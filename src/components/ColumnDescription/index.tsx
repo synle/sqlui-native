@@ -21,17 +21,17 @@ export default function ColumnDescription(props: ColumnDescriptionProps) {
   }
 
   return (
-    <div>
+    <div className='ColumnDescription'>
       {Object.keys(columns).map((columnName) => {
         const column = columns[columnName];
 
         return (
-          <>
+          <div key={columnName}>
             <div>
               <h4>{columnName}</h4>
             </div>
             <pre>{JSON.stringify(column, null, 2)}</pre>
-          </>
+          </div>
         );
       })}
     </div>

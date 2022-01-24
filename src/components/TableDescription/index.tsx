@@ -21,19 +21,14 @@ export default function TableDescription(props: TableDescriptionProps) {
   }
 
   return (
-    <div>
+    <div className='TableDescription'>
       {tables.map((table) => (
-        <>
+        <div key={table}>
           <div>
             <h4>{table}</h4>
           </div>
-          <ColumnDescription
-            connectionId={connectionId}
-            databaseId={databaseId}
-            tableId={table}
-            key={table}
-          />
-        </>
+          <ColumnDescription connectionId={connectionId} databaseId={databaseId} tableId={table} />
+        </div>
       ))}
     </div>
   );
