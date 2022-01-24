@@ -1,7 +1,24 @@
 import { useQuery } from 'react-query';
 
+type ConnectionProps = {
+  id: string;
+  connection: string;
+  name: string;
+  [index: string]: any;
+};
+
 // @ts-ignore
-const _fetch = (...inputs) => fetch(...inputs).then(r => r.json());
+function _fetch<T>(...inputs) {
+  return fetch(inputs[0], {
+    ...(inputs[1] || {}),
+    'content-type': 'Application/JSON',
+  })
+    .then((r) => r.json())
+    .then((r) => {
+      const res: T = r;
+      return res;
+    });
+}
 
 // useQuery('repoData', () =>
 //    fetch('https://api.github.com/repos/tannerlinsley/react-query').then(res =>
@@ -10,7 +27,7 @@ const _fetch = (...inputs) => fetch(...inputs).then(r => r.json());
 //  )
 
 export function useGetConnections() {
-  return useQuery(['connection'], () => _fetch(`/api/connections`));
+  return useQuery(['connection'], () => _fetch<ConnectionProps[]>(`/api/connections`));
 }
 
 export function useGetConnection(connectionId: string) {
