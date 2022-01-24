@@ -56,9 +56,9 @@ ConnectionUtils.addConnection(`mysql://root:password@localhost:3306`, 'sqlui_tes
 // ConnectionUtils.addConnection(`postgres://postgres:password@localhost:5432`, 'sqlui_test_postgres');
 // ConnectionUtils.addConnection(`sqlite://test.db`, 'sqlui_test_sqlite');
 
-const engines: {[index: string]: RelationalDatabaseEngine} = {};
-function getEngine(connection: string){
-  if(engines[connection]){
+const engines: { [index: string]: RelationalDatabaseEngine } = {};
+function getEngine(connection: string) {
+  if (engines[connection]) {
     return engines[connection];
   }
   const engine = new RelationalDatabaseEngine(connection);
