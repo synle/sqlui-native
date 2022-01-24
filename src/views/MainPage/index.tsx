@@ -2,7 +2,7 @@ import React from 'react';
 
 import NewConnectionButton from 'src/components/NewConnectionButton';
 import QueryBox from 'src/components/QueryBox';
-import ConnectionExplorer from 'src/components/ConnectionExplorer';
+import ConnectionDescription from 'src/components/ConnectionDescription';
 import ResultBox from 'src/components/ResultBox';
 
 export default function MainPage() {
@@ -11,7 +11,7 @@ export default function MainPage() {
       <div>
         <h1>MainPage</h1>
       </div>
-      <ConnectionExplorer />
+      <ConnectionDescription />
       <NewConnectionButton />
       <QueryBox />
       <ResultBox />

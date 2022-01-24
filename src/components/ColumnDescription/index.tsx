@@ -1,13 +1,13 @@
 import React from 'react';
 import { useGetColumns } from 'src/hooks';
 
-type ColumnDatabaseDescriptionProps = {
+type ColumnDescriptionProps = {
   connectionId: string;
   databaseId: string;
   tableId: string;
 };
 
-export default function ColumnDatabaseDescription(props: ColumnDatabaseDescriptionProps) {
+export default function ColumnDescription(props: ColumnDescriptionProps) {
   const { databaseId, connectionId, tableId } = props;
 
   const { data: columns, isLoading } = useGetColumns(connectionId, databaseId, tableId);
