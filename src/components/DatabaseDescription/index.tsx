@@ -1,12 +1,12 @@
 import React from 'react';
-import TableDatabaseDescription from 'src/components/TableDatabaseDescription';
+import TableDescription from 'src/components/TableDescription';
 import { useGetDatabases } from 'src/hooks';
 
-type ConnectionDatabaseDescriptionProps = {
+type DatabaseDescriptionProps = {
   connectionId: string;
 };
 
-export default function ConnectionDatabaseDescription(props: ConnectionDatabaseDescriptionProps) {
+export default function DatabaseDescription(props: DatabaseDescriptionProps) {
   const { connectionId } = props;
 
   const { data: databases, isLoading } = useGetDatabases(connectionId);
@@ -26,11 +26,7 @@ export default function ConnectionDatabaseDescription(props: ConnectionDatabaseD
           <div>
             <h4>{database}:</h4>
           </div>
-          <TableDatabaseDescription
-            connectionId={connectionId}
-            databaseId={database}
-            key={database}
-          />
+          <TableDescription connectionId={connectionId} databaseId={database} key={database} />
         </>
       ))}
     </div>

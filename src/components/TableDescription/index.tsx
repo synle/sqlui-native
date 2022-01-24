@@ -1,13 +1,13 @@
 import React from 'react';
-import ColumnDatabaseDescription from 'src/components/ColumnDatabaseDescription';
+import ColumnDescription from 'src/components/ColumnDescription';
 import { useGetTables } from 'src/hooks';
 
-type TableDatabaseDescriptionProps = {
+type TableDescriptionProps = {
   connectionId: string;
   databaseId: string;
 };
 
-export default function TableDatabaseDescription(props: TableDatabaseDescriptionProps) {
+export default function TableDescription(props: TableDescriptionProps) {
   const { databaseId, connectionId } = props;
 
   const { data: tables, isLoading } = useGetTables(connectionId, databaseId);
@@ -27,7 +27,7 @@ export default function TableDatabaseDescription(props: TableDatabaseDescription
           <div>
             <h4>{table}</h4>
           </div>
-          <ColumnDatabaseDescription
+          <ColumnDescription
             connectionId={connectionId}
             databaseId={databaseId}
             tableId={table}

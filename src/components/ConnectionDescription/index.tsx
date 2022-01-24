@@ -1,10 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-import ConnectionDatabaseDescription from 'src/components/ConnectionDatabaseDescription';
+import DatabaseDescription from 'src/components/DatabaseDescription';
 import { useGetConnections } from 'src/hooks';
 
-export default function ConnectionExplorer() {
+export default function ConnectionDescription() {
   const { data: connections, isLoading } = useGetConnections();
 
   if (isLoading) {
@@ -23,7 +23,7 @@ export default function ConnectionExplorer() {
           <div>
             <Link to={`/connection/edit/${connection.id}`}>Edit Connection</Link>
           </div>
-          <ConnectionDatabaseDescription connectionId={connection.id} key={connection.id} />
+          <DatabaseDescription connectionId={connection.id} key={connection.id} />
         </>
       ))}
     </div>
