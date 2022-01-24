@@ -1,5 +1,5 @@
 import React from 'react';
-import { useGetColumns } from 'src/hooks';
+import { useGetColumns, useShowHide } from 'src/hooks';
 
 type ColumnDescriptionProps = {
   connectionId: string;
@@ -9,8 +9,8 @@ type ColumnDescriptionProps = {
 
 export default function ColumnDescription(props: ColumnDescriptionProps) {
   const { databaseId, connectionId, tableId } = props;
-
   const { data: columns, isLoading } = useGetColumns(connectionId, databaseId, tableId);
+  const { visibles, onToggle } = useShowHide();
 
   if (isLoading) {
     return <>loading...</>;
@@ -28,9 +28,13 @@ export default function ColumnDescription(props: ColumnDescriptionProps) {
         return (
           <div key={columnName}>
             <div>
-              <h4>{columnName}</h4>
+              <h6 onClick={() => onToggle(JSON.stringify({ ...props, columnName }))}>
+                {columnName}
+              </h6>
             </div>
-            <pre>{JSON.stringify(column, null, 2)}</pre>
+            {!visibles[JSON.stringify({ ...props, columnName })] ? null : (
+              <pre>{JSON.stringify(column, null, 2)}</pre>
+            )}
           </div>
         );
       })}
