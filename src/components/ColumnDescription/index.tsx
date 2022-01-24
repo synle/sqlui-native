@@ -16,7 +16,7 @@ export default function ColumnDescription(props: ColumnDescriptionProps) {
     return <>loading...</>;
   }
 
-  if (!columns) {
+  if (!columns || Object.keys(columns).length === 0) {
     return <>No Data</>;
   }
 

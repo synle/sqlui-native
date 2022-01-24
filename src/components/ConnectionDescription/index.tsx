@@ -11,7 +11,7 @@ export default function ConnectionDescription() {
     return <>loading...</>;
   }
 
-  if (!connections) {
+  if (!connections || connections.length === 0) {
     return <>No Data</>;
   }
 
