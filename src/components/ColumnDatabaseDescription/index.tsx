@@ -1,27 +1,39 @@
 import React from 'react';
+import { useGetColumns } from 'src/hooks';
 
 type ColumnDatabaseDescriptionProps = {
-  /**
-   * @type String : tableId
-   */
-  id: string;
+  connectionId: string;
+  databaseId: string;
+  tableId: string;
 };
 
 export default function ColumnDatabaseDescription(props: ColumnDatabaseDescriptionProps) {
-  const tableId = props.id;
+  const { databaseId, connectionId, tableId } = props;
 
-  // TODO: hard code for now
-  const columns = ['a', 'b', 'c'].map((id) => ({ id: `column.${tableId}.${id}` }));
+  const { data: columns, isLoading } = useGetColumns(connectionId, databaseId, tableId);
+
+  if (isLoading) {
+    return <>loading...</>;
+  }
+
+  if (!columns) {
+    return <>No Data</>;
+  }
 
   return (
     <div>
-      {columns.map((column) => (
-        <>
-          <div>
-            <h4>column {column.id}:</h4>
-          </div>
-        </>
-      ))}
+      {Object.keys(columns).map((columnName) => {
+        const column = columns[columnName];
+
+        return (
+          <>
+            <div>
+              <h4>{columnName}</h4>
+            </div>
+            <pre>{JSON.stringify(column, null, 2)}</pre>
+          </>
+        );
+      })}
     </div>
   );
 }

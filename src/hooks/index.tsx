@@ -7,6 +7,15 @@ type ConnectionProps = {
   [index: string]: any;
 };
 
+type SqlColumn = {
+  type: string;
+  allowNull: boolean;
+  defaultValue?: string;
+  comment?: string;
+  special?: string;
+  primaryKey: boolean;
+};
+
 // @ts-ignore
 function _fetch<T>(...inputs) {
   return fetch(inputs[0], {
@@ -40,18 +49,33 @@ export function useUpdateConnection() {}
 
 export function useDeleteConnection() {}
 
-// export function useGetDatabases(engine: RelationalDatabaseEngine) {
-//   return engine.getDatabases();
-// }
+export function useGetDatabases(connectionId: string) {
+  return useQuery(['connection', connectionId, 'databases'], () =>
+    _fetch<string[]>(`/api/connection/${connectionId}/databases`),
+  );
+}
 
-// export function useGetTables(engine: RelationalDatabaseEngine, database: string) {
-//   return engine.getTables(database);
-// }
+export function useGetTables(connectionId: string, databaseId: string) {
+  return useQuery(['connection', connectionId, 'database', databaseId, 'tables'], () =>
+    _fetch<string[]>(`/api/connection/${connectionId}/database/${databaseId}/tables`),
+  );
+}
 
-// export function useGetColumns(engine: RelationalDatabaseEngine, database: string) {
-//   return engine.getColumns(database);
-// }
+export function useGetColumns(connectionId: string, databaseId: string, tableId: string) {
+  return useQuery(['connection', connectionId, 'database', databaseId, 'table', tableId], () =>
+    _fetch<{ [index: string]: SqlColumn }>(
+      `/api/connection/${connectionId}/database/${databaseId}/table/${tableId}/columns`,
+    ),
+  );
+}
 
-// export function useExecute(engine: RelationalDatabaseEngine, sql: string, database?: string) {
-//   return engine.execute(sql, database);
-// }
+export function useExecute(connectionId: string, sql: string, databaseId?: string) {
+  return useQuery(['connection', connectionId, 'database', databaseId, 'table'], () =>
+    _fetch(`/api/connection/${connectionId}/execute`, {
+      data: {
+        database: databaseId,
+        sql,
+      },
+    }),
+  );
+}

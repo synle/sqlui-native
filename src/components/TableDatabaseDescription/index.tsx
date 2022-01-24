@@ -1,27 +1,38 @@
 import React from 'react';
 import ColumnDatabaseDescription from 'src/components/ColumnDatabaseDescription';
+import { useGetTables } from 'src/hooks';
 
 type TableDatabaseDescriptionProps = {
-  /**
-   * @type String : databaseId
-   */
-  id: string;
+  connectionId: string;
+  databaseId: string;
 };
 
 export default function TableDatabaseDescription(props: TableDatabaseDescriptionProps) {
-  const databaseId = props.id;
+  const { databaseId, connectionId } = props;
 
-  // TODO: hard code for now
-  const tables = [7, 8, 9].map((id) => ({ id: `tbl.${databaseId}.${id}` }));
+  const { data: tables, isLoading } = useGetTables(connectionId, databaseId);
+
+  if (isLoading) {
+    return <>loading...</>;
+  }
+
+  if (!tables) {
+    return <>No Data</>;
+  }
 
   return (
     <div>
       {tables.map((table) => (
         <>
           <div>
-            <h4>Table {table.id}:</h4>
+            <h4>{table}</h4>
           </div>
-          <ColumnDatabaseDescription id={table.id} key={table.id} />
+          <ColumnDatabaseDescription
+            connectionId={connectionId}
+            databaseId={databaseId}
+            tableId={table}
+            key={table}
+          />
         </>
       ))}
     </div>
