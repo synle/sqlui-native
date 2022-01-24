@@ -89,7 +89,7 @@ export class RelationalDatabaseEngine {
           row.Database || // mssql and mysql
           row.database, // postgres
       )
-      .filter(db => db)
+      .filter((db) => db)
       .sort();
   }
 
@@ -124,7 +124,10 @@ export class RelationalDatabaseEngine {
 
     [data] = await this.execute(sql, database);
 
-    return data.map((row: any) => row.tablename).filter(db => db).sort();
+    return data
+      .map((row: any) => row.tablename)
+      .filter((db) => db)
+      .sort();
   }
 
   async getColumns(table: string, database?: string): Promise<Record<string, ColumnDescription>> {
