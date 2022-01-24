@@ -23,7 +23,7 @@
     "start-mocked": "npx ts-node --project tsconfig-server.json mocked-server/index.ts",
     "build": "cross-env SASS_PATH='./src/styles' react-scripts build",
     "test": "cross-env SASS_PATH='./src/styles' react-scripts test",
-    "format": "npx prettier --config ./.prettierrc --write src/**/**/**/**/*.{ts,tsx,js,jsx,scss,yml} *.{json,MD}",
+    "format": "npx prettier --config ./.prettierrc --write **/*.{ts,tsx,js,jsx,scss,yml} *.{json,MD}",
     "eject": "react-scripts eject"
   },
   "repository": "https://github.com/synle/sqlui-native",
