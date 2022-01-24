@@ -24,7 +24,7 @@ export default function DatabaseDescription(props: DatabaseDescriptionProps) {
       {databases.map((database) => (
         <div key={database}>
           <div>
-            <h4>{database}:</h4>
+            <h4>{database}</h4>
           </div>
           <TableDescription connectionId={connectionId} databaseId={database} />
         </div>

@@ -16,7 +16,6 @@ export class RelationalDatabaseEngine {
    */
   private connectionOption?: string;
   private dialect?: 'mysql' | 'mssql' | 'sqlite' | string;
-  private database?: string;
   private sequelizes: Record<string, Sequelize> = {};
 
   constructor(connectionOption: string | Sequelize) {
@@ -28,13 +27,12 @@ export class RelationalDatabaseEngine {
       // save the connection string
       this.connectionOption = connectionOption;
 
-      sequelize = new Sequelize(connectionOption, { logging: false });
+      sequelize = new Sequelize(connectionOption);
     } else {
       sequelize = connectionOption as Sequelize;
     }
 
     this.dialect = sequelize?.getDialect();
-    this.database = sequelize?.config?.database || '';
 
     // save the root connection
     this.sequelizes[''] = sequelize;
@@ -114,7 +112,7 @@ export class RelationalDatabaseEngine {
         break;
       case 'mariadb':
       case 'mysql':
-        sql = `SELECT TABLE_NAME as tablename FROM information_schema.tables WHERE TABLE_SCHEMA = '${this.database}' ORDER BY tablename`;
+        sql = `SELECT TABLE_NAME as tablename FROM information_schema.tables WHERE TABLE_SCHEMA = '${database}' ORDER BY tablename`;
         break;
     }
 
