@@ -33,8 +33,9 @@
   "dependencies": {
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
+    "react-query": "^3.34.12",
     "react-router-dom": "^6.2.1",
-    "sqlui-core": "git+https://github.com/synle/sqlui-core.git"
+    "sequelize": "^6.14.0"
   },
   "eslintConfig": {
     "extends": [
@@ -52,9 +53,14 @@
     "@types/react-dom": "^17.0.11",
     "cross-env": "^7.0.3",
     "electron": "^16.0.7",
+    "mariadb": "^2.5.5",
+    "mysql2": "^2.3.3",
+    "pg": "^8.7.1",
     "react-scripts": "5.0.0",
     "rimraf": "^3.0.2",
     "sass": "^1.49.0",
+    "sqlite3": "^5.0.2",
+    "tedious": "^14.1.0",
     "typescript": "^4.5.5",
     "web-vitals": "^2.1.4"
   }
