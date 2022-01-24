@@ -1,6 +1,6 @@
 import './App.scss';
 import React from 'react';
-import { BrowserRouter, Routes, Route, Link, useParams } from 'react-router-dom';
+import { HashRouter, Routes, Route, Link, useParams } from 'react-router-dom';
 
 function MainPage() {
   return (
@@ -164,7 +164,7 @@ function ConnectionForm(props: ConnectionFormProps) {
 
 function App() {
   return (
-    <BrowserRouter>
+    <HashRouter>
       <div className='App'>
         <header className='mb2'>
           <h1>SQL UI Native</h1>
@@ -185,10 +185,11 @@ function App() {
             <Route path='/' element={<MainPage />} />
             <Route path='/connection/new' element={<NewConnectionPage />} />
             <Route path='/connection/edit/:connectionId' element={<EditConnectionPage />} />
+            <Route path="/*" element={<MainPage />} />
           </Routes>
         </section>
       </div>
-    </BrowserRouter>
+    </HashRouter>
   );
 }
 
