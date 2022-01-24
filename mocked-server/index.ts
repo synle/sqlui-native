@@ -1,5 +1,5 @@
 import express from 'express';
-import { RelationalDatabaseEngine } from './src/utils/RelationalDatabaseEngine';
+import { RelationalDatabaseEngine } from './utils/RelationalDatabaseEngine';
 
 const app = express()
 const port = 3001
