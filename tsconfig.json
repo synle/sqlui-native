@@ -1,25 +1,21 @@
 {
   "compilerOptions": {
-    "baseUrl": "src/",
-    "target": "es6",
-    "module": "commonjs",
+     "baseUrl": "./",
+    "target": "es5",
     "lib": ["dom", "dom.iterable", "esnext"],
-    "strict": true,
-    "outDir": "./build",
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
+    "strict": true,
     "forceConsistentCasingInFileNames": true,
-    "noImplicitAny": false,
-    "declaration": true,
-    "resolveJsonModule": true,
+    "noFallthroughCasesInSwitch": true,
+    "module": "esnext",
     "moduleResolution": "node",
-    "isolatedModules": false,
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "jsx": "react"
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx"
   },
-  "exclude": ["node_modules"],
-  "include": []
+  "include": ["src"]
 }
