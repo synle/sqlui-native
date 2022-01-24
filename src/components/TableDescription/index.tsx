@@ -16,7 +16,7 @@ export default function TableDescription(props: TableDescriptionProps) {
     return <>loading...</>;
   }
 
-  if (!tables) {
+  if (!tables || tables.length === 0) {
     return <>No Data</>;
   }
 

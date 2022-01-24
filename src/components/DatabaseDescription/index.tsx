@@ -15,7 +15,7 @@ export default function DatabaseDescription(props: DatabaseDescriptionProps) {
     return <>loading...</>;
   }
 
-  if (!databases) {
+  if (!databases || databases.length === 0) {
     return <>No Data</>;
   }
 
