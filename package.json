@@ -23,7 +23,7 @@
     "start-mocked": "npx ts-node --project tsconfig-server.json mocked-server/index.ts",
     "build": "cross-env SASS_PATH='./src/styles' react-scripts build",
     "test": "cross-env SASS_PATH='./src/styles' react-scripts test",
-    "format": "npx prettier --config ./.prettierrc --write **/*.{ts,tsx,js,jsx,scss,yml} *.{json,MD}",
+    "format": "npx prettier --config ./.prettierrc --write **/*.{ts,tsx,js,jsx,scss,yml,html} *.{json,MD}",
     "eject": "react-scripts eject"
   },
   "repository": "https://github.com/synle/sqlui-native",
@@ -33,6 +33,10 @@
   ],
   "author": "Sy Le",
   "dependencies": {
+    "@emotion/react": "^11.7.1",
+    "@emotion/styled": "^11.6.0",
+    "@mui/icons-material": "^5.3.1",
+    "@mui/material": "^5.3.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-query": "^3.34.12",
