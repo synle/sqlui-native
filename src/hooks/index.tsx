@@ -1,3 +1,4 @@
+import React, { useState } from 'react';
 import { useQuery } from 'react-query';
 
 type ConnectionProps = {
@@ -78,4 +79,19 @@ export function useExecute(connectionId: string, sql: string, databaseId?: strin
       },
     }),
   );
+}
+
+export function useShowHide() {
+  const [visibles, setVisibles] = useState<{ [index: string]: boolean }>({});
+
+  const onToggle = (key: string) => {
+    //@ts-ignore
+    visibles[key] = !visibles[key];
+    setVisibles({ ...visibles });
+  };
+
+  return {
+    visibles,
+    onToggle,
+  };
 }

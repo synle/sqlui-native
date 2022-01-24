@@ -1,6 +1,6 @@
 import React from 'react';
 import TableDescription from 'src/components/TableDescription';
-import { useGetDatabases } from 'src/hooks';
+import { useGetDatabases, useShowHide } from 'src/hooks';
 
 type DatabaseDescriptionProps = {
   connectionId: string;
@@ -8,8 +8,8 @@ type DatabaseDescriptionProps = {
 
 export default function DatabaseDescription(props: DatabaseDescriptionProps) {
   const { connectionId } = props;
-
   const { data: databases, isLoading } = useGetDatabases(connectionId);
+  const { visibles, onToggle } = useShowHide();
 
   if (isLoading) {
     return <>loading...</>;
@@ -24,9 +24,11 @@ export default function DatabaseDescription(props: DatabaseDescriptionProps) {
       {databases.map((database) => (
         <div key={database}>
           <div>
-            <h4>{database}</h4>
+            <h4 onClick={() => onToggle(JSON.stringify({ ...props, database }))}>{database}</h4>
           </div>
-          <TableDescription connectionId={connectionId} databaseId={database} />
+          {!visibles[JSON.stringify({ ...props, database })] ? null : (
+            <TableDescription connectionId={connectionId} databaseId={database} />
+          )}
         </div>
       ))}
     </div>

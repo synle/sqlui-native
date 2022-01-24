@@ -16,14 +16,29 @@
 }
 
 .ConnectionDescription {
-  // margin-left: 1.2rem;
+  margin-left: 0.4rem;
 }
 .DatabaseDescription {
-  // margin-left: 1.4rem;
+  margin-left: 0.8rem;
 }
 .TableDescription {
-  // margin-left: 1.6rem;
+  margin-left: 1.2rem;
 }
 .ColumnDescription {
-  // margin-left: 1.8rem;
+  margin-left: 1.4rem;
+}
+
+
+.MainPage{
+  display: flex;
+
+  &__LeftPane{
+    flex-shrink: 0;
+    min-width: 250px;
+    max-width: 350px;
+  }
+
+  &__RightPane{
+    flex-grow: 1;
+  }
 }

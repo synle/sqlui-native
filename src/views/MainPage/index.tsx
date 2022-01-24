@@ -7,14 +7,20 @@ import ResultBox from 'src/components/ResultBox';
 
 export default function MainPage() {
   return (
-    <div>
-      <div>
+    <div className='MainPage'>
+      <div className='MainPage__LeftPane'>
         <h1>MainPage</h1>
+        <div>
+          <NewConnectionButton />
+        </div>
+        <div>
+          <ConnectionDescription />
+        </div>
       </div>
-      <ConnectionDescription />
-      <NewConnectionButton />
-      <QueryBox />
-      <ResultBox />
+      <div className='MainPage__RightPane'>
+        <QueryBox />
+        <ResultBox />
+      </div>
     </div>
   );
 }
