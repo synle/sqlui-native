@@ -6,14 +6,15 @@ import { useGetConnections } from 'src/hooks';
 
 export default function ConnectionExplorer() {
   // TODO: hard code for now
-  const connections = [1, 2, 3].map((id) => ({ id: `connection.${id}` }));
-
-  const { data, isLoading } = useGetConnections();
+  const { data: connections, isLoading } = useGetConnections();
 
   if (isLoading) {
     return <>loading...</>;
   }
-  console.log(data);
+
+  if (!connections) {
+    return <>No Data</>;
+  }
 
   return (
     <div>
