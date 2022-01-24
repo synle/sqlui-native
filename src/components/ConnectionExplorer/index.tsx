@@ -5,7 +5,6 @@ import ConnectionDatabaseDescription from 'src/components/ConnectionDatabaseDesc
 import { useGetConnections } from 'src/hooks';
 
 export default function ConnectionExplorer() {
-  // TODO: hard code for now
   const { data: connections, isLoading } = useGetConnections();
 
   if (isLoading) {
@@ -20,11 +19,11 @@ export default function ConnectionExplorer() {
     <div>
       {connections.map((connection) => (
         <>
-          <h3>Connection {connection.id}:</h3>
+          <h3>{connection.name}</h3>
           <div>
             <Link to={`/connection/edit/${connection.id}`}>Edit Connection</Link>
           </div>
-          <ConnectionDatabaseDescription id={connection.id} key={connection.id} />
+          <ConnectionDatabaseDescription connectionId={connection.id} key={connection.id} />
         </>
       ))}
     </div>

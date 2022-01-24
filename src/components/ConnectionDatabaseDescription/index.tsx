@@ -1,28 +1,36 @@
 import React from 'react';
-
 import TableDatabaseDescription from 'src/components/TableDatabaseDescription';
+import { useGetDatabases } from 'src/hooks';
 
 type ConnectionDatabaseDescriptionProps = {
-  /**
-   * @type String : connectionId
-   */
-  id: string;
+  connectionId: string;
 };
 
 export default function ConnectionDatabaseDescription(props: ConnectionDatabaseDescriptionProps) {
-  const connectionId = props.id;
+  const { connectionId } = props;
 
-  // TODO: hard code for now
-  const databases = [4, 5, 6].map((id) => ({ id: `db.${connectionId}.${id}` }));
+  const { data: databases, isLoading } = useGetDatabases(connectionId);
+
+  if (isLoading) {
+    return <>loading...</>;
+  }
+
+  if (!databases) {
+    return <>No Data</>;
+  }
 
   return (
     <div>
       {databases.map((database) => (
         <>
           <div>
-            <h4>Database {database.id}:</h4>
+            <h4>{database}:</h4>
           </div>
-          <TableDatabaseDescription id={database.id} key={database.id} />
+          <TableDatabaseDescription
+            connectionId={connectionId}
+            databaseId={database}
+            key={database}
+          />
         </>
       ))}
     </div>
