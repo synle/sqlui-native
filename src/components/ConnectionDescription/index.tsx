@@ -16,15 +16,15 @@ export default function ConnectionDescription() {
   }
 
   return (
-    <div>
+    <div className='ConnectionDescription'>
       {connections.map((connection) => (
-        <>
+        <div key={connection.id}>
           <h3>{connection.name}</h3>
           <div>
             <Link to={`/connection/edit/${connection.id}`}>Edit Connection</Link>
           </div>
-          <DatabaseDescription connectionId={connection.id} key={connection.id} />
-        </>
+          <DatabaseDescription connectionId={connection.id} />
+        </div>
       ))}
     </div>
   );
