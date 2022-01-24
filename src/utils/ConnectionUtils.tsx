@@ -1,4 +1,4 @@
-import { RelationalDatabaseEngine } from 'sqlui-core';
+import { RelationalDatabaseEngine } from 'src/utils/RelationalDatabaseEngine';
 
 type ConnectionProps = {
   id: string;
