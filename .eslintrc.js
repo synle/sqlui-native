@@ -15,5 +15,6 @@ module.exports = {
   plugins: ['react', '@typescript-eslint'],
   rules: {
     'no-unused-vars': ['warn', { caughtErrors: 'none', argsIgnorePattern: '^_' }],
+    'no-debugger': ['warn'],
   },
 };
