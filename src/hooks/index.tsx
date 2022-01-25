@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useQuery, useMutation } from 'react-query';
+import { useState, useRef } from 'react';
+import { useQuery, useMutation, useQueryClient } from 'react-query';
 import { Sqlui } from 'typings';
 
 // @ts-ignore
@@ -102,17 +102,19 @@ export function useExecute(connectionId: string, sql: string, databaseId?: strin
   );
 }
 
+let _treeVisibles: { [index: string]: boolean } = {};
 export function useShowHide() {
-  const [visibles, setVisibles] = useState<{ [index: string]: boolean }>({});
+  const queryClient = useQueryClient();
+
+  const { data: visibles, isLoading: loading } = useQuery('treeVisibles', () => _treeVisibles);
 
   const onToggle = (key: string) => {
-    //@ts-ignore
-    visibles[key] = !visibles[key];
-    setVisibles({ ...visibles });
+    _treeVisibles[key] = !_treeVisibles[key];
+    queryClient.invalidateQueries('treeVisibles');
   };
 
   return {
-    visibles,
+    visibles: visibles || {},
     onToggle,
   };
 }
