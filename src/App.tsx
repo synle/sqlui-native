@@ -9,7 +9,7 @@ export default function App() {
   return (
     <HashRouter>
       <div className='App'>
-        <header className='mb2'>
+        <header>
           <h1>SQL UI Native</h1>
         </header>
 
