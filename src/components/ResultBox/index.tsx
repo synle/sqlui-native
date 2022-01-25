@@ -97,5 +97,33 @@ function CsvFormatData(props: FormatDataProps) {
 // TODO: implement me
 function TableFormatData(props: FormatDataProps) {
   const { data } = props;
-  return <pre>Table</pre>;
+
+  const [headers, setHeaders] = useState<string[]>([]);
+
+  useEffect(() => {
+    const newHeaders = new Set<string>();
+    for(const row of data){
+      for(const header of Object.keys(row)){
+        newHeaders.add(header);
+      }
+    }
+    setHeaders(Array.from(newHeaders))
+  }, [data]);
+
+
+  return <table>
+  <thead>
+    <tr>
+      {headers.map(header => <th key={header}>{header}</th>)}
+    </tr>
+    </thead>
+
+    <tbody>
+    {
+      data.map((row, idx) => <tr key={idx}>
+        {headers.map(header => <td key={header}>{row[header]}</td>)}
+      </tr>)
+    }
+    </tbody>
+  </table>;
 }
