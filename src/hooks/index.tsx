@@ -91,9 +91,16 @@ export function useDeleteConnection() {
 
 export function useGetDatabases(connectionId: string) {
   const resp = useGetMetaData();
+  const { data, ...rest } = resp;
 
-  if (resp.data) {
-    resp.data = resp.data.find((connection) => connection.id === connectionId)?.databases;
+  if (data) {
+    const newData: Sqlui.DatabaseMetaData[] = data.find(
+      (connection) => connection.id === connectionId,
+    )?.databases;
+    return {
+      ...rest,
+      data: newData,
+    };
   }
 
   return resp;
@@ -101,9 +108,14 @@ export function useGetDatabases(connectionId: string) {
 
 export function useGetTables(connectionId: string, databaseId: string) {
   const resp = useGetDatabases(connectionId);
+  const { data, ...rest } = resp;
 
-  if (resp.data) {
-    resp.data = resp.data.find((database) => database.name === databaseId)?.tables;
+  if (data) {
+    const newData = data.find((database) => database.name === databaseId)?.tables;
+    return {
+      ...rest,
+      data: newData,
+    };
   }
 
   return resp;

@@ -1,3 +1,5 @@
+import { ColumnDescription } from 'sequelize';
+
 export module Sqlui {
   export type AddConnectionProps = {
     connection: string;
@@ -12,26 +14,23 @@ export module Sqlui {
     [index: string]: any;
   }
 
-  export type Column = {
-    type: string;
-    allowNull: boolean;
-    defaultValue?: string;
-    comment?: string;
-    special?: string;
-    primaryKey: boolean;
-  };
+  export type Column = ColumnDescription;
 
   export type Result = [any[], any];
 
-  export type ConnectionMetaData = ConnectionProps & {
-    database: {
-      name: string;
-      tables: {
-        name: string;
-        columns: {
-          [index: string]: Column;
-        };
-      }[];
-    };
+  export type ColumnMetaData = {
+    [index: string]: Column;
   };
+
+  export type TableMetaData = {
+    name: string;
+    columns: ColumnMetaData;
+  };
+
+  export type DatabaseMetaData = {
+    name: string;
+    tables: TableMetaData[];
+  };
+
+  export type ConnectionMetaData = ConnectionProps & DatabaseMetaData;
 }
