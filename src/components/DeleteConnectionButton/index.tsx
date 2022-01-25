@@ -9,7 +9,7 @@ export default function DeleteConnectionButton(props: DeleteConnectionButtonProp
   const { connectionId } = props;
   const { mutateAsync } = useDeleteConnection();
   const onDelete = async () => {
-    confirm('Delete this connection?') && await mutateAsync(connectionId);
+    confirm('Delete this connection?') && (await mutateAsync(connectionId));
   };
 
   return (

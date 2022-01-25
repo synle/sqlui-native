@@ -44,11 +44,9 @@ function _fetch<T>(...inputs) {
     });
 }
 
-// useQuery('repoData', () =>
-//    fetch('https://api.github.com/repos/tannerlinsley/react-query').then(res =>
-//      res.json()
-//    )
-//  )
+export function useGetMetaData() {
+  return useQuery(['connection', 'metadata'], () => _fetch<ConnectionProps[]>(`/api/metadata`));
+}
 
 export function useGetConnections() {
   return useQuery(['connection'], () => _fetch<ConnectionProps[]>(`/api/connections`));

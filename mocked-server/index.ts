@@ -73,7 +73,7 @@ ConnectionUtils.addConnection({
   connection: `postgres://postgres:password@localhost:5432`,
   name: 'sqlui_test_postgres',
 });
-ConnectionUtils.addConnection({ connection: `sqlite://test.db`, name: 'sqlui_test_sqlite' });
+// ConnectionUtils.addConnection({ connection: `sqlite://test.db`, name: 'sqlui_test_sqlite' });
 
 const engines: { [index: string]: RelationalDatabaseEngine } = {};
 function getEngine(connection: string) {
@@ -140,6 +140,58 @@ app.put('/api/connection/:connectionId', async (req, res) => {
 
 app.delete('/api/connection/:connectionId', async (req, res) => {
   res.json(await ConnectionUtils.deleteConnection(req.params?.connectionId));
+});
+
+app.get('/api/metadata', async (req, res) => {
+  const connections = await ConnectionUtils.getConnections();
+
+  const resp: any[] = [];
+
+  for (const connection of connections) {
+    const engine = getEngine(connection.connection);
+
+    const connItem = { ...connection, databases: [] };
+    resp.push(connItem);
+
+    const databases = await engine.getDatabases();
+    for (const database of databases) {
+      const dbItem = {
+        name: database,
+        tables: [],
+      };
+
+      // @ts-ignore
+      connItem.databases.push(dbItem);
+
+      let tables: any[] = [];
+      try {
+        tables = await engine.getTables(database);
+        console.log('getting tables', database, tables);
+      } catch (err) {
+        console.log('failed getting tables', database);
+      }
+
+      for (const table of tables) {
+        let columns = undefined;
+
+        try {
+          columns = await engine.getColumns(table, database);
+        } catch (err) {
+          console.log('failed getting columns', database, table);
+        }
+
+        const tblItem = {
+          name: table,
+          columns,
+        };
+
+        // @ts-ignore
+        dbItem.tables.push(tblItem);
+      }
+    }
+  }
+
+  res.json(resp);
 });
 
 app.listen(port, () => {
