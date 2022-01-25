@@ -102,28 +102,33 @@ function TableFormatData(props: FormatDataProps) {
 
   useEffect(() => {
     const newHeaders = new Set<string>();
-    for(const row of data){
-      for(const header of Object.keys(row)){
+    for (const row of data) {
+      for (const header of Object.keys(row)) {
         newHeaders.add(header);
       }
     }
-    setHeaders(Array.from(newHeaders))
+    setHeaders(Array.from(newHeaders));
   }, [data]);
 
+  return (
+    <table>
+      <thead>
+        <tr>
+          {headers.map((header) => (
+            <th key={header}>{header}</th>
+          ))}
+        </tr>
+      </thead>
 
-  return <table>
-  <thead>
-    <tr>
-      {headers.map(header => <th key={header}>{header}</th>)}
-    </tr>
-    </thead>
-
-    <tbody>
-    {
-      data.map((row, idx) => <tr key={idx}>
-        {headers.map(header => <td key={header}>{row[header]}</td>)}
-      </tr>)
-    }
-    </tbody>
-  </table>;
+      <tbody>
+        {data.map((row, idx) => (
+          <tr key={idx}>
+            {headers.map((header) => (
+              <td key={header}>{row[header]}</td>
+            ))}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
 }

@@ -5,10 +5,10 @@ import CloudIcon from '@mui/icons-material/Cloud';
 import DatabaseDescription from 'src/components/DatabaseDescription';
 import DeleteConnectionButton from 'src/components/DeleteConnectionButton';
 import { AccordionHeader, AccordionBody } from 'src/components/Accordion';
-import { useGetConnections, useShowHide } from 'src/hooks';
+import { useGetMetaData, useShowHide } from 'src/hooks';
 
 export default function ConnectionDescription() {
-  const { data: connections, isLoading } = useGetConnections();
+  const { data: connections, isLoading } = useGetMetaData();
   const { visibles, onToggle } = useShowHide();
 
   if (isLoading) {
