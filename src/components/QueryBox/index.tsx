@@ -5,7 +5,7 @@ interface QueryBoxProps {
 }
 
 export default function QueryBox(props: QueryBoxProps) {
-  const [sql, setSql] = useState('');
+  const [sql, setSql] = useState('SELECT * FROM artists ORDER BY Name ASC LIMIT 10');
 
   const onExecute = () => {
     props.onExecute(sql);
