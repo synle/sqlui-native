@@ -19,9 +19,16 @@ type SqlColumn = {
 
 // @ts-ignore
 function _fetch<T>(...inputs) {
+  let { headers, ...restInput } = inputs[1] || {};
+
+  headers = headers || {};
+  headers = { ...headers, ...{ 'Content-Type': 'application/json', Accept: 'application/json' } };
+
+  restInput = restInput || {};
+
   return fetch(inputs[0], {
-    ...(inputs[1] || {}),
-    'content-type': 'Application/JSON',
+    ...restInput,
+    headers,
   })
     .then((r) => r.json())
     .then((r) => {
@@ -73,11 +80,15 @@ export function useGetColumns(connectionId: string, databaseId: string, tableId:
 export function useExecute(connectionId: string, sql: string, databaseId?: string) {
   return useQuery(['connection', connectionId, 'database', databaseId, 'table'], () =>
     _fetch(`/api/connection/${connectionId}/execute`, {
-      data: JSON.stringify({
+      method: 'post',
+      body: JSON.stringify({
         database: databaseId,
         sql,
       }),
     }),
+    {
+      enabled: sql.length > 0
+    }
   );
 }
 

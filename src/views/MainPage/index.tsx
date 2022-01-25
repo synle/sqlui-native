@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import NewConnectionButton from 'src/components/NewConnectionButton';
 import QueryBox from 'src/components/QueryBox';
@@ -8,13 +8,12 @@ import { useExecute } from 'src/hooks';
 
 export default function MainPage() {
   // TODO hard coded here for now
-  const { data: connections, isLoading } = useExecute();
+  const [sql, setSql] = useState('');
+  const { data: queryResult, isLoading } = useExecute('connection.1', sql, 'music_store');
 
-  const onExecute = (sql: string) => {
-    alert(sql);
+  const onExecute = (newSql: string) => {
+    setSql(newSql);
   };
-
-  const queryResult = null;
 
   return (
     <section className='MainPage'>
@@ -29,7 +28,7 @@ export default function MainPage() {
       </div>
       <div className='MainPage__RightPane'>
         <QueryBox onExecute={onExecute} />
-        <ResultBox queryResult={queryResult} />
+        <ResultBox queryResult={queryResult} isLoading={isLoading} />
       </div>
     </section>
   );

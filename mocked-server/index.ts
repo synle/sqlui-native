@@ -21,7 +21,7 @@ let id = 0;
 
 const ConnectionUtils = {
   addConnection(connection: string, name: string): ConnectionProps {
-    const newId = `db.${++id}`;
+    const newId = `connection.${++id}`;
 
     caches[newId] = {
       id: newId,
@@ -104,6 +104,7 @@ app.post('/api/connection/:connectionId/execute', async (req, res) => {
   const engine = getEngine(connection.connection);
   const sql = req.body?.sql;
   const database = req.body?.database;
+  console.log(sql, database, req.body);
   res.json(await engine.execute(sql, database));
 });
 
