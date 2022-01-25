@@ -3,7 +3,7 @@ export module Sqlui {
     connection: string;
     name: string;
     [index: string]: any;
-  }
+  };
 
   export interface ConnectionProps {
     id: string;
@@ -19,5 +19,5 @@ export module Sqlui {
     comment?: string;
     special?: string;
     primaryKey: boolean;
-  }
+  };
 }

@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import DatabaseDescription from 'src/components/DatabaseDescription';
 import DeleteConnectionButton from 'src/components/DeleteConnectionButton';

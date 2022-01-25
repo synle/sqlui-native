@@ -1,4 +1,3 @@
-import React from 'react';
 import TableDescription from 'src/components/TableDescription';
 import { useGetDatabases, useShowHide } from 'src/hooks';
 
