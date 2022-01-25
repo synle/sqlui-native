@@ -1,5 +1,6 @@
 import express from 'express';
 import bodyParser from 'body-parser';
+import { Optional } from 'utility-types';
 import { RelationalDatabaseEngine } from './utils/RelationalDatabaseEngine';
 
 const port = 3001;
@@ -15,18 +16,20 @@ type ConnectionProps = {
   [index: string]: any;
 };
 
+type AddConnectionProps = Optional<ConnectionProps, 'id'>;
+
 // this section of the api is caches in memory
 const caches: { [index: string]: ConnectionProps } = {};
 let id = 0;
 
 const ConnectionUtils = {
-  addConnection(connection: string, name: string): ConnectionProps {
+  addConnection(connection: AddConnectionProps): ConnectionProps {
     const newId = `connection.${++id}`;
 
     caches[newId] = {
       id: newId,
-      connection,
-      name,
+      name: connection.name,
+      connection: connection.connection,
     };
 
     return caches[newId];
@@ -54,11 +57,23 @@ const ConnectionUtils = {
   },
 };
 
-ConnectionUtils.addConnection(`mysql://root:password@localhost:3306`, 'sqlui_test_mysql');
-// ConnectionUtils.addConnection(`mssql://sa:password123!@localhost:1433`, 'sqlui_test_mssql');
-// ConnectionUtils.addConnection(`mariadb://root:password@localhost:33061`, 'sqlui_test_mariadb');
-// ConnectionUtils.addConnection(`postgres://postgres:password@localhost:5432`, 'sqlui_test_postgres');
-// ConnectionUtils.addConnection(`sqlite://test.db`, 'sqlui_test_sqlite');
+ConnectionUtils.addConnection({
+  connection: `mysql://root:password@localhost:3306`,
+  name: 'sqlui_test_mysql',
+});
+ConnectionUtils.addConnection({
+  connection: `mssql://sa:password123!@localhost:1433`,
+  name: 'sqlui_test_mssql',
+});
+ConnectionUtils.addConnection({
+  connection: `mariadb://root:password@localhost:33061`,
+  name: 'sqlui_test_mariadb',
+});
+ConnectionUtils.addConnection({
+  connection: `postgres://postgres:password@localhost:5432`,
+  name: 'sqlui_test_postgres',
+});
+ConnectionUtils.addConnection({ connection: `sqlite://test.db`, name: 'sqlui_test_sqlite' });
 
 const engines: { [index: string]: RelationalDatabaseEngine } = {};
 function getEngine(connection: string) {
@@ -104,8 +119,23 @@ app.post('/api/connection/:connectionId/execute', async (req, res) => {
   const engine = getEngine(connection.connection);
   const sql = req.body?.sql;
   const database = req.body?.database;
-  console.log(sql, database, req.body);
   res.json(await engine.execute(sql, database));
+});
+
+app.post('/api/connection', async (req, res) => {
+  res.json(
+    await ConnectionUtils.addConnection({ connection: req.body?.connection, name: req.body?.name }),
+  );
+});
+
+app.put('/api/connection/:connectionId', async (req, res) => {
+  res.json(
+    await ConnectionUtils.updateConnection({
+      id: req.params?.connectionId,
+      connection: req.body?.connection,
+      name: req.body?.name
+    }),
+  );
 });
 
 app.listen(port, () => {
