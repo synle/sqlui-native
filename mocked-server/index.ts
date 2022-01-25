@@ -1,7 +1,7 @@
 import express from 'express';
 import bodyParser from 'body-parser';
-import { Optional } from 'utility-types';
 import { RelationalDatabaseEngine } from './utils/RelationalDatabaseEngine';
+import { Sqlui } from '../typings';
 
 const port = 3001;
 const app = express();
@@ -9,21 +9,12 @@ const app = express();
 app.use(bodyParser.urlencoded({ extended: false })); // parse application/x-www-form-urlencoded
 app.use(bodyParser.json()); // parse application/json
 
-type ConnectionProps = {
-  id: string;
-  connection: string;
-  name: string;
-  [index: string]: any;
-};
-
-type AddConnectionProps = Optional<ConnectionProps, 'id'>;
-
 // this section of the api is caches in memory
-const caches: { [index: string]: ConnectionProps } = {};
+const caches: { [index: string]: Sqlui.ConnectionProps } = {};
 let id = 0;
 
 const ConnectionUtils = {
-  addConnection(connection: AddConnectionProps): ConnectionProps {
+  addConnection(connection: Sqlui.AddConnectionProps): Sqlui.ConnectionProps {
     const newId = `connection.${++id}`;
 
     caches[newId] = {
@@ -35,7 +26,7 @@ const ConnectionUtils = {
     return caches[newId];
   },
 
-  updateConnection(connection: ConnectionProps): ConnectionProps {
+  updateConnection(connection: Sqlui.ConnectionProps): Sqlui.ConnectionProps {
     caches[connection.id] = {
       ...caches[connection.id],
       ...connection,
@@ -44,11 +35,11 @@ const ConnectionUtils = {
     return caches[connection.id];
   },
 
-  getConnections(): ConnectionProps[] {
+  getConnections(): Sqlui.ConnectionProps[] {
     return Object.values(caches);
   },
 
-  getConnection(id: string): ConnectionProps {
+  getConnection(id: string): Sqlui.ConnectionProps {
     return caches[id];
   },
 
