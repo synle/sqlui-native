@@ -4,17 +4,10 @@ import NewConnectionButton from 'src/components/NewConnectionButton';
 import QueryBox from 'src/components/QueryBox';
 import ConnectionDescription from 'src/components/ConnectionDescription';
 import ResultBox from 'src/components/ResultBox';
-import { useExecute } from 'src/hooks';
+import Tabs from 'src/components/Tabs';
+import { useExecute, useConnectionQueries, useConnectionQuery } from 'src/hooks';
 
 export default function MainPage() {
-  // TODO hard coded here for now
-  const [sql, setSql] = useState('');
-  const { data: queryResult, isLoading } = useExecute('connection.1', sql, 'music_store');
-
-  const onExecute = (newSql: string) => {
-    setSql(newSql);
-  };
-
   return (
     <section className='MainPage'>
       <div className='MainPage__LeftPane'>
@@ -27,9 +20,51 @@ export default function MainPage() {
         </div>
       </div>
       <div className='MainPage__RightPane'>
-        <QueryBox onExecute={onExecute} />
-        <ResultBox queryResult={queryResult} isLoading={isLoading} />
+        <QueryResultTabs />
       </div>
     </section>
+  );
+}
+
+// TODO: move this into a component
+function QueryResultTabs() {
+  const { queries, onAddQuery, isLoading } = useConnectionQueries();
+
+  if (isLoading) {
+    return <>loading...</>;
+  }
+
+  if (!queries) {
+    return null;
+  }
+
+  const tabHeaders = queries.map((q) => <button key={q.id}>{q.name}</button>);
+  const tabContents = queries.map((q) => <QueryResultContainer key={q.id} queryId={q.id} />);
+
+  return (
+    <Tabs>
+      <nav>
+        {tabHeaders}
+        <button type='button' onClick={onAddQuery}>
+          Add Query
+        </button>
+      </nav>
+      <div>{tabContents}</div>
+    </Tabs>
+  );
+}
+
+interface QueryResultContainerProps {
+  queryId: string;
+}
+
+function QueryResultContainer(props: QueryResultContainerProps) {
+  const { queryId } = props;
+
+  return (
+    <>
+      <QueryBox queryId={queryId} />
+      <ResultBox queryId={queryId} />
+    </>
   );
 }

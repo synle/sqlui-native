@@ -1,20 +1,30 @@
 import { useState } from 'react';
+import { useExecute, useConnectionQueries, useConnectionQuery } from 'src/hooks';
 
 interface QueryBoxProps {
-  onExecute: (sql: string) => void;
+  queryId: string;
 }
 
 export default function QueryBox(props: QueryBoxProps) {
-  const [sql, setSql] = useState('SELECT * FROM artists ORDER BY Name ASC LIMIT 10');
+  const { queryId } = props;
+  const { query, onChange, isLoading } = useConnectionQuery(queryId);
+
+  if (isLoading) {
+    return <>loading...</>;
+  }
+
+  if (!query) {
+    return null;
+  }
 
   const onExecute = () => {
-    props.onExecute(sql);
+    onChange('sql',query.sql + ' ')
   };
 
   return (
     <section className='QueryBox'>
       <div>
-        <textarea value={sql} onChange={(e) => setSql(e.target.value)}></textarea>
+        <textarea defaultValue={query.sql} onBlur={(e) => onChange('sql', e.target.value)}></textarea>
       </div>
       <div>
         <button type='button' onClick={onExecute}>

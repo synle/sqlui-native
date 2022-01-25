@@ -20,4 +20,6 @@ export module Sqlui {
     special?: string;
     primaryKey: boolean;
   };
+
+  export type Result = [any[], any];
 }

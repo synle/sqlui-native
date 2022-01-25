@@ -59,7 +59,7 @@ export function useUpsertConnection() {
 
 export function useDeleteConnection() {
   return useMutation<void, void, string, void>((deleteConnectionId) =>
-    _fetch(`/api/connection/${deleteConnectionId}`, {
+    _fetch<void>(`/api/connection/${deleteConnectionId}`, {
       method: 'delete',
     }),
   );
@@ -85,11 +85,11 @@ export function useGetColumns(connectionId: string, databaseId: string, tableId:
   );
 }
 
-export function useExecute(connectionId: string, sql: string, databaseId?: string) {
+export function useExecute(connectionId?: string, sql?: string, databaseId?: string) {
   return useQuery(
     ['connection', connectionId, 'database', databaseId, 'table'],
     () =>
-      _fetch(`/api/connection/${connectionId}/execute`, {
+      _fetch<Sqlui.Result>(`/api/connection/${connectionId}/execute`, {
         method: 'post',
         body: JSON.stringify({
           database: databaseId,
@@ -97,12 +97,14 @@ export function useExecute(connectionId: string, sql: string, databaseId?: strin
         }),
       }),
     {
-      enabled: !!sql,
+      enabled: !!sql && !!connectionId && !databaseId,
     },
   );
 }
 
+// used for show and hide the sidebar trees
 let _treeVisibles: { [index: string]: boolean } = {};
+
 export function useShowHide() {
   const queryClient = useQueryClient();
 
@@ -116,5 +118,80 @@ export function useShowHide() {
   return {
     visibles: visibles || {},
     onToggle,
+  };
+}
+
+// connection queries
+interface ConnectionQuery {
+  id: string;
+  name: string;
+  connectionId?: string;
+  databaseId?: string;
+  sql: string;
+}
+
+let _connectionQueries: ConnectionQuery[] = [
+  {
+    id: '1',
+    name: 'Query #1',
+    sql: '',
+  },
+];
+
+export function useConnectionQueries() {
+  const queryClient = useQueryClient();
+
+  const { data: queries, isLoading } = useQuery('connectionQueries', () => _connectionQueries);
+
+  const onAddQuery = () => {
+    _connectionQueries.push({
+      id: `${Date.now()}`,
+      name: `Query ${new Date().toLocaleString()}`,
+      sql: '',
+    });
+    queryClient.invalidateQueries('connectionQueries');
+  };
+
+  const onDeleteQuery = (queryId: string) => {
+    _connectionQueries = _connectionQueries.filter((q) => q.id !== queryId);
+    queryClient.invalidateQueries('connectionQueries');
+  };
+
+  return {
+    isLoading,
+    queries,
+    onAddQuery,
+    onDeleteQuery,
+  };
+}
+
+export function useConnectionQuery(queryId: string) {
+  const queryClient = useQueryClient();
+
+  const { data: queries, isLoading } = useQuery('connectionQueries', () => _connectionQueries);
+
+  const query = queries?.find((q) => q.id === queryId);
+
+  const onExecute = () => {
+    if(!query){
+      return;
+    }
+
+    queryClient.invalidateQueries('connectionQueries');
+  };
+
+  const onChange = (key: keyof ConnectionQuery, value: string) => {
+    if(!query){
+      return;
+    }
+    query[key] = value;
+    queryClient.invalidateQueries('connectionQueries');
+  };
+
+  return {
+    isLoading,
+    query,
+    onExecute,
+    onChange,
   };
 }
