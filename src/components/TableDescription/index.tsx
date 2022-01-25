@@ -24,7 +24,7 @@ export default function TableDescription(props: TableDescriptionProps) {
       {tables.map((table) => (
         <div key={table}>
           <div>
-            <h5 onClick={() => onToggle(JSON.stringify({ ...props, table }))}>{table}</h5>
+            <a onClick={() => onToggle(JSON.stringify({ ...props, table }))}>{table}</a>
           </div>
           {!visibles[JSON.stringify({ ...props, table })] ? null : (
             <ColumnDescription

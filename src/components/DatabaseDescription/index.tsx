@@ -23,7 +23,7 @@ export default function DatabaseDescription(props: DatabaseDescriptionProps) {
       {databases.map((database) => (
         <div key={database}>
           <div>
-            <h4 onClick={() => onToggle(JSON.stringify({ ...props, database }))}>{database}</h4>
+            <a onClick={() => onToggle(JSON.stringify({ ...props, database }))}>{database}</a>
           </div>
           {!visibles[JSON.stringify({ ...props, database })] ? null : (
             <TableDescription connectionId={connectionId} databaseId={database} />

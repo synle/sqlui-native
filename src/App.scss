@@ -5,16 +5,29 @@
 }
 
 .ConnectionDescription {
-  margin-left: 0.4rem;
+  margin-left: 0.3rem;
+
+  &__TitleRow {
+    display: flex;
+    justify-content: space-around;
+
+    * {
+      margin-right: 5px;
+    }
+  }
+
+  &__Title {
+    flex-grow: 1;
+  }
 }
 .DatabaseDescription {
-  margin-left: 0.8rem;
+  margin-left: 0.5rem;
 }
 .TableDescription {
-  margin-left: 1.2rem;
+  margin-left: 0.7rem;
 }
 .ColumnDescription {
-  margin-left: 1.4rem;
+  margin-left: 0.9rem;
 }
 
 .MainPage {
