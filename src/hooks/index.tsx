@@ -24,7 +24,35 @@ function _fetch<T>(...inputs) {
 
 export function useGetMetaData() {
   return useQuery(['connection', 'metadata'], () =>
-    _fetch<Sqlui.ConnectionProps[]>(`/api/metadata`),
+    _fetch<Sqlui.ConnectionMetaData[]>(`/api/metadata`),
+  );
+}
+
+export function useGetAvailableDatabaseConnections() {
+  return useQuery(
+    ['connection', 'metadata'],
+    () => _fetch<Sqlui.ConnectionMetaData[]>(`/api/metadata`),
+    {
+      select: (connections) => {
+        const res = [];
+
+        for (const connection of connections) {
+          const connectionId = connection.id;
+          for (const database of connection.databases) {
+            const databaseId = database.name as string;
+
+            res.push({
+              connectionId,
+              databaseId,
+              id: `${connectionId}.${databaseId}`,
+              label: `${connection.name} > ${database.name}`,
+            });
+          }
+        }
+
+        return res;
+      },
+    },
   );
 }
 
@@ -97,7 +125,7 @@ export function useExecute(connectionId?: string, sql?: string, databaseId?: str
         }),
       }),
     {
-      enabled: !!sql && !!connectionId && !databaseId,
+      enabled: !!sql && !!connectionId && !!databaseId,
     },
   );
 }
@@ -173,18 +201,18 @@ export function useConnectionQuery(queryId: string) {
   const query = queries?.find((q) => q.id === queryId);
 
   const onExecute = () => {
-    if(!query){
+    if (!query) {
       return;
     }
 
     queryClient.invalidateQueries('connectionQueries');
   };
 
-  const onChange = (key: keyof ConnectionQuery, value: string) => {
-    if(!query){
+  const onChange = (key: keyof ConnectionQuery, value?: string) => {
+    if (!query) {
       return;
     }
-    query[key] = value;
+    query[key] = value || '';
     queryClient.invalidateQueries('connectionQueries');
   };
 
