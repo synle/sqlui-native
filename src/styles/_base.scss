@@ -43,6 +43,10 @@ button {
   cursor: pointer;
 }
 
+button:hover {
+  background: #efefef;
+}
+
 button:disabled {
   background: black;
   color: white;
@@ -57,4 +61,6 @@ a {
 
 pre {
   margin: 0;
+  background: #efefef;
+  border: 1px solid black;
 }
