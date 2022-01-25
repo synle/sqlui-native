@@ -1,4 +1,6 @@
+import React, { useState } from 'react';
 import { useExecute, useConnectionQueries, useConnectionQuery } from 'src/hooks';
+import Tabs from 'src/components/Tabs';
 
 interface ResultBoxProps {
   queryId: string;
@@ -7,6 +9,7 @@ interface ResultBoxProps {
 export default function ResultBox(props: ResultBoxProps) {
   const { queryId } = props;
   const { query, isLoading: loadingQuery } = useConnectionQuery(queryId);
+  const [tabIdx, setTabIdx] = useState(0);
 
   const isLoading = loadingQuery;
 
@@ -35,5 +38,54 @@ export default function ResultBox(props: ResultBoxProps) {
 
   const [data] = queryResult;
 
-  return <pre>{JSON.stringify(data, null, 2)}</pre>;
+  // return <pre>{JSON.stringify(data, null, 2)}</pre>;
+
+  const tabHeaders = [
+    <button key={0} onClick={() => setTabIdx(0)} disabled={tabIdx === 0}>
+      JSON
+    </button>,
+    <button key={1} onClick={() => setTabIdx(1)} disabled={tabIdx === 1}>
+      CSV
+    </button>,
+    <button key={2} onClick={() => setTabIdx(2)} disabled={tabIdx === 2}>
+      Table
+    </button>,
+  ];
+
+  const tabContents = [
+    <div key={`JSON`}>
+      <JsonFormatData data={data}/>
+    </div>,
+    <div key={`CSV`}>
+        <CsvFormatData data={data}/>
+    </div>,
+    <div key={`Table`}>
+        <TableFormatData data={data}/>
+    </div>,
+  ];
+
+  return <Tabs tabIdx={tabIdx} tabHeaders={tabHeaders} tabContents={tabContents}></Tabs>;
+}
+
+interface FormatDataProps{
+  data: any[];
+}
+
+function JsonFormatData(props: FormatDataProps){
+  const {data} = props;
+  return <pre>{JSON.stringify(data, null, 2)}</pre>
+}
+
+
+
+// TODO: implement me
+function CsvFormatData(props: FormatDataProps){
+  const {data} = props;
+  return <pre>CSV</pre>
+}
+
+// TODO: implement me
+function TableFormatData(props: FormatDataProps){
+  const {data} = props;
+  return <pre>Table</pre>
 }

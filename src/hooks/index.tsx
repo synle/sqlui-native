@@ -162,6 +162,7 @@ interface ConnectionQuery {
   databaseId?: string;
   sql: string;
   lastExecuted?: string;
+  selected: boolean;
 }
 
 let _connectionQueries: ConnectionQuery[] = [
@@ -169,6 +170,7 @@ let _connectionQueries: ConnectionQuery[] = [
     id: '1',
     name: 'Query #1',
     sql: '',
+    selected: true,
   },
 ];
 
@@ -178,11 +180,19 @@ export function useConnectionQueries() {
   const { data: queries, isLoading } = useQuery('connectionQueries', () => _connectionQueries);
 
   const onAddQuery = () => {
-    _connectionQueries.push({
-      id: `${Date.now()}`,
-      name: `Query ${new Date().toLocaleString()}`,
-      sql: '',
-    });
+    _connectionQueries = [
+      ..._connectionQueries.map((q) => {
+        q.selected = false;
+        return q;
+      }),
+      {
+        id: `${Date.now()}`,
+        name: `Query ${new Date().toLocaleString()}`,
+        sql: '',
+        selected: true,
+      },
+    ];
+
     queryClient.invalidateQueries('connectionQueries');
   };
 
@@ -191,11 +201,20 @@ export function useConnectionQueries() {
     queryClient.invalidateQueries('connectionQueries');
   };
 
+  const onShowQuery = (queryId: string) => {
+    _connectionQueries = _connectionQueries.map((q) => {
+      q.selected = q.id === queryId;
+      return q;
+    });
+    queryClient.invalidateQueries('connectionQueries');
+  };
+
   return {
     isLoading,
     queries,
     onAddQuery,
     onDeleteQuery,
+    onShowQuery,
   };
 }
 
@@ -218,6 +237,8 @@ export function useConnectionQuery(queryId: string) {
     if (!query) {
       return;
     }
+
+    //@ts-ignore
     query[key] = value || '';
     queryClient.invalidateQueries('connectionQueries');
   };

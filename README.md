@@ -4,4 +4,4 @@ A simple UI client for most SQL Engines. Written in Electron, SQLui Native will 
 
 
 ## Screenshot
-![image](https://user-images.githubusercontent.com/3792401/151063630-6a332d5c-d5d3-4e92-856d-c96e9cc0441b.png)
+![image](https://user-images.githubusercontent.com/3792401/151067666-1fe0c75c-465d-4b84-b5c2-ef3626f4b9af.png)
