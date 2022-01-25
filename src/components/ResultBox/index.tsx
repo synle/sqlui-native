@@ -1,10 +1,19 @@
+import { useExecute, useConnectionQueries, useConnectionQuery } from 'src/hooks';
+
 interface ResultBoxProps {
-  queryResult?: any;
-  isLoading: boolean;
+  queryId: string;
 }
 
 export default function ResultBox(props: ResultBoxProps) {
-  const { queryResult, isLoading } = props;
+  const { queryId } = props;
+  const { query, isLoading: loadingQuery } = useConnectionQuery(queryId);
+  const { data: queryResult, isLoading: loadingResults } = useExecute(
+    query?.connectionId,
+    query?.sql,
+    query?.databaseId,
+  );
+
+  const isLoading = loadingQuery || loadingResults;
 
   if (isLoading) {
     return <>loading...</>;
