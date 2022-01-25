@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-
 import DatabaseDescription from 'src/components/DatabaseDescription';
+import DeleteConnectionButton from 'src/components/DeleteConnectionButton';
 import { useGetConnections, useShowHide } from 'src/hooks';
 
 export default function ConnectionDescription() {
@@ -23,6 +23,7 @@ export default function ConnectionDescription() {
           <h3 onClick={() => onToggle(connection.id)}>{connection.name}</h3>
           <div>
             <Link to={`/connection/edit/${connection.id}`}>Edit Connection</Link>
+            <DeleteConnectionButton connectionId={connection.id} />
           </div>
 
           {!visibles[connection.id] ? null : <DatabaseDescription connectionId={connection.id} />}
