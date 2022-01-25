@@ -49,6 +49,11 @@
   cursor: pointer;
   display: flex;
   align-items: center;
+  padding-block: 5px;
+
+  &:hover{
+    background: #efefef;
+  }
 
   * {
     margin-right: 5px;
@@ -59,5 +64,6 @@
 
   > span {
     flex-grow: 1;
+    font-weight: bold;
   }
 }
