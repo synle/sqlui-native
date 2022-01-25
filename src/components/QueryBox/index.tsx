@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
 
-export default function QueryBox() {
+interface QueryBoxProps {
+  onExecute: (sql: string) => void;
+}
+
+export default function QueryBox(props: QueryBoxProps) {
   const [sql, setSql] = useState('');
 
   const onExecute = () => {
-    // TODO  do query
-    alert(sql);
+    props.onExecute(sql);
   };
 
   return (
