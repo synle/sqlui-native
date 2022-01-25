@@ -1,3 +1,4 @@
+import DeleteIcon from '@mui/icons-material/Delete';
 import { useDeleteConnection } from 'src/hooks';
 
 interface DeleteConnectionButtonProps {
@@ -13,7 +14,7 @@ export default function DeleteConnectionButton(props: DeleteConnectionButtonProp
 
   return (
     <div>
-      <b onClick={onDelete}>Delete</b>
+      <a onClick={onDelete}><DeleteIcon /></a>
     </div>
   );
 }

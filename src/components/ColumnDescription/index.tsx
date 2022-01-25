@@ -27,9 +27,7 @@ export default function ColumnDescription(props: ColumnDescriptionProps) {
         return (
           <div key={columnName}>
             <div>
-              <h6 onClick={() => onToggle(JSON.stringify({ ...props, columnName }))}>
-                {columnName}
-              </h6>
+              <a onClick={() => onToggle(JSON.stringify({ ...props, columnName }))}>{columnName}</a>
             </div>
             {!visibles[JSON.stringify({ ...props, columnName })] ? null : (
               <pre>{JSON.stringify(column, null, 2)}</pre>
