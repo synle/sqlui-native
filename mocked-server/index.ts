@@ -139,9 +139,7 @@ app.put('/api/connection/:connectionId', async (req, res) => {
 });
 
 app.delete('/api/connection/:connectionId', async (req, res) => {
-  res.json(
-    await ConnectionUtils.deleteConnection(req.params?.connectionId),
-  );
+  res.json(await ConnectionUtils.deleteConnection(req.params?.connectionId));
 });
 
 app.listen(port, () => {
