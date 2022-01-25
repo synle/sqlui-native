@@ -1,5 +1,14 @@
 import React from 'react';
 
-export default function ResultBox() {
-  return <div>ResultBox</div>;
+
+interface ResultBoxProps{
+  queryResult?: any
+}
+
+export default function ResultBox(props: ResultBoxProps) {
+  const {queryResult} = props;
+  if(!queryResult){
+    return null;
+  }
+  return <pre>{}</pre>;
 }
