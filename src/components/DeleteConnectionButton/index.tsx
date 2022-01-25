@@ -1,4 +1,3 @@
-import React from 'react';
 import { useDeleteConnection } from 'src/hooks';
 
 interface DeleteConnectionButtonProps {

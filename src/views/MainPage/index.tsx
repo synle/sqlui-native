@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 import NewConnectionButton from 'src/components/NewConnectionButton';
 import QueryBox from 'src/components/QueryBox';

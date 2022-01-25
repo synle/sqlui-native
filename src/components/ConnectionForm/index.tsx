@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUpsertConnection, useGetConnection } from 'src/hooks';
 
@@ -6,7 +6,7 @@ type ConnectionFormProps = {
   id?: string;
 };
 
-export function NewConnectionForm(props: ConnectionFormProps) {
+export function NewConnectionForm() {
   const [name, setName] = useState('');
   const [connection, setConnection] = useState('');
   const { data: upsertedConnection, mutateAsync, isLoading: saving } = useUpsertConnection();
