@@ -1,5 +1,10 @@
 import { useState } from 'react';
-import { useExecute, useConnectionQueries, useConnectionQuery } from 'src/hooks';
+import {
+  useExecute,
+  useConnectionQueries,
+  useConnectionQuery,
+  useGetAvailableDatabaseConnections,
+} from 'src/hooks';
 
 interface QueryBoxProps {
   queryId: string;
@@ -7,7 +12,11 @@ interface QueryBoxProps {
 
 export default function QueryBox(props: QueryBoxProps) {
   const { queryId } = props;
-  const { query, onChange, isLoading } = useConnectionQuery(queryId);
+  const { query, onChange, isLoading: loadingConnection } = useConnectionQuery(queryId);
+  const { data: connecionsMetaData, isLoading: loadingMetaData } =
+    useGetAvailableDatabaseConnections();
+
+  const isLoading = loadingMetaData || loadingConnection;
 
   if (isLoading) {
     return <>loading...</>;
@@ -17,14 +26,41 @@ export default function QueryBox(props: QueryBoxProps) {
     return null;
   }
 
+  const onDatabaseConnectionChange = (newValue: string) => {
+    if (!connecionsMetaData) {
+      return;
+    }
+
+    const matched = connecionsMetaData.find(
+      (connMetaData) => `${connMetaData.connectionId}.${connMetaData.databaseId}` === newValue,
+    );
+
+    onChange('connectionId', matched?.connectionId);
+    onChange('databaseId', matched?.databaseId);
+  };
+
   const onExecute = () => {
-    onChange('sql',query.sql + ' ')
+    onChange('sql', query.sql + ' ');
   };
 
   return (
     <section className='QueryBox'>
       <div>
-        <textarea defaultValue={query.sql} onBlur={(e) => onChange('sql', e.target.value)}></textarea>
+        <select
+          defaultValue={`${query.connectionId}.${query.databaseId}`}
+          onBlur={(e) => onDatabaseConnectionChange(e.target.value)}>
+          <option>Pick One</option>
+          {(connecionsMetaData || []).map((connMetaData) => (
+            <option key={`${connMetaData.id}`} value={`${connMetaData.id}`}>
+              {connMetaData.label}
+            </option>
+          ))}
+        </select>
+      </div>
+      <div>
+        <textarea
+          defaultValue={query.sql}
+          onBlur={(e) => onChange('sql', e.target.value)}></textarea>
       </div>
       <div>
         <button type='button' onClick={onExecute}>
