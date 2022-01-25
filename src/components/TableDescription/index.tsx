@@ -1,4 +1,5 @@
 import React from 'react';
+import TableRowsIcon from '@mui/icons-material/TableRows';
 import { AccordionHeader, AccordionBody } from 'src/components/Accordion';
 import ColumnDescription from 'src/components/ColumnDescription';
 import { useGetTables, useShowHide } from 'src/hooks';
@@ -28,6 +29,7 @@ export default function TableDescription(props: TableDescriptionProps) {
         return (
           <React.Fragment key={table}>
             <AccordionHeader expanded={visibles[key]} onToggle={() => onToggle(key)}>
+              <TableRowsIcon />
               <span>{table}</span>
             </AccordionHeader>
             <AccordionBody expanded={visibles[key]}>

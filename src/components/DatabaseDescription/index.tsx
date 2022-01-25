@@ -1,4 +1,5 @@
 import React from 'react';
+import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
 import TableDescription from 'src/components/TableDescription';
 import { AccordionHeader, AccordionBody } from 'src/components/Accordion';
 import { useGetDatabases, useShowHide } from 'src/hooks';
@@ -27,6 +28,7 @@ export default function DatabaseDescription(props: DatabaseDescriptionProps) {
         return (
           <React.Fragment key={database}>
             <AccordionHeader expanded={visibles[key]} onToggle={() => onToggle(key)}>
+              <LibraryBooksIcon />
               <span>{database}</span>
             </AccordionHeader>
             <AccordionBody expanded={visibles[key]}>
