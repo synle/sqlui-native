@@ -24,6 +24,7 @@
     "build": "cross-env SASS_PATH='./src/styles' react-scripts build",
     "test": "cross-env SASS_PATH='./src/styles' react-scripts test",
     "format": "npx prettier --config ./.prettierrc --write **/*.{ts,tsx,js,jsx,scss,yml,html} *.{json,MD}",
+    "lint": "eslint --fix --ext .tsx --ext .ts src",
     "eject": "react-scripts eject"
   },
   "repository": "https://github.com/synle/sqlui-native",
@@ -60,6 +61,7 @@
     "body-parser": "^1.19.1",
     "cross-env": "^7.0.3",
     "electron": "^16.0.7",
+    "eslint-plugin-unused-imports": "^2.0.0",
     "express": "^4.17.2",
     "mariadb": "^2.5.5",
     "mysql2": "^2.3.3",

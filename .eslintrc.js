@@ -12,7 +12,7 @@ module.exports = {
     ecmaVersion: 11,
     sourceType: 'module',
   },
-  plugins: ['react', '@typescript-eslint'],
+  plugins: ['react', '@typescript-eslint', "unused-imports"],
   rules: {
     'no-unused-vars': ['warn', { caughtErrors: 'none', argsIgnorePattern: '^_' }],
     'no-debugger': ['warn'],
