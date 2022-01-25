@@ -133,8 +133,14 @@ app.put('/api/connection/:connectionId', async (req, res) => {
     await ConnectionUtils.updateConnection({
       id: req.params?.connectionId,
       connection: req.body?.connection,
-      name: req.body?.name
+      name: req.body?.name,
     }),
+  );
+});
+
+app.delete('/api/connection/:connectionId', async (req, res) => {
+  res.json(
+    await ConnectionUtils.deleteConnection(req.params?.connectionId),
   );
 });
 

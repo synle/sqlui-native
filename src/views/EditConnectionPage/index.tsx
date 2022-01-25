@@ -1,6 +1,6 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
-import ConnectionForm from 'src/components/ConnectionForm';
+import { EditConnectionForm } from 'src/components/ConnectionForm';
 
 export default function EditConnectionPage() {
   const urlParams = useParams();
@@ -13,7 +13,9 @@ export default function EditConnectionPage() {
   return (
     <div>
       EditConnectionPage
-      <ConnectionForm id={connectionId} />
+      <div>
+        <EditConnectionForm id={connectionId} />
+      </div>
     </div>
   );
 }
