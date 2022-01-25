@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import EditIcon from '@mui/icons-material/Edit';
+import CloudIcon from '@mui/icons-material/Cloud';
 import DatabaseDescription from 'src/components/DatabaseDescription';
 import DeleteConnectionButton from 'src/components/DeleteConnectionButton';
 import { AccordionHeader, AccordionBody } from 'src/components/Accordion';
@@ -25,6 +26,7 @@ export default function ConnectionDescription() {
           <AccordionHeader
             expanded={visibles[connection.id]}
             onToggle={() => onToggle(connection.id)}>
+            <CloudIcon />
             <span>{connection.name}</span>
             <Link to={`/connection/edit/${connection.id}`}>
               <EditIcon />
