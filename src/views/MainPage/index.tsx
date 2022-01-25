@@ -29,6 +29,7 @@ export default function MainPage() {
 // TODO: move this into a component
 function QueryResultTabs() {
   const { queries, onAddQuery, isLoading } = useConnectionQueries();
+  const [tabIdx, setTabIdx] = useState(0);
 
   if (isLoading) {
     return <>loading...</>;
@@ -38,20 +39,24 @@ function QueryResultTabs() {
     return null;
   }
 
-  const tabHeaders = queries.map((q) => <button key={q.id}>{q.name}</button>);
+  const onAddTab = () => {
+    onAddQuery();
+    setTabIdx(queries.length + 1);
+  };
+
+  const tabHeaders = [
+    ...queries.map((q, idx) => (
+      <button key={q.id} onClick={() => setTabIdx(idx)}>
+        {q.name}
+      </button>
+    )),
+    <button type='button' onClick={onAddQuery} key='addquery'>
+      Add Query
+    </button>,
+  ];
   const tabContents = queries.map((q) => <QueryResultContainer key={q.id} queryId={q.id} />);
 
-  return (
-    <Tabs>
-      <nav>
-        {tabHeaders}
-        <button type='button' onClick={onAddQuery}>
-          Add Query
-        </button>
-      </nav>
-      <div>{tabContents}</div>
-    </Tabs>
-  );
+  return <Tabs tabIdx={tabIdx} tabHeaders={tabHeaders} tabContents={tabContents}></Tabs>;
 }
 
 interface QueryResultContainerProps {
