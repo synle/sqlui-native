@@ -157,9 +157,9 @@ app.get('/api/metadata', async (req, res) => {
       let tables: any[] = [];
       try {
         tables = await engine.getTables(database);
-        console.log('getting tables', database, tables);
+        //console.log('getting tables', database, tables);
       } catch (err) {
-        console.log('failed getting tables', database);
+        //console.log('failed getting tables', database);
       }
 
       for (const table of tables) {
@@ -168,7 +168,7 @@ app.get('/api/metadata', async (req, res) => {
         try {
           columns = await engine.getColumns(table, database);
         } catch (err) {
-          console.log('failed getting columns', database, table);
+          //console.log('failed getting columns', database, table);
         }
 
         const tblItem = {
