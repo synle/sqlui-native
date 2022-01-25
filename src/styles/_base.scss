@@ -42,46 +42,43 @@ select {
 button {
   cursor: pointer;
   &:hover {
-  background: #efefef;
-}
+    background: #efefef;
+  }
 
-&:disabled {
-  background: black;
-  color: white;
-}
-
+  &:disabled {
+    background: black;
+    color: white;
+  }
 }
 
 table {
   border-collapse: collapse;
 
-  tr{
-    th{
+  tr {
+    th {
       padding: 10px 10px;
       border: 1px solid black;
       border-right: none;
       background: #efefef;
     }
-    td{
+    td {
       padding: 5px 10px;
       border: 1px solid black;
       border-right: none;
     }
 
-    td,th{
+    td,
+    th {
       &:last-child {
         border-right: 1px solid black;
       }
     }
 
-    &:hover{
+    &:hover {
       background: #efefef;
     }
   }
-
 }
-
-
 
 a {
   cursor: pointer;

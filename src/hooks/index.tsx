@@ -56,10 +56,6 @@ export function useGetAvailableDatabaseConnections() {
   );
 }
 
-export function useGetConnections() {
-  return useQuery(['connection'], () => _fetch<Sqlui.ConnectionProps[]>(`/api/connections`));
-}
-
 export function useGetConnection(connectionId?: string) {
   return useQuery(['connection', connectionId], () =>
     _fetch<Sqlui.ConnectionProps>(`/api/connection/${connectionId}`, { enabled: !!connectionId }),
@@ -94,15 +90,23 @@ export function useDeleteConnection() {
 }
 
 export function useGetDatabases(connectionId: string) {
-  return useQuery(['connection', connectionId, 'databases'], () =>
-    _fetch<string[]>(`/api/connection/${connectionId}/databases`),
-  );
+  const resp = useGetMetaData();
+
+  if (resp.data) {
+    resp.data = resp.data.find((connection) => connection.id === connectionId)?.databases;
+  }
+
+  return resp;
 }
 
 export function useGetTables(connectionId: string, databaseId: string) {
-  return useQuery(['connection', connectionId, 'database', databaseId, 'tables'], () =>
-    _fetch<string[]>(`/api/connection/${connectionId}/database/${databaseId}/tables`),
-  );
+  const resp = useGetDatabases(connectionId);
+
+  if (resp.data) {
+    resp.data = resp.data.find((database) => database.name === databaseId)?.tables;
+  }
+
+  return resp;
 }
 
 export function useGetColumns(connectionId: string, databaseId: string, tableId: string) {
