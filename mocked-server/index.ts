@@ -1,7 +1,7 @@
 import express from 'express';
 import bodyParser from 'body-parser';
-import { Optional } from 'utility-types';
 import { RelationalDatabaseEngine } from './utils/RelationalDatabaseEngine';
+import { Sqlui } from '../typings';
 
 const port = 3001;
 const app = express();
@@ -9,21 +9,12 @@ const app = express();
 app.use(bodyParser.urlencoded({ extended: false })); // parse application/x-www-form-urlencoded
 app.use(bodyParser.json()); // parse application/json
 
-type ConnectionProps = {
-  id: string;
-  connection: string;
-  name: string;
-  [index: string]: any;
-};
-
-type AddConnectionProps = Optional<ConnectionProps, 'id'>;
-
 // this section of the api is caches in memory
-const caches: { [index: string]: ConnectionProps } = {};
+const caches: { [index: string]: Sqlui.ConnectionProps } = {};
 let id = 0;
 
 const ConnectionUtils = {
-  addConnection(connection: AddConnectionProps): ConnectionProps {
+  addConnection(connection: Sqlui.AddConnectionProps): Sqlui.ConnectionProps {
     const newId = `connection.${++id}`;
 
     caches[newId] = {
@@ -35,7 +26,7 @@ const ConnectionUtils = {
     return caches[newId];
   },
 
-  updateConnection(connection: ConnectionProps): ConnectionProps {
+  updateConnection(connection: Sqlui.ConnectionProps): Sqlui.ConnectionProps {
     caches[connection.id] = {
       ...caches[connection.id],
       ...connection,
@@ -44,11 +35,11 @@ const ConnectionUtils = {
     return caches[connection.id];
   },
 
-  getConnections(): ConnectionProps[] {
+  getConnections(): Sqlui.ConnectionProps[] {
     return Object.values(caches);
   },
 
-  getConnection(id: string): ConnectionProps {
+  getConnection(id: string): Sqlui.ConnectionProps {
     return caches[id];
   },
 
@@ -73,7 +64,7 @@ ConnectionUtils.addConnection({
   connection: `postgres://postgres:password@localhost:5432`,
   name: 'sqlui_test_postgres',
 });
-ConnectionUtils.addConnection({ connection: `sqlite://test.db`, name: 'sqlui_test_sqlite' });
+// ConnectionUtils.addConnection({ connection: `sqlite://test.db`, name: 'sqlui_test_sqlite' });
 
 const engines: { [index: string]: RelationalDatabaseEngine } = {};
 function getEngine(connection: string) {
@@ -140,6 +131,58 @@ app.put('/api/connection/:connectionId', async (req, res) => {
 
 app.delete('/api/connection/:connectionId', async (req, res) => {
   res.json(await ConnectionUtils.deleteConnection(req.params?.connectionId));
+});
+
+app.get('/api/metadata', async (req, res) => {
+  const connections = await ConnectionUtils.getConnections();
+
+  const resp: any[] = [];
+
+  for (const connection of connections) {
+    const engine = getEngine(connection.connection);
+
+    const connItem = { ...connection, databases: [] };
+    resp.push(connItem);
+
+    const databases = await engine.getDatabases();
+    for (const database of databases) {
+      const dbItem = {
+        name: database,
+        tables: [],
+      };
+
+      // @ts-ignore
+      connItem.databases.push(dbItem);
+
+      let tables: any[] = [];
+      try {
+        tables = await engine.getTables(database);
+        console.log('getting tables', database, tables);
+      } catch (err) {
+        console.log('failed getting tables', database);
+      }
+
+      for (const table of tables) {
+        let columns = undefined;
+
+        try {
+          columns = await engine.getColumns(table, database);
+        } catch (err) {
+          console.log('failed getting columns', database, table);
+        }
+
+        const tblItem = {
+          name: table,
+          columns,
+        };
+
+        // @ts-ignore
+        dbItem.tables.push(tblItem);
+      }
+    }
+  }
+
+  res.json(resp);
 });
 
 app.listen(port, () => {
