@@ -1,28 +1,7 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation } from 'react-query';
 import { Optional } from 'utility-types';
-
-type ConnectionProps = {
-  id: string;
-  connection: string;
-  name: string;
-  [index: string]: any;
-};
-
-type AddConnectionProps = {
-  connection: string;
-  name: string;
-  [index: string]: any;
-};
-
-type SqlColumn = {
-  type: string;
-  allowNull: boolean;
-  defaultValue?: string;
-  comment?: string;
-  special?: string;
-  primaryKey: boolean;
-};
+import {Sqlui} from 'typings';
 
 // @ts-ignore
 function _fetch<T>(...inputs) {
@@ -44,24 +23,22 @@ function _fetch<T>(...inputs) {
     });
 }
 
-// useQuery('repoData', () =>
-//    fetch('https://api.github.com/repos/tannerlinsley/react-query').then(res =>
-//      res.json()
-//    )
-//  )
+export function useGetMetaData() {
+  return useQuery(['connection', 'metadata'], () => _fetch<Sqlui.ConnectionProps[]>(`/api/metadata`));
+}
 
 export function useGetConnections() {
-  return useQuery(['connection'], () => _fetch<ConnectionProps[]>(`/api/connections`));
+  return useQuery(['connection'], () => _fetch<Sqlui.ConnectionProps[]>(`/api/connections`));
 }
 
 export function useGetConnection(connectionId?: string) {
   return useQuery(['connection', connectionId], () =>
-    _fetch<ConnectionProps>(`/api/connection/${connectionId}`, { enabled: !!connectionId }),
+    _fetch<Sqlui.ConnectionProps>(`/api/connection/${connectionId}`, { enabled: !!connectionId }),
   );
 }
 
 export function useUpsertConnection() {
-  return useMutation<ConnectionProps, void, AddConnectionProps, void>((newConnection) => {
+  return useMutation<Sqlui.ConnectionProps, void, Sqlui.AddConnectionProps, void>((newConnection) => {
     const connectionId = newConnection.id;
     if (connectionId) {
       return _fetch(`/api/connection/${connectionId}`, {
@@ -99,7 +76,7 @@ export function useGetTables(connectionId: string, databaseId: string) {
 
 export function useGetColumns(connectionId: string, databaseId: string, tableId: string) {
   return useQuery(['connection', connectionId, 'database', databaseId, 'table', tableId], () =>
-    _fetch<{ [index: string]: SqlColumn }>(
+    _fetch<{ [index: string]: Sqlui.Column }>(
       `/api/connection/${connectionId}/database/${databaseId}/table/${tableId}/columns`,
     ),
   );
