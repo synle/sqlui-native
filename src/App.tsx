@@ -1,5 +1,5 @@
 import './App.scss';
-import React from 'react';
+
 import { HashRouter, Routes, Route, Link } from 'react-router-dom';
 import EditConnectionPage from 'src/views/EditConnectionPage';
 import NewConnectionPage from 'src/views/NewConnectionPage';

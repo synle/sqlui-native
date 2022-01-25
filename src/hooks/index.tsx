@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useQuery, useMutation } from 'react-query';
-import { Optional } from 'utility-types';
-import {Sqlui} from 'typings';
+import { Sqlui } from 'typings';
 
 // @ts-ignore
 function _fetch<T>(...inputs) {
@@ -24,7 +23,9 @@ function _fetch<T>(...inputs) {
 }
 
 export function useGetMetaData() {
-  return useQuery(['connection', 'metadata'], () => _fetch<Sqlui.ConnectionProps[]>(`/api/metadata`));
+  return useQuery(['connection', 'metadata'], () =>
+    _fetch<Sqlui.ConnectionProps[]>(`/api/metadata`),
+  );
 }
 
 export function useGetConnections() {
@@ -38,20 +39,22 @@ export function useGetConnection(connectionId?: string) {
 }
 
 export function useUpsertConnection() {
-  return useMutation<Sqlui.ConnectionProps, void, Sqlui.AddConnectionProps, void>((newConnection) => {
-    const connectionId = newConnection.id;
-    if (connectionId) {
-      return _fetch(`/api/connection/${connectionId}`, {
-        method: 'put',
-        body: JSON.stringify(newConnection),
-      });
-    } else {
-      return _fetch(`/api/connection`, {
-        method: 'post',
-        body: JSON.stringify(newConnection),
-      });
-    }
-  });
+  return useMutation<Sqlui.ConnectionProps, void, Sqlui.AddConnectionProps, void>(
+    (newConnection) => {
+      const connectionId = newConnection.id;
+      if (connectionId) {
+        return _fetch(`/api/connection/${connectionId}`, {
+          method: 'put',
+          body: JSON.stringify(newConnection),
+        });
+      } else {
+        return _fetch(`/api/connection`, {
+          method: 'post',
+          body: JSON.stringify(newConnection),
+        });
+      }
+    },
+  );
 }
 
 export function useDeleteConnection() {

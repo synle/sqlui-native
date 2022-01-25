@@ -1,4 +1,3 @@
-import React from 'react';
 import { useGetColumns, useShowHide } from 'src/hooks';
 
 type ColumnDescriptionProps = {

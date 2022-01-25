@@ -1,4 +1,3 @@
-import React from 'react';
 import ColumnDescription from 'src/components/ColumnDescription';
 import { useGetTables, useShowHide } from 'src/hooks';
 
