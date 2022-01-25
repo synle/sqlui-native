@@ -15,6 +15,12 @@ export default function QueryBox(props: QueryBoxProps) {
   const { query, onChange, isLoading: loadingConnection, onExecute } = useConnectionQuery(queryId);
   const { data: connecionsMetaData, isLoading: loadingMetaData } =
     useGetAvailableDatabaseConnections();
+  const { isLoading: executing } = useExecute(
+    query?.connectionId,
+    query?.sql,
+    query?.databaseId,
+    query?.lastExecuted,
+  );
 
   const isLoading = loadingMetaData || loadingConnection;
 
@@ -67,7 +73,9 @@ export default function QueryBox(props: QueryBoxProps) {
           required></textarea>
       </div>
       <div>
-        <button type='submit'>Execute</button>
+        <button type='submit' disabled={executing}>
+          Execute
+        </button>
       </div>
     </form>
   );

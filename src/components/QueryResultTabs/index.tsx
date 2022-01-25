@@ -1,11 +1,9 @@
-import { useState } from 'react';
 import QueryResultContainer from 'src/components/QueryResultContainer';
 import Tabs from 'src/components/Tabs';
 import { useExecute, useConnectionQueries, useConnectionQuery } from 'src/hooks';
 
 export default function QueryResultTabs() {
-  const { queries, onAddQuery, isLoading } = useConnectionQueries();
-  const [tabIdx, setTabIdx] = useState(0);
+  const { queries, onAddQuery, onShowQuery, isLoading } = useConnectionQueries();
 
   if (isLoading) {
     return <>loading...</>;
@@ -17,16 +15,17 @@ export default function QueryResultTabs() {
 
   const onAddTab = () => {
     onAddQuery();
-    setTabIdx(queries.length + 1);
   };
 
-  const onTabChange = (idx: number) => {
-    setTabIdx(idx)
-  }
+  const onTabChange = (queryId: string) => {
+    onShowQuery(queryId);
+  };
+
+  const tabIdx = queries.findIndex((q) => q.selected === true) || 0;
 
   const tabHeaders = [
     ...queries.map((q, idx) => (
-      <button key={q.id} onClick={() => onTabChange(idx)}>
+      <button key={q.id} onClick={() => onShowQuery(q.id)} disabled={q.selected}>
         {q.name}
       </button>
     )),
@@ -34,6 +33,7 @@ export default function QueryResultTabs() {
       Add Query
     </button>,
   ];
+
   const tabContents = queries.map((q) => <QueryResultContainer key={q.id} queryId={q.id} />);
 
   return <Tabs tabIdx={tabIdx} tabHeaders={tabHeaders} tabContents={tabContents}></Tabs>;
