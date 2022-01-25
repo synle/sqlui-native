@@ -24,15 +24,15 @@ export default function DatabaseDescription(props: DatabaseDescriptionProps) {
   return (
     <div className='DatabaseDescription'>
       {databases.map((database) => {
-        const key = JSON.stringify({ ...props, database });
+        const key = JSON.stringify({ ...props, database: database.Name });
         return (
-          <React.Fragment key={database}>
+          <React.Fragment key={database.name}>
             <AccordionHeader expanded={visibles[key]} onToggle={() => onToggle(key)}>
               <LibraryBooksIcon />
-              <span>{database}</span>
+              <span>{database.name}</span>
             </AccordionHeader>
             <AccordionBody expanded={visibles[key]}>
-              <TableDescription connectionId={connectionId} databaseId={database} />
+              <TableDescription connectionId={connectionId} databaseId={database.name} />
             </AccordionBody>
           </React.Fragment>
         );

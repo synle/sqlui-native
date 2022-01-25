@@ -25,18 +25,18 @@ export default function TableDescription(props: TableDescriptionProps) {
   return (
     <div className='TableDescription'>
       {tables.map((table) => {
-        const key = JSON.stringify({ ...props, table });
+        const key = JSON.stringify({ ...props, table: table.name });
         return (
-          <React.Fragment key={table}>
+          <React.Fragment key={table.name}>
             <AccordionHeader expanded={visibles[key]} onToggle={() => onToggle(key)}>
               <TableRowsIcon />
-              <span>{table}</span>
+              <span>{table.name}</span>
             </AccordionHeader>
             <AccordionBody expanded={visibles[key]}>
               <ColumnDescription
                 connectionId={connectionId}
                 databaseId={databaseId}
-                tableId={table}
+                tableId={table.name}
               />
             </AccordionBody>
           </React.Fragment>

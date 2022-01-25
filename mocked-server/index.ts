@@ -133,12 +133,11 @@ app.delete('/api/connection/:connectionId', async (req, res) => {
   res.json(await ConnectionUtils.deleteConnection(req.params?.connectionId));
 });
 
-
 let cacheMetaData: any;
 app.get('/api/metadata', async (req, res) => {
   const connections = await ConnectionUtils.getConnections();
 
-  if(cacheMetaData){
+  if (cacheMetaData) {
     return res.json(cacheMetaData);
   }
 
