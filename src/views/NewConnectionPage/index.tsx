@@ -1,11 +1,13 @@
 import React from 'react';
-import ConnectionForm from 'src/components/ConnectionForm';
+import { NewConnectionForm } from 'src/components/ConnectionForm';
 
 export default function NewConnectionPage() {
   return (
     <div>
       NewConnectionPage
-      <ConnectionForm />
+      <div>
+        <NewConnectionForm />
+      </div>
     </div>
   );
 }

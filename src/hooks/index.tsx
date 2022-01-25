@@ -1,8 +1,15 @@
 import React, { useState } from 'react';
-import { useQuery } from 'react-query';
+import { useQuery, useMutation } from 'react-query';
+import { Optional } from 'utility-types';
 
 type ConnectionProps = {
   id: string;
+  connection: string;
+  name: string;
+  [index: string]: any;
+};
+
+type AddConnectionProps = {
   connection: string;
   name: string;
   [index: string]: any;
@@ -47,15 +54,36 @@ export function useGetConnections() {
   return useQuery(['connection'], () => _fetch<ConnectionProps[]>(`/api/connections`));
 }
 
-export function useGetConnection(connectionId: string) {
-  return useQuery(['connection', connectionId], () => _fetch(`/api/connection/${connectionId}`));
+export function useGetConnection(connectionId?: string) {
+  return useQuery(['connection', connectionId], () =>
+    _fetch<ConnectionProps>(`/api/connection/${connectionId}`, { enabled: !!connectionId }),
+  );
 }
 
-export function useAddConnection() {}
+export function useUpsertConnection() {
+  return useMutation<ConnectionProps, void, AddConnectionProps, void>((newConnection) => {
+    const connectionId = newConnection.id;
+    if (connectionId) {
+      return _fetch(`/api/connection/${connectionId}`, {
+        method: 'put',
+        body: JSON.stringify(newConnection),
+      });
+    } else {
+      return _fetch(`/api/connection`, {
+        method: 'post',
+        body: JSON.stringify(newConnection),
+      });
+    }
+  });
+}
 
-export function useUpdateConnection() {}
-
-export function useDeleteConnection() {}
+export function useDeleteConnection() {
+  return useMutation<void, void, string, void>((deleteConnectionId) =>
+    _fetch(`/api/connection/${deleteConnectionId}`, {
+      method: 'delete',
+    }),
+  );
+}
 
 export function useGetDatabases(connectionId: string) {
   return useQuery(['connection', connectionId, 'databases'], () =>
@@ -89,7 +117,7 @@ export function useExecute(connectionId: string, sql: string, databaseId?: strin
         }),
       }),
     {
-      enabled: sql.length > 0,
+      enabled: !!sql,
     },
   );
 }

@@ -18,9 +18,6 @@ export default function App() {
           <div>
             <Link to='/'>Main Page</Link>
           </div>
-          <div>
-            <Link to='/connection/new'>New Connection Page</Link>
-          </div>
         </nav>
 
         <section>
