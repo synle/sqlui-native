@@ -113,7 +113,12 @@ export function useGetColumns(connectionId: string, databaseId: string, tableId:
   );
 }
 
-export function useExecute(connectionId?: string, sql?: string, databaseId?: string) {
+export function useExecute(
+  connectionId?: string,
+  sql?: string,
+  databaseId?: string,
+  lastExecuted?: string,
+) {
   return useQuery(
     ['connection', connectionId, 'database', databaseId, 'table'],
     () =>
@@ -125,7 +130,7 @@ export function useExecute(connectionId?: string, sql?: string, databaseId?: str
         }),
       }),
     {
-      enabled: !!sql && !!connectionId && !!databaseId,
+      enabled: !!sql && !!connectionId && !!databaseId && !!lastExecuted,
     },
   );
 }
@@ -156,6 +161,7 @@ interface ConnectionQuery {
   connectionId?: string;
   databaseId?: string;
   sql: string;
+  lastExecuted?: string;
 }
 
 let _connectionQueries: ConnectionQuery[] = [
@@ -204,7 +210,7 @@ export function useConnectionQuery(queryId: string) {
     if (!query) {
       return;
     }
-
+    query['lastExecuted'] = `${Date.now()}`;
     queryClient.invalidateQueries('connectionQueries');
   };
 

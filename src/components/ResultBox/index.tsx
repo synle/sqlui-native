@@ -22,6 +22,7 @@ export default function ResultBox(props: ResultBoxProps) {
     query?.connectionId,
     query?.sql,
     query?.databaseId,
+    query?.lastExecuted,
   );
 
   if (loadingResults) {
@@ -29,16 +30,7 @@ export default function ResultBox(props: ResultBoxProps) {
   }
 
   if (!queryResult) {
-    return (
-      <>
-        {query?.connectionId}
-        <br />
-        {query?.sql}
-        <br />
-        {query?.databaseId}
-        <br />
-      </>
-    );
+    return null;
   }
 
   const [data] = queryResult;
