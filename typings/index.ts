@@ -22,4 +22,16 @@ export module Sqlui {
   };
 
   export type Result = [any[], any];
+
+  export type ConnectionMetaData = ConnectionProps & {
+    database: {
+      name: string;
+      tables: {
+        name: string;
+        columns: {
+          [index: string]: Column;
+        };
+      }[];
+    };
+  };
 }
