@@ -4,11 +4,15 @@ import NewConnectionButton from 'src/components/NewConnectionButton';
 import QueryBox from 'src/components/QueryBox';
 import ConnectionDescription from 'src/components/ConnectionDescription';
 import ResultBox from 'src/components/ResultBox';
+import { useExecute } from 'src/hooks';
 
 export default function MainPage() {
+  // TODO hard coded here for now
+  const { data: connections, isLoading } = useExecute();
+
   const onExecute = (sql: string) => {
     alert(sql);
-  }
+  };
 
   const queryResult = null;
 
