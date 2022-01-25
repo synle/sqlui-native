@@ -1,8 +1,12 @@
 import express from 'express';
+import bodyParser from 'body-parser';
 import { RelationalDatabaseEngine } from './utils/RelationalDatabaseEngine';
 
-const app = express();
 const port = 3001;
+const app = express();
+
+app.use(bodyParser.urlencoded({ extended: false })); // parse application/x-www-form-urlencoded
+app.use(bodyParser.json()); // parse application/json
 
 type ConnectionProps = {
   id: string;
@@ -98,9 +102,9 @@ app.get(
 app.post('/api/connection/:connectionId/execute', async (req, res) => {
   const connection = await ConnectionUtils.getConnection(req.params?.connectionId);
   const engine = getEngine(connection.connection);
-  // const sql = req?.inputs?.sql;
-  // const database = req?.inputs?.database;
-  // res.json(await engine.execute(sql, database));
+  const sql = req.body?.sql;
+  const database = req.body?.database;
+  res.json(await engine.execute(sql, database));
 });
 
 app.listen(port, () => {
