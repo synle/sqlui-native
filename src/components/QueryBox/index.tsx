@@ -12,7 +12,7 @@ interface QueryBoxProps {
 
 export default function QueryBox(props: QueryBoxProps) {
   const { queryId } = props;
-  const { query, onChange, isLoading: loadingConnection } = useConnectionQuery(queryId);
+  const { query, onChange, isLoading: loadingConnection, onExecute } = useConnectionQuery(queryId);
   const { data: connecionsMetaData, isLoading: loadingMetaData } =
     useGetAvailableDatabaseConnections();
 
@@ -39,10 +39,6 @@ export default function QueryBox(props: QueryBoxProps) {
     onChange('databaseId', matched?.databaseId);
   };
 
-  const onExecute = () => {
-    onChange('sql', query.sql + ' ');
-  };
-
   return (
     <section className='QueryBox'>
       <div>
@@ -60,7 +56,8 @@ export default function QueryBox(props: QueryBoxProps) {
       <div>
         <textarea
           defaultValue={query.sql}
-          onBlur={(e) => onChange('sql', e.target.value)}></textarea>
+          onBlur={(e) => onChange('sql', e.target.value)}
+          placeholder={`Enter SQL for ` + query.name}></textarea>
       </div>
       <div>
         <button type='button' onClick={onExecute}>

@@ -7,17 +7,20 @@ import ResultBox from 'src/components/ResultBox';
 import { useExecute } from 'src/hooks';
 
 interface TabsProps {
-  children: React.ReactNode[];
+  tabIdx: number;
+  tabHeaders: React.ReactNode[];
+  tabContents: React.ReactNode[];
 }
 
 export default function Tabs(props: TabsProps) {
-  const { children } = props;
-  const [nav, ...tabs] = children;
+  const { tabIdx, tabHeaders, tabContents } = props;
+
+  const visibleTab = tabContents[tabIdx];
 
   return (
     <section className='Tabs'>
-      {nav}
-      {tabs}
+      <nav>{tabHeaders}</nav>
+      <div>{tabContents[tabIdx]}</div>
     </section>
   );
 }
