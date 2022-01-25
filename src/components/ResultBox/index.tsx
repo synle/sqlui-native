@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import CsvEngine from 'json-2-csv';
 import { useExecute, useConnectionQueries, useConnectionQuery } from 'src/hooks';
 import Tabs from 'src/components/Tabs';
 
@@ -54,38 +55,47 @@ export default function ResultBox(props: ResultBoxProps) {
 
   const tabContents = [
     <div key={`JSON`}>
-      <JsonFormatData data={data}/>
+      <JsonFormatData data={data} />
     </div>,
     <div key={`CSV`}>
-        <CsvFormatData data={data}/>
+      <CsvFormatData data={data} />
     </div>,
     <div key={`Table`}>
-        <TableFormatData data={data}/>
+      <TableFormatData data={data} />
     </div>,
   ];
 
   return <Tabs tabIdx={tabIdx} tabHeaders={tabHeaders} tabContents={tabContents}></Tabs>;
 }
 
-interface FormatDataProps{
+interface FormatDataProps {
   data: any[];
 }
 
-function JsonFormatData(props: FormatDataProps){
-  const {data} = props;
-  return <pre>{JSON.stringify(data, null, 2)}</pre>
+function JsonFormatData(props: FormatDataProps) {
+  const { data } = props;
+  return <pre>{JSON.stringify(data, null, 2)}</pre>;
 }
 
+function CsvFormatData(props: FormatDataProps) {
+  const { data } = props;
+  const [csv, setCsv] = useState('');
 
+  useEffect(() => {
+    CsvEngine.json2csv(data, (err, newCsv) => {
+      if (!err && newCsv) {
+        setCsv(newCsv);
+      } else {
+        setCsv('');
+      }
+    });
+  }, [data]);
 
-// TODO: implement me
-function CsvFormatData(props: FormatDataProps){
-  const {data} = props;
-  return <pre>CSV</pre>
+  return <pre>{csv}</pre>;
 }
 
 // TODO: implement me
-function TableFormatData(props: FormatDataProps){
-  const {data} = props;
-  return <pre>Table</pre>
+function TableFormatData(props: FormatDataProps) {
+  const { data } = props;
+  return <pre>Table</pre>;
 }
