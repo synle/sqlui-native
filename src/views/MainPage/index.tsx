@@ -7,7 +7,7 @@ import ResultBox from 'src/components/ResultBox';
 
 export default function MainPage() {
   return (
-    <div className='MainPage'>
+    <section className='MainPage'>
       <div className='MainPage__LeftPane'>
         <h1>MainPage</h1>
         <div>
@@ -21,6 +21,6 @@ export default function MainPage() {
         <QueryBox />
         <ResultBox />
       </div>
-    </div>
+    </section>
   );
 }

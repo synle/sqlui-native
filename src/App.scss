@@ -28,17 +28,23 @@
   margin-left: 1.4rem;
 }
 
-
-.MainPage{
+.MainPage {
   display: flex;
 
-  &__LeftPane{
+  &__LeftPane {
     flex-shrink: 0;
     min-width: 250px;
     max-width: 350px;
   }
 
-  &__RightPane{
+  &__RightPane {
     flex-grow: 1;
+  }
+}
+
+.QueryBox {
+  textarea {
+    width: 100%;
+    height: 250px;
   }
 }
