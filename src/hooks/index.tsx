@@ -78,17 +78,19 @@ export function useGetColumns(connectionId: string, databaseId: string, tableId:
 }
 
 export function useExecute(connectionId: string, sql: string, databaseId?: string) {
-  return useQuery(['connection', connectionId, 'database', databaseId, 'table'], () =>
-    _fetch(`/api/connection/${connectionId}/execute`, {
-      method: 'post',
-      body: JSON.stringify({
-        database: databaseId,
-        sql,
+  return useQuery(
+    ['connection', connectionId, 'database', databaseId, 'table'],
+    () =>
+      _fetch(`/api/connection/${connectionId}/execute`, {
+        method: 'post',
+        body: JSON.stringify({
+          database: databaseId,
+          sql,
+        }),
       }),
-    }),
     {
-      enabled: sql.length > 0
-    }
+      enabled: sql.length > 0,
+    },
   );
 }
 
