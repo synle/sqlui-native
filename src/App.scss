@@ -6,19 +6,6 @@
 
 .ConnectionDescription {
   margin-left: 0.3rem;
-
-  &__TitleRow {
-    display: flex;
-    justify-content: space-around;
-
-    * {
-      margin-right: 5px;
-    }
-  }
-
-  &__Title {
-    flex-grow: 1;
-  }
 }
 .DatabaseDescription {
   margin-left: 0.5rem;
@@ -41,6 +28,7 @@
 
   &__RightPane {
     flex-grow: 1;
+    margin-left: 2rem;
   }
 }
 
@@ -54,5 +42,22 @@
 .ConnectionForm {
   input[type='text'] {
     width: 100%;
+  }
+}
+
+.Accordion {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+
+  * {
+    margin-right: 5px;
+  }
+  *:last-child {
+    margin-right: 0;
+  }
+
+  > span {
+    flex-grow: 1;
   }
 }

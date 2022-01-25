@@ -1,3 +1,5 @@
+import React from 'react';
+import { AccordionHeader, AccordionBody } from 'src/components/Accordion';
 import ColumnDescription from 'src/components/ColumnDescription';
 import { useGetTables, useShowHide } from 'src/hooks';
 
@@ -21,20 +23,23 @@ export default function TableDescription(props: TableDescriptionProps) {
 
   return (
     <div className='TableDescription'>
-      {tables.map((table) => (
-        <div key={table}>
-          <div>
-            <a onClick={() => onToggle(JSON.stringify({ ...props, table }))}>{table}</a>
-          </div>
-          {!visibles[JSON.stringify({ ...props, table })] ? null : (
-            <ColumnDescription
-              connectionId={connectionId}
-              databaseId={databaseId}
-              tableId={table}
-            />
-          )}
-        </div>
-      ))}
+      {tables.map((table) => {
+        const key = JSON.stringify({ ...props, table });
+        return (
+          <React.Fragment key={table}>
+            <AccordionHeader expanded={visibles[key]} onToggle={() => onToggle(key)}>
+              <span>{table}</span>
+            </AccordionHeader>
+            <AccordionBody expanded={visibles[key]}>
+              <ColumnDescription
+                connectionId={connectionId}
+                databaseId={databaseId}
+                tableId={table}
+              />
+            </AccordionBody>
+          </React.Fragment>
+        );
+      })}
     </div>
   );
 }

@@ -1,3 +1,5 @@
+import React from 'react';
+import { AccordionHeader, AccordionBody } from 'src/components/Accordion';
 import { useGetColumns, useShowHide } from 'src/hooks';
 
 type ColumnDescriptionProps = {
@@ -23,16 +25,16 @@ export default function ColumnDescription(props: ColumnDescriptionProps) {
     <div className='ColumnDescription'>
       {Object.keys(columns).map((columnName) => {
         const column = columns[columnName];
-
+        const key = JSON.stringify({ ...props, columnName });
         return (
-          <div key={columnName}>
-            <div>
-              <a onClick={() => onToggle(JSON.stringify({ ...props, columnName }))}>{columnName}</a>
-            </div>
-            {!visibles[JSON.stringify({ ...props, columnName })] ? null : (
+          <React.Fragment key={columnName}>
+            <AccordionHeader expanded={visibles[key]} onToggle={() => onToggle(key)}>
+              <span>{columnName}</span>
+            </AccordionHeader>
+            <AccordionBody expanded={visibles[key]}>
               <pre>{JSON.stringify(column, null, 2)}</pre>
-            )}
-          </div>
+            </AccordionBody>
+          </React.Fragment>
         );
       })}
     </div>

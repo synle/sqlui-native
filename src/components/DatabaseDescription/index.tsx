@@ -1,4 +1,6 @@
+import React from 'react';
 import TableDescription from 'src/components/TableDescription';
+import { AccordionHeader, AccordionBody } from 'src/components/Accordion';
 import { useGetDatabases, useShowHide } from 'src/hooks';
 
 type DatabaseDescriptionProps = {
@@ -20,16 +22,19 @@ export default function DatabaseDescription(props: DatabaseDescriptionProps) {
 
   return (
     <div className='DatabaseDescription'>
-      {databases.map((database) => (
-        <div key={database}>
-          <div>
-            <a onClick={() => onToggle(JSON.stringify({ ...props, database }))}>{database}</a>
-          </div>
-          {!visibles[JSON.stringify({ ...props, database })] ? null : (
-            <TableDescription connectionId={connectionId} databaseId={database} />
-          )}
-        </div>
-      ))}
+      {databases.map((database) => {
+        const key = JSON.stringify({ ...props, database });
+        return (
+          <React.Fragment key={database}>
+            <AccordionHeader expanded={visibles[key]} onToggle={() => onToggle(key)}>
+              <span>{database}</span>
+            </AccordionHeader>
+            <AccordionBody expanded={visibles[key]}>
+              <TableDescription connectionId={connectionId} databaseId={database} />
+            </AccordionBody>
+          </React.Fragment>
+        );
+      })}
     </div>
   );
 }
