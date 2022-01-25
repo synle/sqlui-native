@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import EditIcon from '@mui/icons-material/Edit';
 import DatabaseDescription from 'src/components/DatabaseDescription';
 import DeleteConnectionButton from 'src/components/DeleteConnectionButton';
 import { useGetConnections, useShowHide } from 'src/hooks';
@@ -19,9 +20,11 @@ export default function ConnectionDescription() {
     <div className='ConnectionDescription'>
       {connections.map((connection) => (
         <div key={connection.id}>
-          <h3 onClick={() => onToggle(connection.id)}>{connection.name}</h3>
-          <div>
-            <Link to={`/connection/edit/${connection.id}`}>Edit Connection</Link>
+          <div className='ConnectionDescription__TitleRow'>
+            <a className='ConnectionDescription__Title' onClick={() => onToggle(connection.id)}>
+              {connection.name}
+            </a>
+            <Link to={`/connection/edit/${connection.id}`}><EditIcon /></Link>
             <DeleteConnectionButton connectionId={connection.id} />
           </div>
 

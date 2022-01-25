@@ -11,7 +11,6 @@ export default function MainPage() {
   return (
     <section className='MainPage'>
       <div className='MainPage__LeftPane'>
-        <h1>MainPage</h1>
         <div>
           <NewConnectionButton />
         </div>
