@@ -6,6 +6,12 @@ import ConnectionDescription from 'src/components/ConnectionDescription';
 import ResultBox from 'src/components/ResultBox';
 
 export default function MainPage() {
+  const onExecute = (sql: string) => {
+    alert(sql);
+  }
+
+  const queryResult = null;
+
   return (
     <section className='MainPage'>
       <div className='MainPage__LeftPane'>
@@ -18,8 +24,8 @@ export default function MainPage() {
         </div>
       </div>
       <div className='MainPage__RightPane'>
-        <QueryBox />
-        <ResultBox />
+        <QueryBox onExecute={onExecute} />
+        <ResultBox queryResult={queryResult} />
       </div>
     </section>
   );
