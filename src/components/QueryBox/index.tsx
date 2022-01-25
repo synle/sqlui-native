@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import {
   useExecute,
   useConnectionQueries,
@@ -39,13 +39,19 @@ export default function QueryBox(props: QueryBoxProps) {
     onChange('databaseId', matched?.databaseId);
   };
 
+  const onSubmit = (e: React.SyntheticEvent) => {
+    e.preventDefault();
+    onExecute();
+  };
+
   return (
-    <section className='QueryBox'>
+    <form className='QueryBox' onSubmit={onSubmit}>
       <div>
         <select
           defaultValue={`${query.connectionId}.${query.databaseId}`}
-          onBlur={(e) => onDatabaseConnectionChange(e.target.value)}>
-          <option>Pick One</option>
+          onBlur={(e) => onDatabaseConnectionChange(e.target.value)}
+          required>
+          <option value=''>Pick One</option>
           {(connecionsMetaData || []).map((connMetaData) => (
             <option key={`${connMetaData.id}`} value={`${connMetaData.id}`}>
               {connMetaData.label}
@@ -57,13 +63,12 @@ export default function QueryBox(props: QueryBoxProps) {
         <textarea
           defaultValue={query.sql}
           onBlur={(e) => onChange('sql', e.target.value)}
-          placeholder={`Enter SQL for ` + query.name}></textarea>
+          placeholder={`Enter SQL for ` + query.name}
+          required></textarea>
       </div>
       <div>
-        <button type='button' onClick={onExecute}>
-          Execute
-        </button>
+        <button type='submit'>Execute</button>
       </div>
-    </section>
+    </form>
   );
 }
