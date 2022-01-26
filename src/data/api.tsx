@@ -30,7 +30,7 @@ function _fetch<T>(...inputs) {
     });
 }
 
-export default class ProxyApi {
+export class ProxyApi {
   static getMetaData() {
     return _fetch<Sqlui.ConnectionMetaData[]>(`/api/metadata`);
   }
@@ -79,3 +79,6 @@ export default class ProxyApi {
     });
   }
 }
+
+// selectively pick up which api to use...
+export default ProxyApi;
