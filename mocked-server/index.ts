@@ -114,12 +114,14 @@ app.post('/api/connection/:connectionId/execute', async (req, res) => {
 });
 
 app.post('/api/connection', async (req, res) => {
+  cacheMetaData = null;
   res.json(
     await ConnectionUtils.addConnection({ connection: req.body?.connection, name: req.body?.name }),
   );
 });
 
 app.put('/api/connection/:connectionId', async (req, res) => {
+  cacheMetaData = null;
   res.json(
     await ConnectionUtils.updateConnection({
       id: req.params?.connectionId,
@@ -130,6 +132,7 @@ app.put('/api/connection/:connectionId', async (req, res) => {
 });
 
 app.delete('/api/connection/:connectionId', async (req, res) => {
+  cacheMetaData = null;
   res.json(await ConnectionUtils.deleteConnection(req.params?.connectionId));
 });
 
