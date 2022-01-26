@@ -25,8 +25,10 @@ export default function ConnectionDescription() {
     <div className='ConnectionDescription'>
       {connections.map((connection) => {
         const key = [connection.id].join(' > ');
+        const isOnline = connection?.status === 'online';
 
-        return (
+        if(isOnline){
+          return (
           <React.Fragment key={key}>
             <AccordionHeader expanded={visibles[key]} onToggle={() => onToggle(key)}>
               <CloudIcon color='primary' />
@@ -40,6 +42,26 @@ export default function ConnectionDescription() {
             </AccordionHeader>
             <AccordionBody expanded={visibles[key]}>
               <DatabaseDescription connectionId={connection.id} />
+            </AccordionBody>
+          </React.Fragment>
+        );
+        }
+
+        // offline
+        return (
+          <React.Fragment key={key}>
+            <AccordionHeader expanded={visibles[key]} onToggle={() => onToggle(key)}>
+              <CloudIcon color='disabled' />
+              <span>{connection.name}</span>
+              <IconButton
+                aria-label='Edit Connection'
+                onClick={() => navigate(`/connection/edit/${connection.id}`)}>
+                <EditIcon />
+              </IconButton>
+              <DeleteConnectionButton connectionId={connection.id} />
+            </AccordionHeader>
+            <AccordionBody expanded={visibles[key]}>
+              Can't connect to server
             </AccordionBody>
           </React.Fragment>
         );
