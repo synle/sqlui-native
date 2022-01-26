@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import EditIcon from '@mui/icons-material/Edit';
 import CloudIcon from '@mui/icons-material/Cloud';
 import DatabaseDescription from 'src/components/DatabaseDescription';
@@ -8,6 +8,7 @@ import { AccordionHeader, AccordionBody } from 'src/components/Accordion';
 import { useGetMetaData, useShowHide } from 'src/hooks';
 
 export default function ConnectionDescription() {
+  const navigate = useNavigate();
   const { data: connections, isLoading } = useGetMetaData();
   const { visibles, onToggle } = useShowHide();
 
@@ -28,9 +29,7 @@ export default function ConnectionDescription() {
             onToggle={() => onToggle(connection.id)}>
             <CloudIcon />
             <span>{connection.name}</span>
-            <Link to={`/connection/edit/${connection.id}`}>
-              <EditIcon />
-            </Link>
+            <EditIcon onClick={() => navigate(`/connection/edit/${connection.id}`)}/>
             <DeleteConnectionButton connectionId={connection.id} />
           </AccordionHeader>
           <AccordionBody expanded={visibles[connection.id]}>
