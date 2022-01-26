@@ -29,7 +29,7 @@ export default function ConnectionDescription() {
         return (
           <React.Fragment key={key}>
             <AccordionHeader expanded={visibles[key]} onToggle={() => onToggle(key)}>
-              <CloudIcon color="primary" />
+              <CloudIcon color='primary' />
               <span>{connection.name}</span>
               <IconButton
                 aria-label='Edit Connection'

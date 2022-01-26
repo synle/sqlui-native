@@ -18,8 +18,6 @@ export module Sqlui {
     [index: string]: any;
   };
 
-  export type Result = [any[], any];
-
   export type ColumnMetaData = {
     [index: string]: Column;
   };
@@ -35,4 +33,9 @@ export module Sqlui {
   };
 
   export type ConnectionMetaData = ConnectionProps & DatabaseMetaData;
+
+  export type RawData = Record<string, string | number | boolean>[];
+  export type MetaData = Record<string, string | number | boolean>;
+
+  export type Result = [RawData, MetaData];
 }

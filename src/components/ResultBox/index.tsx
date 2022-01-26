@@ -120,7 +120,8 @@ function CsvFormatData(props: FormatDataProps) {
     });
   }, [data]);
 
-  return <CodeEditor
+  return (
+    <CodeEditor
       value={csv}
       padding={10}
       minHeight={200}
@@ -129,7 +130,8 @@ function CsvFormatData(props: FormatDataProps) {
         border: 'none',
         fontFamily: 'monospace',
       }}
-    />;
+    />
+  );
 }
 
 function TableFormatData(props: FormatDataProps) {
@@ -149,7 +151,7 @@ function TableFormatData(props: FormatDataProps) {
 
   return (
     <TableContainer component={Paper}>
-      <Table  sx={{ minWidth: 650 }} size="small">
+      <Table sx={{ minWidth: 650 }} size='small'>
         <TableHead>
           <TableRow>
             {headers.map((header) => (
