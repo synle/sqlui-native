@@ -2,7 +2,6 @@ import { useState, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
 import { Sqlui } from 'typings';
 
-
 const QUERY_KEY_CONNECTIONS = 'connections';
 const QUERY_KEY_TREEVISIBLES = 'treeVisibles';
 const QUERY_KEY_QUERIES = 'queries';
@@ -95,7 +94,7 @@ export function useGetConnection(connectionId?: string, metaData?: Sqlui.Connect
 export function useUpsertConnection() {
   const queryClient = useQueryClient();
 
-  const resp = useMutation<Sqlui.ConnectionProps, void, Sqlui.AddConnectionProps>(
+  const resp = useMutation<Sqlui.ConnectionProps, void, Sqlui.CoreConnectionProps>(
     (newConnection) => {
       const connectionId = newConnection.id;
       if (connectionId) {
@@ -199,7 +198,7 @@ export function useExecute(query?: ConnectionQuery) {
   );
 }
 
-export function useAuthenticateConnection() {
+export function useRetryConnection() {
   const queryClient = useQueryClient();
   return useMutation<Sqlui.ConnectionMetaData, void, string>(
     (connectionId) =>
@@ -231,13 +230,26 @@ export function useAuthenticateConnection() {
   );
 }
 
+export function useTestConnection() {
+  const queryClient = useQueryClient();
+  return useMutation<Sqlui.CoreConnectionMetaData, void, Sqlui.CoreConnectionProps>((connection) =>
+    _fetch<Sqlui.CoreConnectionMetaData>(`/api/connection/test`, {
+      method: 'post',
+      body: JSON.stringify(connection),
+    }),
+  );
+}
+
 // used for show and hide the sidebar trees
 let _treeVisibles: { [index: string]: boolean } = {};
 
 export function useShowHide() {
   const queryClient = useQueryClient();
 
-  const { data: visibles, isLoading: loading } = useQuery(QUERY_KEY_TREEVISIBLES, () => _treeVisibles);
+  const { data: visibles, isLoading: loading } = useQuery(
+    QUERY_KEY_TREEVISIBLES,
+    () => _treeVisibles,
+  );
 
   const onToggle = (key: string) => {
     _treeVisibles[key] = !_treeVisibles[key];
