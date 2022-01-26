@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@mui/material';
 import TextField from '@mui/material/TextField';
 import FormControl from '@mui/material/FormControl';
-import { useUpsertConnection, useGetConnection } from 'src/hooks';
+import { useGetMetaData, useUpsertConnection, useGetConnection } from 'src/hooks';
 
 type ConnectionFormProps = {
   id?: string;
@@ -40,7 +40,8 @@ export function EditConnectionForm(props: ConnectionFormProps) {
   const { id } = props;
   const [name, setName] = useState('');
   const [connection, setConnection] = useState('');
-  const { data: connectionProps, isLoading: loading } = useGetConnection(id);
+  const { data: connections, isLoading: loading } = useGetMetaData();
+  const connectionProps = useGetConnection(id, connections);
   const { data: upsertedConnection, mutateAsync, isLoading: saving } = useUpsertConnection();
 
   const onSave = async () => {
