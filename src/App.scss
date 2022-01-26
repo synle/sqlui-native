@@ -7,15 +7,19 @@
 .ConnectionDescription {
   margin-left: 0.3rem;
 }
+
 .DatabaseDescription {
   margin-left: 0.5rem;
 }
+
 .TableDescription {
   margin-left: 0.7rem;
 }
+
 .ColumnDescription {
   margin-left: 0.9rem;
 }
+
 .AttributeDescription {
   margin-left: 1.1rem;
   font-family: monospace;
@@ -39,14 +43,24 @@
 
 .QueryBox {
 }
+
 .ResultBox {
-  pre {
+  textarea {
+    width: 100%;
+    min-height: 800px;
     margin: 0;
     background: #efefef;
     border: 1px solid black;
     padding: 5px 10px;
   }
+
+  table{
+    min-width: 100%;
+    min-height: 400px;
+    overflow-x: auto;
+  }
 }
+
 .ConnectionForm {
   input[type='text'] {
     width: 100%;
@@ -66,6 +80,7 @@
   * {
     margin-right: 5px;
   }
+
   *:last-child {
     margin-right: 0;
   }
