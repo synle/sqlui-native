@@ -22,8 +22,26 @@ function _fetch<T>(...inputs) {
     });
 }
 
+let _metaData: Sqlui.ConnectionMetaData[] = [];
+try {
+  _metaData = JSON.parse(window.localStorage.getItem('cache.metadata') || '');
+} catch (err) {
+  _metaData = [];
+}
+
 export function useGetMetaData() {
-  return useQuery(['connection', 'all'], () => _fetch<Sqlui.ConnectionMetaData[]>(`/api/metadata`));
+  return useQuery(
+    ['connection', 'all'],
+    () => _fetch<Sqlui.ConnectionMetaData[]>(`/api/metadata`),
+    {
+      initialData: _metaData,
+      onSuccess: (data) => {
+        if (data) {
+          window.localStorage.setItem('cache.metadata', JSON.stringify(data));
+        }
+      },
+    },
+  );
 }
 
 interface AvailableConnectionProps {
@@ -176,19 +194,34 @@ interface ConnectionQuery {
   selected: boolean;
 }
 
-let _connectionQueries: ConnectionQuery[] = [
-  {
-    id: '1',
-    name: 'Query #1',
-    sql: '',
-    selected: true,
-  },
-];
+let _connectionQueries: ConnectionQuery[];
+try {
+  _connectionQueries = JSON.parse(window.localStorage.getItem('cache.connectionQueries') || '');
+} catch (err) {
+  _connectionQueries = [
+    {
+      id: '1',
+      name: 'Query #1',
+      sql: '',
+      selected: true,
+    },
+  ];
+}
+
+function _useConnectionQueries() {
+  return useQuery('connectionQueries', () => _connectionQueries, {
+    onSuccess: (data) => {
+      if (data) {
+        window.localStorage.setItem('cache.connectionQueries', JSON.stringify(data));
+      }
+    },
+  });
+}
 
 export function useConnectionQueries() {
   const queryClient = useQueryClient();
 
-  const { data: queries, isLoading } = useQuery('connectionQueries', () => _connectionQueries);
+  const { data: queries, isLoading } = _useConnectionQueries();
 
   const onAddQuery = () => {
     _connectionQueries = [
@@ -245,7 +278,7 @@ export function useConnectionQueries() {
 export function useConnectionQuery(queryId: string) {
   const queryClient = useQueryClient();
 
-  const { data: queries, isLoading } = useQuery('connectionQueries', () => _connectionQueries);
+  const { data: queries, isLoading, isFetching } = _useConnectionQueries();
 
   const query = queries?.find((q) => q.id === queryId);
 
@@ -269,6 +302,7 @@ export function useConnectionQuery(queryId: string) {
 
   return {
     isLoading,
+    isFetching,
     query,
     onExecute,
     onChange,
@@ -278,7 +312,7 @@ export function useConnectionQuery(queryId: string) {
 export function useActiveConnectionQuery() {
   const queryClient = useQueryClient();
 
-  const { data: queries, isLoading } = useQuery('connectionQueries', () => _connectionQueries);
+  const { data: queries, isLoading } = _useConnectionQueries();
 
   const query = queries?.find((q) => q.selected);
 
