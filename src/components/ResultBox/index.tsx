@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import CodeEditor from '@uiw/react-textarea-code-editor';
 import CsvEngine from 'json-2-csv';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Paper from '@mui/material/Paper';
 import { useExecute, useConnectionQueries, useConnectionQuery } from 'src/hooks';
 import Tabs from 'src/components/Tabs';
 
@@ -132,24 +139,26 @@ function TableFormatData(props: FormatDataProps) {
   }, [data]);
 
   return (
-    <table>
-      <thead>
-        <tr>
-          {headers.map((header) => (
-            <th key={header}>{header}</th>
-          ))}
-        </tr>
-      </thead>
-
-      <tbody>
-        {data.map((row, idx) => (
-          <tr key={idx}>
+    <TableContainer component={Paper}>
+      <Table  sx={{ minWidth: 650 }} size="small">
+        <TableHead>
+          <TableRow>
             {headers.map((header) => (
-              <td key={header}>{row[header]}</td>
+              <TableCell key={header}>{header}</TableCell>
             ))}
-          </tr>
-        ))}
-      </tbody>
-    </table>
+          </TableRow>
+        </TableHead>
+
+        <TableBody>
+          {data.map((row, idx) => (
+            <TableRow key={idx}>
+              {headers.map((header) => (
+                <TableCell key={header}>{row[header]}</TableCell>
+              ))}
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
   );
 }
