@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Button } from '@mui/material';
 import { useUpsertConnection, useGetConnection } from 'src/hooks';
 
 type ConnectionFormProps = {
@@ -12,7 +13,9 @@ export function NewConnectionForm() {
   const { data: upsertedConnection, mutateAsync, isLoading: saving } = useUpsertConnection();
   const navigate = useNavigate();
 
-  const onSave = async () => {
+  const onSave = async (e: React.SyntheticEvent) => {
+    e.preventDefault();
+
     const newConnection = await mutateAsync({
       name,
       connection,
@@ -22,21 +25,29 @@ export function NewConnectionForm() {
   };
 
   return (
-    <div className='ConnectionForm'>
+    <form className='ConnectionForm' onSubmit={onSave}>
       <div>
         <label>Name:</label>
-        <input type='text' value={name} onChange={(e) => setName(e.target.value)} />
+        <input type='text' value={name} onChange={(e) => setName(e.target.value)} required />
       </div>
       <div>
         <label>Connection:</label>
-        <input type='text' value={connection} onChange={(e) => setConnection(e.target.value)} />
+        <input
+          type='text'
+          value={connection}
+          onChange={(e) => setConnection(e.target.value)}
+          required
+        />
       </div>
       <div>
-        <button type='button' onClick={onSave} disabled={saving}>
+        <Button variant='contained' type='submit' disabled={saving}>
           Save
-        </button>
+        </Button>
+        <Button variant='outlined' type='button' disabled={saving} onClick={() => navigate('/')}>
+          Cancel
+        </Button>
       </div>
-    </div>
+    </form>
   );
 }
 
@@ -46,6 +57,7 @@ export function EditConnectionForm(props: ConnectionFormProps) {
   const [connection, setConnection] = useState('');
   const { data: connectionProps, isLoading: loading } = useGetConnection(id);
   const { data: upsertedConnection, mutateAsync, isLoading: saving } = useUpsertConnection();
+  const navigate = useNavigate();
 
   const onSave = async () => {
     mutateAsync({
@@ -66,20 +78,28 @@ export function EditConnectionForm(props: ConnectionFormProps) {
   }
 
   return (
-    <div className='ConnectionForm'>
+    <form className='ConnectionForm' onSubmit={onSave}>
       <div>
         <label>Name:</label>
-        <input type='text' value={name} onChange={(e) => setName(e.target.value)} />
+        <input type='text' value={name} onChange={(e) => setName(e.target.value)} required />
       </div>
       <div>
         <label>Connection:</label>
-        <input type='text' value={connection} onChange={(e) => setConnection(e.target.value)} />
+        <input
+          type='text'
+          value={connection}
+          onChange={(e) => setConnection(e.target.value)}
+          required
+        />
       </div>
       <div>
-        <button type='button' onClick={onSave} disabled={saving}>
+        <Button variant='contained' type='submit' disabled={saving}>
           Save
-        </button>
+        </Button>
+        <Button variant='outlined' type='button' disabled={saving} onClick={() => navigate('/')}>
+          Cancel
+        </Button>
       </div>
-    </div>
+    </form>
   );
 }

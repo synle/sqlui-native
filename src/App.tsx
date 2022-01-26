@@ -13,13 +13,6 @@ export default function App() {
           <h1>SQL UI Native</h1>
         </header>
 
-        {/* this is a test section for link nav*/}
-        <nav>
-          <div>
-            <Link to='/'>Main Page</Link>
-          </div>
-        </nav>
-
         <section>
           <Routes>
             <Route path='/' element={<MainPage />} />
