@@ -23,37 +23,37 @@ function _fetch<T>(...inputs) {
 }
 
 export function useGetMetaData() {
-  return useQuery(['connection', 'metadata'], () =>
+  return useQuery(['connections', 'metadata'], () =>
     _fetch<Sqlui.ConnectionMetaData[]>(`/api/metadata`),
   );
 }
 
-export function useGetAvailableDatabaseConnections() {
-  return useQuery(
-    ['connection', 'metadata'],
-    () => _fetch<Sqlui.ConnectionMetaData[]>(`/api/metadata`),
-    {
-      select: (connections) => {
-        const res = [];
+interface AvailableConnectionProps {
+  connectionId: string;
+  databaseId: string;
+  id: string;
+  label: string;
+}
 
-        for (const connection of connections) {
-          const connectionId = connection.id;
-          for (const database of connection.databases) {
-            const databaseId = database.name as string;
+export function useGetAvailableDatabaseConnections(metaData?: Sqlui.ConnectionMetaData[]) {
+  const connections = metaData || [];
+  const res: AvailableConnectionProps[] = [];
 
-            res.push({
-              connectionId,
-              databaseId,
-              id: `${connectionId}.${databaseId}`,
-              label: `${connection.name} > ${database.name}`,
-            });
-          }
-        }
+  for (const connection of connections) {
+    const connectionId = connection.id;
+    for (const database of connection.databases) {
+      const databaseId = database.name as string;
 
-        return res;
-      },
-    },
-  );
+      res.push({
+        connectionId,
+        databaseId,
+        id: `${connectionId}.${databaseId}`,
+        label: `${connection.name} > ${database.name}`,
+      });
+    }
+  }
+
+  return res;
 }
 
 export function useGetConnection(connectionId?: string) {
@@ -63,7 +63,9 @@ export function useGetConnection(connectionId?: string) {
 }
 
 export function useUpsertConnection() {
-  return useMutation<Sqlui.ConnectionProps, void, Sqlui.AddConnectionProps, void>(
+  const queryClient = useQueryClient();
+
+  const resp = useMutation<Sqlui.ConnectionProps, void, Sqlui.AddConnectionProps, void>(
     (newConnection) => {
       const connectionId = newConnection.id;
       if (connectionId) {
@@ -78,7 +80,14 @@ export function useUpsertConnection() {
         });
       }
     },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries('connections');
+      },
+    },
   );
+
+  return resp;
 }
 
 export function useDeleteConnection() {

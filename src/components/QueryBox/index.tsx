@@ -4,6 +4,7 @@ import {
   useConnectionQueries,
   useConnectionQuery,
   useGetAvailableDatabaseConnections,
+  useGetMetaData,
 } from 'src/hooks';
 
 interface QueryBoxProps {
@@ -12,9 +13,9 @@ interface QueryBoxProps {
 
 export default function QueryBox(props: QueryBoxProps) {
   const { queryId } = props;
+  const { data: connections, isLoading: loadingMetaData } = useGetMetaData();
   const { query, onChange, isLoading: loadingConnection, onExecute } = useConnectionQuery(queryId);
-  const { data: connecionsMetaData, isLoading: loadingMetaData } =
-    useGetAvailableDatabaseConnections();
+  const connecionsMetaData = useGetAvailableDatabaseConnections(connections);
   const { isLoading: executing } = useExecute(
     query?.connectionId,
     query?.sql,
