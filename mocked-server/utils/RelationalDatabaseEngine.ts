@@ -1,9 +1,5 @@
 import { Sequelize, ColumnDescription } from 'sequelize';
-
-export module Sqlui {
-  export type RawData = Record<string, string | number | boolean>[];
-  export type MetaData = Record<string, string | number | boolean>;
-}
+import { Sqlui } from 'typings';
 
 /**
  * mostly adapter for sequelize
