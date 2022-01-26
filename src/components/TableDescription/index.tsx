@@ -1,5 +1,6 @@
 import React from 'react';
 import TableRowsIcon from '@mui/icons-material/TableRows';
+import Alert from '@mui/material/Alert';
 import { AccordionHeader, AccordionBody } from 'src/components/Accordion';
 import ColumnDescription from 'src/components/ColumnDescription';
 import { useGetMetaData, useGetTables, useShowHide } from 'src/hooks';
@@ -20,7 +21,7 @@ export default function TableDescription(props: TableDescriptionProps) {
   }
 
   if (!tables || tables.length === 0) {
-    return <>No Data</>;
+    return <Alert severity='info'>Not Available</Alert>;
   }
 
   return (

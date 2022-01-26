@@ -1,5 +1,6 @@
 import React from 'react';
 import ViewColumnIcon from '@mui/icons-material/ViewColumn';
+import Alert from '@mui/material/Alert';
 import { AccordionHeader, AccordionBody } from 'src/components/Accordion';
 import { useGetMetaData, useGetColumns, useShowHide } from 'src/hooks';
 import { Sqlui } from 'typings';
@@ -21,7 +22,7 @@ export default function ColumnDescription(props: ColumnDescriptionProps) {
   }
 
   if (!columns || Object.keys(columns).length === 0) {
-    return <>No Data</>;
+    return <Alert severity='info'>No Available</Alert>;
   }
 
   return (

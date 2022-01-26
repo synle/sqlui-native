@@ -2,6 +2,7 @@ import React from 'react';
 import SelectAllIcon from '@mui/icons-material/SelectAll';
 import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
 import IconButton from '@mui/material/IconButton';
+import Alert from '@mui/material/Alert';
 import TableDescription from 'src/components/TableDescription';
 import { AccordionHeader, AccordionBody } from 'src/components/Accordion';
 import { useGetMetaData, useGetDatabases, useActiveConnectionQuery, useShowHide } from 'src/hooks';
@@ -22,7 +23,7 @@ export default function DatabaseDescription(props: DatabaseDescriptionProps) {
   }
 
   if (!databases || databases.length === 0) {
-    return <>No Data</>;
+    return <Alert severity='info'>No Available</Alert>;
   }
 
   const onSelectDatabaseForQuery = async (e: React.SyntheticEvent, databaseId: string) => {
