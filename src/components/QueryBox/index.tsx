@@ -17,12 +17,7 @@ export default function QueryBox(props: QueryBoxProps) {
   const { data: connections, isLoading: loadingMetaData } = useGetMetaData();
   const { query, onChange, isLoading: loadingConnection, onExecute } = useConnectionQuery(queryId);
   const connecionsMetaData = useGetAvailableDatabaseConnections(connections);
-  const { isLoading: executing } = useExecute(
-    query?.connectionId,
-    query?.sql,
-    query?.databaseId,
-    query?.lastExecuted,
-  );
+  const { isLoading: executing } = useExecute(query);
 
   const isLoading = loadingMetaData || loadingConnection;
 

@@ -140,16 +140,12 @@ export function useGetColumns(
   return tables?.find((table) => table.name === tableId)?.columns;
 }
 
-export function useExecute(
-  connectionId?: string,
-  sql?: string,
-  databaseId?: string,
-  lastExecuted?: string,
-) {
-  const enabled = !!sql && !!connectionId && !!databaseId && !!lastExecuted;
+export function useExecute(query?: ConnectionQuery) {
+  const { connectionId, sql, databaseId, lastExecuted } = query || {};
+  const enabled = query && !!sql && !!connectionId && !!databaseId && !!lastExecuted;
 
   return useQuery(
-    ['connection', connectionId, 'database', databaseId, 'table'],
+    [`executeQuery.${query?.id}`, lastExecuted],
     () =>
       _fetch<Sqlui.Result>(`/api/connection/${connectionId}/execute`, {
         method: 'post',
@@ -288,6 +284,7 @@ export function useConnectionQuery(queryId: string) {
     }
     query['lastExecuted'] = `${Date.now()}`;
     queryClient.invalidateQueries('connectionQueries');
+    queryClient.invalidateQueries(`executeQuery.${query.id}`);
   };
 
   const onChange = (key: keyof ConnectionQuery, value?: string) => {
@@ -298,6 +295,7 @@ export function useConnectionQuery(queryId: string) {
     //@ts-ignore
     query[key] = value || '';
     queryClient.invalidateQueries('connectionQueries');
+    queryClient.invalidateQueries(`executeQuery.${query.id}`);
   };
 
   return {
@@ -322,6 +320,7 @@ export function useActiveConnectionQuery() {
     }
     query['lastExecuted'] = `${Date.now()}`;
     queryClient.invalidateQueries('connectionQueries');
+    queryClient.invalidateQueries(`executeQuery.${query.id}`);
   };
 
   const onChange = (key: keyof ConnectionQuery, value?: string) => {
@@ -332,6 +331,7 @@ export function useActiveConnectionQuery() {
     //@ts-ignore
     query[key] = value || '';
     queryClient.invalidateQueries('connectionQueries');
+    queryClient.invalidateQueries(`executeQuery.${query.id}`);
   };
 
   return {
