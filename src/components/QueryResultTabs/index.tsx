@@ -3,7 +3,7 @@ import Tabs from 'src/components/Tabs';
 import { useExecute, useConnectionQueries, useConnectionQuery } from 'src/hooks';
 
 export default function QueryResultTabs() {
-  const { queries, onAddQuery, onShowQuery, isLoading } = useConnectionQueries();
+  const { queries, onAddQuery, onShowQuery, onChangeQuery, isLoading } = useConnectionQueries();
 
   if (isLoading) {
     return <>loading...</>;
@@ -21,11 +21,22 @@ export default function QueryResultTabs() {
     onShowQuery(queryId);
   };
 
+  const onRenameQuery = (queryId: string, oldName: string) => {
+    const newName = prompt('Rename Query?', oldName);
+    if (newName) {
+      onChangeQuery(queryId, 'name', newName);
+    }
+  };
+
   const tabIdx = queries.findIndex((q) => q.selected === true) || 0;
 
   const tabHeaders = [
     ...queries.map((q, idx) => (
-      <button key={q.id} onClick={() => onShowQuery(q.id)} disabled={q.selected}>
+      <button
+        key={q.id}
+        onClick={() => onShowQuery(q.id)}
+        onDoubleClick={() => onRenameQuery(q.id, q.name)}
+        aria-selected={q.selected}>
         {q.name}
       </button>
     )),

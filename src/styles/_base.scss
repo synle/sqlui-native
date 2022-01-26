@@ -46,6 +46,11 @@ button {
   }
 
   &:disabled {
+    background: #333;
+    color: white;
+  }
+
+  &[aria-selected='true'] {
     background: black;
     color: white;
   }
