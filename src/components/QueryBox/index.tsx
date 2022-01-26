@@ -54,7 +54,7 @@ export default function QueryBox(props: QueryBoxProps) {
 
   return (
     <form className='QueryBox' onSubmit={onSubmit}>
-      <div>
+      <div className='QueryBox__Row'>
         <select
           value={[query.connectionId, query.databaseId].join(' << ')}
           onChange={(e) => onDatabaseConnectionChange(e.target.value)}
@@ -67,7 +67,7 @@ export default function QueryBox(props: QueryBoxProps) {
           ))}
         </select>
       </div>
-      <div>
+      <div className='QueryBox__Row'>
         <CodeEditor
           value={query.sql}
           language='sql'
@@ -82,7 +82,7 @@ export default function QueryBox(props: QueryBoxProps) {
           }}
         />
       </div>
-      <div>
+      <div className='QueryBox__ActionRow'>
         <Button type='submit' variant='contained' disabled={executing} endIcon={<SendIcon />}>
           Execute
         </Button>

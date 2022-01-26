@@ -40,7 +40,7 @@ export default function DatabaseDescription(props: DatabaseDescriptionProps) {
         return (
           <React.Fragment key={database.name}>
             <AccordionHeader expanded={visibles[key]} onToggle={() => onToggle(key)}>
-              <LibraryBooksIcon />
+              <LibraryBooksIcon color='secondary' />
               <span>{database.name}</span>
               <IconButton
                 aria-label='Select Database For Execution'
