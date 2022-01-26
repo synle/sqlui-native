@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import EditIcon from '@mui/icons-material/Edit';
 import CloudIcon from '@mui/icons-material/Cloud';
 import IconButton from '@mui/material/IconButton';
+import Alert from '@mui/material/Alert';
 import DatabaseDescription from 'src/components/DatabaseDescription';
 import DeleteConnectionButton from 'src/components/DeleteConnectionButton';
 import { AccordionHeader, AccordionBody } from 'src/components/Accordion';
@@ -18,7 +19,7 @@ export default function ConnectionDescription() {
   }
 
   if (!connections || connections.length === 0) {
-    return <>No Data</>;
+    return <Alert severity='info'>No connnections</Alert>;
   }
 
   return (
@@ -27,24 +28,24 @@ export default function ConnectionDescription() {
         const key = [connection.id].join(' > ');
         const isOnline = connection?.status === 'online';
 
-        if(isOnline){
+        if (isOnline) {
           return (
-          <React.Fragment key={key}>
-            <AccordionHeader expanded={visibles[key]} onToggle={() => onToggle(key)}>
-              <CloudIcon color='primary' />
-              <span>{connection.name}</span>
-              <IconButton
-                aria-label='Edit Connection'
-                onClick={() => navigate(`/connection/edit/${connection.id}`)}>
-                <EditIcon />
-              </IconButton>
-              <DeleteConnectionButton connectionId={connection.id} />
-            </AccordionHeader>
-            <AccordionBody expanded={visibles[key]}>
-              <DatabaseDescription connectionId={connection.id} />
-            </AccordionBody>
-          </React.Fragment>
-        );
+            <React.Fragment key={key}>
+              <AccordionHeader expanded={visibles[key]} onToggle={() => onToggle(key)}>
+                <CloudIcon color='primary' />
+                <span>{connection.name}</span>
+                <IconButton
+                  aria-label='Edit Connection'
+                  onClick={() => navigate(`/connection/edit/${connection.id}`)}>
+                  <EditIcon />
+                </IconButton>
+                <DeleteConnectionButton connectionId={connection.id} />
+              </AccordionHeader>
+              <AccordionBody expanded={visibles[key]}>
+                <DatabaseDescription connectionId={connection.id} />
+              </AccordionBody>
+            </React.Fragment>
+          );
         }
 
         // offline
@@ -61,7 +62,7 @@ export default function ConnectionDescription() {
               <DeleteConnectionButton connectionId={connection.id} />
             </AccordionHeader>
             <AccordionBody expanded={visibles[key]}>
-              Can't connect to server
+              <Alert severity='error'>Can't connect to this server</Alert>
             </AccordionBody>
           </React.Fragment>
         );
