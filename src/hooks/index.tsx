@@ -23,9 +23,7 @@ function _fetch<T>(...inputs) {
 }
 
 export function useGetMetaData() {
-  return useQuery(['connections', 'metadata'], () =>
-    _fetch<Sqlui.ConnectionMetaData[]>(`/api/metadata`),
-  );
+  return useQuery(['connection', 'all'], () => _fetch<Sqlui.ConnectionMetaData[]>(`/api/metadata`));
 }
 
 interface AvailableConnectionProps {
@@ -82,7 +80,7 @@ export function useUpsertConnection() {
     },
     {
       onSuccess: () => {
-        queryClient.invalidateQueries('connections');
+        queryClient.invalidateQueries('connection');
       },
     },
   );
@@ -102,10 +100,7 @@ export function useGetDatabases(
   connectionId: string,
   metaData?: Sqlui.ConnectionMetaData[],
 ): Sqlui.DatabaseMetaData[] {
-  const resp = useGetMetaData();
-  const { data, ...rest } = resp;
-
-  return (metaData || []).find((connection) => connection.id === connectionId)?.databases;
+  return metaData?.find((connection) => connection.id === connectionId)?.databases;
 }
 
 export function useGetTables(
@@ -114,7 +109,7 @@ export function useGetTables(
   metaData?: Sqlui.ConnectionMetaData[],
 ) {
   const databases = useGetDatabases(connectionId, metaData);
-  return (databases || []).find((database) => database.name === databaseId)?.tables;
+  return databases?.find((database) => database.name === databaseId)?.tables;
 }
 
 export function useGetColumns(
@@ -124,7 +119,7 @@ export function useGetColumns(
   metaData?: Sqlui.ConnectionMetaData[],
 ) {
   const tables = useGetTables(connectionId, databaseId, metaData);
-  return (tables || []).find((table) => table.name === tableId)?.columns;
+  return tables?.find((table) => table.name === tableId)?.columns;
 }
 
 export function useExecute(
@@ -133,6 +128,8 @@ export function useExecute(
   databaseId?: string,
   lastExecuted?: string,
 ) {
+  const enabled = !!sql && !!connectionId && !!databaseId && !!lastExecuted;
+
   return useQuery(
     ['connection', connectionId, 'database', databaseId, 'table'],
     () =>
@@ -144,7 +141,7 @@ export function useExecute(
         }),
       }),
     {
-      enabled: !!sql && !!connectionId && !!databaseId && !!lastExecuted,
+      enabled,
     },
   );
 }
