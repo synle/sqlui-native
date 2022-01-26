@@ -1,9 +1,12 @@
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { Button } from '@mui/material';
 
 export default function NewConnectionButton() {
+  const navigate = useNavigate();
+
   return (
-    <div>
-      <Link to='/connection/new'>New Connection</Link>
-    </div>
+    <Button onClick={() => navigate('/connection/new')} variant='contained' fullWidth={true}>
+      New Connection
+    </Button>
   );
 }
