@@ -120,7 +120,16 @@ function CsvFormatData(props: FormatDataProps) {
     });
   }, [data]);
 
-  return <textarea disabled defaultValue={csv}></textarea>;
+  return <CodeEditor
+      value={csv}
+      padding={10}
+      minHeight={200}
+      style={{
+        backgroundColor: '#f5f5f5',
+        border: 'none',
+        fontFamily: 'monospace',
+      }}
+    />;
 }
 
 function TableFormatData(props: FormatDataProps) {
