@@ -89,44 +89,33 @@ export function useDeleteConnection() {
   );
 }
 
-export function useGetDatabases(connectionId: string) {
+export function useGetDatabases(
+  connectionId: string,
+  metaData?: Sqlui.ConnectionMetaData[],
+): Sqlui.DatabaseMetaData[] {
   const resp = useGetMetaData();
   const { data, ...rest } = resp;
 
-  if (data) {
-    const newData: Sqlui.DatabaseMetaData[] = data.find(
-      (connection) => connection.id === connectionId,
-    )?.databases;
-    return {
-      ...rest,
-      data: newData,
-    };
-  }
-
-  return resp;
+  return (metaData || []).find((connection) => connection.id === connectionId)?.databases;
 }
 
-export function useGetTables(connectionId: string, databaseId: string) {
-  const resp = useGetDatabases(connectionId);
-  const { data, ...rest } = resp;
-
-  if (data) {
-    const newData = data.find((database) => database.name === databaseId)?.tables;
-    return {
-      ...rest,
-      data: newData,
-    };
-  }
-
-  return resp;
+export function useGetTables(
+  connectionId: string,
+  databaseId: string,
+  metaData?: Sqlui.ConnectionMetaData[],
+) {
+  const databases = useGetDatabases(connectionId, metaData);
+  return (databases || []).find((database) => database.name === databaseId)?.tables;
 }
 
-export function useGetColumns(connectionId: string, databaseId: string, tableId: string) {
-  return useQuery(['connection', connectionId, 'database', databaseId, 'table', tableId], () =>
-    _fetch<{ [index: string]: Sqlui.Column }>(
-      `/api/connection/${connectionId}/database/${databaseId}/table/${tableId}/columns`,
-    ),
-  );
+export function useGetColumns(
+  connectionId: string,
+  databaseId: string,
+  tableId: string,
+  metaData?: Sqlui.ConnectionMetaData[],
+) {
+  const tables = useGetTables(connectionId, databaseId, metaData);
+  return (tables || []).find((table) => table.name === tableId)?.columns;
 }
 
 export function useExecute(
