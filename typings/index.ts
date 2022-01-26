@@ -24,7 +24,7 @@ export module Sqlui {
 
   export type TableMetaData = {
     name: string;
-    columns: ColumnMetaData;
+    columns?: ColumnMetaData;
   };
 
   export type DatabaseMetaData = {
@@ -32,7 +32,9 @@ export module Sqlui {
     tables: TableMetaData[];
   };
 
-  export type ConnectionMetaData = ConnectionProps & DatabaseMetaData;
+  export type ConnectionMetaData = ConnectionProps & {
+    databases: DatabaseMetaData[];
+  };
 
   export type RawData = Record<string, string | number | boolean>[];
   export type MetaData = Record<string, string | number | boolean>;
