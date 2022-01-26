@@ -65,7 +65,11 @@ export default function ResultBox(props: ResultBoxProps) {
     </div>,
   ];
 
-  return <Tabs tabIdx={tabIdx} tabHeaders={tabHeaders} tabContents={tabContents}></Tabs>;
+  return (
+    <div className='ResultBox'>
+      <Tabs tabIdx={tabIdx} tabHeaders={tabHeaders} tabContents={tabContents}></Tabs>
+    </div>
+  );
 }
 
 interface FormatDataProps {
