@@ -29,7 +29,7 @@ export default function ConnectionDescription() {
             onToggle={() => onToggle(connection.id)}>
             <CloudIcon />
             <span>{connection.name}</span>
-            <EditIcon onClick={() => navigate(`/connection/edit/${connection.id}`)}/>
+            <EditIcon onClick={() => navigate(`/connection/edit/${connection.id}`)} />
             <DeleteConnectionButton connectionId={connection.id} />
           </AccordionHeader>
           <AccordionBody expanded={visibles[connection.id]}>

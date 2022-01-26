@@ -15,7 +15,5 @@ export default function DeleteConnectionButton(props: DeleteConnectionButtonProp
     e.stopPropagation();
   };
 
-  return (
-    <DeleteIcon onClick={onDelete}/>
-  );
+  return <DeleteIcon onClick={onDelete} />;
 }
