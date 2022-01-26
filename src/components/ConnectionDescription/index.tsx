@@ -8,13 +8,13 @@ import { Button } from '@mui/material';
 import DatabaseDescription from 'src/components/DatabaseDescription';
 import DeleteConnectionButton from 'src/components/DeleteConnectionButton';
 import { AccordionHeader, AccordionBody } from 'src/components/Accordion';
-import { useAuthenticateConnection, useGetMetaData, useShowHide } from 'src/hooks';
+import { useRetryConnection, useGetMetaData, useShowHide } from 'src/hooks';
 
 export default function ConnectionDescription() {
   const navigate = useNavigate();
   const { data: connections, isLoading } = useGetMetaData();
   const { visibles, onToggle } = useShowHide();
-  const { mutateAsync: reconnectConnection, isLoading: reconnecting } = useAuthenticateConnection();
+  const { mutateAsync: reconnectConnection, isLoading: reconnecting } = useRetryConnection();
 
   if (isLoading) {
     return <>loading...</>;
@@ -66,15 +66,15 @@ export default function ConnectionDescription() {
               <DeleteConnectionButton connectionId={connection.id} />
             </AccordionHeader>
             <AccordionBody expanded={visibles[key]}>
-                <Alert
-                  severity='error'
-                  action={
-                    <Button color='inherit' size='small' onClick={() => onReconnect(connection.id)}>
-                      Reconnect
-                    </Button>
-                  }>
-                  Can't connect to this server
-                </Alert>
+              <Alert
+                severity='error'
+                action={
+                  <Button color='inherit' size='small' onClick={() => onReconnect(connection.id)}>
+                    Reconnect
+                  </Button>
+                }>
+                Can't connect to this server
+              </Alert>
             </AccordionBody>
           </React.Fragment>
         );

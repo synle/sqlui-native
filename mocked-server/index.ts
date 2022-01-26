@@ -14,7 +14,7 @@ const caches: { [index: string]: Sqlui.ConnectionProps } = {};
 let id = 0;
 
 const ConnectionUtils = {
-  addConnection(connection: Sqlui.AddConnectionProps): Sqlui.ConnectionProps {
+  addConnection(connection: Sqlui.CoreConnectionProps): Sqlui.ConnectionProps {
     const newId = `connection.${++id}`;
 
     caches[newId] = {
@@ -76,7 +76,7 @@ function getEngine(connection: string) {
   return engine;
 }
 
-async function getConnectionMetaData(connection: Sqlui.ConnectionProps) {
+async function getConnectionMetaData(connection: Sqlui.CoreConnectionProps) {
   const connItem: Sqlui.ConnectionMetaData = {
     name: connection.name,
     id: connection.id,
@@ -201,6 +201,18 @@ app.post('/api/connection/:connectionId/execute', async (req, res) => {
   const database = req.body?.database;
   try {
     res.json(await engine.execute(sql, database));
+  } catch (err) {
+    res.status(500);
+    res.send('Server Error');
+  }
+});
+
+app.post('/api/connection/test', async (req, res) => {
+  try {
+    const connection: Sqlui.CoreConnectionProps = req.body;
+    const engine = getEngine(connection.connection);
+    await engine.authenticate();
+    res.json(await getConnectionMetaData(connection));
   } catch (err) {
     res.status(500);
     res.send('Server Error');
