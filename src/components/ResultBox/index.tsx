@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import CodeEditor from '@uiw/react-textarea-code-editor';
 import CsvEngine from 'json-2-csv';
 import { useExecute, useConnectionQueries, useConnectionQuery } from 'src/hooks';
 import Tabs from 'src/components/Tabs';
@@ -38,6 +39,14 @@ export default function ResultBox(props: ResultBoxProps) {
 
   // return <pre>{JSON.stringify(data, null, 2)}</pre>;
 
+  if (!Array.isArray(data)) {
+    return (
+      <div className='ResultBox'>
+        <JsonFormatData data={data} />
+      </div>
+    );
+  }
+
   const tabHeaders = [
     <button key={0} onClick={() => setTabIdx(0)} disabled={tabIdx === 0}>
       JSON
@@ -75,7 +84,19 @@ interface FormatDataProps {
 
 function JsonFormatData(props: FormatDataProps) {
   const { data } = props;
-  return <textarea disabled defaultValue={JSON.stringify(data, null, 2)}></textarea>;
+  return (
+    <CodeEditor
+      value={JSON.stringify(data, null, 2)}
+      language='json'
+      padding={10}
+      minHeight={200}
+      style={{
+        backgroundColor: '#f5f5f5',
+        border: 'none',
+        fontFamily: 'monospace',
+      }}
+    />
+  );
 }
 
 function CsvFormatData(props: FormatDataProps) {
