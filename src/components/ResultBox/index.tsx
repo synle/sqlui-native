@@ -78,7 +78,7 @@ interface FormatDataProps {
 
 function JsonFormatData(props: FormatDataProps) {
   const { data } = props;
-  return <pre>{JSON.stringify(data, null, 2)}</pre>;
+  return <textarea disabled defaultValue={JSON.stringify(data, null, 2)}></textarea>;
 }
 
 function CsvFormatData(props: FormatDataProps) {
@@ -95,10 +95,9 @@ function CsvFormatData(props: FormatDataProps) {
     });
   }, [data]);
 
-  return <pre>{csv}</pre>;
+  return <textarea disabled defaultValue={csv}></textarea>;
 }
 
-// TODO: implement me
 function TableFormatData(props: FormatDataProps) {
   const { data } = props;
 
