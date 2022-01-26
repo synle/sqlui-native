@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@mui/material';
+import TextField from '@mui/material/TextField';
+import FormControl from '@mui/material/FormControl';
 import { useUpsertConnection, useGetConnection } from 'src/hooks';
 
 type ConnectionFormProps = {
@@ -13,9 +15,7 @@ export function NewConnectionForm() {
   const { data: upsertedConnection, mutateAsync, isLoading: saving } = useUpsertConnection();
   const navigate = useNavigate();
 
-  const onSave = async (e: React.SyntheticEvent) => {
-    e.preventDefault();
-
+  const onSave = async () => {
     const newConnection = await mutateAsync({
       name,
       connection,
@@ -25,29 +25,14 @@ export function NewConnectionForm() {
   };
 
   return (
-    <form className='ConnectionForm' onSubmit={onSave}>
-      <div>
-        <label>Name:</label>
-        <input type='text' value={name} onChange={(e) => setName(e.target.value)} required />
-      </div>
-      <div>
-        <label>Connection:</label>
-        <input
-          type='text'
-          value={connection}
-          onChange={(e) => setConnection(e.target.value)}
-          required
-        />
-      </div>
-      <div>
-        <Button variant='contained' type='submit' disabled={saving}>
-          Save
-        </Button>
-        <Button variant='outlined' type='button' disabled={saving} onClick={() => navigate('/')}>
-          Cancel
-        </Button>
-      </div>
-    </form>
+    <MainConnectionForm
+      onSave={onSave}
+      name={name}
+      setName={setName}
+      connection={connection}
+      setConnection={setConnection}
+      saving={saving}
+    />
   );
 }
 
@@ -57,7 +42,6 @@ export function EditConnectionForm(props: ConnectionFormProps) {
   const [connection, setConnection] = useState('');
   const { data: connectionProps, isLoading: loading } = useGetConnection(id);
   const { data: upsertedConnection, mutateAsync, isLoading: saving } = useUpsertConnection();
-  const navigate = useNavigate();
 
   const onSave = async () => {
     mutateAsync({
@@ -73,30 +57,72 @@ export function EditConnectionForm(props: ConnectionFormProps) {
     setConnection(connectionProps?.connection || '');
   }, [connectionProps]);
 
-  if (loading) {
+  return (
+    <MainConnectionForm
+      onSave={onSave}
+      name={name}
+      setName={setName}
+      connection={connection}
+      setConnection={setConnection}
+      saving={saving}
+      loading={loading}
+    />
+  );
+}
+
+interface MainConnectionFormProps {
+  onSave: () => void;
+  name: string;
+  setName: (newVal: string) => void;
+  connection: string;
+  setConnection: (newVal: string) => void;
+  saving?: boolean;
+  loading?: boolean;
+}
+
+function MainConnectionForm(props: MainConnectionFormProps) {
+  const navigate = useNavigate();
+
+  const onSave = (e: React.SyntheticEvent) => {
+    e.preventDefault();
+    props.onSave();
+  };
+
+  if (props.loading) {
     return <>loading...</>;
   }
 
   return (
     <form className='ConnectionForm' onSubmit={onSave}>
-      <div>
-        <label>Name:</label>
-        <input type='text' value={name} onChange={(e) => setName(e.target.value)} required />
-      </div>
-      <div>
-        <label>Connection:</label>
-        <input
-          type='text'
-          value={connection}
-          onChange={(e) => setConnection(e.target.value)}
+      <div className='ConnectionForm__Row'>
+        <TextField
+          label='Name'
+          value={props.name}
+          onChange={(e) => props.setName(e.target.value)}
           required
+          size='small'
+          fullWidth={true}
         />
       </div>
-      <div>
-        <Button variant='contained' type='submit' disabled={saving}>
+      <div className='ConnectionForm__Row'>
+        <TextField
+          label='Connection'
+          value={props.connection}
+          onChange={(e) => props.setConnection(e.target.value)}
+          required
+          size='small'
+          fullWidth={true}
+        />
+      </div>
+      <div className='ConnectionForm__ActionRow'>
+        <Button variant='contained' type='submit' disabled={props.saving}>
           Save
         </Button>
-        <Button variant='outlined' type='button' disabled={saving} onClick={() => navigate('/')}>
+        <Button
+          variant='outlined'
+          type='button'
+          disabled={props.saving}
+          onClick={() => navigate('/')}>
           Cancel
         </Button>
       </div>
