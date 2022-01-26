@@ -173,54 +173,61 @@ app.get('/api/metadata', async (req, res) => {
     return res.json(cacheMetaData);
   }
 
-  const resp: any[] = [];
+  const resp: Sqlui.ConnectionMetaData[] = [];
 
   for (const connection of connections) {
-    const engine = getEngine(connection.connection);
-
-    const connItem = { ...connection, databases: [] };
+    const connItem: Sqlui.ConnectionMetaData = {
+      name: connection.name,
+      id: connection.id,
+      connection: connection.connection,
+      databases: [] as Sqlui.DatabaseMetaData[],
+    };
     resp.push(connItem);
 
-    const databases = await engine.getDatabases();
-    for (const database of databases) {
-      const dbItem = {
-        name: database,
-        tables: [],
-      };
-
-      // @ts-ignore
-      connItem.databases.push(dbItem);
-
-      let tables: any[] = [];
-      try {
-        tables = await engine.getTables(database);
-        //console.log('getting tables', database, tables);
-      } catch (err) {
-        //console.log('failed getting tables', database);
-      }
-
-      for (const table of tables) {
-        let columns = undefined;
-
-        try {
-          columns = await engine.getColumns(table, database);
-        } catch (err) {
-          //console.log('failed getting columns', database, table);
-        }
-
-        const tblItem = {
-          name: table,
-          columns,
+    try {
+      const engine = getEngine(connection.connection);
+      const databases = await engine.getDatabases();
+      for (const database of databases) {
+        const dbItem: Sqlui.DatabaseMetaData = {
+          name: database,
+          tables: [] as Sqlui.TableMetaData[],
         };
 
         // @ts-ignore
-        dbItem.tables.push(tblItem);
+        connItem.databases.push(dbItem);
+
+        let tables: string[] = [];
+        try {
+          tables = await engine.getTables(database);
+          //console.log('getting tables', database, tables);
+        } catch (err) {
+          //console.log('failed getting tables', database);
+        }
+
+        for (const table of tables) {
+          let columns: Sqlui.ColumnMetaData | undefined = undefined;
+
+          try {
+            columns = await engine.getColumns(table, database);
+          } catch (err) {
+            //console.log('failed getting columns', database, table);
+          }
+
+          const tblItem: Sqlui.TableMetaData = {
+            name: table,
+            columns,
+          };
+
+          // @ts-ignore
+          dbItem.tables.push(tblItem);
+        }
       }
+    } catch (err) {
+      console.log('connection error', connection.name, err);
     }
   }
 
   cacheMetaData = resp;
-
   res.json(resp);
 });
 
