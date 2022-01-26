@@ -53,7 +53,7 @@ export default function QueryBox(props: QueryBoxProps) {
     <form className='QueryBox' onSubmit={onSubmit}>
       <div>
         <select
-          value={[query.connectionId,query.databaseId].join(' << ')}
+          value={[query.connectionId, query.databaseId].join(' << ')}
           onChange={(e) => onDatabaseConnectionChange(e.target.value)}
           required>
           <option value=''>Pick One</option>
