@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import CodeEditor from '@uiw/react-textarea-code-editor';
 import {
   useExecute,
   useConnectionQueries,
@@ -67,11 +68,19 @@ export default function QueryBox(props: QueryBoxProps) {
         </select>
       </div>
       <div>
-        <textarea
-          defaultValue={query.sql}
-          onBlur={(e) => onChange('sql', e.target.value)}
+        <CodeEditor
+          value={query.sql}
+          language='sql'
           placeholder={`Enter SQL for ` + query.name}
-          required></textarea>
+          onBlur={(e) => onChange('sql', e.target.value)}
+          padding={10}
+          minHeight={200}
+          style={{
+            backgroundColor: '#f5f5f5',
+            border: 'none',
+            fontFamily: 'monospace',
+          }}
+        />
       </div>
       <div>
         <button type='submit' disabled={executing}>

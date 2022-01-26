@@ -38,6 +38,7 @@
     "@emotion/styled": "^11.6.0",
     "@mui/icons-material": "^5.3.1",
     "@mui/material": "^5.3.1",
+    "@uiw/react-textarea-code-editor": "^1.4.15",
     "json-2-csv": "^3.16.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
