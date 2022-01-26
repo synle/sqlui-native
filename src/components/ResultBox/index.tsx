@@ -47,13 +47,13 @@ export default function ResultBox(props: ResultBoxProps) {
   ];
 
   const tabContents = [
-    <div key={`JSON`}>
+    <div className='ResultBox__Content' key={`JSON`}>
       <JsonFormatData data={data} />
     </div>,
-    <div key={`CSV`}>
+    <div className='ResultBox__Content' key={`CSV`}>
       <CsvFormatData data={data} />
     </div>,
-    <div key={`Table`}>
+    <div className='ResultBox__Content' key={`Table`}>
       <TableFormatData data={data} />
     </div>,
   ];

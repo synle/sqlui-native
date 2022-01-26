@@ -38,6 +38,7 @@
   &__RightPane {
     flex-grow: 1;
     margin-left: 2rem;
+    overflow: hidden;
   }
 }
 
@@ -45,6 +46,12 @@
 }
 
 .ResultBox {
+  &__Content{
+    width: 100%;
+    overflow-x: auto;
+  }
+
+
   textarea {
     width: 100%;
     min-height: 800px;
