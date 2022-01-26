@@ -117,7 +117,7 @@ export function useDeleteConnection() {
 export function useGetDatabases(
   connectionId: string,
   metaData?: Sqlui.ConnectionMetaData[],
-): Sqlui.DatabaseMetaData[] {
+) {
   return metaData?.find((connection) => connection.id === connectionId)?.databases;
 }
 
