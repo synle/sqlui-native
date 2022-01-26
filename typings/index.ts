@@ -2,6 +2,7 @@ import { ColumnDescription } from 'sequelize';
 
 export module Sqlui {
   export type CoreConnectionProps = {
+    id?: string;
     connection: string;
     name: string;
     [index: string]: any;
@@ -43,4 +44,17 @@ export module Sqlui {
   export type MetaData = Record<string, string | number | boolean>;
 
   export type Result = [RawData, MetaData];
+}
+
+export module SqluiNative {
+  // connection queries
+  export interface ConnectionQuery {
+    id: string;
+    name: string;
+    connectionId?: string;
+    databaseId?: string;
+    sql: string;
+    lastExecuted?: string;
+    selected: boolean;
+  }
 }
