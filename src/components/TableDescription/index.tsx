@@ -26,7 +26,7 @@ export default function TableDescription(props: TableDescriptionProps) {
   return (
     <div className='TableDescription'>
       {tables.map((table) => {
-        const key = JSON.stringify({ ...props, table: table.name });
+        const key = [connectionId, databaseId, table.name].join(' > ');
         return (
           <React.Fragment key={table.name}>
             <AccordionHeader expanded={visibles[key]} onToggle={() => onToggle(key)}>

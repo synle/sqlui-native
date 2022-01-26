@@ -16,7 +16,7 @@ export default function QueryBox(props: QueryBoxProps) {
   const { queryId } = props;
   const { data: connections, isLoading: loadingMetaData } = useGetMetaData();
   const { query, onChange, isLoading: loadingConnection, onExecute } = useConnectionQuery(queryId);
-  const connecionsMetaData = useGetAvailableDatabaseConnections(connections);
+  const connectionsMetaData = useGetAvailableDatabaseConnections(connections);
   const { isLoading: executing } = useExecute(query);
 
   const isLoading = loadingMetaData || loadingConnection;
@@ -30,13 +30,11 @@ export default function QueryBox(props: QueryBoxProps) {
   }
 
   const onDatabaseConnectionChange = (newValue: string) => {
-    if (!connecionsMetaData) {
+    if (!connectionsMetaData) {
       return;
     }
 
-    const matched = connecionsMetaData.find(
-      (connMetaData) => `${connMetaData.connectionId}.${connMetaData.databaseId}` === newValue,
-    );
+    const matched = connectionsMetaData.find((connMetaData) => connMetaData.id === newValue);
 
     onChange('connectionId', matched?.connectionId);
     onChange('databaseId', matched?.databaseId);
@@ -55,11 +53,11 @@ export default function QueryBox(props: QueryBoxProps) {
     <form className='QueryBox' onSubmit={onSubmit}>
       <div>
         <select
-          value={`${query.connectionId}.${query.databaseId}`}
+          value={[query.connectionId,query.databaseId].join(' << ')}
           onChange={(e) => onDatabaseConnectionChange(e.target.value)}
           required>
           <option value=''>Pick One</option>
-          {(connecionsMetaData || []).map((connMetaData) => (
+          {(connectionsMetaData || []).map((connMetaData) => (
             <option key={`${connMetaData.id}`} value={`${connMetaData.id}`}>
               {connMetaData.label}
             </option>

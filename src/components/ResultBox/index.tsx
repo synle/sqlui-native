@@ -18,8 +18,8 @@ export default function ResultBox(props: ResultBoxProps) {
     return <>loading...</>;
   }
 
-  if(isError){
-    return <>Query error</>
+  if (isError) {
+    return <>Query error</>;
   }
 
   if (loadingResults) {

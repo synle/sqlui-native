@@ -63,8 +63,8 @@ export function useGetAvailableDatabaseConnections(metaData?: Sqlui.ConnectionMe
       res.push({
         connectionId,
         databaseId,
-        id: `${connectionId}.${databaseId}`,
-        label: `${connection.name} > ${database.name}`,
+        id: [connectionId, databaseId].join(' << '),
+        label: [connection.name, database.name].join(' > '),
       });
     }
   }

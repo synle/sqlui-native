@@ -27,7 +27,7 @@ export default function ColumnDescription(props: ColumnDescriptionProps) {
     <div className='ColumnDescription'>
       {Object.keys(columns).map((columnName) => {
         const column = columns[columnName];
-        const key = JSON.stringify({ ...props, columnName });
+        const key = [connectionId, databaseId, tableId, columnName].join(' > ');
         return (
           <React.Fragment key={columnName}>
             <AccordionHeader expanded={visibles[key]} onToggle={() => onToggle(key)}>
