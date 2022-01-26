@@ -16,10 +16,6 @@ export default function DeleteConnectionButton(props: DeleteConnectionButtonProp
   };
 
   return (
-    <div>
-      <a onClick={onDelete}>
-        <DeleteIcon />
-      </a>
-    </div>
+    <DeleteIcon onClick={onDelete}/>
   );
 }
