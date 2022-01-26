@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import EditIcon from '@mui/icons-material/Edit';
 import CloudIcon from '@mui/icons-material/Cloud';
+import IconButton from '@mui/material/IconButton';
 import DatabaseDescription from 'src/components/DatabaseDescription';
 import DeleteConnectionButton from 'src/components/DeleteConnectionButton';
 import { AccordionHeader, AccordionBody } from 'src/components/Accordion';
@@ -30,7 +31,11 @@ export default function ConnectionDescription() {
             <AccordionHeader expanded={visibles[key]} onToggle={() => onToggle(key)}>
               <CloudIcon />
               <span>{connection.name}</span>
-              <EditIcon onClick={() => navigate(`/connection/edit/${connection.id}`)} />
+              <IconButton
+                aria-label='Edit Connection'
+                onClick={() => navigate(`/connection/edit/${connection.id}`)}>
+                <EditIcon />
+              </IconButton>
               <DeleteConnectionButton connectionId={connection.id} />
             </AccordionHeader>
             <AccordionBody expanded={visibles[key]}>

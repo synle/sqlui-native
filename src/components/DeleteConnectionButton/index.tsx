@@ -1,5 +1,6 @@
 import React from 'react';
 import DeleteIcon from '@mui/icons-material/Delete';
+import IconButton from '@mui/material/IconButton';
 import { useDeleteConnection } from 'src/hooks';
 
 interface DeleteConnectionButtonProps {
@@ -15,5 +16,9 @@ export default function DeleteConnectionButton(props: DeleteConnectionButtonProp
     e.stopPropagation();
   };
 
-  return <DeleteIcon onClick={onDelete} />;
+  return (
+    <IconButton aria-label='Delete Connection' onClick={onDelete}>
+      <DeleteIcon />
+    </IconButton>
+  );
 }
