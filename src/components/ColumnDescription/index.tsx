@@ -53,13 +53,32 @@ function ColumnAttributes(props: ColumnAttributesProps) {
 
   const keys = Object.keys(column);
 
+  const attributes = keys
+    .map((key) => {
+      let value = column[key];
 
-  return <div>
-    {keys.map(key =>{
-      <React.Fragment key={key}>
-        <div><b>{key}</b></div>
-        <div>{column[key]}</div>
-      </React.Fragment>
-    })}
-  </div>
+      if (value === true) {
+        value = 'Yes';
+      } else if (value === 'false') {
+        value = 'No';
+      }
+      return {
+        name: key,
+        value: value,
+      };
+    })
+    .filter((attribute) => !!attribute.value);
+
+  return (
+    <div className='AttributeDescription'>
+      {attributes.map((attr) => (
+        <div key={attr.name}>
+          <div>
+            <b>{attr.name}</b>
+          </div>
+          <div>{attr.value}</div>
+        </div>
+      ))}
+    </div>
+  );
 }
