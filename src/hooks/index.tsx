@@ -169,15 +169,31 @@ export function useExecute(query?: ConnectionQuery) {
 
 export function useAuthenticateConnection() {
   const queryClient = useQueryClient();
-
-  return useMutation<void, void, string, void>(
+  return useMutation<Sqlui.ConnectionMetaData, void, string>(
     (connectionId) =>
-      _fetch<void>(`/api/connection/${connectionId}/connect`, {
+      _fetch<Sqlui.ConnectionMetaData>(`/api/connection/${connectionId}/connect`, {
         method: 'post',
       }),
     {
-      onSuccess: () => {
+      onSuccess: (newConnection) => {
         queryClient.invalidateQueries('connection');
+
+        queryClient.setQueryData<Sqlui.ConnectionMetaData[] | undefined>(
+          ['connection', 'all'],
+          (oldData) => {
+            // find that entry
+            oldData = oldData?.map((connection) => {
+              if (connection.id === newConnection.id) {
+                return newConnection;
+              }
+              return connection;
+            });
+
+            return oldData;
+          },
+        );
+
+        return Promise.resolve(newConnection);
       },
     },
   );

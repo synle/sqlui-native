@@ -76,7 +76,7 @@ function getEngine(connection: string) {
   return engine;
 }
 
-async function getConnectionMetaData(connection: Sqlui.ConnectionMetaData) {
+async function getConnectionMetaData(connection: Sqlui.ConnectionProps) {
   const connItem: Sqlui.ConnectionMetaData = {
     name: connection.name,
     id: connection.id,
@@ -129,6 +129,8 @@ async function getConnectionMetaData(connection: Sqlui.ConnectionMetaData) {
     // console.log('connection error', connection.name, err);
     connItem.status = 'offline';
   }
+
+  return connItem;
 }
 
 app.get('/api/connections', async (req, res) => {
@@ -186,7 +188,7 @@ app.post('/api/connection/:connectionId/connect', async (req, res) => {
     const engine = getEngine(connection.connection);
     await engine.authenticate();
     cacheMetaData = null;
-    res.status(200).send();
+    res.json(await getConnectionMetaData(connection));
   } catch (err) {
     res.status(500).send();
   }
