@@ -14,7 +14,9 @@ export module Sqlui {
     [index: string]: any;
   }
 
-  export type Column = ColumnDescription;
+  export type Column = ColumnDescription & {
+    [index: string]: any;
+  };
 
   export type Result = [any[], any];
 

@@ -2,7 +2,7 @@ import React from 'react';
 import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
 import TableDescription from 'src/components/TableDescription';
 import { AccordionHeader, AccordionBody } from 'src/components/Accordion';
-import { useGetDatabases, useShowHide } from 'src/hooks';
+import { useGetMetaData, useGetDatabases, useShowHide } from 'src/hooks';
 
 type DatabaseDescriptionProps = {
   connectionId: string;
@@ -10,7 +10,8 @@ type DatabaseDescriptionProps = {
 
 export default function DatabaseDescription(props: DatabaseDescriptionProps) {
   const { connectionId } = props;
-  const { data: databases, isLoading } = useGetDatabases(connectionId);
+  const { data: connections, isLoading } = useGetMetaData();
+  const databases = useGetDatabases(connectionId, connections);
   const { visibles, onToggle } = useShowHide();
 
   if (isLoading) {

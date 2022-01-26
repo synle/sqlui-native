@@ -1,6 +1,7 @@
 import React from 'react';
 import { AccordionHeader, AccordionBody } from 'src/components/Accordion';
-import { useGetColumns, useShowHide } from 'src/hooks';
+import { useGetMetaData, useGetColumns, useShowHide } from 'src/hooks';
+import { Sqlui } from 'typings';
 
 type ColumnDescriptionProps = {
   connectionId: string;
@@ -10,7 +11,8 @@ type ColumnDescriptionProps = {
 
 export default function ColumnDescription(props: ColumnDescriptionProps) {
   const { databaseId, connectionId, tableId } = props;
-  const { data: columns, isLoading } = useGetColumns(connectionId, databaseId, tableId);
+  const { data: connections, isLoading } = useGetMetaData();
+  const columns = useGetColumns(connectionId, databaseId, tableId, connections);
   const { visibles, onToggle } = useShowHide();
 
   if (isLoading) {
@@ -32,11 +34,32 @@ export default function ColumnDescription(props: ColumnDescriptionProps) {
               <span>{columnName}</span>
             </AccordionHeader>
             <AccordionBody expanded={visibles[key]}>
-              <pre>{JSON.stringify(column, null, 2)}</pre>
+              <ColumnAttributes column={column} />
             </AccordionBody>
           </React.Fragment>
         );
       })}
     </div>
   );
+}
+
+// TODO: move me to a new file
+interface ColumnAttributesProps {
+  column: Sqlui.Column;
+}
+
+function ColumnAttributes(props: ColumnAttributesProps) {
+  const { column } = props;
+
+  const keys = Object.keys(column);
+
+
+  return <div>
+    {keys.map(key =>{
+      <React.Fragment key={key}>
+        <div><b>{key}</b></div>
+        <div>{column[key]}</div>
+      </React.Fragment>
+    })}
+  </div>
 }

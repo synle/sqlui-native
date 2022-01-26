@@ -2,7 +2,7 @@ import React from 'react';
 import TableRowsIcon from '@mui/icons-material/TableRows';
 import { AccordionHeader, AccordionBody } from 'src/components/Accordion';
 import ColumnDescription from 'src/components/ColumnDescription';
-import { useGetTables, useShowHide } from 'src/hooks';
+import { useGetMetaData, useGetTables, useShowHide } from 'src/hooks';
 
 type TableDescriptionProps = {
   connectionId: string;
@@ -11,7 +11,8 @@ type TableDescriptionProps = {
 
 export default function TableDescription(props: TableDescriptionProps) {
   const { databaseId, connectionId } = props;
-  const { data: tables, isLoading } = useGetTables(connectionId, databaseId);
+  const { data: connections, isLoading } = useGetMetaData();
+  const tables = useGetTables(connectionId, databaseId, connections);
   const { visibles, onToggle } = useShowHide();
 
   if (isLoading) {
