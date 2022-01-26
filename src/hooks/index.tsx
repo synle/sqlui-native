@@ -32,6 +32,8 @@ function _fetch<T>(...inputs) {
     });
 }
 
+const QUERY_KEY_CONNECTIONS = 'connections';
+
 let _metaData: Sqlui.ConnectionMetaData[] = [];
 try {
   _metaData = JSON.parse(window.localStorage.getItem('cache.metadata') || '');
@@ -41,7 +43,7 @@ try {
 
 export function useGetMetaData() {
   return useQuery(
-    ['connection', 'all'],
+    QUERY_KEY_CONNECTIONS,
     () => _fetch<Sqlui.ConnectionMetaData[]>(`/api/metadata`),
     {
       initialData: _metaData,
@@ -82,16 +84,14 @@ export function useGetAvailableDatabaseConnections(metaData?: Sqlui.ConnectionMe
   return res;
 }
 
-export function useGetConnection(connectionId?: string) {
-  return useQuery(['connection', connectionId], () =>
-    _fetch<Sqlui.ConnectionProps>(`/api/connection/${connectionId}`, { enabled: !!connectionId }),
-  );
+export function useGetConnection(connectionId?: string, metaData?: Sqlui.ConnectionMetaData[]) {
+  return metaData?.find((connection) => connection.id === connectionId);
 }
 
 export function useUpsertConnection() {
   const queryClient = useQueryClient();
 
-  const resp = useMutation<Sqlui.ConnectionProps, void, Sqlui.AddConnectionProps, void>(
+  const resp = useMutation<Sqlui.ConnectionProps, void, Sqlui.AddConnectionProps>(
     (newConnection) => {
       const connectionId = newConnection.id;
       if (connectionId) {
@@ -107,8 +107,36 @@ export function useUpsertConnection() {
       }
     },
     {
-      onSuccess: () => {
+      onSuccess: (newConnection) => {
         queryClient.invalidateQueries('connection');
+
+        queryClient.setQueryData<Sqlui.ConnectionProps[] | undefined>(
+          QUERY_KEY_CONNECTIONS,
+          (oldData) => {
+            // find that entry
+            let isNew = true;
+            oldData = oldData?.map((connection) => {
+              if (connection.id === newConnection.id) {
+                isNew = false;
+                return {
+                  ...connection,
+                  ...newConnection,
+                };
+              }
+              return connection;
+            });
+
+            if (isNew) {
+              oldData?.push({
+                ...newConnection,
+              });
+            }
+
+            return oldData;
+          },
+        );
+
+        return Promise.resolve(newConnection);
       },
     },
   );
@@ -179,7 +207,7 @@ export function useAuthenticateConnection() {
         queryClient.invalidateQueries('connection');
 
         queryClient.setQueryData<Sqlui.ConnectionMetaData[] | undefined>(
-          ['connection', 'all'],
+          QUERY_KEY_CONNECTIONS,
           (oldData) => {
             // find that entry
             oldData = oldData?.map((connection) => {
