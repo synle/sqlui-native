@@ -22,21 +22,23 @@ export default function ConnectionDescription() {
 
   return (
     <div className='ConnectionDescription'>
-      {connections.map((connection) => (
-        <React.Fragment key={connection.id}>
-          <AccordionHeader
-            expanded={visibles[connection.id]}
-            onToggle={() => onToggle(connection.id)}>
-            <CloudIcon />
-            <span>{connection.name}</span>
-            <EditIcon onClick={() => navigate(`/connection/edit/${connection.id}`)} />
-            <DeleteConnectionButton connectionId={connection.id} />
-          </AccordionHeader>
-          <AccordionBody expanded={visibles[connection.id]}>
-            <DatabaseDescription connectionId={connection.id} />
-          </AccordionBody>
-        </React.Fragment>
-      ))}
+      {connections.map((connection) => {
+        const key = [connection.id].join(' > ');
+
+        return (
+          <React.Fragment key={key}>
+            <AccordionHeader expanded={visibles[key]} onToggle={() => onToggle(key)}>
+              <CloudIcon />
+              <span>{connection.name}</span>
+              <EditIcon onClick={() => navigate(`/connection/edit/${connection.id}`)} />
+              <DeleteConnectionButton connectionId={connection.id} />
+            </AccordionHeader>
+            <AccordionBody expanded={visibles[key]}>
+              <DatabaseDescription connectionId={connection.id} />
+            </AccordionBody>
+          </React.Fragment>
+        );
+      })}
     </div>
   );
 }
