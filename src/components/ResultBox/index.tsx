@@ -54,17 +54,7 @@ export default function ResultBox(props: ResultBoxProps) {
     );
   }
 
-  const tabHeaders = [
-    <button key={0} onClick={() => setTabIdx(0)} disabled={tabIdx === 0}>
-      JSON
-    </button>,
-    <button key={1} onClick={() => setTabIdx(1)} disabled={tabIdx === 1}>
-      CSV
-    </button>,
-    <button key={2} onClick={() => setTabIdx(2)} disabled={tabIdx === 2}>
-      Table
-    </button>,
-  ];
+  const tabHeaders = ['JSON', 'CSV', 'Table'];
 
   const tabContents = [
     <div className='ResultBox__Content' key={`JSON`}>
@@ -80,7 +70,11 @@ export default function ResultBox(props: ResultBoxProps) {
 
   return (
     <div className='ResultBox'>
-      <Tabs tabIdx={tabIdx} tabHeaders={tabHeaders} tabContents={tabContents}></Tabs>
+      <Tabs
+        tabIdx={tabIdx}
+        tabHeaders={tabHeaders}
+        tabContents={tabContents}
+        onTabChange={(newTabIdx) => setTabIdx(newTabIdx)}></Tabs>
     </div>
   );
 }

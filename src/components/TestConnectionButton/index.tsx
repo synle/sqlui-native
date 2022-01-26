@@ -3,9 +3,8 @@ import { Button } from '@mui/material';
 import { useTestConnection } from 'src/hooks';
 import { Sqlui } from 'typings';
 
-
 interface TestConnectionButtonProps {
-  connection: Sqlui.CoreConnectionProps
+  connection: Sqlui.CoreConnectionProps;
 }
 
 export default function TestConnectionButton(props: TestConnectionButtonProps) {
@@ -13,11 +12,11 @@ export default function TestConnectionButton(props: TestConnectionButtonProps) {
 
   const onTestConnection = async () => {
     // const connectionMetadata = {};
-    try{
+    try {
       await testConnection(props.connection);
-      alert('good connection')
-    } catch(err){
-      alert('bad connection')
+      alert('good connection');
+    } catch (err) {
+      alert('bad connection');
     }
   };
 
