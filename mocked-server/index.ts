@@ -125,6 +125,18 @@ app.get(
   },
 );
 
+app.post('/api/connection/:connectionId/connect', async (req, res) => {
+  try {
+    const connection = await ConnectionUtils.getConnection(req.params?.connectionId);
+    const engine = getEngine(connection.connection);
+    await engine.authenticate();
+    cacheMetaData = null;
+    res.status(200).send();
+  } catch (err) {
+    res.status(500).send();
+  }
+});
+
 app.post('/api/connection/:connectionId/execute', async (req, res) => {
   const connection = await ConnectionUtils.getConnection(req.params?.connectionId);
   const engine = getEngine(connection.connection);

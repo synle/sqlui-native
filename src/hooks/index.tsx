@@ -15,7 +15,14 @@ function _fetch<T>(...inputs) {
     ...restInput,
     headers,
   })
-    .then((r) => r.json())
+    .then((r) => r.text())
+    .then((r) => {
+      try{
+        return JSON.parse(r)
+      } catch(err){
+        return r;
+      }
+    })
     .then((r) => {
       const res: T = r;
       return res;
@@ -36,7 +43,7 @@ export function useGetMetaData() {
     {
       initialData: _metaData,
       onSuccess: (data) => {
-        if (data) {
+        if (data && Object.keys(data).length > 0) {
           window.localStorage.setItem('cache.metadata', JSON.stringify(data));
         }
       },
@@ -157,6 +164,22 @@ export function useExecute(query?: ConnectionQuery) {
   );
 }
 
+export function useAuthenticateConnection() {
+  const queryClient = useQueryClient();
+
+  return useMutation<void, void, string, void>(
+    (connectionId) =>
+      _fetch<void>(`/api/connection/${connectionId}/connect`, {
+        method: 'post',
+      }),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries('connection');
+      },
+    },
+  );
+}
+
 // used for show and hide the sidebar trees
 let _treeVisibles: { [index: string]: boolean } = {};
 
@@ -204,7 +227,7 @@ try {
 function _useConnectionQueries() {
   return useQuery('connectionQueries', () => _connectionQueries, {
     onSuccess: (data) => {
-      if (data) {
+      if (data && Object.keys(data).length > 0) {
         window.localStorage.setItem('cache.connectionQueries', JSON.stringify(data));
       }
     },
