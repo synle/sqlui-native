@@ -1,4 +1,5 @@
 import React from 'react';
+import ViewColumnIcon from '@mui/icons-material/ViewColumn';
 import { AccordionHeader, AccordionBody } from 'src/components/Accordion';
 import { useGetMetaData, useGetColumns, useShowHide } from 'src/hooks';
 import { Sqlui } from 'typings';
@@ -31,6 +32,7 @@ export default function ColumnDescription(props: ColumnDescriptionProps) {
         return (
           <React.Fragment key={columnName}>
             <AccordionHeader expanded={visibles[key]} onToggle={() => onToggle(key)}>
+              <ViewColumnIcon color='disabled' />
               <span>{columnName}</span>
             </AccordionHeader>
             <AccordionBody expanded={visibles[key]}>
