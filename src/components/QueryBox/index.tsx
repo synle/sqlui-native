@@ -52,6 +52,8 @@ export default function QueryBox(props: QueryBoxProps) {
     onExecute();
   };
 
+  const disabledExecute = executing || !query?.sql || !query?.connectionId;
+
   return (
     <form className='QueryBox' onSubmit={onSubmit}>
       <div className='QueryBox__Row'>
@@ -83,7 +85,7 @@ export default function QueryBox(props: QueryBoxProps) {
         />
       </div>
       <div className='QueryBox__ActionRow'>
-        <Button type='submit' variant='contained' disabled={executing} endIcon={<SendIcon />}>
+        <Button type='submit' variant='contained' disabled={disabledExecute} endIcon={<SendIcon />}>
           Execute
         </Button>
       </div>

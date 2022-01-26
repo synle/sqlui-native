@@ -30,18 +30,21 @@ export default function QueryResultTabs() {
 
   const tabIdx = queries.findIndex((q) => q.selected === true) || 0;
 
-  const tabHeaders: string[] = [
-    ...queries.map((q, idx) => (q.name)),
-    'Add Query',
-  ];
+  const tabHeaders: string[] = [...queries.map((q, idx) => q.name), 'Add Query'];
 
   const tabContents = queries.map((q) => <QueryResultContainer key={q.id} queryId={q.id} />);
 
-  return <Tabs tabIdx={tabIdx} tabHeaders={tabHeaders} tabContents={tabContents} onTabChange={(newTabIdx) => {
-    if(newTabIdx < queries.length){
-      onTabChange(queries[newTabIdx].id);
-    } else {
-      onAddTab();
-    }
-  }}></Tabs>;
+  return (
+    <Tabs
+      tabIdx={tabIdx}
+      tabHeaders={tabHeaders}
+      tabContents={tabContents}
+      onTabChange={(newTabIdx) => {
+        if (newTabIdx < queries.length) {
+          onTabChange(queries[newTabIdx].id);
+        } else {
+          onAddTab();
+        }
+      }}></Tabs>
+  );
 }
