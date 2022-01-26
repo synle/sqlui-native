@@ -24,9 +24,7 @@ export default function ConnectionDescription() {
     return <Alert severity='info'>No connnections</Alert>;
   }
 
-  const onReconnect = async (connectionId: string) => {
-    await reconnectConnection(connectionId);
-  };
+  const onReconnect = async (connectionId: string) => reconnectConnection(connectionId);
 
   return (
     <div className='ConnectionDescription'>
@@ -68,19 +66,19 @@ export default function ConnectionDescription() {
               <DeleteConnectionButton connectionId={connection.id} />
             </AccordionHeader>
             <AccordionBody expanded={visibles[key]}>
-              <Alert
-                severity='error'
-                action={
-                  <Button
-                    color='inherit'
-                    size='small'
-                    onClick={() => onReconnect(connection.id)}
-                    disabled={reconnecting}>
-                    Reconnect
-                  </Button>
-                }>
-                Can't connect to this server{' '}
-              </Alert>
+              {reconnecting ? (
+                <Alert severity='info'>Reconnecting. Please wait...</Alert>
+              ) : (
+                <Alert
+                  severity='error'
+                  action={
+                    <Button color='inherit' size='small' onClick={() => onReconnect(connection.id)}>
+                      Reconnect
+                    </Button>
+                  }>
+                  Can't connect to this server
+                </Alert>
+              )}
             </AccordionBody>
           </React.Fragment>
         );
