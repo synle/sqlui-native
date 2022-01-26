@@ -30,22 +30,18 @@ export default function QueryResultTabs() {
 
   const tabIdx = queries.findIndex((q) => q.selected === true) || 0;
 
-  const tabHeaders = [
-    ...queries.map((q, idx) => (
-      <button
-        key={q.id}
-        onClick={() => onShowQuery(q.id)}
-        onDoubleClick={() => onRenameQuery(q.id, q.name)}
-        aria-selected={q.selected}>
-        {q.name}
-      </button>
-    )),
-    <button type='button' onClick={onAddQuery} key='addquery'>
-      Add Query
-    </button>,
+  const tabHeaders: string[] = [
+    ...queries.map((q, idx) => (q.name)),
+    'Add Query',
   ];
 
   const tabContents = queries.map((q) => <QueryResultContainer key={q.id} queryId={q.id} />);
 
-  return <Tabs tabIdx={tabIdx} tabHeaders={tabHeaders} tabContents={tabContents}></Tabs>;
+  return <Tabs tabIdx={tabIdx} tabHeaders={tabHeaders} tabContents={tabContents} onTabChange={(newTabIdx) => {
+    if(newTabIdx < queries.length){
+      onTabChange(queries[newTabIdx].id);
+    } else {
+      onAddTab();
+    }
+  }}></Tabs>;
 }

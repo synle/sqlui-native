@@ -95,10 +95,10 @@ function MainConnectionForm(props: MainConnectionFormProps) {
     return <>loading...</>;
   }
 
-  const connection : Sqlui.CoreConnectionProps = {
+  const connection: Sqlui.CoreConnectionProps = {
     name: props.name,
     connection: props.connection,
-  }
+  };
 
   return (
     <form className='ConnectionForm' onSubmit={onSave}>
