@@ -223,12 +223,25 @@ export function useConnectionQueries() {
     queryClient.invalidateQueries('connectionQueries');
   };
 
+  const onChangeQuery = (queryId: string, key: keyof ConnectionQuery, value?: string) => {
+    const query = queries?.find((q) => q.id === queryId);
+
+    if (!query) {
+      return;
+    }
+
+    //@ts-ignore
+    query[key] = value || '';
+    queryClient.invalidateQueries('connectionQueries');
+  };
+
   return {
     isLoading,
     queries,
     onAddQuery,
     onDeleteQuery,
     onShowQuery,
+    onChangeQuery,
   };
 }
 
