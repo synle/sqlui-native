@@ -56,35 +56,6 @@ button {
   }
 }
 
-table {
-  border-collapse: collapse;
-
-  tr {
-    th {
-      padding: 10px 10px;
-      border: 1px solid black;
-      border-right: none;
-      background: #efefef;
-    }
-    td {
-      padding: 5px 10px;
-      border: 1px solid black;
-      border-right: none;
-    }
-
-    td,
-    th {
-      &:last-child {
-        border-right: 1px solid black;
-      }
-    }
-
-    &:hover {
-      background: #efefef;
-    }
-  }
-}
-
 a {
   cursor: pointer;
   color: blue;

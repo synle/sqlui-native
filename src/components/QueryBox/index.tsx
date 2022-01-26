@@ -42,6 +42,10 @@ export default function QueryBox(props: QueryBoxProps) {
     onChange('databaseId', matched?.databaseId);
   };
 
+  const onSqlQueryChange = (newQuery: string) => {
+    onChange('sql', newQuery);
+  }
+
   const onSubmit = (e: React.SyntheticEvent) => {
     e.preventDefault();
     onExecute();
@@ -67,7 +71,7 @@ export default function QueryBox(props: QueryBoxProps) {
           value={query.sql}
           language='sql'
           placeholder={`Enter SQL for ` + query.name}
-          onBlur={(e) => onChange('sql', e.target.value)}
+          onBlur={(e) => onSqlQueryChange(e.target.value)}
           padding={10}
           minHeight={200}
           style={{
