@@ -2,6 +2,12 @@ import { useState, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
 import { Sqlui } from 'typings';
 
+
+const QUERY_KEY_CONNECTIONS = 'connections';
+const QUERY_KEY_TREEVISIBLES = 'treeVisibles';
+const QUERY_KEY_QUERIES = 'queries';
+const QUERY_KEY_RESULTS = 'results';
+
 // @ts-ignore
 function _fetch<T>(...inputs) {
   let { headers, ...restInput } = inputs[1] || {};
@@ -31,8 +37,6 @@ function _fetch<T>(...inputs) {
       return res;
     });
 }
-
-const QUERY_KEY_CONNECTIONS = 'connections';
 
 let _metaData: Sqlui.ConnectionMetaData[] = [];
 try {
@@ -176,11 +180,11 @@ export function useGetColumns(
 }
 
 export function useExecute(query?: ConnectionQuery) {
-  const { connectionId, sql, databaseId, lastExecuted } = query || {};
+  const { id, connectionId, sql, databaseId, lastExecuted } = query || {};
   const enabled = query && !!sql && !!connectionId && !!databaseId && !!lastExecuted;
 
   return useQuery(
-    [`executeQuery.${query?.id}`, connectionId, databaseId, lastExecuted],
+    [QUERY_KEY_RESULTS, `${QUERY_KEY_RESULTS}_${id}`, id, connectionId, databaseId, lastExecuted],
     () =>
       _fetch<Sqlui.Result>(`/api/connection/${connectionId}/execute`, {
         method: 'post',
@@ -233,11 +237,11 @@ let _treeVisibles: { [index: string]: boolean } = {};
 export function useShowHide() {
   const queryClient = useQueryClient();
 
-  const { data: visibles, isLoading: loading } = useQuery('treeVisibles', () => _treeVisibles);
+  const { data: visibles, isLoading: loading } = useQuery(QUERY_KEY_TREEVISIBLES, () => _treeVisibles);
 
   const onToggle = (key: string) => {
     _treeVisibles[key] = !_treeVisibles[key];
-    queryClient.invalidateQueries('treeVisibles');
+    queryClient.invalidateQueries(QUERY_KEY_TREEVISIBLES);
   };
 
   return {
@@ -272,7 +276,7 @@ try {
 }
 
 function _useConnectionQueries() {
-  return useQuery('connectionQueries', () => _connectionQueries, {
+  return useQuery(QUERY_KEY_QUERIES, () => _connectionQueries, {
     onSuccess: (data) => {
       if (data && Object.keys(data).length > 0) {
         window.localStorage.setItem('cache.connectionQueries', JSON.stringify(data));
@@ -300,12 +304,12 @@ export function useConnectionQueries() {
       },
     ];
 
-    queryClient.invalidateQueries('connectionQueries');
+    queryClient.invalidateQueries(QUERY_KEY_QUERIES);
   };
 
   const onDeleteQuery = (queryId: string) => {
     _connectionQueries = _connectionQueries.filter((q) => q.id !== queryId);
-    queryClient.invalidateQueries('connectionQueries');
+    queryClient.invalidateQueries(QUERY_KEY_QUERIES);
   };
 
   const onShowQuery = (queryId: string) => {
@@ -313,7 +317,7 @@ export function useConnectionQueries() {
       q.selected = q.id === queryId;
       return q;
     });
-    queryClient.invalidateQueries('connectionQueries');
+    queryClient.invalidateQueries(QUERY_KEY_QUERIES);
   };
 
   const onChangeQuery = (queryId: string, key: keyof ConnectionQuery, value?: string) => {
@@ -325,7 +329,7 @@ export function useConnectionQueries() {
 
     //@ts-ignore
     query[key] = value || '';
-    queryClient.invalidateQueries('connectionQueries');
+    queryClient.invalidateQueries(QUERY_KEY_QUERIES);
   };
 
   return {
@@ -350,8 +354,8 @@ export function useConnectionQuery(queryId: string) {
       return;
     }
     query['lastExecuted'] = `${Date.now()}`;
-    queryClient.invalidateQueries('connectionQueries');
-    queryClient.invalidateQueries(`executeQuery.${query.id}`);
+    queryClient.invalidateQueries(QUERY_KEY_QUERIES);
+    queryClient.invalidateQueries(`${QUERY_KEY_RESULTS}_${query.id}`);
   };
 
   const onChange = (key: keyof ConnectionQuery, value?: string) => {
@@ -361,8 +365,8 @@ export function useConnectionQuery(queryId: string) {
 
     //@ts-ignore
     query[key] = value || '';
-    queryClient.invalidateQueries('connectionQueries');
-    queryClient.invalidateQueries(`executeQuery.${query.id}`);
+    queryClient.invalidateQueries(QUERY_KEY_QUERIES);
+    queryClient.invalidateQueries(`result.${query.id}`);
   };
 
   return {
@@ -386,7 +390,7 @@ export function useActiveConnectionQuery() {
       return;
     }
     query['lastExecuted'] = `${Date.now()}`;
-    queryClient.invalidateQueries('connectionQueries');
+    queryClient.invalidateQueries(QUERY_KEY_QUERIES);
     queryClient.invalidateQueries(`executeQuery.${query.id}`);
   };
 
@@ -397,7 +401,7 @@ export function useActiveConnectionQuery() {
 
     //@ts-ignore
     query[key] = value || '';
-    queryClient.invalidateQueries('connectionQueries');
+    queryClient.invalidateQueries(QUERY_KEY_QUERIES);
     queryClient.invalidateQueries(`executeQuery.${query.id}`);
   };
 
