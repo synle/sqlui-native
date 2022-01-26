@@ -15,12 +15,15 @@ function _fetch<T>(...inputs) {
     ...restInput,
     headers,
   })
-    .then((r) => r.text())
-    .then((r) => {
-      try{
-        return JSON.parse(r)
-      } catch(err){
-        return r;
+    .then(async (r) => {
+      if (!r.ok) {
+        throw r;
+      }
+      let response = await r.text();
+      try {
+        return JSON.parse(response);
+      } catch (err) {
+        return response;
       }
     })
     .then((r) => {
