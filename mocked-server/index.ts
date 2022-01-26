@@ -1,7 +1,7 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import { RelationalDatabaseEngine } from './utils/RelationalDatabaseEngine';
-import { Sqlui } from '../typings';
+import { Sqlui } from 'typings';
 
 const port = 3001;
 const app = express();
