@@ -66,9 +66,6 @@ export default function ConnectionDescription() {
               <DeleteConnectionButton connectionId={connection.id} />
             </AccordionHeader>
             <AccordionBody expanded={visibles[key]}>
-              {reconnecting ? (
-                <Alert severity='info'>Reconnecting. Please wait...</Alert>
-              ) : (
                 <Alert
                   severity='error'
                   action={
@@ -78,7 +75,6 @@ export default function ConnectionDescription() {
                   }>
                   Can't connect to this server
                 </Alert>
-              )}
             </AccordionBody>
           </React.Fragment>
         );
