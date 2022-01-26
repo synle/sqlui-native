@@ -77,23 +77,39 @@ function getEngine(connection: string) {
 }
 
 app.get('/api/connections', async (req, res) => {
-  res.json(await ConnectionUtils.getConnections());
+  try{
+    res.json(await ConnectionUtils.getConnections());
+  } catch(err){
+    res.send()
+  }
 });
 
 app.get('/api/connection/:connectionId', async (req, res) => {
-  res.json(await ConnectionUtils.getConnection(req.params?.connectionId));
+  try{
+    res.json(await ConnectionUtils.getConnection(req.params?.connectionId));
+  } catch(err){
+    res.send()
+  }
 });
 
 app.get('/api/connection/:connectionId/databases', async (req, res) => {
   const connection = await ConnectionUtils.getConnection(req.params?.connectionId);
   const engine = getEngine(connection.connection);
-  res.json(await engine.getDatabases());
+  try{
+    res.json(await engine.getDatabases());
+  } catch(err){
+    res.send()
+  }
 });
 
 app.get('/api/connection/:connectionId/database/:databaseId/tables', async (req, res) => {
   const connection = await ConnectionUtils.getConnection(req.params?.connectionId);
   const engine = getEngine(connection.connection);
-  res.json(await engine.getTables(req.params?.databaseId));
+  try{
+    res.json(await engine.getTables(req.params?.databaseId));
+  } catch(err){
+    res.send()
+  }
 });
 
 app.get(
@@ -101,7 +117,11 @@ app.get(
   async (req, res) => {
     const connection = await ConnectionUtils.getConnection(req.params?.connectionId);
     const engine = getEngine(connection.connection);
-    res.json(await engine.getColumns(req.params?.tableId, req.params?.databaseId));
+    try{
+      res.json(await engine.getColumns(req.params?.tableId, req.params?.databaseId));
+    } catch(err){
+      res.send()
+    }
   },
 );
 
@@ -110,7 +130,12 @@ app.post('/api/connection/:connectionId/execute', async (req, res) => {
   const engine = getEngine(connection.connection);
   const sql = req.body?.sql;
   const database = req.body?.database;
-  res.json(await engine.execute(sql, database));
+  try{
+    res.json(await engine.execute(sql, database));
+  } catch(err){
+    res.status(500);
+    res.send('Server Error');
+  }
 });
 
 app.post('/api/connection', async (req, res) => {
@@ -133,7 +158,11 @@ app.put('/api/connection/:connectionId', async (req, res) => {
 
 app.delete('/api/connection/:connectionId', async (req, res) => {
   cacheMetaData = null;
-  res.json(await ConnectionUtils.deleteConnection(req.params?.connectionId));
+  try{
+    res.json(await ConnectionUtils.deleteConnection(req.params?.connectionId));
+  } catch(err){
+    res.send()
+  }
 });
 
 let cacheMetaData: any;
