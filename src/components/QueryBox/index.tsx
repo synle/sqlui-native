@@ -1,4 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { Button } from '@mui/material';
+import SendIcon from '@mui/icons-material/Send';
+
 import CodeEditor from '@uiw/react-textarea-code-editor';
 import {
   useExecute,
@@ -80,9 +83,9 @@ export default function QueryBox(props: QueryBoxProps) {
         />
       </div>
       <div>
-        <button type='submit' disabled={executing}>
+        <Button type='submit' variant='contained' disabled={executing} endIcon={<SendIcon />}>
           Execute
-        </button>
+        </Button>
       </div>
     </form>
   );

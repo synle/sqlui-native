@@ -1,6 +1,7 @@
 import React from 'react';
 import SelectAllIcon from '@mui/icons-material/SelectAll';
 import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
+import IconButton from '@mui/material/IconButton';
 import TableDescription from 'src/components/TableDescription';
 import { AccordionHeader, AccordionBody } from 'src/components/Accordion';
 import { useGetMetaData, useGetDatabases, useActiveConnectionQuery, useShowHide } from 'src/hooks';
@@ -41,7 +42,11 @@ export default function DatabaseDescription(props: DatabaseDescriptionProps) {
             <AccordionHeader expanded={visibles[key]} onToggle={() => onToggle(key)}>
               <LibraryBooksIcon />
               <span>{database.name}</span>
-              <SelectAllIcon onClick={(e) => onSelectDatabaseForQuery(e, database.name)} />
+              <IconButton
+                aria-label='Select Database For Execution'
+                onClick={(e) => onSelectDatabaseForQuery(e, database.name)}>
+                <SelectAllIcon />
+              </IconButton>
             </AccordionHeader>
             <AccordionBody expanded={visibles[key]}>
               <TableDescription connectionId={connectionId} databaseId={database.name} />
