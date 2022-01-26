@@ -11,12 +11,7 @@ export default function ResultBox(props: ResultBoxProps) {
   const { queryId } = props;
   const { query, isFetching: loadingQuery } = useConnectionQuery(queryId);
   const [tabIdx, setTabIdx] = useState(0);
-  const { data: queryResult, isLoading: loadingResults } = useExecute(
-    query?.connectionId,
-    query?.sql,
-    query?.databaseId,
-    query?.lastExecuted,
-  );
+  const { data: queryResult, isFetching: loadingResults } = useExecute(query);
   const isLoading = loadingQuery;
 
   if (isLoading) {
