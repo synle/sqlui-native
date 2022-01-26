@@ -76,6 +76,61 @@ function getEngine(connection: string) {
   return engine;
 }
 
+async function getConnectionMetaData(connection: Sqlui.ConnectionMetaData) {
+  const connItem: Sqlui.ConnectionMetaData = {
+    name: connection.name,
+    id: connection.id,
+    connection: connection.connection,
+    databases: [] as Sqlui.DatabaseMetaData[],
+  };
+
+  try {
+    const engine = getEngine(connection.connection);
+    const databases = await engine.getDatabases();
+
+    connItem.status = 'online';
+
+    for (const database of databases) {
+      const dbItem: Sqlui.DatabaseMetaData = {
+        name: database,
+        tables: [] as Sqlui.TableMetaData[],
+      };
+
+      // @ts-ignore
+      connItem.databases.push(dbItem);
+
+      let tables: string[] = [];
+      try {
+        tables = await engine.getTables(database);
+        //console.log('getting tables', database, tables);
+      } catch (err) {
+        //console.log('failed getting tables', database);
+      }
+
+      for (const table of tables) {
+        let columns: Sqlui.ColumnMetaData | undefined = undefined;
+
+        try {
+          columns = await engine.getColumns(table, database);
+        } catch (err) {
+          //console.log('failed getting columns', database, table);
+        }
+
+        const tblItem: Sqlui.TableMetaData = {
+          name: table,
+          columns,
+        };
+
+        // @ts-ignore
+        dbItem.tables.push(tblItem);
+      }
+    }
+  } catch (err) {
+    // console.log('connection error', connection.name, err);
+    connItem.status = 'offline';
+  }
+}
+
 app.get('/api/connections', async (req, res) => {
   try {
     res.json(await ConnectionUtils.getConnections());
@@ -188,59 +243,7 @@ app.get('/api/metadata', async (req, res) => {
   const resp: Sqlui.ConnectionMetaData[] = [];
 
   for (const connection of connections) {
-    const connItem: Sqlui.ConnectionMetaData = {
-      name: connection.name,
-      id: connection.id,
-      connection: connection.connection,
-      databases: [] as Sqlui.DatabaseMetaData[],
-    };
-    resp.push(connItem);
-
-    try {
-      const engine = getEngine(connection.connection);
-      const databases = await engine.getDatabases();
-
-      connItem.status = 'online';
-
-      for (const database of databases) {
-        const dbItem: Sqlui.DatabaseMetaData = {
-          name: database,
-          tables: [] as Sqlui.TableMetaData[],
-        };
-
-        // @ts-ignore
-        connItem.databases.push(dbItem);
-
-        let tables: string[] = [];
-        try {
-          tables = await engine.getTables(database);
-          //console.log('getting tables', database, tables);
-        } catch (err) {
-          //console.log('failed getting tables', database);
-        }
-
-        for (const table of tables) {
-          let columns: Sqlui.ColumnMetaData | undefined = undefined;
-
-          try {
-            columns = await engine.getColumns(table, database);
-          } catch (err) {
-            //console.log('failed getting columns', database, table);
-          }
-
-          const tblItem: Sqlui.TableMetaData = {
-            name: table,
-            columns,
-          };
-
-          // @ts-ignore
-          dbItem.tables.push(tblItem);
-        }
-      }
-    } catch (err) {
-      // console.log('connection error', connection.name, err);
-      connItem.status = 'offline';
-    }
+    resp.push(await getConnectionMetaData(connection));
   }
 
   cacheMetaData = resp;
