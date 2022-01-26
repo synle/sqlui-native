@@ -77,38 +77,38 @@ function getEngine(connection: string) {
 }
 
 app.get('/api/connections', async (req, res) => {
-  try{
+  try {
     res.json(await ConnectionUtils.getConnections());
-  } catch(err){
-    res.send()
+  } catch (err) {
+    res.status(500).send();
   }
 });
 
 app.get('/api/connection/:connectionId', async (req, res) => {
-  try{
+  try {
     res.json(await ConnectionUtils.getConnection(req.params?.connectionId));
-  } catch(err){
-    res.send()
+  } catch (err) {
+    res.status(500).send();
   }
 });
 
 app.get('/api/connection/:connectionId/databases', async (req, res) => {
   const connection = await ConnectionUtils.getConnection(req.params?.connectionId);
   const engine = getEngine(connection.connection);
-  try{
+  try {
     res.json(await engine.getDatabases());
-  } catch(err){
-    res.send()
+  } catch (err) {
+    res.status(500).send();
   }
 });
 
 app.get('/api/connection/:connectionId/database/:databaseId/tables', async (req, res) => {
   const connection = await ConnectionUtils.getConnection(req.params?.connectionId);
   const engine = getEngine(connection.connection);
-  try{
+  try {
     res.json(await engine.getTables(req.params?.databaseId));
-  } catch(err){
-    res.send()
+  } catch (err) {
+    res.status(500).send();
   }
 });
 
@@ -117,10 +117,10 @@ app.get(
   async (req, res) => {
     const connection = await ConnectionUtils.getConnection(req.params?.connectionId);
     const engine = getEngine(connection.connection);
-    try{
+    try {
       res.json(await engine.getColumns(req.params?.tableId, req.params?.databaseId));
-    } catch(err){
-      res.send()
+    } catch (err) {
+      res.status(500).send();
     }
   },
 );
@@ -130,9 +130,9 @@ app.post('/api/connection/:connectionId/execute', async (req, res) => {
   const engine = getEngine(connection.connection);
   const sql = req.body?.sql;
   const database = req.body?.database;
-  try{
+  try {
     res.json(await engine.execute(sql, database));
-  } catch(err){
+  } catch (err) {
     res.status(500);
     res.send('Server Error');
   }
@@ -158,10 +158,10 @@ app.put('/api/connection/:connectionId', async (req, res) => {
 
 app.delete('/api/connection/:connectionId', async (req, res) => {
   cacheMetaData = null;
-  try{
+  try {
     res.json(await ConnectionUtils.deleteConnection(req.params?.connectionId));
-  } catch(err){
-    res.send()
+  } catch (err) {
+    res.status(500).send();
   }
 });
 

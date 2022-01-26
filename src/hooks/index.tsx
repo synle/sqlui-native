@@ -145,7 +145,7 @@ export function useExecute(query?: ConnectionQuery) {
   const enabled = query && !!sql && !!connectionId && !!databaseId && !!lastExecuted;
 
   return useQuery(
-    [`executeQuery.${query?.id}`, lastExecuted],
+    [`executeQuery.${query?.id}`, connectionId, databaseId, lastExecuted],
     () =>
       _fetch<Sqlui.Result>(`/api/connection/${connectionId}/execute`, {
         method: 'post',
