@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   useExecute,
   useConnectionQueries,
@@ -55,8 +55,8 @@ export default function QueryBox(props: QueryBoxProps) {
     <form className='QueryBox' onSubmit={onSubmit}>
       <div>
         <select
-          defaultValue={`${query.connectionId}.${query.databaseId}`}
-          onBlur={(e) => onDatabaseConnectionChange(e.target.value)}
+          value={`${query.connectionId}.${query.databaseId}`}
+          onChange={(e) => onDatabaseConnectionChange(e.target.value)}
           required>
           <option value=''>Pick One</option>
           {(connecionsMetaData || []).map((connMetaData) => (

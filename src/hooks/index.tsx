@@ -264,3 +264,36 @@ export function useConnectionQuery(queryId: string) {
     onChange,
   };
 }
+
+export function useActiveConnectionQuery() {
+  const queryClient = useQueryClient();
+
+  const { data: queries, isLoading } = useQuery('connectionQueries', () => _connectionQueries);
+
+  const query = queries?.find((q) => q.selected);
+
+  const onExecute = () => {
+    if (!query) {
+      return;
+    }
+    query['lastExecuted'] = `${Date.now()}`;
+    queryClient.invalidateQueries('connectionQueries');
+  };
+
+  const onChange = (key: keyof ConnectionQuery, value?: string) => {
+    if (!query) {
+      return;
+    }
+
+    //@ts-ignore
+    query[key] = value || '';
+    queryClient.invalidateQueries('connectionQueries');
+  };
+
+  return {
+    isLoading,
+    query,
+    onExecute,
+    onChange,
+  };
+}
