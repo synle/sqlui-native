@@ -44,7 +44,7 @@ export default function QueryBox(props: QueryBoxProps) {
 
   const onSqlQueryChange = (newQuery: string) => {
     onChange('sql', newQuery);
-  }
+  };
 
   const onSubmit = (e: React.SyntheticEvent) => {
     e.preventDefault();
