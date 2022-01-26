@@ -39,23 +39,6 @@ select {
   box-sizing: border-box;
 }
 
-button {
-  cursor: pointer;
-  &:hover {
-    background: #efefef;
-  }
-
-  &:disabled {
-    background: #333;
-    color: white;
-  }
-
-  &[aria-selected='true'] {
-    background: black;
-    color: white;
-  }
-}
-
 a {
   cursor: pointer;
   color: blue;
