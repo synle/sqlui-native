@@ -11,6 +11,7 @@ export module Sqlui {
     id: string;
     connection: string;
     name: string;
+    status?: 'online' | 'offline';
     [index: string]: any;
   }
 

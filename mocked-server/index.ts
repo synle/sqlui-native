@@ -187,6 +187,9 @@ app.get('/api/metadata', async (req, res) => {
     try {
       const engine = getEngine(connection.connection);
       const databases = await engine.getDatabases();
+
+      connItem.status = 'online';
+
       for (const database of databases) {
         const dbItem: Sqlui.DatabaseMetaData = {
           name: database,
@@ -223,7 +226,8 @@ app.get('/api/metadata', async (req, res) => {
         }
       }
     } catch (err) {
-      console.log('connection error', connection.name, err);
+      // console.log('connection error', connection.name, err);
+      connItem.status = 'offline';
     }
   }
 
