@@ -30,7 +30,7 @@ export default function TableDescription(props: TableDescriptionProps) {
         return (
           <React.Fragment key={table.name}>
             <AccordionHeader expanded={visibles[key]} onToggle={() => onToggle(key)}>
-              <TableRowsIcon />
+              <TableRowsIcon color='success' />
               <span>{table.name}</span>
             </AccordionHeader>
             <AccordionBody expanded={visibles[key]}>

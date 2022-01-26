@@ -43,13 +43,26 @@
 }
 
 .QueryBox {
+  &__Row {
+    margin-top: 15px;
+  }
+
+  &__ActionRow {
+    margin-top: 15px;
+
+    [type='submit'] {
+      margin-right: 20px;
+    }
+  }
 }
 
 .ResultBox {
+  margin-top: 15px;
+
   &__Content {
     width: 100%;
     overflow-x: auto;
-    margin-top: 10px;
+    margin-top: 15px;
   }
 
   textarea {
