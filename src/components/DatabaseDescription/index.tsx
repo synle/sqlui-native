@@ -35,7 +35,7 @@ export default function DatabaseDescription(props: DatabaseDescriptionProps) {
   return (
     <div className='DatabaseDescription'>
       {databases.map((database) => {
-        const key = JSON.stringify({ ...props, database: database.name });
+        const key = [connectionId, database.name].join(' > ');
         return (
           <React.Fragment key={database.name}>
             <AccordionHeader expanded={visibles[key]} onToggle={() => onToggle(key)}>
