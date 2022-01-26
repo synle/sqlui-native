@@ -4,6 +4,8 @@ import { Button } from '@mui/material';
 import TextField from '@mui/material/TextField';
 import FormControl from '@mui/material/FormControl';
 import { useGetMetaData, useUpsertConnection, useGetConnection } from 'src/hooks';
+import TestConnectionButton from 'src/components/TestConnectionButton';
+import { Sqlui } from 'typings';
 
 type ConnectionFormProps = {
   id?: string;
@@ -93,6 +95,11 @@ function MainConnectionForm(props: MainConnectionFormProps) {
     return <>loading...</>;
   }
 
+  const connection : Sqlui.CoreConnectionProps = {
+    name: props.name,
+    connection: props.connection,
+  }
+
   return (
     <form className='ConnectionForm' onSubmit={onSave}>
       <div className='ConnectionForm__Row'>
@@ -126,6 +133,7 @@ function MainConnectionForm(props: MainConnectionFormProps) {
           onClick={() => navigate('/')}>
           Cancel
         </Button>
+        <TestConnectionButton connection={connection} />
       </div>
     </form>
   );

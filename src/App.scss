@@ -50,8 +50,11 @@
   &__ActionRow {
     margin-top: 15px;
 
+    *{
+      margin-left: 20px !important;
+    }
     [type='submit'] {
-      margin-right: 20px;
+      margin-left: 0 !important;
     }
   }
 }
@@ -88,8 +91,11 @@
   &__ActionRow {
     margin-top: 15px;
 
+    *{
+      margin-left: 20px !important;
+    }
     [type='submit'] {
-      margin-right: 20px;
+      margin-left: 0 !important;
     }
   }
 }
