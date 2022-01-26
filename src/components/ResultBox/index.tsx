@@ -9,9 +9,14 @@ interface ResultBoxProps {
 
 export default function ResultBox(props: ResultBoxProps) {
   const { queryId } = props;
-  const { query, isLoading: loadingQuery } = useConnectionQuery(queryId);
+  const { query, isFetching: loadingQuery } = useConnectionQuery(queryId);
   const [tabIdx, setTabIdx] = useState(0);
-
+  const { data: queryResult, isLoading: loadingResults } = useExecute(
+    query?.connectionId,
+    query?.sql,
+    query?.databaseId,
+    query?.lastExecuted,
+  );
   const isLoading = loadingQuery;
 
   if (isLoading) {
@@ -21,13 +26,6 @@ export default function ResultBox(props: ResultBoxProps) {
   if (!query) {
     return null;
   }
-
-  const { data: queryResult, isLoading: loadingResults } = useExecute(
-    query?.connectionId,
-    query?.sql,
-    query?.databaseId,
-    query?.lastExecuted,
-  );
 
   if (loadingResults) {
     return <>loadingResults...</>;
