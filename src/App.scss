@@ -32,7 +32,7 @@
   &__LeftPane {
     flex-shrink: 0;
     min-width: 250px;
-    max-width: 350px;
+    max-width: 33%;
   }
 
   &__RightPane {
@@ -46,11 +46,10 @@
 }
 
 .ResultBox {
-  &__Content{
+  &__Content {
     width: 100%;
     overflow-x: auto;
   }
-
 
   textarea {
     width: 100%;
@@ -120,5 +119,8 @@
   > span {
     flex-grow: 1;
     font-weight: bold;
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 }
