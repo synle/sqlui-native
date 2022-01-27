@@ -64,25 +64,21 @@ ipcMain.on('sqluiNativeEvent/fetch', async (event, data) => {
   const {method} = (options.method || 'get').toLowerCase();
 
   try{
-    const sendResponse = (responseData: any) => {
+    const sendResponse = (responseData: any, ok = true) => {
     console.log('send response', responseData)
       event.reply(requestId, {
-      ok: true,
+      ok,
       text: JSON.stringify(responseData),
     });
   }
 
-  if(url.includes('/api/metadata')){
-
-    //core api
-    const connections = await ConnectionUtils.getConnections();
-
+  if(matchPath(url, '/api/metadata')){
     if (cacheMetaData) {
       return sendResponse(cacheMetaData);
     }
 
     const resp: Sqlui.CoreConnectionMetaData[] = [];
-
+    const connections = await ConnectionUtils.getConnections();
     for (const connection of connections) {
       resp.push(await getConnectionMetaData(connection));
     }
@@ -90,14 +86,7 @@ ipcMain.on('sqluiNativeEvent/fetch', async (event, data) => {
     cacheMetaData = resp;
     sendResponse(cacheMetaData);
   } else {
-    setTimeout(() => {
-      event.reply(data.requestId, {
-        ok: true,
-        response: `server response ${Date.now()}`,
-        request: JSON.stringify(data),
-        body: data,
-      });
-    }, 3000);
+    sendResponse('404 Resource Not Found...', false);
   }
 } catch(err){
   console.log('error', err)
