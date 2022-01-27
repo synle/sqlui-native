@@ -10,11 +10,8 @@ export default function EditConnectionPage() {
   }
 
   return (
-    <div>
-      EditConnectionPage
-      <div>
-        <EditConnectionForm id={connectionId} />
-      </div>
+    <div className='ConnectionPage'>
+      <EditConnectionForm id={connectionId} />
     </div>
   );
 }
