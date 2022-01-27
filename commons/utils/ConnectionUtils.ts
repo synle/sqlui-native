@@ -1,4 +1,4 @@
-import { Sqlui } from 'typings';
+import { Sqlui } from '../../typings';
 
 // this section of the api is caches in memory
 const caches: { [index: string]: Sqlui.ConnectionProps } = {};

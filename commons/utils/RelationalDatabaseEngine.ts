@@ -1,5 +1,5 @@
 import { Sequelize, ColumnDescription } from 'sequelize';
-import { Sqlui } from 'typings';
+import { Sqlui } from '../../typings';
 
 /**
  * mostly adapter for sequelize

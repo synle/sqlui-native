@@ -1,4 +1,11 @@
 // Modules to control application life and create native browser window
+import {
+  RelationalDatabaseEngine,
+  getEngine,
+  getConnectionMetaData,
+} from './commons/utils/RelationalDatabaseEngine';
+import ConnectionUtils from './commons/utils/ConnectionUtils';
+import { Sqlui } from './typings';
 const { app, BrowserWindow } = require('electron');
 const { ipcMain } = require('electron'); // used to communicate asynchronously from the main process to renderer processes.
 const ipcRenderer = require('electron').ipcRenderer;
@@ -48,16 +55,52 @@ app.on('window-all-closed', function () {
 
 // events
 // this is the event listener that will respond when we will request it in the web page
+
+let cacheMetaData: any;
+
 ipcMain.on('sqluiNative/fetch', async (event, data) => {
   const { requestId, url, options } = data;
   const responseId = `server response ${Date.now()}`;
 
-  setTimeout(() => {
-    event.reply(data.requestId, {
+  const {method} = (options.method || 'get').toLowerCase();
+
+  try{
+    const sendResponse = (responseData: any) => {
+    console.log('send response', responseData)
+      event.reply(requestId, {
       ok: true,
-      response: `server response ${Date.now()}`,
-      request: JSON.stringify(data),
-      body: data,
+      text: JSON.stringify(responseData),
     });
-  }, 3000);
+  }
+
+  if(url.includes('/api/metadata')){
+
+    //core api
+    const connections = await ConnectionUtils.getConnections();
+
+    if (cacheMetaData) {
+      return sendResponse(cacheMetaData);
+    }
+
+    const resp: Sqlui.CoreConnectionMetaData[] = [];
+
+    for (const connection of connections) {
+      resp.push(await getConnectionMetaData(connection));
+    }
+
+    cacheMetaData = resp;
+    sendResponse(cacheMetaData);
+  } else {
+    setTimeout(() => {
+      event.reply(data.requestId, {
+        ok: true,
+        response: `server response ${Date.now()}`,
+        request: JSON.stringify(data),
+        body: data,
+      });
+    }, 3000);
+  }
+} catch(err){
+  console.log('error', err)
+}
 });
