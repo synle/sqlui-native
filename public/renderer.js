@@ -25,7 +25,7 @@ try {
 
     window.fetch = (url, options) => {
       return new Promise((resolve, reject) => {
-        const requestId = `requestId.${Date.now()}`;
+        const requestId = `requestId.${Date.now()}.${Math.floor(Math.random() * 10000000000000000)}`;
         ipcRenderer.once(requestId, (event, data) => {
           const { ok, text } = data;
 
