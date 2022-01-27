@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import EditIcon from '@mui/icons-material/Edit';
 import CloudIcon from '@mui/icons-material/Cloud';
@@ -14,7 +14,6 @@ export default function ConnectionDescription() {
   const navigate = useNavigate();
   const { data: connections, isLoading } = useGetMetaData();
   const { visibles, onToggle } = useShowHide();
-  const { mutateAsync: reconnectConnection, isLoading: reconnecting } = useRetryConnection();
 
   if (isLoading) {
     return <>loading...</>;
@@ -23,8 +22,6 @@ export default function ConnectionDescription() {
   if (!connections || connections.length === 0) {
     return <Alert severity='info'>No connnections</Alert>;
   }
-
-  const onReconnect = async (connectionId: string) => reconnectConnection(connectionId);
 
   return (
     <div className='ConnectionDescription'>
@@ -66,19 +63,48 @@ export default function ConnectionDescription() {
               <DeleteConnectionButton connectionId={connection.id} />
             </AccordionHeader>
             <AccordionBody expanded={visibles[key]}>
-              <Alert
-                severity='error'
-                action={
-                  <Button color='inherit' size='small' onClick={() => onReconnect(connection.id)}>
-                    Reconnect
-                  </Button>
-                }>
-                Can't connect to this server
-              </Alert>
+              <ConnectionRetryAlert connectionId={connection.id} />
             </AccordionBody>
           </React.Fragment>
         );
       })}
     </div>
+  );
+}
+
+// TODO: move this into a file if we need to reuse it
+interface ConnectionRetryAlertProps {
+  connectionId: string;
+}
+
+function ConnectionRetryAlert(props: ConnectionRetryAlertProps) {
+  const { connectionId } = props;
+  const [retrying, setRetrying] = useState(false);
+  const { mutateAsync: reconnectConnection, isLoading: reconnecting } = useRetryConnection();
+
+  const onReconnect = async (connectionId: string) => {
+    setRetrying(true);
+    try {
+      await reconnectConnection(connectionId);
+      setRetrying(false);
+    } catch (err) {
+      setRetrying(false);
+    }
+  };
+
+  if (retrying) {
+    return <Alert severity='info'>Connecting to server. Please wait....</Alert>;
+  }
+
+  return (
+    <Alert
+      severity='error'
+      action={
+        <Button color='inherit' size='small' onClick={() => onReconnect(connectionId)}>
+          Reconnect
+        </Button>
+      }>
+      Can't connect to this server
+    </Alert>
   );
 }
