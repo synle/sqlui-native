@@ -8,6 +8,10 @@ import ConnectionUtils from './commons/utils/ConnectionUtils';
 import { Sqlui } from './typings';
 import { matchPath } from 'react-router-dom';
 import { app, BrowserWindow, ipcMain } from 'electron';
+import { setUpDataEndpoints, getEndpointHandlers } from './commons/utils/EndpointUtils';
+
+setUpDataEndpoints();
+
 const path = require('path');
 
 function createWindow() {
@@ -26,7 +30,7 @@ function createWindow() {
   mainWindow.loadFile('index.html');
 
   // Open the DevTools.
-  if(process.env.ENV_TYPE === 'electron-dev'){
+  if (process.env.ENV_TYPE === 'electron-dev') {
     mainWindow.webContents.openDevTools();
   }
 }
@@ -56,6 +60,8 @@ app.on('window-all-closed', function () {
 
 // events
 // this is the event listener that will respond when we will request it in the web page
+const _apiCache = {};
+
 ipcMain.on('sqluiNativeEvent/fetch', async (event, data) => {
   const { requestId, url, options } = data;
   const responseId = `server response ${Date.now()}`;
@@ -67,86 +73,60 @@ ipcMain.on('sqluiNativeEvent/fetch', async (event, data) => {
     body = JSON.parse(options.body);
   } catch (err) {}
 
-  console.log('>> received request', method, url, body);
+  console.log('>> Request', method, url, body);
   let matchedUrlObject: any;
   const matchCurrentUrlAgainst = (matchAgainstUrl: string) => {
-    matchedUrlObject = matchPath(matchAgainstUrl, url);
-    return matchedUrlObject;
+    try {
+      return matchPath(matchAgainstUrl, url);
+    } catch (err) {
+      return undefined;
+    }
   };
 
   try {
-    const sendResponse = (responseData: any = '', ok = true) => {
-      console.log('>> send response', method, url, body, responseData);
+    const sendResponse = (responseData: any = '', status = 200) => {
+      let ok = true;
+      if (status >= 300 || status < 200) {
+        ok = false;
+      }
+      console.log('>> Response', status, method, url, body, responseData);
       event.reply(requestId, {
         ok,
+        status,
         text: JSON.stringify(responseData),
       });
     };
 
-    if (matchCurrentUrlAgainst('/api/metadata')) {
-      const resp: Sqlui.CoreConnectionMetaData[] = [];
-      const connections = await ConnectionUtils.getConnections();
-      for (const connection of connections) {
-        resp.push(await getConnectionMetaData(connection));
-      }
-      return sendResponse(resp);
-    } else if (matchCurrentUrlAgainst('/api/connection') && method === 'post') {
-      return sendResponse(
-        await ConnectionUtils.addConnection({ connection: body?.connection, name: body?.name }),
-      );
-    } else if (matchCurrentUrlAgainst('/api/connection/:connectionId') && method === 'put') {
-      return sendResponse(
-        await ConnectionUtils.updateConnection({
-          id: matchedUrlObject?.params?.connectionId,
-          connection: body?.connection,
-          name: body?.name,
-        }),
-      );
-    } else if (matchCurrentUrlAgainst('/api/connection/:connectionId') && method === 'delete') {
-      return sendResponse(
-        await ConnectionUtils.deleteConnection(matchedUrlObject?.params?.connectionId),
-      );
-    } else if (
-      matchCurrentUrlAgainst('/api/connection/:connectionId/execute') &&
-      method === 'post'
-    ) {
-      try {
-        const connection = await ConnectionUtils.getConnection(
-          matchedUrlObject?.params?.connectionId,
-        );
-        const engine = getEngine(connection.connection);
-        const sql = body?.sql;
-        const database = body?.database;
-        return sendResponse(await engine.execute(sql, database));
-      } catch (err) {
-        sendResponse(`500 Server Error... ${err}`, false);
-      }
-    } else if (
-      matchCurrentUrlAgainst('/api/connection/:connectionId/connect') &&
-      method === 'post'
-    ) {
-      try {
-        const connection = await ConnectionUtils.getConnection(
-          matchedUrlObject?.params?.connectionId,
-        );
-        const engine = getEngine(connection.connection);
-        return sendResponse(await getConnectionMetaData(connection));
-      } catch (err) {
-        sendResponse(`500 Server Error... ${err}`, false);
-      }
-    } else if (matchCurrentUrlAgainst('/api/connection/test') && method === 'post') {
-      try {
-        const connection: Sqlui.CoreConnectionProps = body;
-        const engine = getEngine(connection.connection);
-        await engine.authenticate();
-        sendResponse(await getConnectionMetaData(connection));
-      } catch (err) {
-        sendResponse(`500 Server Error... ${err}`, false);
+    // polyfill for the express server interface
+    const res = {
+      status: (code: number) => {
+        return {
+          send: (msg: any) => {
+            sendResponse(msg, code);
+          },
+          json: (returnedData: any) => {
+            sendResponse(returnedData, code);
+          },
+        };
+      },
+    };
+
+    const endpoints = getEndpointHandlers();
+    for (const endpoint of endpoints) {
+      const [targetMethod, targetUrl, targetHandler] = endpoint;
+      const matchedUrlObject = matchCurrentUrlAgainst(targetUrl);
+      if (targetMethod === method && matchedUrlObject) {
+        const req = {
+          params: matchedUrlObject?.params,
+          body: body,
+        };
+
+        return targetHandler(req, res, _apiCache);
       }
     }
 
     // not found, then return 404
-    sendResponse('404 Resource Not Found...', false);
+    sendResponse('Resource Not Found...', 500);
   } catch (err) {
     console.log('error', err);
   }
