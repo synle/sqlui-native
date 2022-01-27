@@ -14,11 +14,9 @@ export default function App() {
   return (
     <HashRouter>
       <div className='App'>
-        <AppBar position="static">
-          <Toolbar variant="dense">
-            <Typography variant="h6">
-              SQLUI NATIVE
-            </Typography>
+        <AppBar position='static'>
+          <Toolbar variant='dense'>
+            <Typography variant='h6'>SQLUI NATIVE</Typography>
           </Toolbar>
         </AppBar>
 
