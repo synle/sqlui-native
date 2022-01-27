@@ -16,6 +16,11 @@
   },
   "proxy": "http://localhost:3001",
   "homepage": "./",
+  "build": {
+    "appId": "io.synle.github.sqlui-native",
+    "extends": null
+  },
+  "main": "main.js",
   "scripts": {
     "clean": "rimraf .cache .parcel-cache dist build",
     "start": "cross-env ELECTRON_DISABLE_SECURITY_WARNINGS=true electron ./main.js",
@@ -26,7 +31,9 @@
     "test": "cross-env SASS_PATH='./src/styles' react-scripts test",
     "format": "npx prettier --config ./.prettierrc --write **/*.{ts,tsx,js,jsx,scss,yml,html} *.{json,MD}",
     "lint": "eslint --fix --ext .tsx --ext .ts src",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder"
   },
   "repository": "https://github.com/synle/sqlui-native",
   "keywords": [

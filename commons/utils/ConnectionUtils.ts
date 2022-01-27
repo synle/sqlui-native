@@ -1,22 +1,22 @@
-const fs = require( 'fs');
+const fs = require('fs');
 import { Sqlui } from '../../typings';
 
 // this section of the api is caches in memory
-interface ConnectionStore{
-   [index: string]: Sqlui.ConnectionProps
+interface ConnectionStore {
+  [index: string]: Sqlui.ConnectionProps;
 }
 
 const storeFilePath = './connections.json';
-function getData(): ConnectionStore{
-  try{
+function getData(): ConnectionStore {
+  try {
     return JSON.parse(fs.readFileSync(storeFilePath, { encoding: 'utf8', flag: 'r' }).trim());
-  } catch(err){
+  } catch (err) {
     return {};
   }
 }
 
-function setData(toSave: ConnectionStore){
-  fs.writeFileSync(storeFilePath, JSON.stringify(toSave, null, 2))
+function setData(toSave: ConnectionStore) {
+  fs.writeFileSync(storeFilePath, JSON.stringify(toSave, null, 2));
 }
 
 const ConnectionUtils = {

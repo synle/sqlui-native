@@ -25,14 +25,28 @@ try {
 
     window.fetch = (url, options) => {
       return new Promise((resolve, reject) => {
-        const requestId = `requestId.${Date.now()}.${Math.floor(Math.random() * 10000000000000000)}`;
+        const requestId = `requestId.${Date.now()}.${Math.floor(
+          Math.random() * 10000000000000000,
+        )}`;
         ipcRenderer.once(requestId, (event, data) => {
           const { ok, text } = data;
 
-          try{
-            console.log('>> Network', ok ? 'Success': 'Error:' , options.method || 'get', url, JSON.parse(text))
-          } catch(err){
-            console.log('>> Network', ok ? 'Success': 'Error:', options.method || 'get', url, text)
+          try {
+            console.log(
+              '>> Network',
+              ok ? 'Success' : 'Error:',
+              options.method || 'get',
+              url,
+              JSON.parse(text),
+            );
+          } catch (err) {
+            console.log(
+              '>> Network',
+              ok ? 'Success' : 'Error:',
+              options.method || 'get',
+              url,
+              text,
+            );
           }
 
           data.ok

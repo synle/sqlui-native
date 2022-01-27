@@ -104,9 +104,14 @@ ipcMain.on('sqluiNativeEvent/fetch', async (event, data) => {
       return sendResponse(
         await ConnectionUtils.deleteConnection(matchedUrlObject?.params?.connectionId),
       );
-    } else if (matchCurrentUrlAgainst('/api/connection/:connectionId/execute') && method === 'post') {
+    } else if (
+      matchCurrentUrlAgainst('/api/connection/:connectionId/execute') &&
+      method === 'post'
+    ) {
       try {
-        const connection = await ConnectionUtils.getConnection(matchedUrlObject?.params?.connectionId);
+        const connection = await ConnectionUtils.getConnection(
+          matchedUrlObject?.params?.connectionId,
+        );
         const engine = getEngine(connection.connection);
         const sql = body?.sql;
         const database = body?.database;
@@ -114,9 +119,14 @@ ipcMain.on('sqluiNativeEvent/fetch', async (event, data) => {
       } catch (err) {
         sendResponse(`500 Server Error... ${err}`, false);
       }
-    } else if (matchCurrentUrlAgainst('/api/connection/:connectionId/connect') && method === 'post') {
+    } else if (
+      matchCurrentUrlAgainst('/api/connection/:connectionId/connect') &&
+      method === 'post'
+    ) {
       try {
-        const connection = await ConnectionUtils.getConnection(matchedUrlObject?.params?.connectionId);
+        const connection = await ConnectionUtils.getConnection(
+          matchedUrlObject?.params?.connectionId,
+        );
         const engine = getEngine(connection.connection);
         return sendResponse(await getConnectionMetaData(connection));
       } catch (err) {
