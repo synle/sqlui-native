@@ -29,6 +29,12 @@ try {
         ipcRenderer.once(requestId, (event, data) => {
           const { ok, text } = data;
 
+          try{
+            console.log('>> Network', ok ? 'Success': 'Error:' , options.method || 'get', url, JSON.parse(text))
+          } catch(err){
+            console.log('>> Network', ok ? 'Success': 'Error:', options.method || 'get', url, text)
+          }
+
           data.ok
             ? resolve({
                 ok,
@@ -40,9 +46,6 @@ try {
               });
         });
         ipcRenderer.send('sqluiNativeEvent/fetch', { requestId, url, options });
-      }).catch((e) => {
-        debugger;
-        throw e;
       });
     };
   }
