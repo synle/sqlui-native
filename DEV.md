@@ -1,5 +1,7 @@
 ## Bootstrap script for connections
 
+
+### Populating data
 ```
 echo '''
 {
@@ -25,4 +27,25 @@ echo '''
   }
 }
 ''' > connections.json
+```
+
+
+
+### How to run locally?
+
+#### In an electron container
+```
+npm install
+npm start
+```
+
+#### In a mocked server container
+```
+npm install
+
+# terminal 1
+npm run start-webapp
+
+# terminal 2
+npm run start-mocked
 ```
