@@ -1,5 +1,10 @@
+import AppBar from '@mui/material/AppBar';
+import Box from '@mui/material/Box';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
+import IconButton from '@mui/material/IconButton';
+import MenuIcon from '@mui/icons-material/Menu';
 import './App.scss';
-
 import { HashRouter, Routes, Route, Link } from 'react-router-dom';
 import EditConnectionPage from 'src/views/EditConnectionPage';
 import NewConnectionPage from 'src/views/NewConnectionPage';
@@ -9,9 +14,13 @@ export default function App() {
   return (
     <HashRouter>
       <div className='App'>
-        <header>
-          <h1>SQL UI Native</h1>
-        </header>
+        <AppBar position="static">
+          <Toolbar variant="dense">
+            <Typography variant="h6">
+              SQLUI NATIVE
+            </Typography>
+          </Toolbar>
+        </AppBar>
 
         <section>
           <Routes>

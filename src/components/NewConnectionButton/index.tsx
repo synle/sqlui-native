@@ -5,7 +5,7 @@ export default function NewConnectionButton() {
   const navigate = useNavigate();
 
   return (
-    <Button onClick={() => navigate('/connection/new')} variant='contained' fullWidth={true}>
+    <Button onClick={() => navigate('/connection/new')} size='small' fullWidth={true}>
       New Connection
     </Button>
   );
