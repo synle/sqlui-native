@@ -1,6 +1,6 @@
 # sqlui-native
 
-A simple UI client for most SQL Engines. Written in Electron, SQLui Native will be compatible with most desktop OS's.
+A simple UI client for most SQL Engines. Written in Electron, sqlui-native is compatible with most desktop OS's and support most dialects of RMBDs like MySQL, Microsoft SQL Server, Postgres and SQLite.
 
 ## Screenshot
 ![image](https://user-images.githubusercontent.com/3792401/151284876-b8362f65-c20e-4e70-91d6-9b2ede3656ac.png)
