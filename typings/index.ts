@@ -2,19 +2,15 @@ import { ColumnDescription } from 'sequelize';
 
 export module Sqlui {
   export type CoreConnectionProps = {
-    id?: string;
-    connection: string;
-    name: string;
-    [index: string]: any;
-  };
-
-  export interface ConnectionProps {
-    id: string;
     connection: string;
     name: string;
     status?: 'online' | 'offline';
     [index: string]: any;
-  }
+  };
+
+  export type ConnectionProps = CoreConnectionProps & {
+    id: string;
+  };
 
   export type Column = ColumnDescription & {
     [index: string]: any;
