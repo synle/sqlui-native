@@ -4,6 +4,7 @@
 }
 
 .ConnectionDescription {
+  margin-top: 10px;
   margin-left: 0.3rem;
 }
 
@@ -32,12 +33,19 @@
   &__LeftPane {
     flex-shrink: 0;
     min-width: 300px;
-    max-width: 33%;
+    max-width: 50%;
+  }
+
+  &__Spacing {
+    width: 15px;
+    &:hover {
+      background: #efefef;
+      cursor: col-resize;
+    }
   }
 
   &__RightPane {
     flex-grow: 1;
-    margin-left: 2rem;
     overflow: hidden;
   }
 }
