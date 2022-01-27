@@ -18,7 +18,7 @@
   "homepage": "./",
   "scripts": {
     "clean": "rimraf .cache .parcel-cache dist build",
-    "start": "cross-env ELECTRON_DISABLE_SECURITY_WARNINGS=true electron ./main.js",
+    "start": "npx tsc main.ts; cross-env ELECTRON_DISABLE_SECURITY_WARNINGS=true electron ./main.js",
     "start-webapp": "cross-env SASS_PATH='./src/styles' react-scripts start",
     "start-mocked": "npx ts-node --project tsconfig-server.json mocked-server/index.ts",
     "build": "cross-env SASS_PATH='./src/styles' react-scripts build",
