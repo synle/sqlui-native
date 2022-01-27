@@ -6,10 +6,9 @@ import {
 } from './commons/utils/RelationalDatabaseEngine';
 import ConnectionUtils from './commons/utils/ConnectionUtils';
 import { Sqlui } from './typings';
-const { app, BrowserWindow } = require('electron');
-const { ipcMain } = require('electron'); // used to communicate asynchronously from the main process to renderer processes.
-const ipcRenderer = require('electron').ipcRenderer;
-const path = require('path');
+import { matchPath } from 'react-router-dom';
+import { app, BrowserWindow, ipcMain } from 'electron';
+const path  = require('path');
 
 function createWindow() {
   // Create the browser window.
@@ -58,7 +57,7 @@ app.on('window-all-closed', function () {
 
 let cacheMetaData: any;
 
-ipcMain.on('sqluiNative/fetch', async (event, data) => {
+ipcMain.on('sqluiNativeEvent/fetch', async (event, data) => {
   const { requestId, url, options } = data;
   const responseId = `server response ${Date.now()}`;
 
