@@ -11,9 +11,10 @@ export default function DeleteConnectionButton(props: DeleteConnectionButtonProp
   const { connectionId } = props;
   const { mutateAsync } = useDeleteConnection();
   const onDelete = async (e: React.SyntheticEvent) => {
-    confirm('Delete this connection?') && (await mutateAsync(connectionId));
     e.preventDefault();
     e.stopPropagation();
+
+    confirm('Delete this connection?') && (await mutateAsync(connectionId));
   };
 
   return (
