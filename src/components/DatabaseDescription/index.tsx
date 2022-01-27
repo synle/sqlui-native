@@ -42,12 +42,13 @@ export default function DatabaseDescription(props: DatabaseDescriptionProps) {
         return (
           <React.Fragment key={database.name}>
             <AccordionHeader expanded={visibles[key]} onToggle={() => onToggle(key)}>
-              <LibraryBooksIcon color='secondary' />
+              <LibraryBooksIcon color='secondary' fontSize='small' />
               <span>{database.name}</span>
               <IconButton
                 aria-label='Select Database For Execution'
-                onClick={(e) => onSelectDatabaseForQuery(e, database.name)}>
-                <SelectAllIcon />
+                onClick={(e) => onSelectDatabaseForQuery(e, database.name)}
+                size='small'>
+                <SelectAllIcon fontSize='small' />
               </IconButton>
             </AccordionHeader>
             <AccordionBody expanded={visibles[key]}>

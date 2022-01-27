@@ -16,7 +16,7 @@ export function AccordionHeader(props: AccordionHeaderProps) {
   const { children, expanded, onToggle } = props;
   return (
     <div className='Accordion' onClick={() => onToggle()}>
-      {!expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+      {!expanded ? <ExpandLessIcon fontSize='small' /> : <ExpandMoreIcon fontSize='small' />}
       {children}
     </div>
   );
