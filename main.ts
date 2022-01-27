@@ -76,7 +76,7 @@ ipcMain.on('sqluiNativeEvent/fetch', async (event, data) => {
   };
 
   try {
-    const sendResponse = (responseData: any, ok = true) => {
+    const sendResponse = (responseData: any = '', ok = true) => {
       console.log('>> send response', method, url, body, responseData);
       event.reply(requestId, {
         ok,
@@ -102,8 +102,6 @@ ipcMain.on('sqluiNativeEvent/fetch', async (event, data) => {
         await ConnectionUtils.addConnection({ connection: body?.connection, name: body?.name }),
       );
     } else if (matchCurrentUrlAgainst('/api/connection/:connectionId') && method === 'put') {
-      console.log(matchedUrlObject, matchedUrlObject?.params?.connectionId);
-
       return sendResponse(
         await ConnectionUtils.updateConnection({
           id: matchedUrlObject?.params?.connectionId,
@@ -111,6 +109,37 @@ ipcMain.on('sqluiNativeEvent/fetch', async (event, data) => {
           name: body?.name,
         }),
       );
+    } else if (matchCurrentUrlAgainst('/api/connection/:connectionId') && method === 'delete') {
+      return sendResponse(
+        await ConnectionUtils.deleteConnection(matchedUrlObject?.params?.connectionId),
+      );
+    } else if (matchCurrentUrlAgainst('/api/connection/:connectionId/execute') && method === 'post') {
+      try {
+        const connection = await ConnectionUtils.getConnection(matchedUrlObject?.params?.connectionId);
+        const engine = getEngine(connection.connection);
+        const sql = body?.sql;
+        const database = body?.database;
+        return sendResponse(await engine.execute(sql, database));
+      } catch (err) {
+        sendResponse(`500 Server Error... ${err}`, false);
+      }
+    } else if (matchCurrentUrlAgainst('/api/connection/:connectionId/connect') && method === 'post') {
+      try {
+        const connection = await ConnectionUtils.getConnection(matchedUrlObject?.params?.connectionId);
+        const engine = getEngine(connection.connection);
+        return sendResponse(await getConnectionMetaData(connection));
+      } catch (err) {
+        sendResponse(`500 Server Error... ${err}`, false);
+      }
+    } else if (matchCurrentUrlAgainst('/api/connection/test') && method === 'post') {
+      try {
+        const connection: Sqlui.CoreConnectionProps = body;
+        const engine = getEngine(connection.connection);
+        await engine.authenticate();
+        sendResponse(await getConnectionMetaData(connection));
+      } catch (err) {
+        sendResponse(`500 Server Error... ${err}`, false);
+      }
     }
 
     // not found, then return 404
