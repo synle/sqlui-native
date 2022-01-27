@@ -27,9 +27,17 @@ try {
       return new Promise((resolve, reject) => {
         const requestId = `requestId.${Date.now()}`;
         ipcRenderer.once(requestId, (event, data) => {
-          reject(data);
+          const {ok, text} = data;
+
+          data.ok ? resolve({
+            ok,
+            text: () => text,
+          }) : reject({
+            ok,
+            text: () => text,
+          }) ;
         });
-        ipcRenderer.send('sqluiNative/fetch', { requestId, url, options });
+        ipcRenderer.send('sqluiNativeEvent/fetch', { requestId, url, options });
       }).catch((e) => {
         debugger;
         throw e;
