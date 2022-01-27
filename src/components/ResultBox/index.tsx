@@ -9,6 +9,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
+import Alert from '@mui/material/Alert';
 import { useExecute, useConnectionQueries, useConnectionQuery } from 'src/hooks';
 import Tabs from 'src/components/Tabs';
 
@@ -21,18 +22,17 @@ export default function ResultBox(props: ResultBoxProps) {
   const { query, isFetching: loadingQuery } = useConnectionQuery(queryId);
   const [tabIdx, setTabIdx] = useState(0);
   const { data: queryResult, isFetching: loadingResults, isError } = useExecute(query);
-  const isLoading = loadingQuery;
 
-  if (isLoading) {
-    return <>loading...</>;
-  }
-
-  if (isError) {
-    return <>Query error</>;
+  if (loadingQuery) {
+    return <Alert severity='info'>Loading Query...</Alert>;
   }
 
   if (loadingResults) {
-    return <>loadingResults...</>;
+    return <Alert severity='info'>Loading Results...</Alert>;
+  }
+
+  if (isError) {
+    return <Alert severity='error'>Query Error...</Alert>;
   }
 
   if (!query) {

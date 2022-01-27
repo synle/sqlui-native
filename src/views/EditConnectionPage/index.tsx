@@ -12,7 +12,9 @@ export default function EditConnectionPage() {
 
   return (
     <div className='ConnectionPage'>
-      <Typography variant='h4' gutterBottom={true}>Edit Connection</Typography>
+      <Typography variant='h4' gutterBottom={true}>
+        Edit Connection
+      </Typography>
       <EditConnectionForm id={connectionId} />
     </div>
   );

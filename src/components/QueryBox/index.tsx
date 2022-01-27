@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Typography from '@mui/material/Typography';
 import { Button } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
+import NativeSelect from '@mui/material/NativeSelect';
 import CodeEditor from '@uiw/react-textarea-code-editor';
 import {
   useExecute,
@@ -10,6 +11,7 @@ import {
   useGetAvailableDatabaseConnections,
   useGetMetaData,
 } from 'src/hooks';
+import { Sqlui, SqluiNative } from 'typings';
 
 interface QueryBoxProps {
   queryId: string;
@@ -57,17 +59,11 @@ export default function QueryBox(props: QueryBoxProps) {
   return (
     <form className='QueryBox' onSubmit={onSubmit}>
       <div className='QueryBox__Row'>
-        <select
-          value={[query.connectionId, query.databaseId].join(' << ')}
-          onChange={(e) => onDatabaseConnectionChange(e.target.value)}
-          required>
-          <option value=''>Pick One</option>
-          {(connectionsMetaData || []).map((connMetaData) => (
-            <option key={`${connMetaData.id}`} value={`${connMetaData.id}`}>
-              {connMetaData.label}
-            </option>
-          ))}
-        </select>
+        <ConnectionDatabaseSelector
+          value={query}
+          onChange={onDatabaseConnectionChange}
+          options={connectionsMetaData}
+        />
       </div>
       <div className='QueryBox__Row'>
         <CodeEditor
@@ -90,5 +86,28 @@ export default function QueryBox(props: QueryBoxProps) {
         </Button>
       </div>
     </form>
+  );
+}
+
+// TODO: move me to a file
+interface ConnectionDatabaseSelectorProps {
+  value: SqluiNative.ConnectionQuery;
+  onChange: (newValue: string) => void;
+  options?: SqluiNative.AvailableConnectionProps[];
+}
+
+function ConnectionDatabaseSelector(props: ConnectionDatabaseSelectorProps) {
+  const query = props.value;
+  const value = [query.connectionId, query.databaseId].join(' << ');
+
+  return (
+    <NativeSelect value={value} onChange={(e) => props.onChange(e.target.value)} required>
+      <option value=''>Pick One</option>
+      {props.options?.map((connMetaData) => (
+        <option key={`${connMetaData.id}`} value={`${connMetaData.id}`}>
+          {connMetaData.label}
+        </option>
+      ))}
+    </NativeSelect>
   );
 }

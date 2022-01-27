@@ -6,8 +6,13 @@ export default function NewConnectionButton() {
   const navigate = useNavigate();
 
   return (
-    <Button onClick={() => navigate('/connection/new')} startIcon={<AddIcon />}>
-      New Connection
-    </Button>
+    <div style={{ textAlign: 'center' }}>
+      <Button
+        onClick={() => navigate('/connection/new')}
+        startIcon={<AddIcon />}
+        variant='outlined'>
+        New Connection
+      </Button>
+    </div>
   );
 }

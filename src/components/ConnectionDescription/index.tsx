@@ -34,12 +34,13 @@ export default function ConnectionDescription() {
           return (
             <React.Fragment key={key}>
               <AccordionHeader expanded={visibles[key]} onToggle={() => onToggle(key)}>
-                <CloudIcon color='primary' />
+                <CloudIcon color='primary' fontSize='small' />
                 <span>{connection.name}</span>
                 <IconButton
                   aria-label='Edit Connection'
-                  onClick={() => navigate(`/connection/edit/${connection.id}`)}>
-                  <EditIcon />
+                  onClick={() => navigate(`/connection/edit/${connection.id}`)}
+                  size='small'>
+                  <EditIcon fontSize='small' />
                 </IconButton>
                 <DeleteConnectionButton connectionId={connection.id} />
               </AccordionHeader>

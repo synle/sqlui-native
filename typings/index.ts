@@ -53,4 +53,11 @@ export module SqluiNative {
     lastExecuted?: string;
     selected: boolean;
   }
+
+  export interface AvailableConnectionProps {
+    connectionId: string;
+    databaseId: string;
+    id: string;
+    label: string;
+  }
 }
