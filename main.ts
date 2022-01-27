@@ -54,9 +54,6 @@ app.on('window-all-closed', function () {
 
 // events
 // this is the event listener that will respond when we will request it in the web page
-
-let cacheMetaData: any;
-
 ipcMain.on('sqluiNativeEvent/fetch', async (event, data) => {
   const { requestId, url, options } = data;
   const responseId = `server response ${Date.now()}`;
@@ -85,25 +82,17 @@ ipcMain.on('sqluiNativeEvent/fetch', async (event, data) => {
     };
 
     if (matchCurrentUrlAgainst('/api/metadata')) {
-      if (cacheMetaData) {
-        return sendResponse(cacheMetaData);
-      }
-
       const resp: Sqlui.CoreConnectionMetaData[] = [];
       const connections = await ConnectionUtils.getConnections();
       for (const connection of connections) {
         resp.push(await getConnectionMetaData(connection));
       }
-
-      cacheMetaData = resp;
-      return sendResponse(cacheMetaData);
+      return sendResponse(resp);
     } else if (matchCurrentUrlAgainst('/api/connection') && method === 'post') {
-      cacheMetaData = null; //clear cache
       return sendResponse(
         await ConnectionUtils.addConnection({ connection: body?.connection, name: body?.name }),
       );
     } else if (matchCurrentUrlAgainst('/api/connection/:connectionId') && method === 'put') {
-      cacheMetaData = null; //clear cache
       return sendResponse(
         await ConnectionUtils.updateConnection({
           id: matchedUrlObject?.params?.connectionId,
@@ -112,7 +101,6 @@ ipcMain.on('sqluiNativeEvent/fetch', async (event, data) => {
         }),
       );
     } else if (matchCurrentUrlAgainst('/api/connection/:connectionId') && method === 'delete') {
-      cacheMetaData = null; //clear cache
       return sendResponse(
         await ConnectionUtils.deleteConnection(matchedUrlObject?.params?.connectionId),
       );
@@ -127,7 +115,6 @@ ipcMain.on('sqluiNativeEvent/fetch', async (event, data) => {
         sendResponse(`500 Server Error... ${err}`, false);
       }
     } else if (matchCurrentUrlAgainst('/api/connection/:connectionId/connect') && method === 'post') {
-      cacheMetaData = null; //clear cache
       try {
         const connection = await ConnectionUtils.getConnection(matchedUrlObject?.params?.connectionId);
         const engine = getEngine(connection.connection);
