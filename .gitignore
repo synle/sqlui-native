@@ -23,3 +23,5 @@ yarn-error.log*
 build
 dist
 .parcel-cache
+
+main.js
