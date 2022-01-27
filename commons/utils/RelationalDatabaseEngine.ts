@@ -11,7 +11,7 @@ export class RelationalDatabaseEngine {
    * @type {string}
    */
   private connectionOption?: string;
-  private dialect?: 'mysql' | 'mssql' | 'sqlite' | string;
+  public dialect?: Sqlui.Dialect;
   private sequelizes: Record<string, Sequelize> = {};
 
   constructor(connectionOption: string | Sequelize) {
@@ -168,6 +168,7 @@ export async function getConnectionMetaData(connection: Sqlui.CoreConnectionProp
     const databases = await engine.getDatabases();
 
     connItem.status = 'online';
+    connItem.dialect = engine.dialect;
 
     for (const database of databases) {
       const dbItem: Sqlui.DatabaseMetaData = {
@@ -207,6 +208,7 @@ export async function getConnectionMetaData(connection: Sqlui.CoreConnectionProp
   } catch (err) {
     // console.log('connection error', connection.name, err);
     connItem.status = 'offline';
+    connItem.dialect = undefined;
   }
 
   return connItem;
