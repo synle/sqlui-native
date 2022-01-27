@@ -23,10 +23,10 @@
   "main": "main.js",
   "scripts": {
     "clean": "rimraf .cache .parcel-cache dist build",
-    "start": "cross-env ELECTRON_DISABLE_SECURITY_WARNINGS=true electron ./main.js",
+    "start": "cross-env ELECTRON_DISABLE_SECURITY_WARNINGS=true electron ./build/main.js",
     "start-webapp": "cross-env SASS_PATH='./src/styles' react-scripts start",
     "start-mocked": "npx ts-node --project tsconfig-server.json mocked-server.ts",
-    "build-main": "npx tsc main.ts",
+    "build-main": "npx tsc --project tsconfig-electron.json",
     "build": "cross-env SASS_PATH='./src/styles' react-scripts build",
     "test": "cross-env SASS_PATH='./src/styles' react-scripts test",
     "format": "npx prettier --config ./.prettierrc --write **/*.{ts,tsx,js,jsx,scss,yml,html} *.{json,MD}",

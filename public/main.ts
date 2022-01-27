@@ -3,9 +3,9 @@ import {
   RelationalDatabaseEngine,
   getEngine,
   getConnectionMetaData,
-} from './commons/utils/RelationalDatabaseEngine';
-import ConnectionUtils from './commons/utils/ConnectionUtils';
-import { Sqlui } from './typings';
+} from '../commons/utils/RelationalDatabaseEngine';
+import ConnectionUtils from '../commons/utils/ConnectionUtils';
+import { Sqlui } from '../typings';
 import { matchPath } from 'react-router-dom';
 import { app, BrowserWindow, ipcMain } from 'electron';
 const path = require('path');
@@ -16,14 +16,14 @@ function createWindow() {
     width: 1400,
     height: 800,
     webPreferences: {
-      preload: path.join(__dirname, 'build/preload.js'),
+      preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: true,
       contextIsolation: false,
     },
   });
 
   // and load the index.html of the app.
-  mainWindow.loadFile('build/index.html');
+  mainWindow.loadFile('index.html');
 
   // Open the DevTools.
   mainWindow.webContents.openDevTools();

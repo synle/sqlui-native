@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "module": "AMD",
+    "lib": ["es5", "es6", "dom"],
+    "rootDir": "./",
+    "moduleResolution": "node",
+    "outFile": "./public/main.js"
+  },
+  "include": ["public/main.ts"]
+}
