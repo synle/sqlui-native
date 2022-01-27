@@ -98,10 +98,12 @@ ipcMain.on('sqluiNativeEvent/fetch', async (event, data) => {
       cacheMetaData = resp;
       return sendResponse(cacheMetaData);
     } else if (matchCurrentUrlAgainst('/api/connection') && method === 'post') {
+      cacheMetaData = null; //clear cache
       return sendResponse(
         await ConnectionUtils.addConnection({ connection: body?.connection, name: body?.name }),
       );
     } else if (matchCurrentUrlAgainst('/api/connection/:connectionId') && method === 'put') {
+      cacheMetaData = null; //clear cache
       return sendResponse(
         await ConnectionUtils.updateConnection({
           id: matchedUrlObject?.params?.connectionId,
@@ -110,6 +112,7 @@ ipcMain.on('sqluiNativeEvent/fetch', async (event, data) => {
         }),
       );
     } else if (matchCurrentUrlAgainst('/api/connection/:connectionId') && method === 'delete') {
+      cacheMetaData = null; //clear cache
       return sendResponse(
         await ConnectionUtils.deleteConnection(matchedUrlObject?.params?.connectionId),
       );
@@ -124,6 +127,7 @@ ipcMain.on('sqluiNativeEvent/fetch', async (event, data) => {
         sendResponse(`500 Server Error... ${err}`, false);
       }
     } else if (matchCurrentUrlAgainst('/api/connection/:connectionId/connect') && method === 'post') {
+      cacheMetaData = null; //clear cache
       try {
         const connection = await ConnectionUtils.getConnection(matchedUrlObject?.params?.connectionId);
         const engine = getEngine(connection.connection);
