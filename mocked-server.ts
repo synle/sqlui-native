@@ -4,8 +4,8 @@ import {
   RelationalDatabaseEngine,
   getEngine,
   getConnectionMetaData,
-} from './utils/RelationalDatabaseEngine';
-import ConnectionUtils from './utils/ConnectionUtils';
+} from './commons/utils/RelationalDatabaseEngine';
+import ConnectionUtils from './commons/utils/ConnectionUtils';
 import { Sqlui } from 'typings';
 
 const port = 3001;
@@ -146,5 +146,5 @@ app.get('/api/metadata', async (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
+  console.log(`SQLUI Native Mocked Server started and listening on port ${port}`);
 });
