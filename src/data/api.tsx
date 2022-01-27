@@ -36,9 +36,9 @@ export class ProxyApi {
   }
 
   static deleteConnection(connectionId: string) {
-    return _fetch<void>(`/api/connection/${connectionId}`, {
+    return _fetch<string>(`/api/connection/${connectionId}`, {
       method: 'delete',
-    });
+    }).then(() => connectionId);
   }
 
   static upsertConnection(newConnection: Sqlui.CoreConnectionProps) {

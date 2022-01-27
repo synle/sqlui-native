@@ -90,11 +90,10 @@ export function useGetConnection(connectionId?: string, metaData?: Sqlui.Connect
 
 export function useUpsertConnection() {
   const queryClient = useQueryClient();
-
-  const resp = useMutation<Sqlui.ConnectionProps, void, Sqlui.CoreConnectionProps>(
+  return useMutation<Sqlui.ConnectionProps, void, Sqlui.CoreConnectionProps>(
     dataApi.upsertConnection,
     {
-      onSuccess: (newConnection) => {
+      onSuccess: async (newConnection) => {
         queryClient.invalidateQueries('connection');
 
         queryClient.setQueryData<Sqlui.ConnectionProps[] | undefined>(
@@ -123,16 +122,29 @@ export function useUpsertConnection() {
           },
         );
 
-        return Promise.resolve(newConnection);
+        return newConnection;
       },
     },
   );
-
-  return resp;
 }
 
 export function useDeleteConnection() {
-  return useMutation<void, void, string, void>(dataApi.deleteConnection);
+  const queryClient = useQueryClient();
+
+  return useMutation<string, void, string>(dataApi.deleteConnection, {
+    onSuccess: async (deletedConnectionId) => {
+      queryClient.invalidateQueries('connection');
+
+      queryClient.setQueryData<Sqlui.ConnectionProps[] | undefined>(
+        QUERY_KEY_CONNECTIONS,
+        (oldData) => {
+          return oldData?.filter((connection) => connection.id !== deletedConnectionId);
+        },
+      );
+
+      return deletedConnectionId;
+    },
+  });
 }
 
 export function useGetDatabases(connectionId: string, metaData?: Sqlui.ConnectionMetaData[]) {
@@ -174,7 +186,7 @@ export function useExecute(query?: SqluiNative.ConnectionQuery) {
 export function useRetryConnection() {
   const queryClient = useQueryClient();
   return useMutation<Sqlui.ConnectionMetaData, void, string>(dataApi.reconnect, {
-    onSuccess: (newConnection) => {
+    onSuccess: async (newConnection) => {
       queryClient.invalidateQueries('connection');
 
       queryClient.setQueryData<Sqlui.ConnectionMetaData[] | undefined>(
@@ -192,7 +204,7 @@ export function useRetryConnection() {
         },
       );
 
-      return Promise.resolve(newConnection);
+      return newConnection;
     },
   });
 }
