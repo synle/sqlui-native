@@ -19,8 +19,8 @@ export default function DeleteConnectionButton(props: DeleteConnectionButtonProp
   };
 
   return (
-    <IconButton aria-label='Delete Connection' onClick={onDelete}>
-      <DeleteIcon />
+    <IconButton aria-label='Delete Connection' onClick={onDelete} size='small'>
+      <DeleteIcon fontSize='small' />
     </IconButton>
   );
 }

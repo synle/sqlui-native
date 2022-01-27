@@ -56,16 +56,9 @@ export function useGetMetaData() {
   });
 }
 
-interface AvailableConnectionProps {
-  connectionId: string;
-  databaseId: string;
-  id: string;
-  label: string;
-}
-
 export function useGetAvailableDatabaseConnections(metaData?: Sqlui.ConnectionMetaData[]) {
   const connections = metaData || [];
-  const res: AvailableConnectionProps[] = [];
+  const res: SqluiNative.AvailableConnectionProps[] = [];
 
   for (const connection of connections) {
     const connectionId = connection.id;
