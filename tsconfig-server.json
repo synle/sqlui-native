@@ -17,8 +17,9 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "baseUrl": ".",
-    "outDir": "./build"
+    "outDir": "./build",
+    "sourceMap": true
   },
   "exclude": ["node_modules"],
-  "include": ["src/**/*.ts"]
+  "include": ["mocked-server.ts"]
 }
