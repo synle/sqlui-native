@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import Typography from '@mui/material/Typography';
 import { Button } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 import CodeEditor from '@uiw/react-textarea-code-editor';

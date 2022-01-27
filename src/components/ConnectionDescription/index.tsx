@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Typography from '@mui/material/Typography';
 import { useNavigate } from 'react-router-dom';
 import EditIcon from '@mui/icons-material/Edit';
 import CloudIcon from '@mui/icons-material/Cloud';

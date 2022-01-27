@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Typography from '@mui/material/Typography';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import NewConnectionButton from 'src/components/NewConnectionButton';

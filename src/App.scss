@@ -1,8 +1,10 @@
 @import 'base';
 
 .App {
+  &__Section{
+    margin-top: 10px;
+  }
 }
-
 
 .MainPage {
   display: flex;
@@ -28,14 +30,12 @@
   }
 }
 
-.ConnectionPage{
+.ConnectionPage {
   margin-inline: 20px;
 }
 
-
 // components
 .ConnectionDescription {
-  margin-top: 10px;
   margin-left: 0.3rem;
 }
 
