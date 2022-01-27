@@ -144,3 +144,70 @@ export class RelationalDatabaseEngine {
     });
   }
 }
+
+const engines: { [index: string]: RelationalDatabaseEngine } = {};
+export function getEngine(connection: string) {
+  if (engines[connection]) {
+    return engines[connection];
+  }
+  const engine = new RelationalDatabaseEngine(connection);
+  engines[connection] = engine;
+  return engine;
+}
+
+export async function getConnectionMetaData(connection: Sqlui.CoreConnectionProps) {
+  const connItem: Sqlui.CoreConnectionMetaData = {
+    name: connection.name,
+    id: connection?.id,
+    connection: connection.connection,
+    databases: [] as Sqlui.DatabaseMetaData[],
+  };
+
+  try {
+    const engine = getEngine(connection.connection);
+    const databases = await engine.getDatabases();
+
+    connItem.status = 'online';
+
+    for (const database of databases) {
+      const dbItem: Sqlui.DatabaseMetaData = {
+        name: database,
+        tables: [] as Sqlui.TableMetaData[],
+      };
+
+      // @ts-ignore
+      connItem.databases.push(dbItem);
+
+      let tables: string[] = [];
+      try {
+        tables = await engine.getTables(database);
+        //console.log('getting tables', database, tables);
+      } catch (err) {
+        //console.log('failed getting tables', database);
+      }
+
+      for (const table of tables) {
+        let columns: Sqlui.ColumnMetaData | undefined = undefined;
+
+        try {
+          columns = await engine.getColumns(table, database);
+        } catch (err) {
+          //console.log('failed getting columns', database, table);
+        }
+
+        const tblItem: Sqlui.TableMetaData = {
+          name: table,
+          columns,
+        };
+
+        // @ts-ignore
+        dbItem.tables.push(tblItem);
+      }
+    }
+  } catch (err) {
+    // console.log('connection error', connection.name, err);
+    connItem.status = 'offline';
+  }
+
+  return connItem;
+}
