@@ -16,17 +16,19 @@ function createWindow() {
     width: 1400,
     height: 800,
     webPreferences: {
-      preload: path.join(__dirname, 'build/preload.js'),
+      preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: true,
       contextIsolation: false,
     },
   });
 
   // and load the index.html of the app.
-  mainWindow.loadFile('build/index.html');
+  mainWindow.loadFile('index.html');
 
   // Open the DevTools.
-  mainWindow.webContents.openDevTools();
+  if(process.env.ENV_TYPE === 'electron-dev'){
+    mainWindow.webContents.openDevTools();
+  }
 }
 
 // This method will be called when Electron has finished
@@ -67,7 +69,7 @@ ipcMain.on('sqluiNativeEvent/fetch', async (event, data) => {
 
   console.log('>> received request', method, url, body);
   let matchedUrlObject: any;
-  const matchCurrentUrlAgainst = (matchAgainstUrl) => {
+  const matchCurrentUrlAgainst = (matchAgainstUrl: string) => {
     matchedUrlObject = matchPath(matchAgainstUrl, url);
     return matchedUrlObject;
   };
@@ -104,9 +106,14 @@ ipcMain.on('sqluiNativeEvent/fetch', async (event, data) => {
       return sendResponse(
         await ConnectionUtils.deleteConnection(matchedUrlObject?.params?.connectionId),
       );
-    } else if (matchCurrentUrlAgainst('/api/connection/:connectionId/execute') && method === 'post') {
+    } else if (
+      matchCurrentUrlAgainst('/api/connection/:connectionId/execute') &&
+      method === 'post'
+    ) {
       try {
-        const connection = await ConnectionUtils.getConnection(matchedUrlObject?.params?.connectionId);
+        const connection = await ConnectionUtils.getConnection(
+          matchedUrlObject?.params?.connectionId,
+        );
         const engine = getEngine(connection.connection);
         const sql = body?.sql;
         const database = body?.database;
@@ -114,9 +121,14 @@ ipcMain.on('sqluiNativeEvent/fetch', async (event, data) => {
       } catch (err) {
         sendResponse(`500 Server Error... ${err}`, false);
       }
-    } else if (matchCurrentUrlAgainst('/api/connection/:connectionId/connect') && method === 'post') {
+    } else if (
+      matchCurrentUrlAgainst('/api/connection/:connectionId/connect') &&
+      method === 'post'
+    ) {
       try {
-        const connection = await ConnectionUtils.getConnection(matchedUrlObject?.params?.connectionId);
+        const connection = await ConnectionUtils.getConnection(
+          matchedUrlObject?.params?.connectionId,
+        );
         const engine = getEngine(connection.connection);
         return sendResponse(await getConnectionMetaData(connection));
       } catch (err) {
