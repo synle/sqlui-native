@@ -6,12 +6,8 @@ export default function MainPage() {
   return (
     <section className='MainPage'>
       <div className='MainPage__LeftPane'>
-        <div>
-          <NewConnectionButton />
-        </div>
-        <div>
-          <ConnectionDescription />
-        </div>
+        <NewConnectionButton />
+        <ConnectionDescription />
       </div>
       <div className='MainPage__RightPane'>
         <QueryResultTabs />
