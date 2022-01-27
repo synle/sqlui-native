@@ -1,4 +1,5 @@
 import { useParams } from 'react-router-dom';
+import Typography from '@mui/material/Typography';
 import { EditConnectionForm } from 'src/components/ConnectionForm';
 
 export default function EditConnectionPage() {
@@ -11,6 +12,7 @@ export default function EditConnectionPage() {
 
   return (
     <div className='ConnectionPage'>
+      <Typography variant='h4' gutterBottom={true}>Edit Connection</Typography>
       <EditConnectionForm id={connectionId} />
     </div>
   );

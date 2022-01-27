@@ -1,7 +1,7 @@
+import Typography from '@mui/material/Typography';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import './App.scss';
@@ -16,11 +16,11 @@ export default function App() {
       <div className='App'>
         <AppBar position='static'>
           <Toolbar variant='dense'>
-            <Typography variant='h6'>SQLUI NATIVE</Typography>
+            <Typography variant='h3'>SQLUI NATIVE</Typography>
           </Toolbar>
         </AppBar>
 
-        <section>
+        <section className='App__Section'>
           <Routes>
             <Route path='/' element={<MainPage />} />
             <Route path='/connection/new' element={<NewConnectionPage />} />
