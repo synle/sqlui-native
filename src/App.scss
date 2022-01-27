@@ -1,7 +1,6 @@
 @import 'base';
 
 .App {
-  padding: 5px 10px;
 }
 
 .ConnectionDescription {
@@ -28,6 +27,7 @@
 
 .MainPage {
   display: flex;
+  margin-top: 15px;
 
   &__LeftPane {
     flex-shrink: 0;
