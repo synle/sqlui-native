@@ -25,8 +25,4 @@ dist
 .parcel-cache
 
 main.js
-
-commons/utils/ConnectionUtils.js
-commons/utils/RelationalDatabaseEngine.js
-
 connections.json

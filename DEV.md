@@ -49,3 +49,12 @@ npm run start-webapp
 # terminal 2
 npm run start-mocked
 ```
+
+
+### To package
+```
+npm run build
+cd build
+npm install
+npm run dist
+```
