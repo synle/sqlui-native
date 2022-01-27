@@ -1,4 +1,5 @@
 import React from 'react';
+import Typography from '@mui/material/Typography';
 import TableRowsIcon from '@mui/icons-material/TableRows';
 import Alert from '@mui/material/Alert';
 import { AccordionHeader, AccordionBody } from 'src/components/Accordion';

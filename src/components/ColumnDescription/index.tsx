@@ -1,4 +1,5 @@
 import React from 'react';
+import Typography from '@mui/material/Typography';
 import ViewColumnIcon from '@mui/icons-material/ViewColumn';
 import Alert from '@mui/material/Alert';
 import { AccordionHeader, AccordionBody } from 'src/components/Accordion';
