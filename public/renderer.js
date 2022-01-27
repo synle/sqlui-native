@@ -9,45 +9,29 @@ try {
     const ipcRenderer = require('electron').ipcRenderer;
     window.ipcRenderer = ipcRenderer;
 
-    // in the child
-    // const send =(callback, waitingEventName= 'event-name-reply')=>{
-    //     ipcRenderer.once(waitingEventName, (event, data) => {
-    //         callback(data);
-    //     });
-    //     ipcRenderer.send('sqluiNative/fetch', {waitingEventName});
-    // };
-
-    // send((value)=>{
-    //     console.log(value);
-    // });
-
     // here we are polyfilling fetch with ipcRenderer
-
     window.fetch = (url, options) => {
       return new Promise((resolve, reject) => {
         const requestId = `requestId.${Date.now()}.${Math.floor(
           Math.random() * 10000000000000000,
         )}`;
         ipcRenderer.once(requestId, (event, data) => {
-          const { ok, text } = data;
+          const { ok, text, status } = data;
+
+          let returnedData = text;
 
           try {
-            console.log(
-              '>> Network',
-              ok ? 'Success' : 'Error:',
-              options.method || 'get',
-              url,
-              JSON.parse(text),
-            );
-          } catch (err) {
-            console.log(
-              '>> Network',
-              ok ? 'Success' : 'Error:',
-              options.method || 'get',
-              url,
-              text,
-            );
-          }
+            returnedData = JSON.parse(text);
+          } catch (err) {}
+
+          console.log(
+            '>> Network',
+            ok ? 'Success' : 'Error:',
+            status,
+            options.method || 'get',
+            url,
+            returnedData,
+          );
 
           data.ok
             ? resolve({

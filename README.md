@@ -11,8 +11,8 @@
 
 
 ## TODOs:
-- [ ] Consolidate the interface for mocked server and the main.ts page
-- [ ] Make a build for OSX and Windows
+- [X] Consolidate the interface for mocked server and the main.ts page
+- [ ] Make a build for Windows (Done) and Darwin
 - [ ] Add a configuration / option page
 - [ ] Enhance the table for result with sorting, searching and pagination
 - [ ] Add quick query queries (such as select from a table or do update / insert)
