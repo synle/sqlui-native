@@ -1,6 +1,8 @@
 import { ColumnDescription } from 'sequelize';
 
 export module Sqlui {
+  export type Dialect = 'mysql' | 'mssql' | 'postgres' | 'sqlite' | string;
+
   export type CoreConnectionProps = {
     connection: string;
     name: string;
@@ -32,6 +34,7 @@ export module Sqlui {
 
   export type CoreConnectionMetaData = CoreConnectionProps & {
     databases: DatabaseMetaData[];
+    dialect?: Sqlui.Dialect;
   };
 
   export type ConnectionMetaData = CoreConnectionMetaData & ConnectionProps;
