@@ -12,7 +12,7 @@ try {
     // here we are polyfilling fetch with ipcRenderer
     const origFetch = window.fetch;
     window.fetch = (url, options) => {
-      if(url.indexOf('/api') !== 0){
+      if (url.indexOf('/api') !== 0) {
         // if not /api/, then use the original fetch
         return origFetch(url, options);
       }
