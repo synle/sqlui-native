@@ -141,3 +141,14 @@
     text-overflow: ellipsis;
   }
 }
+
+.Tab {
+  &__Header {
+    display: inline-flex;
+    align-items: center;
+
+    *:last-child {
+      margin-left: 10px;
+    }
+  }
+}
