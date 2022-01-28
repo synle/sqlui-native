@@ -16,7 +16,7 @@ export default function App() {
       <div className='App'>
         <AppBar position='static'>
           <Toolbar variant='dense'>
-            <Typography variant='h3'>SQLUI NATIVE</Typography>
+            <Typography variant='h4'>SQLUI NATIVE</Typography>
           </Toolbar>
         </AppBar>
 
