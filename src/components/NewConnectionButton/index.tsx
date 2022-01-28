@@ -11,7 +11,7 @@ export default function NewConnectionButton() {
         onClick={() => navigate('/connection/new')}
         startIcon={<AddIcon />}
         variant='outlined'>
-        New Connection
+        Connection
       </Button>
     </div>
   );
