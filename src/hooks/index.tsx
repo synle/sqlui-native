@@ -275,8 +275,25 @@ export function useConnectionQueries() {
     queryClient.invalidateQueries(QUERY_KEY_QUERIES);
   };
 
-  const onDeleteQuery = (queryId: string) => {
-    _connectionQueries = _connectionQueries.filter((q) => q.id !== queryId);
+  const onDeleteQuery = (queryId?: string) => {
+    if (!queryId) {
+      return;
+    }
+
+    let toBeSelected = 0;
+    _connectionQueries = _connectionQueries.filter((q, idx) => {
+      if (q.id !== queryId) {
+        return true;
+      }
+      toBeSelected = Math.max(0, idx - 1);
+
+      return false;
+    });
+
+    if (_connectionQueries.length > 0) {
+      _connectionQueries[toBeSelected].selected = true;
+    }
+
     queryClient.invalidateQueries(QUERY_KEY_QUERIES);
   };
 
@@ -331,7 +348,8 @@ export function useConnectionQueries() {
 export function useConnectionQuery(queryId: string) {
   const queryClient = useQueryClient();
 
-  const { queries, onChangeQuery, onExecuteQuery, isLoading, isFetching } = useConnectionQueries();
+  const { queries, onChangeQuery, onExecuteQuery, onDeleteQuery, isLoading, isFetching } =
+    useConnectionQueries();
 
   const query = queries?.find((q) => q.id === queryId);
 
@@ -340,19 +358,23 @@ export function useConnectionQuery(queryId: string) {
   const onChange = (key: keyof SqluiNative.ConnectionQuery, value?: string) =>
     onChangeQuery(query?.id, key, value);
 
+  const onDelete = () => onDeleteQuery(query?.id);
+
   return {
     isLoading,
     isFetching,
     query,
     onExecute,
     onChange,
+    onDelete,
   };
 }
 
 export function useActiveConnectionQuery() {
   const queryClient = useQueryClient();
 
-  const { queries, onChangeQuery, onExecuteQuery, isLoading, isFetching } = useConnectionQueries();
+  const { queries, onChangeQuery, onExecuteQuery, onDeleteQuery, isLoading, isFetching } =
+    useConnectionQueries();
 
   const query = queries?.find((q) => q.selected);
 
@@ -361,11 +383,14 @@ export function useActiveConnectionQuery() {
   const onChange = (key: keyof SqluiNative.ConnectionQuery, value?: string) =>
     onChangeQuery(query?.id, key, value);
 
+  const onDelete = () => onDeleteQuery(query?.id);
+
   return {
     isLoading,
     isFetching,
     query,
     onExecute,
     onChange,
+    onDelete,
   };
 }
