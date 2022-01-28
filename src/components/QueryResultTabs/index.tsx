@@ -56,12 +56,12 @@ export default function QueryResultTabs() {
     ...queries.map((q, idx) => {
       const options = [
         {
-          label: 'Close Query',
-          onClick: () => onDeleteTab(q),
-        },
-        {
           label: 'Rename',
           onClick: () => onRenameTab(q),
+        },
+        {
+          label: 'Close Query',
+          onClick: () => onDeleteTab(q),
         },
       ];
       return (
