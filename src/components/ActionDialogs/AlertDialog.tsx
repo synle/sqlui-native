@@ -30,7 +30,7 @@ export default function AlertDialog(props: AlertDialogProps) {
         </DialogContent>
         <DialogActions>
           <Button onClick={props.onDismiss}>{props.noLabel || 'No'}</Button>
-          <Button onClick={props.onYesClick} autoFocus>
+          <Button onClick={props.onYesClick} autoFocus variant='contained'>
             {props.yesLabel || 'Yes'}
           </Button>
         </DialogActions>
