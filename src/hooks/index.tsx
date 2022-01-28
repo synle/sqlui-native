@@ -62,15 +62,18 @@ export function useGetAvailableDatabaseConnections(metaData?: Sqlui.ConnectionMe
 
   for (const connection of connections) {
     const connectionId = connection.id;
-    for (const database of connection.databases) {
-      const databaseId = database.name as string;
 
-      res.push({
-        connectionId,
-        databaseId,
-        id: [connectionId, databaseId].join(' << '),
-        label: [connection.name, database.name].join(' > '),
-      });
+    if (connection.databases) {
+      for (const database of connection.databases) {
+        const databaseId = database.name as string;
+
+        res.push({
+          connectionId,
+          databaseId,
+          id: [connectionId, databaseId].join(' << '),
+          label: [connection.name, database.name].join(' > '),
+        });
+      }
     }
   }
 
