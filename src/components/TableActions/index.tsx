@@ -28,7 +28,10 @@ export default function TableActions(props: TableActionsProps) {
 
   let action;
 
-  action = getSelect1(tableActionInput);
+  action = getSelectAllColumns(tableActionInput);
+  action && actions.push(action);
+
+  action = getSelectSpecificColumns(tableActionInput);
   action && actions.push(action);
 
 
@@ -60,9 +63,8 @@ type TableActionOutput ={
 
 const QUERY_LIMIT = 10;
 
-function getSelect1(input : TableActionInput): TableActionOutput | undefined{
-  const label= `Select All`;
-
+function getSelectAllColumns(input : TableActionInput): TableActionOutput | undefined{
+  const label= `Select *`;
 
   switch (input.dialect) {
     case 'mssql':
@@ -85,6 +87,38 @@ function getSelect1(input : TableActionInput): TableActionOutput | undefined{
       return {
         label,
         query: `SELECT * FROM ${input.tableId} LIMIT ${QUERY_LIMIT}`
+      }
+  }
+}
+
+
+function getSelectSpecificColumns(input : TableActionInput): TableActionOutput | undefined{
+  const label= `Select *`;
+
+  const columnString = input.columns.map(col => col.name).join(',\n');
+  const whereColumnString = input.columns.map(col => `${col.name} = ''`).join('\n AND ');
+
+  switch (input.dialect) {
+    case 'mssql':
+      return {
+        label,
+        query: `SELECT TOP ${QUERY_LIMIT} ${columnString} FROM ${input.tableId} WHERE ${whereColumnString}`
+      }
+    case 'postgres':
+      return {
+        label,
+        query: `SELECT ${columnString} FROM ${input.tableId} LIMIT ${QUERY_LIMIT} WHERE ${whereColumnString}`
+      }
+    case 'sqlite':
+      return {
+        label,
+        query: `SELECT ${columnString} FROM ${input.tableId} LIMIT ${QUERY_LIMIT} WHERE ${whereColumnString}`
+      }
+    case 'mariadb':
+    case 'mysql':
+      return {
+        label,
+        query: `SELECT ${columnString} FROM ${input.tableId} LIMIT ${QUERY_LIMIT} WHERE ${whereColumnString}`
       }
   }
 }
