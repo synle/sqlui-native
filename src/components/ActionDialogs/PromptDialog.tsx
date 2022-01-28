@@ -34,7 +34,7 @@ export default function PromptDialog(props: PromptDialogProps) {
 
   return (
     <Dialog onClose={handleClose} aria-labelledby='prompt-dialog-title' open={props.open}>
-      <form onSubmit={onSave} style={{width: 500}}>
+      <form onSubmit={onSave} style={{ width: 500 }}>
         <DialogTitle id='prompt-dialog-title'>
           {props.title}
           <IconButton
