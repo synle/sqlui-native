@@ -3,7 +3,9 @@ import Typography from '@mui/material/Typography';
 import ViewColumnIcon from '@mui/icons-material/ViewColumn';
 import Alert from '@mui/material/Alert';
 import { AccordionHeader, AccordionBody } from 'src/components/Accordion';
-import SplitButton from 'src/components/SplitButton';
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
+import MenuIcon from '@mui/icons-material/Menu';
 import {
   useGetMetaData,
   useGetColumns,
@@ -11,6 +13,7 @@ import {
   useGetConnection,
   useActiveConnectionQuery,
 } from 'src/hooks';
+import DropdownButton from 'src/components/DropdownButton';
 import { Sqlui } from 'typings';
 
 type TableActionsProps = {
@@ -61,7 +64,11 @@ export default function TableActions(props: TableActionsProps) {
 
   return (
     <div className='TableActions'>
-      <SplitButton id='table-action-split-button' label='Table Actions' options={options} />
+      <DropdownButton id='table-action-split-button' options={options}>
+        <IconButton aria-label='Table Actions' size='small'>
+          <MenuIcon fontSize='inherit' />
+        </IconButton>
+      </DropdownButton>
     </div>
   );
 }

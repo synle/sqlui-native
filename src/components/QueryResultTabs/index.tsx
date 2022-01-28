@@ -51,7 +51,11 @@ export default function QueryResultTabs() {
       <>
         {q.name}
         <Tooltip title='Close this query'>
-          <CloseIcon fontSize='small' onClick={(e) => onDeleteTab(e, q.id)} aria-label='Close query' />
+          <CloseIcon
+            fontSize='small'
+            onClick={(e) => onDeleteTab(e, q.id)}
+            aria-label='Close query'
+          />
         </Tooltip>
       </>
     )),
