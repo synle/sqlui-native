@@ -35,13 +35,13 @@ export default function TableDescription(props: TableDescriptionProps) {
             <AccordionHeader expanded={visibles[key]} onToggle={() => onToggle(key)}>
               <TableRowsIcon color='success' fontSize='inherit' />
               <span>{table.name}</span>
-            </AccordionHeader>
-            <AccordionBody expanded={visibles[key]}>
               <TableActions
                 connectionId={connectionId}
                 databaseId={databaseId}
                 tableId={table.name}
               />
+            </AccordionHeader>
+            <AccordionBody expanded={visibles[key]}>
               <ColumnDescription
                 connectionId={connectionId}
                 databaseId={databaseId}

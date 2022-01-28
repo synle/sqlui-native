@@ -1,6 +1,5 @@
 import React from 'react';
 import Button from '@mui/material/Button';
-import ButtonGroup from '@mui/material/ButtonGroup';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ClickAwayListener from '@mui/material/ClickAwayListener';
 import Grow from '@mui/material/Grow';
@@ -9,19 +8,19 @@ import Popper from '@mui/material/Popper';
 import MenuItem from '@mui/material/MenuItem';
 import MenuList from '@mui/material/MenuList';
 
-interface SplitButtonOption {
+interface DropdownButtonOption {
   label: string;
   onClick: () => void;
 }
 
-interface SplitButtonProps {
+interface DropdownButtonProps {
   id: string;
-  label: string;
-  options: SplitButtonOption[];
+  children: React.ReactNode;
+  options: DropdownButtonOption[];
 }
 
-export default function SplitButton(props: SplitButtonProps) {
-  const { id, options, label } = props;
+export default function DropdownButton(props: DropdownButtonProps) {
+  const { id, options, children } = props;
   const [open, setOpen] = React.useState(false);
   const anchorRef = React.useRef<HTMLDivElement>(null);
   const [selectedIndex, setSelectedIndex] = React.useState(1);
@@ -34,7 +33,10 @@ export default function SplitButton(props: SplitButtonProps) {
     setOpen(false);
   };
 
-  const handleToggle = () => {
+  const handleToggle = (e: React.SyntheticEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
     setOpen((prevOpen) => !prevOpen);
   };
 
@@ -48,24 +50,21 @@ export default function SplitButton(props: SplitButtonProps) {
 
   return (
     <React.Fragment>
-      <ButtonGroup variant='outlined' ref={anchorRef} aria-label={label} size='small'>
-        <Button onClick={() => setOpen(!open)}>{label}</Button>
-        <Button
-          size='small'
-          aria-controls={open ? id : undefined}
-          aria-expanded={open ? 'true' : undefined}
-          aria-label={label}
-          aria-haspopup='menu'
-          onClick={handleToggle}>
-          <ArrowDropDownIcon />
-        </Button>
-      </ButtonGroup>
+      <span
+        ref={anchorRef}
+        aria-controls={open ? id : undefined}
+        aria-expanded={open ? 'true' : undefined}
+        aria-label='actions dropdown'
+        aria-haspopup='menu'
+        onClick={handleToggle}>
+        {children}
+      </span>
       <Popper open={open} anchorEl={anchorRef.current} role={undefined} transition>
         {({ TransitionProps, placement }) => (
           <Grow
             {...TransitionProps}
             style={{
-              transformOrigin: placement === 'bottom' ? 'center top' : 'center bottom',
+              transformOrigin: placement === 'bottom' ? 'right top' : 'right bottom',
             }}>
             <Paper>
               <ClickAwayListener onClickAway={handleClose}>
