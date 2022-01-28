@@ -25,10 +25,10 @@ export default function TestConnectionButton(props: TestConnectionButtonProps) {
 
   return (
     <>
-    <Button type='button' onClick={() => onTestConnection()}>
-      Test Connection
-    </Button>
-    <Toast open={!!message} onClose={() => setMessage('')} message={message} />
+      <Button type='button' onClick={() => onTestConnection()}>
+        Test Connection
+      </Button>
+      <Toast open={!!message} onClose={() => setMessage('')} message={message} />
     </>
   );
 }
