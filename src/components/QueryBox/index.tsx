@@ -82,6 +82,7 @@ export default function QueryBox(props: QueryBoxProps) {
           onBlur={(e) => onSqlQueryChange(e.target.value)}
           padding={10}
           minHeight={200}
+          autoFocus
           style={{
             backgroundColor: '#f5f5f5',
             border: 'none',
