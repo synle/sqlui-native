@@ -8,6 +8,8 @@ import ConnectionDescription from 'src/components/ConnectionDescription';
 import ResultBox from 'src/components/ResultBox';
 import { useExecute } from 'src/hooks';
 
+const VERTICAL_TAB_THRESHOLD = 20;
+
 interface TabsProps {
   tabIdx: number;
   onTabChange: (newTabIdx: number) => void;
@@ -24,18 +26,22 @@ export default function MyTabs(props: TabsProps) {
     props.onTabChange && props.onTabChange(newTabIdx);
   };
 
+  let isVerticalTabs = tabHeaders.length > VERTICAL_TAB_THRESHOLD;
+
   return (
-    <section className='Tabs'>
+    <section className={isVerticalTabs ? 'Tabs Tabs__Vertical' : 'Tabs Tabs__Horizontal'}>
       <Tabs
         value={tabIdx}
         onChange={(_e, newTabIdx) => onTabChange(newTabIdx)}
         variant='scrollable'
-        aria-label='Tabs'>
+        aria-label='Tabs'
+        orientation={isVerticalTabs ? 'vertical' : 'horizontal'}
+        className='Tab__Headers'>
         {tabHeaders.map((tabHeader, idx) => (
           <Tab key={idx} label={<div className='Tab__Header'>{tabHeader}</div>}></Tab>
         ))}
       </Tabs>
-      <div>{tabContents[tabIdx]}</div>
+      <div className='Tab__Body'>{tabContents[tabIdx]}</div>
     </section>
   );
 }

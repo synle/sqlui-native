@@ -142,13 +142,28 @@
   }
 }
 
-.Tab {
-  &__Header {
-    display: inline-flex;
-    align-items: center;
+.Tabs {
+  &__Vertical {
+    display: flex;
 
-    *:last-child {
+    .Tab__Headers {
+      flex-shrink: 0;
+    }
+
+    .Tab__Body {
+      flex-grow: 1;
       margin-left: 10px;
+    }
+  }
+
+  .Tab {
+    &__Header {
+      display: inline-flex;
+      align-items: center;
+
+      *:last-child {
+        margin-left: 10px;
+      }
     }
   }
 }
