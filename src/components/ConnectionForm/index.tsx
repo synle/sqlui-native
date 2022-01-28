@@ -16,7 +16,7 @@ type ConnectionFormProps = {
 export function NewConnectionForm() {
   const [name, setName] = useState('');
   const [connection, setConnection] = useState('');
-  const { data: upsertedConnection, mutateAsync, isLoading: saving } = useUpsertConnection();
+  const { mutateAsync, isLoading: saving } = useUpsertConnection();
   const navigate = useNavigate();
 
   const onSave = async () => {
@@ -47,7 +47,7 @@ export function EditConnectionForm(props: ConnectionFormProps) {
   const [connection, setConnection] = useState('');
   const { data: connections, isLoading: loading } = useGetMetaData();
   const connectionProps = useGetConnection(id, connections);
-  const { data: upsertedConnection, mutateAsync, isLoading: saving } = useUpsertConnection();
+  const { mutateAsync, isLoading: saving } = useUpsertConnection();
   const navigate = useNavigate();
 
   const onSave = async () => {

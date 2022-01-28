@@ -15,7 +15,13 @@ import TableActions from 'src/components/TableActions';
 import DropdownButton from 'src/components/DropdownButton';
 import { useActionDialogs } from 'src/components/ActionDialogs';
 import Toast from 'src/components/Toast';
-import { useRetryConnection, useGetMetaData, useShowHide, useDeleteConnection } from 'src/hooks';
+import {
+  useRetryConnection,
+  useGetMetaData,
+  useShowHide,
+  useDeleteConnection,
+  useDuplicateConnection,
+} from 'src/hooks';
 import { Sqlui } from 'typings';
 
 export default function ConnectionDescription() {
@@ -104,6 +110,7 @@ function ConnectionActions(props: ConnectionActionsProps) {
   const navigate = useNavigate();
   const { mutateAsync: deleteConnection } = useDeleteConnection();
   const { mutateAsync: reconnectConnection } = useRetryConnection();
+  const { mutateAsync: duplicateConnection } = useDuplicateConnection();
   const { confirm } = useActionDialogs();
 
   const onDelete = async () => {
@@ -120,10 +127,18 @@ function ConnectionActions(props: ConnectionActionsProps) {
     }
   };
 
+  const onDuplicate = async () => {
+    duplicateConnection(connection);
+  };
+
   const options = [
     {
       label: 'Edit',
       onClick: () => navigate(`/connection/edit/${connection.id}`),
+    },
+    {
+      label: 'Duplicate',
+      onClick: onDuplicate,
     },
     {
       label: 'Refresh',
