@@ -13,7 +13,7 @@ interface AlertDialogProps {
   yesLabel?: string;
   onYesClick: () => void;
   noLabel?: string;
-  onNoClick: () => void;
+  onDismiss: () => void;
 }
 
 export default function AlertDialog(props: AlertDialogProps) {
@@ -21,7 +21,7 @@ export default function AlertDialog(props: AlertDialogProps) {
     <div>
       <Dialog
         open={props.open}
-        onClose={props.onNoClick}
+        onClose={props.onDismiss}
         aria-labelledby='alert-dialog-title'
         aria-describedby='alert-dialog-description'>
         <DialogTitle id='alert-dialog-title'>{props.title}</DialogTitle>
@@ -29,7 +29,7 @@ export default function AlertDialog(props: AlertDialogProps) {
           <DialogContentText id='alert-dialog-description'>{props.message}</DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={props.onNoClick}>{props.noLabel || 'No'}</Button>
+          <Button onClick={props.onDismiss}>{props.noLabel || 'No'}</Button>
           <Button onClick={props.onYesClick} autoFocus>
             {props.yesLabel || 'Yes'}
           </Button>
