@@ -2,6 +2,7 @@ import React, { useState, createRef, useEffect } from 'react';
 import NewConnectionButton from 'src/components/NewConnectionButton';
 import ConnectionDescription from 'src/components/ConnectionDescription';
 import QueryResultTabs from 'src/components/QueryResultTabs';
+import Resizer from 'src/components/Resizer';
 
 export default function MainPage() {
   const [width, setWidth] = useState<undefined | number>();
@@ -12,24 +13,10 @@ export default function MainPage() {
         <NewConnectionButton />
         <ConnectionDescription />
       </div>
-      <MainPageSpacingResizer onSetWidth={setWidth} />
+      <Resizer onSetWidth={setWidth} />
       <div className='MainPage__RightPane'>
         <QueryResultTabs />
       </div>
     </section>
   );
-}
-
-// move this into a file
-interface MainPageSpacingResizerProps {
-  onSetWidth: (newWidth: number) => void;
-}
-
-function MainPageSpacingResizer(props: MainPageSpacingResizerProps) {
-  const onDragEnd = (e: React.MouseEvent) => {
-    const endX = e.clientX;
-    props.onSetWidth(endX);
-  };
-
-  return <div className='MainPage__Spacing' draggable={true} onDragEnd={onDragEnd} />;
 }

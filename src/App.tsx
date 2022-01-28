@@ -10,17 +10,14 @@ import EditConnectionPage from 'src/views/EditConnectionPage';
 import NewConnectionPage from 'src/views/NewConnectionPage';
 import MainPage from 'src/views/MainPage';
 import ActionDialogs from 'src/components/ActionDialogs';
+import AppHeader from 'src/components/AppHeader';
+import Resizer from 'src/components/Resizer';
 
 export default function App() {
   return (
     <HashRouter>
       <div className='App'>
-        <AppBar position='static'>
-          <Toolbar variant='dense'>
-            <Typography variant='h4'>SQLUI NATIVE</Typography>
-          </Toolbar>
-        </AppBar>
-
+        <AppHeader  />
         <section className='App__Section'>
           <Routes>
             <Route path='/' element={<MainPage />} />

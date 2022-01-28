@@ -16,14 +16,6 @@
     max-width: 50%;
   }
 
-  &__Spacing {
-    width: 15px;
-    &:hover {
-      background: #efefef;
-      cursor: col-resize;
-    }
-  }
-
   &__RightPane {
     flex-grow: 1;
     overflow: hidden;
@@ -165,5 +157,13 @@
         margin-left: 10px;
       }
     }
+  }
+}
+
+.Resizer {
+  width: 15px;
+  &:hover {
+    background: #efefef;
+    cursor: col-resize;
   }
 }
