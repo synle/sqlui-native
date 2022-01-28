@@ -60,4 +60,6 @@ export module SqluiNative {
     id: string;
     label: string;
   }
+
+  export type TreeVisibilities = { [index: string]: boolean };
 }

@@ -131,7 +131,23 @@ export function useDuplicateConnection() {
     mutateAsync: (connection: Sqlui.CoreConnectionProps) => {
       // delete the id - so we can duplicate
       const duplicatedConnection = {
-        name: `Connection ${new Date().toLocaleString()}`,
+        name: `Conn ${new Date().toLocaleString()}`,
+        connection: connection.connection,
+      };
+      upsertConnection(duplicatedConnection);
+    },
+    isLoading,
+  };
+}
+
+export function useImportConnection() {
+  const { mutateAsync: upsertConnection, isLoading } = useUpsertConnection();
+
+  return {
+    mutateAsync: (connection: Sqlui.CoreConnectionProps) => {
+      // delete the id - so we can duplicate
+      const duplicatedConnection = {
+        name: `Imported Conn ${new Date().toLocaleString()}`,
         connection: connection.connection,
       };
       upsertConnection(duplicatedConnection);
@@ -237,7 +253,7 @@ export function useTestConnection() {
 }
 
 // used for show and hide the sidebar trees
-let _treeVisibles: { [index: string]: boolean } = {};
+let _treeVisibles: SqluiNative.TreeVisibilities = {};
 
 export function useShowHide() {
   const queryClient = useQueryClient();
@@ -250,6 +266,10 @@ export function useShowHide() {
   const onToggle = (key: string) => {
     _treeVisibles[key] = !_treeVisibles[key];
     queryClient.invalidateQueries(QUERY_KEY_TREEVISIBLES);
+    queryClient.setQueryData<SqluiNative.TreeVisibilities | undefined>(
+      QUERY_KEY_TREEVISIBLES,
+      () => _treeVisibles,
+    );
   };
 
   return {
@@ -278,6 +298,14 @@ export function useConnectionQueries() {
 
   const { data: queries, isLoading, isFetching } = _useConnectionQueries();
 
+  function _invalidateQueries() {
+    queryClient.invalidateQueries(QUERY_KEY_QUERIES);
+    queryClient.setQueryData<SqluiNative.ConnectionQuery[] | undefined>(
+      QUERY_KEY_QUERIES,
+      () => _connectionQueries,
+    );
+  }
+
   const onAddQuery = (query?: SqluiNative.ConnectionQuery) => {
     const newId = `query.${Date.now()}.${Math.floor(Math.random() * 10000000000000000)}`;
 
@@ -294,6 +322,7 @@ export function useConnectionQueries() {
         ...query,
         id: newId,
         name: `Duplicated Query ${new Date().toLocaleString()}`,
+        selected: true,
       };
     }
 
@@ -305,7 +334,7 @@ export function useConnectionQueries() {
       newQuery,
     ];
 
-    queryClient.invalidateQueries(QUERY_KEY_QUERIES);
+    _invalidateQueries();
   };
 
   const onDeleteQueries = (queryIds?: string[]) => {
@@ -338,7 +367,7 @@ export function useConnectionQueries() {
       _connectionQueries[toBeSelected].selected = true;
     }
 
-    queryClient.invalidateQueries(QUERY_KEY_QUERIES);
+    _invalidateQueries();
   };
 
   const onDeleteQuery = (queryId?: string) => queryId && onDeleteQueries([queryId]);
@@ -348,7 +377,7 @@ export function useConnectionQueries() {
       q.selected = q.id === queryId;
       return q;
     });
-    queryClient.invalidateQueries(QUERY_KEY_QUERIES);
+    _invalidateQueries();
   };
 
   const onChangeQuery = (
@@ -363,26 +392,34 @@ export function useConnectionQueries() {
     }
 
     //@ts-ignore
-    query[key] = value || '';
-    _connectionQueries = [..._connectionQueries];
-    queryClient.invalidateQueries(QUERY_KEY_QUERIES);
+    _connectionQueries = [..._connectionQueries].map((query) => {
+      if (query.id === queryId) {
+        return {
+          ...query,
+          ...{ [key]: value || '' },
+        };
+      }
+
+      return query;
+    });
+    _invalidateQueries();
   };
 
   const onExecuteQuery = (queryId?: string) => {
+    onChangeQuery(queryId, 'lastExecuted', `${Date.now()}`);
+  };
+
+  const onDuplicateQuery = (queryId?: string) => {
     const query = queries?.find((q) => q.id === queryId);
 
     if (!query || !query) {
       return;
     }
 
-    query['lastExecuted'] = `${Date.now()}`;
-    queryClient.invalidateQueries(QUERY_KEY_QUERIES);
-    queryClient.invalidateQueries(`executeQuery.${query.id}`);
+    onAddQuery(query);
   };
 
-  const onDuplicateQuery = (queryId?: string) => {
-    const query = queries?.find((q) => q.id === queryId);
-
+  const onImportQuery = (query?: SqluiNative.ConnectionQuery) => {
     if (!query || !query) {
       return;
     }
@@ -401,6 +438,7 @@ export function useConnectionQueries() {
     onChangeQuery,
     onExecuteQuery,
     onDuplicateQuery,
+    onImportQuery,
   };
 }
 
