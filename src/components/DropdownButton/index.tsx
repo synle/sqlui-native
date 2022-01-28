@@ -33,14 +33,14 @@ export default function DropdownButton(props: DropdownButtonProps) {
     setOpen(false);
   };
 
-  const handleToggle = (e: React.SyntheticEvent) => {
+  const onToggle = (e: React.SyntheticEvent) => {
     e.preventDefault();
     e.stopPropagation();
 
     setOpen((prevOpen) => !prevOpen);
   };
 
-  const handleClose = (event: Event) => {
+  const onClose = (event: Event) => {
     if (anchorRef.current && anchorRef.current.contains(event.target as HTMLElement)) {
       return;
     }
@@ -56,7 +56,7 @@ export default function DropdownButton(props: DropdownButtonProps) {
         aria-expanded={open ? 'true' : undefined}
         aria-label='actions dropdown'
         aria-haspopup='menu'
-        onClick={handleToggle}>
+        onClick={onToggle}>
         {children}
       </i>
       <Popper open={open} anchorEl={anchorRef.current} role={undefined} transition>
@@ -67,7 +67,7 @@ export default function DropdownButton(props: DropdownButtonProps) {
               transformOrigin: placement === 'bottom' ? 'right top' : 'right bottom',
             }}>
             <Paper>
-              <ClickAwayListener onClickAway={handleClose}>
+              <ClickAwayListener onClickAway={onClose}>
                 <MenuList id={id}>
                   {options.map((option, index) => (
                     <MenuItem
