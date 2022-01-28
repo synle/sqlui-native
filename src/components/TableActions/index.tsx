@@ -3,6 +3,7 @@ import Typography from '@mui/material/Typography';
 import ViewColumnIcon from '@mui/icons-material/ViewColumn';
 import Alert from '@mui/material/Alert';
 import { AccordionHeader, AccordionBody } from 'src/components/Accordion';
+import SplitButton from 'src/components/SplitButton';
 import {
   useGetMetaData,
   useGetColumns,
@@ -53,17 +54,19 @@ export default function TableActions(props: TableActionsProps) {
     onChangeActiveQuery('sql', queryToShow);
   };
 
+  const options = actions.map((action) => ({
+    label: action.label,
+    onClick: () => onShowQuery(action.query),
+  }));
+
   return (
     <div className='TableActions'>
-      {actions.map((action) => (
-        <div>
-          <button onClick={() => onShowQuery(action.query)}>{action.label}</button>
-        </div>
-      ))}
+      <SplitButton id='table-action-split-button' label='Table Actions' options={options} />
     </div>
   );
 }
 
+// TODO: move me to a file
 interface TableActionInput {
   dialect: string;
   connectionId: string;
