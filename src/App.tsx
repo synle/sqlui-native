@@ -9,6 +9,7 @@ import { HashRouter, Routes, Route, Link } from 'react-router-dom';
 import EditConnectionPage from 'src/views/EditConnectionPage';
 import NewConnectionPage from 'src/views/NewConnectionPage';
 import MainPage from 'src/views/MainPage';
+import ActionDialogs from 'src/components/ActionDialogs';
 
 export default function App() {
   return (
@@ -29,6 +30,7 @@ export default function App() {
           </Routes>
         </section>
       </div>
+      <ActionDialogs />
     </HashRouter>
   );
 }
