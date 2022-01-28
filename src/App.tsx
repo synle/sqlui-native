@@ -17,7 +17,7 @@ export default function App() {
   return (
     <HashRouter>
       <div className='App'>
-        <AppHeader  />
+        <AppHeader />
         <section className='App__Section'>
           <Routes>
             <Route path='/' element={<MainPage />} />
