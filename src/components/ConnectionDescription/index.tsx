@@ -7,13 +7,17 @@ import IconButton from '@mui/material/IconButton';
 import Alert from '@mui/material/Alert';
 import { Button } from '@mui/material';
 import Tooltip from '@mui/material/Tooltip';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import DatabaseDescription from 'src/components/DatabaseDescription';
-import DeleteConnectionButton from 'src/components/DeleteConnectionButton';
 import { AccordionHeader, AccordionBody } from 'src/components/Accordion';
-import { useRetryConnection, useGetMetaData, useShowHide } from 'src/hooks';
+import ColumnDescription from 'src/components/ColumnDescription';
+import TableActions from 'src/components/TableActions';
+import DropdownButton from 'src/components/DropdownButton';
+import { useActionDialogs } from 'src/components/ActionDialogs';
+import { useRetryConnection, useGetMetaData, useShowHide, useDeleteConnection } from 'src/hooks';
+import { Sqlui } from 'typings';
 
 export default function ConnectionDescription() {
-  const navigate = useNavigate();
   const { data: connections, isLoading } = useGetMetaData();
   const { visibles, onToggle } = useShowHide();
 
@@ -36,15 +40,7 @@ export default function ConnectionDescription() {
             <AccordionHeader expanded={visibles[key]} onToggle={() => onToggle(key)}>
               <CloudIcon color={isOnline ? 'primary' : 'disabled'} fontSize='inherit' />
               <span>{connection.name}</span>
-              <Tooltip title='Edit Connection'>
-                <IconButton
-                  aria-label='Edit Connection'
-                  onClick={() => navigate(`/connection/edit/${connection.id}`)}
-                  size='small'>
-                  <EditIcon fontSize='inherit' />
-                </IconButton>
-              </Tooltip>
-              <DeleteConnectionButton connectionId={connection.id} />
+              <ConnectionActions connection={connection} />
             </AccordionHeader>
             <AccordionBody expanded={visibles[key]}>
               {isOnline ? (
@@ -94,5 +90,40 @@ function ConnectionRetryAlert(props: ConnectionRetryAlertProps) {
       }>
       Can't connect to this server
     </Alert>
+  );
+}
+
+// TOD:
+interface ConnectionActionsProps {
+  connection: Sqlui.ConnectionMetaData;
+}
+function ConnectionActions(props: ConnectionActionsProps) {
+  const { connection } = props;
+  const navigate = useNavigate();
+  const { mutateAsync: deleteConnection } = useDeleteConnection();
+  const { confirm } = useActionDialogs();
+
+  const onDelete = async () => {
+    await confirm('Delete this connection?');
+    await deleteConnection(connection.id);
+  };
+
+  const options = [
+    {
+      label: 'Edit',
+      onClick: () => navigate(`/connection/edit/${connection.id}`),
+    },
+    {
+      label: 'Delete',
+      onClick: onDelete,
+    },
+  ];
+
+  return (
+    <DropdownButton id='connection-actions-split-button' options={options}>
+      <IconButton aria-label='Connection Actions' size='small'>
+        <ArrowDropDownIcon fontSize='inherit' />
+      </IconButton>
+    </DropdownButton>
   );
 }

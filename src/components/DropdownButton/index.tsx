@@ -50,7 +50,7 @@ export default function DropdownButton(props: DropdownButtonProps) {
 
   return (
     <React.Fragment>
-      <span
+      <i
         ref={anchorRef}
         aria-controls={open ? id : undefined}
         aria-expanded={open ? 'true' : undefined}
@@ -58,7 +58,7 @@ export default function DropdownButton(props: DropdownButtonProps) {
         aria-haspopup='menu'
         onClick={handleToggle}>
         {children}
-      </span>
+      </i>
       <Popper open={open} anchorEl={anchorRef.current} role={undefined} transition>
         {({ TransitionProps, placement }) => (
           <Grow
