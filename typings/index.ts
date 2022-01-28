@@ -14,17 +14,14 @@ export module Sqlui {
     id: string;
   };
 
-  export type Column = ColumnDescription & {
+  export type ColumnMetaData = ColumnDescription & {
+    name: string;
     [index: string]: any;
-  };
-
-  export type ColumnMetaData = {
-    [index: string]: Column;
   };
 
   export type TableMetaData = {
     name: string;
-    columns?: ColumnMetaData;
+    columns: ColumnMetaData[];
   };
 
   export type DatabaseMetaData = {
@@ -33,8 +30,8 @@ export module Sqlui {
   };
 
   export type CoreConnectionMetaData = CoreConnectionProps & {
-    databases: DatabaseMetaData[];
     dialect?: Sqlui.Dialect;
+    databases: DatabaseMetaData[];
   };
 
   export type ConnectionMetaData = CoreConnectionMetaData & ConnectionProps;

@@ -110,8 +110,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     try {
       res.status(200).json(await engine.execute(sql, database));
     } catch (err) {
-      res.status(500);
-      res.send('Server Error');
+      res.status(500).send(err);
     }
   });
 
@@ -122,8 +121,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
       await engine.authenticate();
       res.status(200).json(await getConnectionMetaData(connection));
     } catch (err) {
-      res.status(500);
-      res.send('Server Error');
+      res.status(500).send(err);
     }
   });
 

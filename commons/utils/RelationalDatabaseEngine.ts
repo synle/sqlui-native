@@ -124,7 +124,7 @@ export class RelationalDatabaseEngine {
       .sort();
   }
 
-  async getColumns(table: string, database?: string): Promise<Record<string, ColumnDescription>> {
+  async getColumns(table: string, database?: string): Promise<Sqlui.ColumnMetaData[]> {
     switch (this.dialect) {
       case 'mssql':
       case 'postgres':
@@ -132,7 +132,21 @@ export class RelationalDatabaseEngine {
       case 'mariadb':
       case 'mysql':
       default:
-        return this.getConnection(database).getQueryInterface().describeTable(table);
+        const columns: Sqlui.ColumnMetaData[] = [];
+        try {
+          const columnMap = await this.getConnection(database)
+            .getQueryInterface()
+            .describeTable(table);
+
+          for (const columnName of Object.keys(columnMap)) {
+            columns.push({
+              name: columnName,
+              ...columnMap[columnName],
+            });
+          }
+        } catch (err) {}
+
+        return columns;
     }
   }
 
@@ -188,7 +202,7 @@ export async function getConnectionMetaData(connection: Sqlui.CoreConnectionProp
       }
 
       for (const table of tables) {
-        let columns: Sqlui.ColumnMetaData | undefined = undefined;
+        let columns: Sqlui.ColumnMetaData[] = [];
 
         try {
           columns = await engine.getColumns(table, database);

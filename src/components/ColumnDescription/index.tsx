@@ -28,14 +28,13 @@ export default function ColumnDescription(props: ColumnDescriptionProps) {
 
   return (
     <div className='ColumnDescription'>
-      {Object.keys(columns).map((columnName) => {
-        const column = columns[columnName];
-        const key = [connectionId, databaseId, tableId, columnName].join(' > ');
+      {columns.map((column) => {
+        const key = [connectionId, databaseId, tableId, column.name].join(' > ');
         return (
-          <React.Fragment key={columnName}>
+          <React.Fragment key={column.name}>
             <AccordionHeader expanded={visibles[key]} onToggle={() => onToggle(key)}>
               <ViewColumnIcon color='disabled' fontSize='small' />
-              <span>{columnName}</span>
+              <span>{column.name}</span>
             </AccordionHeader>
             <AccordionBody expanded={visibles[key]}>
               <ColumnAttributes column={column} />
@@ -49,7 +48,7 @@ export default function ColumnDescription(props: ColumnDescriptionProps) {
 
 // TODO: move me to a new file
 interface ColumnAttributesProps {
-  column: Sqlui.Column;
+  column: Sqlui.ColumnMetaData;
 }
 
 function ColumnAttributes(props: ColumnAttributesProps) {
