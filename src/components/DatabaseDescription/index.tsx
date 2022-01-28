@@ -3,6 +3,7 @@ import Typography from '@mui/material/Typography';
 import SelectAllIcon from '@mui/icons-material/SelectAll';
 import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
 import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
 import Alert from '@mui/material/Alert';
 import TableDescription from 'src/components/TableDescription';
 import { AccordionHeader, AccordionBody } from 'src/components/Accordion';
@@ -44,12 +45,14 @@ export default function DatabaseDescription(props: DatabaseDescriptionProps) {
             <AccordionHeader expanded={visibles[key]} onToggle={() => onToggle(key)}>
               <LibraryBooksIcon color='secondary' fontSize='inherit' />
               <span>{database.name}</span>
-              <IconButton
-                aria-label='Select Database For Execution'
-                onClick={(e) => onSelectDatabaseForQuery(e, database.name)}
-                size='small'>
-                <SelectAllIcon fontSize='inherit' />
-              </IconButton>
+              <Tooltip title='Select Database For Execution'>
+                <IconButton
+                  aria-label='Select Database For Execution'
+                  onClick={(e) => onSelectDatabaseForQuery(e, database.name)}
+                  size='small'>
+                  <SelectAllIcon fontSize='inherit' />
+                </IconButton>
+              </Tooltip>
             </AccordionHeader>
             <AccordionBody expanded={visibles[key]}>
               <TableDescription connectionId={connectionId} databaseId={database.name} />

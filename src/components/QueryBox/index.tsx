@@ -62,12 +62,6 @@ export default function QueryBox(props: QueryBoxProps) {
 
   const disabledExecute = executing || !query?.sql || !query?.connectionId;
 
-  const onDeleteQuery = () => {
-    if (confirm('Do you want to delete this query?')) {
-      onDelete();
-    }
-  };
-
   const onRenameQuery = () => {
     const oldName = query.name;
     const newName = prompt('Rename Query?', oldName);
@@ -103,9 +97,6 @@ export default function QueryBox(props: QueryBoxProps) {
       <div className='QueryBox__ActionRow'>
         <Button type='submit' variant='contained' disabled={disabledExecute} endIcon={<SendIcon />}>
           Execute
-        </Button>
-        <Button type='button' variant='outlined' onClick={onDeleteQuery} color='error'>
-          Delete
         </Button>
         <Button type='button' variant='outlined' onClick={onRenameQuery}>
           Rename

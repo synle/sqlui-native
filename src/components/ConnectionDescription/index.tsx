@@ -6,6 +6,7 @@ import CloudIcon from '@mui/icons-material/Cloud';
 import IconButton from '@mui/material/IconButton';
 import Alert from '@mui/material/Alert';
 import { Button } from '@mui/material';
+import Tooltip from '@mui/material/Tooltip';
 import DatabaseDescription from 'src/components/DatabaseDescription';
 import DeleteConnectionButton from 'src/components/DeleteConnectionButton';
 import { AccordionHeader, AccordionBody } from 'src/components/Accordion';
@@ -36,12 +37,14 @@ export default function ConnectionDescription() {
               <AccordionHeader expanded={visibles[key]} onToggle={() => onToggle(key)}>
                 <CloudIcon color='primary' fontSize='inherit' />
                 <span>{connection.name}</span>
-                <IconButton
-                  aria-label='Edit Connection'
-                  onClick={() => navigate(`/connection/edit/${connection.id}`)}
-                  size='small'>
-                  <EditIcon fontSize='inherit' />
-                </IconButton>
+                <Tooltip title='Edit Connection'>
+                  <IconButton
+                    aria-label='Edit Connection'
+                    onClick={() => navigate(`/connection/edit/${connection.id}`)}
+                    size='small'>
+                    <EditIcon fontSize='inherit' />
+                  </IconButton>
+                </Tooltip>
                 <DeleteConnectionButton connectionId={connection.id} />
               </AccordionHeader>
               <AccordionBody expanded={visibles[key]}>
