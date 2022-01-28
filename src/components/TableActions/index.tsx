@@ -5,7 +5,7 @@ import Alert from '@mui/material/Alert';
 import { AccordionHeader, AccordionBody } from 'src/components/Accordion';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
-import MenuIcon from '@mui/icons-material/Menu';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import {
   useGetMetaData,
   useGetColumns,
@@ -66,7 +66,7 @@ export default function TableActions(props: TableActionsProps) {
     <div className='TableActions'>
       <DropdownButton id='table-action-split-button' options={options}>
         <IconButton aria-label='Table Actions' size='small'>
-          <MenuIcon fontSize='inherit' />
+          <ArrowDropDownIcon fontSize='inherit' />
         </IconButton>
       </DropdownButton>
     </div>

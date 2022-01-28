@@ -62,14 +62,6 @@ export default function QueryBox(props: QueryBoxProps) {
 
   const disabledExecute = executing || !query?.sql || !query?.connectionId;
 
-  const onRenameQuery = () => {
-    const oldName = query.name;
-    const newName = prompt('Rename Query?', oldName);
-    if (newName) {
-      onChange('name', newName);
-    }
-  };
-
   return (
     <form className='QueryBox' onSubmit={onSubmit}>
       <div className='QueryBox__Row'>
@@ -97,9 +89,6 @@ export default function QueryBox(props: QueryBoxProps) {
       <div className='QueryBox__ActionRow'>
         <Button type='submit' variant='contained' disabled={disabledExecute} endIcon={<SendIcon />}>
           Execute
-        </Button>
-        <Button type='button' variant='outlined' onClick={onRenameQuery}>
-          Rename
         </Button>
       </div>
     </form>
