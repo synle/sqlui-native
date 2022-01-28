@@ -14,6 +14,7 @@ import ColumnDescription from 'src/components/ColumnDescription';
 import TableActions from 'src/components/TableActions';
 import DropdownButton from 'src/components/DropdownButton';
 import { useActionDialogs } from 'src/components/ActionDialogs';
+import Toast from 'src/components/Toast';
 import { useRetryConnection, useGetMetaData, useShowHide, useDeleteConnection } from 'src/hooks';
 import { Sqlui } from 'typings';
 
@@ -99,8 +100,10 @@ interface ConnectionActionsProps {
 }
 function ConnectionActions(props: ConnectionActionsProps) {
   const { connection } = props;
+  const [message, setMessage] = useState('');
   const navigate = useNavigate();
   const { mutateAsync: deleteConnection } = useDeleteConnection();
+  const { mutateAsync: reconnectConnection } = useRetryConnection();
   const { confirm } = useActionDialogs();
 
   const onDelete = async () => {
@@ -108,10 +111,23 @@ function ConnectionActions(props: ConnectionActionsProps) {
     await deleteConnection(connection.id);
   };
 
+  const onRefresh = async() => {
+    try {
+      await reconnectConnection(connection.id);
+      setMessage('Successfully refreshed connection');
+    } catch (err) {
+      setMessage('Failed to refresh connection');
+    }
+  }
+
   const options = [
     {
       label: 'Edit',
       onClick: () => navigate(`/connection/edit/${connection.id}`),
+    },
+    {
+      label: 'Refresh',
+      onClick: onRefresh,
     },
     {
       label: 'Delete',
@@ -120,10 +136,13 @@ function ConnectionActions(props: ConnectionActionsProps) {
   ];
 
   return (
-    <DropdownButton id='connection-actions-split-button' options={options}>
-      <IconButton aria-label='Connection Actions' size='small'>
-        <ArrowDropDownIcon fontSize='inherit' />
-      </IconButton>
-    </DropdownButton>
+    <>
+      <DropdownButton id='connection-actions-split-button' options={options}>
+        <IconButton aria-label='Connection Actions' size='small'>
+          <ArrowDropDownIcon fontSize='inherit' />
+        </IconButton>
+      </DropdownButton>
+      <Toast open={!!message} onClose={() => setMessage('')} message={message} />
+    </>
   );
 }
