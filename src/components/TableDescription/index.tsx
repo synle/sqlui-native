@@ -4,7 +4,9 @@ import TableRowsIcon from '@mui/icons-material/TableRows';
 import Alert from '@mui/material/Alert';
 import { AccordionHeader, AccordionBody } from 'src/components/Accordion';
 import ColumnDescription from 'src/components/ColumnDescription';
+import TableActions from 'src/components/TableActions';
 import { useGetMetaData, useGetTables, useShowHide } from 'src/hooks';
+
 
 type TableDescriptionProps = {
   connectionId: string;
@@ -37,6 +39,11 @@ export default function TableDescription(props: TableDescriptionProps) {
             </AccordionHeader>
             <AccordionBody expanded={visibles[key]}>
               <ColumnDescription
+                connectionId={connectionId}
+                databaseId={databaseId}
+                tableId={table.name}
+              />
+              <TableActions
                 connectionId={connectionId}
                 databaseId={databaseId}
                 tableId={table.name}
