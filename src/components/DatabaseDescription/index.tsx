@@ -16,7 +16,7 @@ export default function DatabaseDescription(props: DatabaseDescriptionProps) {
   const { connectionId } = props;
   const { data: connections, isLoading } = useGetMetaData();
   const databases = useGetDatabases(connectionId, connections);
-  const { query, onChange: onChangeQueryProp } = useActiveConnectionQuery();
+  const { query, onChange: onChangeActiveQuery } = useActiveConnectionQuery();
   const { visibles, onToggle } = useShowHide();
 
   if (isLoading) {
@@ -31,8 +31,8 @@ export default function DatabaseDescription(props: DatabaseDescriptionProps) {
     e.preventDefault();
     e.stopPropagation();
 
-    onChangeQueryProp('connectionId', connectionId);
-    onChangeQueryProp('databaseId', databaseId);
+    onChangeActiveQuery('connectionId', connectionId);
+    onChangeActiveQuery('databaseId', databaseId);
   };
 
   return (
@@ -42,13 +42,13 @@ export default function DatabaseDescription(props: DatabaseDescriptionProps) {
         return (
           <React.Fragment key={database.name}>
             <AccordionHeader expanded={visibles[key]} onToggle={() => onToggle(key)}>
-              <LibraryBooksIcon color='secondary' fontSize='small' />
+              <LibraryBooksIcon color='secondary' fontSize='inherit' />
               <span>{database.name}</span>
               <IconButton
                 aria-label='Select Database For Execution'
                 onClick={(e) => onSelectDatabaseForQuery(e, database.name)}
                 size='small'>
-                <SelectAllIcon fontSize='small' />
+                <SelectAllIcon fontSize='inherit' />
               </IconButton>
             </AccordionHeader>
             <AccordionBody expanded={visibles[key]}>

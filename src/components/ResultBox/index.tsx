@@ -21,7 +21,12 @@ export default function ResultBox(props: ResultBoxProps) {
   const { queryId } = props;
   const { query, isFetching: loadingQuery } = useConnectionQuery(queryId);
   const [tabIdx, setTabIdx] = useState(0);
-  const { data: queryResult, isFetching: loadingResults, isError } = useExecute(query);
+  const {
+    data: queryResult,
+    error: queryError,
+    isFetching: loadingResults,
+    isError,
+  } = useExecute(query);
 
   if (loadingQuery) {
     return <Alert severity='info'>Loading Query...</Alert>;
@@ -32,7 +37,22 @@ export default function ResultBox(props: ResultBoxProps) {
   }
 
   if (isError) {
-    return <Alert severity='error'>Query Error...</Alert>;
+    return (
+      <>
+        <Alert severity='error'>Query Error...</Alert>
+        <CodeEditor
+          value={JSON.stringify(queryError, null, 2)}
+          language='json'
+          padding={10}
+          minHeight={200}
+          style={{
+            backgroundColor: '#f5f5f5',
+            border: 'none',
+            fontFamily: 'monospace',
+          }}
+        />
+      </>
+    );
   }
 
   if (!query) {

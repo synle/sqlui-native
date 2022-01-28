@@ -21,6 +21,8 @@ export default function QueryResultTabs() {
     onShowQuery(queryId);
   };
 
+  // TODO: find a way to add me back
+  // onRenameQuery(queries[tabIdx].id, queries[tabIdx].name);
   const onRenameQuery = (queryId: string, oldName: string) => {
     const newName = prompt('Rename Query?', oldName);
     if (newName) {
@@ -40,7 +42,10 @@ export default function QueryResultTabs() {
       tabHeaders={tabHeaders}
       tabContents={tabContents}
       onTabChange={(newTabIdx) => {
-        if (newTabIdx < queries.length) {
+        if (newTabIdx === tabIdx) {
+          // if they clicked on the same tab twice, it's a rename
+          onRenameQuery(queries[tabIdx].id, queries[tabIdx].name);
+        } else if (newTabIdx < queries.length) {
           onTabChange(queries[newTabIdx].id);
         } else {
           onAddTab();
