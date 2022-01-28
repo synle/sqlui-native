@@ -1,10 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Typography from '@mui/material/Typography';
 import ViewColumnIcon from '@mui/icons-material/ViewColumn';
 import Alert from '@mui/material/Alert';
+import Button from '@mui/material/Button';
 import { AccordionHeader, AccordionBody } from 'src/components/Accordion';
 import { useGetMetaData, useGetColumns, useShowHide } from 'src/hooks';
 import { Sqlui } from 'typings';
+
+const MAX_COLUMN_SIZE_TO_SHOW = 5;
 
 type ColumnDescriptionProps = {
   connectionId: string;
@@ -19,6 +22,12 @@ export default function ColumnDescription(props: ColumnDescriptionProps) {
   const columns = useGetColumns(connectionId, databaseId, tableId, connections);
   const { visibles, onToggle } = useShowHide();
 
+  useEffect(() => {
+    if (columns && columns.length < MAX_COLUMN_SIZE_TO_SHOW) {
+      setShowAllColumns(true);
+    }
+  }, [columns]);
+
   if (isLoading) {
     return <>loading...</>;
   }
@@ -30,7 +39,7 @@ export default function ColumnDescription(props: ColumnDescriptionProps) {
   return (
     <div className='ColumnDescription'>
       {columns
-        .filter((column, idx) => showAllColumns || idx < 3)
+        .filter((column, idx) => showAllColumns || idx < MAX_COLUMN_SIZE_TO_SHOW)
         .map((column) => {
           const key = [connectionId, databaseId, tableId, column.name].join(' > ');
           return (
@@ -45,7 +54,7 @@ export default function ColumnDescription(props: ColumnDescriptionProps) {
             </React.Fragment>
           );
         })}
-      {!showAllColumns && <button onClick={() => setShowAllColumns(true)}>Show All</button>}
+      {!showAllColumns && <Button onClick={() => setShowAllColumns(true)}>Show All Columns</Button>}
     </div>
   );
 }
