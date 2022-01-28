@@ -7,7 +7,10 @@ import Tooltip from '@mui/material/Tooltip';
 import QueryResultContainer from 'src/components/QueryResultContainer';
 import Tabs from 'src/components/Tabs';
 import AddIcon from '@mui/icons-material/Add';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import DropdownButton from 'src/components/DropdownButton';
 import { useExecute, useConnectionQueries, useConnectionQuery } from 'src/hooks';
+import { SqluiNative } from 'typings';
 
 export default function QueryResultTabs() {
   const { queries, onAddQuery, onShowQuery, onChangeQuery, onDeleteQuery, isLoading } =
@@ -21,12 +24,17 @@ export default function QueryResultTabs() {
     onShowQuery(queryId);
   };
 
-  const onDeleteTab = (e: React.SyntheticEvent, queryId: string) => {
-    e.preventDefault();
-    e.stopPropagation();
-
+  const onDeleteTab = (query: SqluiNative.ConnectionQuery) => {
     if (confirm('Do you want to delete this query?')) {
-      onDeleteQuery(queryId);
+      onDeleteQuery(query.id);
+    }
+  };
+
+  const onRenameTab = (query: SqluiNative.ConnectionQuery) => {
+    const oldName = query.name;
+    const newName = prompt('Rename Query?', oldName);
+    if (newName) {
+      onChangeQuery(query.id, 'name', newName);
     }
   };
 
@@ -47,18 +55,26 @@ export default function QueryResultTabs() {
 
   const tabIdx = queries.findIndex((q) => q.selected === true) || 0;
   const tabHeaders: React.ReactNode[] = [
-    ...queries.map((q, idx) => (
-      <>
-        {q.name}
-        <Tooltip title='Close this query'>
-          <CloseIcon
-            fontSize='small'
-            onClick={(e) => onDeleteTab(e, q.id)}
-            aria-label='Close query'
-          />
-        </Tooltip>
-      </>
-    )),
+    ...queries.map((q, idx) => {
+      const options = [
+        {
+          label: 'Close Query',
+          onClick: () => onDeleteTab(q),
+        },
+        {
+          label: 'Rename',
+          onClick: () => onRenameTab(q),
+        },
+      ];
+      return (
+        <>
+          {q.name}
+          <DropdownButton id='table-action-split-button' options={options}>
+            <ArrowDropDownIcon fontSize='small' />
+          </DropdownButton>
+        </>
+      );
+    }),
     <>
       <AddIcon fontSize='small' aria-label='Add query' /> Add Query
     </>,

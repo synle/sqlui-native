@@ -103,11 +103,11 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
   });
 
   addDataEndpoint('post', '/api/connection/:connectionId/execute', async (req, res, apiCache) => {
-    const connection = await ConnectionUtils.getConnection(req.params?.connectionId);
-    const engine = getEngine(connection.connection);
-    const sql = req.body?.sql;
-    const database = req.body?.database;
     try {
+      const connection = await ConnectionUtils.getConnection(req.params?.connectionId);
+      const engine = getEngine(connection.connection);
+      const sql = req.body?.sql;
+      const database = req.body?.database;
       res.status(200).json(await engine.execute(sql, database));
     } catch (err) {
       res.status(500).send(err);
