@@ -25,7 +25,8 @@ export function NewConnectionForm() {
       connection,
     });
 
-    navigate(`/connection/edit/${newConnection.id}`, { replace: true });
+    // when done, go back to the main page
+    navigate(`/`, { replace: true });
   };
 
   return (
@@ -47,13 +48,17 @@ export function EditConnectionForm(props: ConnectionFormProps) {
   const { data: connections, isLoading: loading } = useGetMetaData();
   const connectionProps = useGetConnection(id, connections);
   const { data: upsertedConnection, mutateAsync, isLoading: saving } = useUpsertConnection();
+  const navigate = useNavigate();
 
   const onSave = async () => {
-    mutateAsync({
+    await mutateAsync({
       id,
       name,
       connection,
     });
+
+    // when done, go back to the main page
+    navigate(`/`, { replace: true });
   };
 
   // set the data for existing form
