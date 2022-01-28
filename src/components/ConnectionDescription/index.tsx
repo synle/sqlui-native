@@ -31,44 +31,27 @@ export default function ConnectionDescription() {
         const key = [connection.id].join(' > ');
         const isOnline = connection?.status === 'online';
 
-        if (isOnline) {
-          return (
-            <React.Fragment key={key}>
-              <AccordionHeader expanded={visibles[key]} onToggle={() => onToggle(key)}>
-                <CloudIcon color='primary' fontSize='inherit' />
-                <span>{connection.name}</span>
-                <Tooltip title='Edit Connection'>
-                  <IconButton
-                    aria-label='Edit Connection'
-                    onClick={() => navigate(`/connection/edit/${connection.id}`)}
-                    size='small'>
-                    <EditIcon fontSize='inherit' />
-                  </IconButton>
-                </Tooltip>
-                <DeleteConnectionButton connectionId={connection.id} />
-              </AccordionHeader>
-              <AccordionBody expanded={visibles[key]}>
-                <DatabaseDescription connectionId={connection.id} />
-              </AccordionBody>
-            </React.Fragment>
-          );
-        }
-
-        // offline
         return (
           <React.Fragment key={key}>
             <AccordionHeader expanded={visibles[key]} onToggle={() => onToggle(key)}>
-              <CloudIcon color='disabled' />
+              <CloudIcon color={isOnline ? 'primary' : 'disabled'} fontSize='inherit' />
               <span>{connection.name}</span>
-              <IconButton
-                aria-label='Edit Connection'
-                onClick={() => navigate(`/connection/edit/${connection.id}`)}>
-                <EditIcon />
-              </IconButton>
+              <Tooltip title='Edit Connection'>
+                <IconButton
+                  aria-label='Edit Connection'
+                  onClick={() => navigate(`/connection/edit/${connection.id}`)}
+                  size='small'>
+                  <EditIcon fontSize='inherit' />
+                </IconButton>
+              </Tooltip>
               <DeleteConnectionButton connectionId={connection.id} />
             </AccordionHeader>
             <AccordionBody expanded={visibles[key]}>
-              <ConnectionRetryAlert connectionId={connection.id} />
+              {isOnline ? (
+                <DatabaseDescription connectionId={connection.id} />
+              ) : (
+                <ConnectionRetryAlert connectionId={connection.id} />
+              )}
             </AccordionBody>
           </React.Fragment>
         );
