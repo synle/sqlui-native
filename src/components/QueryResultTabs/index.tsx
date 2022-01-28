@@ -14,7 +14,7 @@ import { SqluiNative } from 'typings';
 import { useActionDialogs } from 'src/components/ActionDialogs';
 
 export default function QueryResultTabs() {
-  const { queries, onAddQuery, onShowQuery, onChangeQuery, onDeleteQuery, isLoading } =
+  const { queries, onAddQuery, onShowQuery, onChangeQuery, onDeleteQueries, isLoading } =
     useConnectionQueries();
   const { confirm, prompt } = useActionDialogs();
 
@@ -26,12 +26,18 @@ export default function QueryResultTabs() {
     onShowQuery(queryId);
   };
 
-  const onDeleteTab = async (query: SqluiNative.ConnectionQuery) => {
+  const onCloseQuery = async (query: SqluiNative.ConnectionQuery) => {
     await confirm('Do you want to delete this query?');
-    onDeleteQuery(query.id);
+    onDeleteQueries([query.id]);
   };
 
-  const onRenameTab = async (query: SqluiNative.ConnectionQuery) => {
+  const onCloseOtherQueries = async (query: SqluiNative.ConnectionQuery) => {
+    await confirm('Do you want to close other queries?');
+    onDeleteQueries(queries?.map(q => q.id).filter(queryId => queryId !== query.id))
+  };
+
+
+  const onRenameQuery = async (query: SqluiNative.ConnectionQuery) => {
     const newName = await prompt('Rename Query?', query.name);
     onChangeQuery(query.id, 'name', newName);
   };
@@ -57,11 +63,15 @@ export default function QueryResultTabs() {
       const options = [
         {
           label: 'Rename',
-          onClick: () => onRenameTab(q),
+          onClick: () => onRenameQuery(q),
         },
         {
-          label: 'Close Query',
-          onClick: () => onDeleteTab(q),
+          label: 'Close',
+          onClick: () => onCloseQuery(q),
+        },
+        {
+          label: 'Close Other Tabs',
+          onClick: () => onCloseOtherQueries(q),
         },
       ];
       return (
