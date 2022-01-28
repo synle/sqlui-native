@@ -9,6 +9,7 @@ import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
+import CodeEditor from '@uiw/react-textarea-code-editor';
 
 interface PromptDialogProps {
   open: boolean;
@@ -18,6 +19,7 @@ interface PromptDialogProps {
   saveLabel?: string;
   onSaveClick: (newValue: string) => void;
   onDismiss: () => void;
+  isLongPrompt?: boolean;
 }
 
 export default function PromptDialog(props: PromptDialogProps) {
@@ -34,7 +36,7 @@ export default function PromptDialog(props: PromptDialogProps) {
 
   return (
     <Dialog onClose={handleClose} aria-labelledby='prompt-dialog-title' open={props.open}>
-      <form onSubmit={onSave} style={{ width: 500 }}>
+      <form onSubmit={onSave} style={{ width: 600 }}>
         <DialogTitle id='prompt-dialog-title'>
           {props.title}
           <IconButton
@@ -50,15 +52,31 @@ export default function PromptDialog(props: PromptDialogProps) {
           </IconButton>
         </DialogTitle>
         <DialogContent dividers>
-          <TextField
-            label={props.message}
-            value={value}
-            onChange={(e) => setValue(e.target.value)}
-            required
-            size='small'
-            fullWidth={true}
-            autoFocus={true}
-          />
+          {props.isLongPrompt ? (
+            <CodeEditor
+              value={value}
+              onChange={(e) => setValue(e.target.value)}
+              language='json'
+              padding={10}
+              minHeight={400}
+              style={{
+                backgroundColor: '#f5f5f5',
+                border: 'none',
+                fontFamily: 'monospace',
+              }}
+              autoFocus
+            />
+          ) : (
+            <TextField
+              label={props.message}
+              value={value}
+              onChange={(e) => setValue(e.target.value)}
+              required
+              size='small'
+              fullWidth
+              autoFocus
+            />
+          )}
         </DialogContent>
         <DialogActions>
           <Button type='submit'>{props.saveLabel || 'Save Changes'}</Button>
