@@ -12,20 +12,15 @@ export default function ActionDialogs(props: ActionDialogsProps) {
     return null;
   }
 
-  // TODO: implement me
   const onConfirmSubmit = () => {
     dismiss();
     dialog.onSubmit(true);
-  };
-  const onConfirmDismiss = () => {
-    dismiss();
-    dialog.onSubmit(false);
   };
   const onPromptSaveClick = (newValue?: string) => {
     dismiss();
     dialog.onSubmit(true, newValue);
   };
-  const onPromptDismiss = () => {
+  const onDimiss = () => {
     dismiss();
     dialog.onSubmit(false);
   };
@@ -38,7 +33,7 @@ export default function ActionDialogs(props: ActionDialogsProps) {
           title='Confirmation'
           message={dialog.message}
           onYesClick={onConfirmSubmit}
-          onDismiss={onConfirmDismiss}
+          onDismiss={onDimiss}
         />
       );
     case 'prompt':
@@ -49,7 +44,8 @@ export default function ActionDialogs(props: ActionDialogsProps) {
           message={dialog.message}
           value={dialog.defaultValue}
           onSaveClick={onPromptSaveClick}
-          onDismiss={onPromptDismiss}
+          onDismiss={onDimiss}
+          isLongPrompt={dialog.isLongPrompt}
         />
       );
   }
@@ -68,6 +64,7 @@ type ActionDialog =
       message: string;
       defaultValue?: string;
       onSubmit: (yesSelected: boolean, newValue?: string) => void;
+      isLongPrompt?: boolean;
     };
 
 const QUERY_KEY_ACTION_DIALOGS = 'actionDialogs';
@@ -78,12 +75,17 @@ export function useActionDialogs() {
 
   const { data, isLoading: loading } = useQuery(QUERY_KEY_ACTION_DIALOGS, () => _actionDialogs);
 
-  const prompt = (message: string, defaultValue: string): Promise<string | undefined> => {
+  const prompt = (
+    message: string,
+    defaultValue: string,
+    isLongPrompt?: boolean,
+  ): Promise<string | undefined> => {
     return new Promise((resolve, reject) => {
       const newActionDialog: ActionDialog = {
         type: 'prompt',
         message,
         defaultValue,
+        isLongPrompt,
         onSubmit: (yesSelected, newValue) => {
           yesSelected ? resolve(newValue) : reject();
         },

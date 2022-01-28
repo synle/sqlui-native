@@ -68,8 +68,6 @@ export default function ResultBox(props: ResultBoxProps) {
 
   const [data] = queryResult;
 
-  // return <pre>{JSON.stringify(data, null, 2)}</pre>;
-
   if (!Array.isArray(data)) {
     return (
       <div className='ResultBox'>
