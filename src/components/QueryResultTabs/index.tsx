@@ -16,7 +16,7 @@ import { useActionDialogs } from 'src/components/ActionDialogs';
 export default function QueryResultTabs() {
   const { queries, onAddQuery, onShowQuery, onChangeQuery, onDeleteQuery, isLoading } =
     useConnectionQueries();
-  const { confirm } = useActionDialogs();
+  const { confirm, prompt } = useActionDialogs();
 
   const onAddTab = () => {
     onAddQuery();
@@ -31,12 +31,9 @@ export default function QueryResultTabs() {
     onDeleteQuery(query.id);
   };
 
-  const onRenameTab = (query: SqluiNative.ConnectionQuery) => {
-    const oldName = query.name;
-    const newName = prompt('Rename Query?', oldName);
-    if (newName) {
-      onChangeQuery(query.id, 'name', newName);
-    }
+  const onRenameTab = async (query: SqluiNative.ConnectionQuery) => {
+    const newName = await prompt('Rename Query?', query.name);
+    onChangeQuery(query.id, 'name', newName);
   };
 
   if (isLoading) {

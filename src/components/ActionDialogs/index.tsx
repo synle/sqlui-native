@@ -2,7 +2,7 @@ import { useState, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
 import { Sqlui, SqluiNative } from 'typings';
 import AlertDialog from 'src/components/ActionDialogs/AlertDialog';
-
+import PromptDialog from 'src/components/ActionDialogs/PromptDialog';
 interface ActionDialogsProps {}
 
 export default function ActionDialogs(props: ActionDialogsProps) {
@@ -13,23 +13,43 @@ export default function ActionDialogs(props: ActionDialogsProps) {
   }
 
   // TODO: implement me
-  const onYesClick = () => {
+  const onConfirmSubmit = () => {
     dismiss();
     dialog.onSubmit(true);
   };
-  const onNoClick = () => {
+  const onConfirmDismiss = () => {
     dismiss();
     dialog.onSubmit(false);
   };
+  const onPromptSaveClick = (newValue?: string) => {
+    dismiss();
+    dialog.onSubmit(true, newValue);
+  };
+  const onPromptDismiss = () => {
+    dismiss();
+    dialog.onSubmit(false);
+  };
+
   switch (dialog.type) {
     case 'confirm':
       return (
         <AlertDialog
           open={true}
-          title='Confirmation?'
+          title='Confirmation'
           message={dialog.message}
-          onYesClick={onYesClick}
-          onNoClick={onNoClick}
+          onYesClick={onConfirmSubmit}
+          onDismiss={onConfirmDismiss}
+        />
+      );
+    case 'prompt':
+      return (
+        <PromptDialog
+          open={true}
+          title='Prompt'
+          message={dialog.message}
+          value={dialog.defaultValue}
+          onSaveClick={onPromptSaveClick}
+          onDismiss={onPromptDismiss}
         />
       );
   }
@@ -58,7 +78,7 @@ export function useActionDialogs() {
 
   const { data, isLoading: loading } = useQuery(QUERY_KEY_ACTION_DIALOGS, () => _actionDialogs);
 
-  const prompt = (message: string, defaultValue: string) => {
+  const prompt = (message: string, defaultValue: string): Promise<string | undefined> => {
     return new Promise((resolve, reject) => {
       const newActionDialog: ActionDialog = {
         type: 'prompt',
