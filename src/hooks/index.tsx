@@ -275,27 +275,41 @@ export function useConnectionQueries() {
     queryClient.invalidateQueries(QUERY_KEY_QUERIES);
   };
 
-  const onDeleteQuery = (queryId?: string) => {
-    if (!queryId) {
+  const onDeleteQueries = (queryIds?: string[]) => {
+    if (!queryIds || queryIds.length === 0) {
       return;
     }
 
     let toBeSelected = 0;
-    _connectionQueries = _connectionQueries.filter((q, idx) => {
-      if (q.id !== queryId) {
+    if (queryIds.length === 1) {
+      const [queryId] = queryIds;
+      _connectionQueries = _connectionQueries.filter((q, idx) => {
+        if (q.id !== queryId) {
+          return true;
+        }
+        toBeSelected = Math.max(0, idx - 1);
+
+        return false;
+      });
+    } else {
+      _connectionQueries = _connectionQueries.filter((q, idx) => {
+        if (queryIds.indexOf(q.id) >= 0) {
+          return false;
+        }
+
         return true;
-      }
-      toBeSelected = Math.max(0, idx - 1);
+      });
+    }
 
-      return false;
-    });
-
-    if (_connectionQueries.length > 0) {
+    if (_connectionQueries[toBeSelected]) {
       _connectionQueries[toBeSelected].selected = true;
     }
 
+    _connectionQueries[toBeSelected].selected;
     queryClient.invalidateQueries(QUERY_KEY_QUERIES);
   };
+
+  const onDeleteQuery = (queryId?: string) => queryId && onDeleteQueries([queryId]);
 
   const onShowQuery = (queryId: string) => {
     _connectionQueries = _connectionQueries.map((q) => {
@@ -339,6 +353,7 @@ export function useConnectionQueries() {
     queries,
     onAddQuery,
     onDeleteQuery,
+    onDeleteQueries,
     onShowQuery,
     onChangeQuery,
     onExecuteQuery,
