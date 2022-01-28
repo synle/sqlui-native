@@ -12,6 +12,7 @@ import DropdownButton from 'src/components/DropdownButton';
 import { useExecute, useConnectionQueries, useConnectionQuery } from 'src/hooks';
 import { SqluiNative } from 'typings';
 import { useActionDialogs } from 'src/components/ActionDialogs';
+import { downloadText } from 'src/data/file';
 
 export default function QueryResultTabs() {
   const {
@@ -52,6 +53,15 @@ export default function QueryResultTabs() {
     onDuplicateQuery(query.id);
   };
 
+  const onExportQuery = async (query: SqluiNative.ConnectionQuery) => {
+    const { selected, lastExecuted, ...dataToExport } = query;
+    downloadText(
+      `${query.name}.query.json`,
+      JSON.stringify([{ _type: 'query', ...dataToExport }], null, 2),
+      'text/json',
+    );
+  };
+
   if (isLoading) {
     return <>loading...</>;
   }
@@ -74,6 +84,10 @@ export default function QueryResultTabs() {
         {
           label: 'Rename',
           onClick: () => onRenameQuery(q),
+        },
+        {
+          label: 'Export',
+          onClick: () => onExportQuery(q),
         },
         {
           label: 'Duplicate',

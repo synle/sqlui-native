@@ -22,6 +22,7 @@ import {
   useDeleteConnection,
   useDuplicateConnection,
 } from 'src/hooks';
+import { downloadText } from 'src/data/file';
 import { Sqlui } from 'typings';
 
 export default function ConnectionDescription() {
@@ -131,10 +132,23 @@ function ConnectionActions(props: ConnectionActionsProps) {
     duplicateConnection(connection);
   };
 
+  const onExportConnection = () => {
+    const { dialect, databases, ...dataToExport } = connection;
+    downloadText(
+      `${connection.name}.connection.json`,
+      JSON.stringify([{ _type: 'connection', ...dataToExport }], null, 2),
+      'text/json',
+    );
+  };
+
   const options = [
     {
       label: 'Edit',
       onClick: () => navigate(`/connection/edit/${connection.id}`),
+    },
+    {
+      label: 'Export',
+      onClick: onExportConnection,
     },
     {
       label: 'Duplicate',
