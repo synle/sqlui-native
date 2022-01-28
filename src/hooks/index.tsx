@@ -178,28 +178,38 @@ export function useExecute(query?: SqluiNative.ConnectionQuery) {
 
 export function useRetryConnection() {
   const queryClient = useQueryClient();
-  return useMutation<Sqlui.ConnectionMetaData, void, string>(dataApi.reconnect, {
-    onSuccess: async (newConnection) => {
-      queryClient.invalidateQueries('connection');
+  return useMutation<Sqlui.ConnectionMetaData, Sqlui.ConnectionMetaData, string>(
+    dataApi.reconnect,
+    {
+      onSettled: async (newConnection, newCleanedConnection) => {
+        // NOTE: here we used settled, because if the connection
+        // went bad, we want to also refresh the data
+        queryClient.invalidateQueries('connection');
 
-      queryClient.setQueryData<Sqlui.ConnectionMetaData[] | undefined>(
-        QUERY_KEY_CONNECTIONS,
-        (oldData) => {
-          // find that entry
-          oldData = oldData?.map((connection) => {
-            if (connection.id === newConnection.id) {
-              return newConnection;
-            }
-            return connection;
-          });
+        queryClient.setQueryData<Sqlui.ConnectionMetaData[] | undefined>(
+          QUERY_KEY_CONNECTIONS,
+          (oldData) => {
+            // find that entry
+            oldData = oldData?.map((connection) => {
+              if (connection.id === newConnection?.id) {
+                // good connnection
+                return newConnection;
+              }
+              if (connection.id === newCleanedConnection?.id) {
+                // bad connection
+                return newCleanedConnection;
+              }
+              return connection;
+            });
 
-          return oldData;
-        },
-      );
+            return oldData;
+          },
+        );
 
-      return newConnection;
+        return newConnection;
+      },
     },
-  });
+  );
 }
 
 export function useTestConnection() {
