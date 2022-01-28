@@ -7,7 +7,6 @@ import ColumnDescription from 'src/components/ColumnDescription';
 import TableActions from 'src/components/TableActions';
 import { useGetMetaData, useGetTables, useShowHide } from 'src/hooks';
 
-
 type TableDescriptionProps = {
   connectionId: string;
   databaseId: string;
@@ -34,7 +33,7 @@ export default function TableDescription(props: TableDescriptionProps) {
         return (
           <React.Fragment key={table.name}>
             <AccordionHeader expanded={visibles[key]} onToggle={() => onToggle(key)}>
-              <TableRowsIcon color='success' fontSize='small' />
+              <TableRowsIcon color='success' fontSize='inherit' />
               <span>{table.name}</span>
             </AccordionHeader>
             <AccordionBody expanded={visibles[key]}>
