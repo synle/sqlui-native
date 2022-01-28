@@ -262,20 +262,31 @@ export function useConnectionQueries() {
 
   const { data: queries, isLoading, isFetching } = _useConnectionQueries();
 
-  const onAddQuery = () => {
+  const onAddQuery = (query?: SqluiNative.ConnectionQuery) => {
     const newId = `query.${Date.now()}.${Math.floor(Math.random() * 10000000000000000)}`;
+
+    let newQuery: SqluiNative.ConnectionQuery;
+    if (!query) {
+      newQuery = {
+        id: newId,
+        name: `Query ${new Date().toLocaleString()}`,
+        sql: '',
+        selected: true,
+      };
+    } else {
+      newQuery = {
+        ...query,
+        id: newId,
+        name: `Duplicated Query ${new Date().toLocaleString()}`,
+      };
+    }
 
     _connectionQueries = [
       ..._connectionQueries.map((q) => {
         q.selected = false;
         return q;
       }),
-      {
-        id: newId,
-        name: `Query ${new Date().toLocaleString()}`,
-        sql: '',
-        selected: true,
-      },
+      newQuery,
     ];
 
     queryClient.invalidateQueries(QUERY_KEY_QUERIES);
@@ -353,6 +364,16 @@ export function useConnectionQueries() {
     queryClient.invalidateQueries(`executeQuery.${query.id}`);
   };
 
+  const onDuplicateQuery = (queryId?: string) => {
+    const query = queries?.find((q) => q.id === queryId);
+
+    if (!query || !query) {
+      return;
+    }
+
+    onAddQuery(query);
+  };
+
   return {
     isLoading,
     isFetching,
@@ -363,6 +384,7 @@ export function useConnectionQueries() {
     onShowQuery,
     onChangeQuery,
     onExecuteQuery,
+    onDuplicateQuery,
   };
 }
 

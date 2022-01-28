@@ -14,8 +14,15 @@ import { SqluiNative } from 'typings';
 import { useActionDialogs } from 'src/components/ActionDialogs';
 
 export default function QueryResultTabs() {
-  const { queries, onAddQuery, onShowQuery, onChangeQuery, onDeleteQueries, isLoading } =
-    useConnectionQueries();
+  const {
+    queries,
+    onAddQuery,
+    onShowQuery,
+    onChangeQuery,
+    onDeleteQueries,
+    onDuplicateQuery,
+    isLoading,
+  } = useConnectionQueries();
   const { confirm, prompt } = useActionDialogs();
 
   const onAddTab = () => {
@@ -41,6 +48,10 @@ export default function QueryResultTabs() {
     onChangeQuery(query.id, 'name', newName);
   };
 
+  const onDuplicate = async (query: SqluiNative.ConnectionQuery) => {
+    onDuplicateQuery(query.id);
+  };
+
   if (isLoading) {
     return <>loading...</>;
   }
@@ -63,6 +74,10 @@ export default function QueryResultTabs() {
         {
           label: 'Rename',
           onClick: () => onRenameQuery(q),
+        },
+        {
+          label: 'Duplicate',
+          onClick: () => onDuplicate(q),
         },
         {
           label: 'Close',
