@@ -239,9 +239,7 @@ try {
 function _useConnectionQueries() {
   return useQuery(QUERY_KEY_QUERIES, () => _connectionQueries, {
     onSuccess: (data) => {
-      if (data && Object.keys(data).length > 0) {
-        window.localStorage.setItem('cache.connectionQueries', JSON.stringify(data));
-      }
+      window.localStorage.setItem('cache.connectionQueries', JSON.stringify(data));
     },
   });
 }
@@ -326,6 +324,7 @@ export function useConnectionQueries() {
 
     //@ts-ignore
     query[key] = value || '';
+    _connectionQueries = [..._connectionQueries];
     queryClient.invalidateQueries(QUERY_KEY_QUERIES);
   };
 
