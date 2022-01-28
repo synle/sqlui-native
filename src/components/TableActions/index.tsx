@@ -96,23 +96,23 @@ function getSelectAllColumns(input: TableActionInput): TableActionOutput | undef
     case 'mssql':
       return {
         label,
-        query: `SELECT TOP ${QUERY_LIMIT} * \n FROM ${input.tableId}`,
+        query: `SELECT TOP ${QUERY_LIMIT} * \nFROM ${input.tableId}`,
       };
     case 'postgres':
       return {
         label,
-        query: `SELECT * \n FROM ${input.tableId} \n LIMIT ${QUERY_LIMIT}`,
+        query: `SELECT * \nFROM ${input.tableId} \nLIMIT ${QUERY_LIMIT}`,
       };
     case 'sqlite':
       return {
         label,
-        query: `SELECT * \n FROM ${input.tableId} \n LIMIT ${QUERY_LIMIT}`,
+        query: `SELECT * \nFROM ${input.tableId} \nLIMIT ${QUERY_LIMIT}`,
       };
     case 'mariadb':
     case 'mysql':
       return {
         label,
-        query: `SELECT * \n FROM ${input.tableId} \n LIMIT ${QUERY_LIMIT}`,
+        query: `SELECT * \nFROM ${input.tableId} \nLIMIT ${QUERY_LIMIT}`,
       };
   }
 }
@@ -120,30 +120,30 @@ function getSelectAllColumns(input: TableActionInput): TableActionOutput | undef
 function getSelectSpecificColumns(input: TableActionInput): TableActionOutput | undefined {
   const label = `Select Specific Columns`;
 
-  const columnString = input.columns.map((col) => col.name).join(',\n');
-  const whereColumnString = input.columns.map((col) => `${col.name} = ''`).join('\n AND ');
+  const columnString = `\n` + input.columns.map((col) => `  ${col.name}`).join(',\n');
+  const whereColumnString = input.columns.map((col) => `${col.name} = ''`).join('\n -- AND ');
 
   switch (input.dialect) {
     case 'mssql':
       return {
         label,
-        query: `SELECT TOP ${QUERY_LIMIT} ${columnString} \n FROM ${input.tableId} WHERE ${whereColumnString}`,
+        query: `SELECT TOP ${QUERY_LIMIT} ${columnString} \nFROM ${input.tableId} -- WHERE ${whereColumnString}`,
       };
     case 'postgres':
       return {
         label,
-        query: `SELECT ${columnString} \n FROM ${input.tableId} WHERE ${whereColumnString} \n LIMIT ${QUERY_LIMIT}`,
+        query: `SELECT ${columnString} \nFROM ${input.tableId} \n -- WHERE ${whereColumnString} \nLIMIT ${QUERY_LIMIT}`,
       };
     case 'sqlite':
       return {
         label,
-        query: `SELECT ${columnString} \n FROM ${input.tableId} WHERE ${whereColumnString} \n LIMIT ${QUERY_LIMIT}`,
+        query: `SELECT ${columnString} \nFROM ${input.tableId} \n -- WHERE ${whereColumnString} \nLIMIT ${QUERY_LIMIT}`,
       };
     case 'mariadb':
     case 'mysql':
       return {
         label,
-        query: `SELECT ${columnString} \n FROM ${input.tableId} WHERE ${whereColumnString} \n LIMIT ${QUERY_LIMIT}`,
+        query: `SELECT ${columnString} \nFROM ${input.tableId} \n -- WHERE ${whereColumnString} \nLIMIT ${QUERY_LIMIT}`,
       };
   }
 }
@@ -171,7 +171,7 @@ function getUpdateCommand(input: TableActionInput): TableActionOutput | undefine
   const label = `Update`;
 
   const columnString = input.columns.map((col) => `${col.name} = ''`).join(',\n');
-  const whereColumnString = input.columns.map((col) => `${col.name} = ''`).join('\n AND ');
+  const whereColumnString = input.columns.map((col) => `${col.name} = ''`).join('\n -- AND ');
 
   switch (input.dialect) {
     case 'mssql':
