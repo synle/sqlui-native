@@ -233,14 +233,7 @@ let _connectionQueries: SqluiNative.ConnectionQuery[];
 try {
   _connectionQueries = JSON.parse(window.localStorage.getItem('cache.connectionQueries') || '');
 } catch (err) {
-  _connectionQueries = [
-    {
-      id: '1',
-      name: 'Query #1',
-      sql: '',
-      selected: true,
-    },
-  ];
+  _connectionQueries = [];
 }
 
 function _useConnectionQueries() {
@@ -259,13 +252,15 @@ export function useConnectionQueries() {
   const { data: queries, isLoading, isFetching } = _useConnectionQueries();
 
   const onAddQuery = () => {
+    const newId = `query.${Date.now()}.${Math.floor(Math.random() * 10000000000000000)}`;
+
     _connectionQueries = [
       ..._connectionQueries.map((q) => {
         q.selected = false;
         return q;
       }),
       {
-        id: `${Date.now()}`,
+        id: newId,
         name: `Query ${new Date().toLocaleString()}`,
         sql: '',
         selected: true,
