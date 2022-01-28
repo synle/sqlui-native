@@ -33,7 +33,7 @@ export default function ColumnDescription(props: ColumnDescriptionProps) {
         return (
           <React.Fragment key={column.name}>
             <AccordionHeader expanded={visibles[key]} onToggle={() => onToggle(key)}>
-              <ViewColumnIcon color='disabled' fontSize='small' />
+              <ViewColumnIcon color='disabled' fontSize='inherit' />
               <span>{column.name}</span>
             </AccordionHeader>
             <AccordionBody expanded={visibles[key]}>

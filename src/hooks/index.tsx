@@ -256,7 +256,7 @@ function _useConnectionQueries() {
 export function useConnectionQueries() {
   const queryClient = useQueryClient();
 
-  const { data: queries, isLoading } = _useConnectionQueries();
+  const { data: queries, isLoading, isFetching } = _useConnectionQueries();
 
   const onAddQuery = () => {
     _connectionQueries = [
@@ -289,13 +289,13 @@ export function useConnectionQueries() {
   };
 
   const onChangeQuery = (
-    queryId: string,
+    queryId: string | undefined,
     key: keyof SqluiNative.ConnectionQuery,
     value?: string,
   ) => {
     const query = queries?.find((q) => q.id === queryId);
 
-    if (!query) {
+    if (!query || !query) {
       return;
     }
 
@@ -304,42 +304,41 @@ export function useConnectionQueries() {
     queryClient.invalidateQueries(QUERY_KEY_QUERIES);
   };
 
+  const onExecuteQuery = (queryId?: string) => {
+    const query = queries?.find((q) => q.id === queryId);
+
+    if (!query || !query) {
+      return;
+    }
+
+    query['lastExecuted'] = `${Date.now()}`;
+    queryClient.invalidateQueries(QUERY_KEY_QUERIES);
+    queryClient.invalidateQueries(`executeQuery.${query.id}`);
+  };
+
   return {
     isLoading,
+    isFetching,
     queries,
     onAddQuery,
     onDeleteQuery,
     onShowQuery,
     onChangeQuery,
+    onExecuteQuery,
   };
 }
 
 export function useConnectionQuery(queryId: string) {
   const queryClient = useQueryClient();
 
-  const { data: queries, isLoading, isFetching } = _useConnectionQueries();
+  const { queries, onChangeQuery, onExecuteQuery, isLoading, isFetching } = useConnectionQueries();
 
   const query = queries?.find((q) => q.id === queryId);
 
-  const onExecute = () => {
-    if (!query) {
-      return;
-    }
-    query['lastExecuted'] = `${Date.now()}`;
-    queryClient.invalidateQueries(QUERY_KEY_QUERIES);
-    queryClient.invalidateQueries(`${QUERY_KEY_RESULTS}_${query.id}`);
-  };
+  const onExecute = () => onExecuteQuery(query?.id);
 
-  const onChange = (key: keyof SqluiNative.ConnectionQuery, value?: string) => {
-    if (!query) {
-      return;
-    }
-
-    //@ts-ignore
-    query[key] = value || '';
-    queryClient.invalidateQueries(QUERY_KEY_QUERIES);
-    queryClient.invalidateQueries(`result.${query.id}`);
-  };
+  const onChange = (key: keyof SqluiNative.ConnectionQuery, value?: string) =>
+    onChangeQuery(query?.id, key, value);
 
   return {
     isLoading,
@@ -353,32 +352,18 @@ export function useConnectionQuery(queryId: string) {
 export function useActiveConnectionQuery() {
   const queryClient = useQueryClient();
 
-  const { data: queries, isLoading } = _useConnectionQueries();
+  const { queries, onChangeQuery, onExecuteQuery, isLoading, isFetching } = useConnectionQueries();
 
   const query = queries?.find((q) => q.selected);
 
-  const onExecute = () => {
-    if (!query) {
-      return;
-    }
-    query['lastExecuted'] = `${Date.now()}`;
-    queryClient.invalidateQueries(QUERY_KEY_QUERIES);
-    queryClient.invalidateQueries(`executeQuery.${query.id}`);
-  };
+  const onExecute = () => onExecuteQuery(query?.id);
 
-  const onChange = (key: keyof SqluiNative.ConnectionQuery, value?: string) => {
-    if (!query) {
-      return;
-    }
-
-    //@ts-ignore
-    query[key] = value || '';
-    queryClient.invalidateQueries(QUERY_KEY_QUERIES);
-    queryClient.invalidateQueries(`executeQuery.${query.id}`);
-  };
+  const onChange = (key: keyof SqluiNative.ConnectionQuery, value?: string) =>
+    onChangeQuery(query?.id, key, value);
 
   return {
     isLoading,
+    isFetching,
     query,
     onExecute,
     onChange,

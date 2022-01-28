@@ -20,7 +20,7 @@ export default function DeleteConnectionButton(props: DeleteConnectionButtonProp
 
   return (
     <IconButton aria-label='Delete Connection' onClick={onDelete} size='small'>
-      <DeleteIcon fontSize='small' />
+      <DeleteIcon fontSize='inherit' />
     </IconButton>
   );
 }

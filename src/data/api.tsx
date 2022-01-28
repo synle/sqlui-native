@@ -14,15 +14,16 @@ function _fetch<T>(...inputs) {
     headers,
   })
     .then(async (r) => {
-      if (!r.ok) {
-        throw r;
-      }
-      let response = await r.text();
+      const response = await r.text();
+
+      let responseToUse;
       try {
-        return JSON.parse(response);
+        responseToUse = JSON.parse(response);
       } catch (err) {
-        return response;
+        responseToUse = response;
       }
+
+      return r.ok ? responseToUse : Promise.reject(responseToUse);
     })
     .then((r) => {
       const res: T = r;
