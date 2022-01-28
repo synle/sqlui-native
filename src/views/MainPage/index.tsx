@@ -8,13 +8,13 @@ export default function MainPage() {
   const [width, setWidth] = useState<undefined | number>();
 
   return (
-    <section className='MainPage'>
-      <div className='MainPage__LeftPane' style={{ width }}>
+    <section className='MainPage LayoutTwoColumns'>
+      <div className='LayoutTwoColumns__LeftPane' style={{ width }}>
         <NewConnectionButton />
         <ConnectionDescription />
       </div>
       <Resizer onSetWidth={setWidth} />
-      <div className='MainPage__RightPane'>
+      <div className='LayoutTwoColumns__RightPane'>
         <QueryResultTabs />
       </div>
     </section>
