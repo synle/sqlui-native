@@ -3,6 +3,7 @@ import {
   RelationalDatabaseEngine,
   getEngine,
   getConnectionMetaData,
+  resetConnectionMetaData,
 } from './RelationalDatabaseEngine';
 import ConnectionUtils from './ConnectionUtils';
 import { Sqlui } from '../../typings';
@@ -53,8 +54,8 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
   addDataEndpoint('get', '/api/connection/:connectionId/databases', async (req, res, apiCache) => {
     const connection = await ConnectionUtils.getConnection(req.params?.connectionId);
 
-    if(!connection){
-      return res.status(404).send('Not Found')
+    if (!connection) {
+      return res.status(404).send('Not Found');
     }
 
     try {
@@ -99,9 +100,11 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
   addDataEndpoint('post', '/api/connection/:connectionId/connect', async (req, res, apiCache) => {
     const connection = await ConnectionUtils.getConnection(req.params?.connectionId);
 
-    if(!connection){
-      return res.status(404).send('Not Found')
+    if (!connection) {
+      return res.status(404).send('Not Found');
     }
+
+    apiCache.cacheMetaData = null;
 
     try {
       const engine = getEngine(connection.connection);
@@ -109,15 +112,17 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
       apiCache.cacheMetaData = null;
       res.status(200).json(await getConnectionMetaData(connection));
     } catch (err) {
-      res.status(500).send();
+      // here means we failed to connect, just set back 407 - Not Acceptable
+      // here we return the barebone
+      res.status(406).json(await resetConnectionMetaData(connection));
     }
   });
 
   addDataEndpoint('post', '/api/connection/:connectionId/execute', async (req, res, apiCache) => {
     const connection = await ConnectionUtils.getConnection(req.params?.connectionId);
 
-    if(!connection){
-      return res.status(404).send('Not Found')
+    if (!connection) {
+      return res.status(404).send('Not Found');
     }
 
     try {

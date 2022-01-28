@@ -111,14 +111,14 @@ function ConnectionActions(props: ConnectionActionsProps) {
     await deleteConnection(connection.id);
   };
 
-  const onRefresh = async() => {
+  const onRefresh = async () => {
     try {
       await reconnectConnection(connection.id);
       setMessage('Successfully refreshed connection');
     } catch (err) {
       setMessage('Failed to refresh connection');
     }
-  }
+  };
 
   const options = [
     {

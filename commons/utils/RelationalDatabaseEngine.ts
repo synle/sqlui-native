@@ -227,3 +227,15 @@ export async function getConnectionMetaData(connection: Sqlui.CoreConnectionProp
 
   return connItem;
 }
+
+export function resetConnectionMetaData(connection: Sqlui.CoreConnectionProps) {
+  const connItem: Sqlui.CoreConnectionMetaData = {
+    name: connection.name,
+    id: connection?.id,
+    connection: connection.connection,
+    databases: [] as Sqlui.DatabaseMetaData[],
+    status: 'offline',
+  };
+
+  return connItem;
+}
