@@ -33,12 +33,11 @@ export default function QueryResultTabs() {
 
   const onCloseOtherQueries = async (query: SqluiNative.ConnectionQuery) => {
     await confirm('Do you want to close other queries?');
-    onDeleteQueries(queries?.map(q => q.id).filter(queryId => queryId !== query.id))
+    onDeleteQueries(queries?.map((q) => q.id).filter((queryId) => queryId !== query.id));
   };
 
-
   const onRenameQuery = async (query: SqluiNative.ConnectionQuery) => {
-    const newName = await prompt('Rename Query?', query.name);
+    const newName = await prompt('New Query Name', query.name);
     onChangeQuery(query.id, 'name', newName);
   };
 

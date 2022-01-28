@@ -305,7 +305,6 @@ export function useConnectionQueries() {
       _connectionQueries[toBeSelected].selected = true;
     }
 
-    _connectionQueries[toBeSelected].selected;
     queryClient.invalidateQueries(QUERY_KEY_QUERIES);
   };
 

@@ -26,9 +26,15 @@ export default function PromptDialog(props: PromptDialogProps) {
     props.onDismiss();
   };
 
+  const onSave = (e: React.SyntheticEvent) => {
+    e.preventDefault();
+
+    props.onSaveClick(value);
+  };
+
   return (
-    <div>
-      <Dialog onClose={handleClose} aria-labelledby='prompt-dialog-title' open={props.open}>
+    <Dialog onClose={handleClose} aria-labelledby='prompt-dialog-title' open={props.open}>
+      <form onSubmit={onSave} style={{width: 500}}>
         <DialogTitle id='prompt-dialog-title'>
           {props.title}
           <IconButton
@@ -51,14 +57,13 @@ export default function PromptDialog(props: PromptDialogProps) {
             required
             size='small'
             fullWidth={true}
+            autoFocus={true}
           />
         </DialogContent>
         <DialogActions>
-          <Button autoFocus onClick={() => props.onSaveClick(value)}>
-            {props.saveLabel || 'Save Changes'}
-          </Button>
+          <Button type='submit'>{props.saveLabel || 'Save Changes'}</Button>
         </DialogActions>
-      </Dialog>
-    </div>
+      </form>
+    </Dialog>
   );
 }
