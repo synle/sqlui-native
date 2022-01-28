@@ -174,7 +174,7 @@ function getUpdateCommand(input: TableActionInput): TableActionOutput | undefine
     case 'mysql':
       return {
         label,
-        query: `SELECT ${columnString} \n FROM ${input.tableId} \n WHERE ${whereColumnString}`,
+        query: `UPDATE ${input.tableId}\n SET \n${columnString}\n WHERE ${whereColumnString}`,
       };
   }
 }
