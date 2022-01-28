@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import Typography from '@mui/material/Typography';
 import ViewColumnIcon from '@mui/icons-material/ViewColumn';
 import Alert from '@mui/material/Alert';
@@ -13,6 +13,7 @@ type ColumnDescriptionProps = {
 };
 
 export default function ColumnDescription(props: ColumnDescriptionProps) {
+  const [showAllColumns, setShowAllColumns]  =useState(false);
   const { databaseId, connectionId, tableId } = props;
   const { data: connections, isLoading } = useGetMetaData();
   const columns = useGetColumns(connectionId, databaseId, tableId, connections);
@@ -28,7 +29,7 @@ export default function ColumnDescription(props: ColumnDescriptionProps) {
 
   return (
     <div className='ColumnDescription'>
-      {columns.map((column) => {
+      {columns.filter((column, idx) => showAllColumns || idx < 3).map((column) => {
         const key = [connectionId, databaseId, tableId, column.name].join(' > ');
         return (
           <React.Fragment key={column.name}>
@@ -42,6 +43,9 @@ export default function ColumnDescription(props: ColumnDescriptionProps) {
           </React.Fragment>
         );
       })}
+      {
+              !showAllColumns && <button onClick={() => setShowAllColumns(true)}>Show All</button>
+            }
     </div>
   );
 }
