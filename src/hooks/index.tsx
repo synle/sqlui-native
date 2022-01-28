@@ -124,6 +124,22 @@ export function useUpsertConnection() {
   );
 }
 
+export function useDuplicateConnection() {
+  const { mutateAsync: upsertConnection, isLoading } = useUpsertConnection();
+
+  return {
+    mutateAsync: (connection: Sqlui.CoreConnectionProps) => {
+      // delete the id - so we can duplicate
+      const duplicatedConnection = {
+        name: `Connection ${new Date().toLocaleString()}`,
+        connection: connection.connection,
+      };
+      upsertConnection(duplicatedConnection);
+    },
+    isLoading,
+  };
+}
+
 export function useDeleteConnection() {
   const queryClient = useQueryClient();
 
