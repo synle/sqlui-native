@@ -65,6 +65,9 @@ export default function QueryBox(props: QueryBoxProps) {
   return (
     <form className='QueryBox' onSubmit={onSubmit}>
       <div className='QueryBox__Row'>
+        <Typography variant='h6'>{query.name}</Typography>
+      </div>
+      <div className='QueryBox__Row'>
         <ConnectionDatabaseSelector
           value={query}
           onChange={onDatabaseConnectionChange}
