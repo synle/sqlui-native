@@ -4,6 +4,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import { useDeleteConnection } from 'src/hooks';
+import { useActionDialogs } from 'src/components/ActionDialogs';
 
 interface DeleteConnectionButtonProps {
   connectionId: string;
@@ -11,12 +12,14 @@ interface DeleteConnectionButtonProps {
 
 export default function DeleteConnectionButton(props: DeleteConnectionButtonProps) {
   const { connectionId } = props;
+  const { confirm } = useActionDialogs();
   const { mutateAsync } = useDeleteConnection();
   const onDelete = async (e: React.SyntheticEvent) => {
     e.preventDefault();
     e.stopPropagation();
 
-    confirm('Delete this connection?') && (await mutateAsync(connectionId));
+    await confirm('Delete this connection?');
+    await mutateAsync(connectionId);
   };
 
   return (
