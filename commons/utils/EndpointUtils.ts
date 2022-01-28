@@ -19,7 +19,7 @@ function addDataEndpoint(
   if (expressAppContext) {
     // set up the route in the context of express server
     expressAppContext[method](url, async (req, res) => {
-      handler(req, res, _apiCache);
+      setTimeout(() => handler(req, res, _apiCache), 250);
     });
   } else {
     electronEndpointHandlers.push([method, url, handler]);
