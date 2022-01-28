@@ -37,12 +37,12 @@ export default function TableDescription(props: TableDescriptionProps) {
               <span>{table.name}</span>
             </AccordionHeader>
             <AccordionBody expanded={visibles[key]}>
-              <ColumnDescription
+              <TableActions
                 connectionId={connectionId}
                 databaseId={databaseId}
                 tableId={table.name}
               />
-              <TableActions
+              <ColumnDescription
                 connectionId={connectionId}
                 databaseId={databaseId}
                 tableId={table.name}
