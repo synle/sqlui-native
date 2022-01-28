@@ -26,9 +26,12 @@ export default function DropdownButton(props: DropdownButtonProps) {
   const [selectedIndex, setSelectedIndex] = React.useState(1);
 
   const handleMenuItemClick = (
-    event: React.MouseEvent<HTMLLIElement, MouseEvent>,
+    e: React.MouseEvent<HTMLLIElement, MouseEvent>,
     index: number,
   ) => {
+    e.preventDefault();
+    e.stopPropagation();
+
     options[index].onClick();
     setOpen(false);
   };
