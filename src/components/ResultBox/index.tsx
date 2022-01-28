@@ -10,8 +10,11 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import Alert from '@mui/material/Alert';
+import DownloadIcon from '@mui/icons-material/Download';
+import Tooltip from '@mui/material/Tooltip';
 import { useExecute, useConnectionQueries, useConnectionQuery } from 'src/hooks';
 import Tabs from 'src/components/Tabs';
+import { downloadText } from 'src/data/file';
 
 interface ResultBoxProps {
   queryId: string;
@@ -75,7 +78,42 @@ export default function ResultBox(props: ResultBoxProps) {
     );
   }
 
-  const tabHeaders = ['JSON', 'CSV', 'Table'];
+  const onDownloadJson = async (e: React.SyntheticEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    downloadText(
+      `Result - ${new Date().toLocaleString()}.result.json`,
+      JSON.stringify(data, null, 2),
+      'text/json',
+    );
+  };
+
+  const onDownloadCsv = async (e: React.SyntheticEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    CsvEngine.json2csv(queryResult[0], (err, newCsv) => {
+      if (!err && newCsv) {
+        downloadText(`Result - ${new Date().toLocaleString()}.result.csv`, newCsv, 'text/csv');
+      }
+    });
+  };
+
+  const tabHeaders = [
+    <>
+      JSON
+      <Tooltip title='Download Result JSON'>
+        <DownloadIcon fontSize='small' onClick={onDownloadJson} />
+      </Tooltip>
+    </>,
+    <>
+      CSV{' '}
+      <Tooltip title='Download Result CSV'>
+        <DownloadIcon fontSize='small' onClick={onDownloadCsv} />
+      </Tooltip>
+    </>,
+    <>Table</>,
+  ];
 
   const tabContents = [
     <div className='ResultBox__Content' key={`JSON`}>
