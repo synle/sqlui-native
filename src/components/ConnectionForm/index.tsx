@@ -6,6 +6,7 @@ import TextField from '@mui/material/TextField';
 import FormControl from '@mui/material/FormControl';
 import { useGetMetaData, useUpsertConnection, useGetConnection } from 'src/hooks';
 import TestConnectionButton from 'src/components/TestConnectionButton';
+import Toast from 'src/components/Toast';
 import { Sqlui } from 'typings';
 
 type ConnectionFormProps = {
@@ -75,7 +76,7 @@ export function EditConnectionForm(props: ConnectionFormProps) {
 }
 
 interface MainConnectionFormProps {
-  onSave: () => void;
+  onSave: () => Promise<void>;
   name: string;
   setName: (newVal: string) => void;
   connection: string;
@@ -86,10 +87,17 @@ interface MainConnectionFormProps {
 
 function MainConnectionForm(props: MainConnectionFormProps) {
   const navigate = useNavigate();
+  const [toastOpen, setToastOpen] = useState(false);
 
-  const onSave = (e: React.SyntheticEvent) => {
+  const onSave = async (e: React.SyntheticEvent) => {
     e.preventDefault();
-    props.onSave();
+    setToastOpen(true);
+    try {
+      await props.onSave();
+      // setToastOpen(false)
+    } catch (err) {
+      // setToastOpen(false)
+    }
   };
 
   if (props.loading) {
@@ -136,6 +144,7 @@ function MainConnectionForm(props: MainConnectionFormProps) {
         </Button>
         <TestConnectionButton connection={connection} />
       </div>
+      <Toast open={toastOpen} onClose={() => setToastOpen(false)} message='Connection Saved...' />
     </form>
   );
 }
