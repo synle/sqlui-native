@@ -11,10 +11,12 @@ import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import DropdownButton from 'src/components/DropdownButton';
 import { useExecute, useConnectionQueries, useConnectionQuery } from 'src/hooks';
 import { SqluiNative } from 'typings';
+import { useActionDialogs } from 'src/components/ActionDialogs';
 
 export default function QueryResultTabs() {
   const { queries, onAddQuery, onShowQuery, onChangeQuery, onDeleteQuery, isLoading } =
     useConnectionQueries();
+  const { confirm } = useActionDialogs();
 
   const onAddTab = () => {
     onAddQuery();
@@ -24,10 +26,9 @@ export default function QueryResultTabs() {
     onShowQuery(queryId);
   };
 
-  const onDeleteTab = (query: SqluiNative.ConnectionQuery) => {
-    if (confirm('Do you want to delete this query?')) {
-      onDeleteQuery(query.id);
-    }
+  const onDeleteTab = async (query: SqluiNative.ConnectionQuery) => {
+    await confirm('Do you want to delete this query?');
+    onDeleteQuery(query.id);
   };
 
   const onRenameTab = (query: SqluiNative.ConnectionQuery) => {
