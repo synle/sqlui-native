@@ -11,7 +11,7 @@ import { useExecute } from 'src/hooks';
 interface TabsProps {
   tabIdx: number;
   onTabChange: (newTabIdx: number) => void;
-  tabHeaders: string[];
+  tabHeaders: string[] | React.ReactNode[];
   tabContents: React.ReactNode[];
 }
 
@@ -32,7 +32,7 @@ export default function MyTabs(props: TabsProps) {
         variant='scrollable'
         aria-label='Tabs'>
         {tabHeaders.map((tabHeader, idx) => (
-          <Tab key={idx} label={tabHeader}></Tab>
+          <Tab key={idx} label={<div className='Tab__Header'>{tabHeader}</div>}></Tab>
         ))}
       </Tabs>
       <div>{tabContents[tabIdx]}</div>

@@ -2,6 +2,7 @@ import React from 'react';
 import Typography from '@mui/material/Typography';
 import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
 import { useDeleteConnection } from 'src/hooks';
 
 interface DeleteConnectionButtonProps {
@@ -19,8 +20,10 @@ export default function DeleteConnectionButton(props: DeleteConnectionButtonProp
   };
 
   return (
-    <IconButton aria-label='Delete Connection' onClick={onDelete} size='small'>
-      <DeleteIcon fontSize='inherit' />
-    </IconButton>
+    <Tooltip title='Delete Connection'>
+      <IconButton aria-label='Delete Connection' onClick={onDelete} size='small'>
+        <DeleteIcon fontSize='inherit' />
+      </IconButton>
+    </Tooltip>
   );
 }
