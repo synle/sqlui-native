@@ -17,6 +17,7 @@ interface SplitButtonOption {
 interface SplitButtonProps {
   id: string;
   label: string;
+  onClick: () => void;
   options: SplitButtonOption[];
 }
 
@@ -49,7 +50,13 @@ export default function SplitButton(props: SplitButtonProps) {
   return (
     <React.Fragment>
       <ButtonGroup variant='outlined' ref={anchorRef} aria-label={label} size='small'>
-        <Button onClick={() => setOpen(!open)}>{label}</Button>
+        <Button
+          onClick={() => {
+            props.onClick();
+            setOpen(false);
+          }}>
+          {label}
+        </Button>
         <Button
           size='small'
           aria-controls={open ? id : undefined}
@@ -60,7 +67,7 @@ export default function SplitButton(props: SplitButtonProps) {
           <ArrowDropDownIcon />
         </Button>
       </ButtonGroup>
-      <Popper open={open} anchorEl={anchorRef.current} role={undefined} transition>
+      <Popper open={open} anchorEl={anchorRef.current} role={undefined} transition disablePortal>
         {({ TransitionProps, placement }) => (
           <Grow
             {...TransitionProps}
