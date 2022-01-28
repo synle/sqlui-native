@@ -51,8 +51,13 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
   });
 
   addDataEndpoint('get', '/api/connection/:connectionId/databases', async (req, res, apiCache) => {
+    const connection = await ConnectionUtils.getConnection(req.params?.connectionId);
+
+    if(!connection){
+      return res.status(404).send('Not Found')
+    }
+
     try {
-      const connection = await ConnectionUtils.getConnection(req.params?.connectionId);
       const engine = getEngine(connection.connection);
 
       res.status(200).json(await engine.getDatabases());
@@ -92,8 +97,13 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
   );
 
   addDataEndpoint('post', '/api/connection/:connectionId/connect', async (req, res, apiCache) => {
+    const connection = await ConnectionUtils.getConnection(req.params?.connectionId);
+
+    if(!connection){
+      return res.status(404).send('Not Found')
+    }
+
     try {
-      const connection = await ConnectionUtils.getConnection(req.params?.connectionId);
       const engine = getEngine(connection.connection);
       await engine.authenticate();
       apiCache.cacheMetaData = null;
@@ -104,8 +114,13 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
   });
 
   addDataEndpoint('post', '/api/connection/:connectionId/execute', async (req, res, apiCache) => {
+    const connection = await ConnectionUtils.getConnection(req.params?.connectionId);
+
+    if(!connection){
+      return res.status(404).send('Not Found')
+    }
+
     try {
-      const connection = await ConnectionUtils.getConnection(req.params?.connectionId);
       const engine = getEngine(connection.connection);
       const sql = req.body?.sql;
       const database = req.body?.database;
