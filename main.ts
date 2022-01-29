@@ -7,7 +7,7 @@ import {
 import ConnectionUtils from './commons/utils/ConnectionUtils';
 import { Sqlui } from './typings';
 import { matchPath } from 'react-router-dom';
-import { app, BrowserWindow, ipcMain } from 'electron';
+import { app, BrowserWindow, ipcMain, Menu } from 'electron';
 import { setUpDataEndpoints, getEndpointHandlers } from './commons/utils/EndpointUtils';
 
 setUpDataEndpoints();
@@ -33,6 +33,25 @@ function createWindow() {
   if (process.env.ENV_TYPE === 'electron-dev') {
     mainWindow.webContents.openDevTools();
   }
+
+  let menuTemplate: Electron.MenuItemConstructorOptions[] = [
+    {
+      label: 'Help',
+      submenu: [
+        { role: 'forceReload' },
+        {
+          label: 'About',
+          click: async () => {
+            const { shell } = require('electron');
+            await shell.openExternal('https://github.com/synle/sqlui-native');
+          },
+        },
+      ],
+    },
+  ];
+
+  let menu = Menu.buildFromTemplate(menuTemplate);
+  Menu.setApplicationMenu(menu);
 }
 
 // This method will be called when Electron has finished
