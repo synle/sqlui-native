@@ -8,9 +8,12 @@ import Paper from '@mui/material/Paper';
 import Popper from '@mui/material/Popper';
 import MenuItem from '@mui/material/MenuItem';
 import MenuList from '@mui/material/MenuList';
+import ListItemText from '@mui/material/ListItemText';
+import ListItemIcon from '@mui/material/ListItemIcon';
 
 interface SplitButtonOption {
   label: string;
+  startIcon?: React.ReactNode;
   onClick: () => void;
 }
 
@@ -48,6 +51,22 @@ export default function SplitButton(props: SplitButtonProps) {
     setOpen(false);
   };
 
+  let popperBody: React.ReactElement = <></>;
+  if (options.length === 0) {
+    popperBody = <div style={{ padding: '10px 15px' }}>No options.</div>;
+  } else {
+    popperBody = (
+      <MenuList id={id}>
+        {options.map((option, index) => (
+          <MenuItem key={option.label} onClick={(event) => handleMenuItemClick(event, index)}>
+            {!option.startIcon ? null : <ListItemIcon>{option.startIcon}</ListItemIcon>}
+            <ListItemText>{option.label}</ListItemText>
+          </MenuItem>
+        ))}
+      </MenuList>
+    );
+  }
+
   return (
     <React.Fragment>
       <ButtonGroup variant='outlined' ref={anchorRef} aria-label={label}>
@@ -76,17 +95,7 @@ export default function SplitButton(props: SplitButtonProps) {
               transformOrigin: placement === 'bottom' ? 'center top' : 'center bottom',
             }}>
             <Paper>
-              <ClickAwayListener onClickAway={handleClose}>
-                <MenuList id={id}>
-                  {options.map((option, index) => (
-                    <MenuItem
-                      key={option.label}
-                      onClick={(event) => handleMenuItemClick(event, index)}>
-                      {option.label}
-                    </MenuItem>
-                  ))}
-                </MenuList>
-              </ClickAwayListener>
+              <ClickAwayListener onClickAway={handleClose}>{popperBody}</ClickAwayListener>
             </Paper>
           </Grow>
         )}

@@ -1,13 +1,19 @@
 import React, { useState } from 'react';
 import Typography from '@mui/material/Typography';
 import { useNavigate } from 'react-router-dom';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
+import CloseIcon from '@mui/icons-material/Close';
 import EditIcon from '@mui/icons-material/Edit';
 import CloudIcon from '@mui/icons-material/Cloud';
+import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
+import RefreshIcon from '@mui/icons-material/Refresh';
 import Alert from '@mui/material/Alert';
 import { Button } from '@mui/material';
 import Tooltip from '@mui/material/Tooltip';
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import DatabaseDescription from 'src/components/DatabaseDescription';
 import { AccordionHeader, AccordionBody } from 'src/components/Accordion';
 import ColumnDescription from 'src/components/ColumnDescription';
@@ -149,22 +155,27 @@ function ConnectionActions(props: ConnectionActionsProps) {
     {
       label: 'Edit',
       onClick: () => navigate(`/connection/edit/${connection.id}`),
+      startIcon: <EditIcon />,
     },
     {
       label: 'Export',
       onClick: onExportConnection,
+      startIcon: <ArrowUpwardIcon />,
     },
     {
       label: 'Duplicate',
       onClick: onDuplicate,
+      startIcon: <ContentCopyIcon />,
     },
     {
       label: 'Refresh',
       onClick: onRefresh,
+      startIcon: <RefreshIcon />,
     },
     {
       label: 'Delete',
       onClick: onDelete,
+      startIcon: <DeleteIcon />,
     },
   ];
 

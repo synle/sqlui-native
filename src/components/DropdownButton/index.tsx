@@ -7,9 +7,12 @@ import Paper from '@mui/material/Paper';
 import Popper from '@mui/material/Popper';
 import MenuItem from '@mui/material/MenuItem';
 import MenuList from '@mui/material/MenuList';
+import ListItemText from '@mui/material/ListItemText';
+import ListItemIcon from '@mui/material/ListItemIcon';
 
 interface DropdownButtonOption {
   label: string;
+  startIcon?: React.ReactNode;
   onClick: () => void;
 }
 
@@ -67,7 +70,8 @@ export default function DropdownButton(props: DropdownButtonProps) {
       <MenuList id={id}>
         {options.map((option, index) => (
           <MenuItem key={option.label} onClick={(event) => handleMenuItemClick(event, index)}>
-            {option.label}
+            {!option.startIcon ? null : <ListItemIcon>{option.startIcon}</ListItemIcon>}
+            <ListItemText>{option.label}</ListItemText>
           </MenuItem>
         ))}
       </MenuList>
