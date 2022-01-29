@@ -55,6 +55,11 @@ export default function QueryBox(props: QueryBoxProps) {
   };
 
   const onFormatQuery = () => {
+    if (query && query.sql && query.sql.length > 20000) {
+      // this is too large for the library to handle
+      // let's stop it
+      return;
+    }
     onChange('sql', format(query?.sql || ''));
   };
 
@@ -75,18 +80,22 @@ export default function QueryBox(props: QueryBoxProps) {
         <ConnectionRevealButton query={query} />
       </div>
       <div className='QueryBox__Row'>
-        <CodeEditor
+        <textarea
           value={query.sql}
-          language='sql'
           placeholder={`Enter SQL for ` + query.name}
-          onBlur={(e) => onSqlQueryChange(e.target.value)}
-          padding={10}
-          minHeight={200}
+          onChange={(e) => onSqlQueryChange(e.target.value)}
+          data-language='sql'
           autoFocus
           style={{
             backgroundColor: '#f5f5f5',
             border: 'none',
             fontFamily: 'monospace',
+            fontWeight: '700',
+            width: '100%',
+            minHeight: '200px',
+            color: '#888',
+            padding: '10px',
+            resize: 'vertical',
           }}
         />
       </div>

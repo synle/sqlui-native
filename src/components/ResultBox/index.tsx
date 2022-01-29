@@ -49,12 +49,16 @@ export default function ResultBox(props: ResultBoxProps) {
         <CodeEditor
           value={JSON.stringify(errorToDisplay, null, 2)}
           language='json'
-          padding={10}
-          minHeight={200}
           style={{
             backgroundColor: '#f5f5f5',
             border: 'none',
             fontFamily: 'monospace',
+            fontWeight: '700',
+            width: '100%',
+            minHeight: '200px',
+            color: '#888',
+            padding: '10px',
+            resize: 'vertical',
           }}
         />
       </>
@@ -149,12 +153,18 @@ function JsonFormatData(props: FormatDataProps) {
     <CodeEditor
       value={JSON.stringify(data, null, 2)}
       language='json'
-      padding={10}
-      minHeight={200}
       style={{
         backgroundColor: '#f5f5f5',
         border: 'none',
         fontFamily: 'monospace',
+        fontWeight: '700',
+        width: '100%',
+        minWidth: '100%',
+        maxWidth: '100%',
+        minHeight: '200px',
+        color: '#888',
+        padding: '10px',
+        resize: 'vertical',
       }}
     />
   );
@@ -177,12 +187,16 @@ function CsvFormatData(props: FormatDataProps) {
   return (
     <CodeEditor
       value={csv}
-      padding={10}
-      minHeight={200}
       style={{
         backgroundColor: '#f5f5f5',
         border: 'none',
         fontFamily: 'monospace',
+        fontWeight: '700',
+        width: '100%',
+        minHeight: '200px',
+        color: '#888',
+        padding: '10px',
+        resize: 'vertical',
       }}
     />
   );

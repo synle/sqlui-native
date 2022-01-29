@@ -57,12 +57,13 @@ export default function PromptDialog(props: PromptDialogProps) {
               value={value}
               onChange={(e) => setValue(e.target.value)}
               language='json'
-              padding={10}
-              minHeight={400}
               style={{
                 backgroundColor: '#f5f5f5',
                 border: 'none',
                 fontFamily: 'monospace',
+                width: '100%',
+                minHeight: '400px',
+                padding: '10px',
               }}
               autoFocus
               required
