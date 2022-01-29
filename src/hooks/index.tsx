@@ -196,6 +196,8 @@ export function useExecute(query?: SqluiFrontend.ConnectionQuery) {
         if (results || !error) {
           // if we have any one of these keywords, let's refresh the table...
           const KEYWORDS_TO_REFRESH_CONNECTION = [
+            'DROP DATABASE',
+            'CREATE DATABASE',
             'DROP TABLE',
             'CREATE TABLE',
             'ALTER TABLE',
