@@ -5,7 +5,7 @@ import Alert from '@mui/material/Alert';
 import { AccordionHeader, AccordionBody } from 'src/components/Accordion';
 import ColumnDescription from 'src/components/ColumnDescription';
 import TableActions from 'src/components/TableActions';
-import { useGetMetaData, useGetTables, useShowHide } from 'src/hooks';
+import { useGetTables, useShowHide } from 'src/hooks';
 
 type TableDescriptionProps = {
   connectionId: string;
@@ -14,12 +14,11 @@ type TableDescriptionProps = {
 
 export default function TableDescription(props: TableDescriptionProps) {
   const { databaseId, connectionId } = props;
-  const { data: connections, isLoading } = useGetMetaData();
-  const tables = useGetTables(connectionId, databaseId, connections);
+  const { data: tables, isLoading } = useGetTables(connectionId, databaseId);
   const { visibles, onToggle } = useShowHide();
 
   if (isLoading) {
-    return <>loading...</>;
+    return <Alert severity='info'>Loading...</Alert>;
   }
 
   if (!tables || tables.length === 0) {

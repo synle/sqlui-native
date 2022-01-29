@@ -53,7 +53,7 @@ export class RelationalDatabaseEngine {
     return this.getConnection().authenticate();
   }
 
-  async getDatabases(): Promise<string[]> {
+  async getDatabases(): Promise<SqluiCore.DatabaseMetaData[]> {
     let sql;
 
     switch (this.dialect) {
@@ -84,10 +84,14 @@ export class RelationalDatabaseEngine {
           row.database, // postgres
       )
       .filter((db) => db)
-      .sort();
+      .sort()
+      .map((name) => ({
+        name,
+        tables: [], // TODO: will remove this entirely
+      }));
   }
 
-  async getTables(database?: string): Promise<string[]> {
+  async getTables(database?: string): Promise<SqluiCore.TableMetaData[]> {
     // https://github.com/knex/knex/issues/360
     // PostgreSQL: SELECT tablename FROM pg_tables WHERE schemaname='public''
     // MySQL: SELECT TABLE_SCHEMA FROM information_schema.tables GROUP BY TABLE_SCHEMA;
@@ -121,7 +125,11 @@ export class RelationalDatabaseEngine {
     return data
       .map((row: any) => row.tablename)
       .filter((db) => db)
-      .sort();
+      .sort()
+      .map((name) => ({
+        name,
+        columns: [], // TODO: will remove this entirely
+      }));
   }
 
   async getColumns(table: string, database?: string): Promise<SqluiCore.ColumnMetaData[]> {
@@ -185,44 +193,30 @@ export async function getConnectionMetaData(connection: SqluiCore.CoreConnection
     connItem.dialect = engine.dialect;
 
     for (const database of databases) {
-      const dbItem: SqluiCore.DatabaseMetaData = {
-        name: database,
-        tables: [] as SqluiCore.TableMetaData[],
-      };
+      connItem.databases.push(database);
 
-      // @ts-ignore
-      connItem.databases.push(dbItem);
-
-      let tables: string[] = [];
       try {
-        tables = await engine.getTables(database);
+        database.tables = await engine.getTables(database.name);
         //console.log('getting tables', database, tables);
       } catch (err) {
+        database.tables = [];
         //console.log('failed getting tables', database);
       }
 
-      for (const table of tables) {
-        let columns: SqluiCore.ColumnMetaData[] = [];
-
+      for (const table of database.tables) {
         try {
-          columns = await engine.getColumns(table, database);
+          table.columns = await engine.getColumns(table.name, database.name);
         } catch (err) {
+          table.columns = [];
           //console.log('failed getting columns', database, table);
         }
-
-        const tblItem: SqluiCore.TableMetaData = {
-          name: table,
-          columns,
-        };
-
-        // @ts-ignore
-        dbItem.tables.push(tblItem);
       }
     }
   } catch (err) {
     // console.log('connection error', connection.name, err);
     connItem.status = 'offline';
     connItem.dialect = undefined;
+    console.log('>> Server Error', err);
   }
 
   return connItem;

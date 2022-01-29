@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { format } from 'sql-formatter';
+import Alert from '@mui/material/Alert';
 import Typography from '@mui/material/Typography';
 import { Button } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
@@ -38,7 +39,7 @@ export default function QueryBox(props: QueryBoxProps) {
   const isLoading = loadingMetaData || loadingConnection;
 
   if (isLoading) {
-    return <>loading...</>;
+    return <Alert severity='info'>Loading...</Alert>;
   }
 
   if (!query) {

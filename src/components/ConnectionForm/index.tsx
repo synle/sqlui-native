@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import Alert from '@mui/material/Alert';
 import Typography from '@mui/material/Typography';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@mui/material';
 import TextField from '@mui/material/TextField';
 import FormControl from '@mui/material/FormControl';
-import { useGetMetaData, useUpsertConnection, useGetConnection } from 'src/hooks';
+import { useGetConnectionById, useUpsertConnection } from 'src/hooks';
 import TestConnectionButton from 'src/components/TestConnectionButton';
 import Toast from 'src/components/Toast';
 import { SqluiCore } from 'typings';
@@ -46,8 +47,7 @@ export function EditConnectionForm(props: ConnectionFormProps) {
   const { id } = props;
   const [name, setName] = useState('');
   const [connection, setConnection] = useState('');
-  const { data: connections, isLoading: loading } = useGetMetaData();
-  const connectionProps = useGetConnection(id, connections);
+  const { data: initialConnection, isLoading: loading } = useGetConnectionById(id);
   const { mutateAsync, isLoading: saving } = useUpsertConnection();
   const navigate = useNavigate();
 
@@ -64,9 +64,20 @@ export function EditConnectionForm(props: ConnectionFormProps) {
 
   // set the data for existing form
   useEffect(() => {
-    setName(connectionProps?.name || '');
-    setConnection(connectionProps?.connection || '');
-  }, [connectionProps]);
+    setName(initialConnection?.name || '');
+    setConnection(initialConnection?.connection || '');
+  }, [initialConnection]);
+
+  if (!loading && !initialConnection) {
+    return (
+      <Alert severity='error'>
+        This connection couldn't be found. It might have been deleted....
+        <strong onClick={() => navigate(`/`, { replace: true })} style={{ cursor: 'pointer' }}>
+          Click here to go back to the main query page
+        </strong>
+      </Alert>
+    );
+  }
 
   return (
     <MainConnectionForm
@@ -107,7 +118,7 @@ function MainConnectionForm(props: MainConnectionFormProps) {
   };
 
   if (props.loading) {
-    return <>loading...</>;
+    return <Alert severity='info'>Loading connection. Please wait....</Alert>;
   }
 
   const connection: SqluiCore.CoreConnectionProps = {

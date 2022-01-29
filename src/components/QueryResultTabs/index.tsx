@@ -76,7 +76,7 @@ export default function QueryResultTabs() {
   }, [command]);
 
   if (isLoading) {
-    return <>loading...</>;
+    return <Alert severity='info'>Loading...</Alert>;
   }
 
   if (!queries || queries.length === 0) {
