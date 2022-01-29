@@ -53,7 +53,7 @@ export default function ConnectionDescription() {
         return (
           <React.Fragment key={key}>
             <AccordionHeader expanded={visibles[key]} onToggle={() => onToggle(key)}>
-              <ConnectionDialectIcon connection={connection}/>
+              <ConnectionDialectIcon connection={connection} />
               <span>{connection.name}</span>
               <ConnectionActions connection={connection} />
             </AccordionHeader>
@@ -76,23 +76,29 @@ interface ConnectionDialectIconProps {
   connection: SqluiCore.ConnectionProps;
 }
 function ConnectionDialectIcon(props: ConnectionDialectIconProps) {
-  const {dialect, status} = props.connection;
+  const { dialect, status } = props.connection;
 
-  if(status !== 'online'){
-     return <CloudIcon color='disabled' fontSize='inherit' />;
+  if (status !== 'online') {
+    return <CloudIcon color='disabled' fontSize='inherit' />;
   }
 
-  switch(dialect){
+  switch (dialect) {
     case 'mssql':
-      return <img src={`${process.env.PUBLIC_URL}/assets/sqlserver.png`} title={dialect} width={30} />
+      return (
+        <img src={`${process.env.PUBLIC_URL}/assets/sqlserver.png`} title={dialect} width={30} />
+      );
     case 'postgres':
-      return <img src={`${process.env.PUBLIC_URL}/assets/postgresql.png`} title={dialect} width={30} />
+      return (
+        <img src={`${process.env.PUBLIC_URL}/assets/postgresql.png`} title={dialect} width={30} />
+      );
     case 'sqlite':
-      return <img src={`${process.env.PUBLIC_URL}/assets/sqlite.png`} title={dialect} width={30} />
+      return <img src={`${process.env.PUBLIC_URL}/assets/sqlite.png`} title={dialect} width={30} />;
     case 'mariadb':
-      return <img src={`${process.env.PUBLIC_URL}/assets/mariadb.png`} title={dialect} width={30} />
+      return (
+        <img src={`${process.env.PUBLIC_URL}/assets/mariadb.png`} title={dialect} width={30} />
+      );
     case 'mysql':
-      return <img src={`${process.env.PUBLIC_URL}/assets/mysql.png`} title={dialect} width={30} />
+      return <img src={`${process.env.PUBLIC_URL}/assets/mysql.png`} title={dialect} width={30} />;
     default:
       return <CloudIcon color='primary' fontSize='inherit' />;
   }
