@@ -45,7 +45,7 @@ export default function QueryBox(props: QueryBoxProps) {
   }
 
   const onDatabaseConnectionChange = (connectionId?: string, databaseId?: string) => {
-    onChange('lastExecuted', undefined);// this is to stop the query from automatically triggered
+    onChange('lastExecuted', undefined); // this is to stop the query from automatically triggered
     onChange('connectionId', connectionId);
     onChange('databaseId', databaseId);
   };
@@ -214,15 +214,17 @@ function ConnectionRevealButton(props: ConnectionRevealButtonProps) {
 
   return (
     <Tooltip title='Reveal this Connection on the connection tree.'>
-      <Button
-        type='button'
-        variant='outlined'
-        startIcon={<PreviewIcon />}
-        onClick={onReveal}
-        sx={{ ml: 3 }}
-        disabled={disabled}>
-        Reveal
-      </Button>
+      <span>
+        <Button
+          type='button'
+          variant='outlined'
+          startIcon={<PreviewIcon />}
+          onClick={onReveal}
+          sx={{ ml: 3 }}
+          disabled={disabled}>
+          Reveal
+        </Button>
+      </span>
     </Tooltip>
   );
 }
