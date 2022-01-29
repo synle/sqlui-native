@@ -15,18 +15,22 @@ export default function ActionDialogs(props: ActionDialogsProps) {
 
   const onConfirmSubmit = () => {
     dismiss();
-    dialog.onSubmit(true);
+    dialog.onSubmit && dialog.onSubmit(true);
   };
   const onPromptSaveClick = (newValue?: string) => {
     dismiss();
-    dialog.onSubmit(true, newValue);
+    dialog.onSubmit && dialog.onSubmit(true, newValue);
   };
   const onDimiss = () => {
     dismiss();
-    dialog.onSubmit(false);
+    dialog.onSubmit && dialog.onSubmit(false);
   };
 
   switch (dialog.type) {
+    case 'alert':
+      return (
+        <AlertDialog open={true} title='Alert' message={dialog.message} onDismiss={onDimiss} />
+      );
     case 'confirm':
       return (
         <AlertDialog
@@ -56,6 +60,11 @@ export default function ActionDialogs(props: ActionDialogsProps) {
 // TODO: move me to a file
 // used for show and hide the sidebar trees
 type ActionDialog =
+  | {
+      type: 'alert';
+      message: string;
+      onSubmit?: () => void;
+    }
   | {
       type: 'confirm';
       message: string;
@@ -115,6 +124,17 @@ export function useActionDialogs() {
     });
   };
 
+  const alert = (message: string): Promise<void> => {
+    return new Promise((resolve, reject) => {
+      const newActionDialog: ActionDialog = {
+        type: 'alert',
+        message,
+      };
+      _actionDialogs.push(newActionDialog);
+      queryClient.invalidateQueries(QUERY_KEY_ACTION_DIALOGS);
+    });
+  };
+
   let dialog;
   try {
     if (data) {
@@ -132,6 +152,7 @@ export function useActionDialogs() {
   return {
     dialogs: data,
     dialog,
+    alert,
     prompt,
     confirm,
     dismiss,

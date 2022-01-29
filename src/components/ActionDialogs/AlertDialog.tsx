@@ -11,30 +11,41 @@ interface AlertDialogProps {
   title: string;
   message: string;
   yesLabel?: string;
-  onYesClick: () => void;
+  onYesClick?: () => void;
   noLabel?: string;
   onDismiss: () => void;
+  isConfirm?: boolean;
 }
 
 export default function AlertDialog(props: AlertDialogProps) {
   return (
-    <div>
-      <Dialog
-        open={props.open}
-        onClose={props.onDismiss}
-        aria-labelledby='alert-dialog-title'
-        aria-describedby='alert-dialog-description'>
+    <Dialog
+      open={props.open}
+      onClose={props.onDismiss}
+      aria-labelledby='alert-dialog-title'
+      aria-describedby='alert-dialog-description'>
+      <div style={{ width: 400 }}>
         <DialogTitle id='alert-dialog-title'>{props.title}</DialogTitle>
         <DialogContent>
           <DialogContentText id='alert-dialog-description'>{props.message}</DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={props.onDismiss}>{props.noLabel || 'No'}</Button>
-          <Button onClick={props.onYesClick} autoFocus variant='contained'>
-            {props.yesLabel || 'Yes'}
-          </Button>
+          {props.isConfirm ? (
+            <>
+              <Button onClick={props.onDismiss}>{props.noLabel || 'No'}</Button>
+              <Button onClick={props.onYesClick} autoFocus variant='contained'>
+                {props.yesLabel || 'Yes'}
+              </Button>{' '}
+            </>
+          ) : (
+            <>
+              <Button onClick={props.onDismiss} autoFocus variant='contained'>
+                {props.yesLabel || 'OK'}
+              </Button>
+            </>
+          )}
         </DialogActions>
-      </Dialog>
-    </div>
+      </div>
+    </Dialog>
   );
 }
