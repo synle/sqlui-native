@@ -29,7 +29,7 @@ export default function ActionDialogs(props: ActionDialogsProps) {
   switch (dialog.type) {
     case 'alert':
       return (
-        <AlertDialog open={true} title='Alert' message={dialog.message} onDismiss={onDimiss} />
+        <AlertDialog open={true} title='Alert' message={dialog.message} onDismiss={onDimiss}  isConfirm={false} />
       );
     case 'confirm':
       return (
@@ -39,18 +39,20 @@ export default function ActionDialogs(props: ActionDialogsProps) {
           message={dialog.message}
           onYesClick={onConfirmSubmit}
           onDismiss={onDimiss}
+          isConfirm={true}
         />
       );
     case 'prompt':
       return (
         <PromptDialog
           open={true}
-          title='Prompt'
+          title={dialog.title || 'Prompt'}
           message={dialog.message}
           value={dialog.defaultValue}
           onSaveClick={onPromptSaveClick}
           onDismiss={onDimiss}
           isLongPrompt={dialog.isLongPrompt}
+          saveLabel={dialog.saveLabel}
         />
       );
   }
@@ -72,16 +74,20 @@ type ActionDialog =
     }
   | {
       type: 'prompt';
+      title?: string;
       message: string;
       defaultValue?: string;
-      onSubmit: (yesSelected: boolean, newValue?: string) => void;
       isLongPrompt?: boolean;
+      saveLabel?: string;
+      onSubmit: (yesSelected: boolean, newValue?: string) => void;
     };
 
 interface PromptActionDialogInput {
+  title?: string;
   message: string;
   defaultValue?: string;
   isLongPrompt?: boolean;
+  saveLabel?: string;
 }
 
 const QUERY_KEY_ACTION_DIALOGS = 'actionDialogs';
@@ -97,10 +103,8 @@ export function useActionDialogs() {
       const { message, defaultValue, isLongPrompt } = props;
 
       const newActionDialog: ActionDialog = {
+        ...props,
         type: 'prompt',
-        message,
-        defaultValue,
-        isLongPrompt,
         onSubmit: (yesSelected, newValue) => {
           yesSelected ? resolve(newValue) : reject();
         },

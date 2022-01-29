@@ -27,7 +27,9 @@ export default function NewConnectionButton() {
   const onImport = async () => {
     try {
       const rawJson = await prompt({
+        title: 'Import Connections / Queries',
         message: 'Import',
+        saveLabel: 'Import',
         defaultValue: '',
         isLongPrompt: true,
       });
