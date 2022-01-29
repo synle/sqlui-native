@@ -4,11 +4,11 @@ import { SqluiCore, SqluiFrontend } from 'typings';
 import dataApi from 'src/data/api';
 import Config from 'src/data/config';
 
-const QUERY_KEY_CONNECTIONS = 'connections';
-const QUERY_KEY_CONNECTION = 'connection';
-const QUERY_KEY_TREEVISIBLES = 'treeVisibles';
-const QUERY_KEY_QUERIES = 'queries';
-const QUERY_KEY_RESULTS = 'results';
+const QUERY_KEY_ALL_CONNECTIONS = 'qk.connections';
+const QUERY_KEY_SINGLE_CONNECTION = 'qk.connection';
+const QUERY_KEY_TREEVISIBLES = 'qk.treeVisibles';
+const QUERY_KEY_QUERIES = 'qk.queries';
+const QUERY_KEY_RESULTS = 'qk.results';
 
 // @ts-ignore
 function _fetch<T>(...inputs) {
@@ -40,50 +40,13 @@ function _fetch<T>(...inputs) {
     });
 }
 
-let _metaData = Config.get<SqluiCore.ConnectionMetaData[]>('cache.metadata', []);
-
-export function useGetMetaData() {
-  return useQuery(QUERY_KEY_CONNECTIONS, dataApi.getMetaData, {
-    initialData: _metaData,
-    onSuccess: (data) => {
-      if (data && Object.keys(data).length > 0) {
-        Config.set('cache.metadata', data);
-      }
-    },
-  });
-}
-
-export function useGetAvailableDatabaseConnections(metaData?: SqluiCore.ConnectionMetaData[]) {
-  const connections = metaData || [];
-  const res: SqluiFrontend.AvailableConnectionProps[] = [];
-
-  for (const connection of connections) {
-    const connectionId = connection.id;
-
-    if (connection.databases) {
-      for (const database of connection.databases) {
-        const databaseId = database.name as string;
-
-        res.push({
-          connectionId,
-          databaseId,
-          id: [connectionId, databaseId].join(' << '),
-          label: [connection.name, database.name].join(' > '),
-        });
-      }
-    }
-  }
-
-  return res;
-}
-
 export function useGetConnections() {
-  return useQuery([QUERY_KEY_CONNECTION, 'allConnections'], dataApi.getConnections);
+  return useQuery([QUERY_KEY_ALL_CONNECTIONS], dataApi.getConnections);
 }
 
 export function useGetConnectionById(connectionId?: string) {
   return useQuery(
-    [QUERY_KEY_CONNECTION, connectionId],
+    [QUERY_KEY_SINGLE_CONNECTION, connectionId],
     () => (!connectionId ? undefined : dataApi.getConnection(connectionId)),
     {
       enabled: !!connectionId,
@@ -97,10 +60,11 @@ export function useUpsertConnection() {
     dataApi.upsertConnection,
     {
       onSuccess: async (newConnection) => {
-        queryClient.invalidateQueries([QUERY_KEY_CONNECTION, newConnection.id]);
+        queryClient.invalidateQueries([QUERY_KEY_SINGLE_CONNECTION, newConnection.id]);
+        queryClient.invalidateQueries([QUERY_KEY_ALL_CONNECTIONS]);
 
         queryClient.setQueryData<SqluiCore.ConnectionProps[] | undefined>(
-          QUERY_KEY_CONNECTIONS,
+          QUERY_KEY_ALL_CONNECTIONS,
           (oldData) => {
             // find that entry
             let isNew = true;
@@ -130,6 +94,27 @@ export function useUpsertConnection() {
     },
   );
 }
+
+export function useDeleteConnection() {
+  const queryClient = useQueryClient();
+
+  return useMutation<string, void, string>(dataApi.deleteConnection, {
+    onSuccess: async (deletedConnectionId) => {
+      queryClient.invalidateQueries([QUERY_KEY_SINGLE_CONNECTION, deletedConnectionId]);
+      queryClient.invalidateQueries([QUERY_KEY_ALL_CONNECTIONS]);
+
+      queryClient.setQueryData<SqluiCore.ConnectionProps[] | undefined>(
+        QUERY_KEY_ALL_CONNECTIONS,
+        (oldData) => {
+          return oldData?.filter((connection) => connection.id !== deletedConnectionId);
+        },
+      );
+
+      return deletedConnectionId;
+    },
+  });
+}
+
 
 export function useDuplicateConnection() {
   const { mutateAsync: upsertConnection, isLoading } = useUpsertConnection();
@@ -163,30 +148,11 @@ export function useImportConnection() {
   };
 }
 
-export function useDeleteConnection() {
-  const queryClient = useQueryClient();
-
-  return useMutation<string, void, string>(dataApi.deleteConnection, {
-    onSuccess: async (deletedConnectionId) => {
-      queryClient.invalidateQueries([QUERY_KEY_CONNECTION, deletedConnectionId]);
-
-      queryClient.setQueryData<SqluiCore.ConnectionProps[] | undefined>(
-        QUERY_KEY_CONNECTIONS,
-        (oldData) => {
-          return oldData?.filter((connection) => connection.id !== deletedConnectionId);
-        },
-      );
-
-      return deletedConnectionId;
-    },
-  });
-}
-
 export function useGetDatabases(connectionId?: string) {
   const enabled = !!connectionId;
 
   return useQuery(
-    [QUERY_KEY_CONNECTION, connectionId, 'databases'],
+    [QUERY_KEY_SINGLE_CONNECTION, connectionId, 'databases'],
     () => (!enabled ? undefined : dataApi.getConnectionDatabases(connectionId)),
     {
       enabled,
@@ -198,7 +164,7 @@ export function useGetTables(connectionId: string, databaseId: string) {
   const enabled = !!connectionId && !!databaseId;
 
   return useQuery(
-    [QUERY_KEY_CONNECTION, connectionId, databaseId, 'tables'],
+    [QUERY_KEY_SINGLE_CONNECTION, connectionId, databaseId, 'tables'],
     () => (!enabled ? undefined : dataApi.getConnectionTables(connectionId, databaseId)),
     {
       enabled,
@@ -210,7 +176,7 @@ export function useGetColumns(connectionId?: string, databaseId?: string, tableI
   const enabled = !!connectionId && !!databaseId && !!tableId;
 
   return useQuery(
-    [QUERY_KEY_CONNECTION, connectionId, databaseId, tableId, 'columns'],
+    [QUERY_KEY_SINGLE_CONNECTION, connectionId, databaseId, tableId, 'columns'],
     () => (!enabled ? undefined : dataApi.getConnectionColumns(connectionId, databaseId, tableId)),
     {
       enabled,
@@ -242,7 +208,7 @@ export function useRetryConnection() {
         queryClient.invalidateQueries('connection');
 
         queryClient.setQueryData<SqluiCore.ConnectionMetaData[] | undefined>(
-          QUERY_KEY_CONNECTIONS,
+          QUERY_KEY_ALL_CONNECTIONS,
           (oldData) => {
             // find that entry
             oldData = oldData?.map((connection) => {

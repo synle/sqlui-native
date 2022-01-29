@@ -9,7 +9,7 @@ import { useCommands } from 'src/components/MissionControl';
 import {
   useImportConnection,
   useConnectionQueries,
-  useGetMetaData,
+  useGetConnections,
   getExportedConnection,
   getExportedQuery,
 } from 'src/hooks';
@@ -18,7 +18,7 @@ export default function NewConnectionButton() {
   const { prompt } = useActionDialogs();
   const { mutateAsync: importConnection } = useImportConnection();
   const { queries, isLoading: loadingQueries, onImportQuery } = useConnectionQueries();
-  const { data: connections, isLoading: loadingConnections } = useGetMetaData();
+  const { data: connections, isLoading: loadingConnections } = useGetConnections();
   const { command, dismissCommand } = useCommands();
   const navigate = useNavigate();
 
