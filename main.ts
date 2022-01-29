@@ -42,6 +42,9 @@ function sendMessage(win: BrowserWindow, message: SqluiEnums.ClientEventKey) {
 }
 
 function setupMenu() {
+  const isMac = process.platform === 'darwin'
+
+
   let menuTemplate: Electron.MenuItemConstructorOptions[] = [
     {
       label: 'File',
@@ -54,6 +57,17 @@ function setupMenu() {
         },
         {
           type: 'separator',
+        },{
+          label: 'New Connection',
+          click: async (item, win) =>
+            sendMessage(win as BrowserWindow, 'clientEvent.newConnection'),
+        },
+        {
+          label: 'New Query',
+          click: async (item, win) => sendMessage(win as BrowserWindow, 'clientEvent.newQuery'),
+        },
+        {
+          type: 'separator',
         },
         {
           label: 'Import',
@@ -63,22 +77,38 @@ function setupMenu() {
           label: 'Export',
           click: async (item, win) => sendMessage(win as BrowserWindow, 'clientEvent.exportAll'),
         },
+        {
+          type: 'separator',
+        },
+         isMac ? { role: 'close' } : { role: 'quit' }
       ],
     },
     {
-      label: 'Query',
-      submenu: [
-        {
-          label: 'New Connection',
-          click: async (item, win) =>
-            sendMessage(win as BrowserWindow, 'clientEvent.newConnection'),
-        },
-        {
-          label: 'New Query',
-          click: async (item, win) => sendMessage(win as BrowserWindow, 'clientEvent.newQuery'),
-        },
-      ],
+    label: 'Edit',
+    submenu: [
+        { role: 'undo' },
+        { role: 'redo' },
+        { type: 'separator' },
+        { role: 'cut' },
+        { role: 'copy' },
+        { role: 'paste' },
+        { role: 'selectAll' },
+      ]
     },
+    {
+    label: 'View',
+    submenu: [
+      { role: 'reload' },
+      { role: 'forceReload' },
+      { role: 'toggleDevTools' },
+      { type: 'separator' },
+      { role: 'resetZoom' },
+      { role: 'zoomIn' },
+      { role: 'zoomOut' },
+      { type: 'separator' },
+      { role: 'togglefullscreen' }
+    ]
+  },
     {
       label: 'Help',
       submenu: [
@@ -90,7 +120,7 @@ function setupMenu() {
           label: 'About',
           click: async () => {
             const { shell } = require('electron');
-            await shell.openExternal('https://github.com/synle/sqlui-native');
+            await shell.openExternal('https://synle.github.io/sqlui-native/');
           },
         },
       ],
