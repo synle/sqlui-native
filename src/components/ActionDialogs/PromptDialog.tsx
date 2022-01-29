@@ -65,6 +65,7 @@ export default function PromptDialog(props: PromptDialogProps) {
                 fontFamily: 'monospace',
               }}
               autoFocus
+              required
             />
           ) : (
             <TextField
