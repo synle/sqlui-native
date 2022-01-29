@@ -1,12 +1,11 @@
-import {SqluiCacheKeys} from 'typings'
-
+import { SqluiEnums } from 'typings';
 
 export const SessionStorageConfig = {
-  set(key: SqluiCacheKeys.ClientConfig, value: any) {
+  set(key: SqluiEnums.ClientConfigKey, value: any) {
     window.sessionStorage.setItem(key, JSON.stringify(value));
   },
 
-  get<T>(key: SqluiCacheKeys.ClientConfig, defaultValue?: T): T {
+  get<T>(key: SqluiEnums.ClientConfigKey, defaultValue?: T): T {
     let res;
 
     try {
@@ -20,11 +19,11 @@ export const SessionStorageConfig = {
 };
 
 export const LocalStorageConfig = {
-  set(key: SqluiCacheKeys.ClientConfig, value: any) {
+  set(key: SqluiEnums.ClientConfigKey, value: any) {
     window.localStorage.setItem(key, JSON.stringify(value));
   },
 
-  get<T>(key: SqluiCacheKeys.ClientConfig, defaultValue?: T): T {
+  get<T>(key: SqluiEnums.ClientConfigKey, defaultValue?: T): T {
     let res;
 
     try {

@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
-import { Sqlui, SqluiNative } from 'typings';
+import { SqluiCore, SqluiFrontend } from 'typings';
 import dataApi from 'src/data/api';
 import Config from 'src/data/config';
 
@@ -39,7 +39,7 @@ function _fetch<T>(...inputs) {
     });
 }
 
-let _metaData = Config.get<Sqlui.ConnectionMetaData[]>('cache.metadata', []);
+let _metaData = Config.get<SqluiCore.ConnectionMetaData[]>('cache.metadata', []);
 
 export function useGetMetaData() {
   return useQuery(QUERY_KEY_CONNECTIONS, dataApi.getMetaData, {
@@ -52,9 +52,9 @@ export function useGetMetaData() {
   });
 }
 
-export function useGetAvailableDatabaseConnections(metaData?: Sqlui.ConnectionMetaData[]) {
+export function useGetAvailableDatabaseConnections(metaData?: SqluiCore.ConnectionMetaData[]) {
   const connections = metaData || [];
-  const res: SqluiNative.AvailableConnectionProps[] = [];
+  const res: SqluiFrontend.AvailableConnectionProps[] = [];
 
   for (const connection of connections) {
     const connectionId = connection.id;
@@ -76,19 +76,19 @@ export function useGetAvailableDatabaseConnections(metaData?: Sqlui.ConnectionMe
   return res;
 }
 
-export function useGetConnection(connectionId?: string, metaData?: Sqlui.ConnectionMetaData[]) {
+export function useGetConnection(connectionId?: string, metaData?: SqluiCore.ConnectionMetaData[]) {
   return metaData?.find((connection) => connection.id === connectionId);
 }
 
 export function useUpsertConnection() {
   const queryClient = useQueryClient();
-  return useMutation<Sqlui.ConnectionProps, void, Sqlui.CoreConnectionProps>(
+  return useMutation<SqluiCore.ConnectionProps, void, SqluiCore.CoreConnectionProps>(
     dataApi.upsertConnection,
     {
       onSuccess: async (newConnection) => {
         queryClient.invalidateQueries('connection');
 
-        queryClient.setQueryData<Sqlui.ConnectionProps[] | undefined>(
+        queryClient.setQueryData<SqluiCore.ConnectionProps[] | undefined>(
           QUERY_KEY_CONNECTIONS,
           (oldData) => {
             // find that entry
@@ -124,7 +124,7 @@ export function useDuplicateConnection() {
   const { mutateAsync: upsertConnection, isLoading } = useUpsertConnection();
 
   return {
-    mutateAsync: (connection: Sqlui.CoreConnectionProps) => {
+    mutateAsync: (connection: SqluiCore.CoreConnectionProps) => {
       // delete the id - so we can duplicate
       const duplicatedConnection = {
         name: `Conn ${new Date().toLocaleString()}`,
@@ -140,7 +140,7 @@ export function useImportConnection() {
   const { mutateAsync: upsertConnection, isLoading } = useUpsertConnection();
 
   return {
-    mutateAsync: (connection: Sqlui.CoreConnectionProps) => {
+    mutateAsync: (connection: SqluiCore.CoreConnectionProps) => {
       // delete the id - so we can duplicate
       const duplicatedConnection = {
         name: `Imported Conn ${new Date().toLocaleString()}`,
@@ -159,7 +159,7 @@ export function useDeleteConnection() {
     onSuccess: async (deletedConnectionId) => {
       queryClient.invalidateQueries('connection');
 
-      queryClient.setQueryData<Sqlui.ConnectionProps[] | undefined>(
+      queryClient.setQueryData<SqluiCore.ConnectionProps[] | undefined>(
         QUERY_KEY_CONNECTIONS,
         (oldData) => {
           return oldData?.filter((connection) => connection.id !== deletedConnectionId);
@@ -171,14 +171,14 @@ export function useDeleteConnection() {
   });
 }
 
-export function useGetDatabases(connectionId: string, metaData?: Sqlui.ConnectionMetaData[]) {
+export function useGetDatabases(connectionId: string, metaData?: SqluiCore.ConnectionMetaData[]) {
   return metaData?.find((connection) => connection.id === connectionId)?.databases;
 }
 
 export function useGetTables(
   connectionId: string,
   databaseId: string,
-  metaData?: Sqlui.ConnectionMetaData[],
+  metaData?: SqluiCore.ConnectionMetaData[],
 ) {
   const databases = useGetDatabases(connectionId, metaData);
   return databases?.find((database) => database.name === databaseId)?.tables;
@@ -188,13 +188,13 @@ export function useGetColumns(
   connectionId: string,
   databaseId: string,
   tableId: string,
-  metaData?: Sqlui.ConnectionMetaData[],
+  metaData?: SqluiCore.ConnectionMetaData[],
 ) {
   const tables = useGetTables(connectionId, databaseId, metaData);
   return tables?.find((table) => table.name === tableId)?.columns;
 }
 
-export function useExecute(query?: SqluiNative.ConnectionQuery) {
+export function useExecute(query?: SqluiFrontend.ConnectionQuery) {
   const { id, connectionId, sql, databaseId, lastExecuted } = query || {};
   const enabled = query && !!sql && !!connectionId && !!databaseId && !!lastExecuted;
 
@@ -209,7 +209,7 @@ export function useExecute(query?: SqluiNative.ConnectionQuery) {
 
 export function useRetryConnection() {
   const queryClient = useQueryClient();
-  return useMutation<Sqlui.ConnectionMetaData, Sqlui.ConnectionMetaData, string>(
+  return useMutation<SqluiCore.ConnectionMetaData, SqluiCore.ConnectionMetaData, string>(
     dataApi.reconnect,
     {
       onSettled: async (newConnection, newCleanedConnection) => {
@@ -217,7 +217,7 @@ export function useRetryConnection() {
         // went bad, we want to also refresh the data
         queryClient.invalidateQueries('connection');
 
-        queryClient.setQueryData<Sqlui.ConnectionMetaData[] | undefined>(
+        queryClient.setQueryData<SqluiCore.ConnectionMetaData[] | undefined>(
           QUERY_KEY_CONNECTIONS,
           (oldData) => {
             // find that entry
@@ -245,11 +245,11 @@ export function useRetryConnection() {
 
 export function useTestConnection() {
   const queryClient = useQueryClient();
-  return useMutation<Sqlui.CoreConnectionMetaData, void, Sqlui.CoreConnectionProps>(dataApi.test);
+  return useMutation<SqluiCore.CoreConnectionMetaData, void, SqluiCore.CoreConnectionProps>(dataApi.test);
 }
 
 // used for show and hide the sidebar trees
-let _treeVisibles: SqluiNative.TreeVisibilities = {};
+let _treeVisibles: SqluiFrontend.TreeVisibilities = {};
 
 export function useShowHide() {
   const queryClient = useQueryClient();
@@ -262,7 +262,7 @@ export function useShowHide() {
   const onToggle = (key: string) => {
     _treeVisibles[key] = !_treeVisibles[key];
     queryClient.invalidateQueries(QUERY_KEY_TREEVISIBLES);
-    queryClient.setQueryData<SqluiNative.TreeVisibilities | undefined>(
+    queryClient.setQueryData<SqluiFrontend.TreeVisibilities | undefined>(
       QUERY_KEY_TREEVISIBLES,
       () => _treeVisibles,
     );
@@ -274,7 +274,7 @@ export function useShowHide() {
   };
 }
 
-let _connectionQueries = Config.get<SqluiNative.ConnectionQuery[]>('cache.connectionQueries', []);
+let _connectionQueries = Config.get<SqluiFrontend.ConnectionQuery[]>('cache.connectionQueries', []);
 
 function _useConnectionQueries() {
   return useQuery(QUERY_KEY_QUERIES, () => _connectionQueries, {
@@ -291,16 +291,16 @@ export function useConnectionQueries() {
 
   function _invalidateQueries() {
     queryClient.invalidateQueries(QUERY_KEY_QUERIES);
-    queryClient.setQueryData<SqluiNative.ConnectionQuery[] | undefined>(
+    queryClient.setQueryData<SqluiFrontend.ConnectionQuery[] | undefined>(
       QUERY_KEY_QUERIES,
       () => _connectionQueries,
     );
   }
 
-  const onAddQuery = (query?: SqluiNative.ConnectionQuery) => {
+  const onAddQuery = (query?: SqluiFrontend.ConnectionQuery) => {
     const newId = `query.${Date.now()}.${Math.floor(Math.random() * 10000000000000000)}`;
 
-    let newQuery: SqluiNative.ConnectionQuery;
+    let newQuery: SqluiFrontend.ConnectionQuery;
     if (!query) {
       newQuery = {
         id: newId,
@@ -373,7 +373,7 @@ export function useConnectionQueries() {
 
   const onChangeQuery = (
     queryId: string | undefined,
-    key: keyof SqluiNative.ConnectionQuery,
+    key: keyof SqluiFrontend.ConnectionQuery,
     value?: string,
   ) => {
     const query = queries?.find((q) => q.id === queryId);
@@ -410,7 +410,7 @@ export function useConnectionQueries() {
     onAddQuery(query);
   };
 
-  const onImportQuery = (query?: SqluiNative.ConnectionQuery) => {
+  const onImportQuery = (query?: SqluiFrontend.ConnectionQuery) => {
     if (!query || !query) {
       return;
     }
@@ -443,7 +443,7 @@ export function useConnectionQuery(queryId: string) {
 
   const onExecute = () => onExecuteQuery(query?.id);
 
-  const onChange = (key: keyof SqluiNative.ConnectionQuery, value?: string) =>
+  const onChange = (key: keyof SqluiFrontend.ConnectionQuery, value?: string) =>
     onChangeQuery(query?.id, key, value);
 
   const onDelete = () => onDeleteQuery(query?.id);
@@ -468,7 +468,7 @@ export function useActiveConnectionQuery() {
 
   const onExecute = () => onExecuteQuery(query?.id);
 
-  const onChange = (key: keyof SqluiNative.ConnectionQuery, value?: string) =>
+  const onChange = (key: keyof SqluiFrontend.ConnectionQuery, value?: string) =>
     onChangeQuery(query?.id, key, value);
 
   const onDelete = () => onDeleteQuery(query?.id);
@@ -484,12 +484,12 @@ export function useActiveConnectionQuery() {
 }
 
 // for exporting
-export function getExportedConnection(connection: Sqlui.ConnectionMetaData) {
+export function getExportedConnection(connection: SqluiCore.ConnectionMetaData) {
   const { dialect, databases, ...dataToExport } = connection;
   return { _type: 'connection', ...dataToExport };
 }
 
-export function getExportedQuery(query: SqluiNative.ConnectionQuery) {
+export function getExportedQuery(query: SqluiFrontend.ConnectionQuery) {
   const { selected, lastExecuted, ...dataToExport } = query;
   return { _type: 'query', ...dataToExport };
 }

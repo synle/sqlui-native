@@ -1,5 +1,5 @@
-import { Sqlui, SqluiNative } from 'typings';
-import {SessionStorageConfig} from 'src/data/config';
+import { SqluiCore, SqluiFrontend } from 'typings';
+import { SessionStorageConfig } from 'src/data/config';
 
 let instanceId: string = 'mocked-server';
 try {
@@ -53,7 +53,7 @@ function _fetch<T>(...inputs) {
 
 export class ProxyApi {
   static getMetaData() {
-    return _fetch<Sqlui.ConnectionMetaData[]>(`/api/metadata`);
+    return _fetch<SqluiCore.ConnectionMetaData[]>(`/api/metadata`);
   }
 
   static deleteConnection(connectionId: string) {
@@ -62,23 +62,23 @@ export class ProxyApi {
     }).then(() => connectionId);
   }
 
-  static upsertConnection(newConnection: Sqlui.CoreConnectionProps) {
+  static upsertConnection(newConnection: SqluiCore.CoreConnectionProps) {
     const connectionId = newConnection.id;
     if (connectionId) {
-      return _fetch<Sqlui.ConnectionProps>(`/api/connection/${connectionId}`, {
+      return _fetch<SqluiCore.ConnectionProps>(`/api/connection/${connectionId}`, {
         method: 'put',
         body: JSON.stringify(newConnection),
       });
     } else {
-      return _fetch<Sqlui.ConnectionProps>(`/api/connection`, {
+      return _fetch<SqluiCore.ConnectionProps>(`/api/connection`, {
         method: 'post',
         body: JSON.stringify(newConnection),
       });
     }
   }
 
-  static execute(query?: SqluiNative.ConnectionQuery) {
-    return _fetch<Sqlui.Result>(`/api/connection/${query?.connectionId}/execute`, {
+  static execute(query?: SqluiFrontend.ConnectionQuery) {
+    return _fetch<SqluiCore.Result>(`/api/connection/${query?.connectionId}/execute`, {
       method: 'post',
       body: JSON.stringify({
         database: query?.databaseId,
@@ -88,13 +88,13 @@ export class ProxyApi {
   }
 
   static reconnect(connectionId: string) {
-    return _fetch<Sqlui.ConnectionMetaData>(`/api/connection/${connectionId}/connect`, {
+    return _fetch<SqluiCore.ConnectionMetaData>(`/api/connection/${connectionId}/connect`, {
       method: 'post',
     });
   }
 
-  static test(connection: Sqlui.CoreConnectionProps) {
-    return _fetch<Sqlui.CoreConnectionMetaData>(`/api/connection/test`, {
+  static test(connection: SqluiCore.CoreConnectionProps) {
+    return _fetch<SqluiCore.CoreConnectionMetaData>(`/api/connection/test`, {
       method: 'post',
       body: JSON.stringify(connection),
     });

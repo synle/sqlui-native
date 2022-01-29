@@ -7,7 +7,7 @@ import {
 } from './commons/utils/RelationalDatabaseEngine';
 import ConnectionUtils from './commons/utils/ConnectionUtils';
 import { setUpDataEndpoints } from './commons/utils/EndpointUtils';
-import { Sqlui } from './typings';
+import { SqluiCore } from './typings';
 
 const port = 3001;
 const app = express();

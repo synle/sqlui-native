@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
-import { Sqlui, SqluiNative } from 'typings';
+import { SqluiCore, SqluiFrontend } from 'typings';
 import AlertDialog from 'src/components/ActionDialogs/AlertDialog';
 import PromptDialog from 'src/components/ActionDialogs/PromptDialog';
 interface ActionDialogsProps {}
