@@ -140,11 +140,15 @@ function ConnectionDatabaseSelector(props: ConnectionDatabaseSelectorProps) {
   }
 
   const connectionOptions = connections?.map((connection) => (
-    <option value={connection.id}>{connection.name}</option>
+    <option value={connection.id} key={connection.id}>
+      {connection.name}
+    </option>
   ));
 
   const databaseConnections = databases?.map((database) => (
-    <option value={database.name}>{database.name}</option>
+    <option value={database.name} key={database.name}>
+      {database.name}
+    </option>
   ));
 
   return (
@@ -159,7 +163,6 @@ function ConnectionDatabaseSelector(props: ConnectionDatabaseSelectorProps) {
       <NativeSelect
         value={query.databaseId}
         onChange={(e) => onDatabaseChange(e.target.value)}
-        required
         sx={{ ml: 3 }}>
         <option value=''>Pick One</option>
         {databaseConnections}
