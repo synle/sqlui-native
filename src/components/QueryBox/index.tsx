@@ -135,10 +135,6 @@ function ConnectionDatabaseSelector(props: ConnectionDatabaseSelectorProps) {
     props.onChange(query.connectionId, databaseId);
   };
 
-  if (isLoading) {
-    return null;
-  }
-
   const connectionOptions = connections?.map((connection) => (
     <option value={connection.id} key={connection.id}>
       {connection.name}
@@ -150,6 +146,17 @@ function ConnectionDatabaseSelector(props: ConnectionDatabaseSelectorProps) {
       {database.name}
     </option>
   ));
+
+  useEffect(() => {
+    if (databases?.length === 1) {
+      // if there is only one database, let's select it
+      onDatabaseChange(databases[0].name);
+    }
+  }, [databases]);
+
+  if (isLoading) {
+    return null;
+  }
 
   return (
     <>
