@@ -18,8 +18,12 @@ export default function DeleteConnectionButton(props: DeleteConnectionButtonProp
     e.preventDefault();
     e.stopPropagation();
 
-    await confirm('Delete this connection?');
-    await mutateAsync(connectionId);
+    try {
+      await confirm('Delete this connection?');
+      await mutateAsync(connectionId);
+    } catch (err) {
+      // @ts-ignore
+    }
   };
 
   return (
