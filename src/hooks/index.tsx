@@ -5,7 +5,6 @@ import dataApi from 'src/data/api';
 import Config from 'src/data/config';
 
 const QUERY_KEY_ALL_CONNECTIONS = 'qk.connections';
-const QUERY_KEY_SINGLE_CONNECTION = 'qk.connection';
 const QUERY_KEY_TREEVISIBLES = 'qk.treeVisibles';
 const QUERY_KEY_QUERIES = 'qk.queries';
 const QUERY_KEY_RESULTS = 'qk.results';
@@ -46,7 +45,7 @@ export function useGetConnections() {
 
 export function useGetConnectionById(connectionId?: string) {
   return useQuery(
-    [QUERY_KEY_SINGLE_CONNECTION, connectionId],
+    [connectionId, 'Definition'],
     () => (!connectionId ? undefined : dataApi.getConnection(connectionId)),
     {
       enabled: !!connectionId,
@@ -60,8 +59,8 @@ export function useUpsertConnection() {
     dataApi.upsertConnection,
     {
       onSuccess: async (newConnection) => {
-        queryClient.invalidateQueries([QUERY_KEY_SINGLE_CONNECTION, newConnection.id]);
-        queryClient.invalidateQueries([QUERY_KEY_ALL_CONNECTIONS]);
+        queryClient.invalidateQueries(newConnection.id);
+        queryClient.invalidateQueries(QUERY_KEY_ALL_CONNECTIONS);
 
         queryClient.setQueryData<SqluiCore.ConnectionProps[] | undefined>(
           QUERY_KEY_ALL_CONNECTIONS,
@@ -100,8 +99,8 @@ export function useDeleteConnection() {
 
   return useMutation<string, void, string>(dataApi.deleteConnection, {
     onSuccess: async (deletedConnectionId) => {
-      queryClient.invalidateQueries([QUERY_KEY_SINGLE_CONNECTION, deletedConnectionId]);
-      queryClient.invalidateQueries([QUERY_KEY_ALL_CONNECTIONS]);
+      queryClient.invalidateQueries(deletedConnectionId);
+      queryClient.invalidateQueries(QUERY_KEY_ALL_CONNECTIONS);
 
       queryClient.setQueryData<SqluiCore.ConnectionProps[] | undefined>(
         QUERY_KEY_ALL_CONNECTIONS,
@@ -151,7 +150,7 @@ export function useGetDatabases(connectionId?: string) {
   const enabled = !!connectionId;
 
   return useQuery(
-    [QUERY_KEY_SINGLE_CONNECTION, connectionId, 'databases'],
+    [connectionId, 'databases'],
     () => (!enabled ? undefined : dataApi.getConnectionDatabases(connectionId)),
     {
       enabled,
@@ -163,7 +162,7 @@ export function useGetTables(connectionId: string, databaseId: string) {
   const enabled = !!connectionId && !!databaseId;
 
   return useQuery(
-    [QUERY_KEY_SINGLE_CONNECTION, connectionId, databaseId, 'tables'],
+    [connectionId, databaseId, 'tables'],
     () => (!enabled ? undefined : dataApi.getConnectionTables(connectionId, databaseId)),
     {
       enabled,
@@ -175,7 +174,7 @@ export function useGetColumns(connectionId?: string, databaseId?: string, tableI
   const enabled = !!connectionId && !!databaseId && !!tableId;
 
   return useQuery(
-    [QUERY_KEY_SINGLE_CONNECTION, connectionId, databaseId, tableId, 'columns'],
+    [connectionId, databaseId, tableId, 'columns'],
     () => (!enabled ? undefined : dataApi.getConnectionColumns(connectionId, databaseId, tableId)),
     {
       enabled,
@@ -184,6 +183,7 @@ export function useGetColumns(connectionId?: string, databaseId?: string, tableI
 }
 
 export function useExecute(query?: SqluiFrontend.ConnectionQuery) {
+  const queryClient = useQueryClient();
   const { id, connectionId, sql, databaseId, lastExecuted } = query || {};
   const enabled = query && !!sql && !!connectionId && !!lastExecuted;
 
@@ -192,6 +192,25 @@ export function useExecute(query?: SqluiFrontend.ConnectionQuery) {
     () => dataApi.execute(query),
     {
       enabled,
+      onSettled: (results, error) => {
+        if (results || !error) {
+          // if we have any one of these keywords, let's refresh the table...
+          const KEYWORDS_TO_REFRESH_CONNECTION = [
+            'DROP TABLE',
+            'CREATE TABLE',
+            'ALTER TABLE',
+            'DROP COLUMN',
+          ];
+          const shouldRefreshConnection = KEYWORDS_TO_REFRESH_CONNECTION.some((keyword) =>
+            query?.sql?.toUpperCase()?.includes(keyword),
+          );
+
+          if (shouldRefreshConnection) {
+            queryClient.invalidateQueries(connectionId);
+            queryClient.invalidateQueries(QUERY_KEY_ALL_CONNECTIONS);
+          }
+        }
+      },
     },
   );
 }
@@ -201,23 +220,25 @@ export function useRetryConnection() {
   return useMutation<SqluiCore.ConnectionMetaData, SqluiCore.ConnectionMetaData, string>(
     dataApi.reconnect,
     {
-      onSettled: async (newConnection, newCleanedConnection) => {
+      onSettled: async (newSuccessConnection, newFailedConnection) => {
         // NOTE: here we used settled, because if the connection
         // went bad, we want to also refresh the data
-        queryClient.invalidateQueries('connection');
+        queryClient.invalidateQueries(QUERY_KEY_ALL_CONNECTIONS);
 
         queryClient.setQueryData<SqluiCore.ConnectionMetaData[] | undefined>(
           QUERY_KEY_ALL_CONNECTIONS,
           (oldData) => {
             // find that entry
             oldData = oldData?.map((connection) => {
-              if (connection.id === newConnection?.id) {
+              if (connection.id === newSuccessConnection?.id) {
                 // good connnection
-                return newConnection;
+                queryClient.invalidateQueries(newSuccessConnection.id);
+                return newSuccessConnection;
               }
-              if (connection.id === newCleanedConnection?.id) {
+              if (connection.id === newFailedConnection?.id) {
                 // bad connection
-                return newCleanedConnection;
+                queryClient.invalidateQueries(newFailedConnection.id);
+                return newFailedConnection;
               }
               return connection;
             });
@@ -225,8 +246,6 @@ export function useRetryConnection() {
             return oldData;
           },
         );
-
-        return newConnection;
       },
     },
   );
