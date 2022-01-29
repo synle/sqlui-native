@@ -63,3 +63,17 @@ export module SqluiNative {
 
   export type TreeVisibilities = { [index: string]: boolean };
 }
+
+export module SqluiCacheKeys {
+  /**
+   * in memory cache keys used in the server
+   * @type {String}
+   */
+  export type ServerApi = 'cacheMetaData';
+
+  /**
+   * client config key used for storage on the client side
+   * @type {String}
+   */
+  export type ClientConfig = 'cache.metadata' | 'cache.connectionQueries' | 'api.instanceId';
+}
