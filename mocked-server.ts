@@ -12,8 +12,8 @@ import { SqluiCore } from './typings';
 const port = 3001;
 const app = express();
 
-app.use(bodyParser.urlencoded({ extended: false })); // parse application/x-www-form-urlencoded
-app.use(bodyParser.json()); // parse application/json
+app.use(bodyParser.urlencoded({ extended: false, limit: '50mb' })); // parse application/x-www-form-urlencoded
+app.use(bodyParser.json({ limit: '50mb' })); // parse application/json
 
 setUpDataEndpoints(app);
 

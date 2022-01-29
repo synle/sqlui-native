@@ -19,6 +19,7 @@
   &__RightPane {
     flex-grow: 1;
     overflow: hidden;
+    margin-right: 10px;
   }
 }
 
@@ -68,16 +69,6 @@
   &__Content {
     width: 100%;
     overflow-x: auto;
-  }
-
-  textarea {
-    width: 100%;
-    min-height: 300px;
-    margin: 0;
-    background: #efefef;
-    border: 1px solid black;
-    padding: 5px 10px;
-    resize: vertical;
   }
 }
 
