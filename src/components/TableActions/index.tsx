@@ -1,4 +1,5 @@
 import React from 'react';
+import { format } from 'sql-formatter';
 import Typography from '@mui/material/Typography';
 import ViewColumnIcon from '@mui/icons-material/ViewColumn';
 import Alert from '@mui/material/Alert';
@@ -52,6 +53,7 @@ export default function TableActions(props: TableActionsProps) {
   action && actions.push(action);
 
   const onShowQuery = (queryToShow: string) => {
+    onChangeActiveQuery('lastExecuted', undefined); // this is to stop the query from automatically triggered
     onChangeActiveQuery('connectionId', connectionId);
     onChangeActiveQuery('databaseId', databaseId);
     onChangeActiveQuery('sql', queryToShow);
@@ -59,7 +61,7 @@ export default function TableActions(props: TableActionsProps) {
 
   const options = actions.map((action) => ({
     label: action.label,
-    onClick: () => onShowQuery(action.query),
+    onClick: () => onShowQuery(format(action.query)),
   }));
 
   return (
@@ -170,8 +172,8 @@ function getInsertCommand(input: TableActionInput): TableActionOutput | undefine
 function getUpdateCommand(input: TableActionInput): TableActionOutput | undefined {
   const label = `Update`;
 
-  const columnString = input.columns.map((col) => `${col.name} = ''`).join(',\n');
-  const whereColumnString = input.columns.map((col) => `${col.name} = ''`).join('\n -- AND ');
+  const columnString = input.columns.map((col) => `-- ${col.name} = ''`).join(',\n');
+  const whereColumnString = input.columns.map((col) => `-- ${col.name} = ''`).join(' AND \n');
 
   switch (input.dialect) {
     case 'mssql':
