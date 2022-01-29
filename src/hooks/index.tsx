@@ -2,6 +2,7 @@ import { useState, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
 import { Sqlui, SqluiNative } from 'typings';
 import dataApi from 'src/data/api';
+import Config from 'src/data/config';
 
 const QUERY_KEY_CONNECTIONS = 'connections';
 const QUERY_KEY_TREEVISIBLES = 'treeVisibles';
@@ -38,19 +39,14 @@ function _fetch<T>(...inputs) {
     });
 }
 
-let _metaData: Sqlui.ConnectionMetaData[] = [];
-try {
-  _metaData = JSON.parse(window.localStorage.getItem('cache.metadata') || '');
-} catch (err) {
-  _metaData = [];
-}
+let _metaData = Config.get<Sqlui.ConnectionMetaData[]>('cache.metadata', []);
 
 export function useGetMetaData() {
   return useQuery(QUERY_KEY_CONNECTIONS, dataApi.getMetaData, {
     initialData: _metaData,
     onSuccess: (data) => {
       if (data && Object.keys(data).length > 0) {
-        window.localStorage.setItem('cache.metadata', JSON.stringify(data));
+        Config.set('cache.metadata', data);
       }
     },
   });
@@ -278,17 +274,12 @@ export function useShowHide() {
   };
 }
 
-let _connectionQueries: SqluiNative.ConnectionQuery[];
-try {
-  _connectionQueries = JSON.parse(window.localStorage.getItem('cache.connectionQueries') || '');
-} catch (err) {
-  _connectionQueries = [];
-}
+let _connectionQueries = Config.get<SqluiNative.ConnectionQuery[]>('cache.connectionQueries', []);
 
 function _useConnectionQueries() {
   return useQuery(QUERY_KEY_QUERIES, () => _connectionQueries, {
     onSuccess: (data) => {
-      window.localStorage.setItem('cache.connectionQueries', JSON.stringify(data));
+      Config.set('cache.connectionQueries', data);
     },
   });
 }
