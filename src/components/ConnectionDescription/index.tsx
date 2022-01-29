@@ -11,6 +11,7 @@ import CloudIcon from '@mui/icons-material/Cloud';
 import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
 import RefreshIcon from '@mui/icons-material/Refresh';
+import SelectAllIcon from '@mui/icons-material/SelectAll';
 import Alert from '@mui/material/Alert';
 import { Button } from '@mui/material';
 import Tooltip from '@mui/material/Tooltip';
@@ -28,6 +29,7 @@ import {
   useDeleteConnection,
   useDuplicateConnection,
   getExportedConnection,
+  useActiveConnectionQuery,
 } from 'src/hooks';
 import { downloadText } from 'src/data/file';
 import { SqluiCore } from 'typings';
@@ -153,6 +155,7 @@ function ConnectionActions(props: ConnectionActionsProps) {
   const { mutateAsync: reconnectConnection } = useRetryConnection();
   const { mutateAsync: duplicateConnection } = useDuplicateConnection();
   const { confirm } = useActionDialogs();
+  const { onChange: onChangeActiveQuery } = useActiveConnectionQuery();
 
   const onDelete = async () => {
     try {
@@ -184,7 +187,18 @@ function ConnectionActions(props: ConnectionActionsProps) {
     );
   };
 
+  const onSelectConnection = () => {
+    onChangeActiveQuery('lastExecuted', undefined); // this is to stop the query from automatically triggered
+    onChangeActiveQuery('connectionId', connection.id);
+    onChangeActiveQuery('databaseId', undefined);
+  };
+
   const options = [
+    {
+      label: 'Select',
+      onClick: () => onSelectConnection(),
+      startIcon: <SelectAllIcon />,
+    },
     {
       label: 'Edit',
       onClick: () => navigate(`/connection/edit/${connection.id}`),
