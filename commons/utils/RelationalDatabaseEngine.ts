@@ -25,7 +25,7 @@ export class RelationalDatabaseEngine {
 
       this.dialect = sequelize?.getDialect();
 
-      if((connectionOption as string).includes('mariadb://')){
+      if ((connectionOption as string).includes('mariadb://')) {
         this.dialect = 'mariadb';
       }
     } else {

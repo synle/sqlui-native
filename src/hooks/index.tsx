@@ -185,7 +185,7 @@ export function useGetColumns(connectionId?: string, databaseId?: string, tableI
 
 export function useExecute(query?: SqluiFrontend.ConnectionQuery) {
   const { id, connectionId, sql, databaseId, lastExecuted } = query || {};
-  const enabled = query && !!sql && !!connectionId && !!databaseId && !!lastExecuted;
+  const enabled = query && !!sql && !!connectionId && !!lastExecuted;
 
   return useQuery(
     [QUERY_KEY_RESULTS, `${QUERY_KEY_RESULTS}_${id}`, id, connectionId, databaseId, lastExecuted],
