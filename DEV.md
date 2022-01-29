@@ -72,7 +72,7 @@ npm run dist
 
 
 ## Sample Databases
-Docker can be used to spin off these database engines. Refer to this repo for the SQL dumps.
+Docker can be used to spin off these database engines. Refer to (this repo for the SQL dumps)[https://github.com/synle/sqlui-core].
 
 ```
 # MySQL (https://hub.docker.com/_/mysql)

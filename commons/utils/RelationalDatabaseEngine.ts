@@ -47,6 +47,9 @@ export class RelationalDatabaseEngine {
     if (!this.sequelizes[database]) {
       this.sequelizes[database] = new Sequelize(`${this.connectionOption}/${database}`, {
         logging: false,
+        dialectOptions: {
+          multipleStatements: true,
+        },
       });
     }
     return this.sequelizes[database];

@@ -45,6 +45,7 @@ export default function QueryBox(props: QueryBoxProps) {
   }
 
   const onDatabaseConnectionChange = (connectionId?: string, databaseId?: string) => {
+    onChange('lastExecuted', undefined);// this is to stop the query from automatically triggered
     onChange('connectionId', connectionId);
     onChange('databaseId', databaseId);
   };
