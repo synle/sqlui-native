@@ -78,10 +78,7 @@ export function useGetAvailableDatabaseConnections(metaData?: SqluiCore.Connecti
 }
 
 export function useGetConnections() {
-  return useQuery(
-    [QUERY_KEY_CONNECTION, 'allConnections'],
-    dataApi.getConnections
-  );
+  return useQuery([QUERY_KEY_CONNECTION, 'allConnections'], dataApi.getConnections);
 }
 
 export function useGetConnectionById(connectionId?: string) {
