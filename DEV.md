@@ -101,3 +101,24 @@ cd build
 npm install
 npm run dist
 ```
+
+
+## Sample Databases
+Docker can be used to spin off these database engines. Refer to this repo for the SQL dumps.
+
+```
+# MySQL (https://hub.docker.com/_/mysql)
+docker run --name sqlui_mysql -p 3306:3306 -e MYSQL_ROOT_PASSWORD=password -d mysql
+
+  # Use this to connect to mysql with the docker image
+  docker run -it --rm mysql mysql -h127.0.0.1 -uroot -p
+
+# MariaDB (https://hub.docker.com/_/mariadb)
+docker run --detach --name sqlui_mariadb -p 33061:3306 -e MARIADB_ROOT_PASSWORD=password mariadb:latest
+
+# MSSQL (https://hub.docker.com/_/microsoft-mssql-server)
+docker run --name sqlui_mssql -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=password123!" -p 1433:1433 -d mcr.microsoft.com/mssql/server:2019-latest
+
+# postgres (https://hub.docker.com/_/postgres)
+docker run --name sql_postgres -p 5432:5432 -e POSTGRES_PASSWORD=password -d postgres
+```
