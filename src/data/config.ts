@@ -1,11 +1,12 @@
-type ConfigKey = 'cache.metadata' | 'cache.connectionQueries';
+import {SqluiCacheKeys} from 'typings'
+
 
 export const SessionStorageConfig = {
-  set(key: ConfigKey, value: any) {
+  set(key: SqluiCacheKeys.ClientConfig, value: any) {
     window.sessionStorage.setItem(key, JSON.stringify(value));
   },
 
-  get<T>(key: ConfigKey, defaultValue?: T): T {
+  get<T>(key: SqluiCacheKeys.ClientConfig, defaultValue?: T): T {
     let res;
 
     try {
@@ -19,11 +20,11 @@ export const SessionStorageConfig = {
 };
 
 export const LocalStorageConfig = {
-  set(key: ConfigKey, value: any) {
+  set(key: SqluiCacheKeys.ClientConfig, value: any) {
     window.localStorage.setItem(key, JSON.stringify(value));
   },
 
-  get<T>(key: ConfigKey, defaultValue?: T): T {
+  get<T>(key: SqluiCacheKeys.ClientConfig, defaultValue?: T): T {
     let res;
 
     try {

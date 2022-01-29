@@ -6,11 +6,9 @@ import {
   resetConnectionMetaData,
 } from './RelationalDatabaseEngine';
 import ConnectionUtils from './ConnectionUtils';
-import { Sqlui } from '../../typings';
+import { Sqlui, SqluiCacheKeys } from '../../typings';
 
 let expressAppContext: Express | undefined;
-
-type ServerApiCacheKeys = 'cacheMetaData';
 
 const _cache = {};
 
@@ -26,7 +24,7 @@ function addDataEndpoint(
       // here we simulate a delay for our mocked server
       const instanceid = req.headers.instanceid;
       const apiCache = {
-        get(key: string) {
+        get(key: SqluiCacheKeys.ServerApi) {
           try {
             //@ts-ignore
             return _cache[instanceid][key];
@@ -34,7 +32,7 @@ function addDataEndpoint(
             return undefined;
           }
         },
-        set(key: string, value: any) {
+        set(key: SqluiCacheKeys.ServerApi, value: any) {
           try {
             //@ts-ignore
             _cache[instanceid] = _cache[instanceid] || {};
