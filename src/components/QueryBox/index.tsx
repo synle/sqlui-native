@@ -10,12 +10,14 @@ import PreviewIcon from '@mui/icons-material/Preview';
 import FormatColorTextIcon from '@mui/icons-material/FormatColorText';
 import Tooltip from '@mui/material/Tooltip';
 import {
+  useGetConnections,
   useExecute,
   useConnectionQueries,
   useConnectionQuery,
   useGetAvailableDatabaseConnections,
   useGetMetaData,
   useShowHide,
+  useGetDatabases,
 } from 'src/hooks';
 import { SqluiCore, SqluiFrontend } from 'typings';
 
@@ -33,7 +35,6 @@ export default function QueryBox(props: QueryBoxProps) {
     isLoading: loadingConnection,
     onExecute,
   } = useConnectionQuery(queryId);
-  const connectionsMetaData = useGetAvailableDatabaseConnections(connections);
   const { isLoading: executing } = useExecute(query);
 
   const isLoading = loadingMetaData || loadingConnection;
@@ -46,15 +47,9 @@ export default function QueryBox(props: QueryBoxProps) {
     return null;
   }
 
-  const onDatabaseConnectionChange = (newValue: string) => {
-    if (!connectionsMetaData) {
-      return;
-    }
-
-    const matched = connectionsMetaData.find((connMetaData) => connMetaData.id === newValue);
-
-    onChange('connectionId', matched?.connectionId);
-    onChange('databaseId', matched?.databaseId);
+  const onDatabaseConnectionChange = (connectionId?: string, databaseId?: string) => {
+    onChange('connectionId', connectionId);
+    onChange('databaseId', databaseId);
   };
 
   const onSqlQueryChange = (newQuery: string) => {
@@ -78,11 +73,7 @@ export default function QueryBox(props: QueryBoxProps) {
         <Typography variant='h6'>{query.name}</Typography>
       </div>
       <div className='QueryBox__Row'>
-        <ConnectionDatabaseSelector
-          value={query}
-          onChange={onDatabaseConnectionChange}
-          options={connectionsMetaData}
-        />
+        <ConnectionDatabaseSelector value={query} onChange={onDatabaseConnectionChange} />
         <ConnectionRevealButton query={query} />
       </div>
       <div className='QueryBox__Row'>
@@ -128,23 +119,55 @@ export default function QueryBox(props: QueryBoxProps) {
 // TODO: move me to a file
 interface ConnectionDatabaseSelectorProps {
   value: SqluiFrontend.ConnectionQuery;
-  onChange: (newValue: string) => void;
-  options?: SqluiFrontend.AvailableConnectionProps[];
+  onChange: (connectionId?: string, databaseId?: string) => void;
 }
 
 function ConnectionDatabaseSelector(props: ConnectionDatabaseSelectorProps) {
   const query = props.value;
   const value = [query.connectionId, query.databaseId].join(' << ');
+  const { data: connections, isLoading: loadingConnections } = useGetConnections();
+  const { data: databases, isLoading: loadingDatabases } = useGetDatabases(query.connectionId);
+
+  const isLoading = loadingDatabases || loadingConnections;
+
+  const onConnectionChange = (connectionId: string) => {
+    props.onChange(connectionId, undefined);
+  };
+
+  const onDatabaseChange = (databaseId: string) => {
+    props.onChange(query.connectionId, databaseId);
+  };
+
+  if (isLoading) {
+    return null;
+  }
+
+  const connectionOptions = connections?.map((connection) => (
+    <option value={connection.id}>{connection.name}</option>
+  ));
+
+  const databaseConnections = databases?.map((database) => (
+    <option value={database.name}>{database.name}</option>
+  ));
 
   return (
-    <NativeSelect value={value} onChange={(e) => props.onChange(e.target.value)} required>
-      <option value=''>Pick One</option>
-      {props.options?.map((connMetaData) => (
-        <option key={`${connMetaData.id}`} value={`${connMetaData.id}`}>
-          {connMetaData.label}
-        </option>
-      ))}
-    </NativeSelect>
+    <>
+      <NativeSelect
+        value={query.connectionId}
+        onChange={(e) => onConnectionChange(e.target.value)}
+        required>
+        <option value=''>Pick One</option>
+        {connectionOptions}
+      </NativeSelect>
+      <NativeSelect
+        value={query.databaseId}
+        onChange={(e) => onDatabaseChange(e.target.value)}
+        required
+        sx={{ml: 3}}>
+        <option value=''>Pick One</option>
+        {databaseConnections}
+      </NativeSelect>
+    </>
   );
 }
 
