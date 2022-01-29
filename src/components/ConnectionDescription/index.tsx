@@ -53,7 +53,7 @@ export default function ConnectionDescription() {
         return (
           <React.Fragment key={key}>
             <AccordionHeader expanded={visibles[key]} onToggle={() => onToggle(key)}>
-              <CloudIcon color={isOnline ? 'primary' : 'disabled'} fontSize='inherit' />
+              <ConnectionDialectIcon connection={connection}/>
               <span>{connection.name}</span>
               <ConnectionActions connection={connection} />
             </AccordionHeader>
@@ -69,6 +69,33 @@ export default function ConnectionDescription() {
       })}
     </div>
   );
+}
+
+// TODO: move this into a file if we need to reuse it
+interface ConnectionDialectIconProps {
+  connection: SqluiCore.ConnectionProps;
+}
+function ConnectionDialectIcon(props: ConnectionDialectIconProps) {
+  const {dialect, status} = props.connection;
+
+  if(status !== 'online'){
+     return <CloudIcon color='disabled' fontSize='inherit' />;
+  }
+
+  switch(dialect){
+    case 'mssql':
+      return <img src={`${process.env.PUBLIC_URL}/assets/sqlserver.png`} title={dialect} width={30} />
+    case 'postgres':
+      return <img src={`${process.env.PUBLIC_URL}/assets/postgresql.png`} title={dialect} width={30} />
+    case 'sqlite':
+      return <img src={`${process.env.PUBLIC_URL}/assets/sqlite.png`} title={dialect} width={30} />
+    case 'mariadb':
+      return <img src={`${process.env.PUBLIC_URL}/assets/mariadb.png`} title={dialect} width={30} />
+    case 'mysql':
+      return <img src={`${process.env.PUBLIC_URL}/assets/mysql.png`} title={dialect} width={30} />
+    default:
+      return <CloudIcon color='primary' fontSize='inherit' />;
+  }
 }
 
 // TODO: move this into a file if we need to reuse it
@@ -108,7 +135,7 @@ function ConnectionRetryAlert(props: ConnectionRetryAlertProps) {
   );
 }
 
-// TOD:
+// TODO: move this into a file if we need to reuse it
 interface ConnectionActionsProps {
   connection: SqluiCore.ConnectionProps;
 }

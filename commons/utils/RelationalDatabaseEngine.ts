@@ -17,18 +17,21 @@ export class RelationalDatabaseEngine {
   constructor(connectionOption: string | Sequelize) {
     let sequelize;
     if (typeof connectionOption === 'string') {
-      //since mariadb and mysql are fully compatible, let's use the same data
-      connectionOption = (connectionOption as string).replace('mariadb://', 'mysql://');
-
+      // since mariadb and mysql are fully compatible, let's use the same data
       // save the connection string
-      this.connectionOption = connectionOption;
+      this.connectionOption = (connectionOption as string).replace('mariadb://', 'mysql://');
 
       sequelize = new Sequelize(connectionOption);
+
+      this.dialect = sequelize?.getDialect();
+
+      if((connectionOption as string).includes('mariadb://')){
+        this.dialect = 'mariadb';
+      }
     } else {
       sequelize = connectionOption as Sequelize;
+      this.dialect = sequelize?.getDialect();
     }
-
-    this.dialect = sequelize?.getDialect();
 
     // save the root connection
     this.sequelizes[''] = sequelize;
