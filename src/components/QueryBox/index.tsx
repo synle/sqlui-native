@@ -14,8 +14,6 @@ import {
   useExecute,
   useConnectionQueries,
   useConnectionQuery,
-  useGetAvailableDatabaseConnections,
-  useGetMetaData,
   useShowHide,
   useGetDatabases,
 } from 'src/hooks';
@@ -27,7 +25,6 @@ interface QueryBoxProps {
 
 export default function QueryBox(props: QueryBoxProps) {
   const { queryId } = props;
-  const { data: connections, isLoading: loadingMetaData } = useGetMetaData();
   const {
     query,
     onChange,
@@ -37,7 +34,7 @@ export default function QueryBox(props: QueryBoxProps) {
   } = useConnectionQuery(queryId);
   const { isLoading: executing } = useExecute(query);
 
-  const isLoading = loadingMetaData || loadingConnection;
+  const isLoading = loadingConnection;
 
   if (isLoading) {
     return <Alert severity='info'>Loading...</Alert>;
@@ -57,7 +54,7 @@ export default function QueryBox(props: QueryBoxProps) {
   };
 
   const onFormatQuery = () => {
-    onChange('sql', format(query?.sql));
+    onChange('sql', format(query?.sql || ''));
   };
 
   const onSubmit = (e: React.SyntheticEvent) => {
@@ -163,7 +160,7 @@ function ConnectionDatabaseSelector(props: ConnectionDatabaseSelectorProps) {
         value={query.databaseId}
         onChange={(e) => onDatabaseChange(e.target.value)}
         required
-        sx={{ml: 3}}>
+        sx={{ ml: 3 }}>
         <option value=''>Pick One</option>
         {databaseConnections}
       </NativeSelect>

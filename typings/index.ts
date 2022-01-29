@@ -55,7 +55,7 @@ export module SqluiFrontend {
     name: string;
     connectionId?: string;
     databaseId?: string;
-    sql: string;
+    sql?: string;
     lastExecuted?: string;
     selected: boolean;
   }

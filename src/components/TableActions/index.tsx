@@ -8,7 +8,6 @@ import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import {
-  useGetMetaData,
   useGetColumns,
   useShowHide,
   useGetConnectionById,
