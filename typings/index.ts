@@ -10,6 +10,7 @@ export module SqluiCore {
     connection: string;
     name: string;
     status?: 'online' | 'offline';
+    dialect?: SqluiCore.Dialect;
     [index: string]: any;
   };
 
@@ -33,7 +34,6 @@ export module SqluiCore {
   };
 
   export type CoreConnectionMetaData = CoreConnectionProps & {
-    dialect?: SqluiCore.Dialect;
     databases: DatabaseMetaData[];
   };
 

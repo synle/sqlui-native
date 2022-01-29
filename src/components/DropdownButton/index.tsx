@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Button from '@mui/material/Button';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ClickAwayListener from '@mui/material/ClickAwayListener';
@@ -17,6 +17,9 @@ interface DropdownButtonProps {
   id: string;
   children: React.ReactNode;
   options: DropdownButtonOption[];
+  onToggle?: (open: boolean) => void;
+  open?: boolean;
+  isLoading?: boolean;
 }
 
 export default function DropdownButton(props: DropdownButtonProps) {
@@ -38,6 +41,8 @@ export default function DropdownButton(props: DropdownButtonProps) {
     e.stopPropagation();
 
     setOpen((prevOpen) => !prevOpen);
+
+    props.onToggle && props.onToggle(!open);
   };
 
   const onClose = (event: Event) => {
@@ -47,6 +52,27 @@ export default function DropdownButton(props: DropdownButtonProps) {
 
     setOpen(false);
   };
+
+  useEffect(() => {
+    setOpen(!!props.open);
+  }, [props.open]);
+
+  let popperBody: React.ReactElement = <></>;
+  if (props.isLoading) {
+    popperBody = <div style={{ padding: '10px 15px' }}>Loading... Please wait.</div>;
+  } else if (options.length === 0) {
+    popperBody = <div style={{ padding: '10px 15px' }}>No options.</div>;
+  } else {
+    popperBody = (
+      <MenuList id={id}>
+        {options.map((option, index) => (
+          <MenuItem key={option.label} onClick={(event) => handleMenuItemClick(event, index)}>
+            {option.label}
+          </MenuItem>
+        ))}
+      </MenuList>
+    );
+  }
 
   return (
     <React.Fragment>
@@ -67,17 +93,7 @@ export default function DropdownButton(props: DropdownButtonProps) {
               transformOrigin: placement === 'bottom' ? 'right top' : 'right bottom',
             }}>
             <Paper>
-              <ClickAwayListener onClickAway={onClose}>
-                <MenuList id={id}>
-                  {options.map((option, index) => (
-                    <MenuItem
-                      key={option.label}
-                      onClick={(event) => handleMenuItemClick(event, index)}>
-                      {option.label}
-                    </MenuItem>
-                  ))}
-                </MenuList>
-              </ClickAwayListener>
+              <ClickAwayListener onClickAway={onClose}>{popperBody}</ClickAwayListener>
             </Paper>
           </Grow>
         )}

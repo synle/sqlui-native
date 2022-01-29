@@ -4,7 +4,7 @@ import ViewColumnIcon from '@mui/icons-material/ViewColumn';
 import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
 import { AccordionHeader, AccordionBody } from 'src/components/Accordion';
-import { useGetMetaData, useGetColumns, useShowHide } from 'src/hooks';
+import { useGetColumns, useShowHide } from 'src/hooks';
 import { SqluiCore } from 'typings';
 
 const MAX_COLUMN_SIZE_TO_SHOW = 5;
@@ -18,8 +18,11 @@ type ColumnDescriptionProps = {
 export default function ColumnDescription(props: ColumnDescriptionProps) {
   const [showAllColumns, setShowAllColumns] = useState(false);
   const { databaseId, connectionId, tableId } = props;
-  const { data: connections, isLoading } = useGetMetaData();
-  const columns = useGetColumns(connectionId, databaseId, tableId, connections);
+  const {
+    data: columns,
+    isLoading: loadingColumns,
+    isError,
+  } = useGetColumns(connectionId, databaseId, tableId);
   const { visibles, onToggle } = useShowHide();
 
   useEffect(() => {
@@ -28,12 +31,18 @@ export default function ColumnDescription(props: ColumnDescriptionProps) {
     }
   }, [columns]);
 
+  const isLoading = loadingColumns;
+
   if (isLoading) {
-    return <>loading...</>;
+    return <Alert severity='info'>Loading...</Alert>;
+  }
+
+  if (isError) {
+    return <Alert severity='error'>Error...</Alert>;
   }
 
   if (!columns || Object.keys(columns).length === 0) {
-    return <Alert severity='info'>No Available</Alert>;
+    return <Alert severity='info'>Not Available</Alert>;
   }
 
   return (

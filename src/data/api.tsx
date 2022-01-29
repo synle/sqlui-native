@@ -56,6 +56,30 @@ export class ProxyApi {
     return _fetch<SqluiCore.ConnectionMetaData[]>(`/api/metadata`);
   }
 
+  static getConnections() {
+    return _fetch<SqluiCore.ConnectionProps[]>(`/api/connections`);
+  }
+
+  static getConnection(connectionId: string) {
+    return _fetch<SqluiCore.ConnectionProps>(`/api/connection/${connectionId}`);
+  }
+
+  static getConnectionDatabases(connectionId: string) {
+    return _fetch<SqluiCore.DatabaseMetaData[]>(`/api/connection/${connectionId}/databases`);
+  }
+
+  static getConnectionTables(connectionId: string, databaseId: string) {
+    return _fetch<SqluiCore.TableMetaData[]>(
+      `/api/connection/${connectionId}/database/${databaseId}/tables`,
+    );
+  }
+
+  static getConnectionColumns(connectionId: string, databaseId: string, tableId: string) {
+    return _fetch<SqluiCore.ColumnMetaData[]>(
+      `/api/connection/${connectionId}/database/${databaseId}/table/${tableId}/columns`,
+    );
+  }
+
   static deleteConnection(connectionId: string) {
     return _fetch<string>(`/api/connection/${connectionId}`, {
       method: 'delete',

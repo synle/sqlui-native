@@ -48,7 +48,7 @@ function addDataEndpoint(
         },
       };
 
-      setTimeout(() => handler(req, res, apiCache), 350);
+      setTimeout(() => handler(req, res, apiCache), 50);
     });
   } else {
     electronEndpointHandlers.push([method, url, handler]);
@@ -64,7 +64,22 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
 
   addDataEndpoint('get', '/api/connections', async (req, res, apiCache) => {
     try {
-      res.status(200).json(await new ConnectionUtils(req.headers.instanceid).getConnections());
+      const connections = await new ConnectionUtils(req.headers.instanceid).getConnections();
+
+      for (const connection of connections) {
+        try {
+          const engine = getEngine(connection.connection);
+          const databases = await engine.getDatabases();
+
+          connection.status = 'online';
+          connection.dialect = engine.dialect;
+        } catch (err) {
+          connection.status = 'offline';
+          connection.dialect = undefined;
+        }
+      }
+
+      res.status(200).json(connections);
     } catch (err) {
       res.status(500).send();
     }
@@ -72,11 +87,19 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
 
   addDataEndpoint('get', '/api/connection/:connectionId', async (req, res, apiCache) => {
     try {
-      res
-        .status(200)
-        .json(
-          await new ConnectionUtils(req.headers.instanceid).getConnection(req.params?.connectionId),
-        );
+      const connection = await new ConnectionUtils(req.headers.instanceid).getConnection(
+        req.params?.connectionId,
+      );
+
+      try {
+        const engine = getEngine(connection.connection);
+        const databases = await engine.getDatabases();
+
+        connection.status = 'online';
+        connection.dialect = engine.dialect;
+      } catch (err) {}
+
+      res.status(200).json(connection);
     } catch (err) {
       res.status(500).send();
     }

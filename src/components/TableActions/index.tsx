@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { format } from 'sql-formatter';
 import Typography from '@mui/material/Typography';
 import ViewColumnIcon from '@mui/icons-material/ViewColumn';
@@ -11,7 +11,7 @@ import {
   useGetMetaData,
   useGetColumns,
   useShowHide,
-  useGetConnection,
+  useGetConnectionById,
   useActiveConnectionQuery,
 } from 'src/hooks';
 import DropdownButton from 'src/components/DropdownButton';
@@ -24,19 +24,20 @@ type TableActionsProps = {
 };
 
 export default function TableActions(props: TableActionsProps) {
+  const [open, setOpen] = useState(false);
   const { databaseId, connectionId, tableId } = props;
-  const { data: connections, isLoading } = useGetMetaData();
-  const connection = useGetConnection(connectionId, connections);
-  const columns = useGetColumns(connectionId, databaseId, tableId, connections);
+  const { data: connection, isLoading: loadingConnection } = useGetConnectionById(connectionId);
+  const { data: columns, isLoading: loadingColumns } = !open
+    ? useGetColumns(undefined, undefined, undefined)
+    : useGetColumns(connectionId, databaseId, tableId);
+
   const { query, onChange: onChangeActiveQuery } = useActiveConnectionQuery();
   const dialect = connection?.dialect;
 
-  if (isLoading || !dialect || !connection || !columns || Object.keys(columns).length === 0) {
-    return null;
-  }
+  const isLoading = loadingConnection || loadingColumns;
 
   const actions: TableActionOutput[] = [];
-  const tableActionInput = { dialect, connectionId, databaseId, tableId, columns };
+  const tableActionInput = { dialect, connectionId, databaseId, tableId, columns: columns || [] };
 
   let action;
 
@@ -66,7 +67,11 @@ export default function TableActions(props: TableActionsProps) {
 
   return (
     <div className='TableActions'>
-      <DropdownButton id='table-action-split-button' options={options}>
+      <DropdownButton
+        id='table-action-split-button'
+        options={options}
+        onToggle={(newOpen) => setOpen(newOpen)}
+        isLoading={isLoading}>
         <IconButton aria-label='Table Actions' size='small'>
           <ArrowDropDownIcon fontSize='inherit' />
         </IconButton>
@@ -77,10 +82,10 @@ export default function TableActions(props: TableActionsProps) {
 
 // TODO: move me to a file
 interface TableActionInput {
-  dialect: string;
-  connectionId: string;
-  databaseId: string;
-  tableId: string;
+  dialect?: string;
+  connectionId?: string;
+  databaseId?: string;
+  tableId?: string;
   columns: SqluiCore.ColumnMetaData[];
 }
 

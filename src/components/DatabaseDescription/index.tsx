@@ -7,7 +7,7 @@ import Tooltip from '@mui/material/Tooltip';
 import Alert from '@mui/material/Alert';
 import TableDescription from 'src/components/TableDescription';
 import { AccordionHeader, AccordionBody } from 'src/components/Accordion';
-import { useGetMetaData, useGetDatabases, useActiveConnectionQuery, useShowHide } from 'src/hooks';
+import { useGetDatabases, useActiveConnectionQuery, useShowHide } from 'src/hooks';
 
 type DatabaseDescriptionProps = {
   connectionId: string;
@@ -15,17 +15,20 @@ type DatabaseDescriptionProps = {
 
 export default function DatabaseDescription(props: DatabaseDescriptionProps) {
   const { connectionId } = props;
-  const { data: connections, isLoading } = useGetMetaData();
-  const databases = useGetDatabases(connectionId, connections);
+  const { data: databases, isLoading, isError } = useGetDatabases(connectionId);
   const { query, onChange: onChangeActiveQuery } = useActiveConnectionQuery();
   const { visibles, onToggle } = useShowHide();
 
   if (isLoading) {
-    return <>loading...</>;
+    return <Alert severity='info'>Loading...</Alert>;
+  }
+
+  if (isError) {
+    return <Alert severity='error'>Error...</Alert>;
   }
 
   if (!databases || databases.length === 0) {
-    return <Alert severity='info'>No Available</Alert>;
+    return <Alert severity='info'>Not Available</Alert>;
   }
 
   const onSelectDatabaseForQuery = async (e: React.SyntheticEvent, databaseId: string) => {

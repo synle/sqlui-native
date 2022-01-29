@@ -17,7 +17,7 @@ import { useActionDialogs } from 'src/components/ActionDialogs';
 import Toast from 'src/components/Toast';
 import {
   useRetryConnection,
-  useGetMetaData,
+  useGetConnections,
   useShowHide,
   useDeleteConnection,
   useDuplicateConnection,
@@ -27,11 +27,11 @@ import { downloadText } from 'src/data/file';
 import { SqluiCore } from 'typings';
 
 export default function ConnectionDescription() {
-  const { data: connections, isLoading } = useGetMetaData();
+  const { data: connections, isLoading } = useGetConnections();
   const { visibles, onToggle } = useShowHide();
 
   if (isLoading) {
-    return <>loading...</>;
+    return <Alert severity='info'>Loading...</Alert>;
   }
 
   if (!connections || connections.length === 0) {
@@ -104,7 +104,7 @@ function ConnectionRetryAlert(props: ConnectionRetryAlertProps) {
 
 // TOD:
 interface ConnectionActionsProps {
-  connection: SqluiCore.ConnectionMetaData;
+  connection: SqluiCore.ConnectionProps;
 }
 function ConnectionActions(props: ConnectionActionsProps) {
   const { connection } = props;

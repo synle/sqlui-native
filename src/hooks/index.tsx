@@ -5,6 +5,7 @@ import dataApi from 'src/data/api';
 import Config from 'src/data/config';
 
 const QUERY_KEY_CONNECTIONS = 'connections';
+const QUERY_KEY_CONNECTION = 'connection';
 const QUERY_KEY_TREEVISIBLES = 'treeVisibles';
 const QUERY_KEY_QUERIES = 'queries';
 const QUERY_KEY_RESULTS = 'results';
@@ -76,8 +77,21 @@ export function useGetAvailableDatabaseConnections(metaData?: SqluiCore.Connecti
   return res;
 }
 
-export function useGetConnection(connectionId?: string, metaData?: SqluiCore.ConnectionMetaData[]) {
-  return metaData?.find((connection) => connection.id === connectionId);
+export function useGetConnections() {
+  return useQuery(
+    [QUERY_KEY_CONNECTION, 'allConnections'],
+    dataApi.getConnections
+  );
+}
+
+export function useGetConnectionById(connectionId?: string) {
+  return useQuery(
+    [QUERY_KEY_CONNECTION, connectionId],
+    () => (!connectionId ? undefined : dataApi.getConnection(connectionId)),
+    {
+      enabled: !!connectionId,
+    },
+  );
 }
 
 export function useUpsertConnection() {
@@ -86,7 +100,7 @@ export function useUpsertConnection() {
     dataApi.upsertConnection,
     {
       onSuccess: async (newConnection) => {
-        queryClient.invalidateQueries('connection');
+        queryClient.invalidateQueries([QUERY_KEY_CONNECTION, newConnection.id]);
 
         queryClient.setQueryData<SqluiCore.ConnectionProps[] | undefined>(
           QUERY_KEY_CONNECTIONS,
@@ -157,7 +171,7 @@ export function useDeleteConnection() {
 
   return useMutation<string, void, string>(dataApi.deleteConnection, {
     onSuccess: async (deletedConnectionId) => {
-      queryClient.invalidateQueries('connection');
+      queryClient.invalidateQueries([QUERY_KEY_CONNECTION, deletedConnectionId]);
 
       queryClient.setQueryData<SqluiCore.ConnectionProps[] | undefined>(
         QUERY_KEY_CONNECTIONS,
@@ -171,27 +185,40 @@ export function useDeleteConnection() {
   });
 }
 
-export function useGetDatabases(connectionId: string, metaData?: SqluiCore.ConnectionMetaData[]) {
-  return metaData?.find((connection) => connection.id === connectionId)?.databases;
+export function useGetDatabases(connectionId?: string) {
+  const enabled = !!connectionId;
+
+  return useQuery(
+    [QUERY_KEY_CONNECTION, connectionId, 'databases'],
+    () => (!enabled ? undefined : dataApi.getConnectionDatabases(connectionId)),
+    {
+      enabled,
+    },
+  );
 }
 
-export function useGetTables(
-  connectionId: string,
-  databaseId: string,
-  metaData?: SqluiCore.ConnectionMetaData[],
-) {
-  const databases = useGetDatabases(connectionId, metaData);
-  return databases?.find((database) => database.name === databaseId)?.tables;
+export function useGetTables(connectionId: string, databaseId: string) {
+  const enabled = !!connectionId && !!databaseId;
+
+  return useQuery(
+    [QUERY_KEY_CONNECTION, connectionId, databaseId, 'tables'],
+    () => (!enabled ? undefined : dataApi.getConnectionTables(connectionId, databaseId)),
+    {
+      enabled,
+    },
+  );
 }
 
-export function useGetColumns(
-  connectionId: string,
-  databaseId: string,
-  tableId: string,
-  metaData?: SqluiCore.ConnectionMetaData[],
-) {
-  const tables = useGetTables(connectionId, databaseId, metaData);
-  return tables?.find((table) => table.name === tableId)?.columns;
+export function useGetColumns(connectionId?: string, databaseId?: string, tableId?: string) {
+  const enabled = !!connectionId && !!databaseId && !!tableId;
+
+  return useQuery(
+    [QUERY_KEY_CONNECTION, connectionId, databaseId, tableId, 'columns'],
+    () => (!enabled ? undefined : dataApi.getConnectionColumns(connectionId, databaseId, tableId)),
+    {
+      enabled,
+    },
+  );
 }
 
 export function useExecute(query?: SqluiFrontend.ConnectionQuery) {
@@ -496,8 +523,8 @@ export function useActiveConnectionQuery() {
 }
 
 // for exporting
-export function getExportedConnection(connection: SqluiCore.ConnectionMetaData) {
-  const { dialect, databases, ...dataToExport } = connection;
+export function getExportedConnection(connection: SqluiCore.ConnectionProps) {
+  const { dialect, databases, status, ...dataToExport } = connection;
   return { _type: 'connection', ...dataToExport };
 }
 
