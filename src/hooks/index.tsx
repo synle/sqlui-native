@@ -482,3 +482,14 @@ export function useActiveConnectionQuery() {
     onDelete,
   };
 }
+
+// for exporting
+export function getExportedConnection(connection: Sqlui.ConnectionMetaData) {
+  const { dialect, databases, ...dataToExport } = connection;
+  return { _type: 'connection', ...dataToExport };
+}
+
+export function getExportedQuery(query: SqluiNative.ConnectionQuery) {
+  const { selected, lastExecuted, ...dataToExport } = query;
+  return { _type: 'query', ...dataToExport };
+}

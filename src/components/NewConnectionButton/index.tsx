@@ -3,13 +3,23 @@ import { Button } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import SplitButton from 'src/components/SplitButton';
 import { useActionDialogs } from 'src/components/ActionDialogs';
-import { useImportConnection, useConnectionQueries } from 'src/hooks';
+import { downloadText } from 'src/data/file';
+import {
+  useImportConnection,
+  useConnectionQueries,
+  useGetMetaData,
+  getExportedConnection,
+  getExportedQuery,
+} from 'src/hooks';
 
 export default function NewConnectionButton() {
   const { prompt } = useActionDialogs();
   const { mutateAsync: importConnection } = useImportConnection();
-  const { isLoading, onImportQuery } = useConnectionQueries();
+  const { queries, isLoading: loadingQueries, onImportQuery } = useConnectionQueries();
+  const { data: connections, isLoading: loadingConnections } = useGetMetaData();
   const navigate = useNavigate();
+
+  const isLoading = loadingQueries || loadingConnections;
 
   if (isLoading) {
     return null;
@@ -36,6 +46,31 @@ export default function NewConnectionButton() {
             console.log('>> Import Failed', jsonRow, err);
           }
         }
+      },
+    },
+    {
+      label: 'Export All',
+      onClick: async () => {
+        let jsonContent: any[] = [];
+
+        // TODO: implement export all
+        if (connections) {
+          for (const connection of connections) {
+            jsonContent.push(getExportedConnection(connection));
+          }
+        }
+
+        if (queries) {
+          for (const query of queries) {
+            jsonContent.push(getExportedQuery(query));
+          }
+        }
+
+        downloadText(
+          `${new Date().toLocaleString()}.sqlui_native.json`,
+          JSON.stringify(jsonContent, null, 2),
+          'text/json',
+        );
       },
     },
   ];
