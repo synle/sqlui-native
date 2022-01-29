@@ -179,19 +179,27 @@ function ConnectionRevealButton(props: ConnectionRevealButtonProps) {
   const onReveal = () => {
     const { databaseId, connectionId } = query;
 
-    if (databaseId && connectionId) {
-      const branchesToReveal: string[] = [connectionId, [connectionId, databaseId].join(' > ')];
+    if (!connectionId) {
+      return;
+    }
 
-      for (const branchToReveal of branchesToReveal) {
-        // reveal
-        onToggle(branchToReveal, true);
-      }
+    const branchesToReveal: string[] = [connectionId];
+
+    if (databaseId && connectionId) {
+      branchesToReveal.push([connectionId, databaseId].join(' > '));
+    }
+
+    for (const branchToReveal of branchesToReveal) {
+      // reveal
+      onToggle(branchToReveal, true);
     }
   };
 
   if (!query) {
     return null;
   }
+
+  const disabled = !query.connectionId && !query.databaseId;
 
   return (
     <Tooltip title='Reveal this Connection on the connection tree.'>
@@ -200,7 +208,8 @@ function ConnectionRevealButton(props: ConnectionRevealButtonProps) {
         variant='outlined'
         startIcon={<PreviewIcon />}
         onClick={onReveal}
-        sx={{ ml: 3 }}>
+        sx={{ ml: 3 }}
+        disabled={disabled}>
         Reveal
       </Button>
     </Tooltip>
