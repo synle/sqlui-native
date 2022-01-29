@@ -276,7 +276,13 @@ export function useShowHide() {
   };
 }
 
-let _connectionQueries = Config.get<SqluiFrontend.ConnectionQuery[]>('cache.connectionQueries', []);
+let _connectionQueries = Config.get<SqluiFrontend.ConnectionQuery[]>(
+  'cache.connectionQueries',
+  [],
+).map((query) => {
+  delete query.lastExecuted; // this is to stop the query from automatically triggered
+  return query;
+});
 
 function _useConnectionQueries() {
   return useQuery(QUERY_KEY_QUERIES, () => _connectionQueries, {

@@ -69,12 +69,13 @@ export module SqluiFrontend {
 
   export type TreeVisibilities = { [index: string]: boolean };
 
-  export type QueryKey = 'qk.actionDialogs' |
-  'qk.missionControlCommand' |
-  'qk.connections' |
-  'qk.treeVisibles' |
-  'qk.queries' |
-  'qk.results';
+  export type QueryKey =
+    | 'qk.actionDialogs'
+    | 'qk.missionControlCommand'
+    | 'qk.connections'
+    | 'qk.treeVisibles'
+    | 'qk.queries'
+    | 'qk.results';
 }
 
 /**
