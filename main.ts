@@ -5,7 +5,7 @@ import {
   getConnectionMetaData,
 } from './commons/utils/RelationalDatabaseEngine';
 import ConnectionUtils from './commons/utils/ConnectionUtils';
-import { Sqlui } from './typings';
+import { SqluiCore } from './typings';
 import { matchPath } from 'react-router-dom';
 import { app, BrowserWindow, ipcMain, Menu } from 'electron';
 import { setUpDataEndpoints, getEndpointHandlers } from './commons/utils/EndpointUtils';
@@ -35,6 +35,12 @@ function createWindow() {
   }
 }
 
+function sendMessage(win: BrowserWindow, message: string) {
+  if (win) {
+    win.webContents.send(message);
+  }
+}
+
 function setupMenu() {
   let menuTemplate: Electron.MenuItemConstructorOptions[] = [
     {
@@ -44,6 +50,17 @@ function setupMenu() {
           label: 'New Window',
           click: async () => {
             createWindow();
+          },
+        },
+      ],
+    },
+    {
+      label: 'Commands',
+      submenu: [
+        {
+          label: 'Export All',
+          click: async (item, win) => {
+            // sendMessage(win as BrowserWindow, ''),
           },
         },
       ],

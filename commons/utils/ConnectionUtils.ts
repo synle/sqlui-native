@@ -1,9 +1,9 @@
 const fs = require('fs');
-import { Sqlui } from '../../typings';
+import { SqluiCore } from '../../typings';
 
 // this section of the api is caches in memory
 interface ConnectionStore {
-  [index: string]: Sqlui.ConnectionProps;
+  [index: string]: SqluiCore.ConnectionProps;
 }
 
 export class ConnectionUtils {
@@ -27,7 +27,7 @@ export class ConnectionUtils {
     fs.writeFileSync(storeFilePath, JSON.stringify(toSave, null, 2));
   }
 
-  addConnection(connection: Sqlui.CoreConnectionProps): Sqlui.ConnectionProps {
+  addConnection(connection: SqluiCore.CoreConnectionProps): SqluiCore.ConnectionProps {
     const newId = `connection.${Date.now()}.${Math.floor(Math.random() * 10000000000000000)}`;
 
     const caches = this.getData();
@@ -42,7 +42,7 @@ export class ConnectionUtils {
     return caches[newId];
   }
 
-  updateConnection(connection: Sqlui.ConnectionProps): Sqlui.ConnectionProps {
+  updateConnection(connection: SqluiCore.ConnectionProps): SqluiCore.ConnectionProps {
     const caches = this.getData();
     caches[connection.id] = {
       ...caches[connection.id],
@@ -54,12 +54,12 @@ export class ConnectionUtils {
     return caches[connection.id];
   }
 
-  getConnections(): Sqlui.ConnectionProps[] {
+  getConnections(): SqluiCore.ConnectionProps[] {
     const caches = this.getData();
     return Object.values(caches);
   }
 
-  getConnection(id: string): Sqlui.ConnectionProps {
+  getConnection(id: string): SqluiCore.ConnectionProps {
     const caches = this.getData();
     return caches[id];
   }

@@ -11,7 +11,7 @@ import {
   useGetAvailableDatabaseConnections,
   useGetMetaData,
 } from 'src/hooks';
-import { Sqlui, SqluiNative } from 'typings';
+import { SqluiCore, SqluiFrontend } from 'typings';
 
 interface QueryBoxProps {
   queryId: string;
@@ -101,9 +101,9 @@ export default function QueryBox(props: QueryBoxProps) {
 
 // TODO: move me to a file
 interface ConnectionDatabaseSelectorProps {
-  value: SqluiNative.ConnectionQuery;
+  value: SqluiFrontend.ConnectionQuery;
   onChange: (newValue: string) => void;
-  options?: SqluiNative.AvailableConnectionProps[];
+  options?: SqluiFrontend.AvailableConnectionProps[];
 }
 
 function ConnectionDatabaseSelector(props: ConnectionDatabaseSelectorProps) {

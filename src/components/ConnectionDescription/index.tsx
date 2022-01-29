@@ -24,7 +24,7 @@ import {
   getExportedConnection,
 } from 'src/hooks';
 import { downloadText } from 'src/data/file';
-import { Sqlui } from 'typings';
+import { SqluiCore } from 'typings';
 
 export default function ConnectionDescription() {
   const { data: connections, isLoading } = useGetMetaData();
@@ -104,7 +104,7 @@ function ConnectionRetryAlert(props: ConnectionRetryAlertProps) {
 
 // TOD:
 interface ConnectionActionsProps {
-  connection: Sqlui.ConnectionMetaData;
+  connection: SqluiCore.ConnectionMetaData;
 }
 function ConnectionActions(props: ConnectionActionsProps) {
   const { connection } = props;

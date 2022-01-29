@@ -5,7 +5,7 @@ import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
 import { AccordionHeader, AccordionBody } from 'src/components/Accordion';
 import { useGetMetaData, useGetColumns, useShowHide } from 'src/hooks';
-import { Sqlui } from 'typings';
+import { SqluiCore } from 'typings';
 
 const MAX_COLUMN_SIZE_TO_SHOW = 5;
 
@@ -61,7 +61,7 @@ export default function ColumnDescription(props: ColumnDescriptionProps) {
 
 // TODO: move me to a new file
 interface ColumnAttributesProps {
-  column: Sqlui.ColumnMetaData;
+  column: SqluiCore.ColumnMetaData;
 }
 
 function ColumnAttributes(props: ColumnAttributesProps) {

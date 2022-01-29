@@ -3,10 +3,10 @@ import Typography from '@mui/material/Typography';
 import { Button } from '@mui/material';
 import { useTestConnection } from 'src/hooks';
 import Toast from 'src/components/Toast';
-import { Sqlui } from 'typings';
+import { SqluiCore } from 'typings';
 
 interface TestConnectionButtonProps {
-  connection: Sqlui.CoreConnectionProps;
+  connection: SqluiCore.CoreConnectionProps;
 }
 
 export default function TestConnectionButton(props: TestConnectionButtonProps) {

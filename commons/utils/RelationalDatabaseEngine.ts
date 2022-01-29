@@ -1,5 +1,5 @@
 import { Sequelize, ColumnDescription } from 'sequelize';
-import { Sqlui } from '../../typings';
+import { SqluiCore } from '../../typings';
 
 /**
  * mostly adapter for sequelize
@@ -11,7 +11,7 @@ export class RelationalDatabaseEngine {
    * @type {string}
    */
   private connectionOption?: string;
-  public dialect?: Sqlui.Dialect;
+  public dialect?: SqluiCore.Dialect;
   private sequelizes: Record<string, Sequelize> = {};
 
   constructor(connectionOption: string | Sequelize) {
@@ -124,7 +124,7 @@ export class RelationalDatabaseEngine {
       .sort();
   }
 
-  async getColumns(table: string, database?: string): Promise<Sqlui.ColumnMetaData[]> {
+  async getColumns(table: string, database?: string): Promise<SqluiCore.ColumnMetaData[]> {
     switch (this.dialect) {
       case 'mssql':
       case 'postgres':
@@ -132,7 +132,7 @@ export class RelationalDatabaseEngine {
       case 'mariadb':
       case 'mysql':
       default:
-        const columns: Sqlui.ColumnMetaData[] = [];
+        const columns: SqluiCore.ColumnMetaData[] = [];
         try {
           const columnMap = await this.getConnection(database)
             .getQueryInterface()
@@ -150,7 +150,7 @@ export class RelationalDatabaseEngine {
     }
   }
 
-  async execute(sql: string, database?: string): Promise<[Sqlui.RawData, Sqlui.MetaData]> {
+  async execute(sql: string, database?: string): Promise<[SqluiCore.RawData, SqluiCore.MetaData]> {
     // https://sequelize.org/master/manual/raw-queries.html
     //@ts-ignore
     return this.getConnection(database).query(sql, {
@@ -169,12 +169,12 @@ export function getEngine(connection: string) {
   return engine;
 }
 
-export async function getConnectionMetaData(connection: Sqlui.CoreConnectionProps) {
-  const connItem: Sqlui.CoreConnectionMetaData = {
+export async function getConnectionMetaData(connection: SqluiCore.CoreConnectionProps) {
+  const connItem: SqluiCore.CoreConnectionMetaData = {
     name: connection.name,
     id: connection?.id,
     connection: connection.connection,
-    databases: [] as Sqlui.DatabaseMetaData[],
+    databases: [] as SqluiCore.DatabaseMetaData[],
   };
 
   try {
@@ -185,9 +185,9 @@ export async function getConnectionMetaData(connection: Sqlui.CoreConnectionProp
     connItem.dialect = engine.dialect;
 
     for (const database of databases) {
-      const dbItem: Sqlui.DatabaseMetaData = {
+      const dbItem: SqluiCore.DatabaseMetaData = {
         name: database,
-        tables: [] as Sqlui.TableMetaData[],
+        tables: [] as SqluiCore.TableMetaData[],
       };
 
       // @ts-ignore
@@ -202,7 +202,7 @@ export async function getConnectionMetaData(connection: Sqlui.CoreConnectionProp
       }
 
       for (const table of tables) {
-        let columns: Sqlui.ColumnMetaData[] = [];
+        let columns: SqluiCore.ColumnMetaData[] = [];
 
         try {
           columns = await engine.getColumns(table, database);
@@ -210,7 +210,7 @@ export async function getConnectionMetaData(connection: Sqlui.CoreConnectionProp
           //console.log('failed getting columns', database, table);
         }
 
-        const tblItem: Sqlui.TableMetaData = {
+        const tblItem: SqluiCore.TableMetaData = {
           name: table,
           columns,
         };
@@ -228,12 +228,12 @@ export async function getConnectionMetaData(connection: Sqlui.CoreConnectionProp
   return connItem;
 }
 
-export function resetConnectionMetaData(connection: Sqlui.CoreConnectionProps) {
-  const connItem: Sqlui.CoreConnectionMetaData = {
+export function resetConnectionMetaData(connection: SqluiCore.CoreConnectionProps) {
+  const connItem: SqluiCore.CoreConnectionMetaData = {
     name: connection.name,
     id: connection?.id,
     connection: connection.connection,
-    databases: [] as Sqlui.DatabaseMetaData[],
+    databases: [] as SqluiCore.DatabaseMetaData[],
     status: 'offline',
   };
 

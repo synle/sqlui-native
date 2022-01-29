@@ -7,7 +7,7 @@ import FormControl from '@mui/material/FormControl';
 import { useGetMetaData, useUpsertConnection, useGetConnection } from 'src/hooks';
 import TestConnectionButton from 'src/components/TestConnectionButton';
 import Toast from 'src/components/Toast';
-import { Sqlui } from 'typings';
+import { SqluiCore } from 'typings';
 
 type ConnectionFormProps = {
   id?: string;
@@ -109,7 +109,7 @@ function MainConnectionForm(props: MainConnectionFormProps) {
     return <>loading...</>;
   }
 
-  const connection: Sqlui.CoreConnectionProps = {
+  const connection: SqluiCore.CoreConnectionProps = {
     name: props.name,
     connection: props.connection,
   };
