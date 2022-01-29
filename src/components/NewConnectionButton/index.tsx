@@ -2,6 +2,8 @@ import { useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
+import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import SplitButton from 'src/components/SplitButton';
 import { useActionDialogs } from 'src/components/ActionDialogs';
 import { downloadText } from 'src/data/file';
@@ -105,10 +107,12 @@ export default function NewConnectionButton() {
     {
       label: 'Import',
       onClick: onImport,
+      startIcon: <ArrowDownwardIcon />,
     },
     {
       label: 'Export All',
       onClick: onExportAll,
+      startIcon: <ArrowUpwardIcon />,
     },
   ];
 

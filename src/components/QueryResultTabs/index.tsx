@@ -1,13 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import Link from '@mui/material/Link';
 import Alert from '@mui/material/Alert';
-import CloseIcon from '@mui/icons-material/Close';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import QueryResultContainer from 'src/components/QueryResultContainer';
 import Tabs from 'src/components/Tabs';
 import AddIcon from '@mui/icons-material/Add';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
+import CloseIcon from '@mui/icons-material/Close';
+import EditIcon from '@mui/icons-material/Edit';
 import DropdownButton from 'src/components/DropdownButton';
 import { useExecute, useConnectionQueries, useConnectionQuery, getExportedQuery } from 'src/hooks';
 import { SqluiFrontend } from 'typings';
@@ -117,22 +121,27 @@ export default function QueryResultTabs() {
         {
           label: 'Rename',
           onClick: () => onRenameQuery(q),
+          startIcon: <EditIcon />,
         },
         {
           label: 'Export',
           onClick: () => onExportQuery(q),
+          startIcon: <ArrowUpwardIcon />,
         },
         {
           label: 'Duplicate',
           onClick: () => onDuplicate(q),
+          startIcon: <ContentCopyIcon />,
         },
         {
           label: 'Close',
           onClick: () => onCloseQuery(q),
+          startIcon: <CloseIcon />,
         },
         {
           label: 'Close Other Tabs',
           onClick: () => onCloseOtherQueries(q),
+          startIcon: <CloseIcon />,
         },
       ];
       return (
