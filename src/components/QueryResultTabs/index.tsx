@@ -9,7 +9,7 @@ import Tabs from 'src/components/Tabs';
 import AddIcon from '@mui/icons-material/Add';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import DropdownButton from 'src/components/DropdownButton';
-import { useExecute, useConnectionQueries, useConnectionQuery } from 'src/hooks';
+import { useExecute, useConnectionQueries, useConnectionQuery, getExportedQuery } from 'src/hooks';
 import { SqluiNative } from 'typings';
 import { useActionDialogs } from 'src/components/ActionDialogs';
 import { downloadText } from 'src/data/file';
@@ -54,10 +54,9 @@ export default function QueryResultTabs() {
   };
 
   const onExportQuery = async (query: SqluiNative.ConnectionQuery) => {
-    const { selected, lastExecuted, ...dataToExport } = query;
     downloadText(
       `${query.name}.query.json`,
-      JSON.stringify([{ _type: 'query', ...dataToExport }], null, 2),
+      JSON.stringify([getExportedQuery(query)], null, 2),
       'text/json',
     );
   };

@@ -21,6 +21,7 @@ import {
   useShowHide,
   useDeleteConnection,
   useDuplicateConnection,
+  getExportedConnection,
 } from 'src/hooks';
 import { downloadText } from 'src/data/file';
 import { Sqlui } from 'typings';
@@ -133,10 +134,9 @@ function ConnectionActions(props: ConnectionActionsProps) {
   };
 
   const onExportConnection = () => {
-    const { dialect, databases, ...dataToExport } = connection;
     downloadText(
       `${connection.name}.connection.json`,
-      JSON.stringify([{ _type: 'connection', ...dataToExport }], null, 2),
+      JSON.stringify([getExportedConnection(connection)], null, 2),
       'text/json',
     );
   };
