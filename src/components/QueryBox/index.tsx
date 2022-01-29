@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { format } from 'sql-formatter';
 import Typography from '@mui/material/Typography';
 import { Button } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
@@ -55,6 +56,10 @@ export default function QueryBox(props: QueryBoxProps) {
     onChange('sql', newQuery);
   };
 
+  const onFormatQuery = () => {
+    onChange('sql', format(query?.sql));
+  };
+
   const onSubmit = (e: React.SyntheticEvent) => {
     e.preventDefault();
     onExecute();
@@ -93,6 +98,10 @@ export default function QueryBox(props: QueryBoxProps) {
       <div className='QueryBox__ActionRow'>
         <Button type='submit' variant='contained' disabled={disabledExecute} endIcon={<SendIcon />}>
           Execute
+        </Button>
+
+        <Button type='button' variant='outlined' onClick={onFormatQuery}>
+          Format Query
         </Button>
       </div>
     </form>
