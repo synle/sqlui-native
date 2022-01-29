@@ -5,12 +5,16 @@ import { Button } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 import NativeSelect from '@mui/material/NativeSelect';
 import CodeEditor from '@uiw/react-textarea-code-editor';
+import PreviewIcon from '@mui/icons-material/Preview';
+import FormatColorTextIcon from '@mui/icons-material/FormatColorText';
+import Tooltip from '@mui/material/Tooltip';
 import {
   useExecute,
   useConnectionQueries,
   useConnectionQuery,
   useGetAvailableDatabaseConnections,
   useGetMetaData,
+  useShowHide,
 } from 'src/hooks';
 import { SqluiCore, SqluiFrontend } from 'typings';
 
@@ -78,6 +82,7 @@ export default function QueryBox(props: QueryBoxProps) {
           onChange={onDatabaseConnectionChange}
           options={connectionsMetaData}
         />
+        <ConnectionRevealButton query={query} />
       </div>
       <div className='QueryBox__Row'>
         <CodeEditor
@@ -95,14 +100,25 @@ export default function QueryBox(props: QueryBoxProps) {
           }}
         />
       </div>
-      <div className='QueryBox__ActionRow'>
-        <Button type='submit' variant='contained' disabled={disabledExecute} endIcon={<SendIcon />}>
+      <div className='QueryBox__Row'>
+        <Button
+          type='submit'
+          variant='contained'
+          disabled={disabledExecute}
+          startIcon={<SendIcon />}>
           Execute
         </Button>
 
-        <Button type='button' variant='outlined' onClick={onFormatQuery}>
-          Format Query
-        </Button>
+        <Tooltip title='Format the SQL query for readability.'>
+          <Button
+            type='button'
+            variant='outlined'
+            onClick={onFormatQuery}
+            startIcon={<FormatColorTextIcon />}
+            sx={{ ml: 3 }}>
+            Format
+          </Button>
+        </Tooltip>
       </div>
     </form>
   );
@@ -128,5 +144,44 @@ function ConnectionDatabaseSelector(props: ConnectionDatabaseSelectorProps) {
         </option>
       ))}
     </NativeSelect>
+  );
+}
+
+// TODO: move me to a file
+interface ConnectionRevealButtonProps {
+  query: SqluiFrontend.ConnectionQuery;
+}
+function ConnectionRevealButton(props: ConnectionRevealButtonProps) {
+  const { query } = props;
+  const { onToggle } = useShowHide();
+
+  const onReveal = () => {
+    const { databaseId, connectionId } = query;
+
+    if (databaseId && connectionId) {
+      const branchesToReveal: string[] = [connectionId, [connectionId, databaseId].join(' > ')];
+
+      for (const branchToReveal of branchesToReveal) {
+        // reveal
+        onToggle(branchToReveal, true);
+      }
+    }
+  };
+
+  if (!query) {
+    return null;
+  }
+
+  return (
+    <Tooltip title='Reveal this Connection on the connection tree.'>
+      <Button
+        type='button'
+        variant='outlined'
+        startIcon={<PreviewIcon />}
+        onClick={onReveal}
+        sx={{ ml: 3 }}>
+        Reveal
+      </Button>
+    </Tooltip>
   );
 }

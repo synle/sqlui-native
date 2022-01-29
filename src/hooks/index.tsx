@@ -261,9 +261,13 @@ export function useShowHide() {
     () => _treeVisibles,
   );
 
-  const onToggle = (key: string) => {
-    _treeVisibles[key] = !_treeVisibles[key];
-    queryClient.invalidateQueries(QUERY_KEY_TREEVISIBLES);
+  const onToggle = (key: string, isVisible?: boolean) => {
+    if (isVisible === undefined) {
+      _treeVisibles[key] = !_treeVisibles[key];
+    } else {
+      _treeVisibles[key] = isVisible;
+    }
+    // queryClient.invalidateQueries(QUERY_KEY_TREEVISIBLES);
     queryClient.setQueryData<SqluiFrontend.TreeVisibilities | undefined>(
       QUERY_KEY_TREEVISIBLES,
       () => _treeVisibles,
@@ -298,7 +302,7 @@ export function useConnectionQueries() {
   const { data: queries, isLoading, isFetching } = _useConnectionQueries();
 
   function _invalidateQueries() {
-    queryClient.invalidateQueries(QUERY_KEY_QUERIES);
+    // queryClient.invalidateQueries(QUERY_KEY_QUERIES);
     queryClient.setQueryData<SqluiFrontend.ConnectionQuery[] | undefined>(
       QUERY_KEY_QUERIES,
       () => _connectionQueries,
