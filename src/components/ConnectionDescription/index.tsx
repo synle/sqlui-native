@@ -116,8 +116,12 @@ function ConnectionActions(props: ConnectionActionsProps) {
   const { confirm } = useActionDialogs();
 
   const onDelete = async () => {
-    await confirm('Delete this connection?');
-    await deleteConnection(connection.id);
+    try {
+      await confirm('Delete this connection?');
+      await deleteConnection(connection.id);
+    } catch (err) {
+      //@ts-ignore
+    }
   };
 
   const onRefresh = async () => {

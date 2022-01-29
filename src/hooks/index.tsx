@@ -115,7 +115,6 @@ export function useDeleteConnection() {
   });
 }
 
-
 export function useDuplicateConnection() {
   const { mutateAsync: upsertConnection, isLoading } = useUpsertConnection();
 

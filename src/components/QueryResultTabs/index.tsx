@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from '@mui/material/Link';
 import Alert from '@mui/material/Alert';
 import CloseIcon from '@mui/icons-material/Close';
@@ -16,6 +16,7 @@ import { useCommands } from 'src/components/MissionControl';
 import { downloadText } from 'src/data/file';
 
 export default function QueryResultTabs() {
+  const [init, setInit] = useState(false);
   const {
     queries,
     onAddQuery,
@@ -28,22 +29,22 @@ export default function QueryResultTabs() {
   const { command, dismissCommand } = useCommands();
   const { confirm, prompt } = useActionDialogs();
 
-  const onAddTab = () => {
-    onAddQuery();
-  };
-
-  const onTabChange = (queryId: string) => {
-    onShowQuery(queryId);
-  };
-
   const onCloseQuery = async (query: SqluiFrontend.ConnectionQuery) => {
-    await confirm('Do you want to delete this query?');
-    onDeleteQueries([query.id]);
+    try {
+      await confirm('Do you want to delete this query?');
+      onDeleteQueries([query.id]);
+    } catch (err) {
+      //@ts-ignore
+    }
   };
 
   const onCloseOtherQueries = async (query: SqluiFrontend.ConnectionQuery) => {
-    await confirm('Do you want to close other queries?');
-    onDeleteQueries(queries?.map((q) => q.id).filter((queryId) => queryId !== query.id));
+    try {
+      await confirm('Do you want to close other queries?');
+      onDeleteQueries(queries?.map((q) => q.id).filter((queryId) => queryId !== query.id));
+    } catch (err) {
+      //@ts-ignore
+    }
   };
 
   const onRenameQuery = async (query: SqluiFrontend.ConnectionQuery) => {
@@ -63,6 +64,7 @@ export default function QueryResultTabs() {
     );
   };
 
+  // mission control commands
   useEffect(() => {
     if (command) {
       dismissCommand();
@@ -75,6 +77,16 @@ export default function QueryResultTabs() {
     }
   }, [command]);
 
+  // add a dummy query to start
+  useEffect(() => {
+    if (!init) {
+      if (queries?.length === 0) {
+        onAddQuery();
+        setInit(true);
+      }
+    }
+  }, [queries, init]);
+
   if (isLoading) {
     return <Alert severity='info'>Loading...</Alert>;
   }
@@ -83,7 +95,7 @@ export default function QueryResultTabs() {
     return (
       <Alert severity='info'>
         No Query Yet.{' '}
-        <Link onClick={onAddTab} underline='none' sx={{ cursor: 'pointer' }}>
+        <Link onClick={() => onAddQuery()} underline='none' sx={{ cursor: 'pointer' }}>
           Click here to add a new query.
         </Link>
       </Alert>
@@ -137,9 +149,9 @@ export default function QueryResultTabs() {
       tabContents={tabContents}
       onTabChange={(newTabIdx) => {
         if (newTabIdx < queries.length) {
-          onTabChange(queries[newTabIdx].id);
+          onShowQuery(queries[newTabIdx].id);
         } else {
-          onAddTab();
+          onAddQuery();
         }
       }}></Tabs>
   );
