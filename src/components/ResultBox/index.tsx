@@ -40,11 +40,14 @@ export default function ResultBox(props: ResultBoxProps) {
   }
 
   if (isError) {
+    let errorToDisplay: any = queryError;
+    errorToDisplay = errorToDisplay?.original || errorToDisplay?.original || errorToDisplay;
+
     return (
       <>
         <Alert severity='error'>Query Error...</Alert>
         <CodeEditor
-          value={JSON.stringify(queryError, null, 2)}
+          value={JSON.stringify(errorToDisplay, null, 2)}
           language='json'
           padding={10}
           minHeight={200}
