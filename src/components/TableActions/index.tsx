@@ -14,7 +14,7 @@ import {
   useActiveConnectionQuery,
 } from 'src/hooks';
 import DropdownButton from 'src/components/DropdownButton';
-import { Sqlui } from 'typings';
+import { SqluiCore } from 'typings';
 
 type TableActionsProps = {
   connectionId: string;
@@ -79,7 +79,7 @@ interface TableActionInput {
   connectionId: string;
   databaseId: string;
   tableId: string;
-  columns: Sqlui.ColumnMetaData[];
+  columns: SqluiCore.ColumnMetaData[];
 }
 
 type TableActionOutput = {

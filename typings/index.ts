@@ -1,6 +1,9 @@
 import { ColumnDescription } from 'sequelize';
 
-export module Sqlui {
+/**
+ * Stores common typings used by both frontend and backend
+ */
+export module SqluiCore {
   export type Dialect = 'mysql' | 'mssql' | 'postgres' | 'sqlite' | string;
 
   export type CoreConnectionProps = {
@@ -30,7 +33,7 @@ export module Sqlui {
   };
 
   export type CoreConnectionMetaData = CoreConnectionProps & {
-    dialect?: Sqlui.Dialect;
+    dialect?: SqluiCore.Dialect;
     databases: DatabaseMetaData[];
   };
 
@@ -42,7 +45,10 @@ export module Sqlui {
   export type Result = [RawData, MetaData];
 }
 
-export module SqluiNative {
+/**
+ * Stores most of the typings used strictly by the frontend
+ */
+export module SqluiFrontend {
   // connection queries
   export interface ConnectionQuery {
     id: string;
@@ -64,16 +70,19 @@ export module SqluiNative {
   export type TreeVisibilities = { [index: string]: boolean };
 }
 
-export module SqluiCacheKeys {
+/**
+ * This stores mostly keys used in our app
+ */
+export module SqluiEnums {
   /**
    * in memory cache keys used in the server
    * @type {String}
    */
-  export type ServerApi = 'cacheMetaData';
+  export type ServerApiCacheKey = 'cacheMetaData';
 
   /**
    * client config key used for storage on the client side
    * @type {String}
    */
-  export type ClientConfig = 'cache.metadata' | 'cache.connectionQueries' | 'api.instanceId';
+  export type ClientConfigKey = 'cache.metadata' | 'cache.connectionQueries' | 'api.instanceId';
 }

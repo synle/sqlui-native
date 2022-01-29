@@ -6,7 +6,7 @@ import {
   resetConnectionMetaData,
 } from './RelationalDatabaseEngine';
 import ConnectionUtils from './ConnectionUtils';
-import { Sqlui, SqluiCacheKeys } from '../../typings';
+import { SqluiCore, SqluiEnums } from '../../typings';
 
 let expressAppContext: Express | undefined;
 
@@ -24,7 +24,7 @@ function addDataEndpoint(
       // here we simulate a delay for our mocked server
       const instanceid = req.headers.instanceid;
       const apiCache = {
-        get(key: SqluiCacheKeys.ServerApi) {
+        get(key: SqluiEnums.ServerApiCacheKey) {
           try {
             //@ts-ignore
             return _cache[instanceid][key];
@@ -32,7 +32,7 @@ function addDataEndpoint(
             return undefined;
           }
         },
-        set(key: SqluiCacheKeys.ServerApi, value: any) {
+        set(key: SqluiEnums.ServerApiCacheKey, value: any) {
           try {
             //@ts-ignore
             _cache[instanceid] = _cache[instanceid] || {};
@@ -178,7 +178,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
 
   addDataEndpoint('post', '/api/connection/test', async (req, res, apiCache) => {
     try {
-      const connection: Sqlui.CoreConnectionProps = req.body;
+      const connection: SqluiCore.CoreConnectionProps = req.body;
       const engine = getEngine(connection.connection);
       await engine.authenticate();
       res.status(200).json(await getConnectionMetaData(connection));
@@ -230,7 +230,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
       return res.status(200).json(apiCache.get('cacheMetaData'));
     }
 
-    const resp: Sqlui.CoreConnectionMetaData[] = [];
+    const resp: SqluiCore.CoreConnectionMetaData[] = [];
 
     for (const connection of connections) {
       resp.push(await getConnectionMetaData(connection));

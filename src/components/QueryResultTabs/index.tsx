@@ -10,7 +10,7 @@ import AddIcon from '@mui/icons-material/Add';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import DropdownButton from 'src/components/DropdownButton';
 import { useExecute, useConnectionQueries, useConnectionQuery, getExportedQuery } from 'src/hooks';
-import { SqluiNative } from 'typings';
+import { SqluiFrontend } from 'typings';
 import { useActionDialogs } from 'src/components/ActionDialogs';
 import { downloadText } from 'src/data/file';
 
@@ -34,26 +34,26 @@ export default function QueryResultTabs() {
     onShowQuery(queryId);
   };
 
-  const onCloseQuery = async (query: SqluiNative.ConnectionQuery) => {
+  const onCloseQuery = async (query: SqluiFrontend.ConnectionQuery) => {
     await confirm('Do you want to delete this query?');
     onDeleteQueries([query.id]);
   };
 
-  const onCloseOtherQueries = async (query: SqluiNative.ConnectionQuery) => {
+  const onCloseOtherQueries = async (query: SqluiFrontend.ConnectionQuery) => {
     await confirm('Do you want to close other queries?');
     onDeleteQueries(queries?.map((q) => q.id).filter((queryId) => queryId !== query.id));
   };
 
-  const onRenameQuery = async (query: SqluiNative.ConnectionQuery) => {
+  const onRenameQuery = async (query: SqluiFrontend.ConnectionQuery) => {
     const newName = await prompt('New Query Name', query.name);
     onChangeQuery(query.id, 'name', newName);
   };
 
-  const onDuplicate = async (query: SqluiNative.ConnectionQuery) => {
+  const onDuplicate = async (query: SqluiFrontend.ConnectionQuery) => {
     onDuplicateQuery(query.id);
   };
 
-  const onExportQuery = async (query: SqluiNative.ConnectionQuery) => {
+  const onExportQuery = async (query: SqluiFrontend.ConnectionQuery) => {
     downloadText(
       `${query.name}.query.json`,
       JSON.stringify([getExportedQuery(query)], null, 2),
