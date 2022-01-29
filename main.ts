@@ -42,8 +42,7 @@ function sendMessage(win: BrowserWindow, message: SqluiEnums.ClientEventKey) {
 }
 
 function setupMenu() {
-  const isMac = process.platform === 'darwin'
-
+  const isMac = process.platform === 'darwin';
 
   let menuTemplate: Electron.MenuItemConstructorOptions[] = [
     {
@@ -57,7 +56,8 @@ function setupMenu() {
         },
         {
           type: 'separator',
-        },{
+        },
+        {
           label: 'New Connection',
           click: async (item, win) =>
             sendMessage(win as BrowserWindow, 'clientEvent.newConnection'),
@@ -80,12 +80,12 @@ function setupMenu() {
         {
           type: 'separator',
         },
-         isMac ? { role: 'close' } : { role: 'quit' }
+        isMac ? { role: 'close' } : { role: 'quit' },
       ],
     },
     {
-    label: 'Edit',
-    submenu: [
+      label: 'Edit',
+      submenu: [
         { role: 'undo' },
         { role: 'redo' },
         { type: 'separator' },
@@ -93,22 +93,22 @@ function setupMenu() {
         { role: 'copy' },
         { role: 'paste' },
         { role: 'selectAll' },
-      ]
+      ],
     },
     {
-    label: 'View',
-    submenu: [
-      { role: 'reload' },
-      { role: 'forceReload' },
-      { role: 'toggleDevTools' },
-      { type: 'separator' },
-      { role: 'resetZoom' },
-      { role: 'zoomIn' },
-      { role: 'zoomOut' },
-      { type: 'separator' },
-      { role: 'togglefullscreen' }
-    ]
-  },
+      label: 'View',
+      submenu: [
+        { role: 'reload' },
+        { role: 'forceReload' },
+        { role: 'toggleDevTools' },
+        { type: 'separator' },
+        { role: 'resetZoom' },
+        { role: 'zoomIn' },
+        { role: 'zoomOut' },
+        { type: 'separator' },
+        { role: 'togglefullscreen' },
+      ],
+    },
     {
       label: 'Help',
       submenu: [
