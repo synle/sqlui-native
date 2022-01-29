@@ -33,8 +33,21 @@ function createWindow() {
   if (process.env.ENV_TYPE === 'electron-dev') {
     mainWindow.webContents.openDevTools();
   }
+}
 
+function setupMenu() {
   let menuTemplate: Electron.MenuItemConstructorOptions[] = [
+    {
+      label: 'New',
+      submenu: [
+        {
+          label: 'New Window',
+          click: async () => {
+            createWindow();
+          },
+        },
+      ],
+    },
     {
       label: 'Help',
       submenu: [
@@ -59,6 +72,7 @@ function createWindow() {
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
   createWindow();
+  setupMenu();
 
   app.on('activate', function () {
     // On macOS it's common to re-create a window in the app when the
@@ -79,7 +93,7 @@ app.on('window-all-closed', function () {
 
 // events
 // this is the event listener that will respond when we will request it in the web page
-const _apiCache = {};
+const _cache = {};
 
 ipcMain.on('sqluiNativeEvent/fetch', async (event, data) => {
   const { requestId, url, options } = data;
@@ -87,12 +101,14 @@ ipcMain.on('sqluiNativeEvent/fetch', async (event, data) => {
 
   const method = (options.method || 'get').toLowerCase();
 
+  const instanceid = options?.headers?.instanceid;
+
   let body: any = {};
   try {
     body = JSON.parse(options.body);
   } catch (err) {}
 
-  console.log('>> Request', method, url, body);
+  console.log('>> Request', method, url, instanceid, body);
   let matchedUrlObject: any;
   const matchCurrentUrlAgainst = (matchAgainstUrl: string) => {
     try {
@@ -108,7 +124,7 @@ ipcMain.on('sqluiNativeEvent/fetch', async (event, data) => {
       if (status >= 300 || status < 200) {
         ok = false;
       }
-      console.log('>> Response', status, method, url, body, responseData);
+      console.log('>> Response', status, method, url, instanceid, body, responseData);
       event.reply(requestId, {
         ok,
         status,
@@ -135,12 +151,40 @@ ipcMain.on('sqluiNativeEvent/fetch', async (event, data) => {
       const [targetMethod, targetUrl, targetHandler] = endpoint;
       const matchedUrlObject = matchCurrentUrlAgainst(targetUrl);
       if (targetMethod === method && matchedUrlObject) {
+        const apiCache = {
+          get(key: string) {
+            try {
+              //@ts-ignore
+              return _cache[instanceid][key];
+            } catch (err) {
+              return undefined;
+            }
+          },
+          set(key: string, value: any) {
+            try {
+              //@ts-ignore
+              _cache[instanceid] = _cache[instanceid] || {};
+
+              //@ts-ignore
+              _cache[instanceid][key] = value;
+            } catch (err) {
+              //@ts-ignore
+            }
+          },
+          json() {
+            return JSON.stringify(_cache);
+          },
+        };
+
         const req = {
           params: matchedUrlObject?.params,
           body: body,
+          headers: {
+            instanceid: instanceid,
+          },
         };
 
-        return targetHandler(req, res, _apiCache);
+        return targetHandler(req, res, apiCache);
       }
     }
 

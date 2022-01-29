@@ -37,9 +37,9 @@ export const LocalStorageConfig = {
 };
 
 let DefaultConfig = LocalStorageConfig;
-//@ts-ignore
 try {
-  if (process.env.ENV_TYPE !== 'mocked-server') {
+  // @ts-ignore
+  if (window.isElectron) {
     // if it's in electron mode then we will use session storage
     // to support multiple query windows
     DefaultConfig = SessionStorageConfig;

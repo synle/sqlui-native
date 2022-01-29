@@ -26,7 +26,7 @@ echo '''
     "connection": "postgres://postgres:password@localhost:5432"
   }
 }
-''' > connections.json
+''' > connections-mocked-server.json
 ```
 
 

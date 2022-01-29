@@ -25,4 +25,4 @@ dist
 .parcel-cache
 
 main.js
-connections.json
+connections-mocked-server.json

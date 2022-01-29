@@ -1,11 +1,30 @@
 import { Sqlui, SqluiNative } from 'typings';
 
+let instanceId: string = 'mocked-server';
+try {
+  // @ts-ignore
+  if (window.isElectron) {
+    instanceId = sessionStorage.getItem('instanceId') || '';
+    if (!instanceId) {
+      instanceId = `instanceId.${Date.now()}.${Math.random() * 1000}`;
+      sessionStorage.setItem('instanceId', instanceId);
+    }
+  } else {
+    sessionStorage.setItem('instanceId', instanceId);
+  }
+} catch (err) {
+  //@ts-ignore
+}
+
 // @ts-ignore
 function _fetch<T>(...inputs) {
   let { headers, ...restInput } = inputs[1] || {};
 
   headers = headers || {};
-  headers = { ...headers, ...{ 'Content-Type': 'application/json', Accept: 'application/json' } };
+  headers = {
+    ...headers,
+    ...{ instanceid: instanceId, 'Content-Type': 'application/json', Accept: 'application/json' },
+  };
 
   restInput = restInput || {};
 
