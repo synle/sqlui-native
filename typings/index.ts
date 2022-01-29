@@ -68,6 +68,13 @@ export module SqluiFrontend {
   }
 
   export type TreeVisibilities = { [index: string]: boolean };
+
+  export type QueryKey = 'qk.actionDialogs' |
+  'qk.missionControlCommand' |
+  'qk.connections' |
+  'qk.treeVisibles' |
+  'qk.queries' |
+  'qk.results';
 }
 
 /**
@@ -85,4 +92,15 @@ export module SqluiEnums {
    * @type {String}
    */
   export type ClientConfigKey = 'cache.metadata' | 'cache.connectionQueries' | 'api.instanceId';
+
+  /**
+   * client side specific events, can be used by electron
+   * to send message to client side
+   * @type {String}
+   */
+  export type ClientEventKey =
+    | 'clientEvent.newConnection'
+    | 'clientEvent.newQuery'
+    | 'clientEvent.import'
+    | 'clientEvent.exportAll';
 }
