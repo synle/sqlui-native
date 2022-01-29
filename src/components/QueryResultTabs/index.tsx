@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Link from '@mui/material/Link';
 import Alert from '@mui/material/Alert';
 import CloseIcon from '@mui/icons-material/Close';
@@ -12,6 +12,7 @@ import DropdownButton from 'src/components/DropdownButton';
 import { useExecute, useConnectionQueries, useConnectionQuery, getExportedQuery } from 'src/hooks';
 import { SqluiFrontend } from 'typings';
 import { useActionDialogs } from 'src/components/ActionDialogs';
+import { useCommands } from 'src/components/MissionControl';
 import { downloadText } from 'src/data/file';
 
 export default function QueryResultTabs() {
@@ -24,6 +25,7 @@ export default function QueryResultTabs() {
     onDuplicateQuery,
     isLoading,
   } = useConnectionQueries();
+  const { command, dismissCommand } = useCommands();
   const { confirm, prompt } = useActionDialogs();
 
   const onAddTab = () => {
@@ -60,6 +62,18 @@ export default function QueryResultTabs() {
       'text/json',
     );
   };
+
+  useEffect(() => {
+    if (command) {
+      dismissCommand();
+
+      switch (command.event) {
+        case 'clientEvent.newQuery':
+          onAddQuery();
+          break;
+      }
+    }
+  }, [command]);
 
   if (isLoading) {
     return <>loading...</>;

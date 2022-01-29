@@ -245,7 +245,9 @@ export function useRetryConnection() {
 
 export function useTestConnection() {
   const queryClient = useQueryClient();
-  return useMutation<SqluiCore.CoreConnectionMetaData, void, SqluiCore.CoreConnectionProps>(dataApi.test);
+  return useMutation<SqluiCore.CoreConnectionMetaData, void, SqluiCore.CoreConnectionProps>(
+    dataApi.test,
+  );
 }
 
 // used for show and hide the sidebar trees

@@ -5,7 +5,7 @@ import {
   getConnectionMetaData,
 } from './commons/utils/RelationalDatabaseEngine';
 import ConnectionUtils from './commons/utils/ConnectionUtils';
-import { SqluiCore } from './typings';
+import { SqluiCore, SqluiEnums } from './typings';
 import { matchPath } from 'react-router-dom';
 import { app, BrowserWindow, ipcMain, Menu } from 'electron';
 import { setUpDataEndpoints, getEndpointHandlers } from './commons/utils/EndpointUtils';
@@ -35,16 +35,16 @@ function createWindow() {
   }
 }
 
-function sendMessage(win: BrowserWindow, message: string) {
+function sendMessage(win: BrowserWindow, message: SqluiEnums.ClientEventKey) {
   if (win) {
-    win.webContents.send(message);
+    win.webContents.send('sqluiNativeEvent/ipcElectronCommand', message);
   }
 }
 
 function setupMenu() {
   let menuTemplate: Electron.MenuItemConstructorOptions[] = [
     {
-      label: 'New',
+      label: 'File',
       submenu: [
         {
           label: 'New Window',
@@ -52,16 +52,30 @@ function setupMenu() {
             createWindow();
           },
         },
+        {
+          type: 'separator',
+        },
+        {
+          label: 'Import',
+          click: async (item, win) => sendMessage(win as BrowserWindow, 'clientEvent.import'),
+        },
+        {
+          label: 'Export',
+          click: async (item, win) => sendMessage(win as BrowserWindow, 'clientEvent.exportAll'),
+        },
       ],
     },
     {
-      label: 'Commands',
+      label: 'Query',
       submenu: [
         {
-          label: 'Export All',
-          click: async (item, win) => {
-            // sendMessage(win as BrowserWindow, ''),
-          },
+          label: 'New Connection',
+          click: async (item, win) =>
+            sendMessage(win as BrowserWindow, 'clientEvent.newConnection'),
+        },
+        {
+          label: 'New Query',
+          click: async (item, win) => sendMessage(win as BrowserWindow, 'clientEvent.newQuery'),
         },
       ],
     },
@@ -69,6 +83,9 @@ function setupMenu() {
       label: 'Help',
       submenu: [
         { role: 'forceReload' },
+        {
+          type: 'separator',
+        },
         {
           label: 'About',
           click: async () => {
