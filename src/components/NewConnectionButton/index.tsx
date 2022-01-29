@@ -106,7 +106,8 @@ export default function NewConnectionButton() {
     <div style={{ textAlign: 'center' }}>
       <SplitButton
         id='new-connection-split-button'
-        label='New Connection'
+        label='Connection'
+        startIcon={<AddIcon />}
         onClick={onNewConnection}
         options={options}
       />

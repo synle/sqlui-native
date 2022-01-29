@@ -17,6 +17,7 @@ interface SplitButtonOption {
 interface SplitButtonProps {
   id: string;
   label: string;
+  startIcon?: React.ReactNode;
   onClick: () => void;
   options: SplitButtonOption[];
 }
@@ -49,16 +50,16 @@ export default function SplitButton(props: SplitButtonProps) {
 
   return (
     <React.Fragment>
-      <ButtonGroup variant='outlined' ref={anchorRef} aria-label={label} size='small'>
+      <ButtonGroup variant='outlined' ref={anchorRef} aria-label={label}>
         <Button
           onClick={() => {
             props.onClick();
             setOpen(false);
-          }}>
+          }}
+          startIcon={props.startIcon}>
           {label}
         </Button>
         <Button
-          size='small'
           aria-controls={open ? id : undefined}
           aria-expanded={open ? 'true' : undefined}
           aria-label={label}
