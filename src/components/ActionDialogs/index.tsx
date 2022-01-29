@@ -69,6 +69,12 @@ type ActionDialog =
       isLongPrompt?: boolean;
     };
 
+interface PromptActionDialogInput {
+  message: string;
+  defaultValue?: string;
+  isLongPrompt?: boolean;
+}
+
 const QUERY_KEY_ACTION_DIALOGS = 'actionDialogs';
 let _actionDialogs: ActionDialog[] = [];
 
@@ -77,12 +83,10 @@ export function useActionDialogs() {
 
   const { data, isLoading: loading } = useQuery(QUERY_KEY_ACTION_DIALOGS, () => _actionDialogs);
 
-  const prompt = (
-    message: string,
-    defaultValue: string,
-    isLongPrompt?: boolean,
-  ): Promise<string | undefined> => {
+  const prompt = (props: PromptActionDialogInput): Promise<string | undefined> => {
     return new Promise((resolve, reject) => {
+      const { message, defaultValue, isLongPrompt } = props;
+
       const newActionDialog: ActionDialog = {
         type: 'prompt',
         message,

@@ -25,22 +25,30 @@ export default function NewConnectionButton() {
   const isLoading = loadingQueries || loadingConnections;
 
   const onImport = async () => {
-    const rawJson = await prompt('Import', '', true);
-    const jsonRows: any = JSON.parse(rawJson || '');
-    for (const jsonRow of jsonRows) {
-      try {
-        const { _type, ...rawImportMetaData } = jsonRow;
-        switch (_type) {
-          case 'connection':
-            await importConnection(rawImportMetaData);
-            break;
-          case 'query':
-            await onImportQuery(jsonRow);
-            break;
+    try {
+      const rawJson = await prompt({
+        message: 'Import',
+        defaultValue: '',
+        isLongPrompt: true,
+      });
+      const jsonRows: any = JSON.parse(rawJson || '');
+      for (const jsonRow of jsonRows) {
+        try {
+          const { _type, ...rawImportMetaData } = jsonRow;
+          switch (_type) {
+            case 'connection':
+              await importConnection(rawImportMetaData);
+              break;
+            case 'query':
+              await onImportQuery(jsonRow);
+              break;
+          }
+        } catch (err) {
+          console.log('>> Import Failed', jsonRow, err);
         }
-      } catch (err) {
-        console.log('>> Import Failed', jsonRow, err);
       }
+    } catch (err) {
+      //@ts-ignore
     }
   };
 

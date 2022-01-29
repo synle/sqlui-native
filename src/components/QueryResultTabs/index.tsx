@@ -48,8 +48,15 @@ export default function QueryResultTabs() {
   };
 
   const onRenameQuery = async (query: SqluiFrontend.ConnectionQuery) => {
-    const newName = await prompt('New Query Name', query.name);
-    onChangeQuery(query.id, 'name', newName);
+    try {
+      const newName = await prompt({
+        message: 'New Query Name',
+        defaultValue: query.name,
+      });
+      onChangeQuery(query.id, 'name', newName);
+    } catch (err) {
+      //@ts-ignore
+    }
   };
 
   const onDuplicate = async (query: SqluiFrontend.ConnectionQuery) => {
