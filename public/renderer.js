@@ -5,9 +5,12 @@
 // selectively enable features needed in the rendering
 // process.
 try {
+  window.isElectron = false;
+
   if (process.env.ENV_TYPE !== 'mocked-server') {
     const ipcRenderer = require('electron').ipcRenderer;
     window.ipcRenderer = ipcRenderer;
+    window.isElectron = true;
 
     // here we are polyfilling fetch with ipcRenderer
     const origFetch = window.fetch;
@@ -35,6 +38,7 @@ try {
             status,
             options.method || 'get',
             url,
+            options.headers.instanceid,
             returnedData,
           );
 
