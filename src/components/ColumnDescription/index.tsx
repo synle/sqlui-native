@@ -56,6 +56,7 @@ export default function ColumnDescription(props: ColumnDescriptionProps) {
               <AccordionHeader expanded={visibles[key]} onToggle={() => onToggle(key)}>
                 <ViewColumnIcon color='disabled' fontSize='inherit' />
                 <span>{column.name}</span>
+                <i className='ColumnDescription__Type'>{column.name}</i>
               </AccordionHeader>
               <AccordionBody expanded={visibles[key]}>
                 <ColumnAttributes column={column} />

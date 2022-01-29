@@ -42,6 +42,12 @@
 
 .ColumnDescription {
   margin-left: 0.9rem;
+
+  &__Type {
+    font-family: monospace;
+    padding-right: 10px;
+    color: #999;
+  }
 }
 
 .AttributeDescription {
@@ -89,7 +95,7 @@
   cursor: pointer;
   display: flex;
   align-items: center;
-  min-height: 34px;
+  min-height: 37px;
 
   &:hover {
     background: #efefef;

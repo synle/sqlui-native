@@ -29,7 +29,13 @@ export default function ActionDialogs(props: ActionDialogsProps) {
   switch (dialog.type) {
     case 'alert':
       return (
-        <AlertDialog open={true} title='Alert' message={dialog.message} onDismiss={onDimiss}  isConfirm={false} />
+        <AlertDialog
+          open={true}
+          title='Alert'
+          message={dialog.message}
+          onDismiss={onDimiss}
+          isConfirm={false}
+        />
       );
     case 'confirm':
       return (
