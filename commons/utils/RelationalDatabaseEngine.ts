@@ -67,6 +67,15 @@ export class RelationalDatabaseEngine {
         sql = `SELECT datname AS database FROM pg_database`;
         break;
       case 'sqlite':
+        // because SQLITE doesn't have a concept of database
+        // so we will hard code this as sqlite here
+        // so that the ui will show up
+        return [
+          {
+            name: 'Sqlite',
+            tables: [], // TODO: will remove this entirely
+          },
+        ];
         break;
       case 'mariadb':
       case 'mysql':
