@@ -1,17 +1,18 @@
 import { Sqlui, SqluiNative } from 'typings';
+import {SessionStorageConfig} from 'src/data/config';
 
 let instanceId: string = 'mocked-server';
 try {
   // @ts-ignore
   if (window.isElectron) {
-    instanceId = sessionStorage.getItem('instanceId') || '';
+    instanceId = SessionStorageConfig.get<string>('api.instanceId', '');
     if (!instanceId) {
       instanceId = `instanceId.${Date.now()}.${Math.random() * 1000}`;
-      sessionStorage.setItem('instanceId', instanceId);
     }
-  } else {
-    sessionStorage.setItem('instanceId', instanceId);
   }
+
+  // persist this instance id
+  SessionStorageConfig.set('api.instanceId', instanceId);
 } catch (err) {
   //@ts-ignore
 }
