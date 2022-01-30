@@ -17,13 +17,18 @@ interface CodeEditorProps {
 
 export default function CodeEditorBox(props: CodeEditorProps) {
   const [wordWrap, setWordWrap] = useState(false);
+  const onChange = (newValue: string) => {
+    if (newValue !== props.value) {
+      props.onChange && props.onChange(newValue);
+    }
+  };
   return (
     <>
       <textarea
         className='CodeEditorBox'
         defaultValue={props?.value}
         placeholder={props.placeholder}
-        onBlur={(e) => props.onChange && props.onChange(e.target.value)}
+        onBlur={(e) => onChange(e.target.value)}
         data-language={props.language}
         autoFocus={props.autoFocus}
         required={props.required}
