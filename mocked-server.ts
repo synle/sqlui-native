@@ -4,8 +4,8 @@ import {
   RelationalDatabaseEngine,
   getEngine,
   getConnectionMetaData,
-} from './commons/utils/RelationalDatabaseEngine';
-import { setUpDataEndpoints } from './commons/utils/EndpointUtils';
+} from './commons/RelationalDatabaseEngine';
+import { setUpDataEndpoints } from './commons/EndpointUtils';
 import { SqluiCore } from './typings';
 
 const port = 3001;

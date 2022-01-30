@@ -6,7 +6,7 @@ import {
   resetConnectionMetaData,
 } from './RelationalDatabaseEngine';
 import PersistentStorage from './PersistentStorage';
-import { SqluiCore, SqluiEnums } from '../../typings';
+import { SqluiCore, SqluiEnums } from '../typings';
 const fs = require('fs');
 let expressAppContext: Express | undefined;
 

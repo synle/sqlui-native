@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const homedir = require('os').homedir();
-import { SqluiCore } from '../../typings';
+import { SqluiCore } from '../typings';
 
 // this section of the api is caches in memory
 interface StorageContent {

@@ -3,11 +3,11 @@ import {
   RelationalDatabaseEngine,
   getEngine,
   getConnectionMetaData,
-} from './commons/utils/RelationalDatabaseEngine';
+} from './commons/RelationalDatabaseEngine';
 import { SqluiCore, SqluiEnums } from './typings';
 import { matchPath } from 'react-router-dom';
 import { app, BrowserWindow, ipcMain, Menu } from 'electron';
-import { setUpDataEndpoints, getEndpointHandlers } from './commons/utils/EndpointUtils';
+import { setUpDataEndpoints, getEndpointHandlers } from './commons/EndpointUtils';
 
 setUpDataEndpoints();
 
