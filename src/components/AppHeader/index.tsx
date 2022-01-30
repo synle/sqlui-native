@@ -11,6 +11,9 @@ import Tooltip from '@mui/material/Tooltip';
 import QueryBuilderIcon from '@mui/icons-material/QueryBuilder';
 import AddIcon from '@mui/icons-material/Add';
 import Avatar from '@mui/material/Avatar';
+import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
+import CheckBoxIcon from '@mui/icons-material/CheckBox';
+import AppsIcon from '@mui/icons-material/Apps';
 import EditConnectionPage from 'src/views/EditConnectionPage';
 import NewConnectionPage from 'src/views/NewConnectionPage';
 import MainPage from 'src/views/MainPage';
@@ -50,7 +53,8 @@ export default function AppHeader() {
         ...sessions.map((session) => ({
           label: session.name,
           value: session.id,
-          startIcon: <QueryBuilderIcon />,
+          startIcon:
+            session.id === currentSession?.id ? <CheckBoxIcon /> : <CheckBoxOutlineBlankIcon />,
         })),
         {
           label: 'New Session',
@@ -59,18 +63,7 @@ export default function AppHeader() {
         },
       ];
 
-      const selected = await choice(
-        'Choose a session',
-        <div>
-          <Typography variant='subtitle1' gutterBottom={true}>
-            <strong>Current Session</strong>
-          </Typography>
-          <Typography variant='subtitle2' gutterBottom={true}>
-            {currentSession?.name || 'N/A'}
-          </Typography>
-        </div>,
-        options,
-      );
+      const selected = await choice('Choose a session', undefined, options);
 
       // make an api call to update my session to this
       let newSession: SqluiCore.Session | undefined;
@@ -78,6 +71,7 @@ export default function AppHeader() {
         // create the new session
         // if there is no session, let's create the session
         const newSessionName = await prompt({
+          title: 'New Session',
           message: 'New Session Name',
           value: `Session ${new Date().toLocaleString()}`,
           saveLabel: 'Save',
@@ -93,6 +87,10 @@ export default function AppHeader() {
           name: newSessionName,
         });
       } else {
+        if(currentSession?.id === selected){
+          // if they select the same session, just ignore it
+          return;
+        }
         newSession = sessions.find((session) => session.id === selected);
       }
 
@@ -118,10 +116,10 @@ export default function AppHeader() {
       }
 
       const newSessionName = await prompt({
-        message: 'Rename Session',
+        title: 'Rename Session',
+        message: 'New Session Session',
         value: currentSession.name,
         saveLabel: 'Save',
-        required: true,
       });
 
       if (!newSessionName) {
@@ -179,9 +177,14 @@ export default function AppHeader() {
           SQLUI NATIVE
         </Typography>
 
-        <Typography variant='subtitle1' sx={{ mr: 'auto', fontFamily: 'monospace' }}>
-          ({currentSession?.name})
-        </Typography>
+        <Tooltip title='This is the current session name. Click to rename it.'>
+          <Typography
+            variant='subtitle1'
+            sx={{ cursor: 'pointer', mr: 'auto', fontFamily: 'monospace' }}
+            onClick={onRenameSession}>
+            ({currentSession?.name})
+          </Typography>
+        </Tooltip>
 
         <DropdownButton
           id='session-action-split-button'

@@ -80,6 +80,11 @@ function setupMenu() {
         {
           type: 'separator',
         },
+        {
+          label: 'Close Query',
+          accelerator: isMac ? 'Cmd+W' : 'Ctrl+W',
+          click: async (item, win) => sendMessage(win as BrowserWindow, 'clientEvent.closeQuery'),
+        },
         isMac ? { role: 'close', accelerator: 'Cmd+Q' } : { role: 'quit', accelerator: 'Alt+F4' },
       ],
     },
@@ -87,12 +92,12 @@ function setupMenu() {
       label: 'Session',
       submenu: [
         {
-          label: 'New Connection',
+          label: 'Rename Session',
           click: async (item, win) =>
             sendMessage(win as BrowserWindow, 'clientEvent.renameSession'),
         },
         {
-          label: 'New Connection',
+          label: 'Change Session',
           click: async (item, win) =>
             sendMessage(win as BrowserWindow, 'clientEvent.changeSession'),
         },
@@ -108,16 +113,12 @@ function setupMenu() {
         { role: 'copy' },
         { role: 'paste' },
         { role: 'selectAll' },
-      ],
-    },
-    {
-      label: 'View',
-      submenu: [
+        { type: 'separator' },
         { role: 'forceReload' },
         { role: 'toggleDevTools' },
         { type: 'separator' },
         { role: 'resetZoom' },
-        { role: 'zoomIn' },
+        { role: 'zoomIn', accelerator: isMac ? 'Cmd++' : 'Ctrl++' },
         { role: 'zoomOut' },
         { type: 'separator' },
         { role: 'togglefullscreen' },

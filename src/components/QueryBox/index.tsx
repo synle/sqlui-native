@@ -95,13 +95,22 @@ export default function QueryBox(props: QueryBoxProps) {
         />
       </div>
       <div className='QueryBox__Row'>
-        <Button
-          type='submit'
-          variant='contained'
-          disabled={disabledExecute}
-          startIcon={<SendIcon />}>
-          Execute
-        </Button>
+        <Tooltip
+          title={
+            disabledExecute
+              ? 'Connection value and SQL value are required for execution. Please select them up above'
+              : 'Execute the SQL'
+          }>
+          <span>
+            <Button
+              type='submit'
+              variant='contained'
+              disabled={disabledExecute}
+              startIcon={<SendIcon />}>
+              Execute
+            </Button>
+          </span>
+        </Tooltip>
 
         <Tooltip title='Format the SQL query for readability.'>
           <Button
@@ -161,14 +170,14 @@ function ConnectionDatabaseSelector(props: ConnectionDatabaseSelectorProps) {
         value={query.connectionId}
         onChange={(e) => onConnectionChange(e.target.value)}
         required>
-        <option value=''>Pick One</option>
+        <option value=''>Pick a connection</option>
         {connectionOptions}
       </NativeSelect>
       <NativeSelect
         value={query.databaseId}
         onChange={(e) => onDatabaseChange(e.target.value)}
         sx={{ ml: 3 }}>
-        <option value=''>Pick One</option>
+        <option value=''>Pick a database (Optional)</option>
         {databaseConnections}
       </NativeSelect>
     </>
