@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import Typography from '@mui/material/Typography';
-import CodeEditor from '@uiw/react-textarea-code-editor';
 import CsvEngine from 'json-2-csv';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -15,6 +14,7 @@ import Tooltip from '@mui/material/Tooltip';
 import { useExecute, useConnectionQueries, useConnectionQuery } from 'src/hooks';
 import Tabs from 'src/components/Tabs';
 import { downloadText } from 'src/data/file';
+import CodeEditorBox from 'src/components/CodeEditorBox';
 
 interface ResultBoxProps {
   queryId: string;
@@ -46,20 +46,10 @@ export default function ResultBox(props: ResultBoxProps) {
     return (
       <>
         <Alert severity='error'>Query Error...</Alert>
-        <CodeEditor
+        <CodeEditorBox
           value={JSON.stringify(errorToDisplay, null, 2)}
           language='json'
-          style={{
-            backgroundColor: '#f5f5f5',
-            border: 'none',
-            fontFamily: 'monospace',
-            fontWeight: '700',
-            width: '100%',
-            minHeight: '200px',
-            color: '#888',
-            padding: '10px',
-            resize: 'vertical',
-          }}
+          mode='textarea'
         />
       </>
     );
@@ -149,25 +139,7 @@ interface FormatDataProps {
 
 function JsonFormatData(props: FormatDataProps) {
   const { data } = props;
-  return (
-    <CodeEditor
-      value={JSON.stringify(data, null, 2)}
-      language='json'
-      style={{
-        backgroundColor: '#f5f5f5',
-        border: 'none',
-        fontFamily: 'monospace',
-        fontWeight: '700',
-        width: '100%',
-        minWidth: '100%',
-        maxWidth: '100%',
-        minHeight: '200px',
-        color: '#888',
-        padding: '10px',
-        resize: 'vertical',
-      }}
-    />
-  );
+  return <CodeEditorBox value={JSON.stringify(data, null, 2)} language='json' mode='textarea' />;
 }
 
 function CsvFormatData(props: FormatDataProps) {
@@ -184,22 +156,7 @@ function CsvFormatData(props: FormatDataProps) {
     });
   }, [data]);
 
-  return (
-    <CodeEditor
-      value={csv}
-      style={{
-        backgroundColor: '#f5f5f5',
-        border: 'none',
-        fontFamily: 'monospace',
-        fontWeight: '700',
-        width: '100%',
-        minHeight: '200px',
-        color: '#888',
-        padding: '10px',
-        resize: 'vertical',
-      }}
-    />
-  );
+  return <CodeEditorBox value={csv} mode='textarea' />;
 }
 
 function TableFormatData(props: FormatDataProps) {

@@ -142,3 +142,11 @@
     cursor: col-resize;
   }
 }
+
+.CodeEditorBox {
+  &:hover,
+  &:focus {
+    border: 2px solid #aaa !important;
+    outline: none;
+  }
+}
