@@ -16,6 +16,7 @@ interface CodeEditorProps {
 }
 
 export default function CodeEditorBox(props: CodeEditorProps) {
+  const [value, setValue] = useState('');
   const [wordWrap, setWordWrap] = useState(false);
 
   const onChange = (newValue: string) => {
@@ -24,13 +25,17 @@ export default function CodeEditorBox(props: CodeEditorProps) {
     }
   };
 
+  useEffect(() => {
+    setValue(props?.value || '');
+  }, [props.value]);
+
   return (
     <>
       <textarea
         className='CodeEditorBox'
-        value={props?.value}
+        value={value}
         placeholder={props.placeholder}
-        onChange={() => {}}
+        onChange={(e) => setValue(e.target.value)}
         onBlur={(e) => onChange(e.target.value)}
         data-language={props.language}
         autoFocus={props.autoFocus}

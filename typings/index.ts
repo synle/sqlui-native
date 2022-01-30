@@ -52,6 +52,14 @@ export module SqluiCore {
     databaseId?: string;
     sql?: string;
   };
+
+  // session
+  export type Session = {
+    id: string;
+    name: string;
+    created?: number;
+    lastUpdated?: number;
+  };
 }
 
 /**

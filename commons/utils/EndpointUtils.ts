@@ -290,6 +290,36 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
       );
   });
 
+  // session api
+  // query endpoints
+  addDataEndpoint('get', '/api/sessions', async (req, res, apiCache) => {
+    res
+      .status(200)
+      .json(
+        await new PersistentStorage<SqluiCore.Session>(req.headers.instanceid, 'session').list(),
+      );
+  });
+
+  addDataEndpoint('post', '/api/session', async (req, res, apiCache) => {
+    apiCache.set('cacheMetaData', null);
+    res.status(201).json(
+      await new PersistentStorage<SqluiCore.Session>(req.headers.instanceid, 'session').add({
+        connection: req.body?.name,
+      }),
+    );
+  });
+
+  addDataEndpoint('delete', '/api/session/:sessionId', async (req, res, apiCache) => {
+    apiCache.set('cacheMetaData', null);
+    res
+      .status(202)
+      .json(
+        await new PersistentStorage<SqluiCore.Session>(req.headers.instanceid, 'session').delete(
+          req.params?.queryId,
+        ),
+      );
+  });
+
   // debug endpoints
   addDataEndpoint('get', '/api/debug', async (req, res, apiCache) => {
     res.status(200).json(apiCache.json());
