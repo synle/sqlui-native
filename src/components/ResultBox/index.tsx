@@ -33,11 +33,19 @@ export default function ResultBox(props: ResultBoxProps) {
   } = useExecute(query);
 
   if (loadingQuery) {
-    return <Alert severity='info'>Loading Query...</Alert>;
+    return (
+      <Alert severity='info' icon={<CircularProgress size={15} />}>
+        Loading Query...
+      </Alert>
+    );
   }
 
   if (loadingResults) {
-    return <Alert severity='info'>Loading Results...</Alert>;
+    return (
+      <Alert severity='info' icon={<CircularProgress size={15} />}>
+        Loading Results...
+      </Alert>
+    );
   }
 
   if (isError) {

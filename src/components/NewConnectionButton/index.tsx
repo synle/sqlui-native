@@ -136,7 +136,7 @@ export default function NewConnectionButton() {
   ];
 
   return (
-    <div style={{ textAlign: 'center' }}>
+    <div style={{ textAlign: 'center', marginBottom: '15px' }}>
       <SplitButton
         id='new-connection-split-button'
         label='Connection'

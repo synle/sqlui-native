@@ -3,11 +3,13 @@ import { useQuery, useMutation, useQueryClient } from 'react-query';
 import { SqluiCore, SqluiFrontend } from 'typings';
 import dataApi from 'src/data/api';
 import Config from 'src/data/config';
+import { setCurrentSessionId, getCurrentSessionId } from 'src/data/session';
 
 const QUERY_KEY_ALL_CONNECTIONS = 'qk.connections';
 const QUERY_KEY_TREEVISIBLES = 'qk.treeVisibles';
 const QUERY_KEY_QUERIES = 'qk.queries';
 const QUERY_KEY_RESULTS = 'qk.results';
+const QUERY_KEY_SESSIONS = 'qk.sessions';
 
 // @ts-ignore
 function _fetch<T>(...inputs) {
@@ -562,6 +564,43 @@ export function useActiveConnectionQuery() {
     onChange,
     onDelete,
   };
+}
+
+// for sessions
+export function useGetSessions() {
+  return useQuery([QUERY_KEY_SESSIONS], dataApi.getSessions);
+}
+
+export function useGetCurrentSession() {
+  const { data, ...rest } = useGetSessions();
+
+  const currentMatchedSession = data?.find((session) => session.id === getCurrentSessionId());
+
+  return {
+    data: currentMatchedSession,
+    ...rest,
+  };
+}
+
+export function useUpsertSession() {
+  const queryClient = useQueryClient();
+  return useMutation<SqluiCore.Session, void, SqluiCore.CoreSession>(dataApi.upsertSession, {
+    onSuccess: async (newSession) => {
+      queryClient.invalidateQueries(QUERY_KEY_SESSIONS);
+      return newSession;
+    },
+  });
+}
+
+export function useDeleteSession() {
+  const queryClient = useQueryClient();
+
+  return useMutation<string, void, string>(dataApi.deleteSession, {
+    onSuccess: async (deletedSessionId) => {
+      queryClient.invalidateQueries(QUERY_KEY_SESSIONS);
+      return deletedSessionId;
+    },
+  });
 }
 
 // for exporting

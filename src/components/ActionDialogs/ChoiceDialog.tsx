@@ -11,6 +11,7 @@ import PersonIcon from '@mui/icons-material/Person';
 import AddIcon from '@mui/icons-material/Add';
 import Typography from '@mui/material/Typography';
 import { blue } from '@mui/material/colors';
+import DialogContent from '@mui/material/DialogContent';
 
 export type ChoiceActionDialogOption = {
   startIcon?: React.ReactNode;
@@ -39,20 +40,23 @@ export default function ChoiceDialog(props: ChoiceDialogProps) {
 
   return (
     <Dialog onClose={handleClose} open={open}>
-      <div style={{ width: '4g00px' }}>
+      <div style={{ width: '400px' }}>
         <DialogTitle>{title}</DialogTitle>
-        <List sx={{ pt: 0 }}>
-          {options.map((option) => (
-            <ListItem button onClick={() => handleListItemClick(option.value)} key={option.value}>
-              {!option.startIcon ? null : (
-                <ListItemAvatar>
-                  <Avatar sx={{ bgcolor: blue[100], color: blue[600] }}>{option.startIcon}</Avatar>
-                </ListItemAvatar>
-              )}
-              <ListItemText primary={option.value} />
-            </ListItem>
-          ))}
-        </List>
+        <DialogContent>
+          {message}
+          <List sx={{ pt: 0 }}>
+            {options.map((option) => (
+              <ListItem
+                button
+                onClick={() => handleListItemClick(option.value)}
+                key={option.value}
+                sx={{ alignItems: 'center', display: 'flex' }}>
+                {!option.startIcon ? null : option.startIcon}
+                <ListItemText primary={option.label} sx={{ ml: 1 }} />
+              </ListItem>
+            ))}
+          </List>
+        </DialogContent>
       </div>
     </Dialog>
   );

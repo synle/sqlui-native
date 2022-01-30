@@ -16,6 +16,10 @@ export const SessionStorageConfig = {
 
     return res;
   },
+
+  clear() {
+    window.sessionStorage.clear();
+  },
 };
 
 export const LocalStorageConfig = {
@@ -34,18 +38,11 @@ export const LocalStorageConfig = {
 
     return res;
   },
+
+  clear() {
+    window.localStorage.clear();
+  },
 };
 
-let DefaultConfig = LocalStorageConfig;
-try {
-  // @ts-ignore
-  if (window.isElectron) {
-    // if it's in electron mode then we will use session storage
-    // to support multiple query windows
-    DefaultConfig = SessionStorageConfig;
-  }
-} catch (err) {
-  //@ts-ignore
-}
-
+let DefaultConfig = SessionStorageConfig;
 export default DefaultConfig;
