@@ -105,6 +105,7 @@ interface MainConnectionFormProps {
 function MainConnectionForm(props: MainConnectionFormProps) {
   const navigate = useNavigate();
   const [toastOpen, setToastOpen] = useState(false);
+  const [showHint, setShowHint] = useState(false);
 
   const onSave = async (e: React.SyntheticEvent) => {
     e.preventDefault();
@@ -149,6 +150,27 @@ function MainConnectionForm(props: MainConnectionFormProps) {
         />
       </div>
       <div className='ConnectionForm__Row'>
+        {showHint && (
+          <>
+            <Alert severity='info' sx={{ mb: 2 }}>
+              mysql://root:password@localhost:3306
+            </Alert>
+            <Alert severity='info' sx={{ mb: 2 }}>
+              mariadb://root:password@localhost:3306
+            </Alert>
+            <Alert severity='info' sx={{ mb: 2 }}>
+              mssql://sa:password123!@localhost:1433
+            </Alert>
+            <Alert severity='info' sx={{ mb: 2 }}>
+              postgres://postgres:password@localhost:5432
+            </Alert>
+            <Alert severity='info' sx={{ mb: 2 }}>
+              sqlite://db.test
+            </Alert>
+          </>
+        )}
+      </div>
+      <div className='ConnectionForm__Row'>
         <Button
           variant='contained'
           type='submit'
@@ -166,6 +188,15 @@ function MainConnectionForm(props: MainConnectionFormProps) {
           Cancel
         </Button>
         <TestConnectionButton connection={connection} />
+        {!showHint && (
+          <Button
+            type='button'
+            disabled={props.saving}
+            onClick={() => setShowHint(true)}
+            sx={{ ml: 3 }}>
+            Show Hints
+          </Button>
+        )}
       </div>
       <Toast open={toastOpen} onClose={() => setToastOpen(false)} message='Connection Saved...' />
     </form>
