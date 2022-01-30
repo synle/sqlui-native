@@ -16,8 +16,16 @@ const electronEndpointHandlers: any[] = [];
 function addDataEndpoint(
   method: 'get' | 'post' | 'put' | 'delete',
   url: string,
-  handler: (req: any, res: any, cache: any) => void,
+  incomingHandler: (req: any, res: any, cache: any) => void,
 ) {
+  const handlerToUse = async (req: any, res: any, cache: any) => {
+    try {
+      await incomingHandler(req, res, cache);
+    } catch (err: any) {
+      res.status(500).send(err.stack || err.toString() || err);
+    }
+  };
+
   if (expressAppContext) {
     // set up the route in the context of express server
     expressAppContext[method](url, async (req, res) => {
@@ -28,7 +36,7 @@ function addDataEndpoint(
           try {
             //@ts-ignore
             return _cache[instanceid][key];
-          } catch (err) {
+          } catch (err: any) {
             return undefined;
           }
         },
@@ -39,7 +47,7 @@ function addDataEndpoint(
 
             //@ts-ignore
             _cache[instanceid][key] = value;
-          } catch (err) {
+          } catch (err: any) {
             //@ts-ignore
           }
         },
@@ -48,10 +56,10 @@ function addDataEndpoint(
         },
       };
 
-      setTimeout(() => handler(req, res, apiCache), 50);
+      setTimeout(() => handlerToUse(req, res, apiCache), 50);
     });
   } else {
-    electronEndpointHandlers.push([method, url, handler]);
+    electronEndpointHandlers.push([method, url, handlerToUse]);
   }
 }
 
@@ -63,46 +71,38 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
   expressAppContext = anExpressAppContext;
 
   addDataEndpoint('get', '/api/connections', async (req, res, apiCache) => {
-    try {
-      const connections = await new ConnectionUtils(req.headers.instanceid).getConnections();
+    const connections = await new ConnectionUtils(req.headers.instanceid).getConnections();
 
-      for (const connection of connections) {
-        try {
-          const engine = getEngine(connection.connection);
-          const databases = await engine.getDatabases();
-
-          connection.status = 'online';
-          connection.dialect = engine.dialect;
-        } catch (err) {
-          connection.status = 'offline';
-          connection.dialect = undefined;
-        }
-      }
-
-      res.status(200).json(connections);
-    } catch (err) {
-      res.status(500).send();
-    }
-  });
-
-  addDataEndpoint('get', '/api/connection/:connectionId', async (req, res, apiCache) => {
-    try {
-      const connection = await new ConnectionUtils(req.headers.instanceid).getConnection(
-        req.params?.connectionId,
-      );
-
+    for (const connection of connections) {
       try {
         const engine = getEngine(connection.connection);
         const databases = await engine.getDatabases();
 
         connection.status = 'online';
         connection.dialect = engine.dialect;
-      } catch (err) {}
-
-      res.status(200).json(connection);
-    } catch (err) {
-      res.status(500).send();
+      } catch (err: any) {
+        connection.status = 'offline';
+        connection.dialect = undefined;
+      }
     }
+
+    res.status(200).json(connections);
+  });
+
+  addDataEndpoint('get', '/api/connection/:connectionId', async (req, res, apiCache) => {
+    const connection = await new ConnectionUtils(req.headers.instanceid).getConnection(
+      req.params?.connectionId,
+    );
+
+    try {
+      const engine = getEngine(connection.connection);
+      const databases = await engine.getDatabases();
+
+      connection.status = 'online';
+      connection.dialect = engine.dialect;
+    } catch (err: any) {}
+
+    res.status(200).json(connection);
   });
 
   addDataEndpoint('get', '/api/connection/:connectionId/databases', async (req, res, apiCache) => {
@@ -114,29 +114,20 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
       return res.status(404).send('Not Found');
     }
 
-    try {
-      const engine = getEngine(connection.connection);
-
-      res.status(200).json(await engine.getDatabases());
-    } catch (err) {
-      res.status(500).send();
-    }
+    const engine = getEngine(connection.connection);
+    res.status(200).json(await engine.getDatabases());
   });
 
   addDataEndpoint(
     'get',
     '/api/connection/:connectionId/database/:databaseId/tables',
     async (req, res) => {
-      try {
-        const connection = await new ConnectionUtils(req.headers.instanceid).getConnection(
-          req.params?.connectionId,
-        );
-        const engine = getEngine(connection.connection);
+      const connection = await new ConnectionUtils(req.headers.instanceid).getConnection(
+        req.params?.connectionId,
+      );
+      const engine = getEngine(connection.connection);
 
-        res.status(200).json(await engine.getTables(req.params?.databaseId));
-      } catch (err) {
-        res.status(500).send();
-      }
+      res.status(200).json(await engine.getTables(req.params?.databaseId));
     },
   );
 
@@ -144,16 +135,12 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     'get',
     '/api/connection/:connectionId/database/:databaseId/table/:tableId/columns',
     async (req, res) => {
-      try {
-        const connection = await new ConnectionUtils(req.headers.instanceid).getConnection(
-          req.params?.connectionId,
-        );
-        const engine = getEngine(connection.connection);
+      const connection = await new ConnectionUtils(req.headers.instanceid).getConnection(
+        req.params?.connectionId,
+      );
+      const engine = getEngine(connection.connection);
 
-        res.status(200).json(await engine.getColumns(req.params?.tableId, req.params?.databaseId));
-      } catch (err) {
-        res.status(500).send();
-      }
+      res.status(200).json(await engine.getColumns(req.params?.tableId, req.params?.databaseId));
     },
   );
 
@@ -173,7 +160,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
       await engine.authenticate();
       apiCache.set('cacheMetaData', null);
       res.status(200).json(await getConnectionMetaData(connection));
-    } catch (err) {
+    } catch (err: any) {
       // here means we failed to connect, just set back 407 - Not Acceptable
       // here we return the barebone
       res.status(406).json(await resetConnectionMetaData(connection));
@@ -189,69 +176,49 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
       return res.status(404).send('Not Found');
     }
 
-    try {
-      const engine = getEngine(connection.connection);
-      const sql = req.body?.sql;
-      const database = req.body?.database;
-      res.status(200).json(await engine.execute(sql, database));
-    } catch (err) {
-      res.status(500).send(err);
-    }
+    const engine = getEngine(connection.connection);
+    const sql = req.body?.sql;
+    const database = req.body?.database;
+    res.status(200).json(await engine.execute(sql, database));
   });
 
   addDataEndpoint('post', '/api/connection/test', async (req, res, apiCache) => {
-    try {
-      const connection: SqluiCore.CoreConnectionProps = req.body;
-      const engine = getEngine(connection.connection);
-      await engine.authenticate();
-      res.status(200).json(await getConnectionMetaData(connection));
-    } catch (err) {
-      res.status(500).send(err);
-    }
+    const connection: SqluiCore.CoreConnectionProps = req.body;
+    const engine = getEngine(connection.connection);
+    await engine.authenticate();
+    res.status(200).json(await getConnectionMetaData(connection));
   });
 
   addDataEndpoint('post', '/api/connection', async (req, res, apiCache) => {
     apiCache.set('cacheMetaData', null);
-    try{
-      res.status(201).json(
-        await new ConnectionUtils(req.headers.instanceid).addConnection({
-          connection: req.body?.connection,
-          name: req.body?.name,
-        }),
-      );
-    } catch(err){
-      res.status(500).send(err);
-    }
+    res.status(201).json(
+      await new ConnectionUtils(req.headers.instanceid).addConnection({
+        connection: req.body?.connection,
+        name: req.body?.name,
+      }),
+    );
   });
 
   addDataEndpoint('put', '/api/connection/:connectionId', async (req, res, apiCache) => {
     apiCache.set('cacheMetaData', null);
-    try{
-      res.status(202).json(
+    res.status(202).json(
       await new ConnectionUtils(req.headers.instanceid).updateConnection({
         id: req.params?.connectionId,
         connection: req.body?.connection,
         name: req.body?.name,
       }),
     );
-    } catch(err){
-      res.status(500).send(err);
-    }
   });
 
   addDataEndpoint('delete', '/api/connection/:connectionId', async (req, res, apiCache) => {
     apiCache.set('cacheMetaData', null);
-    try {
-      res
-        .status(202)
-        .json(
-          await new ConnectionUtils(req.headers.instanceid).deleteConnection(
-            req.params?.connectionId,
-          ),
-        );
-    } catch (err) {
-      res.status(500).send();
-    }
+    res
+      .status(202)
+      .json(
+        await new ConnectionUtils(req.headers.instanceid).deleteConnection(
+          req.params?.connectionId,
+        ),
+      );
   });
 
   addDataEndpoint('get', '/api/metadata', async (req, res, apiCache) => {
