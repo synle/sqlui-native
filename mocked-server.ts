@@ -5,7 +5,6 @@ import {
   getEngine,
   getConnectionMetaData,
 } from './commons/utils/RelationalDatabaseEngine';
-import ConnectionUtils from './commons/utils/ConnectionUtils';
 import { setUpDataEndpoints } from './commons/utils/EndpointUtils';
 import { SqluiCore } from './typings';
 
