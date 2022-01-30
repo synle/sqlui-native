@@ -4,6 +4,7 @@ import { SqluiCore, SqluiEnums } from './typings';
 import { matchPath } from 'react-router-dom';
 import { app, BrowserWindow, ipcMain, Menu } from 'electron';
 import { setUpDataEndpoints, getEndpointHandlers } from './commons/Endpoints';
+const { shell } = require('electron');
 
 setUpDataEndpoints();
 
@@ -128,9 +129,14 @@ function setupMenu() {
       label: 'Help',
       submenu: [
         {
+          label: 'File a bug',
+          click: async () => {
+            await shell.openExternal('https://github.com/synle/sqlui-native/issues/new');
+          },
+        },
+        {
           label: 'About',
           click: async () => {
-            const { shell } = require('electron');
             await shell.openExternal('https://synle.github.io/sqlui-native/');
           },
         },
