@@ -1,9 +1,18 @@
 const fs = require('fs');
+const path = require('path');
+const homedir = require('os').homedir();
 import { SqluiCore } from '../../typings';
 
 // this section of the api is caches in memory
 interface ConnectionStore {
   [index: string]: SqluiCore.ConnectionProps;
+}
+
+const baseDir = path.join(homedir, '.sqlui-native');
+try {
+  fs.mkdirSync(baseDir);
+} catch (err) {
+  //@ts-ignore
 }
 
 export class ConnectionUtils {
@@ -15,7 +24,7 @@ export class ConnectionUtils {
 
   private getData(): ConnectionStore {
     try {
-      const storeFilePath = `./connections-${this.instanceId}.json`;
+      const storeFilePath = path.join(homedir, `${this.instanceId}.connections.json`);
       return JSON.parse(fs.readFileSync(storeFilePath, { encoding: 'utf8', flag: 'r' }).trim());
     } catch (err) {
       return {};
@@ -23,7 +32,7 @@ export class ConnectionUtils {
   }
 
   private setData(toSave: ConnectionStore) {
-    const storeFilePath = `./connections-${this.instanceId}.json`;
+    const storeFilePath = path.join(homedir, `${this.instanceId}.connections.json`);
     fs.writeFileSync(storeFilePath, JSON.stringify(toSave, null, 2));
   }
 

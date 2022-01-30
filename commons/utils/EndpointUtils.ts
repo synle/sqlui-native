@@ -7,7 +7,7 @@ import {
 } from './RelationalDatabaseEngine';
 import ConnectionUtils from './ConnectionUtils';
 import { SqluiCore, SqluiEnums } from '../../typings';
-
+const fs = require('fs');
 let expressAppContext: Express | undefined;
 
 const _cache = {};
@@ -212,23 +212,31 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
 
   addDataEndpoint('post', '/api/connection', async (req, res, apiCache) => {
     apiCache.set('cacheMetaData', null);
-    res.status(201).json(
-      await new ConnectionUtils(req.headers.instanceid).addConnection({
-        connection: req.body?.connection,
-        name: req.body?.name,
-      }),
-    );
+    try{
+      res.status(201).json(
+        await new ConnectionUtils(req.headers.instanceid).addConnection({
+          connection: req.body?.connection,
+          name: req.body?.name,
+        }),
+      );
+    } catch(err){
+      res.status(500).send(err);
+    }
   });
 
   addDataEndpoint('put', '/api/connection/:connectionId', async (req, res, apiCache) => {
     apiCache.set('cacheMetaData', null);
-    res.status(202).json(
+    try{
+      res.status(202).json(
       await new ConnectionUtils(req.headers.instanceid).updateConnection({
         id: req.params?.connectionId,
         connection: req.body?.connection,
         name: req.body?.name,
       }),
     );
+    } catch(err){
+      res.status(500).send(err);
+    }
   });
 
   addDataEndpoint('delete', '/api/connection/:connectionId', async (req, res, apiCache) => {
