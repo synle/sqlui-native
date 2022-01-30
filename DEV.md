@@ -98,7 +98,13 @@ docker run --detach --name sqlui_mariadb -p 33061:3306 -e MARIADB_ROOT_PASSWORD=
 docker run --name sqlui_mssql -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=password123!" -p 1433:1433 -d mcr.microsoft.com/mssql/server:2019-latest
 
 # postgres (https://hub.docker.com/_/postgres)
-docker run --name sql_postgres -p 5432:5432 -e POSTGRES_PASSWORD=password -d postgres
+docker run --name sqlui_postgres -p 5432:5432 -e POSTGRES_PASSWORD=password -d postgres
+
+# Cassandra
+docker run --name sqlui_cassandra -p 9042:9042 -d cassandra:latest
+
+  # use qlsh
+  docker exec -it sqlui_cassandra cqlsh
 ```
 
 
