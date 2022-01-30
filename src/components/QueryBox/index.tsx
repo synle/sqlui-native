@@ -5,7 +5,6 @@ import Typography from '@mui/material/Typography';
 import { Button } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 import NativeSelect from '@mui/material/NativeSelect';
-import CodeEditor from '@uiw/react-textarea-code-editor';
 import PreviewIcon from '@mui/icons-material/Preview';
 import FormatColorTextIcon from '@mui/icons-material/FormatColorText';
 import Tooltip from '@mui/material/Tooltip';
@@ -17,6 +16,7 @@ import {
   useShowHide,
   useGetDatabases,
 } from 'src/hooks';
+import CodeEditorBox from 'src/components/CodeEditorBox';
 import { SqluiCore, SqluiFrontend } from 'typings';
 
 interface QueryBoxProps {
@@ -80,23 +80,13 @@ export default function QueryBox(props: QueryBoxProps) {
         <ConnectionRevealButton query={query} />
       </div>
       <div className='QueryBox__Row'>
-        <textarea
+        <CodeEditorBox
           value={query.sql}
           placeholder={`Enter SQL for ` + query.name}
-          onChange={(e) => onSqlQueryChange(e.target.value)}
-          data-language='sql'
+          onChange={onSqlQueryChange}
+          language='sql'
           autoFocus
-          style={{
-            backgroundColor: '#f5f5f5',
-            border: 'none',
-            fontFamily: 'monospace',
-            fontWeight: '700',
-            width: '100%',
-            minHeight: '200px',
-            color: '#888',
-            padding: '10px',
-            resize: 'vertical',
-          }}
+          mode='textarea'
         />
       </div>
       <div className='QueryBox__Row'>

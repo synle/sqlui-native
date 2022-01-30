@@ -9,7 +9,7 @@ import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
-import CodeEditor from '@uiw/react-textarea-code-editor';
+import CodeEditorBox from 'src/components/CodeEditorBox';
 
 interface PromptDialogProps {
   open: boolean;
@@ -53,20 +53,13 @@ export default function PromptDialog(props: PromptDialogProps) {
         </DialogTitle>
         <DialogContent dividers>
           {props.isLongPrompt ? (
-            <CodeEditor
+            <CodeEditorBox
               value={value}
-              onChange={(e) => setValue(e.target.value)}
+              onChange={setValue}
               language='json'
-              style={{
-                backgroundColor: '#f5f5f5',
-                border: 'none',
-                fontFamily: 'monospace',
-                width: '100%',
-                minHeight: '400px',
-                padding: '10px',
-              }}
-              autoFocus
-              required
+              autoFocus={true}
+              required={true}
+              mode='textarea'
             />
           ) : (
             <TextField
