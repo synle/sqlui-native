@@ -5,7 +5,7 @@ import {
   getConnectionMetaData,
   resetConnectionMetaData,
 } from './RelationalDatabaseEngine';
-import ConnectionUtils from './ConnectionUtils';
+import PersistentStorage from './PersistentStorage';
 import { SqluiCore, SqluiEnums } from '../../typings';
 const fs = require('fs');
 let expressAppContext: Express | undefined;
@@ -71,7 +71,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
   expressAppContext = anExpressAppContext;
 
   addDataEndpoint('get', '/api/connections', async (req, res, apiCache) => {
-    const connections = await new ConnectionUtils(req.headers.instanceid).getConnections();
+    const connections = await new PersistentStorage<SqluiCore.ConnectionProps>(req.headers.instanceid, 'connections').list();
 
     for (const connection of connections) {
       try {
@@ -90,7 +90,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
   });
 
   addDataEndpoint('get', '/api/connection/:connectionId', async (req, res, apiCache) => {
-    const connection = await new ConnectionUtils(req.headers.instanceid).getConnection(
+    const connection = await new PersistentStorage<SqluiCore.ConnectionProps>(req.headers.instanceid, 'connections').get(
       req.params?.connectionId,
     );
 
@@ -106,7 +106,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
   });
 
   addDataEndpoint('get', '/api/connection/:connectionId/databases', async (req, res, apiCache) => {
-    const connection = await new ConnectionUtils(req.headers.instanceid).getConnection(
+    const connection = await new PersistentStorage<SqluiCore.ConnectionProps>(req.headers.instanceid, 'connections').get(
       req.params?.connectionId,
     );
 
@@ -122,7 +122,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     'get',
     '/api/connection/:connectionId/database/:databaseId/tables',
     async (req, res) => {
-      const connection = await new ConnectionUtils(req.headers.instanceid).getConnection(
+      const connection = await new PersistentStorage<SqluiCore.ConnectionProps>(req.headers.instanceid, 'connections').get(
         req.params?.connectionId,
       );
       const engine = getEngine(connection.connection);
@@ -135,7 +135,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     'get',
     '/api/connection/:connectionId/database/:databaseId/table/:tableId/columns',
     async (req, res) => {
-      const connection = await new ConnectionUtils(req.headers.instanceid).getConnection(
+      const connection = await new PersistentStorage<SqluiCore.ConnectionProps>(req.headers.instanceid, 'connections').get(
         req.params?.connectionId,
       );
       const engine = getEngine(connection.connection);
@@ -145,7 +145,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
   );
 
   addDataEndpoint('post', '/api/connection/:connectionId/connect', async (req, res, apiCache) => {
-    const connection = await new ConnectionUtils(req.headers.instanceid).getConnection(
+    const connection = await new PersistentStorage<SqluiCore.ConnectionProps>(req.headers.instanceid, 'connections').get(
       req.params?.connectionId,
     );
 
@@ -168,7 +168,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
   });
 
   addDataEndpoint('post', '/api/connection/:connectionId/execute', async (req, res, apiCache) => {
-    const connection = await new ConnectionUtils(req.headers.instanceid).getConnection(
+    const connection = await new PersistentStorage<SqluiCore.ConnectionProps>(req.headers.instanceid, 'connections').get(
       req.params?.connectionId,
     );
 
@@ -192,7 +192,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
   addDataEndpoint('post', '/api/connection', async (req, res, apiCache) => {
     apiCache.set('cacheMetaData', null);
     res.status(201).json(
-      await new ConnectionUtils(req.headers.instanceid).addConnection({
+      await new PersistentStorage<SqluiCore.ConnectionProps>(req.headers.instanceid, 'connections').add({
         connection: req.body?.connection,
         name: req.body?.name,
       }),
@@ -202,7 +202,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
   addDataEndpoint('put', '/api/connection/:connectionId', async (req, res, apiCache) => {
     apiCache.set('cacheMetaData', null);
     res.status(202).json(
-      await new ConnectionUtils(req.headers.instanceid).updateConnection({
+      await new PersistentStorage<SqluiCore.ConnectionProps>(req.headers.instanceid, 'connections').update({
         id: req.params?.connectionId,
         connection: req.body?.connection,
         name: req.body?.name,
@@ -215,14 +215,14 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     res
       .status(202)
       .json(
-        await new ConnectionUtils(req.headers.instanceid).deleteConnection(
+        await new PersistentStorage<SqluiCore.ConnectionProps>(req.headers.instanceid, 'connections').delete(
           req.params?.connectionId,
         ),
       );
   });
 
   addDataEndpoint('get', '/api/metadata', async (req, res, apiCache) => {
-    const connections = await new ConnectionUtils(req.headers.instanceid).getConnections();
+    const connections = await new PersistentStorage<SqluiCore.ConnectionProps>(req.headers.instanceid, 'connections').list();
 
     if (apiCache.get('cacheMetaData')) {
       return res.status(200).json(apiCache.get('cacheMetaData'));

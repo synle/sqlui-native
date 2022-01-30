@@ -4,7 +4,6 @@ import {
   getEngine,
   getConnectionMetaData,
 } from './commons/utils/RelationalDatabaseEngine';
-import ConnectionUtils from './commons/utils/ConnectionUtils';
 import { SqluiCore, SqluiEnums } from './typings';
 import { matchPath } from 'react-router-dom';
 import { app, BrowserWindow, ipcMain, Menu } from 'electron';
