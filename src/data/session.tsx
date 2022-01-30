@@ -8,12 +8,12 @@ export function getDefaultSessionId() {
   if (window.isElectron) {
     // default value for electron
     if (!sessionId) {
-      sessionId = getRandomSessionId();
+      sessionId = 'electron-default';
     }
   } else {
     // default value for mocked server
     if (!sessionId) {
-      sessionId = 'mocked-server';
+      sessionId = 'mocked-server-default';
     }
   }
 

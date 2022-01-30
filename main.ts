@@ -79,6 +79,21 @@ function setupMenu() {
       ],
     },
     {
+      label: 'Session',
+      submenu: [
+        {
+          label: 'New Connection',
+          click: async (item, win) =>
+            sendMessage(win as BrowserWindow, 'clientEvent.renameSession'),
+        },
+        {
+          label: 'New Connection',
+          click: async (item, win) =>
+            sendMessage(win as BrowserWindow, 'clientEvent.changeSession'),
+        },
+      ],
+    },
+    {
       label: 'Edit',
       submenu: [
         { role: 'undo' },
@@ -239,7 +254,7 @@ ipcMain.on('sqluiNativeEvent/fetch', async (event, data) => {
           params: matchedUrlObject?.params,
           body: body,
           headers: {
-            sessionId: sessionId,
+            ['sqlui-native-session-id']: sessionId,
           },
         };
 
