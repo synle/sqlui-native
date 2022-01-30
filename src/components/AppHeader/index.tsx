@@ -66,47 +66,63 @@ export default function AppHeader() {
       const selected = await choice('Choose a session', undefined, options);
 
       // make an api call to update my session to this
-      let newSession: SqluiCore.Session | undefined;
       if (selected === 'newSession') {
-        // create the new session
-        // if there is no session, let's create the session
-        const newSessionName = await prompt({
-          title: 'New Session',
-          message: 'New Session Name',
-          value: `Session ${new Date().toLocaleString()}`,
-          saveLabel: 'Save',
-          required: true,
-        });
-
-        if (!newSessionName) {
-          return;
-        }
-
-        newSession = await upsertSession({
-          id: getRandomSessionId(),
-          name: newSessionName,
-        });
+        onAddSession();
       } else {
+        // switching session
         if (currentSession?.id === selected) {
           // if they select the same session, just ignore it
           return;
         }
-        newSession = sessions.find((session) => session.id === selected);
+        const newSession: SqluiCore.Session | undefined = sessions.find(
+          (session) => session.id === selected,
+        );
+        if (!newSession) {
+          return;
+        }
+
+        // then set it as current session
+        setCurrentSessionId(newSession.id);
+
+        // reload the page just in case
+        // TODO: see if we need to use a separate row
+        window.location.reload();
       }
-
-      if (!newSession) {
-        return;
-      }
-
-      // then set it as current session
-      setCurrentSessionId(newSession.id);
-
-      // reload the page just in case
-      // TODO: see if we need to use a separate row
-      window.location.reload();
     } catch (err) {
       //@ts-ignore
     }
+  };
+
+  const onAddSession = async () => {
+    // create the new session
+    // if there is no session, let's create the session
+    const newSessionName = await prompt({
+      title: 'New Session',
+      message: 'New Session Name',
+      value: `Session ${new Date().toLocaleString()}`,
+      saveLabel: 'Save',
+      required: true,
+    });
+
+    if (!newSessionName) {
+      return;
+    }
+
+    const newSession = await upsertSession({
+      id: getRandomSessionId(),
+      name: newSessionName,
+    });
+
+    if (!newSession) {
+      return;
+    }
+
+    // then set it as current session
+    setCurrentSessionId(newSession.id);
+
+    // reload the page just in case
+    // TODO: see if we need to use a separate row
+    window.location.reload();
   };
 
   const onRenameSession = async () => {
@@ -157,6 +173,10 @@ export default function AppHeader() {
   }
 
   const options = [
+    {
+      label: 'New Session',
+      onClick: onAddSession,
+    },
     {
       label: 'Change Session',
       onClick: onChangeSession,
