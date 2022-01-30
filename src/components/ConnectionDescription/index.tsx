@@ -81,7 +81,7 @@ function ConnectionDialectIcon(props: ConnectionDialectIconProps) {
   const { dialect, status } = props.connection;
 
   if (status !== 'online') {
-    return <CloudIcon color='disabled' fontSize='inherit' />;
+    return <CloudIcon color='disabled' fontSize='large' />;
   }
 
   switch (dialect) {
@@ -102,7 +102,7 @@ function ConnectionDialectIcon(props: ConnectionDialectIconProps) {
     case 'mysql':
       return <img src={`${process.env.PUBLIC_URL}/assets/mysql.png`} title={dialect} width={30} />;
     default:
-      return <CloudIcon color='primary' fontSize='inherit' />;
+      return <CloudIcon color='primary' fontSize='large' />;
   }
 }
 
