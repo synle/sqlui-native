@@ -32,7 +32,8 @@ export default function NewConnectionButton() {
         title: 'Import Connections / Queries',
         message: 'Import',
         saveLabel: 'Import',
-        defaultValue: '',
+        value: '',
+        required: true,
         isLongPrompt: true,
       });
 

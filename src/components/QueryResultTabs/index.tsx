@@ -56,7 +56,7 @@ export default function QueryResultTabs() {
     try {
       const newName = await prompt({
         message: 'New Query Name',
-        defaultValue: query.name,
+        value: query.name,
         saveLabel: 'Save',
       });
       onChangeQuery(query.id, 'name', newName);
