@@ -56,6 +56,8 @@ export default function NewConnectionButton() {
         return alert(`Import failed. JSON Config includes duplicate IDs.`);
       }
 
+      let failedCount = 0,
+        successCount = 0;
       for (const jsonRow of jsonRows) {
         try {
           const { _type, ...rawImportMetaData } = jsonRow;
@@ -67,10 +69,14 @@ export default function NewConnectionButton() {
               await onImportQuery(jsonRow);
               break;
           }
+          successCount++;
         } catch (err) {
           console.log('>> Import Failed', jsonRow, err);
+          failedCount++;
         }
       }
+
+      alert(`Import finished with ${successCount} successes and ${failedCount} failures`);
     } catch (err) {
       //@ts-ignore
     }

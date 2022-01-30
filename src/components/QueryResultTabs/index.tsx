@@ -108,13 +108,13 @@ export default function QueryResultTabs() {
 
   // add a dummy query to start
   useEffect(() => {
-    if (!init) {
+    if (!init && !isLoading) {
       if (queries?.length === 0) {
         onAddQuery();
       }
       setInit(true);
     }
-  }, [queries, init]);
+  }, [isLoading, queries, init]);
 
   if (isLoading) {
     return (
