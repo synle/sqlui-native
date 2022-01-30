@@ -37,7 +37,7 @@ export default function App() {
           // if there is no session, let's create the session
           const newSession = await upsertSession({
             id: getDefaultSessionId(),
-            name: `Session ${new Date().toLocaleString()}`,
+            name: `Default Session`,
           });
 
           // then set it as current session

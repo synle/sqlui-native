@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Link from '@mui/material/Link';
 import Alert from '@mui/material/Alert';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -14,13 +15,20 @@ import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import CloseIcon from '@mui/icons-material/Close';
 import EditIcon from '@mui/icons-material/Edit';
 import DropdownButton from 'src/components/DropdownButton';
-import { useExecute, useConnectionQueries, useConnectionQuery, getExportedQuery } from 'src/hooks';
+import {
+  useExecute,
+  useConnectionQueries,
+  useConnectionQuery,
+  getExportedQuery,
+  useActiveConnectionQuery,
+} from 'src/hooks';
 import { SqluiFrontend } from 'typings';
 import { useActionDialogs } from 'src/components/ActionDialogs';
 import { useCommands } from 'src/components/MissionControl';
 import { downloadText } from 'src/data/file';
 
 export default function QueryResultTabs() {
+  const navigate = useNavigate();
   const [init, setInit] = useState(false);
   const {
     queries,
@@ -31,6 +39,7 @@ export default function QueryResultTabs() {
     onDuplicateQuery,
     isLoading,
   } = useConnectionQueries();
+  const { query: activeQuery } = useActiveConnectionQuery();
   const { command, dismissCommand } = useCommands();
   const { confirm, prompt } = useActionDialogs();
 
@@ -55,6 +64,7 @@ export default function QueryResultTabs() {
   const onRenameQuery = async (query: SqluiFrontend.ConnectionQuery) => {
     try {
       const newName = await prompt({
+        title: 'Rename Query',
         message: 'New Query Name',
         value: query.name,
         saveLabel: 'Save',
@@ -86,6 +96,12 @@ export default function QueryResultTabs() {
         case 'clientEvent.newQuery':
           onAddQuery();
           break;
+        case 'clientEvent.closeQuery':
+          // this closes the active query
+          if (activeQuery) {
+            onCloseQuery(activeQuery);
+          }
+          break;
       }
     }
   }, [command]);
@@ -95,8 +111,8 @@ export default function QueryResultTabs() {
     if (!init) {
       if (queries?.length === 0) {
         onAddQuery();
-        setInit(true);
       }
+      setInit(true);
     }
   }, [queries, init]);
 

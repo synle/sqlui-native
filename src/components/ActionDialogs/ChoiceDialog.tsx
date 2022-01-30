@@ -15,7 +15,7 @@ import DialogContent from '@mui/material/DialogContent';
 
 export type ChoiceActionDialogOption = {
   startIcon?: React.ReactNode;
-  label: string;
+  label: string | React.ReactNode;
   value: string;
 };
 
