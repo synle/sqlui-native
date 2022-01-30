@@ -124,7 +124,7 @@ export function useDuplicateConnection() {
         name: `Conn ${new Date().toLocaleString()}`,
         connection: connection.connection,
       };
-      upsertConnection(duplicatedConnection);
+      return upsertConnection(duplicatedConnection);
     },
     isLoading,
   };
@@ -141,7 +141,7 @@ export function useImportConnection() {
         name: connection.name,
         connection: connection.connection,
       };
-      upsertConnection(duplicatedConnection);
+      return upsertConnection(duplicatedConnection);
     },
     isLoading,
   };
@@ -496,7 +496,7 @@ export function useConnectionQueries() {
       return;
     }
 
-    onAddQuery(query);
+    return onAddQuery(query);
   };
 
   return {
