@@ -290,20 +290,54 @@ export function useShowHide() {
   };
 }
 
-let _connectionQueries = Config.get<SqluiFrontend.ConnectionQuery[]>(
-  'cache.connectionQueries',
-  [],
-).map((query) => {
-  delete query.lastExecuted; // this is to stop the query from automatically triggered
-  return query;
-});
+let _connectionQueries: SqluiFrontend.ConnectionQuery[];
 
 function _useConnectionQueries() {
-  return useQuery(QUERY_KEY_QUERIES, () => _connectionQueries, {
-    onSuccess: (data) => {
-      Config.set('cache.connectionQueries', data);
+  return useQuery(
+    QUERY_KEY_QUERIES,
+    async () => {
+      if (!_connectionQueries) {
+        // this is the first time
+        try {
+          _connectionQueries = await dataApi.getQueries();
+        } catch (err) {
+          //@ts-ignore
+        }
+
+        if (_connectionQueries.length === 0) {
+          // try pulling it in from sessionStorage
+          _connectionQueries = Config.get<SqluiFrontend.ConnectionQuery[]>(
+            'cache.connectionQueries',
+            [],
+          );
+        }
+
+        // at the end we want to remove lastExecuted so the query won't be run again
+        let toBeSelectedQuery = 0;
+        _connectionQueries = _connectionQueries.map((query, idx) => {
+          delete query.lastExecuted; // this is to stop the query from automatically triggered
+
+          if (query.selected) {
+            query.selected = false;
+            toBeSelectedQuery = idx;
+          }
+
+          return query;
+        });
+
+        if (_connectionQueries[toBeSelectedQuery]) {
+          _connectionQueries[toBeSelectedQuery].selected = true;
+        }
+      }
+
+      return _connectionQueries;
     },
-  });
+    {
+      onSuccess: (data) => {
+        Config.set('cache.connectionQueries', data);
+      },
+    },
+  );
 }
 
 export function useConnectionQueries() {
@@ -312,14 +346,13 @@ export function useConnectionQueries() {
   const { data: queries, isLoading, isFetching } = _useConnectionQueries();
 
   function _invalidateQueries() {
-    // queryClient.invalidateQueries(QUERY_KEY_QUERIES);
     queryClient.setQueryData<SqluiFrontend.ConnectionQuery[] | undefined>(
       QUERY_KEY_QUERIES,
       () => _connectionQueries,
     );
   }
 
-  const onAddQuery = (query?: SqluiFrontend.ConnectionQuery) => {
+  const onAddQuery = async (query?: SqluiFrontend.ConnectionQuery) => {
     const newId = `query.${Date.now()}.${Math.floor(Math.random() * 10000000000000000)}`;
 
     let newQuery: SqluiFrontend.ConnectionQuery;
@@ -346,6 +379,14 @@ export function useConnectionQueries() {
       }),
       newQuery,
     ];
+
+    // make an api call to persists
+    // this is fire and forget
+    try {
+      dataApi.upsertQuery(newQuery);
+    } catch (err) {
+      //@ts-ignore
+    }
 
     _invalidateQueries();
   };
@@ -380,6 +421,13 @@ export function useConnectionQueries() {
       _connectionQueries[toBeSelected].selected = true;
     }
 
+    // make an api call to persists
+    // this is fire and forget
+    for (const queryId of queryIds) {
+      // make api to delete the query
+      dataApi.deleteQuery(queryId);
+    }
+
     _invalidateQueries();
   };
 
@@ -393,7 +441,7 @@ export function useConnectionQueries() {
     _invalidateQueries();
   };
 
-  const onChangeQuery = (
+  const onChangeQuery = async (
     queryId: string | undefined,
     key: keyof SqluiFrontend.ConnectionQuery,
     value?: string,
@@ -415,7 +463,16 @@ export function useConnectionQueries() {
 
       return query;
     });
+
     _invalidateQueries();
+
+    // make an api call to persists
+    // this is fire and forget
+    try {
+      dataApi.upsertQuery(query);
+    } catch (err) {
+      //@ts-ignore
+    }
   };
 
   const onExecuteQuery = (queryId?: string) => {
