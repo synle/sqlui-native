@@ -10,11 +10,12 @@ import MenuList from '@mui/material/MenuList';
 import ListItemText from '@mui/material/ListItemText';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import CircularProgress from '@mui/material/CircularProgress';
+import Divider from '@mui/material/Divider';
 
 interface DropdownButtonOption {
   label: string;
   startIcon?: React.ReactNode;
-  onClick: () => void;
+  onClick?: () => void;
 }
 
 interface DropdownButtonProps {
@@ -36,8 +37,11 @@ export default function DropdownButton(props: DropdownButtonProps) {
     e.preventDefault();
     e.stopPropagation();
 
-    options[index].onClick();
-    setOpen(false);
+    if (options[index].onClick) {
+      // @ts-ignore
+      options[index].onClick();
+      setOpen(false);
+    }
   };
 
   const onToggle = (e: React.SyntheticEvent) => {
@@ -73,12 +77,21 @@ export default function DropdownButton(props: DropdownButtonProps) {
   } else {
     popperBody = (
       <MenuList id={id}>
-        {options.map((option, index) => (
-          <MenuItem key={option.label} onClick={(event) => handleMenuItemClick(event, index)}>
-            {!option.startIcon ? null : <ListItemIcon>{option.startIcon}</ListItemIcon>}
-            <ListItemText>{option.label}</ListItemText>
-          </MenuItem>
-        ))}
+        {options.map((option, index) => {
+          let content;
+          if (option.label === 'divider') {
+            return (content = <Divider />);
+          } else {
+            content = (
+              <MenuItem onClick={(event) => handleMenuItemClick(event, index)}>
+                {!option.startIcon ? null : <ListItemIcon>{option.startIcon}</ListItemIcon>}
+                <ListItemText>{option.label}</ListItemText>
+              </MenuItem>
+            );
+          }
+
+          return <React.Fragment key={option.label}>{content}</React.Fragment>;
+        })}
       </MenuList>
     );
   }
