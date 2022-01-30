@@ -118,7 +118,7 @@ function setupMenu() {
         { role: 'toggleDevTools' },
         { type: 'separator' },
         { role: 'resetZoom' },
-        { role: 'zoomIn', accelerator: isMac ? 'Cmd++' : 'Ctrl++' },
+        { role: 'zoomIn' },
         { role: 'zoomOut' },
         { type: 'separator' },
         { role: 'togglefullscreen' },
