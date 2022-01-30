@@ -61,7 +61,7 @@ export module SqluiFrontend {
   // connection queries
   export type ConnectionQuery = SqluiCore.CoreConnectionQuery & {
     lastExecuted?: string;
-    selected: boolean;
+    selected?: boolean;
   };
 
   export interface AvailableConnectionProps {

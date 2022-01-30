@@ -21,9 +21,9 @@ export default function CodeEditorBox(props: CodeEditorProps) {
     <>
       <textarea
         className='CodeEditorBox'
-        value={props?.value}
+        defaultValue={props?.value}
         placeholder={props.placeholder}
-        onChange={(e) => props.onChange && props.onChange(e.target.value)}
+        onBlur={(e) => props.onChange && props.onChange(e.target.value)}
         data-language={props.language}
         autoFocus={props.autoFocus}
         required={props.required}
