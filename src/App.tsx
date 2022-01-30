@@ -8,6 +8,7 @@ import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import Alert from '@mui/material/Alert';
 import CircularProgress from '@mui/material/CircularProgress';
+import { ThemeProvider, useTheme, createTheme } from '@mui/material/styles';
 import './App.scss';
 import { HashRouter, Routes, Route, Link } from 'react-router-dom';
 import EditConnectionPage from 'src/views/EditConnectionPage';
@@ -29,6 +30,13 @@ export default function App() {
   const { data: sessions, isLoading: loadingSessions } = useGetSessions();
   const { data: currentSession, isLoading: loadingCurrentSession } = useGetCurrentSession();
   const { mutateAsync: upsertSession } = useUpsertSession();
+
+  const myTheme = createTheme({
+    // Theme settings
+    palette: {
+      mode: 'dark', //'dark' : 'light',
+    },
+  });
 
   useEffect(() => {
     async function _validateSession() {
@@ -77,7 +85,7 @@ export default function App() {
   }
 
   return (
-    <>
+    <ThemeProvider theme={myTheme}>
       <HashRouter>
         <div className='App'>
           <AppHeader />
@@ -93,6 +101,6 @@ export default function App() {
       </HashRouter>
       <ActionDialogs />
       <ElectronEventListener />
-    </>
+    </ThemeProvider>
   );
 }

@@ -14,6 +14,8 @@ import Avatar from '@mui/material/Avatar';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import AppsIcon from '@mui/icons-material/Apps';
+import EditIcon from '@mui/icons-material/Edit';
+import PhotoSizeSelectSmallIcon from '@mui/icons-material/PhotoSizeSelectSmall';
 import EditConnectionPage from 'src/views/EditConnectionPage';
 import NewConnectionPage from 'src/views/NewConnectionPage';
 import MainPage from 'src/views/MainPage';
@@ -174,16 +176,25 @@ export default function AppHeader() {
 
   const options = [
     {
+      label: currentSession?.name || '',
+    },
+    {
+      label: 'divider',
+    },
+    {
       label: 'New Session',
       onClick: onAddSession,
+      startIcon: <AddIcon />,
     },
     {
       label: 'Change Session',
       onClick: onChangeSession,
+      startIcon: <PhotoSizeSelectSmallIcon />,
     },
     {
       label: 'Rename Session',
       onClick: onRenameSession,
+      startIcon: <EditIcon />,
     },
   ];
 
