@@ -137,7 +137,8 @@ export function useImportConnection() {
     mutateAsync: (connection: SqluiCore.CoreConnectionProps) => {
       // delete the id - so we can duplicate
       const duplicatedConnection = {
-        name: `Imported Conn ${new Date().toLocaleString()}`,
+        id: connection.id,
+        name: connection.name,
         connection: connection.connection,
       };
       upsertConnection(duplicatedConnection);
