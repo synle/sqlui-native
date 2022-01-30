@@ -54,7 +54,7 @@ export default function CodeEditorBox(props: CodeEditorProps) {
         }}
       />
       <div style={{ textAlign: 'right' }}>
-        <ToggleButton value='check' selected={wordWrap} onChange={() => setWordWrap(!wordWrap)}>
+        <ToggleButton value='check' selected={wordWrap} onChange={() => setWordWrap(!wordWrap)} size='small'>
           {wordWrap ? <CheckBoxIcon /> : <CheckBoxOutlineBlankIcon />}
           <span style={{ marginLeft: '5px' }}>Word Wrap</span>
         </ToggleButton>
