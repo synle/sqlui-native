@@ -2,7 +2,7 @@
 import { RelationalDatabaseEngine, getEngine } from './commons/RelationalDatabaseEngine';
 import { SqluiCore, SqluiEnums } from './typings';
 import { matchPath } from 'react-router-dom';
-import { app, BrowserWindow, ipcMain, Menu } from 'electron';
+import { app, BrowserWindow, ipcMain, Menu, nativeTheme } from 'electron';
 import { setUpDataEndpoints, getEndpointHandlers } from './commons/Endpoints';
 const { shell } = require('electron');
 
@@ -171,11 +171,25 @@ app.on('window-all-closed', function () {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
-
 // events
+
+ipcMain.handle('dark-mode:toggle', () => {
+  if (nativeTheme.shouldUseDarkColors) {
+    nativeTheme.themeSource = 'light'
+  } else {
+    nativeTheme.themeSource = 'dark'
+  }
+  return nativeTheme.shouldUseDarkColors
+})
+
+ipcMain.handle('dark-mode:system', () => {
+  nativeTheme.themeSource = 'system'
+})
+
+
+
 // this is the event listener that will respond when we will request it in the web page
 const _cache = {};
-
 ipcMain.on('sqluiNativeEvent/fetch', async (event, data) => {
   const { requestId, url, options } = data;
   const responseId = `server response ${Date.now()}`;

@@ -4,6 +4,7 @@ import SelectAllIcon from '@mui/icons-material/SelectAll';
 import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
+import Box from '@mui/material/Box';
 import Alert from '@mui/material/Alert';
 import CircularProgress from '@mui/material/CircularProgress';
 import TableDescription from 'src/components/TableDescription';

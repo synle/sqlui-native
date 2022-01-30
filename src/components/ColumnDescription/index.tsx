@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import Typography from '@mui/material/Typography';
 import ViewColumnIcon from '@mui/icons-material/ViewColumn';
+import Box from '@mui/material/Box';
 import Alert from '@mui/material/Alert';
 import CircularProgress from '@mui/material/CircularProgress';
 import Button from '@mui/material/Button';
+import { grey } from '@mui/material/colors';
 import { AccordionHeader, AccordionBody } from 'src/components/Accordion';
 import { useGetColumns, useShowHide } from 'src/hooks';
 import { SqluiCore } from 'typings';
@@ -61,7 +63,7 @@ export default function ColumnDescription(props: ColumnDescriptionProps) {
               <AccordionHeader expanded={visibles[key]} onToggle={() => onToggle(key)}>
                 <ViewColumnIcon color='disabled' fontSize='inherit' />
                 <span>{column.name}</span>
-                <i className='ColumnDescription__Type'>{column.name}</i>
+                <i className='ColumnDescription__Type' style={{color: grey[700]}}>{column.name}</i>
               </AccordionHeader>
               <AccordionBody expanded={visibles[key]}>
                 <ColumnAttributes column={column} />
@@ -101,7 +103,7 @@ function ColumnAttributes(props: ColumnAttributesProps) {
     .filter((attribute) => !!attribute.value);
 
   return (
-    <div className='AttributeDescription'>
+    <div className='AttributeDescription' style={{color: grey[700]}}>
       {attributes.map((attr) => (
         <div key={attr.name}>
           <div>

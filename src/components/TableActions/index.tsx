@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { format } from 'sql-formatter';
 import Typography from '@mui/material/Typography';
 import ViewColumnIcon from '@mui/icons-material/ViewColumn';
+import Box from '@mui/material/Box';
 import Alert from '@mui/material/Alert';
 import CircularProgress from '@mui/material/CircularProgress';
 import { AccordionHeader, AccordionBody } from 'src/components/Accordion';

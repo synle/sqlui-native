@@ -4,6 +4,7 @@ import ToggleButton from '@mui/material/ToggleButton';
 import Button from '@mui/material/Button';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
+import { grey } from '@mui/material/colors';
 
 interface CodeEditorProps {
   value?: string;
@@ -41,13 +42,13 @@ export default function CodeEditorBox(props: CodeEditorProps) {
         autoFocus={props.autoFocus}
         required={props.required}
         style={{
-          backgroundColor: '#f5f5f5',
+          backgroundColor: grey[800],
           border: 'none',
           fontFamily: 'monospace',
           fontWeight: '700',
           width: '100%',
           minHeight: '200px',
-          color: '#888',
+          color: grey[50],
           padding: '10px',
           resize: 'vertical',
           whiteSpace: wordWrap ? 'nowrap' : 'initial',
