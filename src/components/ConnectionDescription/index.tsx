@@ -12,10 +12,12 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import SelectAllIcon from '@mui/icons-material/SelectAll';
+import Box from '@mui/material/Box';
 import Alert from '@mui/material/Alert';
 import CircularProgress from '@mui/material/CircularProgress';
 import { Button } from '@mui/material';
 import Tooltip from '@mui/material/Tooltip';
+import List from '@mui/material/List';
 import DatabaseDescription from 'src/components/DatabaseDescription';
 import { AccordionHeader, AccordionBody } from 'src/components/Accordion';
 import ColumnDescription from 'src/components/ColumnDescription';
@@ -59,18 +61,20 @@ export default function ConnectionDescription() {
 
         return (
           <React.Fragment key={key}>
-            <AccordionHeader expanded={visibles[key]} onToggle={() => onToggle(key)}>
-              <ConnectionDialectIcon connection={connection} />
-              <span>{connection.name}</span>
-              <ConnectionActions connection={connection} />
-            </AccordionHeader>
-            <AccordionBody expanded={visibles[key]}>
-              {isOnline ? (
-                <DatabaseDescription connectionId={connection.id} />
-              ) : (
-                <ConnectionRetryAlert connectionId={connection.id} />
-              )}
-            </AccordionBody>
+            <List>
+              <AccordionHeader expanded={visibles[key]} onToggle={() => onToggle(key)}>
+                <ConnectionDialectIcon connection={connection} />
+                <span>{connection.name}</span>
+                <ConnectionActions connection={connection} />
+              </AccordionHeader>
+              <AccordionBody expanded={visibles[key]}>
+                {isOnline ? (
+                  <DatabaseDescription connectionId={connection.id} />
+                ) : (
+                  <ConnectionRetryAlert connectionId={connection.id} />
+                )}
+              </AccordionBody>
+            </List>
           </React.Fragment>
         );
       })}

@@ -1,6 +1,8 @@
 @import 'base';
 
 .App {
+  min-height: 100vh;
+
   &__Section {
     margin-top: 10px;
   }
@@ -47,14 +49,12 @@
   &__Type {
     font-family: monospace;
     padding-right: 10px;
-    color: #999;
   }
 }
 
 .AttributeDescription {
   margin-left: 1.1rem;
   font-family: monospace;
-  color: #666;
 }
 
 .QueryBox {
@@ -88,9 +88,9 @@
   align-items: center;
   min-height: 37px;
 
-  &:hover {
-    background: #efefef;
-  }
+  // &:hover {
+  //   background: #efefef;
+  // }
 
   * {
     margin-right: 5px;

@@ -1,5 +1,9 @@
 import React from 'react';
 import Typography from '@mui/material/Typography';
+import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText'
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
@@ -15,10 +19,10 @@ type AccordionHeaderProps = AccordionBodyProps & {
 export function AccordionHeader(props: AccordionHeaderProps) {
   const { children, expanded, onToggle } = props;
   return (
-    <div className='Accordion' onClick={() => onToggle()}>
+    <ListItem disablePadding  onClick={() => onToggle()} className='Accordion'>
       {!expanded ? <ExpandLessIcon fontSize='inherit' /> : <ExpandMoreIcon fontSize='inherit' />}
       {children}
-    </div>
+    </ListItem>
   );
 }
 

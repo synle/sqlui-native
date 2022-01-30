@@ -2,13 +2,14 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
 import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
+import Box from '@mui/material/Box';
 import Alert from '@mui/material/Alert';
 import CircularProgress from '@mui/material/CircularProgress';
 import { ThemeProvider, useTheme, createTheme } from '@mui/material/styles';
+import useMediaQuery from '@mui/material/useMediaQuery';
 import './App.scss';
 import { HashRouter, Routes, Route, Link } from 'react-router-dom';
 import EditConnectionPage from 'src/views/EditConnectionPage';
@@ -30,11 +31,12 @@ export default function App() {
   const { data: sessions, isLoading: loadingSessions } = useGetSessions();
   const { data: currentSession, isLoading: loadingCurrentSession } = useGetCurrentSession();
   const { mutateAsync: upsertSession } = useUpsertSession();
+  const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
 
   const myTheme = createTheme({
     // Theme settings
     palette: {
-      mode: 'dark', //'dark' : 'light',
+      mode: prefersDarkMode ? 'dark' : 'light',
     },
   });
 
@@ -87,7 +89,12 @@ export default function App() {
   return (
     <ThemeProvider theme={myTheme}>
       <HashRouter>
-        <div className='App'>
+        <Box
+          className='App'
+          sx={{
+            bgcolor: 'background.default',
+            color: 'text.primary',
+          }}>
           <AppHeader />
           <section className='App__Section'>
             <Routes>
@@ -97,7 +104,7 @@ export default function App() {
               <Route path='/*' element={<MainPage />} />
             </Routes>
           </section>
-        </div>
+        </Box>
       </HashRouter>
       <ActionDialogs />
       <ElectronEventListener />
