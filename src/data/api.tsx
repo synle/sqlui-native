@@ -1,5 +1,5 @@
 import { SqluiCore, SqluiFrontend } from 'typings';
-import { getCurrentsessionId } from 'src/data/session';
+import { getCurrentSessionId } from 'src/data/session';
 
 // @ts-ignore
 async function _fetch<T>(...inputs) {
@@ -9,7 +9,7 @@ async function _fetch<T>(...inputs) {
   headers = {
     ...headers,
     ...{
-      'sqlui-native-session-id': await getCurrentsessionId(),
+      'sqlui-native-session-id': await getCurrentSessionId(),
       'Content-Type': 'application/json',
       Accept: 'application/json',
     },
@@ -139,12 +139,12 @@ export class ProxyApi {
     return _fetch<SqluiCore.Session[]>(`/api/sessions`);
   }
 
-  static upsertSession(newSession: SqluiCore.Session) {
+  static upsertSession(newSession: SqluiCore.CoreSession) {
     const { id } = newSession;
     if (id) {
       return _fetch<SqluiCore.Session>(`/api/session/${newSession.id}`, {
         method: 'put',
-        body: JSON.stringify({ newSession }),
+        body: JSON.stringify(newSession),
       });
     } else {
       return _fetch<SqluiCore.Session>(`/api/session`, {

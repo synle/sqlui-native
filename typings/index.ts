@@ -54,11 +54,15 @@ export module SqluiCore {
   };
 
   // session
-  export type Session = {
-    id: string;
+  export type CoreSession = {
+    id?: string;
     name: string;
     created?: number;
     lastUpdated?: number;
+  };
+
+  export type Session = CoreSession & {
+    id: string;
   };
 }
 

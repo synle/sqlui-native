@@ -300,6 +300,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
         await new PersistentStorage<SqluiCore.Session>(
           req.headers['sqlui-native-session-id'],
           'session',
+          'sessions',
         ).list(),
       );
   });
@@ -310,8 +311,23 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
       await new PersistentStorage<SqluiCore.Session>(
         req.headers['sqlui-native-session-id'],
         'session',
+        'sessions',
       ).add({
         connection: req.body?.name,
+      }),
+    );
+  });
+
+  addDataEndpoint('put', '/api/session/:session', async (req, res, apiCache) => {
+    apiCache.set('cacheMetaData', null);
+    res.status(202).json(
+      await new PersistentStorage<SqluiCore.Session>(
+        req.headers['sqlui-native-session-id'],
+        'session',
+        'sessions',
+      ).update({
+        id: req.params?.session,
+        name: req.body?.name,
       }),
     );
   });
@@ -324,6 +340,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
         await new PersistentStorage<SqluiCore.Session>(
           req.headers['sqlui-native-session-id'],
           'session',
+          'sessions',
         ).delete(req.params?.queryId),
       );
   });

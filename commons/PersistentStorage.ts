@@ -25,10 +25,14 @@ export class PersistentStorage<T extends StorageEntry> {
   name: string;
   storageLocation: string;
 
-  constructor(instanceId: string, name: string) {
+  constructor(instanceId: string, name: string, storageLocation?: string) {
     this.instanceId = instanceId;
     this.name = name;
-    this.storageLocation = path.join(baseDir, `${this.instanceId}.${this.name}.json`);
+    if (storageLocation) {
+      this.storageLocation = path.join(baseDir, `${storageLocation}.json`);
+    } else {
+      this.storageLocation = path.join(baseDir, `${this.instanceId}.${this.name}.json`);
+    }
   }
 
   private getData(): StorageContent {
