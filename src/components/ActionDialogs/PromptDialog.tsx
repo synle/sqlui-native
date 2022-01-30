@@ -11,6 +11,14 @@ import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
 import CodeEditorBox from 'src/components/CodeEditorBox';
 
+export type PromptActionDialogInput = {
+  title?: string;
+  message: string;
+  defaultValue?: string;
+  isLongPrompt?: boolean;
+  saveLabel?: string;
+};
+
 interface PromptDialogProps {
   open: boolean;
   title: string;
