@@ -1,13 +1,9 @@
 // Modules to control application life and create native browser window
-import {
-  RelationalDatabaseEngine,
-  getEngine,
-  getConnectionMetaData,
-} from './commons/RelationalDatabaseEngine';
+import { RelationalDatabaseEngine, getEngine } from './commons/RelationalDatabaseEngine';
 import { SqluiCore, SqluiEnums } from './typings';
 import { matchPath } from 'react-router-dom';
 import { app, BrowserWindow, ipcMain, Menu } from 'electron';
-import { setUpDataEndpoints, getEndpointHandlers } from './commons/EndpointUtils';
+import { setUpDataEndpoints, getEndpointHandlers } from './commons/Endpoints';
 
 setUpDataEndpoints();
 
@@ -159,14 +155,14 @@ ipcMain.on('sqluiNativeEvent/fetch', async (event, data) => {
 
   const method = (options.method || 'get').toLowerCase();
 
-  const instanceid = options?.headers?.instanceid;
+  const sessionId = options?.headers['sqlui-native-session-id'];
 
   let body: any = {};
   try {
     body = JSON.parse(options.body);
   } catch (err) {}
 
-  console.log('>> Request', method, url, instanceid, body);
+  console.log('>> Request', method, url, sessionId, body);
   let matchedUrlObject: any;
   const matchCurrentUrlAgainst = (matchAgainstUrl: string) => {
     try {
@@ -177,16 +173,18 @@ ipcMain.on('sqluiNativeEvent/fetch', async (event, data) => {
   };
 
   try {
+    let returnedResponseHeaders: any = []; // array of [key, value]
     const sendResponse = (responseData: any = '', status = 200) => {
       let ok = true;
       if (status >= 300 || status < 200) {
         ok = false;
       }
-      console.log('>> Response', status, method, url, instanceid, body, responseData);
+      console.log('>> Response', status, method, url, sessionId, body, responseData);
       event.reply(requestId, {
         ok,
         status,
         text: JSON.stringify(responseData),
+        headers: returnedResponseHeaders,
       });
     };
 
@@ -202,6 +200,9 @@ ipcMain.on('sqluiNativeEvent/fetch', async (event, data) => {
           },
         };
       },
+      header: (key: string, value: string) => {
+        returnedResponseHeaders.push([key, value]);
+      },
     };
 
     const endpoints = getEndpointHandlers();
@@ -213,7 +214,7 @@ ipcMain.on('sqluiNativeEvent/fetch', async (event, data) => {
           get(key: string) {
             try {
               //@ts-ignore
-              return _cache[instanceid][key];
+              return _cache[sessionId][key];
             } catch (err) {
               return undefined;
             }
@@ -221,10 +222,10 @@ ipcMain.on('sqluiNativeEvent/fetch', async (event, data) => {
           set(key: string, value: any) {
             try {
               //@ts-ignore
-              _cache[instanceid] = _cache[instanceid] || {};
+              _cache[sessionId] = _cache[sessionId] || {};
 
               //@ts-ignore
-              _cache[instanceid][key] = value;
+              _cache[sessionId][key] = value;
             } catch (err) {
               //@ts-ignore
             }
@@ -238,7 +239,7 @@ ipcMain.on('sqluiNativeEvent/fetch', async (event, data) => {
           params: matchedUrlObject?.params,
           body: body,
           headers: {
-            instanceid: instanceid,
+            sessionId: sessionId,
           },
         };
 

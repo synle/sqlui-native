@@ -24,7 +24,7 @@ try {
           Math.random() * 10000000000000000,
         )}`;
         ipcRenderer.once(requestId, (event, data) => {
-          const { ok, text, status } = data;
+          const { ok, text, status, headers } = data;
 
           let returnedData = text;
 
@@ -40,16 +40,19 @@ try {
             url,
             options.headers.instanceid,
             returnedData,
+            headers,
           );
 
           data.ok
             ? resolve({
                 ok,
                 text: () => text,
+                headers,
               })
             : reject({
                 ok,
                 text: () => text,
+                headers,
               });
         });
         ipcRenderer.send('sqluiNativeEvent/fetch', { requestId, url, options });
