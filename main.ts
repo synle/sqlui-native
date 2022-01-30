@@ -45,6 +45,7 @@ function setupMenu() {
       submenu: [
         {
           label: 'New Window',
+          accelerator: isMac ? 'Alt+Cmd+N' : 'Ctrl+Shift+N',
           click: async () => {
             createWindow();
           },
@@ -54,11 +55,13 @@ function setupMenu() {
         },
         {
           label: 'New Connection',
+          accelerator: isMac ? 'Cmd+N' : 'Ctrl+N',
           click: async (item, win) =>
             sendMessage(win as BrowserWindow, 'clientEvent.newConnection'),
         },
         {
           label: 'New Query',
+          accelerator: isMac ? 'Cmd+T' : 'Ctrl+T',
           click: async (item, win) => sendMessage(win as BrowserWindow, 'clientEvent.newQuery'),
         },
         {
@@ -66,16 +69,18 @@ function setupMenu() {
         },
         {
           label: 'Import',
+          accelerator: isMac ? 'Cmd+O' : 'Ctrl+O',
           click: async (item, win) => sendMessage(win as BrowserWindow, 'clientEvent.import'),
         },
         {
           label: 'Export',
+          accelerator: isMac ? 'Cmd+S' : 'Ctrl+S',
           click: async (item, win) => sendMessage(win as BrowserWindow, 'clientEvent.exportAll'),
         },
         {
           type: 'separator',
         },
-        isMac ? { role: 'close' } : { role: 'quit' },
+        isMac ? { role: 'close', accelerator: 'Cmd+Q' } : { role: 'quit', accelerator: 'Alt+F4' },
       ],
     },
     {
