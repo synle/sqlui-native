@@ -90,3 +90,26 @@ docker run --name sqlui_mssql -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=password123!" -
 # postgres (https://hub.docker.com/_/postgres)
 docker run --name sql_postgres -p 5432:5432 -e POSTGRES_PASSWORD=password -d postgres
 ```
+
+
+
+## Sample runbooks
+```
+mysql://root:password@localhost:3306
+
+ALTER TABLE artists ADD COLUMN email varchar(200);
+
+INSERT INTO
+  artists (Name, Email)
+VALUES
+  ('Sy Le', 'syle@test_email.com')
+
+
+SELECT
+  *
+FROM
+  artists
+WHERE email LIKE 'syle@test_email.com'
+LIMIT
+  10
+```
