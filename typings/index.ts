@@ -104,7 +104,7 @@ export module SqluiEnums {
    * client config key used for storage on the client side
    * @type {String}
    */
-  export type ClientConfigKey = 'cache.metadata' | 'cache.connectionQueries' | 'api.instanceId';
+  export type ClientConfigKey = 'cache.metadata' | 'cache.connectionQueries' | 'api.sessionId';
 
   /**
    * client side specific events, can be used by electron

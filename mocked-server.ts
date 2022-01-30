@@ -1,11 +1,7 @@
 import express from 'express';
 import bodyParser from 'body-parser';
-import {
-  RelationalDatabaseEngine,
-  getEngine,
-  getConnectionMetaData,
-} from './commons/RelationalDatabaseEngine';
-import { setUpDataEndpoints } from './commons/EndpointUtils';
+import { RelationalDatabaseEngine, getEngine } from './commons/RelationalDatabaseEngine';
+import { setUpDataEndpoints } from './commons/Endpoints';
 import { SqluiCore } from './typings';
 
 const port = 3001;

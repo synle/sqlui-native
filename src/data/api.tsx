@@ -1,30 +1,18 @@
 import { SqluiCore, SqluiFrontend } from 'typings';
-import { SessionStorageConfig } from 'src/data/config';
-
-let instanceId: string = 'mocked-server';
-try {
-  // @ts-ignore
-  if (window.isElectron) {
-    instanceId = SessionStorageConfig.get<string>('api.instanceId', '');
-    if (!instanceId) {
-      instanceId = `instanceId.${Date.now()}.${Math.random() * 1000}`;
-    }
-  }
-
-  // persist this instance id
-  SessionStorageConfig.set('api.instanceId', instanceId);
-} catch (err) {
-  //@ts-ignore
-}
+import { getCurrentsessionId } from 'src/data/session';
 
 // @ts-ignore
-function _fetch<T>(...inputs) {
+async function _fetch<T>(...inputs) {
   let { headers, ...restInput } = inputs[1] || {};
 
   headers = headers || {};
   headers = {
     ...headers,
-    ...{ instanceid: instanceId, 'Content-Type': 'application/json', Accept: 'application/json' },
+    ...{
+      'sqlui-native-session-id': await getCurrentsessionId(),
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    },
   };
 
   restInput = restInput || {};
