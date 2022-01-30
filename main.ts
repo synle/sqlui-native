@@ -98,7 +98,6 @@ function setupMenu() {
     {
       label: 'View',
       submenu: [
-        { role: 'reload' },
         { role: 'forceReload' },
         { role: 'toggleDevTools' },
         { type: 'separator' },
@@ -112,10 +111,6 @@ function setupMenu() {
     {
       label: 'Help',
       submenu: [
-        { role: 'forceReload' },
-        {
-          type: 'separator',
-        },
         {
           label: 'About',
           click: async () => {
