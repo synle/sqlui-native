@@ -43,6 +43,15 @@ export module SqluiCore {
   export type MetaData = Record<string, string | number | boolean>;
 
   export type Result = [RawData, MetaData];
+
+  // connection queries
+  export type CoreConnectionQuery = {
+    id: string;
+    name: string;
+    connectionId?: string;
+    databaseId?: string;
+    sql?: string;
+  };
 }
 
 /**
@@ -50,15 +59,10 @@ export module SqluiCore {
  */
 export module SqluiFrontend {
   // connection queries
-  export interface ConnectionQuery {
-    id: string;
-    name: string;
-    connectionId?: string;
-    databaseId?: string;
-    sql?: string;
+  export type ConnectionQuery = SqluiCore.CoreConnectionQuery & {
     lastExecuted?: string;
     selected: boolean;
-  }
+  };
 
   export interface AvailableConnectionProps {
     connectionId: string;

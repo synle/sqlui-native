@@ -52,10 +52,6 @@ function _fetch<T>(...inputs) {
 }
 
 export class ProxyApi {
-  static getMetaData() {
-    return _fetch<SqluiCore.ConnectionMetaData[]>(`/api/metadata`);
-  }
-
   static getConnections() {
     return _fetch<SqluiCore.ConnectionProps[]>(`/api/connections`);
   }
@@ -87,9 +83,9 @@ export class ProxyApi {
   }
 
   static upsertConnection(newConnection: SqluiCore.CoreConnectionProps) {
-    const connectionId = newConnection.id;
-    if (connectionId) {
-      return _fetch<SqluiCore.ConnectionProps>(`/api/connection/${connectionId}`, {
+    const { id } = newConnection;
+    if (id) {
+      return _fetch<SqluiCore.ConnectionProps>(`/api/connection/${id}`, {
         method: 'put',
         body: JSON.stringify(newConnection),
       });
@@ -122,6 +118,36 @@ export class ProxyApi {
       method: 'post',
       body: JSON.stringify(connection),
     });
+  }
+
+  // queries endpoints
+  static getQueries() {
+    return _fetch<SqluiCore.CoreConnectionQuery[]>(`/api/queries`);
+  }
+
+  static getQuery(queryId: string) {
+    return _fetch<SqluiCore.CoreConnectionQuery>(`/api/query/${queryId}`);
+  }
+
+  static upsertQuery(newQuery: SqluiCore.CoreConnectionQuery) {
+    const { id } = newQuery;
+    if (id) {
+      return _fetch<SqluiCore.CoreConnectionQuery>(`/api/query/${newQuery.id}`, {
+        method: 'put',
+        body: JSON.stringify(newQuery),
+      });
+    } else {
+      return _fetch<SqluiCore.CoreConnectionQuery>(`/api/query`, {
+        method: 'post',
+        body: JSON.stringify(newQuery),
+      });
+    }
+  }
+
+  static deleteQuery(queryId: string) {
+    return _fetch<string>(`/api/query/${queryId}`, {
+      method: 'delete',
+    }).then(() => queryId);
   }
 }
 
