@@ -37,16 +37,23 @@ export default function NewConnectionButton() {
       });
 
       let jsonRows: any[];
-      try{
+      try {
         jsonRows = JSON.parse(rawJson || '');
-      } catch(err){
+      } catch (err) {
         return alert(`Import failed. Invalid JSON config`);
       }
 
       // here we will attempt to import all the connections first before queries
-      jsonRows = jsonRows.sort((a,b) => {
+      jsonRows = jsonRows.sort((a, b) => {
         return a._type.localeCompare(b._type); //note that query will go after connection (q > c)
-      })
+      });
+
+      /// check for duplicate id
+      const hasDuplicateIds =
+        new Set([...jsonRows.map((jsonRow) => jsonRow.id)]).size !== jsonRows.length;
+      if (hasDuplicateIds) {
+        return alert(`Import failed. JSON Config includes duplicate IDs.`);
+      }
 
       for (const jsonRow of jsonRows) {
         try {

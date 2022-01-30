@@ -151,28 +151,6 @@ function ConnectionDatabaseSelector(props: ConnectionDatabaseSelectorProps) {
     </option>
   ));
 
-  useEffect(() => {
-    if (databases?.length === 1) {
-      // if there is only one database, let's select it
-      onDatabaseChange(databases[0].name);
-    } else if (connections) {
-      // make sure our selected connection is present;
-      let matchedConnection = connections?.find((conn) => conn.id === query.connectionId);
-
-      if (!matchedConnection) {
-        // not found, then we need to reset it
-        onConnectionChange('');
-      } else if (databases) {
-        // make sure our selected database is present;
-        let matchedDatabase = databases?.find((database) => database.name === query.databaseId);
-
-        if (!matchedDatabase) {
-          onDatabaseChange('');
-        }
-      }
-    }
-  }, [databases, connections]);
-
   if (isLoading) {
     return null;
   }
