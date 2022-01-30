@@ -14,42 +14,51 @@ import CodeEditorBox from 'src/components/CodeEditorBox';
 export type PromptActionDialogInput = {
   title?: string;
   message: string;
-  defaultValue?: string;
+  value?: string;
   isLongPrompt?: boolean;
   saveLabel?: string;
+  required?: boolean;
 };
 
-interface PromptDialogProps {
+type PromptDialogProps = PromptActionDialogInput & {
   open: boolean;
-  title: string;
-  message: string;
-  value?: string;
-  saveLabel?: string;
   onSaveClick: (newValue: string) => void;
   onDismiss: () => void;
-  isLongPrompt?: boolean;
-}
+};
 
 export default function PromptDialog(props: PromptDialogProps) {
   const [value, setValue] = useState(props.value || '');
-  const handleClose = () => {
+
+  const handleClose = (forceClose = false) => {
+    if (props.required && !forceClose) {
+      // needs to fill out an input
+      // we don't want to allow user to click outside
+      return;
+    }
     props.onDismiss();
   };
 
   const onSave = (e: React.SyntheticEvent) => {
     e.preventDefault();
-
+    if (props.required && !value) {
+      // needs to fill out an input
+      // we don't want to allow user to click outside
+      return;
+    }
     props.onSaveClick(value);
   };
 
   return (
-    <Dialog onClose={handleClose} aria-labelledby='prompt-dialog-title' open={props.open}>
+    <Dialog
+      onClose={() => handleClose(false)}
+      aria-labelledby='prompt-dialog-title'
+      open={props.open}>
       <form onSubmit={onSave} style={{ width: 600 }}>
         <DialogTitle id='prompt-dialog-title'>
-          {props.title}
+          {props.title || 'Prompt'}
           <IconButton
             aria-label='close'
-            onClick={handleClose}
+            onClick={() => handleClose(true)}
             sx={{
               position: 'absolute',
               right: 8,
@@ -66,7 +75,7 @@ export default function PromptDialog(props: PromptDialogProps) {
               onChange={setValue}
               language='json'
               autoFocus={true}
-              required={true}
+              required={props.required}
               mode='textarea'
             />
           ) : (
@@ -74,7 +83,7 @@ export default function PromptDialog(props: PromptDialogProps) {
               label={props.message}
               value={value}
               onChange={(e) => setValue(e.target.value)}
-              required
+              required={props.required}
               size='small'
               fullWidth
               autoFocus

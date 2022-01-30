@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { HashRouter, Routes, Route, Link } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
@@ -27,9 +27,11 @@ import {
   setCurrentSessionId,
   getRandomSessionId,
 } from 'src/data/session';
+import DropdownButton from 'src/components/DropdownButton';
 import { SqluiCore } from 'typings';
 
 export default function AppHeader() {
+  const [open, setOpen] = useState(false);
   const { choice, prompt } = useActionDialogs();
   const navigate = useNavigate();
   const { data: sessions, isLoading: loadingSessions } = useGetSessions();
@@ -75,11 +77,12 @@ export default function AppHeader() {
         // if there is no session, let's create the session
         const newSessionName = await prompt({
           message: 'New Session Name',
-          defaultValue: `Session ${new Date().toLocaleString()}`,
+          value: `Session ${new Date().toLocaleString()}`,
           saveLabel: 'Save',
+          required: true,
         });
 
-        if(!newSessionName){
+        if (!newSessionName) {
           return;
         }
 
@@ -106,11 +109,48 @@ export default function AppHeader() {
     }
   };
 
+  const onRenameSession = async () => {
+    try {
+      if (!currentSession) {
+        return;
+      }
+
+      const newSessionName = await prompt({
+        message: 'Rename Session',
+        value: currentSession.name,
+        saveLabel: 'Save',
+        required: true,
+      });
+
+      if (!newSessionName) {
+        return;
+      }
+
+      await upsertSession({
+        ...currentSession,
+        name: newSessionName,
+      });
+    } catch (err) {
+      //@ts-ignore
+    }
+  };
+
   const isLoading = loadingSessions || loadingCurrentSession;
 
   if (isLoading) {
     return null;
   }
+
+  const options = [
+    {
+      label: 'Change Session',
+      onClick: onChangeSession,
+    },
+    {
+      label: 'Rename Session',
+      onClick: onRenameSession,
+    },
+  ];
 
   return (
     <AppBar position='static'>
@@ -118,21 +158,25 @@ export default function AppHeader() {
         <Typography
           variant='h5'
           onClick={() => navigate('/')}
-          sx={{ cursor: 'pointer', fontWeight: 'bold' }}>
+          sx={{ cursor: 'pointer', fontWeight: 'bold', mr: 3 }}>
           SQLUI NATIVE
         </Typography>
 
-        <Tooltip title='Session Management'>
-          <IconButton
-            size='large'
-            edge='start'
-            color='inherit'
-            aria-label='menu'
-            sx={{ ml: 'auto' }}
-            onClick={onChangeSession}>
-            <MenuIcon />
+        <Typography
+          variant='subtitle1'
+          sx={{  mr: 'auto', fontFamily: 'monospace' }}>
+          ({currentSession?.name})
+        </Typography>
+
+        <DropdownButton
+          id='session-action-split-button'
+          options={options}
+          onToggle={(newOpen) => setOpen(newOpen)}
+          isLoading={isLoading}>
+          <IconButton aria-label='Table Actions' color='inherit'>
+            <MenuIcon fontSize='inherit' color='inherit' />
           </IconButton>
-        </Tooltip>
+        </DropdownButton>
       </Toolbar>
     </AppBar>
   );

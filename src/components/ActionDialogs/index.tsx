@@ -57,13 +57,14 @@ export default function ActionDialogs(props: ActionDialogsProps) {
       return (
         <PromptDialog
           open={true}
-          title={dialog.title || 'Prompt'}
+          title={dialog.title}
           message={dialog.message}
-          value={dialog.defaultValue}
+          value={dialog.value}
           onSaveClick={onPromptSaveClick}
           onDismiss={onDimiss}
           isLongPrompt={dialog.isLongPrompt}
           saveLabel={dialog.saveLabel}
+          required={dialog.required}
         />
       );
     case 'choice':
@@ -124,7 +125,7 @@ export function useActionDialogs() {
 
   const prompt = (props: PromptActionDialogInput): Promise<string | undefined> => {
     return new Promise((resolve, reject) => {
-      const { message, defaultValue, isLongPrompt } = props;
+      const { message, value, isLongPrompt } = props;
 
       const newActionDialog: ActionDialog = {
         ...props,
