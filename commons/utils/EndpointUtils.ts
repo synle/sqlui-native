@@ -250,7 +250,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
       );
   });
 
-  addDataEndpoint('post', '/api/queries', async (req, res, apiCache) => {
+  addDataEndpoint('post', '/api/query', async (req, res, apiCache) => {
     apiCache.set('cacheMetaData', null);
     res.status(201).json(
       await new PersistentStorage<SqluiCore.CoreConnectionQuery>(

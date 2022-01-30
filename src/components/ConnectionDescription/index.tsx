@@ -13,6 +13,7 @@ import IconButton from '@mui/material/IconButton';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import SelectAllIcon from '@mui/icons-material/SelectAll';
 import Alert from '@mui/material/Alert';
+import CircularProgress from '@mui/material/CircularProgress';
 import { Button } from '@mui/material';
 import Tooltip from '@mui/material/Tooltip';
 import DatabaseDescription from 'src/components/DatabaseDescription';
@@ -39,7 +40,11 @@ export default function ConnectionDescription() {
   const { visibles, onToggle } = useShowHide();
 
   if (isLoading) {
-    return <Alert severity='info'>Loading...</Alert>;
+    return (
+      <Alert severity='info' icon={<CircularProgress size={15} />}>
+        Loading...
+      </Alert>
+    );
   }
 
   if (!connections || connections.length === 0) {

@@ -3,6 +3,7 @@ import { format } from 'sql-formatter';
 import Typography from '@mui/material/Typography';
 import ViewColumnIcon from '@mui/icons-material/ViewColumn';
 import Alert from '@mui/material/Alert';
+import CircularProgress from '@mui/material/CircularProgress';
 import { AccordionHeader, AccordionBody } from 'src/components/Accordion';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';

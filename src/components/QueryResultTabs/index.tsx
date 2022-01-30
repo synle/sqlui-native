@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Link from '@mui/material/Link';
 import Alert from '@mui/material/Alert';
+import CircularProgress from '@mui/material/CircularProgress';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import QueryResultContainer from 'src/components/QueryResultContainer';
@@ -100,7 +101,11 @@ export default function QueryResultTabs() {
   }, [queries, init]);
 
   if (isLoading) {
-    return <Alert severity='info'>Loading...</Alert>;
+    return (
+      <Alert severity='info' icon={<CircularProgress size={15} />}>
+        Loading...
+      </Alert>
+    );
   }
 
   if (!queries || queries.length === 0) {

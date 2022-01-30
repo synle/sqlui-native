@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import CodeEditor from '@uiw/react-textarea-code-editor';
 import ToggleButton from '@mui/material/ToggleButton';
 import Button from '@mui/material/Button';
@@ -17,17 +17,20 @@ interface CodeEditorProps {
 
 export default function CodeEditorBox(props: CodeEditorProps) {
   const [wordWrap, setWordWrap] = useState(false);
+
   const onChange = (newValue: string) => {
     if (newValue !== props.value) {
       props.onChange && props.onChange(newValue);
     }
   };
+
   return (
     <>
       <textarea
         className='CodeEditorBox'
-        defaultValue={props?.value}
+        value={props?.value}
         placeholder={props.placeholder}
+        onChange={() => {}}
         onBlur={(e) => onChange(e.target.value)}
         data-language={props.language}
         autoFocus={props.autoFocus}
