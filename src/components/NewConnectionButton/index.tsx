@@ -35,7 +35,14 @@ export default function NewConnectionButton() {
         defaultValue: '',
         isLongPrompt: true,
       });
-      const jsonRows: any = JSON.parse(rawJson || '');
+
+      let jsonRows: any[] = JSON.parse(rawJson || '');
+
+      // here we will attempt to import all the connections first before queries
+      jsonRows = jsonRows.sort((a,b) => {
+        return a._type.localeCompare(b._type); //note that query will go after connection (q > c)
+      })
+
       for (const jsonRow of jsonRows) {
         try {
           const { _type, ...rawImportMetaData } = jsonRow;
