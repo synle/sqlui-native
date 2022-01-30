@@ -70,8 +70,12 @@ export function getEndpointHandlers() {
 export function setUpDataEndpoints(anExpressAppContext?: Express) {
   expressAppContext = anExpressAppContext;
 
+  // query endpoints
   addDataEndpoint('get', '/api/connections', async (req, res, apiCache) => {
-    const connections = await new PersistentStorage<SqluiCore.ConnectionProps>(req.headers.instanceid, 'connections').list();
+    const connections = await new PersistentStorage<SqluiCore.ConnectionProps>(
+      req.headers.instanceid,
+      'connection',
+    ).list();
 
     for (const connection of connections) {
       try {
@@ -90,9 +94,10 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
   });
 
   addDataEndpoint('get', '/api/connection/:connectionId', async (req, res, apiCache) => {
-    const connection = await new PersistentStorage<SqluiCore.ConnectionProps>(req.headers.instanceid, 'connections').get(
-      req.params?.connectionId,
-    );
+    const connection = await new PersistentStorage<SqluiCore.ConnectionProps>(
+      req.headers.instanceid,
+      'connection',
+    ).get(req.params?.connectionId);
 
     try {
       const engine = getEngine(connection.connection);
@@ -106,9 +111,10 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
   });
 
   addDataEndpoint('get', '/api/connection/:connectionId/databases', async (req, res, apiCache) => {
-    const connection = await new PersistentStorage<SqluiCore.ConnectionProps>(req.headers.instanceid, 'connections').get(
-      req.params?.connectionId,
-    );
+    const connection = await new PersistentStorage<SqluiCore.ConnectionProps>(
+      req.headers.instanceid,
+      'connection',
+    ).get(req.params?.connectionId);
 
     if (!connection) {
       return res.status(404).send('Not Found');
@@ -122,9 +128,10 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     'get',
     '/api/connection/:connectionId/database/:databaseId/tables',
     async (req, res) => {
-      const connection = await new PersistentStorage<SqluiCore.ConnectionProps>(req.headers.instanceid, 'connections').get(
-        req.params?.connectionId,
-      );
+      const connection = await new PersistentStorage<SqluiCore.ConnectionProps>(
+        req.headers.instanceid,
+        'connection',
+      ).get(req.params?.connectionId);
       const engine = getEngine(connection.connection);
 
       res.status(200).json(await engine.getTables(req.params?.databaseId));
@@ -135,9 +142,10 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     'get',
     '/api/connection/:connectionId/database/:databaseId/table/:tableId/columns',
     async (req, res) => {
-      const connection = await new PersistentStorage<SqluiCore.ConnectionProps>(req.headers.instanceid, 'connections').get(
-        req.params?.connectionId,
-      );
+      const connection = await new PersistentStorage<SqluiCore.ConnectionProps>(
+        req.headers.instanceid,
+        'connection',
+      ).get(req.params?.connectionId);
       const engine = getEngine(connection.connection);
 
       res.status(200).json(await engine.getColumns(req.params?.tableId, req.params?.databaseId));
@@ -145,9 +153,10 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
   );
 
   addDataEndpoint('post', '/api/connection/:connectionId/connect', async (req, res, apiCache) => {
-    const connection = await new PersistentStorage<SqluiCore.ConnectionProps>(req.headers.instanceid, 'connections').get(
-      req.params?.connectionId,
-    );
+    const connection = await new PersistentStorage<SqluiCore.ConnectionProps>(
+      req.headers.instanceid,
+      'connection',
+    ).get(req.params?.connectionId);
 
     if (!connection) {
       return res.status(404).send('Not Found');
@@ -168,9 +177,10 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
   });
 
   addDataEndpoint('post', '/api/connection/:connectionId/execute', async (req, res, apiCache) => {
-    const connection = await new PersistentStorage<SqluiCore.ConnectionProps>(req.headers.instanceid, 'connections').get(
-      req.params?.connectionId,
-    );
+    const connection = await new PersistentStorage<SqluiCore.ConnectionProps>(
+      req.headers.instanceid,
+      'connection',
+    ).get(req.params?.connectionId);
 
     if (!connection) {
       return res.status(404).send('Not Found');
@@ -192,7 +202,10 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
   addDataEndpoint('post', '/api/connection', async (req, res, apiCache) => {
     apiCache.set('cacheMetaData', null);
     res.status(201).json(
-      await new PersistentStorage<SqluiCore.ConnectionProps>(req.headers.instanceid, 'connections').add({
+      await new PersistentStorage<SqluiCore.ConnectionProps>(
+        req.headers.instanceid,
+        'connection',
+      ).add({
         connection: req.body?.connection,
         name: req.body?.name,
       }),
@@ -202,7 +215,10 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
   addDataEndpoint('put', '/api/connection/:connectionId', async (req, res, apiCache) => {
     apiCache.set('cacheMetaData', null);
     res.status(202).json(
-      await new PersistentStorage<SqluiCore.ConnectionProps>(req.headers.instanceid, 'connections').update({
+      await new PersistentStorage<SqluiCore.ConnectionProps>(
+        req.headers.instanceid,
+        'connection',
+      ).update({
         id: req.params?.connectionId,
         connection: req.body?.connection,
         name: req.body?.name,
@@ -215,29 +231,66 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     res
       .status(202)
       .json(
-        await new PersistentStorage<SqluiCore.ConnectionProps>(req.headers.instanceid, 'connections').delete(
-          req.params?.connectionId,
-        ),
+        await new PersistentStorage<SqluiCore.ConnectionProps>(
+          req.headers.instanceid,
+          'connection',
+        ).delete(req.params?.connectionId),
       );
   });
 
-  addDataEndpoint('get', '/api/metadata', async (req, res, apiCache) => {
-    const connections = await new PersistentStorage<SqluiCore.ConnectionProps>(req.headers.instanceid, 'connections').list();
-
-    if (apiCache.get('cacheMetaData')) {
-      return res.status(200).json(apiCache.get('cacheMetaData'));
-    }
-
-    const resp: SqluiCore.CoreConnectionMetaData[] = [];
-
-    for (const connection of connections) {
-      resp.push(await getConnectionMetaData(connection));
-    }
-
-    apiCache.set('cacheMetaData', resp);
-    res.status(200).json(resp);
+  // query endpoints
+  addDataEndpoint('get', '/api/queries', async (req, res, apiCache) => {
+    res
+      .status(200)
+      .json(
+        await new PersistentStorage<SqluiCore.CoreConnectionQuery>(
+          req.headers.instanceid,
+          'query',
+        ).list(),
+      );
   });
 
+  addDataEndpoint('post', '/api/queries', async (req, res, apiCache) => {
+    apiCache.set('cacheMetaData', null);
+    res.status(201).json(
+      await new PersistentStorage<SqluiCore.CoreConnectionQuery>(
+        req.headers.instanceid,
+        'query',
+      ).add({
+        connection: req.body?.name,
+      }),
+    );
+  });
+
+  addDataEndpoint('put', '/api/query/:queryId', async (req, res, apiCache) => {
+    apiCache.set('cacheMetaData', null);
+    res.status(202).json(
+      await new PersistentStorage<SqluiCore.CoreConnectionQuery>(
+        req.headers.instanceid,
+        'query',
+      ).update({
+        id: req.body.id,
+        name: req.body.name,
+        connectionId: req.body?.connectionId,
+        databaseId: req.body?.databaseId,
+        sql: req.body?.sql,
+      }),
+    );
+  });
+
+  addDataEndpoint('delete', '/api/query/:queryId', async (req, res, apiCache) => {
+    apiCache.set('cacheMetaData', null);
+    res
+      .status(202)
+      .json(
+        await new PersistentStorage<SqluiCore.CoreConnectionQuery>(
+          req.headers.instanceid,
+          'query',
+        ).delete(req.params?.queryId),
+      );
+  });
+
+  // debug endpoints
   addDataEndpoint('get', '/api/debug', async (req, res, apiCache) => {
     res.status(200).json(apiCache.json());
   });

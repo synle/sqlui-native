@@ -8,7 +8,7 @@ interface StorageContent {
   [index: string]: any;
 }
 
-interface StorageEntry{
+interface StorageEntry {
   id: string;
   [index: string]: any;
 }
@@ -20,7 +20,7 @@ try {
   //@ts-ignore
 }
 
-export class PersistentStorage <T extends StorageEntry> {
+export class PersistentStorage<T extends StorageEntry> {
   instanceId: string;
   name: string;
   storageLocation: string;
@@ -33,7 +33,9 @@ export class PersistentStorage <T extends StorageEntry> {
 
   private getData(): StorageContent {
     try {
-      return JSON.parse(fs.readFileSync(this.storageLocation, { encoding: 'utf8', flag: 'r' }).trim());
+      return JSON.parse(
+        fs.readFileSync(this.storageLocation, { encoding: 'utf8', flag: 'r' }).trim(),
+      );
     } catch (err) {
       return {};
     }
@@ -49,7 +51,7 @@ export class PersistentStorage <T extends StorageEntry> {
     const caches = this.getData();
     caches[newId] = {
       id: newId,
-      ...entry
+      ...entry,
     };
 
     this.setData(caches);
