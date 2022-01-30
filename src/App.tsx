@@ -43,6 +43,8 @@ export default function App() {
           // then set it as current session
           setCurrentSessionId(newSession.id);
 
+          console.log('>> No Session Found, Getting you a new session', newSession)
+
           // reload the page just in case
           // TODO: see if we need to use a separate row
           window.location.reload();

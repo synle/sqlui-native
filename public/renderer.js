@@ -38,7 +38,7 @@ try {
             status,
             options.method || 'get',
             url,
-            options.headers.instanceid,
+            options.headers['sqlui-native-session-id'],
             returnedData,
             headers,
           );

@@ -28,6 +28,7 @@ import {
   getRandomSessionId,
 } from 'src/data/session';
 import DropdownButton from 'src/components/DropdownButton';
+import { useCommands } from 'src/components/MissionControl';
 import { SqluiCore } from 'typings';
 
 export default function AppHeader() {
@@ -37,6 +38,7 @@ export default function AppHeader() {
   const { data: sessions, isLoading: loadingSessions } = useGetSessions();
   const { data: currentSession, isLoading: loadingCurrentSession } = useGetCurrentSession();
   const { mutateAsync: upsertSession } = useUpsertSession();
+  const { command, dismissCommand } = useCommands();
 
   const onChangeSession = async () => {
     if (!sessions) {
@@ -135,6 +137,21 @@ export default function AppHeader() {
     }
   };
 
+  useEffect(() => {
+    if (command) {
+      dismissCommand();
+
+      switch (command.event) {
+        case 'clientEvent.changeSession':
+          onChangeSession();
+          break;
+        case 'clientEvent.renameSession':
+          onRenameSession();
+          break;
+      }
+    }
+  }, [command]);
+
   const isLoading = loadingSessions || loadingCurrentSession;
 
   if (isLoading) {
@@ -162,9 +179,7 @@ export default function AppHeader() {
           SQLUI NATIVE
         </Typography>
 
-        <Typography
-          variant='subtitle1'
-          sx={{  mr: 'auto', fontFamily: 'monospace' }}>
+        <Typography variant='subtitle1' sx={{ mr: 'auto', fontFamily: 'monospace' }}>
           ({currentSession?.name})
         </Typography>
 
