@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { format } from 'sql-formatter';
 import Alert from '@mui/material/Alert';
+import CircularProgress from '@mui/material/CircularProgress';
 import Typography from '@mui/material/Typography';
 import { Button } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
@@ -37,7 +38,11 @@ export default function QueryBox(props: QueryBoxProps) {
   const isLoading = loadingConnection;
 
   if (isLoading) {
-    return <Alert severity='info'>Loading...</Alert>;
+    return (
+      <Alert severity='info' icon={<CircularProgress size={15} />}>
+        Loading...
+      </Alert>
+    );
   }
 
   if (!query) {

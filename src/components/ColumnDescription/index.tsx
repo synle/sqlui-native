@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Typography from '@mui/material/Typography';
 import ViewColumnIcon from '@mui/icons-material/ViewColumn';
 import Alert from '@mui/material/Alert';
+import CircularProgress from '@mui/material/CircularProgress';
 import Button from '@mui/material/Button';
 import { AccordionHeader, AccordionBody } from 'src/components/Accordion';
 import { useGetColumns, useShowHide } from 'src/hooks';
@@ -34,7 +35,11 @@ export default function ColumnDescription(props: ColumnDescriptionProps) {
   const isLoading = loadingColumns;
 
   if (isLoading) {
-    return <Alert severity='info'>Loading...</Alert>;
+    return (
+      <Alert severity='info' icon={<CircularProgress size={15} />}>
+        Loading...
+      </Alert>
+    );
   }
 
   if (isError) {

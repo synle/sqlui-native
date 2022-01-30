@@ -9,6 +9,7 @@ import MenuItem from '@mui/material/MenuItem';
 import MenuList from '@mui/material/MenuList';
 import ListItemText from '@mui/material/ListItemText';
 import ListItemIcon from '@mui/material/ListItemIcon';
+import CircularProgress from '@mui/material/CircularProgress';
 
 interface DropdownButtonOption {
   label: string;
@@ -62,9 +63,13 @@ export default function DropdownButton(props: DropdownButtonProps) {
 
   let popperBody: React.ReactElement = <></>;
   if (props.isLoading) {
-    popperBody = <div style={{ padding: '10px 15px' }}>Loading... Please wait.</div>;
+    popperBody = (
+      <div className='DropdownButton__Popper'>
+        <CircularProgress size={15} /> Loading... Please wait.
+      </div>
+    );
   } else if (options.length === 0) {
-    popperBody = <div style={{ padding: '10px 15px' }}>No options.</div>;
+    popperBody = <div className='DropdownButton__Popper'>No options.</div>;
   } else {
     popperBody = (
       <MenuList id={id}>

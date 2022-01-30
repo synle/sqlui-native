@@ -5,6 +5,7 @@ import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import Alert from '@mui/material/Alert';
+import CircularProgress from '@mui/material/CircularProgress';
 import TableDescription from 'src/components/TableDescription';
 import { AccordionHeader, AccordionBody } from 'src/components/Accordion';
 import { useGetDatabases, useActiveConnectionQuery, useShowHide } from 'src/hooks';
@@ -20,7 +21,11 @@ export default function DatabaseDescription(props: DatabaseDescriptionProps) {
   const { visibles, onToggle } = useShowHide();
 
   if (isLoading) {
-    return <Alert severity='info'>Loading...</Alert>;
+    return (
+      <Alert severity='info' icon={<CircularProgress size={15} />}>
+        Loading...
+      </Alert>
+    );
   }
 
   if (isError) {

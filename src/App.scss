@@ -150,3 +150,15 @@
     outline: none;
   }
 }
+
+.DropdownButton {
+  &__Popper {
+    padding: 10px 15px;
+    align-items: center;
+    display: flex;
+
+    > span {
+      margin-right: 10px;
+    }
+  }
+}
