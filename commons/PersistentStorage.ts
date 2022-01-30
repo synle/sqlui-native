@@ -1,7 +1,9 @@
-const fs = require('fs');
-const path = require('path');
-const homedir = require('os').homedir();
+import fs from 'fs';
+import path from 'path';
+import { app } from 'electron';
 import { SqluiCore } from '../typings';
+
+const homedir = require('os').homedir();
 
 // this section of the api is caches in memory
 interface StorageContent {
@@ -13,12 +15,25 @@ interface StorageEntry {
   [index: string]: any;
 }
 
-const baseDir = path.join(homedir, '.sqlui-native');
+let baseDir: string;
 try {
-  fs.mkdirSync(baseDir);
+  // electron path
+  baseDir = path.join(app.getPath('appData'), 'sqlui-native');
+  try {
+    fs.mkdirSync(baseDir);
+  } catch (err) {
+    //@ts-ignore
+  }
 } catch (err) {
-  //@ts-ignore
+  // fall back for mocked server
+  baseDir = path.join(homedir, '.sqlui-native');
+  try {
+    fs.mkdirSync(baseDir);
+  } catch (err) {
+    //@ts-ignore
+  }
 }
+console.log('baseDir', baseDir);
 
 export class PersistentStorage<T extends StorageEntry> {
   instanceId: string;

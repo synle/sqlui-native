@@ -63,7 +63,9 @@ export default function ColumnDescription(props: ColumnDescriptionProps) {
               <AccordionHeader expanded={visibles[key]} onToggle={() => onToggle(key)}>
                 <ViewColumnIcon color='disabled' fontSize='inherit' />
                 <span>{column.name}</span>
-                <i className='ColumnDescription__Type' style={{color: grey[700]}}>{column.name}</i>
+                <i className='ColumnDescription__Type' style={{ color: grey[700] }}>
+                  {column.name}
+                </i>
               </AccordionHeader>
               <AccordionBody expanded={visibles[key]}>
                 <ColumnAttributes column={column} />
@@ -103,7 +105,7 @@ function ColumnAttributes(props: ColumnAttributesProps) {
     .filter((attribute) => !!attribute.value);
 
   return (
-    <div className='AttributeDescription' style={{color: grey[700]}}>
+    <div className='AttributeDescription' style={{ color: grey[700] }}>
       {attributes.map((attr) => (
         <div key={attr.name}>
           <div>

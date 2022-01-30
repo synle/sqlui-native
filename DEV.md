@@ -51,6 +51,7 @@ npm start
 ```
 
 #### In a mocked server container
+Run this and test it in the browser
 ```
 npm install
 
@@ -68,6 +69,15 @@ npm run build
 cd build
 npm install
 npm run dist
+```
+
+
+### Where is the config / data stored on local machine?
+```
+# Windows
+C:\Users\some_username\AppData\Roaming\sqlui-native
+
+# Mac
 ```
 
 
