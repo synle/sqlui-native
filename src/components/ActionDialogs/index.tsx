@@ -1,8 +1,9 @@
-import { useState, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
 import { SqluiCore, SqluiFrontend } from 'typings';
 import AlertDialog from 'src/components/ActionDialogs/AlertDialog';
-import PromptDialog from 'src/components/ActionDialogs/PromptDialog';
+import PromptDialog, { PromptActionDialogInput } from 'src/components/ActionDialogs/PromptDialog';
+import ChoiceDialog, { ChoiceActionDialogOption } from 'src/components/ActionDialogs/ChoiceDialog';
 
 interface ActionDialogsProps {}
 
@@ -18,6 +19,10 @@ export default function ActionDialogs(props: ActionDialogsProps) {
     dialog.onSubmit && dialog.onSubmit(true);
   };
   const onPromptSaveClick = (newValue?: string) => {
+    dismiss();
+    dialog.onSubmit && dialog.onSubmit(true, newValue);
+  };
+  const onChoiceSelect = (newValue?: string) => {
     dismiss();
     dialog.onSubmit && dialog.onSubmit(true, newValue);
   };
@@ -61,40 +66,53 @@ export default function ActionDialogs(props: ActionDialogsProps) {
           saveLabel={dialog.saveLabel}
         />
       );
+    case 'choice':
+      return (
+        <ChoiceDialog
+          open={true}
+          title={dialog.title}
+          message={dialog.message}
+          options={dialog.options}
+          onSelect={onChoiceSelect}
+          onDismiss={onDimiss}
+        />
+      );
   }
   return null;
 }
 
 // TODO: move me to a file
 // used for show and hide the sidebar trees
-type ActionDialog =
-  | {
-      type: 'alert';
-      message: string;
-      onSubmit?: () => void;
-    }
-  | {
-      type: 'confirm';
-      message: string;
-      onSubmit: (yesSelected: boolean) => void;
-    }
-  | {
-      type: 'prompt';
-      title?: string;
-      message: string;
-      defaultValue?: string;
-      isLongPrompt?: boolean;
-      saveLabel?: string;
-      onSubmit: (yesSelected: boolean, newValue?: string) => void;
-    };
-
-interface PromptActionDialogInput {
-  title?: string;
+type AlertActionDialog = {
+  type: 'alert';
   message: string;
-  defaultValue?: string;
-  isLongPrompt?: boolean;
-  saveLabel?: string;
-}
+  onSubmit?: () => void;
+};
+
+type ConfirmActionDialog = {
+  type: 'confirm';
+  message: string;
+  onSubmit: (yesSelected: boolean) => void;
+};
+
+type ChoiceActionDialog = {
+  type: 'choice';
+  title: string;
+  message: string | React.ReactNode;
+  options: ChoiceActionDialogOption[];
+  onSubmit: (yesSelected: boolean, selectedChoice?: string) => void;
+};
+
+type PromptActionDialog = PromptActionDialogInput & {
+  type: 'prompt';
+  onSubmit: (yesSelected: boolean, newValue?: string) => void;
+};
+
+type ActionDialog =
+  | AlertActionDialog
+  | ConfirmActionDialog
+  | PromptActionDialog
+  | ChoiceActionDialog;
 
 const QUERY_KEY_ACTION_DIALOGS = 'actionDialogs';
 let _actionDialogs: ActionDialog[] = [];
@@ -134,6 +152,26 @@ export function useActionDialogs() {
     });
   };
 
+  const choice = (
+    title: string,
+    message: string | React.ReactNode,
+    options: ChoiceActionDialogOption[],
+  ): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const newActionDialog: ActionDialog = {
+        type: 'choice',
+        title,
+        message,
+        options,
+        onSubmit: (yesSelected, newValue) => {
+          yesSelected && newValue ? resolve(newValue) : reject();
+        },
+      };
+      _actionDialogs.push(newActionDialog);
+      queryClient.invalidateQueries(QUERY_KEY_ACTION_DIALOGS);
+    });
+  };
+
   const alert = (message: string): Promise<void> => {
     return new Promise((resolve, reject) => {
       const newActionDialog: ActionDialog = {
@@ -165,6 +203,7 @@ export function useActionDialogs() {
     alert,
     prompt,
     confirm,
+    choice,
     dismiss,
   };
 }
