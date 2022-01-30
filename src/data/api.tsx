@@ -125,10 +125,6 @@ export class ProxyApi {
     return _fetch<SqluiCore.CoreConnectionQuery[]>(`/api/queries`);
   }
 
-  static getQuery(queryId: string) {
-    return _fetch<SqluiCore.CoreConnectionQuery>(`/api/query/${queryId}`);
-  }
-
   static upsertQuery(newQuery: SqluiCore.CoreConnectionQuery) {
     const { id } = newQuery;
     if (id) {
@@ -148,6 +144,32 @@ export class ProxyApi {
     return _fetch<string>(`/api/query/${queryId}`, {
       method: 'delete',
     }).then(() => queryId);
+  }
+
+  // sessions api
+  static getSessions() {
+    return _fetch<SqluiCore.Session[]>(`/api/sessions`);
+  }
+
+  static upsertSession(newSession: SqluiCore.Session) {
+    const { id } = newSession;
+    if (id) {
+      return _fetch<SqluiCore.Session>(`/api/session/${newSession.id}`, {
+        method: 'put',
+        body: JSON.stringify({ newSession }),
+      });
+    } else {
+      return _fetch<SqluiCore.Session>(`/api/session`, {
+        method: 'post',
+        body: JSON.stringify(newSession),
+      });
+    }
+  }
+
+  static deleteSession(sessionId: string) {
+    return _fetch<string>(`/api/session/${sessionId}`, {
+      method: 'delete',
+    }).then(() => sessionId);
   }
 }
 
