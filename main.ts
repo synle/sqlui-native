@@ -1,14 +1,12 @@
-// Modules to control application life and create native browser window
 import { RelationalDatabaseEngine, getEngine } from './commons/RelationalDatabaseEngine';
 import { SqluiCore, SqluiEnums } from './typings';
 import { matchPath } from 'react-router-dom';
 import { app, BrowserWindow, ipcMain, Menu, nativeTheme } from 'electron';
 import { setUpDataEndpoints, getEndpointHandlers } from './commons/Endpoints';
-const { shell } = require('electron');
+import { crashReporter, shell } from 'electron';
+import path from 'path';
 
 setUpDataEndpoints();
-
-const path = require('path');
 
 function createWindow() {
   // Create the browser window.
@@ -46,7 +44,7 @@ function setupMenu() {
       submenu: [
         {
           label: 'New Window',
-          accelerator: isMac ? 'Alt+Cmd+N' : 'Ctrl+Shift+N',
+          accelerator: isMac ? 'Cmd+Shift+N' : 'Ctrl+Shift+N',
           click: async () => {
             createWindow();
           },
@@ -175,18 +173,16 @@ app.on('window-all-closed', function () {
 
 ipcMain.handle('dark-mode:toggle', () => {
   if (nativeTheme.shouldUseDarkColors) {
-    nativeTheme.themeSource = 'light'
+    nativeTheme.themeSource = 'light';
   } else {
-    nativeTheme.themeSource = 'dark'
+    nativeTheme.themeSource = 'dark';
   }
-  return nativeTheme.shouldUseDarkColors
-})
+  return nativeTheme.shouldUseDarkColors;
+});
 
 ipcMain.handle('dark-mode:system', () => {
-  nativeTheme.themeSource = 'system'
-})
-
-
+  nativeTheme.themeSource = 'system';
+});
 
 // this is the event listener that will respond when we will request it in the web page
 const _cache = {};
