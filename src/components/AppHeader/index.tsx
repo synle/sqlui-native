@@ -87,7 +87,7 @@ export default function AppHeader() {
           name: newSessionName,
         });
       } else {
-        if(currentSession?.id === selected){
+        if (currentSession?.id === selected) {
           // if they select the same session, just ignore it
           return;
         }

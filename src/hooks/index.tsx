@@ -368,10 +368,19 @@ export function useConnectionQueries() {
         selected: true,
       };
     } else {
+      let newQueryName = query.name;
+
+      for (const query of _connectionQueries) {
+        if (query.name === newQueryName) {
+          // replace it with a new anme
+          newQueryName = `Duplicated Query ${new Date().toLocaleString()}`;
+        }
+      }
+
       newQuery = {
         ...query,
         id: newId,
-        name: `Duplicated Query ${new Date().toLocaleString()}`,
+        name: newQueryName,
         selected: true,
       };
     }
