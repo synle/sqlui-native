@@ -298,18 +298,19 @@ function _useConnectionQueries() {
     async () => {
       if (!_connectionQueries) {
         // this is the first time
-        try {
-          _connectionQueries = await dataApi.getQueries();
-        } catch (err) {
-          //@ts-ignore
-        }
+        // try pulling it in from sessionStorage
+        _connectionQueries = Config.get<SqluiFrontend.ConnectionQuery[]>(
+          'cache.connectionQueries',
+          [],
+        );
 
         if (_connectionQueries.length === 0) {
-          // try pulling it in from sessionStorage
-          _connectionQueries = Config.get<SqluiFrontend.ConnectionQuery[]>(
-            'cache.connectionQueries',
-            [],
-          );
+          // if local config failed, attempt to get it from the api
+          try {
+            _connectionQueries = await dataApi.getQueries();
+          } catch (err) {
+            //@ts-ignore
+          }
         }
 
         // at the end we want to remove lastExecuted so the query won't be run again
