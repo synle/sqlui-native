@@ -17,7 +17,7 @@ import {
 } from 'src/hooks';
 
 export default function NewConnectionButton() {
-  const { prompt } = useActionDialogs();
+  const { prompt, alert } = useActionDialogs();
   const { mutateAsync: importConnection } = useImportConnection();
   const { queries, isLoading: loadingQueries, onImportQuery } = useConnectionQueries();
   const { data: connections, isLoading: loadingConnections } = useGetConnections();
@@ -36,7 +36,12 @@ export default function NewConnectionButton() {
         isLongPrompt: true,
       });
 
-      let jsonRows: any[] = JSON.parse(rawJson || '');
+      let jsonRows: any[];
+      try{
+        jsonRows = JSON.parse(rawJson || '');
+      } catch(err){
+        return alert(`Import failed. Invalid JSON config`);
+      }
 
       // here we will attempt to import all the connections first before queries
       jsonRows = jsonRows.sort((a,b) => {
