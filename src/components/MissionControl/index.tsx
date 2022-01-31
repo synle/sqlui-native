@@ -73,6 +73,18 @@ export function useCommands() {
   };
 }
 
+const allMenuKeys = [
+  'menu-connection-new',
+  'menu-import',
+  'menu-export',
+  'menu-query-new',
+  'menu-query-prev',
+  'menu-query-next',
+  'menu-query-close',
+  'menu-session-rename',
+  'menu-session-switch',
+];
+
 export default function MissionControl() {
   const navigate = useNavigate();
   const [init, setInit] = useState(false);
@@ -354,82 +366,120 @@ export default function MissionControl() {
 
   // mission control commands
   useEffect(() => {
-    if (command) {
-      dismissCommand();
+    async function _executeMissionCommand() {
+      if (command) {
+        dismissCommand();
 
-      switch (command.event) {
-        // overall commands
-        case 'clientEvent/import':
-          onImport();
-          break;
-        case 'clientEvent/exportAll':
-          onExportAll();
-          break;
+        switch (command.event) {
+          // overall commands
+          case 'clientEvent/import':
+            try {
+              //@ts-ignore
+              window.toggleElectronMenu(false, allMenuKeys);
+              await onImport();
+            } catch (err) {
+              //@ts-ignore
+            }
 
-        // connection commands
-        case 'clientEvent/connection/new':
-          onNewConnection();
-          break;
+            //@ts-ignore
+            window.toggleElectronMenu(true, allMenuKeys);
+            break;
+          case 'clientEvent/exportAll':
+            onExportAll();
+            break;
 
-        // query commands
-        case 'clientEvent/query/new':
-          onAddQuery();
-          break;
-        case 'clientEvent/query/show':
-          if (command.data) {
-            onShowQuery((command.data as SqluiFrontend.ConnectionQuery).id);
-          }
-          break;
-        case 'clientEvent/query/showNext':
-        case 'clientEvent/query/showPrev':
-          onShowQueryWithDirection(
-            command.event === 'clientEvent/query/showNext' ? 1 : -1,
-          );
-          break;
-        case 'clientEvent/query/rename':
-          if (command.data) {
-            onRenameQuery(command.data as SqluiFrontend.ConnectionQuery);
-          }
-          break;
-        case 'clientEvent/query/export':
-          if (command.data) {
-            onExportQuery(command.data as SqluiFrontend.ConnectionQuery);
-          }
-          break;
-        case 'clientEvent/query/duplicate':
-          if (command.data) {
-            onDuplicateQuery(command.data as SqluiFrontend.ConnectionQuery);
-          }
-          break;
-        case 'clientEvent/query/close':
-          if (command.data) {
-            onCloseQuery(command.data as SqluiFrontend.ConnectionQuery);
-          }
-          break;
-        case 'clientEvent/query/closeOther':
-          if (command.data) {
-            onCloseOtherQueries(command.data as SqluiFrontend.ConnectionQuery);
-          }
-          break;
-        case 'clientEvent/query/closeCurrentlySelected':
-          // this closes the active query
-          if (activeQuery) {
-            onCloseQuery(activeQuery);
-          }
-          break;
+          // connection commands
+          case 'clientEvent/connection/new':
+            onNewConnection();
+            break;
 
-        // session commands
-        case 'clientEvent/session/switch':
-          onChangeSession();
-          break;
-        case 'clientEvent/session/new':
-          onAddSession();
-          break;
-        case 'clientEvent/session/rename':
-          onRenameSession();
-          break;
+          // query commands
+          case 'clientEvent/query/new':
+            onAddQuery();
+            break;
+          case 'clientEvent/query/show':
+            if (command.data) {
+              onShowQuery((command.data as SqluiFrontend.ConnectionQuery).id);
+            }
+            break;
+          case 'clientEvent/query/showNext':
+          case 'clientEvent/query/showPrev':
+            onShowQueryWithDirection(command.event === 'clientEvent/query/showNext' ? 1 : -1);
+            break;
+          case 'clientEvent/query/rename':
+            if (command.data) {
+              onRenameQuery(command.data as SqluiFrontend.ConnectionQuery);
+            }
+            break;
+          case 'clientEvent/query/export':
+            if (command.data) {
+              onExportQuery(command.data as SqluiFrontend.ConnectionQuery);
+            }
+            break;
+          case 'clientEvent/query/duplicate':
+            if (command.data) {
+              onDuplicateQuery(command.data as SqluiFrontend.ConnectionQuery);
+            }
+            break;
+          case 'clientEvent/query/close':
+            if (command.data) {
+              onCloseQuery(command.data as SqluiFrontend.ConnectionQuery);
+            }
+            break;
+          case 'clientEvent/query/closeOther':
+            if (command.data) {
+              onCloseOtherQueries(command.data as SqluiFrontend.ConnectionQuery);
+            }
+            break;
+          case 'clientEvent/query/closeCurrentlySelected':
+            // this closes the active query
+            if (activeQuery) {
+              onCloseQuery(activeQuery);
+            }
+            break;
+
+          // session commands
+          case 'clientEvent/session/switch':
+            try {
+              //@ts-ignore
+              window.toggleElectronMenu(false, allMenuKeys);
+              await onChangeSession();
+            } catch (err) {
+              //@ts-ignore
+            }
+
+            //@ts-ignore
+            window.toggleElectronMenu(true, allMenuKeys);
+            break;
+          case 'clientEvent/session/new':
+            try {
+              //@ts-ignore
+              window.toggleElectronMenu(false, allMenuKeys);
+              await onAddSession();
+            } catch (err) {
+              //@ts-ignore
+            }
+
+            //@ts-ignore
+            window.toggleElectronMenu(true, allMenuKeys);
+            break;
+          case 'clientEvent/session/rename':
+            try {
+              //@ts-ignore
+              window.toggleElectronMenu(false, allMenuKeys);
+              await onRenameSession();
+            } catch (err) {
+              //@ts-ignore
+            }
+
+            //@ts-ignore
+            window.toggleElectronMenu(true, allMenuKeys);
+            break;
+        }
       }
     }
+
+    _executeMissionCommand();
   }, [command]);
 
   return null;

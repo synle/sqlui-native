@@ -63,6 +63,25 @@ export default function QueryResultTabs() {
     }
   }, [isLoading, queries, init]);
 
+  // this section is specific to electron
+  // we only want to show the query menu for
+  // electron only when we can see the query tabs...
+  useEffect(() => {
+    const queryMenuKeys = [
+      'menu-query-new',
+      'menu-query-prev',
+      'menu-query-next',
+      'menu-query-close',
+    ];
+    //@ts-ignore
+    window.toggleElectronMenu(true, queryMenuKeys);
+
+    return () => {
+      //@ts-ignore
+      window.toggleElectronMenu(false, queryMenuKeys);
+    };
+  }, []);
+
   if (isLoading) {
     return (
       <Alert severity='info' icon={<CircularProgress size={15} />}>
