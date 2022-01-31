@@ -100,7 +100,7 @@ export default function MissionControl() {
   } = useConnectionQueries();
   const { query: activeQuery } = useActiveConnectionQuery();
   const { command, dismissCommand } = useCommands();
-  const { choice, confirm, prompt } = useActionDialogs();
+  const { choice, confirm, prompt, alert } = useActionDialogs();
   const { data: sessions, isLoading: loadingSessions } = useGetSessions();
   const { data: currentSession, isLoading: loadingCurrentSession } = useGetCurrentSession();
   const { mutateAsync: upsertSession } = useUpsertSession();
