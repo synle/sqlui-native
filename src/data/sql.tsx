@@ -52,6 +52,30 @@ function getSelectAllColumns(input: SqlAction.TableInput): SqlAction.Output | un
   }
 }
 
+function getSelectCount(input: SqlAction.TableInput): SqlAction.Output | undefined {
+  const label = `Select Count`;
+
+  if (!input.columns) {
+    return undefined;
+  }
+
+  const columnString = `\n` + input.columns.map((col) => `  ${col.name}`).join(',\n');
+  const whereColumnString = input.columns.map((col) => `${col.name} = ''`).join('\n -- AND ');
+
+  switch (input.dialect) {
+    case 'mssql':
+    case 'postgres':
+    case 'sqlite':
+    case 'mariadb':
+    case 'mysql':
+      return {
+        label,
+        query: `SELECT COUNT(*) \nFROM ${input.tableId} \n -- WHERE ${whereColumnString}`,
+      };
+  }
+}
+
+
 function getSelectSpecificColumns(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Select Specific Columns`;
 
@@ -310,6 +334,9 @@ export function getTableActions(tableActionInput: SqlAction.TableInput) {
   let action: SqlAction.Output | undefined;
 
   action = getSelectAllColumns(tableActionInput);
+  action && res.push(action);
+
+  action = getSelectCount(tableActionInput);
   action && res.push(action);
 
   action = getSelectSpecificColumns(tableActionInput);
