@@ -27,3 +27,4 @@ dist
 
 main.js
 connections-mocked-server.json
+*.sqlite

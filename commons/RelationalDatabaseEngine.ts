@@ -90,7 +90,7 @@ export class RelationalDatabaseEngine {
       return [];
     }
 
-    const [data] = await this.execute(sql);
+    const [data] = await this._execute(sql);
 
     return data
       .map(
@@ -135,7 +135,7 @@ export class RelationalDatabaseEngine {
       return [];
     }
 
-    [data] = await this.execute(sql, database);
+    [data] = await this._execute(sql, database);
 
     return data
       .map((row: any) => row.tablename)
@@ -173,7 +173,33 @@ export class RelationalDatabaseEngine {
     }
   }
 
-  async execute(sql: string, database?: string): Promise<[SqluiCore.RawData, SqluiCore.MetaData]> {
+  async execute(sql: string, database?: string): Promise<SqluiCore.Result> {
+    // https://sequelize.org/master/manual/raw-queries.html
+    //@ts-ignore
+    try {
+      const [raw, meta] = await this.getConnection(database).query(sql, {
+        raw: true,
+      });
+
+      return {
+        ok: true,
+        raw,
+        meta,
+        executed: Date.now(),
+      };
+    } catch (error) {
+      return {
+        ok: false,
+        error,
+        executed: Date.now(),
+      };
+    }
+  }
+
+  private async _execute(
+    sql: string,
+    database?: string,
+  ): Promise<[SqluiCore.RawData, SqluiCore.MetaData]> {
     // https://sequelize.org/master/manual/raw-queries.html
     //@ts-ignore
     return this.getConnection(database).query(sql, {

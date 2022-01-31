@@ -96,22 +96,13 @@ export default function QueryBox(props: QueryBoxProps) {
         />
       </div>
       <div className='QueryBox__Row'>
-        <Tooltip
-          title={
-            disabledExecute
-              ? 'Connection value and SQL value are required for execution. Please select them up above'
-              : 'Execute the SQL'
-          }>
-          <span>
-            <Button
-              type='submit'
-              variant='contained'
-              disabled={disabledExecute}
-              startIcon={<SendIcon />}>
-              Execute
-            </Button>
-          </span>
-        </Tooltip>
+        <Button
+          type='submit'
+          variant='contained'
+          disabled={disabledExecute}
+          startIcon={<SendIcon />}>
+          Execute
+        </Button>
 
         <Tooltip title='Format the SQL query for readability.'>
           <Button
