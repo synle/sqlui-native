@@ -88,10 +88,6 @@
   align-items: center;
   min-height: 37px;
 
-  // &:hover {
-  //   background: #efefef;
-  // }
-
   * {
     margin-right: 5px;
   }
@@ -136,8 +132,6 @@
 }
 
 .CodeEditorBox {
-  border: 2px solid transparent !important;
-
   &:hover,
   &:focus {
     border: 2px solid #aaa !important;
