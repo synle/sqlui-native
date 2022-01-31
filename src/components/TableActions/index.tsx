@@ -54,6 +54,26 @@ export default function TableActions(props: TableActionsProps) {
   action = getUpdateCommand(tableActionInput);
   action && actions.push(action);
 
+  actions.push({
+    label: 'divider',
+  });
+
+  action = getCreateTable(tableActionInput);
+  action && actions.push(action);
+
+  action = getDropTable(tableActionInput);
+  action && actions.push(action);
+
+  actions.push({
+    label: 'divider',
+  });
+
+  action = getAddColumn(tableActionInput);
+  action && actions.push(action);
+
+  action = getDropColumn(tableActionInput);
+  action && actions.push(action);
+
   const onShowQuery = (queryToShow: string) => {
     onChangeActiveQuery('lastExecuted', undefined); // this is to stop the query from automatically triggered
     onChangeActiveQuery('connectionId', connectionId);
@@ -63,7 +83,7 @@ export default function TableActions(props: TableActionsProps) {
 
   const options = actions.map((action) => ({
     label: action.label,
-    onClick: () => onShowQuery(format(action.query)),
+    onClick: () => action.query && onShowQuery(format(action.query)),
   }));
 
   return (
@@ -92,7 +112,7 @@ interface TableActionInput {
 
 type TableActionOutput = {
   label: string;
-  query: string;
+  query?: string;
 };
 
 const QUERY_LIMIT = 10;
@@ -160,7 +180,7 @@ function getInsertCommand(input: TableActionInput): TableActionOutput | undefine
   const label = `Insert`;
 
   const columnString = input.columns.map((col) => col.name).join(',\n');
-  const insertValueString = input.columns.map((col) => `'?'`).join(',\n');
+  const insertValueString = input.columns.map((col) => `'_${col.name}_'`).join(',\n');
 
   switch (input.dialect) {
     case 'mssql':
@@ -190,6 +210,140 @@ function getUpdateCommand(input: TableActionInput): TableActionOutput | undefine
       return {
         label,
         query: `UPDATE ${input.tableId}\n SET \n${columnString}\n WHERE ${whereColumnString}`,
+      };
+  }
+}
+
+function getCreateTable(input: TableActionInput): TableActionOutput | undefined {
+  const label = `Create Table`;
+  let columnString: string = '';
+
+  // TODO: figure out how to use the defaultval
+  switch (input.dialect) {
+    case 'mssql':
+      columnString = input.columns
+        .map((col) =>
+          [
+            col.name,
+            col.type,
+            col.primaryKey ? 'PRIMARY KEY' : '',
+            col.autoIncrement ? 'IDENTITY' : '',
+            col.allowNull ? '' : 'NOT NULL',
+          ].join(' '),
+        )
+        .join(',\n');
+      return {
+        label,
+        query: `CREATE TABLE ${input.tableId} (${columnString})`,
+      };
+    case 'postgres':
+      columnString = input.columns
+        .map((col) => {
+          const res = [col.name];
+
+          // TODO: better use regex here
+          // nextval(employees_employeeid_seq::regclass)
+          if (
+            col.primaryKey &&
+            col?.defaultValue?.includes('nextval(') &&
+            col?.defaultValue?.includes('_seq::regclass)')
+          ) {
+            res.push('BIGSERIAL PRIMARY KEY');
+          } else {
+            res.push(col.type);
+            res.push(col.allowNull ? '' : 'NOT NULL');
+          }
+
+          return res.join(' ');
+        })
+        .join(',\n');
+      return {
+        label,
+        query: `CREATE TABLE ${input.tableId} (${columnString})`,
+      };
+    case 'sqlite':
+      return {
+        label,
+        query: `CREATE TABLE`,
+      };
+    case 'mariadb':
+    case 'mysql':
+      columnString = input.columns
+        .map((col) =>
+          [
+            col.name,
+            col.type,
+            col.primaryKey ? 'PRIMARY KEY' : '',
+            col.autoIncrement ? 'AUTO_INCREMENT' : '',
+            col.allowNull ? '' : 'NOT NULL',
+          ].join(' '),
+        )
+        .join(',\n');
+      return {
+        label,
+        query: `CREATE TABLE ${input.tableId} (${columnString})`,
+      };
+  }
+}
+
+function getDropTable(input: TableActionInput): TableActionOutput | undefined {
+  const label = `Drop Table`;
+
+  switch (input.dialect) {
+    case 'mssql':
+    case 'postgres':
+    case 'sqlite':
+    case 'mariadb':
+    case 'mysql':
+      return {
+        label,
+        query: `DROP TABLE ${input.tableId}`,
+      };
+  }
+}
+
+function getAddColumn(input: TableActionInput): TableActionOutput | undefined {
+  const label = `Add Column`;
+
+  switch (input.dialect) {
+    case 'mssql':
+      return {
+        label,
+        query: `ALTER TABLE ${input.tableId} ADD COLUMN colname${Date.now()} NVARCHAR(200)`,
+      };
+    case 'postgres':
+      return {
+        label,
+        query: `ALTER TABLE ${input.tableId} ADD COLUMN colname${Date.now()} CHAR(200)`,
+      };
+    case 'sqlite':
+      return {
+        label,
+        query: `ALTER TABLE ${input.tableId} ADD COLUMN colname${Date.now()} varchar(200)`,
+      };
+    case 'mariadb':
+    case 'mysql':
+      return {
+        label,
+        query: `ALTER TABLE ${input.tableId} ADD COLUMN colname${Date.now()} varchar(200)`,
+      };
+  }
+}
+
+function getDropColumn(input: TableActionInput): TableActionOutput | undefined {
+  const label = `Drop Column`;
+
+  switch (input.dialect) {
+    case 'mssql':
+    case 'postgres':
+    case 'sqlite':
+    case 'mariadb':
+    case 'mysql':
+      return {
+        label,
+        query: input.columns
+          .map((col) => `--ALTER TABLE ${input.tableId} DROP COLUMN ${col.name}`)
+          .join('\n'),
       };
   }
 }
