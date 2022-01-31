@@ -466,7 +466,7 @@ export function useConnectionQueries() {
       if (query.id === queryId) {
         return {
           ...query,
-          ...{ [key]: value || '' },
+          ...{ [key]: value },
         };
       }
 

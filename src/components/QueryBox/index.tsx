@@ -69,7 +69,7 @@ export default function QueryBox(props: QueryBoxProps) {
     e.preventDefault();
     setExecuting(true);
     onChange('executionStart', Date.now());
-    onChange('result', undefined); // clear result
+    onChange('result', []); // clear result
 
     try {
       const newResult = await executeQuery(query);
