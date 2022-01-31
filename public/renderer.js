@@ -48,17 +48,11 @@ try {
             headers,
           );
 
-          data.ok
-            ? resolve({
-                ok,
-                text: () => text,
-                headers,
-              })
-            : reject({
-                ok,
-                text: () => text,
-                headers,
-              });
+          resolve({
+            ok,
+            text: () => text,
+            headers,
+          })
         });
         ipcRenderer.send('sqluiNativeEvent/fetch', { requestId, url, options });
       });
