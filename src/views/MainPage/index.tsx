@@ -1,7 +1,7 @@
 import React, { useState, createRef, useEffect } from 'react';
 import NewConnectionButton from 'src/components/NewConnectionButton';
 import ConnectionDescription from 'src/components/ConnectionDescription';
-import QueryResultTabs from 'src/components/QueryResultTabs';
+import QueryBoxTabs from 'src/components/QueryBoxTabs';
 import Resizer from 'src/components/Resizer';
 
 export default function MainPage() {
@@ -15,7 +15,7 @@ export default function MainPage() {
       </div>
       <Resizer onSetWidth={setWidth} />
       <div className='LayoutTwoColumns__RightPane'>
-        <QueryResultTabs />
+        <QueryBoxTabs />
       </div>
     </section>
   );

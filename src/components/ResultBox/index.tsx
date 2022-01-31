@@ -18,54 +18,36 @@ import Tabs from 'src/components/Tabs';
 import { downloadText } from 'src/data/file';
 import CodeEditorBox from 'src/components/CodeEditorBox';
 import Timer from 'src/components/Timer';
+import { SqluiCore, SqluiFrontend } from 'typings';
 
 interface ResultBoxProps {
-  queryId: string;
+  query: SqluiFrontend.ConnectionQuery;
+  executing: boolean;
 }
 
 export default function ResultBox(props: ResultBoxProps) {
-  const { queryId } = props;
-  const { query, isFetching: loadingQuery } = useConnectionQuery(queryId);
   const [tabIdx, setTabIdx] = useState(0);
-  const {
-    data: queryResult,
-    error: queryError,
-    isFetching: loadingResults,
-    isError,
-  } = useExecute(query);
-
+  const { query, executing } = props;
+  const queryResult = query.result;
   const data = queryResult?.raw;
-  const error = queryResult?.error || queryError;
+  const error = queryResult?.error;
 
-  if (loadingResults) {
+  if (executing) {
     return (
       <Alert severity='info' icon={<CircularProgress size={15} />}>
-        Loading Query <Timer startTime={query?.lastExecuted} endTime={queryResult?.executed} />
+        Loading <Timer startTime={query?.executionStart} endTime={query?.executionEnd} />
         ...
       </Alert>
     );
   }
 
-  if (loadingResults) {
-    return (
-      <Alert severity='info' icon={<CircularProgress size={15} />}>
-        Loading Results <Timer startTime={query?.lastExecuted} endTime={queryResult?.executed} />
-        ...
-      </Alert>
-    );
-  }
-
-  if (isError || error) {
+  if (error) {
     let errorToDisplay: any = error;
     errorToDisplay = errorToDisplay?.original || errorToDisplay?.original || errorToDisplay;
 
     return (
       <>
-        <Alert severity='error'>
-          Query Error (took{' '}
-          <Timer startTime={query?.lastExecuted} endTime={queryResult?.executed} />
-          )...
-        </Alert>
+        <QueryTimeDescription query={query} />
         <CodeEditorBox
           value={JSON.stringify(errorToDisplay, null, 2)}
           language='json'
@@ -87,9 +69,7 @@ export default function ResultBox(props: ResultBoxProps) {
     // for inserts / update queries
     return (
       <div className='ResultBox'>
-        <Alert severity='info'>
-          Query took <Timer startTime={query?.lastExecuted} endTime={queryResult?.executed} />
-        </Alert>
+        <QueryTimeDescription query={query} />
         <JsonFormatData data={[queryResult.raw, queryResult.meta]} />
       </div>
     );
@@ -143,7 +123,7 @@ export default function ResultBox(props: ResultBoxProps) {
   return (
     <div className='ResultBox'>
       <Alert severity='info'>
-        Query took <Timer startTime={query?.lastExecuted} endTime={queryResult?.executed} />
+        Query took <Timer startTime={query?.executionStart} endTime={query?.executionEnd} />
       </Alert>
       <Tabs
         tabIdx={tabIdx}
@@ -217,5 +197,18 @@ function TableFormatData(props: FormatDataProps) {
         </TableBody>
       </Table>
     </TableContainer>
+  );
+}
+
+interface QueryTimeDescriptionProps {
+  query: SqluiFrontend.ConnectionQuery;
+}
+
+function QueryTimeDescription(props: QueryTimeDescriptionProps) {
+  const { query } = props;
+  return (
+    <Alert severity='info'>
+      Query took <Timer startTime={query?.executionStart} endTime={query?.executionEnd} />
+    </Alert>
   );
 }
