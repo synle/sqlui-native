@@ -41,8 +41,10 @@ export default function DatabaseDescription(props: DatabaseDescriptionProps) {
     e.preventDefault();
     e.stopPropagation();
 
-    onChangeActiveQuery('connectionId', connectionId);
-    onChangeActiveQuery('databaseId', databaseId);
+    onChangeActiveQuery({
+      connectionId: connectionId,
+      databaseId: databaseId,
+    });
   };
 
   return (

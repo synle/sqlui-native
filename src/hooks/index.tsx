@@ -452,8 +452,7 @@ export function useConnectionQueries() {
 
   const onChangeQuery = async (
     queryId: string | undefined,
-    key: keyof SqluiFrontend.ConnectionQuery,
-    value?: any,
+    partials: SqluiFrontend.PartialConnectionQuery,
   ) => {
     const query = queries?.find((q) => q.id === queryId);
 
@@ -466,7 +465,7 @@ export function useConnectionQueries() {
       if (query.id === queryId) {
         return {
           ...query,
-          ...{ [key]: value || '' },
+          ...{ ...partials },
         };
       }
 
@@ -523,8 +522,8 @@ export function useConnectionQuery(queryId: string) {
 
   const query = queries?.find((q) => q.id === queryId);
 
-  const onChange = (key: keyof SqluiFrontend.ConnectionQuery, value?: any) =>
-    onChangeQuery(query?.id, key, value);
+  const onChange = (partials: SqluiFrontend.PartialConnectionQuery) =>
+    onChangeQuery(query?.id, partials);
 
   const onDelete = () => onDeleteQuery(query?.id);
 
@@ -544,8 +543,8 @@ export function useActiveConnectionQuery() {
 
   const query = queries?.find((q) => q.selected);
 
-  const onChange = (key: keyof SqluiFrontend.ConnectionQuery, value?: any) =>
-    onChangeQuery(query?.id, key, value);
+  const onChange = (partials: SqluiFrontend.PartialConnectionQuery) =>
+    onChangeQuery(query?.id, partials);
 
   const onDelete = () => onDeleteQuery(query?.id);
 
