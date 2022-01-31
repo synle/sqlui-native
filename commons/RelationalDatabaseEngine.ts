@@ -177,14 +177,52 @@ export class RelationalDatabaseEngine {
     // https://sequelize.org/master/manual/raw-queries.html
     //@ts-ignore
     try {
-      const [raw, meta] = await this.getConnection(database).query(sql, {
+      let [raw, meta] = await this.getConnection(database).query(sql, {
         raw: true,
       });
 
+      let rawToUse : any | undefined= raw;
+      let metaToUse : any | undefined = meta;
+      let affectedRows;
+
+      switch (this.dialect) {
+        case 'mssql':
+          affectedRows = metaToUse;
+          break;
+        case 'postgres':
+          if(metaToUse.rowCount >= 0){
+            affectedRows = metaToUse.rowCount
+          }
+          // Postgres returns a lot of redundant data, best to remove it to save space...
+          metaToUse = undefined;
+          break;
+        case 'sqlite':
+          if(metaToUse.changes >= 0){
+            affectedRows = metaToUse.changes;
+          } else {
+            metaToUse = undefined;
+          }
+          break;
+        case 'mariadb':
+        case 'mysql':
+          if(metaToUse?.affectedRows){
+            // these are likely insert / update calls
+            // these don't need raw data
+            rawToUse = undefined;
+            affectedRows = metaToUse?.affectedRows;
+          } else {
+            // these are select calls, we don't need the meta
+            metaToUse = undefined;
+          }
+        default:
+          break;
+      }
+
       return {
         ok: true,
-        raw,
-        meta,
+        raw: rawToUse,
+        meta: metaToUse,
+        affectedRows,
       };
     } catch (error) {
       return {
