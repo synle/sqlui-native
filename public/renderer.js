@@ -52,7 +52,7 @@ try {
             ok,
             text: () => text,
             headers,
-          })
+          });
         });
         ipcRenderer.send('sqluiNativeEvent/fetch', { requestId, url, options });
       });

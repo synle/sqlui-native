@@ -54,6 +54,9 @@ export default function TableActions(props: TableActionsProps) {
   action = getUpdateCommand(tableActionInput);
   action && actions.push(action);
 
+  action = getDropTable(tableActionInput);
+  action && actions.push(action);
+
   const onShowQuery = (queryToShow: string) => {
     onChangeActiveQuery('lastExecuted', undefined); // this is to stop the query from automatically triggered
     onChangeActiveQuery('connectionId', connectionId);
@@ -193,8 +196,6 @@ function getUpdateCommand(input: TableActionInput): TableActionOutput | undefine
       };
   }
 }
-
-
 
 function getDropTable(input: TableActionInput): TableActionOutput | undefined {
   const label = `Drop`;
