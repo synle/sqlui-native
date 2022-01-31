@@ -193,3 +193,21 @@ function getUpdateCommand(input: TableActionInput): TableActionOutput | undefine
       };
   }
 }
+
+
+
+function getDropTable(input: TableActionInput): TableActionOutput | undefined {
+  const label = `Drop`;
+
+  switch (input.dialect) {
+    case 'mssql':
+    case 'postgres':
+    case 'sqlite':
+    case 'mariadb':
+    case 'mysql':
+      return {
+        label,
+        query: `DROP TABLE ${input.tableId}`,
+      };
+  }
+}
