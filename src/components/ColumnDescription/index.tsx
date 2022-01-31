@@ -64,7 +64,7 @@ export default function ColumnDescription(props: ColumnDescriptionProps) {
                 <ViewColumnIcon color='disabled' fontSize='inherit' />
                 <span>{column.name}</span>
                 <i className='ColumnDescription__Type' style={{ color: grey[700] }}>
-                  {column.name}
+                  {column.type}
                 </i>
               </AccordionHeader>
               <AccordionBody expanded={visibles[key]}>
@@ -94,9 +94,14 @@ function ColumnAttributes(props: ColumnAttributesProps) {
 
       if (value === true) {
         value = 'Yes';
-      } else if (value === 'false') {
+      } else if (value === false) {
         value = 'No';
+      } else if (Array.isArray(value)) {
+        value = JSON.stringify(value);
+      } else if (value === null) {
+        value = 'null';
       }
+
       return {
         name: key,
         value: value,
@@ -106,14 +111,16 @@ function ColumnAttributes(props: ColumnAttributesProps) {
 
   return (
     <div className='AttributeDescription' style={{ color: grey[700] }}>
-      {attributes.map((attr) => (
-        <div key={attr.name}>
-          <div>
-            <b>{attr.name}</b>
+      {attributes
+        .filter((attr) => ['name'].indexOf(attr.name) === -1)
+        .map((attr) => (
+          <div key={attr.name}>
+            <div>
+              <b>{attr.name}</b>
+            </div>
+            <div>{attr.value}</div>
           </div>
-          <div>{attr.value}</div>
-        </div>
-      ))}
+        ))}
     </div>
   );
 }
