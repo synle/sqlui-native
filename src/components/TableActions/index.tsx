@@ -57,6 +57,9 @@ export default function TableActions(props: TableActionsProps) {
   action = getDropTable(tableActionInput);
   action && actions.push(action);
 
+  action = getDropColumn(tableActionInput);
+  action && actions.push(action);
+
   const onShowQuery = (queryToShow: string) => {
     onChangeActiveQuery('lastExecuted', undefined); // this is to stop the query from automatically triggered
     onChangeActiveQuery('connectionId', connectionId);
@@ -198,7 +201,7 @@ function getUpdateCommand(input: TableActionInput): TableActionOutput | undefine
 }
 
 function getDropTable(input: TableActionInput): TableActionOutput | undefined {
-  const label = `Drop`;
+  const label = `Drop Table`;
 
   switch (input.dialect) {
     case 'mssql':
@@ -209,6 +212,24 @@ function getDropTable(input: TableActionInput): TableActionOutput | undefined {
       return {
         label,
         query: `DROP TABLE ${input.tableId}`,
+      };
+  }
+}
+
+
+function getDropColumn(input: TableActionInput): TableActionOutput | undefined {
+  const label = `Drop Column`;
+
+
+  switch (input.dialect) {
+    case 'mssql':
+    case 'postgres':
+    case 'sqlite':
+    case 'mariadb':
+    case 'mysql':
+      return {
+        label,
+        query: input.columns.map((col) => `--ALTER TABLE ${input.tableId} DROP COLUMN ${col.name}`).join('\n'),
       };
   }
 }
