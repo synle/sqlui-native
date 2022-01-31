@@ -1,0 +1,8 @@
+title: sqlui-native
+description: sqlui-native is a simple UI client for most SQL Engines written in Electron. It is compatible with most desktop OS’s and support most dialects.
+show_downloads: true
+google_analytics:
+github:
+  mac_url: https://github.com/synle/sqlui-native/releases/download/1.0.0/sqlui-native-1.0.0.dmg
+  windows_url: https://github.com/synle/sqlui-native/releases/download/1.0.0/sqlui-native.Setup.1.0.0.exe
+theme: jekyll-theme-cayman
