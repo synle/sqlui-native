@@ -24,6 +24,12 @@ export module SqlAction {
 
 const QUERY_LIMIT = 10;
 
+function getDivider() {
+  return {
+    label: 'divider',
+  };
+}
+
 function getSelectAllColumns(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Select All Columns`;
 
@@ -48,6 +54,28 @@ function getSelectAllColumns(input: SqlAction.TableInput): SqlAction.Output | un
       return {
         label,
         query: `SELECT * \nFROM ${input.tableId} \nLIMIT ${QUERY_LIMIT}`,
+      };
+  }
+}
+
+function getSelectCount(input: SqlAction.TableInput): SqlAction.Output | undefined {
+  const label = `Select Count`;
+
+  if (!input.columns) {
+    return undefined;
+  }
+
+  const whereColumnString = input.columns.map((col) => `-- ${col.name} = ''`).join(' AND \n');
+
+  switch (input.dialect) {
+    case 'mssql':
+    case 'postgres':
+    case 'sqlite':
+    case 'mariadb':
+    case 'mysql':
+      return {
+        label,
+        query: `SELECT COUNT(*) \nFROM ${input.tableId} \n -- WHERE \n ${whereColumnString}`,
       };
   }
 }
@@ -306,40 +334,26 @@ function getDropColumns(input: SqlAction.TableInput): SqlAction.Output | undefin
 }
 
 export function getTableActions(tableActionInput: SqlAction.TableInput) {
-  let res: SqlAction.Output[] = [];
-  let action: SqlAction.Output | undefined;
+  const actions: SqlAction.Output[] = [];
 
-  action = getSelectAllColumns(tableActionInput);
-  action && res.push(action);
-
-  action = getSelectSpecificColumns(tableActionInput);
-  action && res.push(action);
-
-  action = getInsertCommand(tableActionInput);
-  action && res.push(action);
-
-  action = getUpdateCommand(tableActionInput);
-  action && res.push(action);
-
-  res.push({
-    label: 'divider',
+  [
+    getSelectAllColumns,
+    getSelectCount,
+    getSelectSpecificColumns,
+    getInsertCommand,
+    getUpdateCommand,
+    getDivider,
+    getCreateTable,
+    getDropTable,
+    getDivider,
+    getAddColumn,
+    getDropColumns,
+  ].forEach((fn) => {
+    const action = fn(tableActionInput);
+    if (action) {
+      actions.push(action);
+    }
   });
 
-  action = getCreateTable(tableActionInput);
-  action && res.push(action);
-
-  action = getDropTable(tableActionInput);
-  action && res.push(action);
-
-  res.push({
-    label: 'divider',
-  });
-
-  action = getAddColumn(tableActionInput);
-  action && res.push(action);
-
-  action = getDropColumns(tableActionInput);
-  action && res.push(action);
-
-  return res;
+  return actions;
 }
