@@ -65,8 +65,7 @@ function getSelectCount(input: SqlAction.TableInput): SqlAction.Output | undefin
     return undefined;
   }
 
-  const columnString = `\n` + input.columns.map((col) => `  ${col.name}`).join(',\n');
-  const whereColumnString = input.columns.map((col) => `${col.name} = ''`).join('\n -- AND ');
+  const whereColumnString = input.columns.map((col) => `-- ${col.name} = ''`).join(' AND \n');
 
   switch (input.dialect) {
     case 'mssql':
@@ -76,7 +75,7 @@ function getSelectCount(input: SqlAction.TableInput): SqlAction.Output | undefin
     case 'mysql':
       return {
         label,
-        query: `SELECT COUNT(*) \nFROM ${input.tableId} \n -- WHERE ${whereColumnString}`,
+        query: `SELECT COUNT(*) \nFROM ${input.tableId} \n -- WHERE \n ${whereColumnString}`,
       };
   }
 }
