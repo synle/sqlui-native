@@ -47,6 +47,7 @@ export module SqluiCore {
     raw?: RawData;
     meta?: MetaData;
     error?: any;
+    affectedRows?: number;
   };
 
   // connection queries
