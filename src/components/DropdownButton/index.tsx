@@ -80,7 +80,7 @@ export default function DropdownButton(props: DropdownButtonProps) {
         {options.map((option, index) => {
           let content;
           if (option.label === 'divider') {
-            return (content = <Divider key={index} />);
+            return (content = <Divider key={index} sx={{ marginBlock: 1 }} />);
           } else {
             content = (
               <MenuItem onClick={(event) => handleMenuItemClick(event, index)}>

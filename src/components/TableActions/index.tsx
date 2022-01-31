@@ -64,6 +64,10 @@ export default function TableActions(props: TableActionsProps) {
   action = getDropTable(tableActionInput);
   action && actions.push(action);
 
+  actions.push({
+    label: 'divider',
+  });
+
   action = getAddColumn(tableActionInput);
   action && actions.push(action);
 
@@ -212,12 +216,51 @@ function getUpdateCommand(input: TableActionInput): TableActionOutput | undefine
 
 function getCreateTable(input: TableActionInput): TableActionOutput | undefined {
   const label = `Create Table`;
-  let columnString : string ='';
-  // TODO: fix me...
+  let columnString: string = '';
 
+  // TODO: figure out how to use the defaultval
   switch (input.dialect) {
     case 'mssql':
+      columnString = input.columns
+        .map((col) =>
+          [
+            col.name,
+            col.type,
+            col.primaryKey ? 'PRIMARY KEY' : '',
+            col.autoIncrement ? 'IDENTITY' : '',
+            col.allowNull ? '' : 'NOT NULL',
+          ].join(' '),
+        )
+        .join(',\n');
+      return {
+        label,
+        query: `CREATE TABLE ${input.tableId} (${columnString})`,
+      };
     case 'postgres':
+      columnString = input.columns
+        .map((col) => {
+          const res = [col.name];
+
+          // TODO: better use regex here
+          // nextval(employees_employeeid_seq::regclass)
+          if (
+            col.primaryKey &&
+            col?.defaultValue?.includes('nextval(') &&
+            col?.defaultValue?.includes('_seq::regclass)')
+          ) {
+            res.push('BIGSERIAL PRIMARY KEY');
+          } else {
+            res.push(col.type);
+            res.push(col.allowNull ? '' : 'NOT NULL');
+          }
+
+          return res.join(' ');
+        })
+        .join(',\n');
+      return {
+        label,
+        query: `CREATE TABLE ${input.tableId} (${columnString})`,
+      };
     case 'sqlite':
       return {
         label,
@@ -264,8 +307,20 @@ function getAddColumn(input: TableActionInput): TableActionOutput | undefined {
 
   switch (input.dialect) {
     case 'mssql':
+      return {
+        label,
+        query: `ALTER TABLE ${input.tableId} ADD COLUMN colname${Date.now()} NVARCHAR(200)`,
+      };
     case 'postgres':
+      return {
+        label,
+        query: `ALTER TABLE ${input.tableId} ADD COLUMN colname${Date.now()} CHAR(200)`,
+      };
     case 'sqlite':
+      return {
+        label,
+        query: `ALTER TABLE ${input.tableId} ADD COLUMN colname${Date.now()} varchar(200)`,
+      };
     case 'mariadb':
     case 'mysql':
       return {
