@@ -53,6 +53,7 @@ function setupMenu() {
           type: 'separator',
         },
         {
+          id: 'menu-connection-new',
           label: 'New Connection',
           accelerator: isMac ? 'Cmd+N' : 'Ctrl+N',
           click: async (item, win) =>
@@ -62,23 +63,19 @@ function setupMenu() {
           type: 'separator',
         },
         {
+          id: 'menu-import',
           label: 'Import',
           accelerator: isMac ? 'Cmd+O' : 'Ctrl+O',
           click: async (item, win) => sendMessage(win as BrowserWindow, 'clientEvent/import'),
         },
         {
+          id: 'menu-export',
           label: 'Export',
           accelerator: isMac ? 'Cmd+S' : 'Ctrl+S',
           click: async (item, win) => sendMessage(win as BrowserWindow, 'clientEvent/exportAll'),
         },
         {
           type: 'separator',
-        },
-        {
-          label: 'Close Query',
-          accelerator: isMac ? 'Cmd+W' : 'Ctrl+W',
-          click: async (item, win) =>
-            sendMessage(win as BrowserWindow, 'clientEvent/query/closeCurrentlySelected'),
         },
         isMac ? { role: 'close', accelerator: 'Cmd+Q' } : { role: 'quit', accelerator: 'Alt+F4' },
       ],
@@ -87,6 +84,7 @@ function setupMenu() {
       label: 'Query',
       submenu: [
         {
+          id: 'menu-query-new',
           label: 'New Query',
           accelerator: isMac ? 'Cmd+T' : 'Ctrl+T',
           click: async (item, win) => sendMessage(win as BrowserWindow, 'clientEvent/query/new'),
@@ -95,14 +93,28 @@ function setupMenu() {
           type: 'separator',
         },
         {
+          id: 'menu-query-prev',
           label: 'Prev Query',
           accelerator: isMac ? 'Cmd+Shift+[' : 'Alt+Shift+[',
-          click: async (item, win) => sendMessage(win as BrowserWindow, 'clientEvent/query/showPrev'),
+          click: async (item, win) =>
+            sendMessage(win as BrowserWindow, 'clientEvent/query/showPrev'),
         },
         {
+          id: 'menu-query-next',
           label: 'Next Query',
           accelerator: isMac ? 'Cmd+Shift+]' : 'Alt+Shift+]',
-          click: async (item, win) => sendMessage(win as BrowserWindow, 'clientEvent/query/showNext'),
+          click: async (item, win) =>
+            sendMessage(win as BrowserWindow, 'clientEvent/query/showNext'),
+        },
+        {
+          type: 'separator',
+        },
+        {
+          id: 'menu-query-close',
+          label: 'Close Query',
+          accelerator: isMac ? 'Cmd+W' : 'Ctrl+W',
+          click: async (item, win) =>
+            sendMessage(win as BrowserWindow, 'clientEvent/query/closeCurrentlySelected'),
         },
       ],
     },
@@ -110,12 +122,14 @@ function setupMenu() {
       label: 'Session',
       submenu: [
         {
+          id: 'menu-session-rename',
           label: 'Rename Session',
           click: async (item, win) =>
             sendMessage(win as BrowserWindow, 'clientEvent/session/rename'),
         },
         {
-          label: 'Change Session',
+          id: 'menu-session-switch',
+          label: 'Switch Session',
           click: async (item, win) =>
             sendMessage(win as BrowserWindow, 'clientEvent/session/switch'),
         },
@@ -138,10 +152,10 @@ function setupMenu() {
         { role: 'resetZoom' },
         { role: 'zoomIn' },
         {
-          role: 'zoomIn' ,
+          role: 'zoomIn',
           accelerator: isMac ? 'Cmd+=' : 'Ctrl+=',
           visible: false,
-          acceleratorWorksWhenHidden: true
+          acceleratorWorksWhenHidden: true,
         },
         { role: 'zoomOut' },
         { type: 'separator' },
@@ -209,9 +223,18 @@ ipcMain.handle('dark-mode:system', () => {
   nativeTheme.themeSource = 'system';
 });
 
-
-ipcMain.on('sqluiNativeEvent/toggleMenu', function (event, data) {
-  console.log('>> sqluiNativeEvent/toggleMenu', event, data);
+ipcMain.on('sqluiNativeEvent/toggleMenus', function (event, data) {
+  const [enabled, ...targetMenuIds] = data;
+  // console.log('>> Toggle Menus', enabled, targetMenuIds);
+  for (const targetMenuId of targetMenuIds) {
+    try {
+      //@ts-ignore
+      let menuItem: any = Menu.getApplicationMenu().getMenuItemById(targetMenuId);
+      menuItem.enabled = enabled;
+    } catch (err) {
+      console.log('>> Failed to toggle Menu', data, err);
+    }
+  }
 });
 
 // this is the event listener that will respond when we will request it in the web page

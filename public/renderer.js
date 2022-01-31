@@ -6,11 +6,16 @@
 // process.
 try {
   window.isElectron = false;
+  window.toggleElectronMenu = () => {};
 
   if (process.env.ENV_TYPE !== 'mocked-server') {
     const ipcRenderer = require('electron').ipcRenderer;
     window.ipcRenderer = ipcRenderer;
     window.isElectron = true;
+    window.toggleElectronMenu = (visible, menus) => {
+      menus = [].concat(menus);
+      ipcRenderer.send('sqluiNativeEvent/toggleMenus', [visible, ...menus]);
+    };
 
     // here we are polyfilling fetch with ipcRenderer
     const origFetch = window.fetch;
