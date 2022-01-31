@@ -44,11 +44,11 @@ export default function AppHeader() {
   const { mutateAsync: upsertSession } = useUpsertSession();
   const { selectCommand } = useCommands();
 
-  const onChangeSession = () => selectCommand({ event: 'clientEvent.changeSession' });
+  const onChangeSession = () => selectCommand({ event: 'clientEvent/session/switch' });
 
-  const onAddSession = () => selectCommand({ event: 'clientEvent.import' });
+  const onAddSession = () => selectCommand({ event: 'clientEvent/import' });
 
-  const onRenameSession = () => selectCommand({ event: 'clientEvent.renameSession' });
+  const onRenameSession = () => selectCommand({ event: 'clientEvent/session/rename' });
 
   const options = [
     {

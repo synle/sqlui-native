@@ -335,53 +335,53 @@ export default function MissionControl() {
 
       switch (command.event) {
         // overall commands
-        case 'clientEvent.import':
+        case 'clientEvent/import':
           onImport();
           break;
-        case 'clientEvent.exportAll':
+        case 'clientEvent/exportAll':
           onExportAll();
           break;
 
         // connection commands
-        case 'clientEvent.newConnection':
+        case 'clientEvent/connection.new':
           onNewConnection();
           break;
 
         // query commands
-        case 'clientEvent.newQuery':
+        case 'clientEvent/query/new':
           onAddQuery();
           break;
-        case 'clientEvent.showQuery':
+        case 'clientEvent/query/show':
           if (command.data) {
             onShowQuery((command.data as SqluiFrontend.ConnectionQuery).id);
           }
           break;
-        case 'clientEvent.renameQuery':
+        case 'clientEvent/query/rename':
           if (command.data) {
             onRenameQuery(command.data as SqluiFrontend.ConnectionQuery);
           }
           break;
-        case 'clientEvent.exportQuery':
+        case 'clientEvent/query/export':
           if (command.data) {
             onExportQuery(command.data as SqluiFrontend.ConnectionQuery);
           }
           break;
-        case 'clientEvent.duplicateQuery':
+        case 'clientEvent/query/duplicate':
           if (command.data) {
             onDuplicateQuery(command.data as SqluiFrontend.ConnectionQuery);
           }
           break;
-        case 'clientEvent.closeQuery':
+        case 'clientEvent/query/close':
           if (command.data) {
             onCloseQuery(command.data as SqluiFrontend.ConnectionQuery);
           }
           break;
-        case 'clientEvent.closeOtherQueries':
+        case 'clientEvent/query/closeOther':
           if (command.data) {
             onCloseOtherQueries(command.data as SqluiFrontend.ConnectionQuery);
           }
           break;
-        case 'clientEvent.closeCurrentlySelectedQuery':
+        case 'clientEvent/query/closeCurrentlySelected':
           // this closes the active query
           if (activeQuery) {
             onCloseQuery(activeQuery);
@@ -389,13 +389,13 @@ export default function MissionControl() {
           break;
 
         // session commands
-        case 'clientEvent.changeSession':
+        case 'clientEvent/session/switch':
           onChangeSession();
           break;
-        case 'clientEvent.newSession':
+        case 'clientEvent/session/new':
           onAddSession();
           break;
-        case 'clientEvent.renameSession':
+        case 'clientEvent/session/rename':
           onRenameSession();
           break;
       }
