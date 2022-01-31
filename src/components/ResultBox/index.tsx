@@ -112,20 +112,15 @@ export default function ResultBox(props: ResultBoxProps) {
       </Tooltip>
     </>,
     <>
-      CSV{' '}
+      Table{' '}
       <Tooltip title='Download Result CSV'>
         <DownloadIcon fontSize='small' onClick={onDownloadCsv} />
       </Tooltip>
-    </>,
-    <>Table</>,
-  ];
+    </>,  ];
 
   const tabContents = [
     <div className='ResultBox__Content' key={`JSON`}>
       <JsonFormatData data={data} />
-    </div>,
-    <div className='ResultBox__Content' key={`CSV`}>
-      <CsvFormatData data={data} />
     </div>,
     <div className='ResultBox__Content' key={`Table`}>
       <TableFormatData data={data} />
