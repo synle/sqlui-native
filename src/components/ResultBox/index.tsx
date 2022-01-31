@@ -83,11 +83,7 @@ export default function ResultBox(props: ResultBoxProps) {
     return null;
   }
 
-  if (!data) {
-    return null;
-  }
-
-  if (!Array.isArray(data) || data.length === 0) {
+  if (!data || !Array.isArray(data) || data.length === 0) {
     // for inserts / update queries
     return (
       <div className='ResultBox'>
