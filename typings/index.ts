@@ -118,7 +118,13 @@ export module SqluiEnums {
   export type ClientEventKey =
     | 'clientEvent.newConnection'
     | 'clientEvent.newQuery'
+    | 'clientEvent.renameQuery'
+    | 'clientEvent.exportQuery'
+    | 'clientEvent.duplicateQuery'
+    | 'clientEvent.showQuery'
     | 'clientEvent.closeQuery'
+    | 'clientEvent.closeCurrentlySelectedQuery'
+    | 'clientEvent.closeOtherQueries'
     | 'clientEvent.import'
     | 'clientEvent.exportAll'
     | 'clientEvent.newSession'

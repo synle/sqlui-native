@@ -82,7 +82,8 @@ function setupMenu() {
         {
           label: 'Close Query',
           accelerator: isMac ? 'Cmd+W' : 'Ctrl+W',
-          click: async (item, win) => sendMessage(win as BrowserWindow, 'clientEvent.closeQuery'),
+          click: async (item, win) =>
+            sendMessage(win as BrowserWindow, 'clientEvent.closeCurrentlySelectedQuery'),
         },
         isMac ? { role: 'close', accelerator: 'Cmd+Q' } : { role: 'quit', accelerator: 'Alt+F4' },
       ],

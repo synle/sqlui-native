@@ -61,20 +61,18 @@ export default function ConnectionDescription() {
 
         return (
           <React.Fragment key={key}>
-            <List>
-              <AccordionHeader expanded={visibles[key]} onToggle={() => onToggle(key)}>
-                <ConnectionDialectIcon connection={connection} />
-                <span>{connection.name}</span>
-                <ConnectionActions connection={connection} />
-              </AccordionHeader>
-              <AccordionBody expanded={visibles[key]}>
-                {isOnline ? (
-                  <DatabaseDescription connectionId={connection.id} />
-                ) : (
-                  <ConnectionRetryAlert connectionId={connection.id} />
-                )}
-              </AccordionBody>
-            </List>
+            <AccordionHeader expanded={visibles[key]} onToggle={() => onToggle(key)}>
+              <ConnectionDialectIcon connection={connection} />
+              <span>{connection.name}</span>
+              <ConnectionActions connection={connection} />
+            </AccordionHeader>
+            <AccordionBody expanded={visibles[key]}>
+              {isOnline ? (
+                <DatabaseDescription connectionId={connection.id} />
+              ) : (
+                <ConnectionRetryAlert connectionId={connection.id} />
+              )}
+            </AccordionBody>
           </React.Fragment>
         );
       })}

@@ -42,7 +42,7 @@ export default function AppHeader() {
   const { data: sessions, isLoading } = useGetSessions();
   const { data: currentSession, isLoading: loadingCurrentSession } = useGetCurrentSession();
   const { mutateAsync: upsertSession } = useUpsertSession();
-  const { dismissCommand, selectCommand } = useCommands();
+  const { selectCommand } = useCommands();
 
   const onChangeSession = () => selectCommand({ event: 'clientEvent.changeSession' });
 

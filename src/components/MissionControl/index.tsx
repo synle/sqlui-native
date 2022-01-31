@@ -82,7 +82,7 @@ export default function MissionControl() {
     onShowQuery,
     onChangeQuery,
     onDeleteQueries,
-    onDuplicateQuery,
+    onDuplicateQuery: _onDuplicateQuery,
     onImportQuery,
     isLoading: loadingQueries,
   } = useConnectionQueries();
@@ -127,8 +127,8 @@ export default function MissionControl() {
     }
   };
 
-  const onDuplicate = async (query: SqluiFrontend.ConnectionQuery) => {
-    onDuplicateQuery(query.id);
+  const onDuplicateQuery = async (query: SqluiFrontend.ConnectionQuery) => {
+    _onDuplicateQuery(query.id);
   };
 
   const onExportQuery = async (query: SqluiFrontend.ConnectionQuery) => {
@@ -334,24 +334,61 @@ export default function MissionControl() {
       dismissCommand();
 
       switch (command.event) {
+        // overall commands
         case 'clientEvent.import':
           onImport();
           break;
         case 'clientEvent.exportAll':
           onExportAll();
           break;
+
+        // connection commands
         case 'clientEvent.newConnection':
           onNewConnection();
           break;
+
+        // query commands
         case 'clientEvent.newQuery':
           onAddQuery();
           break;
+        case 'clientEvent.showQuery':
+          if (command.data) {
+            onShowQuery((command.data as SqluiFrontend.ConnectionQuery).id);
+          }
+          break;
+        case 'clientEvent.renameQuery':
+          if (command.data) {
+            onRenameQuery(command.data as SqluiFrontend.ConnectionQuery);
+          }
+          break;
+        case 'clientEvent.exportQuery':
+          if (command.data) {
+            onExportQuery(command.data as SqluiFrontend.ConnectionQuery);
+          }
+          break;
+        case 'clientEvent.duplicateQuery':
+          if (command.data) {
+            onDuplicateQuery(command.data as SqluiFrontend.ConnectionQuery);
+          }
+          break;
         case 'clientEvent.closeQuery':
+          if (command.data) {
+            onCloseQuery(command.data as SqluiFrontend.ConnectionQuery);
+          }
+          break;
+        case 'clientEvent.closeOtherQueries':
+          if (command.data) {
+            onCloseOtherQueries(command.data as SqluiFrontend.ConnectionQuery);
+          }
+          break;
+        case 'clientEvent.closeCurrentlySelectedQuery':
           // this closes the active query
           if (activeQuery) {
             onCloseQuery(activeQuery);
           }
           break;
+
+        // session commands
         case 'clientEvent.changeSession':
           onChangeSession();
           break;
