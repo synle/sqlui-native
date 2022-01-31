@@ -262,9 +262,20 @@ function getCreateTable(input: TableActionInput): TableActionOutput | undefined 
         query: `CREATE TABLE ${input.tableId} (${columnString})`,
       };
     case 'sqlite':
+      columnString = input.columns
+        .map((col) =>
+          [
+            col.name,
+            col.type,
+            col.primaryKey ? 'PRIMARY KEY' : '',
+            col.autoIncrement ? 'AUTOINCREMENT' : '',
+            col.allowNull ? '' : 'NOT NULL',
+          ].join(' '),
+        )
+        .join(',\n');
       return {
         label,
-        query: `CREATE TABLE`,
+        query: `CREATE TABLE ${input.tableId} (${columnString})`,
       };
     case 'mariadb':
     case 'mysql':
@@ -319,7 +330,7 @@ function getAddColumn(input: TableActionInput): TableActionOutput | undefined {
     case 'sqlite':
       return {
         label,
-        query: `ALTER TABLE ${input.tableId} ADD COLUMN colname${Date.now()} varchar(200)`,
+        query: `ALTER TABLE ${input.tableId} ADD COLUMN colname${Date.now()} TEXT`,
       };
     case 'mariadb':
     case 'mysql':
