@@ -54,7 +54,17 @@ export default function TableActions(props: TableActionsProps) {
   action = getUpdateCommand(tableActionInput);
   action && actions.push(action);
 
+  actions.push({
+    label: 'divider',
+  });
+
+  action = getCreateTable(tableActionInput);
+  action && actions.push(action);
+
   action = getDropTable(tableActionInput);
+  action && actions.push(action);
+
+  action = getAddColumn(tableActionInput);
   action && actions.push(action);
 
   action = getDropColumn(tableActionInput);
@@ -69,7 +79,7 @@ export default function TableActions(props: TableActionsProps) {
 
   const options = actions.map((action) => ({
     label: action.label,
-    onClick: () => onShowQuery(format(action.query)),
+    onClick: () => action.query && onShowQuery(format(action.query)),
   }));
 
   return (
@@ -98,7 +108,7 @@ interface TableActionInput {
 
 type TableActionOutput = {
   label: string;
-  query: string;
+  query?: string;
 };
 
 const QUERY_LIMIT = 10;
@@ -166,7 +176,7 @@ function getInsertCommand(input: TableActionInput): TableActionOutput | undefine
   const label = `Insert`;
 
   const columnString = input.columns.map((col) => col.name).join(',\n');
-  const insertValueString = input.columns.map((col) => `'?'`).join(',\n');
+  const insertValueString = input.columns.map((col) => `'_${col.name}_'`).join(',\n');
 
   switch (input.dialect) {
     case 'mssql':
@@ -200,6 +210,39 @@ function getUpdateCommand(input: TableActionInput): TableActionOutput | undefine
   }
 }
 
+function getCreateTable(input: TableActionInput): TableActionOutput | undefined {
+  const label = `Create Table`;
+  let columnString : string ='';
+  // TODO: fix me...
+
+  switch (input.dialect) {
+    case 'mssql':
+    case 'postgres':
+    case 'sqlite':
+      return {
+        label,
+        query: `CREATE TABLE`,
+      };
+    case 'mariadb':
+    case 'mysql':
+      columnString = input.columns
+        .map((col) =>
+          [
+            col.name,
+            col.type,
+            col.primaryKey ? 'PRIMARY KEY' : '',
+            col.autoIncrement ? 'AUTO_INCREMENT' : '',
+            col.allowNull ? '' : 'NOT NULL',
+          ].join(' '),
+        )
+        .join(',\n');
+      return {
+        label,
+        query: `CREATE TABLE ${input.tableId} (${columnString})`,
+      };
+  }
+}
+
 function getDropTable(input: TableActionInput): TableActionOutput | undefined {
   const label = `Drop Table`;
 
@@ -216,10 +259,8 @@ function getDropTable(input: TableActionInput): TableActionOutput | undefined {
   }
 }
 
-
-function getDropColumn(input: TableActionInput): TableActionOutput | undefined {
-  const label = `Drop Column`;
-
+function getAddColumn(input: TableActionInput): TableActionOutput | undefined {
+  const label = `Add Column`;
 
   switch (input.dialect) {
     case 'mssql':
@@ -229,7 +270,25 @@ function getDropColumn(input: TableActionInput): TableActionOutput | undefined {
     case 'mysql':
       return {
         label,
-        query: input.columns.map((col) => `--ALTER TABLE ${input.tableId} DROP COLUMN ${col.name}`).join('\n'),
+        query: `ALTER TABLE ${input.tableId} ADD COLUMN colname${Date.now()} varchar(200)`,
+      };
+  }
+}
+
+function getDropColumn(input: TableActionInput): TableActionOutput | undefined {
+  const label = `Drop Column`;
+
+  switch (input.dialect) {
+    case 'mssql':
+    case 'postgres':
+    case 'sqlite':
+    case 'mariadb':
+    case 'mysql':
+      return {
+        label,
+        query: input.columns
+          .map((col) => `--ALTER TABLE ${input.tableId} DROP COLUMN ${col.name}`)
+          .join('\n'),
       };
   }
 }
