@@ -121,6 +121,7 @@ export module SqluiEnums {
     | 'clientEvent.closeQuery'
     | 'clientEvent.import'
     | 'clientEvent.exportAll'
+    | 'clientEvent.newSession'
     | 'clientEvent.renameSession'
     | 'clientEvent.changeSession';
 }

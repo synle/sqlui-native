@@ -1,9 +1,48 @@
-import { useEffect } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
+import Typography from '@mui/material/Typography';
+import AppBar from '@mui/material/AppBar';
+import Box from '@mui/material/Box';
+import Toolbar from '@mui/material/Toolbar';
+import IconButton from '@mui/material/IconButton';
+import MenuIcon from '@mui/icons-material/Menu';
+import Tooltip from '@mui/material/Tooltip';
+import QueryBuilderIcon from '@mui/icons-material/QueryBuilder';
+import AddIcon from '@mui/icons-material/Add';
+import Avatar from '@mui/material/Avatar';
+import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
+import CheckBoxIcon from '@mui/icons-material/CheckBox';
+import AppsIcon from '@mui/icons-material/Apps';
+import EditIcon from '@mui/icons-material/Edit';
+import PhotoSizeSelectSmallIcon from '@mui/icons-material/PhotoSizeSelectSmall';
 import { SqluiCore, SqluiFrontend, SqluiEnums } from 'typings';
+import { useActionDialogs } from 'src/components/ActionDialogs';
+import { downloadText } from 'src/data/file';
+import {
+  useExecute,
+  useConnectionQueries,
+  useConnectionQuery,
+  useActiveConnectionQuery,
+  useGetSessions,
+  useUpsertSession,
+  useDeleteSession,
+  useGetCurrentSession,
+  useGetConnections,
+  useImportConnection,
+  getExportedConnection,
+  getExportedQuery,
+} from 'src/hooks';
+import {
+  getCurrentSessionId,
+  getDefaultSessionId,
+  setCurrentSessionId,
+  getRandomSessionId,
+} from 'src/data/session';
 
 interface Command {
   event: SqluiEnums.ClientEventKey;
+  data?: unknown;
 }
 
 const QUERY_KEY_MISSION_CONTROL_COMMAND = 'missionControlCommand';
@@ -32,4 +71,299 @@ export function useCommands() {
     selectCommand,
     dismissCommand,
   };
+}
+
+export default function MissionControl() {
+  const navigate = useNavigate();
+  const [init, setInit] = useState(false);
+  const {
+    queries,
+    onAddQuery,
+    onShowQuery,
+    onChangeQuery,
+    onDeleteQueries,
+    onDuplicateQuery,
+    onImportQuery,
+    isLoading: loadingQueries,
+  } = useConnectionQueries();
+  const { query: activeQuery } = useActiveConnectionQuery();
+  const { command, dismissCommand } = useCommands();
+  const { choice, confirm, prompt } = useActionDialogs();
+  const { data: sessions, isLoading: loadingSessions } = useGetSessions();
+  const { data: currentSession, isLoading: loadingCurrentSession } = useGetCurrentSession();
+  const { mutateAsync: upsertSession } = useUpsertSession();
+  const { mutateAsync: importConnection } = useImportConnection();
+  const { data: connections, isLoading: loadingConnections } = useGetConnections();
+
+  const onCloseQuery = async (query: SqluiFrontend.ConnectionQuery) => {
+    try {
+      await confirm('Do you want to delete this query?');
+      onDeleteQueries([query.id]);
+    } catch (err) {
+      //@ts-ignore
+    }
+  };
+
+  const onCloseOtherQueries = async (query: SqluiFrontend.ConnectionQuery) => {
+    try {
+      await confirm('Do you want to close other queries?');
+      onDeleteQueries(queries?.map((q) => q.id).filter((queryId) => queryId !== query.id));
+    } catch (err) {
+      //@ts-ignore
+    }
+  };
+
+  const onRenameQuery = async (query: SqluiFrontend.ConnectionQuery) => {
+    try {
+      const newName = await prompt({
+        title: 'Rename Query',
+        message: 'New Query Name',
+        value: query.name,
+        saveLabel: 'Save',
+      });
+      onChangeQuery(query.id, 'name', newName);
+    } catch (err) {
+      //@ts-ignore
+    }
+  };
+
+  const onDuplicate = async (query: SqluiFrontend.ConnectionQuery) => {
+    onDuplicateQuery(query.id);
+  };
+
+  const onExportQuery = async (query: SqluiFrontend.ConnectionQuery) => {
+    downloadText(
+      `${query.name}.query.json`,
+      JSON.stringify([getExportedQuery(query)], null, 2),
+      'text/json',
+    );
+  };
+
+  const onChangeSession = async () => {
+    if (!sessions) {
+      return;
+    }
+
+    try {
+      const options = [
+        ...sessions.map((session) => ({
+          label: session.name,
+          value: session.id,
+          startIcon:
+            session.id === currentSession?.id ? <CheckBoxIcon /> : <CheckBoxOutlineBlankIcon />,
+        })),
+        {
+          label: 'New Session',
+          value: 'newSession',
+          startIcon: <AddIcon />,
+        },
+      ];
+
+      const selected = await choice('Choose a session', undefined, options);
+
+      // make an api call to update my session to this
+      if (selected === 'newSession') {
+        onAddSession();
+      } else {
+        // switching session
+        if (currentSession?.id === selected) {
+          // if they select the same session, just ignore it
+          return;
+        }
+        const newSession: SqluiCore.Session | undefined = sessions.find(
+          (session) => session.id === selected,
+        );
+        if (!newSession) {
+          return;
+        }
+
+        // then set it as current session
+        setCurrentSessionId(newSession.id);
+
+        // reload the page just in case
+        // TODO: see if we need to use a separate row
+        window.location.reload();
+      }
+    } catch (err) {
+      //@ts-ignore
+    }
+  };
+
+  const onAddSession = async () => {
+    // create the new session
+    // if there is no session, let's create the session
+    const newSessionName = await prompt({
+      title: 'New Session',
+      message: 'New Session Name',
+      value: `Session ${new Date().toLocaleString()}`,
+      saveLabel: 'Save',
+      required: true,
+    });
+
+    if (!newSessionName) {
+      return;
+    }
+
+    const newSession = await upsertSession({
+      id: getRandomSessionId(),
+      name: newSessionName,
+    });
+
+    if (!newSession) {
+      return;
+    }
+
+    // then set it as current session
+    setCurrentSessionId(newSession.id);
+
+    // reload the page just in case
+    // TODO: see if we need to use a separate row
+    window.location.reload();
+  };
+
+  const onRenameSession = async () => {
+    try {
+      if (!currentSession) {
+        return;
+      }
+
+      const newSessionName = await prompt({
+        title: 'Rename Session',
+        message: 'New Session Session',
+        value: currentSession.name,
+        saveLabel: 'Save',
+      });
+
+      if (!newSessionName) {
+        return;
+      }
+
+      await upsertSession({
+        ...currentSession,
+        name: newSessionName,
+      });
+    } catch (err) {
+      //@ts-ignore
+    }
+  };
+
+  const onExportAll = async () => {
+    let jsonContent: any[] = [];
+
+    // TODO: implement export all
+    if (connections) {
+      for (const connection of connections) {
+        jsonContent.push(getExportedConnection(connection));
+      }
+    }
+
+    if (queries) {
+      for (const query of queries) {
+        jsonContent.push(getExportedQuery(query));
+      }
+    }
+
+    downloadText(
+      `${new Date().toLocaleString()}.sqlui_native.json`,
+      JSON.stringify(jsonContent, null, 2),
+      'text/json',
+    );
+  };
+
+  const onNewConnection = useCallback(() => navigate('/connection/new'), []);
+
+  const onImport = async () => {
+    try {
+      const rawJson = await prompt({
+        title: 'Import Connections / Queries',
+        message: 'Import',
+        saveLabel: 'Import',
+        value: '',
+        required: true,
+        isLongPrompt: true,
+      });
+
+      let jsonRows: any[];
+      try {
+        jsonRows = JSON.parse(rawJson || '');
+      } catch (err) {
+        return alert(`Import failed. Invalid JSON config`);
+      }
+
+      // here we will attempt to import all the connections first before queries
+      jsonRows = jsonRows.sort((a, b) => {
+        return a._type.localeCompare(b._type); //note that query will go after connection (q > c)
+      });
+
+      /// check for duplicate id
+      const hasDuplicateIds =
+        new Set([...jsonRows.map((jsonRow) => jsonRow.id)]).size !== jsonRows.length;
+      if (hasDuplicateIds) {
+        return alert(`Import failed. JSON Config includes duplicate IDs.`);
+      }
+
+      let failedCount = 0,
+        successCount = 0;
+      for (const jsonRow of jsonRows) {
+        try {
+          const { _type, ...rawImportMetaData } = jsonRow;
+          switch (_type) {
+            case 'connection':
+              await importConnection(rawImportMetaData);
+              break;
+            case 'query':
+              await onImportQuery(jsonRow);
+              break;
+          }
+          successCount++;
+        } catch (err) {
+          console.log('>> Import Failed', jsonRow, err);
+          failedCount++;
+        }
+      }
+
+      alert(`Import finished with ${successCount} successes and ${failedCount} failures`);
+    } catch (err) {
+      //@ts-ignore
+    }
+  };
+
+  // mission control commands
+  useEffect(() => {
+    if (command) {
+      dismissCommand();
+
+      switch (command.event) {
+        case 'clientEvent.import':
+          onImport();
+          break;
+        case 'clientEvent.exportAll':
+          onExportAll();
+          break;
+        case 'clientEvent.newConnection':
+          onNewConnection();
+          break;
+        case 'clientEvent.newQuery':
+          onAddQuery();
+          break;
+        case 'clientEvent.closeQuery':
+          // this closes the active query
+          if (activeQuery) {
+            onCloseQuery(activeQuery);
+          }
+          break;
+        case 'clientEvent.changeSession':
+          onChangeSession();
+          break;
+        case 'clientEvent.newSession':
+          onAddSession();
+          break;
+        case 'clientEvent.renameSession':
+          onRenameSession();
+          break;
+      }
+    }
+  }, [command]);
+
+  return null;
 }

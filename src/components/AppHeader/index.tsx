@@ -38,141 +38,17 @@ import { SqluiCore } from 'typings';
 
 export default function AppHeader() {
   const [open, setOpen] = useState(false);
-  const { choice, prompt } = useActionDialogs();
   const navigate = useNavigate();
-  const { data: sessions, isLoading: loadingSessions } = useGetSessions();
+  const { data: sessions, isLoading } = useGetSessions();
   const { data: currentSession, isLoading: loadingCurrentSession } = useGetCurrentSession();
   const { mutateAsync: upsertSession } = useUpsertSession();
-  const { command, dismissCommand } = useCommands();
+  const { dismissCommand, selectCommand } = useCommands();
 
-  const onChangeSession = async () => {
-    if (!sessions) {
-      return;
-    }
+  const onChangeSession = () => selectCommand({ event: 'clientEvent.changeSession' });
 
-    try {
-      const options = [
-        ...sessions.map((session) => ({
-          label: session.name,
-          value: session.id,
-          startIcon:
-            session.id === currentSession?.id ? <CheckBoxIcon /> : <CheckBoxOutlineBlankIcon />,
-        })),
-        {
-          label: 'New Session',
-          value: 'newSession',
-          startIcon: <AddIcon />,
-        },
-      ];
+  const onAddSession = () => selectCommand({ event: 'clientEvent.import' });
 
-      const selected = await choice('Choose a session', undefined, options);
-
-      // make an api call to update my session to this
-      if (selected === 'newSession') {
-        onAddSession();
-      } else {
-        // switching session
-        if (currentSession?.id === selected) {
-          // if they select the same session, just ignore it
-          return;
-        }
-        const newSession: SqluiCore.Session | undefined = sessions.find(
-          (session) => session.id === selected,
-        );
-        if (!newSession) {
-          return;
-        }
-
-        // then set it as current session
-        setCurrentSessionId(newSession.id);
-
-        // reload the page just in case
-        // TODO: see if we need to use a separate row
-        window.location.reload();
-      }
-    } catch (err) {
-      //@ts-ignore
-    }
-  };
-
-  const onAddSession = async () => {
-    // create the new session
-    // if there is no session, let's create the session
-    const newSessionName = await prompt({
-      title: 'New Session',
-      message: 'New Session Name',
-      value: `Session ${new Date().toLocaleString()}`,
-      saveLabel: 'Save',
-      required: true,
-    });
-
-    if (!newSessionName) {
-      return;
-    }
-
-    const newSession = await upsertSession({
-      id: getRandomSessionId(),
-      name: newSessionName,
-    });
-
-    if (!newSession) {
-      return;
-    }
-
-    // then set it as current session
-    setCurrentSessionId(newSession.id);
-
-    // reload the page just in case
-    // TODO: see if we need to use a separate row
-    window.location.reload();
-  };
-
-  const onRenameSession = async () => {
-    try {
-      if (!currentSession) {
-        return;
-      }
-
-      const newSessionName = await prompt({
-        title: 'Rename Session',
-        message: 'New Session Session',
-        value: currentSession.name,
-        saveLabel: 'Save',
-      });
-
-      if (!newSessionName) {
-        return;
-      }
-
-      await upsertSession({
-        ...currentSession,
-        name: newSessionName,
-      });
-    } catch (err) {
-      //@ts-ignore
-    }
-  };
-
-  useEffect(() => {
-    if (command) {
-      dismissCommand();
-
-      switch (command.event) {
-        case 'clientEvent.changeSession':
-          onChangeSession();
-          break;
-        case 'clientEvent.renameSession':
-          onRenameSession();
-          break;
-      }
-    }
-  }, [command]);
-
-  const isLoading = loadingSessions || loadingCurrentSession;
-
-  if (isLoading) {
-    return null;
-  }
+  const onRenameSession = () => selectCommand({ event: 'clientEvent.renameSession' });
 
   const options = [
     {

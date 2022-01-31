@@ -88,25 +88,6 @@ export default function QueryResultTabs() {
     );
   };
 
-  // mission control commands
-  useEffect(() => {
-    if (command) {
-      dismissCommand();
-
-      switch (command.event) {
-        case 'clientEvent.newQuery':
-          onAddQuery();
-          break;
-        case 'clientEvent.closeQuery':
-          // this closes the active query
-          if (activeQuery) {
-            onCloseQuery(activeQuery);
-          }
-          break;
-      }
-    }
-  }, [command]);
-
   // add a dummy query to start
   useEffect(() => {
     if (!init && !isLoading) {
