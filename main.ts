@@ -56,12 +56,12 @@ function setupMenu() {
           label: 'New Connection',
           accelerator: isMac ? 'Cmd+N' : 'Ctrl+N',
           click: async (item, win) =>
-            sendMessage(win as BrowserWindow, 'clientEvent.newConnection'),
+            sendMessage(win as BrowserWindow, 'clientEvent/connection.new'),
         },
         {
           label: 'New Query',
           accelerator: isMac ? 'Cmd+T' : 'Ctrl+T',
-          click: async (item, win) => sendMessage(win as BrowserWindow, 'clientEvent.newQuery'),
+          click: async (item, win) => sendMessage(win as BrowserWindow, 'clientEvent/query/new'),
         },
         {
           type: 'separator',
@@ -69,12 +69,12 @@ function setupMenu() {
         {
           label: 'Import',
           accelerator: isMac ? 'Cmd+O' : 'Ctrl+O',
-          click: async (item, win) => sendMessage(win as BrowserWindow, 'clientEvent.import'),
+          click: async (item, win) => sendMessage(win as BrowserWindow, 'clientEvent/import'),
         },
         {
           label: 'Export',
           accelerator: isMac ? 'Cmd+S' : 'Ctrl+S',
-          click: async (item, win) => sendMessage(win as BrowserWindow, 'clientEvent.exportAll'),
+          click: async (item, win) => sendMessage(win as BrowserWindow, 'clientEvent/exportAll'),
         },
         {
           type: 'separator',
@@ -83,7 +83,7 @@ function setupMenu() {
           label: 'Close Query',
           accelerator: isMac ? 'Cmd+W' : 'Ctrl+W',
           click: async (item, win) =>
-            sendMessage(win as BrowserWindow, 'clientEvent.closeCurrentlySelectedQuery'),
+            sendMessage(win as BrowserWindow, 'clientEvent/query/closeCurrentlySelected'),
         },
         isMac ? { role: 'close', accelerator: 'Cmd+Q' } : { role: 'quit', accelerator: 'Alt+F4' },
       ],
@@ -94,12 +94,12 @@ function setupMenu() {
         {
           label: 'Rename Session',
           click: async (item, win) =>
-            sendMessage(win as BrowserWindow, 'clientEvent.renameSession'),
+            sendMessage(win as BrowserWindow, 'clientEvent/session/rename'),
         },
         {
           label: 'Change Session',
           click: async (item, win) =>
-            sendMessage(win as BrowserWindow, 'clientEvent.changeSession'),
+            sendMessage(win as BrowserWindow, 'clientEvent/session/switch'),
         },
       ],
     },

@@ -35,23 +35,23 @@ export default function QueryResultTabs() {
   const { selectCommand } = useCommands();
 
   const onShowQuery = async (query: SqluiFrontend.ConnectionQuery) =>
-    selectCommand({ event: 'clientEvent.showQuery', data: query });
-  const onAddQuery = () => selectCommand({ event: 'clientEvent.newQuery' });
+    selectCommand({ event: 'clientEvent/query/show', data: query });
+  const onAddQuery = () => selectCommand({ event: 'clientEvent/query/new' });
 
   const onCloseQuery = async (query: SqluiFrontend.ConnectionQuery) =>
-    selectCommand({ event: 'clientEvent.closeQuery', data: query });
+    selectCommand({ event: 'clientEvent/query/close', data: query });
 
   const onCloseOtherQueries = async (query: SqluiFrontend.ConnectionQuery) =>
-    selectCommand({ event: 'clientEvent.closeOtherQueries', data: query });
+    selectCommand({ event: 'clientEvent/query/closeOther', data: query });
 
   const onRenameQuery = async (query: SqluiFrontend.ConnectionQuery) =>
-    selectCommand({ event: 'clientEvent.renameQuery', data: query });
+    selectCommand({ event: 'clientEvent/query/rename', data: query });
 
   const onDuplicateQuery = async (query: SqluiFrontend.ConnectionQuery) =>
-    selectCommand({ event: 'clientEvent.duplicateQuery', data: query });
+    selectCommand({ event: 'clientEvent/query/duplicate', data: query });
 
   const onExportQuery = async (query: SqluiFrontend.ConnectionQuery) =>
-    selectCommand({ event: 'clientEvent.exportQuery', data: query });
+    selectCommand({ event: 'clientEvent/query/export', data: query });
 
   // add a dummy query to start
   useEffect(() => {

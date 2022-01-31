@@ -116,18 +116,18 @@ export module SqluiEnums {
    * @type {String}
    */
   export type ClientEventKey =
-    | 'clientEvent.newConnection'
-    | 'clientEvent.newQuery'
-    | 'clientEvent.renameQuery'
-    | 'clientEvent.exportQuery'
-    | 'clientEvent.duplicateQuery'
-    | 'clientEvent.showQuery'
-    | 'clientEvent.closeQuery'
-    | 'clientEvent.closeCurrentlySelectedQuery'
-    | 'clientEvent.closeOtherQueries'
-    | 'clientEvent.import'
-    | 'clientEvent.exportAll'
-    | 'clientEvent.newSession'
-    | 'clientEvent.renameSession'
-    | 'clientEvent.changeSession';
+    | 'clientEvent/import'
+    | 'clientEvent/exportAll'
+    | 'clientEvent/connection.new'
+    | 'clientEvent/query/new'
+    | 'clientEvent/query/rename'
+    | 'clientEvent/query/export'
+    | 'clientEvent/query/duplicate'
+    | 'clientEvent/query/show'
+    | 'clientEvent/query/close'
+    | 'clientEvent/query/closeCurrentlySelected'
+    | 'clientEvent/query/closeOther'
+    | 'clientEvent/session/new'
+    | 'clientEvent/session/rename'
+    | 'clientEvent/session/switch';
 }

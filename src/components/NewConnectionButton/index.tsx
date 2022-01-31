@@ -19,9 +19,9 @@ import {
 export default function NewConnectionButton() {
   const { selectCommand } = useCommands();
 
-  const onImport = () => selectCommand({ event: 'clientEvent.import' });
-  const onExportAll = () => selectCommand({ event: 'clientEvent.exportAll' });
-  const onNewConnection = () => selectCommand({ event: 'clientEvent.newConnection' });
+  const onImport = () => selectCommand({ event: 'clientEvent/import' });
+  const onExportAll = () => selectCommand({ event: 'clientEvent/exportAll' });
+  const onNewConnection = () => selectCommand({ event: 'clientEvent/connection.new' });
 
   const options = [
     {
