@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import CodeEditor from '@uiw/react-textarea-code-editor';
 import ToggleButton from '@mui/material/ToggleButton';
 import Button from '@mui/material/Button';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import { grey } from '@mui/material/colors';
+import SchemaEditor from 'src/components/CodeEditorBox/SchemaEditor';
 
 interface CodeEditorProps {
   value?: string;
@@ -32,18 +33,18 @@ export default function CodeEditorBox(props: CodeEditorProps) {
 
   return (
     <>
-      <textarea
+      <SchemaEditor
         className='CodeEditorBox'
         value={value}
         placeholder={props.placeholder}
-        onChange={(e) => setValue(e.target.value)}
-        onBlur={(e) => onChange(e.target.value)}
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setValue(e.target.value)}
+        onBlur={(e: React.ChangeEvent<HTMLInputElement>) => onChange(e.target.value)}
         data-language={props.language}
         autoFocus={props.autoFocus}
         required={props.required}
         style={{
           backgroundColor: grey[800],
-          border: 'none',
+          border: '2px solid transparent',
           fontFamily: 'monospace',
           fontWeight: '700',
           width: '100%',
