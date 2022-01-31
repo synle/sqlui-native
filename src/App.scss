@@ -135,14 +135,6 @@
   }
 }
 
-.Resizer {
-  width: 15px;
-  &:hover {
-    background: #efefef;
-    cursor: col-resize;
-  }
-}
-
 .CodeEditorBox {
   border: 2px solid transparent !important;
 

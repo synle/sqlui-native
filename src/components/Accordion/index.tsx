@@ -1,11 +1,9 @@
 import React from 'react';
 import Typography from '@mui/material/Typography';
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import Box from '@mui/material/Box';
+import { blue } from '@mui/material/colors';
 
 type AccordionBodyProps = {
   children: React.ReactNode[] | React.ReactNode;
@@ -19,10 +17,17 @@ type AccordionHeaderProps = AccordionBodyProps & {
 export function AccordionHeader(props: AccordionHeaderProps) {
   const { children, expanded, onToggle } = props;
   return (
-    <div onClick={() => onToggle()} className='Accordion'>
+    <Box
+      onClick={() => onToggle()}
+      className='Accordion'
+      sx={{
+        '&:hover': {
+          background: blue[600],
+        },
+      }}>
       {!expanded ? <ExpandLessIcon fontSize='inherit' /> : <ExpandMoreIcon fontSize='inherit' />}
       {children}
-    </div>
+    </Box>
   );
 }
 
