@@ -137,6 +137,12 @@ function setupMenu() {
         { type: 'separator' },
         { role: 'resetZoom' },
         { role: 'zoomIn' },
+        {
+          role: 'zoomIn' ,
+          accelerator: isMac ? 'Cmd+=' : 'Ctrl+=',
+          visible: false,
+          acceleratorWorksWhenHidden: true
+        },
         { role: 'zoomOut' },
         { type: 'separator' },
         { role: 'togglefullscreen' },
@@ -201,6 +207,11 @@ ipcMain.handle('dark-mode:toggle', () => {
 
 ipcMain.handle('dark-mode:system', () => {
   nativeTheme.themeSource = 'system';
+});
+
+
+ipcMain.on('sqluiNativeEvent/toggleMenu', function (event, data) {
+  console.log('>> sqluiNativeEvent/toggleMenu', event, data);
 });
 
 // this is the event listener that will respond when we will request it in the web page
