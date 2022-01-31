@@ -118,25 +118,25 @@ export default function ResultBox(props: ResultBoxProps) {
 
   const tabHeaders = [
     <>
-      JSON
-      <Tooltip title='Download Result JSON'>
-        <DownloadIcon fontSize='small' onClick={onDownloadJson} />
-      </Tooltip>
-    </>,
-    <>
       Table{' '}
       <Tooltip title='Download Result CSV'>
         <DownloadIcon fontSize='small' onClick={onDownloadCsv} />
       </Tooltip>
     </>,
+    <>
+      JSON
+      <Tooltip title='Download Result JSON'>
+        <DownloadIcon fontSize='small' onClick={onDownloadJson} />
+      </Tooltip>
+    </>,
   ];
 
   const tabContents = [
-    <div className='ResultBox__Content' key={`JSON`}>
-      <JsonFormatData data={data} />
-    </div>,
     <div className='ResultBox__Content' key={`Table`}>
       <TableFormatData data={data} />
+    </div>,
+    <div className='ResultBox__Content' key={`JSON`}>
+      <JsonFormatData data={data} />
     </div>,
   ];
 
