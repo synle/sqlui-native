@@ -18,6 +18,7 @@ import MainPage from 'src/views/MainPage';
 import ActionDialogs from 'src/components/ActionDialogs';
 import AppHeader from 'src/components/AppHeader';
 import ElectronEventListener from 'src/components/ElectronEventListener';
+import MissionControl from 'src/components/MissionControl';
 import {
   useGetSessions,
   useUpsertSession,
@@ -105,6 +106,7 @@ export default function App() {
             </Routes>
           </section>
         </Box>
+        <MissionControl />
       </HashRouter>
       <ActionDialogs />
       <ElectronEventListener />

@@ -80,7 +80,7 @@ export default function DropdownButton(props: DropdownButtonProps) {
         {options.map((option, index) => {
           let content;
           if (option.label === 'divider') {
-            return (content = <Divider />);
+            return (content = <Divider key={index} />);
           } else {
             content = (
               <MenuItem onClick={(event) => handleMenuItemClick(event, index)}>
@@ -90,7 +90,7 @@ export default function DropdownButton(props: DropdownButtonProps) {
             );
           }
 
-          return <React.Fragment key={option.label}>{content}</React.Fragment>;
+          return <div key={option.label}>{content}</div>;
         })}
       </MenuList>
     );
