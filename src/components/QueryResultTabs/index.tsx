@@ -31,62 +31,27 @@ import { downloadText } from 'src/data/file';
 export default function QueryResultTabs() {
   const navigate = useNavigate();
   const [init, setInit] = useState(false);
-  const {
-    queries,
-    onAddQuery,
-    onShowQuery,
-    onChangeQuery,
-    onDeleteQueries,
-    onDuplicateQuery,
-    isLoading,
-  } = useConnectionQueries();
-  const { query: activeQuery } = useActiveConnectionQuery();
-  const { command, dismissCommand } = useCommands();
-  const { confirm, prompt } = useActionDialogs();
+  const { queries, isLoading } = useConnectionQueries();
+  const { selectCommand } = useCommands();
 
-  const onCloseQuery = async (query: SqluiFrontend.ConnectionQuery) => {
-    try {
-      await confirm('Do you want to delete this query?');
-      onDeleteQueries([query.id]);
-    } catch (err) {
-      //@ts-ignore
-    }
-  };
+  const onShowQuery = async (query: SqluiFrontend.ConnectionQuery) =>
+    selectCommand({ event: 'clientEvent.showQuery', data: query });
+  const onAddQuery = () => selectCommand({ event: 'clientEvent.newQuery' });
 
-  const onCloseOtherQueries = async (query: SqluiFrontend.ConnectionQuery) => {
-    try {
-      await confirm('Do you want to close other queries?');
-      onDeleteQueries(queries?.map((q) => q.id).filter((queryId) => queryId !== query.id));
-    } catch (err) {
-      //@ts-ignore
-    }
-  };
+  const onCloseQuery = async (query: SqluiFrontend.ConnectionQuery) =>
+    selectCommand({ event: 'clientEvent.closeQuery', data: query });
 
-  const onRenameQuery = async (query: SqluiFrontend.ConnectionQuery) => {
-    try {
-      const newName = await prompt({
-        title: 'Rename Query',
-        message: 'New Query Name',
-        value: query.name,
-        saveLabel: 'Save',
-      });
-      onChangeQuery(query.id, 'name', newName);
-    } catch (err) {
-      //@ts-ignore
-    }
-  };
+  const onCloseOtherQueries = async (query: SqluiFrontend.ConnectionQuery) =>
+    selectCommand({ event: 'clientEvent.closeOtherQueries', data: query });
 
-  const onDuplicate = async (query: SqluiFrontend.ConnectionQuery) => {
-    onDuplicateQuery(query.id);
-  };
+  const onRenameQuery = async (query: SqluiFrontend.ConnectionQuery) =>
+    selectCommand({ event: 'clientEvent.renameQuery', data: query });
 
-  const onExportQuery = async (query: SqluiFrontend.ConnectionQuery) => {
-    downloadText(
-      `${query.name}.query.json`,
-      JSON.stringify([getExportedQuery(query)], null, 2),
-      'text/json',
-    );
-  };
+  const onDuplicateQuery = async (query: SqluiFrontend.ConnectionQuery) =>
+    selectCommand({ event: 'clientEvent.duplicateQuery', data: query });
+
+  const onExportQuery = async (query: SqluiFrontend.ConnectionQuery) =>
+    selectCommand({ event: 'clientEvent.exportQuery', data: query });
 
   // add a dummy query to start
   useEffect(() => {
@@ -133,7 +98,7 @@ export default function QueryResultTabs() {
         },
         {
           label: 'Duplicate',
-          onClick: () => onDuplicate(q),
+          onClick: () => onDuplicateQuery(q),
           startIcon: <ContentCopyIcon />,
         },
         {
@@ -169,7 +134,7 @@ export default function QueryResultTabs() {
       tabContents={tabContents}
       onTabChange={(newTabIdx) => {
         if (newTabIdx < queries.length) {
-          onShowQuery(queries[newTabIdx].id);
+          onShowQuery(queries[newTabIdx]);
         } else {
           onAddQuery();
         }

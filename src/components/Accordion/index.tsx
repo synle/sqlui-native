@@ -19,10 +19,10 @@ type AccordionHeaderProps = AccordionBodyProps & {
 export function AccordionHeader(props: AccordionHeaderProps) {
   const { children, expanded, onToggle } = props;
   return (
-    <ListItem disablePadding onClick={() => onToggle()} className='Accordion'>
+    <div onClick={() => onToggle()} className='Accordion'>
       {!expanded ? <ExpandLessIcon fontSize='inherit' /> : <ExpandMoreIcon fontSize='inherit' />}
       {children}
-    </ListItem>
+    </div>
   );
 }
 
