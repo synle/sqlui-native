@@ -17,6 +17,7 @@ import { useExecute, useConnectionQueries, useConnectionQuery } from 'src/hooks'
 import Tabs from 'src/components/Tabs';
 import { downloadText } from 'src/data/file';
 import CodeEditorBox from 'src/components/CodeEditorBox';
+import Timer from 'src/components/Timer';
 
 interface ResultBoxProps {
   queryId: string;
@@ -33,10 +34,14 @@ export default function ResultBox(props: ResultBoxProps) {
     isError,
   } = useExecute(query);
 
-  if (loadingQuery) {
+  const data = queryResult?.raw;
+  const error = queryResult?.error || queryError;
+
+  if (loadingResults) {
     return (
       <Alert severity='info' icon={<CircularProgress size={15} />}>
-        Loading Query...
+        Loading Query <Timer startTime={query?.lastExecuted} endTime={queryResult?.executed} />
+        ...
       </Alert>
     );
   }
@@ -44,18 +49,23 @@ export default function ResultBox(props: ResultBoxProps) {
   if (loadingResults) {
     return (
       <Alert severity='info' icon={<CircularProgress size={15} />}>
-        Loading Results...
+        Loading Results <Timer startTime={query?.lastExecuted} endTime={queryResult?.executed} />
+        ...
       </Alert>
     );
   }
 
-  if (isError) {
-    let errorToDisplay: any = queryError;
+  if (isError || error) {
+    let errorToDisplay: any = error;
     errorToDisplay = errorToDisplay?.original || errorToDisplay?.original || errorToDisplay;
 
     return (
       <>
-        <Alert severity='error'>Query Error...</Alert>
+        <Alert severity='error'>
+          Query Error (took{' '}
+          <Timer startTime={query?.lastExecuted} endTime={queryResult?.executed} />
+          )...
+        </Alert>
         <CodeEditorBox
           value={JSON.stringify(errorToDisplay, null, 2)}
           language='json'
@@ -73,12 +83,14 @@ export default function ResultBox(props: ResultBoxProps) {
     return null;
   }
 
-  const [data] = queryResult;
-
-  if (!Array.isArray(data)) {
+  if (!data || !Array.isArray(data) || data.length === 0) {
+    // for inserts / update queries
     return (
       <div className='ResultBox'>
-        <JsonFormatData data={data} />
+        <Alert severity='info'>
+          Query took <Timer startTime={query?.lastExecuted} endTime={queryResult?.executed} />
+        </Alert>
+        <JsonFormatData data={[queryResult.raw, queryResult.meta]} />
       </div>
     );
   }
@@ -97,7 +109,7 @@ export default function ResultBox(props: ResultBoxProps) {
     e.preventDefault();
     e.stopPropagation();
 
-    CsvEngine.json2csv(queryResult[0], (err, newCsv) => {
+    CsvEngine.json2csv(data, (err, newCsv) => {
       if (!err && newCsv) {
         downloadText(`Result - ${new Date().toLocaleString()}.result.csv`, newCsv, 'text/csv');
       }
@@ -112,20 +124,16 @@ export default function ResultBox(props: ResultBoxProps) {
       </Tooltip>
     </>,
     <>
-      CSV{' '}
+      Table{' '}
       <Tooltip title='Download Result CSV'>
         <DownloadIcon fontSize='small' onClick={onDownloadCsv} />
       </Tooltip>
     </>,
-    <>Table</>,
   ];
 
   const tabContents = [
     <div className='ResultBox__Content' key={`JSON`}>
       <JsonFormatData data={data} />
-    </div>,
-    <div className='ResultBox__Content' key={`CSV`}>
-      <CsvFormatData data={data} />
     </div>,
     <div className='ResultBox__Content' key={`Table`}>
       <TableFormatData data={data} />
@@ -134,6 +142,9 @@ export default function ResultBox(props: ResultBoxProps) {
 
   return (
     <div className='ResultBox'>
+      <Alert severity='info'>
+        Query took <Timer startTime={query?.lastExecuted} endTime={queryResult?.executed} />
+      </Alert>
       <Tabs
         tabIdx={tabIdx}
         tabHeaders={tabHeaders}
