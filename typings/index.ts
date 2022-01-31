@@ -39,10 +39,16 @@ export module SqluiCore {
 
   export type ConnectionMetaData = CoreConnectionMetaData & ConnectionProps;
 
-  export type RawData = Record<string, string | number | boolean>[];
-  export type MetaData = Record<string, string | number | boolean>;
+  export type RawData = any[];
+  export type MetaData = any;
 
-  export type Result = [RawData, MetaData];
+  export type Result = {
+    ok: boolean;
+    raw?: RawData;
+    meta?: MetaData;
+    executed: number;
+    error?: any;
+  };
 
   // connection queries
   export type CoreConnectionQuery = {
@@ -72,7 +78,7 @@ export module SqluiCore {
 export module SqluiFrontend {
   // connection queries
   export type ConnectionQuery = SqluiCore.CoreConnectionQuery & {
-    lastExecuted?: string;
+    lastExecuted?: number;
     selected?: boolean;
   };
 
