@@ -19,7 +19,7 @@ interface CodeEditorProps {
 
 export default function CodeEditorBox(props: CodeEditorProps) {
   const [value, setValue] = useState('');
-  const [wordWrap, setWordWrap] = useState(false);
+  const [wordWrap, setWordWrap] = useState(true);
 
   const onChange = (newValue: string) => {
     if (newValue !== props.value) {
@@ -52,7 +52,7 @@ export default function CodeEditorBox(props: CodeEditorProps) {
           color: grey[50],
           padding: '10px',
           resize: 'vertical',
-          whiteSpace: wordWrap ? 'nowrap' : 'initial',
+          whiteSpace: wordWrap ? 'initial' : 'nowrap',
         }}
       />
       <div style={{ textAlign: 'right' }}>
