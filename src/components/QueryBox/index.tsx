@@ -17,8 +17,10 @@ import {
   useConnectionQuery,
   useShowHide,
   useGetDatabases,
+  refreshAfterExecution,
 } from 'src/hooks';
 import CodeEditorBox from 'src/components/CodeEditorBox';
+import ResultBox from 'src/components/ResultBox';
 import { SqluiCore, SqluiFrontend } from 'typings';
 
 interface QueryBoxProps {
@@ -27,14 +29,9 @@ interface QueryBoxProps {
 
 export default function QueryBox(props: QueryBoxProps) {
   const { queryId } = props;
-  const {
-    query,
-    onChange,
-    onDelete,
-    isLoading: loadingConnection,
-    onExecute,
-  } = useConnectionQuery(queryId);
-  const { isLoading: executing } = useExecute(query);
+  const { query, onChange, onDelete, isLoading: loadingConnection } = useConnectionQuery(queryId);
+  const { mutateAsync: executeQuery } = useExecute();
+  const [executing, setExecuting] = useState(false);
 
   const isLoading = loadingConnection;
 
@@ -51,7 +48,6 @@ export default function QueryBox(props: QueryBoxProps) {
   }
 
   const onDatabaseConnectionChange = (connectionId?: string, databaseId?: string) => {
-    onChange('lastExecuted', undefined); // this is to stop the query from automatically triggered
     onChange('connectionId', connectionId);
     onChange('databaseId', databaseId);
   };
@@ -69,53 +65,69 @@ export default function QueryBox(props: QueryBoxProps) {
     onChange('sql', format(query?.sql || ''));
   };
 
-  const onSubmit = (e: React.SyntheticEvent) => {
+  const onSubmit = async (e: React.SyntheticEvent) => {
     e.preventDefault();
-    onExecute();
+    setExecuting(true);
+    onChange('executionStart', Date.now());
+    onChange('result', undefined); // clear result
+
+    try {
+      const newResult = await executeQuery(query);
+      onChange('result', newResult); // clear result
+      refreshAfterExecution(query);
+    } catch (err) {
+      //@ts-ignore
+      // here query failed...
+    }
+    setExecuting(false);
+    onChange('executionEnd', Date.now());
   };
 
   const disabledExecute = executing || !query?.sql || !query?.connectionId;
 
   return (
-    <form className='QueryBox' onSubmit={onSubmit}>
-      <div className='QueryBox__Row'>
-        <Typography variant='h6'>{query.name}</Typography>
-      </div>
-      <div className='QueryBox__Row'>
-        <ConnectionDatabaseSelector value={query} onChange={onDatabaseConnectionChange} />
-        <ConnectionRevealButton query={query} />
-      </div>
-      <div className='QueryBox__Row'>
-        <CodeEditorBox
-          value={query.sql}
-          placeholder={`Enter SQL for ` + query.name}
-          onChange={onSqlQueryChange}
-          language='sql'
-          autoFocus
-          mode='textarea'
-        />
-      </div>
-      <div className='QueryBox__Row'>
-        <Button
-          type='submit'
-          variant='contained'
-          disabled={disabledExecute}
-          startIcon={<SendIcon />}>
-          Execute
-        </Button>
-
-        <Tooltip title='Format the SQL query for readability.'>
+    <>
+      <form className='QueryBox' onSubmit={onSubmit}>
+        <div className='QueryBox__Row'>
+          <Typography variant='h6'>{query.name}</Typography>
+        </div>
+        <div className='QueryBox__Row'>
+          <ConnectionDatabaseSelector value={query} onChange={onDatabaseConnectionChange} />
+          <ConnectionRevealButton query={query} />
+        </div>
+        <div className='QueryBox__Row'>
+          <CodeEditorBox
+            value={query.sql}
+            placeholder={`Enter SQL for ` + query.name}
+            onChange={onSqlQueryChange}
+            language='sql'
+            autoFocus
+            mode='textarea'
+          />
+        </div>
+        <div className='QueryBox__Row'>
           <Button
-            type='button'
-            variant='outlined'
-            onClick={onFormatQuery}
-            startIcon={<FormatColorTextIcon />}
-            sx={{ ml: 3 }}>
-            Format
+            type='submit'
+            variant='contained'
+            disabled={disabledExecute}
+            startIcon={<SendIcon />}>
+            Execute
           </Button>
-        </Tooltip>
-      </div>
-    </form>
+
+          <Tooltip title='Format the SQL query for readability.'>
+            <Button
+              type='button'
+              variant='outlined'
+              onClick={onFormatQuery}
+              startIcon={<FormatColorTextIcon />}
+              sx={{ ml: 3 }}>
+              Format
+            </Button>
+          </Tooltip>
+        </div>
+      </form>
+      <ResultBox query={query} executing={executing} />
+    </>
   );
 }
 

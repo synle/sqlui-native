@@ -185,39 +185,37 @@ export function useGetColumns(connectionId?: string, databaseId?: string, tableI
   );
 }
 
-export function useExecute(query?: SqluiFrontend.ConnectionQuery) {
-  const queryClient = useQueryClient();
-  const { id, connectionId, sql, databaseId, lastExecuted } = query || {};
-  const enabled = query && !!sql && !!connectionId && !!lastExecuted;
-
-  return useQuery(
-    [QUERY_KEY_RESULTS, `${QUERY_KEY_RESULTS}_${id}`, id, connectionId, databaseId, lastExecuted],
-    () => dataApi.execute(query),
-    {
-      enabled,
-      onSettled: (results, error) => {
-        if (results || !error) {
-          // if we have any one of these keywords, let's refresh the table...
-          const KEYWORDS_TO_REFRESH_CONNECTION = [
-            'DROP DATABASE',
-            'CREATE DATABASE',
-            'DROP TABLE',
-            'CREATE TABLE',
-            'ALTER TABLE',
-            'DROP COLUMN',
-          ];
-          const shouldRefreshConnection = KEYWORDS_TO_REFRESH_CONNECTION.some((keyword) =>
-            query?.sql?.toUpperCase()?.includes(keyword),
-          );
-
-          if (shouldRefreshConnection) {
-            queryClient.invalidateQueries(connectionId);
-            queryClient.invalidateQueries(QUERY_KEY_ALL_CONNECTIONS);
-          }
-        }
-      },
-    },
+export function useExecute() {
+  return useMutation<SqluiCore.Result, void, SqluiFrontend.ConnectionQuery>(
+    (query?: SqluiFrontend.ConnectionQuery) => dataApi.execute(query),
   );
+}
+
+export function refreshAfterExecution(query: SqluiFrontend.ConnectionQuery) {
+  if (!query) {
+    return;
+  }
+
+  const queryClient = useQueryClient();
+
+  // if we have any one of these keywords, let's refresh the table...
+  const KEYWORDS_TO_REFRESH_CONNECTION = [
+    'DROP DATABASE',
+    'CREATE DATABASE',
+    'DROP TABLE',
+    'CREATE TABLE',
+    'ALTER TABLE',
+    'DROP COLUMN',
+  ];
+
+  const shouldRefreshConnection = KEYWORDS_TO_REFRESH_CONNECTION.some((keyword) =>
+    query?.sql?.toUpperCase()?.includes(keyword),
+  );
+
+  if (shouldRefreshConnection) {
+    queryClient.invalidateQueries(query.connectionId);
+    queryClient.invalidateQueries(QUERY_KEY_ALL_CONNECTIONS);
+  }
 }
 
 export function useRetryConnection() {
@@ -316,11 +314,9 @@ function _useConnectionQueries() {
           }
         }
 
-        // at the end we want to remove lastExecuted so the query won't be run again
+        // at the end we want to remove executionStart so the query won't be run again
         let toBeSelectedQuery = 0;
         _connectionQueries = _connectionQueries.map((query, idx) => {
-          delete query.lastExecuted; // this is to stop the query from automatically triggered
-
           if (query.selected) {
             query.selected = false;
             toBeSelectedQuery = idx;
@@ -457,7 +453,7 @@ export function useConnectionQueries() {
   const onChangeQuery = async (
     queryId: string | undefined,
     key: keyof SqluiFrontend.ConnectionQuery,
-    value?: string,
+    value?: any,
   ) => {
     const query = queries?.find((q) => q.id === queryId);
 
@@ -488,10 +484,6 @@ export function useConnectionQueries() {
     }
   };
 
-  const onExecuteQuery = (queryId?: string) => {
-    onChangeQuery(queryId, 'lastExecuted', `${Date.now()}`);
-  };
-
   const onDuplicateQuery = (queryId?: string) => {
     const query = queries?.find((q) => q.id === queryId);
 
@@ -519,7 +511,6 @@ export function useConnectionQueries() {
     onDeleteQueries,
     onShowQuery,
     onChangeQuery,
-    onExecuteQuery,
     onDuplicateQuery,
     onImportQuery,
   };
@@ -528,14 +519,11 @@ export function useConnectionQueries() {
 export function useConnectionQuery(queryId: string) {
   const queryClient = useQueryClient();
 
-  const { queries, onChangeQuery, onExecuteQuery, onDeleteQuery, isLoading, isFetching } =
-    useConnectionQueries();
+  const { queries, onChangeQuery, onDeleteQuery, isLoading, isFetching } = useConnectionQueries();
 
   const query = queries?.find((q) => q.id === queryId);
 
-  const onExecute = () => onExecuteQuery(query?.id);
-
-  const onChange = (key: keyof SqluiFrontend.ConnectionQuery, value?: string) =>
+  const onChange = (key: keyof SqluiFrontend.ConnectionQuery, value?: any) =>
     onChangeQuery(query?.id, key, value);
 
   const onDelete = () => onDeleteQuery(query?.id);
@@ -544,7 +532,6 @@ export function useConnectionQuery(queryId: string) {
     isLoading,
     isFetching,
     query,
-    onExecute,
     onChange,
     onDelete,
   };
@@ -553,14 +540,11 @@ export function useConnectionQuery(queryId: string) {
 export function useActiveConnectionQuery() {
   const queryClient = useQueryClient();
 
-  const { queries, onChangeQuery, onExecuteQuery, onDeleteQuery, isLoading, isFetching } =
-    useConnectionQueries();
+  const { queries, onChangeQuery, onDeleteQuery, isLoading, isFetching } = useConnectionQueries();
 
   const query = queries?.find((q) => q.selected);
 
-  const onExecute = () => onExecuteQuery(query?.id);
-
-  const onChange = (key: keyof SqluiFrontend.ConnectionQuery, value?: string) =>
+  const onChange = (key: keyof SqluiFrontend.ConnectionQuery, value?: any) =>
     onChangeQuery(query?.id, key, value);
 
   const onDelete = () => onDeleteQuery(query?.id);
@@ -569,7 +553,6 @@ export function useActiveConnectionQuery() {
     isLoading,
     isFetching,
     query,
-    onExecute,
     onChange,
     onDelete,
   };
@@ -619,6 +602,6 @@ export function getExportedConnection(connection: SqluiCore.ConnectionProps) {
 }
 
 export function getExportedQuery(query: SqluiFrontend.ConnectionQuery) {
-  const { selected, lastExecuted, ...dataToExport } = query;
+  const { selected, ...dataToExport } = query;
   return { _type: 'query', ...dataToExport };
 }

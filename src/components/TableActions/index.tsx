@@ -47,7 +47,6 @@ export default function TableActions(props: TableActionsProps) {
   });
 
   const onShowQuery = (queryToShow: string) => {
-    onChangeActiveQuery('lastExecuted', undefined); // this is to stop the query from automatically triggered
     onChangeActiveQuery('connectionId', connectionId);
     onChangeActiveQuery('databaseId', databaseId);
     onChangeActiveQuery('sql', queryToShow);

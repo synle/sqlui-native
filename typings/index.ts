@@ -46,7 +46,6 @@ export module SqluiCore {
     ok: boolean;
     raw?: RawData;
     meta?: MetaData;
-    executed: number;
     error?: any;
   };
 
@@ -78,8 +77,10 @@ export module SqluiCore {
 export module SqluiFrontend {
   // connection queries
   export type ConnectionQuery = SqluiCore.CoreConnectionQuery & {
-    lastExecuted?: number;
     selected?: boolean;
+    executionStart?: number;
+    executionEnd?: number;
+    result?: SqluiCore.Result;
   };
 
   export interface AvailableConnectionProps {

@@ -41,7 +41,6 @@ export default function DatabaseDescription(props: DatabaseDescriptionProps) {
     e.preventDefault();
     e.stopPropagation();
 
-    onChangeActiveQuery('lastExecuted', undefined); // this is to stop the query from automatically triggered
     onChangeActiveQuery('connectionId', connectionId);
     onChangeActiveQuery('databaseId', databaseId);
   };

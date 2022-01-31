@@ -3,7 +3,6 @@ import Typography from '@mui/material/Typography';
 import { NewConnectionForm } from 'src/components/ConnectionForm';
 import NewConnectionButton from 'src/components/NewConnectionButton';
 import ConnectionDescription from 'src/components/ConnectionDescription';
-import QueryResultTabs from 'src/components/QueryResultTabs';
 import Resizer from 'src/components/Resizer';
 import { useParams } from 'react-router-dom';
 import { EditConnectionForm } from 'src/components/ConnectionForm';

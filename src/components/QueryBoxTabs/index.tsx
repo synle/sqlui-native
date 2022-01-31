@@ -6,7 +6,7 @@ import Alert from '@mui/material/Alert';
 import CircularProgress from '@mui/material/CircularProgress';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
-import QueryResultContainer from 'src/components/QueryResultContainer';
+import QueryBox from 'src/components/QueryBox';
 import Tabs from 'src/components/Tabs';
 import AddIcon from '@mui/icons-material/Add';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
@@ -28,7 +28,7 @@ import { useActionDialogs } from 'src/components/ActionDialogs';
 import { useCommands } from 'src/components/MissionControl';
 import { downloadText } from 'src/data/file';
 
-export default function QueryResultTabs() {
+export default function QueryBoxTabs() {
   const navigate = useNavigate();
   const [init, setInit] = useState(false);
   const { queries, isLoading } = useConnectionQueries();
@@ -144,7 +144,7 @@ export default function QueryResultTabs() {
       <AddIcon fontSize='small' aria-label='Add query' /> Add Query
     </>,
   ];
-  const tabContents = queries.map((q) => <QueryResultContainer key={q.id} queryId={q.id} />);
+  const tabContents = queries.map((q) => <QueryBox key={q.id} queryId={q.id} />);
 
   return (
     <Tabs
