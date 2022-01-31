@@ -185,13 +185,11 @@ export class RelationalDatabaseEngine {
         ok: true,
         raw,
         meta,
-        executed: Date.now(),
       };
     } catch (error) {
       return {
         ok: false,
         error,
-        executed: Date.now(),
       };
     }
   }

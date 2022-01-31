@@ -195,7 +195,6 @@ function ConnectionActions(props: ConnectionActionsProps) {
   };
 
   const onSelectConnection = () => {
-    onChangeActiveQuery('lastExecuted', undefined); // this is to stop the query from automatically triggered
     onChangeActiveQuery('connectionId', connection.id);
     onChangeActiveQuery('databaseId', undefined);
   };
