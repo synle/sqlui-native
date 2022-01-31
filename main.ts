@@ -56,12 +56,7 @@ function setupMenu() {
           label: 'New Connection',
           accelerator: isMac ? 'Cmd+N' : 'Ctrl+N',
           click: async (item, win) =>
-            sendMessage(win as BrowserWindow, 'clientEvent/connection.new'),
-        },
-        {
-          label: 'New Query',
-          accelerator: isMac ? 'Cmd+T' : 'Ctrl+T',
-          click: async (item, win) => sendMessage(win as BrowserWindow, 'clientEvent/query/new'),
+            sendMessage(win as BrowserWindow, 'clientEvent/connection/new'),
         },
         {
           type: 'separator',
@@ -86,6 +81,29 @@ function setupMenu() {
             sendMessage(win as BrowserWindow, 'clientEvent/query/closeCurrentlySelected'),
         },
         isMac ? { role: 'close', accelerator: 'Cmd+Q' } : { role: 'quit', accelerator: 'Alt+F4' },
+      ],
+    },
+    {
+      label: 'Query',
+      submenu: [
+        {
+          label: 'New Query',
+          accelerator: isMac ? 'Cmd+T' : 'Ctrl+T',
+          click: async (item, win) => sendMessage(win as BrowserWindow, 'clientEvent/query/new'),
+        },
+        {
+          type: 'separator',
+        },
+        {
+          label: 'Prev Query',
+          accelerator: isMac ? 'Cmd+Shift+[' : 'Alt+Shift+[',
+          click: async (item, win) => sendMessage(win as BrowserWindow, 'clientEvent/query/showPrev'),
+        },
+        {
+          label: 'Next Query',
+          accelerator: isMac ? 'Cmd+Shift+]' : 'Alt+Shift+]',
+          click: async (item, win) => sendMessage(win as BrowserWindow, 'clientEvent/query/showNext'),
+        },
       ],
     },
     {

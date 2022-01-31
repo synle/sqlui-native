@@ -139,6 +139,30 @@ export default function MissionControl() {
     );
   };
 
+  const onShowQueryWithDirection = (direction: number) => {
+    if (!queries || !activeQuery) {
+      return;
+    }
+
+    let targetIdx = queries?.findIndex((q) => q.id === activeQuery.id);
+
+    if (targetIdx !== -1) {
+      targetIdx = targetIdx + direction;
+
+      // these are handler to rotate the search
+      if (targetIdx >= queries.length) {
+        targetIdx = 0;
+      }
+
+      if (targetIdx < 0) {
+        targetIdx = queries.length - 1;
+      }
+
+      // then show that tab
+      onShowQuery(queries[targetIdx].id);
+    }
+  };
+
   const onChangeSession = async () => {
     if (!sessions) {
       return;
@@ -343,7 +367,7 @@ export default function MissionControl() {
           break;
 
         // connection commands
-        case 'clientEvent/connection.new':
+        case 'clientEvent/connection/new':
           onNewConnection();
           break;
 
@@ -355,6 +379,12 @@ export default function MissionControl() {
           if (command.data) {
             onShowQuery((command.data as SqluiFrontend.ConnectionQuery).id);
           }
+          break;
+        case 'clientEvent/query/showNext':
+        case 'clientEvent/query/showPrev':
+          onShowQueryWithDirection(
+            command.event === 'clientEvent/query/showNext' ? 1 : -1,
+          );
           break;
         case 'clientEvent/query/rename':
           if (command.data) {

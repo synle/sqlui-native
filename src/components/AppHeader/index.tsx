@@ -45,9 +45,7 @@ export default function AppHeader() {
   const { selectCommand } = useCommands();
 
   const onChangeSession = () => selectCommand({ event: 'clientEvent/session/switch' });
-
-  const onAddSession = () => selectCommand({ event: 'clientEvent/import' });
-
+  const onAddSession = () => selectCommand({ event: 'clientEvent/session/new' });
   const onRenameSession = () => selectCommand({ event: 'clientEvent/session/rename' });
 
   const options = [
