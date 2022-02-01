@@ -60,7 +60,8 @@ export default function DatabaseDescription(props: DatabaseDescriptionProps) {
                 <IconButton
                   aria-label='Select Database For Execution'
                   onClick={(e) => onSelectDatabaseForQuery(e, database.name)}
-                  size='small'>
+                  size='small'
+                  color='inherit'>
                   <SelectAllIcon fontSize='inherit' />
                 </IconButton>
               </Tooltip>
