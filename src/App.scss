@@ -83,29 +83,6 @@
   }
 }
 
-.Accordion {
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  min-height: 37px;
-
-  * {
-    margin-right: 5px;
-  }
-
-  *:last-child {
-    margin-right: 0;
-  }
-
-  > span {
-    flex-grow: 1;
-    font-weight: bold;
-    display: block;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-}
-
 .Tabs {
   &__Vertical {
     display: flex;
@@ -129,14 +106,6 @@
         margin-left: 10px;
       }
     }
-  }
-}
-
-.CodeEditorBox {
-  &:hover,
-  &:focus {
-    border: 2px solid #aaa !important;
-    outline: none;
   }
 }
 

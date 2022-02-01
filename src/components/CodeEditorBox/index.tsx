@@ -43,15 +43,6 @@ export default function CodeEditorBox(props: CodeEditorProps) {
         autoFocus={props.autoFocus}
         required={props.required}
         style={{
-          backgroundColor: grey[800],
-          border: '2px solid transparent',
-          fontFamily: 'monospace',
-          fontWeight: '700',
-          width: '100%',
-          minHeight: '200px',
-          color: grey[50],
-          padding: '10px',
-          resize: 'vertical',
           whiteSpace: wordWrap ? 'initial' : 'nowrap',
         }}
       />

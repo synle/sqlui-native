@@ -66,8 +66,8 @@ export default function TableActions(props: TableActionsProps) {
         options={options}
         onToggle={(newOpen) => setOpen(newOpen)}
         isLoading={isLoading}>
-        <IconButton aria-label='Table Actions' size='small'>
-          <ArrowDropDownIcon fontSize='inherit' />
+        <IconButton aria-label='Table Actions' size='small' color='inherit'>
+          <ArrowDropDownIcon fontSize='inherit' color='inherit' />
         </IconButton>
       </DropdownButton>
     </div>
