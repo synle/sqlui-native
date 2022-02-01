@@ -29,19 +29,12 @@ export default function DataTable(props: DataTableProps) {
       <Table sx={{ minWidth: 650 }} size='small'>
         <TableHead>
           {
-            // Loop over the header rows
             headerGroups.map((headerGroup) => (
-              // Apply the header row props
               <TableRow {...headerGroup.getHeaderGroupProps()}>
                 {
-                  // Loop over the headers in each row
                   headerGroup.headers.map((column) => (
-                    // Apply the header cell props
                     <TableCell {...column.getHeaderProps()}>
-                      {
-                        // Render the header
-                        column.render('Header')
-                      }
+                      {column.render('Header')}
                     </TableCell>
                   ))
                 }
