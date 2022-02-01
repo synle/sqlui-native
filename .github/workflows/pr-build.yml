@@ -1,4 +1,4 @@
-name: PR - Smoke Tests
+name: pr-build
 
 on:
   pull_request:
