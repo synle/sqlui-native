@@ -468,9 +468,7 @@ export function useConnectionQueries() {
           ...partials,
         };
 
-        console.log('>> ', partials, newValue)
-
-        return newValue
+        return newValue;
       }
 
       return query;

@@ -67,7 +67,7 @@ export default function QueryBox(props: QueryBoxProps) {
   const onSubmit = async (e: React.SyntheticEvent) => {
     e.preventDefault();
     setExecuting(true);
-    onChange({ executionStart: Date.now(), result: {} as SqluiCore.Result});
+    onChange({ executionStart: Date.now(), result: {} as SqluiCore.Result });
 
     try {
       const newResult = await executeQuery(query);

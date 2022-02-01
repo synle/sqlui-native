@@ -4,6 +4,7 @@ import { SqluiCore, SqluiFrontend } from 'typings';
 import AlertDialog from 'src/components/ActionDialogs/AlertDialog';
 import PromptDialog, { PromptActionDialogInput } from 'src/components/ActionDialogs/PromptDialog';
 import ChoiceDialog, { ChoiceActionDialogOption } from 'src/components/ActionDialogs/ChoiceDialog';
+import ModalDialog, { ModalInput } from 'src/components/ActionDialogs/ModalDialog';
 
 interface ActionDialogsProps {}
 
@@ -78,6 +79,10 @@ export default function ActionDialogs(props: ActionDialogsProps) {
           onDismiss={onDimiss}
         />
       );
+    case 'modal':
+      return (
+        <ModalDialog open={true} title={dialog.title} body={dialog.message} onDismiss={onDimiss} />
+      );
   }
   return null;
 }
@@ -111,7 +116,13 @@ type PromptActionDialog = PromptActionDialogInput & {
 
 type ModalActionDialog = {
   type: 'modal';
-  body: React.ReactNode;
+  title: string;
+  /**
+   * body of the modal
+   * @type {[type]}
+   */
+  message: React.ReactNode;
+  onSubmit: (closed: boolean) => void;
 };
 
 type ActionDialog =
@@ -190,9 +201,13 @@ export function useActionDialogs() {
     });
   };
 
-  const modal = (newActionDialog: ModalActionDialog): Promise<void> => {
+  const modal = (props: ModalInput): Promise<void> => {
     return new Promise((resolve, reject) => {
-      _actionDialogs.push(newActionDialog);
+      _actionDialogs.push({
+        type: 'modal',
+        onSubmit: () => {},
+        ...props,
+      });
       queryClient.invalidateQueries(QUERY_KEY_ACTION_DIALOGS);
     });
   };
@@ -219,5 +234,6 @@ export function useActionDialogs() {
     confirm,
     choice,
     dismiss,
+    modal,
   };
 }
