@@ -110,7 +110,7 @@ export class ProxyApi {
 
   // queries endpoints
   static getQueries() {
-    return _fetch<SqluiCore.CoreConnectionQuery[]>(`/api/queries`);
+    return _fetch<SqluiCore.ConnectionQuery[]>(`/api/queries`);
   }
 
   static upsertQuery(newQuery: SqluiCore.CoreConnectionQuery) {

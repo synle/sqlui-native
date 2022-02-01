@@ -181,8 +181,8 @@ export class RelationalDatabaseEngine {
         raw: true,
       });
 
-      let rawToUse : any | undefined= raw;
-      let metaToUse : any | undefined = meta;
+      let rawToUse: any | undefined = raw;
+      let metaToUse: any | undefined = meta;
       let affectedRows;
 
       switch (this.dialect) {
@@ -190,14 +190,14 @@ export class RelationalDatabaseEngine {
           affectedRows = metaToUse;
           break;
         case 'postgres':
-          if(metaToUse.rowCount >= 0){
-            affectedRows = metaToUse.rowCount
+          if (metaToUse.rowCount >= 0) {
+            affectedRows = metaToUse.rowCount;
           }
           // Postgres returns a lot of redundant data, best to remove it to save space...
           metaToUse = undefined;
           break;
         case 'sqlite':
-          if(metaToUse.changes >= 0){
+          if (metaToUse.changes >= 0) {
             affectedRows = metaToUse.changes;
           } else {
             metaToUse = undefined;
@@ -205,7 +205,7 @@ export class RelationalDatabaseEngine {
           break;
         case 'mariadb':
         case 'mysql':
-          if(metaToUse?.affectedRows){
+          if (metaToUse?.affectedRows) {
             // these are likely insert / update calls
             // these don't need raw data
             rawToUse = undefined;

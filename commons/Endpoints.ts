@@ -244,7 +244,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     res
       .status(200)
       .json(
-        await new PersistentStorage<SqluiCore.CoreConnectionQuery>(
+        await new PersistentStorage<SqluiCore.ConnectionQuery>(
           req.headers['sqlui-native-session-id'],
           'query',
         ).list(),
@@ -254,7 +254,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
   addDataEndpoint('post', '/api/query', async (req, res, apiCache) => {
     apiCache.set('cacheMetaData', null);
     res.status(201).json(
-      await new PersistentStorage<SqluiCore.CoreConnectionQuery>(
+      await new PersistentStorage<SqluiCore.ConnectionQuery>(
         req.headers['sqlui-native-session-id'],
         'query',
       ).add({
@@ -266,7 +266,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
   addDataEndpoint('put', '/api/query/:queryId', async (req, res, apiCache) => {
     apiCache.set('cacheMetaData', null);
     res.status(202).json(
-      await new PersistentStorage<SqluiCore.CoreConnectionQuery>(
+      await new PersistentStorage<SqluiCore.ConnectionQuery>(
         req.headers['sqlui-native-session-id'],
         'query',
       ).update({
@@ -284,7 +284,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     res
       .status(202)
       .json(
-        await new PersistentStorage<SqluiCore.CoreConnectionQuery>(
+        await new PersistentStorage<SqluiCore.ConnectionQuery>(
           req.headers['sqlui-native-session-id'],
           'query',
         ).delete(req.params?.queryId),

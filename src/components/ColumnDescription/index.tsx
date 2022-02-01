@@ -49,7 +49,7 @@ export default function ColumnDescription(props: ColumnDescriptionProps) {
   }
 
   if (!columns || Object.keys(columns).length === 0) {
-    return <Alert severity='info'>Not Available</Alert>;
+    return <Alert severity='warning'>Not Available</Alert>;
   }
 
   return (

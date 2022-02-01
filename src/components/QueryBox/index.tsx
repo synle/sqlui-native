@@ -48,12 +48,11 @@ export default function QueryBox(props: QueryBoxProps) {
   }
 
   const onDatabaseConnectionChange = (connectionId?: string, databaseId?: string) => {
-    onChange('connectionId', connectionId);
-    onChange('databaseId', databaseId);
+    onChange({ connectionId: connectionId, databaseId: databaseId });
   };
 
   const onSqlQueryChange = (newQuery: string) => {
-    onChange('sql', newQuery);
+    onChange({ sql: newQuery });
   };
 
   const onFormatQuery = () => {
@@ -62,25 +61,24 @@ export default function QueryBox(props: QueryBoxProps) {
       // let's stop it
       return;
     }
-    onChange('sql', format(query?.sql || ''));
+    onChange({ sql: format(query?.sql || '') });
   };
 
   const onSubmit = async (e: React.SyntheticEvent) => {
     e.preventDefault();
     setExecuting(true);
-    onChange('executionStart', Date.now());
-    onChange('result', []); // clear result
+    onChange({ executionStart: Date.now(), result: {} as SqluiCore.Result});
 
     try {
       const newResult = await executeQuery(query);
-      onChange('result', newResult); // clear result
+      onChange({ result: newResult });
       refreshAfterExecution(query);
     } catch (err) {
       //@ts-ignore
       // here query failed...
     }
     setExecuting(false);
-    onChange('executionEnd', Date.now());
+    onChange({ executionEnd: Date.now() });
   };
 
   const disabledExecute = executing || !query?.sql || !query?.connectionId;

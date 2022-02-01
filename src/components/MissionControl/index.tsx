@@ -133,7 +133,9 @@ export default function MissionControl() {
         value: query.name,
         saveLabel: 'Save',
       });
-      onChangeQuery(query.id, 'name', newName);
+      onChangeQuery(query.id, {
+        name: newName,
+      });
     } catch (err) {
       //@ts-ignore
     }
