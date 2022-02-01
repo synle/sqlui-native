@@ -24,7 +24,7 @@ import ResultBox from 'src/components/ResultBox';
 import { SqluiCore, SqluiFrontend } from 'typings';
 
 interface QueryBoxProps {
-  queryId: string
+  queryId: string;
 }
 
 export default function QueryBox(props: QueryBoxProps) {
@@ -160,13 +160,12 @@ function ConnectionDatabaseSelector(props: ConnectionDatabaseSelectorProps) {
   ));
 
   if (isLoading) {
-    return <>
-      <NativeSelect>
-      </NativeSelect>
-      <NativeSelect
-        sx={{ ml: 3 }}>
-      </NativeSelect>
-    </>
+    return (
+      <>
+        <NativeSelect></NativeSelect>
+        <NativeSelect sx={{ ml: 3 }}></NativeSelect>
+      </>
+    );
   }
 
   return (
