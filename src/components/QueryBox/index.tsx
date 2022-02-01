@@ -160,13 +160,12 @@ function ConnectionDatabaseSelector(props: ConnectionDatabaseSelectorProps) {
   ));
 
   if (isLoading) {
-    return <>
-      <NativeSelect>
-      </NativeSelect>
-      <NativeSelect
-        sx={{ ml: 3 }}>
-      </NativeSelect>
-    </>
+    return (
+      <>
+        <NativeSelect></NativeSelect>
+        <NativeSelect sx={{ ml: 3 }}></NativeSelect>
+      </>
+    );
   }
 
   return (
