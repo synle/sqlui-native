@@ -73,7 +73,7 @@ export default function DataTable(props: DataTableProps) {
               return (
                 <TableRow {...row.getRowProps()}>
                   {row.cells.map((cell) => {
-                    return <TableCell>{cell.render('Cell')}</TableCell>;
+                    return <TableCell {...cell.getCellProps()}>{cell.render('Cell')}</TableCell>;
                   })}
                 </TableRow>
               );
