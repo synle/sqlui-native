@@ -10,6 +10,8 @@ import NativeSelect from '@mui/material/NativeSelect';
 import PreviewIcon from '@mui/icons-material/Preview';
 import FormatColorTextIcon from '@mui/icons-material/FormatColorText';
 import Tooltip from '@mui/material/Tooltip';
+import MenuItem from '@mui/material/MenuItem';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
 import {
   useGetConnections,
   useExecute,
@@ -87,9 +89,6 @@ export default function QueryBox(props: QueryBoxProps) {
     <>
       <form className='QueryBox' onSubmit={onSubmit}>
         <div className='QueryBox__Row'>
-          <Typography variant='h6'>{query.name}</Typography>
-        </div>
-        <div className='QueryBox__Row'>
           <ConnectionDatabaseSelector value={query} onChange={onDatabaseConnectionChange} />
           <ConnectionRevealButton query={query} />
         </div>
@@ -151,37 +150,40 @@ function ConnectionDatabaseSelector(props: ConnectionDatabaseSelectorProps) {
   };
 
   const connectionOptions = connections?.map((connection) => (
-    <option value={connection.id} key={connection.id}>
+    <MenuItem value={connection.id} key={connection.id}>
       {connection.name}
-    </option>
+    </MenuItem>
   ));
 
   const databaseConnections = databases?.map((database) => (
-    <option value={database.name} key={database.name}>
+    <MenuItem value={database.name} key={database.name}>
       {database.name}
-    </option>
+    </MenuItem>
   ));
 
   if (isLoading) {
-    return null;
+    <>
+      <Select disabled size='small'></Select>
+      <Select disabled size='small' sx={{ ml: 3 }}></Select>
+    </>;
   }
 
   return (
     <>
-      <NativeSelect
+      <Select
         value={query.connectionId}
-        onChange={(e) => onConnectionChange(e.target.value)}
-        required>
-        <option value=''>Pick a connection</option>
+        onChange={(e) => onConnectionChange(e.target.value as string)}
+        required
+        size='small'>
         {connectionOptions}
-      </NativeSelect>
-      <NativeSelect
+      </Select>
+      <Select
         value={query.databaseId}
-        onChange={(e) => onDatabaseChange(e.target.value)}
+        onChange={(e) => onDatabaseChange(e.target.value as string)}
+        size='small'
         sx={{ ml: 3 }}>
-        <option value=''>Pick a database (Optional)</option>
         {databaseConnections}
-      </NativeSelect>
+      </Select>
     </>
   );
 }

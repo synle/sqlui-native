@@ -28,8 +28,9 @@ const ALL_COMMAND_PALETTE_OPTIONS: CommandOption[] = [
   { event: 'clientEvent/connection/new', label: 'New Connection' },
   { event: 'clientEvent/query/new', label: 'New Query' },
   { event: 'clientEvent/query/show', label: 'Show Query', expandQueries: true },
-  { event: 'clientEvent/query/showNext', label: 'Show Next Query', useCurrentQuery: true },
-  { event: 'clientEvent/query/showPrev', label: 'Show Prev Query', useCurrentQuery: true },
+  // these 2 commands don't make sense, let's disable it...
+  // { event: 'clientEvent/query/showNext', label: 'Show Next Query', useCurrentQuery: true },
+  // { event: 'clientEvent/query/showPrev', label: 'Show Prev Query', useCurrentQuery: true },
   { event: 'clientEvent/query/rename', label: 'Rename Current Query', useCurrentQuery: true },
   { event: 'clientEvent/query/export', label: 'Export Current Query', useCurrentQuery: true },
   { event: 'clientEvent/query/duplicate', label: 'Duplicate Current Query', useCurrentQuery: true },

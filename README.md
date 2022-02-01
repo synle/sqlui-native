@@ -50,6 +50,15 @@ Also these sessions, and the associated connections and queries are persisted lo
 Dark mode will be turned on automatically with respect to your OS Preference.
 ![demo-darkmode](https://user-images.githubusercontent.com/3792401/151746840-e4889ae1-cab9-4ade-b56b-5a4dbb654712.gif)
 
+
+### Query Tabs
+When there is more than 20 tabs, the query tabs will be wrapped vertically.
+![image](https://user-images.githubusercontent.com/3792401/152028900-400605a2-0cb0-48df-9249-8ce060d3a256.png)
+
+### Command Palette
+Similar to VS Code and Sublime Text, sqlui-native comes with a command palette that lets you reach your mostly used command via a key combo `CMD + P` or `Ctrl + P` on Windows.
+![image](https://user-images.githubusercontent.com/3792401/152029205-5798c53d-6304-40dc-b9d8-11700bfc03f2.png)
+
 ## Contributing
 - [Repo](https://github.com/synle/sqlui-native)
 

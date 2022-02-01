@@ -1,5 +1,26 @@
 // @ts-nocheck
 import { useState, useEffect, useCallback } from 'react';
+import { styled, createTheme, ThemeProvider } from '@mui/system';
+import { grey } from '@mui/material/colors';
+
+const StyledTextArea = styled('textarea')(({ theme }) => {
+  const backgroundColor = grey[800];
+  return {
+    backgroundColor,
+    color: theme.palette.getContrastText(backgroundColor),
+    border: '2px solid transparent',
+    fontFamily: 'monospace',
+    fontWeight: '700',
+    width: '100%',
+    minHeight: '200px',
+    padding: '10px',
+    resize: 'vertical',
+    outline: 'none',
+    '&:hover, &:focus': {
+      borderColor: theme.palette.primary.main,
+    },
+  };
+});
 
 export default function SchemaEditor(props) {
   const onInputKeyDown = useCallback((e) => {
@@ -140,5 +161,5 @@ export default function SchemaEditor(props) {
     }
   }, []);
 
-  return <textarea onKeyDown={(e) => onInputKeyDown(e)} {...props}></textarea>;
+  return <StyledTextArea onKeyDown={(e) => onInputKeyDown(e)} {...props} />;
 }

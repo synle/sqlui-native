@@ -237,8 +237,8 @@ function ConnectionActions(props: ConnectionActionsProps) {
   return (
     <>
       <DropdownButton id='connection-actions-split-button' options={options}>
-        <IconButton aria-label='Connection Actions' size='small'>
-          <ArrowDropDownIcon fontSize='inherit' />
+        <IconButton aria-label='Connection Actions' size='small' color='inherit'>
+          <ArrowDropDownIcon fontSize='inherit' color='inherit' />
         </IconButton>
       </DropdownButton>
       <Toast open={!!message} onClose={() => setMessage('')} message={message} />

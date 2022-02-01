@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import Button from '@mui/material/Button';
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ClickAwayListener from '@mui/material/ClickAwayListener';
 import Grow from '@mui/material/Grow';
 import Paper from '@mui/material/Paper';
