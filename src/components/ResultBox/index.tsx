@@ -1,12 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Typography from '@mui/material/Typography';
 import CsvEngine from 'json-2-csv';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
 import Alert from '@mui/material/Alert';
@@ -17,6 +11,7 @@ import { useExecute, useConnectionQueries, useConnectionQuery } from 'src/hooks'
 import Tabs from 'src/components/Tabs';
 import { downloadText } from 'src/data/file';
 import CodeEditorBox from 'src/components/CodeEditorBox';
+import DataTable from 'src/components/DataTable';
 import Timer from 'src/components/Timer';
 import { SqluiCore, SqluiFrontend } from 'typings';
 
@@ -163,41 +158,22 @@ function CsvFormatData(props: FormatDataProps) {
 function TableFormatData(props: FormatDataProps) {
   const { data } = props;
 
-  const [headers, setHeaders] = useState<string[]>([]);
-
-  useEffect(() => {
-    const newHeaders = new Set<string>();
+  const columns = useMemo(() => {
+    const newColumnNames = new Set<string>();
     for (const row of data) {
       for (const header of Object.keys(row)) {
-        newHeaders.add(header);
+        newColumnNames.add(header);
       }
     }
-    setHeaders(Array.from(newHeaders));
-  }, [data]);
+    return Array.from(newColumnNames).map((columnName) => {
+      return {
+        Header: columnName,
+        accessor: columnName,
+      };
+    });
+  }, []);
 
-  return (
-    <TableContainer component={Paper}>
-      <Table sx={{ minWidth: 650 }} size='small'>
-        <TableHead>
-          <TableRow>
-            {headers.map((header) => (
-              <TableCell key={header}>{header}</TableCell>
-            ))}
-          </TableRow>
-        </TableHead>
-
-        <TableBody>
-          {data.map((row, idx) => (
-            <TableRow key={idx}>
-              {headers.map((header) => (
-                <TableCell key={header}>{row[header]}</TableCell>
-              ))}
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
-  );
+  return <DataTable columns={columns} data={data} />;
 }
 
 interface QueryTimeDescriptionProps {
