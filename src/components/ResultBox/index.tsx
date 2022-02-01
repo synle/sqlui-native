@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Typography from '@mui/material/Typography';
 import CsvEngine from 'json-2-csv';
 import Table from '@mui/material/Table';
@@ -163,17 +163,15 @@ function CsvFormatData(props: FormatDataProps) {
 function TableFormatData(props: FormatDataProps) {
   const { data } = props;
 
-  const [headers, setHeaders] = useState<string[]>([]);
-
-  useEffect(() => {
+  const headers = useMemo(() => {
     const newHeaders = new Set<string>();
     for (const row of data) {
       for (const header of Object.keys(row)) {
         newHeaders.add(header);
       }
     }
-    setHeaders(Array.from(newHeaders));
-  }, [data]);
+    return Array.from(newHeaders);
+  }, []);
 
   return (
     <TableContainer component={Paper}>
