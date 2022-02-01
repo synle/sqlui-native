@@ -21,33 +21,26 @@ interface DataTableProps {
   data: any[];
 }
 
-const pageSizeOptions : any[] = [10, 25, 50, 100, {label: 'Show All', value: -1}]
+const pageSizeOptions: any[] = [10, 25, 50, 100, { label: 'Show All', value: -1 }];
 
 export default function DataTable(props: DataTableProps) {
   const { columns, data } = props;
 
   //@ts-ignore
-  const {
-    getTableBodyProps,
-    gotoPage,
-    headerGroups,
-    page,
-    prepareRow,
-    setPageSize,
-    state,
-  } = useTable(
-    {
-      initialState: {
-        pageSize: 50,
+  const { getTableBodyProps, gotoPage, headerGroups, page, prepareRow, setPageSize, state } =
+    useTable(
+      {
+        initialState: {
+          pageSize: 50,
+        },
+        columns,
+        data,
       },
-      columns,
-      data,
-    },
-    useFilters,
-    useGlobalFilter,
-    useSortBy,
-    usePagination,
-  );
+      useFilters,
+      useGlobalFilter,
+      useSortBy,
+      usePagination,
+    );
   const { pageIndex, pageSize } = state;
 
   const onPageChange = useCallback(

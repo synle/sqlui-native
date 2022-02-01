@@ -132,14 +132,6 @@
   }
 }
 
-.CodeEditorBox {
-  &:hover,
-  &:focus {
-    border: 2px solid #aaa !important;
-    outline: none;
-  }
-}
-
 .DropdownButton {
   &__Popper {
     padding: 10px 15px;
