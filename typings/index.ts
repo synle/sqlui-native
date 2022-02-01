@@ -131,7 +131,7 @@ export module SqluiEnums {
    * @type {String}
    */
   export type ClientEventKey =
-    | 'clientEvent/missionControl'
+    | 'clientEvent/showCommandPalette'
     | 'clientEvent/import'
     | 'clientEvent/exportAll'
     | 'clientEvent/connection/new'

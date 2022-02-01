@@ -69,7 +69,7 @@ export default function AppHeader() {
 
     {
       label: 'Command Palette',
-      onClick: () => selectCommand({ event: 'clientEvent/missionControl' }),
+      onClick: () => selectCommand({ event: 'clientEvent/showCommandPalette' }),
       startIcon: <KeyboardCommandKeyIcon />,
     },
   ];

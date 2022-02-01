@@ -467,7 +467,6 @@ export function useConnectionQueries() {
           ...query,
           ...partials,
         };
-
         return newValue;
       }
 
