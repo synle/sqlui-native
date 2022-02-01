@@ -109,11 +109,17 @@ type PromptActionDialog = PromptActionDialogInput & {
   onSubmit: (yesSelected: boolean, newValue?: string) => void;
 };
 
+type ModalActionDialog = {
+  type: 'modal';
+  body: React.ReactNode;
+};
+
 type ActionDialog =
   | AlertActionDialog
   | ConfirmActionDialog
   | PromptActionDialog
-  | ChoiceActionDialog;
+  | ChoiceActionDialog
+  | ModalActionDialog;
 
 const QUERY_KEY_ACTION_DIALOGS = 'actionDialogs';
 let _actionDialogs: ActionDialog[] = [];
@@ -179,6 +185,13 @@ export function useActionDialogs() {
         type: 'alert',
         message,
       };
+      _actionDialogs.push(newActionDialog);
+      queryClient.invalidateQueries(QUERY_KEY_ACTION_DIALOGS);
+    });
+  };
+
+  const modal = (newActionDialog: ModalActionDialog): Promise<void> => {
+    return new Promise((resolve, reject) => {
       _actionDialogs.push(newActionDialog);
       queryClient.invalidateQueries(QUERY_KEY_ACTION_DIALOGS);
     });
