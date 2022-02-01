@@ -24,7 +24,7 @@ import ResultBox from 'src/components/ResultBox';
 import { SqluiCore, SqluiFrontend } from 'typings';
 
 interface QueryBoxProps {
-  queryId: string;
+  queryId: string
 }
 
 export default function QueryBox(props: QueryBoxProps) {
