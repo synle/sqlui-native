@@ -39,31 +39,33 @@ import {
   setCurrentSessionId,
   getRandomSessionId,
 } from 'src/data/session';
+import CommandPalette from 'src/components/CommandPalette';
 
-interface Command {
+export interface Command {
   event: SqluiEnums.ClientEventKey;
   data?: unknown;
+  label?: string;
 }
 
-const QUERY_KEY_MISSION_CONTROL_COMMAND = 'missionControlCommand';
+const QUERY_KEY_COMMAND_PALETTE = 'commandPalette';
 const _commands: Command[] = [];
 export function useCommands() {
   const queryClient = useQueryClient();
 
-  const { data, isLoading: loading } = useQuery(QUERY_KEY_MISSION_CONTROL_COMMAND, () => _commands);
+  const { data, isLoading: loading } = useQuery(QUERY_KEY_COMMAND_PALETTE, () => _commands);
 
   const command = _commands[_commands.length - 1];
 
   const selectCommand = (command: Command) => {
     _commands.push(command);
-    queryClient.invalidateQueries(QUERY_KEY_MISSION_CONTROL_COMMAND);
+    queryClient.invalidateQueries(QUERY_KEY_COMMAND_PALETTE);
   };
 
   const dismissCommand = () => {
     if (_commands.length > 0) {
       _commands.pop();
     }
-    queryClient.invalidateQueries(QUERY_KEY_MISSION_CONTROL_COMMAND);
+    queryClient.invalidateQueries(QUERY_KEY_COMMAND_PALETTE);
   };
 
   return {
@@ -99,8 +101,8 @@ export default function MissionControl() {
     isLoading: loadingQueries,
   } = useConnectionQueries();
   const { query: activeQuery } = useActiveConnectionQuery();
-  const { command, dismissCommand } = useCommands();
-  const { choice, confirm, prompt, alert } = useActionDialogs();
+  const { command, selectCommand, dismissCommand } = useCommands();
+  const { modal, choice, confirm, prompt, alert, dismiss: dismissDialog } = useActionDialogs();
   const { data: sessions, isLoading: loadingSessions } = useGetSessions();
   const { data: currentSession, isLoading: loadingCurrentSession } = useGetCurrentSession();
   const { mutateAsync: upsertSession } = useUpsertSession();
@@ -366,123 +368,183 @@ export default function MissionControl() {
     }
   };
 
+  const onShowCommandPalette = async () => {
+    try {
+      const onSelectCommand = (command: Command) => {
+        dismissDialog();
+        _executeCommandPalette(command);
+      };
+      await modal({
+        title: 'Control Palette',
+        message: <CommandPalette onSelectCommand={onSelectCommand} />,
+      });
+    } catch (err) {
+      //@ts-ignore
+    }
+  };
+
   // mission control commands
+  async function _executeCommandPalette(command: Command) {
+    if (command) {
+      dismissCommand();
+
+      switch (command.event) {
+        case 'clientEvent/showCommandPalette':
+          onShowCommandPalette();
+          break;
+
+        // overall commands
+        case 'clientEvent/import':
+          try {
+            //@ts-ignore
+            window.toggleElectronMenu(false, allMenuKeys);
+            await onImport();
+          } catch (err) {
+            //@ts-ignore
+          }
+
+          //@ts-ignore
+          window.toggleElectronMenu(true, allMenuKeys);
+          break;
+        case 'clientEvent/exportAll':
+          onExportAll();
+          break;
+
+        // connection commands
+        case 'clientEvent/connection/new':
+          onNewConnection();
+          break;
+
+        // query commands
+        case 'clientEvent/query/new':
+          onAddQuery();
+          break;
+        case 'clientEvent/query/show':
+          if (command.data) {
+            onShowQuery((command.data as SqluiFrontend.ConnectionQuery).id);
+          }
+          break;
+        case 'clientEvent/query/showNext':
+        case 'clientEvent/query/showPrev':
+          onShowQueryWithDirection(command.event === 'clientEvent/query/showNext' ? 1 : -1);
+          break;
+        case 'clientEvent/query/rename':
+          if (command.data) {
+            onRenameQuery(command.data as SqluiFrontend.ConnectionQuery);
+          }
+          break;
+        case 'clientEvent/query/export':
+          if (command.data) {
+            onExportQuery(command.data as SqluiFrontend.ConnectionQuery);
+          }
+          break;
+        case 'clientEvent/query/duplicate':
+          if (command.data) {
+            onDuplicateQuery(command.data as SqluiFrontend.ConnectionQuery);
+          }
+          break;
+        case 'clientEvent/query/close':
+          if (command.data) {
+            onCloseQuery(command.data as SqluiFrontend.ConnectionQuery);
+          }
+          break;
+        case 'clientEvent/query/closeOther':
+          if (command.data) {
+            onCloseOtherQueries(command.data as SqluiFrontend.ConnectionQuery);
+          }
+          break;
+        case 'clientEvent/query/closeCurrentlySelected':
+          // this closes the active query
+          if (activeQuery) {
+            onCloseQuery(activeQuery);
+          }
+          break;
+
+        // session commands
+        case 'clientEvent/session/switch':
+          try {
+            //@ts-ignore
+            window.toggleElectronMenu(false, allMenuKeys);
+            await onChangeSession();
+          } catch (err) {
+            //@ts-ignore
+          }
+
+          //@ts-ignore
+          window.toggleElectronMenu(true, allMenuKeys);
+          break;
+        case 'clientEvent/session/new':
+          try {
+            //@ts-ignore
+            window.toggleElectronMenu(false, allMenuKeys);
+            await onAddSession();
+          } catch (err) {
+            //@ts-ignore
+          }
+
+          //@ts-ignore
+          window.toggleElectronMenu(true, allMenuKeys);
+          break;
+        case 'clientEvent/session/rename':
+          try {
+            //@ts-ignore
+            window.toggleElectronMenu(false, allMenuKeys);
+            await onRenameSession();
+          } catch (err) {
+            //@ts-ignore
+          }
+
+          //@ts-ignore
+          window.toggleElectronMenu(true, allMenuKeys);
+          break;
+      }
+    }
+  }
+
   useEffect(() => {
-    async function _executeMissionCommand() {
-      if (command) {
-        dismissCommand();
+    _executeCommandPalette(command);
+  }, [command]);
 
-        switch (command.event) {
-          // overall commands
-          case 'clientEvent/import':
-            try {
-              //@ts-ignore
-              window.toggleElectronMenu(false, allMenuKeys);
-              await onImport();
-            } catch (err) {
-              //@ts-ignore
-            }
+  useEffect(() => {
+    // @ts-ignore
+    if (window.isElectron) {
+      // if it is electron, then let's not create these shortcut here
+      // this is mostly for webapp to debug
+      return;
+    }
 
-            //@ts-ignore
-            window.toggleElectronMenu(true, allMenuKeys);
-            break;
-          case 'clientEvent/exportAll':
-            onExportAll();
-            break;
-
-          // connection commands
-          case 'clientEvent/connection/new':
-            onNewConnection();
-            break;
-
-          // query commands
-          case 'clientEvent/query/new':
-            onAddQuery();
-            break;
-          case 'clientEvent/query/show':
-            if (command.data) {
-              onShowQuery((command.data as SqluiFrontend.ConnectionQuery).id);
-            }
-            break;
-          case 'clientEvent/query/showNext':
-          case 'clientEvent/query/showPrev':
-            onShowQueryWithDirection(command.event === 'clientEvent/query/showNext' ? 1 : -1);
-            break;
-          case 'clientEvent/query/rename':
-            if (command.data) {
-              onRenameQuery(command.data as SqluiFrontend.ConnectionQuery);
-            }
-            break;
-          case 'clientEvent/query/export':
-            if (command.data) {
-              onExportQuery(command.data as SqluiFrontend.ConnectionQuery);
-            }
-            break;
-          case 'clientEvent/query/duplicate':
-            if (command.data) {
-              onDuplicateQuery(command.data as SqluiFrontend.ConnectionQuery);
-            }
-            break;
-          case 'clientEvent/query/close':
-            if (command.data) {
-              onCloseQuery(command.data as SqluiFrontend.ConnectionQuery);
-            }
-            break;
-          case 'clientEvent/query/closeOther':
-            if (command.data) {
-              onCloseOtherQueries(command.data as SqluiFrontend.ConnectionQuery);
-            }
-            break;
-          case 'clientEvent/query/closeCurrentlySelected':
-            // this closes the active query
-            if (activeQuery) {
-              onCloseQuery(activeQuery);
-            }
-            break;
-
-          // session commands
-          case 'clientEvent/session/switch':
-            try {
-              //@ts-ignore
-              window.toggleElectronMenu(false, allMenuKeys);
-              await onChangeSession();
-            } catch (err) {
-              //@ts-ignore
-            }
-
-            //@ts-ignore
-            window.toggleElectronMenu(true, allMenuKeys);
-            break;
-          case 'clientEvent/session/new':
-            try {
-              //@ts-ignore
-              window.toggleElectronMenu(false, allMenuKeys);
-              await onAddSession();
-            } catch (err) {
-              //@ts-ignore
-            }
-
-            //@ts-ignore
-            window.toggleElectronMenu(true, allMenuKeys);
-            break;
-          case 'clientEvent/session/rename':
-            try {
-              //@ts-ignore
-              window.toggleElectronMenu(false, allMenuKeys);
-              await onRenameSession();
-            } catch (err) {
-              //@ts-ignore
-            }
-
-            //@ts-ignore
-            window.toggleElectronMenu(true, allMenuKeys);
+    const onOpenCommandPalettePrompt = (e: KeyboardEvent) => {
+      let onShowCommandPalette = false;
+      let preventDefault = false;
+      const { key } = e;
+      if (e.altKey || e.ctrlKey || e.metaKey) {
+        switch (key) {
+          case 'p':
+            onShowCommandPalette = true;
+            preventDefault = true;
             break;
         }
       }
-    }
 
-    _executeMissionCommand();
-  }, [command]);
+      if (preventDefault) {
+        e.stopPropagation();
+        e.preventDefault();
+      }
+
+      if (onShowCommandPalette === true) {
+        selectCommand({
+          event: 'clientEvent/showCommandPalette',
+        });
+      }
+    };
+
+    document.addEventListener('keydown', onOpenCommandPalettePrompt);
+    return () => {
+      document.removeEventListener('keydown', onOpenCommandPalettePrompt);
+    };
+  }, []);
 
   return null;
 }
+
+// TODO: move me to a file

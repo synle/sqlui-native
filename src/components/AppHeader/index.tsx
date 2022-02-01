@@ -15,6 +15,7 @@ import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import AppsIcon from '@mui/icons-material/Apps';
 import EditIcon from '@mui/icons-material/Edit';
+import KeyboardCommandKeyIcon from '@mui/icons-material/KeyboardCommandKey';
 import PhotoSizeSelectSmallIcon from '@mui/icons-material/PhotoSizeSelectSmall';
 import EditConnectionPage from 'src/views/EditConnectionPage';
 import NewConnectionPage from 'src/views/NewConnectionPage';
@@ -41,12 +42,7 @@ export default function AppHeader() {
   const navigate = useNavigate();
   const { data: sessions, isLoading } = useGetSessions();
   const { data: currentSession, isLoading: loadingCurrentSession } = useGetCurrentSession();
-  const { mutateAsync: upsertSession } = useUpsertSession();
   const { selectCommand } = useCommands();
-
-  const onChangeSession = () => selectCommand({ event: 'clientEvent/session/switch' });
-  const onAddSession = () => selectCommand({ event: 'clientEvent/session/new' });
-  const onRenameSession = () => selectCommand({ event: 'clientEvent/session/rename' });
 
   const options = [
     {
@@ -57,18 +53,24 @@ export default function AppHeader() {
     },
     {
       label: 'New Session',
-      onClick: onAddSession,
+      onClick: () => selectCommand({ event: 'clientEvent/session/new' }),
       startIcon: <AddIcon />,
     },
     {
       label: 'Change Session',
-      onClick: onChangeSession,
+      onClick: () => selectCommand({ event: 'clientEvent/session/switch' }),
       startIcon: <PhotoSizeSelectSmallIcon />,
     },
     {
       label: 'Rename Session',
-      onClick: onRenameSession,
+      onClick: () => selectCommand({ event: 'clientEvent/session/rename' }),
       startIcon: <EditIcon />,
+    },
+
+    {
+      label: 'Command Palette',
+      onClick: () => selectCommand({ event: 'clientEvent/showCommandPalette' }),
+      startIcon: <KeyboardCommandKeyIcon />,
     },
   ];
 
@@ -86,7 +88,7 @@ export default function AppHeader() {
           <Typography
             variant='subtitle1'
             sx={{ cursor: 'pointer', mr: 'auto', fontFamily: 'monospace' }}
-            onClick={onRenameSession}>
+            onClick={() => selectCommand({ event: 'clientEvent/session/rename' })}>
             ({currentSession?.name})
           </Typography>
         </Tooltip>

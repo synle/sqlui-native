@@ -160,6 +160,15 @@ function setupMenu() {
         { role: 'zoomOut' },
         { type: 'separator' },
         { role: 'togglefullscreen' },
+        {
+          id: 'menu-session-switch',
+          label: 'Command Palette',
+          accelerator: isMac ? 'Cmd+P' : 'Ctrl+P',
+          visible: false,
+          acceleratorWorksWhenHidden: true,
+          click: async (item, win) =>
+            sendMessage(win as BrowserWindow, 'clientEvent/showCommandPalette'),
+        },
       ],
     },
     {
