@@ -52,11 +52,16 @@ export module SqluiCore {
 
   // connection queries
   export type CoreConnectionQuery = {
-    id: string;
-    name: string;
+    id?: string;
+    name?: string;
     connectionId?: string;
     databaseId?: string;
     sql?: string;
+  };
+
+  export type ConnectionQuery = CoreConnectionQuery & {
+    id: string;
+    name: string;
   };
 
   // session
@@ -77,12 +82,14 @@ export module SqluiCore {
  */
 export module SqluiFrontend {
   // connection queries
-  export type ConnectionQuery = SqluiCore.CoreConnectionQuery & {
+  export type PartialConnectionQuery = SqluiCore.CoreConnectionQuery & {
     selected?: boolean;
     executionStart?: number;
     executionEnd?: number;
     result?: SqluiCore.Result;
   };
+
+  export type ConnectionQuery = SqluiCore.ConnectionQuery & SqluiFrontend.PartialConnectionQuery;
 
   export interface AvailableConnectionProps {
     connectionId: string;

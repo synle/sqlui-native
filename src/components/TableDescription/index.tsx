@@ -28,7 +28,7 @@ export default function TableDescription(props: TableDescriptionProps) {
   }
 
   if (!tables || tables.length === 0) {
-    return <Alert severity='info'>Not Available</Alert>;
+    return <Alert severity='warning'>Not Available</Alert>;
   }
 
   return (
