@@ -513,15 +513,42 @@ export default function MissionControl() {
       return;
     }
 
-    const onOpenCommandPalettePrompt = (e: KeyboardEvent) => {
+    const onKeyboardShortcutEvent = (e: KeyboardEvent) => {
       let onShowCommandPalette = false;
       let preventDefault = false;
+      let command: Command | undefined;
       const { key } = e;
       if (e.altKey || e.ctrlKey || e.metaKey) {
-        switch (key) {
+        switch (key.toLowerCase()) {
           case 'p':
-            onShowCommandPalette = true;
-            preventDefault = true;
+            command = {
+              event: 'clientEvent/showCommandPalette',
+            };
+            break;
+          case 't':
+            command = {
+              event: 'clientEvent/query/new',
+            };
+            break;
+          case 'o':
+            command = {
+              event: 'clientEvent/import',
+            };
+            break;
+          case 's':
+            command = {
+              event: 'clientEvent/exportAll',
+            };
+            break;
+          case 'n':
+            command = {
+              event: 'clientEvent/connection/new',
+            };
+            break;
+          case 'w':
+            command = {
+              event: 'clientEvent/query/closeCurrentlySelected',
+            };
             break;
         }
       }
@@ -531,16 +558,14 @@ export default function MissionControl() {
         e.preventDefault();
       }
 
-      if (onShowCommandPalette === true) {
-        selectCommand({
-          event: 'clientEvent/showCommandPalette',
-        });
+      if (command) {
+        selectCommand(command);
       }
     };
 
-    document.addEventListener('keydown', onOpenCommandPalettePrompt);
+    document.addEventListener('keydown', onKeyboardShortcutEvent);
     return () => {
-      document.removeEventListener('keydown', onOpenCommandPalettePrompt);
+      document.removeEventListener('keydown', onKeyboardShortcutEvent);
     };
   }, []);
 
