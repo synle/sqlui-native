@@ -195,8 +195,10 @@ function ConnectionActions(props: ConnectionActionsProps) {
   };
 
   const onSelectConnection = () => {
-    onChangeActiveQuery('connectionId', connection.id);
-    onChangeActiveQuery('databaseId', '');
+    onChangeActiveQuery({
+      connectionId: connection.id,
+      databaseId: '',
+    });
   };
 
   const options = [

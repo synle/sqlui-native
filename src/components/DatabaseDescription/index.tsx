@@ -34,15 +34,17 @@ export default function DatabaseDescription(props: DatabaseDescriptionProps) {
   }
 
   if (!databases || databases.length === 0) {
-    return <Alert severity='info'>Not Available</Alert>;
+    return <Alert severity='warning'>Not Available</Alert>;
   }
 
   const onSelectDatabaseForQuery = async (e: React.SyntheticEvent, databaseId: string) => {
     e.preventDefault();
     e.stopPropagation();
 
-    onChangeActiveQuery('connectionId', connectionId);
-    onChangeActiveQuery('databaseId', databaseId);
+    onChangeActiveQuery({
+      connectionId: connectionId,
+      databaseId: databaseId,
+    });
   };
 
   return (

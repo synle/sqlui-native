@@ -47,9 +47,11 @@ export default function TableActions(props: TableActionsProps) {
   });
 
   const onShowQuery = (queryToShow: string) => {
-    onChangeActiveQuery('connectionId', connectionId);
-    onChangeActiveQuery('databaseId', databaseId);
-    onChangeActiveQuery('sql', queryToShow);
+    onChangeActiveQuery({
+      connectionId: connectionId,
+      databaseId: databaseId,
+      sql: queryToShow,
+    });
   };
 
   const options = actions.map((action) => ({
