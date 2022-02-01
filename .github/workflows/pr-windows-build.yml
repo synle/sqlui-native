@@ -1,4 +1,4 @@
-name: Pull Request Build
+name: pr-windows-build
 
 on:
   pull_request:
