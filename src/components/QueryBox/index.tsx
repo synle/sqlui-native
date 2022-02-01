@@ -10,8 +10,6 @@ import NativeSelect from '@mui/material/NativeSelect';
 import PreviewIcon from '@mui/icons-material/Preview';
 import FormatColorTextIcon from '@mui/icons-material/FormatColorText';
 import Tooltip from '@mui/material/Tooltip';
-import MenuItem from '@mui/material/MenuItem';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
 import {
   useGetConnections,
   useExecute,
@@ -150,40 +148,43 @@ function ConnectionDatabaseSelector(props: ConnectionDatabaseSelectorProps) {
   };
 
   const connectionOptions = connections?.map((connection) => (
-    <MenuItem value={connection.id} key={connection.id}>
+    <option value={connection.id} key={connection.id}>
       {connection.name}
-    </MenuItem>
+    </option>
   ));
 
   const databaseConnections = databases?.map((database) => (
-    <MenuItem value={database.name} key={database.name}>
+    <option value={database.name} key={database.name}>
       {database.name}
-    </MenuItem>
+    </option>
   ));
 
   if (isLoading) {
-    <>
-      <Select disabled size='small'></Select>
-      <Select disabled size='small' sx={{ ml: 3 }}></Select>
-    </>;
+    return <>
+      <NativeSelect>
+      </NativeSelect>
+      <NativeSelect
+        sx={{ ml: 3 }}>
+      </NativeSelect>
+    </>
   }
 
   return (
     <>
-      <Select
+      <NativeSelect
         value={query.connectionId}
-        onChange={(e) => onConnectionChange(e.target.value as string)}
-        required
-        size='small'>
+        onChange={(e) => onConnectionChange(e.target.value)}
+        required>
+        <option value=''>Pick a connection</option>
         {connectionOptions}
-      </Select>
-      <Select
+      </NativeSelect>
+      <NativeSelect
         value={query.databaseId}
-        onChange={(e) => onDatabaseChange(e.target.value as string)}
-        size='small'
+        onChange={(e) => onDatabaseChange(e.target.value)}
         sx={{ ml: 3 }}>
+        <option value=''>Pick a database (Optional)</option>
         {databaseConnections}
-      </Select>
+      </NativeSelect>
     </>
   );
 }
