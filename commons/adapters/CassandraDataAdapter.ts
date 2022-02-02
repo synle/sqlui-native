@@ -5,36 +5,67 @@ import CoreDataAdapter from './CoreDataAdapter';
 export default class CassandraAdapter implements CoreDataAdapter {
   connectionOption: string;
   dialect: SqluiCore.Dialect = 'cassandra';
-  client: cassandra.Client;
+  client?: cassandra.Client;
+  /**
+   * cassandra version
+   * @type {number}
+   */
+  // version: string;
 
   constructor(connectionOption: string) {
     this.connectionOption = connectionOption as string;
 
-    // TODO: hard coded now for testing...
-    this.client = new cassandra.Client({
-      contactPoints: ['127.0.0.1'],
-      protocolOptions: {
-          port: 9042,
-      }
-      // keyspace: undefined
-    });
+    try{
+      // TODO: hard coded now for testing...
+      this.client = new cassandra.Client({
+        contactPoints: ['127.0.0.1'],
+        protocolOptions: {
+            port: 9042,
+        }
+        // keyspace: undefined
+      });
+    } catch(err){
+
+    }
+
+
   }
 
   async authenticate() {
     // TODO: To Be Implemented
-    // var authProvider = new cassandra.auth.PlainTextAuthProvider('Username', 'Password');
+     return new Promise<void>((resolve, reject) => {
+      this.client?.connect((err: unknown) => {
+        if (err) {
+          this.client?.shutdown();
+          return reject(err);
+        }
+
+        console.log(this.client?.getState().getConnectedHosts());
+
+        // this.version = {
+        //   name: 'Cassandra',
+        //   version: this.client?.getState().getConnectedHosts()[0].cassandraVersion,
+        //   string: `Cassandra ${this.client?.getState().getConnectedHosts()[0].cassandraVersion}`,
+        // };
+
+        resolve();
+      });
+    });
   }
 
   async getDatabases(): Promise<SqluiCore.DatabaseMetaData[]> {
-    // TODO: To Be Implemented
-    return [{
-      name: 'cass-db',
+    //@ts-ignore
+    const keyspaces = Object.keys(this.client?.metadata?.keyspaces);
+    return keyspaces.map(keyspace =>({
+      name: keyspace,
       tables: []
-    }];
+    }));
   }
 
   async getTables(database?: string): Promise<SqluiCore.TableMetaData[]> {
     // TODO: To Be Implemented
+    console.log(this.version);
+
     return [{
       name: 'cass-tbl1',
       columns: []
@@ -42,6 +73,9 @@ export default class CassandraAdapter implements CoreDataAdapter {
   }
 
   async getColumns(table: string, database?: string): Promise<SqluiCore.ColumnMetaData[]> {
+
+
+
     // TODO: To Be Implemented
     return [
       {"name":"cass-c1","type":"INT","allowNull":false,"defaultValue":'',"primaryKey":true,"autoIncrement":true,"comment":null},
@@ -53,10 +87,16 @@ export default class CassandraAdapter implements CoreDataAdapter {
   async execute(sql: string, database?: string): Promise<SqluiCore.Result> {
     let rawToUse: any | undefined ;
     let metaToUse: any | undefined;
-    let affectedRows;
 
-    const res = await this.client.execute(sql);
+    const res = await this.client?.execute(sql);
 
+    if(!res){
+       return {
+        ok: false,
+        raw: [],
+        meta: null,
+      };
+    }
     const {rows} = res;
 
     //@ts-ignore
@@ -92,7 +132,6 @@ export default class CassandraAdapter implements CoreDataAdapter {
       ok: false,
       raw: rawToUse,
       meta: metaToUse,
-      affectedRows,
     };
   }
 }

@@ -27,16 +27,16 @@ export default class RelationalDataAdapter implements CoreDataAdapter {
 
   constructor(connectionOption: string) {
     let sequelize;
-      // since mariadb and mysql are fully compatible, let's use the same data
-      // save the connection string
-      this.connectionOption = (connectionOption as string).replace('mariadb://', 'mysql://');
+    // since mariadb and mysql are fully compatible, let's use the same data
+    // save the connection string
+    this.connectionOption = (connectionOption as string).replace('mariadb://', 'mysql://');
 
-      sequelize = new Sequelize(connectionOption);
-      this.dialect = this.getDialect(sequelize);
+    sequelize = new Sequelize(connectionOption);
+    this.dialect = this.getDialect(sequelize);
 
-      if ((connectionOption as string).includes('mariadb://')) {
-        this.dialect = 'mariadb';
-      }
+    if ((connectionOption as string).includes('mariadb://')) {
+      this.dialect = 'mariadb';
+    }
 
     // save the root connection
     this.sequelizes[''] = sequelize;
