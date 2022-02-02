@@ -1,4 +1,3 @@
-import { RelationalDatabaseEngine, getEngine } from './commons/RelationalDatabaseEngine';
 import { SqluiCore, SqluiEnums } from './typings';
 import { matchPath } from 'react-router-dom';
 import { app, BrowserWindow, ipcMain, Menu, nativeTheme } from 'electron';

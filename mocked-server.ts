@@ -1,6 +1,5 @@
 import express from 'express';
 import bodyParser from 'body-parser';
-import { RelationalDatabaseEngine, getEngine } from './commons/RelationalDatabaseEngine';
 import { setUpDataEndpoints } from './commons/Endpoints';
 import { SqluiCore } from './typings';
 
