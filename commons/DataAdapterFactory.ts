@@ -75,7 +75,7 @@ export async function getConnectionMetaData(connection: SqluiCore.CoreConnection
     console.log('>> Server Error', err);
 
     // also clean up the connection if there is error
-  delete _adapterCache[connection.connection];
+    delete _adapterCache[connection.connection];
   }
 
   return connItem;

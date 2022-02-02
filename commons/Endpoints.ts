@@ -1,5 +1,9 @@
 import { Express } from 'express';
-import { getDataAdapter, getConnectionMetaData, resetConnectionMetaData } from './DataAdapterFactory';
+import {
+  getDataAdapter,
+  getConnectionMetaData,
+  resetConnectionMetaData,
+} from './DataAdapterFactory';
 import PersistentStorage from './PersistentStorage';
 import { SqluiCore, SqluiEnums } from '../typings';
 
