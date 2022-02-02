@@ -192,11 +192,11 @@ export function useExecute() {
 }
 
 export function refreshAfterExecution(query: SqluiFrontend.ConnectionQuery) {
+  const queryClient = useQueryClient();
+
   if (!query) {
     return;
   }
-
-  const queryClient = useQueryClient();
 
   // if we have any one of these keywords, let's refresh the table...
   const KEYWORDS_TO_REFRESH_CONNECTION = [
