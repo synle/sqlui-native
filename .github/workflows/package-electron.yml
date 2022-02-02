@@ -15,3 +15,19 @@ jobs:
       - run: echo "Tag Version - ${{ github.event.inputs.tagVersion }}"
       - run: npm ci
       - run: npm run dist
+
+  release:
+    runs-on: self-hosted
+
+    steps:
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.event.inputs.tagVersion }}
+        release_name: ${{ github.event.inputs.tagVersion }}
+        body: |
+          ${{ github.event.inputs.tagVersion }} Release Notes:
+        draft: true
+        prerelease: true
