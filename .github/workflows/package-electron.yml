@@ -1,0 +1,80 @@
+name: package-electron
+
+on:
+  workflow_dispatch:
+    inputs:
+      message:
+
+jobs:
+  get_package_version:
+    runs-on: ubuntu-latest
+
+    outputs:
+      package_version: ${{ steps.package-version.outputs.current-version }}
+
+    steps:
+      - uses: actions/checkout@v2
+      - id: package-version
+        uses: martinbeentjes/npm-get-version-action@master
+        with:
+          path: "./"
+
+  create_release:
+    needs: get_package_version
+    runs-on: ubuntu-latest
+    outputs:
+      release_upload_url: ${{ steps.create_release.outputs.upload_url }}
+    steps:
+      # Create a release
+      - uses: actions/create-release@v1
+        id: create_release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ needs.get_package_version.outputs.package_version }}
+          release_name: ${{ needs.get_package_version.outputs.package_version }}
+          body: |
+            Release Notes:
+            ${{ github.event.inputs.message }}
+          draft: true
+          prerelease: true
+
+  build_windows:
+    needs: create_release
+    runs-on: [self-hosted, windows]
+    steps:
+      # build
+      - uses: actions/checkout@v2
+      - run: npm install
+      - run: npm run dist
+      - run: mv ./dist/sqlui-native*.exe ./dist/sqlui-native.exe
+
+      #  Upload binary step
+      - uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create_release.outputs.release_upload_url }}
+          asset_path: ./dist/sqlui-native.exe
+          asset_name: sqlui-native.exe
+          asset_content_type: application/octet-stream
+
+  build_macos:
+    needs: create_release
+    runs-on: [self-hosted, macos]
+    steps:
+      # build
+      - uses: actions/checkout@v2
+      - run: npm install
+      - run: npm run dist
+      - run: mv ./dist/sqlui-native*.dmg ./dist/sqlui-native.dmg
+
+      #  Upload binary step
+      - uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create_release.outputs.release_upload_url }}
+          asset_path: ./dist/sqlui-native.dmg
+          asset_name: sqlui-native.dmg
+          asset_content_type: application/octet-stream
