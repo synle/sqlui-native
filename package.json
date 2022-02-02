@@ -1,6 +1,6 @@
 {
   "name": "sqlui-native",
-  "version": "1.4.7",
+  "version": "1.4.8",
   "description": "A minimal Electron application for SQL Databases",
   "browserslist": {
     "production": [
@@ -22,8 +22,10 @@
   },
   "main": "main.js",
   "scripts": {
-    "clean": "rimraf .cache .parcel-cache dist build",
+    "clean": "rimraf .cache .parcel-cache dist build && cpx package.json src/",
     "prestart": "npm run clean && npm run build",
+    "prestart-webapp": "npm run prebuild",
+    "prebuild": "npm run clean",
     "start": "npm run start-electron",
     "start-electron": "cross-env ENV_TYPE='electron-dev' cross-env ELECTRON_DISABLE_SECURITY_WARNINGS=true electron build/main.js",
     "start-webapp": "cross-env ENV_TYPE='mocked-server' SASS_PATH='./src/styles' react-scripts start",

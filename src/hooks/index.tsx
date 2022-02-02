@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { useQuery, useMutation, useQueryClient } from 'react-query';
+import { QueryClient, useQuery, useMutation, useQueryClient } from 'react-query';
 import { SqluiCore, SqluiFrontend } from 'typings';
 import dataApi from 'src/data/api';
 import Config from 'src/data/config';
@@ -191,12 +191,13 @@ export function useExecute() {
   );
 }
 
-export function refreshAfterExecution(query: SqluiFrontend.ConnectionQuery) {
+export function refreshAfterExecution(
+  query: SqluiFrontend.ConnectionQuery,
+  queryClient: QueryClient,
+) {
   if (!query) {
     return;
   }
-
-  const queryClient = useQueryClient();
 
   // if we have any one of these keywords, let's refresh the table...
   const KEYWORDS_TO_REFRESH_CONNECTION = [

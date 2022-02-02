@@ -36,6 +36,7 @@ import {
 import DropdownButton from 'src/components/DropdownButton';
 import { useCommands } from 'src/components/MissionControl';
 import { SqluiCore } from 'typings';
+import appPackage from 'src/package.json';
 
 export default function AppHeader() {
   const [open, setOpen] = useState(false);
@@ -81,7 +82,7 @@ export default function AppHeader() {
           variant='h5'
           onClick={() => navigate('/')}
           sx={{ cursor: 'pointer', fontWeight: 'bold', mr: 3 }}>
-          SQLUI NATIVE
+          SQLUI NATIVE {appPackage.version}
         </Typography>
 
         <Tooltip title='This is the current session name. Click to rename it.'>
