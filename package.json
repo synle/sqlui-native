@@ -28,14 +28,14 @@
     "start-electron": "cross-env ENV_TYPE='electron-dev' cross-env ELECTRON_DISABLE_SECURITY_WARNINGS=true electron build/main.js",
     "start-webapp": "cross-env ENV_TYPE='mocked-server' SASS_PATH='./src/styles' react-scripts start",
     "start-mocked": "npx ts-node --project tsconfig-server.json mocked-server.ts",
+    "build-binary": "cpx \"build/**/*\" . && electron-builder build --publish=never",
     "build-electron": "npx tsc --project tsconfig-electron.json && cpx package.json build",
     "build-react": "cross-env CI=\"\" SASS_PATH='./src/styles' react-scripts build",
     "build": "npm run build-react && npm run build-electron",
-    "build-ci": "npm run build-react",
     "test": "cross-env SASS_PATH='./src/styles' react-scripts test",
     "format": "npx prettier --config ./.prettierrc --write **/*.{ts,tsx,js,jsx,scss,yml,html} *.{json,MD}",
     "lint": "eslint --fix --ext .tsx --ext .ts src",
-    "dist": "npm run build && cpx \"build/**/*\" . && electron-builder build --publish=never"
+    "dist": "npm run build && npm run build-binary"
   },
   "repository": "https://github.com/synle/sqlui-native",
   "keywords": [

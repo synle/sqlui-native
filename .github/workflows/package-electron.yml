@@ -1,0 +1,17 @@
+name: Package Electron
+
+on:
+  workflow_dispatch:
+    inputs:
+      tagVersion:
+        required: true
+
+jobs:
+  build:
+    runs-on: self-hosted
+
+    steps:
+      - uses: actions/checkout@v2
+      - run: echo "Tag Version - ${{ github.event.inputs.tagVersion }}"
+      - run: npm ci
+      - run: npm run dist
