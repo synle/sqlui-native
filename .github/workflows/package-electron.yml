@@ -39,7 +39,7 @@ jobs:
           prerelease: true
 
   build_windows:
-    needs: create_release
+    needs: [get_package_version, create_release]
     runs-on: [self-hosted, windows]
     timeout-minutes: 15
     steps:
@@ -60,7 +60,7 @@ jobs:
           asset_content_type: application/octet-stream
 
   build_macos:
-    needs: create_release
+    needs: [get_package_version, create_release]
     runs-on: [self-hosted, macos]
     timeout-minutes: 15
     steps:
@@ -81,7 +81,7 @@ jobs:
           asset_content_type: application/octet-stream
           
   publish:
-    needs: [build_windows, build_macos]
+    needs: [get_package_version, build_windows, build_macos]
     runs-on: ubuntu-latest
     timeout-minutes: 4
     steps:
