@@ -137,3 +137,12 @@ WHERE email LIKE 'syle@test_email.com'
 LIMIT
   10
 ```
+
+
+## CI / CD Notes
+Self hosted runners
+
+### Windows
+```
+Set-ExecutionPolicy RemoteSigned
+```
