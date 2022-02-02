@@ -78,3 +78,15 @@ jobs:
           asset_path: ./dist/sqlui-native.dmg
           asset_name: sqlui-native.dmg
           asset_content_type: application/octet-stream
+          
+  publish:
+    needs: [build_windows, build_macos]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: echo " ${{ needs.get_package_version.outputs.package_version }}"
+      - run: |
+          sed -i "s/app_version: 1.*\+/app_version: ${{ needs.get_package_version.outputs.package_version }}/" _config.yml
+      - uses: EndBug/add-and-commit@v7
+        with:
+          message: "CI / CD - New Release ${{needs.get_package_version.outputs.package_version}}"
