@@ -1,10 +1,5 @@
 import { Express } from 'express';
-import {
-  RelationalDatabaseEngine,
-  getEngine,
-  getConnectionMetaData,
-  resetConnectionMetaData,
-} from './RelationalDatabaseEngine';
+import { getEngine, getConnectionMetaData, resetConnectionMetaData } from './EngineFactory';
 import PersistentStorage from './PersistentStorage';
 import { SqluiCore, SqluiEnums } from '../typings';
 

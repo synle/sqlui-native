@@ -1,18 +1,29 @@
 import { Sequelize, ColumnDescription } from 'sequelize';
-import { SqluiCore } from '../typings';
+import { SqluiCore } from '../../typings';
+import CoreDataAdapter from './CoreDataAdapter';
 
 /**
  * mostly adapter for sequelize
  * https://sequelize.org/master/class/lib/dialects/abstract/query-interface.js~QueryInterface.html
  */
-export class RelationalDatabaseEngine {
-  /**
-   * // https://sequelize.org/v5/manual/dialects.html
-   * @type {string}
-   */
-  private connectionOption?: string;
-  public dialect?: SqluiCore.Dialect;
+export default class RelationalDataAdapter implements CoreDataAdapter {
+  connectionOption?: string;
+  dialect?: SqluiCore.Dialect;
   private sequelizes: Record<string, Sequelize> = {};
+
+  private getDialect(sequelize: Sequelize){
+      const parsedConnectionType = sequelize?.getDialect();
+      switch(parsedConnectionType){
+      case 'mysql':
+      case 'mariadb':
+      case 'mssql':
+      case 'postgres':
+      case 'sqlite':
+      return parsedConnectionType
+      default:
+        return undefined; // Not supported by relational database adapter
+    }
+  }
 
   constructor(connectionOption: string | Sequelize) {
     let sequelize;
@@ -22,15 +33,14 @@ export class RelationalDatabaseEngine {
       this.connectionOption = (connectionOption as string).replace('mariadb://', 'mysql://');
 
       sequelize = new Sequelize(connectionOption);
-
-      this.dialect = sequelize?.getDialect();
+      this.dialect = this.getDialect(sequelize);
 
       if ((connectionOption as string).includes('mariadb://')) {
         this.dialect = 'mariadb';
       }
     } else {
       sequelize = connectionOption as Sequelize;
-      this.dialect = sequelize?.getDialect();
+      this.dialect = this.getDialect(sequelize);
     }
 
     // save the root connection
@@ -242,71 +252,4 @@ export class RelationalDatabaseEngine {
       raw: true,
     });
   }
-}
-
-const engines: { [index: string]: RelationalDatabaseEngine } = {};
-export function getEngine(connection: string) {
-  if (engines[connection]) {
-    return engines[connection];
-  }
-  const engine = new RelationalDatabaseEngine(connection);
-  engines[connection] = engine;
-  return engine;
-}
-
-export async function getConnectionMetaData(connection: SqluiCore.CoreConnectionProps) {
-  const connItem: SqluiCore.CoreConnectionMetaData = {
-    name: connection.name,
-    id: connection?.id,
-    connection: connection.connection,
-    databases: [] as SqluiCore.DatabaseMetaData[],
-  };
-
-  try {
-    const engine = getEngine(connection.connection);
-    const databases = await engine.getDatabases();
-
-    connItem.status = 'online';
-    connItem.dialect = engine.dialect;
-
-    for (const database of databases) {
-      connItem.databases.push(database);
-
-      try {
-        database.tables = await engine.getTables(database.name);
-        //console.log('getting tables', database, tables);
-      } catch (err) {
-        database.tables = [];
-        //console.log('failed getting tables', database);
-      }
-
-      for (const table of database.tables) {
-        try {
-          table.columns = await engine.getColumns(table.name, database.name);
-        } catch (err) {
-          table.columns = [];
-          //console.log('failed getting columns', database, table);
-        }
-      }
-    }
-  } catch (err) {
-    // console.log('connection error', connection.name, err);
-    connItem.status = 'offline';
-    connItem.dialect = undefined;
-    console.log('>> Server Error', err);
-  }
-
-  return connItem;
-}
-
-export function resetConnectionMetaData(connection: SqluiCore.CoreConnectionProps) {
-  const connItem: SqluiCore.CoreConnectionMetaData = {
-    name: connection.name,
-    id: connection?.id,
-    connection: connection.connection,
-    databases: [] as SqluiCore.DatabaseMetaData[],
-    status: 'offline',
-  };
-
-  return connItem;
 }
