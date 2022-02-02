@@ -1,6 +1,6 @@
 {
   "name": "sqlui-native",
-  "version": "1.4.8",
+  "version": "1.5.1",
   "description": "A minimal Electron application for SQL Databases",
   "browserslist": {
     "production": [
@@ -51,6 +51,7 @@
     "@mui/icons-material": "^5.3.1",
     "@mui/material": "^5.4.0",
     "@uiw/react-textarea-code-editor": "^1.4.15",
+    "cassandra-driver": "^4.6.3",
     "json-2-csv": "^3.17.0",
     "mariadb": "^2.5.5",
     "mysql2": "^2.3.3",
