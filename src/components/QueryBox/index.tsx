@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { useQueryClient } from 'react-query';
 import { format } from 'sql-formatter';
 import Box from '@mui/material/Box';
 import Alert from '@mui/material/Alert';
@@ -34,6 +35,7 @@ export default function QueryBox(props: QueryBoxProps) {
   const { query, onChange, onDelete, isLoading: loadingConnection } = useConnectionQuery(queryId);
   const { mutateAsync: executeQuery } = useExecute();
   const [executing, setExecuting] = useState(false);
+  const queryClient = useQueryClient();
 
   const isLoading = loadingConnection;
 
@@ -74,7 +76,7 @@ export default function QueryBox(props: QueryBoxProps) {
     try {
       const newResult = await executeQuery(query);
       onChange({ result: newResult });
-      refreshAfterExecution(query);
+      refreshAfterExecution(query, queryClient);
     } catch (err) {
       //@ts-ignore
       // here query failed...
