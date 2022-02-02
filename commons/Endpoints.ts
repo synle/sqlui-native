@@ -1,11 +1,15 @@
 import { Express } from 'express';
-import { getEngine, getConnectionMetaData, resetConnectionMetaData } from './EngineFactory';
+import {
+  getDataAdapter,
+  getConnectionMetaData,
+  resetConnectionMetaData,
+} from './DataAdapterFactory';
 import PersistentStorage from './PersistentStorage';
 import { SqluiCore, SqluiEnums } from '../typings';
 
 let expressAppContext: Express | undefined;
 
-const _cache = {};
+const _apiCache = {};
 
 const electronEndpointHandlers: any[] = [];
 function addDataEndpoint(
@@ -31,7 +35,7 @@ function addDataEndpoint(
         get(key: SqluiEnums.ServerApiCacheKey) {
           try {
             //@ts-ignore
-            return _cache[cacheKey][key];
+            return _apiCache[cacheKey][key];
           } catch (err: any) {
             return undefined;
           }
@@ -39,16 +43,16 @@ function addDataEndpoint(
         set(key: SqluiEnums.ServerApiCacheKey, value: any) {
           try {
             //@ts-ignore
-            _cache[cacheKey] = _cache[cacheKey] || {};
+            _apiCache[cacheKey] = _apiCache[cacheKey] || {};
 
             //@ts-ignore
-            _cache[cacheKey][key] = value;
+            _apiCache[cacheKey][key] = value;
           } catch (err: any) {
             //@ts-ignore
           }
         },
         json() {
-          return JSON.stringify(_cache);
+          return JSON.stringify(_apiCache);
         },
       };
 
@@ -75,7 +79,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
 
     for (const connection of connections) {
       try {
-        const engine = getEngine(connection.connection);
+        const engine = getDataAdapter(connection.connection);
         const databases = await engine.getDatabases();
 
         connection.status = 'online';
@@ -96,7 +100,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     ).get(req.params?.connectionId);
 
     try {
-      const engine = getEngine(connection.connection);
+      const engine = getDataAdapter(connection.connection);
       const databases = await engine.getDatabases();
 
       connection.status = 'online';
@@ -116,7 +120,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
       return res.status(404).send('Not Found');
     }
 
-    const engine = getEngine(connection.connection);
+    const engine = getDataAdapter(connection.connection);
     res.status(200).json(await engine.getDatabases());
   });
 
@@ -128,7 +132,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
         req.headers['sqlui-native-session-id'],
         'connection',
       ).get(req.params?.connectionId);
-      const engine = getEngine(connection.connection);
+      const engine = getDataAdapter(connection.connection);
 
       res.status(200).json(await engine.getTables(req.params?.databaseId));
     },
@@ -142,7 +146,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
         req.headers['sqlui-native-session-id'],
         'connection',
       ).get(req.params?.connectionId);
-      const engine = getEngine(connection.connection);
+      const engine = getDataAdapter(connection.connection);
 
       res.status(200).json(await engine.getColumns(req.params?.tableId, req.params?.databaseId));
     },
@@ -161,7 +165,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     apiCache.set('cacheMetaData', null);
 
     try {
-      const engine = getEngine(connection.connection);
+      const engine = getDataAdapter(connection.connection);
       await engine.authenticate();
       apiCache.set('cacheMetaData', null);
       res.status(200).json(await getConnectionMetaData(connection));
@@ -182,7 +186,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
       return res.status(404).send('Not Found');
     }
 
-    const engine = getEngine(connection.connection);
+    const engine = getDataAdapter(connection.connection);
     const sql = req.body?.sql;
     const database = req.body?.database;
     res.status(200).json(await engine.execute(sql, database));
@@ -190,7 +194,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
 
   addDataEndpoint('post', '/api/connection/test', async (req, res, apiCache) => {
     const connection: SqluiCore.CoreConnectionProps = req.body;
-    const engine = getEngine(connection.connection);
+    const engine = getDataAdapter(connection.connection);
     await engine.authenticate();
     res.status(200).json(await getConnectionMetaData(connection));
   });
