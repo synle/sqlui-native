@@ -1,0 +1,28 @@
+name: Package Electron MacOS
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_upload_url:
+        required: true
+
+jobs:
+  build_macos:
+    runs-on: [self-hosted, macos]
+    steps:
+      # build
+      - uses: actions/checkout@v2
+      - run: npm install
+      - run: npm run dist
+      - run: pwd
+      - run: mv ./dist/sqlui-native*.dmg ./dist/sqlui-native.dmg
+
+      #  Upload binary step
+      - uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.inputs.release_upload_url }}
+          asset_path: ./dist/sqlui-native.dmg
+          asset_name: sqlui-native.dmg
+          asset_content_type: application/octet-stream

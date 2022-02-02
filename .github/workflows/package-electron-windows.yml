@@ -1,0 +1,27 @@
+name: Package Electron Windows
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_upload_url:
+        required: true
+
+jobs:
+  build_windows:
+    runs-on: [self-hosted, windows]
+    steps:
+      # build
+      - uses: actions/checkout@v2
+      - run: npm install
+      - run: npm run dist
+      - run: mv ./dist/sqlui-native*.exe ./dist/sqlui-native.exe
+
+      #  Upload binary step
+      - uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.inputs.release_upload_url }}
+          asset_path: ./dist/sqlui-native.exe
+          asset_name: sqlui-native.exe
+          asset_content_type: application/octet-stream
