@@ -11,15 +11,15 @@ export default class RelationalDataAdapter implements CoreDataAdapter {
   dialect?: SqluiCore.Dialect;
   private sequelizes: Record<string, Sequelize> = {};
 
-  private getDialect(sequelize: Sequelize){
-      const parsedConnectionType = sequelize?.getDialect();
-      switch(parsedConnectionType){
+  private getDialect(sequelize: Sequelize) {
+    const parsedConnectionType = sequelize?.getDialect();
+    switch (parsedConnectionType) {
       case 'mysql':
       case 'mariadb':
       case 'mssql':
       case 'postgres':
       case 'sqlite':
-      return parsedConnectionType
+        return parsedConnectionType;
       default:
         return undefined; // Not supported by relational database adapter
     }

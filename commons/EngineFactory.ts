@@ -4,20 +4,20 @@ import CoreDataAdapter from './adapters/CoreDataAdapter';
 
 const engines: { [index: string]: CoreDataAdapter } = {};
 
-function getConnectionType(connection: string){
-    const parsedConnectionType = connection.substr(0, connection.indexOf(':')).toLowerCase();
-    switch(parsedConnectionType){
-      case 'mysql':
-      case 'mariadb':
-      case 'mssql':
-      case 'postgres':
-      case 'sqlite':
-      return parsedConnectionType
-      case 'cassandra':
-        // TODO: to be implemented
-      default:
-        return undefined;
-    }
+function getConnectionType(connection: string) {
+  const parsedConnectionType = connection.substr(0, connection.indexOf(':')).toLowerCase();
+  switch (parsedConnectionType) {
+    case 'mysql':
+    case 'mariadb':
+    case 'mssql':
+    case 'postgres':
+    case 'sqlite':
+      return parsedConnectionType;
+    case 'cassandra':
+    // TODO: to be implemented
+    default:
+      return undefined;
+  }
 }
 
 export function getEngine(connection: string) {
