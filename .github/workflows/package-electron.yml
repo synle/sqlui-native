@@ -56,7 +56,7 @@ jobs:
         with:
           upload_url: ${{ needs.create_release.outputs.release_upload_url }}
           asset_path: ./dist/sqlui-native.exe
-          asset_name: sqlui-native.exe
+          asset_name: sqlui-native-${{ needs.get_package_version.outputs.package_version }}.exe
           asset_content_type: application/octet-stream
 
   build_macos:
@@ -77,7 +77,7 @@ jobs:
         with:
           upload_url: ${{ needs.create_release.outputs.release_upload_url }}
           asset_path: ./dist/sqlui-native.dmg
-          asset_name: sqlui-native.dmg
+          asset_name: sqlui-native-${{ needs.get_package_version.outputs.package_version }}.dmg
           asset_content_type: application/octet-stream
           
   publish:
