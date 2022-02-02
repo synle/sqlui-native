@@ -6,42 +6,38 @@ on:
       message:
 
 jobs:
-  get_package_version:
+  create_release:
     runs-on: ubuntu-latest
     timeout-minutes: 4
     outputs:
       package_version: ${{ steps.package-version.outputs.current-version }}
+      release_upload_url: ${{ steps.create_release.outputs.upload_url }}
     steps:
+      # get the latest package version
       - uses: actions/checkout@v2
       - id: package-version
         uses: martinbeentjes/npm-get-version-action@master
         with:
-          path: './'
+          path: '.'
 
-  create_release:
-    needs: get_package_version
-    runs-on: ubuntu-latest
-    outputs:
-      release_upload_url: ${{ steps.create_release.outputs.upload_url }}
-    steps:
       # Create a release
       - uses: actions/create-release@v1
         id: create_release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ needs.get_package_version.outputs.package_version }}
-          release_name: ${{ needs.get_package_version.outputs.package_version }}
+          tag_name: ${{ steps.package-version.outputs.current-version }}
+          release_name: ${{ steps.package-version.outputs.current-version }}
           body: |
             Release Notes:
             ${{ github.event.inputs.message }}
-          draft: true
+          draft: false
           prerelease: true
 
   build_windows:
-    needs: [get_package_version, create_release]
+    needs: [create_release]
     runs-on: [self-hosted, windows]
-    timeout-minutes: 15
+    timeout-minutes: 12
     steps:
       # build
       - uses: actions/checkout@v2
@@ -56,13 +52,13 @@ jobs:
         with:
           upload_url: ${{ needs.create_release.outputs.release_upload_url }}
           asset_path: ./dist/sqlui-native.exe
-          asset_name: sqlui-native-${{ needs.get_package_version.outputs.package_version }}.exe
+          asset_name: sqlui-native-${{ needs.create_release.outputs.package_version }}.exe
           asset_content_type: application/octet-stream
 
   build_macos:
-    needs: [get_package_version, create_release]
+    needs: [create_release]
     runs-on: [self-hosted, macos]
-    timeout-minutes: 15
+    timeout-minutes: 12
     steps:
       # build
       - uses: actions/checkout@v2
@@ -77,18 +73,18 @@ jobs:
         with:
           upload_url: ${{ needs.create_release.outputs.release_upload_url }}
           asset_path: ./dist/sqlui-native.dmg
-          asset_name: sqlui-native-${{ needs.get_package_version.outputs.package_version }}.dmg
+          asset_name: sqlui-native-${{ needs.create_release.outputs.package_version }}.dmg
           asset_content_type: application/octet-stream
 
   publish:
-    needs: [get_package_version, build_windows, build_macos]
+    needs: [create_release, build_windows, build_macos]
     runs-on: ubuntu-latest
     timeout-minutes: 4
     steps:
       - uses: actions/checkout@v2
-      - run: echo " ${{ needs.get_package_version.outputs.package_version }}"
+      - run: echo " ${{ needs.create_release.outputs.package_version }}"
       - run: |
-          sed -i "s/app_version:.*\+/app_version: ${{ needs.get_package_version.outputs.package_version }}/" _config.yml
+          sed -i "s/app_version:.*\+/app_version: ${{ needs.create_release.outputs.package_version }}/" _config.yml
       - uses: EndBug/add-and-commit@v8
         with:
-          message: 'CI / CD - New Release ${{needs.get_package_version.outputs.package_version}}'
+          message: 'CI / CD - New Release ${{needs.create_release.outputs.package_version}}'
