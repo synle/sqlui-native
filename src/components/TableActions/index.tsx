@@ -27,19 +27,23 @@ type TableActionsProps = {
 
 export default function TableActions(props: TableActionsProps) {
   const [open, setOpen] = useState(false);
-  let databaseId : string | undefined = props.databaseId;
-  let connectionId : string | undefined = props.connectionId;
-  let tableId : string | undefined = props.tableId;
+  let databaseId: string | undefined = props.databaseId;
+  let connectionId: string | undefined = props.connectionId;
+  let tableId: string | undefined = props.tableId;
 
-  if(!open){
+  if (!open) {
     // if tbale action is not opened, hen we don't need to do this...
-    databaseId = undefined
-    connectionId= undefined
-    tableId= undefined
+    databaseId = undefined;
+    connectionId = undefined;
+    tableId = undefined;
   }
 
   const { data: connection, isLoading: loadingConnection } = useGetConnectionById(connectionId);
-  const { data: columns, isLoading: loadingColumns } = useGetColumns(connectionId, databaseId, tableId);
+  const { data: columns, isLoading: loadingColumns } = useGetColumns(
+    connectionId,
+    databaseId,
+    tableId,
+  );
 
   const { query, onChange: onChangeActiveQuery } = useActiveConnectionQuery();
   const dialect = connection?.dialect;

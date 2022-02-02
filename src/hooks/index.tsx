@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { useQuery, useMutation, useQueryClient } from 'react-query';
+import { QueryClient, useQuery, useMutation, useQueryClient } from 'react-query';
 import { SqluiCore, SqluiFrontend } from 'typings';
 import dataApi from 'src/data/api';
 import Config from 'src/data/config';
@@ -191,9 +191,10 @@ export function useExecute() {
   );
 }
 
-export function refreshAfterExecution(query: SqluiFrontend.ConnectionQuery) {
-  const queryClient = useQueryClient();
-
+export function refreshAfterExecution(
+  query: SqluiFrontend.ConnectionQuery,
+  queryClient: QueryClient,
+) {
   if (!query) {
     return;
   }
