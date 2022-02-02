@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { format } from 'sql-formatter';
 import Box from '@mui/material/Box';
 import Alert from '@mui/material/Alert';
@@ -10,6 +10,8 @@ import NativeSelect from '@mui/material/NativeSelect';
 import PreviewIcon from '@mui/icons-material/Preview';
 import FormatColorTextIcon from '@mui/icons-material/FormatColorText';
 import Tooltip from '@mui/material/Tooltip';
+import MenuItem from '@mui/material/MenuItem';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
 import {
   useGetConnections,
   useExecute,
@@ -139,51 +141,57 @@ function ConnectionDatabaseSelector(props: ConnectionDatabaseSelectorProps) {
 
   const isLoading = loadingDatabases || loadingConnections;
 
+  const connectionOptions = useMemo(
+    () =>
+      connections?.map((connection) => (
+        <MenuItem value={connection.id} key={connection.id}>
+          {connection.name}
+        </MenuItem>
+      )),
+    [connections],
+  );
+
+  const databaseConnections = useMemo(
+    () =>
+      databases?.map((database) => (
+        <MenuItem value={database.name} key={database.name}>
+          {database.name}
+        </MenuItem>
+      )),
+    [databases],
+  );
+
+  if (isLoading) {
+    <>
+      <Select disabled size='small'></Select>
+      <Select disabled size='small' sx={{ ml: 3 }}></Select>
+    </>;
+  }
+
   const onConnectionChange = (connectionId: string) => {
-    props.onChange(connectionId, undefined);
+    props.onChange(connectionId, '');
   };
 
   const onDatabaseChange = (databaseId: string) => {
     props.onChange(query.connectionId, databaseId);
   };
 
-  const connectionOptions = connections?.map((connection) => (
-    <option value={connection.id} key={connection.id}>
-      {connection.name}
-    </option>
-  ));
-
-  const databaseConnections = databases?.map((database) => (
-    <option value={database.name} key={database.name}>
-      {database.name}
-    </option>
-  ));
-
-  if (isLoading) {
-    return (
-      <>
-        <NativeSelect></NativeSelect>
-        <NativeSelect sx={{ ml: 3 }}></NativeSelect>
-      </>
-    );
-  }
-
   return (
     <>
-      <NativeSelect
+      <Select
         value={query.connectionId}
-        onChange={(e) => onConnectionChange(e.target.value)}
-        required>
-        <option value=''>Pick a connection</option>
+        onChange={(e) => onConnectionChange(e.target.value as string)}
+        required
+        size='small'>
         {connectionOptions}
-      </NativeSelect>
-      <NativeSelect
+      </Select>
+      <Select
         value={query.databaseId}
-        onChange={(e) => onDatabaseChange(e.target.value)}
+        onChange={(e) => onDatabaseChange(e.target.value as string)}
+        size='small'
         sx={{ ml: 3 }}>
-        <option value=''>Pick a database (Optional)</option>
         {databaseConnections}
-      </NativeSelect>
+      </Select>
     </>
   );
 }
