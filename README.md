@@ -69,12 +69,13 @@ Here is the link where you can find information about how run this application l
 ## Features / TODO's:
 - [X] Consolidate the interface for mocked server and the main.ts page.
 - [X] Make a build for Windows and Darwin.
+- [X] Added Basic CI/CD to package electron
 - [X] Make a build for other systems like Debian and Redhat.
 - [ ] Add a configuration / option page.
 - [ ] Enhance the table for result with sorting, searching and pagination.
 - [X] Add quick query queries (such as select from a table or do update / insert).
 - [ ] Add quick query to recreate the table definition (Create Table), Drop Table, etc....
-- [ ] Add a full screen mode.
+- [X] Add a full screen mode (F11)
 - [X] Add ability to save CSV / JSON / Table to files.
 - [X] Add ability to support multiple windows and sessions..
 - [X] Add ability to import and export connections and queries.
