@@ -5,6 +5,8 @@ on:
     inputs:
       tagVersion:
         required: true
+      message:
+        required: true
 
 jobs:
   build:
@@ -13,7 +15,6 @@ jobs:
     steps:
       # build
       - uses: actions/checkout@v2
-      - run: echo "Tag Version - ${{ github.event.inputs.tagVersion }}"
       - run: npm ci
       - run: npm run dist
       - run: mv './dist/sqlui-native*.exe' './dist/sqlui-native.exe'
@@ -27,10 +28,10 @@ jobs:
           tag_name: ${{ github.event.inputs.tagVersion }}
           release_name: ${{ github.event.inputs.tagVersion }}
           body: |
-            ${{ github.event.inputs.tagVersion }} Release Notes:
+            Release Notes:
+            ${{ github.event.inputs.message }}
           draft: true
           prerelease: true
-      - run: echo "Release URL - ${{ steps.create_release.outputs.upload_url }}"
 
       #  Upload binary step
       - uses: actions/upload-release-asset@v1
@@ -39,3 +40,5 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
           asset_path: ./dist/sqlui-native.exe
+          asset_name: sqlui-native.exe
+          asset_content_type: application/octet-stream
