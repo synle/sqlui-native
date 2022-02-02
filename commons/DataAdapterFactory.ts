@@ -2,7 +2,7 @@ import { SqluiCore } from '../typings';
 import RelationalDataAdapter from './adapters/RelationalDataAdapter';
 import CoreDataAdapter from './adapters/CoreDataAdapter';
 
-const engines: { [index: string]: CoreDataAdapter } = {};
+const _adapterCache: { [index: string]: CoreDataAdapter } = {};
 
 function getConnectionType(connection: string) {
   const parsedConnectionType = connection.substr(0, connection.indexOf(':')).toLowerCase();
@@ -20,16 +20,16 @@ function getConnectionType(connection: string) {
   }
 }
 
-export function getEngine(connection: string) {
-  if (engines[connection]) {
-    return engines[connection];
+export function getDataAdapter(connection: string) {
+  if (_adapterCache[connection]) {
+    return _adapterCache[connection];
   }
 
   // TOOD: here we should initialize the connection based on type
   // of the connection string
 
   const engine = new RelationalDataAdapter(connection);
-  engines[connection] = engine;
+  _adapterCache[connection] = engine;
   return engine;
 }
 
@@ -42,7 +42,7 @@ export async function getConnectionMetaData(connection: SqluiCore.CoreConnection
   };
 
   try {
-    const engine = getEngine(connection.connection);
+    const engine = getDataAdapter(connection.connection);
     const databases = await engine.getDatabases();
 
     connItem.status = 'online';
@@ -73,6 +73,9 @@ export async function getConnectionMetaData(connection: SqluiCore.CoreConnection
     connItem.status = 'offline';
     connItem.dialect = undefined;
     console.log('>> Server Error', err);
+
+    // also clean up the connection if there is error
+  delete _adapterCache[connection.connection];
   }
 
   return connItem;
@@ -86,6 +89,9 @@ export function resetConnectionMetaData(connection: SqluiCore.CoreConnectionProp
     databases: [] as SqluiCore.DatabaseMetaData[],
     status: 'offline',
   };
+
+  // also clean up the connection
+  delete _adapterCache[connection.connection];
 
   return connItem;
 }

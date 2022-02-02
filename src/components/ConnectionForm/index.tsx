@@ -167,7 +167,7 @@ function MainConnectionForm(props: MainConnectionFormProps) {
               postgres://postgres:password@localhost:5432
             </Alert>
             <Alert severity='info' sx={{ mb: 2 }}>
-              sqlite://db.test
+              sqlite://test-db.sqlite
             </Alert>
           </>
         )}
