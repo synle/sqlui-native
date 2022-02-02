@@ -168,14 +168,13 @@ function ConnectionDatabaseSelector(props: ConnectionDatabaseSelectorProps) {
     </>;
   }
 
-    const onConnectionChange = (connectionId: string) => {
+  const onConnectionChange = (connectionId: string) => {
     props.onChange(connectionId, '');
   };
 
   const onDatabaseChange = (databaseId: string) => {
     props.onChange(query.connectionId, databaseId);
   };
-
 
   return (
     <>

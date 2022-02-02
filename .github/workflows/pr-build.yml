@@ -20,9 +20,9 @@ jobs:
           node-version: ${{ matrix.node-version }}
           registry-url: https://registry.npmjs.org/
       - run: npm install
-      - run: npm version --no-git-tag-version patch
       - run: npm run build
+      - run: npm version --no-git-tag-version patch
       - run: npm run format
-      - uses: EndBug/add-and-commit@v7
+      - uses: EndBug/add-and-commit@v8
         with:
-          message: 'CI / CD - Prettier'
+          message: 'CI / CD - Prettier Automatic Commit'

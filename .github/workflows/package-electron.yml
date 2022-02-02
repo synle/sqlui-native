@@ -16,7 +16,7 @@ jobs:
       - id: package-version
         uses: martinbeentjes/npm-get-version-action@master
         with:
-          path: "./"
+          path: './'
 
   create_release:
     needs: get_package_version
@@ -79,7 +79,7 @@ jobs:
           asset_path: ./dist/sqlui-native.dmg
           asset_name: sqlui-native-${{ needs.get_package_version.outputs.package_version }}.dmg
           asset_content_type: application/octet-stream
-          
+
   publish:
     needs: [get_package_version, build_windows, build_macos]
     runs-on: ubuntu-latest
@@ -89,6 +89,6 @@ jobs:
       - run: echo " ${{ needs.get_package_version.outputs.package_version }}"
       - run: |
           sed -i "s/app_version:.*\+/app_version: ${{ needs.get_package_version.outputs.package_version }}/" _config.yml
-      - uses: EndBug/add-and-commit@v7
+      - uses: EndBug/add-and-commit@v8
         with:
-          message: "CI / CD - New Release ${{needs.get_package_version.outputs.package_version}}"
+          message: 'CI / CD - New Release ${{needs.get_package_version.outputs.package_version}}'
