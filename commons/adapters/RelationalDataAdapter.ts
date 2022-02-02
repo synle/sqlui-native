@@ -7,7 +7,7 @@ import CoreDataAdapter from './CoreDataAdapter';
  * https://sequelize.org/master/class/lib/dialects/abstract/query-interface.js~QueryInterface.html
  */
 export default class RelationalDataAdapter implements CoreDataAdapter {
-  connectionOption?: string;
+  connectionOption: string;
   dialect?: SqluiCore.Dialect;
   private sequelizes: Record<string, Sequelize> = {};
 
@@ -25,9 +25,8 @@ export default class RelationalDataAdapter implements CoreDataAdapter {
     }
   }
 
-  constructor(connectionOption: string | Sequelize) {
+  constructor(connectionOption: string) {
     let sequelize;
-    if (typeof connectionOption === 'string') {
       // since mariadb and mysql are fully compatible, let's use the same data
       // save the connection string
       this.connectionOption = (connectionOption as string).replace('mariadb://', 'mysql://');
@@ -38,10 +37,6 @@ export default class RelationalDataAdapter implements CoreDataAdapter {
       if ((connectionOption as string).includes('mariadb://')) {
         this.dialect = 'mariadb';
       }
-    } else {
-      sequelize = connectionOption as Sequelize;
-      this.dialect = this.getDialect(sequelize);
-    }
 
     // save the root connection
     this.sequelizes[''] = sequelize;
