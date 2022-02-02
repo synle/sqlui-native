@@ -1,5 +1,6 @@
 import { SqluiCore } from '../typings';
 import RelationalDataAdapter from './adapters/RelationalDataAdapter';
+import CassandraDataAdapter from './adapters/CassandraDataAdapter';
 import CoreDataAdapter from './adapters/CoreDataAdapter';
 
 const _adapterCache: { [index: string]: CoreDataAdapter } = {};
@@ -12,9 +13,8 @@ function getConnectionType(connection: string) {
     case 'mssql':
     case 'postgres':
     case 'sqlite':
-      return parsedConnectionType;
     case 'cassandra':
-    // TODO: to be implemented
+      return parsedConnectionType;
     default:
       return undefined;
   }
@@ -27,10 +27,24 @@ export function getDataAdapter(connection: string) {
 
   // TOOD: here we should initialize the connection based on type
   // of the connection string
-
-  const engine = new RelationalDataAdapter(connection);
-  _adapterCache[connection] = engine;
-  return engine;
+  let adapter : CoreDataAdapter;
+  switch(getConnectionType(connection)){
+    case 'mysql':
+    case 'mariadb':
+    case 'mssql':
+    case 'postgres':
+    case 'sqlite':
+      adapter = new RelationalDataAdapter(connection);
+      _adapterCache[connection] = adapter;
+      return adapter;
+    case 'cassandra':
+      adapter = new CassandraDataAdapter(connection);
+      _adapterCache[connection] = adapter;
+      return adapter;
+    default:
+      throw 'dialect not supported';
+      break;
+  }
 }
 
 export async function getConnectionMetaData(connection: SqluiCore.CoreConnectionProps) {
