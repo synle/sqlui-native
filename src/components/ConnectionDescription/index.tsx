@@ -108,6 +108,8 @@ function ConnectionDialectIcon(props: ConnectionDialectIconProps) {
       );
     case 'mysql':
       return <img src={`${process.env.PUBLIC_URL}/assets/mysql.png`} title={dialect} width={30} />;
+    case 'cassandra':
+      return <img src={`${process.env.PUBLIC_URL}/assets/cassandra.png`} title={dialect} width={30} />;
     default:
       return <CloudIcon color='primary' fontSize='large' />;
   }
