@@ -6,7 +6,7 @@ import Box from '@mui/material/Box';
 import { styled, createTheme, ThemeProvider } from '@mui/system';
 
 const StyledAccordionHeader = styled('div')(({ theme }) => {
-  const backgroundColor = theme.palette.grey[800];
+  const backgroundColor = theme.palette.action.focus;
 
   return {
     cursor: 'pointer',
@@ -16,7 +16,6 @@ const StyledAccordionHeader = styled('div')(({ theme }) => {
 
     '&:hover, &:focus': {
       backgroundColor,
-      color: theme.palette.getContrastText(backgroundColor),
     },
 
     '*': {
