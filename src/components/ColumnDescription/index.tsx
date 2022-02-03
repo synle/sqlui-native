@@ -64,9 +64,7 @@ export default function ColumnDescription(props: ColumnDescriptionProps) {
               <AccordionHeader expanded={visibles[key]} onToggle={() => onToggle(key)}>
                 <ViewColumnIcon color='disabled' fontSize='inherit' />
                 <span>{column.name}</span>
-                <ColumnType>
-                  {column.type}
-                </ColumnType>
+                <ColumnType>{column.type}</ColumnType>
               </AccordionHeader>
               <AccordionBody expanded={visibles[key]}>
                 <ColumnAttributes column={column} />
@@ -120,7 +118,7 @@ function ColumnAttributes(props: ColumnAttributesProps) {
               <b>{attr.name}</b>
             </div>
             <Tooltip title={attr.value}>
-            <div className='AttributeLine'>{attr.value}</div>
+              <div className='AttributeLine'>{attr.value}</div>
             </Tooltip>
           </div>
         ))}
@@ -134,16 +132,15 @@ const StyledAttributeDescription = styled('div')(({ theme }) => {
     marginLeft: theme.spacing(1),
     fontFamily: 'monospace',
 
-    '.AttributeLine':{
+    '.AttributeLine': {
       overflow: 'hidden',
-      textOverflow: 'ellipsis'
-    }
+      textOverflow: 'ellipsis',
+    },
   };
 });
 
-
-function ColumnType(props:{children: React.ReactNode}){
-  return <StyledColumnType>{props.children}</StyledColumnType>
+function ColumnType(props: { children: React.ReactNode }) {
+  return <StyledColumnType>{props.children}</StyledColumnType>;
 }
 
 const StyledColumnType = styled('i')(({ theme }) => {

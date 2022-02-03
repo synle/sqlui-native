@@ -182,8 +182,7 @@ function ConnectionDatabaseSelector(props: ConnectionDatabaseSelectorProps) {
       <Select
         value={query.connectionId}
         onChange={(newValue) => onConnectionChange(newValue)}
-        required
-       >
+        required>
         <option value=''>Pick a Connection</option>
         {connectionOptions}
       </Select>

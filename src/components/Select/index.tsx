@@ -11,33 +11,35 @@ const StyledSelect = styled('select')(({ theme }) => {
     color: theme.palette.text.secondary,
     borderColor: theme.palette.action.selected,
 
-    'option': {
+    option: {
       background: theme.palette.background.default,
       color: theme.palette.text.primary,
     },
 
-    '&:hover, &:focus':{
+    '&:hover, &:focus': {
       borderColor: theme.palette.primary.main,
     },
 
-    '&:disabled':{
+    '&:disabled': {
       color: theme.palette.action.disabled,
       borderColor: theme.palette.action.disabledBackground,
-    }
+    },
   };
 });
 
 type SelectProps = Omit<React.SelectHTMLAttributes<HTMLButtonElement>, 'onChange'> & {
   children?: React.ReactNode;
   onChange?: (newValue: string) => void;
-  [key: string] : any;
-}
+  [key: string]: any;
+};
 
 export default function Select(props: SelectProps) {
   const { children, onChange, ...restProps } = props;
 
   //@ts-ignore
-  return <StyledSelect onChange={(e) => onChange && onChange(e.target.value) } {...restProps}>
-        {children}
-      </StyledSelect>
+  return (
+    <StyledSelect onChange={(e) => onChange && onChange(e.target.value)} {...restProps}>
+      {children}
+    </StyledSelect>
+  );
 }

@@ -6,15 +6,13 @@ const StyledAccordionHeader = styled('div')(({ theme }) => {
 
   return {
     width: '10px',
-        cursor: 'col-resize',
-        flexShrink: 0,
-        '&:hover': {
-          background: theme.palette.action.focus,
-        },
+    cursor: 'col-resize',
+    flexShrink: 0,
+    '&:hover': {
+      background: theme.palette.action.focus,
+    },
   };
 });
-
-
 
 // move this into a file
 interface ResizerProps {
@@ -27,10 +25,5 @@ export default function Resizer(props: ResizerProps) {
     props.onSetWidth(endX);
   };
 
-  return (
-    <StyledAccordionHeader
-      draggable={true}
-      onDragEnd={onDragEnd}
-    />
-  );
+  return <StyledAccordionHeader draggable={true} onDragEnd={onDragEnd} />;
 }
