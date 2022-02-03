@@ -14,7 +14,7 @@ export default abstract class BaseDataAdapter {
    * @param {string} connection in the uri scheme (cassandra://localhost:9042)
    * @return {string} the dialect, in this case, it's cassandra
    */
-  static getDialect(connection: string) : string | undefined{
+  static getDialect(connection: string): string | undefined {
     try {
       return connection.substr(0, connection.indexOf(':')).toLowerCase();
     } catch (err) {

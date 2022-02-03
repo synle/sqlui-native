@@ -3,34 +3,42 @@
 exports[`cassandra cassandra - Get columns 1`] = `
 Array [
   Object {
+    "kind": "regular",
     "name": "clustering_order",
     "type": "text",
   },
   Object {
+    "kind": "clustering",
     "name": "column_name",
     "type": "text",
   },
   Object {
+    "kind": "regular",
     "name": "column_name_bytes",
     "type": "blob",
   },
   Object {
+    "kind": "partition_key",
     "name": "keyspace_name",
     "type": "text",
   },
   Object {
+    "kind": "regular",
     "name": "kind",
     "type": "text",
   },
   Object {
+    "kind": "regular",
     "name": "position",
     "type": "int",
   },
   Object {
+    "kind": "clustering",
     "name": "table_name",
     "type": "text",
   },
   Object {
+    "kind": "regular",
     "name": "type",
     "type": "text",
   },
@@ -39,6 +47,10 @@ Array [
 
 exports[`cassandra cassandra - Get database 1`] = `
 Array [
+  Object {
+    "name": "music_stores",
+    "tables": Array [],
+  },
   Object {
     "name": "system",
     "tables": Array [],

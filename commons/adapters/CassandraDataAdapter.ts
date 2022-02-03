@@ -24,7 +24,7 @@ export default class CassandraAdapter extends BaseDataAdapter implements IDataAd
         const connectionParameters = BaseDataAdapter.getConnectionParameters(this.connectionOption);
 
         const connectionHosts = connectionParameters?.hosts || [];
-        if(connectionHosts.length === 0){
+        if (connectionHosts.length === 0) {
           // we need a host in the connection string
           reject('Invalid connection. Host and Port not found');
         }
@@ -115,14 +115,14 @@ export default class CassandraAdapter extends BaseDataAdapter implements IDataAd
     let sql;
     if (this.isCassandra2 === true) {
       sql = `
-        SELECT type as position, column_name, validator as type
+        SELECT type as position, column_name as name, validator as type
         FROM system.schema_columns
         WHERE keyspace_name = ?
           AND columnfamily_name = ?
       `;
     } else {
       sql = `
-        SELECT position, column_name, type
+        SELECT position, column_name as name, type, kind
         FROM system_schema.columns
         WHERE keyspace_name = ?
           AND table_name = ?
@@ -131,11 +131,12 @@ export default class CassandraAdapter extends BaseDataAdapter implements IDataAd
     const res = await this._execute(sql, [database, table]);
 
     return res.rows
+      .sort((a: any, b: any) => (a.name || '').localeCompare(b.name || ''))
       .map((row) => ({
-        name: row.column_name,
+        name: row.name,
         type: row.type,
-      }))
-      .sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+        kind: row.kind,
+      }));
   }
 
   private async _execute(sql: string, params?: string[], database?: string) {
