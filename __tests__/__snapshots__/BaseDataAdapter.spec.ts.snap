@@ -1,0 +1,37 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`BaseDataAdapter getParsedConnectionConfig basic input should work  1`] = `
+Array [
+  Object {
+    "host": "localhost",
+    "port": 9042,
+  },
+]
+`;
+
+exports[`BaseDataAdapter getParsedConnectionConfig input with keyspace 1`] = `
+Array [
+  Object {
+    "host": "localhost",
+    "port": 9042,
+  },
+]
+`;
+
+exports[`BaseDataAdapter getParsedConnectionConfig input with username and password 1`] = `
+Array [
+  Object {
+    "host": "localhost",
+    "port": 9042,
+  },
+]
+`;
+
+exports[`BaseDataAdapter getParsedConnectionConfig input with username and password and database 1`] = `
+Array [
+  Object {
+    "host": "localhost",
+    "port": 9042,
+  },
+]
+`;

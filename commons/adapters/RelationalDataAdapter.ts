@@ -1,15 +1,34 @@
 import { Sequelize, ColumnDescription } from 'sequelize';
 import { SqluiCore } from '../../typings';
-import CoreDataAdapter from './CoreDataAdapter';
+import IDataAdapter from './IDataAdapter';
+import BaseDataAdapter from './BaseDataAdapter';
 
 /**
  * mostly adapter for sequelize
  * https://sequelize.org/master/class/lib/dialects/abstract/query-interface.js~QueryInterface.html
  */
-export default class RelationalDataAdapter implements CoreDataAdapter {
-  connectionOption: string;
+export default class RelationalDataAdapter extends BaseDataAdapter implements IDataAdapter {
   dialect?: SqluiCore.Dialect;
   private sequelizes: Record<string, Sequelize> = {};
+
+  constructor(connectionOption: string) {
+    super(connectionOption);
+
+    let sequelize;
+    // since mariadb and mysql are fully compatible, let's use the same data
+    // save the connection string
+    this.connectionOption = connectionOption.replace('mariadb://', 'mysql://');
+
+    sequelize = new Sequelize(connectionOption);
+    this.dialect = this.getDialect(sequelize);
+
+    if (connectionOption.includes('mariadb://')) {
+      this.dialect = 'mariadb';
+    }
+
+    // save the root connection
+    this.sequelizes[''] = sequelize;
+  }
 
   private getDialect(sequelize: Sequelize) {
     const parsedConnectionType = sequelize?.getDialect();
@@ -23,23 +42,6 @@ export default class RelationalDataAdapter implements CoreDataAdapter {
       default:
         return undefined; // Not supported by relational database adapter
     }
-  }
-
-  constructor(connectionOption: string) {
-    let sequelize;
-    // since mariadb and mysql are fully compatible, let's use the same data
-    // save the connection string
-    this.connectionOption = (connectionOption as string).replace('mariadb://', 'mysql://');
-
-    sequelize = new Sequelize(connectionOption);
-    this.dialect = this.getDialect(sequelize);
-
-    if ((connectionOption as string).includes('mariadb://')) {
-      this.dialect = 'mariadb';
-    }
-
-    // save the root connection
-    this.sequelizes[''] = sequelize;
   }
 
   private getConnection(database?: string): Sequelize {

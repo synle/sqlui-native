@@ -1,7 +1,6 @@
 import { SqluiCore } from '../../typings';
 
-export default interface CoreDataAdapter {
-  connectionOption?: string;
+export default interface IDataAdapter {
   dialect?: SqluiCore.Dialect;
   authenticate: () => Promise<void>;
   getDatabases: () => Promise<SqluiCore.DatabaseMetaData[]>;

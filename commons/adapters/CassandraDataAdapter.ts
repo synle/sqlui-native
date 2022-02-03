@@ -1,12 +1,10 @@
 import * as cassandra from 'cassandra-driver';
 import { SqluiCore } from '../../typings';
-import CoreDataAdapter from './CoreDataAdapter';
+import IDataAdapter from './IDataAdapter';
+import BaseDataAdapter from './BaseDataAdapter';
 
-export default class CassandraAdapter implements CoreDataAdapter {
-  connectionOption: string;
+export default class CassandraAdapter extends BaseDataAdapter implements IDataAdapter {
   dialect: SqluiCore.Dialect = 'cassandra';
-  client?: cassandra.Client;
-  private clients: Record<string, cassandra.Client> = {};
   /**
    * cassandra version
    * @type {number}
@@ -15,7 +13,8 @@ export default class CassandraAdapter implements CoreDataAdapter {
   isCassandra2?: boolean;
 
   constructor(connectionOption: string) {
-    this.connectionOption = connectionOption as string;
+    super(connectionOption);
+    this.dialect = 'cassandra';
   }
 
   private async getConnection(database?: string): Promise<cassandra.Client> {
@@ -147,50 +146,34 @@ export default class CassandraAdapter implements CoreDataAdapter {
     let rawToUse: any | undefined;
     let metaToUse: any | undefined;
 
-    const res = await this._execute(sql, undefined, database);
+    try {
+      const res = await this._execute(sql, undefined, database);
 
-    if (!res) {
+      if (!res) {
+        return {
+          ok: false,
+          raw: [],
+          meta: null,
+        };
+      }
+      const { rows } = res;
+
+      //@ts-ignore
+      delete res.rows;
+
+      rawToUse = rows;
+      metaToUse = res;
+
+      return {
+        ok: true,
+        raw: rawToUse,
+        meta: metaToUse,
+      };
+    } catch (error) {
       return {
         ok: false,
-        raw: [],
-        meta: null,
+        error,
       };
     }
-    const { rows } = res;
-
-    //@ts-ignore
-    delete res.rows;
-
-    rawToUse = rows;
-    metaToUse = res;
-
-    //
-    // {
-    //   info: {
-    //     queriedHost: '127.0.0.1:9042',
-    //     triedHosts: { '127.0.0.1:9042': null },
-    //     speculativeExecutions: 0,
-    //     achievedConsistency: 10,
-    //     traceId: undefined,
-    //     warnings: undefined,
-    //     customPayload: undefined
-    //   },
-    //   rows: [
-    //     Row { cluster_name: 'Test Cluster', listen_address: [InetAddress] }
-    //   ],
-    //   rowLength: 1,
-    //   columns: [
-    //     { name: 'cluster_name', type: [Object] },
-    //     { name: 'listen_address', type: [Object] }
-    //   ],
-    //   pageState: null,
-    //   nextPage: undefined
-    // }
-
-    return {
-      ok: false,
-      raw: rawToUse,
-      meta: metaToUse,
-    };
   }
 }

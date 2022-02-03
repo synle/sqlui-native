@@ -1,24 +1,10 @@
 import { SqluiCore } from '../typings';
 import RelationalDataAdapter from './adapters/RelationalDataAdapter';
 import CassandraDataAdapter from './adapters/CassandraDataAdapter';
-import CoreDataAdapter from './adapters/CoreDataAdapter';
+import IDataAdapter from './adapters/IDataAdapter';
+import BaseDataAdapter from './adapters/BaseDataAdapter';
 
-const _adapterCache: { [index: string]: CoreDataAdapter } = {};
-
-function getConnectionType(connection: string) {
-  const parsedConnectionType = connection.substr(0, connection.indexOf(':')).toLowerCase();
-  switch (parsedConnectionType) {
-    case 'mysql':
-    case 'mariadb':
-    case 'mssql':
-    case 'postgres':
-    case 'sqlite':
-    case 'cassandra':
-      return parsedConnectionType;
-    default:
-      return undefined;
-  }
-}
+const _adapterCache: { [index: string]: IDataAdapter } = {};
 
 export function getDataAdapter(connection: string) {
   if (_adapterCache[connection]) {
@@ -27,8 +13,8 @@ export function getDataAdapter(connection: string) {
 
   // TOOD: here we should initialize the connection based on type
   // of the connection string
-  let adapter: CoreDataAdapter;
-  switch (getConnectionType(connection)) {
+  let adapter: IDataAdapter;
+  switch (BaseDataAdapter.getParsedDialect(connection)) {
     case 'mysql':
     case 'mariadb':
     case 'mssql':
