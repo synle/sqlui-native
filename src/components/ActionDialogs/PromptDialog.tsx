@@ -45,7 +45,7 @@ export default function PromptDialog(props: PromptDialogProps) {
       // we don't want to allow user to click outside
       return;
     }
-    props.onSaveClick(value);
+    props.onSaveClick(value.trim());
   };
 
   return (
