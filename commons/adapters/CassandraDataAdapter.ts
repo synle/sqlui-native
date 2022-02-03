@@ -29,15 +29,24 @@ export default class CassandraAdapter extends BaseDataAdapter implements IDataAd
           reject('Invalid connection. Host and Port not found');
         }
 
-        //@ts-ignore
-        const client = new cassandra.Client({
+        const clientOptions: cassandra.ClientOptions = {
           contactPoints: [connectionHosts[0].host],
           protocolOptions: {
             port: connectionHosts[0].port,
           },
           keyspace: database,
-        });
+        };
 
+        // client authentication
+        let authProvider: cassandra.auth.PlainTextAuthProvider | undefined;
+        if (connectionParameters?.username && connectionParameters?.password) {
+          clientOptions.authProvider = new cassandra.auth.PlainTextAuthProvider(
+            connectionParameters?.username,
+            connectionParameters?.password,
+          );
+        }
+
+        const client = new cassandra.Client(clientOptions);
         await this.authenticate(client);
 
         resolve(client);
