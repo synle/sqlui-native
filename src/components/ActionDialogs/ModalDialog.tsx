@@ -5,6 +5,8 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
 
 export type ModalInput = {
   title: string;
@@ -13,14 +15,13 @@ export type ModalInput = {
    * @type {[type]}
    */
   message: React.ReactNode;
+  showCloseButton?: boolean;
 };
 
-interface ModalProps {
+type ModalProps = ModalInput & {
   open: boolean;
-  title: string;
-  body: React.ReactNode;
   onDismiss: () => void;
-}
+};
 
 export default function Modal(props: ModalProps) {
   return (
@@ -29,8 +30,23 @@ export default function Modal(props: ModalProps) {
       onClose={props.onDismiss}
       aria-labelledby='modal-dialog-title'
       aria-describedby='modal-dialog-description'>
-      <DialogTitle id='modal-dialog-title'>{props.title}</DialogTitle>
-      <DialogContent>{props.body}</DialogContent>
+      <DialogTitle id='modal-dialog-title'>
+        {props.title}
+        {props.showCloseButton && (
+          <IconButton
+            aria-label='close'
+            onClick={() => props.onDismiss()}
+            sx={{
+              position: 'absolute',
+              right: 8,
+              top: 8,
+              color: (theme) => theme.palette.grey[500],
+            }}>
+            <CloseIcon />
+          </IconButton>
+        )}
+      </DialogTitle>
+      <DialogContent>{props.message}</DialogContent>
     </Dialog>
   );
 }

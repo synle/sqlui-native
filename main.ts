@@ -5,7 +5,7 @@ import { setUpDataEndpoints, getEndpointHandlers } from './commons/Endpoints';
 import { crashReporter, shell } from 'electron';
 import path from 'path';
 
-setUpDataEndpoints();
+const isMac = process.platform === 'darwin';
 
 function createWindow() {
   // Create the browser window.
@@ -30,13 +30,11 @@ function createWindow() {
 
 function sendMessage(win: BrowserWindow, message: SqluiEnums.ClientEventKey) {
   if (win) {
-    win.webContents.send('sqluiNativeEvent/ipcElectronCommand', message);
+    win.webContents.send('sqluiNativeEvent/ipcElectronCommand', message, {});
   }
 }
 
 function setupMenu() {
-  const isMac = process.platform === 'darwin';
-
   let menuTemplate: Electron.MenuItemConstructorOptions[] = [
     {
       label: 'File',
@@ -180,6 +178,14 @@ function setupMenu() {
           },
         },
         {
+          label: 'Check for update',
+          click: async (item, win) =>
+            sendMessage(win as BrowserWindow, 'clientEvent/checkForUpdate'),
+        },
+        {
+          type: 'separator',
+        },
+        {
           label: 'About',
           click: async () => {
             await shell.openExternal('https://synle.github.io/sqlui-native/');
@@ -197,6 +203,7 @@ function setupMenu() {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
+  setUpDataEndpoints();
   createWindow();
   setupMenu();
 
@@ -246,7 +253,7 @@ ipcMain.on('sqluiNativeEvent/toggleMenus', function (event, data) {
 });
 
 // this is the event listener that will respond when we will request it in the web page
-const _cache = {};
+const _apiCache = {};
 ipcMain.on('sqluiNativeEvent/fetch', async (event, data) => {
   const { requestId, url, options } = data;
   const responseId = `server response ${Date.now()}`;
@@ -312,7 +319,7 @@ ipcMain.on('sqluiNativeEvent/fetch', async (event, data) => {
           get(key: string) {
             try {
               //@ts-ignore
-              return _cache[sessionId][key];
+              return _apiCache[sessionId][key];
             } catch (err) {
               return undefined;
             }
@@ -320,16 +327,16 @@ ipcMain.on('sqluiNativeEvent/fetch', async (event, data) => {
           set(key: string, value: any) {
             try {
               //@ts-ignore
-              _cache[sessionId] = _cache[sessionId] || {};
+              _apiCache[sessionId] = _apiCache[sessionId] || {};
 
               //@ts-ignore
-              _cache[sessionId][key] = value;
+              _apiCache[sessionId][key] = value;
             } catch (err) {
               //@ts-ignore
             }
           },
           json() {
-            return JSON.stringify(_cache);
+            return JSON.stringify(_apiCache);
           },
         };
 
