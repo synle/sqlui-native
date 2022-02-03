@@ -5,7 +5,8 @@ import Box from '@mui/material/Box';
 import Alert from '@mui/material/Alert';
 import CircularProgress from '@mui/material/CircularProgress';
 import Button from '@mui/material/Button';
-import { grey } from '@mui/material/colors';
+import Tooltip from '@mui/material/Tooltip';
+import { styled, createTheme, ThemeProvider } from '@mui/system';
 import { AccordionHeader, AccordionBody } from 'src/components/Accordion';
 import { useGetColumns, useShowHide } from 'src/hooks';
 import { SqluiCore } from 'typings';
@@ -63,9 +64,7 @@ export default function ColumnDescription(props: ColumnDescriptionProps) {
               <AccordionHeader expanded={visibles[key]} onToggle={() => onToggle(key)}>
                 <ViewColumnIcon color='disabled' fontSize='inherit' />
                 <span>{column.name}</span>
-                <i className='ColumnDescription__Type' style={{ color: grey[700] }}>
-                  {column.type}
-                </i>
+                <ColumnType>{column.type}</ColumnType>
               </AccordionHeader>
               <AccordionBody expanded={visibles[key]}>
                 <ColumnAttributes column={column} />
@@ -110,17 +109,44 @@ function ColumnAttributes(props: ColumnAttributesProps) {
     .filter((attribute) => !!attribute.value);
 
   return (
-    <div className='AttributeDescription' style={{ color: grey[700] }}>
+    <StyledAttributeDescription>
       {attributes
         .filter((attr) => ['name'].indexOf(attr.name) === -1)
         .map((attr) => (
           <div key={attr.name}>
-            <div>
+            <div className='AttributeLine'>
               <b>{attr.name}</b>
             </div>
-            <div>{attr.value}</div>
+            <Tooltip title={attr.value}>
+              <div className='AttributeLine'>{attr.value}</div>
+            </Tooltip>
           </div>
         ))}
-    </div>
+    </StyledAttributeDescription>
   );
 }
+
+const StyledAttributeDescription = styled('div')(({ theme }) => {
+  return {
+    color: theme.palette.text.disabled,
+    marginLeft: theme.spacing(1),
+    fontFamily: 'monospace',
+
+    '.AttributeLine': {
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+    },
+  };
+});
+
+function ColumnType(props: { children: React.ReactNode }) {
+  return <StyledColumnType>{props.children}</StyledColumnType>;
+}
+
+const StyledColumnType = styled('i')(({ theme }) => {
+  return {
+    color: theme.palette.text.disabled,
+    fontFamily: 'monospace',
+    paddingRight: theme.spacing(1),
+  };
+});
