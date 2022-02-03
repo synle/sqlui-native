@@ -3,6 +3,7 @@ import Box from '@mui/material/Box';
 import Alert from '@mui/material/Alert';
 import AlertTitle from '@mui/material/AlertTitle';
 import Tooltip from '@mui/material/Tooltip';
+import Link from '@mui/material/Link';
 import CircularProgress from '@mui/material/CircularProgress';
 import Typography from '@mui/material/Typography';
 import { useNavigate } from 'react-router-dom';
@@ -201,27 +202,39 @@ function ConnectionHint(props: ConnectionHintProps) {
     <>
       <Alert severity='info' icon={<ConnectionTypeIcon scheme='mysql' status='online' />} sx={{ mb: 2 }}>
         <AlertTitle>MySQL</AlertTitle>
-        <span onClick={() => props.onChange('mysql://root:password@localhost:3306')}>mysql://root:password@localhost:3306</span>
+        <Tooltip title='Use this sample MySQL connection.'>
+        <Link underline="hover" onClick={() => props.onChange('mysql://root:password@localhost:3306')}>mysql://root:password@localhost:3306</Link>
+        </Tooltip>
       </Alert>
       <Alert severity='info' icon={<ConnectionTypeIcon scheme='mariadb' status='online' />} sx={{ mb: 2 }}>
         <AlertTitle>MariaDB</AlertTitle>
-        <span onClick={() => props.onChange('mariadb://root:password@localhost:3306')}>mariadb://root:password@localhost:3306</span>
+        <Tooltip title='Use this sample MariaDB connection.'>
+        <Link underline="hover" onClick={() => props.onChange('mariadb://root:password@localhost:3306')}>mariadb://root:password@localhost:3306</Link>
+        </Tooltip>
       </Alert>
       <Alert severity='info' icon={<ConnectionTypeIcon scheme='mssql' status='online' />} sx={{ mb: 2 }}>
         <AlertTitle>Microsoft SQL Server</AlertTitle>
-        <span onClick={() => props.onChange('mssql://sa:password123!@localhost:1433')}>mssql://sa:password123!@localhost:1433</span>
+        <Tooltip title='Use this sample Microsoft SQL Server connection.'>
+        <Link underline="hover" onClick={() => props.onChange('mssql://sa:password123!@localhost:1433')}>mssql://sa:password123!@localhost:1433</Link>
+        </Tooltip>
       </Alert>
       <Alert severity='info' icon={<ConnectionTypeIcon scheme='postgres' status='online' />} sx={{ mb: 2 }}>
         <AlertTitle>PostgresSQL</AlertTitle>
-        <span onClick={() => props.onChange('postgres://postgres:password@localhost:5432')}>postgres://postgres:password@localhost:5432</span>
+        <Tooltip title='Use this sample PostgresSQL connection.'>
+        <Link underline="hover" onClick={() => props.onChange('postgres://postgres:password@localhost:5432')}>postgres://postgres:password@localhost:5432</Link>
+        </Tooltip>
       </Alert>
       <Alert severity='info' icon={<ConnectionTypeIcon scheme='sqlite' status='online' />} sx={{ mb: 2 }}>
         <AlertTitle>SQLite</AlertTitle>
-        <span onClick={() => props.onChange('sqlite://test-db.sqlite')}>sqlite://test-db.sqlite</span>
+        <Tooltip title='Use this sample SQLite connection.'>
+        <Link underline="hover" onClick={() => props.onChange('sqlite://test-db.sqlite')}>sqlite://test-db.sqlite</Link>
+        </Tooltip>
       </Alert>
       <Alert severity='info' icon={<ConnectionTypeIcon scheme='cassandra' status='online' />} sx={{ mb: 2 }}>
         <AlertTitle>Cassandra</AlertTitle>
-        <span onClick={() => props.onChange('cassandra://postgres:passwordlocalhost:9042')}>cassandra://postgres:passwordlocalhost:9042</span>
+        <Tooltip title='Use this sample Cassandra connection.'>
+        <Link underline="hover" onClick={() => props.onChange('cassandra://username:password@localhost:9042')}>cassandra://username:password@localhost:9042</Link>
+        </Tooltip>
       </Alert>
     </>
   );
