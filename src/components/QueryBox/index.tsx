@@ -164,8 +164,8 @@ function ConnectionDatabaseSelector(props: ConnectionDatabaseSelectorProps) {
 
   if (isLoading) {
     <>
-      <Select disabled size='small'></Select>
-      <Select disabled size='small' sx={{ ml: 3 }}></Select>
+      <Select disabled></Select>
+      <Select disabled sx={{ ml: 3 }}></Select>
     </>;
   }
 
@@ -183,14 +183,13 @@ function ConnectionDatabaseSelector(props: ConnectionDatabaseSelectorProps) {
         value={query.connectionId}
         onChange={(newValue) => onConnectionChange(newValue)}
         required
-        size='small'>
+       >
         <option value=''>Pick a Connection</option>
         {connectionOptions}
       </Select>
       <Select
         value={query.databaseId}
         onChange={(newValue) => onDatabaseChange(newValue)}
-        size='small'
         sx={{ ml: 3 }}>
         <option value=''>Pick a Database (Optional)</option>
         {databaseConnections}

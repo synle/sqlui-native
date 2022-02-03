@@ -2,9 +2,9 @@ import React from 'react';
 import { styled, createTheme, ThemeProvider } from '@mui/system';
 
 const StyledSelect = styled('select')(({ theme }) => {
-  const backgroundColor = theme.palette.grey[800];
   return {
     cursor: 'pointer',
+    outline: 'none',
     padding: theme.spacing(1),
     borderRadius: theme.shape.borderRadius,
     background: theme.palette.background.default,
@@ -17,7 +17,7 @@ const StyledSelect = styled('select')(({ theme }) => {
     },
 
     '&:hover, &:focus':{
-      borderColor: theme.palette.action.focus,
+      borderColor: theme.palette.primary.main,
     },
 
     '&:disabled':{
@@ -27,9 +27,7 @@ const StyledSelect = styled('select')(({ theme }) => {
   };
 });
 
-
-
-type SelectProps = {
+type SelectProps = Omit<React.SelectHTMLAttributes<HTMLButtonElement>, 'onChange'> & {
   children?: React.ReactNode;
   onChange?: (newValue: string) => void;
   [key: string] : any;
@@ -38,6 +36,7 @@ type SelectProps = {
 export default function Select(props: SelectProps) {
   const { children, onChange, ...restProps } = props;
 
+  //@ts-ignore
   return <StyledSelect onChange={(e) => onChange && onChange(e.target.value) } {...restProps}>
         {children}
       </StyledSelect>
