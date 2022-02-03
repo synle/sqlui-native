@@ -1,6 +1,6 @@
 {
   "name": "sqlui-native",
-  "version": "1.5.3",
+  "version": "1.6.0",
   "description": "A minimal Electron application for SQL Databases",
   "browserslist": {
     "production": [
@@ -37,7 +37,7 @@
     "build-react": "cross-env CI=\"\" SASS_PATH='./src/styles' react-scripts build",
     "build": "npm run build-react && npm run build-electron",
     "test": "jest",
-    "test-ci": "CI=true jest __tests__/smoke_tests",
+    "test-ci": "CI=true jest __tests__",
     "test-react": "cross-env SASS_PATH='./src/styles' react-scripts test",
     "format": "npx prettier --config ./.prettierrc --write **/*.{ts,tsx,js,jsx,scss,yml,html} *.{json,MD}",
     "lint": "eslint --fix --ext .tsx --ext .ts src",

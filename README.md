@@ -84,7 +84,8 @@ Here is the link where you can find information about how run this application l
 - [X] Add dark theme (Dark mode respect system color theme).
 - [ ] Add auto update features.
 - [ ] Push a build to Microsoft Store.
-- [ ] Add supports for Cassandra, Azure Table, and AWS Redshift.
+- [X] Add supports for Cassandra
+- [ ] Add supports for Azure Table, and AWS Redshift.
 
 ## Suggestion?
 Use the following link to file a bug or a suggestion.
