@@ -80,7 +80,6 @@ export default function ConnectionDescription() {
   );
 }
 
-
 // TODO: move this into a file if we need to reuse it
 interface ConnectionRetryAlertProps {
   connectionId: string;

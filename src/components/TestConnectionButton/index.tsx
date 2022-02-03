@@ -14,7 +14,7 @@ export default function TestConnectionButton(props: TestConnectionButtonProps) {
   const { mutateAsync: testConnection } = useTestConnection();
 
   const onTestConnection = async () => {
-    if(!props.connection.connection){
+    if (!props.connection.connection) {
       return setMessage(`Connection is required to perform testing.`);
     }
     try {
