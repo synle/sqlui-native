@@ -7,12 +7,10 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Typography from '@mui/material/Typography';
 import { Button } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
-import NativeSelect from '@mui/material/NativeSelect';
 import PreviewIcon from '@mui/icons-material/Preview';
 import FormatColorTextIcon from '@mui/icons-material/FormatColorText';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
 import {
   useGetConnections,
   useExecute,
@@ -24,6 +22,7 @@ import {
 } from 'src/hooks';
 import CodeEditorBox from 'src/components/CodeEditorBox';
 import ResultBox from 'src/components/ResultBox';
+import Select from 'src/components/Select';
 import { SqluiCore, SqluiFrontend } from 'typings';
 
 interface QueryBoxProps {
@@ -165,8 +164,8 @@ function ConnectionDatabaseSelector(props: ConnectionDatabaseSelectorProps) {
 
   if (isLoading) {
     <>
-      <NativeSelect disabled size='small'></NativeSelect>
-      <NativeSelect disabled size='small' sx={{ ml: 3 }}></NativeSelect>
+      <Select disabled size='small'></Select>
+      <Select disabled size='small' sx={{ ml: 3 }}></Select>
     </>;
   }
 
@@ -180,22 +179,22 @@ function ConnectionDatabaseSelector(props: ConnectionDatabaseSelectorProps) {
 
   return (
     <>
-      <NativeSelect
+      <Select
         value={query.connectionId}
-        onChange={(e) => onConnectionChange(e.target.value as string)}
+        onChange={(newValue) => onConnectionChange(newValue)}
         required
         size='small'>
         <option value=''>Pick a Connection</option>
         {connectionOptions}
-      </NativeSelect>
-      <NativeSelect
+      </Select>
+      <Select
         value={query.databaseId}
-        onChange={(e) => onDatabaseChange(e.target.value as string)}
+        onChange={(newValue) => onDatabaseChange(newValue)}
         size='small'
         sx={{ ml: 3 }}>
         <option value=''>Pick a Database (Optional)</option>
         {databaseConnections}
-      </NativeSelect>
+      </Select>
     </>
   );
 }
