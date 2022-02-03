@@ -14,12 +14,14 @@ export default function TestConnectionButton(props: TestConnectionButtonProps) {
   const { mutateAsync: testConnection } = useTestConnection();
 
   const onTestConnection = async () => {
-    // const connectionMetadata = {};
+    if(!props.connection.connection){
+      return setMessage(`Connection is required to perform testing.`);
+    }
     try {
       await testConnection(props.connection);
       setMessage(`Successfully connected to Server`);
     } catch (err) {
-      setMessage(`Failed to connect to Server`);
+      setMessage(`Failed to connect to Server. ${err}`);
     }
   };
 

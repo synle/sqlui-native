@@ -194,6 +194,11 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
 
   addDataEndpoint('post', '/api/connection/test', async (req, res, apiCache) => {
     const connection: SqluiCore.CoreConnectionProps = req.body;
+
+    if(!connection.connection){
+      return res.status(400).send('`connection` is required...');
+    }
+
     const engine = getDataAdapter(connection.connection);
     await engine.authenticate();
     res.status(200).json(await getConnectionMetaData(connection));
