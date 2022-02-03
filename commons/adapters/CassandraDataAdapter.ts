@@ -129,11 +129,6 @@ export default class CassandraAdapter implements CoreDataAdapter {
       .map((row) => ({
         name: row.column_name,
         type: row.type,
-        allowNull: false,
-        defaultValue: '',
-        primaryKey: false,
-        autoIncrement: false,
-        comment: null,
       }))
       .sort((a, b) => (a.name || '').localeCompare(b.name || ''));
   }
