@@ -23,6 +23,7 @@ jobs:
           registry-url: https://registry.npmjs.org/
       - run: npm install
       - run: npm run build
+      - run: npm test
       - run: npm version --no-git-tag-version patch
       - run: npm run format
       - uses: EndBug/add-and-commit@v8
