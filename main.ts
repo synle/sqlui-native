@@ -5,7 +5,7 @@ import { setUpDataEndpoints, getEndpointHandlers } from './commons/Endpoints';
 import { crashReporter, shell } from 'electron';
 import path from 'path';
 
-setUpDataEndpoints();
+const isMac = process.platform === 'darwin';
 
 function createWindow() {
   // Create the browser window.
@@ -30,12 +30,12 @@ function createWindow() {
 
 function sendMessage(win: BrowserWindow, message: SqluiEnums.ClientEventKey) {
   if (win) {
-    win.webContents.send('sqluiNativeEvent/ipcElectronCommand', message);
+    win.webContents.send('sqluiNativeEvent/ipcElectronCommand', message, {});
   }
 }
 
 function setupMenu() {
-  const isMac = process.platform === 'darwin';
+
 
   let menuTemplate: Electron.MenuItemConstructorOptions[] = [
     {
@@ -180,6 +180,10 @@ function setupMenu() {
           },
         },
         {
+          label: 'Check for update',
+          click: async (item, win) => sendMessage(win as BrowserWindow, 'clientEvent/checkForUpdate'),
+        },
+        {
           label: 'About',
           click: async () => {
             await shell.openExternal('https://synle.github.io/sqlui-native/');
@@ -197,6 +201,7 @@ function setupMenu() {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
+  setUpDataEndpoints();
   createWindow();
   setupMenu();
 
