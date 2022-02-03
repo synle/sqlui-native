@@ -146,9 +146,9 @@ function ConnectionDatabaseSelector(props: ConnectionDatabaseSelectorProps) {
   const connectionOptions = useMemo(
     () =>
       connections?.map((connection) => (
-        <MenuItem value={connection.id} key={connection.id}>
+        <option value={connection.id} key={connection.id}>
           {connection.name}
-        </MenuItem>
+        </option>
       )),
     [connections],
   );
@@ -156,17 +156,17 @@ function ConnectionDatabaseSelector(props: ConnectionDatabaseSelectorProps) {
   const databaseConnections = useMemo(
     () =>
       databases?.map((database) => (
-        <MenuItem value={database.name} key={database.name}>
+        <option value={database.name} key={database.name}>
           {database.name}
-        </MenuItem>
+        </option>
       )),
     [databases],
   );
 
   if (isLoading) {
     <>
-      <Select disabled size='small'></Select>
-      <Select disabled size='small' sx={{ ml: 3 }}></Select>
+      <NativeSelect disabled size='small'></NativeSelect>
+      <NativeSelect disabled size='small' sx={{ ml: 3 }}></NativeSelect>
     </>;
   }
 
@@ -180,22 +180,22 @@ function ConnectionDatabaseSelector(props: ConnectionDatabaseSelectorProps) {
 
   return (
     <>
-      <Select
+      <NativeSelect
         value={query.connectionId}
         onChange={(e) => onConnectionChange(e.target.value as string)}
         required
         size='small'>
-        <MenuItem value=''>Pick a Connection</MenuItem>
+        <option value=''>Pick a Connection</option>
         {connectionOptions}
-      </Select>
-      <Select
+      </NativeSelect>
+      <NativeSelect
         value={query.databaseId}
         onChange={(e) => onDatabaseChange(e.target.value as string)}
         size='small'
         sx={{ ml: 3 }}>
-        <MenuItem value=''>Pick a Database (Optional)</MenuItem>
+        <option value=''>Pick a Database (Optional)</option>
         {databaseConnections}
-      </Select>
+      </NativeSelect>
     </>
   );
 }
