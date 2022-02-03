@@ -251,7 +251,7 @@ ipcMain.on('sqluiNativeEvent/toggleMenus', function (event, data) {
 });
 
 // this is the event listener that will respond when we will request it in the web page
-const _cache = {};
+const _apiCache = {};
 ipcMain.on('sqluiNativeEvent/fetch', async (event, data) => {
   const { requestId, url, options } = data;
   const responseId = `server response ${Date.now()}`;
@@ -317,7 +317,7 @@ ipcMain.on('sqluiNativeEvent/fetch', async (event, data) => {
           get(key: string) {
             try {
               //@ts-ignore
-              return _cache[sessionId][key];
+              return _apiCache[sessionId][key];
             } catch (err) {
               return undefined;
             }
@@ -325,16 +325,16 @@ ipcMain.on('sqluiNativeEvent/fetch', async (event, data) => {
           set(key: string, value: any) {
             try {
               //@ts-ignore
-              _cache[sessionId] = _cache[sessionId] || {};
+              _apiCache[sessionId] = _apiCache[sessionId] || {};
 
               //@ts-ignore
-              _cache[sessionId][key] = value;
+              _apiCache[sessionId][key] = value;
             } catch (err) {
               //@ts-ignore
             }
           },
           json() {
-            return JSON.stringify(_cache);
+            return JSON.stringify(_apiCache);
           },
         };
 
