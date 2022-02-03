@@ -20,7 +20,7 @@ export default function Resizer(props: ResizerProps) {
       sx={{
         width: '10px',
         cursor: 'col-resize',
-        flexShrink:0 ,
+        flexShrink: 0,
         '&:hover': {
           background: grey[400],
         },
