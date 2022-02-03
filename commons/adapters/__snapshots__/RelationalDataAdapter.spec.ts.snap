@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`sqlite sqlite - Execute Select 1`] = `
+exports[`sqlite Execute Select 1`] = `
 Object {
   "affectedRows": undefined,
   "meta": undefined,
@@ -22,7 +22,7 @@ Object {
 }
 `;
 
-exports[`sqlite sqlite - Get columns 1`] = `
+exports[`sqlite Get columns 1`] = `
 Array [
   Object {
     "allowNull": false,
@@ -43,7 +43,7 @@ Array [
 ]
 `;
 
-exports[`sqlite sqlite - Get tables 1`] = `
+exports[`sqlite Get tables 1`] = `
 Array [
   Object {
     "columns": Array [],
