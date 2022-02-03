@@ -142,6 +142,7 @@ function getInsertCommand(input: SqlAction.TableInput): SqlAction.Output | undef
     case 'sqlite':
     case 'mariadb':
     case 'mysql':
+    case 'cassandra':
       return {
         label,
         query: `INSERT INTO ${input.tableId} (\n${columnString}\n) VALUES (\n${insertValueString}\n)`,
@@ -165,6 +166,7 @@ function getUpdateCommand(input: SqlAction.TableInput): SqlAction.Output | undef
     case 'sqlite':
     case 'mariadb':
     case 'mysql':
+    case 'cassandra':
       return {
         label,
         query: `UPDATE ${input.tableId}\n SET \n${columnString}\n WHERE ${whereColumnString}`,
