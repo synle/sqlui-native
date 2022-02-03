@@ -1,17 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import Box from '@mui/material/Box';
 import Alert from '@mui/material/Alert';
+import AlertTitle from '@mui/material/AlertTitle';
+import Tooltip from '@mui/material/Tooltip';
 import CircularProgress from '@mui/material/CircularProgress';
 import Typography from '@mui/material/Typography';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@mui/material';
 import TextField from '@mui/material/TextField';
 import FormControl from '@mui/material/FormControl';
+import SaveIcon from '@mui/icons-material/Save';
+import ConnectionTypeIcon from 'src/components/ConnectionTypeIcon';
 import { useGetConnectionById, useUpsertConnection } from 'src/hooks';
 import TestConnectionButton from 'src/components/TestConnectionButton';
 import Toast from 'src/components/Toast';
 import { SqluiCore } from 'typings';
-import SaveIcon from '@mui/icons-material/Save';
 
 type ConnectionFormProps = {
   id?: string;
@@ -151,7 +154,7 @@ function MainConnectionForm(props: MainConnectionFormProps) {
           fullWidth={true}
         />
       </div>
-      <div className='ConnectionForm__Row'>{showHint && <ConnectionHint />}</div>
+      <div className='ConnectionForm__Row'>{showHint && <ConnectionHint  onChange={props.setConnection} />}</div>
       <div className='ConnectionForm__Row'>
         <Button
           variant='contained'
@@ -171,13 +174,15 @@ function MainConnectionForm(props: MainConnectionFormProps) {
         </Button>
         <TestConnectionButton connection={connection} />
         {!showHint && (
+          <Tooltip title='Show connection hints.'>
           <Button
             type='button'
             disabled={props.saving}
             onClick={() => setShowHint(true)}
             sx={{ ml: 3 }}>
-            Show Hints
+            Show Connection Hints
           </Button>
+          </Tooltip>
         )}
       </div>
       <Toast open={toastOpen} onClose={() => setToastOpen(false)} message='Connection Saved...' />
@@ -185,27 +190,40 @@ function MainConnectionForm(props: MainConnectionFormProps) {
   );
 }
 
-function ConnectionHint() {
+
+// TODO: move me to a file
+type ConnectionHintProps= {
+  onChange: (connectionName: string) => void;
+}
+
+function ConnectionHint(props: ConnectionHintProps) {
   return (
     <>
-      <Alert severity='info' sx={{ mb: 2 }}>
-        mysql://root:password@localhost:3306
+      <Alert severity='info' icon={<ConnectionTypeIcon scheme='mysql' status='online' />} sx={{ mb: 2 }}>
+        <AlertTitle>MySQL</AlertTitle>
+        <span onClick={() => props.onChange('mysql://root:password@localhost:3306')}>mysql://root:password@localhost:3306</span>
       </Alert>
-      <Alert severity='info' sx={{ mb: 2 }}>
-        mariadb://root:password@localhost:3306
+      <Alert severity='info' icon={<ConnectionTypeIcon scheme='mariadb' status='online' />} sx={{ mb: 2 }}>
+        <AlertTitle>MariaDB</AlertTitle>
+        <span onClick={() => props.onChange('mariadb://root:password@localhost:3306')}>mariadb://root:password@localhost:3306</span>
       </Alert>
-      <Alert severity='info' sx={{ mb: 2 }}>
-        mssql://sa:password123!@localhost:1433
+      <Alert severity='info' icon={<ConnectionTypeIcon scheme='mssql' status='online' />} sx={{ mb: 2 }}>
+        <AlertTitle>Microsoft SQL Server</AlertTitle>
+        <span onClick={() => props.onChange('mssql://sa:password123!@localhost:1433')}>mssql://sa:password123!@localhost:1433</span>
       </Alert>
-      <Alert severity='info' sx={{ mb: 2 }}>
-        postgres://postgres:password@localhost:5432
+      <Alert severity='info' icon={<ConnectionTypeIcon scheme='postgres' status='online' />} sx={{ mb: 2 }}>
+        <AlertTitle>PostgresSQL</AlertTitle>
+        <span onClick={() => props.onChange('postgres://postgres:password@localhost:5432')}>postgres://postgres:password@localhost:5432</span>
       </Alert>
-      <Alert severity='info' sx={{ mb: 2 }}>
-        sqlite://test-db.sqlite
+      <Alert severity='info' icon={<ConnectionTypeIcon scheme='sqlite' status='online' />} sx={{ mb: 2 }}>
+        <AlertTitle>SQLite</AlertTitle>
+        <span onClick={() => props.onChange('sqlite://test-db.sqlite')}>sqlite://test-db.sqlite</span>
       </Alert>
-      <Alert severity='info' sx={{ mb: 2 }}>
-        cassandra://localhost:9042
+      <Alert severity='info' icon={<ConnectionTypeIcon scheme='cassandra' status='online' />} sx={{ mb: 2 }}>
+        <AlertTitle>Cassandra</AlertTitle>
+        <span onClick={() => props.onChange('cassandra://postgres:passwordlocalhost:9042')}>cassandra://postgres:passwordlocalhost:9042</span>
       </Alert>
     </>
   );
 }
+
