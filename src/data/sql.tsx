@@ -55,6 +55,11 @@ function getSelectAllColumns(input: SqlAction.TableInput): SqlAction.Output | un
         label,
         query: `SELECT * \nFROM ${input.tableId} \nLIMIT ${QUERY_LIMIT}`,
       };
+    case 'cassandra':
+      return {
+        label,
+        query: `SELECT * \nFROM ${input.tableId} \nLIMIT ${QUERY_LIMIT}`,
+      };
   }
 }
 
@@ -108,6 +113,12 @@ function getSelectSpecificColumns(input: SqlAction.TableInput): SqlAction.Output
       };
     case 'mariadb':
     case 'mysql':
+      return {
+        label,
+        query: `SELECT ${columnString} \nFROM ${input.tableId} \n -- WHERE ${whereColumnString} \nLIMIT ${QUERY_LIMIT}`,
+      };
+
+    case 'cassandra':
       return {
         label,
         query: `SELECT ${columnString} \nFROM ${input.tableId} \n -- WHERE ${whereColumnString} \nLIMIT ${QUERY_LIMIT}`,
@@ -342,10 +353,10 @@ export function getTableActions(tableActionInput: SqlAction.TableInput) {
     getSelectSpecificColumns,
     getInsertCommand,
     getUpdateCommand,
-    getDivider,
+    // getDivider,
     getCreateTable,
     getDropTable,
-    getDivider,
+    // getDivider,
     getAddColumn,
     getDropColumns,
   ].forEach((fn) => {
