@@ -22,7 +22,7 @@ export module SqluiCore {
     allowNull?: boolean;
     primaryKey?: boolean;
     autoIncrement?: boolean;
-    comment?: string | null ;
+    comment?: string | null;
     [index: string]: any;
   };
 

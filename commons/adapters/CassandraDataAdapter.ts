@@ -23,35 +23,33 @@ export default class CassandraAdapter implements CoreDataAdapter {
     return new Promise<cassandra.Client>(async (resolve, reject) => {
       try {
         // TODO: hard coded now for testing...
-        this.client = new cassandra.Client({
-          contactPoints: ['127.0.0.1'],
+        const client = new cassandra.Client({
+          contactPoints: ['localhost'],
           protocolOptions: {
             port: 9042,
           },
           keyspace: database,
         });
 
-        // connection = new driver.Client({contactPoints: ['abc'], keyspace: 'system_schema'});
+        await this.authenticate(client);
 
-        await this.authenticate();
-
-        resolve(this.client);
+        resolve(client);
       } catch (err) {
         reject(err);
       }
     });
   }
 
-  async authenticate() {
+  async authenticate(client?: cassandra.Client) {
     // TODO: To Be Implemented
     return new Promise<void>((resolve, reject) => {
-      this.client?.connect((err: unknown) => {
+      client?.connect((err: unknown) => {
         if (err) {
-          this.client?.shutdown();
+          client?.shutdown();
           return reject(err);
         }
 
-        this.version = this.client?.getState().getConnectedHosts()[0].cassandraVersion;
+        this.version = client?.getState().getConnectedHosts()[0].cassandraVersion;
         this.isCassandra2 = this.version === '2';
 
         resolve();
@@ -63,7 +61,7 @@ export default class CassandraAdapter implements CoreDataAdapter {
     const client = await this.getConnection();
 
     //@ts-ignore
-    const keyspaces = Object.keys(this.client?.metadata?.keyspaces);
+    const keyspaces = Object.keys(client?.metadata?.keyspaces);
     return keyspaces
       .map((keyspace) => ({
         name: keyspace,
@@ -135,10 +133,14 @@ export default class CassandraAdapter implements CoreDataAdapter {
 
   private async _execute(sql: string, params?: string[], database?: string) {
     const client = await this.getConnection(database);
-    if (!database) {
-      return client.execute(sql, params || [], { prepare: true });
+    try {
+      let res = await client.execute(sql, params || [], { prepare: true });
+      client?.shutdown();
+      return res;
+    } catch (err) {
+      client?.shutdown();
+      throw err;
     }
-    return client.execute(sql, params || [], { prepare: true });
   }
 
   async execute(sql: string, database?: string): Promise<SqluiCore.Result> {
