@@ -171,7 +171,7 @@ function TableFormatData(props: FormatDataProps) {
         Cell: (data: any) => {
           const columnValue = data.row.original[columnName];
           if (typeof columnValue === 'object') {
-            return JSON.stringify(columnValue, null, 2);
+            return <pre>{JSON.stringify(columnValue, null, 2)}</pre>;
           }
           return columnValue;
         },
