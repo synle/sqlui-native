@@ -1,0 +1,34 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`cassandra - Get database 1`] = `
+Array [
+  Object {
+    "name": "system_views",
+    "tables": Array [],
+  },
+  Object {
+    "name": "system_virtual_schema",
+    "tables": Array [],
+  },
+  Object {
+    "name": "system_auth",
+    "tables": Array [],
+  },
+  Object {
+    "name": "system_schema",
+    "tables": Array [],
+  },
+  Object {
+    "name": "system_distributed",
+    "tables": Array [],
+  },
+  Object {
+    "name": "system",
+    "tables": Array [],
+  },
+  Object {
+    "name": "system_traces",
+    "tables": Array [],
+  },
+]
+`;

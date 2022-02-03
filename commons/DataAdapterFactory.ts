@@ -27,8 +27,8 @@ export function getDataAdapter(connection: string) {
 
   // TOOD: here we should initialize the connection based on type
   // of the connection string
-  let adapter : CoreDataAdapter;
-  switch(getConnectionType(connection)){
+  let adapter: CoreDataAdapter;
+  switch (getConnectionType(connection)) {
     case 'mysql':
     case 'mariadb':
     case 'mssql':

@@ -1,0 +1,53 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`sqlite sqlite - Execute Select 1`] = `
+Object {
+  "affectedRows": undefined,
+  "meta": undefined,
+  "ok": true,
+  "raw": Array [
+    Object {
+      "ArtistId": 1,
+      "Name": "Test Artist 1",
+    },
+    Object {
+      "ArtistId": 2,
+      "Name": "Test Artist 2",
+    },
+    Object {
+      "ArtistId": 3,
+      "Name": "Test Artist 3",
+    },
+  ],
+}
+`;
+
+exports[`sqlite sqlite - Get columns 1`] = `
+Array [
+  Object {
+    "allowNull": false,
+    "defaultValue": undefined,
+    "name": "ArtistId",
+    "primaryKey": true,
+    "type": "INTEGER",
+    "unique": false,
+  },
+  Object {
+    "allowNull": true,
+    "defaultValue": undefined,
+    "name": "Name",
+    "primaryKey": false,
+    "type": "NVARCHAR(120)",
+    "unique": false,
+  },
+]
+`;
+
+exports[`sqlite sqlite - Get tables 1`] = `
+Array [
+  Object {
+    "columns": Array [],
+    "name": "artists",
+  },
+]
+`;

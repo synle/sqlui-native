@@ -10,43 +10,48 @@ export default class CassandraAdapter implements CoreDataAdapter {
    * cassandra version
    * @type {number}
    */
-  // version: string;
+  version?: string;
 
   constructor(connectionOption: string) {
     this.connectionOption = connectionOption as string;
+  }
 
-    try{
-      // TODO: hard coded now for testing...
-      this.client = new cassandra.Client({
-        contactPoints: ['127.0.0.1'],
-        protocolOptions: {
-            port: 9042,
-        }
-        // keyspace: undefined
-      });
-    } catch(err){
-
+  private async getConnection(database?: string): Promise<cassandra.Client> {
+    if (this.client) {
+      return this.client;
     }
 
+    // attempt to pull in connections
+    return new Promise<cassandra.Client>(async (resolve, reject) => {
+      try {
+        // TODO: hard coded now for testing...
+        this.client = new cassandra.Client({
+          contactPoints: ['127.0.0.1'],
+          protocolOptions: {
+            port: 9042,
+          },
+          // keyspace: undefined
+        });
 
+        await this.authenticate();
+
+        resolve(this.client);
+      } catch (err) {
+        reject(err);
+      }
+    });
   }
 
   async authenticate() {
     // TODO: To Be Implemented
-     return new Promise<void>((resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
       this.client?.connect((err: unknown) => {
         if (err) {
           this.client?.shutdown();
           return reject(err);
         }
 
-        console.log(this.client?.getState().getConnectedHosts());
-
-        // this.version = {
-        //   name: 'Cassandra',
-        //   version: this.client?.getState().getConnectedHosts()[0].cassandraVersion,
-        //   string: `Cassandra ${this.client?.getState().getConnectedHosts()[0].cassandraVersion}`,
-        // };
+        this.version = this.client?.getState().getConnectedHosts()[0].cassandraVersion;
 
         resolve();
       });
@@ -54,50 +59,74 @@ export default class CassandraAdapter implements CoreDataAdapter {
   }
 
   async getDatabases(): Promise<SqluiCore.DatabaseMetaData[]> {
+    const client = await this.getConnection();
+
     //@ts-ignore
     const keyspaces = Object.keys(this.client?.metadata?.keyspaces);
-    return keyspaces.map(keyspace =>({
+    return keyspaces.map((keyspace) => ({
       name: keyspace,
-      tables: []
+      tables: [],
     }));
   }
 
   async getTables(database?: string): Promise<SqluiCore.TableMetaData[]> {
     // TODO: To Be Implemented
-    console.log(this.version);
 
-    return [{
-      name: 'cass-tbl1',
-      columns: []
-    }];
+    return [
+      {
+        name: 'cass-tbl1',
+        columns: [],
+      },
+    ];
   }
 
   async getColumns(table: string, database?: string): Promise<SqluiCore.ColumnMetaData[]> {
-
-
-
     // TODO: To Be Implemented
     return [
-      {"name":"cass-c1","type":"INT","allowNull":false,"defaultValue":'',"primaryKey":true,"autoIncrement":true,"comment":null},
-      {"name":"cass-c2","type":"INT","allowNull":false,"defaultValue":'',"primaryKey":true,"autoIncrement":true,"comment":null},
-      {"name":"cass-c3","type":"INT","allowNull":false,"defaultValue":'',"primaryKey":true,"autoIncrement":true,"comment":null},
+      {
+        name: 'cass-c1',
+        type: 'INT',
+        allowNull: false,
+        defaultValue: '',
+        primaryKey: true,
+        autoIncrement: true,
+        comment: null,
+      },
+      {
+        name: 'cass-c2',
+        type: 'INT',
+        allowNull: false,
+        defaultValue: '',
+        primaryKey: true,
+        autoIncrement: true,
+        comment: null,
+      },
+      {
+        name: 'cass-c3',
+        type: 'INT',
+        allowNull: false,
+        defaultValue: '',
+        primaryKey: true,
+        autoIncrement: true,
+        comment: null,
+      },
     ];
   }
 
   async execute(sql: string, database?: string): Promise<SqluiCore.Result> {
-    let rawToUse: any | undefined ;
+    let rawToUse: any | undefined;
     let metaToUse: any | undefined;
 
     const res = await this.client?.execute(sql);
 
-    if(!res){
-       return {
+    if (!res) {
+      return {
         ok: false,
         raw: [],
         meta: null,
       };
     }
-    const {rows} = res;
+    const { rows } = res;
 
     //@ts-ignore
     delete res.rows;
