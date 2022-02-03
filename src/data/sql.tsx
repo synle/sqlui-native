@@ -174,6 +174,29 @@ function getUpdateCommand(input: SqlAction.TableInput): SqlAction.Output | undef
   }
 }
 
+function getDeleteCommand(input: SqlAction.TableInput): SqlAction.Output | undefined {
+  const label = `Delete`;
+
+  if (!input.columns) {
+    return undefined;
+  }
+
+  const whereColumnString = input.columns.map((col) => `-- ${col.name} = ''`).join(' AND \n');
+
+  switch (input.dialect) {
+    case 'mssql':
+    case 'postgres':
+    case 'sqlite':
+    case 'mariadb':
+    case 'mysql':
+    case 'cassandra':
+      return {
+        label,
+        query: `-- DELETE FROM ${input.tableId} \n -- WHERE\n ${whereColumnString}`,
+      };
+  }
+}
+
 function getCreateTable(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Create Table`;
 
@@ -355,6 +378,7 @@ export function getTableActions(tableActionInput: SqlAction.TableInput) {
     getSelectSpecificColumns,
     getInsertCommand,
     getUpdateCommand,
+    getDeleteCommand,
     // getDivider,
     getCreateTable,
     getDropTable,
