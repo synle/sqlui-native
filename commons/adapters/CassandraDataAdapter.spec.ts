@@ -8,8 +8,8 @@ test('cassandra - Get database', async () => {
 });
 
 test('cassandra - Get tables', async () => {
-  const tables = await adapter.getTables();
-  expect(1).toBe(1);
+  const tables = await adapter.getTables('system');
+  expect(tables).toBe(1);
 });
 
 test('cassandra - Get columns', async () => {

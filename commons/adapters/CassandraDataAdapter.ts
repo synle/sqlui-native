@@ -70,14 +70,33 @@ export default class CassandraAdapter implements CoreDataAdapter {
   }
 
   async getTables(database?: string): Promise<SqluiCore.TableMetaData[]> {
-    // TODO: To Be Implemented
+    if(!database){
+      return [];
+    }
 
-    return [
-      {
-        name: 'cass-tbl1',
+    let sql;
+    if(this.version === '2'){
+      sql = `
+          SELECT columnfamily_name as name
+          FROM system.schema_columnfamilies
+          WHERE keyspace_name = ?
+        `;
+    } else {
+      sql = `
+          SELECT table_name as name
+          FROM system_schema.tables
+          WHERE keyspace_name = ?
+        `;
+    }
+
+    const res = await this._execute(sql, [database]);
+
+    return res.rows.map(row =>
+      ({
+        name: row.name,
         columns: [],
-      },
-    ];
+      })
+    );
   }
 
   async getColumns(table: string, database?: string): Promise<SqluiCore.ColumnMetaData[]> {
@@ -113,11 +132,16 @@ export default class CassandraAdapter implements CoreDataAdapter {
     ];
   }
 
-  async execute(sql: string, database?: string): Promise<SqluiCore.Result> {
+  private async  _execute(sql: string, params?: string[] ){
+    const client = await this.getConnection();
+    return client.execute(sql, params);
+  }
+
+  async execute(sql: string): Promise<SqluiCore.Result> {
     let rawToUse: any | undefined;
     let metaToUse: any | undefined;
 
-    const res = await this.client?.execute(sql);
+    const res = await this._execute(sql);
 
     if (!res) {
       return {
