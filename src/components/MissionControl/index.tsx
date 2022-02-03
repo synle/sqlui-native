@@ -413,6 +413,7 @@ export default function MissionControl() {
     await modal({
       title: 'Check for update',
       message: contentDom,
+      showCloseButton: true,
     });
   }
 
@@ -585,6 +586,12 @@ export default function MissionControl() {
           case 'w':
             command = {
               event: 'clientEvent/query/closeCurrentlySelected',
+            };
+            break;
+          // TODO: remove me
+          case 'z':
+            command = {
+              event: 'clientEvent/checkForUpdate',
             };
             break;
         }

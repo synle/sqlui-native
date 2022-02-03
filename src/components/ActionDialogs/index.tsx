@@ -81,7 +81,7 @@ export default function ActionDialogs(props: ActionDialogsProps) {
       );
     case 'modal':
       return (
-        <ModalDialog open={true} title={dialog.title} body={dialog.message} onDismiss={onDimiss} />
+        <ModalDialog open={true} title={dialog.title} message={dialog.message} onDismiss={onDimiss} showCloseButton={!!dialog.showCloseButton} />
       );
   }
   return null;
@@ -114,14 +114,8 @@ type PromptActionDialog = PromptActionDialogInput & {
   onSubmit: (yesSelected: boolean, newValue?: string) => void;
 };
 
-type ModalActionDialog = {
+type ModalActionDialog = ModalInput & {
   type: 'modal';
-  title: string;
-  /**
-   * body of the modal
-   * @type {[type]}
-   */
-  message: React.ReactNode;
   onSubmit: (closed: boolean) => void;
 };
 
