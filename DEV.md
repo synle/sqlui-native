@@ -96,7 +96,7 @@ C:\Users\some_username\AppData\Roaming\sqlui-native
 
 
 ## Sample Databases
-Docker can be used to spin off these database engines. Refer to (this repo for the SQL dumps)[https://github.com/synle/sqlui-core].
+Docker can be used to spin off these database engines. Refer to [this repo for the SQL dumps](https://github.com/synle/sqlui-core).
 
 ```
 # MySQL (https://hub.docker.com/_/mysql)
@@ -115,10 +115,15 @@ docker run --name sqlui_mssql -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=password123!" -
 docker run --name sqlui_postgres -p 5432:5432 -e POSTGRES_PASSWORD=password -d postgres
 
 # Cassandra
-docker run --name sqlui_cassandra -p 9042:9042 -d cassandra:latest
+  # v4 (latest)
+  docker run --name sqlui_cassandra_v4 -p 9042:9042 -d cassandra:4.0.1
 
-  # use qlsh
-  docker exec -it sqlui_cassandra cqlsh
+  # v2 (legacy) - note that here we expose it in the same machine on port 9043
+  docker run --name sqlui_cassandra_v2 -p 9043:9042 -d cassandra:2.2.19
+
+  # use qlsh - use the above image name for cqlsh
+  docker exec -it sqlui_cassandra_v4 cqlsh
+  docker exec -it sqlui_cassandra_v2 cqlsh
 ```
 
 
