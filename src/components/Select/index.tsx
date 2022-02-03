@@ -1,5 +1,33 @@
 import React from 'react';
-import NativeSelect from '@mui/material/NativeSelect';
+import { styled, createTheme, ThemeProvider } from '@mui/system';
+
+const StyledSelect = styled('select')(({ theme }) => {
+  const backgroundColor = theme.palette.grey[800];
+  return {
+    cursor: 'pointer',
+    padding: theme.spacing(1),
+    borderRadius: theme.shape.borderRadius,
+    background: theme.palette.background.default,
+    color: theme.palette.text.secondary,
+    borderColor: theme.palette.action.selected,
+
+    'option': {
+      background: theme.palette.background.default,
+      color: theme.palette.text.primary,
+    },
+
+    '&:hover, &:focus':{
+      borderColor: theme.palette.action.focus,
+    },
+
+    '&:disabled':{
+      color: theme.palette.action.disabled,
+      borderColor: theme.palette.action.disabledBackground,
+    }
+  };
+});
+
+
 
 type SelectProps = {
   children?: React.ReactNode;
@@ -10,7 +38,7 @@ type SelectProps = {
 export default function Select(props: SelectProps) {
   const { children, onChange, ...restProps } = props;
 
-  return <NativeSelect onChange={(e) => onChange && onChange(e.target.value) } {...restProps}>
+  return <StyledSelect onChange={(e) => onChange && onChange(e.target.value) } {...restProps}>
         {children}
-      </NativeSelect>
+      </StyledSelect>
 }
