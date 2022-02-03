@@ -134,6 +134,7 @@ export module SqluiEnums {
    * @type {String}
    */
   export type ClientEventKey =
+    | 'clientEvent/checkForUpdate'
     | 'clientEvent/showCommandPalette'
     | 'clientEvent/import'
     | 'clientEvent/exportAll'

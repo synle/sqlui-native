@@ -11,7 +11,7 @@ import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
 import CodeEditorBox from 'src/components/CodeEditorBox';
 
-export type PromptActionDialogInput = {
+export type PromptInput = {
   title?: string;
   message: string;
   value?: string;
@@ -20,7 +20,7 @@ export type PromptActionDialogInput = {
   required?: boolean;
 };
 
-type PromptDialogProps = PromptActionDialogInput & {
+type PromptDialogProps = PromptInput & {
   open: boolean;
   onSaveClick: (newValue: string) => void;
   onDismiss: () => void;

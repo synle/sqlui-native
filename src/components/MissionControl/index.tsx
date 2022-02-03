@@ -16,6 +16,7 @@ import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import AppsIcon from '@mui/icons-material/Apps';
 import EditIcon from '@mui/icons-material/Edit';
 import PhotoSizeSelectSmallIcon from '@mui/icons-material/PhotoSizeSelectSmall';
+import Link from '@mui/material/Link';
 import { SqluiCore, SqluiFrontend, SqluiEnums } from 'typings';
 import { useActionDialogs } from 'src/components/ActionDialogs';
 import { downloadText } from 'src/data/file';
@@ -40,6 +41,7 @@ import {
   getRandomSessionId,
 } from 'src/data/session';
 import CommandPalette from 'src/components/CommandPalette';
+import appPackage from 'src/package.json';
 
 export interface Command {
   event: SqluiEnums.ClientEventKey;
@@ -385,6 +387,47 @@ export default function MissionControl() {
     }
   };
 
+  const onCheckForUpdate = async () => {
+    let contentDom: React.ReactNode;
+
+    const newVersion = await fetch('https://synle.github.io/sqlui-native/package.json')
+      .then((r) => r.json())
+      .then((r) => r.version);
+
+    if (newVersion === appPackage.version) {
+      contentDom = (
+        <>
+          <Typography gutterBottom={true}>sqlui-native is up to date</Typography>
+          <Typography gutterBottom={true} sx={{ mt: 3 }}>
+            Version {appPackage.version}
+          </Typography>
+        </>
+      );
+    } else {
+      const platform = window?.process?.platform;
+      const downloadLink =
+        platform === 'darwin'
+          ? `https://github.com/synle/sqlui-native/releases/download/${newVersion}/sqlui-native-${newVersion}.dmg`
+          : `https://github.com/synle/sqlui-native/releases/download/${newVersion}/sqlui-native-${newVersion}.exe`;
+
+      contentDom = (
+        <>
+          <Typography gutterBottom={true}>Your version {appPackage.version} </Typography>
+          <Typography gutterBottom={true}>Latest version {newVersion} </Typography>
+          <Typography gutterBottom={true} sx={{ mt: 3 }}>
+            <Link href={downloadLink}>Click here to download the new version</Link>.
+          </Typography>
+        </>
+      );
+    }
+
+    await modal({
+      title: 'Check for update',
+      message: <div style={{ width: '250px' }}>{contentDom}</div>,
+      showCloseButton: true,
+    });
+  };
+
   // mission control commands
   async function _executeCommandPalette(command: Command) {
     if (command) {
@@ -393,6 +436,10 @@ export default function MissionControl() {
       switch (command.event) {
         case 'clientEvent/showCommandPalette':
           onShowCommandPalette();
+          break;
+
+        case 'clientEvent/checkForUpdate':
+          onCheckForUpdate();
           break;
 
         // overall commands
