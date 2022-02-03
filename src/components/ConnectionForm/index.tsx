@@ -151,27 +151,7 @@ function MainConnectionForm(props: MainConnectionFormProps) {
           fullWidth={true}
         />
       </div>
-      <div className='ConnectionForm__Row'>
-        {showHint && (
-          <>
-            <Alert severity='info' sx={{ mb: 2 }}>
-              mysql://root:password@localhost:3306
-            </Alert>
-            <Alert severity='info' sx={{ mb: 2 }}>
-              mariadb://root:password@localhost:3306
-            </Alert>
-            <Alert severity='info' sx={{ mb: 2 }}>
-              mssql://sa:password123!@localhost:1433
-            </Alert>
-            <Alert severity='info' sx={{ mb: 2 }}>
-              postgres://postgres:password@localhost:5432
-            </Alert>
-            <Alert severity='info' sx={{ mb: 2 }}>
-              sqlite://test-db.sqlite
-            </Alert>
-          </>
-        )}
-      </div>
+      <div className='ConnectionForm__Row'>{showHint && <ConnectionHint />}</div>
       <div className='ConnectionForm__Row'>
         <Button
           variant='contained'
@@ -202,5 +182,30 @@ function MainConnectionForm(props: MainConnectionFormProps) {
       </div>
       <Toast open={toastOpen} onClose={() => setToastOpen(false)} message='Connection Saved...' />
     </form>
+  );
+}
+
+function ConnectionHint() {
+  return (
+    <>
+      <Alert severity='info' sx={{ mb: 2 }}>
+        mysql://root:password@localhost:3306
+      </Alert>
+      <Alert severity='info' sx={{ mb: 2 }}>
+        mariadb://root:password@localhost:3306
+      </Alert>
+      <Alert severity='info' sx={{ mb: 2 }}>
+        mssql://sa:password123!@localhost:1433
+      </Alert>
+      <Alert severity='info' sx={{ mb: 2 }}>
+        postgres://postgres:password@localhost:5432
+      </Alert>
+      <Alert severity='info' sx={{ mb: 2 }}>
+        sqlite://test-db.sqlite
+      </Alert>
+      <Alert severity='info' sx={{ mb: 2 }}>
+        cassandra://localhost:9042
+      </Alert>
+    </>
   );
 }

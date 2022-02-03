@@ -168,7 +168,13 @@ function TableFormatData(props: FormatDataProps) {
     return Array.from(newColumnNames).map((columnName) => {
       return {
         Header: columnName,
-        accessor: columnName,
+        Cell: (data: any) => {
+          const columnValue = data.row.original[columnName];
+          if (typeof columnValue === 'object') {
+            return <pre>{JSON.stringify(columnValue, null, 2)}</pre>;
+          }
+          return columnValue;
+        },
       };
     });
   }, []);

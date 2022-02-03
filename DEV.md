@@ -37,14 +37,20 @@
     "name": "sy sqlite",
     "connection": "sqlite://db.test"
   },
-   {
+  {
+    "_type": "connection",
+    "id": "connection.1643837396621.9385585085281324",
+    "connection": "cassandra://localhost:9042",
+    "name": "cassandra"
+  },
+  {
     "_type": "query",
     "id": "query.1643578195409.9745654678705536",
     "name": "aaa",
     "sql": "SELECT\n  *\nFROM\n  artists\nLIMIT\n  10",
     "connectionId": "connection.1643485467072.6333713976068809",
     "databaseId": "music_store"
-  }
+  },
 ]
 ```
 
@@ -118,6 +124,7 @@ docker run --name sqlui_cassandra -p 9042:9042 -d cassandra:latest
 
 
 ## Sample runbooks
+### Relational Database
 ```
 mysql://root:password@localhost:3306
 
@@ -136,6 +143,18 @@ FROM
 WHERE email LIKE 'syle@test_email.com'
 LIMIT
   10
+```
+
+### Cassandra
+```
+-- Create a artists music_stores
+CREATE KEYSPACE music_stores
+WITH replication = {'class': 'SimpleStrategy', 'replication_factor' : 3};
+
+CREATE TABLE artists(
+  artist_id int PRIMARY KEY,
+  name text
+)
 ```
 
 

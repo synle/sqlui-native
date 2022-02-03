@@ -1,5 +1,3 @@
-import { ColumnDescription } from 'sequelize';
-
 /**
  * Stores common typings used by both frontend and backend
  */
@@ -18,8 +16,13 @@ export module SqluiCore {
     id: string;
   };
 
-  export type ColumnMetaData = ColumnDescription & {
+  export type ColumnMetaData = {
     name: string;
+    type: string;
+    allowNull?: boolean;
+    primaryKey?: boolean;
+    autoIncrement?: boolean;
+    comment?: string | null;
     [index: string]: any;
   };
 
