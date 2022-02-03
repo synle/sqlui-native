@@ -30,7 +30,6 @@ export default function Modal(props: ModalProps) {
       onClose={props.onDismiss}
       aria-labelledby='modal-dialog-title'
       aria-describedby='modal-dialog-description'>
-      <DialogTitle id='modal-dialog-title'>{props.title}</DialogTitle>
       <DialogTitle id='modal-dialog-title'>
           {props.title}
           {
