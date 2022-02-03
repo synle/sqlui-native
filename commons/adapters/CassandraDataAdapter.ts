@@ -6,6 +6,7 @@ export default class CassandraAdapter implements CoreDataAdapter {
   connectionOption: string;
   dialect: SqluiCore.Dialect = 'cassandra';
   client?: cassandra.Client;
+  private clients: Record<string, cassandra.Client> = {};
   /**
    * cassandra version
    * @type {number}
@@ -18,10 +19,6 @@ export default class CassandraAdapter implements CoreDataAdapter {
   }
 
   private async getConnection(database?: string): Promise<cassandra.Client> {
-    if (this.client) {
-      return this.client;
-    }
-
     // attempt to pull in connections
     return new Promise<cassandra.Client>(async (resolve, reject) => {
       try {
@@ -31,8 +28,10 @@ export default class CassandraAdapter implements CoreDataAdapter {
           protocolOptions: {
             port: 9042,
           },
-          // keyspace: undefined
+          keyspace: database,
         });
+
+        // connection = new driver.Client({contactPoints: ['abc'], keyspace: 'system_schema'});
 
         await this.authenticate();
 
@@ -139,16 +138,19 @@ export default class CassandraAdapter implements CoreDataAdapter {
       .sort((a, b) => (a.name || '').localeCompare(b.name || ''));
   }
 
-  private async _execute(sql: string, params?: string[]) {
-    const client = await this.getConnection();
-    return client.execute(sql, params);
+  private async _execute(sql: string, params?: string[], database?: string) {
+    const client = await this.getConnection(database);
+    if (!database) {
+      return client.execute(sql, params || [], { prepare: true });
+    }
+    return client.execute(sql, params || [], { prepare: true });
   }
 
-  async execute(sql: string): Promise<SqluiCore.Result> {
+  async execute(sql: string, database?: string): Promise<SqluiCore.Result> {
     let rawToUse: any | undefined;
     let metaToUse: any | undefined;
 
-    const res = await this._execute(sql);
+    const res = await this._execute(sql, undefined, database);
 
     if (!res) {
       return {

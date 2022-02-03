@@ -174,7 +174,7 @@ export default class RelationalDataAdapter implements CoreDataAdapter {
           }
         } catch (err) {}
 
-        return columns.sort((a, b) => (a.name || '').localeCompare(b.name || ''));;
+        return columns.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
     }
   }
 
