@@ -1,6 +1,6 @@
 import CassandraDataAdapter from './CassandraDataAdapter';
 
-const adapter = new CassandraDataAdapter('cassandra://test.db');
+const adapter = new CassandraDataAdapter('cassandra://localhost:9042');
 
 describe('cassandra', () => {
   test('cassandra - Get database', async () => {

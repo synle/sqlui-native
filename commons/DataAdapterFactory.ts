@@ -14,7 +14,7 @@ export function getDataAdapter(connection: string) {
   // TOOD: here we should initialize the connection based on type
   // of the connection string
   let adapter: IDataAdapter;
-  switch (BaseDataAdapter.getParsedDialect(connection)) {
+  switch (BaseDataAdapter.getDialect(connection)) {
     case 'mysql':
     case 'mariadb':
     case 'mssql':

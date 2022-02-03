@@ -21,11 +21,19 @@ export default class CassandraAdapter extends BaseDataAdapter implements IDataAd
     // attempt to pull in connections
     return new Promise<cassandra.Client>(async (resolve, reject) => {
       try {
-        // TODO: hard coded now for testing...
+        const connectionParameters = BaseDataAdapter.getConnectionParameters(this.connectionOption);
+
+        const connectionHosts = connectionParameters?.hosts || [];
+        if(connectionHosts.length === 0){
+          // we need a host in the connection string
+          reject('Invalid connection. Host and Port not found');
+        }
+
+        //@ts-ignore
         const client = new cassandra.Client({
-          contactPoints: ['localhost'],
+          contactPoints: [connectionHosts[0].host],
           protocolOptions: {
-            port: 9042,
+            port: connectionHosts[0].port,
           },
           keyspace: database,
         });

@@ -9,7 +9,12 @@ export default abstract class BaseDataAdapter {
     this.connectionOption = connectionOption as string;
   }
 
-  static getParsedDialect(connection: string) {
+  /**
+   * get dialect string from a connection string
+   * @param {string} connection in the uri scheme (cassandra://localhost:9042)
+   * @return {string} the dialect, in this case, it's cassandra
+   */
+  static getDialect(connection: string) : string | undefined{
     try {
       return connection.substr(0, connection.indexOf(':')).toLowerCase();
     } catch (err) {
@@ -23,8 +28,8 @@ export default abstract class BaseDataAdapter {
    * @param {string} connection in the uri scheme (cassandra://localhost:9042)
    */
   static getConnectionParameters(connection: string) {
-    const dialect = BaseDataAdapter.getParsedDialect(connection);
-    switch (BaseDataAdapter.getParsedDialect(connection)) {
+    const dialect = BaseDataAdapter.getDialect(connection);
+    switch (BaseDataAdapter.getDialect(connection)) {
       case 'mysql':
       case 'mariadb':
       case 'mssql':
