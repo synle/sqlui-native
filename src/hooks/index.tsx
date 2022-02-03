@@ -207,6 +207,10 @@ export function refreshAfterExecution(
     'CREATE TABLE',
     'ALTER TABLE',
     'DROP COLUMN',
+    // for cassandra
+    'CREATE KEYSPACE',
+    'ALTER KEYSPACE',
+    'DROP KEYSPACE',
   ];
 
   const shouldRefreshConnection = KEYWORDS_TO_REFRESH_CONNECTION.some((keyword) =>

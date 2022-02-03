@@ -1,4 +1,4 @@
-import RelationalDataAdapter from './RelationalDataAdapter';
+import RelationalDataAdapter from '../commons/adapters/RelationalDataAdapter';
 
 const adapter = new RelationalDataAdapter('sqlite://mocked-db.sqlite');
 
@@ -47,9 +47,9 @@ describe('sqlite', () => {
   });
 
   test('Execute Update', async () => {
-    try{
-    const resp = await adapter.execute(`UPDATE artists SET name = 'AC/DC' WHERE ArtistId = '1'`);
-    expect(1).toBe(1);
+    try {
+      const resp = await adapter.execute(`UPDATE artists SET name = 'AC/DC' WHERE ArtistId = '1'`);
+      expect(1).toBe(1);
     } catch (err) {
       expect(err).toBeUndefined();
     }

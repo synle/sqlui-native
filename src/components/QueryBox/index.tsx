@@ -185,6 +185,7 @@ function ConnectionDatabaseSelector(props: ConnectionDatabaseSelectorProps) {
         onChange={(e) => onConnectionChange(e.target.value as string)}
         required
         size='small'>
+        <MenuItem value=''>Pick a Connection</MenuItem>
         {connectionOptions}
       </Select>
       <Select
@@ -192,6 +193,7 @@ function ConnectionDatabaseSelector(props: ConnectionDatabaseSelectorProps) {
         onChange={(e) => onDatabaseChange(e.target.value as string)}
         size='small'
         sx={{ ml: 3 }}>
+        <MenuItem value=''>Pick a Database (Optional)</MenuItem>
         {databaseConnections}
       </Select>
     </>

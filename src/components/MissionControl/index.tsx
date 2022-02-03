@@ -222,6 +222,7 @@ export default function MissionControl() {
 
         // reload the page just in case
         // TODO: see if we need to use a separate row
+        navigate('/', { replace: true });
         window.location.reload();
       }
     } catch (err) {
@@ -258,6 +259,7 @@ export default function MissionControl() {
 
     // reload the page just in case
     // TODO: see if we need to use a separate row
+    navigate('/', { replace: true });
     window.location.reload();
   };
 
