@@ -13,17 +13,23 @@ import Typography from '@mui/material/Typography';
 import { blue } from '@mui/material/colors';
 import DialogContent from '@mui/material/DialogContent';
 
-export type ChoiceActionDialogOption = {
+export type ChoiceOption = {
   startIcon?: React.ReactNode;
   label: string | React.ReactNode;
   value: string;
 };
 
+export type ChoiceInput = {
+  title: string;
+  message: string | React.ReactNode;
+  options: ChoiceOption[];
+}
+
 interface ChoiceDialogProps {
   open: boolean;
   title: string;
   message: string | React.ReactNode;
-  options: ChoiceActionDialogOption[];
+  options: ChoiceOption[];
   onSelect: (newValue: string) => void;
   onDismiss: () => void;
 }

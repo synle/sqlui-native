@@ -588,12 +588,6 @@ export default function MissionControl() {
               event: 'clientEvent/query/closeCurrentlySelected',
             };
             break;
-          // TODO: remove me
-          case 'z':
-            command = {
-              event: 'clientEvent/checkForUpdate',
-            };
-            break;
         }
       }
 

@@ -184,6 +184,9 @@ function setupMenu() {
           click: async (item, win) => sendMessage(win as BrowserWindow, 'clientEvent/checkForUpdate'),
         },
         {
+          type: 'separator',
+        },
+        {
           label: 'About',
           click: async () => {
             await shell.openExternal('https://synle.github.io/sqlui-native/');

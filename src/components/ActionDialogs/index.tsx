@@ -2,8 +2,8 @@ import React, { useState, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
 import { SqluiCore, SqluiFrontend } from 'typings';
 import AlertDialog from 'src/components/ActionDialogs/AlertDialog';
-import PromptDialog, { PromptActionDialogInput } from 'src/components/ActionDialogs/PromptDialog';
-import ChoiceDialog, { ChoiceActionDialogOption } from 'src/components/ActionDialogs/ChoiceDialog';
+import PromptDialog, { PromptInput } from 'src/components/ActionDialogs/PromptDialog';
+import ChoiceDialog, { ChoiceInput, ChoiceOption } from 'src/components/ActionDialogs/ChoiceDialog';
 import ModalDialog, { ModalInput } from 'src/components/ActionDialogs/ModalDialog';
 
 interface ActionDialogsProps {}
@@ -101,15 +101,12 @@ type ConfirmActionDialog = {
   onSubmit: (yesSelected: boolean) => void;
 };
 
-type ChoiceActionDialog = {
+type ChoiceActionDialog = ChoiceInput &  {
   type: 'choice';
-  title: string;
-  message: string | React.ReactNode;
-  options: ChoiceActionDialogOption[];
   onSubmit: (yesSelected: boolean, selectedChoice?: string) => void;
 };
 
-type PromptActionDialog = PromptActionDialogInput & {
+type PromptActionDialog = PromptInput & {
   type: 'prompt';
   onSubmit: (yesSelected: boolean, newValue?: string) => void;
 };
@@ -134,7 +131,7 @@ export function useActionDialogs() {
 
   const { data, isLoading: loading } = useQuery(QUERY_KEY_ACTION_DIALOGS, () => _actionDialogs);
 
-  const prompt = (props: PromptActionDialogInput): Promise<string | undefined> => {
+  const prompt = (props: PromptInput): Promise<string | undefined> => {
     return new Promise((resolve, reject) => {
       const { message, value, isLongPrompt } = props;
 
@@ -167,7 +164,7 @@ export function useActionDialogs() {
   const choice = (
     title: string,
     message: string | React.ReactNode,
-    options: ChoiceActionDialogOption[],
+    options: ChoiceOption[],
   ): Promise<string> => {
     return new Promise((resolve, reject) => {
       const newActionDialog: ActionDialog = {
