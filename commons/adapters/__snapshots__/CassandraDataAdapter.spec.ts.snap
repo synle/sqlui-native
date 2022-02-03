@@ -1,7 +1,104 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`cassandra - Get columns 1`] = `
+Array [
+  Object {
+    "allowNull": false,
+    "autoIncrement": false,
+    "comment": null,
+    "defaultValue": "",
+    "name": "clustering_order",
+    "primaryKey": false,
+    "type": "text",
+  },
+  Object {
+    "allowNull": false,
+    "autoIncrement": false,
+    "comment": null,
+    "defaultValue": "",
+    "name": "column_name",
+    "primaryKey": false,
+    "type": "text",
+  },
+  Object {
+    "allowNull": false,
+    "autoIncrement": false,
+    "comment": null,
+    "defaultValue": "",
+    "name": "column_name_bytes",
+    "primaryKey": false,
+    "type": "blob",
+  },
+  Object {
+    "allowNull": false,
+    "autoIncrement": false,
+    "comment": null,
+    "defaultValue": "",
+    "name": "keyspace_name",
+    "primaryKey": false,
+    "type": "text",
+  },
+  Object {
+    "allowNull": false,
+    "autoIncrement": false,
+    "comment": null,
+    "defaultValue": "",
+    "name": "kind",
+    "primaryKey": false,
+    "type": "text",
+  },
+  Object {
+    "allowNull": false,
+    "autoIncrement": false,
+    "comment": null,
+    "defaultValue": "",
+    "name": "position",
+    "primaryKey": false,
+    "type": "int",
+  },
+  Object {
+    "allowNull": false,
+    "autoIncrement": false,
+    "comment": null,
+    "defaultValue": "",
+    "name": "table_name",
+    "primaryKey": false,
+    "type": "text",
+  },
+  Object {
+    "allowNull": false,
+    "autoIncrement": false,
+    "comment": null,
+    "defaultValue": "",
+    "name": "type",
+    "primaryKey": false,
+    "type": "text",
+  },
+]
+`;
+
 exports[`cassandra - Get database 1`] = `
 Array [
+  Object {
+    "name": "system",
+    "tables": Array [],
+  },
+  Object {
+    "name": "system_auth",
+    "tables": Array [],
+  },
+  Object {
+    "name": "system_distributed",
+    "tables": Array [],
+  },
+  Object {
+    "name": "system_schema",
+    "tables": Array [],
+  },
+  Object {
+    "name": "system_traces",
+    "tables": Array [],
+  },
   Object {
     "name": "system_views",
     "tables": Array [],
@@ -10,25 +107,90 @@ Array [
     "name": "system_virtual_schema",
     "tables": Array [],
   },
+]
+`;
+
+exports[`cassandra - Get tables 1`] = `
+Array [
   Object {
-    "name": "system_auth",
-    "tables": Array [],
+    "columns": Array [],
+    "name": "available_ranges",
   },
   Object {
-    "name": "system_schema",
-    "tables": Array [],
+    "columns": Array [],
+    "name": "available_ranges_v2",
   },
   Object {
-    "name": "system_distributed",
-    "tables": Array [],
+    "columns": Array [],
+    "name": "batches",
   },
   Object {
-    "name": "system",
-    "tables": Array [],
+    "columns": Array [],
+    "name": "built_views",
   },
   Object {
-    "name": "system_traces",
-    "tables": Array [],
+    "columns": Array [],
+    "name": "compaction_history",
+  },
+  Object {
+    "columns": Array [],
+    "name": "IndexInfo",
+  },
+  Object {
+    "columns": Array [],
+    "name": "local",
+  },
+  Object {
+    "columns": Array [],
+    "name": "paxos",
+  },
+  Object {
+    "columns": Array [],
+    "name": "peer_events",
+  },
+  Object {
+    "columns": Array [],
+    "name": "peer_events_v2",
+  },
+  Object {
+    "columns": Array [],
+    "name": "peers",
+  },
+  Object {
+    "columns": Array [],
+    "name": "peers_v2",
+  },
+  Object {
+    "columns": Array [],
+    "name": "prepared_statements",
+  },
+  Object {
+    "columns": Array [],
+    "name": "repairs",
+  },
+  Object {
+    "columns": Array [],
+    "name": "size_estimates",
+  },
+  Object {
+    "columns": Array [],
+    "name": "sstable_activity",
+  },
+  Object {
+    "columns": Array [],
+    "name": "table_estimates",
+  },
+  Object {
+    "columns": Array [],
+    "name": "transferred_ranges",
+  },
+  Object {
+    "columns": Array [],
+    "name": "transferred_ranges_v2",
+  },
+  Object {
+    "columns": Array [],
+    "name": "view_builds_in_progress",
   },
 ]
 `;

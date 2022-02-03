@@ -9,10 +9,10 @@ test('cassandra - Get database', async () => {
 
 test('cassandra - Get tables', async () => {
   const tables = await adapter.getTables('system');
-  expect(tables).toBe(1);
+  expect(tables).toMatchSnapshot();
 });
 
 test('cassandra - Get columns', async () => {
-  const columns = await adapter.getColumns('artists');
-  expect(1).toBe(1);
+  const columns = await adapter.getColumns('columns', 'system_schema');
+  expect(columns).toMatchSnapshot();
 });

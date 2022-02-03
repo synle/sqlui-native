@@ -104,11 +104,11 @@ export default class RelationalDataAdapter implements CoreDataAdapter {
           row.database, // postgres
       )
       .filter((db) => db)
-      .sort()
       .map((name) => ({
         name,
         tables: [], // TODO: will remove this entirely
-      }));
+      }))
+      .sort((a, b) => (a.name || '').localeCompare(b.name || ''));
   }
 
   async getTables(database?: string): Promise<SqluiCore.TableMetaData[]> {
@@ -145,11 +145,11 @@ export default class RelationalDataAdapter implements CoreDataAdapter {
     return data
       .map((row: any) => row.tablename)
       .filter((db) => db)
-      .sort()
       .map((name) => ({
         name,
         columns: [], // TODO: will remove this entirely
-      }));
+      }))
+      .sort((a, b) => (a.name || '').localeCompare(b.name || ''));
   }
 
   async getColumns(table: string, database?: string): Promise<SqluiCore.ColumnMetaData[]> {
@@ -174,7 +174,7 @@ export default class RelationalDataAdapter implements CoreDataAdapter {
           }
         } catch (err) {}
 
-        return columns;
+        return columns.sort((a, b) => (a.name || '').localeCompare(b.name || ''));;
     }
   }
 

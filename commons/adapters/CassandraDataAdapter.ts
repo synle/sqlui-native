@@ -11,6 +11,7 @@ export default class CassandraAdapter implements CoreDataAdapter {
    * @type {number}
    */
   version?: string;
+  isCassandra2?: boolean;
 
   constructor(connectionOption: string) {
     this.connectionOption = connectionOption as string;
@@ -52,6 +53,7 @@ export default class CassandraAdapter implements CoreDataAdapter {
         }
 
         this.version = this.client?.getState().getConnectedHosts()[0].cassandraVersion;
+        this.isCassandra2 = this.version === '2';
 
         resolve();
       });
@@ -63,19 +65,21 @@ export default class CassandraAdapter implements CoreDataAdapter {
 
     //@ts-ignore
     const keyspaces = Object.keys(this.client?.metadata?.keyspaces);
-    return keyspaces.map((keyspace) => ({
-      name: keyspace,
-      tables: [],
-    }));
+    return keyspaces
+      .map((keyspace) => ({
+        name: keyspace,
+        tables: [],
+      }))
+      .sort((a, b) => (a.name || '').localeCompare(b.name || ''));
   }
 
   async getTables(database?: string): Promise<SqluiCore.TableMetaData[]> {
-    if(!database){
+    if (!database) {
       return [];
     }
 
     let sql;
-    if(this.version === '2'){
+    if (this.isCassandra2 === true) {
       sql = `
           SELECT columnfamily_name as name
           FROM system.schema_columnfamilies
@@ -91,48 +95,51 @@ export default class CassandraAdapter implements CoreDataAdapter {
 
     const res = await this._execute(sql, [database]);
 
-    return res.rows.map(row =>
-      ({
+    return res.rows
+      .map((row) => ({
         name: row.name,
         columns: [],
-      })
-    );
+      }))
+      .sort((a, b) => (a.name || '').localeCompare(b.name || ''));
   }
 
   async getColumns(table: string, database?: string): Promise<SqluiCore.ColumnMetaData[]> {
-    // TODO: To Be Implemented
-    return [
-      {
-        name: 'cass-c1',
-        type: 'INT',
+    if (!database) {
+      return [];
+    }
+
+    let sql;
+    if (this.isCassandra2 === true) {
+      sql = `
+        SELECT type as position, column_name, validator as type
+        FROM system.schema_columns
+        WHERE keyspace_name = ?
+          AND columnfamily_name = ?
+      `;
+    } else {
+      sql = `
+        SELECT position, column_name, type
+        FROM system_schema.columns
+        WHERE keyspace_name = ?
+          AND table_name = ?
+      `;
+    }
+    const res = await this._execute(sql, [database, table]);
+
+    return res.rows
+      .map((row) => ({
+        name: row.column_name,
+        type: row.type,
         allowNull: false,
         defaultValue: '',
-        primaryKey: true,
-        autoIncrement: true,
+        primaryKey: false,
+        autoIncrement: false,
         comment: null,
-      },
-      {
-        name: 'cass-c2',
-        type: 'INT',
-        allowNull: false,
-        defaultValue: '',
-        primaryKey: true,
-        autoIncrement: true,
-        comment: null,
-      },
-      {
-        name: 'cass-c3',
-        type: 'INT',
-        allowNull: false,
-        defaultValue: '',
-        primaryKey: true,
-        autoIncrement: true,
-        comment: null,
-      },
-    ];
+      }))
+      .sort((a, b) => (a.name || '').localeCompare(b.name || ''));
   }
 
-  private async  _execute(sql: string, params?: string[] ){
+  private async _execute(sql: string, params?: string[]) {
     const client = await this.getConnection();
     return client.execute(sql, params);
   }
