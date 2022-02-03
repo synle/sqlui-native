@@ -81,7 +81,13 @@ export default function ActionDialogs(props: ActionDialogsProps) {
       );
     case 'modal':
       return (
-        <ModalDialog open={true} title={dialog.title} message={dialog.message} onDismiss={onDimiss} showCloseButton={!!dialog.showCloseButton} />
+        <ModalDialog
+          open={true}
+          title={dialog.title}
+          message={dialog.message}
+          onDismiss={onDimiss}
+          showCloseButton={!!dialog.showCloseButton}
+        />
       );
   }
   return null;
@@ -101,7 +107,7 @@ type ConfirmActionDialog = {
   onSubmit: (yesSelected: boolean) => void;
 };
 
-type ChoiceActionDialog = ChoiceInput &  {
+type ChoiceActionDialog = ChoiceInput & {
   type: 'choice';
   onSubmit: (yesSelected: boolean, selectedChoice?: string) => void;
 };

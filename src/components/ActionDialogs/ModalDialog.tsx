@@ -21,7 +21,7 @@ export type ModalInput = {
 type ModalProps = ModalInput & {
   open: boolean;
   onDismiss: () => void;
-}
+};
 
 export default function Modal(props: ModalProps) {
   return (
@@ -31,9 +31,9 @@ export default function Modal(props: ModalProps) {
       aria-labelledby='modal-dialog-title'
       aria-describedby='modal-dialog-description'>
       <DialogTitle id='modal-dialog-title'>
-          {props.title}
-          {
-            props.showCloseButton && <IconButton
+        {props.title}
+        {props.showCloseButton && (
+          <IconButton
             aria-label='close'
             onClick={() => props.onDismiss()}
             sx={{
@@ -44,8 +44,8 @@ export default function Modal(props: ModalProps) {
             }}>
             <CloseIcon />
           </IconButton>
-          }
-        </DialogTitle>
+        )}
+      </DialogTitle>
       <DialogContent>{props.message}</DialogContent>
     </Dialog>
   );

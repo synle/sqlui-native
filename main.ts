@@ -35,8 +35,6 @@ function sendMessage(win: BrowserWindow, message: SqluiEnums.ClientEventKey) {
 }
 
 function setupMenu() {
-
-
   let menuTemplate: Electron.MenuItemConstructorOptions[] = [
     {
       label: 'File',
@@ -181,7 +179,8 @@ function setupMenu() {
         },
         {
           label: 'Check for update',
-          click: async (item, win) => sendMessage(win as BrowserWindow, 'clientEvent/checkForUpdate'),
+          click: async (item, win) =>
+            sendMessage(win as BrowserWindow, 'clientEvent/checkForUpdate'),
         },
         {
           type: 'separator',

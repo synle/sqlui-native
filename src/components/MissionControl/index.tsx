@@ -388,34 +388,45 @@ export default function MissionControl() {
   };
 
   const onCheckForUpdate = async () => {
-    let contentDom : React.ReactNode;
+    let contentDom: React.ReactNode;
 
-    const newVersion = await fetch('https://synle.github.io/sqlui-native/package.json').then(r => r.json()).then(r => r.version)
+    const newVersion = await fetch('https://synle.github.io/sqlui-native/package.json')
+      .then((r) => r.json())
+      .then((r) => r.version);
 
-    if(newVersion === appPackage.version){
-      contentDom = <>
-      <Typography gutterBottom={true}>sqlui-native is up to date</Typography>
-      <Typography gutterBottom={true} sx={{mt: 3}}>Version {appPackage.version}</Typography>
-      </>
+    if (newVersion === appPackage.version) {
+      contentDom = (
+        <>
+          <Typography gutterBottom={true}>sqlui-native is up to date</Typography>
+          <Typography gutterBottom={true} sx={{ mt: 3 }}>
+            Version {appPackage.version}
+          </Typography>
+        </>
+      );
     } else {
       const platform = window?.process?.platform;
-      const downloadLink = platform === 'darwin'
+      const downloadLink =
+        platform === 'darwin'
           ? `https://github.com/synle/sqlui-native/releases/download/${newVersion}/sqlui-native-${newVersion}.dmg`
           : `https://github.com/synle/sqlui-native/releases/download/${newVersion}/sqlui-native-${newVersion}.exe`;
 
-      contentDom = <>
-        <Typography gutterBottom={true}>Your version {appPackage.version} </Typography>
-        <Typography gutterBottom={true}>Latest version {newVersion} </Typography>
-        <Typography gutterBottom={true} sx={{mt: 3}}><Link href={downloadLink}>Click here to download the new version</Link>.</Typography>
-      </>
+      contentDom = (
+        <>
+          <Typography gutterBottom={true}>Your version {appPackage.version} </Typography>
+          <Typography gutterBottom={true}>Latest version {newVersion} </Typography>
+          <Typography gutterBottom={true} sx={{ mt: 3 }}>
+            <Link href={downloadLink}>Click here to download the new version</Link>.
+          </Typography>
+        </>
+      );
     }
 
     await modal({
       title: 'Check for update',
-      message: <div style={{width: '250px'}}>{contentDom}</div>,
+      message: <div style={{ width: '250px' }}>{contentDom}</div>,
       showCloseButton: true,
     });
-  }
+  };
 
   // mission control commands
   async function _executeCommandPalette(command: Command) {

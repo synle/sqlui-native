@@ -23,7 +23,7 @@ export type ChoiceInput = {
   title: string;
   message: string | React.ReactNode;
   options: ChoiceOption[];
-}
+};
 
 interface ChoiceDialogProps {
   open: boolean;
