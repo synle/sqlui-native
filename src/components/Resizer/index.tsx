@@ -18,8 +18,9 @@ export default function Resizer(props: ResizerProps) {
       draggable={true}
       onDragEnd={onDragEnd}
       sx={{
-        width: '15px',
+        width: '10px',
         cursor: 'col-resize',
+        flexShrink: 0,
         '&:hover': {
           background: grey[400],
         },
