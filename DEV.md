@@ -68,12 +68,9 @@ npm start
 Run this and test it in the browser
 ```
 npm install
-
-# terminal 1
-npm run start-webapp
-
-# terminal 2
-npm run start-mocked
+npm run dev
+# then open a browser with URL
+# http://localhost:3000
 ```
 
 
