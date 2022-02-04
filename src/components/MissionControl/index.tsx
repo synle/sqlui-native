@@ -425,8 +425,8 @@ export default function MissionControl() {
     });
   };
 
-  const onChangeDarkMode= (newValue: string) => {
-    if(!settings){
+  const onChangeDarkMode = (newValue: string) => {
+    if (!settings) {
       return;
     }
 
@@ -434,7 +434,7 @@ export default function MissionControl() {
     settings.darkmode = newValue;
 
     onChangeSettings(settings);
-  }
+  };
 
   // mission control commands
   async function _executeCommandPalette(command: Command) {

@@ -30,7 +30,11 @@ const ALL_COMMAND_PALETTE_OPTIONS: CommandOption[] = [
   { event: 'clientEvent/import', label: 'Import' },
   { event: 'clientEvent/exportAll', label: 'Export All' },
   { event: 'clientEvent/changeDarkMode', label: 'Enable Dark Mode', data: 'dark' },
-  { event: 'clientEvent/changeDarkMode', label: 'Disable Dark Mode (Use Light Mode)', data: 'light' },
+  {
+    event: 'clientEvent/changeDarkMode',
+    label: 'Disable Dark Mode (Use Light Mode)',
+    data: 'light',
+  },
   { event: 'clientEvent/changeDarkMode', label: 'Follows System Settings for Dark Mode', data: '' },
   { event: 'clientEvent/connection/new', label: 'New Connection' },
   { event: 'clientEvent/session/switch', label: 'Switch Session' },
@@ -104,9 +108,9 @@ export default function CommandPalette(props: CommandPaletteProps) {
 
   let optionsToShow = options;
 
-  if(optionsToShow.length > MAX_OPTION_TO_SHOW && text.length === 0){
+  if (optionsToShow.length > MAX_OPTION_TO_SHOW && text.length === 0) {
     // limit the initial commands
-    optionsToShow = optionsToShow.slice(0, MAX_OPTION_TO_SHOW)
+    optionsToShow = optionsToShow.slice(0, MAX_OPTION_TO_SHOW);
   }
 
   return (
