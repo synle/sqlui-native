@@ -75,6 +75,13 @@ function setupMenu() {
         {
           type: 'separator',
         },
+        {
+          label: 'Settings',
+          click: async (item, win) => sendMessage(win as BrowserWindow, 'clientEvent/showSettings'),
+        },
+        {
+          type: 'separator',
+        },
         isMac ? { role: 'close', accelerator: 'Cmd+Q' } : { role: 'quit', accelerator: 'Alt+F4' },
       ],
     },

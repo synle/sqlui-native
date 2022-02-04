@@ -41,6 +41,7 @@ import {
   getRandomSessionId,
 } from 'src/data/session';
 import CommandPalette from 'src/components/CommandPalette';
+import Settings from 'src/components/Settings';
 import appPackage from 'src/package.json';
 
 export interface Command {
@@ -414,6 +415,14 @@ export default function MissionControl() {
     });
   };
 
+  const onShowSettings = async () => {
+    await modal({
+      title: 'Settings',
+      message: <Settings />,
+      showCloseButton: true,
+    });
+  };
+
   // mission control commands
   async function _executeCommandPalette(command: Command) {
     if (command) {
@@ -426,6 +435,10 @@ export default function MissionControl() {
 
         case 'clientEvent/checkForUpdate':
           onCheckForUpdate();
+          break;
+
+        case 'clientEvent/showSettings':
+          onShowSettings();
           break;
 
         // overall commands
@@ -598,5 +611,3 @@ export default function MissionControl() {
 
   return null;
 }
-
-// TODO: move me to a file

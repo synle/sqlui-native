@@ -16,11 +16,9 @@ export default function NewConnectionPage() {
       </div>
       <Resizer onSetWidth={setWidth} />
       <div className='LayoutTwoColumns__RightPane'>
-        <div>
-          <Typography variant='h5' gutterBottom={true}>
-            New Connection
-          </Typography>
-        </div>
+        <Typography variant='h5' gutterBottom={true} sx={{ mt: 1 }}>
+          New Connection
+        </Typography>
         <NewConnectionForm />
       </div>
     </section>

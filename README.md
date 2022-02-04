@@ -52,7 +52,7 @@ Also these sessions, and the associated connections and queries are persisted lo
 ![demo-session](https://user-images.githubusercontent.com/3792401/151750740-10ff3497-11b4-4026-bd39-c34b80bc1e3a.gif)
 
 ### Dark Mode
-Dark mode will be turned on automatically with respect to your OS Preference.
+Dark mode will be turned on automatically with respect to your OS Preference. You can update settings to prefer Dark Mode or Light Mode if desired.
 ![demo-darkmode](https://user-images.githubusercontent.com/3792401/151746840-e4889ae1-cab9-4ade-b56b-5a4dbb654712.gif)
 
 
@@ -76,7 +76,7 @@ Here is the link where you can find information about how run this application l
 - [X] Make a build for Windows and Darwin.
 - [X] Added Basic CI/CD to package electron
 - [X] Make a build for other systems like Debian and Redhat.
-- [ ] Add a configuration / option page.
+- [X] Add a configuration / option page for color mode.
 - [X] Enhance the table with pagination.
 - [ ] Enhance the table for result with sorting, and searching.
 - [X] Add quick query queries (such as select from a table or do update / insert).

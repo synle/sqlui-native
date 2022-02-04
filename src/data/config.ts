@@ -43,6 +43,3 @@ export const LocalStorageConfig = {
     window.localStorage.clear();
   },
 };
-
-let DefaultConfig = SessionStorageConfig;
-export default DefaultConfig;
