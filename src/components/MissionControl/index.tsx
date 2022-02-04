@@ -115,18 +115,14 @@ export default function MissionControl() {
     try {
       await confirm('Do you want to delete this query?');
       onDeleteQueries([query.id]);
-    } catch (err) {
-      //@ts-ignore
-    }
+    } catch (err) {}
   };
 
   const onCloseOtherQueries = async (query: SqluiFrontend.ConnectionQuery) => {
     try {
       await confirm('Do you want to close other queries?');
       onDeleteQueries(queries?.map((q) => q.id).filter((queryId) => queryId !== query.id));
-    } catch (err) {
-      //@ts-ignore
-    }
+    } catch (err) {}
   };
 
   const onRenameQuery = async (query: SqluiFrontend.ConnectionQuery) => {
@@ -140,9 +136,7 @@ export default function MissionControl() {
       onChangeQuery(query.id, {
         name: newName,
       });
-    } catch (err) {
-      //@ts-ignore
-    }
+    } catch (err) {}
   };
 
   const onDuplicateQuery = async (query: SqluiFrontend.ConnectionQuery) => {
@@ -227,9 +221,7 @@ export default function MissionControl() {
         navigate('/', { replace: true });
         window.location.reload();
       }
-    } catch (err) {
-      //@ts-ignore
-    }
+    } catch (err) {}
   };
 
   const onAddSession = async () => {
@@ -286,9 +278,7 @@ export default function MissionControl() {
         ...currentSession,
         name: newSessionName,
       });
-    } catch (err) {
-      //@ts-ignore
-    }
+    } catch (err) {}
   };
 
   const onExportAll = async () => {
@@ -367,9 +357,7 @@ export default function MissionControl() {
       }
 
       alert(`Import finished with ${successCount} successes and ${failedCount} failures`);
-    } catch (err) {
-      //@ts-ignore
-    }
+    } catch (err) {}
   };
 
   const onShowCommandPalette = async () => {
@@ -382,9 +370,7 @@ export default function MissionControl() {
         title: 'Control Palette',
         message: <CommandPalette onSelectCommand={onSelectCommand} />,
       });
-    } catch (err) {
-      //@ts-ignore
-    }
+    } catch (err) {}
   };
 
   const onCheckForUpdate = async () => {
@@ -448,9 +434,7 @@ export default function MissionControl() {
             //@ts-ignore
             window.toggleElectronMenu(false, allMenuKeys);
             await onImport();
-          } catch (err) {
-            //@ts-ignore
-          }
+          } catch (err) {}
 
           //@ts-ignore
           window.toggleElectronMenu(true, allMenuKeys);
@@ -515,9 +499,7 @@ export default function MissionControl() {
             //@ts-ignore
             window.toggleElectronMenu(false, allMenuKeys);
             await onChangeSession();
-          } catch (err) {
-            //@ts-ignore
-          }
+          } catch (err) {}
 
           //@ts-ignore
           window.toggleElectronMenu(true, allMenuKeys);
@@ -527,9 +509,7 @@ export default function MissionControl() {
             //@ts-ignore
             window.toggleElectronMenu(false, allMenuKeys);
             await onAddSession();
-          } catch (err) {
-            //@ts-ignore
-          }
+          } catch (err) {}
 
           //@ts-ignore
           window.toggleElectronMenu(true, allMenuKeys);
@@ -539,9 +519,7 @@ export default function MissionControl() {
             //@ts-ignore
             window.toggleElectronMenu(false, allMenuKeys);
             await onRenameSession();
-          } catch (err) {
-            //@ts-ignore
-          }
+          } catch (err) {}
 
           //@ts-ignore
           window.toggleElectronMenu(true, allMenuKeys);

@@ -135,9 +135,7 @@ function ConnectionActions(props: ConnectionActionsProps) {
     try {
       await confirm('Delete this connection?');
       await deleteConnection(connection.id);
-    } catch (err) {
-      //@ts-ignore
-    }
+    } catch (err) {}
   };
 
   const onRefresh = async () => {

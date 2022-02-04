@@ -21,17 +21,13 @@ try {
   baseDir = path.join(app.getPath('appData'), 'sqlui-native');
   try {
     fs.mkdirSync(baseDir);
-  } catch (err) {
-    //@ts-ignore
-  }
+  } catch (err) {}
 } catch (err) {
   // fall back for mocked server
   baseDir = path.join(homedir, '.sqlui-native');
   try {
     fs.mkdirSync(baseDir);
-  } catch (err) {
-    //@ts-ignore
-  }
+  } catch (err) {}
 }
 console.log('baseDir', baseDir);
 

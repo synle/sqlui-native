@@ -47,9 +47,7 @@ function addDataEndpoint(
 
             //@ts-ignore
             _apiCache[cacheKey][key] = value;
-          } catch (err: any) {
-            //@ts-ignore
-          }
+          } catch (err: any) {}
         },
         json() {
           return JSON.stringify(_apiCache);

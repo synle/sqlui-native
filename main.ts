@@ -332,9 +332,7 @@ ipcMain.on('sqluiNativeEvent/fetch', async (event, data) => {
 
               //@ts-ignore
               _apiCache[sessionId][key] = value;
-            } catch (err) {
-              //@ts-ignore
-            }
+            } catch (err) {}
           },
           json() {
             return JSON.stringify(_apiCache);
