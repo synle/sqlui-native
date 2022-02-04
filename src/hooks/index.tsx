@@ -13,8 +13,12 @@ const QUERY_KEY_RESULTS = 'qk.results';
 const QUERY_KEY_SESSIONS = 'qk.sessions';
 const QUERY_KEY_SETTINGS = 'qk.settings';
 
+const DEFAULT_STALE_TIME = 30000;
+
 export function useGetConnections() {
-  return useQuery([QUERY_KEY_ALL_CONNECTIONS], dataApi.getConnections);
+  return useQuery([QUERY_KEY_ALL_CONNECTIONS], dataApi.getConnections, {
+    staleTime: DEFAULT_STALE_TIME,
+  });
 }
 
 export function useGetConnectionById(connectionId?: string) {
@@ -129,6 +133,7 @@ export function useGetDatabases(connectionId?: string) {
     () => (!enabled ? undefined : dataApi.getConnectionDatabases(connectionId)),
     {
       enabled,
+      staleTime: DEFAULT_STALE_TIME,
     },
   );
 }
@@ -141,6 +146,7 @@ export function useGetTables(connectionId: string, databaseId: string) {
     () => (!enabled ? undefined : dataApi.getConnectionTables(connectionId, databaseId)),
     {
       enabled,
+      staleTime: DEFAULT_STALE_TIME,
     },
   );
 }
@@ -153,6 +159,7 @@ export function useGetColumns(connectionId?: string, databaseId?: string, tableI
     () => (!enabled ? undefined : dataApi.getConnectionColumns(connectionId, databaseId, tableId)),
     {
       enabled,
+      staleTime: DEFAULT_STALE_TIME,
     },
   );
 }
@@ -264,7 +271,7 @@ export function useShowHide() {
 
     queryClient.setQueryData<SqluiFrontend.TreeVisibilities | undefined>(
       QUERY_KEY_TREEVISIBLES,
-      () => _treeVisibles,
+      () => ({ ..._treeVisibles }),
     );
   };
 
