@@ -5,6 +5,8 @@ import { SqluiCore, SqluiFrontend, SqluiEnums } from 'typings';
 import { useConnectionQueries, useConnectionQuery, useActiveConnectionQuery } from 'src/hooks';
 import { useCommands, Command } from 'src/components/MissionControl';
 
+const MAX_OPTION_TO_SHOW = 20;
+
 interface CommandPaletteProps {
   onSelectCommand: (command: Command) => void;
 }
@@ -20,13 +22,20 @@ type CommandOption = {
    * whether or not to attach current query to this command
    */
   useCurrentQuery?: boolean;
+  data?: any;
 };
 
 const ALL_COMMAND_PALETTE_OPTIONS: CommandOption[] = [
   { event: 'clientEvent/showSettings', label: 'Settings' },
   { event: 'clientEvent/import', label: 'Import' },
   { event: 'clientEvent/exportAll', label: 'Export All' },
+  { event: 'clientEvent/changeDarkMode', label: 'Enable Dark Mode', data: 'dark' },
+  { event: 'clientEvent/changeDarkMode', label: 'Disable Dark Mode (Use Light Mode)', data: 'light' },
+  { event: 'clientEvent/changeDarkMode', label: 'Follows System Settings for Dark Mode', data: '' },
   { event: 'clientEvent/connection/new', label: 'New Connection' },
+  { event: 'clientEvent/session/switch', label: 'Switch Session' },
+  { event: 'clientEvent/session/new', label: 'New Session' },
+  { event: 'clientEvent/session/rename', label: 'Rename Current Session' },
   { event: 'clientEvent/query/new', label: 'New Query' },
   { event: 'clientEvent/query/show', label: 'Show Query', expandQueries: true },
   // these 2 commands don't make sense, let's disable it...
@@ -37,9 +46,6 @@ const ALL_COMMAND_PALETTE_OPTIONS: CommandOption[] = [
   { event: 'clientEvent/query/duplicate', label: 'Duplicate Current Query', useCurrentQuery: true },
   { event: 'clientEvent/query/close', label: 'Close Current Query', useCurrentQuery: true },
   { event: 'clientEvent/query/closeOther', label: 'Close Other Query', useCurrentQuery: true },
-  { event: 'clientEvent/session/switch', label: 'Switch Session' },
-  { event: 'clientEvent/session/new', label: 'New Session' },
-  { event: 'clientEvent/session/rename', label: 'Rename Current Session' },
 ];
 
 export default function CommandPalette(props: CommandPaletteProps) {
@@ -96,6 +102,13 @@ export default function CommandPalette(props: CommandPaletteProps) {
     return null;
   }
 
+  let optionsToShow = options;
+
+  if(optionsToShow.length > MAX_OPTION_TO_SHOW && text.length === 0){
+    // limit the initial commands
+    optionsToShow = optionsToShow.slice(0, MAX_OPTION_TO_SHOW)
+  }
+
   return (
     <div style={{ width: '400px' }}>
       <div>
@@ -106,7 +119,7 @@ export default function CommandPalette(props: CommandPaletteProps) {
           placeholder='> Type a command here'
           fullWidth
         />
-        {options.map((option, idx) => (
+        {optionsToShow.map((option, idx) => (
           <div key={`${option.event}.${idx}`}>
             <Button onClick={() => onSelectCommand(option)} title={option.event}>
               {option.label}
