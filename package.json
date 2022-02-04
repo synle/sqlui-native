@@ -1,6 +1,6 @@
 {
   "name": "sqlui-native",
-  "version": "1.7.3",
+  "version": "1.7.4",
   "description": "A minimal native Desktop Electron application for running queries against popular database engines MySQL, MariaDB, Microsoft, PostgresSQL, SQLite and Cassandra",
   "browserslist": {
     "production": [
