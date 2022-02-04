@@ -1,6 +1,6 @@
 {
   "name": "sqlui-native",
-  "version": "1.6.11",
+  "version": "1.6.12",
   "description": "A minimal native Desktop Electron application for running queries against popular database engines MySQL, MariaDB, Microsoft, PostgresSQL, SQLite and Cassandra",
   "browserslist": {
     "production": [
@@ -33,7 +33,7 @@
     "start-webapp": "cross-env ENV_TYPE='mocked-server' SASS_PATH='./src/styles' react-scripts start",
     "start-mocked": "npx ts-node --project tsconfig-server.json mocked-server.ts",
     "build-binary": "cpx \"build/**/*\" . && electron-builder build --publish=never",
-    "build-electron": "npx tsc --project tsconfig-electron.json && cpx package.json build",
+    "build-electron": "tsc --project tsconfig-electron.json && cpx package.json build",
     "build-react": "cross-env CI=\"\" SASS_PATH='./src/styles' react-scripts build",
     "build": "npm run build-react && npm run build-electron",
     "test": "jest",
@@ -55,7 +55,11 @@
     "SQLite",
     "Cassandra"
   ],
-  "author": "Sy Le",
+  "license": "MIT",
+  "author": {
+    "name": "Sy Le",
+    "email": "le.nguyen.sy@gmail.com"
+  },
   "dependencies": {
     "@emotion/react": "^11.7.1",
     "@emotion/styled": "^11.6.0",
