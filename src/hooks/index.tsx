@@ -271,7 +271,7 @@ export function useShowHide() {
 
     queryClient.setQueryData<SqluiFrontend.TreeVisibilities | undefined>(
       QUERY_KEY_TREEVISIBLES,
-      () => ({..._treeVisibles}),
+      () => ({ ..._treeVisibles }),
     );
   };
 
