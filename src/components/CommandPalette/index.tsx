@@ -35,6 +35,7 @@ const ALL_COMMAND_PALETTE_OPTIONS: CommandOption[] = [
     label: 'Disable Dark Mode (Use Light Mode)',
     data: 'light',
   },
+  { event: 'clientEvent/clearShowHides', label: 'Collapse All Connections' },
   { event: 'clientEvent/changeDarkMode', label: 'Follows System Settings for Dark Mode', data: '' },
   { event: 'clientEvent/connection/new', label: 'New Connection' },
   { event: 'clientEvent/session/switch', label: 'Switch Session' },
