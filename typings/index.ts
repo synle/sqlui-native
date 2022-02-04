@@ -105,7 +105,6 @@ export module SqluiFrontend {
 
   export type Settings = {
     darkmode?: 'dark' | 'light';
-    queryLimit?: number;
   };
 
   export type SettingKey = keyof Settings;

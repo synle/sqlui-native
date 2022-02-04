@@ -25,14 +25,14 @@ export default function Settings(props: SettingsProps) {
   const { isLoading, settings, onChange } = useSettings();
 
   const onSettingChange = (key: SqluiFrontend.SettingKey, value: any) => {
-    if(!settings){
+    if (!settings) {
       return;
     }
 
     //@ts-ignore
     settings[key] = value;
 
-    onChange(settings)
+    onChange(settings);
   };
 
   let contentDom: React.ReactNode;
@@ -44,14 +44,17 @@ export default function Settings(props: SettingsProps) {
   } else {
     contentDom = (
       <>
+        <Typography variant='subtitle1' gutterBottom={true}>
+          Theme Mode
+        </Typography>
         <div className='FormInput__Row'>
           <Select
             value={settings.darkmode}
             onChange={(newValue) => onSettingChange('darkmode', newValue)}
-            >
-            <option value="">Use System Settings</option>
-            <option value="dark">Prefer Dark Mode</option>
-            <option value="light">Prefer Light Mode</option>
+            sx={{ width: '100%' }}>
+            <option value=''>Follows System Settings</option>
+            <option value='dark'>Prefers Dark Mode</option>
+            <option value='light'>Prefers Light Mode</option>
           </Select>
         </div>
       </>

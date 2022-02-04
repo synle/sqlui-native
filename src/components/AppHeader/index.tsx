@@ -74,6 +74,9 @@ export default function AppHeader() {
       startIcon: <KeyboardCommandKeyIcon />,
     },
     {
+      label: 'divider',
+    },
+    {
       label: 'Settings',
       onClick: () => selectCommand({ event: 'clientEvent/showSettings' }),
       startIcon: <SettingsIcon />,

@@ -300,18 +300,18 @@ export function useSettings() {
   };
 }
 
-export function useDarkModeSetting(){
+export function useDarkModeSetting() {
   const { isLoading, settings, onChange } = useSettings();
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
 
   let darkmode: 'dark' | 'light' | undefined;
   let shouldUseSystemDarkMode = isLoading;
 
-  if(!isLoading && settings && settings.darkmode){
+  if (!isLoading && settings && settings.darkmode) {
     darkmode = settings.darkmode;
   }
 
-  if(darkmode !=='light' && darkmode !=='dark'){
+  if (darkmode !== 'light' && darkmode !== 'dark') {
     darkmode = prefersDarkMode ? 'dark' : 'light';
   }
 
@@ -334,7 +334,7 @@ function _useConnectionQueries() {
         );
 
         if (_connectionQueries.length === 0) {
-          // if local SessionStorageConfig failed, attempt to get it from the api
+          // if config failed, attempt to get it from the api
           try {
             _connectionQueries = await dataApi.getQueries();
           } catch (err) {}
