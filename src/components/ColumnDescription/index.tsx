@@ -63,8 +63,8 @@ export default function ColumnDescription(props: ColumnDescriptionProps) {
             <React.Fragment key={column.name}>
               <AccordionHeader expanded={visibles[key]} onToggle={() => onToggle(key)}>
                 <ViewColumnIcon color='disabled' fontSize='inherit' />
-                <span>{column.name}</span>
-                <ColumnType>{column.type}</ColumnType>
+                <ColumnName value={column.name}></ColumnName>
+                <ColumnType value={column.type}></ColumnType>
               </AccordionHeader>
               <AccordionBody expanded={visibles[key]}>
                 <ColumnAttributes column={column} />
@@ -139,8 +139,12 @@ const StyledAttributeDescription = styled('div')(({ theme }) => {
   };
 });
 
-function ColumnType(props: { children: React.ReactNode }) {
-  return <StyledColumnType>{props.children}</StyledColumnType>;
+function ColumnType(props: { value: string }) {
+  return (
+    <Tooltip title={props.value}>
+      <StyledColumnType>{props.value}</StyledColumnType>
+    </Tooltip>
+  );
 }
 
 const StyledColumnType = styled('i')(({ theme }) => {
@@ -148,5 +152,25 @@ const StyledColumnType = styled('i')(({ theme }) => {
     color: theme.palette.text.disabled,
     fontFamily: 'monospace',
     paddingRight: theme.spacing(1),
+    maxWidth: '50%',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    marginLeft: 'auto',
+  };
+});
+
+function ColumnName(props: { value: string }) {
+  return (
+    <Tooltip title={props.value}>
+      <StyledColumnName>{props.value}</StyledColumnName>
+    </Tooltip>
+  );
+}
+
+const StyledColumnName = styled('span')(({ theme }) => {
+  return {
+    maxWidth: '50%',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
   };
 });

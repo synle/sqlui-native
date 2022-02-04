@@ -10,20 +10,26 @@
 
 .LayoutTwoColumns {
   display: flex;
-  margin-top: 15px;
+  position: fixed;
+  top: 50px;
+  left: 0;
+  right: 0;
+  bottom: 0;
 
   &__LeftPane {
     flex-shrink: 0;
     min-width: 275px;
-    max-width: 50%;
-    min-height: 90vh;
+    max-width: 60%;
+    height: 100%;
+    overflow-y: auto;
   }
 
   &__RightPane {
     flex-grow: 1;
     overflow: hidden;
-    margin-right: 10px;
     padding-left: 4px;
+    height: 100%;
+    overflow-y: auto;
   }
 }
 
