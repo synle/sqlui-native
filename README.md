@@ -8,9 +8,14 @@ It supports multiple windows, so you can have different sets of queries and conn
 At this point, we only have prebuilt binaries for Windows and Mac. Refer to the following link for download information.
 - [Sqlui Native Homepage](https://synle.github.io/sqlui-native)
 
-## About me
-- [linkedin.com/in/syle1021](https://www.linkedin.com/in/syle1021/)
-- [github.com/synle](https://github.com/synle)
+## Supported Database Adapters
+- MySQL
+- MariaDB
+- Microsoft
+- PostgresSQL
+- SQLite
+- Cassandra
+
 
 ## Features
 ### Overall Demo
@@ -72,9 +77,10 @@ Here is the link where you can find information about how run this application l
 - [X] Added Basic CI/CD to package electron
 - [X] Make a build for other systems like Debian and Redhat.
 - [ ] Add a configuration / option page.
-- [ ] Enhance the table for result with sorting, searching and pagination.
+- [X] Enhance the table with pagination.
+- [ ] Enhance the table for result with sorting, and searching.
 - [X] Add quick query queries (such as select from a table or do update / insert).
-- [ ] Add quick query to recreate the table definition (Create Table), Drop Table, etc....
+- [X] Add quick query to recreate the table definition (Create Table), Drop Table, etc....
 - [X] Add a full screen mode (F11)
 - [X] Add ability to save CSV / JSON / Table to files.
 - [X] Add ability to support multiple windows and sessions..
@@ -90,3 +96,4 @@ Here is the link where you can find information about how run this application l
 ## Suggestion?
 Use the following link to file a bug or a suggestion.
 - [File a bug or a suggestion?](https://github.com/synle/sqlui-native/issues/new)
+
