@@ -13,10 +13,12 @@ const QUERY_KEY_RESULTS = 'qk.results';
 const QUERY_KEY_SESSIONS = 'qk.sessions';
 const QUERY_KEY_SETTINGS = 'qk.settings';
 
-const DEFAULT_STALE_TIME = 15000;
+const DEFAULT_STALE_TIME = 30000;
 
 export function useGetConnections() {
-  return useQuery([QUERY_KEY_ALL_CONNECTIONS], dataApi.getConnections);
+  return useQuery([QUERY_KEY_ALL_CONNECTIONS], dataApi.getConnections, {
+    staleTime: DEFAULT_STALE_TIME,
+  });
 }
 
 export function useGetConnectionById(connectionId?: string) {
@@ -269,7 +271,7 @@ export function useShowHide() {
 
     queryClient.setQueryData<SqluiFrontend.TreeVisibilities | undefined>(
       QUERY_KEY_TREEVISIBLES,
-      () => _treeVisibles,
+      () => ({..._treeVisibles}),
     );
   };
 
