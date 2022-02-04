@@ -15,9 +15,7 @@ export default function ConnectionTypeIcon(props: ConnectionTypeIconProps) {
 
   switch (scheme) {
     case 'mssql':
-      return (
-        <img src={`${process.env.PUBLIC_URL}/assets/sqlserver.png`} alt={scheme} width={30} />
-      );
+      return <img src={`${process.env.PUBLIC_URL}/assets/sqlserver.png`} alt={scheme} width={30} />;
     case 'postgres':
       return (
         <img src={`${process.env.PUBLIC_URL}/assets/postgresql.png`} alt={scheme} width={30} />
@@ -29,9 +27,7 @@ export default function ConnectionTypeIcon(props: ConnectionTypeIconProps) {
     case 'mysql':
       return <img src={`${process.env.PUBLIC_URL}/assets/mysql.png`} alt={scheme} width={30} />;
     case 'cassandra':
-      return (
-        <img src={`${process.env.PUBLIC_URL}/assets/cassandra.png`} alt={scheme} width={30} />
-      );
+      return <img src={`${process.env.PUBLIC_URL}/assets/cassandra.png`} alt={scheme} width={30} />;
     default:
       return <CloudIcon color='primary' fontSize='large' />;
   }

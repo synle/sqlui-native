@@ -140,7 +140,11 @@ const StyledAttributeDescription = styled('div')(({ theme }) => {
 });
 
 function ColumnType(props: { value: string }) {
-  return <Tooltip title={props.value}><StyledColumnType>{props.value}</StyledColumnType></Tooltip>;
+  return (
+    <Tooltip title={props.value}>
+      <StyledColumnType>{props.value}</StyledColumnType>
+    </Tooltip>
+  );
 }
 
 const StyledColumnType = styled('i')(({ theme }) => {
@@ -156,7 +160,11 @@ const StyledColumnType = styled('i')(({ theme }) => {
 });
 
 function ColumnName(props: { value: string }) {
-  return <Tooltip title={props.value}><StyledColumnName>{props.value}</StyledColumnName></Tooltip>;
+  return (
+    <Tooltip title={props.value}>
+      <StyledColumnName>{props.value}</StyledColumnName>
+    </Tooltip>
+  );
 }
 
 const StyledColumnName = styled('span')(({ theme }) => {
