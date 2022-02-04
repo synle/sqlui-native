@@ -1,8 +1,9 @@
+import useMediaQuery from '@mui/material/useMediaQuery';
 import { useState, useRef } from 'react';
 import { QueryClient, useQuery, useMutation, useQueryClient } from 'react-query';
 import { SqluiCore, SqluiFrontend } from 'typings';
 import dataApi from 'src/data/api';
-import Config from 'src/data/config';
+import { SessionStorageConfig, LocalStorageConfig } from 'src/data/config';
 import { setCurrentSessionId, getCurrentSessionId } from 'src/data/session';
 
 const QUERY_KEY_ALL_CONNECTIONS = 'qk.connections';
@@ -10,6 +11,7 @@ const QUERY_KEY_TREEVISIBLES = 'qk.treeVisibles';
 const QUERY_KEY_QUERIES = 'qk.queries';
 const QUERY_KEY_RESULTS = 'qk.results';
 const QUERY_KEY_SESSIONS = 'qk.sessions';
+const QUERY_KEY_SETTINGS = 'qk.settings';
 
 export function useGetConnections() {
   return useQuery([QUERY_KEY_ALL_CONNECTIONS], dataApi.getConnections);
@@ -237,7 +239,10 @@ export function useTestConnection() {
 }
 
 // used for show and hide the sidebar trees
-let _treeVisibles = Config.get<SqluiFrontend.TreeVisibilities>('cache.treeVisibles', {});
+let _treeVisibles = SessionStorageConfig.get<SqluiFrontend.TreeVisibilities>(
+  'cache.treeVisibles',
+  {},
+);
 
 export function useShowHide() {
   const queryClient = useQueryClient();
@@ -246,9 +251,7 @@ export function useShowHide() {
     QUERY_KEY_TREEVISIBLES,
     () => _treeVisibles,
     {
-      onSuccess: (data) => {
-        Config.set('cache.treeVisibles', _treeVisibles);
-      },
+      onSuccess: (data) => SessionStorageConfig.set('cache.treeVisibles', _treeVisibles),
     },
   );
 
@@ -258,7 +261,7 @@ export function useShowHide() {
     } else {
       _treeVisibles[key] = isVisible;
     }
-    // queryClient.invalidateQueries(QUERY_KEY_TREEVISIBLES);
+
     queryClient.setQueryData<SqluiFrontend.TreeVisibilities | undefined>(
       QUERY_KEY_TREEVISIBLES,
       () => _treeVisibles,
@@ -271,6 +274,51 @@ export function useShowHide() {
   };
 }
 
+// Settings
+let _settings = LocalStorageConfig.get<SqluiFrontend.Settings>('cache.settings', {});
+
+export function useSettings() {
+  const queryClient = useQueryClient();
+
+  const { data: settings, isLoading } = useQuery(QUERY_KEY_SETTINGS, () => _settings, {
+    onSuccess: (data) => LocalStorageConfig.set('cache.settings', _settings),
+  });
+
+  const onChange = (newSettings: SqluiFrontend.Settings) => {
+    _settings = { ...newSettings };
+
+    queryClient.setQueryData<SqluiFrontend.Settings | undefined>(
+      QUERY_KEY_SETTINGS,
+      () => _settings,
+    );
+  };
+
+  return {
+    isLoading,
+    settings,
+    onChange,
+  };
+}
+
+export function useDarkModeSetting() {
+  const { isLoading, settings, onChange } = useSettings();
+  const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
+
+  let darkmode: 'dark' | 'light' | undefined;
+  let shouldUseSystemDarkMode = isLoading;
+
+  if (!isLoading && settings && settings.darkmode) {
+    darkmode = settings.darkmode;
+  }
+
+  if (darkmode !== 'light' && darkmode !== 'dark') {
+    darkmode = prefersDarkMode ? 'dark' : 'light';
+  }
+
+  return darkmode;
+}
+
+// connection queries
 let _connectionQueries: SqluiFrontend.ConnectionQuery[];
 
 function _useConnectionQueries() {
@@ -280,13 +328,13 @@ function _useConnectionQueries() {
       if (!_connectionQueries) {
         // this is the first time
         // try pulling it in from sessionStorage
-        _connectionQueries = Config.get<SqluiFrontend.ConnectionQuery[]>(
+        _connectionQueries = SessionStorageConfig.get<SqluiFrontend.ConnectionQuery[]>(
           'cache.connectionQueries',
           [],
         );
 
         if (_connectionQueries.length === 0) {
-          // if local config failed, attempt to get it from the api
+          // if config failed, attempt to get it from the api
           try {
             _connectionQueries = await dataApi.getQueries();
           } catch (err) {}
@@ -312,7 +360,7 @@ function _useConnectionQueries() {
     },
     {
       onSuccess: (data) => {
-        Config.set('cache.connectionQueries', data);
+        SessionStorageConfig.set('cache.connectionQueries', data);
       },
     },
   );

@@ -24,6 +24,7 @@ import {
   useUpsertSession,
   useDeleteSession,
   useGetCurrentSession,
+  useDarkModeSetting,
 } from 'src/hooks';
 import { getCurrentSessionId, getDefaultSessionId, setCurrentSessionId } from 'src/data/session';
 
@@ -32,12 +33,12 @@ export default function App() {
   const { data: sessions, isLoading: loadingSessions } = useGetSessions();
   const { data: currentSession, isLoading: loadingCurrentSession } = useGetCurrentSession();
   const { mutateAsync: upsertSession } = useUpsertSession();
-  const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
+  const colorMode = useDarkModeSetting();
 
   const myTheme = createTheme({
     // Theme settings
     palette: {
-      mode: prefersDarkMode ? 'dark' : 'light',
+      mode: colorMode,
     },
   });
 

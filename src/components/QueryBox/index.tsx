@@ -89,11 +89,11 @@ export default function QueryBox(props: QueryBoxProps) {
   return (
     <>
       <form className='QueryBox' onSubmit={onSubmit}>
-        <div className='QueryBox__Row'>
+        <div className='FormInput__Row'>
           <ConnectionDatabaseSelector value={query} onChange={onDatabaseConnectionChange} />
           <ConnectionRevealButton query={query} />
         </div>
-        <div className='QueryBox__Row'>
+        <div className='FormInput__Row'>
           <CodeEditorBox
             value={query.sql}
             placeholder={`Enter SQL for ` + query.name}
@@ -103,7 +103,7 @@ export default function QueryBox(props: QueryBoxProps) {
             mode='textarea'
           />
         </div>
-        <div className='QueryBox__Row'>
+        <div className='FormInput__Row'>
           <Button
             type='submit'
             variant='contained'

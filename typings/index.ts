@@ -103,13 +103,20 @@ export module SqluiFrontend {
 
   export type TreeVisibilities = { [index: string]: boolean };
 
+  export type Settings = {
+    darkmode?: 'dark' | 'light';
+  };
+
+  export type SettingKey = keyof Settings;
+
   export type QueryKey =
     | 'qk.actionDialogs'
     | 'qk.missionControlCommand'
     | 'qk.connections'
     | 'qk.treeVisibles'
     | 'qk.queries'
-    | 'qk.results';
+    | 'qk.results'
+    | 'qk.settings';
 }
 
 /**
@@ -127,9 +134,9 @@ export module SqluiEnums {
    * @type {String}
    */
   export type ClientConfigKey =
-    | 'cache.metadata'
     | 'cache.connectionQueries'
     | 'cache.treeVisibles'
+    | 'cache.settings'
     | 'api.sessionId';
 
   /**
@@ -138,6 +145,7 @@ export module SqluiEnums {
    * @type {String}
    */
   export type ClientEventKey =
+    | 'clientEvent/showSettings'
     | 'clientEvent/checkForUpdate'
     | 'clientEvent/showCommandPalette'
     | 'clientEvent/import'
