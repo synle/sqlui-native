@@ -23,6 +23,7 @@ type CommandOption = {
 };
 
 const ALL_COMMAND_PALETTE_OPTIONS: CommandOption[] = [
+  { event: 'clientEvent/showSettings', label: 'Settings' },
   { event: 'clientEvent/import', label: 'Import' },
   { event: 'clientEvent/exportAll', label: 'Export All' },
   { event: 'clientEvent/connection/new', label: 'New Connection' },
