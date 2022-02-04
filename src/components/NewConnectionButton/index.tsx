@@ -4,6 +4,7 @@ import { Button } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
+import Box from '@mui/material/Box';
 import SplitButton from 'src/components/SplitButton';
 import { useActionDialogs } from 'src/components/ActionDialogs';
 import { downloadText } from 'src/data/file';
@@ -37,7 +38,7 @@ export default function NewConnectionButton() {
   ];
 
   return (
-    <div style={{ textAlign: 'center', marginBottom: '15px' }}>
+    <Box sx={{ textAlign: 'center', marginBottom: 2, marginTop: 1 }}>
       <SplitButton
         id='new-connection-split-button'
         label='Connection'
@@ -45,6 +46,6 @@ export default function NewConnectionButton() {
         onClick={onNewConnection}
         options={options}
       />
-    </div>
+    </Box>
   );
 }
