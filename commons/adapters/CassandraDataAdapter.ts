@@ -124,7 +124,7 @@ export default class CassandraAdapter extends BaseDataAdapter implements IDataAd
     let sql;
     if (this.isCassandra2 === true) {
       sql = `
-        SELECT type as position, column_name as name, validator as type
+        SELECT type as position, column_name as name, validator as type, type as kind
         FROM system.schema_columns
         WHERE keyspace_name = ?
           AND columnfamily_name = ?
