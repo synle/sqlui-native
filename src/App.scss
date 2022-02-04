@@ -57,7 +57,9 @@
 
 .QueryBox {
   margin-bottom: 15px;
+}
 
+.FormInput {
   &__Row {
     margin-top: 15px;
   }
@@ -67,16 +69,6 @@
   &__Content {
     width: 100%;
     overflow-x: auto;
-  }
-}
-
-.ConnectionForm {
-  input[type='text'] {
-    width: 100%;
-  }
-
-  &__Row {
-    margin-top: 15px;
   }
 }
 

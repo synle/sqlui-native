@@ -15,6 +15,7 @@ import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import AppsIcon from '@mui/icons-material/Apps';
 import EditIcon from '@mui/icons-material/Edit';
+import SettingsIcon from '@mui/icons-material/Settings';
 import KeyboardCommandKeyIcon from '@mui/icons-material/KeyboardCommandKey';
 import PhotoSizeSelectSmallIcon from '@mui/icons-material/PhotoSizeSelectSmall';
 import EditConnectionPage from 'src/views/EditConnectionPage';
@@ -67,11 +68,15 @@ export default function AppHeader() {
       onClick: () => selectCommand({ event: 'clientEvent/session/rename' }),
       startIcon: <EditIcon />,
     },
-
     {
       label: 'Command Palette',
       onClick: () => selectCommand({ event: 'clientEvent/showCommandPalette' }),
       startIcon: <KeyboardCommandKeyIcon />,
+    },
+    {
+      label: 'Settings',
+      onClick: () => selectCommand({ event: 'clientEvent/showSettings' }),
+      startIcon: <SettingsIcon />,
     },
   ];
 

@@ -135,7 +135,7 @@ function MainConnectionForm(props: MainConnectionFormProps) {
 
   return (
     <form className='ConnectionForm' onSubmit={onSave}>
-      <div className='ConnectionForm__Row'>
+      <div className='FormInput__Row'>
         <TextField
           label='Name'
           value={props.name}
@@ -145,7 +145,7 @@ function MainConnectionForm(props: MainConnectionFormProps) {
           fullWidth={true}
         />
       </div>
-      <div className='ConnectionForm__Row'>
+      <div className='FormInput__Row'>
         <TextField
           label='Connection'
           value={props.connection}
@@ -155,10 +155,10 @@ function MainConnectionForm(props: MainConnectionFormProps) {
           fullWidth={true}
         />
       </div>
-      <div className='ConnectionForm__Row'>
+      <div className='FormInput__Row'>
         {showHint && <ConnectionHint onChange={props.setConnection} />}
       </div>
-      <div className='ConnectionForm__Row'>
+      <div className='FormInput__Row'>
         <Button
           variant='contained'
           type='submit'

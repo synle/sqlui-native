@@ -24,11 +24,9 @@ export default function EditConnectionPage() {
       </div>
       <Resizer onSetWidth={setWidth} />
       <div className='LayoutTwoColumns__RightPane'>
-        <div>
-          <Typography variant='h5' gutterBottom={true}>
-            Edit Connection
-          </Typography>
-        </div>
+        <Typography variant='h5' gutterBottom={true} sx={{ mt: 1 }}>
+          Edit Connection
+        </Typography>
         <EditConnectionForm id={connectionId} />
       </div>
     </section>
