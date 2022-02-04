@@ -31,6 +31,7 @@ import {
   useGetCurrentSession,
   useGetConnections,
   useImportConnection,
+  useSettings,
   getExportedConnection,
   getExportedQuery,
 } from 'src/hooks';
@@ -111,6 +112,7 @@ export default function MissionControl() {
   const { mutateAsync: upsertSession } = useUpsertSession();
   const { mutateAsync: importConnection } = useImportConnection();
   const { data: connections, isLoading: loadingConnections } = useGetConnections();
+  const { settings, onChange: onChangeSettings } = useSettings();
 
   const onCloseQuery = async (query: SqluiFrontend.ConnectionQuery) => {
     try {
@@ -423,6 +425,17 @@ export default function MissionControl() {
     });
   };
 
+  const onChangeDarkMode = (newValue: string) => {
+    if (!settings) {
+      return;
+    }
+
+    //@ts-ignore
+    settings.darkmode = newValue;
+
+    onChangeSettings(settings);
+  };
+
   // mission control commands
   async function _executeCommandPalette(command: Command) {
     if (command) {
@@ -439,6 +452,10 @@ export default function MissionControl() {
 
         case 'clientEvent/showSettings':
           onShowSettings();
+          break;
+
+        case 'clientEvent/changeDarkMode':
+          onChangeDarkMode(command.data as string);
           break;
 
         // overall commands

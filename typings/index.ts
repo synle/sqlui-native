@@ -146,6 +146,7 @@ export module SqluiEnums {
    */
   export type ClientEventKey =
     | 'clientEvent/showSettings'
+    | 'clientEvent/changeDarkMode'
     | 'clientEvent/checkForUpdate'
     | 'clientEvent/showCommandPalette'
     | 'clientEvent/import'
