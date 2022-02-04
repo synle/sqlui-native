@@ -237,10 +237,7 @@ export function useTestConnection() {
 }
 
 // used for show and hide the sidebar trees
-let _treeVisibles = Config.get<SqluiFrontend.TreeVisibilities>(
-  'cache.treeVisibles',
-  {},
-);;
+let _treeVisibles = Config.get<SqluiFrontend.TreeVisibilities>('cache.treeVisibles', {});
 
 export function useShowHide() {
   const queryClient = useQueryClient();
