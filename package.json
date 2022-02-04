@@ -1,7 +1,7 @@
 {
   "name": "sqlui-native",
-  "version": "1.6.10",
-  "description": "A minimal Electron application for SQL Databases",
+  "version": "1.6.11",
+  "description": "A minimal native Desktop Electron application for running queries against popular database engines MySQL, MariaDB, Microsoft, PostgresSQL, SQLite and Cassandra",
   "browserslist": {
     "production": [
       ">0.2%",
@@ -46,7 +46,14 @@
   "repository": "https://github.com/synle/sqlui-native",
   "keywords": [
     "Electron",
-    "SQL"
+    "SQL",
+    "Native Desktop Application",
+    "MySQL",
+    "MariaDB",
+    "Microsoft",
+    "PostgresSQL",
+    "SQLite",
+    "Cassandra"
   ],
   "author": "Sy Le",
   "dependencies": {
