@@ -149,6 +149,7 @@ export module SqluiEnums {
     | 'clientEvent/changeDarkMode'
     | 'clientEvent/checkForUpdate'
     | 'clientEvent/showCommandPalette'
+    | 'clientEvent/clearShowHides'
     | 'clientEvent/import'
     | 'clientEvent/exportAll'
     | 'clientEvent/connection/new'

@@ -32,6 +32,7 @@ import {
   useGetConnections,
   useImportConnection,
   useSettings,
+  useShowHide,
   getExportedConnection,
   getExportedQuery,
 } from 'src/hooks';
@@ -113,6 +114,7 @@ export default function MissionControl() {
   const { mutateAsync: importConnection } = useImportConnection();
   const { data: connections, isLoading: loadingConnections } = useGetConnections();
   const { settings, onChange: onChangeSettings } = useSettings();
+  const { onClear: onClearShowHides } = useShowHide();
 
   const onCloseQuery = async (query: SqluiFrontend.ConnectionQuery) => {
     try {
@@ -452,6 +454,10 @@ export default function MissionControl() {
 
         case 'clientEvent/showSettings':
           onShowSettings();
+          break;
+
+        case 'clientEvent/clearShowHides':
+          onClearShowHides();
           break;
 
         case 'clientEvent/changeDarkMode':
