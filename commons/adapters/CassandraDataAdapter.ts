@@ -66,7 +66,7 @@ export default class CassandraAdapter extends BaseDataAdapter implements IDataAd
         }
 
         this.version = client?.getState().getConnectedHosts()[0].cassandraVersion;
-        this.isCassandra2 = this.version === '2';
+        this.isCassandra2 = this.version.indexOf('2.') === 0;
 
         resolve();
       });
