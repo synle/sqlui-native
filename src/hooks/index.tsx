@@ -13,6 +13,8 @@ const QUERY_KEY_RESULTS = 'qk.results';
 const QUERY_KEY_SESSIONS = 'qk.sessions';
 const QUERY_KEY_SETTINGS = 'qk.settings';
 
+const DEFAULT_STALE_TIME = 15000;
+
 export function useGetConnections() {
   return useQuery([QUERY_KEY_ALL_CONNECTIONS], dataApi.getConnections);
 }
@@ -129,6 +131,7 @@ export function useGetDatabases(connectionId?: string) {
     () => (!enabled ? undefined : dataApi.getConnectionDatabases(connectionId)),
     {
       enabled,
+      staleTime: DEFAULT_STALE_TIME,
     },
   );
 }
@@ -141,6 +144,7 @@ export function useGetTables(connectionId: string, databaseId: string) {
     () => (!enabled ? undefined : dataApi.getConnectionTables(connectionId, databaseId)),
     {
       enabled,
+      staleTime: DEFAULT_STALE_TIME,
     },
   );
 }
@@ -153,6 +157,7 @@ export function useGetColumns(connectionId?: string, databaseId?: string, tableI
     () => (!enabled ? undefined : dataApi.getConnectionColumns(connectionId, databaseId, tableId)),
     {
       enabled,
+      staleTime: DEFAULT_STALE_TIME,
     },
   );
 }
