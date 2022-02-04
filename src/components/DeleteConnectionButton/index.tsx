@@ -21,9 +21,7 @@ export default function DeleteConnectionButton(props: DeleteConnectionButtonProp
     try {
       await confirm('Delete this connection?');
       await mutateAsync(connectionId);
-    } catch (err) {
-      // @ts-ignore
-    }
+    } catch (err) {}
   };
 
   return (

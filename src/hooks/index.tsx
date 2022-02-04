@@ -11,36 +11,6 @@ const QUERY_KEY_QUERIES = 'qk.queries';
 const QUERY_KEY_RESULTS = 'qk.results';
 const QUERY_KEY_SESSIONS = 'qk.sessions';
 
-// @ts-ignore
-function _fetch<T>(...inputs) {
-  let { headers, ...restInput } = inputs[1] || {};
-
-  headers = headers || {};
-  headers = { ...headers, ...{ 'Content-Type': 'application/json', Accept: 'application/json' } };
-
-  restInput = restInput || {};
-
-  return fetch(inputs[0], {
-    ...restInput,
-    headers,
-  })
-    .then(async (r) => {
-      if (!r.ok) {
-        throw r;
-      }
-      let response = await r.text();
-      try {
-        return JSON.parse(response);
-      } catch (err) {
-        return response;
-      }
-    })
-    .then((r) => {
-      const res: T = r;
-      return res;
-    });
-}
-
 export function useGetConnections() {
   return useQuery([QUERY_KEY_ALL_CONNECTIONS], dataApi.getConnections);
 }
@@ -314,9 +284,7 @@ function _useConnectionQueries() {
           // if local config failed, attempt to get it from the api
           try {
             _connectionQueries = await dataApi.getQueries();
-          } catch (err) {
-            //@ts-ignore
-          }
+          } catch (err) {}
         }
 
         // at the end we want to remove executionStart so the query won't be run again
@@ -398,9 +366,7 @@ export function useConnectionQueries() {
     // this is fire and forget
     try {
       dataApi.upsertQuery(newQuery);
-    } catch (err) {
-      //@ts-ignore
-    }
+    } catch (err) {}
 
     _invalidateQueries();
   };
@@ -484,9 +450,7 @@ export function useConnectionQueries() {
     // this is fire and forget
     try {
       dataApi.upsertQuery(query);
-    } catch (err) {
-      //@ts-ignore
-    }
+    } catch (err) {}
   };
 
   const onDuplicateQuery = (queryId?: string) => {

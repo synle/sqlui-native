@@ -147,15 +147,11 @@ export default function SchemaEditor(props) {
         lineEnd = 0;
       try {
         lineStart = myField.value.substr(0, startPos).match(/\n/g).length;
-      } catch (err) {
-        // @ts-ignore
-      }
+      } catch (err) {}
 
       try {
         lineEnd = myField.value.substr(0, endPos).match(/\n/g).length;
-      } catch (err) {
-        // @ts-ignore
-      }
+      } catch (err) {}
 
       return [lineStart, lineEnd];
     }
