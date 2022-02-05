@@ -5,6 +5,7 @@ import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import { grey } from '@mui/material/colors';
 import SchemaEditor from 'src/components/CodeEditorBox/SchemaEditor';
+import CodeEditor from 'src/components/CodeEditorBox/CodeEditor';
 
 interface CodeEditorProps {
   value?: string;
@@ -32,29 +33,42 @@ export default function CodeEditorBox(props: CodeEditorProps) {
 
   return (
     <>
-      <SchemaEditor
-        className='CodeEditorBox'
+      <CodeEditor
         value={value}
-        placeholder={props.placeholder}
         onChange={(e: React.ChangeEvent<HTMLInputElement>) => setValue(e.target.value)}
         onBlur={(e: React.ChangeEvent<HTMLInputElement>) => onChange(e.target.value)}
-        data-language={props.language}
+        language={props.language}
         autoFocus={props.autoFocus}
         required={props.required}
-        style={{
-          whiteSpace: wordWrap ? 'initial' : 'nowrap',
-        }}
       />
-      <div style={{ textAlign: 'right' }}>
-        <ToggleButton
-          value='check'
-          selected={wordWrap}
-          onChange={() => setWordWrap(!wordWrap)}
-          size='small'>
-          {wordWrap ? <CheckBoxIcon /> : <CheckBoxOutlineBlankIcon />}
-          <span style={{ marginLeft: '5px' }}>Wrap</span>
-        </ToggleButton>
-      </div>
     </>
   );
+
+  // return (
+  //   <>
+  //     <SchemaEditor
+  //       className='CodeEditorBox'
+  //       value={value}
+  //       placeholder={props.placeholder}
+  //       onChange={(e: React.ChangeEvent<HTMLInputElement>) => setValue(e.target.value)}
+  //       onBlur={(e: React.ChangeEvent<HTMLInputElement>) => onChange(e.target.value)}
+  //       data-language={props.language}
+  //       autoFocus={props.autoFocus}
+  //       required={props.required}
+  //       style={{
+  //         whiteSpace: wordWrap ? 'initial' : 'nowrap',
+  //       }}
+  //     />
+  //     <div style={{ textAlign: 'right' }}>
+  //       <ToggleButton
+  //         value='check'
+  //         selected={wordWrap}
+  //         onChange={() => setWordWrap(!wordWrap)}
+  //         size='small'>
+  //         {wordWrap ? <CheckBoxIcon /> : <CheckBoxOutlineBlankIcon />}
+  //         <span style={{ marginLeft: '5px' }}>Wrap</span>
+  //       </ToggleButton>
+  //     </div>
+  //   </>
+  // );
 }
