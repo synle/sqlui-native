@@ -11,6 +11,7 @@ import { Button } from '@mui/material';
 import TextField from '@mui/material/TextField';
 import FormControl from '@mui/material/FormControl';
 import SaveIcon from '@mui/icons-material/Save';
+import HelpIcon from '@mui/icons-material/Help';
 import ConnectionTypeIcon from 'src/components/ConnectionTypeIcon';
 import { useSettings } from 'src/hooks';
 import TestConnectionButton from 'src/components/TestConnectionButton';
@@ -44,8 +45,11 @@ export default function Settings(props: SettingsProps) {
   } else {
     contentDom = (
       <>
-        <Typography variant='subtitle1' gutterBottom={true}>
+        <Typography className='FormInput__Label' variant='subtitle1'>
           Theme Mode
+          <Tooltip title='Application theme mode. Dark mode or light mode or follows system preference'>
+          <HelpIcon fontSize='small' sx={{ml: 1}}/>
+          </Tooltip>
         </Typography>
         <div className='FormInput__Row'>
           <Select
@@ -57,8 +61,11 @@ export default function Settings(props: SettingsProps) {
             <option value='light'>Prefers Light Mode</option>
           </Select>
         </div>
-        <Typography variant='subtitle1' gutterBottom={true} sx={{ mt: 2 }}>
+        <Typography className='FormInput__Label' variant='subtitle1'>
           Editor Mode
+          <Tooltip title='Which editor to use? Simple Editor vs Advanced Editor'>
+          <HelpIcon fontSize='small' sx={{ml: 1}}/>
+          </Tooltip>
         </Typography>
         <div className='FormInput__Row'>
           <Select
@@ -69,8 +76,11 @@ export default function Settings(props: SettingsProps) {
             <option value='simple'>Simple Mode</option>
           </Select>
         </div>
-        <Typography variant='subtitle1' gutterBottom={true} sx={{ mt: 2 }}>
-          Word Wrap
+        <Typography className='FormInput__Label' variant='subtitle1'>
+          Editor Word Wrap
+          <Tooltip title='Whether or not to wrap words inside of the editor by default'>
+          <HelpIcon fontSize='small' sx={{ml: 1}}/>
+          </Tooltip>
         </Typography>
         <div className='FormInput__Row'>
           <Select
@@ -81,8 +91,11 @@ export default function Settings(props: SettingsProps) {
             <option value='wrap'>Wrap</option>
           </Select>
         </div>
-        <Typography variant='subtitle1' gutterBottom={true} sx={{ mt: 2 }}>
+        <Typography className='FormInput__Label' variant='subtitle1'>
           Query Tab Orientation
+          <Tooltip title='Query Tabs Orientation. Vertical tabs vs Horizontal tabs'>
+          <HelpIcon fontSize='small' sx={{ml: 1}}/>
+          </Tooltip>
         </Typography>
         <div className='FormInput__Row'>
           <Select
@@ -93,6 +106,22 @@ export default function Settings(props: SettingsProps) {
             <option value='horizontal'>Horizontal</option>
             <option value='vertical'>Vertical</option>
           </Select>
+        </div>
+        <Typography className='FormInput__Label' variant='subtitle1'>
+          Query Size
+          <Tooltip title='The default query size for Select SQL statements. Note this change only apply to future queries.'>
+          <HelpIcon fontSize='small' sx={{ml: 1}}/>
+          </Tooltip>
+        </Typography>
+        <div className='FormInput__Row'>
+          <TextField
+            defaultValue={settings.querySize}
+            onBlur={(e) => onSettingChange('querySize', e.target.value)}
+            required
+            size='small'
+            fullWidth={true}
+            type='number'
+          />
         </div>
       </>
     );

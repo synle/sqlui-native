@@ -7,7 +7,7 @@ const StyledSelect = styled('select')(({ theme }) => {
     outline: 'none',
     padding: theme.spacing(1),
     borderRadius: theme.shape.borderRadius,
-    background: theme.palette.background.default,
+    background: 'initial',
     color: theme.palette.text.secondary,
     borderColor: theme.palette.action.selected,
 

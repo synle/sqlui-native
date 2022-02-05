@@ -108,6 +108,7 @@ export module SqluiFrontend {
     editorMode?: 'advanced' | 'simple';
     wordWrap?: 'wrap';
     queryTabOrientation?: 'vertical' | 'horizontal';
+    querySize?: number;
   };
 
   export type SettingKey = keyof Settings;
