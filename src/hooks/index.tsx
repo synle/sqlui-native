@@ -342,6 +342,14 @@ export function useEditorModeSetting() {
   return value;
 }
 
+export function useWordWrapSetting() {
+  const { settings } = useSettings();
+
+  let value = settings?.wordWrap;
+
+  return value === 'wrap';
+}
+
 // connection queries
 let _connectionQueries: SqluiFrontend.ConnectionQuery[];
 

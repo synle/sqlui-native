@@ -69,6 +69,18 @@ export default function Settings(props: SettingsProps) {
             <option value='simple'>Simple Mode</option>
           </Select>
         </div>
+        <Typography variant='subtitle1' gutterBottom={true} sx={{ mt: 2 }}>
+          Word Wrap
+        </Typography>
+        <div className='FormInput__Row'>
+          <Select
+            value={settings.wordWrap}
+            onChange={(newValue) => onSettingChange('wordWrap', newValue)}
+            sx={{ width: '100%' }}>
+            <option value=''>No wrap</option>
+            <option value='wrap'>Wrap</option>
+          </Select>
+        </div>
       </>
     );
   }

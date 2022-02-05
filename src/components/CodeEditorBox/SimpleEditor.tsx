@@ -158,7 +158,7 @@ export default function SchemaEditor(props) {
   }, []);
 
   const { value, ...restProps } = props;
-  const [text, setText] = useState('');
+  const [text, setText] = useState(value);
 
   const onInputChange = (e) => setText(e.target.value);
 
