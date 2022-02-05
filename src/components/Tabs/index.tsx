@@ -19,7 +19,7 @@ interface TabsProps {
 
 export default function MyTabs(props: TabsProps) {
   const { tabIdx, tabHeaders, tabContents } = props;
-  let {orientation} = props;
+  let { orientation } = props;
 
   const visibleTab = tabContents[tabIdx];
 
@@ -27,12 +27,13 @@ export default function MyTabs(props: TabsProps) {
     props.onTabChange && props.onTabChange(newTabIdx);
   };
 
-  if(!orientation){
-    orientation = tabHeaders.length > VERTICAL_TAB_THRESHOLD ? 'vertical' : 'horizontal'
+  if (!orientation) {
+    orientation = tabHeaders.length > VERTICAL_TAB_THRESHOLD ? 'vertical' : 'horizontal';
   }
 
   return (
-    <section className={orientation === 'vertical' ? 'Tabs Tabs__Vertical' : 'Tabs Tabs__Horizontal'}>
+    <section
+      className={orientation === 'vertical' ? 'Tabs Tabs__Vertical' : 'Tabs Tabs__Horizontal'}>
       <Tabs
         value={tabIdx}
         onChange={(_e, newTabIdx) => onTabChange(newTabIdx)}

@@ -258,7 +258,8 @@ export function useShowHide() {
     QUERY_KEY_TREEVISIBLES,
     () => _treeVisibles,
     {
-      onSuccess: (data) => SessionStorageConfig.set('clientConfig/cache.treeVisibles', _treeVisibles),
+      onSuccess: (data) =>
+        SessionStorageConfig.set('clientConfig/cache.treeVisibles', _treeVisibles),
     },
   );
 
@@ -355,7 +356,6 @@ export function useQueryTabOrientationSetting() {
 
   return settings?.queryTabOrientation;
 }
-
 
 // connection queries
 let _connectionQueries: SqluiFrontend.ConnectionQuery[];

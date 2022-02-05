@@ -94,7 +94,6 @@ export default function Settings(props: SettingsProps) {
             <option value='vertical'>Vertical</option>
           </Select>
         </div>
-
       </>
     );
   }
