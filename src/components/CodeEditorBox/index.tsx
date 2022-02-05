@@ -21,8 +21,12 @@ interface CodeEditorProps {
 
 export default function CodeEditorBox(props: CodeEditorProps) {
   const colorMode = useDarkModeSetting();
-  const [value, setValue] = useState('');
+  const [value, setValue] = useState(props.value || '');
   const [wordWrap, setWordWrap] = useState(true);
+
+  useEffect(() => {
+    setValue(props.value || '');
+  },[props.value])
 
   const onChange = () => {
     props.onChange && props.onChange(value);

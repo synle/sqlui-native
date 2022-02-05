@@ -35,16 +35,38 @@ export default function AdvancedEditor(props: AdvancedEditorProps) {
 
   useEffect(() => {
     if (monacoEl && !editor) {
+      const newEditor = monaco.editor.create(monacoEl.current!, {
+          language: 'sql',
+          glyphMargin: false,
+  folding: false,
+  minimap: {
+    enabled: false,
+  },
+        })
+
+      newEditor.onDidBlurEditorWidget(()=>{
+           console.log("Blur event triggerd !", newEditor.getValue())
+      })
+
       setEditor(
         monaco.editor.create(monacoEl.current!, {
-          value: ['function x() {', '\tconsole.log("Hello world!");', '}'].join('\n'),
-          language: 'typescript',
+          language: 'sql',
         }),
       );
+
     }
 
-    return () => editor?.dispose();
+    return () => {
+      editor?.dispose();
+    };
   }, [monacoEl.current]);
 
-  return <AdvancedEditorContainer ref={monacoEl} />;
+  useEffect(() => {
+    if(editor){
+      console.log('Set', props.value)
+      editor.setValue(props.value || '');
+    }
+  }, [editor, props.value]);
+
+  return <div ref={monacoEl} style={{height: '300px'}}></div>;
 }

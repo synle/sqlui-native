@@ -40,7 +40,7 @@
     "test": "jest",
     "test-ci": "cross-env CI=true jest __tests__",
     "test-react": "cross-env SASS_PATH='./src/styles' react-scripts test",
-    "format": "npx prettier --config ./.prettierrc --write **/*.{ts,tsx,js,jsx,scss,yml,html} *.{json,MD}",
+    "format": "npx prettier --config ./.prettierrc --write src/**/**/**/*.{ts,tsx,js,jsx,scss,yml,html} **/*.{json,MD}",
     "lint": "eslint --fix --ext .tsx --ext .ts src",
     "dist": "npm run build && npm run build-binary"
   },
