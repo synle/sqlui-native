@@ -1,28 +1,17 @@
 import { useRef, useState, useEffect, useCallback } from 'react';
-import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
+import Editor from "@monaco-editor/react";
 
 type CodeEditorProps = any & {
   language: 'sql' | '' | string;
+  value: string;
+  onChange: (newValue: string) => void;
 }
 
 export default function CodeEditor(props: CodeEditorProps) {
-  const [editor, setEditor] = useState<monaco.editor.IStandaloneCodeEditor | null>(null);
-  const monacoEl = useRef(null);
-
-  useEffect(() => {
-    if (monacoEl && !editor) {
-      setEditor(
-        monaco.editor.create(monacoEl.current!, {
-          value: props.value,
-          language: props.value
-        })
-      );
-    }
-
-    return () => editor?.dispose();
-  }, [monacoEl.current]);
-
-  return <div ref={monacoEl} style={{height: '200px', width: '100%'}}></div>;
-
-  return null
+  return <Editor
+     height="250px"
+     defaultLanguage={props.language}
+     defaultValue={props.value}
+     onChange={(newValue) => props?.onChange(newValue)}
+   />
 }
