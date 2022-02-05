@@ -5,9 +5,9 @@ import { useDarkModeSetting } from 'src/hooks';
 
 type AdvancedEditorProps = {
   language?: 'sql' | string;
-  value: string;
+  value?: string;
   onChange?: (newValue: string) => void;
-  onBlur?: () => void;
+  onBlur?: (newValue: string) => void;
 };
 
 const AdvancedEditorContainer = styled('div')(({ theme }) => {
@@ -26,7 +26,7 @@ const DEFAULT_OPTIONS = {
   },
 };
 
-export default function AdvancedEditor(props: AdvancedEditorProps) {
+export function AdvancedEditor2(props: AdvancedEditorProps) {
   const colorMode = useDarkModeSetting();
   const theme = colorMode === 'dark' ? 'vs-dark' : 'light';
 
@@ -69,4 +69,37 @@ export default function AdvancedEditor(props: AdvancedEditorProps) {
   }, [editor, props.value]);
 
   return <div ref={monacoEl} style={{height: '300px'}}></div>;
+}
+
+
+export default function AdvancedEditor(props: AdvancedEditorProps) {
+  const [editor, setEditor] = useState<monaco.editor.IStandaloneCodeEditor | null>(null);
+  const monacoEl = useRef(null);
+
+  useEffect(() => {
+    if (monacoEl && !editor) {
+      const newEditor = monaco.editor.create(monacoEl.current!, {
+        value: props.value,
+        language: props.value
+      });
+
+      newEditor.onDidBlurEditorWidget(()=>{
+           props.onBlur && props.onBlur(newEditor.getValue() || '');
+      })
+
+      setEditor(
+        newEditor
+      );
+    }
+
+    return () => editor?.dispose();
+  }, [monacoEl.current]);
+
+  useEffect(() => {
+    if(editor){
+      editor.setValue(props.value || '');
+    }
+  }, [editor, props.value]);
+
+  return <div ref={monacoEl} style={{height: '200px', width: '100%'}}></div>;
 }

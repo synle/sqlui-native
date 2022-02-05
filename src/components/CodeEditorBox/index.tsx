@@ -20,16 +20,8 @@ interface CodeEditorProps {
 }
 
 export default function CodeEditorBox(props: CodeEditorProps) {
-  const colorMode = useDarkModeSetting();
-  const [value, setValue] = useState(props.value || '');
-  const [wordWrap, setWordWrap] = useState(true);
-
-  useEffect(() => {
-    setValue(props.value || '');
-  },[props.value])
-
-  const onChange = () => {
-    props.onChange && props.onChange(value);
+  const onChange = (newValue: string) => {
+    props.onChange && props.onChange(newValue);
   };
 
   // TODO: will add an option to let user decide which editor to use
@@ -67,8 +59,7 @@ export default function CodeEditorBox(props: CodeEditorProps) {
     <>
       <AdvancedEditor
         language={props.language}
-        value={value}
-        onChange={(newValue) => setValue(newValue)}
+        value={props.value}
         onBlur={onChange}
       />
     </>
