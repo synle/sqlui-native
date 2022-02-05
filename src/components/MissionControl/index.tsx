@@ -32,6 +32,7 @@ import {
   useGetConnections,
   useImportConnection,
   useSettings,
+  useShowHide,
   getExportedConnection,
   getExportedQuery,
 } from 'src/hooks';
@@ -113,6 +114,7 @@ export default function MissionControl() {
   const { mutateAsync: importConnection } = useImportConnection();
   const { data: connections, isLoading: loadingConnections } = useGetConnections();
   const { settings, onChange: onChangeSettings } = useSettings();
+  const { onClear: onClearConnectionVisibles, onToggle: onToggleConnectionVisible } = useShowHide();
 
   const onCloseQuery = async (query: SqluiFrontend.ConnectionQuery) => {
     try {
@@ -152,6 +154,25 @@ export default function MissionControl() {
       JSON.stringify([getExportedQuery(query)], null, 2),
       'text/json',
     );
+  };
+
+  const onRevealQueryConnection = async (query: SqluiFrontend.ConnectionQuery) => {
+    const { databaseId, connectionId } = query;
+
+    if (!connectionId) {
+      return;
+    }
+
+    const branchesToReveal: string[] = [connectionId];
+
+    if (databaseId && connectionId) {
+      branchesToReveal.push([connectionId, databaseId].join(' > '));
+    }
+
+    for (const branchToReveal of branchesToReveal) {
+      // reveal
+      onToggleConnectionVisible(branchToReveal, true);
+    }
   };
 
   const onShowQueryWithDirection = (direction: number) => {
@@ -454,6 +475,10 @@ export default function MissionControl() {
           onShowSettings();
           break;
 
+        case 'clientEvent/clearShowHides':
+          onClearConnectionVisibles();
+          break;
+
         case 'clientEvent/changeDarkMode':
           onChangeDarkMode(command.data as string);
           break;
@@ -520,6 +545,13 @@ export default function MissionControl() {
           // this closes the active query
           if (activeQuery) {
             onCloseQuery(activeQuery);
+          }
+          break;
+
+        case 'clientEvent/query/reveal':
+          // this reveal the current query connection
+          if (activeQuery) {
+            onRevealQueryConnection(activeQuery);
           }
           break;
 

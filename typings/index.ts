@@ -149,6 +149,7 @@ export module SqluiEnums {
     | 'clientEvent/changeDarkMode'
     | 'clientEvent/checkForUpdate'
     | 'clientEvent/showCommandPalette'
+    | 'clientEvent/clearShowHides'
     | 'clientEvent/import'
     | 'clientEvent/exportAll'
     | 'clientEvent/connection/new'
@@ -162,6 +163,7 @@ export module SqluiEnums {
     | 'clientEvent/query/close'
     | 'clientEvent/query/closeCurrentlySelected'
     | 'clientEvent/query/closeOther'
+    | 'clientEvent/query/reveal'
     | 'clientEvent/session/new'
     | 'clientEvent/session/rename'
     | 'clientEvent/session/switch';

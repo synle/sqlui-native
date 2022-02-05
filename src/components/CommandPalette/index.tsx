@@ -35,6 +35,7 @@ const ALL_COMMAND_PALETTE_OPTIONS: CommandOption[] = [
     label: 'Disable Dark Mode (Use Light Mode)',
     data: 'light',
   },
+  { event: 'clientEvent/clearShowHides', label: 'Collapse All Connections' },
   { event: 'clientEvent/changeDarkMode', label: 'Follows System Settings for Dark Mode', data: '' },
   { event: 'clientEvent/connection/new', label: 'New Connection' },
   { event: 'clientEvent/session/switch', label: 'Switch Session' },
@@ -49,7 +50,8 @@ const ALL_COMMAND_PALETTE_OPTIONS: CommandOption[] = [
   { event: 'clientEvent/query/export', label: 'Export Current Query', useCurrentQuery: true },
   { event: 'clientEvent/query/duplicate', label: 'Duplicate Current Query', useCurrentQuery: true },
   { event: 'clientEvent/query/close', label: 'Close Current Query', useCurrentQuery: true },
-  { event: 'clientEvent/query/closeOther', label: 'Close Other Query', useCurrentQuery: true },
+  { event: 'clientEvent/query/closeOther', label: 'Close Other Query' },
+  { event: 'clientEvent/query/reveal', label: 'Reveal Query Connection' },
 ];
 
 export default function CommandPalette(props: CommandPaletteProps) {

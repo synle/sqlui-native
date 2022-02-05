@@ -4,6 +4,7 @@ import { Button } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
+import UnfoldLessIcon from '@mui/icons-material/UnfoldLess';
 import Box from '@mui/material/Box';
 import SplitButton from 'src/components/SplitButton';
 import { useActionDialogs } from 'src/components/ActionDialogs';
@@ -20,20 +21,21 @@ import {
 export default function NewConnectionButton() {
   const { selectCommand } = useCommands();
 
-  const onImport = () => selectCommand({ event: 'clientEvent/import' });
-  const onExportAll = () => selectCommand({ event: 'clientEvent/exportAll' });
-  const onNewConnection = () => selectCommand({ event: 'clientEvent/connection/new' });
-
   const options = [
     {
       label: 'Import',
-      onClick: onImport,
+      onClick: () => selectCommand({ event: 'clientEvent/import' }),
       startIcon: <ArrowDownwardIcon />,
     },
     {
       label: 'Export All',
-      onClick: onExportAll,
+      onClick: () => selectCommand({ event: 'clientEvent/exportAll' }),
       startIcon: <ArrowUpwardIcon />,
+    },
+    {
+      label: 'Collapse All Connections',
+      onClick: () => selectCommand({ event: 'clientEvent/clearShowHides' }),
+      startIcon: <UnfoldLessIcon />,
     },
   ];
 
@@ -43,7 +45,7 @@ export default function NewConnectionButton() {
         id='new-connection-split-button'
         label='Connection'
         startIcon={<AddIcon />}
-        onClick={onNewConnection}
+        onClick={() => selectCommand({ event: 'clientEvent/connection/new' })}
         options={options}
       />
     </Box>
