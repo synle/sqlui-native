@@ -106,6 +106,7 @@ export module SqluiFrontend {
   export type Settings = {
     darkMode?: 'dark' | 'light';
     editorMode?: 'advanced' | 'simple';
+    wordWrap?: 'wrap';
   };
 
   export type SettingKey = keyof Settings;
