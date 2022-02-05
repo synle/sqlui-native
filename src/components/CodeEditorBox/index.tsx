@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import CodeEditor from '@uiw/react-textarea-code-editor';
 import ToggleButton from '@mui/material/ToggleButton';
 import Button from '@mui/material/Button';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
-import { grey } from '@mui/material/colors';
-import SchemaEditor from 'src/components/CodeEditorBox/SchemaEditor';
+import SimpleEditor from 'src/components/CodeEditorBox/SimpleEditor';
+import AdvancedEditor from 'src/components/CodeEditorBox/AdvancedEditor';
+import { useDarkModeSetting } from 'src/hooks';
 
 interface CodeEditorProps {
   value?: string;
@@ -18,60 +18,52 @@ interface CodeEditorProps {
 }
 
 export default function CodeEditorBox(props: CodeEditorProps) {
-  const [value, setValue] = useState('');
   const [wordWrap, setWordWrap] = useState(true);
-
   const onChange = (newValue: string) => {
-    if (newValue !== props.value) {
-      props.onChange && props.onChange(newValue);
-    }
+    props.onChange && props.onChange(newValue);
   };
 
-  useEffect(() => {
-    setValue(props?.value || '');
-  }, [props.value]);
+  // TODO: will add an option to let user decide which editor to use
+  let shouldUseSimpleEditor = false;
+
+  const contentToggleWordWrap = (
+    <div style={{ textAlign: 'right' }}>
+      <ToggleButton
+        value='check'
+        selected={wordWrap}
+        onChange={() => setWordWrap(!wordWrap)}
+        size='small'>
+        {wordWrap ? <CheckBoxIcon /> : <CheckBoxOutlineBlankIcon />}
+        <span style={{ marginLeft: '5px' }}>Wrap</span>
+      </ToggleButton>
+    </div>
+  );
+
+  if (shouldUseSimpleEditor) {
+    return (
+      <>
+        <SimpleEditor
+          value={props.value}
+          placeholder={props.placeholder}
+          onBlur={onChange}
+          autoFocus={props.autoFocus}
+          required={props.required}
+          wordWrap={wordWrap}
+        />
+        {contentToggleWordWrap}
+      </>
+    );
+  }
 
   return (
     <>
-      <SchemaEditor
-        className='CodeEditorBox'
-        value={value}
-        placeholder={props.placeholder}
-        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setValue(e.target.value)}
-        onBlur={(e: React.ChangeEvent<HTMLInputElement>) => onChange(e.target.value)}
-        data-language={props.language}
-        autoFocus={props.autoFocus}
-        required={props.required}
-        style={{
-          whiteSpace: wordWrap ? 'initial' : 'nowrap',
-        }}
+      <AdvancedEditor
+        language={props.language}
+        value={props.value}
+        onBlur={onChange}
+        wordWrap={wordWrap}
       />
-      <div style={{ textAlign: 'right' }}>
-        <ToggleButton
-          value='check'
-          selected={wordWrap}
-          onChange={() => setWordWrap(!wordWrap)}
-          size='small'>
-          {wordWrap ? <CheckBoxIcon /> : <CheckBoxOutlineBlankIcon />}
-          <span style={{ marginLeft: '5px' }}>Wrap</span>
-        </ToggleButton>
-      </div>
+      {contentToggleWordWrap}
     </>
   );
-
-  // <CodeEditor
-  //              value={value}
-  //              onChange={(e) => setValue(e.target.value)}
-  //              language='json'
-  //              style={{
-  //                backgroundColor: '#f5f5f5',
-  //                border: 'none',
-  //                fontFamily: 'monospace',
-  //                width: '100%',
-  //                minHeight: '400px',
-  //                padding: '10px',
-  //              }}
-  //              autoFocus
-  //              required
-  //            />
 }
