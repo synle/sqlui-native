@@ -446,27 +446,16 @@ export default function MissionControl() {
     });
   };
 
-  const onChangeDarkMode = (newValue: string) => {
+  const onUpdateSetting = (key: SqluiFrontend.SettingKey, newValue: string) => {
     if (!settings) {
       return;
     }
 
     //@ts-ignore
-    settings.darkMode = newValue;
+    settings[key] = newValue;
 
     onChangeSettings(settings);
-  };
-
-  const onChangeEditorMode = (newValue: string) => {
-    if (!settings) {
-      return;
-    }
-
-    //@ts-ignore
-    settings.editorMode = newValue;
-
-    onChangeSettings(settings);
-  };
+  }
 
   // mission control commands
   async function _executeCommandPalette(command: Command) {
@@ -491,11 +480,15 @@ export default function MissionControl() {
           break;
 
         case 'clientEvent/changeDarkMode':
-          onChangeDarkMode(command.data as string);
+          onUpdateSetting('darkMode', command.data as string)
           break;
 
         case 'clientEvent/changeEditorMode':
-          onChangeEditorMode(command.data as string);
+          onUpdateSetting('editorMode', command.data as string)
+          break;
+
+        case 'clientEvent/changeWrapMode':
+          onUpdateSetting('wordWrap', command.data as string)
           break;
 
         // overall commands

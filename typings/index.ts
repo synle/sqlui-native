@@ -150,6 +150,7 @@ export module SqluiEnums {
     | 'clientEvent/showSettings'
     | 'clientEvent/changeDarkMode'
     | 'clientEvent/changeEditorMode'
+    | 'clientEvent/changeWrapMode'
     | 'clientEvent/checkForUpdate'
     | 'clientEvent/showCommandPalette'
     | 'clientEvent/clearShowHides'
