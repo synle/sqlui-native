@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import CodeEditor from '@uiw/react-textarea-code-editor';
 import ToggleButton from '@mui/material/ToggleButton';
 import Button from '@mui/material/Button';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
@@ -58,20 +57,4 @@ export default function CodeEditorBox(props: CodeEditorProps) {
       </div>
     </>
   );
-
-  // <CodeEditor
-  //              value={value}
-  //              onChange={(e) => setValue(e.target.value)}
-  //              language='json'
-  //              style={{
-  //                backgroundColor: '#f5f5f5',
-  //                border: 'none',
-  //                fontFamily: 'monospace',
-  //                width: '100%',
-  //                minHeight: '400px',
-  //                padding: '10px',
-  //              }}
-  //              autoFocus
-  //              required
-  //            />
 }
