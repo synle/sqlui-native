@@ -1,4 +1,5 @@
 import { useRef, useState, useEffect, useCallback } from 'react';
+import { useAsyncDebounce } from 'react-table';
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
 import { styled, createTheme, ThemeProvider } from '@mui/system';
 import { useDarkModeSetting } from 'src/hooks';
@@ -31,6 +32,28 @@ export default function AdvancedEditor(props: AdvancedEditorProps) {
   const colorMode = useDarkModeSetting();
   const [editor, setEditor] = useState<monaco.editor.IStandaloneCodeEditor | null>(null);
   const monacoEl = useRef(null);
+  const onSetupMonacoEditor = useAsyncDebounce(() => {
+    editor?.dispose();
+
+    if (monacoEl.current) {
+      const newEditor = monaco.editor.create(monacoEl.current!, {
+        value: props.value,
+        language: props.language,
+        automaticLayout: true,
+        minimap: {
+          enabled: false,
+        },
+        theme: colorMode === 'dark' ? 'vs-dark' : 'light',
+        wordWrap: props.wordWrap === true ? 'on' : 'off',
+      });
+
+      newEditor.onDidBlurEditorWidget(() => {
+        props.onBlur && props.onBlur(newEditor.getValue() || '');
+      });
+
+      setEditor(newEditor);
+    }
+  }, 100);
 
   // this is used to clean up the editor
   useEffect(() => {
@@ -49,27 +72,7 @@ export default function AdvancedEditor(props: AdvancedEditorProps) {
 
   // here we will initiate the editor
   // and can be also be used to update the settings
-  useEffect(() => {
-    editor?.dispose();
-
-    if (monacoEl.current) {
-      const newEditor = monaco.editor.create(monacoEl.current!, {
-        value: props.value,
-        language: props.language,
-        minimap: {
-          enabled: false,
-        },
-        theme: colorMode === 'dark' ? 'vs-dark' : 'light',
-        wordWrap: props.wordWrap === true ? 'on' : 'off',
-      });
-
-      newEditor.onDidBlurEditorWidget(() => {
-        props.onBlur && props.onBlur(newEditor.getValue() || '');
-      });
-
-      setEditor(newEditor);
-    }
-  }, [monacoEl, props.wordWrap, colorMode]);
+  useEffect(onSetupMonacoEditor, [monacoEl, props.wordWrap, colorMode]);
 
   return <AdvancedEditorContainer ref={monacoEl}></AdvancedEditorContainer>;
 }
