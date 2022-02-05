@@ -642,7 +642,7 @@ export default function MissionControl() {
         }
       }
 
-      if (preventDefault) {
+      if (command) {
         e.stopPropagation();
         e.preventDefault();
       }
