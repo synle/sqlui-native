@@ -160,12 +160,12 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
       return res.status(404).send('Not Found');
     }
 
-    apiCache.set('cacheMetaData', null);
+    apiCache.set('serverCacheKey/cacheMetaData', null);
 
     try {
       const engine = getDataAdapter(connection.connection);
       await engine.authenticate();
-      apiCache.set('cacheMetaData', null);
+      apiCache.set('serverCacheKey/cacheMetaData', null);
       res.status(200).json(await getConnectionMetaData(connection));
     } catch (err: any) {
       // here means we failed to connect, just set back 407 - Not Acceptable
@@ -203,7 +203,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
   });
 
   addDataEndpoint('post', '/api/connection', async (req, res, apiCache) => {
-    apiCache.set('cacheMetaData', null);
+    apiCache.set('serverCacheKey/cacheMetaData', null);
     res.status(201).json(
       await new PersistentStorage<SqluiCore.ConnectionProps>(
         req.headers['sqlui-native-session-id'],
@@ -216,7 +216,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
   });
 
   addDataEndpoint('put', '/api/connection/:connectionId', async (req, res, apiCache) => {
-    apiCache.set('cacheMetaData', null);
+    apiCache.set('serverCacheKey/cacheMetaData', null);
     res.status(202).json(
       await new PersistentStorage<SqluiCore.ConnectionProps>(
         req.headers['sqlui-native-session-id'],
@@ -230,7 +230,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
   });
 
   addDataEndpoint('delete', '/api/connection/:connectionId', async (req, res, apiCache) => {
-    apiCache.set('cacheMetaData', null);
+    apiCache.set('serverCacheKey/cacheMetaData', null);
     res
       .status(202)
       .json(
@@ -254,7 +254,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
   });
 
   addDataEndpoint('post', '/api/query', async (req, res, apiCache) => {
-    apiCache.set('cacheMetaData', null);
+    apiCache.set('serverCacheKey/cacheMetaData', null);
     res.status(201).json(
       await new PersistentStorage<SqluiCore.ConnectionQuery>(
         req.headers['sqlui-native-session-id'],
@@ -266,7 +266,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
   });
 
   addDataEndpoint('put', '/api/query/:queryId', async (req, res, apiCache) => {
-    apiCache.set('cacheMetaData', null);
+    apiCache.set('serverCacheKey/cacheMetaData', null);
     res.status(202).json(
       await new PersistentStorage<SqluiCore.ConnectionQuery>(
         req.headers['sqlui-native-session-id'],
@@ -282,7 +282,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
   });
 
   addDataEndpoint('delete', '/api/query/:queryId', async (req, res, apiCache) => {
-    apiCache.set('cacheMetaData', null);
+    apiCache.set('serverCacheKey/cacheMetaData', null);
     res
       .status(202)
       .json(
@@ -308,7 +308,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
   });
 
   addDataEndpoint('post', '/api/session', async (req, res, apiCache) => {
-    apiCache.set('cacheMetaData', null);
+    apiCache.set('serverCacheKey/cacheMetaData', null);
     res.status(201).json(
       await new PersistentStorage<SqluiCore.Session>(
         req.headers['sqlui-native-session-id'],
@@ -321,7 +321,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
   });
 
   addDataEndpoint('put', '/api/session/:session', async (req, res, apiCache) => {
-    apiCache.set('cacheMetaData', null);
+    apiCache.set('serverCacheKey/cacheMetaData', null);
     res.status(202).json(
       await new PersistentStorage<SqluiCore.Session>(
         req.headers['sqlui-native-session-id'],
@@ -335,7 +335,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
   });
 
   addDataEndpoint('delete', '/api/session/:sessionId', async (req, res, apiCache) => {
-    apiCache.set('cacheMetaData', null);
+    apiCache.set('serverCacheKey/cacheMetaData', null);
     res
       .status(202)
       .json(

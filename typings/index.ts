@@ -129,17 +129,17 @@ export module SqluiEnums {
    * in memory cache keys used in the server
    * @type {String}
    */
-  export type ServerApiCacheKey = 'cacheMetaData';
+  export type ServerApiCacheKey = 'serverCacheKey/cacheMetaData';
 
   /**
    * client config key used for storage on the client side
    * @type {String}
    */
   export type ClientConfigKey =
-    | 'cache.connectionQueries'
-    | 'cache.treeVisibles'
-    | 'cache.settings'
-    | 'api.sessionId';
+    | 'clientConfig/cache.connectionQueries'
+    | 'clientConfig/cache.treeVisibles'
+    | 'clientConfig/cache.settings'
+    | 'clientConfig/api.sessionId';
 
   /**
    * client side specific events, can be used by electron

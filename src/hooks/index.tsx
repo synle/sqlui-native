@@ -247,7 +247,7 @@ export function useTestConnection() {
 
 // used for show and hide the sidebar trees
 let _treeVisibles = SessionStorageConfig.get<SqluiFrontend.TreeVisibilities>(
-  'cache.treeVisibles',
+  'clientConfig/cache.treeVisibles',
   {},
 );
 
@@ -258,7 +258,7 @@ export function useShowHide() {
     QUERY_KEY_TREEVISIBLES,
     () => _treeVisibles,
     {
-      onSuccess: (data) => SessionStorageConfig.set('cache.treeVisibles', _treeVisibles),
+      onSuccess: (data) => SessionStorageConfig.set('clientConfig/cache.treeVisibles', _treeVisibles),
     },
   );
 
@@ -292,13 +292,13 @@ export function useShowHide() {
 }
 
 // Settings
-let _settings = LocalStorageConfig.get<SqluiFrontend.Settings>('cache.settings', {});
+let _settings = LocalStorageConfig.get<SqluiFrontend.Settings>('clientConfig/cache.settings', {});
 
 export function useSettings() {
   const queryClient = useQueryClient();
 
   const { data: settings, isLoading } = useQuery(QUERY_KEY_SETTINGS, () => _settings, {
-    onSuccess: (data) => LocalStorageConfig.set('cache.settings', _settings),
+    onSuccess: (data) => LocalStorageConfig.set('clientConfig/cache.settings', _settings),
   });
 
   const onChange = (newSettings: SqluiFrontend.Settings) => {
@@ -361,7 +361,7 @@ function _useConnectionQueries() {
         // this is the first time
         // try pulling it in from sessionStorage
         _connectionQueries = SessionStorageConfig.get<SqluiFrontend.ConnectionQuery[]>(
-          'cache.connectionQueries',
+          'clientConfig/cache.connectionQueries',
           [],
         );
 
@@ -392,7 +392,7 @@ function _useConnectionQueries() {
     },
     {
       onSuccess: (data) => {
-        SessionStorageConfig.set('cache.connectionQueries', data);
+        SessionStorageConfig.set('clientConfig/cache.connectionQueries', data);
       },
     },
   );
