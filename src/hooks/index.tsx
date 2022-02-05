@@ -282,12 +282,12 @@ export function useShowHide() {
       QUERY_KEY_TREEVISIBLES,
       () => ({ ..._treeVisibles }),
     );
-  }
+  };
 
   return {
     visibles: visibles || {},
     onToggle,
-    onClear
+    onClear,
   };
 }
 

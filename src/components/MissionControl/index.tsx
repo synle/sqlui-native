@@ -173,7 +173,7 @@ export default function MissionControl() {
       // reveal
       onToggleConnectionVisible(branchToReveal, true);
     }
-  }
+  };
 
   const onShowQueryWithDirection = (direction: number) => {
     if (!queries || !activeQuery) {

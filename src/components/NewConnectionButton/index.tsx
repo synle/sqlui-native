@@ -39,8 +39,6 @@ export default function NewConnectionButton() {
     },
   ];
 
-
-
   return (
     <Box sx={{ textAlign: 'center', marginBottom: 2, marginTop: 1 }}>
       <SplitButton

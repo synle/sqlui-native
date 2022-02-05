@@ -203,7 +203,7 @@ interface ConnectionRevealButtonProps {
   query: SqluiFrontend.ConnectionQuery;
 }
 function ConnectionRevealButton(props: ConnectionRevealButtonProps) {
-    const { query } = props;
+  const { query } = props;
   const { selectCommand } = useCommands();
 
   if (!query) {
