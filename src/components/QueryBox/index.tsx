@@ -20,6 +20,7 @@ import {
   useGetDatabases,
   refreshAfterExecution,
 } from 'src/hooks';
+import { useCommands } from 'src/components/MissionControl';
 import CodeEditorBox from 'src/components/CodeEditorBox';
 import ResultBox from 'src/components/ResultBox';
 import Select from 'src/components/Select';
@@ -202,27 +203,8 @@ interface ConnectionRevealButtonProps {
   query: SqluiFrontend.ConnectionQuery;
 }
 function ConnectionRevealButton(props: ConnectionRevealButtonProps) {
-  const { query } = props;
-  const { onToggle } = useShowHide();
-
-  const onReveal = () => {
-    const { databaseId, connectionId } = query;
-
-    if (!connectionId) {
-      return;
-    }
-
-    const branchesToReveal: string[] = [connectionId];
-
-    if (databaseId && connectionId) {
-      branchesToReveal.push([connectionId, databaseId].join(' > '));
-    }
-
-    for (const branchToReveal of branchesToReveal) {
-      // reveal
-      onToggle(branchToReveal, true);
-    }
-  };
+    const { query } = props;
+  const { selectCommand } = useCommands();
 
   if (!query) {
     return null;
@@ -237,7 +219,7 @@ function ConnectionRevealButton(props: ConnectionRevealButtonProps) {
           type='button'
           variant='outlined'
           startIcon={<PreviewIcon />}
-          onClick={onReveal}
+          onClick={() => selectCommand({ event: 'clientEvent/query/reveal' })}
           sx={{ ml: 3 }}
           disabled={disabled}>
           Reveal

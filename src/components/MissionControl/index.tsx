@@ -114,7 +114,7 @@ export default function MissionControl() {
   const { mutateAsync: importConnection } = useImportConnection();
   const { data: connections, isLoading: loadingConnections } = useGetConnections();
   const { settings, onChange: onChangeSettings } = useSettings();
-  const { onClear: onClearShowHides } = useShowHide();
+  const { onClear: onClearConnectionVisibles, onToggle: onToggleConnectionVisible } = useShowHide();
 
   const onCloseQuery = async (query: SqluiFrontend.ConnectionQuery) => {
     try {
@@ -155,6 +155,25 @@ export default function MissionControl() {
       'text/json',
     );
   };
+
+  const onRevealQueryConnection = async (query: SqluiFrontend.ConnectionQuery) => {
+    const { databaseId, connectionId } = query;
+
+    if (!connectionId) {
+      return;
+    }
+
+    const branchesToReveal: string[] = [connectionId];
+
+    if (databaseId && connectionId) {
+      branchesToReveal.push([connectionId, databaseId].join(' > '));
+    }
+
+    for (const branchToReveal of branchesToReveal) {
+      // reveal
+      onToggleConnectionVisible(branchToReveal, true);
+    }
+  }
 
   const onShowQueryWithDirection = (direction: number) => {
     if (!queries || !activeQuery) {
@@ -457,7 +476,7 @@ export default function MissionControl() {
           break;
 
         case 'clientEvent/clearShowHides':
-          onClearShowHides();
+          onClearConnectionVisibles();
           break;
 
         case 'clientEvent/changeDarkMode':
@@ -526,6 +545,13 @@ export default function MissionControl() {
           // this closes the active query
           if (activeQuery) {
             onCloseQuery(activeQuery);
+          }
+          break;
+
+        case 'clientEvent/query/reveal':
+          // this reveal the current query connection
+          if (activeQuery) {
+            onRevealQueryConnection(activeQuery);
           }
           break;
 

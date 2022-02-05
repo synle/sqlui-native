@@ -50,7 +50,8 @@ const ALL_COMMAND_PALETTE_OPTIONS: CommandOption[] = [
   { event: 'clientEvent/query/export', label: 'Export Current Query', useCurrentQuery: true },
   { event: 'clientEvent/query/duplicate', label: 'Duplicate Current Query', useCurrentQuery: true },
   { event: 'clientEvent/query/close', label: 'Close Current Query', useCurrentQuery: true },
-  { event: 'clientEvent/query/closeOther', label: 'Close Other Query', useCurrentQuery: true },
+  { event: 'clientEvent/query/closeOther', label: 'Close Other Query' },
+  { event: 'clientEvent/query/reveal', label: 'Reveal Query Connection' },
 ];
 
 export default function CommandPalette(props: CommandPaletteProps) {
