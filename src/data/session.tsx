@@ -2,7 +2,7 @@ import { SqluiCore, SqluiFrontend } from 'typings';
 import { SessionStorageConfig } from 'src/data/config';
 
 export function getDefaultSessionId() {
-  let sessionId = SessionStorageConfig.get<string>('api.sessionId', '');
+  let sessionId = SessionStorageConfig.get<string>('clientConfig/api.sessionId', '');
 
   // @ts-ignore
   if (window.isElectron) {
@@ -26,11 +26,11 @@ export function getRandomSessionId() {
 
 export function getCurrentSessionId() {
   let sessionId = getDefaultSessionId();
-  SessionStorageConfig.set('api.sessionId', sessionId);
+  SessionStorageConfig.set('clientConfig/api.sessionId', sessionId);
   return sessionId;
 }
 
 export function setCurrentSessionId(newSessionId: string) {
   SessionStorageConfig.clear();
-  SessionStorageConfig.set('api.sessionId', newSessionId);
+  SessionStorageConfig.set('clientConfig/api.sessionId', newSessionId);
 }
