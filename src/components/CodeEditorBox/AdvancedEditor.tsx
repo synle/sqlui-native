@@ -1,5 +1,6 @@
 import { useRef, useState, useEffect, useCallback } from 'react';
-import Editor, { useMonaco } from '@monaco-editor/react';
+import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
+import { styled, createTheme, ThemeProvider } from '@mui/system';
 import { useDarkModeSetting } from 'src/hooks';
 
 type AdvancedEditorProps = {
@@ -9,43 +10,41 @@ type AdvancedEditorProps = {
   onBlur?: () => void;
 };
 
+const AdvancedEditorContainer = styled('div')(({ theme }) => {
+  return {
+    height: '300px',
+    width: '100%',
+  };
+});
+
+const DEFAULT_OPTIONS = {
+  // lineNumbers: 'off',
+  glyphMargin: false,
+  folding: false,
+  minimap: {
+    enabled: false,
+  },
+};
+
 export default function AdvancedEditor(props: AdvancedEditorProps) {
-  const monaco = useMonaco();
   const colorMode = useDarkModeSetting();
+  const theme = colorMode === 'dark' ? 'vs-dark' : 'light';
+
+  const [editor, setEditor] = useState<monaco.editor.IStandaloneCodeEditor | null>(null);
+  const monacoEl = useRef(null);
 
   useEffect(() => {
-    if (monaco) {
-      console.log('here is the monaco isntance:', monaco);
-      debugger;
-      // monaco.editor.onDidBlurEditorWidget(()=>{
-      //      console.log("Blur event triggerd !")
-      // })
+    if (monacoEl && !editor) {
+      setEditor(
+        monaco.editor.create(monacoEl.current!, {
+          value: ['function x() {', '\tconsole.log("Hello world!");', '}'].join('\n'),
+          language: 'typescript',
+        }),
+      );
     }
-  }, [monaco]);
 
-  const onChange = (newValue?: string) => {
-    console.log('onChange advanced', newValue)
-    props.onChange && props.onChange(newValue || '');
-  };
+    return () => editor?.dispose();
+  }, [monacoEl.current]);
 
-  return (
-    <>
-      <Editor
-        height='300px'
-        language={props.language}
-        value={props.value}
-        onChange={(newValue) => onChange(newValue || '')}
-        theme={colorMode === 'dark' ? 'vs-dark' : 'light'}
-        options={{
-          // lineNumbers: 'off',
-          glyphMargin: false,
-          folding: false,
-          minimap: {
-            enabled: false,
-          },
-        }}
-      />
-      {props.value}
-    </>
-  );
+  return <AdvancedEditorContainer ref={monacoEl} />;
 }
