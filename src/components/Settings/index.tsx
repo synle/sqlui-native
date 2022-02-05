@@ -48,7 +48,7 @@ export default function Settings(props: SettingsProps) {
         <Typography className='FormInput__Label' variant='subtitle1'>
           Theme Mode
           <Tooltip title='Application theme mode. Dark mode or light mode or follows system preference'>
-          <HelpIcon fontSize='small' sx={{ml: 1}}/>
+            <HelpIcon fontSize='small' sx={{ ml: 1 }} />
           </Tooltip>
         </Typography>
         <div className='FormInput__Row'>
@@ -64,7 +64,7 @@ export default function Settings(props: SettingsProps) {
         <Typography className='FormInput__Label' variant='subtitle1'>
           Editor Mode
           <Tooltip title='Which editor to use? Simple Editor vs Advanced Editor'>
-          <HelpIcon fontSize='small' sx={{ml: 1}}/>
+            <HelpIcon fontSize='small' sx={{ ml: 1 }} />
           </Tooltip>
         </Typography>
         <div className='FormInput__Row'>
@@ -79,7 +79,7 @@ export default function Settings(props: SettingsProps) {
         <Typography className='FormInput__Label' variant='subtitle1'>
           Editor Word Wrap
           <Tooltip title='Whether or not to wrap words inside of the editor by default'>
-          <HelpIcon fontSize='small' sx={{ml: 1}}/>
+            <HelpIcon fontSize='small' sx={{ ml: 1 }} />
           </Tooltip>
         </Typography>
         <div className='FormInput__Row'>
@@ -94,7 +94,7 @@ export default function Settings(props: SettingsProps) {
         <Typography className='FormInput__Label' variant='subtitle1'>
           Query Tab Orientation
           <Tooltip title='Query Tabs Orientation. Vertical tabs vs Horizontal tabs'>
-          <HelpIcon fontSize='small' sx={{ml: 1}}/>
+            <HelpIcon fontSize='small' sx={{ ml: 1 }} />
           </Tooltip>
         </Typography>
         <div className='FormInput__Row'>
@@ -110,7 +110,7 @@ export default function Settings(props: SettingsProps) {
         <Typography className='FormInput__Label' variant='subtitle1'>
           Query Size
           <Tooltip title='The default query size for Select SQL statements. Note this change only apply to future queries.'>
-          <HelpIcon fontSize='small' sx={{ml: 1}}/>
+            <HelpIcon fontSize='small' sx={{ ml: 1 }} />
           </Tooltip>
         </Typography>
         <div className='FormInput__Row'>
