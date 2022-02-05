@@ -452,7 +452,18 @@ export default function MissionControl() {
     }
 
     //@ts-ignore
-    settings.darkmode = newValue;
+    settings.darkMode = newValue;
+
+    onChangeSettings(settings);
+  };
+
+  const onChangeEditorMode = (newValue: string) => {
+    if (!settings) {
+      return;
+    }
+
+    //@ts-ignore
+    settings.editorMode = newValue;
 
     onChangeSettings(settings);
   };
@@ -481,6 +492,10 @@ export default function MissionControl() {
 
         case 'clientEvent/changeDarkMode':
           onChangeDarkMode(command.data as string);
+          break;
+
+        case 'clientEvent/changeEditorMode':
+          onChangeEditorMode(command.data as string);
           break;
 
         // overall commands

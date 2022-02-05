@@ -171,6 +171,7 @@ export default function SchemaEditor(props) {
   return (
     <StyledTextArea
       value={text}
+      onKeyDown={onInputKeyDown}
       onChange={onInputChange}
       onBlur={onInputBlur}
       placeholder={props.placeholder}

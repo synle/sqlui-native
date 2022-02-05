@@ -46,11 +46,11 @@
   {
     "_type": "query",
     "id": "query.1643578195409.9745654678705536",
-    "name": "aaa",
+    "name": "Simple Select Query",
     "sql": "SELECT\n  *\nFROM\n  artists\nLIMIT\n  10",
     "connectionId": "connection.1643485467072.6333713976068809",
     "databaseId": "music_store"
-  },
+  }
 ]
 ```
 
