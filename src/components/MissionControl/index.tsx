@@ -455,7 +455,7 @@ export default function MissionControl() {
     settings[key] = newValue;
 
     onChangeSettings(settings);
-  }
+  };
 
   // mission control commands
   async function _executeCommandPalette(command: Command) {
@@ -480,15 +480,15 @@ export default function MissionControl() {
           break;
 
         case 'clientEvent/changeDarkMode':
-          onUpdateSetting('darkMode', command.data as string)
+          onUpdateSetting('darkMode', command.data as string);
           break;
 
         case 'clientEvent/changeEditorMode':
-          onUpdateSetting('editorMode', command.data as string)
+          onUpdateSetting('editorMode', command.data as string);
           break;
 
         case 'clientEvent/changeWrapMode':
-          onUpdateSetting('wordWrap', command.data as string)
+          onUpdateSetting('wordWrap', command.data as string);
           break;
 
         // overall commands

@@ -39,7 +39,7 @@ export default function CodeEditorBox(props: CodeEditorProps) {
     </div>
   );
 
-  useEffect(() => setWordWrap(globalWordWrap), [globalWordWrap])
+  useEffect(() => setWordWrap(globalWordWrap), [globalWordWrap]);
 
   if (editorModeToUse === 'simple') {
     return (
