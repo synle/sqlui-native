@@ -1,4 +1,5 @@
 import { useRef, useState, useEffect, useCallback } from 'react';
+import { useAsyncDebounce } from 'react-table';
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
 import { styled, createTheme, ThemeProvider } from '@mui/system';
 import { useDarkModeSetting } from 'src/hooks';
@@ -31,25 +32,7 @@ export default function AdvancedEditor(props: AdvancedEditorProps) {
   const colorMode = useDarkModeSetting();
   const [editor, setEditor] = useState<monaco.editor.IStandaloneCodeEditor | null>(null);
   const monacoEl = useRef(null);
-
-  // this is used to clean up the editor
-  useEffect(() => {
-    return () => {
-      editor?.dispose();
-      setEditor(null);
-    };
-  }, []);
-
-  // we used this block to set the value of the editor
-  useEffect(() => {
-    if (editor) {
-      editor.setValue(props.value || '');
-    }
-  }, [editor, props.value]);
-
-  // here we will initiate the editor
-  // and can be also be used to update the settings
-  useEffect(() => {
+  const onSetupMonacoEditor = useAsyncDebounce(() => {
     editor?.dispose();
 
     if (monacoEl.current) {
@@ -69,7 +52,26 @@ export default function AdvancedEditor(props: AdvancedEditorProps) {
 
       setEditor(newEditor);
     }
-  }, [monacoEl, props.wordWrap, colorMode]);
+  }, 100);
+
+  // this is used to clean up the editor
+  useEffect(() => {
+    return () => {
+      editor?.dispose();
+      setEditor(null);
+    };
+  }, []);
+
+  // we used this block to set the value of the editor
+  useEffect(() => {
+    if (editor) {
+      editor.setValue(props.value || '');
+    }
+  }, [editor, props.value]);
+
+  // here we will initiate the editor
+  // and can be also be used to update the settings
+  useEffect(onSetupMonacoEditor, [monacoEl, props.wordWrap, colorMode]);
 
   return <AdvancedEditorContainer ref={monacoEl}></AdvancedEditorContainer>;
 }
