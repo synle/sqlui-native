@@ -335,7 +335,7 @@ export function useEditorModeSetting() {
 
   let value = settings?.editorMode;
 
-  if(value !== 'simple'){
+  if (value !== 'simple') {
     value = 'advanced';
   }
 

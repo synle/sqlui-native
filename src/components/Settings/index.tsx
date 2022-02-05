@@ -57,7 +57,7 @@ export default function Settings(props: SettingsProps) {
             <option value='light'>Prefers Light Mode</option>
           </Select>
         </div>
-        <Typography variant='subtitle1' gutterBottom={true} sx={{mt: 2}}>
+        <Typography variant='subtitle1' gutterBottom={true} sx={{ mt: 2 }}>
           Editor Mode
         </Typography>
         <div className='FormInput__Row'>

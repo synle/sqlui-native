@@ -498,7 +498,6 @@ export default function MissionControl() {
           onChangeEditorMode(command.data as string);
           break;
 
-
         // overall commands
         case 'clientEvent/import':
           try {
