@@ -17,3 +17,19 @@ li {
   padding: 0;
   margin: 0;
 }
+
+// scrollbar styles
+::-webkit-scrollbar {
+  width: 8px;
+
+  &-track {
+    background: #f0f0f0;
+  }
+
+  &-thumb {
+    background: #aaa;
+    &:hover {
+      background: #666;
+    }
+  }
+}
