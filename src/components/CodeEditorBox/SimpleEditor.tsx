@@ -12,7 +12,7 @@ const StyledTextArea = styled('textarea')(({ theme }) => {
     fontFamily: 'monospace',
     fontWeight: '700',
     width: '100%',
-    minHeight: '325px',
+    minHeight: '300px',
     padding: '10px',
     resize: 'vertical',
     outline: 'none',
@@ -157,5 +157,28 @@ export default function SchemaEditor(props) {
     }
   }, []);
 
-  return <StyledTextArea onKeyDown={(e) => onInputKeyDown(e)} {...props} />;
+  const { value, ...restProps } = props;
+  const [text, setText] = useState('');
+
+  const onInputChange = (e) => setText(e.target.value);
+
+  const onInputBlur = (e) => {
+    props.onBlur && props.onBlur(e.target.value);
+  };
+
+  useEffect(() => setText(value), [value])
+
+  return (
+    <StyledTextArea
+      value={text}
+      onChange={onInputChange}
+      onBlur={onInputBlur}
+      placeholder={props.placeholder}
+      autoFocus={props.autoFocus}
+      required={props.required}
+      style={{
+        whiteSpace: props.wordWrap ? 'initial' : 'nowrap',
+      }}
+    />
+  );
 }

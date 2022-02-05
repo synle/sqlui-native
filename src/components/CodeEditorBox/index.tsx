@@ -7,7 +7,7 @@ import SimpleEditor from 'src/components/CodeEditorBox/SimpleEditor';
 import AdvancedEditor from 'src/components/CodeEditorBox/AdvancedEditor';
 import { useDarkModeSetting } from 'src/hooks';
 
-let shouldUseSimpleEditor = false;
+
 
 interface CodeEditorProps {
   value?: string;
@@ -20,40 +20,40 @@ interface CodeEditorProps {
 }
 
 export default function CodeEditorBox(props: CodeEditorProps) {
+  const [wordWrap, setWordWrap] = useState(true);
   const onChange = (newValue: string) => {
     props.onChange && props.onChange(newValue);
   };
 
   // TODO: will add an option to let user decide which editor to use
-  // if(shouldUseSimpleEditor){
-  //   return (
-  //   <>
-  //     <SimpleEditor
-  //       className='CodeEditorBox'
-  //       value={value}
-  //       placeholder={props.placeholder}
-  //       onChange={(e: React.ChangeEvent<HTMLInputElement>) => setValue(e.target.value)}
-  //       onBlur={onChange}
-  //       data-language={props.language}
-  //       autoFocus={props.autoFocus}
-  //       required={props.required}
-  //       style={{
-  //         whiteSpace: wordWrap ? 'initial' : 'nowrap',
-  //       }}
-  //     />
-  //     <div style={{ textAlign: 'right' }}>
-  //       <ToggleButton
-  //         value='check'
-  //         selected={wordWrap}
-  //         onChange={() => setWordWrap(!wordWrap)}
-  //         size='small'>
-  //         {wordWrap ? <CheckBoxIcon /> : <CheckBoxOutlineBlankIcon />}
-  //         <span style={{ marginLeft: '5px' }}>Wrap</span>
-  //       </ToggleButton>
-  //     </div>
-  //   </>
-  // );
-  // }
+  let shouldUseSimpleEditor = false;
+
+  const contentToggleWordWrap = <div style={{ textAlign: 'right' }}>
+          <ToggleButton
+            value='check'
+            selected={wordWrap}
+            onChange={() => setWordWrap(!wordWrap)}
+            size='small'>
+            {wordWrap ? <CheckBoxIcon /> : <CheckBoxOutlineBlankIcon />}
+            <span style={{ marginLeft: '5px' }}>Wrap</span>
+          </ToggleButton>
+        </div>
+
+  if (shouldUseSimpleEditor) {
+    return (
+      <>
+        <SimpleEditor
+          value={props.value}
+          placeholder={props.placeholder}
+          onBlur={onChange}
+          autoFocus={props.autoFocus}
+          required={props.required}
+          wordWrap={wordWrap}
+        />
+        {contentToggleWordWrap}
+      </>
+    );
+  }
 
   return (
     <>
@@ -61,7 +61,9 @@ export default function CodeEditorBox(props: CodeEditorProps) {
         language={props.language}
         value={props.value}
         onBlur={onChange}
+        wordWrap={wordWrap}
       />
+      {contentToggleWordWrap}
     </>
   );
 }

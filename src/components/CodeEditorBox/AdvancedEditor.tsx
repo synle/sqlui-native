@@ -8,6 +8,7 @@ type AdvancedEditorProps = {
   value?: string;
   onChange?: (newValue: string) => void;
   onBlur?: (newValue: string) => void;
+  wordWrap?: boolean;
 };
 
 const AdvancedEditorContainer = styled('div')(({ theme }) => {
@@ -26,80 +27,49 @@ const DEFAULT_OPTIONS = {
   },
 };
 
-export function AdvancedEditor2(props: AdvancedEditorProps) {
+export default function AdvancedEditor(props: AdvancedEditorProps) {
   const colorMode = useDarkModeSetting();
-  const theme = colorMode === 'dark' ? 'vs-dark' : 'light';
-
   const [editor, setEditor] = useState<monaco.editor.IStandaloneCodeEditor | null>(null);
   const monacoEl = useRef(null);
 
+  // this is used to clean up the editor
   useEffect(() => {
-    if (monacoEl && !editor) {
-      const newEditor = monaco.editor.create(monacoEl.current!, {
-          language: 'sql',
-          glyphMargin: false,
-  folding: false,
-  minimap: {
-    enabled: false,
-  },
-        })
-
-      newEditor.onDidBlurEditorWidget(()=>{
-           console.log("Blur event triggerd !", newEditor.getValue())
-      })
-
-      setEditor(
-        monaco.editor.create(monacoEl.current!, {
-          language: 'sql',
-        }),
-      );
-
-    }
-
     return () => {
       editor?.dispose();
+      setEditor(null);
     };
-  }, [monacoEl.current]);
+  }, []);
 
+  // we used this block to set the value of the editor
   useEffect(() => {
-    if(editor){
-      console.log('Set', props.value)
+    if (editor) {
       editor.setValue(props.value || '');
     }
   }, [editor, props.value]);
 
-  return <div ref={monacoEl} style={{height: '300px'}}></div>;
-}
-
-
-export default function AdvancedEditor(props: AdvancedEditorProps) {
-  const [editor, setEditor] = useState<monaco.editor.IStandaloneCodeEditor | null>(null);
-  const monacoEl = useRef(null);
-
+  // here we will initiate the editor
+  // and can be also be used to update the settings
   useEffect(() => {
-    if (monacoEl && !editor) {
+    editor?.dispose();
+
+    if (monacoEl.current) {
       const newEditor = monaco.editor.create(monacoEl.current!, {
         value: props.value,
-        language: props.value
+        language: props.language,
+        minimap: {
+          enabled: false,
+        },
+        theme: colorMode === 'dark' ? 'vs-dark' : 'light',
+        wordWrap: props.wordWrap === true ? 'on' : 'off',
       });
 
-      newEditor.onDidBlurEditorWidget(()=>{
-           props.onBlur && props.onBlur(newEditor.getValue() || '');
-      })
+      newEditor.onDidBlurEditorWidget(() => {
+        props.onBlur && props.onBlur(newEditor.getValue() || '');
+      });
 
-      setEditor(
-        newEditor
-      );
+      setEditor(newEditor);
     }
+  }, [monacoEl, props.wordWrap, colorMode]);
 
-    return () => editor?.dispose();
-  }, [monacoEl.current]);
-
-  useEffect(() => {
-    if(editor){
-      editor.setValue(props.value || '');
-    }
-  }, [editor, props.value]);
-
-  return <div ref={monacoEl} style={{height: '200px', width: '100%'}}></div>;
+  return <AdvancedEditorContainer ref={monacoEl}></AdvancedEditorContainer>;
 }
