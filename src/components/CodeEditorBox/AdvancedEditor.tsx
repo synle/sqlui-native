@@ -39,6 +39,7 @@ export default function AdvancedEditor(props: AdvancedEditorProps) {
       const newEditor = monaco.editor.create(monacoEl.current!, {
         value: props.value,
         language: props.language,
+        automaticLayout: true,
         minimap: {
           enabled: false,
         },
