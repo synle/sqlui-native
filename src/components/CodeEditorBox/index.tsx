@@ -4,8 +4,10 @@ import ToggleButton from '@mui/material/ToggleButton';
 import Button from '@mui/material/Button';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
-import { grey } from '@mui/material/colors';
 import CodeEditor from 'src/components/CodeEditorBox/CodeEditor';
+import {
+  useDarkModeSetting,
+} from 'src/hooks';
 
 interface CodeEditorProps {
   value?: string;
@@ -18,6 +20,7 @@ interface CodeEditorProps {
 }
 
 export default function CodeEditorBox(props: CodeEditorProps) {
+  const colorMode = useDarkModeSetting();
   const [value, setValue] = useState('');
   const [wordWrap, setWordWrap] = useState(true);
 
@@ -32,10 +35,11 @@ export default function CodeEditorBox(props: CodeEditorProps) {
   return (
     <>
       <Editor
-       height="250px"
+       height="325px"
        defaultLanguage={props.language}
        defaultValue={props.value}
        onChange={(newValue) => onChange(newValue)}
+       theme={colorMode === 'dark' ? 'vs-dark': 'light'}
      />
     </>
   );
