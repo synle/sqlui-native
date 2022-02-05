@@ -64,6 +64,20 @@ When there is more than 20 tabs, the query tabs will be wrapped vertically.
 Similar to VS Code and Sublime Text, sqlui-native comes with a command palette that lets you reach your mostly used command via a key combo `CMD + P` or `Ctrl + P` on Windows.
 ![image](https://user-images.githubusercontent.com/3792401/152029205-5798c53d-6304-40dc-b9d8-11700bfc03f2.png)
 
+### Connection Hints
+Sample URI connection string can be accessed by clicking on the `Show Connection Hints` on New / Edit Connection Page. Then you can click on the sample URI connection to use that sample connection string as a starting place.
+
+![image](https://user-images.githubusercontent.com/3792401/152658433-74fdb868-293c-46b4-8bc3-ec0008f32b2d.png)
+
+
+### Settings
+Settings can be accessed via the top right menu icon. It allows you to set up preferred settings for things like Editor and Color Theme, etc...
+
+![image](https://user-images.githubusercontent.com/3792401/152658383-10a204b8-ab45-46be-87f3-03084cc2ae7a.png)
+
+![image](https://user-images.githubusercontent.com/3792401/152658348-fc4c295f-0b45-463b-b543-7a97101669c8.png)
+
+
 ## Contributing
 - [Repo](https://github.com/synle/sqlui-native)
 
