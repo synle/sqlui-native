@@ -14,10 +14,12 @@ interface TabsProps {
   onTabChange: (newTabIdx: number) => void;
   tabHeaders: string[] | React.ReactNode[];
   tabContents: React.ReactNode[];
+  orientation?: 'vertical' | 'horizontal';
 }
 
 export default function MyTabs(props: TabsProps) {
   const { tabIdx, tabHeaders, tabContents } = props;
+  let {orientation} = props;
 
   const visibleTab = tabContents[tabIdx];
 
@@ -25,16 +27,18 @@ export default function MyTabs(props: TabsProps) {
     props.onTabChange && props.onTabChange(newTabIdx);
   };
 
-  let isVerticalTabs = tabHeaders.length > VERTICAL_TAB_THRESHOLD;
+  if(!orientation){
+    orientation = tabHeaders.length > VERTICAL_TAB_THRESHOLD ? 'vertical' : 'horizontal'
+  }
 
   return (
-    <section className={isVerticalTabs ? 'Tabs Tabs__Vertical' : 'Tabs Tabs__Horizontal'}>
+    <section className={orientation === 'vertical' ? 'Tabs Tabs__Vertical' : 'Tabs Tabs__Horizontal'}>
       <Tabs
         value={tabIdx}
         onChange={(_e, newTabIdx) => onTabChange(newTabIdx)}
         variant='scrollable'
         aria-label='Tabs'
-        orientation={isVerticalTabs ? 'vertical' : 'horizontal'}
+        orientation={orientation}
         className='Tab__Headers'>
         {tabHeaders.map((tabHeader, idx) => (
           <Tab key={idx} label={<div className='Tab__Header'>{tabHeader}</div>}></Tab>

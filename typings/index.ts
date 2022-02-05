@@ -107,6 +107,7 @@ export module SqluiFrontend {
     darkMode?: 'dark' | 'light';
     editorMode?: 'advanced' | 'simple';
     wordWrap?: 'wrap';
+    queryTabOrientation?: 'vertical' | 'horizontal';
   };
 
   export type SettingKey = keyof Settings;
@@ -154,6 +155,7 @@ export module SqluiEnums {
     | 'clientEvent/checkForUpdate'
     | 'clientEvent/showCommandPalette'
     | 'clientEvent/clearShowHides'
+    | 'clientEvent/changeQueryTabOrientation'
     | 'clientEvent/import'
     | 'clientEvent/exportAll'
     | 'clientEvent/connection/new'

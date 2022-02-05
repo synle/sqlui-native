@@ -491,6 +491,10 @@ export default function MissionControl() {
           onUpdateSetting('wordWrap', command.data as string);
           break;
 
+        case 'clientEvent/changeQueryTabOrientation':
+          onUpdateSetting('queryTabOrientation', command.data as string);
+          break;
+
         // overall commands
         case 'clientEvent/import':
           try {

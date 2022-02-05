@@ -21,6 +21,7 @@ import {
   useConnectionQueries,
   useConnectionQuery,
   getExportedQuery,
+  useQueryTabOrientationSetting,
   useActiveConnectionQuery,
 } from 'src/hooks';
 import { SqluiFrontend } from 'typings';
@@ -33,6 +34,7 @@ export default function QueryBoxTabs() {
   const [init, setInit] = useState(false);
   const { queries, isLoading } = useConnectionQueries();
   const { selectCommand } = useCommands();
+  const queryTabOrientation = useQueryTabOrientationSetting();
 
   const onShowQuery = async (query: SqluiFrontend.ConnectionQuery) =>
     selectCommand({ event: 'clientEvent/query/show', data: query });

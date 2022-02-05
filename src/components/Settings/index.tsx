@@ -81,6 +81,20 @@ export default function Settings(props: SettingsProps) {
             <option value='wrap'>Wrap</option>
           </Select>
         </div>
+        <Typography variant='subtitle1' gutterBottom={true} sx={{ mt: 2 }}>
+          Query Tab Orientation
+        </Typography>
+        <div className='FormInput__Row'>
+          <Select
+            value={settings.queryTabOrientation}
+            onChange={(newValue) => onSettingChange('queryTabOrientation', newValue)}
+            sx={{ width: '100%' }}>
+            <option value=''>Application will find which orientation best fit</option>
+            <option value='horizontal'>Horizontal</option>
+            <option value='vertical'>Vertical</option>
+          </Select>
+        </div>
+
       </>
     );
   }

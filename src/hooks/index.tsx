@@ -350,6 +350,13 @@ export function useWordWrapSetting() {
   return value === 'wrap';
 }
 
+export function useQueryTabOrientationSetting() {
+  const { settings } = useSettings();
+
+  return settings?.queryTabOrientation;
+}
+
+
 // connection queries
 let _connectionQueries: SqluiFrontend.ConnectionQuery[];
 
