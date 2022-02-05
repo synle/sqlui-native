@@ -14,6 +14,7 @@ import {
   useShowHide,
   useGetConnectionById,
   useActiveConnectionQuery,
+  useQuerySizeSetting,
 } from 'src/hooks';
 import DropdownButton from 'src/components/DropdownButton';
 import { getTableActions } from 'src/data/sql';
@@ -27,6 +28,7 @@ type TableActionsProps = {
 
 export default function TableActions(props: TableActionsProps) {
   const [open, setOpen] = useState(false);
+  const querySize = useQuerySizeSetting();
   let databaseId: string | undefined = props.databaseId;
   let connectionId: string | undefined = props.connectionId;
   let tableId: string | undefined = props.tableId;
@@ -56,6 +58,7 @@ export default function TableActions(props: TableActionsProps) {
     databaseId,
     tableId,
     columns: columns || [],
+    querySize,
   });
 
   const onShowQuery = (queryToShow: string) => {

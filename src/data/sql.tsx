@@ -5,6 +5,7 @@ export module SqlAction {
     dialect?: string;
     connectionId?: string;
     databaseId?: string;
+    querySize: number;
   };
 
   export type DatabaseInput = SqlAction.CoreInput & {
@@ -22,8 +23,6 @@ export module SqlAction {
   };
 }
 
-const QUERY_LIMIT = 10;
-
 function getDivider() {
   return {
     label: 'divider',
@@ -37,28 +36,28 @@ function getSelectAllColumns(input: SqlAction.TableInput): SqlAction.Output | un
     case 'mssql':
       return {
         label,
-        query: `SELECT TOP ${QUERY_LIMIT} * \nFROM ${input.tableId}`,
+        query: `SELECT TOP ${input.querySize} * \nFROM ${input.tableId}`,
       };
     case 'postgres':
       return {
         label,
-        query: `SELECT * \nFROM ${input.tableId} \nLIMIT ${QUERY_LIMIT}`,
+        query: `SELECT * \nFROM ${input.tableId} \nLIMIT ${input.querySize}`,
       };
     case 'sqlite':
       return {
         label,
-        query: `SELECT * \nFROM ${input.tableId} \nLIMIT ${QUERY_LIMIT}`,
+        query: `SELECT * \nFROM ${input.tableId} \nLIMIT ${input.querySize}`,
       };
     case 'mariadb':
     case 'mysql':
       return {
         label,
-        query: `SELECT * \nFROM ${input.tableId} \nLIMIT ${QUERY_LIMIT}`,
+        query: `SELECT * \nFROM ${input.tableId} \nLIMIT ${input.querySize}`,
       };
     case 'cassandra':
       return {
         label,
-        query: `SELECT * \nFROM ${input.tableId} \nLIMIT ${QUERY_LIMIT}`,
+        query: `SELECT * \nFROM ${input.tableId} \nLIMIT ${input.querySize}`,
       };
   }
 }
@@ -99,29 +98,29 @@ function getSelectSpecificColumns(input: SqlAction.TableInput): SqlAction.Output
     case 'mssql':
       return {
         label,
-        query: `SELECT TOP ${QUERY_LIMIT} ${columnString} \nFROM ${input.tableId} -- WHERE ${whereColumnString}`,
+        query: `SELECT TOP ${input.querySize} ${columnString} \nFROM ${input.tableId} -- WHERE ${whereColumnString}`,
       };
     case 'postgres':
       return {
         label,
-        query: `SELECT ${columnString} \nFROM ${input.tableId} \n -- WHERE ${whereColumnString} \nLIMIT ${QUERY_LIMIT}`,
+        query: `SELECT ${columnString} \nFROM ${input.tableId} \n -- WHERE ${whereColumnString} \nLIMIT ${input.querySize}`,
       };
     case 'sqlite':
       return {
         label,
-        query: `SELECT ${columnString} \nFROM ${input.tableId} \n -- WHERE ${whereColumnString} \nLIMIT ${QUERY_LIMIT}`,
+        query: `SELECT ${columnString} \nFROM ${input.tableId} \n -- WHERE ${whereColumnString} \nLIMIT ${input.querySize}`,
       };
     case 'mariadb':
     case 'mysql':
       return {
         label,
-        query: `SELECT ${columnString} \nFROM ${input.tableId} \n -- WHERE ${whereColumnString} \nLIMIT ${QUERY_LIMIT}`,
+        query: `SELECT ${columnString} \nFROM ${input.tableId} \n -- WHERE ${whereColumnString} \nLIMIT ${input.querySize}`,
       };
 
     case 'cassandra':
       return {
         label,
-        query: `SELECT ${columnString} \nFROM ${input.tableId} \n -- WHERE ${whereColumnString} \nLIMIT ${QUERY_LIMIT}`,
+        query: `SELECT ${columnString} \nFROM ${input.tableId} \n -- WHERE ${whereColumnString} \nLIMIT ${input.querySize}`,
       };
   }
 }

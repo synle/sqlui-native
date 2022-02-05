@@ -345,16 +345,17 @@ export function useEditorModeSetting() {
 
 export function useWordWrapSetting() {
   const { settings } = useSettings();
-
-  let value = settings?.wordWrap;
-
-  return value === 'wrap';
+  return settings?.wordWrap === 'wrap';
 }
 
 export function useQueryTabOrientationSetting() {
   const { settings } = useSettings();
-
   return settings?.queryTabOrientation;
+}
+
+export function useQuerySizeSetting() {
+  const { settings } = useSettings();
+  return parseInt(settings?.querySize + '') || 100;
 }
 
 // connection queries

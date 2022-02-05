@@ -60,8 +60,13 @@
 }
 
 .FormInput {
+  &__Label {
+    padding-block: 8px;
+    display: flex;
+    align-items: center;
+  }
   &__Row {
-    margin-top: 15px;
+    margin-bottom: 15px;
   }
 }
 
