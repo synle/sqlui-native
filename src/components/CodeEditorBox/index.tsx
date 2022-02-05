@@ -5,7 +5,7 @@ import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import SimpleEditor from 'src/components/CodeEditorBox/SimpleEditor';
 import AdvancedEditor from 'src/components/CodeEditorBox/AdvancedEditor';
-import { useEditorModeSetting } from 'src/hooks';
+import { useEditorModeSetting, useWordWrapSetting } from 'src/hooks';
 
 interface CodeEditorProps {
   value?: string;
@@ -18,7 +18,8 @@ interface CodeEditorProps {
 }
 
 export default function CodeEditorBox(props: CodeEditorProps) {
-  const [wordWrap, setWordWrap] = useState(true);
+  const globalWordWrap = useWordWrapSetting();
+  const [wordWrap, setWordWrap] = useState(false);
   const editorModeToUse = useEditorModeSetting();
 
   const onChange = (newValue: string) => {
@@ -37,6 +38,8 @@ export default function CodeEditorBox(props: CodeEditorProps) {
       </ToggleButton>
     </div>
   );
+
+  useEffect(() => setWordWrap(globalWordWrap), [globalWordWrap]);
 
   if (editorModeToUse === 'simple') {
     return (
