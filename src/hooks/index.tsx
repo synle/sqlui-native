@@ -318,21 +318,28 @@ export function useSettings() {
 }
 
 export function useDarkModeSetting() {
-  const { isLoading, settings, onChange } = useSettings();
+  const { settings } = useSettings();
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
 
-  let darkmode: 'dark' | 'light' | undefined;
-  let shouldUseSystemDarkMode = isLoading;
+  let value = settings?.darkMode;
 
-  if (!isLoading && settings && settings.darkmode) {
-    darkmode = settings.darkmode;
+  if (!value) {
+    value = prefersDarkMode ? 'dark' : 'light';
   }
 
-  if (darkmode !== 'light' && darkmode !== 'dark') {
-    darkmode = prefersDarkMode ? 'dark' : 'light';
+  return value;
+}
+
+export function useEditorModeSetting() {
+  const { settings } = useSettings();
+
+  let value = settings?.editorMode;
+
+  if (value !== 'simple') {
+    value = 'advanced';
   }
 
-  return darkmode;
+  return value;
 }
 
 // connection queries

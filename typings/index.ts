@@ -104,7 +104,8 @@ export module SqluiFrontend {
   export type TreeVisibilities = { [index: string]: boolean };
 
   export type Settings = {
-    darkmode?: 'dark' | 'light';
+    darkMode?: 'dark' | 'light';
+    editorMode?: 'advanced' | 'simple';
   };
 
   export type SettingKey = keyof Settings;
@@ -147,6 +148,7 @@ export module SqluiEnums {
   export type ClientEventKey =
     | 'clientEvent/showSettings'
     | 'clientEvent/changeDarkMode'
+    | 'clientEvent/changeEditorMode'
     | 'clientEvent/checkForUpdate'
     | 'clientEvent/showCommandPalette'
     | 'clientEvent/clearShowHides'
