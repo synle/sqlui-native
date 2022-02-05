@@ -275,9 +275,19 @@ export function useShowHide() {
     );
   };
 
+  const onClear = () => {
+    _treeVisibles = {};
+
+    queryClient.setQueryData<SqluiFrontend.TreeVisibilities | undefined>(
+      QUERY_KEY_TREEVISIBLES,
+      () => ({ ..._treeVisibles }),
+    );
+  };
+
   return {
     visibles: visibles || {},
     onToggle,
+    onClear,
   };
 }
 

@@ -56,7 +56,7 @@ export default function ColumnDescription(props: ColumnDescriptionProps) {
   return (
     <div className='ColumnDescription'>
       {columns
-        .filter((column, idx) => showAllColumns || idx < MAX_COLUMN_SIZE_TO_SHOW)
+        .filter((column, idx) => showAllColumns || idx <= MAX_COLUMN_SIZE_TO_SHOW)
         .map((column) => {
           const key = [connectionId, databaseId, tableId, column.name].join(' > ');
           return (
