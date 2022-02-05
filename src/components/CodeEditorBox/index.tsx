@@ -5,7 +5,7 @@ import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import SimpleEditor from 'src/components/CodeEditorBox/SimpleEditor';
 import AdvancedEditor from 'src/components/CodeEditorBox/AdvancedEditor';
-import { useDarkModeSetting } from 'src/hooks';
+import { useEditorModeSetting } from 'src/hooks';
 
 interface CodeEditorProps {
   value?: string;
@@ -19,12 +19,11 @@ interface CodeEditorProps {
 
 export default function CodeEditorBox(props: CodeEditorProps) {
   const [wordWrap, setWordWrap] = useState(true);
+  const editorModeToUse = useEditorModeSetting();
+
   const onChange = (newValue: string) => {
     props.onChange && props.onChange(newValue);
   };
-
-  // TODO: will add an option to let user decide which editor to use
-  let shouldUseSimpleEditor = false;
 
   const contentToggleWordWrap = (
     <div style={{ textAlign: 'right' }}>
@@ -39,7 +38,7 @@ export default function CodeEditorBox(props: CodeEditorProps) {
     </div>
   );
 
-  if (shouldUseSimpleEditor) {
+  if (editorModeToUse === 'simple') {
     return (
       <>
         <SimpleEditor

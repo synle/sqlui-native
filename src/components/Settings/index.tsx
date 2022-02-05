@@ -49,12 +49,24 @@ export default function Settings(props: SettingsProps) {
         </Typography>
         <div className='FormInput__Row'>
           <Select
-            value={settings.darkmode}
-            onChange={(newValue) => onSettingChange('darkmode', newValue)}
+            value={settings.darkMode}
+            onChange={(newValue) => onSettingChange('darkMode', newValue)}
             sx={{ width: '100%' }}>
             <option value=''>Follows System Settings</option>
             <option value='dark'>Prefers Dark Mode</option>
             <option value='light'>Prefers Light Mode</option>
+          </Select>
+        </div>
+        <Typography variant='subtitle1' gutterBottom={true} sx={{mt: 2}}>
+          Editor Mode
+        </Typography>
+        <div className='FormInput__Row'>
+          <Select
+            value={settings.editorMode || 'advanced'}
+            onChange={(newValue) => onSettingChange('editorMode', newValue)}
+            sx={{ width: '100%' }}>
+            <option value='advanced'>Advanced Mode</option>
+            <option value='simple'>Simple Mode</option>
           </Select>
         </div>
       </>
