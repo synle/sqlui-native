@@ -7,8 +7,6 @@ import SimpleEditor from 'src/components/CodeEditorBox/SimpleEditor';
 import AdvancedEditor from 'src/components/CodeEditorBox/AdvancedEditor';
 import { useDarkModeSetting } from 'src/hooks';
 
-
-
 interface CodeEditorProps {
   value?: string;
   onChange?: (newValue: string) => void;
@@ -28,16 +26,18 @@ export default function CodeEditorBox(props: CodeEditorProps) {
   // TODO: will add an option to let user decide which editor to use
   let shouldUseSimpleEditor = false;
 
-  const contentToggleWordWrap = <div style={{ textAlign: 'right' }}>
-          <ToggleButton
-            value='check'
-            selected={wordWrap}
-            onChange={() => setWordWrap(!wordWrap)}
-            size='small'>
-            {wordWrap ? <CheckBoxIcon /> : <CheckBoxOutlineBlankIcon />}
-            <span style={{ marginLeft: '5px' }}>Wrap</span>
-          </ToggleButton>
-        </div>
+  const contentToggleWordWrap = (
+    <div style={{ textAlign: 'right' }}>
+      <ToggleButton
+        value='check'
+        selected={wordWrap}
+        onChange={() => setWordWrap(!wordWrap)}
+        size='small'>
+        {wordWrap ? <CheckBoxIcon /> : <CheckBoxOutlineBlankIcon />}
+        <span style={{ marginLeft: '5px' }}>Wrap</span>
+      </ToggleButton>
+    </div>
+  );
 
   if (shouldUseSimpleEditor) {
     return (

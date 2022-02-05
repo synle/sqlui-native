@@ -166,7 +166,7 @@ export default function SchemaEditor(props) {
     props.onBlur && props.onBlur(e.target.value);
   };
 
-  useEffect(() => setText(value), [value])
+  useEffect(() => setText(value), [value]);
 
   return (
     <StyledTextArea
