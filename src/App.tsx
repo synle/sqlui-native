@@ -27,6 +27,7 @@ import {
   useDarkModeSetting,
 } from 'src/hooks';
 import { getCurrentSessionId, getDefaultSessionId, setCurrentSessionId } from 'src/data/session';
+import 'src/renderer';
 
 export default function App() {
   const [hasValidSessionId, setHasValidSessionId] = useState(false);
