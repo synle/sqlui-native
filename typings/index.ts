@@ -141,6 +141,7 @@ export module SqluiEnums {
     | 'clientConfig/cache.connectionQueries'
     | 'clientConfig/cache.treeVisibles'
     | 'clientConfig/cache.settings'
+    | 'clientConfig/leftPanelWidth'
     | 'clientConfig/api.sessionId';
 
   /**
