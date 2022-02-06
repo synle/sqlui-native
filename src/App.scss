@@ -18,11 +18,11 @@
 
   &__LeftPane {
     flex-shrink: 0;
-    min-width: 275px;
+    min-width: 250px;
     max-width: 60%;
     height: 100%;
     overflow-y: auto;
-    transition: all 1s ease;
+    transition: all 0.8s ease;
   }
 
   &__RightPane {
@@ -31,7 +31,7 @@
     padding-left: 4px;
     height: 100%;
     overflow-y: auto;
-    transition: all 1s ease;
+    transition: all 0.8s ease;
   }
 }
 
