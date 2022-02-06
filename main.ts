@@ -95,6 +95,12 @@ function setupMenu() {
           click: async (item, win) => sendMessage(win as BrowserWindow, 'clientEvent/query/new'),
         },
         {
+          id: 'menu-query-rename',
+          label: 'Rename Query',
+          accelerator: 'F2',
+          click: async (item, win) => sendMessage(win as BrowserWindow, 'clientEvent/query/rename'),
+        },
+        {
           type: 'separator',
         },
         {

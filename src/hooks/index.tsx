@@ -353,9 +353,11 @@ export function useQueryTabOrientationSetting() {
   return settings?.queryTabOrientation;
 }
 
+export const DEFAULT_QUERY_SIZE = 100;
+
 export function useQuerySizeSetting() {
   const { settings } = useSettings();
-  return parseInt(settings?.querySize + '') || 100;
+  return parseInt(settings?.querySize + '') || DEFAULT_QUERY_SIZE;
 }
 
 // connection queries

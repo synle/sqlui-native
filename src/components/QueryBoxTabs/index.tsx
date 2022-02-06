@@ -26,7 +26,7 @@ import {
 } from 'src/hooks';
 import { SqluiFrontend } from 'typings';
 import { useActionDialogs } from 'src/components/ActionDialogs';
-import { useCommands } from 'src/components/MissionControl';
+import { useCommands, allMenuKeys } from 'src/components/MissionControl';
 import { downloadText } from 'src/data/file';
 
 export default function QueryBoxTabs() {
@@ -69,18 +69,12 @@ export default function QueryBoxTabs() {
   // we only want to show the query menu for
   // electron only when we can see the query tabs...
   useEffect(() => {
-    const queryMenuKeys = [
-      'menu-query-new',
-      'menu-query-prev',
-      'menu-query-next',
-      'menu-query-close',
-    ];
     //@ts-ignore
-    window.toggleElectronMenu(true, queryMenuKeys);
+    window.toggleElectronMenu(true, allMenuKeys);
 
     return () => {
       //@ts-ignore
-      window.toggleElectronMenu(false, queryMenuKeys);
+      window.toggleElectronMenu(false, allMenuKeys);
     };
   }, []);
 
