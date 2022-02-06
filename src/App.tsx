@@ -1,3 +1,4 @@
+import './App.scss';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
@@ -10,8 +11,8 @@ import Alert from '@mui/material/Alert';
 import CircularProgress from '@mui/material/CircularProgress';
 import { ThemeProvider, useTheme, createTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import './App.scss';
 import { HashRouter, Routes, Route, Link } from 'react-router-dom';
+import 'src/electronRenderer';
 import EditConnectionPage from 'src/views/EditConnectionPage';
 import NewConnectionPage from 'src/views/NewConnectionPage';
 import MainPage from 'src/views/MainPage';
@@ -27,7 +28,6 @@ import {
   useDarkModeSetting,
 } from 'src/hooks';
 import { getCurrentSessionId, getDefaultSessionId, setCurrentSessionId } from 'src/data/session';
-import 'src/renderer';
 
 export default function App() {
   const [hasValidSessionId, setHasValidSessionId] = useState(false);
