@@ -12,9 +12,14 @@ export default function ElectronEventListener() {
     //@ts-ignore
     window?.ipcRenderer?.on('sqluiNativeEvent/ipcElectronCommand', (event, data) => {
       if (dialog) {
-        // if there is already a dialog, then ignore this command
-        console.log('>> clientEvent Ignored (Active Dialog)', event, data);
-        return;
+        switch (data) {
+          case 'clientEvent/checkForUpdate':
+            break;
+          default:
+            // if there is already a dialog, then ignore this command
+            console.log('>> clientEvent Ignored (Active Dialog)', event, data);
+            return; // early exits
+        }
       }
 
       console.log('>> clientEvent Executed', event, data);
