@@ -13,7 +13,7 @@ import FormControl from '@mui/material/FormControl';
 import SaveIcon from '@mui/icons-material/Save';
 import HelpIcon from '@mui/icons-material/Help';
 import ConnectionTypeIcon from 'src/components/ConnectionTypeIcon';
-import { useSettings } from 'src/hooks';
+import { useSettings, useQuerySizeSetting } from 'src/hooks';
 import TestConnectionButton from 'src/components/TestConnectionButton';
 import Toast from 'src/components/Toast';
 import { SqluiCore, SqluiFrontend } from 'typings';
@@ -24,6 +24,7 @@ interface SettingsProps {}
 
 export default function Settings(props: SettingsProps) {
   const { isLoading, settings, onChange } = useSettings();
+  const querySize = useQuerySizeSetting();
 
   const onSettingChange = (key: SqluiFrontend.SettingKey, value: any) => {
     if (!settings) {
@@ -115,7 +116,7 @@ export default function Settings(props: SettingsProps) {
         </Typography>
         <div className='FormInput__Row'>
           <TextField
-            defaultValue={settings.querySize}
+            defaultValue={settings.querySize || querySize}
             onBlur={(e) => onSettingChange('querySize', e.target.value)}
             required
             size='small'

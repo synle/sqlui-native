@@ -80,11 +80,17 @@ export function useCommands() {
   };
 }
 
-const allMenuKeys = [
+/**
+ * These are all the menu keys that should be disabled when the query tab
+ * is not visible. Triggering these events in the background will be confusing
+ * @type {Array}
+ */
+export const allMenuKeys = [
   'menu-connection-new',
   'menu-import',
   'menu-export',
   'menu-query-new',
+  'menu-query-rename',
   'menu-query-prev',
   'menu-query-next',
   'menu-query-close',
@@ -531,6 +537,8 @@ export default function MissionControl() {
         case 'clientEvent/query/rename':
           if (command.data) {
             onRenameQuery(command.data as SqluiFrontend.ConnectionQuery);
+          } else if(activeQuery){
+            onRenameQuery(activeQuery as SqluiFrontend.ConnectionQuery);
           }
           break;
         case 'clientEvent/query/export':
