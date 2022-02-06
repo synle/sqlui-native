@@ -6,11 +6,13 @@ import Resizer from 'src/components/Resizer';
 import { LocalStorageConfig } from 'src/data/config';
 
 export default function MainPage() {
-  const [width, setWidth] = useState<undefined | number>(LocalStorageConfig.get<number>('clientConfig/leftPanelWidth', 300));
+  const [width, setWidth] = useState<undefined | number>(
+    LocalStorageConfig.get<number>('clientConfig/leftPanelWidth', 300),
+  );
   const onSetWidth = (newWidth: number) => {
     LocalStorageConfig.set('clientConfig/leftPanelWidth', newWidth);
     setWidth(newWidth);
-  }
+  };
 
   return (
     <section className='MainPage LayoutTwoColumns'>

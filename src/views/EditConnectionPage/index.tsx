@@ -11,12 +11,13 @@ import { LocalStorageConfig } from 'src/data/config';
 export default function EditConnectionPage() {
   const urlParams = useParams();
   const connectionId = urlParams.connectionId as string;
-  const [width, setWidth] = useState<undefined | number>(LocalStorageConfig.get<number>('clientConfig/leftPanelWidth', 300));
+  const [width, setWidth] = useState<undefined | number>(
+    LocalStorageConfig.get<number>('clientConfig/leftPanelWidth', 300),
+  );
   const onSetWidth = (newWidth: number) => {
     LocalStorageConfig.set('clientConfig/leftPanelWidth', newWidth);
     setWidth(newWidth);
-  }
-
+  };
 
   if (!connectionId) {
     return null;
