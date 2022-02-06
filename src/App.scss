@@ -22,6 +22,7 @@
     max-width: 60%;
     height: 100%;
     overflow-y: auto;
+    transition: all 1s ease;
   }
 
   &__RightPane {
@@ -30,6 +31,7 @@
     padding-left: 4px;
     height: 100%;
     overflow-y: auto;
+    transition: all 1s ease;
   }
 }
 
