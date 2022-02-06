@@ -537,7 +537,7 @@ export default function MissionControl() {
         case 'clientEvent/query/rename':
           if (command.data) {
             onRenameQuery(command.data as SqluiFrontend.ConnectionQuery);
-          } else if(activeQuery){
+          } else if (activeQuery) {
             onRenameQuery(activeQuery as SqluiFrontend.ConnectionQuery);
           }
           break;
