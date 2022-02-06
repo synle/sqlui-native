@@ -19,11 +19,34 @@ interface ResizerProps {
   onSetWidth: (newWidth: number) => void;
 }
 
+const DRAG_GHOST_ID = 'drag-ghost';
+
 export default function Resizer(props: ResizerProps) {
+  const onDragStart = (e: React.DragEvent) => {
+    const dragGhostElem = document.createElement('div');
+    dragGhostElem.id = DRAG_GHOST_ID;
+    dragGhostElem.classList.add('LayoutTwoColumns__LeftPane__DragGhost');
+    dragGhostElem.style.width = e.clientX + 'px';
+
+    document.body.appendChild(dragGhostElem);
+
+    // Customize the drag image
+    e.dataTransfer.setDragImage(dragGhostElem, 0, 0);
+  }
+
   const onDragEnd = (e: React.MouseEvent) => {
-    const endX = e.clientX;
-    props.onSetWidth(endX);
+    props.onSetWidth( e.clientX);
+    document.querySelector(`#${DRAG_GHOST_ID}`)?.remove();
   };
 
-  return <StyledAccordionHeader draggable={true} onDragEnd={onDragEnd} />;
+  const onDrag = (e: React.MouseEvent) => {
+    const dragGhostElem = document.querySelector(`#${DRAG_GHOST_ID}`);
+    const endX = e.clientX;
+    //@ts-ignore
+    dragGhostElem.style.width = e.clientX + 'px'
+  };
+
+
+
+  return <StyledAccordionHeader draggable={true} onDragStart={onDragStart} onDragEnd={onDragEnd} onDrag={onDrag} />;
 }
