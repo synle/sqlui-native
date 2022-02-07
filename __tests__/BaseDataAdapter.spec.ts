@@ -1,4 +1,4 @@
-import BaseDataAdapter from '../commons/adapters/BaseDataAdapter';
+import BaseDataAdapter from 'commons/adapters/BaseDataAdapter';
 
 describe('BaseDataAdapter', () => {
   describe('getConnectionParameters', () => {

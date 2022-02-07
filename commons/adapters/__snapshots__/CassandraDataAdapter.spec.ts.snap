@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`cassandra cassandra - Get columns 1`] = `
+exports[`cassandra Get columns 1`] = `
 Array [
   Object {
     "kind": "regular",
@@ -45,7 +45,7 @@ Array [
 ]
 `;
 
-exports[`cassandra cassandra - Get database 1`] = `
+exports[`cassandra Get database 1`] = `
 Array [
   Object {
     "name": "music_stores",
@@ -82,7 +82,7 @@ Array [
 ]
 `;
 
-exports[`cassandra cassandra - Get tables 1`] = `
+exports[`cassandra Get tables 1`] = `
 Array [
   Object {
     "columns": Array [],
