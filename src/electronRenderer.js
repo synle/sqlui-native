@@ -8,8 +8,8 @@ try {
   window.isElectron = false;
   window.toggleElectronMenu = () => {};
 
-  if (process.env.ENV_TYPE !== 'mocked-server') {
-    const ipcRenderer = require('electron').ipcRenderer;
+  if (window.process.env.ENV_TYPE !== 'mocked-server') {
+    const ipcRenderer = window.require('electron').ipcRenderer;
     window.ipcRenderer = ipcRenderer;
     window.isElectron = true;
     window.toggleElectronMenu = (visible, menus) => {
