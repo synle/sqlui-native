@@ -16,7 +16,7 @@ import { useGetConnectionById, useUpsertConnection } from 'src/hooks';
 import TestConnectionButton from 'src/components/TestConnectionButton';
 import Toast from 'src/components/Toast';
 import { SqluiCore } from 'typings';
-import ConnectionHint from 'src/components/ConnectionForm/ConnectionHint'
+import ConnectionHint from 'src/components/ConnectionForm/ConnectionHint';
 
 type ConnectionFormProps = {
   id?: string;
@@ -193,4 +193,3 @@ function MainConnectionForm(props: MainConnectionFormProps) {
     </form>
   );
 }
-

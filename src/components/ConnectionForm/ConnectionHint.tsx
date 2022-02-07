@@ -21,7 +21,7 @@ type ConnectionHintProps = {
   onChange: (connectionName: string) => void;
 };
 
-export default  function ConnectionHint(props: ConnectionHintProps) {
+export default function ConnectionHint(props: ConnectionHintProps) {
   return (
     <>
       <Alert

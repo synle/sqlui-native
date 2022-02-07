@@ -19,8 +19,7 @@ const StyledColumnName = styled('span')(({ theme }) => {
   };
 });
 
-
-export default  function ColumnName(props: { value: string }) {
+export default function ColumnName(props: { value: string }) {
   return (
     <Tooltip title={props.value}>
       <StyledColumnName>{props.value}</StyledColumnName>

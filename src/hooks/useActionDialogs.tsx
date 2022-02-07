@@ -6,7 +6,6 @@ import PromptDialog, { PromptInput } from 'src/components/ActionDialogs/PromptDi
 import ChoiceDialog, { ChoiceInput, ChoiceOption } from 'src/components/ActionDialogs/ChoiceDialog';
 import ModalDialog, { ModalInput } from 'src/components/ActionDialogs/ModalDialog';
 
-
 type AlertActionDialog = {
   type: 'alert';
   message: string;

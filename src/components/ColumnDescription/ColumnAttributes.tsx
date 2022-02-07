@@ -73,4 +73,3 @@ const StyledAttributeDescription = styled('div')(({ theme }) => {
     },
   };
 });
-
