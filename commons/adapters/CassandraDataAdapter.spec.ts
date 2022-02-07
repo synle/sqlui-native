@@ -1,19 +1,19 @@
-import CassandraDataAdapter from './CassandraDataAdapter';
+import CassandraDataAdapter from 'commons/adapters/CassandraDataAdapter';
 
 const adapter = new CassandraDataAdapter('cassandra://localhost:9042');
 
-describe('cassandra', () => {
-  test('cassandra - Get database', async () => {
+describe('cassandra v4', () => {
+  test('Get database', async () => {
     const databases = await adapter.getDatabases();
     expect(databases).toMatchSnapshot();
   });
 
-  test('cassandra - Get tables', async () => {
+  test('Get tables', async () => {
     const tables = await adapter.getTables('system');
     expect(tables).toMatchSnapshot();
   });
 
-  test('cassandra - Get columns', async () => {
+  test('Get columns', async () => {
     const columns = await adapter.getColumns('columns', 'system_schema');
     expect(columns).toMatchSnapshot();
   });

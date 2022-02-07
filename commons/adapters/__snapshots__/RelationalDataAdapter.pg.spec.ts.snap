@@ -1,0 +1,83 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`postgres Execute Select 1`] = `undefined`;
+
+exports[`postgres Get columns 1`] = `
+Array [
+  Object {
+    "allowNull": false,
+    "comment": null,
+    "defaultValue": "nextval(artists_artistid_seq::regclass)",
+    "name": "artistid",
+    "primaryKey": true,
+    "special": Array [],
+    "type": "BIGINT",
+  },
+  Object {
+    "allowNull": true,
+    "comment": null,
+    "defaultValue": null,
+    "name": "name",
+    "primaryKey": false,
+    "special": Array [],
+    "type": "CHARACTER(120)",
+  },
+]
+`;
+
+exports[`postgres Get tables 1`] = `
+Array [
+  Object {
+    "columns": Array [],
+    "name": "albums",
+  },
+  Object {
+    "columns": Array [],
+    "name": "artists",
+  },
+  Object {
+    "columns": Array [],
+    "name": "customers",
+  },
+  Object {
+    "columns": Array [],
+    "name": "employees",
+  },
+  Object {
+    "columns": Array [],
+    "name": "employees2",
+  },
+  Object {
+    "columns": Array [],
+    "name": "genres",
+  },
+  Object {
+    "columns": Array [],
+    "name": "invoice_items",
+  },
+  Object {
+    "columns": Array [],
+    "name": "invoices",
+  },
+  Object {
+    "columns": Array [],
+    "name": "media_types",
+  },
+  Object {
+    "columns": Array [],
+    "name": "playlist_track",
+  },
+  Object {
+    "columns": Array [],
+    "name": "playlist_track2",
+  },
+  Object {
+    "columns": Array [],
+    "name": "playlists",
+  },
+  Object {
+    "columns": Array [],
+    "name": "tracks",
+  },
+]
+`;
