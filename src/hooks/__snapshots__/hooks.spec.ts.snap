@@ -1,0 +1,24 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`hooks getExportedConnection should work 1`] = `
+Object {
+  "_type": "connection",
+  "connection": "mysql://root:password@localhost:3306",
+  "id": "connection.1643485467072.6333713976068809",
+  "name": "sy mysql 123",
+}
+`;
+
+exports[`hooks getExportedQuery should work 1`] = `
+Object {
+  "_type": "query",
+  "connectionId": "connection.1644098335891.8887562323718656",
+  "databaseId": "musicstores",
+  "id": "query.1643737746323.6184509846791006",
+  "name": "Query 2/1/2022, 9:49:06 AM",
+  "sql": "SELECT
+  TOP 200 *
+FROM
+  albums",
+}
+`;
