@@ -25,6 +25,8 @@ import CodeEditorBox from 'src/components/CodeEditorBox';
 import ResultBox from 'src/components/ResultBox';
 import Select from 'src/components/Select';
 import { SqluiCore, SqluiFrontend } from 'typings';
+import ConnectionDatabaseSelector from 'src/components/QueryBox/ConnectionDatabaseSelector';
+import ConnectionRevealButton from 'src/components/QueryBox/ConnectionRevealButton';
 
 interface QueryBoxProps {
   queryId: string;
@@ -127,104 +129,5 @@ export default function QueryBox(props: QueryBoxProps) {
       </form>
       <ResultBox query={query} executing={executing} />
     </>
-  );
-}
-
-// TODO: move me to a file
-interface ConnectionDatabaseSelectorProps {
-  value: SqluiFrontend.ConnectionQuery;
-  onChange: (connectionId?: string, databaseId?: string) => void;
-}
-
-function ConnectionDatabaseSelector(props: ConnectionDatabaseSelectorProps) {
-  const query = props.value;
-  const { data: connections, isLoading: loadingConnections } = useGetConnections();
-  const { data: databases, isLoading: loadingDatabases } = useGetDatabases(query.connectionId);
-
-  const isLoading = loadingDatabases || loadingConnections;
-
-  const connectionOptions = useMemo(
-    () =>
-      connections?.map((connection) => (
-        <option value={connection.id} key={connection.id}>
-          {connection.name}
-        </option>
-      )),
-    [connections],
-  );
-
-  const databaseConnections = useMemo(
-    () =>
-      databases?.map((database) => (
-        <option value={database.name} key={database.name}>
-          {database.name}
-        </option>
-      )),
-    [databases],
-  );
-
-  if (isLoading) {
-    <>
-      <Select disabled></Select>
-      <Select disabled sx={{ ml: 3 }}></Select>
-    </>;
-  }
-
-  const onConnectionChange = (connectionId: string) => {
-    props.onChange(connectionId, '');
-  };
-
-  const onDatabaseChange = (databaseId: string) => {
-    props.onChange(query.connectionId, databaseId);
-  };
-
-  return (
-    <>
-      <Select
-        value={query.connectionId}
-        onChange={(newValue) => onConnectionChange(newValue)}
-        required>
-        <option value=''>Pick a Connection</option>
-        {connectionOptions}
-      </Select>
-      <Select
-        value={query.databaseId}
-        onChange={(newValue) => onDatabaseChange(newValue)}
-        sx={{ ml: 3 }}>
-        <option value=''>Pick a Database (Optional)</option>
-        {databaseConnections}
-      </Select>
-    </>
-  );
-}
-
-// TODO: move me to a file
-interface ConnectionRevealButtonProps {
-  query: SqluiFrontend.ConnectionQuery;
-}
-function ConnectionRevealButton(props: ConnectionRevealButtonProps) {
-  const { query } = props;
-  const { selectCommand } = useCommands();
-
-  if (!query) {
-    return null;
-  }
-
-  const disabled = !query.connectionId && !query.databaseId;
-
-  return (
-    <Tooltip title='Reveal this Connection on the connection tree.'>
-      <span>
-        <Button
-          type='button'
-          variant='outlined'
-          startIcon={<PreviewIcon />}
-          onClick={() => selectCommand({ event: 'clientEvent/query/reveal' })}
-          sx={{ ml: 3 }}
-          disabled={disabled}>
-          Reveal
-        </Button>
-      </span>
-    </Tooltip>
   );
 }
