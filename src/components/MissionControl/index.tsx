@@ -18,7 +18,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import PhotoSizeSelectSmallIcon from '@mui/icons-material/PhotoSizeSelectSmall';
 import Link from '@mui/material/Link';
 import { SqluiCore, SqluiFrontend, SqluiEnums } from 'typings';
-import { useActionDialogs } from 'src/components/ActionDialogs';
+import { useActionDialogs } from 'src/hooks/useActionDialogs';
 import { downloadText } from 'src/data/file';
 import {
   useExecute,

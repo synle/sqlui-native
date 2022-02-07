@@ -7,7 +7,7 @@ import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import UnfoldLessIcon from '@mui/icons-material/UnfoldLess';
 import Box from '@mui/material/Box';
 import SplitButton from 'src/components/SplitButton';
-import { useActionDialogs } from 'src/components/ActionDialogs';
+import { useActionDialogs } from 'src/hooks/useActionDialogs';
 import { downloadText } from 'src/data/file';
 import { useCommands } from 'src/components/MissionControl';
 import {
