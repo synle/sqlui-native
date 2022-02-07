@@ -8,12 +8,8 @@ try {
   window.isElectron = false;
   window.toggleElectronMenu = () => {};
 
-  console.log('process.env.ENV_TYPE', process.env.ENV_TYPE);
-  debugger
-
-
-  if (process.env.ENV_TYPE !== 'mocked-server') {
-    const ipcRenderer = require('electron').ipcRenderer;
+  if (window.process.env.ENV_TYPE !== 'mocked-server') {
+    const ipcRenderer = window.require('electron').ipcRenderer;
     window.ipcRenderer = ipcRenderer;
     window.isElectron = true;
     window.toggleElectronMenu = (visible, menus) => {
@@ -62,6 +58,4 @@ try {
       });
     };
   }
-
-  debugger
 } catch (err) {}
