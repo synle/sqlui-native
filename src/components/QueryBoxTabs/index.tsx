@@ -25,7 +25,7 @@ import {
   useActiveConnectionQuery,
 } from 'src/hooks';
 import { SqluiFrontend } from 'typings';
-import { useActionDialogs } from 'src/components/ActionDialogs';
+import { useActionDialogs } from 'src/hooks/useActionDialogs';
 import { useCommands, allMenuKeys } from 'src/components/MissionControl';
 import { downloadText } from 'src/data/file';
 

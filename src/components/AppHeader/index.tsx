@@ -21,7 +21,7 @@ import PhotoSizeSelectSmallIcon from '@mui/icons-material/PhotoSizeSelectSmall';
 import EditConnectionPage from 'src/views/EditConnectionPage';
 import NewConnectionPage from 'src/views/NewConnectionPage';
 import MainPage from 'src/views/MainPage';
-import { useActionDialogs } from 'src/components/ActionDialogs';
+import { useActionDialogs } from 'src/hooks/useActionDialogs';
 import {
   useGetSessions,
   useUpsertSession,
