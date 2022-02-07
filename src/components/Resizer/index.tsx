@@ -32,10 +32,10 @@ export default function Resizer(props: ResizerProps) {
 
     // Customize the drag image
     e.dataTransfer.setDragImage(dragGhostElem, 0, 0);
-  }
+  };
 
   const onDragEnd = (e: React.MouseEvent) => {
-    props.onSetWidth( e.clientX);
+    props.onSetWidth(e.clientX);
     document.querySelector(`#${DRAG_GHOST_ID}`)?.remove();
   };
 
@@ -43,10 +43,15 @@ export default function Resizer(props: ResizerProps) {
     const dragGhostElem = document.querySelector(`#${DRAG_GHOST_ID}`);
     const endX = e.clientX;
     //@ts-ignore
-    dragGhostElem.style.width = e.clientX + 'px'
+    dragGhostElem.style.width = e.clientX + 'px';
   };
 
-
-
-  return <StyledAccordionHeader draggable={true} onDragStart={onDragStart} onDragEnd={onDragEnd} onDrag={onDrag} />;
+  return (
+    <StyledAccordionHeader
+      draggable={true}
+      onDragStart={onDragStart}
+      onDragEnd={onDragEnd}
+      onDrag={onDrag}
+    />
+  );
 }
