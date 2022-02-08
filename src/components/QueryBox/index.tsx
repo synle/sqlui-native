@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useQueryClient } from 'react-query';
-import { format } from 'sql-formatter';
+import { format: formatSQL } from 'sql-formatter';
 import Box from '@mui/material/Box';
 import Alert from '@mui/material/Alert';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -67,7 +67,7 @@ export default function QueryBox(props: QueryBoxProps) {
       // let's stop it
       return;
     }
-    onChange({ sql: format(query?.sql || '') });
+    onChange({ sql: formatSQL(query?.sql || '') });
   };
 
   const onSubmit = async (e: React.SyntheticEvent) => {
