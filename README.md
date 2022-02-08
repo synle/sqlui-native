@@ -108,7 +108,7 @@ Here is the link where you can find information about how run this application l
 - [X] Add supports for Cassandra
 - [ ] Add supports for Azure Table, and AWS Redshift.
 
-## Limitations:
+## Limitations
 
 ### Cassandra Limitations
 Cassandra Keyspaces are mapped to sqlui-native databases. And Cassandra Column Families are mapped to sqlui-native table.
