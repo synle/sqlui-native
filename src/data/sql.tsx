@@ -20,6 +20,7 @@ export module SqlAction {
   export type Output = {
     label: string;
     query?: string;
+    formatter: 'sql' | 'js';
   };
 }
 
@@ -36,32 +37,38 @@ function getSelectAllColumns(input: SqlAction.TableInput): SqlAction.Output | un
     case 'mssql':
       return {
         label,
+        formatter: 'sql',
         query: `SELECT TOP ${input.querySize} * \nFROM ${input.tableId}`,
       };
     case 'postgres':
       return {
         label,
+        formatter: 'sql',
         query: `SELECT * \nFROM ${input.tableId} \nLIMIT ${input.querySize}`,
       };
     case 'sqlite':
       return {
         label,
+        formatter: 'sql',
         query: `SELECT * \nFROM ${input.tableId} \nLIMIT ${input.querySize}`,
       };
     case 'mariadb':
     case 'mysql':
       return {
         label,
+        formatter: 'sql',
         query: `SELECT * \nFROM ${input.tableId} \nLIMIT ${input.querySize}`,
       };
     case 'cassandra':
       return {
         label,
+        formatter: 'sql',
         query: `SELECT * \nFROM ${input.tableId} \nLIMIT ${input.querySize}`,
       };
     case 'mongodb':
       return {
         label,
+        formatter: 'sql',
         query: `db.collection('${input.tableId}').find().limit(${input.querySize}).toArray();`
       }
   }
@@ -84,6 +91,7 @@ function getSelectCount(input: SqlAction.TableInput): SqlAction.Output | undefin
     case 'mysql':
       return {
         label,
+        formatter: 'sql',
         query: `SELECT COUNT(*) \nFROM ${input.tableId} \n -- WHERE \n ${whereColumnString}`,
       };
   }
@@ -103,28 +111,33 @@ function getSelectSpecificColumns(input: SqlAction.TableInput): SqlAction.Output
     case 'mssql':
       return {
         label,
+        formatter: 'sql',
         query: `SELECT TOP ${input.querySize} ${columnString} \nFROM ${input.tableId} -- WHERE ${whereColumnString}`,
       };
     case 'postgres':
       return {
         label,
+        formatter: 'sql',
         query: `SELECT ${columnString} \nFROM ${input.tableId} \n -- WHERE ${whereColumnString} \nLIMIT ${input.querySize}`,
       };
     case 'sqlite':
       return {
         label,
+        formatter: 'sql',
         query: `SELECT ${columnString} \nFROM ${input.tableId} \n -- WHERE ${whereColumnString} \nLIMIT ${input.querySize}`,
       };
     case 'mariadb':
     case 'mysql':
       return {
         label,
+        formatter: 'sql',
         query: `SELECT ${columnString} \nFROM ${input.tableId} \n -- WHERE ${whereColumnString} \nLIMIT ${input.querySize}`,
       };
 
     case 'cassandra':
       return {
         label,
+        formatter: 'sql',
         query: `SELECT ${columnString} \nFROM ${input.tableId} \n -- WHERE ${whereColumnString} \nLIMIT ${input.querySize}`,
       };
   }
@@ -149,8 +162,22 @@ function getInsertCommand(input: SqlAction.TableInput): SqlAction.Output | undef
     case 'cassandra':
       return {
         label,
+        formatter: 'sql',
         query: `INSERT INTO ${input.tableId} (\n${columnString}\n) VALUES (\n${insertValueString}\n)`,
       };
+    case 'mongodb':
+      const insertValueObject = {};
+      for(const column of input.columns){
+        if(column.name !== '_id' && !column.name.includes('.')){
+          //@ts-ignore
+          insertValueObject[column.name] = column.type === 'string' ? '' : 123
+        }
+      }
+      return {
+        label,
+        formatter: 'js',
+        query: `db.collection('${input.tableId}').insertMany([\n${JSON.stringify(insertValueObject, null, 2)}\n]);`
+      }
   }
 }
 
@@ -173,8 +200,22 @@ function getUpdateCommand(input: SqlAction.TableInput): SqlAction.Output | undef
     case 'cassandra':
       return {
         label,
+        formatter: 'js',
         query: `UPDATE ${input.tableId}\n SET \n${columnString}\n WHERE ${whereColumnString}`,
       };
+    case 'mongodb':
+      const insertValueObject = {};
+      for(const column of input.columns){
+        if(column.name !== '_id' && !column.name.includes('.')){
+          //@ts-ignore
+          insertValueObject[column.name] = column.type === 'string' ? '' : 123
+        }
+      }
+      return {
+        label,
+        formatter: 'js',
+        query: `db.collection('${input.tableId}').update(${JSON.stringify(insertValueObject, null, 2)},\n{\$set: ${JSON.stringify(insertValueObject, null, 2)}});`
+      }
   }
 }
 
@@ -196,8 +237,22 @@ function getDeleteCommand(input: SqlAction.TableInput): SqlAction.Output | undef
     case 'cassandra':
       return {
         label,
+        formatter: 'sql',
         query: `-- DELETE FROM ${input.tableId} \n -- WHERE\n ${whereColumnString}`,
       };
+    case 'mongodb':
+      const insertValueObject = {};
+      for(const column of input.columns){
+        if(column.name !== '_id' && !column.name.includes('.')){
+          //@ts-ignore
+          insertValueObject[column.name] = column.type === 'string' ? '' : 123
+        }
+      }
+      return {
+        label,
+        formatter: 'js',
+        query: `db.collection('${input.tableId}').deleteMany(\n${JSON.stringify(insertValueObject, null, 2)}\n);`
+      }
   }
 }
 
@@ -226,6 +281,7 @@ function getCreateTable(input: SqlAction.TableInput): SqlAction.Output | undefin
         .join(',\n');
       return {
         label,
+        formatter: 'sql',
         query: `CREATE TABLE ${input.tableId} (${columnString})`,
       };
     case 'postgres':
@@ -251,6 +307,7 @@ function getCreateTable(input: SqlAction.TableInput): SqlAction.Output | undefin
         .join(',\n');
       return {
         label,
+        formatter: 'sql',
         query: `CREATE TABLE ${input.tableId} (${columnString})`,
       };
     case 'sqlite':
@@ -267,6 +324,7 @@ function getCreateTable(input: SqlAction.TableInput): SqlAction.Output | undefin
         .join(',\n');
       return {
         label,
+        formatter: 'sql',
         query: `CREATE TABLE ${input.tableId} (${columnString})`,
       };
     case 'mariadb':
@@ -284,6 +342,7 @@ function getCreateTable(input: SqlAction.TableInput): SqlAction.Output | undefin
         .join(',\n');
       return {
         label,
+        formatter: 'sql',
         query: `CREATE TABLE ${input.tableId} (${columnString})`,
       };
   }
@@ -300,6 +359,7 @@ function getDropTable(input: SqlAction.TableInput): SqlAction.Output | undefined
     case 'mysql':
       return {
         label,
+        formatter: 'sql',
         query: `-- DROP TABLE ${input.tableId}`,
       };
   }
@@ -316,6 +376,7 @@ function getDropTables(input: SqlAction.DatabaseInput): SqlAction.Output | undef
     case 'mysql':
       return {
         label,
+        formatter: 'sql',
         query: input.tables
           .map((table) => getDropTable({ ...input, tableId: table.name }))
           .join('\n'),
@@ -330,22 +391,26 @@ function getAddColumn(input: SqlAction.TableInput): SqlAction.Output | undefined
     case 'mssql':
       return {
         label,
+        formatter: 'sql',
         query: `ALTER TABLE ${input.tableId} ADD COLUMN colname${Date.now()} NVARCHAR(200)`,
       };
     case 'postgres':
       return {
         label,
+        formatter: 'sql',
         query: `ALTER TABLE ${input.tableId} ADD COLUMN colname${Date.now()} CHAR(200)`,
       };
     case 'sqlite':
       return {
         label,
+        formatter: 'sql',
         query: `ALTER TABLE ${input.tableId} ADD COLUMN colname${Date.now()} TEXT`,
       };
     case 'mariadb':
     case 'mysql':
       return {
         label,
+        formatter: 'sql',
         query: `ALTER TABLE ${input.tableId} ADD COLUMN colname${Date.now()} varchar(200)`,
       };
   }
@@ -366,6 +431,7 @@ function getDropColumns(input: SqlAction.TableInput): SqlAction.Output | undefin
     case 'mysql':
       return {
         label,
+        formatter: 'sql',
         query: input.columns
           .map((col) => `--ALTER TABLE ${input.tableId} DROP COLUMN ${col.name}`)
           .join('\n'),

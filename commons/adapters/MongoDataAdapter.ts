@@ -116,12 +116,28 @@ export default class MongoDataAdapter extends BaseDataAdapter implements IDataAd
         const db = await client.db(database)
 
         //@ts-ignore
-        const rawToUse : any[] =await eval(sql);
+        const rawToUse : any =await eval(sql);
 
-        resolve({
-          ok: false,
-          raw: rawToUse,
-        })
+        console.log(rawToUse);
+
+        if(rawToUse.acknowledged  === true){
+          // insert or insertOne
+          let affectedRows = rawToUse.insertedCount || rawToUse.deletedCount || rawToUse.modifiedCount;
+          if(affectedRows === undefined){
+            affectedRows = 1;
+          }
+
+          resolve({
+            ok: false,
+            meta: rawToUse,
+            affectedRows,
+          })
+        } else {
+          resolve({
+            ok: false,
+            raw: rawToUse,
+          })
+        }
       } catch (err) {
         console.log(err)
         resolve({

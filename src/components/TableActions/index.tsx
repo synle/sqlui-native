@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { format } from 'sql-formatter';
+import { format as formatSQL } from 'sql-formatter';
 import Typography from '@mui/material/Typography';
 import ViewColumnIcon from '@mui/icons-material/ViewColumn';
 import Box from '@mui/material/Box';
@@ -71,7 +71,17 @@ export default function TableActions(props: TableActionsProps) {
 
   const options = actions.map((action) => ({
     label: action.label,
-    onClick: () => action.query && onShowQuery(format(action.query)),
+    onClick: () => {
+      if(action.query){
+        switch(action.formatter){
+          case 'sql':
+            onShowQuery(formatSQL(action.query))
+          case 'js':
+            onShowQuery(action.query)
+            break;
+        }
+      }
+    },
   }));
 
   return (
