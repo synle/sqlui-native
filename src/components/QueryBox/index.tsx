@@ -18,6 +18,7 @@ import {
   useConnectionQuery,
   useShowHide,
   useGetDatabases,
+  useGetConnectionById,
   refreshAfterExecution,
 } from 'src/hooks';
 import { useCommands } from 'src/components/MissionControl';
@@ -28,6 +29,8 @@ import { SqluiCore, SqluiFrontend } from 'typings';
 import ConnectionDatabaseSelector from 'src/components/QueryBox/ConnectionDatabaseSelector';
 import ConnectionRevealButton from 'src/components/QueryBox/ConnectionRevealButton';
 
+const formatJS = require('js-beautify').js;
+
 interface QueryBoxProps {
   queryId: string;
 }
@@ -37,6 +40,7 @@ export default function QueryBox(props: QueryBoxProps) {
   const { query, onChange, onDelete, isLoading: loadingConnection } = useConnectionQuery(queryId);
   const { mutateAsync: executeQuery } = useExecute();
   const [executing, setExecuting] = useState(false);
+  const { data: selectedConnection } = useGetConnectionById(query?.connectionId);
   const queryClient = useQueryClient();
 
   const isLoading = loadingConnection;
@@ -67,7 +71,23 @@ export default function QueryBox(props: QueryBoxProps) {
       // let's stop it
       return;
     }
-    onChange({ sql: formatSQL(query?.sql || '') });
+    let { sql } = query;
+    sql = sql || '';
+
+    switch (selectedConnection?.dialect) {
+      case 'mssql':
+      case 'postgres':
+      case 'sqlite':
+      case 'mariadb':
+      case 'mysql':
+        sql = formatSQL(sql);
+        break;
+      case 'mongodb':
+        sql = formatJS(sql, { indent_size: 2, space_in_empty_paren: true, break_chained_methods: 2 });
+        break;
+    }
+
+    onChange({ sql });
   };
 
   const onSubmit = async (e: React.SyntheticEvent) => {

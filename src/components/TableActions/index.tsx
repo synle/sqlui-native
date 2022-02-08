@@ -79,7 +79,7 @@ export default function TableActions(props: TableActionsProps) {
           case 'sql':
             onShowQuery(formatSQL(action.query));
           case 'js':
-            onShowQuery(formatJS(action.query, { indent_size: 2, space_in_empty_paren: true }));
+            onShowQuery(formatJS(action.query, { indent_size: 2, space_in_empty_paren: true, break_chained_methods: 2 }));
             break;
         }
       }

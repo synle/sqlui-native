@@ -76,7 +76,9 @@ function getSelectAllColumns(input: SqlAction.TableInput): SqlAction.Output | un
       return {
         label,
         formatter: 'sql',
-        query: `db.collection('${input.tableId}').find(${JSON.stringify(insertValueObject)}).limit(${input.querySize}).toArray();`,
+        query: `db.collection('${input.tableId}').find(
+          ${JSON.stringify(insertValueObject)}
+        ).limit(${input.querySize}).toArray();`,
       };
   }
 }
@@ -183,11 +185,9 @@ function getInsertCommand(input: SqlAction.TableInput): SqlAction.Output | undef
       return {
         label,
         formatter: 'js',
-        query: `db.collection('${input.tableId}').insertMany([\n${JSON.stringify(
-          insertValueObject,
-          null,
-          2,
-        )}\n]);`,
+        query: `db.collection('${input.tableId}').insertMany([
+          ${JSON.stringify(insertValueObject)}
+        ]);`,
       };
   }
 }
@@ -225,11 +225,10 @@ function getUpdateCommand(input: SqlAction.TableInput): SqlAction.Output | undef
       return {
         label,
         formatter: 'js',
-        query: `db.collection('${input.tableId}').update(${JSON.stringify(
-          insertValueObject,
-          null,
-          2,
-        )},\n{\$set: ${JSON.stringify(insertValueObject, null, 2)}});`,
+        query: `db.collection('${input.tableId}').update(
+          ${JSON.stringify(insertValueObject)},
+          {\$set: ${JSON.stringify(insertValueObject, null, 2)}}
+        );`,
       };
   }
 }
@@ -266,11 +265,9 @@ function getDeleteCommand(input: SqlAction.TableInput): SqlAction.Output | undef
       return {
         label,
         formatter: 'js',
-        query: `db.collection('${input.tableId}').deleteMany(\n${JSON.stringify(
-          insertValueObject,
-          null,
-          2,
-        )}\n);`,
+        query: `db.collection('${input.tableId}').deleteMany(
+          ${JSON.stringify(insertValueObject)}
+        );`,
       };
   }
 }

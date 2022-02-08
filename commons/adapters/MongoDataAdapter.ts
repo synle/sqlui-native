@@ -16,7 +16,7 @@ export default class MongoDataAdapter extends BaseDataAdapter implements IDataAd
     // attempt to pull in connections
     return new Promise<MongoClient>(async (resolve, reject) => {
       try {
-        if(this.client){
+        if (this.client) {
           return resolve(this.client);
         }
         const client = new MongoClient(this.connectionOption);
@@ -30,7 +30,7 @@ export default class MongoDataAdapter extends BaseDataAdapter implements IDataAd
   }
 
   private async closeConnection() {
-    if(this.client){
+    if (this.client) {
       await this.client.close();
     }
   }
@@ -97,7 +97,7 @@ export default class MongoDataAdapter extends BaseDataAdapter implements IDataAd
               for (const key2 of Object.keys(item[key1])) {
                 let type2 = typeof item[key1][key2];
 
-                const key = [key1, key2].join('.')
+                const key = [key1, key2].join('.');
 
                 columnsMap[key] = columnsMap[key1] || {
                   name: key,
@@ -124,17 +124,18 @@ export default class MongoDataAdapter extends BaseDataAdapter implements IDataAd
       try {
         const client = await this.getConnection();
 
-        const db = await client.db(database)
+        const db = await client.db(database);
 
         //@ts-ignore
-        const rawToUse : any =await eval(sql);
+        const rawToUse: any = await eval(sql);
 
         console.log(rawToUse);
 
-        if(rawToUse.acknowledged  === true){
+        if (rawToUse.acknowledged === true) {
           // insert or insertOne
-          let affectedRows = rawToUse.insertedCount || rawToUse.deletedCount || rawToUse.modifiedCount;
-          if(affectedRows === undefined){
+          let affectedRows =
+            rawToUse.insertedCount || rawToUse.deletedCount || rawToUse.modifiedCount;
+          if (affectedRows === undefined) {
             affectedRows = 1;
           }
 
@@ -142,19 +143,19 @@ export default class MongoDataAdapter extends BaseDataAdapter implements IDataAd
             ok: false,
             meta: rawToUse,
             affectedRows,
-          })
+          });
         } else {
           resolve({
             ok: false,
             raw: rawToUse,
-          })
+          });
         }
       } catch (err) {
-        console.log(err)
+        console.log(err);
         resolve({
           ok: false,
-          error: err
-        })
+          error: err,
+        });
       }
     });
   }
