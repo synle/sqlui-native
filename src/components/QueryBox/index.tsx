@@ -83,7 +83,11 @@ export default function QueryBox(props: QueryBoxProps) {
         sql = formatSQL(sql);
         break;
       case 'mongodb':
-        sql = formatJS(sql, { indent_size: 2, space_in_empty_paren: true, break_chained_methods: 2 });
+        sql = formatJS(sql, {
+          indent_size: 2,
+          space_in_empty_paren: true,
+          break_chained_methods: 2,
+        });
         break;
     }
 
