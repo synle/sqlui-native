@@ -52,10 +52,12 @@ export default class MongoDataAdapter extends BaseDataAdapter implements IDataAd
 
     //@ts-ignore
     const res = await client.db().admin().listDatabases();
-    return res.databases.map((database: any) => ({
-      name: database.name,
-      tables: [],
-    })).sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+    return res.databases
+      .map((database: any) => ({
+        name: database.name,
+        tables: [],
+      }))
+      .sort((a, b) => (a.name || '').localeCompare(b.name || ''));
   }
 
   async getTables(database?: string): Promise<SqluiCore.TableMetaData[]> {
@@ -67,10 +69,12 @@ export default class MongoDataAdapter extends BaseDataAdapter implements IDataAd
         const collections = await client.db(database).listCollections().toArray();
 
         resolve(
-          (collections || []).map((collection) => ({
-            name: collection.name,
-            columns: [],
-          })).sort((a, b) => (a.name || '').localeCompare(b.name || '')),
+          (collections || [])
+            .map((collection) => ({
+              name: collection.name,
+              columns: [],
+            }))
+            .sort((a, b) => (a.name || '').localeCompare(b.name || '')),
         );
       } catch (err) {
         reject(err);
@@ -112,7 +116,9 @@ export default class MongoDataAdapter extends BaseDataAdapter implements IDataAd
             }
           }
         }
-        resolve(Object.values(columnsMap).sort((a, b) => (a.name || '').localeCompare(b.name || '')));
+        resolve(
+          Object.values(columnsMap).sort((a, b) => (a.name || '').localeCompare(b.name || '')),
+        );
       } catch (err) {
         reject(err);
       }
@@ -142,12 +148,12 @@ export default class MongoDataAdapter extends BaseDataAdapter implements IDataAd
             meta: rawToUse,
             affectedRows,
           });
-        } else if(Array.isArray(rawToUse)){
+        } else if (Array.isArray(rawToUse)) {
           resolve({
             ok: false,
             raw: rawToUse,
           });
-        } else{
+        } else {
           resolve({
             ok: false,
           });
