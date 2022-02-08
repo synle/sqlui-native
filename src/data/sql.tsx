@@ -66,19 +66,10 @@ function getSelectAllColumns(input: SqlAction.TableInput): SqlAction.Output | un
         query: `SELECT * \nFROM ${input.tableId} \nLIMIT ${input.querySize}`,
       };
     case 'mongodb':
-      const insertValueObject = {};
-      for (const column of input.columns || []) {
-        if (!column.name.includes('.')) {
-          //@ts-ignore
-          insertValueObject[column.name] = column.type === 'string' ? '' : 123;
-        }
-      }
       return {
         label,
         formatter: 'sql',
-        query: `db.collection('${input.tableId}').find(
-          ${JSON.stringify(insertValueObject)}
-        ).limit(${input.querySize}).toArray();`,
+        query: `db.collection('${input.tableId}').find().limit(${input.querySize}).toArray();`,
       };
   }
 }
@@ -142,12 +133,26 @@ function getSelectSpecificColumns(input: SqlAction.TableInput): SqlAction.Output
         formatter: 'sql',
         query: `SELECT ${columnString} \nFROM ${input.tableId} \n -- WHERE ${whereColumnString} \nLIMIT ${input.querySize}`,
       };
-
     case 'cassandra':
       return {
         label,
         formatter: 'sql',
         query: `SELECT ${columnString} \nFROM ${input.tableId} \n -- WHERE ${whereColumnString} \nLIMIT ${input.querySize}`,
+      };
+    case 'mongodb':
+      const insertValueObject = {};
+      for (const column of input.columns || []) {
+        if (!column.name.includes('.')) {
+          //@ts-ignore
+          insertValueObject[column.name] = column.type === 'string' ? '' : 123;
+        }
+      }
+      return {
+        label,
+        formatter: 'sql',
+        query: `db.collection('${input.tableId}').find(
+          ${JSON.stringify(insertValueObject)}
+        ).limit(${input.querySize}).toArray();`,
       };
   }
 }
@@ -361,6 +366,12 @@ function getCreateTable(input: SqlAction.TableInput): SqlAction.Output | undefin
         formatter: 'sql',
         query: `CREATE TABLE ${input.tableId} (${columnString})`,
       };
+    case 'mongodb':
+      return {
+        label,
+        formatter: 'js',
+        query: `db.createCollection("${input.tableId}")`,
+      };
   }
 }
 
@@ -377,6 +388,12 @@ function getDropTable(input: SqlAction.TableInput): SqlAction.Output | undefined
         label,
         formatter: 'sql',
         query: `-- DROP TABLE ${input.tableId}`,
+      };
+    case 'mongodb':
+      return {
+        label,
+        formatter: 'js',
+        query: `db.collection('${input.tableId}').drop()`,
       };
   }
 }

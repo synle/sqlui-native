@@ -22,6 +22,7 @@ function addDataEndpoint(
       res.header('sqlui-native-session-id', req.headers['sqlui-native-session-id']);
       await incomingHandler(req, res, cache);
     } catch (err: any) {
+      console.log('err', err);
       res.status(500).send(err);
     }
   };
