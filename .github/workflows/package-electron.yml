@@ -36,7 +36,7 @@ jobs:
 
   build_windows:
     needs: [create_release]
-    runs-on: [self-hosted, windows]
+    runs-on: windows-latest
     timeout-minutes: 12
     steps:
       # build
@@ -58,7 +58,7 @@ jobs:
 
   build_macos:
     needs: [create_release]
-    runs-on: [self-hosted, macos]
+    runs-on: macos-latest
     timeout-minutes: 12
     steps:
       # build
