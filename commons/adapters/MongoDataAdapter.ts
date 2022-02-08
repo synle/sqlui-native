@@ -11,6 +11,22 @@ export default class MongoDataAdapter extends BaseDataAdapter implements IDataAd
     super(connectionOption);
   }
 
+  private async getConnection(database?: string): Promise<MongoClient> {
+    // attempt to pull in connections
+    return new Promise<MongoClient>(async (resolve, reject) => {
+      try {
+        console.log('connecting', this.connectionOption)
+        const client = new MongoClient(this.connectionOption);
+        // await client.connect();
+        // console.log('connected', client)
+
+        resolve(client);
+      } catch (err) {
+        reject(err);
+      }
+    });
+  }
+
   async authenticate() {
     // TODO: To Be Implemented
     return new Promise<void>(async (resolve, reject) => {
@@ -23,6 +39,7 @@ export default class MongoDataAdapter extends BaseDataAdapter implements IDataAd
   }
 
   async getDatabases(): Promise<SqluiCore.DatabaseMetaData[]> {
+    const client = await this.getConnection();
     return [];
   }
 
