@@ -59,6 +59,11 @@ function getSelectAllColumns(input: SqlAction.TableInput): SqlAction.Output | un
         label,
         query: `SELECT * \nFROM ${input.tableId} \nLIMIT ${input.querySize}`,
       };
+    case 'mongodb':
+      return {
+        label,
+        query: `db.collection('${input.tableId}').find().limit(${input.querySize}).toArray();`
+      }
   }
 }
 
