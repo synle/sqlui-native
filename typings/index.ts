@@ -2,7 +2,14 @@
  * Stores common typings used by both frontend and backend
  */
 export module SqluiCore {
-  export type Dialect = 'mysql' | 'mariadb' | 'mssql' | 'postgres' | 'sqlite' | 'cassandra';
+  export type Dialect =
+    | 'mysql'
+    | 'mariadb'
+    | 'mssql'
+    | 'postgres'
+    | 'sqlite'
+    | 'cassandra'
+    | 'mongodb';
 
   export type CoreConnectionProps = {
     connection: string;

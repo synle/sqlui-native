@@ -1,6 +1,7 @@
 import { SqluiCore } from '../typings';
 import RelationalDataAdapter from './adapters/RelationalDataAdapter';
 import CassandraDataAdapter from './adapters/CassandraDataAdapter';
+import MongoDataAdapter from './adapters/MongoDataAdapter';
 import IDataAdapter from './adapters/IDataAdapter';
 import BaseDataAdapter from './adapters/BaseDataAdapter';
 
@@ -25,6 +26,10 @@ export function getDataAdapter(connection: string) {
       return adapter;
     case 'cassandra':
       adapter = new CassandraDataAdapter(connection);
+      _adapterCache[connection] = adapter;
+      return adapter;
+    case 'mongodb':
+      adapter = new MongoDataAdapter(connection);
       _adapterCache[connection] = adapter;
       return adapter;
     default:

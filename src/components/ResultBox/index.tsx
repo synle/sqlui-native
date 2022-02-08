@@ -173,7 +173,7 @@ function TableFormatData(props: FormatDataProps) {
           if (typeof columnValue === 'object') {
             return <pre>{JSON.stringify(columnValue, null, 2)}</pre>;
           }
-          return columnValue;
+          return columnValue || '';
         },
       };
     });
