@@ -1,5 +1,5 @@
 // mongodb://localhost:27017
-import MongoDB from 'mongodb';
+import { MongoClient } from 'mongodb';
 import { SqluiCore } from '../../typings';
 import IDataAdapter from './IDataAdapter';
 import BaseDataAdapter from './BaseDataAdapter';
@@ -13,7 +13,11 @@ export default class MongoDataAdapter extends BaseDataAdapter implements IDataAd
 
   async authenticate() {
     // TODO: To Be Implemented
-    return new Promise<void>((resolve, reject) => {
+    return new Promise<void>(async (resolve, reject) => {
+      console.log('connecting', this.connectionOption)
+      const client = new MongoClient(this.connectionOption);
+      // await client.connect();
+      // console.log('connected', client)
       resolve();
     });
   }
@@ -32,5 +36,7 @@ export default class MongoDataAdapter extends BaseDataAdapter implements IDataAd
 
   private async _execute(sql: string, params?: string[], database?: string) {}
 
-  async execute(sql: string, database?: string): Promise<SqluiCore.Result> {}
+  async execute(sql: string, database?: string): Promise<SqluiCore.Result> {
+    return Promise.resolve({ok: false});
+  }
 }

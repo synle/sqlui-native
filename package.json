@@ -45,7 +45,7 @@
     "build": "npm run build-react && npm run build-electron",
     "test": "cross-env CI=true npm test-electron && cross-env CI=true npm run test-react",
     "test-ci": "cross-env CI=true jest __tests__ && cross-env CI=true npm run test-react",
-    "test-electron": "jest commons __tests__",
+    "test-electron": "jest _layouts",
     "test-react": "cross-env react-scripts test",
     "format": "npx prettier --config ./.prettierrc --write **/*.{ts,tsx,js,jsx,scss,yml,html} *.{json,MD}",
     "lint": "eslint --fix --ext .tsx --ext .ts src",
