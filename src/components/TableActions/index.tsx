@@ -72,12 +72,12 @@ export default function TableActions(props: TableActionsProps) {
   const options = actions.map((action) => ({
     label: action.label,
     onClick: () => {
-      if(action.query){
-        switch(action.formatter){
+      if (action.query) {
+        switch (action.formatter) {
           case 'sql':
-            onShowQuery(formatSQL(action.query))
+            onShowQuery(formatSQL(action.query));
           case 'js':
-            onShowQuery(action.query)
+            onShowQuery(action.query);
             break;
         }
       }

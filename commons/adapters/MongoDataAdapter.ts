@@ -6,6 +6,7 @@ import BaseDataAdapter from './BaseDataAdapter';
 
 export default class MongoDataAdapter extends BaseDataAdapter implements IDataAdapter {
   dialect: SqluiCore.Dialect = 'mongodb';
+  client?: MongoClient;
 
   constructor(connectionOption: string) {
     super(connectionOption);
@@ -15,13 +16,23 @@ export default class MongoDataAdapter extends BaseDataAdapter implements IDataAd
     // attempt to pull in connections
     return new Promise<MongoClient>(async (resolve, reject) => {
       try {
+        if(this.client){
+          return resolve(this.client);
+        }
         const client = new MongoClient(this.connectionOption);
         await client.connect();
+        this.client = client;
         resolve(client);
       } catch (err) {
         reject(err);
       }
     });
+  }
+
+  private async closeConnection() {
+    if(this.client){
+      await this.client.close();
+    }
   }
 
   async authenticate() {

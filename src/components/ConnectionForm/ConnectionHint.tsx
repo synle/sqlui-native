@@ -106,9 +106,7 @@ export default function ConnectionHint(props: ConnectionHintProps) {
         sx={{ mb: 2 }}>
         <AlertTitle>Cassandra</AlertTitle>
         <Tooltip title='Use this sample MongoDB connection.'>
-          <Link
-            underline='hover'
-            onClick={() => props.onChange('mongodb://localhost:27017')}>
+          <Link underline='hover' onClick={() => props.onChange('mongodb://localhost:27017')}>
             mongodb://localhost:27017
           </Link>
         </Tooltip>

@@ -69,8 +69,8 @@ function getSelectAllColumns(input: SqlAction.TableInput): SqlAction.Output | un
       return {
         label,
         formatter: 'sql',
-        query: `db.collection('${input.tableId}').find().limit(${input.querySize}).toArray();`
-      }
+        query: `db.collection('${input.tableId}').find().limit(${input.querySize}).toArray();`,
+      };
   }
 }
 
@@ -167,17 +167,21 @@ function getInsertCommand(input: SqlAction.TableInput): SqlAction.Output | undef
       };
     case 'mongodb':
       const insertValueObject = {};
-      for(const column of input.columns){
-        if(column.name !== '_id' && !column.name.includes('.')){
+      for (const column of input.columns) {
+        if (column.name !== '_id' && !column.name.includes('.')) {
           //@ts-ignore
-          insertValueObject[column.name] = column.type === 'string' ? '' : 123
+          insertValueObject[column.name] = column.type === 'string' ? '' : 123;
         }
       }
       return {
         label,
         formatter: 'js',
-        query: `db.collection('${input.tableId}').insertMany([\n${JSON.stringify(insertValueObject, null, 2)}\n]);`
-      }
+        query: `db.collection('${input.tableId}').insertMany([\n${JSON.stringify(
+          insertValueObject,
+          null,
+          2,
+        )}\n]);`,
+      };
   }
 }
 
@@ -205,17 +209,21 @@ function getUpdateCommand(input: SqlAction.TableInput): SqlAction.Output | undef
       };
     case 'mongodb':
       const insertValueObject = {};
-      for(const column of input.columns){
-        if(column.name !== '_id' && !column.name.includes('.')){
+      for (const column of input.columns) {
+        if (column.name !== '_id' && !column.name.includes('.')) {
           //@ts-ignore
-          insertValueObject[column.name] = column.type === 'string' ? '' : 123
+          insertValueObject[column.name] = column.type === 'string' ? '' : 123;
         }
       }
       return {
         label,
         formatter: 'js',
-        query: `db.collection('${input.tableId}').update(${JSON.stringify(insertValueObject, null, 2)},\n{\$set: ${JSON.stringify(insertValueObject, null, 2)}});`
-      }
+        query: `db.collection('${input.tableId}').update(${JSON.stringify(
+          insertValueObject,
+          null,
+          2,
+        )},\n{\$set: ${JSON.stringify(insertValueObject, null, 2)}});`,
+      };
   }
 }
 
@@ -242,17 +250,21 @@ function getDeleteCommand(input: SqlAction.TableInput): SqlAction.Output | undef
       };
     case 'mongodb':
       const insertValueObject = {};
-      for(const column of input.columns){
-        if(column.name !== '_id' && !column.name.includes('.')){
+      for (const column of input.columns) {
+        if (column.name !== '_id' && !column.name.includes('.')) {
           //@ts-ignore
-          insertValueObject[column.name] = column.type === 'string' ? '' : 123
+          insertValueObject[column.name] = column.type === 'string' ? '' : 123;
         }
       }
       return {
         label,
         formatter: 'js',
-        query: `db.collection('${input.tableId}').deleteMany(\n${JSON.stringify(insertValueObject, null, 2)}\n);`
-      }
+        query: `db.collection('${input.tableId}').deleteMany(\n${JSON.stringify(
+          insertValueObject,
+          null,
+          2,
+        )}\n);`,
+      };
   }
 }
 
