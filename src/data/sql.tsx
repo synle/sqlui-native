@@ -361,6 +361,12 @@ function getCreateTable(input: SqlAction.TableInput): SqlAction.Output | undefin
         formatter: 'sql',
         query: `CREATE TABLE ${input.tableId} (${columnString})`,
       };
+    case 'mongodb':
+      return {
+        label,
+        formatter: 'js',
+        query: `db.createCollection("${input.tableId}")`,
+      };
   }
 }
 
@@ -377,6 +383,12 @@ function getDropTable(input: SqlAction.TableInput): SqlAction.Output | undefined
         label,
         formatter: 'sql',
         query: `-- DROP TABLE ${input.tableId}`,
+      };
+    case 'mongodb':
+      return {
+        label,
+        formatter: 'js',
+        query: `db.collection('${input.tableId}').drop()`,
       };
   }
 }

@@ -142,10 +142,14 @@ export default class MongoDataAdapter extends BaseDataAdapter implements IDataAd
             meta: rawToUse,
             affectedRows,
           });
-        } else {
+        } else if(Array.isArray(rawToUse)){
           resolve({
             ok: false,
             raw: rawToUse,
+          });
+        } else{
+          resolve({
+            ok: false,
           });
         }
       } catch (err) {
