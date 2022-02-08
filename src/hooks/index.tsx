@@ -195,6 +195,8 @@ export function refreshAfterExecution(
     '.INSERT',
     '.DELETE',
     '.UPDATE',
+    '.DROP',
+    '.CREATECOLLECTION',
   ];
 
   const shouldRefreshConnection = KEYWORDS_TO_REFRESH_CONNECTION.some((keyword) =>
