@@ -129,8 +129,6 @@ export default class MongoDataAdapter extends BaseDataAdapter implements IDataAd
         //@ts-ignore
         const rawToUse: any = await eval(sql);
 
-        console.log(rawToUse);
-
         if (rawToUse.acknowledged === true) {
           // insert or insertOne
           let affectedRows =
@@ -151,7 +149,6 @@ export default class MongoDataAdapter extends BaseDataAdapter implements IDataAd
           });
         }
       } catch (err) {
-        console.log(err);
         resolve({
           ok: false,
           error: err,
