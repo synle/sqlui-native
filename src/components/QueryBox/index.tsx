@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useQueryClient } from 'react-query';
-import { format: formatSQL } from 'sql-formatter';
+import { format as formatSQL } from 'sql-formatter';
 import Box from '@mui/material/Box';
 import Alert from '@mui/material/Alert';
 import CircularProgress from '@mui/material/CircularProgress';

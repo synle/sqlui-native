@@ -20,6 +20,8 @@ import DropdownButton from 'src/components/DropdownButton';
 import { getTableActions } from 'src/data/sql';
 import { SqluiCore } from 'typings';
 
+const formatJS = require('js-beautify').js;
+
 type TableActionsProps = {
   connectionId: string;
   databaseId: string;
@@ -77,7 +79,7 @@ export default function TableActions(props: TableActionsProps) {
           case 'sql':
             onShowQuery(formatSQL(action.query));
           case 'js':
-            onShowQuery(action.query);
+            onShowQuery(formatJS(action.query, { indent_size: 2, space_in_empty_paren: true }));
             break;
         }
       }

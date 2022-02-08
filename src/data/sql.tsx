@@ -66,10 +66,17 @@ function getSelectAllColumns(input: SqlAction.TableInput): SqlAction.Output | un
         query: `SELECT * \nFROM ${input.tableId} \nLIMIT ${input.querySize}`,
       };
     case 'mongodb':
+      const insertValueObject = {};
+      for (const column of input.columns || []) {
+        if (!column.name.includes('.')) {
+          //@ts-ignore
+          insertValueObject[column.name] = column.type === 'string' ? '' : 123;
+        }
+      }
       return {
         label,
         formatter: 'sql',
-        query: `db.collection('${input.tableId}').find().limit(${input.querySize}).toArray();`,
+        query: `db.collection('${input.tableId}').find(${JSON.stringify(insertValueObject)}).limit(${input.querySize}).toArray();`,
       };
   }
 }
