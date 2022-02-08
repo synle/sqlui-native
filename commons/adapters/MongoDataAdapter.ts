@@ -55,7 +55,7 @@ export default class MongoDataAdapter extends BaseDataAdapter implements IDataAd
     return res.databases.map((database: any) => ({
       name: database.name,
       tables: [],
-    }));
+    })).sort((a, b) => (a.name || '').localeCompare(b.name || ''));
   }
 
   async getTables(database?: string): Promise<SqluiCore.TableMetaData[]> {
@@ -70,7 +70,7 @@ export default class MongoDataAdapter extends BaseDataAdapter implements IDataAd
           (collections || []).map((collection) => ({
             name: collection.name,
             columns: [],
-          })),
+          })).sort((a, b) => (a.name || '').localeCompare(b.name || '')),
         );
       } catch (err) {
         reject(err);
@@ -112,7 +112,7 @@ export default class MongoDataAdapter extends BaseDataAdapter implements IDataAd
             }
           }
         }
-        resolve(Object.values(columnsMap));
+        resolve(Object.values(columnsMap).sort((a, b) => (a.name || '').localeCompare(b.name || '')));
       } catch (err) {
         reject(err);
       }
