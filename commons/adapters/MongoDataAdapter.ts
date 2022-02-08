@@ -15,10 +15,9 @@ export default class MongoDataAdapter extends BaseDataAdapter implements IDataAd
     // attempt to pull in connections
     return new Promise<MongoClient>(async (resolve, reject) => {
       try {
-        console.log('connecting', this.connectionOption)
         const client = new MongoClient(this.connectionOption);
-        // await client.connect();
-        // console.log('connected', client)
+        await client.connect();
+        // await client.db("admin").command({ ping: 1 });
 
         resolve(client);
       } catch (err) {
@@ -40,7 +39,13 @@ export default class MongoDataAdapter extends BaseDataAdapter implements IDataAd
 
   async getDatabases(): Promise<SqluiCore.DatabaseMetaData[]> {
     const client = await this.getConnection();
-    return [];
+
+    //@ts-ignore
+    const res = await client.db().admin().listDatabases() ;
+    return res.databases.map(database => ({
+      name: database.name,
+      tables: [],
+    }));
   }
 
   async getTables(database?: string): Promise<SqluiCore.TableMetaData[]> {
@@ -51,7 +56,7 @@ export default class MongoDataAdapter extends BaseDataAdapter implements IDataAd
     return [];
   }
 
-  private async _execute(sql: string, params?: string[], database?: string) {}
+  private async _execute(sql: string, params?:  string[], database?: string) {}
 
   async execute(sql: string, database?: string): Promise<SqluiCore.Result> {
     return Promise.resolve({ok: false});
