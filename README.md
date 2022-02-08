@@ -14,7 +14,8 @@ At this point, we only have prebuilt binaries for Windows and Mac. Refer to the 
 - Microsoft
 - PostgresSQL
 - SQLite
-- Cassandra
+- Cassandra (Limited Supported)
+- MongoDB (Limited Supported)
 
 
 ## Features
@@ -106,6 +107,14 @@ Here is the link where you can find information about how run this application l
 - [ ] Push a build to Microsoft Store.
 - [X] Add supports for Cassandra
 - [ ] Add supports for Azure Table, and AWS Redshift.
+
+## Limitations:
+
+### Cassandra Limitations
+Cassandra Keyspaces are mapped to sqlui-native databases. And Cassandra Column Families are mapped to sqlui-native table.
+
+### MongoDB Limitations
+MongoDB Collections is mapped to sqlui-native table. We scan the first 5 Documents to come up with the schema for the columns.
 
 ## Suggestion?
 Use the following link to file a bug or a suggestion.

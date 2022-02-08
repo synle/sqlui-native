@@ -3,7 +3,7 @@ import { SqluiCore } from '../../typings';
 import IDataAdapter from './IDataAdapter';
 import BaseDataAdapter from './BaseDataAdapter';
 
-export default class CassandraAdapter extends BaseDataAdapter implements IDataAdapter {
+export default class CassandraDataAdapter extends BaseDataAdapter implements IDataAdapter {
   dialect: SqluiCore.Dialect = 'cassandra';
   /**
    * cassandra version
@@ -14,7 +14,6 @@ export default class CassandraAdapter extends BaseDataAdapter implements IDataAd
 
   constructor(connectionOption: string) {
     super(connectionOption);
-    this.dialect = 'cassandra';
   }
 
   private async getConnection(database?: string): Promise<cassandra.Client> {

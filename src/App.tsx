@@ -84,7 +84,7 @@ export default function App() {
   if (!hasValidSessionId) {
     return (
       <Alert severity='info' icon={<CircularProgress size={15} />}>
-        Loading...
+        Loading sqlui-native, please wait...
       </Alert>
     );
   }

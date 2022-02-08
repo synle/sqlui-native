@@ -190,6 +190,11 @@ export function refreshAfterExecution(
     'CREATE KEYSPACE',
     'ALTER KEYSPACE',
     'DROP KEYSPACE',
+
+    // for mongo
+    '.INSERT',
+    '.DELETE',
+    '.UPDATE',
   ];
 
   const shouldRefreshConnection = KEYWORDS_TO_REFRESH_CONNECTION.some((keyword) =>

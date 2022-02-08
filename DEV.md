@@ -121,7 +121,11 @@ docker run --name sqlui_postgres -p 5432:5432 -e POSTGRES_PASSWORD=password -d p
   # use qlsh - use the above image name for cqlsh
   docker exec -it sqlui_cassandra_v4 cqlsh
   docker exec -it sqlui_cassandra_v2 cqlsh
+
+# mongodb
+docker run --name sqlui_mongodb -d mongo:4.4.12
 ```
+
 
 
 

@@ -1,6 +1,6 @@
 {
   "name": "sqlui-native",
-  "version": "1.9.15",
+  "version": "1.10.0",
   "description": "A minimal native Desktop Electron application for running queries against popular database engines MySQL, MariaDB, Microsoft, PostgresSQL, SQLite and Cassandra",
   "browserslist": {
     "production": [
@@ -45,7 +45,7 @@
     "build": "npm run build-react && npm run build-electron",
     "test": "cross-env CI=true npm test-electron && cross-env CI=true npm run test-react",
     "test-ci": "cross-env CI=true jest __tests__ && cross-env CI=true npm run test-react",
-    "test-electron": "jest",
+    "test-electron": "jest commons __tests__",
     "test-react": "cross-env react-scripts test",
     "format": "npx prettier --config ./.prettierrc --write **/*.{ts,tsx,js,jsx,scss,yml,html} *.{json,MD}",
     "lint": "eslint --fix --ext .tsx --ext .ts src",
@@ -75,9 +75,11 @@
     "@mui/material": "^5.4.0",
     "cassandra-driver": "^3.6.0",
     "connection-string-parser": "^1.0.4",
+    "js-beautify": "^1.14.0",
     "json-2-csv": "^3.17.0",
     "mariadb": "^2.5.5",
     "monaco-editor": "^0.32.1",
+    "mongodb": "^4.3.1",
     "mysql2": "^2.3.3",
     "pg": "^8.7.3",
     "react": "^17.0.2",
@@ -102,6 +104,7 @@
     "@testing-library/user-event": "^13.5.0",
     "@types/cassandra-driver": "^3.6.0",
     "@types/jest": "^27.4.0",
+    "@types/js-beautify": "^1.13.3",
     "@types/react": "^17.0.39",
     "@types/react-dom": "^17.0.11",
     "@types/react-table": "^7.7.9",
