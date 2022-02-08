@@ -18,7 +18,13 @@
   "homepage": "./",
   "build": {
     "appId": "io.synle.github.sqlui-native",
-    "extends": null
+    "extends": null,
+    "win": {
+      "icon": "build/logo512.png"
+    },
+    "mac": {
+      "icon": "build/logo512.png"
+    }
   },
   "main": "main.js",
   "scripts": {
