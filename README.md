@@ -47,7 +47,7 @@ Import and Export can be used to share connections across different machines and
 
 
 ### Session Management
-This application supports multiple windows / instances. Sessions are used to control which instances it persist the data with. By default, any new Window created will be instantiated with the default session. There you can decide to change it if desired.
+This application supports multiple windows / instances. Sessions are used to control which instances it persist the data with.
 
 Also these sessions, and the associated connections and queries are persisted locally. So you can continue where you left off in the future.
 ![demo-session](https://user-images.githubusercontent.com/3792401/151750740-10ff3497-11b4-4026-bd39-c34b80bc1e3a.gif)
