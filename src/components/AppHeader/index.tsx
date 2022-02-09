@@ -84,14 +84,14 @@ export default function AppHeader() {
   ];
 
   useEffect(() => {
-    let newTitle
-    if(currentSession?.name){
+    let newTitle;
+    if (currentSession?.name) {
       newTitle = `${currentSession?.name}`;
-    }else {
-      newTitle = `SQLUI Native`
+    } else {
+      newTitle = `SQLUI Native`;
     }
     window.document.title = newTitle;
-  }, [currentSession?.name])
+  }, [currentSession?.name]);
 
   return (
     <AppBar position='static'>
