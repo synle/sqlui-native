@@ -20,6 +20,7 @@ export default function DatabaseDescription(props: DatabaseDescriptionProps) {
   const { data: databases, isLoading, isError } = useGetDatabases(connectionId);
   const { query, onChange: onChangeActiveQuery } = useActiveConnectionQuery();
   const { visibles, onToggle } = useShowHide();
+  const { query: activeQuery } = useActiveConnectionQuery();
 
   if (isLoading) {
     return (
@@ -51,9 +52,14 @@ export default function DatabaseDescription(props: DatabaseDescriptionProps) {
     <div className='DatabaseDescription'>
       {databases.map((database) => {
         const key = [connectionId, database.name].join(' > ');
+        const isSelected = activeQuery?.databaseId === database.name;
+
         return (
           <React.Fragment key={database.name}>
-            <AccordionHeader expanded={visibles[key]} onToggle={() => onToggle(key)}>
+            <AccordionHeader
+              expanded={visibles[key]}
+              onToggle={() => onToggle(key)}
+              className={isSelected ? 'selected' : ''}>
               <LibraryBooksIcon color='secondary' fontSize='inherit' />
               <span>{database.name}</span>
               <Tooltip title='Select Database For Execution'>

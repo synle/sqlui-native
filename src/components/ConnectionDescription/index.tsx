@@ -31,6 +31,7 @@ import { SqluiCore } from 'typings';
 export default function ConnectionDescription() {
   const { data: connections, isLoading } = useGetConnections();
   const { visibles, onToggle } = useShowHide();
+  const { query: activeQuery } = useActiveConnectionQuery();
 
   if (isLoading) {
     return (
@@ -49,10 +50,14 @@ export default function ConnectionDescription() {
       {connections.map((connection) => {
         const key = [connection.id].join(' > ');
         const isOnline = connection?.status === 'online';
+        const isSelected = activeQuery?.connectionId === connection.id;
 
         return (
           <React.Fragment key={key}>
-            <AccordionHeader expanded={visibles[key]} onToggle={() => onToggle(key)}>
+            <AccordionHeader
+              expanded={visibles[key]}
+              onToggle={() => onToggle(key)}
+              className={isSelected ? 'selected' : ''}>
               <ConnectionTypeIcon scheme={connection.dialect} status={connection.status} />
               <span>{connection.name}</span>
               <ConnectionActions connection={connection} />
