@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useQueryClient } from 'react-query';
-import { format as formatSQL } from 'sql-formatter';
 import Box from '@mui/material/Box';
 import Alert from '@mui/material/Alert';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -28,8 +27,7 @@ import Select from 'src/components/Select';
 import { SqluiCore, SqluiFrontend } from 'typings';
 import ConnectionDatabaseSelector from 'src/components/QueryBox/ConnectionDatabaseSelector';
 import ConnectionRevealButton from 'src/components/QueryBox/ConnectionRevealButton';
-
-const formatJS = require('js-beautify').js;
+import { formatSQL, formatJS } from 'src/utils/formatter';
 
 interface QueryBoxProps {
   queryId: string;
@@ -83,11 +81,7 @@ export default function QueryBox(props: QueryBoxProps) {
         sql = formatSQL(sql);
         break;
       case 'mongodb':
-        sql = formatJS(sql, {
-          indent_size: 2,
-          space_in_empty_paren: true,
-          break_chained_methods: 2,
-        });
+        sql = formatJS(sql);
         break;
     }
 
