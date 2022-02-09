@@ -1,37 +1,24 @@
-import React, { useState } from 'react';
-import Typography from '@mui/material/Typography';
-import { useNavigate } from 'react-router-dom';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import ContentCopyIcon from '@mui/icons-material/ContentCopy';
-import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
-import CloseIcon from '@mui/icons-material/Close';
-import EditIcon from '@mui/icons-material/Edit';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import DeleteIcon from '@mui/icons-material/Delete';
-import IconButton from '@mui/material/IconButton';
+import EditIcon from '@mui/icons-material/Edit';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import SelectAllIcon from '@mui/icons-material/SelectAll';
-import Box from '@mui/material/Box';
-import Alert from '@mui/material/Alert';
-import CircularProgress from '@mui/material/CircularProgress';
-import { Button } from '@mui/material';
-import Tooltip from '@mui/material/Tooltip';
-import { SqluiCore } from 'typings';
-import { useActionDialogs } from 'src/hooks/useActionDialogs';
-import TableActions from 'src/components/TableActions';
+import {Button} from '@mui/material';
+import IconButton from '@mui/material/IconButton';
+import {useNavigate} from 'react-router-dom';
+import {useState} from 'react';
+import {downloadText} from 'src/data/file';
+import {getExportedConnection} from 'src/hooks';
+import {SqluiCore} from 'typings';
+import {useActionDialogs} from 'src/hooks/useActionDialogs';
+import {useActiveConnectionQuery} from 'src/hooks';
+import {useDeleteConnection} from 'src/hooks';
+import {useDuplicateConnection} from 'src/hooks';
+import {useRetryConnection} from 'src/hooks';
 import DropdownButton from 'src/components/DropdownButton';
 import Toast from 'src/components/Toast';
-import {
-  useRetryConnection,
-  useGetConnections,
-  useShowHide,
-  useDeleteConnection,
-  useDuplicateConnection,
-  getExportedConnection,
-  useActiveConnectionQuery,
-} from 'src/hooks';
-import { downloadText } from 'src/data/file';
-
 interface ConnectionActionsProps {
   connection: SqluiCore.ConnectionProps;
 }

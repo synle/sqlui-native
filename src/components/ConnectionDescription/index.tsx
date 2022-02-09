@@ -1,33 +1,15 @@
-import React, { useState } from 'react';
-import Typography from '@mui/material/Typography';
-import { useNavigate } from 'react-router-dom';
-import Box from '@mui/material/Box';
 import Alert from '@mui/material/Alert';
 import CircularProgress from '@mui/material/CircularProgress';
-import { Button } from '@mui/material';
-import Tooltip from '@mui/material/Tooltip';
-import DatabaseDescription from 'src/components/DatabaseDescription';
-import { AccordionHeader, AccordionBody } from 'src/components/Accordion';
-import ColumnDescription from 'src/components/ColumnDescription';
-import TableActions from 'src/components/TableActions';
-import DropdownButton from 'src/components/DropdownButton';
-import { useActionDialogs } from 'src/hooks/useActionDialogs';
-import ConnectionTypeIcon from 'src/components/ConnectionTypeIcon';
-import Toast from 'src/components/Toast';
-import {
-  useRetryConnection,
-  useGetConnections,
-  useShowHide,
-  useDeleteConnection,
-  useDuplicateConnection,
-  getExportedConnection,
-  useActiveConnectionQuery,
-} from 'src/hooks';
-import { downloadText } from 'src/data/file';
-import ConnectionRetryAlert from 'src/components/ConnectionRetryAlert';
+import React from 'react';
+import {AccordionBody} from 'src/components/Accordion';
+import {AccordionHeader} from 'src/components/Accordion';
+import {useActiveConnectionQuery} from 'src/hooks';
+import {useGetConnections} from 'src/hooks';
+import {useShowHide} from 'src/hooks';
 import ConnectionActions from 'src/components/ConnectionActions';
-import { SqluiCore } from 'typings';
-
+import ConnectionRetryAlert from 'src/components/ConnectionRetryAlert';
+import ConnectionTypeIcon from 'src/components/ConnectionTypeIcon';
+import DatabaseDescription from 'src/components/DatabaseDescription';
 export default function ConnectionDescription() {
   const { data: connections, isLoading } = useGetConnections();
   const { visibles, onToggle } = useShowHide();

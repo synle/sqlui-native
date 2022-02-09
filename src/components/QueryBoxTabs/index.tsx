@@ -1,34 +1,25 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import Link from '@mui/material/Link';
-import Box from '@mui/material/Box';
-import Alert from '@mui/material/Alert';
-import CircularProgress from '@mui/material/CircularProgress';
-import IconButton from '@mui/material/IconButton';
-import Tooltip from '@mui/material/Tooltip';
-import QueryBox from 'src/components/QueryBox';
-import Tabs from 'src/components/Tabs';
 import AddIcon from '@mui/icons-material/Add';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import ContentCopyIcon from '@mui/icons-material/ContentCopy';
-import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import CloseIcon from '@mui/icons-material/Close';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import EditIcon from '@mui/icons-material/Edit';
+import Alert from '@mui/material/Alert';
+import Box from '@mui/material/Box';
+import CircularProgress from '@mui/material/CircularProgress';
+import Link from '@mui/material/Link';
+import {useEffect} from 'react';
+import {useNavigate} from 'react-router-dom';
+import {useState} from 'react';
+import React from 'react';
+import {allMenuKeys} from 'src/components/MissionControl';
+import {SqluiFrontend} from 'typings';
+import {useCommands} from 'src/components/MissionControl';
+import {useConnectionQueries} from 'src/hooks';
+import {useQueryTabOrientationSetting} from 'src/hooks';
 import DropdownButton from 'src/components/DropdownButton';
-import {
-  useExecute,
-  useConnectionQueries,
-  useConnectionQuery,
-  getExportedQuery,
-  useQueryTabOrientationSetting,
-  useActiveConnectionQuery,
-} from 'src/hooks';
-import { SqluiFrontend } from 'typings';
-import { useActionDialogs } from 'src/hooks/useActionDialogs';
-import { useCommands, allMenuKeys } from 'src/components/MissionControl';
-import { downloadText } from 'src/data/file';
-
+import QueryBox from 'src/components/QueryBox';
+import Tabs from 'src/components/Tabs';
 export default function QueryBoxTabs() {
   const navigate = useNavigate();
   const [init, setInit] = useState(false);

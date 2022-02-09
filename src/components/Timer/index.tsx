@@ -1,5 +1,6 @@
-import { useState, useEffect, useRef } from 'react';
-
+import {useEffect} from 'react';
+import {useRef} from 'react';
+import {useState} from 'react';
 interface TimerProps {
   startTime?: number;
   endTime?: number;

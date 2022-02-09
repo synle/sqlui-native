@@ -1,11 +1,10 @@
-import React, { useState, useRef } from 'react';
-import { useQuery, useMutation, useQueryClient } from 'react-query';
-import { SqluiCore, SqluiFrontend } from 'typings';
-import AlertDialog from 'src/components/ActionDialogs/AlertDialog';
-import PromptDialog, { PromptInput } from 'src/components/ActionDialogs/PromptDialog';
-import ChoiceDialog, { ChoiceInput, ChoiceOption } from 'src/components/ActionDialogs/ChoiceDialog';
-import ModalDialog, { ModalInput } from 'src/components/ActionDialogs/ModalDialog';
-
+import {useQuery} from 'react-query';
+import {useQueryClient} from 'react-query';
+import React from 'react';
+import {ChoiceInput} from 'src/components/ActionDialogs/ChoiceDialog';
+import {ChoiceOption} from 'src/components/ActionDialogs/ChoiceDialog';
+import {ModalInput} from 'src/components/ActionDialogs/ModalDialog';
+import {PromptInput} from 'src/components/ActionDialogs/PromptDialog';
 type AlertActionDialog = {
   type: 'alert';
   message: string;

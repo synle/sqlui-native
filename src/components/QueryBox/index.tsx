@@ -1,34 +1,25 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { useQueryClient } from 'react-query';
-import Box from '@mui/material/Box';
-import Alert from '@mui/material/Alert';
-import CircularProgress from '@mui/material/CircularProgress';
-import Typography from '@mui/material/Typography';
-import { Button } from '@mui/material';
-import SendIcon from '@mui/icons-material/Send';
-import PreviewIcon from '@mui/icons-material/Preview';
 import FormatColorTextIcon from '@mui/icons-material/FormatColorText';
+import SendIcon from '@mui/icons-material/Send';
+import {Button} from '@mui/material';
+import Alert from '@mui/material/Alert';
+import Box from '@mui/material/Box';
+import CircularProgress from '@mui/material/CircularProgress';
 import Tooltip from '@mui/material/Tooltip';
-import MenuItem from '@mui/material/MenuItem';
-import {
-  useGetConnections,
-  useExecute,
-  useConnectionQueries,
-  useConnectionQuery,
-  useShowHide,
-  useGetDatabases,
-  useGetConnectionById,
-  refreshAfterExecution,
-} from 'src/hooks';
-import { useCommands } from 'src/components/MissionControl';
+import {useQueryClient} from 'react-query';
+import {useState} from 'react';
+import React from 'react';
+import {formatJS} from 'src/utils/formatter';
+import {formatSQL} from 'src/utils/formatter';
+import {refreshAfterExecution} from 'src/hooks';
+import {SqluiCore} from 'typings';
+import {useConnectionQuery} from 'src/hooks';
+import {useExecute} from 'src/hooks';
+import {useGetConnectionById} from 'src/hooks';
 import CodeEditorBox from 'src/components/CodeEditorBox';
-import ResultBox from 'src/components/ResultBox';
-import Select from 'src/components/Select';
-import { SqluiCore, SqluiFrontend } from 'typings';
 import ConnectionDatabaseSelector from 'src/components/QueryBox/ConnectionDatabaseSelector';
 import ConnectionRevealButton from 'src/components/QueryBox/ConnectionRevealButton';
-import { formatSQL, formatJS } from 'src/utils/formatter';
-
+import ResultBox from 'src/components/ResultBox';
+import Select from 'src/components/Select';
 interface QueryBoxProps {
   queryId: string;
 }
