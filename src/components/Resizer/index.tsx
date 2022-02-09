@@ -1,7 +1,7 @@
 import React from 'react';
 import { styled, createTheme, ThemeProvider } from '@mui/system';
 
-const StyledAccordionHeader = styled('div')(({ theme }) => {
+const StyledResizer = styled('div')(({ theme }) => {
   const backgroundColor = theme.palette.action.focus;
 
   return {
@@ -29,9 +29,6 @@ export default function Resizer(props: ResizerProps) {
     dragGhostElem.style.width = e.clientX + 'px';
 
     document.body.appendChild(dragGhostElem);
-
-    // Customize the drag image
-    e.dataTransfer.setDragImage(dragGhostElem, 0, 0);
   };
 
   const onDragEnd = (e: React.MouseEvent) => {
@@ -47,7 +44,7 @@ export default function Resizer(props: ResizerProps) {
   };
 
   return (
-    <StyledAccordionHeader
+    <StyledResizer
       draggable={true}
       onDragStart={onDragStart}
       onDragEnd={onDragEnd}
