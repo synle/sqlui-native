@@ -426,18 +426,20 @@ export default function MissionControl() {
           ? `https://github.com/synle/sqlui-native/releases/download/${newVersion}/sqlui-native-${newVersion}.dmg`
           : `https://github.com/synle/sqlui-native/releases/download/${newVersion}/sqlui-native-${newVersion}.exe`;
 
-
       const onDownloadLatestVersion = () => {
         //@ts-ignore
         window.openBrowserLink(downloadLink);
-      }
+      };
 
       contentDom = (
         <>
           <Typography gutterBottom={true}>Your version {appPackage.version} </Typography>
           <Typography gutterBottom={true}>Latest version {newVersion} </Typography>
           <Typography gutterBottom={true} sx={{ mt: 3 }}>
-            <Link onClick={onDownloadLatestVersion} sx={{cursor:'pointer'}}>Click here to download the new version</Link>.
+            <Link onClick={onDownloadLatestVersion} sx={{ cursor: 'pointer' }}>
+              Click here to download the new version
+            </Link>
+            .
           </Typography>
         </>
       );
@@ -446,16 +448,20 @@ export default function MissionControl() {
     const onGoToHomepage = () => {
       //@ts-ignore
       window.openBrowserLink('https://synle.github.io/sqlui-native/');
-    }
+    };
 
     await modal({
       title: 'Check for update',
-      message: <div style={{ width: '250px' }}>
-        {contentDom}
-        <Typography gutterBottom={true} sx={{ mt: 3 }}>
-          <Link onClick={onGoToHomepage} sx={{cursor:'pointer'}}>synle.github.io/sqlui-native</Link>
-        </Typography>
-      </div>,
+      message: (
+        <div style={{ width: '250px' }}>
+          {contentDom}
+          <Typography gutterBottom={true} sx={{ mt: 3 }}>
+            <Link onClick={onGoToHomepage} sx={{ cursor: 'pointer' }}>
+              synle.github.io/sqlui-native
+            </Link>
+          </Typography>
+        </div>
+      ),
       showCloseButton: true,
     });
   };

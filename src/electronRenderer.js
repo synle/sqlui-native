@@ -7,7 +7,9 @@
 try {
   window.isElectron = false;
   window.toggleElectronMenu = () => {};
-  window.openBrowserLink = (link) => {window.location.href = link;}
+  window.openBrowserLink = (link) => {
+    window.location.href = link;
+  };
 
   if (window.process.env.ENV_TYPE !== 'mocked-server') {
     const ipcRenderer = window.require('electron').ipcRenderer;
@@ -18,7 +20,9 @@ try {
       menus = [].concat(menus);
       ipcRenderer.send('sqluiNativeEvent/toggleMenus', [visible, ...menus]);
     };
-    window.openBrowserLink = (link) => {shell.openExternal(link)}
+    window.openBrowserLink = (link) => {
+      shell.openExternal(link);
+    };
 
     // here we are polyfilling fetch with ipcRenderer
     const origFetch = window.fetch;
