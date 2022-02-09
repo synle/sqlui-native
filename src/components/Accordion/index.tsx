@@ -13,9 +13,14 @@ const StyledAccordionHeader = styled('div')(({ theme }) => {
     display: 'flex',
     alignItems: 'center',
     minHeight: '37px',
+    borderLeft: '2px solid transparent',
 
     '&:hover, &:focus': {
       backgroundColor,
+    },
+
+    '&.selected':{
+      borderColor: 'red'
     },
 
     '*': {
@@ -43,12 +48,13 @@ type AccordionBodyProps = {
 
 type AccordionHeaderProps = AccordionBodyProps & {
   onToggle: () => void;
+  className?: string;
 };
 
 export function AccordionHeader(props: AccordionHeaderProps) {
-  const { children, expanded, onToggle } = props;
+  const { children, expanded, onToggle, className } = props;
   return (
-    <StyledAccordionHeader onClick={() => onToggle()} className='Accordion'>
+    <StyledAccordionHeader onClick={() => onToggle()} className={'Accordion ' + className}>
       {!expanded ? (
         <ExpandLessIcon fontSize='inherit' color='inherit' />
       ) : (
