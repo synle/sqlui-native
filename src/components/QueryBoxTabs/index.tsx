@@ -147,6 +147,7 @@ export default function QueryBoxTabs() {
       tabIdx={tabIdx}
       tabHeaders={tabHeaders}
       tabContents={tabContents}
+      orientation={queryTabOrientation}
       onTabChange={(newTabIdx) => {
         if (newTabIdx < queries.length) {
           onShowQuery(queries[newTabIdx]);
