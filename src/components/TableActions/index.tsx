@@ -1,13 +1,13 @@
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import IconButton from '@mui/material/IconButton';
-import {useState} from 'react';
-import {formatJS} from 'src/utils/formatter';
-import {formatSQL} from 'src/utils/formatter';
-import {getTableActions} from 'src/data/sql';
-import {useActiveConnectionQuery} from 'src/hooks';
-import {useGetColumns} from 'src/hooks';
-import {useGetConnectionById} from 'src/hooks';
-import {useQuerySizeSetting} from 'src/hooks';
+import { useState } from 'react';
+import { formatJS } from 'src/utils/formatter';
+import { formatSQL } from 'src/utils/formatter';
+import { getTableActions } from 'src/data/sql';
+import { useActiveConnectionQuery } from 'src/hooks';
+import { useGetColumns } from 'src/hooks';
+import { useGetConnectionById } from 'src/hooks';
+import { useQuerySizeSetting } from 'src/hooks';
 import DropdownButton from 'src/components/DropdownButton';
 type TableActionsProps = {
   connectionId: string;

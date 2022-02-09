@@ -6,12 +6,12 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
-import {useCallback} from 'react';
-import {useFilters} from 'react-table';
-import {useGlobalFilter} from 'react-table';
-import {usePagination} from 'react-table';
-import {useSortBy} from 'react-table';
-import {useTable} from 'react-table';
+import { useCallback } from 'react';
+import { useFilters } from 'react-table';
+import { useGlobalFilter } from 'react-table';
+import { usePagination } from 'react-table';
+import { useSortBy } from 'react-table';
+import { useTable } from 'react-table';
 import React from 'react';
 interface DataTableProps {
   columns: any[];

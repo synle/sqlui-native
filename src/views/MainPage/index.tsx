@@ -1,5 +1,5 @@
-import {useState} from 'react';
-import {LocalStorageConfig} from 'src/data/config';
+import { useState } from 'react';
+import { LocalStorageConfig } from 'src/data/config';
 import ConnectionDescription from 'src/components/ConnectionDescription';
 import NewConnectionButton from 'src/components/NewConnectionButton';
 import QueryBoxTabs from 'src/components/QueryBoxTabs';

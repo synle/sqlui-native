@@ -1,10 +1,10 @@
-import {useQuery} from 'react-query';
-import {useQueryClient} from 'react-query';
+import { useQuery } from 'react-query';
+import { useQueryClient } from 'react-query';
 import React from 'react';
-import {ChoiceInput} from 'src/components/ActionDialogs/ChoiceDialog';
-import {ChoiceOption} from 'src/components/ActionDialogs/ChoiceDialog';
-import {ModalInput} from 'src/components/ActionDialogs/ModalDialog';
-import {PromptInput} from 'src/components/ActionDialogs/PromptDialog';
+import { ChoiceInput } from 'src/components/ActionDialogs/ChoiceDialog';
+import { ChoiceOption } from 'src/components/ActionDialogs/ChoiceDialog';
+import { ModalInput } from 'src/components/ActionDialogs/ModalDialog';
+import { PromptInput } from 'src/components/ActionDialogs/PromptDialog';
 type AlertActionDialog = {
   type: 'alert';
   message: string;
