@@ -32,12 +32,12 @@ export default function TableDescription(props: TableDescriptionProps) {
   }
 
   return (
-    <div className='TableDescription'>
+    <>
       {tables.map((table) => {
         const key = [connectionId, databaseId, table.name].join(' > ');
         return (
           <React.Fragment key={table.name}>
-            <AccordionHeader expanded={visibles[key]} onToggle={() => onToggle(key)}>
+            <AccordionHeader expanded={visibles[key]} onToggle={() => onToggle(key)} className='TableDescription'>
               <TableRowsIcon color='success' fontSize='inherit' />
               <span>{table.name}</span>
               <TableActions
@@ -56,6 +56,6 @@ export default function TableDescription(props: TableDescriptionProps) {
           </React.Fragment>
         );
       })}
-    </div>
+    </>
   );
 }
