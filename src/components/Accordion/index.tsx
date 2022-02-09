@@ -1,10 +1,7 @@
-import React from 'react';
-import Typography from '@mui/material/Typography';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import Box from '@mui/material/Box';
-import { styled, createTheme, ThemeProvider } from '@mui/system';
-
+import React from 'react';
+import { styled } from '@mui/system';
 const StyledAccordionHeader = styled('div')(({ theme }) => {
   const backgroundColor = theme.palette.action.focus;
   return {

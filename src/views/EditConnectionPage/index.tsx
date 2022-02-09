@@ -1,13 +1,11 @@
-import React, { useState, createRef, useEffect } from 'react';
 import Typography from '@mui/material/Typography';
-import { NewConnectionForm } from 'src/components/ConnectionForm';
-import NewConnectionButton from 'src/components/NewConnectionButton';
-import ConnectionDescription from 'src/components/ConnectionDescription';
-import Resizer from 'src/components/Resizer';
 import { useParams } from 'react-router-dom';
+import { useState } from 'react';
 import { EditConnectionForm } from 'src/components/ConnectionForm';
 import { LocalStorageConfig } from 'src/data/config';
-
+import ConnectionDescription from 'src/components/ConnectionDescription';
+import NewConnectionButton from 'src/components/NewConnectionButton';
+import Resizer from 'src/components/Resizer';
 export default function EditConnectionPage() {
   const urlParams = useParams();
   const connectionId = urlParams.connectionId as string;

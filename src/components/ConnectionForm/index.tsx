@@ -1,23 +1,18 @@
-import React, { useState, useEffect } from 'react';
-import Box from '@mui/material/Box';
-import Alert from '@mui/material/Alert';
-import AlertTitle from '@mui/material/AlertTitle';
-import Tooltip from '@mui/material/Tooltip';
-import Link from '@mui/material/Link';
-import CircularProgress from '@mui/material/CircularProgress';
-import Typography from '@mui/material/Typography';
-import { useNavigate } from 'react-router-dom';
-import { Button } from '@mui/material';
-import TextField from '@mui/material/TextField';
-import FormControl from '@mui/material/FormControl';
 import SaveIcon from '@mui/icons-material/Save';
-import ConnectionTypeIcon from 'src/components/ConnectionTypeIcon';
-import { useGetConnectionById, useUpsertConnection } from 'src/hooks';
+import { Button } from '@mui/material';
+import Alert from '@mui/material/Alert';
+import TextField from '@mui/material/TextField';
+import Tooltip from '@mui/material/Tooltip';
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import React from 'react';
+import { SqluiCore } from 'typings';
+import { useGetConnectionById } from 'src/hooks';
+import { useUpsertConnection } from 'src/hooks';
+import ConnectionHint from 'src/components/ConnectionForm/ConnectionHint';
 import TestConnectionButton from 'src/components/TestConnectionButton';
 import Toast from 'src/components/Toast';
-import { SqluiCore } from 'typings';
-import ConnectionHint from 'src/components/ConnectionForm/ConnectionHint';
-
 type ConnectionFormProps = {
   id?: string;
 };

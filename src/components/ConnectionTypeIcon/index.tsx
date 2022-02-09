@@ -1,6 +1,4 @@
 import CloudIcon from '@mui/icons-material/Cloud';
-import { SqluiCore } from 'typings';
-
 interface ConnectionTypeIconProps {
   scheme?: string;
   status?: string;

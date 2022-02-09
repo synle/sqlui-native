@@ -1,5 +1,4 @@
 import { SqluiCore } from 'typings';
-
 export module SqlAction {
   export type CoreInput = {
     dialect?: string;

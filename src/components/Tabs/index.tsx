@@ -1,12 +1,6 @@
-import React, { useState } from 'react';
-import Typography from '@mui/material/Typography';
-import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
-import QueryBox from 'src/components/QueryBox';
-import ConnectionDescription from 'src/components/ConnectionDescription';
-import ResultBox from 'src/components/ResultBox';
-import { useExecute } from 'src/hooks';
-
+import Tabs from '@mui/material/Tabs';
+import React from 'react';
 const VERTICAL_TAB_THRESHOLD = 20;
 
 interface TabsProps {
