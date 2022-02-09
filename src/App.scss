@@ -49,20 +49,23 @@
 
 // components
 .ConnectionDescription {
-  padding-left: 0.3rem;
 }
 
 .DatabaseDescription {
-  padding-left: 0.5rem;
+  margin-left: 0.8rem;
 }
 
 .TableDescription,
 .TableActions {
-  padding-left: 0.7rem;
+  margin-left: 1.2rem;
 }
 
 .ColumnDescription {
-  padding-left: 0.9rem;
+  margin-left: 1.7rem;
+}
+
+.ColumnAttributes {
+  margin-left: 2rem;
 }
 
 .QueryBox {

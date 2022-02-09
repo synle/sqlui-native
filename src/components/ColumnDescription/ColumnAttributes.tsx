@@ -44,7 +44,7 @@ export default function ColumnAttributes(props: ColumnAttributesProps) {
     .filter((attribute) => !!attribute.value);
 
   return (
-    <StyledAttributeDescription>
+    <StyledAttributeDescription className='ColumnAttributes'>
       {attributes
         .filter((attr) => ['name'].indexOf(attr.name) === -1)
         .map((attr) => (
@@ -64,7 +64,6 @@ export default function ColumnAttributes(props: ColumnAttributesProps) {
 const StyledAttributeDescription = styled('div')(({ theme }) => {
   return {
     color: theme.palette.text.disabled,
-    marginLeft: theme.spacing(1),
     fontFamily: 'monospace',
 
     '.AttributeLine': {
