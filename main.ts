@@ -50,7 +50,7 @@ function setupMenu() {
             const newWindowHandler = () => {
               sendMessage(mainWindow, 'clientEvent/session/switch');
               mainWindow.webContents.removeListener('did-finish-load', newWindowHandler);
-            }
+            };
 
             mainWindow.webContents.on('did-finish-load', newWindowHandler);
           },
