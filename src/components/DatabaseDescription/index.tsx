@@ -56,7 +56,10 @@ export default function DatabaseDescription(props: DatabaseDescriptionProps) {
 
         return (
           <React.Fragment key={database.name}>
-            <AccordionHeader expanded={visibles[key]} onToggle={() => onToggle(key)} className={isSelected ? 'selected DatabaseDescription' : 'DatabaseDescription'}>
+            <AccordionHeader
+              expanded={visibles[key]}
+              onToggle={() => onToggle(key)}
+              className={isSelected ? 'selected DatabaseDescription' : 'DatabaseDescription'}>
               <LibraryBooksIcon color='secondary' fontSize='inherit' />
               <span>{database.name}</span>
               <Tooltip title='Select Database For Execution'>

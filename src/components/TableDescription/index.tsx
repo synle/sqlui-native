@@ -37,7 +37,10 @@ export default function TableDescription(props: TableDescriptionProps) {
         const key = [connectionId, databaseId, table.name].join(' > ');
         return (
           <React.Fragment key={table.name}>
-            <AccordionHeader expanded={visibles[key]} onToggle={() => onToggle(key)} className='TableDescription'>
+            <AccordionHeader
+              expanded={visibles[key]}
+              onToggle={() => onToggle(key)}
+              className='TableDescription'>
               <TableRowsIcon color='success' fontSize='inherit' />
               <span>{table.name}</span>
               <TableActions

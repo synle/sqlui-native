@@ -47,28 +47,31 @@ export default function ConnectionDescription() {
 
   return (
     <>
-    {connections.map((connection) => {
-      const key = [connection.id].join(' > ');
-      const isOnline = connection?.status === 'online';
-      const isSelected = activeQuery?.connectionId === connection.id;
+      {connections.map((connection) => {
+        const key = [connection.id].join(' > ');
+        const isOnline = connection?.status === 'online';
+        const isSelected = activeQuery?.connectionId === connection.id;
 
-      return (
-        <React.Fragment key={key}>
-          <AccordionHeader expanded={visibles[key]} onToggle={() => onToggle(key)} className={isSelected ? 'selected ConnectionDescription' : 'ConnectionDescription'}>
-            <ConnectionTypeIcon scheme={connection.dialect} status={connection.status} />
-            <span>{connection.name}</span>
-            <ConnectionActions connection={connection} />
-          </AccordionHeader>
-          <AccordionBody expanded={visibles[key]}>
-            {isOnline ? (
-              <DatabaseDescription connectionId={connection.id} />
-            ) : (
-              <ConnectionRetryAlert connectionId={connection.id} />
-            )}
-          </AccordionBody>
-        </React.Fragment>
-      );
-    })}
+        return (
+          <React.Fragment key={key}>
+            <AccordionHeader
+              expanded={visibles[key]}
+              onToggle={() => onToggle(key)}
+              className={isSelected ? 'selected ConnectionDescription' : 'ConnectionDescription'}>
+              <ConnectionTypeIcon scheme={connection.dialect} status={connection.status} />
+              <span>{connection.name}</span>
+              <ConnectionActions connection={connection} />
+            </AccordionHeader>
+            <AccordionBody expanded={visibles[key]}>
+              {isOnline ? (
+                <DatabaseDescription connectionId={connection.id} />
+              ) : (
+                <ConnectionRetryAlert connectionId={connection.id} />
+              )}
+            </AccordionBody>
+          </React.Fragment>
+        );
+      })}
     </>
   );
 }

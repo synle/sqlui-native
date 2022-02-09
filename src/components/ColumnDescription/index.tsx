@@ -64,7 +64,10 @@ export default function ColumnDescription(props: ColumnDescriptionProps) {
           const key = [connectionId, databaseId, tableId, column.name].join(' > ');
           return (
             <React.Fragment key={column.name}>
-              <AccordionHeader expanded={visibles[key]} onToggle={() => onToggle(key)} className='ColumnDescription'>
+              <AccordionHeader
+                expanded={visibles[key]}
+                onToggle={() => onToggle(key)}
+                className='ColumnDescription'>
                 <ViewColumnIcon color='disabled' fontSize='inherit' />
                 <ColumnName value={column.name}></ColumnName>
                 <ColumnType value={column.type}></ColumnType>
