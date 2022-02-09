@@ -16,6 +16,8 @@ export default class MongoDataAdapter extends BaseDataAdapter implements IDataAd
     // attempt to pull in connections
     return new Promise<MongoClient>(async (resolve, reject) => {
       try {
+        setTimeout(() => reject('MongoDB connection Timeout'), 3000);
+
         if (this.client) {
           return resolve(this.client);
         }

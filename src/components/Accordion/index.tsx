@@ -7,20 +7,19 @@ import { styled, createTheme, ThemeProvider } from '@mui/system';
 
 const StyledAccordionHeader = styled('div')(({ theme }) => {
   const backgroundColor = theme.palette.action.focus;
-
   return {
     cursor: 'pointer',
     display: 'flex',
     alignItems: 'center',
     minHeight: '37px',
-    borderLeft: '2px solid transparent',
+    borderLeft: '3px solid transparent',
 
     '&:hover, &:focus': {
       backgroundColor,
     },
 
     '&.selected':{
-      borderColor: 'red'
+      borderColor: theme.palette.primary.main,
     },
 
     '*': {
