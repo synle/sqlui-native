@@ -8,7 +8,6 @@ import path from 'path';
 const isMac = process.platform === 'darwin';
 
 function createWindow() {
-  // Create the browser window.
   const mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
@@ -27,6 +26,8 @@ function createWindow() {
   if (process.env.ENV_TYPE === 'electron-dev') {
     mainWindow.webContents.openDevTools();
   }
+
+  return mainWindow;
 }
 
 function sendMessage(win: BrowserWindow, message: SqluiEnums.ClientEventKey) {
@@ -44,7 +45,10 @@ function setupMenu() {
           label: 'New Window',
           accelerator: isMac ? 'Cmd+Shift+N' : 'Ctrl+Shift+N',
           click: async () => {
-            createWindow();
+            const mainWindow = createWindow();
+            mainWindow.webContents.on('did-finish-load', () => {
+              sendMessage(mainWindow, 'clientEvent/session/switch');
+            });
           },
         },
         {
