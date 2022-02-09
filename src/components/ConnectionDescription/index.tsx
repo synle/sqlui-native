@@ -46,7 +46,7 @@ export default function ConnectionDescription() {
   }
 
   return (
-    <div className='ConnectionDescription'>
+    <>
       {connections.map((connection) => {
         const key = [connection.id].join(' > ');
         const isOnline = connection?.status === 'online';
@@ -57,7 +57,7 @@ export default function ConnectionDescription() {
             <AccordionHeader
               expanded={visibles[key]}
               onToggle={() => onToggle(key)}
-              className={isSelected ? 'selected' : ''}>
+              className={isSelected ? 'selected ConnectionDescription' : 'ConnectionDescription'}>
               <ConnectionTypeIcon scheme={connection.dialect} status={connection.status} />
               <span>{connection.name}</span>
               <ConnectionActions connection={connection} />
@@ -72,6 +72,6 @@ export default function ConnectionDescription() {
           </React.Fragment>
         );
       })}
-    </div>
+    </>
   );
 }
