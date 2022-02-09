@@ -18,7 +18,7 @@ const StyledAccordionHeader = styled('div')(({ theme }) => {
       backgroundColor,
     },
 
-    '&.selected':{
+    '&.selected': {
       borderColor: theme.palette.primary.main,
     },
 

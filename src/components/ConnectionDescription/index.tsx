@@ -54,7 +54,10 @@ export default function ConnectionDescription() {
 
         return (
           <React.Fragment key={key}>
-            <AccordionHeader expanded={visibles[key]} onToggle={() => onToggle(key)} className={isSelected ? 'selected' : ''}>
+            <AccordionHeader
+              expanded={visibles[key]}
+              onToggle={() => onToggle(key)}
+              className={isSelected ? 'selected' : ''}>
               <ConnectionTypeIcon scheme={connection.dialect} status={connection.status} />
               <span>{connection.name}</span>
               <ConnectionActions connection={connection} />
