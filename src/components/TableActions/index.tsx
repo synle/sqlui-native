@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { format as formatSQL } from 'sql-formatter';
 import Typography from '@mui/material/Typography';
 import ViewColumnIcon from '@mui/icons-material/ViewColumn';
 import Box from '@mui/material/Box';
@@ -19,8 +18,7 @@ import {
 import DropdownButton from 'src/components/DropdownButton';
 import { getTableActions } from 'src/data/sql';
 import { SqluiCore } from 'typings';
-
-const formatJS = require('js-beautify').js;
+import {formatSQL, formatJS} from 'src/utils/formatter';
 
 type TableActionsProps = {
   connectionId: string;
@@ -80,11 +78,7 @@ export default function TableActions(props: TableActionsProps) {
             onShowQuery(formatSQL(action.query));
           case 'js':
             onShowQuery(
-              formatJS(action.query, {
-                indent_size: 2,
-                space_in_empty_paren: true,
-                break_chained_methods: 2,
-              }),
+              formatJS(action.query),
             );
             break;
         }
