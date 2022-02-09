@@ -47,7 +47,7 @@ function setupMenu() {
           click: async () => {
             const mainWindow = createWindow();
             mainWindow.webContents.on('did-finish-load', () => {
-                sendMessage(mainWindow, 'clientEvent/session/switch');
+              sendMessage(mainWindow, 'clientEvent/session/switch');
             });
           },
         },
