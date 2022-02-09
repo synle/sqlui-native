@@ -27,7 +27,7 @@ import Select from 'src/components/Select';
 import { SqluiCore, SqluiFrontend } from 'typings';
 import ConnectionDatabaseSelector from 'src/components/QueryBox/ConnectionDatabaseSelector';
 import ConnectionRevealButton from 'src/components/QueryBox/ConnectionRevealButton';
-import {formatSQL, formatJS} from 'src/utils/formatter';
+import { formatSQL, formatJS } from 'src/utils/formatter';
 
 interface QueryBoxProps {
   queryId: string;

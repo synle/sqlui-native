@@ -18,7 +18,7 @@ import {
 import DropdownButton from 'src/components/DropdownButton';
 import { getTableActions } from 'src/data/sql';
 import { SqluiCore } from 'typings';
-import {formatSQL, formatJS} from 'src/utils/formatter';
+import { formatSQL, formatJS } from 'src/utils/formatter';
 
 type TableActionsProps = {
   connectionId: string;
@@ -77,9 +77,7 @@ export default function TableActions(props: TableActionsProps) {
           case 'sql':
             onShowQuery(formatSQL(action.query));
           case 'js':
-            onShowQuery(
-              formatJS(action.query),
-            );
+            onShowQuery(formatJS(action.query));
             break;
         }
       }
