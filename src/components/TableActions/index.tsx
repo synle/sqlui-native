@@ -1,25 +1,14 @@
-import React, { useState } from 'react';
-import Typography from '@mui/material/Typography';
-import ViewColumnIcon from '@mui/icons-material/ViewColumn';
-import Box from '@mui/material/Box';
-import Alert from '@mui/material/Alert';
-import CircularProgress from '@mui/material/CircularProgress';
-import { AccordionHeader, AccordionBody } from 'src/components/Accordion';
+import {useState} from 'react';
 import IconButton from '@mui/material/IconButton';
-import Tooltip from '@mui/material/Tooltip';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import {
-  useGetColumns,
-  useShowHide,
-  useGetConnectionById,
-  useActiveConnectionQuery,
-  useQuerySizeSetting,
-} from 'src/hooks';
+import {useGetColumns} from 'src/hooks';
+import {useGetConnectionById} from 'src/hooks';
+import {useActiveConnectionQuery} from 'src/hooks';
+import {useQuerySizeSetting} from 'src/hooks';
 import DropdownButton from 'src/components/DropdownButton';
-import { getTableActions } from 'src/data/sql';
-import { SqluiCore } from 'typings';
-import { formatSQL, formatJS } from 'src/utils/formatter';
-
+import {getTableActions} from 'src/data/sql';
+import {formatSQL} from 'src/utils/formatter';
+import {formatJS} from 'src/utils/formatter';
 type TableActionsProps = {
   connectionId: string;
   databaseId: string;

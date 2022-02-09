@@ -1,6 +1,6 @@
-import { SqluiCore, SqluiFrontend } from 'typings';
-import { getCurrentSessionId } from 'src/data/session';
-
+import {SqluiCore} from 'typings';
+import {SqluiFrontend} from 'typings';
+import {getCurrentSessionId} from 'src/data/session';
 // @ts-ignore
 async function _fetch<T>(...inputs) {
   let { headers, ...restInput } = inputs[1] || {};

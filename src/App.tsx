@@ -1,18 +1,13 @@
-import './App.scss';
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import Typography from '@mui/material/Typography';
-import AppBar from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
-import IconButton from '@mui/material/IconButton';
-import MenuIcon from '@mui/icons-material/Menu';
+import {useState} from 'react';
+import {useEffect} from 'react';
 import Box from '@mui/material/Box';
 import Alert from '@mui/material/Alert';
 import CircularProgress from '@mui/material/CircularProgress';
-import { ThemeProvider, useTheme, createTheme } from '@mui/material/styles';
-import useMediaQuery from '@mui/material/useMediaQuery';
-import { HashRouter, Routes, Route, Link } from 'react-router-dom';
-import 'src/electronRenderer';
+import {ThemeProvider} from '@mui/material/styles';
+import {createTheme} from '@mui/material/styles';
+import {HashRouter} from 'react-router-dom';
+import {Routes} from 'react-router-dom';
+import {Route} from 'react-router-dom';
 import EditConnectionPage from 'src/views/EditConnectionPage';
 import NewConnectionPage from 'src/views/NewConnectionPage';
 import MainPage from 'src/views/MainPage';
@@ -20,15 +15,14 @@ import ActionDialogs from 'src/components/ActionDialogs';
 import AppHeader from 'src/components/AppHeader';
 import ElectronEventListener from 'src/components/ElectronEventListener';
 import MissionControl from 'src/components/MissionControl';
-import {
-  useGetSessions,
-  useUpsertSession,
-  useDeleteSession,
-  useGetCurrentSession,
-  useDarkModeSetting,
-} from 'src/hooks';
-import { getCurrentSessionId, getDefaultSessionId, setCurrentSessionId } from 'src/data/session';
-
+import {useGetSessions} from 'src/hooks';
+import {useUpsertSession} from 'src/hooks';
+import {useGetCurrentSession} from 'src/hooks';
+import {useDarkModeSetting} from 'src/hooks';
+import {getDefaultSessionId} from 'src/data/session';
+import {setCurrentSessionId} from 'src/data/session';
+import './App.scss';
+import 'src/electronRenderer';
 export default function App() {
   const [hasValidSessionId, setHasValidSessionId] = useState(false);
   const { data: sessions, isLoading: loadingSessions } = useGetSessions();

@@ -1,10 +1,9 @@
-import React, { useState, createRef, useEffect } from 'react';
+import {useState} from 'react';
 import NewConnectionButton from 'src/components/NewConnectionButton';
 import ConnectionDescription from 'src/components/ConnectionDescription';
 import QueryBoxTabs from 'src/components/QueryBoxTabs';
 import Resizer from 'src/components/Resizer';
-import { LocalStorageConfig } from 'src/data/config';
-
+import {LocalStorageConfig} from 'src/data/config';
 export default function MainPage() {
   const [width, setWidth] = useState<undefined | number>(
     LocalStorageConfig.get<number>('clientConfig/leftPanelWidth', 300),

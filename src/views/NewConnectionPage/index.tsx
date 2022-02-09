@@ -1,11 +1,10 @@
-import React, { useState, createRef, useEffect } from 'react';
+import {useState} from 'react';
 import Typography from '@mui/material/Typography';
-import { NewConnectionForm } from 'src/components/ConnectionForm';
+import {NewConnectionForm} from 'src/components/ConnectionForm';
 import NewConnectionButton from 'src/components/NewConnectionButton';
 import ConnectionDescription from 'src/components/ConnectionDescription';
 import Resizer from 'src/components/Resizer';
-import { LocalStorageConfig } from 'src/data/config';
-
+import {LocalStorageConfig} from 'src/data/config';
 export default function NewConnectionPage() {
   const [width, setWidth] = useState<undefined | number>(
     LocalStorageConfig.get<number>('clientConfig/leftPanelWidth', 300),

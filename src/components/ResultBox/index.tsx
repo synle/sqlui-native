@@ -1,20 +1,19 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import Typography from '@mui/material/Typography';
+import React from 'react';
+import {useState} from 'react';
+import {useEffect} from 'react';
+import {useMemo} from 'react';
 import CsvEngine from 'json-2-csv';
-import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
 import Alert from '@mui/material/Alert';
 import CircularProgress from '@mui/material/CircularProgress';
 import DownloadIcon from '@mui/icons-material/Download';
 import Tooltip from '@mui/material/Tooltip';
-import { useExecute, useConnectionQueries, useConnectionQuery } from 'src/hooks';
 import Tabs from 'src/components/Tabs';
-import { downloadText } from 'src/data/file';
+import {downloadText} from 'src/data/file';
 import CodeEditorBox from 'src/components/CodeEditorBox';
 import DataTable from 'src/components/DataTable';
 import Timer from 'src/components/Timer';
-import { SqluiCore, SqluiFrontend } from 'typings';
-
+import {SqluiFrontend} from 'typings';
 interface ResultBoxProps {
   query: SqluiFrontend.ConnectionQuery;
   executing: boolean;

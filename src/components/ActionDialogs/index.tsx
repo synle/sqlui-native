@@ -1,12 +1,8 @@
-import React, { useState, useRef } from 'react';
-import { useQuery, useMutation, useQueryClient } from 'react-query';
-import { SqluiCore, SqluiFrontend } from 'typings';
 import AlertDialog from 'src/components/ActionDialogs/AlertDialog';
-import PromptDialog, { PromptInput } from 'src/components/ActionDialogs/PromptDialog';
-import ChoiceDialog, { ChoiceInput, ChoiceOption } from 'src/components/ActionDialogs/ChoiceDialog';
-import ModalDialog, { ModalInput } from 'src/components/ActionDialogs/ModalDialog';
-import { useActionDialogs } from 'src/hooks/useActionDialogs';
-
+import PromptDialog from 'src/components/ActionDialogs/PromptDialog';
+import ChoiceDialog from 'src/components/ActionDialogs/ChoiceDialog';
+import ModalDialog from 'src/components/ActionDialogs/ModalDialog';
+import {useActionDialogs} from 'src/hooks/useActionDialogs';
 interface ActionDialogsProps {}
 
 export default function ActionDialogs(props: ActionDialogsProps) {

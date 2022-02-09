@@ -1,12 +1,13 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import {useState} from 'react';
+import {useEffect} from 'react';
 import ToggleButton from '@mui/material/ToggleButton';
 import Button from '@mui/material/Button';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import SimpleEditor from 'src/components/CodeEditorBox/SimpleEditor';
 import AdvancedEditor from 'src/components/CodeEditorBox/AdvancedEditor';
-import { useEditorModeSetting, useWordWrapSetting } from 'src/hooks';
-
+import {useEditorModeSetting} from 'src/hooks';
+import {useWordWrapSetting} from 'src/hooks';
 interface CodeEditorProps {
   value?: string;
   onChange?: (newValue: string) => void;

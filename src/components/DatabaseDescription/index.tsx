@@ -1,16 +1,16 @@
 import React from 'react';
-import Typography from '@mui/material/Typography';
 import SelectAllIcon from '@mui/icons-material/SelectAll';
 import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
-import Box from '@mui/material/Box';
 import Alert from '@mui/material/Alert';
 import CircularProgress from '@mui/material/CircularProgress';
 import TableDescription from 'src/components/TableDescription';
-import { AccordionHeader, AccordionBody } from 'src/components/Accordion';
-import { useGetDatabases, useActiveConnectionQuery, useShowHide } from 'src/hooks';
-
+import {AccordionHeader} from 'src/components/Accordion';
+import {AccordionBody} from 'src/components/Accordion';
+import {useGetDatabases} from 'src/hooks';
+import {useActiveConnectionQuery} from 'src/hooks';
+import {useShowHide} from 'src/hooks';
 type DatabaseDescriptionProps = {
   connectionId: string;
 };

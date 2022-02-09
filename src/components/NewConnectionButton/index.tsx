@@ -1,23 +1,11 @@
-import { useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Button } from '@mui/material';
+import {Button} from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import UnfoldLessIcon from '@mui/icons-material/UnfoldLess';
 import Box from '@mui/material/Box';
 import SplitButton from 'src/components/SplitButton';
-import { useActionDialogs } from 'src/hooks/useActionDialogs';
-import { downloadText } from 'src/data/file';
-import { useCommands } from 'src/components/MissionControl';
-import {
-  useImportConnection,
-  useConnectionQueries,
-  useGetConnections,
-  getExportedConnection,
-  getExportedQuery,
-} from 'src/hooks';
-
+import {useCommands} from 'src/components/MissionControl';
 export default function NewConnectionButton() {
   const { selectCommand } = useCommands();
 
