@@ -46,9 +46,13 @@ function setupMenu() {
           accelerator: isMac ? 'Cmd+Shift+N' : 'Ctrl+Shift+N',
           click: async () => {
             const mainWindow = createWindow();
-            mainWindow.webContents.on('did-finish-load', () => {
+
+            const newWindowHandler = () => {
               sendMessage(mainWindow, 'clientEvent/session/switch');
-            });
+              mainWindow.webContents.removeListener('did-finish-load', newWindowHandler);
+            }
+
+            mainWindow.webContents.on('did-finish-load', newWindowHandler);
           },
         },
         {
