@@ -33,3 +33,7 @@ li {
     }
   }
 }
+
+[data-popper-placement] {
+  z-index: 1;
+}

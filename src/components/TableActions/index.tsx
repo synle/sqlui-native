@@ -1,8 +1,6 @@
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import IconButton from '@mui/material/IconButton';
 import { useState } from 'react';
-import { formatJS } from 'src/utils/formatter';
-import { formatSQL } from 'src/utils/formatter';
 import { getTableActions } from 'src/data/sql';
 import { useActiveConnectionQuery } from 'src/hooks';
 import { useGetColumns } from 'src/hooks';
@@ -62,13 +60,7 @@ export default function TableActions(props: TableActionsProps) {
     label: action.label,
     onClick: () => {
       if (action.query) {
-        switch (action.formatter) {
-          case 'sql':
-            onShowQuery(formatSQL(action.query));
-          case 'js':
-            onShowQuery(formatJS(action.query));
-            break;
-        }
+        onShowQuery(action.query);
       }
     },
   }));
