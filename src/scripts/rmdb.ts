@@ -361,4 +361,3 @@ export const scripts: SqlAction.ScriptGenerator[] = [
   getAddColumn,
   getDropColumns,
 ];
-
