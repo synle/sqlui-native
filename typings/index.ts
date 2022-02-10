@@ -9,7 +9,8 @@ export module SqluiCore {
     | 'postgres'
     | 'sqlite'
     | 'cassandra'
-    | 'mongodb';
+    | 'mongodb'
+    | 'redis';
 
   export type CoreConnectionProps = {
     connection: string;

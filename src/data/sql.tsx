@@ -471,6 +471,46 @@ function getDropColumns(input: SqlAction.TableInput): SqlAction.Output | undefin
   }
 }
 
+
+// for redis
+function getRedisSetValue(input: SqlAction.TableInput) : SqlAction.Output | undefined{
+  const label = `Set Value`;
+
+  if (!input.columns) {
+    return undefined;
+  }
+
+  switch (input.dialect) {
+    default:
+      return undefined;
+    case 'redis':
+      return {
+        label,
+        formatter: 'js',
+        query: `db.set('key', 'value123')`,
+      };
+  }
+}
+
+function getRedisGet(input: SqlAction.TableInput): SqlAction.Output | undefined {
+  const label = `Get Value by Key`;
+
+  if (!input.columns) {
+    return undefined;
+  }
+
+  switch (input.dialect) {
+    default:
+      return undefined;
+    case 'redis':
+      return {
+        label,
+        formatter: 'js',
+        query: `db.get('key')`,
+      };
+  }
+}
+
 export function getTableActions(tableActionInput: SqlAction.TableInput) {
   const actions: SqlAction.Output[] = [];
 
@@ -487,6 +527,9 @@ export function getTableActions(tableActionInput: SqlAction.TableInput) {
     // getDivider,
     getAddColumn,
     getDropColumns,
+    // for redis only
+    getRedisGet,
+    getRedisSetValue,
   ].forEach((fn) => {
     const action = fn(tableActionInput);
     if (action) {

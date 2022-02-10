@@ -97,6 +97,17 @@ export default function ConnectionHint(props: ConnectionHintProps) {
           </Link>
         </Tooltip>
       </Alert>
+      <Alert
+        severity='info'
+        icon={<ConnectionTypeIcon scheme='redis' status='online' />}
+        sx={{ mb: 2 }}>
+        <AlertTitle>Redis</AlertTitle>
+        <Tooltip title='Use this sample Redis connection.'>
+          <Link underline='hover' onClick={() => props.onChange('redis://localhost:6379')}>
+            redis://localhost:6379
+          </Link>
+        </Tooltip>
+      </Alert>
     </>
   );
 }
