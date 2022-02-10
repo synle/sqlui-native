@@ -195,6 +195,17 @@ export function getSortedSetAddItem(input: SqlAction.TableInput): SqlAction.Outp
       };
 }
 
+
+export function getPublishMessage(input: SqlAction.TableInput): SqlAction.Output | undefined {
+  const label = `Publish a message`;
+
+      return {
+        label,
+        formatter: 'js',
+        query: `${REDIS_ADAPTER_PREFIX}.publish("key", "some_message")`,
+      };
+}
+
 export const scripts = [
   getSetValue,
   getGet,
@@ -219,4 +230,6 @@ export const scripts = [
   getDivider,
   getSortedSetGetItems,
   getSortedSetAddItem,
+  getDivider,
+  getPublishMessage,
 ];
