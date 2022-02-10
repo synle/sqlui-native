@@ -23,7 +23,6 @@ const pageSizeOptions: any[] = [10, 25, 50, 100, { label: 'Show All', value: -1 
 export default function DataTable(props: DataTableProps) {
   const { columns, data } = props;
 
-  //@ts-ignore
   const { getTableBodyProps, gotoPage, headerGroups, page, prepareRow, setPageSize, state } =
     useTable(
       {

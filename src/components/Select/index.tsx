@@ -35,7 +35,6 @@ type SelectProps = {
 export default function Select(props: SelectProps) {
   const { children, onChange, ...restProps } = props;
 
-  //@ts-ignore
   return (
     <StyledSelect onChange={(e) => onChange && onChange(e.target.value)} {...restProps}>
       {children}

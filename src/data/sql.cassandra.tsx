@@ -4,8 +4,7 @@ import { getDivider } from 'src/data/sql';
 export function getSelectAllColumns(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Select All Columns`;
 
-  switch (input.dialect) {
-    case 'cassandra':
+  if (input.dialect === 'cassandra') {
       return {
         label,
         formatter: 'sql',
@@ -26,8 +25,7 @@ export function getSelectSpecificColumns(
   const columnString = `\n` + input.columns.map((col) => `  ${col.name}`).join(',\n');
   const whereColumnString = input.columns.map((col) => `${col.name} = ''`).join('\n -- AND ');
 
-  switch (input.dialect) {
-    case 'cassandra':
+  if (input.dialect === 'cassandra') {
       return {
         label,
         formatter: 'sql',
@@ -46,8 +44,7 @@ export function getInsertCommand(input: SqlAction.TableInput): SqlAction.Output 
   const columnString = input.columns.map((col) => col.name).join(',\n');
   const insertValueString = input.columns.map((col) => `'_${col.name}_'`).join(',\n');
 
-  switch (input.dialect) {
-    case 'cassandra':
+  if (input.dialect === 'cassandra') {
       return {
         label,
         formatter: 'sql',
@@ -66,8 +63,7 @@ export function getUpdateCommand(input: SqlAction.TableInput): SqlAction.Output 
   const columnString = input.columns.map((col) => `-- ${col.name} = ''`).join(',\n');
   const whereColumnString = input.columns.map((col) => `-- ${col.name} = ''`).join(' AND \n');
 
-  switch (input.dialect) {
-    case 'cassandra':
+  if (input.dialect === 'cassandra') {
       return {
         label,
         formatter: 'js',
@@ -85,8 +81,7 @@ export function getDeleteCommand(input: SqlAction.TableInput): SqlAction.Output 
 
   const whereColumnString = input.columns.map((col) => `-- ${col.name} = ''`).join(' AND \n');
 
-  switch (input.dialect) {
-    case 'cassandra':
+  if (input.dialect === 'cassandra') {
       return {
         label,
         formatter: 'sql',

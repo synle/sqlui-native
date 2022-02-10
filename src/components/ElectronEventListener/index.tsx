@@ -6,7 +6,6 @@ export default function ElectronEventListener() {
   const { dialog } = useActionDialogs();
 
   useEffect(() => {
-    //@ts-ignore
     window?.ipcRenderer?.on('sqluiNativeEvent/ipcElectronCommand', (event, data) => {
       if (dialog) {
         switch (data) {
@@ -26,7 +25,6 @@ export default function ElectronEventListener() {
     });
 
     return () => {
-      //@ts-ignore
       window?.ipcRenderer?.removeAllListeners('sqluiNativeEvent/ipcElectronCommand');
     };
   }, [dialog]);
