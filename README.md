@@ -9,6 +9,7 @@ At this point, we only have prebuilt binaries for Windows and Mac. Refer to the 
 - [Sqlui Native Homepage](https://synle.github.io/sqlui-native)
 
 ## Supported Database Adapters
+The list below are supported datastores. You can also refer to [this link for queries help](https://github.com/synle/sqlui-native/blob/main/guides.md)
 - MySQL
 - MariaDB
 - Microsoft
