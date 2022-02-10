@@ -191,7 +191,7 @@ export function getSortedSetAddItem(input: SqlAction.TableInput): SqlAction.Outp
       return {
         label,
         formatter: 'js',
-        query: `${REDIS_ADAPTER_PREFIX}.zAdd("key", 11)`,
+        query: `${REDIS_ADAPTER_PREFIX}.zAdd("key", [{score: 1, value: "some_value"}])`,
       };
 }
 
