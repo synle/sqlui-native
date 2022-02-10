@@ -1,5 +1,5 @@
-import { SqluiCore,SqlAction } from 'typings';
-import {getDivider} from 'src/data/sql'
+import { SqluiCore, SqlAction } from 'typings';
+import { getDivider } from 'src/data/sql';
 
 export function getSelectAllColumns(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Select All Columns`;
@@ -30,7 +30,6 @@ export function getSelectAllColumns(input: SqlAction.TableInput): SqlAction.Outp
         formatter: 'sql',
         query: `SELECT * \nFROM ${input.tableId} \nLIMIT ${input.querySize}`,
       };
-
   }
 }
 
@@ -57,7 +56,9 @@ export function getSelectCount(input: SqlAction.TableInput): SqlAction.Output | 
   }
 }
 
-export function getSelectSpecificColumns(input: SqlAction.TableInput): SqlAction.Output | undefined {
+export function getSelectSpecificColumns(
+  input: SqlAction.TableInput,
+): SqlAction.Output | undefined {
   const label = `Select Specific Columns`;
 
   if (!input.columns) {
@@ -93,7 +94,6 @@ export function getSelectSpecificColumns(input: SqlAction.TableInput): SqlAction
         formatter: 'sql',
         query: `SELECT ${columnString} \nFROM ${input.tableId} \n -- WHERE ${whereColumnString} \nLIMIT ${input.querySize}`,
       };
-
   }
 }
 
@@ -155,7 +155,7 @@ export function getDeleteCommand(input: SqlAction.TableInput): SqlAction.Output 
     case 'sqlite':
     case 'mariadb':
     case 'mysql':
-          return {
+      return {
         label,
         formatter: 'sql',
         query: `-- DELETE FROM ${input.tableId} \n -- WHERE\n ${whereColumnString}`,
@@ -346,17 +346,16 @@ export function getDropColumns(input: SqlAction.TableInput): SqlAction.Output | 
   }
 }
 
-
 export const scripts = [
-getSelectAllColumns,
-getSelectCount,
-getSelectSpecificColumns,
-getInsertCommand,
-getUpdateCommand,
-getDeleteCommand,
-getDivider,
-getCreateTable,
-getDropTable,
-getAddColumn,
-getDropColumns,
-  ]
+  getSelectAllColumns,
+  getSelectCount,
+  getSelectSpecificColumns,
+  getInsertCommand,
+  getUpdateCommand,
+  getDeleteCommand,
+  getDivider,
+  getCreateTable,
+  getDropTable,
+  getAddColumn,
+  getDropColumns,
+];

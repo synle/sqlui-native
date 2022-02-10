@@ -1,5 +1,5 @@
-import { SqluiCore,SqlAction } from 'typings';
-import {getDivider} from 'src/data/sql'
+import { SqluiCore, SqlAction } from 'typings';
+import { getDivider } from 'src/data/sql';
 
 const REDIS_ADAPTER_PREFIX = 'db';
 
@@ -327,24 +327,25 @@ export function getSetRemoveLastItem(input: SqlAction.TableInput): SqlAction.Out
   }
 }
 
-
-export const scripts = [getSetValue,
-    getGet,
-    getScan,
-    getDivider,
-    getHset,
-    getHget,
-    getHvals,
-    getHexist,
-    getDivider,
-    getListGetItems,
-    getListLPush,
-    getListRPush,
-    getListLPop,
-    getListRPop,
-    getDivider,
-    getSetGetItems,
-    getSetAddItems,
-    getSetIsMember,
-    getSetCount,
-    getSetRemoveLastItem,]
+export const scripts = [
+  getSetValue,
+  getGet,
+  getScan,
+  getDivider,
+  getHset,
+  getHget,
+  getHvals,
+  getHexist,
+  getDivider,
+  getListGetItems,
+  getListLPush,
+  getListRPush,
+  getListLPop,
+  getListRPop,
+  getDivider,
+  getSetGetItems,
+  getSetAddItems,
+  getSetIsMember,
+  getSetCount,
+  getSetRemoveLastItem,
+];

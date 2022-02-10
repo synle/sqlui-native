@@ -1,5 +1,5 @@
-import { SqluiCore,SqlAction } from 'typings';
-import {getDivider} from 'src/data/sql'
+import { SqluiCore, SqlAction } from 'typings';
+import { getDivider } from 'src/data/sql';
 
 const MONGO_ADAPTER_PREFIX = 'db';
 
@@ -16,7 +16,9 @@ export function getSelectAllColumns(input: SqlAction.TableInput): SqlAction.Outp
   }
 }
 
-export function getSelectSpecificColumns(input: SqlAction.TableInput): SqlAction.Output | undefined {
+export function getSelectSpecificColumns(
+  input: SqlAction.TableInput,
+): SqlAction.Output | undefined {
   const label = `Select Specific Columns`;
 
   if (!input.columns) {
@@ -165,13 +167,13 @@ export function getDropTable(input: SqlAction.TableInput): SqlAction.Output | un
   }
 }
 
-
-export const scripts= [
-getSelectAllColumns,
-    getSelectSpecificColumns,
-    getInsertCommand,
-    getUpdateCommand,
-    getDeleteCommand,
-    getDivider,
-    getCreateTable,
-    getDropTable]
+export const scripts = [
+  getSelectAllColumns,
+  getSelectSpecificColumns,
+  getInsertCommand,
+  getUpdateCommand,
+  getDeleteCommand,
+  getDivider,
+  getCreateTable,
+  getDropTable,
+];

@@ -1,5 +1,5 @@
-import { SqluiCore,SqlAction } from 'typings';
-import {getDivider} from 'src/data/sql'
+import { SqluiCore, SqlAction } from 'typings';
+import { getDivider } from 'src/data/sql';
 
 export function getSelectAllColumns(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Select All Columns`;
@@ -14,7 +14,9 @@ export function getSelectAllColumns(input: SqlAction.TableInput): SqlAction.Outp
   }
 }
 
-export function getSelectSpecificColumns(input: SqlAction.TableInput): SqlAction.Output | undefined {
+export function getSelectSpecificColumns(
+  input: SqlAction.TableInput,
+): SqlAction.Output | undefined {
   const label = `Select Specific Columns`;
 
   if (!input.columns) {
@@ -93,11 +95,10 @@ export function getDeleteCommand(input: SqlAction.TableInput): SqlAction.Output 
   }
 }
 
-
 export const scripts = [
-getSelectAllColumns,
-getSelectSpecificColumns,
-getInsertCommand,
-getUpdateCommand,
-getDeleteCommand,
-  ]
+  getSelectAllColumns,
+  getSelectSpecificColumns,
+  getInsertCommand,
+  getUpdateCommand,
+  getDeleteCommand,
+];
