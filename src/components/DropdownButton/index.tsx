@@ -1,16 +1,16 @@
-import React, { useEffect } from 'react';
 import Button from '@mui/material/Button';
+import CircularProgress from '@mui/material/CircularProgress';
 import ClickAwayListener from '@mui/material/ClickAwayListener';
+import Divider from '@mui/material/Divider';
 import Grow from '@mui/material/Grow';
-import Paper from '@mui/material/Paper';
-import Popper from '@mui/material/Popper';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
 import MenuItem from '@mui/material/MenuItem';
 import MenuList from '@mui/material/MenuList';
-import ListItemText from '@mui/material/ListItemText';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import CircularProgress from '@mui/material/CircularProgress';
-import Divider from '@mui/material/Divider';
-
+import Paper from '@mui/material/Paper';
+import Popper from '@mui/material/Popper';
+import { useEffect } from 'react';
+import React from 'react';
 interface DropdownButtonOption {
   label: string;
   startIcon?: React.ReactNode;
@@ -106,13 +106,9 @@ export default function DropdownButton(props: DropdownButtonProps) {
         onClick={onToggle}>
         {children}
       </i>
-      <Popper open={open} anchorEl={anchorRef.current} role={undefined} transition>
+      <Popper open={open} anchorEl={anchorRef.current} transition>
         {({ TransitionProps, placement }) => (
-          <Grow
-            {...TransitionProps}
-            style={{
-              transformOrigin: placement === 'bottom' ? 'right top' : 'right bottom',
-            }}>
+          <Grow {...TransitionProps}>
             <Paper>
               <ClickAwayListener onClickAway={onClose}>{popperBody}</ClickAwayListener>
             </Paper>

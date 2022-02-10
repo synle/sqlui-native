@@ -1,19 +1,17 @@
-import React, { useState, useEffect } from 'react';
-import Typography from '@mui/material/Typography';
 import ViewColumnIcon from '@mui/icons-material/ViewColumn';
-import Box from '@mui/material/Box';
 import Alert from '@mui/material/Alert';
-import CircularProgress from '@mui/material/CircularProgress';
 import Button from '@mui/material/Button';
-import Tooltip from '@mui/material/Tooltip';
-import { styled, createTheme, ThemeProvider } from '@mui/system';
-import { AccordionHeader, AccordionBody } from 'src/components/Accordion';
-import { useGetColumns, useShowHide } from 'src/hooks';
-import { SqluiCore } from 'typings';
+import CircularProgress from '@mui/material/CircularProgress';
+import { useEffect } from 'react';
+import { useState } from 'react';
+import React from 'react';
+import { AccordionBody } from 'src/components/Accordion';
+import { AccordionHeader } from 'src/components/Accordion';
+import { useGetColumns } from 'src/hooks';
+import { useShowHide } from 'src/hooks';
 import ColumnAttributes from 'src/components/ColumnDescription/ColumnAttributes';
 import ColumnName from 'src/components/ColumnDescription/ColumnName';
 import ColumnType from 'src/components/ColumnDescription/ColumnType';
-
 const MAX_COLUMN_SIZE_TO_SHOW = 5;
 
 type ColumnDescriptionProps = {

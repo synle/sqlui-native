@@ -1,47 +1,34 @@
-import React, { useEffect, useState, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useQuery, useMutation, useQueryClient } from 'react-query';
-import Typography from '@mui/material/Typography';
-import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
-import Toolbar from '@mui/material/Toolbar';
-import IconButton from '@mui/material/IconButton';
-import MenuIcon from '@mui/icons-material/Menu';
-import Tooltip from '@mui/material/Tooltip';
-import QueryBuilderIcon from '@mui/icons-material/QueryBuilder';
 import AddIcon from '@mui/icons-material/Add';
-import Avatar from '@mui/material/Avatar';
-import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
-import AppsIcon from '@mui/icons-material/Apps';
-import EditIcon from '@mui/icons-material/Edit';
-import PhotoSizeSelectSmallIcon from '@mui/icons-material/PhotoSizeSelectSmall';
+import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
+import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
-import { SqluiCore, SqluiFrontend, SqluiEnums } from 'typings';
-import { useActionDialogs } from 'src/hooks/useActionDialogs';
+import Typography from '@mui/material/Typography';
+import { useCallback } from 'react';
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useQuery } from 'react-query';
+import { useQueryClient } from 'react-query';
+import { useState } from 'react';
+import React from 'react';
 import { downloadText } from 'src/data/file';
-import {
-  useExecute,
-  useConnectionQueries,
-  useConnectionQuery,
-  useActiveConnectionQuery,
-  useGetSessions,
-  useUpsertSession,
-  useDeleteSession,
-  useGetCurrentSession,
-  useGetConnections,
-  useImportConnection,
-  useSettings,
-  useShowHide,
-  getExportedConnection,
-  getExportedQuery,
-} from 'src/hooks';
-import {
-  getCurrentSessionId,
-  getDefaultSessionId,
-  setCurrentSessionId,
-  getRandomSessionId,
-} from 'src/data/session';
+import { getExportedConnection } from 'src/hooks';
+import { getExportedQuery } from 'src/hooks';
+import { getRandomSessionId } from 'src/data/session';
+import { setCurrentSessionId } from 'src/data/session';
+import { SqluiCore } from 'typings';
+import { SqluiEnums } from 'typings';
+import { SqluiFrontend } from 'typings';
+import { useActionDialogs } from 'src/hooks/useActionDialogs';
+import { useActiveConnectionQuery } from 'src/hooks';
+import { useConnectionQueries } from 'src/hooks';
+import { useGetConnections } from 'src/hooks';
+import { useGetCurrentSession } from 'src/hooks';
+import { useGetSessions } from 'src/hooks';
+import { useImportConnection } from 'src/hooks';
+import { useSettings } from 'src/hooks';
+import { useShowHide } from 'src/hooks';
+import { useUpsertSession } from 'src/hooks';
 import CommandPalette from 'src/components/CommandPalette';
 import Settings from 'src/components/Settings';
 import appPackage from 'src/package.json';

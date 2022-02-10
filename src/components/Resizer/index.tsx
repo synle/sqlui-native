@@ -1,6 +1,5 @@
 import React from 'react';
-import { styled, createTheme, ThemeProvider } from '@mui/system';
-
+import { styled } from '@mui/system';
 const StyledResizer = styled('div')(({ theme }) => {
   const backgroundColor = theme.palette.action.focus;
 

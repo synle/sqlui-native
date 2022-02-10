@@ -1,23 +1,7 @@
-import React, { useState } from 'react';
-import Typography from '@mui/material/Typography';
-import { useNavigate } from 'react-router-dom';
-import Box from '@mui/material/Box';
-import Alert from '@mui/material/Alert';
-import CircularProgress from '@mui/material/CircularProgress';
 import { Button } from '@mui/material';
-import Tooltip from '@mui/material/Tooltip';
-import { SqluiCore } from 'typings';
-import { useActionDialogs } from 'src/hooks/useActionDialogs';
-import {
-  useRetryConnection,
-  useGetConnections,
-  useShowHide,
-  useDeleteConnection,
-  useDuplicateConnection,
-  getExportedConnection,
-  useActiveConnectionQuery,
-} from 'src/hooks';
-
+import Alert from '@mui/material/Alert';
+import { useState } from 'react';
+import { useRetryConnection } from 'src/hooks';
 interface ConnectionRetryAlertProps {
   connectionId: string;
 }

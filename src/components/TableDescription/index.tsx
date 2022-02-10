@@ -1,14 +1,13 @@
-import React from 'react';
-import Typography from '@mui/material/Typography';
 import TableRowsIcon from '@mui/icons-material/TableRows';
-import Box from '@mui/material/Box';
 import Alert from '@mui/material/Alert';
 import CircularProgress from '@mui/material/CircularProgress';
-import { AccordionHeader, AccordionBody } from 'src/components/Accordion';
+import React from 'react';
+import { AccordionBody } from 'src/components/Accordion';
+import { AccordionHeader } from 'src/components/Accordion';
+import { useGetTables } from 'src/hooks';
+import { useShowHide } from 'src/hooks';
 import ColumnDescription from 'src/components/ColumnDescription';
 import TableActions from 'src/components/TableActions';
-import { useGetTables, useShowHide } from 'src/hooks';
-
 type TableDescriptionProps = {
   connectionId: string;
   databaseId: string;

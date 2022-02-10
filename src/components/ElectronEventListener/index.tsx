@@ -1,9 +1,6 @@
 import { useEffect } from 'react';
-import { useQuery, useMutation, useQueryClient } from 'react-query';
-import { SqluiCore, SqluiFrontend, SqluiEnums } from 'typings';
-import { useCommands } from 'src/components/MissionControl';
 import { useActionDialogs } from 'src/hooks/useActionDialogs';
-
+import { useCommands } from 'src/components/MissionControl';
 export default function ElectronEventListener() {
   const { selectCommand } = useCommands();
   const { dialog } = useActionDialogs();

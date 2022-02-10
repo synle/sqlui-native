@@ -1,4 +1,3 @@
-// mongodb://localhost:27017
 import { MongoClient } from 'mongodb';
 import { SqluiCore } from '../../typings';
 import IDataAdapter from './IDataAdapter';

@@ -1,10 +1,11 @@
-import React, { useEffect, useState, useCallback } from 'react';
-import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
-import { SqluiCore, SqluiFrontend, SqluiEnums } from 'typings';
-import { useConnectionQueries, useConnectionQuery, useActiveConnectionQuery } from 'src/hooks';
-import { useCommands, Command } from 'src/components/MissionControl';
-
+import TextField from '@mui/material/TextField';
+import { useEffect } from 'react';
+import { useState } from 'react';
+import { Command } from 'src/components/MissionControl';
+import { SqluiEnums } from 'typings';
+import { useActiveConnectionQuery } from 'src/hooks';
+import { useConnectionQueries } from 'src/hooks';
 const MAX_OPTION_TO_SHOW = 20;
 
 interface CommandPaletteProps {
