@@ -106,13 +106,10 @@ export default function DropdownButton(props: DropdownButtonProps) {
         onClick={onToggle}>
         {children}
       </i>
-      <Popper open={open} anchorEl={anchorRef.current} role={undefined} transition>
+      <Popper open={open} anchorEl={anchorRef.current} transition>
         {({ TransitionProps, placement }) => (
           <Grow
-            {...TransitionProps}
-            style={{
-              transformOrigin: placement === 'bottom' ? 'right top' : 'right bottom',
-            }}>
+            {...TransitionProps}>
             <Paper>
               <ClickAwayListener onClickAway={onClose}>{popperBody}</ClickAwayListener>
             </Paper>
