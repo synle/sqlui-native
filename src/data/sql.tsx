@@ -1,4 +1,7 @@
 import { SqluiCore } from 'typings';
+import { formatJS } from 'src/utils/formatter';
+import { formatSQL } from 'src/utils/formatter';
+
 export module SqlAction {
   export type CoreInput = {
     dialect?: string;
@@ -835,6 +838,13 @@ export function getTableActions(tableActionInput: SqlAction.TableInput) {
   ].forEach((fn) => {
     const action = fn(tableActionInput);
     if (action) {
+      switch (action.formatter) {
+        case 'sql':
+          action.query = formatSQL(action.query || '');
+        case 'js':
+          action.query = formatJS(action.query || '');
+          break;
+      }
       actions.push(action);
     }
   });
