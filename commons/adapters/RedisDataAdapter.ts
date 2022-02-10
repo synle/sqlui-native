@@ -78,32 +78,32 @@ export default class RedisDataAdapter extends BaseDataAdapter implements IDataAd
   async execute(sql: string, database?: string): Promise<SqluiCore.Result> {
     const db = await this.getConnection();
 
-    try{
+    try {
       //@ts-ignore
-      const resp : any = await eval(sql);
+      const resp: any = await eval(sql);
       console.log(resp);
 
-      if(resp === 'OK'){
-        return {ok: true}
+      if (resp === 'OK') {
+        return { ok: true };
       }
 
-      if(typeof resp  === 'number' || typeof resp  === 'string'){
+      if (typeof resp === 'number' || typeof resp === 'string') {
         //@ts-ignore
-        return { ok: true, raw: [].concat({value: resp}) };
+        return { ok: true, raw: [].concat({ value: resp }) };
       }
 
-      if(Array.isArray(resp )){
+      if (Array.isArray(resp)) {
         //@ts-ignore
-        return { ok: true, raw: [].concat(resp.map(item => ({item: JSON.stringify(item)}))) };
+        return { ok: true, raw: [].concat(resp.map((item) => ({ item: JSON.stringify(item) }))) };
       }
 
-      if(typeof resp === 'object'){
-        return {ok: true, raw: [resp]}
+      if (typeof resp === 'object') {
+        return { ok: true, raw: [resp] };
       }
 
-      return {ok: true, meta: resp}
-    } catch(error: any){
-      console.log(error)
+      return { ok: true, meta: resp };
+    } catch (error: any) {
+      console.log(error);
       return { ok: false, error: error.toString() };
     }
   }
