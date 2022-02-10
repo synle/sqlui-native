@@ -131,6 +131,30 @@ export module SqluiFrontend {
     | 'qk.settings';
 }
 
+export module SqlAction {
+  export type CoreInput = {
+    dialect?: string;
+    connectionId?: string;
+    databaseId?: string;
+    querySize: number;
+  };
+
+  export type DatabaseInput = SqlAction.CoreInput & {
+    tables: SqluiCore.TableMetaData[];
+  };
+
+  export type TableInput = SqlAction.CoreInput & {
+    tableId?: string;
+    columns?: SqluiCore.ColumnMetaData[];
+  };
+
+  export type Output = {
+    label: string;
+    query?: string;
+    formatter?: 'sql' | 'js';
+  };
+}
+
 /**
  * This stores mostly keys used in our app
  */
