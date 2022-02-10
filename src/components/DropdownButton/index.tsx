@@ -108,8 +108,13 @@ export default function DropdownButton(props: DropdownButtonProps) {
       </i>
       <Popper open={open} anchorEl={anchorRef.current} transition>
         {({ TransitionProps, placement }) => (
-          <Grow {...TransitionProps}>
-            <Paper>
+          <Grow
+            {...TransitionProps}
+            style={{
+              transformOrigin: placement === 'bottom' ? 'right top' : 'right bottom',
+            }}>
+            <Paper sx={{    maxHeight: '300px',
+    overflow: 'auto'}}>
               <ClickAwayListener onClickAway={onClose}>{popperBody}</ClickAwayListener>
             </Paper>
           </Grow>
