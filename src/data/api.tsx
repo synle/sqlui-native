@@ -1,9 +1,9 @@
 import { getCurrentSessionId } from 'src/data/session';
 import { SqluiCore } from 'typings';
 import { SqluiFrontend } from 'typings';
-// @ts-ignore
-async function _fetch<T>(...inputs) {
-  let { headers, ...restInput } = inputs[1] || {};
+
+async function _fetch<T>(input: RequestInfo, initOptions?: RequestInit | undefined) {
+  let { headers, ...restInput } = initOptions || {};
 
   headers = headers || {};
   headers = {
@@ -17,7 +17,7 @@ async function _fetch<T>(...inputs) {
 
   restInput = restInput || {};
 
-  return fetch(inputs[0], {
+  return fetch(input, {
     ...restInput,
     headers,
   })

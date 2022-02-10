@@ -2,7 +2,6 @@ import { SessionStorageConfig } from 'src/data/config';
 export function getDefaultSessionId() {
   let sessionId = SessionStorageConfig.get<string>('clientConfig/api.sessionId', '');
 
-  // @ts-ignore
   if (window.isElectron) {
     // default value for electron
     if (!sessionId) {

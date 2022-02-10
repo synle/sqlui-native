@@ -18,7 +18,6 @@ export default function Settings(props: SettingsProps) {
       return;
     }
 
-    //@ts-ignore
     settings[key] = value;
 
     onChange(settings);

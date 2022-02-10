@@ -60,11 +60,9 @@ export default function QueryBoxTabs() {
   // we only want to show the query menu for
   // electron only when we can see the query tabs...
   useEffect(() => {
-    //@ts-ignore
     window.toggleElectronMenu(true, allMenuKeys);
 
     return () => {
-      //@ts-ignore
       window.toggleElectronMenu(false, allMenuKeys);
     };
   }, []);

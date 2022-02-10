@@ -414,7 +414,6 @@ export default function MissionControl() {
           : `https://github.com/synle/sqlui-native/releases/download/${newVersion}/sqlui-native-${newVersion}.exe`;
 
       const onDownloadLatestVersion = () => {
-        //@ts-ignore
         window.openBrowserLink(downloadLink);
       };
 
@@ -433,7 +432,6 @@ export default function MissionControl() {
     }
 
     const onGoToHomepage = () => {
-      //@ts-ignore
       window.openBrowserLink('https://synle.github.io/sqlui-native/');
     };
 
@@ -513,7 +511,6 @@ export default function MissionControl() {
         // overall commands
         case 'clientEvent/import':
           try {
-            //@ts-ignore
             window.toggleElectronMenu(false, allMenuKeys);
             await onImport();
           } catch (err) {}
@@ -587,7 +584,6 @@ export default function MissionControl() {
         // session commands
         case 'clientEvent/session/switch':
           try {
-            //@ts-ignore
             window.toggleElectronMenu(false, allMenuKeys);
             await onChangeSession();
           } catch (err) {}
@@ -597,7 +593,6 @@ export default function MissionControl() {
           break;
         case 'clientEvent/session/new':
           try {
-            //@ts-ignore
             window.toggleElectronMenu(false, allMenuKeys);
             await onAddSession();
           } catch (err) {}
@@ -607,7 +602,6 @@ export default function MissionControl() {
           break;
         case 'clientEvent/session/rename':
           try {
-            //@ts-ignore
             window.toggleElectronMenu(false, allMenuKeys);
             await onRenameSession();
           } catch (err) {}
@@ -624,7 +618,6 @@ export default function MissionControl() {
   }, [command]);
 
   useEffect(() => {
-    // @ts-ignore
     if (window.isElectron) {
       // if it is electron, then let's not create these shortcut here
       // this is mostly for webapp to debug
