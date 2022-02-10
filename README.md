@@ -1,6 +1,6 @@
 # sqlui-native
 
-`sqlui-native` is a simple UI client for most SQL Engines written in Electron. It is compatible with most desktop OS's and support most dialects of RMBDs like MySQL, Microsoft SQL Server, Postgres and SQLite.
+`sqlui-native` is a simple UI client for most SQL Engines written in Electron. It is compatible with most desktop OS's and support most dialects of RMBDs like MySQL, Microsoft SQL Server, Postgres, SQLite, Cassandra, MongoDB and Redis.
 
 It supports multiple windows, so you can have different sets of queries and connections side by side. The connections and queries are all stored locally, so you can continue where you left off in later visits.
 
@@ -16,6 +16,7 @@ At this point, we only have prebuilt binaries for Windows and Mac. Refer to the 
 - SQLite
 - Cassandra (Limited Supported)
 - MongoDB (Limited Supported)
+- Redis (Limited Supported)
 
 
 ## Features
@@ -115,6 +116,9 @@ Cassandra Keyspaces are mapped to sqlui-native databases. And Cassandra Column F
 
 ### MongoDB Limitations
 MongoDB Collections is mapped to sqlui-native table. We scan the first 5 Documents to come up with the schema for the columns.
+
+### Redis Limitations
+Due to the size of keys within Redis connection, we will not show all keys in the Redis cache.
 
 ## Suggestion?
 Use the following link to file a bug or a suggestion.

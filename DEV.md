@@ -3,6 +3,9 @@
 ### Requirement
 - Node 14+
 
+### Starting guide
+- Refer to this Linkedin POST for the basic overview of this project.
+
 
 ### Sample Import Files
 ```
@@ -10,46 +13,56 @@
   {
     "_type": "connection",
     "id": "connection.1643485467072.6333713976068809",
-    "name": "sy mysql",
-    "connection": "mysql://root:password@localhost:3306"
+    "connection": "mysql://root:password@localhost:3306",
+    "name": "local mysql"
   },
   {
     "_type": "connection",
     "id": "connection.1643485479951.8848237338571023",
-    "name": "sy mariadb",
-    "connection": "mariadb://root:password@localhost:33061"
+    "connection": "mariadb://root:password@localhost:33061",
+    "name": "local mariadb"
   },
   {
     "_type": "connection",
     "id": "connection.1643485495810.296972129680364",
-    "name": "sy sql server",
-    "connection": "mssql://sa:password123!@localhost:1433"
+    "connection": "mssql://sa:password123!@localhost:1433",
+    "name": "local sql server"
   },
   {
     "_type": "connection",
     "id": "connection.1643485516220.4798705129674932",
-    "name": "sy postgres",
-    "connection": "postgres://postgres:password@localhost:5432"
+    "connection": "postgres://postgres:password@localhost:5432",
+    "name": "local postgres"
   },
   {
     "_type": "connection",
     "id": "connection.1643485607366.2475344250499598",
-    "name": "sy sqlite",
-    "connection": "sqlite://db.test"
+    "connection": "sqlite://test.sqlite",
+    "name": "local sqlite"
+  },
+  {
+    "_type": "connection",
+    "id": "connection.1643921772969.1005383449983459",
+    "connection": "cassandra://localhost:9043",
+    "name": "local cassandra v2"
   },
   {
     "_type": "connection",
     "id": "connection.1643837396621.9385585085281324",
     "connection": "cassandra://localhost:9042",
-    "name": "cassandra"
+    "name": "local cassandra v4"
   },
   {
-    "_type": "query",
-    "id": "query.1643578195409.9745654678705536",
-    "name": "Simple Select Query",
-    "sql": "SELECT\n  *\nFROM\n  artists\nLIMIT\n  10",
-    "connectionId": "connection.1643485467072.6333713976068809",
-    "databaseId": "music_store"
+    "_type": "connection",
+    "id": "connection.1644343163858.95939920823759",
+    "connection": "mongodb://localhost:27017",
+    "name": "local mongodb"
+  },
+  {
+    "_type": "connection",
+    "id": "connection.1644456516996.9387746947534656",
+    "connection": "redis://localhost:6379",
+    "name": "local redis"
   }
 ]
 ```
@@ -123,7 +136,11 @@ docker run --name sqlui_postgres -p 5432:5432 -e POSTGRES_PASSWORD=password -d p
   docker exec -it sqlui_cassandra_v2 cqlsh
 
 # mongodb
-docker run --name sqlui_mongodb -d mongo:4.4.12
+docker run --name sqlui_mongodb -p 27017:27017 -d mongo
+
+# redis
+docker run --name sqlui_redis -p 6379:6379 -d redis
+
 ```
 
 
