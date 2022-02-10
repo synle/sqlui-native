@@ -49,16 +49,26 @@ export default class RedisDataAdapter extends BaseDataAdapter implements IDataAd
   async getDatabases(): Promise<SqluiCore.DatabaseMetaData[]> {
     return [
       {
-        name: 'Redis',
+        name: 'Redis Database',
         tables: [],
       },
     ];
   }
 
   async getTables(database?: string): Promise<SqluiCore.TableMetaData[]> {
-    const db = await this.getConnection();
-    const keys = await db.keys('*');
-    return keys.map((name) => ({ name, columns: [] }));
+    // TODO: this operation seems to work, but very slow
+    // for now, we will just returned a hard coded value
+
+    // const db = await this.getConnection();
+    // const keys = await db.keys('*');
+    // return keys.map((name) => ({ name, columns: [] }));
+
+    return [
+      {
+        name: 'Redis Table',
+        columns: [],
+      },
+    ];
   }
 
   async getColumns(table: string, database?: string): Promise<SqluiCore.ColumnMetaData[]> {
@@ -68,12 +78,33 @@ export default class RedisDataAdapter extends BaseDataAdapter implements IDataAd
   async execute(sql: string, database?: string): Promise<SqluiCore.Result> {
     const db = await this.getConnection();
 
-    //@ts-ignore
-    const rawToUse: any = await eval(sql);
+    try{
+      //@ts-ignore
+      const resp : any = await eval(sql);
+      console.log(resp);
 
-    console.log(sql);
-    console.log(rawToUse);
+      if(resp === 'OK'){
+        return {ok: true}
+      }
 
-    return { ok: false };
+      if(typeof resp  === 'number' || typeof resp  === 'string'){
+        //@ts-ignore
+        return { ok: true, raw: [].concat({value: resp}) };
+      }
+
+      if(Array.isArray(resp )){
+        //@ts-ignore
+        return { ok: true, raw: [].concat(resp.map(item => ({item: JSON.stringify(item)}))) };
+      }
+
+      if(typeof resp === 'object'){
+        return {ok: true, raw: [resp]}
+      }
+
+      return {ok: true, meta: resp}
+    } catch(error: any){
+      console.log(error)
+      return { ok: false, error: error.toString() };
+    }
   }
 }
