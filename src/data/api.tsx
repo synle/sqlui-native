@@ -2,9 +2,7 @@ import { getCurrentSessionId } from 'src/data/session';
 import { SqluiCore } from 'typings';
 import { SqluiFrontend } from 'typings';
 
-
-async function _fetch<T>(input: RequestInfo,
-  initOptions?: RequestInit | undefined) {
+async function _fetch<T>(input: RequestInfo, initOptions?: RequestInit | undefined) {
   let { headers, ...restInput } = initOptions || {};
 
   headers = headers || {};

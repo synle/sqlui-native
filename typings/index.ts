@@ -1,12 +1,12 @@
-import Electron from 'electron'
+import Electron from 'electron';
 
 declare global {
-    interface Window {
-        isElectron: boolean;
-        toggleElectronMenu: (visible: boolean, menus: any[]) => void;
-        openBrowserLink: (link: string) => void;
-        ipcRenderer?:Electron.IpcRenderer;
-    }
+  interface Window {
+    isElectron: boolean;
+    toggleElectronMenu: (visible: boolean, menus: any[]) => void;
+    openBrowserLink: (link: string) => void;
+    ipcRenderer?: Electron.IpcRenderer;
+  }
 }
 
 /**
