@@ -477,7 +477,7 @@ function getDropColumns(input: SqlAction.TableInput): SqlAction.Output | undefin
 
 // for redis
 function getRedisSetValue(input: SqlAction.TableInput) : SqlAction.Output | undefined{
-  const label = `Set Value (set)`;
+  const label = `Set Value`;
 
   if (!input.columns) {
     return undefined;
@@ -496,7 +496,7 @@ function getRedisSetValue(input: SqlAction.TableInput) : SqlAction.Output | unde
 }
 
 function getRedisGet(input: SqlAction.TableInput): SqlAction.Output | undefined {
-  const label = `Get Value by Key (get)`;
+  const label = `Get Value by Key`;
 
   if (!input.columns) {
     return undefined;
@@ -534,7 +534,7 @@ function getRedisScan(input: SqlAction.TableInput): SqlAction.Output | undefined
 }
 
 function getRedisHset(input: SqlAction.TableInput): SqlAction.Output | undefined {
-  const label = `Set Value for Hashset`;
+  const label = `Hashset > Set Value`;
 
   if (!input.columns) {
     return undefined;
@@ -554,7 +554,7 @@ function getRedisHset(input: SqlAction.TableInput): SqlAction.Output | undefined
 
 
 function getRedisHget(input: SqlAction.TableInput): SqlAction.Output | undefined {
-  const label = `Get Hashset`;
+  const label = `Hashset > Get Value By Key`;
 
   if (!input.columns) {
     return undefined;
@@ -575,7 +575,7 @@ function getRedisHget(input: SqlAction.TableInput): SqlAction.Output | undefined
 
 
 function getRedisHvals(input: SqlAction.TableInput): SqlAction.Output | undefined {
-  const label = `Get Hashset Values`;
+  const label = `Hashset > Values`;
 
   if (!input.columns) {
     return undefined;
@@ -595,7 +595,7 @@ function getRedisHvals(input: SqlAction.TableInput): SqlAction.Output | undefine
 
 
 function getRedisHexist(input: SqlAction.TableInput): SqlAction.Output | undefined {
-  const label = `Is Hashset key existed`;
+  const label = `Hashset > Check if key exists`;
 
   if (!input.columns) {
     return undefined;
@@ -614,7 +614,7 @@ function getRedisHexist(input: SqlAction.TableInput): SqlAction.Output | undefin
 }
 
 function getRedisListLPush(input: SqlAction.TableInput): SqlAction.Output | undefined {
-  const label = `Push item to the front`;
+  const label = `List > Push item to the front`;
 
   if (!input.columns) {
     return undefined;
@@ -633,7 +633,7 @@ function getRedisListLPush(input: SqlAction.TableInput): SqlAction.Output | unde
 }
 
 function getRedisListRPush(input: SqlAction.TableInput): SqlAction.Output | undefined {
-  const label = `Push item to the back`;
+  const label = `List > Push item to the back`;
 
   if (!input.columns) {
     return undefined;
@@ -652,7 +652,7 @@ function getRedisListRPush(input: SqlAction.TableInput): SqlAction.Output | unde
 }
 
 function getRedisListLPop(input: SqlAction.TableInput): SqlAction.Output | undefined {
-  const label = `Delete item from the front`;
+  const label = `List > Delete item from the front`;
 
   if (!input.columns) {
     return undefined;
@@ -671,7 +671,7 @@ function getRedisListLPop(input: SqlAction.TableInput): SqlAction.Output | undef
 }
 
 function getRedisListRPop(input: SqlAction.TableInput): SqlAction.Output | undefined {
-  const label = `Delete item from the back`;
+  const label = `List > Delete item from the back`;
 
   if (!input.columns) {
     return undefined;
@@ -690,7 +690,7 @@ function getRedisListRPop(input: SqlAction.TableInput): SqlAction.Output | undef
 }
 
 function getRedisListGetItems(input: SqlAction.TableInput): SqlAction.Output | undefined {
-  const label = `Get List Items`;
+  const label = `List > Get Items`;
 
   if (!input.columns) {
     return undefined;
@@ -710,7 +710,7 @@ function getRedisListGetItems(input: SqlAction.TableInput): SqlAction.Output | u
 
 
 function getRedisSetGetItems(input: SqlAction.TableInput): SqlAction.Output | undefined {
-  const label = `Get Set Items`;
+  const label = `Set > Get Items`;
 
   if (!input.columns) {
     return undefined;
@@ -729,7 +729,7 @@ function getRedisSetGetItems(input: SqlAction.TableInput): SqlAction.Output | un
 }
 
 function getRedisSetAddItems(input: SqlAction.TableInput): SqlAction.Output | undefined {
-  const label = `Add Item to Set`;
+  const label = `Set > Add Item`;
 
   if (!input.columns) {
     return undefined;
@@ -748,7 +748,7 @@ function getRedisSetAddItems(input: SqlAction.TableInput): SqlAction.Output | un
 }
 
 function getRedisSetIsMember(input: SqlAction.TableInput): SqlAction.Output | undefined {
-  const label = `Is member of set`;
+  const label = `Set > Is a member of set`;
 
   if (!input.columns) {
     return undefined;
@@ -768,7 +768,7 @@ function getRedisSetIsMember(input: SqlAction.TableInput): SqlAction.Output | un
 
 
 function getRedisSetCount(input: SqlAction.TableInput): SqlAction.Output | undefined {
-  const label = `Size of Set`;
+  const label = `Set > Total Size`;
 
   if (!input.columns) {
     return undefined;
@@ -788,7 +788,7 @@ function getRedisSetCount(input: SqlAction.TableInput): SqlAction.Output | undef
 
 
 function getRedisSetRemoveLastItem(input: SqlAction.TableInput): SqlAction.Output | undefined {
-  const label = `Remove last item`;
+  const label = `Set > Remove last item`;
 
   if (!input.columns) {
     return undefined;
@@ -830,11 +830,11 @@ export function getTableActions(tableActionInput: SqlAction.TableInput) {
     getRedisHget,
     getRedisHvals,
     getRedisHexist,
+    getRedisListGetItems,
     getRedisListLPush,
     getRedisListRPush,
     getRedisListLPop,
     getRedisListRPop,
-    getRedisListGetItems,
     getRedisSetGetItems,
     getRedisSetAddItems,
     getRedisSetIsMember,

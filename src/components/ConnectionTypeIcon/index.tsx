@@ -15,7 +15,7 @@ export default function ConnectionTypeIcon(props: ConnectionTypeIconProps) {
     case 'mssql':
       return (
         <img
-          src={`${process.env.PUBLIC_URL}/assets/sqlserver.png`}
+          src={`${process.env.PUBLIC_URL}/assets/${scheme}.png`}
           alt={scheme}
           title={scheme}
           width={30}
@@ -24,7 +24,7 @@ export default function ConnectionTypeIcon(props: ConnectionTypeIconProps) {
     case 'postgres':
       return (
         <img
-          src={`${process.env.PUBLIC_URL}/assets/postgresql.png`}
+          src={`${process.env.PUBLIC_URL}/assets/${scheme}.png`}
           alt={scheme}
           title={scheme}
           width={30}
@@ -33,7 +33,7 @@ export default function ConnectionTypeIcon(props: ConnectionTypeIconProps) {
     case 'sqlite':
       return (
         <img
-          src={`${process.env.PUBLIC_URL}/assets/sqlite.png`}
+          src={`${process.env.PUBLIC_URL}/assets/${scheme}.png`}
           alt={scheme}
           title={scheme}
           width={30}
@@ -42,7 +42,7 @@ export default function ConnectionTypeIcon(props: ConnectionTypeIconProps) {
     case 'mariadb':
       return (
         <img
-          src={`${process.env.PUBLIC_URL}/assets/mariadb.png`}
+          src={`${process.env.PUBLIC_URL}/assets/${scheme}.png`}
           alt={scheme}
           title={scheme}
           width={30}
@@ -51,7 +51,7 @@ export default function ConnectionTypeIcon(props: ConnectionTypeIconProps) {
     case 'mysql':
       return (
         <img
-          src={`${process.env.PUBLIC_URL}/assets/mysql.png`}
+          src={`${process.env.PUBLIC_URL}/assets/${scheme}.png`}
           alt={scheme}
           title={scheme}
           width={30}
@@ -60,7 +60,7 @@ export default function ConnectionTypeIcon(props: ConnectionTypeIconProps) {
     case 'cassandra':
       return (
         <img
-          src={`${process.env.PUBLIC_URL}/assets/cassandra.png`}
+          src={`${process.env.PUBLIC_URL}/assets/${scheme}.png`}
           alt={scheme}
           title={scheme}
           width={30}
@@ -69,7 +69,16 @@ export default function ConnectionTypeIcon(props: ConnectionTypeIconProps) {
     case 'mongodb':
       return (
         <img
-          src={`${process.env.PUBLIC_URL}/assets/mongodb.png`}
+          src={`${process.env.PUBLIC_URL}/assets/${scheme}.png`}
+          alt={scheme}
+          title={scheme}
+          width={30}
+        />
+      );
+    case 'redis':
+      return (
+        <img
+          src={`${process.env.PUBLIC_URL}/assets/${scheme}.png`}
           alt={scheme}
           title={scheme}
           width={30}
