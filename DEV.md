@@ -123,7 +123,11 @@ docker run --name sqlui_postgres -p 5432:5432 -e POSTGRES_PASSWORD=password -d p
   docker exec -it sqlui_cassandra_v2 cqlsh
 
 # mongodb
-docker run --name sqlui_mongodb -d mongo:4.4.12
+docker run --name sqlui_mongodb -p 27017:27017 -d mongo
+
+# redis
+docker run --name sqlui_redis -p 6379:6379 -d redis
+
 ```
 
 
