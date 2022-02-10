@@ -1,23 +1,15 @@
 import { SqluiCore, SqlAction } from 'typings';
 import { formatJS } from 'src/utils/formatter';
 import { formatSQL } from 'src/utils/formatter';
-import { scripts as RmdbScripts } from 'src/data/sql.rmdb';
-import { scripts as CassandraScripts } from 'src/data/sql.cassandra';
-import { scripts as MongodbScripts } from 'src/data/sql.mongodb';
-import { scripts as RedisScripts } from 'src/data/sql.redis';
-
-type ScriptToUse = (input: SqlAction.TableInput) => SqlAction.Output | undefined;
-
-export function getDivider(): SqlAction.Output {
-  return {
-    label: 'divider',
-  };
-}
+import { scripts as RmdbScripts } from 'src/scripts/rmdb';
+import { scripts as CassandraScripts } from 'src/scripts/cassandra';
+import { scripts as MongodbScripts } from 'src/scripts/mongodb';
+import { scripts as RedisScripts } from 'src/scripts/redis';
 
 export function getTableActions(tableActionInput: SqlAction.TableInput) {
   const actions: SqlAction.Output[] = [];
 
-  let scriptsToUse: ScriptToUse[] = [];
+  let scriptsToUse: SqlAction.ScriptGenerator[] = [];
   switch (tableActionInput.dialect) {
     case 'mysql':
     case 'mariadb':
