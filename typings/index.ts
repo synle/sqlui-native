@@ -164,6 +164,8 @@ export module SqlAction {
     query?: string;
     formatter?: 'sql' | 'js';
   };
+
+  export type ScriptGenerator = (input: SqlAction.TableInput) => SqlAction.Output | undefined;
 }
 
 /**

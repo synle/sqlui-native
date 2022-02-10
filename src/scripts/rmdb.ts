@@ -1,5 +1,5 @@
 import { SqluiCore, SqlAction } from 'typings';
-import { getDivider } from 'src/data/sql';
+import { getDivider } from './base';
 
 export function getSelectAllColumns(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Select All Columns`;
@@ -299,26 +299,26 @@ export function getAddColumn(input: SqlAction.TableInput): SqlAction.Output | un
       return {
         label,
         formatter: 'sql',
-        query: `ALTER TABLE ${input.tableId} ADD COLUMN colname${Date.now()} NVARCHAR(200)`,
+        query: `ALTER TABLE ${input.tableId} ADD COLUMN newColumn1 NVARCHAR(200)`,
       };
     case 'postgres':
       return {
         label,
         formatter: 'sql',
-        query: `ALTER TABLE ${input.tableId} ADD COLUMN colname${Date.now()} CHAR(200)`,
+        query: `ALTER TABLE ${input.tableId} ADD COLUMN newColumn1 CHAR(200)`,
       };
     case 'sqlite':
       return {
         label,
         formatter: 'sql',
-        query: `ALTER TABLE ${input.tableId} ADD COLUMN colname${Date.now()} TEXT`,
+        query: `ALTER TABLE ${input.tableId} ADD COLUMN newColumn1 TEXT`,
       };
     case 'mariadb':
     case 'mysql':
       return {
         label,
         formatter: 'sql',
-        query: `ALTER TABLE ${input.tableId} ADD COLUMN colname${Date.now()} varchar(200)`,
+        query: `ALTER TABLE ${input.tableId} ADD COLUMN newColumn1 varchar(200)`,
       };
   }
 }
@@ -346,7 +346,7 @@ export function getDropColumns(input: SqlAction.TableInput): SqlAction.Output | 
   }
 }
 
-export const scripts = [
+export const scripts: SqlAction.ScriptGenerator[] = [
   getSelectAllColumns,
   getSelectCount,
   getSelectSpecificColumns,

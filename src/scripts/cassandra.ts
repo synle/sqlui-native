@@ -1,5 +1,5 @@
 import { SqluiCore, SqlAction } from 'typings';
-import { getDivider } from 'src/data/sql';
+import { getDivider } from './base';
 
 export function getSelectAllColumns(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Select All Columns`;
@@ -90,7 +90,7 @@ export function getDeleteCommand(input: SqlAction.TableInput): SqlAction.Output 
   }
 }
 
-export const scripts = [
+export const scripts: SqlAction.ScriptGenerator[] = [
   getSelectAllColumns,
   getSelectSpecificColumns,
   getInsertCommand,

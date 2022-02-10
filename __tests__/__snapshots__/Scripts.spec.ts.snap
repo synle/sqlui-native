@@ -1,0 +1,600 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Scripts CassandraScripts 1`] = `
+Array [
+  Object {
+    "formatter": "sql",
+    "label": "Select All Columns",
+    "query": "SELECT * 
+FROM table1 
+LIMIT 200",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Select Specific Columns",
+    "query": "SELECT 
+  column1,
+  column2 
+FROM table1 
+ -- WHERE column1 = ''
+ -- AND column2 = '' 
+LIMIT 200",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Insert",
+    "query": "INSERT INTO table1 (
+column1,
+column2
+) VALUES (
+'_column1_',
+'_column2_'
+)",
+  },
+  Object {
+    "formatter": "js",
+    "label": "Update",
+    "query": "UPDATE table1
+ SET 
+-- column1 = '',
+-- column2 = ''
+ WHERE -- column1 = '' AND 
+-- column2 = ''",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Delete",
+    "query": "-- DELETE FROM table1 
+ -- WHERE
+ -- column1 = '' AND 
+-- column2 = ''",
+  },
+]
+`;
+
+exports[`Scripts MongodbScripts 1`] = `
+Array [
+  Object {
+    "formatter": "sql",
+    "label": "Select All Columns",
+    "query": "db.collection('table1').find().limit(200).toArray();",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Select Specific Columns",
+    "query": "db.collection('table1').find(
+          {\\"column1\\":123,\\"column2\\":123}
+        ).limit(200).toArray();",
+  },
+  Object {
+    "formatter": "js",
+    "label": "Insert",
+    "query": "db.collection('table1').insertMany([
+          {\\"column1\\":123,\\"column2\\":123}
+        ]);",
+  },
+  Object {
+    "formatter": "js",
+    "label": "Update",
+    "query": "db.collection('table1').update(
+          {\\"column1\\":123,\\"column2\\":123},
+          {$set: {
+  \\"column1\\": 123,
+  \\"column2\\": 123
+}}
+        );",
+  },
+  Object {
+    "formatter": "js",
+    "label": "Delete",
+    "query": "db.collection('table1').deleteMany(
+          {\\"column1\\":123,\\"column2\\":123}
+        );",
+  },
+  Object {
+    "label": "divider",
+  },
+  Object {
+    "formatter": "js",
+    "label": "Create Table",
+    "query": "db.createCollection(\\"table1\\")",
+  },
+  Object {
+    "formatter": "js",
+    "label": "Drop Table",
+    "query": "db.collection('table1').drop()",
+  },
+]
+`;
+
+exports[`Scripts RedisScripts 1`] = `
+Array [
+  Object {
+    "formatter": "js",
+    "label": "Set Value",
+    "query": "db.set(\\"key\\", \\"value123\\")",
+  },
+  Object {
+    "formatter": "js",
+    "label": "Get Value by Key",
+    "query": "db.get(\\"key\\")",
+  },
+  Object {
+    "formatter": "js",
+    "label": "Scan for keys",
+    "query": "db.keys(\\"*\\")",
+  },
+  Object {
+    "label": "divider",
+  },
+  Object {
+    "formatter": "js",
+    "label": "Hashset > Set Value",
+    "query": "db.hSet(\\"key\\", \\"field\\", \\"value\\")",
+  },
+  Object {
+    "formatter": "js",
+    "label": "Hashset > Get Value By Key",
+    "query": "db.hGetAll(\\"key\\")",
+  },
+  Object {
+    "formatter": "js",
+    "label": "Hashset > Values",
+    "query": "db.hVals(\\"key\\")",
+  },
+  Object {
+    "formatter": "js",
+    "label": "Hashset > Check if key exists",
+    "query": "db.hExists(\\"key\\", \\"field1\\")",
+  },
+  Object {
+    "label": "divider",
+  },
+  Object {
+    "formatter": "js",
+    "label": "List > Get Items",
+    "query": "db.lRange(\\"key\\", 0, -1)",
+  },
+  Object {
+    "formatter": "js",
+    "label": "List > Push item to the front",
+    "query": "db.lPush(\\"key\\", \\"value\\")",
+  },
+  Object {
+    "formatter": "js",
+    "label": "List > Push item to the back",
+    "query": "db.rPush(\\"key\\", \\"value\\")",
+  },
+  Object {
+    "formatter": "js",
+    "label": "List > Delete item from the front",
+    "query": "db.lPop(\\"key\\")",
+  },
+  Object {
+    "formatter": "js",
+    "label": "List > Delete item from the back",
+    "query": "db.rPop(\\"key\\")",
+  },
+  Object {
+    "label": "divider",
+  },
+  Object {
+    "formatter": "js",
+    "label": "Set > Get Items",
+    "query": "db.sMembers(\\"key\\")",
+  },
+  Object {
+    "formatter": "js",
+    "label": "Set > Add Item",
+    "query": "db.sAdd(\\"key\\", \\"value1\\")",
+  },
+  Object {
+    "formatter": "js",
+    "label": "Set > Is a member of set",
+    "query": "db.sIsMember(\\"key\\", \\"value1\\")",
+  },
+  Object {
+    "formatter": "js",
+    "label": "Set > Total Size",
+    "query": "db.sCard(\\"key\\")",
+  },
+  Object {
+    "formatter": "js",
+    "label": "Set > Remove last item",
+    "query": "db.sPop(\\"key\\")",
+  },
+  Object {
+    "label": "divider",
+  },
+  Object {
+    "formatter": "js",
+    "label": "Sorted Set > Get Items",
+    "query": "db.zRange(\\"key\\", 0, -1)",
+  },
+  Object {
+    "formatter": "js",
+    "label": "Sorted Set > Add Item",
+    "query": "db.zAdd(\\"key\\", [{score: 1, value: \\"some_value\\"}])",
+  },
+  Object {
+    "label": "divider",
+  },
+  Object {
+    "formatter": "js",
+    "label": "Publish a message",
+    "query": "db.publish(\\"key\\", \\"some_message\\")",
+  },
+]
+`;
+
+exports[`Scripts RmdbScripts - mariadb 1`] = `
+Array [
+  Object {
+    "formatter": "sql",
+    "label": "Select All Columns",
+    "query": "SELECT * 
+FROM table1 
+LIMIT 200",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Select Count",
+    "query": "SELECT COUNT(*) 
+FROM table1 
+ -- WHERE 
+ -- column1 = '' AND 
+-- column2 = ''",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Select Specific Columns",
+    "query": "SELECT 
+  column1,
+  column2 
+FROM table1 
+ -- WHERE column1 = ''
+ -- AND column2 = '' 
+LIMIT 200",
+  },
+  Object {
+    "formatter": "js",
+    "label": "Update",
+    "query": "UPDATE table1
+ SET 
+-- column1 = '',
+-- column2 = ''
+ WHERE -- column1 = '' AND 
+-- column2 = ''",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Delete",
+    "query": "-- DELETE FROM table1 
+ -- WHERE
+ -- column1 = '' AND 
+-- column2 = ''",
+  },
+  Object {
+    "label": "divider",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Create Table",
+    "query": "CREATE TABLE table1 (column1 NUMBER   NOT NULL,
+column2 VARCHAR(100)   NOT NULL)",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Drop Table",
+    "query": "-- DROP TABLE table1",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Add Column",
+    "query": "ALTER TABLE table1 ADD COLUMN newColumn1 varchar(200)",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Drop Column",
+    "query": "--ALTER TABLE table1 DROP COLUMN column1
+--ALTER TABLE table1 DROP COLUMN column2",
+  },
+]
+`;
+
+exports[`Scripts RmdbScripts - mssql 1`] = `
+Array [
+  Object {
+    "formatter": "sql",
+    "label": "Select All Columns",
+    "query": "SELECT TOP 200 * 
+FROM table1",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Select Count",
+    "query": "SELECT COUNT(*) 
+FROM table1 
+ -- WHERE 
+ -- column1 = '' AND 
+-- column2 = ''",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Select Specific Columns",
+    "query": "SELECT TOP 200 
+  column1,
+  column2 
+FROM table1 -- WHERE column1 = ''
+ -- AND column2 = ''",
+  },
+  Object {
+    "formatter": "js",
+    "label": "Update",
+    "query": "UPDATE table1
+ SET 
+-- column1 = '',
+-- column2 = ''
+ WHERE -- column1 = '' AND 
+-- column2 = ''",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Delete",
+    "query": "-- DELETE FROM table1 
+ -- WHERE
+ -- column1 = '' AND 
+-- column2 = ''",
+  },
+  Object {
+    "label": "divider",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Create Table",
+    "query": "CREATE TABLE table1 (column1 NUMBER   NOT NULL,
+column2 VARCHAR(100)   NOT NULL)",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Drop Table",
+    "query": "-- DROP TABLE table1",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Add Column",
+    "query": "ALTER TABLE table1 ADD COLUMN newColumn1 NVARCHAR(200)",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Drop Column",
+    "query": "--ALTER TABLE table1 DROP COLUMN column1
+--ALTER TABLE table1 DROP COLUMN column2",
+  },
+]
+`;
+
+exports[`Scripts RmdbScripts - mysql 1`] = `
+Array [
+  Object {
+    "formatter": "sql",
+    "label": "Select All Columns",
+    "query": "SELECT * 
+FROM table1 
+LIMIT 200",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Select Count",
+    "query": "SELECT COUNT(*) 
+FROM table1 
+ -- WHERE 
+ -- column1 = '' AND 
+-- column2 = ''",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Select Specific Columns",
+    "query": "SELECT 
+  column1,
+  column2 
+FROM table1 
+ -- WHERE column1 = ''
+ -- AND column2 = '' 
+LIMIT 200",
+  },
+  Object {
+    "formatter": "js",
+    "label": "Update",
+    "query": "UPDATE table1
+ SET 
+-- column1 = '',
+-- column2 = ''
+ WHERE -- column1 = '' AND 
+-- column2 = ''",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Delete",
+    "query": "-- DELETE FROM table1 
+ -- WHERE
+ -- column1 = '' AND 
+-- column2 = ''",
+  },
+  Object {
+    "label": "divider",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Create Table",
+    "query": "CREATE TABLE table1 (column1 NUMBER   NOT NULL,
+column2 VARCHAR(100)   NOT NULL)",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Drop Table",
+    "query": "-- DROP TABLE table1",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Add Column",
+    "query": "ALTER TABLE table1 ADD COLUMN newColumn1 varchar(200)",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Drop Column",
+    "query": "--ALTER TABLE table1 DROP COLUMN column1
+--ALTER TABLE table1 DROP COLUMN column2",
+  },
+]
+`;
+
+exports[`Scripts RmdbScripts - postgres 1`] = `
+Array [
+  Object {
+    "formatter": "sql",
+    "label": "Select All Columns",
+    "query": "SELECT * 
+FROM table1 
+LIMIT 200",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Select Count",
+    "query": "SELECT COUNT(*) 
+FROM table1 
+ -- WHERE 
+ -- column1 = '' AND 
+-- column2 = ''",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Select Specific Columns",
+    "query": "SELECT 
+  column1,
+  column2 
+FROM table1 
+ -- WHERE column1 = ''
+ -- AND column2 = '' 
+LIMIT 200",
+  },
+  Object {
+    "formatter": "js",
+    "label": "Update",
+    "query": "UPDATE table1
+ SET 
+-- column1 = '',
+-- column2 = ''
+ WHERE -- column1 = '' AND 
+-- column2 = ''",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Delete",
+    "query": "-- DELETE FROM table1 
+ -- WHERE
+ -- column1 = '' AND 
+-- column2 = ''",
+  },
+  Object {
+    "label": "divider",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Create Table",
+    "query": "CREATE TABLE table1 (column1 NUMBER NOT NULL,
+column2 VARCHAR(100) NOT NULL)",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Drop Table",
+    "query": "-- DROP TABLE table1",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Add Column",
+    "query": "ALTER TABLE table1 ADD COLUMN newColumn1 CHAR(200)",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Drop Column",
+    "query": "--ALTER TABLE table1 DROP COLUMN column1
+--ALTER TABLE table1 DROP COLUMN column2",
+  },
+]
+`;
+
+exports[`Scripts RmdbScripts - sqlite 1`] = `
+Array [
+  Object {
+    "formatter": "sql",
+    "label": "Select All Columns",
+    "query": "SELECT * 
+FROM table1 
+LIMIT 200",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Select Count",
+    "query": "SELECT COUNT(*) 
+FROM table1 
+ -- WHERE 
+ -- column1 = '' AND 
+-- column2 = ''",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Select Specific Columns",
+    "query": "SELECT 
+  column1,
+  column2 
+FROM table1 
+ -- WHERE column1 = ''
+ -- AND column2 = '' 
+LIMIT 200",
+  },
+  Object {
+    "formatter": "js",
+    "label": "Update",
+    "query": "UPDATE table1
+ SET 
+-- column1 = '',
+-- column2 = ''
+ WHERE -- column1 = '' AND 
+-- column2 = ''",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Delete",
+    "query": "-- DELETE FROM table1 
+ -- WHERE
+ -- column1 = '' AND 
+-- column2 = ''",
+  },
+  Object {
+    "label": "divider",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Create Table",
+    "query": "CREATE TABLE table1 (column1 NUMBER   NOT NULL,
+column2 VARCHAR(100)   NOT NULL)",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Drop Table",
+    "query": "-- DROP TABLE table1",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Add Column",
+    "query": "ALTER TABLE table1 ADD COLUMN newColumn1 TEXT",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Drop Column",
+    "query": "--ALTER TABLE table1 DROP COLUMN column1
+--ALTER TABLE table1 DROP COLUMN column2",
+  },
+]
+`;

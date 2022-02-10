@@ -1,5 +1,5 @@
 import { SqluiCore, SqlAction } from 'typings';
-import { getDivider } from 'src/data/sql';
+import { getDivider } from './base';
 
 const REDIS_ADAPTER_PREFIX = 'db';
 
@@ -204,7 +204,7 @@ export function getPublishMessage(input: SqlAction.TableInput): SqlAction.Output
   };
 }
 
-export const scripts = [
+export const scripts: SqlAction.ScriptGenerator[] = [
   getSetValue,
   getGet,
   getScan,

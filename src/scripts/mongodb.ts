@@ -1,5 +1,5 @@
 import { SqluiCore, SqlAction } from 'typings';
-import { getDivider } from 'src/data/sql';
+import { getDivider } from './base';
 
 const MONGO_ADAPTER_PREFIX = 'db';
 
@@ -156,7 +156,7 @@ export function getDropTable(input: SqlAction.TableInput): SqlAction.Output | un
   }
 }
 
-export const scripts = [
+export const scripts: SqlAction.ScriptGenerator[] = [
   getSelectAllColumns,
   getSelectSpecificColumns,
   getInsertCommand,
