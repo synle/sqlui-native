@@ -89,7 +89,6 @@ export default function QueryBox(props: QueryBoxProps) {
       onChange({ result: newResult });
       refreshAfterExecution(query, queryClient);
     } catch (err) {
-      //@ts-ignore
       // here query failed...
     }
     setExecuting(false);

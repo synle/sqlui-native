@@ -6,13 +6,12 @@ const MONGO_ADAPTER_PREFIX = 'db';
 export function getSelectAllColumns(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Select All Columns`;
 
-  switch (input.dialect) {
-    case 'mongodb':
-      return {
-        label,
-        formatter: 'sql',
-        query: `${MONGO_ADAPTER_PREFIX}.collection('${input.tableId}').find().limit(${input.querySize}).toArray();`,
-      };
+  if (input.dialect === 'mongodb') {
+    return {
+      label,
+      formatter: 'sql',
+      query: `${MONGO_ADAPTER_PREFIX}.collection('${input.tableId}').find().limit(${input.querySize}).toArray();`,
+    };
   }
 }
 
@@ -28,22 +27,20 @@ export function getSelectSpecificColumns(
   const columnString = `\n` + input.columns.map((col) => `  ${col.name}`).join(',\n');
   const whereColumnString = input.columns.map((col) => `${col.name} = ''`).join('\n -- AND ');
 
-  switch (input.dialect) {
-    case 'mongodb':
-      const insertValueObject = {};
-      for (const column of input.columns || []) {
-        if (!column.name.includes('.')) {
-          //@ts-ignore
-          insertValueObject[column.name] = column.type === 'string' ? '' : 123;
-        }
+  if (input.dialect === 'mongodb') {
+    const columns: any = {};
+    for (const column of input.columns || []) {
+      if (!column.name.includes('.')) {
+        columns[column.name] = column.type === 'string' ? '' : 123;
       }
-      return {
-        label,
-        formatter: 'sql',
-        query: `${MONGO_ADAPTER_PREFIX}.collection('${input.tableId}').find(
-          ${JSON.stringify(insertValueObject)}
+    }
+    return {
+      label,
+      formatter: 'sql',
+      query: `${MONGO_ADAPTER_PREFIX}.collection('${input.tableId}').find(
+          ${JSON.stringify(columns)}
         ).limit(${input.querySize}).toArray();`,
-      };
+    };
   }
 }
 
@@ -57,22 +54,20 @@ export function getInsertCommand(input: SqlAction.TableInput): SqlAction.Output 
   const columnString = input.columns.map((col) => col.name).join(',\n');
   const insertValueString = input.columns.map((col) => `'_${col.name}_'`).join(',\n');
 
-  switch (input.dialect) {
-    case 'mongodb':
-      const insertValueObject = {};
-      for (const column of input.columns) {
-        if (column.name !== '_id' && !column.name.includes('.')) {
-          //@ts-ignore
-          insertValueObject[column.name] = column.type === 'string' ? '' : 123;
-        }
+  if (input.dialect === 'mongodb') {
+    const columns: any = {};
+    for (const column of input.columns) {
+      if (column.name !== '_id' && !column.name.includes('.')) {
+        columns[column.name] = column.type === 'string' ? '' : 123;
       }
-      return {
-        label,
-        formatter: 'js',
-        query: `${MONGO_ADAPTER_PREFIX}.collection('${input.tableId}').insertMany([
-          ${JSON.stringify(insertValueObject)}
+    }
+    return {
+      label,
+      formatter: 'js',
+      query: `${MONGO_ADAPTER_PREFIX}.collection('${input.tableId}').insertMany([
+          ${JSON.stringify(columns)}
         ]);`,
-      };
+    };
   }
 }
 
@@ -86,23 +81,21 @@ export function getUpdateCommand(input: SqlAction.TableInput): SqlAction.Output 
   const columnString = input.columns.map((col) => `-- ${col.name} = ''`).join(',\n');
   const whereColumnString = input.columns.map((col) => `-- ${col.name} = ''`).join(' AND \n');
 
-  switch (input.dialect) {
-    case 'mongodb':
-      const insertValueObject = {};
-      for (const column of input.columns) {
-        if (column.name !== '_id' && !column.name.includes('.')) {
-          //@ts-ignore
-          insertValueObject[column.name] = column.type === 'string' ? '' : 123;
-        }
+  if (input.dialect === 'mongodb') {
+    const columns: any = {};
+    for (const column of input.columns) {
+      if (column.name !== '_id' && !column.name.includes('.')) {
+        columns[column.name] = column.type === 'string' ? '' : 123;
       }
-      return {
-        label,
-        formatter: 'js',
-        query: `${MONGO_ADAPTER_PREFIX}.collection('${input.tableId}').update(
-          ${JSON.stringify(insertValueObject)},
-          {\$set: ${JSON.stringify(insertValueObject, null, 2)}}
+    }
+    return {
+      label,
+      formatter: 'js',
+      query: `${MONGO_ADAPTER_PREFIX}.collection('${input.tableId}').update(
+          ${JSON.stringify(columns)},
+          {\$set: ${JSON.stringify(columns, null, 2)}}
         );`,
-      };
+    };
   }
 }
 
@@ -115,22 +108,20 @@ export function getDeleteCommand(input: SqlAction.TableInput): SqlAction.Output 
 
   const whereColumnString = input.columns.map((col) => `-- ${col.name} = ''`).join(' AND \n');
 
-  switch (input.dialect) {
-    case 'mongodb':
-      const insertValueObject = {};
-      for (const column of input.columns) {
-        if (column.name !== '_id' && !column.name.includes('.')) {
-          //@ts-ignore
-          insertValueObject[column.name] = column.type === 'string' ? '' : 123;
-        }
+  if (input.dialect === 'mongodb') {
+    const columns: any = {};
+    for (const column of input.columns) {
+      if (column.name !== '_id' && !column.name.includes('.')) {
+        columns[column.name] = column.type === 'string' ? '' : 123;
       }
-      return {
-        label,
-        formatter: 'js',
-        query: `${MONGO_ADAPTER_PREFIX}.collection('${input.tableId}').deleteMany(
-          ${JSON.stringify(insertValueObject)}
+    }
+    return {
+      label,
+      formatter: 'js',
+      query: `${MONGO_ADAPTER_PREFIX}.collection('${input.tableId}').deleteMany(
+          ${JSON.stringify(columns)}
         );`,
-      };
+    };
   }
 }
 
@@ -144,26 +135,24 @@ export function getCreateTable(input: SqlAction.TableInput): SqlAction.Output | 
   let columnString: string = '';
 
   // TODO: figure out how to use the defaultval
-  switch (input.dialect) {
-    case 'mongodb':
-      return {
-        label,
-        formatter: 'js',
-        query: `${MONGO_ADAPTER_PREFIX}.createCollection("${input.tableId}")`,
-      };
+  if (input.dialect === 'mongodb') {
+    return {
+      label,
+      formatter: 'js',
+      query: `${MONGO_ADAPTER_PREFIX}.createCollection("${input.tableId}")`,
+    };
   }
 }
 
 export function getDropTable(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Drop Table`;
 
-  switch (input.dialect) {
-    case 'mongodb':
-      return {
-        label,
-        formatter: 'js',
-        query: `${MONGO_ADAPTER_PREFIX}.collection('${input.tableId}').drop()`,
-      };
+  if (input.dialect === 'mongodb') {
+    return {
+      label,
+      formatter: 'js',
+      query: `${MONGO_ADAPTER_PREFIX}.collection('${input.tableId}').drop()`,
+    };
   }
 }
 

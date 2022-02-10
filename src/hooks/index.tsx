@@ -536,7 +536,6 @@ export function useConnectionQueries() {
       return;
     }
 
-    //@ts-ignore
     _connectionQueries = [..._connectionQueries].map((query) => {
       if (query.id === queryId) {
         const newValue = {
