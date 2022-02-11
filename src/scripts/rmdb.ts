@@ -42,7 +42,7 @@ export function getSelectCount(input: SqlAction.TableInput): SqlAction.Output | 
     return undefined;
   }
 
-  const whereColumnString = input.columns.map((col) => `-- ${col.name} = ''`).join(' AND \n');
+  const whereColumnString = input.columns.map((col) => `${col.name} = ''`).join(' AND \n');
 
   switch (input.dialect) {
     case 'mssql':
@@ -53,7 +53,7 @@ export function getSelectCount(input: SqlAction.TableInput): SqlAction.Output | 
       return {
         label,
         formatter,
-        query: `SELECT COUNT(*) \nFROM ${input.tableId} \n -- WHERE \n ${whereColumnString}`,
+        query: `SELECT COUNT(*) \nFROM ${input.tableId} \n WHERE \n ${whereColumnString}`,
       };
   }
 }
@@ -68,33 +68,33 @@ export function getSelectSpecificColumns(
   }
 
   const columnString = `\n` + input.columns.map((col) => `  ${col.name}`).join(',\n');
-  const whereColumnString = input.columns.map((col) => `${col.name} = ''`).join('\n -- AND ');
+  const whereColumnString = input.columns.map((col) => `${col.name} = ''`).join('\n AND ');
 
   switch (input.dialect) {
     case 'mssql':
       return {
         label,
         formatter,
-        query: `SELECT TOP ${input.querySize} ${columnString} \nFROM ${input.tableId} -- WHERE ${whereColumnString}`,
+        query: `SELECT TOP ${input.querySize} ${columnString} \nFROM ${input.tableId} WHERE ${whereColumnString}`,
       };
     case 'postgres':
       return {
         label,
         formatter,
-        query: `SELECT ${columnString} \nFROM ${input.tableId} \n -- WHERE ${whereColumnString} \nLIMIT ${input.querySize}`,
+        query: `SELECT ${columnString} \nFROM ${input.tableId} \n WHERE ${whereColumnString} \nLIMIT ${input.querySize}`,
       };
     case 'sqlite':
       return {
         label,
         formatter,
-        query: `SELECT ${columnString} \nFROM ${input.tableId} \n -- WHERE ${whereColumnString} \nLIMIT ${input.querySize}`,
+        query: `SELECT ${columnString} \nFROM ${input.tableId} \n WHERE ${whereColumnString} \nLIMIT ${input.querySize}`,
       };
     case 'mariadb':
     case 'mysql':
       return {
         label,
         formatter,
-        query: `SELECT ${columnString} \nFROM ${input.tableId} \n -- WHERE ${whereColumnString} \nLIMIT ${input.querySize}`,
+        query: `SELECT ${columnString} \nFROM ${input.tableId} \n WHERE ${whereColumnString} \nLIMIT ${input.querySize}`,
       };
   }
 }
@@ -106,8 +106,9 @@ export function getInsertCommand(input: SqlAction.TableInput): SqlAction.Output 
     return undefined;
   }
 
-  const columnString = input.columns.map((col) => col.name).join(',\n');
-  const insertValueString = input.columns.map((col) => `'_${col.name}_'`).join(',\n');
+  const columns = input.columns.filter((col) => !col.primaryKey);
+  const columnString = columns.map((col) => col.name).join(',\n');
+  const insertValueString = columns.map((col) => `'_${col.name}_'`).join(',\n');
 
   switch (input.dialect) {
     case 'mssql':
@@ -115,6 +116,11 @@ export function getInsertCommand(input: SqlAction.TableInput): SqlAction.Output 
     case 'sqlite':
     case 'mariadb':
     case 'mysql':
+      return {
+        label,
+        formatter: 'sql',
+        query: `INSERT INTO ${input.tableId} (\n${columnString}\n) VALUES (\n${insertValueString}\n)`,
+      };
   }
 }
 
@@ -125,8 +131,8 @@ export function getUpdateCommand(input: SqlAction.TableInput): SqlAction.Output 
     return undefined;
   }
 
-  const columnString = input.columns.map((col) => `-- ${col.name} = ''`).join(',\n');
-  const whereColumnString = input.columns.map((col) => `-- ${col.name} = ''`).join(' AND \n');
+  const columnString = input.columns.map((col) => `${col.name} = ''`).join(',\n');
+  const whereColumnString = input.columns.map((col) => `${col.name} = ''`).join(' AND \n');
 
   switch (input.dialect) {
     case 'mssql':
@@ -149,7 +155,7 @@ export function getDeleteCommand(input: SqlAction.TableInput): SqlAction.Output 
     return undefined;
   }
 
-  const whereColumnString = input.columns.map((col) => `-- ${col.name} = ''`).join(' AND \n');
+  const whereColumnString = input.columns.map((col) => `${col.name} = ''`).join(' AND \n');
 
   switch (input.dialect) {
     case 'mssql':
@@ -160,7 +166,7 @@ export function getDeleteCommand(input: SqlAction.TableInput): SqlAction.Output 
       return {
         label,
         formatter,
-        query: `-- DELETE FROM ${input.tableId} \n -- WHERE\n ${whereColumnString}`,
+        query: `DELETE FROM ${input.tableId} \n WHERE\n ${whereColumnString}`,
       };
   }
 }
@@ -269,7 +275,7 @@ export function getDropTable(input: SqlAction.TableInput): SqlAction.Output | un
       return {
         label,
         formatter,
-        query: `-- DROP TABLE ${input.tableId}`,
+        query: `DROP TABLE ${input.tableId}`,
       };
   }
 }
@@ -342,7 +348,7 @@ export function getDropColumns(input: SqlAction.TableInput): SqlAction.Output | 
         label,
         formatter,
         query: input.columns
-          .map((col) => `--ALTER TABLE ${input.tableId} DROP COLUMN ${col.name};`)
+          .map((col) => `ALTER TABLE ${input.tableId} DROP COLUMN ${col.name};`)
           .join('\n'),
       };
   }
