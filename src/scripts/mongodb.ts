@@ -128,7 +128,7 @@ export function getDeleteCommand(input: SqlAction.TableInput): SqlAction.Output 
 }
 
 export function getCreateTable(input: SqlAction.TableInput): SqlAction.Output | undefined {
-  const label = `Create Table`;
+  const label = `Create Collection`;
 
   if (!input.columns) {
     return undefined;
@@ -147,7 +147,7 @@ export function getCreateTable(input: SqlAction.TableInput): SqlAction.Output | 
 }
 
 export function getDropTable(input: SqlAction.TableInput): SqlAction.Output | undefined {
-  const label = `Drop Table`;
+  const label = `Drop Collection`;
 
   if (input.dialect === 'mongodb') {
     return {
