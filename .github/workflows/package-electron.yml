@@ -57,6 +57,29 @@ jobs:
           asset_name: sqlui-native-${{ needs.create_release.outputs.package_version }}.exe
           asset_content_type: application/octet-stream
 
+  build_ubuntu:
+    needs: [create_release]
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      # build
+      - uses: actions/checkout@v2
+      - run: npm version --no-git-tag-version patch
+      - run: npm install
+      - run: npm run test-ci
+      - run: npm run dist
+      - run: mv ./dist/sqlui-native*.snap ./dist/sqlui-native.snap
+
+      #  Upload binary step
+      - uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create_release.outputs.release_upload_url }}
+          asset_path: ./dist/sqlui-native.snap
+          asset_name: sqlui-native-${{ needs.create_release.outputs.package_version }}.snap
+          asset_content_type: application/octet-stream
+
   build_macos:
     needs: [create_release]
     runs-on: macos-latest
@@ -81,7 +104,7 @@ jobs:
           asset_content_type: application/octet-stream
 
   publish:
-    needs: [create_release, build_windows, build_macos]
+    needs: [create_release, build_windows, build_macos, build_ubuntu]
     runs-on: ubuntu-latest
     timeout-minutes: 4
     steps:
