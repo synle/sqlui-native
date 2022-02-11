@@ -175,10 +175,10 @@ export default function MissionControl() {
     if (activeConnection && activeConnection.dialect) {
       // open query help with selected dialect
       window.openBrowserLink(
-        `https://github.com/synle/sqlui-native/blob/main/guides.md#${activeConnection.dialect}`,
+        `https://synle.github.io/sqlui-native/guides#${activeConnection.dialect}`,
       );
     } else {
-      window.openBrowserLink(`https://github.com/synle/sqlui-native/blob/main/guides.md`);
+      window.openBrowserLink(`https://synle.github.io/sqlui-native/guides`);
     }
   };
 
