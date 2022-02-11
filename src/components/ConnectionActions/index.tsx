@@ -19,6 +19,7 @@ import { useDuplicateConnection } from 'src/hooks';
 import { useRetryConnection } from 'src/hooks';
 import DropdownButton from 'src/components/DropdownButton';
 import Toast from 'src/components/Toast';
+
 interface ConnectionActionsProps {
   connection: SqluiCore.ConnectionProps;
 }

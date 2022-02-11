@@ -13,6 +13,7 @@ import { usePagination } from 'react-table';
 import { useSortBy } from 'react-table';
 import { useTable } from 'react-table';
 import React from 'react';
+
 interface DataTableProps {
   columns: any[];
   data: any[];

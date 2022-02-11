@@ -5,12 +5,14 @@ import { useState } from 'react';
 import { styled } from '@mui/system';
 import { useDarkModeSetting } from 'src/hooks';
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
+
 type AdvancedEditorProps = {
   language?: 'sql' | string;
   value?: string;
   onChange?: (newValue: string) => void;
   onBlur?: (newValue: string) => void;
   wordWrap?: boolean;
+  placeholder?: string;
 };
 
 const AdvancedEditorContainer = styled('div')(({ theme }) => {

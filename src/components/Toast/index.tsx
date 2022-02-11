@@ -1,6 +1,7 @@
 import CloseIcon from '@mui/icons-material/Close';
 import IconButton from '@mui/material/IconButton';
 import Snackbar from '@mui/material/Snackbar';
+
 interface ToastProps {
   open: boolean;
   onClose: () => void;

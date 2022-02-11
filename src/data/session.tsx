@@ -1,4 +1,5 @@
 import { SessionStorageConfig } from 'src/data/config';
+
 export function getDefaultSessionId() {
   let sessionId = SessionStorageConfig.get<string>('clientConfig/api.sessionId', '');
 

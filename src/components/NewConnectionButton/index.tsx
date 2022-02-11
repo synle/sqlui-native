@@ -6,6 +6,7 @@ import { Button } from '@mui/material';
 import Box from '@mui/material/Box';
 import { useCommands } from 'src/components/MissionControl';
 import SplitButton from 'src/components/SplitButton';
+
 export default function NewConnectionButton() {
   const { selectCommand } = useCommands();
 

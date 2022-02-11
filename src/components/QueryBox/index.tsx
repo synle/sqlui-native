@@ -22,6 +22,7 @@ import ConnectionDatabaseSelector from 'src/components/QueryBox/ConnectionDataba
 import ConnectionRevealButton from 'src/components/QueryBox/ConnectionRevealButton';
 import ResultBox from 'src/components/ResultBox';
 import Select from 'src/components/Select';
+
 interface QueryBoxProps {
   queryId: string;
 }
@@ -100,6 +101,16 @@ export default function QueryBox(props: QueryBoxProps) {
 
   const disabledExecute = executing || !query?.sql || !query?.connectionId;
 
+  let language = 'sql';
+  if (selectedConnection && selectedConnection.dialect) {
+    switch (selectedConnection.dialect) {
+      case 'mongodb':
+      case 'redis':
+        language = 'js';
+        break;
+    }
+  }
+
   return (
     <>
       <form className='QueryBox' onSubmit={onSubmit}>
@@ -112,7 +123,7 @@ export default function QueryBox(props: QueryBoxProps) {
             value={query.sql}
             placeholder={`Enter SQL for ` + query.name}
             onChange={onSqlQueryChange}
-            language='sql'
+            language={language}
             autoFocus
             mode='textarea'
           />
