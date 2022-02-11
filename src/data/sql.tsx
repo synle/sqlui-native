@@ -1,11 +1,10 @@
-import { SqluiCore, SqlAction } from 'typings';
-import { formatJS } from 'src/utils/formatter';
-import { formatSQL } from 'src/utils/formatter';
-import { scripts as RmdbScripts } from 'src/scripts/rmdb';
-import { scripts as CassandraScripts } from 'src/scripts/cassandra';
 import { scripts as MongodbScripts } from 'src/scripts/mongodb';
 import { scripts as RedisScripts } from 'src/scripts/redis';
-
+import { formatJS } from 'src/utils/formatter';
+import { formatSQL } from 'src/utils/formatter';
+import { scripts as CassandraScripts } from 'src/scripts/cassandra';
+import { scripts as RmdbScripts } from 'src/scripts/rmdb';
+import { SqlAction } from 'typings';
 export function getTableActions(tableActionInput: SqlAction.TableInput) {
   const actions: SqlAction.Output[] = [];
 
