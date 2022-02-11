@@ -130,22 +130,22 @@ Array [
   Object {
     "formatter": "js",
     "label": "Hashset > Set Value",
-    "query": "db.hSet(\\"key\\", \\"field\\", \\"value\\")",
+    "query": "db.hSet(\\"hash_key1\\", \\"field1\\", \\"value1\\")",
   },
   Object {
     "formatter": "js",
     "label": "Hashset > Get Value By Key",
-    "query": "db.hGetAll(\\"key\\")",
+    "query": "db.hGetAll(\\"hash_key1\\")",
   },
   Object {
     "formatter": "js",
     "label": "Hashset > Values",
-    "query": "db.hVals(\\"key\\")",
+    "query": "db.hVals(\\"hash_key1\\")",
   },
   Object {
     "formatter": "js",
     "label": "Hashset > Check if key exists",
-    "query": "db.hExists(\\"key\\", \\"field1\\")",
+    "query": "db.hExists(\\"hash_key1\\", \\"field1\\")",
   },
   Object {
     "label": "divider",
@@ -153,27 +153,27 @@ Array [
   Object {
     "formatter": "js",
     "label": "List > Get Items",
-    "query": "db.lRange(\\"key\\", 0, -1)",
+    "query": "db.lRange(\\"list_key1\\", 0, -1)",
   },
   Object {
     "formatter": "js",
     "label": "List > Push item to the front",
-    "query": "db.lPush(\\"key\\", \\"value\\")",
+    "query": "db.lPush(\\"list_key1\\", \\"value\\")",
   },
   Object {
     "formatter": "js",
     "label": "List > Push item to the back",
-    "query": "db.rPush(\\"key\\", \\"value\\")",
+    "query": "db.rPush(\\"list_key1\\", \\"value\\")",
   },
   Object {
     "formatter": "js",
     "label": "List > Delete item from the front",
-    "query": "db.lPop(\\"key\\")",
+    "query": "db.lPop(\\"list_key1\\")",
   },
   Object {
     "formatter": "js",
     "label": "List > Delete item from the back",
-    "query": "db.rPop(\\"key\\")",
+    "query": "db.rPop(\\"list_key1\\")",
   },
   Object {
     "label": "divider",
@@ -181,27 +181,27 @@ Array [
   Object {
     "formatter": "js",
     "label": "Set > Get Items",
-    "query": "db.sMembers(\\"key\\")",
+    "query": "db.sMembers(\\"set_key1\\")",
   },
   Object {
     "formatter": "js",
     "label": "Set > Add Item",
-    "query": "db.sAdd(\\"key\\", \\"value1\\")",
+    "query": "db.sAdd(\\"set_key1\\", \\"value1\\")",
   },
   Object {
     "formatter": "js",
     "label": "Set > Is a member of set",
-    "query": "db.sIsMember(\\"key\\", \\"value1\\")",
+    "query": "db.sIsMember(\\"set_key1\\", \\"value1\\")",
   },
   Object {
     "formatter": "js",
     "label": "Set > Total Size",
-    "query": "db.sCard(\\"key\\")",
+    "query": "db.sCard(\\"set_key1\\")",
   },
   Object {
     "formatter": "js",
     "label": "Set > Remove last item",
-    "query": "db.sPop(\\"key\\")",
+    "query": "db.sPop(\\"set_key1\\")",
   },
   Object {
     "label": "divider",
@@ -209,12 +209,12 @@ Array [
   Object {
     "formatter": "js",
     "label": "Sorted Set > Get Items",
-    "query": "db.zRange(\\"key\\", 0, -1)",
+    "query": "db.zRange(\\"sorted_set_key1\\", 0, -1)",
   },
   Object {
     "formatter": "js",
     "label": "Sorted Set > Add Item",
-    "query": "db.zAdd(\\"key\\", [{score: 1, value: \\"some_value\\"}])",
+    "query": "db.zAdd(\\"sorted_set_key1\\", [{score: 1, value: \\"some_value\\"}])",
   },
   Object {
     "label": "divider",
@@ -222,7 +222,7 @@ Array [
   Object {
     "formatter": "js",
     "label": "Publish a message",
-    "query": "db.publish(\\"key\\", \\"some_message\\")",
+    "query": "db.publish(\\"pubsub_channel_key1\\", \\"some_message\\")",
   },
 ]
 `;
