@@ -676,6 +676,6 @@ export function getExportedConnection(connection: SqluiCore.ConnectionProps) {
 }
 
 export function getExportedQuery(query: SqluiFrontend.ConnectionQuery) {
-  const { selected, ...dataToExport } = query;
+  const { selected, executionStart, result, ...dataToExport } = query;
   return { _type: 'query', ...dataToExport };
 }
