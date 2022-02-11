@@ -1,3 +1,9 @@
+---
+title: sqlui-native query help?
+---
+
+Query Help?
+===========
 ## mysql
 
 ### Select All Columns
@@ -89,9 +95,9 @@ ADD
 
 ```
 ALTER TABLE
-  table1 DROP COLUMN column1
+  table1 DROP COLUMN column1;
 ALTER TABLE
-  table1 DROP COLUMN column2
+  table1 DROP COLUMN column2;
 ```
 
 
@@ -186,9 +192,9 @@ ADD
 
 ```
 ALTER TABLE
-  table1 DROP COLUMN column1
+  table1 DROP COLUMN column1;
 ALTER TABLE
-  table1 DROP COLUMN column2
+  table1 DROP COLUMN column2;
 ```
 
 
@@ -279,9 +285,9 @@ ADD
 
 ```
 ALTER TABLE
-  table1 DROP COLUMN column1
+  table1 DROP COLUMN column1;
 ALTER TABLE
-  table1 DROP COLUMN column2
+  table1 DROP COLUMN column2;
 ```
 
 
@@ -376,9 +382,9 @@ ADD
 
 ```
 ALTER TABLE
-  table1 DROP COLUMN column1
+  table1 DROP COLUMN column1;
 ALTER TABLE
-  table1 DROP COLUMN column2
+  table1 DROP COLUMN column2;
 ```
 
 
@@ -473,9 +479,9 @@ ADD
 
 ```
 ALTER TABLE
-  table1 DROP COLUMN column1
+  table1 DROP COLUMN column1;
 ALTER TABLE
-  table1 DROP COLUMN column2
+  table1 DROP COLUMN column2;
 ```
 
 

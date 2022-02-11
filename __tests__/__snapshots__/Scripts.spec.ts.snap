@@ -296,8 +296,8 @@ column2 VARCHAR(100)   NOT NULL)",
   Object {
     "formatter": "sql",
     "label": "Drop Column",
-    "query": "--ALTER TABLE table1 DROP COLUMN column1
---ALTER TABLE table1 DROP COLUMN column2",
+    "query": "--ALTER TABLE table1 DROP COLUMN column1;
+--ALTER TABLE table1 DROP COLUMN column2;",
   },
 ]
 `;
@@ -368,8 +368,8 @@ column2 VARCHAR(100)   NOT NULL)",
   Object {
     "formatter": "sql",
     "label": "Drop Column",
-    "query": "--ALTER TABLE table1 DROP COLUMN column1
---ALTER TABLE table1 DROP COLUMN column2",
+    "query": "--ALTER TABLE table1 DROP COLUMN column1;
+--ALTER TABLE table1 DROP COLUMN column2;",
   },
 ]
 `;
@@ -443,8 +443,8 @@ column2 VARCHAR(100)   NOT NULL)",
   Object {
     "formatter": "sql",
     "label": "Drop Column",
-    "query": "--ALTER TABLE table1 DROP COLUMN column1
---ALTER TABLE table1 DROP COLUMN column2",
+    "query": "--ALTER TABLE table1 DROP COLUMN column1;
+--ALTER TABLE table1 DROP COLUMN column2;",
   },
 ]
 `;
@@ -518,8 +518,8 @@ column2 VARCHAR(100) NOT NULL)",
   Object {
     "formatter": "sql",
     "label": "Drop Column",
-    "query": "--ALTER TABLE table1 DROP COLUMN column1
---ALTER TABLE table1 DROP COLUMN column2",
+    "query": "--ALTER TABLE table1 DROP COLUMN column1;
+--ALTER TABLE table1 DROP COLUMN column2;",
   },
 ]
 `;
@@ -593,8 +593,8 @@ column2 VARCHAR(100)   NOT NULL)",
   Object {
     "formatter": "sql",
     "label": "Drop Column",
-    "query": "--ALTER TABLE table1 DROP COLUMN column1
---ALTER TABLE table1 DROP COLUMN column2",
+    "query": "--ALTER TABLE table1 DROP COLUMN column1;
+--ALTER TABLE table1 DROP COLUMN column2;",
   },
 ]
 `;

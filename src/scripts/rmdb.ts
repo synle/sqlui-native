@@ -342,7 +342,7 @@ export function getDropColumns(input: SqlAction.TableInput): SqlAction.Output | 
         label,
         formatter,
         query: input.columns
-          .map((col) => `--ALTER TABLE ${input.tableId} DROP COLUMN ${col.name}`)
+          .map((col) => `--ALTER TABLE ${input.tableId} DROP COLUMN ${col.name};`)
           .join('\n'),
       };
   }
