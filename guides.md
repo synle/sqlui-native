@@ -649,112 +649,112 @@ db.keys("*")
 ### Hashset > Set Value
 
 ```
-db.hSet("key", "field", "value")
+db.hSet("hash_key1", "field1", "value1")
 ```
 
 
 ### Hashset > Get Value By Key
 
 ```
-db.hGetAll("key")
+db.hGetAll("hash_key1")
 ```
 
 
 ### Hashset > Values
 
 ```
-db.hVals("key")
+db.hVals("hash_key1")
 ```
 
 
 ### Hashset > Check if key exists
 
 ```
-db.hExists("key", "field1")
+db.hExists("hash_key1", "field1")
 ```
 
 
 ### List > Get Items
 
 ```
-db.lRange("key", 0, -1)
+db.lRange("list_key1", 0, -1)
 ```
 
 
 ### List > Push item to the front
 
 ```
-db.lPush("key", "value")
+db.lPush("list_key1", "value")
 ```
 
 
 ### List > Push item to the back
 
 ```
-db.rPush("key", "value")
+db.rPush("list_key1", "value")
 ```
 
 
 ### List > Delete item from the front
 
 ```
-db.lPop("key")
+db.lPop("list_key1")
 ```
 
 
 ### List > Delete item from the back
 
 ```
-db.rPop("key")
+db.rPop("list_key1")
 ```
 
 
 ### Set > Get Items
 
 ```
-db.sMembers("key")
+db.sMembers("set_key1")
 ```
 
 
 ### Set > Add Item
 
 ```
-db.sAdd("key", "value1")
+db.sAdd("set_key1", "value1")
 ```
 
 
 ### Set > Is a member of set
 
 ```
-db.sIsMember("key", "value1")
+db.sIsMember("set_key1", "value1")
 ```
 
 
 ### Set > Total Size
 
 ```
-db.sCard("key")
+db.sCard("set_key1")
 ```
 
 
 ### Set > Remove last item
 
 ```
-db.sPop("key")
+db.sPop("set_key1")
 ```
 
 
 ### Sorted Set > Get Items
 
 ```
-db.zRange("key", 0, -1)
+db.zRange("sorted_set_key1", 0, -1)
 ```
 
 
 ### Sorted Set > Add Item
 
 ```
-db.zAdd("key", [{
+db.zAdd("sorted_set_key1", [{
   score: 1,
   value: "some_value"
 }])
@@ -764,6 +764,6 @@ db.zAdd("key", [{
 ### Publish a message
 
 ```
-db.publish("key", "some_message")
+db.publish("pubsub_channel_key1", "some_message")
 ```
 
