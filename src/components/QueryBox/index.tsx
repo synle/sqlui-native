@@ -1,4 +1,5 @@
 import FormatColorTextIcon from '@mui/icons-material/FormatColorText';
+import HelpIcon from '@mui/icons-material/Help';
 import SendIcon from '@mui/icons-material/Send';
 import { Button } from '@mui/material';
 import Alert from '@mui/material/Alert';
@@ -12,6 +13,7 @@ import { formatJS } from 'src/utils/formatter';
 import { formatSQL } from 'src/utils/formatter';
 import { refreshAfterExecution } from 'src/hooks';
 import { SqluiCore } from 'typings';
+import { useCommands } from 'src/components/MissionControl';
 import { useConnectionQuery } from 'src/hooks';
 import { useExecute } from 'src/hooks';
 import { useGetConnectionById } from 'src/hooks';
@@ -20,9 +22,6 @@ import ConnectionDatabaseSelector from 'src/components/QueryBox/ConnectionDataba
 import ConnectionRevealButton from 'src/components/QueryBox/ConnectionRevealButton';
 import ResultBox from 'src/components/ResultBox';
 import Select from 'src/components/Select';
-import { useCommands } from 'src/components/MissionControl';
-import HelpIcon from '@mui/icons-material/Help';
-
 interface QueryBoxProps {
   queryId: string;
 }
