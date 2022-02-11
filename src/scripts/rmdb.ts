@@ -11,26 +11,19 @@ export function getSelectAllColumns(input: SqlAction.TableInput): SqlAction.Outp
       return {
         label,
         formatter,
-        query: `SELECT TOP ${input.querySize} * \nFROM ${input.tableId}`,
+        query: `SELECT TOP ${input.querySize} *
+                FROM ${input.tableId}`,
       };
     case 'postgres':
-      return {
-        label,
-        formatter,
-        query: `SELECT * \nFROM ${input.tableId} \nLIMIT ${input.querySize}`,
-      };
     case 'sqlite':
-      return {
-        label,
-        formatter,
-        query: `SELECT * \nFROM ${input.tableId} \nLIMIT ${input.querySize}`,
-      };
     case 'mariadb':
     case 'mysql':
       return {
         label,
         formatter,
-        query: `SELECT * \nFROM ${input.tableId} \nLIMIT ${input.querySize}`,
+        query: `SELECT *
+                FROM ${input.tableId}
+                LIMIT ${input.querySize}`,
       };
   }
 }
@@ -53,7 +46,9 @@ export function getSelectCount(input: SqlAction.TableInput): SqlAction.Output | 
       return {
         label,
         formatter,
-        query: `SELECT COUNT(*) \nFROM ${input.tableId} \n WHERE \n ${whereColumnString}`,
+        query: `SELECT COUNT(*)
+                FROM ${input.tableId}
+                WHERE ${whereColumnString}`,
       };
   }
 }
@@ -75,26 +70,57 @@ export function getSelectSpecificColumns(
       return {
         label,
         formatter,
-        query: `SELECT TOP ${input.querySize} ${columnString} \nFROM ${input.tableId} WHERE ${whereColumnString}`,
+        query: `SELECT TOP ${input.querySize} ${columnString}
+                FROM ${input.tableId}
+                WHERE ${whereColumnString}`,
       };
     case 'postgres':
-      return {
-        label,
-        formatter,
-        query: `SELECT ${columnString} \nFROM ${input.tableId} \n WHERE ${whereColumnString} \nLIMIT ${input.querySize}`,
-      };
     case 'sqlite':
-      return {
-        label,
-        formatter,
-        query: `SELECT ${columnString} \nFROM ${input.tableId} \n WHERE ${whereColumnString} \nLIMIT ${input.querySize}`,
-      };
     case 'mariadb':
     case 'mysql':
       return {
         label,
         formatter,
-        query: `SELECT ${columnString} \nFROM ${input.tableId} \n WHERE ${whereColumnString} \nLIMIT ${input.querySize}`,
+        query: `SELECT ${columnString}
+                FROM ${input.tableId}
+                WHERE ${whereColumnString}
+                LIMIT ${input.querySize}`,
+      };
+  }
+}
+
+export function getSelectDistinctValues(input: SqlAction.TableInput): SqlAction.Output | undefined {
+  const label = `Select Distinct`;
+
+  if (!input.columns) {
+    return undefined;
+  }
+
+  const columns = input.columns || [];
+
+  const distinctColumn = columns.filter((col) => !col.primaryKey)?.[0]?.name || 'some_field';
+  const whereColumnString = columns.map((col) => `${col.name} = ''`).join('\n AND ');
+
+  switch (input.dialect) {
+    case 'mssql':
+      return {
+        label,
+        formatter,
+        query: `SELECT DISTINCT TOP ${input.querySize} ${distinctColumn}
+                FROM ${input.tableId}
+                WHERE ${whereColumnString}`,
+      };
+    case 'postgres':
+    case 'sqlite':
+    case 'mariadb':
+    case 'mysql':
+      return {
+        label,
+        formatter,
+        query: `SELECT DISTINCT ${distinctColumn}
+                FROM ${input.tableId}
+                WHERE ${whereColumnString}
+                LIMIT ${input.querySize}`,
       };
   }
 }
@@ -119,7 +145,8 @@ export function getInsertCommand(input: SqlAction.TableInput): SqlAction.Output 
       return {
         label,
         formatter: 'sql',
-        query: `INSERT INTO ${input.tableId} (\n${columnString}\n) VALUES (\n${insertValueString}\n)`,
+        query: `INSERT INTO ${input.tableId} (${columnString})
+                VALUES (${insertValueString})`,
       };
   }
 }
@@ -143,7 +170,9 @@ export function getUpdateCommand(input: SqlAction.TableInput): SqlAction.Output 
       return {
         label,
         formatter: 'js',
-        query: `UPDATE ${input.tableId}\n SET \n${columnString}\n WHERE ${whereColumnString}`,
+        query: `UPDATE ${input.tableId}
+                SET ${columnString}
+                WHERE ${whereColumnString}`,
       };
   }
 }
@@ -166,7 +195,8 @@ export function getDeleteCommand(input: SqlAction.TableInput): SqlAction.Output 
       return {
         label,
         formatter,
-        query: `DELETE FROM ${input.tableId} \n WHERE\n ${whereColumnString}`,
+        query: `DELETE FROM ${input.tableId}
+                WHERE ${whereColumnString}`,
       };
   }
 }
@@ -307,26 +337,30 @@ export function getAddColumn(input: SqlAction.TableInput): SqlAction.Output | un
       return {
         label,
         formatter,
-        query: `ALTER TABLE ${input.tableId} ADD COLUMN newColumn1 NVARCHAR(200)`,
+        query: `ALTER TABLE ${input.tableId}
+                ADD COLUMN newColumn1 NVARCHAR(200)`,
       };
     case 'postgres':
       return {
         label,
         formatter,
-        query: `ALTER TABLE ${input.tableId} ADD COLUMN newColumn1 CHAR(200)`,
+        query: `ALTER TABLE ${input.tableId}
+                ADD COLUMN newColumn1 CHAR(200)`,
       };
     case 'sqlite':
       return {
         label,
         formatter,
-        query: `ALTER TABLE ${input.tableId} ADD COLUMN newColumn1 TEXT`,
+        query: `ALTER TABLE ${input.tableId}
+                ADD COLUMN newColumn1 TEXT`,
       };
     case 'mariadb':
     case 'mysql':
       return {
         label,
         formatter,
-        query: `ALTER TABLE ${input.tableId} ADD COLUMN newColumn1 varchar(200)`,
+        query: `ALTER TABLE ${input.tableId}
+                ADD COLUMN newColumn1 varchar(200)`,
       };
   }
 }
@@ -348,7 +382,10 @@ export function getDropColumns(input: SqlAction.TableInput): SqlAction.Output | 
         label,
         formatter,
         query: input.columns
-          .map((col) => `ALTER TABLE ${input.tableId} DROP COLUMN ${col.name};`)
+          .map(
+            (col) => `ALTER TABLE ${input.tableId}
+                         DROP COLUMN ${col.name};`,
+          )
           .join('\n'),
       };
   }
@@ -358,6 +395,8 @@ export const scripts: SqlAction.ScriptGenerator[] = [
   getSelectAllColumns,
   getSelectCount,
   getSelectSpecificColumns,
+  getSelectDistinctValues,
+  getDivider,
   getInsertCommand,
   getUpdateCommand,
   getDeleteCommand,

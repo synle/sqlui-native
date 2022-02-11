@@ -5,56 +5,58 @@ Array [
   Object {
     "formatter": "sql",
     "label": "Select All Columns",
-    "query": "SELECT * 
-FROM table1 
-LIMIT 200",
+    "query": "SELECT
+  *
+FROM
+  table1
+LIMIT
+  200",
   },
   Object {
     "formatter": "sql",
     "label": "Select Specific Columns",
-    "query": "SELECT 
+    "query": "SELECT
   id,
   column1,
-  column2 
-FROM table1 
- -- WHERE id = ''
- -- AND column1 = ''
- -- AND column2 = '' 
-LIMIT 200",
+  column2
+FROM
+  table1
+WHERE
+  id = ''
+  AND column1 = ''
+  AND column2 = ''
+LIMIT
+  200",
   },
   Object {
     "formatter": "sql",
     "label": "Insert",
-    "query": "INSERT INTO table1 (
-id,
-column1,
-column2
-) VALUES (
-'_id_',
-'_column1_',
-'_column2_'
-)",
+    "query": "INSERT INTO
+  table1 (id, column1, column2)
+VALUES
+  ('_id_', '_column1_', '_column2_')",
+  },
+  Object {
+    "label": "divider",
+    "query": "",
   },
   Object {
     "formatter": "js",
     "label": "Update",
-    "query": "UPDATE table1
- SET 
--- id = '',
--- column1 = '',
--- column2 = ''
- WHERE -- id = '' AND 
--- column1 = '' AND 
--- column2 = ''",
+    "query": "UPDATE table1 SET id = '', column1 = '', column2 = ''
+WHERE id = ''
+AND column1 = ''
+AND column2 = ''",
   },
   Object {
     "formatter": "sql",
     "label": "Delete",
-    "query": "-- DELETE FROM table1 
- -- WHERE
- -- id = '' AND 
--- column1 = '' AND 
--- column2 = ''",
+    "query": "DELETE FROM
+  table1
+WHERE
+  id = ''
+  AND column1 = ''
+  AND column2 = ''",
   },
 ]
 `;
@@ -64,54 +66,76 @@ Array [
   Object {
     "formatter": "js",
     "label": "Select All Columns",
-    "query": "db.collection('table1').find().limit(200).toArray();",
+    "query": "db.collection('table1')
+  .find()
+  .limit(200)
+  .toArray();",
   },
   Object {
     "formatter": "js",
     "label": "Select Specific Columns",
-    "query": "db.collection('table1').find(
-          {\\"id\\":123,\\"column1\\":123,\\"column2\\":123}
-        ).limit(200).toArray();",
+    "query": "db.collection('table1')
+  .find({
+    \\"id\\": 123,
+    \\"column1\\": 123,
+    \\"column2\\": 123
+  })
+  .limit(200)
+  .toArray();",
   },
   Object {
     "formatter": "js",
     "label": "Select Distinct",
-    "query": "db.collection('table1').distinct(
-          'id',
-          {\\"id\\":\\"\\",\\"column1\\":\\"\\",\\"column2\\":\\"\\"}
-        )",
+    "query": "db.collection('table1')
+  .distinct('id', {
+    \\"id\\": \\"\\",
+    \\"column1\\": \\"\\",
+    \\"column2\\": \\"\\"
+  })",
   },
   Object {
     "label": "divider",
+    "query": "",
   },
   Object {
     "formatter": "js",
     "label": "Insert",
-    "query": "db.collection('table1').insertMany([
-          {\\"id\\":123,\\"column1\\":123,\\"column2\\":123}
-        ]);",
+    "query": "db.collection('table1')
+  .insertMany([{
+    \\"id\\": 123,
+    \\"column1\\": 123,
+    \\"column2\\": 123
+  }]);",
   },
   Object {
     "formatter": "js",
     "label": "Update",
-    "query": "db.collection('table1').update(
-          {\\"id\\":123,\\"column1\\":123,\\"column2\\":123},
-          {$set: {
-  \\"id\\": 123,
-  \\"column1\\": 123,
-  \\"column2\\": 123
-}}
-        );",
+    "query": "db.collection('table1')
+  .update({
+    \\"id\\": 123,
+    \\"column1\\": 123,
+    \\"column2\\": 123
+  }, {
+    $set: {
+      \\"id\\": 123,
+      \\"column1\\": 123,
+      \\"column2\\": 123
+    }
+  });",
   },
   Object {
     "formatter": "js",
     "label": "Delete",
-    "query": "db.collection('table1').deleteMany(
-          {\\"id\\":123,\\"column1\\":123,\\"column2\\":123}
-        );",
+    "query": "db.collection('table1')
+  .deleteMany({
+    \\"id\\": 123,
+    \\"column1\\": 123,
+    \\"column2\\": 123
+  });",
   },
   Object {
     "label": "divider",
+    "query": "",
   },
   Object {
     "formatter": "js",
@@ -121,7 +145,8 @@ Array [
   Object {
     "formatter": "js",
     "label": "Drop Collection",
-    "query": "db.collection('table1').drop()",
+    "query": "db.collection('table1')
+  .drop()",
   },
 ]
 `;
@@ -145,6 +170,7 @@ Array [
   },
   Object {
     "label": "divider",
+    "query": "",
   },
   Object {
     "formatter": "js",
@@ -168,6 +194,7 @@ Array [
   },
   Object {
     "label": "divider",
+    "query": "",
   },
   Object {
     "formatter": "js",
@@ -196,6 +223,7 @@ Array [
   },
   Object {
     "label": "divider",
+    "query": "",
   },
   Object {
     "formatter": "js",
@@ -224,6 +252,7 @@ Array [
   },
   Object {
     "label": "divider",
+    "query": "",
   },
   Object {
     "formatter": "js",
@@ -233,10 +262,14 @@ Array [
   Object {
     "formatter": "js",
     "label": "Sorted Set > Add Item",
-    "query": "db.zAdd(\\"sorted_set_key1\\", [{score: 1, value: \\"some_value\\"}])",
+    "query": "db.zAdd(\\"sorted_set_key1\\", [{
+  score: 1,
+  value: \\"some_value\\"
+}])",
   },
   Object {
     "label": "divider",
+    "query": "",
   },
   Object {
     "formatter": "js",
@@ -251,74 +284,97 @@ Array [
   Object {
     "formatter": "sql",
     "label": "Select All Columns",
-    "query": "SELECT * 
-FROM table1 
-LIMIT 200",
+    "query": "SELECT
+  *
+FROM
+  table1
+LIMIT
+  200",
   },
   Object {
     "formatter": "sql",
     "label": "Select Count",
-    "query": "SELECT COUNT(*) 
-FROM table1 
- WHERE 
- id = '' AND 
-column1 = '' AND 
-column2 = ''",
+    "query": "SELECT
+  COUNT(*)
+FROM
+  table1
+WHERE
+  id = ''
+  AND column1 = ''
+  AND column2 = ''",
   },
   Object {
     "formatter": "sql",
     "label": "Select Specific Columns",
-    "query": "SELECT 
+    "query": "SELECT
   id,
   column1,
-  column2 
-FROM table1 
- WHERE id = ''
- AND column1 = ''
- AND column2 = '' 
-LIMIT 200",
+  column2
+FROM
+  table1
+WHERE
+  id = ''
+  AND column1 = ''
+  AND column2 = ''
+LIMIT
+  200",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Select Distinct",
+    "query": "SELECT
+  DISTINCT column1
+FROM
+  table1
+WHERE
+  id = ''
+  AND column1 = ''
+  AND column2 = ''
+LIMIT
+  200",
+  },
+  Object {
+    "label": "divider",
+    "query": "",
   },
   Object {
     "formatter": "sql",
     "label": "Insert",
-    "query": "INSERT INTO table1 (
-column1,
-column2
-) VALUES (
-'_column1_',
-'_column2_'
-)",
+    "query": "INSERT INTO
+  table1 (column1, column2)
+VALUES
+  ('_column1_', '_column2_')",
   },
   Object {
     "formatter": "js",
     "label": "Update",
-    "query": "UPDATE table1
- SET 
-id = '',
-column1 = '',
-column2 = ''
- WHERE id = '' AND 
-column1 = '' AND 
-column2 = ''",
+    "query": "UPDATE table1 SET id = '', column1 = '', column2 = ''
+WHERE id = ''
+AND column1 = ''
+AND column2 = ''",
   },
   Object {
     "formatter": "sql",
     "label": "Delete",
-    "query": "DELETE FROM table1 
- WHERE
- id = '' AND 
-column1 = '' AND 
-column2 = ''",
+    "query": "DELETE FROM
+  table1
+WHERE
+  id = ''
+  AND column1 = ''
+  AND column2 = ''",
   },
   Object {
     "label": "divider",
+    "query": "",
   },
   Object {
     "formatter": "sql",
     "label": "Create Table",
-    "query": "CREATE TABLE table1 (id INT PRIMARY KEY  NOT NULL,
-column1 INT   NOT NULL,
-column2 VARCHAR(100)   NOT NULL)",
+    "query": "CREATE TABLE table1 (
+  id INT PRIMARY KEY NOT NULL,
+  column1 INT NOT NULL,
+  column2 VARCHAR(100) NOT NULL
+)",
   },
   Object {
     "formatter": "sql",
@@ -328,14 +384,20 @@ column2 VARCHAR(100)   NOT NULL)",
   Object {
     "formatter": "sql",
     "label": "Add Column",
-    "query": "ALTER TABLE table1 ADD COLUMN newColumn1 varchar(200)",
+    "query": "ALTER TABLE
+  table1
+ADD
+  COLUMN newColumn1 varchar(200)",
   },
   Object {
     "formatter": "sql",
     "label": "Drop Column",
-    "query": "ALTER TABLE table1 DROP COLUMN id;
-ALTER TABLE table1 DROP COLUMN column1;
-ALTER TABLE table1 DROP COLUMN column2;",
+    "query": "ALTER TABLE
+  table1 DROP COLUMN id;
+ALTER TABLE
+  table1 DROP COLUMN column1;
+ALTER TABLE
+  table1 DROP COLUMN column2;",
   },
 ]
 `;
@@ -345,71 +407,91 @@ Array [
   Object {
     "formatter": "sql",
     "label": "Select All Columns",
-    "query": "SELECT TOP 200 * 
-FROM table1",
+    "query": "SELECT
+  TOP 200 *
+FROM
+  table1",
   },
   Object {
     "formatter": "sql",
     "label": "Select Count",
-    "query": "SELECT COUNT(*) 
-FROM table1 
- WHERE 
- id = '' AND 
-column1 = '' AND 
-column2 = ''",
+    "query": "SELECT
+  COUNT(*)
+FROM
+  table1
+WHERE
+  id = ''
+  AND column1 = ''
+  AND column2 = ''",
   },
   Object {
     "formatter": "sql",
     "label": "Select Specific Columns",
-    "query": "SELECT TOP 200 
-  id,
+    "query": "SELECT
+  TOP 200 id,
   column1,
-  column2 
-FROM table1 WHERE id = ''
- AND column1 = ''
- AND column2 = ''",
+  column2
+FROM
+  table1
+WHERE
+  id = ''
+  AND column1 = ''
+  AND column2 = ''",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Select Distinct",
+    "query": "SELECT
+  DISTINCT TOP 200 column1
+FROM
+  table1
+WHERE
+  id = ''
+  AND column1 = ''
+  AND column2 = ''",
+  },
+  Object {
+    "label": "divider",
+    "query": "",
   },
   Object {
     "formatter": "sql",
     "label": "Insert",
-    "query": "INSERT INTO table1 (
-column1,
-column2
-) VALUES (
-'_column1_',
-'_column2_'
-)",
+    "query": "INSERT INTO
+  table1 (column1, column2)
+VALUES
+  ('_column1_', '_column2_')",
   },
   Object {
     "formatter": "js",
     "label": "Update",
-    "query": "UPDATE table1
- SET 
-id = '',
-column1 = '',
-column2 = ''
- WHERE id = '' AND 
-column1 = '' AND 
-column2 = ''",
+    "query": "UPDATE table1 SET id = '', column1 = '', column2 = ''
+WHERE id = ''
+AND column1 = ''
+AND column2 = ''",
   },
   Object {
     "formatter": "sql",
     "label": "Delete",
-    "query": "DELETE FROM table1 
- WHERE
- id = '' AND 
-column1 = '' AND 
-column2 = ''",
+    "query": "DELETE FROM
+  table1
+WHERE
+  id = ''
+  AND column1 = ''
+  AND column2 = ''",
   },
   Object {
     "label": "divider",
+    "query": "",
   },
   Object {
     "formatter": "sql",
     "label": "Create Table",
-    "query": "CREATE TABLE table1 (id INT PRIMARY KEY  NOT NULL,
-column1 INT   NOT NULL,
-column2 VARCHAR(100)   NOT NULL)",
+    "query": "CREATE TABLE table1 (
+  id INT PRIMARY KEY NOT NULL,
+  column1 INT NOT NULL,
+  column2 VARCHAR(100) NOT NULL
+)",
   },
   Object {
     "formatter": "sql",
@@ -419,14 +501,20 @@ column2 VARCHAR(100)   NOT NULL)",
   Object {
     "formatter": "sql",
     "label": "Add Column",
-    "query": "ALTER TABLE table1 ADD COLUMN newColumn1 NVARCHAR(200)",
+    "query": "ALTER TABLE
+  table1
+ADD
+  COLUMN newColumn1 NVARCHAR(200)",
   },
   Object {
     "formatter": "sql",
     "label": "Drop Column",
-    "query": "ALTER TABLE table1 DROP COLUMN id;
-ALTER TABLE table1 DROP COLUMN column1;
-ALTER TABLE table1 DROP COLUMN column2;",
+    "query": "ALTER TABLE
+  table1 DROP COLUMN id;
+ALTER TABLE
+  table1 DROP COLUMN column1;
+ALTER TABLE
+  table1 DROP COLUMN column2;",
   },
 ]
 `;
@@ -436,74 +524,97 @@ Array [
   Object {
     "formatter": "sql",
     "label": "Select All Columns",
-    "query": "SELECT * 
-FROM table1 
-LIMIT 200",
+    "query": "SELECT
+  *
+FROM
+  table1
+LIMIT
+  200",
   },
   Object {
     "formatter": "sql",
     "label": "Select Count",
-    "query": "SELECT COUNT(*) 
-FROM table1 
- WHERE 
- id = '' AND 
-column1 = '' AND 
-column2 = ''",
+    "query": "SELECT
+  COUNT(*)
+FROM
+  table1
+WHERE
+  id = ''
+  AND column1 = ''
+  AND column2 = ''",
   },
   Object {
     "formatter": "sql",
     "label": "Select Specific Columns",
-    "query": "SELECT 
+    "query": "SELECT
   id,
   column1,
-  column2 
-FROM table1 
- WHERE id = ''
- AND column1 = ''
- AND column2 = '' 
-LIMIT 200",
+  column2
+FROM
+  table1
+WHERE
+  id = ''
+  AND column1 = ''
+  AND column2 = ''
+LIMIT
+  200",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Select Distinct",
+    "query": "SELECT
+  DISTINCT column1
+FROM
+  table1
+WHERE
+  id = ''
+  AND column1 = ''
+  AND column2 = ''
+LIMIT
+  200",
+  },
+  Object {
+    "label": "divider",
+    "query": "",
   },
   Object {
     "formatter": "sql",
     "label": "Insert",
-    "query": "INSERT INTO table1 (
-column1,
-column2
-) VALUES (
-'_column1_',
-'_column2_'
-)",
+    "query": "INSERT INTO
+  table1 (column1, column2)
+VALUES
+  ('_column1_', '_column2_')",
   },
   Object {
     "formatter": "js",
     "label": "Update",
-    "query": "UPDATE table1
- SET 
-id = '',
-column1 = '',
-column2 = ''
- WHERE id = '' AND 
-column1 = '' AND 
-column2 = ''",
+    "query": "UPDATE table1 SET id = '', column1 = '', column2 = ''
+WHERE id = ''
+AND column1 = ''
+AND column2 = ''",
   },
   Object {
     "formatter": "sql",
     "label": "Delete",
-    "query": "DELETE FROM table1 
- WHERE
- id = '' AND 
-column1 = '' AND 
-column2 = ''",
+    "query": "DELETE FROM
+  table1
+WHERE
+  id = ''
+  AND column1 = ''
+  AND column2 = ''",
   },
   Object {
     "label": "divider",
+    "query": "",
   },
   Object {
     "formatter": "sql",
     "label": "Create Table",
-    "query": "CREATE TABLE table1 (id INT PRIMARY KEY  NOT NULL,
-column1 INT   NOT NULL,
-column2 VARCHAR(100)   NOT NULL)",
+    "query": "CREATE TABLE table1 (
+  id INT PRIMARY KEY NOT NULL,
+  column1 INT NOT NULL,
+  column2 VARCHAR(100) NOT NULL
+)",
   },
   Object {
     "formatter": "sql",
@@ -513,14 +624,20 @@ column2 VARCHAR(100)   NOT NULL)",
   Object {
     "formatter": "sql",
     "label": "Add Column",
-    "query": "ALTER TABLE table1 ADD COLUMN newColumn1 varchar(200)",
+    "query": "ALTER TABLE
+  table1
+ADD
+  COLUMN newColumn1 varchar(200)",
   },
   Object {
     "formatter": "sql",
     "label": "Drop Column",
-    "query": "ALTER TABLE table1 DROP COLUMN id;
-ALTER TABLE table1 DROP COLUMN column1;
-ALTER TABLE table1 DROP COLUMN column2;",
+    "query": "ALTER TABLE
+  table1 DROP COLUMN id;
+ALTER TABLE
+  table1 DROP COLUMN column1;
+ALTER TABLE
+  table1 DROP COLUMN column2;",
   },
 ]
 `;
@@ -530,74 +647,97 @@ Array [
   Object {
     "formatter": "sql",
     "label": "Select All Columns",
-    "query": "SELECT * 
-FROM table1 
-LIMIT 200",
+    "query": "SELECT
+  *
+FROM
+  table1
+LIMIT
+  200",
   },
   Object {
     "formatter": "sql",
     "label": "Select Count",
-    "query": "SELECT COUNT(*) 
-FROM table1 
- WHERE 
- id = '' AND 
-column1 = '' AND 
-column2 = ''",
+    "query": "SELECT
+  COUNT(*)
+FROM
+  table1
+WHERE
+  id = ''
+  AND column1 = ''
+  AND column2 = ''",
   },
   Object {
     "formatter": "sql",
     "label": "Select Specific Columns",
-    "query": "SELECT 
+    "query": "SELECT
   id,
   column1,
-  column2 
-FROM table1 
- WHERE id = ''
- AND column1 = ''
- AND column2 = '' 
-LIMIT 200",
+  column2
+FROM
+  table1
+WHERE
+  id = ''
+  AND column1 = ''
+  AND column2 = ''
+LIMIT
+  200",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Select Distinct",
+    "query": "SELECT
+  DISTINCT column1
+FROM
+  table1
+WHERE
+  id = ''
+  AND column1 = ''
+  AND column2 = ''
+LIMIT
+  200",
+  },
+  Object {
+    "label": "divider",
+    "query": "",
   },
   Object {
     "formatter": "sql",
     "label": "Insert",
-    "query": "INSERT INTO table1 (
-column1,
-column2
-) VALUES (
-'_column1_',
-'_column2_'
-)",
+    "query": "INSERT INTO
+  table1 (column1, column2)
+VALUES
+  ('_column1_', '_column2_')",
   },
   Object {
     "formatter": "js",
     "label": "Update",
-    "query": "UPDATE table1
- SET 
-id = '',
-column1 = '',
-column2 = ''
- WHERE id = '' AND 
-column1 = '' AND 
-column2 = ''",
+    "query": "UPDATE table1 SET id = '', column1 = '', column2 = ''
+WHERE id = ''
+AND column1 = ''
+AND column2 = ''",
   },
   Object {
     "formatter": "sql",
     "label": "Delete",
-    "query": "DELETE FROM table1 
- WHERE
- id = '' AND 
-column1 = '' AND 
-column2 = ''",
+    "query": "DELETE FROM
+  table1
+WHERE
+  id = ''
+  AND column1 = ''
+  AND column2 = ''",
   },
   Object {
     "label": "divider",
+    "query": "",
   },
   Object {
     "formatter": "sql",
     "label": "Create Table",
-    "query": "CREATE TABLE table1 (id INT NOT NULL,
-column1 INT NOT NULL,
-column2 VARCHAR(100) NOT NULL)",
+    "query": "CREATE TABLE table1 (
+  id INT NOT NULL,
+  column1 INT NOT NULL,
+  column2 VARCHAR(100) NOT NULL
+)",
   },
   Object {
     "formatter": "sql",
@@ -607,14 +747,20 @@ column2 VARCHAR(100) NOT NULL)",
   Object {
     "formatter": "sql",
     "label": "Add Column",
-    "query": "ALTER TABLE table1 ADD COLUMN newColumn1 CHAR(200)",
+    "query": "ALTER TABLE
+  table1
+ADD
+  COLUMN newColumn1 CHAR(200)",
   },
   Object {
     "formatter": "sql",
     "label": "Drop Column",
-    "query": "ALTER TABLE table1 DROP COLUMN id;
-ALTER TABLE table1 DROP COLUMN column1;
-ALTER TABLE table1 DROP COLUMN column2;",
+    "query": "ALTER TABLE
+  table1 DROP COLUMN id;
+ALTER TABLE
+  table1 DROP COLUMN column1;
+ALTER TABLE
+  table1 DROP COLUMN column2;",
   },
 ]
 `;
@@ -624,74 +770,97 @@ Array [
   Object {
     "formatter": "sql",
     "label": "Select All Columns",
-    "query": "SELECT * 
-FROM table1 
-LIMIT 200",
+    "query": "SELECT
+  *
+FROM
+  table1
+LIMIT
+  200",
   },
   Object {
     "formatter": "sql",
     "label": "Select Count",
-    "query": "SELECT COUNT(*) 
-FROM table1 
- WHERE 
- id = '' AND 
-column1 = '' AND 
-column2 = ''",
+    "query": "SELECT
+  COUNT(*)
+FROM
+  table1
+WHERE
+  id = ''
+  AND column1 = ''
+  AND column2 = ''",
   },
   Object {
     "formatter": "sql",
     "label": "Select Specific Columns",
-    "query": "SELECT 
+    "query": "SELECT
   id,
   column1,
-  column2 
-FROM table1 
- WHERE id = ''
- AND column1 = ''
- AND column2 = '' 
-LIMIT 200",
+  column2
+FROM
+  table1
+WHERE
+  id = ''
+  AND column1 = ''
+  AND column2 = ''
+LIMIT
+  200",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Select Distinct",
+    "query": "SELECT
+  DISTINCT column1
+FROM
+  table1
+WHERE
+  id = ''
+  AND column1 = ''
+  AND column2 = ''
+LIMIT
+  200",
+  },
+  Object {
+    "label": "divider",
+    "query": "",
   },
   Object {
     "formatter": "sql",
     "label": "Insert",
-    "query": "INSERT INTO table1 (
-column1,
-column2
-) VALUES (
-'_column1_',
-'_column2_'
-)",
+    "query": "INSERT INTO
+  table1 (column1, column2)
+VALUES
+  ('_column1_', '_column2_')",
   },
   Object {
     "formatter": "js",
     "label": "Update",
-    "query": "UPDATE table1
- SET 
-id = '',
-column1 = '',
-column2 = ''
- WHERE id = '' AND 
-column1 = '' AND 
-column2 = ''",
+    "query": "UPDATE table1 SET id = '', column1 = '', column2 = ''
+WHERE id = ''
+AND column1 = ''
+AND column2 = ''",
   },
   Object {
     "formatter": "sql",
     "label": "Delete",
-    "query": "DELETE FROM table1 
- WHERE
- id = '' AND 
-column1 = '' AND 
-column2 = ''",
+    "query": "DELETE FROM
+  table1
+WHERE
+  id = ''
+  AND column1 = ''
+  AND column2 = ''",
   },
   Object {
     "label": "divider",
+    "query": "",
   },
   Object {
     "formatter": "sql",
     "label": "Create Table",
-    "query": "CREATE TABLE table1 (id INT PRIMARY KEY  NOT NULL,
-column1 INT   NOT NULL,
-column2 VARCHAR(100)   NOT NULL)",
+    "query": "CREATE TABLE table1 (
+  id INT PRIMARY KEY NOT NULL,
+  column1 INT NOT NULL,
+  column2 VARCHAR(100) NOT NULL
+)",
   },
   Object {
     "formatter": "sql",
@@ -701,14 +870,20 @@ column2 VARCHAR(100)   NOT NULL)",
   Object {
     "formatter": "sql",
     "label": "Add Column",
-    "query": "ALTER TABLE table1 ADD COLUMN newColumn1 TEXT",
+    "query": "ALTER TABLE
+  table1
+ADD
+  COLUMN newColumn1 TEXT",
   },
   Object {
     "formatter": "sql",
     "label": "Drop Column",
-    "query": "ALTER TABLE table1 DROP COLUMN id;
-ALTER TABLE table1 DROP COLUMN column1;
-ALTER TABLE table1 DROP COLUMN column2;",
+    "query": "ALTER TABLE
+  table1 DROP COLUMN id;
+ALTER TABLE
+  table1 DROP COLUMN column1;
+ALTER TABLE
+  table1 DROP COLUMN column2;",
   },
 ]
 `;
