@@ -65,6 +65,7 @@ export default function CodeEditorBox(props: CodeEditorProps) {
         value={props.value}
         onBlur={onChange}
         wordWrap={wordWrap}
+        placeholder={props.placeholder}
       />
       {contentToggleWordWrap}
     </>
