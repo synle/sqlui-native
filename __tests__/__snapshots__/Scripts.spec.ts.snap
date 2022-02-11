@@ -96,12 +96,12 @@ Array [
   },
   Object {
     "formatter": "js",
-    "label": "Create Table",
+    "label": "Create Collection",
     "query": "db.createCollection(\\"table1\\")",
   },
   Object {
     "formatter": "js",
-    "label": "Drop Table",
+    "label": "Drop Collection",
     "query": "db.collection('table1').drop()",
   },
 ]
