@@ -29,6 +29,7 @@ import { useImportConnection } from 'src/hooks';
 import { useSettings } from 'src/hooks';
 import { useShowHide } from 'src/hooks';
 import { useUpsertSession } from 'src/hooks';
+import { useGetConnectionById } from 'src/hooks';
 import CommandPalette from 'src/components/CommandPalette';
 import Settings from 'src/components/Settings';
 import appPackage from 'src/package.json';
@@ -78,6 +79,7 @@ export const allMenuKeys = [
   'menu-export',
   'menu-query-new',
   'menu-query-rename',
+  'menu-query-help',
   'menu-query-prev',
   'menu-query-next',
   'menu-query-close',
@@ -108,6 +110,7 @@ export default function MissionControl() {
   const { data: connections, isLoading: loadingConnections } = useGetConnections();
   const { settings, onChange: onChangeSettings } = useSettings();
   const { onClear: onClearConnectionVisibles, onToggle: onToggleConnectionVisible } = useShowHide();
+  const { data: activeConnection } = useGetConnectionById(activeQuery?.connectionId);
 
   const onCloseQuery = async (query: SqluiFrontend.ConnectionQuery) => {
     try {
@@ -165,6 +168,17 @@ export default function MissionControl() {
     for (const branchToReveal of branchesToReveal) {
       // reveal
       onToggleConnectionVisible(branchToReveal, true);
+    }
+  };
+
+  const onShowQueryHelp = async () => {
+    if (activeConnection && activeConnection.dialect) {
+      // open query help with selected dialect
+      window.openBrowserLink(
+        `https://github.com/synle/sqlui-native/blob/main/guides.md#${activeConnection.dialect}`,
+      );
+    } else {
+      window.openBrowserLink(`https://github.com/synle/sqlui-native/blob/main/guides.md`);
     }
   };
 
@@ -506,6 +520,10 @@ export default function MissionControl() {
 
         case 'clientEvent/changeQueryTabOrientation':
           onUpdateSetting('queryTabOrientation', command.data as string);
+          break;
+
+        case 'clientEvent/showQueryHelp':
+          onShowQueryHelp();
           break;
 
         // overall commands
