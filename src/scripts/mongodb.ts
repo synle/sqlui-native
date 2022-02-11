@@ -45,6 +45,28 @@ export function getSelectSpecificColumns(
     };
   }
 }
+export function getSelectDistinctValues(input: SqlAction.TableInput): SqlAction.Output | undefined {
+  const label = `Select Distinct`;
+
+  if (input.dialect === 'mongodb') {
+    const columns = input.columns || [];
+    const whereColumnString = columns.reduce((res: any, col) => {
+      res[col.name] = '';
+      return res;
+    }, {});
+
+    const distinctColumn = columns.filter((col) => col.name !== '_id')?.[0]?.name || 'some_field';
+
+    return {
+      label,
+      formatter,
+      query: `${MONGO_ADAPTER_PREFIX}.collection('${input.tableId}').distinct(
+          '${distinctColumn}',
+          ${JSON.stringify(whereColumnString)}
+        )`,
+    };
+  }
+}
 
 export function getInsertCommand(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Insert`;
@@ -161,6 +183,8 @@ export function getDropTable(input: SqlAction.TableInput): SqlAction.Output | un
 export const scripts: SqlAction.ScriptGenerator[] = [
   getSelectAllColumns,
   getSelectSpecificColumns,
+  getSelectDistinctValues,
+  getDivider,
   getInsertCommand,
   getUpdateCommand,
   getDeleteCommand,
