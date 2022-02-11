@@ -18,8 +18,13 @@ function _getScript(scripts: SqlAction.ScriptGenerator[], dialect: SqluiCore.Dia
         tableId: 'table1',
         columns: [
           {
+            name: 'id',
+            type: 'INT',
+            primaryKey: true
+          },
+          {
             name: 'column1',
-            type: 'NUMBER',
+            type: 'INT',
           },
           {
             name: 'column2',

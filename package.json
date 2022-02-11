@@ -39,6 +39,7 @@
   "main": "main.js",
   "scripts": {
     "clean": "rimraf .cache .parcel-cache dist build mocked-db.sqlite && cpx package.json src",
+    "cleanSnapshot": "rm -rf __tests__/__snapshots__/",
     "prestart": "npm run clean && npm run build",
     "prebuild": "npm run clean",
     "predev": "npm run prebuild",
