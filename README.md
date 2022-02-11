@@ -5,7 +5,7 @@
 It supports multiple windows, so you can have different sets of queries and connections side by side. The connections and queries are all stored locally, so you can continue where you left off in later visits.
 
 ## Downloads
-At this point, we only have prebuilt binaries for Windows and Mac. Refer to the following link for download information.
+At this point, we only have pre-built binaries for Windows (`.exe`), Mac (`.dmg`), and Ubuntu (`.snap`). Refer to the following link for download information.
 - [Sqlui Native Homepage](https://synle.github.io/sqlui-native)
 
 ## Supported Database Adapters
