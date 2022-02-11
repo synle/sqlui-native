@@ -32,7 +32,7 @@ jobs:
           body: |
             ${{ github.event.inputs.message }}
           draft: false
-          prerelease: true
+          prerelease: false
 
   build_windows:
     needs: [create_release]
@@ -117,3 +117,20 @@ jobs:
       - uses: EndBug/add-and-commit@v8
         with:
           message: 'CI / CD - New Release ${{needs.create_release.outputs.package_version}}'
+
+  roll_back:
+    if: failure()
+    needs: [create_release, build_windows, build_macos, build_ubuntu]
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{ github.head_ref }}
+      - uses: dev-drprasad/delete-tag-and-release@v0.2.0
+        with:
+          delete_release: true
+          tag_name: "${{ needs.create_release.outputs.package_version }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
