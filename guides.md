@@ -50,6 +50,22 @@ LIMIT
 ```
 
 
+### Select Distinct
+
+```
+SELECT
+  DISTINCT column1
+FROM
+  table1
+WHERE
+  id = ''
+  AND column1 = ''
+  AND column2 = ''
+LIMIT
+  200
+```
+
+
 ### Insert
 
 ```
@@ -168,6 +184,22 @@ LIMIT
 ```
 
 
+### Select Distinct
+
+```
+SELECT
+  DISTINCT column1
+FROM
+  table1
+WHERE
+  id = ''
+  AND column1 = ''
+  AND column2 = ''
+LIMIT
+  200
+```
+
+
 ### Insert
 
 ```
@@ -273,6 +305,20 @@ SELECT
   TOP 200 id,
   column1,
   column2
+FROM
+  table1
+WHERE
+  id = ''
+  AND column1 = ''
+  AND column2 = ''
+```
+
+
+### Select Distinct
+
+```
+SELECT
+  DISTINCT TOP 200 column1
 FROM
   table1
 WHERE
@@ -400,6 +446,22 @@ LIMIT
 ```
 
 
+### Select Distinct
+
+```
+SELECT
+  DISTINCT column1
+FROM
+  table1
+WHERE
+  id = ''
+  AND column1 = ''
+  AND column2 = ''
+LIMIT
+  200
+```
+
+
 ### Insert
 
 ```
@@ -507,6 +569,22 @@ SELECT
   id,
   column1,
   column2
+FROM
+  table1
+WHERE
+  id = ''
+  AND column1 = ''
+  AND column2 = ''
+LIMIT
+  200
+```
+
+
+### Select Distinct
+
+```
+SELECT
+  DISTINCT column1
 FROM
   table1
 WHERE

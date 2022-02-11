@@ -10,7 +10,9 @@ export function getSelectAllColumns(input: SqlAction.TableInput): SqlAction.Outp
     return {
       label,
       formatter,
-      query: `SELECT * \nFROM ${input.tableId} \nLIMIT ${input.querySize}`,
+      query: `SELECT *
+              FROM ${input.tableId}
+              LIMIT ${input.querySize}`,
     };
   }
 }
@@ -31,7 +33,10 @@ export function getSelectSpecificColumns(
     return {
       label,
       formatter,
-      query: `SELECT ${columnString} \nFROM ${input.tableId} \n -- WHERE ${whereColumnString} \nLIMIT ${input.querySize}`,
+      query: `SELECT ${columnString}
+              FROM ${input.tableId}
+              WHERE ${whereColumnString}
+              LIMIT ${input.querySize}`,
     };
   }
 }
@@ -50,7 +55,8 @@ export function getInsertCommand(input: SqlAction.TableInput): SqlAction.Output 
     return {
       label,
       formatter,
-      query: `INSERT INTO ${input.tableId} (\n${columnString}\n) VALUES (\n${insertValueString}\n)`,
+      query: `INSERT INTO ${input.tableId} (${columnString})
+              VALUES (${insertValueString})`,
     };
   }
 }
@@ -69,7 +75,9 @@ export function getUpdateCommand(input: SqlAction.TableInput): SqlAction.Output 
     return {
       label,
       formatter: 'js',
-      query: `UPDATE ${input.tableId}\n SET \n${columnString}\n WHERE ${whereColumnString}`,
+      query: `UPDATE ${input.tableId}
+              SET ${columnString}
+              WHERE ${whereColumnString}`,
     };
   }
 }
@@ -87,7 +95,8 @@ export function getDeleteCommand(input: SqlAction.TableInput): SqlAction.Output 
     return {
       label,
       formatter,
-      query: `-- DELETE FROM ${input.tableId} \n -- WHERE\n ${whereColumnString}`,
+      query: `DELETE FROM ${input.tableId}
+              WHERE ${whereColumnString}`,
     };
   }
 }
@@ -96,6 +105,7 @@ export const scripts: SqlAction.ScriptGenerator[] = [
   getSelectAllColumns,
   getSelectSpecificColumns,
   getInsertCommand,
+  getDivider,
   getUpdateCommand,
   getDeleteCommand,
 ];

@@ -33,7 +33,29 @@ function _getScript(scripts: SqlAction.ScriptGenerator[], dialect: SqluiCore.Dia
         ],
       });
     })
-    .filter((script) => script);
+    .filter((script) => script)
+    .map((script) => {
+      if (script) {
+        let query = (script.query || '')
+          .replace(/--/g, '\n')
+          .replace(/\n/g, ' ')
+          .replace(/[ ][ ]+/g, ' ')
+          .trim();
+
+        switch (script.formatter) {
+          case 'sql':
+            query = formatSQL(query);
+            break;
+          case 'js':
+            query = formatJS(query);
+            break;
+        }
+
+        script.query = query;
+      }
+
+      return script;
+    });
 }
 
 describe('Scripts', () => {
@@ -55,22 +77,8 @@ Query Guides:
       if (script && script.query) {
         commandGuides.push(`### ${script.label}\n`);
 
-        let query = script.query
-          .replace(/--/g, '\n')
-          .replace(/\n/g, ' ')
-          .replace(/[ ][ ]+/g, ' ')
-          .trim();
-        switch (script.formatter) {
-          case 'sql':
-            query = formatSQL(query);
-            break;
-          case 'js':
-            query = formatJS(query);
-            break;
-        }
-
         commandGuides.push('```');
-        commandGuides.push(query);
+        commandGuides.push(script.query);
         commandGuides.push('```\n\n');
       }
     }
