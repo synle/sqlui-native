@@ -11,16 +11,16 @@ At this point, we only have prebuilt binaries for Windows and Mac. Refer to the 
 ## Supported Database Adapters
 The list below are supported data stores.
 
-You can also refer to this link for [General Queries](https://github.com/synle/sqlui-native/blob/main/guides.md)
+You can also refer to this link for [General Queries](https://synle.github.io/sqlui-native/guides)
 
-- [MySQL](https://github.com/synle/sqlui-native/blob/main/guides.md#mysql)
-- [MariaDB](https://github.com/synle/sqlui-native/blob/main/guides.md#mariadb)
-- [Microsoft](https://github.com/synle/sqlui-native/blob/main/guides.md#mssql)
-- [PostgresSQL](https://github.com/synle/sqlui-native/blob/main/guides.md#postgres)
-- [SQLite](https://github.com/synle/sqlui-native/blob/main/guides.md#sqlite)
-- [Cassandra](https://github.com/synle/sqlui-native/blob/main/guides.md#cassandra) (Limited Supported)
-- [MongoDB](https://github.com/synle/sqlui-native/blob/main/guides.md#mongodb) (Limited Supported)
-- [Redis](https://github.com/synle/sqlui-native/blob/main/guides.md#redis) (Limited Supported)
+- [MySQL](https://synle.github.io/sqlui-native/guides#mysql)
+- [MariaDB](https://synle.github.io/sqlui-native/guides#mariadb)
+- [Microsoft](https://synle.github.io/sqlui-native/guides#mssql)
+- [PostgresSQL](https://synle.github.io/sqlui-native/guides#postgres)
+- [SQLite](https://synle.github.io/sqlui-native/guides#sqlite)
+- [Cassandra](https://synle.github.io/sqlui-native/guides#cassandra) (Limited Supported)
+- [MongoDB](https://synle.github.io/sqlui-native/guides#mongodb) (Limited Supported)
+- [Redis](https://synle.github.io/sqlui-native/guides#redis) (Limited Supported)
 
 
 ## Features
