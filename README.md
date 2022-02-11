@@ -14,6 +14,8 @@ At this point, we only have pre-built binaries for Windows, Mac, and Linux (Ubun
 - Debian / Ubuntu
 - Redhat
 
+Refer to this link for [Installation Instructions](https://synle.github.io/sqlui-native/installation)
+
 ## Supported Database Adapters
 The list below are supported data stores.
 
