@@ -121,6 +121,18 @@ Cassandra Keyspaces are mapped to sqlui-native databases. And Cassandra Column F
 ### MongoDB Limitations
 MongoDB Collections is mapped to sqlui-native table. We scan the first 5 Documents to come up with the schema for the columns.
 
+#### Create new MongoDB Database
+Given the limitation of the mongodb NodeJS library, there is not a direct API that we can use to create the MongoDB database. 
+
+- To create a mongoDB database, simply duplicate your existing DB connection
+- Update the connection string to add the new database name to the end of the list.
+- Then execute the following `db.createCollection("some_collection_name")` to create at least one collection.
+
+![image](https://user-images.githubusercontent.com/3792401/153538969-613f34e9-ce61-470d-ab4c-92f2c6db2196.png)
+![image](https://user-images.githubusercontent.com/3792401/153538995-0ea825b9-124e-4799-9af0-3c7dc2255f5d.png)
+![image](https://user-images.githubusercontent.com/3792401/153539332-5a78867d-f454-45eb-8ff1-a82a6b91be1a.png)
+
+
 ### Redis Limitations
 Due to the size of keys within Redis connection, we will not show all keys in the Redis cache.
 
