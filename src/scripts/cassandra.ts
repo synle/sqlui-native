@@ -1,13 +1,15 @@
 import { SqluiCore, SqlAction } from 'typings';
 import { getDivider } from './base';
 
+const formatter = 'sql';
+
 export function getSelectAllColumns(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Select All Columns`;
 
   if (input.dialect === 'cassandra') {
     return {
       label,
-      formatter: 'sql',
+      formatter,
       query: `SELECT * \nFROM ${input.tableId} \nLIMIT ${input.querySize}`,
     };
   }
@@ -28,7 +30,7 @@ export function getSelectSpecificColumns(
   if (input.dialect === 'cassandra') {
     return {
       label,
-      formatter: 'sql',
+      formatter,
       query: `SELECT ${columnString} \nFROM ${input.tableId} \n -- WHERE ${whereColumnString} \nLIMIT ${input.querySize}`,
     };
   }
@@ -47,7 +49,7 @@ export function getInsertCommand(input: SqlAction.TableInput): SqlAction.Output 
   if (input.dialect === 'cassandra') {
     return {
       label,
-      formatter: 'sql',
+      formatter,
       query: `INSERT INTO ${input.tableId} (\n${columnString}\n) VALUES (\n${insertValueString}\n)`,
     };
   }
@@ -84,7 +86,7 @@ export function getDeleteCommand(input: SqlAction.TableInput): SqlAction.Output 
   if (input.dialect === 'cassandra') {
     return {
       label,
-      formatter: 'sql',
+      formatter,
       query: `-- DELETE FROM ${input.tableId} \n -- WHERE\n ${whereColumnString}`,
     };
   }
