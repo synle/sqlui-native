@@ -13,15 +13,12 @@ jobs:
       package_version: ${{ steps.package-version.outputs.current-version }}
       release_upload_url: ${{ steps.create_release.outputs.upload_url }}
     steps:
-      # get the latest package version
       - uses: actions/checkout@v2
       - run: npm version --no-git-tag-version patch
       - id: package-version
         uses: martinbeentjes/npm-get-version-action@master
         with:
           path: '.'
-
-      # Create a release
       - uses: actions/create-release@v1
         id: create_release
         env:
@@ -43,10 +40,10 @@ jobs:
       - run: npm version --no-git-tag-version patch
       - run: npm install
       - run: npm run test-ci
+      - run: npm run build
       - run: npm run dist
       - run: mv ./dist/sqlui-native*.exe ./dist/sqlui-native.exe
 
-      #  Upload binary step
       - uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -56,21 +53,42 @@ jobs:
           asset_name: sqlui-native-${{ needs.create_release.outputs.package_version }}.exe
           asset_content_type: application/octet-stream
 
-  build_ubuntu:
+  build_macos:
     needs: [create_release]
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v2
       - run: npm version --no-git-tag-version patch
       - run: npm install
       - run: npm run test-ci
+      - run: npm run build
       - run: npm run dist
-      - run: find ./dist
-      - run: mv ./dist/sqlui-native*.rpm ./dist/sqlui-native.rpm
+      - run: mv ./dist/sqlui-native*.dmg ./dist/sqlui-native.dmg
+
+      - uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create_release.outputs.release_upload_url }}
+          asset_path: ./dist/sqlui-native.dmg
+          asset_name: sqlui-native-${{ needs.create_release.outputs.package_version }}.dmg
+          asset_content_type: application/octet-stream
+
+  build_linux:
+    needs: [create_release]
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v2
+      - run: npm version --no-git-tag-version patch
+      - run: npm install
+      - run: npm run test-ci
+      - run: npm run build
+      - run: npm run dist
       - run: mv ./dist/sqlui-native*.deb ./dist/sqlui-native.deb
-      - run: mv ./dist/sqlui-native*.pacman ./dist/sqlui-native.pacman
-      - run: find ./dist
+      - run: mv ./dist/sqlui-native*.rpm ./dist/sqlui-native.rpm
+      - run: mv ./dist/sqlui-native*.snap ./dist/sqlui-native.snap
 
       - uses: actions/upload-release-asset@v1
         env:
@@ -90,30 +108,17 @@ jobs:
           asset_name: sqlui-native-${{ needs.create_release.outputs.package_version }}.rpm
           asset_content_type: application/octet-stream
 
-  build_macos:
-    needs: [create_release]
-    runs-on: macos-latest
-    timeout-minutes: 30
-    steps:
-      - uses: actions/checkout@v2
-      - run: npm version --no-git-tag-version patch
-      - run: npm install
-      - run: npm run test-ci
-      - run: npm run dist
-      - run: mv ./dist/sqlui-native*.dmg ./dist/sqlui-native.dmg
-
-      #  Upload binary step
       - uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ needs.create_release.outputs.release_upload_url }}
-          asset_path: ./dist/sqlui-native.dmg
-          asset_name: sqlui-native-${{ needs.create_release.outputs.package_version }}.dmg
+          asset_path: ./dist/sqlui-native.snap
+          asset_name: sqlui-native-${{ needs.create_release.outputs.package_version }}.snap
           asset_content_type: application/octet-stream
 
   publish:
-    needs: [create_release, build_windows, build_macos, build_ubuntu]
+    needs: [create_release, build_windows, build_macos, build_linux]
     runs-on: ubuntu-latest
     timeout-minutes: 4
     steps:
@@ -129,7 +134,7 @@ jobs:
 
   roll_back:
     if: failure()
-    needs: [create_release, build_windows, build_macos, build_ubuntu]
+    needs: [create_release, build_windows, build_macos, build_linux]
     runs-on: ubuntu-latest
     timeout-minutes: 4
     steps:
