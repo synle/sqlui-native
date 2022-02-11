@@ -680,6 +680,18 @@ db.collection('table1')
 ```
 
 
+### Select Distinct
+
+```
+db.collection('table1')
+  .distinct('id', {
+    "id": "",
+    "column1": "",
+    "column2": ""
+  })
+```
+
+
 ### Insert
 
 ```

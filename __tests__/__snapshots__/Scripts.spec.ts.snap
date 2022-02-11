@@ -75,6 +75,17 @@ Array [
   },
   Object {
     "formatter": "js",
+    "label": "Select Distinct",
+    "query": "db.collection('table1').distinct(
+          'id',
+          {\\"id\\":\\"\\",\\"column1\\":\\"\\",\\"column2\\":\\"\\"}
+        )",
+  },
+  Object {
+    "label": "divider",
+  },
+  Object {
+    "formatter": "js",
     "label": "Insert",
     "query": "db.collection('table1').insertMany([
           {\\"id\\":123,\\"column1\\":123,\\"column2\\":123}
