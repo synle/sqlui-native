@@ -2,7 +2,7 @@ import { SqluiCore } from '../typings';
 import RelationalDataAdapter from './adapters/RelationalDataAdapter';
 import CassandraDataAdapter from './adapters/CassandraDataAdapter';
 import RedisDataAdapter from './adapters/RedisDataAdapter';
-import MongoDataAdapter from './adapters/MongoDataAdapter';
+import MongoDBDataAdapter from './adapters/MongoDBDataAdapter';
 import IDataAdapter from './adapters/IDataAdapter';
 import BaseDataAdapter from './adapters/BaseDataAdapter';
 
@@ -30,7 +30,7 @@ export function getDataAdapter(connection: string) {
       _adapterCache[connection] = adapter;
       return adapter;
     case 'mongodb':
-      adapter = new MongoDataAdapter(connection);
+      adapter = new MongoDBDataAdapter(connection);
       _adapterCache[connection] = adapter;
       return adapter;
     case 'redis':

@@ -3,7 +3,7 @@ import { SqluiCore } from '../../typings';
 import IDataAdapter from './IDataAdapter';
 import BaseDataAdapter from './BaseDataAdapter';
 
-export default class MongoDataAdapter extends BaseDataAdapter implements IDataAdapter {
+export default class MongoDBDataAdapter extends BaseDataAdapter implements IDataAdapter {
   dialect: SqluiCore.Dialect = 'mongodb';
   client?: MongoClient;
 
