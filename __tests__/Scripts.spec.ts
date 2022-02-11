@@ -49,6 +49,7 @@ describe('Scripts', () => {
         switch (script.formatter) {
           case 'sql':
             query = formatSQL(query);
+            break;
           case 'js':
             query = formatJS(query);
             break;

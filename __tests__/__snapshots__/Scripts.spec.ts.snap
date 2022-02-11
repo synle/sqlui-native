@@ -55,12 +55,12 @@ column2
 exports[`Scripts MongodbScripts 1`] = `
 Array [
   Object {
-    "formatter": "sql",
+    "formatter": "js",
     "label": "Select All Columns",
     "query": "db.collection('table1').find().limit(200).toArray();",
   },
   Object {
-    "formatter": "sql",
+    "formatter": "js",
     "label": "Select Specific Columns",
     "query": "db.collection('table1').find(
           {\\"column1\\":123,\\"column2\\":123}

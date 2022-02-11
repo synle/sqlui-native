@@ -2,6 +2,7 @@ import { SqluiCore, SqlAction } from 'typings';
 import { getDivider } from './base';
 
 const MONGO_ADAPTER_PREFIX = 'db';
+const formatter = 'js';
 
 export function getSelectAllColumns(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Select All Columns`;
@@ -9,7 +10,7 @@ export function getSelectAllColumns(input: SqlAction.TableInput): SqlAction.Outp
   if (input.dialect === 'mongodb') {
     return {
       label,
-      formatter: 'sql',
+      formatter,
       query: `${MONGO_ADAPTER_PREFIX}.collection('${input.tableId}').find().limit(${input.querySize}).toArray();`,
     };
   }
@@ -36,7 +37,7 @@ export function getSelectSpecificColumns(
     }
     return {
       label,
-      formatter: 'sql',
+      formatter,
       query: `${MONGO_ADAPTER_PREFIX}.collection('${input.tableId}').find(
           ${JSON.stringify(columns)}
         ).limit(${input.querySize}).toArray();`,
@@ -63,7 +64,7 @@ export function getInsertCommand(input: SqlAction.TableInput): SqlAction.Output 
     }
     return {
       label,
-      formatter: 'js',
+      formatter,
       query: `${MONGO_ADAPTER_PREFIX}.collection('${input.tableId}').insertMany([
           ${JSON.stringify(columns)}
         ]);`,
@@ -90,7 +91,7 @@ export function getUpdateCommand(input: SqlAction.TableInput): SqlAction.Output 
     }
     return {
       label,
-      formatter: 'js',
+      formatter,
       query: `${MONGO_ADAPTER_PREFIX}.collection('${input.tableId}').update(
           ${JSON.stringify(columns)},
           {\$set: ${JSON.stringify(columns, null, 2)}}
@@ -117,7 +118,7 @@ export function getDeleteCommand(input: SqlAction.TableInput): SqlAction.Output 
     }
     return {
       label,
-      formatter: 'js',
+      formatter,
       query: `${MONGO_ADAPTER_PREFIX}.collection('${input.tableId}').deleteMany(
           ${JSON.stringify(columns)}
         );`,
@@ -138,7 +139,7 @@ export function getCreateTable(input: SqlAction.TableInput): SqlAction.Output | 
   if (input.dialect === 'mongodb') {
     return {
       label,
-      formatter: 'js',
+      formatter,
       query: `${MONGO_ADAPTER_PREFIX}.createCollection("${input.tableId}")`,
     };
   }
@@ -150,7 +151,7 @@ export function getDropTable(input: SqlAction.TableInput): SqlAction.Output | un
   if (input.dialect === 'mongodb') {
     return {
       label,
-      formatter: 'js',
+      formatter,
       query: `${MONGO_ADAPTER_PREFIX}.collection('${input.tableId}').drop()`,
     };
   }

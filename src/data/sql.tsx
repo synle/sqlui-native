@@ -35,6 +35,7 @@ export function getTableActions(tableActionInput: SqlAction.TableInput) {
       switch (action.formatter) {
         case 'sql':
           action.query = formatSQL(action.query || '');
+          break;
         case 'js':
           action.query = formatJS(action.query || '');
           break;

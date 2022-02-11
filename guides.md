@@ -5,10 +5,10 @@
 ```
 SELECT
   *
-  FROM
-table1
+FROM
+  table1
 LIMIT
-200
+  200
 ```
 
 
@@ -16,12 +16,12 @@ LIMIT
 
 ```
 SELECT
-COUNT( * )
+  COUNT(*)
 FROM
-table1
+  table1
 WHERE
-column1 = ''
-AND column2 = ''
+  column1 = ''
+  AND column2 = ''
 ```
 
 
@@ -29,15 +29,15 @@ AND column2 = ''
 
 ```
 SELECT
-column1,
-column2
+  column1,
+  column2
 FROM
-table1
+  table1
 WHERE
-column1 = ''
-AND column2 = ''
+  column1 = ''
+  AND column2 = ''
 LIMIT
-200
+  200
 ```
 
 
@@ -54,17 +54,17 @@ AND column2 = ''
 
 ```
 DELETE FROM
-table1
+  table1
 WHERE
-column1 = ''
-AND column2 = ''
+  column1 = ''
+  AND column2 = ''
 ```
 
 
 ### Create Table
 
 ```
-CREATE TABLE table1(column1 NUMBER NOT NULL, column2 VARCHAR(100) NOT NULL)
+CREATE TABLE table1 (column1 NUMBER NOT NULL, column2 VARCHAR(100) NOT NULL)
 ```
 
 
@@ -79,9 +79,9 @@ DROP TABLE table1
 
 ```
 ALTER TABLE
-table1
+  table1
 ADD
-COLUMN newColumn1 varchar(200)
+  COLUMN newColumn1 varchar(200)
 ```
 
 
@@ -89,9 +89,9 @@ COLUMN newColumn1 varchar(200)
 
 ```
 ALTER TABLE
-table1 DROP COLUMN column1
+  table1 DROP COLUMN column1
 ALTER TABLE
-table1 DROP COLUMN column2
+  table1 DROP COLUMN column2
 ```
 
 
@@ -102,10 +102,10 @@ table1 DROP COLUMN column2
 ```
 SELECT
   *
-  FROM
-table1
+FROM
+  table1
 LIMIT
-200
+  200
 ```
 
 
@@ -113,12 +113,12 @@ LIMIT
 
 ```
 SELECT
-COUNT( * )
+  COUNT(*)
 FROM
-table1
+  table1
 WHERE
-column1 = ''
-AND column2 = ''
+  column1 = ''
+  AND column2 = ''
 ```
 
 
@@ -126,15 +126,15 @@ AND column2 = ''
 
 ```
 SELECT
-column1,
-column2
+  column1,
+  column2
 FROM
-table1
+  table1
 WHERE
-column1 = ''
-AND column2 = ''
+  column1 = ''
+  AND column2 = ''
 LIMIT
-200
+  200
 ```
 
 
@@ -151,17 +151,17 @@ AND column2 = ''
 
 ```
 DELETE FROM
-table1
+  table1
 WHERE
-column1 = ''
-AND column2 = ''
+  column1 = ''
+  AND column2 = ''
 ```
 
 
 ### Create Table
 
 ```
-CREATE TABLE table1(column1 NUMBER NOT NULL, column2 VARCHAR(100) NOT NULL)
+CREATE TABLE table1 (column1 NUMBER NOT NULL, column2 VARCHAR(100) NOT NULL)
 ```
 
 
@@ -176,9 +176,9 @@ DROP TABLE table1
 
 ```
 ALTER TABLE
-table1
+  table1
 ADD
-COLUMN newColumn1 varchar(200)
+  COLUMN newColumn1 varchar(200)
 ```
 
 
@@ -186,9 +186,9 @@ COLUMN newColumn1 varchar(200)
 
 ```
 ALTER TABLE
-table1 DROP COLUMN column1
+  table1 DROP COLUMN column1
 ALTER TABLE
-table1 DROP COLUMN column2
+  table1 DROP COLUMN column2
 ```
 
 
@@ -198,9 +198,9 @@ table1 DROP COLUMN column2
 
 ```
 SELECT
-TOP 200 *
-  FROM
-table1
+  TOP 200 *
+FROM
+  table1
 ```
 
 
@@ -208,12 +208,12 @@ table1
 
 ```
 SELECT
-COUNT( * )
+  COUNT(*)
 FROM
-table1
+  table1
 WHERE
-column1 = ''
-AND column2 = ''
+  column1 = ''
+  AND column2 = ''
 ```
 
 
@@ -221,13 +221,13 @@ AND column2 = ''
 
 ```
 SELECT
-TOP 200 column1,
-column2
+  TOP 200 column1,
+  column2
 FROM
-table1
+  table1
 WHERE
-column1 = ''
-AND column2 = ''
+  column1 = ''
+  AND column2 = ''
 ```
 
 
@@ -244,17 +244,17 @@ AND column2 = ''
 
 ```
 DELETE FROM
-table1
+  table1
 WHERE
-column1 = ''
-AND column2 = ''
+  column1 = ''
+  AND column2 = ''
 ```
 
 
 ### Create Table
 
 ```
-CREATE TABLE table1(column1 NUMBER NOT NULL, column2 VARCHAR(100) NOT NULL)
+CREATE TABLE table1 (column1 NUMBER NOT NULL, column2 VARCHAR(100) NOT NULL)
 ```
 
 
@@ -269,9 +269,9 @@ DROP TABLE table1
 
 ```
 ALTER TABLE
-table1
+  table1
 ADD
-COLUMN newColumn1 NVARCHAR(200)
+  COLUMN newColumn1 NVARCHAR(200)
 ```
 
 
@@ -279,9 +279,9 @@ COLUMN newColumn1 NVARCHAR(200)
 
 ```
 ALTER TABLE
-table1 DROP COLUMN column1
+  table1 DROP COLUMN column1
 ALTER TABLE
-table1 DROP COLUMN column2
+  table1 DROP COLUMN column2
 ```
 
 
@@ -292,10 +292,10 @@ table1 DROP COLUMN column2
 ```
 SELECT
   *
-  FROM
-table1
+FROM
+  table1
 LIMIT
-200
+  200
 ```
 
 
@@ -303,12 +303,12 @@ LIMIT
 
 ```
 SELECT
-COUNT( * )
+  COUNT(*)
 FROM
-table1
+  table1
 WHERE
-column1 = ''
-AND column2 = ''
+  column1 = ''
+  AND column2 = ''
 ```
 
 
@@ -316,15 +316,15 @@ AND column2 = ''
 
 ```
 SELECT
-column1,
-column2
+  column1,
+  column2
 FROM
-table1
+  table1
 WHERE
-column1 = ''
-AND column2 = ''
+  column1 = ''
+  AND column2 = ''
 LIMIT
-200
+  200
 ```
 
 
@@ -341,17 +341,17 @@ AND column2 = ''
 
 ```
 DELETE FROM
-table1
+  table1
 WHERE
-column1 = ''
-AND column2 = ''
+  column1 = ''
+  AND column2 = ''
 ```
 
 
 ### Create Table
 
 ```
-CREATE TABLE table1(column1 NUMBER NOT NULL, column2 VARCHAR(100) NOT NULL)
+CREATE TABLE table1 (column1 NUMBER NOT NULL, column2 VARCHAR(100) NOT NULL)
 ```
 
 
@@ -366,9 +366,9 @@ DROP TABLE table1
 
 ```
 ALTER TABLE
-table1
+  table1
 ADD
-COLUMN newColumn1 CHAR(200)
+  COLUMN newColumn1 CHAR(200)
 ```
 
 
@@ -376,9 +376,9 @@ COLUMN newColumn1 CHAR(200)
 
 ```
 ALTER TABLE
-table1 DROP COLUMN column1
+  table1 DROP COLUMN column1
 ALTER TABLE
-table1 DROP COLUMN column2
+  table1 DROP COLUMN column2
 ```
 
 
@@ -389,10 +389,10 @@ table1 DROP COLUMN column2
 ```
 SELECT
   *
-  FROM
-table1
+FROM
+  table1
 LIMIT
-200
+  200
 ```
 
 
@@ -400,12 +400,12 @@ LIMIT
 
 ```
 SELECT
-COUNT( * )
+  COUNT(*)
 FROM
-table1
+  table1
 WHERE
-column1 = ''
-AND column2 = ''
+  column1 = ''
+  AND column2 = ''
 ```
 
 
@@ -413,15 +413,15 @@ AND column2 = ''
 
 ```
 SELECT
-column1,
-column2
+  column1,
+  column2
 FROM
-table1
+  table1
 WHERE
-column1 = ''
-AND column2 = ''
+  column1 = ''
+  AND column2 = ''
 LIMIT
-200
+  200
 ```
 
 
@@ -438,17 +438,17 @@ AND column2 = ''
 
 ```
 DELETE FROM
-table1
+  table1
 WHERE
-column1 = ''
-AND column2 = ''
+  column1 = ''
+  AND column2 = ''
 ```
 
 
 ### Create Table
 
 ```
-CREATE TABLE table1(column1 NUMBER NOT NULL, column2 VARCHAR(100) NOT NULL)
+CREATE TABLE table1 (column1 NUMBER NOT NULL, column2 VARCHAR(100) NOT NULL)
 ```
 
 
@@ -463,9 +463,9 @@ DROP TABLE table1
 
 ```
 ALTER TABLE
-table1
+  table1
 ADD
-COLUMN newColumn1 TEXT
+  COLUMN newColumn1 TEXT
 ```
 
 
@@ -473,9 +473,9 @@ COLUMN newColumn1 TEXT
 
 ```
 ALTER TABLE
-table1 DROP COLUMN column1
+  table1 DROP COLUMN column1
 ALTER TABLE
-table1 DROP COLUMN column2
+  table1 DROP COLUMN column2
 ```
 
 
@@ -486,10 +486,10 @@ table1 DROP COLUMN column2
 ```
 SELECT
   *
-  FROM
-table1
+FROM
+  table1
 LIMIT
-200
+  200
 ```
 
 
@@ -497,15 +497,15 @@ LIMIT
 
 ```
 SELECT
-column1,
-column2
+  column1,
+  column2
 FROM
-table1
+  table1
 WHERE
-column1 = ''
-AND column2 = ''
+  column1 = ''
+  AND column2 = ''
 LIMIT
-200
+  200
 ```
 
 
@@ -513,7 +513,7 @@ LIMIT
 
 ```
 INSERT INTO
-table1(column1, column2)
+  table1 (column1, column2)
 VALUES
   ('_column1_', '_column2_')
 ```
@@ -532,10 +532,10 @@ AND column2 = ''
 
 ```
 DELETE FROM
-table1
+  table1
 WHERE
-column1 = ''
-AND column2 = ''
+  column1 = ''
+  AND column2 = ''
 ```
 
 
