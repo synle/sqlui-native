@@ -68,14 +68,11 @@ export default function QueryBox(props: QueryBoxProps) {
     sql = sql || '';
 
     switch (selectedConnection?.dialect) {
-      case 'mssql':
-      case 'postgres':
-      case 'sqlite':
-      case 'mariadb':
-      case 'mysql':
+      default:
         sql = formatSQL(sql);
         break;
       case 'mongodb':
+      case 'redis':
         sql = formatJS(sql);
         break;
     }
@@ -101,9 +98,12 @@ export default function QueryBox(props: QueryBoxProps) {
 
   const disabledExecute = executing || !query?.sql || !query?.connectionId;
 
-  let language = 'sql';
+  let language : string = '';
   if (selectedConnection && selectedConnection.dialect) {
     switch (selectedConnection.dialect) {
+      default:
+        language = 'sql';
+        break;
       case 'mongodb':
       case 'redis':
         language = 'js';
