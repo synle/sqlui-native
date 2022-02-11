@@ -608,14 +608,14 @@ db.collection('table1')
 ```
 
 
-### Create Table
+### Create Collection
 
 ```
 db.createCollection("table1")
 ```
 
 
-### Drop Table
+### Drop Collection
 
 ```
 db.collection('table1')
