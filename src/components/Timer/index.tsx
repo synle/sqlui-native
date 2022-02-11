@@ -13,10 +13,6 @@ export default function _Timer(props: TimerProps) {
   const [endTime, setEndTime] = useState<number>(Date.now());
 
   useEffect(() => {
-    intervalRef.current = setInterval(() => {
-      setEndTime(Date.now());
-    }, 1000);
-
     return () => {
       intervalRef.current && clearInterval(intervalRef.current);
     };
@@ -24,11 +20,14 @@ export default function _Timer(props: TimerProps) {
 
   useEffect(() => {
     if (props.endTime) {
+      setEndTime(props.endTime);
       intervalRef.current && clearInterval(intervalRef.current);
       return;
+    } else {
+      intervalRef.current = setInterval(() => {
+        setEndTime(Date.now());
+      }, 1000);
     }
-
-    setEndTime(props.endTime || Date.now());
   }, [props.endTime]);
 
   if (!startTime) {
