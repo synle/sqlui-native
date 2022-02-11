@@ -42,7 +42,7 @@ export function getHset(input: SqlAction.TableInput): SqlAction.Output | undefin
   return {
     label,
     formatter,
-    query: `${REDIS_ADAPTER_PREFIX}.hSet("key", "field", "value")`,
+    query: `${REDIS_ADAPTER_PREFIX}.hSet("hash_key1", "field1", "value1")`,
   };
 }
 
@@ -52,7 +52,7 @@ export function getHget(input: SqlAction.TableInput): SqlAction.Output | undefin
   return {
     label,
     formatter,
-    query: `${REDIS_ADAPTER_PREFIX}.hGetAll("key")`,
+    query: `${REDIS_ADAPTER_PREFIX}.hGetAll("hash_key1")`,
   };
 }
 
@@ -62,7 +62,7 @@ export function getHvals(input: SqlAction.TableInput): SqlAction.Output | undefi
   return {
     label,
     formatter,
-    query: `${REDIS_ADAPTER_PREFIX}.hVals("key")`,
+    query: `${REDIS_ADAPTER_PREFIX}.hVals("hash_key1")`,
   };
 }
 
@@ -72,7 +72,7 @@ export function getHexist(input: SqlAction.TableInput): SqlAction.Output | undef
   return {
     label,
     formatter,
-    query: `${REDIS_ADAPTER_PREFIX}.hExists("key", "field1")`,
+    query: `${REDIS_ADAPTER_PREFIX}.hExists("hash_key1", "field1")`,
   };
 }
 
@@ -82,7 +82,7 @@ export function getListLPush(input: SqlAction.TableInput): SqlAction.Output | un
   return {
     label,
     formatter,
-    query: `${REDIS_ADAPTER_PREFIX}.lPush("key", "value")`,
+    query: `${REDIS_ADAPTER_PREFIX}.lPush("list_key1", "value")`,
   };
 }
 
@@ -92,7 +92,7 @@ export function getListRPush(input: SqlAction.TableInput): SqlAction.Output | un
   return {
     label,
     formatter,
-    query: `${REDIS_ADAPTER_PREFIX}.rPush("key", "value")`,
+    query: `${REDIS_ADAPTER_PREFIX}.rPush("list_key1", "value")`,
   };
 }
 
@@ -102,7 +102,7 @@ export function getListLPop(input: SqlAction.TableInput): SqlAction.Output | und
   return {
     label,
     formatter,
-    query: `${REDIS_ADAPTER_PREFIX}.lPop("key")`,
+    query: `${REDIS_ADAPTER_PREFIX}.lPop("list_key1")`,
   };
 }
 
@@ -112,7 +112,7 @@ export function getListRPop(input: SqlAction.TableInput): SqlAction.Output | und
   return {
     label,
     formatter,
-    query: `${REDIS_ADAPTER_PREFIX}.rPop("key")`,
+    query: `${REDIS_ADAPTER_PREFIX}.rPop("list_key1")`,
   };
 }
 
@@ -122,7 +122,7 @@ export function getListGetItems(input: SqlAction.TableInput): SqlAction.Output |
   return {
     label,
     formatter,
-    query: `${REDIS_ADAPTER_PREFIX}.lRange("key", 0, -1)`,
+    query: `${REDIS_ADAPTER_PREFIX}.lRange("list_key1", 0, -1)`,
   };
 }
 
@@ -132,7 +132,7 @@ export function getSetGetItems(input: SqlAction.TableInput): SqlAction.Output | 
   return {
     label,
     formatter,
-    query: `${REDIS_ADAPTER_PREFIX}.sMembers("key")`,
+    query: `${REDIS_ADAPTER_PREFIX}.sMembers("set_key1")`,
   };
 }
 
@@ -142,7 +142,7 @@ export function getSetAddItems(input: SqlAction.TableInput): SqlAction.Output | 
   return {
     label,
     formatter,
-    query: `${REDIS_ADAPTER_PREFIX}.sAdd("key", "value1")`,
+    query: `${REDIS_ADAPTER_PREFIX}.sAdd("set_key1", "value1")`,
   };
 }
 
@@ -152,7 +152,7 @@ export function getSetIsMember(input: SqlAction.TableInput): SqlAction.Output | 
   return {
     label,
     formatter,
-    query: `${REDIS_ADAPTER_PREFIX}.sIsMember("key", "value1")`,
+    query: `${REDIS_ADAPTER_PREFIX}.sIsMember("set_key1", "value1")`,
   };
 }
 
@@ -162,7 +162,7 @@ export function getSetCount(input: SqlAction.TableInput): SqlAction.Output | und
   return {
     label,
     formatter,
-    query: `${REDIS_ADAPTER_PREFIX}.sCard("key")`,
+    query: `${REDIS_ADAPTER_PREFIX}.sCard("set_key1")`,
   };
 }
 
@@ -172,7 +172,7 @@ export function getSetRemoveLastItem(input: SqlAction.TableInput): SqlAction.Out
   return {
     label,
     formatter,
-    query: `${REDIS_ADAPTER_PREFIX}.sPop("key")`,
+    query: `${REDIS_ADAPTER_PREFIX}.sPop("set_key1")`,
   };
 }
 
@@ -182,7 +182,7 @@ export function getSortedSetGetItems(input: SqlAction.TableInput): SqlAction.Out
   return {
     label,
     formatter,
-    query: `${REDIS_ADAPTER_PREFIX}.zRange("key", 0, -1)`,
+    query: `${REDIS_ADAPTER_PREFIX}.zRange("sorted_set_key1", 0, -1)`,
   };
 }
 
@@ -192,7 +192,7 @@ export function getSortedSetAddItem(input: SqlAction.TableInput): SqlAction.Outp
   return {
     label,
     formatter,
-    query: `${REDIS_ADAPTER_PREFIX}.zAdd("key", [{score: 1, value: "some_value"}])`,
+    query: `${REDIS_ADAPTER_PREFIX}.zAdd("sorted_set_key1", [{score: 1, value: "some_value"}])`,
   };
 }
 
@@ -202,7 +202,7 @@ export function getPublishMessage(input: SqlAction.TableInput): SqlAction.Output
   return {
     label,
     formatter,
-    query: `${REDIS_ADAPTER_PREFIX}.publish("key", "some_message")`,
+    query: `${REDIS_ADAPTER_PREFIX}.publish("pubsub_channel_key1", "some_message")`,
   };
 }
 
