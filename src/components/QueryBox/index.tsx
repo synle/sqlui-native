@@ -98,7 +98,7 @@ export default function QueryBox(props: QueryBoxProps) {
 
   const disabledExecute = executing || !query?.sql || !query?.connectionId;
 
-  let language : string = '';
+  let language: string = '';
   if (selectedConnection && selectedConnection.dialect) {
     switch (selectedConnection.dialect) {
       default:

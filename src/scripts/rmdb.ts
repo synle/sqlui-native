@@ -89,9 +89,7 @@ export function getSelectSpecificColumns(
   }
 }
 
-export function getSelectDistinctValues(
-  input: SqlAction.TableInput,
-): SqlAction.Output | undefined {
+export function getSelectDistinctValues(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Select Distinct`;
 
   if (!input.columns) {
@@ -100,7 +98,7 @@ export function getSelectDistinctValues(
 
   const columns = input.columns || [];
 
-  const distinctColumn = columns.filter(col => !col.primaryKey)?.[0]?.name ||  'some_field';
+  const distinctColumn = columns.filter((col) => !col.primaryKey)?.[0]?.name || 'some_field';
   const whereColumnString = columns.map((col) => `${col.name} = ''`).join('\n AND ');
 
   switch (input.dialect) {
@@ -384,8 +382,10 @@ export function getDropColumns(input: SqlAction.TableInput): SqlAction.Output | 
         label,
         formatter,
         query: input.columns
-          .map((col) => `ALTER TABLE ${input.tableId}
-                         DROP COLUMN ${col.name};`)
+          .map(
+            (col) => `ALTER TABLE ${input.tableId}
+                         DROP COLUMN ${col.name};`,
+          )
           .join('\n'),
       };
   }

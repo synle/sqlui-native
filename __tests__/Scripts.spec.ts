@@ -34,9 +34,8 @@ function _getScript(scripts: SqlAction.ScriptGenerator[], dialect: SqluiCore.Dia
       });
     })
     .filter((script) => script)
-    .map(script => {
-
-      if(script){
+    .map((script) => {
+      if (script) {
         let query = (script.query || '')
           .replace(/--/g, '\n')
           .replace(/\n/g, ' ')
@@ -44,18 +43,18 @@ function _getScript(scripts: SqlAction.ScriptGenerator[], dialect: SqluiCore.Dia
           .trim();
 
         switch (script.formatter) {
-            case 'sql':
-              query = formatSQL(query);
-              break;
-            case 'js':
-              query = formatJS(query);
-              break;
+          case 'sql':
+            query = formatSQL(query);
+            break;
+          case 'js':
+            query = formatJS(query);
+            break;
         }
 
         script.query = query;
       }
 
-      return script
+      return script;
     });
 }
 
