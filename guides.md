@@ -1,3 +1,9 @@
+---
+title: sqlui-native query help?
+---
+
+Query Help?
+===========
 ## mysql
 
 ### Select All Columns
