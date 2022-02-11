@@ -56,6 +56,19 @@ jobs:
           asset_path: ./dist/sqlui-native.exe
           asset_name: sqlui-native-${{ needs.create_release.outputs.package_version }}.exe
           asset_content_type: application/octet-stream
+          
+  build_ubuntu:
+    needs: [create_release]
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      # build
+      - uses: actions/checkout@v2
+      - run: npm version --no-git-tag-version patch
+      - run: npm install
+      - run: npm run test-ci
+      - run: npm run dist
+      - run: find ./dist
 
   build_macos:
     needs: [create_release]
@@ -81,7 +94,7 @@ jobs:
           asset_content_type: application/octet-stream
 
   publish:
-    needs: [create_release, build_windows, build_macos]
+    needs: [create_release, build_windows, build_macos, build_ubuntu]
     runs-on: ubuntu-latest
     timeout-minutes: 4
     steps:
