@@ -26,7 +26,8 @@ SELECT
 FROM
   table1
 WHERE
-  column1 = ''
+  id = ''
+  AND column1 = ''
   AND column2 = ''
 ```
 
@@ -35,23 +36,36 @@ WHERE
 
 ```
 SELECT
+  id,
   column1,
   column2
 FROM
   table1
 WHERE
-  column1 = ''
+  id = ''
+  AND column1 = ''
   AND column2 = ''
 LIMIT
   200
 ```
 
 
+### Insert
+
+```
+INSERT INTO
+  table1 (column1, column2)
+VALUES
+  ('_column1_', '_column2_')
+```
+
+
 ### Update
 
 ```
-UPDATE table1 SET column1 = '', column2 = ''
-WHERE column1 = ''
+UPDATE table1 SET id = '', column1 = '', column2 = ''
+WHERE id = ''
+AND column1 = ''
 AND column2 = ''
 ```
 
@@ -62,7 +76,8 @@ AND column2 = ''
 DELETE FROM
   table1
 WHERE
-  column1 = ''
+  id = ''
+  AND column1 = ''
   AND column2 = ''
 ```
 
@@ -70,7 +85,11 @@ WHERE
 ### Create Table
 
 ```
-CREATE TABLE table1 (column1 NUMBER NOT NULL, column2 VARCHAR(100) NOT NULL)
+CREATE TABLE table1 (
+  id INT PRIMARY KEY NOT NULL,
+  column1 INT NOT NULL,
+  column2 VARCHAR(100) NOT NULL
+)
 ```
 
 
@@ -94,6 +113,8 @@ ADD
 ### Drop Column
 
 ```
+ALTER TABLE
+  table1 DROP COLUMN id;
 ALTER TABLE
   table1 DROP COLUMN column1;
 ALTER TABLE
@@ -123,7 +144,8 @@ SELECT
 FROM
   table1
 WHERE
-  column1 = ''
+  id = ''
+  AND column1 = ''
   AND column2 = ''
 ```
 
@@ -132,23 +154,36 @@ WHERE
 
 ```
 SELECT
+  id,
   column1,
   column2
 FROM
   table1
 WHERE
-  column1 = ''
+  id = ''
+  AND column1 = ''
   AND column2 = ''
 LIMIT
   200
 ```
 
 
+### Insert
+
+```
+INSERT INTO
+  table1 (column1, column2)
+VALUES
+  ('_column1_', '_column2_')
+```
+
+
 ### Update
 
 ```
-UPDATE table1 SET column1 = '', column2 = ''
-WHERE column1 = ''
+UPDATE table1 SET id = '', column1 = '', column2 = ''
+WHERE id = ''
+AND column1 = ''
 AND column2 = ''
 ```
 
@@ -159,7 +194,8 @@ AND column2 = ''
 DELETE FROM
   table1
 WHERE
-  column1 = ''
+  id = ''
+  AND column1 = ''
   AND column2 = ''
 ```
 
@@ -167,7 +203,11 @@ WHERE
 ### Create Table
 
 ```
-CREATE TABLE table1 (column1 NUMBER NOT NULL, column2 VARCHAR(100) NOT NULL)
+CREATE TABLE table1 (
+  id INT PRIMARY KEY NOT NULL,
+  column1 INT NOT NULL,
+  column2 VARCHAR(100) NOT NULL
+)
 ```
 
 
@@ -191,6 +231,8 @@ ADD
 ### Drop Column
 
 ```
+ALTER TABLE
+  table1 DROP COLUMN id;
 ALTER TABLE
   table1 DROP COLUMN column1;
 ALTER TABLE
@@ -218,7 +260,8 @@ SELECT
 FROM
   table1
 WHERE
-  column1 = ''
+  id = ''
+  AND column1 = ''
   AND column2 = ''
 ```
 
@@ -227,21 +270,34 @@ WHERE
 
 ```
 SELECT
-  TOP 200 column1,
+  TOP 200 id,
+  column1,
   column2
 FROM
   table1
 WHERE
-  column1 = ''
+  id = ''
+  AND column1 = ''
   AND column2 = ''
+```
+
+
+### Insert
+
+```
+INSERT INTO
+  table1 (column1, column2)
+VALUES
+  ('_column1_', '_column2_')
 ```
 
 
 ### Update
 
 ```
-UPDATE table1 SET column1 = '', column2 = ''
-WHERE column1 = ''
+UPDATE table1 SET id = '', column1 = '', column2 = ''
+WHERE id = ''
+AND column1 = ''
 AND column2 = ''
 ```
 
@@ -252,7 +308,8 @@ AND column2 = ''
 DELETE FROM
   table1
 WHERE
-  column1 = ''
+  id = ''
+  AND column1 = ''
   AND column2 = ''
 ```
 
@@ -260,7 +317,11 @@ WHERE
 ### Create Table
 
 ```
-CREATE TABLE table1 (column1 NUMBER NOT NULL, column2 VARCHAR(100) NOT NULL)
+CREATE TABLE table1 (
+  id INT PRIMARY KEY NOT NULL,
+  column1 INT NOT NULL,
+  column2 VARCHAR(100) NOT NULL
+)
 ```
 
 
@@ -284,6 +345,8 @@ ADD
 ### Drop Column
 
 ```
+ALTER TABLE
+  table1 DROP COLUMN id;
 ALTER TABLE
   table1 DROP COLUMN column1;
 ALTER TABLE
@@ -313,7 +376,8 @@ SELECT
 FROM
   table1
 WHERE
-  column1 = ''
+  id = ''
+  AND column1 = ''
   AND column2 = ''
 ```
 
@@ -322,23 +386,36 @@ WHERE
 
 ```
 SELECT
+  id,
   column1,
   column2
 FROM
   table1
 WHERE
-  column1 = ''
+  id = ''
+  AND column1 = ''
   AND column2 = ''
 LIMIT
   200
 ```
 
 
+### Insert
+
+```
+INSERT INTO
+  table1 (column1, column2)
+VALUES
+  ('_column1_', '_column2_')
+```
+
+
 ### Update
 
 ```
-UPDATE table1 SET column1 = '', column2 = ''
-WHERE column1 = ''
+UPDATE table1 SET id = '', column1 = '', column2 = ''
+WHERE id = ''
+AND column1 = ''
 AND column2 = ''
 ```
 
@@ -349,7 +426,8 @@ AND column2 = ''
 DELETE FROM
   table1
 WHERE
-  column1 = ''
+  id = ''
+  AND column1 = ''
   AND column2 = ''
 ```
 
@@ -357,7 +435,11 @@ WHERE
 ### Create Table
 
 ```
-CREATE TABLE table1 (column1 NUMBER NOT NULL, column2 VARCHAR(100) NOT NULL)
+CREATE TABLE table1 (
+  id INT NOT NULL,
+  column1 INT NOT NULL,
+  column2 VARCHAR(100) NOT NULL
+)
 ```
 
 
@@ -381,6 +463,8 @@ ADD
 ### Drop Column
 
 ```
+ALTER TABLE
+  table1 DROP COLUMN id;
 ALTER TABLE
   table1 DROP COLUMN column1;
 ALTER TABLE
@@ -410,7 +494,8 @@ SELECT
 FROM
   table1
 WHERE
-  column1 = ''
+  id = ''
+  AND column1 = ''
   AND column2 = ''
 ```
 
@@ -419,23 +504,36 @@ WHERE
 
 ```
 SELECT
+  id,
   column1,
   column2
 FROM
   table1
 WHERE
-  column1 = ''
+  id = ''
+  AND column1 = ''
   AND column2 = ''
 LIMIT
   200
 ```
 
 
+### Insert
+
+```
+INSERT INTO
+  table1 (column1, column2)
+VALUES
+  ('_column1_', '_column2_')
+```
+
+
 ### Update
 
 ```
-UPDATE table1 SET column1 = '', column2 = ''
-WHERE column1 = ''
+UPDATE table1 SET id = '', column1 = '', column2 = ''
+WHERE id = ''
+AND column1 = ''
 AND column2 = ''
 ```
 
@@ -446,7 +544,8 @@ AND column2 = ''
 DELETE FROM
   table1
 WHERE
-  column1 = ''
+  id = ''
+  AND column1 = ''
   AND column2 = ''
 ```
 
@@ -454,7 +553,11 @@ WHERE
 ### Create Table
 
 ```
-CREATE TABLE table1 (column1 NUMBER NOT NULL, column2 VARCHAR(100) NOT NULL)
+CREATE TABLE table1 (
+  id INT PRIMARY KEY NOT NULL,
+  column1 INT NOT NULL,
+  column2 VARCHAR(100) NOT NULL
+)
 ```
 
 
@@ -478,6 +581,8 @@ ADD
 ### Drop Column
 
 ```
+ALTER TABLE
+  table1 DROP COLUMN id;
 ALTER TABLE
   table1 DROP COLUMN column1;
 ALTER TABLE
@@ -503,12 +608,14 @@ LIMIT
 
 ```
 SELECT
+  id,
   column1,
   column2
 FROM
   table1
 WHERE
-  column1 = ''
+  id = ''
+  AND column1 = ''
   AND column2 = ''
 LIMIT
   200
@@ -519,17 +626,18 @@ LIMIT
 
 ```
 INSERT INTO
-  table1 (column1, column2)
+  table1 (id, column1, column2)
 VALUES
-  ('_column1_', '_column2_')
+  ('_id_', '_column1_', '_column2_')
 ```
 
 
 ### Update
 
 ```
-UPDATE table1 SET column1 = '', column2 = ''
-WHERE column1 = ''
+UPDATE table1 SET id = '', column1 = '', column2 = ''
+WHERE id = ''
+AND column1 = ''
 AND column2 = ''
 ```
 
@@ -540,7 +648,8 @@ AND column2 = ''
 DELETE FROM
   table1
 WHERE
-  column1 = ''
+  id = ''
+  AND column1 = ''
   AND column2 = ''
 ```
 
@@ -562,6 +671,7 @@ db.collection('table1')
 ```
 db.collection('table1')
   .find({
+    "id": 123,
     "column1": 123,
     "column2": 123
   })
@@ -575,6 +685,7 @@ db.collection('table1')
 ```
 db.collection('table1')
   .insertMany([{
+    "id": 123,
     "column1": 123,
     "column2": 123
   }]);
@@ -586,10 +697,12 @@ db.collection('table1')
 ```
 db.collection('table1')
   .update({
+    "id": 123,
     "column1": 123,
     "column2": 123
   }, {
     $set: {
+      "id": 123,
       "column1": 123,
       "column2": 123
     }
@@ -602,6 +715,7 @@ db.collection('table1')
 ```
 db.collection('table1')
   .deleteMany({
+    "id": 123,
     "column1": 123,
     "column2": 123
   });
