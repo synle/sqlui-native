@@ -39,7 +39,6 @@ jobs:
     runs-on: windows-latest
     timeout-minutes: 30
     steps:
-      # build
       - uses: actions/checkout@v2
       - run: npm version --no-git-tag-version patch
       - run: npm install
@@ -62,22 +61,33 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
-      # build
       - uses: actions/checkout@v2
       - run: npm version --no-git-tag-version patch
       - run: npm install
       - run: npm run test-ci
       - run: npm run dist
-      - run: mv ./dist/sqlui-native*.snap ./dist/sqlui-native.snap
+      - run: find ./dist
+      - run: mv ./dist/sqlui-native*.rpm ./dist/sqlui-native.rpm
+      - run: mv ./dist/sqlui-native*.deb ./dist/sqlui-native.deb
+      - run: mv ./dist/sqlui-native*.pacman ./dist/sqlui-native.pacman
+      - run: find ./dist
 
-      #  Upload binary step
       - uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ needs.create_release.outputs.release_upload_url }}
-          asset_path: ./dist/sqlui-native.snap
-          asset_name: sqlui-native-${{ needs.create_release.outputs.package_version }}.snap
+          asset_path: ./dist/sqlui-native.deb
+          asset_name: sqlui-native-${{ needs.create_release.outputs.package_version }}.deb
+          asset_content_type: application/octet-stream
+
+      - uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create_release.outputs.release_upload_url }}
+          asset_path: ./dist/sqlui-native.rpm
+          asset_name: sqlui-native-${{ needs.create_release.outputs.package_version }}.rpm
           asset_content_type: application/octet-stream
 
   build_macos:
@@ -85,7 +95,6 @@ jobs:
     runs-on: macos-latest
     timeout-minutes: 30
     steps:
-      # build
       - uses: actions/checkout@v2
       - run: npm version --no-git-tag-version patch
       - run: npm install
