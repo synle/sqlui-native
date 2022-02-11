@@ -2,11 +2,17 @@
 
 `sqlui-native` is a simple UI client for most SQL Engines written in Electron. It is compatible with most desktop OS's and support most dialects of RMBDs like MySQL, Microsoft SQL Server, Postgres, SQLite, Cassandra, MongoDB and Redis.
 
-It supports multiple windows, so you can have different sets of queries and connections side by side. The connections and queries are all stored locally, so you can continue where you left off in later visits.
+It supports multiple Windows, so you can have different sets of queries and connections side by side. The connections and queries are all stored locally, so you can continue where you left off in later visits.
 
 ## Downloads
-At this point, we only have pre-built binaries for Windows (`.exe`), Mac (`.dmg`), and Ubuntu (`.snap`). Refer to the following link for download information.
+At this point, we only have pre-built binaries for Windows, Mac, and Linux (Ubuntu / Debian and Redhat). Refer to the following link for download information.
 - [Sqlui Native Homepage](https://synle.github.io/sqlui-native)
+
+## Supported OS's
+- Windows (Tested on Windows 10 and 11)
+- Mac OS (Tested on Mac OS Monterey)
+- Debian / Ubuntu
+- Redhat
 
 ## Supported Database Adapters
 The list below are supported data stores.
@@ -95,7 +101,7 @@ Here is the link where you can find information about how run this application l
 - [X] Consolidate the interface for mocked server and the main.ts page.
 - [X] Make a build for Windows and Darwin.
 - [X] Added Basic CI/CD to package electron
-- [X] Make a build for other systems like Debian and Redhat.
+- [X] Make a build for other systems like Debian / Ubuntu and Redhat.
 - [X] Add a configuration / option page for color mode.
 - [X] Enhance the table with pagination.
 - [ ] Enhance the table for result with sorting, and searching.
