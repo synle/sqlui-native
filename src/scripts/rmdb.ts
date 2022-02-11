@@ -75,26 +75,56 @@ export function getSelectSpecificColumns(
       return {
         label,
         formatter,
-        query: `SELECT TOP ${input.querySize} ${columnString} \nFROM ${input.tableId} WHERE ${whereColumnString}`,
+        query: `SELECT TOP ${input.querySize} ${columnString}
+                FROM ${input.tableId}
+                WHERE ${whereColumnString}`,
       };
     case 'postgres':
-      return {
-        label,
-        formatter,
-        query: `SELECT ${columnString} \nFROM ${input.tableId} \n WHERE ${whereColumnString} \nLIMIT ${input.querySize}`,
-      };
     case 'sqlite':
-      return {
-        label,
-        formatter,
-        query: `SELECT ${columnString} \nFROM ${input.tableId} \n WHERE ${whereColumnString} \nLIMIT ${input.querySize}`,
-      };
     case 'mariadb':
     case 'mysql':
       return {
         label,
         formatter,
-        query: `SELECT ${columnString} \nFROM ${input.tableId} \n WHERE ${whereColumnString} \nLIMIT ${input.querySize}`,
+        query: `SELECT ${columnString}
+                FROM ${input.tableId}
+                WHERE ${whereColumnString}
+                LIMIT ${input.querySize}`,
+      };
+  }
+}
+
+export function getSelectDistinctValues(
+  input: SqlAction.TableInput,
+): SqlAction.Output | undefined {
+  const label = `Select Distinct`;
+
+  if (!input.columns) {
+    return undefined;
+  }
+
+  const distinctColumn = 'some_field';
+  const whereColumnString = input.columns.map((col) => `${col.name} = ''`).join('\n AND ');
+
+  switch (input.dialect) {
+    case 'mssql':
+      // return {
+      //   label,
+      //   formatter,
+      //   query: `SELECT TOP ${input.querySize} ${columnString} \nFROM ${input.tableId} WHERE ${whereColumnString}`,
+      // };
+      return undefined;
+    case 'postgres':
+    case 'sqlite':
+    case 'mariadb':
+    case 'mysql':
+      return {
+        label,
+        formatter,
+        query: `SELECT DISTINCT ${distinctColumn}
+                FROM ${input.tableId}
+                WHERE ${whereColumnString}
+                LIMIT ${input.querySize}`,
       };
   }
 }
@@ -358,6 +388,8 @@ export const scripts: SqlAction.ScriptGenerator[] = [
   getSelectAllColumns,
   getSelectCount,
   getSelectSpecificColumns,
+  getSelectDistinctValues,
+  getDivider,
   getInsertCommand,
   getUpdateCommand,
   getDeleteCommand,
