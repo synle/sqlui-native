@@ -32,7 +32,16 @@ function _getScript(scripts: SqlAction.ScriptGenerator[], dialect: SqluiCore.Dia
 }
 
 describe('Scripts', () => {
-  let commandGuides: string[] = [];
+  let commandGuides: string[] = [
+    `
+---
+title: sqlui-native query help?
+---
+
+Query Help?
+===========
+  `.trim(),
+  ];
 
   function addGuideText(sectionName: string, scripts: (SqlAction.Output | undefined)[]) {
     commandGuides.push(`## ${sectionName}\n`);
