@@ -20,6 +20,9 @@ import ConnectionDatabaseSelector from 'src/components/QueryBox/ConnectionDataba
 import ConnectionRevealButton from 'src/components/QueryBox/ConnectionRevealButton';
 import ResultBox from 'src/components/ResultBox';
 import Select from 'src/components/Select';
+import { useCommands } from 'src/components/MissionControl';
+import HelpIcon from '@mui/icons-material/Help';
+
 interface QueryBoxProps {
   queryId: string;
 }
@@ -31,6 +34,7 @@ export default function QueryBox(props: QueryBoxProps) {
   const [executing, setExecuting] = useState(false);
   const { data: selectedConnection } = useGetConnectionById(query?.connectionId);
   const queryClient = useQueryClient();
+   const { selectCommand} = useCommands();
 
   const isLoading = loadingConnection;
 
@@ -122,6 +126,17 @@ export default function QueryBox(props: QueryBoxProps) {
             startIcon={<SendIcon />}>
             Execute
           </Button>
+
+          <Tooltip title='Click here to see how to get started with some queries.'>
+            <Button
+              type='button'
+              variant='outlined'
+              onClick={() => selectCommand({ event: 'clientEvent/showQueryHelp' })}
+              startIcon={<HelpIcon />}
+              sx={{ ml: 3 }}>
+              Show Query Help
+            </Button>
+          </Tooltip>
 
           <Tooltip title='Format the SQL query for readability.'>
             <Button

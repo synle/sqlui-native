@@ -66,6 +66,10 @@ const ALL_COMMAND_PALETTE_OPTIONS: CommandOption[] = [
     label: 'Use Vertical Tab Orientation',
     data: 'Vertical',
   },
+  {
+    event: 'clientEvent/showQueryHelp',
+    label: 'Show Query Help',
+  },
   { event: 'clientEvent/clearShowHides', label: 'Collapse All Connections' },
   { event: 'clientEvent/changeDarkMode', label: 'Follows System Settings for Dark Mode', data: '' },
   { event: 'clientEvent/connection/new', label: 'New Connection' },
