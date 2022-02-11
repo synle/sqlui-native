@@ -172,9 +172,11 @@ export default function MissionControl() {
   };
 
   const onShowQueryHelp = async () => {
-    if(activeConnection && activeConnection.dialect){
+    if (activeConnection && activeConnection.dialect) {
       // open query help with selected dialect
-      window.openBrowserLink(`https://github.com/synle/sqlui-native/blob/main/guides.md#${activeConnection.dialect}`);
+      window.openBrowserLink(
+        `https://github.com/synle/sqlui-native/blob/main/guides.md#${activeConnection.dialect}`,
+      );
     } else {
       window.openBrowserLink(`https://github.com/synle/sqlui-native/blob/main/guides.md`);
     }

@@ -34,7 +34,7 @@ export default function QueryBox(props: QueryBoxProps) {
   const [executing, setExecuting] = useState(false);
   const { data: selectedConnection } = useGetConnectionById(query?.connectionId);
   const queryClient = useQueryClient();
-   const { selectCommand} = useCommands();
+  const { selectCommand } = useCommands();
 
   const isLoading = loadingConnection;
 
