@@ -203,6 +203,7 @@ export module SqluiEnums {
     | 'clientEvent/showCommandPalette'
     | 'clientEvent/clearShowHides'
     | 'clientEvent/changeQueryTabOrientation'
+    | 'clientEvent/showQueryHelp'
     | 'clientEvent/import'
     | 'clientEvent/exportAll'
     | 'clientEvent/connection/new'

@@ -8,7 +8,7 @@ try {
   window.isElectron = false;
   window.toggleElectronMenu = () => {};
   window.openBrowserLink = (link) => {
-    window.location.href = link;
+    window.open(link, '_blank');
   };
 
   if (window.process.env.ENV_TYPE !== 'mocked-server') {
