@@ -2,6 +2,7 @@ import { SqlAction } from 'typings';
 import { getDivider } from './base';
 
 const REDIS_ADAPTER_PREFIX = 'db';
+
 const formatter = 'js';
 
 // for redis

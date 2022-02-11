@@ -2,6 +2,7 @@ import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import React from 'react';
 import { styled } from '@mui/system';
+
 const StyledAccordionHeader = styled('div')(({ theme }) => {
   const backgroundColor = theme.palette.action.focus;
   return {

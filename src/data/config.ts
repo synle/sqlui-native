@@ -1,4 +1,5 @@
 import { SqluiEnums } from 'typings';
+
 export const SessionStorageConfig = {
   set(key: SqluiEnums.ClientConfigKey, value: any) {
     window.sessionStorage.setItem(key, JSON.stringify(value));

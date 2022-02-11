@@ -7,6 +7,7 @@ import { SqluiFrontend } from 'typings';
 import { useQuerySizeSetting } from 'src/hooks';
 import { useSettings } from 'src/hooks';
 import Select from 'src/components/Select';
+
 interface SettingsProps {}
 
 export default function Settings(props: SettingsProps) {

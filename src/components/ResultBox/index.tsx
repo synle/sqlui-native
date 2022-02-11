@@ -14,6 +14,7 @@ import CodeEditorBox from 'src/components/CodeEditorBox';
 import DataTable from 'src/components/DataTable';
 import Tabs from 'src/components/Tabs';
 import Timer from 'src/components/Timer';
+
 interface ResultBoxProps {
   query: SqluiFrontend.ConnectionQuery;
   executing: boolean;

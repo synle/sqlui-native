@@ -12,6 +12,7 @@ import { useShowHide } from 'src/hooks';
 import ColumnAttributes from 'src/components/ColumnDescription/ColumnAttributes';
 import ColumnName from 'src/components/ColumnDescription/ColumnName';
 import ColumnType from 'src/components/ColumnDescription/ColumnType';
+
 const MAX_COLUMN_SIZE_TO_SHOW = 5;
 
 type ColumnDescriptionProps = {

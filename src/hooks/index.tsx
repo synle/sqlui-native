@@ -9,6 +9,7 @@ import { SessionStorageConfig } from 'src/data/config';
 import { SqluiCore } from 'typings';
 import { SqluiFrontend } from 'typings';
 import dataApi from 'src/data/api';
+
 const QUERY_KEY_ALL_CONNECTIONS = 'qk.connections';
 const QUERY_KEY_TREEVISIBLES = 'qk.treeVisibles';
 const QUERY_KEY_QUERIES = 'qk.queries';

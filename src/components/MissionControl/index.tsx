@@ -41,7 +41,9 @@ export interface Command {
 }
 
 const QUERY_KEY_COMMAND_PALETTE = 'commandPalette';
+
 const _commands: Command[] = [];
+
 export function useCommands() {
   const queryClient = useQueryClient();
 

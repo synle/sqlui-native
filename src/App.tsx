@@ -23,6 +23,7 @@ import MissionControl from 'src/components/MissionControl';
 import NewConnectionPage from 'src/views/NewConnectionPage';
 import './App.scss';
 import 'src/electronRenderer';
+
 export default function App() {
   const [hasValidSessionId, setHasValidSessionId] = useState(false);
   const { data: sessions, isLoading: loadingSessions } = useGetSessions();

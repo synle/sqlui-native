@@ -9,6 +9,7 @@ import TextField from '@mui/material/TextField';
 import { useState } from 'react';
 import React from 'react';
 import CodeEditorBox from 'src/components/CodeEditorBox';
+
 export type PromptInput = {
   title?: string;
   message: string;
