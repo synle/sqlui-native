@@ -9,9 +9,9 @@ At this point, we only have pre-built binaries for Windows, Mac, and Linux (Ubun
 - [Sqlui Native Homepage](https://synle.github.io/sqlui-native)
 
 ## Supported OS's
-- Windows (Tested on Windows 10 and 11)
-- Mac OS (Tested on Mac OS Monterey)
-- Debian / Ubuntu
+- [Windows](https://synle.github.io/sqlui-native/installation#windows) (Tested on Windows 10 and 11)
+- [Mac OS](https://synle.github.io/sqlui-native/installation#mac) (Tested on Mac OS Monterey)
+- [Debian / Ubuntu](https://synle.github.io/sqlui-native/installation#ubuntu--debian)
 - Redhat
 
 Refer to this link for [Installation Instructions](https://synle.github.io/sqlui-native/installation)
