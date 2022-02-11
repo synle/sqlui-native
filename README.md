@@ -5,14 +5,14 @@
 It supports multiple Windows, so you can have different sets of queries and connections side by side. The connections and queries are all stored locally, so you can continue where you left off in later visits.
 
 ## Downloads
-At this point, we only have pre-built binaries for Windows, Mac, and Linux (Ubuntu / Debian and Redhat). Refer to the following link for download information.
+Refer to the following link for download information.
 - [Sqlui Native Homepage](https://synle.github.io/sqlui-native)
 
 ## Supported OS's
-- Windows (Tested on Windows 10 and 11)
-- Mac OS (Tested on Mac OS Monterey)
-- Debian / Ubuntu
-- Redhat
+- [Windows](https://synle.github.io/sqlui-native/installation#windows) (Tested on Windows 10 and 11)
+- [Mac OS](https://synle.github.io/sqlui-native/installation#mac) (Tested on Mac OS Monterey)
+- [Debian / Ubuntu](https://synle.github.io/sqlui-native/installation#ubuntu--debian)
+- [Redhat / CentOS / Fedora](https://synle.github.io/sqlui-native/installation#redhat--centos--fedora)
 
 Refer to this link for [Installation Instructions](https://synle.github.io/sqlui-native/installation)
 
