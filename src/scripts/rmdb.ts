@@ -106,7 +106,7 @@ export function getInsertCommand(input: SqlAction.TableInput): SqlAction.Output 
     return undefined;
   }
 
-  const columns = input.columns.filter(col => !col.primaryKey)
+  const columns = input.columns.filter((col) => !col.primaryKey);
   const columnString = columns.map((col) => col.name).join(',\n');
   const insertValueString = columns.map((col) => `'_${col.name}_'`).join(',\n');
 

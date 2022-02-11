@@ -20,7 +20,7 @@ function _getScript(scripts: SqlAction.ScriptGenerator[], dialect: SqluiCore.Dia
           {
             name: 'id',
             type: 'INT',
-            primaryKey: true
+            primaryKey: true,
           },
           {
             name: 'column1',
