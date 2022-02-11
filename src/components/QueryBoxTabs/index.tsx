@@ -20,6 +20,7 @@ import { useQueryTabOrientationSetting } from 'src/hooks';
 import DropdownButton from 'src/components/DropdownButton';
 import QueryBox from 'src/components/QueryBox';
 import Tabs from 'src/components/Tabs';
+
 export default function QueryBoxTabs() {
   const navigate = useNavigate();
   const [init, setInit] = useState(false);

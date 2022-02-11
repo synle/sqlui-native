@@ -1,5 +1,6 @@
 import Tooltip from '@mui/material/Tooltip';
 import { styled } from '@mui/system';
+
 const StyledColumnName = styled('span')(({ theme }) => {
   return {
     maxWidth: '50%',

@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { SqluiCore } from 'typings';
 import { useTestConnection } from 'src/hooks';
 import Toast from 'src/components/Toast';
+
 interface TestConnectionButtonProps {
   connection: SqluiCore.CoreConnectionProps;
 }

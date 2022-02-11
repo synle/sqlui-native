@@ -1,6 +1,7 @@
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 import React from 'react';
+
 const VERTICAL_TAB_THRESHOLD = 20;
 
 interface TabsProps {

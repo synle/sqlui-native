@@ -22,6 +22,7 @@ import ConnectionDatabaseSelector from 'src/components/QueryBox/ConnectionDataba
 import ConnectionRevealButton from 'src/components/QueryBox/ConnectionRevealButton';
 import ResultBox from 'src/components/ResultBox';
 import Select from 'src/components/Select';
+
 interface QueryBoxProps {
   queryId: string;
 }
