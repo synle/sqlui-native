@@ -1,7 +1,7 @@
 import { createClient, RedisClientType } from 'redis';
 import { SqluiCore } from '../../typings';
 import IDataAdapter from './IDataAdapter';
-import BaseDataAdapter, {MAX_CONNECTION_TIMEOUT} from './BaseDataAdapter';
+import BaseDataAdapter, { MAX_CONNECTION_TIMEOUT } from './BaseDataAdapter';
 
 export default class RedisDataAdapter extends BaseDataAdapter implements IDataAdapter {
   dialect: SqluiCore.Dialect = 'redis';
@@ -43,7 +43,20 @@ export default class RedisDataAdapter extends BaseDataAdapter implements IDataAd
   async authenticate() {
     return new Promise<void>(async (resolve, reject) => {
       try {
-        resolve();
+        setTimeout(() => reject('Redis connection Timeout'), MAX_CONNECTION_TIMEOUT);
+
+        const client = createClient({
+          url: this.connectionOption,
+        });
+
+        client.connect();
+
+        client.on('ready', () =>
+          //@ts-ignore
+          resolve(),
+        );
+
+        client.on('error', (err) => reject(err));
       } catch (err) {
         reject(err);
       }
