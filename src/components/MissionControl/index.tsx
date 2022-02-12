@@ -192,7 +192,6 @@ export default function MissionControl() {
       //@ts-ignore
       document.querySelector('.Accordion__Header.selected').scrollIntoView();
     }, 100);
-    curToast.dismiss(2000);
   };
 
   const onShowQueryHelp = async () => {
