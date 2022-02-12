@@ -100,6 +100,7 @@ export default function MissionControl() {
     onChangeQuery,
     onDeleteQueries,
     onDuplicateQuery: _onDuplicateQuery,
+    onOrderingChange: onChangeTabOrdering,
     onImportQuery,
     isLoading: loadingQueries,
   } = useConnectionQueries();
@@ -168,11 +169,6 @@ export default function MissionControl() {
 
     await curToast.dismiss(2000);
   };
-
-  const onChangeTabOrdering = (from: number, to: number) => {
-    // TODO: do the api call to change the tab ordering
-    console.log(from, to)
-  }
 
   const onRevealQueryConnection = async (query: SqluiFrontend.ConnectionQuery) => {
     const { databaseId, connectionId } = query;
@@ -601,12 +597,11 @@ export default function MissionControl() {
           break;
 
         case 'clientEvent/query/changeTabOrdering':
-          const {from, to} = command?.data as any;
-          if (from && to) {
+          const { from, to } = command?.data as any;
+          if (from !== undefined && to !== undefined) {
             onChangeTabOrdering(from, to);
           }
           break;
-
 
         case 'clientEvent/query/showNext':
         case 'clientEvent/query/showPrev':

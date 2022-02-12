@@ -576,6 +576,21 @@ export function useConnectionQueries() {
     return onAddQuery(query);
   };
 
+  const onOrderingChange = (from: number, to: number) => {
+    // ordering will move the tab from the old index to the new index
+    // and push everything from that point out
+    console.log(_connectionQueries.map(q => q.name));
+
+    const targetQuery = _connectionQueries[from];
+    const leftHalf = _connectionQueries.filter((q, idx) => idx < to && idx !== from);
+    const rightHalf = _connectionQueries.filter((q, idx) => idx >= to && idx !== from);
+    _connectionQueries = [...leftHalf, targetQuery, ...rightHalf];
+
+    console.log(_connectionQueries.map(q => q.name));
+
+    _invalidateQueries();
+  };
+
   return {
     isLoading,
     isFetching,
@@ -587,6 +602,7 @@ export function useConnectionQueries() {
     onChangeQuery,
     onDuplicateQuery,
     onImportQuery,
+    onOrderingChange,
   };
 }
 

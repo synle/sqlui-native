@@ -8,18 +8,25 @@ type TabsProps = {
   tabIdx: number;
   onTabChange: (newTabIdx: number) => void;
   tabHeaders: string[] | React.ReactNode[];
+  /**
+   * This is optional, if none provided, we will use
+   * index as tab keys
+   */
+  tabKeys?: string[];
   tabContents: React.ReactNode[];
   orientation?: 'vertical' | 'horizontal';
   onTabOrdering?: (fromIdx: number, toIdx: number) => void;
 };
 
-let fromIdx: number, toIdx: number;
+let fromIdx: number | undefined, toIdx: number | undefined;
 
 export default function MyTabs(props: TabsProps) {
   const { tabIdx, tabHeaders, tabContents } = props;
   let { orientation } = props;
 
   const visibleTab = tabContents[tabIdx];
+
+  const tabKeys = props.tabKeys || [];
 
   const onTabChange = (newTabIdx: number) => {
     props.onTabChange && props.onTabChange(newTabIdx);
@@ -34,32 +41,47 @@ export default function MyTabs(props: TabsProps) {
   let dragAndDropProps: any = {};
   if (props.onTabOrdering) {
     const onDragStart = (e: React.DragEvent) => {
-    let element = e.currentTarget;
-    //@ts-ignore
-    fromIdx = [...element.parentNode.children].indexOf(element);
+      const element = e.currentTarget;
 
-    // @ts-ignore
-    e.currentTarget.style.background = 'yellow';
-  };
+      fromIdx = undefined;
+      toIdx = undefined;
 
-  const onDragLeave = (e: React.DragEvent) => {
-    // @ts-ignore
-    e.currentTarget.style.background = '';
-  };
+      //@ts-ignore
+      const newFromIdx = [...element.parentNode.children].indexOf(element);
+      if (newFromIdx >= tabContents.length) {
+        // not able to drag this, ignore them
+        return;
+      }
 
-  const onDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-    // @ts-ignore
-    e.currentTarget.style.background = 'cyan';
-  };
+      fromIdx = newFromIdx;
 
-  const onDrop = (e: React.MouseEvent) => {
-    let element = e.currentTarget;
-    //@ts-ignore
-    toIdx = [...element.parentNode.children].indexOf(element);
+      // @ts-ignore
+      e.currentTarget.style.background = 'yellow';
+    };
 
-    if(props.onTabOrdering){props.onTabOrdering( fromIdx, toIdx);}
-  };
+    const onDragLeave = (e: React.DragEvent) => {
+      // @ts-ignore
+      e.currentTarget.style.background = '';
+    };
+
+    const onDragOver = (e: React.DragEvent) => {
+      e.preventDefault();
+
+      if (fromIdx !== undefined && toIdx !== undefined) {
+        // @ts-ignore
+        e.currentTarget.style.background = 'cyan';
+      }
+    };
+
+    const onDrop = (e: React.MouseEvent) => {
+      const element = e.currentTarget;
+      //@ts-ignore
+      toIdx = [...element.parentNode.children].indexOf(element);
+
+      if (props.onTabOrdering && fromIdx !== undefined && toIdx !== undefined) {
+        props.onTabOrdering(fromIdx, toIdx);
+      }
+    };
 
     dragAndDropProps = {
       draggable: true,
@@ -86,7 +108,7 @@ export default function MyTabs(props: TabsProps) {
         className='Tab__Headers'>
         {tabHeaders.map((tabHeader, idx) => (
           <Tab
-            key={idx}
+            key={tabKeys[idx] || idx}
             label={<div className='Tab__Header'>{tabHeader}</div>}
             onContextMenu={onShowActions}
             {...dragAndDropProps}></Tab>
