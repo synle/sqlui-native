@@ -22,6 +22,12 @@ export default function MyTabs(props: TabsProps) {
     props.onTabChange && props.onTabChange(newTabIdx);
   };
 
+  const onShowActions = (e: React.SyntheticEvent) => {
+    e.preventDefault();
+    const actionButton = e.currentTarget.querySelector('.DropdownButton') as HTMLButtonElement;
+    actionButton?.click?.();
+  };
+
   if (!orientation) {
     orientation = tabHeaders.length > VERTICAL_TAB_THRESHOLD ? 'vertical' : 'horizontal';
   }
@@ -37,7 +43,10 @@ export default function MyTabs(props: TabsProps) {
         orientation={orientation}
         className='Tab__Headers'>
         {tabHeaders.map((tabHeader, idx) => (
-          <Tab key={idx} label={<div className='Tab__Header'>{tabHeader}</div>}></Tab>
+          <Tab
+            key={idx}
+            label={<div className='Tab__Header'>{tabHeader}</div>}
+            onContextMenu={onShowActions}></Tab>
         ))}
       </Tabs>
       <div className='Tab__Body'>{tabContents[tabIdx]}</div>
