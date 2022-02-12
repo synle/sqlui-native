@@ -2,7 +2,7 @@ import { MongoClient } from 'mongodb';
 import { SqluiCore } from '../../typings';
 import IDataAdapter from './IDataAdapter';
 import BaseDataAdapter, { MAX_CONNECTION_TIMEOUT } from './BaseDataAdapter';
-import {MONGO_ADAPTER_PREFIX} from '../../src/scripts/mongodb';
+import { MONGO_ADAPTER_PREFIX } from '../../src/scripts/mongodb';
 
 export default class MongoDBDataAdapter extends BaseDataAdapter implements IDataAdapter {
   dialect: SqluiCore.Dialect = 'mongodb';
@@ -139,7 +139,7 @@ export default class MongoDBDataAdapter extends BaseDataAdapter implements IData
   async execute(sql: string, database?: string): Promise<SqluiCore.Result> {
     return new Promise(async (resolve, reject) => {
       try {
-        if(!sql.includes(`${MONGO_ADAPTER_PREFIX}.`)){
+        if (!sql.includes(`${MONGO_ADAPTER_PREFIX}.`)) {
           throw `Invalid syntax. MongoDB syntax in sqlui-native starts with '${MONGO_ADAPTER_PREFIX}.'. Refer to the syntax help in this link https://synle.github.io/sqlui-native/guides#mongodb`;
         }
 
