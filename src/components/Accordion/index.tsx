@@ -51,8 +51,13 @@ type AccordionHeaderProps = AccordionBodyProps & {
 
 export function AccordionHeader(props: AccordionHeaderProps) {
   const { children, expanded, onToggle, className } = props;
+  const onShowActions = (e: React.SyntheticEvent) => {
+    e.preventDefault();
+    //@ts-ignore
+    e.currentTarget?.querySelector('.DropdownButton')?.click();
+  }
   return (
-    <StyledAccordionHeader onClick={() => onToggle()} className={'Accordion__Header ' + className}>
+    <StyledAccordionHeader onClick={() => onToggle()} className={'Accordion__Header ' + className} onContextMenu={(e) => onShowActions(e)}>
       {!expanded ? (
         <ExpandLessIcon fontSize='inherit' color='inherit' />
       ) : (
