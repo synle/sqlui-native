@@ -670,12 +670,12 @@ export function useDeleteSession() {
 }
 
 // for exporting
-export function getExportedConnection(connection: SqluiCore.ConnectionProps) {
-  const { dialect, databases, status, ...dataToExport } = connection;
-  return { _type: 'connection', ...dataToExport };
+export function getExportedConnection(connectionProps: SqluiCore.ConnectionProps) {
+  const { id, connection, name } = connectionProps;
+  return { _type: 'connection', ...{id, connection, name} };
 }
 
 export function getExportedQuery(query: SqluiFrontend.ConnectionQuery) {
-  const { selected, executionStart, result, ...dataToExport } = query;
-  return { _type: 'query', ...dataToExport };
+  const { id, name, sql, connectionId, databaseId } = query;
+  return { _type: 'query', ...{ id, name, sql, connectionId, databaseId }};
 }
