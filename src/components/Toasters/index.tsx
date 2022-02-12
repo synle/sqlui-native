@@ -1,14 +1,14 @@
 import Toast from 'src/components/Toast';
-import useToaster from 'src/hooks/useToaster';
+import useToaster, {ToasterProps} from 'src/hooks/useToaster';
 
 export default function Toasters() {
-  const { toast, dismiss } = useToaster();
+  const { toasts, dismiss } = useToaster();
 
-  if (!toast) {
+  if (!toasts || toasts.length === 0) {
     return null;
   }
 
-  const onToastClose = () => {
+  const onToastClose = (toast: ToasterProps) => {
     if (toast.onClose) {
       toast.onClose();
     }
@@ -16,11 +16,15 @@ export default function Toasters() {
   };
 
   return (
-    <Toast
-      open={true}
-      onClose={onToastClose}
-      message={toast.message}
-      anchorOrigin={toast.anchorOrigin}
-    />
+    <>
+    {toasts.map(toast => <Toast
+          key={toast.id}
+          open={true}
+          onClose={() => onToastClose(toast)}
+          message={toast.message}
+          anchorOrigin={toast.anchorOrigin}
+        />
+        )}
+    </>
   );
 }

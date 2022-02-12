@@ -11,7 +11,7 @@ type CoreToasterProps = {
   anchorOrigin?: AnchorOrigin;
 };
 
-type ToasterProps = CoreToasterProps & {
+export type ToasterProps = CoreToasterProps & {
   id: string;
 };
 
