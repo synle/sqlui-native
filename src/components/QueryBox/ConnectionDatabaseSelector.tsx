@@ -4,7 +4,7 @@ import { useGetConnections } from 'src/hooks';
 import { useGetDatabases } from 'src/hooks';
 import Select from 'src/components/Select';
 
-interface ConnectionDatabaseSelectorProps {
+type ConnectionDatabaseSelectorProps =  {
   value: SqluiFrontend.ConnectionQuery;
   onChange: (connectionId?: string, databaseId?: string) => void;
 }

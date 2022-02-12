@@ -95,7 +95,7 @@ export function EditConnectionForm(props: ConnectionFormProps) {
   );
 }
 
-interface MainConnectionFormProps {
+type MainConnectionFormProps =  {
   onSave: () => Promise<void>;
   name: string;
   setName: (newVal: string) => void;

@@ -9,7 +9,7 @@ import { useWordWrapSetting } from 'src/hooks';
 import AdvancedEditor from 'src/components/CodeEditorBox/AdvancedEditor';
 import SimpleEditor from 'src/components/CodeEditorBox/SimpleEditor';
 
-interface CodeEditorProps {
+type CodeEditorProps =  {
   value?: string;
   onChange?: (newValue: string) => void;
   language?: string;

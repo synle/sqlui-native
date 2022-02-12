@@ -17,7 +17,7 @@ export type ChoiceInput = {
   options: ChoiceOption[];
 };
 
-interface ChoiceDialogProps {
+type ChoiceDialogProps =  {
   open: boolean;
   title: string;
   message: string | React.ReactNode;

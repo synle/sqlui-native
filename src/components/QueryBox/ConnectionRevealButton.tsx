@@ -4,7 +4,7 @@ import Tooltip from '@mui/material/Tooltip';
 import { SqluiFrontend } from 'typings';
 import { useCommands } from 'src/components/MissionControl';
 
-interface ConnectionRevealButtonProps {
+type ConnectionRevealButtonProps =  {
   query: SqluiFrontend.ConnectionQuery;
 }
 

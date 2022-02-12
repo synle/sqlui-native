@@ -15,7 +15,7 @@ import DataTable from 'src/components/DataTable';
 import Tabs from 'src/components/Tabs';
 import Timer from 'src/components/Timer';
 
-interface ResultBoxProps {
+type ResultBoxProps =  {
   query: SqluiFrontend.ConnectionQuery;
   executing: boolean;
 }
@@ -129,7 +129,7 @@ export default function ResultBox(props: ResultBoxProps) {
   );
 }
 
-interface FormatDataProps {
+type FormatDataProps =  {
   data: any[];
 }
 
@@ -185,7 +185,7 @@ function TableFormatData(props: FormatDataProps) {
   return <DataTable columns={columns} data={data} />;
 }
 
-interface QueryTimeDescriptionProps {
+type QueryTimeDescriptionProps =  {
   query: SqluiFrontend.ConnectionQuery;
 }
 

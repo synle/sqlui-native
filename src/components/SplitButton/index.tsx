@@ -11,13 +11,13 @@ import Paper from '@mui/material/Paper';
 import Popper from '@mui/material/Popper';
 import React from 'react';
 
-interface SplitButtonOption {
+type SplitButtonOption =  {
   label: string;
   startIcon?: React.ReactNode;
   onClick: () => void;
 }
 
-interface SplitButtonProps {
+type SplitButtonProps =  {
   id: string;
   label: string;
   startIcon?: React.ReactNode;

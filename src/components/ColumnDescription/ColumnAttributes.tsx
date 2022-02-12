@@ -2,7 +2,7 @@ import Tooltip from '@mui/material/Tooltip';
 import { SqluiCore } from 'typings';
 import { styled } from '@mui/system';
 
-interface ColumnAttributesProps {
+type ColumnAttributesProps =  {
   column: SqluiCore.ColumnMetaData;
 }
 

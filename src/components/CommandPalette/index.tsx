@@ -9,7 +9,7 @@ import { useConnectionQueries } from 'src/hooks';
 
 const MAX_OPTION_TO_SHOW = 20;
 
-interface CommandPaletteProps {
+type CommandPaletteProps =  {
   onSelectCommand: (command: Command) => void;
 }
 

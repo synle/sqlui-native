@@ -1,6 +1,6 @@
 import CloudIcon from '@mui/icons-material/Cloud';
 
-interface ConnectionTypeIconProps {
+type ConnectionTypeIconProps =  {
   scheme?: string;
   status?: string;
 }

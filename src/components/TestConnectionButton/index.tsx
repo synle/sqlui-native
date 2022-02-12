@@ -4,7 +4,7 @@ import { SqluiCore } from 'typings';
 import { useTestConnection } from 'src/hooks';
 import Toast from 'src/components/Toast';
 
-interface TestConnectionButtonProps {
+type TestConnectionButtonProps =  {
   connection: SqluiCore.CoreConnectionProps;
 }
 

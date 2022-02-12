@@ -4,7 +4,7 @@ import React from 'react';
 
 const VERTICAL_TAB_THRESHOLD = 20;
 
-interface TabsProps {
+type TabsProps =  {
   tabIdx: number;
   onTabChange: (newTabIdx: number) => void;
   tabHeaders: string[] | React.ReactNode[];

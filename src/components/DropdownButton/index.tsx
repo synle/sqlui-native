@@ -12,13 +12,13 @@ import Popper from '@mui/material/Popper';
 import { useEffect } from 'react';
 import React from 'react';
 
-interface DropdownButtonOption {
+type DropdownButtonOption =  {
   label: string;
   startIcon?: React.ReactNode;
   onClick?: () => void;
 }
 
-interface DropdownButtonProps {
+type DropdownButtonProps =  {
   id: string;
   children: React.ReactNode;
   options: DropdownButtonOption[];

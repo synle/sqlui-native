@@ -20,7 +20,7 @@ import DropdownButton from 'src/components/DropdownButton';
 import Toast from 'src/components/Toast';
 import useToaster from 'src/hooks/useToaster';
 
-interface ConnectionActionsProps {
+type ConnectionActionsProps =  {
   connection: SqluiCore.ConnectionProps;
 }
 

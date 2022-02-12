@@ -15,7 +15,7 @@ const StyledResizer = styled('div')(({ theme }) => {
 });
 
 // move this into a file
-interface ResizerProps {
+type ResizerProps =  {
   onSetWidth: (newWidth: number) => void;
 }
 
