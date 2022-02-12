@@ -1,7 +1,7 @@
 import { SqlAction } from 'typings';
 import { getDivider } from './base';
 
-const MONGO_ADAPTER_PREFIX = 'db';
+export const MONGO_ADAPTER_PREFIX = 'db';
 
 const formatter = 'js';
 
