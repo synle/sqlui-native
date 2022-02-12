@@ -3,6 +3,20 @@
 exports[`Scripts CassandraScripts 1`] = `
 Array [
   Object {
+    "label": "divider",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Create Keyspace",
+    "query": "CREATE KEYSPACE IF NOT EXISTS some_keyspace WITH replication = { 'class': 'SimpleStrategy',
+'replication_factor': 3 };",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Drop Keyspace",
+    "query": "DROP KEYSPACE IF EXISTS database1;",
+  },
+  Object {
     "formatter": "sql",
     "label": "Select All Columns",
     "query": "SELECT

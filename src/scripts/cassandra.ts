@@ -41,7 +41,7 @@ export function getSelectSpecificColumns(
   }
 }
 
-export function getInsertCommand(input: SqlAction.TableInput): SqlAction.Output | undefined {
+export function getInsert(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Insert`;
 
   if (!input.columns) {
@@ -61,7 +61,7 @@ export function getInsertCommand(input: SqlAction.TableInput): SqlAction.Output 
   }
 }
 
-export function getUpdateCommand(input: SqlAction.TableInput): SqlAction.Output | undefined {
+export function getUpdate(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Update`;
 
   if (!input.columns) {
@@ -82,7 +82,7 @@ export function getUpdateCommand(input: SqlAction.TableInput): SqlAction.Output 
   }
 }
 
-export function getDeleteCommand(input: SqlAction.TableInput): SqlAction.Output | undefined {
+export function getDelete(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Delete`;
 
   if (!input.columns) {
@@ -101,13 +101,42 @@ export function getDeleteCommand(input: SqlAction.TableInput): SqlAction.Output 
   }
 }
 
+export function getCreateKeyspace(input: SqlAction.DatabaseInput): SqlAction.Output | undefined {
+  const label = `Create Keyspace`;
+
+  if (input.dialect === 'cassandra') {
+    return {
+      label,
+      formatter,
+      query: `CREATE KEYSPACE IF NOT EXISTS some_keyspace
+             WITH replication = {'class': 'SimpleStrategy', 'replication_factor' : 3};`,
+    };
+  }
+}
+
+export function getDropKeyspace(input: SqlAction.DatabaseInput): SqlAction.Output | undefined {
+  const label = `Drop Keyspace`;
+
+  if (input.dialect === 'cassandra') {
+    return {
+      label,
+      formatter,
+      query: `DROP KEYSPACE IF EXISTS ${input.databaseId};`,
+    };
+  }
+}
+
 export const tableActionScripts: SqlAction.TableActionScriptGenerator[] = [
   getSelectAllColumns,
   getSelectSpecificColumns,
-  getInsertCommand,
+  getInsert,
   getDivider,
-  getUpdateCommand,
-  getDeleteCommand,
+  getUpdate,
+  getDelete,
 ];
 
-export const databaseActionScripts: SqlAction.DatabaseActionScriptGenerator[] = [];
+export const databaseActionScripts: SqlAction.DatabaseActionScriptGenerator[] = [
+  getDivider,
+  getCreateKeyspace, // TODO: right now this command does not tie to the input, it will hard code the keyspace to be some_keyspace
+  getDropKeyspace,
+];
