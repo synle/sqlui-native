@@ -2,6 +2,7 @@ import { createClient, RedisClientType } from 'redis';
 import { SqluiCore } from '../../typings';
 import IDataAdapter from './IDataAdapter';
 import BaseDataAdapter, { MAX_CONNECTION_TIMEOUT } from './BaseDataAdapter';
+import {REDIS_ADAPTER_PREFIX} from '../../src/scripts/redis';
 
 export default class RedisDataAdapter extends BaseDataAdapter implements IDataAdapter {
   dialect: SqluiCore.Dialect = 'redis';
@@ -97,9 +98,15 @@ export default class RedisDataAdapter extends BaseDataAdapter implements IDataAd
   }
 
   async execute(sql: string, database?: string): Promise<SqluiCore.Result> {
-    const db = await this.getConnection();
+    let db : RedisClientType | undefined;
 
     try {
+      if(!sql.includes(`${REDIS_ADAPTER_PREFIX}.`)){
+        throw `Invalid syntax. Redis syntax in sqlui-native starts with '${REDIS_ADAPTER_PREFIX}.'. Refer to the syntax help in this link https://synle.github.io/sqlui-native/guides#redis`;
+      }
+
+      db = await this.getConnection();
+
       //@ts-ignore
       const resp: any = await eval(sql);
       console.log(resp);
