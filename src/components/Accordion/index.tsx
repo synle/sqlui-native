@@ -4,7 +4,6 @@ import React from 'react';
 import { styled } from '@mui/system';
 
 const StyledAccordionHeader = styled('div')(({ theme }) => {
-  const backgroundColor = theme.palette.action.focus;
   return {
     cursor: 'pointer',
     display: 'flex',
@@ -13,8 +12,12 @@ const StyledAccordionHeader = styled('div')(({ theme }) => {
     borderLeft: '3px solid transparent',
     paddingLeft: '3px',
 
-    '&:hover, &:focus': {
-      backgroundColor,
+    '&:hover': {
+      backgroundColor: theme.palette.action.focus,
+    },
+
+    '&:focus-within, &:focus': {
+      backgroundColor: theme.palette.action.hover,
     },
 
     '&.selected': {
@@ -53,11 +56,12 @@ export function AccordionHeader(props: AccordionHeaderProps) {
   const { children, expanded, onToggle, className } = props;
   const onShowActions = (e: React.SyntheticEvent) => {
     e.preventDefault();
-    //@ts-ignore
-    e.currentTarget?.querySelector('.DropdownButton')?.click();
+
+    const actionButton = e.currentTarget.querySelector('.DropdownButton') as HTMLButtonElement;
+    actionButton?.click?.();
   }
   return (
-    <StyledAccordionHeader onClick={() => onToggle()} className={'Accordion__Header ' + className} onContextMenu={(e) => onShowActions(e)}>
+    <StyledAccordionHeader onClick={() => onToggle()} className={'Accordion__Header ' + className} onContextMenu={onShowActions}>
       {!expanded ? (
         <ExpandLessIcon fontSize='inherit' color='inherit' />
       ) : (
