@@ -765,6 +765,13 @@ ALTER TABLE
 
 ## cassandra
 
+### Drop Keyspace
+
+```
+DROP KEYSPACE IF EXISTS database1;
+```
+
+
 ### Select All Columns
 
 ```
