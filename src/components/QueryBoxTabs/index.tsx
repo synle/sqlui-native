@@ -47,6 +47,9 @@ export default function QueryBoxTabs() {
   const onExportQuery = async (query: SqluiFrontend.ConnectionQuery) =>
     selectCommand({ event: 'clientEvent/query/export', data: query });
 
+  const onChangeQueryTabOrdering = async (from: number, to: number) =>
+    selectCommand({ event: 'clientEvent/query/changeTabOrdering', data: { from, to } });
+
   // add a dummy query to start
   useEffect(() => {
     if (!init && !isLoading) {
@@ -88,6 +91,8 @@ export default function QueryBoxTabs() {
   }
 
   const tabIdx = queries.findIndex((q) => q.selected === true) || 0;
+
+  const tabKeys: string[] = [];
   const tabHeaders: React.ReactNode[] = [
     ...queries.map((q, idx) => {
       const options = [
@@ -117,6 +122,9 @@ export default function QueryBoxTabs() {
           startIcon: <CloseIcon />,
         },
       ];
+
+      tabKeys.push(q.name + '.' + idx);
+
       return (
         <>
           {q.name}
@@ -130,6 +138,7 @@ export default function QueryBoxTabs() {
       <AddIcon fontSize='small' aria-label='Add query' /> Add Query
     </>,
   ];
+
   const tabContents = queries.map((q) => <QueryBox key={q.id} queryId={q.id} />);
 
   return (
@@ -144,6 +153,7 @@ export default function QueryBoxTabs() {
         } else {
           onAddQuery();
         }
-      }}></Tabs>
+      }}
+      onTabOrdering={onChangeQueryTabOrdering}></Tabs>
   );
 }

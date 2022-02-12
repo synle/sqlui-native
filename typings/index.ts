@@ -217,6 +217,7 @@ export module SqluiEnums {
     | 'clientEvent/query/rename'
     | 'clientEvent/query/export'
     | 'clientEvent/query/duplicate'
+    | 'clientEvent/query/changeTabOrdering'
     | 'clientEvent/query/show'
     | 'clientEvent/query/showNext'
     | 'clientEvent/query/showPrev'
