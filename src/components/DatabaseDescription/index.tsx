@@ -1,17 +1,14 @@
 import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
-import SelectAllIcon from '@mui/icons-material/SelectAll';
 import Alert from '@mui/material/Alert';
 import CircularProgress from '@mui/material/CircularProgress';
-import IconButton from '@mui/material/IconButton';
-import Tooltip from '@mui/material/Tooltip';
 import React from 'react';
 import { AccordionBody } from 'src/components/Accordion';
 import { AccordionHeader } from 'src/components/Accordion';
 import { useActiveConnectionQuery } from 'src/hooks';
 import { useGetDatabases } from 'src/hooks';
 import { useShowHide } from 'src/hooks';
-import TableDescription from 'src/components/TableDescription';
 import DatabaseActions from 'src/components/DatabaseActions';
+import TableDescription from 'src/components/TableDescription';
 
 type DatabaseDescriptionProps = {
   connectionId: string;
@@ -54,10 +51,7 @@ export default function DatabaseDescription(props: DatabaseDescriptionProps) {
               className={isSelected ? 'selected DatabaseDescription' : 'DatabaseDescription'}>
               <LibraryBooksIcon color='secondary' fontSize='inherit' />
               <span>{database.name}</span>
-              <DatabaseActions
-                connectionId={connectionId}
-                databaseId={database.name}
-              />
+              <DatabaseActions connectionId={connectionId} databaseId={database.name} />
             </AccordionHeader>
             <AccordionBody expanded={visibles[key]}>
               <TableDescription connectionId={connectionId} databaseId={database.name} />

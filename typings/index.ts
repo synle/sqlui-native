@@ -165,9 +165,13 @@ export module SqlAction {
     formatter?: 'sql' | 'js';
   };
 
-  export type TableActionScriptGenerator = (input: SqlAction.TableInput) => SqlAction.Output | undefined;
+  export type TableActionScriptGenerator = (
+    input: SqlAction.TableInput,
+  ) => SqlAction.Output | undefined;
 
-  export type DatabaseActionScriptGenerator = (input: SqlAction.DatabaseInput) => SqlAction.Output | undefined;
+  export type DatabaseActionScriptGenerator = (
+    input: SqlAction.DatabaseInput,
+  ) => SqlAction.Output | undefined;
 }
 
 /**

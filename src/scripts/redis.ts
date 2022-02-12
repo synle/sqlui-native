@@ -234,4 +234,4 @@ export const tableActionScripts: SqlAction.TableActionScriptGenerator[] = [
   getPublishMessage,
 ];
 
-export const databaseActionScripts : SqlAction.DatabaseActionScriptGenerator[] = []
+export const databaseActionScripts: SqlAction.DatabaseActionScriptGenerator[] = [];

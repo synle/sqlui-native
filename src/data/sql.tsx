@@ -1,15 +1,14 @@
-import { tableActionScripts as MongodbTableActionScripts } from 'src/scripts/mongodb';
-import { tableActionScripts as RedisTableActionScripts } from 'src/scripts/redis';
-import { tableActionScripts as CassandraTableActionScripts } from 'src/scripts/cassandra';
-import { tableActionScripts as RmdbTableActionScripts } from 'src/scripts/rmdb';
 import { databaseActionScripts as MongodbDatabaseActionScripts } from 'src/scripts/mongodb';
+import { tableActionScripts as MongodbTableActionScripts } from 'src/scripts/mongodb';
 import { databaseActionScripts as RedisDatabaseActionScripts } from 'src/scripts/redis';
+import { tableActionScripts as RedisTableActionScripts } from 'src/scripts/redis';
 import { databaseActionScripts as CassandraDatabaseActionScripts } from 'src/scripts/cassandra';
 import { databaseActionScripts as RmdbDatabaseActionScripts } from 'src/scripts/rmdb';
 import { formatJS } from 'src/utils/formatter';
 import { formatSQL } from 'src/utils/formatter';
 import { SqlAction } from 'typings';
-
+import { tableActionScripts as CassandraTableActionScripts } from 'src/scripts/cassandra';
+import { tableActionScripts as RmdbTableActionScripts } from 'src/scripts/rmdb';
 
 export function getTableActions(tableActionInput: SqlAction.TableInput) {
   const actions: SqlAction.Output[] = [];
@@ -51,9 +50,6 @@ export function getTableActions(tableActionInput: SqlAction.TableInput) {
 
   return actions;
 }
-
-
-
 export function getDatabaseActions(databaseActionInput: SqlAction.DatabaseInput) {
   const actions: SqlAction.Output[] = [];
 

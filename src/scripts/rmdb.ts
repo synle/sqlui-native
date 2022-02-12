@@ -371,8 +371,6 @@ export function getDropColumns(input: SqlAction.TableInput): SqlAction.Output | 
       };
   }
 }
-
-
 export function getDropDatabase(input: SqlAction.DatabaseInput): SqlAction.Output | undefined {
   const label = `Drop Database`;
 
@@ -385,7 +383,7 @@ export function getDropDatabase(input: SqlAction.DatabaseInput): SqlAction.Outpu
       return {
         label,
         formatter,
-        query: `DROP DATABASE ${input.dialect}`
+        query: `DROP DATABASE ${input.dialect}`,
       };
   }
 }
@@ -406,7 +404,4 @@ export const tableActionScripts: SqlAction.TableActionScriptGenerator[] = [
   getDropColumns,
 ];
 
-
-export const databaseActionScripts : SqlAction.DatabaseActionScriptGenerator[] = [
-  getDropDatabase,
-]
+export const databaseActionScripts: SqlAction.DatabaseActionScriptGenerator[] = [getDropDatabase];

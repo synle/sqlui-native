@@ -1,12 +1,11 @@
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import SelectAllIcon from '@mui/icons-material/SelectAll';
 import IconButton from '@mui/material/IconButton';
 import { useState } from 'react';
 import { getDatabaseActions } from 'src/data/sql';
 import { useActiveConnectionQuery } from 'src/hooks';
-import { useGetColumns } from 'src/hooks';
 import { useGetConnectionById } from 'src/hooks';
 import { useQuerySizeSetting } from 'src/hooks';
-import SelectAllIcon from '@mui/icons-material/SelectAll';
 import DropdownButton from 'src/components/DropdownButton';
 import useToaster from 'src/hooks/useToaster';
 
@@ -57,28 +56,28 @@ export default function DatabaseActions(props: DatabaseActionsProps) {
   };
 
   const options = [
-  {
-    label: 'Select',
-    onClick: onSelectDatabaseForQuery,
-    startIcon: <SelectAllIcon />,
-  },
-  {
-    label: 'divider',
-  },
-  ...actions.map((action) => ({
-    label: action.label,
-    onClick: async () => {
-      if (action.query) {
-        const curToast = await addToast({
-          message: `Applied "${action.label}" query`,
-        });
-
-        onShowQuery(action.query);
-
-        await curToast.dismiss(2000);
-      }
+    {
+      label: 'Select',
+      onClick: onSelectDatabaseForQuery,
+      startIcon: <SelectAllIcon />,
     },
-  }))
+    {
+      label: 'divider',
+    },
+    ...actions.map((action) => ({
+      label: action.label,
+      onClick: async () => {
+        if (action.query) {
+          const curToast = await addToast({
+            message: `Applied "${action.label}" query`,
+          });
+
+          onShowQuery(action.query);
+
+          await curToast.dismiss(2000);
+        }
+      },
+    })),
   ];
 
   return (

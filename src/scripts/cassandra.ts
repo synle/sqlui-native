@@ -110,5 +110,4 @@ export const tableActionScripts: SqlAction.TableActionScriptGenerator[] = [
   getDeleteCommand,
 ];
 
-
-export const databaseActionScripts : SqlAction.DatabaseActionScriptGenerator[] = []
+export const databaseActionScripts: SqlAction.DatabaseActionScriptGenerator[] = [];

@@ -188,4 +188,4 @@ export const tableActionScripts: SqlAction.TableActionScriptGenerator[] = [
   getDropTable,
 ];
 
-export const databaseActionScripts : SqlAction.DatabaseActionScriptGenerator[] = []
+export const databaseActionScripts: SqlAction.DatabaseActionScriptGenerator[] = [];

@@ -4,45 +4,44 @@ import { formatJS } from 'src/utils/formatter';
 import { formatSQL } from 'src/utils/formatter';
 import { getTableActions, getDatabaseActions } from 'src/data/sql';
 
-function _getScript(dialect : SqluiCore.Dialect) {
+function _getScript(dialect: SqluiCore.Dialect) {
   const connectionId = 'connection1';
   const databaseId = 'database1';
   const tableId = 'table1';
-  const querySize=  200;
+  const querySize = 200;
 
   const baseInputs = {
     dialect,
-        connectionId,
-        databaseId,
-        querySize,
-  }
+    connectionId,
+    databaseId,
+    querySize,
+  };
 
   const tableActionScripts = getTableActions({
-        ...baseInputs,
-        tableId,
-        columns: [
-          {
-            name: 'id',
-            type: 'INT',
-            primaryKey: true,
-          },
-          {
-            name: 'column1',
-            type: 'INT',
-          },
-          {
-            name: 'column2',
-            type: 'VARCHAR(100)',
-          },
-        ],
-      })
+    ...baseInputs,
+    tableId,
+    columns: [
+      {
+        name: 'id',
+        type: 'INT',
+        primaryKey: true,
+      },
+      {
+        name: 'column1',
+        type: 'INT',
+      },
+      {
+        name: 'column2',
+        type: 'VARCHAR(100)',
+      },
+    ],
+  });
 
   const databaseActionScripts = getDatabaseActions({
-        ...baseInputs,
-      })
+    ...baseInputs,
+  });
 
-
-  return [...databaseActionScripts, ...tableActionScripts]
+  return [...databaseActionScripts, ...tableActionScripts];
 }
 
 describe('Scripts', () => {
