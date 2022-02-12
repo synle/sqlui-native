@@ -7,6 +7,7 @@ import { useGetColumns } from 'src/hooks';
 import { useGetConnectionById } from 'src/hooks';
 import { useQuerySizeSetting } from 'src/hooks';
 import DropdownButton from 'src/components/DropdownButton';
+import useToaster from 'src/hooks/useToaster';
 type TableActionsProps = {
   connectionId: string;
   databaseId: string;
@@ -19,6 +20,7 @@ export default function TableActions(props: TableActionsProps) {
   let databaseId: string | undefined = props.databaseId;
   let connectionId: string | undefined = props.connectionId;
   let tableId: string | undefined = props.tableId;
+  const { add: addToast } = useToaster();
 
   if (!open) {
     // if tbale action is not opened, hen we don't need to do this...
@@ -58,9 +60,15 @@ export default function TableActions(props: TableActionsProps) {
 
   const options = actions.map((action) => ({
     label: action.label,
-    onClick: () => {
+    onClick: async () => {
       if (action.query) {
+        const curToast = await addToast({
+          message: `Applied "${action.label}" query`,
+        });
+
         onShowQuery(action.query);
+
+        await curToast.dismiss(2000);
       }
     },
   }));

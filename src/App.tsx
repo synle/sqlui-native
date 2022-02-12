@@ -21,6 +21,7 @@ import ElectronEventListener from 'src/components/ElectronEventListener';
 import MainPage from 'src/views/MainPage';
 import MissionControl from 'src/components/MissionControl';
 import NewConnectionPage from 'src/views/NewConnectionPage';
+import Toasters from 'src/components/Toasters';
 import './App.scss';
 import 'src/electronRenderer';
 
@@ -106,6 +107,7 @@ export default function App() {
         <MissionControl />
       </HashRouter>
       <ActionDialogs />
+      <Toasters />
       <ElectronEventListener />
     </ThemeProvider>
   );
