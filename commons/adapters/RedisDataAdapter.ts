@@ -24,12 +24,21 @@ export default class RedisDataAdapter extends BaseDataAdapter implements IDataAd
 
           await client.connect();
 
-          //@ts-ignore
-          this.client = client;
-        }
+          client.on('error', err => {
+              reject(err);
+          });
 
-        //@ts-ignore
-        resolve(this.client);
+          client.on('ready', err => {
+            //@ts-ignore
+            this.client = client;
+
+            //@ts-ignore
+            resolve(this.client);
+          });
+        } else {
+          //@ts-ignore
+          resolve(this.client);
+        }
       } catch (err) {
         reject(err);
       }
