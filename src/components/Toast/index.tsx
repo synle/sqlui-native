@@ -1,6 +1,7 @@
 import CloseIcon from '@mui/icons-material/Close';
 import IconButton from '@mui/material/IconButton';
 import Snackbar from '@mui/material/Snackbar';
+import Slide from '@mui/material/Slide';
 
 type ToastProps = {
   open: boolean;
@@ -41,6 +42,7 @@ export default function Toast(props: ToastProps) {
       onClose={onClose}
       message={message}
       action={action}
+      TransitionComponent={Slide}
     />
   );
 }
