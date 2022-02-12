@@ -39,10 +39,7 @@ export default function useToaster() {
 
       resolve({
         dismiss: (dismissDelay?: number) => {
-          setTimeout(() => {
-            _toasts = _toasts.filter((toast) => toast.id !== toastId);
-            queryClient.invalidateQueries(QUERY_KEY_TOASTS);
-          }, dismissDelay || 0);
+          dismiss(toastId, dismissDelay)
         },
       });
     });
