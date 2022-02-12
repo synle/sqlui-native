@@ -22,6 +22,8 @@ type ToasterHandler = {
 
 let _toasts: ToasterProps[] = [];
 
+const DEFAULT_AUTO_HIDE_DURATION = 6000;
+
 export default function useToaster() {
   const queryClient = useQueryClient();
 
@@ -33,7 +35,7 @@ export default function useToaster() {
       _toasts.push({
         ...props,
         id: toastId,
-        autoHideDuration: props.autoHideDuration || 4000,
+        autoHideDuration: props.autoHideDuration || DEFAULT_AUTO_HIDE_DURATION,
       });
       queryClient.invalidateQueries(QUERY_KEY_TOASTS);
 

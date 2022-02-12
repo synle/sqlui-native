@@ -59,9 +59,9 @@ export default function ConnectionActions(props: ConnectionActionsProps) {
     let resultMessage = '';
     try {
       await reconnectConnection(connection.id);
-      resultMessage = `Successfully refreshed connection`;
+      resultMessage = `Successfully refreshed connection "${connection.name}" (dialect=${connection.dialect})`;
     } catch (err) {
-      resultMessage = `Failed to refresh connection`;
+      resultMessage = `Failed to refresh connection "${connection.name}"`;
     }
 
     await curToast.dismiss();
