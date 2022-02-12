@@ -70,8 +70,6 @@ export default function DatabaseActions(props: DatabaseActionsProps) {
           });
 
           onShowQuery(action.query);
-
-          await curToast.dismiss(2000);
         }
       },
     })),

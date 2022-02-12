@@ -152,8 +152,6 @@ export default function MissionControl() {
     });
 
     _onDuplicateQuery(query.id);
-
-    await curToast.dismiss(2000);
   };
 
   const onExportQuery = async (query: SqluiFrontend.ConnectionQuery) => {
@@ -166,8 +164,6 @@ export default function MissionControl() {
       JSON.stringify([getExportedQuery(query)], null, 2),
       'text/json',
     );
-
-    await curToast.dismiss(2000);
   };
 
   const onRevealQueryConnection = async (query: SqluiFrontend.ConnectionQuery) => {
@@ -365,8 +361,6 @@ export default function MissionControl() {
       JSON.stringify(jsonContent, null, 2),
       'text/json',
     );
-
-    await curToast.dismiss(2000);
   };
 
   const onNewConnection = useCallback(() => navigate('/connection/new'), []);

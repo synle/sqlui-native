@@ -9,6 +9,7 @@ type CoreToasterProps = {
   onClose?: () => void;
   message: string;
   anchorOrigin?: AnchorOrigin;
+  autoHideDuration?: number;
 };
 
 type ToasterProps = CoreToasterProps & {
@@ -30,8 +31,9 @@ export default function useToaster() {
     return new Promise((resolve, reject) => {
       const toastId = `toast.${Date.now()}.${Math.floor(Math.random() * 10000000000000000)}`;
       _toasts.push({
-        id: toastId,
         ...props,
+        id: toastId,
+        autoHideDuration: props.autoHideDuration || 4000,
       });
       queryClient.invalidateQueries(QUERY_KEY_TOASTS);
 
@@ -46,12 +48,10 @@ export default function useToaster() {
     });
   };
 
-  const dismiss = (dismissDelay?: number): Promise<void> => {
+  const dismiss = (toastId: string, dismissDelay?: number): Promise<void> => {
     return new Promise((resolve, reject) => {
       setTimeout(() => {
-        if (_toasts.length > 0) {
-          _toasts.pop();
-        }
+        _toasts = _toasts.filter((toast) => toast.id !== toastId);
         queryClient.invalidateQueries(QUERY_KEY_TOASTS);
         resolve();
       }, dismissDelay || 0);

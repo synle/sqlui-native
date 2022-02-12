@@ -12,7 +12,7 @@ export default function Toasters() {
     if (toast.onClose) {
       toast.onClose();
     }
-    dismiss();
+    dismiss(toast.id);
   };
 
   return (
@@ -20,6 +20,7 @@ export default function Toasters() {
       open={true}
       onClose={onToastClose}
       message={toast.message}
+      autoHideDuration={toast.autoHideDuration}
       anchorOrigin={toast.anchorOrigin}
     />
   );
