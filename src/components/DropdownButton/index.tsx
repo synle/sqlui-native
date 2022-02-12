@@ -104,7 +104,8 @@ export default function DropdownButton(props: DropdownButtonProps) {
         aria-expanded={open ? 'true' : undefined}
         aria-label='actions dropdown'
         aria-haspopup='menu'
-        onClick={onToggle}>
+        onClick={onToggle}
+        className='DropdownButton'>
         {children}
       </i>
       <Popper open={open} anchorEl={anchorRef.current} transition>
