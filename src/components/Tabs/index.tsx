@@ -23,8 +23,7 @@ type TabsProps = {
 let fromIdx: number | undefined, toIdx: number | undefined;
 
 const StyledTabs = styled('section')(({ theme }) => {
-  return {
-  }
+  return {};
 });
 
 export default function MyTabs(props: TabsProps) {
@@ -53,8 +52,7 @@ export default function MyTabs(props: TabsProps) {
     toIdx = undefined;
   };
 
-  const onDragLeave = (e: React.DragEvent) => {
-  };
+  const onDragLeave = (e: React.DragEvent) => {};
 
   const onDragOver = (e: React.DragEvent) => {
     e.preventDefault();
