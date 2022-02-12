@@ -10,7 +10,10 @@ type TabsProps = {
   tabHeaders: string[] | React.ReactNode[];
   tabContents: React.ReactNode[];
   orientation?: 'vertical' | 'horizontal';
+  onTabOrdering?: (fromIdx: number, toIdx: number) => void;
 };
+
+let fromIdx: number, toIdx: number;
 
 export default function MyTabs(props: TabsProps) {
   const { tabIdx, tabHeaders, tabContents } = props;
@@ -27,6 +30,45 @@ export default function MyTabs(props: TabsProps) {
     const actionButton = e.currentTarget.querySelector('.DropdownButton') as HTMLButtonElement;
     actionButton?.click?.();
   };
+
+  let dragAndDropProps: any = {};
+  if (props.onTabOrdering) {
+    const onDragStart = (e: React.DragEvent) => {
+    let element = e.currentTarget;
+    //@ts-ignore
+    fromIdx = [...element.parentNode.children].indexOf(element);
+
+    // @ts-ignore
+    e.currentTarget.style.background = 'yellow';
+  };
+
+  const onDragLeave = (e: React.DragEvent) => {
+    // @ts-ignore
+    e.currentTarget.style.background = '';
+  };
+
+  const onDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    // @ts-ignore
+    e.currentTarget.style.background = 'cyan';
+  };
+
+  const onDrop = (e: React.MouseEvent) => {
+    let element = e.currentTarget;
+    //@ts-ignore
+    toIdx = [...element.parentNode.children].indexOf(element);
+
+    if(props.onTabOrdering){props.onTabOrdering( fromIdx, toIdx);}
+  };
+
+    dragAndDropProps = {
+      draggable: true,
+      onDragStart,
+      onDragLeave,
+      onDragOver,
+      onDrop,
+    };
+  }
 
   if (!orientation) {
     orientation = tabHeaders.length > VERTICAL_TAB_THRESHOLD ? 'vertical' : 'horizontal';
@@ -46,7 +88,8 @@ export default function MyTabs(props: TabsProps) {
           <Tab
             key={idx}
             label={<div className='Tab__Header'>{tabHeader}</div>}
-            onContextMenu={onShowActions}></Tab>
+            onContextMenu={onShowActions}
+            {...dragAndDropProps}></Tab>
         ))}
       </Tabs>
       <div className='Tab__Body'>{tabContents[tabIdx]}</div>

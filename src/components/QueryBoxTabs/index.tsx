@@ -47,6 +47,9 @@ export default function QueryBoxTabs() {
   const onExportQuery = async (query: SqluiFrontend.ConnectionQuery) =>
     selectCommand({ event: 'clientEvent/query/export', data: query });
 
+  const onChangeQueryTabOrdering = async (from: number, to: number) =>
+    selectCommand({ event: 'clientEvent/query/changeTabOrdering', data: {from, to} });
+
   // add a dummy query to start
   useEffect(() => {
     if (!init && !isLoading) {
@@ -144,6 +147,7 @@ export default function QueryBoxTabs() {
         } else {
           onAddQuery();
         }
-      }}></Tabs>
+      }}
+      onTabOrdering={onChangeQueryTabOrdering}></Tabs>
   );
 }

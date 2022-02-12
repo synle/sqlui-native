@@ -169,6 +169,11 @@ export default function MissionControl() {
     await curToast.dismiss(2000);
   };
 
+  const onChangeTabOrdering = (from: number, to: number) => {
+    // TODO: do the api call to change the tab ordering
+    console.log(from, to)
+  }
+
   const onRevealQueryConnection = async (query: SqluiFrontend.ConnectionQuery) => {
     const { databaseId, connectionId } = query;
 
@@ -574,6 +579,7 @@ export default function MissionControl() {
           //@ts-ignore
           window.toggleElectronMenu(true, allMenuKeys);
           break;
+
         case 'clientEvent/exportAll':
           onExportAll();
           break;
@@ -587,15 +593,26 @@ export default function MissionControl() {
         case 'clientEvent/query/new':
           onAddQuery();
           break;
+
         case 'clientEvent/query/show':
           if (command.data) {
             onShowQuery((command.data as SqluiFrontend.ConnectionQuery).id);
           }
           break;
+
+        case 'clientEvent/query/changeTabOrdering':
+          const {from, to} = command?.data as any;
+          if (from && to) {
+            onChangeTabOrdering(from, to);
+          }
+          break;
+
+
         case 'clientEvent/query/showNext':
         case 'clientEvent/query/showPrev':
           onShowQueryWithDirection(command.event === 'clientEvent/query/showNext' ? 1 : -1);
           break;
+
         case 'clientEvent/query/rename':
           if (command.data) {
             onRenameQuery(command.data as SqluiFrontend.ConnectionQuery);
@@ -603,26 +620,31 @@ export default function MissionControl() {
             onRenameQuery(activeQuery as SqluiFrontend.ConnectionQuery);
           }
           break;
+
         case 'clientEvent/query/export':
           if (command.data) {
             onExportQuery(command.data as SqluiFrontend.ConnectionQuery);
           }
           break;
+
         case 'clientEvent/query/duplicate':
           if (command.data) {
             onDuplicateQuery(command.data as SqluiFrontend.ConnectionQuery);
           }
           break;
+
         case 'clientEvent/query/close':
           if (command.data) {
             onCloseQuery(command.data as SqluiFrontend.ConnectionQuery);
           }
           break;
+
         case 'clientEvent/query/closeOther':
           if (command.data) {
             onCloseOtherQueries(command.data as SqluiFrontend.ConnectionQuery);
           }
           break;
+
         case 'clientEvent/query/closeCurrentlySelected':
           // this closes the active query
           if (activeQuery) {
@@ -647,6 +669,7 @@ export default function MissionControl() {
           //@ts-ignore
           window.toggleElectronMenu(true, allMenuKeys);
           break;
+
         case 'clientEvent/session/new':
           try {
             window.toggleElectronMenu(false, allMenuKeys);
@@ -656,6 +679,7 @@ export default function MissionControl() {
           //@ts-ignore
           window.toggleElectronMenu(true, allMenuKeys);
           break;
+
         case 'clientEvent/session/rename':
           try {
             window.toggleElectronMenu(false, allMenuKeys);
