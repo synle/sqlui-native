@@ -52,7 +52,8 @@ export default function DatabaseDescription(props: DatabaseDescriptionProps) {
     <>
       {databases.map((database) => {
         const key = [connectionId, database.name].join(' > ');
-        const isSelected = activeQuery?.databaseId === database.name;
+        const isSelected =
+          activeQuery?.connectionId === connectionId && activeQuery?.databaseId === database.name;
 
         return (
           <React.Fragment key={database.name}>
