@@ -1,9 +1,9 @@
 import CloudIcon from '@mui/icons-material/Cloud';
 
-interface ConnectionTypeIconProps {
+type ConnectionTypeIconProps = {
   scheme?: string;
   status?: string;
-}
+};
 
 export default function ConnectionTypeIcon(props: ConnectionTypeIconProps) {
   const { scheme, status } = props;

@@ -5,7 +5,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 
-interface AlertDialogProps {
+type AlertDialogProps = {
   open: boolean;
   title: string;
   message: string;
@@ -14,7 +14,7 @@ interface AlertDialogProps {
   noLabel?: string;
   onDismiss: () => void;
   isConfirm?: boolean;
-}
+};
 
 export default function AlertDialog(props: AlertDialogProps) {
   return (

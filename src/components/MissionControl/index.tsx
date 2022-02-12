@@ -35,11 +35,11 @@ import Settings from 'src/components/Settings';
 import useToaster from 'src/hooks/useToaster';
 import appPackage from 'src/package.json';
 
-export interface Command {
+export type Command = {
   event: SqluiEnums.ClientEventKey;
   data?: unknown;
   label?: string;
-}
+};
 
 const QUERY_KEY_COMMAND_PALETTE = 'commandPalette';
 
