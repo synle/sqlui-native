@@ -1,36 +1,84 @@
-import { scripts as MongodbScripts } from 'src/scripts/mongodb';
-import { scripts as RedisScripts } from 'src/scripts/redis';
+import { tableActionScripts as MongodbTableActionScripts } from 'src/scripts/mongodb';
+import { tableActionScripts as RedisTableActionScripts } from 'src/scripts/redis';
+import { tableActionScripts as CassandraTableActionScripts } from 'src/scripts/cassandra';
+import { tableActionScripts as RmdbTableActionScripts } from 'src/scripts/rmdb';
+import { databaseActionScripts as MongodbDatabaseActionScripts } from 'src/scripts/mongodb';
+import { databaseActionScripts as RedisDatabaseActionScripts } from 'src/scripts/redis';
+import { databaseActionScripts as CassandraDatabaseActionScripts } from 'src/scripts/cassandra';
+import { databaseActionScripts as RmdbDatabaseActionScripts } from 'src/scripts/rmdb';
 import { formatJS } from 'src/utils/formatter';
 import { formatSQL } from 'src/utils/formatter';
-import { scripts as CassandraScripts } from 'src/scripts/cassandra';
-import { scripts as RmdbScripts } from 'src/scripts/rmdb';
 import { SqlAction } from 'typings';
+
 
 export function getTableActions(tableActionInput: SqlAction.TableInput) {
   const actions: SqlAction.Output[] = [];
 
-  let scriptsToUse: SqlAction.ScriptGenerator[] = [];
+  let scriptsToUse: SqlAction.TableActionScriptGenerator[] = [];
   switch (tableActionInput.dialect) {
     case 'mysql':
     case 'mariadb':
     case 'mssql':
     case 'postgres':
     case 'sqlite':
-      scriptsToUse = RmdbScripts;
+      scriptsToUse = RmdbTableActionScripts;
       break;
     case 'cassandra':
-      scriptsToUse = CassandraScripts;
+      scriptsToUse = CassandraTableActionScripts;
       break;
     case 'mongodb':
-      scriptsToUse = MongodbScripts;
+      scriptsToUse = MongodbTableActionScripts;
       break;
     case 'redis':
-      scriptsToUse = RedisScripts;
+      scriptsToUse = RedisTableActionScripts;
       break;
   }
 
   scriptsToUse.forEach((fn) => {
     const action = fn(tableActionInput);
+    if (action) {
+      switch (action.formatter) {
+        case 'sql':
+          action.query = formatSQL(action.query || '');
+          break;
+        case 'js':
+          action.query = formatJS(action.query || '');
+          break;
+      }
+      actions.push(action);
+    }
+  });
+
+  return actions;
+}
+
+
+
+export function getDatabaseActions(databaseActionInput: SqlAction.DatabaseInput) {
+  const actions: SqlAction.Output[] = [];
+
+  let scriptsToUse: SqlAction.DatabaseActionScriptGenerator[] = [];
+  switch (databaseActionInput.dialect) {
+    case 'mysql':
+    case 'mariadb':
+    case 'mssql':
+    case 'postgres':
+    case 'sqlite':
+      scriptsToUse = RmdbDatabaseActionScripts;
+      break;
+    case 'cassandra':
+      scriptsToUse = CassandraDatabaseActionScripts;
+      break;
+    case 'mongodb':
+      scriptsToUse = MongodbDatabaseActionScripts;
+      break;
+    case 'redis':
+      scriptsToUse = RedisDatabaseActionScripts;
+      break;
+  }
+
+  scriptsToUse.forEach((fn) => {
+    const action = fn(databaseActionInput);
     if (action) {
       switch (action.formatter) {
         case 'sql':

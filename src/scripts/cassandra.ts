@@ -101,7 +101,7 @@ export function getDeleteCommand(input: SqlAction.TableInput): SqlAction.Output 
   }
 }
 
-export const scripts: SqlAction.ScriptGenerator[] = [
+export const tableActionScripts: SqlAction.TableActionScriptGenerator[] = [
   getSelectAllColumns,
   getSelectSpecificColumns,
   getInsertCommand,
@@ -109,3 +109,6 @@ export const scripts: SqlAction.ScriptGenerator[] = [
   getUpdateCommand,
   getDeleteCommand,
 ];
+
+
+export const databaseActionScripts : SqlAction.DatabaseActionScriptGenerator[] = []

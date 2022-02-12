@@ -7,7 +7,7 @@ import { scripts as CassandraScripts } from 'src/scripts/cassandra';
 import { scripts as MongodbScripts } from 'src/scripts/mongodb';
 import { scripts as RedisScripts } from 'src/scripts/redis';
 
-function _getScript(scripts: SqlAction.ScriptGenerator[], dialect: SqluiCore.Dialect) {
+function _getScript(scripts: SqlAction.TableActionScriptGenerator[], dialect: SqluiCore.Dialect) {
   return scripts
     .map((fn) => {
       return fn({

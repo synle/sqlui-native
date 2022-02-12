@@ -180,7 +180,7 @@ export function getDropTable(input: SqlAction.TableInput): SqlAction.Output | un
   }
 }
 
-export const scripts: SqlAction.ScriptGenerator[] = [
+export const tableActionScripts: SqlAction.TableActionScriptGenerator[] = [
   getSelectAllColumns,
   getSelectSpecificColumns,
   getSelectDistinctValues,
@@ -192,3 +192,5 @@ export const scripts: SqlAction.ScriptGenerator[] = [
   getCreateTable,
   getDropTable,
 ];
+
+export const databaseActionScripts : SqlAction.DatabaseActionScriptGenerator[] = []

@@ -1,55 +1,52 @@
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import IconButton from '@mui/material/IconButton';
 import { useState } from 'react';
-import { getTableActions } from 'src/data/sql';
+import { getDatabaseActions } from 'src/data/sql';
 import { useActiveConnectionQuery } from 'src/hooks';
 import { useGetColumns } from 'src/hooks';
 import { useGetConnectionById } from 'src/hooks';
 import { useQuerySizeSetting } from 'src/hooks';
+import SelectAllIcon from '@mui/icons-material/SelectAll';
 import DropdownButton from 'src/components/DropdownButton';
 import useToaster from 'src/hooks/useToaster';
 
-type TableActionsProps = {
+type DatabaseActionsProps = {
   connectionId: string;
   databaseId: string;
-  tableId: string;
 };
 
-export default function TableActions(props: TableActionsProps) {
+export default function DatabaseActions(props: DatabaseActionsProps) {
   const [open, setOpen] = useState(false);
   const querySize = useQuerySizeSetting();
   let databaseId: string | undefined = props.databaseId;
   let connectionId: string | undefined = props.connectionId;
-  let tableId: string | undefined = props.tableId;
   const { add: addToast } = useToaster();
 
   if (!open) {
     // if table action is not opened, hen we don't need to do this...
     databaseId = undefined;
     connectionId = undefined;
-    tableId = undefined;
   }
 
   const { data: connection, isLoading: loadingConnection } = useGetConnectionById(connectionId);
-  const { data: columns, isLoading: loadingColumns } = useGetColumns(
-    connectionId,
-    databaseId,
-    tableId,
-  );
-
   const { query, onChange: onChangeActiveQuery } = useActiveConnectionQuery();
   const dialect = connection?.dialect;
 
-  const isLoading = loadingConnection || loadingColumns;
+  const isLoading = loadingConnection;
 
-  const actions = getTableActions({
+  const actions = getDatabaseActions({
     dialect,
     connectionId,
     databaseId,
-    tableId,
-    columns: columns || [],
     querySize,
   });
+
+  const onSelectDatabaseForQuery = () => {
+    onChangeActiveQuery({
+      connectionId: connectionId,
+      databaseId: databaseId,
+    });
+  };
 
   const onShowQuery = (queryToShow: string) => {
     onChangeActiveQuery({
@@ -59,7 +56,16 @@ export default function TableActions(props: TableActionsProps) {
     });
   };
 
-  const options = actions.map((action) => ({
+  const options = [
+  {
+    label: 'Select',
+    onClick: onSelectDatabaseForQuery,
+    startIcon: <SelectAllIcon />,
+  },
+  {
+    label: 'divider',
+  },
+  ...actions.map((action) => ({
     label: action.label,
     onClick: async () => {
       if (action.query) {
@@ -72,16 +78,17 @@ export default function TableActions(props: TableActionsProps) {
         await curToast.dismiss(2000);
       }
     },
-  }));
+  }))
+  ];
 
   return (
-    <div className='TableActions'>
+    <div className='DatabaseActions'>
       <DropdownButton
-        id='table-action-split-button'
+        id='database-action-split-button'
         options={options}
         onToggle={(newOpen) => setOpen(newOpen)}
         isLoading={isLoading}>
-        <IconButton aria-label='Table Actions' size='small' color='inherit'>
+        <IconButton aria-label='Database Actions' size='small' color='inherit'>
           <ArrowDropDownIcon fontSize='inherit' color='inherit' />
         </IconButton>
       </DropdownButton>

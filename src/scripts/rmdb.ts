@@ -310,25 +310,6 @@ export function getDropTable(input: SqlAction.TableInput): SqlAction.Output | un
   }
 }
 
-export function getDropTables(input: SqlAction.DatabaseInput): SqlAction.Output | undefined {
-  const label = `Drop Table`;
-
-  switch (input.dialect) {
-    case 'mssql':
-    case 'postgres':
-    case 'sqlite':
-    case 'mariadb':
-    case 'mysql':
-      return {
-        label,
-        formatter,
-        query: input.tables
-          .map((table) => getDropTable({ ...input, tableId: table.name }))
-          .join('\n'),
-      };
-  }
-}
-
 export function getAddColumn(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Add Column`;
 
@@ -391,7 +372,25 @@ export function getDropColumns(input: SqlAction.TableInput): SqlAction.Output | 
   }
 }
 
-export const scripts: SqlAction.ScriptGenerator[] = [
+
+export function getDropDatabase(input: SqlAction.DatabaseInput): SqlAction.Output | undefined {
+  const label = `Drop Database`;
+
+  switch (input.dialect) {
+    case 'mssql':
+    case 'postgres':
+    case 'sqlite':
+    case 'mariadb':
+    case 'mysql':
+      return {
+        label,
+        formatter,
+        query: `DROP DATABASE ${input.dialect}`
+      };
+  }
+}
+
+export const tableActionScripts: SqlAction.TableActionScriptGenerator[] = [
   getSelectAllColumns,
   getSelectCount,
   getSelectSpecificColumns,
@@ -406,3 +405,8 @@ export const scripts: SqlAction.ScriptGenerator[] = [
   getAddColumn,
   getDropColumns,
 ];
+
+
+export const databaseActionScripts : SqlAction.DatabaseActionScriptGenerator[] = [
+  getDropDatabase,
+]
