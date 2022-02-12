@@ -194,7 +194,7 @@ export default function MissionControl() {
     setTimeout(() => {
       //@ts-ignore
       document.querySelector('.Accordion__Header.selected').scrollIntoView();
-    }, 100)
+    }, 100);
     curToast.dismiss(2000);
   };
 
