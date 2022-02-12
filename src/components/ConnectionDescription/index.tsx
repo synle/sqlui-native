@@ -1,11 +1,11 @@
 import Alert from '@mui/material/Alert';
 import CircularProgress from '@mui/material/CircularProgress';
 import React from 'react';
-import { AccordionBody } from 'src/components/Accordion';
-import { AccordionHeader } from 'src/components/Accordion';
-import { useActiveConnectionQuery } from 'src/hooks';
-import { useGetConnections } from 'src/hooks';
-import { useShowHide } from 'src/hooks';
+import {AccordionBody} from 'src/components/Accordion';
+import {AccordionHeader} from 'src/components/Accordion';
+import {useActiveConnectionQuery} from 'src/hooks';
+import {useGetConnections} from 'src/hooks';
+import {useShowHide} from 'src/hooks';
 import ConnectionActions from 'src/components/ConnectionActions';
 import ConnectionRetryAlert from 'src/components/ConnectionRetryAlert';
 import ConnectionTypeIcon from 'src/components/ConnectionTypeIcon';

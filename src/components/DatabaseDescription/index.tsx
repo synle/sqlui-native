@@ -5,11 +5,11 @@ import CircularProgress from '@mui/material/CircularProgress';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import React from 'react';
-import { AccordionBody } from 'src/components/Accordion';
-import { AccordionHeader } from 'src/components/Accordion';
-import { useActiveConnectionQuery } from 'src/hooks';
-import { useGetDatabases } from 'src/hooks';
-import { useShowHide } from 'src/hooks';
+import {AccordionBody} from 'src/components/Accordion';
+import {AccordionHeader} from 'src/components/Accordion';
+import {useActiveConnectionQuery} from 'src/hooks';
+import {useGetDatabases} from 'src/hooks';
+import {useShowHide} from 'src/hooks';
 import TableDescription from 'src/components/TableDescription';
 
 type DatabaseDescriptionProps = {

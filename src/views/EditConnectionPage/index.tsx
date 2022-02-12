@@ -1,8 +1,8 @@
 import Typography from '@mui/material/Typography';
-import { useParams } from 'react-router-dom';
-import { useState } from 'react';
-import { EditConnectionForm } from 'src/components/ConnectionForm';
-import { LocalStorageConfig } from 'src/data/config';
+import {useParams} from 'react-router-dom';
+import {useState} from 'react';
+import {EditConnectionForm} from 'src/components/ConnectionForm';
+import {LocalStorageConfig} from 'src/data/config';
 import ConnectionDescription from 'src/components/ConnectionDescription';
 import NewConnectionButton from 'src/components/NewConnectionButton';
 import Resizer from 'src/components/Resizer';

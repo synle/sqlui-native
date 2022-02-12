@@ -1,6 +1,6 @@
-import { useQuery } from 'react-query';
-import { useQueryClient } from 'react-query';
-import { AnchorOrigin } from 'src/components/Toast';
+import {useQuery} from 'react-query';
+import {useQueryClient} from 'react-query';
+import {AnchorOrigin} from 'src/components/Toast';
 import Toast from 'src/components/Toast';
 
 const QUERY_KEY_TOASTS = 'toasts';

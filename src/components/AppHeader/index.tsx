@@ -9,12 +9,12 @@ import IconButton from '@mui/material/IconButton';
 import Toolbar from '@mui/material/Toolbar';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
-import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
-import { useCommands } from 'src/components/MissionControl';
-import { useGetCurrentSession } from 'src/hooks';
-import { useGetSessions } from 'src/hooks';
+import {useEffect} from 'react';
+import {useNavigate} from 'react-router-dom';
+import {useState} from 'react';
+import {useCommands} from 'src/components/MissionControl';
+import {useGetCurrentSession} from 'src/hooks';
+import {useGetSessions} from 'src/hooks';
 import DropdownButton from 'src/components/DropdownButton';
 import appPackage from 'src/package.json';
 

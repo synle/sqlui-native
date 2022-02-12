@@ -2,9 +2,9 @@ import AddIcon from '@mui/icons-material/Add';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import UnfoldLessIcon from '@mui/icons-material/UnfoldLess';
-import { Button } from '@mui/material';
+import {Button} from '@mui/material';
 import Box from '@mui/material/Box';
-import { useCommands } from 'src/components/MissionControl';
+import {useCommands} from 'src/components/MissionControl';
 import SplitButton from 'src/components/SplitButton';
 
 export default function NewConnectionButton() {
