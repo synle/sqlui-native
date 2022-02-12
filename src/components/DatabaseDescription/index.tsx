@@ -11,6 +11,7 @@ import { useActiveConnectionQuery } from 'src/hooks';
 import { useGetDatabases } from 'src/hooks';
 import { useShowHide } from 'src/hooks';
 import TableDescription from 'src/components/TableDescription';
+
 type DatabaseDescriptionProps = {
   connectionId: string;
 };

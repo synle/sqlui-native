@@ -27,8 +27,8 @@ export default function Toast(props: ToastProps) {
 
   const anchorOrigin = props?.anchorOrigin;
 
-  const vertical = anchorOrigin?.vertical || 'bottom'
-  const horizontal = anchorOrigin?.horizontal || 'center'
+  const vertical = anchorOrigin?.vertical || 'bottom';
+  const horizontal = anchorOrigin?.horizontal || 'center';
 
   return (
     <Snackbar
