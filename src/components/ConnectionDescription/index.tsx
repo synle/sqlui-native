@@ -33,7 +33,7 @@ export default function ConnectionDescription() {
       {connections.map((connection) => {
         const key = [connection.id].join(' > ');
         const isOnline = connection?.status === 'online';
-        const isSelected = activeQuery?.connectionId === connection.id;
+        const isSelected = activeQuery?.connectionId && activeQuery?.connectionId === connection.id;
 
         return (
           <React.Fragment key={key}>
