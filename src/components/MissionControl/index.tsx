@@ -33,8 +33,7 @@ import { useUpsertSession } from 'src/hooks';
 import CommandPalette from 'src/components/CommandPalette';
 import Settings from 'src/components/Settings';
 import appPackage from 'src/package.json';
- import useToaster from 'src/hooks/useToaster';
-
+import useToaster from 'src/hooks/useToaster';
 
 export interface Command {
   event: SqluiEnums.ClientEventKey;
@@ -120,6 +119,7 @@ export default function MissionControl() {
   const onCloseQuery = async (query: SqluiFrontend.ConnectionQuery) => {
     try {
       await confirm('Do you want to delete this query?');
+
       onDeleteQueries([query.id]);
     } catch (err) {}
   };
@@ -146,12 +146,18 @@ export default function MissionControl() {
   };
 
   const onDuplicateQuery = async (query: SqluiFrontend.ConnectionQuery) => {
+    await addToast({
+      message: `Duplicating "${query.name}", please wait...`,
+    });
+
     _onDuplicateQuery(query.id);
+
+    await dismissToast(2000);
   };
 
   const onExportQuery = async (query: SqluiFrontend.ConnectionQuery) => {
     await addToast({
-      message: `Exporting Query "${query.name}", please wait...`
+      message: `Exporting Query "${query.name}", please wait...`,
     });
 
     downloadText(
@@ -325,7 +331,7 @@ export default function MissionControl() {
 
   const onExportAll = async () => {
     await addToast({
-      message: `Exporting All Connections and Queries, please wait...`
+      message: `Exporting All Connections and Queries, please wait...`,
     });
 
     let jsonContent: any[] = [];
@@ -373,7 +379,7 @@ export default function MissionControl() {
       }
 
       await addToast({
-        message: 'Importing, please wait...'
+        message: 'Importing, please wait...',
       });
 
       // here we will attempt to import all the connections first before queries

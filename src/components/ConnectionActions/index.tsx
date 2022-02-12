@@ -19,7 +19,7 @@ import { useDuplicateConnection } from 'src/hooks';
 import { useRetryConnection } from 'src/hooks';
 import DropdownButton from 'src/components/DropdownButton';
 import Toast from 'src/components/Toast';
- import useToaster from 'src/hooks/useToaster';
+import useToaster from 'src/hooks/useToaster';
 
 interface ConnectionActionsProps {
   connection: SqluiCore.ConnectionProps;
@@ -27,7 +27,6 @@ interface ConnectionActionsProps {
 
 export default function ConnectionActions(props: ConnectionActionsProps) {
   const { connection } = props;
-  const [message, setMessage] = useState('');
   const navigate = useNavigate();
   const { mutateAsync: deleteConnection } = useDeleteConnection();
   const { mutateAsync: reconnectConnection } = useRetryConnection();
@@ -40,25 +39,52 @@ export default function ConnectionActions(props: ConnectionActionsProps) {
     try {
       await confirm('Delete this connection?');
       await deleteConnection(connection.id);
-    } catch (err) {}
+      await addToast({
+        message: `Connection "${connection.name}" deleted`,
+      });
+    } catch (err) {
+      await addToast({
+        message: `Failed to delete connection "${connection.name}"`,
+      });
+    }
+
+    await dismissToast(2000);
   };
 
   const onRefresh = async () => {
+    await addToast({
+      message: `Refreshing connection "${connection.name}", please wait...`,
+    });
+
+    let resultMessage = '';
     try {
       await reconnectConnection(connection.id);
-      setMessage('Successfully refreshed connection');
+      resultMessage = `Successfully refreshed connection`;
     } catch (err) {
-      setMessage('Failed to refresh connection');
+      resultMessage = `Failed to refresh connection`;
     }
+
+    await dismissToast();
+    await addToast({
+      message: resultMessage,
+    });
+
+    await dismissToast(3000);
   };
 
   const onDuplicate = async () => {
+    await addToast({
+      message: `Duplicating connection "${connection.name}", please wait...`,
+    });
+
     duplicateConnection(connection);
+
+    await dismissToast(2000);
   };
 
   const onExportConnection = async () => {
     await addToast({
-      message: `Exporting connection "${connection.name}", please wait...`
+      message: `Exporting connection "${connection.name}", please wait...`,
     });
 
     downloadText(
@@ -72,7 +98,7 @@ export default function ConnectionActions(props: ConnectionActionsProps) {
 
   const onSelectConnection = async () => {
     await addToast({
-      message: `Connection "${connection.name}" selected for query`
+      message: `Connection "${connection.name}" selected for query`,
     });
 
     onChangeActiveQuery({
@@ -123,7 +149,6 @@ export default function ConnectionActions(props: ConnectionActionsProps) {
           <ArrowDropDownIcon fontSize='inherit' color='inherit' />
         </IconButton>
       </DropdownButton>
-      <Toast open={!!message} onClose={() => setMessage('')} message={message} />
     </>
   );
 }

@@ -1,42 +1,59 @@
 import { useQuery } from 'react-query';
 import { useQueryClient } from 'react-query';
 import React from 'react';
- import Toast from 'src/components/Toast';
-
+import Toast from 'src/components/Toast';
 
 const QUERY_KEY_TOASTS = 'toasts';
 
-
-type ToasterProps = {
+type CoreToasterProps = {
   onClose?: () => void;
   message: string;
-}
+};
 
-let _toasts : ToasterProps []= [];
+type ToasterProps = CoreToasterProps & {
+  id: string;
+};
+
+type ToasterHandler = {
+  dismiss: (dismissDelay?: number) => void;
+};
+
+let _toasts: ToasterProps[] = [];
 
 export default function useToaster() {
   const queryClient = useQueryClient();
 
   const { data, isLoading } = useQuery(QUERY_KEY_TOASTS, () => _toasts);
 
-  const add = (props: ToasterProps): Promise<void> => {
+  const add = (props: CoreToasterProps): Promise<ToasterHandler> => {
     return new Promise((resolve, reject) => {
-      _toasts.push(props);
+      const toastId = `toast.${Date.now()}.${Math.floor(Math.random() * 10000000000000000)}`
+      _toasts.push({
+        id: toastId,
+        ...props,
+      });
       queryClient.invalidateQueries(QUERY_KEY_TOASTS);
-      resolve();
+
+      resolve({
+        dismiss: (dismissDelay?: number) => {
+          setTimeout(() => {
+            _toasts = _toasts.filter(toast => toast.id !== toastId);
+            queryClient.invalidateQueries(QUERY_KEY_TOASTS);
+          }, dismissDelay || 0);
+        },
+      });
     });
   };
 
   const dismiss = (dismissDelay?: number): Promise<void> => {
     return new Promise((resolve, reject) => {
-      setTimeout(
-        () => {
-          if(_toasts.length > 0){
-        _toasts.pop();
-      }
-      queryClient.invalidateQueries(QUERY_KEY_TOASTS);
-      resolve();
-    }, dismissDelay || 0);
+      setTimeout(() => {
+        if (_toasts.length > 0) {
+          _toasts.pop();
+        }
+        queryClient.invalidateQueries(QUERY_KEY_TOASTS);
+        resolve();
+      }, dismissDelay || 0);
     });
   };
 
@@ -49,12 +66,11 @@ export default function useToaster() {
     toast = undefined;
   }
 
-
   return {
     toasts: data,
     toast,
     isLoading,
     add,
     dismiss,
-  }
+  };
 }

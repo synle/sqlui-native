@@ -1,8 +1,8 @@
 import { useQuery } from 'react-query';
 import { useQueryClient } from 'react-query';
 import React from 'react';
- import Toast from 'src/components/Toast';
- import useToaster from 'src/hooks/useToaster';
+import Toast from 'src/components/Toast';
+import useToaster from 'src/hooks/useToaster';
 
 export default function Toasters() {
   const { toast, dismiss } = useToaster();
@@ -12,11 +12,11 @@ export default function Toasters() {
   }
 
   const onToastClose = () => {
-    if(toast.onClose){
+    if (toast.onClose) {
       toast.onClose();
     }
     dismiss();
-  }
+  };
 
-  return <Toast open={true} onClose={onToastClose} message={toast.message} />
+  return <Toast open={true} onClose={onToastClose} message={toast.message} />;
 }
