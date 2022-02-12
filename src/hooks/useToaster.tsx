@@ -1,6 +1,5 @@
 import { useQuery } from 'react-query';
 import { useQueryClient } from 'react-query';
-import React from 'react';
 import Toast from 'src/components/Toast';
 
 const QUERY_KEY_TOASTS = 'toasts';
@@ -27,7 +26,7 @@ export default function useToaster() {
 
   const add = (props: CoreToasterProps): Promise<ToasterHandler> => {
     return new Promise((resolve, reject) => {
-      const toastId = `toast.${Date.now()}.${Math.floor(Math.random() * 10000000000000000)}`
+      const toastId = `toast.${Date.now()}.${Math.floor(Math.random() * 10000000000000000)}`;
       _toasts.push({
         id: toastId,
         ...props,
@@ -37,7 +36,7 @@ export default function useToaster() {
       resolve({
         dismiss: (dismissDelay?: number) => {
           setTimeout(() => {
-            _toasts = _toasts.filter(toast => toast.id !== toastId);
+            _toasts = _toasts.filter((toast) => toast.id !== toastId);
             queryClient.invalidateQueries(QUERY_KEY_TOASTS);
           }, dismissDelay || 0);
         },

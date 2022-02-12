@@ -8,7 +8,6 @@ import SelectAllIcon from '@mui/icons-material/SelectAll';
 import { Button } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
 import { downloadText } from 'src/data/file';
 import { getExportedConnection } from 'src/hooks';
 import { SqluiCore } from 'typings';
@@ -53,7 +52,7 @@ export default function ConnectionActions(props: ConnectionActionsProps) {
   };
 
   const onRefresh = async () => {
-    let curToast
+    let curToast;
 
     curToast = await addToast({
       message: `Refreshing connection "${connection.name}", please wait...`,

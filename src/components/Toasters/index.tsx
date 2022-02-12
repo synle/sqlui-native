@@ -1,6 +1,3 @@
-import { useQuery } from 'react-query';
-import { useQueryClient } from 'react-query';
-import React from 'react';
 import Toast from 'src/components/Toast';
 import useToaster from 'src/hooks/useToaster';
 

@@ -8,7 +8,6 @@ import { useGetConnectionById } from 'src/hooks';
 import { useQuerySizeSetting } from 'src/hooks';
 import DropdownButton from 'src/components/DropdownButton';
 import useToaster from 'src/hooks/useToaster';
-
 type TableActionsProps = {
   connectionId: string;
   databaseId: string;

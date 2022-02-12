@@ -1,6 +1,3 @@
-import { useQuery } from 'react-query';
-import { useQueryClient } from 'react-query';
-import React from 'react';
 import CloseIcon from '@mui/icons-material/Close';
 import IconButton from '@mui/material/IconButton';
 import Snackbar from '@mui/material/Snackbar';

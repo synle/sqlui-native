@@ -32,8 +32,8 @@ import { useShowHide } from 'src/hooks';
 import { useUpsertSession } from 'src/hooks';
 import CommandPalette from 'src/components/CommandPalette';
 import Settings from 'src/components/Settings';
-import appPackage from 'src/package.json';
 import useToaster from 'src/hooks/useToaster';
+import appPackage from 'src/package.json';
 
 export interface Command {
   event: SqluiEnums.ClientEventKey;
