@@ -1,7 +1,7 @@
 import CloseIcon from '@mui/icons-material/Close';
 import IconButton from '@mui/material/IconButton';
-import Snackbar from '@mui/material/Snackbar';
 import Slide from '@mui/material/Slide';
+import Snackbar from '@mui/material/Snackbar';
 
 type ToastProps = {
   open: boolean;
