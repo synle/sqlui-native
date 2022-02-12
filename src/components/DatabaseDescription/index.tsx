@@ -4,11 +4,11 @@ import CircularProgress from '@mui/material/CircularProgress';
 import React from 'react';
 import { AccordionBody } from 'src/components/Accordion';
 import { AccordionHeader } from 'src/components/Accordion';
+import DatabaseActions from 'src/components/DatabaseActions';
+import TableDescription from 'src/components/TableDescription';
 import { useActiveConnectionQuery } from 'src/hooks';
 import { useGetDatabases } from 'src/hooks';
 import { useShowHide } from 'src/hooks';
-import DatabaseActions from 'src/components/DatabaseActions';
-import TableDescription from 'src/components/TableDescription';
 
 type DatabaseDescriptionProps = {
   connectionId: string;

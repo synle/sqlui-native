@@ -1,10 +1,10 @@
 import Typography from '@mui/material/Typography';
 import { useState } from 'react';
-import { LocalStorageConfig } from 'src/data/config';
-import { NewConnectionForm } from 'src/components/ConnectionForm';
 import ConnectionDescription from 'src/components/ConnectionDescription';
+import { NewConnectionForm } from 'src/components/ConnectionForm';
 import NewConnectionButton from 'src/components/NewConnectionButton';
 import Resizer from 'src/components/Resizer';
+import { LocalStorageConfig } from 'src/data/config';
 
 export default function NewConnectionPage() {
   const [width, setWidth] = useState<undefined | number>(

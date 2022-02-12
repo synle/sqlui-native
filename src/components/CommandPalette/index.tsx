@@ -3,9 +3,9 @@ import TextField from '@mui/material/TextField';
 import { useEffect } from 'react';
 import { useState } from 'react';
 import { Command } from 'src/components/MissionControl';
-import { SqluiEnums } from 'typings';
 import { useActiveConnectionQuery } from 'src/hooks';
 import { useConnectionQueries } from 'src/hooks';
+import { SqluiEnums } from 'typings';
 
 const MAX_OPTION_TO_SHOW = 20;
 

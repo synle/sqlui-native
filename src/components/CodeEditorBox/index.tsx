@@ -4,10 +4,10 @@ import Button from '@mui/material/Button';
 import ToggleButton from '@mui/material/ToggleButton';
 import { useEffect } from 'react';
 import { useState } from 'react';
-import { useEditorModeSetting } from 'src/hooks';
-import { useWordWrapSetting } from 'src/hooks';
 import AdvancedEditor from 'src/components/CodeEditorBox/AdvancedEditor';
 import SimpleEditor from 'src/components/CodeEditorBox/SimpleEditor';
+import { useEditorModeSetting } from 'src/hooks';
+import { useWordWrapSetting } from 'src/hooks';
 
 type CodeEditorProps = {
   value?: string;

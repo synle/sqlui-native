@@ -3,10 +3,10 @@ import TextField from '@mui/material/TextField';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import React from 'react';
-import { SqluiFrontend } from 'typings';
+import Select from 'src/components/Select';
 import { useQuerySizeSetting } from 'src/hooks';
 import { useSettings } from 'src/hooks';
-import Select from 'src/components/Select';
+import { SqluiFrontend } from 'typings';
 
 type SettingsProps = {};
 
