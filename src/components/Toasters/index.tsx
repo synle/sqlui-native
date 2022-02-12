@@ -1,5 +1,6 @@
 import Toast from 'src/components/Toast';
-import useToaster, {ToasterProps} from 'src/hooks/useToaster';
+import { ToasterProps } from 'src/hooks/useToaster';
+import useToaster from 'src/hooks/useToaster';
 
 export default function Toasters() {
   const { toasts, dismiss } = useToaster();
@@ -17,14 +18,15 @@ export default function Toasters() {
 
   return (
     <>
-    {toasts.map(toast => <Toast
+      {toasts.map((toast) => (
+        <Toast
           key={toast.id}
           open={true}
           onClose={() => onToastClose(toast)}
           message={toast.message}
           anchorOrigin={toast.anchorOrigin}
         />
-        )}
+      ))}
     </>
   );
 }
