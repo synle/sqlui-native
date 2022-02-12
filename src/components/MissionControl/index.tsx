@@ -186,6 +186,16 @@ export default function MissionControl() {
       // reveal
       onToggleConnectionVisible(branchToReveal, true);
     }
+
+    // scroll to the selected dom
+    const curToast = await addToast({
+      message: `Revealed selected connection / database on the sidebar`,
+    });
+    setTimeout(() => {
+      //@ts-ignore
+      document.querySelector('.Accordion__Header.selected').scrollIntoView();
+    }, 100);
+    curToast.dismiss(2000);
   };
 
   const onShowQueryHelp = async () => {
