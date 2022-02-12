@@ -59,9 +59,12 @@ export function AccordionHeader(props: AccordionHeaderProps) {
 
     const actionButton = e.currentTarget.querySelector('.DropdownButton') as HTMLButtonElement;
     actionButton?.click?.();
-  }
+  };
   return (
-    <StyledAccordionHeader onClick={() => onToggle()} className={'Accordion__Header ' + className} onContextMenu={onShowActions}>
+    <StyledAccordionHeader
+      onClick={() => onToggle()}
+      className={'Accordion__Header ' + className}
+      onContextMenu={onShowActions}>
       {!expanded ? (
         <ExpandLessIcon fontSize='inherit' color='inherit' />
       ) : (
