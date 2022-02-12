@@ -41,7 +41,7 @@ export default function useToaster() {
 
       resolve({
         dismiss: (dismissDelay?: number) => {
-          dismiss(toastId, dismissDelay)
+          dismiss(toastId, dismissDelay);
         },
       });
     });
