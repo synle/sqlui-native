@@ -371,6 +371,7 @@ export function getDropColumns(input: SqlAction.TableInput): SqlAction.Output | 
       };
   }
 }
+
 export function getDropDatabase(input: SqlAction.DatabaseInput): SqlAction.Output | undefined {
   const label = `Drop Database`;
 
@@ -384,6 +385,23 @@ export function getDropDatabase(input: SqlAction.DatabaseInput): SqlAction.Outpu
         label,
         formatter,
         query: `DROP DATABASE ${input.dialect}`,
+      };
+  }
+}
+
+export function getCreateDatabase(input: SqlAction.DatabaseInput): SqlAction.Output | undefined {
+  const label = `Create Database`;
+
+  switch (input.dialect) {
+    case 'mssql':
+    case 'postgres':
+    case 'sqlite':
+    case 'mariadb':
+    case 'mysql':
+      return {
+        label,
+        formatter,
+        query: `CREATE DATABASE ${input.dialect}`,
       };
   }
 }
@@ -404,4 +422,8 @@ export const tableActionScripts: SqlAction.TableActionScriptGenerator[] = [
   getDropColumns,
 ];
 
-export const databaseActionScripts: SqlAction.DatabaseActionScriptGenerator[] = [getDropDatabase];
+export const databaseActionScripts: SqlAction.DatabaseActionScriptGenerator[] = [
+  getDivider,
+  getDropDatabase,
+  getCreateDatabase,
+];
