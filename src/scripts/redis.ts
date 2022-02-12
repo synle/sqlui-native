@@ -206,7 +206,7 @@ export function getPublishMessage(input: SqlAction.TableInput): SqlAction.Output
   };
 }
 
-export const scripts: SqlAction.ScriptGenerator[] = [
+export const tableActionScripts: SqlAction.TableActionScriptGenerator[] = [
   getSetValue,
   getGet,
   getScan,
@@ -233,3 +233,5 @@ export const scripts: SqlAction.ScriptGenerator[] = [
   getDivider,
   getPublishMessage,
 ];
+
+export const databaseActionScripts: SqlAction.DatabaseActionScriptGenerator[] = [];

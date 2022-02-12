@@ -6,6 +6,13 @@ Query Guides:
 =============
 ## mysql
 
+### Drop Database
+
+```
+DROP DATABASE mysql
+```
+
+
 ### Select All Columns
 
 ```
@@ -79,10 +86,15 @@ VALUES
 ### Update
 
 ```
-UPDATE table1 SET id = '', column1 = '', column2 = ''
+UPDATE table1
+SET id = '',
+  column1 = '',
+  column2 = ''
 WHERE id = ''
-AND column1 = ''
-AND column2 = ''
+AND
+column1 = ''
+AND
+column2 = ''
 ```
 
 
@@ -140,6 +152,13 @@ ALTER TABLE
 
 ## mariadb
 
+### Drop Database
+
+```
+DROP DATABASE mariadb
+```
+
+
 ### Select All Columns
 
 ```
@@ -213,10 +232,15 @@ VALUES
 ### Update
 
 ```
-UPDATE table1 SET id = '', column1 = '', column2 = ''
+UPDATE table1
+SET id = '',
+  column1 = '',
+  column2 = ''
 WHERE id = ''
-AND column1 = ''
-AND column2 = ''
+AND
+column1 = ''
+AND
+column2 = ''
 ```
 
 
@@ -273,6 +297,13 @@ ALTER TABLE
 
 
 ## mssql
+
+### Drop Database
+
+```
+DROP DATABASE mssql
+```
+
 
 ### Select All Columns
 
@@ -341,10 +372,15 @@ VALUES
 ### Update
 
 ```
-UPDATE table1 SET id = '', column1 = '', column2 = ''
+UPDATE table1
+SET id = '',
+  column1 = '',
+  column2 = ''
 WHERE id = ''
-AND column1 = ''
-AND column2 = ''
+AND
+column1 = ''
+AND
+column2 = ''
 ```
 
 
@@ -402,6 +438,13 @@ ALTER TABLE
 
 ## postgres
 
+### Drop Database
+
+```
+DROP DATABASE postgres
+```
+
+
 ### Select All Columns
 
 ```
@@ -475,10 +518,15 @@ VALUES
 ### Update
 
 ```
-UPDATE table1 SET id = '', column1 = '', column2 = ''
+UPDATE table1
+SET id = '',
+  column1 = '',
+  column2 = ''
 WHERE id = ''
-AND column1 = ''
-AND column2 = ''
+AND
+column1 = ''
+AND
+column2 = ''
 ```
 
 
@@ -536,6 +584,13 @@ ALTER TABLE
 
 ## sqlite
 
+### Drop Database
+
+```
+DROP DATABASE sqlite
+```
+
+
 ### Select All Columns
 
 ```
@@ -609,10 +664,15 @@ VALUES
 ### Update
 
 ```
-UPDATE table1 SET id = '', column1 = '', column2 = ''
+UPDATE table1
+SET id = '',
+  column1 = '',
+  column2 = ''
 WHERE id = ''
-AND column1 = ''
-AND column2 = ''
+AND
+column1 = ''
+AND
+column2 = ''
 ```
 
 
@@ -713,10 +773,15 @@ VALUES
 ### Update
 
 ```
-UPDATE table1 SET id = '', column1 = '', column2 = ''
+UPDATE table1
+SET id = '',
+  column1 = '',
+  column2 = ''
 WHERE id = ''
-AND column1 = ''
-AND column2 = ''
+AND
+column1 = ''
+AND
+column2 = ''
 ```
 
 
@@ -762,11 +827,13 @@ db.collection('table1')
 
 ```
 db.collection('table1')
-  .distinct('id', {
-    "id": "",
-    "column1": "",
-    "column2": ""
-  })
+  .distinct(
+    'id', {
+      "id": "",
+      "column1": "",
+      "column2": ""
+    }
+  )
 ```
 
 
