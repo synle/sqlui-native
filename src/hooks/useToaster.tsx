@@ -9,6 +9,7 @@ type CoreToasterProps = {
   onClose?: () => void;
   message: string;
   anchorOrigin?: AnchorOrigin;
+  autoHideDuration?: number;
 };
 
 type ToasterProps = CoreToasterProps & {
@@ -30,8 +31,9 @@ export default function useToaster() {
     return new Promise((resolve, reject) => {
       const toastId = `toast.${Date.now()}.${Math.floor(Math.random() * 10000000000000000)}`;
       _toasts.push({
-        id: toastId,
         ...props,
+        id: toastId,
+        autoHideDuration: props.autoHideDuration || 4000,
       });
       queryClient.invalidateQueries(QUERY_KEY_TOASTS);
 

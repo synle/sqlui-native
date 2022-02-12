@@ -68,8 +68,6 @@ export default function TableActions(props: TableActionsProps) {
         });
 
         onShowQuery(action.query);
-
-        await curToast.dismiss(2000);
       }
     },
   }));

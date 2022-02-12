@@ -7,6 +7,7 @@ type ToastProps = {
   open: boolean;
   onClose: () => void;
   message: string;
+  autoHideDuration?: number;
   anchorOrigin?: AnchorOrigin;
 };
 
@@ -16,7 +17,7 @@ export type AnchorOrigin = {
 };
 
 export default function Toast(props: ToastProps) {
-  const { message, open, onClose } = props;
+  const { message, open, onClose, autoHideDuration } = props;
 
   const action = (
     <>
@@ -38,7 +39,7 @@ export default function Toast(props: ToastProps) {
         vertical,
         horizontal,
       }}
-      autoHideDuration={6000}
+      autoHideDuration={autoHideDuration}
       onClose={onClose}
       message={message}
       action={action}

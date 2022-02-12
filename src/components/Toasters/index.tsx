@@ -20,6 +20,7 @@ export default function Toasters() {
       open={true}
       onClose={onToastClose}
       message={toast.message}
+      autoHideDuration={toast.autoHideDuration}
       anchorOrigin={toast.anchorOrigin}
     />
   );

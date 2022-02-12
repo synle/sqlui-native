@@ -47,8 +47,6 @@ export default function ConnectionActions(props: ConnectionActionsProps) {
         message: `Failed to delete connection "${connection.name}"`,
       });
     }
-
-    await curToast.dismiss(2000);
   };
 
   const onRefresh = async () => {
@@ -70,8 +68,6 @@ export default function ConnectionActions(props: ConnectionActionsProps) {
     curToast = await addToast({
       message: resultMessage,
     });
-
-    await curToast.dismiss(3000);
   };
 
   const onDuplicate = async () => {
@@ -80,8 +76,6 @@ export default function ConnectionActions(props: ConnectionActionsProps) {
     });
 
     duplicateConnection(connection);
-
-    await curToast.dismiss(2000);
   };
 
   const onExportConnection = async () => {
@@ -94,8 +88,6 @@ export default function ConnectionActions(props: ConnectionActionsProps) {
       JSON.stringify([getExportedConnection(connection)], null, 2),
       'text/json',
     );
-
-    await curToast.dismiss(2000);
   };
 
   const onSelectConnection = async () => {
@@ -107,8 +99,6 @@ export default function ConnectionActions(props: ConnectionActionsProps) {
       connectionId: connection.id,
       databaseId: '',
     });
-
-    await curToast.dismiss(2000);
   };
 
   const options = [
