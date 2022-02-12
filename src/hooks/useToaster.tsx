@@ -27,13 +27,16 @@ export default function useToaster() {
     });
   };
 
-  const dismiss = (): Promise<void> => {
+  const dismiss = (dismissDelay?: number): Promise<void> => {
     return new Promise((resolve, reject) => {
-      if(_toasts.length > 0){
+      setTimeout(
+        () => {
+          if(_toasts.length > 0){
         _toasts.pop();
       }
       queryClient.invalidateQueries(QUERY_KEY_TOASTS);
       resolve();
+    }, dismissDelay || 0);
     });
   };
 

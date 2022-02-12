@@ -58,7 +58,7 @@ export default function ConnectionActions(props: ConnectionActionsProps) {
 
   const onExportConnection = async () => {
     await addToast({
-      message: 'Exporting Connection, please wait...'
+      message: `Exporting connection "${connection.name}", please wait...`
     });
 
     downloadText(
@@ -67,14 +67,20 @@ export default function ConnectionActions(props: ConnectionActionsProps) {
       'text/json',
     );
 
-    await dismissToast();
+    await dismissToast(2000);
   };
 
-  const onSelectConnection = () => {
+  const onSelectConnection = async () => {
+    await addToast({
+      message: `Connection "${connection.name}" selected for query`
+    });
+
     onChangeActiveQuery({
       connectionId: connection.id,
       databaseId: '',
     });
+
+    await dismissToast(2000);
   };
 
   const options = [

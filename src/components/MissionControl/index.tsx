@@ -151,7 +151,7 @@ export default function MissionControl() {
 
   const onExportQuery = async (query: SqluiFrontend.ConnectionQuery) => {
     await addToast({
-      message: `Exporting Query, please wait...`
+      message: `Exporting Query "${query.name}", please wait...`
     });
 
     downloadText(
@@ -160,7 +160,7 @@ export default function MissionControl() {
       'text/json',
     );
 
-    await dismissToast();
+    await dismissToast(2000);
   };
 
   const onRevealQueryConnection = async (query: SqluiFrontend.ConnectionQuery) => {
@@ -325,7 +325,7 @@ export default function MissionControl() {
 
   const onExportAll = async () => {
     await addToast({
-      message: `Exporting Connections and Queries, please wait...`
+      message: `Exporting All Connections and Queries, please wait...`
     });
 
     let jsonContent: any[] = [];
@@ -349,7 +349,7 @@ export default function MissionControl() {
       'text/json',
     );
 
-    await dismissToast();
+    await dismissToast(2000);
   };
 
   const onNewConnection = useCallback(() => navigate('/connection/new'), []);
