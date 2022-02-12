@@ -1,12 +1,13 @@
 import { useQuery } from 'react-query';
 import { useQueryClient } from 'react-query';
-import Toast from 'src/components/Toast';
+import Toast, { AnchorOrigin } from 'src/components/Toast';
 
 const QUERY_KEY_TOASTS = 'toasts';
 
 type CoreToasterProps = {
   onClose?: () => void;
   message: string;
+  anchorOrigin?: AnchorOrigin;
 };
 
 type ToasterProps = CoreToasterProps & {

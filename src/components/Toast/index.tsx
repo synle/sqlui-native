@@ -6,7 +6,13 @@ interface ToastProps {
   open: boolean;
   onClose: () => void;
   message: string;
+  anchorOrigin?: AnchorOrigin;
 }
+
+export type AnchorOrigin = {
+  vertical?: 'bottom' | 'top';
+  horizontal?: 'left' | 'right' | 'center';
+};
 
 export default function Toast(props: ToastProps) {
   const { message, open, onClose } = props;
@@ -18,9 +24,19 @@ export default function Toast(props: ToastProps) {
       </IconButton>
     </>
   );
+
+  const anchorOrigin = props?.anchorOrigin;
+
+  const vertical = anchorOrigin?.vertical || 'bottom'
+  const horizontal = anchorOrigin?.horizontal || 'center'
+
   return (
     <Snackbar
       open={open}
+      anchorOrigin={{
+        vertical,
+        horizontal,
+      }}
       autoHideDuration={6000}
       onClose={onClose}
       message={message}
