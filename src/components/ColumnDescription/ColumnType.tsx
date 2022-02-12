@@ -1,5 +1,5 @@
 import Tooltip from '@mui/material/Tooltip';
-import {styled} from '@mui/system';
+import { styled } from '@mui/system';
 
 const StyledColumnType = styled('i')(({ theme }) => {
   return {

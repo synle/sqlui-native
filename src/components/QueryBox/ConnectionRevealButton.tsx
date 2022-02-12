@@ -1,8 +1,8 @@
 import PreviewIcon from '@mui/icons-material/Preview';
-import {Button} from '@mui/material';
+import { Button } from '@mui/material';
 import Tooltip from '@mui/material/Tooltip';
-import {SqluiFrontend} from 'typings';
-import {useCommands} from 'src/components/MissionControl';
+import { SqluiFrontend } from 'typings';
+import { useCommands } from 'src/components/MissionControl';
 
 interface ConnectionRevealButtonProps {
   query: SqluiFrontend.ConnectionQuery;

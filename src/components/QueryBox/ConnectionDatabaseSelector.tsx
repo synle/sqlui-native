@@ -1,7 +1,7 @@
-import {useMemo} from 'react';
-import {SqluiFrontend} from 'typings';
-import {useGetConnections} from 'src/hooks';
-import {useGetDatabases} from 'src/hooks';
+import { useMemo } from 'react';
+import { SqluiFrontend } from 'typings';
+import { useGetConnections } from 'src/hooks';
+import { useGetDatabases } from 'src/hooks';
 import Select from 'src/components/Select';
 
 interface ConnectionDatabaseSelectorProps {

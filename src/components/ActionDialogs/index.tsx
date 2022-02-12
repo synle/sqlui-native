@@ -1,4 +1,4 @@
-import {useActionDialogs} from 'src/hooks/useActionDialogs';
+import { useActionDialogs } from 'src/hooks/useActionDialogs';
 import AlertDialog from 'src/components/ActionDialogs/AlertDialog';
 import ChoiceDialog from 'src/components/ActionDialogs/ChoiceDialog';
 import ModalDialog from 'src/components/ActionDialogs/ModalDialog';

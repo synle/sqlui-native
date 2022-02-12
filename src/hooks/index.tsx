@@ -1,13 +1,13 @@
 import useMediaQuery from '@mui/material/useMediaQuery';
-import {QueryClient} from 'react-query';
-import {useMutation} from 'react-query';
-import {useQuery} from 'react-query';
-import {useQueryClient} from 'react-query';
-import {getCurrentSessionId} from 'src/data/session';
-import {LocalStorageConfig} from 'src/data/config';
-import {SessionStorageConfig} from 'src/data/config';
-import {SqluiCore} from 'typings';
-import {SqluiFrontend} from 'typings';
+import { QueryClient } from 'react-query';
+import { useMutation } from 'react-query';
+import { useQuery } from 'react-query';
+import { useQueryClient } from 'react-query';
+import { getCurrentSessionId } from 'src/data/session';
+import { LocalStorageConfig } from 'src/data/config';
+import { SessionStorageConfig } from 'src/data/config';
+import { SqluiCore } from 'typings';
+import { SqluiFrontend } from 'typings';
 import dataApi from 'src/data/api';
 
 const QUERY_KEY_ALL_CONNECTIONS = 'qk.connections';

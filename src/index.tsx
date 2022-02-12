@@ -1,7 +1,7 @@
 import CssBaseline from '@mui/material/CssBaseline';
-import {QueryClient} from 'react-query';
-import {QueryClientProvider} from 'react-query';
-import {ReactQueryDevtools} from 'react-query/devtools';
+import { QueryClient } from 'react-query';
+import { QueryClientProvider } from 'react-query';
+import { ReactQueryDevtools } from 'react-query/devtools';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
