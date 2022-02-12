@@ -1,26 +1,24 @@
 # sqlui-native
-
 `sqlui-native` is a simple UI client for most SQL Engines written in Electron. It is compatible with most desktop OS's and support most dialects of RMBDs like MySQL, Microsoft SQL Server, Postgres, SQLite, Cassandra, MongoDB and Redis.
-
 It supports multiple Windows, so you can have different sets of queries and connections side by side. The connections and queries are all stored locally, so you can continue where you left off in later visits.
 
 ## Downloads
+
 Refer to the following link for download information.
 - [Sqlui Native Homepage](https://synle.github.io/sqlui-native)
 
 ## Supported OS's
+
 - [Windows](https://synle.github.io/sqlui-native/installation#windows) (Tested on Windows 10 and 11)
 - [Mac OS](https://synle.github.io/sqlui-native/installation#mac) (Tested on Mac OS Monterey)
 - [Debian / Ubuntu](https://synle.github.io/sqlui-native/installation#ubuntu--debian)
 - [Redhat / CentOS / Fedora](https://synle.github.io/sqlui-native/installation#redhat--centos--fedora)
-
 Refer to this link for [Installation Instructions](https://synle.github.io/sqlui-native/installation)
 
 ## Supported Database Adapters
+
 The list below are supported data stores.
-
 You can also refer to this link for [General Queries](https://synle.github.io/sqlui-native/guides)
-
 - [MySQL](https://synle.github.io/sqlui-native/guides#mysql)
 - [MariaDB](https://synle.github.io/sqlui-native/guides#mariadb)
 - [Microsoft](https://synle.github.io/sqlui-native/guides#mssql)
@@ -30,13 +28,16 @@ You can also refer to this link for [General Queries](https://synle.github.io/sq
 - [MongoDB](https://synle.github.io/sqlui-native/guides#mongodb) (Limited Supported)
 - [Redis](https://synle.github.io/sqlui-native/guides#redis) (Limited Supported)
 
-
 ## Features
+
+
 ### Overall Demo
+
+
 ![demo-full](https://user-images.githubusercontent.com/3792401/151750703-419b66f2-938b-4edd-b852-97bfdfa12efd.gif)
 
-
 ### Import and Export
+
 Import and Export can be used to share connections across different machines and users. Below is a sample import config.
 ```
 [
@@ -56,56 +57,74 @@ Import and Export can be used to share connections across different machines and
   }
 ]
 ```
+
 ![demo-import-export](https://user-images.githubusercontent.com/3792401/151750721-9ea1ab38-e185-40dd-ba4d-71d28f3ae1d6.gif)
 
-
 ### Session Management
-This application supports multiple windows / instances. Sessions are used to control which instances it persist the data with.
 
+This application supports multiple windows / instances. Sessions are used to control which instances it persist the data with.
 Also these sessions, and the associated connections and queries are persisted locally. So you can continue where you left off in the future.
+
 ![demo-session](https://user-images.githubusercontent.com/3792401/151750740-10ff3497-11b4-4026-bd39-c34b80bc1e3a.gif)
 
 ### Dark Mode
+
 Dark mode will be turned on automatically with respect to your OS Preference. You can update settings to prefer Dark Mode or Light Mode if desired.
+
 ![demo-darkmode](https://user-images.githubusercontent.com/3792401/151746840-e4889ae1-cab9-4ade-b56b-5a4dbb654712.gif)
 
-
 ### Query Tabs
+
+
 #### Query Tab Orientation
+
 When there is more than 20 tabs, the query tabs will be wrapped vertically.
+
 ![image](https://user-images.githubusercontent.com/3792401/152028900-400605a2-0cb0-48df-9249-8ce060d3a256.png)
 
 #### Reordering Query Tabs
-Query tabs can be re-ordered by drag and drop the query tabs bar.
-![tabordering](https://user-images.githubusercontent.com/3792401/153718447-5fd9a216-6842-4103-b08f-e853245320b1.gif)
 
+Query tabs can be re-ordered by drag and drop the query tabs bar.
+
+![tab-ordering](https://user-images.githubusercontent.com/3792401/153722628-ea28a940-e33a-4f66-983d-eb3e824e2a1c.gif)
+
+#### Resizing the sidebar
+
+The left sidebar can be resized by clicking and dragging the small section between the sidebar and the query box.
+
+![sidebar-resize](https://user-images.githubusercontent.com/3792401/153722656-10529ff3-e818-4b6d-954c-7bdf57631d11.gif)
 
 ### Command Palette
+
 Similar to VS Code and Sublime Text, sqlui-native comes with a command palette that lets you reach your mostly used command via a key combo `CMD + P` or `Ctrl + P` on Windows.
+
 ![image](https://user-images.githubusercontent.com/3792401/152029205-5798c53d-6304-40dc-b9d8-11700bfc03f2.png)
 
 ### Connection Hints
+
 Sample URI connection string can be accessed by clicking on the `Show Connection Hints` on New / Edit Connection Page. Then you can click on the sample URI connection to use that sample connection string as a starting place.
 
 ![image](https://user-images.githubusercontent.com/3792401/152658433-74fdb868-293c-46b4-8bc3-ec0008f32b2d.png)
 
-
 ### Settings
+
 Settings can be accessed via the top right menu icon. It allows you to set up preferred settings for things like Editor and Color Theme, etc...
 
 ![image](https://user-images.githubusercontent.com/3792401/152658383-10a204b8-ab45-46be-87f3-03084cc2ae7a.png)
 
 ![image](https://user-images.githubusercontent.com/3792401/152658348-fc4c295f-0b45-463b-b543-7a97101669c8.png)
 
-
 ## Contributing
+
 - [Repo](https://github.com/synle/sqlui-native)
 
 ### Dev Note
+
 Here is the link where you can find information about how run this application locally.
 - [Dev Notes](https://github.com/synle/sqlui-native/blob/main/DEV.md)
 
 ## Features / TODO's:
+
 - [X] Consolidate the interface for mocked server and the main.ts page.
 - [X] Make a build for Windows and Darwin.
 - [X] Added Basic CI/CD to package electron
@@ -129,28 +148,33 @@ Here is the link where you can find information about how run this application l
 
 ## Limitations
 
+
 ### Cassandra Limitations
+
 Cassandra Keyspaces are mapped to sqlui-native databases. And Cassandra Column Families are mapped to sqlui-native table.
 
 ### MongoDB Limitations
+
 MongoDB Collections is mapped to sqlui-native table. We scan the first 5 Documents to come up with the schema for the columns.
 
 #### Create new MongoDB Database
-Given the limitation of the mongodb NodeJS library, there is not a direct API that we can use to create the MongoDB database. 
 
+Given the limitation of the mongodb NodeJS library, there is not a direct API that we can use to create the MongoDB database. 
 - To create a mongoDB database, simply duplicate your existing DB connection
 - Update the connection string to add the new database name to the end of the list.
 - Then execute the following `db.createCollection("some_collection_name")` to create at least one collection.
 
 ![image](https://user-images.githubusercontent.com/3792401/153538969-613f34e9-ce61-470d-ab4c-92f2c6db2196.png)
+
 ![image](https://user-images.githubusercontent.com/3792401/153538995-0ea825b9-124e-4799-9af0-3c7dc2255f5d.png)
+
 ![image](https://user-images.githubusercontent.com/3792401/153539332-5a78867d-f454-45eb-8ff1-a82a6b91be1a.png)
 
-
 ### Redis Limitations
+
 Due to the size of keys within Redis connection, we will not show all keys in the Redis cache.
 
 ## Suggestion?
+
 Use the following link to file a bug or a suggestion.
 - [File a bug or a suggestion?](https://github.com/synle/sqlui-native/issues/new)
-
