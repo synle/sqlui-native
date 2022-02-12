@@ -579,14 +579,19 @@ export function useConnectionQueries() {
   const onOrderingChange = (from: number, to: number) => {
     // ordering will move the tab from the old index to the new index
     // and push everything from that point out
-    console.log(_connectionQueries.map(q => q.name));
-
     const targetQuery = _connectionQueries[from];
-    const leftHalf = _connectionQueries.filter((q, idx) => idx < to && idx !== from);
-    const rightHalf = _connectionQueries.filter((q, idx) => idx >= to && idx !== from);
-    _connectionQueries = [...leftHalf, targetQuery, ...rightHalf];
+    let leftHalf: SqluiFrontend.ConnectionQuery[];
+    let rightHalf: SqluiFrontend.ConnectionQuery[];
 
-    console.log(_connectionQueries.map(q => q.name));
+    if (from > to) {
+      leftHalf = _connectionQueries.filter((q, idx) => idx < to && idx !== from);
+      rightHalf = _connectionQueries.filter((q, idx) => idx >= to && idx !== from);
+    } else {
+      leftHalf = _connectionQueries.filter((q, idx) => idx <= to && idx !== from);
+      rightHalf = _connectionQueries.filter((q, idx) => idx > to && idx !== from);
+    }
+
+    _connectionQueries = [...leftHalf, targetQuery, ...rightHalf];
 
     _invalidateQueries();
   };

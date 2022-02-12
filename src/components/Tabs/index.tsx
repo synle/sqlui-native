@@ -1,6 +1,7 @@
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 import React from 'react';
+import { styled } from '@mui/system';
 
 const VERTICAL_TAB_THRESHOLD = 20;
 
@@ -18,7 +19,13 @@ type TabsProps = {
   onTabOrdering?: (fromIdx: number, toIdx: number) => void;
 };
 
+// these are drag and drop index
 let fromIdx: number | undefined, toIdx: number | undefined;
+
+const StyledTabs = styled('section')(({ theme }) => {
+  return {
+  }
+});
 
 export default function MyTabs(props: TabsProps) {
   const { tabIdx, tabHeaders, tabContents } = props;
@@ -38,66 +45,37 @@ export default function MyTabs(props: TabsProps) {
     actionButton?.click?.();
   };
 
-  let dragAndDropProps: any = {};
-  if (props.onTabOrdering) {
-    const onDragStart = (e: React.DragEvent) => {
-      const element = e.currentTarget;
+  const onDragStart = (e: React.DragEvent) => {
+    const element = e.currentTarget;
 
-      fromIdx = undefined;
-      toIdx = undefined;
+    //@ts-ignore
+    fromIdx = [...element.parentNode.children].indexOf(element);
+    toIdx = undefined;
+  };
 
-      //@ts-ignore
-      const newFromIdx = [...element.parentNode.children].indexOf(element);
-      if (newFromIdx >= tabContents.length) {
-        // not able to drag this, ignore them
-        return;
-      }
+  const onDragLeave = (e: React.DragEvent) => {
+  };
 
-      fromIdx = newFromIdx;
+  const onDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+  };
 
-      // @ts-ignore
-      e.currentTarget.style.background = 'yellow';
-    };
+  const onDrop = (e: React.MouseEvent) => {
+    const element = e.currentTarget;
+    //@ts-ignore
+    toIdx = [...element.parentNode.children].indexOf(element);
 
-    const onDragLeave = (e: React.DragEvent) => {
-      // @ts-ignore
-      e.currentTarget.style.background = '';
-    };
-
-    const onDragOver = (e: React.DragEvent) => {
-      e.preventDefault();
-
-      if (fromIdx !== undefined && toIdx !== undefined) {
-        // @ts-ignore
-        e.currentTarget.style.background = 'cyan';
-      }
-    };
-
-    const onDrop = (e: React.MouseEvent) => {
-      const element = e.currentTarget;
-      //@ts-ignore
-      toIdx = [...element.parentNode.children].indexOf(element);
-
-      if (props.onTabOrdering && fromIdx !== undefined && toIdx !== undefined) {
-        props.onTabOrdering(fromIdx, toIdx);
-      }
-    };
-
-    dragAndDropProps = {
-      draggable: true,
-      onDragStart,
-      onDragLeave,
-      onDragOver,
-      onDrop,
-    };
-  }
+    if (props.onTabOrdering && fromIdx !== undefined && toIdx !== undefined) {
+      props.onTabOrdering(fromIdx, toIdx);
+    }
+  };
 
   if (!orientation) {
     orientation = tabHeaders.length > VERTICAL_TAB_THRESHOLD ? 'vertical' : 'horizontal';
   }
 
   return (
-    <section
+    <StyledTabs
       className={orientation === 'vertical' ? 'Tabs Tabs__Vertical' : 'Tabs Tabs__Horizontal'}>
       <Tabs
         value={tabIdx}
@@ -106,15 +84,28 @@ export default function MyTabs(props: TabsProps) {
         aria-label='Tabs'
         orientation={orientation}
         className='Tab__Headers'>
-        {tabHeaders.map((tabHeader, idx) => (
-          <Tab
-            key={tabKeys[idx] || idx}
-            label={<div className='Tab__Header'>{tabHeader}</div>}
-            onContextMenu={onShowActions}
-            {...dragAndDropProps}></Tab>
-        ))}
+        {tabHeaders.map((tabHeader, idx) => {
+          let dragAndDropProps: any = {};
+          if (props.onTabOrdering) {
+            dragAndDropProps = {
+              draggable: idx < tabContents.length,
+              onDragStart,
+              onDragLeave,
+              onDragOver,
+              onDrop,
+            };
+          }
+
+          return (
+            <Tab
+              key={tabKeys[idx] || idx}
+              label={<div className='Tab__Header'>{tabHeader}</div>}
+              onContextMenu={onShowActions}
+              {...dragAndDropProps}></Tab>
+          );
+        })}
       </Tabs>
       <div className='Tab__Body'>{tabContents[tabIdx]}</div>
-    </section>
+    </StyledTabs>
   );
 }
