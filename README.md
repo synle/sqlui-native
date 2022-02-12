@@ -71,8 +71,14 @@ Dark mode will be turned on automatically with respect to your OS Preference. Yo
 
 
 ### Query Tabs
+#### Query Tab Orientation
 When there is more than 20 tabs, the query tabs will be wrapped vertically.
 ![image](https://user-images.githubusercontent.com/3792401/152028900-400605a2-0cb0-48df-9249-8ce060d3a256.png)
+
+#### Reordering Query Tabs
+Query tabs can be re-ordered by drag and drop the query tabs bar.
+![tabordering](https://user-images.githubusercontent.com/3792401/153718447-5fd9a216-6842-4103-b08f-e853245320b1.gif)
+
 
 ### Command Palette
 Similar to VS Code and Sublime Text, sqlui-native comes with a command palette that lets you reach your mostly used command via a key combo `CMD + P` or `Ctrl + P` on Windows.
