@@ -51,7 +51,7 @@ export default function useToaster() {
   const dismiss = (toastId: string, dismissDelay?: number): Promise<void> => {
     return new Promise((resolve, reject) => {
       setTimeout(() => {
-        _toasts = _toasts.filter(toast => toast.id !== toastId)
+        _toasts = _toasts.filter((toast) => toast.id !== toastId);
         queryClient.invalidateQueries(QUERY_KEY_TOASTS);
         resolve();
       }, dismissDelay || 0);
