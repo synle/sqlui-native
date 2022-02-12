@@ -2,11 +2,11 @@ import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import SelectAllIcon from '@mui/icons-material/SelectAll';
 import IconButton from '@mui/material/IconButton';
 import { useState } from 'react';
+import DropdownButton from 'src/components/DropdownButton';
 import { getDatabaseActions } from 'src/data/sql';
 import { useActiveConnectionQuery } from 'src/hooks';
 import { useGetConnectionById } from 'src/hooks';
 import { useQuerySizeSetting } from 'src/hooks';
-import DropdownButton from 'src/components/DropdownButton';
 import useToaster from 'src/hooks/useToaster';
 
 type DatabaseActionsProps = {

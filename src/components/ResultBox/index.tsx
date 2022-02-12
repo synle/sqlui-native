@@ -8,12 +8,12 @@ import { useEffect } from 'react';
 import { useMemo } from 'react';
 import { useState } from 'react';
 import React from 'react';
-import { downloadText } from 'src/data/file';
-import { SqluiFrontend } from 'typings';
 import CodeEditorBox from 'src/components/CodeEditorBox';
 import DataTable from 'src/components/DataTable';
 import Tabs from 'src/components/Tabs';
 import Timer from 'src/components/Timer';
+import { downloadText } from 'src/data/file';
+import { SqluiFrontend } from 'typings';
 
 type ResultBoxProps = {
   query: SqluiFrontend.ConnectionQuery;

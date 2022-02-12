@@ -4,10 +4,10 @@ import CircularProgress from '@mui/material/CircularProgress';
 import React from 'react';
 import { AccordionBody } from 'src/components/Accordion';
 import { AccordionHeader } from 'src/components/Accordion';
-import { useGetTables } from 'src/hooks';
-import { useShowHide } from 'src/hooks';
 import ColumnDescription from 'src/components/ColumnDescription';
 import TableActions from 'src/components/TableActions';
+import { useGetTables } from 'src/hooks';
+import { useShowHide } from 'src/hooks';
 
 type TableDescriptionProps = {
   connectionId: string;

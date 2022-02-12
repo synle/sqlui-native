@@ -8,18 +8,18 @@ import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import Link from '@mui/material/Link';
-import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
 import { useState } from 'react';
 import React from 'react';
-import { allMenuKeys } from 'src/components/MissionControl';
-import { SqluiFrontend } from 'typings';
-import { useCommands } from 'src/components/MissionControl';
-import { useConnectionQueries } from 'src/hooks';
-import { useQueryTabOrientationSetting } from 'src/hooks';
 import DropdownButton from 'src/components/DropdownButton';
+import { allMenuKeys } from 'src/components/MissionControl';
+import { useCommands } from 'src/components/MissionControl';
 import QueryBox from 'src/components/QueryBox';
 import Tabs from 'src/components/Tabs';
+import { useConnectionQueries } from 'src/hooks';
+import { useQueryTabOrientationSetting } from 'src/hooks';
+import { SqluiFrontend } from 'typings';
 
 export default function QueryBoxTabs() {
   const navigate = useNavigate();

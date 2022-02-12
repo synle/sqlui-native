@@ -3,12 +3,12 @@ import { QueryClient } from 'react-query';
 import { useMutation } from 'react-query';
 import { useQuery } from 'react-query';
 import { useQueryClient } from 'react-query';
-import { getCurrentSessionId } from 'src/data/session';
+import dataApi from 'src/data/api';
 import { LocalStorageConfig } from 'src/data/config';
 import { SessionStorageConfig } from 'src/data/config';
+import { getCurrentSessionId } from 'src/data/session';
 import { SqluiCore } from 'typings';
 import { SqluiFrontend } from 'typings';
-import dataApi from 'src/data/api';
 
 const QUERY_KEY_ALL_CONNECTIONS = 'qk.connections';
 const QUERY_KEY_TREEVISIBLES = 'qk.treeVisibles';

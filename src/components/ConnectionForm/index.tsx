@@ -3,16 +3,16 @@ import { Button } from '@mui/material';
 import Alert from '@mui/material/Alert';
 import TextField from '@mui/material/TextField';
 import Tooltip from '@mui/material/Tooltip';
-import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
 import { useState } from 'react';
 import React from 'react';
-import { SqluiCore } from 'typings';
-import { useGetConnectionById } from 'src/hooks';
-import { useUpsertConnection } from 'src/hooks';
 import ConnectionHint from 'src/components/ConnectionForm/ConnectionHint';
 import TestConnectionButton from 'src/components/TestConnectionButton';
 import Toast from 'src/components/Toast';
+import { useGetConnectionById } from 'src/hooks';
+import { useUpsertConnection } from 'src/hooks';
+import { SqluiCore } from 'typings';
 
 type ConnectionFormProps = {
   id?: string;

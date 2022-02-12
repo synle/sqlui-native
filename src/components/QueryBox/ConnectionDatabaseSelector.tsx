@@ -1,8 +1,8 @@
 import { useMemo } from 'react';
-import { SqluiFrontend } from 'typings';
+import Select from 'src/components/Select';
 import { useGetConnections } from 'src/hooks';
 import { useGetDatabases } from 'src/hooks';
-import Select from 'src/components/Select';
+import { SqluiFrontend } from 'typings';
 
 type ConnectionDatabaseSelectorProps = {
   value: SqluiFrontend.ConnectionQuery;

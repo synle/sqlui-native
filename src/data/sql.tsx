@@ -3,12 +3,12 @@ import { tableActionScripts as MongodbTableActionScripts } from 'src/scripts/mon
 import { databaseActionScripts as RedisDatabaseActionScripts } from 'src/scripts/redis';
 import { tableActionScripts as RedisTableActionScripts } from 'src/scripts/redis';
 import { databaseActionScripts as CassandraDatabaseActionScripts } from 'src/scripts/cassandra';
+import { tableActionScripts as CassandraTableActionScripts } from 'src/scripts/cassandra';
 import { databaseActionScripts as RmdbDatabaseActionScripts } from 'src/scripts/rmdb';
+import { tableActionScripts as RmdbTableActionScripts } from 'src/scripts/rmdb';
 import { formatJS } from 'src/utils/formatter';
 import { formatSQL } from 'src/utils/formatter';
 import { SqlAction } from 'typings';
-import { tableActionScripts as CassandraTableActionScripts } from 'src/scripts/cassandra';
-import { tableActionScripts as RmdbTableActionScripts } from 'src/scripts/rmdb';
 
 export function getTableActions(tableActionInput: SqlAction.TableInput) {
   const actions: SqlAction.Output[] = [];

@@ -9,19 +9,19 @@ import Tooltip from '@mui/material/Tooltip';
 import { useQueryClient } from 'react-query';
 import { useState } from 'react';
 import React from 'react';
-import { formatJS } from 'src/utils/formatter';
-import { formatSQL } from 'src/utils/formatter';
-import { refreshAfterExecution } from 'src/hooks';
-import { SqluiCore } from 'typings';
-import { useCommands } from 'src/components/MissionControl';
-import { useConnectionQuery } from 'src/hooks';
-import { useExecute } from 'src/hooks';
-import { useGetConnectionById } from 'src/hooks';
 import CodeEditorBox from 'src/components/CodeEditorBox';
+import { useCommands } from 'src/components/MissionControl';
 import ConnectionDatabaseSelector from 'src/components/QueryBox/ConnectionDatabaseSelector';
 import ConnectionRevealButton from 'src/components/QueryBox/ConnectionRevealButton';
 import ResultBox from 'src/components/ResultBox';
 import Select from 'src/components/Select';
+import { refreshAfterExecution } from 'src/hooks';
+import { useConnectionQuery } from 'src/hooks';
+import { useExecute } from 'src/hooks';
+import { useGetConnectionById } from 'src/hooks';
+import { formatJS } from 'src/utils/formatter';
+import { formatSQL } from 'src/utils/formatter';
+import { SqluiCore } from 'typings';
 
 type QueryBoxProps = {
   queryId: string;
