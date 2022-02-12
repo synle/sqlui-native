@@ -46,7 +46,7 @@ export default class CassandraDataAdapter extends BaseDataAdapter implements IDa
         }
 
         const client = new cassandra.Client(clientOptions);
-        await this.authenticate(client);
+        await this.authenticateClient(client);
 
         resolve(client);
       } catch (err) {
@@ -55,7 +55,7 @@ export default class CassandraDataAdapter extends BaseDataAdapter implements IDa
     });
   }
 
-  async authenticate(client?: cassandra.Client) {
+  private async authenticateClient(client?: cassandra.Client) {
     // TODO: To Be Implemented
     return new Promise<void>((resolve, reject) => {
       client?.connect((err: unknown) => {
@@ -70,6 +70,10 @@ export default class CassandraDataAdapter extends BaseDataAdapter implements IDa
         resolve();
       });
     });
+  }
+
+  async authenticate() {
+    await this.getConnection();
   }
 
   async getDatabases(): Promise<SqluiCore.DatabaseMetaData[]> {

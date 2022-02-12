@@ -1,11 +1,10 @@
 import { createClient, RedisClientType } from 'redis';
 import { SqluiCore } from '../../typings';
 import IDataAdapter from './IDataAdapter';
-import BaseDataAdapter from './BaseDataAdapter';
+import BaseDataAdapter, { MAX_CONNECTION_TIMEOUT } from './BaseDataAdapter';
 
 export default class RedisDataAdapter extends BaseDataAdapter implements IDataAdapter {
   dialect: SqluiCore.Dialect = 'redis';
-  client?: RedisClientType;
 
   constructor(connectionOption: string) {
     super(connectionOption);
@@ -15,31 +14,49 @@ export default class RedisDataAdapter extends BaseDataAdapter implements IDataAd
     // attempt to pull in connections
     return new Promise<RedisClientType>(async (resolve, reject) => {
       try {
-        setTimeout(() => reject('Redis connection Timeout'), 3000);
+        setTimeout(() => reject('Redis connection Timeout'), MAX_CONNECTION_TIMEOUT);
 
-        if (!this.client) {
-          const client = createClient({
-            url: this.connectionOption,
-          });
+        const client = createClient({
+          url: this.connectionOption,
+        });
 
-          await client.connect();
+        client.connect();
 
+        client.on('ready', () =>
           //@ts-ignore
-          this.client = client;
-        }
+          resolve(client),
+        );
 
-        //@ts-ignore
-        resolve(this.client);
+        client.on('error', (err) => reject(err));
       } catch (err) {
         reject(err);
       }
     });
   }
 
+  private async closeConnection(client?: RedisClientType) {
+    try {
+      await client?.disconnect();
+    } catch (err) {}
+  }
+
   async authenticate() {
     return new Promise<void>(async (resolve, reject) => {
       try {
-        resolve();
+        setTimeout(() => reject('Redis connection Timeout'), MAX_CONNECTION_TIMEOUT);
+
+        const client = createClient({
+          url: this.connectionOption,
+        });
+
+        client.connect();
+
+        client.on('ready', () =>
+          //@ts-ignore
+          resolve(),
+        );
+
+        client.on('error', (err) => reject(err));
       } catch (err) {
         reject(err);
       }
@@ -47,6 +64,8 @@ export default class RedisDataAdapter extends BaseDataAdapter implements IDataAd
   }
 
   async getDatabases(): Promise<SqluiCore.DatabaseMetaData[]> {
+    await this.getConnection();
+
     return [
       {
         name: 'Redis Database',
@@ -56,6 +75,8 @@ export default class RedisDataAdapter extends BaseDataAdapter implements IDataAd
   }
 
   async getTables(database?: string): Promise<SqluiCore.TableMetaData[]> {
+    await this.getConnection();
+
     // TODO: this operation seems to work, but very slow
     // for now, we will just returned a hard coded value
 
@@ -105,6 +126,8 @@ export default class RedisDataAdapter extends BaseDataAdapter implements IDataAd
     } catch (error: any) {
       console.log(error);
       return { ok: false, error: error.toString() };
+    } finally {
+      this.closeConnection(db);
     }
   }
 }

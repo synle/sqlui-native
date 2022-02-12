@@ -82,6 +82,14 @@ WHERE
 exports[`Scripts MongodbScripts 1`] = `
 Array [
   Object {
+    "label": "divider",
+  },
+  Object {
+    "formatter": "js",
+    "label": "Drop Database",
+    "query": "db.dropDatabase()",
+  },
+  Object {
     "formatter": "js",
     "label": "Select All Columns",
     "query": "db.collection('table1')

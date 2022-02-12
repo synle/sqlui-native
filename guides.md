@@ -849,6 +849,13 @@ WHERE
 
 ## mongodb
 
+### Drop Database
+
+```
+db.dropDatabase()
+```
+
+
 ### Select All Columns
 
 ```

@@ -19,7 +19,7 @@ export default function ConnectionDescription() {
   if (isLoading) {
     return (
       <Alert severity='info' icon={<CircularProgress size={15} />}>
-        Loading...
+        Loading Connections...
       </Alert>
     );
   }
