@@ -3,6 +3,8 @@ import { SqluiCore } from '../../typings';
 import IDataAdapter from './IDataAdapter';
 import BaseDataAdapter from './BaseDataAdapter';
 
+const MAX_CONNECTION_TIMEOUT = 5000;
+
 export default class MongoDBDataAdapter extends BaseDataAdapter implements IDataAdapter {
   dialect: SqluiCore.Dialect = 'mongodb';
   client?: MongoClient;
@@ -15,7 +17,7 @@ export default class MongoDBDataAdapter extends BaseDataAdapter implements IData
     // attempt to pull in connections
     return new Promise<MongoClient>(async (resolve, reject) => {
       try {
-        setTimeout(() => reject('MongoDB connection Timeout'), 3000);
+        setTimeout(() => reject('MongoDB connection Timeout'), MAX_CONNECTION_TIMEOUT);
 
         if (this.client) {
           return resolve(this.client);

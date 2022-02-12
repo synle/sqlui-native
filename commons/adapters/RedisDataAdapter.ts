@@ -3,6 +3,8 @@ import { SqluiCore } from '../../typings';
 import IDataAdapter from './IDataAdapter';
 import BaseDataAdapter from './BaseDataAdapter';
 
+const MAX_CONNECTION_TIMEOUT = 5000;
+
 export default class RedisDataAdapter extends BaseDataAdapter implements IDataAdapter {
   dialect: SqluiCore.Dialect = 'redis';
   client?: RedisClientType;
@@ -15,7 +17,7 @@ export default class RedisDataAdapter extends BaseDataAdapter implements IDataAd
     // attempt to pull in connections
     return new Promise<RedisClientType>(async (resolve, reject) => {
       try {
-        setTimeout(() => reject('Redis connection Timeout'), 3000);
+        setTimeout(() => reject('Redis connection Timeout'), MAX_CONNECTION_TIMEOUT);
 
         if (!this.client) {
           const client = createClient({
