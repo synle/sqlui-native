@@ -13,6 +13,13 @@ DROP DATABASE mysql
 ```
 
 
+### Create Database
+
+```
+CREATE DATABASE mysql
+```
+
+
 ### Select All Columns
 
 ```
@@ -156,6 +163,13 @@ ALTER TABLE
 
 ```
 DROP DATABASE mariadb
+```
+
+
+### Create Database
+
+```
+CREATE DATABASE mariadb
 ```
 
 
@@ -305,6 +319,13 @@ DROP DATABASE mssql
 ```
 
 
+### Create Database
+
+```
+CREATE DATABASE mssql
+```
+
+
 ### Select All Columns
 
 ```
@@ -442,6 +463,13 @@ ALTER TABLE
 
 ```
 DROP DATABASE postgres
+```
+
+
+### Create Database
+
+```
+CREATE DATABASE postgres
 ```
 
 
@@ -588,6 +616,13 @@ ALTER TABLE
 
 ```
 DROP DATABASE sqlite
+```
+
+
+### Create Database
+
+```
+CREATE DATABASE sqlite
 ```
 
 

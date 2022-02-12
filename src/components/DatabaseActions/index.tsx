@@ -61,9 +61,6 @@ export default function DatabaseActions(props: DatabaseActionsProps) {
       onClick: onSelectDatabaseForQuery,
       startIcon: <SelectAllIcon />,
     },
-    {
-      label: 'divider',
-    },
     ...actions.map((action) => ({
       label: action.label,
       onClick: async () => {
