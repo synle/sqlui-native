@@ -102,9 +102,6 @@ export function getUpdateCommand(input: SqlAction.TableInput): SqlAction.Output 
     return undefined;
   }
 
-  const columnString = input.columns.map((col) => `-- ${col.name} = ''`).join(',\n');
-  const whereColumnString = input.columns.map((col) => `-- ${col.name} = ''`).join(' AND \n');
-
   if (input.dialect === 'mongodb') {
     const columns: any = {};
     for (const column of input.columns) {
@@ -129,8 +126,6 @@ export function getDeleteCommand(input: SqlAction.TableInput): SqlAction.Output 
   if (!input.columns) {
     return undefined;
   }
-
-  const whereColumnString = input.columns.map((col) => `-- ${col.name} = ''`).join(' AND \n');
 
   if (input.dialect === 'mongodb') {
     const columns: any = {};

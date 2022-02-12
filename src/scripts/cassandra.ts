@@ -27,7 +27,7 @@ export function getSelectSpecificColumns(
   }
 
   const columnString = `\n` + input.columns.map((col) => `  ${col.name}`).join(',\n');
-  const whereColumnString = input.columns.map((col) => `${col.name} = ''`).join('\n -- AND ');
+  const whereColumnString = input.columns.map((col) => `${col.name} = ''`).join('\n AND ');
 
   if (input.dialect === 'cassandra') {
     return {
@@ -68,8 +68,8 @@ export function getUpdateCommand(input: SqlAction.TableInput): SqlAction.Output 
     return undefined;
   }
 
-  const columnString = input.columns.map((col) => `-- ${col.name} = ''`).join(',\n');
-  const whereColumnString = input.columns.map((col) => `-- ${col.name} = ''`).join(' AND \n');
+  const columnString = input.columns.map((col) => `${col.name} = ''`).join(',\n');
+  const whereColumnString = input.columns.map((col) => `${col.name} = ''`).join(' AND \n');
 
   if (input.dialect === 'cassandra') {
     return {
@@ -89,7 +89,7 @@ export function getDeleteCommand(input: SqlAction.TableInput): SqlAction.Output 
     return undefined;
   }
 
-  const whereColumnString = input.columns.map((col) => `-- ${col.name} = ''`).join(' AND \n');
+  const whereColumnString = input.columns.map((col) => `${col.name} = ''`).join(' AND \n');
 
   if (input.dialect === 'cassandra') {
     return {
