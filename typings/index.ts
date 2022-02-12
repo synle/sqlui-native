@@ -151,7 +151,7 @@ export module SqlAction {
   };
 
   export type DatabaseInput = SqlAction.CoreInput & {
-    tables: SqluiCore.TableMetaData[];
+    tables?: SqluiCore.TableMetaData[];
   };
 
   export type TableInput = SqlAction.CoreInput & {
@@ -165,7 +165,13 @@ export module SqlAction {
     formatter?: 'sql' | 'js';
   };
 
-  export type ScriptGenerator = (input: SqlAction.TableInput) => SqlAction.Output | undefined;
+  export type TableActionScriptGenerator = (
+    input: SqlAction.TableInput,
+  ) => SqlAction.Output | undefined;
+
+  export type DatabaseActionScriptGenerator = (
+    input: SqlAction.DatabaseInput,
+  ) => SqlAction.Output | undefined;
 }
 
 /**

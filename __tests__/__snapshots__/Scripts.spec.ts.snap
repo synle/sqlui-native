@@ -38,15 +38,19 @@ VALUES
   },
   Object {
     "label": "divider",
-    "query": "",
   },
   Object {
     "formatter": "js",
     "label": "Update",
-    "query": "UPDATE table1 SET id = '', column1 = '', column2 = ''
+    "query": "UPDATE table1
+SET id = '',
+  column1 = '',
+  column2 = ''
 WHERE id = ''
-AND column1 = ''
-AND column2 = ''",
+AND
+column1 = ''
+AND
+column2 = ''",
   },
   Object {
     "formatter": "sql",
@@ -87,15 +91,16 @@ Array [
     "formatter": "js",
     "label": "Select Distinct",
     "query": "db.collection('table1')
-  .distinct('id', {
-    \\"id\\": \\"\\",
-    \\"column1\\": \\"\\",
-    \\"column2\\": \\"\\"
-  })",
+  .distinct(
+    'id', {
+      \\"id\\": \\"\\",
+      \\"column1\\": \\"\\",
+      \\"column2\\": \\"\\"
+    }
+  )",
   },
   Object {
     "label": "divider",
-    "query": "",
   },
   Object {
     "formatter": "js",
@@ -135,7 +140,6 @@ Array [
   },
   Object {
     "label": "divider",
-    "query": "",
   },
   Object {
     "formatter": "js",
@@ -170,7 +174,6 @@ Array [
   },
   Object {
     "label": "divider",
-    "query": "",
   },
   Object {
     "formatter": "js",
@@ -194,7 +197,6 @@ Array [
   },
   Object {
     "label": "divider",
-    "query": "",
   },
   Object {
     "formatter": "js",
@@ -223,7 +225,6 @@ Array [
   },
   Object {
     "label": "divider",
-    "query": "",
   },
   Object {
     "formatter": "js",
@@ -252,7 +253,6 @@ Array [
   },
   Object {
     "label": "divider",
-    "query": "",
   },
   Object {
     "formatter": "js",
@@ -269,7 +269,6 @@ Array [
   },
   Object {
     "label": "divider",
-    "query": "",
   },
   Object {
     "formatter": "js",
@@ -281,6 +280,11 @@ Array [
 
 exports[`Scripts RmdbScripts - mariadb 1`] = `
 Array [
+  Object {
+    "formatter": "sql",
+    "label": "Drop Database",
+    "query": "DROP DATABASE mariadb",
+  },
   Object {
     "formatter": "sql",
     "label": "Select All Columns",
@@ -335,7 +339,6 @@ LIMIT
   },
   Object {
     "label": "divider",
-    "query": "",
   },
   Object {
     "formatter": "sql",
@@ -348,10 +351,15 @@ VALUES
   Object {
     "formatter": "js",
     "label": "Update",
-    "query": "UPDATE table1 SET id = '', column1 = '', column2 = ''
+    "query": "UPDATE table1
+SET id = '',
+  column1 = '',
+  column2 = ''
 WHERE id = ''
-AND column1 = ''
-AND column2 = ''",
+AND
+column1 = ''
+AND
+column2 = ''",
   },
   Object {
     "formatter": "sql",
@@ -365,7 +373,6 @@ WHERE
   },
   Object {
     "label": "divider",
-    "query": "",
   },
   Object {
     "formatter": "sql",
@@ -404,6 +411,11 @@ ALTER TABLE
 
 exports[`Scripts RmdbScripts - mssql 1`] = `
 Array [
+  Object {
+    "formatter": "sql",
+    "label": "Drop Database",
+    "query": "DROP DATABASE mssql",
+  },
   Object {
     "formatter": "sql",
     "label": "Select All Columns",
@@ -452,7 +464,6 @@ WHERE
   },
   Object {
     "label": "divider",
-    "query": "",
   },
   Object {
     "formatter": "sql",
@@ -465,10 +476,15 @@ VALUES
   Object {
     "formatter": "js",
     "label": "Update",
-    "query": "UPDATE table1 SET id = '', column1 = '', column2 = ''
+    "query": "UPDATE table1
+SET id = '',
+  column1 = '',
+  column2 = ''
 WHERE id = ''
-AND column1 = ''
-AND column2 = ''",
+AND
+column1 = ''
+AND
+column2 = ''",
   },
   Object {
     "formatter": "sql",
@@ -482,7 +498,6 @@ WHERE
   },
   Object {
     "label": "divider",
-    "query": "",
   },
   Object {
     "formatter": "sql",
@@ -523,6 +538,11 @@ exports[`Scripts RmdbScripts - mysql 1`] = `
 Array [
   Object {
     "formatter": "sql",
+    "label": "Drop Database",
+    "query": "DROP DATABASE mysql",
+  },
+  Object {
+    "formatter": "sql",
     "label": "Select All Columns",
     "query": "SELECT
   *
@@ -575,7 +595,6 @@ LIMIT
   },
   Object {
     "label": "divider",
-    "query": "",
   },
   Object {
     "formatter": "sql",
@@ -588,10 +607,15 @@ VALUES
   Object {
     "formatter": "js",
     "label": "Update",
-    "query": "UPDATE table1 SET id = '', column1 = '', column2 = ''
+    "query": "UPDATE table1
+SET id = '',
+  column1 = '',
+  column2 = ''
 WHERE id = ''
-AND column1 = ''
-AND column2 = ''",
+AND
+column1 = ''
+AND
+column2 = ''",
   },
   Object {
     "formatter": "sql",
@@ -605,7 +629,6 @@ WHERE
   },
   Object {
     "label": "divider",
-    "query": "",
   },
   Object {
     "formatter": "sql",
@@ -646,6 +669,11 @@ exports[`Scripts RmdbScripts - postgres 1`] = `
 Array [
   Object {
     "formatter": "sql",
+    "label": "Drop Database",
+    "query": "DROP DATABASE postgres",
+  },
+  Object {
+    "formatter": "sql",
     "label": "Select All Columns",
     "query": "SELECT
   *
@@ -698,7 +726,6 @@ LIMIT
   },
   Object {
     "label": "divider",
-    "query": "",
   },
   Object {
     "formatter": "sql",
@@ -711,10 +738,15 @@ VALUES
   Object {
     "formatter": "js",
     "label": "Update",
-    "query": "UPDATE table1 SET id = '', column1 = '', column2 = ''
+    "query": "UPDATE table1
+SET id = '',
+  column1 = '',
+  column2 = ''
 WHERE id = ''
-AND column1 = ''
-AND column2 = ''",
+AND
+column1 = ''
+AND
+column2 = ''",
   },
   Object {
     "formatter": "sql",
@@ -728,7 +760,6 @@ WHERE
   },
   Object {
     "label": "divider",
-    "query": "",
   },
   Object {
     "formatter": "sql",
@@ -769,6 +800,11 @@ exports[`Scripts RmdbScripts - sqlite 1`] = `
 Array [
   Object {
     "formatter": "sql",
+    "label": "Drop Database",
+    "query": "DROP DATABASE sqlite",
+  },
+  Object {
+    "formatter": "sql",
     "label": "Select All Columns",
     "query": "SELECT
   *
@@ -821,7 +857,6 @@ LIMIT
   },
   Object {
     "label": "divider",
-    "query": "",
   },
   Object {
     "formatter": "sql",
@@ -834,10 +869,15 @@ VALUES
   Object {
     "formatter": "js",
     "label": "Update",
-    "query": "UPDATE table1 SET id = '', column1 = '', column2 = ''
+    "query": "UPDATE table1
+SET id = '',
+  column1 = '',
+  column2 = ''
 WHERE id = ''
-AND column1 = ''
-AND column2 = ''",
+AND
+column1 = ''
+AND
+column2 = ''",
   },
   Object {
     "formatter": "sql",
@@ -851,7 +891,6 @@ WHERE
   },
   Object {
     "label": "divider",
-    "query": "",
   },
   Object {
     "formatter": "sql",
