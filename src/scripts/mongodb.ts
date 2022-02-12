@@ -68,7 +68,7 @@ export function getSelectDistinctValues(input: SqlAction.TableInput): SqlAction.
   }
 }
 
-export function getInsertCommand(input: SqlAction.TableInput): SqlAction.Output | undefined {
+export function getInsert(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Insert`;
 
   if (!input.columns) {
@@ -95,7 +95,7 @@ export function getInsertCommand(input: SqlAction.TableInput): SqlAction.Output 
   }
 }
 
-export function getUpdateCommand(input: SqlAction.TableInput): SqlAction.Output | undefined {
+export function getUpdate(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Update`;
 
   if (!input.columns) {
@@ -120,7 +120,7 @@ export function getUpdateCommand(input: SqlAction.TableInput): SqlAction.Output 
   }
 }
 
-export function getDeleteCommand(input: SqlAction.TableInput): SqlAction.Output | undefined {
+export function getDelete(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Delete`;
 
   if (!input.columns) {
@@ -144,7 +144,7 @@ export function getDeleteCommand(input: SqlAction.TableInput): SqlAction.Output 
   }
 }
 
-export function getCreateTable(input: SqlAction.TableInput): SqlAction.Output | undefined {
+export function getCreateCollection(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Create Collection`;
 
   if (!input.columns) {
@@ -163,7 +163,7 @@ export function getCreateTable(input: SqlAction.TableInput): SqlAction.Output | 
   }
 }
 
-export function getDropTable(input: SqlAction.TableInput): SqlAction.Output | undefined {
+export function getDropCollection(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Drop Collection`;
 
   if (input.dialect === 'mongodb') {
@@ -175,17 +175,32 @@ export function getDropTable(input: SqlAction.TableInput): SqlAction.Output | un
   }
 }
 
+export function getDropDatabase(input: SqlAction.DatabaseInput): SqlAction.Output | undefined {
+  const label = `Drop Database`;
+
+  if (input.dialect === 'mongodb') {
+    return {
+      label,
+      formatter,
+      query: `${MONGO_ADAPTER_PREFIX}.dropDatabase()`,
+    };
+  }
+}
+
 export const tableActionScripts: SqlAction.TableActionScriptGenerator[] = [
   getSelectAllColumns,
   getSelectSpecificColumns,
   getSelectDistinctValues,
   getDivider,
-  getInsertCommand,
-  getUpdateCommand,
-  getDeleteCommand,
+  getInsert,
+  getUpdate,
+  getDelete,
   getDivider,
-  getCreateTable,
-  getDropTable,
+  getCreateCollection,
+  getDropCollection,
 ];
 
-export const databaseActionScripts: SqlAction.DatabaseActionScriptGenerator[] = [];
+export const databaseActionScripts: SqlAction.DatabaseActionScriptGenerator[] = [
+  getDivider,
+  getDropDatabase,
+];

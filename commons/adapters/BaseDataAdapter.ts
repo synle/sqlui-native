@@ -1,6 +1,8 @@
 import { ConnectionStringParser } from 'connection-string-parser';
 import { SqluiCore } from '../../typings';
 
+export const MAX_CONNECTION_TIMEOUT = 3000;
+
 export default abstract class BaseDataAdapter {
   protected connectionOption: string;
   public dialect?: SqluiCore.Dialect;

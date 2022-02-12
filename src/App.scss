@@ -48,24 +48,27 @@
 }
 
 // components
+$ConnectionTreeIndentSize: 7px;
+
 .ConnectionDescription {
 }
 
 .DatabaseDescription {
-  margin-left: 0.8rem;
+  margin-left: $ConnectionTreeIndentSize * 1;
 }
 
 .TableDescription,
 .TableActions {
-  margin-left: 1.2rem;
+  margin-left: $ConnectionTreeIndentSize * 2;
 }
 
 .ColumnDescription {
-  margin-left: 1.7rem;
+  margin-left: $ConnectionTreeIndentSize * 3;
 }
 
-.ColumnAttributes {
-  margin-left: 2rem;
+.ColumnAttributes,
+.ShowAllColumnsButton {
+  margin-left: $ConnectionTreeIndentSize * 4;
 }
 
 .QueryBox {

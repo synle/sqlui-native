@@ -125,7 +125,7 @@ export function getSelectDistinctValues(input: SqlAction.TableInput): SqlAction.
   }
 }
 
-export function getInsertCommand(input: SqlAction.TableInput): SqlAction.Output | undefined {
+export function getInsert(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Insert`;
 
   if (!input.columns) {
@@ -151,7 +151,7 @@ export function getInsertCommand(input: SqlAction.TableInput): SqlAction.Output 
   }
 }
 
-export function getUpdateCommand(input: SqlAction.TableInput): SqlAction.Output | undefined {
+export function getUpdate(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Update`;
 
   if (!input.columns) {
@@ -177,7 +177,7 @@ export function getUpdateCommand(input: SqlAction.TableInput): SqlAction.Output 
   }
 }
 
-export function getDeleteCommand(input: SqlAction.TableInput): SqlAction.Output | undefined {
+export function getDelete(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Delete`;
 
   if (!input.columns) {
@@ -412,9 +412,9 @@ export const tableActionScripts: SqlAction.TableActionScriptGenerator[] = [
   getSelectSpecificColumns,
   getSelectDistinctValues,
   getDivider,
-  getInsertCommand,
-  getUpdateCommand,
-  getDeleteCommand,
+  getInsert,
+  getUpdate,
+  getDelete,
   getDivider,
   getCreateTable,
   getDropTable,
