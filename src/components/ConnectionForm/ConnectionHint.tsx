@@ -3,6 +3,7 @@ import AlertTitle from '@mui/material/AlertTitle';
 import Link from '@mui/material/Link';
 import Tooltip from '@mui/material/Tooltip';
 import ConnectionTypeIcon from 'src/components/ConnectionTypeIcon';
+
 type ConnectionHintProps = {
   onChange: (connectionName: string) => void;
 };
