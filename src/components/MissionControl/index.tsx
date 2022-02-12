@@ -32,6 +32,7 @@ import { useShowHide } from 'src/hooks';
 import { useUpsertSession } from 'src/hooks';
 import CommandPalette from 'src/components/CommandPalette';
 import Settings from 'src/components/Settings';
+import useToaster from 'src/hooks/useToaster';
 import appPackage from 'src/package.json';
 
 export interface Command {
@@ -113,10 +114,12 @@ export default function MissionControl() {
   const { settings, onChange: onChangeSettings } = useSettings();
   const { onClear: onClearConnectionVisibles, onToggle: onToggleConnectionVisible } = useShowHide();
   const { data: activeConnection } = useGetConnectionById(activeQuery?.connectionId);
+  const { add: addToast } = useToaster();
 
   const onCloseQuery = async (query: SqluiFrontend.ConnectionQuery) => {
     try {
       await confirm('Do you want to delete this query?');
+
       onDeleteQueries([query.id]);
     } catch (err) {}
   };
@@ -143,15 +146,27 @@ export default function MissionControl() {
   };
 
   const onDuplicateQuery = async (query: SqluiFrontend.ConnectionQuery) => {
+    const curToast = await addToast({
+      message: `Duplicating "${query.name}", please wait...`,
+    });
+
     _onDuplicateQuery(query.id);
+
+    await curToast.dismiss(2000);
   };
 
   const onExportQuery = async (query: SqluiFrontend.ConnectionQuery) => {
+    const curToast = await addToast({
+      message: `Exporting Query "${query.name}", please wait...`,
+    });
+
     downloadText(
       `${query.name}.query.json`,
       JSON.stringify([getExportedQuery(query)], null, 2),
       'text/json',
     );
+
+    await curToast.dismiss(2000);
   };
 
   const onRevealQueryConnection = async (query: SqluiFrontend.ConnectionQuery) => {
@@ -315,6 +330,10 @@ export default function MissionControl() {
   };
 
   const onExportAll = async () => {
+    const curToast = await addToast({
+      message: `Exporting All Connections and Queries, please wait...`,
+    });
+
     let jsonContent: any[] = [];
 
     // TODO: implement export all
@@ -335,6 +354,8 @@ export default function MissionControl() {
       JSON.stringify(jsonContent, null, 2),
       'text/json',
     );
+
+    await curToast.dismiss(2000);
   };
 
   const onNewConnection = useCallback(() => navigate('/connection/new'), []);
@@ -356,6 +377,10 @@ export default function MissionControl() {
       } catch (err) {
         return alert(`Import failed. Invalid JSON config`);
       }
+
+      const curToast = await addToast({
+        message: 'Importing, please wait...',
+      });
 
       // here we will attempt to import all the connections first before queries
       jsonRows = jsonRows.sort((a, b) => {
@@ -389,6 +414,7 @@ export default function MissionControl() {
         }
       }
 
+      await curToast.dismiss();
       alert(`Import finished with ${successCount} successes and ${failedCount} failures`);
     } catch (err) {}
   };
