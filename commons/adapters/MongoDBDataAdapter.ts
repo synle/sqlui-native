@@ -1,9 +1,7 @@
 import { MongoClient } from 'mongodb';
 import { SqluiCore } from '../../typings';
 import IDataAdapter from './IDataAdapter';
-import BaseDataAdapter from './BaseDataAdapter';
-
-const MAX_CONNECTION_TIMEOUT = 5000;
+import BaseDataAdapter, {MAX_CONNECTION_TIMEOUT} from './BaseDataAdapter';
 
 export default class MongoDBDataAdapter extends BaseDataAdapter implements IDataAdapter {
   dialect: SqluiCore.Dialect = 'mongodb';

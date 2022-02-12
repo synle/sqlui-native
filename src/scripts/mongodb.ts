@@ -175,7 +175,6 @@ export function getDropCollection(input: SqlAction.TableInput): SqlAction.Output
   }
 }
 
-
 export function getDropDatabase(input: SqlAction.DatabaseInput): SqlAction.Output | undefined {
   const label = `Drop Database`;
 
@@ -203,5 +202,5 @@ export const tableActionScripts: SqlAction.TableActionScriptGenerator[] = [
 
 export const databaseActionScripts: SqlAction.DatabaseActionScriptGenerator[] = [
   getDivider,
-  getDropDatabase
+  getDropDatabase,
 ];

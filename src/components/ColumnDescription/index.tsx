@@ -77,7 +77,11 @@ export default function ColumnDescription(props: ColumnDescriptionProps) {
             </React.Fragment>
           );
         })}
-      {!showAllColumns && <div className='ShowAllColumnsButton'><Button onClick={() => setShowAllColumns(true)}>Show All Columns</Button></div>}
+      {!showAllColumns && (
+        <div className='ShowAllColumnsButton'>
+          <Button onClick={() => setShowAllColumns(true)}>Show All Columns</Button>
+        </div>
+      )}
     </>
   );
 }
