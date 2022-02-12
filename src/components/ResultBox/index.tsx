@@ -15,10 +15,10 @@ import DataTable from 'src/components/DataTable';
 import Tabs from 'src/components/Tabs';
 import Timer from 'src/components/Timer';
 
-type ResultBoxProps =  {
+type ResultBoxProps = {
   query: SqluiFrontend.ConnectionQuery;
   executing: boolean;
-}
+};
 
 export default function ResultBox(props: ResultBoxProps) {
   const [tabIdx, setTabIdx] = useState(0);
@@ -129,9 +129,9 @@ export default function ResultBox(props: ResultBoxProps) {
   );
 }
 
-type FormatDataProps =  {
+type FormatDataProps = {
   data: any[];
-}
+};
 
 function JsonFormatData(props: FormatDataProps) {
   const { data } = props;
@@ -185,9 +185,9 @@ function TableFormatData(props: FormatDataProps) {
   return <DataTable columns={columns} data={data} />;
 }
 
-type QueryTimeDescriptionProps =  {
+type QueryTimeDescriptionProps = {
   query: SqluiFrontend.ConnectionQuery;
-}
+};
 
 function QueryTimeDescription(props: QueryTimeDescriptionProps) {
   const { query } = props;

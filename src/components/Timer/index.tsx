@@ -2,10 +2,10 @@ import { useEffect } from 'react';
 import { useRef } from 'react';
 import { useState } from 'react';
 
-type TimerProps =  {
+type TimerProps = {
   startTime?: number;
   endTime?: number;
-}
+};
 
 export default function _Timer(props: TimerProps) {
   const { startTime } = props;

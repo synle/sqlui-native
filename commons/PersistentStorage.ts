@@ -8,12 +8,12 @@ const homedir = require('os').homedir();
 // this section of the api is caches in memory
 type StorageContent = {
   [index: string]: any;
-}
+};
 
 type StorageEntry = {
   id: string;
   [index: string]: any;
-}
+};
 
 let baseDir: string;
 try {

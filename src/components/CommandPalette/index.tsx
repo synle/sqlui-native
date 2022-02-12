@@ -9,9 +9,9 @@ import { useConnectionQueries } from 'src/hooks';
 
 const MAX_OPTION_TO_SHOW = 20;
 
-type CommandPaletteProps =  {
+type CommandPaletteProps = {
   onSelectCommand: (command: Command) => void;
-}
+};
 
 type CommandOption = {
   event: SqluiEnums.ClientEventKey;

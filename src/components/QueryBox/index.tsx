@@ -23,9 +23,9 @@ import ConnectionRevealButton from 'src/components/QueryBox/ConnectionRevealButt
 import ResultBox from 'src/components/ResultBox';
 import Select from 'src/components/Select';
 
-type QueryBoxProps =  {
+type QueryBoxProps = {
   queryId: string;
-}
+};
 
 export default function QueryBox(props: QueryBoxProps) {
   const { queryId } = props;

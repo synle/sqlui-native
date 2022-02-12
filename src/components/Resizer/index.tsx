@@ -15,9 +15,9 @@ const StyledResizer = styled('div')(({ theme }) => {
 });
 
 // move this into a file
-type ResizerProps =  {
+type ResizerProps = {
   onSetWidth: (newWidth: number) => void;
-}
+};
 
 const DRAG_GHOST_ID = 'drag-ghost';
 

@@ -4,7 +4,7 @@ import ChoiceDialog from 'src/components/ActionDialogs/ChoiceDialog';
 import ModalDialog from 'src/components/ActionDialogs/ModalDialog';
 import PromptDialog from 'src/components/ActionDialogs/PromptDialog';
 
-type ActionDialogsProps =  {}
+type ActionDialogsProps = {};
 
 export default function ActionDialogs(props: ActionDialogsProps) {
   const { dialog, dismiss } = useActionDialogs();

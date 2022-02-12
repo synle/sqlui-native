@@ -11,19 +11,19 @@ import Paper from '@mui/material/Paper';
 import Popper from '@mui/material/Popper';
 import React from 'react';
 
-type SplitButtonOption =  {
+type SplitButtonOption = {
   label: string;
   startIcon?: React.ReactNode;
   onClick: () => void;
-}
+};
 
-type SplitButtonProps =  {
+type SplitButtonProps = {
   id: string;
   label: string;
   startIcon?: React.ReactNode;
   onClick: () => void;
   options: SplitButtonOption[];
-}
+};
 
 export default function SplitButton(props: SplitButtonProps) {
   const { id, options, label } = props;

@@ -4,13 +4,13 @@ import React from 'react';
 
 const VERTICAL_TAB_THRESHOLD = 20;
 
-type TabsProps =  {
+type TabsProps = {
   tabIdx: number;
   onTabChange: (newTabIdx: number) => void;
   tabHeaders: string[] | React.ReactNode[];
   tabContents: React.ReactNode[];
   orientation?: 'vertical' | 'horizontal';
-}
+};
 
 export default function MyTabs(props: TabsProps) {
   const { tabIdx, tabHeaders, tabContents } = props;

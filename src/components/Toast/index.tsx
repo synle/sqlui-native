@@ -2,12 +2,12 @@ import CloseIcon from '@mui/icons-material/Close';
 import IconButton from '@mui/material/IconButton';
 import Snackbar from '@mui/material/Snackbar';
 
-type ToastProps =  {
+type ToastProps = {
   open: boolean;
   onClose: () => void;
   message: string;
   anchorOrigin?: AnchorOrigin;
-}
+};
 
 export type AnchorOrigin = {
   vertical?: 'bottom' | 'top';

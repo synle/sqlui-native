@@ -95,7 +95,7 @@ export function EditConnectionForm(props: ConnectionFormProps) {
   );
 }
 
-type MainConnectionFormProps =  {
+type MainConnectionFormProps = {
   onSave: () => Promise<void>;
   name: string;
   setName: (newVal: string) => void;
@@ -103,7 +103,7 @@ type MainConnectionFormProps =  {
   setConnection: (newVal: string) => void;
   saving?: boolean;
   loading?: boolean;
-}
+};
 
 function MainConnectionForm(props: MainConnectionFormProps) {
   const navigate = useNavigate();

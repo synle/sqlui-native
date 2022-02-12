@@ -12,20 +12,20 @@ import Popper from '@mui/material/Popper';
 import { useEffect } from 'react';
 import React from 'react';
 
-type DropdownButtonOption =  {
+type DropdownButtonOption = {
   label: string;
   startIcon?: React.ReactNode;
   onClick?: () => void;
-}
+};
 
-type DropdownButtonProps =  {
+type DropdownButtonProps = {
   id: string;
   children: React.ReactNode;
   options: DropdownButtonOption[];
   onToggle?: (open: boolean) => void;
   open?: boolean;
   isLoading?: boolean;
-}
+};
 
 export default function DropdownButton(props: DropdownButtonProps) {
   const { id, options, children } = props;

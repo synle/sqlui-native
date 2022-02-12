@@ -20,9 +20,9 @@ import DropdownButton from 'src/components/DropdownButton';
 import Toast from 'src/components/Toast';
 import useToaster from 'src/hooks/useToaster';
 
-type ConnectionActionsProps =  {
+type ConnectionActionsProps = {
   connection: SqluiCore.ConnectionProps;
-}
+};
 
 export default function ConnectionActions(props: ConnectionActionsProps) {
   const { connection } = props;

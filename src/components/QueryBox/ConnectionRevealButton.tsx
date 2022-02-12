@@ -4,9 +4,9 @@ import Tooltip from '@mui/material/Tooltip';
 import { SqluiFrontend } from 'typings';
 import { useCommands } from 'src/components/MissionControl';
 
-type ConnectionRevealButtonProps =  {
+type ConnectionRevealButtonProps = {
   query: SqluiFrontend.ConnectionQuery;
-}
+};
 
 export default function ConnectionRevealButton(props: ConnectionRevealButtonProps) {
   const { query } = props;

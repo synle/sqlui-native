@@ -9,7 +9,7 @@ import { useWordWrapSetting } from 'src/hooks';
 import AdvancedEditor from 'src/components/CodeEditorBox/AdvancedEditor';
 import SimpleEditor from 'src/components/CodeEditorBox/SimpleEditor';
 
-type CodeEditorProps =  {
+type CodeEditorProps = {
   value?: string;
   onChange?: (newValue: string) => void;
   language?: string;
@@ -17,7 +17,7 @@ type CodeEditorProps =  {
   mode: 'textarea' | 'code';
   autoFocus?: boolean;
   required?: boolean;
-}
+};
 
 export default function CodeEditorBox(props: CodeEditorProps) {
   const globalWordWrap = useWordWrapSetting();
