@@ -12,7 +12,7 @@ export default function Toasters() {
     if (toast.onClose) {
       toast.onClose();
     }
-    dismiss();
+    dismiss(toast.id);
   };
 
   return (

@@ -46,12 +46,10 @@ export default function useToaster() {
     });
   };
 
-  const dismiss = (dismissDelay?: number): Promise<void> => {
+  const dismiss = (toastId: string, dismissDelay?: number): Promise<void> => {
     return new Promise((resolve, reject) => {
       setTimeout(() => {
-        if (_toasts.length > 0) {
-          _toasts.pop();
-        }
+        _toasts = _toasts.filter(toast => toast.id !== toastId)
         queryClient.invalidateQueries(QUERY_KEY_TOASTS);
         resolve();
       }, dismissDelay || 0);
