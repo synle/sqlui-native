@@ -33,26 +33,29 @@ export default function ConnectionActions(props: ConnectionActionsProps) {
   const { mutateAsync: duplicateConnection } = useDuplicateConnection();
   const { confirm } = useActionDialogs();
   const { onChange: onChangeActiveQuery } = useActiveConnectionQuery();
-  const { add: addToast, dismiss: dismissToast } = useToaster();
+  const { add: addToast } = useToaster();
 
   const onDelete = async () => {
+    let curToast;
     try {
       await confirm('Delete this connection?');
       await deleteConnection(connection.id);
-      await addToast({
+      curToast = await addToast({
         message: `Connection "${connection.name}" deleted`,
       });
     } catch (err) {
-      await addToast({
+      curToast = await addToast({
         message: `Failed to delete connection "${connection.name}"`,
       });
     }
 
-    await dismissToast(2000);
+    await curToast.dismiss(2000);
   };
 
   const onRefresh = async () => {
-    await addToast({
+    let curToast
+
+    curToast = await addToast({
       message: `Refreshing connection "${connection.name}", please wait...`,
     });
 
@@ -64,26 +67,26 @@ export default function ConnectionActions(props: ConnectionActionsProps) {
       resultMessage = `Failed to refresh connection`;
     }
 
-    await dismissToast();
-    await addToast({
+    await curToast.dismiss();
+    curToast = await addToast({
       message: resultMessage,
     });
 
-    await dismissToast(3000);
+    await curToast.dismiss(3000);
   };
 
   const onDuplicate = async () => {
-    await addToast({
+    const curToast = await addToast({
       message: `Duplicating connection "${connection.name}", please wait...`,
     });
 
     duplicateConnection(connection);
 
-    await dismissToast(2000);
+    await curToast.dismiss(2000);
   };
 
   const onExportConnection = async () => {
-    await addToast({
+    const curToast = await addToast({
       message: `Exporting connection "${connection.name}", please wait...`,
     });
 
@@ -93,11 +96,11 @@ export default function ConnectionActions(props: ConnectionActionsProps) {
       'text/json',
     );
 
-    await dismissToast(2000);
+    await curToast.dismiss(2000);
   };
 
   const onSelectConnection = async () => {
-    await addToast({
+    const curToast = await addToast({
       message: `Connection "${connection.name}" selected for query`,
     });
 
@@ -106,7 +109,7 @@ export default function ConnectionActions(props: ConnectionActionsProps) {
       databaseId: '',
     });
 
-    await dismissToast(2000);
+    await curToast.dismiss(2000);
   };
 
   const options = [

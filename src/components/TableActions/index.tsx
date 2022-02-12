@@ -21,7 +21,7 @@ export default function TableActions(props: TableActionsProps) {
   let databaseId: string | undefined = props.databaseId;
   let connectionId: string | undefined = props.connectionId;
   let tableId: string | undefined = props.tableId;
-  const { add: addToast, dismiss: dismissToast } = useToaster();
+  const { add: addToast } = useToaster();
 
   if (!open) {
     // if tbale action is not opened, hen we don't need to do this...
@@ -63,13 +63,13 @@ export default function TableActions(props: TableActionsProps) {
     label: action.label,
     onClick: async () => {
       if (action.query) {
-        await addToast({
+        const curToast = await addToast({
           message: `Applied "${action.label}" query`,
         });
 
         onShowQuery(action.query);
 
-        await dismissToast(2000);
+        await curToast.dismiss(2000);
       }
     },
   }));

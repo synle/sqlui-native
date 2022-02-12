@@ -114,7 +114,7 @@ export default function MissionControl() {
   const { settings, onChange: onChangeSettings } = useSettings();
   const { onClear: onClearConnectionVisibles, onToggle: onToggleConnectionVisible } = useShowHide();
   const { data: activeConnection } = useGetConnectionById(activeQuery?.connectionId);
-  const { add: addToast, dismiss: dismissToast } = useToaster();
+  const { add: addToast } = useToaster();
 
   const onCloseQuery = async (query: SqluiFrontend.ConnectionQuery) => {
     try {
@@ -146,17 +146,17 @@ export default function MissionControl() {
   };
 
   const onDuplicateQuery = async (query: SqluiFrontend.ConnectionQuery) => {
-    await addToast({
+    const curToast = await addToast({
       message: `Duplicating "${query.name}", please wait...`,
     });
 
     _onDuplicateQuery(query.id);
 
-    await dismissToast(2000);
+    await curToast.dismiss(2000);
   };
 
   const onExportQuery = async (query: SqluiFrontend.ConnectionQuery) => {
-    await addToast({
+    const curToast = await addToast({
       message: `Exporting Query "${query.name}", please wait...`,
     });
 
@@ -166,7 +166,7 @@ export default function MissionControl() {
       'text/json',
     );
 
-    await dismissToast(2000);
+    await curToast.dismiss(2000);
   };
 
   const onRevealQueryConnection = async (query: SqluiFrontend.ConnectionQuery) => {
@@ -330,7 +330,7 @@ export default function MissionControl() {
   };
 
   const onExportAll = async () => {
-    await addToast({
+    const curToast = await addToast({
       message: `Exporting All Connections and Queries, please wait...`,
     });
 
@@ -355,7 +355,7 @@ export default function MissionControl() {
       'text/json',
     );
 
-    await dismissToast(2000);
+    await curToast.dismiss(2000);
   };
 
   const onNewConnection = useCallback(() => navigate('/connection/new'), []);
@@ -378,7 +378,7 @@ export default function MissionControl() {
         return alert(`Import failed. Invalid JSON config`);
       }
 
-      await addToast({
+      const curToast = await addToast({
         message: 'Importing, please wait...',
       });
 
@@ -414,7 +414,7 @@ export default function MissionControl() {
         }
       }
 
-      await dismissToast();
+      await curToast.dismiss();
       alert(`Import finished with ${successCount} successes and ${failedCount} failures`);
     } catch (err) {}
   };
