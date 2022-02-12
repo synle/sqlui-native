@@ -33,6 +33,8 @@ import { useUpsertSession } from 'src/hooks';
 import CommandPalette from 'src/components/CommandPalette';
 import Settings from 'src/components/Settings';
 import appPackage from 'src/package.json';
+ import useToaster from 'src/hooks/useToaster';
+
 
 export interface Command {
   event: SqluiEnums.ClientEventKey;
@@ -113,6 +115,7 @@ export default function MissionControl() {
   const { settings, onChange: onChangeSettings } = useSettings();
   const { onClear: onClearConnectionVisibles, onToggle: onToggleConnectionVisible } = useShowHide();
   const { data: activeConnection } = useGetConnectionById(activeQuery?.connectionId);
+  const { add: addToast, dismiss: dismissToast } = useToaster();
 
   const onCloseQuery = async (query: SqluiFrontend.ConnectionQuery) => {
     try {
@@ -147,11 +150,17 @@ export default function MissionControl() {
   };
 
   const onExportQuery = async (query: SqluiFrontend.ConnectionQuery) => {
+    await addToast({
+      message: `Exporting Query, please wait...`
+    });
+
     downloadText(
       `${query.name}.query.json`,
       JSON.stringify([getExportedQuery(query)], null, 2),
       'text/json',
     );
+
+    await dismissToast();
   };
 
   const onRevealQueryConnection = async (query: SqluiFrontend.ConnectionQuery) => {
@@ -315,6 +324,10 @@ export default function MissionControl() {
   };
 
   const onExportAll = async () => {
+    await addToast({
+      message: `Exporting Connections and Queries, please wait...`
+    });
+
     let jsonContent: any[] = [];
 
     // TODO: implement export all
@@ -335,6 +348,8 @@ export default function MissionControl() {
       JSON.stringify(jsonContent, null, 2),
       'text/json',
     );
+
+    await dismissToast();
   };
 
   const onNewConnection = useCallback(() => navigate('/connection/new'), []);
@@ -356,6 +371,10 @@ export default function MissionControl() {
       } catch (err) {
         return alert(`Import failed. Invalid JSON config`);
       }
+
+      await addToast({
+        message: 'Importing, please wait...'
+      });
 
       // here we will attempt to import all the connections first before queries
       jsonRows = jsonRows.sort((a, b) => {
@@ -389,6 +408,7 @@ export default function MissionControl() {
         }
       }
 
+      await dismissToast();
       alert(`Import finished with ${successCount} successes and ${failedCount} failures`);
     } catch (err) {}
   };

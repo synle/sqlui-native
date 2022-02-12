@@ -23,6 +23,7 @@ import MissionControl from 'src/components/MissionControl';
 import NewConnectionPage from 'src/views/NewConnectionPage';
 import './App.scss';
 import 'src/electronRenderer';
+import Toasters from 'src/components/Toasters';
 
 export default function App() {
   const [hasValidSessionId, setHasValidSessionId] = useState(false);
@@ -106,6 +107,7 @@ export default function App() {
         <MissionControl />
       </HashRouter>
       <ActionDialogs />
+      <Toasters />
       <ElectronEventListener />
     </ThemeProvider>
   );

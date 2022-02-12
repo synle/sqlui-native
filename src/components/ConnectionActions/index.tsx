@@ -19,6 +19,7 @@ import { useDuplicateConnection } from 'src/hooks';
 import { useRetryConnection } from 'src/hooks';
 import DropdownButton from 'src/components/DropdownButton';
 import Toast from 'src/components/Toast';
+ import useToaster from 'src/hooks/useToaster';
 
 interface ConnectionActionsProps {
   connection: SqluiCore.ConnectionProps;
@@ -33,6 +34,7 @@ export default function ConnectionActions(props: ConnectionActionsProps) {
   const { mutateAsync: duplicateConnection } = useDuplicateConnection();
   const { confirm } = useActionDialogs();
   const { onChange: onChangeActiveQuery } = useActiveConnectionQuery();
+  const { add: addToast, dismiss: dismissToast } = useToaster();
 
   const onDelete = async () => {
     try {
@@ -54,12 +56,18 @@ export default function ConnectionActions(props: ConnectionActionsProps) {
     duplicateConnection(connection);
   };
 
-  const onExportConnection = () => {
+  const onExportConnection = async () => {
+    await addToast({
+      message: 'Exporting Connection, please wait...'
+    });
+
     downloadText(
       `${connection.name}.connection.json`,
       JSON.stringify([getExportedConnection(connection)], null, 2),
       'text/json',
     );
+
+    await dismissToast();
   };
 
   const onSelectConnection = () => {
