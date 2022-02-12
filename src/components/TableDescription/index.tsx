@@ -8,6 +8,7 @@ import { useGetTables } from 'src/hooks';
 import { useShowHide } from 'src/hooks';
 import ColumnDescription from 'src/components/ColumnDescription';
 import TableActions from 'src/components/TableActions';
+
 type TableDescriptionProps = {
   connectionId: string;
   databaseId: string;

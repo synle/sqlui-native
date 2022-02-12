@@ -15,5 +15,12 @@ export default function Toasters() {
     dismiss();
   };
 
-  return <Toast open={true} onClose={onToastClose} message={toast.message} />;
+  return (
+    <Toast
+      open={true}
+      onClose={onToastClose}
+      message={toast.message}
+      anchorOrigin={toast.anchorOrigin}
+    />
+  );
 }
