@@ -24,21 +24,12 @@ export default class RedisDataAdapter extends BaseDataAdapter implements IDataAd
 
           await client.connect();
 
-          client.on('error', err => {
-              reject(err);
-          });
-
-          client.on('ready', err => {
-            //@ts-ignore
-            this.client = client;
-
-            //@ts-ignore
-            resolve(this.client);
-          });
-        } else {
           //@ts-ignore
-          resolve(this.client);
+          this.client = client;
         }
+
+        //@ts-ignore
+        resolve(this.client);
       } catch (err) {
         reject(err);
       }
@@ -56,6 +47,8 @@ export default class RedisDataAdapter extends BaseDataAdapter implements IDataAd
   }
 
   async getDatabases(): Promise<SqluiCore.DatabaseMetaData[]> {
+    await this.getConnection();
+
     return [
       {
         name: 'Redis Database',
@@ -65,6 +58,8 @@ export default class RedisDataAdapter extends BaseDataAdapter implements IDataAd
   }
 
   async getTables(database?: string): Promise<SqluiCore.TableMetaData[]> {
+    await this.getConnection();
+
     // TODO: this operation seems to work, but very slow
     // for now, we will just returned a hard coded value
 
