@@ -672,10 +672,10 @@ export function useDeleteSession() {
 // for exporting
 export function getExportedConnection(connectionProps: SqluiCore.ConnectionProps) {
   const { id, connection, name } = connectionProps;
-  return { _type: 'connection', ...{id, connection, name} };
+  return { _type: 'connection', ...{ id, connection, name } };
 }
 
 export function getExportedQuery(query: SqluiFrontend.ConnectionQuery) {
   const { id, name, sql, connectionId, databaseId } = query;
-  return { _type: 'query', ...{ id, name, sql, connectionId, databaseId }};
+  return { _type: 'query', ...{ id, name, sql, connectionId, databaseId } };
 }
