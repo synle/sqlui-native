@@ -8,7 +8,7 @@ import { useQuerySizeSetting } from 'src/hooks';
 import { useSettings } from 'src/hooks';
 import Select from 'src/components/Select';
 
-interface SettingsProps {}
+type SettingsProps = {};
 
 export default function Settings(props: SettingsProps) {
   const { isLoading, settings, onChange } = useSettings();

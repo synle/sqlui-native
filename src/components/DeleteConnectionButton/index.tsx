@@ -5,9 +5,9 @@ import React from 'react';
 import { useActionDialogs } from 'src/hooks/useActionDialogs';
 import { useDeleteConnection } from 'src/hooks';
 
-interface DeleteConnectionButtonProps {
+type DeleteConnectionButtonProps = {
   connectionId: string;
-}
+};
 
 export default function DeleteConnectionButton(props: DeleteConnectionButtonProps) {
   const { connectionId } = props;

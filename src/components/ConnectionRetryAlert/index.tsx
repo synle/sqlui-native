@@ -3,9 +3,9 @@ import Alert from '@mui/material/Alert';
 import { useState } from 'react';
 import { useRetryConnection } from 'src/hooks';
 
-interface ConnectionRetryAlertProps {
+type ConnectionRetryAlertProps = {
   connectionId: string;
-}
+};
 
 export default function ConnectionRetryAlert(props: ConnectionRetryAlertProps) {
   const { connectionId } = props;

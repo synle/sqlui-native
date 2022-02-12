@@ -14,10 +14,10 @@ import { useSortBy } from 'react-table';
 import { useTable } from 'react-table';
 import React from 'react';
 
-interface DataTableProps {
+type DataTableProps = {
   columns: any[];
   data: any[];
-}
+};
 
 const pageSizeOptions: any[] = [10, 25, 50, 100, { label: 'Show All', value: -1 }];
 

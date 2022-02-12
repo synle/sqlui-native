@@ -17,14 +17,14 @@ export type ChoiceInput = {
   options: ChoiceOption[];
 };
 
-interface ChoiceDialogProps {
+type ChoiceDialogProps = {
   open: boolean;
   title: string;
   message: string | React.ReactNode;
   options: ChoiceOption[];
   onSelect: (newValue: string) => void;
   onDismiss: () => void;
-}
+};
 
 export default function ChoiceDialog(props: ChoiceDialogProps) {
   const {

@@ -6,14 +6,14 @@ import { SqluiCore } from '../typings';
 const homedir = require('os').homedir();
 
 // this section of the api is caches in memory
-interface StorageContent {
+type StorageContent = {
   [index: string]: any;
-}
+};
 
-interface StorageEntry {
+type StorageEntry = {
   id: string;
   [index: string]: any;
-}
+};
 
 let baseDir: string;
 try {
