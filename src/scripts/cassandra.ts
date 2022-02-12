@@ -138,5 +138,5 @@ export const tableActionScripts: SqlAction.TableActionScriptGenerator[] = [
 export const databaseActionScripts: SqlAction.DatabaseActionScriptGenerator[] = [
   getDivider,
   getCreateKeyspace, // TODO: right now this command does not tie to the input, it will hard code the keyspace to be some_keyspace
-  getDropKeyspace
+  getDropKeyspace,
 ];

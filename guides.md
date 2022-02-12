@@ -765,6 +765,14 @@ ALTER TABLE
 
 ## cassandra
 
+### Create Keyspace
+
+```
+CREATE KEYSPACE IF NOT EXISTS some_keyspace WITH replication = { 'class': 'SimpleStrategy',
+'replication_factor': 3 };
+```
+
+
 ### Drop Keyspace
 
 ```
