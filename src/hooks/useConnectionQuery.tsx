@@ -3,6 +3,7 @@ import { useQuery } from 'react-query';
 import { useQueryClient } from 'react-query';
 import dataApi from 'src/data/api';
 import { SessionStorageConfig } from 'src/data/config';
+import { getGeneratedRandomId } from 'src/utils/commonUtils';
 import { getUpdatedOrdersForList } from 'src/utils/commonUtils';
 import { SqluiFrontend } from 'typings';
 
@@ -69,7 +70,7 @@ export function useConnectionQueries() {
   }
 
   const onAddQuery = async (query?: SqluiFrontend.ConnectionQuery) => {
-    const newId = `query.${Date.now()}.${Math.floor(Math.random() * 10000000000000000)}`;
+    const newId = getGeneratedRandomId(`queryId`);
 
     let newQuery: SqluiFrontend.ConnectionQuery;
     if (!query) {

@@ -2,6 +2,7 @@ import { useQuery } from 'react-query';
 import { useQueryClient } from 'react-query';
 import { AnchorOrigin } from 'src/components/Toast';
 import Toast from 'src/components/Toast';
+import { getGeneratedRandomId } from 'src/utils/commonUtils';
 
 const QUERY_KEY_TOASTS = 'toasts';
 
@@ -31,7 +32,7 @@ export default function useToaster() {
 
   const add = (props: CoreToasterProps): Promise<ToasterHandler> => {
     return new Promise((resolve, reject) => {
-      const toastId = `toast.${Date.now()}.${Math.floor(Math.random() * 10000000000000000)}`;
+      const toastId = getGeneratedRandomId(`toasterId`);
       _toasts.push({
         ...props,
         id: toastId,
