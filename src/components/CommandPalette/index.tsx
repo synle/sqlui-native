@@ -1,5 +1,6 @@
 import TextField from '@mui/material/TextField';
 import fuzzysort from 'fuzzysort';
+import { useRef } from 'react';
 import { useEffect } from 'react';
 import { useState } from 'react';
 import { styled } from '@mui/system';
@@ -126,6 +127,7 @@ export default function CommandPalette(props: CommandPaletteProps) {
   const [text, setText] = useState('');
   const [options, setOptions] = useState<Command[]>([]);
   const [allOptions, setAllOptions] = useState<Command[]>([]);
+  const refOption = useRef<HTMLDivElement>(null);
   const { isLoading: loadingActiveQuery, query: activeQuery } = useActiveConnectionQuery();
   const { isLoading: loadingQueries, queries } = useConnectionQueries();
 
@@ -171,6 +173,42 @@ export default function CommandPalette(props: CommandPaletteProps) {
     props.onSelectCommand(command);
   };
 
+  const onTextboxKeyDown =(e:React.KeyboardEvent) => {
+    if(!refOption || !refOption.current){
+      return;
+    }
+
+    let moveDirection : number | undefined;
+
+    switch(e.key){
+      case 'ArrowDown':
+        moveDirection = 1;
+        break;
+      case 'ArrowUp':
+        moveDirection = -1;
+        break;
+    }
+
+    if(moveDirection !== undefined){
+      e.preventDefault();
+
+      const allOptions = [...refOption?.current?.querySelectorAll('.CommandPalette__Option')];
+
+      let selectedElem = refOption?.current?.querySelector('.CommandPalette__Option:focus');
+      let nextIndex = selectedElem ? allOptions.indexOf(selectedElem) + moveDirection : 0;
+
+      if(nextIndex < 0){
+        nextIndex= 0;
+      }
+
+      if(nextIndex >= allOptions.length){
+        nextIndex = allOptions.length - 1;
+      }
+
+      (refOption?.current?.querySelectorAll('.CommandPalette__Option')[nextIndex] as HTMLButtonElement)?.focus();
+    }
+  }
+
   if (isLoading) {
     return null;
   }
@@ -191,7 +229,7 @@ export default function CommandPalette(props: CommandPaletteProps) {
   };
 
   return (
-    <StyledCommandPalette>
+    <StyledCommandPalette ref={refOption} onKeyDown={(e) => onTextboxKeyDown(e)}>
       <div className='CommandPalette__SearchBox'>
         <TextField
           value={text}
