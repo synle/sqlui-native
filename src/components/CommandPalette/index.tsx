@@ -1,7 +1,7 @@
 import TextField from '@mui/material/TextField';
 import fuzzysort from 'fuzzysort';
-import { useRef } from 'react';
 import { useEffect } from 'react';
+import { useRef } from 'react';
 import { useState } from 'react';
 import { styled } from '@mui/system';
 import { Command } from 'src/components/MissionControl';
@@ -173,14 +173,14 @@ export default function CommandPalette(props: CommandPaletteProps) {
     props.onSelectCommand(command);
   };
 
-  const onTextboxKeyDown =(e:React.KeyboardEvent) => {
-    if(!refOption || !refOption.current){
+  const onTextboxKeyDown = (e: React.KeyboardEvent) => {
+    if (!refOption || !refOption.current) {
       return;
     }
 
-    let moveDirection : number | undefined;
+    let moveDirection: number | undefined;
 
-    switch(e.key){
+    switch (e.key) {
       case 'ArrowDown':
         moveDirection = 1;
         break;
@@ -189,7 +189,7 @@ export default function CommandPalette(props: CommandPaletteProps) {
         break;
     }
 
-    if(moveDirection !== undefined){
+    if (moveDirection !== undefined) {
       e.preventDefault();
 
       const allOptions = [...refOption?.current?.querySelectorAll('.CommandPalette__Option')];
@@ -197,17 +197,21 @@ export default function CommandPalette(props: CommandPaletteProps) {
       let selectedElem = refOption?.current?.querySelector('.CommandPalette__Option:focus');
       let nextIndex = selectedElem ? allOptions.indexOf(selectedElem) + moveDirection : 0;
 
-      if(nextIndex < 0){
-        nextIndex= 0;
+      if (nextIndex < 0) {
+        nextIndex = 0;
       }
 
-      if(nextIndex >= allOptions.length){
+      if (nextIndex >= allOptions.length) {
         nextIndex = allOptions.length - 1;
       }
 
-      (refOption?.current?.querySelectorAll('.CommandPalette__Option')[nextIndex] as HTMLButtonElement)?.focus();
+      (
+        refOption?.current?.querySelectorAll('.CommandPalette__Option')[
+          nextIndex
+        ] as HTMLButtonElement
+      )?.focus();
     }
-  }
+  };
 
   if (isLoading) {
     return null;
