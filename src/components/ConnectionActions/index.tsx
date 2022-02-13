@@ -11,13 +11,13 @@ import { useNavigate } from 'react-router-dom';
 import DropdownButton from 'src/components/DropdownButton';
 import Toast from 'src/components/Toast';
 import { downloadText } from 'src/data/file';
-import {getExportedQuery, getExportedConnection, getUpdatedOrdersForList} from 'src/utils/commonUtils';
-import { useActiveConnectionQuery } from 'src/hooks/useConnectionQuery';
+import { useActionDialogs } from 'src/hooks/useActionDialogs';
 import { useDeleteConnection } from 'src/hooks/useConnection';
 import { useDuplicateConnection } from 'src/hooks/useConnection';
 import { useRetryConnection } from 'src/hooks/useConnection';
-import { useActionDialogs } from 'src/hooks/useActionDialogs';
+import { useActiveConnectionQuery } from 'src/hooks/useConnectionQuery';
 import useToaster from 'src/hooks/useToaster';
+import { getExportedConnection } from 'src/utils/commonUtils';
 import { SqluiCore } from 'typings';
 
 type ConnectionActionsProps = {

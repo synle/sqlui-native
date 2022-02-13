@@ -10,7 +10,12 @@ describe('commonUtils', () => {
         status: 'online',
         dialect: 'mysql',
       });
-      expect(actual).toStrictEqual({"_type": "connection", "connection": "mysql://root:password@localhost:3306", "id": "connection.1643485467072.6333713976068809", "name": "sy mysql 123"});
+      expect(actual).toStrictEqual({
+        _type: 'connection',
+        connection: 'mysql://root:password@localhost:3306',
+        id: 'connection.1643485467072.6333713976068809',
+        name: 'sy mysql 123',
+      });
     });
   });
 
@@ -26,7 +31,6 @@ describe('commonUtils', () => {
       expect(actual).toMatchSnapshot();
     });
 
-
     test('should work with more completed data inputs', async () => {
       //@ts-ignore
       const actual = commonUtils.getExportedQuery({
@@ -40,16 +44,15 @@ describe('commonUtils', () => {
         executionEnd: 456,
         result: {
           ok: true,
-          raw: [{aa: 777}]
-        }
+          raw: [{ aa: 777 }],
+        },
       });
       expect(actual).toMatchSnapshot();
     });
   });
 
-
   describe('getUpdatedOrdersForList', () => {
-    const items = [11, 22, 33, 44, 55]
+    const items = [11, 22, 33, 44, 55];
     test('should work for from=4, to=2', async () => {
       let actual = commonUtils.getUpdatedOrdersForList(items, 4, 2);
       expect(actual).toStrictEqual([11, 22, 55, 33, 44]);

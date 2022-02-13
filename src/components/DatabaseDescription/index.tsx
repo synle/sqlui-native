@@ -6,8 +6,8 @@ import { AccordionBody } from 'src/components/Accordion';
 import { AccordionHeader } from 'src/components/Accordion';
 import DatabaseActions from 'src/components/DatabaseActions';
 import TableDescription from 'src/components/TableDescription';
-import { useActiveConnectionQuery } from 'src/hooks/useConnectionQuery';
 import { useGetDatabases } from 'src/hooks/useConnection';
+import { useActiveConnectionQuery } from 'src/hooks/useConnectionQuery';
 import { useShowHide } from 'src/hooks/useShowHide';
 
 type DatabaseDescriptionProps = {

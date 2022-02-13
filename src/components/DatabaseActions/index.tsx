@@ -4,8 +4,8 @@ import IconButton from '@mui/material/IconButton';
 import { useState } from 'react';
 import DropdownButton from 'src/components/DropdownButton';
 import { getDatabaseActions } from 'src/data/sql';
-import { useActiveConnectionQuery } from 'src/hooks/useConnectionQuery';
 import { useGetConnectionById } from 'src/hooks/useConnection';
+import { useActiveConnectionQuery } from 'src/hooks/useConnectionQuery';
 import { useQuerySizeSetting } from 'src/hooks/useSetting';
 import useToaster from 'src/hooks/useToaster';
 
