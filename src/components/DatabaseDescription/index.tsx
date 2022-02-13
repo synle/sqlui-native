@@ -8,7 +8,7 @@ import DatabaseActions from 'src/components/DatabaseActions';
 import TableDescription from 'src/components/TableDescription';
 import { useActiveConnectionQuery } from 'src/hooks';
 import { useGetDatabases } from 'src/hooks';
-import { useShowHide } from 'src/hooks';
+import { useShowHide } from 'src/hooks/useShowHide';
 
 type DatabaseDescriptionProps = {
   connectionId: string;

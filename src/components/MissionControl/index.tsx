@@ -26,7 +26,7 @@ import { useGetCurrentSession } from 'src/hooks';
 import { useGetSessions } from 'src/hooks';
 import { useImportConnection } from 'src/hooks';
 import { useSettings } from 'src/hooks';
-import { useShowHide } from 'src/hooks';
+import { useShowHide } from 'src/hooks/useShowHide';
 import { useUpsertSession } from 'src/hooks';
 import { useActionDialogs } from 'src/hooks/useActionDialogs';
 import useToaster from 'src/hooks/useToaster';
