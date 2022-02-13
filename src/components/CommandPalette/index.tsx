@@ -1,11 +1,13 @@
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
+import React from 'react';
 import { useEffect } from 'react';
 import { useState } from 'react';
 import { Command } from 'src/components/MissionControl';
 import { useActiveConnectionQuery } from 'src/hooks/useConnectionQuery';
 import { useConnectionQueries } from 'src/hooks/useConnectionQuery';
 import { SqluiEnums } from 'typings';
+import fuzzysort from 'fuzzysort';
 
 const MAX_OPTION_TO_SHOW = 20;
 
@@ -93,41 +95,44 @@ const ALL_COMMAND_PALETTE_OPTIONS: CommandOption[] = [
 export default function CommandPalette(props: CommandPaletteProps) {
   const [text, setText] = useState('');
   const [options, setOptions] = useState<Command[]>([]);
+  const [allOptions, setAllOptions] = useState<Command[]>([]);
   const { isLoading: loadingActiveQuery, query: activeQuery } = useActiveConnectionQuery();
   const { isLoading: loadingQueries, queries } = useConnectionQueries();
 
   const isLoading = loadingActiveQuery || loadingQueries;
 
+  useEffect(
+    () => {
+      let newAllOptions: Command[] = [];
+      ALL_COMMAND_PALETTE_OPTIONS.forEach((commandOption) => {
+        if (commandOption.expandQueries === true) {
+          if (queries) {
+            for (const query of queries) {
+              newAllOptions.push({
+                event: commandOption.event,
+                label: `${commandOption.label} > ${query.name}`,
+                data: query,
+              });
+            }
+          }
+        } else if (commandOption.useCurrentQuery === true) {
+          newAllOptions.push({
+            ...commandOption,
+            data: activeQuery,
+          });
+        } else {
+          newAllOptions.push(commandOption);
+        }
+      });
+
+      setAllOptions(newAllOptions);
+      setOptions(newAllOptions);
+    }, [queries, activeQuery]);
+
   const onSearch = (newText: string) => {
     setText(newText);
 
-    let allOptions: Command[] = [];
-    ALL_COMMAND_PALETTE_OPTIONS.forEach((commandOption) => {
-      if (commandOption.expandQueries === true) {
-        if (queries) {
-          for (const query of queries) {
-            allOptions.push({
-              event: commandOption.event,
-              label: `${commandOption.label} > ${query.name}`,
-              data: query,
-            });
-          }
-        }
-      } else if (commandOption.useCurrentQuery === true) {
-        allOptions.push({
-          ...commandOption,
-          data: activeQuery,
-        });
-      } else {
-        allOptions.push(commandOption);
-      }
-    });
-
-    const newOptions: Command[] = allOptions
-      .filter((command) => {
-        return command.label?.toLowerCase().trim().includes(newText.toLowerCase().trim());
-      })
-      .sort((a, b) => (a.label || '').localeCompare(b.label || ''));
+    const newOptions: Command[] = fuzzysort.go(newText, allOptions, {key: 'label', allowTypo: false}).map(result => result.obj)
 
     setOptions(newOptions);
   };
@@ -136,15 +141,11 @@ export default function CommandPalette(props: CommandPaletteProps) {
     props.onSelectCommand(command);
   };
 
-  useEffect(() => {
-    onSearch('');
-  }, []);
-
   if (isLoading) {
     return null;
   }
 
-  let optionsToShow = options;
+  let optionsToShow = options.sort((a, b) => (a.label || '').localeCompare(b.label || ''));
 
   if (optionsToShow.length > MAX_OPTION_TO_SHOW && text.length === 0) {
     // limit the initial commands
@@ -152,10 +153,17 @@ export default function CommandPalette(props: CommandPaletteProps) {
   }
 
   const getFormattedLabel = (label?: string) => {
-    if(label){
-      return label;
+    if(!text || !label){
+      return label || '';
     }
-    return null;
+
+    const res = fuzzysort.single(text, label);
+    if(res){
+      //@ts-ignored
+      return fuzzysort.highlight(res, '<span class="CommandPalette__Highlight">', '</span>') || '';
+    }
+
+    return label;
   }
 
   return (
@@ -174,7 +182,7 @@ export default function CommandPalette(props: CommandPaletteProps) {
         <div className='CommandPalette__Options'>
           {optionsToShow.map((option, idx) => (
             <button className='CommandPalette__Option' key={`${option.event}.${idx}`} onClick={() => onSelectCommand(option)} title={option.event}>
-              {getFormattedLabel(option.label)}
+              <span dangerouslySetInnerHTML={{__html:getFormattedLabel(option.label)}} />
             </button>
           ))}
         </div>
