@@ -8,6 +8,50 @@ import { useActiveConnectionQuery } from 'src/hooks/useConnectionQuery';
 import { useConnectionQueries } from 'src/hooks/useConnectionQuery';
 import { SqluiEnums } from 'typings';
 import fuzzysort from 'fuzzysort';
+import { styled } from '@mui/system';
+
+const StyledCommandPalette = styled('section')(({ theme }) => {
+  return {
+    color: theme.palette.text.disabled,
+    fontFamily: 'monospace',
+    paddingRight: theme.spacing(1),
+    maxWidth: '50%',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    marginLeft: 'auto',
+  };
+
+  return {
+    width: '400px',
+
+    '.CommandPalette__SearchBox': {
+      marginBottom: '1rem',
+    },
+
+    '.CommandPalette__Options': {
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '1rem',
+    },
+
+    '.CommandPalette__Option': {
+      background: 'transparent',
+      border: 'none',
+      textAlign: 'left',
+      cursor: 'pointer',
+      color: 'cyan',
+
+      '&:hover': {
+        color: 'tomato',
+      },
+    },
+
+    '.CommandPalette__Highlight': {
+      fontWeight: 'bold',
+      color: 'yellow',
+    },
+  };
+});
 
 const MAX_OPTION_TO_SHOW = 20;
 
@@ -101,38 +145,39 @@ export default function CommandPalette(props: CommandPaletteProps) {
 
   const isLoading = loadingActiveQuery || loadingQueries;
 
-  useEffect(
-    () => {
-      let newAllOptions: Command[] = [];
-      ALL_COMMAND_PALETTE_OPTIONS.forEach((commandOption) => {
-        if (commandOption.expandQueries === true) {
-          if (queries) {
-            for (const query of queries) {
-              newAllOptions.push({
-                event: commandOption.event,
-                label: `${commandOption.label} > ${query.name}`,
-                data: query,
-              });
-            }
+  useEffect(() => {
+    let newAllOptions: Command[] = [];
+    ALL_COMMAND_PALETTE_OPTIONS.forEach((commandOption) => {
+      if (commandOption.expandQueries === true) {
+        if (queries) {
+          for (const query of queries) {
+            newAllOptions.push({
+              event: commandOption.event,
+              label: `${commandOption.label} > ${query.name}`,
+              data: query,
+            });
           }
-        } else if (commandOption.useCurrentQuery === true) {
-          newAllOptions.push({
-            ...commandOption,
-            data: activeQuery,
-          });
-        } else {
-          newAllOptions.push(commandOption);
         }
-      });
+      } else if (commandOption.useCurrentQuery === true) {
+        newAllOptions.push({
+          ...commandOption,
+          data: activeQuery,
+        });
+      } else {
+        newAllOptions.push(commandOption);
+      }
+    });
 
-      setAllOptions(newAllOptions);
-      setOptions(newAllOptions);
-    }, [queries, activeQuery]);
+    setAllOptions(newAllOptions);
+    setOptions(newAllOptions);
+  }, [queries, activeQuery]);
 
   const onSearch = (newText: string) => {
     setText(newText);
 
-    const newOptions: Command[] = fuzzysort.go(newText, allOptions, {key: 'label', allowTypo: false}).map(result => result.obj)
+    const newOptions: Command[] = fuzzysort
+      .go(newText, allOptions, { key: 'label', allowTypo: false })
+      .map((result) => result.obj);
 
     setOptions(newOptions);
   };
@@ -153,21 +198,21 @@ export default function CommandPalette(props: CommandPaletteProps) {
   }
 
   const getFormattedLabel = (label?: string) => {
-    if(!text || !label){
+    if (!text || !label) {
       return label || '';
     }
 
     const res = fuzzysort.single(text, label);
-    if(res){
+    if (res) {
       //@ts-ignored
       return fuzzysort.highlight(res, '<span class="CommandPalette__Highlight">', '</span>') || '';
     }
 
     return label;
-  }
+  };
 
   return (
-    <div className='CommandPalette'>
+    <StyledCommandPalette>
       <div className='CommandPalette__SearchBox'>
         <TextField
           value={text}
@@ -178,14 +223,18 @@ export default function CommandPalette(props: CommandPaletteProps) {
           size='small'
           autoComplete='off'
         />
-        </div>
-        <div className='CommandPalette__Options'>
-          {optionsToShow.map((option, idx) => (
-            <button className='CommandPalette__Option' key={`${option.event}.${idx}`} onClick={() => onSelectCommand(option)} title={option.event}>
-              <span dangerouslySetInnerHTML={{__html:getFormattedLabel(option.label)}} />
-            </button>
-          ))}
-        </div>
-    </div>
+      </div>
+      <div className='CommandPalette__Options'>
+        {optionsToShow.map((option, idx) => (
+          <button
+            className='CommandPalette__Option'
+            key={`${option.event}.${idx}`}
+            onClick={() => onSelectCommand(option)}
+            title={option.event}>
+            <span dangerouslySetInnerHTML={{ __html: getFormattedLabel(option.label) }} />
+          </button>
+        ))}
+      </div>
+    </StyledCommandPalette>
   );
 }

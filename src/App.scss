@@ -136,35 +136,3 @@ $ConnectionTreeIndentSize: 7px;
     }
   }
 }
-
-
-.CommandPalette{
-  width: 400px;
-
-  &__SearchBox{
-    margin-bottom: 1rem;
-  }
-
-  &__Options{
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-  }
-
-  &__Option{
-    background: transparent;
-    border: none;
-    text-align: left;
-    cursor: pointer;
-    color: cyan;
-
-    &:hover{
-      color: tomato;
-    }
-  }
-
-  &__Highlight{
-    font-weight: bold;
-    color: yellow;
-  }
-}
