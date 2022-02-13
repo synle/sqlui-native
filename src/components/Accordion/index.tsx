@@ -9,8 +9,8 @@ const StyledAccordionHeader = styled('div')(({ theme }) => {
     display: 'flex',
     alignItems: 'center',
     minHeight: '37px',
-    borderLeft: '3px solid transparent',
     paddingLeft: '3px',
+    gap: '5px',
 
     '&:hover': {
       backgroundColor: theme.palette.action.focus,
@@ -21,15 +21,7 @@ const StyledAccordionHeader = styled('div')(({ theme }) => {
     },
 
     '&.selected': {
-      borderColor: theme.palette.primary.main,
-    },
-
-    '*': {
-      marginRight: '5px',
-    },
-
-    '*:last-child': {
-      marginRight: 0,
+      backgroundColor: theme.palette.action.selected,
     },
 
     '> span': {

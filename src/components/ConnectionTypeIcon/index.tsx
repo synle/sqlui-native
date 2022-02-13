@@ -19,7 +19,8 @@ export default function ConnectionTypeIcon(props: ConnectionTypeIconProps) {
           src={`${process.env.PUBLIC_URL}/assets/${scheme}.png`}
           alt={scheme}
           title={scheme}
-          width={30}
+          width={25}
+          height={25}
         />
       );
     case 'postgres':
@@ -28,7 +29,8 @@ export default function ConnectionTypeIcon(props: ConnectionTypeIconProps) {
           src={`${process.env.PUBLIC_URL}/assets/${scheme}.png`}
           alt={scheme}
           title={scheme}
-          width={30}
+          width={25}
+          height={25}
         />
       );
     case 'sqlite':
@@ -37,7 +39,8 @@ export default function ConnectionTypeIcon(props: ConnectionTypeIconProps) {
           src={`${process.env.PUBLIC_URL}/assets/${scheme}.png`}
           alt={scheme}
           title={scheme}
-          width={30}
+          width={25}
+          height={25}
         />
       );
     case 'mariadb':
@@ -46,7 +49,8 @@ export default function ConnectionTypeIcon(props: ConnectionTypeIconProps) {
           src={`${process.env.PUBLIC_URL}/assets/${scheme}.png`}
           alt={scheme}
           title={scheme}
-          width={30}
+          width={25}
+          height={25}
         />
       );
     case 'mysql':
@@ -55,7 +59,8 @@ export default function ConnectionTypeIcon(props: ConnectionTypeIconProps) {
           src={`${process.env.PUBLIC_URL}/assets/${scheme}.png`}
           alt={scheme}
           title={scheme}
-          width={30}
+          width={25}
+          height={25}
         />
       );
     case 'cassandra':
@@ -64,7 +69,8 @@ export default function ConnectionTypeIcon(props: ConnectionTypeIconProps) {
           src={`${process.env.PUBLIC_URL}/assets/${scheme}.png`}
           alt={scheme}
           title={scheme}
-          width={30}
+          width={25}
+          height={25}
         />
       );
     case 'mongodb':
@@ -73,7 +79,8 @@ export default function ConnectionTypeIcon(props: ConnectionTypeIconProps) {
           src={`${process.env.PUBLIC_URL}/assets/${scheme}.png`}
           alt={scheme}
           title={scheme}
-          width={30}
+          width={25}
+          height={25}
         />
       );
     case 'redis':
@@ -82,7 +89,8 @@ export default function ConnectionTypeIcon(props: ConnectionTypeIconProps) {
           src={`${process.env.PUBLIC_URL}/assets/${scheme}.png`}
           alt={scheme}
           title={scheme}
-          width={30}
+          width={25}
+          height={25}
         />
       );
     default:
