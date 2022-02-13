@@ -131,7 +131,6 @@ export default function QueryBox(props: QueryBoxProps) {
           <ConnectionDatabaseSelector value={query} onChange={onDatabaseConnectionChange} />
           <ConnectionRevealButton query={query} />
         </div>
-        <div className='FormInput__Row'>
           <CodeEditorBox
             value={query.sql}
             placeholder={`Enter SQL for ` + query.name}
@@ -140,7 +139,6 @@ export default function QueryBox(props: QueryBoxProps) {
             autoFocus
             mode='textarea'
           />
-        </div>
         <div className='FormInput__Row'>
           <Button
             type='submit'
@@ -155,8 +153,7 @@ export default function QueryBox(props: QueryBoxProps) {
               type='button'
               variant='outlined'
               onClick={() => selectCommand({ event: 'clientEvent/showQueryHelp' })}
-              startIcon={<HelpIcon />}
-              sx={{ ml: 3 }}>
+              startIcon={<HelpIcon />}>
               Show Query Help
             </Button>
           </Tooltip>
@@ -166,14 +163,13 @@ export default function QueryBox(props: QueryBoxProps) {
               type='button'
               variant='outlined'
               onClick={onFormatQuery}
-              startIcon={<FormatColorTextIcon />}
-              sx={{ ml: 3 }}>
+              startIcon={<FormatColorTextIcon />}>
               Format
             </Button>
           </Tooltip>
         </div>
-      </form>
       <ResultBox query={query} executing={executing} />
+      </form>
     </>
   );
 }

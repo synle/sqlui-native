@@ -164,7 +164,7 @@ function MainConnectionForm(props: MainConnectionFormProps) {
           type='submit'
           disabled={props.saving}
           startIcon={<SaveIcon />}
-          sx={{ mr: 3 }}>
+          >
           Save
         </Button>
         <Button
@@ -172,7 +172,7 @@ function MainConnectionForm(props: MainConnectionFormProps) {
           type='button'
           disabled={props.saving}
           onClick={() => navigate('/')}
-          sx={{ mr: 3 }}>
+          >
           Cancel
         </Button>
         <TestConnectionButton connection={connection} />
@@ -182,7 +182,7 @@ function MainConnectionForm(props: MainConnectionFormProps) {
               type='button'
               disabled={props.saving}
               onClick={() => setShowHint(true)}
-              sx={{ ml: 3 }}>
+              >
               Show Connection Hints
             </Button>
           </Tooltip>

@@ -26,7 +26,6 @@ export default function ConnectionRevealButton(props: ConnectionRevealButtonProp
           variant='outlined'
           startIcon={<PreviewIcon />}
           onClick={() => selectCommand({ event: 'clientEvent/query/reveal' })}
-          sx={{ ml: 3 }}
           disabled={disabled}>
           Reveal
         </Button>
