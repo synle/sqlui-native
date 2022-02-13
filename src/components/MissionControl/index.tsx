@@ -390,7 +390,9 @@ export default function MissionControl() {
       );
     } catch (err) {
       curToast = await addToast({
-        message: `Failed to delete connection "${connection.name}" (dialect=${connection.dialect || 'N/A'})`,
+        message: `Failed to delete connection "${connection.name}" (dialect=${
+          connection.dialect || 'N/A'
+        })`,
       });
     }
   };
@@ -405,7 +407,9 @@ export default function MissionControl() {
     let resultMessage = '';
     try {
       await reconnectConnection(connection.id);
-      resultMessage = `Successfully connected to "${connection.name}" (dialect=${connection.dialect || 'N/A'})`;
+      resultMessage = `Successfully connected to "${connection.name}" (dialect=${
+        connection.dialect || 'N/A'
+      })`;
     } catch (err) {
       resultMessage = `Failed to connect to "${connection.name}"`;
     }

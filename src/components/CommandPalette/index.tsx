@@ -5,7 +5,8 @@ import { useRef } from 'react';
 import { useState } from 'react';
 import { styled } from '@mui/system';
 import { Command as CoreCommand } from 'src/components/MissionControl';
-import { useGetConnectionById, useGetConnections } from 'src/hooks/useConnection';
+import { useGetConnectionById } from 'src/hooks/useConnection';
+import { useGetConnections } from 'src/hooks/useConnection';
 import { useActiveConnectionQuery } from 'src/hooks/useConnectionQuery';
 import { useConnectionQueries } from 'src/hooks/useConnectionQuery';
 import { SqluiEnums } from 'typings';
@@ -166,7 +167,8 @@ export default function CommandPalette(props: CommandPaletteProps) {
   );
   const { data: connections, isLoading: loadingConnections } = useGetConnections();
 
-  const isLoading = loadingActiveQuery || loadingQueries || loadingActiveConnection || loadingConnections;
+  const isLoading =
+    loadingActiveQuery || loadingQueries || loadingActiveConnection || loadingConnections;
 
   useEffect(() => {
     let newAllOptions: Command[] = [];
@@ -182,12 +184,12 @@ export default function CommandPalette(props: CommandPaletteProps) {
           }
         }
       } else if (commandOption.useCurrentQuery === true) {
-        if(activeQuery){
-                newAllOptions.push({
-                  ...commandOption,
-                  data: activeQuery,
-                });
-              }
+        if (activeQuery) {
+          newAllOptions.push({
+            ...commandOption,
+            data: activeQuery,
+          });
+        }
       } else if (commandOption.expandConnections === true) {
         if (connections && connections.length > 0) {
           for (const connection of connections) {
@@ -199,11 +201,12 @@ export default function CommandPalette(props: CommandPaletteProps) {
           }
         }
       } else if (commandOption.useCurrentConnection === true) {
-        if(activeConnection){
-                newAllOptions.push({
-                  ...commandOption,
-                  data: activeConnection,
-                });}
+        if (activeConnection) {
+          newAllOptions.push({
+            ...commandOption,
+            data: activeConnection,
+          });
+        }
       } else {
         newAllOptions.push(commandOption);
       }
