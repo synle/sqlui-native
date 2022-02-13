@@ -21,7 +21,9 @@ import { useGetConnectionById } from 'src/hooks/useConnection';
 import { useConnectionQuery } from 'src/hooks/useConnectionQuery';
 import { formatJS } from 'src/utils/formatter';
 import { formatSQL } from 'src/utils/formatter';
+import { formatDuration } from 'src/utils/formatter';
 import { SqluiCore } from 'typings';
+ import useToaster from 'src/hooks/useToaster';
 
 type QueryBoxProps = {
   queryId: string;
@@ -35,6 +37,7 @@ export default function QueryBox(props: QueryBoxProps) {
   const { data: selectedConnection } = useGetConnectionById(query?.connectionId);
   const queryClient = useQueryClient();
   const { selectCommand } = useCommands();
+  const { add: addToast } = useToaster();
 
   const isLoading = loadingConnection;
 
@@ -99,7 +102,9 @@ export default function QueryBox(props: QueryBoxProps) {
     const executionEnd= Date.now();
     onChange({ executionEnd });
 
-
+    const curToast = await addToast({
+      message: `Query "${query.name}" executed and took about ${formatDuration(executionEnd - executionStart)} second(s)...`,
+    });
   };
 
   const disabledExecute = executing || !query?.sql || !query?.connectionId;
