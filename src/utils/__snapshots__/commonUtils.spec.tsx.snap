@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`hooks getExportedQuery should work with minimal inputs 1`] = `
+exports[`commonUtils getExportedQuery should work with minimal inputs 1`] = `
 Object {
   "_type": "query",
   "connectionId": "connection.1644098335891.8887562323718656",
@@ -14,7 +14,7 @@ FROM
 }
 `;
 
-exports[`hooks getExportedQuery should work with more completed data inputs 1`] = `
+exports[`commonUtils getExportedQuery should work with more completed data inputs 1`] = `
 Object {
   "_type": "query",
   "connectionId": "connection.1644098335891.8887562323718656",

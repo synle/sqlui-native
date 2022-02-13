@@ -1,7 +1,7 @@
 import { Button } from '@mui/material';
 import Alert from '@mui/material/Alert';
 import { useState } from 'react';
-import { useRetryConnection } from 'src/hooks';
+import { useRetryConnection } from 'src/hooks/useConnection';
 
 type ConnectionRetryAlertProps = {
   connectionId: string;

@@ -10,8 +10,8 @@ import React from 'react';
 import ConnectionHint from 'src/components/ConnectionForm/ConnectionHint';
 import TestConnectionButton from 'src/components/TestConnectionButton';
 import Toast from 'src/components/Toast';
-import { useGetConnectionById } from 'src/hooks';
-import { useUpsertConnection } from 'src/hooks';
+import { useGetConnectionById } from 'src/hooks/useConnection';
+import { useUpsertConnection } from 'src/hooks/useConnection';
 import { SqluiCore } from 'typings';
 
 type ConnectionFormProps = {

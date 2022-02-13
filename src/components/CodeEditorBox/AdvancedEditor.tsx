@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import { useRef } from 'react';
 import { useState } from 'react';
 import { styled } from '@mui/system';
-import { useDarkModeSetting } from 'src/hooks';
+import { useDarkModeSetting } from 'src/hooks/useSetting';
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
 
 type AdvancedEditorProps = {

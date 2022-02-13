@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import Select from 'src/components/Select';
-import { useGetConnections } from 'src/hooks';
-import { useGetDatabases } from 'src/hooks';
+import { useGetConnections } from 'src/hooks/useConnection';
+import { useGetDatabases } from 'src/hooks/useConnection';
 import { SqluiFrontend } from 'typings';
 
 type ConnectionDatabaseSelectorProps = {
