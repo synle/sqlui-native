@@ -5,7 +5,7 @@ import { useRef } from 'react';
 import { useState } from 'react';
 import { styled } from '@mui/system';
 import { Command as CoreCommand } from 'src/components/MissionControl';
-import { useGetConnectionById } from 'src/hooks/useConnection';
+import { useGetConnectionById, useGetConnections } from 'src/hooks/useConnection';
 import { useActiveConnectionQuery } from 'src/hooks/useConnectionQuery';
 import { useConnectionQueries } from 'src/hooks/useConnectionQuery';
 import { SqluiEnums } from 'typings';
@@ -106,12 +106,12 @@ const ALL_COMMAND_PALETTE_OPTIONS: CommandOption[] = [
   {
     event: 'clientEvent/changeQueryTabOrientation',
     label: 'Use Horizontal Tab Orientation',
-    data: 'Horizontal',
+    data: 'horizontal',
   },
   {
     event: 'clientEvent/changeQueryTabOrientation',
     label: 'Use Vertical Tab Orientation',
-    data: 'Vertical',
+    data: 'vertical',
   },
   {
     event: 'clientEvent/showQueryHelp',
@@ -120,8 +120,18 @@ const ALL_COMMAND_PALETTE_OPTIONS: CommandOption[] = [
   { event: 'clientEvent/clearShowHides', label: 'Collapse All Connections' },
   { event: 'clientEvent/changeDarkMode', label: 'Follows System Settings for Dark Mode', data: '' },
 
+  // sessions
+  { event: 'clientEvent/session/switch', label: 'Switch Session' },
+  { event: 'clientEvent/session/new', label: 'New Session' },
+  { event: 'clientEvent/session/rename', label: 'Rename Current Session' },
+
   // connections
   { event: 'clientEvent/connection/new', label: 'New Connection' },
+  {
+    event: 'clientEvent/connection/delete',
+    label: 'Delete Connection',
+    expandConnections: true,
+  },
   {
     event: 'clientEvent/connection/delete',
     label: 'Delete Current Connection',
@@ -132,11 +142,6 @@ const ALL_COMMAND_PALETTE_OPTIONS: CommandOption[] = [
     label: 'Refresh Current Connection',
     useCurrentConnection: true,
   },
-
-  // sessions
-  { event: 'clientEvent/session/switch', label: 'Switch Session' },
-  { event: 'clientEvent/session/new', label: 'New Session' },
-  { event: 'clientEvent/session/rename', label: 'Rename Current Session' },
 
   // queries
   { event: 'clientEvent/query/new', label: 'New Query' },
@@ -159,14 +164,15 @@ export default function CommandPalette(props: CommandPaletteProps) {
   const { isLoading: loadingActiveConnection, data: activeConnection } = useGetConnectionById(
     activeQuery?.connectionId,
   );
+  const { data: connections, isLoading: loadingConnections } = useGetConnections();
 
-  const isLoading = loadingActiveQuery || loadingQueries || loadingActiveConnection;
+  const isLoading = loadingActiveQuery || loadingQueries || loadingActiveConnection || loadingConnections;
 
   useEffect(() => {
     let newAllOptions: Command[] = [];
     ALL_COMMAND_PALETTE_OPTIONS.forEach((commandOption) => {
       if (commandOption.expandQueries === true) {
-        if (queries) {
+        if (queries && queries?.length > 0) {
           for (const query of queries) {
             newAllOptions.push({
               event: commandOption.event,
@@ -176,15 +182,28 @@ export default function CommandPalette(props: CommandPaletteProps) {
           }
         }
       } else if (commandOption.useCurrentQuery === true) {
-        newAllOptions.push({
-          ...commandOption,
-          data: activeQuery,
-        });
+        if(activeQuery){
+                newAllOptions.push({
+                  ...commandOption,
+                  data: activeQuery,
+                });
+              }
+      } else if (commandOption.expandConnections === true) {
+        if (connections && connections.length > 0) {
+          for (const connection of connections) {
+            newAllOptions.push({
+              event: commandOption.event,
+              label: `${commandOption.label} > ${connection.name}`,
+              data: connection,
+            });
+          }
+        }
       } else if (commandOption.useCurrentConnection === true) {
-        newAllOptions.push({
-          ...commandOption,
-          data: activeConnection,
-        });
+        if(activeConnection){
+                newAllOptions.push({
+                  ...commandOption,
+                  data: activeConnection,
+                });}
       } else {
         newAllOptions.push(commandOption);
       }
