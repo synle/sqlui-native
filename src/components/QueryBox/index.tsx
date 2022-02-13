@@ -90,10 +90,14 @@ export default function QueryBox(props: QueryBoxProps) {
     const executionStart = Date.now();
     onChange({ executionStart, result: {} as SqluiCore.Result });
 
+    let success = false;
+
     try {
       const newResult = await executeQuery(query);
       onChange({ result: newResult });
       refreshAfterExecution(query, queryClient);
+
+      success = newResult.ok;
     } catch (err) {
       // here query failed...
     }
@@ -102,10 +106,10 @@ export default function QueryBox(props: QueryBoxProps) {
     const executionEnd = Date.now();
     onChange({ executionEnd });
 
-    const curToast = await addToast({
-      message: `Query "${query.name}" executed and took about ${formatDuration(
-        executionEnd - executionStart,
-      )} second(s)...`,
+    await addToast({
+      message: `Query "${query.name}" executed ${
+        success ? 'Successfully' : 'Unsuccessfully'
+      } and took about ${formatDuration(executionEnd - executionStart)} second(s)...`,
     });
   };
 
