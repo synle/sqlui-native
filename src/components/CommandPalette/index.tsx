@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import { useRef } from 'react';
 import { useState } from 'react';
 import { styled } from '@mui/system';
-import { Command } from 'src/components/MissionControl';
+import { Command as CoreCommand } from 'src/components/MissionControl';
 import { useActiveConnectionQuery } from 'src/hooks/useConnectionQuery';
 import { useConnectionQueries } from 'src/hooks/useConnectionQuery';
 import { SqluiEnums } from 'typings';
@@ -41,6 +41,10 @@ const StyledCommandPalette = styled('section')(({ theme }) => {
     },
   };
 });
+
+type Command = CoreCommand & {
+  label: string;
+}
 
 type CommandPaletteProps = {
   onSelectCommand: (command: Command) => void;
@@ -157,6 +161,7 @@ export default function CommandPalette(props: CommandPaletteProps) {
     });
 
     setAllOptions(newAllOptions);
+
     // filter out the options
     let newOptions: Command[] = newAllOptions;
 
@@ -219,14 +224,12 @@ export default function CommandPalette(props: CommandPaletteProps) {
 
   let optionsToShow = options.sort((a, b) => (a.label || '').localeCompare(b.label || ''));
 
-  const getFormattedLabel = (label?: string) => {
-    if (!text || !label) {
-      return label || '';
-    }
-
-    const res = fuzzysort.single(text, label);
-    if (res) {
-      return fuzzysort.highlight(res, '<span class="CommandPalette__Highlight">', '</span>') || '';
+  const getFormattedLabel = (label: string) => {
+    if (text) {
+      const res = fuzzysort.single(text, label);
+      if (res) {
+        return fuzzysort.highlight(res, '<span class="CommandPalette__Highlight">', '</span>') || '';
+      }
     }
 
     return label;

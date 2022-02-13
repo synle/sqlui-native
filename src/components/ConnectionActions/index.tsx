@@ -28,119 +28,54 @@ type ConnectionActionsProps = {
 export default function ConnectionActions(props: ConnectionActionsProps) {
   const { connection } = props;
   const navigate = useNavigate();
-  const { mutateAsync: deleteConnection } = useDeleteConnection();
-  const { mutateAsync: reconnectConnection } = useRetryConnection();
-  const { mutateAsync: duplicateConnection } = useDuplicateConnection();
-  const { confirm } = useActionDialogs();
-  const { add: addToast } = useToaster();
-  const { selectCommand } = useCommands();
-
-  const onDelete = async () => {
-    let curToast;
-    try {
-      await confirm('Delete this connection?');
-      await deleteConnection(connection.id);
-      curToast = await addToast({
-        message: `Connection "${connection.name}" deleted`,
-      });
-
-      createSystemNotification(
-        `Connection "${connection.name}" (dialect=${connection.dialect}) deleted`,
-      );
-    } catch (err) {
-      curToast = await addToast({
-        message: `Failed to delete connection "${connection.name}" (dialect=${connection.dialect})`,
-      });
-    }
-  };
-
-  const onRefresh = async () => {
-    let curToast;
-
-    curToast = await addToast({
-      message: `Refreshing connection "${connection.name}", please wait...`,
-    });
-
-    let resultMessage = '';
-    try {
-      await reconnectConnection(connection.id);
-      resultMessage = `Successfully connected to "${connection.name}" (dialect=${connection.dialect})`;
-    } catch (err) {
-      resultMessage = `Failed to connect to "${connection.name}"`;
-    }
-
-    await curToast.dismiss();
-    curToast = await addToast({
-      message: resultMessage,
-    });
-
-    createSystemNotification(resultMessage);
-  };
-
-  const onDuplicate = async () => {
-    const curToast = await addToast({
-      message: `Duplicating connection "${connection.name}", please wait...`,
-    });
-
-    duplicateConnection(connection);
-  };
-
-  const onExportConnection = async () => {
-    const curToast = await addToast({
-      message: `Exporting connection "${connection.name}", please wait...`,
-    });
-
-    downloadText(
-      `${connection.name}.connection.json`,
-      JSON.stringify([getExportedConnection(connection)], null, 2),
-      'text/json',
-    );
-  };
-
-  const onSelectConnection = async () => {
-    const curToast = await addToast({
-      message: `Connection "${connection.name}" selected for query`,
-    });
-
-    selectCommand({
-      event: 'clientEvent/query/changeActiveQuery',
-      data: {
-        connectionId: connection.id,
-        databaseId: '',
-      },
-    });
-  };
+  const { selectCommand } = useCommands()
+  const data = connection;
 
   const options = [
     {
       label: 'Select',
-      onClick: () => onSelectConnection(),
       startIcon: <SelectAllIcon />,
+      onClick: () => selectCommand({
+        event: 'clientEvent/connection/select',
+        data,
+      }),
     },
     {
       label: 'Edit',
-      onClick: () => navigate(`/connection/edit/${connection.id}`),
       startIcon: <EditIcon />,
+      onClick: () => navigate(`/connection/edit/${connection.id}`),
     },
     {
       label: 'Export',
-      onClick: onExportConnection,
       startIcon: <ArrowUpwardIcon />,
+      onClick: () => selectCommand({
+        event: 'clientEvent/connection/export',
+        data,
+      }),
     },
     {
       label: 'Duplicate',
-      onClick: onDuplicate,
       startIcon: <ContentCopyIcon />,
+      onClick: () => selectCommand({
+        event: 'clientEvent/connection/duplicate',
+        data,
+      }),
     },
     {
       label: 'Refresh',
-      onClick: onRefresh,
       startIcon: <RefreshIcon />,
+      onClick: () => selectCommand({
+        event: 'clientEvent/connection/refresh',
+        data,
+      }),
     },
     {
       label: 'Delete',
-      onClick: onDelete,
       startIcon: <DeleteIcon />,
+      onClick: () => selectCommand({
+        event: 'clientEvent/connection/delete',
+        data,
+      }),
     },
   ];
 
