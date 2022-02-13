@@ -3,6 +3,7 @@ import SelectAllIcon from '@mui/icons-material/SelectAll';
 import IconButton from '@mui/material/IconButton';
 import { useState } from 'react';
 import DropdownButton from 'src/components/DropdownButton';
+import { useCommands } from 'src/components/MissionControl';
 import { getDatabaseActions } from 'src/data/sql';
 import { useGetConnectionById } from 'src/hooks/useConnection';
 import { useActiveConnectionQuery } from 'src/hooks/useConnectionQuery';
@@ -20,6 +21,7 @@ export default function DatabaseActions(props: DatabaseActionsProps) {
   let databaseId: string | undefined = props.databaseId;
   let connectionId: string | undefined = props.connectionId;
   const { add: addToast } = useToaster();
+  const { selectCommand } = useCommands();
 
   if (!open) {
     // if table action is not opened, hen we don't need to do this...
@@ -28,7 +30,7 @@ export default function DatabaseActions(props: DatabaseActionsProps) {
   }
 
   const { data: connection, isLoading: loadingConnection } = useGetConnectionById(connectionId);
-  const { query, onChange: onChangeActiveQuery } = useActiveConnectionQuery();
+  const { query } = useActiveConnectionQuery();
   const dialect = connection?.dialect;
 
   const isLoading = loadingConnection;
@@ -40,25 +42,17 @@ export default function DatabaseActions(props: DatabaseActionsProps) {
     querySize,
   });
 
-  const onSelectDatabaseForQuery = () => {
-    onChangeActiveQuery({
-      connectionId: connectionId,
-      databaseId: databaseId,
-    });
-  };
-
-  const onShowQuery = (queryToShow: string) => {
-    onChangeActiveQuery({
-      connectionId: connectionId,
-      databaseId: databaseId,
-      sql: queryToShow,
-    });
-  };
-
   const options = [
     {
       label: 'Select',
-      onClick: onSelectDatabaseForQuery,
+      onClick: () =>
+        selectCommand({
+          event: 'clientEvent/query/changeActiveQuery',
+          data: {
+            connectionId: connectionId,
+            databaseId: databaseId,
+          },
+        }),
       startIcon: <SelectAllIcon />,
     },
     ...actions.map((action) => ({
@@ -69,7 +63,14 @@ export default function DatabaseActions(props: DatabaseActionsProps) {
             message: `Applied "${action.label}" query`,
           });
 
-          onShowQuery(action.query);
+          selectCommand({
+            event: 'clientEvent/query/changeActiveQuery',
+            data: {
+              connectionId: connectionId,
+              databaseId: databaseId,
+              sql: action.query,
+            },
+          });
         }
       },
     })),

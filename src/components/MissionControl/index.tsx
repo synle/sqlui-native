@@ -104,7 +104,7 @@ export default function MissionControl() {
     onImportQuery,
     isLoading: loadingQueries,
   } = useConnectionQueries();
-  const { query: activeQuery } = useActiveConnectionQuery();
+  const { query: activeQuery, onChange: onChangeActiveQuery } = useActiveConnectionQuery();
   const { command, selectCommand, dismissCommand } = useCommands();
   const { modal, choice, confirm, prompt, alert, dismiss: dismissDialog } = useActionDialogs();
   const { data: sessions, isLoading: loadingSessions } = useGetSessions();
@@ -194,15 +194,21 @@ export default function MissionControl() {
     }, 100);
   };
 
+  const onUpdateActiveQuery = async (data: SqluiFrontend.PartialConnectionQuery) => {
+    onChangeActiveQuery(data);
+  };
+
   const onShowQueryHelp = async () => {
+    let data: string;
+
     if (activeConnection && activeConnection.dialect) {
       // open query help with selected dialect
-      window.openBrowserLink(
-        `https://synle.github.io/sqlui-native/guides#${activeConnection.dialect}`,
-      );
+      data = `https://synle.github.io/sqlui-native/guides#${activeConnection.dialect}`;
     } else {
-      window.openBrowserLink(`https://synle.github.io/sqlui-native/guides`);
+      data = `https://synle.github.io/sqlui-native/guides`;
     }
+
+    selectCommand({ event: 'clientEvent/openExternalUrl', data });
   };
 
   const onShowQueryWithDirection = (direction: number) => {
@@ -460,7 +466,7 @@ export default function MissionControl() {
           : `https://github.com/synle/sqlui-native/releases/download/${newVersion}/sqlui-native-${newVersion}.exe`;
 
       const onDownloadLatestVersion = () => {
-        window.openBrowserLink(downloadLink);
+        selectCommand({ event: 'clientEvent/openExternalUrl', data: downloadLink });
       };
 
       contentDom = (
@@ -478,7 +484,8 @@ export default function MissionControl() {
     }
 
     const onGoToHomepage = () => {
-      window.openBrowserLink('https://synle.github.io/sqlui-native/');
+      const data = 'https://synle.github.io/sqlui-native/';
+      selectCommand({ event: 'clientEvent/openExternalUrl', data });
     };
 
     await modal({
@@ -558,6 +565,13 @@ export default function MissionControl() {
           onShowQueryHelp();
           break;
 
+        case 'clientEvent/openExternalUrl':
+          const url = command.data as string;
+          if (url) {
+            window.openBrowserLink(url);
+          }
+          break;
+
         // overall commands
         case 'clientEvent/import':
           try {
@@ -586,6 +600,12 @@ export default function MissionControl() {
         case 'clientEvent/query/show':
           if (command.data) {
             onShowQuery((command.data as SqluiFrontend.ConnectionQuery).id);
+          }
+          break;
+
+        case 'clientEvent/query/changeActiveQuery':
+          if (command.data) {
+            onUpdateActiveQuery(command.data as SqluiFrontend.PartialConnectionQuery);
           }
           break;
 
