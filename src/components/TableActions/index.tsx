@@ -8,6 +8,7 @@ import { useGetConnectionById } from 'src/hooks/useConnection';
 import { useActiveConnectionQuery } from 'src/hooks/useConnectionQuery';
 import { useQuerySizeSetting } from 'src/hooks/useSetting';
 import useToaster from 'src/hooks/useToaster';
+import { useCommands } from 'src/components/MissionControl';
 
 type TableActionsProps = {
   connectionId: string;
@@ -22,6 +23,7 @@ export default function TableActions(props: TableActionsProps) {
   let connectionId: string | undefined = props.connectionId;
   let tableId: string | undefined = props.tableId;
   const { add: addToast } = useToaster();
+  const { selectCommand } = useCommands();
 
   if (!open) {
     // if table action is not opened, hen we don't need to do this...
@@ -37,7 +39,7 @@ export default function TableActions(props: TableActionsProps) {
     tableId,
   );
 
-  const { query, onChange: onChangeActiveQuery } = useActiveConnectionQuery();
+  const { query } = useActiveConnectionQuery();
   const dialect = connection?.dialect;
 
   const isLoading = loadingConnection || loadingColumns;
@@ -52,10 +54,13 @@ export default function TableActions(props: TableActionsProps) {
   });
 
   const onShowQuery = (queryToShow: string) => {
-    onChangeActiveQuery({
-      connectionId: connectionId,
-      databaseId: databaseId,
-      sql: queryToShow,
+    selectCommand({
+      event: 'clientEvent/query/changeActiveQuery',
+      data: {
+        connectionId: connectionId,
+        databaseId: databaseId,
+        sql: queryToShow,
+      },
     });
   };
 

@@ -20,6 +20,7 @@ import useToaster from 'src/hooks/useToaster';
 import { createSystemNotification } from 'src/utils/commonUtils';
 import { getExportedConnection } from 'src/utils/commonUtils';
 import { SqluiCore } from 'typings';
+import { useCommands } from 'src/components/MissionControl';
 
 type ConnectionActionsProps = {
   connection: SqluiCore.ConnectionProps;
@@ -32,8 +33,8 @@ export default function ConnectionActions(props: ConnectionActionsProps) {
   const { mutateAsync: reconnectConnection } = useRetryConnection();
   const { mutateAsync: duplicateConnection } = useDuplicateConnection();
   const { confirm } = useActionDialogs();
-  const { onChange: onChangeActiveQuery } = useActiveConnectionQuery();
   const { add: addToast } = useToaster();
+  const { selectCommand } = useCommands();
 
   const onDelete = async () => {
     let curToast;
@@ -102,9 +103,12 @@ export default function ConnectionActions(props: ConnectionActionsProps) {
       message: `Connection "${connection.name}" selected for query`,
     });
 
-    onChangeActiveQuery({
-      connectionId: connection.id,
-      databaseId: '',
+    selectCommand({
+      event: 'clientEvent/query/changeActiveQuery',
+      data: {
+        connectionId: connection.id,
+        databaseId: '',
+      },
     });
   };
 

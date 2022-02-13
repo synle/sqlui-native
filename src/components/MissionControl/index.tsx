@@ -104,7 +104,7 @@ export default function MissionControl() {
     onImportQuery,
     isLoading: loadingQueries,
   } = useConnectionQueries();
-  const { query: activeQuery } = useActiveConnectionQuery();
+  const { query: activeQuery, onChange: onChangeActiveQuery } = useActiveConnectionQuery();
   const { command, selectCommand, dismissCommand } = useCommands();
   const { modal, choice, confirm, prompt, alert, dismiss: dismissDialog } = useActionDialogs();
   const { data: sessions, isLoading: loadingSessions } = useGetSessions();
@@ -192,6 +192,10 @@ export default function MissionControl() {
       const selectedHeaders = document.querySelectorAll('.Accordion__Header.selected');
       selectedHeaders[selectedHeaders.length - 1].scrollIntoView();
     }, 100);
+  };
+
+  const onUpdateActiveQuery = async (data: SqluiFrontend.PartialConnectionQuery) => {
+    onChangeActiveQuery(data);
   };
 
   const onShowQueryHelp = async () => {
@@ -586,6 +590,12 @@ export default function MissionControl() {
         case 'clientEvent/query/show':
           if (command.data) {
             onShowQuery((command.data as SqluiFrontend.ConnectionQuery).id);
+          }
+          break;
+
+        case 'clientEvent/query/changeActiveQuery':
+          if (command.data) {
+            onUpdateActiveQuery(command.data as SqluiFrontend.PartialConnectionQuery);
           }
           break;
 

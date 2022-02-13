@@ -213,6 +213,7 @@ export module SqluiEnums {
     | 'clientEvent/import'
     | 'clientEvent/exportAll'
     | 'clientEvent/connection/new'
+    | 'clientEvent/query/changeActiveQuery'
     | 'clientEvent/query/new'
     | 'clientEvent/query/rename'
     | 'clientEvent/query/export'
