@@ -19,6 +19,8 @@ import { refreshAfterExecution } from 'src/hooks/useConnection';
 import { useExecute } from 'src/hooks/useConnection';
 import { useGetConnectionById } from 'src/hooks/useConnection';
 import { useConnectionQuery } from 'src/hooks/useConnectionQuery';
+import useToaster from 'src/hooks/useToaster';
+import { formatDuration } from 'src/utils/formatter';
 import { formatJS } from 'src/utils/formatter';
 import { formatSQL } from 'src/utils/formatter';
 import { SqluiCore } from 'typings';
@@ -35,6 +37,7 @@ export default function QueryBox(props: QueryBoxProps) {
   const { data: selectedConnection } = useGetConnectionById(query?.connectionId);
   const queryClient = useQueryClient();
   const { selectCommand } = useCommands();
+  const { add: addToast } = useToaster();
 
   const isLoading = loadingConnection;
 
@@ -83,7 +86,9 @@ export default function QueryBox(props: QueryBoxProps) {
   const onSubmit = async (e: React.SyntheticEvent) => {
     e.preventDefault();
     setExecuting(true);
-    onChange({ executionStart: Date.now(), result: {} as SqluiCore.Result });
+
+    const executionStart = Date.now();
+    onChange({ executionStart, result: {} as SqluiCore.Result });
 
     try {
       const newResult = await executeQuery(query);
@@ -93,7 +98,15 @@ export default function QueryBox(props: QueryBoxProps) {
       // here query failed...
     }
     setExecuting(false);
-    onChange({ executionEnd: Date.now() });
+
+    const executionEnd = Date.now();
+    onChange({ executionEnd });
+
+    const curToast = await addToast({
+      message: `Query "${query.name}" executed and took about ${formatDuration(
+        executionEnd - executionStart,
+      )} second(s)...`,
+    });
   };
 
   const disabledExecute = executing || !query?.sql || !query?.connectionId;

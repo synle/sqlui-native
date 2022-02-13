@@ -12,6 +12,7 @@ import TestConnectionButton from 'src/components/TestConnectionButton';
 import Toast from 'src/components/Toast';
 import { useGetConnectionById } from 'src/hooks/useConnection';
 import { useUpsertConnection } from 'src/hooks/useConnection';
+import { createSystemNotification } from 'src/utils/commonUtils';
 import { SqluiCore } from 'typings';
 
 type ConnectionFormProps = {
@@ -29,6 +30,8 @@ export function NewConnectionForm() {
       name,
       connection,
     });
+
+    createSystemNotification(`Connection "${name}" created`);
 
     // when done, go back to the main page
     navigate(`/`, { replace: true });
