@@ -10,7 +10,7 @@ import { AccordionHeader } from 'src/components/Accordion';
 import ColumnAttributes from 'src/components/ColumnDescription/ColumnAttributes';
 import ColumnName from 'src/components/ColumnDescription/ColumnName';
 import ColumnType from 'src/components/ColumnDescription/ColumnType';
-import { useGetColumns } from 'src/hooks';
+import { useGetColumns } from 'src/hooks/useConnection';
 import { useShowHide } from 'src/hooks/useShowHide';
 
 const MAX_COLUMN_SIZE_TO_SHOW = 5;

@@ -4,14 +4,14 @@ import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import React from 'react';
 import Select from 'src/components/Select';
-import { useQuerySizeSetting } from 'src/hooks/useSettings';
-import { useSettings } from 'src/hooks/useSettings';
+import { useQuerySizeSetting } from 'src/hooks/useSetting';
+import { useSetting } from 'src/hooks/useSetting';
 import { SqluiFrontend } from 'typings';
 
 type SettingsProps = {};
 
 export default function Settings(props: SettingsProps) {
-  const { isLoading, settings, onChange } = useSettings();
+  const { isLoading, settings, onChange } = useSetting();
   const querySize = useQuerySizeSetting();
 
   const onSettingChange = (key: SqluiFrontend.SettingKey, value: any) => {

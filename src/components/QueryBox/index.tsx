@@ -15,10 +15,10 @@ import ConnectionDatabaseSelector from 'src/components/QueryBox/ConnectionDataba
 import ConnectionRevealButton from 'src/components/QueryBox/ConnectionRevealButton';
 import ResultBox from 'src/components/ResultBox';
 import Select from 'src/components/Select';
-import { refreshAfterExecution } from 'src/hooks';
-import { useConnectionQuery } from 'src/hooks';
-import { useExecute } from 'src/hooks';
-import { useGetConnectionById } from 'src/hooks';
+import { refreshAfterExecution } from 'src/hooks/useConnection';
+import { useConnectionQuery } from 'src/hooks/useConnectionQuery';
+import { useExecute } from 'src/hooks/useConnection';
+import { useGetConnectionById } from 'src/hooks/useConnection';
 import { formatJS } from 'src/utils/formatter';
 import { formatSQL } from 'src/utils/formatter';
 import { SqluiCore } from 'typings';

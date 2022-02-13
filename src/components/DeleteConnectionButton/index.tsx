@@ -2,7 +2,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import React from 'react';
-import { useDeleteConnection } from 'src/hooks';
+import { useDeleteConnection } from 'src/hooks/useConnection';
 import { useActionDialogs } from 'src/hooks/useActionDialogs';
 
 type DeleteConnectionButtonProps = {

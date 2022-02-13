@@ -1,0 +1,42 @@
+import useMediaQuery from '@mui/material/useMediaQuery';
+import { QueryClient } from 'react-query';
+import { useMutation } from 'react-query';
+import { useQuery } from 'react-query';
+import { useQueryClient } from 'react-query';
+import dataApi from 'src/data/api';
+import { LocalStorageConfig } from 'src/data/config';
+import { SessionStorageConfig } from 'src/data/config';
+import { getCurrentSessionId } from 'src/data/session';
+import { SqluiCore } from 'typings';
+import { SqluiFrontend } from 'typings';
+
+// for exporting
+export function getExportedConnection(connectionProps: SqluiCore.ConnectionProps) {
+  const { id, connection, name } = connectionProps;
+  return { _type: 'connection', ...{ id, connection, name } };
+}
+
+export function getExportedQuery(query: SqluiFrontend.ConnectionQuery) {
+  const { id, name, sql, connectionId, databaseId } = query;
+  return { _type: 'query', ...{ id, name, sql, connectionId, databaseId } };
+}
+
+
+// misc utils
+export function getUpdatedOrdersForList(items: any[], from: number, to : number){
+    // ordering will move the tab from the old index to the new index
+    // and push everything from that point out
+    const targetItem = items[from];
+    let leftHalf: SqluiFrontend.ConnectionQuery[];
+    let rightHalf: SqluiFrontend.ConnectionQuery[];
+
+    if (from > to) {
+      leftHalf = items.filter((q, idx) => idx < to && idx !== from);
+      rightHalf = items.filter((q, idx) => idx >= to && idx !== from);
+    } else {
+      leftHalf = items.filter((q, idx) => idx <= to && idx !== from);
+      rightHalf = items.filter((q, idx) => idx > to && idx !== from);
+    }
+
+    return [...leftHalf, targetItem, ...rightHalf];
+}

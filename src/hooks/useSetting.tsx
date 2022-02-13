@@ -15,7 +15,7 @@ const QUERY_KEY_SETTINGS = 'qk.settings';
 // Settings
 let _settings = LocalStorageConfig.get<SqluiFrontend.Settings>('clientConfig/cache.settings', {});
 
-export function useSettings() {
+export function useSetting() {
   const queryClient = useQueryClient();
 
   const { data: settings, isLoading } = useQuery(QUERY_KEY_SETTINGS, () => _settings, {
@@ -39,7 +39,7 @@ export function useSettings() {
 }
 
 export function useDarkModeSetting() {
-  const { settings } = useSettings();
+  const { settings } = useSetting();
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
 
   let value = settings?.darkMode;
@@ -52,7 +52,7 @@ export function useDarkModeSetting() {
 }
 
 export function useEditorModeSetting() {
-  const { settings } = useSettings();
+  const { settings } = useSetting();
 
   let value = settings?.editorMode;
 
@@ -64,18 +64,18 @@ export function useEditorModeSetting() {
 }
 
 export function useWordWrapSetting() {
-  const { settings } = useSettings();
+  const { settings } = useSetting();
   return settings?.wordWrap === 'wrap';
 }
 
 export function useQueryTabOrientationSetting() {
-  const { settings } = useSettings();
+  const { settings } = useSetting();
   return settings?.queryTabOrientation;
 }
 
 export const DEFAULT_QUERY_SIZE = 100;
 
 export function useQuerySizeSetting() {
-  const { settings } = useSettings();
+  const { settings } = useSetting();
   return parseInt(settings?.querySize + '') || DEFAULT_QUERY_SIZE;
 }

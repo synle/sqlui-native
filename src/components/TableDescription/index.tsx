@@ -6,7 +6,7 @@ import { AccordionBody } from 'src/components/Accordion';
 import { AccordionHeader } from 'src/components/Accordion';
 import ColumnDescription from 'src/components/ColumnDescription';
 import TableActions from 'src/components/TableActions';
-import { useGetTables } from 'src/hooks';
+import { useGetTables } from 'src/hooks/useConnection';
 import { useShowHide } from 'src/hooks/useShowHide';
 
 type TableDescriptionProps = {

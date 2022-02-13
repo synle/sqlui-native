@@ -6,8 +6,8 @@ import { useEffect } from 'react';
 import { useState } from 'react';
 import AdvancedEditor from 'src/components/CodeEditorBox/AdvancedEditor';
 import SimpleEditor from 'src/components/CodeEditorBox/SimpleEditor';
-import { useEditorModeSetting } from 'src/hooks/useSettings';
-import { useWordWrapSetting } from 'src/hooks/useSettings';
+import { useEditorModeSetting } from 'src/hooks/useSetting';
+import { useWordWrapSetting } from 'src/hooks/useSetting';
 
 type CodeEditorProps = {
   value?: string;
