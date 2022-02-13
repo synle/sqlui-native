@@ -143,6 +143,7 @@ function MainConnectionForm(props: MainConnectionFormProps) {
           required
           size='small'
           fullWidth={true}
+          autoComplete='off'
         />
       </div>
       <div className='FormInput__Row'>

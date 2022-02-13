@@ -1,6 +1,6 @@
 {
   "name": "sqlui-native",
-  "version": "1.16.3",
+  "version": "1.17.0",
   "description": "A minimal native desktop client for most databases supporting MySQL, MariaDB, MS SQL Server, PostgresSQL, SQLite, Cassandra, MongoDB and Redis.",
   "browserslist": {
     "production": [
@@ -86,6 +86,7 @@
     "@mui/material": "^5.4.0",
     "cassandra-driver": "^3.6.0",
     "connection-string-parser": "^1.0.4",
+    "fuzzysort": "^1.1.4",
     "js-beautify": "^1.14.0",
     "json-2-csv": "^3.17.0",
     "mariadb": "^2.5.5",
