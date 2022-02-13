@@ -11,27 +11,17 @@ import fuzzysort from 'fuzzysort';
 import { styled } from '@mui/system';
 
 const StyledCommandPalette = styled('section')(({ theme }) => {
-  return {
-    color: theme.palette.text.disabled,
-    fontFamily: 'monospace',
-    paddingRight: theme.spacing(1),
-    maxWidth: '50%',
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    marginLeft: 'auto',
-  };
-
+  console.log(theme)
   return {
     width: '400px',
 
     '.CommandPalette__SearchBox': {
-      marginBottom: '1rem',
+      marginBottom: theme.spacing(1),
     },
 
     '.CommandPalette__Options': {
       display: 'flex',
       flexDirection: 'column',
-      gap: '1rem',
     },
 
     '.CommandPalette__Option': {
@@ -39,21 +29,20 @@ const StyledCommandPalette = styled('section')(({ theme }) => {
       border: 'none',
       textAlign: 'left',
       cursor: 'pointer',
-      color: 'cyan',
+      color: theme.palette.primary.main,
+      padding: theme.spacing(1),
 
-      '&:hover': {
-        color: 'tomato',
+      '&:hover, &:hover': {
+        background: theme.palette.action.focus,
       },
     },
 
     '.CommandPalette__Highlight': {
       fontWeight: 'bold',
-      color: 'yellow',
+      textDecoration: 'underline',
     },
   };
 });
-
-const MAX_OPTION_TO_SHOW = 20;
 
 type CommandPaletteProps = {
   onSelectCommand: (command: Command) => void;
@@ -191,11 +180,6 @@ export default function CommandPalette(props: CommandPaletteProps) {
   }
 
   let optionsToShow = options.sort((a, b) => (a.label || '').localeCompare(b.label || ''));
-
-  if (optionsToShow.length > MAX_OPTION_TO_SHOW && text.length === 0) {
-    // limit the initial commands
-    optionsToShow = optionsToShow.slice(0, MAX_OPTION_TO_SHOW);
-  }
 
   const getFormattedLabel = (label?: string) => {
     if (!text || !label) {
