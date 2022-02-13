@@ -13,6 +13,7 @@ import Toast from 'src/components/Toast';
 import { useGetConnectionById } from 'src/hooks/useConnection';
 import { useUpsertConnection } from 'src/hooks/useConnection';
 import { SqluiCore } from 'typings';
+import { createSystemNotification } from 'src/utils/commonUtils';
 
 type ConnectionFormProps = {
   id?: string;
@@ -29,6 +30,8 @@ export function NewConnectionForm() {
       name,
       connection,
     });
+
+    createSystemNotification(`Connection "${name}" created`);
 
     // when done, go back to the main page
     navigate(`/`, { replace: true });

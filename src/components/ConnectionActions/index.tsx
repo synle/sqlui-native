@@ -19,6 +19,7 @@ import { useActiveConnectionQuery } from 'src/hooks/useConnectionQuery';
 import useToaster from 'src/hooks/useToaster';
 import { getExportedConnection } from 'src/utils/commonUtils';
 import { SqluiCore } from 'typings';
+import { createSystemNotification } from 'src/utils/commonUtils';
 
 type ConnectionActionsProps = {
   connection: SqluiCore.ConnectionProps;
@@ -42,9 +43,11 @@ export default function ConnectionActions(props: ConnectionActionsProps) {
       curToast = await addToast({
         message: `Connection "${connection.name}" deleted`,
       });
+
+      createSystemNotification(`Connection "${connection.name}" (dialect=${connection.dialect}) deleted`)
     } catch (err) {
       curToast = await addToast({
-        message: `Failed to delete connection "${connection.name}"`,
+        message: `Failed to delete connection "${connection.name}" (dialect=${connection.dialect})`,
       });
     }
   };
@@ -59,15 +62,17 @@ export default function ConnectionActions(props: ConnectionActionsProps) {
     let resultMessage = '';
     try {
       await reconnectConnection(connection.id);
-      resultMessage = `Successfully refreshed connection "${connection.name}" (dialect=${connection.dialect})`;
+      resultMessage = `Successfully connected to "${connection.name}" (dialect=${connection.dialect})`;
     } catch (err) {
-      resultMessage = `Failed to refresh connection "${connection.name}"`;
+      resultMessage = `Failed to connect to "${connection.name}"`;
     }
 
     await curToast.dismiss();
     curToast = await addToast({
       message: resultMessage,
     });
+
+    createSystemNotification(resultMessage)
   };
 
   const onDuplicate = async () => {

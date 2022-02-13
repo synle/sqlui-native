@@ -22,6 +22,7 @@ import { useConnectionQuery } from 'src/hooks/useConnectionQuery';
 import { formatJS } from 'src/utils/formatter';
 import { formatSQL } from 'src/utils/formatter';
 import { formatDuration } from 'src/utils/formatter';
+import { createSystemNotification } from 'src/utils/commonUtils';
 import { SqluiCore } from 'typings';
  import useToaster from 'src/hooks/useToaster';
 
