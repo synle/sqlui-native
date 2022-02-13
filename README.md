@@ -121,7 +121,7 @@ Settings can be accessed via the top right menu icon. It allows you to set up pr
 ### Dev Note
 
 Here is the link where you can find information about how run this application locally.
-- [Dev Notes](https://github.com/synle/sqlui-native/blob/main/DEV.md)
+- [Dev Notes](https://github.com/synle/sqlui-native/blob/main/CONTRIBUTING.md)
 
 ## Features / TODO's:
 
