@@ -576,25 +576,7 @@ export function useConnectionQueries() {
     return onAddQuery(query);
   };
 
-  const onOrderingChange = (from: number, to: number) => {
-    // ordering will move the tab from the old index to the new index
-    // and push everything from that point out
-    const targetQuery = _connectionQueries[from];
-    let leftHalf: SqluiFrontend.ConnectionQuery[];
-    let rightHalf: SqluiFrontend.ConnectionQuery[];
-
-    if (from > to) {
-      leftHalf = _connectionQueries.filter((q, idx) => idx < to && idx !== from);
-      rightHalf = _connectionQueries.filter((q, idx) => idx >= to && idx !== from);
-    } else {
-      leftHalf = _connectionQueries.filter((q, idx) => idx <= to && idx !== from);
-      rightHalf = _connectionQueries.filter((q, idx) => idx > to && idx !== from);
-    }
-
-    _connectionQueries = [...leftHalf, targetQuery, ...rightHalf];
-
-    _invalidateQueries();
-  };
+  const onOrderingChange = (from: number, to: number) => getUpdatedOrdersForList(_connectionQueries, from, to);
 
   return {
     isLoading,
@@ -699,4 +681,24 @@ export function getExportedConnection(connectionProps: SqluiCore.ConnectionProps
 export function getExportedQuery(query: SqluiFrontend.ConnectionQuery) {
   const { id, name, sql, connectionId, databaseId } = query;
   return { _type: 'query', ...{ id, name, sql, connectionId, databaseId } };
+}
+
+
+// misc utils
+export function getUpdatedOrdersForList(items: any[], from: number, to : number){
+    // ordering will move the tab from the old index to the new index
+    // and push everything from that point out
+    const targetItem = items[from];
+    let leftHalf: SqluiFrontend.ConnectionQuery[];
+    let rightHalf: SqluiFrontend.ConnectionQuery[];
+
+    if (from > to) {
+      leftHalf = items.filter((q, idx) => idx < to && idx !== from);
+      rightHalf = items.filter((q, idx) => idx >= to && idx !== from);
+    } else {
+      leftHalf = items.filter((q, idx) => idx <= to && idx !== from);
+      rightHalf = items.filter((q, idx) => idx > to && idx !== from);
+    }
+
+    return [...leftHalf, targetItem, ...rightHalf];
 }
