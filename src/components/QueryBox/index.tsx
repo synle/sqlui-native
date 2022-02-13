@@ -19,12 +19,11 @@ import { refreshAfterExecution } from 'src/hooks/useConnection';
 import { useExecute } from 'src/hooks/useConnection';
 import { useGetConnectionById } from 'src/hooks/useConnection';
 import { useConnectionQuery } from 'src/hooks/useConnectionQuery';
+import useToaster from 'src/hooks/useToaster';
+import { formatDuration } from 'src/utils/formatter';
 import { formatJS } from 'src/utils/formatter';
 import { formatSQL } from 'src/utils/formatter';
-import { formatDuration } from 'src/utils/formatter';
-import { createSystemNotification } from 'src/utils/commonUtils';
 import { SqluiCore } from 'typings';
- import useToaster from 'src/hooks/useToaster';
 
 type QueryBoxProps = {
   queryId: string;
@@ -100,11 +99,13 @@ export default function QueryBox(props: QueryBoxProps) {
     }
     setExecuting(false);
 
-    const executionEnd= Date.now();
+    const executionEnd = Date.now();
     onChange({ executionEnd });
 
     const curToast = await addToast({
-      message: `Query "${query.name}" executed and took about ${formatDuration(executionEnd - executionStart)} second(s)...`,
+      message: `Query "${query.name}" executed and took about ${formatDuration(
+        executionEnd - executionStart,
+      )} second(s)...`,
     });
   };
 

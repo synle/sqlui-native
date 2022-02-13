@@ -33,9 +33,9 @@ export function getGeneratedRandomId(prefix: string) {
   return `${prefix}.${Date.now()}.${Math.floor(Math.random() * 10000000000000000)}`;
 }
 
-export async function createSystemNotification(message: string){
-  try{
+export async function createSystemNotification(message: string) {
+  try {
     await Notification.requestPermission();
     new Notification(message);
-  } catch(err){}
+  } catch (err) {}
 }

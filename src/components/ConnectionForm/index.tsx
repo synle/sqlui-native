@@ -12,8 +12,8 @@ import TestConnectionButton from 'src/components/TestConnectionButton';
 import Toast from 'src/components/Toast';
 import { useGetConnectionById } from 'src/hooks/useConnection';
 import { useUpsertConnection } from 'src/hooks/useConnection';
-import { SqluiCore } from 'typings';
 import { createSystemNotification } from 'src/utils/commonUtils';
+import { SqluiCore } from 'typings';
 
 type ConnectionFormProps = {
   id?: string;
