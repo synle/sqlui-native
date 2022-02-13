@@ -8,7 +8,6 @@ import { useGetColumns } from 'src/hooks/useConnection';
 import { useGetConnectionById } from 'src/hooks/useConnection';
 import { useActiveConnectionQuery } from 'src/hooks/useConnectionQuery';
 import { useQuerySizeSetting } from 'src/hooks/useSetting';
-import useToaster from 'src/hooks/useToaster';
 
 type TableActionsProps = {
   connectionId: string;
@@ -22,7 +21,6 @@ export default function TableActions(props: TableActionsProps) {
   let databaseId: string | undefined = props.databaseId;
   let connectionId: string | undefined = props.connectionId;
   let tableId: string | undefined = props.tableId;
-  const { add: addToast } = useToaster();
   const { selectCommand } = useCommands();
 
   if (!open) {
@@ -55,22 +53,17 @@ export default function TableActions(props: TableActionsProps) {
 
   const options = actions.map((action) => ({
     label: action.label,
-    onClick: async () => {
-      if (action.query) {
-        const curToast = await addToast({
-          message: `Applied "${action.label}" query`,
-        });
-
-        selectCommand({
-          event: 'clientEvent/query/changeActiveQuery',
-          data: {
-            connectionId: connectionId,
-            databaseId: databaseId,
-            sql: action.query,
-          },
-        });
-      }
-    },
+    onClick: async () =>
+      action.query &&
+      selectCommand({
+        event: 'clientEvent/query/changeActiveQuery',
+        data: {
+          connectionId: connectionId,
+          databaseId: databaseId,
+          sql: action.query,
+        },
+        label: `Applied "${action.label}" to active query tab.`,
+      }),
   }));
 
   return (

@@ -8,7 +8,6 @@ import { getDatabaseActions } from 'src/data/sql';
 import { useGetConnectionById } from 'src/hooks/useConnection';
 import { useActiveConnectionQuery } from 'src/hooks/useConnectionQuery';
 import { useQuerySizeSetting } from 'src/hooks/useSetting';
-import useToaster from 'src/hooks/useToaster';
 
 type DatabaseActionsProps = {
   connectionId: string;
@@ -20,7 +19,6 @@ export default function DatabaseActions(props: DatabaseActionsProps) {
   const querySize = useQuerySizeSetting();
   let databaseId: string | undefined = props.databaseId;
   let connectionId: string | undefined = props.connectionId;
-  const { add: addToast } = useToaster();
   const { selectCommand } = useCommands();
 
   if (!open) {
@@ -45,6 +43,7 @@ export default function DatabaseActions(props: DatabaseActionsProps) {
   const options = [
     {
       label: 'Select',
+      startIcon: <SelectAllIcon />,
       onClick: () =>
         selectCommand({
           event: 'clientEvent/query/changeActiveQuery',
@@ -53,26 +52,20 @@ export default function DatabaseActions(props: DatabaseActionsProps) {
             databaseId: databaseId,
           },
         }),
-      startIcon: <SelectAllIcon />,
     },
     ...actions.map((action) => ({
       label: action.label,
-      onClick: async () => {
-        if (action.query) {
-          const curToast = await addToast({
-            message: `Applied "${action.label}" query`,
-          });
-
-          selectCommand({
-            event: 'clientEvent/query/changeActiveQuery',
-            data: {
-              connectionId: connectionId,
-              databaseId: databaseId,
-              sql: action.query,
-            },
-          });
-        }
-      },
+      onClick: async () =>
+        action.query &&
+        selectCommand({
+          event: 'clientEvent/query/changeActiveQuery',
+          data: {
+            connectionId: connectionId,
+            databaseId: databaseId,
+            sql: action.query,
+          },
+          label: `Applied "${action.label}" to active query tab.`,
+        }),
     })),
   ];
 
