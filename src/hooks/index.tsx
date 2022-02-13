@@ -576,7 +576,8 @@ export function useConnectionQueries() {
     return onAddQuery(query);
   };
 
-  const onOrderingChange = (from: number, to: number) => getUpdatedOrdersForList(_connectionQueries, from, to);
+  const onOrderingChange = (from: number, to: number) =>
+    getUpdatedOrdersForList(_connectionQueries, from, to);
 
   return {
     isLoading,
@@ -682,23 +683,21 @@ export function getExportedQuery(query: SqluiFrontend.ConnectionQuery) {
   const { id, name, sql, connectionId, databaseId } = query;
   return { _type: 'query', ...{ id, name, sql, connectionId, databaseId } };
 }
-
-
 // misc utils
-export function getUpdatedOrdersForList(items: any[], from: number, to : number){
-    // ordering will move the tab from the old index to the new index
-    // and push everything from that point out
-    const targetItem = items[from];
-    let leftHalf: SqluiFrontend.ConnectionQuery[];
-    let rightHalf: SqluiFrontend.ConnectionQuery[];
+export function getUpdatedOrdersForList(items: any[], from: number, to: number) {
+  // ordering will move the tab from the old index to the new index
+  // and push everything from that point out
+  const targetItem = items[from];
+  let leftHalf: SqluiFrontend.ConnectionQuery[];
+  let rightHalf: SqluiFrontend.ConnectionQuery[];
 
-    if (from > to) {
-      leftHalf = items.filter((q, idx) => idx < to && idx !== from);
-      rightHalf = items.filter((q, idx) => idx >= to && idx !== from);
-    } else {
-      leftHalf = items.filter((q, idx) => idx <= to && idx !== from);
-      rightHalf = items.filter((q, idx) => idx > to && idx !== from);
-    }
+  if (from > to) {
+    leftHalf = items.filter((q, idx) => idx < to && idx !== from);
+    rightHalf = items.filter((q, idx) => idx >= to && idx !== from);
+  } else {
+    leftHalf = items.filter((q, idx) => idx <= to && idx !== from);
+    rightHalf = items.filter((q, idx) => idx > to && idx !== from);
+  }
 
-    return [...leftHalf, targetItem, ...rightHalf];
+  return [...leftHalf, targetItem, ...rightHalf];
 }
