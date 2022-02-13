@@ -1,9 +1,15 @@
+import {getGeneratedRandomId} from 'src/utils/commonUtils';
+import {getExportedQuery, getExportedConnection, getUpdatedOrdersForList} from 'src/utils/commonUtils';
+import useMediaQuery from '@mui/material/useMediaQuery';
 import { QueryClient } from 'react-query';
+import { useMutation } from 'react-query';
 import { useQuery } from 'react-query';
 import { useQueryClient } from 'react-query';
 import dataApi from 'src/data/api';
+import { LocalStorageConfig } from 'src/data/config';
 import { SessionStorageConfig } from 'src/data/config';
-import { getUpdatedOrdersForList } from 'src/utils/commonUtils';
+import { getCurrentSessionId } from 'src/data/session';
+import { SqluiCore } from 'typings';
 import { SqluiFrontend } from 'typings';
 
 const QUERY_KEY_QUERIES = 'qk.queries';
@@ -69,7 +75,7 @@ export function useConnectionQueries() {
   }
 
   const onAddQuery = async (query?: SqluiFrontend.ConnectionQuery) => {
-    const newId = `query.${Date.now()}.${Math.floor(Math.random() * 10000000000000000)}`;
+    const newId = getGeneratedRandomId(`queryId`);
 
     let newQuery: SqluiFrontend.ConnectionQuery;
     if (!query) {
@@ -213,8 +219,7 @@ export function useConnectionQueries() {
     return onAddQuery(query);
   };
 
-  const onOrderingChange = (from: number, to: number) =>
-    getUpdatedOrdersForList(_connectionQueries, from, to);
+  const onOrderingChange = (from: number, to: number) => getUpdatedOrdersForList(_connectionQueries, from, to);
 
   return {
     isLoading,
