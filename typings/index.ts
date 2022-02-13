@@ -207,6 +207,7 @@ export module SqluiEnums {
     | 'clientEvent/changeWrapMode'
     | 'clientEvent/checkForUpdate'
     | 'clientEvent/showCommandPalette'
+    | 'clientEvent/openExternalUrl'
     | 'clientEvent/clearShowHides'
     | 'clientEvent/changeQueryTabOrientation'
     | 'clientEvent/showQueryHelp'
