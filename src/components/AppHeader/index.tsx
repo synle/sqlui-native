@@ -14,8 +14,8 @@ import { useEffect } from 'react';
 import { useState } from 'react';
 import DropdownButton from 'src/components/DropdownButton';
 import { useCommands } from 'src/components/MissionControl';
-import { useGetCurrentSession } from 'src/hooks';
-import { useGetSessions } from 'src/hooks';
+import { useGetCurrentSession } from 'src/hooks/useSession';
+import { useGetSessions } from 'src/hooks/useSession';
 import appPackage from 'src/package.json';
 
 export default function AppHeader() {

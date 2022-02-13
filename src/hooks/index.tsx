@@ -13,7 +13,6 @@ import { SqluiFrontend } from 'typings';
 const QUERY_KEY_ALL_CONNECTIONS = 'qk.connections';
 const QUERY_KEY_QUERIES = 'qk.queries';
 const QUERY_KEY_RESULTS = 'qk.results';
-const QUERY_KEY_SESSIONS = 'qk.sessions';
 
 const DEFAULT_STALE_TIME = 30000;
 
@@ -519,42 +518,6 @@ export function useActiveConnectionQuery() {
   };
 }
 
-// for sessions
-export function useGetSessions() {
-  return useQuery([QUERY_KEY_SESSIONS], dataApi.getSessions);
-}
-
-export function useGetCurrentSession() {
-  const { data, ...rest } = useGetSessions();
-
-  const currentMatchedSession = data?.find((session) => session.id === getCurrentSessionId());
-
-  return {
-    data: currentMatchedSession,
-    ...rest,
-  };
-}
-
-export function useUpsertSession() {
-  const queryClient = useQueryClient();
-  return useMutation<SqluiCore.Session, void, SqluiCore.CoreSession>(dataApi.upsertSession, {
-    onSuccess: async (newSession) => {
-      queryClient.invalidateQueries(QUERY_KEY_SESSIONS);
-      return newSession;
-    },
-  });
-}
-
-export function useDeleteSession() {
-  const queryClient = useQueryClient();
-
-  return useMutation<string, void, string>(dataApi.deleteSession, {
-    onSuccess: async (deletedSessionId) => {
-      queryClient.invalidateQueries(QUERY_KEY_SESSIONS);
-      return deletedSessionId;
-    },
-  });
-}
 
 // for exporting
 export function getExportedConnection(connectionProps: SqluiCore.ConnectionProps) {
