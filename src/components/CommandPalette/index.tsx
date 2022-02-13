@@ -15,7 +15,7 @@ type CommandPaletteProps = {
 
 type CommandOption = {
   event: SqluiEnums.ClientEventKey;
-  label?: string;
+  label: string;
   /**
    * This means that the queries will need to be expanded before showing the command options
    */
@@ -151,24 +151,33 @@ export default function CommandPalette(props: CommandPaletteProps) {
     optionsToShow = optionsToShow.slice(0, MAX_OPTION_TO_SHOW);
   }
 
+  const getFormattedLabel = (label?: string) => {
+    if(label){
+      return label;
+    }
+    return null;
+  }
+
   return (
-    <div style={{ width: '400px' }}>
-      <div>
+    <div className='CommandPalette'>
+      <div className='CommandPalette__SearchBox'>
         <TextField
           value={text}
           onChange={(e) => onSearch(e.target.value)}
           autoFocus
           placeholder='> Type a command here'
           fullWidth
+          size='small'
+          autoComplete='off'
         />
-        {optionsToShow.map((option, idx) => (
-          <div key={`${option.event}.${idx}`}>
-            <Button onClick={() => onSelectCommand(option)} title={option.event}>
-              {option.label}
-            </Button>
-          </div>
-        ))}
-      </div>
+        </div>
+        <div className='CommandPalette__Options'>
+          {optionsToShow.map((option, idx) => (
+            <button className='CommandPalette__Option' key={`${option.event}.${idx}`} onClick={() => onSelectCommand(option)} title={option.event}>
+              {getFormattedLabel(option.label)}
+            </button>
+          ))}
+        </div>
     </div>
   );
 }
