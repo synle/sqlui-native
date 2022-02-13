@@ -17,9 +17,12 @@ import { downloadText } from 'src/data/file';
 import { getRandomSessionId } from 'src/data/session';
 import { setCurrentSessionId } from 'src/data/session';
 import { useActionDialogs } from 'src/hooks/useActionDialogs';
+import { useDeleteConnection } from 'src/hooks/useConnection';
+import { useDuplicateConnection } from 'src/hooks/useConnection';
 import { useGetConnectionById } from 'src/hooks/useConnection';
 import { useGetConnections } from 'src/hooks/useConnection';
 import { useImportConnection } from 'src/hooks/useConnection';
+import { useRetryConnection } from 'src/hooks/useConnection';
 import { useActiveConnectionQuery } from 'src/hooks/useConnectionQuery';
 import { useConnectionQueries } from 'src/hooks/useConnectionQuery';
 import { useGetCurrentSession } from 'src/hooks/useSession';
@@ -28,15 +31,12 @@ import { useUpsertSession } from 'src/hooks/useSession';
 import { useSetting } from 'src/hooks/useSetting';
 import { useShowHide } from 'src/hooks/useShowHide';
 import useToaster from 'src/hooks/useToaster';
+import { createSystemNotification } from 'src/utils/commonUtils';
 import { getExportedConnection } from 'src/utils/commonUtils';
 import { getExportedQuery } from 'src/utils/commonUtils';
 import { SqluiCore } from 'typings';
 import { SqluiEnums } from 'typings';
 import { SqluiFrontend } from 'typings';
-import { useDeleteConnection } from 'src/hooks/useConnection';
-import { useDuplicateConnection } from 'src/hooks/useConnection';
-import { useRetryConnection } from 'src/hooks/useConnection';
-import { createSystemNotification } from 'src/utils/commonUtils';
 import appPackage from 'src/package.json';
 
 export type Command = {
@@ -376,8 +376,6 @@ export default function MissionControl() {
   };
 
   const onNewConnection = useCallback(() => navigate('/connection/new'), []);
-
-
   const onDeleteConnection = async (connection: SqluiCore.ConnectionProps) => {
     let curToast;
     try {
@@ -677,27 +675,27 @@ export default function MissionControl() {
           break;
 
         case 'clientEvent/connection/delete':
-          if(command.data){
+          if (command.data) {
             onDeleteConnection(command.data as SqluiCore.ConnectionProps);
           }
           break;
         case 'clientEvent/connection/refresh':
-          if(command.data){
+          if (command.data) {
             onRefreshConnection(command.data as SqluiCore.ConnectionProps);
           }
           break;
         case 'clientEvent/connection/duplicate':
-          if(command.data){
+          if (command.data) {
             onDuplicateConnection(command.data as SqluiCore.ConnectionProps);
           }
           break;
         case 'clientEvent/connection/export':
-          if(command.data){
+          if (command.data) {
             onExportConnection(command.data as SqluiCore.ConnectionProps);
           }
           break;
         case 'clientEvent/connection/select':
-          if(command.data){
+          if (command.data) {
             onSelectConnection(command.data as SqluiCore.ConnectionProps);
           }
           break;
@@ -718,7 +716,7 @@ export default function MissionControl() {
             onUpdateActiveQuery(command.data as SqluiFrontend.PartialConnectionQuery);
 
             // show the toast with the label
-            if(command.label){
+            if (command.label) {
               await addToast({
                 message: command.label,
               });

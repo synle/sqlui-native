@@ -44,7 +44,7 @@ const StyledCommandPalette = styled('section')(({ theme }) => {
 
 type Command = CoreCommand & {
   label: string;
-}
+};
 
 type CommandPaletteProps = {
   onSelectCommand: (command: Command) => void;
@@ -228,7 +228,9 @@ export default function CommandPalette(props: CommandPaletteProps) {
     if (text) {
       const res = fuzzysort.single(text, label);
       if (res) {
-        return fuzzysort.highlight(res, '<span class="CommandPalette__Highlight">', '</span>') || '';
+        return (
+          fuzzysort.highlight(res, '<span class="CommandPalette__Highlight">', '</span>') || ''
+        );
       }
     }
 

@@ -10,15 +10,6 @@ import IconButton from '@mui/material/IconButton';
 import { useNavigate } from 'react-router-dom';
 import DropdownButton from 'src/components/DropdownButton';
 import { useCommands } from 'src/components/MissionControl';
-import Toast from 'src/components/Toast';
-import { downloadText } from 'src/data/file';
-import { useActionDialogs } from 'src/hooks/useActionDialogs';
-import { useDeleteConnection } from 'src/hooks/useConnection';
-import { useDuplicateConnection } from 'src/hooks/useConnection';
-import { useRetryConnection } from 'src/hooks/useConnection';
-import useToaster from 'src/hooks/useToaster';
-import { createSystemNotification } from 'src/utils/commonUtils';
-import { getExportedConnection } from 'src/utils/commonUtils';
 import { SqluiCore } from 'typings';
 
 type ConnectionActionsProps = {
@@ -28,17 +19,18 @@ type ConnectionActionsProps = {
 export default function ConnectionActions(props: ConnectionActionsProps) {
   const { connection } = props;
   const navigate = useNavigate();
-  const { selectCommand } = useCommands()
+  const { selectCommand } = useCommands();
   const data = connection;
 
   const options = [
     {
       label: 'Select',
       startIcon: <SelectAllIcon />,
-      onClick: () => selectCommand({
-        event: 'clientEvent/connection/select',
-        data,
-      }),
+      onClick: () =>
+        selectCommand({
+          event: 'clientEvent/connection/select',
+          data,
+        }),
     },
     {
       label: 'Edit',
@@ -48,34 +40,38 @@ export default function ConnectionActions(props: ConnectionActionsProps) {
     {
       label: 'Export',
       startIcon: <ArrowUpwardIcon />,
-      onClick: () => selectCommand({
-        event: 'clientEvent/connection/export',
-        data,
-      }),
+      onClick: () =>
+        selectCommand({
+          event: 'clientEvent/connection/export',
+          data,
+        }),
     },
     {
       label: 'Duplicate',
       startIcon: <ContentCopyIcon />,
-      onClick: () => selectCommand({
-        event: 'clientEvent/connection/duplicate',
-        data,
-      }),
+      onClick: () =>
+        selectCommand({
+          event: 'clientEvent/connection/duplicate',
+          data,
+        }),
     },
     {
       label: 'Refresh',
       startIcon: <RefreshIcon />,
-      onClick: () => selectCommand({
-        event: 'clientEvent/connection/refresh',
-        data,
-      }),
+      onClick: () =>
+        selectCommand({
+          event: 'clientEvent/connection/refresh',
+          data,
+        }),
     },
     {
       label: 'Delete',
       startIcon: <DeleteIcon />,
-      onClick: () => selectCommand({
-        event: 'clientEvent/connection/delete',
-        data,
-      }),
+      onClick: () =>
+        selectCommand({
+          event: 'clientEvent/connection/delete',
+          data,
+        }),
     },
   ];
 
