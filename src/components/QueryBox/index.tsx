@@ -126,7 +126,7 @@ export default function QueryBox(props: QueryBoxProps) {
 
   return (
     <>
-      <form className='QueryBox' onSubmit={onSubmit}>
+      <form className='QueryBox FormInput__Container' onSubmit={onSubmit}>
         <div className='FormInput__Row'>
           <ConnectionDatabaseSelector value={query} onChange={onDatabaseConnectionChange} />
           <ConnectionRevealButton query={query} />
