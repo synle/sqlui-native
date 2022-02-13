@@ -14,7 +14,7 @@ export default function ConnectionHint(props: ConnectionHintProps) {
       <Alert
         severity='info'
         icon={<ConnectionTypeIcon scheme='mysql' status='online' />}
-        sx={{ mb: 2 }}>
+        >
         <AlertTitle>MySQL</AlertTitle>
         <Tooltip title='Use this sample MySQL connection.'>
           <Link
@@ -27,7 +27,7 @@ export default function ConnectionHint(props: ConnectionHintProps) {
       <Alert
         severity='info'
         icon={<ConnectionTypeIcon scheme='mariadb' status='online' />}
-        sx={{ mb: 2 }}>
+        >
         <AlertTitle>MariaDB</AlertTitle>
         <Tooltip title='Use this sample MariaDB connection.'>
           <Link
@@ -40,7 +40,7 @@ export default function ConnectionHint(props: ConnectionHintProps) {
       <Alert
         severity='info'
         icon={<ConnectionTypeIcon scheme='mssql' status='online' />}
-        sx={{ mb: 2 }}>
+        >
         <AlertTitle>Microsoft SQL Server</AlertTitle>
         <Tooltip title='Use this sample Microsoft SQL Server connection.'>
           <Link
@@ -53,7 +53,7 @@ export default function ConnectionHint(props: ConnectionHintProps) {
       <Alert
         severity='info'
         icon={<ConnectionTypeIcon scheme='postgres' status='online' />}
-        sx={{ mb: 2 }}>
+        >
         <AlertTitle>PostgresSQL</AlertTitle>
         <Tooltip title='Use this sample PostgresSQL connection.'>
           <Link
@@ -66,7 +66,7 @@ export default function ConnectionHint(props: ConnectionHintProps) {
       <Alert
         severity='info'
         icon={<ConnectionTypeIcon scheme='sqlite' status='online' />}
-        sx={{ mb: 2 }}>
+        >
         <AlertTitle>SQLite</AlertTitle>
         <Tooltip title='Use this sample SQLite connection.'>
           <Link underline='hover' onClick={() => props.onChange('sqlite://test-db.sqlite')}>
@@ -77,7 +77,7 @@ export default function ConnectionHint(props: ConnectionHintProps) {
       <Alert
         severity='info'
         icon={<ConnectionTypeIcon scheme='cassandra' status='online' />}
-        sx={{ mb: 2 }}>
+        >
         <AlertTitle>Cassandra</AlertTitle>
         <Tooltip title='Use this sample Cassandra connection.'>
           <Link
@@ -90,7 +90,7 @@ export default function ConnectionHint(props: ConnectionHintProps) {
       <Alert
         severity='info'
         icon={<ConnectionTypeIcon scheme='mongodb' status='online' />}
-        sx={{ mb: 2 }}>
+        >
         <AlertTitle>MongoDB</AlertTitle>
         <Tooltip title='Use this sample MongoDB connection.'>
           <Link underline='hover' onClick={() => props.onChange('mongodb://localhost:27017')}>
@@ -101,7 +101,7 @@ export default function ConnectionHint(props: ConnectionHintProps) {
       <Alert
         severity='info'
         icon={<ConnectionTypeIcon scheme='redis' status='online' />}
-        sx={{ mb: 2 }}>
+        >
         <AlertTitle>Redis</AlertTitle>
         <Tooltip title='Use this sample Redis connection.'>
           <Link underline='hover' onClick={() => props.onChange('redis://localhost:6379')}>

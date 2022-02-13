@@ -43,10 +43,6 @@
   }
 }
 
-.ConnectionPage {
-  margin-inline: 20px;
-}
-
 // components
 $ConnectionTreeIndentSize: 7px;
 
@@ -72,10 +68,13 @@ $ConnectionTreeIndentSize: 7px;
 }
 
 .QueryBox {
-  margin-bottom: 15px;
+}
+
+.FormInput__Container{
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  padding-right: 1rem;
 }
 
 .FormInput {
