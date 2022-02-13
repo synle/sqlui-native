@@ -1,17 +1,14 @@
-import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
-import React from 'react';
+import fuzzysort from 'fuzzysort';
 import { useEffect } from 'react';
 import { useState } from 'react';
+import { styled } from '@mui/system';
 import { Command } from 'src/components/MissionControl';
 import { useActiveConnectionQuery } from 'src/hooks/useConnectionQuery';
 import { useConnectionQueries } from 'src/hooks/useConnectionQuery';
 import { SqluiEnums } from 'typings';
-import fuzzysort from 'fuzzysort';
-import { styled } from '@mui/system';
 
 const StyledCommandPalette = styled('section')(({ theme }) => {
-  console.log(theme)
   return {
     width: '400px',
 
@@ -158,16 +155,14 @@ export default function CommandPalette(props: CommandPaletteProps) {
     });
 
     setAllOptions(newAllOptions);
-
-
     // filter out the options
-    let newOptions: Command[]  = newAllOptions;
+    let newOptions: Command[] = newAllOptions;
 
-    if(text){
-        newOptions= fuzzysort
-          .go(text, newOptions, { key: 'label', allowTypo: false })
-          .map((result) => result.obj);
-        }
+    if (text) {
+      newOptions = fuzzysort
+        .go(text, newOptions, { key: 'label', allowTypo: false })
+        .map((result) => result.obj);
+    }
 
     setOptions(newOptions);
   }, [queries, activeQuery, text]);
