@@ -131,14 +131,14 @@ export default function QueryBox(props: QueryBoxProps) {
           <ConnectionDatabaseSelector value={query} onChange={onDatabaseConnectionChange} />
           <ConnectionRevealButton query={query} />
         </div>
-          <CodeEditorBox
-            value={query.sql}
-            placeholder={`Enter SQL for ` + query.name}
-            onChange={onSqlQueryChange}
-            language={language}
-            autoFocus
-            mode='textarea'
-          />
+        <CodeEditorBox
+          value={query.sql}
+          placeholder={`Enter SQL for ` + query.name}
+          onChange={onSqlQueryChange}
+          language={language}
+          autoFocus
+          mode='textarea'
+        />
         <div className='FormInput__Row'>
           <Button
             type='submit'
@@ -168,7 +168,7 @@ export default function QueryBox(props: QueryBoxProps) {
             </Button>
           </Tooltip>
         </div>
-      <ResultBox query={query} executing={executing} />
+        <ResultBox query={query} executing={executing} />
       </form>
     </>
   );

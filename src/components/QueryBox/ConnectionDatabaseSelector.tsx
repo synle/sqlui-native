@@ -60,9 +60,7 @@ export default function ConnectionDatabaseSelector(props: ConnectionDatabaseSele
         <option value=''>Pick a Connection</option>
         {connectionOptions}
       </Select>
-      <Select
-        value={query.databaseId}
-        onChange={(newValue) => onDatabaseChange(newValue)}>
+      <Select value={query.databaseId} onChange={(newValue) => onDatabaseChange(newValue)}>
         <option value=''>Pick a Database (Optional)</option>
         {databaseConnections}
       </Select>

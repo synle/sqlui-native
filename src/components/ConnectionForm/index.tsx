@@ -159,30 +159,20 @@ function MainConnectionForm(props: MainConnectionFormProps) {
         {showHint && <ConnectionHint onChange={props.setConnection} />}
       </div>
       <div className='FormInput__Row'>
-        <Button
-          variant='contained'
-          type='submit'
-          disabled={props.saving}
-          startIcon={<SaveIcon />}
-          >
+        <Button variant='contained' type='submit' disabled={props.saving} startIcon={<SaveIcon />}>
           Save
         </Button>
         <Button
           variant='outlined'
           type='button'
           disabled={props.saving}
-          onClick={() => navigate('/')}
-          >
+          onClick={() => navigate('/')}>
           Cancel
         </Button>
         <TestConnectionButton connection={connection} />
         {!showHint && (
           <Tooltip title='Show connection hints.'>
-            <Button
-              type='button'
-              disabled={props.saving}
-              onClick={() => setShowHint(true)}
-              >
+            <Button type='button' disabled={props.saving} onClick={() => setShowHint(true)}>
               Show Connection Hints
             </Button>
           </Tooltip>

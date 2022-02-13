@@ -217,7 +217,7 @@ export function useConnectionQueries() {
   const onOrderingChange = (from: number, to: number) => {
     _connectionQueries = getUpdatedOrdersForList(_connectionQueries, from, to);
     _invalidateQueries();
-  }
+  };
 
   return {
     isLoading,
