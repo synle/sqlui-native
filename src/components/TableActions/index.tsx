@@ -2,6 +2,7 @@ import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import IconButton from '@mui/material/IconButton';
 import { useState } from 'react';
 import DropdownButton from 'src/components/DropdownButton';
+import { useCommands } from 'src/components/MissionControl';
 import { getTableActions } from 'src/data/sql';
 import { useGetColumns } from 'src/hooks/useConnection';
 import { useGetConnectionById } from 'src/hooks/useConnection';
@@ -22,6 +23,7 @@ export default function TableActions(props: TableActionsProps) {
   let connectionId: string | undefined = props.connectionId;
   let tableId: string | undefined = props.tableId;
   const { add: addToast } = useToaster();
+  const { selectCommand } = useCommands();
 
   if (!open) {
     // if table action is not opened, hen we don't need to do this...
@@ -37,7 +39,7 @@ export default function TableActions(props: TableActionsProps) {
     tableId,
   );
 
-  const { query, onChange: onChangeActiveQuery } = useActiveConnectionQuery();
+  const { query } = useActiveConnectionQuery();
   const dialect = connection?.dialect;
 
   const isLoading = loadingConnection || loadingColumns;
@@ -51,14 +53,6 @@ export default function TableActions(props: TableActionsProps) {
     querySize,
   });
 
-  const onShowQuery = (queryToShow: string) => {
-    onChangeActiveQuery({
-      connectionId: connectionId,
-      databaseId: databaseId,
-      sql: queryToShow,
-    });
-  };
-
   const options = actions.map((action) => ({
     label: action.label,
     onClick: async () => {
@@ -67,7 +61,14 @@ export default function TableActions(props: TableActionsProps) {
           message: `Applied "${action.label}" query`,
         });
 
-        onShowQuery(action.query);
+        selectCommand({
+          event: 'clientEvent/query/changeActiveQuery',
+          data: {
+            connectionId: connectionId,
+            databaseId: databaseId,
+            sql: action.query,
+          },
+        });
       }
     },
   }));
