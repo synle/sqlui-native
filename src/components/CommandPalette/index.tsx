@@ -5,6 +5,7 @@ import { useRef } from 'react';
 import { useState } from 'react';
 import { styled } from '@mui/system';
 import { Command as CoreCommand } from 'src/components/MissionControl';
+import { useGetConnectionById } from 'src/hooks/useConnection';
 import { useActiveConnectionQuery } from 'src/hooks/useConnectionQuery';
 import { useConnectionQueries } from 'src/hooks/useConnectionQuery';
 import { SqluiEnums } from 'typings';
@@ -61,6 +62,14 @@ type CommandOption = {
    * whether or not to attach current query to this command
    */
   useCurrentQuery?: boolean;
+  /**
+   * This means that the connections will need to be expanded before showing the command options
+   */
+  expandConnections?: boolean;
+  /**
+   * whether or not to attach current connection
+   */
+  useCurrentConnection?: boolean;
   data?: any;
 };
 
@@ -110,21 +119,34 @@ const ALL_COMMAND_PALETTE_OPTIONS: CommandOption[] = [
   },
   { event: 'clientEvent/clearShowHides', label: 'Collapse All Connections' },
   { event: 'clientEvent/changeDarkMode', label: 'Follows System Settings for Dark Mode', data: '' },
+
+  // connections
   { event: 'clientEvent/connection/new', label: 'New Connection' },
+  {
+    event: 'clientEvent/connection/delete',
+    label: 'Delete Current Connection',
+    useCurrentConnection: true,
+  },
+  {
+    event: 'clientEvent/connection/refresh',
+    label: 'Refresh Current Connection',
+    useCurrentConnection: true,
+  },
+
+  // sessions
   { event: 'clientEvent/session/switch', label: 'Switch Session' },
   { event: 'clientEvent/session/new', label: 'New Session' },
   { event: 'clientEvent/session/rename', label: 'Rename Current Session' },
+
+  // queries
   { event: 'clientEvent/query/new', label: 'New Query' },
   { event: 'clientEvent/query/show', label: 'Show Query', expandQueries: true },
-  // these 2 commands don't make sense, let's disable it...
-  // { event: 'clientEvent/query/showNext', label: 'Show Next Query', useCurrentQuery: true },
-  // { event: 'clientEvent/query/showPrev', label: 'Show Prev Query', useCurrentQuery: true },
   { event: 'clientEvent/query/rename', label: 'Rename Current Query', useCurrentQuery: true },
   { event: 'clientEvent/query/export', label: 'Export Current Query', useCurrentQuery: true },
   { event: 'clientEvent/query/duplicate', label: 'Duplicate Current Query', useCurrentQuery: true },
   { event: 'clientEvent/query/close', label: 'Close Current Query', useCurrentQuery: true },
   { event: 'clientEvent/query/closeOther', label: 'Close Other Query', useCurrentQuery: true },
-  { event: 'clientEvent/query/reveal', label: 'Reveal Query Connection' },
+  { event: 'clientEvent/query/reveal', label: 'Reveal Query Connection', useCurrentQuery: true },
 ];
 
 export default function CommandPalette(props: CommandPaletteProps) {
@@ -134,8 +156,11 @@ export default function CommandPalette(props: CommandPaletteProps) {
   const refOption = useRef<HTMLDivElement>(null);
   const { isLoading: loadingActiveQuery, query: activeQuery } = useActiveConnectionQuery();
   const { isLoading: loadingQueries, queries } = useConnectionQueries();
+  const { isLoading: loadingActiveConnection, data: activeConnection } = useGetConnectionById(
+    activeQuery?.connectionId,
+  );
 
-  const isLoading = loadingActiveQuery || loadingQueries;
+  const isLoading = loadingActiveQuery || loadingQueries || loadingActiveConnection;
 
   useEffect(() => {
     let newAllOptions: Command[] = [];
@@ -154,6 +179,11 @@ export default function CommandPalette(props: CommandPaletteProps) {
         newAllOptions.push({
           ...commandOption,
           data: activeQuery,
+        });
+      } else if (commandOption.useCurrentConnection === true) {
+        newAllOptions.push({
+          ...commandOption,
+          data: activeConnection,
         });
       } else {
         newAllOptions.push(commandOption);
