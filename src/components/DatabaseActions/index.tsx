@@ -6,7 +6,7 @@ import DropdownButton from 'src/components/DropdownButton';
 import { getDatabaseActions } from 'src/data/sql';
 import { useActiveConnectionQuery } from 'src/hooks';
 import { useGetConnectionById } from 'src/hooks';
-import { useQuerySizeSetting } from 'src/hooks';
+import { useQuerySizeSetting } from 'src/hooks/useSettings';
 import useToaster from 'src/hooks/useToaster';
 
 type DatabaseActionsProps = {

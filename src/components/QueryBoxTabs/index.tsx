@@ -18,7 +18,7 @@ import { useCommands } from 'src/components/MissionControl';
 import QueryBox from 'src/components/QueryBox';
 import Tabs from 'src/components/Tabs';
 import { useConnectionQueries } from 'src/hooks';
-import { useQueryTabOrientationSetting } from 'src/hooks';
+import { useQueryTabOrientationSetting } from 'src/hooks/useSettings';
 import { SqluiFrontend } from 'typings';
 
 export default function QueryBoxTabs() {

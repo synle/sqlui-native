@@ -15,7 +15,7 @@ import MissionControl from 'src/components/MissionControl';
 import Toasters from 'src/components/Toasters';
 import { getDefaultSessionId } from 'src/data/session';
 import { setCurrentSessionId } from 'src/data/session';
-import { useDarkModeSetting } from 'src/hooks';
+import { useDarkModeSetting } from 'src/hooks/useSettings';
 import { useGetCurrentSession } from 'src/hooks';
 import { useGetSessions } from 'src/hooks';
 import { useUpsertSession } from 'src/hooks';
