@@ -9,18 +9,17 @@ import { Button } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import { useNavigate } from 'react-router-dom';
 import DropdownButton from 'src/components/DropdownButton';
+import { useCommands } from 'src/components/MissionControl';
 import Toast from 'src/components/Toast';
 import { downloadText } from 'src/data/file';
 import { useActionDialogs } from 'src/hooks/useActionDialogs';
 import { useDeleteConnection } from 'src/hooks/useConnection';
 import { useDuplicateConnection } from 'src/hooks/useConnection';
 import { useRetryConnection } from 'src/hooks/useConnection';
-import { useActiveConnectionQuery } from 'src/hooks/useConnectionQuery';
 import useToaster from 'src/hooks/useToaster';
 import { createSystemNotification } from 'src/utils/commonUtils';
 import { getExportedConnection } from 'src/utils/commonUtils';
 import { SqluiCore } from 'typings';
-import { useCommands } from 'src/components/MissionControl';
 
 type ConnectionActionsProps = {
   connection: SqluiCore.ConnectionProps;

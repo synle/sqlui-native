@@ -3,12 +3,12 @@ import SelectAllIcon from '@mui/icons-material/SelectAll';
 import IconButton from '@mui/material/IconButton';
 import { useState } from 'react';
 import DropdownButton from 'src/components/DropdownButton';
+import { useCommands } from 'src/components/MissionControl';
 import { getDatabaseActions } from 'src/data/sql';
 import { useGetConnectionById } from 'src/hooks/useConnection';
 import { useActiveConnectionQuery } from 'src/hooks/useConnectionQuery';
 import { useQuerySizeSetting } from 'src/hooks/useSetting';
 import useToaster from 'src/hooks/useToaster';
-import { useCommands } from 'src/components/MissionControl';
 
 type DatabaseActionsProps = {
   connectionId: string;

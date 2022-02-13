@@ -2,13 +2,13 @@ import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import IconButton from '@mui/material/IconButton';
 import { useState } from 'react';
 import DropdownButton from 'src/components/DropdownButton';
+import { useCommands } from 'src/components/MissionControl';
 import { getTableActions } from 'src/data/sql';
 import { useGetColumns } from 'src/hooks/useConnection';
 import { useGetConnectionById } from 'src/hooks/useConnection';
 import { useActiveConnectionQuery } from 'src/hooks/useConnectionQuery';
 import { useQuerySizeSetting } from 'src/hooks/useSetting';
 import useToaster from 'src/hooks/useToaster';
-import { useCommands } from 'src/components/MissionControl';
 
 type TableActionsProps = {
   connectionId: string;
