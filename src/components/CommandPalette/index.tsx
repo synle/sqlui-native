@@ -5,8 +5,8 @@ import { useRef } from 'react';
 import { useState } from 'react';
 import { styled } from '@mui/system';
 import { Command as CoreCommand } from 'src/components/MissionControl';
-import { useActiveConnectionQuery } from 'src/hooks/useConnectionQuery';
 import { useGetConnectionById } from 'src/hooks/useConnection';
+import { useActiveConnectionQuery } from 'src/hooks/useConnectionQuery';
 import { useConnectionQueries } from 'src/hooks/useConnectionQuery';
 import { SqluiEnums } from 'typings';
 
@@ -122,8 +122,16 @@ const ALL_COMMAND_PALETTE_OPTIONS: CommandOption[] = [
 
   // connections
   { event: 'clientEvent/connection/new', label: 'New Connection' },
-  { event: 'clientEvent/connection/delete', label: 'Delete Current Connection', useCurrentConnection: true },
-  { event: 'clientEvent/connection/refresh', label: 'Refresh Current Connection', useCurrentConnection: true },
+  {
+    event: 'clientEvent/connection/delete',
+    label: 'Delete Current Connection',
+    useCurrentConnection: true,
+  },
+  {
+    event: 'clientEvent/connection/refresh',
+    label: 'Refresh Current Connection',
+    useCurrentConnection: true,
+  },
 
   // sessions
   { event: 'clientEvent/session/switch', label: 'Switch Session' },
@@ -148,7 +156,9 @@ export default function CommandPalette(props: CommandPaletteProps) {
   const refOption = useRef<HTMLDivElement>(null);
   const { isLoading: loadingActiveQuery, query: activeQuery } = useActiveConnectionQuery();
   const { isLoading: loadingQueries, queries } = useConnectionQueries();
-  const { isLoading:  loadingActiveConnection, data: activeConnection } = useGetConnectionById(activeQuery?.connectionId);
+  const { isLoading: loadingActiveConnection, data: activeConnection } = useGetConnectionById(
+    activeQuery?.connectionId,
+  );
 
   const isLoading = loadingActiveQuery || loadingQueries || loadingActiveConnection;
 
@@ -170,12 +180,12 @@ export default function CommandPalette(props: CommandPaletteProps) {
           ...commandOption,
           data: activeQuery,
         });
-      } else if(commandOption.useCurrentConnection === true) {
+      } else if (commandOption.useCurrentConnection === true) {
         newAllOptions.push({
           ...commandOption,
           data: activeConnection,
         });
-      }else {
+      } else {
         newAllOptions.push(commandOption);
       }
     });
