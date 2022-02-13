@@ -45,7 +45,7 @@ export default function CodeEditorBox(props: CodeEditorProps) {
 
   if (editorModeToUse === 'simple') {
     return (
-      <>
+      <div className='CodeEditorBox'>
         <SimpleEditor
           value={props.value}
           placeholder={props.placeholder}
@@ -55,12 +55,12 @@ export default function CodeEditorBox(props: CodeEditorProps) {
           wordWrap={wordWrap}
         />
         {contentToggleWordWrap}
-      </>
+      </div>
     );
   }
 
   return (
-    <>
+    <div className='CodeEditorBox'>
       <AdvancedEditor
         language={props.language}
         value={props.value}
@@ -69,6 +69,6 @@ export default function CodeEditorBox(props: CodeEditorProps) {
         placeholder={props.placeholder}
       />
       {contentToggleWordWrap}
-    </>
+    </div>
   );
 }
