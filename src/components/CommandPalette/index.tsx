@@ -158,18 +158,19 @@ export default function CommandPalette(props: CommandPaletteProps) {
     });
 
     setAllOptions(newAllOptions);
-    setOptions(newAllOptions);
-  }, [queries, activeQuery]);
 
-  const onSearch = (newText: string) => {
-    setText(newText);
 
-    const newOptions: Command[] = fuzzysort
-      .go(newText, allOptions, { key: 'label', allowTypo: false })
-      .map((result) => result.obj);
+    // filter out the options
+    let newOptions: Command[]  = newAllOptions;
+
+    if(text){
+        newOptions= fuzzysort
+          .go(text, newOptions, { key: 'label', allowTypo: false })
+          .map((result) => result.obj);
+        }
 
     setOptions(newOptions);
-  };
+  }, [queries, activeQuery, text]);
 
   const onSelectCommand = (command: Command) => {
     props.onSelectCommand(command);
@@ -199,7 +200,7 @@ export default function CommandPalette(props: CommandPaletteProps) {
       <div className='CommandPalette__SearchBox'>
         <TextField
           value={text}
-          onChange={(e) => onSearch(e.target.value)}
+          onChange={(e) => setText(e.target.value)}
           autoFocus
           placeholder='> Type a command here'
           fullWidth
