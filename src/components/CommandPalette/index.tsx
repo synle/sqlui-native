@@ -188,7 +188,6 @@ export default function CommandPalette(props: CommandPaletteProps) {
 
     const res = fuzzysort.single(text, label);
     if (res) {
-      //@ts-ignored
       return fuzzysort.highlight(res, '<span class="CommandPalette__Highlight">', '</span>') || '';
     }
 
