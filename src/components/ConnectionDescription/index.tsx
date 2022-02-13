@@ -7,9 +7,9 @@ import ConnectionActions from 'src/components/ConnectionActions';
 import ConnectionRetryAlert from 'src/components/ConnectionRetryAlert';
 import ConnectionTypeIcon from 'src/components/ConnectionTypeIcon';
 import DatabaseDescription from 'src/components/DatabaseDescription';
-import { useActiveConnectionQuery } from 'src/hooks';
-import { useGetConnections } from 'src/hooks';
-import { useShowHide } from 'src/hooks';
+import { useGetConnections } from 'src/hooks/useConnection';
+import { useActiveConnectionQuery } from 'src/hooks/useConnectionQuery';
+import { useShowHide } from 'src/hooks/useShowHide';
 
 export default function ConnectionDescription() {
   const { data: connections, isLoading } = useGetConnections();
