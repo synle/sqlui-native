@@ -83,7 +83,9 @@ export default function QueryBox(props: QueryBoxProps) {
   const onSubmit = async (e: React.SyntheticEvent) => {
     e.preventDefault();
     setExecuting(true);
-    onChange({ executionStart: Date.now(), result: {} as SqluiCore.Result });
+
+    const executionStart = Date.now();
+    onChange({ executionStart, result: {} as SqluiCore.Result });
 
     try {
       const newResult = await executeQuery(query);
@@ -93,7 +95,11 @@ export default function QueryBox(props: QueryBoxProps) {
       // here query failed...
     }
     setExecuting(false);
-    onChange({ executionEnd: Date.now() });
+
+    const executionEnd= Date.now();
+    onChange({ executionEnd });
+
+
   };
 
   const disabledExecute = executing || !query?.sql || !query?.connectionId;
