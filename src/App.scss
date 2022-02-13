@@ -73,6 +73,9 @@ $ConnectionTreeIndentSize: 7px;
 
 .QueryBox {
   margin-bottom: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
 }
 
 .FormInput {
@@ -82,7 +85,8 @@ $ConnectionTreeIndentSize: 7px;
     align-items: center;
   }
   &__Row {
-    margin-bottom: 15px;
+    display: flex;
+    gap: 2rem;
   }
 }
 

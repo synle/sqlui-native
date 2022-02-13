@@ -214,8 +214,10 @@ export function useConnectionQueries() {
     return onAddQuery(query);
   };
 
-  const onOrderingChange = (from: number, to: number) =>
-    getUpdatedOrdersForList(_connectionQueries, from, to);
+  const onOrderingChange = (from: number, to: number) => {
+    _connectionQueries = getUpdatedOrdersForList(_connectionQueries, from, to);
+    _invalidateQueries();
+  };
 
   return {
     isLoading,
