@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { app } from 'electron';
 import { SqluiCore } from '../typings';
+import { getGeneratedRandomId } from '../src/utils/commonUtils';
 
 const homedir = require('os').homedir();
 
@@ -61,7 +62,7 @@ export class PersistentStorage<T extends StorageEntry> {
   }
 
   add<K>(entry: K): T {
-    const newId = `${this.name}.${Date.now()}.${Math.floor(Math.random() * 10000000000000000)}`;
+    const newId = getGeneratedRandomId(`${this.name}`);
 
     const caches = this.getData();
     caches[newId] = {

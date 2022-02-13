@@ -1,4 +1,5 @@
 import { SessionStorageConfig } from 'src/data/config';
+import { getGeneratedRandomId } from 'src/utils/commonUtils';
 
 export function getDefaultSessionId() {
   let sessionId = SessionStorageConfig.get<string>('clientConfig/api.sessionId', '');
@@ -19,7 +20,7 @@ export function getDefaultSessionId() {
 }
 
 export function getRandomSessionId() {
-  return `sessionId.${Date.now()}.${Math.random() * 1000}`;
+  return getGeneratedRandomId(`sessionId`);
 }
 
 export function getCurrentSessionId() {
