@@ -2,8 +2,7 @@ import { useQuery } from 'react-query';
 import { useQueryClient } from 'react-query';
 import { AnchorOrigin } from 'src/components/Toast';
 import Toast from 'src/components/Toast';
-import {getGeneratedRandomId} from 'src/utils/commonUtils';
-
+import { getGeneratedRandomId } from 'src/utils/commonUtils';
 
 const QUERY_KEY_TOASTS = 'toasts';
 
