@@ -42,31 +42,17 @@ export default function DatabaseActions(props: DatabaseActionsProps) {
     querySize,
   });
 
-  const onSelectDatabaseForQuery = () => {
-    selectCommand({
-      event: 'clientEvent/query/changeActiveQuery',
-      data: {
-        connectionId: connectionId,
-        databaseId: databaseId,
-      },
-    });
-  };
-
-  const onShowQuery = (queryToShow: string) => {
-    selectCommand({
-      event: 'clientEvent/query/changeActiveQuery',
-      data: {
-        connectionId: connectionId,
-        databaseId: databaseId,
-        sql: queryToShow,
-      },
-    });
-  };
-
   const options = [
     {
       label: 'Select',
-      onClick: onSelectDatabaseForQuery,
+      onClick: () =>
+        selectCommand({
+          event: 'clientEvent/query/changeActiveQuery',
+          data: {
+            connectionId: connectionId,
+            databaseId: databaseId,
+          },
+        }),
       startIcon: <SelectAllIcon />,
     },
     ...actions.map((action) => ({
@@ -77,7 +63,14 @@ export default function DatabaseActions(props: DatabaseActionsProps) {
             message: `Applied "${action.label}" query`,
           });
 
-          onShowQuery(action.query);
+          selectCommand({
+            event: 'clientEvent/query/changeActiveQuery',
+            data: {
+              connectionId: connectionId,
+              databaseId: databaseId,
+              sql: action.query,
+            },
+          });
         }
       },
     })),

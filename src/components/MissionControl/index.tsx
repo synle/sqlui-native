@@ -203,12 +203,12 @@ export default function MissionControl() {
 
     if (activeConnection && activeConnection.dialect) {
       // open query help with selected dialect
-      data = `https://synle.github.io/sqlui-native/guides#${activeConnection.dialect}`
+      data = `https://synle.github.io/sqlui-native/guides#${activeConnection.dialect}`;
     } else {
-      data =`https://synle.github.io/sqlui-native/guides`;
+      data = `https://synle.github.io/sqlui-native/guides`;
     }
 
-    selectCommand({ event: 'clientEvent/openExternalUrl', data})
+    selectCommand({ event: 'clientEvent/openExternalUrl', data });
   };
 
   const onShowQueryWithDirection = (direction: number) => {
@@ -466,7 +466,7 @@ export default function MissionControl() {
           : `https://github.com/synle/sqlui-native/releases/download/${newVersion}/sqlui-native-${newVersion}.exe`;
 
       const onDownloadLatestVersion = () => {
-        selectCommand({ event: 'clientEvent/openExternalUrl', data: downloadLink})
+        selectCommand({ event: 'clientEvent/openExternalUrl', data: downloadLink });
       };
 
       contentDom = (
@@ -485,7 +485,7 @@ export default function MissionControl() {
 
     const onGoToHomepage = () => {
       const data = 'https://synle.github.io/sqlui-native/';
-      selectCommand({ event: 'clientEvent/openExternalUrl', data})
+      selectCommand({ event: 'clientEvent/openExternalUrl', data });
     };
 
     await modal({
@@ -567,10 +567,10 @@ export default function MissionControl() {
 
         case 'clientEvent/openExternalUrl':
           const url = command.data as string;
-          if(url){
-                    window.openBrowserLink(url);}
+          if (url) {
+            window.openBrowserLink(url);
+          }
           break;
-
 
         // overall commands
         case 'clientEvent/import':

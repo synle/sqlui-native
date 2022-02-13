@@ -53,17 +53,6 @@ export default function TableActions(props: TableActionsProps) {
     querySize,
   });
 
-  const onShowQuery = (queryToShow: string) => {
-    selectCommand({
-      event: 'clientEvent/query/changeActiveQuery',
-      data: {
-        connectionId: connectionId,
-        databaseId: databaseId,
-        sql: queryToShow,
-      },
-    });
-  };
-
   const options = actions.map((action) => ({
     label: action.label,
     onClick: async () => {
@@ -72,7 +61,14 @@ export default function TableActions(props: TableActionsProps) {
           message: `Applied "${action.label}" query`,
         });
 
-        onShowQuery(action.query);
+        selectCommand({
+          event: 'clientEvent/query/changeActiveQuery',
+          data: {
+            connectionId: connectionId,
+            databaseId: databaseId,
+            sql: action.query,
+          },
+        });
       }
     },
   }));
