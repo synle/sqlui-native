@@ -189,8 +189,8 @@ export default function MissionControl() {
       message: `Revealed selected connection / database on the sidebar`,
     });
     setTimeout(() => {
-      //@ts-ignore
-      document.querySelector('.Accordion__Header.selected').scrollIntoView();
+      const selectedHeaders = document.querySelectorAll('.Accordion__Header.selected');
+      selectedHeaders[selectedHeaders.length - 1].scrollIntoView();
     }, 100);
   };
 
