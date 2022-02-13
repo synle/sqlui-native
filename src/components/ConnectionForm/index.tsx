@@ -155,7 +155,11 @@ function MainConnectionForm(props: MainConnectionFormProps) {
           fullWidth={true}
         />
       </div>
-      {showHint && <div className='FormInput__Container'><ConnectionHint onChange={props.setConnection} /></div>}
+      {showHint && (
+        <div className='FormInput__Container'>
+          <ConnectionHint onChange={props.setConnection} />
+        </div>
+      )}
       <div className='FormInput__Row'>
         <Button variant='contained' type='submit' disabled={props.saving} startIcon={<SaveIcon />}>
           Save
