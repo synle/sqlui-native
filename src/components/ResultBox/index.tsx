@@ -37,13 +37,18 @@ export default function ResultBox(props: ResultBoxProps) {
     let errorToDisplay: any = error;
     errorToDisplay = errorToDisplay?.original || errorToDisplay?.original || errorToDisplay;
 
+    if(typeof errorToDisplay === 'object'){
+      errorToDisplay = JSON.stringify(errorToDisplay, null, 2)
+    }
+
     return (
       <>
         <QueryTimeDescription query={query} />
         <CodeEditorBox
-          value={JSON.stringify(errorToDisplay, null, 2)}
+          value={errorToDisplay}
           language='json'
           mode='textarea'
+          wordWrap={true}
         />
       </>
     );
