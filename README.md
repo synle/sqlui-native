@@ -1,3 +1,5 @@
+[![main-build](https://github.com/synle/sqlui-native/actions/workflows/main-build.yml/badge.svg)](https://github.com/synle/sqlui-native/actions/workflows/main-build.yml)
+
 # sqlui-native
 
 `sqlui-native` is a simple UI client for most SQL Engines written in Electron. It is compatible with most desktop OS's and support most dialects of RMBDs like MySQL, Microsoft SQL Server, Postgres, SQLite, Cassandra, MongoDB and Redis.
