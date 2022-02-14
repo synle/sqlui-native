@@ -6,7 +6,7 @@ import ConnectionActions from 'src/components/ConnectionActions';
 import ConnectionRetryAlert from 'src/components/ConnectionRetryAlert';
 import ConnectionTypeIcon from 'src/components/ConnectionTypeIcon';
 import DatabaseDescription from 'src/components/DatabaseDescription';
-import { useGetConnections } from 'src/hooks/useConnection';
+import { useGetConnections, useUpdateConnections } from 'src/hooks/useConnection';
 import { useActiveConnectionQuery } from 'src/hooks/useConnectionQuery';
 import { useShowHide } from 'src/hooks/useShowHide';
 
@@ -14,6 +14,7 @@ export default function ConnectionDescription() {
   const { data: connections, isLoading } = useGetConnections();
   const { visibles, onToggle } = useShowHide();
   const { query: activeQuery } = useActiveConnectionQuery();
+  const {mutateAsync: updateConnections} = useUpdateConnections(connections);
 
   if (isLoading) {
     return (
@@ -25,6 +26,10 @@ export default function ConnectionDescription() {
 
   if (!connections || connections.length === 0) {
     return <Alert severity='info'>No connnections</Alert>;
+  }
+
+  const onConnectionOrderChange =  (fromIdx: number, toIdx: number)  => {
+    updateConnections([fromIdx, toIdx])
   }
 
   return (
@@ -39,7 +44,8 @@ export default function ConnectionDescription() {
             <AccordionHeader
               expanded={visibles[key]}
               onToggle={() => onToggle(key)}
-              className={isSelected ? 'selected ConnectionDescription' : 'ConnectionDescription'}>
+              className={isSelected ? 'selected ConnectionDescription' : 'ConnectionDescription'}
+              onOrderChange={onConnectionOrderChange}>
               <ConnectionTypeIcon scheme={connection.dialect} status={connection.status} />
               <span>{connection.name}</span>
               <ConnectionActions connection={connection} />

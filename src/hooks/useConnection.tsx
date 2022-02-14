@@ -1,6 +1,7 @@
 import { QueryClient, useMutation, useQuery, useQueryClient } from 'react-query';
 import dataApi from 'src/data/api';
 import { SqluiCore, SqluiFrontend } from 'typings';
+import { getGeneratedRandomId, getUpdatedOrdersForList } from 'src/utils/commonUtils';
 
 const QUERY_KEY_ALL_CONNECTIONS = 'qk.connections';
 
@@ -10,6 +11,17 @@ export function useGetConnections() {
   return useQuery([QUERY_KEY_ALL_CONNECTIONS], dataApi.getConnections, {
     staleTime: DEFAULT_STALE_TIME,
   });
+}
+
+export function useUpdateConnections(connections?: SqluiCore.ConnectionProps[])  {
+  const queryClient = useQueryClient();
+  return useMutation<SqluiCore.ConnectionProps[], void, number[]>(
+    ([from, to]) => {
+      connections= connections|| [];
+      connections = getUpdatedOrdersForList(connections, from, to);
+      return dataApi.update(connections);
+    },
+  );
 }
 
 export function useGetConnectionById(connectionId?: string) {
