@@ -308,12 +308,12 @@ Array [
   Object {
     "formatter": "sql",
     "label": "Drop Database",
-    "query": "DROP DATABASE mariadb",
+    "query": "DROP DATABASE database1",
   },
   Object {
     "formatter": "sql",
     "label": "Create Database",
-    "query": "CREATE DATABASE mariadb",
+    "query": "CREATE DATABASE database1",
   },
   Object {
     "formatter": "sql",
@@ -447,12 +447,12 @@ Array [
   Object {
     "formatter": "sql",
     "label": "Drop Database",
-    "query": "DROP DATABASE mssql",
+    "query": "DROP DATABASE database1",
   },
   Object {
     "formatter": "sql",
     "label": "Create Database",
-    "query": "CREATE DATABASE mssql",
+    "query": "CREATE DATABASE database1",
   },
   Object {
     "formatter": "sql",
@@ -580,12 +580,12 @@ Array [
   Object {
     "formatter": "sql",
     "label": "Drop Database",
-    "query": "DROP DATABASE mysql",
+    "query": "DROP DATABASE database1",
   },
   Object {
     "formatter": "sql",
     "label": "Create Database",
-    "query": "CREATE DATABASE mysql",
+    "query": "CREATE DATABASE database1",
   },
   Object {
     "formatter": "sql",
@@ -719,12 +719,12 @@ Array [
   Object {
     "formatter": "sql",
     "label": "Drop Database",
-    "query": "DROP DATABASE postgres",
+    "query": "DROP DATABASE database1",
   },
   Object {
     "formatter": "sql",
     "label": "Create Database",
-    "query": "CREATE DATABASE postgres",
+    "query": "CREATE DATABASE database1",
   },
   Object {
     "formatter": "sql",
@@ -858,12 +858,12 @@ Array [
   Object {
     "formatter": "sql",
     "label": "Drop Database",
-    "query": "DROP DATABASE sqlite",
+    "query": "DROP DATABASE database1",
   },
   Object {
     "formatter": "sql",
     "label": "Create Database",
-    "query": "CREATE DATABASE sqlite",
+    "query": "CREATE DATABASE database1",
   },
   Object {
     "formatter": "sql",
