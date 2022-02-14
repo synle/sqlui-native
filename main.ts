@@ -1,9 +1,8 @@
-import { SqluiCore, SqluiEnums } from './typings';
+import { BrowserWindow, Menu, app, ipcMain, nativeTheme, shell } from 'electron';
 import { matchPath } from 'react-router-dom';
-import { app, BrowserWindow, ipcMain, Menu, nativeTheme } from 'electron';
-import { setUpDataEndpoints, getEndpointHandlers } from './commons/Endpoints';
-import { crashReporter, shell } from 'electron';
 import path from 'path';
+import { SqluiCore, SqluiEnums } from './typings';
+import { setUpDataEndpoints, getEndpointHandlers } from './commons/Endpoints';
 
 const isMac = process.platform === 'darwin';
 

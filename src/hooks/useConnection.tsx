@@ -1,10 +1,6 @@
-import { QueryClient } from 'react-query';
-import { useMutation } from 'react-query';
-import { useQuery } from 'react-query';
-import { useQueryClient } from 'react-query';
+import { QueryClient, useMutation, useQuery, useQueryClient } from 'react-query';
 import dataApi from 'src/data/api';
-import { SqluiCore } from 'typings';
-import { SqluiFrontend } from 'typings';
+import { SqluiCore, SqluiFrontend } from 'typings';
 
 const QUERY_KEY_ALL_CONNECTIONS = 'qk.connections';
 

@@ -1,7 +1,4 @@
-import { QueryClient } from 'react-query';
-import { useMutation } from 'react-query';
-import { useQuery } from 'react-query';
-import { useQueryClient } from 'react-query';
+import { QueryClient, useMutation, useQuery, useQueryClient } from 'react-query';
 import dataApi from 'src/data/api';
 import { getCurrentSessionId } from 'src/data/session';
 import { SqluiCore } from 'typings';

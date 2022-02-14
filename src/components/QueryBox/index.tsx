@@ -7,22 +7,17 @@ import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import Tooltip from '@mui/material/Tooltip';
 import { useQueryClient } from 'react-query';
-import { useState } from 'react';
-import React from 'react';
+import React, { useState } from 'react';
 import CodeEditorBox from 'src/components/CodeEditorBox';
 import { useCommands } from 'src/components/MissionControl';
 import ConnectionDatabaseSelector from 'src/components/QueryBox/ConnectionDatabaseSelector';
 import ConnectionRevealButton from 'src/components/QueryBox/ConnectionRevealButton';
 import ResultBox from 'src/components/ResultBox';
 import Select from 'src/components/Select';
-import { refreshAfterExecution } from 'src/hooks/useConnection';
-import { useExecute } from 'src/hooks/useConnection';
-import { useGetConnectionById } from 'src/hooks/useConnection';
+import { refreshAfterExecution, useExecute, useGetConnectionById } from 'src/hooks/useConnection';
 import { useConnectionQuery } from 'src/hooks/useConnectionQuery';
 import useToaster from 'src/hooks/useToaster';
-import { formatDuration } from 'src/utils/formatter';
-import { formatJS } from 'src/utils/formatter';
-import { formatSQL } from 'src/utils/formatter';
+import { formatDuration, formatJS, formatSQL } from 'src/utils/formatter';
 import { SqluiCore } from 'typings';
 
 type QueryBoxProps = {

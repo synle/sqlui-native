@@ -9,8 +9,7 @@ import MenuItem from '@mui/material/MenuItem';
 import MenuList from '@mui/material/MenuList';
 import Paper from '@mui/material/Paper';
 import Popper from '@mui/material/Popper';
-import { useEffect } from 'react';
-import React from 'react';
+import React, { useEffect } from 'react';
 
 type DropdownButtonOption = {
   label: string;

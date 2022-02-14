@@ -1,5 +1,4 @@
 import Electron from 'electron';
-
 declare global {
   interface Window {
     isElectron: boolean;
