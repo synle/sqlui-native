@@ -1,0 +1,136 @@
+name: package-electron-beta
+
+on:
+  workflow_dispatch:
+    inputs:
+      message:
+
+jobs:
+  create_release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    outputs:
+      package_version: ${{ steps.package-version.outputs.current-version }}
+      release_upload_url: ${{ steps.create_release.outputs.upload_url }}
+    steps:
+      - uses: actions/checkout@v2
+      - run: npm version --no-git-tag-version patch
+      - uses: dev-drprasad/delete-tag-and-release@v0.2.0
+        with:
+          delete_release: true
+          tag_name: 'beta'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/create-release@v1
+        id: create_release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: beta
+          release_name: beta
+          body: |
+            beta
+          draft: false
+          prerelease: false
+
+  build_windows:
+    needs: [create_release]
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v2
+      - run: npm version --no-git-tag-version patch
+      - run: npm install
+      - run: npm run test-ci
+      - run: npm run build
+      - run: npm run dist
+      - run: mv ./dist/sqlui-native*.exe ./dist/sqlui-native.exe
+
+      - uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create_release.outputs.release_upload_url }}
+          asset_path: ./dist/sqlui-native.exe
+          asset_name: sqlui-native-beta.exe
+          asset_content_type: application/octet-stream
+
+  build_macos:
+    needs: [create_release]
+    runs-on: macos-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v2
+      - run: npm version --no-git-tag-version patch
+      - run: npm install
+      - run: npm run test-ci
+      - run: npm run build
+      - run: npm run dist
+      - run: mv ./dist/sqlui-native*.dmg ./dist/sqlui-native.dmg
+
+      - uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create_release.outputs.release_upload_url }}
+          asset_path: ./dist/sqlui-native.dmg
+          asset_name: sqlui-native-beta.dmg
+          asset_content_type: application/octet-stream
+
+  build_linux:
+    needs: [create_release]
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v2
+      - run: npm version --no-git-tag-version patch
+      - run: npm install
+      - run: npm run test-ci
+      - run: npm run build
+      - run: npm run dist
+      - run: mv ./dist/sqlui-native*.deb ./dist/sqlui-native.deb
+      - run: mv ./dist/sqlui-native*.rpm ./dist/sqlui-native.rpm
+      - run: mv ./dist/sqlui-native*.snap ./dist/sqlui-native.snap
+
+      - uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create_release.outputs.release_upload_url }}
+          asset_path: ./dist/sqlui-native.deb
+          asset_name: sqlui-native-beta.deb
+          asset_content_type: application/octet-stream
+
+      - uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create_release.outputs.release_upload_url }}
+          asset_path: ./dist/sqlui-native.rpm
+          asset_name: sqlui-native-beta.rpm
+          asset_content_type: application/octet-stream
+
+      - uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create_release.outputs.release_upload_url }}
+          asset_path: ./dist/sqlui-native.snap
+          asset_name: sqlui-native-beta.snap
+          asset_content_type: application/octet-stream
+
+  roll_back:
+    if: failure()
+    needs: [create_release, build_windows, build_macos, build_linux]
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{ github.head_ref }}
+      - uses: dev-drprasad/delete-tag-and-release@v0.2.0
+        with:
+          delete_release: true
+          tag_name: 'beta'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
