@@ -1,13 +1,20 @@
-import { databaseActionScripts as MongodbDatabaseActionScripts } from 'src/scripts/mongodb';
-import { tableActionScripts as MongodbTableActionScripts } from 'src/scripts/mongodb';
-import { databaseActionScripts as RedisDatabaseActionScripts } from 'src/scripts/redis';
-import { tableActionScripts as RedisTableActionScripts } from 'src/scripts/redis';
-import { databaseActionScripts as CassandraDatabaseActionScripts } from 'src/scripts/cassandra';
-import { tableActionScripts as CassandraTableActionScripts } from 'src/scripts/cassandra';
-import { databaseActionScripts as RmdbDatabaseActionScripts } from 'src/scripts/rmdb';
-import { tableActionScripts as RmdbTableActionScripts } from 'src/scripts/rmdb';
-import { formatJS } from 'src/utils/formatter';
-import { formatSQL } from 'src/utils/formatter';
+import {
+  databaseActionScripts as MongodbDatabaseActionScripts,
+  tableActionScripts as MongodbTableActionScripts,
+} from 'src/scripts/mongodb';
+import {
+  databaseActionScripts as RedisDatabaseActionScripts,
+  tableActionScripts as RedisTableActionScripts,
+} from 'src/scripts/redis';
+import {
+  databaseActionScripts as CassandraDatabaseActionScripts,
+  tableActionScripts as CassandraTableActionScripts,
+} from 'src/scripts/cassandra';
+import {
+  databaseActionScripts as RmdbDatabaseActionScripts,
+  tableActionScripts as RmdbTableActionScripts,
+} from 'src/scripts/rmdb';
+import { formatJS, formatSQL } from 'src/utils/formatter';
 import { SqlAction } from 'typings';
 
 export function getTableActions(tableActionInput: SqlAction.TableInput) {

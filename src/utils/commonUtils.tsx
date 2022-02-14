@@ -1,5 +1,4 @@
-import { SqluiCore } from 'typings';
-import { SqluiFrontend } from 'typings';
+import { SqluiCore, SqluiFrontend } from 'typings';
 // for exporting
 export function getExportedConnection(connectionProps: SqluiCore.ConnectionProps) {
   const { id, connection, name } = connectionProps;
