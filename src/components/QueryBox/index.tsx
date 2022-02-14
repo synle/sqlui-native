@@ -13,7 +13,6 @@ import { useCommands } from 'src/components/MissionControl';
 import ConnectionDatabaseSelector from 'src/components/QueryBox/ConnectionDatabaseSelector';
 import ConnectionRevealButton from 'src/components/QueryBox/ConnectionRevealButton';
 import ResultBox from 'src/components/ResultBox';
-import Select from 'src/components/Select';
 import { refreshAfterExecution, useExecute, useGetConnectionById } from 'src/hooks/useConnection';
 import { useConnectionQuery } from 'src/hooks/useConnectionQuery';
 import useToaster from 'src/hooks/useToaster';

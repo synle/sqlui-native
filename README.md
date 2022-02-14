@@ -1,10 +1,12 @@
 # sqlui-native
+
 `sqlui-native` is a simple UI client for most SQL Engines written in Electron. It is compatible with most desktop OS's and support most dialects of RMBDs like MySQL, Microsoft SQL Server, Postgres, SQLite, Cassandra, MongoDB and Redis.
 It supports multiple Windows, so you can have different sets of queries and connections side by side. The connections and queries are all stored locally, so you can continue where you left off in later visits.
 
 ## Downloads
 
 Refer to the following link for download information.
+
 - [Sqlui Native Homepage](https://synle.github.io/sqlui-native)
 
 ## Supported OS's
@@ -13,12 +15,13 @@ Refer to the following link for download information.
 - [Mac OS](https://synle.github.io/sqlui-native/installation#mac) (Tested on Mac OS Monterey)
 - [Debian / Ubuntu](https://synle.github.io/sqlui-native/installation#ubuntu--debian)
 - [Redhat / CentOS / Fedora](https://synle.github.io/sqlui-native/installation#redhat--centos--fedora)
-Refer to this link for [Installation Instructions](https://synle.github.io/sqlui-native/installation)
+  Refer to this link for [Installation Instructions](https://synle.github.io/sqlui-native/installation)
 
 ## Supported Database Adapters
 
 The list below are supported data stores.
 You can also refer to this link for [General Queries](https://synle.github.io/sqlui-native/guides)
+
 - [MySQL](https://synle.github.io/sqlui-native/guides#mysql)
 - [MariaDB](https://synle.github.io/sqlui-native/guides#mariadb)
 - [Microsoft](https://synle.github.io/sqlui-native/guides#mssql)
@@ -30,15 +33,14 @@ You can also refer to this link for [General Queries](https://synle.github.io/sq
 
 ## Features
 
-
 ### Overall Demo
-
 
 ![demo-full](https://user-images.githubusercontent.com/3792401/151750703-419b66f2-938b-4edd-b852-97bfdfa12efd.gif)
 
 ### Import and Export
 
 Import and Export can be used to share connections across different machines and users. Below is a sample import config.
+
 ```
 [
   {
@@ -74,7 +76,6 @@ Dark mode will be turned on automatically with respect to your OS Preference. Yo
 ![demo-darkmode](https://user-images.githubusercontent.com/3792401/151746840-e4889ae1-cab9-4ade-b56b-5a4dbb654712.gif)
 
 ### Query Tabs
-
 
 #### Query Tab Orientation
 
@@ -121,33 +122,33 @@ Settings can be accessed via the top right menu icon. It allows you to set up pr
 ### Dev Note
 
 Here is the link where you can find information about how run this application locally.
+
 - [Dev Notes](https://github.com/synle/sqlui-native/blob/main/CONTRIBUTING.md)
 
 ## Features / TODO's:
 
-- [X] Consolidate the interface for mocked server and the main.ts page.
-- [X] Make a build for Windows and Darwin.
-- [X] Added Basic CI/CD to package electron
-- [X] Make a build for other systems like Debian / Ubuntu and Redhat.
-- [X] Add a configuration / option page for color mode.
-- [X] Enhance the table with pagination.
+- [x] Consolidate the interface for mocked server and the main.ts page.
+- [x] Make a build for Windows and Darwin.
+- [x] Added Basic CI/CD to package electron
+- [x] Make a build for other systems like Debian / Ubuntu and Redhat.
+- [x] Add a configuration / option page for color mode.
+- [x] Enhance the table with pagination.
 - [ ] Enhance the table for result with sorting, and searching.
-- [X] Add quick query queries (such as select from a table or do update / insert).
-- [X] Add quick query to recreate the table definition (Create Table), Drop Table, etc....
-- [X] Add a full screen mode (F11)
-- [X] Add ability to save CSV / JSON / Table to files.
-- [X] Add ability to support multiple windows and sessions..
-- [X] Add ability to import and export connections and queries.
-- [X] Add ability to work with multiple instances.
+- [x] Add quick query queries (such as select from a table or do update / insert).
+- [x] Add quick query to recreate the table definition (Create Table), Drop Table, etc....
+- [x] Add a full screen mode (F11)
+- [x] Add ability to save CSV / JSON / Table to files.
+- [x] Add ability to support multiple windows and sessions..
+- [x] Add ability to import and export connections and queries.
+- [x] Add ability to work with multiple instances.
 - [ ] Add autocomplete tokens for the query.
-- [X] Add dark theme (Dark mode respect system color theme).
+- [x] Add dark theme (Dark mode respect system color theme).
 - [ ] Add auto update features.
 - [ ] Push a build to Microsoft Store.
-- [X] Add supports for Cassandra
+- [x] Add supports for Cassandra
 - [ ] Add supports for Azure Table, and AWS Redshift.
 
 ## Limitations
-
 
 ### Cassandra Limitations
 
@@ -159,7 +160,8 @@ MongoDB Collections is mapped to sqlui-native table. We scan the first 5 Documen
 
 #### Create new MongoDB Database
 
-Given the limitation of the mongodb NodeJS library, there is not a direct API that we can use to create the MongoDB database. 
+Given the limitation of the mongodb NodeJS library, there is not a direct API that we can use to create the MongoDB database.
+
 - To create a mongoDB database, simply duplicate your existing DB connection
 - Update the connection string to add the new database name to the end of the list.
 - Then execute the following `db.createCollection("some_collection_name")` to create at least one collection.
@@ -177,4 +179,5 @@ Due to the size of keys within Redis connection, we will not show all keys in th
 ## Suggestion?
 
 Use the following link to file a bug or a suggestion.
+
 - [File a bug or a suggestion?](https://github.com/synle/sqlui-native/issues/new)

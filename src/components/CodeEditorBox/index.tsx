@@ -1,6 +1,5 @@
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
-import Button from '@mui/material/Button';
 import ToggleButton from '@mui/material/ToggleButton';
 import { useEffect, useState } from 'react';
 import AdvancedEditor from 'src/components/CodeEditorBox/AdvancedEditor';
