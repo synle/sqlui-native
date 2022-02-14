@@ -2,10 +2,10 @@
 title: sqlui-native
 ---
 
-Installation:
-=============
+# Installation:
 
 ## Windows
+
 - Download the above `.exe` file
 - Open the `.exe` file
 - Click on `More info`
@@ -17,8 +17,8 @@ Installation:
 
 ![image](https://user-images.githubusercontent.com/3792401/153638239-b9e1f1f7-2125-4316-885f-4e266c3a01de.png)
 
-
 ## Mac
+
 - Download the above `.dmg` file
 - Open the `.dmg` file
 - Drag the binary to Application file
@@ -39,9 +39,8 @@ Installation:
 
 ![image](https://user-images.githubusercontent.com/3792401/153640735-8fe99a6e-c052-407e-95a9-13b00c3747f1.png)
 
-
-
 ## Ubuntu / Debian
+
 - Download the above `.deb` file
 - Run the following shell command to install the above `.deb`
 
@@ -53,8 +52,8 @@ sudo dpkg -i sqlui-native*.deb
 
 ![image](https://user-images.githubusercontent.com/3792401/153638017-85896932-65b1-4670-9a05-b81bcb858d51.png)
 
-
 ## Redhat / CentOS / Fedora
+
 - Download the above `.rpm` file
 - Run the following shell command to install the above `.rpm`
 

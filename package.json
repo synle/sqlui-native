@@ -46,7 +46,7 @@
     "pretest": "npm run prebuild",
     "pretest-ci": "npm run pretest",
     "predist": "cpx \"build/**/*\" .",
-    "preformat": "curl https://raw.githubusercontent.com/synle/js-import-fixer/main/removed-unused-imports.js | node - --groupImport",
+    "preformat": "curl https://raw.githubusercontent.com/synle/js-import-fixer/main/removed-unused-imports.js | node - --groupImport --aggressive",
     "start": "npm run start-electron",
     "start-electron": "cross-env ENV_TYPE='electron-dev' electron build/main.js",
     "start-webapp": "cross-env ENV_TYPE='mocked-server' react-scripts start",
@@ -60,7 +60,7 @@
     "test-ci": "cross-env CI=true jest __tests__ && cross-env CI=true npm run test-react",
     "test-electron": "jest commons __tests__",
     "test-react": "cross-env react-scripts test",
-    "format": "npx prettier --config ./.prettierrc --write **/*.{ts,tsx,js,jsx,scss,yml,html} *.{json,MD}",
+    "format": "npx prettier --config ./.prettierrc --write **/*.{ts,tsx,js,jsx,scss,yml,html,json,md}",
     "lint": "eslint --fix --ext .tsx --ext .ts src"
   },
   "repository": "https://github.com/synle/sqlui-native",
