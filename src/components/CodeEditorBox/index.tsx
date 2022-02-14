@@ -28,7 +28,7 @@ export default function CodeEditorBox(props: CodeEditorProps) {
 
   const contentToggleWordWrap = (
     <ToggleButton
-    className='CodeEditorBox__WordWrap'
+      className='CodeEditorBox__WordWrap'
       value='check'
       selected={wordWrap}
       onChange={() => setWordWrap(!wordWrap)}

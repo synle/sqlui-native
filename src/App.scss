@@ -137,19 +137,18 @@ $ConnectionTreeIndentSize: 7px;
   }
 }
 
-
-.CodeEditorBox{
+.CodeEditorBox {
   position: relative;
 
-  .CodeEditorBox__WordWrap{
+  .CodeEditorBox__WordWrap {
     position: absolute;
     bottom: 5px;
     display: none;
     right: 20px;
   }
 
-  &:hover{
-    .CodeEditorBox__WordWrap{
+  &:hover {
+    .CodeEditorBox__WordWrap {
       display: flex;
     }
   }
