@@ -9,7 +9,7 @@ import reportWebVitals from './reportWebVitals';
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      refetchOnWindowFocus: false,
+      // refetchOnWindowFocus: true,
       retry: false,
     },
   },
