@@ -384,7 +384,7 @@ export function getDropDatabase(input: SqlAction.DatabaseInput): SqlAction.Outpu
       return {
         label,
         formatter,
-        query: `DROP DATABASE ${input.dialect}`,
+        query: `DROP DATABASE ${input.databaseId}`,
       };
   }
 }
@@ -401,7 +401,7 @@ export function getCreateDatabase(input: SqlAction.DatabaseInput): SqlAction.Out
       return {
         label,
         formatter,
-        query: `CREATE DATABASE ${input.dialect}`,
+        query: `CREATE DATABASE ${input.databaseId}`,
       };
   }
 }
