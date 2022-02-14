@@ -3,13 +3,15 @@
 ## Bootstrap script for connections
 
 ### Requirement
+
 - Node 14+
 
 ### Starting guide
+
 - Refer to this Linkedin POST for the basic overview of this project.
 
-
 ### Sample Import Files
+
 ```
 [
   {
@@ -69,18 +71,19 @@
 ]
 ```
 
-
-
 ### How to run locally?
 
 #### In an electron container
+
 ```
 npm install
 npm start
 ```
 
 #### In a mocked server container
+
 Run this and test it in the browser
+
 ```
 npm install
 npm run dev
@@ -88,8 +91,8 @@ npm run dev
 # http://localhost:3000
 ```
 
-
 ### To package
+
 ```
 npm run build
 cd build
@@ -97,8 +100,8 @@ npm install
 npm run dist
 ```
 
-
 ### Where is the config / data stored on local machine?
+
 ```
 # Windows
 C:\Users\some_username\AppData\Roaming\sqlui-native
@@ -106,8 +109,8 @@ C:\Users\some_username\AppData\Roaming\sqlui-native
 # Mac
 ```
 
-
 ## Sample Databases
+
 Docker can be used to spin off these database engines. Refer to [this repo for the SQL dumps](https://github.com/synle/sqlui-core).
 
 ```
@@ -145,11 +148,10 @@ docker run --name sqlui_redis -p 6379:6379 -d redis
 
 ```
 
-
-
-
 ## Sample runbooks
+
 ### Relational Database
+
 ```
 mysql://root:password@localhost:3306
 
@@ -171,6 +173,7 @@ LIMIT
 ```
 
 ### Cassandra
+
 ```
 -- Create a artists music_stores
 CREATE KEYSPACE music_stores
@@ -182,11 +185,12 @@ CREATE TABLE artists(
 )
 ```
 
-
 ## CI / CD Notes
+
 Self hosted runners
 
 ### Windows
+
 ```
 Set-ExecutionPolicy RemoteSigned
 ```
