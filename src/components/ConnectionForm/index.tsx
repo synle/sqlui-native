@@ -4,14 +4,11 @@ import Alert from '@mui/material/Alert';
 import TextField from '@mui/material/TextField';
 import Tooltip from '@mui/material/Tooltip';
 import { useNavigate } from 'react-router-dom';
-import { useEffect } from 'react';
-import { useState } from 'react';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import ConnectionHint from 'src/components/ConnectionForm/ConnectionHint';
 import TestConnectionButton from 'src/components/TestConnectionButton';
 import Toast from 'src/components/Toast';
-import { useGetConnectionById } from 'src/hooks/useConnection';
-import { useUpsertConnection } from 'src/hooks/useConnection';
+import { useGetConnectionById, useUpsertConnection } from 'src/hooks/useConnection';
 import { createSystemNotification } from 'src/utils/commonUtils';
 import { SqluiCore } from 'typings';
 

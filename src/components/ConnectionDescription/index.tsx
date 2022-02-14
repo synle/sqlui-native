@@ -1,8 +1,7 @@
 import Alert from '@mui/material/Alert';
 import CircularProgress from '@mui/material/CircularProgress';
 import React from 'react';
-import { AccordionBody } from 'src/components/Accordion';
-import { AccordionHeader } from 'src/components/Accordion';
+import { AccordionBody, AccordionHeader } from 'src/components/Accordion';
 import ConnectionActions from 'src/components/ConnectionActions';
 import ConnectionRetryAlert from 'src/components/ConnectionRetryAlert';
 import ConnectionTypeIcon from 'src/components/ConnectionTypeIcon';

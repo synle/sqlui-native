@@ -46,6 +46,7 @@
     "pretest": "npm run prebuild",
     "pretest-ci": "npm run pretest",
     "predist": "cpx \"build/**/*\" .",
+    "preformat": "curl https://raw.githubusercontent.com/synle/js-import-fixer/main/removed-unused-imports.js | node - --groupImport",
     "start": "npm run start-electron",
     "start-electron": "cross-env ENV_TYPE='electron-dev' electron build/main.js",
     "start-webapp": "cross-env ENV_TYPE='mocked-server' react-scripts start",

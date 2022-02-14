@@ -4,8 +4,7 @@ import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import React from 'react';
 import Select from 'src/components/Select';
-import { useQuerySizeSetting } from 'src/hooks/useSetting';
-import { useSetting } from 'src/hooks/useSetting';
+import { useQuerySizeSetting, useSetting } from 'src/hooks/useSetting';
 import { SqluiFrontend } from 'typings';
 
 type SettingsProps = {};

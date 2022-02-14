@@ -1,4 +1,4 @@
-import { createClient, RedisClientType } from 'redis';
+import { RedisClientType, createClient } from 'redis';
 import { SqluiCore } from '../../typings';
 import IDataAdapter from './IDataAdapter';
 import BaseDataAdapter, { MAX_CONNECTION_TIMEOUT } from './BaseDataAdapter';

@@ -4,39 +4,33 @@ import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
 import Typography from '@mui/material/Typography';
-import { useQuery } from 'react-query';
-import { useQueryClient } from 'react-query';
+import { useQuery, useQueryClient } from 'react-query';
 import { useNavigate } from 'react-router-dom';
-import { useCallback } from 'react';
-import { useEffect } from 'react';
-import { useState } from 'react';
-import React from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import CommandPalette from 'src/components/CommandPalette';
 import Settings from 'src/components/Settings';
 import { downloadText } from 'src/data/file';
-import { getRandomSessionId } from 'src/data/session';
-import { setCurrentSessionId } from 'src/data/session';
+import { getRandomSessionId, setCurrentSessionId } from 'src/data/session';
 import { useActionDialogs } from 'src/hooks/useActionDialogs';
-import { useDeleteConnection } from 'src/hooks/useConnection';
-import { useDuplicateConnection } from 'src/hooks/useConnection';
-import { useGetConnectionById } from 'src/hooks/useConnection';
-import { useGetConnections } from 'src/hooks/useConnection';
-import { useImportConnection } from 'src/hooks/useConnection';
-import { useRetryConnection } from 'src/hooks/useConnection';
-import { useActiveConnectionQuery } from 'src/hooks/useConnectionQuery';
-import { useConnectionQueries } from 'src/hooks/useConnectionQuery';
-import { useGetCurrentSession } from 'src/hooks/useSession';
-import { useGetSessions } from 'src/hooks/useSession';
-import { useUpsertSession } from 'src/hooks/useSession';
+import {
+  useDeleteConnection,
+  useDuplicateConnection,
+  useGetConnectionById,
+  useGetConnections,
+  useImportConnection,
+  useRetryConnection,
+} from 'src/hooks/useConnection';
+import { useActiveConnectionQuery, useConnectionQueries } from 'src/hooks/useConnectionQuery';
+import { useGetCurrentSession, useGetSessions, useUpsertSession } from 'src/hooks/useSession';
 import { useSetting } from 'src/hooks/useSetting';
 import { useShowHide } from 'src/hooks/useShowHide';
 import useToaster from 'src/hooks/useToaster';
-import { createSystemNotification } from 'src/utils/commonUtils';
-import { getExportedConnection } from 'src/utils/commonUtils';
-import { getExportedQuery } from 'src/utils/commonUtils';
-import { SqluiCore } from 'typings';
-import { SqluiEnums } from 'typings';
-import { SqluiFrontend } from 'typings';
+import {
+  createSystemNotification,
+  getExportedConnection,
+  getExportedQuery,
+} from 'src/utils/commonUtils';
+import { SqluiCore, SqluiEnums, SqluiFrontend } from 'typings';
 import appPackage from 'src/package.json';
 
 export type Command = {

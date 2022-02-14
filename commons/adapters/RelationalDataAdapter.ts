@@ -1,4 +1,4 @@
-import { Sequelize, ColumnDescription } from 'sequelize';
+import { Sequelize } from 'sequelize';
 import { SqluiCore } from '../../typings';
 import IDataAdapter from './IDataAdapter';
 import BaseDataAdapter from './BaseDataAdapter';

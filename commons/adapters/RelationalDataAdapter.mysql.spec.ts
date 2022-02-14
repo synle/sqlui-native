@@ -1,5 +1,4 @@
 import RelationalDataAdapter from 'commons/adapters/RelationalDataAdapter';
-
 // this is a big integration, won't be run on smoke test
 describe('mysql', () => {
   const adapter = new RelationalDataAdapter('mysql://root:password@localhost:3306');

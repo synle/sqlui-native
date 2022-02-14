@@ -1,5 +1,4 @@
 import RelationalDataAdapter from 'commons/adapters/RelationalDataAdapter';
-
 // this is a big integration, won't be run on smoke test
 describe('mariadb', () => {
   const adapter = new RelationalDataAdapter('mariadb://root:password@localhost:33061');

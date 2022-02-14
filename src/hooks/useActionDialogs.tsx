@@ -1,8 +1,6 @@
-import { useQuery } from 'react-query';
-import { useQueryClient } from 'react-query';
+import { useQuery, useQueryClient } from 'react-query';
 import React from 'react';
-import { ChoiceInput } from 'src/components/ActionDialogs/ChoiceDialog';
-import { ChoiceOption } from 'src/components/ActionDialogs/ChoiceDialog';
+import { ChoiceInput, ChoiceOption } from 'src/components/ActionDialogs/ChoiceDialog';
 import { ModalInput } from 'src/components/ActionDialogs/ModalDialog';
 import { PromptInput } from 'src/components/ActionDialogs/PromptDialog';
 

@@ -1,5 +1,4 @@
 import RelationalDataAdapter from 'commons/adapters/RelationalDataAdapter';
-
 // this is a big integration, won't be run on smoke test
 describe('mssql', () => {
   const adapter = new RelationalDataAdapter('mssql://sa:password123!@localhost:1433');

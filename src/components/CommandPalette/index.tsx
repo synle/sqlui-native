@@ -1,14 +1,10 @@
 import TextField from '@mui/material/TextField';
 import fuzzysort from 'fuzzysort';
-import { useEffect } from 'react';
-import { useRef } from 'react';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { styled } from '@mui/system';
 import { Command as CoreCommand } from 'src/components/MissionControl';
-import { useGetConnectionById } from 'src/hooks/useConnection';
-import { useGetConnections } from 'src/hooks/useConnection';
-import { useActiveConnectionQuery } from 'src/hooks/useConnectionQuery';
-import { useConnectionQueries } from 'src/hooks/useConnectionQuery';
+import { useGetConnectionById, useGetConnections } from 'src/hooks/useConnection';
+import { useActiveConnectionQuery, useConnectionQueries } from 'src/hooks/useConnectionQuery';
 import { SqluiEnums } from 'typings';
 
 const StyledCommandPalette = styled('section')(({ theme }) => {

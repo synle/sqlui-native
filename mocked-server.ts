@@ -1,9 +1,10 @@
-import express from 'express';
 import bodyParser from 'body-parser';
+import express from 'express';
 import { setUpDataEndpoints } from './commons/Endpoints';
 import { SqluiCore } from './typings';
 
 const port = 3001;
+
 const app = express();
 
 app.use(bodyParser.urlencoded({ extended: false, limit: '50mb' })); // parse application/x-www-form-urlencoded
