@@ -136,3 +136,20 @@ $ConnectionTreeIndentSize: 7px;
     }
   }
 }
+
+.CodeEditorBox {
+  position: relative;
+
+  .CodeEditorBox__WordWrap {
+    position: absolute;
+    bottom: 5px;
+    display: none;
+    right: 20px;
+  }
+
+  &:hover {
+    .CodeEditorBox__WordWrap {
+      display: flex;
+    }
+  }
+}
