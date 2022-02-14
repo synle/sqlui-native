@@ -21,6 +21,16 @@ export function useUpdateConnections(connections?: SqluiCore.ConnectionProps[]) 
       connections = getUpdatedOrdersForList(connections, from, to);
       return dataApi.update(connections);
     },
+    {
+      onSuccess: (newConnections) => {
+        queryClient.invalidateQueries(QUERY_KEY_ALL_CONNECTIONS);
+
+        queryClient.setQueryData<SqluiCore.ConnectionProps[] | undefined>(
+          QUERY_KEY_ALL_CONNECTIONS,
+          newConnections
+        )
+      }
+    }
   );
 }
 
