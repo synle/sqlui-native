@@ -104,7 +104,7 @@
     "sequelize": "^6.15.1",
     "sql-formatter": "^4.0.2",
     "sqlite3": "^5.0.2",
-    "tedious": "^14.2.0"
+    "tedious": "^14.3.0"
   },
   "eslintConfig": {
     "extends": [
