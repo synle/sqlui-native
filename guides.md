@@ -9,14 +9,14 @@ Query Guides:
 ### Drop Database
 
 ```
-DROP DATABASE mysql
+DROP DATABASE database1
 ```
 
 
 ### Create Database
 
 ```
-CREATE DATABASE mysql
+CREATE DATABASE database1
 ```
 
 
@@ -162,14 +162,14 @@ ALTER TABLE
 ### Drop Database
 
 ```
-DROP DATABASE mariadb
+DROP DATABASE database1
 ```
 
 
 ### Create Database
 
 ```
-CREATE DATABASE mariadb
+CREATE DATABASE database1
 ```
 
 
@@ -315,14 +315,14 @@ ALTER TABLE
 ### Drop Database
 
 ```
-DROP DATABASE mssql
+DROP DATABASE database1
 ```
 
 
 ### Create Database
 
 ```
-CREATE DATABASE mssql
+CREATE DATABASE database1
 ```
 
 
@@ -462,14 +462,14 @@ ALTER TABLE
 ### Drop Database
 
 ```
-DROP DATABASE postgres
+DROP DATABASE database1
 ```
 
 
 ### Create Database
 
 ```
-CREATE DATABASE postgres
+CREATE DATABASE database1
 ```
 
 
@@ -615,14 +615,14 @@ ALTER TABLE
 ### Drop Database
 
 ```
-DROP DATABASE sqlite
+DROP DATABASE database1
 ```
 
 
 ### Create Database
 
 ```
-CREATE DATABASE sqlite
+CREATE DATABASE database1
 ```
 
 
