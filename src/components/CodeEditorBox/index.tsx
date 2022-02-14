@@ -14,6 +14,7 @@ type CodeEditorProps = {
   mode: 'textarea' | 'code';
   autoFocus?: boolean;
   required?: boolean;
+  wordWrap?: boolean;
 };
 
 export default function CodeEditorBox(props: CodeEditorProps) {
@@ -38,7 +39,7 @@ export default function CodeEditorBox(props: CodeEditorProps) {
     </div>
   );
 
-  useEffect(() => setWordWrap(globalWordWrap), [globalWordWrap]);
+  useEffect(() => setWordWrap(!!props.wordWrap || globalWordWrap), [globalWordWrap]);
 
   if (editorModeToUse === 'simple') {
     return (
