@@ -12,8 +12,8 @@ try {
   };
 
   if (window.process.env.ENV_TYPE !== 'mocked-server') {
-    const ipcRenderer = window.require('electron').ipcRenderer;
-    const shell = window.require('electron').shell;
+    const ipcRenderer = window.requireElectron('electron').ipcRenderer;
+    const shell = window.requireElectron('electron').shell;
     window.ipcRenderer = ipcRenderer;
     window.isElectron = true;
     window.toggleElectronMenu = (visible, menus) => {
