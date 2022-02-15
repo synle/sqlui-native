@@ -16,7 +16,7 @@ type TabsProps = {
   tabKeys?: string[];
   tabContents: React.ReactNode[];
   orientation?: 'vertical' | 'horizontal';
-  onTabOrdering?: (fromIdx: number, toIdx: number) => void;
+  onOrderChange?: (fromIdx: number, toIdx: number) => void;
 };
 
 // these are drag and drop index
@@ -52,8 +52,6 @@ export default function MyTabs(props: TabsProps) {
     toIdx = undefined;
   };
 
-  const onDragLeave = (e: React.DragEvent) => {};
-
   const onDragOver = (e: React.DragEvent) => {
     e.preventDefault();
   };
@@ -63,8 +61,8 @@ export default function MyTabs(props: TabsProps) {
     //@ts-ignore
     toIdx = [...element.parentNode.children].indexOf(element);
 
-    if (props.onTabOrdering && fromIdx !== undefined && toIdx !== undefined) {
-      props.onTabOrdering(fromIdx, toIdx);
+    if (props.onOrderChange && fromIdx !== undefined && toIdx !== undefined) {
+      props.onOrderChange(fromIdx, toIdx);
     }
   };
 
@@ -84,11 +82,10 @@ export default function MyTabs(props: TabsProps) {
         className='Tab__Headers'>
         {tabHeaders.map((tabHeader, idx) => {
           let dragAndDropProps: any = {};
-          if (props.onTabOrdering) {
+          if (props.onOrderChange) {
             dragAndDropProps = {
               draggable: idx < tabContents.length,
               onDragStart,
-              onDragLeave,
               onDragOver,
               onDrop,
             };

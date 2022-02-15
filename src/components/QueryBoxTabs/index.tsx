@@ -151,6 +151,6 @@ export default function QueryBoxTabs() {
           onAddQuery();
         }
       }}
-      onTabOrdering={onChangeQueryTabOrdering}></Tabs>
+      onOrderChange={onChangeQueryTabOrdering}></Tabs>
   );
 }

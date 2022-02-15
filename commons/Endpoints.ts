@@ -92,6 +92,15 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     res.status(200).json(connections);
   });
 
+  addDataEndpoint('post', '/api/connections', async (req, res, apiCache) => {
+    const connections = await new PersistentStorage<SqluiCore.ConnectionProps>(
+      req.headers['sqlui-native-session-id'],
+      'connection',
+    ).set(req.body);
+
+    res.status(200).json(connections);
+  });
+
   addDataEndpoint('get', '/api/connection/:connectionId', async (req, res, apiCache) => {
     const connection = await new PersistentStorage<SqluiCore.ConnectionProps>(
       req.headers['sqlui-native-session-id'],
