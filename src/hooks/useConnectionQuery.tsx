@@ -4,7 +4,7 @@ import { SessionStorageConfig } from 'src/data/config';
 import { getGeneratedRandomId, getUpdatedOrdersForList } from 'src/utils/commonUtils';
 import { SqluiFrontend } from 'typings';
 
-const QUERY_KEY_QUERIES = 'qk.queries';
+const QUERY_KEY_QUERIES = 'queries';
 
 // connection queries
 let _connectionQueries: SqluiFrontend.ConnectionQuery[];

@@ -3,7 +3,7 @@ import { QueryClient, useQuery, useQueryClient } from 'react-query';
 import { LocalStorageConfig } from 'src/data/config';
 import { SqluiFrontend } from 'typings';
 
-const QUERY_KEY_SETTINGS = 'qk.settings';
+const QUERY_KEY_SETTINGS = 'settings';
 
 // Settings
 let _settings = LocalStorageConfig.get<SqluiFrontend.Settings>('clientConfig/cache.settings', {});

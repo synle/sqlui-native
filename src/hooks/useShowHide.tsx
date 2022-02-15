@@ -2,7 +2,7 @@ import { QueryClient, useQuery, useQueryClient } from 'react-query';
 import { SessionStorageConfig } from 'src/data/config';
 import { SqluiFrontend } from 'typings';
 
-const QUERY_KEY_TREEVISIBLES = 'qk.treeVisibles';
+const QUERY_KEY_TREEVISIBLES = 'treeVisibles';
 // used for show and hide the sidebar trees
 let _treeVisibles = SessionStorageConfig.get<SqluiFrontend.TreeVisibilities>(
   'clientConfig/cache.treeVisibles',
