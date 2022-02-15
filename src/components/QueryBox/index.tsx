@@ -117,7 +117,7 @@ export default function QueryBox(props: QueryBoxProps) {
         break;
       case 'mongodb':
       case 'redis':
-        language = 'js';
+        language = 'javascript';
         break;
     }
   }
