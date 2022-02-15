@@ -106,6 +106,13 @@ export class ProxyApi {
     });
   }
 
+  static update(connections: SqluiCore.ConnectionProps[]) {
+    return _fetch<SqluiCore.ConnectionProps[]>(`/api/connections`, {
+      method: 'post',
+      body: JSON.stringify(connections),
+    });
+  }
+
   // queries endpoints
   static getQueries() {
     return _fetch<SqluiCore.ConnectionQuery[]>(`/api/queries`);
