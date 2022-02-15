@@ -194,8 +194,3 @@ Self hosted runners
 ```
 Set-ExecutionPolicy RemoteSigned
 ```
-
-### Setting up new vscode binary
-```
-cp -R node_modules/monaco-editor/min/vs ./public
-```
