@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { formatDuration } from 'src/utils/formatter';
 
 type TimerProps = {
   startTime?: number;
@@ -32,13 +33,5 @@ export default function _Timer(props: TimerProps) {
     return null;
   }
 
-  const duration = Math.floor((endTime - startTime) / 1000);
-
-  let formattedDuration;
-  if (duration <= 1) {
-    formattedDuration = '<= 1 second';
-  } else {
-    formattedDuration = Math.floor((endTime - startTime) / 1000) + ' seconds';
-  }
-  return <>{formattedDuration}</>;
+  return <>{formatDuration(endTime - startTime)}</>;
 }

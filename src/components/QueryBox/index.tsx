@@ -103,7 +103,7 @@ export default function QueryBox(props: QueryBoxProps) {
     await addToast({
       message: `Query "${query.name}" executed ${
         success ? 'Successfully' : 'Unsuccessfully'
-      } and took about ${formatDuration(executionEnd - executionStart)} second(s)...`,
+      } and took about ${formatDuration(executionEnd - executionStart)}...`,
     });
   };
 
