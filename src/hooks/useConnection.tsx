@@ -1,7 +1,7 @@
 import { QueryClient, useMutation, useQuery, useQueryClient } from 'react-query';
 import dataApi from 'src/data/api';
+import { getUpdatedOrdersForList } from 'src/utils/commonUtils';
 import { SqluiCore, SqluiFrontend } from 'typings';
-import { getGeneratedRandomId, getUpdatedOrdersForList } from 'src/utils/commonUtils';
 
 const QUERY_KEY_ALL_CONNECTIONS = 'connections';
 
@@ -13,24 +13,22 @@ export function useGetConnections() {
   });
 }
 
-export function useUpdateConnections(connections?: SqluiCore.ConnectionProps[])  {
+export function useUpdateConnections(connections?: SqluiCore.ConnectionProps[]) {
   const queryClient = useQueryClient();
-  return useMutation<SqluiCore.ConnectionProps[] | undefined, void, number[]>(
-    ([from, to]) => {
-      if(connections){
-        connections = getUpdatedOrdersForList(connections, from, to);
+  return useMutation<SqluiCore.ConnectionProps[] | undefined, void, number[]>(([from, to]) => {
+    if (connections) {
+      connections = getUpdatedOrdersForList(connections, from, to);
 
-        queryClient.setQueryData<SqluiCore.ConnectionProps[] | undefined>(
-          QUERY_KEY_ALL_CONNECTIONS,
-          connections
-        )
+      queryClient.setQueryData<SqluiCore.ConnectionProps[] | undefined>(
+        QUERY_KEY_ALL_CONNECTIONS,
+        connections,
+      );
 
-        return dataApi.update(connections);
-      }
-
-      return Promise.reject();
+      return dataApi.update(connections);
     }
-  );
+
+    return Promise.reject();
+  });
 }
 
 export function useGetConnectionById(connectionId?: string) {
