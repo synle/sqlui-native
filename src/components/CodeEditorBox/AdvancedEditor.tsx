@@ -24,6 +24,7 @@ const DEFAULT_OPTIONS = {
   // lineNumbers: 'off',
   glyphMargin: false,
   folding: false,
+  automaticLayout: true,
   minimap: {
     enabled: false,
   },
@@ -37,15 +38,13 @@ export default function AdvancedEditor(props: AdvancedEditorProps) {
     editor?.dispose();
 
     if (monacoEl.current) {
-      const newEditor = monaco.editor.create(monacoEl.current!, {
+      //@ts-ignore
+      const newEditor = window.monaco.editor.create(monacoEl.current!, {
         value: props.value,
         language: props.language,
-        automaticLayout: true,
-        minimap: {
-          enabled: false,
-        },
         theme: colorMode === 'dark' ? 'vs-dark' : 'light',
         wordWrap: props.wordWrap === true ? 'on' : 'off',
+        ...DEFAULT_OPTIONS,
       });
 
       newEditor.onDidBlurEditorWidget(() => {
@@ -73,7 +72,7 @@ export default function AdvancedEditor(props: AdvancedEditorProps) {
 
   // here we will initiate the editor
   // and can be also be used to update the settings
-  useEffect(onSetupMonacoEditor, [monacoEl, props.wordWrap, colorMode]);
+  useEffect(onSetupMonacoEditor, [monacoEl, props.wordWrap, props.language, colorMode]);
 
   return <AdvancedEditorContainer ref={monacoEl}></AdvancedEditorContainer>;
 }
