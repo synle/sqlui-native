@@ -132,13 +132,13 @@ export module SqluiFrontend {
   export type SettingKey = keyof Settings;
 
   export type QueryKey =
-    | 'qk.actionDialogs'
-    | 'qk.missionControlCommand'
-    | 'qk.connections'
-    | 'qk.treeVisibles'
-    | 'qk.queries'
-    | 'qk.results'
-    | 'qk.settings';
+    | 'actionDialogs'
+    | 'missionControlCommand'
+    | 'connections'
+    | 'treeVisibles'
+    | 'queries'
+    | 'results'
+    | 'settings';
 }
 
 export module SqlAction {

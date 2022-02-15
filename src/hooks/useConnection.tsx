@@ -3,7 +3,7 @@ import dataApi from 'src/data/api';
 import { getUpdatedOrdersForList } from 'src/utils/commonUtils';
 import { SqluiCore, SqluiFrontend } from 'typings';
 
-const QUERY_KEY_ALL_CONNECTIONS = 'qk.connections';
+const QUERY_KEY_ALL_CONNECTIONS = 'connections';
 
 const DEFAULT_STALE_TIME = 30000;
 
@@ -15,27 +15,25 @@ export function useGetConnections() {
 
 export function useUpdateConnections(connections?: SqluiCore.ConnectionProps[]) {
   const queryClient = useQueryClient();
-  return useMutation<SqluiCore.ConnectionProps[], void, number[]>(
-    ([from, to]) => {
-      connections = connections || [];
+  return useMutation<SqluiCore.ConnectionProps[] | undefined, void, number[]>(([from, to]) => {
+    if (connections) {
       connections = getUpdatedOrdersForList(connections, from, to);
+
+      queryClient.setQueryData<SqluiCore.ConnectionProps[] | undefined>(
+        QUERY_KEY_ALL_CONNECTIONS,
+        connections,
+      );
+
       return dataApi.update(connections);
-    },
-    {
-      onSuccess: (newConnections) => {
-        // queryClient.invalidateQueries(QUERY_KEY_ALL_CONNECTIONS);
-        queryClient.setQueryData<SqluiCore.ConnectionProps[] | undefined>(
-          QUERY_KEY_ALL_CONNECTIONS,
-          newConnections,
-        );
-      },
-    },
-  );
+    }
+
+    return Promise.reject();
+  });
 }
 
 export function useGetConnectionById(connectionId?: string) {
   return useQuery(
-    [connectionId, 'Definition'],
+    [connectionId],
     () => (!connectionId ? undefined : dataApi.getConnection(connectionId)),
     {
       enabled: !!connectionId,

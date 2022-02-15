@@ -3,7 +3,7 @@ import dataApi from 'src/data/api';
 import { getCurrentSessionId } from 'src/data/session';
 import { SqluiCore } from 'typings';
 
-const QUERY_KEY_SESSIONS = 'qk.sessions';
+const QUERY_KEY_SESSIONS = 'sessions';
 
 // for sessions
 export function useGetSessions() {
