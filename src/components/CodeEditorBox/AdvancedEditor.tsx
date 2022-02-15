@@ -44,7 +44,7 @@ export default function AdvancedEditor(props: AdvancedEditorProps) {
         language: props.language,
         theme: colorMode === 'dark' ? 'vs-dark' : 'light',
         wordWrap: props.wordWrap === true ? 'on' : 'off',
-        ...DEFAULT_OPTIONS
+        ...DEFAULT_OPTIONS,
       });
 
       newEditor.onDidBlurEditorWidget(() => {

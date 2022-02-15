@@ -14,13 +14,15 @@
       content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'" /> -->
     <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo512.png" />
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
-    <script>var require = { paths: { 'vs': '%PUBLIC_URL%/vs' } }</script>
+    <script>
+      var require = { paths: { vs: '%PUBLIC_URL%/vs' } };
+    </script>
     <script src="%PUBLIC_URL%/vs/loader.js"></script>
     <script src="%PUBLIC_URL%/vs/editor/editor.main.nls.js"></script>
     <script src="%PUBLIC_URL%/vs/editor/editor.main.js"></script>
     <title>Loading...</title>
   </head>
   <body>
-    <div id='body'></div>
+    <div id="body"></div>
   </body>
 </html>
