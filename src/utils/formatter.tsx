@@ -12,7 +12,7 @@ export const formatJS = (val: string) =>
 
 export const formatDuration = (durationMs: number) => {
   const durationS = Math.floor(durationMs / 1000);
-  if (durationS > 1) return durationS;
+  if (durationS > 1) return `${durationS} seconds`;
 
-  return '<= 1';
+  return '<= 1 second';
 };
