@@ -23,8 +23,8 @@
         const vsCodeLoader = '%PUBLIC_URL%/vs/loader.js';
         let amdRequire;
         let amdDefine;
-        new Promise(resolve => {
-          try{
+        new Promise((resolve) => {
+          try {
             // option 1: initiate monaco editor for electron version
             window.requireElectron = window.require; // keep an existing copy of electron require
 
@@ -42,26 +42,26 @@
             }
 
             amdRequire.config({
-              baseUrl: _uriFromPath(path.join(__dirname, '%PUBLIC_URL%'))
+              baseUrl: _uriFromPath(path.join(__dirname, '%PUBLIC_URL%')),
             });
 
-            self.module = undefined;// workaround monaco-css not understanding the environment
+            self.module = undefined; // workaround monaco-css not understanding the environment
 
             resolve();
-          } catch(err){
+          } catch (err) {
             // option 2: initiate monaco editor for the mocked web server
             function _loadjs(file, cb) {
-              var script = document.createElement("script");
-              script.type = "text/javascript";
+              var script = document.createElement('script');
+              script.type = 'text/javascript';
               script.src = file;
               script.onload = cb;
               document.body.appendChild(script);
-           }
+            }
 
-           _loadjs(vsCodeLoader, () => {
+            _loadjs(vsCodeLoader, () => {
               amdRequire = window.require;
               resolve();
-           });
+            });
           }
         }).then(() => {
           amdRequire(['vs/editor/editor.main'], function () {
