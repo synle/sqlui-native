@@ -38,7 +38,7 @@
   },
   "main": "main.js",
   "scripts": {
-    "clean": "rimraf .cache .parcel-cache dist build mocked-db.sqlite && cpx package.json src",
+    "clean": "rimraf .cache .parcel-cache dist build mocked-db.sqlite public/vs && cpx package.json src && cpx \"node_modules/monaco-editor/min/vs/**/*.{css,js}\"  ./public/vs",
     "cleanSnapshot": "rm -rf __tests__/__snapshots__/ && npm run test-ci",
     "prestart": "npm run clean && npm run build",
     "prebuild": "npm run clean",
