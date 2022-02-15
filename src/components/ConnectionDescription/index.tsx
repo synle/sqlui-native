@@ -14,7 +14,7 @@ export default function ConnectionDescription() {
   const { data: connections, isLoading } = useGetConnections();
   const { visibles, onToggle } = useShowHide();
   const { query: activeQuery } = useActiveConnectionQuery();
-  const {mutateAsync: updateConnections} = useUpdateConnections(connections);
+  const { mutateAsync: updateConnections } = useUpdateConnections(connections);
 
   if (isLoading) {
     return (
@@ -28,9 +28,9 @@ export default function ConnectionDescription() {
     return <Alert severity='info'>No connnections</Alert>;
   }
 
-  const onConnectionOrderChange =  (fromIdx: number, toIdx: number)  => {
-    updateConnections([fromIdx, toIdx])
-  }
+  const onConnectionOrderChange = (fromIdx: number, toIdx: number) => {
+    updateConnections([fromIdx, toIdx]);
+  };
 
   return (
     <>

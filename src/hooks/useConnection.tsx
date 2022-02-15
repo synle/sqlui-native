@@ -1,7 +1,7 @@
 import { QueryClient, useMutation, useQuery, useQueryClient } from 'react-query';
 import dataApi from 'src/data/api';
+import { getUpdatedOrdersForList } from 'src/utils/commonUtils';
 import { SqluiCore, SqluiFrontend } from 'typings';
-import { getGeneratedRandomId, getUpdatedOrdersForList } from 'src/utils/commonUtils';
 
 const QUERY_KEY_ALL_CONNECTIONS = 'qk.connections';
 
@@ -13,11 +13,11 @@ export function useGetConnections() {
   });
 }
 
-export function useUpdateConnections(connections?: SqluiCore.ConnectionProps[])  {
+export function useUpdateConnections(connections?: SqluiCore.ConnectionProps[]) {
   const queryClient = useQueryClient();
   return useMutation<SqluiCore.ConnectionProps[], void, number[]>(
     ([from, to]) => {
-      connections= connections|| [];
+      connections = connections || [];
       connections = getUpdatedOrdersForList(connections, from, to);
       return dataApi.update(connections);
     },
@@ -26,10 +26,10 @@ export function useUpdateConnections(connections?: SqluiCore.ConnectionProps[]) 
         // queryClient.invalidateQueries(QUERY_KEY_ALL_CONNECTIONS);
         queryClient.setQueryData<SqluiCore.ConnectionProps[] | undefined>(
           QUERY_KEY_ALL_CONNECTIONS,
-          newConnections
-        )
-      }
-    }
+          newConnections,
+        );
+      },
+    },
   );
 }
 

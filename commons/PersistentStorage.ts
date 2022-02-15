@@ -88,10 +88,10 @@ export class PersistentStorage<T extends StorageEntry> {
   }
 
   set(entries: T[]): T[] {
-    const caches : StorageContent= {};
+    const caches: StorageContent = {};
 
-    for(const entry of entries){
-      caches[entry.id] = entry
+    for (const entry of entries) {
+      caches[entry.id] = entry;
     }
 
     this.setData(caches);
