@@ -21,8 +21,6 @@ import './App.scss';
 import 'src/electronRenderer';
 import dataApi from 'src/data/api';
 
-let curToast: ToasterHandler | undefined;
-
 export default function App() {
   const [hasValidSessionId, setHasValidSessionId] = useState(false);
   const { data: sessions, isLoading: loadingSessions } = useGetSessions();
