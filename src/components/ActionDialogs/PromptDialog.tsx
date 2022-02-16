@@ -75,6 +75,7 @@ export default function PromptDialog(props: PromptDialogProps) {
               autoFocus={true}
               required={props.required}
               mode='textarea'
+              wordWrap={true}
             />
           ) : (
             <TextField
