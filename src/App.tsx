@@ -85,13 +85,8 @@ export default function App() {
       //@ts-ignore
       const fs = window.requireElectron('fs');
 
-      fs.readFile(files[0].path, {encoding: 'utf-8'}, function(err: any,data: any) {
-       if (!err) {
-            console.log('received data: ', data);
-       } else {
-            console.log('err', err);
-        }
-     });
+      const data = fs.readFileSync(files[0].path, {encoding: 'utf-8'});
+      console.log('received data: ', data);
 
       //path
       console.log('onDrop', e, files)
