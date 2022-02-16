@@ -47,6 +47,12 @@ export default function QueryBoxTabs() {
   const onChangeQueryTabOrdering = async (from: number, to: number) =>
     selectCommand({ event: 'clientEvent/query/changeTabOrdering', data: { from, to } });
 
+  const onMiddleMouseClicked= (idx: number) => {
+    if(queries && queries[idx]){
+      onCloseQuery(queries[idx]);
+    }
+  };
+
   // add a dummy query to start
   useEffect(() => {
     if (!init && !isLoading) {
@@ -151,6 +157,7 @@ export default function QueryBoxTabs() {
           onAddQuery();
         }
       }}
-      onOrderChange={onChangeQueryTabOrdering}></Tabs>
+      onOrderChange={onChangeQueryTabOrdering}
+      onMiddleMouseClicked={(idx) => onMiddleMouseClicked(idx)}></Tabs>
   );
 }
