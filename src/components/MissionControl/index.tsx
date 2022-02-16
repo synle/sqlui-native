@@ -517,7 +517,7 @@ export default function MissionControl() {
       await modal({
         title: 'Command Palette',
         message: <CommandPalette onSelectCommand={onSelectCommand} />,
-        size: 'sm'
+        size: 'sm',
       });
     } catch (err) {}
   };
@@ -578,10 +578,10 @@ export default function MissionControl() {
               synle.github.io/sqlui-native
             </Link>
           </Typography>
-          </>
+        </>
       ),
       showCloseButton: true,
-      size: 'sm'
+      size: 'sm',
     });
   };
 
@@ -590,7 +590,7 @@ export default function MissionControl() {
       title: 'Settings',
       message: <Settings />,
       showCloseButton: true,
-      size: 'xs'
+      size: 'xs',
     });
   };
 

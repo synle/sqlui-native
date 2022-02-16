@@ -13,7 +13,7 @@ export type ModalInput = {
    */
   message: React.ReactNode;
   showCloseButton?: boolean;
-  size: 'xs'| 'sm' | 'md' | 'lg';
+  size: 'xs' | 'sm' | 'md' | 'lg';
 };
 
 type ModalProps = ModalInput & {
