@@ -3,7 +3,7 @@ import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { HashRouter, Route, Routes } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useEffect, useState , useRef} from 'react';
 import ActionDialogs from 'src/components/ActionDialogs';
 import AppHeader from 'src/components/AppHeader';
 import ElectronEventListener from 'src/components/ElectronEventListener';
@@ -16,10 +16,12 @@ import EditConnectionPage from 'src/views/EditConnectionPage';
 import MainPage from 'src/views/MainPage';
 import NewConnectionPage from 'src/views/NewConnectionPage';
 import { useCommands } from 'src/components/MissionControl';
-import useToaster from 'src/hooks/useToaster';
+import useToaster, {ToasterHandler} from 'src/hooks/useToaster';
 import './App.scss';
 import 'src/electronRenderer';
 import dataApi from 'src/data/api';
+
+let curToast: ToasterHandler | undefined;
 
 export default function App() {
   const [hasValidSessionId, setHasValidSessionId] = useState(false);
@@ -29,6 +31,7 @@ export default function App() {
   const colorMode = useDarkModeSetting();
   const { selectCommand } = useCommands();
   const { add: addToast } = useToaster();
+  const toasterRef = useRef<ToasterHandler| undefined>();
 
   const myTheme = createTheme({
     // Theme settings
@@ -87,7 +90,9 @@ export default function App() {
     if(e.dataTransfer.items && e.dataTransfer.items.length === 1){
       e.preventDefault();
 
-      const curToast = await addToast({
+      await toasterRef.current?.dismiss();
+
+      toasterRef.current = await addToast({
         message: `Parsing the file for importing, please wait...`,
       });
 
@@ -98,14 +103,21 @@ export default function App() {
       const file = files[0];
       const data = await dataApi.readFileContent(file);
 
-      await curToast.dismiss();
+      await toasterRef.current?.dismiss();
+      toasterRef.current = undefined;
       selectCommand({ event: 'clientEvent/import', data })
     }
   }
 
-  const onDragOver = (e: React.DragEvent) => {
+  const onDragOver = async (e: React.DragEvent) => {
     if(e.dataTransfer.items && e.dataTransfer.items.length === 1){
       e.preventDefault();
+
+      if(!toasterRef.current){
+        toasterRef.current= await addToast({
+          message: `Drop the file here to upload and import it.`,
+        });
+      }
     }
   }
 
