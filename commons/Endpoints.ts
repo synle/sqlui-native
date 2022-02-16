@@ -357,6 +357,12 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
       );
   });
 
+
+  // strictly used for the mocked server to upload and read the content of the files
+  addDataEndpoint('post', '/api/files', async (req, res, apiCache) => {
+    res.status(200).send('ok');
+  });
+
   // debug endpoints
   addDataEndpoint('get', '/api/debug', async (req, res, apiCache) => {
     res.status(200).json(apiCache.json());

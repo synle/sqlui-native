@@ -15,6 +15,7 @@ import { useDarkModeSetting } from 'src/hooks/useSetting';
 import EditConnectionPage from 'src/views/EditConnectionPage';
 import MainPage from 'src/views/MainPage';
 import NewConnectionPage from 'src/views/NewConnectionPage';
+import { useCommands } from 'src/components/MissionControl';
 import './App.scss';
 import 'src/electronRenderer';
 
@@ -23,6 +24,7 @@ export default function App() {
   const { data: sessions, isLoading: loadingSessions } = useGetSessions();
   const { data: currentSession, isLoading: loadingCurrentSession } = useGetCurrentSession();
   const { mutateAsync: upsertSession } = useUpsertSession();
+  const { selectCommand } = useCommands();
   const colorMode = useDarkModeSetting();
 
   const myTheme = createTheme({
@@ -78,25 +80,24 @@ export default function App() {
     );
   }
 
-  const onDrop = (e: React.DragEvent) => {
-    if(e.dataTransfer.items && e.dataTransfer.items.length > 0){
+  const onDrop = async (e: React.DragEvent) => {
+    if(e.dataTransfer.items && e.dataTransfer.items.length === 1){
+      // TODO: right now only support one file for drop...
       const files = [...e.dataTransfer.items].map((item) => item.getAsFile()).filter(f => f) as File[];
 
       //@ts-ignore
       const fs = window.requireElectron('fs');
+      const file = files[0];
+      const data = fs.readFileSync(file.path, {encoding: 'utf-8'});
 
-      const data = fs.readFileSync(files[0].path, {encoding: 'utf-8'});
-      console.log('received data: ', data);
+      selectCommand({ event: 'clientEvent/import', data })
 
-      //path
-      console.log('onDrop', e, files)
       e.preventDefault();
     }
   }
 
   const onDragOver = (e: React.DragEvent) => {
-    if(e.dataTransfer.items && e.dataTransfer.items.length > 0){
-      console.log('onDragOver', e, e.dataTransfer.items)
+    if(e.dataTransfer.items && e.dataTransfer.items.length === 1){
       e.preventDefault();
     }
   }
