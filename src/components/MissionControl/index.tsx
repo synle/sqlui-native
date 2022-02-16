@@ -119,7 +119,7 @@ export default function MissionControl() {
 
   const onCloseQuery = async (query: SqluiFrontend.ConnectionQuery) => {
     try {
-      await confirm('Do you want to delete this query?');
+      await confirm(`Do you want to delete this query "${query.name}"?`);
 
       onDeleteQueries([query.id]);
     } catch (err) {}
@@ -127,7 +127,7 @@ export default function MissionControl() {
 
   const onCloseOtherQueries = async (query: SqluiFrontend.ConnectionQuery) => {
     try {
-      await confirm('Do you want to close other queries?');
+      await confirm(`Do you want to close other queries except "${query.name}"?`);
       onDeleteQueries(queries?.map((q) => q.id).filter((queryId) => queryId !== query.id));
     } catch (err) {}
   };
