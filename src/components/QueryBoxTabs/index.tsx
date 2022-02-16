@@ -47,8 +47,8 @@ export default function QueryBoxTabs() {
   const onChangeQueryTabOrdering = async (from: number, to: number) =>
     selectCommand({ event: 'clientEvent/query/changeTabOrdering', data: { from, to } });
 
-  const onMiddleMouseClicked= (idx: number) => {
-    if(queries && queries[idx]){
+  const onMiddleMouseClicked = (idx: number) => {
+    if (queries && queries[idx]) {
       onCloseQuery(queries[idx]);
     }
   };

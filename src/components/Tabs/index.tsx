@@ -68,16 +68,15 @@ export default function MyTabs(props: TabsProps) {
   };
 
   const onMouseDown = (idx: number) => (e: React.MouseEvent) => {
-
-    if(e.button === 1){
+    if (e.button === 1) {
       // middle mouse click
       e.preventDefault();
 
-      if(props.onMiddleMouseClicked){
+      if (props.onMiddleMouseClicked) {
         props.onMiddleMouseClicked(idx);
       }
     }
-  }
+  };
 
   if (!orientation) {
     orientation = tabHeaders.length > VERTICAL_TAB_THRESHOLD ? 'vertical' : 'horizontal';
