@@ -50,8 +50,10 @@ export default function PromptDialog(props: PromptDialogProps) {
     <Dialog
       onClose={() => handleClose(false)}
       aria-labelledby='prompt-dialog-title'
-      open={props.open}>
-      <form onSubmit={onSave} style={{ width: 600 }}>
+      open={props.open}
+      fullWidth={true}
+      maxWidth={props.isLongPrompt ? 'lg' : 'sm'}>
+      <form onSubmit={onSave}>
         <DialogTitle id='prompt-dialog-title'>
           {props.title || 'Prompt'}
           <IconButton
