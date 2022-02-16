@@ -78,6 +78,21 @@ export default function App() {
     );
   }
 
+  const onDrop = (e: React.DragEvent) => {
+    if(e.dataTransfer.items && e.dataTransfer.items.length > 0){
+      const items = [...e.dataTransfer.items].map((item) => item.getAsFile());
+      console.log('onDrop', e, items)
+      e.preventDefault();
+    }
+  }
+
+  const onDragOver = (e: React.DragEvent) => {
+    if(e.dataTransfer.items && e.dataTransfer.items.length > 0){
+      console.log('onDragOver', e, e.dataTransfer.items)
+      e.preventDefault();
+    }
+  }
+
   return (
     <ThemeProvider theme={myTheme}>
       <HashRouter>
@@ -86,7 +101,9 @@ export default function App() {
           sx={{
             bgcolor: 'background.default',
             color: 'text.primary',
-          }}>
+          }}
+          onDrop={onDrop}
+          onDragOver={onDragOver}>
           <AppHeader />
           <section className='App__Section'>
             <Routes>
