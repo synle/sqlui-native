@@ -80,8 +80,10 @@ export default function App() {
 
   const onDrop = (e: React.DragEvent) => {
     if(e.dataTransfer.items && e.dataTransfer.items.length > 0){
-      const items = [...e.dataTransfer.items].map((item) => item.getAsFile());
-      console.log('onDrop', e, items)
+      const files = [...e.dataTransfer.items].map((item) => item.getAsFile()).filter(f => f) as File[];
+
+      //path
+      console.log('onDrop', e, files)
       e.preventDefault();
     }
   }
