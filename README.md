@@ -62,6 +62,8 @@ Import and Export can be used to share connections across different machines and
 ]
 ```
 
+You can also drag and drop the file directly into sqlui-native application. At the moment, we only support drag and drop for a single file.
+
 ![demo-import-export](https://user-images.githubusercontent.com/3792401/151750721-9ea1ab38-e185-40dd-ba4d-71d28f3ae1d6.gif)
 
 ### Session Management

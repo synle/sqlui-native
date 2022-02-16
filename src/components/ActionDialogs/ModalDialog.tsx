@@ -13,6 +13,7 @@ export type ModalInput = {
    */
   message: React.ReactNode;
   showCloseButton?: boolean;
+  size: 'xs' | 'sm' | 'md' | 'lg';
 };
 
 type ModalProps = ModalInput & {
@@ -26,7 +27,9 @@ export default function Modal(props: ModalProps) {
       open={props.open}
       onClose={props.onDismiss}
       aria-labelledby='modal-dialog-title'
-      aria-describedby='modal-dialog-description'>
+      aria-describedby='modal-dialog-description'
+      fullWidth={true}
+      maxWidth={props.size}>
       <DialogTitle id='modal-dialog-title'>
         {props.title}
         {props.showCloseButton && (

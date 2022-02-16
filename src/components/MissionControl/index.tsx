@@ -515,8 +515,9 @@ export default function MissionControl() {
         _executeCommandPalette(command);
       };
       await modal({
-        title: 'Control Palette',
+        title: 'Command Palette',
         message: <CommandPalette onSelectCommand={onSelectCommand} />,
+        size: 'sm',
       });
     } catch (err) {}
   };
@@ -570,16 +571,17 @@ export default function MissionControl() {
     await modal({
       title: 'Check for update',
       message: (
-        <div style={{ width: '250px' }}>
+        <>
           {contentDom}
           <Typography gutterBottom={true} sx={{ mt: 3 }}>
             <Link onClick={onGoToHomepage} sx={{ cursor: 'pointer' }}>
               synle.github.io/sqlui-native
             </Link>
           </Typography>
-        </div>
+        </>
       ),
       showCloseButton: true,
+      size: 'sm',
     });
   };
 
@@ -588,6 +590,7 @@ export default function MissionControl() {
       title: 'Settings',
       message: <Settings />,
       showCloseButton: true,
+      size: 'xs',
     });
   };
 
