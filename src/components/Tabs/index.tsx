@@ -16,6 +16,7 @@ type TabsProps = {
   tabKeys?: string[];
   tabContents: React.ReactNode[];
   orientation?: 'vertical' | 'horizontal';
+  onMiddleMouseClicked?: (idx: number) => void;
   onOrderChange?: (fromIdx: number, toIdx: number) => void;
 };
 
@@ -66,6 +67,18 @@ export default function MyTabs(props: TabsProps) {
     }
   };
 
+  const onMouseDown = (idx: number) => (e: React.MouseEvent) => {
+
+    if(e.button === 1){
+      // middle mouse click
+      e.preventDefault();
+
+      if(props.onMiddleMouseClicked){
+        props.onMiddleMouseClicked(idx);
+      }
+    }
+  }
+
   if (!orientation) {
     orientation = tabHeaders.length > VERTICAL_TAB_THRESHOLD ? 'vertical' : 'horizontal';
   }
@@ -96,6 +109,7 @@ export default function MyTabs(props: TabsProps) {
               key={tabKeys[idx] || idx}
               label={<div className='Tab__Header'>{tabHeader}</div>}
               onContextMenu={onShowActions}
+              onMouseDown={onMouseDown(idx)}
               {...dragAndDropProps}></Tab>
           );
         })}
