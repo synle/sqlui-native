@@ -52,4 +52,40 @@ export default abstract class BaseDataAdapter {
     // not supported
     return undefined;
   }
+
+
+  static resolveTypes(inputItem: any) {
+    const stack: {
+      item: any,
+      path: string[],
+    }[] = [{ item: inputItem, path: [] }];
+
+    const columnsMap: Record<string, SqluiCore.ColumnMetaData> = {};
+
+    while (stack.length > 0) {
+      //@ts-ignore
+      const { item, path } = stack.pop();
+
+      const type = typeof item;
+
+      console.log(type, item, Array.isArray(item))
+
+      if (type === 'object' && !Array.isArray(item)) {
+        for (const key of Object.keys(item)) {
+          stack.push({
+            item: item[key],
+            path: [...path, key]
+          })
+        }
+      } else {
+        const key = path.join('.')
+        columnsMap[key] = columnsMap[key] || {
+          name: key,
+          type: Array.isArray(item) ? 'array' : type,
+        };
+      }
+    }
+
+    return columnsMap
+  }
 }
