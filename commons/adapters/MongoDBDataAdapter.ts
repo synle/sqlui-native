@@ -1,8 +1,8 @@
 import { MongoClient } from 'mongodb';
-import { SqluiCore } from '../../typings';
-import IDataAdapter from './IDataAdapter';
-import BaseDataAdapter, { MAX_CONNECTION_TIMEOUT } from './BaseDataAdapter';
 import { MONGO_ADAPTER_PREFIX } from '../../src/scripts/mongodb';
+import { SqluiCore } from '../../typings';
+import BaseDataAdapter, { MAX_CONNECTION_TIMEOUT } from './BaseDataAdapter';
+import IDataAdapter from './IDataAdapter';
 
 export default class MongoDBDataAdapter extends BaseDataAdapter implements IDataAdapter {
   dialect: SqluiCore.Dialect = 'mongodb';
@@ -98,31 +98,10 @@ export default class MongoDBDataAdapter extends BaseDataAdapter implements IData
           //@ts-ignore
           const items = await client.db(database).collection(table).find().limit(5).toArray();
 
-          const columnsMap: Record<string, SqluiCore.ColumnMetaData> = {};
+          let columnsMap: Record<string, SqluiCore.ColumnMetaData> = {};
+
           for (const item of items) {
-            for (const key1 of Object.keys(item)) {
-              let type1 = typeof item[key1];
-
-              if (type1 === 'object' && key1 !== '_id') {
-                // let's get to the second layer
-                // TODO: ideally, we should do a DFS here and get all of the children
-                for (const key2 of Object.keys(item[key1])) {
-                  let type2 = typeof item[key1][key2];
-
-                  const key = [key1, key2].join('.');
-
-                  columnsMap[key] = columnsMap[key1] || {
-                    name: key,
-                    type: type2,
-                  };
-                }
-              } else {
-                columnsMap[key1] = columnsMap[key1] || {
-                  name: key1,
-                  type: type1,
-                };
-              }
-            }
+            columnsMap = BaseDataAdapter.resolveTypes(item);
           }
           resolve(
             Object.values(columnsMap).sort((a, b) => (a.name || '').localeCompare(b.name || '')),
