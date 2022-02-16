@@ -15,7 +15,7 @@ type ToasterProps = CoreToasterProps & {
   id: string;
 };
 
-type ToasterHandler = {
+export type ToasterHandler = {
   dismiss: (dismissDelay?: number) => void;
 };
 

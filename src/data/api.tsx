@@ -164,6 +164,20 @@ export class ProxyApi {
       method: 'delete',
     }).then(() => sessionId);
   }
+  static readFileContent(file: File): Promise<string> {
+    try {
+      //@ts-ignore
+      const fs = window.requireElectron('fs');
+      return fs.readFileSync(file.path, { encoding: 'utf-8' });
+    } catch (err) {
+      const form = new FormData();
+      form.append('file', file);
+      return fetch('/api/file', {
+        method: 'POST',
+        body: form,
+      }).then((r) => r.text());
+    }
+  }
 }
 
 // selectively pick up which api to use...

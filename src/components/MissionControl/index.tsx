@@ -449,13 +449,13 @@ export default function MissionControl() {
     });
   };
 
-  const onImport = async () => {
+  const onImport = async (value = '') => {
     try {
       const rawJson = await prompt({
         title: 'Import Connections / Queries',
         message: 'Import',
         saveLabel: 'Import',
-        value: '',
+        value: value,
         required: true,
         isLongPrompt: true,
       });
@@ -655,7 +655,7 @@ export default function MissionControl() {
         case 'clientEvent/import':
           try {
             window.toggleElectronMenu(false, allMenuKeys);
-            await onImport();
+            await onImport(command.data as string);
           } catch (err) {}
 
           //@ts-ignore
