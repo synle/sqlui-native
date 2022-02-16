@@ -3,23 +3,22 @@ import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { HashRouter, Route, Routes } from 'react-router-dom';
-import { useEffect, useState , useRef} from 'react';
+import { useEffect, useRef, useState } from 'react';
 import ActionDialogs from 'src/components/ActionDialogs';
 import AppHeader from 'src/components/AppHeader';
 import ElectronEventListener from 'src/components/ElectronEventListener';
-import MissionControl from 'src/components/MissionControl';
+import MissionControl, { useCommands } from 'src/components/MissionControl';
 import Toasters from 'src/components/Toasters';
+import dataApi from 'src/data/api';
 import { getDefaultSessionId, setCurrentSessionId } from 'src/data/session';
 import { useGetCurrentSession, useGetSessions, useUpsertSession } from 'src/hooks/useSession';
 import { useDarkModeSetting } from 'src/hooks/useSetting';
+import useToaster, { ToasterHandler } from 'src/hooks/useToaster';
 import EditConnectionPage from 'src/views/EditConnectionPage';
 import MainPage from 'src/views/MainPage';
 import NewConnectionPage from 'src/views/NewConnectionPage';
-import { useCommands } from 'src/components/MissionControl';
-import useToaster, {ToasterHandler} from 'src/hooks/useToaster';
 import './App.scss';
 import 'src/electronRenderer';
-import dataApi from 'src/data/api';
 
 export default function App() {
   const [hasValidSessionId, setHasValidSessionId] = useState(false);
@@ -29,7 +28,7 @@ export default function App() {
   const colorMode = useDarkModeSetting();
   const { selectCommand } = useCommands();
   const { add: addToast } = useToaster();
-  const toasterRef = useRef<ToasterHandler| undefined>();
+  const toasterRef = useRef<ToasterHandler | undefined>();
 
   const myTheme = createTheme({
     // Theme settings
@@ -85,7 +84,7 @@ export default function App() {
   }
 
   const onDrop = async (e: React.DragEvent) => {
-    if(e.dataTransfer.items && e.dataTransfer.items.length === 1){
+    if (e.dataTransfer.items && e.dataTransfer.items.length === 1) {
       e.preventDefault();
 
       await toasterRef.current?.dismiss();
@@ -95,7 +94,9 @@ export default function App() {
       });
 
       // TODO: right now only support one file for drop...
-      const files = [...e.dataTransfer.items].map((item) => item.getAsFile()).filter(f => f) as File[];
+      const files = [...e.dataTransfer.items]
+        .map((item) => item.getAsFile())
+        .filter((f) => f) as File[];
 
       //@ts-ignore
       const file = files[0];
@@ -103,21 +104,21 @@ export default function App() {
 
       await toasterRef.current?.dismiss();
       toasterRef.current = undefined;
-      selectCommand({ event: 'clientEvent/import', data })
+      selectCommand({ event: 'clientEvent/import', data });
     }
-  }
+  };
 
   const onDragOver = async (e: React.DragEvent) => {
-    if(e.dataTransfer.items && e.dataTransfer.items.length === 1){
+    if (e.dataTransfer.items && e.dataTransfer.items.length === 1) {
       e.preventDefault();
 
-      if(!toasterRef.current){
-        toasterRef.current= await addToast({
+      if (!toasterRef.current) {
+        toasterRef.current = await addToast({
           message: `Drop the file here to upload and import it.`,
         });
       }
     }
-  }
+  };
 
   return (
     <ThemeProvider theme={myTheme}>
