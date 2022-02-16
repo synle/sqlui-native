@@ -26,7 +26,9 @@ export default function Modal(props: ModalProps) {
       open={props.open}
       onClose={props.onDismiss}
       aria-labelledby='modal-dialog-title'
-      aria-describedby='modal-dialog-description'>
+      aria-describedby='modal-dialog-description'
+      fullWidth={true}
+      maxWidth='sm'>
       <DialogTitle id='modal-dialog-title'>
         {props.title}
         {props.showCloseButton && (

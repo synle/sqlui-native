@@ -515,7 +515,7 @@ export default function MissionControl() {
         _executeCommandPalette(command);
       };
       await modal({
-        title: 'Control Palette',
+        title: 'Command Palette',
         message: <CommandPalette onSelectCommand={onSelectCommand} />,
       });
     } catch (err) {}

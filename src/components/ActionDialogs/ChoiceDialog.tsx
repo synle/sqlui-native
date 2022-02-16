@@ -37,8 +37,7 @@ export default function ChoiceDialog(props: ChoiceDialogProps) {
   } = props;
 
   return (
-    <Dialog onClose={handleClose} open={open}>
-      <div style={{ width: '400px' }}>
+    <Dialog onClose={handleClose} open={open} fullWidth={true}>
         <DialogTitle>{title}</DialogTitle>
         <DialogContent>
           {message}
@@ -55,7 +54,6 @@ export default function ChoiceDialog(props: ChoiceDialogProps) {
             ))}
           </List>
         </DialogContent>
-      </div>
     </Dialog>
   );
 }
