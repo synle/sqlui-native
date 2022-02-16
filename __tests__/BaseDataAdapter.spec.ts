@@ -41,18 +41,37 @@ describe('BaseDataAdapter', () => {
 
   describe('resolveTypes', () => {
     test('primitive types only', async () => {
-      const actual = BaseDataAdapter.resolveTypes({ "_id": "620d36396027dda455d46763", "name": "sy le", zipcode: 95037});
-      expect(actual).toStrictEqual({ "_id": { "name": "_id", "type": "string" }, "name": { "name": "name", "type": "string" }, "zipcode": { "name": "zipcode", "type": "number" } })
+      const actual = BaseDataAdapter.resolveTypes({
+        _id: '620d36396027dda455d46763',
+        name: 'sy le',
+        zipcode: 95037,
+      });
+      expect(actual).toStrictEqual({
+        _id: { name: '_id', type: 'string' },
+        name: { name: 'name', type: 'string' },
+        zipcode: { name: 'zipcode', type: 'number' },
+      });
     });
 
     test('arrays', async () => {
-      const actual = BaseDataAdapter.resolveTypes({ "genre": ["aa", "bb", "cc"] });
-      expect(actual).toStrictEqual({ "genre": { "name": "genre", "type": "array" } })
+      const actual = BaseDataAdapter.resolveTypes({ genre: ['aa', 'bb', 'cc'] });
+      expect(actual).toStrictEqual({ genre: { name: 'genre', type: 'array' } });
     });
 
     test('nested objects', async () => {
-      const actual = BaseDataAdapter.resolveTypes({ "_id": "620d36396027dda455d46763", "name": "sy le", "location": { "zip": 95037, "county": { "name": "santa clara" } }, "genre": ["aa", "bb", "cc"] });
-      expect(actual).toStrictEqual({ "_id": { "name": "_id", "type": "string" }, "genre": { "name": "genre", "type": "array" }, "location.county.name": { "name": "location.county.name", "type": "string" }, "location.zip": { "name": "location.zip", "type": "number" }, "name": { "name": "name", "type": "string" } })
+      const actual = BaseDataAdapter.resolveTypes({
+        _id: '620d36396027dda455d46763',
+        name: 'sy le',
+        location: { zip: 95037, county: { name: 'santa clara' } },
+        genre: ['aa', 'bb', 'cc'],
+      });
+      expect(actual).toStrictEqual({
+        _id: { name: '_id', type: 'string' },
+        genre: { name: 'genre', type: 'array' },
+        'location.county.name': { name: 'location.county.name', type: 'string' },
+        'location.zip': { name: 'location.zip', type: 'number' },
+        name: { name: 'name', type: 'string' },
+      });
     });
-  })
+  });
 });
