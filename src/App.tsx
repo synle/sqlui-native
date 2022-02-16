@@ -16,16 +16,19 @@ import EditConnectionPage from 'src/views/EditConnectionPage';
 import MainPage from 'src/views/MainPage';
 import NewConnectionPage from 'src/views/NewConnectionPage';
 import { useCommands } from 'src/components/MissionControl';
+import useToaster from 'src/hooks/useToaster';
 import './App.scss';
 import 'src/electronRenderer';
+import dataApi from 'src/data/api';
 
 export default function App() {
   const [hasValidSessionId, setHasValidSessionId] = useState(false);
   const { data: sessions, isLoading: loadingSessions } = useGetSessions();
   const { data: currentSession, isLoading: loadingCurrentSession } = useGetCurrentSession();
   const { mutateAsync: upsertSession } = useUpsertSession();
-  const { selectCommand } = useCommands();
   const colorMode = useDarkModeSetting();
+  const { selectCommand } = useCommands();
+  const { add: addToast } = useToaster();
 
   const myTheme = createTheme({
     // Theme settings
@@ -82,17 +85,21 @@ export default function App() {
 
   const onDrop = async (e: React.DragEvent) => {
     if(e.dataTransfer.items && e.dataTransfer.items.length === 1){
+      e.preventDefault();
+
+      const curToast = await addToast({
+        message: `Parsing the file for importing, please wait...`,
+      });
+
       // TODO: right now only support one file for drop...
       const files = [...e.dataTransfer.items].map((item) => item.getAsFile()).filter(f => f) as File[];
 
       //@ts-ignore
-      const fs = window.requireElectron('fs');
       const file = files[0];
-      const data = fs.readFileSync(file.path, {encoding: 'utf-8'});
+      const data = await dataApi.readFileContent(file);
 
+      await curToast.dismiss();
       selectCommand({ event: 'clientEvent/import', data })
-
-      e.preventDefault();
     }
   }
 
