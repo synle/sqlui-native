@@ -9,8 +9,6 @@ import { SqluiEnums } from 'typings';
 
 const StyledCommandPalette = styled('section')(({ theme }) => {
   return {
-    width: '400px',
-
     '.CommandPalette__SearchBox': {
       marginBottom: theme.spacing(1),
     },

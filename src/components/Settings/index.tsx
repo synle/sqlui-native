@@ -114,5 +114,5 @@ export default function Settings(props: SettingsProps) {
     );
   }
 
-  return <div style={{ width: '400px' }}>{contentDom}</div>;
+  return <>{contentDom}</>;
 }

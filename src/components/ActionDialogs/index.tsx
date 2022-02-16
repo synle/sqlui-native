@@ -85,6 +85,7 @@ export default function ActionDialogs(props: ActionDialogsProps) {
           message={dialog.message}
           onDismiss={onDimiss}
           showCloseButton={!!dialog.showCloseButton}
+          size={dialog.size}
         />
       );
   }

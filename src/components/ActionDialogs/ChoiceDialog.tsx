@@ -37,25 +37,23 @@ export default function ChoiceDialog(props: ChoiceDialogProps) {
   } = props;
 
   return (
-    <Dialog onClose={handleClose} open={open}>
-      <div style={{ width: '400px' }}>
-        <DialogTitle>{title}</DialogTitle>
-        <DialogContent>
-          {message}
-          <List sx={{ pt: 0 }}>
-            {options.map((option) => (
-              <ListItem
-                button
-                onClick={() => handleListItemClick(option.value)}
-                key={option.value}
-                sx={{ alignItems: 'center', display: 'flex' }}>
-                {!option.startIcon ? null : option.startIcon}
-                <ListItemText primary={option.label} sx={{ ml: 1 }} />
-              </ListItem>
-            ))}
-          </List>
-        </DialogContent>
-      </div>
+    <Dialog onClose={handleClose} open={open} fullWidth={true}>
+      <DialogTitle>{title}</DialogTitle>
+      <DialogContent>
+        {message}
+        <List sx={{ pt: 0 }}>
+          {options.map((option) => (
+            <ListItem
+              button
+              onClick={() => handleListItemClick(option.value)}
+              key={option.value}
+              sx={{ alignItems: 'center', display: 'flex' }}>
+              {!option.startIcon ? null : option.startIcon}
+              <ListItemText primary={option.label} sx={{ ml: 1 }} />
+            </ListItem>
+          ))}
+        </List>
+      </DialogContent>
     </Dialog>
   );
 }
