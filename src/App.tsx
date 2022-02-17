@@ -100,11 +100,16 @@ export default function App() {
 
       //@ts-ignore
       const file = files[0];
-      const data = await dataApi.readFileContent(file);
+      if(file.type === "application/json"){
+        selectCommand({ event: 'clientEvent/import', data: await dataApi.readFileContent(file) });
+      } else {
+        await addToast({
+          message: `File not supported for import. Only application/json file type is supported.`,
+        });
+      }
 
       await toasterRef.current?.dismiss();
       toasterRef.current = undefined;
-      selectCommand({ event: 'clientEvent/import', data });
     }
   };
 

@@ -581,7 +581,7 @@ export default function MissionControl() {
         </>
       ),
       showCloseButton: true,
-      size: 'sm',
+      size: 'xs',
     });
   };
 
