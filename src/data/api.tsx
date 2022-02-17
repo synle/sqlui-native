@@ -1,5 +1,5 @@
 import { getCurrentSessionId } from 'src/data/session';
-import { SqluiCore, SqluiFrontend } from 'typings';
+import { SqluiCore } from 'typings';
 async function _fetch<T>(input: RequestInfo, initOptions?: RequestInit) {
   let { headers, ...restInput } = initOptions || {};
 
@@ -83,12 +83,12 @@ export class ProxyApi {
     }
   }
 
-  static execute(query?: SqluiFrontend.ConnectionQuery) {
-    return _fetch<SqluiCore.Result>(`/api/connection/${query?.connectionId}/execute`, {
+  static execute(connectionId?: string, databaseId?: string, sql?: string) {
+    return _fetch<SqluiCore.Result>(`/api/connection/${connectionId}/execute`, {
       method: 'post',
       body: JSON.stringify({
-        database: query?.databaseId,
-        sql: query?.sql,
+        database: databaseId,
+        sql: sql,
       }),
     });
   }

@@ -11,6 +11,7 @@ type AdvancedEditorProps = {
   onBlur?: (newValue: string) => void;
   wordWrap?: boolean;
   placeholder?: string;
+  onCtrlEnter?: (newValue: string) => void;
 };
 
 const AdvancedEditorContainer = styled('div')(({ theme }) => {
@@ -69,6 +70,35 @@ export default function AdvancedEditor(props: AdvancedEditorProps) {
       editor.setValue(props.value || '');
     }
   }, [editor, props.value]);
+  useEffect(() => {
+    //onCtrlEnter
+    let keydownHandler = (e: KeyboardEvent) => {
+      if (!props.onCtrlEnter || !editor) {
+        return;
+      }
+      if (e.key === 'Enter' && e.ctrlKey) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        try
+        {//@ts-ignore
+                let textHighlited = editor.getModel().getValueInRange(editor.getSelection());
+                let textFromEditor = editor.getValue();
+                const newQuery = textHighlited || textFromEditor || '';
+                props.onCtrlEnter(newQuery)
+              }catch(err){
+
+document.removeEventListener('keydown', keydownHandler);
+                }
+      }
+    };
+
+    document.addEventListener('keydown', keydownHandler, true);
+
+    return () => {
+      document.removeEventListener('keydown', keydownHandler);
+    };
+  }, [editor, props.onCtrlEnter]);
 
   // here we will initiate the editor
   // and can be also be used to update the settings

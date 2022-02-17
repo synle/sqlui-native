@@ -48,6 +48,17 @@ export default function MyTabs(props: TabsProps) {
   const onDragStart = (e: React.DragEvent) => {
     const element = e.currentTarget;
 
+    var ghost = element.cloneNode(true) as HTMLElement;
+    ghost.style.backgroundColor = "#efefef";
+    ghost.style.color = "#000";
+    ghost.style.position = "absolute";
+    ghost.style.top = "0px";
+    ghost.id = 'ghost';
+    document.body.appendChild(ghost);
+
+    //@ts-ignore
+    e.dataTransfer.setDragImage(ghost, 0, 0);
+
     //@ts-ignore
     fromIdx = [...element.parentNode.children].indexOf(element);
     toIdx = undefined;
@@ -65,6 +76,8 @@ export default function MyTabs(props: TabsProps) {
     if (props.onOrderChange && fromIdx !== undefined && toIdx !== undefined) {
       props.onOrderChange(fromIdx, toIdx);
     }
+
+    document.querySelector('#ghost')?.remove();
   };
 
   const onMouseDown = (idx: number) => (e: React.MouseEvent) => {

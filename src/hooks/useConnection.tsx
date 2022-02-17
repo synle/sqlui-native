@@ -175,8 +175,8 @@ export function useGetColumns(connectionId?: string, databaseId?: string, tableI
 }
 
 export function useExecute() {
-  return useMutation<SqluiCore.Result, void, SqluiFrontend.ConnectionQuery>(
-    (query?: SqluiFrontend.ConnectionQuery) => dataApi.execute(query),
+  return useMutation<SqluiCore.Result, void, (string | undefined)[]>(
+    ([connectionId, databaseId, sql]) => dataApi.execute(connectionId, databaseId, sql),
   );
 }
 

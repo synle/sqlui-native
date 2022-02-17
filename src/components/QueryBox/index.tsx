@@ -79,6 +79,10 @@ export default function QueryBox(props: QueryBoxProps) {
 
   const onSubmit = async (e: React.SyntheticEvent) => {
     e.preventDefault();
+    onExecuteHighlightQuery(query.sql);
+  };
+
+  const onExecuteHighlightQuery = async (rawSql?: string) => {
     setExecuting(true);
 
     const executionStart = Date.now();
@@ -87,7 +91,7 @@ export default function QueryBox(props: QueryBoxProps) {
     let success = false;
 
     try {
-      const newResult = await executeQuery(query);
+      const newResult = await executeQuery([query.connectionId, query.databaseId, rawSql]);
       onChange({ result: newResult });
       refreshAfterExecution(query, queryClient);
 
@@ -105,7 +109,7 @@ export default function QueryBox(props: QueryBoxProps) {
         success ? 'Successfully' : 'Unsuccessfully'
       } and took about ${formatDuration(executionEnd - executionStart)}...`,
     });
-  };
+  }
 
   const disabledExecute = executing || !query?.sql || !query?.connectionId;
 
@@ -133,6 +137,7 @@ export default function QueryBox(props: QueryBoxProps) {
           value={query.sql}
           placeholder={`Enter SQL for ` + query.name}
           onChange={onSqlQueryChange}
+          onCtrlEnter={onExecuteHighlightQuery}
           language={language}
           autoFocus
           mode='textarea'

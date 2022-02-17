@@ -9,6 +9,7 @@ import { useEditorModeSetting, useWordWrapSetting } from 'src/hooks/useSetting';
 type CodeEditorProps = {
   value?: string;
   onChange?: (newValue: string) => void;
+  onCtrlEnter?: (newValue: string) => void;
   language?: string;
   placeholder?: string;
   mode: 'textarea' | 'code';
@@ -50,6 +51,7 @@ export default function CodeEditorBox(props: CodeEditorProps) {
           autoFocus={props.autoFocus}
           required={props.required}
           wordWrap={wordWrap}
+          onCtrlEnter={props.onCtrlEnter}
         />
         {contentToggleWordWrap}
       </div>
@@ -64,6 +66,7 @@ export default function CodeEditorBox(props: CodeEditorProps) {
         onBlur={onChange}
         wordWrap={wordWrap}
         placeholder={props.placeholder}
+        onCtrlEnter={props.onCtrlEnter}
       />
       {contentToggleWordWrap}
     </div>
