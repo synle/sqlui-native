@@ -108,6 +108,10 @@ $ConnectionTreeIndentSize: 7px;
       flex-grow: 1;
       margin-left: 10px;
     }
+
+    .Tab__Header{
+      align-self: baseline !important;
+    }
   }
 
   .Tab {
