@@ -7,7 +7,7 @@ import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import Tooltip from '@mui/material/Tooltip';
 import { useQueryClient } from 'react-query';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import CodeEditorBox from 'src/components/CodeEditorBox';
 import { useCommands } from 'src/components/MissionControl';
 import ConnectionDatabaseSelector from 'src/components/QueryBox/ConnectionDatabaseSelector';
@@ -34,6 +34,28 @@ export default function QueryBox(props: QueryBoxProps) {
   const { add: addToast } = useToaster();
 
   const isLoading = loadingConnection;
+
+  useEffect(() => {
+    const keydownHandlerDetectCtrlEnter = (e: KeyboardEvent)=> {
+      if(!(e.target as HTMLElement)?.classList?.contains('monaco-mouse-cursor-text')){
+        return;
+      }
+      if(e.ctrlKey || e.metaKey){
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          e.stopPropagation();
+
+          onSubmit(e);
+        }
+      }
+    };
+
+    document.addEventListener('keydown', keydownHandlerDetectCtrlEnter, true)
+
+    return ()=> {
+      document.removeEventListener('keydown', keydownHandlerDetectCtrlEnter)
+    }
+  },[])
 
   if (isLoading) {
     return (
@@ -77,7 +99,7 @@ export default function QueryBox(props: QueryBoxProps) {
     onChange({ sql });
   };
 
-  const onSubmit = async (e: React.SyntheticEvent) => {
+  const onSubmit = async (e: React.SyntheticEvent | KeyboardEvent) => {
     e.preventDefault();
     setExecuting(true);
 
