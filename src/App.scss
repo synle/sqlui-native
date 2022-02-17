@@ -153,3 +153,10 @@ $ConnectionTreeIndentSize: 7px;
     }
   }
 }
+
+// remove transition
+@media (prefers-reduced-motion) {
+  *{
+    transition-duration: 0s !important;
+  }
+}
