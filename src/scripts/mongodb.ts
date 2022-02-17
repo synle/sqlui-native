@@ -114,7 +114,7 @@ export function getUpdate(input: SqlAction.TableInput): SqlAction.Output | undef
       formatter,
       query: `${MONGO_ADAPTER_PREFIX}.collection('${input.tableId}').update(
           ${JSON.stringify(columns)},
-          {\$set: ${JSON.stringify(columns, null, 2)}}
+          {$set: ${JSON.stringify(columns, null, 2)}}
         );`,
     };
   }
