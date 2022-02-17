@@ -139,6 +139,7 @@ export default function QueryBox(props: QueryBoxProps) {
         />
         <div className='FormInput__Row'>
           <Button
+            id='btnExecuteCommand'
             type='submit'
             variant='contained'
             disabled={disabledExecute}
