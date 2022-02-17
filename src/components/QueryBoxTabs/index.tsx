@@ -9,7 +9,7 @@ import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import Link from '@mui/material/Link';
 import { useNavigate } from 'react-router-dom';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import DropdownButton from 'src/components/DropdownButton';
 import { allMenuKeys, useCommands } from 'src/components/MissionControl';
 import QueryBox from 'src/components/QueryBox';
@@ -25,33 +25,29 @@ export default function QueryBoxTabs() {
   const { selectCommand } = useCommands();
   const queryTabOrientation = useQueryTabOrientationSetting();
 
-  const onShowQuery = async (query: SqluiFrontend.ConnectionQuery) =>
-    selectCommand({ event: 'clientEvent/query/show', data: query });
-  const onAddQuery = () => selectCommand({ event: 'clientEvent/query/new' });
+  const onShowQuery = useCallback((data: SqluiFrontend.ConnectionQuery) =>
+    selectCommand({ event: 'clientEvent/query/show', data }),[selectCommand]);
 
-  const onCloseQuery = async (query: SqluiFrontend.ConnectionQuery) =>
-    selectCommand({ event: 'clientEvent/query/close', data: query });
+  const onAddQuery = useCallback(() =>
+    selectCommand({ event: 'clientEvent/query/new' }),[selectCommand]);
 
-  const onCloseOtherQueries = async (query: SqluiFrontend.ConnectionQuery) =>
-    selectCommand({ event: 'clientEvent/query/closeOther', data: query });
+  const onCloseQuery = useCallback((data: SqluiFrontend.ConnectionQuery) =>
+    selectCommand({ event: 'clientEvent/query/close', data }),[selectCommand]);
 
-  const onRenameQuery = async (query: SqluiFrontend.ConnectionQuery) =>
-    selectCommand({ event: 'clientEvent/query/rename', data: query });
+  const onCloseOtherQueries = useCallback((data: SqluiFrontend.ConnectionQuery) =>
+    selectCommand({ event: 'clientEvent/query/closeOther', data }),[selectCommand]);
 
-  const onDuplicateQuery = async (query: SqluiFrontend.ConnectionQuery) =>
-    selectCommand({ event: 'clientEvent/query/duplicate', data: query });
+  const onRenameQuery = useCallback((data: SqluiFrontend.ConnectionQuery) =>
+    selectCommand({ event: 'clientEvent/query/rename', data }),[selectCommand]);
 
-  const onExportQuery = async (query: SqluiFrontend.ConnectionQuery) =>
-    selectCommand({ event: 'clientEvent/query/export', data: query });
+  const onDuplicateQuery = useCallback((data: SqluiFrontend.ConnectionQuery) =>
+    selectCommand({ event: 'clientEvent/query/duplicate', data }),[selectCommand]);
 
-  const onChangeQueryTabOrdering = async (from: number, to: number) =>
-    selectCommand({ event: 'clientEvent/query/changeTabOrdering', data: { from, to } });
+  const onExportQuery = useCallback((data: SqluiFrontend.ConnectionQuery) =>
+    selectCommand({ event: 'clientEvent/query/export', data }),[selectCommand]);
 
-  const onMiddleMouseClicked = (idx: number) => {
-    if (queries && queries[idx]) {
-      onCloseQuery(queries[idx]);
-    }
-  };
+  const onChangeQueryTabOrdering = useCallback((from: number, to: number) =>
+    selectCommand({ event: 'clientEvent/query/changeTabOrdering', data: { from, to } }),[selectCommand]);
 
   // add a dummy query to start
   useEffect(() => {
@@ -74,6 +70,58 @@ export default function QueryBoxTabs() {
     };
   }, []);
 
+  const tabIdx = queries?.findIndex((q) => q.selected === true) || 0;
+
+  const tabKeys: string[] = [];
+  const tabHeaders: React.ReactNode[] = useMemo(() => [
+      ...(queries || []).map((q, idx) => {
+        const options = [
+          {
+            label: 'Rename',
+            onClick: () => onRenameQuery(q),
+            startIcon: <EditIcon />,
+          },
+          {
+            label: 'Export',
+            onClick: () => onExportQuery(q),
+            startIcon: <ArrowUpwardIcon />,
+          },
+          {
+            label: 'Duplicate',
+            onClick: () => onDuplicateQuery(q),
+            startIcon: <ContentCopyIcon />,
+          },
+          {
+            label: 'Close',
+            onClick: () => onCloseQuery(q),
+            startIcon: <CloseIcon />,
+          },
+          {
+            label: 'Close Other Tabs',
+            onClick: () => onCloseOtherQueries(q),
+            startIcon: <CloseIcon />,
+          },
+        ];
+
+        tabKeys.push(q.name + '.' + idx);
+
+        return (
+          <>
+            {q.name}
+            <DropdownButton id='table-action-split-button' options={options}>
+              <ArrowDropDownIcon fontSize='small' />
+            </DropdownButton>
+          </>
+        );
+      }),
+      <>
+        <AddIcon fontSize='small' aria-label='Add query' /> Add Query
+      </>,
+    ], [queries]);
+
+  const tabContents = useMemo(() => (queries ||[]).map((q) => <QueryBox key={q.id} queryId={q.id} />), [queries]);
+
+
   if (isLoading) {
     return (
       <Alert severity='info' icon={<CircularProgress size={15} />}>
@@ -93,56 +141,6 @@ export default function QueryBoxTabs() {
     );
   }
 
-  const tabIdx = queries.findIndex((q) => q.selected === true) || 0;
-
-  const tabKeys: string[] = [];
-  const tabHeaders: React.ReactNode[] = [
-    ...queries.map((q, idx) => {
-      const options = [
-        {
-          label: 'Rename',
-          onClick: () => onRenameQuery(q),
-          startIcon: <EditIcon />,
-        },
-        {
-          label: 'Export',
-          onClick: () => onExportQuery(q),
-          startIcon: <ArrowUpwardIcon />,
-        },
-        {
-          label: 'Duplicate',
-          onClick: () => onDuplicateQuery(q),
-          startIcon: <ContentCopyIcon />,
-        },
-        {
-          label: 'Close',
-          onClick: () => onCloseQuery(q),
-          startIcon: <CloseIcon />,
-        },
-        {
-          label: 'Close Other Tabs',
-          onClick: () => onCloseOtherQueries(q),
-          startIcon: <CloseIcon />,
-        },
-      ];
-
-      tabKeys.push(q.name + '.' + idx);
-
-      return (
-        <>
-          {q.name}
-          <DropdownButton id='table-action-split-button' options={options}>
-            <ArrowDropDownIcon fontSize='small' />
-          </DropdownButton>
-        </>
-      );
-    }),
-    <>
-      <AddIcon fontSize='small' aria-label='Add query' /> Add Query
-    </>,
-  ];
-
-  const tabContents = queries.map((q) => <QueryBox key={q.id} queryId={q.id} />);
 
   return (
     <Tabs
@@ -158,6 +156,10 @@ export default function QueryBoxTabs() {
         }
       }}
       onOrderChange={onChangeQueryTabOrdering}
-      onMiddleMouseClicked={(idx) => onMiddleMouseClicked(idx)}></Tabs>
+      onMiddleMouseClicked={(idx: number) => {
+        if (queries && queries[idx]) {
+          onCloseQuery(queries[idx]);
+        }
+      }}></Tabs>
   );
 }
