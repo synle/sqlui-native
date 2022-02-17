@@ -7,62 +7,59 @@
     <meta
       name="description"
       content="SQLUI Native - A minimal Electron application for Databases" />
-    <script type='text/javascript'>
+    <script type="text/javascript">
       window.requireElectron = window.require; // keep an existing copy of electron require
 
-      window.addEventListener(
-        'sqluiNativeEvent/init',
-        function () {
-          const vsCodeLoader = '%PUBLIC_URL%/vs/loader.js';
-          let amdRequire;
-          let amdDefine;
-          new Promise((resolve) => {
-            try {
-              // option 1: initiate monaco editor for electron version
-              const path = requireElectron('path');
-              const amdLoader = requireElectron(vsCodeLoader);
-              amdRequire = amdLoader.require;
-              amdDefine = amdLoader.require.define;
+      window.addEventListener('sqluiNativeEvent/init', function () {
+        const vsCodeLoader = '%PUBLIC_URL%/vs/loader.js';
+        let amdRequire;
+        let amdDefine;
+        new Promise((resolve) => {
+          try {
+            // option 1: initiate monaco editor for electron version
+            const path = requireElectron('path');
+            const amdLoader = requireElectron(vsCodeLoader);
+            amdRequire = amdLoader.require;
+            amdDefine = amdLoader.require.define;
 
-              function _uriFromPath(_path) {
-                var pathName = path.resolve(_path).replace(/\\/g, '/');
-                if (pathName.length > 0 && pathName.charAt(0) !== '/') {
-                  pathName = '/' + pathName;
-                }
-                return encodeURI('file://' + pathName);
+            function _uriFromPath(_path) {
+              var pathName = path.resolve(_path).replace(/\\/g, '/');
+              if (pathName.length > 0 && pathName.charAt(0) !== '/') {
+                pathName = '/' + pathName;
               }
-
-              amdRequire.config({
-                baseUrl: _uriFromPath(path.join(__dirname, '%PUBLIC_URL%')),
-              });
-
-              resolve();
-
-              self.module = undefined; // workaround monaco-css not understanding the environment
-            } catch (err) {
-              // option 2: initiate monaco editor for the mocked web server
-              function _loadjs(file, cb) {
-                var script = document.createElement('script');
-                script.type = 'text/javascript';
-                script.src = file;
-                script.onload = cb;
-                document.body.appendChild(script);
-              }
-
-              _loadjs(vsCodeLoader, () => {
-                amdRequire = window.require;
-                resolve();
-              });
+              return encodeURI('file://' + pathName);
             }
-          }).then(() => {
-            amdRequire(['vs/editor/editor.main'], function () {
-              window.monaco = monaco;
 
-              window.dispatchEvent(new Event('sqluiNativeEvent/ready'));
+            amdRequire.config({
+              baseUrl: _uriFromPath(path.join(__dirname, '%PUBLIC_URL%')),
             });
+
+            resolve();
+
+            self.module = undefined; // workaround monaco-css not understanding the environment
+          } catch (err) {
+            // option 2: initiate monaco editor for the mocked web server
+            function _loadjs(file, cb) {
+              var script = document.createElement('script');
+              script.type = 'text/javascript';
+              script.src = file;
+              script.onload = cb;
+              document.body.appendChild(script);
+            }
+
+            _loadjs(vsCodeLoader, () => {
+              amdRequire = window.require;
+              resolve();
+            });
+          }
+        }).then(() => {
+          amdRequire(['vs/editor/editor.main'], function () {
+            window.monaco = monaco;
+
+            window.dispatchEvent(new Event('sqluiNativeEvent/ready'));
           });
-        }
-      );
+        });
+      });
     </script>
     <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
     <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo512.png" />
