@@ -821,19 +821,36 @@ export default function MissionControl() {
   }, [command]);
 
   useEffect(() => {
-    if (window.isElectron) {
-      // if it is electron, then let's not create these shortcut here
-      // this is mostly for webapp to debug
-      return;
-    }
+    const onKeyboardShortcutEventForAll = (e: KeyboardEvent) => {
+      const hasModifierKey = e.altKey || e.ctrlKey || e.metaKey;
+      const { key } = e;
 
-    const onKeyboardShortcutEvent = (e: KeyboardEvent) => {
+      // here are keybindings that are used for both the electron and web mocked
+      if (hasModifierKey) {
+        // with modifier key
+        switch (key) {
+          case 'Enter':
+            try {
+              (document.querySelector('#btnExecuteCommand') as HTMLButtonElement).click();
+              e.stopPropagation();
+              e.preventDefault();
+            } catch (err) {}
+            break;
+        }
+      }
+    };
+    // this section below is strictly for mocked webserver
+    const onKeyboardShortcutEventForMockedServer = (e: KeyboardEvent) => {
+      const hasModifierKey = e.altKey || e.ctrlKey || e.metaKey;
+
       let onShowCommandPalette = false;
       let preventDefault = false;
       let command: Command | undefined;
       const { key } = e;
-      if (e.altKey || e.ctrlKey || e.metaKey) {
-        switch (key.toLowerCase()) {
+
+      if (hasModifierKey) {
+        // with modifier key
+        switch (key) {
           case 'p':
             command = {
               event: 'clientEvent/showCommandPalette',
@@ -864,6 +881,25 @@ export default function MissionControl() {
               event: 'clientEvent/query/closeCurrentlySelected',
             };
             break;
+          case '{':
+            command = {
+              event: 'clientEvent/query/showPrev',
+            };
+            break;
+          case '}':
+            command = {
+              event: 'clientEvent/query/showNext',
+            };
+            break;
+        }
+      } else {
+        // no modifier key
+        switch (key) {
+          case 'F2':
+            command = {
+              event: 'clientEvent/query/rename',
+            };
+            break;
         }
       }
 
@@ -877,9 +913,13 @@ export default function MissionControl() {
       }
     };
 
-    document.addEventListener('keydown', onKeyboardShortcutEvent);
+    document.addEventListener('keydown', onKeyboardShortcutEventForAll, true);
+    !window.isElectron &&
+      document.addEventListener('keydown', onKeyboardShortcutEventForMockedServer, true);
     return () => {
-      document.removeEventListener('keydown', onKeyboardShortcutEvent);
+      document.removeEventListener('keydown', onKeyboardShortcutEventForAll);
+      !window.isElectron &&
+        document.removeEventListener('keydown', onKeyboardShortcutEventForMockedServer);
     };
   }, []);
 
