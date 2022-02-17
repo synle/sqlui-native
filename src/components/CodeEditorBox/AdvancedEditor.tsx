@@ -80,16 +80,15 @@ export default function AdvancedEditor(props: AdvancedEditorProps) {
         e.preventDefault();
         e.stopPropagation();
 
-        try
-        {//@ts-ignore
-                let textHighlited = editor.getModel().getValueInRange(editor.getSelection());
-                let textFromEditor = editor.getValue();
-                const newQuery = textHighlited || textFromEditor || '';
-                props.onCtrlEnter(newQuery)
-              }catch(err){
-
-document.removeEventListener('keydown', keydownHandler);
-                }
+        try {
+          //@ts-ignore
+          let textHighlited = editor.getModel().getValueInRange(editor.getSelection());
+          let textFromEditor = editor.getValue();
+          const newQuery = textHighlited || textFromEditor || '';
+          props.onCtrlEnter(newQuery);
+        } catch (err) {
+          document.removeEventListener('keydown', keydownHandler);
+        }
       }
     };
 

@@ -109,7 +109,7 @@ export default function QueryBox(props: QueryBoxProps) {
         success ? 'Successfully' : 'Unsuccessfully'
       } and took about ${formatDuration(executionEnd - executionStart)}...`,
     });
-  }
+  };
 
   const disabledExecute = executing || !query?.sql || !query?.connectionId;
 

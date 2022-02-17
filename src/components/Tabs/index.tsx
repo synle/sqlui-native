@@ -49,10 +49,10 @@ export default function MyTabs(props: TabsProps) {
     const element = e.currentTarget;
 
     var ghost = element.cloneNode(true) as HTMLElement;
-    ghost.style.backgroundColor = "#efefef";
-    ghost.style.color = "#000";
-    ghost.style.position = "absolute";
-    ghost.style.top = "0px";
+    ghost.style.backgroundColor = '#efefef';
+    ghost.style.color = '#000';
+    ghost.style.position = 'absolute';
+    ghost.style.top = '0px';
     ghost.id = 'ghost';
     document.body.appendChild(ghost);
 

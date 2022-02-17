@@ -2,3 +2,4 @@ build
 _layouts
 coverage
 node_modules
+public/vs
