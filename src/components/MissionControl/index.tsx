@@ -830,17 +830,15 @@ export default function MissionControl() {
         // with modifier key
         switch (key) {
           case 'Enter':
-            try{
+            try {
               (document.querySelector('#btnExecuteCommand') as HTMLButtonElement).click();
               e.stopPropagation();
               e.preventDefault();
-            } catch(err){}
+            } catch (err) {}
             break;
         }
       }
     };
-
-
     // this section below is strictly for mocked webserver
     const onKeyboardShortcutEventForMockedServer = (e: KeyboardEvent) => {
       const hasModifierKey = e.altKey || e.ctrlKey || e.metaKey;
@@ -916,10 +914,12 @@ export default function MissionControl() {
     };
 
     document.addEventListener('keydown', onKeyboardShortcutEventForAll, true);
-    !window.isElectron && document.addEventListener('keydown', onKeyboardShortcutEventForMockedServer, true);
+    !window.isElectron &&
+      document.addEventListener('keydown', onKeyboardShortcutEventForMockedServer, true);
     return () => {
       document.removeEventListener('keydown', onKeyboardShortcutEventForAll);
-      !window.isElectron && document.removeEventListener('keydown', onKeyboardShortcutEventForMockedServer);
+      !window.isElectron &&
+        document.removeEventListener('keydown', onKeyboardShortcutEventForMockedServer);
     };
   }, []);
 
