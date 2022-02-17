@@ -100,7 +100,7 @@ export default function App() {
 
       //@ts-ignore
       const file = files[0];
-      if(file.type === "application/json"){
+      if (file.type === 'application/json') {
         selectCommand({ event: 'clientEvent/import', data: await dataApi.readFileContent(file) });
       } else {
         await addToast({
