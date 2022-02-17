@@ -2,7 +2,7 @@ import { QueryClient, useQuery, useQueryClient } from 'react-query';
 import dataApi from 'src/data/api';
 import { SessionStorageConfig } from 'src/data/config';
 import { getGeneratedRandomId, getUpdatedOrdersForList } from 'src/utils/commonUtils';
-import { SqluiFrontend } from 'typings';
+import { SqluiCore, SqluiFrontend } from 'typings';
 
 const QUERY_KEY_QUERIES = 'queries';
 
@@ -66,7 +66,7 @@ export function useConnectionQueries() {
     );
   }
 
-  const onAddQuery = async (query?: SqluiFrontend.ConnectionQuery) => {
+  const onAddQuery = async (query?: SqluiCore.CoreConnectionQuery) => {
     const newId = getGeneratedRandomId(`queryId`);
 
     let newQuery: SqluiFrontend.ConnectionQuery;
@@ -78,7 +78,7 @@ export function useConnectionQueries() {
         selected: true,
       };
     } else {
-      let newQueryName = query.name;
+      let newQueryName = query.name || `Query ${new Date().toLocaleString()}`;
 
       for (const query of _connectionQueries) {
         if (query.name === newQueryName) {
@@ -103,13 +103,12 @@ export function useConnectionQueries() {
       newQuery,
     ];
 
-    // make an api call to persists
-    // this is fire and forget
     try {
-      dataApi.upsertQuery(newQuery);
+      _invalidateQueries();
+      dataApi.upsertQuery(newQuery); // make an api call to persists and this is fire and forget
     } catch (err) {}
 
-    _invalidateQueries();
+    return newQuery;
   };
 
   const onDeleteQueries = (queryIds?: string[]) => {
@@ -166,6 +165,19 @@ export function useConnectionQueries() {
     queryId: string | undefined,
     partials: SqluiFrontend.PartialConnectionQuery,
   ) => {
+    if (!queryId) {
+      if (!queries || queries.length === 0) {
+        // this is an edge case where users already closed all the query tab
+        const newQuery = await onAddQuery({
+          id: getGeneratedRandomId(`queryId`),
+          name: `Query ${new Date().toLocaleString()}`,
+          ...partials,
+        });
+
+        queryId = newQuery.id;
+      }
+    }
+
     const query = queries?.find((q) => q.id === queryId);
 
     if (!query || !query) {
@@ -184,12 +196,9 @@ export function useConnectionQueries() {
       return query;
     });
 
-    _invalidateQueries();
-
-    // make an api call to persists
-    // this is fire and forget
     try {
-      dataApi.upsertQuery(query);
+      _invalidateQueries();
+      dataApi.upsertQuery(query); // make an api call to persists and this is fire and forget
     } catch (err) {}
   };
 
