@@ -831,14 +831,17 @@ export default function MissionControl() {
         switch (key) {
           case 'Enter':
             try {
-              (document.querySelector('.AdvancedEditorContainer  .inputarea.monaco-mouse-cursor-text') as HTMLTextAreaElement).blur();
-              setTimeout(
-                () => (document.querySelector('#btnExecuteCommand') as HTMLButtonElement).click()
-              )
+              (
+                document.querySelector(
+                  '.AdvancedEditorContainer  .inputarea.monaco-mouse-cursor-text',
+                ) as HTMLTextAreaElement
+              ).blur();
+              setTimeout(() =>
+                (document.querySelector('#btnExecuteCommand') as HTMLButtonElement).click(),
+              );
               e.stopPropagation();
               e.preventDefault();
-            } catch (err) {
-            }
+            } catch (err) {}
             break;
         }
       }

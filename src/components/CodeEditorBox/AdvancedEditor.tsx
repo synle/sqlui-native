@@ -74,5 +74,9 @@ export default function AdvancedEditor(props: AdvancedEditorProps) {
   // and can be also be used to update the settings
   useEffect(onSetupMonacoEditor, [monacoEl, props.wordWrap, props.language, colorMode]);
 
-  return <AdvancedEditorContainer className='AdvancedEditorContainer' ref={monacoEl}></AdvancedEditorContainer>;
+  return (
+    <AdvancedEditorContainer
+      className='AdvancedEditorContainer'
+      ref={monacoEl}></AdvancedEditorContainer>
+  );
 }
