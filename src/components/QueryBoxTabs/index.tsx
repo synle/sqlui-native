@@ -9,7 +9,7 @@ import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import Link from '@mui/material/Link';
 import { useNavigate } from 'react-router-dom';
-import React, { useEffect, useState, useMemo, useCallback } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import DropdownButton from 'src/components/DropdownButton';
 import { allMenuKeys, useCommands } from 'src/components/MissionControl';
 import QueryBox from 'src/components/QueryBox';
@@ -25,29 +25,52 @@ export default function QueryBoxTabs() {
   const { selectCommand } = useCommands();
   const queryTabOrientation = useQueryTabOrientationSetting();
 
-  const onShowQuery = useCallback((data: SqluiFrontend.ConnectionQuery) =>
-    selectCommand({ event: 'clientEvent/query/show', data }),[selectCommand]);
+  const onShowQuery = useCallback(
+    (data: SqluiFrontend.ConnectionQuery) =>
+      selectCommand({ event: 'clientEvent/query/show', data }),
+    [selectCommand],
+  );
 
-  const onAddQuery = useCallback(() =>
-    selectCommand({ event: 'clientEvent/query/new' }),[selectCommand]);
+  const onAddQuery = useCallback(
+    () => selectCommand({ event: 'clientEvent/query/new' }),
+    [selectCommand],
+  );
 
-  const onCloseQuery = useCallback((data: SqluiFrontend.ConnectionQuery) =>
-    selectCommand({ event: 'clientEvent/query/close', data }),[selectCommand]);
+  const onCloseQuery = useCallback(
+    (data: SqluiFrontend.ConnectionQuery) =>
+      selectCommand({ event: 'clientEvent/query/close', data }),
+    [selectCommand],
+  );
 
-  const onCloseOtherQueries = useCallback((data: SqluiFrontend.ConnectionQuery) =>
-    selectCommand({ event: 'clientEvent/query/closeOther', data }),[selectCommand]);
+  const onCloseOtherQueries = useCallback(
+    (data: SqluiFrontend.ConnectionQuery) =>
+      selectCommand({ event: 'clientEvent/query/closeOther', data }),
+    [selectCommand],
+  );
 
-  const onRenameQuery = useCallback((data: SqluiFrontend.ConnectionQuery) =>
-    selectCommand({ event: 'clientEvent/query/rename', data }),[selectCommand]);
+  const onRenameQuery = useCallback(
+    (data: SqluiFrontend.ConnectionQuery) =>
+      selectCommand({ event: 'clientEvent/query/rename', data }),
+    [selectCommand],
+  );
 
-  const onDuplicateQuery = useCallback((data: SqluiFrontend.ConnectionQuery) =>
-    selectCommand({ event: 'clientEvent/query/duplicate', data }),[selectCommand]);
+  const onDuplicateQuery = useCallback(
+    (data: SqluiFrontend.ConnectionQuery) =>
+      selectCommand({ event: 'clientEvent/query/duplicate', data }),
+    [selectCommand],
+  );
 
-  const onExportQuery = useCallback((data: SqluiFrontend.ConnectionQuery) =>
-    selectCommand({ event: 'clientEvent/query/export', data }),[selectCommand]);
+  const onExportQuery = useCallback(
+    (data: SqluiFrontend.ConnectionQuery) =>
+      selectCommand({ event: 'clientEvent/query/export', data }),
+    [selectCommand],
+  );
 
-  const onChangeQueryTabOrdering = useCallback((from: number, to: number) =>
-    selectCommand({ event: 'clientEvent/query/changeTabOrdering', data: { from, to } }),[selectCommand]);
+  const onChangeQueryTabOrdering = useCallback(
+    (from: number, to: number) =>
+      selectCommand({ event: 'clientEvent/query/changeTabOrdering', data: { from, to } }),
+    [selectCommand],
+  );
 
   // add a dummy query to start
   useEffect(() => {
@@ -73,7 +96,8 @@ export default function QueryBoxTabs() {
   const tabIdx = queries?.findIndex((q) => q.selected === true) || 0;
 
   const tabKeys: string[] = [];
-  const tabHeaders: React.ReactNode[] = useMemo(() => [
+  const tabHeaders: React.ReactNode[] = useMemo(
+    () => [
       ...(queries || []).map((q, idx) => {
         const options = [
           {
@@ -117,11 +141,14 @@ export default function QueryBoxTabs() {
       <>
         <AddIcon fontSize='small' aria-label='Add query' /> Add Query
       </>,
-    ], [queries]);
+    ],
+    [queries],
+  );
 
-  const tabContents = useMemo(() => (queries ||[]).map((q) => <QueryBox key={q.id} queryId={q.id} />), [queries]);
-
-
+  const tabContents = useMemo(
+    () => (queries || []).map((q) => <QueryBox key={q.id} queryId={q.id} />),
+    [queries],
+  );
   if (isLoading) {
     return (
       <Alert severity='info' icon={<CircularProgress size={15} />}>
@@ -140,8 +167,6 @@ export default function QueryBoxTabs() {
       </Alert>
     );
   }
-
-
   return (
     <Tabs
       tabIdx={tabIdx}

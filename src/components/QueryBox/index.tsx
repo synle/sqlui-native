@@ -7,7 +7,7 @@ import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import Tooltip from '@mui/material/Tooltip';
 import { useQueryClient } from 'react-query';
-import React, { useState, useMemo, useCallback} from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import CodeEditorBox from 'src/components/CodeEditorBox';
 import { useCommands } from 'src/components/MissionControl';
 import ConnectionDatabaseSelector from 'src/components/QueryBox/ConnectionDatabaseSelector';
@@ -41,17 +41,23 @@ export default function QueryBox(props: QueryBoxProps) {
         return 'sql';
       case 'mongodb':
       case 'redis':
-        return'javascript';
+        return 'javascript';
     }
-  },[selectedConnection?.dialect])
+  }, [selectedConnection?.dialect]);
 
-  const onDatabaseConnectionChange = useCallback((connectionId?: string, databaseId?: string) => {
-    onChange({ connectionId: connectionId, databaseId: databaseId });
-  },[onChange]);
+  const onDatabaseConnectionChange = useCallback(
+    (connectionId?: string, databaseId?: string) => {
+      onChange({ connectionId: connectionId, databaseId: databaseId });
+    },
+    [onChange],
+  );
 
-  const onSqlQueryChange = useCallback((newQuery: string) => {
-    onChange({ sql: newQuery });
-  },[onChange]);
+  const onSqlQueryChange = useCallback(
+    (newQuery: string) => {
+      onChange({ sql: newQuery });
+    },
+    [onChange],
+  );
 
   const onFormatQuery = () => {
     if (!query || (query && query.sql && query.sql.length > 20000)) {
@@ -75,7 +81,7 @@ export default function QueryBox(props: QueryBoxProps) {
   };
 
   const onSubmit = async (e: React.SyntheticEvent) => {
-    if(!query){
+    if (!query) {
       return;
     }
 
