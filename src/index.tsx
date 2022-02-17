@@ -5,7 +5,6 @@ import { ReactQueryDevtools } from 'react-query/devtools';
 import React from 'react';
 import App from './App';
 
-
 const renderApp = function () {
   const queryClient = new QueryClient({
     defaultOptions: {
@@ -27,13 +26,9 @@ const renderApp = function () {
   );
 
   window.removeEventListener('sqluiNativeEvent/ready', renderApp);
-}
+};
 
-window.addEventListener(
-  'sqluiNativeEvent/ready',
-  renderApp,
-  false,
-);
+window.addEventListener('sqluiNativeEvent/ready', renderApp, false);
 
 // tell the main app to get ready for initiation
 window.dispatchEvent(new Event('sqluiNativeEvent/init'));
