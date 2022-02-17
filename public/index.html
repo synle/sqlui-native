@@ -18,7 +18,7 @@
   </head>
   <body>
     <div id="body"></div>
-    <script>
+    <script type='text/javascript'>
       (function () {
         const vsCodeLoader = '%PUBLIC_URL%/vs/loader.js';
         let amdRequire;
@@ -67,8 +67,10 @@
           amdRequire(['vs/editor/editor.main'], function () {
             window.monaco = monaco;
 
-            const event = new Event('sqluiNativeEvent/ready');
-            window.dispatchEvent(event);
+            setImmediate(() => {
+              const event = new Event('sqluiNativeEvent/ready');
+              window.dispatchEvent(event);
+            })
           });
         });
       })();
