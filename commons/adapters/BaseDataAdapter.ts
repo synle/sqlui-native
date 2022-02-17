@@ -63,11 +63,7 @@ export default abstract class BaseDataAdapter {
     while (stack.length > 0) {
       //@ts-ignore
       const { item, path } = stack.pop();
-
       const type = typeof item;
-
-      console.log(type, item, Array.isArray(item));
-
       if (type === 'object' && !Array.isArray(item)) {
         for (const key of Object.keys(item)) {
           stack.push({
