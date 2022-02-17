@@ -7,7 +7,7 @@ import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import Tooltip from '@mui/material/Tooltip';
 import { useQueryClient } from 'react-query';
-import React, { useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import CodeEditorBox from 'src/components/CodeEditorBox';
 import { useCommands } from 'src/components/MissionControl';
 import ConnectionDatabaseSelector from 'src/components/QueryBox/ConnectionDatabaseSelector';
@@ -35,28 +35,32 @@ export default function QueryBox(props: QueryBoxProps) {
 
   const isLoading = loadingConnection;
 
-  if (isLoading) {
-    return (
-      <Alert severity='info' icon={<CircularProgress size={15} />}>
-        Loading...
-      </Alert>
-    );
-  }
+  const language: string = useMemo(() => {
+    switch (selectedConnection?.dialect) {
+      default:
+        return 'sql';
+      case 'mongodb':
+      case 'redis':
+        return 'javascript';
+    }
+  }, [selectedConnection?.dialect]);
 
-  if (!query) {
-    return null;
-  }
+  const onDatabaseConnectionChange = useCallback(
+    (connectionId?: string, databaseId?: string) => {
+      onChange({ connectionId: connectionId, databaseId: databaseId });
+    },
+    [onChange],
+  );
 
-  const onDatabaseConnectionChange = (connectionId?: string, databaseId?: string) => {
-    onChange({ connectionId: connectionId, databaseId: databaseId });
-  };
-
-  const onSqlQueryChange = (newQuery: string) => {
-    onChange({ sql: newQuery });
-  };
+  const onSqlQueryChange = useCallback(
+    (newQuery: string) => {
+      onChange({ sql: newQuery });
+    },
+    [onChange],
+  );
 
   const onFormatQuery = () => {
-    if (query && query.sql && query.sql.length > 20000) {
+    if (!query || (query && query.sql && query.sql.length > 20000)) {
       // this is too large for the library to handle
       // let's stop it
       return;
@@ -64,12 +68,11 @@ export default function QueryBox(props: QueryBoxProps) {
     let { sql } = query;
     sql = sql || '';
 
-    switch (selectedConnection?.dialect) {
-      default:
+    switch (language) {
+      case 'sql':
         sql = formatSQL(sql);
         break;
-      case 'mongodb':
-      case 'redis':
+      case 'javascript':
         sql = formatJS(sql);
         break;
     }
@@ -78,6 +81,10 @@ export default function QueryBox(props: QueryBoxProps) {
   };
 
   const onSubmit = async (e: React.SyntheticEvent) => {
+    if (!query) {
+      return;
+    }
+
     e.preventDefault();
     setExecuting(true);
 
@@ -109,17 +116,16 @@ export default function QueryBox(props: QueryBoxProps) {
 
   const disabledExecute = executing || !query?.sql || !query?.connectionId;
 
-  let language: string = '';
-  if (selectedConnection && selectedConnection.dialect) {
-    switch (selectedConnection.dialect) {
-      default:
-        language = 'sql';
-        break;
-      case 'mongodb':
-      case 'redis':
-        language = 'javascript';
-        break;
-    }
+  if (isLoading) {
+    return (
+      <Alert severity='info' icon={<CircularProgress size={15} />}>
+        Loading...
+      </Alert>
+    );
+  }
+
+  if (!query) {
+    return null;
   }
 
   return (
