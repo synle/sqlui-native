@@ -2,7 +2,7 @@ import { QueryClient, useQuery, useQueryClient } from 'react-query';
 import dataApi from 'src/data/api';
 import { SessionStorageConfig } from 'src/data/config';
 import { getGeneratedRandomId, getUpdatedOrdersForList } from 'src/utils/commonUtils';
-import { SqluiFrontend, SqluiCore } from 'typings';
+import { SqluiCore, SqluiFrontend } from 'typings';
 
 const QUERY_KEY_QUERIES = 'queries';
 
@@ -105,7 +105,7 @@ export function useConnectionQueries() {
 
     try {
       _invalidateQueries();
-      dataApi.upsertQuery(newQuery);// make an api call to persists and this is fire and forget
+      dataApi.upsertQuery(newQuery); // make an api call to persists and this is fire and forget
     } catch (err) {}
 
     return newQuery;
@@ -165,13 +165,13 @@ export function useConnectionQueries() {
     queryId: string | undefined,
     partials: SqluiFrontend.PartialConnectionQuery,
   ) => {
-    if(!queryId){
-      if(!queries || queries.length === 0){
+    if (!queryId) {
+      if (!queries || queries.length === 0) {
         // this is an edge case where users already closed all the query tab
         const newQuery = await onAddQuery({
           id: getGeneratedRandomId(`queryId`),
           name: `Query ${new Date().toLocaleString()}`,
-          ...partials
+          ...partials,
         });
 
         queryId = newQuery.id;
@@ -198,7 +198,7 @@ export function useConnectionQueries() {
 
     try {
       _invalidateQueries();
-      dataApi.upsertQuery(query);// make an api call to persists and this is fire and forget
+      dataApi.upsertQuery(query); // make an api call to persists and this is fire and forget
     } catch (err) {}
   };
 
