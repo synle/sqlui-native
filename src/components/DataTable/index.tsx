@@ -23,6 +23,8 @@ export const pageSizeOptions: any[] = [
 {label: '100', value: 100},
     { label: 'Show All', value: -1 }];
 
+export const DEFAULT_TABLE_PAGE_SIZE = 50;
+
 function TableContainerWrapper(props: any){
   return <Paper square={true} variant='outlined'>{props.children}</Paper>
 }
@@ -60,7 +62,7 @@ export default function DataTable(props: DataTableProps) {
     useTable(
       {
         initialState: {
-          pageSize: defaultPageSize,
+          pageSize: defaultPageSize || DEFAULT_TABLE_PAGE_SIZE,
         },
         columns,
         data,

@@ -6,7 +6,7 @@ import React from 'react';
 import Select from 'src/components/Select';
 import { useQuerySizeSetting, useSetting } from 'src/hooks/useSetting';
 import { SqluiFrontend } from 'typings';
-import {pageSizeOptions} from 'src/components/DataTable';
+import {pageSizeOptions, DEFAULT_TABLE_PAGE_SIZE} from 'src/components/DataTable';
 
 type SettingsProps = {};
 
@@ -113,17 +113,17 @@ export default function Settings(props: SettingsProps) {
         </div>
         <Typography className='FormInput__Label' variant='subtitle1'>
           Table Page Size
-          <Tooltip title='The default table page size used for results table.'>
+          <Tooltip title='The default table page size used for results table. Note this change only apply to future results.'>
             <HelpIcon fontSize='small' sx={{ ml: 1 }} />
           </Tooltip>
         </Typography>
         <div className='FormInput__Row'>
           <Select
-            value={settings.tablePageSize}
+            value={settings.tablePageSize||DEFAULT_TABLE_PAGE_SIZE}
             onChange={(newValue) => onSettingChange('tablePageSize', newValue)}
             sx={{ width: '100%' }}>
             {
-              pageSizeOptions.map(pageSize => <option value={pageSize.value}>{pageSize.label}</option>)
+              pageSizeOptions.map(pageSize => <option value={pageSize.value} key={pageSize.value}>{pageSize.label}</option>)
             }
           </Select>
         </div>

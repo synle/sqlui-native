@@ -76,5 +76,5 @@ export function useQuerySizeSetting() {
 
 export function useTablePageSize() {
   const { settings } = useSetting();
-  return parseInt(settings?.tablePageSize + '') || 50;
+  return parseInt(settings?.tablePageSize + '');
 }
