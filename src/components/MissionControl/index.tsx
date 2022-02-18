@@ -833,7 +833,7 @@ export default function MissionControl() {
             try {
               (
                 document.querySelector(
-                  '.AdvancedEditorContainer  .inputarea.monaco-mouse-cursor-text',
+                  '.AdvancedEditorContainer  .inputarea.monaco-mouse-cursor-text,.SimpleEditorContainer',
                 ) as HTMLTextAreaElement
               ).blur();
               setTimeout(() =>
