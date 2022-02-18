@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import AdvancedEditor from 'src/components/CodeEditorBox/AdvancedEditor';
 import SimpleEditor from 'src/components/CodeEditorBox/SimpleEditor';
 import { useEditorModeSetting, useWordWrapSetting } from 'src/hooks/useSetting';
+import Paper from '@mui/material/Paper';
 
 type CodeEditorProps = {
   value?: string;
@@ -57,7 +58,7 @@ export default function CodeEditorBox(props: CodeEditorProps) {
   }
 
   return (
-    <div className='CodeEditorBox'>
+    <Paper className='CodeEditorBox'  variant='outlined'>
       <AdvancedEditor
         language={props.language}
         value={props.value}
@@ -66,6 +67,6 @@ export default function CodeEditorBox(props: CodeEditorProps) {
         placeholder={props.placeholder}
       />
       {contentToggleWordWrap}
-    </div>
+    </Paper>
   );
 }
