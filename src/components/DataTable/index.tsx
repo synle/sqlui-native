@@ -1,5 +1,4 @@
 import Paper from '@mui/material/Paper';
-import { styled } from '@mui/material/styles';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell, { tableCellClasses } from '@mui/material/TableCell';
@@ -9,21 +8,26 @@ import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import { useFilters, useGlobalFilter, usePagination, useSortBy, useTable } from 'react-table';
 import React, { useCallback } from 'react';
+import { styled } from '@mui/material/styles';
+import { useTablePageSize } from 'src/hooks/useSetting';
 
 type DataTableProps = {
   columns: any[];
   data: any[];
 };
 
-const pageSizeOptions: any[] = [10, 25, 50, 100, { label: 'Show All', value: -1 }];
+export const pageSizeOptions: any[] = [
+{label: '10', value: 10},
+{label: '25', value: 25},
+{label: '50', value: 50},
+{label: '100', value: 100},
+    { label: 'Show All', value: -1 }];
 
-function TableContainerWrapper(props: any) {
-  return (
-    <Paper square={true} variant='outlined'>
-      {props.children}
-    </Paper>
-  );
+function TableContainerWrapper(props: any){
+  return <Paper square={true} variant='outlined'>{props.children}</Paper>
 }
+
+
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
     backgroundColor: theme.palette.common.black,
@@ -46,14 +50,17 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
+
 export default function DataTable(props: DataTableProps) {
   const { columns, data } = props;
+
+  const defaultPageSize = useTablePageSize();
 
   const { getTableBodyProps, gotoPage, headerGroups, page, prepareRow, setPageSize, state } =
     useTable(
       {
         initialState: {
-          pageSize: 50,
+          pageSize: defaultPageSize,
         },
         columns,
         data,
@@ -84,9 +91,7 @@ export default function DataTable(props: DataTableProps) {
             {headerGroups.map((headerGroup) => (
               <TableRow {...headerGroup.getHeaderGroupProps()}>
                 {headerGroup.headers.map((column) => (
-                  <StyledTableCell {...column.getHeaderProps()}>
-                    {column.render('Header')}
-                  </StyledTableCell>
+                  <StyledTableCell {...column.getHeaderProps()}>{column.render('Header')}</StyledTableCell>
                 ))}
               </TableRow>
             ))}
@@ -97,11 +102,7 @@ export default function DataTable(props: DataTableProps) {
               return (
                 <StyledTableRow {...row.getRowProps()}>
                   {row.cells.map((cell) => {
-                    return (
-                      <StyledTableCell {...cell.getCellProps()}>
-                        {cell.render('Cell')}
-                      </StyledTableCell>
-                    );
+                    return <StyledTableCell {...cell.getCellProps()}>{cell.render('Cell')}</StyledTableCell>;
                   })}
                 </StyledTableRow>
               );

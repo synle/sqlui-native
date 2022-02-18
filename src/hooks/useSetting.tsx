@@ -72,3 +72,9 @@ export function useQuerySizeSetting() {
   const { settings } = useSetting();
   return parseInt(settings?.querySize + '') || DEFAULT_QUERY_SIZE;
 }
+
+
+export function useTablePageSize() {
+  const { settings } = useSetting();
+  return parseInt(settings?.tablePageSize + '') || 50;
+}
