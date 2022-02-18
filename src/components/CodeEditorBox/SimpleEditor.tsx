@@ -6,7 +6,7 @@ import { styled } from '@mui/system';
 const StyledTextArea = styled('textarea')(({ theme }) => {
   let backgroundColor, color;
 
-  if(theme.palette.mode === 'light'){
+  if (theme.palette.mode === 'light') {
     backgroundColor = grey[100];
   } else {
     backgroundColor = grey[800];
