@@ -6,7 +6,7 @@ import React from 'react';
 import Select from 'src/components/Select';
 import { useQuerySizeSetting, useSetting } from 'src/hooks/useSetting';
 import { SqluiFrontend } from 'typings';
-import {pageSizeOptions, DEFAULT_TABLE_PAGE_SIZE} from 'src/components/DataTable';
+import { pageSizeOptions, DEFAULT_TABLE_PAGE_SIZE } from 'src/components/DataTable';
 
 type SettingsProps = {};
 
@@ -119,12 +119,14 @@ export default function Settings(props: SettingsProps) {
         </Typography>
         <div className='FormInput__Row'>
           <Select
-            value={settings.tablePageSize||DEFAULT_TABLE_PAGE_SIZE}
+            value={settings.tablePageSize || DEFAULT_TABLE_PAGE_SIZE}
             onChange={(newValue) => onSettingChange('tablePageSize', newValue)}
             sx={{ width: '100%' }}>
-            {
-              pageSizeOptions.map(pageSize => <option value={pageSize.value} key={pageSize.value}>{pageSize.label}</option>)
-            }
+            {pageSizeOptions.map((pageSize) => (
+              <option value={pageSize.value} key={pageSize.value}>
+                {pageSize.label}
+              </option>
+            ))}
           </Select>
         </div>
       </>
