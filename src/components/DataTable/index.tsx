@@ -9,13 +9,22 @@ import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import { useFilters, useGlobalFilter, usePagination, useSortBy, useTable } from 'react-table';
 import React, { useCallback } from 'react';
+import { useTablePageSize } from 'src/hooks/useSetting';
 
 type DataTableProps = {
   columns: any[];
   data: any[];
 };
 
-const pageSizeOptions: any[] = [10, 25, 50, 100, { label: 'Show All', value: -1 }];
+export const pageSizeOptions: any[] = [
+  { label: '10', value: 10 },
+  { label: '25', value: 25 },
+  { label: '50', value: 50 },
+  { label: '100', value: 100 },
+  { label: 'Show All', value: -1 },
+];
+
+export const DEFAULT_TABLE_PAGE_SIZE = 50;
 
 function TableContainerWrapper(props: any) {
   return (
@@ -49,11 +58,13 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 export default function DataTable(props: DataTableProps) {
   const { columns, data } = props;
 
+  const defaultPageSize = useTablePageSize();
+
   const { getTableBodyProps, gotoPage, headerGroups, page, prepareRow, setPageSize, state } =
     useTable(
       {
         initialState: {
-          pageSize: 50,
+          pageSize: defaultPageSize || DEFAULT_TABLE_PAGE_SIZE,
         },
         columns,
         data,
