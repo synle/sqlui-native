@@ -127,6 +127,7 @@ export module SqluiFrontend {
     wordWrap?: 'wrap';
     queryTabOrientation?: 'vertical' | 'horizontal';
     querySize?: number;
+    tablePageSize?: number;
   };
 
   export type SettingKey = keyof Settings;
