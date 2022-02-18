@@ -4,10 +4,19 @@ import { useCallback, useEffect, useState } from 'react';
 import { styled } from '@mui/system';
 
 const StyledTextArea = styled('textarea')(({ theme }) => {
-  const backgroundColor = grey[800];
+  let backgroundColor, color;
+
+  if (theme.palette.mode === 'light') {
+    backgroundColor = grey[100];
+  } else {
+    backgroundColor = grey[800];
+  }
+
+  color = theme.palette.getContrastText(backgroundColor);
+
   return {
     backgroundColor,
-    color: theme.palette.getContrastText(backgroundColor),
+    color,
     border: '2px solid transparent',
     fontFamily: 'monospace',
     fontWeight: '700',
