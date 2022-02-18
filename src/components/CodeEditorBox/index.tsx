@@ -1,5 +1,6 @@
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
+import Paper from '@mui/material/Paper';
 import ToggleButton from '@mui/material/ToggleButton';
 import { useEffect, useState } from 'react';
 import AdvancedEditor from 'src/components/CodeEditorBox/AdvancedEditor';
@@ -57,7 +58,7 @@ export default function CodeEditorBox(props: CodeEditorProps) {
   }
 
   return (
-    <div className='CodeEditorBox'>
+    <Paper className='CodeEditorBox' variant='outlined'>
       <AdvancedEditor
         language={props.language}
         value={props.value}
@@ -66,6 +67,6 @@ export default function CodeEditorBox(props: CodeEditorProps) {
         placeholder={props.placeholder}
       />
       {contentToggleWordWrap}
-    </div>
+    </Paper>
   );
 }

@@ -170,6 +170,7 @@ export default function SchemaEditor(props) {
 
   return (
     <StyledTextArea
+      className='SimpleEditorContainer'
       value={text}
       onKeyDown={onInputKeyDown}
       onChange={onInputChange}
