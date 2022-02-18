@@ -16,6 +16,10 @@ type DataTableProps = {
 
 const pageSizeOptions: any[] = [10, 25, 50, 100, { label: 'Show All', value: -1 }];
 
+function TableContainerWrapper(props: any){
+  return <Paper square={true} variant='outlined'>{props.children}</Paper>
+}
+
 export default function DataTable(props: DataTableProps) {
   const { columns, data } = props;
 
@@ -48,7 +52,7 @@ export default function DataTable(props: DataTableProps) {
 
   return (
     <>
-      <TableContainer component={Paper}>
+      <TableContainer component={TableContainerWrapper}>
         <Table sx={{ minWidth: 650 }} size='small'>
           <TableHead>
             {headerGroups.map((headerGroup) => (
