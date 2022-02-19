@@ -59,7 +59,7 @@
     "test-ci": "cross-env CI=true jest __tests__ && cross-env CI=true npm run test-react",
     "test-electron": "jest commons __tests__",
     "test-react": "cross-env react-scripts test",
-    "fix-import": "curl https://raw.githubusercontent.com/synle/js-import-fixer/main/removed-unused-imports.js | node - --groupImport --aggressive",
+    "fix-import": "npx import-fixer --groupImport --aggressive",
     "format": "npx prettier --config ./.prettierrc --write **/*.{ts,tsx,js,jsx,scss,yml,html,json,md}",
     "lint": "eslint --fix --ext .tsx --ext .ts src"
   },
