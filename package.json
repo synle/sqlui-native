@@ -90,7 +90,7 @@
     "fuzzysort": "^1.1.4",
     "js-beautify": "^1.14.0",
     "json-2-csv": "^3.17.0",
-    "mariadb": "^2.5.5",
+    "mariadb": "^2.5.6",
     "monaco-editor": "^0.32.1",
     "mongodb": "^4.3.1",
     "mysql2": "^2.3.3",
