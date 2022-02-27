@@ -130,7 +130,7 @@
     "electron": "^17.0.1",
     "electron-builder": "^22.14.13",
     "eslint-plugin-unused-imports": "^2.0.0",
-    "express": "^4.17.2",
+    "express": "^4.17.3",
     "jest": "^27.5.1",
     "multer": "^1.4.4",
     "react-scripts": "5.0.0",
