@@ -101,7 +101,7 @@
     "react-router-dom": "^6.2.1",
     "react-table": "^7.7.0",
     "redis": "^4.0.3",
-    "sequelize": "^6.16.1",
+    "sequelize": "^6.16.2",
     "sql-formatter": "^4.0.2",
     "sqlite3": "^5.0.2",
     "tedious": "^14.3.0"
