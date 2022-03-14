@@ -84,7 +84,7 @@
     "@emotion/react": "^11.7.1",
     "@emotion/styled": "^11.8.1",
     "@mui/icons-material": "^5.4.4",
-    "@mui/material": "^5.4.4",
+    "@mui/material": "^5.5.0",
     "cassandra-driver": "^3.6.0",
     "connection-string-parser": "^1.0.4",
     "fuzzysort": "^1.2.1",
