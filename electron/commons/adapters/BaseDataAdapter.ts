@@ -1,5 +1,5 @@
 import { ConnectionStringParser } from 'connection-string-parser';
-import { SqluiCore } from '../../typings';
+import { SqluiCore } from '../../../typings';
 
 export const MAX_CONNECTION_TIMEOUT = 3000;
 

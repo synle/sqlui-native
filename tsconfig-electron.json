@@ -2,25 +2,19 @@
   "compilerOptions": {
     "allowJs": true,
     "allowSyntheticDefaultImports": true,
-    "baseUrl": ".",
-    "declaration": true,
-    "emitDecoratorMetadata": true,
+    "baseUrl": "./",
     "esModuleInterop": true,
-    "experimentalDecorators": true,
     "forceConsistentCasingInFileNames": true,
-    "jsx": "react-jsx",
-    "module": "commonjs",
+    "isolatedModules": false,
+    "jsx": "react",
+    "module": "esNext",
     "moduleResolution": "node",
     "noFallthroughCasesInSwitch": false,
-    "noImplicitAny": false,
-    "outDir": "./build",
-    "removeComments": true,
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "sourceMap": true,
-    "strict": true,
+    "strict": false,
     "target": "es6"
   },
-  "exclude": ["node_modules"],
-  "include": ["main.ts"]
+  "include": ["./electron/main.ts"]
 }

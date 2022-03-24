@@ -1,4 +1,4 @@
-import { SqluiCore } from '../../typings';
+import { SqluiCore } from '../../../typings';
 
 export default interface IDataAdapter {
   dialect?: SqluiCore.Dialect;
