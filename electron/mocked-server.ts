@@ -3,7 +3,7 @@ import express from 'express';
 import multer from 'multer';
 import fs from 'fs';
 import { setUpDataEndpoints } from './commons/Endpoints';
-import { SqluiCore } from './typings';
+import { SqluiCore } from '../typings';
 
 const port = 3001;
 

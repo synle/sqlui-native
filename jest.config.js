@@ -10,7 +10,7 @@ module.exports = {
   moduleDirectories: ['node_modules', '.'],
   globals: {
     'ts-jest': {
-      tsconfig: 'tsconfig-server.json',
+      tsconfig: 'tsconfig-mocked-server.json',
     },
   },
 };

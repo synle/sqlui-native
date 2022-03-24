@@ -11,24 +11,21 @@ src/package.json
 coverage
 
 # misc
+*.LICENSE.txt
+*.sqlite
+.cache
 .DS_Store
-.env.local
 .env.development.local
-.env.test.local
+.env.local
 .env.production.local
-
+.env.test.local
+.parcel-cache
+build
+connections-mocked-server.json
+dist
+main.js
 npm-debug.log*
+public/vs
+upload
 yarn-debug.log*
 yarn-error.log*
-.cache
-
-build
-dist
-.parcel-cache
-
-main.js
-connections-mocked-server.json
-*.sqlite
-public/vs
-
-upload

@@ -1,8 +1,9 @@
 import { RedisClientType, createClient } from 'redis';
-import { SqluiCore } from '../../typings';
+import { SqluiCore } from '../../../typings';
 import IDataAdapter from './IDataAdapter';
 import BaseDataAdapter, { MAX_CONNECTION_TIMEOUT } from './BaseDataAdapter';
-import { REDIS_ADAPTER_PREFIX } from '../../src/scripts/redis';
+
+const REDIS_ADAPTER_PREFIX = 'db';
 
 export default class RedisDataAdapter extends BaseDataAdapter implements IDataAdapter {
   dialect: SqluiCore.Dialect = 'redis';

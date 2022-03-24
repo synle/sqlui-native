@@ -3,20 +3,7 @@ import { getGeneratedRandomId } from 'src/utils/commonUtils';
 
 export function getDefaultSessionId() {
   let sessionId = SessionStorageConfig.get<string>('clientConfig/api.sessionId', '');
-
-  if (window.isElectron) {
-    // default value for electron
-    if (!sessionId) {
-      sessionId = 'electron-default';
-    }
-  } else {
-    // default value for mocked server
-    if (!sessionId) {
-      sessionId = 'mocked-server-default';
-    }
-  }
-
-  return sessionId;
+  return sessionId || 'electron-default';
 }
 
 export function getRandomSessionId() {
