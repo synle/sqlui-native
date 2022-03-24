@@ -1,8 +1,7 @@
+import BaseDataAdapter from 'electron/commons/adapters/BaseDataAdapter';
+import IDataAdapter from 'electron/commons/adapters/IDataAdapter';
 import { Sequelize } from 'sequelize';
 import { SqluiCore } from 'typings';
-import IDataAdapter from 'electron/commons/adapters/IDataAdapter';
-import BaseDataAdapter from 'electron/commons/adapters/BaseDataAdapter';
-
 /**
  * mostly adapter for sequelize
  * https://sequelize.org/master/class/lib/dialects/abstract/query-interface.js~QueryInterface.html

@@ -1,9 +1,8 @@
 import bodyParser from 'body-parser';
+import { setUpDataEndpoints } from 'electron/commons/Endpoints';
 import express from 'express';
 import multer from 'multer';
 import fs from 'fs';
-import { setUpDataEndpoints } from 'electron/commons/Endpoints';
-import { SqluiCore } from 'typings';
 
 const port = 3001;
 

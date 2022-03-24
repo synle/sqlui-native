@@ -1,10 +1,10 @@
-import { SqluiCore } from 'typings';
-import RelationalDataAdapter from 'electron/commons/adapters/RelationalDataAdapter';
-import CassandraDataAdapter from 'electron/commons/adapters/CassandraDataAdapter';
-import RedisDataAdapter from 'electron/commons/adapters/RedisDataAdapter';
-import MongoDBDataAdapter from 'electron/commons/adapters/MongoDBDataAdapter';
-import IDataAdapter from 'electron/commons/adapters/IDataAdapter';
 import BaseDataAdapter from 'electron/commons/adapters/BaseDataAdapter';
+import CassandraDataAdapter from 'electron/commons/adapters/CassandraDataAdapter';
+import IDataAdapter from 'electron/commons/adapters/IDataAdapter';
+import MongoDBDataAdapter from 'electron/commons/adapters/MongoDBDataAdapter';
+import RedisDataAdapter from 'electron/commons/adapters/RedisDataAdapter';
+import RelationalDataAdapter from 'electron/commons/adapters/RelationalDataAdapter';
+import { SqluiCore } from 'typings';
 
 const _adapterCache: { [index: string]: IDataAdapter } = {};
 

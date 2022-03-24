@@ -1,5 +1,5 @@
-import { SqlAction } from 'typings';
 import { getDivider } from 'src/scripts/base';
+import { SqlAction } from 'typings';
 
 export const REDIS_ADAPTER_PREFIX = 'db';
 
