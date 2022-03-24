@@ -1,7 +1,7 @@
-import IDataAdapter from 'src/electron/commons/adapters/IDataAdapter';
+import IDataAdapter from 'src/common/adapters/IDataAdapter';
 import { RedisClientType, createClient } from 'redis';
 import { SqluiCore } from 'typings';
-import BaseDataAdapter, { MAX_CONNECTION_TIMEOUT } from 'src/electron/commons/adapters/BaseDataAdapter';
+import BaseDataAdapter, { MAX_CONNECTION_TIMEOUT } from 'src/common/adapters/BaseDataAdapter';
 
 const REDIS_ADAPTER_PREFIX = 'db';
 

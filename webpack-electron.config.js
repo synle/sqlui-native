@@ -4,7 +4,7 @@ const webpack = require('webpack');
 module.exports = {
   mode: 'production',
   target: ['node'],
-  entry: './electron/main.ts',
+  entry: './src/electron/index.ts',
   output: {
     filename: 'main.js',
     libraryTarget: 'this',

@@ -1,5 +1,5 @@
 import { app } from 'electron';
-import { getGeneratedRandomId } from 'src/electron/commons/utils/commonUtils';
+import { getGeneratedRandomId } from 'src/common/utils/commonUtils';
 import fs from 'fs';
 import path from 'path';
 

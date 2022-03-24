@@ -1,7 +1,7 @@
-import RelationalDataAdapter from 'src/electron/commons/adapters/RelationalDataAdapter';
+import RelationalDataAdapter from 'src/common/adapters/RelationalDataAdapter';
 // this is a big integration, won't be run on smoke test
-describe('mysql', () => {
-  const adapter = new RelationalDataAdapter('mysql://root:password@localhost:3306');
+describe('mssql', () => {
+  const adapter = new RelationalDataAdapter('mssql://sa:password123!@localhost:1433');
 
   test('Get tables', async () => {
     const tables = await adapter.getTables('music_store');

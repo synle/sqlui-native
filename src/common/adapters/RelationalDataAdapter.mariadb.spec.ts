@@ -1,4 +1,4 @@
-import RelationalDataAdapter from 'src/electron/commons/adapters/RelationalDataAdapter';
+import RelationalDataAdapter from 'src/common/adapters/RelationalDataAdapter';
 // this is a big integration, won't be run on smoke test
 describe('mariadb', () => {
   const adapter = new RelationalDataAdapter('mariadb://root:password@localhost:33061');

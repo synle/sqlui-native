@@ -1,7 +1,7 @@
-import RelationalDataAdapter from 'src/electron/commons/adapters/RelationalDataAdapter';
+import RelationalDataAdapter from 'src/common/adapters/RelationalDataAdapter';
 // this is a big integration, won't be run on smoke test
-describe('postgres', () => {
-  const adapter = new RelationalDataAdapter('postgres://postgres:password@localhost:5432');
+describe('mysql', () => {
+  const adapter = new RelationalDataAdapter('mysql://root:password@localhost:3306');
 
   test('Get tables', async () => {
     const tables = await adapter.getTables('music_store');

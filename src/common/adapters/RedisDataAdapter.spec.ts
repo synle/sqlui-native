@@ -1,4 +1,4 @@
-import RedisDataAdapter from 'src/electron/commons/adapters/RedisDataAdapter';
+import RedisDataAdapter from 'src/common/adapters/RedisDataAdapter';
 
 const adapter = new RedisDataAdapter('redis://localhost:6379');
 
