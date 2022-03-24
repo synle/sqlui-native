@@ -1,7 +1,7 @@
 import { Sequelize } from 'sequelize';
 import { SqluiCore } from 'typings';
-import IDataAdapter from './IDataAdapter';
-import BaseDataAdapter from './BaseDataAdapter';
+import IDataAdapter from 'electron/commons/adapters/IDataAdapter';
+import BaseDataAdapter from 'electron/commons/adapters/BaseDataAdapter';
 
 /**
  * mostly adapter for sequelize

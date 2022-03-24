@@ -34,6 +34,7 @@ module.exports = {
     extensions: ['.tsx', '.ts', '.js'],
     alias: {
       src: path.resolve(__dirname, 'src'),
+      electron: path.resolve(__dirname, 'electron'),
       typings: path.resolve(__dirname, 'typings'),
     },
   },
