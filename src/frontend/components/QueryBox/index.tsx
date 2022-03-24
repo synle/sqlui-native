@@ -8,15 +8,15 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Tooltip from '@mui/material/Tooltip';
 import { useQueryClient } from 'react-query';
 import React, { useCallback, useMemo, useState } from 'react';
-import CodeEditorBox from 'src/components/CodeEditorBox';
-import { useCommands } from 'src/components/MissionControl';
-import ConnectionDatabaseSelector from 'src/components/QueryBox/ConnectionDatabaseSelector';
-import ConnectionRevealButton from 'src/components/QueryBox/ConnectionRevealButton';
-import ResultBox from 'src/components/ResultBox';
-import { refreshAfterExecution, useExecute, useGetConnectionById } from 'src/hooks/useConnection';
-import { useConnectionQuery } from 'src/hooks/useConnectionQuery';
-import useToaster from 'src/hooks/useToaster';
-import { formatDuration, formatJS, formatSQL } from 'src/utils/formatter';
+import CodeEditorBox from 'src/frontend/components/CodeEditorBox';
+import { useCommands } from 'src/frontend/components/MissionControl';
+import ConnectionDatabaseSelector from 'src/frontend/components/QueryBox/ConnectionDatabaseSelector';
+import ConnectionRevealButton from 'src/frontend/components/QueryBox/ConnectionRevealButton';
+import ResultBox from 'src/frontend/components/ResultBox';
+import { refreshAfterExecution, useExecute, useGetConnectionById } from 'src/frontend/hooks/useConnection';
+import { useConnectionQuery } from 'src/frontend/hooks/useConnectionQuery';
+import useToaster from 'src/frontend/hooks/useToaster';
+import { formatDuration, formatJS, formatSQL } from 'src/frontend/utils/formatter';
 import { SqluiCore } from 'typings';
 
 type QueryBoxProps = {

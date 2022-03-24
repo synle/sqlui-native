@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import ConnectionDescription from 'src/components/ConnectionDescription';
-import NewConnectionButton from 'src/components/NewConnectionButton';
-import QueryBoxTabs from 'src/components/QueryBoxTabs';
-import Resizer from 'src/components/Resizer';
-import { LocalStorageConfig } from 'src/data/config';
+import ConnectionDescription from 'src/frontend/components/ConnectionDescription';
+import NewConnectionButton from 'src/frontend/components/NewConnectionButton';
+import QueryBoxTabs from 'src/frontend/components/QueryBoxTabs';
+import Resizer from 'src/frontend/components/Resizer';
+import { LocalStorageConfig } from 'src/frontend/data/config';
 
 export default function MainPage() {
   const [width, setWidth] = useState<undefined | number>(

@@ -8,8 +8,8 @@ import SelectAllIcon from '@mui/icons-material/SelectAll';
 import { Button } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import { useNavigate } from 'react-router-dom';
-import DropdownButton from 'src/components/DropdownButton';
-import { useCommands } from 'src/components/MissionControl';
+import DropdownButton from 'src/frontend/components/DropdownButton';
+import { useCommands } from 'src/frontend/components/MissionControl';
 import { SqluiCore } from 'typings';
 
 type ConnectionActionsProps = {

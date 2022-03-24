@@ -1,4 +1,4 @@
-import * as commonUtils from 'src/utils/commonUtils';
+import * as commonUtils from 'src/frontend/utils/commonUtils';
 
 describe('commonUtils', () => {
   describe('getExportedConnection', () => {

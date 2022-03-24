@@ -1,14 +1,14 @@
 import Alert from '@mui/material/Alert';
 import CircularProgress from '@mui/material/CircularProgress';
 import React from 'react';
-import { AccordionBody, AccordionHeader } from 'src/components/Accordion';
-import ConnectionActions from 'src/components/ConnectionActions';
-import ConnectionRetryAlert from 'src/components/ConnectionRetryAlert';
-import ConnectionTypeIcon from 'src/components/ConnectionTypeIcon';
-import DatabaseDescription from 'src/components/DatabaseDescription';
-import { useGetConnections, useUpdateConnections } from 'src/hooks/useConnection';
-import { useActiveConnectionQuery } from 'src/hooks/useConnectionQuery';
-import { useShowHide } from 'src/hooks/useShowHide';
+import { AccordionBody, AccordionHeader } from 'src/frontend/components/Accordion';
+import ConnectionActions from 'src/frontend/components/ConnectionActions';
+import ConnectionRetryAlert from 'src/frontend/components/ConnectionRetryAlert';
+import ConnectionTypeIcon from 'src/frontend/components/ConnectionTypeIcon';
+import DatabaseDescription from 'src/frontend/components/DatabaseDescription';
+import { useGetConnections, useUpdateConnections } from 'src/frontend/hooks/useConnection';
+import { useActiveConnectionQuery } from 'src/frontend/hooks/useConnectionQuery';
+import { useShowHide } from 'src/frontend/hooks/useShowHide';
 
 export default function ConnectionDescription() {
   const { data: connections, isLoading } = useGetConnections();

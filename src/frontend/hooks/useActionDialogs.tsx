@@ -1,8 +1,8 @@
 import { useQuery, useQueryClient } from 'react-query';
 import React from 'react';
-import { ChoiceInput, ChoiceOption } from 'src/components/ActionDialogs/ChoiceDialog';
-import { ModalInput } from 'src/components/ActionDialogs/ModalDialog';
-import { PromptInput } from 'src/components/ActionDialogs/PromptDialog';
+import { ChoiceInput, ChoiceOption } from 'src/frontend/components/ActionDialogs/ChoiceDialog';
+import { ModalInput } from 'src/frontend/components/ActionDialogs/ModalDialog';
+import { PromptInput } from 'src/frontend/components/ActionDialogs/PromptDialog';
 
 type AlertActionDialog = {
   type: 'alert';

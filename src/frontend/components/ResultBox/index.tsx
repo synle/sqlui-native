@@ -5,11 +5,11 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Tooltip from '@mui/material/Tooltip';
 import CsvEngine from 'json-2-csv';
 import React, { useEffect, useMemo, useState } from 'react';
-import CodeEditorBox from 'src/components/CodeEditorBox';
-import DataTable from 'src/components/DataTable';
-import Tabs from 'src/components/Tabs';
-import Timer from 'src/components/Timer';
-import { downloadText } from 'src/data/file';
+import CodeEditorBox from 'src/frontend/components/CodeEditorBox';
+import DataTable from 'src/frontend/components/DataTable';
+import Tabs from 'src/frontend/components/Tabs';
+import Timer from 'src/frontend/components/Timer';
+import { downloadText } from 'src/frontend/data/file';
 import { SqluiFrontend } from 'typings';
 
 type ResultBoxProps = {

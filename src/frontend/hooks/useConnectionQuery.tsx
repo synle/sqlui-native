@@ -1,7 +1,7 @@
 import { QueryClient, useQuery, useQueryClient } from 'react-query';
-import dataApi from 'src/data/api';
-import { SessionStorageConfig } from 'src/data/config';
-import { getGeneratedRandomId, getUpdatedOrdersForList } from 'src/utils/commonUtils';
+import dataApi from 'src/frontend/data/api';
+import { SessionStorageConfig } from 'src/frontend/data/config';
+import { getGeneratedRandomId, getUpdatedOrdersForList } from 'src/frontend/utils/commonUtils';
 import { SqluiCore, SqluiFrontend } from 'typings';
 
 const QUERY_KEY_QUERIES = 'queries';

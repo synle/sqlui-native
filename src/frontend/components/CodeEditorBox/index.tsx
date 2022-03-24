@@ -3,9 +3,9 @@ import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import Paper from '@mui/material/Paper';
 import ToggleButton from '@mui/material/ToggleButton';
 import { useEffect, useState } from 'react';
-import AdvancedEditor from 'src/components/CodeEditorBox/AdvancedEditor';
-import SimpleEditor from 'src/components/CodeEditorBox/SimpleEditor';
-import { useEditorModeSetting, useWordWrapSetting } from 'src/hooks/useSetting';
+import AdvancedEditor from 'src/frontend/components/CodeEditorBox/AdvancedEditor';
+import SimpleEditor from 'src/frontend/components/CodeEditorBox/SimpleEditor';
+import { useEditorModeSetting, useWordWrapSetting } from 'src/frontend/hooks/useSetting';
 
 type CodeEditorProps = {
   value?: string;

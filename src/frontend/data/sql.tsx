@@ -1,20 +1,20 @@
 import {
   databaseActionScripts as MongodbDatabaseActionScripts,
   tableActionScripts as MongodbTableActionScripts,
-} from 'src/scripts/mongodb';
+} from 'src/frontend/scripts/mongodb';
 import {
   databaseActionScripts as RedisDatabaseActionScripts,
   tableActionScripts as RedisTableActionScripts,
-} from 'src/scripts/redis';
+} from 'src/frontend/scripts/redis';
 import {
   databaseActionScripts as CassandraDatabaseActionScripts,
   tableActionScripts as CassandraTableActionScripts,
-} from 'src/scripts/cassandra';
+} from 'src/frontend/scripts/cassandra';
 import {
   databaseActionScripts as RmdbDatabaseActionScripts,
   tableActionScripts as RmdbTableActionScripts,
-} from 'src/scripts/rmdb';
-import { formatJS, formatSQL } from 'src/utils/formatter';
+} from 'src/frontend/scripts/rmdb';
+import { formatJS, formatSQL } from 'src/frontend/utils/formatter';
 import { SqlAction } from 'typings';
 
 export function getTableActions(tableActionInput: SqlAction.TableInput) {

@@ -1,4 +1,4 @@
-import { getCurrentSessionId } from 'src/data/session';
+import { getCurrentSessionId } from 'src/frontend/data/session';
 import { SqluiCore, SqluiFrontend } from 'typings';
 async function _fetch<T>(input: RequestInfo, initOptions?: RequestInit) {
   let { headers, ...restInput } = initOptions || {};

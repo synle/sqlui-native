@@ -1,6 +1,6 @@
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { QueryClient, useQuery, useQueryClient } from 'react-query';
-import { LocalStorageConfig } from 'src/data/config';
+import { LocalStorageConfig } from 'src/frontend/data/config';
 import { SqluiFrontend } from 'typings';
 
 const QUERY_KEY_SETTINGS = 'settings';

@@ -1,5 +1,5 @@
-import { SessionStorageConfig } from 'src/data/config';
-import { getGeneratedRandomId } from 'src/utils/commonUtils';
+import { SessionStorageConfig } from 'src/frontend/data/config';
+import { getGeneratedRandomId } from 'src/frontend/utils/commonUtils';
 
 export function getDefaultSessionId() {
   let sessionId = SessionStorageConfig.get<string>('clientConfig/api.sessionId', '');

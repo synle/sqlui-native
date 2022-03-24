@@ -1,5 +1,5 @@
-import Toast from 'src/components/Toast';
-import useToaster from 'src/hooks/useToaster';
+import Toast from 'src/frontend/components/Toast';
+import useToaster from 'src/frontend/hooks/useToaster';
 
 export default function Toasters() {
   const { toast, dismiss } = useToaster();

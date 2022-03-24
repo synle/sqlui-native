@@ -1,4 +1,4 @@
-import * as formatter from 'src/utils/formatter';
+import * as formatter from 'src/frontend/utils/formatter';
 
 describe('formatter', () => {
   describe('formatJS', () => {

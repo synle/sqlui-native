@@ -4,8 +4,8 @@ import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import UnfoldLessIcon from '@mui/icons-material/UnfoldLess';
 import { Button } from '@mui/material';
 import Box from '@mui/material/Box';
-import { useCommands } from 'src/components/MissionControl';
-import SplitButton from 'src/components/SplitButton';
+import { useCommands } from 'src/frontend/components/MissionControl';
+import SplitButton from 'src/frontend/components/SplitButton';
 
 export default function NewConnectionButton() {
   const { selectCommand } = useCommands();

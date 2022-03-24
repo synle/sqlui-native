@@ -1,6 +1,6 @@
 import { QueryClient, useMutation, useQuery, useQueryClient } from 'react-query';
-import dataApi from 'src/data/api';
-import { getCurrentSessionId } from 'src/data/session';
+import dataApi from 'src/frontend/data/api';
+import { getCurrentSessionId } from 'src/frontend/data/session';
 import { SqluiCore } from 'typings';
 
 const QUERY_KEY_SESSIONS = 'sessions';

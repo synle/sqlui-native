@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
-import { useCommands } from 'src/components/MissionControl';
-import { useActionDialogs } from 'src/hooks/useActionDialogs';
+import { useCommands } from 'src/frontend/components/MissionControl';
+import { useActionDialogs } from 'src/frontend/hooks/useActionDialogs';
 
 export default function ElectronEventListener() {
   const { selectCommand } = useCommands();

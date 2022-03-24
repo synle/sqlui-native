@@ -7,7 +7,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import IconButton from '@mui/material/IconButton';
 import TextField from '@mui/material/TextField';
 import React, { useState } from 'react';
-import CodeEditorBox from 'src/components/CodeEditorBox';
+import CodeEditorBox from 'src/frontend/components/CodeEditorBox';
 
 export type PromptInput = {
   title?: string;

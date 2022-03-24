@@ -11,10 +11,10 @@ import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import DropdownButton from 'src/components/DropdownButton';
-import { useCommands } from 'src/components/MissionControl';
-import { useGetCurrentSession, useGetSessions } from 'src/hooks/useSession';
-import appPackage from 'src/package.json';
+import DropdownButton from 'src/frontend/components/DropdownButton';
+import { useCommands } from 'src/frontend/components/MissionControl';
+import { useGetCurrentSession, useGetSessions } from 'src/frontend/hooks/useSession';
+import appPackage from 'src/frontend/package.json';
 
 export default function AppHeader() {
   const [open, setOpen] = useState(false);

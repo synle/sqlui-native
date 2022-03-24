@@ -2,9 +2,9 @@ import TextField from '@mui/material/TextField';
 import fuzzysort from 'fuzzysort';
 import { useEffect, useRef, useState } from 'react';
 import { styled } from '@mui/system';
-import { Command as CoreCommand } from 'src/components/MissionControl';
-import { useGetConnectionById, useGetConnections } from 'src/hooks/useConnection';
-import { useActiveConnectionQuery, useConnectionQueries } from 'src/hooks/useConnectionQuery';
+import { Command as CoreCommand } from 'src/frontend/components/MissionControl';
+import { useGetConnectionById, useGetConnections } from 'src/frontend/hooks/useConnection';
+import { useActiveConnectionQuery, useConnectionQueries } from 'src/frontend/hooks/useConnectionQuery';
 import { SqluiEnums } from 'typings';
 
 const StyledCommandPalette = styled('section')(({ theme }) => {

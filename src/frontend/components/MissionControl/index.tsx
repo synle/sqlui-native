@@ -6,11 +6,11 @@ import Typography from '@mui/material/Typography';
 import { useQuery, useQueryClient } from 'react-query';
 import { useNavigate } from 'react-router-dom';
 import React, { useCallback, useEffect, useState } from 'react';
-import CommandPalette from 'src/components/CommandPalette';
-import Settings from 'src/components/Settings';
-import { downloadText } from 'src/data/file';
-import { getRandomSessionId, setCurrentSessionId } from 'src/data/session';
-import { useActionDialogs } from 'src/hooks/useActionDialogs';
+import CommandPalette from 'src/frontend/components/CommandPalette';
+import Settings from 'src/frontend/components/Settings';
+import { downloadText } from 'src/frontend/data/file';
+import { getRandomSessionId, setCurrentSessionId } from 'src/frontend/data/session';
+import { useActionDialogs } from 'src/frontend/hooks/useActionDialogs';
 import {
   useDeleteConnection,
   useDuplicateConnection,
@@ -18,19 +18,19 @@ import {
   useGetConnections,
   useImportConnection,
   useRetryConnection,
-} from 'src/hooks/useConnection';
-import { useActiveConnectionQuery, useConnectionQueries } from 'src/hooks/useConnectionQuery';
-import { useGetCurrentSession, useGetSessions, useUpsertSession } from 'src/hooks/useSession';
-import { useSetting } from 'src/hooks/useSetting';
-import { useShowHide } from 'src/hooks/useShowHide';
-import useToaster from 'src/hooks/useToaster';
+} from 'src/frontend/hooks/useConnection';
+import { useActiveConnectionQuery, useConnectionQueries } from 'src/frontend/hooks/useConnectionQuery';
+import { useGetCurrentSession, useGetSessions, useUpsertSession } from 'src/frontend/hooks/useSession';
+import { useSetting } from 'src/frontend/hooks/useSetting';
+import { useShowHide } from 'src/frontend/hooks/useShowHide';
+import useToaster from 'src/frontend/hooks/useToaster';
 import {
   createSystemNotification,
   getExportedConnection,
   getExportedQuery,
-} from 'src/utils/commonUtils';
+} from 'src/frontend/utils/commonUtils';
 import { SqluiCore, SqluiEnums, SqluiFrontend } from 'typings';
-import appPackage from 'src/package.json';
+import appPackage from 'src/frontend/package.json';
 
 export type Command = {
   event: SqluiEnums.ClientEventKey;

@@ -5,11 +5,11 @@ import TextField from '@mui/material/TextField';
 import Tooltip from '@mui/material/Tooltip';
 import { useNavigate } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
-import ConnectionHint from 'src/components/ConnectionForm/ConnectionHint';
-import TestConnectionButton from 'src/components/TestConnectionButton';
-import Toast from 'src/components/Toast';
-import { useGetConnectionById, useUpsertConnection } from 'src/hooks/useConnection';
-import { createSystemNotification } from 'src/utils/commonUtils';
+import ConnectionHint from 'src/frontend/components/ConnectionForm/ConnectionHint';
+import TestConnectionButton from 'src/frontend/components/TestConnectionButton';
+import Toast from 'src/frontend/components/Toast';
+import { useGetConnectionById, useUpsertConnection } from 'src/frontend/hooks/useConnection';
+import { createSystemNotification } from 'src/frontend/utils/commonUtils';
 import { SqluiCore } from 'typings';
 
 type ConnectionFormProps = {

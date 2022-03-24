@@ -1,8 +1,8 @@
-import AlertDialog from 'src/components/ActionDialogs/AlertDialog';
-import ChoiceDialog from 'src/components/ActionDialogs/ChoiceDialog';
-import ModalDialog from 'src/components/ActionDialogs/ModalDialog';
-import PromptDialog from 'src/components/ActionDialogs/PromptDialog';
-import { useActionDialogs } from 'src/hooks/useActionDialogs';
+import AlertDialog from 'src/frontend/components/ActionDialogs/AlertDialog';
+import ChoiceDialog from 'src/frontend/components/ActionDialogs/ChoiceDialog';
+import ModalDialog from 'src/frontend/components/ActionDialogs/ModalDialog';
+import PromptDialog from 'src/frontend/components/ActionDialogs/PromptDialog';
+import { useActionDialogs } from 'src/frontend/hooks/useActionDialogs';
 
 type ActionDialogsProps = {};
 

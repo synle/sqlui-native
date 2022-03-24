@@ -9,7 +9,7 @@ import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import { useFilters, useGlobalFilter, usePagination, useSortBy, useTable } from 'react-table';
 import React, { useCallback } from 'react';
-import { useTablePageSize } from 'src/hooks/useSetting';
+import { useTablePageSize } from 'src/frontend/hooks/useSetting';
 
 type DataTableProps = {
   columns: any[];

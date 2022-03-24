@@ -2,11 +2,11 @@ import TableRowsIcon from '@mui/icons-material/TableRows';
 import Alert from '@mui/material/Alert';
 import CircularProgress from '@mui/material/CircularProgress';
 import React from 'react';
-import { AccordionBody, AccordionHeader } from 'src/components/Accordion';
-import ColumnDescription from 'src/components/ColumnDescription';
-import TableActions from 'src/components/TableActions';
-import { useGetTables } from 'src/hooks/useConnection';
-import { useShowHide } from 'src/hooks/useShowHide';
+import { AccordionBody, AccordionHeader } from 'src/frontend/components/Accordion';
+import ColumnDescription from 'src/frontend/components/ColumnDescription';
+import TableActions from 'src/frontend/components/TableActions';
+import { useGetTables } from 'src/frontend/hooks/useConnection';
+import { useShowHide } from 'src/frontend/hooks/useShowHide';
 
 type TableDescriptionProps = {
   connectionId: string;

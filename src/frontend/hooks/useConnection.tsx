@@ -1,6 +1,6 @@
 import { QueryClient, useMutation, useQuery, useQueryClient } from 'react-query';
-import dataApi from 'src/data/api';
-import { getUpdatedOrdersForList } from 'src/utils/commonUtils';
+import dataApi from 'src/frontend/data/api';
+import { getUpdatedOrdersForList } from 'src/frontend/utils/commonUtils';
 import { SqluiCore, SqluiFrontend } from 'typings';
 
 const QUERY_KEY_ALL_CONNECTIONS = 'connections';

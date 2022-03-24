@@ -1,7 +1,7 @@
 import { Button } from '@mui/material';
 import { useState } from 'react';
-import Toast from 'src/components/Toast';
-import { useTestConnection } from 'src/hooks/useConnection';
+import Toast from 'src/frontend/components/Toast';
+import { useTestConnection } from 'src/frontend/hooks/useConnection';
 import { SqluiCore } from 'typings';
 
 type TestConnectionButtonProps = {

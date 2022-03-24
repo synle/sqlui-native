@@ -1,7 +1,7 @@
 import PreviewIcon from '@mui/icons-material/Preview';
 import { Button } from '@mui/material';
 import Tooltip from '@mui/material/Tooltip';
-import { useCommands } from 'src/components/MissionControl';
+import { useCommands } from 'src/frontend/components/MissionControl';
 import { SqluiFrontend } from 'typings';
 
 type ConnectionRevealButtonProps = {

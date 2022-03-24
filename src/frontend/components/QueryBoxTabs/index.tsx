@@ -10,12 +10,12 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Link from '@mui/material/Link';
 import { useNavigate } from 'react-router-dom';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import DropdownButton from 'src/components/DropdownButton';
-import { allMenuKeys, useCommands } from 'src/components/MissionControl';
-import QueryBox from 'src/components/QueryBox';
-import Tabs from 'src/components/Tabs';
-import { useConnectionQueries } from 'src/hooks/useConnectionQuery';
-import { useQueryTabOrientationSetting } from 'src/hooks/useSetting';
+import DropdownButton from 'src/frontend/components/DropdownButton';
+import { allMenuKeys, useCommands } from 'src/frontend/components/MissionControl';
+import QueryBox from 'src/frontend/components/QueryBox';
+import Tabs from 'src/frontend/components/Tabs';
+import { useConnectionQueries } from 'src/frontend/hooks/useConnectionQuery';
+import { useQueryTabOrientationSetting } from 'src/frontend/hooks/useSetting';
 import { SqluiFrontend } from 'typings';
 
 export default function QueryBoxTabs() {

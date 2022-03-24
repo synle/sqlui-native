@@ -2,12 +2,12 @@ import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
 import Alert from '@mui/material/Alert';
 import CircularProgress from '@mui/material/CircularProgress';
 import React from 'react';
-import { AccordionBody, AccordionHeader } from 'src/components/Accordion';
-import DatabaseActions from 'src/components/DatabaseActions';
-import TableDescription from 'src/components/TableDescription';
-import { useGetDatabases } from 'src/hooks/useConnection';
-import { useActiveConnectionQuery } from 'src/hooks/useConnectionQuery';
-import { useShowHide } from 'src/hooks/useShowHide';
+import { AccordionBody, AccordionHeader } from 'src/frontend/components/Accordion';
+import DatabaseActions from 'src/frontend/components/DatabaseActions';
+import TableDescription from 'src/frontend/components/TableDescription';
+import { useGetDatabases } from 'src/frontend/hooks/useConnection';
+import { useActiveConnectionQuery } from 'src/frontend/hooks/useConnectionQuery';
+import { useShowHide } from 'src/frontend/hooks/useShowHide';
 
 type DatabaseDescriptionProps = {
   connectionId: string;

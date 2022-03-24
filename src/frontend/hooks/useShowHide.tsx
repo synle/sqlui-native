@@ -1,5 +1,5 @@
 import { QueryClient, useQuery, useQueryClient } from 'react-query';
-import { SessionStorageConfig } from 'src/data/config';
+import { SessionStorageConfig } from 'src/frontend/data/config';
 import { SqluiFrontend } from 'typings';
 
 const QUERY_KEY_TREEVISIBLES = 'treeVisibles';

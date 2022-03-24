@@ -2,8 +2,8 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import React from 'react';
-import { useActionDialogs } from 'src/hooks/useActionDialogs';
-import { useDeleteConnection } from 'src/hooks/useConnection';
+import { useActionDialogs } from 'src/frontend/hooks/useActionDialogs';
+import { useDeleteConnection } from 'src/frontend/hooks/useConnection';
 
 type DeleteConnectionButtonProps = {
   connectionId: string;

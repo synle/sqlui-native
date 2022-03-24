@@ -1,6 +1,6 @@
 import { useQuery, useQueryClient } from 'react-query';
-import Toast, { AnchorOrigin } from 'src/components/Toast';
-import { getGeneratedRandomId } from 'src/utils/commonUtils';
+import Toast, { AnchorOrigin } from 'src/frontend/components/Toast';
+import { getGeneratedRandomId } from 'src/frontend/utils/commonUtils';
 
 const QUERY_KEY_TOASTS = 'toasts';
 
