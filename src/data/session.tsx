@@ -3,7 +3,7 @@ import { getGeneratedRandomId } from 'src/utils/commonUtils';
 
 export function getDefaultSessionId() {
   let sessionId = SessionStorageConfig.get<string>('clientConfig/api.sessionId', '');
-  return sessionId ||  'electron-default';
+  return sessionId || 'electron-default';
 }
 
 export function getRandomSessionId() {

@@ -1,14 +1,14 @@
-const path = require("path");
-const webpack = require("webpack");
+const path = require('path');
+const webpack = require('webpack');
 
 module.exports = {
-  mode: "production",
-  target: ["node"],
-  entry: "./electron/mocked-server.ts",
+  mode: 'production',
+  target: ['node'],
+  entry: './electron/mocked-server.ts',
   output: {
-    filename: "mocked-server.js",
-    libraryTarget: "this",
-    path: path.resolve(__dirname, "build"),
+    filename: 'mocked-server.js',
+    libraryTarget: 'this',
+    path: path.resolve(__dirname, 'build'),
   },
   externals: {
     electron: 'commonjs electron',

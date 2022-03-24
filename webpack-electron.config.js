@@ -1,14 +1,14 @@
-const path = require("path");
-const webpack = require("webpack");
+const path = require('path');
+const webpack = require('webpack');
 
 module.exports = {
-  mode: "production",
-  target: ["node"],
-  entry: "./electron/main.ts",
+  mode: 'production',
+  target: ['node'],
+  entry: './electron/main.ts',
   output: {
-    filename: "main.js",
-    libraryTarget: "this",
-    path: path.resolve(__dirname, "build"),
+    filename: 'main.js',
+    libraryTarget: 'this',
+    path: path.resolve(__dirname, 'build'),
   },
   externals: {
     electron: 'commonjs electron',
