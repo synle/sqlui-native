@@ -3,8 +3,8 @@ import {
   getDataAdapter,
   getConnectionMetaData,
   resetConnectionMetaData,
-} from './DataAdapterFactory';
-import PersistentStorage from './PersistentStorage';
+} from 'electron/commons/DataAdapterFactory';
+import PersistentStorage from 'electron/commons/PersistentStorage';
 import { SqluiCore, SqluiEnums } from 'typings';
 
 let expressAppContext: Express | undefined;
