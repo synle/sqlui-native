@@ -1,5 +1,5 @@
+import { getDivider } from 'src/scripts/base';
 import { SqlAction } from 'typings';
-import { getDivider } from './base';
 
 const formatter = 'sql';
 

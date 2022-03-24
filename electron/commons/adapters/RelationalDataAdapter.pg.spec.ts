@@ -1,4 +1,4 @@
-import RelationalDataAdapter from 'commons/adapters/RelationalDataAdapter';
+import RelationalDataAdapter from 'electron/commons/adapters/RelationalDataAdapter';
 // this is a big integration, won't be run on smoke test
 describe('postgres', () => {
   const adapter = new RelationalDataAdapter('postgres://postgres:password@localhost:5432');
