@@ -14,6 +14,7 @@ module.exports = {
     electron: 'commonjs electron',
     'react-router-dom': 'commonjs react-router-dom',
     sequelize: 'commonjs sequelize',
+    mongodb: 'commonjs mongodb',
   },
   module: {
     rules: [
