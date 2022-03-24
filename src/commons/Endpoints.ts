@@ -2,8 +2,8 @@ import {
   getConnectionMetaData,
   getDataAdapter,
   resetConnectionMetaData,
-} from 'electron/commons/DataAdapterFactory';
-import PersistentStorage from 'electron/commons/PersistentStorage';
+} from 'src/electron/commons/DataAdapterFactory';
+import PersistentStorage from 'src/electron/commons/PersistentStorage';
 import { Express } from 'express';
 import { SqluiCore, SqluiEnums } from 'typings';
 let expressAppContext: Express | undefined;

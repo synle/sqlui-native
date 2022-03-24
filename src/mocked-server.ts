@@ -1,5 +1,5 @@
 import bodyParser from 'body-parser';
-import { setUpDataEndpoints } from 'electron/commons/Endpoints';
+import { setUpDataEndpoints } from 'src/electron/commons/Endpoints';
 import express from 'express';
 import multer from 'multer';
 import fs from 'fs';

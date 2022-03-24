@@ -1,6 +1,6 @@
 import * as cassandra from 'cassandra-driver';
-import BaseDataAdapter from 'electron/commons/adapters/BaseDataAdapter';
-import IDataAdapter from 'electron/commons/adapters/IDataAdapter';
+import BaseDataAdapter from 'src/electron/commons/adapters/BaseDataAdapter';
+import IDataAdapter from 'src/electron/commons/adapters/IDataAdapter';
 import { SqluiCore } from 'typings';
 
 export default class CassandraDataAdapter extends BaseDataAdapter implements IDataAdapter {

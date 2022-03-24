@@ -1,4 +1,4 @@
-import CassandraDataAdapter from 'electron/commons/adapters/CassandraDataAdapter';
+import CassandraDataAdapter from 'src/electron/commons/adapters/CassandraDataAdapter';
 
 const adapter = new CassandraDataAdapter('cassandra://localhost:9042');
 
