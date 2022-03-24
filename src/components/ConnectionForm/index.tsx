@@ -132,8 +132,8 @@ function MainConnectionForm(props: MainConnectionFormProps) {
 
   const onApplyConnectionHint = (dialect, connection) => {
     props.setName(`${dialect} Connection - ${new Date().toLocaleDateString()}`);
-    props.setConnection(connection)
-  }
+    props.setConnection(connection);
+  };
 
   return (
     <form className='ConnectionForm FormInput__Container' onSubmit={onSave}>
