@@ -130,6 +130,11 @@ function MainConnectionForm(props: MainConnectionFormProps) {
     connection: props.connection,
   };
 
+  const onApplyConnectionHint = (dialect, connection) => {
+    props.setName(`${dialect} Connection - ${new Date().toLocaleDateString()}`);
+    props.setConnection(connection)
+  }
+
   return (
     <form className='ConnectionForm FormInput__Container' onSubmit={onSave}>
       <div className='FormInput__Row'>
@@ -155,7 +160,7 @@ function MainConnectionForm(props: MainConnectionFormProps) {
       </div>
       {showHint && (
         <div className='FormInput__Container'>
-          <ConnectionHint onChange={props.setConnection} />
+          <ConnectionHint onChange={onApplyConnectionHint} />
         </div>
       )}
       <div className='FormInput__Row'>

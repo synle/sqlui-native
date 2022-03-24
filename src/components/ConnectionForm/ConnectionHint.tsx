@@ -5,7 +5,7 @@ import Tooltip from '@mui/material/Tooltip';
 import ConnectionTypeIcon from 'src/components/ConnectionTypeIcon';
 
 type ConnectionHintProps = {
-  onChange: (connectionName: string) => void;
+  onChange: (dialect: string, connection: string) => void;
 };
 
 export default function ConnectionHint(props: ConnectionHintProps) {
@@ -16,7 +16,7 @@ export default function ConnectionHint(props: ConnectionHintProps) {
         <Tooltip title='Use this sample MySQL connection.'>
           <Link
             underline='hover'
-            onClick={() => props.onChange('mysql://root:password@localhost:3306')}>
+            onClick={() => props.onChange('mysql', 'mysql://root:password@localhost:3306')}>
             mysql://root:password@localhost:3306
           </Link>
         </Tooltip>
@@ -26,7 +26,7 @@ export default function ConnectionHint(props: ConnectionHintProps) {
         <Tooltip title='Use this sample MariaDB connection.'>
           <Link
             underline='hover'
-            onClick={() => props.onChange('mariadb://root:password@localhost:3306')}>
+            onClick={() => props.onChange('mariadb', 'mariadb://root:password@localhost:3306')}>
             mariadb://root:password@localhost:3306
           </Link>
         </Tooltip>
@@ -36,7 +36,7 @@ export default function ConnectionHint(props: ConnectionHintProps) {
         <Tooltip title='Use this sample Microsoft SQL Server connection.'>
           <Link
             underline='hover'
-            onClick={() => props.onChange('mssql://sa:password123!@localhost:1433')}>
+            onClick={() => props.onChange('mssql', 'mssql://sa:password123!@localhost:1433')}>
             mssql://sa:password123!@localhost:1433
           </Link>
         </Tooltip>
@@ -46,7 +46,7 @@ export default function ConnectionHint(props: ConnectionHintProps) {
         <Tooltip title='Use this sample PostgresSQL connection.'>
           <Link
             underline='hover'
-            onClick={() => props.onChange('postgres://postgres:password@localhost:5432')}>
+            onClick={() => props.onChange('postgres', 'postgres://postgres:password@localhost:5432')}>
             postgres://postgres:password@localhost:5432
           </Link>
         </Tooltip>
@@ -54,7 +54,7 @@ export default function ConnectionHint(props: ConnectionHintProps) {
       <Alert severity='info' icon={<ConnectionTypeIcon scheme='sqlite' status='online' />}>
         <AlertTitle>SQLite</AlertTitle>
         <Tooltip title='Use this sample SQLite connection.'>
-          <Link underline='hover' onClick={() => props.onChange('sqlite://test-db.sqlite')}>
+          <Link underline='hover' onClick={() => props.onChange('sqlite', 'sqlite://test-db.sqlite')}>
             sqlite://test-db.sqlite
           </Link>
         </Tooltip>
@@ -64,7 +64,7 @@ export default function ConnectionHint(props: ConnectionHintProps) {
         <Tooltip title='Use this sample Cassandra connection.'>
           <Link
             underline='hover'
-            onClick={() => props.onChange('cassandra://username:password@localhost:9042')}>
+            onClick={() => props.onChange('cassandra', 'cassandra://username:password@localhost:9042')}>
             cassandra://username:password@localhost:9042
           </Link>
         </Tooltip>
@@ -72,7 +72,7 @@ export default function ConnectionHint(props: ConnectionHintProps) {
       <Alert severity='info' icon={<ConnectionTypeIcon scheme='mongodb' status='online' />}>
         <AlertTitle>MongoDB</AlertTitle>
         <Tooltip title='Use this sample MongoDB connection.'>
-          <Link underline='hover' onClick={() => props.onChange('mongodb://localhost:27017')}>
+          <Link underline='hover' onClick={() => props.onChange('mongodb', 'mongodb://localhost:27017')}>
             mongodb://localhost:27017
           </Link>
         </Tooltip>
@@ -80,7 +80,7 @@ export default function ConnectionHint(props: ConnectionHintProps) {
       <Alert severity='info' icon={<ConnectionTypeIcon scheme='redis' status='online' />}>
         <AlertTitle>Redis</AlertTitle>
         <Tooltip title='Use this sample Redis connection.'>
-          <Link underline='hover' onClick={() => props.onChange('redis://localhost:6379')}>
+          <Link underline='hover' onClick={() => props.onChange('redis', 'redis://localhost:6379')}>
             redis://localhost:6379
           </Link>
         </Tooltip>
