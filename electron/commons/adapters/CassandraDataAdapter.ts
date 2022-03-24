@@ -1,5 +1,5 @@
 import * as cassandra from 'cassandra-driver';
-import { SqluiCore } from '../../typings';
+import { SqluiCore } from '../../../typings';
 import IDataAdapter from './IDataAdapter';
 import BaseDataAdapter from './BaseDataAdapter';
 
