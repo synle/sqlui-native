@@ -4,7 +4,7 @@ const webpack = require('webpack');
 module.exports = {
   mode: 'production',
   target: ['node'],
-  entry: './electron/mocked-server.ts',
+  entry: './src/mocked-server/index.ts',
   output: {
     filename: 'mocked-server.js',
     libraryTarget: 'this',
