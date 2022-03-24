@@ -14,7 +14,7 @@ import { useEffect, useState } from 'react';
 import DropdownButton from 'src/frontend/components/DropdownButton';
 import { useCommands } from 'src/frontend/components/MissionControl';
 import { useGetCurrentSession, useGetSessions } from 'src/frontend/hooks/useSession';
-import appPackage from 'src/frontend/package.json';
+import appPackage from 'src/package.json';
 
 export default function AppHeader() {
   const [open, setOpen] = useState(false);

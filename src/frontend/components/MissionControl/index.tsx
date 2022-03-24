@@ -30,7 +30,7 @@ import {
   getExportedQuery,
 } from 'src/frontend/utils/commonUtils';
 import { SqluiCore, SqluiEnums, SqluiFrontend } from 'typings';
-import appPackage from 'src/frontend/package.json';
+import appPackage from 'src/package.json';
 
 export type Command = {
   event: SqluiEnums.ClientEventKey;
