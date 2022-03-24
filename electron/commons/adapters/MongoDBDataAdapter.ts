@@ -1,5 +1,5 @@
 import { MongoClient } from 'mongodb';
-import { SqluiCore } from '../../../typings';
+import { SqluiCore } from 'typings';
 import BaseDataAdapter, { MAX_CONNECTION_TIMEOUT } from './BaseDataAdapter';
 import IDataAdapter from './IDataAdapter';
 

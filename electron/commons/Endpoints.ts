@@ -5,7 +5,7 @@ import {
   resetConnectionMetaData,
 } from './DataAdapterFactory';
 import PersistentStorage from './PersistentStorage';
-import { SqluiCore, SqluiEnums } from '../../typings';
+import { SqluiCore, SqluiEnums } from 'typings';
 
 let expressAppContext: Express | undefined;
 

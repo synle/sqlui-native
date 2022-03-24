@@ -1,4 +1,4 @@
-import { SqluiCore } from '../../typings';
+import { SqluiCore } from 'typings';
 import RelationalDataAdapter from './adapters/RelationalDataAdapter';
 import CassandraDataAdapter from './adapters/CassandraDataAdapter';
 import RedisDataAdapter from './adapters/RedisDataAdapter';
