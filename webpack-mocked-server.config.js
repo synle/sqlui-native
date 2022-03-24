@@ -13,6 +13,7 @@ module.exports = {
   externals: {
     electron: 'commonjs electron',
     'react-router-dom': 'commonjs react-router-dom',
+    sequelize: 'commonjs sequelize',
   },
   module: {
     rules: [
