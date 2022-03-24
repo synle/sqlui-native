@@ -4,9 +4,9 @@ const webpack = require("webpack");
 module.exports = {
   mode: "production",
   target: ["node"],
-  entry: "./electron/main.ts",
+  entry: "./electron/mocked-server.ts",
   output: {
-    filename: "main.js",
+    filename: "mocked-server.js",
     libraryTarget: "this",
     path: path.resolve(__dirname, "build"),
   },
@@ -22,7 +22,7 @@ module.exports = {
           {
             loader: 'ts-loader',
             options: {
-              configFile: 'tsconfig-electron.json',
+              configFile: 'tsconfig-mocked-server.json',
             },
           },
         ],
