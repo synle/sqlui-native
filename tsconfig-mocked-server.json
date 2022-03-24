@@ -16,5 +16,6 @@
     "strict": false,
     "target": "es6"
   },
+  "exclude": ["node_modules"],
   "include": ["./electron/mocked-server.ts"]
 }
