@@ -1,6 +1,6 @@
 {
   "name": "sqlui-native",
-  "version": "1.20.7",
+  "version": "1.22.0",
   "description": "A minimal native desktop client for most databases supporting MySQL, MariaDB, MS SQL Server, PostgresSQL, SQLite, Cassandra, MongoDB and Redis.",
   "browserslist": {
     "production": [
@@ -38,11 +38,12 @@
   },
   "main": "main.js",
   "scripts": {
-    "clean": "rimraf upload .cache .parcel-cache dist build mocked-db.sqlite public/vs && cpx package.json src && cpx \"node_modules/monaco-editor/min/vs/**/*.{css,js}\"  ./public/vs",
+    "clean": "rimraf upload .cache .parcel-cache dist build mocked-db.sqlite public/vs && cpx package.json src && cpx \"node_modules/monaco-editor/min/vs/**/*.{css,js}\" ./public/vs",
     "cleanSnapshot": "rm -rf __tests__/__snapshots__/ && npm run test-ci",
     "prestart": "npm run clean && npm run build",
     "prebuild": "npm run clean",
     "predev": "npm run prebuild",
+    "prestart-mocked-server": "npm run build-mocked-sever",
     "pretest": "npm run prebuild",
     "pretest-ci": "npm run pretest",
     "predist": "cpx \"build/**/*\" .",
@@ -56,7 +57,7 @@
     "build-mocked-sever": "webpack --config webpack-mocked-server.config.js",
     "postbuild-electron": "cpx package.json build",
     "build-react": "cross-env CI=\"\" react-scripts build",
-    "build": "concurrently \"npm run build-react\" \"npm run build-electron\" \"npm run build-mocked-sever\"",
+    "build": "npm run build-react && concurrently \"npm run build-electron\" \"npm run build-mocked-sever\"",
     "test": "cross-env CI=true npm test-electron && cross-env CI=true npm run test-react",
     "test-ci": "cross-env CI=true jest __tests__ && cross-env CI=true npm run test-react",
     "test-electron": "jest commons __tests__",
