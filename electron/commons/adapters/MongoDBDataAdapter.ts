@@ -1,7 +1,7 @@
+import IDataAdapter from 'electron/commons/adapters/IDataAdapter';
 import { MongoClient } from 'mongodb';
-import { SqluiCore } from '../../../typings';
-import BaseDataAdapter, { MAX_CONNECTION_TIMEOUT } from './BaseDataAdapter';
-import IDataAdapter from './IDataAdapter';
+import { SqluiCore } from 'typings';
+import BaseDataAdapter, { MAX_CONNECTION_TIMEOUT } from 'electron/commons/adapters/BaseDataAdapter';
 
 const MONGO_ADAPTER_PREFIX = 'db';
 

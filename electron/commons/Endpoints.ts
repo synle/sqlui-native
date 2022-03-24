@@ -1,12 +1,11 @@
-import { Express } from 'express';
 import {
-  getDataAdapter,
   getConnectionMetaData,
+  getDataAdapter,
   resetConnectionMetaData,
-} from './DataAdapterFactory';
-import PersistentStorage from './PersistentStorage';
-import { SqluiCore, SqluiEnums } from '../../typings';
-
+} from 'electron/commons/DataAdapterFactory';
+import PersistentStorage from 'electron/commons/PersistentStorage';
+import { Express } from 'express';
+import { SqluiCore, SqluiEnums } from 'typings';
 let expressAppContext: Express | undefined;
 
 const _apiCache = {};

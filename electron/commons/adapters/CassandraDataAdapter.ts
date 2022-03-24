@@ -1,7 +1,7 @@
 import * as cassandra from 'cassandra-driver';
-import { SqluiCore } from '../../../typings';
-import IDataAdapter from './IDataAdapter';
-import BaseDataAdapter from './BaseDataAdapter';
+import BaseDataAdapter from 'electron/commons/adapters/BaseDataAdapter';
+import IDataAdapter from 'electron/commons/adapters/IDataAdapter';
+import { SqluiCore } from 'typings';
 
 export default class CassandraDataAdapter extends BaseDataAdapter implements IDataAdapter {
   dialect: SqluiCore.Dialect = 'cassandra';
