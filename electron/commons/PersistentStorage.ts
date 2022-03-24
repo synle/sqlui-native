@@ -1,8 +1,7 @@
 import { app } from 'electron';
+import { getGeneratedRandomId } from 'electron/commons/utils/commonUtils';
 import fs from 'fs';
 import path from 'path';
-import { SqluiCore } from '../../typings';
-import { getGeneratedRandomId } from './utils/commonUtils';
 
 const homedir = require('os').homedir();
 
