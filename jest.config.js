@@ -8,9 +8,4 @@ module.exports = {
   moduleNameMapper: {},
   collectCoverage: true,
   moduleDirectories: ['node_modules', '.'],
-  globals: {
-    'ts-jest': {
-      tsconfig: 'tsconfig-mocked-server.json',
-    },
-  },
 };
