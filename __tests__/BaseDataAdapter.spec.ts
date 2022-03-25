@@ -1,4 +1,4 @@
-import BaseDataAdapter from 'electron/commons/adapters/BaseDataAdapter';
+import BaseDataAdapter from 'src/common/adapters/BaseDataAdapter';
 
 describe('BaseDataAdapter', () => {
   describe('getConnectionParameters', () => {

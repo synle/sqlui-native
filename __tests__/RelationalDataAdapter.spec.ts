@@ -1,4 +1,4 @@
-import RelationalDataAdapter from 'electron/commons/adapters/RelationalDataAdapter';
+import RelationalDataAdapter from 'src/common/adapters/RelationalDataAdapter';
 
 const adapter = new RelationalDataAdapter('sqlite://mocked-db.sqlite');
 
