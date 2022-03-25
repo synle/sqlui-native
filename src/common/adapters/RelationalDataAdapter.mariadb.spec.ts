@@ -1,11 +1,10 @@
 import RelationalDataAdapter from 'src/common/adapters/RelationalDataAdapter';
-
 // this is a big integration, won't be run on smoke test
 describe.skip('mariadb', () => {
-  let adapter
+  let adapter;
 
   beforeAll(() => {
-     adapter = new RelationalDataAdapter('mariadb://root:password@localhost:33061');
+    adapter = new RelationalDataAdapter('mariadb://root:password@localhost:33061');
   });
 
   test('Get tables', async () => {

@@ -13,7 +13,11 @@ import { useCommands } from 'src/frontend/components/MissionControl';
 import ConnectionDatabaseSelector from 'src/frontend/components/QueryBox/ConnectionDatabaseSelector';
 import ConnectionRevealButton from 'src/frontend/components/QueryBox/ConnectionRevealButton';
 import ResultBox from 'src/frontend/components/ResultBox';
-import { refreshAfterExecution, useExecute, useGetConnectionById } from 'src/frontend/hooks/useConnection';
+import {
+  refreshAfterExecution,
+  useExecute,
+  useGetConnectionById,
+} from 'src/frontend/hooks/useConnection';
 import { useConnectionQuery } from 'src/frontend/hooks/useConnectionQuery';
 import useToaster from 'src/frontend/hooks/useToaster';
 import { formatDuration, formatJS, formatSQL } from 'src/frontend/utils/formatter';

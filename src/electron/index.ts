@@ -1,7 +1,7 @@
 import { BrowserWindow, Menu, app, ipcMain, nativeTheme, shell } from 'electron';
-import { getEndpointHandlers, setUpDataEndpoints } from 'src/common/Endpoints';
 import { matchPath } from 'react-router-dom';
 import path from 'path';
+import { getEndpointHandlers, setUpDataEndpoints } from 'src/common/Endpoints';
 import { SqluiEnums } from 'typings';
 
 const isMac = process.platform === 'darwin';

@@ -1,11 +1,10 @@
 import RelationalDataAdapter from 'src/common/adapters/RelationalDataAdapter';
-
 // this is a big integration, won't be run on smoke test
 describe.skip('mssql', () => {
-  let adapter
+  let adapter;
 
   beforeAll(() => {
-      adapter = new RelationalDataAdapter('mssql://sa:password123!@localhost:1433');
+    adapter = new RelationalDataAdapter('mssql://sa:password123!@localhost:1433');
   });
 
   test('Get tables', async () => {

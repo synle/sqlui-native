@@ -1,11 +1,10 @@
 import RelationalDataAdapter from 'src/common/adapters/RelationalDataAdapter';
-
 // this is a big integration, won't be run on smoke test
 describe.skip('postgres', () => {
-  let adapter
+  let adapter;
 
   beforeAll(() => {
-        adapter = new RelationalDataAdapter('postgres://postgres:password@localhost:5432');
+    adapter = new RelationalDataAdapter('postgres://postgres:password@localhost:5432');
   });
 
   test('Get tables', async () => {

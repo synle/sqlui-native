@@ -1,7 +1,7 @@
 import CassandraDataAdapter from 'src/common/adapters/CassandraDataAdapter';
 
 describe.skip('cassandra v4', () => {
-  let adapter
+  let adapter;
 
   beforeAll(() => {
     adapter = new CassandraDataAdapter('cassandra://localhost:9042');

@@ -1,7 +1,7 @@
 import { app } from 'electron';
-import { getGeneratedRandomId } from 'src/common/utils/commonUtils';
 import fs from 'fs';
 import path from 'path';
+import { getGeneratedRandomId } from 'src/common/utils/commonUtils';
 
 const homedir = require('os').homedir();
 

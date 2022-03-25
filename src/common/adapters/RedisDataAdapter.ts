@@ -1,5 +1,5 @@
-import IDataAdapter from 'src/common/adapters/IDataAdapter';
 import { RedisClientType, createClient } from 'redis';
+import IDataAdapter from 'src/common/adapters/IDataAdapter';
 import { SqluiCore } from 'typings';
 import BaseDataAdapter, { MAX_CONNECTION_TIMEOUT } from 'src/common/adapters/BaseDataAdapter';
 

@@ -1,10 +1,10 @@
+import { Express } from 'express';
 import {
   getConnectionMetaData,
   getDataAdapter,
   resetConnectionMetaData,
 } from 'src/common/DataAdapterFactory';
 import PersistentStorage from 'src/common/PersistentStorage';
-import { Express } from 'express';
 import { SqluiCore, SqluiEnums } from 'typings';
 let expressAppContext: Express | undefined;
 

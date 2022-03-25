@@ -2,15 +2,15 @@ import fs from 'fs';
 import RelationalDataAdapter from 'src/common/adapters/RelationalDataAdapter';
 
 describe('sqlite', () => {
-  let adapter
+  let adapter;
 
   beforeAll(() => {
-    const mockedDbFilePath = `mocked-db.sqlite`
+    const mockedDbFilePath = `mocked-db.sqlite`;
 
     // try remove the mocked db before starting this test
-    try{
-      fs.unlinkSync(mockedDbFilePath)
-    } catch(err){}
+    try {
+      fs.unlinkSync(mockedDbFilePath);
+    } catch (err) {}
 
     adapter = new RelationalDataAdapter(`sqlite://${mockedDbFilePath}`);
   });

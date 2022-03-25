@@ -19,8 +19,15 @@ import {
   useImportConnection,
   useRetryConnection,
 } from 'src/frontend/hooks/useConnection';
-import { useActiveConnectionQuery, useConnectionQueries } from 'src/frontend/hooks/useConnectionQuery';
-import { useGetCurrentSession, useGetSessions, useUpsertSession } from 'src/frontend/hooks/useSession';
+import {
+  useActiveConnectionQuery,
+  useConnectionQueries,
+} from 'src/frontend/hooks/useConnectionQuery';
+import {
+  useGetCurrentSession,
+  useGetSessions,
+  useUpsertSession,
+} from 'src/frontend/hooks/useSession';
 import { useSetting } from 'src/frontend/hooks/useSetting';
 import { useShowHide } from 'src/frontend/hooks/useShowHide';
 import useToaster from 'src/frontend/hooks/useToaster';

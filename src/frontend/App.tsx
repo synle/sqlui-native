@@ -11,7 +11,11 @@ import MissionControl, { useCommands } from 'src/frontend/components/MissionCont
 import Toasters from 'src/frontend/components/Toasters';
 import dataApi from 'src/frontend/data/api';
 import { getDefaultSessionId, setCurrentSessionId } from 'src/frontend/data/session';
-import { useGetCurrentSession, useGetSessions, useUpsertSession } from 'src/frontend/hooks/useSession';
+import {
+  useGetCurrentSession,
+  useGetSessions,
+  useUpsertSession,
+} from 'src/frontend/hooks/useSession';
 import { useDarkModeSetting } from 'src/frontend/hooks/useSetting';
 import useToaster, { ToasterHandler } from 'src/frontend/hooks/useToaster';
 import EditConnectionPage from 'src/frontend/views/EditConnectionPage';
