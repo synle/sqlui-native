@@ -1,5 +1,5 @@
 import fs from 'fs';
-import { getDatabaseActions, getTableActions } from 'src/data/sql';
+import { getDatabaseActions, getTableActions } from 'src/frontend/data/sql';
 import { SqlAction, SqluiCore } from 'typings';
 function _getScript(dialect: SqluiCore.Dialect) {
   const connectionId = 'connection1';
