@@ -17,5 +17,5 @@
     "target": "es6"
   },
   "exclude": ["node_modules"],
-  "include": ["./electron/main.ts"]
+  "include": ["./src/electron/index.ts"]
 }

@@ -4,7 +4,7 @@ const webpack = require('webpack');
 module.exports = {
   mode: 'production',
   target: ['node'],
-  entry: './electron/mocked-server.ts',
+  entry: './src/mocked-server/index.ts',
   output: {
     filename: 'mocked-server.js',
     libraryTarget: 'this',
@@ -14,6 +14,7 @@ module.exports = {
     electron: 'commonjs electron',
     'react-router-dom': 'commonjs react-router-dom',
     sequelize: 'commonjs sequelize',
+    mongodb: 'commonjs mongodb',
   },
   module: {
     rules: [
