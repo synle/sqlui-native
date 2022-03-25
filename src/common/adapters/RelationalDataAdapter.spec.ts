@@ -1,8 +1,20 @@
+import fs from 'fs';
 import RelationalDataAdapter from 'src/common/adapters/RelationalDataAdapter';
 
-const adapter = new RelationalDataAdapter('sqlite://mocked-db.sqlite');
-
 describe('sqlite', () => {
+  let adapter
+
+  beforeAll(() => {
+    const mockedDbFilePath = `mocked-db.sqlite`
+
+    // try remove the mocked db before starting this test
+    try{
+      fs.unlinkSync(mockedDbFilePath)
+    } catch(err){}
+
+    adapter = new RelationalDataAdapter(`sqlite://${mockedDbFilePath}`);
+  });
+
   test('Create and insert table', async () => {
     try {
       // create the table
@@ -32,18 +44,64 @@ describe('sqlite', () => {
 
   test('Get tables', async () => {
     const tables = await adapter.getTables();
-    expect(tables).toMatchSnapshot();
+    expect(tables).toMatchInlineSnapshot(`
+Array [
+  Object {
+    "columns": Array [],
+    "name": "artists",
+  },
+]
+`);
   });
 
   test('Get columns', async () => {
     const columns = await adapter.getColumns('artists');
-    expect(columns).toMatchSnapshot();
+    expect(columns).toMatchInlineSnapshot(`
+Array [
+  Object {
+    "allowNull": false,
+    "defaultValue": undefined,
+    "name": "ArtistId",
+    "primaryKey": true,
+    "type": "INTEGER",
+    "unique": false,
+  },
+  Object {
+    "allowNull": true,
+    "defaultValue": undefined,
+    "name": "Name",
+    "primaryKey": false,
+    "type": "NVARCHAR(120)",
+    "unique": false,
+  },
+]
+`);
   });
 
   test('Execute Select', async () => {
     const resp = await adapter.execute(`SELECT * FROM artists ORDER BY Name ASC LIMIT 10`);
     expect(resp?.raw?.length).toBe(3);
-    expect(resp).toMatchSnapshot();
+    expect(resp).toMatchInlineSnapshot(`
+Object {
+  "affectedRows": undefined,
+  "meta": undefined,
+  "ok": true,
+  "raw": Array [
+    Object {
+      "ArtistId": 1,
+      "Name": "Test Artist 1",
+    },
+    Object {
+      "ArtistId": 2,
+      "Name": "Test Artist 2",
+    },
+    Object {
+      "ArtistId": 3,
+      "Name": "Test Artist 3",
+    },
+  ],
+}
+`);
   });
 
   test('Execute Update', async () => {

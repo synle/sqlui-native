@@ -5,7 +5,14 @@ describe('BaseDataAdapter', () => {
     test('basic input should work ', async () => {
       const config = BaseDataAdapter.getConnectionParameters('cassandra://localhost:9042');
       expect(config?.scheme).toBe('cassandra');
-      expect(config?.hosts).toMatchSnapshot();
+      expect(config?.hosts).toMatchInlineSnapshot(`
+Array [
+  Object {
+    "host": "localhost",
+    "port": 9042,
+  },
+]
+`);
     });
 
     test('input with keyspace', async () => {
@@ -14,7 +21,14 @@ describe('BaseDataAdapter', () => {
       );
       expect(config?.scheme).toBe('cassandra');
       expect(config?.endpoint).toBe('system_schema');
-      expect(config?.hosts).toMatchSnapshot();
+      expect(config?.hosts).toMatchInlineSnapshot(`
+Array [
+  Object {
+    "host": "localhost",
+    "port": 9042,
+  },
+]
+`);
     });
 
     test('input with username and password', async () => {
@@ -24,7 +38,14 @@ describe('BaseDataAdapter', () => {
       expect(config?.scheme).toBe('cassandra');
       expect(config?.username).toBe('username');
       expect(config?.password).toBe('password');
-      expect(config?.hosts).toMatchSnapshot();
+      expect(config?.hosts).toMatchInlineSnapshot(`
+Array [
+  Object {
+    "host": "localhost",
+    "port": 9042,
+  },
+]
+`);
     });
 
     test('input with username and password and database', async () => {
@@ -35,7 +56,14 @@ describe('BaseDataAdapter', () => {
       expect(config?.username).toBe('username');
       expect(config?.password).toBe('password');
       expect(config?.endpoint).toBe('system_schema');
-      expect(config?.hosts).toMatchSnapshot();
+      expect(config?.hosts).toMatchInlineSnapshot(`
+Array [
+  Object {
+    "host": "localhost",
+    "port": 9042,
+  },
+]
+`);
     });
   });
 

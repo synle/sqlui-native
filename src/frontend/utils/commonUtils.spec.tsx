@@ -28,7 +28,19 @@ describe('commonUtils', () => {
         connectionId: 'connection.1644098335891.8887562323718656',
         databaseId: 'musicstores',
       });
-      expect(actual).toMatchSnapshot();
+      expect(actual).toMatchInlineSnapshot(`
+Object {
+  "_type": "query",
+  "connectionId": "connection.1644098335891.8887562323718656",
+  "databaseId": "musicstores",
+  "id": "query.1643737746323.6184509846791006",
+  "name": "Query 2/1/2022, 9:49:06 AM",
+  "sql": "SELECT
+  TOP 200 *
+FROM
+  albums",
+}
+`);
     });
 
     test('should work with more completed data inputs', async () => {
@@ -47,7 +59,19 @@ describe('commonUtils', () => {
           raw: [{ aa: 777 }],
         },
       });
-      expect(actual).toMatchSnapshot();
+      expect(actual).toMatchInlineSnapshot(`
+Object {
+  "_type": "query",
+  "connectionId": "connection.1644098335891.8887562323718656",
+  "databaseId": "musicstores",
+  "id": "query.1643737746323.6184509846791006",
+  "name": "Query 2/1/2022, 9:49:06 AM",
+  "sql": "SELECT
+  TOP 200 *
+FROM
+  albums",
+}
+`);
     });
   });
 

@@ -2,7 +2,7 @@ import RedisDataAdapter from 'src/common/adapters/RedisDataAdapter';
 
 const adapter = new RedisDataAdapter('redis://localhost:6379');
 
-describe('redis', () => {
+describe.skip('redis', () => {
   test('Set', async () => {
     await adapter.execute(`db.set('key', 'value123');`);
   });
