@@ -1,7 +1,7 @@
 import RelationalDataAdapter from 'src/common/adapters/RelationalDataAdapter';
 
 // this is a big integration, won't be run on smoke test
-describe(' 2 mysql', () => {
+describe.skip('mysql', () => {
   let adapter
 
   beforeAll(() => {

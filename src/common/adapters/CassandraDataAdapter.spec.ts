@@ -1,6 +1,6 @@
 import CassandraDataAdapter from 'src/common/adapters/CassandraDataAdapter';
 
-describe(' 2 cassandra v4', () => {
+describe.skip('cassandra v4', () => {
   let adapter
 
   beforeAll(() => {
