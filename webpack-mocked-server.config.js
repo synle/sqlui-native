@@ -1,5 +1,16 @@
 const path = require('path');
 const webpack = require('webpack');
+const appPackage = require('./package.json');
+
+const externals = {};
+const externalsDeps = [
+  'electron',
+  ...Object.keys(appPackage.optionalDependencies || []),
+  ...Object.keys(appPackage.dependencies || [])
+];
+for(const dep of externalsDeps){
+  externals[dep] = `commonjs ${dep}`;
+}
 
 module.exports = {
   mode: 'production',
@@ -10,12 +21,7 @@ module.exports = {
     libraryTarget: 'this',
     path: path.resolve(__dirname, 'build'),
   },
-  externals: {
-    electron: 'commonjs electron',
-    'react-router-dom': 'commonjs react-router-dom',
-    sequelize: 'commonjs sequelize',
-    mongodb: 'commonjs mongodb',
-  },
+  externals,
   module: {
     rules: [
       {
