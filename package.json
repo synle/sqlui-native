@@ -60,6 +60,7 @@
     "test-ci": "cross-env CI=true npm test",
     "test": "jest src",
     "fix-import": "npx import-fixer --groupImport --aggressive",
+    "preformat": "npm run fix-import",
     "format": "npx prettier --config ./.prettierrc --write **/*.{ts,tsx,js,jsx,scss,yml,html,json,md}",
     "lint": "eslint --fix --ext .tsx --ext .ts src"
   },
