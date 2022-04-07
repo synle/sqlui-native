@@ -1,4 +1,4 @@
-import { BrowserWindow, Menu, app, ipcMain, nativeTheme, shell } from 'electron';
+import { app, BrowserWindow, ipcMain, Menu, nativeTheme, shell } from 'electron';
 import { matchPath } from 'react-router-dom';
 import path from 'path';
 import { getEndpointHandlers, setUpDataEndpoints } from 'src/common/Endpoints';
