@@ -6,7 +6,7 @@ module.exports = {
   },
   setupFilesAfterEnv: ['./jest.setup.js'],
   moduleNameMapper: {
-    "^src/(.*)": "<rootDir>/src/$1"
+    '^src/(.*)': '<rootDir>/src/$1',
   },
   collectCoverage: true,
   moduleDirectories: ['node_modules', '.'],
