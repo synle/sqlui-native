@@ -2,8 +2,8 @@
 title: sqlui-native
 ---
 
-# Query Guides:
-
+Query Guides:
+=============
 ## mysql
 
 ### Drop Database
@@ -12,11 +12,13 @@ title: sqlui-native
 DROP DATABASE database1
 ```
 
+
 ### Create Database
 
 ```
 CREATE DATABASE database1
 ```
+
 
 ### Select All Columns
 
@@ -28,6 +30,7 @@ FROM
 LIMIT
   200
 ```
+
 
 ### Select Count
 
@@ -41,6 +44,7 @@ WHERE
   AND column1 = ''
   AND column2 = ''
 ```
+
 
 ### Select Specific Columns
 
@@ -59,6 +63,7 @@ LIMIT
   200
 ```
 
+
 ### Select Distinct
 
 ```
@@ -74,6 +79,7 @@ LIMIT
   200
 ```
 
+
 ### Insert
 
 ```
@@ -82,6 +88,7 @@ INSERT INTO
 VALUES
   ('_column1_', '_column2_')
 ```
+
 
 ### Update
 
@@ -97,6 +104,7 @@ AND
 column2 = ''
 ```
 
+
 ### Delete
 
 ```
@@ -108,6 +116,7 @@ WHERE
   AND column2 = ''
 ```
 
+
 ### Create Table
 
 ```
@@ -118,11 +127,13 @@ CREATE TABLE table1 (
 )
 ```
 
+
 ### Drop Table
 
 ```
 DROP TABLE table1
 ```
+
 
 ### Add Column
 
@@ -132,6 +143,7 @@ ALTER TABLE
 ADD
   COLUMN newColumn1 varchar(200)
 ```
+
 
 ### Drop Column
 
@@ -143,6 +155,7 @@ ALTER TABLE
 ALTER TABLE
   table1 DROP COLUMN column2;
 ```
+
 
 ## mariadb
 
@@ -152,11 +165,13 @@ ALTER TABLE
 DROP DATABASE database1
 ```
 
+
 ### Create Database
 
 ```
 CREATE DATABASE database1
 ```
+
 
 ### Select All Columns
 
@@ -168,6 +183,7 @@ FROM
 LIMIT
   200
 ```
+
 
 ### Select Count
 
@@ -181,6 +197,7 @@ WHERE
   AND column1 = ''
   AND column2 = ''
 ```
+
 
 ### Select Specific Columns
 
@@ -199,6 +216,7 @@ LIMIT
   200
 ```
 
+
 ### Select Distinct
 
 ```
@@ -214,6 +232,7 @@ LIMIT
   200
 ```
 
+
 ### Insert
 
 ```
@@ -222,6 +241,7 @@ INSERT INTO
 VALUES
   ('_column1_', '_column2_')
 ```
+
 
 ### Update
 
@@ -237,6 +257,7 @@ AND
 column2 = ''
 ```
 
+
 ### Delete
 
 ```
@@ -248,6 +269,7 @@ WHERE
   AND column2 = ''
 ```
 
+
 ### Create Table
 
 ```
@@ -258,11 +280,13 @@ CREATE TABLE table1 (
 )
 ```
 
+
 ### Drop Table
 
 ```
 DROP TABLE table1
 ```
+
 
 ### Add Column
 
@@ -272,6 +296,7 @@ ALTER TABLE
 ADD
   COLUMN newColumn1 varchar(200)
 ```
+
 
 ### Drop Column
 
@@ -284,6 +309,7 @@ ALTER TABLE
   table1 DROP COLUMN column2;
 ```
 
+
 ## mssql
 
 ### Drop Database
@@ -292,11 +318,13 @@ ALTER TABLE
 DROP DATABASE database1
 ```
 
+
 ### Create Database
 
 ```
 CREATE DATABASE database1
 ```
+
 
 ### Select All Columns
 
@@ -307,6 +335,7 @@ FROM
   table1
 ```
 
+
 ### Select Count
 
 ```
@@ -319,6 +348,7 @@ WHERE
   AND column1 = ''
   AND column2 = ''
 ```
+
 
 ### Select Specific Columns
 
@@ -335,6 +365,7 @@ WHERE
   AND column2 = ''
 ```
 
+
 ### Select Distinct
 
 ```
@@ -348,6 +379,7 @@ WHERE
   AND column2 = ''
 ```
 
+
 ### Insert
 
 ```
@@ -356,6 +388,7 @@ INSERT INTO
 VALUES
   ('_column1_', '_column2_')
 ```
+
 
 ### Update
 
@@ -371,6 +404,7 @@ AND
 column2 = ''
 ```
 
+
 ### Delete
 
 ```
@@ -382,6 +416,7 @@ WHERE
   AND column2 = ''
 ```
 
+
 ### Create Table
 
 ```
@@ -392,11 +427,13 @@ CREATE TABLE table1 (
 )
 ```
 
+
 ### Drop Table
 
 ```
 DROP TABLE table1
 ```
+
 
 ### Add Column
 
@@ -406,6 +443,7 @@ ALTER TABLE
 ADD
   COLUMN newColumn1 NVARCHAR(200)
 ```
+
 
 ### Drop Column
 
@@ -418,6 +456,7 @@ ALTER TABLE
   table1 DROP COLUMN column2;
 ```
 
+
 ## postgres
 
 ### Drop Database
@@ -426,11 +465,13 @@ ALTER TABLE
 DROP DATABASE database1
 ```
 
+
 ### Create Database
 
 ```
 CREATE DATABASE database1
 ```
+
 
 ### Select All Columns
 
@@ -442,6 +483,7 @@ FROM
 LIMIT
   200
 ```
+
 
 ### Select Count
 
@@ -455,6 +497,7 @@ WHERE
   AND column1 = ''
   AND column2 = ''
 ```
+
 
 ### Select Specific Columns
 
@@ -473,6 +516,7 @@ LIMIT
   200
 ```
 
+
 ### Select Distinct
 
 ```
@@ -488,6 +532,7 @@ LIMIT
   200
 ```
 
+
 ### Insert
 
 ```
@@ -496,6 +541,7 @@ INSERT INTO
 VALUES
   ('_column1_', '_column2_')
 ```
+
 
 ### Update
 
@@ -511,6 +557,7 @@ AND
 column2 = ''
 ```
 
+
 ### Delete
 
 ```
@@ -521,6 +568,7 @@ WHERE
   AND column1 = ''
   AND column2 = ''
 ```
+
 
 ### Create Table
 
@@ -532,11 +580,13 @@ CREATE TABLE table1 (
 )
 ```
 
+
 ### Drop Table
 
 ```
 DROP TABLE table1
 ```
+
 
 ### Add Column
 
@@ -546,6 +596,7 @@ ALTER TABLE
 ADD
   COLUMN newColumn1 CHAR(200)
 ```
+
 
 ### Drop Column
 
@@ -558,6 +609,7 @@ ALTER TABLE
   table1 DROP COLUMN column2;
 ```
 
+
 ## sqlite
 
 ### Drop Database
@@ -566,11 +618,13 @@ ALTER TABLE
 DROP DATABASE database1
 ```
 
+
 ### Create Database
 
 ```
 CREATE DATABASE database1
 ```
+
 
 ### Select All Columns
 
@@ -582,6 +636,7 @@ FROM
 LIMIT
   200
 ```
+
 
 ### Select Count
 
@@ -595,6 +650,7 @@ WHERE
   AND column1 = ''
   AND column2 = ''
 ```
+
 
 ### Select Specific Columns
 
@@ -612,6 +668,7 @@ WHERE
 LIMIT
   200
 ```
+
 
 ### Select Distinct
 
@@ -628,6 +685,7 @@ LIMIT
   200
 ```
 
+
 ### Insert
 
 ```
@@ -636,6 +694,7 @@ INSERT INTO
 VALUES
   ('_column1_', '_column2_')
 ```
+
 
 ### Update
 
@@ -651,6 +710,7 @@ AND
 column2 = ''
 ```
 
+
 ### Delete
 
 ```
@@ -662,6 +722,7 @@ WHERE
   AND column2 = ''
 ```
 
+
 ### Create Table
 
 ```
@@ -672,11 +733,13 @@ CREATE TABLE table1 (
 )
 ```
 
+
 ### Drop Table
 
 ```
 DROP TABLE table1
 ```
+
 
 ### Add Column
 
@@ -686,6 +749,7 @@ ALTER TABLE
 ADD
   COLUMN newColumn1 TEXT
 ```
+
 
 ### Drop Column
 
@@ -698,6 +762,7 @@ ALTER TABLE
   table1 DROP COLUMN column2;
 ```
 
+
 ## cassandra
 
 ### Create Keyspace
@@ -707,11 +772,13 @@ CREATE KEYSPACE IF NOT EXISTS some_keyspace WITH replication = { 'class': 'Simpl
 'replication_factor': 3 };
 ```
 
+
 ### Drop Keyspace
 
 ```
 DROP KEYSPACE IF EXISTS database1;
 ```
+
 
 ### Select All Columns
 
@@ -723,6 +790,7 @@ FROM
 LIMIT
   200
 ```
+
 
 ### Select Specific Columns
 
@@ -741,6 +809,7 @@ LIMIT
   200
 ```
 
+
 ### Insert
 
 ```
@@ -749,6 +818,7 @@ INSERT INTO
 VALUES
   ('_id_', '_column1_', '_column2_')
 ```
+
 
 ### Update
 
@@ -764,6 +834,7 @@ AND
 column2 = ''
 ```
 
+
 ### Delete
 
 ```
@@ -775,6 +846,7 @@ WHERE
   AND column2 = ''
 ```
 
+
 ## mongodb
 
 ### Drop Database
@@ -782,6 +854,7 @@ WHERE
 ```
 db.dropDatabase()
 ```
+
 
 ### Select All Columns
 
@@ -791,6 +864,7 @@ db.collection('table1')
   .limit(200)
   .toArray();
 ```
+
 
 ### Select Specific Columns
 
@@ -805,6 +879,7 @@ db.collection('table1')
   .toArray();
 ```
 
+
 ### Select Distinct
 
 ```
@@ -818,6 +893,7 @@ db.collection('table1')
   )
 ```
 
+
 ### Insert
 
 ```
@@ -828,6 +904,7 @@ db.collection('table1')
     "column2": 123
   }]);
 ```
+
 
 ### Update
 
@@ -846,6 +923,7 @@ db.collection('table1')
   });
 ```
 
+
 ### Delete
 
 ```
@@ -857,11 +935,13 @@ db.collection('table1')
   });
 ```
 
+
 ### Create Collection
 
 ```
 db.createCollection("table1")
 ```
+
 
 ### Drop Collection
 
@@ -869,6 +949,7 @@ db.createCollection("table1")
 db.collection('table1')
   .drop()
 ```
+
 
 ## redis
 
@@ -878,11 +959,13 @@ db.collection('table1')
 db.set("key", "value123")
 ```
 
+
 ### Get Value by Key
 
 ```
 db.get("key")
 ```
+
 
 ### Scan for keys
 
@@ -890,11 +973,13 @@ db.get("key")
 db.keys("*")
 ```
 
+
 ### Hashset > Set Value
 
 ```
 db.hSet("hash_key1", "field1", "value1")
 ```
+
 
 ### Hashset > Get Value By Key
 
@@ -902,11 +987,13 @@ db.hSet("hash_key1", "field1", "value1")
 db.hGetAll("hash_key1")
 ```
 
+
 ### Hashset > Values
 
 ```
 db.hVals("hash_key1")
 ```
+
 
 ### Hashset > Check if key exists
 
@@ -914,11 +1001,13 @@ db.hVals("hash_key1")
 db.hExists("hash_key1", "field1")
 ```
 
+
 ### List > Get Items
 
 ```
 db.lRange("list_key1", 0, -1)
 ```
+
 
 ### List > Push item to the front
 
@@ -926,11 +1015,13 @@ db.lRange("list_key1", 0, -1)
 db.lPush("list_key1", "value")
 ```
 
+
 ### List > Push item to the back
 
 ```
 db.rPush("list_key1", "value")
 ```
+
 
 ### List > Delete item from the front
 
@@ -938,11 +1029,13 @@ db.rPush("list_key1", "value")
 db.lPop("list_key1")
 ```
 
+
 ### List > Delete item from the back
 
 ```
 db.rPop("list_key1")
 ```
+
 
 ### Set > Get Items
 
@@ -950,11 +1043,13 @@ db.rPop("list_key1")
 db.sMembers("set_key1")
 ```
 
+
 ### Set > Add Item
 
 ```
 db.sAdd("set_key1", "value1")
 ```
+
 
 ### Set > Is a member of set
 
@@ -962,11 +1057,13 @@ db.sAdd("set_key1", "value1")
 db.sIsMember("set_key1", "value1")
 ```
 
+
 ### Set > Total Size
 
 ```
 db.sCard("set_key1")
 ```
+
 
 ### Set > Remove last item
 
@@ -974,11 +1071,13 @@ db.sCard("set_key1")
 db.sPop("set_key1")
 ```
 
+
 ### Sorted Set > Get Items
 
 ```
 db.zRange("sorted_set_key1", 0, -1)
 ```
+
 
 ### Sorted Set > Add Item
 
@@ -989,8 +1088,10 @@ db.zAdd("sorted_set_key1", [{
 }])
 ```
 
+
 ### Publish a message
 
 ```
 db.publish("pubsub_channel_key1", "some_message")
 ```
+
