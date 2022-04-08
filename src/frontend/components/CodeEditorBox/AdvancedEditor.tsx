@@ -1,8 +1,8 @@
+import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
 import { useAsyncDebounce } from 'react-table';
 import { useEffect, useRef, useState } from 'react';
 import { styled } from '@mui/system';
 import { useDarkModeSetting } from 'src/frontend/hooks/useSetting';
-import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
 
 type AdvancedEditorProps = {
   language?: 'sql' | string;
