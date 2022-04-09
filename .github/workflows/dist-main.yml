@@ -1,7 +1,9 @@
-name: package-electron-beta
+name: dist-main
 
 on:
   workflow_dispatch:
+    inputs:
+      message:
 
 jobs:
   create_release:
@@ -17,23 +19,17 @@ jobs:
         uses: martinbeentjes/npm-get-version-action@master
         with:
           path: '.'
-      - uses: dev-drprasad/delete-tag-and-release@v0.2.0
-        with:
-          delete_release: true
-          tag_name: beta
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/create-release@v1
         id: create_release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: beta
-          release_name: beta
+          tag_name: ${{ steps.package-version.outputs.current-version }}
+          release_name: ${{ steps.package-version.outputs.current-version }}
           body: |
-            Version: ${{ steps.package-version.outputs.current-version }}
+            ${{ github.event.inputs.message }}
           draft: false
-          prerelease: true
+          prerelease: false
 
   build_windows:
     needs: [create_release]
@@ -54,7 +50,7 @@ jobs:
         with:
           upload_url: ${{ needs.create_release.outputs.release_upload_url }}
           asset_path: ./dist/sqlui-native.exe
-          asset_name: sqlui-native-beta.exe
+          asset_name: sqlui-native-${{ needs.create_release.outputs.package_version }}.exe
           asset_content_type: application/octet-stream
 
   build_macos:
@@ -76,7 +72,7 @@ jobs:
         with:
           upload_url: ${{ needs.create_release.outputs.release_upload_url }}
           asset_path: ./dist/sqlui-native.dmg
-          asset_name: sqlui-native-beta.dmg
+          asset_name: sqlui-native-${{ needs.create_release.outputs.package_version }}.dmg
           asset_content_type: application/octet-stream
 
   build_linux:
@@ -100,7 +96,7 @@ jobs:
         with:
           upload_url: ${{ needs.create_release.outputs.release_upload_url }}
           asset_path: ./dist/sqlui-native.deb
-          asset_name: sqlui-native-beta.deb
+          asset_name: sqlui-native-${{ needs.create_release.outputs.package_version }}.deb
           asset_content_type: application/octet-stream
 
       - uses: actions/upload-release-asset@v1
@@ -109,7 +105,7 @@ jobs:
         with:
           upload_url: ${{ needs.create_release.outputs.release_upload_url }}
           asset_path: ./dist/sqlui-native.rpm
-          asset_name: sqlui-native-beta.rpm
+          asset_name: sqlui-native-${{ needs.create_release.outputs.package_version }}.rpm
           asset_content_type: application/octet-stream
 
       - uses: actions/upload-release-asset@v1
@@ -118,8 +114,23 @@ jobs:
         with:
           upload_url: ${{ needs.create_release.outputs.release_upload_url }}
           asset_path: ./dist/sqlui-native.snap
-          asset_name: sqlui-native-beta.snap
+          asset_name: sqlui-native-${{ needs.create_release.outputs.package_version }}.snap
           asset_content_type: application/octet-stream
+
+  publish:
+    needs: [create_release, build_windows, build_macos, build_linux]
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{ github.head_ref }}
+      - run: npm version --no-git-tag-version patch
+      - run: |
+          echo "{ \"version\": \"${{ needs.create_release.outputs.package_version }}\" }" > release.json
+      - uses: EndBug/add-and-commit@v8
+        with:
+          message: 'CI / CD - New Release ${{needs.create_release.outputs.package_version}}'
 
   roll_back:
     if: failure()
@@ -133,6 +144,6 @@ jobs:
       - uses: dev-drprasad/delete-tag-and-release@v0.2.0
         with:
           delete_release: true
-          tag_name: 'beta'
+          tag_name: '${{ needs.create_release.outputs.package_version }}'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
