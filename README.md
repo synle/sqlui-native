@@ -1,4 +1,4 @@
-[![main-build](https://github.com/synle/sqlui-native/actions/workflows/main-build.yml/badge.svg)](https://github.com/synle/sqlui-native/actions/workflows/main-build.yml)
+[![build-main](https://github.com/synle/sqlui-native/actions/workflows/build-main.yml/badge.svg)](https://github.com/synle/sqlui-native/actions/workflows/build-main.yml)
 
 # [sqlui-native](https://github.com/synle/sqlui-native)
 
