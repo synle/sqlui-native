@@ -59,7 +59,7 @@
     "build": "npm run build-react && concurrently \"npm run build-electron\" \"npm run build-mocked-sever\"",
     "test-ci": "cross-env CI=true npm test",
     "test": "jest src",
-    "fix-import": "npx import-fixer --groupImport --aggressive --transformRelativeImport",
+    "fix-import": "npx import-fixer --groupImport --aggressive --transformRelativeImport --importQuote=single",
     "preformat": "npm run fix-import",
     "format": "npx prettier --config ./.prettierrc --write **/*.{ts,tsx,js,jsx,scss,yml,html,json,md}",
     "lint": "eslint --fix --ext .tsx --ext .ts src"
