@@ -3,10 +3,10 @@ import TextField from '@mui/material/TextField';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import React from 'react';
+import { DEFAULT_TABLE_PAGE_SIZE, pageSizeOptions } from 'src/frontend/components/DataTable';
 import Select from 'src/frontend/components/Select';
 import { useQuerySizeSetting, useSetting } from 'src/frontend/hooks/useSetting';
 import { SqluiFrontend } from 'typings';
-import { pageSizeOptions, DEFAULT_TABLE_PAGE_SIZE } from 'src/frontend/components/DataTable';
 
 type SettingsProps = {};
 
