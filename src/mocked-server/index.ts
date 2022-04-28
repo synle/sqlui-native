@@ -1,7 +1,7 @@
 import bodyParser from 'body-parser';
 import express from 'express';
-import multer from 'multer';
 import fs from 'fs';
+import multer from 'multer';
 import { setUpDataEndpoints } from 'src/common/Endpoints';
 
 const port = 3001;
