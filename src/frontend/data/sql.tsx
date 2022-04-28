@@ -1,4 +1,8 @@
 import {
+  databaseActionScripts as CassandraDatabaseActionScripts,
+  tableActionScripts as CassandraTableActionScripts,
+} from 'src/frontend/scripts/cassandra';
+import {
   databaseActionScripts as MongodbDatabaseActionScripts,
   tableActionScripts as MongodbTableActionScripts,
 } from 'src/frontend/scripts/mongodb';
@@ -6,10 +10,6 @@ import {
   databaseActionScripts as RedisDatabaseActionScripts,
   tableActionScripts as RedisTableActionScripts,
 } from 'src/frontend/scripts/redis';
-import {
-  databaseActionScripts as CassandraDatabaseActionScripts,
-  tableActionScripts as CassandraTableActionScripts,
-} from 'src/frontend/scripts/cassandra';
 import {
   databaseActionScripts as RmdbDatabaseActionScripts,
   tableActionScripts as RmdbTableActionScripts,
