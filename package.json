@@ -89,7 +89,7 @@
     "cassandra-driver": "^3.6.0",
     "connection-string-parser": "^1.0.4",
     "fuzzysort": "^1.2.1",
-    "js-beautify": "^1.14.2",
+    "js-beautify": "^1.14.3",
     "json-2-csv": "^3.17.0",
     "mariadb": "^3.0.0",
     "monaco-editor": "^0.32.1",
