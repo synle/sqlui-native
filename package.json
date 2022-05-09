@@ -93,7 +93,7 @@
     "json-2-csv": "^3.17.1",
     "mariadb": "^3.0.0",
     "monaco-editor": "^0.32.1",
-    "mongodb": "^4.4.0",
+    "mongodb": "^4.5.0",
     "mysql2": "^2.3.3",
     "pg": "^8.7.3",
     "pg-hstore": "^2.3.4",
