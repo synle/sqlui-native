@@ -455,7 +455,7 @@ export default function MissionControl() {
     });
 
     selectCommand({
-      event: 'clientEvent/query/changeActiveQuery',
+      event: 'clientEvent/query/apply/active',
       data: {
         connectionId: connection.id,
         databaseId: '',
@@ -729,7 +729,7 @@ export default function MissionControl() {
           }
           break;
 
-        case 'clientEvent/query/changeActiveQuery':
+        case 'clientEvent/query/apply/active':
           if (command.data) {
             onUpdateActiveQuery(command.data as SqluiFrontend.PartialConnectionQuery);
 

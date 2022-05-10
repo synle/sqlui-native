@@ -223,7 +223,7 @@ export module SqluiEnums {
     | 'clientEvent/connection/duplicate'
     | 'clientEvent/connection/export'
     | 'clientEvent/connection/select'
-    | 'clientEvent/query/changeActiveQuery'
+    | 'clientEvent/query/apply/active' // currently selected / active query only
     | 'clientEvent/query/apply'
     | 'clientEvent/query/new'
     | 'clientEvent/query/rename'
