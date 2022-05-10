@@ -207,6 +207,7 @@ export function refreshAfterExecution(
     '.UPDATE',
     '.DROP',
     '.CREATECOLLECTION',
+    '.CREATEDATABASE',
     '.CREATE'
   ];
 

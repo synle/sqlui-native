@@ -142,8 +142,9 @@ export default class MongoDBDataAdapter extends BaseDataAdapter implements IData
           throw `Invalid syntax. MongoDB syntax in sqlui-native starts with '${MONGO_ADAPTER_PREFIX}.'. Refer to the syntax help in this link https://synle.github.io/sqlui-native/guides#mongodb`;
         }
 
-        if(sql.includes('db.create(') && sql.includes(')')){
-          let databaseName = sql.replace('db.create(','').replace(')','').replace(/['"]/g,'').trim();
+        if(sql.includes('db.create(') && sql.includes('db.createDatabase(') && sql.includes(')')){
+          // TODO: see if we need to be more strict with the regex
+          let databaseName = sql.replace('db.create(','').replace(')','').replace(/[;'" ]/g,'').trim();
           await this.createDatabase(databaseName);
           return resolve( {
                       ok: true

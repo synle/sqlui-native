@@ -849,6 +849,13 @@ WHERE
 
 ## mongodb
 
+### Create Database
+
+```
+db.create('database1')
+```
+
+
 ### Drop Database
 
 ```
