@@ -201,15 +201,21 @@ export default function MissionControl() {
     }, 100);
   };
 
-  const onUpdateActiveQuery = async (data: SqluiFrontend.PartialConnectionQuery) => {
-    onChangeActiveQuery(data);
-  };
+  const onApplyQuery = async (data: SqluiFrontend.PartialConnectionQuery, openQueryInNewTab : boolean, toastMessage : string | undefined) => {
+    if(openQueryInNewTab === true){
+      onAddQuery({
+        ...data,
+        name: `Query ${new Date().toLocaleString()} - ${data.databaseId}`,
+      });
+    } else {
+      onChangeActiveQuery(data);
+    }
 
-  const onCreateAndMakeNewQueryActive = async (data: SqluiFrontend.PartialConnectionQuery) => {
-    onAddQuery({
-      ...data,
-      name: `Query ${new Date().toLocaleString()} - ${data.databaseId}`,
-    });
+    if(toastMessage){
+      await addToast({
+        message: toastMessage,
+      });
+    }
   };
 
   const onShowQueryHelp = async () => {
@@ -729,31 +735,35 @@ export default function MissionControl() {
           }
           break;
 
-        case 'clientEvent/query/apply/active':
+        case 'clientEvent/query/apply':// based on the setting use either new query or selected query
           if (command.data) {
-            onUpdateActiveQuery(command.data as SqluiFrontend.PartialConnectionQuery);
+            const querySelectionMode = settings?.querySelectionMode || 'new-tab';
 
-            // show the toast with the label
-            if (command.label) {
-              await addToast({
-                message: command.label,
-              });
-            }
+            onApplyQuery(
+              command.data as SqluiFrontend.PartialConnectionQuery,
+              querySelectionMode === 'new-tab',
+              command.label
+            );
           }
           break;
 
-        case 'clientEvent/query/apply':
+        case 'clientEvent/query/apply/active':// currently selected / active query only
           if (command.data) {
-            settings?.querySelectionMode === 'same-tab'
-              ? onUpdateActiveQuery(command.data as SqluiFrontend.PartialConnectionQuery)
-              : onCreateAndMakeNewQueryActive(command.data as SqluiFrontend.PartialConnectionQuery);
+            onApplyQuery(
+              command.data as SqluiFrontend.PartialConnectionQuery,
+              false, // same-tab
+              command.label
+            );
+          }
+          break;
 
-            // show the toast with the label
-            if (command.label) {
-              await addToast({
-                message: command.label,
-              });
-            }
+        case 'clientEvent/query/apply/new':// create new query and apply
+          if (command.data) {
+            onApplyQuery(
+              command.data as SqluiFrontend.PartialConnectionQuery,
+              true, // new-tab
+              command.label
+            );
           }
           break;
 
