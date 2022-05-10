@@ -20,7 +20,8 @@ export module SqluiCore {
     | 'sqlite'
     | 'cassandra'
     | 'mongodb'
-    | 'redis';
+    | 'redis'
+    | 'cosmosdb';
 
   export type CoreConnectionProps = {
     connection: string;
