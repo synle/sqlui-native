@@ -51,7 +51,7 @@ export default function DatabaseActions(props: DatabaseActionsProps) {
           sql: action.query,
         },
         label: action.description || `Applied "${action.label}" to active query tab.`,
-      })
+      }),
   }));
 
   return (

@@ -208,7 +208,7 @@ export default function MissionControl() {
   const onCreateAndMakeNewQueryActive = async (data: SqluiFrontend.PartialConnectionQuery) => {
     onAddQuery({
       ...data,
-      name: `Query ${new Date().toLocaleString()} - ${data.databaseId}`
+      name: `Query ${new Date().toLocaleString()} - ${data.databaseId}`,
     });
   };
 
