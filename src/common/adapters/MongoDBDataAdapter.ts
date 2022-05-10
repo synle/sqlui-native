@@ -122,8 +122,8 @@ export default class MongoDBDataAdapter extends BaseDataAdapter implements IData
     // TODO: check if this database name is there
     const databases = await this.getDatabases();
 
-    for(const database of databases){
-      if(database.name === newDatabase){
+    for (const database of databases) {
+      if (database.name === newDatabase) {
         throw 'Database already existed, cannot create this database';
       }
     }
@@ -142,13 +142,18 @@ export default class MongoDBDataAdapter extends BaseDataAdapter implements IData
           throw `Invalid syntax. MongoDB syntax in sqlui-native starts with '${MONGO_ADAPTER_PREFIX}.'. Refer to the syntax help in this link https://synle.github.io/sqlui-native/guides#mongodb`;
         }
 
-        if(sql.includes('db.create(') && sql.includes('db.createDatabase(') && sql.includes(')')){
+        if (sql.includes('db.create(') && sql.includes('db.createDatabase(') && sql.includes(')')) {
           // TODO: see if we need to be more strict with the regex
-          let databaseName = sql.replace('db.create(','').replace(')','').replace(/[;'" ]/g,'').trim();
+          let databaseName = sql
+            .replace('db.create(', '')
+            .replace('db.createDatabase(', '')
+            .replace(')', '')
+            .replace(/[;'" ]/g, '')
+            .trim();
           await this.createDatabase(databaseName);
-          return resolve( {
-                      ok: true
-                    })
+          return resolve({
+            ok: true,
+          });
         }
 
         const client = await this.getConnection();

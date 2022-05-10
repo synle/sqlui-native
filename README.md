@@ -166,10 +166,10 @@ MongoDB Collections is mapped to sqlui-native table. We scan the first 5 Documen
 
 #### Create new MongoDB Database
 
-As of now (v1.27.0),  you can create new mongodb using the following syntax
+As of now (v1.27.0), you can create new mongodb using the following syntax
 
 ```js
-db.create('new-database-name')
+db.create('new-database-name');
 ```
 
 ![image](https://user-images.githubusercontent.com/3792401/153538969-613f34e9-ce61-470d-ab4c-92f2c6db2196.png)
