@@ -175,6 +175,18 @@ export function getDropCollection(input: SqlAction.TableInput): SqlAction.Output
   }
 }
 
+export function getCreateDatabase(input: SqlAction.DatabaseInput): SqlAction.Output | undefined {
+  const label = `Create Database`;
+
+  if (input.dialect === 'mongodb') {
+    return {
+      label,
+      formatter,
+      query: `${MONGO_ADAPTER_PREFIX}.create('${input.databaseId}')`,
+    };
+  }
+}
+
 export function getDropDatabase(input: SqlAction.DatabaseInput): SqlAction.Output | undefined {
   const label = `Drop Database`;
 
@@ -202,5 +214,6 @@ export const tableActionScripts: SqlAction.TableActionScriptGenerator[] = [
 
 export const databaseActionScripts: SqlAction.DatabaseActionScriptGenerator[] = [
   getDivider,
+  getCreateDatabase,
   getDropDatabase,
 ];

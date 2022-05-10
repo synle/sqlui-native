@@ -96,6 +96,11 @@ Array [
   },
   Object {
     "formatter": "js",
+    "label": "Create Database",
+    "query": "db.create('database1')",
+  },
+  Object {
+    "formatter": "js",
     "label": "Drop Database",
     "query": "db.dropDatabase()",
   },

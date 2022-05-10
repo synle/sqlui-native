@@ -166,11 +166,11 @@ MongoDB Collections is mapped to sqlui-native table. We scan the first 5 Documen
 
 #### Create new MongoDB Database
 
-Given the limitation of the mongodb NodeJS library, there is not a direct API that we can use to create the MongoDB database.
+As of now (v1.27.0), you can create new mongodb using the following syntax
 
-- To create a mongoDB database, simply duplicate your existing DB connection
-- Update the connection string to add the new database name to the end of the list.
-- Then execute the following `db.createCollection("some_collection_name")` to create at least one collection.
+```js
+db.create('new-database-name');
+```
 
 ![image](https://user-images.githubusercontent.com/3792401/153538969-613f34e9-ce61-470d-ab4c-92f2c6db2196.png)
 
