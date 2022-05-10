@@ -205,6 +205,13 @@ export default function MissionControl() {
     onChangeActiveQuery(data);
   };
 
+  const onCreateAndMakeNewQueryActive = async (data: SqluiFrontend.PartialConnectionQuery) => {
+    onAddQuery({
+      ...data,
+      name: `Query ${new Date().toLocaleString()} - ${data.databaseId}`,
+    });
+  };
+
   const onShowQueryHelp = async () => {
     let data: string;
 
@@ -650,6 +657,10 @@ export default function MissionControl() {
           onUpdateSetting('queryTabOrientation', command.data as string);
           break;
 
+        case 'clientEvent/changeQuerySelectionMode':
+          onUpdateSetting('querySelectionMode', command.data as string);
+          break;
+
         case 'clientEvent/showQueryHelp':
           onShowQueryHelp();
           break;
@@ -721,6 +732,21 @@ export default function MissionControl() {
         case 'clientEvent/query/changeActiveQuery':
           if (command.data) {
             onUpdateActiveQuery(command.data as SqluiFrontend.PartialConnectionQuery);
+
+            // show the toast with the label
+            if (command.label) {
+              await addToast({
+                message: command.label,
+              });
+            }
+          }
+          break;
+
+        case 'clientEvent/query/apply':
+          if (command.data) {
+            settings?.querySelectionMode === 'same-tab'
+              ? onUpdateActiveQuery(command.data as SqluiFrontend.PartialConnectionQuery)
+              : onCreateAndMakeNewQueryActive(command.data as SqluiFrontend.PartialConnectionQuery);
 
             // show the toast with the label
             if (command.label) {

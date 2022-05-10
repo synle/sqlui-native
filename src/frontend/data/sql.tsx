@@ -1,3 +1,4 @@
+import SelectAllIcon from '@mui/icons-material/SelectAll';
 import {
   databaseActionScripts as CassandraDatabaseActionScripts,
   tableActionScripts as CassandraTableActionScripts,
@@ -58,7 +59,13 @@ export function getTableActions(tableActionInput: SqlAction.TableInput) {
   return actions;
 }
 export function getDatabaseActions(databaseActionInput: SqlAction.DatabaseInput) {
-  const actions: SqlAction.Output[] = [];
+  const actions: SqlAction.Output[] = [
+    {
+      label: 'Select',
+      description: `Selected the related database and connection.`,
+      icon: <SelectAllIcon />,
+    },
+  ];
 
   let scriptsToUse: SqlAction.DatabaseActionScriptGenerator[] = [];
   switch (databaseActionInput.dialect) {
