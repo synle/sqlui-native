@@ -128,6 +128,7 @@ export module SqluiFrontend {
     queryTabOrientation?: 'vertical' | 'horizontal';
     querySize?: number;
     tablePageSize?: number;
+    querySelectionMode?: 'same-tab' | 'new-tab';
   };
 
   export type SettingKey = keyof Settings;
@@ -162,6 +163,8 @@ export module SqlAction {
   export type Output = {
     label: string;
     query?: string;
+    description?: string;
+    icon?: JSX.Element;
     formatter?: 'sql' | 'js';
   };
 
@@ -220,6 +223,7 @@ export module SqluiEnums {
     | 'clientEvent/connection/export'
     | 'clientEvent/connection/select'
     | 'clientEvent/query/changeActiveQuery'
+    | 'clientEvent/query/apply'
     | 'clientEvent/query/new'
     | 'clientEvent/query/rename'
     | 'clientEvent/query/export'

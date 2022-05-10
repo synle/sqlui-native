@@ -55,7 +55,7 @@ export default function TableActions(props: TableActionsProps) {
     onClick: async () =>
       action.query &&
       selectCommand({
-        event: 'clientEvent/query/changeActiveQuery',
+        event: 'clientEvent/query/apply',
         data: {
           connectionId: connectionId,
           databaseId: databaseId,

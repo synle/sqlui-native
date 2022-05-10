@@ -50,6 +50,21 @@ export default function Settings(props: SettingsProps) {
           </Select>
         </div>
         <Typography className='FormInput__Label' variant='subtitle1'>
+          Query Selection Mode
+          <Tooltip title='Whether or not to open the query from bookmarks in a new tab or in the same tab.'>
+            <HelpIcon fontSize='small' sx={{ ml: 1 }} />
+          </Tooltip>
+        </Typography>
+        <div className='FormInput__Row'>
+          <Select
+            value={settings.querySelectionMode || 'same-tab'}
+            onChange={(newValue) => onSettingChange('querySelectionMode', newValue)}
+            sx={{ width: '100%' }}>
+            <option value='same-tab'>Same Tab</option>
+            <option value='new-tab'>New Tab</option>
+          </Select>
+        </div>
+        <Typography className='FormInput__Label' variant='subtitle1'>
           Editor Mode
           <Tooltip title='Which editor to use? Simple Editor vs Advanced Editor'>
             <HelpIcon fontSize='small' sx={{ ml: 1 }} />

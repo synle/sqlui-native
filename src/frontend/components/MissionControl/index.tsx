@@ -28,7 +28,7 @@ import {
   useGetSessions,
   useUpsertSession,
 } from 'src/frontend/hooks/useSession';
-import { useSetting } from 'src/frontend/hooks/useSetting';
+import { useSetting, useQuerySelectionMode } from 'src/frontend/hooks/useSetting';
 import { useShowHide } from 'src/frontend/hooks/useShowHide';
 import useToaster from 'src/frontend/hooks/useToaster';
 import {
@@ -123,6 +123,7 @@ export default function MissionControl() {
   const { mutateAsync: deleteConnection } = useDeleteConnection();
   const { mutateAsync: reconnectConnection } = useRetryConnection();
   const { mutateAsync: duplicateConnection } = useDuplicateConnection();
+  const querySelectionMode = useQuerySelectionMode();
 
   const onCloseQuery = async (query: SqluiFrontend.ConnectionQuery) => {
     try {
@@ -203,6 +204,13 @@ export default function MissionControl() {
 
   const onUpdateActiveQuery = async (data: SqluiFrontend.PartialConnectionQuery) => {
     onChangeActiveQuery(data);
+  };
+
+  const onCreateAndMakeNewQueryActive = async (data: SqluiFrontend.PartialConnectionQuery) => {
+    onAddQuery({
+      ...data,
+      name: `Query ${new Date().toLocaleString()} - ${data.databaseId}`
+    });
   };
 
   const onShowQueryHelp = async () => {
@@ -721,6 +729,21 @@ export default function MissionControl() {
         case 'clientEvent/query/changeActiveQuery':
           if (command.data) {
             onUpdateActiveQuery(command.data as SqluiFrontend.PartialConnectionQuery);
+
+            // show the toast with the label
+            if (command.label) {
+              await addToast({
+                message: command.label,
+              });
+            }
+          }
+          break;
+
+        case 'clientEvent/query/apply':
+          if (command.data) {
+            querySelectionMode === 'same-tab'
+              ? onUpdateActiveQuery(command.data as SqluiFrontend.PartialConnectionQuery)
+              : onCreateAndMakeNewQueryActive(command.data as SqluiFrontend.PartialConnectionQuery);
 
             // show the toast with the label
             if (command.label) {
