@@ -128,6 +128,9 @@ export module SqluiFrontend {
     queryTabOrientation?: 'vertical' | 'horizontal';
     querySize?: number;
     tablePageSize?: number;
+    /**
+     * whether or not to open the bookmarked query in the same tab or new tab
+     */
     querySelectionMode?: 'same-tab' | 'new-tab';
   };
 
@@ -223,8 +226,9 @@ export module SqluiEnums {
     | 'clientEvent/connection/duplicate'
     | 'clientEvent/connection/export'
     | 'clientEvent/connection/select'
-    | 'clientEvent/query/changeActiveQuery'
-    | 'clientEvent/query/apply'
+    | 'clientEvent/query/apply/active' // currently selected / active query only
+    | 'clientEvent/query/apply/new' // create new query and apply
+    | 'clientEvent/query/apply' // based on the setting use either new query or selected query
     | 'clientEvent/query/new'
     | 'clientEvent/query/rename'
     | 'clientEvent/query/export'
