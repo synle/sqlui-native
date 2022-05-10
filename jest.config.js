@@ -9,5 +9,5 @@ module.exports = {
     '^src/(.*)': '<rootDir>/src/$1',
   },
   collectCoverage: true,
-  moduleDirectories: ['node_modules', '.'],
+  moduleDirectories: ['node_modules', '<rootDir>'],
 };
