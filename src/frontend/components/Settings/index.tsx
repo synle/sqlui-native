@@ -57,7 +57,7 @@ export default function Settings(props: SettingsProps) {
         </Typography>
         <div className='FormInput__Row'>
           <Select
-            value={settings.querySelectionMode || 'same-tab'}
+            value={settings.querySelectionMode || 'new-tab'}
             onChange={(newValue) => onSettingChange('querySelectionMode', newValue)}
             sx={{ width: '100%' }}>
             <option value='same-tab'>Same Tab</option>
