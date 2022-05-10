@@ -658,6 +658,10 @@ export default function MissionControl() {
           onUpdateSetting('queryTabOrientation', command.data as string);
           break;
 
+        case 'clientEvent/changeQuerySelectionMode':
+          onUpdateSetting('querySelectionMode', command.data as string);
+          break;
+
         case 'clientEvent/showQueryHelp':
           onShowQueryHelp();
           break;

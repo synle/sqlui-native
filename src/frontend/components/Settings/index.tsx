@@ -51,7 +51,7 @@ export default function Settings(props: SettingsProps) {
         </div>
         <Typography className='FormInput__Label' variant='subtitle1'>
           Query Selection Mode
-          <Tooltip title='Whether or not to open the query from bookmarks in a new tab or in the same tab.'>
+          <Tooltip title='Whether or not to open the bookmarked query in a new tab or in the same tab.'>
             <HelpIcon fontSize='small' sx={{ ml: 1 }} />
           </Tooltip>
         </Typography>

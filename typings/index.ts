@@ -216,6 +216,7 @@ export module SqluiEnums {
     | 'clientEvent/showQueryHelp'
     | 'clientEvent/import'
     | 'clientEvent/exportAll'
+    | 'clientEvent/changeQuerySelectionMode'
     | 'clientEvent/connection/new'
     | 'clientEvent/connection/delete'
     | 'clientEvent/connection/refresh'

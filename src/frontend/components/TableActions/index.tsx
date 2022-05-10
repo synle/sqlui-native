@@ -52,6 +52,7 @@ export default function TableActions(props: TableActionsProps) {
 
   const options = actions.map((action) => ({
     label: action.label,
+    startIcon: action.icon,
     onClick: async () =>
       action.query &&
       selectCommand({

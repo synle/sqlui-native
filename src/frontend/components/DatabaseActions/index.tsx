@@ -39,22 +39,20 @@ export default function DatabaseActions(props: DatabaseActionsProps) {
     querySize,
   });
 
-  const options = [
-    ...actions.map((action) => ({
-      label: action.label,
-      startIcon: action.icon,
-      onClick: async () =>
-        selectCommand({
-          event: 'clientEvent/query/apply',
-          data: {
-            connectionId: connectionId,
-            databaseId: databaseId,
-            sql: action.query,
-          },
-          label: action.description || `Applied "${action.label}" to active query tab.`,
-        })
-    })),
-  ];
+  const options = actions.map((action) => ({
+    label: action.label,
+    startIcon: action.icon,
+    onClick: async () =>
+      selectCommand({
+        event: 'clientEvent/query/apply',
+        data: {
+          connectionId: connectionId,
+          databaseId: databaseId,
+          sql: action.query,
+        },
+        label: action.description || `Applied "${action.label}" to active query tab.`,
+      })
+  }));
 
   return (
     <div className='DatabaseActions'>
