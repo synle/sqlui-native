@@ -12,13 +12,13 @@ export default class MongoDBDataAdapter extends BaseDataAdapter implements IData
     super(connectionOption);
   }
 
-  private async getConnection(): Promise<MongoClient> {
+  private async getConnection(connectionToUse?: string): Promise<MongoClient> {
     // attempt to pull in connections
     return new Promise<MongoClient>(async (resolve, reject) => {
       try {
         setTimeout(() => reject('MongoDB connection Timeout'), MAX_CONNECTION_TIMEOUT);
 
-        const client = new MongoClient(this.connectionOption);
+        const client = new MongoClient(connectionToUse || this.connectionOption);
         await client.connect();
         resolve(client);
       } catch (err) {
@@ -116,11 +116,38 @@ export default class MongoDBDataAdapter extends BaseDataAdapter implements IData
     });
   }
 
+  private async createDatabase(newDatabase: string): Promise<void> {
+    const connectionToUse = `${this.connectionOption}/${newDatabase}`;
+
+    // TODO: check if this database name is there
+    const databases = await this.getDatabases();
+
+    for(const database of databases){
+      if(database.name === newDatabase){
+        throw 'Database already existed, cannot create this database';
+      }
+    }
+
+    // connect to this client
+    const client = await this.getConnection(connectionToUse);
+
+    // create a dummy collection
+    await client.db(newDatabase).createCollection('test-collection');
+  }
+
   async execute(sql: string, database?: string): Promise<SqluiCore.Result> {
     return new Promise(async (resolve, reject) => {
       try {
         if (!sql.includes(`${MONGO_ADAPTER_PREFIX}.`)) {
           throw `Invalid syntax. MongoDB syntax in sqlui-native starts with '${MONGO_ADAPTER_PREFIX}.'. Refer to the syntax help in this link https://synle.github.io/sqlui-native/guides#mongodb`;
+        }
+
+        if(sql.includes('db.create(') && sql.includes(')')){
+          let databaseName = sql.replace('db.create(','').replace(')','').replace(/['"]/g,'').trim();
+          await this.createDatabase(databaseName);
+          return resolve( {
+                      ok: true
+                    })
         }
 
         const client = await this.getConnection();
