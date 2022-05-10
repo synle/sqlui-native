@@ -201,8 +201,12 @@ export default function MissionControl() {
     }, 100);
   };
 
-  const onApplyQuery = async (data: SqluiFrontend.PartialConnectionQuery, openQueryInNewTab : boolean, toastMessage : string | undefined) => {
-    if(openQueryInNewTab === true){
+  const onApplyQuery = async (
+    data: SqluiFrontend.PartialConnectionQuery,
+    openQueryInNewTab: boolean,
+    toastMessage: string | undefined,
+  ) => {
+    if (openQueryInNewTab === true) {
       onAddQuery({
         ...data,
         name: `Query ${new Date().toLocaleString()} - ${data.databaseId}`,
@@ -211,7 +215,7 @@ export default function MissionControl() {
       onChangeActiveQuery(data);
     }
 
-    if(toastMessage){
+    if (toastMessage) {
       await addToast({
         message: toastMessage,
       });
@@ -735,34 +739,34 @@ export default function MissionControl() {
           }
           break;
 
-        case 'clientEvent/query/apply':// based on the setting use either new query or selected query
+        case 'clientEvent/query/apply': // based on the setting use either new query or selected query
           if (command.data) {
             const querySelectionMode = settings?.querySelectionMode || 'new-tab';
 
             onApplyQuery(
               command.data as SqluiFrontend.PartialConnectionQuery,
               querySelectionMode === 'new-tab',
-              command.label
+              command.label,
             );
           }
           break;
 
-        case 'clientEvent/query/apply/active':// currently selected / active query only
+        case 'clientEvent/query/apply/active': // currently selected / active query only
           if (command.data) {
             onApplyQuery(
               command.data as SqluiFrontend.PartialConnectionQuery,
               false, // same-tab
-              command.label
+              command.label,
             );
           }
           break;
 
-        case 'clientEvent/query/apply/new':// create new query and apply
+        case 'clientEvent/query/apply/new': // create new query and apply
           if (command.data) {
             onApplyQuery(
               command.data as SqluiFrontend.PartialConnectionQuery,
               true, // new-tab
-              command.label
+              command.label,
             );
           }
           break;
