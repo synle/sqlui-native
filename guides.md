@@ -852,7 +852,7 @@ WHERE
 ### Create Database
 
 ```js
-db.create('database1')
+db.createDatabase('database1')
 ```
 
 
