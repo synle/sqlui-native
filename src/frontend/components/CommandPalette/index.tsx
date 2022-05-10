@@ -118,6 +118,18 @@ const ALL_COMMAND_PALETTE_OPTIONS: CommandOption[] = [
   { event: 'clientEvent/clearShowHides', label: 'Collapse All Connections' },
   { event: 'clientEvent/changeDarkMode', label: 'Follows System Settings for Dark Mode', data: '' },
 
+  {
+    event: 'clientEvent/changeQuerySelectionMode',
+    label: 'Open bookmarked queries in the same tab',
+    data: 'same-tab',
+  },
+
+  {
+    event: 'clientEvent/changeQuerySelectionMode',
+    label: 'Open bookmarked queries in a new tab',
+    data: 'new-tab',
+  },
+
   // sessions
   { event: 'clientEvent/session/switch', label: 'Switch Session' },
   { event: 'clientEvent/session/new', label: 'New Session' },

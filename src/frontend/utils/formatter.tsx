@@ -1,4 +1,5 @@
 import { format as _formatSQL } from 'sql-formatter';
+
 const _formatJS = require('js-beautify').js;
 
 export const formatSQL = _formatSQL;

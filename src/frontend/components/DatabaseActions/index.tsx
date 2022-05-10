@@ -1,5 +1,4 @@
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import SelectAllIcon from '@mui/icons-material/SelectAll';
 import IconButton from '@mui/material/IconButton';
 import { useState } from 'react';
 import DropdownButton from 'src/frontend/components/DropdownButton';
@@ -40,34 +39,20 @@ export default function DatabaseActions(props: DatabaseActionsProps) {
     querySize,
   });
 
-  const options = [
-    {
-      label: 'Select',
-      startIcon: <SelectAllIcon />,
-      onClick: () =>
-        selectCommand({
-          event: 'clientEvent/query/changeActiveQuery',
-          data: {
-            connectionId: connectionId,
-            databaseId: databaseId,
-          },
-        }),
-    },
-    ...actions.map((action) => ({
-      label: action.label,
-      onClick: async () =>
-        action.query &&
-        selectCommand({
-          event: 'clientEvent/query/changeActiveQuery',
-          data: {
-            connectionId: connectionId,
-            databaseId: databaseId,
-            sql: action.query,
-          },
-          label: `Applied "${action.label}" to active query tab.`,
-        }),
-    })),
-  ];
+  const options = actions.map((action) => ({
+    label: action.label,
+    startIcon: action.icon,
+    onClick: async () =>
+      selectCommand({
+        event: 'clientEvent/query/apply',
+        data: {
+          connectionId: connectionId,
+          databaseId: databaseId,
+          sql: action.query,
+        },
+        label: action.description || `Applied "${action.label}" to active query tab.`,
+      }),
+  }));
 
   return (
     <div className='DatabaseActions'>
