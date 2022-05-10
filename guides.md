@@ -8,21 +8,21 @@ Query Guides:
 
 ### Drop Database
 
-```
+```sql
 DROP DATABASE database1
 ```
 
 
 ### Create Database
 
-```
+```sql
 CREATE DATABASE database1
 ```
 
 
 ### Select All Columns
 
-```
+```sql
 SELECT
   *
 FROM
@@ -34,7 +34,7 @@ LIMIT
 
 ### Select Count
 
-```
+```sql
 SELECT
   COUNT(*)
 FROM
@@ -48,7 +48,7 @@ WHERE
 
 ### Select Specific Columns
 
-```
+```sql
 SELECT
   id,
   column1,
@@ -66,7 +66,7 @@ LIMIT
 
 ### Select Distinct
 
-```
+```sql
 SELECT
   DISTINCT column1
 FROM
@@ -82,7 +82,7 @@ LIMIT
 
 ### Insert
 
-```
+```sql
 INSERT INTO
   table1 (column1, column2)
 VALUES
@@ -92,7 +92,7 @@ VALUES
 
 ### Update
 
-```
+```js
 UPDATE table1
 SET id = '',
   column1 = '',
@@ -107,7 +107,7 @@ column2 = ''
 
 ### Delete
 
-```
+```sql
 DELETE FROM
   table1
 WHERE
@@ -119,7 +119,7 @@ WHERE
 
 ### Create Table
 
-```
+```sql
 CREATE TABLE table1 (
   id INT PRIMARY KEY NOT NULL,
   column1 INT NOT NULL,
@@ -130,14 +130,14 @@ CREATE TABLE table1 (
 
 ### Drop Table
 
-```
+```sql
 DROP TABLE table1
 ```
 
 
 ### Add Column
 
-```
+```sql
 ALTER TABLE
   table1
 ADD
@@ -147,7 +147,7 @@ ADD
 
 ### Drop Column
 
-```
+```sql
 ALTER TABLE
   table1 DROP COLUMN id;
 ALTER TABLE
@@ -161,21 +161,21 @@ ALTER TABLE
 
 ### Drop Database
 
-```
+```sql
 DROP DATABASE database1
 ```
 
 
 ### Create Database
 
-```
+```sql
 CREATE DATABASE database1
 ```
 
 
 ### Select All Columns
 
-```
+```sql
 SELECT
   *
 FROM
@@ -187,7 +187,7 @@ LIMIT
 
 ### Select Count
 
-```
+```sql
 SELECT
   COUNT(*)
 FROM
@@ -201,7 +201,7 @@ WHERE
 
 ### Select Specific Columns
 
-```
+```sql
 SELECT
   id,
   column1,
@@ -219,7 +219,7 @@ LIMIT
 
 ### Select Distinct
 
-```
+```sql
 SELECT
   DISTINCT column1
 FROM
@@ -235,7 +235,7 @@ LIMIT
 
 ### Insert
 
-```
+```sql
 INSERT INTO
   table1 (column1, column2)
 VALUES
@@ -245,7 +245,7 @@ VALUES
 
 ### Update
 
-```
+```js
 UPDATE table1
 SET id = '',
   column1 = '',
@@ -260,7 +260,7 @@ column2 = ''
 
 ### Delete
 
-```
+```sql
 DELETE FROM
   table1
 WHERE
@@ -272,7 +272,7 @@ WHERE
 
 ### Create Table
 
-```
+```sql
 CREATE TABLE table1 (
   id INT PRIMARY KEY NOT NULL,
   column1 INT NOT NULL,
@@ -283,14 +283,14 @@ CREATE TABLE table1 (
 
 ### Drop Table
 
-```
+```sql
 DROP TABLE table1
 ```
 
 
 ### Add Column
 
-```
+```sql
 ALTER TABLE
   table1
 ADD
@@ -300,7 +300,7 @@ ADD
 
 ### Drop Column
 
-```
+```sql
 ALTER TABLE
   table1 DROP COLUMN id;
 ALTER TABLE
@@ -314,21 +314,21 @@ ALTER TABLE
 
 ### Drop Database
 
-```
+```sql
 DROP DATABASE database1
 ```
 
 
 ### Create Database
 
-```
+```sql
 CREATE DATABASE database1
 ```
 
 
 ### Select All Columns
 
-```
+```sql
 SELECT
   TOP 200 *
 FROM
@@ -338,7 +338,7 @@ FROM
 
 ### Select Count
 
-```
+```sql
 SELECT
   COUNT(*)
 FROM
@@ -352,7 +352,7 @@ WHERE
 
 ### Select Specific Columns
 
-```
+```sql
 SELECT
   TOP 200 id,
   column1,
@@ -368,7 +368,7 @@ WHERE
 
 ### Select Distinct
 
-```
+```sql
 SELECT
   DISTINCT TOP 200 column1
 FROM
@@ -382,7 +382,7 @@ WHERE
 
 ### Insert
 
-```
+```sql
 INSERT INTO
   table1 (column1, column2)
 VALUES
@@ -392,7 +392,7 @@ VALUES
 
 ### Update
 
-```
+```js
 UPDATE table1
 SET id = '',
   column1 = '',
@@ -407,7 +407,7 @@ column2 = ''
 
 ### Delete
 
-```
+```sql
 DELETE FROM
   table1
 WHERE
@@ -419,7 +419,7 @@ WHERE
 
 ### Create Table
 
-```
+```sql
 CREATE TABLE table1 (
   id INT PRIMARY KEY NOT NULL,
   column1 INT NOT NULL,
@@ -430,14 +430,14 @@ CREATE TABLE table1 (
 
 ### Drop Table
 
-```
+```sql
 DROP TABLE table1
 ```
 
 
 ### Add Column
 
-```
+```sql
 ALTER TABLE
   table1
 ADD
@@ -447,7 +447,7 @@ ADD
 
 ### Drop Column
 
-```
+```sql
 ALTER TABLE
   table1 DROP COLUMN id;
 ALTER TABLE
@@ -461,21 +461,21 @@ ALTER TABLE
 
 ### Drop Database
 
-```
+```sql
 DROP DATABASE database1
 ```
 
 
 ### Create Database
 
-```
+```sql
 CREATE DATABASE database1
 ```
 
 
 ### Select All Columns
 
-```
+```sql
 SELECT
   *
 FROM
@@ -487,7 +487,7 @@ LIMIT
 
 ### Select Count
 
-```
+```sql
 SELECT
   COUNT(*)
 FROM
@@ -501,7 +501,7 @@ WHERE
 
 ### Select Specific Columns
 
-```
+```sql
 SELECT
   id,
   column1,
@@ -519,7 +519,7 @@ LIMIT
 
 ### Select Distinct
 
-```
+```sql
 SELECT
   DISTINCT column1
 FROM
@@ -535,7 +535,7 @@ LIMIT
 
 ### Insert
 
-```
+```sql
 INSERT INTO
   table1 (column1, column2)
 VALUES
@@ -545,7 +545,7 @@ VALUES
 
 ### Update
 
-```
+```js
 UPDATE table1
 SET id = '',
   column1 = '',
@@ -560,7 +560,7 @@ column2 = ''
 
 ### Delete
 
-```
+```sql
 DELETE FROM
   table1
 WHERE
@@ -572,7 +572,7 @@ WHERE
 
 ### Create Table
 
-```
+```sql
 CREATE TABLE table1 (
   id INT NOT NULL,
   column1 INT NOT NULL,
@@ -583,14 +583,14 @@ CREATE TABLE table1 (
 
 ### Drop Table
 
-```
+```sql
 DROP TABLE table1
 ```
 
 
 ### Add Column
 
-```
+```sql
 ALTER TABLE
   table1
 ADD
@@ -600,7 +600,7 @@ ADD
 
 ### Drop Column
 
-```
+```sql
 ALTER TABLE
   table1 DROP COLUMN id;
 ALTER TABLE
@@ -614,21 +614,21 @@ ALTER TABLE
 
 ### Drop Database
 
-```
+```sql
 DROP DATABASE database1
 ```
 
 
 ### Create Database
 
-```
+```sql
 CREATE DATABASE database1
 ```
 
 
 ### Select All Columns
 
-```
+```sql
 SELECT
   *
 FROM
@@ -640,7 +640,7 @@ LIMIT
 
 ### Select Count
 
-```
+```sql
 SELECT
   COUNT(*)
 FROM
@@ -654,7 +654,7 @@ WHERE
 
 ### Select Specific Columns
 
-```
+```sql
 SELECT
   id,
   column1,
@@ -672,7 +672,7 @@ LIMIT
 
 ### Select Distinct
 
-```
+```sql
 SELECT
   DISTINCT column1
 FROM
@@ -688,7 +688,7 @@ LIMIT
 
 ### Insert
 
-```
+```sql
 INSERT INTO
   table1 (column1, column2)
 VALUES
@@ -698,7 +698,7 @@ VALUES
 
 ### Update
 
-```
+```js
 UPDATE table1
 SET id = '',
   column1 = '',
@@ -713,7 +713,7 @@ column2 = ''
 
 ### Delete
 
-```
+```sql
 DELETE FROM
   table1
 WHERE
@@ -725,7 +725,7 @@ WHERE
 
 ### Create Table
 
-```
+```sql
 CREATE TABLE table1 (
   id INT PRIMARY KEY NOT NULL,
   column1 INT NOT NULL,
@@ -736,14 +736,14 @@ CREATE TABLE table1 (
 
 ### Drop Table
 
-```
+```sql
 DROP TABLE table1
 ```
 
 
 ### Add Column
 
-```
+```sql
 ALTER TABLE
   table1
 ADD
@@ -753,7 +753,7 @@ ADD
 
 ### Drop Column
 
-```
+```sql
 ALTER TABLE
   table1 DROP COLUMN id;
 ALTER TABLE
@@ -767,7 +767,7 @@ ALTER TABLE
 
 ### Create Keyspace
 
-```
+```sql
 CREATE KEYSPACE IF NOT EXISTS some_keyspace WITH replication = { 'class': 'SimpleStrategy',
 'replication_factor': 3 };
 ```
@@ -775,14 +775,14 @@ CREATE KEYSPACE IF NOT EXISTS some_keyspace WITH replication = { 'class': 'Simpl
 
 ### Drop Keyspace
 
-```
+```sql
 DROP KEYSPACE IF EXISTS database1;
 ```
 
 
 ### Select All Columns
 
-```
+```sql
 SELECT
   *
 FROM
@@ -794,7 +794,7 @@ LIMIT
 
 ### Select Specific Columns
 
-```
+```sql
 SELECT
   id,
   column1,
@@ -812,7 +812,7 @@ LIMIT
 
 ### Insert
 
-```
+```sql
 INSERT INTO
   table1 (id, column1, column2)
 VALUES
@@ -822,7 +822,7 @@ VALUES
 
 ### Update
 
-```
+```js
 UPDATE table1
 SET id = '',
   column1 = '',
@@ -837,7 +837,7 @@ column2 = ''
 
 ### Delete
 
-```
+```sql
 DELETE FROM
   table1
 WHERE
@@ -851,21 +851,21 @@ WHERE
 
 ### Create Database
 
-```
+```js
 db.create('database1')
 ```
 
 
 ### Drop Database
 
-```
+```js
 db.dropDatabase()
 ```
 
 
 ### Select All Columns
 
-```
+```js
 db.collection('table1')
   .find()
   .limit(200)
@@ -875,7 +875,7 @@ db.collection('table1')
 
 ### Select Specific Columns
 
-```
+```js
 db.collection('table1')
   .find({
     "id": 123,
@@ -889,7 +889,7 @@ db.collection('table1')
 
 ### Select Distinct
 
-```
+```js
 db.collection('table1')
   .distinct(
     'id', {
@@ -903,7 +903,7 @@ db.collection('table1')
 
 ### Insert
 
-```
+```js
 db.collection('table1')
   .insertMany([{
     "id": 123,
@@ -915,7 +915,7 @@ db.collection('table1')
 
 ### Update
 
-```
+```js
 db.collection('table1')
   .update({
     "id": 123,
@@ -933,7 +933,7 @@ db.collection('table1')
 
 ### Delete
 
-```
+```js
 db.collection('table1')
   .deleteMany({
     "id": 123,
@@ -945,14 +945,14 @@ db.collection('table1')
 
 ### Create Collection
 
-```
+```js
 db.createCollection("table1")
 ```
 
 
 ### Drop Collection
 
-```
+```js
 db.collection('table1')
   .drop()
 ```
@@ -962,133 +962,133 @@ db.collection('table1')
 
 ### Set Value
 
-```
+```js
 db.set("key", "value123")
 ```
 
 
 ### Get Value by Key
 
-```
+```js
 db.get("key")
 ```
 
 
 ### Scan for keys
 
-```
+```js
 db.keys("*")
 ```
 
 
 ### Hashset > Set Value
 
-```
+```js
 db.hSet("hash_key1", "field1", "value1")
 ```
 
 
 ### Hashset > Get Value By Key
 
-```
+```js
 db.hGetAll("hash_key1")
 ```
 
 
 ### Hashset > Values
 
-```
+```js
 db.hVals("hash_key1")
 ```
 
 
 ### Hashset > Check if key exists
 
-```
+```js
 db.hExists("hash_key1", "field1")
 ```
 
 
 ### List > Get Items
 
-```
+```js
 db.lRange("list_key1", 0, -1)
 ```
 
 
 ### List > Push item to the front
 
-```
+```js
 db.lPush("list_key1", "value")
 ```
 
 
 ### List > Push item to the back
 
-```
+```js
 db.rPush("list_key1", "value")
 ```
 
 
 ### List > Delete item from the front
 
-```
+```js
 db.lPop("list_key1")
 ```
 
 
 ### List > Delete item from the back
 
-```
+```js
 db.rPop("list_key1")
 ```
 
 
 ### Set > Get Items
 
-```
+```js
 db.sMembers("set_key1")
 ```
 
 
 ### Set > Add Item
 
-```
+```js
 db.sAdd("set_key1", "value1")
 ```
 
 
 ### Set > Is a member of set
 
-```
+```js
 db.sIsMember("set_key1", "value1")
 ```
 
 
 ### Set > Total Size
 
-```
+```js
 db.sCard("set_key1")
 ```
 
 
 ### Set > Remove last item
 
-```
+```js
 db.sPop("set_key1")
 ```
 
 
 ### Sorted Set > Get Items
 
-```
+```js
 db.zRange("sorted_set_key1", 0, -1)
 ```
 
 
 ### Sorted Set > Add Item
 
-```
+```js
 db.zAdd("sorted_set_key1", [{
   score: 1,
   value: "some_value"
@@ -1098,7 +1098,7 @@ db.zAdd("sorted_set_key1", [{
 
 ### Publish a message
 
-```
+```js
 db.publish("pubsub_channel_key1", "some_message")
 ```
 

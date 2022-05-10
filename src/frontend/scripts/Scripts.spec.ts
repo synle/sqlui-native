@@ -60,7 +60,7 @@ Query Guides:
       if (script && script.query) {
         commandGuides.push(`### ${script.label}\n`);
 
-        commandGuides.push('```');
+        commandGuides.push('```' + script.formatter);
         commandGuides.push(script.query);
         commandGuides.push('```\n\n');
       }
