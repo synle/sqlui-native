@@ -76,8 +76,3 @@ export function useTablePageSize() {
   const { settings } = useSetting();
   return parseInt(settings?.tablePageSize + '');
 }
-
-export function useQuerySelectionMode() : 'same-tab' | 'new-tab'{
-  const { settings } = useSetting();
-  return settings?.querySelectionMode === 'same-tab' ? 'same-tab' : 'new-tab';
-}

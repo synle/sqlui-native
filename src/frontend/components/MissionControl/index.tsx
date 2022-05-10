@@ -28,7 +28,7 @@ import {
   useGetSessions,
   useUpsertSession,
 } from 'src/frontend/hooks/useSession';
-import { useSetting, useQuerySelectionMode } from 'src/frontend/hooks/useSetting';
+import { useSetting } from 'src/frontend/hooks/useSetting';
 import { useShowHide } from 'src/frontend/hooks/useShowHide';
 import useToaster from 'src/frontend/hooks/useToaster';
 import {
@@ -123,7 +123,6 @@ export default function MissionControl() {
   const { mutateAsync: deleteConnection } = useDeleteConnection();
   const { mutateAsync: reconnectConnection } = useRetryConnection();
   const { mutateAsync: duplicateConnection } = useDuplicateConnection();
-  const querySelectionMode = useQuerySelectionMode();
 
   const onCloseQuery = async (query: SqluiFrontend.ConnectionQuery) => {
     try {
@@ -745,7 +744,7 @@ export default function MissionControl() {
 
         case 'clientEvent/query/apply':
           if (command.data) {
-            querySelectionMode === 'same-tab'
+            settings?.querySelectionMode === 'same-tab'
               ? onUpdateActiveQuery(command.data as SqluiFrontend.PartialConnectionQuery)
               : onCreateAndMakeNewQueryActive(command.data as SqluiFrontend.PartialConnectionQuery);
 
