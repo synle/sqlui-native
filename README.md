@@ -119,7 +119,7 @@ Settings can be accessed via the top right menu icon. It allows you to set up pr
 
 ![image](https://user-images.githubusercontent.com/3792401/152658383-10a204b8-ab45-46be-87f3-03084cc2ae7a.png)
 
-![image](https://user-images.githubusercontent.com/3792401/152658348-fc4c295f-0b45-463b-b543-7a97101669c8.png)
+![image](https://user-images.githubusercontent.com/3792401/167707497-82546e72-4a7f-4724-bf1e-8c36836d685d.png)
 
 ## Contributing
 
@@ -169,14 +169,8 @@ MongoDB Collections is mapped to sqlui-native table. We scan the first 5 Documen
 As of now (v1.27.0), you can create new mongodb using the following syntax
 
 ```js
-db.create('new-database-name');
+db.createDatabase('new-database-name');
 ```
-
-![image](https://user-images.githubusercontent.com/3792401/153538969-613f34e9-ce61-470d-ab4c-92f2c6db2196.png)
-
-![image](https://user-images.githubusercontent.com/3792401/153538995-0ea825b9-124e-4799-9af0-3c7dc2255f5d.png)
-
-![image](https://user-images.githubusercontent.com/3792401/153539332-5a78867d-f454-45eb-8ff1-a82a6b91be1a.png)
 
 ### Redis Limitations
 
