@@ -97,7 +97,7 @@ Array [
   Object {
     "formatter": "js",
     "label": "Create Database",
-    "query": "db.create('database1')",
+    "query": "db.createDatabase('database1')",
   },
   Object {
     "formatter": "js",
