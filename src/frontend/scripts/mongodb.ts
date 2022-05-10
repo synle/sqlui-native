@@ -182,7 +182,7 @@ export function getCreateDatabase(input: SqlAction.DatabaseInput): SqlAction.Out
     return {
       label,
       formatter,
-      query: `${MONGO_ADAPTER_PREFIX}.create('${input.databaseId}')`,
+      query: `${MONGO_ADAPTER_PREFIX}.createDatabase('${input.databaseId}')`,
     };
   }
 }
