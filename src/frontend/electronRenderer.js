@@ -52,7 +52,6 @@ try {
             url,
             options.headers['sqlui-native-session-id'],
             returnedData,
-            headers,
           );
 
           resolve({
