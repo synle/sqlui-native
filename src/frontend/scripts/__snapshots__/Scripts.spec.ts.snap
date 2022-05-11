@@ -45,7 +45,7 @@ Array [
   },
   Object {
     "formatter": "js",
-    "label": "Insert",
+    "label": "Delete",
     "query": "client
   .database('database1')
   .container('table1')

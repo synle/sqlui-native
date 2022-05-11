@@ -76,7 +76,7 @@ export function getUpdate(input: SqlAction.TableInput): SqlAction.Output | undef
 }
 
 export function getDelete(input: SqlAction.TableInput): SqlAction.Output | undefined {
-  const label = `Insert`;
+  const label = `Delete`;
 
   return {
     label,
