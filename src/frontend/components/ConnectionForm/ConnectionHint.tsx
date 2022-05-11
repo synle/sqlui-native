@@ -2,7 +2,10 @@ import Alert from '@mui/material/Alert';
 import AlertTitle from '@mui/material/AlertTitle';
 import Link from '@mui/material/Link';
 import Tooltip from '@mui/material/Tooltip';
-import { getSampleConnectionString } from 'src/common/adapters/DataScriptFactory';
+import {
+  getSampleConnectionString,
+  SUPPORTED_DIALECTS,
+} from 'src/common/adapters/DataScriptFactory';
 import ConnectionTypeIcon from 'src/frontend/components/ConnectionTypeIcon';
 
 type ConnectionHintProps = {
@@ -10,23 +13,11 @@ type ConnectionHintProps = {
 };
 
 export default function ConnectionHint(props: ConnectionHintProps) {
-  const supportedConnections = [
-    'mysql',
-    'mariadb',
-    'mssql',
-    'postgres',
-    'sqlite',
-    'cassandra',
-    'mongodb',
-    'redis',
-    'cosmosdb',
-  ];
-
   return (
     <>
-      {supportedConnections.map((connection) => {
+      {SUPPORTED_DIALECTS.map((connection) => {
         return (
-          <Alert severity='info' icon={<ConnectionTypeIcon scheme={connection} status='online' />}>
+          <Alert severity='info' icon={<ConnectionTypeIcon dialect={connection} status='online' />}>
             <AlertTitle>{connection}</AlertTitle>
             <Tooltip title={`Use this sample ${connection} connection string.`}>
               <Link

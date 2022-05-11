@@ -46,7 +46,7 @@ export default function ConnectionDescription() {
               onToggle={() => onToggle(key)}
               className={isSelected ? 'selected ConnectionDescription' : 'ConnectionDescription'}
               onOrderChange={onConnectionOrderChange}>
-              <ConnectionTypeIcon scheme={connection.dialect} status={connection.status} />
+              <ConnectionTypeIcon dialect={connection.dialect} status={connection.status} />
               <span>{connection.name}</span>
               <ConnectionActions connection={connection} />
             </AccordionHeader>

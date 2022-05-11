@@ -1,37 +1,29 @@
 import CloudIcon from '@mui/icons-material/Cloud';
+import { SUPPORTED_DIALECTS } from 'src/common/adapters/DataScriptFactory';
 
 type ConnectionTypeIconProps = {
-  scheme?: string;
+  dialect?: string;
   status?: string;
 };
 
 export default function ConnectionTypeIcon(props: ConnectionTypeIconProps) {
-  const { scheme, status } = props;
+  const { dialect, status } = props;
 
   if (status !== 'online') {
     return <CloudIcon color='disabled' fontSize='large' />;
   }
 
-  switch (scheme) {
-    case 'mssql':
-    case 'postgres':
-    case 'sqlite':
-    case 'mariadb':
-    case 'mysql':
-    case 'cassandra':
-    case 'mongodb':
-    case 'redis':
-    case 'cosmosdb': // azure cosmosdb
-      return (
-        <img
-          src={`${process.env.PUBLIC_URL}/assets/${scheme}.png`}
-          alt={scheme}
-          title={scheme}
-          width={25}
-          height={25}
-        />
-      );
-    default:
-      return <CloudIcon color='primary' fontSize='large' />;
+  if (dialect && SUPPORTED_DIALECTS.indexOf(dialect) >= 0) {
+    return (
+      <img
+        src={`${process.env.PUBLIC_URL}/assets/${dialect}.png`}
+        alt={dialect}
+        title={dialect}
+        width={25}
+        height={25}
+      />
+    );
   }
+
+  return <CloudIcon color='primary' fontSize='large' />;
 }
