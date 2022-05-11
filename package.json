@@ -1,6 +1,6 @@
 {
   "name": "sqlui-native",
-  "version": "1.27.2",
+  "version": "1.28.0",
   "description": "A minimal native desktop client for most databases supporting MySQL, MariaDB, MS SQL Server, PostgresSQL, SQLite, Cassandra, MongoDB and Redis.",
   "browserslist": {
     "production": [
@@ -57,8 +57,8 @@
     "build-mocked-sever": "webpack --config webpack-mocked-server.config.js",
     "build-react": "cross-env CI=\"\" react-scripts build",
     "build": "npm run build-react && concurrently \"npm run build-electron\" \"npm run build-mocked-sever\"",
-    "test-ci": "cross-env CI=true npm test",
-    "test": "jest src",
+    "test-ci": "cross-env CI=true jest",
+    "test": "jest --watch --verbose",
     "fix-import": "npx import-fixer --groupImport --aggressive --transformRelativeImport --importQuote=single",
     "preformat": "npm run fix-import",
     "format": "npx prettier --config ./.prettierrc --no-error-on-unmatched-pattern --write **/*.{ts,tsx,js,jsx,scss,yml,html,json,md}",
@@ -82,6 +82,7 @@
     "email": "le.nguyen.sy@gmail.com"
   },
   "dependencies": {
+    "@azure/cosmos": "^3.15.1",
     "@emotion/react": "^11.9.0",
     "@emotion/styled": "^11.8.1",
     "@mui/icons-material": "^5.6.2",
