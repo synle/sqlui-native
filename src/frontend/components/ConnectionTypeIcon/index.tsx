@@ -14,87 +14,14 @@ export default function ConnectionTypeIcon(props: ConnectionTypeIconProps) {
 
   switch (scheme) {
     case 'mssql':
-      return (
-        <img
-          src={`${process.env.PUBLIC_URL}/assets/${scheme}.png`}
-          alt={scheme}
-          title={scheme}
-          width={25}
-          height={25}
-        />
-      );
     case 'postgres':
-      return (
-        <img
-          src={`${process.env.PUBLIC_URL}/assets/${scheme}.png`}
-          alt={scheme}
-          title={scheme}
-          width={25}
-          height={25}
-        />
-      );
     case 'sqlite':
-      return (
-        <img
-          src={`${process.env.PUBLIC_URL}/assets/${scheme}.png`}
-          alt={scheme}
-          title={scheme}
-          width={25}
-          height={25}
-        />
-      );
     case 'mariadb':
-      return (
-        <img
-          src={`${process.env.PUBLIC_URL}/assets/${scheme}.png`}
-          alt={scheme}
-          title={scheme}
-          width={25}
-          height={25}
-        />
-      );
     case 'mysql':
-      return (
-        <img
-          src={`${process.env.PUBLIC_URL}/assets/${scheme}.png`}
-          alt={scheme}
-          title={scheme}
-          width={25}
-          height={25}
-        />
-      );
     case 'cassandra':
-      return (
-        <img
-          src={`${process.env.PUBLIC_URL}/assets/${scheme}.png`}
-          alt={scheme}
-          title={scheme}
-          width={25}
-          height={25}
-        />
-      );
     case 'mongodb':
-      return (
-        <img
-          src={`${process.env.PUBLIC_URL}/assets/${scheme}.png`}
-          alt={scheme}
-          title={scheme}
-          width={25}
-          height={25}
-        />
-      );
     case 'redis':
-      return (
-        <img
-          src={`${process.env.PUBLIC_URL}/assets/${scheme}.png`}
-          alt={scheme}
-          title={scheme}
-          width={25}
-          height={25}
-        />
-      );
-    // azure cosmosdb
-    case 'cosmosdb':
+    case 'cosmosdb': // azure cosmosdb
       return (
         <img
           src={`${process.env.PUBLIC_URL}/assets/${scheme}.png`}
