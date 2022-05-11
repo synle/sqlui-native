@@ -151,7 +151,6 @@ export default class AzureCosmosDataAdapter extends BaseDataAdapter implements I
         //@ts-ignore
         const res: any = await eval(sql);
 
-        console.log('>>res', res);
         items = res.item || res.resource || res.resources;
       } else {
         // run as sql query
