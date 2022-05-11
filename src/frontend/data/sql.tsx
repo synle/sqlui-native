@@ -27,7 +27,6 @@ import {
 import { formatJS, formatSQL } from 'src/frontend/utils/formatter';
 import { SqlAction } from 'typings';
 
-
 export function getSampleConnectionString(dialect?: string) {
   switch (dialect) {
     case 'mysql':

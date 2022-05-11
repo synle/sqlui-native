@@ -7,7 +7,7 @@ const COSMOSDB_TABLE_ALIAS_PREFIX = 'c';
 
 const formatter = 'js';
 
-export function getSampleConnectionString(dialect?: string){
+export function getSampleConnectionString(dialect?: SqluiCore.Dialect){
   return `cosmosdb://AccountEndpoint=some_cosmos_endpoint;AccountKey=some_cosmos_account_key`;
 }
 

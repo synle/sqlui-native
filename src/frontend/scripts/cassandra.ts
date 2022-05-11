@@ -1,9 +1,9 @@
 import { getDivider } from 'src/frontend/scripts/base';
-import { SqlAction } from 'typings';
+import { SqlAction, SqluiCore } from 'typings';
 
 const formatter = 'sql';
 
-export function getSampleConnectionString(dialect?: string){
+export function getSampleConnectionString(dialect?: SqluiCore.Dialect){
   return `cassandra://username:password@localhost:9042`;
 }
 

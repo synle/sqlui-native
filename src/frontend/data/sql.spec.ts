@@ -1,23 +1,6 @@
 import fs from 'fs';
-import { getDatabaseActions, getTableActions } from 'src/frontend/data/sql';
+import { getSampleConnectionString, getDatabaseActions, getTableActions } from 'src/frontend/data/sql';
 import { SqlAction, SqluiCore } from 'typings';
-
-export function getSampleConnectionString(dialect?: string){
-  switch (dialect) {
-    case 'mssql':
-      return `mssql://sa:password123!@localhost:1433`;
-    case 'postgres':
-      return `postgres://postgres:password@localhost:5432`;
-    case 'sqlite':
-      return `sqlite://test-db.sqlite`;
-    case 'mariadb':
-      return `mariadb://root:password@localhost:3306`;
-    case 'mysql':
-      return `mysql://root:password@localhost:3306`;
-    default:
-      throw `${dialect} is not supported`;
-  }
-}
 
 function _getScript(dialect: SqluiCore.Dialect) {
   const connectionId = 'connection1';
@@ -31,6 +14,8 @@ function _getScript(dialect: SqluiCore.Dialect) {
     databaseId,
     querySize,
   };
+
+  const sampleConnectionString = getSampleConnectionString(dialect);
 
   const tableActionScripts = getTableActions({
     ...baseInputs,
@@ -56,7 +41,7 @@ function _getScript(dialect: SqluiCore.Dialect) {
     ...baseInputs,
   });
 
-  return [...databaseActionScripts, ...tableActionScripts];
+  return [sampleConnectionString, ...databaseActionScripts, ...tableActionScripts];
 }
 
 describe('Scripts', () => {
@@ -71,8 +56,16 @@ Query Guides:
   `.trim(),
   ];
 
-  function addGuideText(sectionName: string, scripts: (SqlAction.Output | undefined)[]) {
+  function addGuideText(sectionName: string, connectionString: string | undefined, scripts: (SqlAction.Output | undefined)[]) {
     commandGuides.push(`## ${sectionName}\n`);
+
+    if(connectionString){
+      commandGuides.push(`### Sample Connection String\n`);
+
+      commandGuides.push('```');
+      commandGuides.push(connectionString);
+      commandGuides.push('```\n\n');
+    }
 
     for (const script of scripts) {
       if (script && script.query) {
@@ -86,57 +79,57 @@ Query Guides:
   }
 
   test('RmdbScripts - mysql', async () => {
-    const scripts = _getScript('mysql');
+    const [connectionString, ...scripts] = _getScript('mysql');
     expect(scripts).toMatchSnapshot();
-    addGuideText('mysql', scripts);
+    addGuideText('mysql', connectionString, scripts);
   });
 
   test('RmdbScripts - mariadb', async () => {
-    const scripts = _getScript('mariadb');
+    const [connectionString, ...scripts] = _getScript('mariadb');
     expect(scripts).toMatchSnapshot();
-    addGuideText('mariadb', scripts);
+    addGuideText('mariadb', connectionString, scripts);
   });
 
   test('RmdbScripts - mssql', async () => {
-    const scripts = _getScript('mssql');
+    const [connectionString, ...scripts] = _getScript('mssql');
     expect(scripts).toMatchSnapshot();
-    addGuideText('mssql', scripts);
+    addGuideText('mssql', connectionString, scripts);
   });
 
   test('RmdbScripts - postgres', async () => {
-    const scripts = _getScript('postgres');
+    const [connectionString, ...scripts] = _getScript('postgres');
     expect(scripts).toMatchSnapshot();
-    addGuideText('postgres', scripts);
+    addGuideText('postgres', connectionString, scripts);
   });
 
   test('RmdbScripts - sqlite', async () => {
-    const scripts = _getScript('sqlite');
+    const [connectionString, ...scripts] = _getScript('sqlite');
     expect(scripts).toMatchSnapshot();
-    addGuideText('sqlite', scripts);
+    addGuideText('sqlite', connectionString, scripts);
   });
 
   test('CassandraScripts', async () => {
-    const scripts = _getScript('cassandra');
+    const [connectionString, ...scripts] = _getScript('cassandra');
     expect(scripts).toMatchSnapshot();
-    addGuideText('cassandra', scripts);
+    addGuideText('cassandra', connectionString, scripts);
   });
 
   test('MongodbScripts', async () => {
-    const scripts = _getScript('mongodb');
+    const [connectionString, ...scripts] = _getScript('mongodb');
     expect(scripts).toMatchSnapshot();
-    addGuideText('mongodb', scripts);
+    addGuideText('mongodb', connectionString, scripts);
   });
 
   test('RedisScripts', async () => {
-    const scripts = _getScript('redis');
+    const [connectionString, ...scripts] = _getScript('redis');
     expect(scripts).toMatchSnapshot();
-    addGuideText('redis', scripts);
+    addGuideText('redis', connectionString, scripts);
   });
 
   test('AzureCosmosDBScripts', async () => {
-    const scripts = _getScript('cosmosdb');
+    const [connectionString, ...scripts] = _getScript('cosmosdb');
     expect(scripts).toMatchSnapshot();
-    addGuideText('cosmosdb', scripts);
+    addGuideText('cosmosdb', connectionString, scripts);
   });
 
   test('Consolidate the guide into a command', async () => {

@@ -1,9 +1,9 @@
 import { getDivider } from 'src/frontend/scripts/base';
-import { SqlAction } from 'typings';
+import { SqlAction, SqluiCore } from 'typings';
 
 const formatter = 'sql';
 
-export function getSampleQueryString(dialect?: string){
+export function getSampleConnectionString(dialect?: SqluiCore.Dialect){
   switch (dialect) {
     case 'mssql':
       return `mssql://sa:password123!@localhost:1433`;

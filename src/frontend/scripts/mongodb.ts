@@ -1,11 +1,11 @@
 import { getDivider } from 'src/frontend/scripts/base';
-import { SqlAction } from 'typings';
+import { SqlAction, SqluiCore } from 'typings';
 
 export const MONGO_ADAPTER_PREFIX = 'db';
 
 const formatter = 'js';
 
-export function getSampleConnectionString(dialect?: string){
+export function getSampleConnectionString(dialect?: SqluiCore.Dialect){
   return `mongodb://localhost:27017`;
 }
 
