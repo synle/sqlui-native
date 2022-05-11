@@ -1,4 +1,4 @@
-import { getDivider } from 'src/frontend/scripts/base';
+import { getDivider } from 'src/common/adapters/BaseDataAdapter/scripts';
 import { SqlAction, SqluiCore } from 'typings';
 
 export const COSMOSDB_ADAPTER_PREFIX = 'db';
@@ -6,6 +6,10 @@ export const COSMOSDB_ADAPTER_PREFIX = 'db';
 const COSMOSDB_TABLE_ALIAS_PREFIX = 'c';
 
 const formatter = 'js';
+
+export function getSampleConnectionString(dialect?: SqluiCore.Dialect) {
+  return `cosmosdb://AccountEndpoint=some_cosmos_endpoint;AccountKey=some_cosmos_account_key`;
+}
 
 // https://docs.microsoft.com/en-us/azure/cosmos-db/sql/sql-api-nodejs-get-started?tabs=windows
 function _shouldIncludeField(col: SqluiCore.ColumnMetaData) {

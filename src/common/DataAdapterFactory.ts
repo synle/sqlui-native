@@ -1,10 +1,10 @@
-import AzureCosmosDataAdapter from 'src/common/adapters/AzureCosmosDataAdapter';
-import BaseDataAdapter from 'src/common/adapters/BaseDataAdapter';
-import CassandraDataAdapter from 'src/common/adapters/CassandraDataAdapter';
+import AzureCosmosDataAdapter from 'src/common/adapters/AzureCosmosDataAdapter/index';
+import BaseDataAdapter from 'src/common/adapters/BaseDataAdapter/index';
+import CassandraDataAdapter from 'src/common/adapters/CassandraDataAdapter/index';
 import IDataAdapter from 'src/common/adapters/IDataAdapter';
-import MongoDBDataAdapter from 'src/common/adapters/MongoDBDataAdapter';
-import RedisDataAdapter from 'src/common/adapters/RedisDataAdapter';
-import RelationalDataAdapter from 'src/common/adapters/RelationalDataAdapter';
+import MongoDBDataAdapter from 'src/common/adapters/MongoDBDataAdapter/index';
+import RedisDataAdapter from 'src/common/adapters/RedisDataAdapter/index';
+import RelationalDataAdapter from 'src/common/adapters/RelationalDataAdapter/index';
 import { SqluiCore } from 'typings';
 
 const _adapterCache: { [index: string]: IDataAdapter } = {};

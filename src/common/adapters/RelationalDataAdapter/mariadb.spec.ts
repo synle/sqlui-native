@@ -1,10 +1,10 @@
-import RelationalDataAdapter from 'src/common/adapters/RelationalDataAdapter';
+import RelationalDataAdapter from 'src/common/adapters/RelationalDataAdapter/index';
 // this is a big integration, won't be run on smoke test
-describe.skip('postgres', () => {
+describe.skip('mariadb', () => {
   let adapter;
 
   beforeAll(() => {
-    adapter = new RelationalDataAdapter('postgres://postgres:password@localhost:5432');
+    adapter = new RelationalDataAdapter('mariadb://root:password@localhost:33061');
   });
 
   test('Get tables', async () => {
@@ -49,10 +49,6 @@ Array [
   },
   Object {
     "columns": Array [],
-    "name": "playlist_track2",
-  },
-  Object {
-    "columns": Array [],
     "name": "playlists",
   },
   Object {
@@ -69,21 +65,21 @@ Array [
 Array [
   Object {
     "allowNull": false,
+    "autoIncrement": true,
     "comment": null,
-    "defaultValue": "nextval(artists_artistid_seq::regclass)",
-    "name": "artistid",
+    "defaultValue": null,
+    "name": "ArtistId",
     "primaryKey": true,
-    "special": Array [],
-    "type": "BIGINT",
+    "type": "INT(11)",
   },
   Object {
     "allowNull": true,
+    "autoIncrement": false,
     "comment": null,
     "defaultValue": null,
-    "name": "name",
+    "name": "Name",
     "primaryKey": false,
-    "special": Array [],
-    "type": "CHARACTER(120)",
+    "type": "VARCHAR(120)",
   },
 ]
 `);

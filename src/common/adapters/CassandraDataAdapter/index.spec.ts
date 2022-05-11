@@ -1,4 +1,4 @@
-import CassandraDataAdapter from 'src/common/adapters/CassandraDataAdapter';
+import CassandraDataAdapter from 'src/common/adapters/CassandraDataAdapter/index';
 
 describe.skip('cassandra v4', () => {
   let adapter;

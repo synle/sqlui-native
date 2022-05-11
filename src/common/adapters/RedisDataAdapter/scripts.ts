@@ -1,9 +1,13 @@
-import { getDivider } from 'src/frontend/scripts/base';
-import { SqlAction } from 'typings';
+import { getDivider } from 'src/common/adapters/BaseDataAdapter/scripts';
+import { SqlAction, SqluiCore } from 'typings';
 
 export const REDIS_ADAPTER_PREFIX = 'db';
 
 const formatter = 'js';
+
+export function getSampleConnectionString(dialect?: SqluiCore.Dialect) {
+  return `redis://localhost:6379`;
+}
 
 // for redis
 export function getSetValue(input: SqlAction.TableInput): SqlAction.Output | undefined {

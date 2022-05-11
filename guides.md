@@ -6,6 +6,14 @@ Query Guides:
 =============
 ## mysql
 
+### Sample Connection String
+
+This is a sample connection string you can use.
+```
+mysql://root:password@localhost:3306
+```
+
+
 ### Drop Database
 
 ```sql
@@ -158,6 +166,14 @@ ALTER TABLE
 
 
 ## mariadb
+
+### Sample Connection String
+
+This is a sample connection string you can use.
+```
+mariadb://root:password@localhost:3306
+```
+
 
 ### Drop Database
 
@@ -312,6 +328,14 @@ ALTER TABLE
 
 ## mssql
 
+### Sample Connection String
+
+This is a sample connection string you can use.
+```
+mssql://sa:password123!@localhost:1433
+```
+
+
 ### Drop Database
 
 ```sql
@@ -458,6 +482,14 @@ ALTER TABLE
 
 
 ## postgres
+
+### Sample Connection String
+
+This is a sample connection string you can use.
+```
+postgres://postgres:password@localhost:5432
+```
+
 
 ### Drop Database
 
@@ -612,6 +644,14 @@ ALTER TABLE
 
 ## sqlite
 
+### Sample Connection String
+
+This is a sample connection string you can use.
+```
+sqlite://test-db.sqlite
+```
+
+
 ### Drop Database
 
 ```sql
@@ -765,6 +805,14 @@ ALTER TABLE
 
 ## cassandra
 
+### Sample Connection String
+
+This is a sample connection string you can use.
+```
+cassandra://username:password@localhost:9042
+```
+
+
 ### Create Keyspace
 
 ```sql
@@ -848,6 +896,14 @@ WHERE
 
 
 ## mongodb
+
+### Sample Connection String
+
+This is a sample connection string you can use.
+```
+mongodb://localhost:27017
+```
+
 
 ### Create Database
 
@@ -959,6 +1015,14 @@ db.collection('table1')
 
 
 ## redis
+
+### Sample Connection String
+
+This is a sample connection string you can use.
+```
+redis://localhost:6379
+```
+
 
 ### Set Value
 
@@ -1104,6 +1168,14 @@ db.publish("pubsub_channel_key1", "some_message")
 
 
 ## cosmosdb
+
+### Sample Connection String
+
+This is a sample connection string you can use.
+```
+cosmosdb://AccountEndpoint=some_cosmos_endpoint;AccountKey=some_cosmos_account_key
+```
+
 
 ### Create Database
 

@@ -1,9 +1,13 @@
-import { getDivider } from 'src/frontend/scripts/base';
-import { SqlAction } from 'typings';
+import { getDivider } from 'src/common/adapters/BaseDataAdapter/scripts';
+import { SqlAction, SqluiCore } from 'typings';
 
 export const MONGO_ADAPTER_PREFIX = 'db';
 
 const formatter = 'js';
+
+export function getSampleConnectionString(dialect?: SqluiCore.Dialect) {
+  return `mongodb://localhost:27017`;
+}
 
 export function getSelectAllColumns(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Select All Columns`;

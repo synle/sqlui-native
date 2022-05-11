@@ -1,5 +1,5 @@
 import { Sequelize } from 'sequelize';
-import BaseDataAdapter from 'src/common/adapters/BaseDataAdapter';
+import BaseDataAdapter from 'src/common/adapters/BaseDataAdapter/index';
 import IDataAdapter from 'src/common/adapters/IDataAdapter';
 import { SqluiCore } from 'typings';
 /**

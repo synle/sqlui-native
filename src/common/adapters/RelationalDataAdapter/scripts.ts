@@ -1,7 +1,24 @@
-import { getDivider } from 'src/frontend/scripts/base';
-import { SqlAction } from 'typings';
+import { getDivider } from 'src/common/adapters/BaseDataAdapter/scripts';
+import { SqlAction, SqluiCore } from 'typings';
 
 const formatter = 'sql';
+
+export function getSampleConnectionString(dialect?: SqluiCore.Dialect) {
+  switch (dialect) {
+    case 'mssql':
+      return `mssql://sa:password123!@localhost:1433`;
+    case 'postgres':
+      return `postgres://postgres:password@localhost:5432`;
+    case 'sqlite':
+      return `sqlite://test-db.sqlite`;
+    case 'mariadb':
+      return `mariadb://root:password@localhost:3306`;
+    case 'mysql':
+      return `mysql://root:password@localhost:3306`;
+    default: // Not supported dialect
+      return '';
+  }
+}
 
 export function getSelectAllColumns(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Select All Columns`;
