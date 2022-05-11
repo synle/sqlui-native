@@ -1,4 +1,3 @@
-import { getDivider } from 'src/frontend/scripts/base';
 import { SqlAction } from 'typings';
 
 export const COSMOSDB_ADAPTER_PREFIX = 'db';
@@ -18,7 +17,6 @@ export function getSelectAllColumns(input: SqlAction.TableInput): SqlAction.Outp
 
 export const tableActionScripts: SqlAction.TableActionScriptGenerator[] = [
   getSelectAllColumns,
-  getDivider
 ];
 
 export const databaseActionScripts: SqlAction.DatabaseActionScriptGenerator[] = [];
