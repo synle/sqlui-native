@@ -7,6 +7,7 @@ import {
 import BaseDataAdapter, { MAX_CONNECTION_TIMEOUT } from 'src/common/adapters/BaseDataAdapter/index';
 import IDataAdapter from 'src/common/adapters/IDataAdapter';
 import { SqluiCore } from 'typings';
+import {getSampleConnectionString} from 'src/common/adapters/AzureTableStorageAdapter/scripts';
 
 type AzureTableConnectionOption = {
   DefaultEndpointsProtocol: string;
@@ -42,7 +43,7 @@ export default class AzureTableStorageAdapter extends BaseDataAdapter implements
       }
     }
 
-    throw `Missing AccountName / AccountKey. The proper connection string should be aztable://AccountEndpoint=<your_cosmos_uri>;AccountKey=<your_cosmos_primary_key>`;
+    throw `Missing AccountName / AccountKey. The proper connection string should be ${getSampleConnectionString()}`;
   }
 
   static getParsedConnectionOptions(connectionOption: string): AzureTableConnectionOption {

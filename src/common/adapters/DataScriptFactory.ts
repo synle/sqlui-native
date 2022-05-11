@@ -69,10 +69,17 @@ export const SUPPORTED_DIALECTS = [
   'mongodb',
   'redis',
   'cosmosdb',
+  'aztable'
 ];
 
 export function getIsTableIdRequiredForQuery(dialect?: string) {
-  return dialect === 'cosmosdb';
+  switch (dialect) {
+    default:
+      return false;
+    case 'aztable':
+    case 'cosmosdb':
+      return true;
+  }
 }
 
 export function getSyntaxModeByDialect(dialect?: string): 'javascript' | 'sql' {

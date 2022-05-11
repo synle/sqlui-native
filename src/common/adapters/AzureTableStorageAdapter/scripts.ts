@@ -4,7 +4,7 @@ import { SqlAction, SqluiCore } from 'typings';
 const formatter = 'js';
 
 export function getSampleConnectionString(dialect?: SqluiCore.Dialect) {
-  return `your_dialect://your_props`;
+  return `aztable://DefaultEndpointsProtocol=https;AccountName=<your_account_name>;AccountKey=<your_account_key>;EndpointSuffix=core.windows.net`;
 }
 
 export function getSelectAllColumns(input: SqlAction.TableInput): SqlAction.Output | undefined {
