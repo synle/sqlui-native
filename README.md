@@ -155,7 +155,7 @@ Here is the link where you can find information about how run this application l
 - [ ] Push a build to Microsoft Store.
 - [x] Add supports for Cassandra.
 - [x] Add supports for Azure CosmosDB.
-- [ ] Add supports for [Azure Table (Azure Table storage)](https://docs.microsoft.com/en-us/azure/storage/tables/table-storage-overview).
+- [x] Add supports for [Azure Table (Azure Table storage)](https://docs.microsoft.com/en-us/azure/storage/tables/table-storage-overview).
 - [ ] Add supports for AWS Redshift.
 
 ## Limitations
