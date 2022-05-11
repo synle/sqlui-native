@@ -47,7 +47,7 @@ export default class AzureCosmosDataAdapter extends BaseDataAdapter implements I
     // attempt to pull in connections
     return new Promise<AzureCosmosDBClient>(async (resolve, reject) => {
       try {
-        setTimeout(() => reject('CosmosDB connection Timeout'), MAX_CONNECTION_TIMEOUT);
+        setTimeout(() => reject('Connection Timeout'), MAX_CONNECTION_TIMEOUT);
 
         const parsedConnectionOption = AzureCosmosDataAdapter.getParsedConnectionOptions(
           this.connectionOption,
@@ -74,7 +74,7 @@ export default class AzureCosmosDataAdapter extends BaseDataAdapter implements I
   async authenticate() {
     return new Promise<void>(async (resolve, reject) => {
       try {
-        setTimeout(() => reject('CosmosDB connection timeout'), MAX_CONNECTION_TIMEOUT);
+        setTimeout(() => reject('Connection timeout'), MAX_CONNECTION_TIMEOUT);
 
         await this.getConnection();
 

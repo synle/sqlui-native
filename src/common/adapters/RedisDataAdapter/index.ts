@@ -16,7 +16,7 @@ export default class RedisDataAdapter extends BaseDataAdapter implements IDataAd
     // attempt to pull in connections
     return new Promise<RedisClientType>(async (resolve, reject) => {
       try {
-        setTimeout(() => reject('Redis connection Timeout'), MAX_CONNECTION_TIMEOUT);
+        setTimeout(() => reject('Connection Timeout'), MAX_CONNECTION_TIMEOUT);
 
         const client = createClient({
           url: this.connectionOption,
@@ -45,7 +45,7 @@ export default class RedisDataAdapter extends BaseDataAdapter implements IDataAd
   async authenticate() {
     return new Promise<void>(async (resolve, reject) => {
       try {
-        setTimeout(() => reject('Redis connection Timeout'), MAX_CONNECTION_TIMEOUT);
+        setTimeout(() => reject('Connection Timeout'), MAX_CONNECTION_TIMEOUT);
 
         const client = createClient({
           url: this.connectionOption,
