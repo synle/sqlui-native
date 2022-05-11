@@ -5,7 +5,7 @@ import DropdownButton from 'src/frontend/components/DropdownButton';
 import { useCommands } from 'src/frontend/components/MissionControl';
 import { getTableActions } from 'src/frontend/data/sql';
 import { useGetColumns, useGetConnectionById } from 'src/frontend/hooks/useConnection';
-import { useActiveConnectionQuery } from 'src/frontend/hooks/useConnectionQuery';
+import { useActiveConnectionQuery, getIsTableIdRequiredForQuery } from 'src/frontend/hooks/useConnectionQuery';
 import { useQuerySizeSetting } from 'src/frontend/hooks/useSetting';
 
 type TableActionsProps = {
@@ -39,6 +39,8 @@ export default function TableActions(props: TableActionsProps) {
   const { query } = useActiveConnectionQuery();
   const dialect = connection?.dialect;
 
+  const isTableIdRequiredForQuery = getIsTableIdRequiredForQuery(dialect);
+
   const isLoading = loadingConnection || loadingColumns;
 
   const actions = getTableActions({
@@ -60,9 +62,7 @@ export default function TableActions(props: TableActionsProps) {
         data: {
           connectionId: connectionId,
           databaseId: databaseId,
-          // NOTE: here we only apply the tableId for cosmosdb
-          // because other dialect doesn't need to be passed in a tableId
-          tableId: dialect === 'cosmosdb' ? tableId : '',
+          tableId: isTableIdRequiredForQuery ? tableId : '',
           sql: action.query,
         },
         label: `Applied "${action.label}" to active query tab.`,

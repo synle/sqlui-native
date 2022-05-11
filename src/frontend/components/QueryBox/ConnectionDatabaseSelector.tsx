@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import Select from 'src/frontend/components/Select';
 import { useGetConnections, useGetDatabases, useGetTables } from 'src/frontend/hooks/useConnection';
+import { getIsTableIdRequiredForQuery } from 'src/frontend/hooks/useConnectionQuery';
 import { SqluiFrontend } from 'typings';
 
 type ConnectionDatabaseSelectorProps = {
@@ -50,7 +51,7 @@ export default function ConnectionDatabaseSelector(props: ConnectionDatabaseSele
   const isTableIdRequired = useMemo<boolean>(
     () => {
       const selectedConnection = connections?.find((connection) => connection.id === query.connectionId);
-      return selectedConnection?.dialect === "cosmosdb";
+      return getIsTableIdRequiredForQuery(selectedConnection?.dialect);
     }
     ,[connections, query.connectionId]);
 
