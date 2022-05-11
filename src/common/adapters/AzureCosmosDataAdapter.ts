@@ -122,14 +122,23 @@ export default class AzureCosmosDataAdapter extends BaseDataAdapter implements I
     return BaseDataAdapter.inferTypesFromItems(items);
   }
 
-  async execute(sql: string, database?: string): Promise<SqluiCore.Result> {
+  async execute(sql: string, database?: string, table?: string): Promise<SqluiCore.Result> {
     try {
       if(!database){
         throw 'Database is a required field for Azure CosmosDB';
       }
 
-      // TODO: implement me
-      return { ok: true };
+      if(!table){
+        throw 'Table is a required field for Azure CosmosDB';
+      }
+
+      const client = await this.getConnection();
+
+      const {resources: items} = await client.database(database).container(table).items.query({
+        query: sql
+      }).fetchAll();
+
+      return { ok: true, raw: items };
     } catch (error: any) {
       console.log(error);
       return { ok: false, error: error.toString() };

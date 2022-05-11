@@ -32,4 +32,9 @@ Object {
     expect(actual[0].name).toBeDefined();
     expect(actual[0].type).toBeDefined();
   });
+
+  test('execute', async () => {
+    const actual = await adapter.execute('SELECT * FROM C OFFSET 1 LIMIT 2', 'sy-test-database1', 'sy-test-container1');
+    expect(actual.raw.length).toBe('');
+  });
 });

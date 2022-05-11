@@ -78,6 +78,11 @@ export module SqluiCore {
     name?: string;
     connectionId?: string;
     databaseId?: string;
+    /**
+     * only applicable for a few dialect (Azure CosmosDB at the moment)
+     * @type {[type]}
+     */
+    tableId?: string;
     sql?: string;
   };
 
