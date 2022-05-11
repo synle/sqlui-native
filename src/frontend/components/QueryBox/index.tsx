@@ -46,8 +46,10 @@ export default function QueryBox(props: QueryBoxProps) {
       case 'mongodb':
       case 'redis':
         return 'javascript';
+      case 'cosmosdb':
+        return 'javascript';
     }
-  }, [selectedConnection?.dialect]);
+  }, [selectedConnection?.dialect, query?.sql]);
 
   const onDatabaseConnectionChange = useCallback(
     (connectionId?: string, databaseId?: string, tableId?: string) => {
