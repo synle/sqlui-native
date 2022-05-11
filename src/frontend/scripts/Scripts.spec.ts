@@ -115,6 +115,12 @@ Query Guides:
     addGuideText('redis', scripts);
   });
 
+  test('AzureCosmosDBScripts', async () => {
+    const scripts = _getScript('cosmosdb');
+    expect(scripts).toMatchSnapshot();
+    addGuideText('cosmosdb', scripts);
+  });
+
   test('Consolidate the guide into a command', async () => {
     const newGuide = commandGuides.join('\n');
     fs.writeFileSync('./guides.md', newGuide);

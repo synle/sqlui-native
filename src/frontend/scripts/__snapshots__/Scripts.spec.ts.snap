@@ -1,5 +1,20 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Scripts AzureCosmosDBScripts 1`] = `
+Array [
+  Object {
+    "description": "Selected the related database and connection.",
+    "icon": <Memo />,
+    "label": "Select",
+  },
+  Object {
+    "formatter": "js",
+    "label": "Select All Columns",
+    "query": "SELECT * FROM c",
+  },
+]
+`;
+
 exports[`Scripts CassandraScripts 1`] = `
 Array [
   Object {

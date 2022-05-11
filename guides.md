@@ -1102,3 +1102,12 @@ db.zAdd("sorted_set_key1", [{
 db.publish("pubsub_channel_key1", "some_message")
 ```
 
+
+## cosmosdb
+
+### Select All Columns
+
+```js
+SELECT * FROM c
+```
+
