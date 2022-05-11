@@ -3,11 +3,6 @@
 exports[`Scripts AzureCosmosDBScripts 1`] = `
 Array [
   Object {
-    "description": "Selected the related database and connection.",
-    "icon": <Memo />,
-    "label": "Select",
-  },
-  Object {
     "label": "divider",
   },
   Object {
@@ -170,11 +165,6 @@ FROM
 exports[`Scripts CassandraScripts 1`] = `
 Array [
   Object {
-    "description": "Selected the related database and connection.",
-    "icon": <Memo />,
-    "label": "Select",
-  },
-  Object {
     "label": "divider",
   },
   Object {
@@ -253,11 +243,6 @@ WHERE
 
 exports[`Scripts MongodbScripts 1`] = `
 Array [
-  Object {
-    "description": "Selected the related database and connection.",
-    "icon": <Memo />,
-    "label": "Select",
-  },
   Object {
     "label": "divider",
   },
@@ -361,11 +346,6 @@ Array [
 
 exports[`Scripts RedisScripts 1`] = `
 Array [
-  Object {
-    "description": "Selected the related database and connection.",
-    "icon": <Memo />,
-    "label": "Select",
-  },
   Object {
     "formatter": "js",
     "label": "Set Value",
@@ -489,11 +469,6 @@ Array [
 
 exports[`Scripts RmdbScripts - mariadb 1`] = `
 Array [
-  Object {
-    "description": "Selected the related database and connection.",
-    "icon": <Memo />,
-    "label": "Select",
-  },
   Object {
     "label": "divider",
   },
@@ -634,11 +609,6 @@ ALTER TABLE
 exports[`Scripts RmdbScripts - mssql 1`] = `
 Array [
   Object {
-    "description": "Selected the related database and connection.",
-    "icon": <Memo />,
-    "label": "Select",
-  },
-  Object {
     "label": "divider",
   },
   Object {
@@ -771,11 +741,6 @@ ALTER TABLE
 
 exports[`Scripts RmdbScripts - mysql 1`] = `
 Array [
-  Object {
-    "description": "Selected the related database and connection.",
-    "icon": <Memo />,
-    "label": "Select",
-  },
   Object {
     "label": "divider",
   },
@@ -916,11 +881,6 @@ ALTER TABLE
 exports[`Scripts RmdbScripts - postgres 1`] = `
 Array [
   Object {
-    "description": "Selected the related database and connection.",
-    "icon": <Memo />,
-    "label": "Select",
-  },
-  Object {
     "label": "divider",
   },
   Object {
@@ -1059,11 +1019,6 @@ ALTER TABLE
 
 exports[`Scripts RmdbScripts - sqlite 1`] = `
 Array [
-  Object {
-    "description": "Selected the related database and connection.",
-    "icon": <Memo />,
-    "label": "Select",
-  },
   Object {
     "label": "divider",
   },
