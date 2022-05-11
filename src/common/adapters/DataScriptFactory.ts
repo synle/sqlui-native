@@ -25,11 +25,15 @@ import {
 } from 'src/common/adapters/RelationalDataAdapter/scripts';
 import { formatJS, formatSQL } from 'src/frontend/utils/formatter';
 import { SqlAction } from 'typings';
-
-function _formatScripts(actionInput: SqlAction.TableInput | SqlAction.DatabaseInput, generatorFuncs : SqlAction.TableActionScriptGenerator[] | SqlAction.DatabaseActionScriptGenerator[]){
+function _formatScripts(
+  actionInput: SqlAction.TableInput | SqlAction.DatabaseInput,
+  generatorFuncs:
+    | SqlAction.TableActionScriptGenerator[]
+    | SqlAction.DatabaseActionScriptGenerator[],
+) {
   const actions: SqlAction.Output[] = [];
 
-  for(const fn of generatorFuncs){
+  for (const fn of generatorFuncs) {
     const action = fn(actionInput);
     if (action) {
       switch (action.formatter) {

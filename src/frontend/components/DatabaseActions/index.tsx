@@ -1,10 +1,10 @@
-import SelectAllIcon from '@mui/icons-material/SelectAll';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import SelectAllIcon from '@mui/icons-material/SelectAll';
 import IconButton from '@mui/material/IconButton';
 import { useState } from 'react';
+import { getDatabaseActions } from 'src/common/adapters/DataScriptFactory';
 import DropdownButton from 'src/frontend/components/DropdownButton';
 import { useCommands } from 'src/frontend/components/MissionControl';
-import { getDatabaseActions } from 'src/common/adapters/DataScriptFactory';
 import { useGetConnectionById } from 'src/frontend/hooks/useConnection';
 import { useActiveConnectionQuery } from 'src/frontend/hooks/useConnectionQuery';
 import { useQuerySizeSetting } from 'src/frontend/hooks/useSetting';
@@ -35,17 +35,20 @@ export default function DatabaseActions(props: DatabaseActionsProps) {
   const isLoading = loadingConnection;
 
   let actions: SqlAction.Output[] = getDatabaseActions({
-      dialect,
-      connectionId,
-      databaseId,
-      querySize,
-    })
+    dialect,
+    connectionId,
+    databaseId,
+    querySize,
+  });
 
-  actions = [{
+  actions = [
+    {
       label: 'Select',
       description: `Selected the related database and connection.`,
       icon: <SelectAllIcon />,
-    },...actions];
+    },
+    ...actions,
+  ];
 
   const options = actions.map((action) => ({
     label: action.label,
