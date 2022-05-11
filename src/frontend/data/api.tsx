@@ -87,8 +87,9 @@ export class ProxyApi {
     return _fetch<SqluiCore.Result>(`/api/connection/${query?.connectionId}/execute`, {
       method: 'post',
       body: JSON.stringify({
-        database: query?.databaseId,
         sql: query?.sql,
+        database: query?.databaseId,
+        table: query?.tableId,
       }),
     });
   }

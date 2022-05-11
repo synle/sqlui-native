@@ -148,7 +148,7 @@ export function useGetDatabases(connectionId?: string) {
   );
 }
 
-export function useGetTables(connectionId: string, databaseId: string) {
+export function useGetTables(connectionId?: string, databaseId?: string) {
   const enabled = !!connectionId && !!databaseId;
 
   return useQuery(

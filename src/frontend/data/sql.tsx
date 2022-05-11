@@ -4,6 +4,10 @@ import {
   tableActionScripts as CassandraTableActionScripts,
 } from 'src/frontend/scripts/cassandra';
 import {
+  databaseActionScripts as AzureCosmosDBDatabaseActionScripts,
+  tableActionScripts as AzureCosmosDBTableActionScripts,
+} from 'src/frontend/scripts/cosmosdb';
+import {
   databaseActionScripts as MongodbDatabaseActionScripts,
   tableActionScripts as MongodbTableActionScripts,
 } from 'src/frontend/scripts/mongodb';
@@ -38,6 +42,9 @@ export function getTableActions(tableActionInput: SqlAction.TableInput) {
       break;
     case 'redis':
       scriptsToUse = RedisTableActionScripts;
+      break;
+    case 'cosmosdb':
+      scriptsToUse = AzureCosmosDBTableActionScripts;
       break;
   }
 
@@ -84,6 +91,9 @@ export function getDatabaseActions(databaseActionInput: SqlAction.DatabaseInput)
       break;
     case 'redis':
       scriptsToUse = RedisDatabaseActionScripts;
+      break;
+    case 'cosmosdb':
+      scriptsToUse = AzureCosmosDBDatabaseActionScripts;
       break;
   }
 

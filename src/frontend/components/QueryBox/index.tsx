@@ -50,8 +50,8 @@ export default function QueryBox(props: QueryBoxProps) {
   }, [selectedConnection?.dialect]);
 
   const onDatabaseConnectionChange = useCallback(
-    (connectionId?: string, databaseId?: string) => {
-      onChange({ connectionId: connectionId, databaseId: databaseId });
+    (connectionId?: string, databaseId?: string, tableId?: string) => {
+      onChange({ connectionId, databaseId, tableId });
     },
     [onChange],
   );
