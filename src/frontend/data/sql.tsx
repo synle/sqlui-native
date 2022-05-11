@@ -1,26 +1,52 @@
 import SelectAllIcon from '@mui/icons-material/SelectAll';
 import {
-  databaseActionScripts as CassandraDatabaseActionScripts,
-  tableActionScripts as CassandraTableActionScripts,
-} from 'src/frontend/scripts/cassandra';
-import {
   databaseActionScripts as AzureCosmosDBDatabaseActionScripts,
+  getSampleConnectionString as getAzureCosmosDBSampleConnectionString,
   tableActionScripts as AzureCosmosDBTableActionScripts,
-} from 'src/frontend/scripts/cosmosdb';
+} from 'src/common/adapters/AzureCosmosDataAdapter/scripts';
+import {
+  databaseActionScripts as CassandraDatabaseActionScripts,
+  getSampleConnectionString as getCassandraSampleConnectionString,
+  tableActionScripts as CassandraTableActionScripts,
+} from 'src/common/adapters/CassandraDataAdapter/scripts';
 import {
   databaseActionScripts as MongodbDatabaseActionScripts,
+  getSampleConnectionString as getMongodbSampleConnectionString,
   tableActionScripts as MongodbTableActionScripts,
-} from 'src/frontend/scripts/mongodb';
+} from 'src/common/adapters/MongoDBDataAdapter/scripts';
 import {
   databaseActionScripts as RedisDatabaseActionScripts,
+  getSampleConnectionString as getRedisSampleConnectionString,
   tableActionScripts as RedisTableActionScripts,
-} from 'src/frontend/scripts/redis';
+} from 'src/common/adapters/RedisDataAdapter/scripts';
 import {
   databaseActionScripts as RmdbDatabaseActionScripts,
+  getSampleConnectionString as getRmdbSampleConnectionString,
   tableActionScripts as RmdbTableActionScripts,
-} from 'src/frontend/scripts/rmdb';
+} from 'src/common/adapters/RelationalDataAdapter/scripts';
 import { formatJS, formatSQL } from 'src/frontend/utils/formatter';
 import { SqlAction } from 'typings';
+
+export function getSampleConnectionString(dialect?: string) {
+  switch (dialect) {
+    case 'mysql':
+    case 'mariadb':
+    case 'mssql':
+    case 'postgres':
+    case 'sqlite':
+      return getRmdbSampleConnectionString(dialect);
+    case 'cassandra':
+      return getCassandraSampleConnectionString();
+    case 'mongodb':
+      return getMongodbSampleConnectionString();
+    case 'redis':
+      return getRedisSampleConnectionString();
+    case 'cosmosdb':
+      return getAzureCosmosDBSampleConnectionString();
+    default: // Not supported dialect
+      return '';
+  }
+}
 
 export function getTableActions(tableActionInput: SqlAction.TableInput) {
   const actions: SqlAction.Output[] = [];

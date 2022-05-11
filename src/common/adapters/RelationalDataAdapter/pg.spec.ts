@@ -1,11 +1,12 @@
-import RelationalDataAdapter from 'src/common/adapters/RelationalDataAdapter';
+import RelationalDataAdapter from 'src/common/adapters/RelationalDataAdapter/index';
 // this is a big integration, won't be run on smoke test
-describe.skip('mysql', () => {
+describe.skip('postgres', () => {
   let adapter;
 
   beforeAll(() => {
-    adapter = new RelationalDataAdapter('mysql://root:password@localhost:3306');
+    adapter = new RelationalDataAdapter('postgres://postgres:password@localhost:5432');
   });
+
   test('Get tables', async () => {
     const tables = await adapter.getTables('music_store');
     expect(tables).toMatchInlineSnapshot(`
@@ -48,6 +49,10 @@ Array [
   },
   Object {
     "columns": Array [],
+    "name": "playlist_track2",
+  },
+  Object {
+    "columns": Array [],
     "name": "playlists",
   },
   Object {
@@ -64,21 +69,21 @@ Array [
 Array [
   Object {
     "allowNull": false,
-    "autoIncrement": true,
     "comment": null,
-    "defaultValue": null,
-    "name": "ArtistId",
+    "defaultValue": "nextval(artists_artistid_seq::regclass)",
+    "name": "artistid",
     "primaryKey": true,
-    "type": "INT",
+    "special": Array [],
+    "type": "BIGINT",
   },
   Object {
     "allowNull": true,
-    "autoIncrement": false,
     "comment": null,
     "defaultValue": null,
-    "name": "Name",
+    "name": "name",
     "primaryKey": false,
-    "type": "VARCHAR(120)",
+    "special": Array [],
+    "type": "CHARACTER(120)",
   },
 ]
 `);

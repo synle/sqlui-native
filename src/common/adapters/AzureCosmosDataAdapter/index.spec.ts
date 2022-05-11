@@ -1,4 +1,4 @@
-import AzureCosmosDataAdapter from 'src/common/adapters/AzureCosmosDataAdapter';
+import AzureCosmosDataAdapter from 'src/common/adapters/AzureCosmosDataAdapter/index';
 
 const cosmosDBConnectionString = process.env.COSMOS_CONNECTION_STRING;
 const adapter = new AzureCosmosDataAdapter(`cosmosdb://${cosmosDBConnectionString}`);

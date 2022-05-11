@@ -1,12 +1,11 @@
-import RelationalDataAdapter from 'src/common/adapters/RelationalDataAdapter';
+import RelationalDataAdapter from 'src/common/adapters/RelationalDataAdapter/index';
 // this is a big integration, won't be run on smoke test
-describe.skip('mariadb', () => {
+describe.skip('mysql', () => {
   let adapter;
 
   beforeAll(() => {
-    adapter = new RelationalDataAdapter('mariadb://root:password@localhost:33061');
+    adapter = new RelationalDataAdapter('mysql://root:password@localhost:3306');
   });
-
   test('Get tables', async () => {
     const tables = await adapter.getTables('music_store');
     expect(tables).toMatchInlineSnapshot(`
@@ -70,7 +69,7 @@ Array [
     "defaultValue": null,
     "name": "ArtistId",
     "primaryKey": true,
-    "type": "INT(11)",
+    "type": "INT",
   },
   Object {
     "allowNull": true,

@@ -1,5 +1,5 @@
 import fs from 'fs';
-import RelationalDataAdapter from 'src/common/adapters/RelationalDataAdapter';
+import RelationalDataAdapter from 'src/common/adapters/RelationalDataAdapter/index';
 
 describe('sqlite', () => {
   let adapter;
