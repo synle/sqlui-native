@@ -3,27 +3,27 @@ import {
   getSampleConnectionString as getCassandraSampleConnectionString,
   databaseActionScripts as CassandraDatabaseActionScripts,
   tableActionScripts as CassandraTableActionScripts,
-} from 'src/frontend/data/sql/scripts/cassandra';
+} from 'src/common/adapters/CassandraDataAdapter.scripts';
 import {
   getSampleConnectionString as getAzureCosmosDBSampleConnectionString,
   databaseActionScripts as AzureCosmosDBDatabaseActionScripts,
   tableActionScripts as AzureCosmosDBTableActionScripts,
-} from 'src/frontend/data/sql/scripts/cosmosdb';
+} from 'src/common/adapters/AzureCosmosDataAdapter.scripts';
 import {
   getSampleConnectionString as getMongodbSampleConnectionString,
   databaseActionScripts as MongodbDatabaseActionScripts,
   tableActionScripts as MongodbTableActionScripts,
-} from 'src/frontend/data/sql/scripts/mongodb';
+} from 'src/common/adapters/MongoDBDataAdapter.scripts';
 import {
   getSampleConnectionString as getRedisSampleConnectionString,
   databaseActionScripts as RedisDatabaseActionScripts,
   tableActionScripts as RedisTableActionScripts,
-} from 'src/frontend/data/sql/scripts/redis';
+} from 'src/common/adapters/RedisDataAdapter.scripts';
 import {
   getSampleConnectionString as getRmdbSampleConnectionString,
   databaseActionScripts as RmdbDatabaseActionScripts,
   tableActionScripts as RmdbTableActionScripts,
-} from 'src/frontend/data/sql/scripts/rmdb';
+} from 'src/common/adapters/RelationalDataAdapter.scripts';
 import { formatJS, formatSQL } from 'src/frontend/utils/formatter';
 import { SqlAction } from 'typings';
 

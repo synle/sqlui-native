@@ -1,4 +1,4 @@
-import { getDivider } from 'src/frontend/data/sql/scripts/base';
+import { getDivider } from 'src/common/adapters/BaseDataAdapter.scripts';
 import { SqlAction, SqluiCore } from 'typings';
 
 export const COSMOSDB_ADAPTER_PREFIX = 'db';
