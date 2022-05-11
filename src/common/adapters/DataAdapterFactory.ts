@@ -24,28 +24,26 @@ export function getDataAdapter(connection: string) {
     case 'postgres':
     case 'sqlite':
       adapter = new RelationalDataAdapter(connection);
-      _adapterCache[connection] = adapter;
-      return adapter;
+      break;
     case 'cassandra':
       adapter = new CassandraDataAdapter(connection);
-      _adapterCache[connection] = adapter;
-      return adapter;
+      break;
     case 'mongodb':
       adapter = new MongoDBDataAdapter(connection);
-      _adapterCache[connection] = adapter;
-      return adapter;
+      break;
     case 'redis':
       adapter = new RedisDataAdapter(connection);
-      _adapterCache[connection] = adapter;
-      return adapter;
+      break;
     case 'cosmosdb':
       adapter = new AzureCosmosDataAdapter(connection);
-      _adapterCache[connection] = adapter;
-      return adapter;
+      break;
     default:
       throw 'dialect not supported';
       break;
   }
+
+  _adapterCache[connection] = adapter;
+  return adapter;
 }
 
 export async function getConnectionMetaData(connection: SqluiCore.CoreConnectionProps) {
