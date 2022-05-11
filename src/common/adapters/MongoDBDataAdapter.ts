@@ -5,6 +5,11 @@ import { SqluiCore } from 'typings';
 
 const MONGO_ADAPTER_PREFIX = 'db';
 
+/**
+ * @type {Number} maximum number of items to scan for column metadata
+ */
+const MAX_ITEM_COUNT_TO_SCAN = 5;
+
 export default class MongoDBDataAdapter extends BaseDataAdapter implements IDataAdapter {
   dialect: SqluiCore.Dialect = 'mongodb';
 
@@ -97,16 +102,9 @@ export default class MongoDBDataAdapter extends BaseDataAdapter implements IData
 
         try {
           //@ts-ignore
-          const items = await client.db(database).collection(table).find().limit(5).toArray();
+          const items = await client.db(database).collection(table).find().limit(MAX_ITEM_COUNT_TO_SCAN).toArray();
 
-          let columnsMap: Record<string, SqluiCore.ColumnMetaData> = {};
-
-          for (const item of items) {
-            columnsMap = BaseDataAdapter.resolveTypes(item);
-          }
-          resolve(
-            Object.values(columnsMap).sort((a, b) => (a.name || '').localeCompare(b.name || '')),
-          );
+          return BaseDataAdapter.inferTypesFromItems(items);
         } finally {
           this.closeConnection(client);
         }

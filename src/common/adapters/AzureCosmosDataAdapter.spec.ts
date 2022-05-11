@@ -26,8 +26,10 @@ Object {
     expect(actual[0].name).toBeDefined();
   });
 
-  test.only('getColumns', async () => {
+  test('getColumns', async () => {
     const actual = await adapter.getColumns('sy-test-container1', 'sy-test-database1');
-    expect(actual).toBe('');
+    expect(actual.length).toBeGreaterThan(0);
+    expect(actual[0].name).toBeDefined();
+    expect(actual[0].type).toBeDefined();
   });
 });

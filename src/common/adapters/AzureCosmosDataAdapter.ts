@@ -10,6 +10,11 @@ type AzureCosmosDBConnectionOption = {
   AccountKey:  string,
 }
 
+/**
+ * @type {Number} maximum number of items to scan for column metadata
+ */
+const MAX_ITEM_COUNT_TO_SCAN = 5;
+
 export default class AzureCosmosDataAdapter extends BaseDataAdapter implements IDataAdapter {
   // https://docs.microsoft.com/en-us/azure/cosmos-db/sql/sql-api-nodejs-get-started?tabs=windows
   dialect: SqluiCore.Dialect = 'cosmosdb';
@@ -79,9 +84,9 @@ export default class AzureCosmosDataAdapter extends BaseDataAdapter implements I
     // https://azure.github.io/azure-cosmos-js/classes/databases.html#readall
     const client = await this.getConnection();
 
-    const {resources} = await client.databases.readAll().fetchAll();
+    const {resources: databases} = await client.databases.readAll().fetchAll();
 
-    return resources.map(db => ({
+    return databases.map(db => ({
       name: db.id,
       tables: [],
     }));
@@ -90,26 +95,39 @@ export default class AzureCosmosDataAdapter extends BaseDataAdapter implements I
   async getTables(database?: string): Promise<SqluiCore.TableMetaData[]> {
     // https://azure.github.io/azure-cosmos-js/classes/containers.html#readall
     if(!database){
-      return [];
+      throw 'Database is a required field for Azure CosmosDB';
     }
 
     const client = await this.getConnection();
 
-    const {resources} = await client.database(database).containers.readAll().fetchAll();
+    const {resources: tables} = await client.database(database).containers.readAll().fetchAll();
 
-    return resources.map(db => ({
-      name: db.id,
+    return tables.map(table => ({
+      name: table.id,
       columns: [],
     }));
   }
 
   async getColumns(table: string, database?: string): Promise<SqluiCore.ColumnMetaData[]> {
-    // TODO: implement me
-    return [];
+    if(!database){
+      throw 'Database is a required field for Azure CosmosDB';
+    }
+
+    const client = await this.getConnection();
+
+    const {resources: items} = await client.database(database).container(table).items.query({
+      query: `SELECT * from c OFFSET 1 LIMIT ${MAX_ITEM_COUNT_TO_SCAN}`
+    }).fetchAll();
+
+    return BaseDataAdapter.inferTypesFromItems(items);
   }
 
   async execute(sql: string, database?: string): Promise<SqluiCore.Result> {
     try {
+      if(!database){
+        throw 'Database is a required field for Azure CosmosDB';
+      }
+
       // TODO: implement me
       return { ok: true };
     } catch (error: any) {
