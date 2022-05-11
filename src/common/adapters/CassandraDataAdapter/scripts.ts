@@ -1,4 +1,4 @@
-import { getDivider } from 'src/common/adapters/BaseDataAdapter.scripts';
+import { getDivider } from 'src/common/adapters/BaseDataAdapter/scripts';
 import { SqlAction, SqluiCore } from 'typings';
 
 const formatter = 'sql';

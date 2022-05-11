@@ -1,4 +1,4 @@
-import { getDivider } from 'src/common/adapters/BaseDataAdapter.scripts';
+import { getDivider } from 'src/common/adapters/BaseDataAdapter/scripts';
 import { SqlAction, SqluiCore } from 'typings';
 
 export const MONGO_ADAPTER_PREFIX = 'db';
