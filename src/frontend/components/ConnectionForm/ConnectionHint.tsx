@@ -15,15 +15,15 @@ type ConnectionHintProps = {
 export default function ConnectionHint(props: ConnectionHintProps) {
   return (
     <>
-      {SUPPORTED_DIALECTS.map((connection) => {
+      {SUPPORTED_DIALECTS.map((dialect) => {
         return (
-          <Alert severity='info' icon={<ConnectionTypeIcon dialect={connection} status='online' />}>
-            <AlertTitle>{connection}</AlertTitle>
-            <Tooltip title={`Use this sample ${connection} connection string.`}>
+          <Alert key={dialect} severity='info' icon={<ConnectionTypeIcon dialect={dialect} status='online' />}>
+            <AlertTitle>{dialect}</AlertTitle>
+            <Tooltip title={`Use this sample ${dialect} connection string.`}>
               <Link
                 underline='hover'
-                onClick={() => props.onChange(connection, getSampleConnectionString(connection))}>
-                {getSampleConnectionString(connection)}
+                onClick={() => props.onChange(dialect, getSampleConnectionString(dialect))}>
+                {getSampleConnectionString(dialect)}
               </Link>
             </Tooltip>
           </Alert>
