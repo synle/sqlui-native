@@ -3,6 +3,23 @@ import { SqlAction } from 'typings';
 
 const formatter = 'sql';
 
+export function getSampleQueryString(dialect?: string){
+  switch (dialect) {
+    case 'mssql':
+      return `mssql://sa:password123!@localhost:1433`;
+    case 'postgres':
+      return `postgres://postgres:password@localhost:5432`;
+    case 'sqlite':
+      return `sqlite://test-db.sqlite`;
+    case 'mariadb':
+      return `mariadb://root:password@localhost:3306`;
+    case 'mysql':
+      return `mysql://root:password@localhost:3306`;
+    default: // Not supported dialect
+      return '';
+  }
+}
+
 export function getSelectAllColumns(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Select All Columns`;
 

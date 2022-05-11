@@ -5,6 +5,10 @@ export const MONGO_ADAPTER_PREFIX = 'db';
 
 const formatter = 'js';
 
+export function getSampleConnectionString(dialect?: string){
+  return `mongodb://localhost:27017`;
+}
+
 export function getSelectAllColumns(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Select All Columns`;
 

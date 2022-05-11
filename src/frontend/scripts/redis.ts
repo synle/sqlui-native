@@ -5,6 +5,10 @@ export const REDIS_ADAPTER_PREFIX = 'db';
 
 const formatter = 'js';
 
+export function getSampleConnectionString(dialect?: string){
+  return `redis://localhost:6379`;
+}
+
 // for redis
 export function getSetValue(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Set Value`;

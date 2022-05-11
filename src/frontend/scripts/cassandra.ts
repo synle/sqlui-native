@@ -3,6 +3,10 @@ import { SqlAction } from 'typings';
 
 const formatter = 'sql';
 
+export function getSampleConnectionString(dialect?: string){
+  return `cassandra://username:password@localhost:9042`;
+}
+
 export function getSelectAllColumns(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Select All Columns`;
 

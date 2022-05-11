@@ -7,6 +7,10 @@ const COSMOSDB_TABLE_ALIAS_PREFIX = 'c';
 
 const formatter = 'js';
 
+export function getSampleConnectionString(dialect?: string){
+  return `cosmosdb://AccountEndpoint=some_cosmos_endpoint;AccountKey=some_cosmos_account_key`;
+}
+
 // https://docs.microsoft.com/en-us/azure/cosmos-db/sql/sql-api-nodejs-get-started?tabs=windows
 function _shouldIncludeField(col: SqluiCore.ColumnMetaData) {
   if (col.name.indexOf('_') !== 0) {
