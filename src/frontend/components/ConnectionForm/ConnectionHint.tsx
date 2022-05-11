@@ -3,7 +3,7 @@ import AlertTitle from '@mui/material/AlertTitle';
 import Link from '@mui/material/Link';
 import Tooltip from '@mui/material/Tooltip';
 import ConnectionTypeIcon from 'src/frontend/components/ConnectionTypeIcon';
-import { getSampleConnectionString } from 'src/frontend/data/sql';
+import { getSampleConnectionString } from 'src/common/adapters/DataScriptFactory';
 
 type ConnectionHintProps = {
   onChange: (dialect: string, connection: string) => void;

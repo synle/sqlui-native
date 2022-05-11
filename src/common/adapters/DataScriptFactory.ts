@@ -1,4 +1,3 @@
-import SelectAllIcon from '@mui/icons-material/SelectAll';
 import {
   databaseActionScripts as AzureCosmosDBDatabaseActionScripts,
   getSampleConnectionString as getAzureCosmosDBSampleConnectionString,
@@ -119,11 +118,5 @@ export function getDatabaseActions(databaseActionInput: SqlAction.DatabaseInput)
       break;
   }
 
-  return[
-  {
-      label: 'Select',
-      description: `Selected the related database and connection.`,
-      icon: <SelectAllIcon />,
-    },
-  ..._formatScripts(databaseActionInput, scriptsToUse)];
+  return _formatScripts(databaseActionInput, scriptsToUse);
 }
