@@ -141,9 +141,12 @@ export default class AzureCosmosDataAdapter extends BaseDataAdapter implements I
 
       const db = await client.database(database);
 
-      let items : any;
+      let items: any;
 
-      if((sql.includes('db') || sql.includes('client')) && (sql.includes('.database') || sql.includes('.container'))){
+      if (
+        (sql.includes('db') || sql.includes('client')) &&
+        (sql.includes('.database') || sql.includes('.container'))
+      ) {
         // run as raw query
         //@ts-ignore
         const res: any = await eval(sql);
@@ -162,8 +165,6 @@ export default class AzureCosmosDataAdapter extends BaseDataAdapter implements I
             query: sql,
           })
           .fetchAll();
-
-
         items = res.resources;
       }
 
