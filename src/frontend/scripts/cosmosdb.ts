@@ -8,34 +8,34 @@ const COSMOSDB_TABLE_ALIAS_PREFIX = 'c';
 const formatter = 'js';
 
 // https://docs.microsoft.com/en-us/azure/cosmos-db/sql/sql-api-nodejs-get-started?tabs=windows
-
-
-function _shouldIncludeField(col: SqluiCore.ColumnMetaData){
-  if(col.name.indexOf('_') !== 0){
+function _shouldIncludeField(col: SqluiCore.ColumnMetaData) {
+  if (col.name.indexOf('_') !== 0) {
     return true;
   }
 
   return false;
 }
 
-function _getColMapForInsertAndUpdate(columns?: SqluiCore.ColumnMetaData[]){
-  return columns?.reduce((res, col) => {
-    if(_shouldIncludeField(col)){
-      switch(col.type){
-        case 'string':
-          res[col.name] = '';
-          break;
-        case 'number':
-          res[col.name] = 123;
-          break;
-        case 'array':
-          res[col.name] = [];
-          break;
+function _getColMapForInsertAndUpdate(columns?: SqluiCore.ColumnMetaData[]) {
+  return (
+    columns?.reduce((res, col) => {
+      if (_shouldIncludeField(col)) {
+        switch (col.type) {
+          case 'string':
+            res[col.name] = '';
+            break;
+          case 'number':
+            res[col.name] = 123;
+            break;
+          case 'array':
+            res[col.name] = [];
+            break;
+        }
       }
-    }
 
-    return res;
-  }, {}) || {};
+      return res;
+    }, {}) || {}
+  );
 }
 
 // for cosmosdb
@@ -72,11 +72,7 @@ export function getSelectAllColumns(input: SqlAction.TableInput): SqlAction.Outp
     `,
   };
 }
-
-
-export function getSelectById(
-  input: SqlAction.TableInput,
-): SqlAction.Output | undefined {
+export function getSelectById(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Select By Id`;
 
   const sql = `
@@ -100,9 +96,7 @@ export function getSelectById(
   };
 }
 
-export function getReadItemById(
-  input: SqlAction.TableInput,
-): SqlAction.Output | undefined {
+export function getReadItemById(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Read`;
 
   return {
@@ -123,8 +117,12 @@ export function getSelectSpecificColumns(
 ): SqlAction.Output | undefined {
   const label = `Select Specific Columns`;
 
-  const columnString = input?.columns?.map((col) => `${COSMOSDB_TABLE_ALIAS_PREFIX}.${col.name}`).join(',\n  ');
-  const whereColumnString = input?.columns?.map((col) => `${COSMOSDB_TABLE_ALIAS_PREFIX}.${col.name} = ''`).join('\n  AND ');
+  const columnString = input?.columns
+    ?.map((col) => `${COSMOSDB_TABLE_ALIAS_PREFIX}.${col.name}`)
+    .join(',\n  ');
+  const whereColumnString = input?.columns
+    ?.map((col) => `${COSMOSDB_TABLE_ALIAS_PREFIX}.${col.name} = ''`)
+    .join('\n  AND ');
 
   const sql = `
   SELECT ${columnString}
@@ -201,8 +199,6 @@ export function getDelete(input: SqlAction.TableInput): SqlAction.Output | undef
     `,
   };
 }
-
-
 export function getCreateContainer(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Create Container`;
 
@@ -247,7 +243,9 @@ export function getCreateDatabase(input: SqlAction.DatabaseInput): SqlAction.Out
   };
 }
 
-export function getCreateDatabaseContainer(input: SqlAction.DatabaseInput): SqlAction.Output | undefined {
+export function getCreateDatabaseContainer(
+  input: SqlAction.DatabaseInput,
+): SqlAction.Output | undefined {
   const label = `Create Database Container`;
 
   return {
@@ -275,8 +273,6 @@ export function getDropDatabase(input: SqlAction.DatabaseInput): SqlAction.Outpu
     `,
   };
 }
-
-
 export const tableActionScripts: SqlAction.TableActionScriptGenerator[] = [
   getSelectAllColumns,
   getSelectSpecificColumns,
