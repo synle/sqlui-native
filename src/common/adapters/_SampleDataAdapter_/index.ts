@@ -19,7 +19,7 @@ export default class YOUR_ADAPTER_NAME extends BaseDataAdapter implements IDataA
         setTimeout(() => reject('Connection timeout'), MAX_CONNECTION_TIMEOUT);
 
         // TODO: implement me
-        resolve();
+        resolve({});
       } catch (err) {
         reject(err);
       }
