@@ -51,8 +51,35 @@ function _formatScripts(
   return actions;
 }
 
+/**
+ * @type {Array} ordered list of supported dialects is shown in the connection hints
+ */
+export const SUPPORTED_DIALECTS = [
+  'mysql',
+  'mariadb',
+  'mssql',
+  'postgres',
+  'sqlite',
+  'cassandra',
+  'mongodb',
+  'redis',
+  'cosmosdb',
+];
+
 export function getIsTableIdRequiredForQuery(dialect?: string) {
   return dialect === 'cosmosdb';
+}
+
+export function getSyntaxModeByDialect(dialect?: string): 'javascript' | 'sql' {
+  switch (dialect) {
+    default:
+      return 'sql';
+    case 'mongodb':
+    case 'redis':
+      return 'javascript';
+    case 'cosmosdb':
+      return 'javascript';
+  }
 }
 
 export function getSampleConnectionString(dialect?: string) {

@@ -8,6 +8,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Tooltip from '@mui/material/Tooltip';
 import { useQueryClient } from 'react-query';
 import React, { useCallback, useMemo, useState } from 'react';
+import { getSyntaxModeByDialect } from 'src/common/adapters/DataScriptFactory';
 import CodeEditorBox from 'src/frontend/components/CodeEditorBox';
 import { useCommands } from 'src/frontend/components/MissionControl';
 import ConnectionDatabaseSelector from 'src/frontend/components/QueryBox/ConnectionDatabaseSelector';
@@ -39,17 +40,10 @@ export default function QueryBox(props: QueryBoxProps) {
 
   const isLoading = loadingConnection;
 
-  const language: string = useMemo(() => {
-    switch (selectedConnection?.dialect) {
-      default:
-        return 'sql';
-      case 'mongodb':
-      case 'redis':
-        return 'javascript';
-      case 'cosmosdb':
-        return 'javascript';
-    }
-  }, [selectedConnection?.dialect, query?.sql]);
+  const language: string = useMemo(
+    () => getSyntaxModeByDialect(selectedConnection?.dialect),
+    [selectedConnection?.dialect, query?.sql],
+  );
 
   const onDatabaseConnectionChange = useCallback(
     (connectionId?: string, databaseId?: string, tableId?: string) => {
