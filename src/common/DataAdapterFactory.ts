@@ -1,3 +1,4 @@
+import AzureCosmosDataAdapter from 'src/common/adapters/AzureCosmosDataAdapter';
 import BaseDataAdapter from 'src/common/adapters/BaseDataAdapter';
 import CassandraDataAdapter from 'src/common/adapters/CassandraDataAdapter';
 import IDataAdapter from 'src/common/adapters/IDataAdapter';
@@ -35,6 +36,10 @@ export function getDataAdapter(connection: string) {
       return adapter;
     case 'redis':
       adapter = new RedisDataAdapter(connection);
+      _adapterCache[connection] = adapter;
+      return adapter;
+    case 'cosmosdb':
+      adapter = new AzureCosmosDataAdapter(connection);
       _adapterCache[connection] = adapter;
       return adapter;
     default:

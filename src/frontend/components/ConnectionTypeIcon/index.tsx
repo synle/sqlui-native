@@ -93,6 +93,17 @@ export default function ConnectionTypeIcon(props: ConnectionTypeIconProps) {
           height={25}
         />
       );
+    // azure cosmosdb
+    case 'cosmosdb':
+      return (
+        <img
+          src={`${process.env.PUBLIC_URL}/assets/${scheme}.png`}
+          alt={scheme}
+          title={scheme}
+          width={25}
+          height={25}
+        />
+      );
     default:
       return <CloudIcon color='primary' fontSize='large' />;
   }

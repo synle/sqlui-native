@@ -5,6 +5,11 @@ import { SqluiCore } from 'typings';
 
 const MONGO_ADAPTER_PREFIX = 'db';
 
+/**
+ * @type {Number} maximum number of items to scan for column metadata
+ */
+const MAX_ITEM_COUNT_TO_SCAN = 5;
+
 export default class MongoDBDataAdapter extends BaseDataAdapter implements IDataAdapter {
   dialect: SqluiCore.Dialect = 'mongodb';
 
@@ -97,16 +102,14 @@ export default class MongoDBDataAdapter extends BaseDataAdapter implements IData
 
         try {
           //@ts-ignore
-          const items = await client.db(database).collection(table).find().limit(5).toArray();
+          const items = await client
+            .db(database)
+            .collection(table)
+            .find()
+            .limit(MAX_ITEM_COUNT_TO_SCAN)
+            .toArray();
 
-          let columnsMap: Record<string, SqluiCore.ColumnMetaData> = {};
-
-          for (const item of items) {
-            columnsMap = BaseDataAdapter.resolveTypes(item);
-          }
-          resolve(
-            Object.values(columnsMap).sort((a, b) => (a.name || '').localeCompare(b.name || '')),
-          );
+          return BaseDataAdapter.inferTypesFromItems(items);
         } finally {
           this.closeConnection(client);
         }
@@ -142,7 +145,10 @@ export default class MongoDBDataAdapter extends BaseDataAdapter implements IData
           throw `Invalid syntax. MongoDB syntax in sqlui-native starts with '${MONGO_ADAPTER_PREFIX}.'. Refer to the syntax help in this link https://synle.github.io/sqlui-native/guides#mongodb`;
         }
 
-        if ((sql.includes('db.create(') || sql.includes('db.createDatabase(')) && sql.includes(')')) {
+        if (
+          (sql.includes('db.create(') || sql.includes('db.createDatabase(')) &&
+          sql.includes(')')
+        ) {
           // TODO: see if we need to be more strict with the regex
           let databaseName = sql
             .replace(/[;'" )]/g, '')
@@ -152,7 +158,7 @@ export default class MongoDBDataAdapter extends BaseDataAdapter implements IData
           await this.createDatabase(databaseName);
           return resolve({
             ok: true,
-            meta: `Database ${databaseName} created`
+            meta: `Database ${databaseName} created`,
           });
         }
 
