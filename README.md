@@ -4,7 +4,7 @@
 
 ![64](https://user-images.githubusercontent.com/3792401/160178384-638de88f-1712-4419-aed4-b1ef79e5d82a.png)
 
-`sqlui-native` is a simple UI client for most SQL Engines written in Electron. It is compatible with most desktop OS's and support most dialects of RMBDs like MySQL, Microsoft SQL Server, Postgres, SQLite, Cassandra, MongoDB and Redis.
+`sqlui-native` is a simple UI client for most SQL Engines written in Electron. It is compatible with most desktop OS's and support most dialects of RMBDs like MySQL, Microsoft SQL Server, Postgres, SQLite, Cassandra, MongoDB, Redis and Azure CosmosDB.
 It supports multiple Windows, so you can have different sets of queries and connections side by side. The connections and queries are all stored locally, so you can continue where you left off in later visits.
 
 ## Downloads
@@ -182,6 +182,8 @@ Due to the size of keys within Redis connection, we will not show all keys in th
 ### Azure CosmosDB Limitations
 
 Azure CosmosDB Databases are mapped to sqlui-native Databases. And Azure CosmosDB Containers are mapped to sqlui-native Tables. We scan the first 5 items to come up with the schema for the columns.
+
+Tested for Azure CosmosDB (with Core SQL). [More information on Azure CosmosDB can be found here](https://docs.microsoft.com/en-us/azure/cosmos-db/introduction)
 
 ## Suggestion?
 
