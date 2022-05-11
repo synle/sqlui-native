@@ -1,14 +1,14 @@
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import IconButton from '@mui/material/IconButton';
 import { useState } from 'react';
-import { getTableActions } from 'src/common/adapters/DataScriptFactory';
+import {
+  getIsTableIdRequiredForQuery,
+  getTableActions,
+} from 'src/common/adapters/DataScriptFactory';
 import DropdownButton from 'src/frontend/components/DropdownButton';
 import { useCommands } from 'src/frontend/components/MissionControl';
 import { useGetColumns, useGetConnectionById } from 'src/frontend/hooks/useConnection';
-import {
-  getIsTableIdRequiredForQuery,
-  useActiveConnectionQuery,
-} from 'src/frontend/hooks/useConnectionQuery';
+import { useActiveConnectionQuery } from 'src/frontend/hooks/useConnectionQuery';
 import { useQuerySizeSetting } from 'src/frontend/hooks/useSetting';
 
 type TableActionsProps = {

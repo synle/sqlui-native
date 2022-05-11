@@ -281,7 +281,3 @@ export function useActiveConnectionQuery() {
     onDelete,
   };
 }
-
-export function getIsTableIdRequiredForQuery(dialect?: string) {
-  return dialect === 'cosmosdb';
-}

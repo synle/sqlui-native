@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
+import { getIsTableIdRequiredForQuery } from 'src/common/adapters/DataScriptFactory';
 import Select from 'src/frontend/components/Select';
 import { useGetConnections, useGetDatabases, useGetTables } from 'src/frontend/hooks/useConnection';
-import { getIsTableIdRequiredForQuery } from 'src/frontend/hooks/useConnectionQuery';
 import { SqluiFrontend } from 'typings';
 
 type ConnectionDatabaseSelectorProps = {
