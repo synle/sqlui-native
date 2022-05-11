@@ -1,13 +1,24 @@
-import { AzureNamedKeyCredential, TableServiceClient, TableClient } from '@azure/data-tables';
+import {
+  AzureNamedKeyCredential,
+  AzureSASCredential,
+  TableClient,
+  TableServiceClient,
+} from '@azure/data-tables';
 import BaseDataAdapter, { MAX_CONNECTION_TIMEOUT } from 'src/common/adapters/BaseDataAdapter/index';
 import IDataAdapter from 'src/common/adapters/IDataAdapter';
 import { SqluiCore } from 'typings';
 
 type AzureTableConnectionOption = {
   DefaultEndpointsProtocol: string;
-  AccountName: string;
-  AccountKey: string;
   EndpointSuffix: string;
+  /**
+   * @type {string} for account and key auth
+   */
+  AccountName?: string;
+  /**
+   * @type {string} for account and key auth
+   */
+  AccountKey?: string;
 };
 
 export default class AzureTableStorageAdapter extends BaseDataAdapter implements IDataAdapter {
@@ -15,6 +26,23 @@ export default class AzureTableStorageAdapter extends BaseDataAdapter implements
 
   constructor(connectionOption: string) {
     super(connectionOption);
+  }
+
+  static getAuth(
+    parsedConnectionOption: AzureTableConnectionOption,
+  ): AzureNamedKeyCredential {
+    // https://docs.microsoft.com/en-us/javascript/api/overview/azure/data-tables-readme?view=azure-node-latest#create-the-table-service-client
+    // TODO support SAS Token
+    if(parsedConnectionOption){
+      if (parsedConnectionOption.AccountKey && parsedConnectionOption.AccountName) {
+        return new AzureNamedKeyCredential(
+          parsedConnectionOption.AccountName,
+          parsedConnectionOption.AccountKey,
+        );
+      }
+    }
+
+    throw `Missing AccountName / AccountKey. The proper connection string should be aztable://AccountEndpoint=<your_cosmos_uri>;AccountKey=<your_cosmos_primary_key>`;
   }
 
   static getParsedConnectionOptions(connectionOption: string): AzureTableConnectionOption {
@@ -29,14 +57,6 @@ export default class AzureTableStorageAdapter extends BaseDataAdapter implements
 
         return res;
       }, {});
-
-    if (
-      !parsedConnectionOption.AccountKey ||
-      !parsedConnectionOption.AccountName ||
-      !parsedConnectionOption.EndpointSuffix
-    ) {
-      throw `Missing AccountName or AccountKey or EndpointSuffix. The proper connection string should be aztable://AccountEndpoint=<your_cosmos_uri>;AccountKey=<your_cosmos_primary_key>`;
-    }
 
     parsedConnectionOption.DefaultEndpointsProtocol =
       parsedConnectionOption.DefaultEndpointsProtocol || 'https';
@@ -54,19 +74,9 @@ export default class AzureTableStorageAdapter extends BaseDataAdapter implements
           this.connectionOption,
         );
 
-        let azureTableClient : TableServiceClient;
-
-        const endpoint = `${parsedConnectionOption.DefaultEndpointsProtocol}://${parsedConnectionOption.AccountName}.table.${parsedConnectionOption.EndpointSuffix}`
-        const cred = new AzureNamedKeyCredential(
-          parsedConnectionOption.AccountName,
-          parsedConnectionOption.AccountKey,
-        );
-
-
-        resolve(new TableServiceClient(
-            endpoint,
-            cred,
-          ));
+        const endpoint = `${parsedConnectionOption.DefaultEndpointsProtocol}://${parsedConnectionOption.AccountName}.table.${parsedConnectionOption.EndpointSuffix}`;
+        const cred = AzureTableStorageAdapter.getAuth(parsedConnectionOption);
+        resolve(new TableServiceClient(endpoint, cred));
       } catch (err) {
         reject(err);
       }
@@ -83,17 +93,10 @@ export default class AzureTableStorageAdapter extends BaseDataAdapter implements
           this.connectionOption,
         );
 
-        const endpoint = `${parsedConnectionOption.DefaultEndpointsProtocol}://${parsedConnectionOption.AccountName}.table.${parsedConnectionOption.EndpointSuffix}`
-        const cred = new AzureNamedKeyCredential(
-          parsedConnectionOption.AccountName,
-          parsedConnectionOption.AccountKey,
-        );
+        const endpoint = `${parsedConnectionOption.DefaultEndpointsProtocol}://${parsedConnectionOption.AccountName}.table.${parsedConnectionOption.EndpointSuffix}`;
+        const cred = AzureTableStorageAdapter.getAuth(parsedConnectionOption);
 
-        resolve(new TableClient(
-          endpoint,
-          table,
-          cred,
-        ));
+        resolve(new TableClient(endpoint, table, cred));
       } catch (err) {
         reject(err);
       }
@@ -155,25 +158,18 @@ export default class AzureTableStorageAdapter extends BaseDataAdapter implements
 
   async execute(sql: string, database?: string, table?: string): Promise<SqluiCore.Result> {
     try {
-      if(!table){
+      if (!table) {
         throw `table is required to execute a azure table`;
       }
       const client = await this.getTableClient(table);
 
-      let entitiesIter = client.listEntities();
-      let i = 1;
-      for await (const entity of entitiesIter) {
-        console.log(`Entity${i}: PartitionKey: ${entity.partitionKey} RowKey: ${entity.rowKey}`);
-        i++;
-        // Output:
-        // Entity1: PartitionKey: P1 RowKey: R1
-        // Entity2: PartitionKey: P2 RowKey: R2
-        // Entity3: PartitionKey: P3 RowKey: R3
-        // Entity4: PartitionKey: P4 RowKey: R4
+
+      const res: any = await eval(sql);
+
+      const raw: any[] = [];
+      for await (const entity of res) {
+        raw.push(entity);
       }
-
-
-      let raw = [];
 
       return { ok: true, raw };
     } catch (error: any) {

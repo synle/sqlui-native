@@ -13,7 +13,7 @@ export function getSelectAllColumns(input: SqlAction.TableInput): SqlAction.Outp
   return {
     label,
     formatter,
-    query: `// TODO: implement me`,
+    query: `client.listEntities()`,
   };
 }
 
