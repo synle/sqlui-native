@@ -34,6 +34,7 @@ You can also refer to this link for [General Queries](https://synle.github.io/sq
 - [Cassandra](https://synle.github.io/sqlui-native/guides#cassandra) (Limited Supported)
 - [MongoDB](https://synle.github.io/sqlui-native/guides#mongodb) (Limited Supported)
 - [Redis](https://synle.github.io/sqlui-native/guides#redis) (Limited Supported)
+- [Azure CosmosDB](https://synle.github.io/sqlui-native/guides#cosmosdb) (Limited Supported)
 
 ## Features
 
@@ -151,8 +152,10 @@ Here is the link where you can find information about how run this application l
 - [x] Add dark theme (Dark mode respect system color theme).
 - [ ] Add auto update features.
 - [ ] Push a build to Microsoft Store.
-- [x] Add supports for Cassandra
-- [ ] Add supports for Azure Table, and AWS Redshift.
+- [x] Add supports for Cassandra.
+- [x] Add supports for Azure CosmosDB.
+- [ ] Add supports for Azure Table.
+- [ ] Add supports for AWS Redshift.
 
 ## Limitations
 
@@ -175,6 +178,10 @@ db.createDatabase('new-database-name');
 ### Redis Limitations
 
 Due to the size of keys within Redis connection, we will not show all keys in the Redis cache.
+
+### Azure CosmosDB Limitations
+
+Azure CosmosDB Databases are mapped to sqlui-native Databases. And Azure CosmosDB Containers are mapped to sqlui-native Tables. We scan the first 5 items to come up with the schema for the columns.
 
 ## Suggestion?
 
