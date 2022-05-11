@@ -3,6 +3,7 @@ import CassandraDataAdapter from 'src/common/adapters/CassandraDataAdapter';
 import IDataAdapter from 'src/common/adapters/IDataAdapter';
 import MongoDBDataAdapter from 'src/common/adapters/MongoDBDataAdapter';
 import RedisDataAdapter from 'src/common/adapters/RedisDataAdapter';
+import AzureCosmosDataAdapter from 'src/common/adapters/AzureCosmosDataAdapter';
 import RelationalDataAdapter from 'src/common/adapters/RelationalDataAdapter';
 import { SqluiCore } from 'typings';
 
@@ -35,6 +36,10 @@ export function getDataAdapter(connection: string) {
       return adapter;
     case 'redis':
       adapter = new RedisDataAdapter(connection);
+      _adapterCache[connection] = adapter;
+      return adapter;
+    case 'cosmosdb':
+      adapter = new AzureCosmosDataAdapter(connection);
       _adapterCache[connection] = adapter;
       return adapter;
     default:
