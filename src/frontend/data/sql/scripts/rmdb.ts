@@ -1,4 +1,4 @@
-import { getDivider } from 'src/frontend/scripts/base';
+import { getDivider } from 'src/frontend/data/sql/scripts/base';
 import { SqlAction, SqluiCore } from 'typings';
 
 const formatter = 'sql';

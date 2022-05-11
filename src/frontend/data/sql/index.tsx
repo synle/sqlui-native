@@ -3,27 +3,27 @@ import {
   getSampleConnectionString as getCassandraSampleConnectionString,
   databaseActionScripts as CassandraDatabaseActionScripts,
   tableActionScripts as CassandraTableActionScripts,
-} from 'src/frontend/scripts/cassandra';
+} from 'src/frontend/data/sql/scripts/cassandra';
 import {
   getSampleConnectionString as getAzureCosmosDBSampleConnectionString,
   databaseActionScripts as AzureCosmosDBDatabaseActionScripts,
   tableActionScripts as AzureCosmosDBTableActionScripts,
-} from 'src/frontend/scripts/cosmosdb';
+} from 'src/frontend/data/sql/scripts/cosmosdb';
 import {
   getSampleConnectionString as getMongodbSampleConnectionString,
   databaseActionScripts as MongodbDatabaseActionScripts,
   tableActionScripts as MongodbTableActionScripts,
-} from 'src/frontend/scripts/mongodb';
+} from 'src/frontend/data/sql/scripts/mongodb';
 import {
   getSampleConnectionString as getRedisSampleConnectionString,
   databaseActionScripts as RedisDatabaseActionScripts,
   tableActionScripts as RedisTableActionScripts,
-} from 'src/frontend/scripts/redis';
+} from 'src/frontend/data/sql/scripts/redis';
 import {
   getSampleConnectionString as getRmdbSampleConnectionString,
   databaseActionScripts as RmdbDatabaseActionScripts,
   tableActionScripts as RmdbTableActionScripts,
-} from 'src/frontend/scripts/rmdb';
+} from 'src/frontend/data/sql/scripts/rmdb';
 import { formatJS, formatSQL } from 'src/frontend/utils/formatter';
 import { SqlAction } from 'typings';
 
