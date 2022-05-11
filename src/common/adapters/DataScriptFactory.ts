@@ -1,4 +1,3 @@
-import SelectAllIcon from '@mui/icons-material/SelectAll';
 import {
   databaseActionScripts as AzureCosmosDBDatabaseActionScripts,
   getSampleConnectionString as getAzureCosmosDBSampleConnectionString,
@@ -26,6 +25,31 @@ import {
 } from 'src/common/adapters/RelationalDataAdapter/scripts';
 import { formatJS, formatSQL } from 'src/frontend/utils/formatter';
 import { SqlAction } from 'typings';
+function _formatScripts(
+  actionInput: SqlAction.TableInput | SqlAction.DatabaseInput,
+  generatorFuncs:
+    | SqlAction.TableActionScriptGenerator[]
+    | SqlAction.DatabaseActionScriptGenerator[],
+) {
+  const actions: SqlAction.Output[] = [];
+
+  for (const fn of generatorFuncs) {
+    const action = fn(actionInput);
+    if (action) {
+      switch (action.formatter) {
+        case 'sql':
+          action.query = formatSQL(action.query || '');
+          break;
+        case 'js':
+          action.query = formatJS(action.query || '');
+          break;
+      }
+      actions.push(action);
+    }
+  }
+
+  return actions;
+}
 
 export function getSampleConnectionString(dialect?: string) {
   switch (dialect) {
@@ -49,8 +73,6 @@ export function getSampleConnectionString(dialect?: string) {
 }
 
 export function getTableActions(tableActionInput: SqlAction.TableInput) {
-  const actions: SqlAction.Output[] = [];
-
   let scriptsToUse: SqlAction.TableActionScriptGenerator[] = [];
   switch (tableActionInput.dialect) {
     case 'mysql':
@@ -74,32 +96,9 @@ export function getTableActions(tableActionInput: SqlAction.TableInput) {
       break;
   }
 
-  scriptsToUse.forEach((fn) => {
-    const action = fn(tableActionInput);
-    if (action) {
-      switch (action.formatter) {
-        case 'sql':
-          action.query = formatSQL(action.query || '');
-          break;
-        case 'js':
-          action.query = formatJS(action.query || '');
-          break;
-      }
-      actions.push(action);
-    }
-  });
-
-  return actions;
+  return _formatScripts(tableActionInput, scriptsToUse);
 }
 export function getDatabaseActions(databaseActionInput: SqlAction.DatabaseInput) {
-  const actions: SqlAction.Output[] = [
-    {
-      label: 'Select',
-      description: `Selected the related database and connection.`,
-      icon: <SelectAllIcon />,
-    },
-  ];
-
   let scriptsToUse: SqlAction.DatabaseActionScriptGenerator[] = [];
   switch (databaseActionInput.dialect) {
     case 'mysql':
@@ -123,20 +122,5 @@ export function getDatabaseActions(databaseActionInput: SqlAction.DatabaseInput)
       break;
   }
 
-  scriptsToUse.forEach((fn) => {
-    const action = fn(databaseActionInput);
-    if (action) {
-      switch (action.formatter) {
-        case 'sql':
-          action.query = formatSQL(action.query || '');
-          break;
-        case 'js':
-          action.query = formatJS(action.query || '');
-          break;
-      }
-      actions.push(action);
-    }
-  });
-
-  return actions;
+  return _formatScripts(databaseActionInput, scriptsToUse);
 }

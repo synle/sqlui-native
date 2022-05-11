@@ -3,7 +3,7 @@ import {
   getConnectionMetaData,
   getDataAdapter,
   resetConnectionMetaData,
-} from 'src/common/DataAdapterFactory';
+} from 'src/common/adapters/DataAdapterFactory';
 import PersistentStorage from 'src/common/PersistentStorage';
 import { SqluiCore, SqluiEnums } from 'typings';
 let expressAppContext: Express | undefined;

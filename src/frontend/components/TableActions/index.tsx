@@ -1,9 +1,9 @@
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import IconButton from '@mui/material/IconButton';
 import { useState } from 'react';
+import { getTableActions } from 'src/common/adapters/DataScriptFactory';
 import DropdownButton from 'src/frontend/components/DropdownButton';
 import { useCommands } from 'src/frontend/components/MissionControl';
-import { getTableActions } from 'src/frontend/data/sql';
 import { useGetColumns, useGetConnectionById } from 'src/frontend/hooks/useConnection';
 import {
   getIsTableIdRequiredForQuery,
