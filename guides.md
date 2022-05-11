@@ -1105,6 +1105,38 @@ db.publish("pubsub_channel_key1", "some_message")
 
 ## cosmosdb
 
+### Create Database
+
+```js
+client
+  .databases
+  .create({
+    id: 'database1'
+  })
+```
+
+
+### Create Database Container
+
+```js
+client
+  .database('database1')
+  .containers
+  .create({
+    id: 'some_container_name'
+  })
+```
+
+
+### Drop Database
+
+```js
+client
+  .database('database1')
+  .delete()
+```
+
+
 ### Select All Columns
 
 ```js
@@ -1113,9 +1145,62 @@ client
   .container('table1')
   .items
   .query({
-    query: 'SELECT * from c OFFSET 1 LIMIT 5',
+    query: `
+  SELECT *
+  FROM c
+  OFFSET 0 LIMIT 200`,
   })
   .fetchAll()
+```
+
+
+### Select Specific Columns
+
+```js
+client
+  .database('database1')
+  .container('table1')
+  .items
+  .query({
+    query: `
+  SELECT c.id,
+  c.column1,
+  c.column2
+  FROM c
+  WHERE c.id = ''
+  AND c.column1 = ''
+  AND c.column2 = ''
+  OFFSET 0 LIMIT 200`,
+  })
+  .fetchAll()
+```
+
+
+### Select By Id
+
+```js
+client
+  .database('database1')
+  .container('table1')
+  .items
+  .query({
+    query: `
+  SELECT *
+  FROM c
+  WHERE c.id = '123'`,
+  })
+  .fetchAll()
+```
+
+
+### Read
+
+```js
+client
+  .database('database1')
+  .container('table1')
+  .item('some_id', 'some_partition_key')
+  .read()
 ```
 
 
@@ -1127,8 +1212,7 @@ client
   .container('table1')
   .items
   .create({
-    id: '123',
-    name: 'test'
+    "id": "some_id"
   })
 ```
 
@@ -1139,10 +1223,9 @@ client
 client
   .database('database1')
   .container('table1')
-  .item('id_123', 'category')
+  .item('some_id', 'some_partition_key')
   .replace({
-    id: 'id_123',
-    name: 'new_name'
+    "id": "some_id"
   })
 ```
 
@@ -1153,7 +1236,7 @@ client
 client
   .database('database1')
   .container('table1')
-  .item('id_123', 'category')
+  .item('some_id', 'some_partition_key')
   .delete()
 ```
 
@@ -1165,5 +1248,27 @@ SELECT
   *
 FROM
   c
+```
+
+
+### Create Container
+
+```js
+client
+  .database('database1')
+  .containers
+  .create({
+    id: 'table1'
+  })
+```
+
+
+### Drop Container
+
+```js
+client
+  .database('database1')
+  .container('table1')
+  .delete()
 ```
 
