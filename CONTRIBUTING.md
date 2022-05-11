@@ -148,6 +148,21 @@ docker run --name sqlui_redis -p 6379:6379 -d redis
 
 ```
 
+## Adding new adapters?
+
+Refer to this folder for files related to adding a new adapter.
+
+- [Adapter Core Files](https://github.com/synle/sqlui-native/tree/main/src/common/adapters/_SampleDataAdapter_)
+- Sample PR - TBD
+
+Overall the process requires that you do:
+
+- Create a new dialect value in the typings `typings/index.ts`
+- Create a new adapter (refer to this folder https://github.com/synle/sqlui-native/tree/main/src/common/adapters/_SampleDataAdapter_)
+- Hook it up with the Data Adapter Factory.
+- Hook it up with the Data Script Factory.
+- Create the icon for the new dialect. File is located in `public/assets` and must match the dialect name and ended in `png`.
+
 ## Sample runbooks
 
 ### Relational Database
