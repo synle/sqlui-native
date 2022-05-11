@@ -137,24 +137,40 @@ export default class AzureCosmosDataAdapter extends BaseDataAdapter implements I
         throw 'Database is a required field for Azure CosmosDB';
       }
 
-      if (!table) {
-        throw 'Table is a required field for Azure CosmosDB';
-      }
-
       const client = await this.getConnection();
 
-      const { resources: items } = await client
-        .database(database)
-        .container(table)
-        .items.query({
-          query: sql,
-        })
-        .fetchAll();
+      const db = await client.database(database);
+
+      let items : any;
+
+      if((sql.includes('db') || sql.includes('client')) && (sql.includes('.database') || sql.includes('.container'))){
+        // run as raw query
+        //@ts-ignore
+        const res: any = await eval(sql);
+
+        items = res.resource || res.resources;
+      } else {
+        // run as sql query
+        if (!table) {
+          throw 'Table is a required field for Azure CosmosDB in raw SQL mode';
+        }
+
+        const res = await client
+          .database(database)
+          .container(table)
+          .items.query({
+            query: sql,
+          })
+          .fetchAll();
+
+
+        items = res.resources;
+      }
 
       return { ok: true, raw: items };
     } catch (error: any) {
       console.log(error);
-      return { ok: false, error: error.toString() };
+      return { ok: false, error: JSON.stringify(error) };
     } finally {
       this.closeConnection();
     }
