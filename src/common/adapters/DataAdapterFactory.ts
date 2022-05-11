@@ -5,6 +5,7 @@ import IDataAdapter from 'src/common/adapters/IDataAdapter';
 import MongoDBDataAdapter from 'src/common/adapters/MongoDBDataAdapter/index';
 import RedisDataAdapter from 'src/common/adapters/RedisDataAdapter/index';
 import RelationalDataAdapter from 'src/common/adapters/RelationalDataAdapter/index';
+import AzureTableStorageAdapter from 'src/common/adapters/AzureTableStorageAdapter/index';
 import { SqluiCore } from 'typings';
 
 const _adapterCache: { [index: string]: IDataAdapter } = {};
@@ -36,6 +37,9 @@ export function getDataAdapter(connection: string) {
       break;
     case 'cosmosdb':
       adapter = new AzureCosmosDataAdapter(connection);
+      break;
+    case 'aztable':
+      adapter = new AzureTableStorageAdapter(connection);
       break;
     default:
       throw 'dialect not supported';

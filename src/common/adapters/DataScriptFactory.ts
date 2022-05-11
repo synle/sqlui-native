@@ -23,6 +23,11 @@ import {
   getSampleConnectionString as getRmdbSampleConnectionString,
   tableActionScripts as RmdbTableActionScripts,
 } from 'src/common/adapters/RelationalDataAdapter/scripts';
+import {
+  databaseActionScripts as AzureTableDatabaseActionScripts,
+  getSampleConnectionString as getAzureTableSampleConnectionString,
+  tableActionScripts as AzureTableTableActionScripts,
+} from 'src/common/adapters/AzureTableStorageAdapter/scripts';
 import { formatJS, formatSQL } from 'src/frontend/utils/formatter';
 import { SqlAction } from 'typings';
 function _formatScripts(
@@ -76,8 +81,8 @@ export function getSyntaxModeByDialect(dialect?: string): 'javascript' | 'sql' {
       return 'sql';
     case 'mongodb':
     case 'redis':
-      return 'javascript';
     case 'cosmosdb':
+    case 'azuretable':
       return 'javascript';
   }
 }
@@ -98,6 +103,8 @@ export function getSampleConnectionString(dialect?: string) {
       return getRedisSampleConnectionString();
     case 'cosmosdb':
       return getAzureCosmosDBSampleConnectionString();
+    case 'azuretable':
+      return getAzureTableSampleConnectionString();
     default: // Not supported dialect
       return '';
   }
@@ -125,10 +132,14 @@ export function getTableActions(tableActionInput: SqlAction.TableInput) {
     case 'cosmosdb':
       scriptsToUse = AzureCosmosDBTableActionScripts;
       break;
+    case 'azuretable':
+      scriptsToUse= AzureTableTableActionScripts;
+      break;
   }
 
   return _formatScripts(tableActionInput, scriptsToUse);
 }
+
 export function getDatabaseActions(databaseActionInput: SqlAction.DatabaseInput) {
   let scriptsToUse: SqlAction.DatabaseActionScriptGenerator[] = [];
   switch (databaseActionInput.dialect) {
@@ -150,6 +161,9 @@ export function getDatabaseActions(databaseActionInput: SqlAction.DatabaseInput)
       break;
     case 'cosmosdb':
       scriptsToUse = AzureCosmosDBDatabaseActionScripts;
+      break;
+    case 'azuretable':
+      scriptsToUse= AzureTableDatabaseActionScripts;
       break;
   }
 
