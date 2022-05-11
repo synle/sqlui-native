@@ -1,4 +1,4 @@
-import RedisDataAdapter from 'src/common/adapters/RedisDataAdapter';
+import RedisDataAdapter from 'src/common/adapters/RedisDataAdapter/index';
 
 const adapter = new RedisDataAdapter('redis://localhost:6379');
 

@@ -1,7 +1,11 @@
-import { getDivider } from 'src/frontend/scripts/base';
-import { SqlAction } from 'typings';
+import { getDivider } from 'src/common/adapters/BaseDataAdapter/scripts';
+import { SqlAction, SqluiCore } from 'typings';
 
 const formatter = 'sql';
+
+export function getSampleConnectionString(dialect?: SqluiCore.Dialect) {
+  return `cassandra://username:password@localhost:9042`;
+}
 
 export function getSelectAllColumns(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Select All Columns`;
