@@ -3,7 +3,7 @@ import { SqlAction, SqluiCore } from 'typings';
 
 const formatter = 'sql';
 
-export function getSampleConnectionString(dialect?: SqluiCore.Dialect){
+export function getSampleConnectionString(dialect?: SqluiCore.Dialect) {
   return `cassandra://username:password@localhost:9042`;
 }
 

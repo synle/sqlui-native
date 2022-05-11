@@ -5,7 +5,7 @@ export const REDIS_ADAPTER_PREFIX = 'db';
 
 const formatter = 'js';
 
-export function getSampleConnectionString(dialect?: SqluiCore.Dialect){
+export function getSampleConnectionString(dialect?: SqluiCore.Dialect) {
   return `redis://localhost:6379`;
 }
 

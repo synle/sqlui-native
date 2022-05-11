@@ -5,7 +5,7 @@ export const MONGO_ADAPTER_PREFIX = 'db';
 
 const formatter = 'js';
 
-export function getSampleConnectionString(dialect?: SqluiCore.Dialect){
+export function getSampleConnectionString(dialect?: SqluiCore.Dialect) {
   return `mongodb://localhost:27017`;
 }
 

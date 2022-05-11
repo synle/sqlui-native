@@ -1,27 +1,27 @@
 import SelectAllIcon from '@mui/icons-material/SelectAll';
 import {
-  getSampleConnectionString as getCassandraSampleConnectionString,
-  databaseActionScripts as CassandraDatabaseActionScripts,
-  tableActionScripts as CassandraTableActionScripts,
-} from 'src/common/adapters/CassandraDataAdapter/scripts';
-import {
-  getSampleConnectionString as getAzureCosmosDBSampleConnectionString,
   databaseActionScripts as AzureCosmosDBDatabaseActionScripts,
+  getSampleConnectionString as getAzureCosmosDBSampleConnectionString,
   tableActionScripts as AzureCosmosDBTableActionScripts,
 } from 'src/common/adapters/AzureCosmosDataAdapter/scripts';
 import {
-  getSampleConnectionString as getMongodbSampleConnectionString,
+  databaseActionScripts as CassandraDatabaseActionScripts,
+  getSampleConnectionString as getCassandraSampleConnectionString,
+  tableActionScripts as CassandraTableActionScripts,
+} from 'src/common/adapters/CassandraDataAdapter/scripts';
+import {
   databaseActionScripts as MongodbDatabaseActionScripts,
+  getSampleConnectionString as getMongodbSampleConnectionString,
   tableActionScripts as MongodbTableActionScripts,
 } from 'src/common/adapters/MongoDBDataAdapter/scripts';
 import {
-  getSampleConnectionString as getRedisSampleConnectionString,
   databaseActionScripts as RedisDatabaseActionScripts,
+  getSampleConnectionString as getRedisSampleConnectionString,
   tableActionScripts as RedisTableActionScripts,
 } from 'src/common/adapters/RedisDataAdapter/scripts';
 import {
-  getSampleConnectionString as getRmdbSampleConnectionString,
   databaseActionScripts as RmdbDatabaseActionScripts,
+  getSampleConnectionString as getRmdbSampleConnectionString,
   tableActionScripts as RmdbTableActionScripts,
 } from 'src/common/adapters/RelationalDataAdapter/scripts';
 import { formatJS, formatSQL } from 'src/frontend/utils/formatter';

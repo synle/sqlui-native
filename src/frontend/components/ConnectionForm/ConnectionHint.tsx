@@ -20,13 +20,13 @@ export default function ConnectionHint(props: ConnectionHintProps) {
     'mongodb',
     'redis',
     'cosmosdb',
-  ]
+  ];
 
   return (
     <>
-      {
-        supportedConnections.map(connection => {
-          return <Alert severity='info' icon={<ConnectionTypeIcon scheme={connection} status='online' />}>
+      {supportedConnections.map((connection) => {
+        return (
+          <Alert severity='info' icon={<ConnectionTypeIcon scheme={connection} status='online' />}>
             <AlertTitle>{connection}</AlertTitle>
             <Tooltip title={`Use this sample ${connection} connection string.`}>
               <Link
@@ -36,8 +36,8 @@ export default function ConnectionHint(props: ConnectionHintProps) {
               </Link>
             </Tooltip>
           </Alert>
-        })
-      }
+        );
+      })}
     </>
   );
 }
