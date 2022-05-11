@@ -1147,7 +1147,7 @@ client
 ```
 
 
-### Insert
+### Delete
 
 ```js
 client
