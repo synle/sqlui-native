@@ -3,7 +3,7 @@ import AzureTableStorageAdapter from 'src/common/adapters/AzureTableStorageAdapt
 const azTableConnectionString = process.env.AZTABLE_CONNECTION_STRING;
 const adapter = new AzureTableStorageAdapter(`aztable://${azTableConnectionString}`);
 
-describe('AzureTableStorageAdapter', () => {
+describe.skip('AzureTableStorageAdapter', () => {
   test('Authenticate', async () => {
     await adapter.authenticate();
   });
@@ -26,11 +26,19 @@ Array [
     expect(actual[0].name).toBeDefined();
   });
 
+  test('getColumns', async () => {
+    const actual = await adapter.getColumns('syaztabl1');
+    expect(actual.length).toBeGreaterThan(0);
+    expect(actual[0].name).toBeDefined();
+  });
+
+
   test('execute list data', async () => {
-    const actual = await adapter.execute('client.listEntities()', 'Azure Table Storage', 'syaztabl1');
+    const actual = await adapter.execute('tableClient.listEntities()', 'Azure Table Storage', 'syaztabl1');
     expect(actual?.raw?.length).toBeGreaterThan(0);
     expect(actual?.raw?.[0]?.etag).toBeDefined();
     expect(actual?.raw?.[0]?.partitionKey).toBeDefined();
-    expect(actual?.raw?.[0]?.id).toBeDefined();
+    expect(actual?.raw?.[0]?.rowKey).toBeDefined();
+    expect(actual?.raw?.[0]?.timestamp).toBeDefined();
   });
 });

@@ -35,7 +35,7 @@ You can also refer to this link for [General Queries](https://synle.github.io/sq
 - [MongoDB](https://synle.github.io/sqlui-native/guides#mongodb) (Limited Supported)
 - [Redis](https://synle.github.io/sqlui-native/guides#redis) (Limited Supported)
 - [Azure CosmosDB](https://synle.github.io/sqlui-native/guides#cosmosdb) (Limited Supported)
-- [Azure Table Storage (TBD)]()
+- [Azure Table Storage](https://synle.github.io/sqlui-native/guides#aztable) (Limited Supported)
 
 ## Features
 

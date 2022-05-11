@@ -153,7 +153,7 @@ docker run --name sqlui_redis -p 6379:6379 -d redis
 Refer to this folder for files related to adding a new adapter.
 
 - [Adapter Core Files](https://github.com/synle/sqlui-native/tree/main/src/common/adapters/_SampleDataAdapter_)
-- Sample PR - TBD
+- [Sample PR (Adding Support For Azure Table)](https://github.com/synle/sqlui-native/pull/321/files)
 
 Overall the process requires that you do:
 
@@ -162,6 +162,7 @@ Overall the process requires that you do:
 - Hook it up with the Data Adapter Factory.
 - Hook it up with the Data Script Factory.
 - Create the icon for the new dialect. File is located in `public/assets` and must match the dialect name and ended in `png`.
+- Add the script spec into the  Data Script Factory Test.
 
 ## Sample runbooks
 

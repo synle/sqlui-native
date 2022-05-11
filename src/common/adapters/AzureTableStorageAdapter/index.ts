@@ -22,6 +22,11 @@ type AzureTableConnectionOption = {
   AccountKey?: string;
 };
 
+/**
+ * @type {Number} maximum number of items to scan for column metadata
+ */
+const MAX_ITEM_COUNT_TO_SCAN = 5;
+
 export default class AzureTableStorageAdapter extends BaseDataAdapter implements IDataAdapter {
   dialect: SqluiCore.Dialect = 'aztable';
 
@@ -65,7 +70,10 @@ export default class AzureTableStorageAdapter extends BaseDataAdapter implements
     return parsedConnectionOption as AzureTableConnectionOption;
   }
 
-  private async getConnection() {
+  /**
+   * TableServiceClient - Client that provides functions to interact at a Table Service level such as create, list and delete tables
+   */
+  private async getTableServiceClient() {
     // attempt to pull in connections
     return new Promise<TableServiceClient>(async (resolve, reject) => {
       try {
@@ -84,11 +92,19 @@ export default class AzureTableStorageAdapter extends BaseDataAdapter implements
     });
   }
 
-  private async getTableClient(table: string) {
+  /**
+   * TableServiceClient - Client that provides functions to interact at a Table Service level such as create, list and delete tables
+   * @param {string} table [description]
+   */
+  private async getTableClient(table?: string) {
     // attempt to pull in connections
-    return new Promise<TableClient>(async (resolve, reject) => {
+    return new Promise<TableClient | undefined>(async (resolve, reject) => {
       try {
         setTimeout(() => reject('Connection timeout'), MAX_CONNECTION_TIMEOUT);
+
+        if(!table){
+          return resolve(undefined);
+        }
 
         const parsedConnectionOption = AzureTableStorageAdapter.getParsedConnectionOptions(
           this.connectionOption,
@@ -115,7 +131,7 @@ export default class AzureTableStorageAdapter extends BaseDataAdapter implements
       try {
         setTimeout(() => reject('Connection timeout'), MAX_CONNECTION_TIMEOUT);
 
-        await this.getConnection();
+        await this.getTableServiceClient();
 
         resolve();
       } catch (err) {
@@ -135,9 +151,9 @@ export default class AzureTableStorageAdapter extends BaseDataAdapter implements
 
   async getTables(database?: string): Promise<SqluiCore.TableMetaData[]> {
     // https://docs.microsoft.com/en-us/javascript/api/overview/azure/data-tables-readme?view=azure-node-latest#list-tables-in-the-account
-    const client = await this.getConnection();
+    const serviceClient = await this.getTableServiceClient();
 
-    const tablesResponse = await client.listTables();
+    const tablesResponse = await serviceClient.listTables();
 
     const tables: SqluiCore.TableMetaData[] = [];
     for await (const table of tablesResponse) {
@@ -153,29 +169,47 @@ export default class AzureTableStorageAdapter extends BaseDataAdapter implements
   }
 
   async getColumns(table: string, database?: string): Promise<SqluiCore.ColumnMetaData[]> {
-    // TODO: implement me
-    return [];
+    const tableClient = await this.getTableClient(table);
+
+    const page = await tableClient?.listEntities().byPage({ maxPageSize: MAX_ITEM_COUNT_TO_SCAN }).next();
+
+    const items: any[] = [];
+
+    if (page && !page.done) {
+      for await (const entity of page.value) {
+        if(entity['rowKey']){
+          items.push(entity);
+        }
+      }
+    }
+
+    return BaseDataAdapter.inferTypesFromItems(items);
   }
 
   async execute(sql: string, database?: string, table?: string): Promise<SqluiCore.Result> {
     try {
-      if (!table) {
-        throw `table is required to execute a azure table`;
-      }
-      const client = await this.getTableClient(table);
 
+      const serviceClient = await  this.getTableServiceClient();
+      const tableClient = await this.getTableClient(table);
 
       const res: any = await eval(sql);
 
-      const raw: any[] = [];
-      for await (const entity of res) {
-        raw.push(entity);
-      }
+      console.log('>> TODO res', res)
 
-      return { ok: true, raw };
+      try{
+        const raw: any[] = [];
+        for await (const entity of res) {
+          raw.push(entity);
+        }
+
+        return { ok: true, raw };
+      } catch(err){
+        // object is not iterrable
+        return { ok: true, meta:res};
+      }
     } catch (error: any) {
       console.log(error);
-      return { ok: false, error: JSON.stringify(error) };
+      return { ok: false, error: JSON.stringify(error, null, 2) };
     } finally {
       this.closeConnection();
     }

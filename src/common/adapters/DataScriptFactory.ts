@@ -89,7 +89,7 @@ export function getSyntaxModeByDialect(dialect?: string): 'javascript' | 'sql' {
     case 'mongodb':
     case 'redis':
     case 'cosmosdb':
-    case 'azuretable':
+    case 'aztable':
       return 'javascript';
   }
 }
@@ -110,7 +110,7 @@ export function getSampleConnectionString(dialect?: string) {
       return getRedisSampleConnectionString();
     case 'cosmosdb':
       return getAzureCosmosDBSampleConnectionString();
-    case 'azuretable':
+    case 'aztable':
       return getAzureTableSampleConnectionString();
     default: // Not supported dialect
       return '';
@@ -139,7 +139,7 @@ export function getTableActions(tableActionInput: SqlAction.TableInput) {
     case 'cosmosdb':
       scriptsToUse = AzureCosmosDBTableActionScripts;
       break;
-    case 'azuretable':
+    case 'aztable':
       scriptsToUse= AzureTableTableActionScripts;
       break;
   }
@@ -169,7 +169,7 @@ export function getDatabaseActions(databaseActionInput: SqlAction.DatabaseInput)
     case 'cosmosdb':
       scriptsToUse = AzureCosmosDBDatabaseActionScripts;
       break;
-    case 'azuretable':
+    case 'aztable':
       scriptsToUse= AzureTableDatabaseActionScripts;
       break;
   }
