@@ -5,7 +5,10 @@ import DropdownButton from 'src/frontend/components/DropdownButton';
 import { useCommands } from 'src/frontend/components/MissionControl';
 import { getTableActions } from 'src/frontend/data/sql';
 import { useGetColumns, useGetConnectionById } from 'src/frontend/hooks/useConnection';
-import { useActiveConnectionQuery, getIsTableIdRequiredForQuery } from 'src/frontend/hooks/useConnectionQuery';
+import {
+  getIsTableIdRequiredForQuery,
+  useActiveConnectionQuery,
+} from 'src/frontend/hooks/useConnectionQuery';
 import { useQuerySizeSetting } from 'src/frontend/hooks/useSetting';
 
 type TableActionsProps = {

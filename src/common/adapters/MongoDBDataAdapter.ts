@@ -102,7 +102,12 @@ export default class MongoDBDataAdapter extends BaseDataAdapter implements IData
 
         try {
           //@ts-ignore
-          const items = await client.db(database).collection(table).find().limit(MAX_ITEM_COUNT_TO_SCAN).toArray();
+          const items = await client
+            .db(database)
+            .collection(table)
+            .find()
+            .limit(MAX_ITEM_COUNT_TO_SCAN)
+            .toArray();
 
           return BaseDataAdapter.inferTypesFromItems(items);
         } finally {
@@ -140,7 +145,10 @@ export default class MongoDBDataAdapter extends BaseDataAdapter implements IData
           throw `Invalid syntax. MongoDB syntax in sqlui-native starts with '${MONGO_ADAPTER_PREFIX}.'. Refer to the syntax help in this link https://synle.github.io/sqlui-native/guides#mongodb`;
         }
 
-        if ((sql.includes('db.create(') || sql.includes('db.createDatabase(')) && sql.includes(')')) {
+        if (
+          (sql.includes('db.create(') || sql.includes('db.createDatabase(')) &&
+          sql.includes(')')
+        ) {
           // TODO: see if we need to be more strict with the regex
           let databaseName = sql
             .replace(/[;'" )]/g, '')
@@ -150,7 +158,7 @@ export default class MongoDBDataAdapter extends BaseDataAdapter implements IData
           await this.createDatabase(databaseName);
           return resolve({
             ok: true,
-            meta: `Database ${databaseName} created`
+            meta: `Database ${databaseName} created`,
           });
         }
 

@@ -195,11 +195,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
 
     const engine = getDataAdapter(connection.connection);
 
-    res.status(200).json(await engine.execute(
-      req.body?.sql,
-      req.body?.database,
-      req.body?.table
-    ));
+    res.status(200).json(await engine.execute(req.body?.sql, req.body?.database, req.body?.table));
   });
 
   addDataEndpoint('post', '/api/connection/test', async (req, res, apiCache) => {

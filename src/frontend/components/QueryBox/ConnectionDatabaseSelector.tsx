@@ -13,7 +13,10 @@ export default function ConnectionDatabaseSelector(props: ConnectionDatabaseSele
   const query = props.value;
   const { data: connections, isLoading: loadingConnections } = useGetConnections();
   const { data: databases, isLoading: loadingDatabases } = useGetDatabases(query.connectionId);
-  const { data: tables, isLoading: loadingTables } = useGetTables(query.connectionId, query.databaseId);
+  const { data: tables, isLoading: loadingTables } = useGetTables(
+    query.connectionId,
+    query.databaseId,
+  );
   const isLoading = loadingDatabases || loadingConnections || loadingTables;
 
   const connectionOptions = useMemo(
@@ -48,12 +51,12 @@ export default function ConnectionDatabaseSelector(props: ConnectionDatabaseSele
 
   const isDatabaseIdRequired = false;
 
-  const isTableIdRequired = useMemo<boolean>(
-    () => {
-      const selectedConnection = connections?.find((connection) => connection.id === query.connectionId);
-      return getIsTableIdRequiredForQuery(selectedConnection?.dialect);
-    }
-    ,[connections, query.connectionId]);
+  const isTableIdRequired = useMemo<boolean>(() => {
+    const selectedConnection = connections?.find(
+      (connection) => connection.id === query.connectionId,
+    );
+    return getIsTableIdRequiredForQuery(selectedConnection?.dialect);
+  }, [connections, query.connectionId]);
 
   if (isLoading) {
     <>
@@ -72,7 +75,7 @@ export default function ConnectionDatabaseSelector(props: ConnectionDatabaseSele
 
   const onTableChange = (tableId: string) => {
     props.onChange(query.connectionId, query.databaseId, tableId);
-  }
+  };
 
   return (
     <>
@@ -87,12 +90,12 @@ export default function ConnectionDatabaseSelector(props: ConnectionDatabaseSele
         <option value=''>Pick a Database (Optional)</option>
         {databaseOptions}
       </Select>
-      {
-        isTableIdRequired && <Select value={query.tableId} onChange={(newValue) => onTableChange(newValue)}>
-              <option value=''>Pick a Table</option>
-              {tableOptions}
-            </Select>
-      }
+      {isTableIdRequired && (
+        <Select value={query.tableId} onChange={(newValue) => onTableChange(newValue)}>
+          <option value=''>Pick a Table</option>
+          {tableOptions}
+        </Select>
+      )}
     </>
   );
 }

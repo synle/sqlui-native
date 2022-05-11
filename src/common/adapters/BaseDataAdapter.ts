@@ -84,7 +84,7 @@ export default abstract class BaseDataAdapter {
     return columnsMap;
   }
 
-  static inferTypesFromItems(items: any): SqluiCore.ColumnMetaData[]{
+  static inferTypesFromItems(items: any): SqluiCore.ColumnMetaData[] {
     let columnsMap: Record<string, SqluiCore.ColumnMetaData> = {};
 
     for (const item of items) {
@@ -94,6 +94,6 @@ export default abstract class BaseDataAdapter {
       };
     }
 
-    return Object.values(columnsMap).sort((a, b) => (a.name || '').localeCompare(b.name || ''))
+    return Object.values(columnsMap).sort((a, b) => (a.name || '').localeCompare(b.name || ''));
   }
 }

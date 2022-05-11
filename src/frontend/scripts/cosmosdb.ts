@@ -15,8 +15,6 @@ export function getSelectAllColumns(input: SqlAction.TableInput): SqlAction.Outp
   };
 }
 
-export const tableActionScripts: SqlAction.TableActionScriptGenerator[] = [
-  getSelectAllColumns,
-];
+export const tableActionScripts: SqlAction.TableActionScriptGenerator[] = [getSelectAllColumns];
 
 export const databaseActionScripts: SqlAction.DatabaseActionScriptGenerator[] = [];

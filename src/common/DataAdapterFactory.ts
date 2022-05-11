@@ -1,9 +1,9 @@
+import AzureCosmosDataAdapter from 'src/common/adapters/AzureCosmosDataAdapter';
 import BaseDataAdapter from 'src/common/adapters/BaseDataAdapter';
 import CassandraDataAdapter from 'src/common/adapters/CassandraDataAdapter';
 import IDataAdapter from 'src/common/adapters/IDataAdapter';
 import MongoDBDataAdapter from 'src/common/adapters/MongoDBDataAdapter';
 import RedisDataAdapter from 'src/common/adapters/RedisDataAdapter';
-import AzureCosmosDataAdapter from 'src/common/adapters/AzureCosmosDataAdapter';
 import RelationalDataAdapter from 'src/common/adapters/RelationalDataAdapter';
 import { SqluiCore } from 'typings';
 

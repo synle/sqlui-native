@@ -96,7 +96,14 @@ export default function ConnectionHint(props: ConnectionHintProps) {
       <Alert severity='info' icon={<ConnectionTypeIcon scheme='cosmosdb' status='online' />}>
         <AlertTitle>Azure CosmosDB</AlertTitle>
         <Tooltip title='Use this sample Azure CosmosDB connection.'>
-          <Link underline='hover' onClick={() => props.onChange('Azure CosmosDB', 'cosmosdb://AccountEndpoint=some_cosmos_endpoint;AccountKey=some_cosmos_account_key')}>
+          <Link
+            underline='hover'
+            onClick={() =>
+              props.onChange(
+                'Azure CosmosDB',
+                'cosmosdb://AccountEndpoint=some_cosmos_endpoint;AccountKey=some_cosmos_account_key',
+              )
+            }>
             cosmosdb://AccountEndpoint=some_cosmos_endpoint;AccountKey=some_cosmos_account_key
           </Link>
         </Tooltip>

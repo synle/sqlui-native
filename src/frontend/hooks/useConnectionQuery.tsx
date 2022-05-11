@@ -282,6 +282,6 @@ export function useActiveConnectionQuery() {
   };
 }
 
-export function getIsTableIdRequiredForQuery(dialect?: string){
+export function getIsTableIdRequiredForQuery(dialect?: string) {
   return dialect === 'cosmosdb';
 }

@@ -4,6 +4,10 @@ import {
   tableActionScripts as CassandraTableActionScripts,
 } from 'src/frontend/scripts/cassandra';
 import {
+  databaseActionScripts as AzureCosmosDBDatabaseActionScripts,
+  tableActionScripts as AzureCosmosDBTableActionScripts,
+} from 'src/frontend/scripts/cosmosdb';
+import {
   databaseActionScripts as MongodbDatabaseActionScripts,
   tableActionScripts as MongodbTableActionScripts,
 } from 'src/frontend/scripts/mongodb';
@@ -15,10 +19,6 @@ import {
   databaseActionScripts as RmdbDatabaseActionScripts,
   tableActionScripts as RmdbTableActionScripts,
 } from 'src/frontend/scripts/rmdb';
-import {
-  databaseActionScripts as AzureCosmosDBDatabaseActionScripts,
-  tableActionScripts as AzureCosmosDBTableActionScripts,
-} from 'src/frontend/scripts/cosmosdb';
 import { formatJS, formatSQL } from 'src/frontend/utils/formatter';
 import { SqlAction } from 'typings';
 
