@@ -51,6 +51,10 @@ function _formatScripts(
   return actions;
 }
 
+export function getIsTableIdRequiredForQuery(dialect?: string) {
+  return dialect === 'cosmosdb';
+}
+
 export function getSampleConnectionString(dialect?: string) {
   switch (dialect) {
     case 'mysql':
