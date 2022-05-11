@@ -79,24 +79,28 @@ export default class AzureCosmosDataAdapter extends BaseDataAdapter implements I
     // https://azure.github.io/azure-cosmos-js/classes/databases.html#readall
     const client = await this.getConnection();
 
-    const res = await client.databases.readAll().fetchAll();
+    const {resources} = await client.databases.readAll().fetchAll();
 
-    return res.resources.map(db => ({
+    return resources.map(db => ({
       name: db.id,
       tables: [],
     }));
   }
 
   async getTables(database?: string): Promise<SqluiCore.TableMetaData[]> {
-    // TODO: implement me
-    // await this.getConnection();
+    // https://azure.github.io/azure-cosmos-js/classes/containers.html#readall
+    if(!database){
+      return [];
+    }
 
-    return [
-      {
-        name: 'CosmosDB Table',
-        columns: [],
-      },
-    ];
+    const client = await this.getConnection();
+
+    const {resources} = await client.database(database).containers.readAll().fetchAll();
+
+    return resources.map(db => ({
+      name: db.id,
+      columns: [],
+    }));
   }
 
   async getColumns(table: string, database?: string): Promise<SqluiCore.ColumnMetaData[]> {
