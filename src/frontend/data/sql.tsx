@@ -15,6 +15,10 @@ import {
   databaseActionScripts as RmdbDatabaseActionScripts,
   tableActionScripts as RmdbTableActionScripts,
 } from 'src/frontend/scripts/rmdb';
+import {
+  databaseActionScripts as AzureCosmosDBDatabaseActionScripts,
+  tableActionScripts as AzureCosmosDBTableActionScripts,
+} from 'src/frontend/scripts/cosmosdb';
 import { formatJS, formatSQL } from 'src/frontend/utils/formatter';
 import { SqlAction } from 'typings';
 
@@ -38,6 +42,9 @@ export function getTableActions(tableActionInput: SqlAction.TableInput) {
       break;
     case 'redis':
       scriptsToUse = RedisTableActionScripts;
+      break;
+    case 'cosmosdb':
+      scriptsToUse = AzureCosmosDBTableActionScripts;
       break;
   }
 
@@ -84,6 +91,9 @@ export function getDatabaseActions(databaseActionInput: SqlAction.DatabaseInput)
       break;
     case 'redis':
       scriptsToUse = RedisDatabaseActionScripts;
+      break;
+    case 'cosmosdb':
+      scriptsToUse = AzureCosmosDBDatabaseActionScripts;
       break;
   }
 

@@ -60,6 +60,9 @@ export default function TableActions(props: TableActionsProps) {
         data: {
           connectionId: connectionId,
           databaseId: databaseId,
+          // NOTE: here we only apply the tableId for cosmosdb
+          // because other dialect doesn't need to be passed in a tableId
+          tableId: dialect === 'cosmosdb' ? tableId : '',
           sql: action.query,
         },
         label: `Applied "${action.label}" to active query tab.`,
