@@ -5,7 +5,7 @@ import { SqluiFrontend } from 'typings';
 
 type ConnectionDatabaseSelectorProps = {
   value: SqluiFrontend.ConnectionQuery;
-  onChange: (connectionId?: string, databaseId?: string) => void;
+  onChange: (connectionId?: string, databaseId?: string, tableId?: string) => void;
 };
 
 export default function ConnectionDatabaseSelector(props: ConnectionDatabaseSelectorProps) {
@@ -43,12 +43,16 @@ export default function ConnectionDatabaseSelector(props: ConnectionDatabaseSele
   }
 
   const onConnectionChange = (connectionId: string) => {
-    props.onChange(connectionId, '');
+    props.onChange(connectionId, '', '');
   };
 
   const onDatabaseChange = (databaseId: string) => {
-    props.onChange(query.connectionId, databaseId);
+    props.onChange(query.connectionId, databaseId, '');
   };
+
+  const onTableChange = (tableId: string) => {
+    props.onChange(query.connectionId, query.databaseId, tableId);
+  }
 
   return (
     <>
