@@ -10,7 +10,58 @@ Array [
   Object {
     "formatter": "js",
     "label": "Select All Columns",
-    "query": "SELECT * FROM c",
+    "query": "client
+  .database('database1')
+  .container('table1')
+  .items
+  .query({
+    query: 'SELECT * from c OFFSET 1 LIMIT 5',
+  })
+  .fetchAll()",
+  },
+  Object {
+    "formatter": "js",
+    "label": "Insert",
+    "query": "client
+  .database('database1')
+  .container('table1')
+  .items
+  .create({
+    id: '123',
+    name: 'test'
+  })",
+  },
+  Object {
+    "formatter": "js",
+    "label": "Update",
+    "query": "client
+  .database('database1')
+  .container('table1')
+  .item('id_123', 'category')
+  .replace({
+    id: 'id_123',
+    name: 'new_name'
+  })",
+  },
+  Object {
+    "formatter": "js",
+    "label": "Insert",
+    "query": "client
+  .database('database1')
+  .container('table1')
+  .item('id_123', 'category')
+  .delete()",
+  },
+  Object {
+    "label": "divider",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Raw Select All Columns SQL",
+    "query": "SELECT
+  *
+FROM
+  c",
   },
 ]
 `;

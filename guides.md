@@ -1108,6 +1108,62 @@ db.publish("pubsub_channel_key1", "some_message")
 ### Select All Columns
 
 ```js
-SELECT * FROM c
+client
+  .database('database1')
+  .container('table1')
+  .items
+  .query({
+    query: 'SELECT * from c OFFSET 1 LIMIT 5',
+  })
+  .fetchAll()
+```
+
+
+### Insert
+
+```js
+client
+  .database('database1')
+  .container('table1')
+  .items
+  .create({
+    id: '123',
+    name: 'test'
+  })
+```
+
+
+### Update
+
+```js
+client
+  .database('database1')
+  .container('table1')
+  .item('id_123', 'category')
+  .replace({
+    id: 'id_123',
+    name: 'new_name'
+  })
+```
+
+
+### Insert
+
+```js
+client
+  .database('database1')
+  .container('table1')
+  .item('id_123', 'category')
+  .delete()
+```
+
+
+### Raw Select All Columns SQL
+
+```sql
+SELECT
+  *
+FROM
+  c
 ```
 
