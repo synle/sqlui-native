@@ -39,7 +39,6 @@ export default abstract class BaseDataAdapter {
       case 'sqlite':
       case 'cassandra':
       case 'mongodb':
-      case 'cosmosdb':
         if (dialect) {
           const connectionStringParser = new ConnectionStringParser({
             scheme: dialect,
