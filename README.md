@@ -35,6 +35,7 @@ You can also refer to this link for [General Queries](https://synle.github.io/sq
 - [MongoDB](https://synle.github.io/sqlui-native/guides#mongodb) (Limited Supported)
 - [Redis](https://synle.github.io/sqlui-native/guides#redis) (Limited Supported)
 - [Azure CosmosDB](https://synle.github.io/sqlui-native/guides#cosmosdb) (Limited Supported)
+- [Azure Table Storage (TBD)]()
 
 ## Features
 
@@ -154,7 +155,7 @@ Here is the link where you can find information about how run this application l
 - [ ] Push a build to Microsoft Store.
 - [x] Add supports for Cassandra.
 - [x] Add supports for Azure CosmosDB.
-- [ ] Add supports for Azure Table.
+- [ ] Add supports for [Azure Table (Azure Table storage)](https://docs.microsoft.com/en-us/azure/storage/tables/table-storage-overview).
 - [ ] Add supports for AWS Redshift.
 
 ## Limitations
