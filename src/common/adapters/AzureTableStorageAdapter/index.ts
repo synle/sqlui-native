@@ -1,13 +1,8 @@
-import {
-  AzureNamedKeyCredential,
-  AzureSASCredential,
-  TableClient,
-  TableServiceClient,
-} from '@azure/data-tables';
+import { AzureNamedKeyCredential, TableClient, TableServiceClient } from '@azure/data-tables';
+import { getSampleConnectionString } from 'src/common/adapters/AzureTableStorageAdapter/scripts';
 import BaseDataAdapter, { MAX_CONNECTION_TIMEOUT } from 'src/common/adapters/BaseDataAdapter/index';
 import IDataAdapter from 'src/common/adapters/IDataAdapter';
 import { SqluiCore } from 'typings';
-import {getSampleConnectionString} from 'src/common/adapters/AzureTableStorageAdapter/scripts';
 
 type AzureTableConnectionOption = {
   DefaultEndpointsProtocol: string;
@@ -34,12 +29,10 @@ export default class AzureTableStorageAdapter extends BaseDataAdapter implements
     super(connectionOption);
   }
 
-  static getAuth(
-    parsedConnectionOption: AzureTableConnectionOption,
-  ): AzureNamedKeyCredential {
+  static getAuth(parsedConnectionOption: AzureTableConnectionOption): AzureNamedKeyCredential {
     // https://docs.microsoft.com/en-us/javascript/api/overview/azure/data-tables-readme?view=azure-node-latest#create-the-table-service-client
     // TODO support SAS Token
-    if(parsedConnectionOption){
+    if (parsedConnectionOption) {
       if (parsedConnectionOption.AccountKey && parsedConnectionOption.AccountName) {
         return new AzureNamedKeyCredential(
           parsedConnectionOption.AccountName,
@@ -102,7 +95,7 @@ export default class AzureTableStorageAdapter extends BaseDataAdapter implements
       try {
         setTimeout(() => reject('Connection timeout'), MAX_CONNECTION_TIMEOUT);
 
-        if(!table){
+        if (!table) {
           return resolve(undefined);
         }
 
@@ -171,13 +164,16 @@ export default class AzureTableStorageAdapter extends BaseDataAdapter implements
   async getColumns(table: string, database?: string): Promise<SqluiCore.ColumnMetaData[]> {
     const tableClient = await this.getTableClient(table);
 
-    const page = await tableClient?.listEntities().byPage({ maxPageSize: MAX_ITEM_COUNT_TO_SCAN }).next();
+    const page = await tableClient
+      ?.listEntities()
+      .byPage({ maxPageSize: MAX_ITEM_COUNT_TO_SCAN })
+      .next();
 
     const items: any[] = [];
 
     if (page && !page.done) {
       for await (const entity of page.value) {
-        if(entity['rowKey']){
+        if (entity['rowKey']) {
           items.push(entity);
         }
       }
@@ -188,24 +184,23 @@ export default class AzureTableStorageAdapter extends BaseDataAdapter implements
 
   async execute(sql: string, database?: string, table?: string): Promise<SqluiCore.Result> {
     try {
-
-      const serviceClient = await  this.getTableServiceClient();
+      const serviceClient = await this.getTableServiceClient();
       const tableClient = await this.getTableClient(table);
 
       const res: any = await eval(sql);
 
-      console.log('>> TODO res', res)
+      console.log('>> TODO res', res);
 
-      try{
+      try {
         const raw: any[] = [];
         for await (const entity of res) {
           raw.push(entity);
         }
 
         return { ok: true, raw };
-      } catch(err){
+      } catch (err) {
         // object is not iterrable
-        return { ok: true, meta:res};
+        return { ok: true, meta: res };
       }
     } catch (error: any) {
       console.log(error);

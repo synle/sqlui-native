@@ -4,6 +4,11 @@ import {
   tableActionScripts as AzureCosmosDBTableActionScripts,
 } from 'src/common/adapters/AzureCosmosDataAdapter/scripts';
 import {
+  databaseActionScripts as AzureTableDatabaseActionScripts,
+  getSampleConnectionString as getAzureTableSampleConnectionString,
+  tableActionScripts as AzureTableTableActionScripts,
+} from 'src/common/adapters/AzureTableStorageAdapter/scripts';
+import {
   databaseActionScripts as CassandraDatabaseActionScripts,
   getSampleConnectionString as getCassandraSampleConnectionString,
   tableActionScripts as CassandraTableActionScripts,
@@ -23,11 +28,6 @@ import {
   getSampleConnectionString as getRmdbSampleConnectionString,
   tableActionScripts as RmdbTableActionScripts,
 } from 'src/common/adapters/RelationalDataAdapter/scripts';
-import {
-  databaseActionScripts as AzureTableDatabaseActionScripts,
-  getSampleConnectionString as getAzureTableSampleConnectionString,
-  tableActionScripts as AzureTableTableActionScripts,
-} from 'src/common/adapters/AzureTableStorageAdapter/scripts';
 import { formatJS, formatSQL } from 'src/frontend/utils/formatter';
 import { SqlAction } from 'typings';
 function _formatScripts(
@@ -69,7 +69,7 @@ export const SUPPORTED_DIALECTS = [
   'mongodb',
   'redis',
   'cosmosdb',
-  'aztable'
+  'aztable',
 ];
 
 export function getIsTableIdRequiredForQuery(dialect?: string) {
@@ -140,7 +140,7 @@ export function getTableActions(tableActionInput: SqlAction.TableInput) {
       scriptsToUse = AzureCosmosDBTableActionScripts;
       break;
     case 'aztable':
-      scriptsToUse= AzureTableTableActionScripts;
+      scriptsToUse = AzureTableTableActionScripts;
       break;
   }
 
@@ -170,7 +170,7 @@ export function getDatabaseActions(databaseActionInput: SqlAction.DatabaseInput)
       scriptsToUse = AzureCosmosDBDatabaseActionScripts;
       break;
     case 'aztable':
-      scriptsToUse= AzureTableDatabaseActionScripts;
+      scriptsToUse = AzureTableDatabaseActionScripts;
       break;
   }
 

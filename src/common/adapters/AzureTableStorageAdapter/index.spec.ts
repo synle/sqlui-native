@@ -31,8 +31,6 @@ Array [
     expect(actual.length).toBeGreaterThan(0);
     expect(actual[0].name).toBeDefined();
   });
-
-
   test('execute list data', async () => {
     const actual = await adapter.execute('tableClient.listEntities()', 'Azure Table Storage', 'syaztabl1');
     expect(actual?.raw?.length).toBeGreaterThan(0);

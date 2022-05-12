@@ -1,12 +1,12 @@
 import { getDivider } from 'src/common/adapters/BaseDataAdapter/scripts';
 import { SqlAction, SqluiCore } from 'typings';
-
 // https://docs.microsoft.com/en-us/azure/cosmos-db/table/how-to-use-nodejs
 // https://docs.microsoft.com/en-us/javascript/api/@azure/data-tables/?view=azure-node-latest
 
 const formatter = 'js';
 
 export const AZTABLE_TABLE_CLIENT_PREFIX = 'tableClient';
+
 export const AZTABLE_TABLE_SERVICE_PREFIX = 'serviceClient';
 
 function _getColMapForInsertAndUpdate(columns?: SqluiCore.ColumnMetaData[]) {
@@ -32,7 +32,7 @@ function _getColMapForInsertAndUpdate(columns?: SqluiCore.ColumnMetaData[]) {
 }
 
 function _shouldIncludeField(col: SqluiCore.ColumnMetaData) {
-  if(col.name === 'timestamp' || col.name === 'etag'){
+  if (col.name === 'timestamp' || col.name === 'etag') {
     return false;
   }
   return true;
@@ -56,10 +56,12 @@ export function getSelectAllColumns(input: SqlAction.TableInput): SqlAction.Outp
   };
 }
 
-export function getSelectSpecificColumns(input: SqlAction.TableInput): SqlAction.Output | undefined {
+export function getSelectSpecificColumns(
+  input: SqlAction.TableInput,
+): SqlAction.Output | undefined {
   const label = `Select Specific Columns`;
 
-  const columns = input?.columns?.map(col => col.name);
+  const columns = input?.columns?.map((col) => col.name);
 
   return {
     label,
@@ -152,10 +154,9 @@ export function getCreateTable(input: SqlAction.TableInput): SqlAction.Output | 
     `,
   };
 }
-
-
-
-export function getCreateDatabaseTable(input: SqlAction.DatabaseInput): SqlAction.Output | undefined {
+export function getCreateDatabaseTable(
+  input: SqlAction.DatabaseInput,
+): SqlAction.Output | undefined {
   const label = `Create Table`;
 
   return {

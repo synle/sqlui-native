@@ -162,7 +162,7 @@ Overall the process requires that you do:
 - Hook it up with the Data Adapter Factory.
 - Hook it up with the Data Script Factory.
 - Create the icon for the new dialect. File is located in `public/assets` and must match the dialect name and ended in `png`.
-- Add the script spec into the  Data Script Factory Test.
+- Add the script spec into the Data Script Factory Test.
 
 ## Sample runbooks
 
