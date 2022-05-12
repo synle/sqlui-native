@@ -23,40 +23,13 @@ export default class AzureCosmosDataAdapter extends BaseDataAdapter implements I
     super(connectionOption);
   }
 
-  static getParsedConnectionOptions(connectionOption: string): AzureCosmosDBConnectionOption {
-    const parsedConnectionOption: Partial<AzureCosmosDBConnectionOption> = connectionOption
-      .replace('cosmosdb://', '')
-      .split(/;/gi)
-      .reduce((res, s) => {
-        const key = s.substr(0, s.indexOf('='));
-        const value = s.substr(key.length + 1);
-
-        res[key] = value;
-
-        return res;
-      }, {});
-
-    if (!parsedConnectionOption.AccountEndpoint || !parsedConnectionOption.AccountKey) {
-      throw `Missing AccountEndpoint or AccountKey. The proper connection string should be comsosdb://AccountEndpoint=<your_cosmos_uri>;AccountKey=<your_cosmos_primary_key>`;
-    }
-
-    return parsedConnectionOption as AzureCosmosDBConnectionOption;
-  }
-
   private async getConnection(): Promise<AzureCosmosDBClient> {
     // attempt to pull in connections
     return new Promise<AzureCosmosDBClient>(async (resolve, reject) => {
       try {
         setTimeout(() => reject('Connection Timeout'), MAX_CONNECTION_TIMEOUT);
 
-        const parsedConnectionOption = AzureCosmosDataAdapter.getParsedConnectionOptions(
-          this.connectionOption,
-        );
-
-        const client = new CosmosClient({
-          endpoint: parsedConnectionOption.AccountEndpoint,
-          key: parsedConnectionOption.AccountKey,
-        });
+        const client = new CosmosClient(this.getConnectionString());
 
         resolve(client);
       } catch (err) {

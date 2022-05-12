@@ -29,40 +29,6 @@ export default class AzureTableStorageAdapter extends BaseDataAdapter implements
     super(connectionOption);
   }
 
-  static getAuth(parsedConnectionOption: AzureTableConnectionOption): AzureNamedKeyCredential {
-    // https://docs.microsoft.com/en-us/javascript/api/overview/azure/data-tables-readme?view=azure-node-latest#create-the-table-service-client
-    // TODO support SAS Token
-    if (parsedConnectionOption) {
-      if (parsedConnectionOption.AccountKey && parsedConnectionOption.AccountName) {
-        return new AzureNamedKeyCredential(
-          parsedConnectionOption.AccountName,
-          parsedConnectionOption.AccountKey,
-        );
-      }
-    }
-
-    throw `Missing AccountName / AccountKey. The proper connection string should be ${getSampleConnectionString()}`;
-  }
-
-  static getParsedConnectionOptions(connectionOption: string): AzureTableConnectionOption {
-    const parsedConnectionOption: Partial<AzureTableConnectionOption> = connectionOption
-      .replace('aztable://', '')
-      .split(/;/gi)
-      .reduce((res, s) => {
-        const key = s.substr(0, s.indexOf('='));
-        const value = s.substr(key.length + 1);
-
-        res[key] = value;
-
-        return res;
-      }, {});
-
-    parsedConnectionOption.DefaultEndpointsProtocol =
-      parsedConnectionOption.DefaultEndpointsProtocol || 'https';
-
-    return parsedConnectionOption as AzureTableConnectionOption;
-  }
-
   /**
    * TableServiceClient - Client that provides functions to interact at a Table Service level such as create, list and delete tables
    */
@@ -72,13 +38,8 @@ export default class AzureTableStorageAdapter extends BaseDataAdapter implements
       try {
         setTimeout(() => reject('Connection timeout'), MAX_CONNECTION_TIMEOUT);
 
-        const parsedConnectionOption = AzureTableStorageAdapter.getParsedConnectionOptions(
-          this.connectionOption,
-        );
-
-        const endpoint = `${parsedConnectionOption.DefaultEndpointsProtocol}://${parsedConnectionOption.AccountName}.table.${parsedConnectionOption.EndpointSuffix}`;
-        const cred = AzureTableStorageAdapter.getAuth(parsedConnectionOption);
-        resolve(new TableServiceClient(endpoint, cred));
+        const connectionString =  this.getConnectionString();
+        resolve(TableServiceClient.fromConnectionString(connectionString));
       } catch (err) {
         reject(err);
       }
@@ -96,17 +57,11 @@ export default class AzureTableStorageAdapter extends BaseDataAdapter implements
         setTimeout(() => reject('Connection timeout'), MAX_CONNECTION_TIMEOUT);
 
         if (!table) {
-          return resolve(undefined);
+          return reject('Table is required to initiate Azure Table TableClient');
         }
 
-        const parsedConnectionOption = AzureTableStorageAdapter.getParsedConnectionOptions(
-          this.connectionOption,
-        );
-
-        const endpoint = `${parsedConnectionOption.DefaultEndpointsProtocol}://${parsedConnectionOption.AccountName}.table.${parsedConnectionOption.EndpointSuffix}`;
-        const cred = AzureTableStorageAdapter.getAuth(parsedConnectionOption);
-
-        resolve(new TableClient(endpoint, table, cred));
+        const connectionString =  this.getConnectionString();
+        resolve(TableClient.fromConnectionString(connectionString, table));
       } catch (err) {
         reject(err);
       }
@@ -205,8 +160,6 @@ export default class AzureTableStorageAdapter extends BaseDataAdapter implements
       const tableClient = await this.getTableClient(table);
 
       const res: any = await eval(sql);
-
-      console.log('>> TODO res', res);
 
       try {
         const raw: any[] = [];
