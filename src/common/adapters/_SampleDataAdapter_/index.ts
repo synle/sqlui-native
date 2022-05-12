@@ -81,7 +81,7 @@ export default class YOUR_ADAPTER_NAME extends BaseDataAdapter implements IDataA
       return { ok: true, raw };
     } catch (error: any) {
       console.log(error);
-      return { ok: false, error: JSON.stringify(error) };
+      return { ok: false, error: JSON.stringify(error, null, 2) };
     } finally {
       this.closeConnection();
     }

@@ -17,7 +17,10 @@ export default function ConnectionHint(props: ConnectionHintProps) {
     <>
       {SUPPORTED_DIALECTS.map((dialect) => {
         return (
-          <Alert key={dialect} severity='info' icon={<ConnectionTypeIcon dialect={dialect} status='online' />}>
+          <Alert
+            key={dialect}
+            severity='info'
+            icon={<ConnectionTypeIcon dialect={dialect} status='online' />}>
             <AlertTitle>{dialect}</AlertTitle>
             <Tooltip title={`Use this sample ${dialect} connection string.`}>
               <Link
