@@ -63,8 +63,8 @@ export default function TableActions(props: TableActionsProps) {
       selectCommand({
         event: 'clientEvent/query/apply',
         data: {
-          connectionId: connectionId,
-          databaseId: databaseId,
+          connectionId,
+          databaseId,
           tableId: isTableIdRequiredForQuery ? tableId : '',
           sql: action.query,
         },
