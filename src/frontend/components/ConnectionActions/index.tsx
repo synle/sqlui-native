@@ -11,6 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import DropdownButton from 'src/frontend/components/DropdownButton';
 import { useCommands } from 'src/frontend/components/MissionControl';
 import { SqluiCore } from 'typings';
+import { getConnectionActions } from 'src/common/adapters/DataScriptFactory';
 
 type ConnectionActionsProps = {
   connection: SqluiCore.ConnectionProps;
@@ -21,6 +22,11 @@ export default function ConnectionActions(props: ConnectionActionsProps) {
   const navigate = useNavigate();
   const { selectCommand } = useCommands();
   const data = connection;
+
+  const {
+    dialect,
+    connectionId,
+  } = connection;
 
   const options = [
     {
@@ -73,6 +79,22 @@ export default function ConnectionActions(props: ConnectionActionsProps) {
           data,
         }),
     },
+    ...getConnectionActions({
+      dialect,
+      connectionId,
+    }).map((action) => ({
+    label: action.label,
+    startIcon: action.icon,
+    onClick: async () =>
+      selectCommand({
+        event: 'clientEvent/query/apply',
+        data: {
+          connectionId: connectionId,
+          sql: action.query,
+        },
+        label: action.description || `Applied "${action.label}" to active query tab.`,
+      }),
+  }))
   ];
 
   return (

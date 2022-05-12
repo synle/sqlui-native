@@ -239,3 +239,5 @@ export const tableActionScripts: SqlAction.TableActionScriptGenerator[] = [
 ];
 
 export const databaseActionScripts: SqlAction.DatabaseActionScriptGenerator[] = [];
+
+export const connectionActionScripts: SqlAction.ConnectionActionScriptGenerator[] = [];

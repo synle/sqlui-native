@@ -188,6 +188,10 @@ export module SqlAction {
   export type DatabaseActionScriptGenerator = (
     input: SqlAction.DatabaseInput,
   ) => SqlAction.Output | undefined;
+
+  export type ConnectionActionScriptGenerator = (
+    input: SqlAction.ConnectionInput,
+  ) => SqlAction.Output | undefined;
 }
 
 /**

@@ -423,6 +423,23 @@ export function getCreateDatabase(input: SqlAction.DatabaseInput): SqlAction.Out
   }
 }
 
+export function getCreateConnectionDatabase(input: SqlAction.ConnectionInput): SqlAction.Output | undefined {
+  const label = `Create Database`;
+
+  switch (input.dialect) {
+    case 'mssql':
+    case 'postgres':
+    case 'sqlite':
+    case 'mariadb':
+    case 'mysql':
+      return {
+        label,
+        formatter,
+        query: `CREATE DATABASE some_database_name`,
+      };
+  }
+}
+
 export const tableActionScripts: SqlAction.TableActionScriptGenerator[] = [
   getSelectAllColumns,
   getSelectCount,
@@ -443,4 +460,9 @@ export const databaseActionScripts: SqlAction.DatabaseActionScriptGenerator[] = 
   getDivider,
   getDropDatabase,
   getCreateDatabase,
+];
+
+export const connectionActionScripts: SqlAction.ConnectionActionScriptGenerator[] = [
+  getDivider,
+  getCreateConnectionDatabase
 ];

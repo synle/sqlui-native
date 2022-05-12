@@ -277,6 +277,22 @@ export function getDropDatabase(input: SqlAction.DatabaseInput): SqlAction.Outpu
     `,
   };
 }
+
+
+export function getCreateConnectionDatabase(input: SqlAction.ConnectionInput): SqlAction.Output | undefined {
+  const label = `Create Database`;
+
+  return {
+    label,
+    formatter,
+    query: `
+      client
+        .databases
+        .create({id: 'some_database_name'})
+    `,
+  };
+}
+
 export const tableActionScripts: SqlAction.TableActionScriptGenerator[] = [
   getSelectAllColumns,
   getSelectSpecificColumns,
@@ -299,4 +315,9 @@ export const databaseActionScripts: SqlAction.DatabaseActionScriptGenerator[] = 
   getCreateDatabaseContainer,
   getDivider,
   getDropDatabase,
+];
+
+export const connectionActionScripts: SqlAction.ConnectionActionScriptGenerator[] = [
+  getDivider,
+  getCreateConnectionDatabase
 ];
