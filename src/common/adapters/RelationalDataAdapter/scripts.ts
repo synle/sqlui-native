@@ -423,7 +423,9 @@ export function getCreateDatabase(input: SqlAction.DatabaseInput): SqlAction.Out
   }
 }
 
-export function getCreateConnectionDatabase(input: SqlAction.ConnectionInput): SqlAction.Output | undefined {
+export function getCreateConnectionDatabase(
+  input: SqlAction.ConnectionInput,
+): SqlAction.Output | undefined {
   const label = `Create Database`;
 
   switch (input.dialect) {
@@ -464,5 +466,5 @@ export const databaseActionScripts: SqlAction.DatabaseActionScriptGenerator[] = 
 
 export const connectionActionScripts: SqlAction.ConnectionActionScriptGenerator[] = [
   getDivider,
-  getCreateConnectionDatabase
+  getCreateConnectionDatabase,
 ];

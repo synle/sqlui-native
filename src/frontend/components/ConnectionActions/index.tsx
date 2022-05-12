@@ -8,10 +8,10 @@ import SelectAllIcon from '@mui/icons-material/SelectAll';
 import { Button } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import { useNavigate } from 'react-router-dom';
+import { getConnectionActions } from 'src/common/adapters/DataScriptFactory';
 import DropdownButton from 'src/frontend/components/DropdownButton';
 import { useCommands } from 'src/frontend/components/MissionControl';
 import { SqluiCore } from 'typings';
-import { getConnectionActions } from 'src/common/adapters/DataScriptFactory';
 
 type ConnectionActionsProps = {
   connection: SqluiCore.ConnectionProps;
@@ -23,10 +23,7 @@ export default function ConnectionActions(props: ConnectionActionsProps) {
   const { selectCommand } = useCommands();
   const data = connection;
 
-  const {
-    dialect,
-    connectionId,
-  } = connection;
+  const { dialect, connectionId } = connection;
 
   const options = [
     {
@@ -83,18 +80,18 @@ export default function ConnectionActions(props: ConnectionActionsProps) {
       dialect,
       connectionId,
     }).map((action) => ({
-    label: action.label,
-    startIcon: action.icon,
-    onClick: async () =>
-      selectCommand({
-        event: 'clientEvent/query/apply',
-        data: {
-          connectionId: connectionId,
-          sql: action.query,
-        },
-        label: action.description || `Applied "${action.label}" to active query tab.`,
-      }),
-  }))
+      label: action.label,
+      startIcon: action.icon,
+      onClick: async () =>
+        selectCommand({
+          event: 'clientEvent/query/apply',
+          data: {
+            connectionId: connectionId,
+            sql: action.query,
+          },
+          label: action.description || `Applied "${action.label}" to active query tab.`,
+        }),
+    })),
   ];
 
   return (

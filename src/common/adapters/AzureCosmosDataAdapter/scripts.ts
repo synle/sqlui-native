@@ -277,9 +277,9 @@ export function getDropDatabase(input: SqlAction.DatabaseInput): SqlAction.Outpu
     `,
   };
 }
-
-
-export function getCreateConnectionDatabase(input: SqlAction.ConnectionInput): SqlAction.Output | undefined {
+export function getCreateConnectionDatabase(
+  input: SqlAction.ConnectionInput,
+): SqlAction.Output | undefined {
   const label = `Create Database`;
 
   return {
@@ -319,5 +319,5 @@ export const databaseActionScripts: SqlAction.DatabaseActionScriptGenerator[] = 
 
 export const connectionActionScripts: SqlAction.ConnectionActionScriptGenerator[] = [
   getDivider,
-  getCreateConnectionDatabase
+  getCreateConnectionDatabase,
 ];

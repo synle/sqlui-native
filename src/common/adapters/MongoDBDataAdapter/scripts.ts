@@ -203,7 +203,9 @@ export function getDropDatabase(input: SqlAction.DatabaseInput): SqlAction.Outpu
   }
 }
 
-export function getCreateConnectionDatabase(input: SqlAction.ConnectionInput): SqlAction.Output | undefined {
+export function getCreateConnectionDatabase(
+  input: SqlAction.ConnectionInput,
+): SqlAction.Output | undefined {
   const label = `Create Database`;
 
   if (input.dialect === 'mongodb') {
@@ -233,9 +235,7 @@ export const databaseActionScripts: SqlAction.DatabaseActionScriptGenerator[] = 
   getCreateDatabase,
   getDropDatabase,
 ];
-
-
 export const connectionActionScripts: SqlAction.ConnectionActionScriptGenerator[] = [
   getDivider,
-  getCreateConnectionDatabase
+  getCreateConnectionDatabase,
 ];

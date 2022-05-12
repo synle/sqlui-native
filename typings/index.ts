@@ -157,7 +157,7 @@ export module SqlAction {
   export type ConnectionInput = {
     dialect?: string;
     connectionId?: string;
-  }
+  };
 
   export type CoreInput = ConnectionInput & {
     databaseId?: string;

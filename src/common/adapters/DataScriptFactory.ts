@@ -1,38 +1,38 @@
 import {
   connectionActionScripts as AzureCosmosDBConnectionActionScripts,
   databaseActionScripts as AzureCosmosDBDatabaseActionScripts,
-  tableActionScripts as AzureCosmosDBTableActionScripts,
   getSampleConnectionString as getAzureCosmosDBSampleConnectionString,
+  tableActionScripts as AzureCosmosDBTableActionScripts,
 } from 'src/common/adapters/AzureCosmosDataAdapter/scripts';
 import {
   connectionActionScripts as AzureTableConnectionActionScripts,
   databaseActionScripts as AzureTableDatabaseActionScripts,
-  tableActionScripts as AzureTableTableActionScripts,
   getSampleConnectionString as getAzureTableSampleConnectionString,
+  tableActionScripts as AzureTableTableActionScripts,
 } from 'src/common/adapters/AzureTableStorageAdapter/scripts';
 import {
   connectionActionScripts as CassandraConnectionActionScripts,
   databaseActionScripts as CassandraDatabaseActionScripts,
-  tableActionScripts as CassandraTableActionScripts,
   getSampleConnectionString as getCassandraSampleConnectionString,
+  tableActionScripts as CassandraTableActionScripts,
 } from 'src/common/adapters/CassandraDataAdapter/scripts';
 import {
   connectionActionScripts as MongodbConnectionActionScripts,
   databaseActionScripts as MongodbDatabaseActionScripts,
-  tableActionScripts as MongodbTableActionScripts,
   getSampleConnectionString as getMongodbSampleConnectionString,
+  tableActionScripts as MongodbTableActionScripts,
 } from 'src/common/adapters/MongoDBDataAdapter/scripts';
 import {
   connectionActionScripts as RedisConnectionActionScripts,
   databaseActionScripts as RedisDatabaseActionScripts,
-  tableActionScripts as RedisTableActionScripts,
   getSampleConnectionString as getRedisSampleConnectionString,
+  tableActionScripts as RedisTableActionScripts,
 } from 'src/common/adapters/RedisDataAdapter/scripts';
 import {
   connectionActionScripts as RdbmsConnectionActionScripts,
   databaseActionScripts as RdbmsDatabaseActionScripts,
-  tableActionScripts as RdbmsTableActionScripts,
   getSampleConnectionString as getRdbmsSampleConnectionString,
+  tableActionScripts as RdbmsTableActionScripts,
 } from 'src/common/adapters/RelationalDataAdapter/scripts';
 import { formatJS, formatSQL } from 'src/frontend/utils/formatter';
 import { SqlAction } from 'typings';
