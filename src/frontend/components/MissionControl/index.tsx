@@ -209,7 +209,7 @@ export default function MissionControl() {
     if (openQueryInNewTab === true) {
       let newQueryTabName = `Query ${new Date().toLocaleString()}`;
 
-      if(data.databaseId){
+      if (data.databaseId) {
         newQueryTabName += ` - ${data.databaseId}`;
       }
 
