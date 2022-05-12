@@ -1,5 +1,694 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Scripts RDBMS - mariadb 1`] = `
+Array [
+  Object {
+    "label": "divider",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Drop Database",
+    "query": "DROP DATABASE database1",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Create Database",
+    "query": "CREATE DATABASE database1",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Select All Columns",
+    "query": "SELECT
+  *
+FROM
+  table1
+LIMIT
+  200",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Select Count",
+    "query": "SELECT
+  COUNT(*)
+FROM
+  table1
+WHERE
+  id = ''
+  AND column1 = ''
+  AND column2 = ''",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Select Specific Columns",
+    "query": "SELECT
+  id,
+  column1,
+  column2
+FROM
+  table1
+WHERE
+  id = ''
+  AND column1 = ''
+  AND column2 = ''
+LIMIT
+  200",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Select Distinct",
+    "query": "SELECT
+  DISTINCT column1
+FROM
+  table1
+WHERE
+  id = ''
+  AND column1 = ''
+  AND column2 = ''
+LIMIT
+  200",
+  },
+  Object {
+    "label": "divider",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Insert",
+    "query": "INSERT INTO
+  table1 (column1, column2)
+VALUES
+  ('_column1_', '_column2_')",
+  },
+  Object {
+    "formatter": "js",
+    "label": "Update",
+    "query": "UPDATE table1
+SET id = '',
+  column1 = '',
+  column2 = ''
+WHERE id = ''
+AND
+column1 = ''
+AND
+column2 = ''",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Delete",
+    "query": "DELETE FROM
+  table1
+WHERE
+  id = ''
+  AND column1 = ''
+  AND column2 = ''",
+  },
+  Object {
+    "label": "divider",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Create Table",
+    "query": "CREATE TABLE table1 (
+  id INT PRIMARY KEY NOT NULL,
+  column1 INT NOT NULL,
+  column2 VARCHAR(100) NOT NULL
+)",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Drop Table",
+    "query": "DROP TABLE table1",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Add Column",
+    "query": "ALTER TABLE
+  table1
+ADD
+  COLUMN newColumn1 varchar(200)",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Drop Column",
+    "query": "ALTER TABLE
+  table1 DROP COLUMN id;
+ALTER TABLE
+  table1 DROP COLUMN column1;
+ALTER TABLE
+  table1 DROP COLUMN column2;",
+  },
+]
+`;
+
+exports[`Scripts RDBMS - mssql 1`] = `
+Array [
+  Object {
+    "label": "divider",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Drop Database",
+    "query": "DROP DATABASE database1",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Create Database",
+    "query": "CREATE DATABASE database1",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Select All Columns",
+    "query": "SELECT
+  TOP 200 *
+FROM
+  table1",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Select Count",
+    "query": "SELECT
+  COUNT(*)
+FROM
+  table1
+WHERE
+  id = ''
+  AND column1 = ''
+  AND column2 = ''",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Select Specific Columns",
+    "query": "SELECT
+  TOP 200 id,
+  column1,
+  column2
+FROM
+  table1
+WHERE
+  id = ''
+  AND column1 = ''
+  AND column2 = ''",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Select Distinct",
+    "query": "SELECT
+  DISTINCT TOP 200 column1
+FROM
+  table1
+WHERE
+  id = ''
+  AND column1 = ''
+  AND column2 = ''",
+  },
+  Object {
+    "label": "divider",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Insert",
+    "query": "INSERT INTO
+  table1 (column1, column2)
+VALUES
+  ('_column1_', '_column2_')",
+  },
+  Object {
+    "formatter": "js",
+    "label": "Update",
+    "query": "UPDATE table1
+SET id = '',
+  column1 = '',
+  column2 = ''
+WHERE id = ''
+AND
+column1 = ''
+AND
+column2 = ''",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Delete",
+    "query": "DELETE FROM
+  table1
+WHERE
+  id = ''
+  AND column1 = ''
+  AND column2 = ''",
+  },
+  Object {
+    "label": "divider",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Create Table",
+    "query": "CREATE TABLE table1 (
+  id INT PRIMARY KEY NOT NULL,
+  column1 INT NOT NULL,
+  column2 VARCHAR(100) NOT NULL
+)",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Drop Table",
+    "query": "DROP TABLE table1",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Add Column",
+    "query": "ALTER TABLE
+  table1
+ADD
+  COLUMN newColumn1 NVARCHAR(200)",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Drop Column",
+    "query": "ALTER TABLE
+  table1 DROP COLUMN id;
+ALTER TABLE
+  table1 DROP COLUMN column1;
+ALTER TABLE
+  table1 DROP COLUMN column2;",
+  },
+]
+`;
+
+exports[`Scripts RDBMS - mysql 1`] = `
+Array [
+  Object {
+    "label": "divider",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Drop Database",
+    "query": "DROP DATABASE database1",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Create Database",
+    "query": "CREATE DATABASE database1",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Select All Columns",
+    "query": "SELECT
+  *
+FROM
+  table1
+LIMIT
+  200",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Select Count",
+    "query": "SELECT
+  COUNT(*)
+FROM
+  table1
+WHERE
+  id = ''
+  AND column1 = ''
+  AND column2 = ''",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Select Specific Columns",
+    "query": "SELECT
+  id,
+  column1,
+  column2
+FROM
+  table1
+WHERE
+  id = ''
+  AND column1 = ''
+  AND column2 = ''
+LIMIT
+  200",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Select Distinct",
+    "query": "SELECT
+  DISTINCT column1
+FROM
+  table1
+WHERE
+  id = ''
+  AND column1 = ''
+  AND column2 = ''
+LIMIT
+  200",
+  },
+  Object {
+    "label": "divider",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Insert",
+    "query": "INSERT INTO
+  table1 (column1, column2)
+VALUES
+  ('_column1_', '_column2_')",
+  },
+  Object {
+    "formatter": "js",
+    "label": "Update",
+    "query": "UPDATE table1
+SET id = '',
+  column1 = '',
+  column2 = ''
+WHERE id = ''
+AND
+column1 = ''
+AND
+column2 = ''",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Delete",
+    "query": "DELETE FROM
+  table1
+WHERE
+  id = ''
+  AND column1 = ''
+  AND column2 = ''",
+  },
+  Object {
+    "label": "divider",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Create Table",
+    "query": "CREATE TABLE table1 (
+  id INT PRIMARY KEY NOT NULL,
+  column1 INT NOT NULL,
+  column2 VARCHAR(100) NOT NULL
+)",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Drop Table",
+    "query": "DROP TABLE table1",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Add Column",
+    "query": "ALTER TABLE
+  table1
+ADD
+  COLUMN newColumn1 varchar(200)",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Drop Column",
+    "query": "ALTER TABLE
+  table1 DROP COLUMN id;
+ALTER TABLE
+  table1 DROP COLUMN column1;
+ALTER TABLE
+  table1 DROP COLUMN column2;",
+  },
+]
+`;
+
+exports[`Scripts RDBMS - postgres 1`] = `
+Array [
+  Object {
+    "label": "divider",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Drop Database",
+    "query": "DROP DATABASE database1",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Create Database",
+    "query": "CREATE DATABASE database1",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Select All Columns",
+    "query": "SELECT
+  *
+FROM
+  table1
+LIMIT
+  200",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Select Count",
+    "query": "SELECT
+  COUNT(*)
+FROM
+  table1
+WHERE
+  id = ''
+  AND column1 = ''
+  AND column2 = ''",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Select Specific Columns",
+    "query": "SELECT
+  id,
+  column1,
+  column2
+FROM
+  table1
+WHERE
+  id = ''
+  AND column1 = ''
+  AND column2 = ''
+LIMIT
+  200",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Select Distinct",
+    "query": "SELECT
+  DISTINCT column1
+FROM
+  table1
+WHERE
+  id = ''
+  AND column1 = ''
+  AND column2 = ''
+LIMIT
+  200",
+  },
+  Object {
+    "label": "divider",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Insert",
+    "query": "INSERT INTO
+  table1 (column1, column2)
+VALUES
+  ('_column1_', '_column2_')",
+  },
+  Object {
+    "formatter": "js",
+    "label": "Update",
+    "query": "UPDATE table1
+SET id = '',
+  column1 = '',
+  column2 = ''
+WHERE id = ''
+AND
+column1 = ''
+AND
+column2 = ''",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Delete",
+    "query": "DELETE FROM
+  table1
+WHERE
+  id = ''
+  AND column1 = ''
+  AND column2 = ''",
+  },
+  Object {
+    "label": "divider",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Create Table",
+    "query": "CREATE TABLE table1 (
+  id INT NOT NULL,
+  column1 INT NOT NULL,
+  column2 VARCHAR(100) NOT NULL
+)",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Drop Table",
+    "query": "DROP TABLE table1",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Add Column",
+    "query": "ALTER TABLE
+  table1
+ADD
+  COLUMN newColumn1 CHAR(200)",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Drop Column",
+    "query": "ALTER TABLE
+  table1 DROP COLUMN id;
+ALTER TABLE
+  table1 DROP COLUMN column1;
+ALTER TABLE
+  table1 DROP COLUMN column2;",
+  },
+]
+`;
+
+exports[`Scripts RDBMS - sqlite 1`] = `
+Array [
+  Object {
+    "label": "divider",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Drop Database",
+    "query": "DROP DATABASE database1",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Create Database",
+    "query": "CREATE DATABASE database1",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Select All Columns",
+    "query": "SELECT
+  *
+FROM
+  table1
+LIMIT
+  200",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Select Count",
+    "query": "SELECT
+  COUNT(*)
+FROM
+  table1
+WHERE
+  id = ''
+  AND column1 = ''
+  AND column2 = ''",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Select Specific Columns",
+    "query": "SELECT
+  id,
+  column1,
+  column2
+FROM
+  table1
+WHERE
+  id = ''
+  AND column1 = ''
+  AND column2 = ''
+LIMIT
+  200",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Select Distinct",
+    "query": "SELECT
+  DISTINCT column1
+FROM
+  table1
+WHERE
+  id = ''
+  AND column1 = ''
+  AND column2 = ''
+LIMIT
+  200",
+  },
+  Object {
+    "label": "divider",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Insert",
+    "query": "INSERT INTO
+  table1 (column1, column2)
+VALUES
+  ('_column1_', '_column2_')",
+  },
+  Object {
+    "formatter": "js",
+    "label": "Update",
+    "query": "UPDATE table1
+SET id = '',
+  column1 = '',
+  column2 = ''
+WHERE id = ''
+AND
+column1 = ''
+AND
+column2 = ''",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Delete",
+    "query": "DELETE FROM
+  table1
+WHERE
+  id = ''
+  AND column1 = ''
+  AND column2 = ''",
+  },
+  Object {
+    "label": "divider",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Create Table",
+    "query": "CREATE TABLE table1 (
+  id INT PRIMARY KEY NOT NULL,
+  column1 INT NOT NULL,
+  column2 VARCHAR(100) NOT NULL
+)",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Drop Table",
+    "query": "DROP TABLE table1",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Add Column",
+    "query": "ALTER TABLE
+  table1
+ADD
+  COLUMN newColumn1 TEXT",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Drop Column",
+    "query": "ALTER TABLE
+  table1 DROP COLUMN id;
+ALTER TABLE
+  table1 DROP COLUMN column1;
+ALTER TABLE
+  table1 DROP COLUMN column2;",
+  },
+]
+`;
+
 exports[`Scripts aztable 1`] = `
 Array [
   Object {
@@ -318,145 +1007,6 @@ FROM
 ]
 `;
 
-exports[`Scripts mariadb - mariadb 1`] = `
-Array [
-  Object {
-    "label": "divider",
-  },
-  Object {
-    "formatter": "sql",
-    "label": "Drop Database",
-    "query": "DROP DATABASE database1",
-  },
-  Object {
-    "formatter": "sql",
-    "label": "Create Database",
-    "query": "CREATE DATABASE database1",
-  },
-  Object {
-    "formatter": "sql",
-    "label": "Select All Columns",
-    "query": "SELECT
-  *
-FROM
-  table1
-LIMIT
-  200",
-  },
-  Object {
-    "formatter": "sql",
-    "label": "Select Count",
-    "query": "SELECT
-  COUNT(*)
-FROM
-  table1
-WHERE
-  id = ''
-  AND column1 = ''
-  AND column2 = ''",
-  },
-  Object {
-    "formatter": "sql",
-    "label": "Select Specific Columns",
-    "query": "SELECT
-  id,
-  column1,
-  column2
-FROM
-  table1
-WHERE
-  id = ''
-  AND column1 = ''
-  AND column2 = ''
-LIMIT
-  200",
-  },
-  Object {
-    "formatter": "sql",
-    "label": "Select Distinct",
-    "query": "SELECT
-  DISTINCT column1
-FROM
-  table1
-WHERE
-  id = ''
-  AND column1 = ''
-  AND column2 = ''
-LIMIT
-  200",
-  },
-  Object {
-    "label": "divider",
-  },
-  Object {
-    "formatter": "sql",
-    "label": "Insert",
-    "query": "INSERT INTO
-  table1 (column1, column2)
-VALUES
-  ('_column1_', '_column2_')",
-  },
-  Object {
-    "formatter": "js",
-    "label": "Update",
-    "query": "UPDATE table1
-SET id = '',
-  column1 = '',
-  column2 = ''
-WHERE id = ''
-AND
-column1 = ''
-AND
-column2 = ''",
-  },
-  Object {
-    "formatter": "sql",
-    "label": "Delete",
-    "query": "DELETE FROM
-  table1
-WHERE
-  id = ''
-  AND column1 = ''
-  AND column2 = ''",
-  },
-  Object {
-    "label": "divider",
-  },
-  Object {
-    "formatter": "sql",
-    "label": "Create Table",
-    "query": "CREATE TABLE table1 (
-  id INT PRIMARY KEY NOT NULL,
-  column1 INT NOT NULL,
-  column2 VARCHAR(100) NOT NULL
-)",
-  },
-  Object {
-    "formatter": "sql",
-    "label": "Drop Table",
-    "query": "DROP TABLE table1",
-  },
-  Object {
-    "formatter": "sql",
-    "label": "Add Column",
-    "query": "ALTER TABLE
-  table1
-ADD
-  COLUMN newColumn1 varchar(200)",
-  },
-  Object {
-    "formatter": "sql",
-    "label": "Drop Column",
-    "query": "ALTER TABLE
-  table1 DROP COLUMN id;
-ALTER TABLE
-  table1 DROP COLUMN column1;
-ALTER TABLE
-  table1 DROP COLUMN column2;",
-  },
-]
-`;
-
 exports[`Scripts mongodb 1`] = `
 Array [
   Object {
@@ -556,417 +1106,6 @@ Array [
     "label": "Drop Collection",
     "query": "db.collection('table1')
   .drop()",
-  },
-]
-`;
-
-exports[`Scripts mssql - mssql 1`] = `
-Array [
-  Object {
-    "label": "divider",
-  },
-  Object {
-    "formatter": "sql",
-    "label": "Drop Database",
-    "query": "DROP DATABASE database1",
-  },
-  Object {
-    "formatter": "sql",
-    "label": "Create Database",
-    "query": "CREATE DATABASE database1",
-  },
-  Object {
-    "formatter": "sql",
-    "label": "Select All Columns",
-    "query": "SELECT
-  TOP 200 *
-FROM
-  table1",
-  },
-  Object {
-    "formatter": "sql",
-    "label": "Select Count",
-    "query": "SELECT
-  COUNT(*)
-FROM
-  table1
-WHERE
-  id = ''
-  AND column1 = ''
-  AND column2 = ''",
-  },
-  Object {
-    "formatter": "sql",
-    "label": "Select Specific Columns",
-    "query": "SELECT
-  TOP 200 id,
-  column1,
-  column2
-FROM
-  table1
-WHERE
-  id = ''
-  AND column1 = ''
-  AND column2 = ''",
-  },
-  Object {
-    "formatter": "sql",
-    "label": "Select Distinct",
-    "query": "SELECT
-  DISTINCT TOP 200 column1
-FROM
-  table1
-WHERE
-  id = ''
-  AND column1 = ''
-  AND column2 = ''",
-  },
-  Object {
-    "label": "divider",
-  },
-  Object {
-    "formatter": "sql",
-    "label": "Insert",
-    "query": "INSERT INTO
-  table1 (column1, column2)
-VALUES
-  ('_column1_', '_column2_')",
-  },
-  Object {
-    "formatter": "js",
-    "label": "Update",
-    "query": "UPDATE table1
-SET id = '',
-  column1 = '',
-  column2 = ''
-WHERE id = ''
-AND
-column1 = ''
-AND
-column2 = ''",
-  },
-  Object {
-    "formatter": "sql",
-    "label": "Delete",
-    "query": "DELETE FROM
-  table1
-WHERE
-  id = ''
-  AND column1 = ''
-  AND column2 = ''",
-  },
-  Object {
-    "label": "divider",
-  },
-  Object {
-    "formatter": "sql",
-    "label": "Create Table",
-    "query": "CREATE TABLE table1 (
-  id INT PRIMARY KEY NOT NULL,
-  column1 INT NOT NULL,
-  column2 VARCHAR(100) NOT NULL
-)",
-  },
-  Object {
-    "formatter": "sql",
-    "label": "Drop Table",
-    "query": "DROP TABLE table1",
-  },
-  Object {
-    "formatter": "sql",
-    "label": "Add Column",
-    "query": "ALTER TABLE
-  table1
-ADD
-  COLUMN newColumn1 NVARCHAR(200)",
-  },
-  Object {
-    "formatter": "sql",
-    "label": "Drop Column",
-    "query": "ALTER TABLE
-  table1 DROP COLUMN id;
-ALTER TABLE
-  table1 DROP COLUMN column1;
-ALTER TABLE
-  table1 DROP COLUMN column2;",
-  },
-]
-`;
-
-exports[`Scripts mysql - mysql 1`] = `
-Array [
-  Object {
-    "label": "divider",
-  },
-  Object {
-    "formatter": "sql",
-    "label": "Drop Database",
-    "query": "DROP DATABASE database1",
-  },
-  Object {
-    "formatter": "sql",
-    "label": "Create Database",
-    "query": "CREATE DATABASE database1",
-  },
-  Object {
-    "formatter": "sql",
-    "label": "Select All Columns",
-    "query": "SELECT
-  *
-FROM
-  table1
-LIMIT
-  200",
-  },
-  Object {
-    "formatter": "sql",
-    "label": "Select Count",
-    "query": "SELECT
-  COUNT(*)
-FROM
-  table1
-WHERE
-  id = ''
-  AND column1 = ''
-  AND column2 = ''",
-  },
-  Object {
-    "formatter": "sql",
-    "label": "Select Specific Columns",
-    "query": "SELECT
-  id,
-  column1,
-  column2
-FROM
-  table1
-WHERE
-  id = ''
-  AND column1 = ''
-  AND column2 = ''
-LIMIT
-  200",
-  },
-  Object {
-    "formatter": "sql",
-    "label": "Select Distinct",
-    "query": "SELECT
-  DISTINCT column1
-FROM
-  table1
-WHERE
-  id = ''
-  AND column1 = ''
-  AND column2 = ''
-LIMIT
-  200",
-  },
-  Object {
-    "label": "divider",
-  },
-  Object {
-    "formatter": "sql",
-    "label": "Insert",
-    "query": "INSERT INTO
-  table1 (column1, column2)
-VALUES
-  ('_column1_', '_column2_')",
-  },
-  Object {
-    "formatter": "js",
-    "label": "Update",
-    "query": "UPDATE table1
-SET id = '',
-  column1 = '',
-  column2 = ''
-WHERE id = ''
-AND
-column1 = ''
-AND
-column2 = ''",
-  },
-  Object {
-    "formatter": "sql",
-    "label": "Delete",
-    "query": "DELETE FROM
-  table1
-WHERE
-  id = ''
-  AND column1 = ''
-  AND column2 = ''",
-  },
-  Object {
-    "label": "divider",
-  },
-  Object {
-    "formatter": "sql",
-    "label": "Create Table",
-    "query": "CREATE TABLE table1 (
-  id INT PRIMARY KEY NOT NULL,
-  column1 INT NOT NULL,
-  column2 VARCHAR(100) NOT NULL
-)",
-  },
-  Object {
-    "formatter": "sql",
-    "label": "Drop Table",
-    "query": "DROP TABLE table1",
-  },
-  Object {
-    "formatter": "sql",
-    "label": "Add Column",
-    "query": "ALTER TABLE
-  table1
-ADD
-  COLUMN newColumn1 varchar(200)",
-  },
-  Object {
-    "formatter": "sql",
-    "label": "Drop Column",
-    "query": "ALTER TABLE
-  table1 DROP COLUMN id;
-ALTER TABLE
-  table1 DROP COLUMN column1;
-ALTER TABLE
-  table1 DROP COLUMN column2;",
-  },
-]
-`;
-
-exports[`Scripts postgres - postgres 1`] = `
-Array [
-  Object {
-    "label": "divider",
-  },
-  Object {
-    "formatter": "sql",
-    "label": "Drop Database",
-    "query": "DROP DATABASE database1",
-  },
-  Object {
-    "formatter": "sql",
-    "label": "Create Database",
-    "query": "CREATE DATABASE database1",
-  },
-  Object {
-    "formatter": "sql",
-    "label": "Select All Columns",
-    "query": "SELECT
-  *
-FROM
-  table1
-LIMIT
-  200",
-  },
-  Object {
-    "formatter": "sql",
-    "label": "Select Count",
-    "query": "SELECT
-  COUNT(*)
-FROM
-  table1
-WHERE
-  id = ''
-  AND column1 = ''
-  AND column2 = ''",
-  },
-  Object {
-    "formatter": "sql",
-    "label": "Select Specific Columns",
-    "query": "SELECT
-  id,
-  column1,
-  column2
-FROM
-  table1
-WHERE
-  id = ''
-  AND column1 = ''
-  AND column2 = ''
-LIMIT
-  200",
-  },
-  Object {
-    "formatter": "sql",
-    "label": "Select Distinct",
-    "query": "SELECT
-  DISTINCT column1
-FROM
-  table1
-WHERE
-  id = ''
-  AND column1 = ''
-  AND column2 = ''
-LIMIT
-  200",
-  },
-  Object {
-    "label": "divider",
-  },
-  Object {
-    "formatter": "sql",
-    "label": "Insert",
-    "query": "INSERT INTO
-  table1 (column1, column2)
-VALUES
-  ('_column1_', '_column2_')",
-  },
-  Object {
-    "formatter": "js",
-    "label": "Update",
-    "query": "UPDATE table1
-SET id = '',
-  column1 = '',
-  column2 = ''
-WHERE id = ''
-AND
-column1 = ''
-AND
-column2 = ''",
-  },
-  Object {
-    "formatter": "sql",
-    "label": "Delete",
-    "query": "DELETE FROM
-  table1
-WHERE
-  id = ''
-  AND column1 = ''
-  AND column2 = ''",
-  },
-  Object {
-    "label": "divider",
-  },
-  Object {
-    "formatter": "sql",
-    "label": "Create Table",
-    "query": "CREATE TABLE table1 (
-  id INT NOT NULL,
-  column1 INT NOT NULL,
-  column2 VARCHAR(100) NOT NULL
-)",
-  },
-  Object {
-    "formatter": "sql",
-    "label": "Drop Table",
-    "query": "DROP TABLE table1",
-  },
-  Object {
-    "formatter": "sql",
-    "label": "Add Column",
-    "query": "ALTER TABLE
-  table1
-ADD
-  COLUMN newColumn1 CHAR(200)",
-  },
-  Object {
-    "formatter": "sql",
-    "label": "Drop Column",
-    "query": "ALTER TABLE
-  table1 DROP COLUMN id;
-ALTER TABLE
-  table1 DROP COLUMN column1;
-ALTER TABLE
-  table1 DROP COLUMN column2;",
   },
 ]
 `;
@@ -1090,145 +1229,6 @@ Array [
     "formatter": "js",
     "label": "Publish a message",
     "query": "db.publish(\\"pubsub_channel_key1\\", \\"some_message\\")",
-  },
-]
-`;
-
-exports[`Scripts sqlite - sqlite 1`] = `
-Array [
-  Object {
-    "label": "divider",
-  },
-  Object {
-    "formatter": "sql",
-    "label": "Drop Database",
-    "query": "DROP DATABASE database1",
-  },
-  Object {
-    "formatter": "sql",
-    "label": "Create Database",
-    "query": "CREATE DATABASE database1",
-  },
-  Object {
-    "formatter": "sql",
-    "label": "Select All Columns",
-    "query": "SELECT
-  *
-FROM
-  table1
-LIMIT
-  200",
-  },
-  Object {
-    "formatter": "sql",
-    "label": "Select Count",
-    "query": "SELECT
-  COUNT(*)
-FROM
-  table1
-WHERE
-  id = ''
-  AND column1 = ''
-  AND column2 = ''",
-  },
-  Object {
-    "formatter": "sql",
-    "label": "Select Specific Columns",
-    "query": "SELECT
-  id,
-  column1,
-  column2
-FROM
-  table1
-WHERE
-  id = ''
-  AND column1 = ''
-  AND column2 = ''
-LIMIT
-  200",
-  },
-  Object {
-    "formatter": "sql",
-    "label": "Select Distinct",
-    "query": "SELECT
-  DISTINCT column1
-FROM
-  table1
-WHERE
-  id = ''
-  AND column1 = ''
-  AND column2 = ''
-LIMIT
-  200",
-  },
-  Object {
-    "label": "divider",
-  },
-  Object {
-    "formatter": "sql",
-    "label": "Insert",
-    "query": "INSERT INTO
-  table1 (column1, column2)
-VALUES
-  ('_column1_', '_column2_')",
-  },
-  Object {
-    "formatter": "js",
-    "label": "Update",
-    "query": "UPDATE table1
-SET id = '',
-  column1 = '',
-  column2 = ''
-WHERE id = ''
-AND
-column1 = ''
-AND
-column2 = ''",
-  },
-  Object {
-    "formatter": "sql",
-    "label": "Delete",
-    "query": "DELETE FROM
-  table1
-WHERE
-  id = ''
-  AND column1 = ''
-  AND column2 = ''",
-  },
-  Object {
-    "label": "divider",
-  },
-  Object {
-    "formatter": "sql",
-    "label": "Create Table",
-    "query": "CREATE TABLE table1 (
-  id INT PRIMARY KEY NOT NULL,
-  column1 INT NOT NULL,
-  column2 VARCHAR(100) NOT NULL
-)",
-  },
-  Object {
-    "formatter": "sql",
-    "label": "Drop Table",
-    "query": "DROP TABLE table1",
-  },
-  Object {
-    "formatter": "sql",
-    "label": "Add Column",
-    "query": "ALTER TABLE
-  table1
-ADD
-  COLUMN newColumn1 TEXT",
-  },
-  Object {
-    "formatter": "sql",
-    "label": "Drop Column",
-    "query": "ALTER TABLE
-  table1 DROP COLUMN id;
-ALTER TABLE
-  table1 DROP COLUMN column1;
-ALTER TABLE
-  table1 DROP COLUMN column2;",
   },
 ]
 `;

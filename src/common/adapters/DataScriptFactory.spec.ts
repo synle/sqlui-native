@@ -90,31 +90,31 @@ Query Guides:
     }
   }
 
-  test('mysql - mysql', async () => {
+  test('RDBMS - mysql', async () => {
     const {connectionString, scripts} = _getScript('mysql');
     expect(scripts).toMatchSnapshot();
     addGuideText('mysql', connectionString, scripts);
   });
 
-  test('mariadb - mariadb', async () => {
+  test('RDBMS - mariadb', async () => {
     const {connectionString, scripts} = _getScript('mariadb');
     expect(scripts).toMatchSnapshot();
     addGuideText('mariadb', connectionString, scripts);
   });
 
-  test('mssql - mssql', async () => {
+  test('RDBMS - mssql', async () => {
     const {connectionString, scripts} = _getScript('mssql');
     expect(scripts).toMatchSnapshot();
     addGuideText('mssql', connectionString, scripts);
   });
 
-  test('postgres - postgres', async () => {
+  test('RDBMS - postgres', async () => {
     const {connectionString, scripts} = _getScript('postgres');
     expect(scripts).toMatchSnapshot();
     addGuideText('postgres', connectionString, scripts);
   });
 
-  test('sqlite - sqlite', async () => {
+  test('RDBMS - sqlite', async () => {
     const {connectionString, scripts} = _getScript('sqlite');
     expect(scripts).toMatchSnapshot();
     addGuideText('sqlite', connectionString, scripts);

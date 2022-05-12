@@ -23,40 +23,13 @@ export default class AzureCosmosDataAdapter extends BaseDataAdapter implements I
     super(connectionOption);
   }
 
-  static getParsedConnectionOptions(connectionOption: string): AzureCosmosDBConnectionOption {
-    const parsedConnectionOption: Partial<AzureCosmosDBConnectionOption> = connectionOption
-      .replace('cosmosdb://', '')
-      .split(/;/gi)
-      .reduce((res, s) => {
-        const key = s.substr(0, s.indexOf('='));
-        const value = s.substr(key.length + 1);
-
-        res[key] = value;
-
-        return res;
-      }, {});
-
-    if (!parsedConnectionOption.AccountEndpoint || !parsedConnectionOption.AccountKey) {
-      throw `Missing AccountEndpoint or AccountKey. The proper connection string should be comsosdb://AccountEndpoint=<your_cosmos_uri>;AccountKey=<your_cosmos_primary_key>`;
-    }
-
-    return parsedConnectionOption as AzureCosmosDBConnectionOption;
-  }
-
   private async getConnection(): Promise<AzureCosmosDBClient> {
     // attempt to pull in connections
     return new Promise<AzureCosmosDBClient>(async (resolve, reject) => {
       try {
         setTimeout(() => reject('Connection Timeout'), MAX_CONNECTION_TIMEOUT);
 
-        const parsedConnectionOption = AzureCosmosDataAdapter.getParsedConnectionOptions(
-          this.connectionOption,
-        );
-
-        const client = new CosmosClient({
-          endpoint: parsedConnectionOption.AccountEndpoint,
-          key: parsedConnectionOption.AccountKey,
-        });
+        const client = new CosmosClient(this.getConnectionString());
 
         resolve(client);
       } catch (err) {
@@ -67,7 +40,8 @@ export default class AzureCosmosDataAdapter extends BaseDataAdapter implements I
 
   private async closeConnection(client?: any) {
     try {
-      // TODO: implement me
+      const client = await this.getConnection();
+      await client.dispose();
     } catch (err) {}
   }
 
@@ -76,9 +50,16 @@ export default class AzureCosmosDataAdapter extends BaseDataAdapter implements I
       try {
         setTimeout(() => reject('Connection timeout'), MAX_CONNECTION_TIMEOUT);
 
-        await this.getConnection();
+        await this.getDatabases();
 
-        resolve();
+        const client = await this.getConnection();
+        const readEndpoint = await client.getReadEndpoint();
+
+        if (readEndpoint) {
+          resolve();
+        } else {
+          throw 'Failed to connect to Azure CosmosDB - Empty read endpoint';
+        }
       } catch (err) {
         reject(err);
       }
@@ -87,14 +68,20 @@ export default class AzureCosmosDataAdapter extends BaseDataAdapter implements I
 
   async getDatabases(): Promise<SqluiCore.DatabaseMetaData[]> {
     // https://azure.github.io/azure-cosmos-js/classes/databases.html#readall
-    const client = await this.getConnection();
+    try {
+      const client = await this.getConnection();
 
-    const { resources: databases } = await client.databases.readAll().fetchAll();
+      const { resources: databases } = await client.databases.readAll().fetchAll();
 
-    return databases.map((db) => ({
-      name: db.id,
-      tables: [],
-    }));
+      return databases.map((db) => ({
+        name: db.id,
+        tables: [],
+      }));
+    } catch (err) {
+      return [];
+    } finally {
+      this.closeConnection();
+    }
   }
 
   async getTables(database?: string): Promise<SqluiCore.TableMetaData[]> {
@@ -103,14 +90,20 @@ export default class AzureCosmosDataAdapter extends BaseDataAdapter implements I
       throw 'Database is a required field for Azure CosmosDB';
     }
 
-    const client = await this.getConnection();
+    try {
+      const client = await this.getConnection();
 
-    const { resources: tables } = await client.database(database).containers.readAll().fetchAll();
+      const { resources: tables } = await client.database(database).containers.readAll().fetchAll();
 
-    return tables.map((table) => ({
-      name: table.id,
-      columns: [],
-    }));
+      return tables.map((table) => ({
+        name: table.id,
+        columns: [],
+      }));
+    } catch (err) {
+      return [];
+    } finally {
+      this.closeConnection();
+    }
   }
 
   async getColumns(table: string, database?: string): Promise<SqluiCore.ColumnMetaData[]> {
@@ -118,28 +111,28 @@ export default class AzureCosmosDataAdapter extends BaseDataAdapter implements I
       throw 'Database is a required field for Azure CosmosDB';
     }
 
-    const client = await this.getConnection();
+    try {
+      const client = await this.getConnection();
 
-    const { resources: items } = await client
-      .database(database)
-      .container(table)
-      .items.query({
-        query: `SELECT * from c OFFSET 1 LIMIT ${MAX_ITEM_COUNT_TO_SCAN}`,
-      })
-      .fetchAll();
+      const { resources: items } = await client
+        .database(database)
+        .container(table)
+        .items.query({
+          query: `SELECT * from c OFFSET 1 LIMIT ${MAX_ITEM_COUNT_TO_SCAN}`,
+        })
+        .fetchAll();
 
-    return BaseDataAdapter.inferTypesFromItems(items);
+      return BaseDataAdapter.inferTypesFromItems(items);
+    } catch (err) {
+      return [];
+    } finally {
+      this.closeConnection();
+    }
   }
 
   async execute(sql: string, database?: string, table?: string): Promise<SqluiCore.Result> {
     try {
-      if (!database) {
-        throw 'Database is a required field for Azure CosmosDB';
-      }
-
       const client = await this.getConnection();
-
-      const db = await client.database(database);
 
       let items: any;
 
@@ -156,6 +149,10 @@ export default class AzureCosmosDataAdapter extends BaseDataAdapter implements I
         // run as sql query
         if (!table) {
           throw 'Table is a required field for Azure CosmosDB in raw SQL mode';
+        }
+
+        if (!database) {
+          throw 'Database is a required field for Azure CosmosDB in raw SQL mode';
         }
 
         const res = await client
