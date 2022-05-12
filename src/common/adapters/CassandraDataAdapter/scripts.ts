@@ -130,6 +130,21 @@ export function getDropKeyspace(input: SqlAction.DatabaseInput): SqlAction.Outpu
   }
 }
 
+export function getCreateConnectionDatabase(
+  input: SqlAction.ConnectionInput,
+): SqlAction.Output | undefined {
+  const label = `Create Connection Keyspace`;
+
+  if (input.dialect === 'cassandra') {
+    return {
+      label,
+      formatter,
+      query: `CREATE KEYSPACE IF NOT EXISTS some_keyspace
+             WITH replication = {'class': 'SimpleStrategy', 'replication_factor' : 3};`,
+    };
+  }
+}
+
 export const tableActionScripts: SqlAction.TableActionScriptGenerator[] = [
   getSelectAllColumns,
   getSelectSpecificColumns,
@@ -143,4 +158,9 @@ export const databaseActionScripts: SqlAction.DatabaseActionScriptGenerator[] = 
   getDivider,
   getCreateKeyspace, // TODO: right now this command does not tie to the input, it will hard code the keyspace to be some_keyspace
   getDropKeyspace,
+];
+
+export const connectionActionScripts: SqlAction.ConnectionActionScriptGenerator[] = [
+  getDivider,
+  getCreateConnectionDatabase,
 ];

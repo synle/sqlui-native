@@ -154,9 +154,12 @@ export module SqluiFrontend {
 }
 
 export module SqlAction {
-  export type CoreInput = {
+  export type ConnectionInput = {
     dialect?: string;
     connectionId?: string;
+  };
+
+  export type CoreInput = ConnectionInput & {
     databaseId?: string;
     querySize: number;
   };
@@ -184,6 +187,10 @@ export module SqlAction {
 
   export type DatabaseActionScriptGenerator = (
     input: SqlAction.DatabaseInput,
+  ) => SqlAction.Output | undefined;
+
+  export type ConnectionActionScriptGenerator = (
+    input: SqlAction.ConnectionInput,
   ) => SqlAction.Output | undefined;
 }
 

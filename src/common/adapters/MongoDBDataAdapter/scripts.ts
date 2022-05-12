@@ -203,6 +203,20 @@ export function getDropDatabase(input: SqlAction.DatabaseInput): SqlAction.Outpu
   }
 }
 
+export function getCreateConnectionDatabase(
+  input: SqlAction.ConnectionInput,
+): SqlAction.Output | undefined {
+  const label = `Create Database`;
+
+  if (input.dialect === 'mongodb') {
+    return {
+      label,
+      formatter,
+      query: `${MONGO_ADAPTER_PREFIX}.createDatabase('some_database_name')`,
+    };
+  }
+}
+
 export const tableActionScripts: SqlAction.TableActionScriptGenerator[] = [
   getSelectAllColumns,
   getSelectSpecificColumns,
@@ -220,4 +234,8 @@ export const databaseActionScripts: SqlAction.DatabaseActionScriptGenerator[] = 
   getDivider,
   getCreateDatabase,
   getDropDatabase,
+];
+export const connectionActionScripts: SqlAction.ConnectionActionScriptGenerator[] = [
+  getDivider,
+  getCreateConnectionDatabase,
 ];
