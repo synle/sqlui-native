@@ -1,3 +1,2 @@
 title: sqlui-native
-description: A simple UI client for most SQL Engines written in Electron. It is compatible with Windows, Mac, Ubuntu / Debian and Redhat. It supports most dialects of RMBDs like MySQL, Microsoft SQL Server, Postgres, SQLite and has limited supports for Cassandra, MongoDB and Redis.
 theme: jekyll-theme-cayman
