@@ -1,37 +1,43 @@
 import {
+  connectionActionScripts as AzureCosmosDBConnectionActionScripts,
   databaseActionScripts as AzureCosmosDBDatabaseActionScripts,
   getSampleConnectionString as getAzureCosmosDBSampleConnectionString,
   tableActionScripts as AzureCosmosDBTableActionScripts,
 } from 'src/common/adapters/AzureCosmosDataAdapter/scripts';
 import {
+  connectionActionScripts as AzureTableConnectionActionScripts,
   databaseActionScripts as AzureTableDatabaseActionScripts,
   getSampleConnectionString as getAzureTableSampleConnectionString,
   tableActionScripts as AzureTableTableActionScripts,
 } from 'src/common/adapters/AzureTableStorageAdapter/scripts';
 import {
+  connectionActionScripts as CassandraConnectionActionScripts,
   databaseActionScripts as CassandraDatabaseActionScripts,
   getSampleConnectionString as getCassandraSampleConnectionString,
   tableActionScripts as CassandraTableActionScripts,
 } from 'src/common/adapters/CassandraDataAdapter/scripts';
 import {
+  connectionActionScripts as MongodbConnectionActionScripts,
   databaseActionScripts as MongodbDatabaseActionScripts,
   getSampleConnectionString as getMongodbSampleConnectionString,
   tableActionScripts as MongodbTableActionScripts,
 } from 'src/common/adapters/MongoDBDataAdapter/scripts';
 import {
+  connectionActionScripts as RedisConnectionActionScripts,
   databaseActionScripts as RedisDatabaseActionScripts,
   getSampleConnectionString as getRedisSampleConnectionString,
   tableActionScripts as RedisTableActionScripts,
 } from 'src/common/adapters/RedisDataAdapter/scripts';
 import {
-  databaseActionScripts as RmdbDatabaseActionScripts,
-  getSampleConnectionString as getRmdbSampleConnectionString,
-  tableActionScripts as RmdbTableActionScripts,
+  connectionActionScripts as RdbmsConnectionActionScripts,
+  databaseActionScripts as RdbmsDatabaseActionScripts,
+  getSampleConnectionString as getRdbmsSampleConnectionString,
+  tableActionScripts as RdbmsTableActionScripts,
 } from 'src/common/adapters/RelationalDataAdapter/scripts';
 import { formatJS, formatSQL } from 'src/frontend/utils/formatter';
 import { SqlAction } from 'typings';
 function _formatScripts(
-  actionInput: SqlAction.TableInput | SqlAction.DatabaseInput,
+  actionInput: SqlAction.TableInput | SqlAction.DatabaseInput | SqlAction.ConnectionInput,
   generatorFuncs:
     | SqlAction.TableActionScriptGenerator[]
     | SqlAction.DatabaseActionScriptGenerator[],
@@ -39,6 +45,7 @@ function _formatScripts(
   const actions: SqlAction.Output[] = [];
 
   for (const fn of generatorFuncs) {
+    //@ts-ignore
     const action = fn(actionInput);
     if (action) {
       switch (action.formatter) {
@@ -101,7 +108,7 @@ export function getSampleConnectionString(dialect?: string) {
     case 'mssql':
     case 'postgres':
     case 'sqlite':
-      return getRmdbSampleConnectionString(dialect);
+      return getRdbmsSampleConnectionString(dialect);
     case 'cassandra':
       return getCassandraSampleConnectionString();
     case 'mongodb':
@@ -125,7 +132,7 @@ export function getTableActions(tableActionInput: SqlAction.TableInput) {
     case 'mssql':
     case 'postgres':
     case 'sqlite':
-      scriptsToUse = RmdbTableActionScripts;
+      scriptsToUse = RdbmsTableActionScripts;
       break;
     case 'cassandra':
       scriptsToUse = CassandraTableActionScripts;
@@ -155,7 +162,7 @@ export function getDatabaseActions(databaseActionInput: SqlAction.DatabaseInput)
     case 'mssql':
     case 'postgres':
     case 'sqlite':
-      scriptsToUse = RmdbDatabaseActionScripts;
+      scriptsToUse = RdbmsDatabaseActionScripts;
       break;
     case 'cassandra':
       scriptsToUse = CassandraDatabaseActionScripts;
@@ -175,4 +182,34 @@ export function getDatabaseActions(databaseActionInput: SqlAction.DatabaseInput)
   }
 
   return _formatScripts(databaseActionInput, scriptsToUse);
+}
+
+export function getConnectionActions(connectionActionInput: SqlAction.ConnectionInput) {
+  let scriptsToUse: SqlAction.DatabaseActionScriptGenerator[] = [];
+  switch (connectionActionInput.dialect) {
+    case 'mysql':
+    case 'mariadb':
+    case 'mssql':
+    case 'postgres':
+    case 'sqlite':
+      scriptsToUse = RdbmsConnectionActionScripts;
+      break;
+    case 'cassandra':
+      scriptsToUse = CassandraConnectionActionScripts;
+      break;
+    case 'mongodb':
+      scriptsToUse = MongodbConnectionActionScripts;
+      break;
+    case 'redis':
+      scriptsToUse = RedisConnectionActionScripts;
+      break;
+    case 'cosmosdb':
+      scriptsToUse = AzureCosmosDBConnectionActionScripts;
+      break;
+    case 'aztable':
+      scriptsToUse = AzureTableConnectionActionScripts;
+      break;
+  }
+
+  return _formatScripts(connectionActionInput, scriptsToUse);
 }
