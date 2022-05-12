@@ -124,9 +124,14 @@ export default class AzureTableStorageAdapter extends BaseDataAdapter implements
       try {
         setTimeout(() => reject('Connection timeout'), MAX_CONNECTION_TIMEOUT);
 
-        await this.getTableServiceClient();
+        const serviceClient = await this.getTableServiceClient();
+        const props = await serviceClient.getProperties();
 
-        resolve();
+        if(props){
+          return resolve();
+        }
+
+        throw 'Cannot connect to Azure Table';
       } catch (err) {
         reject(err);
       }
@@ -144,42 +149,54 @@ export default class AzureTableStorageAdapter extends BaseDataAdapter implements
 
   async getTables(database?: string): Promise<SqluiCore.TableMetaData[]> {
     // https://docs.microsoft.com/en-us/javascript/api/overview/azure/data-tables-readme?view=azure-node-latest#list-tables-in-the-account
-    const serviceClient = await this.getTableServiceClient();
+    try{
+      const serviceClient = await this.getTableServiceClient();
 
-    const tablesResponse = await serviceClient.listTables();
+      const tablesResponse = await serviceClient.listTables();
 
-    const tables: SqluiCore.TableMetaData[] = [];
-    for await (const table of tablesResponse) {
-      if (table.name) {
-        tables.push({
-          name: table.name,
-          columns: [],
-        });
+      const tables: SqluiCore.TableMetaData[] = [];
+      for await (const table of tablesResponse) {
+        if (table.name) {
+          tables.push({
+            name: table.name,
+            columns: [],
+          });
+        }
       }
-    }
 
-    return tables;
+      return tables;
+    } catch(err){
+      return [];
+    } finally {
+      this.closeConnection();
+    }
   }
 
   async getColumns(table: string, database?: string): Promise<SqluiCore.ColumnMetaData[]> {
-    const tableClient = await this.getTableClient(table);
+    try{
+      const tableClient = await this.getTableClient(table);
 
-    const page = await tableClient
-      ?.listEntities()
-      .byPage({ maxPageSize: MAX_ITEM_COUNT_TO_SCAN })
-      .next();
+      const page = await tableClient
+        ?.listEntities()
+        .byPage({ maxPageSize: MAX_ITEM_COUNT_TO_SCAN })
+        .next();
 
-    const items: any[] = [];
+      const items: any[] = [];
 
-    if (page && !page.done) {
-      for await (const entity of page.value) {
-        if (entity['rowKey']) {
-          items.push(entity);
+      if (page && !page.done) {
+        for await (const entity of page.value) {
+          if (entity['rowKey']) {
+            items.push(entity);
+          }
         }
       }
-    }
 
-    return BaseDataAdapter.inferTypesFromItems(items);
+      return BaseDataAdapter.inferTypesFromItems(items);
+    } catch(err){
+      return [];
+    } finally {
+      this.closeConnection();
+    }
   }
 
   async execute(sql: string, database?: string, table?: string): Promise<SqluiCore.Result> {

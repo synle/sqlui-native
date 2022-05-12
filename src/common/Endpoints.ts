@@ -75,18 +75,25 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
       'connection',
     ).list();
 
+    const promisesCheckConnections : Promise<void>[] = [];
     for (const connection of connections) {
-      try {
-        const engine = getDataAdapter(connection.connection);
-        const databases = await engine.getDatabases();
+      promisesCheckConnections.push(new Promise(async (resolve) => {
+        try {
+          const engine = getDataAdapter(connection.connection);
+          await engine.authenticate();
 
-        connection.status = 'online';
-        connection.dialect = engine.dialect;
-      } catch (err: any) {
-        connection.status = 'offline';
-        connection.dialect = undefined;
-      }
+          connection.status = 'online';
+          connection.dialect = engine.dialect;
+        } catch (err: any) {
+          connection.status = 'offline';
+          connection.dialect = undefined;
+        }
+
+        resolve();
+      }))
     }
+
+    await Promise.all(promisesCheckConnections);
 
     res.status(200).json(connections);
   });
