@@ -185,12 +185,38 @@ Due to the size of keys within Redis connection, we will not show all keys in th
 
 Azure CosmosDB Databases are mapped to sqlui-native Databases. And Azure CosmosDB Containers are mapped to sqlui-native Tables. We scan the first 5 items to come up with the schema for the columns.
 
-Tested for Azure CosmosDB (with Core SQL). [More information on Azure CosmosDB can be found here](https://docs.microsoft.com/en-us/azure/cosmos-db/introduction)
+Tested for Azure CosmosDB (with Core SQL).
+
+#### Setting up connection string
+Here's how to set up the connection. Open your resource, and click on `Keys`. Then copy and use either `PRIMARY CONNECTION STRING` or `SECONDARY CONNECTION STRING`
+
+![image](https://user-images.githubusercontent.com/3792401/168092880-28d066ad-725f-429a-8ebf-92bb7f4f6d68.png)
+![image](https://user-images.githubusercontent.com/3792401/168093067-fe0aa98c-297c-4f11-a16e-8c60797de800.png)
+
+Sample connection will look like this
+```
+cosmosdb://<your_primary_connection_string>
+
+or
+
+cosmosdb://<your_secondary_connection_string>
+```
 
 ### Azure Table Storage Limitations
 
 Azure Table Storage tables are mapped to sqlui-native Tables. We scan the first 5 items to come up with the schema for the columns.
 
+
+#### Setting up connection string
+Here's how to set up the connection.
+
+![image](https://user-images.githubusercontent.com/3792401/168092476-02b0ddb6-5cff-41fe-9b6a-8a212325999a.png)
+![image](https://user-images.githubusercontent.com/3792401/168092539-451ca459-3429-4030-9729-2894a5bbf259.png)
+
+Sample connection will look like this
+```
+aztable://<your_connection_string>
+```
 
 ## Suggestion?
 
