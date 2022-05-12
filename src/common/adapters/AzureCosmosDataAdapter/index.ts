@@ -55,10 +55,10 @@ export default class AzureCosmosDataAdapter extends BaseDataAdapter implements I
         const client = await this.getConnection();
         const readEndpoint = await client.getReadEndpoint();
 
-        if(readEndpoint){
+        if (readEndpoint) {
           resolve();
         } else {
-          throw 'Failed to connect to Azure CosmosDB - Empty read endpoint'
+          throw 'Failed to connect to Azure CosmosDB - Empty read endpoint';
         }
       } catch (err) {
         reject(err);
@@ -68,7 +68,7 @@ export default class AzureCosmosDataAdapter extends BaseDataAdapter implements I
 
   async getDatabases(): Promise<SqluiCore.DatabaseMetaData[]> {
     // https://azure.github.io/azure-cosmos-js/classes/databases.html#readall
-    try{
+    try {
       const client = await this.getConnection();
 
       const { resources: databases } = await client.databases.readAll().fetchAll();
@@ -77,7 +77,7 @@ export default class AzureCosmosDataAdapter extends BaseDataAdapter implements I
         name: db.id,
         tables: [],
       }));
-    } catch(err){
+    } catch (err) {
       return [];
     } finally {
       this.closeConnection();
@@ -90,7 +90,7 @@ export default class AzureCosmosDataAdapter extends BaseDataAdapter implements I
       throw 'Database is a required field for Azure CosmosDB';
     }
 
-    try{
+    try {
       const client = await this.getConnection();
 
       const { resources: tables } = await client.database(database).containers.readAll().fetchAll();
@@ -99,7 +99,7 @@ export default class AzureCosmosDataAdapter extends BaseDataAdapter implements I
         name: table.id,
         columns: [],
       }));
-    } catch(err){
+    } catch (err) {
       return [];
     } finally {
       this.closeConnection();
@@ -111,7 +111,7 @@ export default class AzureCosmosDataAdapter extends BaseDataAdapter implements I
       throw 'Database is a required field for Azure CosmosDB';
     }
 
-    try{
+    try {
       const client = await this.getConnection();
 
       const { resources: items } = await client
@@ -123,7 +123,7 @@ export default class AzureCosmosDataAdapter extends BaseDataAdapter implements I
         .fetchAll();
 
       return BaseDataAdapter.inferTypesFromItems(items);
-    } catch(err){
+    } catch (err) {
       return [];
     } finally {
       this.closeConnection();
