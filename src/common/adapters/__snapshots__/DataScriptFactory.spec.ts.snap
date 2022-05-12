@@ -1,6 +1,162 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Scripts AzureCosmosDBScripts 1`] = `
+exports[`Scripts aztable 1`] = `
+Array [
+  Object {
+    "label": "divider",
+  },
+  Object {
+    "formatter": "js",
+    "label": "Create Table",
+    "query": "serviceClient.createTable('somenewtablename')",
+  },
+  Object {
+    "formatter": "js",
+    "label": "Select All Columns",
+    "query": "tableClient.listEntities({
+  queryOptions: {
+    filter: \`\`
+  }
+})",
+  },
+  Object {
+    "formatter": "js",
+    "label": "Select Specific Columns",
+    "query": "tableClient.listEntities({
+  queryOptions: {
+    filter: \`PartitionKey eq 'some_partition_key'\`,
+    select: [\\"id\\", \\"column1\\", \\"column2\\"]
+  }
+})",
+  },
+  Object {
+    "label": "divider",
+  },
+  Object {
+    "formatter": "js",
+    "label": "Insert",
+    "query": "tableClient.createEntity({
+  \\"rowKey\\": \\"some_row_key\\",
+  \\"partitionKey\\": \\"some_partition_key\\"
+})",
+  },
+  Object {
+    "formatter": "js",
+    "label": "Update",
+    "query": "tableClient.updateEntity({
+  \\"rowKey\\": \\"some_row_key\\",
+  \\"partitionKey\\": \\"some_partition_key\\"
+})",
+  },
+  Object {
+    "formatter": "js",
+    "label": "Upsert",
+    "query": "tableClient.upsertEntity({
+  \\"rowKey\\": \\"some_row_key\\",
+  \\"partitionKey\\": \\"some_partition_key\\"
+}, 'Replace')",
+  },
+  Object {
+    "formatter": "js",
+    "label": "Delete",
+    "query": "tableClient.deleteEntity('some_partition_key', 'some_row_key');",
+  },
+  Object {
+    "label": "divider",
+  },
+  Object {
+    "formatter": "js",
+    "label": "Create Table",
+    "query": "serviceClient.createTable('table1')",
+  },
+  Object {
+    "formatter": "js",
+    "label": "Drop Table",
+    "query": "serviceClient.deleteTable('table1')",
+  },
+]
+`;
+
+exports[`Scripts cassandra 1`] = `
+Array [
+  Object {
+    "label": "divider",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Create Keyspace",
+    "query": "CREATE KEYSPACE IF NOT EXISTS some_keyspace WITH replication = { 'class': 'SimpleStrategy',
+'replication_factor': 3 };",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Drop Keyspace",
+    "query": "DROP KEYSPACE IF EXISTS database1;",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Select All Columns",
+    "query": "SELECT
+  *
+FROM
+  table1
+LIMIT
+  200",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Select Specific Columns",
+    "query": "SELECT
+  id,
+  column1,
+  column2
+FROM
+  table1
+WHERE
+  id = ''
+  AND column1 = ''
+  AND column2 = ''
+LIMIT
+  200",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Insert",
+    "query": "INSERT INTO
+  table1 (id, column1, column2)
+VALUES
+  ('_id_', '_column1_', '_column2_')",
+  },
+  Object {
+    "label": "divider",
+  },
+  Object {
+    "formatter": "js",
+    "label": "Update",
+    "query": "UPDATE table1
+SET id = '',
+  column1 = '',
+  column2 = ''
+WHERE id = ''
+AND
+column1 = ''
+AND
+column2 = ''",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Delete",
+    "query": "DELETE FROM
+  table1
+WHERE
+  id = ''
+  AND column1 = ''
+  AND column2 = ''",
+  },
+]
+`;
+
+exports[`Scripts cosmosdb 1`] = `
 Array [
   Object {
     "label": "divider",
@@ -162,312 +318,7 @@ FROM
 ]
 `;
 
-exports[`Scripts CassandraScripts 1`] = `
-Array [
-  Object {
-    "label": "divider",
-  },
-  Object {
-    "formatter": "sql",
-    "label": "Create Keyspace",
-    "query": "CREATE KEYSPACE IF NOT EXISTS some_keyspace WITH replication = { 'class': 'SimpleStrategy',
-'replication_factor': 3 };",
-  },
-  Object {
-    "formatter": "sql",
-    "label": "Drop Keyspace",
-    "query": "DROP KEYSPACE IF EXISTS database1;",
-  },
-  Object {
-    "formatter": "sql",
-    "label": "Select All Columns",
-    "query": "SELECT
-  *
-FROM
-  table1
-LIMIT
-  200",
-  },
-  Object {
-    "formatter": "sql",
-    "label": "Select Specific Columns",
-    "query": "SELECT
-  id,
-  column1,
-  column2
-FROM
-  table1
-WHERE
-  id = ''
-  AND column1 = ''
-  AND column2 = ''
-LIMIT
-  200",
-  },
-  Object {
-    "formatter": "sql",
-    "label": "Insert",
-    "query": "INSERT INTO
-  table1 (id, column1, column2)
-VALUES
-  ('_id_', '_column1_', '_column2_')",
-  },
-  Object {
-    "label": "divider",
-  },
-  Object {
-    "formatter": "js",
-    "label": "Update",
-    "query": "UPDATE table1
-SET id = '',
-  column1 = '',
-  column2 = ''
-WHERE id = ''
-AND
-column1 = ''
-AND
-column2 = ''",
-  },
-  Object {
-    "formatter": "sql",
-    "label": "Delete",
-    "query": "DELETE FROM
-  table1
-WHERE
-  id = ''
-  AND column1 = ''
-  AND column2 = ''",
-  },
-]
-`;
-
-exports[`Scripts MongodbScripts 1`] = `
-Array [
-  Object {
-    "label": "divider",
-  },
-  Object {
-    "formatter": "js",
-    "label": "Create Database",
-    "query": "db.createDatabase('database1')",
-  },
-  Object {
-    "formatter": "js",
-    "label": "Drop Database",
-    "query": "db.dropDatabase()",
-  },
-  Object {
-    "formatter": "js",
-    "label": "Select All Columns",
-    "query": "db.collection('table1')
-  .find()
-  .limit(200)
-  .toArray();",
-  },
-  Object {
-    "formatter": "js",
-    "label": "Select Specific Columns",
-    "query": "db.collection('table1')
-  .find({
-    \\"id\\": 123,
-    \\"column1\\": 123,
-    \\"column2\\": 123
-  })
-  .limit(200)
-  .toArray();",
-  },
-  Object {
-    "formatter": "js",
-    "label": "Select Distinct",
-    "query": "db.collection('table1')
-  .distinct(
-    'id', {
-      \\"id\\": \\"\\",
-      \\"column1\\": \\"\\",
-      \\"column2\\": \\"\\"
-    }
-  )",
-  },
-  Object {
-    "label": "divider",
-  },
-  Object {
-    "formatter": "js",
-    "label": "Insert",
-    "query": "db.collection('table1')
-  .insertMany([{
-    \\"id\\": 123,
-    \\"column1\\": 123,
-    \\"column2\\": 123
-  }]);",
-  },
-  Object {
-    "formatter": "js",
-    "label": "Update",
-    "query": "db.collection('table1')
-  .update({
-    \\"id\\": 123,
-    \\"column1\\": 123,
-    \\"column2\\": 123
-  }, {
-    $set: {
-      \\"id\\": 123,
-      \\"column1\\": 123,
-      \\"column2\\": 123
-    }
-  });",
-  },
-  Object {
-    "formatter": "js",
-    "label": "Delete",
-    "query": "db.collection('table1')
-  .deleteMany({
-    \\"id\\": 123,
-    \\"column1\\": 123,
-    \\"column2\\": 123
-  });",
-  },
-  Object {
-    "label": "divider",
-  },
-  Object {
-    "formatter": "js",
-    "label": "Create Collection",
-    "query": "db.createCollection(\\"table1\\")",
-  },
-  Object {
-    "formatter": "js",
-    "label": "Drop Collection",
-    "query": "db.collection('table1')
-  .drop()",
-  },
-]
-`;
-
-exports[`Scripts RedisScripts 1`] = `
-Array [
-  Object {
-    "formatter": "js",
-    "label": "Set Value",
-    "query": "db.set(\\"key\\", \\"value123\\")",
-  },
-  Object {
-    "formatter": "js",
-    "label": "Get Value by Key",
-    "query": "db.get(\\"key\\")",
-  },
-  Object {
-    "formatter": "js",
-    "label": "Scan for keys",
-    "query": "db.keys(\\"*\\")",
-  },
-  Object {
-    "label": "divider",
-  },
-  Object {
-    "formatter": "js",
-    "label": "Hashset > Set Value",
-    "query": "db.hSet(\\"hash_key1\\", \\"field1\\", \\"value1\\")",
-  },
-  Object {
-    "formatter": "js",
-    "label": "Hashset > Get Value By Key",
-    "query": "db.hGetAll(\\"hash_key1\\")",
-  },
-  Object {
-    "formatter": "js",
-    "label": "Hashset > Values",
-    "query": "db.hVals(\\"hash_key1\\")",
-  },
-  Object {
-    "formatter": "js",
-    "label": "Hashset > Check if key exists",
-    "query": "db.hExists(\\"hash_key1\\", \\"field1\\")",
-  },
-  Object {
-    "label": "divider",
-  },
-  Object {
-    "formatter": "js",
-    "label": "List > Get Items",
-    "query": "db.lRange(\\"list_key1\\", 0, -1)",
-  },
-  Object {
-    "formatter": "js",
-    "label": "List > Push item to the front",
-    "query": "db.lPush(\\"list_key1\\", \\"value\\")",
-  },
-  Object {
-    "formatter": "js",
-    "label": "List > Push item to the back",
-    "query": "db.rPush(\\"list_key1\\", \\"value\\")",
-  },
-  Object {
-    "formatter": "js",
-    "label": "List > Delete item from the front",
-    "query": "db.lPop(\\"list_key1\\")",
-  },
-  Object {
-    "formatter": "js",
-    "label": "List > Delete item from the back",
-    "query": "db.rPop(\\"list_key1\\")",
-  },
-  Object {
-    "label": "divider",
-  },
-  Object {
-    "formatter": "js",
-    "label": "Set > Get Items",
-    "query": "db.sMembers(\\"set_key1\\")",
-  },
-  Object {
-    "formatter": "js",
-    "label": "Set > Add Item",
-    "query": "db.sAdd(\\"set_key1\\", \\"value1\\")",
-  },
-  Object {
-    "formatter": "js",
-    "label": "Set > Is a member of set",
-    "query": "db.sIsMember(\\"set_key1\\", \\"value1\\")",
-  },
-  Object {
-    "formatter": "js",
-    "label": "Set > Total Size",
-    "query": "db.sCard(\\"set_key1\\")",
-  },
-  Object {
-    "formatter": "js",
-    "label": "Set > Remove last item",
-    "query": "db.sPop(\\"set_key1\\")",
-  },
-  Object {
-    "label": "divider",
-  },
-  Object {
-    "formatter": "js",
-    "label": "Sorted Set > Get Items",
-    "query": "db.zRange(\\"sorted_set_key1\\", 0, -1)",
-  },
-  Object {
-    "formatter": "js",
-    "label": "Sorted Set > Add Item",
-    "query": "db.zAdd(\\"sorted_set_key1\\", [{
-  score: 1,
-  value: \\"some_value\\"
-}])",
-  },
-  Object {
-    "label": "divider",
-  },
-  Object {
-    "formatter": "js",
-    "label": "Publish a message",
-    "query": "db.publish(\\"pubsub_channel_key1\\", \\"some_message\\")",
-  },
-]
-`;
-
-exports[`Scripts RmdbScripts - mariadb 1`] = `
+exports[`Scripts mariadb - mariadb 1`] = `
 Array [
   Object {
     "label": "divider",
@@ -606,7 +457,110 @@ ALTER TABLE
 ]
 `;
 
-exports[`Scripts RmdbScripts - mssql 1`] = `
+exports[`Scripts mongodb 1`] = `
+Array [
+  Object {
+    "label": "divider",
+  },
+  Object {
+    "formatter": "js",
+    "label": "Create Database",
+    "query": "db.createDatabase('database1')",
+  },
+  Object {
+    "formatter": "js",
+    "label": "Drop Database",
+    "query": "db.dropDatabase()",
+  },
+  Object {
+    "formatter": "js",
+    "label": "Select All Columns",
+    "query": "db.collection('table1')
+  .find()
+  .limit(200)
+  .toArray();",
+  },
+  Object {
+    "formatter": "js",
+    "label": "Select Specific Columns",
+    "query": "db.collection('table1')
+  .find({
+    \\"id\\": 123,
+    \\"column1\\": 123,
+    \\"column2\\": 123
+  })
+  .limit(200)
+  .toArray();",
+  },
+  Object {
+    "formatter": "js",
+    "label": "Select Distinct",
+    "query": "db.collection('table1')
+  .distinct(
+    'id', {
+      \\"id\\": \\"\\",
+      \\"column1\\": \\"\\",
+      \\"column2\\": \\"\\"
+    }
+  )",
+  },
+  Object {
+    "label": "divider",
+  },
+  Object {
+    "formatter": "js",
+    "label": "Insert",
+    "query": "db.collection('table1')
+  .insertMany([{
+    \\"id\\": 123,
+    \\"column1\\": 123,
+    \\"column2\\": 123
+  }]);",
+  },
+  Object {
+    "formatter": "js",
+    "label": "Update",
+    "query": "db.collection('table1')
+  .update({
+    \\"id\\": 123,
+    \\"column1\\": 123,
+    \\"column2\\": 123
+  }, {
+    $set: {
+      \\"id\\": 123,
+      \\"column1\\": 123,
+      \\"column2\\": 123
+    }
+  });",
+  },
+  Object {
+    "formatter": "js",
+    "label": "Delete",
+    "query": "db.collection('table1')
+  .deleteMany({
+    \\"id\\": 123,
+    \\"column1\\": 123,
+    \\"column2\\": 123
+  });",
+  },
+  Object {
+    "label": "divider",
+  },
+  Object {
+    "formatter": "js",
+    "label": "Create Collection",
+    "query": "db.createCollection(\\"table1\\")",
+  },
+  Object {
+    "formatter": "js",
+    "label": "Drop Collection",
+    "query": "db.collection('table1')
+  .drop()",
+  },
+]
+`;
+
+exports[`Scripts mssql - mssql 1`] = `
 Array [
   Object {
     "label": "divider",
@@ -739,7 +693,7 @@ ALTER TABLE
 ]
 `;
 
-exports[`Scripts RmdbScripts - mysql 1`] = `
+exports[`Scripts mysql - mysql 1`] = `
 Array [
   Object {
     "label": "divider",
@@ -878,7 +832,7 @@ ALTER TABLE
 ]
 `;
 
-exports[`Scripts RmdbScripts - postgres 1`] = `
+exports[`Scripts postgres - postgres 1`] = `
 Array [
   Object {
     "label": "divider",
@@ -1017,7 +971,130 @@ ALTER TABLE
 ]
 `;
 
-exports[`Scripts RmdbScripts - sqlite 1`] = `
+exports[`Scripts redis 1`] = `
+Array [
+  Object {
+    "formatter": "js",
+    "label": "Set Value",
+    "query": "db.set(\\"key\\", \\"value123\\")",
+  },
+  Object {
+    "formatter": "js",
+    "label": "Get Value by Key",
+    "query": "db.get(\\"key\\")",
+  },
+  Object {
+    "formatter": "js",
+    "label": "Scan for keys",
+    "query": "db.keys(\\"*\\")",
+  },
+  Object {
+    "label": "divider",
+  },
+  Object {
+    "formatter": "js",
+    "label": "Hashset > Set Value",
+    "query": "db.hSet(\\"hash_key1\\", \\"field1\\", \\"value1\\")",
+  },
+  Object {
+    "formatter": "js",
+    "label": "Hashset > Get Value By Key",
+    "query": "db.hGetAll(\\"hash_key1\\")",
+  },
+  Object {
+    "formatter": "js",
+    "label": "Hashset > Values",
+    "query": "db.hVals(\\"hash_key1\\")",
+  },
+  Object {
+    "formatter": "js",
+    "label": "Hashset > Check if key exists",
+    "query": "db.hExists(\\"hash_key1\\", \\"field1\\")",
+  },
+  Object {
+    "label": "divider",
+  },
+  Object {
+    "formatter": "js",
+    "label": "List > Get Items",
+    "query": "db.lRange(\\"list_key1\\", 0, -1)",
+  },
+  Object {
+    "formatter": "js",
+    "label": "List > Push item to the front",
+    "query": "db.lPush(\\"list_key1\\", \\"value\\")",
+  },
+  Object {
+    "formatter": "js",
+    "label": "List > Push item to the back",
+    "query": "db.rPush(\\"list_key1\\", \\"value\\")",
+  },
+  Object {
+    "formatter": "js",
+    "label": "List > Delete item from the front",
+    "query": "db.lPop(\\"list_key1\\")",
+  },
+  Object {
+    "formatter": "js",
+    "label": "List > Delete item from the back",
+    "query": "db.rPop(\\"list_key1\\")",
+  },
+  Object {
+    "label": "divider",
+  },
+  Object {
+    "formatter": "js",
+    "label": "Set > Get Items",
+    "query": "db.sMembers(\\"set_key1\\")",
+  },
+  Object {
+    "formatter": "js",
+    "label": "Set > Add Item",
+    "query": "db.sAdd(\\"set_key1\\", \\"value1\\")",
+  },
+  Object {
+    "formatter": "js",
+    "label": "Set > Is a member of set",
+    "query": "db.sIsMember(\\"set_key1\\", \\"value1\\")",
+  },
+  Object {
+    "formatter": "js",
+    "label": "Set > Total Size",
+    "query": "db.sCard(\\"set_key1\\")",
+  },
+  Object {
+    "formatter": "js",
+    "label": "Set > Remove last item",
+    "query": "db.sPop(\\"set_key1\\")",
+  },
+  Object {
+    "label": "divider",
+  },
+  Object {
+    "formatter": "js",
+    "label": "Sorted Set > Get Items",
+    "query": "db.zRange(\\"sorted_set_key1\\", 0, -1)",
+  },
+  Object {
+    "formatter": "js",
+    "label": "Sorted Set > Add Item",
+    "query": "db.zAdd(\\"sorted_set_key1\\", [{
+  score: 1,
+  value: \\"some_value\\"
+}])",
+  },
+  Object {
+    "label": "divider",
+  },
+  Object {
+    "formatter": "js",
+    "label": "Publish a message",
+    "query": "db.publish(\\"pubsub_channel_key1\\", \\"some_message\\")",
+  },
+]
+`;
+
+exports[`Scripts sqlite - sqlite 1`] = `
 Array [
   Object {
     "label": "divider",

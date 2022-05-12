@@ -1,4 +1,5 @@
 import AzureCosmosDataAdapter from 'src/common/adapters/AzureCosmosDataAdapter/index';
+import AzureTableStorageAdapter from 'src/common/adapters/AzureTableStorageAdapter/index';
 import BaseDataAdapter from 'src/common/adapters/BaseDataAdapter/index';
 import CassandraDataAdapter from 'src/common/adapters/CassandraDataAdapter/index';
 import IDataAdapter from 'src/common/adapters/IDataAdapter';
@@ -36,6 +37,9 @@ export function getDataAdapter(connection: string) {
       break;
     case 'cosmosdb':
       adapter = new AzureCosmosDataAdapter(connection);
+      break;
+    case 'aztable':
+      adapter = new AzureTableStorageAdapter(connection);
       break;
     default:
       throw 'dialect not supported';
