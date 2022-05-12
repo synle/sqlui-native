@@ -11,6 +11,10 @@ export default abstract class BaseDataAdapter {
     this.connectionOption = connectionOption as string;
   }
 
+  protected getConnectionString(): string {
+    return this.connectionOption.replace(`${this.dialect}://`, '');
+  }
+
   /**
    * get dialect string from a connection string
    * @param {string} connection in the uri scheme (cassandra://localhost:9042)
