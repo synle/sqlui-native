@@ -4,6 +4,11 @@ import {
   tableActionScripts as AzureCosmosDBTableActionScripts,
 } from 'src/common/adapters/AzureCosmosDataAdapter/scripts';
 import {
+  databaseActionScripts as AzureTableDatabaseActionScripts,
+  getSampleConnectionString as getAzureTableSampleConnectionString,
+  tableActionScripts as AzureTableTableActionScripts,
+} from 'src/common/adapters/AzureTableStorageAdapter/scripts';
+import {
   databaseActionScripts as CassandraDatabaseActionScripts,
   getSampleConnectionString as getCassandraSampleConnectionString,
   tableActionScripts as CassandraTableActionScripts,
@@ -64,10 +69,17 @@ export const SUPPORTED_DIALECTS = [
   'mongodb',
   'redis',
   'cosmosdb',
+  'aztable',
 ];
 
 export function getIsTableIdRequiredForQuery(dialect?: string) {
-  return dialect === 'cosmosdb';
+  switch (dialect) {
+    default:
+      return false;
+    case 'aztable':
+    case 'cosmosdb':
+      return true;
+  }
 }
 
 export function getSyntaxModeByDialect(dialect?: string): 'javascript' | 'sql' {
@@ -76,8 +88,8 @@ export function getSyntaxModeByDialect(dialect?: string): 'javascript' | 'sql' {
       return 'sql';
     case 'mongodb':
     case 'redis':
-      return 'javascript';
     case 'cosmosdb':
+    case 'aztable':
       return 'javascript';
   }
 }
@@ -98,6 +110,8 @@ export function getSampleConnectionString(dialect?: string) {
       return getRedisSampleConnectionString();
     case 'cosmosdb':
       return getAzureCosmosDBSampleConnectionString();
+    case 'aztable':
+      return getAzureTableSampleConnectionString();
     default: // Not supported dialect
       return '';
   }
@@ -125,10 +139,14 @@ export function getTableActions(tableActionInput: SqlAction.TableInput) {
     case 'cosmosdb':
       scriptsToUse = AzureCosmosDBTableActionScripts;
       break;
+    case 'aztable':
+      scriptsToUse = AzureTableTableActionScripts;
+      break;
   }
 
   return _formatScripts(tableActionInput, scriptsToUse);
 }
+
 export function getDatabaseActions(databaseActionInput: SqlAction.DatabaseInput) {
   let scriptsToUse: SqlAction.DatabaseActionScriptGenerator[] = [];
   switch (databaseActionInput.dialect) {
@@ -150,6 +168,9 @@ export function getDatabaseActions(databaseActionInput: SqlAction.DatabaseInput)
       break;
     case 'cosmosdb':
       scriptsToUse = AzureCosmosDBDatabaseActionScripts;
+      break;
+    case 'aztable':
+      scriptsToUse = AzureTableDatabaseActionScripts;
       break;
   }
 

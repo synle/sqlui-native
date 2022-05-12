@@ -21,7 +21,8 @@ export module SqluiCore {
     | 'cassandra'
     | 'mongodb'
     | 'redis'
-    | 'cosmosdb';
+    | 'cosmosdb'
+    | 'aztable';
 
   export type CoreConnectionProps = {
     connection: string;

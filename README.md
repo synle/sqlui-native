@@ -35,7 +35,7 @@ You can also refer to this link for [General Queries](https://synle.github.io/sq
 - [MongoDB](https://synle.github.io/sqlui-native/guides#mongodb) (Limited Supported)
 - [Redis](https://synle.github.io/sqlui-native/guides#redis) (Limited Supported)
 - [Azure CosmosDB](https://synle.github.io/sqlui-native/guides#cosmosdb) (Limited Supported)
-- [Azure Table Storage (TBD)]()
+- [Azure Table Storage (Azure Table)](https://synle.github.io/sqlui-native/guides#aztable) (Limited Supported)
 
 ## Features
 
@@ -155,7 +155,7 @@ Here is the link where you can find information about how run this application l
 - [ ] Push a build to Microsoft Store.
 - [x] Add supports for Cassandra.
 - [x] Add supports for Azure CosmosDB.
-- [ ] Add supports for [Azure Table (Azure Table storage)](https://docs.microsoft.com/en-us/azure/storage/tables/table-storage-overview).
+- [x] Add supports for [Azure Table (Azure Table storage)](https://docs.microsoft.com/en-us/azure/storage/tables/table-storage-overview).
 - [ ] Add supports for AWS Redshift.
 
 ## Limitations
@@ -185,6 +185,11 @@ Due to the size of keys within Redis connection, we will not show all keys in th
 Azure CosmosDB Databases are mapped to sqlui-native Databases. And Azure CosmosDB Containers are mapped to sqlui-native Tables. We scan the first 5 items to come up with the schema for the columns.
 
 Tested for Azure CosmosDB (with Core SQL). [More information on Azure CosmosDB can be found here](https://docs.microsoft.com/en-us/azure/cosmos-db/introduction)
+
+### Azure Table Storage Limitations
+
+Azure Table Storage tables are mapped to sqlui-native Tables. We scan the first 5 items to come up with the schema for the columns.
+
 
 ## Suggestion?
 

@@ -209,6 +209,10 @@ export function refreshAfterExecution(
     '.CREATECOLLECTION',
     '.CREATEDATABASE',
     '.CREATE',
+
+    // for azure table storage
+    '.CREATETABLE',
+    '.DELETETABLE',
   ];
 
   const shouldRefreshConnection = KEYWORDS_TO_REFRESH_CONNECTION.some((keyword) =>

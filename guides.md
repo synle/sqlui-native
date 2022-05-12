@@ -1344,3 +1344,94 @@ client
   .delete()
 ```
 
+
+## aztable
+
+### Sample Connection String
+
+This is a sample connection string you can use.
+```
+aztable://DefaultEndpointsProtocol=https;AccountName=<your_account_name>;AccountKey=<your_account_key>;EndpointSuffix=core.windows.net
+```
+
+
+### Create Table
+
+```js
+serviceClient.createTable('somenewtablename')
+```
+
+
+### Select All Columns
+
+```js
+tableClient.listEntities({
+  queryOptions: {
+    filter: ``
+  }
+})
+```
+
+
+### Select Specific Columns
+
+```js
+tableClient.listEntities({
+  queryOptions: {
+    filter: `PartitionKey eq 'some_partition_key'`,
+    select: ["id", "column1", "column2"]
+  }
+})
+```
+
+
+### Insert
+
+```js
+tableClient.createEntity({
+  "rowKey": "some_row_key",
+  "partitionKey": "some_partition_key"
+})
+```
+
+
+### Update
+
+```js
+tableClient.updateEntity({
+  "rowKey": "some_row_key",
+  "partitionKey": "some_partition_key"
+})
+```
+
+
+### Upsert
+
+```js
+tableClient.upsertEntity({
+  "rowKey": "some_row_key",
+  "partitionKey": "some_partition_key"
+}, 'Replace')
+```
+
+
+### Delete
+
+```js
+tableClient.deleteEntity('some_partition_key', 'some_row_key');
+```
+
+
+### Create Table
+
+```js
+serviceClient.createTable('table1')
+```
+
+
+### Drop Table
+
+```js
+serviceClient.deleteTable('table1')
+```
+

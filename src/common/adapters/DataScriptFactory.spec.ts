@@ -90,58 +90,64 @@ Query Guides:
     }
   }
 
-  test('RmdbScripts - mysql', async () => {
+  test('mysql - mysql', async () => {
     const {connectionString, scripts} = _getScript('mysql');
     expect(scripts).toMatchSnapshot();
     addGuideText('mysql', connectionString, scripts);
   });
 
-  test('RmdbScripts - mariadb', async () => {
+  test('mariadb - mariadb', async () => {
     const {connectionString, scripts} = _getScript('mariadb');
     expect(scripts).toMatchSnapshot();
     addGuideText('mariadb', connectionString, scripts);
   });
 
-  test('RmdbScripts - mssql', async () => {
+  test('mssql - mssql', async () => {
     const {connectionString, scripts} = _getScript('mssql');
     expect(scripts).toMatchSnapshot();
     addGuideText('mssql', connectionString, scripts);
   });
 
-  test('RmdbScripts - postgres', async () => {
+  test('postgres - postgres', async () => {
     const {connectionString, scripts} = _getScript('postgres');
     expect(scripts).toMatchSnapshot();
     addGuideText('postgres', connectionString, scripts);
   });
 
-  test('RmdbScripts - sqlite', async () => {
+  test('sqlite - sqlite', async () => {
     const {connectionString, scripts} = _getScript('sqlite');
     expect(scripts).toMatchSnapshot();
     addGuideText('sqlite', connectionString, scripts);
   });
 
-  test('CassandraScripts', async () => {
+  test('cassandra', async () => {
     const {connectionString, scripts} = _getScript('cassandra');
     expect(scripts).toMatchSnapshot();
     addGuideText('cassandra', connectionString, scripts);
   });
 
-  test('MongodbScripts', async () => {
+  test('mongodb', async () => {
     const {connectionString, scripts} = _getScript('mongodb');
     expect(scripts).toMatchSnapshot();
     addGuideText('mongodb', connectionString, scripts);
   });
 
-  test('RedisScripts', async () => {
+  test('redis', async () => {
     const {connectionString, scripts} = _getScript('redis');
     expect(scripts).toMatchSnapshot();
     addGuideText('redis', connectionString, scripts);
   });
 
-  test('AzureCosmosDBScripts', async () => {
+  test('cosmosdb', async () => {
     const {connectionString, scripts} = _getScript('cosmosdb');
     expect(scripts).toMatchSnapshot();
     addGuideText('cosmosdb', connectionString, scripts);
+  });
+
+  test('aztable', async () => {
+    const {connectionString, scripts} = _getScript('aztable');
+    expect(scripts).toMatchSnapshot();
+    addGuideText('aztable', connectionString, scripts);
   });
 
   test('Consolidate the guide into a command', async () => {
