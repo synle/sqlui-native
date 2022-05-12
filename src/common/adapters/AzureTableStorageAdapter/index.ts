@@ -157,9 +157,9 @@ export default class AzureTableStorageAdapter extends BaseDataAdapter implements
     try {
       const serviceClient = await this.getTableServiceClient();
 
-      let tableClient : TableClient | undefined;
+      let tableClient: TableClient | undefined;
 
-      if(table){
+      if (table) {
         tableClient = await this.getTableClient(table);
       }
 
