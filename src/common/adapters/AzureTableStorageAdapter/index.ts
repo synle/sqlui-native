@@ -156,7 +156,12 @@ export default class AzureTableStorageAdapter extends BaseDataAdapter implements
   async execute(sql: string, database?: string, table?: string): Promise<SqluiCore.Result> {
     try {
       const serviceClient = await this.getTableServiceClient();
-      const tableClient = await this.getTableClient(table);
+
+      let tableClient : TableClient | undefined;
+
+      if(table){
+        tableClient = await this.getTableClient(table);
+      }
 
       const res: any = await eval(sql);
 
