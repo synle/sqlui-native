@@ -8,6 +8,7 @@ import SelectAllIcon from '@mui/icons-material/SelectAll';
 import { Button } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import { useNavigate } from 'react-router-dom';
+import { getConnectionActions } from 'src/common/adapters/DataScriptFactory';
 import DropdownButton from 'src/frontend/components/DropdownButton';
 import { useCommands } from 'src/frontend/components/MissionControl';
 import { SqluiCore } from 'typings';
@@ -21,6 +22,8 @@ export default function ConnectionActions(props: ConnectionActionsProps) {
   const navigate = useNavigate();
   const { selectCommand } = useCommands();
   const data = connection;
+
+  const { dialect, connectionId } = connection;
 
   const options = [
     {
@@ -73,6 +76,22 @@ export default function ConnectionActions(props: ConnectionActionsProps) {
           data,
         }),
     },
+    ...getConnectionActions({
+      dialect,
+      connectionId,
+    }).map((action) => ({
+      label: action.label,
+      startIcon: action.icon,
+      onClick: async () =>
+        selectCommand({
+          event: 'clientEvent/query/apply',
+          data: {
+            connectionId: connectionId,
+            sql: action.query,
+          },
+          label: action.description || `Applied "${action.label}" to active query tab.`,
+        }),
+    })),
   ];
 
   return (

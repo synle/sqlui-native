@@ -185,3 +185,5 @@ export const databaseActionScripts: SqlAction.DatabaseActionScriptGenerator[] = 
   getDivider,
   getCreateDatabaseTable,
 ];
+
+export const connectionActionScripts: SqlAction.ConnectionActionScriptGenerator[] = [];

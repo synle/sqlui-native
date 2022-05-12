@@ -52,3 +52,5 @@ export const databaseActionScripts: SqlAction.DatabaseActionScriptGenerator[] = 
   getDivider,
   getCreateDatabase,
 ];
+// TODO: implement me
+export const connectionActionScripts: SqlAction.ConnectionActionScriptGenerator[] = [];
