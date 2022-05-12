@@ -154,9 +154,12 @@ export module SqluiFrontend {
 }
 
 export module SqlAction {
-  export type CoreInput = {
+  export type ConnectionInput = {
     dialect?: string;
     connectionId?: string;
+  }
+
+  export type CoreInput = ConnectionInput & {
     databaseId?: string;
     querySize: number;
   };
