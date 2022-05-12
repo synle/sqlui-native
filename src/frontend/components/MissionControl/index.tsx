@@ -207,9 +207,15 @@ export default function MissionControl() {
     toastMessage: string | undefined,
   ) => {
     if (openQueryInNewTab === true) {
+      let newQueryTabName = `Query ${new Date().toLocaleString()}`;
+
+      if(data.databaseId){
+        newQueryTabName += ` - ${data.databaseId}`;
+      }
+
       onAddQuery({
         ...data,
-        name: `Query ${new Date().toLocaleString()} - ${data.databaseId}`,
+        name: newQueryTabName,
       });
     } else {
       onChangeActiveQuery(data);
