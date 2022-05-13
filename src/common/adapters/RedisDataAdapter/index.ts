@@ -66,7 +66,13 @@ export default class RedisDataAdapter extends BaseDataAdapter implements IDataAd
   }
 
   async getDatabases(): Promise<SqluiCore.DatabaseMetaData[]> {
-    await this.getConnection();
+    try{
+      await this.getConnection();
+    }
+    catch(err){}
+    finally{
+      this.closeConnection();
+    }
 
     return [
       {
@@ -77,14 +83,37 @@ export default class RedisDataAdapter extends BaseDataAdapter implements IDataAd
   }
 
   async getTables(database?: string): Promise<SqluiCore.TableMetaData[]> {
-    await this.getConnection();
+    try{
+      const client = await this.getConnection();
 
-    // TODO: this operation seems to work, but very slow
-    // for now, we will just returned a hard coded value
+      const iteratorParams = {
+        TYPE: 'string', // `SCAN` only
+        MATCH: '*',
+        COUNT: 15
+      }
 
-    // const db = await this.getConnection();
-    // const keys = await db.keys('*');
-    // return keys.map((name) => ({ name, columns: [] }));
+      const res: SqluiCore.TableMetaData[] = [];
+
+      for await (const key of client.scanIterator(iteratorParams)) {
+        res.push({
+          name: key,
+          columns: [],
+        })
+
+        if(res.length === 15){
+          // top it off at max records
+          break;
+        }
+      }
+
+      return res;
+    }
+    catch(err){
+
+    }
+    finally{
+      this.closeConnection();
+    }
 
     return [
       {
