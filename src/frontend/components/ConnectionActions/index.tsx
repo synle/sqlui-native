@@ -23,7 +23,7 @@ export default function ConnectionActions(props: ConnectionActionsProps) {
   const { selectCommand } = useCommands();
   const data = connection;
 
-  const { dialect, connectionId } = connection;
+  const { dialect, id: connectionId } = connection;
 
   const options = [
     {
@@ -86,7 +86,9 @@ export default function ConnectionActions(props: ConnectionActionsProps) {
         selectCommand({
           event: 'clientEvent/query/apply',
           data: {
-            connectionId: connectionId,
+            connectionId,
+            databaseId: '',
+            tableId: '',
             sql: action.query,
           },
           label: action.description || `Applied "${action.label}" to active query tab.`,
