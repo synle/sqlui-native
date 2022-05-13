@@ -66,14 +66,6 @@ export default class RedisDataAdapter extends BaseDataAdapter implements IDataAd
   }
 
   async getDatabases(): Promise<SqluiCore.DatabaseMetaData[]> {
-    try{
-      await this.getConnection();
-    }
-    catch(err){}
-    finally{
-      this.closeConnection();
-    }
-
     return [
       {
         name: 'Redis Database',
