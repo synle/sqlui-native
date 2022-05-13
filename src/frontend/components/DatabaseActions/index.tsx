@@ -57,8 +57,9 @@ export default function DatabaseActions(props: DatabaseActionsProps) {
       selectCommand({
         event: 'clientEvent/query/apply',
         data: {
-          connectionId: connectionId,
-          databaseId: databaseId,
+          connectionId,
+          databaseId,
+          tableId: '',
           sql: action.query,
         },
         label: action.description || `Applied "${action.label}" to active query tab.`,
