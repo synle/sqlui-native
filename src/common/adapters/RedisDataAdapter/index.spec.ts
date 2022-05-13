@@ -12,6 +12,8 @@ describe.skip('redis', () => {
   });
 
   test('Scan', async () => {
-    await adapter.execute(`db.keys("*")`);
+    const actual = await adapter.getTables();
+    expect(actual.length).toBeGreaterThan(0);
+    expect(actual[0].name).toBeDefined();
   });
 });

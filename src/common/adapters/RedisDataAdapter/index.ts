@@ -66,8 +66,6 @@ export default class RedisDataAdapter extends BaseDataAdapter implements IDataAd
   }
 
   async getDatabases(): Promise<SqluiCore.DatabaseMetaData[]> {
-    await this.getConnection();
-
     return [
       {
         name: 'Redis Database',
@@ -77,8 +75,6 @@ export default class RedisDataAdapter extends BaseDataAdapter implements IDataAd
   }
 
   async getTables(database?: string): Promise<SqluiCore.TableMetaData[]> {
-    await this.getConnection();
-
     // TODO: this operation seems to work, but very slow
     // for now, we will just returned a hard coded value
 
