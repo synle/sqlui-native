@@ -3,16 +3,14 @@ import ConnectionDescription from 'src/frontend/components/ConnectionDescription
 import NewConnectionButton from 'src/frontend/components/NewConnectionButton';
 import QueryBoxTabs from 'src/frontend/components/QueryBoxTabs';
 import Resizer from 'src/frontend/components/Resizer';
+import {useSideBarWidthPreference} from 'src/frontend/hooks/useClientSidePreference';
 import { LocalStorageConfig } from 'src/frontend/data/config';
 
 export default function MainPage() {
-  const [width, setWidth] = useState<undefined | number>(
-    LocalStorageConfig.get<number>('clientConfig/leftPanelWidth', 300),
-  );
-  const onSetWidth = (newWidth: number) => {
-    LocalStorageConfig.set('clientConfig/leftPanelWidth', newWidth);
-    setWidth(newWidth);
-  };
+  const {
+    value: width,
+    onChange: onSetWidth
+  } = useSideBarWidthPreference();
 
   return (
     <section className='MainPage LayoutTwoColumns'>
