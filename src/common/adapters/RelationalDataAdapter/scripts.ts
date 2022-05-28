@@ -142,7 +142,7 @@ export function getSelectDistinctValues(input: SqlAction.TableInput): SqlAction.
   }
 }
 
-export function getInsert(input: SqlAction.TableInput): SqlAction.Output | undefined {
+export function getInsert(input: SqlAction.TableInput, value?: Record<string, any>): SqlAction.Output | undefined {
   const label = `Insert`;
 
   if (!input.columns) {
@@ -151,7 +151,13 @@ export function getInsert(input: SqlAction.TableInput): SqlAction.Output | undef
 
   const columns = input.columns.filter((col) => !col.primaryKey);
   const columnString = columns.map((col) => col.name).join(',\n');
-  const insertValueString = columns.map((col) => `'_${col.name}_'`).join(',\n');
+  const insertValueString = columns.map((col) => {
+    if(value?.[col.name]){
+      // use the value if it's there
+      return `'${value[col.name]}'`
+    }
+    return `'_${col.name}_'`; // use the default value
+  }).join(',');
 
   switch (input.dialect) {
     case 'mssql':
@@ -164,6 +170,52 @@ export function getInsert(input: SqlAction.TableInput): SqlAction.Output | undef
         formatter: 'sql',
         query: `INSERT INTO ${input.tableId} (${columnString})
                 VALUES (${insertValueString})`,
+      };
+  }
+}
+
+// TODO: add a flag to allow keeping the primary key or consistent id
+export function getBulkInsert(input: SqlAction.TableInput, rows?: Record<string, any>[]): SqlAction.Output | undefined {
+  const label = `Insert`;
+
+  if (!input.columns) {
+    return undefined;
+  }
+
+  if(!rows || rows.length === 0){
+    return undefined;
+  }
+
+  const columns = input.columns.filter((col) => !col.primaryKey);
+  const columnString = columns.map((col) => col.name).join(',\n');
+
+  const insertValueRows = rows?.map(
+    row => {
+      const cells = columns.map((col) => {
+        if(row?.[col.name]){
+          // use the value if it's there
+          return `'${row[col.name]}'`
+        }
+        return `'_${col.name}_'`; // use the default value
+      }).join(',');
+
+      // TODO: see if we need to escape single tick (') for SQL here
+
+      return `(${cells})`
+    }
+  ).join(', \n')
+
+  switch (input.dialect) {
+    case 'mssql':
+    case 'postgres':
+    case 'sqlite':
+    case 'mariadb':
+    case 'mysql':
+      return {
+        label,
+        formatter: 'sql',
+        query: `INSERT INTO ${input.tableId} (${columnString})
+                VALUES ${insertValueRows}`,
       };
   }
 }
@@ -251,6 +303,8 @@ export function getCreateTable(input: SqlAction.TableInput): SqlAction.Output | 
         .map((col) => {
           const res = [col.name];
 
+          const colType = col.type.toUpperCase();
+
           // TODO: better use regex here
           // nextval(employees_employeeid_seq::regclass)
           if (
@@ -260,8 +314,12 @@ export function getCreateTable(input: SqlAction.TableInput): SqlAction.Output | 
           ) {
             res.push('BIGSERIAL PRIMARY KEY');
           } else {
-            res.push(col.type);
-            res.push(col.allowNull ? '' : 'NOT NULL');
+            if(colType.includes('INT') && col.primaryKey){
+              res.push('BIGSERIAL PRIMARY KEY');
+            } else {
+              res.push(col.type);
+              res.push(col.allowNull ? '' : 'NOT NULL');
+            }
           }
 
           return res.join(' ');
@@ -275,13 +333,17 @@ export function getCreateTable(input: SqlAction.TableInput): SqlAction.Output | 
     case 'sqlite':
       columnString = input.columns
         .map((col) =>
-          [
-            col.name,
-            col.type,
-            col.primaryKey ? 'PRIMARY KEY' : '',
-            col.autoIncrement ? 'AUTOINCREMENT' : '',
-            col.allowNull ? '' : 'NOT NULL',
-          ].join(' '),
+          {
+            const colType = col.type.toUpperCase();
+
+            return [
+              col.name,
+              colType.includes('INT') ? 'INTEGER': colType,
+              col.primaryKey ? 'PRIMARY KEY' : '',
+              col.autoIncrement ? 'AUTOINCREMENT' : '',
+              col.allowNull ? '' : 'NOT NULL',
+            ].join(' ')
+          },
         )
         .join(',\n');
       return {

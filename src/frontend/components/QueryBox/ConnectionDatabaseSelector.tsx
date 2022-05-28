@@ -7,6 +7,7 @@ import { SqluiFrontend } from 'typings';
 type ConnectionDatabaseSelectorProps = {
   value: SqluiFrontend.ConnectionQuery;
   onChange: (connectionId?: string, databaseId?: string, tableId?: string) => void;
+  isTableIdRequired?: boolean;
 };
 
 export default function ConnectionDatabaseSelector(props: ConnectionDatabaseSelectorProps) {
@@ -56,7 +57,7 @@ export default function ConnectionDatabaseSelector(props: ConnectionDatabaseSele
       (connection) => connection.id === query.connectionId,
     );
     return getIsTableIdRequiredForQuery(selectedConnection?.dialect);
-  }, [connections, query.connectionId]);
+  }, [connections, query.connectionId]) || !!props.isTableIdRequired;
 
   if (isLoading) {
     <>
