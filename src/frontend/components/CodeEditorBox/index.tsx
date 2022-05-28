@@ -12,7 +12,6 @@ type CodeEditorProps = {
   onChange?: (newValue: string) => void;
   language?: string;
   placeholder?: string;
-  mode: 'textarea' | 'code';
   autoFocus?: boolean;
   required?: boolean;
   wordWrap?: boolean;

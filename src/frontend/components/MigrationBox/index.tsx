@@ -43,7 +43,13 @@ export default function MigrationBox (){
       onChange={onSqlQueryChange}
       language={language}
       autoFocus
-      mode='textarea'
+    />
+    <CodeEditorBox
+      value={query.sql}
+      placeholder={`Enter SQL for ` + query.name}
+      onChange={onSqlQueryChange}
+      language={language}
+      autoFocus
     />
     {/*TODO: remove me*/}
     <pre>{JSON.stringify(query, null, 2)}</pre>

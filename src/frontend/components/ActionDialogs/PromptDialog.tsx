@@ -76,7 +76,6 @@ export default function PromptDialog(props: PromptDialogProps) {
               language='json'
               autoFocus={true}
               required={props.required}
-              mode='textarea'
               wordWrap={true}
             />
           ) : (
