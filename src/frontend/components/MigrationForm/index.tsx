@@ -2,6 +2,7 @@ import SaveIcon from '@mui/icons-material/Save';
 import {useState} from 'react';
 import { Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import MigrationBox from 'src/frontend/components/MigrationBox';
 
 export default function MigrationForm(){
   const navigate = useNavigate();
@@ -10,7 +11,8 @@ export default function MigrationForm(){
   const onSave = async () => {
   };
 
-  return <form className='ConnectionForm FormInput__Container' onSubmit={onSave}>
+  return <form className='MigrationForm FormInput__Container' onSubmit={onSave}>
+      <MigrationBox />
       <div className='FormInput__Row'>
         <Button variant='contained' type='submit' disabled={saving} startIcon={<SaveIcon />}>
           Save

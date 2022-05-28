@@ -5,15 +5,10 @@ import MigrationForm from 'src/frontend/components/MigrationForm';
 import NewConnectionButton from 'src/frontend/components/NewConnectionButton';
 import Resizer from 'src/frontend/components/Resizer';
 import { LocalStorageConfig } from 'src/frontend/data/config';
+import { useSideBarWidthPreference } from 'src/frontend/hooks/useClientSidePreference';
 
 export default function MigrationPage() {
-  const [width, setWidth] = useState<undefined | number>(
-    LocalStorageConfig.get<number>('clientConfig/leftPanelWidth', 300),
-  );
-  const onSetWidth = (newWidth: number) => {
-    LocalStorageConfig.set('clientConfig/leftPanelWidth', newWidth);
-    setWidth(newWidth);
-  };
+  const { value: width, onChange: onSetWidth } = useSideBarWidthPreference();
 
   return (
     <section className='MigrationPage LayoutTwoColumns'>
