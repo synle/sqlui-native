@@ -6,8 +6,11 @@ import { Button } from '@mui/material';
 import Box from '@mui/material/Box';
 import { useCommands } from 'src/frontend/components/MissionControl';
 import SplitButton from 'src/frontend/components/SplitButton';
+import CompareArrowsIcon from '@mui/icons-material/CompareArrows';
+import { useNavigate } from 'react-router-dom';
 
 export default function NewConnectionButton() {
+  const navigate = useNavigate();
   const { selectCommand } = useCommands();
 
   const options = [
@@ -20,6 +23,11 @@ export default function NewConnectionButton() {
       label: 'Export All',
       onClick: () => selectCommand({ event: 'clientEvent/exportAll' }),
       startIcon: <ArrowUpwardIcon />,
+    },
+    {
+      label: 'Connection / Data Migration',
+      onClick: () => navigate('/migration'),
+      startIcon: <CompareArrowsIcon />,
     },
     {
       label: 'Collapse All Connections',

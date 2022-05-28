@@ -21,6 +21,7 @@ import useToaster, { ToasterHandler } from 'src/frontend/hooks/useToaster';
 import EditConnectionPage from 'src/frontend/views/EditConnectionPage';
 import MainPage from 'src/frontend/views/MainPage';
 import NewConnectionPage from 'src/frontend/views/NewConnectionPage';
+import MigrationPage from 'src/frontend/views/MigrationPage';
 import './App.scss';
 import 'src/frontend/electronRenderer';
 
@@ -146,6 +147,7 @@ export default function App() {
               <Route path='/' element={<MainPage />} />
               <Route path='/connection/new' element={<NewConnectionPage />} />
               <Route path='/connection/edit/:connectionId' element={<EditConnectionPage />} />
+              <Route path='/migration' element={<MigrationPage />} />
               <Route path='/*' element={<MainPage />} />
             </Routes>
           </section>

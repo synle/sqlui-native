@@ -15,6 +15,7 @@ import DropdownButton from 'src/frontend/components/DropdownButton';
 import { useCommands } from 'src/frontend/components/MissionControl';
 import { useGetCurrentSession, useGetSessions } from 'src/frontend/hooks/useSession';
 import appPackage from 'src/package.json';
+import CompareArrowsIcon from '@mui/icons-material/CompareArrows';
 
 export default function AppHeader() {
   const [open, setOpen] = useState(false);
@@ -49,6 +50,14 @@ export default function AppHeader() {
       label: 'Command Palette',
       onClick: () => selectCommand({ event: 'clientEvent/showCommandPalette' }),
       startIcon: <KeyboardCommandKeyIcon />,
+    },
+    {
+      label: 'divider',
+    },
+    {
+      label: 'Connection / Data Migration',
+      onClick: () => navigate('/migration'),
+      startIcon: <CompareArrowsIcon />,
     },
     {
       label: 'divider',
