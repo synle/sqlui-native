@@ -1,16 +1,11 @@
-import { useState } from 'react';
 import ConnectionDescription from 'src/frontend/components/ConnectionDescription';
 import NewConnectionButton from 'src/frontend/components/NewConnectionButton';
 import QueryBoxTabs from 'src/frontend/components/QueryBoxTabs';
 import Resizer from 'src/frontend/components/Resizer';
-import {useSideBarWidthPreference} from 'src/frontend/hooks/useClientSidePreference';
-import { LocalStorageConfig } from 'src/frontend/data/config';
+import { useSideBarWidthPreference } from 'src/frontend/hooks/useClientSidePreference';
 
 export default function MainPage() {
-  const {
-    value: width,
-    onChange: onSetWidth
-  } = useSideBarWidthPreference();
+  const { value: width, onChange: onSetWidth } = useSideBarWidthPreference();
 
   return (
     <section className='MainPage LayoutTwoColumns'>

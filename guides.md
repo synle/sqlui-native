@@ -2,17 +2,17 @@
 title: sqlui-native
 ---
 
-# Query Guides:
-
+Query Guides:
+=============
 ## mysql
 
 ### Sample Connection String
 
 This is a sample connection string you can use.
-
 ```
 mysql://root:password@localhost:3306
 ```
+
 
 ### Drop Database
 
@@ -20,11 +20,13 @@ mysql://root:password@localhost:3306
 DROP DATABASE database1
 ```
 
+
 ### Create Database
 
 ```sql
 CREATE DATABASE database1
 ```
+
 
 ### Select All Columns
 
@@ -36,6 +38,7 @@ FROM
 LIMIT
   200
 ```
+
 
 ### Select Count
 
@@ -49,6 +52,7 @@ WHERE
   AND column1 = ''
   AND column2 = ''
 ```
+
 
 ### Select Specific Columns
 
@@ -67,6 +71,7 @@ LIMIT
   200
 ```
 
+
 ### Select Distinct
 
 ```sql
@@ -82,6 +87,7 @@ LIMIT
   200
 ```
 
+
 ### Insert
 
 ```sql
@@ -90,6 +96,7 @@ INSERT INTO
 VALUES
   ('_column1_', '_column2_')
 ```
+
 
 ### Update
 
@@ -105,6 +112,7 @@ AND
 column2 = ''
 ```
 
+
 ### Delete
 
 ```sql
@@ -116,6 +124,7 @@ WHERE
   AND column2 = ''
 ```
 
+
 ### Create Table
 
 ```sql
@@ -126,11 +135,13 @@ CREATE TABLE table1 (
 )
 ```
 
+
 ### Drop Table
 
 ```sql
 DROP TABLE table1
 ```
+
 
 ### Add Column
 
@@ -140,6 +151,7 @@ ALTER TABLE
 ADD
   COLUMN newColumn1 varchar(200)
 ```
+
 
 ### Drop Column
 
@@ -151,16 +163,17 @@ ALTER TABLE
 ALTER TABLE
   table1 DROP COLUMN column2;
 ```
+
 
 ## mariadb
 
 ### Sample Connection String
 
 This is a sample connection string you can use.
-
 ```
 mariadb://root:password@localhost:3306
 ```
+
 
 ### Drop Database
 
@@ -168,11 +181,13 @@ mariadb://root:password@localhost:3306
 DROP DATABASE database1
 ```
 
+
 ### Create Database
 
 ```sql
 CREATE DATABASE database1
 ```
+
 
 ### Select All Columns
 
@@ -184,6 +199,7 @@ FROM
 LIMIT
   200
 ```
+
 
 ### Select Count
 
@@ -197,6 +213,7 @@ WHERE
   AND column1 = ''
   AND column2 = ''
 ```
+
 
 ### Select Specific Columns
 
@@ -215,6 +232,7 @@ LIMIT
   200
 ```
 
+
 ### Select Distinct
 
 ```sql
@@ -230,6 +248,7 @@ LIMIT
   200
 ```
 
+
 ### Insert
 
 ```sql
@@ -238,6 +257,7 @@ INSERT INTO
 VALUES
   ('_column1_', '_column2_')
 ```
+
 
 ### Update
 
@@ -253,6 +273,7 @@ AND
 column2 = ''
 ```
 
+
 ### Delete
 
 ```sql
@@ -264,6 +285,7 @@ WHERE
   AND column2 = ''
 ```
 
+
 ### Create Table
 
 ```sql
@@ -274,11 +296,13 @@ CREATE TABLE table1 (
 )
 ```
 
+
 ### Drop Table
 
 ```sql
 DROP TABLE table1
 ```
+
 
 ### Add Column
 
@@ -288,6 +312,7 @@ ALTER TABLE
 ADD
   COLUMN newColumn1 varchar(200)
 ```
+
 
 ### Drop Column
 
@@ -300,15 +325,16 @@ ALTER TABLE
   table1 DROP COLUMN column2;
 ```
 
+
 ## mssql
 
 ### Sample Connection String
 
 This is a sample connection string you can use.
-
 ```
 mssql://sa:password123!@localhost:1433
 ```
+
 
 ### Drop Database
 
@@ -316,11 +342,13 @@ mssql://sa:password123!@localhost:1433
 DROP DATABASE database1
 ```
 
+
 ### Create Database
 
 ```sql
 CREATE DATABASE database1
 ```
+
 
 ### Select All Columns
 
@@ -331,6 +359,7 @@ FROM
   table1
 ```
 
+
 ### Select Count
 
 ```sql
@@ -343,6 +372,7 @@ WHERE
   AND column1 = ''
   AND column2 = ''
 ```
+
 
 ### Select Specific Columns
 
@@ -359,6 +389,7 @@ WHERE
   AND column2 = ''
 ```
 
+
 ### Select Distinct
 
 ```sql
@@ -372,6 +403,7 @@ WHERE
   AND column2 = ''
 ```
 
+
 ### Insert
 
 ```sql
@@ -380,6 +412,7 @@ INSERT INTO
 VALUES
   ('_column1_', '_column2_')
 ```
+
 
 ### Update
 
@@ -395,6 +428,7 @@ AND
 column2 = ''
 ```
 
+
 ### Delete
 
 ```sql
@@ -406,6 +440,7 @@ WHERE
   AND column2 = ''
 ```
 
+
 ### Create Table
 
 ```sql
@@ -416,11 +451,13 @@ CREATE TABLE table1 (
 )
 ```
 
+
 ### Drop Table
 
 ```sql
 DROP TABLE table1
 ```
+
 
 ### Add Column
 
@@ -430,6 +467,7 @@ ALTER TABLE
 ADD
   COLUMN newColumn1 NVARCHAR(200)
 ```
+
 
 ### Drop Column
 
@@ -442,15 +480,16 @@ ALTER TABLE
   table1 DROP COLUMN column2;
 ```
 
+
 ## postgres
 
 ### Sample Connection String
 
 This is a sample connection string you can use.
-
 ```
 postgres://postgres:password@localhost:5432
 ```
+
 
 ### Drop Database
 
@@ -458,11 +497,13 @@ postgres://postgres:password@localhost:5432
 DROP DATABASE database1
 ```
 
+
 ### Create Database
 
 ```sql
 CREATE DATABASE database1
 ```
+
 
 ### Select All Columns
 
@@ -474,6 +515,7 @@ FROM
 LIMIT
   200
 ```
+
 
 ### Select Count
 
@@ -487,6 +529,7 @@ WHERE
   AND column1 = ''
   AND column2 = ''
 ```
+
 
 ### Select Specific Columns
 
@@ -505,6 +548,7 @@ LIMIT
   200
 ```
 
+
 ### Select Distinct
 
 ```sql
@@ -520,6 +564,7 @@ LIMIT
   200
 ```
 
+
 ### Insert
 
 ```sql
@@ -528,6 +573,7 @@ INSERT INTO
 VALUES
   ('_column1_', '_column2_')
 ```
+
 
 ### Update
 
@@ -543,6 +589,7 @@ AND
 column2 = ''
 ```
 
+
 ### Delete
 
 ```sql
@@ -553,6 +600,7 @@ WHERE
   AND column1 = ''
   AND column2 = ''
 ```
+
 
 ### Create Table
 
@@ -564,11 +612,13 @@ CREATE TABLE table1 (
 )
 ```
 
+
 ### Drop Table
 
 ```sql
 DROP TABLE table1
 ```
+
 
 ### Add Column
 
@@ -578,6 +628,7 @@ ALTER TABLE
 ADD
   COLUMN newColumn1 CHAR(200)
 ```
+
 
 ### Drop Column
 
@@ -590,15 +641,16 @@ ALTER TABLE
   table1 DROP COLUMN column2;
 ```
 
+
 ## sqlite
 
 ### Sample Connection String
 
 This is a sample connection string you can use.
-
 ```
 sqlite://test-db.sqlite
 ```
+
 
 ### Drop Database
 
@@ -606,11 +658,13 @@ sqlite://test-db.sqlite
 DROP DATABASE database1
 ```
 
+
 ### Create Database
 
 ```sql
 CREATE DATABASE database1
 ```
+
 
 ### Select All Columns
 
@@ -622,6 +676,7 @@ FROM
 LIMIT
   200
 ```
+
 
 ### Select Count
 
@@ -635,6 +690,7 @@ WHERE
   AND column1 = ''
   AND column2 = ''
 ```
+
 
 ### Select Specific Columns
 
@@ -652,6 +708,7 @@ WHERE
 LIMIT
   200
 ```
+
 
 ### Select Distinct
 
@@ -668,6 +725,7 @@ LIMIT
   200
 ```
 
+
 ### Insert
 
 ```sql
@@ -676,6 +734,7 @@ INSERT INTO
 VALUES
   ('_column1_', '_column2_')
 ```
+
 
 ### Update
 
@@ -691,6 +750,7 @@ AND
 column2 = ''
 ```
 
+
 ### Delete
 
 ```sql
@@ -702,6 +762,7 @@ WHERE
   AND column2 = ''
 ```
 
+
 ### Create Table
 
 ```sql
@@ -712,11 +773,13 @@ CREATE TABLE table1 (
 )
 ```
 
+
 ### Drop Table
 
 ```sql
 DROP TABLE table1
 ```
+
 
 ### Add Column
 
@@ -726,6 +789,7 @@ ALTER TABLE
 ADD
   COLUMN newColumn1 TEXT
 ```
+
 
 ### Drop Column
 
@@ -738,15 +802,16 @@ ALTER TABLE
   table1 DROP COLUMN column2;
 ```
 
+
 ## cassandra
 
 ### Sample Connection String
 
 This is a sample connection string you can use.
-
 ```
 cassandra://username:password@localhost:9042
 ```
+
 
 ### Create Keyspace
 
@@ -755,11 +820,13 @@ CREATE KEYSPACE IF NOT EXISTS some_keyspace WITH replication = { 'class': 'Simpl
 'replication_factor': 3 };
 ```
 
+
 ### Drop Keyspace
 
 ```sql
 DROP KEYSPACE IF EXISTS database1;
 ```
+
 
 ### Select All Columns
 
@@ -771,6 +838,7 @@ FROM
 LIMIT
   200
 ```
+
 
 ### Select Specific Columns
 
@@ -789,6 +857,7 @@ LIMIT
   200
 ```
 
+
 ### Insert
 
 ```sql
@@ -797,6 +866,7 @@ INSERT INTO
 VALUES
   ('_id_', '_column1_', '_column2_')
 ```
+
 
 ### Update
 
@@ -812,6 +882,7 @@ AND
 column2 = ''
 ```
 
+
 ### Delete
 
 ```sql
@@ -823,276 +894,320 @@ WHERE
   AND column2 = ''
 ```
 
+
 ## mongodb
 
 ### Sample Connection String
 
 This is a sample connection string you can use.
-
 ```
 mongodb://localhost:27017
 ```
 
+
 ### Create Database
 
 ```js
-db.createDatabase('database1');
+db.createDatabase('database1')
 ```
+
 
 ### Drop Database
 
 ```js
-db.dropDatabase();
+db.dropDatabase()
 ```
+
 
 ### Select All Columns
 
 ```js
-db.collection('table1').find().limit(200).toArray();
+db.collection('table1')
+  .find()
+  .limit(200)
+  .toArray();
 ```
+
 
 ### Select Specific Columns
 
 ```js
 db.collection('table1')
   .find({
-    id: 123,
-    column1: 123,
-    column2: 123,
+    "id": 123,
+    "column1": 123,
+    "column2": 123
   })
   .limit(200)
   .toArray();
 ```
 
+
 ### Select Distinct
 
 ```js
-db.collection('table1').distinct('id', {
-  id: '',
-  column1: '',
-  column2: '',
-});
+db.collection('table1')
+  .distinct(
+    'id', {
+      "id": "",
+      "column1": "",
+      "column2": ""
+    }
+  )
 ```
+
 
 ### Insert
 
 ```js
-db.collection('table1').insertMany([
-  {
-    id: 123,
-    column1: 123,
-    column2: 123,
-  },
-]);
+db.collection('table1')
+  .insertMany([{
+    "id": 123,
+    "column1": 123,
+    "column2": 123
+  }]);
 ```
+
 
 ### Update
 
 ```js
-db.collection('table1').update(
-  {
-    id: 123,
-    column1: 123,
-    column2: 123,
-  },
-  {
+db.collection('table1')
+  .update({
+    "id": 123,
+    "column1": 123,
+    "column2": 123
+  }, {
     $set: {
-      id: 123,
-      column1: 123,
-      column2: 123,
-    },
-  },
-);
+      "id": 123,
+      "column1": 123,
+      "column2": 123
+    }
+  });
 ```
+
 
 ### Delete
 
 ```js
-db.collection('table1').deleteMany({
-  id: 123,
-  column1: 123,
-  column2: 123,
-});
+db.collection('table1')
+  .deleteMany({
+    "id": 123,
+    "column1": 123,
+    "column2": 123
+  });
 ```
+
 
 ### Create Collection
 
 ```js
-db.createCollection('table1');
+db.createCollection("table1")
 ```
+
 
 ### Drop Collection
 
 ```js
-db.collection('table1').drop();
+db.collection('table1')
+  .drop()
 ```
+
 
 ## redis
 
 ### Sample Connection String
 
 This is a sample connection string you can use.
-
 ```
 redis://localhost:6379
 ```
 
+
 ### Set Value
 
 ```js
-db.set('key', 'value123');
+db.set("key", "value123")
 ```
+
 
 ### Get Value by Key
 
 ```js
-db.get('key');
+db.get("key")
 ```
+
 
 ### Scan for keys
 
 ```js
-db.keys('*');
+db.keys("*")
 ```
+
 
 ### Hashset > Set Value
 
 ```js
-db.hSet('hash_key1', 'field1', 'value1');
+db.hSet("hash_key1", "field1", "value1")
 ```
+
 
 ### Hashset > Get Value By Key
 
 ```js
-db.hGetAll('hash_key1');
+db.hGetAll("hash_key1")
 ```
+
 
 ### Hashset > Values
 
 ```js
-db.hVals('hash_key1');
+db.hVals("hash_key1")
 ```
+
 
 ### Hashset > Check if key exists
 
 ```js
-db.hExists('hash_key1', 'field1');
+db.hExists("hash_key1", "field1")
 ```
+
 
 ### List > Get Items
 
 ```js
-db.lRange('list_key1', 0, -1);
+db.lRange("list_key1", 0, -1)
 ```
+
 
 ### List > Push item to the front
 
 ```js
-db.lPush('list_key1', 'value');
+db.lPush("list_key1", "value")
 ```
+
 
 ### List > Push item to the back
 
 ```js
-db.rPush('list_key1', 'value');
+db.rPush("list_key1", "value")
 ```
+
 
 ### List > Delete item from the front
 
 ```js
-db.lPop('list_key1');
+db.lPop("list_key1")
 ```
+
 
 ### List > Delete item from the back
 
 ```js
-db.rPop('list_key1');
+db.rPop("list_key1")
 ```
+
 
 ### Set > Get Items
 
 ```js
-db.sMembers('set_key1');
+db.sMembers("set_key1")
 ```
+
 
 ### Set > Add Item
 
 ```js
-db.sAdd('set_key1', 'value1');
+db.sAdd("set_key1", "value1")
 ```
+
 
 ### Set > Is a member of set
 
 ```js
-db.sIsMember('set_key1', 'value1');
+db.sIsMember("set_key1", "value1")
 ```
+
 
 ### Set > Total Size
 
 ```js
-db.sCard('set_key1');
+db.sCard("set_key1")
 ```
+
 
 ### Set > Remove last item
 
 ```js
-db.sPop('set_key1');
+db.sPop("set_key1")
 ```
+
 
 ### Sorted Set > Get Items
 
 ```js
-db.zRange('sorted_set_key1', 0, -1);
+db.zRange("sorted_set_key1", 0, -1)
 ```
+
 
 ### Sorted Set > Add Item
 
 ```js
-db.zAdd('sorted_set_key1', [
-  {
-    score: 1,
-    value: 'some_value',
-  },
-]);
+db.zAdd("sorted_set_key1", [{
+  score: 1,
+  value: "some_value"
+}])
 ```
+
 
 ### Publish a message
 
 ```js
-db.publish('pubsub_channel_key1', 'some_message');
+db.publish("pubsub_channel_key1", "some_message")
 ```
+
 
 ## cosmosdb
 
 ### Sample Connection String
 
 This is a sample connection string you can use.
-
 ```
 cosmosdb://AccountEndpoint=some_cosmos_endpoint;AccountKey=some_cosmos_account_key
 ```
 
+
 ### Create Database
 
 ```js
-client.databases.create({
-  id: 'database1',
-});
+client
+  .databases
+  .create({
+    id: 'database1'
+  })
 ```
+
 
 ### Create Database Container
 
 ```js
-client.database('database1').containers.create({
-  id: 'some_container_name',
-});
+client
+  .database('database1')
+  .containers
+  .create({
+    id: 'some_container_name'
+  })
 ```
+
 
 ### Drop Database
 
 ```js
-client.database('database1').delete();
+client
+  .database('database1')
+  .delete()
 ```
+
 
 ### Select All Columns
 
@@ -1100,14 +1215,16 @@ client.database('database1').delete();
 client
   .database('database1')
   .container('table1')
-  .items.query({
+  .items
+  .query({
     query: `
   SELECT *
   FROM c
   OFFSET 0 LIMIT 200`,
   })
-  .fetchAll();
+  .fetchAll()
 ```
+
 
 ### Select Specific Columns
 
@@ -1115,7 +1232,8 @@ client
 client
   .database('database1')
   .container('table1')
-  .items.query({
+  .items
+  .query({
     query: `
   SELECT c.id,
   c.column1,
@@ -1126,8 +1244,9 @@ client
   AND c.column2 = ''
   OFFSET 0 LIMIT 200`,
   })
-  .fetchAll();
+  .fetchAll()
 ```
+
 
 ### Select By Id
 
@@ -1135,42 +1254,64 @@ client
 client
   .database('database1')
   .container('table1')
-  .items.query({
+  .items
+  .query({
     query: `
   SELECT *
   FROM c
   WHERE c.id = '123'`,
   })
-  .fetchAll();
+  .fetchAll()
 ```
+
 
 ### Read
 
 ```js
-client.database('database1').container('table1').item('some_id', 'some_partition_key').read();
+client
+  .database('database1')
+  .container('table1')
+  .item('some_id', 'some_partition_key')
+  .read()
 ```
+
 
 ### Insert
 
 ```js
-client.database('database1').container('table1').items.create({
-  id: 'some_id',
-});
+client
+  .database('database1')
+  .container('table1')
+  .items
+  .create({
+    "id": "some_id"
+  })
 ```
+
 
 ### Update
 
 ```js
-client.database('database1').container('table1').item('some_id', 'some_partition_key').replace({
-  id: 'some_id',
-});
+client
+  .database('database1')
+  .container('table1')
+  .item('some_id', 'some_partition_key')
+  .replace({
+    "id": "some_id"
+  })
 ```
+
 
 ### Delete
 
 ```js
-client.database('database1').container('table1').item('some_id', 'some_partition_key').delete();
+client
+  .database('database1')
+  .container('table1')
+  .item('some_id', 'some_partition_key')
+  .delete()
 ```
+
 
 ### Raw Select All Columns SQL
 
@@ -1181,45 +1322,56 @@ FROM
   c
 ```
 
+
 ### Create Container
 
 ```js
-client.database('database1').containers.create({
-  id: 'table1',
-});
+client
+  .database('database1')
+  .containers
+  .create({
+    id: 'table1'
+  })
 ```
+
 
 ### Drop Container
 
 ```js
-client.database('database1').container('table1').delete();
+client
+  .database('database1')
+  .container('table1')
+  .delete()
 ```
+
 
 ## aztable
 
 ### Sample Connection String
 
 This is a sample connection string you can use.
-
 ```
 aztable://DefaultEndpointsProtocol=https;AccountName=<your_account_name>;AccountKey=<your_account_key>;EndpointSuffix=core.windows.net
 ```
 
+
 ### Create Table
 
 ```js
-serviceClient.createTable('somenewtablename');
+serviceClient.createTable('somenewtablename')
 ```
+
 
 ### Select All Columns
 
 ```js
 tableClient.listEntities({
   queryOptions: {
-    filter: ``,
-  },
-});
+    filter: ``
+  }
+})
 ```
+
 
 ### Select Specific Columns
 
@@ -1227,40 +1379,41 @@ tableClient.listEntities({
 tableClient.listEntities({
   queryOptions: {
     filter: `PartitionKey eq 'some_partition_key'`,
-    select: ['id', 'column1', 'column2'],
-  },
-});
+    select: ["id", "column1", "column2"]
+  }
+})
 ```
+
 
 ### Insert
 
 ```js
 tableClient.createEntity({
-  rowKey: 'some_row_key',
-  partitionKey: 'some_partition_key',
-});
+  "rowKey": "some_row_key",
+  "partitionKey": "some_partition_key"
+})
 ```
+
 
 ### Update
 
 ```js
 tableClient.updateEntity({
-  rowKey: 'some_row_key',
-  partitionKey: 'some_partition_key',
-});
+  "rowKey": "some_row_key",
+  "partitionKey": "some_partition_key"
+})
 ```
+
 
 ### Upsert
 
 ```js
-tableClient.upsertEntity(
-  {
-    rowKey: 'some_row_key',
-    partitionKey: 'some_partition_key',
-  },
-  'Replace',
-);
+tableClient.upsertEntity({
+  "rowKey": "some_row_key",
+  "partitionKey": "some_partition_key"
+}, 'Replace')
 ```
+
 
 ### Delete
 
@@ -1268,14 +1421,17 @@ tableClient.upsertEntity(
 tableClient.deleteEntity('some_partition_key', 'some_row_key');
 ```
 
+
 ### Create Table
 
 ```js
-serviceClient.createTable('table1');
+serviceClient.createTable('table1')
 ```
+
 
 ### Drop Table
 
 ```js
-serviceClient.deleteTable('table1');
+serviceClient.deleteTable('table1')
 ```
+

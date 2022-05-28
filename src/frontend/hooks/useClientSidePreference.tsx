@@ -17,10 +17,8 @@ export function useLocalStoragePreferences<T>(
   return {
     value,
     onChange,
-  }
+  };
 }
-
-
-export function useSideBarWidthPreference(){
-  return useLocalStoragePreferences<number>('clientConfig/leftPanelWidth', 300)
+export function useSideBarWidthPreference() {
+  return useLocalStoragePreferences<number>('clientConfig/leftPanelWidth', 300);
 }

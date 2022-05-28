@@ -1,19 +1,15 @@
 import Typography from '@mui/material/Typography';
 import { useParams } from 'react-router-dom';
-import { useState } from 'react';
 import ConnectionDescription from 'src/frontend/components/ConnectionDescription';
 import { EditConnectionForm } from 'src/frontend/components/ConnectionForm';
 import NewConnectionButton from 'src/frontend/components/NewConnectionButton';
 import Resizer from 'src/frontend/components/Resizer';
-import {useSideBarWidthPreference} from 'src/frontend/hooks/useClientSidePreference';
+import { useSideBarWidthPreference } from 'src/frontend/hooks/useClientSidePreference';
 
 export default function EditConnectionPage() {
   const urlParams = useParams();
   const connectionId = urlParams.connectionId as string;
-  const {
-    value: width,
-    onChange: onSetWidth
-  } = useSideBarWidthPreference();
+  const { value: width, onChange: onSetWidth } = useSideBarWidthPreference();
 
   if (!connectionId) {
     return null;
