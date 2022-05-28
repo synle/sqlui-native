@@ -7,6 +7,8 @@ import ConnectionDatabaseSelector from 'src/frontend/components/QueryBox/Connect
 import Select from 'src/frontend/components/Select';
 import { SqluiFrontend } from 'typings';
 
+
+// TOOD: extract this
 type DialectSelectorProps = {
   value?: string;
   onChange: (newVal: string) => void;
@@ -33,6 +35,25 @@ function DialectSelector(props: DialectSelectorProps){
   )
 }
 
+type MigrationType = 'insert' | 'create'
+
+type MigrationTypeSelectorProps = {
+  value ?: MigrationType
+  onChange: (newVal: MigrationType) => void;
+}
+
+function MigrationTypeSelector(props: MigrationTypeSelectorProps){
+  const {value, onChange,} = props;
+
+  return (
+    <Select value={value} onChange={(newValue) => onChange && onChange(newValue as MigrationType)}>
+      <option value=''>Pick a dialect</option>
+      <option value='create'>Create Table</option>
+      <option value='insert'>Insert</option>
+    </Select>
+  )
+}
+
 export default function MigrationBox (){
   const [query, setQuery] = useState<SqluiFrontend.ConnectionQuery>({
     id: 'migration_query_' + Date.now(),
@@ -40,7 +61,10 @@ export default function MigrationBox (){
   });
   const [migrationScript, setMigrationScript] = useState('');
   const [migrationDialect, setMigrationDialect] = useState('');
+  const [migrationType, setMigrationType] = useState<MigrationType | undefined>();
   const [saving, setSaving] = useState(false);
+
+  // TODO: pull these from the dialect
   const languageFrom = 'sql';
   const languageTo = 'sql';
 
@@ -79,6 +103,7 @@ export default function MigrationBox (){
       autoFocus
     />
     <DialectSelector value={migrationDialect} onChange={setMigrationDialect} />
+    <MigrationTypeSelector value={migrationType} onChange={setMigrationType} />
     <CodeEditorBox
       value={query.sql}
       onChange={onSqlQueryChange}
