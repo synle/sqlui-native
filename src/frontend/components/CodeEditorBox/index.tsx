@@ -15,6 +15,7 @@ type CodeEditorProps = {
   autoFocus?: boolean;
   required?: boolean;
   wordWrap?: boolean;
+  disabled?: boolean;
 };
 
 export default function CodeEditorBox(props: CodeEditorProps) {
@@ -50,6 +51,7 @@ export default function CodeEditorBox(props: CodeEditorProps) {
           onBlur={onChange}
           autoFocus={props.autoFocus}
           required={props.required}
+          disabled={props.disabled}
           wordWrap={wordWrap}
         />
         {contentToggleWordWrap}
@@ -65,6 +67,7 @@ export default function CodeEditorBox(props: CodeEditorProps) {
         onBlur={onChange}
         wordWrap={wordWrap}
         placeholder={props.placeholder}
+        disabled={props.disabled}
       />
       {contentToggleWordWrap}
     </Paper>

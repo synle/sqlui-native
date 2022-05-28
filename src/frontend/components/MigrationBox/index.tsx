@@ -1,16 +1,50 @@
-import { useState} from 'react';
-import { SqluiFrontend } from 'typings';
-import ConnectionDatabaseSelector from 'src/frontend/components/QueryBox/ConnectionDatabaseSelector';
-import ConnectionRevealButton from 'src/frontend/components/QueryBox/ConnectionRevealButton';
+import CompareArrowsIcon from '@mui/icons-material/CompareArrows';
+import { Button } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 import CodeEditorBox from 'src/frontend/components/CodeEditorBox';
+import ConnectionDatabaseSelector from 'src/frontend/components/QueryBox/ConnectionDatabaseSelector';
+import Select from 'src/frontend/components/Select';
+import { SqluiFrontend } from 'typings';
+
+type DialectSelectorProps = {
+  value?: string;
+  onChange: (newVal: string) => void;
+}
+
+function DialectSelector(props: DialectSelectorProps){
+  const {value,
+    onChange,} = props;
+
+  return (
+    <Select value={value} onChange={(newValue) => onChange && onChange(newValue)}>
+      <option value=''>Pick a dialect</option>
+      <option value='mysql'>mysql</option>
+      <option value='mariadb'>mariadb</option>
+      <option value='mssql'>mssql</option>
+      <option value='postgres'>postgres</option>
+      <option value='sqlite'>sqlite</option>
+      <option value='cassandra'>cassandra</option>
+      <option value='mongodb'>mongodb</option>
+      <option value='redis'>redis</option>
+      <option value='cosmosdb'>cosmosdb</option>
+      <option value='aztable'>aztable</option>
+    </Select>
+  )
+}
 
 export default function MigrationBox (){
   const [query, setQuery] = useState<SqluiFrontend.ConnectionQuery>({
     id: 'migration_query_' + Date.now(),
     name: 'Migration Query'
   });
-
   const [migrationScript, setMigrationScript] = useState('');
+  const [migrationDialect, setMigrationDialect] = useState('');
+  const [saving, setSaving] = useState(false);
+  const languageFrom = 'sql';
+  const languageTo = 'sql';
+
+  const navigate = useNavigate();
 
   const onDatabaseConnectionChange = (connectionId?: string, databaseId?: string) => {
     setQuery({
@@ -31,8 +65,8 @@ export default function MigrationBox (){
     setMigrationScript('')
   }
 
-
-  const language = 'sql';
+  const onSave = async () => {
+  };
 
   return <>
     <div>MigrationBox</div>
@@ -41,17 +75,29 @@ export default function MigrationBox (){
       value={query.sql}
       placeholder={`Enter SQL for ` + query.name}
       onChange={onSqlQueryChange}
-      language={language}
+      language={languageFrom}
       autoFocus
     />
+    <DialectSelector value={migrationDialect} onChange={setMigrationDialect} />
     <CodeEditorBox
       value={query.sql}
-      placeholder={`Enter SQL for ` + query.name}
       onChange={onSqlQueryChange}
-      language={language}
-      autoFocus
+      language={languageTo}
+      disabled={true}
     />
     {/*TODO: remove me*/}
     <pre>{JSON.stringify(query, null, 2)}</pre>
+    <div className='FormInput__Row'>
+        <Button variant='contained' type='submit' disabled={saving} startIcon={<CompareArrowsIcon />}>
+          Generate Migrate
+        </Button>
+        <Button
+          variant='outlined'
+          type='button'
+          disabled={saving}
+          onClick={() => navigate('/')}>
+          Cancel
+        </Button>
+      </div>
   </>
 }

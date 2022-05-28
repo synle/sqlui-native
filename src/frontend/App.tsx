@@ -20,8 +20,8 @@ import { useDarkModeSetting } from 'src/frontend/hooks/useSetting';
 import useToaster, { ToasterHandler } from 'src/frontend/hooks/useToaster';
 import EditConnectionPage from 'src/frontend/views/EditConnectionPage';
 import MainPage from 'src/frontend/views/MainPage';
-import NewConnectionPage from 'src/frontend/views/NewConnectionPage';
 import MigrationPage from 'src/frontend/views/MigrationPage';
+import NewConnectionPage from 'src/frontend/views/NewConnectionPage';
 import './App.scss';
 import 'src/frontend/electronRenderer';
 
