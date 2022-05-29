@@ -161,6 +161,21 @@ Here is the link where you can find information about how run this application l
 
 ## Limitations
 
+### sqlite Limitations
+
+sqlite doesn't support multiple statements. So if you have multiple inserts or updates in a single query, it will not work. Refer to this [Stackoverflow post for more details related to sqlite](https://stackoverflow.com/questions/1609637/is-it-possible-to-insert-multiple-rows-at-a-time-in-an-sqlite-database).
+
+If you want to do bulk inserts, use bulk inserts API instead.
+
+```sql
+INSERT INTO
+  art (Name)
+VALUES
+  ('Queen'),
+  ('Kiss'),
+  ('Spyro Gyra')
+```
+
 ### Cassandra Limitations
 
 Cassandra Keyspaces are mapped to sqlui-native databases. And Cassandra Column Families are mapped to sqlui-native table.
