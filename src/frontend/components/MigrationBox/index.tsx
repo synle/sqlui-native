@@ -1,18 +1,19 @@
 import CompareArrowsIcon from '@mui/icons-material/CompareArrows';
-import { Button, Skeleton, TextField } from '@mui/material';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { Button, Skeleton, TextField  } from '@mui/material';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import {
-  getBulkInsert as getBulkInsertForRdmbs,
-  getCreateTable as getCreateTableForRdbms,
-} from 'src/common/adapters/RelationalDataAdapter/scripts';
 import CodeEditorBox from 'src/frontend/components/CodeEditorBox';
 import ConnectionDatabaseSelector from 'src/frontend/components/QueryBox/ConnectionDatabaseSelector';
 import Select from 'src/frontend/components/Select';
-import dataApi from 'src/frontend/data/api';
-import { useGetColumns, useGetConnections } from 'src/frontend/hooks/useConnection';
-import { formatSQL } from 'src/frontend/utils/formatter';
 import { SqluiCore, SqluiFrontend } from 'typings';
+import { useGetColumns, useGetConnections} from 'src/frontend/hooks/useConnection';
+import {
+  getCreateTable as getCreateTableForRdbms,
+  getBulkInsert as getBulkInsertForRdmbs,
+} from 'src/common/adapters/RelationalDataAdapter/scripts';
+import { formatJS, formatSQL } from 'src/frontend/utils/formatter';
+import dataApi from 'src/frontend/data/api';
+
 // TOOD: extract this
 type DialectSelectorProps = {
   value?: SqluiCore.Dialect;
@@ -66,18 +67,16 @@ async function generateMigrationScript(
   toDialect: SqluiCore.Dialect | undefined,
   toTableId: string | undefined,
   fromQuery: SqluiFrontend.ConnectionQuery,
-  columns?: SqluiCore.ColumnMetaData[],
+  columns?: SqluiCore.ColumnMetaData[]
 ): Promise<string | undefined> {
-  if (!columns) {
-    return '';
-  }
+  if(!columns){return '';};
 
   const toQueryMetaData = {
     dialect: toDialect,
-    databaseId: `Migrated_Database_${fromQuery.databaseId}_${Date.now()}`,
+    databaseId : `Migrated_Database_${fromQuery.databaseId}_${Date.now()}`,
     tableId: toTableId,
     columns,
-  };
+  }
 
   // getCreateTable
   // SqlAction.TableInput
@@ -104,15 +103,15 @@ async function generateMigrationScript(
   // getInsert
   if (migrationType === 'insert') {
     // first get the results
-    try {
+    try{
       const results = await dataApi.execute(fromQuery);
 
-      if (!results.raw || results.raw.length === 0) {
+      if(!results.raw || results.raw.length === 0){
         return 'The SELECT query does not have any returned. You need to provide a valid SELECT query that returns some data.';
       }
 
       // TODO: here we need to perform the query to get the data
-      let res: string[] = [];
+      let res: string [] = [];
       switch (toDialect) {
         case 'mysql':
         case 'mariadb':
@@ -129,7 +128,7 @@ async function generateMigrationScript(
           return 'Dialect Migration not yet supported';
           break;
       }
-    } catch (err) {
+    } catch(err){
       return `Select query failed. ${JSON.stringify(err)}`;
     }
   }
@@ -161,7 +160,7 @@ export default function MigrationBox() {
   const languageFrom = 'sql';
   const languageTo = 'sql';
   const isQueryRequired = migrationType === 'insert';
-  let isDisabled: boolean = migrating || !toDialect;
+  let isDisabled: boolean = migrating || !toDialect || !query.databaseId;
 
   if (isQueryRequired) {
     isDisabled = isDisabled || !query?.sql;
@@ -171,16 +170,13 @@ export default function MigrationBox() {
 
   // effects
   useEffect(() => {
-    setSearchParams(
-      {
-        connectionId: query.connectionId || '',
-        databaseId: query.databaseId || '',
-        tableId: query.tableId || '',
-        toDialect: toDialect || 'sqlite',
-      },
-      { replace: true },
-    );
-  }, [query, toDialect]);
+    setSearchParams({
+      connectionId: query.connectionId || '',
+      databaseId: query.databaseId || '',
+      tableId: query.tableId || '',
+      toDialect: toDialect || 'sqlite',
+    }, {replace: true})
+  }, [query, toDialect])
 
   useEffect(() => {
     setQuery({
@@ -190,17 +186,13 @@ export default function MigrationBox() {
       tableId: searchParams.get('tableId') || '',
     });
 
-    setToDialect(searchParams.get('toDialect') as SqluiCore.Dialect);
+    setToDialect(searchParams.get('toDialect') as  SqluiCore.Dialect)
 
     setMigrationScript('');
-  }, []);
+  }, [])
 
   // events
-  const onDatabaseConnectionChange = (
-    connectionId?: string,
-    databaseId?: string,
-    tableId?: string,
-  ) => {
+  const onDatabaseConnectionChange = (connectionId?: string, databaseId?: string, tableId?: string) => {
     setQuery({
       ...query,
       connectionId,
@@ -234,47 +226,35 @@ export default function MigrationBox() {
     }
     setMigrating(true);
     try {
-      const newMigrationScript = await generateMigrationScript(
-        migrationType,
-        toDialect,
-        migrationNewTableName,
-        query,
-        columns,
-      );
+      const newMigrationScript = await generateMigrationScript(migrationType, toDialect, migrationNewTableName, query, columns);
       setMigrationScript(newMigrationScript || '');
     } catch (err) {}
     setMigrating(false);
   };
 
-  if (isLoading) {
-    return (
-      <div className='FormInput__Container'>
-        <div className='FormInput__Row'>
-          <Skeleton variant='rectangular' height={25} width={120} />
-          <Skeleton variant='rectangular' height={25} width={120} />
-          <Skeleton variant='rectangular' height={25} width={120} />
-        </div>
-        <div className='FormInput__Row'>
-          <Skeleton variant='rectangular' height={25} width={120} />
-          <Skeleton variant='rectangular' height={25} width={120} />
-          <Skeleton variant='rectangular' height={25} width={300} />
-        </div>
-        <div className='FormInput__Row'>
-          <Skeleton variant='rectangular' height={25} width={200} />
-          <Skeleton variant='rectangular' height={25} width={120} />
-        </div>
+  if(isLoading){
+    return <div className='FormInput__Container'>
+      <div className='FormInput__Row'>
+        <Skeleton variant="rectangular" height={25} width={120}/>
+        <Skeleton variant="rectangular" height={25} width={120} />
+        <Skeleton variant="rectangular" height={25} width={120} />
       </div>
-    );
+      <div className='FormInput__Row'>
+        <Skeleton variant="rectangular" height={25} width={120}/>
+        <Skeleton variant="rectangular" height={25} width={120} />
+        <Skeleton variant="rectangular" height={25} width={300} />
+      </div>
+      <div className='FormInput__Row'>
+        <Skeleton variant="rectangular" height={25} width={200}/>
+        <Skeleton variant="rectangular" height={25} width={120} />
+      </div>
+    </div>
   }
 
   return (
     <div className='FormInput__Container'>
       <div className='FormInput__Row'>
-        <ConnectionDatabaseSelector
-          isTableIdRequired={true}
-          value={query}
-          onChange={onDatabaseConnectionChange}
-        />
+        <ConnectionDatabaseSelector  isTableIdRequired={true} value={query} onChange={onDatabaseConnectionChange} />
       </div>
       <div className='FormInput__Row'>
         <DialectSelector value={toDialect} onChange={onSetMigrationDialect} />
