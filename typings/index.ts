@@ -151,6 +151,8 @@ export module SqluiFrontend {
     | 'queries'
     | 'results'
     | 'settings';
+
+  export type MigrationType = 'insert' | 'create';
 }
 
 export module SqlAction {
@@ -161,7 +163,7 @@ export module SqlAction {
 
   export type CoreInput = ConnectionInput & {
     databaseId?: string;
-    querySize: number;
+    querySize?: number;
   };
 
   export type DatabaseInput = SqlAction.CoreInput & {

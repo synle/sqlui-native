@@ -1,4 +1,5 @@
 import AddIcon from '@mui/icons-material/Add';
+import CompareArrowsIcon from '@mui/icons-material/CompareArrows';
 import EditIcon from '@mui/icons-material/Edit';
 import KeyboardCommandKeyIcon from '@mui/icons-material/KeyboardCommandKey';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -49,6 +50,14 @@ export default function AppHeader() {
       label: 'Command Palette',
       onClick: () => selectCommand({ event: 'clientEvent/showCommandPalette' }),
       startIcon: <KeyboardCommandKeyIcon />,
+    },
+    {
+      label: 'divider',
+    },
+    {
+      label: 'Connection / Data Migration',
+      onClick: () => navigate('/migration'),
+      startIcon: <CompareArrowsIcon />,
     },
     {
       label: 'divider',

@@ -44,7 +44,7 @@ export default function ResultBox(props: ResultBoxProps) {
     return (
       <>
         <QueryTimeDescription query={query} />
-        <CodeEditorBox value={errorToDisplay} language='json' mode='textarea' wordWrap={true} />
+        <CodeEditorBox value={errorToDisplay} language='json' wordWrap={true} />
       </>
     );
   }
@@ -132,7 +132,7 @@ type FormatDataProps = {
 
 function JsonFormatData(props: FormatDataProps) {
   const { data } = props;
-  return <CodeEditorBox value={JSON.stringify(data, null, 2)} language='json' mode='textarea' />;
+  return <CodeEditorBox value={JSON.stringify(data, null, 2)} language='json' />;
 }
 
 function CsvFormatData(props: FormatDataProps) {
@@ -149,7 +149,7 @@ function CsvFormatData(props: FormatDataProps) {
     });
   }, [data]);
 
-  return <CodeEditorBox value={csv} mode='textarea' />;
+  return <CodeEditorBox value={csv} />;
 }
 
 function TableFormatData(props: FormatDataProps) {
