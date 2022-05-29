@@ -519,7 +519,7 @@ WHERE
     "formatter": "sql",
     "label": "Create Table",
     "query": "CREATE TABLE table1 (
-  id INT NOT NULL,
+  id BIGSERIAL PRIMARY KEY,
   column1 INT NOT NULL,
   column2 VARCHAR(100) NOT NULL
 )",
@@ -658,8 +658,8 @@ WHERE
     "formatter": "sql",
     "label": "Create Table",
     "query": "CREATE TABLE table1 (
-  id INT PRIMARY KEY NOT NULL,
-  column1 INT NOT NULL,
+  id INTEGER PRIMARY KEY NOT NULL,
+  column1 INTEGER NOT NULL,
   column2 VARCHAR(100) NOT NULL
 )",
   },

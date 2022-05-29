@@ -141,7 +141,6 @@ export default function QueryBox(props: QueryBoxProps) {
           onChange={onSqlQueryChange}
           language={language}
           autoFocus
-          mode='textarea'
         />
         <div className='FormInput__Row'>
           <Button

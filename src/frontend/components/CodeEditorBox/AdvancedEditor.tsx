@@ -11,6 +11,7 @@ type AdvancedEditorProps = {
   onBlur?: (newValue: string) => void;
   wordWrap?: boolean;
   placeholder?: string;
+  disabled?: boolean;
 };
 
 const AdvancedEditorContainer = styled('div')(({ theme }) => {

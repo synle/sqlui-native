@@ -185,6 +185,7 @@ export default class RelationalDataAdapter extends BaseDataAdapter implements ID
     try {
       let [raw, meta] = await this.getConnection(database).query(sql, {
         raw: true,
+        plain: false,
       });
 
       let rawToUse: any | undefined = raw;
@@ -246,6 +247,7 @@ export default class RelationalDataAdapter extends BaseDataAdapter implements ID
     //@ts-ignore
     return this.getConnection(database).query(sql, {
       raw: true,
+      plain: false,
     });
   }
 }
