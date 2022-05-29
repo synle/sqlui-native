@@ -161,7 +161,7 @@ export default function MigrationBox() {
   const languageFrom = 'sql';
   const languageTo = 'sql';
   const isQueryRequired = migrationType === 'insert';
-  let isDisabled: boolean = migrating || !toDialect;
+  let isDisabled: boolean = migrating || !toDialect || !query.databaseId;
 
   if (isQueryRequired) {
     isDisabled = isDisabled || !query?.sql;
