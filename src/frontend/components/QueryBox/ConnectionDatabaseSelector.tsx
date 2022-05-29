@@ -52,12 +52,13 @@ export default function ConnectionDatabaseSelector(props: ConnectionDatabaseSele
 
   const isDatabaseIdRequired = false;
 
-  const isTableIdRequired = useMemo<boolean>(() => {
-    const selectedConnection = connections?.find(
-      (connection) => connection.id === query.connectionId,
-    );
-    return getIsTableIdRequiredForQuery(selectedConnection?.dialect);
-  }, [connections, query.connectionId]) || !!props.isTableIdRequired;
+  const isTableIdRequired =
+    useMemo<boolean>(() => {
+      const selectedConnection = connections?.find(
+        (connection) => connection.id === query.connectionId,
+      );
+      return getIsTableIdRequiredForQuery(selectedConnection?.dialect);
+    }, [connections, query.connectionId]) || !!props.isTableIdRequired;
 
   if (isLoading) {
     <>
