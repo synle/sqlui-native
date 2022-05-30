@@ -1,3 +1,4 @@
+import CompareArrowsIcon from '@mui/icons-material/CompareArrows';
 import FormatColorTextIcon from '@mui/icons-material/FormatColorText';
 import HelpIcon from '@mui/icons-material/Help';
 import SendIcon from '@mui/icons-material/Send';
@@ -7,6 +8,7 @@ import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import Tooltip from '@mui/material/Tooltip';
 import { useQueryClient } from 'react-query';
+import { useNavigate } from 'react-router-dom';
 import React, { useCallback, useMemo, useState } from 'react';
 import { getSyntaxModeByDialect } from 'src/common/adapters/DataScriptFactory';
 import CodeEditorBox from 'src/frontend/components/CodeEditorBox';
@@ -37,6 +39,7 @@ export default function QueryBox(props: QueryBoxProps) {
   const queryClient = useQueryClient();
   const { selectCommand } = useCommands();
   const { add: addToast } = useToaster();
+  const navigate = useNavigate();
 
   const isLoading = loadingConnection;
 
@@ -44,6 +47,10 @@ export default function QueryBox(props: QueryBoxProps) {
     () => getSyntaxModeByDialect(selectedConnection?.dialect),
     [selectedConnection?.dialect, query?.sql],
   );
+
+  const isExecuteDisabled = executing || !query?.sql || !query?.connectionId;
+
+  const isMigrationVisible = !!query?.connectionId && !!query?.databaseId;
 
   const onDatabaseConnectionChange = useCallback(
     (connectionId?: string, databaseId?: string, tableId?: string) => {
@@ -114,7 +121,13 @@ export default function QueryBox(props: QueryBoxProps) {
     });
   };
 
-  const disabledExecute = executing || !query?.sql || !query?.connectionId;
+  const onShowMigrationForThisDatabaseAndTable = () => {
+    navigate(
+      `/migration?connectionId=${query?.connectionId || ''}&databaseId=${
+        query?.databaseId || ''
+      }&tableId=${query?.tableId || ''}`,
+    );
+  };
 
   if (isLoading) {
     return (
@@ -147,11 +160,10 @@ export default function QueryBox(props: QueryBoxProps) {
             id='btnExecuteCommand'
             type='submit'
             variant='contained'
-            disabled={disabledExecute}
+            disabled={isExecuteDisabled}
             startIcon={<SendIcon />}>
             Execute
           </Button>
-
           <Tooltip title='Click here to see how to get started with some queries.'>
             <Button
               type='button'
@@ -161,7 +173,6 @@ export default function QueryBox(props: QueryBoxProps) {
               Show Query Help
             </Button>
           </Tooltip>
-
           <Tooltip title='Format the SQL query for readability.'>
             <Button
               type='button'
@@ -171,6 +182,17 @@ export default function QueryBox(props: QueryBoxProps) {
               Format
             </Button>
           </Tooltip>
+          {isMigrationVisible && (
+            <Tooltip title='Migrate this database and table.'>
+              <Button
+                type='button'
+                variant='outlined'
+                onClick={onShowMigrationForThisDatabaseAndTable}
+                startIcon={<CompareArrowsIcon />}>
+                Migration
+              </Button>
+            </Tooltip>
+          )}
         </div>
         <ResultBox query={query} executing={executing} />
       </form>
