@@ -1,3 +1,4 @@
+import CompareArrowsIcon from '@mui/icons-material/CompareArrows';
 import FormatColorTextIcon from '@mui/icons-material/FormatColorText';
 import HelpIcon from '@mui/icons-material/Help';
 import SendIcon from '@mui/icons-material/Send';
@@ -7,6 +8,7 @@ import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import Tooltip from '@mui/material/Tooltip';
 import { useQueryClient } from 'react-query';
+import { useNavigate } from 'react-router-dom';
 import React, { useCallback, useMemo, useState } from 'react';
 import { getSyntaxModeByDialect } from 'src/common/adapters/DataScriptFactory';
 import CodeEditorBox from 'src/frontend/components/CodeEditorBox';
@@ -23,8 +25,6 @@ import { useConnectionQuery } from 'src/frontend/hooks/useConnectionQuery';
 import useToaster from 'src/frontend/hooks/useToaster';
 import { formatDuration, formatJS, formatSQL } from 'src/frontend/utils/formatter';
 import { SqluiCore } from 'typings';
-import CompareArrowsIcon from '@mui/icons-material/CompareArrows';
-import { useNavigate } from 'react-router-dom';
 
 type QueryBoxProps = {
   queryId: string;
@@ -122,8 +122,12 @@ export default function QueryBox(props: QueryBoxProps) {
   };
 
   const onShowMigrationForThisDatabaseAndTable = () => {
-    navigate(`/migration?connectionId=${query?.connectionId || ''}&databaseId=${query?.databaseId || ''}&tableId=${query?.tableId || ''}`,)
-  }
+    navigate(
+      `/migration?connectionId=${query?.connectionId || ''}&databaseId=${
+        query?.databaseId || ''
+      }&tableId=${query?.tableId || ''}`,
+    );
+  };
 
   if (isLoading) {
     return (
@@ -178,15 +182,17 @@ export default function QueryBox(props: QueryBoxProps) {
               Format
             </Button>
           </Tooltip>
-          {isMigrationVisible && <Tooltip title='Migrate this database and table.'>
-                      <Button
-                        type='button'
-                        variant='outlined'
-                        onClick={onShowMigrationForThisDatabaseAndTable}
-                        startIcon={<CompareArrowsIcon />}>
-                        Migration
-                      </Button>
-                    </Tooltip>}
+          {isMigrationVisible && (
+            <Tooltip title='Migrate this database and table.'>
+              <Button
+                type='button'
+                variant='outlined'
+                onClick={onShowMigrationForThisDatabaseAndTable}
+                startIcon={<CompareArrowsIcon />}>
+                Migration
+              </Button>
+            </Tooltip>
+          )}
         </div>
         <ResultBox query={query} executing={executing} />
       </form>

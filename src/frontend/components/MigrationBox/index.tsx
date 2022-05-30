@@ -11,12 +11,9 @@ import ConnectionDatabaseSelector from 'src/frontend/components/QueryBox/Connect
 import Select from 'src/frontend/components/Select';
 import dataApi from 'src/frontend/data/api';
 import { useGetColumns, useGetConnections } from 'src/frontend/hooks/useConnection';
+import { useConnectionQueries } from 'src/frontend/hooks/useConnectionQuery';
 import { formatSQL } from 'src/frontend/utils/formatter';
 import { SqluiCore, SqluiFrontend } from 'typings';
-import {
-  useConnectionQueries,
-} from 'src/frontend/hooks/useConnectionQuery';
-
 // TOOD: extract this
 type DialectSelectorProps = {
   value?: SqluiCore.Dialect;
@@ -159,9 +156,7 @@ export default function MigrationBox() {
     query?.tableId,
   );
   const { isLoading: loadingConnections } = useGetConnections();
-  const {
-    onAddQuery,
-  } = useConnectionQueries();
+  const { onAddQuery } = useConnectionQueries();
 
   // TODO: pull these from the dialect
   const languageFrom = 'sql';
@@ -196,7 +191,7 @@ export default function MigrationBox() {
       tableId: searchParams.get('tableId') || '',
     });
 
-    setToDialect(searchParams.get('toDialect') as SqluiCore.Dialect || 'sqlite');
+    setToDialect((searchParams.get('toDialect') as SqluiCore.Dialect) || 'sqlite');
 
     setMigrationScript('');
   }, []);
@@ -258,12 +253,12 @@ export default function MigrationBox() {
     onAddQuery({
       name: `Migration ${migrationType} Query - ${query.databaseId} - ${query.tableId}`,
       sql: migrationScript,
-    })
-  }
+    });
+  };
 
   const onCancel = () => {
     navigate('/');
-  }
+  };
 
   if (isLoading) {
     return (
@@ -334,7 +329,11 @@ export default function MigrationBox() {
         <>
           <CodeEditorBox value={migrationScript} language={languageTo} disabled={true} />
           <div className='FormInput__Row'>
-            <Button variant='outlined' type='button' disabled={migrating} onClick={onCreateMigrationQueryTab}>
+            <Button
+              variant='outlined'
+              type='button'
+              disabled={migrating}
+              onClick={onCreateMigrationQueryTab}>
               Create New Tab with This Migration Query
             </Button>
           </div>
