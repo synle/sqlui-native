@@ -35,22 +35,13 @@ export default abstract class BaseDataAdapter {
    */
   static getConnectionParameters(connection: string) {
     const dialect = BaseDataAdapter.getDialect(connection);
-    switch (BaseDataAdapter.getDialect(connection)) {
-      case 'mysql':
-      case 'mariadb':
-      case 'mssql':
-      case 'postgres':
-      case 'sqlite':
-      case 'cassandra':
-      case 'mongodb':
-        if (dialect) {
-          const connectionStringParser = new ConnectionStringParser({
-            scheme: dialect,
-            hosts: [],
-          });
-          return connectionStringParser.parse(connection);
-        }
-        break;
+
+    if (dialect) {
+      const connectionStringParser = new ConnectionStringParser({
+        scheme: dialect,
+        hosts: [],
+      });
+      return connectionStringParser.parse(connection);
     }
 
     // not supported

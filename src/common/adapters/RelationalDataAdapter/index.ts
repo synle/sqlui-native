@@ -44,20 +44,26 @@ export default class RelationalDataAdapter extends BaseDataAdapter implements ID
   }
 
   private getConnection(database?: string): Sequelize {
+    let sqliteStorageOption = '';
     if (!database) {
       database = '';
     } else if (this.dialect === 'sqlite') {
       database = '';
+
+      // special handling for sqlite path
+      sqliteStorageOption = this.connectionOption.replace('sqlite://', ''); // uses :memory: for in memory
     }
 
     if (!this.sequelizes[database]) {
       this.sequelizes[database] = new Sequelize(`${this.connectionOption}/${database}`, {
         logging: false,
+        storage: sqliteStorageOption, // applicable for sqlite
         dialectOptions: {
           multipleStatements: true,
         },
       });
     }
+
     return this.sequelizes[database];
   }
 
