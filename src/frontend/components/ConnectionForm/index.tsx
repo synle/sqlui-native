@@ -109,6 +109,20 @@ function MainConnectionForm(props: MainConnectionFormProps) {
   const navigate = useNavigate();
   const [toastOpen, setToastOpen] = useState(false);
   const [showHint, setShowHint] = useState(false);
+  const [showPathSelection, setShowPathSelection] = useState(false);
+
+  // effects
+  useEffect(() => {
+    setShowPathSelection(props.connection?.indexOf('sqlite://') === 0);
+  }, [props.connection])
+
+  // events
+  const onFileSelectionChange = (files: FileList | null) => {
+    console.log(files);
+
+    if(files){
+    }
+  }
 
   const onSave = async (e: React.SyntheticEvent) => {
     e.preventDefault();
@@ -158,6 +172,12 @@ function MainConnectionForm(props: MainConnectionFormProps) {
           fullWidth={true}
         />
       </div>
+      {
+        showPathSelection &&
+        <div className='FormInput__Row'>
+          <input type='file' onChange={(e) => onFileSelectionChange(e.target.files)} />
+        </div>
+      }
       {showHint && (
         <div className='FormInput__Container'>
           <ConnectionHint onChange={onApplyConnectionHint} />
