@@ -51,8 +51,7 @@ export default class RelationalDataAdapter extends BaseDataAdapter implements ID
       database = '';
 
       // special handling for sqlite path
-      sqliteStorageOption = this.connectionOption.replace('sqlite://','');// uses :memory: for in memory
-
+      sqliteStorageOption = this.connectionOption.replace('sqlite://', ''); // uses :memory: for in memory
     }
 
     if (!this.sequelizes[database]) {
