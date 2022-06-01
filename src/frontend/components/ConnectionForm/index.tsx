@@ -149,7 +149,7 @@ function MainConnectionForm(props: MainConnectionFormProps) {
   const onApplyConnectionHint = (dialect, connection) => {
     props.setName(`${dialect} Connection - ${new Date().toLocaleDateString()}`);
     props.setConnection(connection);
-    setShowHint(false)
+    setShowHint(false);
   };
 
   return (
