@@ -152,7 +152,7 @@ export function getInsert(
     return undefined;
   }
 
-  const columns = input.columns.filter((col) => !col.primaryKey);
+  const columns = input.columns;
   const columnString = columns.map((col) => col.name).join(',\n');
   const insertValueString = columns
     .map((col) => {

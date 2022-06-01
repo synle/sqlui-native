@@ -92,9 +92,9 @@ LIMIT
 
 ```sql
 INSERT INTO
-  table1 (column1, column2)
+  table1 (id, column1, column2)
 VALUES
-  ('_column1_', '_column2_')
+  ('_id_', '_column1_', '_column2_')
 ```
 
 
@@ -253,9 +253,9 @@ LIMIT
 
 ```sql
 INSERT INTO
-  table1 (column1, column2)
+  table1 (id, column1, column2)
 VALUES
-  ('_column1_', '_column2_')
+  ('_id_', '_column1_', '_column2_')
 ```
 
 
@@ -408,9 +408,9 @@ WHERE
 
 ```sql
 INSERT INTO
-  table1 (column1, column2)
+  table1 (id, column1, column2)
 VALUES
-  ('_column1_', '_column2_')
+  ('_id_', '_column1_', '_column2_')
 ```
 
 
@@ -569,9 +569,9 @@ LIMIT
 
 ```sql
 INSERT INTO
-  table1 (column1, column2)
+  table1 (id, column1, column2)
 VALUES
-  ('_column1_', '_column2_')
+  ('_id_', '_column1_', '_column2_')
 ```
 
 
@@ -730,9 +730,9 @@ LIMIT
 
 ```sql
 INSERT INTO
-  table1 (column1, column2)
+  table1 (id, column1, column2)
 VALUES
-  ('_column1_', '_column2_')
+  ('_id_', '_column1_', '_column2_')
 ```
 
 
