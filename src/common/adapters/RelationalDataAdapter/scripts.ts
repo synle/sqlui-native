@@ -204,7 +204,7 @@ export function getBulkInsert(
           let valToUse = '';
           if (row?.[col.name]) {
             // use the value if it's there
-            valToUse= `'${row[col.name]}'`;
+            valToUse = `'${row[col.name]}'`;
           } else {
             // use the default value
             valToUse = '_${col.name}_';

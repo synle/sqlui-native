@@ -8,7 +8,7 @@ const DEFAULT_SEQUELIZE_OPTION = {
   dialectOptions: {
     multipleStatements: true,
   },
-}
+};
 
 /**
  * mostly adapter for sequelize
@@ -57,16 +57,18 @@ export default class RelationalDataAdapter extends BaseDataAdapter implements ID
     }
 
     if (!this.sequelizes[database]) {
-      let sequelizeInstanceToUse : Sequelize;
+      let sequelizeInstanceToUse: Sequelize;
 
-      switch(this.dialect){
+      switch (this.dialect) {
         case 'sqlite':
           database = '';
 
           // special handling for sqlite path
-          let sqliteStorageOption = this.connectionOption.replace('sqlite://', '').replace(/\\/g, '/'); // uses :memory: for in memory
+          let sqliteStorageOption = this.connectionOption
+            .replace('sqlite://', '')
+            .replace(/\\/g, '/'); // uses :memory: for in memory
 
-          sequelizeInstanceToUse =  new Sequelize(`sqlite://`, {
+          sequelizeInstanceToUse = new Sequelize(`sqlite://`, {
             ...DEFAULT_SEQUELIZE_OPTION,
             storage: sqliteStorageOption, // applicable for sqlite
           });
@@ -74,7 +76,7 @@ export default class RelationalDataAdapter extends BaseDataAdapter implements ID
 
         default:
           sequelizeInstanceToUse = new Sequelize(`${this.connectionOption}/${database}`, {
-            ...DEFAULT_SEQUELIZE_OPTION
+            ...DEFAULT_SEQUELIZE_OPTION,
           });
           break;
       }

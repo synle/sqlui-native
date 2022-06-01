@@ -2,7 +2,6 @@ import SaveIcon from '@mui/icons-material/Save';
 import { Button } from '@mui/material';
 import Alert from '@mui/material/Alert';
 import TextField from '@mui/material/TextField';
-import Tooltip from '@mui/material/Tooltip';
 import { useNavigate } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import ConnectionHint from 'src/frontend/components/ConnectionForm/ConnectionHint';
@@ -114,18 +113,18 @@ function MainConnectionForm(props: MainConnectionFormProps) {
   // effects
   useEffect(() => {
     setShowSqliteDatabasePathSelection(props.connection?.indexOf('sqlite://') === 0);
-  }, [props.connection])
+  }, [props.connection]);
 
   // events
   const onSqliteDatabaseFileSelectionChange = (files: FileList | null) => {
-    try{
-        if(files){
+    try {
+      if (files) {
         const [file] = files;
-        let {path} = file;
-        props.setConnection(`sqlite://${path}`)
+        let { path } = file;
+        props.setConnection(`sqlite://${path}`);
       }
-    } catch(err){}
-  }
+    } catch (err) {}
+  };
 
   const onSave = async (e: React.SyntheticEvent) => {
     e.preventDefault();
@@ -175,19 +174,21 @@ function MainConnectionForm(props: MainConnectionFormProps) {
           fullWidth={true}
         />
       </div>
-      {
-        showSqliteDatabasePathSelection &&
+      {showSqliteDatabasePathSelection && (
         <div className='FormInput__Row'>
-          <input type='file' style={{display: 'none'}}
-          onChange={(e) => onSqliteDatabaseFileSelectionChange(e.target.files)}
-          id="sqlite-file-selection"/>
-          <label htmlFor="sqlite-file-selection">
-            <Button variant="contained" component="span">
+          <input
+            type='file'
+            style={{ display: 'none' }}
+            onChange={(e) => onSqliteDatabaseFileSelectionChange(e.target.files)}
+            id='sqlite-file-selection'
+          />
+          <label htmlFor='sqlite-file-selection'>
+            <Button variant='contained' component='span'>
               Browse for sqlite database
             </Button>
           </label>
         </div>
-      }
+      )}
       <div className='FormInput__Row'>
         <Button variant='contained' type='submit' disabled={props.saving} startIcon={<SaveIcon />}>
           Save
