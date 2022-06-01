@@ -194,7 +194,7 @@ export function getBulkInsert(
     return undefined;
   }
 
-  const columns = input.columns.filter((col) => !col.primaryKey);
+  const columns = input.columns;
   const columnString = columns.map((col) => col.name).join(',\n');
 
   const insertValueRows = rows
@@ -207,7 +207,7 @@ export function getBulkInsert(
             valToUse = `'${row[col.name]}'`;
           } else {
             // use the default value
-            valToUse = '_${col.name}_';
+            valToUse = `'_${col.name}_'`;
           }
           return valToUse;
         })
