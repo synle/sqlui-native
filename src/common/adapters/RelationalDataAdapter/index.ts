@@ -209,6 +209,13 @@ export default class RelationalDataAdapter extends BaseDataAdapter implements ID
             return 1;
           }
 
+          if(a.unique !== b.unique){
+            if(a.unique){
+              return -1;
+            }
+            return 1;
+          }
+
           return (a.name || '').localeCompare(b.name || '')
         });
     }
