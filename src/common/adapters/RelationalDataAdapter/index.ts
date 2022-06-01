@@ -201,7 +201,23 @@ export default class RelationalDataAdapter extends BaseDataAdapter implements ID
           }
         } catch (err) {}
 
-        return columns.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+        return columns.sort((a, b) => {
+          if (a.primaryKey !== b.primaryKey) {
+            if (a.primaryKey) {
+              return -1;
+            }
+            return 1;
+          }
+
+          if (a.unique !== b.unique) {
+            if (a.unique) {
+              return -1;
+            }
+            return 1;
+          }
+
+          return (a.name || '').localeCompare(b.name || '');
+        });
     }
   }
 
