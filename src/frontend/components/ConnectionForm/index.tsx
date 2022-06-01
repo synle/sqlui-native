@@ -109,19 +109,22 @@ function MainConnectionForm(props: MainConnectionFormProps) {
   const navigate = useNavigate();
   const [toastOpen, setToastOpen] = useState(false);
   const [showHint, setShowHint] = useState(false);
-  const [showPathSelection, setShowPathSelection] = useState(false);
+  const [showSqliteDatabasePathSelection, setShowSqliteDatabasePathSelection] = useState(false);
 
   // effects
   useEffect(() => {
-    setShowPathSelection(props.connection?.indexOf('sqlite://') === 0);
+    setShowSqliteDatabasePathSelection(props.connection?.indexOf('sqlite://') === 0);
   }, [props.connection])
 
   // events
-  const onFileSelectionChange = (files: FileList | null) => {
-    console.log(files);
-
-    if(files){
-    }
+  const onSqliteDatabaseFileSelectionChange = (files: FileList | null) => {
+    try{
+        if(files){
+        const [file] = files;
+        let {path} = file;
+        props.setConnection(`sqlite://${path}`)
+      }
+    } catch(err){}
   }
 
   const onSave = async (e: React.SyntheticEvent) => {
@@ -173,16 +176,18 @@ function MainConnectionForm(props: MainConnectionFormProps) {
         />
       </div>
       {
-        showPathSelection &&
+        showSqliteDatabasePathSelection &&
         <div className='FormInput__Row'>
-          <input type='file' onChange={(e) => onFileSelectionChange(e.target.files)} />
+          <input type='file' style={{display: 'none'}}
+          onChange={(e) => onSqliteDatabaseFileSelectionChange(e.target.files)}
+          id="sqlite-file-selection"/>
+          <label htmlFor="sqlite-file-selection">
+            <Button variant="contained" component="span">
+              Browse for sqlite database
+            </Button>
+          </label>
         </div>
       }
-      {showHint && (
-        <div className='FormInput__Container'>
-          <ConnectionHint onChange={onApplyConnectionHint} />
-        </div>
-      )}
       <div className='FormInput__Row'>
         <Button variant='contained' type='submit' disabled={props.saving} startIcon={<SaveIcon />}>
           Save
@@ -195,14 +200,15 @@ function MainConnectionForm(props: MainConnectionFormProps) {
           Cancel
         </Button>
         <TestConnectionButton connection={connection} />
-        {!showHint && (
-          <Tooltip title='Show connection hints.'>
-            <Button type='button' disabled={props.saving} onClick={() => setShowHint(true)}>
-              Show Connection Hints
-            </Button>
-          </Tooltip>
-        )}
+        <Button type='button' disabled={props.saving} onClick={() => setShowHint(!showHint)}>
+          {showHint ? 'Show Connection Hints' : 'Hide Connection Hints'}
+        </Button>
       </div>
+      {showHint && (
+        <div className='FormInput__Container'>
+          <ConnectionHint onChange={onApplyConnectionHint} />
+        </div>
+      )}
       <Toast open={toastOpen} onClose={() => setToastOpen(false)} message='Connection Saved...' />
     </form>
   );

@@ -2,6 +2,14 @@ import { Sequelize } from 'sequelize';
 import BaseDataAdapter from 'src/common/adapters/BaseDataAdapter/index';
 import IDataAdapter from 'src/common/adapters/IDataAdapter';
 import { SqluiCore } from 'typings';
+
+const DEFAULT_SEQUELIZE_OPTION = {
+  logging: false,
+  dialectOptions: {
+    multipleStatements: true,
+  },
+}
+
 /**
  * mostly adapter for sequelize
  * https://sequelize.org/master/class/lib/dialects/abstract/query-interface.js~QueryInterface.html
@@ -44,24 +52,34 @@ export default class RelationalDataAdapter extends BaseDataAdapter implements ID
   }
 
   private getConnection(database?: string): Sequelize {
-    let sqliteStorageOption = '';
     if (!database) {
       database = '';
-    } else if (this.dialect === 'sqlite') {
-      database = '';
-
-      // special handling for sqlite path
-      sqliteStorageOption = this.connectionOption.replace('sqlite://', ''); // uses :memory: for in memory
     }
 
     if (!this.sequelizes[database]) {
-      this.sequelizes[database] = new Sequelize(`${this.connectionOption}/${database}`, {
-        logging: false,
-        storage: sqliteStorageOption, // applicable for sqlite
-        dialectOptions: {
-          multipleStatements: true,
-        },
-      });
+      let sequelizeInstanceToUse : Sequelize;
+
+      switch(this.dialect){
+        case 'sqlite':
+          database = '';
+
+          // special handling for sqlite path
+          let sqliteStorageOption = this.connectionOption.replace('sqlite://', '').replace(/\\/g, '/'); // uses :memory: for in memory
+
+          sequelizeInstanceToUse =  new Sequelize(`sqlite://`, {
+            ...DEFAULT_SEQUELIZE_OPTION,
+            storage: sqliteStorageOption, // applicable for sqlite
+          });
+          break;
+
+        default:
+          sequelizeInstanceToUse = new Sequelize(`${this.connectionOption}/${database}`, {
+            ...DEFAULT_SEQUELIZE_OPTION
+          });
+          break;
+      }
+
+      this.sequelizes[database] = sequelizeInstanceToUse;
     }
 
     return this.sequelizes[database];

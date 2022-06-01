@@ -201,11 +201,15 @@ export function getBulkInsert(
     ?.map((row) => {
       const cells = columns
         .map((col) => {
+          let valToUse = '';
           if (row?.[col.name]) {
             // use the value if it's there
-            return `'${row[col.name]}'`;
+            valToUse= `'${row[col.name]}'`;
+          } else {
+            // use the default value
+            valToUse = '_${col.name}_';
           }
-          return `'_${col.name}_'`; // use the default value
+          return valToUse;
         })
         .join(',');
 
