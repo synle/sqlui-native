@@ -36,6 +36,12 @@ export module SqluiCore {
     id: string;
   };
 
+  export type TableReferenceMetaData = {
+    model: string;
+    key: string;
+    [index: string]: any;
+  }
+
   export type ColumnMetaData = {
     name: string;
     type: string;
@@ -43,6 +49,7 @@ export module SqluiCore {
     primaryKey?: boolean;
     autoIncrement?: boolean;
     comment?: string | null;
+    references?: TableReferenceMetaData;
     [index: string]: any;
   };
 
