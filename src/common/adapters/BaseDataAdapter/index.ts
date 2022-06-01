@@ -47,6 +47,7 @@ export default abstract class BaseDataAdapter {
     // not supported
     return undefined;
   }
+
   static resolveTypes(inputItem: any) {
     const stack: {
       item: any;
