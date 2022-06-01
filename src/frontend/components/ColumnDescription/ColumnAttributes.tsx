@@ -23,6 +23,8 @@ export default function ColumnAttributes(props: ColumnAttributesProps) {
         value = JSON.stringify(value);
       } else if (value === null) {
         value = 'null';
+      } else {
+        value = JSON.stringify(value, null, 2);
       }
 
       return {
