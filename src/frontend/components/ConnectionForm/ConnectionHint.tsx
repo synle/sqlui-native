@@ -1,7 +1,6 @@
 import Alert from '@mui/material/Alert';
 import AlertTitle from '@mui/material/AlertTitle';
 import Link from '@mui/material/Link';
-import Tooltip from '@mui/material/Tooltip';
 import {
   getSampleConnectionString,
   SUPPORTED_DIALECTS,
@@ -13,22 +12,31 @@ type ConnectionHintProps = {
 };
 
 export default function ConnectionHint(props: ConnectionHintProps) {
+  const onApplyConnectionHint = (dialect: string) => {
+    props.onChange(dialect, getSampleConnectionString(dialect));
+  };
+
   return (
     <>
       {SUPPORTED_DIALECTS.map((dialect) => {
+        const onApplyThisConnectionHint = () => onApplyConnectionHint(dialect);
         return (
           <Alert
             key={dialect}
             severity='info'
-            icon={<ConnectionTypeIcon dialect={dialect} status='online' />}>
-            <AlertTitle>{dialect}</AlertTitle>
-            <Tooltip title={`Use this sample ${dialect} connection string.`}>
-              <Link
-                underline='hover'
-                onClick={() => props.onChange(dialect, getSampleConnectionString(dialect))}>
-                {getSampleConnectionString(dialect)}
+            icon={
+              <Link onClick={onApplyThisConnectionHint}>
+                <ConnectionTypeIcon dialect={dialect} status='online' />
               </Link>
-            </Tooltip>
+            }>
+            <AlertTitle>
+              <Link underline='none' onClick={onApplyThisConnectionHint}>
+                <strong>{dialect}</strong>
+              </Link>
+            </AlertTitle>
+            <Link underline='none' onClick={onApplyThisConnectionHint}>
+              {getSampleConnectionString(dialect)}
+            </Link>
           </Alert>
         );
       })}

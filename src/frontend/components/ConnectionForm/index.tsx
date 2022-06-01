@@ -149,6 +149,7 @@ function MainConnectionForm(props: MainConnectionFormProps) {
   const onApplyConnectionHint = (dialect, connection) => {
     props.setName(`${dialect} Connection - ${new Date().toLocaleDateString()}`);
     props.setConnection(connection);
+    setShowHint(false);
   };
 
   return (
@@ -202,7 +203,7 @@ function MainConnectionForm(props: MainConnectionFormProps) {
         </Button>
         <TestConnectionButton connection={connection} />
         <Button type='button' disabled={props.saving} onClick={() => setShowHint(!showHint)}>
-          {showHint ? 'Show Connection Hints' : 'Hide Connection Hints'}
+          {showHint ? 'Hide Connection Hints' : 'Show Connection Hints'}
         </Button>
       </div>
       {showHint && (
