@@ -40,7 +40,7 @@ export module SqluiCore {
     model: string;
     key: string;
     [index: string]: any;
-  }
+  };
 
   export type ColumnMetaData = {
     name: string;
