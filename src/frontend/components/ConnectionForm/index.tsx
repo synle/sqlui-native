@@ -2,7 +2,6 @@ import SaveIcon from '@mui/icons-material/Save';
 import { Button } from '@mui/material';
 import Alert from '@mui/material/Alert';
 import TextField from '@mui/material/TextField';
-import Tooltip from '@mui/material/Tooltip';
 import { useNavigate } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import ConnectionHint from 'src/frontend/components/ConnectionForm/ConnectionHint';
@@ -109,6 +108,23 @@ function MainConnectionForm(props: MainConnectionFormProps) {
   const navigate = useNavigate();
   const [toastOpen, setToastOpen] = useState(false);
   const [showHint, setShowHint] = useState(false);
+  const [showSqliteDatabasePathSelection, setShowSqliteDatabasePathSelection] = useState(false);
+
+  // effects
+  useEffect(() => {
+    setShowSqliteDatabasePathSelection(props.connection?.indexOf('sqlite://') === 0);
+  }, [props.connection]);
+
+  // events
+  const onSqliteDatabaseFileSelectionChange = (files: FileList | null) => {
+    try {
+      if (files) {
+        const [file] = files;
+        let { path } = file;
+        props.setConnection(`sqlite://${path}`);
+      }
+    } catch (err) {}
+  };
 
   const onSave = async (e: React.SyntheticEvent) => {
     e.preventDefault();
@@ -133,6 +149,7 @@ function MainConnectionForm(props: MainConnectionFormProps) {
   const onApplyConnectionHint = (dialect, connection) => {
     props.setName(`${dialect} Connection - ${new Date().toLocaleDateString()}`);
     props.setConnection(connection);
+    setShowHint(false);
   };
 
   return (
@@ -158,9 +175,19 @@ function MainConnectionForm(props: MainConnectionFormProps) {
           fullWidth={true}
         />
       </div>
-      {showHint && (
-        <div className='FormInput__Container'>
-          <ConnectionHint onChange={onApplyConnectionHint} />
+      {showSqliteDatabasePathSelection && (
+        <div className='FormInput__Row'>
+          <input
+            type='file'
+            style={{ display: 'none' }}
+            onChange={(e) => onSqliteDatabaseFileSelectionChange(e.target.files)}
+            id='sqlite-file-selection'
+          />
+          <label htmlFor='sqlite-file-selection'>
+            <Button variant='contained' component='span'>
+              Browse for sqlite database
+            </Button>
+          </label>
         </div>
       )}
       <div className='FormInput__Row'>
@@ -175,14 +202,15 @@ function MainConnectionForm(props: MainConnectionFormProps) {
           Cancel
         </Button>
         <TestConnectionButton connection={connection} />
-        {!showHint && (
-          <Tooltip title='Show connection hints.'>
-            <Button type='button' disabled={props.saving} onClick={() => setShowHint(true)}>
-              Show Connection Hints
-            </Button>
-          </Tooltip>
-        )}
+        <Button type='button' disabled={props.saving} onClick={() => setShowHint(!showHint)}>
+          {showHint ? 'Hide Connection Hints' : 'Show Connection Hints'}
+        </Button>
       </div>
+      {showHint && (
+        <div className='FormInput__Container'>
+          <ConnectionHint onChange={onApplyConnectionHint} />
+        </div>
+      )}
       <Toast open={toastOpen} onClose={() => setToastOpen(false)} message='Connection Saved...' />
     </form>
   );

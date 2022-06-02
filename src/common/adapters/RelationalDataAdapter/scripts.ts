@@ -152,7 +152,7 @@ export function getInsert(
     return undefined;
   }
 
-  const columns = input.columns.filter((col) => !col.primaryKey);
+  const columns = input.columns;
   const columnString = columns.map((col) => col.name).join(',\n');
   const insertValueString = columns
     .map((col) => {
@@ -194,18 +194,22 @@ export function getBulkInsert(
     return undefined;
   }
 
-  const columns = input.columns.filter((col) => !col.primaryKey);
+  const columns = input.columns;
   const columnString = columns.map((col) => col.name).join(',\n');
 
   const insertValueRows = rows
     ?.map((row) => {
       const cells = columns
         .map((col) => {
+          let valToUse = '';
           if (row?.[col.name]) {
             // use the value if it's there
-            return `'${row[col.name]}'`;
+            valToUse = `'${row[col.name]}'`;
+          } else {
+            // use the default value
+            valToUse = `'_${col.name}_'`;
           }
-          return `'_${col.name}_'`; // use the default value
+          return valToUse;
         })
         .join(',');
 
