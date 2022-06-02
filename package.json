@@ -106,7 +106,7 @@
     "react-table": "^7.7.0",
     "redis": "^4.1.0",
     "sequelize": "^6.19.0",
-    "sql-formatter": "^4.0.2",
+    "sql-formatter": "^6.1.2",
     "sqlite3": "^5.0.6",
     "tedious": "^14.4.0"
   },
