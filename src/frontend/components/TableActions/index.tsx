@@ -10,7 +10,7 @@ import { useCommands } from 'src/frontend/components/MissionControl';
 import { useGetColumns, useGetConnectionById } from 'src/frontend/hooks/useConnection';
 import { useActiveConnectionQuery } from 'src/frontend/hooks/useConnectionQuery';
 import { useQuerySizeSetting } from 'src/frontend/hooks/useSetting';
-import {useTreeActions} from 'src/frontend/hooks/useTreeActions';
+import { useTreeActions } from 'src/frontend/hooks/useTreeActions';
 
 type TableActionsProps = {
   connectionId: string;
@@ -25,7 +25,7 @@ export default function TableActions(props: TableActionsProps) {
   let connectionId: string | undefined = props.connectionId;
   let tableId: string | undefined = props.tableId;
   const { selectCommand } = useCommands();
-  const {data: treeActions} = useTreeActions();
+  const { data: treeActions } = useTreeActions();
 
   if (!open) {
     // if table action is not opened, hen we don't need to do this...
@@ -74,7 +74,7 @@ export default function TableActions(props: TableActionsProps) {
       }),
   }));
 
-  if(!treeActions.showContextMenu){
+  if (!treeActions.showContextMenu) {
     return null;
   }
 

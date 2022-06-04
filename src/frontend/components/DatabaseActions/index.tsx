@@ -8,8 +8,8 @@ import { useCommands } from 'src/frontend/components/MissionControl';
 import { useGetConnectionById } from 'src/frontend/hooks/useConnection';
 import { useActiveConnectionQuery } from 'src/frontend/hooks/useConnectionQuery';
 import { useQuerySizeSetting } from 'src/frontend/hooks/useSetting';
+import { useTreeActions } from 'src/frontend/hooks/useTreeActions';
 import { SqlAction } from 'typings';
-import {useTreeActions} from 'src/frontend/hooks/useTreeActions';
 
 type DatabaseActionsProps = {
   connectionId: string;
@@ -22,7 +22,7 @@ export default function DatabaseActions(props: DatabaseActionsProps) {
   let databaseId: string | undefined = props.databaseId;
   let connectionId: string | undefined = props.connectionId;
   const { selectCommand } = useCommands();
-  const {data: treeActions} = useTreeActions();
+  const { data: treeActions } = useTreeActions();
 
   if (!open) {
     // if table action is not opened, hen we don't need to do this...
@@ -68,7 +68,7 @@ export default function DatabaseActions(props: DatabaseActionsProps) {
       }),
   }));
 
-  if(!treeActions.showContextMenu){
+  if (!treeActions.showContextMenu) {
     return null;
   }
 

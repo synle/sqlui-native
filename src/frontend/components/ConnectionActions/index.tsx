@@ -11,8 +11,8 @@ import { useNavigate } from 'react-router-dom';
 import { getConnectionActions } from 'src/common/adapters/DataScriptFactory';
 import DropdownButton from 'src/frontend/components/DropdownButton';
 import { useCommands } from 'src/frontend/components/MissionControl';
+import { useTreeActions } from 'src/frontend/hooks/useTreeActions';
 import { SqluiCore } from 'typings';
-import {useTreeActions} from 'src/frontend/hooks/useTreeActions';
 
 type ConnectionActionsProps = {
   connection: SqluiCore.ConnectionProps;
@@ -23,7 +23,7 @@ export default function ConnectionActions(props: ConnectionActionsProps) {
   const navigate = useNavigate();
   const { selectCommand } = useCommands();
   const data = connection;
-  const {data: treeActions} = useTreeActions();
+  const { data: treeActions } = useTreeActions();
 
   const { dialect, id: connectionId } = connection;
 
@@ -98,7 +98,7 @@ export default function ConnectionActions(props: ConnectionActionsProps) {
     })),
   ];
 
-  if(!treeActions.showContextMenu){
+  if (!treeActions.showContextMenu) {
     return null;
   }
 
