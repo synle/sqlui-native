@@ -1,7 +1,8 @@
 import BackupIcon from '@mui/icons-material/Backup';
-import { Button, Skeleton, TextField, Typography, Link } from '@mui/material';
+import { Button, Link, Skeleton, TextField, Typography } from '@mui/material';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import { getSampleSelectQuery } from 'src/common/adapters/DataScriptFactory';
 import {
   getBulkInsert as getBulkInsertForRdmbs,
   getCreateTable as getCreateTableForRdbms,
@@ -14,14 +15,10 @@ import { useGetColumns, useGetConnections } from 'src/frontend/hooks/useConnecti
 import { useConnectionQueries } from 'src/frontend/hooks/useConnectionQuery';
 import { formatSQL } from 'src/frontend/utils/formatter';
 import { SqluiCore, SqluiFrontend } from 'typings';
-import {
-  getSampleSelectQuery,
-} from 'src/common/adapters/DataScriptFactory';
-
 // TOOD: extract this
 type MigrationBoxProps = {
   mode: SqluiFrontend.MigrationMode;
-}
+};
 
 type DialectSelectorProps = {
   value?: SqluiCore.Dialect;
@@ -61,7 +58,7 @@ async function generateMigrationScript(
     return '';
   }
 
-  const res : string[]= [];
+  const res: string[] = [];
 
   const toQueryMetaData = {
     dialect: toDialect,
@@ -93,7 +90,7 @@ async function generateMigrationScript(
   // getInsert
   // first get the results
   try {
-    const results = fromDataToUse || await dataApi.execute(fromQuery);
+    const results = fromDataToUse || (await dataApi.execute(fromQuery));
 
     // TODO: here we need to perform the query to get the data
     switch (toDialect) {
@@ -104,7 +101,9 @@ async function generateMigrationScript(
       case 'sqlite':
         res.push(`-- Data Migration Script`);
         if (!results.raw || results.raw.length === 0) {
-          res.push(`-- The SELECT query does not have any returned that we can use for data migration...`);
+          res.push(
+            `-- The SELECT query does not have any returned that we can use for data migration...`,
+          );
         } else {
           res.push(formatSQL(getBulkInsertForRdmbs(toQueryMetaData, results.raw)?.query || ''));
         }
@@ -121,22 +120,22 @@ async function generateMigrationScript(
     return `Select query failed. ${JSON.stringify(err)}`;
   }
 
-  if(res.length > 0){
-    return res.join('\n\n')
+  if (res.length > 0) {
+    return res.join('\n\n');
   }
 
   return 'Not Supported...';
 }
 
-function _getTypeFromObject(val: any){
-  if(val === true || val === false){
+function _getTypeFromObject(val: any) {
+  if (val === true || val === false) {
     return 'BOOLEAN';
   }
-  if (typeof val === 'string' || val instanceof String){
+  if (typeof val === 'string' || val instanceof String) {
     return 'TEXT';
   }
-  if(typeof(val) === 'number'){
-    if(val.toString().includes('.')){
+  if (typeof val === 'number') {
+    if (val.toString().includes('.')) {
       return 'FLOAT';
     }
     return 'INTEGER';
@@ -147,7 +146,7 @@ function _getTypeFromObject(val: any){
 
 // main migration box
 export default function MigrationBox(props: MigrationBoxProps) {
-  const {mode} = props;
+  const { mode } = props;
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
   const [query, setQuery] = useState<SqluiFrontend.ConnectionQuery>({
@@ -176,10 +175,10 @@ export default function MigrationBox(props: MigrationBoxProps) {
   const isQueryRequired = !isRawJsonEditorVisible;
   let isDisabled = false;
 
-  if(isRawJsonEditorVisible){
+  if (isRawJsonEditorVisible) {
     isDisabled = !rawJson;
-  } else{
-     isDisabled = migrating || !toDialect || !query.databaseId;
+  } else {
+    isDisabled = migrating || !toDialect || !query.databaseId;
   }
 
   const isMigrationScriptVisible = !!migrationScript && !!toDialect && !!migrationType;
@@ -246,9 +245,9 @@ export default function MigrationBox(props: MigrationBoxProps) {
     }
     setMigrating(true);
     try {
-      let newMigrationScript : string | undefined
+      let newMigrationScript: string | undefined;
 
-      if(mode === 'real_connection'){
+      if (mode === 'real_connection') {
         newMigrationScript = await generateMigrationScript(
           toDialect,
           migrationNewTableName,
@@ -259,31 +258,28 @@ export default function MigrationBox(props: MigrationBoxProps) {
         // here we create a mocked object to handle migration
         const parsedRawJson = JSON.parse(rawJson);
 
-        const fromQueryToUse : SqluiFrontend.ConnectionQuery = {
+        const fromQueryToUse: SqluiFrontend.ConnectionQuery = {
           id: `mocked_raw_json_query_id`,
           name: `Raw JSON Data to migrate`,
           connectionId: `mocked_raw_json_connection_id`,
           databaseId: `mocked_raw_json_database_id`,
-          tableId: migrationNewTableName
-        }
+          tableId: migrationNewTableName,
+        };
 
-        const columnsToUse: SqluiCore.ColumnMetaData[] = parsedRawJson.reduce(
-          (res, r) => {
-            for(const key of Object.keys(r)){
-              res.push({
-                name: key,
-                type: _getTypeFromObject(r[key]),
-                allowNull: true,
-              })
-            }
-            return res;
-          },
-          []
-        );
+        const columnsToUse: SqluiCore.ColumnMetaData[] = parsedRawJson.reduce((res, r) => {
+          for (const key of Object.keys(r)) {
+            res.push({
+              name: key,
+              type: _getTypeFromObject(r[key]),
+              allowNull: true,
+            });
+          }
+          return res;
+        }, []);
 
         const dataToUse = {
           ok: true,
-          raw: parsedRawJson
+          raw: parsedRawJson,
         };
 
         newMigrationScript = await generateMigrationScript(
@@ -291,7 +287,7 @@ export default function MigrationBox(props: MigrationBoxProps) {
           migrationNewTableName,
           fromQueryToUse,
           columnsToUse,
-          dataToUse
+          dataToUse,
         );
       }
       setMigrationScript(newMigrationScript || '');
@@ -313,22 +309,24 @@ export default function MigrationBox(props: MigrationBoxProps) {
   };
 
   const onRawJsonChange = (newRawJson: string) => {
-    setRawJson(newRawJson)
-  }
+    setRawJson(newRawJson);
+  };
 
   const onApplySampleQueryForMigration = () => {
-    if(query){
-      const fromConnection = connections?.find(connection => connection.id === query.connectionId);
+    if (query) {
+      const fromConnection = connections?.find(
+        (connection) => connection.id === query.connectionId,
+      );
       const sampleSelectQuery = getSampleSelectQuery({
         ...fromConnection,
         ...query,
-        querySize: 50
+        querySize: 50,
       });
-      if(sampleSelectQuery?.query){
+      if (sampleSelectQuery?.query) {
         onSqlQueryChange(sampleSelectQuery?.query);
       }
     }
-  }
+  };
 
   if (isLoading) {
     return (
@@ -353,27 +351,28 @@ export default function MigrationBox(props: MigrationBoxProps) {
 
   return (
     <div className='FormInput__Container'>
-      {isConnectionSelectorVisible && <div className='FormInput__Row'>
-              <ConnectionDatabaseSelector
-                isTableIdRequired={true}
-                value={query}
-                onChange={onDatabaseConnectionChange}
-              />
-              <Link onClick={onApplySampleQueryForMigration}>Apply Sample Query</Link>
-            </div>}
-      {
-        isRawJsonEditorVisible &&
+      {isConnectionSelectorVisible && (
+        <div className='FormInput__Row'>
+          <ConnectionDatabaseSelector
+            isTableIdRequired={true}
+            value={query}
+            onChange={onDatabaseConnectionChange}
+          />
+          <Link onClick={onApplySampleQueryForMigration}>Apply Sample Query</Link>
+        </div>
+      )}
+      {isRawJsonEditorVisible && (
         <>
-        <Typography sx={{fontWeight: 'medium'}}>Enter Your Raw JSON for migration</Typography>
-        <CodeEditorBox
-          value={rawJson}
-          placeholder={`Enter Your Raw JSON for migration`}
-          onChange={onRawJsonChange}
-          language='javascript'
-          autoFocus
-        />
+          <Typography sx={{ fontWeight: 'medium' }}>Enter Your Raw JSON for migration</Typography>
+          <CodeEditorBox
+            value={rawJson}
+            placeholder={`Enter Your Raw JSON for migration`}
+            onChange={onRawJsonChange}
+            language='javascript'
+            autoFocus
+          />
         </>
-      }
+      )}
       <div className='FormInput__Row'>
         <DialectSelector value={toDialect} onChange={onSetMigrationDialect} />
         <TextField
@@ -388,16 +387,14 @@ export default function MigrationBox(props: MigrationBoxProps) {
       </div>
       {isQueryRequired && (
         <>
-        <Typography sx={{fontWeight: 'medium'}}>
-          Enter SQL to get Data for migration
-        </Typography>
-        <CodeEditorBox
-          value={query.sql}
-          placeholder={`Enter SQL for ` + query.name}
-          onChange={onSqlQueryChange}
-          language={languageFrom}
-          autoFocus
-        />
+          <Typography sx={{ fontWeight: 'medium' }}>Enter SQL to get Data for migration</Typography>
+          <CodeEditorBox
+            value={query.sql}
+            placeholder={`Enter SQL for ` + query.name}
+            onChange={onSqlQueryChange}
+            language={languageFrom}
+            autoFocus
+          />
         </>
       )}
       <div className='FormInput__Row'>

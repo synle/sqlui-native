@@ -147,9 +147,12 @@ export default function App() {
               <Route path='/' element={<MainPage />} />
               <Route path='/connection/new' element={<NewConnectionPage />} />
               <Route path='/connection/edit/:connectionId' element={<EditConnectionPage />} />
-              <Route path='/migration/real_connection' element={<MigrationPage  mode='real_connection' />} />
-              <Route path='/migration/raw_json' element={<MigrationPage  mode='raw_json' />} />
-              <Route path='/migration' element={<MigrationPage  />} />
+              <Route
+                path='/migration/real_connection'
+                element={<MigrationPage mode='real_connection' />}
+              />
+              <Route path='/migration/raw_json' element={<MigrationPage mode='raw_json' />} />
+              <Route path='/migration' element={<MigrationPage />} />
               <Route path='/*' element={<MainPage />} />
             </Routes>
           </section>

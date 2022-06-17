@@ -181,7 +181,9 @@ export function getSampleSelectQuery(tableActionInput: SqlAction.TableInput) {
       break;
   }
 
-  return _formatScripts(tableActionInput, scriptsToUse).filter(script => script.label.includes('Select'))[0];
+  return _formatScripts(tableActionInput, scriptsToUse).filter((script) =>
+    script.label.includes('Select'),
+  )[0];
 }
 
 export function getDatabaseActions(databaseActionInput: SqlAction.DatabaseInput) {

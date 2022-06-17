@@ -1,4 +1,4 @@
-import {Alert, AlertTitle, Link} from '@mui/material';
+import { Alert, AlertTitle, Link } from '@mui/material';
 import {
   getSampleConnectionString,
   SUPPORTED_DIALECTS,
@@ -27,7 +27,6 @@ export default function ConnectionHint(props: ConnectionHintProps) {
                 <ConnectionTypeIcon dialect={dialect} status='online' />
               </Link>
             }>
-
             <AlertTitle>
               <Link underline='hover' onClick={onApplyThisConnectionHint}>
                 <strong>{dialect}</strong>

@@ -1,5 +1,5 @@
 import SaveIcon from '@mui/icons-material/Save';
-import { Button, Box, Alert, TextField, Typography } from '@mui/material';
+import { Alert, Box, Button, TextField, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import ConnectionHint from 'src/frontend/components/ConnectionForm/ConnectionHint';
@@ -37,21 +37,18 @@ export function NewConnectionForm() {
     setConnection(connection);
     setShowHint(false);
   };
-
-
-  if(showHint){
-    return <Box sx={{display: 'flex', flexDirection: 'column', gap: 3}}>
-      <Typography>Select one of the following connection type</Typography>
-      <ConnectionHint onChange={onApplyConnectionHint} />
-      <Box>
-        <Button
-        variant='outlined'
-        type='button'
-        onClick={() => navigate('/')}>
-        Cancel
-      </Button>
+  if (showHint) {
+    return (
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+        <Typography>Select one of the following connection type</Typography>
+        <ConnectionHint onChange={onApplyConnectionHint} />
+        <Box>
+          <Button variant='outlined' type='button' onClick={() => navigate('/')}>
+            Cancel
+          </Button>
+        </Box>
       </Box>
-    </Box>;
+    );
   }
 
   return (
