@@ -1,16 +1,38 @@
-import Typography from '@mui/material/Typography';
+import {Typography, Box, Link} from '@mui/material';
+import { Link as RouterLink } from 'react-router-dom';
 import { useEffect } from 'react';
 import ConnectionDescription from 'src/frontend/components/ConnectionDescription';
-import MigrationForm from 'src/frontend/components/MigrationForm';
+import {RealConnectionMigrationMigrationForm, RawJsonMigrationForm} from 'src/frontend/components/MigrationForm';
 import NewConnectionButton from 'src/frontend/components/NewConnectionButton';
 import Resizer from 'src/frontend/components/Resizer';
 import { useSideBarWidthPreference } from 'src/frontend/hooks/useClientSidePreference';
 import { useTreeActions } from 'src/frontend/hooks/useTreeActions';
+import { SqluiFrontend } from 'typings';
 
-export default function MigrationPage() {
+function MigrationOption(){
+  return <>
+    <Box>
+      <Link component={RouterLink} to="/migration/real_connection"><Typography>Migrate Real Connections</Typography></Link>
+      <Link component={RouterLink} to="/migration/raw_json"><Typography>Migrate Raw JSON</Typography></Link>
+    </Box>
+  </>
+}
+
+type MigrationPageProps = {
+  mode?: SqluiFrontend.MigrationMode;
+}
+
+export default function MigrationPage(props: MigrationPageProps) {
+  const {mode} = props;
   const { value: width, onChange: onSetWidth } = useSideBarWidthPreference();
-
   const { setTreeActions } = useTreeActions();
+
+  let contentDom = <MigrationOption />
+  if(mode === 'real_connection'){
+    contentDom = <RealConnectionMigrationMigrationForm />
+  } else if(mode ===  'raw_json'){
+    contentDom = <RawJsonMigrationForm />
+  }
 
   useEffect(() => {
     setTreeActions({
@@ -29,7 +51,7 @@ export default function MigrationPage() {
         <Typography variant='h5' gutterBottom={true} sx={{ mt: 1 }}>
           Migration
         </Typography>
-        <MigrationForm />
+        {contentDom}
       </div>
     </section>
   );
