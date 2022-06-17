@@ -154,6 +154,38 @@ export function getTableActions(tableActionInput: SqlAction.TableInput) {
   return _formatScripts(tableActionInput, scriptsToUse);
 }
 
+export function getSampleSelectQuery(tableActionInput: SqlAction.TableInput) {
+  let scriptsToUse: SqlAction.TableActionScriptGenerator[] = [];
+  switch (tableActionInput.dialect) {
+    case 'mysql':
+    case 'mariadb':
+    case 'mssql':
+    case 'postgres':
+    case 'sqlite':
+      scriptsToUse = RdbmsTableActionScripts;
+      break;
+    case 'cassandra':
+      scriptsToUse = CassandraTableActionScripts;
+      break;
+    case 'mongodb':
+      scriptsToUse = MongodbTableActionScripts;
+      break;
+    case 'redis':
+      scriptsToUse = RedisTableActionScripts;
+      break;
+    case 'cosmosdb':
+      scriptsToUse = AzureCosmosDBTableActionScripts;
+      break;
+    case 'aztable':
+      scriptsToUse = AzureTableTableActionScripts;
+      break;
+  }
+
+  return _formatScripts(tableActionInput, scriptsToUse).filter((script) =>
+    script.label.includes('Select'),
+  )[0];
+}
+
 export function getDatabaseActions(databaseActionInput: SqlAction.DatabaseInput) {
   let scriptsToUse: SqlAction.DatabaseActionScriptGenerator[] = [];
   switch (databaseActionInput.dialect) {
