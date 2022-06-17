@@ -1,4 +1,4 @@
-import CompareArrowsIcon from '@mui/icons-material/CompareArrows';
+import BackupIcon from '@mui/icons-material/Backup';
 import FormatColorTextIcon from '@mui/icons-material/FormatColorText';
 import HelpIcon from '@mui/icons-material/Help';
 import SendIcon from '@mui/icons-material/Send';
@@ -123,7 +123,7 @@ export default function QueryBox(props: QueryBoxProps) {
 
   const onShowMigrationForThisDatabaseAndTable = () => {
     navigate(
-      `/migration?connectionId=${query?.connectionId || ''}&databaseId=${
+      `/migration/real_connection?connectionId=${query?.connectionId || ''}&databaseId=${
         query?.databaseId || ''
       }&tableId=${query?.tableId || ''}`,
     );
@@ -188,7 +188,7 @@ export default function QueryBox(props: QueryBoxProps) {
                 type='button'
                 variant='outlined'
                 onClick={onShowMigrationForThisDatabaseAndTable}
-                startIcon={<CompareArrowsIcon />}>
+                startIcon={<BackupIcon />}>
                 Migration
               </Button>
             </Tooltip>

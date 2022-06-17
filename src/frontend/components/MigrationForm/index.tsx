@@ -1,5 +1,9 @@
 import MigrationBox from 'src/frontend/components/MigrationBox';
 
-export default function MigrationForm() {
-  return <MigrationBox />;
+export function RealConnectionMigrationMigrationForm() {
+  return <MigrationBox mode='real_connection' />;
+}
+
+export function RawJsonMigrationForm() {
+  return <MigrationBox mode='raw_json' />;
 }

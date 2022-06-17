@@ -1,7 +1,7 @@
 import AddIcon from '@mui/icons-material/Add';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
-import CompareArrowsIcon from '@mui/icons-material/CompareArrows';
+import BackupIcon from '@mui/icons-material/Backup';
 import UnfoldLessIcon from '@mui/icons-material/UnfoldLess';
 import { Button } from '@mui/material';
 import Box from '@mui/material/Box';
@@ -25,9 +25,9 @@ export default function NewConnectionButton() {
       startIcon: <ArrowUpwardIcon />,
     },
     {
-      label: 'Connection / Data Migration',
+      label: 'Data Migration',
       onClick: () => navigate('/migration'),
-      startIcon: <CompareArrowsIcon />,
+      startIcon: <BackupIcon />,
     },
     {
       label: 'Collapse All Connections',
