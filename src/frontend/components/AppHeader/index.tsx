@@ -1,5 +1,5 @@
 import AddIcon from '@mui/icons-material/Add';
-import CompareArrowsIcon from '@mui/icons-material/CompareArrows';
+import BackupIcon from '@mui/icons-material/Backup';
 import EditIcon from '@mui/icons-material/Edit';
 import KeyboardCommandKeyIcon from '@mui/icons-material/KeyboardCommandKey';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -55,9 +55,9 @@ export default function AppHeader() {
       label: 'divider',
     },
     {
-      label: 'Connection / Data Migration',
+      label: 'Data Migration',
       onClick: () => navigate('/migration'),
-      startIcon: <CompareArrowsIcon />,
+      startIcon: <BackupIcon />,
     },
     {
       label: 'divider',

@@ -1,7 +1,5 @@
 import SaveIcon from '@mui/icons-material/Save';
-import { Button } from '@mui/material';
-import Alert from '@mui/material/Alert';
-import TextField from '@mui/material/TextField';
+import { Button, Box, Alert, TextField, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import ConnectionHint from 'src/frontend/components/ConnectionForm/ConnectionHint';
@@ -18,6 +16,7 @@ type ConnectionFormProps = {
 export function NewConnectionForm() {
   const [name, setName] = useState('');
   const [connection, setConnection] = useState('');
+  const [showHint, setShowHint] = useState(true);
   const { mutateAsync, isLoading: saving } = useUpsertConnection();
   const navigate = useNavigate();
 
@@ -32,6 +31,28 @@ export function NewConnectionForm() {
     // when done, go back to the main page
     navigate(`/`, { replace: true });
   };
+
+  const onApplyConnectionHint = (dialect, connection) => {
+    setName(`${dialect} Connection - ${new Date().toLocaleDateString()}`);
+    setConnection(connection);
+    setShowHint(false);
+  };
+
+
+  if(showHint){
+    return <Box sx={{display: 'flex', flexDirection: 'column', gap: 3}}>
+      <Typography>Select one of the following connection type</Typography>
+      <ConnectionHint onChange={onApplyConnectionHint} />
+      <Box>
+        <Button
+        variant='outlined'
+        type='button'
+        onClick={() => navigate('/')}>
+        Cancel
+      </Button>
+      </Box>
+    </Box>;
+  }
 
   return (
     <MainConnectionForm

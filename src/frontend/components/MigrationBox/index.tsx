@@ -1,5 +1,5 @@
-import CompareArrowsIcon from '@mui/icons-material/CompareArrows';
-import { Button, Skeleton, TextField, Typography } from '@mui/material';
+import BackupIcon from '@mui/icons-material/Backup';
+import { Button, Skeleton, TextField, Typography, Link } from '@mui/material';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import {
@@ -14,6 +14,9 @@ import { useGetColumns, useGetConnections } from 'src/frontend/hooks/useConnecti
 import { useConnectionQueries } from 'src/frontend/hooks/useConnectionQuery';
 import { formatSQL } from 'src/frontend/utils/formatter';
 import { SqluiCore, SqluiFrontend } from 'typings';
+import {
+  getSampleSelectQuery,
+} from 'src/common/adapters/DataScriptFactory';
 
 // TOOD: extract this
 type MigrationBoxProps = {
@@ -161,7 +164,7 @@ export default function MigrationBox(props: MigrationBoxProps) {
     query?.databaseId,
     query?.tableId,
   );
-  const { isLoading: loadingConnections } = useGetConnections();
+  const { isLoading: loadingConnections, data: connections } = useGetConnections();
   const { onAddQuery } = useConnectionQueries();
   const [rawJson, setRawJson] = useState('');
 
@@ -313,6 +316,20 @@ export default function MigrationBox(props: MigrationBoxProps) {
     setRawJson(newRawJson)
   }
 
+  const onApplySampleQueryForMigration = () => {
+    if(query){
+      const fromConnection = connections?.find(connection => connection.id === query.connectionId);
+      const sampleSelectQuery = getSampleSelectQuery({
+        ...fromConnection,
+        ...query,
+        querySize: 50
+      });
+      if(sampleSelectQuery?.query){
+        onSqlQueryChange(sampleSelectQuery?.query);
+      }
+    }
+  }
+
   if (isLoading) {
     return (
       <div className='FormInput__Container'>
@@ -342,6 +359,7 @@ export default function MigrationBox(props: MigrationBoxProps) {
                 value={query}
                 onChange={onDatabaseConnectionChange}
               />
+              <Link onClick={onApplySampleQueryForMigration}>Apply Sample Query</Link>
             </div>}
       {
         isRawJsonEditorVisible &&
@@ -370,7 +388,9 @@ export default function MigrationBox(props: MigrationBoxProps) {
       </div>
       {isQueryRequired && (
         <>
-        <Typography sx={{fontWeight: 'medium'}}>Enter SQL to get Data for migration</Typography>
+        <Typography sx={{fontWeight: 'medium'}}>
+          Enter SQL to get Data for migration
+        </Typography>
         <CodeEditorBox
           value={query.sql}
           placeholder={`Enter SQL for ` + query.name}
@@ -385,7 +405,7 @@ export default function MigrationBox(props: MigrationBoxProps) {
           variant='contained'
           type='submit'
           disabled={isDisabled}
-          startIcon={<CompareArrowsIcon />}
+          startIcon={<BackupIcon />}
           onClick={onGenerateMigration}>
           Generate Migrate
         </Button>
