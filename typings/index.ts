@@ -160,6 +160,8 @@ export module SqluiFrontend {
     | 'settings';
 
   export type MigrationType = 'insert' | 'create';
+
+  export type MigrationMode = 'real_connection' | 'raw_json';
 }
 
 export module SqlAction {
