@@ -1,4 +1,9 @@
 import { Alert, AlertTitle, Link } from '@mui/material';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
+import ListItemAvatar from '@mui/material/ListItemAvatar';
+import Avatar from '@mui/material/Avatar';
 import {
   getSampleConnectionString,
   SUPPORTED_DIALECTS,
@@ -10,34 +15,23 @@ type ConnectionHintProps = {
 };
 
 export default function ConnectionHint(props: ConnectionHintProps) {
-  const onApplyConnectionHint = (dialect: string) => {
-    props.onChange(dialect, getSampleConnectionString(dialect));
-  };
-
   return (
-    <>
+    <List sx={{ bgcolor: 'background.paper' }}>
       {SUPPORTED_DIALECTS.map((dialect) => {
-        const onApplyThisConnectionHint = () => onApplyConnectionHint(dialect);
+        const onApplyThisConnectionHint = () => props.onChange(dialect, getSampleConnectionString(dialect));
         return (
-          <Alert
-            key={dialect}
-            severity='info'
-            icon={
-              <Link onClick={onApplyThisConnectionHint}>
+          <ListItem key={dialect}>
+            <ListItemAvatar>
+              <Avatar>
                 <ConnectionTypeIcon dialect={dialect} status='online' />
-              </Link>
-            }>
-            <AlertTitle>
-              <Link underline='hover' onClick={onApplyThisConnectionHint}>
-                <strong>{dialect}</strong>
-              </Link>
-            </AlertTitle>
-            <Link underline='hover' onClick={onApplyThisConnectionHint}>
-              {getSampleConnectionString(dialect)}
-            </Link>
-          </Alert>
+              </Avatar>
+            </ListItemAvatar>
+            <ListItemText primary={
+              <Link underline='hover' onClick={onApplyThisConnectionHint} sx={{textTransform: 'uppercase', fontWeight: 'bold'}}>{dialect}</Link>
+            } secondary={getSampleConnectionString(dialect)} />
+          </ListItem>
         );
       })}
-    </>
+    </List>
   );
 }

@@ -570,10 +570,20 @@ export default function MissionControl() {
       );
     } else {
       const platform = window?.process?.platform;
-      const downloadLink =
-        platform === 'darwin'
-          ? `https://github.com/synle/sqlui-native/releases/download/${newVersion}/sqlui-native-${newVersion}.dmg`
-          : `https://github.com/synle/sqlui-native/releases/download/${newVersion}/sqlui-native-${newVersion}.exe`;
+
+      let downloadLink = '';
+      switch(platform){
+        case 'darwin':
+          downloadLink = `https://github.com/synle/sqlui-native/releases/latest/download/sqlui-native.dmg`;
+          break;
+        case 'linux':
+          downloadLink = `https://github.com/synle/sqlui-native/releases/latest/download/sqlui-native.deb`;
+          break;
+        case 'win32':
+        default:
+          downloadLink = `https://github.com/synle/sqlui-native/releases/latest/download/sqlui-native.dmg`;
+          break;
+      }
 
       const onDownloadLatestVersion = () => {
         selectCommand({ event: 'clientEvent/openExternalUrl', data: downloadLink });

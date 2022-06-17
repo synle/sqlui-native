@@ -40,8 +40,8 @@ export function NewConnectionForm() {
 
   if (showHint) {
     return (
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, pb: 4 }}>
-        <Typography>Select one of the following connection type. <Link onClick={() => navigate('/')}>Back to Main Query Page</Link></Typography>
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, pb: 4 }}>
+        <Typography>Select one of the following connection type. <Link onClick={() => navigate('/')}>Back to Main Query Page</Link>.</Typography>
         <ConnectionHint onChange={onApplyConnectionHint} />
         <Box>
           <Button variant='outlined' type='button' onClick={() => navigate('/')}>
