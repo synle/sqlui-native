@@ -6,7 +6,7 @@ title: sqlui-native
 
 ## Windows
 
-- Download the above `.exe` file
+- [Download sqlui-native for Windows (.exe)](https://github.com/synle/sqlui-native/releases/latest/download/sqlui-native.exe)
 - Open the `.exe` file
 - Click on `More info`
 - Then choose `Run anyway`
@@ -19,7 +19,7 @@ title: sqlui-native
 
 ## Mac
 
-- Download the above `.dmg` file
+- [Download sqlui-native for Mac (.dmg)](https://github.com/synle/sqlui-native/releases/latest/download/sqlui-native.dmg)
 - Open the `.dmg` file
 - Drag the binary to Application file
 - Open the app once in the Applications folder
@@ -41,7 +41,7 @@ title: sqlui-native
 
 ## Ubuntu / Debian
 
-- Download the above `.deb` file
+- [Download sqlui-native for Ubuntu (.deb)](https://github.com/synle/sqlui-native/releases/latest/download/sqlui-native.deb)
 - Run the following shell command to install the above `.deb`
 
 ```
@@ -54,7 +54,7 @@ sudo dpkg -i sqlui-native*.deb
 
 ## Redhat / CentOS / Fedora
 
-- Download the above `.rpm` file
+- [Download sqlui-native for Redhat (.rpm)](https://github.com/synle/sqlui-native/releases/latest/download/sqlui-native.rpm)
 - Run the following shell command to install the above `.rpm`
 
 ```
