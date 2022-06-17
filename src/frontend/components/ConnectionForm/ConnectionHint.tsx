@@ -1,9 +1,9 @@
-import { Alert, AlertTitle, Link } from '@mui/material';
+import { Link } from '@mui/material';
+import Avatar from '@mui/material/Avatar';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
-import ListItemText from '@mui/material/ListItemText';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
-import Avatar from '@mui/material/Avatar';
+import ListItemText from '@mui/material/ListItemText';
 import {
   getSampleConnectionString,
   SUPPORTED_DIALECTS,
@@ -18,7 +18,8 @@ export default function ConnectionHint(props: ConnectionHintProps) {
   return (
     <List sx={{ bgcolor: 'background.paper' }}>
       {SUPPORTED_DIALECTS.map((dialect) => {
-        const onApplyThisConnectionHint = () => props.onChange(dialect, getSampleConnectionString(dialect));
+        const onApplyThisConnectionHint = () =>
+          props.onChange(dialect, getSampleConnectionString(dialect));
         return (
           <ListItem key={dialect}>
             <ListItemAvatar>
@@ -26,9 +27,17 @@ export default function ConnectionHint(props: ConnectionHintProps) {
                 <ConnectionTypeIcon dialect={dialect} status='online' />
               </Avatar>
             </ListItemAvatar>
-            <ListItemText primary={
-              <Link underline='hover' onClick={onApplyThisConnectionHint} sx={{textTransform: 'uppercase', fontWeight: 'bold'}}>{dialect}</Link>
-            } secondary={getSampleConnectionString(dialect)} />
+            <ListItemText
+              primary={
+                <Link
+                  underline='hover'
+                  onClick={onApplyThisConnectionHint}
+                  sx={{ textTransform: 'uppercase', fontWeight: 'bold' }}>
+                  {dialect}
+                </Link>
+              }
+              secondary={getSampleConnectionString(dialect)}
+            />
           </ListItem>
         );
       })}
