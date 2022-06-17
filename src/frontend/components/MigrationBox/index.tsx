@@ -37,37 +37,17 @@ function DialectSelector(props: DialectSelectorProps) {
       <option value='mssql'>mssql</option>
       <option value='postgres'>postgres</option>
       <option value='sqlite'>sqlite</option>
-      <option value='cassandra'>cassandra</option>
+      {/*<option value='cassandra'>cassandra</option>
       <option value='mongodb'>mongodb</option>
       <option value='redis'>redis</option>
       <option value='cosmosdb'>cosmosdb</option>
-      <option value='aztable'>aztable</option>
-    </Select>
-  );
-}
-
-// TOOD: extract this
-type MigrationTypeSelectorProps = {
-  value?: SqluiFrontend.MigrationType;
-  onChange: (newVal: SqluiFrontend.MigrationType) => void;
-};
-
-function MigrationTypeSelector(props: MigrationTypeSelectorProps) {
-  const { value, onChange } = props;
-
-  return (
-    <Select
-      value={value}
-      onChange={(newValue) => onChange && onChange(newValue as SqluiFrontend.MigrationType)}>
-      <option value='create'>Create Table</option>
-      <option value='insert'>Insert Data</option>
+      <option value='aztable'>aztable</option>*/}
     </Select>
   );
 }
 
 // TOOD: extract this
 async function generateMigrationScript(
-  migrationType: SqluiFrontend.MigrationType,
   toDialect: SqluiCore.Dialect | undefined,
   toTableId: string | undefined,
   fromQuery: SqluiFrontend.ConnectionQuery,
@@ -78,6 +58,8 @@ async function generateMigrationScript(
     return '';
   }
 
+  const res : string[]= [];
+
   const toQueryMetaData = {
     dialect: toDialect,
     databaseId: `Migrated_Database_${fromQuery.databaseId}_${Date.now()}`,
@@ -87,57 +69,57 @@ async function generateMigrationScript(
 
   // getCreateTable
   // SqlAction.TableInput
-  if (migrationType === 'create') {
+  switch (toDialect) {
+    case 'mysql':
+    case 'mariadb':
+    case 'mssql':
+    case 'postgres':
+    case 'sqlite':
+      res.push(`-- Database Creation Script`);
+      res.push(formatSQL(getCreateTableForRdbms(toQueryMetaData)?.query || ''));
+      break;
+    // case 'cassandra':
+    // case 'mongodb':
+    // case 'redis':
+    // case 'cosmosdb':
+    // case 'aztable':
+    // default:
+    //   break;
+  }
+
+  // getInsert
+  // first get the results
+  try {
+    const results = fromDataToUse || await dataApi.execute(fromQuery);
+
+    // TODO: here we need to perform the query to get the data
     switch (toDialect) {
       case 'mysql':
       case 'mariadb':
       case 'mssql':
       case 'postgres':
       case 'sqlite':
-        return formatSQL(getCreateTableForRdbms(toQueryMetaData)?.query || '');
+        res.push(`-- Data Migration Script`);
+        if (!results.raw || results.raw.length === 0) {
+          res.push(`-- The SELECT query does not have any returned that we can use for data migration...`);
+        } else {
+          res.push(formatSQL(getBulkInsertForRdmbs(toQueryMetaData, results.raw)?.query || ''));
+        }
         break;
-      case 'cassandra':
-      case 'mongodb':
-      case 'redis':
-      case 'cosmosdb':
-      case 'aztable':
-      default:
-        return 'Dialect Migration not supported because this dialect is a NoSQL and does not no schema';
-        break;
+      // case 'cassandra':
+      // case 'mongodb':
+      // case 'redis':
+      // case 'cosmosdb':
+      // case 'aztable':
+      // default:
+      //   break;
     }
+  } catch (err) {
+    return `Select query failed. ${JSON.stringify(err)}`;
   }
 
-  // getInsert
-  if (migrationType === 'insert') {
-    // first get the results
-    try {
-      const results = fromDataToUse || await dataApi.execute(fromQuery);
-
-      if (!results.raw || results.raw.length === 0) {
-        return 'The SELECT query does not have any returned. You need to provide a valid SELECT query that returns some data.';
-      }
-
-      // TODO: here we need to perform the query to get the data
-      let res: string[] = [];
-      switch (toDialect) {
-        case 'mysql':
-        case 'mariadb':
-        case 'mssql':
-        case 'postgres':
-        case 'sqlite':
-          return formatSQL(getBulkInsertForRdmbs(toQueryMetaData, results.raw)?.query || '');
-        case 'cassandra':
-        case 'mongodb':
-        case 'redis':
-        case 'cosmosdb':
-        case 'aztable':
-        default:
-          return 'Dialect Migration not yet supported';
-          break;
-      }
-    } catch (err) {
-      return `Select query failed. ${JSON.stringify(err)}`;
-    }
+  if(res.length > 0){
+    return res.join('\n\n')
   }
 
   return 'Not Supported...';
@@ -188,16 +170,13 @@ export default function MigrationBox(props: MigrationBoxProps) {
   const languageTo = 'sql';
   const isConnectionSelectorVisible = mode === 'real_connection';
   const isRawJsonEditorVisible = mode === 'raw_json';
-  const isQueryRequired = migrationType === 'insert' && !isRawJsonEditorVisible;
+  const isQueryRequired = !isRawJsonEditorVisible;
   let isDisabled = false;
 
   if(isRawJsonEditorVisible){
     isDisabled = !rawJson;
   } else{
      isDisabled = migrating || !toDialect || !query.databaseId;
-     if (isQueryRequired) {
-      isDisabled = isDisabled || !query?.sql;
-    }
   }
 
   const isMigrationScriptVisible = !!migrationScript && !!toDialect && !!migrationType;
@@ -258,10 +237,6 @@ export default function MigrationBox(props: MigrationBoxProps) {
     setToDialect(newVal);
   };
 
-  const onSetMigrationType = (newVal: SqluiFrontend.MigrationType) => {
-    setMigrationType(newVal);
-  };
-
   const onGenerateMigration = async () => {
     if (migrating) {
       return;
@@ -271,9 +246,7 @@ export default function MigrationBox(props: MigrationBoxProps) {
       let newMigrationScript : string | undefined
 
       if(mode === 'real_connection'){
-        debugger
         newMigrationScript = await generateMigrationScript(
-          migrationType,
           toDialect,
           migrationNewTableName,
           query,
@@ -281,8 +254,6 @@ export default function MigrationBox(props: MigrationBoxProps) {
         );
       } else {
         // here we create a mocked object to handle migration
-        debugger
-
         const parsedRawJson = JSON.parse(rawJson);
 
         const fromQueryToUse : SqluiFrontend.ConnectionQuery = {
@@ -313,7 +284,6 @@ export default function MigrationBox(props: MigrationBoxProps) {
         };
 
         newMigrationScript = await generateMigrationScript(
-          migrationType,
           toDialect,
           migrationNewTableName,
           fromQueryToUse,
@@ -330,7 +300,7 @@ export default function MigrationBox(props: MigrationBoxProps) {
     navigate('/');
 
     onAddQuery({
-      name: `Migration ${migrationType} Query - ${query.databaseId} - ${query.tableId}`,
+      name: `Migration Script for Query - ${query.databaseId} - ${query.tableId}`,
       sql: migrationScript,
     });
   };
@@ -388,7 +358,6 @@ export default function MigrationBox(props: MigrationBoxProps) {
       }
       <div className='FormInput__Row'>
         <DialectSelector value={toDialect} onChange={onSetMigrationDialect} />
-        <MigrationTypeSelector value={migrationType} onChange={onSetMigrationType} />
         <TextField
           label='New Table Name'
           value={migrationNewTableName}
