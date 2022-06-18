@@ -7,12 +7,9 @@ import {
   RealConnectionMigrationMigrationForm,
 } from 'src/frontend/components/MigrationForm';
 import NewConnectionButton from 'src/frontend/components/NewConnectionButton';
-
-import { useSideBarWidthPreference } from 'src/frontend/hooks/useClientSidePreference';
 import { useTreeActions } from 'src/frontend/hooks/useTreeActions';
+import LayoutTwoColumns from 'src/frontend/layout/LayoutTwoColumns';
 import { SqluiFrontend } from 'typings';
-import LayoutTwoColumns from 'src/frontend/layout/LayoutTwoColumns'
-
 function MigrationOption() {
   return (
     <>
