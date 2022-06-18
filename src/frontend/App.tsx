@@ -40,6 +40,13 @@ export default function App() {
     palette: {
       mode: colorMode,
     },
+    components: {
+      MuiButtonBase: {
+        defaultProps: {
+          disableRipple: true,
+        },
+      },
+    },
   });
 
   useEffect(() => {
