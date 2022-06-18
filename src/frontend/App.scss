@@ -17,29 +17,14 @@
   bottom: 0;
 
   &__LeftPane {
-    flex-shrink: 0;
-    min-width: 250px;
-    max-width: 60%;
     height: 100%;
     overflow-y: auto;
-    transition: all 0.8s ease;
-
-    &__DragGhost {
-      min-width: 250px;
-      max-width: 60%;
-      background: #666;
-      opacity: 0.5;
-      @extend .LayoutTwoColumns;
-    }
   }
 
   &__RightPane {
-    flex-grow: 1;
-    overflow: hidden;
-    padding-left: 4px;
+    margin-left: 0.5rem;
     height: 100%;
     overflow-y: auto;
-    transition: all 0.8s ease;
   }
 }
 
@@ -155,6 +140,15 @@ $ConnectionTreeIndentSize: 7px;
   &:hover {
     .CodeEditorBox__WordWrap {
       display: flex;
+    }
+  }
+}
+
+.Resizer {
+  &--Horizontal {
+    cursor: 'col-resize';
+    &:hover {
+      background: #ccc;
     }
   }
 }
