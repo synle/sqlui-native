@@ -17,8 +17,6 @@ export default function LayoutTwoColumns(props: LayoutTwoColumnsProps) {
   const { value: width, onChange: onSetWidth } = useSideBarWidthPreference();
   const { setTreeActions } = useTreeActions();
 
-  console.log('>> TODO', width)
-
   useEffect(() => {
     setTreeActions({
       showContextMenu: true,
