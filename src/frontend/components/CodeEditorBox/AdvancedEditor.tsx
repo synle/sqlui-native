@@ -74,12 +74,14 @@ export default function AdvancedEditor(props: AdvancedEditorProps) {
       // Select all text
       const fullRange = editor.getModel()?.getFullModelRange();
 
-      if(fullRange !== undefined){
+      if (fullRange !== undefined) {
         // Apply the text over the range
-        editor.executeEdits(null, [{
-          text: newValue,
-          range: fullRange
-        }]);
+        editor.executeEdits(null, [
+          {
+            text: newValue,
+            range: fullRange,
+          },
+        ]);
 
         // Indicates the above edit is a complete undo/redo change.
         editor.pushUndoStop();
