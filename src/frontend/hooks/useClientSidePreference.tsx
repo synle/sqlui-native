@@ -19,6 +19,16 @@ export function useLocalStoragePreferences<T>(
     onChange,
   };
 }
+
 export function useSideBarWidthPreference() {
-  return useLocalStoragePreferences<number>('clientConfig/leftPanelWidth', 300);
+  const {value, onChange} = useLocalStoragePreferences<number>('clientConfig/leftPanelWidth', 300);
+
+  return {
+    value,
+    onChange: (deltaWidth: number) => {
+      if(value !== undefined && deltaWidth !== undefined){
+        onChange(value + deltaWidth)
+      }
+    }
+  }
 }
