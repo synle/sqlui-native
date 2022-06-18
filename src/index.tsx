@@ -15,13 +15,11 @@ const renderApp = function () {
   });
 
   ReactDOM.render(
-    <React.StrictMode>
       <QueryClientProvider client={queryClient}>
         <CssBaseline />
         <ReactQueryDevtools initialIsOpen={false} />
         <App />
-      </QueryClientProvider>
-    </React.StrictMode>,
+      </QueryClientProvider>,
     document.querySelector('#body'),
   );
 
