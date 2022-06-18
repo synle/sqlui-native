@@ -67,7 +67,26 @@ export default function AdvancedEditor(props: AdvancedEditorProps) {
   // we used this block to set the value of the editor
   useEffect(() => {
     if (editor) {
-      editor.setValue(props.value || '');
+      const newValue = props.value || '';
+
+      // https://stackoverflow.com/questions/60965171/not-able-to-do-undo-in-monaco-editor
+      // NOTE we can't do setValue here because it will wipe out the undo stack
+      // Select all text
+      const fullRange = editor.getModel()?.getFullModelRange();
+
+      if(fullRange !== undefined){
+        // Apply the text over the range
+        editor.executeEdits(null, [{
+          text: newValue,
+          range: fullRange
+        }]);
+
+        // Indicates the above edit is a complete undo/redo change.
+        editor.pushUndoStop();
+      } else {
+        // fall back to use setValue if we can't find the range
+        editor.setValue(newValue);
+      }
     }
   }, [editor, props.value]);
 
