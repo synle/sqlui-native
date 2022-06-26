@@ -97,17 +97,8 @@ export const allMenuKeys = [
 export default function MissionControl() {
   const navigate = useNavigate();
   const [init, setInit] = useState(false);
-  const {
-    queries,
-    onAddQuery,
-    onShowQuery,
-    onChangeQuery,
-    onDeleteQueries,
-    onDuplicateQuery: _onDuplicateQuery,
-    onOrderingChange: onChangeTabOrdering,
-    onImportQuery,
-    isLoading: loadingQueries,
-  } = useConnectionQueries();
+  const connectionQueries = useConnectionQueries();
+  const { queries, isLoading: loadingQueries } = connectionQueries;
   const { query: activeQuery, onChange: onChangeActiveQuery } = useActiveConnectionQuery();
   const { command, selectCommand, dismissCommand } = useCommands();
   const { modal, choice, confirm, prompt, alert, dismiss: dismissDialog } = useActionDialogs();
@@ -127,15 +118,37 @@ export default function MissionControl() {
   const onCloseQuery = async (query: SqluiFrontend.ConnectionQuery) => {
     try {
       await confirm(`Do you want to delete this query "${query.name}"?`);
-
-      onDeleteQueries([query.id]);
+      await connectionQueries.onDeleteQueries([query.id]);
     } catch (err) {}
   };
 
   const onCloseOtherQueries = async (query: SqluiFrontend.ConnectionQuery) => {
     try {
       await confirm(`Do you want to close other queries except "${query.name}"?`);
-      onDeleteQueries(queries?.map((q) => q.id).filter((queryId) => queryId !== query.id));
+      await connectionQueries.onDeleteQueries(
+        queries?.map((q) => q.id).filter((queryId) => queryId !== query.id),
+      );
+    } catch (err) {}
+  };
+
+  const onCloseQueriesToTheRight = async (query: SqluiFrontend.ConnectionQuery) => {
+    try {
+      if (!queries || queries.length <= 1) {
+        return;
+      }
+      await confirm(`Do you want to close all the queries to the right of "${query.name}"?`);
+
+      // find the target idx
+      for (let i = 0; i < queries.length; i++) {
+        if (queries[i].id === query.id) {
+          const targetIdx = i;
+          await connectionQueries.onDeleteQueries(
+            queries.filter((_q, idx) => idx > targetIdx).map((q) => q.id),
+          );
+          await connectionQueries.onShowQuery(query.id);
+          break;
+        }
+      }
     } catch (err) {}
   };
 
@@ -147,7 +160,7 @@ export default function MissionControl() {
         value: query.name,
         saveLabel: 'Save',
       });
-      onChangeQuery(query.id, {
+      await connectionQueries.onChangeQuery(query.id, {
         name: newName,
       });
     } catch (err) {}
@@ -157,8 +170,7 @@ export default function MissionControl() {
     const curToast = await addToast({
       message: `Duplicating "${query.name}", please wait...`,
     });
-
-    _onDuplicateQuery(query.id);
+    await connectionQueries.onDuplicateQuery(query.id);
   };
 
   const onExportQuery = async (query: SqluiFrontend.ConnectionQuery) => {
@@ -213,7 +225,7 @@ export default function MissionControl() {
         newQueryTabName += ` - ${data.databaseId}`;
       }
 
-      onAddQuery({
+      await connectionQueries.onAddQuery({
         ...data,
         name: newQueryTabName,
       });
@@ -241,7 +253,7 @@ export default function MissionControl() {
     selectCommand({ event: 'clientEvent/openExternalUrl', data });
   };
 
-  const onShowQueryWithDirection = (direction: number) => {
+  const onShowQueryWithDirection = async (direction: number) => {
     if (!queries || !activeQuery) {
       return;
     }
@@ -261,7 +273,7 @@ export default function MissionControl() {
       }
 
       // then show that tab
-      onShowQuery(queries[targetIdx].id);
+      await connectionQueries.onShowQuery(queries[targetIdx].id);
     }
   };
 
@@ -523,7 +535,7 @@ export default function MissionControl() {
               await importConnection(rawImportMetaData);
               break;
             case 'query':
-              await onImportQuery(jsonRow);
+              await connectionQueries.onImportQuery(jsonRow);
               break;
           }
           successCount++;
@@ -736,12 +748,12 @@ export default function MissionControl() {
 
         // query commands
         case 'clientEvent/query/new':
-          onAddQuery();
+          await connectionQueries.onAddQuery();
           break;
 
         case 'clientEvent/query/show':
           if (command.data) {
-            onShowQuery((command.data as SqluiFrontend.ConnectionQuery).id);
+            await connectionQueries.onShowQuery((command.data as SqluiFrontend.ConnectionQuery).id);
           }
           break;
 
@@ -780,7 +792,7 @@ export default function MissionControl() {
         case 'clientEvent/query/changeTabOrdering':
           const { from, to } = command?.data as any;
           if (from !== undefined && to !== undefined) {
-            onChangeTabOrdering(from, to);
+            await connectionQueries.onChangeTabOrdering(from, to);
           }
           break;
 
@@ -818,6 +830,12 @@ export default function MissionControl() {
         case 'clientEvent/query/closeOther':
           if (command.data) {
             onCloseOtherQueries(command.data as SqluiFrontend.ConnectionQuery);
+          }
+          break;
+
+        case 'clientEvent/query/closeToTheRight':
+          if (command.data) {
+            onCloseQueriesToTheRight(command.data as SqluiFrontend.ConnectionQuery);
           }
           break;
 
