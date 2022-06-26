@@ -98,10 +98,7 @@ export default function MissionControl() {
   const navigate = useNavigate();
   const [init, setInit] = useState(false);
   const connectionQueries = useConnectionQueries();
-  const {
-    queries,
-    isLoading: loadingQueries,
-  } = connectionQueries;
+  const { queries, isLoading: loadingQueries } = connectionQueries;
   const { query: activeQuery, onChange: onChangeActiveQuery } = useActiveConnectionQuery();
   const { command, selectCommand, dismissCommand } = useCommands();
   const { modal, choice, confirm, prompt, alert, dismiss: dismissDialog } = useActionDialogs();
@@ -128,22 +125,26 @@ export default function MissionControl() {
   const onCloseOtherQueries = async (query: SqluiFrontend.ConnectionQuery) => {
     try {
       await confirm(`Do you want to close other queries except "${query.name}"?`);
-      await connectionQueries.onDeleteQueries(queries?.map((q) => q.id).filter((queryId) => queryId !== query.id));
+      await connectionQueries.onDeleteQueries(
+        queries?.map((q) => q.id).filter((queryId) => queryId !== query.id),
+      );
     } catch (err) {}
   };
 
   const onCloseQueriesToTheRight = async (query: SqluiFrontend.ConnectionQuery) => {
     try {
-      if(!queries || queries.length <= 1){
+      if (!queries || queries.length <= 1) {
         return;
       }
       await confirm(`Do you want to close all the queries to the right of "${query.name}"?`);
 
       // find the target idx
-      for(let i = 0; i  < queries.length; i++){
-        if(queries[i].id === query.id){
+      for (let i = 0; i < queries.length; i++) {
+        if (queries[i].id === query.id) {
           const targetIdx = i;
-          await connectionQueries.onDeleteQueries(queries.filter((_q, idx) => idx > targetIdx).map(q => q.id));
+          await connectionQueries.onDeleteQueries(
+            queries.filter((_q, idx) => idx > targetIdx).map((q) => q.id),
+          );
           await connectionQueries.onShowQuery(query.id);
           break;
         }
