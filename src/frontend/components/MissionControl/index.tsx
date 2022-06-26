@@ -139,6 +139,13 @@ export default function MissionControl() {
     } catch (err) {}
   };
 
+  const onCloseQueriesToTheRight = async (query: SqluiFrontend.ConnectionQuery) => {
+    try {
+      await confirm(`Do you want to close all the queries to the right of "${query.name}"?`);
+      onDeleteQueries(queries?.map((q) => q.id).filter((queryId) => queryId !== query.id));
+    } catch (err) {}
+  };
+
   const onRenameQuery = async (query: SqluiFrontend.ConnectionQuery) => {
     try {
       const newName = await prompt({
@@ -818,6 +825,12 @@ export default function MissionControl() {
         case 'clientEvent/query/closeOther':
           if (command.data) {
             onCloseOtherQueries(command.data as SqluiFrontend.ConnectionQuery);
+          }
+          break;
+
+        case 'clientEvent/query/closeTabsToTheRight':
+          if (command.data) {
+            onCloseQueriesToTheRight(command.data as SqluiFrontend.ConnectionQuery);
           }
           break;
 

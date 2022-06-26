@@ -48,6 +48,12 @@ export default function QueryBoxTabs() {
     [selectCommand],
   );
 
+  const onCoseTabsToTheRight = useCallback(
+    (data: SqluiFrontend.ConnectionQuery) =>
+      selectCommand({ event: 'clientEvent/query/closeTabsToTheRight', data }),
+    [selectCommand],
+  );
+
   const onRenameQuery = useCallback(
     (data: SqluiFrontend.ConnectionQuery) =>
       selectCommand({ event: 'clientEvent/query/rename', data }),
@@ -123,6 +129,11 @@ export default function QueryBoxTabs() {
           {
             label: 'Close Other Tabs',
             onClick: () => onCloseOtherQueries(q),
+            startIcon: <CloseIcon />,
+          },
+          {
+            label: 'Close Tabs to The Right',
+            onClick: () => onCoseTabsToTheRight(q),
             startIcon: <CloseIcon />,
           },
         ];
