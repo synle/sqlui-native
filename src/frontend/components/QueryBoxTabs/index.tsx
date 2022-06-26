@@ -50,7 +50,7 @@ export default function QueryBoxTabs() {
 
   const onCoseTabsToTheRight = useCallback(
     (data: SqluiFrontend.ConnectionQuery) =>
-      selectCommand({ event: 'clientEvent/query/closeTabsToTheRight', data }),
+      selectCommand({ event: 'clientEvent/query/closeToTheRight', data }),
     [selectCommand],
   );
 

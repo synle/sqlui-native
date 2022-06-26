@@ -265,7 +265,7 @@ export module SqluiEnums {
     | 'clientEvent/query/close'
     | 'clientEvent/query/closeCurrentlySelected'
     | 'clientEvent/query/closeOther'
-    | 'clientEvent/query/closeTabsToTheRight'
+    | 'clientEvent/query/closeToTheRight'
     | 'clientEvent/query/reveal'
     | 'clientEvent/session/new'
     | 'clientEvent/session/rename'
