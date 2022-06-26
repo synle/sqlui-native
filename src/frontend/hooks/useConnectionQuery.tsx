@@ -220,7 +220,7 @@ export function useConnectionQueries() {
     return onAddQuery(query);
   };
 
-  const onOrderingChange = (from: number, to: number) => {
+  const onChangeTabOrdering = (from: number, to: number) => {
     _connectionQueries = getUpdatedOrdersForList(_connectionQueries, from, to);
     _invalidateQueries();
   };
@@ -236,7 +236,7 @@ export function useConnectionQueries() {
     onChangeQuery,
     onDuplicateQuery,
     onImportQuery,
-    onOrderingChange,
+    onChangeTabOrdering,
   };
 }
 

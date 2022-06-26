@@ -364,6 +364,48 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
       );
   });
 
+  // recycle endpoints
+  // this get a list of all recycled items
+  addDataEndpoint('get', '/api/recycle', async (req, res, apiCache) => {
+    const connections = await new PersistentStorage<SqluiCore.ConnectionProps>(
+      req.headers['sqlui-native-session-id'],
+      'connection',
+    ).list();
+
+    const promisesCheckConnections: Promise<void>[] = [];
+    for (const connection of connections) {
+      promisesCheckConnections.push(
+        new Promise(async (resolve) => {
+          try {
+            const engine = getDataAdapter(connection.connection);
+            await engine.authenticate();
+
+            connection.status = 'online';
+            connection.dialect = engine.dialect;
+          } catch (err: any) {
+            connection.status = 'offline';
+            connection.dialect = undefined;
+          }
+
+          resolve();
+        }),
+      );
+    }
+
+    await Promise.all(promisesCheckConnections);
+
+    res.status(200).json(connections);
+  });
+
+  addDataEndpoint('patch', '/api/recycle', async (req, res, apiCache) => {
+    const connections = await new PersistentStorage<SqluiCore.ConnectionProps>(
+      req.headers['sqlui-native-session-id'],
+      'connection',
+    ).set(req.body);
+
+    res.status(200).json(connections);
+  });
+
   // debug endpoints
   addDataEndpoint('get', '/api/debug', async (req, res, apiCache) => {
     res.status(200).json(apiCache.json());
