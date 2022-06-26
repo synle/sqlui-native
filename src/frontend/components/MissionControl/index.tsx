@@ -127,22 +127,33 @@ export default function MissionControl() {
   const onCloseQuery = async (query: SqluiFrontend.ConnectionQuery) => {
     try {
       await confirm(`Do you want to delete this query "${query.name}"?`);
-
-      onDeleteQueries([query.id]);
+      await onDeleteQueries([query.id]);
     } catch (err) {}
   };
 
   const onCloseOtherQueries = async (query: SqluiFrontend.ConnectionQuery) => {
     try {
       await confirm(`Do you want to close other queries except "${query.name}"?`);
-      onDeleteQueries(queries?.map((q) => q.id).filter((queryId) => queryId !== query.id));
+      await onDeleteQueries(queries?.map((q) => q.id).filter((queryId) => queryId !== query.id));
     } catch (err) {}
   };
 
   const onCloseQueriesToTheRight = async (query: SqluiFrontend.ConnectionQuery) => {
     try {
+      if(!queries || queries.length <= 1){
+        return;
+      }
       await confirm(`Do you want to close all the queries to the right of "${query.name}"?`);
-      onDeleteQueries(queries?.map((q) => q.id).filter((queryId) => queryId !== query.id));
+
+      // find the target idx
+      for(let i = 0; i  < queries.length; i++){
+        if(queries[i].id === query.id){
+          const targetIdx = i;
+          await onDeleteQueries(queries.filter((_q, idx) => idx > targetIdx).map(q => q.id));
+          await onShowQuery(query.id);
+          break;
+        }
+      }
     } catch (err) {}
   };
 
