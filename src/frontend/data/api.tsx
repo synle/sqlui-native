@@ -183,7 +183,7 @@ export class ProxyApi {
 
   // folders api
   static getFolderItems(folderId: string) {
-    return _fetch<SqluiCore.Session[]>(`/api/folder/${folderId}`);
+    return _fetch<SqluiCore.FolderItem[]>(`/api/folder/${folderId}`);
   }
 
   static addFolderItem(folderId: string, folderItem: SqluiCore.FolderItem) {
@@ -201,7 +201,7 @@ export class ProxyApi {
 
   // recyclebin folder api
   static getRecycleBinItems() {
-    return _fetch<SqluiCore.Session[]>(`/api/folder/recycleBin`);
+    return getFolderItems(`recycleBin`);
   }
 
   static addRecycleBinItem(folderItem: SqluiCore.FolderItem) {
@@ -220,7 +220,7 @@ export class ProxyApi {
   // TODO: will be used to implement bookmarks
   // bookmarks folder api
   static getBookmarkItems() {
-    return _fetch<SqluiCore.Session[]>(`/api/folder/bookmarks`);
+    return getFolderItems(`bookmarks`);
   }
 
   static addBookmarkItem(folderItem: SqluiCore.FolderItem) {
