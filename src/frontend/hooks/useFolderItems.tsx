@@ -16,8 +16,8 @@ export function useGetFolderItems(folderType: SqluiCore.FolderType) {
 export function useAddFolderItem(folderType: SqluiCore.FolderType) {
   const queryClient = useQueryClient();
 
-  return useMutation<void, void, SqluiCore.FolderItem>(
-    async (folderItem: SqluiCore.FolderItem) => {
+  return useMutation<void, void, Omit<SqluiCore.FolderItem, 'id'>>(
+    async (folderItem) => {
       await dataApi.addFolderItem(folderType, folderItem);
     },
     {
@@ -48,7 +48,7 @@ export function useGetRecycleBinItems() {
   return useGetFolderItems(FOLDER_TYPE_RECYCLE_BIN);
 }
 
-export function useAddRecycleBinItem(folderType: SqluiCore.FolderType) {
+export function useAddRecycleBinItem() {
   return useAddFolderItem(FOLDER_TYPE_RECYCLE_BIN);
 }
 
@@ -62,7 +62,7 @@ export function useGetBookmarkItems() {
   return useGetFolderItems(FOLDER_TYPE_BOOKMARKS);
 }
 
-export function useAddBookmarkItem(folderType: SqluiCore.FolderType) {
+export function useAddBookmarkItem() {
   return useAddFolderItem(FOLDER_TYPE_BOOKMARKS);
 }
 

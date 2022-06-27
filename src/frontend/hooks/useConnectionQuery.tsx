@@ -1,6 +1,7 @@
 import { QueryClient, useQuery, useQueryClient } from 'react-query';
 import dataApi from 'src/frontend/data/api';
 import { SessionStorageConfig } from 'src/frontend/data/config';
+import { useAddRecycleBinItem } from 'src/frontend/hooks/useFolderItems';
 import { getGeneratedRandomId, getUpdatedOrdersForList } from 'src/frontend/utils/commonUtils';
 import { SqluiCore, SqluiFrontend } from 'typings';
 
@@ -58,6 +59,7 @@ export function useConnectionQueries() {
   const queryClient = useQueryClient();
 
   const { data: queries, isLoading, isFetching } = _useConnectionQueries();
+  const { mutateAsync: addRecycleBinItem } = useAddRecycleBinItem();
 
   function _invalidateQueries() {
     queryClient.setQueryData<SqluiFrontend.ConnectionQuery[] | undefined>(
@@ -111,11 +113,33 @@ export function useConnectionQueries() {
     return newQuery;
   };
 
-  const onDeleteQueries = (queryIds?: string[]) => {
+  const onDeleteQueries = async (queryIds?: string[]) => {
     if (!queryIds || queryIds.length === 0) {
       return;
     }
 
+    // generate the list of queries to store in recyclebin
+    const toRecycleQueriesFolderItems: Omit<SqluiCore.FolderItem, 'id'>[] = _connectionQueries
+      .filter((q) => {
+        return queryIds.indexOf(q.id) >= 0;
+      })
+      .map((query) => {
+        // here we should remove the isSelected flag
+        const { selected, ...restOfQuery } = query;
+
+        return {
+          type: 'Query',
+          name: query.name,
+          data: restOfQuery,
+        };
+      });
+
+    // attempt to make backups
+    try {
+      await Promise.allSettled(
+        toRecycleQueriesFolderItems.map(async (folderItem) => addRecycleBinItem(folderItem)),
+      );
+    } catch (err) {}
     let toBeSelected = 0;
     if (queryIds.length === 1) {
       const [queryId] = queryIds;
