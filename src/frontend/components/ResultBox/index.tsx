@@ -6,7 +6,7 @@ import Tooltip from '@mui/material/Tooltip';
 import CsvEngine from 'json-2-csv';
 import React, { useEffect, useMemo, useState } from 'react';
 import CodeEditorBox from 'src/frontend/components/CodeEditorBox';
-import DataTable from 'src/frontend/components/DataTable';
+import {DataTableWithJSONList} from 'src/frontend/components/DataTable';
 import Tabs from 'src/frontend/components/Tabs';
 import Timer from 'src/frontend/components/Timer';
 import { downloadText } from 'src/frontend/data/file';
@@ -105,7 +105,7 @@ export default function ResultBox(props: ResultBoxProps) {
 
   const tabContents = [
     <div className='ResultBox__Content' key={`Table`}>
-      <TableFormatData data={data} />
+      <DataTableWithJSONList data={data} />
     </div>,
     <div className='ResultBox__Content' key={`JSON`}>
       <JsonFormatData data={data} />
@@ -150,36 +150,6 @@ function CsvFormatData(props: FormatDataProps) {
   }, [data]);
 
   return <CodeEditorBox value={csv} />;
-}
-
-function TableFormatData(props: FormatDataProps) {
-  const { data } = props;
-
-  const columns = useMemo(() => {
-    const newColumnNames = new Set<string>();
-    for (const row of data) {
-      for (const header of Object.keys(row)) {
-        newColumnNames.add(header);
-      }
-    }
-    return Array.from(newColumnNames).map((columnName) => {
-      return {
-        Header: columnName,
-        Cell: (data: any) => {
-          const columnValue = data.row.original[columnName];
-          if (typeof columnValue === 'object') {
-            return <pre>{JSON.stringify(columnValue, null, 2)}</pre>;
-          }
-          if (typeof columnValue === 'number') {
-            return columnValue;
-          }
-          return columnValue || '';
-        },
-      };
-    });
-  }, []);
-
-  return <DataTable columns={columns} data={data} />;
 }
 
 type QueryTimeDescriptionProps = {
