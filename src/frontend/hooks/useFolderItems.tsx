@@ -7,9 +7,9 @@ const FOLDER_TYPE_RECYCLE_BIN = 'recycleBin';
 const FOLDER_TYPE_BOOKMARKS = 'bookmarks';
 
 export function useGetFolderItems(folderType: SqluiCore.FolderType) {
-  return useQuery<SqluiCore.FolderItem[], void, SqluiCore.FolderType>(
+  return useQuery<SqluiCore.FolderItem[], void, SqluiCore.FolderItem[]>(
     [QUERY_KEY_FOLDER_ITEMS, folderType],
-    () => dataApi.getFolderItems(folderType),
+    async () => dataApi.getFolderItems(folderType),
   );
 }
 
@@ -52,7 +52,7 @@ export function useAddRecycleBinItem() {
   return useAddFolderItem(FOLDER_TYPE_RECYCLE_BIN);
 }
 
-export function useDeletedRecycleBin(folderType: SqluiCore.FolderType) {
+export function useDeletedRecycleBinItem() {
   return useDeleteFolderItem(FOLDER_TYPE_RECYCLE_BIN);
 }
 
@@ -66,6 +66,6 @@ export function useAddBookmarkItem() {
   return useAddFolderItem(FOLDER_TYPE_BOOKMARKS);
 }
 
-export function useDeleteBookmarkItem(folderType: SqluiCore.FolderType) {
+export function useDeleteBookmarkItem() {
   return useDeleteFolderItem(FOLDER_TYPE_BOOKMARKS);
 }
