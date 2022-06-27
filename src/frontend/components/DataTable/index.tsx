@@ -135,7 +135,7 @@ export default function DataTable(props: DataTableProps) {
   );
 }
 
-export function DataTableWithJSONList(props: Omit<DataTableProps, 'columns'>){
+export function DataTableWithJSONList(props: Omit<DataTableProps, 'columns'>) {
   const { data } = props;
 
   const columns = useMemo(() => {
