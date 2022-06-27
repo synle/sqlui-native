@@ -72,6 +72,9 @@ type CommandOption = {
 };
 
 const ALL_COMMAND_PALETTE_OPTIONS: CommandOption[] = [
+  { event: 'clientEvent/navigate', label: 'Open Main Query Page', data: '/' },
+  { event: 'clientEvent/navigate', label: 'Open Data Migration', data: '/migration' },
+  { event: 'clientEvent/navigate', label: 'Open Recycle Bin', data: '/recycle_bin' },
   { event: 'clientEvent/showSettings', label: 'Settings' },
   { event: 'clientEvent/import', label: 'Import' },
   { event: 'clientEvent/exportAll', label: 'Export All' },
