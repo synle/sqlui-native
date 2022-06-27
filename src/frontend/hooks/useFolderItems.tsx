@@ -16,25 +16,31 @@ export function useGetFolderItems(folderType: SqluiCore.FolderType) {
 export function useAddFolderItem(folderType: SqluiCore.FolderType) {
   const queryClient = useQueryClient();
 
-  return useMutation<void, void, SqluiCore.FolderItem>(async (folderItem: SqluiCore.FolderItem) => {
-    await dataApi.addFolderItem(folderType, folderItem);
-  }, {
-      onSuccess: async() => {
+  return useMutation<void, void, SqluiCore.FolderItem>(
+    async (folderItem: SqluiCore.FolderItem) => {
+      await dataApi.addFolderItem(folderType, folderItem);
+    },
+    {
+      onSuccess: async () => {
         queryClient.invalidateQueries([QUERY_KEY_FOLDER_ITEMS, folderType]);
-      }
-    });
+      },
+    },
+  );
 }
 
 export function useDeleteFolderItem(folderType: SqluiCore.FolderType) {
   const queryClient = useQueryClient();
 
-  return useMutation<void, void, string>(async (itemId) => {
-    await dataApi.deleteFolderItem(folderType, itemId);
-  }, {
-      onSuccess: async() => {
+  return useMutation<void, void, string>(
+    async (itemId) => {
+      await dataApi.deleteFolderItem(folderType, itemId);
+    },
+    {
+      onSuccess: async () => {
         queryClient.invalidateQueries([QUERY_KEY_FOLDER_ITEMS, folderType]);
-      }
-    });
+      },
+    },
+  );
 }
 
 // recycle bin
