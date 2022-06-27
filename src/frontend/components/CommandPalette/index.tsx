@@ -72,6 +72,9 @@ type CommandOption = {
 };
 
 const ALL_COMMAND_PALETTE_OPTIONS: CommandOption[] = [
+  { event: 'clientEvent/navigate', label: 'Open Main Query Page', data: '/' },
+  { event: 'clientEvent/navigate', label: 'Open Data Migration', data: '/migration' },
+  { event: 'clientEvent/navigate', label: 'Open Recycle Bin', data: '/recycle_bin' },
   { event: 'clientEvent/showSettings', label: 'Settings' },
   { event: 'clientEvent/import', label: 'Import' },
   { event: 'clientEvent/exportAll', label: 'Export All' },
@@ -134,6 +137,7 @@ const ALL_COMMAND_PALETTE_OPTIONS: CommandOption[] = [
   { event: 'clientEvent/session/switch', label: 'Switch Session' },
   { event: 'clientEvent/session/new', label: 'New Session' },
   { event: 'clientEvent/session/rename', label: 'Rename Current Session' },
+  { event: 'clientEvent/session/delete', label: 'Delete Current Session' },
 
   // connections
   { event: 'clientEvent/connection/new', label: 'New Connection' },

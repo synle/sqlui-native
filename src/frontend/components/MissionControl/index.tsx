@@ -27,6 +27,7 @@ import {
   useGetCurrentSession,
   useGetSessions,
   useUpsertSession,
+  useDeleteSession
 } from 'src/frontend/hooks/useSession';
 import { useSetting } from 'src/frontend/hooks/useSetting';
 import { useShowHide } from 'src/frontend/hooks/useShowHide';
@@ -38,6 +39,7 @@ import {
 } from 'src/frontend/utils/commonUtils';
 import appPackage from 'src/package.json';
 import { SqluiCore, SqluiEnums, SqluiFrontend } from 'typings';
+import { DEFAULT_SESSION_NAME } from 'src/frontend/data/session';
 
 export type Command = {
   event: SqluiEnums.ClientEventKey;
@@ -114,6 +116,7 @@ export default function MissionControl() {
   const { mutateAsync: deleteConnection } = useDeleteConnection();
   const { mutateAsync: reconnectConnection } = useRetryConnection();
   const { mutateAsync: duplicateConnection } = useDuplicateConnection();
+  const { mutateAsync: deleteSession } = useDeleteSession();
 
   const onCloseQuery = async (query: SqluiFrontend.ConnectionQuery) => {
     try {
@@ -653,6 +656,9 @@ export default function MissionControl() {
       dismissCommand();
 
       switch (command.event) {
+        case 'clientEvent/navigate':
+          navigate(command.data as string);
+          break;
         case 'clientEvent/showCommandPalette':
           onShowCommandPalette();
           break;
@@ -860,7 +866,6 @@ export default function MissionControl() {
             await onChangeSession();
           } catch (err) {}
 
-          //@ts-ignore
           window.toggleElectronMenu(true, allMenuKeys);
           break;
 
@@ -870,7 +875,6 @@ export default function MissionControl() {
             await onAddSession();
           } catch (err) {}
 
-          //@ts-ignore
           window.toggleElectronMenu(true, allMenuKeys);
           break;
 
@@ -880,7 +884,38 @@ export default function MissionControl() {
             await onRenameSession();
           } catch (err) {}
 
-          //@ts-ignore
+          window.toggleElectronMenu(true, allMenuKeys);
+          break;
+
+
+
+        case 'clientEvent/session/delete':
+          // don't let them delete default session
+          if (!currentSession || !currentSession.id) {
+            return;
+          }
+
+          // ignore for default electron
+          if(currentSession.id === DEFAULT_SESSION_NAME){
+            alert(`Default session (${DEFAULT_SESSION_NAME}) cannot be deleted.`);
+            return;
+          }
+
+          try {
+            window.toggleElectronMenu(false, allMenuKeys);
+            await confirm(`Do you want to delete this session?`);
+            await deleteSession(currentSession.id);
+
+            if(window.isElectron){
+              // after you delete a session, we should close it
+              //@ts-ignore
+              const remote = window.requireElectron('electron').ipcRenderer;
+              remote.getCurrentWindow().close();
+            } else {
+              alert(`Session is deleted`);
+            }
+          } catch (err) {}
+
           window.toggleElectronMenu(true, allMenuKeys);
           break;
       }
