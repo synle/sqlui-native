@@ -8,7 +8,7 @@ import TableHead from '@mui/material/TableHead';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import { useFilters, useGlobalFilter, usePagination, useSortBy, useTable } from 'react-table';
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { useTablePageSize } from 'src/frontend/hooks/useSetting';
 
 type DataTableProps = {
@@ -133,4 +133,34 @@ export default function DataTable(props: DataTableProps) {
       />
     </>
   );
+}
+
+export function DataTableWithJSONList(props: Omit<DataTableProps, 'columns'>) {
+  const { data } = props;
+
+  const columns = useMemo(() => {
+    const newColumnNames = new Set<string>();
+    for (const row of data) {
+      for (const header of Object.keys(row)) {
+        newColumnNames.add(header);
+      }
+    }
+    return Array.from(newColumnNames).map((columnName) => {
+      return {
+        Header: columnName,
+        Cell: (data: any) => {
+          const columnValue = data.row.original[columnName];
+          if (typeof columnValue === 'object') {
+            return <pre>{JSON.stringify(columnValue, null, 2)}</pre>;
+          }
+          if (typeof columnValue === 'number') {
+            return columnValue;
+          }
+          return columnValue || '';
+        },
+      };
+    });
+  }, []);
+
+  return <DataTable columns={columns} data={data} />;
 }
