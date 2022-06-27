@@ -159,12 +159,13 @@ export class ProxyApi {
       });
     }
   }
-
   static deleteSession(sessionId: string) {
     return _fetch<string>(`/api/session/${sessionId}`, {
       method: 'delete',
     }).then(() => sessionId);
   }
+
+  // used to read uploaded file content
   static readFileContent(file: File): Promise<string> {
     try {
       //@ts-ignore
@@ -178,6 +179,61 @@ export class ProxyApi {
         body: form,
       }).then((r) => r.text());
     }
+  }
+
+  // folders api
+  static getFolderItems(folderId: string) {
+    return _fetch<SqluiCore.Session[]>(`/api/folder/${folderId}`);
+  }
+
+  static addFolderItem(folderId: string, folderItem: SqluiCore.FolderItem) {
+    return _fetch<SqluiCore.ConnectionProps>(`/api/folder/${folderId}`, {
+      method: 'post',
+      body: JSON.stringify(folderItem),
+    });
+  }
+
+  static deleteFolderItem(folderId: SqluiCore.FolderType, itemId: string) {
+    return _fetch<string>(`/api/folder/${folderId}/${itemId}`, {
+      method: 'delete',
+    });
+  }
+
+  // recyclebin folder api
+  static getRecycleBinItems() {
+    return _fetch<SqluiCore.Session[]>(`/api/folder/recycleBin`);
+  }
+
+  static addRecycleBinItem(folderItem: SqluiCore.FolderItem) {
+    return _fetch<SqluiCore.ConnectionProps>(`/api/folder/recycleBin`, {
+      method: 'post',
+      body: JSON.stringify(folderItem),
+    });
+  }
+
+  static deleteRecycleBinItem(folderId: SqluiCore.FolderType, itemId: string) {
+    return _fetch<string>(`/api/folder/recycleBin/${itemId}`, {
+      method: 'delete',
+    });
+  }
+
+  // TODO: will be used to implement bookmarks
+  // bookmarks folder api
+  static getBookmarkItems() {
+    return _fetch<SqluiCore.Session[]>(`/api/folder/bookmarks`);
+  }
+
+  static addBookmarkItem(folderItem: SqluiCore.FolderItem) {
+    return _fetch<SqluiCore.ConnectionProps>(`/api/folder/bookmarks`, {
+      method: 'post',
+      body: JSON.stringify(folderItem),
+    });
+  }
+
+  static deleteBookmarkItem(folderId: SqluiCore.FolderType, itemId: string) {
+    return _fetch<string>(`/api/folder/bookmarks/${itemId}`, {
+      method: 'delete',
+    });
   }
 }
 
