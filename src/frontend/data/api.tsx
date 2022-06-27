@@ -193,7 +193,7 @@ export class ProxyApi {
     });
   }
 
-  static deleteFolderItem(folderId: string, itemId: string) {
+  static deleteFolderItem(folderId: SqluiCore.FolderType, itemId: string) {
     return _fetch<string>(`/api/folder/${folderId}/${itemId}`, {
       method: 'delete',
     });
@@ -211,7 +211,7 @@ export class ProxyApi {
     });
   }
 
-  static deleteRecycleBinItem(folderId: string, itemId: string) {
+  static deleteRecycleBinItem(folderId: SqluiCore.FolderType, itemId: string) {
     return _fetch<string>(`/api/folder/recycleBin/${itemId}`, {
       method: 'delete',
     });
@@ -230,7 +230,7 @@ export class ProxyApi {
     });
   }
 
-  static deleteBookmarkItem(folderId: string, itemId: string) {
+  static deleteBookmarkItem(folderId: SqluiCore.FolderType, itemId: string) {
     return _fetch<string>(`/api/folder/bookmarks/${itemId}`, {
       method: 'delete',
     });
