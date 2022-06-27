@@ -9,7 +9,11 @@ import React, { useCallback, useEffect, useState } from 'react';
 import CommandPalette from 'src/frontend/components/CommandPalette';
 import Settings from 'src/frontend/components/Settings';
 import { downloadText } from 'src/frontend/data/file';
-import { getRandomSessionId, setCurrentSessionId } from 'src/frontend/data/session';
+import {
+  DEFAULT_SESSION_NAME,
+  getRandomSessionId,
+  setCurrentSessionId,
+} from 'src/frontend/data/session';
 import { useActionDialogs } from 'src/frontend/hooks/useActionDialogs';
 import {
   useDeleteConnection,
@@ -24,6 +28,7 @@ import {
   useConnectionQueries,
 } from 'src/frontend/hooks/useConnectionQuery';
 import {
+  useDeleteSession,
   useGetCurrentSession,
   useGetSessions,
   useUpsertSession,
@@ -114,6 +119,7 @@ export default function MissionControl() {
   const { mutateAsync: deleteConnection } = useDeleteConnection();
   const { mutateAsync: reconnectConnection } = useRetryConnection();
   const { mutateAsync: duplicateConnection } = useDuplicateConnection();
+  const { mutateAsync: deleteSession } = useDeleteSession();
 
   const onCloseQuery = async (query: SqluiFrontend.ConnectionQuery) => {
     try {
@@ -863,7 +869,6 @@ export default function MissionControl() {
             await onChangeSession();
           } catch (err) {}
 
-          //@ts-ignore
           window.toggleElectronMenu(true, allMenuKeys);
           break;
 
@@ -873,7 +878,6 @@ export default function MissionControl() {
             await onAddSession();
           } catch (err) {}
 
-          //@ts-ignore
           window.toggleElectronMenu(true, allMenuKeys);
           break;
 
@@ -883,7 +887,33 @@ export default function MissionControl() {
             await onRenameSession();
           } catch (err) {}
 
-          //@ts-ignore
+          window.toggleElectronMenu(true, allMenuKeys);
+          break;
+        case 'clientEvent/session/delete':
+          // don't let them delete default session
+          if (!currentSession || !currentSession.id) {
+            return;
+          }
+
+          // ignore for default electron
+          if (currentSession.id === DEFAULT_SESSION_NAME) {
+            alert(`Default session (${DEFAULT_SESSION_NAME}) cannot be deleted.`);
+            return;
+          }
+
+          try {
+            window.toggleElectronMenu(false, allMenuKeys);
+            await confirm(`Do you want to delete this session?`);
+            await deleteSession(currentSession.id);
+
+            if (window.isElectron) {
+              // after you delete a session, we should close it
+              window.close();
+            } else {
+              alert(`Session is deleted. Please close this windows.`);
+            }
+          } catch (err) {}
+
           window.toggleElectronMenu(true, allMenuKeys);
           break;
       }
