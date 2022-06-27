@@ -1,5 +1,6 @@
 import AddIcon from '@mui/icons-material/Add';
 import BackupIcon from '@mui/icons-material/Backup';
+import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import KeyboardCommandKeyIcon from '@mui/icons-material/KeyboardCommandKey';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -16,7 +17,6 @@ import DropdownButton from 'src/frontend/components/DropdownButton';
 import { useCommands } from 'src/frontend/components/MissionControl';
 import { useGetCurrentSession, useGetSessions } from 'src/frontend/hooks/useSession';
 import appPackage from 'src/package.json';
-import DeleteIcon from '@mui/icons-material/Delete';
 
 export default function AppHeader() {
   const [open, setOpen] = useState(false);
@@ -62,7 +62,8 @@ export default function AppHeader() {
     },
     {
       label: 'divider',
-    },{
+    },
+    {
       label: 'Recycle Bin',
       onClick: () => navigate('/recycle_bin'),
       startIcon: <DeleteIcon />,
