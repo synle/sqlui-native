@@ -3,6 +3,7 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
 import Link from '@mui/material/Link';
+import Chip from '@mui/material/Chip';
 import Typography from '@mui/material/Typography';
 import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
@@ -16,15 +17,29 @@ import { useDeletedRecycleBinItem, useGetRecycleBinItems } from 'src/frontend/ho
 import { useTreeActions } from 'src/frontend/hooks/useTreeActions';
 import LayoutTwoColumns from 'src/frontend/layout/LayoutTwoColumns';
 import { SqluiCore } from 'typings';
-function RecycleBinItemList() {
-  const { data, isLoading: loadingRecycleBinItems } = useGetRecycleBinItems();
-  const { onAddQuery } = useConnectionQueries();
-  const { mutateAsync: deleteRecyleBinItem, isLoading: loadingRestoreQuery } =
-    useDeletedRecycleBinItem();
-  const navigate = useNavigate();
-  const { confirm } = useActionDialogs();
-  const { mutateAsync: upsertConnection, isLoading: loadingRestoreConnection } =
-    useUpsertConnection();
+import DataTable from 'src/frontend/components/DataTable';
+import RestoreIcon from '@mui/icons-material/Restore';
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
+
+const columns = [
+  {
+    Header: 'Name',
+    accessor: 'name'
+  },
+  {
+    Header: 'Type',
+    accessor: 'type',
+    Cell: (data: any) => {
+      const folderItem = data.row.original;
+      return <Chip label={folderItem.type} color={folderItem.type === 'Connection' ? "success" :"warning"}  size='small' />
+    }
+  },
+  {
+    Header: '',
+    accessor: 'id',
+    Cell: (data: any) => {
+      const folderItem = data.row.original;
+
 
   const onRestoreRecycleBinItem = async (folderItem: SqluiCore.FolderItem) => {
     // here we handle restorable
@@ -48,6 +63,34 @@ function RecycleBinItemList() {
     } catch (err) {}
   };
 
+  const { onAddQuery } = useConnectionQueries();
+  const { mutateAsync: deleteRecyleBinItem, isLoading: loadingRestoreQuery } =
+    useDeletedRecycleBinItem();
+  const navigate = useNavigate();
+  const { confirm } = useActionDialogs();
+  const { mutateAsync: upsertConnection, isLoading: loadingRestoreConnection } =
+    useUpsertConnection();
+
+      return <Box sx={{display: 'flex', gap: 2}}>
+        <Button onClick={() => onRestoreRecycleBinItem(folderItem)} variant='contained' size='small' startIcon={<RestoreIcon />}>
+            Restore
+          </Button>
+          <Button onClick={() => onDeleteRecycleBin(folderItem)} variant='outlined' size='small' color='error' startIcon={<DeleteForeverIcon />}>
+            Delete
+          </Button>
+
+      </Box>
+    },
+  }
+]
+
+
+function RecycleBinItemList() {
+  const { data, isLoading: loadingRecycleBinItems } = useGetRecycleBinItems();
+  const { mutateAsync: deleteRecyleBinItem, isLoading: loadingRestoreQuery } =
+    useDeletedRecycleBinItem();
+  const { confirm } = useActionDialogs();
+
   const onEmptyTrash = async () => {
     try {
       await confirm(`Do you want to empty the recycle bin? This action cannot be undone.`);
@@ -57,7 +100,7 @@ function RecycleBinItemList() {
     } catch (err) {}
   };
 
-  const isLoading = loadingRecycleBinItems || loadingRestoreConnection || loadingRestoreConnection;
+  const isLoading = loadingRecycleBinItems;
 
   if (isLoading) {
     return (
@@ -78,27 +121,17 @@ function RecycleBinItemList() {
     return <Typography>Recycle Bin is empty...</Typography>;
   }
 
+
+
+
   return (
     <>
-      {folderItems.map((folderItem) => {
-        return (
-          <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }} key={folderItem.id}>
-            <Typography>{folderItem.name}</Typography>
-            <Typography>{folderItem.type}</Typography>
-            <Button onClick={() => onRestoreRecycleBinItem(folderItem)} variant='contained'>
-              Restore
-            </Button>
-            <Button onClick={() => onDeleteRecycleBin(folderItem)} variant='outlined'>
-              Delete
-            </Button>
-          </Box>
-        );
-      })}
       <Box>
-        <Button onClick={() => onEmptyTrash()} variant='contained'>
+        <Link onClick={() => onEmptyTrash()}>
           Empty Trash
-        </Button>
+        </Link>
       </Box>
+      <DataTable data={folderItems} columns={columns} />
     </>
   );
 }
