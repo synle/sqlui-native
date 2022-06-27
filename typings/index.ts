@@ -110,6 +110,22 @@ export module SqluiCore {
   export type Session = CoreSession & {
     id: string;
   };
+
+  export type FolderType = 'recycleBin' | 'bookmarks';
+
+  export type FolderItem = {
+    id: string;
+    name?: string;
+  } & (
+    | {
+        type: 'Connection';
+        data: SqluiCore.ConnectionProps;
+      }
+    | {
+        type: 'Query';
+        data: SqluiCore.ConnectionQuery;
+      }
+  );
 }
 
 /**
