@@ -364,6 +364,43 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
       );
   });
 
+  // recycle endpoints
+  // this get a list of all items in a folder
+  addDataEndpoint('get', '/api/folder/:folderId', async (req, res, apiCache) => {
+    const folderItemsStorage = await new PersistentStorage<SqluiCore.FolderItem>(
+      'folders',
+      req.params?.folderId,
+    );
+
+    res.status(200).json(await folderItemsStorage.list());
+  });
+
+  // adds item to recycle bin
+  addDataEndpoint('post', '/api/folder/:folderId', async (req, res, apiCache) => {
+    const folderItemsStorage = await new PersistentStorage<SqluiCore.FolderItem>(
+      'folders',
+      req.params?.folderId,
+    );
+
+    res.status(202).json(
+      await folderItemsStorage.add({
+        name: req.body.name,
+        type: req.body.type,
+        data: req.body.data,
+      }),
+    );
+  });
+
+  // can be used to delete items off the recycle permanently
+  addDataEndpoint('delete', '/api/folder/:folderId/:itemId', async (req, res, apiCache) => {
+    const folderItemsStorage = await new PersistentStorage<SqluiCore.FolderItem>(
+      'folders',
+      req.params?.folderId,
+    );
+
+    res.status(202).json(await folderItemsStorage.delete(req.params?.itemId));
+  });
+
   // debug endpoints
   addDataEndpoint('get', '/api/debug', async (req, res, apiCache) => {
     res.status(200).json(apiCache.json());
