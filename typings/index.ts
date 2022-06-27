@@ -286,5 +286,6 @@ export module SqluiEnums {
     | 'clientEvent/query/reveal'
     | 'clientEvent/session/new'
     | 'clientEvent/session/rename'
-    | 'clientEvent/session/switch';
+    | 'clientEvent/session/switch'
+    | 'clientEvent/session/delete';
 }

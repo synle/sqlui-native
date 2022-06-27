@@ -337,7 +337,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     );
   });
 
-  addDataEndpoint('put', '/api/session/:session', async (req, res, apiCache) => {
+  addDataEndpoint('put', '/api/session/:sessionId', async (req, res, apiCache) => {
     apiCache.set('serverCacheKey/cacheMetaData', null);
     res.status(202).json(
       await new PersistentStorage<SqluiCore.Session>(
@@ -345,7 +345,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
         'session',
         'sessions',
       ).update({
-        id: req.params?.session,
+        id: req.params?.sessionId,
         name: req.body?.name,
       }),
     );
@@ -360,7 +360,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
           req.headers['sqlui-native-session-id'],
           'session',
           'sessions',
-        ).delete(req.params?.queryId),
+        ).delete(req.params?.sessionId),
       );
   });
 
