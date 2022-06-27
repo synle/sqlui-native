@@ -48,20 +48,22 @@ export default function AppHeader() {
       startIcon: <EditIcon />,
     },
     {
+      label: 'Delete Session',
+      onClick: () => selectCommand({ event: 'clientEvent/session/delete' }),
+      startIcon: <DeleteIcon />,
+    },
+    {
+      label: 'divider',
+    },
+    {
       label: 'Command Palette',
       onClick: () => selectCommand({ event: 'clientEvent/showCommandPalette' }),
       startIcon: <KeyboardCommandKeyIcon />,
     },
     {
-      label: 'divider',
-    },
-    {
       label: 'Data Migration',
       onClick: () => navigate('/migration'),
       startIcon: <BackupIcon />,
-    },
-    {
-      label: 'divider',
     },
     {
       label: 'Recycle Bin',
