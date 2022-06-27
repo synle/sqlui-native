@@ -17,6 +17,7 @@ import DropdownButton from 'src/frontend/components/DropdownButton';
 import { useCommands } from 'src/frontend/components/MissionControl';
 import { useGetCurrentSession, useGetSessions } from 'src/frontend/hooks/useSession';
 import appPackage from 'src/package.json';
+import HomeIcon from '@mui/icons-material/Home';
 
 export default function AppHeader() {
   const [open, setOpen] = useState(false);
@@ -28,6 +29,8 @@ export default function AppHeader() {
   const options = [
     {
       label: currentSession?.name || '',
+      onClick: () => selectCommand({ event: 'clientEvent/navigate', data:  '/' }),
+      startIcon : <HomeIcon/>,
     },
     {
       label: 'divider',
