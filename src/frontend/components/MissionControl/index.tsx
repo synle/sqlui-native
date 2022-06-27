@@ -908,11 +908,9 @@ export default function MissionControl() {
 
             if(window.isElectron){
               // after you delete a session, we should close it
-              //@ts-ignore
-              const remote = window.requireElectron('electron').ipcRenderer;
-              remote.getCurrentWindow().close();
+              window.close();
             } else {
-              alert(`Session is deleted`);
+              alert(`Session is deleted. Please close this windows.`);
             }
           } catch (err) {}
 
