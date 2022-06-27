@@ -1,5 +1,6 @@
 import AddIcon from '@mui/icons-material/Add';
 import BackupIcon from '@mui/icons-material/Backup';
+import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import KeyboardCommandKeyIcon from '@mui/icons-material/KeyboardCommandKey';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -58,6 +59,14 @@ export default function AppHeader() {
       label: 'Data Migration',
       onClick: () => navigate('/migration'),
       startIcon: <BackupIcon />,
+    },
+    {
+      label: 'divider',
+    },
+    {
+      label: 'Recycle Bin',
+      onClick: () => navigate('/recycle_bin'),
+      startIcon: <DeleteIcon />,
     },
     {
       label: 'divider',

@@ -111,7 +111,7 @@ export module SqluiCore {
     id: string;
   };
 
-  export type FolderType = 'recycleBin' | 'bookmarks';
+  export type FolderType = 'recycleBin' | 'bookmarks' | string;
 
   export type FolderItem = {
     id: string;
