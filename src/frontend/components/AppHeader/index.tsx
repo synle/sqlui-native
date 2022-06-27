@@ -16,6 +16,7 @@ import DropdownButton from 'src/frontend/components/DropdownButton';
 import { useCommands } from 'src/frontend/components/MissionControl';
 import { useGetCurrentSession, useGetSessions } from 'src/frontend/hooks/useSession';
 import appPackage from 'src/package.json';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 export default function AppHeader() {
   const [open, setOpen] = useState(false);
@@ -58,6 +59,13 @@ export default function AppHeader() {
       label: 'Data Migration',
       onClick: () => navigate('/migration'),
       startIcon: <BackupIcon />,
+    },
+    {
+      label: 'divider',
+    },{
+      label: 'Recycle Bin',
+      onClick: () => navigate('/recycle_bin'),
+      startIcon: <DeleteIcon />,
     },
     {
       label: 'divider',

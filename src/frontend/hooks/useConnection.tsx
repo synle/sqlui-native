@@ -1,5 +1,6 @@
 import { QueryClient, useMutation, useQuery, useQueryClient } from 'react-query';
 import dataApi from 'src/frontend/data/api';
+import { useAddRecycleBinItem } from 'src/frontend/hooks/useFolderItems';
 import { getUpdatedOrdersForList } from 'src/frontend/utils/commonUtils';
 import { SqluiCore, SqluiFrontend } from 'typings';
 
@@ -84,6 +85,8 @@ export function useUpsertConnection() {
 
 export function useDeleteConnection() {
   const queryClient = useQueryClient();
+  const { mutateAsync: addRecycleBinItem } = useAddRecycleBinItem();
+  const { data: connections } = useGetConnections();
 
   return useMutation<string, void, string>(dataApi.deleteConnection, {
     onSuccess: async (deletedConnectionId) => {
@@ -96,6 +99,25 @@ export function useDeleteConnection() {
           return oldData?.filter((connection) => connection.id !== deletedConnectionId);
         },
       );
+
+      try {
+        // generate the connection backup to store in recyclebin
+        const connectionToBackup = connections?.find(
+          (connection) => connection.id === deletedConnectionId,
+        );
+
+        if (connectionToBackup) {
+          // remove status before we backup.
+          const { status, ...restOfConnectionMetaData } = connectionToBackup;
+          await addRecycleBinItem({
+            type: 'Connection',
+            name: restOfConnectionMetaData.name,
+            data: restOfConnectionMetaData,
+          });
+        }
+      } catch (err) {
+        // TODO: add error handling
+      }
 
       return deletedConnectionId;
     },
