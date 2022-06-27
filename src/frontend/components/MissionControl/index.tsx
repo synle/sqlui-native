@@ -654,7 +654,7 @@ export default function MissionControl() {
 
       switch (command.event) {
         case 'clientEvent/navigate':
-          navigate(command.data as string)
+          navigate(command.data as string);
           break;
         case 'clientEvent/showCommandPalette':
           onShowCommandPalette();
