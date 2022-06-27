@@ -186,7 +186,7 @@ export class ProxyApi {
     return _fetch<SqluiCore.FolderItem[]>(`/api/folder/${folderId}`);
   }
 
-  static addFolderItem(folderId: string, folderItem: SqluiCore.FolderItem) {
+  static addFolderItem(folderId: string, folderItem: Omit<SqluiCore.FolderItem, 'id'>) {
     return _fetch<SqluiCore.FolderItem>(`/api/folder/${folderId}`, {
       method: 'post',
       body: JSON.stringify(folderItem),
