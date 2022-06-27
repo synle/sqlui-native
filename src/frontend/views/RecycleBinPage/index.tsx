@@ -1,48 +1,41 @@
+import Backdrop from '@mui/material/Backdrop';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import CircularProgress from '@mui/material/CircularProgress';
 import Link from '@mui/material/Link';
 import Typography from '@mui/material/Typography';
-import CircularProgress from '@mui/material/CircularProgress';
-import Backdrop from '@mui/material/Backdrop';
 import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import ConnectionDescription from 'src/frontend/components/ConnectionDescription';
 import NewConnectionButton from 'src/frontend/components/NewConnectionButton';
 import { useActionDialogs } from 'src/frontend/hooks/useActionDialogs';
 import { useSideBarWidthPreference } from 'src/frontend/hooks/useClientSidePreference';
+import { useUpsertConnection } from 'src/frontend/hooks/useConnection';
 import { useConnectionQueries } from 'src/frontend/hooks/useConnectionQuery';
 import { useDeletedRecycleBinItem, useGetRecycleBinItems } from 'src/frontend/hooks/useFolderItems';
 import { useTreeActions } from 'src/frontend/hooks/useTreeActions';
 import LayoutTwoColumns from 'src/frontend/layout/LayoutTwoColumns';
-import { useUpsertConnection } from 'src/frontend/hooks/useConnection';
-
-
 import { SqluiCore } from 'typings';
-
 function RecycleBinItemList() {
   const { data, isLoading: loadingRecycleBinItems } = useGetRecycleBinItems();
   const { onAddQuery } = useConnectionQueries();
-  const { mutateAsync: deleteRecyleBinItem, isLoading: loadingRestoreQuery } = useDeletedRecycleBinItem();
+  const { mutateAsync: deleteRecyleBinItem, isLoading: loadingRestoreQuery } =
+    useDeletedRecycleBinItem();
   const navigate = useNavigate();
   const { confirm } = useActionDialogs();
-  const { mutateAsync: upsertConnection, isLoading: loadingRestoreConnection } = useUpsertConnection();
+  const { mutateAsync: upsertConnection, isLoading: loadingRestoreConnection } =
+    useUpsertConnection();
 
   const onRestoreRecycleBinItem = async (folderItem: SqluiCore.FolderItem) => {
     // here we handle restorable
     switch (folderItem.type) {
       case 'Connection':
-        await Promise.all([
-          upsertConnection(folderItem.data),
-          deleteRecyleBinItem(folderItem.id),
-        ])
+        await Promise.all([upsertConnection(folderItem.data), deleteRecyleBinItem(folderItem.id)]);
         navigate('/'); // navigate back to the main page
         break;
       case 'Query':
         // TODO: add check and handle restore of related connection
-        await Promise.all([
-          onAddQuery(folderItem.data),
-          deleteRecyleBinItem(folderItem.id),
-        ]);
+        await Promise.all([onAddQuery(folderItem.data), deleteRecyleBinItem(folderItem.id)]);
         navigate('/'); // navigate back to the main page
         break;
     }
@@ -67,21 +60,20 @@ function RecycleBinItemList() {
   const isLoading = loadingRecycleBinItems || loadingRestoreConnection || loadingRestoreConnection;
 
   if (isLoading) {
-    return <Backdrop
+    return (
+      <Backdrop
         open={true}
         sx={{
           bgcolor: 'background.paper',
-          zIndex: theme => theme.zIndex.drawer + 1,
-        }}
-      >
+          zIndex: (theme) => theme.zIndex.drawer + 1,
+        }}>
         <CircularProgress />
-        <Typography variant="h6">
-          Loading...
-        </Typography>
+        <Typography variant='h6'>Loading...</Typography>
       </Backdrop>
+    );
   }
 
-  const folderItems = (data || [])
+  const folderItems = data || [];
   if (folderItems.length === 0) {
     return <Typography>Recycle Bin is empty...</Typography>;
   }
