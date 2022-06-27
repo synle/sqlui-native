@@ -9,7 +9,11 @@ import React, { useCallback, useEffect, useState } from 'react';
 import CommandPalette from 'src/frontend/components/CommandPalette';
 import Settings from 'src/frontend/components/Settings';
 import { downloadText } from 'src/frontend/data/file';
-import { getRandomSessionId, setCurrentSessionId } from 'src/frontend/data/session';
+import {
+  DEFAULT_SESSION_NAME,
+  getRandomSessionId,
+  setCurrentSessionId,
+} from 'src/frontend/data/session';
 import { useActionDialogs } from 'src/frontend/hooks/useActionDialogs';
 import {
   useDeleteConnection,
@@ -24,10 +28,10 @@ import {
   useConnectionQueries,
 } from 'src/frontend/hooks/useConnectionQuery';
 import {
+  useDeleteSession,
   useGetCurrentSession,
   useGetSessions,
   useUpsertSession,
-  useDeleteSession
 } from 'src/frontend/hooks/useSession';
 import { useSetting } from 'src/frontend/hooks/useSetting';
 import { useShowHide } from 'src/frontend/hooks/useShowHide';
@@ -39,7 +43,6 @@ import {
 } from 'src/frontend/utils/commonUtils';
 import appPackage from 'src/package.json';
 import { SqluiCore, SqluiEnums, SqluiFrontend } from 'typings';
-import { DEFAULT_SESSION_NAME } from 'src/frontend/data/session';
 
 export type Command = {
   event: SqluiEnums.ClientEventKey;
@@ -886,9 +889,6 @@ export default function MissionControl() {
 
           window.toggleElectronMenu(true, allMenuKeys);
           break;
-
-
-
         case 'clientEvent/session/delete':
           // don't let them delete default session
           if (!currentSession || !currentSession.id) {
@@ -896,7 +896,7 @@ export default function MissionControl() {
           }
 
           // ignore for default electron
-          if(currentSession.id === DEFAULT_SESSION_NAME){
+          if (currentSession.id === DEFAULT_SESSION_NAME) {
             alert(`Default session (${DEFAULT_SESSION_NAME}) cannot be deleted.`);
             return;
           }
@@ -906,7 +906,7 @@ export default function MissionControl() {
             await confirm(`Do you want to delete this session?`);
             await deleteSession(currentSession.id);
 
-            if(window.isElectron){
+            if (window.isElectron) {
               // after you delete a session, we should close it
               window.close();
             } else {

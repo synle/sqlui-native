@@ -1,9 +1,12 @@
-import {useEffect} from 'react';
 import { QueryClient, useMutation, useQuery, useQueryClient } from 'react-query';
+import { useEffect } from 'react';
 import dataApi from 'src/frontend/data/api';
-import { getCurrentSessionId } from 'src/frontend/data/session';
+import {
+  DEFAULT_SESSION_NAME,
+  getCurrentSessionId,
+  setCurrentSessionId,
+} from 'src/frontend/data/session';
 import { SqluiCore } from 'typings';
-import { DEFAULT_SESSION_NAME, setCurrentSessionId } from 'src/frontend/data/session';
 
 const QUERY_KEY_SESSIONS = 'sessions';
 
@@ -17,18 +20,15 @@ export function useGetCurrentSession() {
 
   const currentMatchedSession = data?.find((session) => session.id === getCurrentSessionId());
 
-  useEffect(
-    () => {
-      if(data){
-        if(!currentMatchedSession){
-          // special case where user is still accessing the deleted session id
-          // switch this back to default session
-          setCurrentSessionId(DEFAULT_SESSION_NAME);
-        }
+  useEffect(() => {
+    if (data) {
+      if (!currentMatchedSession) {
+        // special case where user is still accessing the deleted session id
+        // switch this back to default session
+        setCurrentSessionId(DEFAULT_SESSION_NAME);
       }
-    },
-    [data, currentMatchedSession]
-  )
+    }
+  }, [data, currentMatchedSession]);
 
   return {
     data: currentMatchedSession,
