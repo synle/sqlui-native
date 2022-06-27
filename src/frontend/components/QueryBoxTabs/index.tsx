@@ -127,13 +127,13 @@ export default function QueryBoxTabs() {
             startIcon: <CloseIcon />,
           },
           {
-            label: 'Close Other Tabs',
-            onClick: () => onCloseOtherQueries(q),
+            label: 'Close Tabs to The Right',
+            onClick: () => onCoseTabsToTheRight(q),
             startIcon: <CloseIcon />,
           },
           {
-            label: 'Close Tabs to The Right',
-            onClick: () => onCoseTabsToTheRight(q),
+            label: 'Close Other Tabs',
+            onClick: () => onCloseOtherQueries(q),
             startIcon: <CloseIcon />,
           },
         ];
