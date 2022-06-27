@@ -1,12 +1,16 @@
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
+import RestoreIcon from '@mui/icons-material/Restore';
 import Backdrop from '@mui/material/Backdrop';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import Chip from '@mui/material/Chip';
 import CircularProgress from '@mui/material/CircularProgress';
 import Link from '@mui/material/Link';
 import Typography from '@mui/material/Typography';
 import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import ConnectionDescription from 'src/frontend/components/ConnectionDescription';
+import DataTable from 'src/frontend/components/DataTable';
 import NewConnectionButton from 'src/frontend/components/NewConnectionButton';
 import { useActionDialogs } from 'src/frontend/hooks/useActionDialogs';
 import { useSideBarWidthPreference } from 'src/frontend/hooks/useClientSidePreference';
@@ -16,37 +20,91 @@ import { useDeletedRecycleBinItem, useGetRecycleBinItems } from 'src/frontend/ho
 import { useTreeActions } from 'src/frontend/hooks/useTreeActions';
 import LayoutTwoColumns from 'src/frontend/layout/LayoutTwoColumns';
 import { SqluiCore } from 'typings';
+
+const columns = [
+  {
+    Header: 'Name',
+    accessor: 'name',
+  },
+  {
+    Header: 'Type',
+    accessor: 'type',
+    Cell: (data: any) => {
+      const folderItem = data.row.original;
+      return (
+        <Chip
+          label={folderItem.type}
+          color={folderItem.type === 'Connection' ? 'success' : 'warning'}
+          size='small'
+        />
+      );
+    },
+  },
+  {
+    Header: '',
+    accessor: 'id',
+    Cell: (data: any) => {
+      const folderItem = data.row.original;
+      const onRestoreRecycleBinItem = async (folderItem: SqluiCore.FolderItem) => {
+        // here we handle restorable
+        switch (folderItem.type) {
+          case 'Connection':
+            await Promise.all([
+              upsertConnection(folderItem.data),
+              deleteRecyleBinItem(folderItem.id),
+            ]);
+            navigate('/'); // navigate back to the main page
+            break;
+          case 'Query':
+            // TODO: add check and handle restore of related connection
+            await Promise.all([onAddQuery(folderItem.data), deleteRecyleBinItem(folderItem.id)]);
+            navigate('/'); // navigate back to the main page
+            break;
+        }
+      };
+
+      const onDeleteRecycleBin = async (folderItem: SqluiCore.FolderItem) => {
+        try {
+          await confirm(`Do you want to delete this item permanently "${folderItem.name}"?`);
+          await deleteRecyleBinItem(folderItem.id);
+        } catch (err) {}
+      };
+
+      const { onAddQuery } = useConnectionQueries();
+      const { mutateAsync: deleteRecyleBinItem, isLoading: loadingRestoreQuery } =
+        useDeletedRecycleBinItem();
+      const navigate = useNavigate();
+      const { confirm } = useActionDialogs();
+      const { mutateAsync: upsertConnection, isLoading: loadingRestoreConnection } =
+        useUpsertConnection();
+
+      return (
+        <Box sx={{ display: 'flex', gap: 2 }}>
+          <Button
+            onClick={() => onRestoreRecycleBinItem(folderItem)}
+            variant='contained'
+            size='small'
+            startIcon={<RestoreIcon />}>
+            Restore
+          </Button>
+          <Button
+            onClick={() => onDeleteRecycleBin(folderItem)}
+            variant='outlined'
+            size='small'
+            color='error'
+            startIcon={<DeleteForeverIcon />}>
+            Delete
+          </Button>
+        </Box>
+      );
+    },
+  },
+];
 function RecycleBinItemList() {
   const { data, isLoading: loadingRecycleBinItems } = useGetRecycleBinItems();
-  const { onAddQuery } = useConnectionQueries();
   const { mutateAsync: deleteRecyleBinItem, isLoading: loadingRestoreQuery } =
     useDeletedRecycleBinItem();
-  const navigate = useNavigate();
   const { confirm } = useActionDialogs();
-  const { mutateAsync: upsertConnection, isLoading: loadingRestoreConnection } =
-    useUpsertConnection();
-
-  const onRestoreRecycleBinItem = async (folderItem: SqluiCore.FolderItem) => {
-    // here we handle restorable
-    switch (folderItem.type) {
-      case 'Connection':
-        await Promise.all([upsertConnection(folderItem.data), deleteRecyleBinItem(folderItem.id)]);
-        navigate('/'); // navigate back to the main page
-        break;
-      case 'Query':
-        // TODO: add check and handle restore of related connection
-        await Promise.all([onAddQuery(folderItem.data), deleteRecyleBinItem(folderItem.id)]);
-        navigate('/'); // navigate back to the main page
-        break;
-    }
-  };
-
-  const onDeleteRecycleBin = async (folderItem: SqluiCore.FolderItem) => {
-    try {
-      await confirm(`Do you want to delete this item permanently "${folderItem.name}"?`);
-      await deleteRecyleBinItem(folderItem.id);
-    } catch (err) {}
-  };
 
   const onEmptyTrash = async () => {
     try {
@@ -57,7 +115,7 @@ function RecycleBinItemList() {
     } catch (err) {}
   };
 
-  const isLoading = loadingRecycleBinItems || loadingRestoreConnection || loadingRestoreConnection;
+  const isLoading = loadingRecycleBinItems;
 
   if (isLoading) {
     return (
@@ -77,28 +135,12 @@ function RecycleBinItemList() {
   if (folderItems.length === 0) {
     return <Typography>Recycle Bin is empty...</Typography>;
   }
-
   return (
     <>
-      {folderItems.map((folderItem) => {
-        return (
-          <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }} key={folderItem.id}>
-            <Typography>{folderItem.name}</Typography>
-            <Typography>{folderItem.type}</Typography>
-            <Button onClick={() => onRestoreRecycleBinItem(folderItem)} variant='contained'>
-              Restore
-            </Button>
-            <Button onClick={() => onDeleteRecycleBin(folderItem)} variant='outlined'>
-              Delete
-            </Button>
-          </Box>
-        );
-      })}
       <Box>
-        <Button onClick={() => onEmptyTrash()} variant='contained'>
-          Empty Trash
-        </Button>
+        <Link onClick={() => onEmptyTrash()}>Empty Trash</Link>
       </Box>
+      <DataTable data={folderItems} columns={columns} />
     </>
   );
 }
