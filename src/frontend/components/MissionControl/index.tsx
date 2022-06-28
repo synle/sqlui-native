@@ -205,6 +205,7 @@ export default function MissionControl() {
 
     addBookmarkItem({
       type: 'Query',
+      name: newName,
       data: restOfQuery,
     });
   };

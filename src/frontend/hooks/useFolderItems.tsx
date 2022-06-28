@@ -28,6 +28,21 @@ export function useAddFolderItem(folderType: SqluiCore.FolderType) {
   );
 }
 
+export function useUpdateFolderItem(folderType: SqluiCore.FolderType) {
+  const queryClient = useQueryClient();
+
+  return useMutation<void, void, SqluiCore.FolderItem>(
+    async (folderItem) => {
+      await dataApi.updateFolderItem(folderType, folderItem);
+    },
+    {
+      onSuccess: async () => {
+        queryClient.invalidateQueries([QUERY_KEY_FOLDER_ITEMS, folderType]);
+      },
+    },
+  );
+}
+
 export function useDeleteFolderItem(folderType: SqluiCore.FolderType) {
   const queryClient = useQueryClient();
 
@@ -56,7 +71,10 @@ export function useDeletedRecycleBinItem() {
   return useDeleteFolderItem(FOLDER_TYPE_RECYCLE_BIN);
 }
 
-// TODO: will be used to implement bookmarks
+export function useUpdateRecycleBinItem(){
+  return useUpdateFolderItem(FOLDER_TYPE_RECYCLE_BIN);
+}
+
 // bookmarks folder api
 export function useGetBookmarkItems() {
   return useGetFolderItems(FOLDER_TYPE_BOOKMARKS);
@@ -68,4 +86,8 @@ export function useAddBookmarkItem() {
 
 export function useDeleteBookmarkItem() {
   return useDeleteFolderItem(FOLDER_TYPE_BOOKMARKS);
+}
+
+export function useUpdateBookmarkItem(){
+  return useUpdateFolderItem(FOLDER_TYPE_BOOKMARKS);
 }
