@@ -6,7 +6,7 @@ title: sqlui-native
 
 ## Windows
 
-- Download the above `.exe` file
+- %download-link-windows%
 - Open the `.exe` file
 - Click on `More info`
 - Then choose `Run anyway`
@@ -19,7 +19,7 @@ title: sqlui-native
 
 ## Mac
 
-- Download the above `.dmg` file
+- %download-link-mac%
 - Open the `.dmg` file
 - Drag the binary to Application file
 - Open the app once in the Applications folder
@@ -41,7 +41,7 @@ title: sqlui-native
 
 ## Ubuntu / Debian
 
-- Download the above `.deb` file
+- %download-link-ubuntu%
 - Run the following shell command to install the above `.deb`
 
 ```
