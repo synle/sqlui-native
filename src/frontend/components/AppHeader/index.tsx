@@ -7,6 +7,7 @@ import KeyboardCommandKeyIcon from '@mui/icons-material/KeyboardCommandKey';
 import MenuIcon from '@mui/icons-material/Menu';
 import PhotoSizeSelectSmallIcon from '@mui/icons-material/PhotoSizeSelectSmall';
 import SettingsIcon from '@mui/icons-material/Settings';
+import StarIcon from '@mui/icons-material/Star';
 import AppBar from '@mui/material/AppBar';
 import IconButton from '@mui/material/IconButton';
 import Toolbar from '@mui/material/Toolbar';
@@ -67,6 +68,11 @@ export default function AppHeader() {
       label: 'Data Migration',
       onClick: () => navigate('/migration'),
       startIcon: <BackupIcon />,
+    },
+    {
+      label: 'Bookmarks',
+      onClick: () => navigate('/bookmarks'),
+      startIcon: <StarIcon />,
     },
     {
       label: 'Recycle Bin',
