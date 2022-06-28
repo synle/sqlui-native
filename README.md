@@ -124,6 +124,40 @@ Settings can be accessed via the top right menu icon. It allows you to set up pr
 
 ![image](https://user-images.githubusercontent.com/3792401/167707497-82546e72-4a7f-4724-bf1e-8c36836d685d.png)
 
+### Data Migration
+
+If you happens to work with different database engine, there's a chance you want to move data from one engine to another engine. You can use `Data Migration` to craft a query to pull in data from the old engine and select a destination to generate the new schema / data for the new engine.
+
+- `Data Migration` can be accessed from the top right hamburger icon
+- From there, you have 2 options to migrate data. Either by a raw JSON or by data from an existing connection.
+
+![image](https://user-images.githubusercontent.com/3792401/176089071-ddfe9c67-46bb-4261-9e2b-0978fa25eee2.png)
+
+![image](https://user-images.githubusercontent.com/3792401/176088421-5b0e6e48-0e44-41ab-b98f-0677feff70d1.png)
+
+#### Migration of Real Existing Connection
+
+Use this data migration option to move data from an existing connection
+
+![image](https://user-images.githubusercontent.com/3792401/176088688-eaba3a95-0bf9-4efa-8513-e7b4c534074f.png)
+
+#### Migration of Raw JSON Data
+
+Use this data migration option to move raw JSON data
+
+![image](https://user-images.githubusercontent.com/3792401/176088775-385777a8-a89b-460c-878d-8bb64af20f84.png)
+
+### Recycle bin
+
+By default, all closed queries and deleted connections will be stored inside of a recycle bin which you can always restore at a later. To access the recycle bin, click on the hamburger menu bar on the top right and select Recycle Bin.
+
+- From there you can choose to `Restore` the deleted connections or closed queries.
+- To permanently delete the items from sqlui-native, you can choose either `Empty Trash` or `Delete` individual items permanently.
+
+![image](https://user-images.githubusercontent.com/3792401/176087950-36a3ec82-c975-43c8-b225-b044bd81248e.png)
+
+![image](https://user-images.githubusercontent.com/3792401/176088031-63c7bdfb-16a1-481c-9ca3-615043d5f362.png)
+
 ## Contributing
 
 - [Repo](https://github.com/synle/sqlui-native)
