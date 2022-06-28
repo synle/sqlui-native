@@ -4,6 +4,7 @@ import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import CloseIcon from '@mui/icons-material/Close';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import EditIcon from '@mui/icons-material/Edit';
+import StarIcon from '@mui/icons-material/Star';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -72,6 +73,12 @@ export default function QueryBoxTabs() {
     [selectCommand],
   );
 
+  const onAddToBookmark = useCallback(
+    (data: SqluiFrontend.ConnectionQuery) =>
+      selectCommand({ event: 'clientEvent/query/addToBookmark', data }),
+    [selectCommand],
+  );
+
   const onChangeQueryTabOrdering = useCallback(
     (from: number, to: number) =>
       selectCommand({ event: 'clientEvent/query/changeTabOrdering', data: { from, to } }),
@@ -107,6 +114,12 @@ export default function QueryBoxTabs() {
       ...(queries || []).map((q, idx) => {
         const options = [
           {
+            label: 'Add to Bookmark',
+            onClick: () => onAddToBookmark(q),
+            startIcon: <StarIcon />,
+          },
+          { label: 'divider' },
+          {
             label: 'Rename',
             onClick: () => onRenameQuery(q),
             startIcon: <EditIcon />,
@@ -121,11 +134,7 @@ export default function QueryBoxTabs() {
             onClick: () => onDuplicateQuery(q),
             startIcon: <ContentCopyIcon />,
           },
-          {
-            label: 'Close',
-            onClick: () => onCloseQuery(q),
-            startIcon: <CloseIcon />,
-          },
+          { label: 'divider' },
           {
             label: 'Close Tabs to The Right',
             onClick: () => onCoseTabsToTheRight(q),
@@ -134,6 +143,11 @@ export default function QueryBoxTabs() {
           {
             label: 'Close Other Tabs',
             onClick: () => onCloseOtherQueries(q),
+            startIcon: <CloseIcon />,
+          },
+          {
+            label: 'Close',
+            onClick: () => onCloseQuery(q),
             startIcon: <CloseIcon />,
           },
         ];
