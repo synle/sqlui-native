@@ -274,14 +274,8 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
       'connection',
     );
 
-    res
-      .status(202)
-      .json(
-        await connectionsStorage.delete(req.params?.connectionId),
-      );
+    res.status(202).json(await connectionsStorage.delete(req.params?.connectionId));
   });
-
-
   //=========================================================================
   // query api endpoints
   //=========================================================================
@@ -291,11 +285,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
       'query',
     );
 
-    res
-      .status(200)
-      .json(
-        await queryStorage.list(),
-      );
+    res.status(200).json(await queryStorage.list());
   });
 
   addDataEndpoint('post', '/api/query', async (req, res, apiCache) => {
@@ -340,14 +330,8 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
       'query',
     );
 
-    res
-      .status(202)
-      .json(
-        await queryStorage.delete(req.params?.queryId),
-      );
+    res.status(202).json(await queryStorage.delete(req.params?.queryId));
   });
-
-
   //=========================================================================
   // session api endpoints
   //=========================================================================
@@ -358,11 +342,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
       'sessions',
     );
 
-    res
-      .status(200)
-      .json(
-        await sessionsStorage.list(),
-      );
+    res.status(200).json(await sessionsStorage.list());
   });
 
   addDataEndpoint('post', '/api/session', async (req, res, apiCache) => {
@@ -407,14 +387,8 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
       'sessions',
     );
 
-    res
-      .status(202)
-      .json(
-        await sessionsStorage.delete(req.params?.sessionId),
-      );
+    res.status(202).json(await sessionsStorage.delete(req.params?.sessionId));
   });
-
-
   //=========================================================================
   // recycle api endpoints
   //=========================================================================
