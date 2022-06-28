@@ -27,6 +27,7 @@ import {
   useActiveConnectionQuery,
   useConnectionQueries,
 } from 'src/frontend/hooks/useConnectionQuery';
+import { useAddBookmarkItem } from 'src/frontend/hooks/useFolderItems';
 import {
   useDeleteSession,
   useGetCurrentSession,
@@ -120,6 +121,7 @@ export default function MissionControl() {
   const { mutateAsync: reconnectConnection } = useRetryConnection();
   const { mutateAsync: duplicateConnection } = useDuplicateConnection();
   const { mutateAsync: deleteSession } = useDeleteSession();
+  const { mutateAsync: addBookmarkItem } = useAddBookmarkItem();
 
   const onCloseQuery = async (query: SqluiFrontend.ConnectionQuery) => {
     try {
@@ -189,6 +191,22 @@ export default function MissionControl() {
       JSON.stringify([getExportedQuery(query)], null, 2),
       'text/json',
     );
+  };
+
+  const onAddQueryToBookmark = async (query: SqluiFrontend.ConnectionQuery) => {
+    const newName = await prompt({
+      title: 'Add query to Bookmarks',
+      message: 'A bookmark name',
+      value: `${query.name || ''} -Bookmarked Query ${new Date().toLocaleString()}`,
+      saveLabel: 'Save',
+    });
+
+    const { selected, ...restOfQuery } = query;
+
+    addBookmarkItem({
+      type: 'Query',
+      data: restOfQuery,
+    });
   };
 
   const onRevealQueryConnection = async (query: SqluiFrontend.ConnectionQuery) => {
@@ -859,6 +877,13 @@ export default function MissionControl() {
           // this reveal the current query connection
           if (activeQuery) {
             onRevealQueryConnection(activeQuery);
+          }
+          break;
+
+        case 'clientEvent/query/addToBookmark':
+          // this reveal the current query connection
+          if (command.data) {
+            onAddQueryToBookmark(command.data as SqluiFrontend.ConnectionQuery);
           }
           break;
 
