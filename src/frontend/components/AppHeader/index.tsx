@@ -7,6 +7,7 @@ import KeyboardCommandKeyIcon from '@mui/icons-material/KeyboardCommandKey';
 import MenuIcon from '@mui/icons-material/Menu';
 import PhotoSizeSelectSmallIcon from '@mui/icons-material/PhotoSizeSelectSmall';
 import SettingsIcon from '@mui/icons-material/Settings';
+import StarIcon from '@mui/icons-material/Star';
 import AppBar from '@mui/material/AppBar';
 import IconButton from '@mui/material/IconButton';
 import Toolbar from '@mui/material/Toolbar';
@@ -18,7 +19,6 @@ import DropdownButton from 'src/frontend/components/DropdownButton';
 import { useCommands } from 'src/frontend/components/MissionControl';
 import { useGetCurrentSession, useGetSessions } from 'src/frontend/hooks/useSession';
 import appPackage from 'src/package.json';
-import StarIcon from '@mui/icons-material/Star';
 
 export default function AppHeader() {
   const [open, setOpen] = useState(false);

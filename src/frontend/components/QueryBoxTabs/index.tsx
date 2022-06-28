@@ -4,6 +4,7 @@ import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import CloseIcon from '@mui/icons-material/Close';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import EditIcon from '@mui/icons-material/Edit';
+import StarIcon from '@mui/icons-material/Star';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -17,7 +18,6 @@ import Tabs from 'src/frontend/components/Tabs';
 import { useConnectionQueries } from 'src/frontend/hooks/useConnectionQuery';
 import { useQueryTabOrientationSetting } from 'src/frontend/hooks/useSetting';
 import { SqluiFrontend } from 'typings';
-import StarIcon from '@mui/icons-material/Star';
 
 export default function QueryBoxTabs() {
   const navigate = useNavigate();
@@ -118,7 +118,7 @@ export default function QueryBoxTabs() {
             onClick: () => onAddToBookmark(q),
             startIcon: <StarIcon />,
           },
-          {label: 'divider',},
+          { label: 'divider' },
           {
             label: 'Rename',
             onClick: () => onRenameQuery(q),
@@ -134,7 +134,7 @@ export default function QueryBoxTabs() {
             onClick: () => onDuplicateQuery(q),
             startIcon: <ContentCopyIcon />,
           },
-          {label: 'divider',},
+          { label: 'divider' },
           {
             label: 'Close Tabs to The Right',
             onClick: () => onCoseTabsToTheRight(q),
