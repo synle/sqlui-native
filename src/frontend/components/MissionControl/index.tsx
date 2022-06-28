@@ -191,6 +191,20 @@ export default function MissionControl() {
     );
   };
 
+  const onAddQueryToBookmark = async (query: SqluiFrontend.ConnectionQuery) => {
+    const newName = await prompt({
+      title: 'Add query to Bookmarks',
+      message: 'A bookmark name',
+      value: `${query.name || ''} -Bookmarked Query ${new Date().toLocaleString()}`,
+      saveLabel: 'Save',
+    });
+
+    await connectionQueries.onChangeQuery(query.id, {
+      name: newName,
+    });
+    await connectionQueries.onDuplicateQuery(query.id);
+  };
+
   const onRevealQueryConnection = async (query: SqluiFrontend.ConnectionQuery) => {
     const { databaseId, connectionId } = query;
 
@@ -859,6 +873,13 @@ export default function MissionControl() {
           // this reveal the current query connection
           if (activeQuery) {
             onRevealQueryConnection(activeQuery);
+          }
+          break;
+
+        case 'clientEvent/query/addToBookmark':
+          // this reveal the current query connection
+          if (command.data) {
+            onAddQueryToBookmark(command.data as SqluiFrontend.ConnectionQuery);
           }
           break;
 

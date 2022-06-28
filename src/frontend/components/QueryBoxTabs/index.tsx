@@ -17,6 +17,7 @@ import Tabs from 'src/frontend/components/Tabs';
 import { useConnectionQueries } from 'src/frontend/hooks/useConnectionQuery';
 import { useQueryTabOrientationSetting } from 'src/frontend/hooks/useSetting';
 import { SqluiFrontend } from 'typings';
+import StarIcon from '@mui/icons-material/Star';
 
 export default function QueryBoxTabs() {
   const navigate = useNavigate();
@@ -72,6 +73,12 @@ export default function QueryBoxTabs() {
     [selectCommand],
   );
 
+  const onAddToBookmark = useCallback(
+    (data: SqluiFrontend.ConnectionQuery) =>
+      selectCommand({ event: 'clientEvent/query/addToBookmark', data }),
+    [selectCommand],
+  );
+
   const onChangeQueryTabOrdering = useCallback(
     (from: number, to: number) =>
       selectCommand({ event: 'clientEvent/query/changeTabOrdering', data: { from, to } }),
@@ -107,6 +114,12 @@ export default function QueryBoxTabs() {
       ...(queries || []).map((q, idx) => {
         const options = [
           {
+            label: 'Add to Bookmark',
+            onClick: () => onAddToBookmark(q),
+            startIcon: <StarIcon />,
+          },
+          {label: 'divider',},
+          {
             label: 'Rename',
             onClick: () => onRenameQuery(q),
             startIcon: <EditIcon />,
@@ -121,11 +134,7 @@ export default function QueryBoxTabs() {
             onClick: () => onDuplicateQuery(q),
             startIcon: <ContentCopyIcon />,
           },
-          {
-            label: 'Close',
-            onClick: () => onCloseQuery(q),
-            startIcon: <CloseIcon />,
-          },
+          {label: 'divider',},
           {
             label: 'Close Tabs to The Right',
             onClick: () => onCoseTabsToTheRight(q),
@@ -134,6 +143,11 @@ export default function QueryBoxTabs() {
           {
             label: 'Close Other Tabs',
             onClick: () => onCloseOtherQueries(q),
+            startIcon: <CloseIcon />,
+          },
+          {
+            label: 'Close',
+            onClick: () => onCloseQuery(q),
             startIcon: <CloseIcon />,
           },
         ];
