@@ -43,6 +43,9 @@ import {
 } from 'src/frontend/utils/commonUtils';
 import appPackage from 'src/package.json';
 import { SqluiCore, SqluiEnums, SqluiFrontend } from 'typings';
+import {
+  useAddBookmarkItem
+} from 'src/frontend/hooks/useFolderItems';
 
 export type Command = {
   event: SqluiEnums.ClientEventKey;
@@ -120,6 +123,7 @@ export default function MissionControl() {
   const { mutateAsync: reconnectConnection } = useRetryConnection();
   const { mutateAsync: duplicateConnection } = useDuplicateConnection();
   const { mutateAsync: deleteSession } = useDeleteSession();
+  const {mutateAsync: addBookmarkItem} = useAddBookmarkItem();
 
   const onCloseQuery = async (query: SqluiFrontend.ConnectionQuery) => {
     try {
@@ -199,10 +203,12 @@ export default function MissionControl() {
       saveLabel: 'Save',
     });
 
-    await connectionQueries.onChangeQuery(query.id, {
-      name: newName,
-    });
-    await connectionQueries.onDuplicateQuery(query.id);
+    const { selected, ...restOfQuery } = query;
+
+    addBookmarkItem({
+      type: 'Query',
+      data: restOfQuery
+    })
   };
 
   const onRevealQueryConnection = async (query: SqluiFrontend.ConnectionQuery) => {
