@@ -68,12 +68,16 @@ export function getEndpointHandlers() {
 export function setUpDataEndpoints(anExpressAppContext?: Express) {
   expressAppContext = anExpressAppContext;
 
-  // query endpoints
+  //=========================================================================
+  // connection api endpoints
+  //=========================================================================
   addDataEndpoint('get', '/api/connections', async (req, res, apiCache) => {
-    const connections = await new PersistentStorage<SqluiCore.ConnectionProps>(
+    const connectionsStorage = await new PersistentStorage<SqluiCore.ConnectionProps>(
       req.headers['sqlui-native-session-id'],
       'connection',
-    ).list();
+    );
+
+    const connections = await connectionsStorage.list();
 
     const promisesCheckConnections: Promise<void>[] = [];
     for (const connection of connections) {
@@ -101,19 +105,23 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
   });
 
   addDataEndpoint('post', '/api/connections', async (req, res, apiCache) => {
-    const connections = await new PersistentStorage<SqluiCore.ConnectionProps>(
+    const connectionsStorage = await new PersistentStorage<SqluiCore.ConnectionProps>(
       req.headers['sqlui-native-session-id'],
       'connection',
-    ).set(req.body);
+    );
+
+    const connections = await connectionsStorage.set(req.body);
 
     res.status(200).json(connections);
   });
 
   addDataEndpoint('get', '/api/connection/:connectionId', async (req, res, apiCache) => {
-    const connection = await new PersistentStorage<SqluiCore.ConnectionProps>(
+    const connectionsStorage = await new PersistentStorage<SqluiCore.ConnectionProps>(
       req.headers['sqlui-native-session-id'],
       'connection',
-    ).get(req.params?.connectionId);
+    );
+
+    const connection = await connectionsStorage.get(req.params?.connectionId);
 
     try {
       const engine = getDataAdapter(connection.connection);
@@ -127,10 +135,12 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
   });
 
   addDataEndpoint('get', '/api/connection/:connectionId/databases', async (req, res, apiCache) => {
-    const connection = await new PersistentStorage<SqluiCore.ConnectionProps>(
+    const connectionsStorage = await new PersistentStorage<SqluiCore.ConnectionProps>(
       req.headers['sqlui-native-session-id'],
       'connection',
-    ).get(req.params?.connectionId);
+    );
+
+    const connection = await connectionsStorage.get(req.params?.connectionId);
 
     if (!connection) {
       return res.status(404).send('Not Found');
@@ -169,10 +179,12 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
   );
 
   addDataEndpoint('post', '/api/connection/:connectionId/connect', async (req, res, apiCache) => {
-    const connection = await new PersistentStorage<SqluiCore.ConnectionProps>(
+    const connectionsStorage = await new PersistentStorage<SqluiCore.ConnectionProps>(
       req.headers['sqlui-native-session-id'],
       'connection',
-    ).get(req.params?.connectionId);
+    );
+
+    const connection = await connectionsStorage.get(req.params?.connectionId);
 
     if (!connection) {
       return res.status(404).send('Not Found');
@@ -193,10 +205,12 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
   });
 
   addDataEndpoint('post', '/api/connection/:connectionId/execute', async (req, res, apiCache) => {
-    const connection = await new PersistentStorage<SqluiCore.ConnectionProps>(
+    const connectionsStorage = await new PersistentStorage<SqluiCore.ConnectionProps>(
       req.headers['sqlui-native-session-id'],
       'connection',
-    ).get(req.params?.connectionId);
+    );
+
+    const connection = await connectionsStorage.get(req.params?.connectionId);
 
     if (!connection) {
       return res.status(404).send('Not Found');
@@ -221,11 +235,14 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
 
   addDataEndpoint('post', '/api/connection', async (req, res, apiCache) => {
     apiCache.set('serverCacheKey/cacheMetaData', null);
+
+    const connectionsStorage = await new PersistentStorage<SqluiCore.ConnectionProps>(
+      req.headers['sqlui-native-session-id'],
+      'connection',
+    );
+
     res.status(201).json(
-      await new PersistentStorage<SqluiCore.ConnectionProps>(
-        req.headers['sqlui-native-session-id'],
-        'connection',
-      ).add({
+      await connectionsStorage.add({
         connection: req.body?.connection,
         name: req.body?.name,
       }),
@@ -234,11 +251,14 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
 
   addDataEndpoint('put', '/api/connection/:connectionId', async (req, res, apiCache) => {
     apiCache.set('serverCacheKey/cacheMetaData', null);
+
+    const connectionsStorage = await new PersistentStorage<SqluiCore.ConnectionProps>(
+      req.headers['sqlui-native-session-id'],
+      'connection',
+    );
+
     res.status(202).json(
-      await new PersistentStorage<SqluiCore.ConnectionProps>(
-        req.headers['sqlui-native-session-id'],
-        'connection',
-      ).update({
+      await connectionsStorage.update({
         id: req.params?.connectionId,
         connection: req.body?.connection,
         name: req.body?.name,
@@ -248,35 +268,36 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
 
   addDataEndpoint('delete', '/api/connection/:connectionId', async (req, res, apiCache) => {
     apiCache.set('serverCacheKey/cacheMetaData', null);
-    res
-      .status(202)
-      .json(
-        await new PersistentStorage<SqluiCore.ConnectionProps>(
-          req.headers['sqlui-native-session-id'],
-          'connection',
-        ).delete(req.params?.connectionId),
-      );
-  });
 
-  // query endpoints
+    const connectionsStorage = await new PersistentStorage<SqluiCore.ConnectionProps>(
+      req.headers['sqlui-native-session-id'],
+      'connection',
+    );
+
+    res.status(202).json(await connectionsStorage.delete(req.params?.connectionId));
+  });
+  //=========================================================================
+  // query api endpoints
+  //=========================================================================
   addDataEndpoint('get', '/api/queries', async (req, res, apiCache) => {
-    res
-      .status(200)
-      .json(
-        await new PersistentStorage<SqluiCore.ConnectionQuery>(
-          req.headers['sqlui-native-session-id'],
-          'query',
-        ).list(),
-      );
+    const queryStorage = await new PersistentStorage<SqluiCore.ConnectionQuery>(
+      req.headers['sqlui-native-session-id'],
+      'query',
+    );
+
+    res.status(200).json(await queryStorage.list());
   });
 
   addDataEndpoint('post', '/api/query', async (req, res, apiCache) => {
     apiCache.set('serverCacheKey/cacheMetaData', null);
+
+    const queryStorage = await new PersistentStorage<SqluiCore.ConnectionQuery>(
+      req.headers['sqlui-native-session-id'],
+      'query',
+    );
+
     res.status(201).json(
-      await new PersistentStorage<SqluiCore.ConnectionQuery>(
-        req.headers['sqlui-native-session-id'],
-        'query',
-      ).add({
+      await queryStorage.add({
         connection: req.body?.name,
       }),
     );
@@ -284,11 +305,14 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
 
   addDataEndpoint('put', '/api/query/:queryId', async (req, res, apiCache) => {
     apiCache.set('serverCacheKey/cacheMetaData', null);
+
+    const queryStorage = await new PersistentStorage<SqluiCore.ConnectionQuery>(
+      req.headers['sqlui-native-session-id'],
+      'query',
+    );
+
     res.status(202).json(
-      await new PersistentStorage<SqluiCore.ConnectionQuery>(
-        req.headers['sqlui-native-session-id'],
-        'query',
-      ).update({
+      await queryStorage.update({
         id: req.body.id,
         name: req.body.name,
         connectionId: req.body?.connectionId,
@@ -300,38 +324,38 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
 
   addDataEndpoint('delete', '/api/query/:queryId', async (req, res, apiCache) => {
     apiCache.set('serverCacheKey/cacheMetaData', null);
-    res
-      .status(202)
-      .json(
-        await new PersistentStorage<SqluiCore.ConnectionQuery>(
-          req.headers['sqlui-native-session-id'],
-          'query',
-        ).delete(req.params?.queryId),
-      );
-  });
 
-  // session api
-  // query endpoints
+    const queryStorage = await new PersistentStorage<SqluiCore.ConnectionQuery>(
+      req.headers['sqlui-native-session-id'],
+      'query',
+    );
+
+    res.status(202).json(await queryStorage.delete(req.params?.queryId));
+  });
+  //=========================================================================
+  // session api endpoints
+  //=========================================================================
   addDataEndpoint('get', '/api/sessions', async (req, res, apiCache) => {
-    res
-      .status(200)
-      .json(
-        await new PersistentStorage<SqluiCore.Session>(
-          req.headers['sqlui-native-session-id'],
-          'session',
-          'sessions',
-        ).list(),
-      );
+    const sessionsStorage = await new PersistentStorage<SqluiCore.Session>(
+      req.headers['sqlui-native-session-id'],
+      'session',
+      'sessions',
+    );
+
+    res.status(200).json(await sessionsStorage.list());
   });
 
   addDataEndpoint('post', '/api/session', async (req, res, apiCache) => {
     apiCache.set('serverCacheKey/cacheMetaData', null);
+
+    const sessionsStorage = await new PersistentStorage<SqluiCore.Session>(
+      req.headers['sqlui-native-session-id'],
+      'session',
+      'sessions',
+    );
+
     res.status(201).json(
-      await new PersistentStorage<SqluiCore.Session>(
-        req.headers['sqlui-native-session-id'],
-        'session',
-        'sessions',
-      ).add({
+      await sessionsStorage.add({
         connection: req.body?.name,
       }),
     );
@@ -339,12 +363,15 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
 
   addDataEndpoint('put', '/api/session/:sessionId', async (req, res, apiCache) => {
     apiCache.set('serverCacheKey/cacheMetaData', null);
+
+    const sessionsStorage = await new PersistentStorage<SqluiCore.Session>(
+      req.headers['sqlui-native-session-id'],
+      'session',
+      'sessions',
+    );
+
     res.status(202).json(
-      await new PersistentStorage<SqluiCore.Session>(
-        req.headers['sqlui-native-session-id'],
-        'session',
-        'sessions',
-      ).update({
+      await sessionsStorage.update({
         id: req.params?.sessionId,
         name: req.body?.name,
       }),
@@ -353,18 +380,18 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
 
   addDataEndpoint('delete', '/api/session/:sessionId', async (req, res, apiCache) => {
     apiCache.set('serverCacheKey/cacheMetaData', null);
-    res
-      .status(202)
-      .json(
-        await new PersistentStorage<SqluiCore.Session>(
-          req.headers['sqlui-native-session-id'],
-          'session',
-          'sessions',
-        ).delete(req.params?.sessionId),
-      );
-  });
 
-  // recycle endpoints
+    const sessionsStorage = await new PersistentStorage<SqluiCore.Session>(
+      req.headers['sqlui-native-session-id'],
+      'session',
+      'sessions',
+    );
+
+    res.status(202).json(await sessionsStorage.delete(req.params?.sessionId));
+  });
+  //=========================================================================
+  // recycle api endpoints
+  //=========================================================================
   // this get a list of all items in a folder
   addDataEndpoint('get', '/api/folder/:folderId', async (req, res, apiCache) => {
     const folderItemsStorage = await new PersistentStorage<SqluiCore.FolderItem>(
