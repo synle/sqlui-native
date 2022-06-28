@@ -76,7 +76,7 @@
 #### In an electron container
 
 ```
-npm install --legacy-peer-deps
+npm install
 npm start
 ```
 
@@ -85,7 +85,7 @@ npm start
 Run this and test it in the browser
 
 ```
-npm install --legacy-peer-deps
+npm install
 npm run dev
 # then open a browser with URL
 # http://localhost:3000
@@ -96,7 +96,7 @@ npm run dev
 ```
 npm run build
 cd build
-npm install --legacy-peer-deps
+npm install
 npm run dist
 ```
 
