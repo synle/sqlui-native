@@ -18,6 +18,7 @@ import DropdownButton from 'src/frontend/components/DropdownButton';
 import { useCommands } from 'src/frontend/components/MissionControl';
 import { useGetCurrentSession, useGetSessions } from 'src/frontend/hooks/useSession';
 import appPackage from 'src/package.json';
+import StarIcon from '@mui/icons-material/Star';
 
 export default function AppHeader() {
   const [open, setOpen] = useState(false);
@@ -67,6 +68,11 @@ export default function AppHeader() {
       label: 'Data Migration',
       onClick: () => navigate('/migration'),
       startIcon: <BackupIcon />,
+    },
+    {
+      label: 'Bookmarks',
+      onClick: () => navigate('/bookmarks'),
+      startIcon: <StarIcon />,
     },
     {
       label: 'Recycle Bin',
