@@ -24,9 +24,9 @@
       {% if site.github.is_project_page %}
         <a href="{{ site.github.repository_url }}" class="btn">GitHub</a>
       {% endif %}
-      <a href="https://github.com/synle/sqlui-native/releases/download/APP_VERSION/sqlui-native-APP_VERSION.dmg" class="btn appVersion"><i class="fas fa-download" style="margin-right: 5px;"></i> Mac (<b>.dmg</b>)</a>
-      <a href="https://github.com/synle/sqlui-native/releases/download/APP_VERSION/sqlui-native-APP_VERSION.exe" class="btn appVersion"><i class="fas fa-download" style="margin-right: 5px;"></i> Windows (<b>.exe</b>)</a>
-      <a href="https://github.com/synle/sqlui-native/releases/download/APP_VERSION/sqlui-native-APP_VERSION.deb" class="btn appVersion"><i class="fas fa-download" style="margin-right: 5px;"></i> Ubuntu / Debian (<b>.deb</b>)</a>
+      <a id='download-link-mac' href="https://github.com/synle/sqlui-native/releases/download/APP_VERSION/sqlui-native-APP_VERSION.dmg" class="btn appVersion"><i class="fas fa-download" style="margin-right: 5px;"></i> Mac (<b>.dmg</b>)</a>
+      <a id='download-link-windows' href="https://github.com/synle/sqlui-native/releases/download/APP_VERSION/sqlui-native-APP_VERSION.exe" class="btn appVersion"><i class="fas fa-download" style="margin-right: 5px;"></i> Windows (<b>.exe</b>)</a>
+      <a  id='download-link-ubuntu' href="https://github.com/synle/sqlui-native/releases/download/APP_VERSION/sqlui-native-APP_VERSION.deb" class="btn appVersion"><i class="fas fa-download" style="margin-right: 5px;"></i> Ubuntu / Debian (<b>.deb</b>)</a>
       <a href="https://github.com/synle/sqlui-native/releases/tag/APP_VERSION" class="btn appVersion">Other Releases</a>
     </header>
 
@@ -58,7 +58,26 @@
             item.innerText = item.innerText.replace(/APP_VERSION/g, version)
           }
         }
-      })
+
+        // update the download link in the installation page
+        for(const li of document.querySelectorAll('li')){
+          const innerText = li.innerText;
+          if(innerText.includes('%')){
+            if(innerText.includes('download-link-mac')){
+              const link = document.querySelector('#download-link-mac').href;
+              li.innerHTML = `<a href="${link}">Download sqlui-native for Mac (.dmg)</a>`
+            }
+            if(innerText.includes('download-link-windows')){
+              const link = document.querySelector('#download-link-windows').href;
+              li.innerHTML = `<a href="${link}">Download sqlui-native for Windows (.exe)</a>`
+            }
+            if(innerText.includes('download-link-ubuntu')){
+              const link = document.querySelector('#download-link-ubuntu').href;
+              li.innerHTML = `<a href="${link}">Download sqlui-native for Ubuntu / Debian (.deb)</a>`
+            }
+          }
+        }
+      });
     </script>
   </body>
 </html>
