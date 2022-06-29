@@ -46,7 +46,7 @@ export default function PromptDialog(props: PromptDialogProps) {
     props.onSaveClick(value.trim());
   };
 
-  const isDisabled = !(value?.length > 0)
+  const isDisabled = !(value?.length > 0);
 
   return (
     <Dialog
@@ -93,7 +93,9 @@ export default function PromptDialog(props: PromptDialogProps) {
           )}
         </DialogContent>
         <DialogActions>
-          <Button type='submit' disabled={isDisabled}>{props.saveLabel || 'Save Changes'}</Button>
+          <Button type='submit' disabled={isDisabled}>
+            {props.saveLabel || 'Save Changes'}
+          </Button>
         </DialogActions>
       </form>
     </Dialog>
