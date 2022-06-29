@@ -1,12 +1,11 @@
-import Typography from '@mui/material/Typography';
 import { useParams } from 'react-router-dom';
 import { useEffect } from 'react';
+import Breadcrumbs from 'src/frontend/components/Breadcrumbs';
 import ConnectionDescription from 'src/frontend/components/ConnectionDescription';
 import { EditConnectionForm } from 'src/frontend/components/ConnectionForm';
 import NewConnectionButton from 'src/frontend/components/NewConnectionButton';
 import { useTreeActions } from 'src/frontend/hooks/useTreeActions';
 import LayoutTwoColumns from 'src/frontend/layout/LayoutTwoColumns';
-import Breadcrumbs from 'src/frontend/components/Breadcrumbs';
 
 export default function EditConnectionPage() {
   const urlParams = useParams();
@@ -30,9 +29,13 @@ export default function EditConnectionPage() {
         <ConnectionDescription />
       </>
       <>
-        <Breadcrumbs links={[{
-          label: 'Edit Connection',
-        }]} />
+        <Breadcrumbs
+          links={[
+            {
+              label: 'Edit Connection',
+            },
+          ]}
+        />
         <EditConnectionForm id={connectionId} />
       </>
     </LayoutTwoColumns>

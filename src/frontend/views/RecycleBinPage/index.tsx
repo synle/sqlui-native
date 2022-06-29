@@ -9,6 +9,7 @@ import Link from '@mui/material/Link';
 import Typography from '@mui/material/Typography';
 import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
+import Breadcrumbs from 'src/frontend/components/Breadcrumbs';
 import ConnectionDescription from 'src/frontend/components/ConnectionDescription';
 import DataTable from 'src/frontend/components/DataTable';
 import NewConnectionButton from 'src/frontend/components/NewConnectionButton';
@@ -20,7 +21,6 @@ import { useDeletedRecycleBinItem, useGetRecycleBinItems } from 'src/frontend/ho
 import { useTreeActions } from 'src/frontend/hooks/useTreeActions';
 import LayoutTwoColumns from 'src/frontend/layout/LayoutTwoColumns';
 import { SqluiCore } from 'typings';
-import Breadcrumbs from 'src/frontend/components/Breadcrumbs';
 
 const columns = [
   {
@@ -160,9 +160,13 @@ export default function RecycleBinPage() {
         <ConnectionDescription />
       </>
       <>
-        <Breadcrumbs links={[{
-          label: 'Recycle Bin',
-        }]} />
+        <Breadcrumbs
+          links={[
+            {
+              label: 'Recycle Bin',
+            },
+          ]}
+        />
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
           <RecycleBinItemList />
         </Box>
