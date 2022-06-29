@@ -11,6 +11,7 @@ import NewConnectionButton from 'src/frontend/components/NewConnectionButton';
 import { useTreeActions } from 'src/frontend/hooks/useTreeActions';
 import LayoutTwoColumns from 'src/frontend/layout/LayoutTwoColumns';
 import { SqluiFrontend } from 'typings';
+import BackupIcon from '@mui/icons-material/Backup';
 function MigrationOption() {
   return (
     <>
@@ -37,7 +38,9 @@ export default function MigrationPage(props: MigrationPageProps) {
 
   let titleBreadcrumbs: BreadcrumbLink[] = [
     {
-      label: 'Data Migration',
+      label: <>
+      <BackupIcon fontSize='inherit' />
+      Data Migration</>,
       href: '/migration',
     },
   ];

@@ -5,6 +5,7 @@ import NewConnectionButton from 'src/frontend/components/NewConnectionButton';
 import QueryBoxTabs from 'src/frontend/components/QueryBoxTabs';
 import { useTreeActions } from 'src/frontend/hooks/useTreeActions';
 import LayoutTwoColumns from 'src/frontend/layout/LayoutTwoColumns';
+import PageviewIcon from '@mui/icons-material/Pageview';
 
 export default function MainPage() {
   const { setTreeActions } = useTreeActions();
@@ -25,7 +26,9 @@ export default function MainPage() {
         <Breadcrumbs
           links={[
             {
-              label: 'Query Page',
+              label: <>
+              <PageviewIcon fontSize='inherit' />
+              Query Page</>,
             },
           ]}
         />

@@ -25,6 +25,7 @@ import {
 import { useTreeActions } from 'src/frontend/hooks/useTreeActions';
 import LayoutTwoColumns from 'src/frontend/layout/LayoutTwoColumns';
 import { SqluiCore } from 'typings';
+import StarIcon from '@mui/icons-material/Star';
 
 const columns = [
   {
@@ -178,7 +179,10 @@ export default function BookmarksPage() {
         <Breadcrumbs
           links={[
             {
-              label: 'Bookmarks',
+              label: <>
+        <StarIcon fontSize='inherit' />
+        Bookmarks
+      </>,
             },
           ]}
         />
