@@ -22,7 +22,7 @@
       "icon": "build/logo512.png",
       "target": {
         "target": "default",
-        "arch": ["universal"]
+        "arch": "universal"
       }
     },
     "linux": {
