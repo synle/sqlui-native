@@ -6,6 +6,7 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Chip from '@mui/material/Chip';
 import CircularProgress from '@mui/material/CircularProgress';
+import IconButton from '@mui/material/IconButton';
 import Link from '@mui/material/Link';
 import Typography from '@mui/material/Typography';
 import { useNavigate } from 'react-router-dom';
@@ -72,6 +73,7 @@ const columns = [
   {
     Header: '',
     accessor: 'id',
+    width: 80,
     Cell: (data: any) => {
       const folderItem = data.row.original;
       const { onAddQuery } = useConnectionQueries();
@@ -104,22 +106,13 @@ const columns = [
       };
 
       return (
-        <Box sx={{ display: 'flex', gap: 2 }}>
-          <Button
-            onClick={() => onEditBookmark(folderItem)}
-            variant='contained'
-            size='small'
-            startIcon={<EditIcon />}>
-            Edit
-          </Button>
-          <Button
-            onClick={() => onDeleteBookmarkItem(folderItem)}
-            variant='outlined'
-            size='small'
-            color='error'
-            startIcon={<DeleteForeverIcon />}>
-            Delete
-          </Button>
+        <Box sx={{ display: 'flex', gap: 1 }}>
+          <IconButton aria-label='Edit bookmark' onClick={() => onEditBookmark(folderItem)}>
+            <EditIcon />
+          </IconButton>
+          <IconButton aria-label='Delete bookmark' onClick={() => onDeleteBookmarkItem(folderItem)}>
+            <DeleteForeverIcon />
+          </IconButton>
         </Box>
       );
     },
