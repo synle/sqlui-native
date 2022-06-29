@@ -46,12 +46,10 @@ const columns = [
     Cell: (data: any) => {
       const folderItem = data.row.original;
       const { onAddQuery } = useConnectionQueries();
-      const { mutateAsync: deleteRecyleBinItem } =
-        useDeletedRecycleBinItem();
+      const { mutateAsync: deleteRecyleBinItem } = useDeletedRecycleBinItem();
       const navigate = useNavigate();
       const { confirm } = useActionDialogs();
-      const { mutateAsync: upsertConnection } =
-        useUpsertConnection();
+      const { mutateAsync: upsertConnection } = useUpsertConnection();
 
       const onRestoreRecycleBinItem = async (folderItem: SqluiCore.FolderItem) => {
         // here we handle restorable

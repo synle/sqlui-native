@@ -18,12 +18,12 @@ import {
 } from 'src/frontend/hooks/useSession';
 import { useDarkModeSetting } from 'src/frontend/hooks/useSetting';
 import useToaster, { ToasterHandler } from 'src/frontend/hooks/useToaster';
+import BookmarksPage from 'src/frontend/views/BookmarksPage';
 import EditConnectionPage from 'src/frontend/views/EditConnectionPage';
 import MainPage from 'src/frontend/views/MainPage';
 import MigrationPage from 'src/frontend/views/MigrationPage';
 import NewConnectionPage from 'src/frontend/views/NewConnectionPage';
 import RecycleBinPage from 'src/frontend/views/RecycleBinPage';
-import BookmarksPage from 'src/frontend/views/BookmarksPage';
 import './App.scss';
 import 'src/frontend/electronRenderer';
 

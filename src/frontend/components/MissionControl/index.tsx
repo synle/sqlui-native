@@ -464,8 +464,6 @@ export default function MissionControl() {
       value: `${connection.name || ''} - ${new Date().toLocaleString()}`,
       saveLabel: 'Save',
     });
-
-
     const { status, ...restOfConnectionMetaData } = connection;
 
     await addBookmarkItem({

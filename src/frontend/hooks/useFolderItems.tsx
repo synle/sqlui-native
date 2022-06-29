@@ -71,7 +71,7 @@ export function useDeletedRecycleBinItem() {
   return useDeleteFolderItem(FOLDER_TYPE_RECYCLE_BIN);
 }
 
-export function useUpdateRecycleBinItem(){
+export function useUpdateRecycleBinItem() {
   return useUpdateFolderItem(FOLDER_TYPE_RECYCLE_BIN);
 }
 
@@ -88,6 +88,6 @@ export function useDeleteBookmarkItem() {
   return useDeleteFolderItem(FOLDER_TYPE_BOOKMARKS);
 }
 
-export function useUpdateBookmarkItem(){
+export function useUpdateBookmarkItem() {
   return useUpdateFolderItem(FOLDER_TYPE_BOOKMARKS);
 }

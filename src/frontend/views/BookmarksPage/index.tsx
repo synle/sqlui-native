@@ -1,5 +1,4 @@
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
-import RestoreIcon from '@mui/icons-material/Restore';
 import EditIcon from '@mui/icons-material/Edit';
 import Backdrop from '@mui/material/Backdrop';
 import Box from '@mui/material/Box';
@@ -17,7 +16,11 @@ import { useActionDialogs } from 'src/frontend/hooks/useActionDialogs';
 import { useSideBarWidthPreference } from 'src/frontend/hooks/useClientSidePreference';
 import { useUpsertConnection } from 'src/frontend/hooks/useConnection';
 import { useConnectionQueries } from 'src/frontend/hooks/useConnectionQuery';
-import { useUpdateBookmarkItem, useAddBookmarkItem, useDeleteBookmarkItem, useGetBookmarkItems } from 'src/frontend/hooks/useFolderItems';
+import {
+  useDeleteBookmarkItem,
+  useGetBookmarkItems,
+  useUpdateBookmarkItem,
+} from 'src/frontend/hooks/useFolderItems';
 import { useTreeActions } from 'src/frontend/hooks/useTreeActions';
 import LayoutTwoColumns from 'src/frontend/layout/LayoutTwoColumns';
 import { SqluiCore } from 'typings';
@@ -31,10 +34,7 @@ const columns = [
       const { onAddQuery } = useConnectionQueries();
       const navigate = useNavigate();
       const { confirm, prompt } = useActionDialogs();
-      const { mutateAsync: upsertConnection } =
-        useUpsertConnection();
-
-
+      const { mutateAsync: upsertConnection } = useUpsertConnection();
       const onOpenBookmarkItem = async (folderItem: SqluiCore.FolderItem) => {
         // here we handle restorable
         switch (folderItem.type) {
@@ -50,9 +50,7 @@ const columns = [
         }
       };
 
-      return (
-        <Link onClick={() => onOpenBookmarkItem(folderItem)}>{folderItem.name}</Link>
-      );
+      return <Link onClick={() => onOpenBookmarkItem(folderItem)}>{folderItem.name}</Link>;
     },
   },
   {
@@ -77,12 +75,9 @@ const columns = [
       const { onAddQuery } = useConnectionQueries();
       const navigate = useNavigate();
       const { confirm, prompt } = useActionDialogs();
-      const { mutateAsync: upsertConnection } =
-        useUpsertConnection();
-      const { mutateAsync: deleteBookmarkItem } =
-        useDeleteBookmarkItem();
-      const { mutateAsync: updateBookmarkItem } =
-        useUpdateBookmarkItem();
+      const { mutateAsync: upsertConnection } = useUpsertConnection();
+      const { mutateAsync: deleteBookmarkItem } = useDeleteBookmarkItem();
+      const { mutateAsync: updateBookmarkItem } = useUpdateBookmarkItem();
 
       const onEditBookmark = async (folderItem: SqluiCore.FolderItem) => {
         try {

@@ -148,10 +148,11 @@ Use this data migration option to move raw JSON data
 ![image](https://user-images.githubusercontent.com/3792401/176088775-385777a8-a89b-460c-878d-8bb64af20f84.png)
 
 ### Bookmarks
+
 The system allows you to bookmark connections and queries. Bookmarked items can be applied to any workspace.
 
-
 #### Adding new bookmark
+
 - To bookmark a connection or query, open the context menu on the Connection name or Query tab name and choose `Add to Bookmark`.
 - Give the bookmarked item a `name` and hit Save.
 
@@ -168,7 +169,6 @@ You can select and apply a bookmarked item from bookmarks page which can be acce
 ![image](https://user-images.githubusercontent.com/3792401/176320070-f1194574-94d8-4626-95a8-4743f8b7eeb7.png)
 
 ![image](https://user-images.githubusercontent.com/3792401/176325971-fabcb3ad-efe3-4b19-8383-becc58b9d287.png)
-
 
 ### Recycle bin
 

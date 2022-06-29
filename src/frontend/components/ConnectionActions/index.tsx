@@ -5,6 +5,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import SelectAllIcon from '@mui/icons-material/SelectAll';
+import StarIcon from '@mui/icons-material/Star';
 import { Button } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import { useNavigate } from 'react-router-dom';
@@ -13,7 +14,6 @@ import DropdownButton from 'src/frontend/components/DropdownButton';
 import { useCommands } from 'src/frontend/components/MissionControl';
 import { useTreeActions } from 'src/frontend/hooks/useTreeActions';
 import { SqluiCore } from 'typings';
-import StarIcon from '@mui/icons-material/Star';
 
 type ConnectionActionsProps = {
   connection: SqluiCore.ConnectionProps;
@@ -31,7 +31,8 @@ export default function ConnectionActions(props: ConnectionActionsProps) {
   const options = [
     {
       label: 'Add to Bookmark',
-      onClick: () => selectCommand({
+      onClick: () =>
+        selectCommand({
           event: 'clientEvent/connection/addToBookmark',
           data,
         }),
