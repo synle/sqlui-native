@@ -2,12 +2,12 @@ import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import Paper from '@mui/material/Paper';
 import ToggleButton from '@mui/material/ToggleButton';
-import Button from '@mui/material/Button';
 import { useEffect, useState } from 'react';
 import AdvancedEditor from 'src/frontend/components/CodeEditorBox/AdvancedEditor';
 import SimpleEditor from 'src/frontend/components/CodeEditorBox/SimpleEditor';
-import { useEditorModeSetting, useWordWrapSetting } from 'src/frontend/hooks/useSetting';
 import Select from 'src/frontend/components/Select';
+import { useEditorModeSetting, useWordWrapSetting } from 'src/frontend/hooks/useSetting';
+
 type CodeEditorProps = {
   value?: string;
   onChange?: (newValue: string) => void;
@@ -51,14 +51,14 @@ export default function CodeEditorBox(props: CodeEditorProps) {
     </>
   );
 
-  const editorOptionBox = <div className='CodeEditorBox__Commands'>
-        {contentToggleWordWrap}
-        {contentLanguageMode}
-        </div>;
+  const editorOptionBox = (
+    <div className='CodeEditorBox__Commands'>
+      {contentToggleWordWrap}
+      {contentLanguageMode}
+    </div>
+  );
 
   const languageToUse = languageMode || props.language;
-
-
   useEffect(() => setWordWrap(!!props.wordWrap || globalWordWrap), [globalWordWrap]);
 
   if (editorModeToUse === 'simple') {
