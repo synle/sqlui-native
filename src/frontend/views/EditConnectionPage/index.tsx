@@ -1,3 +1,4 @@
+import SignalWifiStatusbar4BarIcon from '@mui/icons-material/SignalWifiStatusbar4Bar';
 import { useParams } from 'react-router-dom';
 import { useEffect } from 'react';
 import Breadcrumbs from 'src/frontend/components/Breadcrumbs';
@@ -32,7 +33,12 @@ export default function EditConnectionPage() {
         <Breadcrumbs
           links={[
             {
-              label: 'Edit Connection',
+              label: (
+                <>
+                  <SignalWifiStatusbar4BarIcon fontSize='inherit' />
+                  Edit Connection
+                </>
+              ),
             },
           ]}
         />

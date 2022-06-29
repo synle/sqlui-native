@@ -1,3 +1,4 @@
+import SignalWifiStatusbar4BarIcon from '@mui/icons-material/SignalWifiStatusbar4Bar';
 import { useEffect } from 'react';
 import Breadcrumbs from 'src/frontend/components/Breadcrumbs';
 import ConnectionDescription from 'src/frontend/components/ConnectionDescription';
@@ -28,7 +29,12 @@ export default function NewConnectionPage() {
         <Breadcrumbs
           links={[
             {
-              label: 'New Connection',
+              label: (
+                <>
+                  <SignalWifiStatusbar4BarIcon fontSize='inherit' />
+                  New Connection
+                </>
+              ),
             },
           ]}
         />
