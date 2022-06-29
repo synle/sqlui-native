@@ -76,3 +76,9 @@ export function useTablePageSize() {
   const { settings } = useSetting();
   return parseInt(settings?.tablePageSize + '');
 }
+
+
+export function useIsSoftDeleteModeSetting(){
+  const { settings } = useSetting();
+  return settings?.deleteMode !== 'hard-delete';
+}

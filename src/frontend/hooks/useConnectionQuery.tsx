@@ -4,6 +4,7 @@ import { SessionStorageConfig } from 'src/frontend/data/config';
 import { useAddRecycleBinItem } from 'src/frontend/hooks/useFolderItems';
 import { getGeneratedRandomId, getUpdatedOrdersForList } from 'src/frontend/utils/commonUtils';
 import { SqluiCore, SqluiFrontend } from 'typings';
+import { useIsSoftDeleteModeSetting } from 'src/frontend/hooks/useSetting';
 
 const QUERY_KEY_QUERIES = 'queries';
 
@@ -60,6 +61,7 @@ export function useConnectionQueries() {
 
   const { data: queries, isLoading, isFetching } = _useConnectionQueries();
   const { mutateAsync: addRecycleBinItem } = useAddRecycleBinItem();
+  const isSoftDeleteModeSetting = useIsSoftDeleteModeSetting();
 
   function _invalidateQueries() {
     queryClient.setQueryData<SqluiFrontend.ConnectionQuery[] | undefined>(
@@ -118,28 +120,31 @@ export function useConnectionQueries() {
       return;
     }
 
-    // generate the list of queries to store in recyclebin
-    const toRecycleQueriesFolderItems: Omit<SqluiCore.FolderItem, 'id'>[] = _connectionQueries
-      .filter((q) => {
-        return queryIds.indexOf(q.id) >= 0;
-      })
-      .map((query) => {
-        // here we should remove the isSelected flag
-        const { selected, ...restOfQuery } = query;
+    if(isSoftDeleteModeSetting){
+      // generate the list of queries to store in recyclebin
+      const toRecycleQueriesFolderItems: Omit<SqluiCore.FolderItem, 'id'>[] = _connectionQueries
+        .filter((q) => {
+          return queryIds.indexOf(q.id) >= 0;
+        })
+        .map((query) => {
+          // here we should remove the isSelected flag
+          const { selected, ...restOfQuery } = query;
 
-        return {
-          type: 'Query',
-          name: query.name,
-          data: restOfQuery,
-        };
-      });
+          return {
+            type: 'Query',
+            name: query.name,
+            data: restOfQuery,
+          };
+        });
 
-    // attempt to make backups
-    try {
-      await Promise.allSettled(
-        toRecycleQueriesFolderItems.map(async (folderItem) => addRecycleBinItem(folderItem)),
-      );
-    } catch (err) {}
+      // attempt to make backups
+      try {
+        await Promise.allSettled(
+          toRecycleQueriesFolderItems.map(async (folderItem) => addRecycleBinItem(folderItem)),
+        );
+      } catch (err) {}
+    }
+
     let toBeSelected = 0;
     if (queryIds.length === 1) {
       const [queryId] = queryIds;

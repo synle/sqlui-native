@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import Breadcrumbs from 'src/frontend/components/Breadcrumbs';
 import ConnectionDescription from 'src/frontend/components/ConnectionDescription';
 import NewConnectionButton from 'src/frontend/components/NewConnectionButton';
 import QueryBoxTabs from 'src/frontend/components/QueryBoxTabs';
@@ -21,6 +22,13 @@ export default function MainPage() {
         <ConnectionDescription />
       </>
       <>
+        <Breadcrumbs
+          links={[
+            {
+              label: 'Query Page',
+            },
+          ]}
+        />
         <QueryBoxTabs />
       </>
     </LayoutTwoColumns>

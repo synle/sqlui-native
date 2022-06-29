@@ -1,6 +1,7 @@
 import { Box, Link, Typography } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
 import { useEffect } from 'react';
+import Breadcrumbs, { BreadcrumbLink } from 'src/frontend/components/Breadcrumbs';
 import ConnectionDescription from 'src/frontend/components/ConnectionDescription';
 import {
   RawJsonMigrationForm,
@@ -21,9 +22,6 @@ function MigrationOption() {
         <Link component={RouterLink} to='/migration/raw_json'>
           <Typography>Migrate Raw JSON Data</Typography>
         </Link>
-        <Link component={RouterLink} to='/'>
-          <Typography>Back to Main Query Page</Typography>
-        </Link>
       </Box>
     </>
   );
@@ -37,13 +35,18 @@ export default function MigrationPage(props: MigrationPageProps) {
   const { mode } = props;
   const { setTreeActions } = useTreeActions();
 
-  let titleDom = 'Migration';
+  let titleBreadcrumbs: BreadcrumbLink[] = [
+    {
+      label: 'Data Migration',
+      href: '/migration',
+    },
+  ];
   let contentDom = <MigrationOption />;
   if (mode === 'real_connection') {
-    titleDom = 'Migration of Real Existing Connection';
+    titleBreadcrumbs.push({ label: 'Migration of Real Existing Connection' });
     contentDom = <RealConnectionMigrationMigrationForm />;
   } else if (mode === 'raw_json') {
-    titleDom = 'Migration of Raw JSON Data';
+    titleBreadcrumbs.push({ label: 'Migration of Raw JSON Data' });
     contentDom = <RawJsonMigrationForm />;
   }
 
@@ -60,9 +63,7 @@ export default function MigrationPage(props: MigrationPageProps) {
         <ConnectionDescription />
       </>
       <>
-        <Typography variant='h5' gutterBottom={true} sx={{ mt: 1 }}>
-          {titleDom}
-        </Typography>
+        <Breadcrumbs links={titleBreadcrumbs} />
         {contentDom}
       </>
     </LayoutTwoColumns>

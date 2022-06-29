@@ -3,6 +3,7 @@ import dataApi from 'src/frontend/data/api';
 import { useAddRecycleBinItem } from 'src/frontend/hooks/useFolderItems';
 import { getUpdatedOrdersForList } from 'src/frontend/utils/commonUtils';
 import { SqluiCore, SqluiFrontend } from 'typings';
+import { useIsSoftDeleteModeSetting } from 'src/frontend/hooks/useSetting';
 
 const QUERY_KEY_ALL_CONNECTIONS = 'connections';
 
@@ -87,6 +88,7 @@ export function useDeleteConnection() {
   const queryClient = useQueryClient();
   const { mutateAsync: addRecycleBinItem } = useAddRecycleBinItem();
   const { data: connections } = useGetConnections();
+  const isSoftDeleteModeSetting = useIsSoftDeleteModeSetting();
 
   return useMutation<string, void, string>(dataApi.deleteConnection, {
     onSuccess: async (deletedConnectionId) => {
@@ -101,19 +103,21 @@ export function useDeleteConnection() {
       );
 
       try {
-        // generate the connection backup to store in recyclebin
-        const connectionToBackup = connections?.find(
-          (connection) => connection.id === deletedConnectionId,
-        );
+        if(isSoftDeleteModeSetting){
+          // generate the connection backup to store in recyclebin
+          const connectionToBackup = connections?.find(
+            (connection) => connection.id === deletedConnectionId,
+          );
 
-        if (connectionToBackup) {
-          // remove status before we backup.
-          const { status, ...restOfConnectionMetaData } = connectionToBackup;
-          await addRecycleBinItem({
-            type: 'Connection',
-            name: restOfConnectionMetaData.name,
-            data: restOfConnectionMetaData,
-          });
+          if (connectionToBackup) {
+            // remove status before we backup.
+            const { status, ...restOfConnectionMetaData } = connectionToBackup;
+            await addRecycleBinItem({
+              type: 'Connection',
+              name: restOfConnectionMetaData.name,
+              data: restOfConnectionMetaData,
+            });
+          }
         }
       } catch (err) {
         // TODO: add error handling
