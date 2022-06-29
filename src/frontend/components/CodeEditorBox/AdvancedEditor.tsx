@@ -12,7 +12,7 @@ type AdvancedEditorProps = {
   wordWrap?: boolean;
   placeholder?: string;
   disabled?: boolean;
-  height?: string;
+  height: string;
 };
 
 const AdvancedEditorContainer = styled('div')(({ theme }) => {
@@ -101,6 +101,6 @@ export default function AdvancedEditor(props: AdvancedEditorProps) {
       className='AdvancedEditorContainer'
       ref={monacoEl}
       style={{
-    height: '250px',}}></AdvancedEditorContainer>
+    height: props.height,}}></AdvancedEditorContainer>
   );
 }

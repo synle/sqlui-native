@@ -6,8 +6,8 @@ import Button from '@mui/material/Button';
 import { useEffect, useState } from 'react';
 import AdvancedEditor from 'src/frontend/components/CodeEditorBox/AdvancedEditor';
 import SimpleEditor from 'src/frontend/components/CodeEditorBox/SimpleEditor';
-import { useEditorModeSetting, useWordWrapSetting } from 'src/frontend/hooks/useSetting';
 import Select from 'src/frontend/components/Select';
+import { useEditorModeSetting, useWordWrapSetting } from 'src/frontend/hooks/useSetting';
 type CodeEditorProps = {
   value?: string;
   onChange?: (newValue: string) => void;
