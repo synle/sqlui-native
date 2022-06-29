@@ -21,7 +21,6 @@ const StyledTextArea = styled('textarea')(({ theme }) => {
     fontFamily: 'monospace',
     fontWeight: '700',
     width: '100%',
-    minHeight: '300px',
     padding: '10px',
     resize: 'vertical',
     outline: 'none',
@@ -189,6 +188,7 @@ export default function SchemaEditor(props) {
       required={props.required}
       style={{
         whiteSpace: props.wordWrap ? 'initial' : 'nowrap',
+        minHeight: props.height,
       }}
     />
   );
