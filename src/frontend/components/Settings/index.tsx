@@ -144,6 +144,21 @@ export default function Settings(props: SettingsProps) {
             ))}
           </Select>
         </div>
+        <Typography className='FormInput__Label' variant='subtitle1'>
+          Delete Mode
+          <Tooltip title='Whether or not to do soft delete and put deleted items into the recycle bin or hard delete to delete it permanently.'>
+            <HelpIcon fontSize='small' sx={{ ml: 1 }} />
+          </Tooltip>
+        </Typography>
+         <div className='FormInput__Row'>
+          <Select
+            value={settings.deleteMode || 'soft-delete'}
+            onChange={(newValue) => onSettingChange('deleteMode', newValue)}
+            sx={{ width: '100%' }}>
+            <option value='soft-delete'>Soft Delete (Put to Recycle Bin)</option>
+            <option value='hard-delete'>Hard Delete (Permanent Delete)</option>
+          </Select>
+        </div>
       </>
     );
   }
