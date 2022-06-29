@@ -162,6 +162,7 @@ export module SqluiFrontend {
      * whether or not to open the bookmarked query in the same tab or new tab
      */
     querySelectionMode?: 'same-tab' | 'new-tab';
+    deleteMode?: 'soft-delete' | 'hard-delete';
   };
 
   export type SettingKey = keyof Settings;
