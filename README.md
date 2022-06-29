@@ -147,9 +147,32 @@ Use this data migration option to move raw JSON data
 
 ![image](https://user-images.githubusercontent.com/3792401/176088775-385777a8-a89b-460c-878d-8bb64af20f84.png)
 
+### Bookmarks
+The system allows you to bookmark connections and queries. Bookmarked items can be applied to any workspace.
+
+
+#### Adding new bookmark
+- To bookmark a connection or query, open the context menu on the Connection name or Query tab name and choose `Add to Bookmark`.
+- Give the bookmarked item a `name` and hit Save.
+
+![image](https://user-images.githubusercontent.com/3792401/176319082-d6091511-8cee-4482-a0df-81e11af8f5ec.png)
+
+![image](https://user-images.githubusercontent.com/3792401/176326012-855b02ec-e87b-4c8e-a2f2-961bc2c76296.png)
+
+#### Open a bookmark
+
+You can select and apply a bookmarked item from bookmarks page which can be accessed via the hamburger menu bar on the top right and select `Bookmarks`
+
+- From there, you can click on the bookmarked name to apply that bookmark item.
+
+![image](https://user-images.githubusercontent.com/3792401/176320070-f1194574-94d8-4626-95a8-4743f8b7eeb7.png)
+
+![image](https://user-images.githubusercontent.com/3792401/176325971-fabcb3ad-efe3-4b19-8383-becc58b9d287.png)
+
+
 ### Recycle bin
 
-By default, all closed queries and deleted connections will be stored inside of a recycle bin which you can always restore at a later. To access the recycle bin, click on the hamburger menu bar on the top right and select Recycle Bin.
+By default, all closed queries and deleted connections will be stored inside of a recycle bin which you can always restore at a later. To access the recycle bin, click on the hamburger menu bar on the top right and select `Recycle Bin`.
 
 - From there you can choose to `Restore` the deleted connections or closed queries.
 - To permanently delete the items from sqlui-native, you can choose either `Empty Trash` or `Delete` individual items permanently.
