@@ -20,6 +20,7 @@ import { useDeletedRecycleBinItem, useGetRecycleBinItems } from 'src/frontend/ho
 import { useTreeActions } from 'src/frontend/hooks/useTreeActions';
 import LayoutTwoColumns from 'src/frontend/layout/LayoutTwoColumns';
 import { SqluiCore } from 'typings';
+import Breadcrumbs from 'src/frontend/components/Breadcrumbs';
 
 const columns = [
   {
@@ -159,16 +160,11 @@ export default function RecycleBinPage() {
         <ConnectionDescription />
       </>
       <>
-        <Typography variant='h5' gutterBottom={true} sx={{ mt: 1 }}>
-          Recycle Bin
-        </Typography>
+        <Breadcrumbs links={[{
+          label: 'Recycle Bin',
+        }]} />
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
           <RecycleBinItemList />
-          <Box>
-            <Link onClick={() => navigate('/')} underline='none'>
-              Back to Main Query Page
-            </Link>
-          </Box>
         </Box>
       </>
     </LayoutTwoColumns>

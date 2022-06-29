@@ -24,6 +24,7 @@ import {
 import { useTreeActions } from 'src/frontend/hooks/useTreeActions';
 import LayoutTwoColumns from 'src/frontend/layout/LayoutTwoColumns';
 import { SqluiCore } from 'typings';
+import Breadcrumbs from 'src/frontend/components/Breadcrumbs';
 
 const columns = [
   {
@@ -152,11 +153,6 @@ function BookmarksItemList() {
   }
   return (
     <>
-      <Box>
-        <Link onClick={() => navigate('/')} underline='none'>
-          Back to Main Query Page
-        </Link>
-      </Box>
       <DataTable data={folderItems} columns={columns} />
     </>
   );
@@ -179,9 +175,9 @@ export default function BookmarksPage() {
         <ConnectionDescription />
       </>
       <>
-        <Typography variant='h5' gutterBottom={true} sx={{ mt: 1 }}>
-          Bookmarks
-        </Typography>
+        <Breadcrumbs links={[{
+          label: 'Bookmarks',
+        }]} />
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
           <BookmarksItemList />
         </Box>

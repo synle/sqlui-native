@@ -43,7 +43,6 @@ export function NewConnectionForm() {
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, pb: 4 }}>
         <Typography>
           Select one of the following connection type.{' '}
-          <Link onClick={() => navigate('/')}>Back to Main Query Page</Link>.
         </Typography>
         <ConnectionHint onChange={onApplyConnectionHint} />
         <Box>

@@ -6,6 +6,7 @@ import { EditConnectionForm } from 'src/frontend/components/ConnectionForm';
 import NewConnectionButton from 'src/frontend/components/NewConnectionButton';
 import { useTreeActions } from 'src/frontend/hooks/useTreeActions';
 import LayoutTwoColumns from 'src/frontend/layout/LayoutTwoColumns';
+import Breadcrumbs from 'src/frontend/components/Breadcrumbs';
 
 export default function EditConnectionPage() {
   const urlParams = useParams();
@@ -29,9 +30,9 @@ export default function EditConnectionPage() {
         <ConnectionDescription />
       </>
       <>
-        <Typography variant='h5' gutterBottom={true} sx={{ mt: 1 }}>
-          Edit Connection
-        </Typography>
+        <Breadcrumbs links={[{
+          label: 'Edit Connection',
+        }]} />
         <EditConnectionForm id={connectionId} />
       </>
     </LayoutTwoColumns>
