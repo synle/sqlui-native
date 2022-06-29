@@ -193,6 +193,13 @@ export class ProxyApi {
     });
   }
 
+  static updateFolderItem(folderId: string, folderItem: SqluiCore.FolderItem) {
+    return _fetch<SqluiCore.FolderItem>(`/api/folder/${folderId}`, {
+      method: 'put',
+      body: JSON.stringify(folderItem),
+    });
+  }
+
   static deleteFolderItem(folderId: SqluiCore.FolderType, itemId: string) {
     return _fetch<void>(`/api/folder/${folderId}/${itemId}`, {
       method: 'delete',

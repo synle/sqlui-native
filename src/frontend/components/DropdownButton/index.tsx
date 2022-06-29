@@ -24,10 +24,11 @@ type DropdownButtonProps = {
   onToggle?: (open: boolean) => void;
   open?: boolean;
   isLoading?: boolean;
+  maxHeight?: number | string;
 };
 
 export default function DropdownButton(props: DropdownButtonProps) {
-  const { id, options, children } = props;
+  const { id, options, children, maxHeight } = props;
   const [open, setOpen] = React.useState(false);
   const anchorRef = React.useRef<HTMLDivElement>(null);
   const [selectedIndex, setSelectedIndex] = React.useState(1);
@@ -114,7 +115,7 @@ export default function DropdownButton(props: DropdownButtonProps) {
             style={{
               transformOrigin: placement === 'bottom' ? 'right top' : 'right bottom',
             }}>
-            <Paper sx={{ maxHeight: '325px', overflow: 'auto' }}>
+            <Paper sx={{ maxHeight: maxHeight || '325px', overflow: 'auto' }}>
               <ClickAwayListener onClickAway={onClose}>{popperBody}</ClickAwayListener>
             </Paper>
           </Grow>

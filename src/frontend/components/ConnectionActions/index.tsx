@@ -5,6 +5,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import SelectAllIcon from '@mui/icons-material/SelectAll';
+import StarIcon from '@mui/icons-material/Star';
 import { Button } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import { useNavigate } from 'react-router-dom';
@@ -28,6 +29,16 @@ export default function ConnectionActions(props: ConnectionActionsProps) {
   const { dialect, id: connectionId } = connection;
 
   const options = [
+    {
+      label: 'Add to Bookmark',
+      onClick: () =>
+        selectCommand({
+          event: 'clientEvent/connection/addToBookmark',
+          data,
+        }),
+      startIcon: <StarIcon />,
+    },
+    { label: 'divider' },
     {
       label: 'Select',
       startIcon: <SelectAllIcon />,
