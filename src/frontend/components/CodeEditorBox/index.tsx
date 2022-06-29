@@ -19,19 +19,20 @@ type CodeEditorProps = {
   disabled?: boolean;
 };
 
-const EDITOR_HEIGHT = '20vh'
+const DEFAULT_EDITOR_HEIGHT = '20vh'
 
 export default function CodeEditorBox(props: CodeEditorProps) {
   const globalWordWrap = useWordWrapSetting();
   const [wordWrap, setWordWrap] = useState(false);
   const [languageMode, setLanguageMode] = useState<string | undefined>();
+  const [height, setHeight] = useState<string>(DEFAULT_EDITOR_HEIGHT);
   const editorModeToUse = useEditorModeSetting();
 
   const onChange = (newValue: string) => {
     props.onChange && props.onChange(newValue);
   };
 
-  const contentToggleWordWrap = (
+  const contentToggleWordWrapSelection = (
     <ToggleButton
       value='check'
       selected={wordWrap}
@@ -43,7 +44,7 @@ export default function CodeEditorBox(props: CodeEditorProps) {
     </ToggleButton>
   );
 
-  const contentLanguageMode = (
+  const contentLanguageModeSelection = (
     <>
       <Select onChange={(newLanguage) => setLanguageMode(newLanguage)} value={languageMode}>
         <option value=''>Auto Detected ({props.language})</option>
@@ -53,13 +54,23 @@ export default function CodeEditorBox(props: CodeEditorProps) {
     </>
   );
 
+  const contentHeightSelection = (
+    <>
+      <Select onChange={(newHeight) => setHeight(newHeight)} value={height}>
+        <option value='20vh'>Small Editor</option>
+        <option value='40vh'>Medium Editor</option>
+        <option value='60vh'>Large Editor</option>
+      </Select>
+    </>
+  );
+
   const editorOptionBox = <div className='CodeEditorBox__Commands'>
-        {contentToggleWordWrap}
-        {contentLanguageMode}
+        {contentToggleWordWrapSelection}
+        {contentHeightSelection}
+        {contentLanguageModeSelection}
         </div>;
 
   const languageToUse = languageMode || props.language;
-  const height = EDITOR_HEIGHT;
 
   useEffect(() => setWordWrap(!!props.wordWrap || globalWordWrap), [globalWordWrap]);
 
