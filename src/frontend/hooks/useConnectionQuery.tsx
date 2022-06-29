@@ -2,9 +2,9 @@ import { QueryClient, useQuery, useQueryClient } from 'react-query';
 import dataApi from 'src/frontend/data/api';
 import { SessionStorageConfig } from 'src/frontend/data/config';
 import { useAddRecycleBinItem } from 'src/frontend/hooks/useFolderItems';
+import { useIsSoftDeleteModeSetting } from 'src/frontend/hooks/useSetting';
 import { getGeneratedRandomId, getUpdatedOrdersForList } from 'src/frontend/utils/commonUtils';
 import { SqluiCore, SqluiFrontend } from 'typings';
-import { useIsSoftDeleteModeSetting } from 'src/frontend/hooks/useSetting';
 
 const QUERY_KEY_QUERIES = 'queries';
 
@@ -120,7 +120,7 @@ export function useConnectionQueries() {
       return;
     }
 
-    if(isSoftDeleteModeSetting){
+    if (isSoftDeleteModeSetting) {
       // generate the list of queries to store in recyclebin
       const toRecycleQueriesFolderItems: Omit<SqluiCore.FolderItem, 'id'>[] = _connectionQueries
         .filter((q) => {

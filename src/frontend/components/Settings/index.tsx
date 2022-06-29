@@ -150,7 +150,7 @@ export default function Settings(props: SettingsProps) {
             <HelpIcon fontSize='small' sx={{ ml: 1 }} />
           </Tooltip>
         </Typography>
-         <div className='FormInput__Row'>
+        <div className='FormInput__Row'>
           <Select
             value={settings.deleteMode || 'soft-delete'}
             onChange={(newValue) => onSettingChange('deleteMode', newValue)}

@@ -1,9 +1,9 @@
 import { QueryClient, useMutation, useQuery, useQueryClient } from 'react-query';
 import dataApi from 'src/frontend/data/api';
 import { useAddRecycleBinItem } from 'src/frontend/hooks/useFolderItems';
+import { useIsSoftDeleteModeSetting } from 'src/frontend/hooks/useSetting';
 import { getUpdatedOrdersForList } from 'src/frontend/utils/commonUtils';
 import { SqluiCore, SqluiFrontend } from 'typings';
-import { useIsSoftDeleteModeSetting } from 'src/frontend/hooks/useSetting';
 
 const QUERY_KEY_ALL_CONNECTIONS = 'connections';
 
@@ -103,7 +103,7 @@ export function useDeleteConnection() {
       );
 
       try {
-        if(isSoftDeleteModeSetting){
+        if (isSoftDeleteModeSetting) {
           // generate the connection backup to store in recyclebin
           const connectionToBackup = connections?.find(
             (connection) => connection.id === deletedConnectionId,

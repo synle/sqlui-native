@@ -181,12 +181,11 @@ By default, all closed queries and deleted connections will be stored inside of 
 
 ![image](https://user-images.githubusercontent.com/3792401/176088031-63c7bdfb-16a1-481c-9ca3-615043d5f362.png)
 
-
 ##### Hard Delete
+
 If you want to permanently delete those and not put it in the recycle bin, you can set the `Delete Mode` to be hard delete.
 
 ![image](https://user-images.githubusercontent.com/3792401/176343562-0f4400b2-881d-4a55-becc-3ad82c564bc6.png)
-
 
 ## Contributing
 
