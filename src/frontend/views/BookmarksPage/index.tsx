@@ -1,5 +1,6 @@
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import EditIcon from '@mui/icons-material/Edit';
+import StarIcon from '@mui/icons-material/Star';
 import Backdrop from '@mui/material/Backdrop';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -25,7 +26,6 @@ import {
 import { useTreeActions } from 'src/frontend/hooks/useTreeActions';
 import LayoutTwoColumns from 'src/frontend/layout/LayoutTwoColumns';
 import { SqluiCore } from 'typings';
-import StarIcon from '@mui/icons-material/Star';
 
 const columns = [
   {
@@ -179,10 +179,12 @@ export default function BookmarksPage() {
         <Breadcrumbs
           links={[
             {
-              label: <>
-        <StarIcon fontSize='inherit' />
-        Bookmarks
-      </>,
+              label: (
+                <>
+                  <StarIcon fontSize='inherit' />
+                  Bookmarks
+                </>
+              ),
             },
           ]}
         />

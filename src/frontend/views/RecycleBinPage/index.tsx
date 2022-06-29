@@ -1,3 +1,4 @@
+import DeleteIcon from '@mui/icons-material/Delete';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import RestoreIcon from '@mui/icons-material/Restore';
 import Backdrop from '@mui/material/Backdrop';
@@ -21,7 +22,7 @@ import { useDeletedRecycleBinItem, useGetRecycleBinItems } from 'src/frontend/ho
 import { useTreeActions } from 'src/frontend/hooks/useTreeActions';
 import LayoutTwoColumns from 'src/frontend/layout/LayoutTwoColumns';
 import { SqluiCore } from 'typings';
-import DeleteIcon from '@mui/icons-material/Delete';
+
 const columns = [
   {
     Header: 'Name',
@@ -163,10 +164,12 @@ export default function RecycleBinPage() {
         <Breadcrumbs
           links={[
             {
-              label: <>
-        <DeleteIcon fontSize='inherit' />
-        Recycle Bin
-      </>,
+              label: (
+                <>
+                  <DeleteIcon fontSize='inherit' />
+                  Recycle Bin
+                </>
+              ),
             },
           ]}
         />

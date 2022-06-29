@@ -1,3 +1,4 @@
+import BackupIcon from '@mui/icons-material/Backup';
 import { Box, Link, Typography } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
 import { useEffect } from 'react';
@@ -11,7 +12,6 @@ import NewConnectionButton from 'src/frontend/components/NewConnectionButton';
 import { useTreeActions } from 'src/frontend/hooks/useTreeActions';
 import LayoutTwoColumns from 'src/frontend/layout/LayoutTwoColumns';
 import { SqluiFrontend } from 'typings';
-import BackupIcon from '@mui/icons-material/Backup';
 function MigrationOption() {
   return (
     <>
@@ -38,9 +38,12 @@ export default function MigrationPage(props: MigrationPageProps) {
 
   let titleBreadcrumbs: BreadcrumbLink[] = [
     {
-      label: <>
-      <BackupIcon fontSize='inherit' />
-      Data Migration</>,
+      label: (
+        <>
+          <BackupIcon fontSize='inherit' />
+          Data Migration
+        </>
+      ),
       href: '/migration',
     },
   ];

@@ -1,3 +1,4 @@
+import SignalWifiStatusbar4BarIcon from '@mui/icons-material/SignalWifiStatusbar4Bar';
 import { useEffect } from 'react';
 import Breadcrumbs from 'src/frontend/components/Breadcrumbs';
 import ConnectionDescription from 'src/frontend/components/ConnectionDescription';
@@ -6,7 +7,6 @@ import NewConnectionButton from 'src/frontend/components/NewConnectionButton';
 import { useSideBarWidthPreference } from 'src/frontend/hooks/useClientSidePreference';
 import { useTreeActions } from 'src/frontend/hooks/useTreeActions';
 import LayoutTwoColumns from 'src/frontend/layout/LayoutTwoColumns';
-import SignalWifiStatusbar4BarIcon from '@mui/icons-material/SignalWifiStatusbar4Bar';
 
 export default function NewConnectionPage() {
   const { value: width, onChange: onSetWidth } = useSideBarWidthPreference();
@@ -29,9 +29,12 @@ export default function NewConnectionPage() {
         <Breadcrumbs
           links={[
             {
-              label: <>
-              <SignalWifiStatusbar4BarIcon fontSize='inherit' />
-              New Connection</>,
+              label: (
+                <>
+                  <SignalWifiStatusbar4BarIcon fontSize='inherit' />
+                  New Connection
+                </>
+              ),
             },
           ]}
         />
