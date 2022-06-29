@@ -2,6 +2,7 @@ import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import Paper from '@mui/material/Paper';
 import ToggleButton from '@mui/material/ToggleButton';
+import Button from '@mui/material/Button';
 import { useEffect, useState } from 'react';
 import AdvancedEditor from 'src/frontend/components/CodeEditorBox/AdvancedEditor';
 import SimpleEditor from 'src/frontend/components/CodeEditorBox/SimpleEditor';
@@ -29,7 +30,6 @@ export default function CodeEditorBox(props: CodeEditorProps) {
 
   const contentToggleWordWrap = (
     <ToggleButton
-      className='CodeEditorBox__WordWrap'
       value='check'
       selected={wordWrap}
       onChange={() => setWordWrap(!wordWrap)}
@@ -39,6 +39,22 @@ export default function CodeEditorBox(props: CodeEditorProps) {
       <span style={{ marginLeft: '5px' }}>Wrap</span>
     </ToggleButton>
   );
+
+  const contentLanguageMode = (
+    <Button
+      value='check'
+      onChange={() => setWordWrap(!wordWrap)}
+      size='small'
+      color='primary'>
+      <span style={{ marginLeft: '5px' }}>Wrap</span>
+    </Button>
+  );
+
+
+  const editorOptionBox = <div className='CodeEditorBox__Commands'>
+        {contentToggleWordWrap}
+        {contentLanguageMode}
+        </div>;
 
   useEffect(() => setWordWrap(!!props.wordWrap || globalWordWrap), [globalWordWrap]);
 
@@ -54,7 +70,7 @@ export default function CodeEditorBox(props: CodeEditorProps) {
           disabled={props.disabled}
           wordWrap={wordWrap}
         />
-        {contentToggleWordWrap}
+        {editorOptionBox}
       </div>
     );
   }
@@ -69,7 +85,7 @@ export default function CodeEditorBox(props: CodeEditorProps) {
         placeholder={props.placeholder}
         disabled={props.disabled}
       />
-      {contentToggleWordWrap}
+      {editorOptionBox}
     </Paper>
   );
 }
