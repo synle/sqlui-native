@@ -130,16 +130,17 @@ $ConnectionTreeIndentSize: 7px;
 .CodeEditorBox {
   position: relative;
 
-  .CodeEditorBox__WordWrap {
-    position: absolute;
-    bottom: 5px;
-    display: none;
-    right: 20px;
+  .CodeEditorBox__Commands {
+    // display: none;
+    display: flex;
+    justify-content: end;
+    gap: 1rem;
   }
 
   &:hover {
-    .CodeEditorBox__WordWrap {
+    .CodeEditorBox__Commands {
       display: flex;
+      margin-left: auto;
     }
   }
 }

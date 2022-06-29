@@ -5,6 +5,7 @@ import ToggleButton from '@mui/material/ToggleButton';
 import { useEffect, useState } from 'react';
 import AdvancedEditor from 'src/frontend/components/CodeEditorBox/AdvancedEditor';
 import SimpleEditor from 'src/frontend/components/CodeEditorBox/SimpleEditor';
+import Select from 'src/frontend/components/Select';
 import { useEditorModeSetting, useWordWrapSetting } from 'src/frontend/hooks/useSetting';
 
 type CodeEditorProps = {
@@ -21,6 +22,7 @@ type CodeEditorProps = {
 export default function CodeEditorBox(props: CodeEditorProps) {
   const globalWordWrap = useWordWrapSetting();
   const [wordWrap, setWordWrap] = useState(false);
+  const [languageMode, setLanguageMode] = useState<string | undefined>();
   const editorModeToUse = useEditorModeSetting();
 
   const onChange = (newValue: string) => {
@@ -29,7 +31,6 @@ export default function CodeEditorBox(props: CodeEditorProps) {
 
   const contentToggleWordWrap = (
     <ToggleButton
-      className='CodeEditorBox__WordWrap'
       value='check'
       selected={wordWrap}
       onChange={() => setWordWrap(!wordWrap)}
@@ -40,6 +41,24 @@ export default function CodeEditorBox(props: CodeEditorProps) {
     </ToggleButton>
   );
 
+  const contentLanguageMode = (
+    <>
+      <Select onChange={(newLanguage) => setLanguageMode(newLanguage)} value={languageMode}>
+        <option value=''>Auto Detected ({props.language})</option>
+        <option value='javascript'>Javascript</option>
+        <option value='sql'>SQL</option>
+      </Select>
+    </>
+  );
+
+  const editorOptionBox = (
+    <div className='CodeEditorBox__Commands'>
+      {contentToggleWordWrap}
+      {contentLanguageMode}
+    </div>
+  );
+
+  const languageToUse = languageMode || props.language;
   useEffect(() => setWordWrap(!!props.wordWrap || globalWordWrap), [globalWordWrap]);
 
   if (editorModeToUse === 'simple') {
@@ -54,7 +73,7 @@ export default function CodeEditorBox(props: CodeEditorProps) {
           disabled={props.disabled}
           wordWrap={wordWrap}
         />
-        {contentToggleWordWrap}
+        {editorOptionBox}
       </div>
     );
   }
@@ -62,14 +81,14 @@ export default function CodeEditorBox(props: CodeEditorProps) {
   return (
     <Paper className='CodeEditorBox' variant='outlined'>
       <AdvancedEditor
-        language={props.language}
+        language={languageToUse}
         value={props.value}
         onBlur={onChange}
         wordWrap={wordWrap}
         placeholder={props.placeholder}
         disabled={props.disabled}
       />
-      {contentToggleWordWrap}
+      {editorOptionBox}
     </Paper>
   );
 }
