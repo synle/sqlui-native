@@ -9,6 +9,7 @@ import Link from '@mui/material/Link';
 import Typography from '@mui/material/Typography';
 import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
+import Breadcrumbs from 'src/frontend/components/Breadcrumbs';
 import ConnectionDescription from 'src/frontend/components/ConnectionDescription';
 import DataTable from 'src/frontend/components/DataTable';
 import NewConnectionButton from 'src/frontend/components/NewConnectionButton';
@@ -159,16 +160,15 @@ export default function RecycleBinPage() {
         <ConnectionDescription />
       </>
       <>
-        <Typography variant='h5' gutterBottom={true} sx={{ mt: 1 }}>
-          Recycle Bin
-        </Typography>
+        <Breadcrumbs
+          links={[
+            {
+              label: 'Recycle Bin',
+            },
+          ]}
+        />
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
           <RecycleBinItemList />
-          <Box>
-            <Link onClick={() => navigate('/')} underline='none'>
-              Back to Main Query Page
-            </Link>
-          </Box>
         </Box>
       </>
     </LayoutTwoColumns>
