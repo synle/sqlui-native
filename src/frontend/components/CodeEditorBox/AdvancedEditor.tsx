@@ -12,11 +12,11 @@ type AdvancedEditorProps = {
   wordWrap?: boolean;
   placeholder?: string;
   disabled?: boolean;
+  height?: string;
 };
 
 const AdvancedEditorContainer = styled('div')(({ theme }) => {
   return {
-    height: '300px',
     width: '100%',
   };
 });
@@ -99,6 +99,8 @@ export default function AdvancedEditor(props: AdvancedEditorProps) {
   return (
     <AdvancedEditorContainer
       className='AdvancedEditorContainer'
-      ref={monacoEl}></AdvancedEditorContainer>
+      ref={monacoEl}
+      style={{
+    height: '250px',}}></AdvancedEditorContainer>
   );
 }

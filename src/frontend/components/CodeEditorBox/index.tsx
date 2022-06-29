@@ -19,6 +19,8 @@ type CodeEditorProps = {
   disabled?: boolean;
 };
 
+const EDITOR_HEIGHT = '20vh'
+
 export default function CodeEditorBox(props: CodeEditorProps) {
   const globalWordWrap = useWordWrapSetting();
   const [wordWrap, setWordWrap] = useState(false);
@@ -57,7 +59,7 @@ export default function CodeEditorBox(props: CodeEditorProps) {
         </div>;
 
   const languageToUse = languageMode || props.language;
-
+  const height = EDITOR_HEIGHT;
 
   useEffect(() => setWordWrap(!!props.wordWrap || globalWordWrap), [globalWordWrap]);
 
@@ -72,6 +74,7 @@ export default function CodeEditorBox(props: CodeEditorProps) {
           required={props.required}
           disabled={props.disabled}
           wordWrap={wordWrap}
+          height={height}
         />
         {editorOptionBox}
       </div>
@@ -87,6 +90,7 @@ export default function CodeEditorBox(props: CodeEditorProps) {
         wordWrap={wordWrap}
         placeholder={props.placeholder}
         disabled={props.disabled}
+        height={height}
       />
       {editorOptionBox}
     </Paper>
