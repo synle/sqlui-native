@@ -18,15 +18,21 @@ import { useActionDialogs } from 'src/frontend/hooks/useActionDialogs';
 import { useSideBarWidthPreference } from 'src/frontend/hooks/useClientSidePreference';
 import { useUpsertConnection } from 'src/frontend/hooks/useConnection';
 import { useConnectionQueries } from 'src/frontend/hooks/useConnectionQuery';
-import { useDeletedRecycleBinItem, useGetRecycleBinItems } from 'src/frontend/hooks/useFolderItems';
+import { useRestoreRecycleBinItem, useDeletedRecycleBinItem, useGetRecycleBinItems } from 'src/frontend/hooks/useFolderItems';
 import { useTreeActions } from 'src/frontend/hooks/useTreeActions';
 import LayoutTwoColumns from 'src/frontend/layout/LayoutTwoColumns';
 import { SqluiCore } from 'typings';
+import IconButton from '@mui/material/IconButton';
 
 const columns = [
   {
     Header: 'Name',
     accessor: 'name',
+    Cell: (data: any) => {
+      const folderItem = data.row.original;
+      const { mutateAsync: restoreRecycleBinItem } = useRestoreRecycleBinItem();
+      return <Link onClick={() => restoreRecycleBinItem(folderItem)}>{folderItem.name}</Link>;
+    },
   },
   {
     Header: 'Type',
@@ -45,31 +51,14 @@ const columns = [
   {
     Header: '',
     accessor: 'id',
+    width: 80,
     Cell: (data: any) => {
       const folderItem = data.row.original;
-      const { onAddQuery } = useConnectionQueries();
-      const { mutateAsync: deleteRecyleBinItem } = useDeletedRecycleBinItem();
-      const navigate = useNavigate();
       const { confirm } = useActionDialogs();
-      const { mutateAsync: upsertConnection } = useUpsertConnection();
+      const { mutateAsync: restoreRecycleBinItem } = useRestoreRecycleBinItem();
+      const { mutateAsync: deleteRecyleBinItem } = useDeletedRecycleBinItem();
 
-      const onRestoreRecycleBinItem = async (folderItem: SqluiCore.FolderItem) => {
-        // here we handle restorable
-        switch (folderItem.type) {
-          case 'Connection':
-            await Promise.all([
-              upsertConnection(folderItem.data),
-              deleteRecyleBinItem(folderItem.id),
-            ]);
-            navigate('/'); // navigate back to the main page
-            break;
-          case 'Query':
-            // TODO: add check and handle restore of related connection
-            await Promise.all([onAddQuery(folderItem.data), deleteRecyleBinItem(folderItem.id)]);
-            navigate('/'); // navigate back to the main page
-            break;
-        }
-      };
+      const onRestoreRecycleBinItem = restoreRecycleBinItem;
 
       const onDeleteRecycleBin = async (folderItem: SqluiCore.FolderItem) => {
         try {
@@ -79,22 +68,17 @@ const columns = [
       };
 
       return (
-        <Box sx={{ display: 'flex', gap: 2 }}>
-          <Button
-            onClick={() => onRestoreRecycleBinItem(folderItem)}
-            variant='contained'
-            size='small'
-            startIcon={<RestoreIcon />}>
-            Restore
-          </Button>
-          <Button
-            onClick={() => onDeleteRecycleBin(folderItem)}
-            variant='outlined'
-            size='small'
-            color='error'
-            startIcon={<DeleteForeverIcon />}>
-            Delete
-          </Button>
+        <Box sx={{ display: 'flex', gap: 1 }}>
+          <IconButton
+            aria-label='Restore item'
+            onClick={() => onRestoreRecycleBinItem(folderItem)}>
+            <RestoreIcon />
+          </IconButton>
+          <IconButton
+            aria-label='Delete item permanently'
+            onClick={() => onDeleteRecycleBin(folderItem)}>
+            <DeleteForeverIcon />
+          </IconButton>
         </Box>
       );
     },

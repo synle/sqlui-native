@@ -94,8 +94,8 @@ export default function DataTable(props: DataTableProps) {
           <TableHead>
             {headerGroups.map((headerGroup) => (
               <TableRow {...headerGroup.getHeaderGroupProps()}>
-                {headerGroup.headers.map((column) => (
-                  <StyledTableCell {...column.getHeaderProps()}>
+                {headerGroup.headers.map((column, colIdx) => (
+                  <StyledTableCell {...column.getHeaderProps()} sx={{width: columns[colIdx].width}}>
                     {column.render('Header')}
                   </StyledTableCell>
                 ))}
