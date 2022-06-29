@@ -101,6 +101,7 @@ export default function AdvancedEditor(props: AdvancedEditorProps) {
       className='AdvancedEditorContainer'
       ref={monacoEl}
       style={{
-    height: props.height,}}></AdvancedEditorContainer>
+        height: props.height,
+      }}></AdvancedEditorContainer>
   );
 }

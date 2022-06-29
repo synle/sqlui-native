@@ -131,15 +131,16 @@ $ConnectionTreeIndentSize: 7px;
   position: relative;
 
   .CodeEditorBox__Commands {
-    display: none;
+    display: flex;
     justify-content: end;
     gap: 1rem;
+    transition: all 0.5s;
+    transform: scaleY(0);
   }
 
   &:hover {
     .CodeEditorBox__Commands {
-      display: flex;
-      margin-left: auto;
+      transform: none;
     }
   }
 }
@@ -156,6 +157,6 @@ $ConnectionTreeIndentSize: 7px;
 // remove transition
 @media (prefers-reduced-motion) {
   * {
-    transition-duration: 0s !important;
+    transition-duration: 0.25s !important;
   }
 }
