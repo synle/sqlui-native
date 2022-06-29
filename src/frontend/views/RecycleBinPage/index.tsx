@@ -1,3 +1,4 @@
+import DeleteIcon from '@mui/icons-material/Delete';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import RestoreIcon from '@mui/icons-material/Restore';
 import Backdrop from '@mui/material/Backdrop';
@@ -163,7 +164,12 @@ export default function RecycleBinPage() {
         <Breadcrumbs
           links={[
             {
-              label: 'Recycle Bin',
+              label: (
+                <>
+                  <DeleteIcon fontSize='inherit' />
+                  Recycle Bin
+                </>
+              ),
             },
           ]}
         />
