@@ -1,3 +1,4 @@
+import PageviewIcon from '@mui/icons-material/Pageview';
 import { useEffect } from 'react';
 import Breadcrumbs from 'src/frontend/components/Breadcrumbs';
 import ConnectionDescription from 'src/frontend/components/ConnectionDescription';
@@ -25,7 +26,12 @@ export default function MainPage() {
         <Breadcrumbs
           links={[
             {
-              label: 'Query Page',
+              label: (
+                <>
+                  <PageviewIcon fontSize='inherit' />
+                  Query Page
+                </>
+              ),
             },
           ]}
         />

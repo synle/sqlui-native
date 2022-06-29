@@ -1,5 +1,6 @@
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import EditIcon from '@mui/icons-material/Edit';
+import StarIcon from '@mui/icons-material/Star';
 import Backdrop from '@mui/material/Backdrop';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -178,7 +179,12 @@ export default function BookmarksPage() {
         <Breadcrumbs
           links={[
             {
-              label: 'Bookmarks',
+              label: (
+                <>
+                  <StarIcon fontSize='inherit' />
+                  Bookmarks
+                </>
+              ),
             },
           ]}
         />
