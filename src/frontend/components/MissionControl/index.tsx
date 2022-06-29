@@ -197,7 +197,7 @@ export default function MissionControl() {
     const newName = await prompt({
       title: 'Add query to Bookmarks',
       message: 'A bookmark name',
-      value: `${query.name || ''} -Bookmarked Query ${new Date().toLocaleString()}`,
+      value: `${query.name || ''} - ${new Date().toLocaleString()}`,
       saveLabel: 'Save',
     });
 
@@ -455,6 +455,24 @@ export default function MissionControl() {
         })`,
       });
     }
+  };
+
+  const onAddConnectionToBookmark = async (connection: SqluiCore.ConnectionProps) => {
+    const newName = await prompt({
+      title: 'Add connection to Bookmarks',
+      message: 'A bookmark name',
+      value: `${connection.name || ''} - ${new Date().toLocaleString()}`,
+      saveLabel: 'Save',
+    });
+
+
+    const { status, ...restOfConnectionMetaData } = connection;
+
+    await addBookmarkItem({
+      type: 'Connection',
+      name: restOfConnectionMetaData.name,
+      data: restOfConnectionMetaData,
+    });
   };
 
   const onRefreshConnection = async (connection: SqluiCore.ConnectionProps) => {
@@ -771,6 +789,11 @@ export default function MissionControl() {
         case 'clientEvent/connection/select':
           if (command.data) {
             onSelectConnection(command.data as SqluiCore.ConnectionProps);
+          }
+          break;
+        case 'clientEvent/connection/addToBookmark':
+          if (command.data) {
+            onAddConnectionToBookmark(command.data as SqluiCore.ConnectionProps);
           }
           break;
 

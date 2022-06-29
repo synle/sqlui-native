@@ -13,6 +13,7 @@ import DropdownButton from 'src/frontend/components/DropdownButton';
 import { useCommands } from 'src/frontend/components/MissionControl';
 import { useTreeActions } from 'src/frontend/hooks/useTreeActions';
 import { SqluiCore } from 'typings';
+import StarIcon from '@mui/icons-material/Star';
 
 type ConnectionActionsProps = {
   connection: SqluiCore.ConnectionProps;
@@ -28,6 +29,15 @@ export default function ConnectionActions(props: ConnectionActionsProps) {
   const { dialect, id: connectionId } = connection;
 
   const options = [
+    {
+      label: 'Add to Bookmark',
+      onClick: () => selectCommand({
+          event: 'clientEvent/connection/addToBookmark',
+          data,
+        }),
+      startIcon: <StarIcon />,
+    },
+    { label: 'divider' },
     {
       label: 'Select',
       startIcon: <SelectAllIcon />,
