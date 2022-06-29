@@ -18,6 +18,7 @@ import {
 } from 'src/frontend/hooks/useSession';
 import { useDarkModeSetting } from 'src/frontend/hooks/useSetting';
 import useToaster, { ToasterHandler } from 'src/frontend/hooks/useToaster';
+import BookmarksPage from 'src/frontend/views/BookmarksPage';
 import EditConnectionPage from 'src/frontend/views/EditConnectionPage';
 import MainPage from 'src/frontend/views/MainPage';
 import MigrationPage from 'src/frontend/views/MigrationPage';
@@ -162,6 +163,7 @@ export default function App() {
               <Route path='/migration/raw_json' element={<MigrationPage mode='raw_json' />} />
               <Route path='/migration' element={<MigrationPage />} />
               <Route path='/recycle_bin' element={<RecycleBinPage />} />
+              <Route path='/bookmarks' element={<BookmarksPage />} />
               <Route path='/*' element={<MainPage />} />
             </Routes>
           </section>

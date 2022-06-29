@@ -122,7 +122,8 @@ export default function AppHeader() {
           id='session-action-split-button'
           options={options}
           onToggle={(newOpen) => setOpen(newOpen)}
-          isLoading={isLoading}>
+          isLoading={isLoading}
+          maxHeight='400px'>
           <IconButton aria-label='Table Actions' color='inherit'>
             <MenuIcon fontSize='inherit' color='inherit' />
           </IconButton>

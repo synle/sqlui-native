@@ -390,7 +390,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     res.status(202).json(await sessionsStorage.delete(req.params?.sessionId));
   });
   //=========================================================================
-  // recycle api endpoints
+  // folder items endpoints used in bookmarks and recycle bin
   //=========================================================================
   // this get a list of all items in a folder
   addDataEndpoint('get', '/api/folder/:folderId', async (req, res, apiCache) => {
@@ -411,6 +411,22 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
 
     res.status(202).json(
       await folderItemsStorage.add({
+        name: req.body.name,
+        type: req.body.type,
+        data: req.body.data,
+      }),
+    );
+  });
+
+  addDataEndpoint('put', '/api/folder/:folderId', async (req, res, apiCache) => {
+    const folderItemsStorage = await new PersistentStorage<SqluiCore.FolderItem>(
+      'folders',
+      req.params?.folderId,
+    );
+
+    res.status(202).json(
+      await folderItemsStorage.update({
+        id: req.body.id,
         name: req.body.name,
         type: req.body.type,
         data: req.body.data,
