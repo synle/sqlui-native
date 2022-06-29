@@ -6,6 +6,7 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Chip from '@mui/material/Chip';
 import CircularProgress from '@mui/material/CircularProgress';
+import IconButton from '@mui/material/IconButton';
 import Link from '@mui/material/Link';
 import Typography from '@mui/material/Typography';
 import { useNavigate } from 'react-router-dom';
@@ -16,13 +17,14 @@ import DataTable from 'src/frontend/components/DataTable';
 import NewConnectionButton from 'src/frontend/components/NewConnectionButton';
 import { useActionDialogs } from 'src/frontend/hooks/useActionDialogs';
 import { useSideBarWidthPreference } from 'src/frontend/hooks/useClientSidePreference';
-import { useUpsertConnection } from 'src/frontend/hooks/useConnection';
-import { useConnectionQueries } from 'src/frontend/hooks/useConnectionQuery';
-import { useRestoreRecycleBinItem, useDeletedRecycleBinItem, useGetRecycleBinItems } from 'src/frontend/hooks/useFolderItems';
+import {
+  useDeletedRecycleBinItem,
+  useGetRecycleBinItems,
+  useRestoreRecycleBinItem,
+} from 'src/frontend/hooks/useFolderItems';
 import { useTreeActions } from 'src/frontend/hooks/useTreeActions';
 import LayoutTwoColumns from 'src/frontend/layout/LayoutTwoColumns';
 import { SqluiCore } from 'typings';
-import IconButton from '@mui/material/IconButton';
 
 const columns = [
   {
@@ -69,9 +71,7 @@ const columns = [
 
       return (
         <Box sx={{ display: 'flex', gap: 1 }}>
-          <IconButton
-            aria-label='Restore item'
-            onClick={() => onRestoreRecycleBinItem(folderItem)}>
+          <IconButton aria-label='Restore item' onClick={() => onRestoreRecycleBinItem(folderItem)}>
             <RestoreIcon />
           </IconButton>
           <IconButton

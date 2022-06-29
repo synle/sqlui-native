@@ -2,11 +2,11 @@ import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import EditIcon from '@mui/icons-material/Edit';
 import StarIcon from '@mui/icons-material/Star';
 import Backdrop from '@mui/material/Backdrop';
-import IconButton from '@mui/material/IconButton';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Chip from '@mui/material/Chip';
 import CircularProgress from '@mui/material/CircularProgress';
+import IconButton from '@mui/material/IconButton';
 import Link from '@mui/material/Link';
 import Typography from '@mui/material/Typography';
 import { useNavigate } from 'react-router-dom';
@@ -107,14 +107,10 @@ const columns = [
 
       return (
         <Box sx={{ display: 'flex', gap: 1 }}>
-          <IconButton
-            aria-label='Edit bookmark'
-            onClick={() => onEditBookmark(folderItem)}>
+          <IconButton aria-label='Edit bookmark' onClick={() => onEditBookmark(folderItem)}>
             <EditIcon />
           </IconButton>
-          <IconButton
-            aria-label='Delete bookmark'
-            onClick={() => onDeleteBookmarkItem(folderItem)}>
+          <IconButton aria-label='Delete bookmark' onClick={() => onDeleteBookmarkItem(folderItem)}>
             <DeleteForeverIcon />
           </IconButton>
         </Box>
