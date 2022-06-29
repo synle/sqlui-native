@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react';
 import AdvancedEditor from 'src/frontend/components/CodeEditorBox/AdvancedEditor';
 import SimpleEditor from 'src/frontend/components/CodeEditorBox/SimpleEditor';
 import { useEditorModeSetting, useWordWrapSetting } from 'src/frontend/hooks/useSetting';
-
+import Select from 'src/frontend/components/Select';
 type CodeEditorProps = {
   value?: string;
   onChange?: (newValue: string) => void;
@@ -22,6 +22,7 @@ type CodeEditorProps = {
 export default function CodeEditorBox(props: CodeEditorProps) {
   const globalWordWrap = useWordWrapSetting();
   const [wordWrap, setWordWrap] = useState(false);
+  const [languageMode, setLanguageMode] = useState<string | undefined>();
   const editorModeToUse = useEditorModeSetting();
 
   const onChange = (newValue: string) => {
@@ -41,20 +42,22 @@ export default function CodeEditorBox(props: CodeEditorProps) {
   );
 
   const contentLanguageMode = (
-    <Button
-      value='check'
-      onChange={() => setWordWrap(!wordWrap)}
-      size='small'
-      color='primary'>
-      <span style={{ marginLeft: '5px' }}>Wrap</span>
-    </Button>
+    <>
+      <Select onChange={(newLanguage) => setLanguageMode(newLanguage)} value={languageMode}>
+        <option value=''>Auto Detected ({props.language})</option>
+        <option value='javascript'>Javascript</option>
+        <option value='sql'>SQL</option>
+      </Select>
+    </>
   );
-
 
   const editorOptionBox = <div className='CodeEditorBox__Commands'>
         {contentToggleWordWrap}
         {contentLanguageMode}
         </div>;
+
+  const languageToUse = languageMode || props.language;
+
 
   useEffect(() => setWordWrap(!!props.wordWrap || globalWordWrap), [globalWordWrap]);
 
@@ -78,7 +81,7 @@ export default function CodeEditorBox(props: CodeEditorProps) {
   return (
     <Paper className='CodeEditorBox' variant='outlined'>
       <AdvancedEditor
-        language={props.language}
+        language={languageToUse}
         value={props.value}
         onBlur={onChange}
         wordWrap={wordWrap}

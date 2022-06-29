@@ -3,7 +3,11 @@
   "version": "1.37.2",
   "description": "A minimal native desktop client for most databases supporting MySQL, MariaDB, MS SQL Server, PostgresSQL, SQLite, Cassandra, MongoDB and Redis.",
   "browserslist": {
-    "production": [">0.2%", "not dead", "not op_mini all"],
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
     "development": [
       "last 1 chrome version",
       "last 1 firefox version",
@@ -29,7 +33,11 @@
       "synopsis": "sqlui-native is a minimal native desktop client for most databases supporting MySQL, MariaDB, MS SQL Server, PostgresSQL, SQLite, Cassandra, MongoDB and Redis.",
       "icon": "build/logo512.png",
       "category": "Development",
-      "target": ["deb", "rpm", "snap"]
+      "target": [
+        "deb",
+        "rpm",
+        "snap"
+      ]
     }
   },
   "main": "main.js",
@@ -108,7 +116,10 @@
     "tedious": "^14.5.0"
   },
   "eslintConfig": {
-    "extends": ["react-app", "react-app/jest"]
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^5.16.4",
