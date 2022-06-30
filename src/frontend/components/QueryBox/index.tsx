@@ -25,7 +25,7 @@ import { useConnectionQuery } from 'src/frontend/hooks/useConnectionQuery';
 import useToaster from 'src/frontend/hooks/useToaster';
 import { formatDuration, formatJS, formatSQL } from 'src/frontend/utils/formatter';
 import { SqluiCore } from 'typings';
-
+import AddCircleIcon from '@mui/icons-material/AddCircle';
 type QueryBoxProps = {
   queryId: string;
 };
@@ -51,6 +51,7 @@ export default function QueryBox(props: QueryBoxProps) {
   const isExecuteDisabled = executing || !query?.sql || !query?.connectionId;
 
   const isMigrationVisible = !!query?.connectionId && !!query?.databaseId;
+  const isCreateRecordVisible = isMigrationVisible;
 
   const onDatabaseConnectionChange = useCallback(
     (connectionId?: string, databaseId?: string, tableId?: string) => {
@@ -129,6 +130,14 @@ export default function QueryBox(props: QueryBoxProps) {
     );
   };
 
+  const onShowCreateNewRecordForThisDatabaseAndTable = () => {
+    navigate(
+      `/record/new?connectionId=${query?.connectionId || ''}&databaseId=${
+        query?.databaseId || ''
+      }&tableId=${query?.tableId || ''}`,
+    );
+  };
+
   if (isLoading) {
     return (
       <Alert severity='info' icon={<CircularProgress size={15} />}>
@@ -190,6 +199,17 @@ export default function QueryBox(props: QueryBoxProps) {
                 onClick={onShowMigrationForThisDatabaseAndTable}
                 startIcon={<BackupIcon />}>
                 Migration
+              </Button>
+            </Tooltip>
+          )}
+          {isCreateRecordVisible && (
+            <Tooltip title='Create new record for this database and connection.'>
+              <Button
+                type='button'
+                variant='outlined'
+                onClick={onShowCreateNewRecordForThisDatabaseAndTable}
+                startIcon={<AddCircleIcon />}>
+                New Record
               </Button>
             </Tooltip>
           )}
