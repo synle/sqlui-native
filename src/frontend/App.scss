@@ -131,15 +131,14 @@ $ConnectionTreeIndentSize: 7px;
   position: relative;
 
   .CodeEditorBox__Commands {
-    display: flex;
+    display: none;
     justify-content: end;
     gap: 1rem;
-    transform: scaleY(0);
   }
 
   &:hover {
     .CodeEditorBox__Commands {
-      transform: none;
+      display: flex;
     }
   }
 }

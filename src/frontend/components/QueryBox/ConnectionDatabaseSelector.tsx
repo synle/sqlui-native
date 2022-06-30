@@ -5,7 +5,7 @@ import { useGetConnections, useGetDatabases, useGetTables } from 'src/frontend/h
 import { SqluiFrontend } from 'typings';
 
 type ConnectionDatabaseSelectorProps = {
-  value: SqluiFrontend.ConnectionQuery;
+  value: Partial<SqluiFrontend.ConnectionQuery>;
   onChange: (connectionId?: string, databaseId?: string, tableId?: string) => void;
   isTableIdRequired?: boolean;
 };
