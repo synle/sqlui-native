@@ -17,6 +17,8 @@ import { useTreeActions } from 'src/frontend/hooks/useTreeActions';
 import LayoutTwoColumns from 'src/frontend/layout/LayoutTwoColumns';
 import { formatSQL } from 'src/frontend/utils/formatter';
 import { SqluiCore, SqluiFrontend } from 'typings';
+import Tabs from 'src/frontend/components/Tabs';
+import JsonFormatData from 'src/frontend/components/JsonFormatData';
 
 type RecordData = any;
 
@@ -290,15 +292,37 @@ type RecordDetailsPageProps = {
 
 export function RecordDetailsPage(props: RecordDetailsPageProps){
   const {data} = props;
-
+  const [tabIdx, setTabIdx] = useState(0);
   const columnNames = Object.keys(data || {});
 
-  return <Box sx={{display: 'flex', flexDirection: 'column', gap: 2}}>
-    {columnNames.map(columnName => {
-      return <React.Fragment key={columnName}>
-        <Typography sx={{fontWeight: 'bold'}}>{columnName}</Typography>
-        <TextField value={data[columnName]} size='small' disabled={true} />
-      </React.Fragment>
-    })}
-  </Box>;
+  const tabHeaders = [
+    <>
+      Form Display
+    </>,
+    <>
+      Raw JSON
+    </>,
+  ];
+
+  const tabContents = [
+    <Box sx={{display: 'flex', flexDirection: 'column', gap: 2}} key='formDisplay'>
+        {columnNames.map(columnName => {
+          return <React.Fragment key={columnName}>
+            <Typography sx={{fontWeight: 'bold'}}>{columnName}</Typography>
+            <TextField value={data[columnName]} size='small' disabled={true} />
+          </React.Fragment>
+        })}
+      </Box>,
+
+    <Box sx={{display: 'flex', flexDirection: 'column', gap: 2}} key='rawJsonDisplay'>
+      <JsonFormatData data={data} />
+      </Box>
+    ,
+  ];
+
+  return <Tabs
+        tabIdx={tabIdx}
+        tabHeaders={tabHeaders}
+        tabContents={tabContents}
+        onTabChange={(newTabIdx) => setTabIdx(newTabIdx)}></Tabs>
 }

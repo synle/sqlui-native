@@ -136,7 +136,7 @@ type FormatDataProps = {
   data: any[];
 };
 
-function JsonFormatData(props: FormatDataProps) {
+export function JsonFormatData(props: FormatDataProps) {
   const { data } = props;
   return <CodeEditorBox value={JSON.stringify(data, null, 2)} language='json' />;
 }
