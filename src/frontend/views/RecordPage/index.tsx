@@ -2,13 +2,16 @@ import EditIcon from '@mui/icons-material/Edit';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import { getInsert as getInsertForRdmbs } from 'src/common/adapters/RelationalDataAdapter/scripts';
 import Breadcrumbs from 'src/frontend/components/Breadcrumbs';
 import ConnectionDescription from 'src/frontend/components/ConnectionDescription';
+import JsonFormatData from 'src/frontend/components/JsonFormatData';
 import NewConnectionButton from 'src/frontend/components/NewConnectionButton';
 import ConnectionDatabaseSelector from 'src/frontend/components/QueryBox/ConnectionDatabaseSelector';
+import Tabs from 'src/frontend/components/Tabs';
 import { useSideBarWidthPreference } from 'src/frontend/hooks/useClientSidePreference';
 import { useGetColumns, useGetConnectionById } from 'src/frontend/hooks/useConnection';
 import { useConnectionQueries } from 'src/frontend/hooks/useConnectionQuery';
@@ -280,4 +283,40 @@ export function NewRecordPage() {
 export function EditRecordPage() {
   // TODO: to be implemented
   return null;
+}
+type RecordDetailsPageProps = {
+  data: any;
+};
+
+export function RecordDetailsPage(props: RecordDetailsPageProps) {
+  const { data } = props;
+  const [tabIdx, setTabIdx] = useState(0);
+  const columnNames = Object.keys(data || {});
+
+  const tabHeaders = [<>Form Display</>, <>Raw JSON</>];
+
+  const tabContents = [
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }} key='formDisplay'>
+      {columnNames.map((columnName) => {
+        return (
+          <React.Fragment key={columnName}>
+            <Typography sx={{ fontWeight: 'bold' }}>{columnName}</Typography>
+            <TextField value={data[columnName]} size='small' disabled={true} />
+          </React.Fragment>
+        );
+      })}
+    </Box>,
+
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }} key='rawJsonDisplay'>
+      <JsonFormatData data={data} />
+    </Box>,
+  ];
+
+  return (
+    <Tabs
+      tabIdx={tabIdx}
+      tabHeaders={tabHeaders}
+      tabContents={tabContents}
+      onTabChange={(newTabIdx) => setTabIdx(newTabIdx)}></Tabs>
+  );
 }
