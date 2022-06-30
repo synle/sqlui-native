@@ -1,4 +1,4 @@
-import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
@@ -16,7 +16,7 @@ import { useTreeActions } from 'src/frontend/hooks/useTreeActions';
 import LayoutTwoColumns from 'src/frontend/layout/LayoutTwoColumns';
 import { formatSQL } from 'src/frontend/utils/formatter';
 import { SqluiCore, SqluiFrontend } from 'typings';
-import EditIcon from '@mui/icons-material/Edit';
+
 type RecordData = any;
 
 type RecordFormProps = {
@@ -30,23 +30,22 @@ type RecordFormProps = {
   data?: RecordData;
 };
 
-
-export function isRecordFormSupportedForDialect(dialect?: string){
+export function isRecordFormSupportedForDialect(dialect?: string) {
   switch (dialect) {
-      case 'mysql':
-      case 'mariadb':
-      case 'mssql':
-      case 'postgres':
-      case 'sqlite':
-        return true;
-      case 'cassandra':
-      case 'mongodb':
-      case 'redis':
-      case 'cosmosdb':
-      case 'aztable':
-      default:
-        return false;
-    }
+    case 'mysql':
+    case 'mariadb':
+    case 'mssql':
+    case 'postgres':
+    case 'sqlite':
+      return true;
+    case 'cassandra':
+    case 'mongodb':
+    case 'redis':
+    case 'cosmosdb':
+    case 'aztable':
+    default:
+      return false;
+  }
 }
 
 type RecordFormReponse = {
@@ -125,8 +124,12 @@ function RecordForm(props) {
   }, []);
 
   const contentFormDataView: React.ReactElement[] = [];
-  if(!isRecordFormSupportedForDialect(connection?.dialect)){
-    contentFormDataView.push(<React.Fragment key='non_supported_dialect'>The dialect of this connection is not supported for RecordForm</React.Fragment>);
+  if (!isRecordFormSupportedForDialect(connection?.dialect)) {
+    contentFormDataView.push(
+      <React.Fragment key='non_supported_dialect'>
+        The dialect of this connection is not supported for RecordForm
+      </React.Fragment>,
+    );
   } else if (columns && columns.length > 0) {
     for (const column of columns) {
       let type = 'text';
@@ -154,7 +157,11 @@ function RecordForm(props) {
       );
     }
   } else {
-    contentFormDataView.push(<React.Fragment key='connection_required'>Please select a connection, database and table from the above</React.Fragment>)
+    contentFormDataView.push(
+      <React.Fragment key='connection_required'>
+        Please select a connection, database and table from the above
+      </React.Fragment>,
+    );
   }
 
   return (

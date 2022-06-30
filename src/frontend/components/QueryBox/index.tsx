@@ -1,3 +1,4 @@
+import AddCircleIcon from '@mui/icons-material/AddCircle';
 import BackupIcon from '@mui/icons-material/Backup';
 import FormatColorTextIcon from '@mui/icons-material/FormatColorText';
 import HelpIcon from '@mui/icons-material/Help';
@@ -25,7 +26,7 @@ import { useConnectionQuery } from 'src/frontend/hooks/useConnectionQuery';
 import useToaster from 'src/frontend/hooks/useToaster';
 import { formatDuration, formatJS, formatSQL } from 'src/frontend/utils/formatter';
 import { SqluiCore } from 'typings';
-import AddCircleIcon from '@mui/icons-material/AddCircle';
+
 type QueryBoxProps = {
   queryId: string;
 };
