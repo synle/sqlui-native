@@ -139,7 +139,7 @@ export default function RecycleBinPage() {
   }, [setTreeActions]);
 
   return (
-    <LayoutTwoColumns className='MainPage'>
+    <LayoutTwoColumns className='RecycleBinPage'>
       <>
         <NewConnectionButton />
         <ConnectionDescription />
