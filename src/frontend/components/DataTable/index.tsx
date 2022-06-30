@@ -14,7 +14,7 @@ import { useTablePageSize } from 'src/frontend/hooks/useSetting';
 type DataTableProps = {
   columns: any[];
   data: any[];
-  onRowClick?:(rowData: any) => void;
+  onRowClick?: (rowData: any) => void;
 };
 
 export const pageSizeOptions: any[] = [
@@ -109,7 +109,10 @@ export default function DataTable(props: DataTableProps) {
             {page.map((row) => {
               prepareRow(row);
               return (
-                <StyledTableRow {...row.getRowProps()} onClick={() => props.onRowClick && props.onRowClick(row.original)} style={{cursor: props.onRowClick ? 'pointer' : ''}}>
+                <StyledTableRow
+                  {...row.getRowProps()}
+                  onClick={() => props.onRowClick && props.onRowClick(row.original)}
+                  style={{ cursor: props.onRowClick ? 'pointer' : '' }}>
                   {row.cells.map((cell) => {
                     return (
                       <StyledTableCell {...cell.getCellProps()}>

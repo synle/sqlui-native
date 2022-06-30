@@ -7,11 +7,11 @@ import CsvEngine from 'json-2-csv';
 import React, { useEffect, useState } from 'react';
 import CodeEditorBox from 'src/frontend/components/CodeEditorBox';
 import { DataTableWithJSONList } from 'src/frontend/components/DataTable';
+import { useCommands } from 'src/frontend/components/MissionControl';
 import Tabs from 'src/frontend/components/Tabs';
 import Timer from 'src/frontend/components/Timer';
 import { downloadText } from 'src/frontend/data/file';
 import { SqluiFrontend } from 'typings';
-import { useCommands } from 'src/frontend/components/MissionControl';
 
 type ResultBoxProps = {
   query: SqluiFrontend.ConnectionQuery;
@@ -91,8 +91,8 @@ export default function ResultBox(props: ResultBoxProps) {
   };
 
   const onDataRowClick = (rowData: any) => {
-    selectCommand({ event: 'clientEvent/record/showDetails', data: rowData })
-  }
+    selectCommand({ event: 'clientEvent/record/showDetails', data: rowData });
+  };
 
   const tabHeaders = [
     <>

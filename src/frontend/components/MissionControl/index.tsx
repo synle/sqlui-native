@@ -42,10 +42,9 @@ import {
   getExportedConnection,
   getExportedQuery,
 } from 'src/frontend/utils/commonUtils';
+import { RecordDetailsPage } from 'src/frontend/views/RecordPage';
 import appPackage from 'src/package.json';
 import { SqluiCore, SqluiEnums, SqluiFrontend } from 'typings';
-import { RecordDetailsPage } from 'src/frontend/views/RecordPage';
-
 
 export type Command = {
   event: SqluiEnums.ClientEventKey;
