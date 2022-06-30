@@ -9,8 +9,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import IconButton from '@mui/material/IconButton';
 import Link from '@mui/material/Link';
 import Typography from '@mui/material/Typography';
-import { useNavigate } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect , useState} from 'react';
 import Breadcrumbs from 'src/frontend/components/Breadcrumbs';
 import ConnectionDescription from 'src/frontend/components/ConnectionDescription';
 import DataTable from 'src/frontend/components/DataTable';
@@ -24,11 +23,88 @@ import {
 } from 'src/frontend/hooks/useFolderItems';
 import { useTreeActions } from 'src/frontend/hooks/useTreeActions';
 import LayoutTwoColumns from 'src/frontend/layout/LayoutTwoColumns';
-import { SqluiCore } from 'typings';
+import { SqluiCore, SqluiFrontend } from 'typings';
+import ConnectionDatabaseSelector from 'src/frontend/components/QueryBox/ConnectionDatabaseSelector';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import BackupIcon from '@mui/icons-material/Backup';
 
-function RecordForm(){
+type RecordData = any;
+
+type RecordFormProps = {
+  onSave: (item: RecordData) => void;
+  onCancel:()=> void;
+  query?: SqluiCore.ConnectionQuery;
+  data?: RecordData;
+}
+
+function RecordForm(props){
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const [query, setQuery] = useState<Partial<SqluiFrontend.ConnectionQuery>>({
+    id: 'migration_from_query_' + Date.now(),
+    ...props?.query
+  });
+
+  const isDisabled = true;
+
+  const onDatabaseConnectionChange = (
+    connectionId?: string,
+    databaseId?: string,
+    tableId?: string,
+  ) => {
+    setQuery({
+      ...query,
+      connectionId,
+      databaseId,
+      tableId,
+    });
+  };
+
+
+   useEffect(() => {
+    setSearchParams(
+      {
+        connectionId: query.connectionId || '',
+        databaseId: query.databaseId || '',
+        tableId: query.tableId || '',
+      },
+      { replace: true },
+    );
+  }, [query]);
+
+   useEffect(() => {
+    setQuery({
+      ...query,
+      connectionId: searchParams.get('connectionId') || '',
+      databaseId: searchParams.get('databaseId') || '',
+      tableId: searchParams.get('tableId') || '',
+    });
+
+  }, []);
+
   return <>
-    RecordForm
+    <div className='FormInput__Row'>
+    <ConnectionDatabaseSelector
+      isTableIdRequired={true}
+      value={query}
+      onChange={onDatabaseConnectionChange}
+    /></div>
+
+  {/*TODO: render the real form here*/}
+
+    <div className='FormInput__Row'>
+    <Button
+      variant='contained'
+      type='submit'
+      disabled={isDisabled}
+      startIcon={<BackupIcon />}
+      onClick={props.onSave}>
+      Save
+    </Button>
+    <Button variant='outlined' type='button' disabled={isDisabled} onClick={props.onCancel}>
+      Cancel
+    </Button>
+    </div>
   </>
 }
 
@@ -36,6 +112,14 @@ export function NewRecordPage() {
   const { value: width, onChange: onSetWidth } = useSideBarWidthPreference();
   const { setTreeActions } = useTreeActions();
   const navigate = useNavigate();
+
+  const onSave=  (item: RecordData) => {
+
+  }
+
+  const onCancel=  () => {
+
+  }
 
   useEffect(() => {
     setTreeActions({
@@ -63,7 +147,7 @@ export function NewRecordPage() {
           ]}
         />
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-          <RecordForm />
+          <RecordForm onSave={onSave} onCancel={onCancel} />
         </Box>
       </>
     </LayoutTwoColumns>
@@ -103,7 +187,7 @@ export function EditRecordPage() {
           ]}
         />
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-          <RecordForm />
+          {/*<RecordForm />*/}
         </Box>
       </>
     </LayoutTwoColumns>
