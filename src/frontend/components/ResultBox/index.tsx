@@ -7,6 +7,7 @@ import CsvEngine from 'json-2-csv';
 import React, { useEffect, useState } from 'react';
 import CodeEditorBox from 'src/frontend/components/CodeEditorBox';
 import { DataTableWithJSONList } from 'src/frontend/components/DataTable';
+import { useCommands } from 'src/frontend/components/MissionControl';
 import Tabs from 'src/frontend/components/Tabs';
 import Timer from 'src/frontend/components/Timer';
 import { downloadText } from 'src/frontend/data/file';
@@ -18,6 +19,7 @@ type ResultBoxProps = {
 };
 
 export default function ResultBox(props: ResultBoxProps) {
+  const { selectCommand } = useCommands();
   const [tabIdx, setTabIdx] = useState(0);
   const { query, executing } = props;
   const queryResult = query.result;
@@ -88,6 +90,10 @@ export default function ResultBox(props: ResultBoxProps) {
     });
   };
 
+  const onDataRowClick = (rowData: any) => {
+    selectCommand({ event: 'clientEvent/record/showDetails', data: rowData });
+  };
+
   const tabHeaders = [
     <>
       Table{' '}
@@ -105,7 +111,7 @@ export default function ResultBox(props: ResultBoxProps) {
 
   const tabContents = [
     <div className='ResultBox__Content' key={`Table`}>
-      <DataTableWithJSONList data={data} />
+      <DataTableWithJSONList onRowClick={onDataRowClick} data={data} />
     </div>,
     <div className='ResultBox__Content' key={`JSON`}>
       <JsonFormatData data={data} />
@@ -130,7 +136,7 @@ type FormatDataProps = {
   data: any[];
 };
 
-function JsonFormatData(props: FormatDataProps) {
+export function JsonFormatData(props: FormatDataProps) {
   const { data } = props;
   return <CodeEditorBox value={JSON.stringify(data, null, 2)} language='json' />;
 }
