@@ -24,6 +24,7 @@ import MainPage from 'src/frontend/views/MainPage';
 import MigrationPage from 'src/frontend/views/MigrationPage';
 import NewConnectionPage from 'src/frontend/views/NewConnectionPage';
 import RecycleBinPage from 'src/frontend/views/RecycleBinPage';
+import {NewRecordPage,EditRecordPage} from 'src/frontend/views/RecordPage';
 import './App.scss';
 import 'src/frontend/electronRenderer';
 
@@ -164,6 +165,8 @@ export default function App() {
               <Route path='/migration' element={<MigrationPage />} />
               <Route path='/recycle_bin' element={<RecycleBinPage />} />
               <Route path='/bookmarks' element={<BookmarksPage />} />
+              <Route path='/record/new' element={<NewRecordPage />} />
+              <Route path='/record/edit/:recordId' element={<EditRecordPage />} />
               <Route path='/*' element={<MainPage />} />
             </Routes>
           </section>
