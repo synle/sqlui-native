@@ -287,6 +287,9 @@ export module SqluiEnums {
     | 'clientEvent/query/closeToTheRight'
     | 'clientEvent/query/reveal'
     | 'clientEvent/query/addToBookmark'
+    | 'clientEvent/record/showDetails'
+    | 'clientEvent/record/new'
+    | 'clientEvent/record/edit' // TODO: to be implemented
     | 'clientEvent/session/new'
     | 'clientEvent/session/rename'
     | 'clientEvent/session/switch'

@@ -42,6 +42,7 @@ import {
   getExportedConnection,
   getExportedQuery,
 } from 'src/frontend/utils/commonUtils';
+import { RecordDetailsPage } from 'src/frontend/views/RecordPage';
 import appPackage from 'src/package.json';
 import { SqluiCore, SqluiEnums, SqluiFrontend } from 'typings';
 
@@ -605,6 +606,16 @@ export default function MissionControl() {
     } catch (err) {}
   };
 
+  const onShowRecordDetails = async (data: any) => {
+    try {
+      await modal({
+        title: 'Record Details',
+        message: <RecordDetailsPage data={data} />,
+        size: 'md',
+      });
+    } catch (err) {}
+  };
+
   const onCheckForUpdate = async () => {
     let contentDom: React.ReactNode;
 
@@ -907,6 +918,19 @@ export default function MissionControl() {
           if (command.data) {
             onAddQueryToBookmark(command.data as SqluiFrontend.ConnectionQuery);
           }
+          break;
+
+        // records command
+        case 'clientEvent/record/showDetails':
+          if (command.data) {
+            onShowRecordDetails(command.data);
+          }
+          break;
+        case 'clientEvent/record/new':
+          navigate('/record/new');
+          break;
+        case 'clientEvent/record/edit':
+          // TODO to be implemented
           break;
 
         // session commands
