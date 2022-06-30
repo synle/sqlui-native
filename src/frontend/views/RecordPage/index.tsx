@@ -1,5 +1,6 @@
 import EditIcon from '@mui/icons-material/Edit';
 import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import { useNavigate, useSearchParams } from 'react-router-dom';
@@ -280,4 +281,24 @@ export function NewRecordPage() {
 export function EditRecordPage() {
   // TODO: to be implemented
   return null;
+}
+
+
+type RecordDetailsPageProps = {
+  data: any;
+}
+
+export function RecordDetailsPage(props: RecordDetailsPageProps){
+  const {data} = props;
+
+  const columnNames = Object.keys(data || {});
+
+  return <Box sx={{display: 'flex', flexDirection: 'column', gap: 2}}>
+    {columnNames.map(columnName => {
+      return <React.Fragment key={columnName}>
+        <Typography sx={{fontWeight: 'bold'}}>{columnName}</Typography>
+        <TextField value={data[columnName]} size='small' disabled={true} />
+      </React.Fragment>
+    })}
+  </Box>;
 }
