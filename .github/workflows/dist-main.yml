@@ -38,10 +38,10 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: npm version --no-git-tag-version patch
-      - run: npm install
-      - run: npm run test-ci
-      - run: npm run build
-      - run: npm run dist
+      - run: yarn
+      - run: yarn test-ci
+      - run: yarn build
+      - run: yarn dist
       - run: mv ./dist/sqlui-native*.exe ./dist/sqlui-native.exe
 
       - uses: actions/upload-release-asset@v1
@@ -60,10 +60,10 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: npm version --no-git-tag-version patch
-      - run: npm install
-      - run: npm run test-ci
-      - run: npm run build
-      - run: npm run dist
+      - run: yarn
+      - run: yarn test-ci
+      - run: yarn build
+      - run: yarn dist
       - run: mv ./dist/sqlui-native*.dmg ./dist/sqlui-native.dmg
 
       - uses: actions/upload-release-asset@v1
@@ -82,10 +82,10 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: npm version --no-git-tag-version patch
-      - run: npm install
-      - run: npm run test-ci
-      - run: npm run build
-      - run: npm run dist
+      - run: yarn
+      - run: yarn test-ci
+      - run: yarn build
+      - run: yarn dist
       - run: mv ./dist/sqlui-native*.deb ./dist/sqlui-native.deb
       - run: mv ./dist/sqlui-native*.rpm ./dist/sqlui-native.rpm
       - run: mv ./dist/sqlui-native*.snap ./dist/sqlui-native.snap
