@@ -20,10 +20,10 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           registry-url: https://registry.npmjs.org/
-      - run: npm install
-      - run: npm run format
-      - run: npm run test-ci
-      - run: npm run build
+      - run: yarn
+      - run: yarn format
+      - run: yarn test-ci
+      - run: yarn build
       - uses: EndBug/add-and-commit@v8
         with:
           message: 'CI / CD - Prettier Automatic Commit'
