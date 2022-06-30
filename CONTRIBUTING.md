@@ -5,6 +5,7 @@
 ### Requirement
 
 - Node 14+
+- [Yarn](https://classic.yarnpkg.com/en/docs/install#windows-stable)
 
 ### Starting guide
 
@@ -76,8 +77,8 @@
 #### In an electron container
 
 ```
-npm install
-npm start
+yarn
+yarn start
 ```
 
 #### In a mocked server container
@@ -85,8 +86,8 @@ npm start
 Run this and test it in the browser
 
 ```
-npm install
-npm run dev
+yarn
+yarn dev
 # then open a browser with URL
 # http://localhost:3000
 ```
@@ -94,10 +95,10 @@ npm run dev
 ### To package
 
 ```
-npm run build
+yarn build
 cd build
-npm install
-npm run dist
+yarn
+yarn dist
 ```
 
 ### Where is the config / data stored on local machine?
