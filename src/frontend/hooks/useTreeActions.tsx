@@ -18,7 +18,7 @@ export function useTreeActions() {
   const queryClient = useQueryClient();
 
   const { data, isLoading } = useQuery(QUERY_KEY_TREE_ACTIONS, () => _treeActions, {
-    notifyOnChangeProps: ['data', 'error']
+    notifyOnChangeProps: ['data', 'error'],
   });
 
   const setTreeActions = useCallback((newTreeActionProps: Partial<TreeActionProps>) => {

@@ -30,7 +30,7 @@ export function useShowHide() {
       newVisible = isVisible;
     }
 
-    _treeVisibles = { ..._treeVisibles, ...{[key]: newVisible} };
+    _treeVisibles = { ..._treeVisibles, ...{ [key]: newVisible } };
 
     queryClient.invalidateQueries(QUERY_KEY_TREEVISIBLES);
   };

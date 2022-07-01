@@ -14,7 +14,7 @@ export function useGetFolderItems(folderType: SqluiCore.FolderType) {
     [QUERY_KEY_FOLDER_ITEMS, folderType],
     async () => dataApi.getFolderItems(folderType),
     {
-      notifyOnChangeProps: ['data', 'error']
+      notifyOnChangeProps: ['data', 'error'],
     },
   );
 }
