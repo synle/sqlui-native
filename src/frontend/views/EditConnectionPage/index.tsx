@@ -24,7 +24,7 @@ export default function EditConnectionPage() {
   }
 
   return (
-    <LayoutTwoColumns className='EditConnectionPage'>
+    <LayoutTwoColumns className='Page Page__EditConnection'>
       <>
         <NewConnectionButton />
         <ConnectionDescription />

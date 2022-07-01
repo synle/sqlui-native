@@ -2,7 +2,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import InputLabel from '@mui/material/InputLabel';
-import TextField from '@mui/material/TextField';
+import TextField, { TextFieldProps } from '@mui/material/TextField';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import { getInsert as getInsertForRdmbs } from 'src/common/adapters/RelationalDataAdapter/scripts';
@@ -135,27 +135,31 @@ function RecordForm(props) {
     );
   } else if (columns && columns.length > 0) {
     for (const column of columns) {
-      let type = 'text';
-      if (column.type?.toLowerCase()?.includes('int')) {
-        type = 'number';
+      const baseInputProps: TextFieldProps = {
+        label: `${column.name} (${column.type.toLowerCase()}) ${
+          column.primaryKey ? '(Primary Key)' : ''
+        }`,
+        defaultValue: data[column.name],
+        onChange: (e) => onSetData(column.name, e.target.value),
+        required: !column.allowNull,
+        size: 'small',
+        margin: 'dense',
+        fullWidth: true,
+        autoComplete: 'off',
+      };
+      let contentColumnValueInputView = <TextField {...baseInputProps} type='text' multiline />;
+      if (
+        column.type?.toLowerCase()?.includes('int') ||
+        column.type?.toLowerCase()?.includes('number')
+      ) {
+        contentColumnValueInputView = <TextField {...baseInputProps} type='number' />;
       }
+
+      parseInt(`varchar(123)`.replace(/[a-z()]/g, ''));
 
       contentFormDataView.push(
         <React.Fragment key={column.name}>
-          <div className='FormInput__Row'>
-            <TextField
-              label={`${column.name} (${column.type.toLowerCase()}) ${
-                column.primaryKey ? '(Primary Key)' : ''
-              }`}
-              defaultValue={data[column.name]}
-              onChange={(e) => onSetData(column.name, e.target.value)}
-              required={!column.allowNull}
-              size='small'
-              fullWidth={true}
-              autoComplete='off'
-              type={type}
-            />
-          </div>
+          <div className='FormInput__Row'>{contentColumnValueInputView}</div>
         </React.Fragment>,
       );
     }
@@ -187,7 +191,6 @@ function RecordForm(props) {
           />
         </div>
 
-        {/*TODO: render the real form here*/}
         {contentFormDataView}
 
         <div className='FormInput__Row'>
@@ -256,7 +259,7 @@ export function NewRecordPage() {
   }, [setTreeActions]);
 
   return (
-    <LayoutTwoColumns className='NewRecordPage'>
+    <LayoutTwoColumns className='Page Page__NewRecord'>
       <>
         <NewConnectionButton />
         <ConnectionDescription />
@@ -300,23 +303,23 @@ export function RecordDetailsPage(props: RecordDetailsPageProps) {
       {columnNames.map((columnName) => {
         const columnValue = data[columnName];
 
-        let contentColumnValue = (
-          <TextField value={columnValue} size='small' margin='dense' disabled={true} />
+        let contentColumnValueView = (
+          <TextField value={columnValue} size='small' margin='dense' disabled={true} multiline />
         );
         if (columnValue === true || columnValue === false) {
           // boolean
           const booleanLabel = columnValue ? '<TRUE>' : '<FALSE>';
-          contentColumnValue = (
+          contentColumnValueView = (
             <TextField value={columnValue} size='small' margin='dense' disabled={true} />
           );
         } else if (columnValue === null) {
           // null value
-          contentColumnValue = (
+          contentColumnValueView = (
             <TextField value='<NULL>' size='small' margin='dense' disabled={true} />
           );
         } else if (columnValue === undefined) {
           // undefined
-          contentColumnValue = (
+          contentColumnValueView = (
             <TextField value='<undefined>' size='small' margin='dense' disabled={true} />
           );
         } else if (
@@ -324,7 +327,7 @@ export function RecordDetailsPage(props: RecordDetailsPageProps) {
           columnValue?.toString()?.match(/<\/[a-z0-9]+>/gi)
         ) {
           // raw HTML
-          contentColumnValue = (
+          contentColumnValueView = (
             <Box
               className='RawHtmlRender'
               dangerouslySetInnerHTML={{ __html: columnValue }}
@@ -333,7 +336,7 @@ export function RecordDetailsPage(props: RecordDetailsPageProps) {
           );
         } else if (Array.isArray(columnValue) || typeof columnValue === 'object') {
           // complex object (array or plain object)
-          contentColumnValue = (
+          contentColumnValueView = (
             <TextField
               value={JSON.stringify(columnValue, null, 2)}
               size='small'
@@ -343,17 +346,12 @@ export function RecordDetailsPage(props: RecordDetailsPageProps) {
               inputProps={{ style: { fontFamily: 'monospace' } }}
             />
           );
-        } else if (columnValue?.toString()?.length > 200) {
-          // greater than a limit, then render as a multiple lines
-          contentColumnValue = (
-            <TextField value={columnValue} size='small' margin='dense' disabled={true} multiline />
-          );
         }
 
         return (
           <React.Fragment key={columnName}>
             <InputLabel sx={{ mt: 1, fontWeight: 'bold' }}>{columnName}</InputLabel>
-            {contentColumnValue}
+            {contentColumnValueView}
           </React.Fragment>
         );
       })}

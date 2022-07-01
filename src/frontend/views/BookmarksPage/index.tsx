@@ -163,7 +163,7 @@ export default function BookmarksPage() {
   }, [setTreeActions]);
 
   return (
-    <LayoutTwoColumns className='BookmarksPage'>
+    <LayoutTwoColumns className='Page Page__Bookmarks'>
       <>
         <NewConnectionButton />
         <ConnectionDescription />

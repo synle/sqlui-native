@@ -20,7 +20,7 @@ export default function NewConnectionPage() {
   }, [setTreeActions]);
 
   return (
-    <LayoutTwoColumns className='NewConnectionPage'>
+    <LayoutTwoColumns className='Page Page__NewConnection'>
       <>
         <NewConnectionButton />
         <ConnectionDescription />

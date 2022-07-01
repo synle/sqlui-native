@@ -17,7 +17,7 @@ export default function MainPage() {
   }, [setTreeActions]);
 
   return (
-    <LayoutTwoColumns className='MainPage'>
+    <LayoutTwoColumns className='Page Page__MainPage'>
       <>
         <NewConnectionButton />
         <ConnectionDescription />
