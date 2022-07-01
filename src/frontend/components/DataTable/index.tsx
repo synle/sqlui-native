@@ -29,7 +29,7 @@ export const DEFAULT_TABLE_PAGE_SIZE = 50;
 
 function TableContainerWrapper(props: any) {
   return (
-    <Paper square={true} variant='outlined'>
+    <Paper square={true} variant='outlined' sx={{overflow: 'auto'}}>
       {props.children}
     </Paper>
   );
@@ -113,10 +113,10 @@ export default function DataTable(props: DataTableProps) {
                   {...row.getRowProps()}
                   onClick={() => props.onRowClick && props.onRowClick(row.original)}
                   style={{ cursor: props.onRowClick ? 'pointer' : '' }}>
-                  {row.cells.map((cell) => {
+                  {row.cells.map((cell, colIdx) => {
                     return (
                       <StyledTableCell {...cell.getCellProps()}>
-                        {cell.render('Cell')}
+                        <span className='DataTable__Cell'>{cell.render('Cell')}</span>
                       </StyledTableCell>
                     );
                   })}
@@ -160,9 +160,17 @@ export function DataTableWithJSONList(props: Omit<DataTableProps, 'columns'>) {
             return <pre>{JSON.stringify(columnValue, null, 2)}</pre>;
           }
           if (typeof columnValue === 'number') {
-            return columnValue;
+            return <pre>columnValue</pre>;
           }
-          return columnValue || '';
+          return <span style={{
+                          height: '20px',
+                          display: 'block',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          wordBreak: 'break-all',
+                          whiteSpace: 'nowrap',
+                          maxWidth: '200px',
+                        }}>{columnValue || ''}</span>;
         },
       };
     });
