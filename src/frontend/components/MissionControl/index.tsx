@@ -209,6 +209,10 @@ export default function MissionControl() {
       name: newName,
       data: restOfQuery,
     });
+
+    const curToast = await addToast({
+      message: `Query "${newName}" added to Bookmarks.`,
+    });
   };
 
   const onRevealQueryConnection = async (query: SqluiFrontend.ConnectionQuery) => {
@@ -471,6 +475,10 @@ export default function MissionControl() {
       type: 'Connection',
       name: restOfConnectionMetaData.name,
       data: restOfConnectionMetaData,
+    });
+
+    const curToast = await addToast({
+      message: `Connection "${newName}" added to Bookmarks.`,
     });
   };
 
