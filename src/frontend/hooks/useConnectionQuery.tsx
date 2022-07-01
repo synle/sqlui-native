@@ -52,6 +52,7 @@ function _useConnectionQueries() {
       onSuccess: (data) => {
         SessionStorageConfig.set('clientConfig/cache.connectionQueries', data);
       },
+      notifyOnChangeProps: ['data']
     },
   );
 }

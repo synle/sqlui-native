@@ -12,12 +12,13 @@ let _treeVisibles = SessionStorageConfig.get<SqluiFrontend.TreeVisibilities>(
 export function useShowHide() {
   const queryClient = useQueryClient();
 
-  const { data: visibles, isLoading: loading } = useQuery(
+  const { data: visibles, isLoading: loading }  = useQuery(
     QUERY_KEY_TREEVISIBLES,
     () => _treeVisibles,
     {
       onSuccess: (data) =>
         SessionStorageConfig.set('clientConfig/cache.treeVisibles', _treeVisibles),
+        notifyOnChangeProps: ['data']
     },
   );
 
@@ -28,9 +29,11 @@ export function useShowHide() {
       _treeVisibles[key] = isVisible;
     }
 
+    _treeVisibles= { ..._treeVisibles }
+
     queryClient.setQueryData<SqluiFrontend.TreeVisibilities | undefined>(
       QUERY_KEY_TREEVISIBLES,
-      () => ({ ..._treeVisibles }),
+      () => _treeVisibles,
     );
   };
 
