@@ -1,5 +1,5 @@
 import SaveIcon from '@mui/icons-material/Save';
-import { Alert, Box, Button, TextField, Typography, Link } from '@mui/material';
+import { Alert, Box, Button, Link, TextField, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import ConnectionHint from 'src/frontend/components/ConnectionForm/ConnectionHint';
@@ -46,7 +46,9 @@ export function NewConnectionForm() {
   if (showHint) {
     return (
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, pb: 4 }}>
-        <Typography>Select one of the following connection type. Or <Link onClick={onStartBlankConnection}>get started with an empty connection</Link>.
+        <Typography>
+          Select one of the following connection type. Or{' '}
+          <Link onClick={onStartBlankConnection}>get started with an empty connection</Link>.
         </Typography>
         <ConnectionHint onChange={onApplyConnectionHint} />
         <Box>

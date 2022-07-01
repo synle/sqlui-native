@@ -2,7 +2,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import InputLabel from '@mui/material/InputLabel';
-import TextField from '@mui/material/TextField';
+import TextField, { TextFieldProps } from '@mui/material/TextField';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import { getInsert as getInsertForRdmbs } from 'src/common/adapters/RelationalDataAdapter/scripts';
@@ -19,7 +19,6 @@ import { useTreeActions } from 'src/frontend/hooks/useTreeActions';
 import LayoutTwoColumns from 'src/frontend/layout/LayoutTwoColumns';
 import { formatSQL } from 'src/frontend/utils/formatter';
 import { SqluiCore, SqluiFrontend } from 'typings';
-import { TextFieldProps, BaseTextFieldProps } from '@mui/material/TextField';
 
 type RecordData = any;
 
@@ -136,32 +135,31 @@ function RecordForm(props) {
     );
   } else if (columns && columns.length > 0) {
     for (const column of columns) {
-      const baseInputProps : TextFieldProps= {
-    label:`${column.name} (${column.type.toLowerCase()}) ${
-            column.primaryKey ? '(Primary Key)' : ''
-          }`,
-          defaultValue:data[column.name],
-          onChange:(e) => onSetData(column.name, e.target.value),
-          required:!column.allowNull,
-          size:'small',
-          margin:'dense',
-          fullWidth:true,
-          autoComplete:'off',
+      const baseInputProps: TextFieldProps = {
+        label: `${column.name} (${column.type.toLowerCase()}) ${
+          column.primaryKey ? '(Primary Key)' : ''
+        }`,
+        defaultValue: data[column.name],
+        onChange: (e) => onSetData(column.name, e.target.value),
+        required: !column.allowNull,
+        size: 'small',
+        margin: 'dense',
+        fullWidth: true,
+        autoComplete: 'off',
+      };
+      let contentColumnValueInputView = <TextField {...baseInputProps} type='text' multiline />;
+      if (
+        column.type?.toLowerCase()?.includes('int') ||
+        column.type?.toLowerCase()?.includes('number')
+      ) {
+        contentColumnValueInputView = <TextField {...baseInputProps} type='number' />;
       }
 
-
-      let contentColumnValueInputView = <TextField {...baseInputProps} type='text' multiline />
-      if (column.type?.toLowerCase()?.includes('int') || column.type?.toLowerCase()?.includes('number')) {
-        contentColumnValueInputView = <TextField {...baseInputProps} type='number' />
-      }
-
-      parseInt(`varchar(123)`.replace(/[a-z()]/g,''))
+      parseInt(`varchar(123)`.replace(/[a-z()]/g, ''));
 
       contentFormDataView.push(
         <React.Fragment key={column.name}>
-          <div className='FormInput__Row'>
-            {contentColumnValueInputView}
-          </div>
+          <div className='FormInput__Row'>{contentColumnValueInputView}</div>
         </React.Fragment>,
       );
     }
