@@ -314,7 +314,14 @@ export function RecordDetailsPage(props: RecordDetailsPageProps) {
           // undefined
           contentColumnValue = <TextField value='<undefined>' size='small'  margin="dense" disabled={true} />;
         } else if(columnValue?.toString()?.match(/<[a-z0-9]>+/gi) || columnValue?.toString()?.match(/<\/[a-z0-9]+>/gi)){
+          // raw HTML
           contentColumnValue = <Box className='RawHtmlRender' dangerouslySetInnerHTML={{ __html: columnValue }} sx={{border: 1, borderRadius: 1, borderColor: 'divider', p: 1}}/>
+        } else if(Array.isArray(columnValue) || typeof columnValue === 'object'){
+          // complex object (array or plain object)
+          contentColumnValue = <TextField value={JSON.stringify(columnValue, null, 2)} size='small' margin="dense" disabled={true} multiline inputProps={{style: {fontFamily: 'monospace'}}} />;
+        } else if(columnValue?.toString()?.length > 200){
+          // greater than a limit, then render as a multiple lines
+           contentColumnValue = <TextField value={columnValue} size='small' margin="dense" disabled={true} multiline/>;
         }
 
         return (
