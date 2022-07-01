@@ -19,6 +19,8 @@ import { useTreeActions } from 'src/frontend/hooks/useTreeActions';
 import LayoutTwoColumns from 'src/frontend/layout/LayoutTwoColumns';
 import { formatSQL } from 'src/frontend/utils/formatter';
 import { SqluiCore, SqluiFrontend } from 'typings';
+import FilledInput from '@mui/material/FilledInput';
+import InputLabel from '@mui/material/InputLabel';
 
 type RecordData = any;
 
@@ -296,12 +298,27 @@ export function RecordDetailsPage(props: RecordDetailsPageProps) {
   const tabHeaders = [<>Form Display</>, <>Raw JSON</>];
 
   const tabContents = [
-    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }} key='formDisplay'>
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }} key='formDisplay'>
       {columnNames.map((columnName) => {
+        const columnValue = data[columnName];
+
+        let contentColumnValue = <TextField value={columnValue} size='small' margin="dense" disabled={true} />;
+        if(columnValue === true || columnValue === false){
+          // boolean
+        } else if(columnValue === null){
+          // null value
+          contentColumnValue = <TextField value='<NULL>' size='small'  margin="dense" disabled={true} />;
+        }  else if(columnValue === undefined){
+          // undefined
+          contentColumnValue = <TextField value='<undefined>' size='small'  margin="dense" disabled={true} />;
+        } else if(columnValue?.toString()?.match(/<[a-z0-9]>+/gi) || columnValue?.toString()?.match(/<\/[a-z0-9]+>/gi)){
+          contentColumnValue = <Box className='RawHtmlRender' dangerouslySetInnerHTML={{ __html: columnValue }} sx={{border: 1, borderRadius: 1, borderColor: 'divider', p: 1}}/>
+        }
+
         return (
           <React.Fragment key={columnName}>
-            <Typography sx={{ fontWeight: 'bold' }}>{columnName}</Typography>
-            <TextField value={data[columnName]} size='small' disabled={true} />
+            <InputLabel sx={{mt: 1, fontWeight:'bold'}}>{columnName}</InputLabel>
+            {contentColumnValue}
           </React.Fragment>
         );
       })}
