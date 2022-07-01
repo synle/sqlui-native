@@ -63,7 +63,7 @@ export default function MigrationPage(props: MigrationPageProps) {
   }, [setTreeActions]);
 
   return (
-    <LayoutTwoColumns className='MigrationPage'>
+    <LayoutTwoColumns className='Page Page__Migration'>
       <>
         <NewConnectionButton />
         <ConnectionDescription />

@@ -19,12 +19,14 @@
   &__LeftPane {
     height: 100%;
     overflow-y: auto;
+    padding-bottom: 2rem;
   }
 
   &__RightPane {
-    margin-left: 0.5rem;
     height: 100%;
     overflow-y: auto;
+    margin-left: 0.5rem;
+    padding-bottom: 2rem;
   }
 }
 

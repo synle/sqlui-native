@@ -20,7 +20,7 @@ export default function LayoutTwoColumns(props: LayoutTwoColumnsProps) {
   }, [setTreeActions]);
 
   return (
-    <Container className='LayoutTwoColumns'>
+    <Container className={`${className} LayoutTwoColumns`}>
       <Section defaultSize={width} onSizeChanged={onSetWidth} minSize={250} maxSize={600}>
         <div className='LayoutTwoColumns__LeftPane'>{children[0]}</div>
       </Section>
