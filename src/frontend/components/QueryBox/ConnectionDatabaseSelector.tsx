@@ -8,6 +8,8 @@ type ConnectionDatabaseSelectorProps = {
   value: Partial<SqluiFrontend.ConnectionQuery>;
   onChange: (connectionId?: string, databaseId?: string, tableId?: string) => void;
   isTableIdRequired?: boolean;
+  disabledConnection?: boolean;
+  disabledDatabase?: boolean;
 };
 
 export default function ConnectionDatabaseSelector(props: ConnectionDatabaseSelectorProps) {
@@ -58,7 +60,9 @@ export default function ConnectionDatabaseSelector(props: ConnectionDatabaseSele
         (connection) => connection.id === query.connectionId,
       );
       return getIsTableIdRequiredForQuery(selectedConnection?.dialect);
-    }, [connections, query.connectionId]) || !!props.isTableIdRequired;
+    }, [connections, query.connectionId]) ||
+    !!props.isTableIdRequired ||
+    true;
 
   if (isLoading) {
     <>
@@ -84,11 +88,15 @@ export default function ConnectionDatabaseSelector(props: ConnectionDatabaseSele
       <Select
         value={query.connectionId}
         onChange={(newValue) => onConnectionChange(newValue)}
-        required>
+        required
+        disabled={!!props.disabledConnection}>
         <option value=''>Pick a Connection</option>
         {connectionOptions}
       </Select>
-      <Select value={query.databaseId} onChange={(newValue) => onDatabaseChange(newValue)}>
+      <Select
+        value={query.databaseId}
+        onChange={(newValue) => onDatabaseChange(newValue)}
+        disabled={!!props.disabledDatabase}>
         <option value=''>Pick a Database (Optional)</option>
         {databaseOptions}
       </Select>
