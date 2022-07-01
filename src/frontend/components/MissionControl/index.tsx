@@ -216,7 +216,7 @@ export default function MissionControl() {
   };
 
   const onRevealQueryConnection = async (query: SqluiFrontend.ConnectionQuery) => {
-    const { databaseId, connectionId } = query;
+    const { databaseId, connectionId, tableId } = query;
 
     if (!connectionId) {
       return;
@@ -226,6 +226,10 @@ export default function MissionControl() {
 
     if (databaseId && connectionId) {
       branchesToReveal.push([connectionId, databaseId].join(' > '));
+
+      if(tableId){
+        branchesToReveal.push([connectionId, databaseId, tableId].join(' > '));
+      }
     }
 
     for (const branchToReveal of branchesToReveal) {
