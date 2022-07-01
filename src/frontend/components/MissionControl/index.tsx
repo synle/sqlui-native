@@ -227,7 +227,7 @@ export default function MissionControl() {
     if (databaseId && connectionId) {
       branchesToReveal.push([connectionId, databaseId].join(' > '));
 
-      if(tableId){
+      if (tableId) {
         branchesToReveal.push([connectionId, databaseId, tableId].join(' > '));
       }
     }
