@@ -23,7 +23,7 @@ import EditConnectionPage from 'src/frontend/views/EditConnectionPage';
 import MainPage from 'src/frontend/views/MainPage';
 import MigrationPage from 'src/frontend/views/MigrationPage';
 import NewConnectionPage from 'src/frontend/views/NewConnectionPage';
-import { EditRecordPage, NewRecordPage } from 'src/frontend/views/RecordPage';
+import { NewRecordPage } from 'src/frontend/views/RecordPage';
 import RecycleBinPage from 'src/frontend/views/RecycleBinPage';
 import './App.scss';
 import 'src/frontend/electronRenderer';
@@ -166,14 +166,13 @@ export default function App() {
               <Route path='/recycle_bin' element={<RecycleBinPage />} />
               <Route path='/bookmarks' element={<BookmarksPage />} />
               <Route path='/record/new' element={<NewRecordPage />} />
-              <Route path='/record/edit/:recordId' element={<EditRecordPage />} />
               <Route path='/*' element={<MainPage />} />
             </Routes>
           </section>
         </Box>
         <MissionControl />
+        <ActionDialogs />
       </HashRouter>
-      <ActionDialogs />
       <Toasters />
       <ElectronEventListener />
     </ThemeProvider>
