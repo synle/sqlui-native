@@ -152,6 +152,18 @@ $ConnectionTreeIndentSize: 7px;
   }
 }
 
+.RawHtmlRender {
+  > * {
+    &:first-child {
+      margin-top: 0;
+    }
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}
+
 // remove transition
 @media (prefers-reduced-motion) {
   * {
