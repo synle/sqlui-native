@@ -12,7 +12,9 @@ const QUERY_KEY_SESSIONS = 'sessions';
 
 // for sessions
 export function useGetSessions() {
-  return useQuery([QUERY_KEY_SESSIONS], dataApi.getSessions, { notifyOnChangeProps: ['data', 'error'] });
+  return useQuery([QUERY_KEY_SESSIONS], dataApi.getSessions, {
+    notifyOnChangeProps: ['data', 'error'],
+  });
 }
 
 export function useGetCurrentSession() {
