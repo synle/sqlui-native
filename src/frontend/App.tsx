@@ -166,14 +166,13 @@ export default function App() {
               <Route path='/recycle_bin' element={<RecycleBinPage />} />
               <Route path='/bookmarks' element={<BookmarksPage />} />
               <Route path='/record/new' element={<NewRecordPage />} />
-              <Route path='/record/edit/:recordId' element={<EditRecordPage />} />
               <Route path='/*' element={<MainPage />} />
             </Routes>
           </section>
         </Box>
         <MissionControl />
+        <ActionDialogs />
       </HashRouter>
-      <ActionDialogs />
       <Toasters />
       <ElectronEventListener />
     </ThemeProvider>

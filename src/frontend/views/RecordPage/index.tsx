@@ -19,7 +19,7 @@ import { useTreeActions } from 'src/frontend/hooks/useTreeActions';
 import LayoutTwoColumns from 'src/frontend/layout/LayoutTwoColumns';
 import { formatSQL } from 'src/frontend/utils/formatter';
 import { SqluiCore, SqluiFrontend } from 'typings';
-
+import { useActiveConnectionQuery } from 'src/frontend/hooks/useConnectionQuery';
 type RecordData = any;
 
 type RecordFormProps = {
@@ -58,6 +58,77 @@ type RecordFormReponse = {
   data: RecordData;
 };
 
+
+/**
+ * render the form in read only mode
+ * @param {[type]} props: RecordDetailsPageProps [description]
+ */
+function RecordView(props: RecordDetailsPageProps){
+  const { data } = props;
+  const columnNames = Object.keys(data || {});
+
+    return <>{columnNames.map((columnName) => {
+        const columnValue = data[columnName];
+
+        let contentColumnValueView = (
+          <TextField value={columnValue} size='small' margin='dense' disabled={true} multiline />
+        );
+        if (columnValue === true || columnValue === false) {
+          // boolean
+          const booleanLabel = columnValue ? '<TRUE>' : '<FALSE>';
+          contentColumnValueView = (
+            <TextField value={columnValue} size='small' margin='dense' disabled={true} />
+          );
+        } else if (columnValue === null) {
+          // null value
+          contentColumnValueView = (
+            <TextField value='<NULL>' size='small' margin='dense' disabled={true} />
+          );
+        } else if (columnValue === undefined) {
+          // undefined
+          contentColumnValueView = (
+            <TextField value='<undefined>' size='small' margin='dense' disabled={true} />
+          );
+        } else if (
+          columnValue?.toString()?.match(/<[a-z0-9]>+/gi) ||
+          columnValue?.toString()?.match(/<\/[a-z0-9]+>/gi)
+        ) {
+          // raw HTML
+          contentColumnValueView = (
+            <Box
+              className='RawHtmlRender'
+              dangerouslySetInnerHTML={{ __html: columnValue }}
+              sx={{ border: 1, borderRadius: 1, borderColor: 'divider', p: 1 }}
+            />
+          );
+        } else if (Array.isArray(columnValue) || typeof columnValue === 'object') {
+          // complex object (array or plain object)
+          contentColumnValueView = (
+            <TextField
+              value={JSON.stringify(columnValue, null, 2)}
+              size='small'
+              margin='dense'
+              disabled={true}
+              multiline
+              inputProps={{ style: { fontFamily: 'monospace' } }}
+            />
+          );
+        }
+
+        return (
+          <React.Fragment key={columnName}>
+            <InputLabel sx={{ mt: 1, fontWeight: 'bold' }}>{columnName}</InputLabel>
+            {contentColumnValueView}
+          </React.Fragment>
+        );
+      })}
+    </>
+}
+
+/**
+ * render the form in editable / creatable mode
+ * @param {[type]} props [description]
+ */
 function RecordForm(props) {
   const [searchParams, setSearchParams] = useSearchParams();
   const [data, setData] = useState<RecordData>(props.data || {});
@@ -79,7 +150,6 @@ function RecordForm(props) {
     databaseId?: string,
     tableId?: string,
   ) => {
-    // set things
     setQuery({
       ...query,
       connectionId,
@@ -283,10 +353,79 @@ export function NewRecordPage() {
   );
 }
 
-export function EditRecordPage() {
-  // TODO: to be implemented
-  return null;
+export function EditRecordPage(props: RecordDetailsPageProps) {
+  const {data } = props;
+  const navigate = useNavigate();
+  const { value: width, onChange: onSetWidth } = useSideBarWidthPreference();
+  const { setTreeActions } = useTreeActions();
+  const { onAddQuery } = useConnectionQueries();
+  const [isEdit, setIsEdit] = useState(false);
+  const { query: activeQuery } = useActiveConnectionQuery();
+
+  const onSave = async ({ query, connection, columns, data }) => {
+    let sql: string = '';
+    switch (connection?.dialect) {
+      case 'mysql':
+      case 'mariadb':
+      case 'mssql':
+      case 'postgres':
+      case 'sqlite':
+        sql = formatSQL(
+          getInsertForRdmbs(
+            {
+              ...query,
+              dialect: connection.dialect,
+              columns,
+            },
+            data,
+          )?.query || '',
+        );
+        break;
+      // case 'cassandra':
+      // case 'mongodb':
+      // case 'redis':
+      // case 'cosmosdb':
+      // case 'aztable':
+      // default:
+      //   break;
+    }
+
+    onAddQuery({
+      name: `Edit Record Query - ${new Date().toLocaleDateString()}`,
+      ...query,
+      sql,
+    });
+    // TODO fix me
+    navigate('/');
+    setIsEdit(true)
+  };
+
+  const onCancel = () => {
+    setIsEdit(false)
+  };
+
+
+  if(!activeQuery){
+    return null;
+  }
+
+  return (<>
+  {
+      isEdit ?<>
+      <RecordForm query={activeQuery} onSave={onSave} onCancel={onCancel} /></>
+            : <>
+<Box><Button variant='contained' onClick={() => setIsEdit(true)} sx={{display: 'none'}}>
+            Edit
+          </Button></Box>
+            <RecordView data={data} /></>
+
+  }
+  </>
+  );
 }
+
+
+
 type RecordDetailsPageProps = {
   data: any;
 };
@@ -294,67 +433,12 @@ type RecordDetailsPageProps = {
 export function RecordDetailsPage(props: RecordDetailsPageProps) {
   const { data } = props;
   const [tabIdx, setTabIdx] = useState(0);
-  const columnNames = Object.keys(data || {});
 
   const tabHeaders = [<>Form Display</>, <>Raw JSON</>];
 
   const tabContents = [
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }} key='formDisplay'>
-      {columnNames.map((columnName) => {
-        const columnValue = data[columnName];
-
-        let contentColumnValueView = (
-          <TextField value={columnValue} size='small' margin='dense' disabled={true} multiline />
-        );
-        if (columnValue === true || columnValue === false) {
-          // boolean
-          const booleanLabel = columnValue ? '<TRUE>' : '<FALSE>';
-          contentColumnValueView = (
-            <TextField value={columnValue} size='small' margin='dense' disabled={true} />
-          );
-        } else if (columnValue === null) {
-          // null value
-          contentColumnValueView = (
-            <TextField value='<NULL>' size='small' margin='dense' disabled={true} />
-          );
-        } else if (columnValue === undefined) {
-          // undefined
-          contentColumnValueView = (
-            <TextField value='<undefined>' size='small' margin='dense' disabled={true} />
-          );
-        } else if (
-          columnValue?.toString()?.match(/<[a-z0-9]>+/gi) ||
-          columnValue?.toString()?.match(/<\/[a-z0-9]+>/gi)
-        ) {
-          // raw HTML
-          contentColumnValueView = (
-            <Box
-              className='RawHtmlRender'
-              dangerouslySetInnerHTML={{ __html: columnValue }}
-              sx={{ border: 1, borderRadius: 1, borderColor: 'divider', p: 1 }}
-            />
-          );
-        } else if (Array.isArray(columnValue) || typeof columnValue === 'object') {
-          // complex object (array or plain object)
-          contentColumnValueView = (
-            <TextField
-              value={JSON.stringify(columnValue, null, 2)}
-              size='small'
-              margin='dense'
-              disabled={true}
-              multiline
-              inputProps={{ style: { fontFamily: 'monospace' } }}
-            />
-          );
-        }
-
-        return (
-          <React.Fragment key={columnName}>
-            <InputLabel sx={{ mt: 1, fontWeight: 'bold' }}>{columnName}</InputLabel>
-            {contentColumnValueView}
-          </React.Fragment>
-        );
-      })}
+      <EditRecordPage data={data} />
     </Box>,
 
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }} key='rawJsonDisplay'>
