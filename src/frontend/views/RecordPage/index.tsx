@@ -12,6 +12,7 @@ import {
 import Breadcrumbs from 'src/frontend/components/Breadcrumbs';
 import ConnectionDescription from 'src/frontend/components/ConnectionDescription';
 import JsonFormatData from 'src/frontend/components/JsonFormatData';
+import { useCommands } from 'src/frontend/components/MissionControl';
 import NewConnectionButton from 'src/frontend/components/NewConnectionButton';
 import ConnectionDatabaseSelector from 'src/frontend/components/QueryBox/ConnectionDatabaseSelector';
 import Tabs from 'src/frontend/components/Tabs';
@@ -27,7 +28,6 @@ import { useTreeActions } from 'src/frontend/hooks/useTreeActions';
 import LayoutTwoColumns from 'src/frontend/layout/LayoutTwoColumns';
 import { formatSQL } from 'src/frontend/utils/formatter';
 import { SqluiCore, SqluiFrontend } from 'typings';
-import { useCommands } from 'src/frontend/components/MissionControl';
 
 type RecordData = any;
 
@@ -160,12 +160,12 @@ function RecordForm(props) {
     databaseId?: string,
     tableId?: string,
   ) => {
-    if(props.onConnectionChanges){
+    if (props.onConnectionChanges) {
       props.onConnectionChanges({
         connectionId,
         databaseId,
         tableId,
-      })
+      });
     }
 
     setQuery({
@@ -362,11 +362,9 @@ export function NewRecordPage() {
   const onCancel = () => {
     navigate('/');
   };
-
-
   const onConnectionChanges = (query) => {
-    selectCommand({ event: 'clientEvent/query/revealThisOnly', data: query })
-  }
+    selectCommand({ event: 'clientEvent/query/revealThisOnly', data: query });
+  };
 
   useEffect(() => {
     setTreeActions({

@@ -30,21 +30,21 @@ export function useShowHide() {
       newVisible = isVisible;
     }
 
-    _updateVisibles({ ..._treeVisibles, ...{ [key]: newVisible } })
+    _updateVisibles({ ..._treeVisibles, ...{ [key]: newVisible } });
 
     queryClient.invalidateQueries(QUERY_KEY_TREEVISIBLES);
   };
 
   const onSet = (newTreeVisibles: SqluiFrontend.TreeVisibilities) => {
-    _updateVisibles(newTreeVisibles)
+    _updateVisibles(newTreeVisibles);
   };
 
   const onClear = () => {
-    _updateVisibles({})
+    _updateVisibles({});
   };
 
-  function _updateVisibles(newTreeVisibles: SqluiFrontend.TreeVisibilities){
-    _treeVisibles = {...newTreeVisibles};
+  function _updateVisibles(newTreeVisibles: SqluiFrontend.TreeVisibilities) {
+    _treeVisibles = { ...newTreeVisibles };
 
     queryClient.setQueryData<SqluiFrontend.TreeVisibilities | undefined>(
       QUERY_KEY_TREEVISIBLES,

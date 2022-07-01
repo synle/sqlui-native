@@ -115,7 +115,11 @@ export default function MissionControl() {
   const { mutateAsync: importConnection } = useImportConnection();
   const { data: connections, isLoading: loadingConnections } = useGetConnections();
   const { settings, onChange: onChangeSettings } = useSetting();
-  const { onClear: onClearConnectionVisibles, onToggle: onToggleConnectionVisible, onSet: onSetConnectionVisible } = useShowHide();
+  const {
+    onClear: onClearConnectionVisibles,
+    onToggle: onToggleConnectionVisible,
+    onSet: onSetConnectionVisible,
+  } = useShowHide();
   const { data: activeConnection } = useGetConnectionById(activeQuery?.connectionId);
   const { add: addToast } = useToaster();
   const { mutateAsync: deleteConnection } = useDeleteConnection();
@@ -215,7 +219,10 @@ export default function MissionControl() {
     });
   };
 
-  const onRevealQueryConnection = async (query: SqluiFrontend.ConnectionQuery, showOnlyRevealedConnection: boolean) => {
+  const onRevealQueryConnection = async (
+    query: SqluiFrontend.ConnectionQuery,
+    showOnlyRevealedConnection: boolean,
+  ) => {
     const { connectionId, databaseId, tableId } = query;
 
     if (!connectionId) {
@@ -232,21 +239,21 @@ export default function MissionControl() {
       }
     }
 
-    if(showOnlyRevealedConnection === true){
+    if (showOnlyRevealedConnection === true) {
       // hide everything else, only reveal this set of connection
       const newVisibles = {};
       for (const branchToReveal of branchesToReveal) {
-          // reveal
-          newVisibles[branchToReveal] = true;
-        }
+        // reveal
+        newVisibles[branchToReveal] = true;
+      }
 
       onSetConnectionVisible(newVisibles);
     } else {
-        for (const branchToReveal of branchesToReveal) {
-          // reveal
-          onToggleConnectionVisible(branchToReveal, true);
-        }
+      for (const branchToReveal of branchesToReveal) {
+        // reveal
+        onToggleConnectionVisible(branchToReveal, true);
       }
+    }
 
     // scroll to the selected dom
     const curToast = await addToast({
@@ -934,7 +941,7 @@ export default function MissionControl() {
           // this reveal the current query connection
           // but keep the old state
           if (activeQuery) {
-            onRevealQueryConnection(activeQuery, false );
+            onRevealQueryConnection(activeQuery, false);
           }
           break;
 
