@@ -305,6 +305,8 @@ export function RecordDetailsPage(props: RecordDetailsPageProps) {
         let contentColumnValue = <TextField value={columnValue} size='small' margin="dense" disabled={true} />;
         if(columnValue === true || columnValue === false){
           // boolean
+          const booleanLabel = columnValue ? '<TRUE>' : '<FALSE>';
+          contentColumnValue = <TextField value={columnValue} size='small'  margin="dense" disabled={true} />;
         } else if(columnValue === null){
           // null value
           contentColumnValue = <TextField value='<NULL>' size='small'  margin="dense" disabled={true} />;
