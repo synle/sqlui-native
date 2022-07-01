@@ -1,8 +1,8 @@
 import EditIcon from '@mui/icons-material/Edit';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import InputLabel from '@mui/material/InputLabel';
 import TextField from '@mui/material/TextField';
-import Typography from '@mui/material/Typography';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import { getInsert as getInsertForRdmbs } from 'src/common/adapters/RelationalDataAdapter/scripts';
@@ -19,8 +19,6 @@ import { useTreeActions } from 'src/frontend/hooks/useTreeActions';
 import LayoutTwoColumns from 'src/frontend/layout/LayoutTwoColumns';
 import { formatSQL } from 'src/frontend/utils/formatter';
 import { SqluiCore, SqluiFrontend } from 'typings';
-import FilledInput from '@mui/material/FilledInput';
-import InputLabel from '@mui/material/InputLabel';
 
 type RecordData = any;
 
@@ -302,31 +300,59 @@ export function RecordDetailsPage(props: RecordDetailsPageProps) {
       {columnNames.map((columnName) => {
         const columnValue = data[columnName];
 
-        let contentColumnValue = <TextField value={columnValue} size='small' margin="dense" disabled={true} />;
-        if(columnValue === true || columnValue === false){
+        let contentColumnValue = (
+          <TextField value={columnValue} size='small' margin='dense' disabled={true} />
+        );
+        if (columnValue === true || columnValue === false) {
           // boolean
           const booleanLabel = columnValue ? '<TRUE>' : '<FALSE>';
-          contentColumnValue = <TextField value={columnValue} size='small'  margin="dense" disabled={true} />;
-        } else if(columnValue === null){
+          contentColumnValue = (
+            <TextField value={columnValue} size='small' margin='dense' disabled={true} />
+          );
+        } else if (columnValue === null) {
           // null value
-          contentColumnValue = <TextField value='<NULL>' size='small'  margin="dense" disabled={true} />;
-        }  else if(columnValue === undefined){
+          contentColumnValue = (
+            <TextField value='<NULL>' size='small' margin='dense' disabled={true} />
+          );
+        } else if (columnValue === undefined) {
           // undefined
-          contentColumnValue = <TextField value='<undefined>' size='small'  margin="dense" disabled={true} />;
-        } else if(columnValue?.toString()?.match(/<[a-z0-9]>+/gi) || columnValue?.toString()?.match(/<\/[a-z0-9]+>/gi)){
+          contentColumnValue = (
+            <TextField value='<undefined>' size='small' margin='dense' disabled={true} />
+          );
+        } else if (
+          columnValue?.toString()?.match(/<[a-z0-9]>+/gi) ||
+          columnValue?.toString()?.match(/<\/[a-z0-9]+>/gi)
+        ) {
           // raw HTML
-          contentColumnValue = <Box className='RawHtmlRender' dangerouslySetInnerHTML={{ __html: columnValue }} sx={{border: 1, borderRadius: 1, borderColor: 'divider', p: 1}}/>
-        } else if(Array.isArray(columnValue) || typeof columnValue === 'object'){
+          contentColumnValue = (
+            <Box
+              className='RawHtmlRender'
+              dangerouslySetInnerHTML={{ __html: columnValue }}
+              sx={{ border: 1, borderRadius: 1, borderColor: 'divider', p: 1 }}
+            />
+          );
+        } else if (Array.isArray(columnValue) || typeof columnValue === 'object') {
           // complex object (array or plain object)
-          contentColumnValue = <TextField value={JSON.stringify(columnValue, null, 2)} size='small' margin="dense" disabled={true} multiline inputProps={{style: {fontFamily: 'monospace'}}} />;
-        } else if(columnValue?.toString()?.length > 200){
+          contentColumnValue = (
+            <TextField
+              value={JSON.stringify(columnValue, null, 2)}
+              size='small'
+              margin='dense'
+              disabled={true}
+              multiline
+              inputProps={{ style: { fontFamily: 'monospace' } }}
+            />
+          );
+        } else if (columnValue?.toString()?.length > 200) {
           // greater than a limit, then render as a multiple lines
-           contentColumnValue = <TextField value={columnValue} size='small' margin="dense" disabled={true} multiline/>;
+          contentColumnValue = (
+            <TextField value={columnValue} size='small' margin='dense' disabled={true} multiline />
+          );
         }
 
         return (
           <React.Fragment key={columnName}>
-            <InputLabel sx={{mt: 1, fontWeight:'bold'}}>{columnName}</InputLabel>
+            <InputLabel sx={{ mt: 1, fontWeight: 'bold' }}>{columnName}</InputLabel>
             {contentColumnValue}
           </React.Fragment>
         );
