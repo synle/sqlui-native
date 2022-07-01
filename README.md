@@ -200,7 +200,6 @@ If you want to permanently delete those and not put it in the recycle bin, you c
 
 ![image](https://user-images.githubusercontent.com/3792401/176941201-460bd80e-6aa5-467d-987a-7a20637ad807.png)
 
-
 #### Record Details / Edit Record Page
 
 - Clicking on any record on the query results will bring up the Record Detail page
