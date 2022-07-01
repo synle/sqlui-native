@@ -26,9 +26,7 @@ const DEFAULT_AUTO_HIDE_DURATION = 6000;
 export default function useToaster() {
   const queryClient = useQueryClient();
 
-  const { data, isLoading } = useQuery(QUERY_KEY_TOASTS, () => _toasts, {
-
-  });
+  const { data, isLoading } = useQuery(QUERY_KEY_TOASTS, () => _toasts, {});
 
   const add = (props: CoreToasterProps): Promise<ToasterHandler> => {
     return new Promise((resolve, reject) => {

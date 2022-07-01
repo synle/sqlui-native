@@ -17,9 +17,7 @@ let _treeActions: TreeActionProps = {
 export function useTreeActions() {
   const queryClient = useQueryClient();
 
-  const { data, isLoading } = useQuery(QUERY_KEY_TREE_ACTIONS, () => _treeActions, {
-
-  });
+  const { data, isLoading } = useQuery(QUERY_KEY_TREE_ACTIONS, () => _treeActions, {});
 
   const setTreeActions = useCallback((newTreeActionProps: Partial<TreeActionProps>) => {
     _treeActions.showContextMenu = newTreeActionProps.showContextMenu || false;

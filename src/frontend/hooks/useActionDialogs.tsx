@@ -44,9 +44,7 @@ let _actionDialogs: ActionDialog[] = [];
 export function useActionDialogs() {
   const queryClient = useQueryClient();
 
-  const { data } = useQuery(QUERY_KEY_ACTION_DIALOGS, () => _actionDialogs, {
-
-  });
+  const { data } = useQuery(QUERY_KEY_ACTION_DIALOGS, () => _actionDialogs, {});
 
   const prompt = (props: PromptInput): Promise<string | undefined> => {
     return new Promise((resolve, reject) => {

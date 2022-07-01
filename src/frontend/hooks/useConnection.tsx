@@ -12,7 +12,6 @@ const DEFAULT_STALE_TIME = 30000;
 export function useGetConnections() {
   return useQuery([QUERY_KEY_ALL_CONNECTIONS], dataApi.getConnections, {
     staleTime: DEFAULT_STALE_TIME,
-
   });
 }
 
@@ -40,7 +39,6 @@ export function useGetConnectionById(connectionId?: string) {
     () => (!connectionId ? undefined : dataApi.getConnection(connectionId)),
     {
       enabled: !!connectionId,
-
     },
   );
 }

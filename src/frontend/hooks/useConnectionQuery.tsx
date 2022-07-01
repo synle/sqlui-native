@@ -182,7 +182,7 @@ export function useConnectionQueries() {
   const onShowQuery = (queryId: string) => {
     _connectionQueries = _connectionQueries.map((q) => {
       q.selected = q.id === queryId;
-      return {...q};
+      return { ...q };
     });
     _invalidateQueries();
   };

@@ -18,7 +18,6 @@ export function useShowHide() {
     {
       onSuccess: (data) =>
         SessionStorageConfig.set('clientConfig/cache.treeVisibles', _treeVisibles),
-
     },
   );
 
