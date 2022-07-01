@@ -1,6 +1,5 @@
 import ViewColumnIcon from '@mui/icons-material/ViewColumn';
 import Alert from '@mui/material/Alert';
-import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
 import React, { useEffect, useState } from 'react';
@@ -9,8 +8,8 @@ import ColumnAttributes from 'src/frontend/components/ColumnDescription/ColumnAt
 import ColumnName from 'src/frontend/components/ColumnDescription/ColumnName';
 import ColumnType from 'src/frontend/components/ColumnDescription/ColumnType';
 import { useGetColumns } from 'src/frontend/hooks/useConnection';
-import { useShowHide } from 'src/frontend/hooks/useShowHide';
 import { useActiveConnectionQuery } from 'src/frontend/hooks/useConnectionQuery';
+import { useShowHide } from 'src/frontend/hooks/useShowHide';
 
 const MAX_COLUMN_SIZE_TO_SHOW = 5;
 
@@ -33,9 +32,9 @@ export default function ColumnDescription(props: ColumnDescriptionProps) {
   const [showAllColumns, setShowAllColumns] = useState(visibles[keyShowAllColumns]);
 
   const onShowAllColumns = () => {
-    setShowAllColumns(true)
+    setShowAllColumns(true);
     onToggle(keyShowAllColumns, true);
-  }
+  };
 
   useEffect(() => {
     if (columns && columns.length <= MAX_COLUMN_SIZE_TO_SHOW) {
@@ -75,8 +74,8 @@ export default function ColumnDescription(props: ColumnDescriptionProps) {
                 onToggle={() => onToggle(key)}
                 className={isSelected ? 'selected ColumnDescription' : 'ColumnDescription'}>
                 <ViewColumnIcon color='disabled' fontSize='inherit' />
-                  <ColumnName value={column.name}></ColumnName>
-                  <ColumnType value={column.type}></ColumnType>
+                <ColumnName value={column.name}></ColumnName>
+                <ColumnType value={column.type}></ColumnType>
               </AccordionHeader>
               <AccordionBody expanded={visibles[key]}>
                 <ColumnAttributes column={column} />
