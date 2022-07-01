@@ -52,7 +52,6 @@ function _useConnectionQueries() {
       onSuccess: (data) => {
         SessionStorageConfig.set('clientConfig/cache.connectionQueries', data);
       },
-      notifyOnChangeProps: 'tracked',
     },
   );
 }
@@ -65,10 +64,7 @@ export function useConnectionQueries() {
   const isSoftDeleteModeSetting = useIsSoftDeleteModeSetting();
 
   function _invalidateQueries() {
-    queryClient.setQueryData<SqluiFrontend.ConnectionQuery[] | undefined>(
-      QUERY_KEY_QUERIES,
-      () => _connectionQueries,
-    );
+    queryClient.invalidateQueries(QUERY_KEY_QUERIES);
   }
 
   const onAddQuery = async (query?: SqluiCore.CoreConnectionQuery) => {
@@ -186,7 +182,7 @@ export function useConnectionQueries() {
   const onShowQuery = (queryId: string) => {
     _connectionQueries = _connectionQueries.map((q) => {
       q.selected = q.id === queryId;
-      return q;
+      return {...q};
     });
     _invalidateQueries();
   };

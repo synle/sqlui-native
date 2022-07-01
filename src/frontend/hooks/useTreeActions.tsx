@@ -18,17 +18,15 @@ export function useTreeActions() {
   const queryClient = useQueryClient();
 
   const { data, isLoading } = useQuery(QUERY_KEY_TREE_ACTIONS, () => _treeActions, {
-    notifyOnChangeProps: 'tracked',
+
   });
 
   const setTreeActions = useCallback((newTreeActionProps: Partial<TreeActionProps>) => {
     _treeActions.showContextMenu = newTreeActionProps.showContextMenu || false;
     _treeActions.onSelectCallback = newTreeActionProps.onSelectCallback || undefined;
     _treeActions = { ..._treeActions };
-    queryClient.setQueryData<TreeActionProps | undefined>(
-      QUERY_KEY_TREE_ACTIONS,
-      () => _treeActions,
-    );
+
+    queryClient.invalidateQueries(QUERY_KEY_TREE_ACTIONS);
   }, []);
 
   return {

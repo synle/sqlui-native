@@ -45,7 +45,7 @@ export function useActionDialogs() {
   const queryClient = useQueryClient();
 
   const { data } = useQuery(QUERY_KEY_ACTION_DIALOGS, () => _actionDialogs, {
-    notifyOnChangeProps: 'tracked',
+
   });
 
   const prompt = (props: PromptInput): Promise<string | undefined> => {

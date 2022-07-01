@@ -27,7 +27,7 @@ export default function useToaster() {
   const queryClient = useQueryClient();
 
   const { data, isLoading } = useQuery(QUERY_KEY_TOASTS, () => _toasts, {
-    notifyOnChangeProps: 'tracked',
+
   });
 
   const add = (props: CoreToasterProps): Promise<ToasterHandler> => {

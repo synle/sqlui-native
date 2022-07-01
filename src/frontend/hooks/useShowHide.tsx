@@ -18,7 +18,7 @@ export function useShowHide() {
     {
       onSuccess: (data) =>
         SessionStorageConfig.set('clientConfig/cache.treeVisibles', _treeVisibles),
-      notifyOnChangeProps: 'tracked',
+
     },
   );
 
@@ -31,19 +31,13 @@ export function useShowHide() {
 
     _treeVisibles = { ..._treeVisibles };
 
-    queryClient.setQueryData<SqluiFrontend.TreeVisibilities | undefined>(
-      QUERY_KEY_TREEVISIBLES,
-      () => _treeVisibles,
-    );
+    queryClient.invalidateQueries(QUERY_KEY_TREEVISIBLES);
   };
 
   const onClear = () => {
     _treeVisibles = {};
 
-    queryClient.setQueryData<SqluiFrontend.TreeVisibilities | undefined>(
-      QUERY_KEY_TREEVISIBLES,
-      () => ({ ..._treeVisibles }),
-    );
+    queryClient.invalidateQueries(QUERY_KEY_TREEVISIBLES);
   };
 
   return {
