@@ -261,7 +261,7 @@ export function NewRecordPage() {
   }, [setTreeActions]);
 
   return (
-    <LayoutTwoColumns className='NewRecordPage'>
+    <LayoutTwoColumns className='Page Page__NewRecord'>
       <>
         <NewConnectionButton />
         <ConnectionDescription />
