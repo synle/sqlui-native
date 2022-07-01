@@ -363,41 +363,8 @@ export function EditRecordPage(props: RecordDetailsPageProps) {
   const { query: activeQuery } = useActiveConnectionQuery();
 
   const onSave = async ({ query, connection, columns, data }) => {
-    let sql: string = '';
-    switch (connection?.dialect) {
-      case 'mysql':
-      case 'mariadb':
-      case 'mssql':
-      case 'postgres':
-      case 'sqlite':
-        sql = formatSQL(
-          getInsertForRdmbs(
-            {
-              ...query,
-              dialect: connection.dialect,
-              columns,
-            },
-            data,
-          )?.query || '',
-        );
-        break;
-      // case 'cassandra':
-      // case 'mongodb':
-      // case 'redis':
-      // case 'cosmosdb':
-      // case 'aztable':
-      // default:
-      //   break;
-    }
-
-    onAddQuery({
-      name: `Edit Record Query - ${new Date().toLocaleDateString()}`,
-      ...query,
-      sql,
-    });
-    // TODO fix me
-    navigate('/');
-    setIsEdit(true)
+    // TODO: to be implemented
+    setIsEdit(false)
   };
 
   const onCancel = () => {
@@ -414,9 +381,10 @@ export function EditRecordPage(props: RecordDetailsPageProps) {
       isEdit ?<>
       <RecordForm query={activeQuery} onSave={onSave} onCancel={onCancel} /></>
             : <>
-<Box><Button variant='contained' onClick={() => setIsEdit(true)} sx={{display: 'none'}}>
+          {/*TODO: to be implemented*/}
+{/*<Box><Button variant='contained' onClick={() => setIsEdit(true)}>
             Edit
-          </Button></Box>
+          </Button></Box>*/}
             <RecordView data={data} /></>
 
   }
