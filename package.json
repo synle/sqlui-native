@@ -90,7 +90,7 @@
     "@mui/material": "^5.8.2",
     "cassandra-driver": "^3.6.0",
     "connection-string-parser": "^1.0.4",
-    "fuzzysort": "^1.2.1",
+    "fuzzysort": "^2.0.1",
     "js-beautify": "^1.14.3",
     "json-2-csv": "^3.17.1",
     "mariadb": "^3.0.0",
