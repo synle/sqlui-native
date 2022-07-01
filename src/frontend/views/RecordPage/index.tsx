@@ -5,31 +5,33 @@ import InputLabel from '@mui/material/InputLabel';
 import TextField, { TextFieldProps } from '@mui/material/TextField';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
-import { getInsert as getInsertForRdmbs, getUpdateWithValues as getUpdateWithValuesForRmdbs } from 'src/common/adapters/RelationalDataAdapter/scripts';
+import {
+  getInsert as getInsertForRdmbs,
+  getUpdateWithValues as getUpdateWithValuesForRmdbs,
+} from 'src/common/adapters/RelationalDataAdapter/scripts';
 import Breadcrumbs from 'src/frontend/components/Breadcrumbs';
 import ConnectionDescription from 'src/frontend/components/ConnectionDescription';
 import JsonFormatData from 'src/frontend/components/JsonFormatData';
 import NewConnectionButton from 'src/frontend/components/NewConnectionButton';
 import ConnectionDatabaseSelector from 'src/frontend/components/QueryBox/ConnectionDatabaseSelector';
 import Tabs from 'src/frontend/components/Tabs';
+import { useActionDialogs } from 'src/frontend/hooks/useActionDialogs';
 import { useSideBarWidthPreference } from 'src/frontend/hooks/useClientSidePreference';
 import { useGetColumns, useGetConnectionById } from 'src/frontend/hooks/useConnection';
 import {
   useActiveConnectionQuery,
   useConnectionQueries,
 } from 'src/frontend/hooks/useConnectionQuery';
+import useToaster from 'src/frontend/hooks/useToaster';
 import { useTreeActions } from 'src/frontend/hooks/useTreeActions';
 import LayoutTwoColumns from 'src/frontend/layout/LayoutTwoColumns';
 import { formatSQL } from 'src/frontend/utils/formatter';
 import { SqluiCore, SqluiFrontend } from 'typings';
-import { useActionDialogs } from 'src/frontend/hooks/useActionDialogs';
-import useToaster from 'src/frontend/hooks/useToaster';
+
 type RecordData = any;
 
 type RecordFormProps = {
-  onSave: (
-    response: RecordFormReponse
-  ) => void;
+  onSave: (response: RecordFormReponse) => void;
   onCancel: () => void;
   query?: SqluiCore.ConnectionQuery;
   data?: RecordData;
@@ -59,7 +61,7 @@ type RecordFormReponse = {
   connection?: SqluiCore.ConnectionProps;
   columns?: SqluiCore.ColumnMetaData[];
   data: RecordData;
-  deltaFields: string[],
+  deltaFields: string[];
 };
 /**
  * render the form in read only mode
@@ -165,14 +167,14 @@ function RecordForm(props) {
   };
 
   const onSetData = (key: string, value: any) => {
-    deltaFields.add(key)
+    deltaFields.add(key);
     setDeltaFields(deltaFields);
     setData({ ...data, [key]: value });
   };
 
   // when query changes update the form field
   useEffect(() => {
-    if(props.isEditMode === true){
+    if (props.isEditMode === true) {
       return;
     }
     setSearchParams(
@@ -187,8 +189,8 @@ function RecordForm(props) {
 
   // generate the dummy data when selector changes
   useEffect(() => {
-    if(props.data){
-      setData(props.data)
+    if (props.data) {
+      setData(props.data);
       return;
     }
 
@@ -204,7 +206,7 @@ function RecordForm(props) {
   }, [columns, props.data]);
 
   useEffect(() => {
-    if(props.isEditMode === true){
+    if (props.isEditMode === true) {
       return;
     }
 
@@ -224,7 +226,7 @@ function RecordForm(props) {
       </React.Fragment>,
     );
   } else if (columns && columns.length > 0) {
-    for (const column of columns.sort((a,b) => a.name.localeCompare(b.name))) {
+    for (const column of columns.sort((a, b) => a.name.localeCompare(b.name))) {
       const baseInputProps: TextFieldProps = {
         label: `${column.name} (${column.type.toLowerCase()}) ${
           column.primaryKey ? '(Primary Key)' : ''
@@ -270,7 +272,7 @@ function RecordForm(props) {
           connection,
           columns,
           data,
-          deltaFields:[...deltaFields]
+          deltaFields: [...deltaFields],
         });
       }}>
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
@@ -341,8 +343,6 @@ export function NewRecordPage() {
     });
 
     navigate('/');
-
-
     await addToast({
       message: `New Record Query attached, please review and execute the query manually...`,
     });
@@ -407,29 +407,27 @@ export function EditRecordPage(props: RecordDetailsPageProps) {
       case 'mssql':
       case 'postgres':
       case 'sqlite':
-          // find out the delta
+        // find out the delta
         let deltaData = {};
-        for(const deltaField of deltaFields){
-          deltaData[deltaField] = data[deltaField]
+        for (const deltaField of deltaFields) {
+          deltaData[deltaField] = data[deltaField];
         }
-        if(Object.keys(deltaData).length === 0){
+        if (Object.keys(deltaData).length === 0) {
           deltaData = data;
         }
-
-
-          // find out the main condition
+        // find out the main condition
         const conditions = {};
-        for(const column of columns){
-          if(column.primaryKey){
-            conditions[column.name] = data[column.name]
+        for (const column of columns) {
+          if (column.primaryKey) {
+            conditions[column.name] = data[column.name];
           }
         }
 
-        if(Object.keys(conditions).length === 0){
-          for(const column of columns){
-            if(column.name?.toString().toLowerCase()?.includes('id')){
+        if (Object.keys(conditions).length === 0) {
+          for (const column of columns) {
+            if (column.name?.toString().toLowerCase()?.includes('id')) {
               // otherwise include any of the id
-              conditions[column.name] = data[column.name]
+              conditions[column.name] = data[column.name];
             }
           }
         }
@@ -442,8 +440,8 @@ export function EditRecordPage(props: RecordDetailsPageProps) {
               columns,
             },
             deltaData,
-              conditions
-          )?.query || ''
+            conditions,
+          )?.query || '',
         );
         break;
       // case 'cassandra':
@@ -454,8 +452,6 @@ export function EditRecordPage(props: RecordDetailsPageProps) {
       // default:
       //   break;
     }
-
-
     onAddQuery({
       name: `New Record Query - ${new Date().toLocaleDateString()}`,
       ...query,
@@ -482,13 +478,23 @@ export function EditRecordPage(props: RecordDetailsPageProps) {
     <>
       {isEdit ? (
         <>
-          <RecordForm data={data} query={activeQuery} onSave={onSave} onCancel={onCancel} isEditMode={true} />
+          <RecordForm
+            data={data}
+            query={activeQuery}
+            onSave={onSave}
+            onCancel={onCancel}
+            isEditMode={true}
+          />
         </>
       ) : (
         <>
-          {isRecordFormSupportedForDialect(connection?.dialect) && <Box><Button variant='contained' onClick={() => setIsEdit(true)}>
-            Edit
-          </Button></Box>}
+          {isRecordFormSupportedForDialect(connection?.dialect) && (
+            <Box>
+              <Button variant='contained' onClick={() => setIsEdit(true)}>
+                Edit
+              </Button>
+            </Box>
+          )}
           <RecordView data={data} />
         </>
       )}

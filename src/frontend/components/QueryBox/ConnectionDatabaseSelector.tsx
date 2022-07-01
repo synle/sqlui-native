@@ -60,7 +60,9 @@ export default function ConnectionDatabaseSelector(props: ConnectionDatabaseSele
         (connection) => connection.id === query.connectionId,
       );
       return getIsTableIdRequiredForQuery(selectedConnection?.dialect);
-    }, [connections, query.connectionId]) || !!props.isTableIdRequired || true;
+    }, [connections, query.connectionId]) ||
+    !!props.isTableIdRequired ||
+    true;
 
   if (isLoading) {
     <>
@@ -91,7 +93,10 @@ export default function ConnectionDatabaseSelector(props: ConnectionDatabaseSele
         <option value=''>Pick a Connection</option>
         {connectionOptions}
       </Select>
-      <Select value={query.databaseId} onChange={(newValue) => onDatabaseChange(newValue)} disabled={!!props.disabledDatabase}>
+      <Select
+        value={query.databaseId}
+        onChange={(newValue) => onDatabaseChange(newValue)}
+        disabled={!!props.disabledDatabase}>
         <option value=''>Pick a Database (Optional)</option>
         {databaseOptions}
       </Select>
@@ -104,4 +109,3 @@ export default function ConnectionDatabaseSelector(props: ConnectionDatabaseSele
     </>
   );
 }
-

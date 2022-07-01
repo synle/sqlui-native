@@ -1,9 +1,8 @@
 import { getDivider } from 'src/common/adapters/BaseDataAdapter/scripts';
 import { SqlAction, SqluiCore } from 'typings';
-
-function _escapeSQLValue(value?: string){
+function _escapeSQLValue(value?: string) {
   value = value || '';
-  return value?.toString().replace(/'/g, `''`)
+  return value?.toString().replace(/'/g, `''`);
 }
 
 const formatter = 'sql';
@@ -265,15 +264,23 @@ export function getUpdate(input: SqlAction.TableInput): SqlAction.Output | undef
   }
 }
 
-export function getUpdateWithValues(input: SqlAction.TableInput, value: Record<string, any>, conditions: Record<string, any>): SqlAction.Output | undefined {
+export function getUpdateWithValues(
+  input: SqlAction.TableInput,
+  value: Record<string, any>,
+  conditions: Record<string, any>,
+): SqlAction.Output | undefined {
   const label = `Update`;
 
   if (!input.columns) {
     return undefined;
   }
 
-  const columnString = Object.keys(value).map((colName) => `${colName} = '${_escapeSQLValue(value[colName])}'`).join(' AND \n');
-  const whereColumnString = Object.keys(conditions).map((colName) => `${colName} = '${_escapeSQLValue(conditions[colName])}'`).join(' AND \n');
+  const columnString = Object.keys(value)
+    .map((colName) => `${colName} = '${_escapeSQLValue(value[colName])}'`)
+    .join(' AND \n');
+  const whereColumnString = Object.keys(conditions)
+    .map((colName) => `${colName} = '${_escapeSQLValue(conditions[colName])}'`)
+    .join(' AND \n');
 
   switch (input.dialect) {
     case 'mssql':
