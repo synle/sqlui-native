@@ -286,6 +286,7 @@ export module SqluiEnums {
     | 'clientEvent/query/closeOther'
     | 'clientEvent/query/closeToTheRight'
     | 'clientEvent/query/reveal'
+    | 'clientEvent/query/revealThisOnly'
     | 'clientEvent/query/addToBookmark'
     | 'clientEvent/record/showDetails'
     | 'clientEvent/record/new'

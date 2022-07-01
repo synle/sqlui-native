@@ -115,7 +115,11 @@ export default function MissionControl() {
   const { mutateAsync: importConnection } = useImportConnection();
   const { data: connections, isLoading: loadingConnections } = useGetConnections();
   const { settings, onChange: onChangeSettings } = useSetting();
-  const { onClear: onClearConnectionVisibles, onToggle: onToggleConnectionVisible } = useShowHide();
+  const {
+    onClear: onClearConnectionVisibles,
+    onToggle: onToggleConnectionVisible,
+    onSet: onSetConnectionVisible,
+  } = useShowHide();
   const { data: activeConnection } = useGetConnectionById(activeQuery?.connectionId);
   const { add: addToast } = useToaster();
   const { mutateAsync: deleteConnection } = useDeleteConnection();
@@ -215,8 +219,11 @@ export default function MissionControl() {
     });
   };
 
-  const onRevealQueryConnection = async (query: SqluiFrontend.ConnectionQuery) => {
-    const { databaseId, connectionId, tableId } = query;
+  const onRevealQueryConnection = async (
+    query: SqluiFrontend.ConnectionQuery,
+    showOnlyRevealedConnection: boolean,
+  ) => {
+    const { connectionId, databaseId, tableId } = query;
 
     if (!connectionId) {
       return;
@@ -232,9 +239,20 @@ export default function MissionControl() {
       }
     }
 
-    for (const branchToReveal of branchesToReveal) {
-      // reveal
-      onToggleConnectionVisible(branchToReveal, true);
+    if (showOnlyRevealedConnection === true) {
+      // hide everything else, only reveal this set of connection
+      const newVisibles = {};
+      for (const branchToReveal of branchesToReveal) {
+        // reveal
+        newVisibles[branchToReveal] = true;
+      }
+
+      onSetConnectionVisible(newVisibles);
+    } else {
+      for (const branchToReveal of branchesToReveal) {
+        // reveal
+        onToggleConnectionVisible(branchToReveal, true);
+      }
     }
 
     // scroll to the selected dom
@@ -921,8 +939,17 @@ export default function MissionControl() {
 
         case 'clientEvent/query/reveal':
           // this reveal the current query connection
+          // but keep the old state
           if (activeQuery) {
-            onRevealQueryConnection(activeQuery);
+            onRevealQueryConnection(activeQuery, false);
+          }
+          break;
+
+        case 'clientEvent/query/revealThisOnly':
+          // this reveal ONLY the current query connection
+          // and hide everything else
+          if (command.data) {
+            onRevealQueryConnection(command.data as SqluiFrontend.ConnectionQuery, true);
           }
           break;
 

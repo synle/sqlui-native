@@ -12,6 +12,7 @@ import {
 import Breadcrumbs from 'src/frontend/components/Breadcrumbs';
 import ConnectionDescription from 'src/frontend/components/ConnectionDescription';
 import JsonFormatData from 'src/frontend/components/JsonFormatData';
+import { useCommands } from 'src/frontend/components/MissionControl';
 import NewConnectionButton from 'src/frontend/components/NewConnectionButton';
 import ConnectionDatabaseSelector from 'src/frontend/components/QueryBox/ConnectionDatabaseSelector';
 import Tabs from 'src/frontend/components/Tabs';
@@ -33,6 +34,7 @@ type RecordData = any;
 type RecordFormProps = {
   onSave: (response: RecordFormReponse) => void;
   onCancel: () => void;
+  onConnectionChanges?: (query: Partial<SqluiFrontend.ConnectionQuery>) => void;
   query?: SqluiCore.ConnectionQuery;
   data?: RecordData;
   isEditMode?: boolean;
@@ -158,6 +160,14 @@ function RecordForm(props) {
     databaseId?: string,
     tableId?: string,
   ) => {
+    if (props.onConnectionChanges) {
+      props.onConnectionChanges({
+        connectionId,
+        databaseId,
+        tableId,
+      });
+    }
+
     setQuery({
       ...query,
       connectionId,
@@ -307,6 +317,7 @@ export function NewRecordPage() {
   const { setTreeActions } = useTreeActions();
   const { onAddQuery } = useConnectionQueries();
   const { add: addToast } = useToaster();
+  const { selectCommand } = useCommands();
 
   const onSave = async ({ query, connection, columns, data }) => {
     let sql: string = '';
@@ -351,6 +362,9 @@ export function NewRecordPage() {
   const onCancel = () => {
     navigate('/');
   };
+  const onConnectionChanges = (query) => {
+    selectCommand({ event: 'clientEvent/query/revealThisOnly', data: query });
+  };
 
   useEffect(() => {
     setTreeActions({
@@ -377,7 +391,7 @@ export function NewRecordPage() {
             },
           ]}
         />
-        <RecordForm onSave={onSave} onCancel={onCancel} />
+        <RecordForm onSave={onSave} onCancel={onCancel} onConnectionChanges={onConnectionChanges} />
       </>
     </LayoutTwoColumns>
   );
