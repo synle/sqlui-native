@@ -8,6 +8,7 @@ import ColumnAttributes from 'src/frontend/components/ColumnDescription/ColumnAt
 import ColumnName from 'src/frontend/components/ColumnDescription/ColumnName';
 import ColumnType from 'src/frontend/components/ColumnDescription/ColumnType';
 import { useGetColumns } from 'src/frontend/hooks/useConnection';
+import { useActiveConnectionQuery } from 'src/frontend/hooks/useConnectionQuery';
 import { useShowHide } from 'src/frontend/hooks/useShowHide';
 
 const MAX_COLUMN_SIZE_TO_SHOW = 5;
@@ -19,14 +20,21 @@ type ColumnDescriptionProps = {
 };
 
 export default function ColumnDescription(props: ColumnDescriptionProps) {
-  const [showAllColumns, setShowAllColumns] = useState(false);
   const { databaseId, connectionId, tableId } = props;
+  const { query: activeQuery } = useActiveConnectionQuery();
   const {
     data: columns,
     isLoading: loadingColumns,
     isError,
   } = useGetColumns(connectionId, databaseId, tableId);
   const { visibles, onToggle } = useShowHide();
+  const keyShowAllColumns = [connectionId, databaseId, tableId, '__ShowAllColumns__'].join(' > ');
+  const [showAllColumns, setShowAllColumns] = useState(visibles[keyShowAllColumns]);
+
+  const onShowAllColumns = () => {
+    setShowAllColumns(true);
+    onToggle(keyShowAllColumns, true);
+  };
 
   useEffect(() => {
     if (columns && columns.length <= MAX_COLUMN_SIZE_TO_SHOW) {
@@ -58,12 +66,13 @@ export default function ColumnDescription(props: ColumnDescriptionProps) {
         .filter((column, idx) => showAllColumns || idx <= MAX_COLUMN_SIZE_TO_SHOW)
         .map((column) => {
           const key = [connectionId, databaseId, tableId, column.name].join(' > ');
+          const isSelected = visibles[key];
           return (
             <React.Fragment key={column.name}>
               <AccordionHeader
                 expanded={visibles[key]}
                 onToggle={() => onToggle(key)}
-                className='ColumnDescription'>
+                className={isSelected ? 'selected ColumnDescription' : 'ColumnDescription'}>
                 <ViewColumnIcon color='disabled' fontSize='inherit' />
                 <ColumnName value={column.name}></ColumnName>
                 <ColumnType value={column.type}></ColumnType>
@@ -76,7 +85,7 @@ export default function ColumnDescription(props: ColumnDescriptionProps) {
         })}
       {!showAllColumns && (
         <div className='ShowAllColumnsButton'>
-          <Button onClick={() => setShowAllColumns(true)}>Show All Columns</Button>
+          <Button onClick={() => onShowAllColumns()}>Show All Columns</Button>
         </div>
       )}
     </>
