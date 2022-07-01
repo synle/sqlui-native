@@ -612,6 +612,7 @@ export default function MissionControl() {
         title: 'Record Details',
         message: <RecordDetailsPage data={data} />,
         size: 'md',
+        showCloseButton: true,
       });
     } catch (err) {}
   };

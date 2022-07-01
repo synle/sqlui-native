@@ -29,7 +29,7 @@ export default function ColumnDescription(props: ColumnDescriptionProps) {
   const { visibles, onToggle } = useShowHide();
 
   useEffect(() => {
-    if (columns && columns.length < MAX_COLUMN_SIZE_TO_SHOW) {
+    if (columns && columns.length <= MAX_COLUMN_SIZE_TO_SHOW) {
       setShowAllColumns(true);
     }
   }, [columns]);
