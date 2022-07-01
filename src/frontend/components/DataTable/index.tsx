@@ -156,11 +156,14 @@ export function DataTableWithJSONList(props: Omit<DataTableProps, 'columns'>) {
         Header: columnName,
         Cell: (data: any) => {
           const columnValue = data.row.original[columnName];
-          if (typeof columnValue === 'object') {
-            return <pre>{JSON.stringify(columnValue, null, 2)}</pre>;
+          if (columnValue === null) {
+            return <pre style={{textTransform: 'uppercase', fontStyle: 'italic'}}>NULL</pre>;
           }
           if (typeof columnValue === 'number') {
-            return <pre>columnValue</pre>;
+            return <pre style={{textTransform: 'uppercase'}}>{columnValue}</pre>;
+          }
+          if (typeof columnValue === 'object') {
+            return <pre>{JSON.stringify(columnValue, null, 2)}</pre>;
           }
           return <span style={{
                           height: '20px',
