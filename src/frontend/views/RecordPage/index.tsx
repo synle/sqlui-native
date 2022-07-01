@@ -14,12 +14,15 @@ import ConnectionDatabaseSelector from 'src/frontend/components/QueryBox/Connect
 import Tabs from 'src/frontend/components/Tabs';
 import { useSideBarWidthPreference } from 'src/frontend/hooks/useClientSidePreference';
 import { useGetColumns, useGetConnectionById } from 'src/frontend/hooks/useConnection';
-import { useConnectionQueries } from 'src/frontend/hooks/useConnectionQuery';
+import {
+  useActiveConnectionQuery,
+  useConnectionQueries,
+} from 'src/frontend/hooks/useConnectionQuery';
 import { useTreeActions } from 'src/frontend/hooks/useTreeActions';
 import LayoutTwoColumns from 'src/frontend/layout/LayoutTwoColumns';
 import { formatSQL } from 'src/frontend/utils/formatter';
 import { SqluiCore, SqluiFrontend } from 'typings';
-import { useActiveConnectionQuery } from 'src/frontend/hooks/useConnectionQuery';
+
 type RecordData = any;
 
 type RecordFormProps = {
@@ -57,17 +60,17 @@ type RecordFormReponse = {
   columns?: SqluiCore.ColumnMetaData[];
   data: RecordData;
 };
-
-
 /**
  * render the form in read only mode
  * @param {[type]} props: RecordDetailsPageProps [description]
  */
-function RecordView(props: RecordDetailsPageProps){
+function RecordView(props: RecordDetailsPageProps) {
   const { data } = props;
   const columnNames = Object.keys(data || {});
 
-    return <>{columnNames.map((columnName) => {
+  return (
+    <>
+      {columnNames.map((columnName) => {
         const columnValue = data[columnName];
 
         let contentColumnValueView = (
@@ -123,6 +126,7 @@ function RecordView(props: RecordDetailsPageProps){
         );
       })}
     </>
+  );
 }
 
 /**
@@ -354,7 +358,7 @@ export function NewRecordPage() {
 }
 
 export function EditRecordPage(props: RecordDetailsPageProps) {
-  const {data } = props;
+  const { data } = props;
   const navigate = useNavigate();
   const { value: width, onChange: onSetWidth } = useSideBarWidthPreference();
   const { setTreeActions } = useTreeActions();
@@ -364,36 +368,34 @@ export function EditRecordPage(props: RecordDetailsPageProps) {
 
   const onSave = async ({ query, connection, columns, data }) => {
     // TODO: to be implemented
-    setIsEdit(false)
+    setIsEdit(false);
   };
 
   const onCancel = () => {
-    setIsEdit(false)
+    setIsEdit(false);
   };
-
-
-  if(!activeQuery){
+  if (!activeQuery) {
     return null;
   }
 
-  return (<>
-  {
-      isEdit ?<>
-      <RecordForm query={activeQuery} onSave={onSave} onCancel={onCancel} /></>
-            : <>
+  return (
+    <>
+      {isEdit ? (
+        <>
+          <RecordForm query={activeQuery} onSave={onSave} onCancel={onCancel} />
+        </>
+      ) : (
+        <>
           {/*TODO: to be implemented*/}
-{/*<Box><Button variant='contained' onClick={() => setIsEdit(true)}>
+          {/*<Box><Button variant='contained' onClick={() => setIsEdit(true)}>
             Edit
           </Button></Box>*/}
-            <RecordView data={data} /></>
-
-  }
-  </>
+          <RecordView data={data} />
+        </>
+      )}
+    </>
   );
 }
-
-
-
 type RecordDetailsPageProps = {
   data: any;
 };
