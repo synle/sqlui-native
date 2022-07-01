@@ -19,7 +19,6 @@ type ColumnDescriptionProps = {
 };
 
 export default function ColumnDescription(props: ColumnDescriptionProps) {
-  const [showAllColumns, setShowAllColumns] = useState(false);
   const { databaseId, connectionId, tableId } = props;
   const {
     data: columns,
@@ -27,6 +26,13 @@ export default function ColumnDescription(props: ColumnDescriptionProps) {
     isError,
   } = useGetColumns(connectionId, databaseId, tableId);
   const { visibles, onToggle } = useShowHide();
+  const keyShowAllColumns = [connectionId, databaseId, tableId, '__ShowAllColumns__'].join(' > ');
+  const [showAllColumns, setShowAllColumns] = useState(visibles[keyShowAllColumns]);
+
+  const onShowAllColumns = () => {
+    setShowAllColumns(true)
+    onToggle(keyShowAllColumns, true);
+  }
 
   useEffect(() => {
     if (columns && columns.length <= MAX_COLUMN_SIZE_TO_SHOW) {
@@ -76,7 +82,7 @@ export default function ColumnDescription(props: ColumnDescriptionProps) {
         })}
       {!showAllColumns && (
         <div className='ShowAllColumnsButton'>
-          <Button onClick={() => setShowAllColumns(true)}>Show All Columns</Button>
+          <Button onClick={() => onShowAllColumns()}>Show All Columns</Button>
         </div>
       )}
     </>
