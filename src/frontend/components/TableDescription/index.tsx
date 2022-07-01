@@ -34,12 +34,14 @@ export default function TableDescription(props: TableDescriptionProps) {
     <>
       {tables.map((table) => {
         const key = [connectionId, databaseId, table.name].join(' > ');
+        const isSelected = visibles[key];
+
         return (
           <React.Fragment key={table.name}>
             <AccordionHeader
               expanded={visibles[key]}
               onToggle={() => onToggle(key)}
-              className='TableDescription'>
+              className={isSelected ? 'selected TableDescription' : 'TableDescription'}>
               <TableRowsIcon color='success' fontSize='inherit' />
               <span>{table.name}</span>
               <TableActions
