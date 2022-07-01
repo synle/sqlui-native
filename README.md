@@ -187,6 +187,27 @@ If you want to permanently delete those and not put it in the recycle bin, you c
 
 ![image](https://user-images.githubusercontent.com/3792401/176343562-0f4400b2-881d-4a55-becc-3ad82c564bc6.png)
 
+### Record Pages
+
+#### New Record Page
+
+- New record page can be opened using the `New Record` button underneath the query editor.
+- There you need to select Connection / Database / Table you want to create a new record for.
+- The form will render where you need to fill out the form data.
+- Click on `Generate Script` to generate the query for the insert.
+
+![image](https://user-images.githubusercontent.com/3792401/176941021-dad33a56-55d3-439b-a3a5-600f68f7e049.png)
+
+![image](https://user-images.githubusercontent.com/3792401/176941201-460bd80e-6aa5-467d-987a-7a20637ad807.png)
+
+
+#### Record Details / Edit Record Page
+
+- Clicking on any record on the query results will bring up the Record Detail page
+- There you can toggle the edit mode.
+- The form will render where you need to fill out the form data.
+- Click on `Generate Script` to generate the query for the insert.
+
 ## Contributing
 
 - [Repo](https://github.com/synle/sqlui-native)
