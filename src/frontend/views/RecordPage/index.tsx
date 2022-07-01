@@ -22,7 +22,8 @@ import { useTreeActions } from 'src/frontend/hooks/useTreeActions';
 import LayoutTwoColumns from 'src/frontend/layout/LayoutTwoColumns';
 import { formatSQL } from 'src/frontend/utils/formatter';
 import { SqluiCore, SqluiFrontend } from 'typings';
-
+import { useActionDialogs } from 'src/frontend/hooks/useActionDialogs';
+import useToaster from 'src/frontend/hooks/useToaster';
 type RecordData = any;
 
 type RecordFormProps = {
@@ -303,6 +304,7 @@ export function NewRecordPage() {
   const { value: width, onChange: onSetWidth } = useSideBarWidthPreference();
   const { setTreeActions } = useTreeActions();
   const { onAddQuery } = useConnectionQueries();
+  const { add: addToast } = useToaster();
 
   const onSave = async ({ query, connection, columns, data }) => {
     let sql: string = '';
@@ -337,7 +339,13 @@ export function NewRecordPage() {
       ...query,
       sql,
     });
+
     navigate('/');
+
+
+    await addToast({
+      message: `New Record Query attached, please review and execute the query manually...`,
+    });
   };
 
   const onCancel = () => {
@@ -383,7 +391,9 @@ export function EditRecordPage(props: RecordDetailsPageProps) {
   const { onAddQuery } = useConnectionQueries();
   const [isEdit, setIsEdit] = useState(false);
   const { query: activeQuery } = useActiveConnectionQuery();
-    const { data: connection } = useGetConnectionById(activeQuery?.connectionId);
+  const { data: connection } = useGetConnectionById(activeQuery?.connectionId);
+  const { dismiss } = useActionDialogs();
+  const { add: addToast } = useToaster();
   // TODO: intelligently pick up the table name from schema of data
 
   const onSave = async ({ query, connection, columns, data, deltaFields }) => {
@@ -445,15 +455,19 @@ export function EditRecordPage(props: RecordDetailsPageProps) {
       //   break;
     }
 
-    console.log(sql)
 
-    // onAddQuery({
-    //   name: `New Record Query - ${new Date().toLocaleDateString()}`,
-    //   ...query,
-    //   sql,
-    // });
+    onAddQuery({
+      name: `New Record Query - ${new Date().toLocaleDateString()}`,
+      ...query,
+      sql,
+    });
 
-    // TODO: close modal
+    await addToast({
+      message: `Edit Record Query attached, please review and execute the query manually...`,
+    });
+
+    // close modal
+    dismiss();
   };
 
   const onCancel = () => {
