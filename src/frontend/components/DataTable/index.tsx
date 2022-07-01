@@ -29,7 +29,7 @@ export const DEFAULT_TABLE_PAGE_SIZE = 50;
 
 function TableContainerWrapper(props: any) {
   return (
-    <Paper square={true} variant='outlined'>
+    <Paper square={true} variant='outlined' sx={{ overflow: 'auto' }}>
       {props.children}
     </Paper>
   );
@@ -113,7 +113,7 @@ export default function DataTable(props: DataTableProps) {
                   {...row.getRowProps()}
                   onClick={() => props.onRowClick && props.onRowClick(row.original)}
                   style={{ cursor: props.onRowClick ? 'pointer' : '' }}>
-                  {row.cells.map((cell) => {
+                  {row.cells.map((cell, colIdx) => {
                     return (
                       <StyledTableCell {...cell.getCellProps()}>
                         {cell.render('Cell')}
@@ -156,13 +156,28 @@ export function DataTableWithJSONList(props: Omit<DataTableProps, 'columns'>) {
         Header: columnName,
         Cell: (data: any) => {
           const columnValue = data.row.original[columnName];
+          if (columnValue === null) {
+            return <pre style={{ textTransform: 'uppercase', fontStyle: 'italic' }}>NULL</pre>;
+          }
+          if (typeof columnValue === 'number') {
+            return <pre style={{ textTransform: 'uppercase' }}>{columnValue}</pre>;
+          }
           if (typeof columnValue === 'object') {
             return <pre>{JSON.stringify(columnValue, null, 2)}</pre>;
           }
-          if (typeof columnValue === 'number') {
-            return columnValue;
-          }
-          return columnValue || '';
+          return (
+            <span
+              style={{
+                display: 'block',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                wordBreak: 'break-all',
+                whiteSpace: 'nowrap',
+                maxWidth: '250px',
+              }}>
+              {columnValue || ''}
+            </span>
+          );
         },
       };
     });
