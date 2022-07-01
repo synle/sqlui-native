@@ -260,6 +260,32 @@ export function getUpdate(input: SqlAction.TableInput): SqlAction.Output | undef
   }
 }
 
+export function getUpdateWithValues(input: SqlAction.TableInput, value: Record<string, any>, conditions: Record<string, any>): SqlAction.Output | undefined {
+  const label = `Update`;
+
+  if (!input.columns) {
+    return undefined;
+  }
+
+  const columnString = Object.keys(value).map((colName) => `${colName} = '${value[colName] || ""}'`).join(' AND \n');
+  const whereColumnString = Object.keys(conditions).map((colName) => `${colName} = '${conditions[colName] || ""}'`).join(' AND \n');
+
+  switch (input.dialect) {
+    case 'mssql':
+    case 'postgres':
+    case 'sqlite':
+    case 'mariadb':
+    case 'mysql':
+      return {
+        label,
+        formatter: 'js',
+        query: `UPDATE ${input.tableId}
+                SET ${columnString}
+                WHERE ${whereColumnString}`,
+      };
+  }
+}
+
 export function getDelete(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Delete`;
 

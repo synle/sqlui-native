@@ -5,7 +5,7 @@ import InputLabel from '@mui/material/InputLabel';
 import TextField, { TextFieldProps } from '@mui/material/TextField';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
-import { getInsert as getInsertForRdmbs } from 'src/common/adapters/RelationalDataAdapter/scripts';
+import { getInsert as getInsertForRdmbs, getUpdateWithValues as getUpdateWithValuesForRmdbs } from 'src/common/adapters/RelationalDataAdapter/scripts';
 import Breadcrumbs from 'src/frontend/components/Breadcrumbs';
 import ConnectionDescription from 'src/frontend/components/ConnectionDescription';
 import JsonFormatData from 'src/frontend/components/JsonFormatData';
@@ -27,13 +27,12 @@ type RecordData = any;
 
 type RecordFormProps = {
   onSave: (
-    query: Partial<SqluiFrontend.ConnectionQuery>,
-    connection: SqluiCore.ConnectionProps,
-    item: RecordData,
+    response: RecordFormReponse
   ) => void;
   onCancel: () => void;
   query?: SqluiCore.ConnectionQuery;
   data?: RecordData;
+  isEditMode?: boolean;
 };
 
 export function isRecordFormSupportedForDialect(dialect?: string) {
@@ -59,6 +58,7 @@ type RecordFormReponse = {
   connection?: SqluiCore.ConnectionProps;
   columns?: SqluiCore.ColumnMetaData[];
   data: RecordData;
+  deltaFields: string[],
 };
 /**
  * render the form in read only mode
@@ -135,6 +135,7 @@ function RecordView(props: RecordDetailsPageProps) {
  */
 function RecordForm(props) {
   const [searchParams, setSearchParams] = useSearchParams();
+  const [deltaFields, setDeltaFields] = useState<Set<string>>(new Set());
   const [data, setData] = useState<RecordData>(props.data || {});
   const [query, setQuery] = useState<Partial<SqluiFrontend.ConnectionQuery>>({
     id: 'migration_from_query_' + Date.now(),
@@ -163,11 +164,16 @@ function RecordForm(props) {
   };
 
   const onSetData = (key: string, value: any) => {
+    deltaFields.add(key)
+    setDeltaFields(deltaFields);
     setData({ ...data, [key]: value });
   };
 
   // when query changes update the form field
   useEffect(() => {
+    if(props.isEditMode === true){
+      return;
+    }
     setSearchParams(
       {
         connectionId: query.connectionId || '',
@@ -180,6 +186,11 @@ function RecordForm(props) {
 
   // generate the dummy data when selector changes
   useEffect(() => {
+    if(props.data){
+      setData(props.data)
+      return;
+    }
+
     const newData = {};
 
     if (columns) {
@@ -189,9 +200,13 @@ function RecordForm(props) {
     }
 
     setData(newData);
-  }, [columns]);
+  }, [columns, props.data]);
 
   useEffect(() => {
+    if(props.isEditMode === true){
+      return;
+    }
+
     setQuery({
       ...query,
       connectionId: searchParams.get('connectionId') || '',
@@ -254,6 +269,7 @@ function RecordForm(props) {
           connection,
           columns,
           data,
+          deltaFields:[...deltaFields]
         });
       }}>
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
@@ -262,6 +278,8 @@ function RecordForm(props) {
             isTableIdRequired={true}
             value={query}
             onChange={onDatabaseConnectionChange}
+            disabledConnection={!!props.isEditMode}
+            disabledDatabase={!!props.isEditMode}
           />
         </div>
 
@@ -365,16 +383,84 @@ export function EditRecordPage(props: RecordDetailsPageProps) {
   const { onAddQuery } = useConnectionQueries();
   const [isEdit, setIsEdit] = useState(false);
   const { query: activeQuery } = useActiveConnectionQuery();
+    const { data: connection } = useGetConnectionById(activeQuery?.connectionId);
+  // TODO: intelligently pick up the table name from schema of data
 
-  const onSave = async ({ query, connection, columns, data }) => {
+  const onSave = async ({ query, connection, columns, data, deltaFields }) => {
     // TODO: to be implemented
     setIsEdit(false);
+
+    let sql = '';
+    switch (connection?.dialect) {
+      case 'mysql':
+      case 'mariadb':
+      case 'mssql':
+      case 'postgres':
+      case 'sqlite':
+          // find out the delta
+        let deltaData = {};
+        for(const deltaField of deltaFields){
+          deltaData[deltaField] = data[deltaField]
+        }
+        if(Object.keys(deltaData).length === 0){
+          deltaData = data;
+        }
+
+
+          // find out the main condition
+        const conditions = {};
+        for(const column of columns){
+          if(column.primaryKey){
+            conditions[column.name] = data[column.name]
+          }
+        }
+
+        if(Object.keys(conditions).length === 0){
+          for(const column of columns){
+            if(column.name?.toString().toLowerCase()?.includes('id')){
+              // otherwise include any of the id
+              conditions[column.name] = data[column.name]
+            }
+          }
+        }
+
+        sql = formatSQL(
+          getUpdateWithValuesForRmdbs(
+            {
+              ...query,
+              dialect: connection.dialect,
+              columns,
+            },
+            deltaData,
+              conditions
+          )?.query || ''
+        );
+        break;
+      // case 'cassandra':
+      // case 'mongodb':
+      // case 'redis':
+      // case 'cosmosdb':
+      // case 'aztable':
+      // default:
+      //   break;
+    }
+
+    console.log(sql)
+
+    // onAddQuery({
+    //   name: `New Record Query - ${new Date().toLocaleDateString()}`,
+    //   ...query,
+    //   sql,
+    // });
+
+    // TODO: close modal
   };
 
   const onCancel = () => {
     setIsEdit(false);
   };
-  if (!activeQuery) {
+
+  if (!activeQuery || !connection) {
     return null;
   }
 
@@ -382,14 +468,13 @@ export function EditRecordPage(props: RecordDetailsPageProps) {
     <>
       {isEdit ? (
         <>
-          <RecordForm query={activeQuery} onSave={onSave} onCancel={onCancel} />
+          <RecordForm data={data} query={activeQuery} onSave={onSave} onCancel={onCancel} isEditMode={true} />
         </>
       ) : (
         <>
-          {/*TODO: to be implemented*/}
-          {/*<Box><Button variant='contained' onClick={() => setIsEdit(true)}>
+          {isRecordFormSupportedForDialect(connection?.dialect) && <Box><Button variant='contained' onClick={() => setIsEdit(true)}>
             Edit
-          </Button></Box>*/}
+          </Button></Box>}
           <RecordView data={data} />
         </>
       )}
