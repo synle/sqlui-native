@@ -26,16 +26,23 @@ const DEFAULT_AUTO_HIDE_DURATION = 6000;
 export default function useToaster() {
   const queryClient = useQueryClient();
 
-  const { data, isLoading } = useQuery(QUERY_KEY_TOASTS, () => _toasts);
+  const { data, isLoading } = useQuery(QUERY_KEY_TOASTS, () => _toasts, {
+    notifyOnChangeProps: 'tracked',
+  });
 
   const add = (props: CoreToasterProps): Promise<ToasterHandler> => {
     return new Promise((resolve, reject) => {
       const toastId = getGeneratedRandomId(`toasterId`);
-      _toasts.push({
-        ...props,
-        id: toastId,
-        autoHideDuration: props.autoHideDuration || DEFAULT_AUTO_HIDE_DURATION,
-      });
+
+      _toasts = [
+        ..._toasts,
+        {
+          ...props,
+          id: toastId,
+          autoHideDuration: props.autoHideDuration || DEFAULT_AUTO_HIDE_DURATION,
+        },
+      ];
+
       queryClient.invalidateQueries(QUERY_KEY_TOASTS);
 
       resolve({

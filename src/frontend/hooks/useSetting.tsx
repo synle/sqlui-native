@@ -13,6 +13,7 @@ export function useSetting() {
 
   const { data: settings, isLoading } = useQuery(QUERY_KEY_SETTINGS, () => _settings, {
     onSuccess: (data) => LocalStorageConfig.set('clientConfig/cache.settings', _settings),
+    notifyOnChangeProps: 'tracked',
   });
 
   const onChange = (newSettings: SqluiFrontend.Settings) => {
