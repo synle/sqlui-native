@@ -22,10 +22,11 @@ import {
   useGetRecycleBinItems,
   useRestoreRecycleBinItem,
 } from 'src/frontend/hooks/useFolderItems';
+import useToaster from 'src/frontend/hooks/useToaster';
 import { useTreeActions } from 'src/frontend/hooks/useTreeActions';
 import LayoutTwoColumns from 'src/frontend/layout/LayoutTwoColumns';
 import { SqluiCore } from 'typings';
-import useToaster from 'src/frontend/hooks/useToaster';
+
 const columns = [
   {
     Header: 'Name',
