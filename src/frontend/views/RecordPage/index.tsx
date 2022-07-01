@@ -1,8 +1,8 @@
 import EditIcon from '@mui/icons-material/Edit';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import InputLabel from '@mui/material/InputLabel';
 import TextField from '@mui/material/TextField';
-import Typography from '@mui/material/Typography';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import { getInsert as getInsertForRdmbs } from 'src/common/adapters/RelationalDataAdapter/scripts';
@@ -296,12 +296,64 @@ export function RecordDetailsPage(props: RecordDetailsPageProps) {
   const tabHeaders = [<>Form Display</>, <>Raw JSON</>];
 
   const tabContents = [
-    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }} key='formDisplay'>
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }} key='formDisplay'>
       {columnNames.map((columnName) => {
+        const columnValue = data[columnName];
+
+        let contentColumnValue = (
+          <TextField value={columnValue} size='small' margin='dense' disabled={true} />
+        );
+        if (columnValue === true || columnValue === false) {
+          // boolean
+          const booleanLabel = columnValue ? '<TRUE>' : '<FALSE>';
+          contentColumnValue = (
+            <TextField value={columnValue} size='small' margin='dense' disabled={true} />
+          );
+        } else if (columnValue === null) {
+          // null value
+          contentColumnValue = (
+            <TextField value='<NULL>' size='small' margin='dense' disabled={true} />
+          );
+        } else if (columnValue === undefined) {
+          // undefined
+          contentColumnValue = (
+            <TextField value='<undefined>' size='small' margin='dense' disabled={true} />
+          );
+        } else if (
+          columnValue?.toString()?.match(/<[a-z0-9]>+/gi) ||
+          columnValue?.toString()?.match(/<\/[a-z0-9]+>/gi)
+        ) {
+          // raw HTML
+          contentColumnValue = (
+            <Box
+              className='RawHtmlRender'
+              dangerouslySetInnerHTML={{ __html: columnValue }}
+              sx={{ border: 1, borderRadius: 1, borderColor: 'divider', p: 1 }}
+            />
+          );
+        } else if (Array.isArray(columnValue) || typeof columnValue === 'object') {
+          // complex object (array or plain object)
+          contentColumnValue = (
+            <TextField
+              value={JSON.stringify(columnValue, null, 2)}
+              size='small'
+              margin='dense'
+              disabled={true}
+              multiline
+              inputProps={{ style: { fontFamily: 'monospace' } }}
+            />
+          );
+        } else if (columnValue?.toString()?.length > 200) {
+          // greater than a limit, then render as a multiple lines
+          contentColumnValue = (
+            <TextField value={columnValue} size='small' margin='dense' disabled={true} multiline />
+          );
+        }
+
         return (
           <React.Fragment key={columnName}>
-            <Typography sx={{ fontWeight: 'bold' }}>{columnName}</Typography>
-            <TextField value={data[columnName]} size='small' disabled={true} />
+            <InputLabel sx={{ mt: 1, fontWeight: 'bold' }}>{columnName}</InputLabel>
+            {contentColumnValue}
           </React.Fragment>
         );
       })}
