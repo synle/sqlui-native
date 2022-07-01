@@ -12,38 +12,33 @@ let _treeVisibles = SessionStorageConfig.get<SqluiFrontend.TreeVisibilities>(
 export function useShowHide() {
   const queryClient = useQueryClient();
 
-  const { data: visibles, isLoading: loading }  = useQuery(
+  const { data: visibles, isLoading: loading } = useQuery(
     QUERY_KEY_TREEVISIBLES,
     () => _treeVisibles,
     {
       onSuccess: (data) =>
         SessionStorageConfig.set('clientConfig/cache.treeVisibles', _treeVisibles),
-        notifyOnChangeProps: ['data']
+      notifyOnChangeProps: ['data', 'error'],
     },
   );
 
   const onToggle = (key: string, isVisible?: boolean) => {
+    let newVisible: boolean;
     if (isVisible === undefined) {
-      _treeVisibles[key] = !_treeVisibles[key];
+      newVisible = !_treeVisibles[key];
     } else {
-      _treeVisibles[key] = isVisible;
+      newVisible = isVisible;
     }
 
-    _treeVisibles= { ..._treeVisibles }
+    _treeVisibles = { ..._treeVisibles, ...{[key]: newVisible} };
 
-    queryClient.setQueryData<SqluiFrontend.TreeVisibilities | undefined>(
-      QUERY_KEY_TREEVISIBLES,
-      () => _treeVisibles,
-    );
+    queryClient.invalidateQueries(QUERY_KEY_TREEVISIBLES);
   };
 
   const onClear = () => {
     _treeVisibles = {};
 
-    queryClient.setQueryData<SqluiFrontend.TreeVisibilities | undefined>(
-      QUERY_KEY_TREEVISIBLES,
-      () => ({ ..._treeVisibles }),
-    );
+    queryClient.invalidateQueries(QUERY_KEY_TREEVISIBLES);
   };
 
   return {
