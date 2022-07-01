@@ -116,7 +116,7 @@ export default function DataTable(props: DataTableProps) {
                   {row.cells.map((cell, colIdx) => {
                     return (
                       <StyledTableCell {...cell.getCellProps()}>
-                        <span className='DataTable__Cell'>{cell.render('Cell')}</span>
+                        {cell.render('Cell')}
                       </StyledTableCell>
                     );
                   })}
@@ -166,13 +166,12 @@ export function DataTableWithJSONList(props: Omit<DataTableProps, 'columns'>) {
             return <pre>{JSON.stringify(columnValue, null, 2)}</pre>;
           }
           return <span style={{
-                          height: '20px',
                           display: 'block',
                           overflow: 'hidden',
                           textOverflow: 'ellipsis',
                           wordBreak: 'break-all',
                           whiteSpace: 'nowrap',
-                          maxWidth: '200px',
+                          maxWidth: '250px',
                         }}>{columnValue || ''}</span>;
         },
       };
