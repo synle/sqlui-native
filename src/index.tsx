@@ -10,7 +10,7 @@ const renderApp = function () {
     defaultOptions: {
       queries: {
         retry: false,
-        notifyOnChangeProps: 'tracked',
+        notifyOnChangeProps: ['data', 'isLoading'],
       },
     },
   });
