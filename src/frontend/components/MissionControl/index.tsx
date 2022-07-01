@@ -215,7 +215,7 @@ export default function MissionControl() {
     });
   };
 
-  const onRevealQueryConnection = async (query: SqluiFrontend.ConnectionQuery) => {
+  const onRevealQueryConnection = async (query: SqluiFrontend.ConnectionQuery, showOnlyRevealedConnection?: boolean) => {
     const { databaseId, connectionId } = query;
 
     if (!connectionId) {
@@ -917,8 +917,17 @@ export default function MissionControl() {
 
         case 'clientEvent/query/reveal':
           // this reveal the current query connection
+          // but keep the old state
           if (activeQuery) {
-            onRevealQueryConnection(activeQuery);
+            onRevealQueryConnection(activeQuery, false );
+          }
+          break;
+
+        case 'clientEvent/query/revealOnly':
+          // this reveal ONLY the current query connection
+          // and hide everything else
+          if (activeQuery) {
+            onRevealQueryConnection(activeQuery, true);
           }
           break;
 
