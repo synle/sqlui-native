@@ -25,7 +25,7 @@ import {
 import { useTreeActions } from 'src/frontend/hooks/useTreeActions';
 import LayoutTwoColumns from 'src/frontend/layout/LayoutTwoColumns';
 import { SqluiCore } from 'typings';
-
+import useToaster from 'src/frontend/hooks/useToaster';
 const columns = [
   {
     Header: 'Name',
@@ -89,6 +89,7 @@ function RecycleBinItemList() {
   const { mutateAsync: deleteRecyleBinItem, isLoading: loadingRestoreQuery } =
     useDeletedRecycleBinItem();
   const { confirm } = useActionDialogs();
+  const { add: addToast } = useToaster();
   const isLoading = loadingRecycleBinItems;
 
   const onEmptyTrash = async () => {
@@ -97,6 +98,9 @@ function RecycleBinItemList() {
       await Promise.all(
         (folderItems || []).map((folderItem) => deleteRecyleBinItem(folderItem.id)),
       );
+      const curToast = await addToast({
+        message: `Recycle Bin emptied.`,
+      });
     } catch (err) {}
   };
 
