@@ -1,6 +1,11 @@
 import { getDivider } from 'src/common/adapters/BaseDataAdapter/scripts';
 import { SqlAction, SqluiCore } from 'typings';
 
+function _escapeSQLValue(value?: string){
+  value = value || '';
+  return value?.toString().replace(/'/g, `''`)
+}
+
 const formatter = 'sql';
 
 export function getSampleConnectionString(dialect?: SqluiCore.Dialect) {
@@ -158,7 +163,7 @@ export function getInsert(
     .map((col) => {
       if (value?.[col.name]) {
         // use the value if it's there
-        return `'${value[col.name]}'`;
+        return `'${_escapeSQLValue(value[col.name])}'`;
       }
       return `'_${col.name}_'`; // use the default value
     })
@@ -267,8 +272,8 @@ export function getUpdateWithValues(input: SqlAction.TableInput, value: Record<s
     return undefined;
   }
 
-  const columnString = Object.keys(value).map((colName) => `${colName} = '${value[colName] || ""}'`).join(' AND \n');
-  const whereColumnString = Object.keys(conditions).map((colName) => `${colName} = '${conditions[colName] || ""}'`).join(' AND \n');
+  const columnString = Object.keys(value).map((colName) => `${colName} = '${_escapeSQLValue(value[colName])}'`).join(' AND \n');
+  const whereColumnString = Object.keys(conditions).map((colName) => `${colName} = '${_escapeSQLValue(conditions[colName])}'`).join(' AND \n');
 
   switch (input.dialect) {
     case 'mssql':

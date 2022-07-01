@@ -66,7 +66,7 @@ type RecordFormReponse = {
  */
 function RecordView(props: RecordDetailsPageProps) {
   const { data } = props;
-  const columnNames = Object.keys(data || {});
+  const columnNames = Object.keys(data || {}).sort();
 
   return (
     <>
@@ -223,7 +223,7 @@ function RecordForm(props) {
       </React.Fragment>,
     );
   } else if (columns && columns.length > 0) {
-    for (const column of columns) {
+    for (const column of columns.sort((a,b) => a.name.localeCompare(b.name))) {
       const baseInputProps: TextFieldProps = {
         label: `${column.name} (${column.type.toLowerCase()}) ${
           column.primaryKey ? '(Primary Key)' : ''
