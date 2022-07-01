@@ -44,7 +44,9 @@ let _actionDialogs: ActionDialog[] = [];
 export function useActionDialogs() {
   const queryClient = useQueryClient();
 
-  const { data } = useQuery(QUERY_KEY_ACTION_DIALOGS, () => _actionDialogs);
+  const { data } = useQuery(QUERY_KEY_ACTION_DIALOGS, () => _actionDialogs, {
+    notifyOnChangeProps: ['data', 'error'],
+  });
 
   const prompt = (props: PromptInput): Promise<string | undefined> => {
     return new Promise((resolve, reject) => {
@@ -57,7 +59,9 @@ export function useActionDialogs() {
           yesSelected ? resolve(newValue) : reject();
         },
       };
-      _actionDialogs.push(newActionDialog);
+
+      _actionDialogs = [..._actionDialogs, newActionDialog];
+
       queryClient.invalidateQueries(QUERY_KEY_ACTION_DIALOGS);
     });
   };
@@ -71,7 +75,7 @@ export function useActionDialogs() {
           yesSelected ? resolve() : reject();
         },
       };
-      _actionDialogs.push(newActionDialog);
+      _actionDialogs = [..._actionDialogs, newActionDialog];
       queryClient.invalidateQueries(QUERY_KEY_ACTION_DIALOGS);
     });
   };
@@ -91,7 +95,7 @@ export function useActionDialogs() {
           yesSelected && newValue ? resolve(newValue) : reject();
         },
       };
-      _actionDialogs.push(newActionDialog);
+      _actionDialogs = [..._actionDialogs, newActionDialog];
       queryClient.invalidateQueries(QUERY_KEY_ACTION_DIALOGS);
     });
   };
@@ -102,7 +106,7 @@ export function useActionDialogs() {
         type: 'alert',
         message,
       };
-      _actionDialogs.push(newActionDialog);
+      _actionDialogs = [..._actionDialogs, newActionDialog];
       queryClient.invalidateQueries(QUERY_KEY_ACTION_DIALOGS);
     });
   };

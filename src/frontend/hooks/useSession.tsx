@@ -12,7 +12,7 @@ const QUERY_KEY_SESSIONS = 'sessions';
 
 // for sessions
 export function useGetSessions() {
-  return useQuery([QUERY_KEY_SESSIONS], dataApi.getSessions);
+  return useQuery([QUERY_KEY_SESSIONS], dataApi.getSessions, { notifyOnChangeProps: 'tracked' });
 }
 
 export function useGetCurrentSession() {
