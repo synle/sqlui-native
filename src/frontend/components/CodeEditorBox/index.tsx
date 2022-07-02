@@ -12,17 +12,20 @@ export type EditorRef = {
   getSelectedText: () => string | undefined;
 };
 
-type CodeEditorProps = {
+export type BaseCodeEditorProps = {
+  language?: 'sql' | string;
   value?: string;
-  onChange?: (newValue: string) => void;
-  language?: string;
-  placeholder?: string;
   autoFocus?: boolean;
-  required?: boolean;
+  onChange?: (newValue: string) => void;
   wordWrap?: boolean;
+  placeholder?: string;
   disabled?: boolean;
   editorRef?: React.RefObject<EditorRef>;
-};
+  required?: boolean;
+}
+
+type CodeEditorProps = BaseCodeEditorProps;
+
 
 const DEFAULT_EDITOR_HEIGHT = '20vh';
 
@@ -109,6 +112,7 @@ export default function CodeEditorBox(props: CodeEditorProps) {
         placeholder={props.placeholder}
         disabled={props.disabled}
         height={height}
+        required={props.required}
         editorRef={props.editorRef}
       />
       {editorOptionBox}

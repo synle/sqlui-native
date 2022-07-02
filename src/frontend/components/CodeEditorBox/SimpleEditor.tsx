@@ -2,6 +2,12 @@
 import { grey } from '@mui/material/colors';
 import { useCallback, useEffect, useState } from 'react';
 import { styled } from '@mui/system';
+import { BaseCodeEditorProps } from 'src/frontend/components/CodeEditorBox';
+
+type SimpleEditorProps = BaseCodeEditorProps &{
+  onBlur?: (newValue: string) => void;
+  height: string;
+};
 
 const StyledTextArea = styled('textarea')(({ theme }) => {
   let backgroundColor, color;
@@ -30,7 +36,7 @@ const StyledTextArea = styled('textarea')(({ theme }) => {
   };
 });
 
-export default function SchemaEditor(props) {
+export default function SimpleEditor(props:SimpleEditorProps) {
   const onInputKeyDown = useCallback((e) => {
     const TAB_INDENT = '  ';
     switch (e.key) {
