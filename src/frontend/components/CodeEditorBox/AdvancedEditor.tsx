@@ -2,8 +2,8 @@ import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
 import { useAsyncDebounce } from 'react-table';
 import React, { useEffect, useRef, useState } from 'react';
 import { styled } from '@mui/system';
+import { EditorRef } from 'src/frontend/components/CodeEditorBox';
 import { useDarkModeSetting } from 'src/frontend/hooks/useSetting';
-import {EditorRef} from 'src/frontend/components/CodeEditorBox';
 
 type AdvancedEditorProps = {
   language?: 'sql' | string;
@@ -99,13 +99,13 @@ export default function AdvancedEditor(props: AdvancedEditorProps) {
       // @ts-ignore
       // keep a copy of the editor for ref
       props.editorRef.current = {
-        getSelectedText:() => {
-          const selection = editor.getSelection()
-          if(selection){
-              return editor?.getModel()?.getValueInRange(selection);
+        getSelectedText: () => {
+          const selection = editor.getSelection();
+          if (selection) {
+            return editor?.getModel()?.getValueInRange(selection);
           }
-        }
-      }
+        },
+      };
     }
   }, [editor, props.editorRef]);
 

@@ -10,7 +10,7 @@ import { useEditorModeSetting, useWordWrapSetting } from 'src/frontend/hooks/use
 
 export type EditorRef = {
   getSelectedText: () => string | undefined;
-}
+};
 
 type CodeEditorProps = {
   value?: string;

@@ -10,9 +10,9 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Tooltip from '@mui/material/Tooltip';
 import { useQueryClient } from 'react-query';
 import { useNavigate } from 'react-router-dom';
-import React, { useCallback, useMemo, useState, useRef } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { getSyntaxModeByDialect } from 'src/common/adapters/DataScriptFactory';
-import CodeEditorBox, {EditorRef} from 'src/frontend/components/CodeEditorBox';
+import CodeEditorBox, { EditorRef } from 'src/frontend/components/CodeEditorBox';
 import { useCommands } from 'src/frontend/components/MissionControl';
 import ConnectionDatabaseSelector from 'src/frontend/components/QueryBox/ConnectionDatabaseSelector';
 import ConnectionRevealButton from 'src/frontend/components/QueryBox/ConnectionRevealButton';
@@ -104,17 +104,17 @@ export default function QueryBox(props: QueryBoxProps) {
     let success = false;
 
     const queryToExecute = {
-      ...query
-    }
+      ...query,
+    };
 
     // here we attempted to pull in the highlighted text
-    try{
+    try {
       const sql = editorRef?.current?.getSelectedText();
 
-      if(sql){
+      if (sql) {
         queryToExecute.sql = sql;
       }
-    } catch(err){}
+    } catch (err) {}
 
     try {
       const newResult = await executeQuery(queryToExecute);
