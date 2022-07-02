@@ -21,7 +21,7 @@ export default function Settings(props: SettingsProps) {
 
     onChange({
       ...settings,
-      ...{[key]: value}
+      ...{ [key]: value },
     });
   };
 
