@@ -5,7 +5,6 @@ import { styled } from '@mui/system';
 import { BaseCodeEditorProps } from 'src/frontend/components/CodeEditorBox';
 
 type SimpleEditorProps = BaseCodeEditorProps &{
-  onBlur?: (newValue: string) => void;
   height: string;
 };
 

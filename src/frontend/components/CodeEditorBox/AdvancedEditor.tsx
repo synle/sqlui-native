@@ -6,7 +6,6 @@ import { BaseCodeEditorProps } from 'src/frontend/components/CodeEditorBox';
 import { useDarkModeSetting } from 'src/frontend/hooks/useSetting';
 
 type AdvancedEditorProps = BaseCodeEditorProps &{
-  onBlur?: (newValue: string) => void;
   height: string;
 };
 

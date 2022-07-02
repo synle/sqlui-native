@@ -17,6 +17,7 @@ export type BaseCodeEditorProps = {
   value?: string;
   autoFocus?: boolean;
   onChange?: (newValue: string) => void;
+  onBlur?: (newValue: string) => void;
   wordWrap?: boolean;
   placeholder?: string;
   disabled?: boolean;
