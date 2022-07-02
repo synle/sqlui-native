@@ -49,7 +49,7 @@ export default function useToaster() {
         },
       });
 
-      _invalidateQueries()
+      _invalidateQueries();
     });
   };
 
@@ -60,12 +60,12 @@ export default function useToaster() {
 
         resolve();
 
-        _invalidateQueries()
+        _invalidateQueries();
       }, dismissDelay || 0);
     });
   };
 
-  function _invalidateQueries(){
+  function _invalidateQueries() {
     queryClient.invalidateQueries(QUERY_KEY_TOASTS);
   }
 
