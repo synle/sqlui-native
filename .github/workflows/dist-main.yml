@@ -38,7 +38,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: npm version --no-git-tag-version patch
-      - run: yarn
+      - run: yarn install --network-timeout 1000000
       - run: yarn test-ci
       - run: yarn build
       - run: yarn dist
@@ -60,7 +60,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: npm version --no-git-tag-version patch
-      - run: yarn
+      - run: yarn install --network-timeout 1000000
       - run: yarn test-ci
       - run: yarn build
       - run: yarn dist
@@ -82,7 +82,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: npm version --no-git-tag-version patch
-      - run: yarn
+      - run: yarn install --network-timeout 1000000
       - run: yarn test-ci
       - run: yarn build
       - run: yarn dist
