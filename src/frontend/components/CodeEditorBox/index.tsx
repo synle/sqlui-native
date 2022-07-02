@@ -10,14 +10,13 @@ import { useEditorModeSetting, useWordWrapSetting } from 'src/frontend/hooks/use
 
 export type EditorRef = {
   getSelectedText: () => string | undefined;
-};
+} | undefined;
 
-export type BaseCodeEditorProps = {
+export type CodeEditorProps = {
   language?: 'sql' | string;
   value?: string;
   autoFocus?: boolean;
   onChange?: (newValue: string) => void;
-  onBlur?: (newValue: string) => void;
   wordWrap?: boolean;
   placeholder?: string;
   disabled?: boolean;
@@ -25,8 +24,10 @@ export type BaseCodeEditorProps = {
   required?: boolean;
 }
 
-type CodeEditorProps = BaseCodeEditorProps;
-
+export type DecoratedEditorProps = CodeEditorProps &{
+  onBlur?: (newValue: string) => void;
+  height: string;
+};
 
 const DEFAULT_EDITOR_HEIGHT = '20vh';
 
@@ -97,6 +98,7 @@ export default function CodeEditorBox(props: CodeEditorProps) {
           disabled={props.disabled}
           wordWrap={wordWrap}
           height={height}
+          editorRef={props.editorRef}
         />
         {editorOptionBox}
       </div>
