@@ -62,7 +62,7 @@ export function useActionDialogs() {
 
       _actionDialogs = [..._actionDialogs, newActionDialog];
 
-      queryClient.invalidateQueries(QUERY_KEY_ACTION_DIALOGS);
+      _invalidateQueries();
     });
   };
 
@@ -75,8 +75,10 @@ export function useActionDialogs() {
           yesSelected ? resolve() : reject();
         },
       };
+
       _actionDialogs = [..._actionDialogs, newActionDialog];
-      queryClient.invalidateQueries(QUERY_KEY_ACTION_DIALOGS);
+
+      _invalidateQueries();
     });
   };
 
@@ -95,8 +97,10 @@ export function useActionDialogs() {
           yesSelected && newValue ? resolve(newValue) : reject();
         },
       };
+
       _actionDialogs = [..._actionDialogs, newActionDialog];
-      queryClient.invalidateQueries(QUERY_KEY_ACTION_DIALOGS);
+
+      _invalidateQueries();
     });
   };
 
@@ -106,19 +110,24 @@ export function useActionDialogs() {
         type: 'alert',
         message,
       };
+
       _actionDialogs = [..._actionDialogs, newActionDialog];
-      queryClient.invalidateQueries(QUERY_KEY_ACTION_DIALOGS);
+
+      _invalidateQueries();
     });
   };
 
   const modal = (props: ModalInput): Promise<void> => {
     return new Promise((resolve, reject) => {
-      _actionDialogs.push({
+      const newActionDialog: ActionDialog ={
         type: 'modal',
         onSubmit: () => {},
         ...props,
-      });
-      queryClient.invalidateQueries(QUERY_KEY_ACTION_DIALOGS);
+      };
+
+      _actionDialogs = [..._actionDialogs, newActionDialog];
+
+      _invalidateQueries();
     });
   };
 
@@ -133,8 +142,15 @@ export function useActionDialogs() {
 
   const dismiss = () => {
     _actionDialogs.pop();
-    queryClient.invalidateQueries(QUERY_KEY_ACTION_DIALOGS);
+
+    _actionDialogs = [..._actionDialogs];
+
+    _invalidateQueries();
   };
+
+  function _invalidateQueries(){
+    queryClient.invalidateQueries(QUERY_KEY_ACTION_DIALOGS);
+  }
 
   return {
     dialogs: data,
