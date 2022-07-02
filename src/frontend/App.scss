@@ -37,21 +37,21 @@ $ConnectionTreeIndentSize: 7px;
 }
 
 .DatabaseDescription {
-  margin-left: $ConnectionTreeIndentSize * 1;
+  padding-left: $ConnectionTreeIndentSize * 1;
 }
 
 .TableDescription,
 .TableActions {
-  margin-left: $ConnectionTreeIndentSize * 2;
+  padding-left: $ConnectionTreeIndentSize * 2;
 }
 
 .ColumnDescription {
-  margin-left: $ConnectionTreeIndentSize * 3;
+  padding-left: $ConnectionTreeIndentSize * 3;
 }
 
 .ColumnAttributes,
 .ShowAllColumnsButton {
-  margin-left: $ConnectionTreeIndentSize * 4;
+  padding-left: $ConnectionTreeIndentSize * 4;
 }
 
 .QueryBox {

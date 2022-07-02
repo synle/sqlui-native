@@ -21,14 +21,9 @@ const StyledAccordionHeader = styled('div')(({ theme }) => {
     display: 'flex',
     alignItems: 'center',
     minHeight: '37px',
-    paddingLeft: '3px',
     gap: '5px',
 
-    '&:hover': {
-      backgroundColor: theme.palette.action.focus,
-    },
-
-    '&:focus-within, &:focus': {
+    '&:hover, &:focus-within, &:focus': {
       backgroundColor: theme.palette.action.hover,
     },
 
