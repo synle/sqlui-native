@@ -47,12 +47,10 @@ export default function AdvancedEditor(props: AdvancedEditorProps) {
         wordWrap: props.wordWrap === true ? 'on' : 'off',
         ...DEFAULT_OPTIONS,
       });
-
-
       //@ts-ignore
       window.editors = {};
       //@ts-ignore
-      window.editors[newEditor.getModel().id] = newEditor
+      window.editors[newEditor.getModel().id] = newEditor;
 
       newEditor.onDidBlurEditorWidget(() => {
         props.onBlur && props.onBlur(newEditor.getValue() || '');

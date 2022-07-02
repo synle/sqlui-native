@@ -103,11 +103,11 @@ export default function QueryBox(props: QueryBoxProps) {
     let success = false;
 
     const queryToExecute = {
-      ...query
-    }
+      ...query,
+    };
 
     // here we attempted to pull in the highlighted text
-    try{
+    try {
       // TODO: find out a more reliable way to get a model based on an id
       //@ts-ignore
       const editor = window.editors[monaco.editor.getModels()[0].id];
@@ -115,10 +115,10 @@ export default function QueryBox(props: QueryBoxProps) {
       //@ts-ignore
       const sql = editor.getModel().getValueInRange(editor.getSelection());
 
-      if(sql){
+      if (sql) {
         queryToExecute.sql = sql;
       }
-    } catch(err){}
+    } catch (err) {}
 
     try {
       const newResult = await executeQuery(queryToExecute);
