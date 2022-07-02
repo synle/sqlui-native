@@ -12,7 +12,7 @@ import { useQueryClient } from 'react-query';
 import { useNavigate } from 'react-router-dom';
 import React, { useCallback, useMemo, useState, useRef } from 'react';
 import { getSyntaxModeByDialect } from 'src/common/adapters/DataScriptFactory';
-import CodeEditorBox from 'src/frontend/components/CodeEditorBox';
+import CodeEditorBox, {EditorRef} from 'src/frontend/components/CodeEditorBox';
 import { useCommands } from 'src/frontend/components/MissionControl';
 import ConnectionDatabaseSelector from 'src/frontend/components/QueryBox/ConnectionDatabaseSelector';
 import ConnectionRevealButton from 'src/frontend/components/QueryBox/ConnectionRevealButton';
@@ -33,7 +33,7 @@ type QueryBoxProps = {
 
 export default function QueryBox(props: QueryBoxProps) {
   const { queryId } = props;
-  const editorRef = useRef(null);
+  const editorRef = useRef<EditorRef>(null);
   const { query, onChange, onDelete, isLoading: loadingConnection } = useConnectionQuery(queryId);
   const { mutateAsync: executeQuery } = useExecute();
   const [executing, setExecuting] = useState(false);
@@ -109,9 +109,7 @@ export default function QueryBox(props: QueryBoxProps) {
 
     // here we attempted to pull in the highlighted text
     try{
-      // TODO: find out a more reliable way to get a model based on an id
-      //@ts-ignore
-      const sql = editorRef.current.getSelectedText();
+      const sql = editorRef?.current?.getSelectedText();
 
       if(sql){
         queryToExecute.sql = sql;

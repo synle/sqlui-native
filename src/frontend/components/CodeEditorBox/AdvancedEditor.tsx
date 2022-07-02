@@ -1,8 +1,9 @@
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
 import { useAsyncDebounce } from 'react-table';
-import { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { styled } from '@mui/system';
 import { useDarkModeSetting } from 'src/frontend/hooks/useSetting';
+import {EditorRef} from 'src/frontend/components/CodeEditorBox';
 
 type AdvancedEditorProps = {
   language?: 'sql' | string;
@@ -13,7 +14,7 @@ type AdvancedEditorProps = {
   placeholder?: string;
   disabled?: boolean;
   height: string;
-  editorRef?: any;
+  editorRef?: React.RefObject<EditorRef>;
 };
 
 const AdvancedEditorContainer = styled('div')(({ theme }) => {
@@ -48,13 +49,6 @@ export default function AdvancedEditor(props: AdvancedEditorProps) {
         wordWrap: props.wordWrap === true ? 'on' : 'off',
         ...DEFAULT_OPTIONS,
       });
-
-
-      //@ts-ignore
-      window.editors = {};
-
-      //@ts-ignore
-      window.editors[newEditor.getModel().id] = newEditor
 
       newEditor.onDidBlurEditorWidget(() => {
         props.onBlur && props.onBlur(newEditor.getValue() || '');
@@ -97,13 +91,6 @@ export default function AdvancedEditor(props: AdvancedEditorProps) {
         // fall back to use setValue if we can't find the range
         editor.setValue(newValue);
       }
-
-      // @ts-ignore
-      // keep a copy of the editor for ref
-      props.editorRef.current = () => {
-        //@ts-ignore
-        return editor.getModel().getValueInRange(editor.getSelection());
-      }
     }
   }, [editor, props.value]);
 
@@ -113,8 +100,10 @@ export default function AdvancedEditor(props: AdvancedEditorProps) {
       // keep a copy of the editor for ref
       props.editorRef.current = {
         getSelectedText:() => {
-          //@ts-ignore
-          return editor.getModel().getValueInRange(editor.getSelection());
+          const selection = editor.getSelection()
+          if(selection){
+              return editor?.getModel()?.getValueInRange(selection);
+          }
         }
       }
     }

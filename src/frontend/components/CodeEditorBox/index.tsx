@@ -2,11 +2,15 @@ import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import Paper from '@mui/material/Paper';
 import ToggleButton from '@mui/material/ToggleButton';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import AdvancedEditor from 'src/frontend/components/CodeEditorBox/AdvancedEditor';
 import SimpleEditor from 'src/frontend/components/CodeEditorBox/SimpleEditor';
 import Select from 'src/frontend/components/Select';
 import { useEditorModeSetting, useWordWrapSetting } from 'src/frontend/hooks/useSetting';
+
+export type EditorRef = {
+  getSelectedText: () => string | undefined;
+}
 
 type CodeEditorProps = {
   value?: string;
@@ -17,7 +21,7 @@ type CodeEditorProps = {
   required?: boolean;
   wordWrap?: boolean;
   disabled?: boolean;
-  editorRef?: any;
+  editorRef?: React.RefObject<EditorRef>;
 };
 
 const DEFAULT_EDITOR_HEIGHT = '20vh';
