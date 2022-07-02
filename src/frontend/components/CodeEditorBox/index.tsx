@@ -8,20 +8,27 @@ import SimpleEditor from 'src/frontend/components/CodeEditorBox/SimpleEditor';
 import Select from 'src/frontend/components/Select';
 import { useEditorModeSetting, useWordWrapSetting } from 'src/frontend/hooks/useSetting';
 
-export type EditorRef = {
-  getSelectedText: () => string | undefined;
-};
+export type EditorRef =
+  | {
+      getSelectedText: () => string | undefined;
+    }
+  | undefined;
 
-type CodeEditorProps = {
+export type CodeEditorProps = {
+  language?: 'sql' | string;
   value?: string;
-  onChange?: (newValue: string) => void;
-  language?: string;
-  placeholder?: string;
   autoFocus?: boolean;
-  required?: boolean;
+  onChange?: (newValue: string) => void;
   wordWrap?: boolean;
+  placeholder?: string;
   disabled?: boolean;
   editorRef?: React.RefObject<EditorRef>;
+  required?: boolean;
+};
+
+export type DecoratedEditorProps = CodeEditorProps & {
+  onBlur?: (newValue: string) => void;
+  height: string;
 };
 
 const DEFAULT_EDITOR_HEIGHT = '20vh';
@@ -93,6 +100,7 @@ export default function CodeEditorBox(props: CodeEditorProps) {
           disabled={props.disabled}
           wordWrap={wordWrap}
           height={height}
+          editorRef={props.editorRef}
         />
         {editorOptionBox}
       </div>
@@ -109,6 +117,7 @@ export default function CodeEditorBox(props: CodeEditorProps) {
         placeholder={props.placeholder}
         disabled={props.disabled}
         height={height}
+        required={props.required}
         editorRef={props.editorRef}
       />
       {editorOptionBox}

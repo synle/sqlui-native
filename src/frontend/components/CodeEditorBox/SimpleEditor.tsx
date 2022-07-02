@@ -1,7 +1,8 @@
 // @ts-nocheck
 import { grey } from '@mui/material/colors';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { styled } from '@mui/system';
+import { DecoratedEditorProps as SimpleEditorProps } from 'src/frontend/components/CodeEditorBox';
 
 const StyledTextArea = styled('textarea')(({ theme }) => {
   let backgroundColor, color;
@@ -30,7 +31,9 @@ const StyledTextArea = styled('textarea')(({ theme }) => {
   };
 });
 
-export default function SchemaEditor(props) {
+export default function SimpleEditor(props: SimpleEditorProps) {
+  const textareaRef = useRef<HTMLTextareaElement>(null);
+
   const onInputKeyDown = useCallback((e) => {
     const TAB_INDENT = '  ';
     switch (e.key) {
@@ -176,8 +179,22 @@ export default function SchemaEditor(props) {
 
   useEffect(() => setText(value), [value]);
 
+  useEffect(() => {
+    if (textareaRef && props.editorRef) {
+      // @ts-ignore
+      // keep a copy of the editor for ref
+      props.editorRef.current = {
+        getSelectedText: () => {
+          const textarea = textareaRef.current;
+          return textarea.value.substring(textarea.selectionStart, textarea.selectionEnd);
+        },
+      };
+    }
+  }, [textareaRef, props.editorRef]);
+
   return (
     <StyledTextArea
+      ref={textareaRef}
       className='SimpleEditorContainer'
       value={text}
       onKeyDown={onInputKeyDown}

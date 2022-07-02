@@ -33,7 +33,7 @@ type QueryBoxProps = {
 
 export default function QueryBox(props: QueryBoxProps) {
   const { queryId } = props;
-  const editorRef = useRef<EditorRef>(null);
+  const editorRef = useRef<EditorRef>();
   const { query, onChange, onDelete, isLoading: loadingConnection } = useConnectionQuery(queryId);
   const { mutateAsync: executeQuery } = useExecute();
   const [executing, setExecuting] = useState(false);
