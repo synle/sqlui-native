@@ -17,6 +17,7 @@ type CodeEditorProps = {
   required?: boolean;
   wordWrap?: boolean;
   disabled?: boolean;
+  editorRef?: any;
 };
 
 const DEFAULT_EDITOR_HEIGHT = '20vh';
@@ -104,6 +105,7 @@ export default function CodeEditorBox(props: CodeEditorProps) {
         placeholder={props.placeholder}
         disabled={props.disabled}
         height={height}
+        editorRef={props.editorRef}
       />
       {editorOptionBox}
     </Paper>

@@ -13,6 +13,7 @@ type AdvancedEditorProps = {
   placeholder?: string;
   disabled?: boolean;
   height: string;
+  editorRef?: any;
 };
 
 const AdvancedEditorContainer = styled('div')(({ theme }) => {
@@ -51,6 +52,7 @@ export default function AdvancedEditor(props: AdvancedEditorProps) {
 
       //@ts-ignore
       window.editors = {};
+
       //@ts-ignore
       window.editors[newEditor.getModel().id] = newEditor
 
@@ -95,8 +97,28 @@ export default function AdvancedEditor(props: AdvancedEditorProps) {
         // fall back to use setValue if we can't find the range
         editor.setValue(newValue);
       }
+
+      // @ts-ignore
+      // keep a copy of the editor for ref
+      props.editorRef.current = () => {
+        //@ts-ignore
+        return editor.getModel().getValueInRange(editor.getSelection());
+      }
     }
   }, [editor, props.value]);
+
+  useEffect(() => {
+    if (editor && props.editorRef) {
+      // @ts-ignore
+      // keep a copy of the editor for ref
+      props.editorRef.current = {
+        getSelectedText:() => {
+          //@ts-ignore
+          return editor.getModel().getValueInRange(editor.getSelection());
+        }
+      }
+    }
+  }, [editor, props.editorRef]);
 
   // here we will initiate the editor
   // and can be also be used to update the settings
