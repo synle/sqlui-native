@@ -1051,6 +1051,13 @@ export default function MissionControl() {
                   '.AdvancedEditorContainer .inputarea.monaco-mouse-cursor-text,.SimpleEditorContainer',
                 ) as HTMLTextAreaElement
               ).blur();
+
+              //@ts-ignore
+              const editor = window.editors[monaco.editor.getModels()[0].id];
+
+              //@ts-ignore
+              editor.getModel().getValueInRange(editor.getSelection());
+
               setTimeout(() =>
                 (document.querySelector('#btnExecuteCommand') as HTMLButtonElement).click(),
               );

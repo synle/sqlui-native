@@ -48,6 +48,12 @@ export default function AdvancedEditor(props: AdvancedEditorProps) {
         ...DEFAULT_OPTIONS,
       });
 
+
+      //@ts-ignore
+      window.editors = {};
+      //@ts-ignore
+      window.editors[newEditor.getModel().id] = newEditor
+
       newEditor.onDidBlurEditorWidget(() => {
         props.onBlur && props.onBlur(newEditor.getValue() || '');
       });
