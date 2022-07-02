@@ -5,7 +5,7 @@ import Snackbar from '@mui/material/Snackbar';
 
 type ToastProps = {
   open: boolean;
-  onClose: () => void;
+  onClose: (reason?: string) => void;
   message: string;
   autoHideDuration?: number;
   anchorOrigin?: AnchorOrigin;
@@ -21,7 +21,7 @@ export default function Toast(props: ToastProps) {
 
   const action = (
     <>
-      <IconButton size='small' aria-label='close' color='inherit' onClick={onClose}>
+      <IconButton size='small' aria-label='close' color='inherit' onClick={() => onClose()}>
         <CloseIcon fontSize='small' />
       </IconButton>
     </>
@@ -40,7 +40,7 @@ export default function Toast(props: ToastProps) {
         horizontal,
       }}
       autoHideDuration={autoHideDuration}
-      onClose={onClose}
+      onClose={(_e, reason) => onClose(reason)}
       message={message}
       action={action}
       TransitionComponent={Slide}

@@ -8,7 +8,11 @@ export default function Toasters() {
     return null;
   }
 
-  const onToastClose = () => {
+  const onToastClose = (reason?: string) => {
+    if(reason === 'clickaway'){
+      return;
+    }
+
     if (toast.onClose) {
       toast.onClose();
     }
