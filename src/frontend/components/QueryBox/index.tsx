@@ -26,10 +26,87 @@ import { useConnectionQuery } from 'src/frontend/hooks/useConnectionQuery';
 import useToaster from 'src/frontend/hooks/useToaster';
 import { formatDuration, formatJS, formatSQL } from 'src/frontend/utils/formatter';
 import { SqluiCore } from 'typings';
+import DropdownButton from 'src/frontend/components/DropdownButton';
+import IconButton from '@mui/material/IconButton';
+import MenuIcon from '@mui/icons-material/Menu';
+import {
+  getIsTableIdRequiredForQuery,
+  getTableActions,
+} from 'src/common/adapters/DataScriptFactory';
+import { useQuerySizeSetting } from 'src/frontend/hooks/useSetting';
+import { useGetColumns } from 'src/frontend/hooks/useConnection';
 
 type QueryBoxProps = {
   queryId: string;
 };
+
+type ConnectionActionsButtonProps= {
+  query: SqluiCore.ConnectionQuery
+}
+
+function ConnectionActionsButton(props: ConnectionActionsButtonProps){
+  const {query} = props;
+  const  {databaseId, connectionId, tableId} = query;
+  const [open, setOpen] = useState(false);
+  const querySize = useQuerySizeSetting();
+
+  const { selectCommand } = useCommands();
+
+  const { data: connection, isLoading: loadingConnection } = useGetConnectionById(connectionId);
+  const { data: columns, isLoading: loadingColumns } = useGetColumns(
+    connectionId,
+    databaseId,
+    tableId,
+  );
+
+  const dialect = connection?.dialect;
+
+  const isLoading = loadingConnection || loadingColumns;
+
+  const isTableIdRequiredForQuery = getIsTableIdRequiredForQuery(dialect);
+
+  const actions = getTableActions({
+    dialect,
+    connectionId,
+    databaseId,
+    tableId,
+    columns: columns || [],
+    querySize,
+  });
+
+  const options = actions.map((action) => ({
+    label: action.label,
+    startIcon: action.icon,
+    onClick: async () =>
+      action.query &&
+      selectCommand({
+        event: 'clientEvent/query/apply',
+        data: {
+          connectionId,
+          databaseId,
+          tableId: tableId,
+          sql: action.query,
+        },
+        label: `Applied "${action.label}" to active query tab.`,
+      }),
+  }));
+
+
+  if(!databaseId || !connectionId || !tableId){
+    return null
+  }
+
+  return <DropdownButton
+          id='session-action-split-button'
+          options={options}
+          onToggle={(newOpen) => setOpen(newOpen)}
+          isLoading={isLoading}
+          maxHeight='400px'>
+          <IconButton aria-label='Table Actions' color='inherit'>
+            <MenuIcon fontSize='inherit' color='inherit' />
+          </IconButton>
+        </DropdownButton>
+}
 
 export default function QueryBox(props: QueryBoxProps) {
   const { queryId } = props;
@@ -171,6 +248,7 @@ export default function QueryBox(props: QueryBoxProps) {
         <div className='FormInput__Row'>
           <ConnectionDatabaseSelector value={query} onChange={onDatabaseConnectionChange} />
           <ConnectionRevealButton query={query} />
+          <ConnectionActionsButton query={query} />
         </div>
         <CodeEditorBox
           value={query.sql}
