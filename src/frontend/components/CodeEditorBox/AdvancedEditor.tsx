@@ -1,21 +1,9 @@
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
 import { useAsyncDebounce } from 'react-table';
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { styled } from '@mui/system';
-import { EditorRef } from 'src/frontend/components/CodeEditorBox';
+import { DecoratedEditorProps as AdvancedEditorProps } from 'src/frontend/components/CodeEditorBox';
 import { useDarkModeSetting } from 'src/frontend/hooks/useSetting';
-
-type AdvancedEditorProps = {
-  language?: 'sql' | string;
-  value?: string;
-  onChange?: (newValue: string) => void;
-  onBlur?: (newValue: string) => void;
-  wordWrap?: boolean;
-  placeholder?: string;
-  disabled?: boolean;
-  height: string;
-  editorRef?: React.RefObject<EditorRef>;
-};
 
 const AdvancedEditorContainer = styled('div')(({ theme }) => {
   return {
