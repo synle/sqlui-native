@@ -1,7 +1,8 @@
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
 import { useAsyncDebounce } from 'react-table';
-import { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { styled } from '@mui/system';
+import { EditorRef } from 'src/frontend/components/CodeEditorBox';
 import { useDarkModeSetting } from 'src/frontend/hooks/useSetting';
 
 type AdvancedEditorProps = {
@@ -13,6 +14,7 @@ type AdvancedEditorProps = {
   placeholder?: string;
   disabled?: boolean;
   height: string;
+  editorRef?: React.RefObject<EditorRef>;
 };
 
 const AdvancedEditorContainer = styled('div')(({ theme }) => {
@@ -47,10 +49,6 @@ export default function AdvancedEditor(props: AdvancedEditorProps) {
         wordWrap: props.wordWrap === true ? 'on' : 'off',
         ...DEFAULT_OPTIONS,
       });
-      //@ts-ignore
-      window.editors = {};
-      //@ts-ignore
-      window.editors[newEditor.getModel().id] = newEditor;
 
       newEditor.onDidBlurEditorWidget(() => {
         props.onBlur && props.onBlur(newEditor.getValue() || '');
@@ -95,6 +93,21 @@ export default function AdvancedEditor(props: AdvancedEditorProps) {
       }
     }
   }, [editor, props.value]);
+
+  useEffect(() => {
+    if (editor && props.editorRef) {
+      // @ts-ignore
+      // keep a copy of the editor for ref
+      props.editorRef.current = {
+        getSelectedText: () => {
+          const selection = editor.getSelection();
+          if (selection) {
+            return editor?.getModel()?.getValueInRange(selection);
+          }
+        },
+      };
+    }
+  }, [editor, props.editorRef]);
 
   // here we will initiate the editor
   // and can be also be used to update the settings

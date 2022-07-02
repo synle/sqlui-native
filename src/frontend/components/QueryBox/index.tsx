@@ -10,9 +10,9 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Tooltip from '@mui/material/Tooltip';
 import { useQueryClient } from 'react-query';
 import { useNavigate } from 'react-router-dom';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { getSyntaxModeByDialect } from 'src/common/adapters/DataScriptFactory';
-import CodeEditorBox from 'src/frontend/components/CodeEditorBox';
+import CodeEditorBox, { EditorRef } from 'src/frontend/components/CodeEditorBox';
 import { useCommands } from 'src/frontend/components/MissionControl';
 import ConnectionDatabaseSelector from 'src/frontend/components/QueryBox/ConnectionDatabaseSelector';
 import ConnectionRevealButton from 'src/frontend/components/QueryBox/ConnectionRevealButton';
@@ -33,6 +33,7 @@ type QueryBoxProps = {
 
 export default function QueryBox(props: QueryBoxProps) {
   const { queryId } = props;
+  const editorRef = useRef<EditorRef>(null);
   const { query, onChange, onDelete, isLoading: loadingConnection } = useConnectionQuery(queryId);
   const { mutateAsync: executeQuery } = useExecute();
   const [executing, setExecuting] = useState(false);
@@ -108,12 +109,7 @@ export default function QueryBox(props: QueryBoxProps) {
 
     // here we attempted to pull in the highlighted text
     try {
-      // TODO: find out a more reliable way to get a model based on an id
-      //@ts-ignore
-      const editor = window.editors[monaco.editor.getModels()[0].id];
-
-      //@ts-ignore
-      const sql = editor.getModel().getValueInRange(editor.getSelection());
+      const sql = editorRef?.current?.getSelectedText();
 
       if (sql) {
         queryToExecute.sql = sql;
@@ -181,6 +177,7 @@ export default function QueryBox(props: QueryBoxProps) {
           placeholder={`Enter SQL for ` + query.name}
           onChange={onSqlQueryChange}
           language={language}
+          editorRef={editorRef}
           autoFocus
         />
         <div className='FormInput__Row'>
