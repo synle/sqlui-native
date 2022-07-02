@@ -20,7 +20,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           registry-url: https://registry.npmjs.org/
-      - run: yarn
+      - run: yarn install --network-timeout 1000000
       - run: yarn format
       - run: yarn test-ci
       - run: yarn build
