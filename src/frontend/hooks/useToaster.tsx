@@ -43,13 +43,13 @@ export default function useToaster() {
         },
       ];
 
-      queryClient.invalidateQueries(QUERY_KEY_TOASTS);
-
       resolve({
         dismiss: (dismissDelay?: number) => {
           dismiss(toastId, dismissDelay);
         },
       });
+
+      _invalidateQueries()
     });
   };
 
@@ -57,11 +57,17 @@ export default function useToaster() {
     return new Promise((resolve, reject) => {
       setTimeout(() => {
         _toasts = _toasts.filter((toast) => toast.id !== toastId);
-        queryClient.invalidateQueries(QUERY_KEY_TOASTS);
+
         resolve();
+
+        _invalidateQueries()
       }, dismissDelay || 0);
     });
   };
+
+  function _invalidateQueries(){
+    queryClient.invalidateQueries(QUERY_KEY_TOASTS);
+  }
 
   let toast;
   try {
