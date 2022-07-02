@@ -8,9 +8,11 @@ import SimpleEditor from 'src/frontend/components/CodeEditorBox/SimpleEditor';
 import Select from 'src/frontend/components/Select';
 import { useEditorModeSetting, useWordWrapSetting } from 'src/frontend/hooks/useSetting';
 
-export type EditorRef = {
-  getSelectedText: () => string | undefined;
-} | undefined;
+export type EditorRef =
+  | {
+      getSelectedText: () => string | undefined;
+    }
+  | undefined;
 
 export type CodeEditorProps = {
   language?: 'sql' | string;
@@ -22,9 +24,9 @@ export type CodeEditorProps = {
   disabled?: boolean;
   editorRef?: React.RefObject<EditorRef>;
   required?: boolean;
-}
+};
 
-export type DecoratedEditorProps = CodeEditorProps &{
+export type DecoratedEditorProps = CodeEditorProps & {
   onBlur?: (newValue: string) => void;
   height: string;
 };

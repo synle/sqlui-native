@@ -1,9 +1,8 @@
 // @ts-nocheck
 import { grey } from '@mui/material/colors';
-import { useCallback, useEffect, useState, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { styled } from '@mui/system';
-import { BaseCodeEditorProps } from 'src/frontend/components/CodeEditorBox';
-import { DecoratedEditorProps as  SimpleEditorProps} from 'src/frontend/components/CodeEditorBox';
+import { DecoratedEditorProps as SimpleEditorProps } from 'src/frontend/components/CodeEditorBox';
 
 const StyledTextArea = styled('textarea')(({ theme }) => {
   let backgroundColor, color;
@@ -32,7 +31,7 @@ const StyledTextArea = styled('textarea')(({ theme }) => {
   };
 });
 
-export default function SimpleEditor(props:SimpleEditorProps) {
+export default function SimpleEditor(props: SimpleEditorProps) {
   const textareaRef = useRef<HTMLTextareaElement>(null);
 
   const onInputKeyDown = useCallback((e) => {

@@ -1,8 +1,8 @@
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
 import { useAsyncDebounce } from 'react-table';
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { styled } from '@mui/system';
-import { DecoratedEditorProps as  AdvancedEditorProps} from 'src/frontend/components/CodeEditorBox';
+import { DecoratedEditorProps as AdvancedEditorProps } from 'src/frontend/components/CodeEditorBox';
 import { useDarkModeSetting } from 'src/frontend/hooks/useSetting';
 
 const AdvancedEditorContainer = styled('div')(({ theme }) => {
