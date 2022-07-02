@@ -119,7 +119,7 @@ export function useActionDialogs() {
 
   const modal = (props: ModalInput): Promise<void> => {
     return new Promise((resolve, reject) => {
-      const newActionDialog: ActionDialog ={
+      const newActionDialog: ActionDialog = {
         type: 'modal',
         onSubmit: () => {},
         ...props,
@@ -148,7 +148,7 @@ export function useActionDialogs() {
     _invalidateQueries();
   };
 
-  function _invalidateQueries(){
+  function _invalidateQueries() {
     queryClient.invalidateQueries(QUERY_KEY_ACTION_DIALOGS);
   }
 
