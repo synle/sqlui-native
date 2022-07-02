@@ -102,10 +102,28 @@ export default function QueryBox(props: QueryBoxProps) {
 
     let success = false;
 
+    const queryToExecute = {
+      ...query
+    }
+
+    // here we attempted to pull in the highlighted text
+    try{
+      // TODO: find out a more reliable way to get a model based on an id
+      //@ts-ignore
+      const editor = window.editors[monaco.editor.getModels()[0].id];
+
+      //@ts-ignore
+      const sql = editor.getModel().getValueInRange(editor.getSelection());
+
+      if(sql){
+        queryToExecute.sql = sql;
+      }
+    } catch(err){}
+
     try {
-      const newResult = await executeQuery(query);
+      const newResult = await executeQuery(queryToExecute);
       onChange({ result: newResult });
-      refreshAfterExecution(query, queryClient);
+      refreshAfterExecution(queryToExecute, queryClient);
 
       success = newResult.ok;
     } catch (err) {
@@ -117,7 +135,7 @@ export default function QueryBox(props: QueryBoxProps) {
     onChange({ executionEnd });
 
     await addToast({
-      message: `Query "${query.name}" executed ${
+      message: `Query "${queryToExecute.name}" executed ${
         success ? 'successfully' : 'unsuccessfully'
       } and took about ${formatDuration(executionEnd - executionStart)}...`,
     });
