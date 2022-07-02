@@ -19,9 +19,10 @@ export default function Settings(props: SettingsProps) {
       return;
     }
 
-    settings[key] = value;
-
-    onChange(settings);
+    onChange({
+      ...settings,
+      ...{ [key]: value },
+    });
   };
 
   let contentDom: React.ReactNode;
