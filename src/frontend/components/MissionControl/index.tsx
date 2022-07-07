@@ -132,6 +132,21 @@ export default function MissionControl() {
   const onCloseQuery = async (query: SqluiFrontend.ConnectionQuery) => {
     try {
       await confirm(`Do you want to delete this query "${query.name}"?`);
+
+      const onUndo = async () => {
+        curToast?.dismiss();
+        await connectionQueries.onAddQuery(query);
+      }
+
+      let curToast = await addToast({
+        message: <>
+          Query {query.name} closed.
+          <Button size="small" onClick={onUndo} sx={{ml: 'auto'}}>
+            UNDO
+          </Button>
+        </>,
+      });
+
       await connectionQueries.onDeleteQueries([query.id]);
     } catch (err) {}
   };
@@ -470,9 +485,9 @@ export default function MissionControl() {
       await confirm('Delete this connection?');
       await deleteConnection(connection.id);
 
-      const onUndo = () => {
+      const onUndo = async () => {
         curToast?.dismiss();
-        duplicateConnection(connection);
+        await duplicateConnection(connection);
       }
 
       curToast = await addToast({
