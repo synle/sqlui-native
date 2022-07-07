@@ -1,13 +1,10 @@
 import CssBaseline from '@mui/material/CssBaseline';
+import { SnackbarProvider } from 'notistack';
 import ReactDOM from 'react-dom';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { ReactQueryDevtools } from 'react-query/devtools';
 import React from 'react';
 import App from 'src/frontend/App';
-import { SnackbarProvider } from 'notistack';
-import IconButton from '@mui/material/IconButton';
-import { useSnackbar } from 'notistack';
-import CloseIcon from '@mui/icons-material/Close';
 
 const renderApp = function () {
   const queryClient = new QueryClient({
@@ -20,11 +17,11 @@ const renderApp = function () {
 
   ReactDOM.render(
     <SnackbarProvider maxSnack={4}>
-    <QueryClientProvider client={queryClient}>
-      <CssBaseline />
-      <ReactQueryDevtools initialIsOpen={false} />
-      <App />
-    </QueryClientProvider>
+      <QueryClientProvider client={queryClient}>
+        <CssBaseline />
+        <ReactQueryDevtools initialIsOpen={false} />
+        <App />
+      </QueryClientProvider>
     </SnackbarProvider>,
     document.querySelector('#body'),
   );

@@ -139,17 +139,14 @@ export default function MissionControl() {
       };
 
       const curToast = await addToast({
-        message: (
+        message: <>Query "{query.name}" closed.</>,
+        action: (
           <>
-            Query "{query.name}" closed.
-
-          </>
-        ),
-        action: <>
-          <Button size='small' onClick={onUndoConnection} >
+            <Button size='small' onClick={onUndoConnection}>
               UNDO
             </Button>
-        </>
+          </>
+        ),
       });
 
       await connectionQueries.onDeleteQueries([query.id]);
@@ -168,16 +165,14 @@ export default function MissionControl() {
       };
 
       const curToast = await addToast({
-        message: (
+        message: <>Multiple queries closed.</>,
+        action: (
           <>
-            Multiple queries closed.
-          </>
-        ),
-        action: <>
-          <Button size='small' onClick={onUndoQueries} >
+            <Button size='small' onClick={onUndoQueries}>
               UNDO
             </Button>
-        </>
+          </>
+        ),
       });
 
       await connectionQueries.onDeleteQueries(queriesToClose?.map((q) => q.id));
@@ -209,16 +204,14 @@ export default function MissionControl() {
         };
 
         const curToast = await addToast({
-          message: (
+          message: <>Multiple queries closed.</>,
+          action: (
             <>
-              Multiple queries closed.
-            </>
-          ),
-          action: <>
-          <Button size='small' onClick={onUndoQueries} >
+              <Button size='small' onClick={onUndoQueries}>
                 UNDO
               </Button>
-        </>
+            </>
+          ),
         });
 
         await connectionQueries.onDeleteQueries(queriesToClose.map((q) => q.id));
@@ -537,16 +530,14 @@ export default function MissionControl() {
       };
 
       curToast = await addToast({
-        message: (
+        message: <>Connection "{connection.name}" deleted.</>,
+        action: (
           <>
-            Connection "{connection.name}" deleted.
-          </>
-        ),
-        action: <>
-          <Button size='small' onClick={onUndoConnection}>
+            <Button size='small' onClick={onUndoConnection}>
               UNDO
             </Button>
-        </>
+          </>
+        ),
       });
 
       createSystemNotification(

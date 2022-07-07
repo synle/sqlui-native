@@ -1,9 +1,8 @@
-import { useQuery, useQueryClient } from 'react-query';
+import CloseIcon from '@mui/icons-material/Close';
+import IconButton from '@mui/material/IconButton';
+import { useSnackbar } from 'notistack';
 import React from 'react';
 import { getGeneratedRandomId } from 'src/frontend/utils/commonUtils';
-import { useSnackbar } from 'notistack';
-import IconButton from '@mui/material/IconButton';
-import CloseIcon from '@mui/icons-material/Close';
 
 const QUERY_KEY_TOASTS = 'toasts';
 
@@ -35,16 +34,20 @@ export default function useToaster() {
         id: toastId,
         key: toastId,
         autoHideDuration: props.autoHideDuration || DEFAULT_AUTO_HIDE_DURATION,
-        action: snackbarKey => <>
-          {props.action}
-          <IconButton onClick={() => closeSnackbar(snackbarKey)} size="small"
-              aria-label="close"
-              color="inherit">
-            <CloseIcon fontSize="small"  />
-          </IconButton>
-        </>,
-        anchorOrigin:{horizontal: 'center', vertical: 'bottom'},
-      })
+        action: (snackbarKey) => (
+          <>
+            {props.action}
+            <IconButton
+              onClick={() => closeSnackbar(snackbarKey)}
+              size='small'
+              aria-label='close'
+              color='inherit'>
+              <CloseIcon fontSize='small' />
+            </IconButton>
+          </>
+        ),
+        anchorOrigin: { horizontal: 'center', vertical: 'bottom' },
+      });
 
       resolve({
         dismiss: (dismissDelay?: number) => {

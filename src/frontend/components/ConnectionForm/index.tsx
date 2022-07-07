@@ -5,9 +5,9 @@ import React, { useEffect, useState } from 'react';
 import ConnectionHint from 'src/frontend/components/ConnectionForm/ConnectionHint';
 import TestConnectionButton from 'src/frontend/components/TestConnectionButton';
 import { useGetConnectionById, useUpsertConnection } from 'src/frontend/hooks/useConnection';
+import useToaster from 'src/frontend/hooks/useToaster';
 import { createSystemNotification } from 'src/frontend/utils/commonUtils';
 import { SqluiCore } from 'typings';
-import useToaster from 'src/frontend/hooks/useToaster';
 
 type ConnectionFormProps = {
   id?: string;
@@ -157,13 +157,12 @@ function MainConnectionForm(props: MainConnectionFormProps) {
     e.preventDefault();
 
     const toast = await addToast({
-      message: "Saving Connection",
-    })
+      message: 'Saving Connection',
+    });
 
     try {
       await props.onSave();
-    } catch (err) {
-    }
+    } catch (err) {}
 
     await toast?.dismiss();
   };

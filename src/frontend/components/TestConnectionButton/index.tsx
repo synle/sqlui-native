@@ -1,10 +1,8 @@
 import { Button } from '@mui/material';
 import { useState } from 'react';
 import { useTestConnection } from 'src/frontend/hooks/useConnection';
-import { SqluiCore } from 'typings';
-import { SnackbarProvider, useSnackbar } from 'notistack'
-import {useEffect} from 'react';
 import useToaster from 'src/frontend/hooks/useToaster';
+import { SqluiCore } from 'typings';
 
 type TestConnectionButtonProps = {
   connection: SqluiCore.CoreConnectionProps;
@@ -14,7 +12,7 @@ export default function TestConnectionButton(props: TestConnectionButtonProps) {
   const [message, setMessage] = useState('');
   const { mutateAsync: testConnection } = useTestConnection();
   const { add: addToast, dismiss: dismissToast } = useToaster();
-  const toastId=  `toast.connectionCheck.${props.connection.connection}`;
+  const toastId = `toast.connectionCheck.${props.connection.connection}`;
 
   const onTestConnection = async () => {
     let message = '';
@@ -22,25 +20,25 @@ export default function TestConnectionButton(props: TestConnectionButtonProps) {
     await addToast({
       id: toastId,
       message: 'Checking connection...',
-    })
+    });
 
     if (!props.connection.connection) {
       message = `Connection is required to perform testing.`;
     } else {
-     try {
+      try {
         await testConnection(props.connection);
         message = `Successfully connected to Server.`;
       } catch (err) {
-        message= `Failed to connect to Server. ${JSON.stringify(err)}.`;
+        message = `Failed to connect to Server. ${JSON.stringify(err)}.`;
       }
     }
 
-    if(message){
+    if (message) {
       await dismissToast(toastId);
       await addToast({
         id: toastId,
         message,
-      })
+      });
     }
   };
 
