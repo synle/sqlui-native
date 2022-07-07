@@ -1,6 +1,7 @@
 import AddIcon from '@mui/icons-material/Add';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
+import Button from '@mui/material/Button';
 import Link from '@mui/material/Link';
 import Typography from '@mui/material/Typography';
 import { useQuery, useQueryClient } from 'react-query';
@@ -131,6 +132,23 @@ export default function MissionControl() {
   const onCloseQuery = async (query: SqluiFrontend.ConnectionQuery) => {
     try {
       await confirm(`Do you want to delete this query "${query.name}"?`);
+
+      const onUndoConnection = async () => {
+        curToast?.dismiss();
+        await connectionQueries.onAddQuery({ ...query });
+      };
+
+      const curToast = await addToast({
+        message: (
+          <>
+            Query "{query.name}" closed.
+            <Button size='small' onClick={onUndoConnection} sx={{ ml: 'auto' }}>
+              UNDO
+            </Button>
+          </>
+        ),
+      });
+
       await connectionQueries.onDeleteQueries([query.id]);
     } catch (err) {}
   };
@@ -138,9 +156,26 @@ export default function MissionControl() {
   const onCloseOtherQueries = async (query: SqluiFrontend.ConnectionQuery) => {
     try {
       await confirm(`Do you want to close other queries except "${query.name}"?`);
-      await connectionQueries.onDeleteQueries(
-        queries?.map((q) => q.id).filter((queryId) => queryId !== query.id),
-      );
+
+      const queriesToClose = queries?.filter((q) => q.id !== query.id) || [];
+
+      const onUndoQueries = async () => {
+        curToast?.dismiss();
+        await connectionQueries.onAddQueries(queriesToClose);
+      };
+
+      const curToast = await addToast({
+        message: (
+          <>
+            Multiple queries closed.
+            <Button size='small' onClick={onUndoQueries} sx={{ ml: 'auto' }}>
+              UNDO
+            </Button>
+          </>
+        ),
+      });
+
+      await connectionQueries.onDeleteQueries(queriesToClose?.map((q) => q.id));
     } catch (err) {}
   };
 
@@ -152,15 +187,35 @@ export default function MissionControl() {
       await confirm(`Do you want to close all the queries to the right of "${query.name}"?`);
 
       // find the target idx
+      let targetIdx: number = -1;
       for (let i = 0; i < queries.length; i++) {
         if (queries[i].id === query.id) {
-          const targetIdx = i;
-          await connectionQueries.onDeleteQueries(
-            queries.filter((_q, idx) => idx > targetIdx).map((q) => q.id),
-          );
-          await connectionQueries.onShowQuery(query.id);
+          targetIdx = i;
           break;
         }
+      }
+
+      if (targetIdx >= 0) {
+        const queriesToClose = queries.filter((_q, idx) => idx > targetIdx);
+
+        const onUndoQueries = async () => {
+          curToast?.dismiss();
+          await connectionQueries.onAddQueries(queriesToClose);
+        };
+
+        const curToast = await addToast({
+          message: (
+            <>
+              Multiple queries closed.
+              <Button size='small' onClick={onUndoQueries} sx={{ ml: 'auto' }}>
+                UNDO
+              </Button>
+            </>
+          ),
+        });
+
+        await connectionQueries.onDeleteQueries(queriesToClose.map((q) => q.id));
+        await connectionQueries.onShowQuery(query.id);
       }
     } catch (err) {}
   };
@@ -468,8 +523,21 @@ export default function MissionControl() {
     try {
       await confirm('Delete this connection?');
       await deleteConnection(connection.id);
+
+      const onUndoConnection = async () => {
+        curToast?.dismiss();
+        await duplicateConnection(connection);
+      };
+
       curToast = await addToast({
-        message: `Connection "${connection.name}" deleted`,
+        message: (
+          <>
+            Connection "{connection.name}" deleted.
+            <Button size='small' onClick={onUndoConnection} sx={{ ml: 'auto' }}>
+              UNDO
+            </Button>
+          </>
+        ),
       });
 
       createSystemNotification(
