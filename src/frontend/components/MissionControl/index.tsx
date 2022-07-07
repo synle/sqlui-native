@@ -133,15 +133,15 @@ export default function MissionControl() {
     try {
       await confirm(`Do you want to delete this query "${query.name}"?`);
 
-      const onUndo = async () => {
+      const onUndoConnection = async () => {
         curToast?.dismiss();
-        await connectionQueries.onAddQuery(query);
+        await connectionQueries.onAddQuery({...query});
       }
 
-      let curToast = await addToast({
+      const curToast = await addToast({
         message: <>
-          Query {query.name} closed.
-          <Button size="small" onClick={onUndo} sx={{ml: 'auto'}}>
+          Query "{query.name}" closed.
+          <Button size="small" onClick={onUndoConnection} sx={{ml: 'auto'}}>
             UNDO
           </Button>
         </>,
@@ -154,8 +154,25 @@ export default function MissionControl() {
   const onCloseOtherQueries = async (query: SqluiFrontend.ConnectionQuery) => {
     try {
       await confirm(`Do you want to close other queries except "${query.name}"?`);
+
+      const queriesToClose = queries?.filter((q) => q.id !== query.id) || [];
+
+      const onUndoQueries = async () => {
+        curToast?.dismiss();
+        await connectionQueries.onAddQueries(queriesToClose);
+      }
+
+      const curToast = await addToast({
+        message: <>
+          Multiple queries closed.
+          <Button size="small" onClick={onUndoQueries} sx={{ml: 'auto'}}>
+            UNDO
+          </Button>
+        </>,
+      });
+
       await connectionQueries.onDeleteQueries(
-        queries?.map((q) => q.id).filter((queryId) => queryId !== query.id),
+        queriesToClose?.map((q) => q.id),
       );
     } catch (err) {}
   };
@@ -168,15 +185,35 @@ export default function MissionControl() {
       await confirm(`Do you want to close all the queries to the right of "${query.name}"?`);
 
       // find the target idx
+      let targetIdx : number = -1;
       for (let i = 0; i < queries.length; i++) {
         if (queries[i].id === query.id) {
-          const targetIdx = i;
-          await connectionQueries.onDeleteQueries(
-            queries.filter((_q, idx) => idx > targetIdx).map((q) => q.id),
-          );
-          await connectionQueries.onShowQuery(query.id);
+          targetIdx = i;
           break;
         }
+      }
+
+      if(targetIdx >= 0){
+        const queriesToClose = queries.filter((_q, idx) => idx > targetIdx);
+
+        const onUndoQueries = async () => {
+          curToast?.dismiss();
+          await connectionQueries.onAddQueries(queriesToClose);
+        }
+
+        const curToast = await addToast({
+          message: <>
+            Multiple queries closed.
+            <Button size="small" onClick={onUndoQueries} sx={{ml: 'auto'}}>
+              UNDO
+            </Button>
+          </>,
+        });
+
+        await connectionQueries.onDeleteQueries(
+          queriesToClose.map((q) => q.id),
+        );
+        await connectionQueries.onShowQuery(query.id);
       }
     } catch (err) {}
   };
@@ -485,15 +522,15 @@ export default function MissionControl() {
       await confirm('Delete this connection?');
       await deleteConnection(connection.id);
 
-      const onUndo = async () => {
+      const onUndoConnection = async () => {
         curToast?.dismiss();
         await duplicateConnection(connection);
       }
 
       curToast = await addToast({
         message: <>
-          Connection {connection.name} deleted.
-          <Button size="small" onClick={onUndo} sx={{ml: 'auto'}}>
+          Connection "{connection.name}" deleted.
+          <Button size="small" onClick={onUndoConnection} sx={{ml: 'auto'}}>
             UNDO
           </Button>
         </>,

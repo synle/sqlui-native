@@ -71,50 +71,62 @@ export function useConnectionQueries() {
     );
   }
 
-  const onAddQuery = async (query?: SqluiCore.CoreConnectionQuery) => {
-    const newId = getGeneratedRandomId(`queryId`);
+  const onAddQueries = async (queries: (SqluiCore.CoreConnectionQuery | undefined)[]) => {
+    queries= queries || [];
 
-    let newQuery: SqluiFrontend.ConnectionQuery;
-    if (!query) {
-      newQuery = {
-        id: newId,
-        name: `Query ${new Date().toLocaleString()}`,
-        sql: '',
-        selected: true,
-      };
-    } else {
-      let newQueryName = query.name || `Query ${new Date().toLocaleString()}`;
+    const res : SqluiCore.CoreConnectionQuery[]= [];
+    for(const query of queries){
+      const newId = getGeneratedRandomId(`queryId`);
 
-      for (const query of _connectionQueries) {
-        if (query.name === newQueryName) {
-          // replace it with a new anme
-          newQueryName = `Duplicated Query ${new Date().toLocaleString()}`;
+      let newQuery: SqluiFrontend.ConnectionQuery;
+      if (!query) {
+        newQuery = {
+          id: newId,
+          name: `Query ${new Date().toLocaleString()}`,
+          sql: '',
+          selected: true,
+        };
+      } else {
+        let newQueryName = query.name || `Query ${new Date().toLocaleString()}`;
+
+        for (const query of _connectionQueries) {
+          if (query.name === newQueryName) {
+            // replace it with a new anme
+            newQueryName = `Duplicated Query ${new Date().toLocaleString()}`;
+          }
         }
+
+        newQuery = {
+          ...query,
+          id: newId,
+          name: newQueryName,
+          selected: true,
+        };
       }
 
-      newQuery = {
-        ...query,
-        id: newId,
-        name: newQueryName,
-        selected: true,
-      };
-    }
+      _connectionQueries = [
+        ..._connectionQueries.map((q) => {
+          q.selected = false;
+          return q;
+        }),
+        newQuery,
+      ];
 
-    _connectionQueries = [
-      ..._connectionQueries.map((q) => {
-        q.selected = false;
-        return q;
-      }),
-      newQuery,
-    ];
+      res.push(newQuery);
+
+      try {
+        dataApi.upsertQuery(newQuery); // make an api call to persists and this is fire and forget
+      } catch (err) {}
+    }
 
     try {
       _invalidateQueries();
-      dataApi.upsertQuery(newQuery); // make an api call to persists and this is fire and forget
     } catch (err) {}
 
-    return newQuery;
+    return res;
   };
+
+  const onAddQuery = async (query?: SqluiCore.CoreConnectionQuery) => onAddQueries([query])[0];
 
   const onDeleteQueries = async (queryIds?: string[]) => {
     if (!queryIds || queryIds.length === 0) {
@@ -260,6 +272,7 @@ export function useConnectionQueries() {
     isFetching,
     queries,
     onAddQuery,
+    onAddQueries,
     onDeleteQuery,
     onDeleteQueries,
     onShowQuery,
