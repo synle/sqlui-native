@@ -221,9 +221,9 @@ function RecordForm(props) {
         // case 'redis':
         // case 'cosmosdb':
         case 'aztable':
-          const newData = {...props.data};
+          const newData = { ...props.data };
           // for these, let's delete the system key
-          for(const keyToDelete of AZTABLE_KEYS_TO_IGNORE_FOR_INSERT_AND_UPDATE){
+          for (const keyToDelete of AZTABLE_KEYS_TO_IGNORE_FOR_INSERT_AND_UPDATE) {
             delete newData[keyToDelete];
           }
           setRawValue(JSON.stringify(newData, null, 2));
@@ -251,7 +251,8 @@ function RecordForm(props) {
         // case 'cosmosdb':
         case 'aztable':
           for (const column of columns.filter(
-            (targetColumn) => AZTABLE_KEYS_TO_IGNORE_FOR_INSERT_AND_UPDATE.indexOf(targetColumn.name) === -1,
+            (targetColumn) =>
+              AZTABLE_KEYS_TO_IGNORE_FOR_INSERT_AND_UPDATE.indexOf(targetColumn.name) === -1,
           )) {
             newData[column.name] = '';
           }

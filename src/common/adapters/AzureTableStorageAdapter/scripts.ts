@@ -119,7 +119,7 @@ export function getUpdateWithValues(
     }
 
     // for these, let's delete the system key
-    for(const keyToDelete of AZTABLE_KEYS_TO_IGNORE_FOR_INSERT_AND_UPDATE){
+    for (const keyToDelete of AZTABLE_KEYS_TO_IGNORE_FOR_INSERT_AND_UPDATE) {
       delete colMap[keyToDelete];
     }
   }
