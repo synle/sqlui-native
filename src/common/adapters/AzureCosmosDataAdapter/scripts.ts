@@ -150,11 +150,17 @@ export function getSelectSpecificColumns(
   };
 }
 
-export function getInsert(input: SqlAction.TableInput): SqlAction.Output | undefined {
+export function getInsert(input: SqlAction.TableInput, value?: Record<string, any>): SqlAction.Output | undefined {
   const label = `Insert`;
 
-  const colMap = _getColMapForInsertAndUpdate(input?.columns);
-  colMap['id'] = 'some_id';
+  let colMap : any = {};
+  if (value) {
+    for (const key of Object.keys(value)) {
+      colMap[key] = value[key];
+    }
+  } else {
+    colMap = _getColMapForInsertAndUpdate(input?.columns);
+  }
 
   return {
     label,
@@ -168,6 +174,35 @@ export function getInsert(input: SqlAction.TableInput): SqlAction.Output | undef
     `,
   };
 }
+
+export function getUpdateWithValues(
+  input: SqlAction.TableInput,
+  value: Record<string, any>,
+  conditions: Record<string, any>,
+): SqlAction.Output | undefined {
+  const label = `Update`;
+
+  const colMap = _getColMapForInsertAndUpdate(input?.columns);
+
+  if (value) {
+    for (const key of Object.keys(value)) {
+      colMap[key] = value[key];
+    }
+  }
+
+  return {
+    label,
+    formatter,
+    query: `
+      client
+        .database('${input.databaseId}')
+        .container('${input.tableId}')
+        .item('some_id','some_partition_key')
+        .replace(${JSON.stringify(colMap)})
+    `,
+  };
+}
+
 
 export function getUpdate(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Update`;

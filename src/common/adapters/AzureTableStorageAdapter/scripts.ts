@@ -101,12 +101,12 @@ export function getInsert(
     query: `${AZTABLE_TABLE_CLIENT_PREFIX}.createEntity(${JSON.stringify(colMap)})`,
   };
 }
+
 export function getUpdateWithValues(
   input: SqlAction.TableInput,
   value: Record<string, any>,
   conditions: Record<string, any>,
 ): SqlAction.Output | undefined {
-  // TODO: fix me
   const label = `Update`;
 
   const colMap = _getColMapForInsertAndUpdate(input?.columns);

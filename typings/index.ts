@@ -50,6 +50,16 @@ export module SqluiCore {
     autoIncrement?: boolean;
     comment?: string | null;
     references?: TableReferenceMetaData;
+    /**
+     * whether or not this is a complex type and nested inside another JSON
+     * @type {boolean}
+     */
+    nested?: boolean;
+    /**
+     * the name of the parent property
+     * @type {string}
+     */
+    propertyPaths?: string[];
     [index: string]: any;
   };
 

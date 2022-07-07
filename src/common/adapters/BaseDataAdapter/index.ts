@@ -58,7 +58,7 @@ export default abstract class BaseDataAdapter {
 
     while (stack.length > 0) {
       //@ts-ignore
-      const { item, path } = stack.pop();
+      console.log(item, path)
       const type = typeof item;
       if (type === 'object' && !Array.isArray(item)) {
         for (const key of Object.keys(item)) {
@@ -68,11 +68,16 @@ export default abstract class BaseDataAdapter {
           });
         }
       } else {
-        const key = path.join('.');
+        const key = path.join('/');
         columnsMap[key] = columnsMap[key] || {
           name: key,
           type: Array.isArray(item) ? 'array' : type,
         };
+
+        if(path.length > 1){
+          // whether or not this is a complex type and nested inside another JSON
+          columnsMap[key].nested = true;
+        }
       }
     }
 
