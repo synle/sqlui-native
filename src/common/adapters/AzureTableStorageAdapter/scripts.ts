@@ -9,6 +9,8 @@ export const AZTABLE_TABLE_CLIENT_PREFIX = 'tableClient';
 
 export const AZTABLE_TABLE_SERVICE_PREFIX = 'serviceClient';
 
+export const AZTABLE_KEYS_TO_IGNORE_FOR_INSERT_AND_UPDATE = 'etag,timestamp'.split(',');
+
 function _getColMapForInsertAndUpdate(columns?: SqluiCore.ColumnMetaData[]) {
   return (
     columns?.reduce((res, col) => {
@@ -77,17 +79,55 @@ export function getSelectSpecificColumns(
   };
 }
 
-export function getInsert(input: SqlAction.TableInput): SqlAction.Output | undefined {
+export function getInsert(
+  input: SqlAction.TableInput,
+  value?: Record<string, any>,
+): SqlAction.Output | undefined {
   const label = `Insert`;
 
   const colMap = _getColMapForInsertAndUpdate(input?.columns);
   colMap['rowKey'] = 'some_row_key';
   colMap['partitionKey'] = 'some_partition_key';
 
+  if (value) {
+    for (const key of Object.keys(value)) {
+      colMap[key] = value[key];
+    }
+  }
+
   return {
     label,
     formatter,
     query: `${AZTABLE_TABLE_CLIENT_PREFIX}.createEntity(${JSON.stringify(colMap)})`,
+  };
+}
+export function getUpdateWithValues(
+  input: SqlAction.TableInput,
+  value: Record<string, any>,
+  conditions: Record<string, any>,
+): SqlAction.Output | undefined {
+  // TODO: fix me
+  const label = `Update`;
+
+  const colMap = _getColMapForInsertAndUpdate(input?.columns);
+  colMap['rowKey'] = 'some_row_key';
+  colMap['partitionKey'] = 'some_partition_key';
+
+  if (value) {
+    for (const key of Object.keys(value)) {
+      colMap[key] = value[key];
+    }
+
+    // for these, let's delete the system key
+    for (const keyToDelete of AZTABLE_KEYS_TO_IGNORE_FOR_INSERT_AND_UPDATE) {
+      delete colMap[keyToDelete];
+    }
+  }
+
+  return {
+    label,
+    formatter,
+    query: `${AZTABLE_TABLE_CLIENT_PREFIX}.updateEntity(${JSON.stringify(colMap)})`,
   };
 }
 
