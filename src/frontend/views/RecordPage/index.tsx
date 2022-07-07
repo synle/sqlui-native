@@ -9,6 +9,10 @@ import {
   getInsert as getInsertForRdmbs,
   getUpdateWithValues as getUpdateWithValuesForRmdbs,
 } from 'src/common/adapters/RelationalDataAdapter/scripts';
+import {
+  getInsert as getInsertForAzTable,
+  getUpdateWithValues as getUpdateWithValuesForAzTable,
+} from 'src/common/adapters/AzureTableStorageAdapter/scripts';
 import Breadcrumbs from 'src/frontend/components/Breadcrumbs';
 import ConnectionDescription from 'src/frontend/components/ConnectionDescription';
 import JsonFormatData from 'src/frontend/components/JsonFormatData';
@@ -26,7 +30,7 @@ import {
 import useToaster from 'src/frontend/hooks/useToaster';
 import { useTreeActions } from 'src/frontend/hooks/useTreeActions';
 import LayoutTwoColumns from 'src/frontend/layout/LayoutTwoColumns';
-import { formatSQL } from 'src/frontend/utils/formatter';
+import { formatSQL, formatJS } from 'src/frontend/utils/formatter';
 import { SqluiCore, SqluiFrontend } from 'typings';
 
 type RecordData = any;
@@ -52,9 +56,9 @@ export function isRecordFormSupportedForDialect(dialect?: string) {
     case 'mongodb':
     case 'redis':
     case 'cosmosdb':
-    case 'aztable':
-    default:
       return false;
+    case 'aztable':
+      return true;
   }
 }
 
@@ -342,11 +346,21 @@ export function NewRecordPage() {
       // case 'mongodb':
       // case 'redis':
       // case 'cosmosdb':
-      // case 'aztable':
+      case 'aztable':
+        sql = formatJS(
+          getInsertForAzTable(
+            {
+              ...query,
+              dialect: connection.dialect,
+              columns,
+            },
+            data,
+          )?.query || '',
+        );
+        break;
       // default:
       //   break;
     }
-
     onAddQuery({
       name: `New Record Query - ${new Date().toLocaleDateString()}`,
       ...query,
@@ -415,37 +429,38 @@ export function EditRecordPage(props: RecordDetailsPageProps) {
     setIsEdit(false);
 
     let sql = '';
+
+    // find out the delta
+    let deltaData = {};
+    for (const deltaField of deltaFields) {
+      deltaData[deltaField] = data[deltaField];
+    }
+    if (Object.keys(deltaData).length === 0) {
+      deltaData = data;
+    }
+    // find out the main condition
+    const conditions = {};
+    for (const column of columns) {
+      if (column.primaryKey) {
+        conditions[column.name] = data[column.name];
+      }
+    }
+
+    if (Object.keys(conditions).length === 0) {
+      for (const column of columns) {
+        if (column.name?.toString().toLowerCase()?.includes('id')) {
+          // otherwise include any of the id
+          conditions[column.name] = data[column.name];
+        }
+      }
+    }
+
     switch (connection?.dialect) {
       case 'mysql':
       case 'mariadb':
       case 'mssql':
       case 'postgres':
       case 'sqlite':
-        // find out the delta
-        let deltaData = {};
-        for (const deltaField of deltaFields) {
-          deltaData[deltaField] = data[deltaField];
-        }
-        if (Object.keys(deltaData).length === 0) {
-          deltaData = data;
-        }
-        // find out the main condition
-        const conditions = {};
-        for (const column of columns) {
-          if (column.primaryKey) {
-            conditions[column.name] = data[column.name];
-          }
-        }
-
-        if (Object.keys(conditions).length === 0) {
-          for (const column of columns) {
-            if (column.name?.toString().toLowerCase()?.includes('id')) {
-              // otherwise include any of the id
-              conditions[column.name] = data[column.name];
-            }
-          }
-        }
-
         sql = formatSQL(
           getUpdateWithValuesForRmdbs(
             {
@@ -462,7 +477,19 @@ export function EditRecordPage(props: RecordDetailsPageProps) {
       // case 'mongodb':
       // case 'redis':
       // case 'cosmosdb':
-      // case 'aztable':
+      case 'aztable':
+        sql = formatJS(
+          getUpdateWithValuesForAzTable(
+            {
+              ...query,
+              dialect: connection.dialect,
+              columns,
+            },
+            deltaData,
+            conditions,
+          )?.query || '',
+        );
+        break;
       // default:
       //   break;
     }
