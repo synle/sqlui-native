@@ -72,10 +72,10 @@ export function useConnectionQueries() {
   }
 
   const onAddQueries = async (queries: (SqluiCore.CoreConnectionQuery | undefined)[]) => {
-    queries= queries || [];
+    queries = queries || [];
 
-    const res : SqluiCore.CoreConnectionQuery[]= [];
-    for(const query of queries){
+    const res: SqluiCore.CoreConnectionQuery[] = [];
+    for (const query of queries) {
       const newId = getGeneratedRandomId(`queryId`);
 
       let newQuery: SqluiFrontend.ConnectionQuery;

@@ -1,8 +1,8 @@
 import CloseIcon from '@mui/icons-material/Close';
+import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import Slide from '@mui/material/Slide';
 import Snackbar from '@mui/material/Snackbar';
-import Box from '@mui/material/Box';
 import React from 'react';
 
 type ToastProps = {
@@ -34,9 +34,9 @@ export default function Toast(props: ToastProps) {
   const vertical = anchorOrigin?.vertical || 'bottom';
   const horizontal = anchorOrigin?.horizontal || 'center';
 
-  const messageDom = <Box sx={{display: 'flex', alignItems: 'center', width: '350px'}}>
-    {message}
-  </Box>
+  const messageDom = (
+    <Box sx={{ display: 'flex', alignItems: 'center', width: '350px' }}>{message}</Box>
+  );
 
   return (
     <Snackbar

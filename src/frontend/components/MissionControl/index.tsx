@@ -1,8 +1,8 @@
 import AddIcon from '@mui/icons-material/Add';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
-import Link from '@mui/material/Link';
 import Button from '@mui/material/Button';
+import Link from '@mui/material/Link';
 import Typography from '@mui/material/Typography';
 import { useQuery, useQueryClient } from 'react-query';
 import { useNavigate } from 'react-router-dom';
@@ -135,16 +135,18 @@ export default function MissionControl() {
 
       const onUndoConnection = async () => {
         curToast?.dismiss();
-        await connectionQueries.onAddQuery({...query});
-      }
+        await connectionQueries.onAddQuery({ ...query });
+      };
 
       const curToast = await addToast({
-        message: <>
-          Query "{query.name}" closed.
-          <Button size="small" onClick={onUndoConnection} sx={{ml: 'auto'}}>
-            UNDO
-          </Button>
-        </>,
+        message: (
+          <>
+            Query "{query.name}" closed.
+            <Button size='small' onClick={onUndoConnection} sx={{ ml: 'auto' }}>
+              UNDO
+            </Button>
+          </>
+        ),
       });
 
       await connectionQueries.onDeleteQueries([query.id]);
@@ -160,20 +162,20 @@ export default function MissionControl() {
       const onUndoQueries = async () => {
         curToast?.dismiss();
         await connectionQueries.onAddQueries(queriesToClose);
-      }
+      };
 
       const curToast = await addToast({
-        message: <>
-          Multiple queries closed.
-          <Button size="small" onClick={onUndoQueries} sx={{ml: 'auto'}}>
-            UNDO
-          </Button>
-        </>,
+        message: (
+          <>
+            Multiple queries closed.
+            <Button size='small' onClick={onUndoQueries} sx={{ ml: 'auto' }}>
+              UNDO
+            </Button>
+          </>
+        ),
       });
 
-      await connectionQueries.onDeleteQueries(
-        queriesToClose?.map((q) => q.id),
-      );
+      await connectionQueries.onDeleteQueries(queriesToClose?.map((q) => q.id));
     } catch (err) {}
   };
 
@@ -185,7 +187,7 @@ export default function MissionControl() {
       await confirm(`Do you want to close all the queries to the right of "${query.name}"?`);
 
       // find the target idx
-      let targetIdx : number = -1;
+      let targetIdx: number = -1;
       for (let i = 0; i < queries.length; i++) {
         if (queries[i].id === query.id) {
           targetIdx = i;
@@ -193,26 +195,26 @@ export default function MissionControl() {
         }
       }
 
-      if(targetIdx >= 0){
+      if (targetIdx >= 0) {
         const queriesToClose = queries.filter((_q, idx) => idx > targetIdx);
 
         const onUndoQueries = async () => {
           curToast?.dismiss();
           await connectionQueries.onAddQueries(queriesToClose);
-        }
+        };
 
         const curToast = await addToast({
-          message: <>
-            Multiple queries closed.
-            <Button size="small" onClick={onUndoQueries} sx={{ml: 'auto'}}>
-              UNDO
-            </Button>
-          </>,
+          message: (
+            <>
+              Multiple queries closed.
+              <Button size='small' onClick={onUndoQueries} sx={{ ml: 'auto' }}>
+                UNDO
+              </Button>
+            </>
+          ),
         });
 
-        await connectionQueries.onDeleteQueries(
-          queriesToClose.map((q) => q.id),
-        );
+        await connectionQueries.onDeleteQueries(queriesToClose.map((q) => q.id));
         await connectionQueries.onShowQuery(query.id);
       }
     } catch (err) {}
@@ -525,15 +527,17 @@ export default function MissionControl() {
       const onUndoConnection = async () => {
         curToast?.dismiss();
         await duplicateConnection(connection);
-      }
+      };
 
       curToast = await addToast({
-        message: <>
-          Connection "{connection.name}" deleted.
-          <Button size="small" onClick={onUndoConnection} sx={{ml: 'auto'}}>
-            UNDO
-          </Button>
-        </>,
+        message: (
+          <>
+            Connection "{connection.name}" deleted.
+            <Button size='small' onClick={onUndoConnection} sx={{ ml: 'auto' }}>
+              UNDO
+            </Button>
+          </>
+        ),
       });
 
       createSystemNotification(
