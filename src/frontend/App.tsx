@@ -1,3 +1,4 @@
+import { SnackbarProvider } from 'notistack';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -142,6 +143,7 @@ export default function App() {
 
   return (
     <ThemeProvider theme={myTheme}>
+    <SnackbarProvider maxSnack={4}>
       <HashRouter>
         <Box
           className='App'
@@ -174,7 +176,7 @@ export default function App() {
         <ActionDialogs />
       </HashRouter>
       <Toasters />
-      <ElectronEventListener />
+      <ElectronEventListener /></SnackbarProvider>
     </ThemeProvider>
   );
 }
