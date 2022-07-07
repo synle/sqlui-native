@@ -1,3 +1,4 @@
+import React from 'react';
 import { useQuery, useQueryClient } from 'react-query';
 import Toast, { AnchorOrigin } from 'src/frontend/components/Toast';
 import { getGeneratedRandomId } from 'src/frontend/utils/commonUtils';
@@ -6,7 +7,7 @@ const QUERY_KEY_TOASTS = 'toasts';
 
 type CoreToasterProps = {
   onClose?: () => void;
-  message: string;
+  message: string | React.ReactElement;
   anchorOrigin?: AnchorOrigin;
   autoHideDuration?: number;
 };

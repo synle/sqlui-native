@@ -2,6 +2,7 @@ import AddIcon from '@mui/icons-material/Add';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import Link from '@mui/material/Link';
+import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import { useQuery, useQueryClient } from 'react-query';
 import { useNavigate } from 'react-router-dom';
@@ -468,8 +469,19 @@ export default function MissionControl() {
     try {
       await confirm('Delete this connection?');
       await deleteConnection(connection.id);
+
+      const onUndo = () => {
+        curToast?.dismiss();
+        duplicateConnection(connection);
+      }
+
       curToast = await addToast({
-        message: `Connection "${connection.name}" deleted`,
+        message: <>
+          Connection {connection.name} deleted.
+          <Button size="small" onClick={onUndo} sx={{ml: 'auto'}}>
+            UNDO
+          </Button>
+        </>,
       });
 
       createSystemNotification(
