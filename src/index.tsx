@@ -1,4 +1,5 @@
 import CssBaseline from '@mui/material/CssBaseline';
+import { SnackbarProvider } from 'notistack';
 import ReactDOM from 'react-dom';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { ReactQueryDevtools } from 'react-query/devtools';
@@ -15,11 +16,13 @@ const renderApp = function () {
   });
 
   ReactDOM.render(
-    <QueryClientProvider client={queryClient}>
-      <CssBaseline />
-      <ReactQueryDevtools initialIsOpen={false} />
-      <App />
-    </QueryClientProvider>,
+    <SnackbarProvider maxSnack={4}>
+      <QueryClientProvider client={queryClient}>
+        <CssBaseline />
+        <ReactQueryDevtools initialIsOpen={false} />
+        <App />
+      </QueryClientProvider>
+    </SnackbarProvider>,
     document.querySelector('#body'),
   );
 
