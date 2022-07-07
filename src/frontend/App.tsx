@@ -9,7 +9,6 @@ import ActionDialogs from 'src/frontend/components/ActionDialogs';
 import AppHeader from 'src/frontend/components/AppHeader';
 import ElectronEventListener from 'src/frontend/components/ElectronEventListener';
 import MissionControl, { useCommands } from 'src/frontend/components/MissionControl';
-import Toasters from 'src/frontend/components/Toasters';
 import dataApi from 'src/frontend/data/api';
 import { getDefaultSessionId, setCurrentSessionId } from 'src/frontend/data/session';
 import {
@@ -143,7 +142,6 @@ export default function App() {
 
   return (
     <ThemeProvider theme={myTheme}>
-    <SnackbarProvider maxSnack={4}>
       <HashRouter>
         <Box
           className='App'
@@ -175,8 +173,7 @@ export default function App() {
         <MissionControl />
         <ActionDialogs />
       </HashRouter>
-      <Toasters />
-      <ElectronEventListener /></SnackbarProvider>
+      <ElectronEventListener />
     </ThemeProvider>
   );
 }

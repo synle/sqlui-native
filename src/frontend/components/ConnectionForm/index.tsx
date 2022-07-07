@@ -4,10 +4,10 @@ import { useNavigate } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import ConnectionHint from 'src/frontend/components/ConnectionForm/ConnectionHint';
 import TestConnectionButton from 'src/frontend/components/TestConnectionButton';
-import Toast from 'src/frontend/components/Toast';
 import { useGetConnectionById, useUpsertConnection } from 'src/frontend/hooks/useConnection';
 import { createSystemNotification } from 'src/frontend/utils/commonUtils';
 import { SqluiCore } from 'typings';
+import useToaster from 'src/frontend/hooks/useToaster';
 
 type ConnectionFormProps = {
   id?: string;
@@ -133,9 +133,9 @@ type MainConnectionFormProps = {
 
 function MainConnectionForm(props: MainConnectionFormProps) {
   const navigate = useNavigate();
-  const [toastOpen, setToastOpen] = useState(false);
   const [showHint, setShowHint] = useState(false);
   const [showSqliteDatabasePathSelection, setShowSqliteDatabasePathSelection] = useState(false);
+  const { add: addToast, dismiss: dismissToast } = useToaster();
 
   // effects
   useEffect(() => {
@@ -155,13 +155,17 @@ function MainConnectionForm(props: MainConnectionFormProps) {
 
   const onSave = async (e: React.SyntheticEvent) => {
     e.preventDefault();
-    setToastOpen(true);
+
+    const toast = await addToast({
+      message: "Saving Connection",
+    })
+
     try {
       await props.onSave();
-      // setToastOpen(false)
     } catch (err) {
-      // setToastOpen(false)
     }
+
+    await toast?.dismiss();
   };
 
   if (props.loading) {
@@ -238,7 +242,6 @@ function MainConnectionForm(props: MainConnectionFormProps) {
           <ConnectionHint onChange={onApplyConnectionHint} />
         </div>
       )}
-      <Toast open={toastOpen} onClose={() => setToastOpen(false)} message='Connection Saved...' />
     </form>
   );
 }

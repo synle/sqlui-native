@@ -142,11 +142,14 @@ export default function MissionControl() {
         message: (
           <>
             Query "{query.name}" closed.
-            <Button size='small' onClick={onUndoConnection} sx={{ ml: 'auto' }}>
-              UNDO
-            </Button>
+
           </>
         ),
+        action: <>
+          <Button size='small' onClick={onUndoConnection} >
+              UNDO
+            </Button>
+        </>
       });
 
       await connectionQueries.onDeleteQueries([query.id]);
@@ -168,11 +171,13 @@ export default function MissionControl() {
         message: (
           <>
             Multiple queries closed.
-            <Button size='small' onClick={onUndoQueries} sx={{ ml: 'auto' }}>
-              UNDO
-            </Button>
           </>
         ),
+        action: <>
+          <Button size='small' onClick={onUndoQueries} >
+              UNDO
+            </Button>
+        </>
       });
 
       await connectionQueries.onDeleteQueries(queriesToClose?.map((q) => q.id));
@@ -207,11 +212,13 @@ export default function MissionControl() {
           message: (
             <>
               Multiple queries closed.
-              <Button size='small' onClick={onUndoQueries} sx={{ ml: 'auto' }}>
-                UNDO
-              </Button>
             </>
           ),
+          action: <>
+          <Button size='small' onClick={onUndoQueries} >
+                UNDO
+              </Button>
+        </>
         });
 
         await connectionQueries.onDeleteQueries(queriesToClose.map((q) => q.id));
@@ -533,11 +540,13 @@ export default function MissionControl() {
         message: (
           <>
             Connection "{connection.name}" deleted.
-            <Button size='small' onClick={onUndoConnection} sx={{ ml: 'auto' }}>
-              UNDO
-            </Button>
           </>
         ),
+        action: <>
+          <Button size='small' onClick={onUndoConnection}>
+              UNDO
+            </Button>
+        </>
       });
 
       createSystemNotification(
