@@ -139,10 +139,10 @@ export default function MissionControl() {
       };
 
       const curToast = await addToast({
-        message: (
+        message: <>Query "{query.name}" closed.</>,
+        action: (
           <>
-            Query "{query.name}" closed.
-            <Button size='small' onClick={onUndoConnection} sx={{ ml: 'auto' }}>
+            <Button size='small' onClick={onUndoConnection}>
               UNDO
             </Button>
           </>
@@ -165,10 +165,10 @@ export default function MissionControl() {
       };
 
       const curToast = await addToast({
-        message: (
+        message: <>Multiple queries closed.</>,
+        action: (
           <>
-            Multiple queries closed.
-            <Button size='small' onClick={onUndoQueries} sx={{ ml: 'auto' }}>
+            <Button size='small' onClick={onUndoQueries}>
               UNDO
             </Button>
           </>
@@ -204,10 +204,10 @@ export default function MissionControl() {
         };
 
         const curToast = await addToast({
-          message: (
+          message: <>Multiple queries closed.</>,
+          action: (
             <>
-              Multiple queries closed.
-              <Button size='small' onClick={onUndoQueries} sx={{ ml: 'auto' }}>
+              <Button size='small' onClick={onUndoQueries}>
                 UNDO
               </Button>
             </>
@@ -530,10 +530,10 @@ export default function MissionControl() {
       };
 
       curToast = await addToast({
-        message: (
+        message: <>Connection "{connection.name}" deleted.</>,
+        action: (
           <>
-            Connection "{connection.name}" deleted.
-            <Button size='small' onClick={onUndoConnection} sx={{ ml: 'auto' }}>
+            <Button size='small' onClick={onUndoConnection}>
               UNDO
             </Button>
           </>
