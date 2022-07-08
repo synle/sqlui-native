@@ -7,6 +7,7 @@ import MongoDBDataAdapter from 'src/common/adapters/MongoDBDataAdapter/index';
 import RedisDataAdapter from 'src/common/adapters/RedisDataAdapter/index';
 import RelationalDataAdapter from 'src/common/adapters/RelationalDataAdapter/index';
 import { SqluiCore } from 'typings';
+import PersistentStorage from 'src/common/PersistentStorage';
 
 const _adapterCache: { [index: string]: IDataAdapter } = {};
 
@@ -111,4 +112,31 @@ export function resetConnectionMetaData(connection: SqluiCore.CoreConnectionProp
   delete _adapterCache[connection.connection];
 
   return connItem;
+}
+
+export async function getDatabases(sessionId: string, connectionId: string){
+  const connection = await new PersistentStorage<SqluiCore.ConnectionProps>(
+    sessionId,
+    'connection',
+  ).get(connectionId);
+
+  return getDataAdapter(connection.connection).getDatabases();
+}
+
+export async function getTables(sessionId: string, connectionId: string, databaseId: string){
+  const connection = await new PersistentStorage<SqluiCore.ConnectionProps>(
+    sessionId,
+    'connection',
+  ).get(connectionId);
+
+  return getDataAdapter(connection.connection).getTables(databaseId);
+}
+
+export async function getColumns(sessionId: string, connectionId: string, databaseId: string, tableId:string){
+  const connection = await new PersistentStorage<SqluiCore.ConnectionProps>(
+    sessionId,
+    'connection',
+  ).get(connectionId);
+
+  return getDataAdapter(connection.connection).getColumns(tableId, databaseId);
 }

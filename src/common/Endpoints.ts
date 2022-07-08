@@ -3,6 +3,9 @@ import {
   getConnectionMetaData,
   getDataAdapter,
   resetConnectionMetaData,
+  getColumns,
+  getTables,
+  getDatabases
 } from 'src/common/adapters/DataAdapterFactory';
 import PersistentStorage from 'src/common/PersistentStorage';
 import { SqluiCore, SqluiEnums } from 'typings';
@@ -125,7 +128,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
 
     try {
       const engine = getDataAdapter(connection.connection);
-      const databases = await engine.getDatabases();
+      await engine.getDatabases();
 
       connection.status = 'online';
       connection.dialect = engine.dialect;
@@ -135,47 +138,34 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
   });
 
   addDataEndpoint('get', '/api/connection/:connectionId/databases', async (req, res, apiCache) => {
-    const connectionsStorage = await new PersistentStorage<SqluiCore.ConnectionProps>(
-      req.headers['sqlui-native-session-id'],
-      'connection',
+    res.status(200).json(await getDatabases(
+        req.headers['sqlui-native-session-id'],
+        req.params?.connectionId
+      )
     );
-
-    const connection = await connectionsStorage.get(req.params?.connectionId);
-
-    if (!connection) {
-      return res.status(404).send('Not Found');
-    }
-
-    const engine = getDataAdapter(connection.connection);
-    res.status(200).json(await engine.getDatabases());
   });
 
   addDataEndpoint(
     'get',
     '/api/connection/:connectionId/database/:databaseId/tables',
-    async (req, res) => {
-      const connection = await new PersistentStorage<SqluiCore.ConnectionProps>(
-        req.headers['sqlui-native-session-id'],
-        'connection',
-      ).get(req.params?.connectionId);
-      const engine = getDataAdapter(connection.connection);
-
-      res.status(200).json(await engine.getTables(req.params?.databaseId));
-    },
+    async (req, res) => res.status(200).json(await getTables(
+          req.headers['sqlui-native-session-id'],
+          req.params?.connectionId,
+          req.params?.databaseId
+        )
+      ),
   );
 
   addDataEndpoint(
     'get',
     '/api/connection/:connectionId/database/:databaseId/table/:tableId/columns',
-    async (req, res) => {
-      const connection = await new PersistentStorage<SqluiCore.ConnectionProps>(
-        req.headers['sqlui-native-session-id'],
-        'connection',
-      ).get(req.params?.connectionId);
-      const engine = getDataAdapter(connection.connection);
-
-      res.status(200).json(await engine.getColumns(req.params?.tableId, req.params?.databaseId));
-    },
+    async (req, res) => res.status(200).json(await getColumns(
+          req.headers['sqlui-native-session-id'],
+          req.params?.connectionId,
+          req.params?.databaseId,
+          req.params?.tableId
+        )
+      ),
   );
 
   addDataEndpoint('post', '/api/connection/:connectionId/connect', async (req, res, apiCache) => {
