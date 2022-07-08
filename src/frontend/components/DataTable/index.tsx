@@ -8,14 +8,14 @@ import TableHead from '@mui/material/TableHead';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import { useFilters, useGlobalFilter, usePagination, useSortBy, useTable } from 'react-table';
-import React, { useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useRef } from 'react';
 import { useTablePageSize } from 'src/frontend/hooks/useSetting';
+import {DropdownMenu} from 'src/frontend/components/DropdownButton';
 
 type DataTableProps = {
   columns: any[];
   data: any[];
   onRowClick?: (rowData: any) => void;
-  onShowEdit?:  (rowData: any) => void;
   onShowRecordDetails?: (rowData: any) => void;
 };
 
@@ -60,6 +60,8 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 
 export default function DataTable(props: DataTableProps) {
   const { columns, data } = props;
+  const [openContextMenuRowIdx, setOpenContextMenuRowIdx] = useState(-1);
+  const anchorEl = useRef<HTMLElement | undefined>(undefined);
 
   const allRecordSize = data.length;
   let pageSizeToUse = useTablePageSize() || DEFAULT_TABLE_PAGE_SIZE;
@@ -97,6 +99,12 @@ export default function DataTable(props: DataTableProps) {
     setPageSize(e.target.value);
   }, []);
 
+  const onRowContextMenu = (e: React.SyntheticEvent, rowIdx: number) => {
+    e.preventDefault();
+    setOpenContextMenuRowIdx(rowIdx)
+    anchorEl.current = e.target as HTMLElement;
+  }
+
   return (
     <>
       <TableContainer component={TableContainerWrapper}>
@@ -115,16 +123,46 @@ export default function DataTable(props: DataTableProps) {
             ))}
           </TableHead>
           <TableBody {...getTableBodyProps()}>
-            {page.map((row) => {
+            {page.map((row, rowIdx) => {
               prepareRow(row);
               return (
                 <StyledTableRow
                   {...row.getRowProps()}
                   onClick={() => props.onRowClick && props.onRowClick(row.original)}
+                  onContextMenu={(e) => onRowContextMenu(e, rowIdx)}
                   style={{ cursor: props.onRowClick ? 'pointer' : '' }}>
                   {row.cells.map((cell, colIdx) => {
+                    let dropdownContent: any;
+                    if(colIdx === 0){
+                      const options : any[]= []
+                      if(props.onShowRecordDetails){
+                        options.push({
+                          label: 'Show Row Details',
+                          onClick: () => props && props.onShowRecordDetails && props.onShowRecordDetails(data[rowIdx]),
+                          // label: currentSession?.name || '',
+                          // onClick: () => selectCommand({ event: 'clientEvent/navigate', data: '/' }),
+                          // startIcon: <HomeIcon />,
+                        })
+                      }
+
+                      dropdownContent = options.length >0 && <DropdownMenu
+                          id={`data-table-row-dropdown-${rowIdx}`}
+                          options={options}
+                          onToggle={(newOpen) => {
+                            if(newOpen){
+                              setOpenContextMenuRowIdx(rowIdx);
+                            } else {
+                              setOpenContextMenuRowIdx(-1);
+                            }
+                          }}
+                          maxHeight='400px'
+                          anchorEl={anchorEl.current}
+                          open={openContextMenuRowIdx === rowIdx}>
+                        </DropdownMenu>
+                    }
                     return (
                       <StyledTableCell {...cell.getCellProps()}>
+                        {dropdownContent}
                         {cell.render('Cell')}
                       </StyledTableCell>
                     );

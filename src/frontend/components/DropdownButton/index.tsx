@@ -130,12 +130,13 @@ export default function DropdownButton(props: DropdownButtonProps) {
 
 // headless
 
-type HeadlessDropdownButtonProps = DropdownButtonProps;
+type DropdownMenuProps = DropdownButtonProps & {
+  anchorEl: any
+};
 
-function HeadlessDropdownButton(props: HeadlessDropdownButtonProps) {
-  const { id, options, children, maxHeight } = props;
+export function DropdownMenu(props: DropdownMenuProps) {
+  const { id, options, maxHeight, anchorEl } = props;
   const [open, setOpen] = React.useState(false);
-  const anchorRef = React.useRef<HTMLDivElement>(null);
   const [selectedIndex, setSelectedIndex] = React.useState(1);
 
   const handleMenuItemClick = (e: React.MouseEvent<HTMLLIElement, MouseEvent>, index: number) => {
@@ -159,10 +160,7 @@ function HeadlessDropdownButton(props: HeadlessDropdownButtonProps) {
   };
 
   const onClose = (event: Event) => {
-    if (anchorRef.current && anchorRef.current.contains(event.target as HTMLElement)) {
-      return;
-    }
-
+    props.onToggle && props.onToggle(false);
     setOpen(false);
   };
 
@@ -201,9 +199,13 @@ function HeadlessDropdownButton(props: HeadlessDropdownButtonProps) {
     );
   }
 
+  if(!anchorEl){
+    return null;
+  }
+
   return (
     <React.Fragment>
-      <Popper open={open} anchorEl={anchorRef.current} transition>
+      <Popper open={open} anchorEl={anchorEl} transition>
         {({ TransitionProps, placement }) => (
           <Grow
             {...TransitionProps}
