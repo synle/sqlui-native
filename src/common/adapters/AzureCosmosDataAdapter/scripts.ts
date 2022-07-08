@@ -205,6 +205,7 @@ export function getUpdateWithValues(
     `,
   };
 }
+
 export function getUpdate(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Update`;
 
