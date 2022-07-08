@@ -54,6 +54,7 @@ type RecordFormProps = {
   data?: RecordData;
   rawValue?: string;
   isEditMode?: boolean;
+  mode: 'edit' | 'create';
 };
 
 export function isRecordFormSupportedForDialect(dialect?: string) {
@@ -569,7 +570,7 @@ export function NewRecordPage() {
             },
           ]}
         />
-        <RecordForm onSave={onSave} onCancel={onCancel} onConnectionChanges={onConnectionChanges} />
+        <RecordForm onSave={onSave} onCancel={onCancel} onConnectionChanges={onConnectionChanges} mode='create' />
       </>
     </LayoutTwoColumns>
   );
@@ -747,6 +748,7 @@ export function EditRecordPage(props: RecordDetailsPageProps) {
             onSave={onSave}
             onCancel={onCancel}
             isEditMode={true}
+            mode='edit'
           />
         </>
       ) : (
