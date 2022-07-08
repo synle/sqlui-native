@@ -38,6 +38,7 @@ import { useTreeActions } from 'src/frontend/hooks/useTreeActions';
 import LayoutTwoColumns from 'src/frontend/layout/LayoutTwoColumns';
 import { formatJS, formatSQL } from 'src/frontend/utils/formatter';
 import { SqluiCore, SqluiFrontend } from 'typings';
+import set from 'lodash.set';
 
 type RecordData = any;
 
@@ -255,7 +256,7 @@ function RecordForm(props) {
         case 'postgres':
         case 'sqlite':
           for (const column of columns) {
-            newData[column.name] = '';
+            set(newData, column.propertyPath, '');
           }
           setData(newData);
           break;
@@ -263,8 +264,8 @@ function RecordForm(props) {
         // case 'mongodb':
         // case 'redis':
         case 'cosmosdb':
-          for (const column of columns.filter(targetColumn => targetColumn.name[0] !== '_'  && targetColumn.name !== 'id' && !targetColumn.propertyPath)) {
-            newData[column.name] = '';
+          for (const column of columns.filter(targetColumn => targetColumn.name[0] !== '_'  && targetColumn.name !== 'id')) {
+            set(newData, column.propertyPath, '');
           }
           setRawValue(JSON.stringify(newData, null, 2));
           break;

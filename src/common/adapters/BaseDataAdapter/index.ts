@@ -72,12 +72,12 @@ export default abstract class BaseDataAdapter {
         columnsMap[key] = columnsMap[key] || {
           name: key,
           type: Array.isArray(item) ? 'array' : type,
+          propertyPath: path,
         };
 
         if(path.length > 1){
           // whether or not this is a complex type and nested inside another JSON
           columnsMap[key].nested = true;
-          columnsMap[key].propertyPath = path;
         }
       }
     }
