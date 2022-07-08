@@ -71,6 +71,7 @@ export default function ColumnDescription(props: ColumnDescriptionProps) {
           const isSelected = visibles[key];
           const shouldShowPrimaryKeyIcon = column.primaryKey || column.kind === 'partition_key';
           const shouldShowSecondaryKeyIcon = column.kind === 'clustering';
+
           return (
             <React.Fragment key={column.name}>
               <AccordionHeader
@@ -79,7 +80,7 @@ export default function ColumnDescription(props: ColumnDescriptionProps) {
                 className={isSelected ? 'selected ColumnDescription' : 'ColumnDescription'}>
                 <ViewColumnIcon color='disabled' fontSize='inherit' />
                 {shouldShowPrimaryKeyIcon && <Tooltip title='Primary Key'><i style={{height: '15px'}}><KeyIcon fontSize='small' color='primary' /> </i></Tooltip>}
-                {shouldShowSecondaryKeyIcon && <Tooltip title='Secondary Key or Clustering Key'><i style={{height: '15px'}}><KeyIcon fontSize='small' color='secondary' /> </i></Tooltip>}
+                {shouldShowSecondaryKeyIcon && <Tooltip title='Secondary Key / Clustering Key / Partition Key'><i style={{height: '15px'}}><KeyIcon fontSize='small' color='secondary' /> </i></Tooltip>}
                 <ColumnName value={column.name}></ColumnName>
                 <ColumnType value={column.type}></ColumnType>
               </AccordionHeader>

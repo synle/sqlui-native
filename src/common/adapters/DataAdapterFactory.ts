@@ -147,7 +147,18 @@ export async function getColumns(
     'connection',
   ).get(connectionId);
 
-  return (await getDataAdapter(connection.connection).getColumns(tableId, databaseId)).sort(
+  return (await getDataAdapter(connection.connection).getColumns(tableId, databaseId)).map(column => {
+    // here clean up unnecessary property
+    if(column.primaryKey !== true){
+      delete column.primaryKey
+    }
+
+    if(column.unique !== true){
+      delete column.unique
+    }
+
+    return column;
+  }).sort(
     (a, b) => {
       const aPrimaryKey = a.primaryKey || a.kind === 'partition_key';
       const bPrimaryKey = b.primaryKey || b.kind === 'partition_key';
