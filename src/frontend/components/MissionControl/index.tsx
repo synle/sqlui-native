@@ -310,10 +310,13 @@ export default function MissionControl() {
       }
     }
 
+    if(showOnlyRevealedConnection === false){
+      const curToast = await addToast({
+        message: `Revealed selected connection / database on the sidebar`,
+      });
+    }
+
     // scroll to the selected dom
-    const curToast = await addToast({
-      message: `Revealed selected connection / database on the sidebar`,
-    });
     setTimeout(() => {
       const selectedHeaders = document.querySelectorAll('.Accordion__Header.selected');
       selectedHeaders[selectedHeaders.length - 1].scrollIntoView();

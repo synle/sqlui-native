@@ -331,8 +331,6 @@ function RecordForm(props) {
               contentColumnValueInputView = <TextField {...baseInputProps} type='number' />;
             }
 
-            parseInt(`varchar(123)`.replace(/[a-z()]/g, ''));
-
             contentFormDataView.push(
               <React.Fragment key={column.name}>
                 <div className='FormInput__Row'>{contentColumnValueInputView}</div>
