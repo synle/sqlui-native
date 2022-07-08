@@ -52,33 +52,38 @@ export default abstract class BaseDataAdapter {
     const stack: {
       item: any;
       path: string[];
-    }[] = [{ item: inputItem, path: [] }];
+      key: string,
+    }[] = [{ item: inputItem, path: [], key: '' }];
 
     const columnsMap: Record<string, SqluiCore.ColumnMetaData> = {};
-
+    const visited = new Set<string>()
     while (stack.length > 0) {
       //@ts-ignore
-      const { item, path } = stack.pop();
-      const type = typeof item;
-      if (type === 'object' && !Array.isArray(item)) {
-        for (const key of Object.keys(item)) {
-          stack.push({
-            item: item[key],
-            path: [...path, key],
-          });
+      const { item, path, key } = stack.pop();
+      const type = Array.isArray(item) ? 'array' : typeof item;
+      if (type === 'object') {
+        for (const targetKey of Object.keys(item)) {
+          const newPath = [...path, targetKey];
+          const newKey = newPath.join('/');
+
+          if(!visited.has(newKey))
+          {
+            stack.push({
+              item: item[targetKey],
+              path: newPath,
+              key: newKey
+            });
+
+            visited.add(newKey);
+          }
         }
       } else {
-        const key = path.join('/');
         columnsMap[key] = columnsMap[key] || {
           name: key,
-          type: Array.isArray(item) ? 'array' : type,
+          type: type,
           propertyPath: path,
+          nested: path.length > 1,// whether or not this is a complex type and nested inside another JSON
         };
-
-        if (path.length > 1) {
-          // whether or not this is a complex type and nested inside another JSON
-          columnsMap[key].nested = true;
-        }
       }
     }
 

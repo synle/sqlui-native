@@ -109,7 +109,7 @@ export default class MongoDBDataAdapter extends BaseDataAdapter implements IData
             .limit(MAX_ITEM_COUNT_TO_SCAN)
             .toArray();
 
-          return BaseDataAdapter.inferTypesFromItems(items);
+          resolve(BaseDataAdapter.inferTypesFromItems(items));
         } finally {
           this.closeConnection(client);
         }
