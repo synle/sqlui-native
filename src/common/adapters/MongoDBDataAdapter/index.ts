@@ -99,7 +99,12 @@ export default class MongoDBDataAdapter extends BaseDataAdapter implements IData
         .limit(MAX_ITEM_COUNT_TO_SCAN)
         .toArray();
 
-      return BaseDataAdapter.inferTypesFromItems(items);
+      return BaseDataAdapter.inferTypesFromItems(JSON.parse(JSON.stringify(items))).map(
+        (column) => ({
+          ...column,
+          primaryKey: column.name === '_id',
+        }),
+      );
     } finally {
       this.closeConnection(client);
     }
@@ -152,10 +157,12 @@ export default class MongoDBDataAdapter extends BaseDataAdapter implements IData
 
       const db = await client.db(database);
 
+      const { ObjectId } = require('mongodb');
+
       //@ts-ignore
       const rawToUse: any = await eval(sql);
 
-      if (rawToUse.acknowledged === true) {
+      if (rawToUse?.acknowledged === true) {
         // insert or insertOne
         let affectedRows =
           rawToUse.insertedCount || rawToUse.deletedCount || rawToUse.modifiedCount;
@@ -176,12 +183,14 @@ export default class MongoDBDataAdapter extends BaseDataAdapter implements IData
       } else {
         return {
           ok: true,
+          raw: rawToUse,
         };
       }
-    } catch (err) {
+    } catch (err: any) {
+      console.log('Execute Error', err);
       return {
         ok: false,
-        error: err,
+        error: err?.toString() || JSON.stringify(err),
       };
     } finally {
       this.closeConnection(client);

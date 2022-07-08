@@ -1,3 +1,5 @@
+import get from 'lodash.get';
+import set from 'lodash.set';
 import { getDivider } from 'src/common/adapters/BaseDataAdapter/scripts';
 import { SqlAction, SqluiCore } from 'typings';
 
@@ -11,14 +13,11 @@ export function getSampleConnectionString(dialect?: SqluiCore.Dialect) {
 
 export function getSelectAllColumns(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Select All Columns`;
-
-  if (input.dialect === 'mongodb') {
-    return {
-      label,
-      formatter,
-      query: `${MONGO_ADAPTER_PREFIX}.collection('${input.tableId}').find().limit(${input.querySize}).toArray();`,
-    };
-  }
+  return {
+    label,
+    formatter,
+    query: `${MONGO_ADAPTER_PREFIX}.collection('${input.tableId}').find().limit(${input.querySize}).toArray();`,
+  };
 }
 
 export function getSelectSpecificColumns(
@@ -32,47 +31,44 @@ export function getSelectSpecificColumns(
 
   const columnString = `\n` + input.columns.map((col) => `  ${col.name}`).join(',\n');
   const whereColumnString = input.columns.map((col) => `${col.name} = ''`).join('\n -- AND ');
-
-  if (input.dialect === 'mongodb') {
-    const columns: any = {};
-    for (const column of input.columns || []) {
-      if (!column.name.includes('.')) {
-        columns[column.name] = column.type === 'string' ? '' : 123;
-      }
+  const columns: any = {};
+  for (const column of input.columns || []) {
+    if (!column.name.includes('.')) {
+      columns[column.name] = column.type === 'string' ? '' : 123;
     }
-    return {
-      label,
-      formatter,
-      query: `${MONGO_ADAPTER_PREFIX}.collection('${input.tableId}').find(
+  }
+  return {
+    label,
+    formatter,
+    query: `${MONGO_ADAPTER_PREFIX}.collection('${input.tableId}').find(
           ${JSON.stringify(columns)}
         ).limit(${input.querySize}).toArray();`,
-    };
-  }
+  };
 }
 export function getSelectDistinctValues(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Select Distinct`;
+  const columns = input.columns || [];
+  const whereColumnString = columns.reduce((res: any, col) => {
+    res[col.name] = '';
+    return res;
+  }, {});
 
-  if (input.dialect === 'mongodb') {
-    const columns = input.columns || [];
-    const whereColumnString = columns.reduce((res: any, col) => {
-      res[col.name] = '';
-      return res;
-    }, {});
+  const distinctColumn = columns.filter((col) => col.name !== '_id')?.[0]?.name || 'some_field';
 
-    const distinctColumn = columns.filter((col) => col.name !== '_id')?.[0]?.name || 'some_field';
-
-    return {
-      label,
-      formatter,
-      query: `${MONGO_ADAPTER_PREFIX}.collection('${input.tableId}').distinct(
+  return {
+    label,
+    formatter,
+    query: `${MONGO_ADAPTER_PREFIX}.collection('${input.tableId}').distinct(
           '${distinctColumn}',
           ${JSON.stringify(whereColumnString)}
         )`,
-    };
-  }
+  };
 }
 
-export function getInsert(input: SqlAction.TableInput): SqlAction.Output | undefined {
+export function getInsert(
+  input: SqlAction.TableInput,
+  value?: Record<string, any>,
+): SqlAction.Output | undefined {
   const label = `Insert`;
 
   if (!input.columns) {
@@ -82,21 +78,43 @@ export function getInsert(input: SqlAction.TableInput): SqlAction.Output | undef
   const columnString = input.columns.map((col) => col.name).join(',\n');
   const insertValueString = input.columns.map((col) => `'_${col.name}_'`).join(',\n');
 
-  if (input.dialect === 'mongodb') {
-    const columns: any = {};
+  let columns: any = {};
+
+  if (value) {
+    columns = value;
+  } else {
     for (const column of input.columns) {
-      if (column.name !== '_id' && !column.name.includes('.')) {
-        columns[column.name] = column.type === 'string' ? '' : 123;
+      if (column.name !== '_id') {
+        const valueToUse: any = column.type === 'string' ? 'abc' : 123;
+        set(columns, column.propertyPath || column.name, valueToUse);
       }
     }
-    return {
-      label,
-      formatter,
-      query: `${MONGO_ADAPTER_PREFIX}.collection('${input.tableId}').insertMany([
-          ${JSON.stringify(columns)}
-        ]);`,
-    };
   }
+
+  return {
+    label,
+    formatter,
+    query: `${MONGO_ADAPTER_PREFIX}.collection('${input.tableId}').insertMany([
+        ${JSON.stringify(columns)}
+      ]);`,
+  };
+}
+
+export function getUpdateWithValues(
+  input: SqlAction.TableInput,
+  value: Record<string, any>,
+  conditions: Record<string, any>,
+): SqlAction.Output | undefined {
+  const label = `Update`;
+
+  return {
+    label,
+    formatter,
+    query: `${MONGO_ADAPTER_PREFIX}.collection('${input.tableId}').update(
+        ${JSON.stringify(conditions)},
+        {$set: ${JSON.stringify(value, null, 2)}}
+      );`,
+  };
 }
 
 export function getUpdate(input: SqlAction.TableInput): SqlAction.Output | undefined {
@@ -106,22 +124,22 @@ export function getUpdate(input: SqlAction.TableInput): SqlAction.Output | undef
     return undefined;
   }
 
-  if (input.dialect === 'mongodb') {
-    const columns: any = {};
-    for (const column of input.columns) {
-      if (column.name !== '_id' && !column.name.includes('.')) {
-        columns[column.name] = column.type === 'string' ? '' : 123;
-      }
+  const columns: any = {};
+  for (const column of input.columns) {
+    if (column.name !== '_id') {
+      const valueToUse: any = column.type === 'string' ? 'abc' : 123;
+      set(columns, column.propertyPath || column.name, valueToUse);
     }
-    return {
-      label,
-      formatter,
-      query: `${MONGO_ADAPTER_PREFIX}.collection('${input.tableId}').update(
-          ${JSON.stringify(columns)},
-          {$set: ${JSON.stringify(columns, null, 2)}}
-        );`,
-    };
   }
+
+  return {
+    label,
+    formatter,
+    query: `${MONGO_ADAPTER_PREFIX}.collection('${input.tableId}').update(
+        ${JSON.stringify(columns)},
+        {$set: ${JSON.stringify(columns, null, 2)}}
+      );`,
+  };
 }
 
 export function getDelete(input: SqlAction.TableInput): SqlAction.Output | undefined {
@@ -131,21 +149,19 @@ export function getDelete(input: SqlAction.TableInput): SqlAction.Output | undef
     return undefined;
   }
 
-  if (input.dialect === 'mongodb') {
-    const columns: any = {};
-    for (const column of input.columns) {
-      if (column.name !== '_id' && !column.name.includes('.')) {
-        columns[column.name] = column.type === 'string' ? '' : 123;
-      }
+  const columns: any = {};
+  for (const column of input.columns) {
+    if (column.name !== '_id' && !column.name.includes('.')) {
+      columns[column.name] = column.type === 'string' ? '' : 123;
     }
-    return {
-      label,
-      formatter,
-      query: `${MONGO_ADAPTER_PREFIX}.collection('${input.tableId}').deleteMany(
-          ${JSON.stringify(columns)}
-        );`,
-    };
   }
+  return {
+    label,
+    formatter,
+    query: `${MONGO_ADAPTER_PREFIX}.collection('${input.tableId}').deleteMany(
+        ${JSON.stringify(columns)}
+      );`,
+  };
 }
 
 export function getCreateCollection(input: SqlAction.TableInput): SqlAction.Output | undefined {
@@ -158,63 +174,50 @@ export function getCreateCollection(input: SqlAction.TableInput): SqlAction.Outp
   let columnString: string = '';
 
   // TODO: figure out how to use the defaultval
-  if (input.dialect === 'mongodb') {
-    return {
-      label,
-      formatter,
-      query: `${MONGO_ADAPTER_PREFIX}.createCollection("${input.tableId}")`,
-    };
-  }
+
+  return {
+    label,
+    formatter,
+    query: `${MONGO_ADAPTER_PREFIX}.createCollection("${input.tableId}")`,
+  };
 }
 
 export function getDropCollection(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Drop Collection`;
-
-  if (input.dialect === 'mongodb') {
-    return {
-      label,
-      formatter,
-      query: `${MONGO_ADAPTER_PREFIX}.collection('${input.tableId}').drop()`,
-    };
-  }
+  return {
+    label,
+    formatter,
+    query: `${MONGO_ADAPTER_PREFIX}.collection('${input.tableId}').drop()`,
+  };
 }
 
 export function getCreateDatabase(input: SqlAction.DatabaseInput): SqlAction.Output | undefined {
   const label = `Create Database`;
-
-  if (input.dialect === 'mongodb') {
-    return {
-      label,
-      formatter,
-      query: `${MONGO_ADAPTER_PREFIX}.createDatabase('${input.databaseId}')`,
-    };
-  }
+  return {
+    label,
+    formatter,
+    query: `${MONGO_ADAPTER_PREFIX}.createDatabase('${input.databaseId}')`,
+  };
 }
 
 export function getDropDatabase(input: SqlAction.DatabaseInput): SqlAction.Output | undefined {
   const label = `Drop Database`;
-
-  if (input.dialect === 'mongodb') {
-    return {
-      label,
-      formatter,
-      query: `${MONGO_ADAPTER_PREFIX}.dropDatabase()`,
-    };
-  }
+  return {
+    label,
+    formatter,
+    query: `${MONGO_ADAPTER_PREFIX}.dropDatabase()`,
+  };
 }
 
 export function getCreateConnectionDatabase(
   input: SqlAction.ConnectionInput,
 ): SqlAction.Output | undefined {
   const label = `Create Database`;
-
-  if (input.dialect === 'mongodb') {
-    return {
-      label,
-      formatter,
-      query: `${MONGO_ADAPTER_PREFIX}.createDatabase('some_database_name')`,
-    };
-  }
+  return {
+    label,
+    formatter,
+    query: `${MONGO_ADAPTER_PREFIX}.createDatabase('some_database_name')`,
+  };
 }
 
 export const tableActionScripts: SqlAction.TableActionScriptGenerator[] = [
