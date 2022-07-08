@@ -17,8 +17,12 @@ import {
 } from 'src/common/adapters/AzureTableStorageAdapter/scripts';
 import {
   getInsert as getInsertForRdmbs,
-  getUpdateWithValues as getUpdateWithValuesForRmdbs,
+  getUpdateWithValues as getUpdateWithValuesForRdmbs,
 } from 'src/common/adapters/RelationalDataAdapter/scripts';
+import {
+  getInsert as getInsertForMongoDB,
+  getUpdateWithValues as getUpdateWithValuesForMongoDB,
+}from 'src/common/adapters/MongoDBDataAdapter/scripts';
 import Breadcrumbs from 'src/frontend/components/Breadcrumbs';
 import CodeEditorBox from 'src/frontend/components/CodeEditorBox';
 import ConnectionDescription from 'src/frontend/components/ConnectionDescription';
@@ -61,7 +65,10 @@ export function isRecordFormSupportedForDialect(dialect?: string) {
     case 'sqlite':
       return true;
     case 'cassandra':
+      // TODO: to be implemented
+      return false;
     case 'mongodb':
+      return true;
     case 'redis':
       // TODO: to be implemented
       return false;
@@ -224,7 +231,7 @@ function RecordForm(props) {
           newData = props.data;
           break;
         // case 'cassandra':
-        // case 'mongodb':
+        case 'mongodb':
         // case 'redis':
         case 'cosmosdb':
           newRawValue = { ...props.data };
@@ -261,7 +268,12 @@ function RecordForm(props) {
           setData(newData);
           break;
         // case 'cassandra':
-        // case 'mongodb':
+        case 'mongodb':
+          for (const column of columns) {
+            set(newData, column.propertyPath || column.name, '');
+          }
+          setRawValue(JSON.stringify(newData, null, 2));
+          break;
         // case 'redis':
         case 'cosmosdb':
           for (const column of columns.filter(
@@ -350,7 +362,7 @@ function RecordForm(props) {
         }
         break;
       // case 'cassandra':
-      // case 'mongodb':
+      case 'mongodb':
       // case 'redis':
       case 'cosmosdb':
       case 'aztable':
@@ -582,7 +594,7 @@ export function EditRecordPage(props: RecordDetailsPageProps) {
       case 'postgres':
       case 'sqlite':
         sql = formatSQL(
-          getUpdateWithValuesForRmdbs(
+          getUpdateWithValuesForRdmbs(
             {
               ...query,
               dialect: connection.dialect,

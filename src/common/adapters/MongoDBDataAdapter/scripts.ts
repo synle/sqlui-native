@@ -1,5 +1,6 @@
 import { getDivider } from 'src/common/adapters/BaseDataAdapter/scripts';
 import { SqlAction, SqluiCore } from 'typings';
+import set from 'lodash.set';
 
 export const MONGO_ADAPTER_PREFIX = 'db';
 
@@ -72,7 +73,7 @@ export function getSelectDistinctValues(input: SqlAction.TableInput): SqlAction.
   }
 }
 
-export function getInsert(input: SqlAction.TableInput): SqlAction.Output | undefined {
+export function getInsert(input: SqlAction.TableInput, value?: Record<string, any>): SqlAction.Output | undefined {
   const label = `Insert`;
 
   if (!input.columns) {
@@ -81,6 +82,34 @@ export function getInsert(input: SqlAction.TableInput): SqlAction.Output | undef
 
   const columnString = input.columns.map((col) => col.name).join(',\n');
   const insertValueString = input.columns.map((col) => `'_${col.name}_'`).join(',\n');
+
+  const columns: any = {};
+  for (const column of input.columns) {
+    if (column.name !== '_id') {
+      const valueToUse = column.type === 'string' ? 'abc' : 123
+      set(columns, column.propertyPath || column.name, valueToUse);
+    }
+  }
+
+  return {
+    label,
+    formatter,
+    query: `${MONGO_ADAPTER_PREFIX}.collection('${input.tableId}').insertMany([
+        ${JSON.stringify(columns)}
+      ]);`,
+  };
+}
+
+export function getUpdateWithValues(
+  input: SqlAction.TableInput,
+  value: Record<string, any>,
+  conditions: Record<string, any>,
+): SqlAction.Output | undefined {
+  const label = `Update`;
+
+  if (!input.columns) {
+    return undefined;
+  }
 
   if (input.dialect === 'mongodb') {
     const columns: any = {};
@@ -92,9 +121,10 @@ export function getInsert(input: SqlAction.TableInput): SqlAction.Output | undef
     return {
       label,
       formatter,
-      query: `${MONGO_ADAPTER_PREFIX}.collection('${input.tableId}').insertMany([
-          ${JSON.stringify(columns)}
-        ]);`,
+      query: `${MONGO_ADAPTER_PREFIX}.collection('${input.tableId}').update(
+          ${JSON.stringify(columns)},
+          {$set: ${JSON.stringify(columns, null, 2)}}
+        );`,
     };
   }
 }
