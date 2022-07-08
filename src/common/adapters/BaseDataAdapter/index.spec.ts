@@ -78,6 +78,7 @@ Array [
 Object {
   "_id": Object {
     "name": "_id",
+    "nested": false,
     "propertyPath": Array [
       "_id",
     ],
@@ -85,6 +86,7 @@ Object {
   },
   "name": Object {
     "name": "name",
+    "nested": false,
     "propertyPath": Array [
       "name",
     ],
@@ -92,6 +94,7 @@ Object {
   },
   "zipcode": Object {
     "name": "zipcode",
+    "nested": false,
     "propertyPath": Array [
       "zipcode",
     ],
@@ -107,6 +110,7 @@ Object {
 Object {
   "genre": Object {
     "name": "genre",
+    "nested": false,
     "propertyPath": Array [
       "genre",
     ],
@@ -127,6 +131,7 @@ Object {
 Object {
   "_id": Object {
     "name": "_id",
+    "nested": false,
     "propertyPath": Array [
       "_id",
     ],
@@ -134,6 +139,7 @@ Object {
   },
   "genre": Object {
     "name": "genre",
+    "nested": false,
     "propertyPath": Array [
       "genre",
     ],
@@ -160,6 +166,7 @@ Object {
   },
   "name": Object {
     "name": "name",
+    "nested": false,
     "propertyPath": Array [
       "name",
     ],
