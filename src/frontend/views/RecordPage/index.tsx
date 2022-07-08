@@ -256,7 +256,7 @@ function RecordForm(props) {
         case 'postgres':
         case 'sqlite':
           for (const column of columns) {
-            set(newData, column.propertyPath, '');
+            set(newData, column.propertyPath || column.name , '');
           }
           setData(newData);
           break;
@@ -265,7 +265,7 @@ function RecordForm(props) {
         // case 'redis':
         case 'cosmosdb':
           for (const column of columns.filter(targetColumn => targetColumn.name[0] !== '_'  && targetColumn.name !== 'id')) {
-            set(newData, column.propertyPath, '');
+            set(newData, column.propertyPath || column.name, '');
           }
           setRawValue(JSON.stringify(newData, null, 2));
           break;
@@ -274,7 +274,7 @@ function RecordForm(props) {
             (targetColumn) =>
               AZTABLE_KEYS_TO_IGNORE_FOR_INSERT_AND_UPDATE.indexOf(targetColumn.name) === -1,
           )) {
-            newData[column.name] = '';
+            set(newData, column.propertyPath || column.name, '');
           }
           setRawValue(JSON.stringify(newData, null, 2));
           break;
