@@ -58,7 +58,7 @@ export default abstract class BaseDataAdapter {
 
     while (stack.length > 0) {
       //@ts-ignore
-      console.log(item, path)
+      const { item, path } = stack.pop();
       const type = typeof item;
       if (type === 'object' && !Array.isArray(item)) {
         for (const key of Object.keys(item)) {
@@ -77,6 +77,7 @@ export default abstract class BaseDataAdapter {
         if(path.length > 1){
           // whether or not this is a complex type and nested inside another JSON
           columnsMap[key].nested = true;
+          columnsMap[key].propertyPath = path;
         }
       }
     }

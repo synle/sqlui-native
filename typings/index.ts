@@ -59,7 +59,7 @@ export module SqluiCore {
      * the name of the parent property
      * @type {string}
      */
-    propertyPaths?: string[];
+    propertyPath?: string[];
     [index: string]: any;
   };
 
