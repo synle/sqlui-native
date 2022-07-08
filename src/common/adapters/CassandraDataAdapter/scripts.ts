@@ -129,6 +129,62 @@ export function getCreateConnectionDatabase(
   };
 }
 
+export function getCreateTable(input: SqlAction.TableInput): SqlAction.Output | undefined {
+  const label = `Create Table`;
+
+  if (!input.columns) {
+    return undefined;
+  }
+
+  let columnString: string = '';
+
+
+  // mapping column
+  columnString = input.columns
+    .map((col) =>
+      [
+        col.name,
+        col.type,
+      ].join(' '),
+    )
+    .join(',\n');
+
+  // figuring out the keys
+  let partitionKeys: string[] = [], clusteringKeys: string[] = [];
+  for(const col of input.columns){
+    if(col.kind === 'partition_key'){
+      partitionKeys.push(col.name)
+    } else if(col.kind === 'clustering'){
+      clusteringKeys.push(col.name)
+    }
+  }
+  if(partitionKeys.length > 0){
+    if(clusteringKeys.length > 0){
+      columnString += `, PRIMARY KEY((${partitionKeys.join(', ')}), ${clusteringKeys.join(', ')})`
+    } else {
+      // has only the partition key
+      columnString += `, PRIMARY KEY((${partitionKeys.join(', ')}))`
+    }
+  }
+
+  return {
+    label,
+    formatter,
+    query: `CREATE TABLE ${input.tableId} (${columnString})`,
+  };
+}
+
+export function getDropTable(input: SqlAction.TableInput): SqlAction.Output | undefined {
+  const label = `Drop Table`;
+
+  return {
+    label,
+    formatter,
+    query: `DROP TABLE ${input.tableId}`,
+  };
+}
+
+
 export const tableActionScripts: SqlAction.TableActionScriptGenerator[] = [
   getSelectAllColumns,
   getSelectSpecificColumns,
@@ -136,6 +192,9 @@ export const tableActionScripts: SqlAction.TableActionScriptGenerator[] = [
   getDivider,
   getUpdate,
   getDelete,
+  getDivider,
+  getCreateTable,
+  getDropTable,
 ];
 
 export const databaseActionScripts: SqlAction.DatabaseActionScriptGenerator[] = [
