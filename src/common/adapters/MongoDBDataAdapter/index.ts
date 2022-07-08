@@ -155,6 +155,8 @@ export default class MongoDBDataAdapter extends BaseDataAdapter implements IData
 
       const db = await client.db(database);
 
+      const {ObjectId} = require('mongodb')
+
       //@ts-ignore
       const rawToUse: any = await eval(sql);
 
@@ -182,10 +184,11 @@ export default class MongoDBDataAdapter extends BaseDataAdapter implements IData
           raw: rawToUse
         };
       }
-    } catch (err) {
+    } catch (err : any) {
+      console.log('Execute Error', err)
       return {
         ok: false,
-        error: err,
+        error: err?.toString() || JSON.stringify(err),
       };
     } finally {
       this.closeConnection(client);
