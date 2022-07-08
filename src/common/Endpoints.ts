@@ -17,12 +17,21 @@ function addDataEndpoint(
   incomingHandler: (req: any, res: any, cache: any) => void,
 ) {
   const handlerToUse = async (req: any, res: any, cache: any) => {
+    let responded = false;
+    setTimeout(() => {
+      if(!responded){
+        res.status(408).send('Request Timeout');
+      }
+    }, 5000)
+
     try {
       res.header('sqlui-native-session-id', req.headers['sqlui-native-session-id']);
       await incomingHandler(req, res, cache);
+      responded = true;
     } catch (err: any) {
-      console.log('err', err);
+      console.log('>> Server Error', err);
       res.status(500).send(err);
+      responded= true;
     }
   };
 
