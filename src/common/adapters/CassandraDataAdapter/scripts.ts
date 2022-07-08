@@ -137,34 +137,27 @@ export function getCreateTable(input: SqlAction.TableInput): SqlAction.Output | 
   }
 
   let columnString: string = '';
-
-
   // mapping column
   columnString = input.columns
-    .map((col) =>
-      [
-        col.name,
-        col.type,
-        col.primaryKey ? 'PRIMARY KEY' : '',
-      ].join(' '),
-    )
+    .map((col) => [col.name, col.type, col.primaryKey ? 'PRIMARY KEY' : ''].join(' '))
     .join(',\n');
 
   // figuring out the keys
-  let partitionKeys: string[] = [], clusteringKeys: string[] = [];
-  for(const col of input.columns){
-    if(col.kind === 'partition_key'){
-      partitionKeys.push(col.name)
-    } else if(col.kind === 'clustering'){
-      clusteringKeys.push(col.name)
+  let partitionKeys: string[] = [],
+    clusteringKeys: string[] = [];
+  for (const col of input.columns) {
+    if (col.kind === 'partition_key') {
+      partitionKeys.push(col.name);
+    } else if (col.kind === 'clustering') {
+      clusteringKeys.push(col.name);
     }
   }
-  if(partitionKeys.length > 0){
-    if(clusteringKeys.length > 0){
-      columnString += `, PRIMARY KEY((${partitionKeys.join(', ')}), ${clusteringKeys.join(', ')})`
+  if (partitionKeys.length > 0) {
+    if (clusteringKeys.length > 0) {
+      columnString += `, PRIMARY KEY((${partitionKeys.join(', ')}), ${clusteringKeys.join(', ')})`;
     } else {
       // has only the partition key
-      columnString += `, PRIMARY KEY((${partitionKeys.join(', ')}))`
+      columnString += `, PRIMARY KEY((${partitionKeys.join(', ')}))`;
     }
   }
 
@@ -210,8 +203,6 @@ export function getDropColumns(input: SqlAction.TableInput): SqlAction.Output | 
       .join('\n'),
   };
 }
-
-
 export const tableActionScripts: SqlAction.TableActionScriptGenerator[] = [
   getSelectAllColumns,
   getSelectSpecificColumns,
