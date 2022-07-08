@@ -139,18 +139,22 @@ export async function getColumns(sessionId: string, connectionId: string, databa
   ).get(connectionId);
 
   return (await getDataAdapter(connection.connection).getColumns(tableId, databaseId)).sort((a, b) => {
-          if (a.primaryKey !== b.primaryKey) {
-            if (a.primaryKey) {
-              return -1;
-            }
-            return 1;
+      const aPrimaryKey = a.primaryKey || a.kind === 'partition_key';
+      const bPrimaryKey = b.primaryKey || b.kind === 'partition_key';
+
+          if (aPrimaryKey !== bPrimaryKey) {
+            return aPrimaryKey ? -1: 1;
           }
 
           if (a.unique !== b.unique) {
-            if (a.unique) {
-              return -1;
-            }
-            return 1;
+            return a.unique ? -1: 1;
+          }
+
+          const aClusterKey = a.kind === 'clustering';
+      const bClusterKey = b.kind === 'clustering';
+
+      if (aClusterKey !== bClusterKey) {
+            return aClusterKey ? -1: 1;
           }
 
           return (a.name || '').localeCompare(b.name || '');
