@@ -175,8 +175,6 @@ function RecordForm(props) {
     query?.tableId,
   );
 
-  const isDisabled = true;
-
   const onDatabaseConnectionChange = (
     connectionId?: string,
     databaseId?: string,
@@ -389,6 +387,8 @@ function RecordForm(props) {
     }
   }
 
+  const isDisabled = !!(!query.connectionId || !query.databaseId || !query.tableId);
+
   return (
     <form
       onSubmit={(e) => {
@@ -410,13 +410,14 @@ function RecordForm(props) {
             onChange={onDatabaseConnectionChange}
             disabledConnection={!!props.isEditMode}
             disabledDatabase={!!props.isEditMode}
+            required
           />
         </div>
 
         {contentFormDataView}
 
         <div className='FormInput__Row'>
-          <Button variant='contained' type='submit'>
+          <Button variant='contained' type='submit' disabled={isDisabled}>
             Generate Script
           </Button>
           <Button variant='outlined' type='button' onClick={props.onCancel}>
