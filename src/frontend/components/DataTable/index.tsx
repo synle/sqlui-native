@@ -17,7 +17,7 @@ type DataTableProps = {
   onRowClick?: (rowData: any) => void;
 };
 
-export const pageSizeOptions: any[] = [
+export const ALL_PAGE_SIZE_OPTIONS: any[] = [
   { label: '10', value: 10 },
   { label: '25', value: 25 },
   { label: '50', value: 50 },
@@ -59,13 +59,20 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 export default function DataTable(props: DataTableProps) {
   const { columns, data } = props;
 
-  const defaultPageSize = useTablePageSize() || DEFAULT_TABLE_PAGE_SIZE;
+  const allRecordSize = data.length;
+  let pageSizeToUse = useTablePageSize() || DEFAULT_TABLE_PAGE_SIZE;
+  if(pageSizeToUse === -1){
+    pageSizeToUse = allRecordSize;
+  }
+
+  const pageSizeOptions = ALL_PAGE_SIZE_OPTIONS.map(option => ({...option}));
+  pageSizeOptions[pageSizeOptions.length -1].value = allRecordSize;
 
   const { getTableBodyProps, gotoPage, headerGroups, page, prepareRow, setPageSize, state } =
     useTable(
       {
         initialState: {
-          pageSize: defaultPageSize === -1 ? data.length : defaultPageSize,
+          pageSize: pageSizeToUse,
         },
         columns,
         data,
@@ -85,8 +92,7 @@ export default function DataTable(props: DataTableProps) {
   );
 
   const onRowsPerPageChange = useCallback((e) => {
-    const newPageSize = parseInt(e.target.value)
-    setPageSize(newPageSize === -1 ? data.length : newPageSize);
+    setPageSize(e.target.value);
   }, []);
 
   return (
