@@ -116,7 +116,7 @@ export default function DropdownButton(props: DropdownButtonProps) {
               transformOrigin: placement === 'bottom' ? 'right top' : 'right bottom',
             }}>
             <Paper sx={{ maxHeight: maxHeight || '325px', overflow: 'auto' }}>
-              <ClickAwayListener onClickAway={onClose}>{popperBody}</ClickAwayListener>
+              <ClickAwayListener onClickAway={onClose} mouseEvent='onMouseUp'>{popperBody}</ClickAwayListener>
             </Paper>
           </Grow>
         )}
