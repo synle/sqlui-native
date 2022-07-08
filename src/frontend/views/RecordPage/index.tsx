@@ -3,17 +3,18 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import InputLabel from '@mui/material/InputLabel';
 import TextField, { TextFieldProps } from '@mui/material/TextField';
+import set from 'lodash.set';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
+import {
+  getInsert as getInsertForAzCosmosDB,
+  getUpdateWithValues as getUpdateWithValuesForAzCosmosDB,
+} from 'src/common/adapters/AzureCosmosDataAdapter/scripts';
 import {
   AZTABLE_KEYS_TO_IGNORE_FOR_INSERT_AND_UPDATE,
   getInsert as getInsertForAzTable,
   getUpdateWithValues as getUpdateWithValuesForAzTable,
 } from 'src/common/adapters/AzureTableStorageAdapter/scripts';
-import {
-  getInsert as getInsertForAzCosmosDB,
-  getUpdateWithValues as getUpdateWithValuesForAzCosmosDB,
-} from 'src/common/adapters/AzureCosmosDataAdapter/scripts';
 import {
   getInsert as getInsertForRdmbs,
   getUpdateWithValues as getUpdateWithValuesForRmdbs,
@@ -38,7 +39,6 @@ import { useTreeActions } from 'src/frontend/hooks/useTreeActions';
 import LayoutTwoColumns from 'src/frontend/layout/LayoutTwoColumns';
 import { formatJS, formatSQL } from 'src/frontend/utils/formatter';
 import { SqluiCore, SqluiFrontend } from 'typings';
-import set from 'lodash.set';
 
 type RecordData = any;
 
@@ -238,10 +238,10 @@ function RecordForm(props) {
           break;
       }
 
-      if(newData){
+      if (newData) {
         setData(newData);
       }
-      if(newRawValue){
+      if (newRawValue) {
         setRawValue(JSON.stringify(newRawValue, null, 2));
       }
       return;
@@ -256,7 +256,7 @@ function RecordForm(props) {
         case 'postgres':
         case 'sqlite':
           for (const column of columns) {
-            set(newData, column.propertyPath || column.name , '');
+            set(newData, column.propertyPath || column.name, '');
           }
           setData(newData);
           break;
@@ -264,7 +264,9 @@ function RecordForm(props) {
         // case 'mongodb':
         // case 'redis':
         case 'cosmosdb':
-          for (const column of columns.filter(targetColumn => targetColumn.name[0] !== '_'  && targetColumn.name !== 'id')) {
+          for (const column of columns.filter(
+            (targetColumn) => targetColumn.name[0] !== '_' && targetColumn.name !== 'id',
+          )) {
             set(newData, column.propertyPath || column.name, '');
           }
           setRawValue(JSON.stringify(newData, null, 2));
@@ -323,7 +325,9 @@ function RecordForm(props) {
               fullWidth: true,
               autoComplete: 'off',
             };
-            let contentColumnValueInputView = <TextField {...baseInputProps} type='text' multiline />;
+            let contentColumnValueInputView = (
+              <TextField {...baseInputProps} type='text' multiline />
+            );
             if (
               column.type?.toLowerCase()?.includes('int') ||
               column.type?.toLowerCase()?.includes('number')

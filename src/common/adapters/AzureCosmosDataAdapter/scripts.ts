@@ -150,10 +150,13 @@ export function getSelectSpecificColumns(
   };
 }
 
-export function getInsert(input: SqlAction.TableInput, value?: Record<string, any>): SqlAction.Output | undefined {
+export function getInsert(
+  input: SqlAction.TableInput,
+  value?: Record<string, any>,
+): SqlAction.Output | undefined {
   const label = `Insert`;
 
-  let colMap : any = {};
+  let colMap: any = {};
   if (value) {
     for (const key of Object.keys(value)) {
       colMap[key] = value[key];
@@ -202,8 +205,6 @@ export function getUpdateWithValues(
     `,
   };
 }
-
-
 export function getUpdate(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Update`;
 

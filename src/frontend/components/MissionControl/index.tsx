@@ -310,7 +310,7 @@ export default function MissionControl() {
       }
     }
 
-    if(showOnlyRevealedConnection === false){
+    if (showOnlyRevealedConnection === false) {
       const curToast = await addToast({
         message: `Revealed selected connection / database on the sidebar`,
       });

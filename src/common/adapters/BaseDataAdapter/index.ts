@@ -75,7 +75,7 @@ export default abstract class BaseDataAdapter {
           propertyPath: path,
         };
 
-        if(path.length > 1){
+        if (path.length > 1) {
           // whether or not this is a complex type and nested inside another JSON
           columnsMap[key].nested = true;
         }
