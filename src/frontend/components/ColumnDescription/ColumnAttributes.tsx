@@ -26,7 +26,7 @@ export default function ColumnAttributes(props: ColumnAttributesProps) {
       } else {
         value = JSON.stringify(value, null, 2);
         // remove the leading and trailing "
-        value = value.substr(value.indexOf('"') + 1, value.lastIndexOf('"') - 1)
+        value = value.substr(value.indexOf('"') + 1, value.lastIndexOf('"') - 1);
       }
 
       return {

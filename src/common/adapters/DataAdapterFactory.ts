@@ -147,27 +147,28 @@ export async function getColumns(
     'connection',
   ).get(connectionId);
 
-  return (await getDataAdapter(connection.connection).getColumns(tableId, databaseId)).map(column => {
-    // here clean up unnecessary property
-    if(column.primaryKey !== true){
-      delete column.primaryKey
-    }
+  return (await getDataAdapter(connection.connection).getColumns(tableId, databaseId))
+    .map((column) => {
+      // here clean up unnecessary property
+      if (column.primaryKey !== true) {
+        delete column.primaryKey;
+      }
 
-    if(column.unique !== true){
-      delete column.unique
-    }
+      if (column.unique !== true) {
+        delete column.unique;
+      }
 
-    if(column.nested !== true){
-      delete column.nested
-    }
+      if (column.nested !== true) {
+        delete column.nested;
+      }
 
-    if(!column?.propertyPath || column?.propertyPath.length <= 1){
-      delete column.propertyPath
-    }
+      if (!column?.propertyPath || column?.propertyPath.length <= 1) {
+        delete column.propertyPath;
+      }
 
-    return column;
-  }).sort(
-    (a, b) => {
+      return column;
+    })
+    .sort((a, b) => {
       const aPrimaryKey = a.primaryKey || a.kind === 'partition_key';
       const bPrimaryKey = b.primaryKey || b.kind === 'partition_key';
 
@@ -187,6 +188,5 @@ export async function getColumns(
       }
 
       return (a.name || '').localeCompare(b.name || '');
-    },
-  );
+    });
 }

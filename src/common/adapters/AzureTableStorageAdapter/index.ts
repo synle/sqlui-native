@@ -145,10 +145,10 @@ export default class AzureTableStorageAdapter extends BaseDataAdapter implements
         }
       }
 
-      return BaseDataAdapter.inferTypesFromItems(items).map(column => {
-        if(column.name == 'partitionKey'){
+      return BaseDataAdapter.inferTypesFromItems(items).map((column) => {
+        if (column.name == 'partitionKey') {
           column.kind = 'clustering';
-        } else if(column.name == 'rowKey'){
+        } else if (column.name == 'rowKey') {
           column.kind = 'partition_key';
           column.primaryKey = true;
         }

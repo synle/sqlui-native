@@ -1,7 +1,9 @@
+import KeyIcon from '@mui/icons-material/Key';
 import ViewColumnIcon from '@mui/icons-material/ViewColumn';
 import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
+import Tooltip from '@mui/material/Tooltip';
 import React, { useEffect, useState } from 'react';
 import { AccordionBody, AccordionHeader } from 'src/frontend/components/Accordion';
 import ColumnAttributes from 'src/frontend/components/ColumnDescription/ColumnAttributes';
@@ -10,8 +12,6 @@ import ColumnType from 'src/frontend/components/ColumnDescription/ColumnType';
 import { useGetColumns } from 'src/frontend/hooks/useConnection';
 import { useActiveConnectionQuery } from 'src/frontend/hooks/useConnectionQuery';
 import { useShowHide } from 'src/frontend/hooks/useShowHide';
-import KeyIcon from '@mui/icons-material/Key';
-import Tooltip from '@mui/material/Tooltip';
 
 const MAX_COLUMN_SIZE_TO_SHOW = 5;
 
@@ -79,8 +79,20 @@ export default function ColumnDescription(props: ColumnDescriptionProps) {
                 onToggle={() => onToggle(key)}
                 className={isSelected ? 'selected ColumnDescription' : 'ColumnDescription'}>
                 <ViewColumnIcon color='disabled' fontSize='inherit' />
-                {shouldShowPrimaryKeyIcon && <Tooltip title='Primary Key'><i style={{height: '15px'}}><KeyIcon fontSize='small' color='primary' /> </i></Tooltip>}
-                {shouldShowSecondaryKeyIcon && <Tooltip title='Secondary Key / Clustering Key / Partition Key'><i style={{height: '15px'}}><KeyIcon fontSize='small' color='secondary' /> </i></Tooltip>}
+                {shouldShowPrimaryKeyIcon && (
+                  <Tooltip title='Primary Key'>
+                    <i style={{ height: '15px' }}>
+                      <KeyIcon fontSize='small' color='primary' />{' '}
+                    </i>
+                  </Tooltip>
+                )}
+                {shouldShowSecondaryKeyIcon && (
+                  <Tooltip title='Secondary Key / Clustering Key / Partition Key'>
+                    <i style={{ height: '15px' }}>
+                      <KeyIcon fontSize='small' color='secondary' />{' '}
+                    </i>
+                  </Tooltip>
+                )}
                 <ColumnName value={column.name}></ColumnName>
                 <ColumnType value={column.type}></ColumnType>
               </AccordionHeader>
