@@ -157,6 +157,14 @@ export async function getColumns(
       delete column.unique
     }
 
+    if(column.nested !== true){
+      delete column.nested
+    }
+
+    if(!column?.propertyPath || column?.propertyPath.length <= 1){
+      delete column.propertyPath
+    }
+
     return column;
   }).sort(
     (a, b) => {
