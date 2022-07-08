@@ -58,12 +58,10 @@ export default class MongoDBDataAdapter extends BaseDataAdapter implements IData
     try {
       //@ts-ignore
       const res = await client.db().admin().listDatabases();
-      return res.databases
-        .map((database: any) => ({
-          name: database.name,
-          tables: [],
-        }))
-        .sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+      return res.databases.map((database: any) => ({
+        name: database.name,
+        tables: [],
+      }));
     } finally {
       this.closeConnection(client);
     }
@@ -76,12 +74,10 @@ export default class MongoDBDataAdapter extends BaseDataAdapter implements IData
       //@ts-ignore
       const collections = await client.db(database).listCollections().toArray();
 
-      return (collections || [])
-        .map((collection) => ({
-          name: collection.name,
-          columns: [],
-        }))
-        .sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+      return (collections || []).map((collection) => ({
+        name: collection.name,
+        columns: [],
+      }));
     } finally {
       this.closeConnection(client);
     }
