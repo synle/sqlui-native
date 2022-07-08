@@ -10,6 +10,7 @@ type ConnectionDatabaseSelectorProps = {
   isTableIdRequired?: boolean;
   disabledConnection?: boolean;
   disabledDatabase?: boolean;
+  required?: boolean;
 };
 
 export default function ConnectionDatabaseSelector(props: ConnectionDatabaseSelectorProps) {
@@ -96,12 +97,16 @@ export default function ConnectionDatabaseSelector(props: ConnectionDatabaseSele
       <Select
         value={query.databaseId}
         onChange={(newValue) => onDatabaseChange(newValue)}
-        disabled={!!props.disabledDatabase}>
+        disabled={!!props.disabledDatabase}
+        required={props.required}>
         <option value=''>Pick a Database (Optional)</option>
         {databaseOptions}
       </Select>
       {isTableIdRequired && (
-        <Select value={query.tableId} onChange={(newValue) => onTableChange(newValue)}>
+        <Select
+          value={query.tableId}
+          onChange={(newValue) => onTableChange(newValue)}
+          required={props.required}>
           <option value=''>Pick a Table</option>
           {tableOptions}
         </Select>
