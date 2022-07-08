@@ -160,7 +160,7 @@ export default class MongoDBDataAdapter extends BaseDataAdapter implements IData
       //@ts-ignore
       const rawToUse: any = await eval(sql);
 
-      if (rawToUse.acknowledged === true) {
+      if (rawToUse?.acknowledged === true) {
         // insert or insertOne
         let affectedRows =
           rawToUse.insertedCount || rawToUse.deletedCount || rawToUse.modifiedCount;
