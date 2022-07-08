@@ -848,12 +848,30 @@ WHERE
   Object {
     "formatter": "sql",
     "label": "Create Table",
-    "query": "CREATE TABLE table1 (id INT, column1 INT, column2 VARCHAR(100))",
+    "query": "CREATE TABLE table1 (id INT PRIMARY KEY, column1 INT, column2 VARCHAR(100))",
   },
   Object {
     "formatter": "sql",
     "label": "Drop Table",
     "query": "DROP TABLE table1",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Add Column",
+    "query": "ALTER TABLE
+  table1
+ADD
+  new_column1 TEXT",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Drop Column",
+    "query": "ALTER TABLE
+  table1 DROP id;
+ALTER TABLE
+  table1 DROP column1;
+ALTER TABLE
+  table1 DROP column2;",
   },
 ]
 `;

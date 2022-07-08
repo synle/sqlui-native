@@ -185,6 +185,32 @@ export function getDropTable(input: SqlAction.TableInput): SqlAction.Output | un
   };
 }
 
+export function getAddColumn(input: SqlAction.TableInput): SqlAction.Output | undefined {
+  const label = `Add Column`;
+
+  return {
+    label,
+    formatter,
+    query: `ALTER TABLE ${input.tableId}
+            ADD new_column1 TEXT`,
+  };
+}
+
+export function getDropColumns(input: SqlAction.TableInput): SqlAction.Output | undefined {
+  const label = `Drop Column`;
+
+  return {
+    label,
+    formatter,
+    query: input.columns
+      ?.map(
+        (col) => `ALTER TABLE ${input.tableId}
+                     DROP ${col.name};`,
+      )
+      .join('\n'),
+  };
+}
+
 
 export const tableActionScripts: SqlAction.TableActionScriptGenerator[] = [
   getSelectAllColumns,
@@ -196,6 +222,8 @@ export const tableActionScripts: SqlAction.TableActionScriptGenerator[] = [
   getDivider,
   getCreateTable,
   getDropTable,
+  getAddColumn,
+  getDropColumns,
 ];
 
 export const databaseActionScripts: SqlAction.DatabaseActionScriptGenerator[] = [
