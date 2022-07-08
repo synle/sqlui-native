@@ -52,11 +52,11 @@ export default abstract class BaseDataAdapter {
     const stack: {
       item: any;
       path: string[];
-      key: string,
+      key: string;
     }[] = [{ item: inputItem, path: [], key: '' }];
 
     const columnsMap: Record<string, SqluiCore.ColumnMetaData> = {};
-    const visited = new Set<string>()
+    const visited = new Set<string>();
     while (stack.length > 0) {
       //@ts-ignore
       const { item, path, key } = stack.pop();
@@ -66,12 +66,11 @@ export default abstract class BaseDataAdapter {
           const newPath = [...path, targetKey];
           const newKey = newPath.join('/');
 
-          if(!visited.has(newKey))
-          {
+          if (!visited.has(newKey)) {
             stack.push({
               item: item[targetKey],
               path: newPath,
-              key: newKey
+              key: newKey,
             });
 
             visited.add(newKey);
@@ -82,7 +81,7 @@ export default abstract class BaseDataAdapter {
           name: key,
           type: type,
           propertyPath: path,
-          nested: path.length > 1,// whether or not this is a complex type and nested inside another JSON
+          nested: path.length > 1, // whether or not this is a complex type and nested inside another JSON
         };
       }
     }
