@@ -357,7 +357,7 @@ function RecordForm(props) {
             value={rawValue}
             onChange={(newValue) => setRawValue(newValue)}
             required={true}
-            language='js'
+            language='json'
           />,
         );
         break;
