@@ -2,10 +2,11 @@ import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import Paper from '@mui/material/Paper';
 import ToggleButton from '@mui/material/ToggleButton';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import AdvancedEditor from 'src/frontend/components/CodeEditorBox/AdvancedEditor';
 import SimpleEditor from 'src/frontend/components/CodeEditorBox/SimpleEditor';
 import Select from 'src/frontend/components/Select';
+import InputError from 'src/frontend/components/InputError';
 import { useEditorModeSetting, useWordWrapSetting } from 'src/frontend/hooks/useSetting';
 
 export type EditorRef =
@@ -88,6 +89,11 @@ export default function CodeEditorBox(props: CodeEditorProps) {
 
   useEffect(() => setWordWrap(!!props.wordWrap || globalWordWrap), [globalWordWrap]);
 
+  const shouldShowRequiredError = useMemo(
+    () => !!props.required && !props.value,
+    [!!props.required && !props.value]
+  );
+
   if (editorModeToUse === 'simple') {
     return (
       <div className='CodeEditorBox'>
@@ -121,6 +127,7 @@ export default function CodeEditorBox(props: CodeEditorProps) {
         editorRef={props.editorRef}
       />
       {editorOptionBox}
+      {shouldShowRequiredError && <InputError message='This field is required' sx={{ml: 2}} />}
     </Paper>
   );
 }
