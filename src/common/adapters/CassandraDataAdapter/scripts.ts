@@ -145,6 +145,7 @@ export function getCreateTable(input: SqlAction.TableInput): SqlAction.Output | 
       [
         col.name,
         col.type,
+        col.primaryKey ? 'PRIMARY KEY' : '',
       ].join(' '),
     )
     .join(',\n');

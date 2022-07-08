@@ -842,6 +842,19 @@ WHERE
   AND column1 = ''
   AND column2 = ''",
   },
+  Object {
+    "label": "divider",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Create Table",
+    "query": "CREATE TABLE table1 (id INT, column1 INT, column2 VARCHAR(100))",
+  },
+  Object {
+    "formatter": "sql",
+    "label": "Drop Table",
+    "query": "DROP TABLE table1",
+  },
 ]
 `;
 
