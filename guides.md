@@ -1283,9 +1283,7 @@ client
   .database('database1')
   .container('table1')
   .items
-  .create({
-    "id": "some_id"
-  })
+  .create({})
 ```
 
 

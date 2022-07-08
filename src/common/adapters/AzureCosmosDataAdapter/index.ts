@@ -118,7 +118,7 @@ export default class AzureCosmosDataAdapter extends BaseDataAdapter implements I
         .database(database)
         .container(table)
         .items.query({
-          query: `SELECT * from c OFFSET 1 LIMIT ${MAX_ITEM_COUNT_TO_SCAN}`,
+          query: `SELECT * from c OFFSET 0 LIMIT ${MAX_ITEM_COUNT_TO_SCAN}`,
         })
         .fetchAll();
 
