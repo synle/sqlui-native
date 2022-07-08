@@ -3,8 +3,13 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import InputLabel from '@mui/material/InputLabel';
 import TextField, { TextFieldProps } from '@mui/material/TextField';
+import set from 'lodash.set';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
+import {
+  getInsert as getInsertForAzCosmosDB,
+  getUpdateWithValues as getUpdateWithValuesForAzCosmosDB,
+} from 'src/common/adapters/AzureCosmosDataAdapter/scripts';
 import {
   AZTABLE_KEYS_TO_IGNORE_FOR_INSERT_AND_UPDATE,
   getInsert as getInsertForAzTable,
@@ -58,8 +63,9 @@ export function isRecordFormSupportedForDialect(dialect?: string) {
     case 'cassandra':
     case 'mongodb':
     case 'redis':
-    case 'cosmosdb':
+      // TODO: to be implemented
       return false;
+    case 'cosmosdb':
     case 'aztable':
       return true;
   }
@@ -208,26 +214,35 @@ function RecordForm(props) {
   // generate the dummy data when selector changes
   useEffect(() => {
     if (props.data) {
+      let newData: any, newRawValue: any;
       switch (connection?.dialect) {
         case 'mysql':
         case 'mariadb':
         case 'mssql':
         case 'postgres':
         case 'sqlite':
-          setData(props.data);
+          newData = props.data;
           break;
         // case 'cassandra':
         // case 'mongodb':
         // case 'redis':
-        // case 'cosmosdb':
+        case 'cosmosdb':
+          newRawValue = { ...props.data };
+          break;
         case 'aztable':
-          const newData = { ...props.data };
+          newRawValue = { ...props.data };
           // for these, let's delete the system key
           for (const keyToDelete of AZTABLE_KEYS_TO_IGNORE_FOR_INSERT_AND_UPDATE) {
-            delete newData[keyToDelete];
+            delete newRawValue[keyToDelete];
           }
-          setRawValue(JSON.stringify(newData, null, 2));
           break;
+      }
+
+      if (newData) {
+        setData(newData);
+      }
+      if (newRawValue) {
+        setRawValue(JSON.stringify(newRawValue, null, 2));
       }
       return;
     }
@@ -241,20 +256,27 @@ function RecordForm(props) {
         case 'postgres':
         case 'sqlite':
           for (const column of columns) {
-            newData[column.name] = '';
+            set(newData, column.propertyPath || column.name, '');
           }
           setData(newData);
           break;
         // case 'cassandra':
         // case 'mongodb':
         // case 'redis':
-        // case 'cosmosdb':
+        case 'cosmosdb':
+          for (const column of columns.filter(
+            (targetColumn) => targetColumn.name[0] !== '_' && targetColumn.name !== 'id',
+          )) {
+            set(newData, column.propertyPath || column.name, '');
+          }
+          setRawValue(JSON.stringify(newData, null, 2));
+          break;
         case 'aztable':
           for (const column of columns.filter(
             (targetColumn) =>
               AZTABLE_KEYS_TO_IGNORE_FOR_INSERT_AND_UPDATE.indexOf(targetColumn.name) === -1,
           )) {
-            newData[column.name] = '';
+            set(newData, column.propertyPath || column.name, '');
           }
           setRawValue(JSON.stringify(newData, null, 2));
           break;
@@ -282,52 +304,68 @@ function RecordForm(props) {
         The dialect of this connection is not supported for RecordForm
       </React.Fragment>,
     );
-  } else if (connection?.dialect === 'aztable') {
-    // js raw value
-    contentFormDataView.push(
-      <CodeEditorBox
-        key='rawValue'
-        value={rawValue}
-        onChange={(newValue) => setRawValue(newValue)}
-        language='js'
-      />,
-    );
-  } else if (columns && columns.length > 0) {
-    for (const column of columns.sort((a, b) => a.name.localeCompare(b.name))) {
-      const baseInputProps: TextFieldProps = {
-        label: `${column.name} (${column.type.toLowerCase()}) ${
-          column.primaryKey ? '(Primary Key)' : ''
-        }`,
-        defaultValue: data[column.name],
-        onChange: (e) => onSetData(column.name, e.target.value),
-        required: !column.allowNull,
-        size: 'small',
-        margin: 'dense',
-        fullWidth: true,
-        autoComplete: 'off',
-      };
-      let contentColumnValueInputView = <TextField {...baseInputProps} type='text' multiline />;
-      if (
-        column.type?.toLowerCase()?.includes('int') ||
-        column.type?.toLowerCase()?.includes('number')
-      ) {
-        contentColumnValueInputView = <TextField {...baseInputProps} type='number' />;
-      }
-
-      parseInt(`varchar(123)`.replace(/[a-z()]/g, ''));
-
-      contentFormDataView.push(
-        <React.Fragment key={column.name}>
-          <div className='FormInput__Row'>{contentColumnValueInputView}</div>
-        </React.Fragment>,
-      );
-    }
   } else {
-    contentFormDataView.push(
-      <React.Fragment key='connection_required'>
-        Please select a connection, database and table from the above
-      </React.Fragment>,
-    );
+    switch (connection?.dialect) {
+      case 'mysql':
+      case 'mariadb':
+      case 'mssql':
+      case 'postgres':
+      case 'sqlite':
+        if (columns && columns.length > 0) {
+          for (const column of columns.sort((a, b) => a.name.localeCompare(b.name))) {
+            const baseInputProps: TextFieldProps = {
+              label: `${column.name} (${column.type.toLowerCase()}) ${
+                column.primaryKey ? '(Primary Key)' : ''
+              }`,
+              defaultValue: data[column.name],
+              onChange: (e) => onSetData(column.name, e.target.value),
+              required: !column.allowNull,
+              size: 'small',
+              margin: 'dense',
+              fullWidth: true,
+              autoComplete: 'off',
+            };
+            let contentColumnValueInputView = (
+              <TextField {...baseInputProps} type='text' multiline />
+            );
+            if (
+              column.type?.toLowerCase()?.includes('int') ||
+              column.type?.toLowerCase()?.includes('number')
+            ) {
+              contentColumnValueInputView = <TextField {...baseInputProps} type='number' />;
+            }
+
+            contentFormDataView.push(
+              <React.Fragment key={column.name}>
+                <div className='FormInput__Row'>{contentColumnValueInputView}</div>
+              </React.Fragment>,
+            );
+          }
+        } else {
+          contentFormDataView.push(
+            <React.Fragment key='connection_required'>
+              No meta data found. Please select a connection, database and table from the above
+            </React.Fragment>,
+          );
+        }
+        break;
+      // case 'cassandra':
+      // case 'mongodb':
+      // case 'redis':
+      case 'cosmosdb':
+      case 'aztable':
+        // js raw value
+        contentFormDataView.push(
+          <CodeEditorBox
+            key='rawValue'
+            value={rawValue}
+            onChange={(newValue) => setRawValue(newValue)}
+            required={true}
+            language='json'
+          />,
+        );
+        break;
+    }
   }
 
   return (
@@ -399,7 +437,28 @@ export function NewRecordPage() {
       // case 'cassandra':
       // case 'mongodb':
       // case 'redis':
-      // case 'cosmosdb':
+      case 'cosmosdb':
+        try {
+          const jsonValue = JSON.parse(rawValue);
+
+          sql = formatJS(
+            getInsertForAzCosmosDB(
+              {
+                ...query,
+                dialect: connection.dialect,
+                columns,
+              },
+              jsonValue,
+            )?.query || '',
+          );
+        } catch (err) {
+          await addToast({
+            message:
+              'Azure CosmosDB value needs to be a valid JSON object. Input provided is not a valid JSON...',
+          });
+          return;
+        }
+        break;
       case 'aztable':
         try {
           const jsonValue = JSON.parse(rawValue);
@@ -538,7 +597,31 @@ export function EditRecordPage(props: RecordDetailsPageProps) {
       // case 'cassandra':
       // case 'mongodb':
       // case 'redis':
-      // case 'cosmosdb':
+      case 'cosmosdb':
+        try {
+          const jsonValue = JSON.parse(rawValue);
+
+          sql = formatJS(
+            getUpdateWithValuesForAzCosmosDB(
+              {
+                ...query,
+                dialect: connection.dialect,
+                columns,
+              },
+              jsonValue,
+              conditions,
+            )?.query || '',
+          );
+
+          setIsEdit(false);
+        } catch (err) {
+          await addToast({
+            message:
+              'Azure CosmosDB value needs to be a valid JSON object. Input provided is not a valid JSON...',
+          });
+          return;
+        }
+        break;
       case 'aztable':
         try {
           const jsonValue = JSON.parse(rawValue);

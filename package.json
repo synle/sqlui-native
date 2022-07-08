@@ -93,6 +93,8 @@
     "fuzzysort": "^1.2.1",
     "js-beautify": "^1.14.3",
     "json-2-csv": "^3.17.1",
+    "lodash.get": "^4.4.2",
+    "lodash.set": "^4.3.2",
     "mariadb": "^3.0.0",
     "monaco-editor": "^0.32.1",
     "mongodb": "^4.6.0",

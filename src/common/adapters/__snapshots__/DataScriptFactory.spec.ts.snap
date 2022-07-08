@@ -948,9 +948,7 @@ Array [
   .database('database1')
   .container('table1')
   .items
-  .create({
-    \\"id\\": \\"some_id\\"
-  })",
+  .create({})",
   },
   Object {
     "formatter": "js",
