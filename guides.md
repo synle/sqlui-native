@@ -895,6 +895,42 @@ WHERE
 ```
 
 
+### Create Table
+
+```sql
+CREATE TABLE table1 (id INT PRIMARY KEY, column1 INT, column2 VARCHAR(100))
+```
+
+
+### Drop Table
+
+```sql
+DROP TABLE table1
+```
+
+
+### Add Column
+
+```sql
+ALTER TABLE
+  table1
+ADD
+  new_column1 TEXT
+```
+
+
+### Drop Column
+
+```sql
+ALTER TABLE
+  table1 DROP id;
+ALTER TABLE
+  table1 DROP column1;
+ALTER TABLE
+  table1 DROP column2;
+```
+
+
 ## mongodb
 
 ### Sample Connection String
