@@ -70,138 +70,121 @@ export default class MongoDBDataAdapter extends BaseDataAdapter implements IData
   }
 
   async getTables(database?: string): Promise<SqluiCore.TableMetaData[]> {
-    return new Promise(async (resolve, reject) => {
-      try {
-        const client = await this.getConnection();
+    const client = await this.getConnection();
 
-        try {
-          //@ts-ignore
-          const collections = await client.db(database).listCollections().toArray();
+    try {
+      //@ts-ignore
+      const collections = await client.db(database).listCollections().toArray();
 
-          resolve(
-            (collections || [])
-              .map((collection) => ({
-                name: collection.name,
-                columns: [],
-              }))
-              .sort((a, b) => (a.name || '').localeCompare(b.name || '')),
-          );
-        } finally {
-          this.closeConnection(client);
-        }
-      } catch (err) {
-        reject(err);
-      }
-    });
+      return (collections || [])
+        .map((collection) => ({
+          name: collection.name,
+          columns: [],
+        }))
+        .sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+    } finally {
+      this.closeConnection(client);
+    }
   }
 
   async getColumns(table: string, database?: string): Promise<SqluiCore.ColumnMetaData[]> {
-    return new Promise(async (resolve, reject) => {
-      try {
-        const client = await this.getConnection();
+    const client = await this.getConnection();
 
-        try {
-          //@ts-ignore
-          const items = await client
-            .db(database)
-            .collection(table)
-            .find()
-            .limit(MAX_ITEM_COUNT_TO_SCAN)
-            .toArray();
+    try {
+      //@ts-ignore
+      const items = await client
+        .db(database)
+        .collection(table)
+        .find()
+        .limit(MAX_ITEM_COUNT_TO_SCAN)
+        .toArray();
 
-          return BaseDataAdapter.inferTypesFromItems(items);
-        } finally {
-          this.closeConnection(client);
-        }
-      } catch (err) {
-        reject(err);
-      }
-    });
+      return BaseDataAdapter.inferTypesFromItems(items);
+    } finally {
+      this.closeConnection(client);
+    }
   }
 
   private async createDatabase(newDatabase: string): Promise<void> {
     const connectionToUse = `${this.connectionOption}/${newDatabase}`;
 
-    // TODO: check if this database name is there
-    const databases = await this.getDatabases();
-
-    for (const database of databases) {
-      if (database.name === newDatabase) {
-        throw 'Database already existed, cannot create this database';
-      }
-    }
-
     // connect to this client
     const client = await this.getConnection(connectionToUse);
 
-    // create a dummy collection
-    await client.db(newDatabase).createCollection('test-collection');
+    try {
+      // TODO: check if this database name is there
+      const databases = await this.getDatabases();
+
+      for (const database of databases) {
+        if (database.name === newDatabase) {
+          throw 'Database already existed, cannot create this database';
+        }
+      }
+
+      // create a dummy collection
+      await client.db(newDatabase).createCollection('test-collection');
+    } finally {
+      this.closeConnection(client);
+    }
   }
 
   async execute(sql: string, database?: string): Promise<SqluiCore.Result> {
-    return new Promise(async (resolve, reject) => {
-      try {
-        if (!sql.includes(`${MONGO_ADAPTER_PREFIX}.`)) {
-          throw `Invalid syntax. MongoDB syntax in sqlui-native starts with '${MONGO_ADAPTER_PREFIX}.'. Refer to the syntax help in this link https://synle.github.io/sqlui-native/guides#mongodb`;
-        }
+    const client = await this.getConnection();
 
-        if (
-          (sql.includes('db.create(') || sql.includes('db.createDatabase(')) &&
-          sql.includes(')')
-        ) {
-          // TODO: see if we need to be more strict with the regex
-          let databaseName = sql
-            .replace(/[;'" )]/g, '')
-            .replace('db.create(', '')
-            .replace('db.createDatabase(', '')
-            .trim();
-          await this.createDatabase(databaseName);
-          return resolve({
-            ok: true,
-            meta: `Database ${databaseName} created`,
-          });
-        }
-
-        const client = await this.getConnection();
-
-        try {
-          const db = await client.db(database);
-
-          //@ts-ignore
-          const rawToUse: any = await eval(sql);
-
-          if (rawToUse.acknowledged === true) {
-            // insert or insertOne
-            let affectedRows =
-              rawToUse.insertedCount || rawToUse.deletedCount || rawToUse.modifiedCount;
-            if (affectedRows === undefined) {
-              affectedRows = 1;
-            }
-
-            resolve({
-              ok: false,
-              meta: rawToUse,
-              affectedRows,
-            });
-          } else if (Array.isArray(rawToUse)) {
-            resolve({
-              ok: false,
-              raw: rawToUse,
-            });
-          } else {
-            resolve({
-              ok: false,
-            });
-          }
-        } finally {
-          this.closeConnection(client);
-        }
-      } catch (err) {
-        resolve({
-          ok: false,
-          error: err,
-        });
+    try {
+      if (!sql.includes(`${MONGO_ADAPTER_PREFIX}.`)) {
+        throw `Invalid syntax. MongoDB syntax in sqlui-native starts with '${MONGO_ADAPTER_PREFIX}.'. Refer to the syntax help in this link https://synle.github.io/sqlui-native/guides#mongodb`;
       }
-    });
+
+      if ((sql.includes('db.create(') || sql.includes('db.createDatabase(')) && sql.includes(')')) {
+        // TODO: see if we need to be more strict with the regex
+        let databaseName = sql
+          .replace(/[;'" )]/g, '')
+          .replace('db.create(', '')
+          .replace('db.createDatabase(', '')
+          .trim();
+        await this.createDatabase(databaseName);
+        return {
+          ok: true,
+          meta: `Database ${databaseName} created`,
+        };
+      }
+
+      const db = await client.db(database);
+
+      //@ts-ignore
+      const rawToUse: any = await eval(sql);
+
+      if (rawToUse.acknowledged === true) {
+        // insert or insertOne
+        let affectedRows =
+          rawToUse.insertedCount || rawToUse.deletedCount || rawToUse.modifiedCount;
+        if (affectedRows === undefined) {
+          affectedRows = 1;
+        }
+
+        return {
+          ok: true,
+          meta: rawToUse,
+          affectedRows,
+        };
+      } else if (Array.isArray(rawToUse)) {
+        return {
+          ok: true,
+          raw: rawToUse,
+        };
+      } else {
+        return {
+          ok: true,
+        };
+      }
+    } catch (err) {
+      return {
+        ok: false,
+        error: err,
+      };
+    } finally {
+      this.closeConnection(client);
+    }
   }
 }
