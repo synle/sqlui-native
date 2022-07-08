@@ -103,7 +103,10 @@ export default function ConnectionDatabaseSelector(props: ConnectionDatabaseSele
         {databaseOptions}
       </Select>
       {isTableIdRequired && (
-        <Select value={query.tableId} onChange={(newValue) => onTableChange(newValue)} required={props.required}>
+        <Select
+          value={query.tableId}
+          onChange={(newValue) => onTableChange(newValue)}
+          required={props.required}>
           <option value=''>Pick a Table</option>
           {tableOptions}
         </Select>
