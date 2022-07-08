@@ -15,6 +15,8 @@ type DataTableProps = {
   columns: any[];
   data: any[];
   onRowClick?: (rowData: any) => void;
+  onShowEdit?:  (rowData: any) => void;
+  onShowRecordDetails?: (rowData: any) => void;
 };
 
 export const ALL_PAGE_SIZE_OPTIONS: any[] = [
