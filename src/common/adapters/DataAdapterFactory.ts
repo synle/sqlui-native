@@ -120,7 +120,7 @@ export async function getDatabases(sessionId: string, connectionId: string){
     'connection',
   ).get(connectionId);
 
-  return getDataAdapter(connection.connection).getDatabases();
+  return (await getDataAdapter(connection.connection).getDatabases()).sort((a, b) => (a.name || '').localeCompare(b.name || ''));
 }
 
 export async function getTables(sessionId: string, connectionId: string, databaseId: string){
@@ -129,7 +129,7 @@ export async function getTables(sessionId: string, connectionId: string, databas
     'connection',
   ).get(connectionId);
 
-  return getDataAdapter(connection.connection).getTables(databaseId);
+  return (await getDataAdapter(connection.connection).getTables(databaseId)).sort((a, b) => (a.name || '').localeCompare(b.name || ''));
 }
 
 export async function getColumns(sessionId: string, connectionId: string, databaseId: string, tableId:string){
@@ -138,5 +138,21 @@ export async function getColumns(sessionId: string, connectionId: string, databa
     'connection',
   ).get(connectionId);
 
-  return getDataAdapter(connection.connection).getColumns(tableId, databaseId);
+  return (await getDataAdapter(connection.connection).getColumns(tableId, databaseId)).sort((a, b) => {
+          if (a.primaryKey !== b.primaryKey) {
+            if (a.primaryKey) {
+              return -1;
+            }
+            return 1;
+          }
+
+          if (a.unique !== b.unique) {
+            if (a.unique) {
+              return -1;
+            }
+            return 1;
+          }
+
+          return (a.name || '').localeCompare(b.name || '');
+        });
 }

@@ -62,8 +62,7 @@ export default class MongoDBDataAdapter extends BaseDataAdapter implements IData
         .map((database: any) => ({
           name: database.name,
           tables: [],
-        }))
-        .sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+        }));
     } finally {
       this.closeConnection(client);
     }
@@ -80,8 +79,7 @@ export default class MongoDBDataAdapter extends BaseDataAdapter implements IData
         .map((collection) => ({
           name: collection.name,
           columns: [],
-        }))
-        .sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+        }));
     } finally {
       this.closeConnection(client);
     }

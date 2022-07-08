@@ -85,8 +85,7 @@ export default class CassandraDataAdapter extends BaseDataAdapter implements IDa
       .map((keyspace) => ({
         name: keyspace,
         tables: [],
-      }))
-      .sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+      }));
   }
 
   async getTables(database?: string): Promise<SqluiCore.TableMetaData[]> {
@@ -115,8 +114,7 @@ export default class CassandraDataAdapter extends BaseDataAdapter implements IDa
       .map((row) => ({
         name: row.name,
         columns: [],
-      }))
-      .sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+      }));
   }
 
   async getColumns(table: string, database?: string): Promise<SqluiCore.ColumnMetaData[]> {
@@ -143,7 +141,6 @@ export default class CassandraDataAdapter extends BaseDataAdapter implements IDa
     const res = await this._execute(sql, [database, table]);
 
     return res.rows
-      .sort((a: any, b: any) => (a.name || '').localeCompare(b.name || ''))
       .map((row) => ({
         name: row.name,
         type: row.type,
