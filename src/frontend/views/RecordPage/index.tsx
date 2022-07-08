@@ -270,7 +270,9 @@ function RecordForm(props) {
           break;
         // case 'cassandra':
         case 'mongodb':
-          for (const column of columns) {
+          for (const column of columns.filter(
+            (targetColumn) => !targetColumn.primaryKey,
+          )) {
             set(newData, column.propertyPath || column.name, '');
           }
           setRawValue(JSON.stringify(newData, null, 2));
@@ -278,7 +280,7 @@ function RecordForm(props) {
         // case 'redis':
         case 'cosmosdb':
           for (const column of columns.filter(
-            (targetColumn) => targetColumn.name[0] !== '_' && targetColumn.name !== 'id',
+            (targetColumn) => targetColumn.name[0] !== '_' && !targetColumn.primaryKey,
           )) {
             set(newData, column.propertyPath || column.name, '');
           }

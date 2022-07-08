@@ -179,6 +179,7 @@ export default class MongoDBDataAdapter extends BaseDataAdapter implements IData
       } else {
         return {
           ok: true,
+          raw: rawToUse
         };
       }
     } catch (err) {
