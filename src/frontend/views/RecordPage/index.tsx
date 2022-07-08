@@ -367,15 +367,23 @@ function RecordForm(props) {
       case 'cosmosdb':
       case 'aztable':
         // js raw value
-        contentFormDataView.push(
-          <CodeEditorBox
-            key='rawValue'
-            value={rawValue}
-            onChange={(newValue) => setRawValue(newValue)}
-            required={true}
-            language='json'
-          />,
-        );
+        if(query?.tableId){
+          contentFormDataView.push(
+            <CodeEditorBox
+              key='rawValue'
+              value={rawValue}
+              onChange={(newValue) => setRawValue(newValue)}
+              required={true}
+              language='json'
+            />,
+          );
+        } else {
+          contentFormDataView.push(
+            <React.Fragment key='connection_required'>
+              Please select a connection, database and table from the above
+            </React.Fragment>,
+          );
+        }
         break;
     }
   }
@@ -447,7 +455,28 @@ export function NewRecordPage() {
         );
         break;
       // case 'cassandra':
-      // case 'mongodb':
+      case 'mongodb':
+        try {
+          const jsonValue = JSON.parse(rawValue);
+
+          sql = formatJS(
+            getInsertForMongoDB(
+              {
+                ...query,
+                dialect: connection.dialect,
+                columns,
+              },
+              jsonValue,
+            )?.query || '',
+          );
+        } catch (err) {
+          await addToast({
+            message:
+              `Dialect "${connection?.dialect}" value needs to be a valid JSON object. Input provided is not a valid JSON...`,
+          });
+          return;
+        }
+        break;
       // case 'redis':
       case 'cosmosdb':
         try {
@@ -466,7 +495,7 @@ export function NewRecordPage() {
         } catch (err) {
           await addToast({
             message:
-              'Azure CosmosDB value needs to be a valid JSON object. Input provided is not a valid JSON...',
+              `Dialect "${connection?.dialect}" value needs to be a valid JSON object. Input provided is not a valid JSON...`,
           });
           return;
         }
@@ -488,7 +517,7 @@ export function NewRecordPage() {
         } catch (err) {
           await addToast({
             message:
-              'Azure Table value needs to be a valid JSON object. Input provided is not a valid JSON...',
+              `Dialect "${connection?.dialect}" value needs to be a valid JSON object. Input provided is not a valid JSON...`,
           });
           return;
         }
@@ -607,7 +636,31 @@ export function EditRecordPage(props: RecordDetailsPageProps) {
         setIsEdit(false);
         break;
       // case 'cassandra':
-      // case 'mongodb':
+      case 'mongodb':
+        try {
+          const jsonValue = JSON.parse(rawValue);
+
+          sql = formatJS(
+            getUpdateWithValuesForMongoDB(
+              {
+                ...query,
+                dialect: connection.dialect,
+                columns,
+              },
+              jsonValue,
+              conditions,
+            )?.query || '',
+          );
+
+          setIsEdit(false);
+        } catch (err) {
+          await addToast({
+            message:
+              `Dialect "${connection?.dialect}" value needs to be a valid JSON object. Input provided is not a valid JSON...`,
+          });
+          return;
+        }
+        break;
       // case 'redis':
       case 'cosmosdb':
         try {
@@ -629,7 +682,7 @@ export function EditRecordPage(props: RecordDetailsPageProps) {
         } catch (err) {
           await addToast({
             message:
-              'Azure CosmosDB value needs to be a valid JSON object. Input provided is not a valid JSON...',
+              `Dialect "${connection?.dialect}" value needs to be a valid JSON object. Input provided is not a valid JSON...`,
           });
           return;
         }
@@ -654,7 +707,7 @@ export function EditRecordPage(props: RecordDetailsPageProps) {
         } catch (err) {
           await addToast({
             message:
-              'Azure Table value needs to be a valid JSON object. Input provided is not a valid JSON...',
+              `Dialect "${connection?.dialect}" value needs to be a valid JSON object. Input provided is not a valid JSON...`,
           });
           return;
         }
