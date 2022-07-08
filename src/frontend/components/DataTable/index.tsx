@@ -61,12 +61,12 @@ export default function DataTable(props: DataTableProps) {
 
   const allRecordSize = data.length;
   let pageSizeToUse = useTablePageSize() || DEFAULT_TABLE_PAGE_SIZE;
-  if(pageSizeToUse === -1){
+  if (pageSizeToUse === -1) {
     pageSizeToUse = allRecordSize;
   }
 
-  const pageSizeOptions = ALL_PAGE_SIZE_OPTIONS.map(option => ({...option}));
-  pageSizeOptions[pageSizeOptions.length -1].value = allRecordSize;
+  const pageSizeOptions = ALL_PAGE_SIZE_OPTIONS.map((option) => ({ ...option }));
+  pageSizeOptions[pageSizeOptions.length - 1].value = allRecordSize;
 
   const { getTableBodyProps, gotoPage, headerGroups, page, prepareRow, setPageSize, state } =
     useTable(

@@ -82,7 +82,7 @@ export function getInsert(
 
   if (value) {
     columns = value;
-  } else{
+  } else {
     for (const column of input.columns) {
       if (column.name !== '_id') {
         const valueToUse: any = column.type === 'string' ? 'abc' : 123;

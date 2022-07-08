@@ -16,13 +16,13 @@ import {
   getUpdateWithValues as getUpdateWithValuesForAzTable,
 } from 'src/common/adapters/AzureTableStorageAdapter/scripts';
 import {
+  getInsert as getInsertForMongoDB,
+  getUpdateWithValues as getUpdateWithValuesForMongoDB,
+} from 'src/common/adapters/MongoDBDataAdapter/scripts';
+import {
   getInsert as getInsertForRdmbs,
   getUpdateWithValues as getUpdateWithValuesForRdmbs,
 } from 'src/common/adapters/RelationalDataAdapter/scripts';
-import {
-  getInsert as getInsertForMongoDB,
-  getUpdateWithValues as getUpdateWithValuesForMongoDB,
-}from 'src/common/adapters/MongoDBDataAdapter/scripts';
 import Breadcrumbs from 'src/frontend/components/Breadcrumbs';
 import CodeEditorBox from 'src/frontend/components/CodeEditorBox';
 import ConnectionDescription from 'src/frontend/components/ConnectionDescription';
@@ -270,9 +270,7 @@ function RecordForm(props) {
           break;
         // case 'cassandra':
         case 'mongodb':
-          for (const column of columns.filter(
-            (targetColumn) => !targetColumn.primaryKey,
-          )) {
+          for (const column of columns.filter((targetColumn) => !targetColumn.primaryKey)) {
             set(newData, column.propertyPath || column.name, '');
           }
           setRawValue(JSON.stringify(newData, null, 2));
@@ -370,7 +368,7 @@ function RecordForm(props) {
       case 'cosmosdb':
       case 'aztable':
         // js raw value
-        if(query?.tableId){
+        if (query?.tableId) {
           contentFormDataView.push(
             <CodeEditorBox
               key='rawValue'
@@ -474,8 +472,7 @@ export function NewRecordPage() {
           );
         } catch (err) {
           await addToast({
-            message:
-              `Dialect "${connection?.dialect}" value needs to be a valid JSON object. Input provided is not a valid JSON...`,
+            message: `Dialect "${connection?.dialect}" value needs to be a valid JSON object. Input provided is not a valid JSON...`,
           });
           return;
         }
@@ -497,8 +494,7 @@ export function NewRecordPage() {
           );
         } catch (err) {
           await addToast({
-            message:
-              `Dialect "${connection?.dialect}" value needs to be a valid JSON object. Input provided is not a valid JSON...`,
+            message: `Dialect "${connection?.dialect}" value needs to be a valid JSON object. Input provided is not a valid JSON...`,
           });
           return;
         }
@@ -519,8 +515,7 @@ export function NewRecordPage() {
           );
         } catch (err) {
           await addToast({
-            message:
-              `Dialect "${connection?.dialect}" value needs to be a valid JSON object. Input provided is not a valid JSON...`,
+            message: `Dialect "${connection?.dialect}" value needs to be a valid JSON object. Input provided is not a valid JSON...`,
           });
           return;
         }
@@ -572,7 +567,12 @@ export function NewRecordPage() {
             },
           ]}
         />
-        <RecordForm onSave={onSave} onCancel={onCancel} onConnectionChanges={onConnectionChanges} mode='create' />
+        <RecordForm
+          onSave={onSave}
+          onCancel={onCancel}
+          onConnectionChanges={onConnectionChanges}
+          mode='create'
+        />
       </>
     </LayoutTwoColumns>
   );
@@ -644,8 +644,8 @@ export function EditRecordPage(props: RecordDetailsPageProps) {
           const jsonValue = JSON.parse(rawValue);
 
           // properly escape the id
-          if(conditions['_id']){
-            conditions['_id'] = `ObjectId('${conditions['_id']}')`
+          if (conditions['_id']) {
+            conditions['_id'] = `ObjectId('${conditions['_id']}')`;
           }
 
           // filter out the id inside of delta
@@ -664,16 +664,15 @@ export function EditRecordPage(props: RecordDetailsPageProps) {
           );
 
           // here we construct ObjectId
-          sql = sql.replace(/"ObjectId\('[a-z0-9]+'\)"/,(a) => {
-            const id = a.replace(`ObjectId`,'').replace(/[\(\)'"]/g,'')
-            return `ObjectId("${id}")`
-          })
+          sql = sql.replace(/"ObjectId\('[a-z0-9]+'\)"/, (a) => {
+            const id = a.replace(`ObjectId`, '').replace(/[\(\)'"]/g, '');
+            return `ObjectId("${id}")`;
+          });
 
           setIsEdit(false);
         } catch (err) {
           await addToast({
-            message:
-              `Dialect "${connection?.dialect}" value needs to be a valid JSON object. Input provided is not a valid JSON...`,
+            message: `Dialect "${connection?.dialect}" value needs to be a valid JSON object. Input provided is not a valid JSON...`,
           });
           return;
         }
@@ -698,8 +697,7 @@ export function EditRecordPage(props: RecordDetailsPageProps) {
           setIsEdit(false);
         } catch (err) {
           await addToast({
-            message:
-              `Dialect "${connection?.dialect}" value needs to be a valid JSON object. Input provided is not a valid JSON...`,
+            message: `Dialect "${connection?.dialect}" value needs to be a valid JSON object. Input provided is not a valid JSON...`,
           });
           return;
         }
@@ -723,8 +721,7 @@ export function EditRecordPage(props: RecordDetailsPageProps) {
           setIsEdit(false);
         } catch (err) {
           await addToast({
-            message:
-              `Dialect "${connection?.dialect}" value needs to be a valid JSON object. Input provided is not a valid JSON...`,
+            message: `Dialect "${connection?.dialect}" value needs to be a valid JSON object. Input provided is not a valid JSON...`,
           });
           return;
         }
