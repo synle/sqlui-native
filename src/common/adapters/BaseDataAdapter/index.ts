@@ -99,6 +99,6 @@ export default abstract class BaseDataAdapter {
       };
     }
 
-    return Object.values(columnsMap).sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+    return Object.values(columnsMap);
   }
 }
