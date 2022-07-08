@@ -125,9 +125,24 @@ jobs:
           asset_name: sqlui-native-beta.snap
           asset_content_type: application/octet-stream
 
-  roll_back:
+  roll_back_on_failure:
     if: failure()
     needs: [create_release, build_windows, build_macos, build_linux]
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{ github.head_ref }}
+      - uses: dev-drprasad/delete-tag-and-release@v0.2.0
+        with:
+          delete_release: true
+          tag_name: 'beta'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  roll_back_on_canceled:
+    if: cancelled()
     runs-on: ubuntu-latest
     timeout-minutes: 4
     steps:
