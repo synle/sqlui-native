@@ -10,15 +10,13 @@ export function getSampleConnectionString(dialect?: SqluiCore.Dialect) {
 export function getSelectAllColumns(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Select All Columns`;
 
-  if (input.dialect === 'cassandra') {
-    return {
-      label,
-      formatter,
-      query: `SELECT *
+  return {
+    label,
+    formatter,
+    query: `SELECT *
               FROM ${input.tableId}
               LIMIT ${input.querySize}`,
-    };
-  }
+  };
 }
 
 export function getSelectSpecificColumns(
@@ -33,16 +31,14 @@ export function getSelectSpecificColumns(
   const columnString = `\n` + input.columns.map((col) => `  ${col.name}`).join(',\n');
   const whereColumnString = input.columns.map((col) => `${col.name} = ''`).join('\n AND ');
 
-  if (input.dialect === 'cassandra') {
-    return {
-      label,
-      formatter,
-      query: `SELECT ${columnString}
+  return {
+    label,
+    formatter,
+    query: `SELECT ${columnString}
               FROM ${input.tableId}
               WHERE ${whereColumnString}
               LIMIT ${input.querySize}`,
-    };
-  }
+  };
 }
 
 export function getInsert(input: SqlAction.TableInput): SqlAction.Output | undefined {
@@ -55,14 +51,12 @@ export function getInsert(input: SqlAction.TableInput): SqlAction.Output | undef
   const columnString = input.columns.map((col) => col.name).join(',\n');
   const insertValueString = input.columns.map((col) => `'_${col.name}_'`).join(',\n');
 
-  if (input.dialect === 'cassandra') {
-    return {
-      label,
-      formatter,
-      query: `INSERT INTO ${input.tableId} (${columnString})
+  return {
+    label,
+    formatter,
+    query: `INSERT INTO ${input.tableId} (${columnString})
               VALUES (${insertValueString})`,
-    };
-  }
+  };
 }
 
 export function getUpdate(input: SqlAction.TableInput): SqlAction.Output | undefined {
@@ -75,15 +69,13 @@ export function getUpdate(input: SqlAction.TableInput): SqlAction.Output | undef
   const columnString = input.columns.map((col) => `${col.name} = ''`).join(',\n');
   const whereColumnString = input.columns.map((col) => `${col.name} = ''`).join(' AND \n');
 
-  if (input.dialect === 'cassandra') {
-    return {
-      label,
-      formatter: 'js',
-      query: `UPDATE ${input.tableId}
+  return {
+    label,
+    formatter: 'js',
+    query: `UPDATE ${input.tableId}
               SET ${columnString}
               WHERE ${whereColumnString}`,
-    };
-  }
+  };
 }
 
 export function getDelete(input: SqlAction.TableInput): SqlAction.Output | undefined {
@@ -95,39 +87,33 @@ export function getDelete(input: SqlAction.TableInput): SqlAction.Output | undef
 
   const whereColumnString = input.columns.map((col) => `${col.name} = ''`).join(' AND \n');
 
-  if (input.dialect === 'cassandra') {
-    return {
-      label,
-      formatter,
-      query: `DELETE FROM ${input.tableId}
+  return {
+    label,
+    formatter,
+    query: `DELETE FROM ${input.tableId}
               WHERE ${whereColumnString}`,
-    };
-  }
+  };
 }
 
 export function getCreateKeyspace(input: SqlAction.DatabaseInput): SqlAction.Output | undefined {
   const label = `Create Keyspace`;
 
-  if (input.dialect === 'cassandra') {
-    return {
-      label,
-      formatter,
-      query: `CREATE KEYSPACE IF NOT EXISTS some_keyspace
+  return {
+    label,
+    formatter,
+    query: `CREATE KEYSPACE IF NOT EXISTS some_keyspace
              WITH replication = {'class': 'SimpleStrategy', 'replication_factor' : 3};`,
-    };
-  }
+  };
 }
 
 export function getDropKeyspace(input: SqlAction.DatabaseInput): SqlAction.Output | undefined {
   const label = `Drop Keyspace`;
 
-  if (input.dialect === 'cassandra') {
-    return {
-      label,
-      formatter,
-      query: `DROP KEYSPACE IF EXISTS ${input.databaseId};`,
-    };
-  }
+  return {
+    label,
+    formatter,
+    query: `DROP KEYSPACE IF EXISTS ${input.databaseId};`,
+  };
 }
 
 export function getCreateConnectionDatabase(
@@ -135,16 +121,88 @@ export function getCreateConnectionDatabase(
 ): SqlAction.Output | undefined {
   const label = `Create Connection Keyspace`;
 
-  if (input.dialect === 'cassandra') {
-    return {
-      label,
-      formatter,
-      query: `CREATE KEYSPACE IF NOT EXISTS some_keyspace
-             WITH replication = {'class': 'SimpleStrategy', 'replication_factor' : 3};`,
-    };
-  }
+  return {
+    label,
+    formatter,
+    query: `CREATE KEYSPACE IF NOT EXISTS some_keyspace
+           WITH replication = {'class': 'SimpleStrategy', 'replication_factor' : 3};`,
+  };
 }
 
+export function getCreateTable(input: SqlAction.TableInput): SqlAction.Output | undefined {
+  const label = `Create Table`;
+
+  if (!input.columns) {
+    return undefined;
+  }
+
+  let columnString: string = '';
+  // mapping column
+  columnString = input.columns
+    .map((col) => [col.name, col.type, col.primaryKey ? 'PRIMARY KEY' : ''].join(' '))
+    .join(',\n');
+
+  // figuring out the keys
+  let partitionKeys: string[] = [],
+    clusteringKeys: string[] = [];
+  for (const col of input.columns) {
+    if (col.kind === 'partition_key') {
+      partitionKeys.push(col.name);
+    } else if (col.kind === 'clustering') {
+      clusteringKeys.push(col.name);
+    }
+  }
+  if (partitionKeys.length > 0) {
+    if (clusteringKeys.length > 0) {
+      columnString += `, PRIMARY KEY((${partitionKeys.join(', ')}), ${clusteringKeys.join(', ')})`;
+    } else {
+      // has only the partition key
+      columnString += `, PRIMARY KEY((${partitionKeys.join(', ')}))`;
+    }
+  }
+
+  return {
+    label,
+    formatter,
+    query: `CREATE TABLE ${input.tableId} (${columnString})`,
+  };
+}
+
+export function getDropTable(input: SqlAction.TableInput): SqlAction.Output | undefined {
+  const label = `Drop Table`;
+
+  return {
+    label,
+    formatter,
+    query: `DROP TABLE ${input.tableId}`,
+  };
+}
+
+export function getAddColumn(input: SqlAction.TableInput): SqlAction.Output | undefined {
+  const label = `Add Column`;
+
+  return {
+    label,
+    formatter,
+    query: `ALTER TABLE ${input.tableId}
+            ADD new_column1 TEXT`,
+  };
+}
+
+export function getDropColumns(input: SqlAction.TableInput): SqlAction.Output | undefined {
+  const label = `Drop Column`;
+
+  return {
+    label,
+    formatter,
+    query: input.columns
+      ?.map(
+        (col) => `ALTER TABLE ${input.tableId}
+                     DROP ${col.name};`,
+      )
+      .join('\n'),
+  };
+}
 export const tableActionScripts: SqlAction.TableActionScriptGenerator[] = [
   getSelectAllColumns,
   getSelectSpecificColumns,
@@ -152,6 +210,11 @@ export const tableActionScripts: SqlAction.TableActionScriptGenerator[] = [
   getDivider,
   getUpdate,
   getDelete,
+  getDivider,
+  getCreateTable,
+  getDropTable,
+  getAddColumn,
+  getDropColumns,
 ];
 
 export const databaseActionScripts: SqlAction.DatabaseActionScriptGenerator[] = [
