@@ -122,7 +122,10 @@ export default class AzureCosmosDataAdapter extends BaseDataAdapter implements I
         })
         .fetchAll();
 
-      return BaseDataAdapter.inferTypesFromItems(items);
+      return BaseDataAdapter.inferTypesFromItems(items).map((column) => ({
+        ...column,
+        primaryKey: column.name === 'id',
+      }));
     } catch (err) {
       return [];
     } finally {

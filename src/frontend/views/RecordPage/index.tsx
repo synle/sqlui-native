@@ -16,8 +16,12 @@ import {
   getUpdateWithValues as getUpdateWithValuesForAzTable,
 } from 'src/common/adapters/AzureTableStorageAdapter/scripts';
 import {
+  getInsert as getInsertForMongoDB,
+  getUpdateWithValues as getUpdateWithValuesForMongoDB,
+} from 'src/common/adapters/MongoDBDataAdapter/scripts';
+import {
   getInsert as getInsertForRdmbs,
-  getUpdateWithValues as getUpdateWithValuesForRmdbs,
+  getUpdateWithValues as getUpdateWithValuesForRdmbs,
 } from 'src/common/adapters/RelationalDataAdapter/scripts';
 import Breadcrumbs from 'src/frontend/components/Breadcrumbs';
 import CodeEditorBox from 'src/frontend/components/CodeEditorBox';
@@ -50,6 +54,7 @@ type RecordFormProps = {
   data?: RecordData;
   rawValue?: string;
   isEditMode?: boolean;
+  mode: 'edit' | 'create';
 };
 
 export function isRecordFormSupportedForDialect(dialect?: string) {
@@ -61,7 +66,10 @@ export function isRecordFormSupportedForDialect(dialect?: string) {
     case 'sqlite':
       return true;
     case 'cassandra':
+      // TODO: to be implemented
+      return false;
     case 'mongodb':
+      return true;
     case 'redis':
       // TODO: to be implemented
       return false;
@@ -224,7 +232,7 @@ function RecordForm(props) {
           newData = props.data;
           break;
         // case 'cassandra':
-        // case 'mongodb':
+        case 'mongodb':
         // case 'redis':
         case 'cosmosdb':
           newRawValue = { ...props.data };
@@ -261,11 +269,16 @@ function RecordForm(props) {
           setData(newData);
           break;
         // case 'cassandra':
-        // case 'mongodb':
+        case 'mongodb':
+          for (const column of columns.filter((targetColumn) => !targetColumn.primaryKey)) {
+            set(newData, column.propertyPath || column.name, '');
+          }
+          setRawValue(JSON.stringify(newData, null, 2));
+          break;
         // case 'redis':
         case 'cosmosdb':
           for (const column of columns.filter(
-            (targetColumn) => targetColumn.name[0] !== '_' && targetColumn.name !== 'id',
+            (targetColumn) => targetColumn.name[0] !== '_' && !targetColumn.primaryKey,
           )) {
             set(newData, column.propertyPath || column.name, '');
           }
@@ -350,20 +363,28 @@ function RecordForm(props) {
         }
         break;
       // case 'cassandra':
-      // case 'mongodb':
+      case 'mongodb':
       // case 'redis':
       case 'cosmosdb':
       case 'aztable':
         // js raw value
-        contentFormDataView.push(
-          <CodeEditorBox
-            key='rawValue'
-            value={rawValue}
-            onChange={(newValue) => setRawValue(newValue)}
-            required={true}
-            language='json'
-          />,
-        );
+        if (query?.tableId) {
+          contentFormDataView.push(
+            <CodeEditorBox
+              key='rawValue'
+              value={rawValue}
+              onChange={(newValue) => setRawValue(newValue)}
+              required={true}
+              language='json'
+            />,
+          );
+        } else {
+          contentFormDataView.push(
+            <React.Fragment key='connection_required'>
+              Please select a connection, database and table from the above
+            </React.Fragment>,
+          );
+        }
         break;
     }
   }
@@ -435,7 +456,27 @@ export function NewRecordPage() {
         );
         break;
       // case 'cassandra':
-      // case 'mongodb':
+      case 'mongodb':
+        try {
+          const jsonValue = JSON.parse(rawValue);
+
+          sql = formatJS(
+            getInsertForMongoDB(
+              {
+                ...query,
+                dialect: connection.dialect,
+                columns,
+              },
+              jsonValue,
+            )?.query || '',
+          );
+        } catch (err) {
+          await addToast({
+            message: `Dialect "${connection?.dialect}" value needs to be a valid JSON object. Input provided is not a valid JSON...`,
+          });
+          return;
+        }
+        break;
       // case 'redis':
       case 'cosmosdb':
         try {
@@ -453,8 +494,7 @@ export function NewRecordPage() {
           );
         } catch (err) {
           await addToast({
-            message:
-              'Azure CosmosDB value needs to be a valid JSON object. Input provided is not a valid JSON...',
+            message: `Dialect "${connection?.dialect}" value needs to be a valid JSON object. Input provided is not a valid JSON...`,
           });
           return;
         }
@@ -475,8 +515,7 @@ export function NewRecordPage() {
           );
         } catch (err) {
           await addToast({
-            message:
-              'Azure Table value needs to be a valid JSON object. Input provided is not a valid JSON...',
+            message: `Dialect "${connection?.dialect}" value needs to be a valid JSON object. Input provided is not a valid JSON...`,
           });
           return;
         }
@@ -528,7 +567,12 @@ export function NewRecordPage() {
             },
           ]}
         />
-        <RecordForm onSave={onSave} onCancel={onCancel} onConnectionChanges={onConnectionChanges} />
+        <RecordForm
+          onSave={onSave}
+          onCancel={onCancel}
+          onConnectionChanges={onConnectionChanges}
+          mode='create'
+        />
       </>
     </LayoutTwoColumns>
   );
@@ -582,7 +626,7 @@ export function EditRecordPage(props: RecordDetailsPageProps) {
       case 'postgres':
       case 'sqlite':
         sql = formatSQL(
-          getUpdateWithValuesForRmdbs(
+          getUpdateWithValuesForRdmbs(
             {
               ...query,
               dialect: connection.dialect,
@@ -595,7 +639,44 @@ export function EditRecordPage(props: RecordDetailsPageProps) {
         setIsEdit(false);
         break;
       // case 'cassandra':
-      // case 'mongodb':
+      case 'mongodb':
+        try {
+          const jsonValue = JSON.parse(rawValue);
+
+          // properly escape the id
+          if (conditions['_id']) {
+            conditions['_id'] = `ObjectId('${conditions['_id']}')`;
+          }
+
+          // filter out the id inside of delta
+          delete jsonValue['_id'];
+
+          sql = formatJS(
+            getUpdateWithValuesForMongoDB(
+              {
+                ...query,
+                dialect: connection.dialect,
+                columns,
+              },
+              jsonValue,
+              conditions,
+            )?.query || '',
+          );
+
+          // here we construct ObjectId
+          sql = sql.replace(/"ObjectId\('[a-z0-9]+'\)"/, (a) => {
+            const id = a.replace(`ObjectId`, '').replace(/[\(\)'"]/g, '');
+            return `ObjectId("${id}")`;
+          });
+
+          setIsEdit(false);
+        } catch (err) {
+          await addToast({
+            message: `Dialect "${connection?.dialect}" value needs to be a valid JSON object. Input provided is not a valid JSON...`,
+          });
+          return;
+        }
+        break;
       // case 'redis':
       case 'cosmosdb':
         try {
@@ -616,8 +697,7 @@ export function EditRecordPage(props: RecordDetailsPageProps) {
           setIsEdit(false);
         } catch (err) {
           await addToast({
-            message:
-              'Azure CosmosDB value needs to be a valid JSON object. Input provided is not a valid JSON...',
+            message: `Dialect "${connection?.dialect}" value needs to be a valid JSON object. Input provided is not a valid JSON...`,
           });
           return;
         }
@@ -641,8 +721,7 @@ export function EditRecordPage(props: RecordDetailsPageProps) {
           setIsEdit(false);
         } catch (err) {
           await addToast({
-            message:
-              'Azure Table value needs to be a valid JSON object. Input provided is not a valid JSON...',
+            message: `Dialect "${connection?.dialect}" value needs to be a valid JSON object. Input provided is not a valid JSON...`,
           });
           return;
         }
@@ -682,6 +761,7 @@ export function EditRecordPage(props: RecordDetailsPageProps) {
             onSave={onSave}
             onCancel={onCancel}
             isEditMode={true}
+            mode='edit'
           />
         </>
       ) : (
