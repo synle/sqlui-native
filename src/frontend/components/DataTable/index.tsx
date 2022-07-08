@@ -59,13 +59,13 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 export default function DataTable(props: DataTableProps) {
   const { columns, data } = props;
 
-  const defaultPageSize = useTablePageSize();
+  const defaultPageSize = useTablePageSize() || DEFAULT_TABLE_PAGE_SIZE;
 
   const { getTableBodyProps, gotoPage, headerGroups, page, prepareRow, setPageSize, state } =
     useTable(
       {
         initialState: {
-          pageSize: defaultPageSize || DEFAULT_TABLE_PAGE_SIZE,
+          pageSize: defaultPageSize === -1 ? data.length : defaultPageSize,
         },
         columns,
         data,
@@ -85,7 +85,8 @@ export default function DataTable(props: DataTableProps) {
   );
 
   const onRowsPerPageChange = useCallback((e) => {
-    setPageSize(e.target.value);
+    const newPageSize = parseInt(e.target.value)
+    setPageSize(newPageSize === -1 ? data.length : newPageSize);
   }, []);
 
   return (
@@ -181,7 +182,7 @@ export function DataTableWithJSONList(props: Omit<DataTableProps, 'columns'>) {
         },
       };
     });
-  }, []);
+  }, [data]);
 
   return <DataTable {...props} columns={columns} />;
 }
