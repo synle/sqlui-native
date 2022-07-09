@@ -16,6 +16,10 @@ import {
   getUpdateWithValues as getUpdateWithValuesForAzTable,
 } from 'src/common/adapters/AzureTableStorageAdapter/scripts';
 import {
+  getInsert as getInsertForCassandra,
+  getUpdateWithValues as getUpdateWithValuesForCassandra,
+} from 'src/common/adapters/CassandraDataAdapter/scripts';
+import {
   getInsert as getInsertForMongoDB,
   getUpdateWithValues as getUpdateWithValuesForMongoDB,
 } from 'src/common/adapters/MongoDBDataAdapter/scripts';
@@ -23,10 +27,6 @@ import {
   getInsert as getInsertForRdmbs,
   getUpdateWithValues as getUpdateWithValuesForRdmbs,
 } from 'src/common/adapters/RelationalDataAdapter/scripts';
-import {
-  getInsert as getInsertForCassandra,
-  getUpdateWithValues as getUpdateWithValuesForCassandra,
-} from 'src/common/adapters/CassandraDataAdapter/scripts';
 import Breadcrumbs from 'src/frontend/components/Breadcrumbs';
 import CodeEditorBox from 'src/frontend/components/CodeEditorBox';
 import ConnectionDescription from 'src/frontend/components/ConnectionDescription';
@@ -364,7 +364,9 @@ function RecordForm(props) {
           for (const column of columns) {
             const required = column.kind !== 'regular';
             const baseInputProps: TextFieldProps = {
-              label: `${column.name} (${column.type.toLowerCase()}) ${column.kind !== 'regular' ? column.kind : ''}`,
+              label: `${column.name} (${column.type.toLowerCase()}) ${
+                column.kind !== 'regular' ? column.kind : ''
+              }`,
               defaultValue: data[column.name],
               onChange: (e) => onSetData(column.name, e.target.value),
               size: 'small',

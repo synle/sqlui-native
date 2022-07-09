@@ -100,16 +100,17 @@ VALUES
 
 ### Update
 
-```js
-UPDATE table1
-SET id = '',
+```sql
+UPDATE
+  table1
+SET
+  id = '',
   column1 = '',
   column2 = ''
-WHERE id = ''
-AND
-column1 = ''
-AND
-column2 = ''
+WHERE
+  id = ''
+  AND column1 = ''
+  AND column2 = ''
 ```
 
 
@@ -261,16 +262,17 @@ VALUES
 
 ### Update
 
-```js
-UPDATE table1
-SET id = '',
+```sql
+UPDATE
+  table1
+SET
+  id = '',
   column1 = '',
   column2 = ''
-WHERE id = ''
-AND
-column1 = ''
-AND
-column2 = ''
+WHERE
+  id = ''
+  AND column1 = ''
+  AND column2 = ''
 ```
 
 
@@ -416,16 +418,17 @@ VALUES
 
 ### Update
 
-```js
-UPDATE table1
-SET id = '',
+```sql
+UPDATE
+  table1
+SET
+  id = '',
   column1 = '',
   column2 = ''
-WHERE id = ''
-AND
-column1 = ''
-AND
-column2 = ''
+WHERE
+  id = ''
+  AND column1 = ''
+  AND column2 = ''
 ```
 
 
@@ -577,16 +580,17 @@ VALUES
 
 ### Update
 
-```js
-UPDATE table1
-SET id = '',
+```sql
+UPDATE
+  table1
+SET
+  id = '',
   column1 = '',
   column2 = ''
-WHERE id = ''
-AND
-column1 = ''
-AND
-column2 = ''
+WHERE
+  id = ''
+  AND column1 = ''
+  AND column2 = ''
 ```
 
 
@@ -738,16 +742,17 @@ VALUES
 
 ### Update
 
-```js
-UPDATE table1
-SET id = '',
+```sql
+UPDATE
+  table1
+SET
+  id = '',
   column1 = '',
   column2 = ''
-WHERE id = ''
-AND
-column1 = ''
-AND
-column2 = ''
+WHERE
+  id = ''
+  AND column1 = ''
+  AND column2 = ''
 ```
 
 
@@ -864,7 +869,7 @@ LIMIT
 INSERT INTO
   table1 (id, column1, column2)
 VALUES
-  ('_id_', '_column1_', '_column2_')
+  (123, 123, '_column2_')
 ```
 
 

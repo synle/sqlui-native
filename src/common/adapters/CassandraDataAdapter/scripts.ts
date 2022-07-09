@@ -1,10 +1,10 @@
 import { getDivider } from 'src/common/adapters/BaseDataAdapter/scripts';
+import { escapeSQLValue, isValueNumber } from 'src/frontend/utils/formatter';
 import { SqlAction, SqluiCore } from 'typings';
-import {escapeSQLValue, isValueNumber} from 'src/frontend/utils/formatter';
 
 const formatter = 'sql';
 
-function _isColumnNumberField(col: SqluiCore.ColumnMetaData){
+function _isColumnNumberField(col: SqluiCore.ColumnMetaData) {
   return col.type.toLowerCase().includes('int');
 }
 
@@ -46,7 +46,10 @@ export function getSelectSpecificColumns(
   };
 }
 
-export function getInsert(input: SqlAction.TableInput, value?: Record<string, any>): SqlAction.Output | undefined {
+export function getInsert(
+  input: SqlAction.TableInput,
+  value?: Record<string, any>,
+): SqlAction.Output | undefined {
   const label = `Insert`;
 
   if (!input.columns) {
@@ -56,7 +59,7 @@ export function getInsert(input: SqlAction.TableInput, value?: Record<string, an
   const columnString = input.columns.map((col) => col.name).join(',\n');
   const insertValueString = input.columns.map((col) => {
     let valToUse = '';
-    if(value){
+    if (value) {
       if (value?.[col.name]) {
         // use the value if it's there
         valToUse = `${escapeSQLValue(value[col.name])}`;
@@ -65,12 +68,12 @@ export function getInsert(input: SqlAction.TableInput, value?: Record<string, an
       valToUse = _isColumnNumberField(col) ? '123' : `_${col.name}_`;
     }
 
-    if(_isColumnNumberField(col)){
+    if (_isColumnNumberField(col)) {
       // don't wrap with quote
       return valToUse;
     }
 
-    return `'${valToUse}'`
+    return `'${valToUse}'`;
   });
 
   return {
@@ -96,12 +99,12 @@ export function getUpdateWithValues(
     .map((colName) => {
       let valToUse = value[colName];
 
-      if(!isValueNumber(valToUse)){
+      if (!isValueNumber(valToUse)) {
         // wrap the single quote for string
-        valToUse = `'${escapeSQLValue(valToUse)}'`
+        valToUse = `'${escapeSQLValue(valToUse)}'`;
       }
 
-      return `${colName} = ${valToUse}`
+      return `${colName} = ${valToUse}`;
     })
     .join(', \n');
 
@@ -109,22 +112,22 @@ export function getUpdateWithValues(
     .map((colName) => {
       let valToUse = conditions[colName];
 
-      if(!isValueNumber(valToUse)){
+      if (!isValueNumber(valToUse)) {
         // wrap the single quote for string
-        valToUse = `'${escapeSQLValue(valToUse)}'`
+        valToUse = `'${escapeSQLValue(valToUse)}'`;
       }
 
-      return `${colName} = ${valToUse}`
+      return `${colName} = ${valToUse}`;
     })
     .join(' AND \n');
 
   return {
-        label,
-        formatter,
-        query: `UPDATE ${input.tableId}
+    label,
+    formatter,
+    query: `UPDATE ${input.tableId}
                 SET ${columnString}
                 WHERE ${whereColumnString}`,
-      };
+  };
 }
 
 export function getUpdate(input: SqlAction.TableInput): SqlAction.Output | undefined {
