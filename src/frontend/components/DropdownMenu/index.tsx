@@ -38,7 +38,7 @@ export default function DropdownMenu(props: DropdownMenuProps) {
     if (options[index].onClick) {
       // @ts-ignore
       options[index].onClick();
-      setOpen(false);
+      onClose();
     }
   };
 
@@ -51,7 +51,7 @@ export default function DropdownMenu(props: DropdownMenuProps) {
     props.onToggle && props.onToggle(!open);
   };
 
-  const onClose = (event: Event) => {
+  const onClose = () => {
     props.onToggle && props.onToggle(false);
     setOpen(false);
   };
