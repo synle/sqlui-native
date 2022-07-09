@@ -1,7 +1,12 @@
 import { getDivider } from 'src/common/adapters/BaseDataAdapter/scripts';
+import { escapeSQLValue, isValueNumber } from 'src/frontend/utils/formatter';
 import { SqlAction, SqluiCore } from 'typings';
 
 const formatter = 'sql';
+
+function _isColumnNumberField(col: SqluiCore.ColumnMetaData) {
+  return col.type.toLowerCase().includes('int');
+}
 
 export function getSampleConnectionString(dialect?: SqluiCore.Dialect) {
   return `cassandra://username:password@localhost:9042`;
@@ -41,7 +46,10 @@ export function getSelectSpecificColumns(
   };
 }
 
-export function getInsert(input: SqlAction.TableInput): SqlAction.Output | undefined {
+export function getInsert(
+  input: SqlAction.TableInput,
+  value?: Record<string, any>,
+): SqlAction.Output | undefined {
   const label = `Insert`;
 
   if (!input.columns) {
@@ -49,13 +57,76 @@ export function getInsert(input: SqlAction.TableInput): SqlAction.Output | undef
   }
 
   const columnString = input.columns.map((col) => col.name).join(',\n');
-  const insertValueString = input.columns.map((col) => `'_${col.name}_'`).join(',\n');
+  const insertValueString = input.columns.map((col) => {
+    let valToUse = '';
+    if (value) {
+      if (value?.[col.name]) {
+        // use the value if it's there
+        valToUse = `${escapeSQLValue(value[col.name])}`;
+      }
+    } else {
+      valToUse = _isColumnNumberField(col) ? '123' : `_${col.name}_`;
+    }
+
+    if (_isColumnNumberField(col)) {
+      // don't wrap with quote
+      return valToUse;
+    }
+
+    return `'${valToUse}'`;
+  });
 
   return {
     label,
     formatter,
     query: `INSERT INTO ${input.tableId} (${columnString})
               VALUES (${insertValueString})`,
+  };
+}
+
+export function getUpdateWithValues(
+  input: SqlAction.TableInput,
+  value: Record<string, any>,
+  conditions: Record<string, any>,
+): SqlAction.Output | undefined {
+  const label = `Update`;
+
+  if (!input.columns) {
+    return undefined;
+  }
+
+  const columnString = Object.keys(value)
+    .map((colName) => {
+      let valToUse = value[colName];
+
+      if (!isValueNumber(valToUse)) {
+        // wrap the single quote for string
+        valToUse = `'${escapeSQLValue(valToUse)}'`;
+      }
+
+      return `${colName} = ${valToUse}`;
+    })
+    .join(', \n');
+
+  const whereColumnString = Object.keys(conditions)
+    .map((colName) => {
+      let valToUse = conditions[colName];
+
+      if (!isValueNumber(valToUse)) {
+        // wrap the single quote for string
+        valToUse = `'${escapeSQLValue(valToUse)}'`;
+      }
+
+      return `${colName} = ${valToUse}`;
+    })
+    .join(' AND \n');
+
+  return {
+    label,
+    formatter,
+    query: `UPDATE ${input.tableId}
+                SET ${columnString}
+                WHERE ${whereColumnString}`,
   };
 }
 

@@ -17,3 +17,13 @@ export const formatDuration = (durationMs: number) => {
 
   return '<= 1 second';
 };
+
+export const escapeSQLValue = (value?: string) => {
+  value = value || '';
+  return value?.toString().replace(/'/g, `''`);
+};
+
+export const isValueNumber = (value: any) => {
+  const parsed = parseFloat(value);
+  return typeof parsed === 'number' && !isNaN(value);
+};
