@@ -989,7 +989,7 @@ db.collection('table1')
 ```js
 db.collection('table1')
   .distinct(
-    'id', {
+    'column1', {
       "id": "",
       "column1": "",
       "column2": ""
@@ -1003,7 +1003,7 @@ db.collection('table1')
 ```js
 db.collection('table1')
   .findOne({
-    _id: ObjectId('some_id')
+    "_id": ObjectId("some_id")
   });
 ```
 
@@ -1025,7 +1025,10 @@ db.collection('table1')
 ```js
 db.collection('table1')
   .update({
-    _id: ObjectId('some_id')
+    "id": 123,
+    "column1": 123,
+    "column2": 123,
+    "_id": ObjectId("some_id")
   }, {
     $set: {
       "id": 123,
