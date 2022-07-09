@@ -1081,12 +1081,20 @@ Array [
     "label": "Select Distinct",
     "query": "db.collection('table1')
   .distinct(
-    'id', {
+    'column1', {
       \\"id\\": \\"\\",
       \\"column1\\": \\"\\",
       \\"column2\\": \\"\\"
     }
   )",
+  },
+  Object {
+    "formatter": "js",
+    "label": "Select One Record",
+    "query": "db.collection('table1')
+  .findOne({
+    \\"_id\\": ObjectId(\\"some_id\\")
+  });",
   },
   Object {
     "label": "divider",
@@ -1108,7 +1116,8 @@ Array [
   .update({
     \\"id\\": 123,
     \\"column1\\": 123,
-    \\"column2\\": 123
+    \\"column2\\": 123,
+    \\"_id\\": ObjectId(\\"some_id\\")
   }, {
     $set: {
       \\"id\\": 123,
