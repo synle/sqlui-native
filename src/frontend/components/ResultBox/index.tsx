@@ -90,10 +90,6 @@ export default function ResultBox(props: ResultBoxProps) {
     });
   };
 
-  const onDataRowClick = (rowData: any) => {
-    selectCommand({ event: 'clientEvent/record/showDetails', data: rowData });
-  };
-
   const onShowRecordDetails = (rowData: any) => {
     selectCommand({ event: 'clientEvent/record/showDetails', data: rowData });
   };
@@ -113,11 +109,18 @@ export default function ResultBox(props: ResultBoxProps) {
     </>,
   ];
 
+  const rowContextOptions = [
+    {
+      label: 'Show Row Details',
+      onClick: onShowRecordDetails,
+    }
+  ]
+
   const tabContents = [
     <div className='ResultBox__Content' key={`Table`}>
       <DataTableWithJSONList
-      onRowClick={onDataRowClick}
-      onShowRecordDetails={onShowRecordDetails}
+      onRowClick={onShowRecordDetails}
+      rowContextOptions={rowContextOptions}
       data={data} />
     </div>,
     <div className='ResultBox__Content' key={`JSON`}>

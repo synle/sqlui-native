@@ -11,10 +11,10 @@ import Paper from '@mui/material/Paper';
 import Popper from '@mui/material/Popper';
 import React, { useEffect } from 'react';
 
-type DropdownButtonOption = {
+export type DropdownButtonOption = {
   label: string;
   startIcon?: React.ReactNode;
-  onClick?: () => void;
+  onClick?: (data?: any) => void;
 };
 
 type DropdownButtonProps = {

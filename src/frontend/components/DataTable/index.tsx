@@ -10,13 +10,13 @@ import TableRow from '@mui/material/TableRow';
 import { useFilters, useGlobalFilter, usePagination, useSortBy, useTable } from 'react-table';
 import React, { useState, useCallback, useMemo, useRef } from 'react';
 import { useTablePageSize } from 'src/frontend/hooks/useSetting';
-import {DropdownMenu} from 'src/frontend/components/DropdownButton';
+import {DropdownMenu, DropdownButtonOption} from 'src/frontend/components/DropdownButton';
 
 type DataTableProps = {
   columns: any[];
   data: any[];
   onRowClick?: (rowData: any) => void;
-  onShowRecordDetails?: (rowData: any) => void;
+  rowContextOptions?: DropdownButtonOption[];
 };
 
 export const ALL_PAGE_SIZE_OPTIONS: any[] = [
@@ -99,11 +99,16 @@ export default function DataTable(props: DataTableProps) {
     setPageSize(e.target.value);
   }, []);
 
-  const onRowContextMenu = (e: React.SyntheticEvent, rowIdx: number) => {
+  const onRowContextMenuClick = (e: React.SyntheticEvent, rowIdx: number) => {
     e.preventDefault();
     setOpenContextMenuRowIdx(rowIdx)
     anchorEl.current = e.target as HTMLElement;
   }
+
+  const targetRowContextOptions = (props.rowContextOptions || []).map(rowContextOption => ({
+      ...rowContextOption,
+      onClick: () => rowContextOption.onClick && rowContextOption.onClick(data[openContextMenuRowIdx])
+    }));
 
   return (
     <>
@@ -129,25 +134,14 @@ export default function DataTable(props: DataTableProps) {
                 <StyledTableRow
                   {...row.getRowProps()}
                   onClick={() => props.onRowClick && props.onRowClick(row.original)}
-                  onContextMenu={(e) => onRowContextMenu(e, rowIdx)}
+                  onContextMenu={(e) => onRowContextMenuClick(e, rowIdx)}
                   style={{ cursor: props.onRowClick ? 'pointer' : '' }}>
                   {row.cells.map((cell, colIdx) => {
                     let dropdownContent: any;
                     if(colIdx === 0){
-                      const options : any[]= []
-                      if(props.onShowRecordDetails){
-                        options.push({
-                          label: 'Show Row Details',
-                          onClick: () => props && props.onShowRecordDetails && props.onShowRecordDetails(data[rowIdx]),
-                          // label: currentSession?.name || '',
-                          // onClick: () => selectCommand({ event: 'clientEvent/navigate', data: '/' }),
-                          // startIcon: <HomeIcon />,
-                        })
-                      }
-
-                      dropdownContent = options.length >0 && <DropdownMenu
+                      dropdownContent = targetRowContextOptions.length > 0 && <DropdownMenu
                           id={`data-table-row-dropdown-${rowIdx}`}
-                          options={options}
+                          options={targetRowContextOptions}
                           onToggle={(newOpen) => {
                             if(newOpen){
                               setOpenContextMenuRowIdx(rowIdx);
