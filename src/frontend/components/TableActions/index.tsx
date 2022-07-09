@@ -1,10 +1,7 @@
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import IconButton from '@mui/material/IconButton';
 import { useState } from 'react';
-import {
-  getIsTableIdRequiredForQuery,
-  getTableActions,
-} from 'src/common/adapters/DataScriptFactory';
+import { getTableActions } from 'src/common/adapters/DataScriptFactory';
 import DropdownButton from 'src/frontend/components/DropdownButton';
 import { useCommands } from 'src/frontend/components/MissionControl';
 import { useGetColumns, useGetConnectionById } from 'src/frontend/hooks/useConnection';
@@ -44,8 +41,6 @@ export default function TableActions(props: TableActionsProps) {
   const { query } = useActiveConnectionQuery();
   const dialect = connection?.dialect;
 
-  const isTableIdRequiredForQuery = getIsTableIdRequiredForQuery(dialect);
-
   const isLoading = loadingConnection || loadingColumns;
 
   const actions = getTableActions({
@@ -67,7 +62,7 @@ export default function TableActions(props: TableActionsProps) {
         data: {
           connectionId,
           databaseId,
-          tableId: isTableIdRequiredForQuery ? tableId : '',
+          tableId: tableId,
           sql: action.query,
         },
         label: `Applied "${action.label}" to active query tab.`,
