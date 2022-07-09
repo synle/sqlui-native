@@ -10,7 +10,8 @@ import TableRow from '@mui/material/TableRow';
 import { useFilters, useGlobalFilter, usePagination, useSortBy, useTable } from 'react-table';
 import React, { useState, useCallback, useMemo, useRef } from 'react';
 import { useTablePageSize } from 'src/frontend/hooks/useSetting';
-import {DropdownMenu, DropdownButtonOption} from 'src/frontend/components/DropdownButton';
+import {DropdownButtonOption} from 'src/frontend/components/DropdownButton';
+import DropdownMenu from 'src/frontend/components/DropdownMenu';
 
 type DataTableProps = {
   columns: any[];
@@ -160,8 +161,7 @@ export default function DataTable(props: DataTableProps) {
                           }}
                           maxHeight='400px'
                           anchorEl={anchorEl.current}
-                          open={openContextMenuRowIdx === rowIdx}>
-                        </DropdownMenu>
+                          open={openContextMenuRowIdx === rowIdx} />
                     }
                     return (
                       <StyledTableCell {...cell.getCellProps()}>
