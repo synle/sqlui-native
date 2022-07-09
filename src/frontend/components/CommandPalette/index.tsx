@@ -258,7 +258,7 @@ export default function CommandPalette(props: CommandPaletteProps) {
 
     switch (e.key) {
       case 'Enter':
-        if((e.target as HTMLInputElement).type === 'text'){
+        if ((e.target as HTMLInputElement).type === 'text') {
           moveDirection = -1;
         }
         break;
