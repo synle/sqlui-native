@@ -257,6 +257,11 @@ export default function CommandPalette(props: CommandPaletteProps) {
     let moveDirection: number | undefined;
 
     switch (e.key) {
+      case 'Enter':
+        if ((e.target as HTMLInputElement).type === 'text') {
+          moveDirection = -1;
+        }
+        break;
       case 'ArrowDown':
         moveDirection = 1;
         break;
