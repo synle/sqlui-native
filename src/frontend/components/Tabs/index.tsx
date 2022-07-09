@@ -6,6 +6,7 @@ import { styled } from '@mui/system';
 const VERTICAL_TAB_THRESHOLD = 20;
 
 type TabsProps = {
+  id?: string;
   /**
    * selected tab index
    * @type {number}
@@ -32,7 +33,7 @@ const StyledTabs = styled('section')(({ theme }) => {
 });
 
 export default function MyTabs(props: TabsProps) {
-  const { tabIdx, tabHeaders, tabContents } = props;
+  const { id, tabIdx, tabHeaders, tabContents } = props;
   let { orientation } = props;
 
   const visibleTab = tabContents[tabIdx];
@@ -88,6 +89,7 @@ export default function MyTabs(props: TabsProps) {
 
   return (
     <StyledTabs
+      id={id}
       className={orientation === 'vertical' ? 'Tabs Tabs__Vertical' : 'Tabs Tabs__Horizontal'}>
       <Tabs
         value={tabIdx}
