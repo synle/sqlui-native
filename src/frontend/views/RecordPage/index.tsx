@@ -23,6 +23,10 @@ import {
   getInsert as getInsertForRdmbs,
   getUpdateWithValues as getUpdateWithValuesForRdmbs,
 } from 'src/common/adapters/RelationalDataAdapter/scripts';
+import {
+  getInsert as getInsertForCassandra,
+  getUpdateWithValues as getUpdateWithValuesForCassandra,
+} from 'src/common/adapters/CassandraDataAdapter/scripts';
 import Breadcrumbs from 'src/frontend/components/Breadcrumbs';
 import CodeEditorBox from 'src/frontend/components/CodeEditorBox';
 import ConnectionDescription from 'src/frontend/components/ConnectionDescription';
@@ -64,15 +68,10 @@ export function isRecordFormSupportedForDialect(dialect?: string) {
     case 'mssql':
     case 'postgres':
     case 'sqlite':
-      return true;
     case 'cassandra':
-      // TODO: to be implemented
-      return false;
     case 'mongodb':
       return true;
-    case 'redis':
-      // TODO: to be implemented
-      return false;
+    // case 'redis':// TODO: to be implemented
     case 'cosmosdb':
     case 'aztable':
       return true;
@@ -227,11 +226,10 @@ function RecordForm(props) {
         case 'mssql':
         case 'postgres':
         case 'sqlite':
+        case 'cassandra':
           newData = props.data;
-          break;
-        // case 'cassandra':
         case 'mongodb':
-        // case 'redis':
+        // case 'redis': // TODO: to be implemented
         case 'cosmosdb':
           newRawValue = { ...props.data };
           break;
@@ -261,19 +259,19 @@ function RecordForm(props) {
         case 'mssql':
         case 'postgres':
         case 'sqlite':
+        case 'cassandra':
           for (const column of columns) {
             set(newData, column.propertyPath || column.name, '');
           }
           setData(newData);
           break;
-        // case 'cassandra':
         case 'mongodb':
           for (const column of columns.filter((targetColumn) => !targetColumn.primaryKey)) {
             set(newData, column.propertyPath || column.name, '');
           }
           setRawValue(JSON.stringify(newData, null, 2));
           break;
-        // case 'redis':
+        // case 'redis': // TODO: to be implemented
         case 'cosmosdb':
           for (const column of columns.filter(
             (targetColumn) => targetColumn.name[0] !== '_' && !targetColumn.primaryKey,
@@ -322,8 +320,9 @@ function RecordForm(props) {
       case 'mssql':
       case 'postgres':
       case 'sqlite':
+      case 'cassandra':
         if (columns && columns.length > 0) {
-          for (const column of columns.sort((a, b) => a.name.localeCompare(b.name))) {
+          for (const column of columns) {
             const baseInputProps: TextFieldProps = {
               label: `${column.name} (${column.type.toLowerCase()}) ${
                 column.primaryKey ? '(Primary Key)' : ''
@@ -360,9 +359,8 @@ function RecordForm(props) {
           );
         }
         break;
-      // case 'cassandra':
       case 'mongodb':
-      // case 'redis':
+      // case 'redis': // TODO: to be implemented
       case 'cosmosdb':
       case 'aztable':
         // js raw value
@@ -456,7 +454,18 @@ export function NewRecordPage() {
           )?.query || '',
         );
         break;
-      // case 'cassandra':
+      case 'cassandra':
+        sql = formatSQL(
+          getInsertForCassandra(
+            {
+              ...query,
+              dialect: connection.dialect,
+              columns,
+            },
+            data,
+          )?.query || '',
+        );
+        break;
       case 'mongodb':
         try {
           const jsonValue = JSON.parse(rawValue);
@@ -478,7 +487,7 @@ export function NewRecordPage() {
           return;
         }
         break;
-      // case 'redis':
+      // case 'redis': // TODO: to be implemented
       case 'cosmosdb':
         try {
           const jsonValue = JSON.parse(rawValue);
@@ -639,7 +648,20 @@ export function EditRecordPage(props: RecordDetailsPageProps) {
         );
         setIsEdit(false);
         break;
-      // case 'cassandra':
+      case 'cassandra':
+        sql = formatSQL(
+          getUpdateWithValuesForCassandra(
+            {
+              ...query,
+              dialect: connection.dialect,
+              columns,
+            },
+            deltaData,
+            conditions,
+          )?.query || '',
+        );
+        setIsEdit(false);
+        break;
       case 'mongodb':
         try {
           const jsonValue = JSON.parse(rawValue);
@@ -678,7 +700,7 @@ export function EditRecordPage(props: RecordDetailsPageProps) {
           return;
         }
         break;
-      // case 'redis':
+      // case 'redis': // TODO: to be implemented
       case 'cosmosdb':
         try {
           const jsonValue = JSON.parse(rawValue);
