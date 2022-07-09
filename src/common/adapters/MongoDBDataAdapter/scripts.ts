@@ -7,6 +7,23 @@ export const MONGO_ADAPTER_PREFIX = 'db';
 
 const formatter = 'js';
 
+export function serializeJsonForMongoScript(object: any){
+  let res = JSON.stringify(object, (k, v) => {
+    if (k === '_id') {
+      return `ObjectId('${v}')`
+    }
+    return v;
+  }, 2)
+
+  // here we construct ObjectId
+  res = res.replace(/"ObjectId\('[a-z0-9]+'\)"/, (a) => {
+    const id = a.replace(`ObjectId`, '').replace(/[\(\)'"]/g, '');
+    return `ObjectId("${id}")`;
+  });
+
+  return res
+}
+
 export function getSampleConnectionString(dialect?: SqluiCore.Dialect) {
   return `mongodb://localhost:27017`;
 }
