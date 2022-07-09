@@ -16,6 +16,10 @@ import {
   getUpdateWithValues as getUpdateWithValuesForAzTable,
 } from 'src/common/adapters/AzureTableStorageAdapter/scripts';
 import {
+  getInsert as getInsertForCassandra,
+  getUpdateWithValues as getUpdateWithValuesForCassandra,
+} from 'src/common/adapters/CassandraDataAdapter/scripts';
+import {
   getInsert as getInsertForMongoDB,
   getUpdateWithValues as getUpdateWithValuesForMongoDB,
 } from 'src/common/adapters/MongoDBDataAdapter/scripts';
@@ -64,15 +68,10 @@ export function isRecordFormSupportedForDialect(dialect?: string) {
     case 'mssql':
     case 'postgres':
     case 'sqlite':
-      return true;
     case 'cassandra':
-      // TODO: to be implemented
-      return false;
     case 'mongodb':
       return true;
-    case 'redis':
-      // TODO: to be implemented
-      return false;
+    // case 'redis':// TODO: to be implemented
     case 'cosmosdb':
     case 'aztable':
       return true;
@@ -227,11 +226,11 @@ function RecordForm(props) {
         case 'mssql':
         case 'postgres':
         case 'sqlite':
+        case 'cassandra':
           newData = props.data;
           break;
-        // case 'cassandra':
         case 'mongodb':
-        // case 'redis':
+        // case 'redis': // TODO: to be implemented
         case 'cosmosdb':
           newRawValue = { ...props.data };
           break;
@@ -261,19 +260,19 @@ function RecordForm(props) {
         case 'mssql':
         case 'postgres':
         case 'sqlite':
+        case 'cassandra':
           for (const column of columns) {
             set(newData, column.propertyPath || column.name, '');
           }
           setData(newData);
           break;
-        // case 'cassandra':
         case 'mongodb':
           for (const column of columns.filter((targetColumn) => !targetColumn.primaryKey)) {
             set(newData, column.propertyPath || column.name, '');
           }
           setRawValue(JSON.stringify(newData, null, 2));
           break;
-        // case 'redis':
+        // case 'redis': // TODO: to be implemented
         case 'cosmosdb':
           for (const column of columns.filter(
             (targetColumn) => targetColumn.name[0] !== '_' && !targetColumn.primaryKey,
@@ -323,7 +322,7 @@ function RecordForm(props) {
       case 'postgres':
       case 'sqlite':
         if (columns && columns.length > 0) {
-          for (const column of columns.sort((a, b) => a.name.localeCompare(b.name))) {
+          for (const column of columns) {
             const baseInputProps: TextFieldProps = {
               label: `${column.name} (${column.type.toLowerCase()}) ${
                 column.primaryKey ? '(Primary Key)' : ''
@@ -360,9 +359,48 @@ function RecordForm(props) {
           );
         }
         break;
-      // case 'cassandra':
+      case 'cassandra':
+        if (columns && columns.length > 0) {
+          for (const column of columns) {
+            const required = column.kind !== 'regular';
+            const baseInputProps: TextFieldProps = {
+              label: `${column.name} (${column.type.toLowerCase()}) ${
+                column.kind !== 'regular' ? column.kind : ''
+              }`,
+              defaultValue: data[column.name],
+              onChange: (e) => onSetData(column.name, e.target.value),
+              size: 'small',
+              margin: 'dense',
+              fullWidth: true,
+              required,
+              autoComplete: 'off',
+            };
+            let contentColumnValueInputView = (
+              <TextField {...baseInputProps} type='text' multiline />
+            );
+            if (
+              column.type?.toLowerCase()?.includes('int') ||
+              column.type?.toLowerCase()?.includes('number')
+            ) {
+              contentColumnValueInputView = <TextField {...baseInputProps} type='number' />;
+            }
+
+            contentFormDataView.push(
+              <React.Fragment key={column.name}>
+                <div className='FormInput__Row'>{contentColumnValueInputView}</div>
+              </React.Fragment>,
+            );
+          }
+        } else {
+          contentFormDataView.push(
+            <React.Fragment key='connection_required'>
+              No meta data found. Please select a connection, database and table from the above
+            </React.Fragment>,
+          );
+        }
+        break;
       case 'mongodb':
-      // case 'redis':
+      // case 'redis': // TODO: to be implemented
       case 'cosmosdb':
       case 'aztable':
         // js raw value
@@ -456,7 +494,18 @@ export function NewRecordPage() {
           )?.query || '',
         );
         break;
-      // case 'cassandra':
+      case 'cassandra':
+        sql = formatSQL(
+          getInsertForCassandra(
+            {
+              ...query,
+              dialect: connection.dialect,
+              columns,
+            },
+            data,
+          )?.query || '',
+        );
+        break;
       case 'mongodb':
         try {
           const jsonValue = JSON.parse(rawValue);
@@ -478,7 +527,7 @@ export function NewRecordPage() {
           return;
         }
         break;
-      // case 'redis':
+      // case 'redis': // TODO: to be implemented
       case 'cosmosdb':
         try {
           const jsonValue = JSON.parse(rawValue);
@@ -639,7 +688,20 @@ export function EditRecordPage(props: RecordDetailsPageProps) {
         );
         setIsEdit(false);
         break;
-      // case 'cassandra':
+      case 'cassandra':
+        sql = formatSQL(
+          getUpdateWithValuesForCassandra(
+            {
+              ...query,
+              dialect: connection.dialect,
+              columns,
+            },
+            deltaData,
+            conditions,
+          )?.query || '',
+        );
+        setIsEdit(false);
+        break;
       case 'mongodb':
         try {
           const jsonValue = JSON.parse(rawValue);
@@ -678,7 +740,7 @@ export function EditRecordPage(props: RecordDetailsPageProps) {
           return;
         }
         break;
-      // case 'redis':
+      // case 'redis': // TODO: to be implemented
       case 'cosmosdb':
         try {
           const jsonValue = JSON.parse(rawValue);
