@@ -228,6 +228,7 @@ function RecordForm(props) {
         case 'sqlite':
         case 'cassandra':
           newData = props.data;
+          break;
         case 'mongodb':
         // case 'redis': // TODO: to be implemented
         case 'cosmosdb':
@@ -320,7 +321,6 @@ function RecordForm(props) {
       case 'mssql':
       case 'postgres':
       case 'sqlite':
-      case 'cassandra':
         if (columns && columns.length > 0) {
           for (const column of columns) {
             const baseInputProps: TextFieldProps = {
@@ -333,6 +333,44 @@ function RecordForm(props) {
               size: 'small',
               margin: 'dense',
               fullWidth: true,
+              autoComplete: 'off',
+            };
+            let contentColumnValueInputView = (
+              <TextField {...baseInputProps} type='text' multiline />
+            );
+            if (
+              column.type?.toLowerCase()?.includes('int') ||
+              column.type?.toLowerCase()?.includes('number')
+            ) {
+              contentColumnValueInputView = <TextField {...baseInputProps} type='number' />;
+            }
+
+            contentFormDataView.push(
+              <React.Fragment key={column.name}>
+                <div className='FormInput__Row'>{contentColumnValueInputView}</div>
+              </React.Fragment>,
+            );
+          }
+        } else {
+          contentFormDataView.push(
+            <React.Fragment key='connection_required'>
+              No meta data found. Please select a connection, database and table from the above
+            </React.Fragment>,
+          );
+        }
+        break;
+      case 'cassandra':
+        if (columns && columns.length > 0) {
+          for (const column of columns) {
+            const required = column.kind !== 'regular';
+            const baseInputProps: TextFieldProps = {
+              label: `${column.name} (${column.type.toLowerCase()}) ${column.kind !== 'regular' ? column.kind : ''}`,
+              defaultValue: data[column.name],
+              onChange: (e) => onSetData(column.name, e.target.value),
+              size: 'small',
+              margin: 'dense',
+              fullWidth: true,
+              required,
               autoComplete: 'off',
             };
             let contentColumnValueInputView = (

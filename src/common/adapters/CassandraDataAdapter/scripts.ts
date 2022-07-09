@@ -1,8 +1,12 @@
 import { getDivider } from 'src/common/adapters/BaseDataAdapter/scripts';
 import { SqlAction, SqluiCore } from 'typings';
-import {escapeSQLValue} from 'src/frontend/utils/formatter';
+import {escapeSQLValue, isValueNumber} from 'src/frontend/utils/formatter';
 
 const formatter = 'sql';
+
+function _isColumnNumberField(col: SqluiCore.ColumnMetaData){
+  return col.type.toLowerCase().includes('int');
+}
 
 export function getSampleConnectionString(dialect?: SqluiCore.Dialect) {
   return `cassandra://username:password@localhost:9042`;
@@ -51,11 +55,18 @@ export function getInsert(input: SqlAction.TableInput, value?: Record<string, an
 
   const columnString = input.columns.map((col) => col.name).join(',\n');
   const insertValueString = input.columns.map((col) => {
+    let valToUse = '';
     if (value?.[col.name]) {
       // use the value if it's there
-      return `'${_escapeSQLValue(value[col.name])}'`;
+      valToUse = `${escapeSQLValue(value[col.name])}`;
     }
-    return `'_${col.name}_'`; // use the default value
+
+    if(_isColumnNumberField(col)){
+      // don't wrap with quote
+      return valToUse;
+    }
+
+    return `'${valToUse}'`
   });
 
   return {
@@ -78,10 +89,29 @@ export function getUpdateWithValues(
   }
 
   const columnString = Object.keys(value)
-    .map((colName) => `${colName} = '${_escapeSQLValue(value[colName])}'`)
-    .join(' AND \n');
+    .map((colName) => {
+      let valToUse = value[colName];
+
+      if(!isValueNumber(valToUse)){
+        // wrap the single quote for string
+        valToUse = `'${escapeSQLValue(valToUse)}'`
+      }
+
+      return `${colName} = ${valToUse}`
+    })
+    .join(', \n');
+
   const whereColumnString = Object.keys(conditions)
-    .map((colName) => `${colName} = '${_escapeSQLValue(conditions[colName])}'`)
+    .map((colName) => {
+      let valToUse = conditions[colName];
+
+      if(!isValueNumber(valToUse)){
+        // wrap the single quote for string
+        valToUse = `'${escapeSQLValue(valToUse)}'`
+      }
+
+      return `${colName} = ${valToUse}`
+    })
     .join(' AND \n');
 
   return {

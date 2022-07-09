@@ -1,6 +1,6 @@
 import { getDivider } from 'src/common/adapters/BaseDataAdapter/scripts';
 import { SqlAction, SqluiCore } from 'typings';
-import {escapeSQLValue} from 'src/frontend/utils/formatter';
+import {escapeSQLValue, isValueNumber} from 'src/frontend/utils/formatter';
 
 
 const formatter = 'sql';
@@ -274,10 +274,29 @@ export function getUpdateWithValues(
   }
 
   const columnString = Object.keys(value)
-    .map((colName) => `${colName} = '${escapeSQLValue(value[colName])}'`)
-    .join(' AND \n');
+    .map((colName) => {
+      let valToUse = value[colName];
+
+      if(!isValueNumber(valToUse)){
+        // wrap the single quote for string
+        valToUse = `'${escapeSQLValue(valToUse)}'`
+      }
+
+      return `${colName} = ${valToUse}`
+    })
+    .join(', \n');
+
   const whereColumnString = Object.keys(conditions)
-    .map((colName) => `${colName} = '${escapeSQLValue(conditions[colName])}'`)
+    .map((colName) => {
+      let valToUse = conditions[colName];
+
+      if(!isValueNumber(valToUse)){
+        // wrap the single quote for string
+        valToUse = `'${escapeSQLValue(valToUse)}'`
+      }
+
+      return `${colName} = ${valToUse}`
+    })
     .join(' AND \n');
 
   switch (input.dialect) {

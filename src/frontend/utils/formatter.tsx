@@ -22,3 +22,8 @@ export const escapeSQLValue = (value?: string)  =>{
   value = value || '';
   return value?.toString().replace(/'/g, `''`);
 }
+
+export const isValueNumber = (value: any) => {
+  const parsed = parseFloat(value);
+  return typeof parsed === 'number' && !isNaN(value);
+}
