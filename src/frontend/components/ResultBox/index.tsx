@@ -111,8 +111,12 @@ export default function ResultBox(props: ResultBoxProps) {
 
   const rowContextOptions = [
     {
-      label: 'Show Row Details',
+      label: 'Show Details',
       onClick: onShowRecordDetails,
+    },
+    {
+      label: 'Show Edit Record',
+      onClick: rowData => selectCommand({ event: 'clientEvent/record/edit', data: rowData }),
     }
   ]
 

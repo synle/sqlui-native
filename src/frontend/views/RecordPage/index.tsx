@@ -585,7 +585,7 @@ export function EditRecordPage(props: RecordDetailsPageProps) {
   const { value: width, onChange: onSetWidth } = useSideBarWidthPreference();
   const { setTreeActions } = useTreeActions();
   const { onAddQuery } = useConnectionQueries();
-  const [isEdit, setIsEdit] = useState(false);
+  const [isEdit, setIsEdit] = useState(!!props.isEditMode);
   const { query: activeQuery } = useActiveConnectionQuery();
   const { data: connection } = useGetConnectionById(activeQuery?.connectionId);
   const { dismiss } = useActionDialogs();
@@ -782,17 +782,18 @@ export function EditRecordPage(props: RecordDetailsPageProps) {
 }
 type RecordDetailsPageProps = {
   data: any;
+  isEditMode?: boolean
 };
 
 export function RecordDetailsPage(props: RecordDetailsPageProps) {
-  const { data } = props;
+  const { data, isEditMode } = props;
   const [tabIdx, setTabIdx] = useState(0);
 
   const tabHeaders = [<>Form Display</>, <>Raw JSON</>];
 
   const tabContents = [
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }} key='formDisplay'>
-      <EditRecordPage data={data} />
+      <EditRecordPage data={data} isEditMode={!!isEditMode} />
     </Box>,
 
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }} key='rawJsonDisplay'>

@@ -707,11 +707,11 @@ export default function MissionControl() {
     } catch (err) {}
   };
 
-  const onShowRecordDetails = async (data: any) => {
+  const onShowRecordDetails = async (data: any, isEditMode: boolean) => {
     try {
       await modal({
         title: 'Record Details',
-        message: <RecordDetailsPage data={data} />,
+        message: <RecordDetailsPage data={data} isEditMode={isEditMode} />,
         size: 'md',
         showCloseButton: true,
       });
@@ -1034,7 +1034,12 @@ export default function MissionControl() {
         // records command
         case 'clientEvent/record/showDetails':
           if (command.data) {
-            onShowRecordDetails(command.data);
+            onShowRecordDetails(command.data, false);
+          }
+          break;
+        case 'clientEvent/record/edit':
+          if (command.data) {
+            onShowRecordDetails(command.data, true);
           }
           break;
         case 'clientEvent/record/new':
