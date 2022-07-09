@@ -1,5 +1,6 @@
 import { getDivider } from 'src/common/adapters/BaseDataAdapter/scripts';
 import { SqlAction, SqluiCore } from 'typings';
+import {escapeSQLValue} from 'src/frontend/utils/formatter';
 
 const formatter = 'sql';
 
@@ -41,7 +42,7 @@ export function getSelectSpecificColumns(
   };
 }
 
-export function getInsert(input: SqlAction.TableInput): SqlAction.Output | undefined {
+export function getInsert(input: SqlAction.TableInput, value?: Record<string, any>): SqlAction.Output | undefined {
   const label = `Insert`;
 
   if (!input.columns) {
@@ -49,7 +50,13 @@ export function getInsert(input: SqlAction.TableInput): SqlAction.Output | undef
   }
 
   const columnString = input.columns.map((col) => col.name).join(',\n');
-  const insertValueString = input.columns.map((col) => `'_${col.name}_'`).join(',\n');
+  const insertValueString = input.columns.map((col) => {
+    if (value?.[col.name]) {
+      // use the value if it's there
+      return `'${_escapeSQLValue(value[col.name])}'`;
+    }
+    return `'_${col.name}_'`; // use the default value
+  });
 
   return {
     label,
@@ -57,6 +64,33 @@ export function getInsert(input: SqlAction.TableInput): SqlAction.Output | undef
     query: `INSERT INTO ${input.tableId} (${columnString})
               VALUES (${insertValueString})`,
   };
+}
+
+export function getUpdateWithValues(
+  input: SqlAction.TableInput,
+  value: Record<string, any>,
+  conditions: Record<string, any>,
+): SqlAction.Output | undefined {
+  const label = `Update`;
+
+  if (!input.columns) {
+    return undefined;
+  }
+
+  const columnString = Object.keys(value)
+    .map((colName) => `${colName} = '${_escapeSQLValue(value[colName])}'`)
+    .join(' AND \n');
+  const whereColumnString = Object.keys(conditions)
+    .map((colName) => `${colName} = '${_escapeSQLValue(conditions[colName])}'`)
+    .join(' AND \n');
+
+  return {
+        label,
+        formatter,
+        query: `UPDATE ${input.tableId}
+                SET ${columnString}
+                WHERE ${whereColumnString}`,
+      };
 }
 
 export function getUpdate(input: SqlAction.TableInput): SqlAction.Output | undefined {

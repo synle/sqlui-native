@@ -1,9 +1,7 @@
 import { getDivider } from 'src/common/adapters/BaseDataAdapter/scripts';
 import { SqlAction, SqluiCore } from 'typings';
-function _escapeSQLValue(value?: string) {
-  value = value || '';
-  return value?.toString().replace(/'/g, `''`);
-}
+import {escapeSQLValue} from 'src/frontend/utils/formatter';
+
 
 const formatter = 'sql';
 
@@ -162,7 +160,7 @@ export function getInsert(
     .map((col) => {
       if (value?.[col.name]) {
         // use the value if it's there
-        return `'${_escapeSQLValue(value[col.name])}'`;
+        return `'${escapeSQLValue(value[col.name])}'`;
       }
       return `'_${col.name}_'`; // use the default value
     })
@@ -208,10 +206,10 @@ export function getBulkInsert(
           let valToUse = '';
           if (row?.[col.name]) {
             // use the value if it's there
-            valToUse = `'${row[col.name]}'`;
+            valToUse = `'${escapeSQLValue(row[col.name])}'`;
           } else {
             // use the default value
-            valToUse = `'_${col.name}_'`;
+            valToUse = `'_${escapeSQLValue(col.name)}_'`;
           }
           return valToUse;
         })
@@ -256,7 +254,7 @@ export function getUpdate(input: SqlAction.TableInput): SqlAction.Output | undef
     case 'mysql':
       return {
         label,
-        formatter: 'js',
+        formatter,
         query: `UPDATE ${input.tableId}
                 SET ${columnString}
                 WHERE ${whereColumnString}`,
@@ -276,10 +274,10 @@ export function getUpdateWithValues(
   }
 
   const columnString = Object.keys(value)
-    .map((colName) => `${colName} = '${_escapeSQLValue(value[colName])}'`)
+    .map((colName) => `${colName} = '${escapeSQLValue(value[colName])}'`)
     .join(' AND \n');
   const whereColumnString = Object.keys(conditions)
-    .map((colName) => `${colName} = '${_escapeSQLValue(conditions[colName])}'`)
+    .map((colName) => `${colName} = '${escapeSQLValue(conditions[colName])}'`)
     .join(' AND \n');
 
   switch (input.dialect) {
@@ -290,7 +288,7 @@ export function getUpdateWithValues(
     case 'mysql':
       return {
         label,
-        formatter: 'js',
+        formatter,
         query: `UPDATE ${input.tableId}
                 SET ${columnString}
                 WHERE ${whereColumnString}`,

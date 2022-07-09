@@ -17,3 +17,8 @@ export const formatDuration = (durationMs: number) => {
 
   return '<= 1 second';
 };
+
+export const escapeSQLValue = (value?: string)  =>{
+  value = value || '';
+  return value?.toString().replace(/'/g, `''`);
+}
