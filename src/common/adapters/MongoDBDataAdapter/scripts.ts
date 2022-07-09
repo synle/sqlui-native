@@ -141,7 +141,7 @@ export function getUpdate(input: SqlAction.TableInput): SqlAction.Output | undef
     }
   }
 
-  const filters = `{_id: ObjectId('some_id')}`
+  const filters = `{_id: ObjectId('some_id')}`;
 
   return {
     label,
