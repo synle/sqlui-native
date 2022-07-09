@@ -7,12 +7,34 @@ export const MONGO_ADAPTER_PREFIX = 'db';
 
 const formatter = 'js';
 
+export function serializeJsonForMongoScript(object: any) {
+  let res = JSON.stringify(
+    object,
+    (k, v) => {
+      if (k === '_id') {
+        return `ObjectId('${v}')`;
+      }
+      return v;
+    },
+    2,
+  );
+
+  // here we construct ObjectId
+  res = res.replace(/"ObjectId\('[a-z0-9_]*'\)"/, (a) => {
+    const id = a.replace(`ObjectId`, '').replace(/[\(\)'"]/g, '');
+    return `ObjectId("${id}")`;
+  });
+
+  return res;
+}
+
 export function getSampleConnectionString(dialect?: SqluiCore.Dialect) {
   return `mongodb://localhost:27017`;
 }
 
 export function getSelectAllColumns(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Select All Columns`;
+
   return {
     label,
     formatter,
@@ -22,10 +44,15 @@ export function getSelectAllColumns(input: SqlAction.TableInput): SqlAction.Outp
 
 export function getSelectOne(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Select One Record`;
+
+  const filters = { _id: 'some_id' };
+
   return {
     label,
     formatter,
-    query: `${MONGO_ADAPTER_PREFIX}.collection('${input.tableId}').findOne({_id: ObjectId('some_id')});`,
+    query: `${MONGO_ADAPTER_PREFIX}.collection('${
+      input.tableId
+    }').findOne(${serializeJsonForMongoScript(filters)});`,
   };
 }
 
@@ -42,15 +69,15 @@ export function getSelectSpecificColumns(
   const whereColumnString = input.columns.map((col) => `${col.name} = ''`).join('\n -- AND ');
   const columns: any = {};
   for (const column of input.columns || []) {
-    if (!column.name.includes('.')) {
-      columns[column.name] = column.type === 'string' ? '' : 123;
-    }
+    // construct nested object properly
+    columns[column.propertyPath ? column.propertyPath.join('.') : column.name] =
+      column.type === 'string' ? '_some_value_' : 123;
   }
   return {
     label,
     formatter,
     query: `${MONGO_ADAPTER_PREFIX}.collection('${input.tableId}').find(
-          ${JSON.stringify(columns)}
+          ${serializeJsonForMongoScript(columns)}
         ).limit(${input.querySize}).toArray();`,
   };
 }
@@ -62,14 +89,16 @@ export function getSelectDistinctValues(input: SqlAction.TableInput): SqlAction.
     return res;
   }, {});
 
-  const distinctColumn = columns.filter((col) => col.name !== '_id')?.[0]?.name || 'some_field';
+  // select something that is not _id or id
+  const distinctColumn =
+    columns.filter((col) => col.name !== '_id' && col.name !== 'id')?.[0]?.name || 'some_field';
 
   return {
     label,
     formatter,
     query: `${MONGO_ADAPTER_PREFIX}.collection('${input.tableId}').distinct(
           '${distinctColumn}',
-          ${JSON.stringify(whereColumnString)}
+          ${serializeJsonForMongoScript(whereColumnString)}
         )`,
   };
 }
@@ -104,7 +133,7 @@ export function getInsert(
     label,
     formatter,
     query: `${MONGO_ADAPTER_PREFIX}.collection('${input.tableId}').insertMany([
-        ${JSON.stringify(columns)}
+        ${serializeJsonForMongoScript(columns)}
       ]);`,
   };
 }
@@ -120,8 +149,8 @@ export function getUpdateWithValues(
     label,
     formatter,
     query: `${MONGO_ADAPTER_PREFIX}.collection('${input.tableId}').update(
-        ${JSON.stringify(conditions)},
-        {$set: ${JSON.stringify(value, null, 2)}}
+        ${serializeJsonForMongoScript(conditions)},
+        {$set: ${serializeJsonForMongoScript(value)}}
       );`,
   };
 }
@@ -141,14 +170,17 @@ export function getUpdate(input: SqlAction.TableInput): SqlAction.Output | undef
     }
   }
 
-  const filters = `{_id: ObjectId('some_id')}`;
+  const filters = {
+    ...columns,
+    ...{ _id: 'some_id' },
+  };
 
   return {
     label,
     formatter,
     query: `${MONGO_ADAPTER_PREFIX}.collection('${input.tableId}').update(
-        ${filters},
-        {$set: ${JSON.stringify(columns, null, 2)}}
+        ${serializeJsonForMongoScript(filters)},
+        {$set: ${serializeJsonForMongoScript(columns)}}
       );`,
   };
 }
@@ -162,15 +194,15 @@ export function getDelete(input: SqlAction.TableInput): SqlAction.Output | undef
 
   const columns: any = {};
   for (const column of input.columns) {
-    if (column.name !== '_id' && !column.name.includes('.')) {
-      columns[column.name] = column.type === 'string' ? '' : 123;
-    }
+    // construct nested object properly
+    columns[column.propertyPath ? column.propertyPath.join('.') : column.name] =
+      column.type === 'string' ? '_some_value_' : 123;
   }
   return {
     label,
     formatter,
     query: `${MONGO_ADAPTER_PREFIX}.collection('${input.tableId}').deleteMany(
-        ${JSON.stringify(columns)}
+        ${serializeJsonForMongoScript(columns)}
       );`,
   };
 }

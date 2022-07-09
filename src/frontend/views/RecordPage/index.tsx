@@ -706,11 +706,6 @@ export function EditRecordPage(props: RecordDetailsPageProps) {
         try {
           const jsonValue = JSON.parse(rawValue);
 
-          // properly escape the id
-          if (conditions['_id']) {
-            conditions['_id'] = `ObjectId('${conditions['_id']}')`;
-          }
-
           // filter out the id inside of delta
           delete jsonValue['_id'];
 
@@ -725,12 +720,6 @@ export function EditRecordPage(props: RecordDetailsPageProps) {
               conditions,
             )?.query || '',
           );
-
-          // here we construct ObjectId
-          sql = sql.replace(/"ObjectId\('[a-z0-9]+'\)"/, (a) => {
-            const id = a.replace(`ObjectId`, '').replace(/[\(\)'"]/g, '');
-            return `ObjectId("${id}")`;
-          });
 
           setIsEdit(false);
         } catch (err) {
