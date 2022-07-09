@@ -998,6 +998,16 @@ db.collection('table1')
 ```
 
 
+### Select One Record
+
+```js
+db.collection('table1')
+  .findOne({
+    _id: ObjectId('some_id')
+  });
+```
+
+
 ### Insert
 
 ```js
@@ -1015,9 +1025,7 @@ db.collection('table1')
 ```js
 db.collection('table1')
   .update({
-    "id": 123,
-    "column1": 123,
-    "column2": 123
+    _id: ObjectId('some_id')
   }, {
     $set: {
       "id": 123,

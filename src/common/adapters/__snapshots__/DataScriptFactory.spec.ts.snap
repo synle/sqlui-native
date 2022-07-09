@@ -1089,6 +1089,14 @@ Array [
   )",
   },
   Object {
+    "formatter": "js",
+    "label": "Select One Record",
+    "query": "db.collection('table1')
+  .findOne({
+    _id: ObjectId('some_id')
+  });",
+  },
+  Object {
     "label": "divider",
   },
   Object {
@@ -1106,9 +1114,7 @@ Array [
     "label": "Update",
     "query": "db.collection('table1')
   .update({
-    \\"id\\": 123,
-    \\"column1\\": 123,
-    \\"column2\\": 123
+    _id: ObjectId('some_id')
   }, {
     $set: {
       \\"id\\": 123,
