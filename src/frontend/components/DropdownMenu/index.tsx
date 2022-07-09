@@ -18,7 +18,7 @@ export type DropdownButtonOption = {
 };
 
 type DropdownMenuProps = {
-  anchorEl: any;
+  anchorEl: React.RefObject<HTMLElement>;
   id: string;
   options: DropdownButtonOption[];
   onToggle?: (open: boolean) => void;
@@ -92,13 +92,13 @@ export default function DropdownMenu(props: DropdownMenuProps) {
     );
   }
 
-  if (!anchorEl) {
+  if (!anchorEl || !anchorEl.current) {
     return null;
   }
 
   return (
     <React.Fragment>
-      <Popper open={open} anchorEl={anchorEl} transition>
+      <Popper open={open} anchorEl={anchorEl.current} transition>
         {({ TransitionProps, placement }) => (
           <Grow
             {...TransitionProps}

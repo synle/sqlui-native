@@ -62,7 +62,7 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 export default function DataTable(props: DataTableProps) {
   const { columns, data } = props;
   const [openContextMenuRowIdx, setOpenContextMenuRowIdx] = useState(-1);
-  const anchorEl = useRef<HTMLElement | undefined>(undefined);
+  const anchorEl = useRef<HTMLElement | null>(null);
 
   const allRecordSize = data.length;
   let pageSizeToUse = useTablePageSize() || DEFAULT_TABLE_PAGE_SIZE;
@@ -160,7 +160,7 @@ export default function DataTable(props: DataTableProps) {
                             }
                           }}
                           maxHeight='400px'
-                          anchorEl={anchorEl.current}
+                          anchorEl={anchorEl}
                           open={openContextMenuRowIdx === rowIdx} />
                     }
                     return (
