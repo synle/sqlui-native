@@ -6,6 +6,10 @@ import { styled } from '@mui/system';
 const VERTICAL_TAB_THRESHOLD = 20;
 
 type TabsProps = {
+  /**
+   * selected tab index
+   * @type {number}
+   */
   tabIdx: number;
   onTabChange: (newTabIdx: number) => void;
   tabHeaders: string[] | React.ReactNode[];
