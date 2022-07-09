@@ -299,6 +299,7 @@ export module SqluiEnums {
     | 'clientEvent/query/revealThisOnly'
     | 'clientEvent/query/addToBookmark'
     | 'clientEvent/record/showDetails'
+    | 'clientEvent/record/edit'
     | 'clientEvent/record/new'
     | 'clientEvent/record/edit' // TODO: to be implemented
     | 'clientEvent/session/new'

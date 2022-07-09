@@ -1,4 +1,3 @@
-import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
 import ClickAwayListener from '@mui/material/ClickAwayListener';
 import Divider from '@mui/material/Divider';
@@ -17,9 +16,9 @@ export type DropdownButtonOption = {
   onClick?: (data?: any) => void;
 };
 
-type DropdownButtonProps = {
+type DropdownMenuProps = {
+  anchorEl: React.RefObject<HTMLElement>;
   id: string;
-  children: React.ReactNode;
   options: DropdownButtonOption[];
   onToggle?: (open: boolean) => void;
   open?: boolean;
@@ -27,10 +26,9 @@ type DropdownButtonProps = {
   maxHeight?: number | string;
 };
 
-export default function DropdownButton(props: DropdownButtonProps) {
-  const { id, options, children, maxHeight } = props;
+export default function DropdownMenu(props: DropdownMenuProps) {
+  const { id, options, maxHeight, anchorEl } = props;
   const [open, setOpen] = React.useState(false);
-  const anchorRef = React.useRef<HTMLDivElement>(null);
   const [selectedIndex, setSelectedIndex] = React.useState(1);
 
   const handleMenuItemClick = (e: React.MouseEvent<HTMLLIElement, MouseEvent>, index: number) => {
@@ -54,10 +52,7 @@ export default function DropdownButton(props: DropdownButtonProps) {
   };
 
   const onClose = (event: Event) => {
-    if (anchorRef.current && anchorRef.current.contains(event.target as HTMLElement)) {
-      return;
-    }
-
+    props.onToggle && props.onToggle(false);
     setOpen(false);
   };
 
@@ -96,19 +91,13 @@ export default function DropdownButton(props: DropdownButtonProps) {
     );
   }
 
+  if (!anchorEl || !anchorEl.current) {
+    return null;
+  }
+
   return (
     <React.Fragment>
-      <i
-        ref={anchorRef}
-        aria-controls={open ? id : undefined}
-        aria-expanded={open ? 'true' : undefined}
-        aria-label='actions dropdown'
-        aria-haspopup='menu'
-        onClick={onToggle}
-        className='DropdownButton'>
-        {children}
-      </i>
-      <Popper open={open} anchorEl={anchorRef.current} transition>
+      <Popper open={open} anchorEl={anchorEl.current} transition>
         {({ TransitionProps, placement }) => (
           <Grow
             {...TransitionProps}
