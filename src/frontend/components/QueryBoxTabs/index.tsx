@@ -194,6 +194,7 @@ export default function QueryBoxTabs() {
   }
   return (
     <Tabs
+      id='QueryBoxTabs'
       tabIdx={tabIdx}
       tabHeaders={tabHeaders}
       tabContents={tabContents}
