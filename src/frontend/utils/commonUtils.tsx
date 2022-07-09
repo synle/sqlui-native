@@ -10,22 +10,26 @@ export function getExportedQuery(query: SqluiFrontend.ConnectionQuery) {
   return { _type: 'query', ...{ id, name, sql, connectionId, databaseId } };
 }
 // misc utils
+const TO_BE_DELETED_LIST_ITEM = Symbol('to_be_deleted_list_item');
 export function getUpdatedOrdersForList(items: any[], from: number, to: number) {
-  // ordering will move the tab from the old index to the new index
-  // and push everything from that point out
-  const targetItem = items[from];
-  let leftHalf: SqluiFrontend.ConnectionQuery[];
-  let rightHalf: SqluiFrontend.ConnectionQuery[];
-
-  if (from > to) {
-    leftHalf = items.filter((q, idx) => idx < to && idx !== from);
-    rightHalf = items.filter((q, idx) => idx >= to && idx !== from);
-  } else {
-    leftHalf = items.filter((q, idx) => idx <= to && idx !== from);
-    rightHalf = items.filter((q, idx) => idx > to && idx !== from);
+  if(from === to){
+    return items;
   }
 
-  return [...leftHalf, targetItem, ...rightHalf];
+  const targetItem = items[from];
+  items[from] = TO_BE_DELETED_LIST_ITEM;
+
+  // from > to : this is where we insert before `to`
+  // from < to : this is where we insert after `to`
+  items.splice(
+    from > to
+     ? to
+     : to + 1,
+     0,
+     targetItem
+   );
+
+  return items.filter(item => item !== TO_BE_DELETED_LIST_ITEM)
 }
 
 export function getGeneratedRandomId(prefix: string) {
