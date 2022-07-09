@@ -126,12 +126,10 @@ export default function DropdownButton(props: DropdownButtonProps) {
     </React.Fragment>
   );
 }
-
-
 // headless
 
 type DropdownMenuProps = DropdownButtonProps & {
-  anchorEl: any
+  anchorEl: any;
 };
 
 export function DropdownMenu(props: DropdownMenuProps) {
@@ -199,7 +197,7 @@ export function DropdownMenu(props: DropdownMenuProps) {
     );
   }
 
-  if(!anchorEl){
+  if (!anchorEl) {
     return null;
   }
 
