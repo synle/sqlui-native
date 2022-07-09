@@ -128,8 +128,14 @@ export default function DropdownButton(props: DropdownButtonProps) {
 }
 // headless
 
-type DropdownMenuProps = DropdownButtonProps & {
+type DropdownMenuProps = {
   anchorEl: any;
+  id: string;
+  options: DropdownButtonOption[];
+  onToggle?: (open: boolean) => void;
+  open?: boolean;
+  isLoading?: boolean;
+  maxHeight?: number | string;
 };
 
 export function DropdownMenu(props: DropdownMenuProps) {

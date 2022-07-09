@@ -99,10 +99,20 @@ export default function DataTable(props: DataTableProps) {
     setPageSize(e.target.value);
   }, []);
 
-  const onRowContextMenuClick = (e: React.SyntheticEvent, rowIdx: number) => {
-    e.preventDefault();
-    setOpenContextMenuRowIdx(rowIdx)
-    anchorEl.current = e.target as HTMLElement;
+  const onRowContextMenuClick = (e: React.SyntheticEvent) => {
+    const target = e.target as HTMLElement;
+    const tr = target.closest('tr')
+    const siblings = target.closest('tbody')?.children
+    if(siblings){
+      for(let rowIdx = 0; rowIdx < siblings.length; rowIdx++){
+        if(siblings[rowIdx] === tr){
+          e.preventDefault();
+          setOpenContextMenuRowIdx(rowIdx)
+          anchorEl.current = target;
+          break;
+        }
+      }
+    }
   }
 
   const targetRowContextOptions = (props.rowContextOptions || []).map(rowContextOption => ({
@@ -127,19 +137,18 @@ export default function DataTable(props: DataTableProps) {
               </TableRow>
             ))}
           </TableHead>
-          <TableBody {...getTableBodyProps()}>
+          <TableBody {...getTableBodyProps()} onContextMenu={(e) => onRowContextMenuClick(e)}>
             {page.map((row, rowIdx) => {
               prepareRow(row);
               return (
                 <StyledTableRow
                   {...row.getRowProps()}
                   onClick={() => props.onRowClick && props.onRowClick(row.original)}
-                  onContextMenu={(e) => onRowContextMenuClick(e, rowIdx)}
                   style={{ cursor: props.onRowClick ? 'pointer' : '' }}>
                   {row.cells.map((cell, colIdx) => {
                     let dropdownContent: any;
-                    if(colIdx === 0){
-                      dropdownContent = targetRowContextOptions.length > 0 && <DropdownMenu
+                    if(colIdx === 0 && targetRowContextOptions.length > 0){
+                      dropdownContent = <DropdownMenu
                           id={`data-table-row-dropdown-${rowIdx}`}
                           options={targetRowContextOptions}
                           onToggle={(newOpen) => {
