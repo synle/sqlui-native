@@ -928,6 +928,8 @@ export default function MissionControl() {
               querySelectionMode === 'new-tab',
               command.label,
             );
+
+            document.querySelector('#QueryBoxTabs')?.scrollIntoView();
           }
           break;
 
