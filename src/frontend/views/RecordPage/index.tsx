@@ -782,7 +782,7 @@ export function EditRecordPage(props: RecordDetailsPageProps) {
 }
 type RecordDetailsPageProps = {
   data: any;
-  isEditMode?: boolean
+  isEditMode?: boolean;
 };
 
 export function RecordDetailsPage(props: RecordDetailsPageProps) {

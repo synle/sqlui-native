@@ -116,16 +116,17 @@ export default function ResultBox(props: ResultBoxProps) {
     },
     {
       label: 'Show Edit Record',
-      onClick: rowData => selectCommand({ event: 'clientEvent/record/edit', data: rowData }),
-    }
-  ]
+      onClick: (rowData) => selectCommand({ event: 'clientEvent/record/edit', data: rowData }),
+    },
+  ];
 
   const tabContents = [
     <div className='ResultBox__Content' key={`Table`}>
       <DataTableWithJSONList
-      onRowClick={onShowRecordDetails}
-      rowContextOptions={rowContextOptions}
-      data={data} />
+        onRowClick={onShowRecordDetails}
+        rowContextOptions={rowContextOptions}
+        data={data}
+      />
     </div>,
     <div className='ResultBox__Content' key={`JSON`}>
       <JsonFormatData data={data} />

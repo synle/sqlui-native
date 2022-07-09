@@ -8,10 +8,10 @@ import TableHead from '@mui/material/TableHead';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import { useFilters, useGlobalFilter, usePagination, useSortBy, useTable } from 'react-table';
-import React, { useState, useCallback, useMemo, useRef } from 'react';
-import { useTablePageSize } from 'src/frontend/hooks/useSetting';
-import {DropdownButtonOption} from 'src/frontend/components/DropdownButton';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
+import { DropdownButtonOption } from 'src/frontend/components/DropdownButton';
 import DropdownMenu from 'src/frontend/components/DropdownMenu';
+import { useTablePageSize } from 'src/frontend/hooks/useSetting';
 
 type DataTableProps = {
   columns: any[];
@@ -102,24 +102,25 @@ export default function DataTable(props: DataTableProps) {
 
   const onRowContextMenuClick = (e: React.SyntheticEvent) => {
     const target = e.target as HTMLElement;
-    const tr = target.closest('tr')
-    const siblings = target.closest('tbody')?.children
-    if(siblings){
-      for(let rowIdx = 0; rowIdx < siblings.length; rowIdx++){
-        if(siblings[rowIdx] === tr){
+    const tr = target.closest('tr');
+    const siblings = target.closest('tbody')?.children;
+    if (siblings) {
+      for (let rowIdx = 0; rowIdx < siblings.length; rowIdx++) {
+        if (siblings[rowIdx] === tr) {
           e.preventDefault();
-          setOpenContextMenuRowIdx(rowIdx)
+          setOpenContextMenuRowIdx(rowIdx);
           anchorEl.current = target;
           break;
         }
       }
     }
-  }
+  };
 
-  const targetRowContextOptions = (props.rowContextOptions || []).map(rowContextOption => ({
-      ...rowContextOption,
-      onClick: () => rowContextOption.onClick && rowContextOption.onClick(data[openContextMenuRowIdx])
-    }));
+  const targetRowContextOptions = (props.rowContextOptions || []).map((rowContextOption) => ({
+    ...rowContextOption,
+    onClick: () =>
+      rowContextOption.onClick && rowContextOption.onClick(data[openContextMenuRowIdx]),
+  }));
 
   return (
     <>
@@ -148,12 +149,13 @@ export default function DataTable(props: DataTableProps) {
                   style={{ cursor: props.onRowClick ? 'pointer' : '' }}>
                   {row.cells.map((cell, colIdx) => {
                     let dropdownContent: any;
-                    if(colIdx === 0 && targetRowContextOptions.length > 0){
-                      dropdownContent = <DropdownMenu
+                    if (colIdx === 0 && targetRowContextOptions.length > 0) {
+                      dropdownContent = (
+                        <DropdownMenu
                           id={`data-table-row-dropdown-${rowIdx}`}
                           options={targetRowContextOptions}
                           onToggle={(newOpen) => {
-                            if(newOpen){
+                            if (newOpen) {
                               setOpenContextMenuRowIdx(rowIdx);
                             } else {
                               setOpenContextMenuRowIdx(-1);
@@ -161,7 +163,9 @@ export default function DataTable(props: DataTableProps) {
                           }}
                           maxHeight='400px'
                           anchorEl={anchorEl}
-                          open={openContextMenuRowIdx === rowIdx} />
+                          open={openContextMenuRowIdx === rowIdx}
+                        />
+                      );
                     }
                     return (
                       <StyledTableCell {...cell.getCellProps()}>
