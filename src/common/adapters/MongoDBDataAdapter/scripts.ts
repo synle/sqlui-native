@@ -64,9 +64,8 @@ export function getSelectSpecificColumns(
   const whereColumnString = input.columns.map((col) => `${col.name} = ''`).join('\n -- AND ');
   const columns: any = {};
   for (const column of input.columns || []) {
-    if (!column.nested) {
-      columns[column.name] = column.type === 'string' ? '' : 123;
-    }
+    // construct nested object properly
+    columns[column.propertyPath ? column.propertyPath.join('.') : column.name] = column.type === 'string' ? '_some_value_' : 123
   }
   return {
     label,
@@ -188,9 +187,8 @@ export function getDelete(input: SqlAction.TableInput): SqlAction.Output | undef
 
   const columns: any = {};
   for (const column of input.columns) {
-    if (!column.nested) {
-      columns[column.name] = column.type === 'string' ? '' : 123;
-    }
+    // construct nested object properly
+    columns[column.propertyPath ? column.propertyPath.join('.') : column.name] = column.type === 'string' ? '_some_value_' : 123
   }
   return {
     label,
