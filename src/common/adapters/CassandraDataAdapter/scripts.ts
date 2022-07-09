@@ -56,9 +56,13 @@ export function getInsert(input: SqlAction.TableInput, value?: Record<string, an
   const columnString = input.columns.map((col) => col.name).join(',\n');
   const insertValueString = input.columns.map((col) => {
     let valToUse = '';
-    if (value?.[col.name]) {
-      // use the value if it's there
-      valToUse = `${escapeSQLValue(value[col.name])}`;
+    if(value){
+      if (value?.[col.name]) {
+        // use the value if it's there
+        valToUse = `${escapeSQLValue(value[col.name])}`;
+      }
+    } else {
+      valToUse = _isColumnNumberField(col) ? '123' : `_${col.name}_`;
     }
 
     if(_isColumnNumberField(col)){
