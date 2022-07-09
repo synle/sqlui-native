@@ -11,8 +11,9 @@ export function getExportedQuery(query: SqluiFrontend.ConnectionQuery) {
 }
 // misc utils
 const TO_BE_DELETED_LIST_ITEM = Symbol('to_be_deleted_list_item');
+
 export function getUpdatedOrdersForList(items: any[], from: number, to: number) {
-  if(from === to){
+  if (from === to) {
     return items;
   }
 
@@ -21,15 +22,9 @@ export function getUpdatedOrdersForList(items: any[], from: number, to: number) 
 
   // from > to : this is where we insert before `to`
   // from < to : this is where we insert after `to`
-  items.splice(
-    from > to
-     ? to
-     : to + 1,
-     0,
-     targetItem
-   );
+  items.splice(from > to ? to : to + 1, 0, targetItem);
 
-  return items.filter(item => item !== TO_BE_DELETED_LIST_ITEM)
+  return items.filter((item) => item !== TO_BE_DELETED_LIST_ITEM);
 }
 
 export function getGeneratedRandomId(prefix: string) {
