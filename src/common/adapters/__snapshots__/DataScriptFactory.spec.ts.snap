@@ -79,17 +79,18 @@ VALUES
   ('_id_', '_column1_', '_column2_')",
   },
   Object {
-    "formatter": "js",
+    "formatter": "sql",
     "label": "Update",
-    "query": "UPDATE table1
-SET id = '',
+    "query": "UPDATE
+  table1
+SET
+  id = '',
   column1 = '',
   column2 = ''
-WHERE id = ''
-AND
-column1 = ''
-AND
-column2 = ''",
+WHERE
+  id = ''
+  AND column1 = ''
+  AND column2 = ''",
   },
   Object {
     "formatter": "sql",
@@ -212,17 +213,18 @@ VALUES
   ('_id_', '_column1_', '_column2_')",
   },
   Object {
-    "formatter": "js",
+    "formatter": "sql",
     "label": "Update",
-    "query": "UPDATE table1
-SET id = '',
+    "query": "UPDATE
+  table1
+SET
+  id = '',
   column1 = '',
   column2 = ''
-WHERE id = ''
-AND
-column1 = ''
-AND
-column2 = ''",
+WHERE
+  id = ''
+  AND column1 = ''
+  AND column2 = ''",
   },
   Object {
     "formatter": "sql",
@@ -351,17 +353,18 @@ VALUES
   ('_id_', '_column1_', '_column2_')",
   },
   Object {
-    "formatter": "js",
+    "formatter": "sql",
     "label": "Update",
-    "query": "UPDATE table1
-SET id = '',
+    "query": "UPDATE
+  table1
+SET
+  id = '',
   column1 = '',
   column2 = ''
-WHERE id = ''
-AND
-column1 = ''
-AND
-column2 = ''",
+WHERE
+  id = ''
+  AND column1 = ''
+  AND column2 = ''",
   },
   Object {
     "formatter": "sql",
@@ -490,17 +493,18 @@ VALUES
   ('_id_', '_column1_', '_column2_')",
   },
   Object {
-    "formatter": "js",
+    "formatter": "sql",
     "label": "Update",
-    "query": "UPDATE table1
-SET id = '',
+    "query": "UPDATE
+  table1
+SET
+  id = '',
   column1 = '',
   column2 = ''
-WHERE id = ''
-AND
-column1 = ''
-AND
-column2 = ''",
+WHERE
+  id = ''
+  AND column1 = ''
+  AND column2 = ''",
   },
   Object {
     "formatter": "sql",
@@ -629,17 +633,18 @@ VALUES
   ('_id_', '_column1_', '_column2_')",
   },
   Object {
-    "formatter": "js",
+    "formatter": "sql",
     "label": "Update",
-    "query": "UPDATE table1
-SET id = '',
+    "query": "UPDATE
+  table1
+SET
+  id = '',
   column1 = '',
   column2 = ''
-WHERE id = ''
-AND
-column1 = ''
-AND
-column2 = ''",
+WHERE
+  id = ''
+  AND column1 = ''
+  AND column2 = ''",
   },
   Object {
     "formatter": "sql",
@@ -814,7 +819,7 @@ LIMIT
     "query": "INSERT INTO
   table1 (id, column1, column2)
 VALUES
-  ('_id_', '_column1_', '_column2_')",
+  (123, 123, '_column2_')",
   },
   Object {
     "label": "divider",
