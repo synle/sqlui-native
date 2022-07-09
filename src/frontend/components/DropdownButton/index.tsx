@@ -11,10 +11,10 @@ import Paper from '@mui/material/Paper';
 import Popper from '@mui/material/Popper';
 import React, { useEffect } from 'react';
 
-type DropdownButtonOption = {
+export type DropdownButtonOption = {
   label: string;
   startIcon?: React.ReactNode;
-  onClick?: () => void;
+  onClick?: (data?: any) => void;
 };
 
 type DropdownButtonProps = {
@@ -116,7 +116,102 @@ export default function DropdownButton(props: DropdownButtonProps) {
               transformOrigin: placement === 'bottom' ? 'right top' : 'right bottom',
             }}>
             <Paper sx={{ maxHeight: maxHeight || '325px', overflow: 'auto' }}>
-              <ClickAwayListener onClickAway={onClose} mouseEvent='onMouseUp'>
+              <ClickAwayListener onClickAway={onClose} mouseEvent='onMouseDown'>
+                {popperBody}
+              </ClickAwayListener>
+            </Paper>
+          </Grow>
+        )}
+      </Popper>
+    </React.Fragment>
+  );
+}
+// headless
+
+type DropdownMenuProps = DropdownButtonProps & {
+  anchorEl: any;
+};
+
+export function DropdownMenu(props: DropdownMenuProps) {
+  const { id, options, maxHeight, anchorEl } = props;
+  const [open, setOpen] = React.useState(false);
+  const [selectedIndex, setSelectedIndex] = React.useState(1);
+
+  const handleMenuItemClick = (e: React.MouseEvent<HTMLLIElement, MouseEvent>, index: number) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (options[index].onClick) {
+      // @ts-ignore
+      options[index].onClick();
+      setOpen(false);
+    }
+  };
+
+  const onToggle = (e: React.SyntheticEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    setOpen((prevOpen) => !prevOpen);
+
+    props.onToggle && props.onToggle(!open);
+  };
+
+  const onClose = (event: Event) => {
+    props.onToggle && props.onToggle(false);
+    setOpen(false);
+  };
+
+  useEffect(() => {
+    setOpen(!!props.open);
+  }, [props.open]);
+
+  let popperBody: React.ReactElement = <></>;
+  if (props.isLoading) {
+    popperBody = (
+      <div className='DropdownButton__Popper'>
+        <CircularProgress size={15} /> Loading... Please wait.
+      </div>
+    );
+  } else if (options.length === 0) {
+    popperBody = <div className='DropdownButton__Popper'>No options.</div>;
+  } else {
+    popperBody = (
+      <MenuList id={id}>
+        {options.map((option, index) => {
+          let content;
+          if (option.label === 'divider') {
+            return (content = <Divider key={index} sx={{ marginBlock: 1 }} />);
+          } else {
+            content = (
+              <MenuItem onClick={(event) => handleMenuItemClick(event, index)}>
+                {!option.startIcon ? null : <ListItemIcon>{option.startIcon}</ListItemIcon>}
+                <ListItemText>{option.label}</ListItemText>
+              </MenuItem>
+            );
+          }
+
+          return <div key={option.label}>{content}</div>;
+        })}
+      </MenuList>
+    );
+  }
+
+  if (!anchorEl) {
+    return null;
+  }
+
+  return (
+    <React.Fragment>
+      <Popper open={open} anchorEl={anchorEl} transition>
+        {({ TransitionProps, placement }) => (
+          <Grow
+            {...TransitionProps}
+            style={{
+              transformOrigin: placement === 'bottom' ? 'right top' : 'right bottom',
+            }}>
+            <Paper sx={{ maxHeight: maxHeight || '325px', overflow: 'auto' }}>
+              <ClickAwayListener onClickAway={onClose} mouseEvent='onMouseDown'>
                 {popperBody}
               </ClickAwayListener>
             </Paper>
