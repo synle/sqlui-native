@@ -58,7 +58,7 @@ export function getSelectSpecificColumns(
     label,
     formatter,
     query: `${MONGO_ADAPTER_PREFIX}.collection('${input.tableId}').find(
-          ${JSON.stringify(columns)}
+          ${serializeJsonForMongoScript(columns)}
         ).limit(${input.querySize}).toArray();`,
   };
 }
@@ -77,7 +77,7 @@ export function getSelectDistinctValues(input: SqlAction.TableInput): SqlAction.
     formatter,
     query: `${MONGO_ADAPTER_PREFIX}.collection('${input.tableId}').distinct(
           '${distinctColumn}',
-          ${JSON.stringify(whereColumnString)}
+          ${serializeJsonForMongoScript(whereColumnString)}
         )`,
   };
 }
@@ -112,7 +112,7 @@ export function getInsert(
     label,
     formatter,
     query: `${MONGO_ADAPTER_PREFIX}.collection('${input.tableId}').insertMany([
-        ${JSON.stringify(columns)}
+        ${serializeJsonForMongoScript(columns)}
       ]);`,
   };
 }
@@ -128,8 +128,8 @@ export function getUpdateWithValues(
     label,
     formatter,
     query: `${MONGO_ADAPTER_PREFIX}.collection('${input.tableId}').update(
-        ${JSON.stringify(conditions)},
-        {$set: ${JSON.stringify(value, null, 2)}}
+        ${serializeJsonForMongoScript(conditions)},
+        {$set: ${serializeJsonForMongoScript(value)}}
       );`,
   };
 }
@@ -153,8 +153,8 @@ export function getUpdate(input: SqlAction.TableInput): SqlAction.Output | undef
     label,
     formatter,
     query: `${MONGO_ADAPTER_PREFIX}.collection('${input.tableId}').update(
-        ${JSON.stringify(columns)},
-        {$set: ${JSON.stringify(columns, null, 2)}}
+        ${serializeJsonForMongoScript(columns)},
+        {$set: ${serializeJsonForMongoScript(columns)}}
       );`,
   };
 }
@@ -176,7 +176,7 @@ export function getDelete(input: SqlAction.TableInput): SqlAction.Output | undef
     label,
     formatter,
     query: `${MONGO_ADAPTER_PREFIX}.collection('${input.tableId}').deleteMany(
-        ${JSON.stringify(columns)}
+        ${serializeJsonForMongoScript(columns)}
       );`,
   };
 }
