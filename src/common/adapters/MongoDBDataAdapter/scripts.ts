@@ -20,6 +20,15 @@ export function getSelectAllColumns(input: SqlAction.TableInput): SqlAction.Outp
   };
 }
 
+export function getSelectOne(input: SqlAction.TableInput): SqlAction.Output | undefined {
+  const label = `Select One Record`;
+  return {
+    label,
+    formatter,
+    query: `${MONGO_ADAPTER_PREFIX}.collection('${input.tableId}').findOne({_id: ObjectId('some_id')});`,
+  };
+}
+
 export function getSelectSpecificColumns(
   input: SqlAction.TableInput,
 ): SqlAction.Output | undefined {
@@ -132,11 +141,13 @@ export function getUpdate(input: SqlAction.TableInput): SqlAction.Output | undef
     }
   }
 
+  const filters = `{_id: ObjectId('some_id')}`;
+
   return {
     label,
     formatter,
     query: `${MONGO_ADAPTER_PREFIX}.collection('${input.tableId}').update(
-        ${JSON.stringify(columns)},
+        ${filters},
         {$set: ${JSON.stringify(columns, null, 2)}}
       );`,
   };
@@ -224,6 +235,7 @@ export const tableActionScripts: SqlAction.TableActionScriptGenerator[] = [
   getSelectAllColumns,
   getSelectSpecificColumns,
   getSelectDistinctValues,
+  getSelectOne,
   getDivider,
   getInsert,
   getUpdate,
