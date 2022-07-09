@@ -116,7 +116,7 @@ export default function DropdownButton(props: DropdownButtonProps) {
               transformOrigin: placement === 'bottom' ? 'right top' : 'right bottom',
             }}>
             <Paper sx={{ maxHeight: maxHeight || '325px', overflow: 'auto' }}>
-              <ClickAwayListener onClickAway={onClose} mouseEvent='onMouseUp'>
+              <ClickAwayListener onClickAway={onClose} mouseEvent='onMouseDown'>
                 {popperBody}
               </ClickAwayListener>
             </Paper>
@@ -126,12 +126,10 @@ export default function DropdownButton(props: DropdownButtonProps) {
     </React.Fragment>
   );
 }
-
-
 // headless
 
 type DropdownMenuProps = DropdownButtonProps & {
-  anchorEl: any
+  anchorEl: any;
 };
 
 export function DropdownMenu(props: DropdownMenuProps) {
@@ -199,7 +197,7 @@ export function DropdownMenu(props: DropdownMenuProps) {
     );
   }
 
-  if(!anchorEl){
+  if (!anchorEl) {
     return null;
   }
 
@@ -213,7 +211,7 @@ export function DropdownMenu(props: DropdownMenuProps) {
               transformOrigin: placement === 'bottom' ? 'right top' : 'right bottom',
             }}>
             <Paper sx={{ maxHeight: maxHeight || '325px', overflow: 'auto' }}>
-              <ClickAwayListener onClickAway={onClose} mouseEvent='onMouseUp'>
+              <ClickAwayListener onClickAway={onClose} mouseEvent='onMouseDown'>
                 {popperBody}
               </ClickAwayListener>
             </Paper>
