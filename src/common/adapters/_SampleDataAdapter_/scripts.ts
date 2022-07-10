@@ -39,14 +39,19 @@ export function getDropDatabase(input: SqlAction.DatabaseInput): SqlAction.Outpu
 
 export class ConcreteDataScripts extends BaseDataScript {
   dialects = ['<your_dialect_name>'];
+
   // TODO: implement me
   getTableScripts() {
-    return [getDivider, getSelectAllColumns];
+    return [
+    // getDivider, getSelectAllColumns
+    ];
   }
 
   // TODO: implement me
   getDatabaseScripts() {
-    return [getDivider, getCreateDatabase];
+    return [
+    //getDivider, getCreateDatabase
+    ];
   }
 
   // TODO: implement me

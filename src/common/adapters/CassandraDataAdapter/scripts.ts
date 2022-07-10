@@ -273,6 +273,7 @@ export function getDropColumns(input: SqlAction.TableInput): SqlAction.Output | 
 
 export class ConcreteDataScripts extends BaseDataScript {
   dialects = ['cassandra'];
+
   getIsTableIdRequiredForQuery() {
     return false;
   }

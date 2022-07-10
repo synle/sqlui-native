@@ -560,6 +560,7 @@ export function getCreateConnectionDatabase(
 
 export class ConcreteDataScripts extends BaseDataScript {
   dialects = ['mysql', 'mariadb', 'mssql', 'postgres', 'sqlite'];
+
   getIsTableIdRequiredForQuery() {
     return false;
   }
