@@ -2,7 +2,7 @@ import BackupIcon from '@mui/icons-material/Backup';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { Button, Link, Skeleton, TextField, Typography } from '@mui/material';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { getBulkInsert as getBulkInsertForAzTable } from 'src/common/adapters/AzureTableStorageAdapter/scripts';
 import { getSampleSelectQuery } from 'src/common/adapters/DataScriptFactory';
 import {
@@ -13,7 +13,7 @@ import CodeEditorBox from 'src/frontend/components/CodeEditorBox';
 import ConnectionDatabaseSelector from 'src/frontend/components/QueryBox/ConnectionDatabaseSelector';
 import Select from 'src/frontend/components/Select';
 import dataApi from 'src/frontend/data/api';
-import { useGetColumns, useGetConnections } from 'src/frontend/hooks/useConnection';
+import { useGetColumns, useGetConnections, useGetConnectionById } from 'src/frontend/hooks/useConnection';
 import { useConnectionQueries } from 'src/frontend/hooks/useConnectionQuery';
 import { formatJS, formatSQL } from 'src/frontend/utils/formatter';
 import { SqluiCore, SqluiFrontend } from 'typings';
@@ -160,6 +160,10 @@ export default function MigrationBox(props: MigrationBoxProps) {
   const { mode } = props;
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
+  const migrationMetaData = useRef<MigrationMetaData>({
+    toDialect: 'sqlite',
+    newTableName: `new_table_${Date.now()}`
+  });
   const [query, setQuery] = useState<SqluiFrontend.ConnectionQuery>({
     id: 'migration_from_query_' + Date.now(),
     name: 'Migration Query',
@@ -167,14 +171,13 @@ export default function MigrationBox(props: MigrationBoxProps) {
   const [toDialect, setToDialect] = useState<SqluiCore.Dialect | undefined>();
   const [migrationNewTableName, setMigrationNewTableName] = useState(`new_table_${Date.now()}`);
   const [migrationScript, setMigrationScript] = useState('');
-  const [migrationType, setMigrationType] = useState<SqluiFrontend.MigrationType>('create');
   const [migrating, setMigrating] = useState(false);
   const { data: columns, isLoading: loadingColumns } = useGetColumns(
     query?.connectionId,
     query?.databaseId,
     query?.tableId,
   );
-  const { isLoading: loadingConnections, data: connections } = useGetConnections();
+  const { data: connections, isLoading: loadingConnections } = useGetConnections();
   const { onAddQuery } = useConnectionQueries();
   const [rawJson, setRawJson] = useState('');
 
@@ -193,7 +196,7 @@ export default function MigrationBox(props: MigrationBoxProps) {
   }
   const isSaving = migrating;
 
-  const isMigrationScriptVisible = !!migrationScript && !!toDialect && !!migrationType;
+  const isMigrationScriptVisible = !!migrationScript && !!toDialect;
   const isLoading = loadingColumns || loadingConnections;
 
   // effects
@@ -361,6 +364,8 @@ export default function MigrationBox(props: MigrationBoxProps) {
     );
   }
 
+  console.log('MigrationMetaDataInputs', migrationMetaData.current);
+
   return (
     <div className='FormInput__Container'>
       {isConnectionSelectorVisible && (
@@ -386,16 +391,7 @@ export default function MigrationBox(props: MigrationBoxProps) {
         </>
       )}
       <div className='FormInput__Row'>
-        <DialectSelector value={toDialect} onChange={onSetMigrationDialect} />
-        <TextField
-          label='New Table Name'
-          value={migrationNewTableName}
-          onChange={(e) => setMigrationNewTableName(e.target.value)}
-          required
-          size='small'
-          fullWidth={true}
-          autoComplete='off'
-        />
+        <MigrationMetaDataInputs query={query} dataRef={migrationMetaData}/>
       </div>
       {isQueryRequired && (
         <>
@@ -439,4 +435,70 @@ export default function MigrationBox(props: MigrationBoxProps) {
       )}
     </div>
   );
+}
+
+type MigrationMetaData = {
+  toDialect?: SqluiCore.Dialect;
+  newTableName?: string;
+  azTableRowKeyField?: string;
+  azTablePartitionKeyField?: string;
+}
+
+type MigrationMetaDataInputsProps = {
+  query: SqluiFrontend.ConnectionQuery;
+  dataRef: React.RefObject<MigrationMetaData>;
+}
+
+function MigrationMetaDataInputs(props: MigrationMetaDataInputsProps){
+  const {query, dataRef: ref} = props;
+  const { data: columns, isLoading: loadingColumns } = useGetColumns(
+    query?.connectionId,
+    query?.databaseId,
+    query?.tableId,
+  );
+
+  const { data: connection, isLoading: loadingConnection } = useGetConnectionById(query?.connectionId);
+
+  const loading = loadingColumns || loadingConnection;
+
+  if(!ref || !ref.current){
+    return null;
+  }
+
+  if(loading){
+    return null;
+  }
+
+  if(!columns || !connection){
+    return null;
+  }
+
+  const dialect = connection.dialect;
+
+  if(!dialect){
+    return null;
+  }
+
+  const onSetValue = (key: string, value: any) => {
+    if(ref.current){
+      //@ts-ignore
+      ref.current = {
+        ...ref.current,
+        ...{[key]: value}
+      };
+    }
+  }
+
+  return <>
+    <DialectSelector value={ref.current?.toDialect} onChange={(newToDialect) => onSetValue('toDialect', newToDialect)} />
+    <TextField
+      label='New Table Name'
+      defaultValue={ref.current?.newTableName}
+      onBlur={(e) => onSetValue('newTableName', e.target.value)}
+      required
+      size='small'
+      fullWidth={true}
+      autoComplete='off'
+    />
+  </>
 }
