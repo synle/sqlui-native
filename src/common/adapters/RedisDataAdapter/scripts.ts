@@ -207,6 +207,9 @@ export function getPublishMessage(input: SqlAction.TableInput): SqlAction.Output
 }
 
 export class ConcreteDataScripts extends BaseDataScript{
+    dialects = [
+        'redis',
+    ]
   getIsTableIdRequiredForQuery() {
     return false
   }
@@ -216,8 +219,6 @@ export class ConcreteDataScripts extends BaseDataScript{
   }
 
   getTableScripts() {
-
-
     return [ getSetValue,
   getGet,
   getScan,
@@ -253,7 +254,7 @@ export class ConcreteDataScripts extends BaseDataScript{
     return []
   }
 
-  getSampleConnectionString(dialect?: SqluiCore.Dialect) {
+  getSampleConnectionString(dialect) {
     return `redis://localhost:6379`;
   }
 }

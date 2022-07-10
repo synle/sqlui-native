@@ -8,21 +8,7 @@ export function getDivider(): SqlAction.Output {
 }
 
 export default abstract class BaseDataScript implements IDataScript{
-  /**
- * @type {Array} ordered list of supported dialects is shown in the connection hints
- */
-  static SUPPORTED_DIALECTS = [
-    'mysql',
-    'mariadb',
-    'mssql',
-    'postgres',
-    'sqlite',
-    'cassandra',
-    'mongodb',
-    'redis',
-    'cosmosdb',
-    'aztable',
-  ];
+  dialects: string[] = [];
 
   getIsTableIdRequiredForQuery() {
     return false

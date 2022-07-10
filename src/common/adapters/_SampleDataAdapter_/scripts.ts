@@ -38,6 +38,9 @@ export function getDropDatabase(input: SqlAction.DatabaseInput): SqlAction.Outpu
 }
 
 export class ConcreteDataScripts extends BaseDataScript{
+    dialects = [
+        '<your_dialect_name>'
+    ]
   // TODO: implement me
   getTableScripts() {
     return [
@@ -61,7 +64,7 @@ export class ConcreteDataScripts extends BaseDataScript{
   }
 
   // TODO: implement me
-  getSampleConnectionString(dialect?: SqluiCore.Dialect) {
+  getSampleConnectionString(dialect) {
     return `your_dialect://your_props`
   }
 }

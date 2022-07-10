@@ -7,6 +7,7 @@ import RedisDataAdapterScripts from 'src/common/adapters/RedisDataAdapter/script
 import RelationalDataAdapterScripts from 'src/common/adapters/RelationalDataAdapter/scripts';
 import { formatJS, formatSQL } from 'src/frontend/utils/formatter';
 import { SqlAction, SqluiCore } from 'typings';
+
 function _formatScripts(
   actionInput: SqlAction.TableInput | SqlAction.DatabaseInput | SqlAction.ConnectionInput,
   generatorFuncs:
@@ -34,10 +35,46 @@ function _formatScripts(
   return actions;
 }
 
+function _getImplementation(dialect?: string) {
+  switch(dialect){
+    case 'mysql':
+    case 'mariadb':
+    case 'mssql':
+    case 'postgres':
+    case 'sqlite':
+      return RelationalDataAdapterScripts
+    case 'cassandra':
+      return CassandraDataAdapterScripts
+    case 'mongodb':
+      return MongoDBDataAdapterScripts
+    case 'redis':
+      return RedisDataAdapterScripts
+    case 'cosmosdb':
+      return AzureCosmosDataAdapterScripts
+    case 'aztable':
+      return AzureTableStorageAdapterScripts
+  }
+}
+
+// generate the list of all supported dialects
+const allScriptsSet = new Set<string>();
+[
+  RelationalDataAdapterScripts,
+  CassandraDataAdapterScripts,
+  MongoDBDataAdapterScripts,
+  RedisDataAdapterScripts,
+  AzureCosmosDataAdapterScripts,
+  AzureTableStorageAdapterScripts,
+].forEach((script) =>{
+  for(const dialect of script.dialects){
+    allScriptsSet.add(dialect)
+  }
+})
+
 /**
  * @type {Array} ordered list of supported dialects is shown in the connection hints
  */
-export const SUPPORTED_DIALECTS = BaseDataScript.SUPPORTED_DIALECTS;
+export const SUPPORTED_DIALECTS = [...allScriptsSet];
 
 export function getSyntaxModeByDialect (dialect?: string) {
   return _getImplementation(dialect)?.getSyntaxMode() || 'sql';
@@ -71,25 +108,4 @@ export function getDatabaseActions(actionInput: SqlAction.DatabaseInput) {
 export function getConnectionActions(actionInput: SqlAction.ConnectionInput) {
   const scriptsToUse: SqlAction.DatabaseActionScriptGenerator[] = _getImplementation(actionInput.dialect)?.getConnectionScripts() || [];
   return _formatScripts(actionInput, scriptsToUse);
-}
-
-function _getImplementation(dialect?: string) {
-  switch(dialect){
-    case 'mysql':
-    case 'mariadb':
-    case 'mssql':
-    case 'postgres':
-    case 'sqlite':
-      return RelationalDataAdapterScripts
-    case 'cassandra':
-      return CassandraDataAdapterScripts
-    case 'mongodb':
-      return MongoDBDataAdapterScripts
-    case 'redis':
-      return RedisDataAdapterScripts
-    case 'cosmosdb':
-      return AzureCosmosDataAdapterScripts
-    case 'aztable':
-      return AzureTableStorageAdapterScripts
-  }
 }

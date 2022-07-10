@@ -260,6 +260,9 @@ export function getCreateConnectionDatabase(
 }
 
 export class ConcreteDataScripts extends BaseDataScript{
+    dialects = [
+        'mongodb',
+    ]
   getIsTableIdRequiredForQuery() {
     return false
   }
@@ -269,8 +272,6 @@ export class ConcreteDataScripts extends BaseDataScript{
   }
 
   getTableScripts() {
-
-
     return [getSelectAllColumns,
   getSelectSpecificColumns,
   getSelectDistinctValues,
@@ -297,7 +298,7 @@ export class ConcreteDataScripts extends BaseDataScript{
   getCreateConnectionDatabase,]
   }
 
-  getSampleConnectionString(dialect?: SqluiCore.Dialect) {
+  getSampleConnectionString(dialect) {
     return`mongodb://localhost:27017`;
   }
 }

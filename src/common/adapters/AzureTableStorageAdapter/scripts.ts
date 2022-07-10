@@ -263,6 +263,9 @@ export function getCreateDatabaseTable(
 }
 
 export class ConcreteDataScripts extends BaseDataScript{
+    dialects = [
+        'aztable',
+    ]
   getIsTableIdRequiredForQuery() {
     return true
   }
@@ -297,7 +300,7 @@ export class ConcreteDataScripts extends BaseDataScript{
     return []
   }
 
-  getSampleConnectionString(dialect?: SqluiCore.Dialect) {
+  getSampleConnectionString(dialect) {
     return `aztable://DefaultEndpointsProtocol=https;AccountName=<your_account_name>;AccountKey=<your_account_key>;EndpointSuffix=core.windows.net`;
   }
 }

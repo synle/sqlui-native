@@ -328,6 +328,9 @@ export function getCreateConnectionDatabase(
 }
 
 export class ConcreteDataScripts extends BaseDataScript{
+    dialects = [
+        'cosmosdb',
+    ]
   getIsTableIdRequiredForQuery() {
     return true
   }
@@ -337,8 +340,6 @@ export class ConcreteDataScripts extends BaseDataScript{
   }
 
   getTableScripts() {
-
-
     return [
       getSelectAllColumns,
       getSelectSpecificColumns,
@@ -373,7 +374,7 @@ export class ConcreteDataScripts extends BaseDataScript{
     ]
   }
 
-  getSampleConnectionString(dialect?: SqluiCore.Dialect) {
+  getSampleConnectionString(dialect) {
     return `cosmosdb://AccountEndpoint=some_cosmos_endpoint;AccountKey=some_cosmos_account_key`
   }
 }

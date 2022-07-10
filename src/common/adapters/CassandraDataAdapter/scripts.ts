@@ -272,6 +272,9 @@ export function getDropColumns(input: SqlAction.TableInput): SqlAction.Output | 
 }
 
 export class ConcreteDataScripts extends BaseDataScript{
+    dialects = [
+        'cassandra',
+    ]
   getIsTableIdRequiredForQuery() {
     return false
   }
@@ -311,7 +314,7 @@ export class ConcreteDataScripts extends BaseDataScript{
   getCreateConnectionDatabase,]
   }
 
-  getSampleConnectionString(dialect?: SqluiCore.Dialect) {
+  getSampleConnectionString(dialect) {
     return `cassandra://username:password@localhost:9042`;
   }
 }

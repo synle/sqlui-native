@@ -554,6 +554,13 @@ export function getCreateConnectionDatabase(
 }
 
 export class ConcreteDataScripts extends BaseDataScript{
+    dialects = [
+        'mysql',
+        'mariadb',
+        'mssql',
+        'postgres',
+        'sqlite',
+    ]
   getIsTableIdRequiredForQuery() {
     return false
   }
@@ -563,8 +570,6 @@ export class ConcreteDataScripts extends BaseDataScript{
   }
 
   getTableScripts() {
-
-
     return [
     getSelectAllColumns,
   getSelectCount,
@@ -597,7 +602,7 @@ export class ConcreteDataScripts extends BaseDataScript{
   ]
   }
 
-  getSampleConnectionString(dialect?: SqluiCore.Dialect) {
+  getSampleConnectionString(dialect) {
     switch (dialect) {
     case 'mssql':
       return `mssql://sa:password123!@localhost:1433`;
