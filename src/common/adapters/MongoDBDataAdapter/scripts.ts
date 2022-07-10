@@ -1,6 +1,6 @@
 import get from 'lodash.get';
 import set from 'lodash.set';
-import { getDivider } from 'src/common/adapters/BaseDataAdapter/scripts';
+import BaseDataScript, { getDivider } from 'src/common/adapters/BaseDataAdapter/scripts';
 import { SqlAction, SqluiCore } from 'typings';
 
 export const MONGO_ADAPTER_PREFIX = 'db';
@@ -263,8 +263,9 @@ export function getCreateConnectionDatabase(
   };
 }
 
-export const tableActionScripts: SqlAction.TableActionScriptGenerator[] = [
-  getSelectAllColumns,
+export class NAME_YOUR_SCRIPTS extends BaseDataScript{
+  getTableScripts() {
+    return [getSelectAllColumns,
   getSelectSpecificColumns,
   getSelectDistinctValues,
   getSelectOne,
@@ -274,15 +275,23 @@ export const tableActionScripts: SqlAction.TableActionScriptGenerator[] = [
   getDelete,
   getDivider,
   getCreateCollection,
-  getDropCollection,
-];
+  getDropCollection,]
+  }
 
-export const databaseActionScripts: SqlAction.DatabaseActionScriptGenerator[] = [
-  getDivider,
+  getDatabaseScripts() {
+    return [
+    getDivider,
   getCreateDatabase,
   getDropDatabase,
-];
-export const connectionActionScripts: SqlAction.ConnectionActionScriptGenerator[] = [
-  getDivider,
-  getCreateConnectionDatabase,
-];
+  ]
+  }
+
+  getConnectionScripts() {
+    return [getDivider,
+  getCreateConnectionDatabase,]
+  }
+
+  getSampleConnectionString(dialect?: SqluiCore.Dialect) {
+    return
+  }
+}

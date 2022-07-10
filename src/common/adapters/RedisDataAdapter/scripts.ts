@@ -1,13 +1,9 @@
-import { getDivider } from 'src/common/adapters/BaseDataAdapter/scripts';
+import BaseDataScript, { getDivider } from 'src/common/adapters/BaseDataAdapter/scripts';
 import { SqlAction, SqluiCore } from 'typings';
 
 export const REDIS_ADAPTER_PREFIX = 'db';
 
 const formatter = 'js';
-
-export function getSampleConnectionString(dialect?: SqluiCore.Dialect) {
-  return `redis://localhost:6379`;
-}
 
 // for redis
 export function getSetValue(input: SqlAction.TableInput): SqlAction.Output | undefined {
@@ -210,8 +206,9 @@ export function getPublishMessage(input: SqlAction.TableInput): SqlAction.Output
   };
 }
 
-export const tableActionScripts: SqlAction.TableActionScriptGenerator[] = [
-  getSetValue,
+export class NAME_YOUR_SCRIPTS extends BaseDataScript{
+  getTableScripts() {
+    return [ getSetValue,
   getGet,
   getScan,
   getDivider,
@@ -235,9 +232,18 @@ export const tableActionScripts: SqlAction.TableActionScriptGenerator[] = [
   getSortedSetGetItems,
   getSortedSetAddItem,
   getDivider,
-  getPublishMessage,
-];
+  getPublishMessage,]
+  }
 
-export const databaseActionScripts: SqlAction.DatabaseActionScriptGenerator[] = [];
+  getDatabaseScripts() {
+    return []
+  }
 
-export const connectionActionScripts: SqlAction.ConnectionActionScriptGenerator[] = [];
+  getConnectionScripts() {
+    return []
+  }
+
+  getSampleConnectionString(dialect?: SqluiCore.Dialect) {
+    return `redis://localhost:6379`;
+  }
+}

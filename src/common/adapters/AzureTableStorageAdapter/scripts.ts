@@ -1,4 +1,4 @@
-import { getDivider } from 'src/common/adapters/BaseDataAdapter/scripts';
+import BaseDataScript, { getDivider } from 'src/common/adapters/BaseDataAdapter/scripts';
 import { SqlAction, SqluiCore } from 'typings';
 // https://docs.microsoft.com/en-us/azure/cosmos-db/table/how-to-use-nodejs
 // https://docs.microsoft.com/en-us/javascript/api/@azure/data-tables/?view=azure-node-latest
@@ -38,10 +38,6 @@ function _shouldIncludeField(col: SqluiCore.ColumnMetaData) {
     return false;
   }
   return true;
-}
-
-export function getSampleConnectionString(dialect?: SqluiCore.Dialect) {
-  return `aztable://DefaultEndpointsProtocol=https;AccountName=<your_account_name>;AccountKey=<your_account_key>;EndpointSuffix=core.windows.net`;
 }
 
 export function getSelectAllColumns(input: SqlAction.TableInput): SqlAction.Output | undefined {
@@ -266,8 +262,9 @@ export function getCreateDatabaseTable(
   };
 }
 
-export const tableActionScripts: SqlAction.TableActionScriptGenerator[] = [
-  getSelectAllColumns,
+export class NAME_YOUR_SCRIPTS extends BaseDataScript{
+  getTableScripts() {
+    return [getSelectAllColumns,
   getSelectSpecificColumns,
   getDivider,
   getInsert,
@@ -276,12 +273,21 @@ export const tableActionScripts: SqlAction.TableActionScriptGenerator[] = [
   getDelete,
   getDivider,
   getCreateTable,
-  getDropTable,
-];
+  getDropTable,]
+  }
 
-export const databaseActionScripts: SqlAction.DatabaseActionScriptGenerator[] = [
-  getDivider,
+  getDatabaseScripts() {
+    return [
+    getDivider,
   getCreateDatabaseTable,
-];
+  ]
+  }
 
-export const connectionActionScripts: SqlAction.ConnectionActionScriptGenerator[] = [];
+  getConnectionScripts() {
+    return []
+  }
+
+  getSampleConnectionString(dialect?: SqluiCore.Dialect) {
+    `aztable://DefaultEndpointsProtocol=https;AccountName=<your_account_name>;AccountKey=<your_account_key>;EndpointSuffix=core.windows.net`;
+  }
+}
