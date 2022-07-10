@@ -264,6 +264,7 @@ export function getCreateDatabaseTable(
 
 export class ConcreteDataScripts extends BaseDataScript {
   dialects = ['aztable'];
+
   getIsTableIdRequiredForQuery() {
     return true;
   }
