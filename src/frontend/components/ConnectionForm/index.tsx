@@ -1,4 +1,5 @@
 import SaveIcon from '@mui/icons-material/Save';
+import LoadingButton from '@mui/lab/LoadingButton';
 import { Alert, Box, Button, Link, TextField, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
@@ -221,9 +222,13 @@ function MainConnectionForm(props: MainConnectionFormProps) {
         </div>
       )}
       <div className='FormInput__Row'>
-        <Button variant='contained' type='submit' disabled={props.saving} startIcon={<SaveIcon />}>
+        <LoadingButton
+          variant='contained'
+          type='submit'
+          loading={props.saving}
+          startIcon={<SaveIcon />}>
           Save
-        </Button>
+        </LoadingButton>
         <Button
           variant='outlined'
           type='button'

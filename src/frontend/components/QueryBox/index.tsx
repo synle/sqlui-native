@@ -4,6 +4,7 @@ import FormatColorTextIcon from '@mui/icons-material/FormatColorText';
 import HelpIcon from '@mui/icons-material/Help';
 import MenuIcon from '@mui/icons-material/Menu';
 import SendIcon from '@mui/icons-material/Send';
+import LoadingButton from '@mui/lab/LoadingButton';
 import { Button } from '@mui/material';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
@@ -127,7 +128,7 @@ export default function QueryBox(props: QueryBoxProps) {
     [selectedConnection?.dialect, query?.sql],
   );
 
-  const isExecuteDisabled = executing || !query?.sql || !query?.connectionId;
+  const isExecuting = executing;
 
   const isMigrationVisible = !!query?.connectionId && !!query?.databaseId;
   const isCreateRecordVisible = isMigrationVisible;
@@ -257,16 +258,17 @@ export default function QueryBox(props: QueryBoxProps) {
           language={language}
           editorRef={editorRef}
           autoFocus
+          required
         />
         <div className='FormInput__Row'>
-          <Button
+          <LoadingButton
             id='btnExecuteCommand'
             type='submit'
             variant='contained'
-            disabled={isExecuteDisabled}
+            loading={isExecuting}
             startIcon={<SendIcon />}>
             Execute
-          </Button>
+          </LoadingButton>
           <Tooltip title='Click here to see how to get started with some queries.'>
             <Button
               type='button'

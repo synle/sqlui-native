@@ -1,4 +1,5 @@
 import BackupIcon from '@mui/icons-material/Backup';
+import LoadingButton from '@mui/lab/LoadingButton';
 import { Button, Link, Skeleton, TextField, Typography } from '@mui/material';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
@@ -178,8 +179,9 @@ export default function MigrationBox(props: MigrationBoxProps) {
   if (isRawJsonEditorVisible) {
     isDisabled = !rawJson;
   } else {
-    isDisabled = migrating || !toDialect || !query.databaseId;
+    isDisabled = !toDialect || !query.databaseId;
   }
+  const isSaving = migrating;
 
   const isMigrationScriptVisible = !!migrationScript && !!toDialect && !!migrationType;
   const isLoading = loadingColumns || loadingConnections;
@@ -398,14 +400,15 @@ export default function MigrationBox(props: MigrationBoxProps) {
         </>
       )}
       <div className='FormInput__Row'>
-        <Button
+        <LoadingButton
           variant='contained'
           type='submit'
           disabled={isDisabled}
+          loading={isSaving}
           startIcon={<BackupIcon />}
           onClick={onGenerateMigration}>
-          Generate Migrate
-        </Button>
+          Migrate
+        </LoadingButton>
         <Button variant='outlined' type='button' disabled={migrating} onClick={onCancel}>
           Cancel
         </Button>
