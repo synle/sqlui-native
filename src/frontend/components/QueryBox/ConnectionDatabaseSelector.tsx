@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { getIsTableIdRequiredForQuery } from 'src/common/adapters/DataScriptFactory';
 import Select from 'src/frontend/components/Select';
 import { useGetConnections, useGetDatabases, useGetTables } from 'src/frontend/hooks/useConnection';
@@ -87,9 +87,16 @@ export default function ConnectionDatabaseSelector(props: ConnectionDatabaseSele
     props.onChange(query.connectionId, query.databaseId, tableId);
   };
 
+  useEffect(() => {
+    setIsVisible(false)
+    setTimeout(() => {
+      setIsVisible(true)
+    }, 500)
+  }, [query])
+
   return (
-    <Fade>
-      <>
+    <Fade in={isVisible} appear={false}>
+      <div>
       <Select
         value={query.connectionId}
         onChange={(newValue) => onConnectionChange(newValue)}
@@ -115,7 +122,7 @@ export default function ConnectionDatabaseSelector(props: ConnectionDatabaseSele
           {tableOptions}
         </Select>
       )}
-      </>
+      </div>
     </Fade>
   );
 }
