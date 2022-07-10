@@ -211,7 +211,13 @@ export class ConcreteDataScripts extends BaseDataScript{
     return false
   }
 
+  getSyntaxMode() {
+    return 'javascript';
+  }
+
   getTableScripts() {
+
+
     return [ getSetValue,
   getGet,
   getScan,

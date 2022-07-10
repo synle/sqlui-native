@@ -332,7 +332,13 @@ export class ConcreteDataScripts extends BaseDataScript{
     return true
   }
 
+  getSyntaxModeByDialect() {
+    return 'javascript';
+  }
+
   getTableScripts() {
+
+
     return [
       getSelectAllColumns,
       getSelectSpecificColumns,

@@ -39,7 +39,9 @@ function _formatScripts(
  */
 export const SUPPORTED_DIALECTS = BaseDataScript.SUPPORTED_DIALECTS;
 
-export const getSyntaxModeByDialect = BaseDataScript.getSyntaxModeByDialect;
+export function getSyntaxModeByDialect (dialect?: string) {
+  return _getImplementation(dialect)?.getSyntaxMode() || 'sql';
+}
 
 export function getIsTableIdRequiredForQuery (dialect?: string) {
   return _getImplementation(dialect)?.getIsTableIdRequiredForQuery() || false;

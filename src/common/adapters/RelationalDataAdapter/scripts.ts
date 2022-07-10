@@ -558,7 +558,13 @@ export class ConcreteDataScripts extends BaseDataScript{
     return false
   }
 
+  getSyntaxMode() {
+    return 'sql';
+  }
+
   getTableScripts() {
+
+
     return [
     getSelectAllColumns,
   getSelectCount,

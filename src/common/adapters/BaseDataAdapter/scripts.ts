@@ -28,16 +28,8 @@ export default abstract class BaseDataScript implements IDataScript{
     return false
   }
 
-  static getSyntaxModeByDialect(dialect?: SqluiCore.Dialect): 'javascript' | 'sql' {
-    switch (dialect) {
-      default:
-        return 'sql';
-      case 'mongodb':
-      case 'redis':
-      case 'cosmosdb':
-      case 'aztable':
-        return 'javascript';
-    }
+  getSyntaxMode() {
+    return 'sql';
   }
 
   //

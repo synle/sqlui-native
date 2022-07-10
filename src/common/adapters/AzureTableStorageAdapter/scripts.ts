@@ -267,6 +267,10 @@ export class ConcreteDataScripts extends BaseDataScript{
     return true
   }
 
+  getSyntaxMode() {
+    return 'javascript';
+  }
+
   getTableScripts() {
     return [
       getSelectAllColumns,
