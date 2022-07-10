@@ -15,7 +15,7 @@ import { useQueryClient } from 'react-query';
 import { useNavigate } from 'react-router-dom';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import {
-  getIsTableIdRequiredForQuery,
+  getIsTableIdRequiredForQueryByDialect,
   getSyntaxModeByDialect,
   getTableActions,
 } from 'src/common/adapters/DataScriptFactory';
@@ -64,7 +64,7 @@ function ConnectionActionsButton(props: ConnectionActionsButtonProps) {
 
   const isLoading = loadingConnection || loadingColumns;
 
-  const isTableIdRequiredForQuery = getIsTableIdRequiredForQuery(dialect);
+  const isTableIdRequiredForQuery = getIsTableIdRequiredForQueryByDialect(dialect);
 
   const actions = getTableActions({
     dialect,

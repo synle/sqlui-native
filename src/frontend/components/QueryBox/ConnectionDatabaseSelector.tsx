@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { getIsTableIdRequiredForQuery } from 'src/common/adapters/DataScriptFactory';
+import { getIsTableIdRequiredForQueryByDialect } from 'src/common/adapters/DataScriptFactory';
 import Select from 'src/frontend/components/Select';
 import { useGetConnections, useGetDatabases, useGetTables } from 'src/frontend/hooks/useConnection';
 import { SqluiFrontend } from 'typings';
@@ -60,7 +60,7 @@ export default function ConnectionDatabaseSelector(props: ConnectionDatabaseSele
       const selectedConnection = connections?.find(
         (connection) => connection.id === query.connectionId,
       );
-      return getIsTableIdRequiredForQuery(selectedConnection?.dialect);
+      return getIsTableIdRequiredForQueryByDialect(selectedConnection?.dialect);
     }, [connections, query.connectionId]) ||
     !!props.isTableIdRequired ||
     true;

@@ -1,4 +1,4 @@
-import { getDivider } from 'src/common/adapters/BaseDataAdapter/scripts';
+import BaseDataScript, { getDivider } from 'src/common/adapters/BaseDataAdapter/scripts';
 import { SqlAction, SqluiCore } from 'typings';
 // https://docs.microsoft.com/en-us/azure/cosmos-db/table/how-to-use-nodejs
 // https://docs.microsoft.com/en-us/javascript/api/@azure/data-tables/?view=azure-node-latest
@@ -38,10 +38,6 @@ function _shouldIncludeField(col: SqluiCore.ColumnMetaData) {
     return false;
   }
   return true;
-}
-
-export function getSampleConnectionString(dialect?: SqluiCore.Dialect) {
-  return `aztable://DefaultEndpointsProtocol=https;AccountName=<your_account_name>;AccountKey=<your_account_key>;EndpointSuffix=core.windows.net`;
 }
 
 export function getSelectAllColumns(input: SqlAction.TableInput): SqlAction.Output | undefined {
@@ -266,22 +262,42 @@ export function getCreateDatabaseTable(
   };
 }
 
-export const tableActionScripts: SqlAction.TableActionScriptGenerator[] = [
-  getSelectAllColumns,
-  getSelectSpecificColumns,
-  getDivider,
-  getInsert,
-  getUpdate,
-  getUpsert,
-  getDelete,
-  getDivider,
-  getCreateTable,
-  getDropTable,
-];
+export class ConcreteDataScripts extends BaseDataScript {
+  dialects = ['aztable'];
+  getIsTableIdRequiredForQuery() {
+    return true;
+  }
 
-export const databaseActionScripts: SqlAction.DatabaseActionScriptGenerator[] = [
-  getDivider,
-  getCreateDatabaseTable,
-];
+  getSyntaxMode() {
+    return 'javascript';
+  }
 
-export const connectionActionScripts: SqlAction.ConnectionActionScriptGenerator[] = [];
+  getTableScripts() {
+    return [
+      getSelectAllColumns,
+      getSelectSpecificColumns,
+      getDivider,
+      getInsert,
+      getUpdate,
+      getUpsert,
+      getDelete,
+      getDivider,
+      getCreateTable,
+      getDropTable,
+    ];
+  }
+
+  getDatabaseScripts() {
+    return [getDivider, getCreateDatabaseTable];
+  }
+
+  getConnectionScripts() {
+    return [];
+  }
+
+  getSampleConnectionString(dialect) {
+    return `aztable://DefaultEndpointsProtocol=https;AccountName=<your_account_name>;AccountKey=<your_account_key>;EndpointSuffix=core.windows.net`;
+  }
+}
+
+export default new ConcreteDataScripts();
