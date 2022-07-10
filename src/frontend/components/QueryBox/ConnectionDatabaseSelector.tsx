@@ -76,53 +76,70 @@ export default function ConnectionDatabaseSelector(props: ConnectionDatabaseSele
 
   const onConnectionChange = (connectionId: string) => {
     props.onChange(connectionId, '', '');
-
+    _setAnimation();
   };
 
   const onDatabaseChange = (databaseId: string) => {
     props.onChange(query.connectionId, databaseId, '');
+    _setAnimation();
   };
 
   const onTableChange = (tableId: string) => {
     props.onChange(query.connectionId, query.databaseId, tableId);
+    _setAnimation();
   };
 
-  useEffect(() => {
+  useEffect(_setAnimation,[query])
+
+  function _setAnimation(){
     setIsVisible(false)
     setTimeout(() => {
       setIsVisible(true)
     }, 500)
-  }, [query])
+  }
 
   return (
+    <>
     <Fade in={isVisible} appear={false}>
-      <div>
-      <Select
-        value={query.connectionId}
-        onChange={(newValue) => onConnectionChange(newValue)}
-        required
-        disabled={!!props.disabledConnection}>
-        <option value=''>Pick a Connection</option>
-        {connectionOptions}
-      </Select>
-      <Select
-        value={query.databaseId}
-        onChange={(newValue) => onDatabaseChange(newValue)}
-        disabled={!!props.disabledDatabase}
-        required={props.required}>
-        <option value=''>Pick a Database (Optional)</option>
-        {databaseOptions}
-      </Select>
+        <div>
+          <Select
+            value={query.connectionId}
+            animation
+            onChange={(newValue) => onConnectionChange(newValue)}
+            required
+            disabled={!!props.disabledConnection}>
+            <option value=''>Pick a Connection</option>
+            {connectionOptions}
+          </Select>
+        </div>
+      </Fade>
+      <Fade in={isVisible} appear={false}>
+        <div>
+          <Select
+            value={query.databaseId}
+            animation
+            onChange={(newValue) => onDatabaseChange(newValue)}
+            disabled={!!props.disabledDatabase}
+            required={props.required}>
+            <option value=''>Pick a Database (Optional)</option>
+            {databaseOptions}
+          </Select>
+        </div>
+      </Fade>
       {isTableIdRequired && (
-        <Select
-          value={query.tableId}
-          onChange={(newValue) => onTableChange(newValue)}
-          required={props.required}>
-          <option value=''>Pick a Table</option>
-          {tableOptions}
-        </Select>
+        <Fade in={isVisible} appear={false}>
+          <div>
+            <Select
+              value={query.tableId}
+              animation
+              onChange={(newValue) => onTableChange(newValue)}
+              required={props.required}>
+              <option value=''>Pick a Table</option>
+              {tableOptions}
+            </Select>
+          </div>
+        </Fade>
       )}
-      </div>
-    </Fade>
+      </>
   );
 }
