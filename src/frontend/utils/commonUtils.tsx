@@ -37,3 +37,26 @@ export async function createSystemNotification(message: string) {
     new Notification(message);
   } catch (err) {}
 }
+
+export function sortColumnNamesForUnknownData(colNames: string[]){
+  return colNames.sort((a, b) => {
+      // do sorting on columnname
+      // attempt to show common column names (primary keys) first then sort other column names alphabetically
+      const SPECIAL_COLUMN_NAMES = ['_id', 'id', 'rowKey', 'partitionKey', 'etag'];
+
+      // here keep track of its position with respect to special column name
+      let posa = SPECIAL_COLUMN_NAMES.indexOf(a);
+      let posb = SPECIAL_COLUMN_NAMES.indexOf(b);
+      posa = posa === -1 ? 100000 : posa;
+      posb = posb === -1 ? 100000 : posb;
+
+      // here keep track of its position if it has an id in name
+      let ida = a.toLowerCase().endsWith('id') ? 0 : 1;
+      let idb = b.toLowerCase().endsWith('id') ? 0 : 1;
+
+      const sa = `${posa.toString().padStart(6, '0')}.${ida}.${a}`;
+      const sb = `${posb.toString().padStart(6, '0')}.${idb}.${b}`;
+
+      return sa.localeCompare(sb);
+    })
+}

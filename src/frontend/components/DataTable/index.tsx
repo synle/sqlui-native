@@ -12,6 +12,7 @@ import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { DropdownButtonOption } from 'src/frontend/components/DropdownButton';
 import DropdownMenu from 'src/frontend/components/DropdownMenu';
 import { useTablePageSize } from 'src/frontend/hooks/useSetting';
+import {sortColumnNamesForUnknownData} from 'src/frontend/utils/commonUtils'
 
 type DataTableProps = {
   columns: any[];
@@ -216,7 +217,7 @@ export function DataTableWithJSONList(props: Omit<DataTableProps, 'columns'>) {
       }
     }
 
-    return Array.from(newColumnNames).map((columnName) => {
+    return sortColumnNamesForUnknownData([...newColumnNames]).map((columnName) => {
       return {
         Header: columnName,
         Cell: (data: any) => {

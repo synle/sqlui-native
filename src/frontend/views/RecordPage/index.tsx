@@ -47,6 +47,7 @@ import { useTreeActions } from 'src/frontend/hooks/useTreeActions';
 import LayoutTwoColumns from 'src/frontend/layout/LayoutTwoColumns';
 import { formatJS, formatSQL } from 'src/frontend/utils/formatter';
 import { SqluiCore, SqluiFrontend } from 'typings';
+import {sortColumnNamesForUnknownData} from 'src/frontend/utils/commonUtils'
 
 type RecordData = any;
 
@@ -91,7 +92,7 @@ type RecordFormReponse = {
  */
 function RecordView(props: RecordDetailsPageProps) {
   const { data } = props;
-  const columnNames = Object.keys(data || {}).sort();
+  const columnNames = sortColumnNamesForUnknownData(Object.keys(data || {}));
 
   return (
     <>
