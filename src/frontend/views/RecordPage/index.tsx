@@ -45,6 +45,7 @@ import {
 import useToaster from 'src/frontend/hooks/useToaster';
 import { useTreeActions } from 'src/frontend/hooks/useTreeActions';
 import LayoutTwoColumns from 'src/frontend/layout/LayoutTwoColumns';
+import { sortColumnNamesForUnknownData } from 'src/frontend/utils/commonUtils';
 import { formatJS, formatSQL } from 'src/frontend/utils/formatter';
 import { SqluiCore, SqluiFrontend } from 'typings';
 
@@ -91,7 +92,7 @@ type RecordFormReponse = {
  */
 function RecordView(props: RecordDetailsPageProps) {
   const { data } = props;
-  const columnNames = Object.keys(data || {}).sort();
+  const columnNames = sortColumnNamesForUnknownData(Object.keys(data || {}));
 
   return (
     <>
