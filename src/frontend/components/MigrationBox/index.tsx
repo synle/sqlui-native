@@ -23,6 +23,8 @@ import {
 import { useConnectionQueries } from 'src/frontend/hooks/useConnectionQuery';
 import { formatJS, formatSQL } from 'src/frontend/utils/formatter';
 import { SqluiCore, SqluiFrontend } from 'typings';
+import useToaster, { ToasterHandler } from 'src/frontend/hooks/useToaster';
+
 // TOOD: extract this
 type MigrationBoxProps = {
   mode: SqluiFrontend.MigrationMode;
@@ -62,12 +64,13 @@ async function generateMigrationScript(
   fromQuery: SqluiFrontend.ConnectionQuery,
   columns?: SqluiCore.ColumnMetaData[],
   fromDataToUse?: SqluiCore.Result,
-): Promise<string | undefined> {
+): Promise<string[]> {
   if (!columns) {
-    return '';
+    return [];
   }
 
   const res: string[] = [];
+  const errors: string[] = [];
 
   const toQueryMetaData = {
     dialect: toDialect,
@@ -116,6 +119,7 @@ async function generateMigrationScript(
           res.push(
             `-- The SELECT query does not have any returned that we can use for data migration...`,
           );
+          errors.push(`Warning - This migration doesn't contain any record. This might be an error with your query to get data.`)
         }
         break;
       // case 'cassandra':// TODO: to be implemented
@@ -130,18 +134,15 @@ async function generateMigrationScript(
           res.push(
             `// The SELECT query does not have any returned that we can use for data migration...`,
           );
+          errors.push(`Warning - This migration doesn't contain any record. This might be an error with your query to get data.`)
         }
         break;
     }
   } catch (err) {
-    return `Select query failed. ${JSON.stringify(err)}`;
+    errors.push(`Select query failed. ${JSON.stringify(err)}`)
   }
 
-  if (res.length > 0) {
-    return res.join('\n\n');
-  }
-
-  return 'Not Supported...';
+  return [res.join('\n\n'), errors.join('\n\n')];
 }
 
 // main migration box
@@ -170,6 +171,7 @@ export default function MigrationBox(props: MigrationBoxProps) {
   const { data: connections, isLoading: loadingConnections } = useGetConnections();
   const { onAddQuery } = useConnectionQueries();
   const [rawJson, setRawJson] = useState('');
+  const { add: addToast } = useToaster();
 
   // TODO: pull these from the dialect
   const languageFrom = 'sql';
@@ -248,9 +250,10 @@ export default function MigrationBox(props: MigrationBoxProps) {
     setMigrating(true);
     try {
       let newMigrationScript: string | undefined;
+      let error: string | undefined;
 
       if (isMigratingRealConnection) {
-        newMigrationScript = await generateMigrationScript(
+        [newMigrationScript, error] = await generateMigrationScript(
           migrationMetaData.toDialect,
           migrationMetaData.newTableName,
           query,
@@ -286,7 +289,7 @@ export default function MigrationBox(props: MigrationBoxProps) {
           raw: parsedRawJson,
         };
 
-        newMigrationScript = await generateMigrationScript(
+        [newMigrationScript, error] = await generateMigrationScript(
           migrationMetaData.toDialect,
           migrationMetaData.newTableName,
           fromQueryToUse,
@@ -295,6 +298,12 @@ export default function MigrationBox(props: MigrationBoxProps) {
         );
       }
       setMigrationScript(newMigrationScript || '');
+
+      if(error){
+        await addToast({
+          message: error,
+        });
+      }
     } catch (err) {}
     setMigrating(false);
   };
