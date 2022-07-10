@@ -8,7 +8,7 @@ import { useGetConnectionById, useUpsertConnection } from 'src/frontend/hooks/us
 import useToaster from 'src/frontend/hooks/useToaster';
 import { createSystemNotification } from 'src/frontend/utils/commonUtils';
 import { SqluiCore } from 'typings';
-
+import LoadingButton from '@mui/lab/LoadingButton';
 type ConnectionFormProps = {
   id?: string;
 };
@@ -221,9 +221,9 @@ function MainConnectionForm(props: MainConnectionFormProps) {
         </div>
       )}
       <div className='FormInput__Row'>
-        <Button variant='contained' type='submit' disabled={props.saving} startIcon={<SaveIcon />}>
+        <LoadingButton variant='contained' type='submit' loading={props.saving} startIcon={<SaveIcon />}>
           Save
-        </Button>
+        </LoadingButton>
         <Button
           variant='outlined'
           type='button'

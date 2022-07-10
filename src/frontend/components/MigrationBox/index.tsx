@@ -15,6 +15,8 @@ import { useGetColumns, useGetConnections } from 'src/frontend/hooks/useConnecti
 import { useConnectionQueries } from 'src/frontend/hooks/useConnectionQuery';
 import { formatSQL } from 'src/frontend/utils/formatter';
 import { SqluiCore, SqluiFrontend } from 'typings';
+import LoadingButton from '@mui/lab/LoadingButton';
+
 // TOOD: extract this
 type MigrationBoxProps = {
   mode: SqluiFrontend.MigrationMode;
@@ -178,8 +180,9 @@ export default function MigrationBox(props: MigrationBoxProps) {
   if (isRawJsonEditorVisible) {
     isDisabled = !rawJson;
   } else {
-    isDisabled = migrating || !toDialect || !query.databaseId;
+    isDisabled = !toDialect || !query.databaseId;
   }
+  const isSaving = migrating;
 
   const isMigrationScriptVisible = !!migrationScript && !!toDialect && !!migrationType;
   const isLoading = loadingColumns || loadingConnections;
@@ -398,14 +401,15 @@ export default function MigrationBox(props: MigrationBoxProps) {
         </>
       )}
       <div className='FormInput__Row'>
-        <Button
+        <LoadingButton
           variant='contained'
           type='submit'
           disabled={isDisabled}
+          loading={isSaving}
           startIcon={<BackupIcon />}
           onClick={onGenerateMigration}>
-          Generate Migrate
-        </Button>
+          Migrate
+        </LoadingButton>
         <Button variant='outlined' type='button' disabled={migrating} onClick={onCancel}>
           Cancel
         </Button>

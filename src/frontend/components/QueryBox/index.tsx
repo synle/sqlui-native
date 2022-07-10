@@ -35,6 +35,7 @@ import { useQuerySizeSetting } from 'src/frontend/hooks/useSetting';
 import useToaster from 'src/frontend/hooks/useToaster';
 import { formatDuration, formatJS, formatSQL } from 'src/frontend/utils/formatter';
 import { SqluiCore } from 'typings';
+import LoadingButton from '@mui/lab/LoadingButton';
 
 type QueryBoxProps = {
   queryId: string;
@@ -127,7 +128,7 @@ export default function QueryBox(props: QueryBoxProps) {
     [selectedConnection?.dialect, query?.sql],
   );
 
-  const isExecuteDisabled = executing || !query?.sql || !query?.connectionId;
+  const isExecuting = executing;
 
   const isMigrationVisible = !!query?.connectionId && !!query?.databaseId;
   const isCreateRecordVisible = isMigrationVisible;
@@ -260,13 +261,14 @@ export default function QueryBox(props: QueryBoxProps) {
           required
         />
         <div className='FormInput__Row'>
-          <Button
+          <LoadingButton
             id='btnExecuteCommand'
             type='submit'
             variant='contained'
+            loading={isExecuting}
             startIcon={<SendIcon />}>
             Execute
-          </Button>
+          </LoadingButton>
           <Tooltip title='Click here to see how to get started with some queries.'>
             <Button
               type='button'
