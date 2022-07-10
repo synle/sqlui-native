@@ -1,8 +1,9 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { getIsTableIdRequiredForQuery } from 'src/common/adapters/DataScriptFactory';
 import Select from 'src/frontend/components/Select';
 import { useGetConnections, useGetDatabases, useGetTables } from 'src/frontend/hooks/useConnection';
 import { SqluiFrontend } from 'typings';
+import Fade from '@mui/material/Fade';
 
 type ConnectionDatabaseSelectorProps = {
   value: Partial<SqluiFrontend.ConnectionQuery>;
@@ -15,6 +16,7 @@ type ConnectionDatabaseSelectorProps = {
 
 export default function ConnectionDatabaseSelector(props: ConnectionDatabaseSelectorProps) {
   const query = props.value;
+  const [isVisible, setIsVisible] = useState(false);
   const { data: connections, isLoading: loadingConnections } = useGetConnections();
   const { data: databases, isLoading: loadingDatabases } = useGetDatabases(query.connectionId);
   const { data: tables, isLoading: loadingTables } = useGetTables(
@@ -74,6 +76,7 @@ export default function ConnectionDatabaseSelector(props: ConnectionDatabaseSele
 
   const onConnectionChange = (connectionId: string) => {
     props.onChange(connectionId, '', '');
+
   };
 
   const onDatabaseChange = (databaseId: string) => {
@@ -85,7 +88,8 @@ export default function ConnectionDatabaseSelector(props: ConnectionDatabaseSele
   };
 
   return (
-    <>
+    <Fade>
+      <>
       <Select
         value={query.connectionId}
         onChange={(newValue) => onConnectionChange(newValue)}
@@ -111,6 +115,7 @@ export default function ConnectionDatabaseSelector(props: ConnectionDatabaseSele
           {tableOptions}
         </Select>
       )}
-    </>
+      </>
+    </Fade>
   );
 }
