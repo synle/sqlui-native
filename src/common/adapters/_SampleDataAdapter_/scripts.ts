@@ -1,11 +1,7 @@
-import { getDivider } from 'src/common/adapters/BaseDataAdapter/scripts';
+import BaseDataScript, { getDivider } from 'src/common/adapters/BaseDataAdapter/scripts';
 import { SqlAction, SqluiCore } from 'typings';
 
 const formatter = 'js';
-
-export function getSampleConnectionString(dialect?: SqluiCore.Dialect) {
-  return `your_dialect://your_props`;
-}
 
 export function getSelectAllColumns(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Select All Columns`;
@@ -41,16 +37,31 @@ export function getDropDatabase(input: SqlAction.DatabaseInput): SqlAction.Outpu
   };
 }
 
-// TODO: implement me
-export const tableActionScripts: SqlAction.TableActionScriptGenerator[] = [
-  getDivider,
-  getSelectAllColumns,
-];
+export class AzureCosmosDataAdapterScripts extends BaseDataScript{
+  // TODO: implement me
+  getTableScripts() {
+    return [
+          getDivider,
+    getSelectAllColumns,
+    ]
+  }
 
-// TODO: implement me
-export const databaseActionScripts: SqlAction.DatabaseActionScriptGenerator[] = [
-  getDivider,
-  getCreateDatabase,
-];
-// TODO: implement me
-export const connectionActionScripts: SqlAction.ConnectionActionScriptGenerator[] = [];
+  // TODO: implement me
+  getDatabaseScripts() {
+    return [
+    getDivider,
+    getCreateDatabase,
+    ]
+  }
+
+  // TODO: implement me
+  getConnectionScripts() {
+    return [
+    ]
+  }
+
+  // TODO: implement me
+  getSampleConnectionString(dialect?: SqluiCore.Dialect) {
+    return `your_dialect://your_props`
+  }
+}

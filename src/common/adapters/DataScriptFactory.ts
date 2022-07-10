@@ -1,9 +1,4 @@
-import {
-  connectionActionScripts as AzureCosmosDBConnectionActionScripts,
-  databaseActionScripts as AzureCosmosDBDatabaseActionScripts,
-  getSampleConnectionString as getAzureCosmosDBSampleConnectionString,
-  tableActionScripts as AzureCosmosDBTableActionScripts,
-} from 'src/common/adapters/AzureCosmosDataAdapter/scripts';
+import AzureCosmosDataAdapterScripts from 'src/common/adapters/AzureCosmosDataAdapter/scripts';
 import {
   connectionActionScripts as AzureTableConnectionActionScripts,
   databaseActionScripts as AzureTableDatabaseActionScripts,
@@ -116,7 +111,7 @@ export function getSampleConnectionString(dialect?: string) {
     case 'redis':
       return getRedisSampleConnectionString();
     case 'cosmosdb':
-      return getAzureCosmosDBSampleConnectionString();
+      return AzureCosmosDataAdapterScripts.getSampleConnectionString();
     case 'aztable':
       return getAzureTableSampleConnectionString();
     default: // Not supported dialect
@@ -144,7 +139,7 @@ export function getTableActions(tableActionInput: SqlAction.TableInput) {
       scriptsToUse = RedisTableActionScripts;
       break;
     case 'cosmosdb':
-      scriptsToUse = AzureCosmosDBTableActionScripts;
+      scriptsToUse = AzureCosmosDataAdapterScripts.getTableScripts();
       break;
     case 'aztable':
       scriptsToUse = AzureTableTableActionScripts;
@@ -174,7 +169,7 @@ export function getSampleSelectQuery(tableActionInput: SqlAction.TableInput) {
       scriptsToUse = RedisTableActionScripts;
       break;
     case 'cosmosdb':
-      scriptsToUse = AzureCosmosDBTableActionScripts;
+      scriptsToUse = AzureCosmosDataAdapterScripts.getTableScripts();
       break;
     case 'aztable':
       scriptsToUse = AzureTableTableActionScripts;
@@ -206,7 +201,7 @@ export function getDatabaseActions(databaseActionInput: SqlAction.DatabaseInput)
       scriptsToUse = RedisDatabaseActionScripts;
       break;
     case 'cosmosdb':
-      scriptsToUse = AzureCosmosDBDatabaseActionScripts;
+      scriptsToUse = AzureCosmosDataAdapterScripts.getDatabaseScripts();
       break;
     case 'aztable':
       scriptsToUse = AzureTableDatabaseActionScripts;
@@ -236,7 +231,7 @@ export function getConnectionActions(connectionActionInput: SqlAction.Connection
       scriptsToUse = RedisConnectionActionScripts;
       break;
     case 'cosmosdb':
-      scriptsToUse = AzureCosmosDBConnectionActionScripts;
+      scriptsToUse = AzureCosmosDataAdapterScripts.getConnectionScripts();
       break;
     case 'aztable':
       scriptsToUse = AzureTableConnectionActionScripts;
