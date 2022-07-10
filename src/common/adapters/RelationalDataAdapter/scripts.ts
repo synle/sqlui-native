@@ -186,12 +186,11 @@ export function getBulkInsert(
       const cells = columns
         .map((col) => {
           let valToUse = '';
-          if (row?.[col.name]) {
+          if (row?.[col.name] !== undefined) {
             // use the value if it's there
             valToUse = `'${escapeSQLValue(row[col.name])}'`;
           } else {
-            // use the default value
-            valToUse = `'_${escapeSQLValue(col.name)}_'`;
+            valToUse = 'null';
           }
           return valToUse;
         })
@@ -329,6 +328,12 @@ export function getCreateTable(input: SqlAction.TableInput): SqlAction.Output | 
   }
 
   let columnString: string = '';
+
+  // map the nested column accordingly (using _ as a separator)
+  input.columns = input.columns.map((col) => {
+    col.name = col.propertyPath?.join('_') || col.name;
+    return col;
+  });
 
   // TODO: figure out how to use the defaultval
   switch (input.dialect) {
@@ -555,6 +560,7 @@ export function getCreateConnectionDatabase(
 
 export class ConcreteDataScripts extends BaseDataScript {
   dialects = ['mysql', 'mariadb', 'mssql', 'postgres', 'sqlite'];
+
   getIsTableIdRequiredForQuery() {
     return false;
   }

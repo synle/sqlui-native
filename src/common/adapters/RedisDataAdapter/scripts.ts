@@ -208,6 +208,7 @@ export function getPublishMessage(input: SqlAction.TableInput): SqlAction.Output
 
 export class ConcreteDataScripts extends BaseDataScript {
   dialects = ['redis'];
+
   getIsTableIdRequiredForQuery() {
     return false;
   }
