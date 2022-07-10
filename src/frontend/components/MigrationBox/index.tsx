@@ -1,10 +1,11 @@
-import BaseDataAdapter from 'src/common/adapters/BaseDataAdapter/index';
 import BackupIcon from '@mui/icons-material/Backup';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { Button, Link, Skeleton, TextField, Typography } from '@mui/material';
+import get from 'lodash.get';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { getBulkInsert as getBulkInsertForAzTable } from 'src/common/adapters/AzureTableStorageAdapter/scripts';
+import BaseDataAdapter from 'src/common/adapters/BaseDataAdapter/index';
 import { getSampleSelectQuery } from 'src/common/adapters/DataScriptFactory';
 import {
   getBulkInsert as getBulkInsertForRdmbs,
@@ -14,11 +15,14 @@ import CodeEditorBox from 'src/frontend/components/CodeEditorBox';
 import ConnectionDatabaseSelector from 'src/frontend/components/QueryBox/ConnectionDatabaseSelector';
 import Select from 'src/frontend/components/Select';
 import dataApi from 'src/frontend/data/api';
-import { useGetColumns, useGetConnections, useGetConnectionById } from 'src/frontend/hooks/useConnection';
+import {
+  useGetColumns,
+  useGetConnectionById,
+  useGetConnections,
+} from 'src/frontend/hooks/useConnection';
 import { useConnectionQueries } from 'src/frontend/hooks/useConnectionQuery';
 import { formatJS, formatSQL } from 'src/frontend/utils/formatter';
 import { SqluiCore, SqluiFrontend } from 'typings';
-import get from 'lodash.get';
 // TOOD: extract this
 type MigrationBoxProps = {
   mode: SqluiFrontend.MigrationMode;
@@ -140,20 +144,6 @@ async function generateMigrationScript(
   return 'Not Supported...';
 }
 
-function _getTypeFromObject(type: string, val: any) {
-  switch(type){
-    case 'number':
-      if (val.toString().includes('.')) {
-        return 'FLOAT';
-      }
-      return 'INTEGER';
-    case 'boolean':
-      return 'BOOLEAN';
-    default:
-      return 'TEXT'
-  }
-}
-
 // main migration box
 export default function MigrationBox(props: MigrationBoxProps) {
   const { mode } = props;
@@ -161,7 +151,7 @@ export default function MigrationBox(props: MigrationBoxProps) {
   const navigate = useNavigate();
   const [migrationMetaData, setMigrationMetaData] = useState<MigrationMetaData>({
     toDialect: 'sqlite',
-    newTableName: `new_table_${Date.now()}`
+    newTableName: `new_table_${Date.now()}`,
   });
   const [query, setQuery] = useState<SqluiFrontend.ConnectionQuery>({
     id: 'migration_from_query_' + Date.now(),
@@ -174,7 +164,9 @@ export default function MigrationBox(props: MigrationBoxProps) {
     query?.databaseId,
     query?.tableId,
   );
-  const { data: connection, isLoading: loadingConnection } = useGetConnectionById(query?.connectionId);
+  const { data: connection, isLoading: loadingConnection } = useGetConnectionById(
+    query?.connectionId,
+  );
   const { data: connections, isLoading: loadingConnections } = useGetConnections();
   const { onAddQuery } = useConnectionQueries();
   const [rawJson, setRawJson] = useState('');
@@ -182,7 +174,7 @@ export default function MigrationBox(props: MigrationBoxProps) {
   // TODO: pull these from the dialect
   const languageFrom = 'sql';
   const languageTo = 'sql';
-  const isMigratingRealConnection =  mode === 'real_connection'
+  const isMigratingRealConnection = mode === 'real_connection';
   const isConnectionSelectorVisible = isMigratingRealConnection;
   const isRawJsonEditorVisible = !isMigratingRealConnection;
   const isQueryRequired = !isRawJsonEditorVisible;
@@ -196,7 +188,7 @@ export default function MigrationBox(props: MigrationBoxProps) {
   const isSaving = migrating;
 
   const isMigrationScriptVisible = !!migrationScript && !!migrationMetaData.toDialect;
-  const isLoading = loadingColumns || loadingConnections|| loadingConnection;
+  const isLoading = loadingColumns || loadingConnections || loadingConnection;
 
   // effects
   useEffect(() => {
@@ -219,7 +211,7 @@ export default function MigrationBox(props: MigrationBoxProps) {
       tableId: searchParams.get('tableId') || '',
     });
 
-    migrationMetaData.toDialect = (searchParams.get('toDialect') as SqluiCore.Dialect) || 'sqlite'
+    migrationMetaData.toDialect = (searchParams.get('toDialect') as SqluiCore.Dialect) || 'sqlite';
 
     setMigrationScript('');
   }, []);
@@ -258,16 +250,16 @@ export default function MigrationBox(props: MigrationBoxProps) {
       let newMigrationScript: string | undefined;
 
       if (isMigratingRealConnection) {
-
         newMigrationScript = await generateMigrationScript(
           migrationMetaData.toDialect,
           migrationMetaData.newTableName,
           query,
-          columns?.map(column => {
+          columns?.map((column) => {
             return {
               ...column,
-              allowNull: !column.primaryKey || column.name === 'rowKey' || column.kind === 'partition_key'
-            }
+              allowNull:
+                !column.primaryKey || column.name === 'rowKey' || column.kind === 'partition_key',
+            };
           }),
         );
       } else {
@@ -282,12 +274,11 @@ export default function MigrationBox(props: MigrationBoxProps) {
           tableId: migrationMetaData.newTableName,
         };
 
-        let columnsToUse = BaseDataAdapter.inferTypesFromItems(parsedRawJson).map(col => {
+        let columnsToUse = BaseDataAdapter.inferSqlTypeFromItems(parsedRawJson).map((col) => {
           return {
             ...col,
-            type: _getTypeFromObject(col.type, get(parsedRawJson[0], col.propertyPath)),
             allowNull: true,
-          }
+          };
         });
 
         const dataToUse = {
@@ -363,30 +354,31 @@ export default function MigrationBox(props: MigrationBoxProps) {
   }
 
   let supportMigration = true;
-  switch(connection?.dialect){
+  switch (connection?.dialect) {
     case 'redis': // TODO: to be implemented
       supportMigration = false;
       break;
   }
 
-  if(!isRawJsonEditorVisible){
-    if(!supportMigration){
+  if (!isRawJsonEditorVisible) {
+    if (!supportMigration) {
       return (
-      <div className='FormInput__Container'>
-        {isConnectionSelectorVisible && (
+        <div className='FormInput__Container'>
+          {isConnectionSelectorVisible && (
+            <div className='FormInput__Row'>
+              <ConnectionDatabaseSelector
+                isTableIdRequired={true}
+                value={query}
+                onChange={onDatabaseConnectionChange}
+              />
+            </div>
+          )}
           <div className='FormInput__Row'>
-            <ConnectionDatabaseSelector
-              isTableIdRequired={true}
-              value={query}
-              onChange={onDatabaseConnectionChange}
-            />
+            Migration Script is not supported for {connection?.dialect}. Please choose a different
+            connection to migrate data from.
           </div>
-        )}
-        <div className='FormInput__Row'>
-          Migration Script is not supported for {connection?.dialect}. Please choose a different connection to migrate data from.
         </div>
-      </div>
-    );
+      );
     }
   }
 
@@ -415,7 +407,11 @@ export default function MigrationBox(props: MigrationBoxProps) {
         </>
       )}
       <div className='FormInput__Row'>
-        <MigrationMetaDataInputs query={query} value={migrationMetaData} onChange={setMigrationMetaData}/>
+        <MigrationMetaDataInputs
+          query={query}
+          value={migrationMetaData}
+          onChange={setMigrationMetaData}
+        />
       </div>
       {isQueryRequired && (
         <>
@@ -466,39 +462,39 @@ type MigrationMetaData = {
   newTableName?: string;
   azTableRowKeyField?: string;
   azTablePartitionKeyField?: string;
-}
+};
 
 type MigrationMetaDataInputsProps = {
   query: SqluiFrontend.ConnectionQuery;
-  value:MigrationMetaData;
-  onChange:(newValue: MigrationMetaData) => void;
-}
+  value: MigrationMetaData;
+  onChange: (newValue: MigrationMetaData) => void;
+};
 
-function MigrationMetaDataInputs(props: MigrationMetaDataInputsProps){
-  const {query, value: migrationMetaData} = props;
+function MigrationMetaDataInputs(props: MigrationMetaDataInputsProps) {
+  const { query, value: migrationMetaData } = props;
   const { data: columns, isLoading: loadingColumns } = useGetColumns(
     query?.connectionId,
     query?.databaseId,
     query?.tableId,
   );
-  const { data: connection, isLoading: loadingConnection } = useGetConnectionById(query?.connectionId);
+  const { data: connection, isLoading: loadingConnection } = useGetConnectionById(
+    query?.connectionId,
+  );
   const loading = loadingColumns || loadingConnection;
-
-
   const onChange = (propKey: string, propValue: any) => {
     //@ts-ignore
     props.onChange({
       ...migrationMetaData,
-      ...{[propKey]: propValue}
+      ...{ [propKey]: propValue },
     });
-  }
+  };
 
-  if(loading){
+  if (loading) {
     return null;
   }
 
   let shouldShowNewTableName = true;
-  switch(migrationMetaData.toDialect){
+  switch (migrationMetaData.toDialect) {
     // case 'cassandra': // TODO: to be implemented
     // case 'mongodb': // TODO: to be implemented
     // case 'redis': // TODO: to be implemented
@@ -508,9 +504,14 @@ function MigrationMetaDataInputs(props: MigrationMetaDataInputsProps){
       break;
   }
 
-  return <>
-    <DialectSelector value={migrationMetaData.toDialect} onChange={(newToDialect) => onChange('toDialect', newToDialect)} />
-    {shouldShowNewTableName && <TextField
+  return (
+    <>
+      <DialectSelector
+        value={migrationMetaData.toDialect}
+        onChange={(newToDialect) => onChange('toDialect', newToDialect)}
+      />
+      {shouldShowNewTableName && (
+        <TextField
           label='New Table Name'
           defaultValue={migrationMetaData.newTableName}
           onBlur={(e) => onChange('newTableName', e.target.value)}
@@ -518,6 +519,8 @@ function MigrationMetaDataInputs(props: MigrationMetaDataInputsProps){
           size='small'
           fullWidth={true}
           autoComplete='off'
-        />}
-  </>
+        />
+      )}
+    </>
+  );
 }
