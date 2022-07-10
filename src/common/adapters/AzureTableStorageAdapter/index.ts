@@ -187,7 +187,7 @@ export default class AzureTableStorageAdapter extends BaseDataAdapter implements
       }
     } catch (error: any) {
       console.log(error);
-      return { ok: false, error: JSON.stringify(error, null, 2) };
+      return { ok: false, error: error.toString() };
     } finally {
       this.closeConnection();
     }
