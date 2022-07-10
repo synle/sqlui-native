@@ -48,7 +48,10 @@ export default abstract class BaseDataAdapter {
     return undefined;
   }
 
-  static resolveTypes(inputItem: any, incomingTypeConverter?: (type: string, value: any) => string) {
+  static resolveTypes(
+    inputItem: any,
+    incomingTypeConverter?: (type: string, value: any) => string,
+  ) {
     const stack: {
       item: any;
       path: string[];
@@ -56,11 +59,11 @@ export default abstract class BaseDataAdapter {
     }[] = [{ item: inputItem, path: [], key: '' }];
 
     const onTypeConverter = (type: string, value: any) => {
-      if(incomingTypeConverter){
+      if (incomingTypeConverter) {
         return incomingTypeConverter(type, value);
       }
       return type;
-    }
+    };
 
     const columnsMap: Record<string, SqluiCore.ColumnMetaData> = {};
     const visited = new Set<string>();
@@ -108,28 +111,25 @@ export default abstract class BaseDataAdapter {
 
     return Object.values(columnsMap);
   }
-
-
-
-   static inferSqlTypeFromItems(items: any[]): SqluiCore.ColumnMetaData[] {
+  static inferSqlTypeFromItems(items: any[]): SqluiCore.ColumnMetaData[] {
     let columnsMap: Record<string, SqluiCore.ColumnMetaData> = {};
 
     for (const item of items) {
       columnsMap = {
         ...columnsMap,
         ...BaseDataAdapter.resolveTypes(item, (type: string, val: any) => {
-            switch(type){
-              case 'number':
-                if (val.toString().includes('.')) {
-                  return 'FLOAT';
-                }
-                return 'INTEGER';
-              case 'boolean':
-                return 'BOOLEAN';
-              default:
-                return 'TEXT'
-            }
-          }),
+          switch (type) {
+            case 'number':
+              if (val.toString().includes('.')) {
+                return 'FLOAT';
+              }
+              return 'INTEGER';
+            case 'boolean':
+              return 'BOOLEAN';
+            default:
+              return 'TEXT';
+          }
+        }),
       };
     }
 
