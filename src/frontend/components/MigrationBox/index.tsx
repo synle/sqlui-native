@@ -1,25 +1,22 @@
 import BackupIcon from '@mui/icons-material/Backup';
+import LoadingButton from '@mui/lab/LoadingButton';
 import { Button, Link, Skeleton, TextField, Typography } from '@mui/material';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import { getBulkInsert as getBulkInsertForAzTable } from 'src/common/adapters/AzureTableStorageAdapter/scripts';
 import { getSampleSelectQuery } from 'src/common/adapters/DataScriptFactory';
 import {
   getBulkInsert as getBulkInsertForRdmbs,
   getCreateTable as getCreateTableForRdbms,
 } from 'src/common/adapters/RelationalDataAdapter/scripts';
-import {
-  getBulkInsert as getBulkInsertForAzTable,
-} from 'src/common/adapters/AzureTableStorageAdapter/scripts';
 import CodeEditorBox from 'src/frontend/components/CodeEditorBox';
 import ConnectionDatabaseSelector from 'src/frontend/components/QueryBox/ConnectionDatabaseSelector';
 import Select from 'src/frontend/components/Select';
 import dataApi from 'src/frontend/data/api';
 import { useGetColumns, useGetConnections } from 'src/frontend/hooks/useConnection';
 import { useConnectionQueries } from 'src/frontend/hooks/useConnectionQuery';
-import { formatSQL, formatJS } from 'src/frontend/utils/formatter';
+import { formatJS, formatSQL } from 'src/frontend/utils/formatter';
 import { SqluiCore, SqluiFrontend } from 'typings';
-import LoadingButton from '@mui/lab/LoadingButton';
-
 // TOOD: extract this
 type MigrationBoxProps = {
   mode: SqluiFrontend.MigrationMode;

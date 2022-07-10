@@ -106,7 +106,7 @@ export function getBulkInsert(
   input: SqlAction.TableInput,
   rows?: Record<string, any>[],
   rowKeyField?: string,
-  partitionKeyField?: string
+  partitionKeyField?: string,
 ): SqlAction.Output | undefined {
   const label = `Insert`;
 
@@ -119,12 +119,10 @@ export function getBulkInsert(
   }
 
   // TODO: will create the UI for users to hook up row key and partition key
-
-
   // find out the primary key
-  if(!rowKeyField){
-    for(const column of input.columns){
-      if(column.primaryKey || column.kind === 'partition_key'){
+  if (!rowKeyField) {
+    for (const column of input.columns) {
+      if (column.primaryKey || column.kind === 'partition_key') {
         // here is where we infer the rowKey for our record
         rowKeyField = column.name;
         break;
@@ -132,18 +130,20 @@ export function getBulkInsert(
     }
   }
 
-  rows = rows.map(row => ({
+  rows = rows.map((row) => ({
     ...row,
     rowKey: rowKeyField ? row[rowKeyField]?.toString() : '<your_row_key>',
     partitionKey: rowKeyField ? row[rowKeyField]?.toString() : '<your_partition_key>',
-  }))
+  }));
 
   return {
     label,
     formatter,
     query: `
       Promise.all([
-        ${rows.map(row => `${AZTABLE_TABLE_CLIENT_PREFIX}.createEntity(${JSON.stringify(row)})`).join(',')}
+        ${rows
+          .map((row) => `${AZTABLE_TABLE_CLIENT_PREFIX}.createEntity(${JSON.stringify(row)})`)
+          .join(',')}
       ])
     `.trim(),
   };
@@ -160,8 +160,6 @@ export function getBulkInsert(
   //   query: `${AZTABLE_TABLE_CLIENT_PREFIX}.submitTransaction(${JSON.stringify(rowsActions, null, 2)})`,
   // };
 }
-
-
 export function getUpdateWithValues(
   input: SqlAction.TableInput,
   value: Record<string, any>,
