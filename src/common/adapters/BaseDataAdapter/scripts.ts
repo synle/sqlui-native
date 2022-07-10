@@ -24,14 +24,8 @@ export default abstract class BaseDataScript implements IDataScript{
     'aztable',
   ];
 
-  static getIsTableIdRequiredForQuery(dialect?: SqluiCore.Dialect) {
-    switch (dialect) {
-      default:
-        return false;
-      case 'aztable':
-      case 'cosmosdb':
-        return true;
-    }
+  getIsTableIdRequiredForQuery() {
+    return false
   }
 
   static getSyntaxModeByDialect(dialect?: SqluiCore.Dialect): 'javascript' | 'sql' {

@@ -39,9 +39,11 @@ function _formatScripts(
  */
 export const SUPPORTED_DIALECTS = BaseDataScript.SUPPORTED_DIALECTS;
 
-export const getIsTableIdRequiredForQuery = BaseDataScript.getIsTableIdRequiredForQuery;
-
 export const getSyntaxModeByDialect = BaseDataScript.getSyntaxModeByDialect;
+
+export function getIsTableIdRequiredForQuery (dialect?: string) {
+  return _getImplementation(dialect)?.getIsTableIdRequiredForQuery() || false;
+}
 
 export function getSampleConnectionString(dialect?: string) {
   return _getImplementation(dialect)?.getSampleConnectionString(dialect as SqluiCore.Dialect) || '';

@@ -207,6 +207,10 @@ export function getPublishMessage(input: SqlAction.TableInput): SqlAction.Output
 }
 
 export class ConcreteDataScripts extends BaseDataScript{
+  getIsTableIdRequiredForQuery() {
+    return false
+  }
+
   getTableScripts() {
     return [ getSetValue,
   getGet,

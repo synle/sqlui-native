@@ -272,6 +272,10 @@ export function getDropColumns(input: SqlAction.TableInput): SqlAction.Output | 
 }
 
 export class ConcreteDataScripts extends BaseDataScript{
+  getIsTableIdRequiredForQuery() {
+    return false
+  }
+
   getTableScripts() {
     return [
     getSelectAllColumns,

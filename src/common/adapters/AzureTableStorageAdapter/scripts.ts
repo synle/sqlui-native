@@ -263,6 +263,10 @@ export function getCreateDatabaseTable(
 }
 
 export class ConcreteDataScripts extends BaseDataScript{
+  getIsTableIdRequiredForQuery() {
+    return true
+  }
+
   getTableScripts() {
     return [
       getSelectAllColumns,

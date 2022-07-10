@@ -260,6 +260,10 @@ export function getCreateConnectionDatabase(
 }
 
 export class ConcreteDataScripts extends BaseDataScript{
+  getIsTableIdRequiredForQuery() {
+    return false
+  }
+
   getTableScripts() {
     return [getSelectAllColumns,
   getSelectSpecificColumns,
