@@ -142,24 +142,9 @@ jobs:
         with:
           message: 'CI / CD - New Release ${{needs.create_release.outputs.package_version}}'
 
-  roll_back_on_failure:
-    if: failure()
+  roll_back_on_failure_or_canceled:
+    if: failure() || cancelled()
     needs: [create_release, build_windows, build_macos, build_linux]
-    runs-on: ubuntu-latest
-    timeout-minutes: 4
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          ref: ${{ github.head_ref }}
-      - uses: dev-drprasad/delete-tag-and-release@v0.2.0
-        with:
-          delete_release: true
-          tag_name: '${{ needs.create_release.outputs.package_version }}'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  roll_back_on_canceled:
-    if: cancelled()
     runs-on: ubuntu-latest
     timeout-minutes: 4
     steps:
