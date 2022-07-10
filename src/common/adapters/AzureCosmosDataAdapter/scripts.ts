@@ -1,5 +1,4 @@
 import BaseDataScript, { getDivider } from 'src/common/adapters/BaseDataAdapter/scripts';
-import IDataScript from 'src/common/adapters/IDataScript';
 import { SqlAction, SqluiCore } from 'typings';
 
 export const COSMOSDB_ADAPTER_PREFIX = 'db';
@@ -327,12 +326,10 @@ export function getCreateConnectionDatabase(
   };
 }
 
-export class ConcreteDataScripts extends BaseDataScript{
-    dialects = [
-        'cosmosdb',
-    ]
+export class ConcreteDataScripts extends BaseDataScript {
+  dialects = ['cosmosdb'];
   getIsTableIdRequiredForQuery() {
-    return true
+    return true;
   }
 
   getSyntaxModeByDialect() {
@@ -354,28 +351,19 @@ export class ConcreteDataScripts extends BaseDataScript{
       getDivider,
       getCreateContainer,
       getDropContainer,
-    ]
+    ];
   }
 
   getDatabaseScripts() {
-    return [
-      getDivider,
-      getCreateDatabase,
-      getCreateDatabaseContainer,
-      getDivider,
-      getDropDatabase,
-    ]
+    return [getDivider, getCreateDatabase, getCreateDatabaseContainer, getDivider, getDropDatabase];
   }
 
   getConnectionScripts() {
-    return [
-      getDivider,
-      getCreateConnectionDatabase,
-    ]
+    return [getDivider, getCreateConnectionDatabase];
   }
 
   getSampleConnectionString(dialect) {
-    return `cosmosdb://AccountEndpoint=some_cosmos_endpoint;AccountKey=some_cosmos_account_key`
+    return `cosmosdb://AccountEndpoint=some_cosmos_endpoint;AccountKey=some_cosmos_account_key`;
   }
 }
 

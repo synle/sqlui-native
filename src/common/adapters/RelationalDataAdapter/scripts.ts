@@ -1,6 +1,6 @@
 import BaseDataScript, { getDivider } from 'src/common/adapters/BaseDataAdapter/scripts';
 import { escapeSQLValue, isValueNumber } from 'src/frontend/utils/formatter';
-import { SqlAction, SqluiCore } from 'typings';
+import { SqlAction } from 'typings';
 
 const formatter = 'sql';
 
@@ -553,16 +553,10 @@ export function getCreateConnectionDatabase(
   }
 }
 
-export class ConcreteDataScripts extends BaseDataScript{
-    dialects = [
-        'mysql',
-        'mariadb',
-        'mssql',
-        'postgres',
-        'sqlite',
-    ]
+export class ConcreteDataScripts extends BaseDataScript {
+  dialects = ['mysql', 'mariadb', 'mssql', 'postgres', 'sqlite'];
   getIsTableIdRequiredForQuery() {
-    return false
+    return false;
   }
 
   getSyntaxMode() {
@@ -571,52 +565,45 @@ export class ConcreteDataScripts extends BaseDataScript{
 
   getTableScripts() {
     return [
-    getSelectAllColumns,
-  getSelectCount,
-  getSelectSpecificColumns,
-  getSelectDistinctValues,
-  getDivider,
-  getInsert,
-  getUpdate,
-  getDelete,
-  getDivider,
-  getCreateTable,
-  getDropTable,
-  getAddColumn,
-  getDropColumns,
-  ]
+      getSelectAllColumns,
+      getSelectCount,
+      getSelectSpecificColumns,
+      getSelectDistinctValues,
+      getDivider,
+      getInsert,
+      getUpdate,
+      getDelete,
+      getDivider,
+      getCreateTable,
+      getDropTable,
+      getAddColumn,
+      getDropColumns,
+    ];
   }
 
   getDatabaseScripts() {
-    return [
-    getDivider,
-  getDropDatabase,
-  getCreateDatabase,
-  ]
+    return [getDivider, getDropDatabase, getCreateDatabase];
   }
 
   getConnectionScripts() {
-    return [
-    getDivider,
-  getCreateConnectionDatabase,
-  ]
+    return [getDivider, getCreateConnectionDatabase];
   }
 
   getSampleConnectionString(dialect) {
     switch (dialect) {
-    case 'mssql':
-      return `mssql://sa:password123!@localhost:1433`;
-    case 'postgres':
-      return `postgres://postgres:password@localhost:5432`;
-    case 'sqlite':
-      return `sqlite://test-db.sqlite`;
-    case 'mariadb':
-      return `mariadb://root:password@localhost:3306`;
-    case 'mysql':
-      return `mysql://root:password@localhost:3306`;
-    default: // Not supported dialect
-      return '';
-  }
+      case 'mssql':
+        return `mssql://sa:password123!@localhost:1433`;
+      case 'postgres':
+        return `postgres://postgres:password@localhost:5432`;
+      case 'sqlite':
+        return `sqlite://test-db.sqlite`;
+      case 'mariadb':
+        return `mariadb://root:password@localhost:3306`;
+      case 'mysql':
+        return `mysql://root:password@localhost:3306`;
+      default: // Not supported dialect
+        return '';
+    }
   }
 }
 

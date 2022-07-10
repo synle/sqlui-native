@@ -262,12 +262,10 @@ export function getCreateDatabaseTable(
   };
 }
 
-export class ConcreteDataScripts extends BaseDataScript{
-    dialects = [
-        'aztable',
-    ]
+export class ConcreteDataScripts extends BaseDataScript {
+  dialects = ['aztable'];
   getIsTableIdRequiredForQuery() {
-    return true
+    return true;
   }
 
   getSyntaxMode() {
@@ -286,18 +284,15 @@ export class ConcreteDataScripts extends BaseDataScript{
       getDivider,
       getCreateTable,
       getDropTable,
-    ]
+    ];
   }
 
   getDatabaseScripts() {
-    return [
-      getDivider,
-      getCreateDatabaseTable,
-    ]
+    return [getDivider, getCreateDatabaseTable];
   }
 
   getConnectionScripts() {
-    return []
+    return [];
   }
 
   getSampleConnectionString(dialect) {

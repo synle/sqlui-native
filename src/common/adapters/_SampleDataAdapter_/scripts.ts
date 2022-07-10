@@ -1,5 +1,5 @@
 import BaseDataScript, { getDivider } from 'src/common/adapters/BaseDataAdapter/scripts';
-import { SqlAction, SqluiCore } from 'typings';
+import { SqlAction } from 'typings';
 
 const formatter = 'js';
 
@@ -37,35 +37,26 @@ export function getDropDatabase(input: SqlAction.DatabaseInput): SqlAction.Outpu
   };
 }
 
-export class ConcreteDataScripts extends BaseDataScript{
-    dialects = [
-        '<your_dialect_name>'
-    ]
+export class ConcreteDataScripts extends BaseDataScript {
+  dialects = ['<your_dialect_name>'];
   // TODO: implement me
   getTableScripts() {
-    return [
-          getDivider,
-    getSelectAllColumns,
-    ]
+    return [getDivider, getSelectAllColumns];
   }
 
   // TODO: implement me
   getDatabaseScripts() {
-    return [
-    getDivider,
-    getCreateDatabase,
-    ]
+    return [getDivider, getCreateDatabase];
   }
 
   // TODO: implement me
   getConnectionScripts() {
-    return [
-    ]
+    return [];
   }
 
   // TODO: implement me
   getSampleConnectionString(dialect) {
-    return `your_dialect://your_props`
+    return `your_dialect://your_props`;
   }
 }
 

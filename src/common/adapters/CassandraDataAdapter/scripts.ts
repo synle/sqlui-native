@@ -271,12 +271,10 @@ export function getDropColumns(input: SqlAction.TableInput): SqlAction.Output | 
   };
 }
 
-export class ConcreteDataScripts extends BaseDataScript{
-    dialects = [
-        'cassandra',
-    ]
+export class ConcreteDataScripts extends BaseDataScript {
+  dialects = ['cassandra'];
   getIsTableIdRequiredForQuery() {
-    return false
+    return false;
   }
 
   getSyntaxMode() {
@@ -284,34 +282,31 @@ export class ConcreteDataScripts extends BaseDataScript{
   }
 
   getTableScripts() {
-
-
     return [
-    getSelectAllColumns,
-  getSelectSpecificColumns,
-  getInsert,
-  getDivider,
-  getUpdate,
-  getDelete,
-  getDivider,
-  getCreateTable,
-  getDropTable,
-  getAddColumn,
-  getDropColumns,
-    ]
+      getSelectAllColumns,
+      getSelectSpecificColumns,
+      getInsert,
+      getDivider,
+      getUpdate,
+      getDelete,
+      getDivider,
+      getCreateTable,
+      getDropTable,
+      getAddColumn,
+      getDropColumns,
+    ];
   }
 
   getDatabaseScripts() {
     return [
-    getDivider,
-  getCreateKeyspace, // TODO: right now this command does not tie to the input, it will hard code the keyspace to be some_keyspace
-  getDropKeyspace,
-  ]
+      getDivider,
+      getCreateKeyspace, // TODO: right now this command does not tie to the input, it will hard code the keyspace to be some_keyspace
+      getDropKeyspace,
+    ];
   }
 
   getConnectionScripts() {
-    return [getDivider,
-  getCreateConnectionDatabase,]
+    return [getDivider, getCreateConnectionDatabase];
   }
 
   getSampleConnectionString(dialect) {

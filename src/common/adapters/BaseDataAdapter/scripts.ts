@@ -1,5 +1,5 @@
-import { SqlAction, SqluiCore } from 'typings';
 import IDataScript from 'src/common/adapters/IDataScript';
+import { SqlAction, SqluiCore } from 'typings';
 
 export function getDivider(): SqlAction.Output {
   return {
@@ -7,11 +7,11 @@ export function getDivider(): SqlAction.Output {
   };
 }
 
-export default abstract class BaseDataScript implements IDataScript{
+export default abstract class BaseDataScript implements IDataScript {
   dialects: string[] = [];
 
   getIsTableIdRequiredForQuery() {
-    return false
+    return false;
   }
 
   getSyntaxMode() {
@@ -19,16 +19,16 @@ export default abstract class BaseDataScript implements IDataScript{
   }
 
   //
-  getTableScripts  () : SqlAction.TableActionScriptGenerator[]{
+  getTableScripts(): SqlAction.TableActionScriptGenerator[] {
     return [];
   }
-  getDatabaseScripts  () : SqlAction.DatabaseActionScriptGenerator[]{
+  getDatabaseScripts(): SqlAction.DatabaseActionScriptGenerator[] {
     return [];
   }
-  getConnectionScripts  () : SqlAction.ConnectionActionScriptGenerator[]{
+  getConnectionScripts(): SqlAction.ConnectionActionScriptGenerator[] {
     return [];
   }
-  getSampleConnectionString (dialect?: SqluiCore.Dialect) {
-    return ''
+  getSampleConnectionString(dialect?: SqluiCore.Dialect) {
+    return '';
   }
 }

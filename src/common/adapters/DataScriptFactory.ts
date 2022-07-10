@@ -1,4 +1,3 @@
-import BaseDataScript, { getDivider } from 'src/common/adapters/BaseDataAdapter/scripts';
 import AzureCosmosDataAdapterScripts from 'src/common/adapters/AzureCosmosDataAdapter/scripts';
 import AzureTableStorageAdapterScripts from 'src/common/adapters/AzureTableStorageAdapter/scripts';
 import CassandraDataAdapterScripts from 'src/common/adapters/CassandraDataAdapter/scripts';
@@ -7,7 +6,6 @@ import RedisDataAdapterScripts from 'src/common/adapters/RedisDataAdapter/script
 import RelationalDataAdapterScripts from 'src/common/adapters/RelationalDataAdapter/scripts';
 import { formatJS, formatSQL } from 'src/frontend/utils/formatter';
 import { SqlAction, SqluiCore } from 'typings';
-
 function _formatScripts(
   actionInput: SqlAction.TableInput | SqlAction.DatabaseInput | SqlAction.ConnectionInput,
   generatorFuncs:
@@ -36,23 +34,23 @@ function _formatScripts(
 }
 
 function _getImplementation(dialect?: string) {
-  switch(dialect){
+  switch (dialect) {
     case 'mysql':
     case 'mariadb':
     case 'mssql':
     case 'postgres':
     case 'sqlite':
-      return RelationalDataAdapterScripts
+      return RelationalDataAdapterScripts;
     case 'cassandra':
-      return CassandraDataAdapterScripts
+      return CassandraDataAdapterScripts;
     case 'mongodb':
-      return MongoDBDataAdapterScripts
+      return MongoDBDataAdapterScripts;
     case 'redis':
-      return RedisDataAdapterScripts
+      return RedisDataAdapterScripts;
     case 'cosmosdb':
-      return AzureCosmosDataAdapterScripts
+      return AzureCosmosDataAdapterScripts;
     case 'aztable':
-      return AzureTableStorageAdapterScripts
+      return AzureTableStorageAdapterScripts;
   }
 }
 
@@ -65,22 +63,22 @@ const allScriptsSet = new Set<string>();
   RedisDataAdapterScripts,
   AzureCosmosDataAdapterScripts,
   AzureTableStorageAdapterScripts,
-].forEach((script) =>{
-  for(const dialect of script.dialects){
-    allScriptsSet.add(dialect)
+].forEach((script) => {
+  for (const dialect of script.dialects) {
+    allScriptsSet.add(dialect);
   }
-})
+});
 
 /**
  * @type {Array} ordered list of supported dialects is shown in the connection hints
  */
 export const SUPPORTED_DIALECTS = [...allScriptsSet];
 
-export function getSyntaxModeByDialect (dialect?: string) {
+export function getSyntaxModeByDialect(dialect?: string) {
   return _getImplementation(dialect)?.getSyntaxMode() || 'sql';
 }
 
-export function getIsTableIdRequiredForQueryByDialect (dialect?: string) {
+export function getIsTableIdRequiredForQueryByDialect(dialect?: string) {
   return _getImplementation(dialect)?.getIsTableIdRequiredForQuery() || false;
 }
 
@@ -89,23 +87,27 @@ export function getSampleConnectionString(dialect?: string) {
 }
 
 export function getTableActions(actionInput: SqlAction.TableInput) {
-  const scriptsToUse: SqlAction.TableActionScriptGenerator[] = _getImplementation(actionInput.dialect)?.getTableScripts() || [];
+  const scriptsToUse: SqlAction.TableActionScriptGenerator[] =
+    _getImplementation(actionInput.dialect)?.getTableScripts() || [];
   return _formatScripts(actionInput, scriptsToUse);
 }
 
 export function getSampleSelectQuery(actionInput: SqlAction.TableInput) {
-  const scriptsToUse: SqlAction.TableActionScriptGenerator[] = _getImplementation(actionInput.dialect)?.getTableScripts() || [];
+  const scriptsToUse: SqlAction.TableActionScriptGenerator[] =
+    _getImplementation(actionInput.dialect)?.getTableScripts() || [];
   return _formatScripts(actionInput, scriptsToUse).filter((script) =>
     script.label.includes('Select'),
   )[0];
 }
 
 export function getDatabaseActions(actionInput: SqlAction.DatabaseInput) {
-  const scriptsToUse: SqlAction.DatabaseActionScriptGenerator[] = _getImplementation(actionInput.dialect)?.getDatabaseScripts() || [];
+  const scriptsToUse: SqlAction.DatabaseActionScriptGenerator[] =
+    _getImplementation(actionInput.dialect)?.getDatabaseScripts() || [];
   return _formatScripts(actionInput, scriptsToUse);
 }
 
 export function getConnectionActions(actionInput: SqlAction.ConnectionInput) {
-  const scriptsToUse: SqlAction.DatabaseActionScriptGenerator[] = _getImplementation(actionInput.dialect)?.getConnectionScripts() || [];
+  const scriptsToUse: SqlAction.DatabaseActionScriptGenerator[] =
+    _getImplementation(actionInput.dialect)?.getConnectionScripts() || [];
   return _formatScripts(actionInput, scriptsToUse);
 }

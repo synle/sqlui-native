@@ -1,5 +1,5 @@
 import BaseDataScript, { getDivider } from 'src/common/adapters/BaseDataAdapter/scripts';
-import { SqlAction, SqluiCore } from 'typings';
+import { SqlAction } from 'typings';
 
 export const REDIS_ADAPTER_PREFIX = 'db';
 
@@ -206,12 +206,10 @@ export function getPublishMessage(input: SqlAction.TableInput): SqlAction.Output
   };
 }
 
-export class ConcreteDataScripts extends BaseDataScript{
-    dialects = [
-        'redis',
-    ]
+export class ConcreteDataScripts extends BaseDataScript {
+  dialects = ['redis'];
   getIsTableIdRequiredForQuery() {
-    return false
+    return false;
   }
 
   getSyntaxMode() {
@@ -219,39 +217,41 @@ export class ConcreteDataScripts extends BaseDataScript{
   }
 
   getTableScripts() {
-    return [ getSetValue,
-  getGet,
-  getScan,
-  getDivider,
-  getHset,
-  getHget,
-  getHvals,
-  getHexist,
-  getDivider,
-  getListGetItems,
-  getListLPush,
-  getListRPush,
-  getListLPop,
-  getListRPop,
-  getDivider,
-  getSetGetItems,
-  getSetAddItems,
-  getSetIsMember,
-  getSetCount,
-  getSetRemoveLastItem,
-  getDivider,
-  getSortedSetGetItems,
-  getSortedSetAddItem,
-  getDivider,
-  getPublishMessage,]
+    return [
+      getSetValue,
+      getGet,
+      getScan,
+      getDivider,
+      getHset,
+      getHget,
+      getHvals,
+      getHexist,
+      getDivider,
+      getListGetItems,
+      getListLPush,
+      getListRPush,
+      getListLPop,
+      getListRPop,
+      getDivider,
+      getSetGetItems,
+      getSetAddItems,
+      getSetIsMember,
+      getSetCount,
+      getSetRemoveLastItem,
+      getDivider,
+      getSortedSetGetItems,
+      getSortedSetAddItem,
+      getDivider,
+      getPublishMessage,
+    ];
   }
 
   getDatabaseScripts() {
-    return []
+    return [];
   }
 
   getConnectionScripts() {
-    return []
+    return [];
   }
 
   getSampleConnectionString(dialect) {

@@ -1,7 +1,7 @@
 import get from 'lodash.get';
 import set from 'lodash.set';
 import BaseDataScript, { getDivider } from 'src/common/adapters/BaseDataAdapter/scripts';
-import { SqlAction, SqluiCore } from 'typings';
+import { SqlAction } from 'typings';
 
 export const MONGO_ADAPTER_PREFIX = 'db';
 
@@ -259,12 +259,10 @@ export function getCreateConnectionDatabase(
   };
 }
 
-export class ConcreteDataScripts extends BaseDataScript{
-    dialects = [
-        'mongodb',
-    ]
+export class ConcreteDataScripts extends BaseDataScript {
+  dialects = ['mongodb'];
   getIsTableIdRequiredForQuery() {
-    return false
+    return false;
   }
 
   getSyntaxMode() {
@@ -272,34 +270,31 @@ export class ConcreteDataScripts extends BaseDataScript{
   }
 
   getTableScripts() {
-    return [getSelectAllColumns,
-  getSelectSpecificColumns,
-  getSelectDistinctValues,
-  getSelectOne,
-  getDivider,
-  getInsert,
-  getUpdate,
-  getDelete,
-  getDivider,
-  getCreateCollection,
-  getDropCollection,]
+    return [
+      getSelectAllColumns,
+      getSelectSpecificColumns,
+      getSelectDistinctValues,
+      getSelectOne,
+      getDivider,
+      getInsert,
+      getUpdate,
+      getDelete,
+      getDivider,
+      getCreateCollection,
+      getDropCollection,
+    ];
   }
 
   getDatabaseScripts() {
-    return [
-    getDivider,
-  getCreateDatabase,
-  getDropDatabase,
-  ]
+    return [getDivider, getCreateDatabase, getDropDatabase];
   }
 
   getConnectionScripts() {
-    return [getDivider,
-  getCreateConnectionDatabase,]
+    return [getDivider, getCreateConnectionDatabase];
   }
 
   getSampleConnectionString(dialect) {
-    return`mongodb://localhost:27017`;
+    return `mongodb://localhost:27017`;
   }
 }
 
