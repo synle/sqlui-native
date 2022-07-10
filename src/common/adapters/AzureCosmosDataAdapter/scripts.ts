@@ -1,4 +1,4 @@
-import { getDivider } from 'src/common/adapters/BaseDataAdapter/scripts';
+import BaseDataScript, { getDivider } from 'src/common/adapters/BaseDataAdapter/scripts';
 import { SqlAction, SqluiCore } from 'typings';
 
 export const COSMOSDB_ADAPTER_PREFIX = 'db';
@@ -6,10 +6,6 @@ export const COSMOSDB_ADAPTER_PREFIX = 'db';
 const COSMOSDB_TABLE_ALIAS_PREFIX = 'c';
 
 const formatter = 'js';
-
-export function getSampleConnectionString(dialect?: SqluiCore.Dialect) {
-  return `cosmosdb://AccountEndpoint=some_cosmos_endpoint;AccountKey=some_cosmos_account_key`;
-}
 
 // https://docs.microsoft.com/en-us/azure/cosmos-db/sql/sql-api-nodejs-get-started?tabs=windows
 function _shouldIncludeField(col: SqluiCore.ColumnMetaData) {
@@ -330,31 +326,45 @@ export function getCreateConnectionDatabase(
   };
 }
 
-export const tableActionScripts: SqlAction.TableActionScriptGenerator[] = [
-  getSelectAllColumns,
-  getSelectSpecificColumns,
-  getSelectById,
-  getDivider,
-  getReadItemById,
-  getInsert,
-  getUpdate,
-  getDelete,
-  getDivider,
-  getRawSelectAllColumns,
-  getDivider,
-  getCreateContainer,
-  getDropContainer,
-];
+export class ConcreteDataScripts extends BaseDataScript {
+  dialects = ['cosmosdb'];
+  getIsTableIdRequiredForQuery() {
+    return true;
+  }
 
-export const databaseActionScripts: SqlAction.DatabaseActionScriptGenerator[] = [
-  getDivider,
-  getCreateDatabase,
-  getCreateDatabaseContainer,
-  getDivider,
-  getDropDatabase,
-];
+  getSyntaxModeByDialect() {
+    return 'javascript';
+  }
 
-export const connectionActionScripts: SqlAction.ConnectionActionScriptGenerator[] = [
-  getDivider,
-  getCreateConnectionDatabase,
-];
+  getTableScripts() {
+    return [
+      getSelectAllColumns,
+      getSelectSpecificColumns,
+      getSelectById,
+      getDivider,
+      getReadItemById,
+      getInsert,
+      getUpdate,
+      getDelete,
+      getDivider,
+      getRawSelectAllColumns,
+      getDivider,
+      getCreateContainer,
+      getDropContainer,
+    ];
+  }
+
+  getDatabaseScripts() {
+    return [getDivider, getCreateDatabase, getCreateDatabaseContainer, getDivider, getDropDatabase];
+  }
+
+  getConnectionScripts() {
+    return [getDivider, getCreateConnectionDatabase];
+  }
+
+  getSampleConnectionString(dialect) {
+    return `cosmosdb://AccountEndpoint=some_cosmos_endpoint;AccountKey=some_cosmos_account_key`;
+  }
+}
+
+export default new ConcreteDataScripts();
