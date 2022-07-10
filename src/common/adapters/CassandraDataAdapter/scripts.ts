@@ -1,4 +1,4 @@
-import { getDivider } from 'src/common/adapters/BaseDataAdapter/scripts';
+import BaseDataScript, { getDivider } from 'src/common/adapters/BaseDataAdapter/scripts';
 import { escapeSQLValue, isValueNumber } from 'src/frontend/utils/formatter';
 import { SqlAction, SqluiCore } from 'typings';
 
@@ -6,10 +6,6 @@ const formatter = 'sql';
 
 function _isColumnNumberField(col: SqluiCore.ColumnMetaData) {
   return col.type.toLowerCase().includes('int');
-}
-
-export function getSampleConnectionString(dialect?: SqluiCore.Dialect) {
-  return `cassandra://username:password@localhost:9042`;
 }
 
 export function getSelectAllColumns(input: SqlAction.TableInput): SqlAction.Output | undefined {
@@ -274,27 +270,48 @@ export function getDropColumns(input: SqlAction.TableInput): SqlAction.Output | 
       .join('\n'),
   };
 }
-export const tableActionScripts: SqlAction.TableActionScriptGenerator[] = [
-  getSelectAllColumns,
-  getSelectSpecificColumns,
-  getInsert,
-  getDivider,
-  getUpdate,
-  getDelete,
-  getDivider,
-  getCreateTable,
-  getDropTable,
-  getAddColumn,
-  getDropColumns,
-];
 
-export const databaseActionScripts: SqlAction.DatabaseActionScriptGenerator[] = [
-  getDivider,
-  getCreateKeyspace, // TODO: right now this command does not tie to the input, it will hard code the keyspace to be some_keyspace
-  getDropKeyspace,
-];
+export class ConcreteDataScripts extends BaseDataScript {
+  dialects = ['cassandra'];
+  getIsTableIdRequiredForQuery() {
+    return false;
+  }
 
-export const connectionActionScripts: SqlAction.ConnectionActionScriptGenerator[] = [
-  getDivider,
-  getCreateConnectionDatabase,
-];
+  getSyntaxMode() {
+    return 'sql';
+  }
+
+  getTableScripts() {
+    return [
+      getSelectAllColumns,
+      getSelectSpecificColumns,
+      getInsert,
+      getDivider,
+      getUpdate,
+      getDelete,
+      getDivider,
+      getCreateTable,
+      getDropTable,
+      getAddColumn,
+      getDropColumns,
+    ];
+  }
+
+  getDatabaseScripts() {
+    return [
+      getDivider,
+      getCreateKeyspace, // TODO: right now this command does not tie to the input, it will hard code the keyspace to be some_keyspace
+      getDropKeyspace,
+    ];
+  }
+
+  getConnectionScripts() {
+    return [getDivider, getCreateConnectionDatabase];
+  }
+
+  getSampleConnectionString(dialect) {
+    return `cassandra://username:password@localhost:9042`;
+  }
+}
+
+export default new ConcreteDataScripts();

@@ -1,13 +1,9 @@
-import { getDivider } from 'src/common/adapters/BaseDataAdapter/scripts';
-import { SqlAction, SqluiCore } from 'typings';
+import BaseDataScript, { getDivider } from 'src/common/adapters/BaseDataAdapter/scripts';
+import { SqlAction } from 'typings';
 
 export const REDIS_ADAPTER_PREFIX = 'db';
 
 const formatter = 'js';
-
-export function getSampleConnectionString(dialect?: SqluiCore.Dialect) {
-  return `redis://localhost:6379`;
-}
 
 // for redis
 export function getSetValue(input: SqlAction.TableInput): SqlAction.Output | undefined {
@@ -210,34 +206,57 @@ export function getPublishMessage(input: SqlAction.TableInput): SqlAction.Output
   };
 }
 
-export const tableActionScripts: SqlAction.TableActionScriptGenerator[] = [
-  getSetValue,
-  getGet,
-  getScan,
-  getDivider,
-  getHset,
-  getHget,
-  getHvals,
-  getHexist,
-  getDivider,
-  getListGetItems,
-  getListLPush,
-  getListRPush,
-  getListLPop,
-  getListRPop,
-  getDivider,
-  getSetGetItems,
-  getSetAddItems,
-  getSetIsMember,
-  getSetCount,
-  getSetRemoveLastItem,
-  getDivider,
-  getSortedSetGetItems,
-  getSortedSetAddItem,
-  getDivider,
-  getPublishMessage,
-];
+export class ConcreteDataScripts extends BaseDataScript {
+  dialects = ['redis'];
+  getIsTableIdRequiredForQuery() {
+    return false;
+  }
 
-export const databaseActionScripts: SqlAction.DatabaseActionScriptGenerator[] = [];
+  getSyntaxMode() {
+    return 'javascript';
+  }
 
-export const connectionActionScripts: SqlAction.ConnectionActionScriptGenerator[] = [];
+  getTableScripts() {
+    return [
+      getSetValue,
+      getGet,
+      getScan,
+      getDivider,
+      getHset,
+      getHget,
+      getHvals,
+      getHexist,
+      getDivider,
+      getListGetItems,
+      getListLPush,
+      getListRPush,
+      getListLPop,
+      getListRPop,
+      getDivider,
+      getSetGetItems,
+      getSetAddItems,
+      getSetIsMember,
+      getSetCount,
+      getSetRemoveLastItem,
+      getDivider,
+      getSortedSetGetItems,
+      getSortedSetAddItem,
+      getDivider,
+      getPublishMessage,
+    ];
+  }
+
+  getDatabaseScripts() {
+    return [];
+  }
+
+  getConnectionScripts() {
+    return [];
+  }
+
+  getSampleConnectionString(dialect) {
+    return `redis://localhost:6379`;
+  }
+}
+
+export default new ConcreteDataScripts();

@@ -1,7 +1,7 @@
 import get from 'lodash.get';
 import set from 'lodash.set';
-import { getDivider } from 'src/common/adapters/BaseDataAdapter/scripts';
-import { SqlAction, SqluiCore } from 'typings';
+import BaseDataScript, { getDivider } from 'src/common/adapters/BaseDataAdapter/scripts';
+import { SqlAction } from 'typings';
 
 export const MONGO_ADAPTER_PREFIX = 'db';
 
@@ -26,10 +26,6 @@ export function serializeJsonForMongoScript(object: any) {
   });
 
   return res;
-}
-
-export function getSampleConnectionString(dialect?: SqluiCore.Dialect) {
-  return `mongodb://localhost:27017`;
 }
 
 export function getSelectAllColumns(input: SqlAction.TableInput): SqlAction.Output | undefined {
@@ -263,26 +259,43 @@ export function getCreateConnectionDatabase(
   };
 }
 
-export const tableActionScripts: SqlAction.TableActionScriptGenerator[] = [
-  getSelectAllColumns,
-  getSelectSpecificColumns,
-  getSelectDistinctValues,
-  getSelectOne,
-  getDivider,
-  getInsert,
-  getUpdate,
-  getDelete,
-  getDivider,
-  getCreateCollection,
-  getDropCollection,
-];
+export class ConcreteDataScripts extends BaseDataScript {
+  dialects = ['mongodb'];
+  getIsTableIdRequiredForQuery() {
+    return false;
+  }
 
-export const databaseActionScripts: SqlAction.DatabaseActionScriptGenerator[] = [
-  getDivider,
-  getCreateDatabase,
-  getDropDatabase,
-];
-export const connectionActionScripts: SqlAction.ConnectionActionScriptGenerator[] = [
-  getDivider,
-  getCreateConnectionDatabase,
-];
+  getSyntaxMode() {
+    return 'javascript';
+  }
+
+  getTableScripts() {
+    return [
+      getSelectAllColumns,
+      getSelectSpecificColumns,
+      getSelectDistinctValues,
+      getSelectOne,
+      getDivider,
+      getInsert,
+      getUpdate,
+      getDelete,
+      getDivider,
+      getCreateCollection,
+      getDropCollection,
+    ];
+  }
+
+  getDatabaseScripts() {
+    return [getDivider, getCreateDatabase, getDropDatabase];
+  }
+
+  getConnectionScripts() {
+    return [getDivider, getCreateConnectionDatabase];
+  }
+
+  getSampleConnectionString(dialect) {
+    return `mongodb://localhost:27017`;
+  }
+}
+
+export default new ConcreteDataScripts();
