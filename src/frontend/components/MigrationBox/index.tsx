@@ -1,4 +1,5 @@
 import BackupIcon from '@mui/icons-material/Backup';
+import LoadingButton from '@mui/lab/LoadingButton';
 import { Button, Link, Skeleton, TextField, Typography } from '@mui/material';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
@@ -15,8 +16,6 @@ import { useGetColumns, useGetConnections } from 'src/frontend/hooks/useConnecti
 import { useConnectionQueries } from 'src/frontend/hooks/useConnectionQuery';
 import { formatSQL } from 'src/frontend/utils/formatter';
 import { SqluiCore, SqluiFrontend } from 'typings';
-import LoadingButton from '@mui/lab/LoadingButton';
-
 // TOOD: extract this
 type MigrationBoxProps = {
   mode: SqluiFrontend.MigrationMode;

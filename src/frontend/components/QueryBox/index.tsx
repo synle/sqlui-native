@@ -4,6 +4,7 @@ import FormatColorTextIcon from '@mui/icons-material/FormatColorText';
 import HelpIcon from '@mui/icons-material/Help';
 import MenuIcon from '@mui/icons-material/Menu';
 import SendIcon from '@mui/icons-material/Send';
+import LoadingButton from '@mui/lab/LoadingButton';
 import { Button } from '@mui/material';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
@@ -35,7 +36,6 @@ import { useQuerySizeSetting } from 'src/frontend/hooks/useSetting';
 import useToaster from 'src/frontend/hooks/useToaster';
 import { formatDuration, formatJS, formatSQL } from 'src/frontend/utils/formatter';
 import { SqluiCore } from 'typings';
-import LoadingButton from '@mui/lab/LoadingButton';
 
 type QueryBoxProps = {
   queryId: string;

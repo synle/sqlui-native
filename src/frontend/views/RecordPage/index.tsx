@@ -45,9 +45,9 @@ import {
 import useToaster from 'src/frontend/hooks/useToaster';
 import { useTreeActions } from 'src/frontend/hooks/useTreeActions';
 import LayoutTwoColumns from 'src/frontend/layout/LayoutTwoColumns';
+import { sortColumnNamesForUnknownData } from 'src/frontend/utils/commonUtils';
 import { formatJS, formatSQL } from 'src/frontend/utils/formatter';
 import { SqluiCore, SqluiFrontend } from 'typings';
-import {sortColumnNamesForUnknownData} from 'src/frontend/utils/commonUtils'
 
 type RecordData = any;
 
