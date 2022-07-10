@@ -43,7 +43,7 @@ export function getSyntaxModeByDialect (dialect?: string) {
   return _getImplementation(dialect)?.getSyntaxMode() || 'sql';
 }
 
-export function getIsTableIdRequiredForQuery (dialect?: string) {
+export function getIsTableIdRequiredForQueryByDialect (dialect?: string) {
   return _getImplementation(dialect)?.getIsTableIdRequiredForQuery() || false;
 }
 
