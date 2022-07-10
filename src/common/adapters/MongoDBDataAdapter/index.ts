@@ -171,15 +171,15 @@ export default class MongoDBDataAdapter extends BaseDataAdapter implements IData
           meta: rawToUse,
           affectedRows,
         };
-      } else if (Array.isArray(rawToUse)) {
+      } else if (Array.isArray(rawToUse) || (typeof rawToUse === 'object' && rawToUse._id) ) {
         return {
           ok: true,
-          raw: rawToUse,
+          raw: [].concat(rawToUse),
         };
       } else {
         return {
           ok: true,
-          raw: rawToUse,
+          meta: rawToUse,
         };
       }
     } catch (err: any) {
