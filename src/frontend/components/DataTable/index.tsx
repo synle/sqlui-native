@@ -30,6 +30,8 @@ export const ALL_PAGE_SIZE_OPTIONS: any[] = [
 
 export const DEFAULT_TABLE_PAGE_SIZE = 50;
 
+const UNNAMED_PROPERTY_NAME = '<unnamed_property>';
+
 function TableContainerWrapper(props: any) {
   return (
     <Paper square={true} variant='outlined' sx={{ overflow: 'auto' }}>
@@ -200,11 +202,20 @@ export function DataTableWithJSONList(props: Omit<DataTableProps, 'columns'>) {
 
   const columns = useMemo(() => {
     const newColumnNames = new Set<string>();
-    for (const row of data) {
-      for (const header of Object.keys(row)) {
-        newColumnNames.add(header);
+    for (let i = 0; i < data.length; i++) {
+      const row = data[i];
+      if (typeof row === 'object') {
+        // is an object, then render as a list of properties
+        for (const header of Object.keys(row)) {
+          newColumnNames.add(header);
+        }
+      } else {
+        // otherwise, render it as a column named `unknown`
+        newColumnNames.add(UNNAMED_PROPERTY_NAME);
+        data[i] = { UNNAMED_PROPERTY_NAME: row };
       }
     }
+
     return Array.from(newColumnNames).map((columnName) => {
       return {
         Header: columnName,
