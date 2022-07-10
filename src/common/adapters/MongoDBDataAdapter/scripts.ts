@@ -261,6 +261,7 @@ export function getCreateConnectionDatabase(
 
 export class ConcreteDataScripts extends BaseDataScript {
   dialects = ['mongodb'];
+
   getIsTableIdRequiredForQuery() {
     return false;
   }
