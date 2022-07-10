@@ -28,10 +28,6 @@ export function serializeJsonForMongoScript(object: any) {
   return res;
 }
 
-export function getSampleConnectionString(dialect?: SqluiCore.Dialect) {
-  return `mongodb://localhost:27017`;
-}
-
 export function getSelectAllColumns(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Select All Columns`;
 
@@ -263,7 +259,7 @@ export function getCreateConnectionDatabase(
   };
 }
 
-export class NAME_YOUR_SCRIPTS extends BaseDataScript{
+export class ConcreteDataScripts extends BaseDataScript{
   getTableScripts() {
     return [getSelectAllColumns,
   getSelectSpecificColumns,
@@ -292,6 +288,8 @@ export class NAME_YOUR_SCRIPTS extends BaseDataScript{
   }
 
   getSampleConnectionString(dialect?: SqluiCore.Dialect) {
-    return
+    return`mongodb://localhost:27017`;
   }
 }
+
+export default new ConcreteDataScripts();

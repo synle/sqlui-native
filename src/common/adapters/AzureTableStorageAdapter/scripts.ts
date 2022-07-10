@@ -262,7 +262,7 @@ export function getCreateDatabaseTable(
   };
 }
 
-export class NAME_YOUR_SCRIPTS extends BaseDataScript{
+export class ConcreteDataScripts extends BaseDataScript{
   getTableScripts() {
     return [getSelectAllColumns,
   getSelectSpecificColumns,
@@ -291,3 +291,5 @@ export class NAME_YOUR_SCRIPTS extends BaseDataScript{
     `aztable://DefaultEndpointsProtocol=https;AccountName=<your_account_name>;AccountKey=<your_account_key>;EndpointSuffix=core.windows.net`;
   }
 }
+
+export default new ConcreteDataScripts();

@@ -327,7 +327,7 @@ export function getCreateConnectionDatabase(
   };
 }
 
-export class AzureCosmosDataAdapterScripts extends BaseDataScript{
+export class ConcreteDataScripts extends BaseDataScript{
   getTableScripts() {
     return [
       getSelectAllColumns,
@@ -368,4 +368,4 @@ export class AzureCosmosDataAdapterScripts extends BaseDataScript{
   }
 }
 
-export default new AzureCosmosDataAdapterScripts();
+export default new ConcreteDataScripts();

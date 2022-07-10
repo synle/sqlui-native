@@ -1,36 +1,11 @@
 import AzureCosmosDataAdapterScripts from 'src/common/adapters/AzureCosmosDataAdapter/scripts';
-import {
-  connectionActionScripts as AzureTableConnectionActionScripts,
-  databaseActionScripts as AzureTableDatabaseActionScripts,
-  getSampleConnectionString as getAzureTableSampleConnectionString,
-  tableActionScripts as AzureTableTableActionScripts,
-} from 'src/common/adapters/AzureTableStorageAdapter/scripts';
-import {
-  connectionActionScripts as CassandraConnectionActionScripts,
-  databaseActionScripts as CassandraDatabaseActionScripts,
-  getSampleConnectionString as getCassandraSampleConnectionString,
-  tableActionScripts as CassandraTableActionScripts,
-} from 'src/common/adapters/CassandraDataAdapter/scripts';
-import {
-  connectionActionScripts as MongodbConnectionActionScripts,
-  databaseActionScripts as MongodbDatabaseActionScripts,
-  getSampleConnectionString as getMongodbSampleConnectionString,
-  tableActionScripts as MongodbTableActionScripts,
-} from 'src/common/adapters/MongoDBDataAdapter/scripts';
-import {
-  connectionActionScripts as RedisConnectionActionScripts,
-  databaseActionScripts as RedisDatabaseActionScripts,
-  getSampleConnectionString as getRedisSampleConnectionString,
-  tableActionScripts as RedisTableActionScripts,
-} from 'src/common/adapters/RedisDataAdapter/scripts';
-import {
-  connectionActionScripts as RdbmsConnectionActionScripts,
-  databaseActionScripts as RdbmsDatabaseActionScripts,
-  getSampleConnectionString as getRdbmsSampleConnectionString,
-  tableActionScripts as RdbmsTableActionScripts,
-} from 'src/common/adapters/RelationalDataAdapter/scripts';
+import AzureTableStorageAdapterScripts from 'src/common/adapters/AzureTableStorageAdapter/scripts';
+import CassandraDataAdapterScripts from 'src/common/adapters/CassandraDataAdapter/scripts';
+import MongoDBDataAdapterScripts from 'src/common/adapters/MongoDBDataAdapter/scripts';
+import RedisDataAdapterScripts from 'src/common/adapters/RedisDataAdapter/scripts';
+import RelationalDataAdapterScripts from 'src/common/adapters/RelationalDataAdapter/scripts';
 import { formatJS, formatSQL } from 'src/frontend/utils/formatter';
-import { SqlAction } from 'typings';
+import { SqlAction, SqluiCore } from 'typings';
 function _formatScripts(
   actionInput: SqlAction.TableInput | SqlAction.DatabaseInput | SqlAction.ConnectionInput,
   generatorFuncs:
@@ -97,146 +72,49 @@ export function getSyntaxModeByDialect(dialect?: string): 'javascript' | 'sql' {
 }
 
 export function getSampleConnectionString(dialect?: string) {
-  switch (dialect) {
-    case 'mysql':
-    case 'mariadb':
-    case 'mssql':
-    case 'postgres':
-    case 'sqlite':
-      return getRdbmsSampleConnectionString(dialect);
-    case 'cassandra':
-      return getCassandraSampleConnectionString();
-    case 'mongodb':
-      return getMongodbSampleConnectionString();
-    case 'redis':
-      return getRedisSampleConnectionString();
-    case 'cosmosdb':
-      return AzureCosmosDataAdapterScripts.getSampleConnectionString();
-    case 'aztable':
-      return getAzureTableSampleConnectionString();
-    default: // Not supported dialect
-      return '';
-  }
+  return _getImplementation(dialect)?.getSampleConnectionString(dialect as SqluiCore.Dialect);
 }
 
-export function getTableActions(tableActionInput: SqlAction.TableInput) {
-  let scriptsToUse: SqlAction.TableActionScriptGenerator[] = [];
-  switch (tableActionInput.dialect) {
-    case 'mysql':
-    case 'mariadb':
-    case 'mssql':
-    case 'postgres':
-    case 'sqlite':
-      scriptsToUse = RdbmsTableActionScripts;
-      break;
-    case 'cassandra':
-      scriptsToUse = CassandraTableActionScripts;
-      break;
-    case 'mongodb':
-      scriptsToUse = MongodbTableActionScripts;
-      break;
-    case 'redis':
-      scriptsToUse = RedisTableActionScripts;
-      break;
-    case 'cosmosdb':
-      scriptsToUse = AzureCosmosDataAdapterScripts.getTableScripts();
-      break;
-    case 'aztable':
-      scriptsToUse = AzureTableTableActionScripts;
-      break;
-  }
-
-  return _formatScripts(tableActionInput, scriptsToUse);
+export function getTableActions(actionInput: SqlAction.TableInput) {
+  const scriptsToUse: SqlAction.TableActionScriptGenerator[] = _getImplementation(actionInput.dialect)?.getTableActions() || [];
+  return _formatScripts(actionInput, scriptsToUse);
 }
 
-export function getSampleSelectQuery(tableActionInput: SqlAction.TableInput) {
-  let scriptsToUse: SqlAction.TableActionScriptGenerator[] = [];
-  switch (tableActionInput.dialect) {
-    case 'mysql':
-    case 'mariadb':
-    case 'mssql':
-    case 'postgres':
-    case 'sqlite':
-      scriptsToUse = RdbmsTableActionScripts;
-      break;
-    case 'cassandra':
-      scriptsToUse = CassandraTableActionScripts;
-      break;
-    case 'mongodb':
-      scriptsToUse = MongodbTableActionScripts;
-      break;
-    case 'redis':
-      scriptsToUse = RedisTableActionScripts;
-      break;
-    case 'cosmosdb':
-      scriptsToUse = AzureCosmosDataAdapterScripts.getTableScripts();
-      break;
-    case 'aztable':
-      scriptsToUse = AzureTableTableActionScripts;
-      break;
-  }
-
-  return _formatScripts(tableActionInput, scriptsToUse).filter((script) =>
+export function getSampleSelectQuery(actionInput: SqlAction.TableInput) {
+  const scriptsToUse: SqlAction.TableActionScriptGenerator[] = _getImplementation(actionInput.dialect)?.getTableActions() || [];
+  return _formatScripts(actionInput, scriptsToUse).filter((script) =>
     script.label.includes('Select'),
   )[0];
 }
 
-export function getDatabaseActions(databaseActionInput: SqlAction.DatabaseInput) {
-  let scriptsToUse: SqlAction.DatabaseActionScriptGenerator[] = [];
-  switch (databaseActionInput.dialect) {
-    case 'mysql':
-    case 'mariadb':
-    case 'mssql':
-    case 'postgres':
-    case 'sqlite':
-      scriptsToUse = RdbmsDatabaseActionScripts;
-      break;
-    case 'cassandra':
-      scriptsToUse = CassandraDatabaseActionScripts;
-      break;
-    case 'mongodb':
-      scriptsToUse = MongodbDatabaseActionScripts;
-      break;
-    case 'redis':
-      scriptsToUse = RedisDatabaseActionScripts;
-      break;
-    case 'cosmosdb':
-      scriptsToUse = AzureCosmosDataAdapterScripts.getDatabaseScripts();
-      break;
-    case 'aztable':
-      scriptsToUse = AzureTableDatabaseActionScripts;
-      break;
-  }
-
-  return _formatScripts(databaseActionInput, scriptsToUse);
+export function getDatabaseActions(actionInput: SqlAction.DatabaseInput) {
+  const scriptsToUse: SqlAction.DatabaseActionScriptGenerator[] = _getImplementation(actionInput.dialect)?.getDatabaseScripts() || [];
+  return _formatScripts(actionInput, scriptsToUse);
 }
 
-export function getConnectionActions(connectionActionInput: SqlAction.ConnectionInput) {
-  let scriptsToUse: SqlAction.DatabaseActionScriptGenerator[] = [];
-  switch (connectionActionInput.dialect) {
+export function getConnectionActions(actionInput: SqlAction.ConnectionInput) {
+  const scriptsToUse: SqlAction.DatabaseActionScriptGenerator[] = _getImplementation(actionInput.dialect)?.getConnectionScripts() || [];
+  return _formatScripts(actionInput, scriptsToUse);
+}
+
+
+function _getImplementation(dialect?: SqluiCore.Dialect){
+  switch(dialect){
     case 'mysql':
     case 'mariadb':
     case 'mssql':
     case 'postgres':
     case 'sqlite':
-      scriptsToUse = RdbmsConnectionActionScripts;
-      break;
+      return RelationalDataAdapterScripts
     case 'cassandra':
-      scriptsToUse = CassandraConnectionActionScripts;
-      break;
+      return CassandraDataAdapterScripts
     case 'mongodb':
-      scriptsToUse = MongodbConnectionActionScripts;
-      break;
+      return MongoDBDataAdapterScripts
     case 'redis':
-      scriptsToUse = RedisConnectionActionScripts;
-      break;
+      return RedisDataAdapterScripts
     case 'cosmosdb':
-      scriptsToUse = AzureCosmosDataAdapterScripts.getConnectionScripts();
-      break;
+      return AzureCosmosDataAdapterScripts
     case 'aztable':
-      scriptsToUse = AzureTableConnectionActionScripts;
-      break;
+      return AzureTableStorageAdapterScripts
   }
-
-  return _formatScripts(connectionActionInput, scriptsToUse);
 }

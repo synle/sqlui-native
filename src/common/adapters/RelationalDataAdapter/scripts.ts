@@ -553,7 +553,7 @@ export function getCreateConnectionDatabase(
   }
 }
 
-export class NAME_YOUR_SCRIPTS extends BaseDataScript{
+export class ConcreteDataScripts extends BaseDataScript{
   getTableScripts() {
     return [
     getSelectAllColumns,
@@ -604,3 +604,5 @@ export class NAME_YOUR_SCRIPTS extends BaseDataScript{
   }
   }
 }
+
+export default new ConcreteDataScripts();

@@ -206,7 +206,7 @@ export function getPublishMessage(input: SqlAction.TableInput): SqlAction.Output
   };
 }
 
-export class NAME_YOUR_SCRIPTS extends BaseDataScript{
+export class ConcreteDataScripts extends BaseDataScript{
   getTableScripts() {
     return [ getSetValue,
   getGet,
@@ -247,3 +247,5 @@ export class NAME_YOUR_SCRIPTS extends BaseDataScript{
     return `redis://localhost:6379`;
   }
 }
+
+export default new ConcreteDataScripts();

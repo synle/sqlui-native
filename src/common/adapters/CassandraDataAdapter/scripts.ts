@@ -271,7 +271,7 @@ export function getDropColumns(input: SqlAction.TableInput): SqlAction.Output | 
   };
 }
 
-export class NAME_YOUR_SCRIPTS extends BaseDataScript{
+export class ConcreteDataScripts extends BaseDataScript{
   getTableScripts() {
     return [
     getSelectAllColumns,
@@ -305,3 +305,5 @@ export class NAME_YOUR_SCRIPTS extends BaseDataScript{
     return `cassandra://username:password@localhost:9042`;
   }
 }
+
+export default new ConcreteDataScripts();
