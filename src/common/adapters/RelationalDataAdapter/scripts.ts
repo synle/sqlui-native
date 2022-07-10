@@ -330,10 +330,10 @@ export function getCreateTable(input: SqlAction.TableInput): SqlAction.Output | 
   let columnString: string = '';
 
   // map the nested column accordingly (using _ as a separator)
-  input.columns = input.columns.map(col => {
+  input.columns = input.columns.map((col) => {
     col.name = col.propertyPath?.join('_') || col.name;
-    return col
-  })
+    return col;
+  });
 
   // TODO: figure out how to use the defaultval
   switch (input.dialect) {

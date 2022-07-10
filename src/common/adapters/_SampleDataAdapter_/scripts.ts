@@ -43,14 +43,14 @@ export class ConcreteDataScripts extends BaseDataScript {
   // TODO: implement me
   getTableScripts() {
     return [
-    // getDivider, getSelectAllColumns
+      // getDivider, getSelectAllColumns
     ];
   }
 
   // TODO: implement me
   getDatabaseScripts() {
     return [
-    //getDivider, getCreateDatabase
+      //getDivider, getCreateDatabase
     ];
   }
 
