@@ -86,7 +86,7 @@ async function generateMigrationScript(
     // case 'redis': // TODO: to be implemented
     // case 'cosmosdb': // TODO: to be implemented
     case 'aztable':
-      res.push(`// Schema Creation Script : N/A for ${toDialect}`);
+      res.push(`// Schema Creation Script : N/A for toDialect=${toDialect}`);
       break;
   }
 
@@ -261,7 +261,12 @@ export default function MigrationBox(props: MigrationBoxProps) {
           migrationMetaData.current.toDialect,
           migrationMetaData.current.newTableName,
           query,
-          columns,
+          columns?.map(column => {
+            return {
+              ...column,
+              allowNull: !column.primaryKey || column.name === 'rowKey' || column.kind === 'partition_key'
+            }
+          }),
         );
       } else {
         // here we create a mocked object to handle migration
@@ -285,6 +290,7 @@ export default function MigrationBox(props: MigrationBoxProps) {
           }
           return res;
         }, []);
+
 
         const dataToUse = {
           ok: true,
@@ -445,54 +451,60 @@ type MigrationMetaDataInputsProps = {
 
 function MigrationMetaDataInputs(props: MigrationMetaDataInputsProps){
   const {query, dataRef: ref} = props;
+  const [migrationMetaData, setMigrationMetaData] = useState<MigrationMetaData>({});
   const { data: columns, isLoading: loadingColumns } = useGetColumns(
     query?.connectionId,
     query?.databaseId,
     query?.tableId,
   );
-
   const { data: connection, isLoading: loadingConnection } = useGetConnectionById(query?.connectionId);
-
   const loading = loadingColumns || loadingConnection;
 
-  if(!ref || !ref.current){
-    return null;
-  }
 
-  if(loading){
-    return null;
-  }
-
-  if(!columns || !connection){
-    return null;
-  }
-
-  const dialect = connection.dialect;
-
-  if(!dialect){
-    return null;
-  }
-
-  const onSetValue = (key: string, value: any) => {
+  const onChange = (key: string, value: any) => {
     if(ref.current){
       //@ts-ignore
       ref.current = {
         ...ref.current,
         ...{[key]: value}
       };
+      setMigrationMetaData(ref.current);
     }
   }
 
+  useEffect(() => {
+    if(ref.current){
+      setMigrationMetaData(ref.current);
+    }
+  }, [ref.current])
+
+  const dialect = connection?.dialect;
+
+  if(!ref || !ref.current || loading || !columns || !connection ||!dialect){
+    return null;
+  }
+
+  let shouldShowNewTableName = true;
+  switch(migrationMetaData.toDialect){
+    // case 'cassandra': // TODO: to be implemented
+    // case 'mongodb': // TODO: to be implemented
+    // case 'redis': // TODO: to be implemented
+    // case 'cosmosdb': // TODO: to be implemented
+    case 'aztable':
+      shouldShowNewTableName = false;
+      break;
+  }
+
   return <>
-    <DialectSelector value={ref.current?.toDialect} onChange={(newToDialect) => onSetValue('toDialect', newToDialect)} />
-    <TextField
-      label='New Table Name'
-      defaultValue={ref.current?.newTableName}
-      onBlur={(e) => onSetValue('newTableName', e.target.value)}
-      required
-      size='small'
-      fullWidth={true}
-      autoComplete='off'
-    />
+    <DialectSelector value={migrationMetaData.toDialect} onChange={(newToDialect) => onChange('toDialect', newToDialect)} />
+    {shouldShowNewTableName && <TextField
+          label='New Table Name'
+          value={migrationMetaData.newTableName}
+          onBlur={(e) => onChange('newTableName', e.target.value)}
+          required
+          size='small'
+          fullWidth={true}
+          autoComplete='off'
+        />}
   </>
 }
