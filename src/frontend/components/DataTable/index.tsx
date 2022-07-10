@@ -204,7 +204,7 @@ export function DataTableWithJSONList(props: Omit<DataTableProps, 'columns'>) {
     const newColumnNames = new Set<string>();
     for (let i = 0; i < data.length; i++) {
       const row = data[i];
-      if(typeof row === 'object'){
+      if (typeof row === 'object') {
         // is an object, then render as a list of properties
         for (const header of Object.keys(row)) {
           newColumnNames.add(header);
@@ -212,7 +212,7 @@ export function DataTableWithJSONList(props: Omit<DataTableProps, 'columns'>) {
       } else {
         // otherwise, render it as a column named `unknown`
         newColumnNames.add(UNNAMED_PROPERTY_NAME);
-        data[i] = {UNNAMED_PROPERTY_NAME: row}
+        data[i] = { UNNAMED_PROPERTY_NAME: row };
       }
     }
 
