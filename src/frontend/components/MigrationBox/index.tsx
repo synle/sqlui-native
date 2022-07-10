@@ -1,3 +1,4 @@
+import BaseDataAdapter from 'src/common/adapters/BaseDataAdapter/index';
 import BackupIcon from '@mui/icons-material/Backup';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { Button, Link, Skeleton, TextField, Typography } from '@mui/material';
@@ -17,6 +18,7 @@ import { useGetColumns, useGetConnections, useGetConnectionById } from 'src/fron
 import { useConnectionQueries } from 'src/frontend/hooks/useConnectionQuery';
 import { formatJS, formatSQL } from 'src/frontend/utils/formatter';
 import { SqluiCore, SqluiFrontend } from 'typings';
+import get from 'lodash.get';
 // TOOD: extract this
 type MigrationBoxProps = {
   mode: SqluiFrontend.MigrationMode;
@@ -78,7 +80,7 @@ async function generateMigrationScript(
     case 'mssql':
     case 'postgres':
     case 'sqlite':
-      res.push(`-- Schema Creation Script : toDialect=${toDialect}`);
+      res.push(`-- Schema Creation Script : toDialect=${toDialect} toTableId=${toTableId}`);
       res.push(formatSQL(getCreateTableForRdbms(toQueryMetaData)?.query || ''));
       break;
     // case 'cassandra': // TODO: to be implemented
@@ -138,21 +140,18 @@ async function generateMigrationScript(
   return 'Not Supported...';
 }
 
-function _getTypeFromObject(val: any) {
-  if (val === true || val === false) {
-    return 'BOOLEAN';
+function _getTypeFromObject(type: string, val: any) {
+  switch(type){
+    case 'number':
+      if (val.toString().includes('.')) {
+        return 'FLOAT';
+      }
+      return 'INTEGER';
+    case 'boolean':
+      return 'BOOLEAN';
+    default:
+      return 'TEXT'
   }
-  if (typeof val === 'string' || val instanceof String) {
-    return 'TEXT';
-  }
-  if (typeof val === 'number') {
-    if (val.toString().includes('.')) {
-      return 'FLOAT';
-    }
-    return 'INTEGER';
-  }
-
-  return 'TEXT';
 }
 
 // main migration box
@@ -160,7 +159,7 @@ export default function MigrationBox(props: MigrationBoxProps) {
   const { mode } = props;
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
-  const migrationMetaData = useRef<MigrationMetaData>({
+  const [migrationMetaData, setMigrationMetaData] = useState<MigrationMetaData>({
     toDialect: 'sqlite',
     newTableName: `new_table_${Date.now()}`
   });
@@ -175,6 +174,7 @@ export default function MigrationBox(props: MigrationBoxProps) {
     query?.databaseId,
     query?.tableId,
   );
+  const { data: connection, isLoading: loadingConnection } = useGetConnectionById(query?.connectionId);
   const { data: connections, isLoading: loadingConnections } = useGetConnections();
   const { onAddQuery } = useConnectionQueries();
   const [rawJson, setRawJson] = useState('');
@@ -182,20 +182,21 @@ export default function MigrationBox(props: MigrationBoxProps) {
   // TODO: pull these from the dialect
   const languageFrom = 'sql';
   const languageTo = 'sql';
-  const isConnectionSelectorVisible = mode === 'real_connection';
-  const isRawJsonEditorVisible = mode === 'raw_json';
+  const isMigratingRealConnection =  mode === 'real_connection'
+  const isConnectionSelectorVisible = isMigratingRealConnection;
+  const isRawJsonEditorVisible = !isMigratingRealConnection;
   const isQueryRequired = !isRawJsonEditorVisible;
   let isDisabled = false;
 
   if (isRawJsonEditorVisible) {
     isDisabled = !rawJson;
   } else {
-    isDisabled = !migrationMetaData.current.toDialect || !query.databaseId;
+    isDisabled = !migrationMetaData.toDialect || !query.databaseId;
   }
   const isSaving = migrating;
 
-  const isMigrationScriptVisible = !!migrationScript && !!migrationMetaData.current.toDialect;
-  const isLoading = loadingColumns || loadingConnections;
+  const isMigrationScriptVisible = !!migrationScript && !!migrationMetaData.toDialect;
+  const isLoading = loadingColumns || loadingConnections|| loadingConnection;
 
   // effects
   useEffect(() => {
@@ -204,11 +205,11 @@ export default function MigrationBox(props: MigrationBoxProps) {
         connectionId: query.connectionId || '',
         databaseId: query.databaseId || '',
         tableId: query.tableId || '',
-        toDialect: migrationMetaData.current.toDialect || 'sqlite',
+        toDialect: migrationMetaData.toDialect || 'sqlite',
       },
       { replace: true },
     );
-  }, [query, migrationMetaData.current.toDialect]);
+  }, [query, migrationMetaData]);
 
   useEffect(() => {
     setQuery({
@@ -218,7 +219,7 @@ export default function MigrationBox(props: MigrationBoxProps) {
       tableId: searchParams.get('tableId') || '',
     });
 
-    migrationMetaData.current.toDialect = (searchParams.get('toDialect') as SqluiCore.Dialect) || 'sqlite'
+    migrationMetaData.toDialect = (searchParams.get('toDialect') as SqluiCore.Dialect) || 'sqlite'
 
     setMigrationScript('');
   }, []);
@@ -256,10 +257,11 @@ export default function MigrationBox(props: MigrationBoxProps) {
     try {
       let newMigrationScript: string | undefined;
 
-      if (mode === 'real_connection') {
+      if (isMigratingRealConnection) {
+
         newMigrationScript = await generateMigrationScript(
-          migrationMetaData.current.toDialect,
-          migrationMetaData.current.newTableName,
+          migrationMetaData.toDialect,
+          migrationMetaData.newTableName,
           query,
           columns?.map(column => {
             return {
@@ -277,20 +279,16 @@ export default function MigrationBox(props: MigrationBoxProps) {
           name: `Raw JSON Data to migrate`,
           connectionId: `mocked_raw_json_connection_id`,
           databaseId: `mocked_raw_json_database_id`,
-          tableId: migrationMetaData.current.newTableName,
+          tableId: migrationMetaData.newTableName,
         };
 
-        const columnsToUse: SqluiCore.ColumnMetaData[] = parsedRawJson.reduce((res, r) => {
-          for (const key of Object.keys(r)) {
-            res.push({
-              name: key,
-              type: _getTypeFromObject(r[key]),
-              allowNull: true,
-            });
+        let columnsToUse = BaseDataAdapter.inferTypesFromItems(parsedRawJson).map(col => {
+          return {
+            ...col,
+            type: _getTypeFromObject(col.type, get(parsedRawJson[0], col.propertyPath)),
+            allowNull: true,
           }
-          return res;
-        }, []);
-
+        });
 
         const dataToUse = {
           ok: true,
@@ -298,8 +296,8 @@ export default function MigrationBox(props: MigrationBoxProps) {
         };
 
         newMigrationScript = await generateMigrationScript(
-          migrationMetaData.current.toDialect,
-          migrationMetaData.current.newTableName,
+          migrationMetaData.toDialect,
+          migrationMetaData.newTableName,
           fromQueryToUse,
           columnsToUse,
           dataToUse,
@@ -364,7 +362,33 @@ export default function MigrationBox(props: MigrationBoxProps) {
     );
   }
 
-  console.log('MigrationMetaDataInputs', migrationMetaData.current);
+  let supportMigration = true;
+  switch(connection?.dialect){
+    case 'redis': // TODO: to be implemented
+      supportMigration = false;
+      break;
+  }
+
+  if(!isRawJsonEditorVisible){
+    if(!supportMigration){
+      return (
+      <div className='FormInput__Container'>
+        {isConnectionSelectorVisible && (
+          <div className='FormInput__Row'>
+            <ConnectionDatabaseSelector
+              isTableIdRequired={true}
+              value={query}
+              onChange={onDatabaseConnectionChange}
+            />
+          </div>
+        )}
+        <div className='FormInput__Row'>
+          Migration Script is not supported for {connection?.dialect}. Please choose a different connection to migrate data from.
+        </div>
+      </div>
+    );
+    }
+  }
 
   return (
     <div className='FormInput__Container'>
@@ -391,7 +415,7 @@ export default function MigrationBox(props: MigrationBoxProps) {
         </>
       )}
       <div className='FormInput__Row'>
-        <MigrationMetaDataInputs query={query} dataRef={migrationMetaData}/>
+        <MigrationMetaDataInputs query={query} value={migrationMetaData} onChange={setMigrationMetaData}/>
       </div>
       {isQueryRequired && (
         <>
@@ -446,12 +470,12 @@ type MigrationMetaData = {
 
 type MigrationMetaDataInputsProps = {
   query: SqluiFrontend.ConnectionQuery;
-  dataRef: React.RefObject<MigrationMetaData>;
+  value:MigrationMetaData;
+  onChange:(newValue: MigrationMetaData) => void;
 }
 
 function MigrationMetaDataInputs(props: MigrationMetaDataInputsProps){
-  const {query, dataRef: ref} = props;
-  const [migrationMetaData, setMigrationMetaData] = useState<MigrationMetaData>({});
+  const {query, value: migrationMetaData} = props;
   const { data: columns, isLoading: loadingColumns } = useGetColumns(
     query?.connectionId,
     query?.databaseId,
@@ -461,26 +485,15 @@ function MigrationMetaDataInputs(props: MigrationMetaDataInputsProps){
   const loading = loadingColumns || loadingConnection;
 
 
-  const onChange = (key: string, value: any) => {
-    if(ref.current){
-      //@ts-ignore
-      ref.current = {
-        ...ref.current,
-        ...{[key]: value}
-      };
-      setMigrationMetaData(ref.current);
-    }
+  const onChange = (propKey: string, propValue: any) => {
+    //@ts-ignore
+    props.onChange({
+      ...migrationMetaData,
+      ...{[propKey]: propValue}
+    });
   }
 
-  useEffect(() => {
-    if(ref.current){
-      setMigrationMetaData(ref.current);
-    }
-  }, [ref.current])
-
-  const dialect = connection?.dialect;
-
-  if(!ref || !ref.current || loading || !columns || !connection ||!dialect){
+  if(loading){
     return null;
   }
 
@@ -499,7 +512,7 @@ function MigrationMetaDataInputs(props: MigrationMetaDataInputsProps){
     <DialectSelector value={migrationMetaData.toDialect} onChange={(newToDialect) => onChange('toDialect', newToDialect)} />
     {shouldShowNewTableName && <TextField
           label='New Table Name'
-          value={migrationMetaData.newTableName}
+          defaultValue={migrationMetaData.newTableName}
           onBlur={(e) => onChange('newTableName', e.target.value)}
           required
           size='small'

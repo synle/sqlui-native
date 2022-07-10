@@ -89,7 +89,7 @@ export default abstract class BaseDataAdapter {
     return columnsMap;
   }
 
-  static inferTypesFromItems(items: any): SqluiCore.ColumnMetaData[] {
+  static inferTypesFromItems(items: any[]): SqluiCore.ColumnMetaData[] {
     let columnsMap: Record<string, SqluiCore.ColumnMetaData> = {};
 
     for (const item of items) {
