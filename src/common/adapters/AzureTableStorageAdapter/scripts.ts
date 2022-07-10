@@ -102,6 +102,48 @@ export function getInsert(
   };
 }
 
+export function getBulkInsert(
+  input: SqlAction.TableInput,
+  rows?: Record<string, any>[],
+): SqlAction.Output | undefined {
+  const label = `Insert`;
+
+  if (!input.columns) {
+    return undefined;
+  }
+
+  if (!rows || rows.length === 0) {
+    return undefined;
+  }
+
+  // find out the primary key
+  let rowKeyField = '';
+  for(const column of input.columns){
+    if(column.primaryKey || column.kind === 'partition_key'){
+      // here is where we infer the rowKey for our record
+      rowKeyField = column.name;
+      break;
+    }
+  }
+
+  // TODO: azure table support a batch of 100 rows, we need to batch this accordingly
+  // refer to this link for the API - https://docs.microsoft.com/en-us/azure/cosmos-db/table/how-to-use-nodejs#work-with-groups-of-entities
+  const rowsActions = rows.map(
+    row => ['create', {
+      ...row,
+      rowKey: rowKeyField ? row[rowKeyField]?.toString() : '<your_row_key>',
+      partitionKey: rowKeyField ? row[rowKeyField]?.toString() : '<your_partition_key>',
+    }]
+  )
+
+  return {
+    label,
+    formatter,
+    query: `${AZTABLE_TABLE_CLIENT_PREFIX}.submitTransaction(${JSON.stringify(rowsActions, null, 2)})`,
+  };
+}
+
+
 export function getUpdateWithValues(
   input: SqlAction.TableInput,
   value: Record<string, any>,

@@ -1,5 +1,4 @@
 import BackupIcon from '@mui/icons-material/Backup';
-import LoadingButton from '@mui/lab/LoadingButton';
 import { Button, Link, Skeleton, TextField, Typography } from '@mui/material';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
@@ -8,14 +7,19 @@ import {
   getBulkInsert as getBulkInsertForRdmbs,
   getCreateTable as getCreateTableForRdbms,
 } from 'src/common/adapters/RelationalDataAdapter/scripts';
+import {
+  getBulkInsert as getBulkInsertForAzTable,
+} from 'src/common/adapters/AzureTableStorageAdapter/scripts';
 import CodeEditorBox from 'src/frontend/components/CodeEditorBox';
 import ConnectionDatabaseSelector from 'src/frontend/components/QueryBox/ConnectionDatabaseSelector';
 import Select from 'src/frontend/components/Select';
 import dataApi from 'src/frontend/data/api';
 import { useGetColumns, useGetConnections } from 'src/frontend/hooks/useConnection';
 import { useConnectionQueries } from 'src/frontend/hooks/useConnectionQuery';
-import { formatSQL } from 'src/frontend/utils/formatter';
+import { formatSQL, formatJS } from 'src/frontend/utils/formatter';
 import { SqluiCore, SqluiFrontend } from 'typings';
+import LoadingButton from '@mui/lab/LoadingButton';
+
 // TOOD: extract this
 type MigrationBoxProps = {
   mode: SqluiFrontend.MigrationMode;
@@ -38,11 +42,12 @@ function DialectSelector(props: DialectSelectorProps) {
       <option value='mssql'>mssql</option>
       <option value='postgres'>postgres</option>
       <option value='sqlite'>sqlite</option>
+      {/*// TODO: to be implemented*/}
       {/*<option value='cassandra'>cassandra</option>
       <option value='mongodb'>mongodb</option>
       <option value='redis'>redis</option>
-      <option value='cosmosdb'>cosmosdb</option>
-      <option value='aztable'>aztable</option>*/}
+      <option value='cosmosdb'>cosmosdb</option>*/}
+      <option value='aztable'>aztable</option>
     </Select>
   );
 }
@@ -76,22 +81,23 @@ async function generateMigrationScript(
     case 'mssql':
     case 'postgres':
     case 'sqlite':
-      res.push(`-- Database Creation Script`);
+      res.push(`-- Schema Creation Script`);
       res.push(formatSQL(getCreateTableForRdbms(toQueryMetaData)?.query || ''));
       break;
-    // case 'cassandra':
-    // case 'mongodb':
-    // case 'redis':
-    // case 'cosmosdb':
-    // case 'aztable':
-    // default:
-    //   break;
+    // case 'cassandra': // TODO: to be implemented
+    // case 'mongodb': // TODO: to be implemented
+    // case 'redis': // TODO: to be implemented
+    // case 'cosmosdb': // TODO: to be implemented
+    case 'aztable':
+      res.push(`// Schema Creation Script : N/A for ${toDialect}`);
+      break;
   }
 
   // getInsert
   // first get the results
   try {
     const results = fromDataToUse || (await dataApi.execute(fromQuery));
+    const hasSomeResults = results.raw && results.raw.length > 0;
 
     // TODO: here we need to perform the query to get the data
     switch (toDialect) {
@@ -101,21 +107,28 @@ async function generateMigrationScript(
       case 'postgres':
       case 'sqlite':
         res.push(`-- Data Migration Script`);
-        if (!results.raw || results.raw.length === 0) {
+        if (hasSomeResults) {
+          res.push(formatSQL(getBulkInsertForRdmbs(toQueryMetaData, results.raw)?.query || ''));
+        } else {
           res.push(
             `-- The SELECT query does not have any returned that we can use for data migration...`,
           );
-        } else {
-          res.push(formatSQL(getBulkInsertForRdmbs(toQueryMetaData, results.raw)?.query || ''));
         }
         break;
-      // case 'cassandra':
-      // case 'mongodb':
-      // case 'redis':
-      // case 'cosmosdb':
-      // case 'aztable':
-      // default:
-      //   break;
+      // case 'cassandra':// TODO: to be implemented
+      // case 'mongodb':// TODO: to be implemented
+      // case 'redis':// TODO: to be implemented
+      // case 'cosmosdb':// TODO: to be implemented
+      case 'aztable':
+        res.push(`// Data Migration Script`);
+        if (hasSomeResults) {
+          res.push(formatJS(getBulkInsertForAzTable(toQueryMetaData, results.raw)?.query || ''));
+        } else {
+          res.push(
+            `// The SELECT query does not have any returned that we can use for data migration...`,
+          );
+        }
+        break;
     }
   } catch (err) {
     return `Select query failed. ${JSON.stringify(err)}`;
