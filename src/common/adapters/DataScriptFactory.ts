@@ -1,3 +1,4 @@
+import BaseDataScript, { getDivider } from 'src/common/adapters/BaseDataAdapter/scripts';
 import AzureCosmosDataAdapterScripts from 'src/common/adapters/AzureCosmosDataAdapter/scripts';
 import AzureTableStorageAdapterScripts from 'src/common/adapters/AzureTableStorageAdapter/scripts';
 import CassandraDataAdapterScripts from 'src/common/adapters/CassandraDataAdapter/scripts';
@@ -36,52 +37,23 @@ function _formatScripts(
 /**
  * @type {Array} ordered list of supported dialects is shown in the connection hints
  */
-export const SUPPORTED_DIALECTS = [
-  'mysql',
-  'mariadb',
-  'mssql',
-  'postgres',
-  'sqlite',
-  'cassandra',
-  'mongodb',
-  'redis',
-  'cosmosdb',
-  'aztable',
-];
+export const SUPPORTED_DIALECTS = BaseDataScript.SUPPORTED_DIALECTS;
 
-export function getIsTableIdRequiredForQuery(dialect?: string) {
-  switch (dialect) {
-    default:
-      return false;
-    case 'aztable':
-    case 'cosmosdb':
-      return true;
-  }
-}
+export const getIsTableIdRequiredForQuery = BaseDataScript.getIsTableIdRequiredForQuery;
 
-export function getSyntaxModeByDialect(dialect?: string): 'javascript' | 'sql' {
-  switch (dialect) {
-    default:
-      return 'sql';
-    case 'mongodb':
-    case 'redis':
-    case 'cosmosdb':
-    case 'aztable':
-      return 'javascript';
-  }
-}
+export const getSyntaxModeByDialect = BaseDataScript.getSyntaxModeByDialect;
 
 export function getSampleConnectionString(dialect?: string) {
-  return _getImplementation(dialect)?.getSampleConnectionString(dialect as SqluiCore.Dialect);
+  return _getImplementation(dialect)?.getSampleConnectionString(dialect as SqluiCore.Dialect) || '';
 }
 
 export function getTableActions(actionInput: SqlAction.TableInput) {
-  const scriptsToUse: SqlAction.TableActionScriptGenerator[] = _getImplementation(actionInput.dialect)?.getTableActions() || [];
+  const scriptsToUse: SqlAction.TableActionScriptGenerator[] = _getImplementation(actionInput.dialect)?.getTableScripts() || [];
   return _formatScripts(actionInput, scriptsToUse);
 }
 
 export function getSampleSelectQuery(actionInput: SqlAction.TableInput) {
-  const scriptsToUse: SqlAction.TableActionScriptGenerator[] = _getImplementation(actionInput.dialect)?.getTableActions() || [];
+  const scriptsToUse: SqlAction.TableActionScriptGenerator[] = _getImplementation(actionInput.dialect)?.getTableScripts() || [];
   return _formatScripts(actionInput, scriptsToUse).filter((script) =>
     script.label.includes('Select'),
   )[0];
@@ -97,8 +69,7 @@ export function getConnectionActions(actionInput: SqlAction.ConnectionInput) {
   return _formatScripts(actionInput, scriptsToUse);
 }
 
-
-function _getImplementation(dialect?: SqluiCore.Dialect){
+function _getImplementation(dialect?: string) {
   switch(dialect){
     case 'mysql':
     case 'mariadb':

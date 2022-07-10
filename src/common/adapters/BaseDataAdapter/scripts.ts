@@ -1,4 +1,4 @@
-import { SqlAction } from 'typings';
+import { SqlAction, SqluiCore } from 'typings';
 import IDataScript from 'src/common/adapters/IDataScript';
 
 export function getDivider(): SqlAction.Output {
@@ -8,6 +8,45 @@ export function getDivider(): SqlAction.Output {
 }
 
 export default abstract class BaseDataScript implements IDataScript{
+  /**
+ * @type {Array} ordered list of supported dialects is shown in the connection hints
+ */
+  static SUPPORTED_DIALECTS = [
+    'mysql',
+    'mariadb',
+    'mssql',
+    'postgres',
+    'sqlite',
+    'cassandra',
+    'mongodb',
+    'redis',
+    'cosmosdb',
+    'aztable',
+  ];
+
+  static getIsTableIdRequiredForQuery(dialect?: SqluiCore.Dialect) {
+    switch (dialect) {
+      default:
+        return false;
+      case 'aztable':
+      case 'cosmosdb':
+        return true;
+    }
+  }
+
+  static getSyntaxModeByDialect(dialect?: SqluiCore.Dialect): 'javascript' | 'sql' {
+    switch (dialect) {
+      default:
+        return 'sql';
+      case 'mongodb':
+      case 'redis':
+      case 'cosmosdb':
+      case 'aztable':
+        return 'javascript';
+    }
+  }
+
+  //
   getTableScripts  () : SqlAction.TableActionScriptGenerator[]{
     return [];
   }
@@ -17,7 +56,7 @@ export default abstract class BaseDataScript implements IDataScript{
   getConnectionScripts  () : SqlAction.ConnectionActionScriptGenerator[]{
     return [];
   }
-  getSampleConnectionString () {
+  getSampleConnectionString (dialect?: SqluiCore.Dialect) {
     return ''
   }
 }

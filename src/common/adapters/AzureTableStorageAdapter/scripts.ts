@@ -264,23 +264,25 @@ export function getCreateDatabaseTable(
 
 export class ConcreteDataScripts extends BaseDataScript{
   getTableScripts() {
-    return [getSelectAllColumns,
-  getSelectSpecificColumns,
-  getDivider,
-  getInsert,
-  getUpdate,
-  getUpsert,
-  getDelete,
-  getDivider,
-  getCreateTable,
-  getDropTable,]
+    return [
+      getSelectAllColumns,
+      getSelectSpecificColumns,
+      getDivider,
+      getInsert,
+      getUpdate,
+      getUpsert,
+      getDelete,
+      getDivider,
+      getCreateTable,
+      getDropTable,
+    ]
   }
 
   getDatabaseScripts() {
     return [
-    getDivider,
-  getCreateDatabaseTable,
-  ]
+      getDivider,
+      getCreateDatabaseTable,
+    ]
   }
 
   getConnectionScripts() {
@@ -288,7 +290,7 @@ export class ConcreteDataScripts extends BaseDataScript{
   }
 
   getSampleConnectionString(dialect?: SqluiCore.Dialect) {
-    `aztable://DefaultEndpointsProtocol=https;AccountName=<your_account_name>;AccountKey=<your_account_key>;EndpointSuffix=core.windows.net`;
+    return `aztable://DefaultEndpointsProtocol=https;AccountName=<your_account_name>;AccountKey=<your_account_key>;EndpointSuffix=core.windows.net`;
   }
 }
 

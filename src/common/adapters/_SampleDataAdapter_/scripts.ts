@@ -37,7 +37,7 @@ export function getDropDatabase(input: SqlAction.DatabaseInput): SqlAction.Outpu
   };
 }
 
-export class AzureCosmosDataAdapterScripts extends BaseDataScript{
+export class ConcreteDataScripts extends BaseDataScript{
   // TODO: implement me
   getTableScripts() {
     return [
@@ -65,3 +65,5 @@ export class AzureCosmosDataAdapterScripts extends BaseDataScript{
     return `your_dialect://your_props`
   }
 }
+
+export default new ConcreteDataScripts();
