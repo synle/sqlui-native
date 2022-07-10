@@ -1,6 +1,7 @@
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import Paper from '@mui/material/Paper';
+import Box from '@mui/material/Box';
 import ToggleButton from '@mui/material/ToggleButton';
 import React, { useEffect, useMemo, useState } from 'react';
 import AdvancedEditor from 'src/frontend/components/CodeEditorBox/AdvancedEditor';
@@ -114,6 +115,7 @@ export default function CodeEditorBox(props: CodeEditorProps) {
   }
 
   return (
+    <Box>
     <Paper className='CodeEditorBox' variant='outlined'>
       <AdvancedEditor
         language={languageToUse}
@@ -127,7 +129,8 @@ export default function CodeEditorBox(props: CodeEditorProps) {
         editorRef={props.editorRef}
       />
       {editorOptionBox}
-      {shouldShowRequiredError && <InputError message='This field is required' sx={{ ml: 2 }} />}
     </Paper>
+    {shouldShowRequiredError && <InputError message='This field is required' sx={{ ml: 2 }} />}
+    </Box>
   );
 }

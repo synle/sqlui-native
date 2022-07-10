@@ -257,13 +257,13 @@ export default function QueryBox(props: QueryBoxProps) {
           language={language}
           editorRef={editorRef}
           autoFocus
+          required
         />
         <div className='FormInput__Row'>
           <Button
             id='btnExecuteCommand'
             type='submit'
             variant='contained'
-            disabled={isExecuteDisabled}
             startIcon={<SendIcon />}>
             Execute
           </Button>

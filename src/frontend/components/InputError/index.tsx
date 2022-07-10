@@ -11,15 +11,13 @@ export default function InputError(props: InputErrorProps) {
   };
 
   return (
-    <Box sx={{ color: 'error.main', ...props.sx }}>
       <input
         type='text'
         required
         value=''
         onChange={() => {}}
         onInvalid={_setCustomError}
-        style={{ height: 0, width: 0, borderColor: 'transparent', outline: 'none' }}
+        style={{ height: 0, width: 0, padding: 0, margin : 0, position: 'absolute', borderColor: 'transparent', outline: 'none' }}
       />
-    </Box>
   );
 }
