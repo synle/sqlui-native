@@ -4,7 +4,7 @@ const _formatJS = require('js-beautify').js;
 
 export const formatSQL = (val: string) => {
   try {
-    return _formatSQL(val);
+    val = _formatSQL(val);
   } catch (err) {
     // if it's not working, let's remove all the leading space
     val = val
@@ -17,7 +17,7 @@ export const formatSQL = (val: string) => {
 
 export const formatJS = (val: string) => {
   try {
-    return _formatJS(val, {
+    val = _formatJS(val, {
       indent_size: 2,
       space_in_empty_paren: true,
       break_chained_methods: 2,
