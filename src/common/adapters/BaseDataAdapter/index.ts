@@ -59,9 +59,19 @@ export default abstract class BaseDataAdapter {
     }[] = [{ item: inputItem, path: [], key: '' }];
 
     const onTypeConverter = (type: string, value: any) => {
+      // override the number to be more specific (integer vs float)
+      if (type === 'number') {
+        if (Number.isInteger(value)) {
+          type = 'integer';
+        } else {
+          type = 'float';
+        }
+      }
+
       if (incomingTypeConverter) {
         return incomingTypeConverter(type, value);
       }
+
       return type;
     };
 
@@ -87,6 +97,7 @@ export default abstract class BaseDataAdapter {
           }
         }
       } else {
+        // TODO: figure out the max length
         columnsMap[key] = columnsMap[key] || {
           name: key,
           type: onTypeConverter(type, item),
@@ -111,7 +122,7 @@ export default abstract class BaseDataAdapter {
 
     return Object.values(columnsMap);
   }
-  static inferSqlTypeFromItems(items: any[]): SqluiCore.ColumnMetaData[] {
+  static inferSqlTypeFromItems(items: any[], toDialectHint?: string): SqluiCore.ColumnMetaData[] {
     let columnsMap: Record<string, SqluiCore.ColumnMetaData> = {};
 
     for (const item of items) {
@@ -119,15 +130,73 @@ export default abstract class BaseDataAdapter {
         ...columnsMap,
         ...BaseDataAdapter.resolveTypes(item, (type: string, val: any) => {
           switch (type) {
-            case 'number':
-              if (val.toString().includes('.')) {
-                return 'FLOAT';
+            case 'float':
+              switch (toDialectHint) {
+                case 'mysql':
+                case 'mariadb':
+                case 'mssql':
+                case 'postgres':
+                case 'sqlite':
+                case 'cassandra':
+                  return 'FLOAT';
+                case 'mongodb':
+                case 'redis':
+                case 'cosmosdb':
+                case 'aztable':
+                default:
+                  return type;
               }
-              return 'INTEGER';
+            case 'integer':
+              switch (toDialectHint) {
+                case 'mysql':
+                case 'mariadb':
+                case 'mssql':
+                case 'postgres':
+                case 'sqlite':
+                  return 'INTEGER';
+                case 'cassandra':
+                  return 'INT';
+                case 'mongodb':
+                case 'redis':
+                case 'cosmosdb':
+                case 'aztable':
+                default:
+                  return type;
+              }
             case 'boolean':
-              return 'BOOLEAN';
+              switch (toDialectHint) {
+                case 'mssql':
+                  return 'BIT';
+                case 'mysql':
+                case 'mariadb':
+                case 'postgres':
+                case 'sqlite':
+                case 'cassandra':
+                  return 'BOOLEAN';
+                case 'mongodb':
+                case 'redis':
+                case 'cosmosdb':
+                case 'aztable':
+                default:
+                  return type;
+              }
             default:
-              return 'TEXT';
+              // TODO: should pick up nvarchar vs text instead of default to text
+              switch (toDialectHint) {
+                case 'mysql':
+                case 'mariadb':
+                case 'mssql':
+                case 'postgres':
+                case 'sqlite':
+                case 'cassandra':
+                  return 'TEXT';
+                case 'mongodb':
+                case 'redis':
+                case 'cosmosdb':
+                case 'aztable':
+                default:
+                  return type;
+              }
           }
         }),
       };
