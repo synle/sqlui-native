@@ -482,7 +482,12 @@ export default function MigrationBox(props: MigrationBoxProps) {
   }
 
   return (
-    <form className='FormInput__Container' onSubmit={e => { e.preventDefault();  onGenerateMigration() }}>
+    <form
+      className='FormInput__Container'
+      onSubmit={(e) => {
+        e.preventDefault();
+        onGenerateMigration();
+      }}>
       {isConnectionSelectorVisible && (
         <div className='FormInput__Row'>
           <ConnectionDatabaseSelector
