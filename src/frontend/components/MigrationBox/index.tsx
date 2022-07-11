@@ -10,7 +10,8 @@ import {
 } from 'src/common/adapters/AzureTableStorageAdapter/scripts';
 import {
   getBulkInsert as getBulkInsertForCosmosDb,
-  getCreateDatabase as getCreateTableForAzCosmosDb,
+  getCreateDatabase as getCreateDatabaseForAzCosmosDb,
+  getCreateContainer as getCreateContainerForAzCosmosDb,
 } from 'src/common/adapters/AzureCosmosDataAdapter/scripts';
 import BaseDataAdapter from 'src/common/adapters/BaseDataAdapter/index';
 import { getSampleSelectQuery } from 'src/common/adapters/DataScriptFactory';
@@ -145,7 +146,8 @@ async function generateMigrationScript(
     // case 'redis': // TODO: to be implemented
     case 'cosmosdb':
       res.push(`// Schema Creation Script : toDialect=${toDialect} toTableId=${toTableId}`);
-      res.push(formatJS(getCreateTableForAzCosmosDb(toQueryMetaData)?.query || ''));
+      res.push(formatJS(getCreateDatabaseForAzCosmosDb(toQueryMetaData)?.query || ''));
+      res.push(formatJS(getCreateContainerForAzCosmosDb(toQueryMetaData)?.query || ''));
       break;
     case 'aztable':
       res.push(`// Schema Creation Script : toDialect=${toDialect} toTableId=${toTableId}`);

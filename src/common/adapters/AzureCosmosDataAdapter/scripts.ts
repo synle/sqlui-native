@@ -180,14 +180,28 @@ export function getBulkInsert(
 ): SqlAction.Output | undefined {
   const label = `Insert`;
 
-  const scripts = (rows || []).map((row) => getInsert(input, row)).filter(script => script && script.query);
+  const rowsToInsert = rows.map(value => {
+    let colMap: any = {};
+    if (value) {
+      for (const key of Object.keys(value)) {
+        colMap[key] = value[key];
+      }
+    } else {
+      colMap = _getColMapForInsertAndUpdate(input?.columns);
+    }
+    return colMap;
+  })
 
   return {
     label,
     formatter,
     query: `
+      const containerItems = client
+        .database('${input.databaseId}')
+        .container('${input.tableId}')
+        .items;
+
       Promise.all([
-        ${(scripts || []).map(script => script?.query || '').join(',\n')}
       ])
     `,
   };
