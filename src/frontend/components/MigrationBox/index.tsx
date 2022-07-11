@@ -4,9 +4,10 @@ import { Button, Link, Skeleton, TextField, Typography } from '@mui/material';
 import get from 'lodash.get';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { getBulkInsert as getBulkInsertForAzTable,
- getCreateTable as getCreateTableForAzTable
- } from 'src/common/adapters/AzureTableStorageAdapter/scripts';
+import {
+  getBulkInsert as getBulkInsertForAzTable,
+  getCreateTable as getCreateTableForAzTable,
+} from 'src/common/adapters/AzureTableStorageAdapter/scripts';
 import BaseDataAdapter from 'src/common/adapters/BaseDataAdapter/index';
 import { getSampleSelectQuery } from 'src/common/adapters/DataScriptFactory';
 import {
@@ -23,10 +24,9 @@ import {
   useGetConnections,
 } from 'src/frontend/hooks/useConnection';
 import { useConnectionQueries } from 'src/frontend/hooks/useConnectionQuery';
+import useToaster from 'src/frontend/hooks/useToaster';
 import { formatJS, formatSQL } from 'src/frontend/utils/formatter';
 import { SqluiCore, SqluiFrontend } from 'typings';
-import useToaster, { ToasterHandler } from 'src/frontend/hooks/useToaster';
-
 // TOOD: extract this
 type MigrationBoxProps = {
   mode: SqluiFrontend.MigrationMode;
@@ -122,7 +122,9 @@ async function generateMigrationScript(
           res.push(
             `-- The SELECT query does not have any returned that we can use for data migration...`,
           );
-          errors.push(`Warning - This migration doesn't contain any record. This might be an error with your query to get data.`)
+          errors.push(
+            `Warning - This migration doesn't contain any record. This might be an error with your query to get data.`,
+          );
         }
         break;
       // case 'cassandra':// TODO: to be implemented
@@ -137,12 +139,14 @@ async function generateMigrationScript(
           res.push(
             `// The SELECT query does not have any returned that we can use for data migration...`,
           );
-          errors.push(`Warning - This migration doesn't contain any record. This might be an error with your query to get data.`)
+          errors.push(
+            `Warning - This migration doesn't contain any record. This might be an error with your query to get data.`,
+          );
         }
         break;
     }
   } catch (err) {
-    errors.push(`Select query failed. ${JSON.stringify(err)}`)
+    errors.push(`Select query failed. ${JSON.stringify(err)}`);
   }
 
   return [res.join('\n\n'), errors.join('\n\n')];
@@ -302,7 +306,7 @@ export default function MigrationBox(props: MigrationBoxProps) {
       }
       setMigrationScript(newMigrationScript || '');
 
-      if(error){
+      if (error) {
         await addToast({
           message: error,
         });
