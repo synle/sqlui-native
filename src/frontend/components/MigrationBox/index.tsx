@@ -4,9 +4,10 @@ import { Button, Link, Skeleton, TextField, Typography } from '@mui/material';
 import get from 'lodash.get';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { getBulkInsert as getBulkInsertForAzTable,
- getCreateTable as getCreateTableForAzTable
- } from 'src/common/adapters/AzureTableStorageAdapter/scripts';
+import {
+  getBulkInsert as getBulkInsertForAzTable,
+  getCreateTable as getCreateTableForAzTable,
+} from 'src/common/adapters/AzureTableStorageAdapter/scripts';
 import BaseDataAdapter from 'src/common/adapters/BaseDataAdapter/index';
 import { getSampleSelectQuery } from 'src/common/adapters/DataScriptFactory';
 import {
@@ -23,25 +24,26 @@ import {
   useGetConnections,
 } from 'src/frontend/hooks/useConnection';
 import { useConnectionQueries } from 'src/frontend/hooks/useConnectionQuery';
+import useToaster from 'src/frontend/hooks/useToaster';
 import { formatJS, formatSQL } from 'src/frontend/utils/formatter';
 import { SqluiCore, SqluiFrontend } from 'typings';
-import useToaster, { ToasterHandler } from 'src/frontend/hooks/useToaster';
-
 // TOOD: extract this
 type MigrationBoxProps = {
   mode: SqluiFrontend.MigrationMode;
 };
 
 type DialectSelectorProps = {
+  label: string;
   value?: SqluiCore.Dialect;
   onChange: (newVal: SqluiCore.Dialect) => void;
 };
 
 function DialectSelector(props: DialectSelectorProps) {
-  const { value, onChange } = props;
+  const { label, value, onChange } = props;
 
   return (
     <Select
+      label={label}
       value={value}
       onChange={(newValue) => onChange && onChange(newValue as SqluiCore.Dialect)}>
       <option value='mysql'>mysql</option>
@@ -60,26 +62,43 @@ function DialectSelector(props: DialectSelectorProps) {
 }
 
 type ColumnSelectorProps = {
+  label: string;
   value?: string;
+  required?: boolean;
   onChange: (newVal: string) => void;
   columns?: SqluiCore.ColumnMetaData[];
 };
 
 function ColumnSelector(props: ColumnSelectorProps) {
-  const { value, columns, onChange } = props;
+  const { label, value, columns, required, onChange } = props;
+
+  if (!columns || columns.length === 0) {
+    return (
+      <TextField
+        label={label}
+        defaultValue={value}
+        onBlur={(e) => onChange(e.target.value)}
+        required={required}
+        size='small'
+        fullWidth={true}
+        autoComplete='off'
+      />
+    );
+  }
 
   return (
-    <Select
-      value={value}
-      onChange={(newValue) => onChange && onChange(newValue)}>
-      {
-        (columns || []).map(col => <option value={col.name}>{col.name}</option>)
-      }
+    <Select required={required} label={label} value={value} onChange={(newValue) => onChange && onChange(newValue)}>
+      <option>
+        Select a value
+      </option>
+      {(columns || []).map((col) => (
+        <option key={col.name} value={col.name}>
+          {col.name}
+        </option>
+      ))}
     </Select>
   );
 }
-
-
 // TOOD: extract this
 async function generateMigrationScript(
   toDialect: SqluiCore.Dialect | undefined,
@@ -87,6 +106,7 @@ async function generateMigrationScript(
   fromQuery: SqluiFrontend.ConnectionQuery,
   columns?: SqluiCore.ColumnMetaData[],
   fromDataToUse?: SqluiCore.Result,
+  migrationMetaData?: MigrationMetaData,
 ): Promise<string[]> {
   if (!columns) {
     return [];
@@ -143,7 +163,9 @@ async function generateMigrationScript(
           res.push(
             `-- The SELECT query does not have any returned that we can use for data migration...`,
           );
-          errors.push(`Warning - This migration doesn't contain any record. This might be an error with your query to get data.`)
+          errors.push(
+            `Warning - This migration doesn't contain any record. This might be an error with your query to get data.`,
+          );
         }
         break;
       // case 'cassandra':// TODO: to be implemented
@@ -153,17 +175,24 @@ async function generateMigrationScript(
       case 'aztable':
         res.push(`// Data Migration Script`);
         if (hasSomeResults) {
-          res.push(formatJS(getBulkInsertForAzTable(toQueryMetaData, results.raw)?.query || ''));
+          res.push(formatJS(getBulkInsertForAzTable(
+            toQueryMetaData,
+            results.raw,
+            migrationMetaData?.azTableRowKeyField,
+            migrationMetaData?.azTablePartitionKeyField
+          )?.query || ''));
         } else {
           res.push(
             `// The SELECT query does not have any returned that we can use for data migration...`,
           );
-          errors.push(`Warning - This migration doesn't contain any record. This might be an error with your query to get data.`)
+          errors.push(
+            `Warning - This migration doesn't contain any record. This might be an error with your query to get data.`,
+          );
         }
         break;
     }
   } catch (err) {
-    errors.push(`Select query failed. ${JSON.stringify(err)}`)
+    errors.push(`Select query failed. ${JSON.stringify(err)}`);
   }
 
   return [res.join('\n\n'), errors.join('\n\n')];
@@ -288,6 +317,8 @@ export default function MigrationBox(props: MigrationBoxProps) {
                 !column.primaryKey || column.name === 'rowKey' || column.kind === 'partition_key',
             };
           }),
+          undefined,
+          migrationMetaData,
         );
       } else {
         // here we create a mocked object to handle migration
@@ -319,11 +350,12 @@ export default function MigrationBox(props: MigrationBoxProps) {
           fromQueryToUse,
           columnsToUse,
           dataToUse,
+          migrationMetaData,
         );
       }
       setMigrationScript(newMigrationScript || '');
 
-      if(error){
+      if (error) {
         await addToast({
           message: error,
         });
@@ -406,10 +438,10 @@ export default function MigrationBox(props: MigrationBoxProps) {
               />
             </div>
           )}
-          <div className='FormInput__Row'>
+          <Typography className='FormInput__Row' sx={{color: 'error.main'}}>
             Migration Script is not supported for {connection?.dialect}. Please choose a different
             connection to migrate data from.
-          </div>
+          </Typography>
         </div>
       );
     }
@@ -441,12 +473,14 @@ export default function MigrationBox(props: MigrationBoxProps) {
       )}
       <div className='FormInput__Row'>
         <MigrationMetaDataInputs
+          isMigratingRealConnection={isMigratingRealConnection}
           query={query}
           value={migrationMetaData}
           onChange={setMigrationMetaData}
         />
       </div>
-      {isQueryRequired && (
+      {
+        isQueryRequired && (
         <>
           <Typography sx={{ fontWeight: 'medium' }}>Enter SQL to get Data for migration</Typography>
           <CodeEditorBox
@@ -498,13 +532,14 @@ type MigrationMetaData = {
 };
 
 type MigrationMetaDataInputsProps = {
+  isMigratingRealConnection: boolean;
   query: SqluiFrontend.ConnectionQuery;
   value: MigrationMetaData;
   onChange: (newValue: MigrationMetaData) => void;
 };
 
 function MigrationMetaDataInputs(props: MigrationMetaDataInputsProps) {
-  const { query, value: migrationMetaData } = props;
+  const { query, isMigratingRealConnection, value: migrationMetaData } = props;
   const { data: columns, isLoading: loadingColumns } = useGetColumns(
     query?.connectionId,
     query?.databaseId,
@@ -522,7 +557,7 @@ function MigrationMetaDataInputs(props: MigrationMetaDataInputsProps) {
     });
   };
 
-  let extraDoms : React.ReactElement[]= [];
+  let extraDoms: React.ReactElement[] = [];
 
   switch (migrationMetaData.toDialect) {
     // case 'mysql':
@@ -535,18 +570,22 @@ function MigrationMetaDataInputs(props: MigrationMetaDataInputsProps) {
     // case 'redis': // TODO: to be implemented
     // case 'cosmosdb': // TODO: to be implemented
     case 'aztable':
-      extraDoms.push(<>
-        <ColumnSelector
-          columns={columns}
-          value={migrationMetaData.azTableRowKeyField}
-          onChange={(newValue) => onChange('azTableRowKeyField', newValue)}
-        />
-        <ColumnSelector
-          columns={columns}
-          value={migrationMetaData.azTablePartitionKeyField}
-          onChange={(newValue) => onChange('azTablePartitionKeyField', newValue)}
-        />
-      </>)
+      extraDoms.push(
+        <>
+          <ColumnSelector
+            label='aztable rowKey'
+            columns={columns}
+            value={migrationMetaData.azTableRowKeyField}
+            onChange={(newValue) => onChange('azTableRowKeyField', newValue)}
+          />
+          <ColumnSelector
+            label='aztable partitionKey'
+            columns={columns}
+            value={migrationMetaData.azTablePartitionKeyField}
+            onChange={(newValue) => onChange('azTablePartitionKeyField', newValue)}
+          />
+        </>,
+      );
       break;
   }
 
@@ -554,9 +593,16 @@ function MigrationMetaDataInputs(props: MigrationMetaDataInputsProps) {
     return null;
   }
 
+
+  if(isMigratingRealConnection && (columns || []).length === 0){
+    // if it's not migrating real connection and connection is not selected, then we should show an error
+    return <Typography sx={{color: 'error.main'}}>Connection information required to generate migration script. Please select one from the above.</Typography>
+  }
+
   return (
     <>
       <DialectSelector
+        label='Migrate To'
         value={migrationMetaData.toDialect}
         onChange={(newValue) => onChange('toDialect', newValue)}
       />
