@@ -4,7 +4,9 @@ import { Button, Link, Skeleton, TextField, Typography } from '@mui/material';
 import get from 'lodash.get';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { getBulkInsert as getBulkInsertForAzTable } from 'src/common/adapters/AzureTableStorageAdapter/scripts';
+import { getBulkInsert as getBulkInsertForAzTable,
+ getCreateTable as getCreateTableForAzTable
+ } from 'src/common/adapters/AzureTableStorageAdapter/scripts';
 import BaseDataAdapter from 'src/common/adapters/BaseDataAdapter/index';
 import { getSampleSelectQuery } from 'src/common/adapters/DataScriptFactory';
 import {
@@ -95,7 +97,8 @@ async function generateMigrationScript(
     // case 'redis': // TODO: to be implemented
     // case 'cosmosdb': // TODO: to be implemented
     case 'aztable':
-      res.push(`// Schema Creation Script : N/A for toDialect=${toDialect}`);
+      res.push(`// Schema Creation Script : toDialect=${toDialect} toTableId=${toTableId}`);
+      res.push(formatSQL(getCreateTableForAzTable(toQueryMetaData)?.query || ''));
       break;
   }
 
@@ -502,34 +505,21 @@ function MigrationMetaDataInputs(props: MigrationMetaDataInputsProps) {
     return null;
   }
 
-  let shouldShowNewTableName = true;
-  switch (migrationMetaData.toDialect) {
-    // case 'cassandra': // TODO: to be implemented
-    // case 'mongodb': // TODO: to be implemented
-    // case 'redis': // TODO: to be implemented
-    // case 'cosmosdb': // TODO: to be implemented
-    case 'aztable':
-      shouldShowNewTableName = false;
-      break;
-  }
-
   return (
     <>
       <DialectSelector
         value={migrationMetaData.toDialect}
         onChange={(newToDialect) => onChange('toDialect', newToDialect)}
       />
-      {shouldShowNewTableName && (
-        <TextField
-          label='New Table Name'
-          defaultValue={migrationMetaData.newTableName}
-          onBlur={(e) => onChange('newTableName', e.target.value)}
-          required
-          size='small'
-          fullWidth={true}
-          autoComplete='off'
-        />
-      )}
+      <TextField
+        label='New Table Name'
+        defaultValue={migrationMetaData.newTableName}
+        onBlur={(e) => onChange('newTableName', e.target.value)}
+        required
+        size='small'
+        fullWidth={true}
+        autoComplete='off'
+      />
     </>
   );
 }
