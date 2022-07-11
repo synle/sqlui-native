@@ -158,6 +158,7 @@ export function getBulkInsert(
   //   query: `${AZTABLE_TABLE_CLIENT_PREFIX}.submitTransaction(${JSON.stringify(rowsActions, null, 2)})`,
   // };
 }
+
 export function getUpdateWithValues(
   input: SqlAction.TableInput,
   value: Record<string, any>,
