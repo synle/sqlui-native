@@ -126,7 +126,7 @@ export function getBulkInsert(
     }
   }
 
-  partitionKeyField = partitionKeyField|| rowKeyField
+  partitionKeyField = partitionKeyField || rowKeyField;
 
   rows = rows.map((row) => ({
     ...row,

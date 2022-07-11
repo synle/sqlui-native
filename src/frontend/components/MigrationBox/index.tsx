@@ -87,10 +87,12 @@ function ColumnSelector(props: ColumnSelectorProps) {
   }
 
   return (
-    <Select required={required} label={label} value={value} onChange={(newValue) => onChange && onChange(newValue)}>
-      <option>
-        Select a value
-      </option>
+    <Select
+      required={required}
+      label={label}
+      value={value}
+      onChange={(newValue) => onChange && onChange(newValue)}>
+      <option>Select a value</option>
       {(columns || []).map((col) => (
         <option key={col.name} value={col.name}>
           {col.name}
@@ -175,12 +177,16 @@ async function generateMigrationScript(
       case 'aztable':
         res.push(`// Data Migration Script`);
         if (hasSomeResults) {
-          res.push(formatJS(getBulkInsertForAzTable(
-            toQueryMetaData,
-            results.raw,
-            migrationMetaData?.azTableRowKeyField,
-            migrationMetaData?.azTablePartitionKeyField
-          )?.query || ''));
+          res.push(
+            formatJS(
+              getBulkInsertForAzTable(
+                toQueryMetaData,
+                results.raw,
+                migrationMetaData?.azTableRowKeyField,
+                migrationMetaData?.azTablePartitionKeyField,
+              )?.query || '',
+            ),
+          );
         } else {
           res.push(
             `// The SELECT query does not have any returned that we can use for data migration...`,
@@ -438,7 +444,7 @@ export default function MigrationBox(props: MigrationBoxProps) {
               />
             </div>
           )}
-          <Typography className='FormInput__Row' sx={{color: 'error.main'}}>
+          <Typography className='FormInput__Row' sx={{ color: 'error.main' }}>
             Migration Script is not supported for {connection?.dialect}. Please choose a different
             connection to migrate data from.
           </Typography>
@@ -479,8 +485,7 @@ export default function MigrationBox(props: MigrationBoxProps) {
           onChange={setMigrationMetaData}
         />
       </div>
-      {
-        isQueryRequired && (
+      {isQueryRequired && (
         <>
           <Typography sx={{ fontWeight: 'medium' }}>Enter SQL to get Data for migration</Typography>
           <CodeEditorBox
@@ -592,11 +597,14 @@ function MigrationMetaDataInputs(props: MigrationMetaDataInputsProps) {
   if (loading) {
     return null;
   }
-
-
-  if(isMigratingRealConnection && (columns || []).length === 0){
+  if (isMigratingRealConnection && (columns || []).length === 0) {
     // if it's not migrating real connection and connection is not selected, then we should show an error
-    return <Typography sx={{color: 'error.main'}}>Connection information required to generate migration script. Please select one from the above.</Typography>
+    return (
+      <Typography sx={{ color: 'error.main' }}>
+        Connection information required to generate migration script. Please select one from the
+        above.
+      </Typography>
+    );
   }
 
   return (

@@ -43,22 +43,23 @@ export default function Select(props: SelectProps) {
 
   if (label) {
     const controlId = `select-${Date.now()}-${label.replace(/[ -_]/g, '-')}`;
-    return <FormControl sx={{width: '250px'}} variant='filled'
-        size='small'>
-      <InputLabel variant='standard' htmlFor={controlId}>
-        {label}
-      </InputLabel>
-      <NativeSelect
-        required
-        onChange={(e) => onChange && onChange(e.target.value)}
-        {...restProps}
-        inputProps={{
-          id: controlId,
-        }}
-        size='small'>
-        {children}
-      </NativeSelect>
-    </FormControl>;
+    return (
+      <FormControl sx={{ width: '250px' }} variant='filled' size='small'>
+        <InputLabel variant='standard' htmlFor={controlId}>
+          {label}
+        </InputLabel>
+        <NativeSelect
+          required
+          onChange={(e) => onChange && onChange(e.target.value)}
+          {...restProps}
+          inputProps={{
+            id: controlId,
+          }}
+          size='small'>
+          {children}
+        </NativeSelect>
+      </FormControl>
+    );
   }
 
   return (
