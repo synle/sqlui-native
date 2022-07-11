@@ -1,3 +1,6 @@
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+import NativeSelect from '@mui/material/NativeSelect';
 import React from 'react';
 import { styled } from '@mui/system';
 
@@ -28,13 +31,36 @@ const StyledSelect = styled('select')(({ theme }) => {
 });
 
 type SelectProps = {
+  label?: string;
+  required?: boolean;
   children?: React.ReactNode;
   onChange?: (newValue: string) => void;
   [key: string]: any;
 };
 
 export default function Select(props: SelectProps) {
-  const { children, onChange, ...restProps } = props;
+  const { label, children, onChange, ...restProps } = props;
+
+  if (label) {
+    const controlId = `select-${Date.now()}-${label.replace(/[ -_]/g, '-')}`;
+    return (
+      <FormControl sx={{ width: '250px' }} variant='filled' size='small'>
+        <InputLabel variant='standard' htmlFor={controlId}>
+          {label}
+        </InputLabel>
+        <NativeSelect
+          required
+          onChange={(e) => onChange && onChange(e.target.value)}
+          {...restProps}
+          inputProps={{
+            id: controlId,
+          }}
+          size='small'>
+          {children}
+        </NativeSelect>
+      </FormControl>
+    );
+  }
 
   return (
     <StyledSelect onChange={(e) => onChange && onChange(e.target.value)} {...restProps}>

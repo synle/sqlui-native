@@ -126,10 +126,12 @@ export function getBulkInsert(
     }
   }
 
+  partitionKeyField = partitionKeyField || rowKeyField;
+
   rows = rows.map((row) => ({
     ...row,
     rowKey: rowKeyField ? row[rowKeyField]?.toString() : '<your_row_key>',
-    partitionKey: rowKeyField ? row[rowKeyField]?.toString() : '<your_partition_key>',
+    partitionKey: partitionKeyField ? row[partitionKeyField]?.toString() : '<your_partition_key>',
   }));
 
   return {
