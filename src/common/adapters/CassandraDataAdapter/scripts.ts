@@ -1,11 +1,27 @@
 import BaseDataScript, { getDivider } from 'src/common/adapters/BaseDataAdapter/scripts';
-import { escapeSQLValue, isValueNumber } from 'src/frontend/utils/formatter';
+import { escapeSQLValue, isValueNumber, isValueBoolean } from 'src/frontend/utils/formatter';
 import { SqlAction, SqluiCore } from 'typings';
 
 const formatter = 'sql';
 
 function _isColumnNumberField(col: SqluiCore.ColumnMetaData) {
-  return col.type.toLowerCase().includes('int');
+  return col.type.toLowerCase().includes('int') || col.type.toLowerCase().includes('float');
+}
+
+function _isColumnBooleanField(col: SqluiCore.ColumnMetaData) {
+  return col.type.toLowerCase().includes('boolean');
+}
+
+function _getDummyColumnValue(col: SqluiCore.ColumnMetaData){
+  if(_isColumnBooleanField(col)){
+    return 'true';
+  }
+  else if(_isColumnNumberField(col)){
+    return '123'
+  } else {
+    // other types need to be wrapped in single quote
+    return `'_${col.name}_'`;
+  }
 }
 
 export function getSelectAllColumns(input: SqlAction.TableInput): SqlAction.Output | undefined {
@@ -60,16 +76,17 @@ export function getInsert(
         // use the value if it's there
         valToUse = `${escapeSQLValue(value[col.name])}`;
       }
+
+      if (_isColumnBooleanField(col) || _isColumnNumberField(col)) {
+        // don't wrap with quote
+        return valToUse;
+      }
+
+      return `'${valToUse}'`;
     } else {
-      valToUse = _isColumnNumberField(col) ? '123' : `_${col.name}_`;
+      // no value, generate dummy data
+      return _getDummyColumnValue(col);
     }
-
-    if (_isColumnNumberField(col)) {
-      // don't wrap with quote
-      return valToUse;
-    }
-
-    return `'${valToUse}'`;
   });
 
   return {
@@ -95,7 +112,7 @@ export function getUpdateWithValues(
     .map((colName) => {
       let valToUse = value[colName];
 
-      if (!isValueNumber(valToUse)) {
+      if (!isValueNumber(valToUse) && !isValueBoolean(valToUse)) {
         // wrap the single quote for string
         valToUse = `'${escapeSQLValue(valToUse)}'`;
       }
@@ -133,8 +150,8 @@ export function getUpdate(input: SqlAction.TableInput): SqlAction.Output | undef
     return undefined;
   }
 
-  const columnString = input.columns.map((col) => `${col.name} = ''`).join(',\n');
-  const whereColumnString = input.columns.map((col) => `${col.name} = ''`).join(' AND \n');
+  const columnString = input.columns.map((col) => `${col.name} = ${_getDummyColumnValue(col)}`).join(',\n');
+  const whereColumnString = input.columns.map((col) => `${col.name} = ${_getDummyColumnValue(col)}`).join(' AND \n');
 
   return {
     label,

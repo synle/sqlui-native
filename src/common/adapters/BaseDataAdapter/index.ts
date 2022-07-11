@@ -135,13 +135,10 @@ export default abstract class BaseDataAdapter {
                 case 'mysql':
                 case 'mariadb':
                 case 'mssql':
-                  return 'FLOAT';
                 case 'postgres':
-                  return type;
                 case 'sqlite':
-                  return 'FLOAT';
                 case 'cassandra':
-                  return type;
+                  return 'FLOAT';
                 case 'mongodb':
                 case 'redis':
                 case 'cosmosdb':
@@ -154,13 +151,11 @@ export default abstract class BaseDataAdapter {
                 case 'mysql':
                 case 'mariadb':
                 case 'mssql':
-                  return 'INTEGER';
                 case 'postgres':
-                  return type;
                 case 'sqlite':
                   return 'INTEGER';
                 case 'cassandra':
-                  return type;
+                  return 'INT';
                 case 'mongodb':
                 case 'redis':
                 case 'cosmosdb':
@@ -170,17 +165,14 @@ export default abstract class BaseDataAdapter {
               }
             case 'boolean':
               switch(toDialectHint){
-                case 'mysql':
-                case 'mariadb':
-                  return 'BOOLEAN';
                 case 'mssql':
                   return 'BIT';
+                case 'mysql':
+                case 'mariadb':
                 case 'postgres':
-                  return type;
                 case 'sqlite':
-                  return 'BOOLEAN';
                 case 'cassandra':
-                  return type;
+                  return 'BOOLEAN';
                 case 'mongodb':
                 case 'redis':
                 case 'cosmosdb':
@@ -194,13 +186,10 @@ export default abstract class BaseDataAdapter {
                 case 'mysql':
                 case 'mariadb':
                 case 'mssql':
-                  return 'TEXT';
                 case 'postgres':
-                  return type;
                 case 'sqlite':
-                  return 'TEXT';
                 case 'cassandra':
-                  return type;
+                  return 'TEXT';
                 case 'mongodb':
                 case 'redis':
                 case 'cosmosdb':

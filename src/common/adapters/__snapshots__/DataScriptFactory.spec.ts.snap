@@ -702,26 +702,30 @@ Array [
   Object {
     "formatter": "js",
     "label": "Create Table",
-    "query": "serviceClient.createTable('somenewtablename')",
+    "query": "
+      serviceClient.createTable('somenewtablename')
+    ",
   },
   Object {
     "formatter": "js",
     "label": "Select All Columns",
-    "query": "tableClient.listEntities({
-  queryOptions: {
-    filter: \`\`
-  }
-})",
+    "query": "
+      tableClient.listEntities({
+        queryOptions: { filter: \`\` }
+      })
+    ",
   },
   Object {
     "formatter": "js",
     "label": "Select Specific Columns",
-    "query": "tableClient.listEntities({
-  queryOptions: {
-    filter: \`PartitionKey eq 'some_partition_key'\`,
-    select: [\\"id\\", \\"column1\\", \\"column2\\"]
-  }
-})",
+    "query": "
+      tableClient.listEntities({
+        queryOptions: {
+          filter: \`PartitionKey eq 'some_partition_key'\`,
+          select: [\\"id\\",\\"column1\\",\\"column2\\"]
+        }
+      })
+    ",
   },
   Object {
     "label": "divider",
@@ -729,31 +733,24 @@ Array [
   Object {
     "formatter": "js",
     "label": "Insert",
-    "query": "tableClient.createEntity({
-  \\"rowKey\\": \\"some_row_key\\",
-  \\"partitionKey\\": \\"some_partition_key\\"
-})",
+    "query": "tableClient.createEntity({\\"rowKey\\":\\"some_row_key\\",\\"partitionKey\\":\\"some_partition_key\\"})",
   },
   Object {
     "formatter": "js",
     "label": "Update",
-    "query": "tableClient.updateEntity({
-  \\"rowKey\\": \\"some_row_key\\",
-  \\"partitionKey\\": \\"some_partition_key\\"
-})",
+    "query": "tableClient.updateEntity({\\"rowKey\\":\\"some_row_key\\",\\"partitionKey\\":\\"some_partition_key\\"})",
   },
   Object {
     "formatter": "js",
     "label": "Upsert",
-    "query": "tableClient.upsertEntity({
-  \\"rowKey\\": \\"some_row_key\\",
-  \\"partitionKey\\": \\"some_partition_key\\"
-}, 'Replace')",
+    "query": "tableClient.upsertEntity({\\"rowKey\\":\\"some_row_key\\",\\"partitionKey\\":\\"some_partition_key\\"}, 'Replace')",
   },
   Object {
     "formatter": "js",
     "label": "Delete",
-    "query": "tableClient.deleteEntity('some_partition_key', 'some_row_key');",
+    "query": "
+      tableClient.deleteEntity('some_partition_key', 'some_row_key');
+    ",
   },
   Object {
     "label": "divider",
@@ -761,12 +758,16 @@ Array [
   Object {
     "formatter": "js",
     "label": "Create Table",
-    "query": "serviceClient.createTable('table1')",
+    "query": "
+      serviceClient.createTable('table1')
+    ",
   },
   Object {
     "formatter": "js",
     "label": "Drop Table",
-    "query": "serviceClient.deleteTable('table1')",
+    "query": "
+      serviceClient.deleteTable('table1')
+    ",
   },
 ]
 `;
@@ -828,14 +829,12 @@ VALUES
     "formatter": "js",
     "label": "Update",
     "query": "UPDATE table1
-SET id = '',
-  column1 = '',
-  column2 = ''
-WHERE id = ''
-AND
-column1 = ''
-AND
-column2 = ''",
+              SET id = 123,
+column1 = 123,
+column2 = '_column2_'
+              WHERE id = 123 AND 
+column1 = 123 AND 
+column2 = '_column2_'",
   },
   Object {
     "formatter": "sql",
@@ -889,21 +888,21 @@ Array [
   Object {
     "formatter": "js",
     "label": "Create Database",
-    "query": "client
-  .databases
-  .create({
-    id: 'database1'
-  })",
+    "query": "
+      client
+        .databases
+        .create({id: 'database1'})
+    ",
   },
   Object {
     "formatter": "js",
     "label": "Create Database Container",
-    "query": "client
-  .database('database1')
-  .containers
-  .create({
-    id: 'some_container_name'
-  })",
+    "query": "
+      client
+        .database('database1')
+        .containers
+        .create({id: 'some_container_name'})
+    ",
   },
   Object {
     "label": "divider",
@@ -911,34 +910,39 @@ Array [
   Object {
     "formatter": "js",
     "label": "Drop Database",
-    "query": "client
-  .database('database1')
-  .delete()",
+    "query": "
+      client
+        .database('database1')
+        .delete()
+    ",
   },
   Object {
     "formatter": "js",
     "label": "Select All Columns",
-    "query": "client
-  .database('database1')
-  .container('table1')
-  .items
-  .query({
-    query: \`
+    "query": "
+      client
+        .database('database1')
+        .container('table1')
+        .items
+        .query({
+          query: \`
   SELECT *
   FROM c
   OFFSET 0 LIMIT 200\`,
-  })
-  .fetchAll()",
+        })
+        .fetchAll()
+    ",
   },
   Object {
     "formatter": "js",
     "label": "Select Specific Columns",
-    "query": "client
-  .database('database1')
-  .container('table1')
-  .items
-  .query({
-    query: \`
+    "query": "
+      client
+        .database('database1')
+        .container('table1')
+        .items
+        .query({
+          query: \`
   SELECT c.id,
   c.column1,
   c.column2
@@ -947,23 +951,26 @@ Array [
   AND c.column1 = ''
   AND c.column2 = ''
   OFFSET 0 LIMIT 200\`,
-  })
-  .fetchAll()",
+        })
+        .fetchAll()
+    ",
   },
   Object {
     "formatter": "js",
     "label": "Select By Id",
-    "query": "client
-  .database('database1')
-  .container('table1')
-  .items
-  .query({
-    query: \`
+    "query": "
+      client
+        .database('database1')
+        .container('table1')
+        .items
+        .query({
+          query: \`
   SELECT *
   FROM c
   WHERE c.id = '123'\`,
-  })
-  .fetchAll()",
+        })
+        .fetchAll()
+    ",
   },
   Object {
     "label": "divider",
@@ -971,40 +978,46 @@ Array [
   Object {
     "formatter": "js",
     "label": "Read",
-    "query": "client
-  .database('database1')
-  .container('table1')
-  .item('some_id', 'some_partition_key')
-  .read()",
+    "query": "
+      client
+        .database('database1')
+        .container('table1')
+        .item('some_id','some_partition_key')
+        .read()
+    ",
   },
   Object {
     "formatter": "js",
     "label": "Insert",
-    "query": "client
-  .database('database1')
-  .container('table1')
-  .items
-  .create({})",
+    "query": "
+      client
+        .database('database1')
+        .container('table1')
+        .items
+        .create({})
+    ",
   },
   Object {
     "formatter": "js",
     "label": "Update",
-    "query": "client
-  .database('database1')
-  .container('table1')
-  .item('some_id', 'some_partition_key')
-  .replace({
-    \\"id\\": \\"some_id\\"
-  })",
+    "query": "
+      client
+        .database('database1')
+        .container('table1')
+        .item('some_id','some_partition_key')
+        .replace({\\"id\\":\\"some_id\\"})
+    ",
   },
   Object {
     "formatter": "js",
     "label": "Delete",
-    "query": "client
-  .database('database1')
-  .container('table1')
-  .item('some_id', 'some_partition_key')
-  .delete()",
+    "query": "
+      client
+        .database('database1')
+        .container('table1')
+        .item('some_id','some_partition_key')
+        .delete()
+    ",
   },
   Object {
     "label": "divider",
@@ -1023,20 +1036,22 @@ FROM
   Object {
     "formatter": "js",
     "label": "Create Container",
-    "query": "client
-  .database('database1')
-  .containers
-  .create({
-    id: 'table1'
-  })",
+    "query": "
+      client
+        .database('database1')
+        .containers
+        .create({id: 'table1'})
+    ",
   },
   Object {
     "formatter": "js",
     "label": "Drop Container",
-    "query": "client
-  .database('database1')
-  .container('table1')
-  .delete()",
+    "query": "
+      client
+        .database('database1')
+        .container('table1')
+        .delete()
+    ",
   },
 ]
 `;
@@ -1059,42 +1074,37 @@ Array [
   Object {
     "formatter": "js",
     "label": "Select All Columns",
-    "query": "db.collection('table1')
-  .find()
-  .limit(200)
-  .toArray();",
+    "query": "db.collection('table1').find().limit(200).toArray();",
   },
   Object {
     "formatter": "js",
     "label": "Select Specific Columns",
-    "query": "db.collection('table1')
-  .find({
-    \\"id\\": 123,
-    \\"column1\\": 123,
-    \\"column2\\": 123
-  })
-  .limit(200)
-  .toArray();",
+    "query": "db.collection('table1').find(
+          {
+  \\"id\\": 123,
+  \\"column1\\": 123,
+  \\"column2\\": 123
+}
+        ).limit(200).toArray();",
   },
   Object {
     "formatter": "js",
     "label": "Select Distinct",
-    "query": "db.collection('table1')
-  .distinct(
-    'column1', {
-      \\"id\\": \\"\\",
-      \\"column1\\": \\"\\",
-      \\"column2\\": \\"\\"
-    }
-  )",
+    "query": "db.collection('table1').distinct(
+          'column1',
+          {
+  \\"id\\": \\"\\",
+  \\"column1\\": \\"\\",
+  \\"column2\\": \\"\\"
+}
+        )",
   },
   Object {
     "formatter": "js",
     "label": "Select One Record",
-    "query": "db.collection('table1')
-  .findOne({
-    \\"_id\\": ObjectId(\\"some_id\\")
-  });",
+    "query": "db.collection('table1').findOne({
+  \\"_id\\": ObjectId(\\"some_id\\")
+});",
   },
   Object {
     "label": "divider",
@@ -1102,39 +1112,41 @@ Array [
   Object {
     "formatter": "js",
     "label": "Insert",
-    "query": "db.collection('table1')
-  .insertMany([{
-    \\"id\\": 123,
-    \\"column1\\": 123,
-    \\"column2\\": 123
-  }]);",
+    "query": "db.collection('table1').insertMany([
+        {
+  \\"id\\": 123,
+  \\"column1\\": 123,
+  \\"column2\\": 123
+}
+      ]);",
   },
   Object {
     "formatter": "js",
     "label": "Update",
-    "query": "db.collection('table1')
-  .update({
-    \\"id\\": 123,
-    \\"column1\\": 123,
-    \\"column2\\": 123,
-    \\"_id\\": ObjectId(\\"some_id\\")
-  }, {
-    $set: {
-      \\"id\\": 123,
-      \\"column1\\": 123,
-      \\"column2\\": 123
-    }
-  });",
+    "query": "db.collection('table1').update(
+        {
+  \\"id\\": 123,
+  \\"column1\\": 123,
+  \\"column2\\": 123,
+  \\"_id\\": ObjectId(\\"some_id\\")
+},
+        {$set: {
+  \\"id\\": 123,
+  \\"column1\\": 123,
+  \\"column2\\": 123
+}}
+      );",
   },
   Object {
     "formatter": "js",
     "label": "Delete",
-    "query": "db.collection('table1')
-  .deleteMany({
-    \\"id\\": 123,
-    \\"column1\\": 123,
-    \\"column2\\": 123
-  });",
+    "query": "db.collection('table1').deleteMany(
+        {
+  \\"id\\": 123,
+  \\"column1\\": 123,
+  \\"column2\\": 123
+}
+      );",
   },
   Object {
     "label": "divider",
@@ -1147,8 +1159,7 @@ Array [
   Object {
     "formatter": "js",
     "label": "Drop Collection",
-    "query": "db.collection('table1')
-  .drop()",
+    "query": "db.collection('table1').drop()",
   },
 ]
 `;
@@ -1260,10 +1271,7 @@ Array [
   Object {
     "formatter": "js",
     "label": "Sorted Set > Add Item",
-    "query": "db.zAdd(\\"sorted_set_key1\\", [{
-  score: 1,
-  value: \\"some_value\\"
-}])",
+    "query": "db.zAdd(\\"sorted_set_key1\\", [{score: 1, value: \\"some_value\\"}])",
   },
   Object {
     "label": "divider",
