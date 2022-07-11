@@ -3,21 +3,18 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import { Button, Link, Skeleton, TextField, Typography } from '@mui/material';
 import get from 'lodash.get';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useEffect, useState } from 'react';
-import {
-  getBulkInsert as getBulkInsertForCosmosDb,
-  getCreateContainer as getCreateContainerForAzCosmosDb,
-  getCreateDatabase as getCreateDatabaseForAzCosmosDb,
-} from 'src/common/adapters/AzureCosmosDataAdapter/scripts';
+import React, { useEffect, useState } from 'react';
 import {
   getBulkInsert as getBulkInsertForAzTable,
   getCreateTable as getCreateTableForAzTable,
 } from 'src/common/adapters/AzureTableStorageAdapter/scripts';
-import BaseDataAdapter from 'src/common/adapters/BaseDataAdapter/index';
 import {
-  getSampleSelectQuery,
-  getSyntaxModeByDialect,
-} from 'src/common/adapters/DataScriptFactory';
+  getBulkInsert as getBulkInsertForCosmosDb,
+  getCreateDatabase as getCreateDatabaseForAzCosmosDb,
+  getCreateContainer as getCreateContainerForAzCosmosDb,
+} from 'src/common/adapters/AzureCosmosDataAdapter/scripts';
+import BaseDataAdapter from 'src/common/adapters/BaseDataAdapter/index';
+import { getSampleSelectQuery } from 'src/common/adapters/DataScriptFactory';
 import {
   getBulkInsert as getBulkInsertForRdmbs,
   getCreateTable as getCreateTableForRdbms,
@@ -35,6 +32,7 @@ import { useConnectionQueries } from 'src/frontend/hooks/useConnectionQuery';
 import useToaster from 'src/frontend/hooks/useToaster';
 import { formatJS, formatSQL } from 'src/frontend/utils/formatter';
 import { SqluiCore, SqluiFrontend } from 'typings';
+import {getSyntaxModeByDialect} from 'src/common/adapters/DataScriptFactory';
 // TOOD: extract this
 type MigrationBoxProps = {
   mode: SqluiFrontend.MigrationMode;
@@ -112,6 +110,7 @@ function ColumnSelector(props: ColumnSelectorProps) {
 // TOOD: extract this
 async function generateMigrationScript(
   toDialect: SqluiCore.Dialect | undefined,
+  toDatabaseId: string,
   toTableId: string | undefined,
   fromQuery: SqluiFrontend.ConnectionQuery,
   columns?: SqluiCore.ColumnMetaData[],
@@ -127,7 +126,7 @@ async function generateMigrationScript(
 
   const toQueryMetaData = {
     dialect: toDialect,
-    databaseId: `Migrated_Database_${fromQuery.databaseId}_${Date.now()}`,
+    databaseId: toDatabaseId,
     tableId: toTableId,
     columns,
   };
@@ -188,7 +187,14 @@ async function generateMigrationScript(
       case 'cosmosdb':
         res.push(`// Data Migration Script`);
         if (hasSomeResults) {
-          res.push(formatJS(getBulkInsertForCosmosDb(toQueryMetaData, results.raw)?.query || ''));
+          res.push(
+            formatJS(
+              getBulkInsertForCosmosDb(
+                toQueryMetaData,
+                results.raw
+              )?.query || '',
+            ),
+          );
         } else {
           res.push(
             `// The SELECT query does not have any returned that we can use for data migration...`,
@@ -235,6 +241,7 @@ export default function MigrationBox(props: MigrationBoxProps) {
   const navigate = useNavigate();
   const [migrationMetaData, setMigrationMetaData] = useState<MigrationMetaData>({
     toDialect: 'sqlite',
+    newDatabaseName: `Migrated_Database_${Date.now()}`,
     newTableName: `new_table_${Date.now()}`,
   });
   const [query, setQuery] = useState<SqluiFrontend.ConnectionQuery>({
@@ -256,13 +263,10 @@ export default function MigrationBox(props: MigrationBoxProps) {
   const [rawJson, setRawJson] = useState('');
   const { add: addToast } = useToaster();
 
-  // TODO: pull these from the dialect
-  const languageFrom = getSyntaxModeByDialect(connection?.dialect);
   const languageTo = getSyntaxModeByDialect(migrationMetaData?.toDialect);
   const isMigratingRealConnection = mode === 'real_connection';
   const isConnectionSelectorVisible = isMigratingRealConnection;
   const isRawJsonEditorVisible = !isMigratingRealConnection;
-  const isQueryRequired = !isRawJsonEditorVisible;
   let isDisabled = false;
 
   if (isRawJsonEditorVisible) {
@@ -301,6 +305,15 @@ export default function MigrationBox(props: MigrationBoxProps) {
     setMigrationScript('');
   }, []);
 
+  useEffect(() => {
+    if(query.sql !== migrationMetaData.selectQuery){
+      setQuery({
+        ...query,
+        sql: migrationMetaData.selectQuery
+      })
+    }
+  },[query, migrationMetaData.selectQuery])
+
   // events
   const onDatabaseConnectionChange = (
     connectionId?: string,
@@ -317,28 +330,24 @@ export default function MigrationBox(props: MigrationBoxProps) {
     setMigrationScript('');
   };
 
-  const onSqlQueryChange = (sql: string) => {
-    setQuery({
-      ...query,
-      sql,
-    });
-
-    setMigrationScript('');
-  };
-
   const onGenerateMigration = async () => {
     if (migrating) {
       return;
     }
     setMigrating(true);
+    const toDialect = migrationMetaData.toDialect;
+    const toDatabaseId = migrationMetaData.newDatabaseName;
+    const toTableId = migrationMetaData.newTableName;
+
     try {
       let newMigrationScript: string | undefined;
       let error: string | undefined;
 
       if (isMigratingRealConnection) {
         [newMigrationScript, error] = await generateMigrationScript(
-          migrationMetaData.toDialect,
-          migrationMetaData.newTableName,
+          toDialect,
+          toDatabaseId,
+          toTableId,
           query,
           columns?.map((column) => {
             return {
@@ -359,12 +368,12 @@ export default function MigrationBox(props: MigrationBoxProps) {
           name: `Raw JSON Data to migrate`,
           connectionId: `mocked_raw_json_connection_id`,
           databaseId: `mocked_raw_json_database_id`,
-          tableId: migrationMetaData.newTableName,
+          tableId: `mocked_raw_json_table_id`,
         };
 
         let columnsToUse = BaseDataAdapter.inferSqlTypeFromItems(
           parsedRawJson,
-          migrationMetaData.toDialect,
+          toDialect,
         ).map((col) => {
           return {
             ...col,
@@ -379,7 +388,8 @@ export default function MigrationBox(props: MigrationBoxProps) {
 
         [newMigrationScript, error] = await generateMigrationScript(
           migrationMetaData.toDialect,
-          migrationMetaData.newTableName,
+          toDatabaseId,
+          toTableId,
           fromQueryToUse,
           columnsToUse,
           dataToUse,
@@ -425,7 +435,10 @@ export default function MigrationBox(props: MigrationBoxProps) {
         querySize: 50,
       });
       if (sampleSelectQuery?.query) {
-        onSqlQueryChange(sampleSelectQuery?.query);
+        setMigrationMetaData({
+          ...migrationMetaData,
+          selectQuery: sampleSelectQuery.query,
+        })
       }
     }
   };
@@ -504,26 +517,12 @@ export default function MigrationBox(props: MigrationBoxProps) {
           />
         </>
       )}
-      <div className='FormInput__Row'>
-        <MigrationMetaDataInputs
-          isMigratingRealConnection={isMigratingRealConnection}
-          query={query}
-          value={migrationMetaData}
-          onChange={setMigrationMetaData}
-        />
-      </div>
-      {isQueryRequired && (
-        <>
-          <Typography sx={{ fontWeight: 'medium' }}>Enter SQL to get Data for migration</Typography>
-          <CodeEditorBox
-            value={query.sql}
-            placeholder={`Enter SQL for ` + query.name}
-            onChange={onSqlQueryChange}
-            language={languageFrom}
-            autoFocus
-          />
-        </>
-      )}
+      <MigrationMetaDataInputs
+        isMigratingRealConnection={isMigratingRealConnection}
+        query={query}
+        value={migrationMetaData}
+        onChange={setMigrationMetaData}
+      />
       <div className='FormInput__Row'>
         <LoadingButton
           variant='contained'
@@ -558,9 +557,11 @@ export default function MigrationBox(props: MigrationBoxProps) {
 
 type MigrationMetaData = {
   toDialect?: SqluiCore.Dialect;
-  newTableName?: string;
+  newDatabaseName: string;
+  newTableName: string;
   azTableRowKeyField?: string;
   azTablePartitionKeyField?: string;
+  selectQuery?:string;
 };
 
 type MigrationMetaDataInputsProps = {
@@ -581,6 +582,8 @@ function MigrationMetaDataInputs(props: MigrationMetaDataInputsProps) {
     query?.connectionId,
   );
   const loading = loadingColumns || loadingConnection;
+  const isQueryRequired = isMigratingRealConnection;
+  const languageFrom = getSyntaxModeByDialect(connection?.dialect);
   const onChange = (propKey: keyof MigrationMetaData, propValue: any) => {
     //@ts-ignore
     props.onChange({
@@ -597,7 +600,7 @@ function MigrationMetaDataInputs(props: MigrationMetaDataInputsProps) {
     case 'mssql':
     case 'postgres':
     case 'sqlite':
-    default:
+      default:
     // case 'cassandra': // TODO: to be implemented
     // case 'mongodb': // TODO: to be implemented
     // case 'redis': // TODO: to be implemented
@@ -605,7 +608,7 @@ function MigrationMetaDataInputs(props: MigrationMetaDataInputsProps) {
       break;
     case 'aztable':
       extraDoms.push(
-        <>
+        <React.Fragment key='aztable'>
           <ColumnSelector
             label='aztable rowKey'
             columns={columns}
@@ -618,7 +621,7 @@ function MigrationMetaDataInputs(props: MigrationMetaDataInputsProps) {
             value={migrationMetaData.azTablePartitionKeyField}
             onChange={(newValue) => onChange('azTablePartitionKeyField', newValue)}
           />
-        </>,
+        </React.Fragment>,
       );
       break;
   }
@@ -638,21 +641,48 @@ function MigrationMetaDataInputs(props: MigrationMetaDataInputsProps) {
 
   return (
     <>
-      <DialectSelector
-        label='Migrate To'
-        value={migrationMetaData.toDialect}
-        onChange={(newValue) => onChange('toDialect', newValue)}
-      />
-      <TextField
-        label='New Table Name'
-        defaultValue={migrationMetaData.newTableName}
-        onBlur={(e) => onChange('newTableName', e.target.value)}
-        required
-        size='small'
-        fullWidth={true}
-        autoComplete='off'
-      />
-      {extraDoms}
+        <div className='FormInput__Row'>
+          <DialectSelector
+            label='Migrate To'
+            value={migrationMetaData.toDialect}
+            onChange={(newValue) => onChange('toDialect', newValue)}
+          />
+          {extraDoms}
+        </div>
+
+        <div className='FormInput__Row'>
+          <TextField
+            label='New Database Name'
+            defaultValue={migrationMetaData.newDatabaseName}
+            onBlur={(e) => onChange('newDatabaseName', e.target.value)}
+            required
+            size='small'
+            fullWidth={true}
+            autoComplete='off'
+          />
+          <TextField
+            label='New Table Name'
+            defaultValue={migrationMetaData.newTableName}
+            onBlur={(e) => onChange('newTableName', e.target.value)}
+            required
+            size='small'
+            fullWidth={true}
+            autoComplete='off'
+          />
+        </div>
+
+      {isQueryRequired && (
+        <React.Fragment key='line3'>
+          <Typography sx={{ fontWeight: 'medium' }}>Enter SQL to get Data for migration</Typography>
+          <CodeEditorBox
+            value={migrationMetaData.selectQuery || ''}
+            placeholder={`Enter SQL for ` + query.name}
+            onChange={newValue => onChange('selectQuery', newValue)}
+            language={languageFrom}
+            autoFocus
+          />
+        </React.Fragment>
+      )}
     </>
   );
 }
