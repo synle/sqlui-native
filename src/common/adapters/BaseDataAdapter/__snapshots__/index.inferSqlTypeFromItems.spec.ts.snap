@@ -1,0 +1,751 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`BaseDataAdapter inferSqlTypeFromItems inferSqlTypeFromItems work correctly for dialect=aztable 1`] = `
+Array [
+  Object {
+    "name": "cd",
+    "nested": false,
+    "propertyPath": Array [
+      "cd",
+    ],
+    "type": "string",
+  },
+  Object {
+    "name": "cb",
+    "nested": false,
+    "propertyPath": Array [
+      "cb",
+    ],
+    "type": "float",
+  },
+  Object {
+    "name": "cc",
+    "nested": false,
+    "propertyPath": Array [
+      "cc",
+    ],
+    "type": "boolean",
+  },
+  Object {
+    "name": "ca",
+    "nested": false,
+    "propertyPath": Array [
+      "ca",
+    ],
+    "type": "integer",
+  },
+  Object {
+    "name": "n/nc/nc2",
+    "nested": true,
+    "propertyPath": Array [
+      "n",
+      "nc",
+      "nc2",
+    ],
+    "type": "boolean",
+  },
+  Object {
+    "name": "n/nc/nc1",
+    "nested": true,
+    "propertyPath": Array [
+      "n",
+      "nc",
+      "nc1",
+    ],
+    "type": "integer",
+  },
+  Object {
+    "name": "n/nb",
+    "nested": true,
+    "propertyPath": Array [
+      "n",
+      "nb",
+    ],
+    "type": "integer",
+  },
+  Object {
+    "name": "n/na",
+    "nested": true,
+    "propertyPath": Array [
+      "n",
+      "na",
+    ],
+    "type": "string",
+  },
+]
+`;
+
+exports[`BaseDataAdapter inferSqlTypeFromItems inferSqlTypeFromItems work correctly for dialect=cassandra 1`] = `
+Array [
+  Object {
+    "name": "cd",
+    "nested": false,
+    "propertyPath": Array [
+      "cd",
+    ],
+    "type": "TEXT",
+  },
+  Object {
+    "name": "cb",
+    "nested": false,
+    "propertyPath": Array [
+      "cb",
+    ],
+    "type": "FLOAT",
+  },
+  Object {
+    "name": "cc",
+    "nested": false,
+    "propertyPath": Array [
+      "cc",
+    ],
+    "type": "BOOLEAN",
+  },
+  Object {
+    "name": "ca",
+    "nested": false,
+    "propertyPath": Array [
+      "ca",
+    ],
+    "type": "INT",
+  },
+  Object {
+    "name": "n/nc/nc2",
+    "nested": true,
+    "propertyPath": Array [
+      "n",
+      "nc",
+      "nc2",
+    ],
+    "type": "BOOLEAN",
+  },
+  Object {
+    "name": "n/nc/nc1",
+    "nested": true,
+    "propertyPath": Array [
+      "n",
+      "nc",
+      "nc1",
+    ],
+    "type": "INT",
+  },
+  Object {
+    "name": "n/nb",
+    "nested": true,
+    "propertyPath": Array [
+      "n",
+      "nb",
+    ],
+    "type": "INT",
+  },
+  Object {
+    "name": "n/na",
+    "nested": true,
+    "propertyPath": Array [
+      "n",
+      "na",
+    ],
+    "type": "TEXT",
+  },
+]
+`;
+
+exports[`BaseDataAdapter inferSqlTypeFromItems inferSqlTypeFromItems work correctly for dialect=cosmosdb 1`] = `
+Array [
+  Object {
+    "name": "cd",
+    "nested": false,
+    "propertyPath": Array [
+      "cd",
+    ],
+    "type": "string",
+  },
+  Object {
+    "name": "cb",
+    "nested": false,
+    "propertyPath": Array [
+      "cb",
+    ],
+    "type": "float",
+  },
+  Object {
+    "name": "cc",
+    "nested": false,
+    "propertyPath": Array [
+      "cc",
+    ],
+    "type": "boolean",
+  },
+  Object {
+    "name": "ca",
+    "nested": false,
+    "propertyPath": Array [
+      "ca",
+    ],
+    "type": "integer",
+  },
+  Object {
+    "name": "n/nc/nc2",
+    "nested": true,
+    "propertyPath": Array [
+      "n",
+      "nc",
+      "nc2",
+    ],
+    "type": "boolean",
+  },
+  Object {
+    "name": "n/nc/nc1",
+    "nested": true,
+    "propertyPath": Array [
+      "n",
+      "nc",
+      "nc1",
+    ],
+    "type": "integer",
+  },
+  Object {
+    "name": "n/nb",
+    "nested": true,
+    "propertyPath": Array [
+      "n",
+      "nb",
+    ],
+    "type": "integer",
+  },
+  Object {
+    "name": "n/na",
+    "nested": true,
+    "propertyPath": Array [
+      "n",
+      "na",
+    ],
+    "type": "string",
+  },
+]
+`;
+
+exports[`BaseDataAdapter inferSqlTypeFromItems inferSqlTypeFromItems work correctly for dialect=mariadb 1`] = `
+Array [
+  Object {
+    "name": "cd",
+    "nested": false,
+    "propertyPath": Array [
+      "cd",
+    ],
+    "type": "TEXT",
+  },
+  Object {
+    "name": "cb",
+    "nested": false,
+    "propertyPath": Array [
+      "cb",
+    ],
+    "type": "FLOAT",
+  },
+  Object {
+    "name": "cc",
+    "nested": false,
+    "propertyPath": Array [
+      "cc",
+    ],
+    "type": "BOOLEAN",
+  },
+  Object {
+    "name": "ca",
+    "nested": false,
+    "propertyPath": Array [
+      "ca",
+    ],
+    "type": "INTEGER",
+  },
+  Object {
+    "name": "n/nc/nc2",
+    "nested": true,
+    "propertyPath": Array [
+      "n",
+      "nc",
+      "nc2",
+    ],
+    "type": "BOOLEAN",
+  },
+  Object {
+    "name": "n/nc/nc1",
+    "nested": true,
+    "propertyPath": Array [
+      "n",
+      "nc",
+      "nc1",
+    ],
+    "type": "INTEGER",
+  },
+  Object {
+    "name": "n/nb",
+    "nested": true,
+    "propertyPath": Array [
+      "n",
+      "nb",
+    ],
+    "type": "INTEGER",
+  },
+  Object {
+    "name": "n/na",
+    "nested": true,
+    "propertyPath": Array [
+      "n",
+      "na",
+    ],
+    "type": "TEXT",
+  },
+]
+`;
+
+exports[`BaseDataAdapter inferSqlTypeFromItems inferSqlTypeFromItems work correctly for dialect=mongodb 1`] = `
+Array [
+  Object {
+    "name": "cd",
+    "nested": false,
+    "propertyPath": Array [
+      "cd",
+    ],
+    "type": "string",
+  },
+  Object {
+    "name": "cb",
+    "nested": false,
+    "propertyPath": Array [
+      "cb",
+    ],
+    "type": "float",
+  },
+  Object {
+    "name": "cc",
+    "nested": false,
+    "propertyPath": Array [
+      "cc",
+    ],
+    "type": "boolean",
+  },
+  Object {
+    "name": "ca",
+    "nested": false,
+    "propertyPath": Array [
+      "ca",
+    ],
+    "type": "integer",
+  },
+  Object {
+    "name": "n/nc/nc2",
+    "nested": true,
+    "propertyPath": Array [
+      "n",
+      "nc",
+      "nc2",
+    ],
+    "type": "boolean",
+  },
+  Object {
+    "name": "n/nc/nc1",
+    "nested": true,
+    "propertyPath": Array [
+      "n",
+      "nc",
+      "nc1",
+    ],
+    "type": "integer",
+  },
+  Object {
+    "name": "n/nb",
+    "nested": true,
+    "propertyPath": Array [
+      "n",
+      "nb",
+    ],
+    "type": "integer",
+  },
+  Object {
+    "name": "n/na",
+    "nested": true,
+    "propertyPath": Array [
+      "n",
+      "na",
+    ],
+    "type": "string",
+  },
+]
+`;
+
+exports[`BaseDataAdapter inferSqlTypeFromItems inferSqlTypeFromItems work correctly for dialect=mssql 1`] = `
+Array [
+  Object {
+    "name": "cd",
+    "nested": false,
+    "propertyPath": Array [
+      "cd",
+    ],
+    "type": "TEXT",
+  },
+  Object {
+    "name": "cb",
+    "nested": false,
+    "propertyPath": Array [
+      "cb",
+    ],
+    "type": "FLOAT",
+  },
+  Object {
+    "name": "cc",
+    "nested": false,
+    "propertyPath": Array [
+      "cc",
+    ],
+    "type": "BIT",
+  },
+  Object {
+    "name": "ca",
+    "nested": false,
+    "propertyPath": Array [
+      "ca",
+    ],
+    "type": "INTEGER",
+  },
+  Object {
+    "name": "n/nc/nc2",
+    "nested": true,
+    "propertyPath": Array [
+      "n",
+      "nc",
+      "nc2",
+    ],
+    "type": "BIT",
+  },
+  Object {
+    "name": "n/nc/nc1",
+    "nested": true,
+    "propertyPath": Array [
+      "n",
+      "nc",
+      "nc1",
+    ],
+    "type": "INTEGER",
+  },
+  Object {
+    "name": "n/nb",
+    "nested": true,
+    "propertyPath": Array [
+      "n",
+      "nb",
+    ],
+    "type": "INTEGER",
+  },
+  Object {
+    "name": "n/na",
+    "nested": true,
+    "propertyPath": Array [
+      "n",
+      "na",
+    ],
+    "type": "TEXT",
+  },
+]
+`;
+
+exports[`BaseDataAdapter inferSqlTypeFromItems inferSqlTypeFromItems work correctly for dialect=mysql 1`] = `
+Array [
+  Object {
+    "name": "cd",
+    "nested": false,
+    "propertyPath": Array [
+      "cd",
+    ],
+    "type": "TEXT",
+  },
+  Object {
+    "name": "cb",
+    "nested": false,
+    "propertyPath": Array [
+      "cb",
+    ],
+    "type": "FLOAT",
+  },
+  Object {
+    "name": "cc",
+    "nested": false,
+    "propertyPath": Array [
+      "cc",
+    ],
+    "type": "BOOLEAN",
+  },
+  Object {
+    "name": "ca",
+    "nested": false,
+    "propertyPath": Array [
+      "ca",
+    ],
+    "type": "INTEGER",
+  },
+  Object {
+    "name": "n/nc/nc2",
+    "nested": true,
+    "propertyPath": Array [
+      "n",
+      "nc",
+      "nc2",
+    ],
+    "type": "BOOLEAN",
+  },
+  Object {
+    "name": "n/nc/nc1",
+    "nested": true,
+    "propertyPath": Array [
+      "n",
+      "nc",
+      "nc1",
+    ],
+    "type": "INTEGER",
+  },
+  Object {
+    "name": "n/nb",
+    "nested": true,
+    "propertyPath": Array [
+      "n",
+      "nb",
+    ],
+    "type": "INTEGER",
+  },
+  Object {
+    "name": "n/na",
+    "nested": true,
+    "propertyPath": Array [
+      "n",
+      "na",
+    ],
+    "type": "TEXT",
+  },
+]
+`;
+
+exports[`BaseDataAdapter inferSqlTypeFromItems inferSqlTypeFromItems work correctly for dialect=postgres 1`] = `
+Array [
+  Object {
+    "name": "cd",
+    "nested": false,
+    "propertyPath": Array [
+      "cd",
+    ],
+    "type": "TEXT",
+  },
+  Object {
+    "name": "cb",
+    "nested": false,
+    "propertyPath": Array [
+      "cb",
+    ],
+    "type": "FLOAT",
+  },
+  Object {
+    "name": "cc",
+    "nested": false,
+    "propertyPath": Array [
+      "cc",
+    ],
+    "type": "BOOLEAN",
+  },
+  Object {
+    "name": "ca",
+    "nested": false,
+    "propertyPath": Array [
+      "ca",
+    ],
+    "type": "INTEGER",
+  },
+  Object {
+    "name": "n/nc/nc2",
+    "nested": true,
+    "propertyPath": Array [
+      "n",
+      "nc",
+      "nc2",
+    ],
+    "type": "BOOLEAN",
+  },
+  Object {
+    "name": "n/nc/nc1",
+    "nested": true,
+    "propertyPath": Array [
+      "n",
+      "nc",
+      "nc1",
+    ],
+    "type": "INTEGER",
+  },
+  Object {
+    "name": "n/nb",
+    "nested": true,
+    "propertyPath": Array [
+      "n",
+      "nb",
+    ],
+    "type": "INTEGER",
+  },
+  Object {
+    "name": "n/na",
+    "nested": true,
+    "propertyPath": Array [
+      "n",
+      "na",
+    ],
+    "type": "TEXT",
+  },
+]
+`;
+
+exports[`BaseDataAdapter inferSqlTypeFromItems inferSqlTypeFromItems work correctly for dialect=redis 1`] = `
+Array [
+  Object {
+    "name": "cd",
+    "nested": false,
+    "propertyPath": Array [
+      "cd",
+    ],
+    "type": "string",
+  },
+  Object {
+    "name": "cb",
+    "nested": false,
+    "propertyPath": Array [
+      "cb",
+    ],
+    "type": "float",
+  },
+  Object {
+    "name": "cc",
+    "nested": false,
+    "propertyPath": Array [
+      "cc",
+    ],
+    "type": "boolean",
+  },
+  Object {
+    "name": "ca",
+    "nested": false,
+    "propertyPath": Array [
+      "ca",
+    ],
+    "type": "integer",
+  },
+  Object {
+    "name": "n/nc/nc2",
+    "nested": true,
+    "propertyPath": Array [
+      "n",
+      "nc",
+      "nc2",
+    ],
+    "type": "boolean",
+  },
+  Object {
+    "name": "n/nc/nc1",
+    "nested": true,
+    "propertyPath": Array [
+      "n",
+      "nc",
+      "nc1",
+    ],
+    "type": "integer",
+  },
+  Object {
+    "name": "n/nb",
+    "nested": true,
+    "propertyPath": Array [
+      "n",
+      "nb",
+    ],
+    "type": "integer",
+  },
+  Object {
+    "name": "n/na",
+    "nested": true,
+    "propertyPath": Array [
+      "n",
+      "na",
+    ],
+    "type": "string",
+  },
+]
+`;
+
+exports[`BaseDataAdapter inferSqlTypeFromItems inferSqlTypeFromItems work correctly for dialect=sqlite 1`] = `
+Array [
+  Object {
+    "name": "cd",
+    "nested": false,
+    "propertyPath": Array [
+      "cd",
+    ],
+    "type": "TEXT",
+  },
+  Object {
+    "name": "cb",
+    "nested": false,
+    "propertyPath": Array [
+      "cb",
+    ],
+    "type": "FLOAT",
+  },
+  Object {
+    "name": "cc",
+    "nested": false,
+    "propertyPath": Array [
+      "cc",
+    ],
+    "type": "BOOLEAN",
+  },
+  Object {
+    "name": "ca",
+    "nested": false,
+    "propertyPath": Array [
+      "ca",
+    ],
+    "type": "INTEGER",
+  },
+  Object {
+    "name": "n/nc/nc2",
+    "nested": true,
+    "propertyPath": Array [
+      "n",
+      "nc",
+      "nc2",
+    ],
+    "type": "BOOLEAN",
+  },
+  Object {
+    "name": "n/nc/nc1",
+    "nested": true,
+    "propertyPath": Array [
+      "n",
+      "nc",
+      "nc1",
+    ],
+    "type": "INTEGER",
+  },
+  Object {
+    "name": "n/nb",
+    "nested": true,
+    "propertyPath": Array [
+      "n",
+      "nb",
+    ],
+    "type": "INTEGER",
+  },
+  Object {
+    "name": "n/na",
+    "nested": true,
+    "propertyPath": Array [
+      "n",
+      "na",
+    ],
+    "type": "TEXT",
+  },
+]
+`;

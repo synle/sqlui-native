@@ -1,0 +1,91 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`BaseDataAdapter resolveTypes arrays 1`] = `
+Object {
+  "genre": Object {
+    "name": "genre",
+    "nested": false,
+    "propertyPath": Array [
+      "genre",
+    ],
+    "type": "array",
+  },
+}
+`;
+
+exports[`BaseDataAdapter resolveTypes nested objects 1`] = `
+Object {
+  "_id": Object {
+    "name": "_id",
+    "nested": false,
+    "propertyPath": Array [
+      "_id",
+    ],
+    "type": "string",
+  },
+  "genre": Object {
+    "name": "genre",
+    "nested": false,
+    "propertyPath": Array [
+      "genre",
+    ],
+    "type": "array",
+  },
+  "location/county/name": Object {
+    "name": "location/county/name",
+    "nested": true,
+    "propertyPath": Array [
+      "location",
+      "county",
+      "name",
+    ],
+    "type": "string",
+  },
+  "location/zip": Object {
+    "name": "location/zip",
+    "nested": true,
+    "propertyPath": Array [
+      "location",
+      "zip",
+    ],
+    "type": "integer",
+  },
+  "name": Object {
+    "name": "name",
+    "nested": false,
+    "propertyPath": Array [
+      "name",
+    ],
+    "type": "string",
+  },
+}
+`;
+
+exports[`BaseDataAdapter resolveTypes primitive types only 1`] = `
+Object {
+  "_id": Object {
+    "name": "_id",
+    "nested": false,
+    "propertyPath": Array [
+      "_id",
+    ],
+    "type": "string",
+  },
+  "name": Object {
+    "name": "name",
+    "nested": false,
+    "propertyPath": Array [
+      "name",
+    ],
+    "type": "string",
+  },
+  "zipcode": Object {
+    "name": "zipcode",
+    "nested": false,
+    "propertyPath": Array [
+      "zipcode",
+    ],
+    "type": "integer",
+  },
+}
+`;

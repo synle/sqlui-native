@@ -339,8 +339,10 @@ function RecordForm(props) {
             let contentColumnValueInputView = (
               <TextField {...baseInputProps} type='text' multiline />
             );
+
             if (
               column.type?.toLowerCase()?.includes('int') ||
+              column.type?.toLowerCase()?.includes('float') ||
               column.type?.toLowerCase()?.includes('number')
             ) {
               contentColumnValueInputView = <TextField {...baseInputProps} type='number' />;
@@ -653,22 +655,8 @@ export function EditRecordPage(props: RecordDetailsPageProps) {
     if (Object.keys(deltaData).length === 0) {
       deltaData = data;
     }
-    // find out the main condition
-    const conditions = {};
-    for (const column of columns) {
-      if (column.primaryKey) {
-        conditions[column.name] = data[column.name];
-      }
-    }
 
-    if (Object.keys(conditions).length === 0) {
-      for (const column of columns) {
-        if (column.name?.toString().toLowerCase()?.includes('id')) {
-          // otherwise include any of the id
-          conditions[column.name] = data[column.name];
-        }
-      }
-    }
+    const conditions = {};
 
     switch (connection?.dialect) {
       case 'mysql':
@@ -676,6 +664,22 @@ export function EditRecordPage(props: RecordDetailsPageProps) {
       case 'mssql':
       case 'postgres':
       case 'sqlite':
+        // find out the main condition
+        for (const column of columns) {
+          if (column.primaryKey) {
+            conditions[column.name] = data[column.name];
+          }
+        }
+
+        if (Object.keys(conditions).length === 0) {
+          for (const column of columns) {
+            if (column.name?.toString().toLowerCase()?.includes('id')) {
+              // otherwise include any of the id
+              conditions[column.name] = data[column.name];
+            }
+          }
+        }
+
         sql = formatSQL(
           getUpdateWithValuesForRdmbs(
             {
@@ -690,6 +694,13 @@ export function EditRecordPage(props: RecordDetailsPageProps) {
         setIsEdit(false);
         break;
       case 'cassandra':
+        // find out the main condition
+        for (const column of columns) {
+          if (column.kind === 'partition_key') {
+            conditions[column.name] = data[column.name];
+          }
+        }
+
         sql = formatSQL(
           getUpdateWithValuesForCassandra(
             {
