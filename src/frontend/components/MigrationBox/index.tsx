@@ -8,6 +8,10 @@ import {
   getBulkInsert as getBulkInsertForAzTable,
   getCreateTable as getCreateTableForAzTable,
 } from 'src/common/adapters/AzureTableStorageAdapter/scripts';
+import {
+  getBulkInsert as getBulkInsertForCosmosDb,
+  getCreateDatabase as getCreateTableForAzCosmosDb,
+} from 'src/common/adapters/AzureCosmosDataAdapter/scripts';
 import BaseDataAdapter from 'src/common/adapters/BaseDataAdapter/index';
 import { getSampleSelectQuery } from 'src/common/adapters/DataScriptFactory';
 import {
@@ -27,6 +31,7 @@ import { useConnectionQueries } from 'src/frontend/hooks/useConnectionQuery';
 import useToaster from 'src/frontend/hooks/useToaster';
 import { formatJS, formatSQL } from 'src/frontend/utils/formatter';
 import { SqluiCore, SqluiFrontend } from 'typings';
+import {getSyntaxModeByDialect} from 'src/common/adapters/DataScriptFactory';
 // TOOD: extract this
 type MigrationBoxProps = {
   mode: SqluiFrontend.MigrationMode;
@@ -54,8 +59,8 @@ function DialectSelector(props: DialectSelectorProps) {
       {/*// TODO: to be implemented*/}
       {/*<option value='cassandra'>cassandra</option>
       <option value='mongodb'>mongodb</option>
-      <option value='redis'>redis</option>
-      <option value='cosmosdb'>cosmosdb</option>*/}
+      <option value='redis'>redis</option>*/}
+      <option value='cosmosdb'>cosmosdb</option>
       <option value='aztable'>aztable</option>
     </Select>
   );
@@ -138,10 +143,13 @@ async function generateMigrationScript(
     // case 'cassandra': // TODO: to be implemented
     // case 'mongodb': // TODO: to be implemented
     // case 'redis': // TODO: to be implemented
-    // case 'cosmosdb': // TODO: to be implemented
+    case 'cosmosdb':
+      res.push(`// Schema Creation Script : toDialect=${toDialect} toTableId=${toTableId}`);
+      res.push(formatJS(getCreateTableForAzCosmosDb(toQueryMetaData)?.query || ''));
+      break;
     case 'aztable':
       res.push(`// Schema Creation Script : toDialect=${toDialect} toTableId=${toTableId}`);
-      res.push(formatSQL(getCreateTableForAzTable(toQueryMetaData)?.query || ''));
+      res.push(formatJS(getCreateTableForAzTable(toQueryMetaData)?.query || ''));
       break;
   }
 
@@ -173,7 +181,26 @@ async function generateMigrationScript(
       // case 'cassandra':// TODO: to be implemented
       // case 'mongodb':// TODO: to be implemented
       // case 'redis':// TODO: to be implemented
-      // case 'cosmosdb':// TODO: to be implemented
+      case 'cosmosdb':
+        res.push(`// Data Migration Script`);
+        if (hasSomeResults) {
+          res.push(
+            formatJS(
+              getBulkInsertForCosmosDb(
+                toQueryMetaData,
+                results.raw
+              )?.query || '',
+            ),
+          );
+        } else {
+          res.push(
+            `// The SELECT query does not have any returned that we can use for data migration...`,
+          );
+          errors.push(
+            `Warning - This migration doesn't contain any record. This might be an error with your query to get data.`,
+          );
+        }
+        break;
       case 'aztable':
         res.push(`// Data Migration Script`);
         if (hasSomeResults) {
@@ -233,8 +260,8 @@ export default function MigrationBox(props: MigrationBoxProps) {
   const { add: addToast } = useToaster();
 
   // TODO: pull these from the dialect
-  const languageFrom = 'sql';
-  const languageTo = 'sql';
+  const languageFrom = getSyntaxModeByDialect(connection?.dialect);
+  const languageTo = getSyntaxModeByDialect(migrationMetaData?.toDialect);
   const isMigratingRealConnection = mode === 'real_connection';
   const isConnectionSelectorVisible = isMigratingRealConnection;
   const isRawJsonEditorVisible = !isMigratingRealConnection;
@@ -568,15 +595,17 @@ function MigrationMetaDataInputs(props: MigrationMetaDataInputsProps) {
   let extraDoms: React.ReactElement[] = [];
 
   switch (migrationMetaData.toDialect) {
-    // case 'mysql':
-    // case 'mariadb':
-    // case 'mssql':
-    // case 'postgres':
-    // case 'sqlite':
+    case 'mysql':
+    case 'mariadb':
+    case 'mssql':
+    case 'postgres':
+    case 'sqlite':
+      default:
     // case 'cassandra': // TODO: to be implemented
     // case 'mongodb': // TODO: to be implemented
     // case 'redis': // TODO: to be implemented
-    // case 'cosmosdb': // TODO: to be implemented
+    case 'cosmosdb':
+      break;
     case 'aztable':
       extraDoms.push(
         <>

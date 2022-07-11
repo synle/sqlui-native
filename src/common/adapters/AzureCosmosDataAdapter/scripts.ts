@@ -174,6 +174,25 @@ export function getInsert(
   };
 }
 
+export function getBulkInsert(
+  input: SqlAction.TableInput,
+  rows?: Record<string, any>[]
+): SqlAction.Output | undefined {
+  const label = `Insert`;
+
+  const scripts = (rows || []).map((row) => getInsert(input, row)).filter(script => script && script.query);
+
+  return {
+    label,
+    formatter,
+    query: `
+      Promise.all([
+        ${(scripts || []).map(script => script?.query || '').join(',\n')}
+      ])
+    `,
+  };
+}
+
 export function getUpdateWithValues(
   input: SqlAction.TableInput,
   value: Record<string, any>,
@@ -333,7 +352,7 @@ export class ConcreteDataScripts extends BaseDataScript {
     return true;
   }
 
-  getSyntaxModeByDialect() {
+  getSyntaxMode() {
     return 'javascript';
   }
 
