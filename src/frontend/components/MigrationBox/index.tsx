@@ -5,16 +5,19 @@ import get from 'lodash.get';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import {
+  getBulkInsert as getBulkInsertForCosmosDb,
+  getCreateContainer as getCreateContainerForAzCosmosDb,
+  getCreateDatabase as getCreateDatabaseForAzCosmosDb,
+} from 'src/common/adapters/AzureCosmosDataAdapter/scripts';
+import {
   getBulkInsert as getBulkInsertForAzTable,
   getCreateTable as getCreateTableForAzTable,
 } from 'src/common/adapters/AzureTableStorageAdapter/scripts';
-import {
-  getBulkInsert as getBulkInsertForCosmosDb,
-  getCreateDatabase as getCreateDatabaseForAzCosmosDb,
-  getCreateContainer as getCreateContainerForAzCosmosDb,
-} from 'src/common/adapters/AzureCosmosDataAdapter/scripts';
 import BaseDataAdapter from 'src/common/adapters/BaseDataAdapter/index';
-import { getSampleSelectQuery } from 'src/common/adapters/DataScriptFactory';
+import {
+  getSampleSelectQuery,
+  getSyntaxModeByDialect,
+} from 'src/common/adapters/DataScriptFactory';
 import {
   getBulkInsert as getBulkInsertForRdmbs,
   getCreateTable as getCreateTableForRdbms,
@@ -32,7 +35,6 @@ import { useConnectionQueries } from 'src/frontend/hooks/useConnectionQuery';
 import useToaster from 'src/frontend/hooks/useToaster';
 import { formatJS, formatSQL } from 'src/frontend/utils/formatter';
 import { SqluiCore, SqluiFrontend } from 'typings';
-import {getSyntaxModeByDialect} from 'src/common/adapters/DataScriptFactory';
 // TOOD: extract this
 type MigrationBoxProps = {
   mode: SqluiFrontend.MigrationMode;
@@ -186,14 +188,7 @@ async function generateMigrationScript(
       case 'cosmosdb':
         res.push(`// Data Migration Script`);
         if (hasSomeResults) {
-          res.push(
-            formatJS(
-              getBulkInsertForCosmosDb(
-                toQueryMetaData,
-                results.raw
-              )?.query || '',
-            ),
-          );
+          res.push(formatJS(getBulkInsertForCosmosDb(toQueryMetaData, results.raw)?.query || ''));
         } else {
           res.push(
             `// The SELECT query does not have any returned that we can use for data migration...`,
@@ -602,7 +597,7 @@ function MigrationMetaDataInputs(props: MigrationMetaDataInputsProps) {
     case 'mssql':
     case 'postgres':
     case 'sqlite':
-      default:
+    default:
     // case 'cassandra': // TODO: to be implemented
     // case 'mongodb': // TODO: to be implemented
     // case 'redis': // TODO: to be implemented

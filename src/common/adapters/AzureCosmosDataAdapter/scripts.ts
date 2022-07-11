@@ -176,15 +176,15 @@ export function getInsert(
 
 export function getBulkInsert(
   input: SqlAction.TableInput,
-  rows?: Record<string, any>[]
+  rows?: Record<string, any>[],
 ): SqlAction.Output | undefined {
   const label = `Insert`;
 
-  if(!rows || rows.length === 0){
+  if (!rows || rows.length === 0) {
     return undefined;
   }
 
-  const rowsToInsert = rows.map(value => {
+  const rowsToInsert = rows.map((value) => {
     let colMap: any = {};
     if (value) {
       for (const key of Object.keys(value)) {
@@ -194,7 +194,7 @@ export function getBulkInsert(
       colMap = _getColMapForInsertAndUpdate(input?.columns);
     }
     return colMap;
-  })
+  });
 
   // TODO: figure out if there's a better / more efficient way to handle bulk insert
 
@@ -207,8 +207,8 @@ export function getBulkInsert(
         .container('${input.tableId}')
         .items;
 
-      Promise.all(${rowsToInsert.map(value => {
-        return 'containerItems.create('+JSON.stringify(value)+')'
+      Promise.all(${rowsToInsert.map((value) => {
+        return 'containerItems.create(' + JSON.stringify(value) + ')';
       })})
     `,
   };
