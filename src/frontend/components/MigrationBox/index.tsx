@@ -338,7 +338,10 @@ export default function MigrationBox(props: MigrationBoxProps) {
           tableId: migrationMetaData.newTableName,
         };
 
-        let columnsToUse = BaseDataAdapter.inferSqlTypeFromItems(parsedRawJson, migrationMetaData.toDialect).map((col) => {
+        let columnsToUse = BaseDataAdapter.inferSqlTypeFromItems(
+          parsedRawJson,
+          migrationMetaData.toDialect,
+        ).map((col) => {
           return {
             ...col,
             allowNull: true,

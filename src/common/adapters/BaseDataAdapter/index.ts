@@ -60,7 +60,7 @@ export default abstract class BaseDataAdapter {
 
     const onTypeConverter = (type: string, value: any) => {
       // override the number to be more specific (integer vs float)
-      if(type === 'number'){
+      if (type === 'number') {
         if (Number.isInteger(value)) {
           type = 'integer';
         } else {
@@ -131,7 +131,7 @@ export default abstract class BaseDataAdapter {
         ...BaseDataAdapter.resolveTypes(item, (type: string, val: any) => {
           switch (type) {
             case 'float':
-              switch(toDialectHint){
+              switch (toDialectHint) {
                 case 'mysql':
                 case 'mariadb':
                 case 'mssql':
@@ -147,7 +147,7 @@ export default abstract class BaseDataAdapter {
                   return type;
               }
             case 'integer':
-              switch(toDialectHint){
+              switch (toDialectHint) {
                 case 'mysql':
                 case 'mariadb':
                 case 'mssql':
@@ -164,7 +164,7 @@ export default abstract class BaseDataAdapter {
                   return type;
               }
             case 'boolean':
-              switch(toDialectHint){
+              switch (toDialectHint) {
                 case 'mssql':
                   return 'BIT';
                 case 'mysql':
@@ -182,7 +182,7 @@ export default abstract class BaseDataAdapter {
               }
             default:
               // TODO: should pick up nvarchar vs text instead of default to text
-              switch(toDialectHint){
+              switch (toDialectHint) {
                 case 'mysql':
                 case 'mariadb':
                 case 'mssql':

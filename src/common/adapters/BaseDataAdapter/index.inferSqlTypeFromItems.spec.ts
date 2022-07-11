@@ -40,7 +40,4 @@ describe('BaseDataAdapter', () => {
         expect(actual).toMatchSnapshot();
       })
   });
-
-
-
 });

@@ -1,5 +1,5 @@
 import BaseDataScript, { getDivider } from 'src/common/adapters/BaseDataAdapter/scripts';
-import { escapeSQLValue, isValueNumber, isValueBoolean } from 'src/frontend/utils/formatter';
+import { escapeSQLValue, isValueBoolean, isValueNumber } from 'src/frontend/utils/formatter';
 import { SqlAction, SqluiCore } from 'typings';
 
 const formatter = 'sql';
@@ -12,12 +12,11 @@ function _isColumnBooleanField(col: SqluiCore.ColumnMetaData) {
   return col.type.toLowerCase().includes('boolean');
 }
 
-function _getDummyColumnValue(col: SqluiCore.ColumnMetaData){
-  if(_isColumnBooleanField(col)){
+function _getDummyColumnValue(col: SqluiCore.ColumnMetaData) {
+  if (_isColumnBooleanField(col)) {
     return 'true';
-  }
-  else if(_isColumnNumberField(col)){
-    return '123'
+  } else if (_isColumnNumberField(col)) {
+    return '123';
   } else {
     // other types need to be wrapped in single quote
     return `'_${col.name}_'`;
@@ -150,8 +149,12 @@ export function getUpdate(input: SqlAction.TableInput): SqlAction.Output | undef
     return undefined;
   }
 
-  const columnString = input.columns.map((col) => `${col.name} = ${_getDummyColumnValue(col)}`).join(',\n');
-  const whereColumnString = input.columns.map((col) => `${col.name} = ${_getDummyColumnValue(col)}`).join(' AND \n');
+  const columnString = input.columns
+    .map((col) => `${col.name} = ${_getDummyColumnValue(col)}`)
+    .join(',\n');
+  const whereColumnString = input.columns
+    .map((col) => `${col.name} = ${_getDummyColumnValue(col)}`)
+    .join(' AND \n');
 
   return {
     label,

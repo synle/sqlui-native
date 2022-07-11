@@ -224,17 +224,17 @@ export function DataTableWithJSONList(props: Omit<DataTableProps, 'columns'>) {
           const columnValue = data.row.original[columnName];
           if (columnValue === null) {
             return <pre style={{ textTransform: 'uppercase', fontStyle: 'italic' }}>NULL</pre>;
-          }
-          else if (columnValue === true || columnValue === false) {
-            return <pre style={{ textTransform: 'uppercase', fontStyle: 'italic' }}>{columnValue.toString()}</pre>;
-          }
-          else if (typeof columnValue === 'string') {
+          } else if (columnValue === true || columnValue === false) {
+            return (
+              <pre style={{ textTransform: 'uppercase', fontStyle: 'italic' }}>
+                {columnValue.toString()}
+              </pre>
+            );
+          } else if (typeof columnValue === 'string') {
             return <pre style={{ textTransform: 'uppercase' }}>{columnValue}</pre>;
-          }
-          else if (typeof columnValue === 'number') {
+          } else if (typeof columnValue === 'number') {
             return <pre style={{ textTransform: 'uppercase' }}>{columnValue}</pre>;
-          }
-          else if (typeof columnValue === 'object') {
+          } else if (typeof columnValue === 'object') {
             return <pre>{JSON.stringify(columnValue, null, 2)}</pre>;
           }
           return (
