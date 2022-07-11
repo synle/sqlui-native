@@ -236,7 +236,7 @@ export default function MigrationBox(props: MigrationBoxProps) {
   const navigate = useNavigate();
   const [migrationMetaData, setMigrationMetaData] = useState<MigrationMetaData>({
     toDialect: 'sqlite',
-    newDatabaseName: `Migrated_Database_${Date.now()}`,
+    newDatabaseName: `migrated_database_${Date.now()}`,
     newTableName: `new_table_${Date.now()}`,
   });
   const [query, setQuery] = useState<SqluiFrontend.ConnectionQuery>({
@@ -262,13 +262,6 @@ export default function MigrationBox(props: MigrationBoxProps) {
   const isMigratingRealConnection = mode === 'real_connection';
   const isConnectionSelectorVisible = isMigratingRealConnection;
   const isRawJsonEditorVisible = !isMigratingRealConnection;
-  let isDisabled = false;
-
-  if (isRawJsonEditorVisible) {
-    isDisabled = !rawJson;
-  } else {
-    isDisabled = !migrationMetaData.toDialect || !query.databaseId;
-  }
   const isSaving = migrating;
 
   const isMigrationScriptVisible = !!migrationScript && !!migrationMetaData.toDialect;
@@ -475,6 +468,7 @@ export default function MigrationBox(props: MigrationBoxProps) {
                 isTableIdRequired={true}
                 value={query}
                 onChange={onDatabaseConnectionChange}
+                required
               />
             </div>
           )}
@@ -495,6 +489,7 @@ export default function MigrationBox(props: MigrationBoxProps) {
             isTableIdRequired={true}
             value={query}
             onChange={onDatabaseConnectionChange}
+            required
           />
           <Link onClick={onApplySampleQueryForMigration}>Apply Sample Query</Link>
         </div>
@@ -507,7 +502,7 @@ export default function MigrationBox(props: MigrationBoxProps) {
             placeholder={`Enter Your Raw JSON for migration`}
             onChange={onRawJsonChange}
             language='javascript'
-            autoFocus
+            required
           />
         </>
       )}
@@ -521,7 +516,6 @@ export default function MigrationBox(props: MigrationBoxProps) {
         <LoadingButton
           variant='contained'
           type='submit'
-          disabled={isDisabled}
           loading={isSaving}
           startIcon={<BackupIcon />}>
           Migrate
@@ -672,7 +666,6 @@ function MigrationMetaDataInputs(props: MigrationMetaDataInputsProps) {
             placeholder={`Enter SQL for ` + query.name}
             onChange={(newValue) => onChange('selectQuery', newValue)}
             language={languageFrom}
-            autoFocus
           />
         </React.Fragment>
       )}
