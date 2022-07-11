@@ -877,11 +877,11 @@ VALUES
 
 ```js
 UPDATE table1
-              SET id = 123,
-column1 = 123,
-column2 = '_column2_'
-              WHERE id = 123 AND 
-column1 = 123 AND 
+SET id = 123,
+  column1 = 123,
+  column2 = '_column2_'
+WHERE id = 123 AND
+column1 = 123 AND
 column2 = '_column2_'
 ```
 
@@ -961,88 +961,91 @@ db.dropDatabase()
 ### Select All Columns
 
 ```js
-db.collection('table1').find().limit(200).toArray();
+db.collection('table1')
+  .find()
+  .limit(200)
+  .toArray();
 ```
 
 
 ### Select Specific Columns
 
 ```js
-db.collection('table1').find(
-          {
-  "id": 123,
-  "column1": 123,
-  "column2": 123
-}
-        ).limit(200).toArray();
+db.collection('table1')
+  .find({
+    "id": 123,
+    "column1": 123,
+    "column2": 123
+  })
+  .limit(200)
+  .toArray();
 ```
 
 
 ### Select Distinct
 
 ```js
-db.collection('table1').distinct(
-          'column1',
-          {
-  "id": "",
-  "column1": "",
-  "column2": ""
-}
-        )
+db.collection('table1')
+  .distinct(
+    'column1', {
+      "id": "",
+      "column1": "",
+      "column2": ""
+    }
+  )
 ```
 
 
 ### Select One Record
 
 ```js
-db.collection('table1').findOne({
-  "_id": ObjectId("some_id")
-});
+db.collection('table1')
+  .findOne({
+    "_id": ObjectId("some_id")
+  });
 ```
 
 
 ### Insert
 
 ```js
-db.collection('table1').insertMany([
-        {
-  "id": 123,
-  "column1": 123,
-  "column2": 123
-}
-      ]);
+db.collection('table1')
+  .insertMany([{
+    "id": 123,
+    "column1": 123,
+    "column2": 123
+  }]);
 ```
 
 
 ### Update
 
 ```js
-db.collection('table1').update(
-        {
-  "id": 123,
-  "column1": 123,
-  "column2": 123,
-  "_id": ObjectId("some_id")
-},
-        {$set: {
-  "id": 123,
-  "column1": 123,
-  "column2": 123
-}}
-      );
+db.collection('table1')
+  .update({
+    "id": 123,
+    "column1": 123,
+    "column2": 123,
+    "_id": ObjectId("some_id")
+  }, {
+    $set: {
+      "id": 123,
+      "column1": 123,
+      "column2": 123
+    }
+  });
 ```
 
 
 ### Delete
 
 ```js
-db.collection('table1').deleteMany(
-        {
-  "id": 123,
-  "column1": 123,
-  "column2": 123
-}
-      );
+db.collection('table1')
+  .deleteMany({
+    "id": 123,
+    "column1": 123,
+    "column2": 123
+  });
 ```
 
 
@@ -1056,7 +1059,8 @@ db.createCollection("table1")
 ### Drop Collection
 
 ```js
-db.collection('table1').drop()
+db.collection('table1')
+  .drop()
 ```
 
 
@@ -1199,7 +1203,10 @@ db.zRange("sorted_set_key1", 0, -1)
 ### Sorted Set > Add Item
 
 ```js
-db.zAdd("sorted_set_key1", [{score: 1, value: "some_value"}])
+db.zAdd("sorted_set_key1", [{
+  score: 1,
+  value: "some_value"
+}])
 ```
 
 
@@ -1223,66 +1230,61 @@ cosmosdb://AccountEndpoint=some_cosmos_endpoint;AccountKey=some_cosmos_account_k
 ### Create Database
 
 ```js
-
-      client
-        .databases
-        .create({id: 'database1'})
-    
+client
+  .databases
+  .create({
+    id: 'database1'
+  })
 ```
 
 
 ### Create Database Container
 
 ```js
-
-      client
-        .database('database1')
-        .containers
-        .create({id: 'some_container_name'})
-    
+client
+  .database('database1')
+  .containers
+  .create({
+    id: 'some_container_name'
+  })
 ```
 
 
 ### Drop Database
 
 ```js
-
-      client
-        .database('database1')
-        .delete()
-    
+client
+  .database('database1')
+  .delete()
 ```
 
 
 ### Select All Columns
 
 ```js
-
-      client
-        .database('database1')
-        .container('table1')
-        .items
-        .query({
-          query: `
+client
+  .database('database1')
+  .container('table1')
+  .items
+  .query({
+    query: `
   SELECT *
   FROM c
   OFFSET 0 LIMIT 200`,
-        })
-        .fetchAll()
-    
+  })
+  .fetchAll()
 ```
 
 
 ### Select Specific Columns
 
 ```js
-
-      client
-        .database('database1')
-        .container('table1')
-        .items
-        .query({
-          query: `
+client
+  .database('database1')
+  .container('table1')
+  .items
+  .query({
+    query: `
   SELECT c.id,
   c.column1,
   c.column2
@@ -1291,80 +1293,71 @@ cosmosdb://AccountEndpoint=some_cosmos_endpoint;AccountKey=some_cosmos_account_k
   AND c.column1 = ''
   AND c.column2 = ''
   OFFSET 0 LIMIT 200`,
-        })
-        .fetchAll()
-    
+  })
+  .fetchAll()
 ```
 
 
 ### Select By Id
 
 ```js
-
-      client
-        .database('database1')
-        .container('table1')
-        .items
-        .query({
-          query: `
+client
+  .database('database1')
+  .container('table1')
+  .items
+  .query({
+    query: `
   SELECT *
   FROM c
   WHERE c.id = '123'`,
-        })
-        .fetchAll()
-    
+  })
+  .fetchAll()
 ```
 
 
 ### Read
 
 ```js
-
-      client
-        .database('database1')
-        .container('table1')
-        .item('some_id','some_partition_key')
-        .read()
-    
+client
+  .database('database1')
+  .container('table1')
+  .item('some_id', 'some_partition_key')
+  .read()
 ```
 
 
 ### Insert
 
 ```js
-
-      client
-        .database('database1')
-        .container('table1')
-        .items
-        .create({})
-    
+client
+  .database('database1')
+  .container('table1')
+  .items
+  .create({})
 ```
 
 
 ### Update
 
 ```js
-
-      client
-        .database('database1')
-        .container('table1')
-        .item('some_id','some_partition_key')
-        .replace({"id":"some_id"})
-    
+client
+  .database('database1')
+  .container('table1')
+  .item('some_id', 'some_partition_key')
+  .replace({
+    "id": "some_id"
+  })
 ```
 
 
 ### Delete
 
 ```js
-
-      client
-        .database('database1')
-        .container('table1')
-        .item('some_id','some_partition_key')
-        .delete()
-    
+client
+  .database('database1')
+  .container('table1')
+  .item('some_id', 'some_partition_key')
+  .delete()
 ```
 
 
@@ -1381,24 +1374,22 @@ FROM
 ### Create Container
 
 ```js
-
-      client
-        .database('database1')
-        .containers
-        .create({id: 'table1'})
-    
+client
+  .database('database1')
+  .containers
+  .create({
+    id: 'table1'
+  })
 ```
 
 
 ### Drop Container
 
 ```js
-
-      client
-        .database('database1')
-        .container('table1')
-        .delete()
-    
+client
+  .database('database1')
+  .container('table1')
+  .delete()
 ```
 
 
@@ -1415,81 +1406,80 @@ aztable://DefaultEndpointsProtocol=https;AccountName=<your_account_name>;Account
 ### Create Table
 
 ```js
-
-      serviceClient.createTable('somenewtablename')
-    
+serviceClient.createTable('somenewtablename')
 ```
 
 
 ### Select All Columns
 
 ```js
-
-      tableClient.listEntities({
-        queryOptions: { filter: `` }
-      })
-    
+tableClient.listEntities({
+  queryOptions: {
+    filter: ``
+  }
+})
 ```
 
 
 ### Select Specific Columns
 
 ```js
-
-      tableClient.listEntities({
-        queryOptions: {
-          filter: `PartitionKey eq 'some_partition_key'`,
-          select: ["id","column1","column2"]
-        }
-      })
-    
+tableClient.listEntities({
+  queryOptions: {
+    filter: `PartitionKey eq 'some_partition_key'`,
+    select: ["id", "column1", "column2"]
+  }
+})
 ```
 
 
 ### Insert
 
 ```js
-tableClient.createEntity({"rowKey":"some_row_key","partitionKey":"some_partition_key"})
+tableClient.createEntity({
+  "rowKey": "some_row_key",
+  "partitionKey": "some_partition_key"
+})
 ```
 
 
 ### Update
 
 ```js
-tableClient.updateEntity({"rowKey":"some_row_key","partitionKey":"some_partition_key"})
+tableClient.updateEntity({
+  "rowKey": "some_row_key",
+  "partitionKey": "some_partition_key"
+})
 ```
 
 
 ### Upsert
 
 ```js
-tableClient.upsertEntity({"rowKey":"some_row_key","partitionKey":"some_partition_key"}, 'Replace')
+tableClient.upsertEntity({
+  "rowKey": "some_row_key",
+  "partitionKey": "some_partition_key"
+}, 'Replace')
 ```
 
 
 ### Delete
 
 ```js
-
-      tableClient.deleteEntity('some_partition_key', 'some_row_key');
-    
+tableClient.deleteEntity('some_partition_key', 'some_row_key');
 ```
 
 
 ### Create Table
 
 ```js
-
-      serviceClient.createTable('table1')
-    
+serviceClient.createTable('table1')
 ```
 
 
 ### Drop Table
 
 ```js
-
-      serviceClient.deleteTable('table1')
-    
+serviceClient.deleteTable('table1')
 ```
 
