@@ -17,7 +17,7 @@ export const formatSQL = (val: string) => {
 
 export const formatJS = (val: string) => {
   try {
-    _formatJS(val, {
+    return _formatJS(val, {
       indent_size: 2,
       space_in_empty_paren: true,
       break_chained_methods: 2,
