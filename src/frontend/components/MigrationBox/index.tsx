@@ -4,7 +4,9 @@ import { Button, Link, Skeleton, TextField, Typography } from '@mui/material';
 import get from 'lodash.get';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { getBulkInsert as getBulkInsertForAzTable } from 'src/common/adapters/AzureTableStorageAdapter/scripts';
+import { getBulkInsert as getBulkInsertForAzTable,
+ getCreateTable as getCreateTableForAzTable
+ } from 'src/common/adapters/AzureTableStorageAdapter/scripts';
 import BaseDataAdapter from 'src/common/adapters/BaseDataAdapter/index';
 import { getSampleSelectQuery } from 'src/common/adapters/DataScriptFactory';
 import {
@@ -57,6 +59,27 @@ function DialectSelector(props: DialectSelectorProps) {
   );
 }
 
+type ColumnSelectorProps = {
+  value?: string;
+  onChange: (newVal: string) => void;
+  columns?: SqluiCore.ColumnMetaData[];
+};
+
+function ColumnSelector(props: ColumnSelectorProps) {
+  const { value, columns, onChange } = props;
+
+  return (
+    <Select
+      value={value}
+      onChange={(newValue) => onChange && onChange(newValue)}>
+      {
+        (columns || []).map(col => <option value={col.name}>{col.name}</option>)
+      }
+    </Select>
+  );
+}
+
+
 // TOOD: extract this
 async function generateMigrationScript(
   toDialect: SqluiCore.Dialect | undefined,
@@ -95,7 +118,8 @@ async function generateMigrationScript(
     // case 'redis': // TODO: to be implemented
     // case 'cosmosdb': // TODO: to be implemented
     case 'aztable':
-      res.push(`// Schema Creation Script : N/A for toDialect=${toDialect}`);
+      res.push(`// Schema Creation Script : toDialect=${toDialect} toTableId=${toTableId}`);
+      res.push(formatSQL(getCreateTableForAzTable(toQueryMetaData)?.query || ''));
       break;
   }
 
@@ -490,7 +514,7 @@ function MigrationMetaDataInputs(props: MigrationMetaDataInputsProps) {
     query?.connectionId,
   );
   const loading = loadingColumns || loadingConnection;
-  const onChange = (propKey: string, propValue: any) => {
+  const onChange = (propKey: keyof MigrationMetaData, propValue: any) => {
     //@ts-ignore
     props.onChange({
       ...migrationMetaData,
@@ -498,38 +522,54 @@ function MigrationMetaDataInputs(props: MigrationMetaDataInputsProps) {
     });
   };
 
-  if (loading) {
-    return null;
-  }
+  let extraDoms : React.ReactElement[]= [];
 
-  let shouldShowNewTableName = true;
   switch (migrationMetaData.toDialect) {
+    // case 'mysql':
+    // case 'mariadb':
+    // case 'mssql':
+    // case 'postgres':
+    // case 'sqlite':
     // case 'cassandra': // TODO: to be implemented
     // case 'mongodb': // TODO: to be implemented
     // case 'redis': // TODO: to be implemented
     // case 'cosmosdb': // TODO: to be implemented
     case 'aztable':
-      shouldShowNewTableName = false;
+      extraDoms.push(<>
+        <ColumnSelector
+          columns={columns}
+          value={migrationMetaData.azTableRowKeyField}
+          onChange={(newValue) => onChange('azTableRowKeyField', newValue)}
+        />
+        <ColumnSelector
+          columns={columns}
+          value={migrationMetaData.azTablePartitionKeyField}
+          onChange={(newValue) => onChange('azTablePartitionKeyField', newValue)}
+        />
+      </>)
       break;
+  }
+
+  if (loading) {
+    return null;
   }
 
   return (
     <>
       <DialectSelector
         value={migrationMetaData.toDialect}
-        onChange={(newToDialect) => onChange('toDialect', newToDialect)}
+        onChange={(newValue) => onChange('toDialect', newValue)}
       />
-      {shouldShowNewTableName && (
-        <TextField
-          label='New Table Name'
-          defaultValue={migrationMetaData.newTableName}
-          onBlur={(e) => onChange('newTableName', e.target.value)}
-          required
-          size='small'
-          fullWidth={true}
-          autoComplete='off'
-        />
-      )}
+      <TextField
+        label='New Table Name'
+        defaultValue={migrationMetaData.newTableName}
+        onBlur={(e) => onChange('newTableName', e.target.value)}
+        required
+        size='small'
+        fullWidth={true}
+        autoComplete='off'
+      />
+      {extraDoms}
     </>
   );
 }
