@@ -13,6 +13,27 @@ Object {
 }
 `;
 
+exports[`BaseDataAdapter resolveTypes complex objects with null 1`] = `
+Object {
+  "id": Object {
+    "name": "id",
+    "nested": false,
+    "propertyPath": Array [
+      "id",
+    ],
+    "type": "integer",
+  },
+  "is_locked": Object {
+    "name": "is_locked",
+    "nested": false,
+    "propertyPath": Array [
+      "is_locked",
+    ],
+    "type": "integer",
+  },
+}
+`;
+
 exports[`BaseDataAdapter resolveTypes nested objects 1`] = `
 Object {
   "_id": Object {
