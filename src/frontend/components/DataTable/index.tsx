@@ -230,8 +230,6 @@ export function DataTableWithJSONList(props: Omit<DataTableProps, 'columns'>) {
                 {columnValue.toString()}
               </pre>
             );
-          } else if (typeof columnValue === 'string') {
-            return columnValue;
           } else if (typeof columnValue === 'number') {
             return <pre style={{ textTransform: 'uppercase' }}>{columnValue}</pre>;
           } else if (typeof columnValue === 'object') {
