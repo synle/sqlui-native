@@ -28,6 +28,11 @@ import {
   getCreateDatabase as getCreateDatabaseForRdbms,
   getCreateTable as getCreateTableForRdbms,
 } from 'src/common/adapters/RelationalDataAdapter/scripts';
+import {
+  getBulkInsert as getBulkInsertForCassandra,
+  getCreateKeyspace as getCreateKeyspaceForCassandra,
+  getCreateTable as getCreateTableForCassandra,
+} from 'src/common/adapters/CassandraDataAdapter/scripts';
 import CodeEditorBox from 'src/frontend/components/CodeEditorBox';
 import ConnectionDatabaseSelector from 'src/frontend/components/QueryBox/ConnectionDatabaseSelector';
 import Select from 'src/frontend/components/Select';
@@ -42,6 +47,8 @@ import useToaster from 'src/frontend/hooks/useToaster';
 import { formatJS, formatSQL } from 'src/frontend/utils/formatter';
 import { SqluiCore, SqluiFrontend } from 'typings';
 // TOOD: extract this
+const MESSAGE_NO_DATA_FOR_MIGRATION = `Warning - This migration doesn't contain any record. This might be an error with your query to get data.`;
+
 type MigrationBoxProps = {
   mode: SqluiFrontend.MigrationMode;
 };
@@ -66,8 +73,8 @@ function DialectSelector(props: DialectSelectorProps) {
       <option value='postgres'>postgres</option>
       <option value='sqlite'>sqlite</option>
       {/*// TODO: to be implemented*/}
-      {/*<option value='cassandra'>cassandra</option>
-      <option value='redis'>redis</option>*/}
+      {/*<option value='redis'>redis</option>*/}
+      <option value='cassandra'>cassandra</option>
       <option value='mongodb'>mongodb</option>
       <option value='cosmosdb'>cosmosdb</option>
       <option value='aztable'>aztable</option>
@@ -141,6 +148,7 @@ async function generateMigrationScript(
 
   // getCreateTable
   // SqlAction.TableInput
+  const migrationInfoMessage = `toDialect=${toDialect} toDatabaseId=${toDatabaseId} toTableId=${toTableId}`
   switch (toDialect) {
     case 'mysql':
     case 'mariadb':
@@ -148,16 +156,42 @@ async function generateMigrationScript(
     case 'postgres':
     case 'sqlite':
       res.push(
-        `-- Schema Creation Script : toDialect=${toDialect} toDatabaseId=${toDatabaseId} toTableId=${toTableId}`,
+        `-- Schema Creation Script : ${migrationInfoMessage}`,
       );
       res.push(formatSQL(getCreateDatabaseForRdbms(toQueryMetaData)?.query || ''));
       res.push(formatSQL(getCreateTableForRdbms(toQueryMetaData)?.query || ''));
       res.push(`USE ${toDatabaseId}`);
       break;
-    // case 'cassandra': // TODO: to be implemented
+    case 'cassandra':
+      res.push(
+        `-- Schema Creation Script : ${migrationInfoMessage}`,
+      );
+
+      // special type mapping for cassandra
+      toQueryMetaData.columns = toQueryMetaData.columns.map(col => {
+        let type = col.type.toLowerCase();
+        if(type.includes('int') || type.includes('integer')){
+          type = 'INT';
+        } else if(type.includes('float')){
+          type = 'FLOAT';
+        } else if(type === 'bit' || type === 'boolean'){
+          type = 'BOOLEAN';
+        } else {
+          type = 'TEXT';
+        }
+
+        // update the type with new mappings
+        col.type = type;
+
+        return col;
+      })
+
+      res.push(formatSQL(getCreateKeyspaceForCassandra(toQueryMetaData)?.query || ''));
+      res.push(formatSQL(getCreateTableForCassandra(toQueryMetaData)?.query || ''));
+      break;
     case 'mongodb':
       res.push(
-        `// Schema Creation Script : toDialect=${toDialect} toDatabaseId=${toDatabaseId} toTableId=${toTableId}`,
+        `// Schema Creation Script : ${migrationInfoMessage}`,
       );
       res.push(formatJS(getCreateDatabaseForMongoDB(toQueryMetaData)?.query || ''));
       res.push(formatJS(getCreateCollectionForMongoDB(toQueryMetaData)?.query || ''));
@@ -165,14 +199,14 @@ async function generateMigrationScript(
     // case 'redis': // TODO: to be implemented
     case 'cosmosdb':
       res.push(
-        `// Schema Creation Script : toDialect=${toDialect} toDatabaseId=${toDatabaseId} toTableId=${toTableId}`,
+        `// Schema Creation Script : ${migrationInfoMessage}`,
       );
       res.push(formatJS(getCreateDatabaseForAzCosmosDb(toQueryMetaData)?.query || ''));
       res.push(formatJS(getCreateContainerForAzCosmosDb(toQueryMetaData)?.query || ''));
       break;
     case 'aztable':
       res.push(
-        `// Schema Creation Script : toDialect=${toDialect} toDatabaseId=${toDatabaseId} toTableId=${toTableId}`,
+        `// Schema Creation Script : ${migrationInfoMessage}`,
       );
       res.push(formatJS(getCreateTableForAzTable(toQueryMetaData)?.query || ''));
       break;
@@ -196,24 +230,36 @@ async function generateMigrationScript(
           res.push(formatSQL(getBulkInsertForRdbms(toQueryMetaData, results.raw)?.query || ''));
         } else {
           res.push(
-            `-- The SELECT query does not have any returned that we can use for data migration...`,
+            `-- ${MESSAGE_NO_DATA_FOR_MIGRATION}`,
           );
           errors.push(
-            `Warning - This migration doesn't contain any record. This might be an error with your query to get data.`,
+            MESSAGE_NO_DATA_FOR_MIGRATION
           );
         }
         break;
-      // case 'cassandra':// TODO: to be implemented
+      case 'cassandra':
+        res.push(`-- Data Migration Script`);
+        if (hasSomeResults) {
+          res.push(formatSQL(getBulkInsertForCassandra(toQueryMetaData, results.raw)?.query || ''));
+        } else {
+          res.push(
+            `-- ${MESSAGE_NO_DATA_FOR_MIGRATION}`,
+          );
+          errors.push(
+            MESSAGE_NO_DATA_FOR_MIGRATION
+          );
+        }
+        break;
       case 'mongodb':
         res.push(`// Data Migration Script`);
         if (hasSomeResults) {
           res.push(formatJS(getBulkInsertForMongoDB(toQueryMetaData, results.raw)?.query || ''));
         } else {
           res.push(
-            `// The SELECT query does not have any returned that we can use for data migration...`,
+            `// ${MESSAGE_NO_DATA_FOR_MIGRATION}`,
           );
           errors.push(
-            `Warning - This migration doesn't contain any record. This might be an error with your query to get data.`,
+            MESSAGE_NO_DATA_FOR_MIGRATION
           );
         }
         break;
@@ -224,10 +270,10 @@ async function generateMigrationScript(
           res.push(formatJS(getBulkInsertForCosmosDb(toQueryMetaData, results.raw)?.query || ''));
         } else {
           res.push(
-            `// The SELECT query does not have any returned that we can use for data migration...`,
+            `// ${MESSAGE_NO_DATA_FOR_MIGRATION}`,
           );
           errors.push(
-            `Warning - This migration doesn't contain any record. This might be an error with your query to get data.`,
+            MESSAGE_NO_DATA_FOR_MIGRATION
           );
         }
         break;
@@ -246,10 +292,10 @@ async function generateMigrationScript(
           );
         } else {
           res.push(
-            `// The SELECT query does not have any returned that we can use for data migration...`,
+            `// ${MESSAGE_NO_DATA_FOR_MIGRATION}`,
           );
           errors.push(
-            `Warning - This migration doesn't contain any record. This might be an error with your query to get data.`,
+            MESSAGE_NO_DATA_FOR_MIGRATION
           );
         }
         break;
@@ -620,16 +666,16 @@ function MigrationMetaDataInputs(props: MigrationMetaDataInputsProps) {
 
   let shouldShowNewDatabaseIdInput = true;
   switch (migrationMetaData.toDialect) {
+    // case 'redis': // TODO: to be implemented
     case 'mysql':
     case 'mariadb':
     case 'mssql':
     case 'postgres':
     case 'sqlite':
-    default:
-    // case 'cassandra': // TODO: to be implemented
+    case 'cassandra':
     case 'mongodb':
-    // case 'redis': // TODO: to be implemented
     case 'cosmosdb':
+    default:
       break;
     case 'aztable':
       shouldShowNewDatabaseIdInput = false;

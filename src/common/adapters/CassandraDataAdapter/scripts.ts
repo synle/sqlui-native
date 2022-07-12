@@ -69,14 +69,40 @@ export function getInsert(
 
   const columnString = input.columns.map((col) => col.name).join(',\n');
   const insertValueString = input.columns.map((col) => {
-    let valToUse = '';
+    let valToUse : string | null = '';
+    console.log(col.name, value?.[col.name])
+    if(col.name === 'meeting_promoted')debugger
     if (value) {
-      if (value?.[col.name]) {
+      if(value?.[col.name] === null){
+        valToUse = null;
+      }
+      else if (value?.[col.name] !== undefined) {
         // use the value if it's there
         valToUse = `${escapeSQLValue(value[col.name])}`;
       }
 
-      if (_isColumnBooleanField(col) || _isColumnNumberField(col)) {
+      if(valToUse === undefined){
+        valToUse = null;
+      }
+
+      if(valToUse === null || valToUse === 'null'){
+        return 'null';
+      }
+
+      if (_isColumnBooleanField(col)) {
+        valToUse= (valToUse || '').toLowerCase();
+        if(valToUse === 'true' || valToUse === '1'){
+          return 'true'
+        }
+
+        if(valToUse === 'false' || valToUse === '0'){
+          return 'false'
+        }
+
+        return 'null'; // no value, then returned as null
+      }
+
+      if (_isColumnNumberField(col)) {
         // don't wrap with quote
         return valToUse;
       }
@@ -93,6 +119,33 @@ export function getInsert(
     formatter,
     query: `INSERT INTO ${input.tableId} (${columnString})
               VALUES (${insertValueString})`,
+  };
+}
+
+export function getBulkInsert(
+  input: SqlAction.TableInput,
+  rows?: Record<string, any>[],
+): SqlAction.Output | undefined {
+  const label = `Insert`;
+
+  if (!input.columns) {
+    return undefined;
+  }
+
+  if (!rows || rows.length === 0) {
+    return undefined;
+  }
+
+  const rowsToInsert = (rows || []).map(value => getInsert(input, value)).map(output => output?.query);
+
+  return {
+    label,
+    formatter,
+    query: `
+    BEGIN BATCH
+    ${rowsToInsert.join(';\n')}
+    APPLY BATCH
+    `,
   };
 }
 
@@ -158,7 +211,7 @@ export function getUpdate(input: SqlAction.TableInput): SqlAction.Output | undef
 
   return {
     label,
-    formatter: 'js',
+    formatter,
     query: `UPDATE ${input.tableId}
               SET ${columnString}
               WHERE ${whereColumnString}`,
@@ -188,7 +241,7 @@ export function getCreateKeyspace(input: SqlAction.DatabaseInput): SqlAction.Out
   return {
     label,
     formatter,
-    query: `CREATE KEYSPACE IF NOT EXISTS some_keyspace
+    query: `CREATE KEYSPACE IF NOT EXISTS ${input.databaseId || 'some_keyspace'}
              WITH replication = {'class': 'SimpleStrategy', 'replication_factor' : 3};`,
   };
 }
