@@ -15,6 +15,11 @@ import {
 } from 'src/common/adapters/AzureTableStorageAdapter/scripts';
 import BaseDataAdapter from 'src/common/adapters/BaseDataAdapter/index';
 import {
+  getBulkInsert as getBulkInsertForCassandra,
+  getCreateKeyspace as getCreateKeyspaceForCassandra,
+  getCreateTable as getCreateTableForCassandra,
+} from 'src/common/adapters/CassandraDataAdapter/scripts';
+import {
   getSampleSelectQuery,
   getSyntaxModeByDialect,
 } from 'src/common/adapters/DataScriptFactory';
@@ -28,11 +33,6 @@ import {
   getCreateDatabase as getCreateDatabaseForRdbms,
   getCreateTable as getCreateTableForRdbms,
 } from 'src/common/adapters/RelationalDataAdapter/scripts';
-import {
-  getBulkInsert as getBulkInsertForCassandra,
-  getCreateKeyspace as getCreateKeyspaceForCassandra,
-  getCreateTable as getCreateTableForCassandra,
-} from 'src/common/adapters/CassandraDataAdapter/scripts';
 import CodeEditorBox from 'src/frontend/components/CodeEditorBox';
 import ConnectionDatabaseSelector from 'src/frontend/components/QueryBox/ConnectionDatabaseSelector';
 import Select from 'src/frontend/components/Select';
@@ -148,33 +148,29 @@ async function generateMigrationScript(
 
   // getCreateTable
   // SqlAction.TableInput
-  const migrationInfoMessage = `toDialect=${toDialect} toDatabaseId=${toDatabaseId} toTableId=${toTableId}`
+  const migrationInfoMessage = `toDialect=${toDialect} toDatabaseId=${toDatabaseId} toTableId=${toTableId}`;
   switch (toDialect) {
     case 'mysql':
     case 'mariadb':
     case 'mssql':
     case 'postgres':
     case 'sqlite':
-      res.push(
-        `-- Schema Creation Script : ${migrationInfoMessage}`,
-      );
+      res.push(`-- Schema Creation Script : ${migrationInfoMessage}`);
       res.push(formatSQL(getCreateDatabaseForRdbms(toQueryMetaData)?.query || ''));
       res.push(formatSQL(getCreateTableForRdbms(toQueryMetaData)?.query || ''));
       res.push(`USE ${toDatabaseId}`);
       break;
     case 'cassandra':
-      res.push(
-        `-- Schema Creation Script : ${migrationInfoMessage}`,
-      );
+      res.push(`-- Schema Creation Script : ${migrationInfoMessage}`);
 
       // special type mapping for cassandra
-      toQueryMetaData.columns = toQueryMetaData.columns.map(col => {
+      toQueryMetaData.columns = toQueryMetaData.columns.map((col) => {
         let type = col.type.toLowerCase();
-        if(type.includes('int') || type.includes('integer')){
+        if (type.includes('int') || type.includes('integer')) {
           type = 'INT';
-        } else if(type.includes('float')){
+        } else if (type.includes('float')) {
           type = 'FLOAT';
-        } else if(type === 'bit' || type === 'boolean'){
+        } else if (type === 'bit' || type === 'boolean') {
           type = 'BOOLEAN';
         } else {
           type = 'TEXT';
@@ -184,30 +180,24 @@ async function generateMigrationScript(
         col.type = type;
 
         return col;
-      })
+      });
 
       res.push(formatSQL(getCreateKeyspaceForCassandra(toQueryMetaData)?.query || ''));
       res.push(formatSQL(getCreateTableForCassandra(toQueryMetaData)?.query || ''));
       break;
     case 'mongodb':
-      res.push(
-        `// Schema Creation Script : ${migrationInfoMessage}`,
-      );
+      res.push(`// Schema Creation Script : ${migrationInfoMessage}`);
       res.push(formatJS(getCreateDatabaseForMongoDB(toQueryMetaData)?.query || ''));
       res.push(formatJS(getCreateCollectionForMongoDB(toQueryMetaData)?.query || ''));
       break;
     // case 'redis': // TODO: to be implemented
     case 'cosmosdb':
-      res.push(
-        `// Schema Creation Script : ${migrationInfoMessage}`,
-      );
+      res.push(`// Schema Creation Script : ${migrationInfoMessage}`);
       res.push(formatJS(getCreateDatabaseForAzCosmosDb(toQueryMetaData)?.query || ''));
       res.push(formatJS(getCreateContainerForAzCosmosDb(toQueryMetaData)?.query || ''));
       break;
     case 'aztable':
-      res.push(
-        `// Schema Creation Script : ${migrationInfoMessage}`,
-      );
+      res.push(`// Schema Creation Script : ${migrationInfoMessage}`);
       res.push(formatJS(getCreateTableForAzTable(toQueryMetaData)?.query || ''));
       break;
   }
@@ -229,12 +219,8 @@ async function generateMigrationScript(
         if (hasSomeResults) {
           res.push(formatSQL(getBulkInsertForRdbms(toQueryMetaData, results.raw)?.query || ''));
         } else {
-          res.push(
-            `-- ${MESSAGE_NO_DATA_FOR_MIGRATION}`,
-          );
-          errors.push(
-            MESSAGE_NO_DATA_FOR_MIGRATION
-          );
+          res.push(`-- ${MESSAGE_NO_DATA_FOR_MIGRATION}`);
+          errors.push(MESSAGE_NO_DATA_FOR_MIGRATION);
         }
         break;
       case 'cassandra':
@@ -242,12 +228,8 @@ async function generateMigrationScript(
         if (hasSomeResults) {
           res.push(formatSQL(getBulkInsertForCassandra(toQueryMetaData, results.raw)?.query || ''));
         } else {
-          res.push(
-            `-- ${MESSAGE_NO_DATA_FOR_MIGRATION}`,
-          );
-          errors.push(
-            MESSAGE_NO_DATA_FOR_MIGRATION
-          );
+          res.push(`-- ${MESSAGE_NO_DATA_FOR_MIGRATION}`);
+          errors.push(MESSAGE_NO_DATA_FOR_MIGRATION);
         }
         break;
       case 'mongodb':
@@ -255,12 +237,8 @@ async function generateMigrationScript(
         if (hasSomeResults) {
           res.push(formatJS(getBulkInsertForMongoDB(toQueryMetaData, results.raw)?.query || ''));
         } else {
-          res.push(
-            `// ${MESSAGE_NO_DATA_FOR_MIGRATION}`,
-          );
-          errors.push(
-            MESSAGE_NO_DATA_FOR_MIGRATION
-          );
+          res.push(`// ${MESSAGE_NO_DATA_FOR_MIGRATION}`);
+          errors.push(MESSAGE_NO_DATA_FOR_MIGRATION);
         }
         break;
       // case 'redis':// TODO: to be implemented
@@ -269,12 +247,8 @@ async function generateMigrationScript(
         if (hasSomeResults) {
           res.push(formatJS(getBulkInsertForCosmosDb(toQueryMetaData, results.raw)?.query || ''));
         } else {
-          res.push(
-            `// ${MESSAGE_NO_DATA_FOR_MIGRATION}`,
-          );
-          errors.push(
-            MESSAGE_NO_DATA_FOR_MIGRATION
-          );
+          res.push(`// ${MESSAGE_NO_DATA_FOR_MIGRATION}`);
+          errors.push(MESSAGE_NO_DATA_FOR_MIGRATION);
         }
         break;
       case 'aztable':
@@ -291,12 +265,8 @@ async function generateMigrationScript(
             ),
           );
         } else {
-          res.push(
-            `// ${MESSAGE_NO_DATA_FOR_MIGRATION}`,
-          );
-          errors.push(
-            MESSAGE_NO_DATA_FOR_MIGRATION
-          );
+          res.push(`// ${MESSAGE_NO_DATA_FOR_MIGRATION}`);
+          errors.push(MESSAGE_NO_DATA_FOR_MIGRATION);
         }
         break;
     }

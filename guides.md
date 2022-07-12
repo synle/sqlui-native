@@ -821,7 +821,7 @@ cassandra://username:password@localhost:9042
 ### Create Keyspace
 
 ```sql
-CREATE KEYSPACE IF NOT EXISTS some_keyspace WITH replication = { 'class': 'SimpleStrategy',
+CREATE KEYSPACE IF NOT EXISTS database1 WITH replication = { 'class': 'SimpleStrategy',
 'replication_factor': 3 };
 ```
 
@@ -875,14 +875,17 @@ VALUES
 
 ### Update
 
-```js
-UPDATE table1
-SET id = 123,
+```sql
+UPDATE
+  table1
+SET
+  id = 123,
   column1 = 123,
   column2 = '_column2_'
-WHERE id = 123 AND
-column1 = 123 AND
-column2 = '_column2_'
+WHERE
+  id = 123
+  AND column1 = 123
+  AND column2 = '_column2_'
 ```
 
 

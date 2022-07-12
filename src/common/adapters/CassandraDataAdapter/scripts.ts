@@ -69,34 +69,33 @@ export function getInsert(
 
   const columnString = input.columns.map((col) => col.name).join(',\n');
   const insertValueString = input.columns.map((col) => {
-    let valToUse : string | null = '';
-    console.log(col.name, value?.[col.name])
-    if(col.name === 'meeting_promoted')debugger
+    let valToUse: string | null = '';
+    console.log(col.name, value?.[col.name]);
+    if (col.name === 'meeting_promoted') debugger;
     if (value) {
-      if(value?.[col.name] === null){
+      if (value?.[col.name] === null) {
         valToUse = null;
-      }
-      else if (value?.[col.name] !== undefined) {
+      } else if (value?.[col.name] !== undefined) {
         // use the value if it's there
         valToUse = `${escapeSQLValue(value[col.name])}`;
       }
 
-      if(valToUse === undefined){
+      if (valToUse === undefined) {
         valToUse = null;
       }
 
-      if(valToUse === null || valToUse === 'null'){
+      if (valToUse === null || valToUse === 'null') {
         return 'null';
       }
 
       if (_isColumnBooleanField(col)) {
-        valToUse= (valToUse || '').toLowerCase();
-        if(valToUse === 'true' || valToUse === '1'){
-          return 'true'
+        valToUse = (valToUse || '').toLowerCase();
+        if (valToUse === 'true' || valToUse === '1') {
+          return 'true';
         }
 
-        if(valToUse === 'false' || valToUse === '0'){
-          return 'false'
+        if (valToUse === 'false' || valToUse === '0') {
+          return 'false';
         }
 
         return 'null'; // no value, then returned as null
@@ -136,7 +135,9 @@ export function getBulkInsert(
     return undefined;
   }
 
-  const rowsToInsert = (rows || []).map(value => getInsert(input, value)).map(output => output?.query);
+  const rowsToInsert = (rows || [])
+    .map((value) => getInsert(input, value))
+    .map((output) => output?.query);
 
   return {
     label,
