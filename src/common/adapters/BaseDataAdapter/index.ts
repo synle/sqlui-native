@@ -81,7 +81,9 @@ export default abstract class BaseDataAdapter {
       //@ts-ignore
       const { item, path, key } = stack.pop();
       const type = Array.isArray(item) ? 'array' : typeof item;
-      if (type === 'object') {
+      if(item === null || item === undefined){
+        // TODO: if item has a null or undefined, let's set the allow null flag
+      } else if (type === 'object') {
         for (const targetKey of Object.keys(item)) {
           const newPath = [...path, targetKey];
           const newKey = newPath.join('/');
@@ -98,10 +100,11 @@ export default abstract class BaseDataAdapter {
         }
       } else {
         // TODO: figure out the max length
-        columnsMap[key] = columnsMap[key] || {
+        columnsMap[key] = {
+          ...(columnsMap[key] || {}),
           name: key,
-          type: onTypeConverter(type, item),
           propertyPath: path,
+          type: onTypeConverter(type, item),
           nested: path.length > 1, // whether or not this is a complex type and nested inside another JSON
         };
       }
