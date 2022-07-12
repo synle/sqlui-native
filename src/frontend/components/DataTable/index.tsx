@@ -231,7 +231,7 @@ export function DataTableWithJSONList(props: Omit<DataTableProps, 'columns'>) {
               </pre>
             );
           } else if (typeof columnValue === 'string') {
-            return <pre style={{ textTransform: 'uppercase' }}>{columnValue}</pre>;
+            return columnValue;
           } else if (typeof columnValue === 'number') {
             return <pre style={{ textTransform: 'uppercase' }}>{columnValue}</pre>;
           } else if (typeof columnValue === 'object') {
