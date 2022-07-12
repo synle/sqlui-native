@@ -140,7 +140,10 @@ export function getInsert(
   const columnString = columns.map((col) => col.name).join(',\n');
   const insertValueString = columns
     .map((col) => {
-      if (value?.[col.name]) {
+      if (value?.[col.name] === null) {
+        return `null`;
+      }
+      if (value?.[col.name] !== undefined) {
         // use the value if it's there
         return `'${escapeSQLValue(value[col.name])}'`;
       }

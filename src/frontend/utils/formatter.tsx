@@ -35,7 +35,9 @@ export const formatDuration = (durationMs: number) => {
 };
 
 export const escapeSQLValue = (value?: string) => {
-  value = value || '';
+  if (value === undefined) {
+    value = '';
+  }
   return value?.toString().replace(/'/g, `''`);
 };
 
