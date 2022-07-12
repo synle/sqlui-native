@@ -134,6 +134,45 @@ export function getInsert(
   };
 }
 
+export function getBulkInsert(
+  input: SqlAction.TableInput,
+  rows?: Record<string, any>[],
+): SqlAction.Output | undefined {
+  const label = `Insert`;
+
+  if (!input.columns) {
+    return undefined;
+  }
+
+  const columns = input.columns || [];
+
+  const columnString = input.columns.map((col) => col.name).join(',\n');
+  const insertValueString = input.columns.map((col) => `'_${col.name}_'`).join(',\n');
+
+  const rowsToInsert = (rows || []).map(value => {
+    let record: any = {};
+    if (value) {
+      record = value;
+    } else {
+      for (const column of columns) {
+        if (column.name !== '_id') {
+          const valueToUse: any = column.type === 'string' ? 'abc' : 123;
+          set(record, column.propertyPath || column.name, valueToUse);
+        }
+      }
+    }
+    return record;
+  })
+
+  return {
+    label,
+    formatter,
+    query: `${MONGO_ADAPTER_PREFIX}.collection('${input.tableId}').insertMany(
+        ${serializeJsonForMongoScript(rowsToInsert)}
+      );`,
+  };
+}
+
 export function getUpdateWithValues(
   input: SqlAction.TableInput,
   value: Record<string, any>,
