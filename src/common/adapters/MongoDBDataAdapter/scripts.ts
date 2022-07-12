@@ -149,7 +149,7 @@ export function getBulkInsert(
   const columnString = input.columns.map((col) => col.name).join(',\n');
   const insertValueString = input.columns.map((col) => `'_${col.name}_'`).join(',\n');
 
-  const rowsToInsert = (rows || []);
+  const rowsToInsert = rows || [];
 
   return {
     label,

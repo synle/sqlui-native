@@ -81,7 +81,7 @@ export default abstract class BaseDataAdapter {
       //@ts-ignore
       const { item, path, key } = stack.pop();
       const type = Array.isArray(item) ? 'array' : typeof item;
-      if(item === null || item === undefined){
+      if (item === null || item === undefined) {
         // TODO: if item has a null or undefined, let's set the allow null flag
       } else if (type === 'object') {
         for (const targetKey of Object.keys(item)) {

@@ -19,15 +19,15 @@ import {
   getSyntaxModeByDialect,
 } from 'src/common/adapters/DataScriptFactory';
 import {
+  getBulkInsert as getBulkInsertForMongoDB,
+  getCreateCollection as getCreateCollectionForMongoDB,
+  getCreateDatabase as getCreateDatabaseForMongoDB,
+} from 'src/common/adapters/MongoDBDataAdapter/scripts';
+import {
   getBulkInsert as getBulkInsertForRdbms,
   getCreateDatabase as getCreateDatabaseForRdbms,
   getCreateTable as getCreateTableForRdbms,
 } from 'src/common/adapters/RelationalDataAdapter/scripts';
-import {
-  getBulkInsert as getBulkInsertForMongoDB,
-  getCreateDatabase as getCreateDatabaseForMongoDB,
-  getCreateCollection as getCreateCollectionForMongoDB,
-} from 'src/common/adapters/MongoDBDataAdapter/scripts';
 import CodeEditorBox from 'src/frontend/components/CodeEditorBox';
 import ConnectionDatabaseSelector from 'src/frontend/components/QueryBox/ConnectionDatabaseSelector';
 import Select from 'src/frontend/components/Select';
@@ -147,25 +147,33 @@ async function generateMigrationScript(
     case 'mssql':
     case 'postgres':
     case 'sqlite':
-      res.push(`-- Schema Creation Script : toDialect=${toDialect} toDatabaseId=${toDatabaseId} toTableId=${toTableId}`);
+      res.push(
+        `-- Schema Creation Script : toDialect=${toDialect} toDatabaseId=${toDatabaseId} toTableId=${toTableId}`,
+      );
       res.push(formatSQL(getCreateDatabaseForRdbms(toQueryMetaData)?.query || ''));
       res.push(formatSQL(getCreateTableForRdbms(toQueryMetaData)?.query || ''));
       res.push(`USE ${toDatabaseId}`);
       break;
     // case 'cassandra': // TODO: to be implemented
     case 'mongodb':
-      res.push(`// Schema Creation Script : toDialect=${toDialect} toDatabaseId=${toDatabaseId} toTableId=${toTableId}`);
+      res.push(
+        `// Schema Creation Script : toDialect=${toDialect} toDatabaseId=${toDatabaseId} toTableId=${toTableId}`,
+      );
       res.push(formatJS(getCreateDatabaseForMongoDB(toQueryMetaData)?.query || ''));
       res.push(formatJS(getCreateCollectionForMongoDB(toQueryMetaData)?.query || ''));
       break;
     // case 'redis': // TODO: to be implemented
     case 'cosmosdb':
-      res.push(`// Schema Creation Script : toDialect=${toDialect} toDatabaseId=${toDatabaseId} toTableId=${toTableId}`);
+      res.push(
+        `// Schema Creation Script : toDialect=${toDialect} toDatabaseId=${toDatabaseId} toTableId=${toTableId}`,
+      );
       res.push(formatJS(getCreateDatabaseForAzCosmosDb(toQueryMetaData)?.query || ''));
       res.push(formatJS(getCreateContainerForAzCosmosDb(toQueryMetaData)?.query || ''));
       break;
     case 'aztable':
-      res.push(`// Schema Creation Script : toDialect=${toDialect} toDatabaseId=${toDatabaseId} toTableId=${toTableId}`);
+      res.push(
+        `// Schema Creation Script : toDialect=${toDialect} toDatabaseId=${toDatabaseId} toTableId=${toTableId}`,
+      );
       res.push(formatJS(getCreateTableForAzTable(toQueryMetaData)?.query || ''));
       break;
   }
@@ -624,7 +632,7 @@ function MigrationMetaDataInputs(props: MigrationMetaDataInputsProps) {
     case 'cosmosdb':
       break;
     case 'aztable':
-      shouldShowNewDatabaseIdInput = false
+      shouldShowNewDatabaseIdInput = false;
 
       extraDoms.push(
         <React.Fragment key='aztable'>
@@ -670,15 +678,17 @@ function MigrationMetaDataInputs(props: MigrationMetaDataInputsProps) {
       </div>
 
       <div className='FormInput__Row'>
-        {shouldShowNewDatabaseIdInput && <TextField
-                  label='New Database Name'
-                  defaultValue={migrationMetaData.newDatabaseName}
-                  onBlur={(e) => onChange('newDatabaseName', e.target.value)}
-                  required
-                  size='small'
-                  fullWidth={true}
-                  autoComplete='off'
-                />}
+        {shouldShowNewDatabaseIdInput && (
+          <TextField
+            label='New Database Name'
+            defaultValue={migrationMetaData.newDatabaseName}
+            onBlur={(e) => onChange('newDatabaseName', e.target.value)}
+            required
+            size='small'
+            fullWidth={true}
+            autoComplete='off'
+          />
+        )}
         <TextField
           label='New Table Name'
           defaultValue={migrationMetaData.newTableName}

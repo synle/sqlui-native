@@ -25,8 +25,6 @@ describe('BaseDataAdapter', () => {
       });
       expect(actual).toMatchSnapshot();
     });
-
-
     test('complex objects with null', async () => {
       const actual = BaseDataAdapter.resolveTypes({
         "id": 321,
