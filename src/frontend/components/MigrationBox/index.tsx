@@ -19,7 +19,8 @@ import {
   getSyntaxModeByDialect,
 } from 'src/common/adapters/DataScriptFactory';
 import {
-  getBulkInsert as getBulkInsertForRdmbs,
+  getBulkInsert as getBulkInsertForRdbms,
+  getCreateDatabase as getCreateDatabaseForRdbms,
   getCreateTable as getCreateTableForRdbms,
 } from 'src/common/adapters/RelationalDataAdapter/scripts';
 import CodeEditorBox from 'src/frontend/components/CodeEditorBox';
@@ -141,19 +142,21 @@ async function generateMigrationScript(
     case 'mssql':
     case 'postgres':
     case 'sqlite':
-      res.push(`-- Schema Creation Script : toDialect=${toDialect} toTableId=${toTableId}`);
+      res.push(`-- Schema Creation Script : toDialect=${toDialect} toDatabaseId=${toDatabaseId} toTableId=${toTableId}`);
+      res.push(formatSQL(getCreateDatabaseForRdbms(toQueryMetaData)?.query || ''));
       res.push(formatSQL(getCreateTableForRdbms(toQueryMetaData)?.query || ''));
+      res.push(`USE ${toDatabaseId}`);
       break;
     // case 'cassandra': // TODO: to be implemented
     // case 'mongodb': // TODO: to be implemented
     // case 'redis': // TODO: to be implemented
     case 'cosmosdb':
-      res.push(`// Schema Creation Script : toDialect=${toDialect} toTableId=${toTableId}`);
+      res.push(`// Schema Creation Script : toDialect=${toDialect} toDatabaseId=${toDatabaseId} toTableId=${toTableId}`);
       res.push(formatJS(getCreateDatabaseForAzCosmosDb(toQueryMetaData)?.query || ''));
       res.push(formatJS(getCreateContainerForAzCosmosDb(toQueryMetaData)?.query || ''));
       break;
     case 'aztable':
-      res.push(`// Schema Creation Script : toDialect=${toDialect} toTableId=${toTableId}`);
+      res.push(`// Schema Creation Script : toDialect=${toDialect} toDatabaseId=${toDatabaseId} toTableId=${toTableId}`);
       res.push(formatJS(getCreateTableForAzTable(toQueryMetaData)?.query || ''));
       break;
   }
@@ -173,7 +176,7 @@ async function generateMigrationScript(
       case 'sqlite':
         res.push(`-- Data Migration Script`);
         if (hasSomeResults) {
-          res.push(formatSQL(getBulkInsertForRdmbs(toQueryMetaData, results.raw)?.query || ''));
+          res.push(formatSQL(getBulkInsertForRdbms(toQueryMetaData, results.raw)?.query || ''));
         } else {
           res.push(
             `-- The SELECT query does not have any returned that we can use for data migration...`,
