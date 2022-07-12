@@ -156,7 +156,7 @@ export function getInsert(
     case 'mysql':
       return {
         label,
-        formatter: 'sql',
+        formatter,
         query: `INSERT INTO ${input.tableId} (${columnString})
                 VALUES (${insertValueString})`,
       };
@@ -210,7 +210,7 @@ export function getBulkInsert(
     case 'mysql':
       return {
         label,
-        formatter: 'sql',
+        formatter,
         query: `INSERT INTO ${input.tableId} (${columnString})
                 VALUES ${insertValueRows}`,
       };
