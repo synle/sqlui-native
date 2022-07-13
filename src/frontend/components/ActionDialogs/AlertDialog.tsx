@@ -12,9 +12,9 @@ export type AlertInput = {
   onYesClick?: () => void;
   noLabel?: string;
   isConfirm?: boolean;
-}
+};
 
-type AlertDialogProps = AlertInput &{
+type AlertDialogProps = AlertInput & {
   open: boolean;
   onDismiss: () => void;
 };

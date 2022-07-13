@@ -35,8 +35,8 @@ export default function ChoiceDialog(props: ChoiceDialogProps) {
     onSelect: handleListItemClick,
   } = props;
 
-  let onClose : (() => void )| undefined = handleClose;
-  if(required){
+  let onClose: (() => void) | undefined = handleClose;
+  if (required) {
     onClose = undefined;
   }
 
