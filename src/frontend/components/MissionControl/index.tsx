@@ -427,11 +427,6 @@ export default function MissionControl() {
 
         // then set it as current session
         setCurrentSessionId(newSession.id);
-
-        // reload the page just in case
-        // TODO: see if we need to use a separate row
-        navigate('/', { replace: true });
-        window.location.reload();
       }
     } catch (err) {}
   };
@@ -460,11 +455,6 @@ export default function MissionControl() {
       if (!newSession) {
         return;
       }
-
-      // reload the page just in case
-      // TODO: see if we need to use a separate row
-      navigate('/', { replace: true });
-      window.location.reload();
     } catch (err) {
       if (onClose) {
         onClose();
