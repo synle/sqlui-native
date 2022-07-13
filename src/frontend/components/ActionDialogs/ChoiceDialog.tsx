@@ -15,13 +15,11 @@ export type ChoiceInput = {
   title: string;
   message: string | React.ReactNode;
   options: ChoiceOption[];
+  required?: boolean;
 };
 
-type ChoiceDialogProps = {
+type ChoiceDialogProps = ChoiceInput & {
   open: boolean;
-  title: string;
-  message: string | React.ReactNode;
-  options: ChoiceOption[];
   onSelect: (newValue: string) => void;
   onDismiss: () => void;
 };
@@ -32,12 +30,18 @@ export default function ChoiceDialog(props: ChoiceDialogProps) {
     message,
     options,
     open,
+    required,
     onDismiss: handleClose,
     onSelect: handleListItemClick,
   } = props;
 
+  let onClose : (() => void )| undefined = handleClose;
+  if(required){
+    onClose = undefined;
+  }
+
   return (
-    <Dialog onClose={handleClose} open={open} fullWidth={true}>
+    <Dialog onClose={onClose} open={open} fullWidth={true}>
       <DialogTitle>{title}</DialogTitle>
       <DialogContent>
         {message}

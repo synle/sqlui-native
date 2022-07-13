@@ -394,12 +394,22 @@ export default function MissionControl() {
 
     try {
       const options = [
-        ...sessions.map((session) => ({
-          label: session.name,
-          value: session.id,
-          startIcon:
-            session.id === currentSession?.id ? <CheckBoxIcon /> : <CheckBoxOutlineBlankIcon />,
-        })),
+        ...sessions.map((session) => {
+          if(session.id === currentSession?.id){
+            return {
+              label: `${session.name} (Continue using this)`,
+              value: session.id,
+              startIcon:
+                 <CheckBoxIcon />,
+            }
+          }
+          return {
+            label: session.name,
+            value: session.id,
+            startIcon:
+               <CheckBoxOutlineBlankIcon />,
+          }
+        }),
         {
           label: 'New Session',
           value: 'newSession',
@@ -407,7 +417,7 @@ export default function MissionControl() {
         },
       ];
 
-      const selected = await choice('Choose a session', undefined, options);
+      const selected = await choice('Change Session', 'Select one of the following session:', options, true);
 
       // make an api call to update my session to this
       if (selected === 'newSession') {
