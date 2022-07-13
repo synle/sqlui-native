@@ -32,10 +32,10 @@ import { useAddBookmarkItem } from 'src/frontend/hooks/useFolderItems';
 import {
   useDeleteSession,
   useGetCurrentSession,
-  useGetSessions,
-  useUpsertSession,
-  useSetOpenSession,
   useGetOpenedSessionIds,
+  useGetSessions,
+  useSetOpenSession,
+  useUpsertSession,
 } from 'src/frontend/hooks/useSession';
 import { useSetting } from 'src/frontend/hooks/useSetting';
 import { useShowHide } from 'src/frontend/hooks/useShowHide';
@@ -399,7 +399,7 @@ export default function MissionControl() {
     try {
       const options = [
         ...sessions.map((session) => {
-          const disabled = openedSessionIds && openedSessionIds?.indexOf(session.id) >= 0
+          const disabled = openedSessionIds && openedSessionIds?.indexOf(session.id) >= 0;
 
           if (session.id === currentSession?.id) {
             return {

@@ -352,7 +352,9 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     const windowId = req.headers['sqlui-native-window-id'];
 
     // remove the old session id and hook up the new session id
-    global.openedSessionIds = [ ...global.openedSessionIds, newSessionId].filter((sessionId) => sessionId !== oldSessionId)
+    global.openedSessionIds = [...global.openedSessionIds, newSessionId].filter(
+      (sessionId) => sessionId !== oldSessionId,
+    );
 
     res.status(200).json({
       sessionId: newSessionId,
