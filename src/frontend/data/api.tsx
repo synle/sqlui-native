@@ -147,11 +147,11 @@ export class ProxyApi {
   }
 
   static getOpenedSessionIds() {
-    return _fetch<SqluiCore.string[]>(`/api/sessions/opened`);
+    return _fetch<string[]>(`/api/sessions/opened`);
   }
 
   static setOpenSession(sessionId: string) {
-    return _fetch<SqluiCore.FolderItem>(`/api/sessions/opened/${sessionId}`, {
+    return _fetch<void>(`/api/sessions/opened/${sessionId}`, {
       method: 'post',
     });
   }

@@ -9,6 +9,7 @@ export type ChoiceOption = {
   startIcon?: React.ReactNode;
   label: string | React.ReactNode;
   value: string;
+  disabled?: boolean;
 };
 
 export type ChoiceInput = {
@@ -49,7 +50,8 @@ export default function ChoiceDialog(props: ChoiceDialogProps) {
           {options.map((option) => (
             <ListItem
               button
-              onClick={() => handleListItemClick(option.value)}
+              onClick={() => !option.disabled && handleListItemClick(option.value)}
+              disabled={!!option.disabled}
               key={option.value}
               sx={{ alignItems: 'center', display: 'flex' }}>
               {!option.startIcon ? null : option.startIcon}
