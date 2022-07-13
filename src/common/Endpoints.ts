@@ -352,7 +352,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
 
     res.status(200).json({
       sessionId,
-      windowId
+      windowId,
     });
   });
 
