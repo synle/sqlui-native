@@ -399,18 +399,20 @@ export default function MissionControl() {
     try {
       const options = [
         ...sessions.map((session) => {
+          const disabled = openedSessionIds && openedSessionIds?.indexOf(session.id) >= 0
+
           if (session.id === currentSession?.id) {
             return {
               label: `${session.name} (Current Session)`,
               value: session.id,
-              disabled: openedSessionIds.indexOf(session.id) >= 0,
+              disabled,
               startIcon: <CheckBoxIcon />,
             };
           }
           return {
             label: session.name,
             value: session.id,
-            disabled: openedSessionIds.indexOf(session.id) >= 0,
+            disabled,
             startIcon: <CheckBoxOutlineBlankIcon />,
           };
         }),
@@ -443,6 +445,9 @@ export default function MissionControl() {
         if (!newSession) {
           return;
         }
+
+        // set the new session id;
+        setOpenSession(newSession.id);
 
         // go back to homepage before switching session
         navigate('/', { replace: true });
