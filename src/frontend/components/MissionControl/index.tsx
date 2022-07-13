@@ -411,7 +411,7 @@ export default function MissionControl() {
 
       // make an api call to update my session to this
       if (selected === 'newSession') {
-        onAddSession();
+        onAddSession(() => selectCommand({ event: 'clientEvent/session/switch' }));
       } else {
         // switching session
         if (currentSession?.id === selected) {
@@ -436,39 +436,41 @@ export default function MissionControl() {
     } catch (err) {}
   };
 
-  const onAddSession = async () => {
-    // create the new session
-    // if there is no session, let's create the session
-    const newSessionName = await prompt({
-      title: 'New Session',
-      message: 'New Session Name',
-      value: `Session ${new Date().toLocaleString()}`,
-      saveLabel: 'Save',
-      required: true,
-    });
+  const onAddSession = async (onClose?: () => void) => {
+    try {
+      // create the new session
+      // if there is no session, let's create the session
+      const newSessionName = await prompt({
+        title: 'New Session',
+        message: 'New Session Name',
+        value: `Session ${new Date().toLocaleString()}`,
+        saveLabel: 'Save',
+        required: true,
+      });
 
-    if (!newSessionName) {
-      return;
+      if (!newSessionName) {
+        return;
+      }
+
+      const newSession = await upsertSession({
+        id: getRandomSessionId(),
+        name: newSessionName,
+      });
+
+      if (!newSession) {
+        return;
+      }
+
+      // reload the page just in case
+      // TODO: see if we need to use a separate row
+      navigate('/', { replace: true });
+      window.location.reload();
+    } catch (err) {
+      if (onClose) {
+        onClose();
+      }
     }
-
-    const newSession = await upsertSession({
-      id: getRandomSessionId(),
-      name: newSessionName,
-    });
-
-    if (!newSession) {
-      return;
-    }
-
-    // then set it as current session
-    setCurrentSessionId(newSession.id);
-
-    // reload the page just in case
-    // TODO: see if we need to use a separate row
-    navigate('/', { replace: true });
-    window.location.reload();
   };
-
   const onRenameSession = async () => {
     try {
       if (!currentSession) {
