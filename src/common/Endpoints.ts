@@ -341,6 +341,11 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     res.status(200).json(await sessionsStorage.list());
   });
 
+  global.openedSessionIds = [];
+  addDataEndpoint('get', '/api/opened', async (req, res, apiCache) => {
+    res.status(200).json(global.openedSessionIds);
+  });
+
   addDataEndpoint('post', '/api/session', async (req, res, apiCache) => {
     apiCache.set('serverCacheKey/cacheMetaData', null);
 
