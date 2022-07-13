@@ -5,15 +5,18 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 
-type AlertDialogProps = {
-  open: boolean;
-  title: string;
+export type AlertInput = {
+  title?: string;
   message: string;
   yesLabel?: string;
   onYesClick?: () => void;
   noLabel?: string;
-  onDismiss: () => void;
   isConfirm?: boolean;
+};
+
+type AlertDialogProps = AlertInput & {
+  open: boolean;
+  onDismiss: () => void;
 };
 
 export default function AlertDialog(props: AlertDialogProps) {
@@ -24,7 +27,7 @@ export default function AlertDialog(props: AlertDialogProps) {
       aria-labelledby='alert-dialog-title'
       aria-describedby='alert-dialog-description'>
       <div style={{ width: 400 }}>
-        <DialogTitle id='alert-dialog-title'>{props.title}</DialogTitle>
+        <DialogTitle id='alert-dialog-title'>{props.title || 'Alert'}</DialogTitle>
         <DialogContent>
           <DialogContentText id='alert-dialog-description'>{props.message}</DialogContentText>
         </DialogContent>

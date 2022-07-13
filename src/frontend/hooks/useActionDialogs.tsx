@@ -1,10 +1,11 @@
 import { useQuery, useQueryClient } from 'react-query';
 import React from 'react';
+import { AlertInput } from 'src/frontend/components/ActionDialogs/AlertDialog';
 import { ChoiceInput, ChoiceOption } from 'src/frontend/components/ActionDialogs/ChoiceDialog';
 import { ModalInput } from 'src/frontend/components/ActionDialogs/ModalDialog';
 import { PromptInput } from 'src/frontend/components/ActionDialogs/PromptDialog';
 
-type AlertActionDialog = {
+type AlertActionDialog = AlertInput & {
   type: 'alert';
   message: string;
   onSubmit?: () => void;
@@ -86,6 +87,7 @@ export function useActionDialogs() {
     title: string,
     message: string | React.ReactNode,
     options: ChoiceOption[],
+    required?: boolean,
   ): Promise<string> => {
     return new Promise((resolve, reject) => {
       const newActionDialog: ActionDialog = {
@@ -96,6 +98,7 @@ export function useActionDialogs() {
         onSubmit: (yesSelected, newValue) => {
           yesSelected && newValue ? resolve(newValue) : reject();
         },
+        required,
       };
 
       _actionDialogs = [..._actionDialogs, newActionDialog];
