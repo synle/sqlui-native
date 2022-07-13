@@ -47,7 +47,7 @@ function setupMenu() {
             const mainWindow = createWindow();
 
             const newWindowHandler = () => {
-              sendMessage(mainWindow, 'clientEvent/session/switch');
+              setTimeout(() => sendMessage(mainWindow, 'clientEvent/session/switch'), 1500)
               mainWindow.webContents.removeListener('dom-ready', newWindowHandler);
             };
 

@@ -435,6 +435,9 @@ export default function MissionControl() {
           return;
         }
 
+        // go back to homepage before switching session
+        navigate('/', { replace: true });
+
         // then set it as current session
         setCurrentSessionId(newSession.id);
       }
@@ -465,6 +468,12 @@ export default function MissionControl() {
       if (!newSession) {
         return;
       }
+
+      // go back to homepage before switching session
+      navigate('/', { replace: true });
+
+      // then set it as current session
+      setCurrentSessionId(newSession.id);
     } catch (err) {
       if (onClose) {
         onClose();

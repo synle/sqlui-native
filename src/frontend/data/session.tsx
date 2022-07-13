@@ -23,6 +23,5 @@ export function setCurrentSessionId(newSessionId: string) {
   SessionStorageConfig.set('clientConfig/api.sessionId', newSessionId);
 
   // reload the page
-  window.history.replaceState(null, document.title, '/');
   window.location.reload();
 }
