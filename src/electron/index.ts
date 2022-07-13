@@ -18,6 +18,33 @@ function createWindow() {
     },
   });
 
+  let targetWindowId = `electron-window-${Date.now()}`;
+  mainWindow.webContents.on('did-finish-load', () => {
+    mainWindow.webContents.executeJavaScript(`
+      window.electronWindowId = '${targetWindowId}';
+      console.log('hooking window.windowId', window.electronWindowId);
+    `);
+  });
+
+  const onCloseHandler = async () => {
+    // on window close, we need to remove its sessionId
+    const targetSessionId = await mainWindow.webContents.executeJavaScript(
+      `sessionStorage.getItem('clientConfig/api.sessionId')`,
+    );
+    console.log('Window closed - freeing up the targetSessionId', targetSessionId);
+
+    // TODO: here we should free up the sessionid when the window is closed
+    //@ts-ignore
+    global.openedSessionIds = global.openedSessionIds.filter(
+      (sessionId) => sessionId !== targetSessionId,
+    );
+  };
+
+  mainWindow.on('close', onCloseHandler); // win close
+
+  //@ts-ignore
+  mainWindow._windowId = targetWindowId;
+
   // and load the index.html of the app.
   mainWindow.loadFile('index.html');
 
@@ -47,7 +74,12 @@ function setupMenu() {
             const mainWindow = createWindow();
 
             const newWindowHandler = () => {
-              setTimeout(() => sendMessage(mainWindow, 'clientEvent/session/switch'), 1500);
+              setTimeout(() => {
+                sendMessage(mainWindow, 'clientEvent/session/switch');
+                mainWindow.webContents.executeJavaScript(`
+                  console.log('Asking window to show switch session');
+                `);
+              }, 1500);
               mainWindow.webContents.removeListener('dom-ready', newWindowHandler);
             };
 

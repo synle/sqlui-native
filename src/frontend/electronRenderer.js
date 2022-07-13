@@ -6,6 +6,7 @@
 // process.
 try {
   window.isElectron = false;
+  window.electronWindowId = 'mocked-webapp-window';
   window.toggleElectronMenu = () => {};
   window.openBrowserLink = (link) => {
     window.open(link, '_blank');

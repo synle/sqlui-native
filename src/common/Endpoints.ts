@@ -341,6 +341,21 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     res.status(200).json(await sessionsStorage.list());
   });
 
+  global.openedSessionIds = [];
+  addDataEndpoint('get', '/api/sessions/opened', async (req, res, apiCache) => {
+    res.status(200).json(global.openedSessionIds);
+  });
+
+  addDataEndpoint('post', '/api/sessions/opened/:sessionId', async (req, res, apiCache) => {
+    const sessionId = req.params?.sessionId;
+    const windowId = req.headers['sqlui-native-window-id'];
+
+    res.status(200).json({
+      sessionId,
+      windowId,
+    });
+  });
+
   addDataEndpoint('post', '/api/session', async (req, res, apiCache) => {
     apiCache.set('serverCacheKey/cacheMetaData', null);
 

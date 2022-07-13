@@ -17,6 +17,21 @@ export function useGetSessions() {
   });
 }
 
+export function useGetOpenedSessionIds() {
+  return useQuery([QUERY_KEY_SESSIONS, 'opened'], dataApi.getOpenedSessionIds, {
+    notifyOnChangeProps: ['data', 'error'],
+  });
+}
+
+export function useSetOpenSession() {
+  const queryClient = useQueryClient();
+  return useMutation<void, void, string>(dataApi.setOpenSession, {
+    onSuccess: async () => {
+      queryClient.invalidateQueries(QUERY_KEY_SESSIONS);
+    },
+  });
+}
+
 export function useGetCurrentSession() {
   const { data, ...rest } = useGetSessions();
 
