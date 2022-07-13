@@ -34,6 +34,8 @@ import {
   useGetCurrentSession,
   useGetSessions,
   useUpsertSession,
+  useSetOpenSession,
+  useGetOpenedSessionIds,
 } from 'src/frontend/hooks/useSession';
 import { useSetting } from 'src/frontend/hooks/useSetting';
 import { useShowHide } from 'src/frontend/hooks/useShowHide';
@@ -111,6 +113,8 @@ export default function MissionControl() {
   const { command, selectCommand, dismissCommand } = useCommands();
   const { modal, choice, confirm, prompt, alert, dismiss: dismissDialog } = useActionDialogs();
   const { data: sessions, isLoading: loadingSessions } = useGetSessions();
+  const { data: openedSessionIds, isLoading: loadingOpenedSessionIds } = useGetOpenedSessionIds();
+  const { mutateAsync: setOpenSession } = useSetOpenSession();
   const { data: currentSession, isLoading: loadingCurrentSession } = useGetCurrentSession();
   const { mutateAsync: upsertSession } = useUpsertSession();
   const { mutateAsync: importConnection } = useImportConnection();
@@ -397,14 +401,16 @@ export default function MissionControl() {
         ...sessions.map((session) => {
           if (session.id === currentSession?.id) {
             return {
-              label: `${session.name} (Continue using this)`,
+              label: `${session.name} (Current Session)`,
               value: session.id,
+              disabled: openedSessionIds.indexOf(session.id) >= 0,
               startIcon: <CheckBoxIcon />,
             };
           }
           return {
             label: session.name,
             value: session.id,
+            disabled: openedSessionIds.indexOf(session.id) >= 0,
             startIcon: <CheckBoxOutlineBlankIcon />,
           };
         }),
