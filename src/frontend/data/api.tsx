@@ -146,6 +146,16 @@ export class ProxyApi {
     return _fetch<SqluiCore.Session[]>(`/api/sessions`);
   }
 
+  static getOpenedSessionIds() {
+    return _fetch<SqluiCore.string[]>(`/api/sessions/opened`);
+  }
+
+  static setOpenSession(sessionId: string) {
+    return _fetch<SqluiCore.FolderItem>(`/api/sessions/opened/${sessionId}`, {
+      method: 'post',
+    });
+  }
+
   static upsertSession(newSession: SqluiCore.CoreSession) {
     const { id } = newSession;
     if (id) {
@@ -160,6 +170,7 @@ export class ProxyApi {
       });
     }
   }
+
   static deleteSession(sessionId: string) {
     return _fetch<string>(`/api/session/${sessionId}`, {
       method: 'delete',

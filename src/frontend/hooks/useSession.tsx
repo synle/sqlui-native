@@ -5,6 +5,7 @@ import {
   DEFAULT_SESSION_NAME,
   getCurrentSessionId,
   setCurrentSessionId,
+  setOpenSession,
 } from 'src/frontend/data/session';
 import { SqluiCore } from 'typings';
 
@@ -14,6 +15,22 @@ const QUERY_KEY_SESSIONS = 'sessions';
 export function useGetSessions() {
   return useQuery([QUERY_KEY_SESSIONS], dataApi.getSessions, {
     notifyOnChangeProps: ['data', 'error'],
+  });
+}
+
+export function useGetOpenedSessionIds() {
+  return useQuery([QUERY_KEY_SESSIONS, 'opened'], dataApi.getOpenedSessionIds, {
+    notifyOnChangeProps: ['data', 'error'],
+  });
+}
+
+export function useSetOpenSession() {
+  const queryClient = useQueryClient();
+  return useMutation<string, void, void>(dataApi.setOpenSession, {
+    onSuccess: async (newSession) => {
+      queryClient.invalidateQueries(QUERY_KEY_SESSIONS);
+      return newSession;
+    },
   });
 }
 
