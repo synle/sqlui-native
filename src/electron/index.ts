@@ -18,8 +18,19 @@ function createWindow() {
     },
   });
 
+  let targetWindowId = Date.now();
+  mainWindow.webContents.on('did-finish-load', () => {
+    console.log('start hooking up window.windowId', targetWindowId)
+
+    mainWindow.webContents.executeJavaScript(`
+      console.log('setting windowId')
+      window.windowId = '${targetWindowId}';
+      console.log('window.windowId', window.windowId)
+    `);
+  });
+
   //@ts-ignore
-  mainWindow._windowId = Date.now();
+  mainWindow._windowId = targetWindowId;
 
   // and load the index.html of the app.
   mainWindow.loadFile('index.html');
@@ -50,16 +61,13 @@ function setupMenu() {
             const mainWindow = createWindow();
 
             const newWindowHandler = () => {
-              setTimeout(() => sendMessage(mainWindow, 'clientEvent/session/switch'), 1500);
+              setTimeout(() => {
+                sendMessage(mainWindow, 'clientEvent/session/switch');
+                mainWindow.webContents.executeJavaScript(`
+                  console.log('Asking window to show switch session');
+                `);
+              }, 1500);
               mainWindow.webContents.removeListener('dom-ready', newWindowHandler);
-
-              // plumbing up the window id
-              //@ts-ignore
-              const targetWindowId = mainWindow._windowId;
-              mainWindow.webContents.executeJavaScript(`
-                window.windowId = '${targetWindowId}';
-                console.log('window.windowId', window.windowId)
-              `);
             };
 
             mainWindow.webContents.on('dom-ready', newWindowHandler);
