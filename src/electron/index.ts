@@ -18,6 +18,9 @@ function createWindow() {
     },
   });
 
+  //@ts-ignore
+  mainWindow._windowId = Date.now();
+
   // and load the index.html of the app.
   mainWindow.loadFile('index.html');
 
@@ -49,6 +52,14 @@ function setupMenu() {
             const newWindowHandler = () => {
               setTimeout(() => sendMessage(mainWindow, 'clientEvent/session/switch'), 1500);
               mainWindow.webContents.removeListener('dom-ready', newWindowHandler);
+
+              // plumbing up the window id
+              //@ts-ignore
+              const targetWindowId = mainWindow._windowId;
+              mainWindow.webContents.executeJavaScript(`
+                window.windowId = '${targetWindowId}';
+                console.log('window.windowId', window.windowId)
+              `);
             };
 
             mainWindow.webContents.on('dom-ready', newWindowHandler);
