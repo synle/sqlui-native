@@ -8,6 +8,7 @@ async function _fetch<T>(input: RequestInfo, initOptions?: RequestInit) {
     ...headers,
     ...{
       'sqlui-native-session-id': await getCurrentSessionId(),
+      'sqlui-native-window-id': window.electronWindowId,
       'Content-Type': 'application/json',
       Accept: 'application/json',
     },

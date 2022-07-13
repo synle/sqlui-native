@@ -18,16 +18,27 @@ function createWindow() {
     },
   });
 
-  let targetWindowId = Date.now();
+  let targetWindowId = `electron-window-${Date.now()}`;
   mainWindow.webContents.on('did-finish-load', () => {
-    console.log('start hooking up window.windowId', targetWindowId)
-
     mainWindow.webContents.executeJavaScript(`
-      console.log('setting windowId')
-      window.windowId = '${targetWindowId}';
-      console.log('window.windowId', window.windowId)
+      window.electronWindowId = '${targetWindowId}';
+      console.log('hooking window.windowId', window.electronWindowId);
     `);
   });
+
+  const onCloseHandler = async () => {
+    // on window close, we need to remove its sessionId
+    const targetSessionId = await mainWindow.webContents.executeJavaScript(`sessionStorage.getItem('clientConfig/api.sessionId')`);
+    console.log('Window closed - freeing up the targetSessionId', targetSessionId);
+
+    // TODO: here we should free up the sessionid when the window is closed
+    //@ts-ignore
+    global.openedSessionIds = global.openedSessionIds.filter(
+      sessionId => sessionId !== targetSessionId
+    )
+  };
+
+  mainWindow.on('close', onCloseHandler); // win close
 
   //@ts-ignore
   mainWindow._windowId = targetWindowId;
