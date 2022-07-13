@@ -21,4 +21,7 @@ export function getCurrentSessionId() {
 export function setCurrentSessionId(newSessionId: string) {
   SessionStorageConfig.clear();
   SessionStorageConfig.set('clientConfig/api.sessionId', newSessionId);
+
+  // reload the page
+  window.location.reload();
 }

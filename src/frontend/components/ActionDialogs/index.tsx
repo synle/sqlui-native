@@ -75,6 +75,7 @@ export default function ActionDialogs(props: ActionDialogsProps) {
           options={dialog.options}
           onSelect={onChoiceSelect}
           onDismiss={onDimiss}
+          required={dialog.required}
         />
       );
     case 'modal':

@@ -23,6 +23,7 @@ export default function InputError(props: InputErrorProps) {
         position: 'absolute',
         borderColor: 'transparent',
         outline: 'none',
+        transform: 'scale(0.2)',
       }}
     />
   );

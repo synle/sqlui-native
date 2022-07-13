@@ -47,11 +47,11 @@ function setupMenu() {
             const mainWindow = createWindow();
 
             const newWindowHandler = () => {
-              sendMessage(mainWindow, 'clientEvent/session/switch');
-              mainWindow.webContents.removeListener('did-finish-load', newWindowHandler);
+              setTimeout(() => sendMessage(mainWindow, 'clientEvent/session/switch'), 1500);
+              mainWindow.webContents.removeListener('dom-ready', newWindowHandler);
             };
 
-            mainWindow.webContents.on('did-finish-load', newWindowHandler);
+            mainWindow.webContents.on('dom-ready', newWindowHandler);
           },
         },
         {
