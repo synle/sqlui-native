@@ -22,6 +22,7 @@ function addDataEndpoint(
   const handlerToUse = async (req: any, res: any, cache: any) => {
     try {
       res.header('sqlui-native-session-id', req.headers['sqlui-native-session-id']);
+      res.header('sqlui-native-window-id', req.headers['sqlui-native-window-id']);
       await incomingHandler(req, res, cache);
     } catch (err: any) {
       console.log('err', err);
@@ -331,6 +332,17 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
   //=========================================================================
   // session api endpoints
   //=========================================================================
+  // get the current session
+  addDataEndpoint('get', '/api/sessions', async (req, res, apiCache) => {
+    const sessionsStorage = await new PersistentStorage<SqluiCore.Session>(
+      req.headers['sqlui-native-session-id'],
+      'session',
+      'sessions',
+    );
+
+    res.status(200).json(await sessionsStorage.list());
+  });
+
   addDataEndpoint('get', '/api/sessions', async (req, res, apiCache) => {
     const sessionsStorage = await new PersistentStorage<SqluiCore.Session>(
       req.headers['sqlui-native-session-id'],
