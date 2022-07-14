@@ -11,7 +11,6 @@ import CommandPalette from 'src/frontend/components/CommandPalette';
 import Settings from 'src/frontend/components/Settings';
 import { downloadText } from 'src/frontend/data/file';
 import {
-  DEFAULT_SESSION_NAME,
   getRandomSessionId,
   setCurrentSessionId,
 } from 'src/frontend/data/session';

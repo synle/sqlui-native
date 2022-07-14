@@ -27,29 +27,14 @@ import RecycleBinPage from 'src/frontend/views/RecycleBinPage';
 import './App.scss';
 import 'src/frontend/electronRenderer';
 
-export default function App() {
-  const [hasValidSessionId, setHasValidSessionId] = useState(false);
+type SessionManagerProps = {
+  children: any;
+}
+
+export function SessionManager(props: SessionManagerProps){
   const { data: sessions, isLoading: loadingSessions } = useGetSessions();
   const { data: currentSession, isLoading: loadingCurrentSession } = useGetCurrentSession();
   const { mutateAsync: upsertSession } = useUpsertSession();
-  const colorMode = useDarkModeSetting();
-  const { selectCommand } = useCommands();
-  const { add: addToast } = useToaster();
-  const toasterRef = useRef<ToasterHandler | undefined>();
-
-  const myTheme = createTheme({
-    // Theme settings
-    palette: {
-      mode: colorMode,
-    },
-    components: {
-      MuiButtonBase: {
-        defaultProps: {
-          disableRipple: true,
-        },
-      },
-    },
-  });
 
   useEffect(() => {
     async function _validateSession() {
@@ -90,6 +75,33 @@ export default function App() {
       </Alert>
     );
   }
+
+  return props.children;
+}
+
+export default function App() {
+  const [hasValidSessionId, setHasValidSessionId] = useState(false);
+  const { data: sessions, isLoading: loadingSessions } = useGetSessions();
+  const { data: currentSession, isLoading: loadingCurrentSession } = useGetCurrentSession();
+  const { mutateAsync: upsertSession } = useUpsertSession();
+  const colorMode = useDarkModeSetting();
+  const { selectCommand } = useCommands();
+  const { add: addToast } = useToaster();
+  const toasterRef = useRef<ToasterHandler | undefined>();
+
+  const myTheme = createTheme({
+    // Theme settings
+    palette: {
+      mode: colorMode,
+    },
+    components: {
+      MuiButtonBase: {
+        defaultProps: {
+          disableRipple: true,
+        },
+      },
+    },
+  });
 
   const onDrop = async (e: React.DragEvent) => {
     if (e.dataTransfer.items && e.dataTransfer.items.length === 1) {
@@ -136,33 +148,35 @@ export default function App() {
   return (
     <ThemeProvider theme={myTheme}>
       <HashRouter>
-        <Box
-          className='App'
-          sx={{
-            bgcolor: 'background.default',
-            color: 'text.primary',
-          }}
-          onDrop={onDrop}
-          onDragOver={onDragOver}>
-          <AppHeader />
-          <section className='App__Section'>
-            <Routes>
-              <Route path='/' element={<MainPage />} />
-              <Route path='/connection/new' element={<NewConnectionPage />} />
-              <Route path='/connection/edit/:connectionId' element={<EditConnectionPage />} />
-              <Route
-                path='/migration/real_connection'
-                element={<MigrationPage mode='real_connection' />}
-              />
-              <Route path='/migration/raw_json' element={<MigrationPage mode='raw_json' />} />
-              <Route path='/migration' element={<MigrationPage />} />
-              <Route path='/recycle_bin' element={<RecycleBinPage />} />
-              <Route path='/bookmarks' element={<BookmarksPage />} />
-              <Route path='/record/new' element={<NewRecordPage />} />
-              <Route path='/*' element={<MainPage />} />
-            </Routes>
-          </section>
-        </Box>
+        <SessionManager>
+          <Box
+            className='App'
+            sx={{
+              bgcolor: 'background.default',
+              color: 'text.primary',
+            }}
+            onDrop={onDrop}
+            onDragOver={onDragOver}>
+            <AppHeader />
+            <section className='App__Section'>
+              <Routes>
+                <Route path='/' element={<MainPage />} />
+                <Route path='/connection/new' element={<NewConnectionPage />} />
+                <Route path='/connection/edit/:connectionId' element={<EditConnectionPage />} />
+                <Route
+                  path='/migration/real_connection'
+                  element={<MigrationPage mode='real_connection' />}
+                />
+                <Route path='/migration/raw_json' element={<MigrationPage mode='raw_json' />} />
+                <Route path='/migration' element={<MigrationPage />} />
+                <Route path='/recycle_bin' element={<RecycleBinPage />} />
+                <Route path='/bookmarks' element={<BookmarksPage />} />
+                <Route path='/record/new' element={<NewRecordPage />} />
+                <Route path='/*' element={<MainPage />} />
+              </Routes>
+            </section>
+          </Box>
+        </SessionManager>
         <MissionControl />
         <ActionDialogs />
       </HashRouter>
