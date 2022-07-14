@@ -335,7 +335,9 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
   //=========================================================================
   // get the current session
   addDataEndpoint('get', '/api/session', async (req, res, apiCache) => {
-    const windowId = res.header('sqlui-native-window-id');
+    const windowId = req.headers['sqlui-native-window-id'];
+
+    console.log('window_id', windowId)
 
     let sessionId = await sessionUtils.getByWindowId(windowId);
     if(!sessionId){
@@ -351,6 +353,8 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
 
     const session = await sessionsStorage.get(sessionId);
 
+    console.log('> TODO GET', sessionUtils.get());
+
     // TODO see if we need to start over with a new session
     if(!session){
       return res.status(404).json(null);
@@ -365,6 +369,8 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
       'sessions',
     );
 
+    console.log('> TODO GETLIST', sessionUtils.get());
+
     res.status(200).json(await sessionsStorage.list());
   });
 
@@ -377,6 +383,9 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     const windowId = req.headers['sqlui-native-window-id'];
 
     await sessionUtils.open(windowId, newSessionId);
+
+    console.log('> TODO POST', windowId, newSessionId);
+    console.log('> TODO POST', sessionUtils.get());
 
     res.status(200).json(await sessionUtils.get());
   });
