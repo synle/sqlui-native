@@ -8,7 +8,7 @@ export function getRandomSessionId() {
 }
 
 export function setCurrentSessionId(newSessionId: string, supressReload = false) {
-  const currentWindowId = sessionStorage.getItem('sqlui-native.windowId') ;
+  const currentWindowId = sessionStorage.getItem('sqlui-native.windowId') || '';
 
   // clear current configs
   SessionStorageConfig.clear();
