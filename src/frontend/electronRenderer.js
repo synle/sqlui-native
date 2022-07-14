@@ -6,11 +6,11 @@
 // process.
 try {
   window.isElectron = false;
-  window.electronWindowId = 'mocked-webapp-window';
   window.toggleElectronMenu = () => {};
   window.openBrowserLink = (link) => {
     window.open(link, '_blank');
   };
+  sessionStorage.setItem('sqlui-native.windowId', 'mocked-window-id'); // mocked to use a window id
 
   if (window.process.env.ENV_TYPE !== 'mocked-server') {
     const ipcRenderer = window.requireElectron('electron').ipcRenderer;

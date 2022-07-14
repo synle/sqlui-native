@@ -43,6 +43,7 @@ export function SessionManager(props: SessionManagerProps){
       if (!currentSession) {
         selectCommand({ event: 'clientEvent/session/switch' })
       } else {
+        setCurrentSessionId(currentSession.id, true);
         setHasValidSessionId(true);
       }
     }

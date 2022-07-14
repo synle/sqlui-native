@@ -2,7 +2,6 @@ import Electron from 'electron';
 declare global {
   interface Window {
     isElectron: boolean;
-    electronWindowId: string;
     toggleElectronMenu: (visible: boolean, menus: any[]) => void;
     openBrowserLink: (link: string) => void;
     ipcRenderer?: Electron.IpcRenderer;

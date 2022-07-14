@@ -447,7 +447,7 @@ export default function MissionControl() {
         }
 
         // set the new session id;
-        setOpenSession(newSession.id);
+        await setOpenSession(newSession.id);
 
         // go back to homepage before switching session
         navigate('/', { replace: true });

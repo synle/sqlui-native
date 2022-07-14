@@ -21,7 +21,7 @@ function createWindow() {
   let targetWindowId = `electron-window-${Date.now()}`;
   mainWindow.webContents.on('did-finish-load', () => {
     mainWindow.webContents.executeJavaScript(`
-      window.electronWindowId = '${targetWindowId}';
+      sessionStorage.setItem('sqlui-native.windowId', '${targetWindowId}')
       console.log('hooking window.windowId', window.electronWindowId);
     `);
   });
