@@ -9,6 +9,8 @@ import {
 } from 'src/common/adapters/DataAdapterFactory';
 import PersistentStorage from 'src/common/PersistentStorage';
 import { SqluiCore, SqluiEnums } from 'typings';
+import * as sessionUtils from 'src/common/utils/sessionUtils';
+
 let expressAppContext: Express | undefined;
 
 const _apiCache = {};
@@ -335,51 +337,27 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
   // get the current session
   addDataEndpoint('get', '/api/session', async (req, res, apiCache) => {
     const sessionsStorage = await new PersistentStorage<SqluiCore.Session>(
-      req.headers['sqlui-native-session-id'],
+      'session',
       'session',
       'sessions',
     );
 
-    // TODO: to be implemented
-    res.status(200).json(null);
-  });
-
-  addDataEndpoint('get', '/api/sessions', async (req, res, apiCache) => {
-    const sessionsStorage = await new PersistentStorage<SqluiCore.Session>(
-      req.headers['sqlui-native-session-id'],
-      'session',
-      'sessions',
-    );
-
-    res.status(200).json(await sessionsStorage.list());
-  });
-
-  global.openedSessionIds = [];
-  addDataEndpoint('get', '/api/sessions/opened', async (req, res, apiCache) => {
-    res.status(200).json(global.openedSessionIds);
-  });
-
-  addDataEndpoint('post', '/api/sessions/opened/:sessionId', async (req, res, apiCache) => {
-    const oldSessionId = req.headers['sqlui-native-session-id'];
-    const newSessionId = req.params?.sessionId;
     const windowId = req.headers['sqlui-native-window-id'];
+    const sessionId = await sessionUtils.getByWindowId(windowId);
+    const session = await sessionsStorage.get(sessionId);
 
-    // remove the old session id and hook up the new session id
-    global.openedSessionIds = [...global.openedSessionIds, newSessionId].filter(
-      (sessionId) => sessionId !== oldSessionId,
-    );
-
-    res.status(200).json({
-      sessionId: newSessionId,
-      windowId,
-    });
+    if(!session){
+      return res.status(404).json(null);
+    }
+    res.status(200).json(session);
   });
 
+  // add new session
   addDataEndpoint('post', '/api/session', async (req, res, apiCache) => {
     apiCache.set('serverCacheKey/cacheMetaData', null);
 
     const sessionsStorage = await new PersistentStorage<SqluiCore.Session>(
-      req.headers['sqlui-native-session-id'],
+      'session',
       'session',
       'sessions',
     );
@@ -391,11 +369,40 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     );
   });
 
+  // get a list of all sessions
+  addDataEndpoint('get', '/api/sessions', async (req, res, apiCache) => {
+    const sessionsStorage = await new PersistentStorage<SqluiCore.Session>(
+      'session',
+      'session',
+      'sessions',
+    );
+
+    res.status(200).json(await sessionsStorage.list());
+  });
+
+  // get a list of opened session ids
+  addDataEndpoint('get', '/api/sessions/opened', async (req, res, apiCache) => {
+    res.status(200).json(await sessionUtils.listSessionIds());
+  });
+
+  // open a sessionid
+  addDataEndpoint('post', '/api/sessions/opened/:sessionId', async (req, res, apiCache) => {
+    const newSessionId = req.params?.sessionId;
+    const windowId = req.headers['sqlui-native-window-id'];
+
+    await sessionUtils.open(windowId, newSessionId);
+
+    res.status(200).json({
+      sessionId: newSessionId,
+      windowId,
+    });
+  });
+
   addDataEndpoint('put', '/api/session/:sessionId', async (req, res, apiCache) => {
     apiCache.set('serverCacheKey/cacheMetaData', null);
 
     const sessionsStorage = await new PersistentStorage<SqluiCore.Session>(
-      req.headers['sqlui-native-session-id'],
+      'session',
       'session',
       'sessions',
     );
@@ -412,7 +419,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     apiCache.set('serverCacheKey/cacheMetaData', null);
 
     const sessionsStorage = await new PersistentStorage<SqluiCore.Session>(
-      req.headers['sqlui-native-session-id'],
+      'session',
       'session',
       'sessions',
     );

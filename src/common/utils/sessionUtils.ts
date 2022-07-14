@@ -10,6 +10,10 @@ export function get(){
   return openSessions
 }
 
+export function getByWindowId(windowId: string){
+  return openSessions[windowId]
+}
+
 export function listSessionIds(){
   return Object.values(openSessions);
 }
