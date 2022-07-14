@@ -33,24 +33,9 @@ export function useSetOpenSession() {
 }
 
 export function useGetCurrentSession() {
-  const { data, ...rest } = useGetSessions();
-
-  const currentMatchedSession = data?.find((session) => session.id === getCurrentSessionId());
-
-  useEffect(() => {
-    if (data) {
-      if (!currentMatchedSession) {
-        // special case where user is still accessing the deleted session id
-        // switch this back to default session
-        setCurrentSessionId(DEFAULT_SESSION_NAME);
-      }
-    }
-  }, [data, currentMatchedSession]);
-
-  return {
-    data: currentMatchedSession,
-    ...rest,
-  };
+  return useQuery([QUERY_KEY_SESSIONS, 'current'], dataApi.getSession, {
+    notifyOnChangeProps: ['data', 'error'],
+  });
 }
 
 export function useUpsertSession() {

@@ -10,6 +10,10 @@ export function get() {
   return openSessions;
 }
 
+export function getByWindowId(windowId: string){
+  return openSessions[windowId]
+}
+
 export function listSessionIds() {
   return Object.values(openSessions);
 }
@@ -17,6 +21,7 @@ export function listSessionIds() {
 export function open(windowId: string, sessionId: string = DEFAULT_SESSION_NAME) {
   // TODO: handling opening the same session id - should throw a conflict error
   openSessions[windowId] = sessionId;
+  return sessionId;
 }
 
 export function close(windowId: string) {

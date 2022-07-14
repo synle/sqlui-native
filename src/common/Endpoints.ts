@@ -9,6 +9,7 @@ import {
 } from 'src/common/adapters/DataAdapterFactory';
 import PersistentStorage from 'src/common/PersistentStorage';
 import { SqluiCore, SqluiEnums } from 'typings';
+import * as sessionUtils from 'src/common/utils/sessionUtils';
 let expressAppContext: Express | undefined;
 
 const _apiCache = {};
@@ -334,14 +335,27 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
   //=========================================================================
   // get the current session
   addDataEndpoint('get', '/api/session', async (req, res, apiCache) => {
+    const windowId = res.header('sqlui-native-window-id');
+
+    let sessionId = await sessionUtils.getByWindowId(windowId);
+    if(!sessionId){
+      // open the default session id
+      sessionId = await sessionUtils.open(windowId);
+    }
+
     const sessionsStorage = await new PersistentStorage<SqluiCore.Session>(
       'session',
       'session',
       'sessions',
     );
 
-    // TODO: to be implemented
-    res.status(200).json(null);
+    const session = await sessionsStorage.get(sessionId);
+
+    // TODO see if we need to start over with a new session
+    if(!session){
+      return res.status(404).json(null);
+    }
+    res.status(200).json(session);
   });
 
   addDataEndpoint('get', '/api/sessions', async (req, res, apiCache) => {

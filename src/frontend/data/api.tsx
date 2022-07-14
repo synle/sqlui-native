@@ -142,6 +142,10 @@ export class ProxyApi {
   }
 
   // sessions api
+  static getSession() {
+    return _fetch<SqluiCore.Session>(`/api/session`);
+  }
+
   static getSessions() {
     return _fetch<SqluiCore.Session[]>(`/api/sessions`);
   }

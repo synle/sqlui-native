@@ -3,7 +3,7 @@ import path from 'path';
 import { matchPath } from 'react-router-dom';
 import { getEndpointHandlers, setUpDataEndpoints } from 'src/common/Endpoints';
 import { SqluiEnums } from 'typings';
-
+import * as sessionUtils from 'src/common/utils/sessionUtils';
 const isMac = process.platform === 'darwin';
 
 function createWindow() {
@@ -32,12 +32,7 @@ function createWindow() {
       `sessionStorage.getItem('clientConfig/api.sessionId')`,
     );
     console.log('Window closed - freeing up the targetSessionId', targetSessionId);
-
-    // TODO: here we should free up the sessionid when the window is closed
-    //@ts-ignore
-    global.openedSessionIds = global.openedSessionIds.filter(
-      (sessionId) => sessionId !== targetSessionId,
-    );
+    sessionUtils.close(targetWindowId);
   };
 
   mainWindow.on('close', onCloseHandler); // win close
