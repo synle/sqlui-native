@@ -7,6 +7,10 @@ export function getRandomSessionId() {
   return getGeneratedRandomId(`sessionId`);
 }
 
+export function getCurrentSessionId() {
+  return SessionStorageConfig.get<string>('clientConfig/api.sessionId', '');
+}
+
 export function setCurrentSessionId(newSessionId: string) {
   SessionStorageConfig.clear();
   SessionStorageConfig.set('clientConfig/api.sessionId', newSessionId);

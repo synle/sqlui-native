@@ -3,7 +3,6 @@ import { useEffect } from 'react';
 import dataApi from 'src/frontend/data/api';
 import {
   DEFAULT_SESSION_NAME,
-  getCurrentSessionId,
   setCurrentSessionId,
 } from 'src/frontend/data/session';
 import { SqluiCore } from 'typings';

@@ -9,7 +9,7 @@ import AppHeader from 'src/frontend/components/AppHeader';
 import ElectronEventListener from 'src/frontend/components/ElectronEventListener';
 import MissionControl, { useCommands } from 'src/frontend/components/MissionControl';
 import dataApi from 'src/frontend/data/api';
-import { getDefaultSessionId, setCurrentSessionId } from 'src/frontend/data/session';
+import { getRandomSessionId, setCurrentSessionId } from 'src/frontend/data/session';
 import {
   useGetCurrentSession,
   useGetSessions,
@@ -32,35 +32,23 @@ type SessionManagerProps = {
 }
 
 export function SessionManager(props: SessionManagerProps){
+  const [hasValidSessionId, setHasValidSessionId] = useState(false);
   const { data: sessions, isLoading: loadingSessions } = useGetSessions();
   const { data: currentSession, isLoading: loadingCurrentSession } = useGetCurrentSession();
   const { mutateAsync: upsertSession } = useUpsertSession();
+  const { selectCommand } = useCommands();
 
   useEffect(() => {
     async function _validateSession() {
-      if (sessions) {
-        if (sessions.length === 0) {
-          // if there is no session, let's create the session
-          const newSession = await upsertSession({
-            id: getDefaultSessionId(),
-            name: `Default Session`,
-          });
-
-          // then set it as current session
-          setCurrentSessionId(newSession.id);
-        } else {
-          // TODO: see if we need to check again the
-          // current sessionId
-          // assume we don't do delete session
-          // this will fine, we don't need to check if the sessionId
-          // is present in the list of available sessions
-          setHasValidSessionId(true);
-        }
+      if (!currentSession) {
+        selectCommand({ event: 'clientEvent/session/switch' })
+      } else {
+        setHasValidSessionId(true);
       }
     }
 
     _validateSession();
-  }, [sessions]);
+  }, [currentSession]);
 
   const isLoading = loadingSessions || loadingCurrentSession;
 
@@ -80,7 +68,6 @@ export function SessionManager(props: SessionManagerProps){
 }
 
 export default function App() {
-  const [hasValidSessionId, setHasValidSessionId] = useState(false);
   const { data: sessions, isLoading: loadingSessions } = useGetSessions();
   const { data: currentSession, isLoading: loadingCurrentSession } = useGetCurrentSession();
   const { mutateAsync: upsertSession } = useUpsertSession();
