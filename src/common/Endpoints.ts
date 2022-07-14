@@ -333,14 +333,15 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
   // session api endpoints
   //=========================================================================
   // get the current session
-  addDataEndpoint('get', '/api/sessions', async (req, res, apiCache) => {
+  addDataEndpoint('get', '/api/session', async (req, res, apiCache) => {
     const sessionsStorage = await new PersistentStorage<SqluiCore.Session>(
       req.headers['sqlui-native-session-id'],
       'session',
       'sessions',
     );
 
-    res.status(200).json(await sessionsStorage.list());
+    // TODO: to be implemented
+    res.status(200).json(null);
   });
 
   addDataEndpoint('get', '/api/sessions', async (req, res, apiCache) => {
