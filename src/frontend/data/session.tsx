@@ -7,7 +7,7 @@ export function getRandomSessionId() {
   return getGeneratedRandomId(`sessionId`);
 }
 
-export function setCurrentSessionId(newSessionId: string, supressReload = false) {
+export function setCurrentSessionId(newSessionId: string, suppressReload = false) {
   const currentWindowId = sessionStorage.getItem('sqlui-native.windowId') || '';
 
   // clear current configs
@@ -18,7 +18,7 @@ export function setCurrentSessionId(newSessionId: string, supressReload = false)
   sessionStorage.setItem('sqlui-native.windowId', currentWindowId);
 
   // reload the page
-  if(supressReload === false){
+  if(suppressReload === false){
     window.location.reload();
   }
 }

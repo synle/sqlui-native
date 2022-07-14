@@ -33,7 +33,6 @@ type SessionManagerProps = {
 
 export function SessionManager(props: SessionManagerProps){
   const [hasValidSessionId, setHasValidSessionId] = useState(false);
-  const { data: sessions, isLoading: loadingSessions } = useGetSessions();
   const { data: currentSession, isLoading: loadingCurrentSession } = useGetCurrentSession();
   const { mutateAsync: upsertSession } = useUpsertSession();
   const { selectCommand } = useCommands();
@@ -51,7 +50,7 @@ export function SessionManager(props: SessionManagerProps){
     _validateSession();
   }, [currentSession]);
 
-  const isLoading = loadingSessions || loadingCurrentSession;
+  const isLoading = loadingCurrentSession;
 
   if (isLoading) {
     return null;
@@ -135,8 +134,8 @@ export default function App() {
 
   return (
     <ThemeProvider theme={myTheme}>
+    <SessionManager>
       <HashRouter>
-        <SessionManager>
           <Box
             className='App'
             sx={{
@@ -164,10 +163,10 @@ export default function App() {
               </Routes>
             </section>
           </Box>
-        </SessionManager>
         <MissionControl />
         <ActionDialogs />
       </HashRouter>
+      </SessionManager>
       <ElectronEventListener />
     </ThemeProvider>
   );

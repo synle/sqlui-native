@@ -336,6 +336,9 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
   // get the current session
   addDataEndpoint('get', '/api/session', async (req, res, apiCache) => {
     const windowId = req.headers['sqlui-native-window-id'];
+    if(!windowId){
+      throw 'windowId is required'
+    }
 
     console.log('window_id', windowId)
 
@@ -363,6 +366,11 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
   });
 
   addDataEndpoint('get', '/api/sessions', async (req, res, apiCache) => {
+    const windowId = req.headers['sqlui-native-window-id'];
+    if(!windowId){
+      throw 'windowId is required'
+    }
+
     const sessionsStorage = await new PersistentStorage<SqluiCore.Session>(
       'session',
       'session',
@@ -379,9 +387,12 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
   });
 
   addDataEndpoint('post', '/api/sessions/opened/:sessionId', async (req, res, apiCache) => {
-    const newSessionId = req.params?.sessionId;
     const windowId = req.headers['sqlui-native-window-id'];
+    if(!windowId){
+      throw 'windowId is required'
+    }
 
+    const newSessionId = req.params?.sessionId;
     await sessionUtils.open(windowId, newSessionId);
 
     console.log('> TODO POST', windowId, newSessionId);
