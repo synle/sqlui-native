@@ -335,7 +335,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
   // get the current session
   addDataEndpoint('get', '/api/session', async (req, res, apiCache) => {
     const sessionsStorage = await new PersistentStorage<SqluiCore.Session>(
-      req.headers['sqlui-native-session-id'],
+      'session',
       'session',
       'sessions',
     );
@@ -346,7 +346,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
 
   addDataEndpoint('get', '/api/sessions', async (req, res, apiCache) => {
     const sessionsStorage = await new PersistentStorage<SqluiCore.Session>(
-      req.headers['sqlui-native-session-id'],
+      'session',
       'session',
       'sessions',
     );
@@ -356,10 +356,12 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
 
   global.openedSessionIds = [];
   addDataEndpoint('get', '/api/sessions/opened', async (req, res, apiCache) => {
+    // TODO: to be implemented
     res.status(200).json(global.openedSessionIds);
   });
 
   addDataEndpoint('post', '/api/sessions/opened/:sessionId', async (req, res, apiCache) => {
+    // TODO: to be implemented
     const oldSessionId = req.headers['sqlui-native-session-id'];
     const newSessionId = req.params?.sessionId;
     const windowId = req.headers['sqlui-native-window-id'];
@@ -379,7 +381,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     apiCache.set('serverCacheKey/cacheMetaData', null);
 
     const sessionsStorage = await new PersistentStorage<SqluiCore.Session>(
-      req.headers['sqlui-native-session-id'],
+      'session',
       'session',
       'sessions',
     );
@@ -395,7 +397,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     apiCache.set('serverCacheKey/cacheMetaData', null);
 
     const sessionsStorage = await new PersistentStorage<SqluiCore.Session>(
-      req.headers['sqlui-native-session-id'],
+      'session',
       'session',
       'sessions',
     );
@@ -412,7 +414,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     apiCache.set('serverCacheKey/cacheMetaData', null);
 
     const sessionsStorage = await new PersistentStorage<SqluiCore.Session>(
-      req.headers['sqlui-native-session-id'],
+      'session',
       'session',
       'sessions',
     );
