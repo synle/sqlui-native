@@ -347,11 +347,17 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
   });
 
   addDataEndpoint('post', '/api/sessions/opened/:sessionId', async (req, res, apiCache) => {
-    const sessionId = req.params?.sessionId;
+    const oldSessionId = req.headers['sqlui-native-session-id'];
+    const newSessionId = req.params?.sessionId;
     const windowId = req.headers['sqlui-native-window-id'];
 
+    // remove the old session id and hook up the new session id
+    global.openedSessionIds = [...global.openedSessionIds, newSessionId].filter(
+      (sessionId) => sessionId !== oldSessionId,
+    );
+
     res.status(200).json({
-      sessionId,
+      sessionId: newSessionId,
       windowId,
     });
   });

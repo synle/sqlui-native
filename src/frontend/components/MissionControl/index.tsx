@@ -32,7 +32,9 @@ import { useAddBookmarkItem } from 'src/frontend/hooks/useFolderItems';
 import {
   useDeleteSession,
   useGetCurrentSession,
+  useGetOpenedSessionIds,
   useGetSessions,
+  useSetOpenSession,
   useUpsertSession,
 } from 'src/frontend/hooks/useSession';
 import { useSetting } from 'src/frontend/hooks/useSetting';
@@ -111,6 +113,8 @@ export default function MissionControl() {
   const { command, selectCommand, dismissCommand } = useCommands();
   const { modal, choice, confirm, prompt, alert, dismiss: dismissDialog } = useActionDialogs();
   const { data: sessions, isLoading: loadingSessions } = useGetSessions();
+  const { data: openedSessionIds, isLoading: loadingOpenedSessionIds } = useGetOpenedSessionIds();
+  const { mutateAsync: setOpenSession } = useSetOpenSession();
   const { data: currentSession, isLoading: loadingCurrentSession } = useGetCurrentSession();
   const { mutateAsync: upsertSession } = useUpsertSession();
   const { mutateAsync: importConnection } = useImportConnection();
@@ -395,16 +399,20 @@ export default function MissionControl() {
     try {
       const options = [
         ...sessions.map((session) => {
+          const disabled = openedSessionIds && openedSessionIds?.indexOf(session.id) >= 0;
+
           if (session.id === currentSession?.id) {
             return {
-              label: `${session.name} (Continue using this)`,
+              label: `${session.name} (Current Session)`,
               value: session.id,
+              disabled,
               startIcon: <CheckBoxIcon />,
             };
           }
           return {
             label: session.name,
             value: session.id,
+            disabled,
             startIcon: <CheckBoxOutlineBlankIcon />,
           };
         }),
@@ -437,6 +445,9 @@ export default function MissionControl() {
         if (!newSession) {
           return;
         }
+
+        // set the new session id;
+        setOpenSession(newSession.id);
 
         // go back to homepage before switching session
         navigate('/', { replace: true });
