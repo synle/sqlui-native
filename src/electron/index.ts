@@ -3,10 +3,11 @@ import path from 'path';
 import { matchPath } from 'react-router-dom';
 import { getEndpointHandlers, setUpDataEndpoints } from 'src/common/Endpoints';
 import { SqluiEnums } from 'typings';
+import * as sessionUtils from 'src/common/utils/sessionUtils';
 
 const isMac = process.platform === 'darwin';
 
-function createWindow() {
+function createWindow(isFirstWindow = false) {
   const mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
@@ -25,6 +26,11 @@ function createWindow() {
       console.log('hooking window.windowId', window.electronWindowId);
     `);
   });
+
+  if(isFirstWindow === true){
+    // for the first window, we will attempt to refer it as the default electron session
+    sessionUtils.open(targetWindowId);
+  }
 
   const onCloseHandler = async () => {
     // on window close, we need to remove its sessionId
@@ -71,7 +77,7 @@ function setupMenu() {
           label: 'New Window',
           accelerator: isMac ? 'Cmd+Shift+N' : 'Ctrl+Shift+N',
           click: async () => {
-            const mainWindow = createWindow();
+            const mainWindow = createWindow(true);
 
             const newWindowHandler = () => {
               setTimeout(() => {
