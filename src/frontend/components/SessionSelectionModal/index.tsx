@@ -1,56 +1,37 @@
+import CheckBoxIcon from '@mui/icons-material/CheckBox';
+import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
+import Button from '@mui/material/Button';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
-import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
-import Alert from '@mui/material/Alert';
-import Box from '@mui/material/Box';
-import CircularProgress from '@mui/material/CircularProgress';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { HashRouter, Route, Routes } from 'react-router-dom';
-import { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
 import ActionDialogs from 'src/frontend/components/ActionDialogs';
-import AppHeader from 'src/frontend/components/AppHeader';
-import ElectronEventListener from 'src/frontend/components/ElectronEventListener';
-import MissionControl, { useCommands } from 'src/frontend/components/MissionControl';
-import dataApi from 'src/frontend/data/api';
 import { getRandomSessionId, setCurrentSessionId } from 'src/frontend/data/session';
+import { useActionDialogs } from 'src/frontend/hooks/useActionDialogs';
 import {
   useGetCurrentSession,
-  useGetSessions,
-  useUpsertSession,
   useGetOpenedSessionIds,
+  useGetSessions,
   useSetOpenSession,
+  useUpsertSession,
 } from 'src/frontend/hooks/useSession';
-import { useDarkModeSetting } from 'src/frontend/hooks/useSetting';
-import useToaster, { ToasterHandler } from 'src/frontend/hooks/useToaster';
-import BookmarksPage from 'src/frontend/views/BookmarksPage';
-import EditConnectionPage from 'src/frontend/views/EditConnectionPage';
-import MainPage from 'src/frontend/views/MainPage';
-import MigrationPage from 'src/frontend/views/MigrationPage';
-import NewConnectionPage from 'src/frontend/views/NewConnectionPage';
-import { NewRecordPage } from 'src/frontend/views/RecordPage';
-import RecycleBinPage from 'src/frontend/views/RecycleBinPage';
-import { useActionDialogs } from 'src/frontend/hooks/useActionDialogs';
-import CheckBoxIcon from '@mui/icons-material/CheckBox';
-import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
-import AddIcon from '@mui/icons-material/Add';
-import { useNavigate } from 'react-router-dom';
 
 type SessionOption = {
   label: string;
   value: string;
-  disabled?: boolean,
+  disabled?: boolean;
   startIcon: any;
-}
+};
 
 type SessionSelectionFormProps = {
   isFirstTime: boolean;
   options: SessionOption[];
-}
+};
 
-export function SessionSelectionForm(props: SessionSelectionFormProps){
-  const {options} = props;
+export function SessionSelectionForm(props: SessionSelectionFormProps) {
+  const { options } = props;
   const navigate = useNavigate();
   const { mutateAsync: setOpenSession } = useSetOpenSession();
   const { mutateAsync: upsertSession } = useUpsertSession();
@@ -73,7 +54,7 @@ export function SessionSelectionForm(props: SessionSelectionFormProps){
 
     // then set it as current session
     await setCurrentSessionId(newSessionId);
-  }
+  };
 
   const onSelectSession = async (newSessionId: string) => {
     // set the new session id;
@@ -84,48 +65,64 @@ export function SessionSelectionForm(props: SessionSelectionFormProps){
 
     // then set it as current session
     await setCurrentSessionId(newSessionId);
-  }
+  };
 
-  return <div style={{display: 'flex', flexDirection:'column', gap: '1rem'}}>
-    <div>Please select a session from below:</div>
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+      <div>Please select a session from below:</div>
 
-    <List>
-      {options.map(option => {
-        return <ListItem
-        sx={{display:'flex', alignItems: 'center', gap: '1rem'}}
-        key={option.value}
-        disabled={option.disabled}
-        onClick={() => onSelectSession(option.value)}>
-          {option.startIcon}
-          <ListItemText primary={option.label} />
-        </ListItem>
-      })}
-    </List>
+      <List>
+        {options.map((option) => {
+          return (
+            <ListItem
+              sx={{ display: 'flex', alignItems: 'center', gap: '1rem' }}
+              key={option.value}
+              disabled={option.disabled}
+              onClick={() => onSelectSession(option.value)}>
+              {option.startIcon}
+              <ListItemText primary={option.label} />
+            </ListItem>
+          );
+        })}
+      </List>
 
-    <form onSubmit={(e) => {e.preventDefault(); onCreateNewSession(e.target as HTMLElement)}}
-      style={{display: 'flex', gap: '1rem', alignItems: 'center'}}>
-      <TextField placeholder='Enter name for the new session' label='New Session Name' size='small' required sx={{flexGrow: 1}}/>
-      <Button type='submit' size='small'>Create</Button>
-    </form>
-  </div>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          onCreateNewSession(e.target as HTMLElement);
+        }}
+        style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+        <TextField
+          placeholder='Enter name for the new session'
+          label='New Session Name'
+          size='small'
+          required
+          sx={{ flexGrow: 1 }}
+        />
+        <Button type='submit' size='small'>
+          Create
+        </Button>
+      </form>
+    </div>
+  );
 }
 
-export default function SessionSelectionModal(){
+export default function SessionSelectionModal() {
   const navigate = useNavigate();
   const { modal, choice, confirm, prompt, alert, dismiss: dismissDialog } = useActionDialogs();
   const { data: sessions, isLoading: loadingSessions } = useGetSessions();
   const { data: openedSessionIds, isLoading: loadingOpenedSessionIds } = useGetOpenedSessionIds();
   const { data: currentSession, isLoading: loadingCurrentSession } = useGetCurrentSession();
-  const isLoading = loadingSessions || loadingOpenedSessionIds || loadingOpenedSessionIds
+  const isLoading = loadingSessions || loadingOpenedSessionIds || loadingOpenedSessionIds;
   const { mutateAsync: setOpenSession } = useSetOpenSession();
   const { mutateAsync: upsertSession } = useUpsertSession();
 
   useEffect(() => {
-    if(isLoading){
+    if (isLoading) {
       return;
     }
 
-    async function _init(){
+    async function _init() {
       try {
         const options = [
           ...(sessions || []).map((session) => {
@@ -135,27 +132,28 @@ export default function SessionSelectionModal(){
               label: session.name,
               value: session.id,
               disabled,
-              startIcon: session.id === currentSession?.id ? <CheckBoxIcon /> : <CheckBoxOutlineBlankIcon />,
+              startIcon:
+                session.id === currentSession?.id ? <CheckBoxIcon /> : <CheckBoxOutlineBlankIcon />,
             };
           }),
-        ].filter(option => {
-          if(option.disabled){
-                    option.label += ` (Already Selected in another Window)`;
-                  }
+        ].filter((option) => {
+          if (option.disabled) {
+            option.label += ` (Already Selected in another Window)`;
+          }
           return option;
         }); // here we want to hide
 
         await modal({
           title: 'Change Session',
-          message: <SessionSelectionForm options={options} isFirstTime={true}/>,
+          message: <SessionSelectionForm options={options} isFirstTime={true} />,
           size: 'sm',
-          disableBackdropClick: true
+          disableBackdropClick: true,
         });
       } catch (err) {}
     }
 
     _init();
-  }, [currentSession, sessions, openedSessionIds, isLoading])
+  }, [currentSession, sessions, openedSessionIds, isLoading]);
 
   return null;
 }

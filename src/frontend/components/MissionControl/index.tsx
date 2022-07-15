@@ -1,14 +1,13 @@
-import AddIcon from '@mui/icons-material/Add';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
 import Link from '@mui/material/Link';
 import Typography from '@mui/material/Typography';
 import { useQuery, useQueryClient } from 'react-query';
 import { useNavigate } from 'react-router-dom';
 import React, { useCallback, useEffect, useState } from 'react';
 import CommandPalette from 'src/frontend/components/CommandPalette';
+import { SessionSelectionForm } from 'src/frontend/components/SessionSelectionModal';
 import Settings from 'src/frontend/components/Settings';
 import { downloadText } from 'src/frontend/data/file';
 import {
@@ -49,7 +48,6 @@ import {
 import { RecordDetailsPage } from 'src/frontend/views/RecordPage';
 import appPackage from 'src/package.json';
 import { SqluiCore, SqluiEnums, SqluiFrontend } from 'typings';
-import {SessionSelectionForm} from 'src/frontend/components/SessionSelectionModal';
 
 export type Command = {
   event: SqluiEnums.ClientEventKey;
@@ -412,7 +410,7 @@ export default function MissionControl() {
           }
 
           return {
-            label: disabled ? `${session.name} (Already Selected in another Window)` :session.name,
+            label: disabled ? `${session.name} (Already Selected in another Window)` : session.name,
             value: session.id,
             disabled,
             startIcon: <CheckBoxOutlineBlankIcon />,
@@ -422,9 +420,9 @@ export default function MissionControl() {
 
       await modal({
         title: 'Change Session',
-        message: <SessionSelectionForm options={options} isFirstTime={false}/>,
+        message: <SessionSelectionForm options={options} isFirstTime={false} />,
         size: 'sm',
-        disableBackdropClick: true
+        disableBackdropClick: true,
       });
     } catch (err) {}
   };

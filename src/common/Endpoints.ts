@@ -8,8 +8,8 @@ import {
   resetConnectionMetaData,
 } from 'src/common/adapters/DataAdapterFactory';
 import PersistentStorage from 'src/common/PersistentStorage';
-import { SqluiCore, SqluiEnums } from 'typings';
 import * as sessionUtils from 'src/common/utils/sessionUtils';
+import { SqluiCore, SqluiEnums } from 'typings';
 let expressAppContext: Express | undefined;
 
 const _apiCache = {};
@@ -336,23 +336,15 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
   // get the current session
   addDataEndpoint('get', '/api/session', async (req, res, apiCache) => {
     const windowId = req.headers['sqlui-native-window-id'];
-    if(!windowId){
+    if (!windowId) {
       // windowId is required
       return res.status(404).json(null);
     }
 
-    console.log('window_id', windowId)
-
     let sessionId = await sessionUtils.getByWindowId(windowId);
-    if(!sessionId){
+    if (!sessionId) {
       return res.status(404).json(null);
     }
-
-    // let's not do this
-    // if(!sessionId){
-    //   // open the default session id
-    //   sessionId = await sessionUtils.open(windowId);
-    // }
 
     const sessionsStorage = await new PersistentStorage<SqluiCore.Session>(
       'session',
@@ -362,10 +354,8 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
 
     const session = await sessionsStorage.get(sessionId);
 
-    console.log('> TODO GET', sessionUtils.get());
-
     // TODO see if we need to start over with a new session
-    if(!session){
+    if (!session) {
       return res.status(404).json(null);
     }
 
@@ -388,15 +378,12 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
 
   addDataEndpoint('post', '/api/sessions/opened/:sessionId', async (req, res, apiCache) => {
     const windowId = req.headers['sqlui-native-window-id'];
-    if(!windowId){
-      throw 'windowId is required'
+    if (!windowId) {
+      throw 'windowId is required';
     }
 
     const newSessionId = req.params?.sessionId;
     await sessionUtils.open(windowId, newSessionId);
-
-    console.log('> TODO POST', windowId, newSessionId);
-    console.log('> TODO POST', sessionUtils.get());
 
     res.status(200).json(await sessionUtils.get());
   });

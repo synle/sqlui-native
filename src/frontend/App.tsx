@@ -1,5 +1,3 @@
-import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -8,17 +6,15 @@ import { HashRouter, Route, Routes } from 'react-router-dom';
 import { useEffect, useRef, useState } from 'react';
 import ActionDialogs from 'src/frontend/components/ActionDialogs';
 import AppHeader from 'src/frontend/components/AppHeader';
-import SessionSelectionModal from 'src/frontend/components/SessionSelectionModal';
 import ElectronEventListener from 'src/frontend/components/ElectronEventListener';
 import MissionControl, { useCommands } from 'src/frontend/components/MissionControl';
+import SessionSelectionModal from 'src/frontend/components/SessionSelectionModal';
 import dataApi from 'src/frontend/data/api';
-import { getRandomSessionId, setCurrentSessionId } from 'src/frontend/data/session';
+import { setCurrentSessionId } from 'src/frontend/data/session';
 import {
   useGetCurrentSession,
   useGetSessions,
   useUpsertSession,
-  useGetOpenedSessionIds,
-  useSetOpenSession,
 } from 'src/frontend/hooks/useSession';
 import { useDarkModeSetting } from 'src/frontend/hooks/useSetting';
 import useToaster, { ToasterHandler } from 'src/frontend/hooks/useToaster';
@@ -31,18 +27,15 @@ import { NewRecordPage } from 'src/frontend/views/RecordPage';
 import RecycleBinPage from 'src/frontend/views/RecycleBinPage';
 import './App.scss';
 import 'src/frontend/electronRenderer';
-import { useActionDialogs } from 'src/frontend/hooks/useActionDialogs';
-import CheckBoxIcon from '@mui/icons-material/CheckBox';
-import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
-import AddIcon from '@mui/icons-material/Add';
-import { useNavigate } from 'react-router-dom';
 
 type SessionManagerProps = {
   children: any;
-}
+};
 
-export function SessionManager(props: SessionManagerProps){
-  const [status, setStatus] = useState<'pending_session' | 'no_session' | 'valid_session'>('pending_session');
+export function SessionManager(props: SessionManagerProps) {
+  const [status, setStatus] = useState<'pending_session' | 'no_session' | 'valid_session'>(
+    'pending_session',
+  );
   const { data: currentSession, isLoading: loadingCurrentSession } = useGetCurrentSession();
   const { mutateAsync: upsertSession } = useUpsertSession();
 
@@ -74,9 +67,7 @@ export function SessionManager(props: SessionManagerProps){
   }
 
   if (status === 'no_session') {
-    return (
-      <SessionSelectionModal  />
-    );
+    return <SessionSelectionModal />;
   }
 
   return props.children;
@@ -178,7 +169,7 @@ export default function App() {
               </Routes>
             </section>
           </Box>
-        <MissionControl />
+          <MissionControl />
         </SessionManager>
         <ActionDialogs />
       </HashRouter>

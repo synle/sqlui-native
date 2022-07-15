@@ -18,7 +18,7 @@ export function setCurrentSessionId(newSessionId: string, suppressReload = false
   sessionStorage.setItem('sqlui-native.windowId', currentWindowId);
 
   // reload the page
-  if(suppressReload === false){
+  if (suppressReload === false) {
     window.location.reload();
   }
 }

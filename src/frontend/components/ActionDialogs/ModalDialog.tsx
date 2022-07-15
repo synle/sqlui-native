@@ -24,10 +24,10 @@ type ModalProps = ModalInput & {
 
 export default function Modal(props: ModalProps) {
   const onBackdropClick = () => {
-    if(props.disableBackdropClick !== true){
+    if (props.disableBackdropClick !== true) {
       props.onDismiss();
     }
-  }
+  };
   return (
     <Dialog
       open={props.open}

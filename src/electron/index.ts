@@ -2,8 +2,9 @@ import { app, BrowserWindow, ipcMain, Menu, nativeTheme, shell } from 'electron'
 import path from 'path';
 import { matchPath } from 'react-router-dom';
 import { getEndpointHandlers, setUpDataEndpoints } from 'src/common/Endpoints';
-import { SqluiEnums } from 'typings';
 import * as sessionUtils from 'src/common/utils/sessionUtils';
+import { SqluiEnums } from 'typings';
+
 const isMac = process.platform === 'darwin';
 
 function createWindow() {
