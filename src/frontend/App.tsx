@@ -14,6 +14,7 @@ import {
   useGetCurrentSession,
   useGetSessions,
   useUpsertSession,
+  useGetOpenedSessionIds,
 } from 'src/frontend/hooks/useSession';
 import { useDarkModeSetting } from 'src/frontend/hooks/useSetting';
 import useToaster, { ToasterHandler } from 'src/frontend/hooks/useToaster';
@@ -26,16 +27,110 @@ import { NewRecordPage } from 'src/frontend/views/RecordPage';
 import RecycleBinPage from 'src/frontend/views/RecycleBinPage';
 import './App.scss';
 import 'src/frontend/electronRenderer';
+import { useActionDialogs } from 'src/frontend/hooks/useActionDialogs';
+import CheckBoxIcon from '@mui/icons-material/CheckBox';
+import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
+import AddIcon from '@mui/icons-material/Add';
 
 type SessionManagerProps = {
   children: any;
 }
 
+function SessionSelection(){
+  const { modal, choice, confirm, prompt, alert, dismiss: dismissDialog } = useActionDialogs();
+  const { data: sessions, isLoading: loadingSessions } = useGetSessions();
+  const { data: openedSessionIds, isLoading: loadingOpenedSessionIds } = useGetOpenedSessionIds();
+  const { data: currentSession, isLoading: loadingCurrentSession } = useGetCurrentSession();
+
+  const isLoading = loadingSessions || loadingOpenedSessionIds || loadingOpenedSessionIds
+
+  useEffect(() => {
+    if(isLoading){
+      return;
+    }
+
+    async function _init(){
+      try {
+        const options = [
+          ...(sessions || []).map((session) => {
+            const disabled = openedSessionIds && openedSessionIds?.indexOf(session.id) >= 0;
+
+            if (session.id === currentSession?.id) {
+              return {
+                label: `${session.name} (Current Session)`,
+                value: session.id,
+                disabled,
+                startIcon: <CheckBoxIcon />,
+              };
+            }
+            return {
+              label: session.name,
+              value: session.id,
+              disabled,
+              startIcon: <CheckBoxOutlineBlankIcon />,
+            };
+          }),
+          {
+            label: 'New Session',
+            value: 'newSession',
+            startIcon: <AddIcon />,
+          },
+        ];
+
+        const onCreateNewSession = (formEl: HTMLElement) => {
+          // TODO
+        }
+
+        await modal({
+          title: 'Change Session',
+          message: <>
+            <div>Please select a session from below:</div>
+            <form onSubmit={(e) => {e.preventDefault(); onCreateNewSession(e.target as HTMLElement)}}>
+              <input placeholder='New Session Name' />
+              <button type='submit'>Create</button>
+            </form>
+          </>,
+          size: 'sm',
+        });
+
+        // // make an api call to update my session to this
+        // if (selected === 'newSession') {
+        //   onAddSession(() => selectCommand({ event: 'clientEvent/session/switch' }));
+        // } else {
+        //   // switching session
+        //   if (currentSession?.id === selected) {
+        //     // if they select the same session, just ignore it
+        //     return;
+        //   }
+        //   const newSession: SqluiCore.Session | undefined = sessions.find(
+        //     (session) => session.id === selected,
+        //   );
+        //   if (!newSession) {
+        //     return;
+        //   }
+
+        //   // set the new session id;
+        //   await setOpenSession(newSession.id);
+
+        //   // go back to homepage before switching session
+        //   navigate('/', { replace: true });
+
+        //   // then set it as current session
+        //   setCurrentSessionId(newSession.id);
+        // }
+      } catch (err) {}
+    }
+
+    _init();
+  }, [currentSession, sessions, openedSessionIds, isLoading])
+
+  return null;
+}
+
 export function SessionManager(props: SessionManagerProps){
-  const [hasValidSessionId, setHasValidSessionId] = useState(false);
+  const [status, setStatus] = useState<'pending_session' | 'no_session' | 'valid_session'>('pending_session');
   const { data: currentSession, isLoading: loadingCurrentSession } = useGetCurrentSession();
   const { mutateAsync: upsertSession } = useUpsertSession();
-  const { selectCommand } = useCommands();
 
   useEffect(() => {
     async function _validateSession() {
@@ -44,7 +139,7 @@ export function SessionManager(props: SessionManagerProps){
         // selectCommand({ event: 'clientEvent/session/switch' })
       } else {
         setCurrentSessionId(currentSession.id, true);
-        setHasValidSessionId(true);
+        setStatus('valid_session');
       }
     }
 
@@ -57,7 +152,16 @@ export function SessionManager(props: SessionManagerProps){
     return null;
   }
 
-  if (!hasValidSessionId) {
+  if (status === 'pending_session') {
+    return (
+      <Alert severity='info' icon={<CircularProgress size={15} />}>
+        Loading sqlui-native, please wait...
+      </Alert>
+    );
+  }
+
+  if (status === 'no_session') {
+    // TODO: needs to show selection of session
     return (
       <Alert severity='info' icon={<CircularProgress size={15} />}>
         Loading sqlui-native, please wait...
