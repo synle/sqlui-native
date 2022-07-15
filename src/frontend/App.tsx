@@ -150,12 +150,10 @@ export function SessionManager(props: SessionManagerProps){
   useEffect(() => {
     async function _validateSession() {
       if (!currentSession) {
-        // TODO: need to change this
-        // selectCommand({ event: 'clientEvent/session/switch' })
-      } else {
-        // setCurrentSessionId(currentSession.id, true);
-        // setStatus('valid_session');
         setStatus('no_session');
+      } else {
+        setCurrentSessionId(currentSession.id, true);
+        setStatus('valid_session');
       }
     }
 

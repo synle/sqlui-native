@@ -344,9 +344,14 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
 
     let sessionId = await sessionUtils.getByWindowId(windowId);
     if(!sessionId){
-      // open the default session id
-      sessionId = await sessionUtils.open(windowId);
+      return res.status(404).json(null);
     }
+
+    // let's not do this
+    // if(!sessionId){
+    //   // open the default session id
+    //   sessionId = await sessionUtils.open(windowId);
+    // }
 
     const sessionsStorage = await new PersistentStorage<SqluiCore.Session>(
       'session',
