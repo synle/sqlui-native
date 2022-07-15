@@ -1,3 +1,4 @@
+import Link from '@mui/material/Link';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Alert from '@mui/material/Alert';
@@ -90,7 +91,7 @@ export function SessionSelectionForm(props: SessionSelectionFormProps){
       const onSelectThisSession = () => onSelectSession(option.value)
       return <div key={option.value} style={{display:'flex', gap: '1rem'}}>
         <span style={{cursor: 'pointer'}} onClick={onSelectThisSession}>{option.startIcon}</span>
-        <span style={{cursor: 'pointer'}} onClick={onSelectThisSession}>{option.label}</span>
+        <Link onClick={onSelectThisSession}>{option.label}</Link>
       </div>
     })}
 

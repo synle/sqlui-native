@@ -407,12 +407,12 @@ export default function MissionControl() {
             return {
               label: `${session.name} (Current Session)`,
               value: session.id,
-              disabled,
               startIcon: <CheckBoxIcon />,
             };
           }
+
           return {
-            label: session.name,
+            label: disabled ? `${session.name} (Already Selected in another Window)` :session.name,
             value: session.id,
             disabled,
             startIcon: <CheckBoxOutlineBlankIcon />,
