@@ -8,6 +8,7 @@ import { HashRouter, Route, Routes } from 'react-router-dom';
 import { useEffect, useRef, useState } from 'react';
 import ActionDialogs from 'src/frontend/components/ActionDialogs';
 import AppHeader from 'src/frontend/components/AppHeader';
+import SessionSelection from 'src/frontend/components/SessionSelection';
 import ElectronEventListener from 'src/frontend/components/ElectronEventListener';
 import MissionControl, { useCommands } from 'src/frontend/components/MissionControl';
 import dataApi from 'src/frontend/data/api';
@@ -39,7 +40,7 @@ type SessionManagerProps = {
   children: any;
 }
 
-function SessionSelection(){
+function SessionSelectionModal(){
   const navigate = useNavigate();
   const { modal, choice, confirm, prompt, alert, dismiss: dismissDialog } = useActionDialogs();
   const { data: sessions, isLoading: loadingSessions } = useGetSessions();
@@ -77,60 +78,9 @@ function SessionSelection(){
           }),
         ];
 
-        const onCreateNewSession = async (formEl: HTMLElement) => {
-          // TODO
-          const newSessionName = (formEl.querySelector('input') as HTMLInputElement).value;
-          console.log('newName', newSessionName)
-
-          const newSession = await upsertSession({
-            id: getRandomSessionId(),
-            name: newSessionName,
-          });
-
-          const newSessionId = newSession.id;
-
-          // set the new session id;
-          await setOpenSession(newSessionId);
-
-          // go back to homepage before switching session
-          navigate('/', { replace: true });
-
-          // then set it as current session
-          await setCurrentSessionId(newSessionId);
-        }
-
-        const onSelectSession = async (newSessionId: string) => {
-          // TODO
-          console.log('switch', newSessionId)
-
-          // set the new session id;
-          await setOpenSession(newSessionId);
-
-          // go back to homepage before switching session
-          navigate('/', { replace: true });
-
-          // then set it as current session
-          await setCurrentSessionId(newSessionId);
-        }
-
         await modal({
           title: 'Change Session',
-          message:<div style={{display: 'flex', flexDirection:'column', gap: '1rem'}}>
-            <div>Please select a session from below:</div>
-              {options.map(option => {
-                const onSelectThisSession = () => onSelectSession(option.value)
-                return <div key={option.value} style={{display:'flex', gap: '1rem'}}>
-                  <span style={{cursor: 'pointer'}} onClick={onSelectThisSession}>{option.startIcon}</span>
-                  <span style={{cursor: 'pointer'}} onClick={onSelectThisSession}>{option.label}</span>
-                </div>
-              })}
-
-            <form onSubmit={(e) => {e.preventDefault(); onCreateNewSession(e.target as HTMLElement)}}
-              style={{display: 'flex', gap: '1rem', alignItems: 'center'}}>
-              <TextField placeholder='Enter name for the new session' label='New Session Name' size='small' required sx={{flexGrow: 1}}/>
-              <Button type='submit' size='small'>Create</Button>
-            </form>
-          </div>,
+          message: <SessionSelection options={options}/>,
           size: 'sm',
           disableBackdropClick: true
         });
@@ -177,7 +127,7 @@ export function SessionManager(props: SessionManagerProps){
 
   if (status === 'no_session') {
     return (
-      <SessionSelection />
+      <SessionSelectionModal />
     );
   }
 
