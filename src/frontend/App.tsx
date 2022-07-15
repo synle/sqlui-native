@@ -1,3 +1,5 @@
+import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -123,39 +125,14 @@ function SessionSelection(){
                 </div>
               })}
 
-            <form onSubmit={(e) => {e.preventDefault(); onCreateNewSession(e.target as HTMLElement)}}>
-              <input placeholder='New Session Name' required/>
-              <button type='submit'>Create</button>
+            <form onSubmit={(e) => {e.preventDefault(); onCreateNewSession(e.target as HTMLElement)}}
+              style={{display: 'flex', gap: '1rem', alignItems: 'center'}}>
+              <TextField placeholder='Enter name for the new sesssion' label='New Session Name' size='small' required sx={{flexGrow: 1}}/>
+              <Button type='submit' size='small'>Create</Button>
             </form>
           </div>,
           size: 'sm',
         });
-
-        // // make an api call to update my session to this
-        // if (selected === 'newSession') {
-        //   onAddSession(() => selectCommand({ event: 'clientEvent/session/switch' }));
-        // } else {
-        //   // switching session
-        //   if (currentSession?.id === selected) {
-        //     // if they select the same session, just ignore it
-        //     return;
-        //   }
-        //   const newSession: SqluiCore.Session | undefined = sessions.find(
-        //     (session) => session.id === selected,
-        //   );
-        //   if (!newSession) {
-        //     return;
-        //   }
-
-        //   // set the new session id;
-        //   await setOpenSession(newSession.id);
-
-        //   // go back to homepage before switching session
-        //   navigate('/', { replace: true });
-
-        //   // then set it as current session
-        //   setCurrentSessionId(newSession.id);
-        // }
       } catch (err) {}
     }
 
