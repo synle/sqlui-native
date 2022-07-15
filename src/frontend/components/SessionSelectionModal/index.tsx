@@ -1,3 +1,4 @@
+import Box from '@mui/material/Box';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import Button from '@mui/material/Button';
@@ -68,17 +69,24 @@ export function SessionSelectionForm(props: SessionSelectionFormProps) {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-      <div>Please select a session from below:</div>
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+      <Box>Please select a session from below:</Box>
 
       <List>
         {options.map((option) => {
+          const onSelectThisSession = () => {
+            if(!option.disabled){
+              // don't let them select already selected session
+              onSelectSession(option.value)
+            }
+          }
           return (
             <ListItem
-              sx={{ display: 'flex', alignItems: 'center', gap: '1rem' }}
+              button
               key={option.value}
               disabled={option.disabled}
-              onClick={() => onSelectSession(option.value)}>
+              onClick={onSelectThisSession}
+              sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
               {option.startIcon}
               <ListItemText primary={option.label} />
             </ListItem>
@@ -90,20 +98,21 @@ export function SessionSelectionForm(props: SessionSelectionFormProps) {
         onSubmit={(e) => {
           e.preventDefault();
           onCreateNewSession(e.target as HTMLElement);
-        }}
-        style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-        <TextField
-          placeholder='Enter name for the new session'
-          label='New Session Name'
-          size='small'
-          required
-          sx={{ flexGrow: 1 }}
-        />
-        <Button type='submit' size='small'>
-          Create
-        </Button>
+        }}>
+        <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+          <TextField
+            placeholder='Enter name for the new session'
+            label='New Session Name'
+            size='small'
+            required
+            sx={{ flexGrow: 1 }}
+          />
+          <Button type='submit' size='small'>
+            Create
+          </Button>
+        </Box>
       </form>
-    </div>
+    </Box>
   );
 }
 
@@ -144,7 +153,7 @@ export default function SessionSelectionModal() {
         }); // here we want to hide
 
         await modal({
-          title: 'Change Session',
+          title: 'Choose a Session',
           message: <SessionSelectionForm options={options} isFirstTime={true} />,
           size: 'sm',
           disableBackdropClick: true,

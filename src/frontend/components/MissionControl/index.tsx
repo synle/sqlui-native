@@ -11,7 +11,6 @@ import { SessionSelectionForm } from 'src/frontend/components/SessionSelectionMo
 import Settings from 'src/frontend/components/Settings';
 import { downloadText } from 'src/frontend/data/file';
 import {
-  DEFAULT_SESSION_NAME,
   getRandomSessionId,
   setCurrentSessionId,
 } from 'src/frontend/data/session';
@@ -422,7 +421,6 @@ export default function MissionControl() {
         title: 'Change Session',
         message: <SessionSelectionForm options={options} isFirstTime={false} />,
         size: 'sm',
-        disableBackdropClick: true,
       });
     } catch (err) {}
   };
@@ -1075,12 +1073,6 @@ export default function MissionControl() {
         case 'clientEvent/session/delete':
           // don't let them delete default session
           if (!currentSession || !currentSession.id) {
-            return;
-          }
-
-          // ignore for default electron
-          if (currentSession.id === DEFAULT_SESSION_NAME) {
-            alert(`Default session (${DEFAULT_SESSION_NAME}) cannot be deleted.`);
             return;
           }
 

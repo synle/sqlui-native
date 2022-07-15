@@ -1,8 +1,6 @@
 import { SessionStorageConfig } from 'src/frontend/data/config';
 import { getGeneratedRandomId } from 'src/frontend/utils/commonUtils';
 
-export const DEFAULT_SESSION_NAME = 'electron-default';
-
 export function getRandomSessionId() {
   return getGeneratedRandomId(`sessionId`);
 }
