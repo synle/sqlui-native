@@ -1,4 +1,6 @@
-import Link from '@mui/material/Link';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Alert from '@mui/material/Alert';
@@ -87,13 +89,18 @@ export function SessionSelectionForm(props: SessionSelectionFormProps){
   return <div style={{display: 'flex', flexDirection:'column', gap: '1rem'}}>
     <div>Please select a session from below:</div>
 
-    {options.map(option => {
-      const onSelectThisSession = () => onSelectSession(option.value)
-      return <div key={option.value} style={{display:'flex', gap: '1rem'}}>
-        <span style={{cursor: 'pointer'}} onClick={onSelectThisSession}>{option.startIcon}</span>
-        <Link onClick={onSelectThisSession}>{option.label}</Link>
-      </div>
-    })}
+    <List>
+      {options.map(option => {
+        return <ListItem
+        sx={{display:'flex', alignItems: 'center', gap: '1rem'}}
+        key={option.value}
+        disabled={option.disabled}
+        onClick={() => onSelectSession(option.value)}>
+          {option.startIcon}
+          <ListItemText primary={option.label} />
+        </ListItem>
+      })}
+    </List>
 
     <form onSubmit={(e) => {e.preventDefault(); onCreateNewSession(e.target as HTMLElement)}}
       style={{display: 'flex', gap: '1rem', alignItems: 'center'}}>
@@ -132,7 +139,9 @@ export default function SessionSelectionModal(){
             };
           }),
         ].filter(option => {
-          option.label += ` (Already Selected in another Window)`;
+          if(option.disabled){
+                    option.label += ` (Already Selected in another Window)`;
+                  }
           return option;
         }); // here we want to hide
 

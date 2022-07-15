@@ -53,9 +53,9 @@ export default function ChoiceDialog(props: ChoiceDialogProps) {
               onClick={() => !option.disabled && handleListItemClick(option.value)}
               disabled={!!option.disabled}
               key={option.value}
-              sx={{ alignItems: 'center', display: 'flex' }}>
+              sx={{ alignItems: 'center', display: 'flex', gap: 1 }}>
               {!option.startIcon ? null : option.startIcon}
-              <ListItemText primary={option.label} sx={{ ml: 1 }} />
+              <ListItemText primary={option.label} />
             </ListItem>
           ))}
         </List>
