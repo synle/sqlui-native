@@ -38,7 +38,7 @@ type SessionSelectionProps = {
   options: any[];
 }
 
-export default function SessionSelection(props: SessionSelectionProps){
+export function SessionSelection(props: SessionSelectionProps){
   const {options} = props;
   const navigate = useNavigate();
   const { mutateAsync: setOpenSession } = useSetOpenSession();
@@ -92,4 +92,57 @@ export default function SessionSelection(props: SessionSelectionProps){
       <Button type='submit' size='small'>Create</Button>
     </form>
   </div>
+}
+
+export default function SessionSelectionModal(){
+  const navigate = useNavigate();
+  const { modal, choice, confirm, prompt, alert, dismiss: dismissDialog } = useActionDialogs();
+  const { data: sessions, isLoading: loadingSessions } = useGetSessions();
+  const { data: openedSessionIds, isLoading: loadingOpenedSessionIds } = useGetOpenedSessionIds();
+  const { data: currentSession, isLoading: loadingCurrentSession } = useGetCurrentSession();
+  const isLoading = loadingSessions || loadingOpenedSessionIds || loadingOpenedSessionIds
+  const { mutateAsync: setOpenSession } = useSetOpenSession();
+  const { mutateAsync: upsertSession } = useUpsertSession();
+
+  useEffect(() => {
+    if(isLoading){
+      return;
+    }
+
+    async function _init(){
+      try {
+        const options = [
+          ...(sessions || []).map((session) => {
+            const disabled = openedSessionIds && openedSessionIds?.indexOf(session.id) >= 0;
+
+            if (session.id === currentSession?.id) {
+              return {
+                label: `${session.name} (Current Session)`,
+                value: session.id,
+                disabled,
+                startIcon: <CheckBoxIcon />,
+              };
+            }
+            return {
+              label: session.name,
+              value: session.id,
+              disabled,
+              startIcon: <CheckBoxOutlineBlankIcon />,
+            };
+          }),
+        ];
+
+        await modal({
+          title: 'Change Session',
+          message: <SessionSelection options={options}/>,
+          size: 'sm',
+          disableBackdropClick: true
+        });
+      } catch (err) {}
+    }
+
+    _init();
+  }, [currentSession, sessions, openedSessionIds, isLoading])
+
+  return null;
 }

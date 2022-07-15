@@ -8,7 +8,7 @@ import { HashRouter, Route, Routes } from 'react-router-dom';
 import { useEffect, useRef, useState } from 'react';
 import ActionDialogs from 'src/frontend/components/ActionDialogs';
 import AppHeader from 'src/frontend/components/AppHeader';
-import SessionSelection from 'src/frontend/components/SessionSelection';
+import SessionSelectionModal from 'src/frontend/components/SessionSelectionModal';
 import ElectronEventListener from 'src/frontend/components/ElectronEventListener';
 import MissionControl, { useCommands } from 'src/frontend/components/MissionControl';
 import dataApi from 'src/frontend/data/api';
@@ -36,61 +36,9 @@ import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import AddIcon from '@mui/icons-material/Add';
 import { useNavigate } from 'react-router-dom';
+
 type SessionManagerProps = {
   children: any;
-}
-
-function SessionSelectionModal(){
-  const navigate = useNavigate();
-  const { modal, choice, confirm, prompt, alert, dismiss: dismissDialog } = useActionDialogs();
-  const { data: sessions, isLoading: loadingSessions } = useGetSessions();
-  const { data: openedSessionIds, isLoading: loadingOpenedSessionIds } = useGetOpenedSessionIds();
-  const { data: currentSession, isLoading: loadingCurrentSession } = useGetCurrentSession();
-  const isLoading = loadingSessions || loadingOpenedSessionIds || loadingOpenedSessionIds
-  const { mutateAsync: setOpenSession } = useSetOpenSession();
-  const { mutateAsync: upsertSession } = useUpsertSession();
-
-  useEffect(() => {
-    if(isLoading){
-      return;
-    }
-
-    async function _init(){
-      try {
-        const options = [
-          ...(sessions || []).map((session) => {
-            const disabled = openedSessionIds && openedSessionIds?.indexOf(session.id) >= 0;
-
-            if (session.id === currentSession?.id) {
-              return {
-                label: `${session.name} (Current Session)`,
-                value: session.id,
-                disabled,
-                startIcon: <CheckBoxIcon />,
-              };
-            }
-            return {
-              label: session.name,
-              value: session.id,
-              disabled,
-              startIcon: <CheckBoxOutlineBlankIcon />,
-            };
-          }),
-        ];
-
-        await modal({
-          title: 'Change Session',
-          message: <SessionSelection options={options}/>,
-          size: 'sm',
-          disableBackdropClick: true
-        });
-      } catch (err) {}
-    }
-
-    _init();
-  }, [currentSession, sessions, openedSessionIds, isLoading])
-
-  return null;
 }
 
 export function SessionManager(props: SessionManagerProps){
