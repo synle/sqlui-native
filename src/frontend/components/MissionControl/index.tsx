@@ -99,8 +99,10 @@ export const allMenuKeys = [
   'menu-query-prev',
   'menu-query-next',
   'menu-query-close',
+  'menu-session-new',
   'menu-session-rename',
   'menu-session-switch',
+  'menu-session-delete',
 ];
 
 export default function MissionControl() {

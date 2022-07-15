@@ -191,6 +191,15 @@ function setupMenu() {
           click: async (item, win) =>
             sendMessage(win as BrowserWindow, 'clientEvent/session/switch'),
         },
+        {
+          type: 'separator',
+        },
+        {
+          id: 'menu-session-delete',
+          label: 'Delete Session',
+          click: async (item, win) =>
+            sendMessage(win as BrowserWindow, 'clientEvent/session/delete'),
+        },
       ],
     },
     {

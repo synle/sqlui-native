@@ -18,6 +18,7 @@ import {
   useSetOpenSession,
   useUpsertSession,
 } from 'src/frontend/hooks/useSession';
+import {allMenuKeys} from 'src/frontend/components/MissionControl';
 
 type SessionOption = {
   label: string;
@@ -136,6 +137,12 @@ export default function SessionSelectionModal() {
 
     async function _init() {
       try {
+        try {
+          window.toggleElectronMenu(false, allMenuKeys);
+        } catch (err) {}
+
+        window.document.title = 'Choose a Session';
+
         const options = [
           ...(sessions || []).map((session) => {
             const disabled = openedSessionIds && openedSessionIds?.indexOf(session.id) >= 0;
