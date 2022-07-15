@@ -337,7 +337,8 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
   addDataEndpoint('get', '/api/session', async (req, res, apiCache) => {
     const windowId = req.headers['sqlui-native-window-id'];
     if(!windowId){
-      throw 'windowId is required'
+      // windowId is required
+      return res.status(404).json(null);
     }
 
     console.log('window_id', windowId)
@@ -367,22 +368,16 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     if(!session){
       return res.status(404).json(null);
     }
+
     res.status(200).json(session);
   });
 
   addDataEndpoint('get', '/api/sessions', async (req, res, apiCache) => {
-    const windowId = req.headers['sqlui-native-window-id'];
-    if(!windowId){
-      throw 'windowId is required'
-    }
-
     const sessionsStorage = await new PersistentStorage<SqluiCore.Session>(
       'session',
       'session',
       'sessions',
     );
-
-    console.log('> TODO GETLIST', sessionUtils.get());
 
     res.status(200).json(await sessionsStorage.list());
   });

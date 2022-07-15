@@ -51,6 +51,7 @@ try {
             status,
             options.method || 'get',
             url,
+            options.headers['sqlui-native-window-id'],
             options.headers['sqlui-native-session-id'],
             returnedData,
           );
