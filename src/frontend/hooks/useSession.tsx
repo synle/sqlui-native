@@ -1,11 +1,5 @@
 import { QueryClient, useMutation, useQuery, useQueryClient } from 'react-query';
-import { useEffect } from 'react';
 import dataApi from 'src/frontend/data/api';
-import {
-  DEFAULT_SESSION_NAME,
-  getCurrentSessionId,
-  setCurrentSessionId,
-} from 'src/frontend/data/session';
 import { SqluiCore } from 'typings';
 
 const QUERY_KEY_SESSIONS = 'sessions';
@@ -17,25 +11,25 @@ export function useGetSessions() {
   });
 }
 
+export function useGetOpenedSessionIds() {
+  return useQuery([QUERY_KEY_SESSIONS, 'opened'], dataApi.getOpenedSessionIds, {
+    notifyOnChangeProps: ['data', 'error'],
+  });
+}
+
+export function useSetOpenSession() {
+  const queryClient = useQueryClient();
+  return useMutation<void, void, string>(dataApi.setOpenSession, {
+    onSuccess: async () => {
+      queryClient.invalidateQueries(QUERY_KEY_SESSIONS);
+    },
+  });
+}
+
 export function useGetCurrentSession() {
-  const { data, ...rest } = useGetSessions();
-
-  const currentMatchedSession = data?.find((session) => session.id === getCurrentSessionId());
-
-  useEffect(() => {
-    if (data) {
-      if (!currentMatchedSession) {
-        // special case where user is still accessing the deleted session id
-        // switch this back to default session
-        setCurrentSessionId(DEFAULT_SESSION_NAME);
-      }
-    }
-  }, [data, currentMatchedSession]);
-
-  return {
-    data: currentMatchedSession,
-    ...rest,
-  };
+  return useQuery([QUERY_KEY_SESSIONS, 'current'], dataApi.getSession, {
+    notifyOnChangeProps: ['data', 'error'],
+  });
 }
 
 export function useUpsertSession() {

@@ -2,6 +2,7 @@ import { app, BrowserWindow, ipcMain, Menu, nativeTheme, shell } from 'electron'
 import path from 'path';
 import { matchPath } from 'react-router-dom';
 import { getEndpointHandlers, setUpDataEndpoints } from 'src/common/Endpoints';
+import * as sessionUtils from 'src/common/utils/sessionUtils';
 import { SqluiEnums } from 'typings';
 
 const isMac = process.platform === 'darwin';
@@ -17,6 +18,28 @@ function createWindow() {
       contextIsolation: false,
     },
   });
+
+  let targetWindowId = `electron-window-${Date.now()}`;
+  mainWindow.webContents.on('did-finish-load', () => {
+    mainWindow.webContents.executeJavaScript(`
+      sessionStorage.setItem('sqlui-native.windowId', '${targetWindowId}')
+      console.log('hooking window.windowId', window.electronWindowId);
+    `);
+  });
+
+  const onCloseHandler = async () => {
+    // on window close, we need to remove its sessionId
+    const targetSessionId = await mainWindow.webContents.executeJavaScript(
+      `sessionStorage.getItem('clientConfig/api.sessionId')`,
+    );
+    console.log('Window closed - freeing up the targetSessionId', targetSessionId);
+    sessionUtils.close(targetWindowId);
+  };
+
+  mainWindow.on('close', onCloseHandler); // win close
+
+  //@ts-ignore
+  mainWindow._windowId = targetWindowId;
 
   // and load the index.html of the app.
   mainWindow.loadFile('index.html');
@@ -47,7 +70,12 @@ function setupMenu() {
             const mainWindow = createWindow();
 
             const newWindowHandler = () => {
-              setTimeout(() => sendMessage(mainWindow, 'clientEvent/session/switch'), 1500);
+              setTimeout(() => {
+                sendMessage(mainWindow, 'clientEvent/session/switch');
+                mainWindow.webContents.executeJavaScript(`
+                  console.log('Asking window to show switch session');
+                `);
+              }, 1500);
               mainWindow.webContents.removeListener('dom-ready', newWindowHandler);
             };
 
@@ -146,6 +174,12 @@ function setupMenu() {
       label: 'Session',
       submenu: [
         {
+          id: 'menu-session-new',
+          label: 'New Session',
+          click: async (item, win) =>
+            sendMessage(win as BrowserWindow, 'clientEvent/session/new'),
+        },
+        {
           id: 'menu-session-rename',
           label: 'Rename Session',
           click: async (item, win) =>
@@ -156,6 +190,15 @@ function setupMenu() {
           label: 'Switch Session',
           click: async (item, win) =>
             sendMessage(win as BrowserWindow, 'clientEvent/session/switch'),
+        },
+        {
+          type: 'separator',
+        },
+        {
+          id: 'menu-session-delete',
+          label: 'Delete Session',
+          click: async (item, win) =>
+            sendMessage(win as BrowserWindow, 'clientEvent/session/delete'),
         },
       ],
     },
@@ -278,6 +321,7 @@ ipcMain.on('sqluiNativeEvent/fetch', async (event, data) => {
 
   const method = (options.method || 'get').toLowerCase();
 
+  const windowId = options?.headers['sqlui-native-window-id'];
   const sessionId = options?.headers['sqlui-native-session-id'];
 
   let body: any = {};
@@ -361,6 +405,7 @@ ipcMain.on('sqluiNativeEvent/fetch', async (event, data) => {
           body: body,
           headers: {
             ['sqlui-native-session-id']: sessionId,
+            ['sqlui-native-window-id']: windowId,
           },
         };
 
