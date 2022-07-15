@@ -305,6 +305,7 @@ ipcMain.on('sqluiNativeEvent/fetch', async (event, data) => {
 
   const method = (options.method || 'get').toLowerCase();
 
+  const windowId = options?.headers['sqlui-native-window-id'];
   const sessionId = options?.headers['sqlui-native-session-id'];
 
   let body: any = {};
@@ -388,6 +389,7 @@ ipcMain.on('sqluiNativeEvent/fetch', async (event, data) => {
           body: body,
           headers: {
             ['sqlui-native-session-id']: sessionId,
+            ['sqlui-native-window-id']: windowId,
           },
         };
 
