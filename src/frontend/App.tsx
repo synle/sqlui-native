@@ -132,6 +132,7 @@ function SessionSelection(){
             </form>
           </div>,
           size: 'sm',
+          disableBackdropClick: true,
         });
       } catch (err) {}
     }

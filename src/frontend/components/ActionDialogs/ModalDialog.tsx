@@ -13,6 +13,7 @@ export type ModalInput = {
    */
   message: React.ReactNode;
   showCloseButton?: boolean;
+  disableBackdropClick?: boolean;
   size: 'xs' | 'sm' | 'md' | 'lg';
 };
 
@@ -22,10 +23,15 @@ type ModalProps = ModalInput & {
 };
 
 export default function Modal(props: ModalProps) {
+  const onBackdropClick = () => {
+    if(props.disableBackdropClick !== true){
+      props.onDismiss();
+    }
+  }
   return (
     <Dialog
       open={props.open}
-      onClose={props.onDismiss}
+      onClose={onBackdropClick}
       aria-labelledby='modal-dialog-title'
       aria-describedby='modal-dialog-description'
       fullWidth={true}
