@@ -2,6 +2,7 @@ import AddIcon from '@mui/icons-material/Add';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
 import Link from '@mui/material/Link';
 import Typography from '@mui/material/Typography';
 import { useQuery, useQueryClient } from 'react-query';
@@ -416,45 +417,64 @@ export default function MissionControl() {
             startIcon: <CheckBoxOutlineBlankIcon />,
           };
         }),
-        {
-          label: 'New Session',
-          value: 'newSession',
-          startIcon: <AddIcon />,
-        },
       ];
 
-      const selected = await choice(
-        'Change Session',
-        'Select one of the following session:',
-        options,
-        true,
-      );
+      const onCreateNewSession = async (formEl: HTMLElement) => {
+          // TODO
+          const newSessionName = (formEl.querySelector('input') as HTMLInputElement).value;
+          console.log('newName', newSessionName)
 
-      // make an api call to update my session to this
-      if (selected === 'newSession') {
-        onAddSession(() => selectCommand({ event: 'clientEvent/session/switch' }));
-      } else {
-        // switching session
-        if (currentSession?.id === selected) {
-          // if they select the same session, just ignore it
-          return;
+          const newSession = await upsertSession({
+            id: getRandomSessionId(),
+            name: newSessionName,
+          });
+
+          const newSessionId = newSession.id;
+
+          // set the new session id;
+          await setOpenSession(newSessionId);
+
+          // go back to homepage before switching session
+          navigate('/', { replace: true });
+
+          // then set it as current session
+          await setCurrentSessionId(newSessionId);
         }
-        const newSession: SqluiCore.Session | undefined = sessions.find(
-          (session) => session.id === selected,
-        );
-        if (!newSession) {
-          return;
+
+        const onSelectSession = async (newSessionId: string) => {
+          // TODO
+          console.log('switch', newSessionId)
+
+          // set the new session id;
+          await setOpenSession(newSessionId);
+
+          // go back to homepage before switching session
+          navigate('/', { replace: true });
+
+          // then set it as current session
+          await setCurrentSessionId(newSessionId);
         }
 
-        // set the new session id;
-        await setOpenSession(newSession.id);
+        await modal({
+          title: 'Change Session',
+          message:<div style={{display: 'flex', flexDirection:'column', gap: '1rem'}}>
+            <div>Please select a session from below:</div>
+              {options.map(option => {
+                const onSelectThisSession = () => onSelectSession(option.value)
+                return <div key={option.value} style={{display:'flex', gap: '1rem'}}>
+                  <span style={{cursor: 'pointer'}} onClick={onSelectThisSession}>{option.startIcon}</span>
+                  <span style={{cursor: 'pointer'}} onClick={onSelectThisSession}>{option.label}</span>
+                </div>
+              })}
 
-        // go back to homepage before switching session
-        navigate('/', { replace: true });
-
-        // then set it as current session
-        setCurrentSessionId(newSession.id);
-      }
+            <form onSubmit={(e) => {e.preventDefault(); onCreateNewSession(e.target as HTMLElement)}}
+              style={{display: 'flex', gap: '1rem', alignItems: 'center'}}>
+              <TextField placeholder='Enter name for the new session' label='New Session Name' size='small' required sx={{flexGrow: 1}}/>
+              <Button type='submit' size='small'>Create</Button>
+            </form>
+          </div>,
+          size: 'sm',
+        });
     } catch (err) {}
   };
 

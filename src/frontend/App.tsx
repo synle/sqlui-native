@@ -127,12 +127,12 @@ function SessionSelection(){
 
             <form onSubmit={(e) => {e.preventDefault(); onCreateNewSession(e.target as HTMLElement)}}
               style={{display: 'flex', gap: '1rem', alignItems: 'center'}}>
-              <TextField placeholder='Enter name for the new sesssion' label='New Session Name' size='small' required sx={{flexGrow: 1}}/>
+              <TextField placeholder='Enter name for the new session' label='New Session Name' size='small' required sx={{flexGrow: 1}}/>
               <Button type='submit' size='small'>Create</Button>
             </form>
           </div>,
           size: 'sm',
-          disableBackdropClick: true,
+          disableBackdropClick: true
         });
       } catch (err) {}
     }
