@@ -40,7 +40,8 @@ export function SessionManager(props: SessionManagerProps){
   useEffect(() => {
     async function _validateSession() {
       if (!currentSession) {
-        selectCommand({ event: 'clientEvent/session/switch' })
+        // TODO: need to change this
+        // selectCommand({ event: 'clientEvent/session/switch' })
       } else {
         setCurrentSessionId(currentSession.id, true);
         setHasValidSessionId(true);
@@ -164,9 +165,9 @@ export default function App() {
             </section>
           </Box>
         <MissionControl />
-        <ActionDialogs />
       </HashRouter>
       </SessionManager>
+      <ActionDialogs />
       <ElectronEventListener />
     </ThemeProvider>
   );
