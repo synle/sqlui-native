@@ -75,7 +75,7 @@ export function SessionManager(props: SessionManagerProps){
 
   if (status === 'no_session') {
     return (
-      <SessionSelectionModal />
+      <SessionSelectionModal  />
     );
   }
 

@@ -49,6 +49,7 @@ import {
 import { RecordDetailsPage } from 'src/frontend/views/RecordPage';
 import appPackage from 'src/package.json';
 import { SqluiCore, SqluiEnums, SqluiFrontend } from 'typings';
+import {SessionSelectionForm} from 'src/frontend/components/SessionSelectionModal';
 
 export type Command = {
   event: SqluiEnums.ClientEventKey;
@@ -419,62 +420,12 @@ export default function MissionControl() {
         }),
       ];
 
-      const onCreateNewSession = async (formEl: HTMLElement) => {
-          // TODO
-          const newSessionName = (formEl.querySelector('input') as HTMLInputElement).value;
-          console.log('newName', newSessionName)
-
-          const newSession = await upsertSession({
-            id: getRandomSessionId(),
-            name: newSessionName,
-          });
-
-          const newSessionId = newSession.id;
-
-          // set the new session id;
-          await setOpenSession(newSessionId);
-
-          // go back to homepage before switching session
-          navigate('/', { replace: true });
-
-          // then set it as current session
-          await setCurrentSessionId(newSessionId);
-        }
-
-        const onSelectSession = async (newSessionId: string) => {
-          // TODO
-          console.log('switch', newSessionId)
-
-          // set the new session id;
-          await setOpenSession(newSessionId);
-
-          // go back to homepage before switching session
-          navigate('/', { replace: true });
-
-          // then set it as current session
-          await setCurrentSessionId(newSessionId);
-        }
-
-        await modal({
-          title: 'Change Session',
-          message:<div style={{display: 'flex', flexDirection:'column', gap: '1rem'}}>
-            <div>Please select a session from below:</div>
-              {options.map(option => {
-                const onSelectThisSession = () => onSelectSession(option.value)
-                return <div key={option.value} style={{display:'flex', gap: '1rem'}}>
-                  <span style={{cursor: 'pointer'}} onClick={onSelectThisSession}>{option.startIcon}</span>
-                  <span style={{cursor: 'pointer'}} onClick={onSelectThisSession}>{option.label}</span>
-                </div>
-              })}
-
-            <form onSubmit={(e) => {e.preventDefault(); onCreateNewSession(e.target as HTMLElement)}}
-              style={{display: 'flex', gap: '1rem', alignItems: 'center'}}>
-              <TextField placeholder='Enter name for the new session' label='New Session Name' size='small' required sx={{flexGrow: 1}}/>
-              <Button type='submit' size='small'>Create</Button>
-            </form>
-          </div>,
-          size: 'sm',
-        });
+      await modal({
+        title: 'Change Session',
+        message: <SessionSelectionForm options={options} isFirstTime={false}/>,
+        size: 'sm',
+        disableBackdropClick: true
+      });
     } catch (err) {}
   };
 

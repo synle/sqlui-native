@@ -34,11 +34,19 @@ import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import AddIcon from '@mui/icons-material/Add';
 import { useNavigate } from 'react-router-dom';
 
-type SessionSelectionProps = {
-  options: any[];
+type SessionOption = {
+  label: string;
+  value: string;
+  disabled?: boolean,
+  startIcon: any;
 }
 
-export function SessionSelection(props: SessionSelectionProps){
+type SessionSelectionFormProps = {
+  isFirstTime: boolean;
+  options: SessionOption[];
+}
+
+export function SessionSelectionForm(props: SessionSelectionFormProps){
   const {options} = props;
   const navigate = useNavigate();
   const { mutateAsync: setOpenSession } = useSetOpenSession();
@@ -115,26 +123,21 @@ export default function SessionSelectionModal(){
           ...(sessions || []).map((session) => {
             const disabled = openedSessionIds && openedSessionIds?.indexOf(session.id) >= 0;
 
-            if (session.id === currentSession?.id) {
-              return {
-                label: `${session.name} (Current Session)`,
-                value: session.id,
-                disabled,
-                startIcon: <CheckBoxIcon />,
-              };
-            }
             return {
               label: session.name,
               value: session.id,
               disabled,
-              startIcon: <CheckBoxOutlineBlankIcon />,
+              startIcon: session.id === currentSession?.id ? <CheckBoxIcon /> : <CheckBoxOutlineBlankIcon />,
             };
           }),
-        ];
+        ].filter(option => {
+          option.label += ` (Already Selected in another Window)`;
+          return option;
+        }); // here we want to hide
 
         await modal({
           title: 'Change Session',
-          message: <SessionSelection options={options}/>,
+          message: <SessionSelectionForm options={options} isFirstTime={true}/>,
           size: 'sm',
           disableBackdropClick: true
         });
