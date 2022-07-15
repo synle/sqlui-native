@@ -174,6 +174,12 @@ function setupMenu() {
       label: 'Session',
       submenu: [
         {
+          id: 'menu-session-new',
+          label: 'New Session',
+          click: async (item, win) =>
+            sendMessage(win as BrowserWindow, 'clientEvent/session/new'),
+        },
+        {
           id: 'menu-session-rename',
           label: 'Rename Session',
           click: async (item, win) =>

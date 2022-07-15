@@ -68,6 +68,8 @@ export function SessionSelectionForm(props: SessionSelectionFormProps) {
     await setCurrentSessionId(newSessionId);
   };
 
+  let defaultSessionName = options.length === 0 ? `New Session ${new Date().toLocaleDateString()}` :''
+
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
       <Box>Please select a session from below:</Box>
@@ -106,9 +108,10 @@ export function SessionSelectionForm(props: SessionSelectionFormProps) {
             size='small'
             required
             sx={{ flexGrow: 1 }}
+            defaultValue={defaultSessionName}
           />
           <Button type='submit' size='small'>
-            Create
+            Create Session
           </Button>
         </Box>
       </form>
