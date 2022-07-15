@@ -220,12 +220,6 @@ export function useConnectionQueries() {
       }
     }
 
-    const query = queries?.find((q) => q.id === queryId);
-
-    if (!query || !query) {
-      return;
-    }
-
     _connectionQueries = [..._connectionQueries].map((query) => {
       if (query.id === queryId) {
         const newValue = {
@@ -237,6 +231,11 @@ export function useConnectionQueries() {
 
       return query;
     });
+
+    const query = _connectionQueries?.find((q) => q.id === queryId);
+    if (!query) {
+      return;
+    }
 
     try {
       _invalidateQueries();

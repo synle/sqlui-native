@@ -1,4 +1,3 @@
-import AddIcon from '@mui/icons-material/Add';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import Button from '@mui/material/Button';
@@ -8,10 +7,10 @@ import { useQuery, useQueryClient } from 'react-query';
 import { useNavigate } from 'react-router-dom';
 import React, { useCallback, useEffect, useState } from 'react';
 import CommandPalette from 'src/frontend/components/CommandPalette';
+import { SessionSelectionForm } from 'src/frontend/components/SessionSelectionModal';
 import Settings from 'src/frontend/components/Settings';
 import { downloadText } from 'src/frontend/data/file';
 import {
-  DEFAULT_SESSION_NAME,
   getRandomSessionId,
   setCurrentSessionId,
 } from 'src/frontend/data/session';
@@ -32,7 +31,9 @@ import { useAddBookmarkItem } from 'src/frontend/hooks/useFolderItems';
 import {
   useDeleteSession,
   useGetCurrentSession,
+  useGetOpenedSessionIds,
   useGetSessions,
+  useSetOpenSession,
   useUpsertSession,
 } from 'src/frontend/hooks/useSession';
 import { useSetting } from 'src/frontend/hooks/useSetting';
@@ -98,8 +99,10 @@ export const allMenuKeys = [
   'menu-query-prev',
   'menu-query-next',
   'menu-query-close',
+  'menu-session-new',
   'menu-session-rename',
   'menu-session-switch',
+  'menu-session-delete',
 ];
 
 export default function MissionControl() {
@@ -111,6 +114,8 @@ export default function MissionControl() {
   const { command, selectCommand, dismissCommand } = useCommands();
   const { modal, choice, confirm, prompt, alert, dismiss: dismissDialog } = useActionDialogs();
   const { data: sessions, isLoading: loadingSessions } = useGetSessions();
+  const { data: openedSessionIds, isLoading: loadingOpenedSessionIds } = useGetOpenedSessionIds();
+  const { mutateAsync: setOpenSession } = useSetOpenSession();
   const { data: currentSession, isLoading: loadingCurrentSession } = useGetCurrentSession();
   const { mutateAsync: upsertSession } = useUpsertSession();
   const { mutateAsync: importConnection } = useImportConnection();
@@ -395,55 +400,30 @@ export default function MissionControl() {
     try {
       const options = [
         ...sessions.map((session) => {
+          const disabled = openedSessionIds && openedSessionIds?.indexOf(session.id) >= 0;
+
           if (session.id === currentSession?.id) {
             return {
-              label: `${session.name} (Continue using this)`,
+              label: `${session.name} (Current Session)`,
               value: session.id,
               startIcon: <CheckBoxIcon />,
             };
           }
+
           return {
-            label: session.name,
+            label: disabled ? `${session.name} (Already Selected in another Window)` : session.name,
             value: session.id,
+            disabled,
             startIcon: <CheckBoxOutlineBlankIcon />,
           };
         }),
-        {
-          label: 'New Session',
-          value: 'newSession',
-          startIcon: <AddIcon />,
-        },
       ];
 
-      const selected = await choice(
-        'Change Session',
-        'Select one of the following session:',
-        options,
-        true,
-      );
-
-      // make an api call to update my session to this
-      if (selected === 'newSession') {
-        onAddSession(() => selectCommand({ event: 'clientEvent/session/switch' }));
-      } else {
-        // switching session
-        if (currentSession?.id === selected) {
-          // if they select the same session, just ignore it
-          return;
-        }
-        const newSession: SqluiCore.Session | undefined = sessions.find(
-          (session) => session.id === selected,
-        );
-        if (!newSession) {
-          return;
-        }
-
-        // go back to homepage before switching session
-        navigate('/', { replace: true });
-
-        // then set it as current session
-        setCurrentSessionId(newSession.id);
-      }
+      await modal({
+        title: 'Change Session',
+        message: <SessionSelectionForm options={options} isFirstTime={false} />,
+        size: 'sm',
+      });
     } catch (err) {}
   };
 
@@ -1095,12 +1075,6 @@ export default function MissionControl() {
         case 'clientEvent/session/delete':
           // don't let them delete default session
           if (!currentSession || !currentSession.id) {
-            return;
-          }
-
-          // ignore for default electron
-          if (currentSession.id === DEFAULT_SESSION_NAME) {
-            alert(`Default session (${DEFAULT_SESSION_NAME}) cannot be deleted.`);
             return;
           }
 

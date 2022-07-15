@@ -1,27 +1,22 @@
 import { SessionStorageConfig } from 'src/frontend/data/config';
 import { getGeneratedRandomId } from 'src/frontend/utils/commonUtils';
 
-export const DEFAULT_SESSION_NAME = 'electron-default';
-
-export function getDefaultSessionId() {
-  let sessionId = SessionStorageConfig.get<string>('clientConfig/api.sessionId', '');
-  return sessionId || DEFAULT_SESSION_NAME;
-}
-
 export function getRandomSessionId() {
   return getGeneratedRandomId(`sessionId`);
 }
 
-export function getCurrentSessionId() {
-  let sessionId = getDefaultSessionId();
-  SessionStorageConfig.set('clientConfig/api.sessionId', sessionId);
-  return sessionId;
-}
+export function setCurrentSessionId(newSessionId: string, suppressReload = false) {
+  const currentWindowId = sessionStorage.getItem('sqlui-native.windowId') || '';
 
-export function setCurrentSessionId(newSessionId: string) {
+  // clear current configs
   SessionStorageConfig.clear();
-  SessionStorageConfig.set('clientConfig/api.sessionId', newSessionId);
+
+  // set the new sessionId
+  sessionStorage.setItem('sqlui-native.sessionId', newSessionId);
+  sessionStorage.setItem('sqlui-native.windowId', currentWindowId);
 
   // reload the page
-  window.location.reload();
+  if (suppressReload === false) {
+    window.location.reload();
+  }
 }

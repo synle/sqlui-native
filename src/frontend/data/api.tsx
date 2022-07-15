@@ -1,4 +1,3 @@
-import { getCurrentSessionId } from 'src/frontend/data/session';
 import { SqluiCore, SqluiFrontend } from 'typings';
 async function _fetch<T>(input: RequestInfo, initOptions?: RequestInit) {
   let { headers, ...restInput } = initOptions || {};
@@ -7,7 +6,8 @@ async function _fetch<T>(input: RequestInfo, initOptions?: RequestInit) {
   headers = {
     ...headers,
     ...{
-      'sqlui-native-session-id': await getCurrentSessionId(),
+      'sqlui-native-session-id': sessionStorage.getItem('sqlui-native.sessionId') || '',
+      'sqlui-native-window-id': sessionStorage.getItem('sqlui-native.windowId') || '',
       'Content-Type': 'application/json',
       Accept: 'application/json',
     },
@@ -141,8 +141,22 @@ export class ProxyApi {
   }
 
   // sessions api
+  static getSession() {
+    return _fetch<SqluiCore.Session>(`/api/session`);
+  }
+
   static getSessions() {
     return _fetch<SqluiCore.Session[]>(`/api/sessions`);
+  }
+
+  static getOpenedSessionIds() {
+    return _fetch<string[]>(`/api/sessions/opened`);
+  }
+
+  static setOpenSession(sessionId: string) {
+    return _fetch<void>(`/api/sessions/opened/${sessionId}`, {
+      method: 'post',
+    });
   }
 
   static upsertSession(newSession: SqluiCore.CoreSession) {
@@ -159,6 +173,7 @@ export class ProxyApi {
       });
     }
   }
+
   static deleteSession(sessionId: string) {
     return _fetch<string>(`/api/session/${sessionId}`, {
       method: 'delete',

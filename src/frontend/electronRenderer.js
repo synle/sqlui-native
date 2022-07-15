@@ -10,6 +10,7 @@ try {
   window.openBrowserLink = (link) => {
     window.open(link, '_blank');
   };
+  sessionStorage.setItem('sqlui-native.windowId', 'mocked-window-id'); // mocked to use a window id
 
   if (window.process.env.ENV_TYPE !== 'mocked-server') {
     const ipcRenderer = window.requireElectron('electron').ipcRenderer;
@@ -50,6 +51,7 @@ try {
             status,
             options.method || 'get',
             url,
+            options.headers['sqlui-native-window-id'],
             options.headers['sqlui-native-session-id'],
             returnedData,
           );
