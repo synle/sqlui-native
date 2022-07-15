@@ -15,6 +15,7 @@ import {
   useGetSessions,
   useUpsertSession,
   useGetOpenedSessionIds,
+  useSetOpenSession,
 } from 'src/frontend/hooks/useSession';
 import { useDarkModeSetting } from 'src/frontend/hooks/useSetting';
 import useToaster, { ToasterHandler } from 'src/frontend/hooks/useToaster';
@@ -31,18 +32,20 @@ import { useActionDialogs } from 'src/frontend/hooks/useActionDialogs';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import AddIcon from '@mui/icons-material/Add';
-
+import { useNavigate } from 'react-router-dom';
 type SessionManagerProps = {
   children: any;
 }
 
 function SessionSelection(){
+  const navigate = useNavigate();
   const { modal, choice, confirm, prompt, alert, dismiss: dismissDialog } = useActionDialogs();
   const { data: sessions, isLoading: loadingSessions } = useGetSessions();
   const { data: openedSessionIds, isLoading: loadingOpenedSessionIds } = useGetOpenedSessionIds();
   const { data: currentSession, isLoading: loadingCurrentSession } = useGetCurrentSession();
-
   const isLoading = loadingSessions || loadingOpenedSessionIds || loadingOpenedSessionIds
+  const { mutateAsync: setOpenSession } = useSetOpenSession();
+  const { mutateAsync: upsertSession } = useUpsertSession();
 
   useEffect(() => {
     if(isLoading){
@@ -70,26 +73,61 @@ function SessionSelection(){
               startIcon: <CheckBoxOutlineBlankIcon />,
             };
           }),
-          {
-            label: 'New Session',
-            value: 'newSession',
-            startIcon: <AddIcon />,
-          },
         ];
 
-        const onCreateNewSession = (formEl: HTMLElement) => {
+        const onCreateNewSession = async (formEl: HTMLElement) => {
           // TODO
+          const newSessionName = (formEl.querySelector('input') as HTMLInputElement).value;
+          console.log('newName', newSessionName)
+
+          const newSession = await upsertSession({
+            id: getRandomSessionId(),
+            name: newSessionName,
+          });
+
+          const newSessionId = newSession.id;
+
+          // set the new session id;
+          await setOpenSession(newSessionId);
+
+          // go back to homepage before switching session
+          navigate('/', { replace: true });
+
+          // then set it as current session
+          await setCurrentSessionId(newSessionId);
+        }
+
+        const onSelectSession = async (newSessionId: string) => {
+          // TODO
+          console.log('switch', newSessionId)
+
+          // set the new session id;
+          await setOpenSession(newSessionId);
+
+          // go back to homepage before switching session
+          navigate('/', { replace: true });
+
+          // then set it as current session
+          await setCurrentSessionId(newSessionId);
         }
 
         await modal({
           title: 'Change Session',
-          message: <>
+          message:<div style={{display: 'flex', flexDirection:'column', gap: '1rem'}}>
             <div>Please select a session from below:</div>
+              {options.map(option => {
+                const onSelectThisSession = () => onSelectSession(option.value)
+                return <div key={option.value} style={{display:'flex', gap: '1rem'}}>
+                  <span style={{cursor: 'pointer'}} onClick={onSelectThisSession}>{option.startIcon}</span>
+                  <span style={{cursor: 'pointer'}} onClick={onSelectThisSession}>{option.label}</span>
+                </div>
+              })}
+
             <form onSubmit={(e) => {e.preventDefault(); onCreateNewSession(e.target as HTMLElement)}}>
-              <input placeholder='New Session Name' />
+              <input placeholder='New Session Name' required/>
               <button type='submit'>Create</button>
             </form>
-          </>,
+          </div>,
           size: 'sm',
         });
 
@@ -138,8 +176,9 @@ export function SessionManager(props: SessionManagerProps){
         // TODO: need to change this
         // selectCommand({ event: 'clientEvent/session/switch' })
       } else {
-        setCurrentSessionId(currentSession.id, true);
-        setStatus('valid_session');
+        // setCurrentSessionId(currentSession.id, true);
+        // setStatus('valid_session');
+        setStatus('no_session');
       }
     }
 
@@ -161,11 +200,8 @@ export function SessionManager(props: SessionManagerProps){
   }
 
   if (status === 'no_session') {
-    // TODO: needs to show selection of session
     return (
-      <Alert severity='info' icon={<CircularProgress size={15} />}>
-        Loading sqlui-native, please wait...
-      </Alert>
+      <SessionSelection />
     );
   }
 
@@ -239,8 +275,8 @@ export default function App() {
 
   return (
     <ThemeProvider theme={myTheme}>
-    <SessionManager>
       <HashRouter>
+        <SessionManager>
           <Box
             className='App'
             sx={{
@@ -269,9 +305,9 @@ export default function App() {
             </section>
           </Box>
         <MissionControl />
+        </SessionManager>
+        <ActionDialogs />
       </HashRouter>
-      </SessionManager>
-      <ActionDialogs />
       <ElectronEventListener />
     </ThemeProvider>
   );
