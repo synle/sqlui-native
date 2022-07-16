@@ -2,9 +2,9 @@ import { app, BrowserWindow, ipcMain, Menu, nativeTheme, shell } from 'electron'
 import path from 'path';
 import { matchPath } from 'react-router-dom';
 import { getEndpointHandlers, setUpDataEndpoints } from 'src/common/Endpoints';
-import * as sessionUtils from 'src/common/utils/sessionUtils';
-import { SqluiEnums, SqluiCore } from 'typings';
 import PersistentStorage from 'src/common/PersistentStorage';
+import * as sessionUtils from 'src/common/utils/sessionUtils';
+import { SqluiCore, SqluiEnums } from 'typings';
 
 const isMac = process.platform === 'darwin';
 
@@ -22,7 +22,7 @@ async function createWindow(isFirstWindow?: boolean) {
 
   const targetWindowId = `electron-window-${Date.now()}`;
 
-  if(isFirstWindow === true){
+  if (isFirstWindow === true) {
     // if this is the first window, let's attempt to open the first sessionId
     const sessionsStorage = await new PersistentStorage<SqluiCore.Session>(
       'session',
@@ -32,10 +32,10 @@ async function createWindow(isFirstWindow?: boolean) {
 
     const sessions = await sessionsStorage.list();
 
-    if(sessions && sessions.length > 0){
+    if (sessions && sessions.length > 0) {
       // TODO: add the ability to allow setting default session
       const sessionId = sessions[0].id;
-      sessionUtils.open(targetWindowId, sessionId)
+      sessionUtils.open(targetWindowId, sessionId);
     }
   }
 
