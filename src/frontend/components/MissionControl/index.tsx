@@ -5,10 +5,10 @@ import { useQuery, useQueryClient } from 'react-query';
 import { useNavigate } from 'react-router-dom';
 import React, { useCallback, useEffect, useState } from 'react';
 import CommandPalette from 'src/frontend/components/CommandPalette';
-import { SessionSelectionForm } from 'src/frontend/components/SessionSelectionModal';
+import SessionSelectionForm from 'src/frontend/components/SessionSelectionForm';
 import Settings from 'src/frontend/components/Settings';
 import { downloadText } from 'src/frontend/data/file';
-import { getRandomSessionId, setCurrentSessionId } from 'src/frontend/data/session';
+import { getRandomSessionId } from 'src/frontend/data/session';
 import { useActionDialogs } from 'src/frontend/hooks/useActionDialogs';
 import {
   useDeleteConnection,
@@ -28,6 +28,7 @@ import {
   useGetCurrentSession,
   useGetOpenedSessionIds,
   useGetSessions,
+  useSelectSession,
   useSetOpenSession,
   useUpsertSession,
 } from 'src/frontend/hooks/useSession';
@@ -113,6 +114,7 @@ export default function MissionControl() {
   const { mutateAsync: setOpenSession } = useSetOpenSession();
   const { data: currentSession, isLoading: loadingCurrentSession } = useGetCurrentSession();
   const { mutateAsync: upsertSession } = useUpsertSession();
+  const { mutateAsync: selectSession } = useSelectSession();
   const { mutateAsync: importConnection } = useImportConnection();
   const { data: connections, isLoading: loadingConnections } = useGetConnections();
   const { settings, onChange: onChangeSettings } = useSetting();
@@ -450,11 +452,7 @@ export default function MissionControl() {
         return;
       }
 
-      // go back to homepage before switching session
-      navigate('/', { replace: true });
-
-      // then set it as current session
-      setCurrentSessionId(newSession.id);
+      selectSession(newSession.id);
     } catch (err) {
       if (onClose) {
         onClose();
