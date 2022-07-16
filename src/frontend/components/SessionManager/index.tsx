@@ -2,8 +2,8 @@ import Alert from '@mui/material/Alert';
 import CircularProgress from '@mui/material/CircularProgress';
 import { useEffect, useState } from 'react';
 import SessionSelectionModal from 'src/frontend/components/SessionSelectionModal';
-import { useGetCurrentSession, useSelectSession } from 'src/frontend/hooks/useSession';
 import { setCurrentSessionId } from 'src/frontend/data/session';
+import { useGetCurrentSession, useSelectSession } from 'src/frontend/hooks/useSession';
 
 type SessionManagerProps = {
   children: any;
