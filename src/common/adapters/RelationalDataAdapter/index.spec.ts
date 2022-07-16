@@ -1,7 +1,7 @@
 import fs from 'fs';
 import RelationalDataAdapter from 'src/common/adapters/RelationalDataAdapter/index';
 
-describe('sqlite', () => {
+describe.skip('sqlite', () => {
   let adapter;
 
   beforeAll(() => {
