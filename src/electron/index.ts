@@ -2,12 +2,13 @@ import { app, BrowserWindow, ipcMain, Menu, nativeTheme, shell } from 'electron'
 import path from 'path';
 import { matchPath } from 'react-router-dom';
 import { getEndpointHandlers, setUpDataEndpoints } from 'src/common/Endpoints';
+import PersistentStorage from 'src/common/PersistentStorage';
 import * as sessionUtils from 'src/common/utils/sessionUtils';
-import { SqluiEnums } from 'typings';
+import { SqluiCore, SqluiEnums } from 'typings';
 
 const isMac = process.platform === 'darwin';
 
-function createWindow() {
+async function createWindow(isFirstWindow?: boolean) {
   const mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
@@ -19,7 +20,26 @@ function createWindow() {
     },
   });
 
-  let targetWindowId = `electron-window-${Date.now()}`;
+  const targetWindowId = `electron-window-${Date.now()}`;
+
+  if (isFirstWindow === true) {
+    // if this is the first window, let's attempt to open the first sessionId
+    const sessionsStorage = await new PersistentStorage<SqluiCore.Session>(
+      'session',
+      'session',
+      'sessions',
+    );
+
+    const sessions = await sessionsStorage.list();
+
+    if (sessions && sessions.length > 0) {
+      // TODO: add the ability to allow setting default session
+      const sessionId = sessions[0].id;
+      sessionUtils.open(targetWindowId, sessionId);
+    }
+  }
+
+  // hook up events
   mainWindow.webContents.on('did-finish-load', () => {
     mainWindow.webContents.executeJavaScript(`
       sessionStorage.setItem('sqlui-native.windowId', '${targetWindowId}')
@@ -27,16 +47,14 @@ function createWindow() {
     `);
   });
 
-  const onCloseHandler = async () => {
+  mainWindow.on('close', async () => {
     // on window close, we need to remove its sessionId
     const targetSessionId = await mainWindow.webContents.executeJavaScript(
       `sessionStorage.getItem('clientConfig/api.sessionId')`,
     );
     console.log('Window closed - freeing up the targetSessionId', targetSessionId);
     sessionUtils.close(targetWindowId);
-  };
-
-  mainWindow.on('close', onCloseHandler); // win close
+  }); // win close
 
   //@ts-ignore
   mainWindow._windowId = targetWindowId;
@@ -67,7 +85,7 @@ function setupMenu() {
           label: 'New Window',
           accelerator: isMac ? 'Cmd+Shift+N' : 'Ctrl+Shift+N',
           click: async () => {
-            const mainWindow = createWindow();
+            const mainWindow = await createWindow();
 
             const newWindowHandler = () => {
               setTimeout(() => {
@@ -262,9 +280,9 @@ function setupMenu() {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.whenReady().then(() => {
+app.whenReady().then(async () => {
   setUpDataEndpoints();
-  createWindow();
+  await createWindow(true);
   setupMenu();
 
   app.on('activate', () => {
