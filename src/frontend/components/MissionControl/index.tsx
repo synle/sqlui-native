@@ -109,7 +109,7 @@ export default function MissionControl() {
   const { query: activeQuery, onChange: onChangeActiveQuery } = useActiveConnectionQuery();
   const { command, selectCommand, dismissCommand } = useCommands();
   const { modal, choice, confirm, prompt, alert, dismiss: dismissDialog } = useActionDialogs();
-  const { data: sessions, isLoading: loadingSessions } = useGetSessions();
+  const { data: sessions, isLoading: loadingSessions, refetch: refetchSessions } = useGetSessions();
   const { data: openedSessionIds, isLoading: loadingOpenedSessionIds } = useGetOpenedSessionIds();
   const { mutateAsync: setOpenSession } = useSetOpenSession();
   const { data: currentSession, isLoading: loadingCurrentSession } = useGetCurrentSession();
@@ -483,6 +483,8 @@ export default function MissionControl() {
         ...targetSession,
         name: newSessionName,
       });
+
+      await refetchSessions();
     } catch (err) {}
   };
 

@@ -11,6 +11,7 @@ import TextField from '@mui/material/TextField';
 import { useNavigate } from 'react-router-dom';
 import { getRandomSessionId } from 'src/frontend/data/session';
 import {
+  useGetSessions,
   useSelectSession,
   useSetOpenSession,
   useUpsertSession,
@@ -33,6 +34,7 @@ type SessionSelectionFormProps = {
 export default function SessionSelectionForm(props: SessionSelectionFormProps) {
   const { options, isFirstTime } = props;
   const navigate = useNavigate();
+  const { data: sessions, isLoading } = useGetSessions();
   const { mutateAsync: setOpenSession } = useSetOpenSession();
   const { mutateAsync: upsertSession } = useUpsertSession();
   const { mutateAsync: selectSession } = useSelectSession();
@@ -54,6 +56,10 @@ export default function SessionSelectionForm(props: SessionSelectionFormProps) {
   let defaultSessionName =
     options.length === 0 ? `New Session ${new Date().toLocaleDateString()}` : '';
 
+  if(isLoading || !sessions){
+    return null;
+  }
+
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
       <Box>Please select a session from below:</Box>
@@ -70,9 +76,11 @@ export default function SessionSelectionForm(props: SessionSelectionFormProps) {
 
           let secondaryAction: React.ReactElement | undefined;
           if(!isFirstTime){
+            const targetSession = sessions.find(session => session.id === option.value);
+
             secondaryAction = (
               <IconButton edge="end" aria-label="Edit" onClick={(e) => {
-                selectCommand({ event: 'clientEvent/session/rename' })
+                selectCommand({ event: 'clientEvent/session/rename', data: targetSession })
                 e.preventDefault();
                 e.stopPropagation();
               }}>
