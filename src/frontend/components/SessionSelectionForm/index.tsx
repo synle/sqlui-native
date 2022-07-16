@@ -16,7 +16,7 @@ import {
   useUpsertSession,
 } from 'src/frontend/hooks/useSession';
 import EditIcon from '@mui/icons-material/Edit';
-
+import MissionControl, { useCommands } from 'src/frontend/components/MissionControl';
 export type SessionOption = {
   label: string;
   subtitle?: string;
@@ -36,6 +36,7 @@ export default function SessionSelectionForm(props: SessionSelectionFormProps) {
   const { mutateAsync: setOpenSession } = useSetOpenSession();
   const { mutateAsync: upsertSession } = useUpsertSession();
   const { mutateAsync: selectSession } = useSelectSession();
+  const { selectCommand } = useCommands();
 
   const shouldShowRename = !isFirstTime;
 
@@ -68,9 +69,13 @@ export default function SessionSelectionForm(props: SessionSelectionFormProps) {
           const labelId = `session-option-${option.value}`;
 
           let secondaryAction: React.ReactElement | undefined;
-          if(true){
+          if(!isFirstTime){
             secondaryAction = (
-              <IconButton edge="end" aria-label="Edit">
+              <IconButton edge="end" aria-label="Edit" onClick={(e) => {
+                selectCommand({ event: 'clientEvent/session/rename' })
+                e.preventDefault();
+                e.stopPropagation();
+              }}>
                 <EditIcon />
               </IconButton>
             )

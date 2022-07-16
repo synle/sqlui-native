@@ -462,16 +462,16 @@ export default function MissionControl() {
       }
     }
   };
-  const onRenameSession = async () => {
+  const onRenameSession = async (targetSession: SqluiCore.Session) => {
     try {
-      if (!currentSession) {
+      if (!targetSession) {
         return;
       }
 
       const newSessionName = await prompt({
         title: 'Rename Session',
         message: 'New Session Session',
-        value: currentSession.name,
+        value: targetSession.name,
         saveLabel: 'Save',
       });
 
@@ -480,7 +480,7 @@ export default function MissionControl() {
       }
 
       await upsertSession({
-        ...currentSession,
+        ...targetSession,
         name: newSessionName,
       });
     } catch (err) {}
@@ -1066,7 +1066,12 @@ export default function MissionControl() {
         case 'clientEvent/session/rename':
           try {
             window.toggleElectronMenu(false, allMenuKeys);
-            await onRenameSession();
+
+            if (command.data) {
+              await onRenameSession(command.data as SqluiCore.Session);
+            } else if (activeQuery) {
+              await onRenameSession(currentSession as SqluiCore.Session);
+            }
           } catch (err) {}
 
           window.toggleElectronMenu(true, allMenuKeys);
