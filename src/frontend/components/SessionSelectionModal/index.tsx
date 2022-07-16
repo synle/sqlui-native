@@ -63,6 +63,24 @@ export default function SessionSelectionModal() {
           return option;
         }); // here we want to hide
 
+
+        const enabledOptions = options.filter(option => option.disabled !== true);
+
+        if(enabledOptions.length === 1 && enabledOptions[0].value){
+          // only one active session, let's select it
+          const newSessionId = enabledOptions[0].value;
+
+          // set the new session id;
+          await setOpenSession(newSessionId);
+
+          // go back to homepage before switching session
+          navigate('/', { replace: true });
+
+          // then set it as current session
+          await setCurrentSessionId(newSessionId);
+          return;
+        }
+
         await modal({
           title: 'Choose a Session',
           message: <SessionSelectionForm options={options} isFirstTime={true} />,
