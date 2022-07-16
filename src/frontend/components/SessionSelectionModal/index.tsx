@@ -18,6 +18,7 @@ import {
   useGetSessions,
   useSetOpenSession,
   useUpsertSession,
+  useSelectSession,
 } from 'src/frontend/hooks/useSession';
 import SessionSelectionForm from 'src/frontend/components/SessionSelectionForm';
 
@@ -28,8 +29,6 @@ export default function SessionSelectionModal() {
   const { data: openedSessionIds, isLoading: loadingOpenedSessionIds } = useGetOpenedSessionIds();
   const { data: currentSession, isLoading: loadingCurrentSession } = useGetCurrentSession();
   const isLoading = loadingSessions || loadingOpenedSessionIds || loadingOpenedSessionIds;
-  const { mutateAsync: setOpenSession } = useSetOpenSession();
-  const { mutateAsync: upsertSession } = useUpsertSession();
 
   useEffect(() => {
     if (isLoading) {
@@ -62,24 +61,6 @@ export default function SessionSelectionModal() {
           }
           return option;
         }); // here we want to hide
-
-
-        const enabledOptions = options.filter(option => option.disabled !== true);
-
-        if(enabledOptions.length === 1 && enabledOptions[0].value){
-          // only one active session, let's select it
-          const newSessionId = enabledOptions[0].value;
-
-          // set the new session id;
-          await setOpenSession(newSessionId);
-
-          // go back to homepage before switching session
-          navigate('/', { replace: true });
-
-          // then set it as current session
-          await setCurrentSessionId(newSessionId);
-          return;
-        }
 
         await modal({
           title: 'Choose a Session',

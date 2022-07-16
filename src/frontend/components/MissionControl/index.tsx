@@ -29,6 +29,7 @@ import {
   useGetSessions,
   useSetOpenSession,
   useUpsertSession,
+  useSelectSession,
 } from 'src/frontend/hooks/useSession';
 import { useSetting } from 'src/frontend/hooks/useSetting';
 import { useShowHide } from 'src/frontend/hooks/useShowHide';
@@ -113,6 +114,7 @@ export default function MissionControl() {
   const { mutateAsync: setOpenSession } = useSetOpenSession();
   const { data: currentSession, isLoading: loadingCurrentSession } = useGetCurrentSession();
   const { mutateAsync: upsertSession } = useUpsertSession();
+  const { mutateAsync: selectSession } = useSelectSession();
   const { mutateAsync: importConnection } = useImportConnection();
   const { data: connections, isLoading: loadingConnections } = useGetConnections();
   const { settings, onChange: onChangeSettings } = useSetting();
@@ -450,11 +452,7 @@ export default function MissionControl() {
         return;
       }
 
-      // go back to homepage before switching session
-      navigate('/', { replace: true });
-
-      // then set it as current session
-      setCurrentSessionId(newSession.id);
+      selectSession(newSession.id);
     } catch (err) {
       if (onClose) {
         onClose();

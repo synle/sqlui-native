@@ -1,6 +1,8 @@
+import { useNavigate } from 'react-router-dom';
 import { QueryClient, useMutation, useQuery, useQueryClient } from 'react-query';
 import dataApi from 'src/frontend/data/api';
 import { SqluiCore } from 'typings';
+import { setCurrentSessionId } from 'src/frontend/data/session';
 
 const QUERY_KEY_SESSIONS = 'sessions';
 
@@ -29,6 +31,22 @@ export function useSetOpenSession() {
 export function useGetCurrentSession() {
   return useQuery([QUERY_KEY_SESSIONS, 'current'], dataApi.getSession, {
     notifyOnChangeProps: ['data', 'error'],
+  });
+}
+
+export function useSelectSession(suppressReload?: boolean) {
+  const { mutateAsync: setOpenSession } = useSetOpenSession();
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  return useMutation<void, void, string>(async(newSessionId: string) => {
+    // set the new session id;
+    await setOpenSession(newSessionId);
+
+    // go back to homepage before switching session
+    navigate('/', { replace: true });
+
+    // then set it as current session
+    await setCurrentSessionId(newSessionId, suppressReload);
   });
 }
 

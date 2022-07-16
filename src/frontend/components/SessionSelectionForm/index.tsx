@@ -18,6 +18,7 @@ import {
   useGetSessions,
   useSetOpenSession,
   useUpsertSession,
+  useSelectSession,
 } from 'src/frontend/hooks/useSession';
 
 type SessionOption = {
@@ -37,6 +38,7 @@ export default function SessionSelectionForm(props: SessionSelectionFormProps) {
   const navigate = useNavigate();
   const { mutateAsync: setOpenSession } = useSetOpenSession();
   const { mutateAsync: upsertSession } = useUpsertSession();
+  const { mutateAsync: selectSession } = useSelectSession();
 
   const onCreateNewSession = async (formEl: HTMLElement) => {
     const newSessionName = (formEl.querySelector('input') as HTMLInputElement).value;
@@ -46,27 +48,7 @@ export default function SessionSelectionForm(props: SessionSelectionFormProps) {
       name: newSessionName,
     });
 
-    const newSessionId = newSession.id;
-
-    // set the new session id;
-    await setOpenSession(newSessionId);
-
-    // go back to homepage before switching session
-    navigate('/', { replace: true });
-
-    // then set it as current session
-    await setCurrentSessionId(newSessionId);
-  };
-
-  const onSelectSession = async (newSessionId: string) => {
-    // set the new session id;
-    await setOpenSession(newSessionId);
-
-    // go back to homepage before switching session
-    navigate('/', { replace: true });
-
-    // then set it as current session
-    await setCurrentSessionId(newSessionId);
+    selectSession(newSession.id);
   };
 
   let defaultSessionName =
@@ -81,7 +63,7 @@ export default function SessionSelectionForm(props: SessionSelectionFormProps) {
           const onSelectThisSession = () => {
             if (!option.disabled) {
               // don't let them select already selected session
-              onSelectSession(option.value);
+              selectSession(option.value);
             }
           };
           const labelId = `session-option-${option.value}`;
