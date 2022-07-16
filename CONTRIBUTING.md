@@ -5,7 +5,7 @@
 ### Requirement
 
 - Node 14+
-- [Yarn](https://classic.yarnpkg.com/en/docs/install#windows-stable)
+- [Yarn v1 (tested on 1.22.19)](https://classic.yarnpkg.com/en/docs/install#windows-stable)
 
 ### Starting guide
 
