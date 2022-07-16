@@ -400,21 +400,21 @@ export default function MissionControl() {
     try {
       const options = [
         ...sessions.map((session) => {
-          const disabled = openedSessionIds && openedSessionIds?.indexOf(session.id) >= 0;
+          const isSessionOpenedInAnotherWindow = openedSessionIds && openedSessionIds?.indexOf(session.id) >= 0;
 
           if (session.id === currentSession?.id) {
             return {
               label: `${session.name} (Current Session)`,
               value: session.id,
-              startIcon: <CheckBoxIcon />,
+              selected: true,
             };
           }
 
           return {
-            label: disabled ? `${session.name} (Already Selected in another Window)` : session.name,
+            label: isSessionOpenedInAnotherWindow ? `${session.name} (Already Selected in another Window)` : session.name,
             value: session.id,
-            disabled,
-            startIcon: <CheckBoxOutlineBlankIcon />,
+            disabled: isSessionOpenedInAnotherWindow,
+            selected: isSessionOpenedInAnotherWindow,
           };
         }),
       ];

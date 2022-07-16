@@ -4,6 +4,7 @@ import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import Button from '@mui/material/Button';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
+import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import TextField from '@mui/material/TextField';
 import { useNavigate } from 'react-router-dom';
@@ -19,12 +20,14 @@ import {
   useUpsertSession,
 } from 'src/frontend/hooks/useSession';
 import {allMenuKeys} from 'src/frontend/components/MissionControl';
+import Checkbox from '@mui/material/Checkbox';
+
 
 type SessionOption = {
   label: string;
   value: string;
+  selected?: boolean;
   disabled?: boolean;
-  startIcon: any;
 };
 
 type SessionSelectionFormProps = {
@@ -83,15 +86,23 @@ export function SessionSelectionForm(props: SessionSelectionFormProps) {
               onSelectSession(option.value)
             }
           }
+          const labelId = `session-option-${option.value}`;
           return (
             <ListItem
               button
               key={option.value}
               disabled={option.disabled}
-              onClick={onSelectThisSession}
-              sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-              {option.startIcon}
-              <ListItemText primary={option.label} />
+              selected={option.selected}
+              onClick={onSelectThisSession}>
+              <ListItemIcon>
+                <Checkbox
+                  edge="start"
+                  checked={!!option.selected}
+                  tabIndex={-1}
+                  inputProps={{ 'aria-labelledby': labelId }}
+                />
+              </ListItemIcon>
+              <ListItemText id={labelId} primary={option.label} />
             </ListItem>
           );
         })}
@@ -145,14 +156,13 @@ export default function SessionSelectionModal() {
 
         const options = [
           ...(sessions || []).map((session) => {
-            const disabled = openedSessionIds && openedSessionIds?.indexOf(session.id) >= 0;
+            const isSessionOpenedInAnotherWindow = openedSessionIds && openedSessionIds?.indexOf(session.id) >= 0;
 
             return {
               label: session.name,
               value: session.id,
-              disabled,
-              startIcon:
-                session.id === currentSession?.id ? <CheckBoxIcon /> : <CheckBoxOutlineBlankIcon />,
+              disabled: isSessionOpenedInAnotherWindow,
+              selected: session.id === currentSession?.id ||isSessionOpenedInAnotherWindow,
             };
           }),
         ].filter((option) => {
