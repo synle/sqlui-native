@@ -1,25 +1,26 @@
-import React from 'react';
-import IconButton from '@mui/material/IconButton';
+import EditIcon from '@mui/icons-material/Edit';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
+import IconButton from '@mui/material/IconButton';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import TextField from '@mui/material/TextField';
 import { useNavigate } from 'react-router-dom';
+import React from 'react';
+import { useCommands } from 'src/frontend/components/MissionControl';
 import { getRandomSessionId } from 'src/frontend/data/session';
 import {
+  useGetCurrentSession,
+  useGetOpenedSessionIds,
   useGetSessions,
   useSelectSession,
   useSetOpenSession,
   useUpsertSession,
-  useGetCurrentSession,
-  useGetOpenedSessionIds,
 } from 'src/frontend/hooks/useSession';
-import EditIcon from '@mui/icons-material/Edit';
-import MissionControl, { useCommands } from 'src/frontend/components/MissionControl';
+
 export type SessionOption = {
   label: string;
   subtitle?: string;
@@ -33,7 +34,7 @@ type SessionSelectionFormProps = {
 };
 
 export default function SessionSelectionForm(props: SessionSelectionFormProps) {
-  const {  isFirstTime } = props;
+  const { isFirstTime } = props;
   const navigate = useNavigate();
   const { data: sessions, isLoading: loadingSessions } = useGetSessions();
   const { data: openedSessionIds, isLoading: loadingOpenedSessionIds } = useGetOpenedSessionIds();
@@ -58,7 +59,7 @@ export default function SessionSelectionForm(props: SessionSelectionFormProps) {
     selectSession(newSession.id);
   };
 
-  if(isLoading || !sessions){
+  if (isLoading || !sessions) {
     return null;
   }
 
@@ -107,18 +108,21 @@ export default function SessionSelectionForm(props: SessionSelectionFormProps) {
           const labelId = `session-option-${option.value}`;
 
           let secondaryAction: React.ReactElement | undefined;
-          if(!isFirstTime){
-            const targetSession = sessions.find(session => session.id === option.value);
+          if (!isFirstTime) {
+            const targetSession = sessions.find((session) => session.id === option.value);
 
             secondaryAction = (
-              <IconButton edge="end" aria-label="Edit" onClick={(e) => {
-                selectCommand({ event: 'clientEvent/session/rename', data: targetSession })
-                e.preventDefault();
-                e.stopPropagation();
-              }}>
+              <IconButton
+                edge='end'
+                aria-label='Edit'
+                onClick={(e) => {
+                  selectCommand({ event: 'clientEvent/session/rename', data: targetSession });
+                  e.preventDefault();
+                  e.stopPropagation();
+                }}>
                 <EditIcon />
               </IconButton>
-            )
+            );
           }
 
           return (

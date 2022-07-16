@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import ActionDialogs from 'src/frontend/components/ActionDialogs';
 import { allMenuKeys } from 'src/frontend/components/MissionControl';
-import SessionSelectionForm, {SessionOption} from 'src/frontend/components/SessionSelectionForm';
+import SessionSelectionForm from 'src/frontend/components/SessionSelectionForm';
 import { useActionDialogs } from 'src/frontend/hooks/useActionDialogs';
 import {
   useGetCurrentSession,
@@ -41,7 +41,7 @@ export default function SessionSelectionModal() {
     }
 
     _init();
-  }, [ isLoading]);
+  }, [isLoading]);
 
   return null;
 }

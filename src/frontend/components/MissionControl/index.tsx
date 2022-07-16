@@ -5,7 +5,7 @@ import { useQuery, useQueryClient } from 'react-query';
 import { useNavigate } from 'react-router-dom';
 import React, { useCallback, useEffect, useState } from 'react';
 import CommandPalette from 'src/frontend/components/CommandPalette';
-import SessionSelectionForm, {SessionOption} from 'src/frontend/components/SessionSelectionForm';
+import SessionSelectionForm from 'src/frontend/components/SessionSelectionForm';
 import Settings from 'src/frontend/components/Settings';
 import { downloadText } from 'src/frontend/data/file';
 import { getRandomSessionId } from 'src/frontend/data/session';
