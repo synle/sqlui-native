@@ -395,33 +395,9 @@ export default function MissionControl() {
     }
 
     try {
-      const options = [
-        ...sessions.map((session) => {
-          const isSessionOpenedInAnotherWindow =
-            openedSessionIds && openedSessionIds?.indexOf(session.id) >= 0;
-
-          if (session.id === currentSession?.id) {
-            return {
-              label: `${session.name} (Current Session)`,
-              value: session.id,
-              selected: true,
-            };
-          }
-
-          return {
-            label: isSessionOpenedInAnotherWindow
-              ? `${session.name} (Already Selected in another Window)`
-              : session.name,
-            value: session.id,
-            disabled: isSessionOpenedInAnotherWindow,
-            selected: isSessionOpenedInAnotherWindow,
-          };
-        }),
-      ];
-
       await modal({
         title: 'Change Session',
-        message: <SessionSelectionForm options={options} isFirstTime={false} />,
+        message: <SessionSelectionForm isFirstTime={false} />,
         size: 'sm',
       });
     } catch (err) {}
@@ -459,16 +435,16 @@ export default function MissionControl() {
       }
     }
   };
-  const onRenameSession = async () => {
+  const onRenameSession = async (targetSession: SqluiCore.Session) => {
     try {
-      if (!currentSession) {
+      if (!targetSession) {
         return;
       }
 
       const newSessionName = await prompt({
         title: 'Rename Session',
         message: 'New Session Session',
-        value: currentSession.name,
+        value: targetSession.name,
         saveLabel: 'Save',
       });
 
@@ -477,7 +453,7 @@ export default function MissionControl() {
       }
 
       await upsertSession({
-        ...currentSession,
+        ...targetSession,
         name: newSessionName,
       });
     } catch (err) {}
@@ -1063,7 +1039,12 @@ export default function MissionControl() {
         case 'clientEvent/session/rename':
           try {
             window.toggleElectronMenu(false, allMenuKeys);
-            await onRenameSession();
+
+            if (command.data) {
+              await onRenameSession(command.data as SqluiCore.Session);
+            } else if (activeQuery) {
+              await onRenameSession(currentSession as SqluiCore.Session);
+            }
           } catch (err) {}
 
           window.toggleElectronMenu(true, allMenuKeys);

@@ -13,9 +13,9 @@ import {
 export default function SessionSelectionModal() {
   const navigate = useNavigate();
   const { modal, choice, confirm, prompt, alert, dismiss: dismissDialog } = useActionDialogs();
-  const { data: sessions, isLoading: loadingSessions } = useGetSessions();
-  const { data: openedSessionIds, isLoading: loadingOpenedSessionIds } = useGetOpenedSessionIds();
-  const { data: currentSession, isLoading: loadingCurrentSession } = useGetCurrentSession();
+  const { isLoading: loadingSessions } = useGetSessions();
+  const { isLoading: loadingOpenedSessionIds } = useGetOpenedSessionIds();
+  const { isLoading: loadingCurrentSession } = useGetCurrentSession();
   const isLoading = loadingSessions || loadingOpenedSessionIds || loadingOpenedSessionIds;
 
   useEffect(() => {
@@ -31,28 +31,9 @@ export default function SessionSelectionModal() {
 
         window.document.title = 'Choose a Session';
 
-        const options = [
-          ...(sessions || []).map((session) => {
-            const isSessionOpenedInAnotherWindow =
-              openedSessionIds && openedSessionIds?.indexOf(session.id) >= 0;
-
-            return {
-              label: session.name,
-              value: session.id,
-              disabled: isSessionOpenedInAnotherWindow,
-              selected: session.id === currentSession?.id || isSessionOpenedInAnotherWindow,
-            };
-          }),
-        ].filter((option) => {
-          if (option.disabled) {
-            option.label += ` (Already Selected in another Window)`;
-          }
-          return option;
-        }); // here we want to hide
-
         await modal({
           title: 'Choose a Session',
-          message: <SessionSelectionForm options={options} isFirstTime={true} />,
+          message: <SessionSelectionForm isFirstTime={true} />,
           size: 'sm',
           disableBackdropClick: true,
         });
@@ -60,7 +41,7 @@ export default function SessionSelectionModal() {
     }
 
     _init();
-  }, [currentSession, sessions, openedSessionIds, isLoading]);
+  }, [isLoading]);
 
   return null;
 }
