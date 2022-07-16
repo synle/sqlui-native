@@ -5,7 +5,6 @@ import { useQuery, useQueryClient } from 'react-query';
 import { useNavigate } from 'react-router-dom';
 import React, { useCallback, useEffect, useState } from 'react';
 import CommandPalette from 'src/frontend/components/CommandPalette';
-import { SessionSelectionForm } from 'src/frontend/components/SessionSelectionModal';
 import Settings from 'src/frontend/components/Settings';
 import { downloadText } from 'src/frontend/data/file';
 import { getRandomSessionId, setCurrentSessionId } from 'src/frontend/data/session';
@@ -42,6 +41,7 @@ import {
 import { RecordDetailsPage } from 'src/frontend/views/RecordPage';
 import appPackage from 'src/package.json';
 import { SqluiCore, SqluiEnums, SqluiFrontend } from 'typings';
+import SessionSelectionForm from 'src/frontend/components/SessionSelectionForm';
 
 export type Command = {
   event: SqluiEnums.ClientEventKey;
