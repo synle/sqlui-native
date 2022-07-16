@@ -3,6 +3,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import { useEffect, useState } from 'react';
 import SessionSelectionModal from 'src/frontend/components/SessionSelectionModal';
 import { useGetCurrentSession, useSelectSession } from 'src/frontend/hooks/useSession';
+import { setCurrentSessionId } from 'src/frontend/data/session';
 
 type SessionManagerProps = {
   children: any;
@@ -20,7 +21,7 @@ export default function SessionManager(props: SessionManagerProps) {
       if (!currentSession) {
         setStatus('no_session');
       } else {
-        selectSession(currentSession.id);
+        setCurrentSessionId(currentSession.id, true);
         setStatus('valid_session');
       }
     }

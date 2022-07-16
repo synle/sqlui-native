@@ -63,6 +63,7 @@ export default function SessionSelectionForm(props: SessionSelectionFormProps) {
           return (
             <ListItem
               button
+              dense
               key={option.value}
               disabled={option.disabled}
               selected={option.selected}
