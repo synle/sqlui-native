@@ -1,5 +1,3 @@
-import CheckBoxIcon from '@mui/icons-material/CheckBox';
-import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import Button from '@mui/material/Button';
 import Link from '@mui/material/Link';
 import Typography from '@mui/material/Typography';
@@ -10,10 +8,7 @@ import CommandPalette from 'src/frontend/components/CommandPalette';
 import { SessionSelectionForm } from 'src/frontend/components/SessionSelectionModal';
 import Settings from 'src/frontend/components/Settings';
 import { downloadText } from 'src/frontend/data/file';
-import {
-  getRandomSessionId,
-  setCurrentSessionId,
-} from 'src/frontend/data/session';
+import { getRandomSessionId, setCurrentSessionId } from 'src/frontend/data/session';
 import { useActionDialogs } from 'src/frontend/hooks/useActionDialogs';
 import {
   useDeleteConnection,
@@ -400,7 +395,8 @@ export default function MissionControl() {
     try {
       const options = [
         ...sessions.map((session) => {
-          const isSessionOpenedInAnotherWindow = openedSessionIds && openedSessionIds?.indexOf(session.id) >= 0;
+          const isSessionOpenedInAnotherWindow =
+            openedSessionIds && openedSessionIds?.indexOf(session.id) >= 0;
 
           if (session.id === currentSession?.id) {
             return {
@@ -411,7 +407,9 @@ export default function MissionControl() {
           }
 
           return {
-            label: isSessionOpenedInAnotherWindow ? `${session.name} (Already Selected in another Window)` : session.name,
+            label: isSessionOpenedInAnotherWindow
+              ? `${session.name} (Already Selected in another Window)`
+              : session.name,
             value: session.id,
             disabled: isSessionOpenedInAnotherWindow,
             selected: isSessionOpenedInAnotherWindow,

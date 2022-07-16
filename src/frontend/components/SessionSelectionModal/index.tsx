@@ -1,7 +1,6 @@
 import Box from '@mui/material/Box';
-import CheckBoxIcon from '@mui/icons-material/CheckBox';
-import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import Button from '@mui/material/Button';
+import Checkbox from '@mui/material/Checkbox';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
@@ -10,6 +9,7 @@ import TextField from '@mui/material/TextField';
 import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import ActionDialogs from 'src/frontend/components/ActionDialogs';
+import { allMenuKeys } from 'src/frontend/components/MissionControl';
 import { getRandomSessionId, setCurrentSessionId } from 'src/frontend/data/session';
 import { useActionDialogs } from 'src/frontend/hooks/useActionDialogs';
 import {
@@ -19,9 +19,6 @@ import {
   useSetOpenSession,
   useUpsertSession,
 } from 'src/frontend/hooks/useSession';
-import {allMenuKeys} from 'src/frontend/components/MissionControl';
-import Checkbox from '@mui/material/Checkbox';
-
 
 type SessionOption = {
   label: string;
@@ -72,7 +69,8 @@ export function SessionSelectionForm(props: SessionSelectionFormProps) {
     await setCurrentSessionId(newSessionId);
   };
 
-  let defaultSessionName = options.length === 0 ? `New Session ${new Date().toLocaleDateString()}` :''
+  let defaultSessionName =
+    options.length === 0 ? `New Session ${new Date().toLocaleDateString()}` : '';
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
@@ -81,11 +79,11 @@ export function SessionSelectionForm(props: SessionSelectionFormProps) {
       <List>
         {options.map((option) => {
           const onSelectThisSession = () => {
-            if(!option.disabled){
+            if (!option.disabled) {
               // don't let them select already selected session
-              onSelectSession(option.value)
+              onSelectSession(option.value);
             }
-          }
+          };
           const labelId = `session-option-${option.value}`;
           return (
             <ListItem
@@ -96,7 +94,7 @@ export function SessionSelectionForm(props: SessionSelectionFormProps) {
               onClick={onSelectThisSession}>
               <ListItemIcon>
                 <Checkbox
-                  edge="start"
+                  edge='start'
                   checked={!!option.selected}
                   tabIndex={-1}
                   inputProps={{ 'aria-labelledby': labelId }}
@@ -156,13 +154,14 @@ export default function SessionSelectionModal() {
 
         const options = [
           ...(sessions || []).map((session) => {
-            const isSessionOpenedInAnotherWindow = openedSessionIds && openedSessionIds?.indexOf(session.id) >= 0;
+            const isSessionOpenedInAnotherWindow =
+              openedSessionIds && openedSessionIds?.indexOf(session.id) >= 0;
 
             return {
               label: session.name,
               value: session.id,
               disabled: isSessionOpenedInAnotherWindow,
-              selected: session.id === currentSession?.id ||isSessionOpenedInAnotherWindow,
+              selected: session.id === currentSession?.id || isSessionOpenedInAnotherWindow,
             };
           }),
         ].filter((option) => {
