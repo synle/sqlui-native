@@ -1,6 +1,5 @@
 {
   "name": "sqlui-native",
-  "productName": "sqluinative",
   "version": "1.54.3",
   "description": "A minimal native desktop client for most databases supporting MySQL, MariaDB, MS SQL Server, PostgresSQL, SQLite, Cassandra, MongoDB and Redis.",
   "browserslist": {
@@ -19,6 +18,7 @@
   "homepage": "./",
   "build": {
     "appId": "io.synle.github.sqlui-native",
+    "productName": "sqluinative",
     "extends": null,
     "win": {
       "icon": "build/logo512.png"
