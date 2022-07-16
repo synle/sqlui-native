@@ -395,36 +395,9 @@ export default function MissionControl() {
     }
 
     try {
-      const options: SessionOption[] = [
-        ...sessions.map((session) => {
-          const isSessionOpenedInAnotherWindow =
-            openedSessionIds && openedSessionIds?.indexOf(session.id) >= 0;
-
-          const label = session.name;
-          const value = session.id;
-
-          if (session.id === currentSession?.id) {
-            return {
-              label,
-              subtitle: `Current Session`,
-              value,
-              selected: true,
-            };
-          }
-
-          return {
-            label,
-            subtitle: isSessionOpenedInAnotherWindow ? `Selected in another Window` : undefined,
-            value,
-            disabled: isSessionOpenedInAnotherWindow,
-            selected: isSessionOpenedInAnotherWindow,
-          };
-        }),
-      ];
-
       await modal({
         title: 'Change Session',
-        message: <SessionSelectionForm options={options} isFirstTime={false} />,
+        message: <SessionSelectionForm isFirstTime={false} />,
         size: 'sm',
       });
     } catch (err) {}

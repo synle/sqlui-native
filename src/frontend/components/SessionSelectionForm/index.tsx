@@ -15,6 +15,8 @@ import {
   useSelectSession,
   useSetOpenSession,
   useUpsertSession,
+  useGetCurrentSession,
+  useGetOpenedSessionIds,
 } from 'src/frontend/hooks/useSession';
 import EditIcon from '@mui/icons-material/Edit';
 import MissionControl, { useCommands } from 'src/frontend/components/MissionControl';
@@ -28,17 +30,20 @@ export type SessionOption = {
 
 type SessionSelectionFormProps = {
   isFirstTime: boolean;
-  options: SessionOption[];
 };
 
 export default function SessionSelectionForm(props: SessionSelectionFormProps) {
-  const { options, isFirstTime } = props;
+  const {  isFirstTime } = props;
   const navigate = useNavigate();
-  const { data: sessions, isLoading } = useGetSessions();
+  const { data: sessions, isLoading: loadingSessions } = useGetSessions();
+  const { data: openedSessionIds, isLoading: loadingOpenedSessionIds } = useGetOpenedSessionIds();
+  const { data: currentSession, isLoading: loadingCurrentSession } = useGetCurrentSession();
   const { mutateAsync: setOpenSession } = useSetOpenSession();
   const { mutateAsync: upsertSession } = useUpsertSession();
   const { mutateAsync: selectSession } = useSelectSession();
   const { selectCommand } = useCommands();
+
+  const isLoading = loadingSessions || loadingOpenedSessionIds || loadingOpenedSessionIds;
 
   const shouldShowRename = !isFirstTime;
 
@@ -53,12 +58,39 @@ export default function SessionSelectionForm(props: SessionSelectionFormProps) {
     selectSession(newSession.id);
   };
 
-  let defaultSessionName =
-    options.length === 0 ? `New Session ${new Date().toLocaleDateString()}` : '';
-
   if(isLoading || !sessions){
     return null;
   }
+
+  const options: SessionOption[] = [
+    ...sessions.map((session) => {
+      const isSessionOpenedInAnotherWindow =
+        openedSessionIds && openedSessionIds?.indexOf(session.id) >= 0;
+
+      const label = session.name;
+      const value = session.id;
+
+      if (session.id === currentSession?.id) {
+        return {
+          label,
+          subtitle: `Current Session`,
+          value,
+          selected: true,
+        };
+      }
+
+      return {
+        label,
+        subtitle: isSessionOpenedInAnotherWindow ? `Selected in another Window` : undefined,
+        value,
+        disabled: isSessionOpenedInAnotherWindow,
+        selected: isSessionOpenedInAnotherWindow,
+      };
+    }),
+  ];
+
+  let defaultSessionName =
+    options.length === 0 ? `New Session ${new Date().toLocaleDateString()}` : '';
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
