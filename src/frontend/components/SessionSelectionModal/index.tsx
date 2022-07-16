@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import ActionDialogs from 'src/frontend/components/ActionDialogs';
 import { allMenuKeys } from 'src/frontend/components/MissionControl';
-import SessionSelectionForm from 'src/frontend/components/SessionSelectionForm';
+import SessionSelectionForm, {SessionOption} from 'src/frontend/components/SessionSelectionForm';
 import { useActionDialogs } from 'src/frontend/hooks/useActionDialogs';
 import {
   useGetCurrentSession,
@@ -31,24 +31,28 @@ export default function SessionSelectionModal() {
 
         window.document.title = 'Choose a Session';
 
-        const options = [
+        const options : SessionOption[] = [
           ...(sessions || []).map((session) => {
             const isSessionOpenedInAnotherWindow =
               openedSessionIds && openedSessionIds?.indexOf(session.id) >= 0;
 
+            const label = session.name;
+            const value = session.id;
+
             return {
-              label: session.name,
-              value: session.id,
+              label,
+              subtitle: '',
+              value,
               disabled: isSessionOpenedInAnotherWindow,
               selected: session.id === currentSession?.id || isSessionOpenedInAnotherWindow,
             };
           }),
-        ].filter((option) => {
+        ].map((option) => {
           if (option.disabled) {
-            option.label += ` (Already Selected in another Window)`;
+            option.subtitle = `Selected in another Window`;
           }
           return option;
-        }); // here we want to hide
+        });
 
         await modal({
           title: 'Choose a Session',

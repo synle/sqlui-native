@@ -1,3 +1,5 @@
+import React from 'react';
+import IconButton from '@mui/material/IconButton';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
@@ -13,9 +15,11 @@ import {
   useSetOpenSession,
   useUpsertSession,
 } from 'src/frontend/hooks/useSession';
+import EditIcon from '@mui/icons-material/Edit';
 
-type SessionOption = {
+export type SessionOption = {
   label: string;
+  subtitle?: string;
   value: string;
   selected?: boolean;
   disabled?: boolean;
@@ -27,11 +31,13 @@ type SessionSelectionFormProps = {
 };
 
 export default function SessionSelectionForm(props: SessionSelectionFormProps) {
-  const { options } = props;
+  const { options, isFirstTime } = props;
   const navigate = useNavigate();
   const { mutateAsync: setOpenSession } = useSetOpenSession();
   const { mutateAsync: upsertSession } = useUpsertSession();
   const { mutateAsync: selectSession } = useSelectSession();
+
+  const shouldShowRename = !isFirstTime;
 
   const onCreateNewSession = async (formEl: HTMLElement) => {
     const newSessionName = (formEl.querySelector('input') as HTMLInputElement).value;
@@ -60,6 +66,16 @@ export default function SessionSelectionForm(props: SessionSelectionFormProps) {
             }
           };
           const labelId = `session-option-${option.value}`;
+
+          let secondaryAction: React.ReactElement | undefined;
+          if(true){
+            secondaryAction = (
+              <IconButton edge="end" aria-label="Edit">
+                <EditIcon />
+              </IconButton>
+            )
+          }
+
           return (
             <ListItem
               button
@@ -67,7 +83,8 @@ export default function SessionSelectionForm(props: SessionSelectionFormProps) {
               key={option.value}
               disabled={option.disabled}
               selected={option.selected}
-              onClick={onSelectThisSession}>
+              onClick={onSelectThisSession}
+              secondaryAction={secondaryAction}>
               <ListItemIcon>
                 <Checkbox
                   edge='start'
@@ -76,7 +93,7 @@ export default function SessionSelectionForm(props: SessionSelectionFormProps) {
                   inputProps={{ 'aria-labelledby': labelId }}
                 />
               </ListItemIcon>
-              <ListItemText id={labelId} primary={option.label} />
+              <ListItemText id={labelId} primary={option.label} secondary={option.subtitle} />
             </ListItem>
           );
         })}

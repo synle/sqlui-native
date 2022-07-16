@@ -5,7 +5,7 @@ import { useQuery, useQueryClient } from 'react-query';
 import { useNavigate } from 'react-router-dom';
 import React, { useCallback, useEffect, useState } from 'react';
 import CommandPalette from 'src/frontend/components/CommandPalette';
-import SessionSelectionForm from 'src/frontend/components/SessionSelectionForm';
+import SessionSelectionForm, {SessionOption} from 'src/frontend/components/SessionSelectionForm';
 import Settings from 'src/frontend/components/Settings';
 import { downloadText } from 'src/frontend/data/file';
 import { getRandomSessionId } from 'src/frontend/data/session';
@@ -395,24 +395,27 @@ export default function MissionControl() {
     }
 
     try {
-      const options = [
+      const options: SessionOption[] = [
         ...sessions.map((session) => {
           const isSessionOpenedInAnotherWindow =
             openedSessionIds && openedSessionIds?.indexOf(session.id) >= 0;
 
+          const label = session.name;
+          const value = session.id;
+
           if (session.id === currentSession?.id) {
             return {
-              label: `${session.name} (Current Session)`,
-              value: session.id,
+              label,
+              subtitle: `Current Session`,
+              value,
               selected: true,
             };
           }
 
           return {
-            label: isSessionOpenedInAnotherWindow
-              ? `${session.name} (Already Selected in another Window)`
-              : session.name,
-            value: session.id,
+            label,
+            subtitle: isSessionOpenedInAnotherWindow ? `Selected in another Window` : undefined,
+            value,
             disabled: isSessionOpenedInAnotherWindow,
             selected: isSessionOpenedInAnotherWindow,
           };
