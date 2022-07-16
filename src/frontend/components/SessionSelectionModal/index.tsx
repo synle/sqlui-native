@@ -1,26 +1,14 @@
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Checkbox from '@mui/material/Checkbox';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import TextField from '@mui/material/TextField';
 import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import ActionDialogs from 'src/frontend/components/ActionDialogs';
 import { allMenuKeys } from 'src/frontend/components/MissionControl';
-import { getRandomSessionId, setCurrentSessionId } from 'src/frontend/data/session';
+import SessionSelectionForm from 'src/frontend/components/SessionSelectionForm';
 import { useActionDialogs } from 'src/frontend/hooks/useActionDialogs';
 import {
   useGetCurrentSession,
   useGetOpenedSessionIds,
   useGetSessions,
-  useSetOpenSession,
-  useUpsertSession,
-  useSelectSession,
 } from 'src/frontend/hooks/useSession';
-import SessionSelectionForm from 'src/frontend/components/SessionSelectionForm';
 
 export default function SessionSelectionModal() {
   const navigate = useNavigate();

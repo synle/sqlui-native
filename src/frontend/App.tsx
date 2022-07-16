@@ -1,17 +1,13 @@
-import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
-import CircularProgress from '@mui/material/CircularProgress';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { HashRouter, Route, Routes } from 'react-router-dom';
-import { useEffect, useRef, useState } from 'react';
+import { useRef } from 'react';
 import ActionDialogs from 'src/frontend/components/ActionDialogs';
 import AppHeader from 'src/frontend/components/AppHeader';
 import ElectronEventListener from 'src/frontend/components/ElectronEventListener';
 import MissionControl, { useCommands } from 'src/frontend/components/MissionControl';
-import SessionSelectionModal from 'src/frontend/components/SessionSelectionModal';
 import SessionManager from 'src/frontend/components/SessionManager';
 import dataApi from 'src/frontend/data/api';
-import { setCurrentSessionId } from 'src/frontend/data/session';
 import {
   useGetCurrentSession,
   useGetSessions,

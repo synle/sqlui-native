@@ -5,9 +5,10 @@ import { useQuery, useQueryClient } from 'react-query';
 import { useNavigate } from 'react-router-dom';
 import React, { useCallback, useEffect, useState } from 'react';
 import CommandPalette from 'src/frontend/components/CommandPalette';
+import SessionSelectionForm from 'src/frontend/components/SessionSelectionForm';
 import Settings from 'src/frontend/components/Settings';
 import { downloadText } from 'src/frontend/data/file';
-import { getRandomSessionId, setCurrentSessionId } from 'src/frontend/data/session';
+import { getRandomSessionId } from 'src/frontend/data/session';
 import { useActionDialogs } from 'src/frontend/hooks/useActionDialogs';
 import {
   useDeleteConnection,
@@ -27,9 +28,9 @@ import {
   useGetCurrentSession,
   useGetOpenedSessionIds,
   useGetSessions,
+  useSelectSession,
   useSetOpenSession,
   useUpsertSession,
-  useSelectSession,
 } from 'src/frontend/hooks/useSession';
 import { useSetting } from 'src/frontend/hooks/useSetting';
 import { useShowHide } from 'src/frontend/hooks/useShowHide';
@@ -42,7 +43,6 @@ import {
 import { RecordDetailsPage } from 'src/frontend/views/RecordPage';
 import appPackage from 'src/package.json';
 import { SqluiCore, SqluiEnums, SqluiFrontend } from 'typings';
-import SessionSelectionForm from 'src/frontend/components/SessionSelectionForm';
 
 export type Command = {
   event: SqluiEnums.ClientEventKey;

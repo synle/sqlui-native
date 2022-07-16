@@ -7,18 +7,11 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import TextField from '@mui/material/TextField';
 import { useNavigate } from 'react-router-dom';
-import { useEffect } from 'react';
-import ActionDialogs from 'src/frontend/components/ActionDialogs';
-import { allMenuKeys } from 'src/frontend/components/MissionControl';
-import { getRandomSessionId, setCurrentSessionId } from 'src/frontend/data/session';
-import { useActionDialogs } from 'src/frontend/hooks/useActionDialogs';
+import { getRandomSessionId } from 'src/frontend/data/session';
 import {
-  useGetCurrentSession,
-  useGetOpenedSessionIds,
-  useGetSessions,
+  useSelectSession,
   useSetOpenSession,
   useUpsertSession,
-  useSelectSession,
 } from 'src/frontend/hooks/useSession';
 
 type SessionOption = {
