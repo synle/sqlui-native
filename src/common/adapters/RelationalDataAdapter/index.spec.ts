@@ -1,8 +1,14 @@
 import fs from 'fs';
 import RelationalDataAdapter from 'src/common/adapters/RelationalDataAdapter/index';
 
-describe.skip('sqlite', () => {
+describe('sqlite', () => {
   let adapter;
+  if(process.platform === 'win32'){
+    test('Skipped for win32', async () => {
+
+    });
+    return;
+  }
 
   beforeAll(() => {
     const mockedDbFilePath = `mocked-db.sqlite`;
