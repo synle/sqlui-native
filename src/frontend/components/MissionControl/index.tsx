@@ -462,7 +462,7 @@ export default function MissionControl() {
       }
     }
   };
-  const onRenameSession = async (onClose?: () => void) => {
+  const onRenameSession = async () => {
     try {
       if (!currentSession) {
         return;
@@ -484,10 +484,6 @@ export default function MissionControl() {
         name: newSessionName,
       });
     } catch (err) {}
-
-    if (onClose) {
-      onClose();
-    }
   };
 
   const onExportAll = async () => {
@@ -1070,7 +1066,7 @@ export default function MissionControl() {
         case 'clientEvent/session/rename':
           try {
             window.toggleElectronMenu(false, allMenuKeys);
-            await onRenameSession(command.data as () => void);
+            await onRenameSession();
           } catch (err) {}
 
           window.toggleElectronMenu(true, allMenuKeys);
