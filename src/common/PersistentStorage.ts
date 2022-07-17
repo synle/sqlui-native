@@ -31,6 +31,8 @@ try {
 }
 console.log('baseDir', baseDir);
 
+export const storageDir = baseDir;
+
 export class PersistentStorage<T extends StorageEntry> {
   instanceId: string;
   name: string;
