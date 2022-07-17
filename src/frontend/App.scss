@@ -1,5 +1,9 @@
 @import 'base';
 
+label {
+  user-select: none;
+}
+
 .App {
   min-height: 100vh;
 
@@ -72,7 +76,7 @@ $ConnectionTreeIndentSize: 7px;
   }
   &__Row {
     display: flex;
-    gap: 2rem;
+    gap: 1rem;
     align-items: center;
 
     > * {
