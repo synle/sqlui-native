@@ -74,6 +74,10 @@ $ConnectionTreeIndentSize: 7px;
     display: flex;
     gap: 2rem;
     align-items: center;
+
+    > *{
+      flex-shrink: 0;
+    }
   }
 }
 
