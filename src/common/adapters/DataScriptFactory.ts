@@ -67,27 +67,19 @@ function _getAllImplementations(): BaseDataScript[] {
   ]
 }
 
-// generate the list of all supported dialects
-const allScriptsSet = new Set<string>();
-_getAllImplementations().forEach((script) => {
-  for (const dialect of script.dialects) {
-    allScriptsSet.add(dialect);
-  }
-});
-
-/**
- * @type {Array} ordered list of supported dialects is shown in the connection hints
- */
-export const SUPPORTED_DIALECTS = [...allScriptsSet];
-
-export const DIALECTS_SUPPORTING_MIGRATION = _getAllImplementations().filter((script) => {
-  return script.supportMigration();
-}).reduce<string[]>((res, script) => {
+function _consolidateDialects(res: string[], script: BaseDataScript){
   for (const dialect of script.dialects) {
     res.push(dialect);
   }
   return res;
-}, []);
+}
+
+/**
+ * @type {Array} ordered list of supported dialects is shown in the connection hints
+ */
+export const SUPPORTED_DIALECTS = _getAllImplementations().reduce<string[]>(_consolidateDialects, []);
+
+export const DIALECTS_SUPPORTING_MIGRATION = _getAllImplementations().filter((script) => script.supportMigration()).reduce<string[]>(_consolidateDialects, []);
 
 export function getSyntaxModeByDialect(dialect?: string) {
   return _getImplementation(dialect)?.getSyntaxMode() || 'sql';
