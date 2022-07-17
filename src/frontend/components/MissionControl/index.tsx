@@ -1,6 +1,6 @@
+import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Link from '@mui/material/Link';
-import Typography from '@mui/material/Typography';
 import { useQuery, useQueryClient } from 'react-query';
 import { useNavigate } from 'react-router-dom';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -23,6 +23,7 @@ import {
   useConnectionQueries,
 } from 'src/frontend/hooks/useConnectionQuery';
 import { useAddBookmarkItem } from 'src/frontend/hooks/useFolderItems';
+import { useGetServerConfigs } from 'src/frontend/hooks/useServerConfigs';
 import {
   useDeleteSession,
   useGetCurrentSession,
@@ -110,6 +111,7 @@ export default function MissionControl() {
   const { command, selectCommand, dismissCommand } = useCommands();
   const { modal, choice, confirm, prompt, alert, dismiss: dismissDialog } = useActionDialogs();
   const { data: sessions, isLoading: loadingSessions } = useGetSessions();
+  const { data: serverConfigs } = useGetServerConfigs();
   const { data: openedSessionIds, isLoading: loadingOpenedSessionIds } = useGetOpenedSessionIds();
   const { mutateAsync: setOpenSession } = useSetOpenSession();
   const { data: currentSession, isLoading: loadingCurrentSession } = useGetCurrentSession();
@@ -694,10 +696,11 @@ export default function MissionControl() {
     if (newVersion === appPackage.version) {
       contentDom = (
         <>
-          <Typography gutterBottom={true}>sqlui-native is up to date</Typography>
-          <Typography gutterBottom={true} sx={{ mt: 3 }}>
-            Version {appPackage.version}
-          </Typography>
+          <Box className='FormInput__Row'>sqlui-native is up to date</Box>
+          <Box className='FormInput__Row'>
+            <label>Version:</label>
+            {appPackage.version}
+          </Box>
         </>
       );
     } else {
@@ -713,14 +716,20 @@ export default function MissionControl() {
 
       contentDom = (
         <>
-          <Typography gutterBottom={true}>Your version {appPackage.version} </Typography>
-          <Typography gutterBottom={true}>Latest version {newVersion} </Typography>
-          <Typography gutterBottom={true} sx={{ mt: 3 }}>
+          <Box className='FormInput__Row'>
+            <label>Your version:</label>
+            {appPackage.version}
+          </Box>
+          <Box className='FormInput__Row'>
+            <label>Latest version:</label>
+            {newVersion}
+          </Box>
+          <Box className='FormInput__Row' sx={{ mt: 3 }}>
             <Link onClick={onDownloadLatestVersion} sx={{ cursor: 'pointer' }}>
               Click here to download the new version
             </Link>
             .
-          </Typography>
+          </Box>
         </>
       );
     }
@@ -733,14 +742,18 @@ export default function MissionControl() {
     await modal({
       title: 'Check for update',
       message: (
-        <>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
           {contentDom}
-          <Typography gutterBottom={true} sx={{ mt: 3 }}>
+          <Box className='FormInput__Row'>
+            <label>Data Location:</label>
+            {serverConfigs?.storageDir}
+          </Box>
+          <Box sx={{ mt: 3 }}>
             <Link onClick={onGoToHomepage} sx={{ cursor: 'pointer' }}>
               synle.github.io/sqlui-native
             </Link>
-          </Typography>
-        </>
+          </Box>
+        </Box>
       ),
       showCloseButton: true,
       size: 'xs',
