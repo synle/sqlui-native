@@ -172,6 +172,7 @@ const ALL_COMMAND_PALETTE_OPTIONS: CommandOption[] = [
     label: 'Close Tabs to The Right Of Current Query',
     useCurrentQuery: true,
   },
+  { event: 'clientEvent/checkForUpdate', label: 'Check For Update'},
 ];
 
 export default function CommandPalette(props: CommandPaletteProps) {
