@@ -1,7 +1,14 @@
+import Box from '@mui/material/Box';
 import { useMemo } from 'react';
 import { getIsTableIdRequiredForQueryByDialect } from 'src/common/adapters/DataScriptFactory';
+import ConnectionTypeIcon from 'src/frontend/components/ConnectionTypeIcon';
 import Select from 'src/frontend/components/Select';
-import { useGetConnections, useGetDatabases, useGetTables } from 'src/frontend/hooks/useConnection';
+import {
+  useGetConnectionById,
+  useGetConnections,
+  useGetDatabases,
+  useGetTables,
+} from 'src/frontend/hooks/useConnection';
 import { SqluiFrontend } from 'typings';
 
 type ConnectionDatabaseSelectorProps = {
@@ -17,6 +24,7 @@ export default function ConnectionDatabaseSelector(props: ConnectionDatabaseSele
   const query = props.value;
   const { data: connections, isLoading: loadingConnections } = useGetConnections();
   const { data: databases, isLoading: loadingDatabases } = useGetDatabases(query.connectionId);
+  const { data: connection } = useGetConnectionById(query?.connectionId);
   const { data: tables, isLoading: loadingTables } = useGetTables(
     query.connectionId,
     query.databaseId,
@@ -86,14 +94,17 @@ export default function ConnectionDatabaseSelector(props: ConnectionDatabaseSele
 
   return (
     <>
-      <Select
-        value={query.connectionId}
-        onChange={(newValue) => onConnectionChange(newValue)}
-        required
-        disabled={!!props.disabledConnection}>
-        <option value=''>Pick a Connection</option>
-        {connectionOptions}
-      </Select>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+        <ConnectionTypeIcon dialect={connection?.dialect} status={connection?.status} />
+        <Select
+          value={query.connectionId}
+          onChange={(newValue) => onConnectionChange(newValue)}
+          required
+          disabled={!!props.disabledConnection}>
+          <option value=''>Pick a Connection</option>
+          {connectionOptions}
+        </Select>
+      </Box>
       <Select
         value={query.databaseId}
         onChange={(newValue) => onDatabaseChange(newValue)}
