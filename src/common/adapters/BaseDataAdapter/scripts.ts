@@ -22,11 +22,13 @@ export default abstract class BaseDataScript implements IDataScript {
     return false;
   }
 
-  supportRecordForm(){
+  supportCreateRecordForm(){
     return false;
   }
 
-
+  supportEditRecordForm(){
+    return false;
+  }
 
   //
   getTableScripts(): SqlAction.TableActionScriptGenerator[] {

@@ -81,14 +81,19 @@ export const SUPPORTED_DIALECTS = _getAllImplementations().reduce<string[]>(_con
 
 export const DIALECTS_SUPPORTING_MIGRATION = _getAllImplementations().filter((script) => script.supportMigration).reduce<string[]>(_consolidateDialects, []);
 
-export const DIALECTS_SUPPORTING_RECORD_FORM = _getAllImplementations().filter((script) => script.supportRecordForm).reduce<string[]>(_consolidateDialects, []);
+export const DIALECTS_SUPPORTING_CREATE_FORM = _getAllImplementations().filter((script) => script.supportCreateRecordForm).reduce<string[]>(_consolidateDialects, []);
+export const DIALECTS_SUPPORTING_EDIT_FORM = _getAllImplementations().filter((script) => script.supportEditRecordForm).reduce<string[]>(_consolidateDialects, []);
 
 export function isDialectSupportMigration(dialect?: string) {
   return dialect && DIALECTS_SUPPORTING_MIGRATION.indexOf(dialect) >= 0
 }
 
-export function isDialectSupportRecordForm(dialect?: string) {
-  return dialect && DIALECTS_SUPPORTING_RECORD_FORM.indexOf(dialect) >= 0
+export function isDialectSupportCreateRecordForm(dialect?: string) {
+  return dialect && DIALECTS_SUPPORTING_CREATE_FORM.indexOf(dialect) >= 0
+}
+
+export function isDialectSupportEditRecordForm(dialect?: string) {
+  return dialect && DIALECTS_SUPPORTING_EDIT_FORM.indexOf(dialect) >= 0
 }
 
 export function getSyntaxModeByDialect(dialect?: string) {

@@ -49,7 +49,8 @@ import { sortColumnNamesForUnknownData } from 'src/frontend/utils/commonUtils';
 import { formatJS, formatSQL } from 'src/frontend/utils/formatter';
 import { SqluiCore, SqluiFrontend } from 'typings';
 import {
-  isDialectSupportRecordForm,
+  isDialectSupportCreateRecordForm,
+  isDialectSupportEditRecordForm,
 } from 'src/common/adapters/DataScriptFactory';
 type RecordData = any;
 
@@ -294,7 +295,7 @@ function RecordForm(props) {
   }, []);
 
   const contentFormDataView: React.ReactElement[] = [];
-  if (!isDialectSupportRecordForm(connection?.dialect)) {
+  if (!isDialectSupportCreateRecordForm(connection?.dialect)) {
     contentFormDataView.push(
       <React.Fragment key='non_supported_dialect'>
         The dialect of this connection is not supported for RecordForm
@@ -815,7 +816,7 @@ export function EditRecordPage(props: RecordDetailsPageProps) {
         </>
       ) : (
         <>
-          {isDialectSupportRecordForm(connection?.dialect) && (
+          {isDialectSupportEditRecordForm(connection?.dialect) && (
             <Box>
               <Button variant='contained' onClick={() => setIsEdit(true)}>
                 Edit

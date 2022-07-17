@@ -300,7 +300,11 @@ export class ConcreteDataScripts extends BaseDataScript {
     return true;
   }
 
-  supportRecordForm(){
+  supportCreateRecordForm(){
+    return true;
+  }
+
+  supportEditRecordForm(){
     return true;
   }
 

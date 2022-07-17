@@ -7,7 +7,8 @@ export default interface IDataScript {
   getIsTableIdRequiredForQuery: () => boolean;
   getSyntaxMode: () => string;
   supportMigration:() => boolean;
-  supportRecordForm:() => boolean;
+  supportCreateRecordForm:() => boolean;
+  supportEditRecordForm:() => boolean;
 
   // core script methods
   getTableScripts: () => SqlAction.TableActionScriptGenerator[];
