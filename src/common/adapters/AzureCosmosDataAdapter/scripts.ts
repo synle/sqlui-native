@@ -381,11 +381,7 @@ export class ConcreteDataScripts extends BaseDataScript {
     return true;
   }
 
-  supportEditRecord(){
-    return true;
-  }
-
-  supportCreateRecord(){
+  supportRecordForm(){
     return true;
   }
 

@@ -48,7 +48,9 @@ import LayoutTwoColumns from 'src/frontend/layout/LayoutTwoColumns';
 import { sortColumnNamesForUnknownData } from 'src/frontend/utils/commonUtils';
 import { formatJS, formatSQL } from 'src/frontend/utils/formatter';
 import { SqluiCore, SqluiFrontend } from 'typings';
-
+import {
+  isDialectSupportRecordForm,
+} from 'src/common/adapters/DataScriptFactory';
 type RecordData = any;
 
 type RecordFormProps = {
@@ -61,22 +63,6 @@ type RecordFormProps = {
   isEditMode?: boolean;
   mode: 'edit' | 'create';
 };
-
-export function isRecordFormSupportedForDialect(dialect?: string) {
-  switch (dialect) {
-    case 'mysql':
-    case 'mariadb':
-    case 'mssql':
-    case 'postgres':
-    case 'sqlite':
-    case 'cassandra':
-    case 'mongodb':
-    case 'cosmosdb':
-    case 'aztable':
-      return true;
-    // case 'redis':// TODO: to be implemented
-  }
-}
 
 type RecordFormReponse = {
   query: Partial<SqluiFrontend.ConnectionQuery>;
@@ -308,7 +294,7 @@ function RecordForm(props) {
   }, []);
 
   const contentFormDataView: React.ReactElement[] = [];
-  if (!isRecordFormSupportedForDialect(connection?.dialect)) {
+  if (!isDialectSupportRecordForm(connection?.dialect)) {
     contentFormDataView.push(
       <React.Fragment key='non_supported_dialect'>
         The dialect of this connection is not supported for RecordForm
@@ -829,7 +815,7 @@ export function EditRecordPage(props: RecordDetailsPageProps) {
         </>
       ) : (
         <>
-          {isRecordFormSupportedForDialect(connection?.dialect) && (
+          {isDialectSupportRecordForm(connection?.dialect) && (
             <Box>
               <Button variant='contained' onClick={() => setIsEdit(true)}>
                 Edit

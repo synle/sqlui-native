@@ -60,12 +60,7 @@ export class ConcreteDataScripts extends BaseDataScript {
   }
 
   // TODO: implement me
-  supportEditRecord(){
-    return false;
-  }
-
-  // TODO: implement me
-  supportCreateRecord(){
+  supportRecordForm(){
     return false;
   }
 
