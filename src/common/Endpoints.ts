@@ -7,7 +7,7 @@ import {
   getTables,
   resetConnectionMetaData,
 } from 'src/common/adapters/DataAdapterFactory';
-import PersistentStorage from 'src/common/PersistentStorage';
+import PersistentStorage, { storageDir } from 'src/common/PersistentStorage';
 import * as sessionUtils from 'src/common/utils/sessionUtils';
 import { SqluiCore, SqluiEnums } from 'typings';
 let expressAppContext: Express | undefined;
@@ -72,6 +72,16 @@ export function getEndpointHandlers() {
 
 export function setUpDataEndpoints(anExpressAppContext?: Express) {
   expressAppContext = anExpressAppContext;
+  // storageDir
+  //=========================================================================
+  // config api endpoints
+  //=========================================================================
+  addDataEndpoint('get', '/api/configs', async (req, res, apiCache) => {
+    res.status(200).json({
+      storageDir,
+      isElectron: !expressAppContext,
+    });
+  });
 
   //=========================================================================
   // connection api endpoints

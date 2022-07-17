@@ -38,6 +38,10 @@ async function _fetch<T>(input: RequestInfo, initOptions?: RequestInit) {
 }
 
 export class ProxyApi {
+  static getConfigs() {
+    return _fetch<SqluiCore.ServerConfigs>(`/api/configs`);
+  }
+
   static getConnections() {
     return _fetch<SqluiCore.ConnectionProps[]>(`/api/connections`);
   }

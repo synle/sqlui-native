@@ -24,6 +24,11 @@ export module SqluiCore {
     | 'cosmosdb'
     | 'aztable';
 
+  export type ServerConfigs = {
+    storageDir: string;
+    isElectron: boolean;
+  };
+
   export type CoreConnectionProps = {
     connection: string;
     name: string;

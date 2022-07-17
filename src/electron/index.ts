@@ -265,7 +265,7 @@ function setupMenu() {
           },
         },
         {
-          label: 'About / Check for update',
+          label: 'About sqlui-native (Check for update)',
           click: async (item, win) =>
             sendMessage(win as BrowserWindow, 'clientEvent/checkForUpdate'),
         },
