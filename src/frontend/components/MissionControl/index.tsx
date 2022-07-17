@@ -43,6 +43,7 @@ import {
 import { RecordDetailsPage } from 'src/frontend/views/RecordPage';
 import appPackage from 'src/package.json';
 import { SqluiCore, SqluiEnums, SqluiFrontend } from 'typings';
+import {BookmarksItemListModalContent} from 'src/frontend/components/BookmarksItemList';
 
 export type Command = {
   event: SqluiEnums.ClientEventKey;
@@ -521,6 +522,17 @@ export default function MissionControl() {
     }
   };
 
+  const onShowBookmarks = async () => {
+    try {
+      await modal({
+        title: 'Bookmarks',
+        message: <BookmarksItemListModalContent />,
+        size: 'lg',
+        showCloseButton: true
+      });
+    } catch (err) {}
+  };
+
   const onAddConnectionToBookmark = async (connection: SqluiCore.ConnectionProps) => {
     const newName = await prompt({
       title: 'Add connection to Bookmarks',
@@ -872,6 +884,11 @@ export default function MissionControl() {
           if (command.data) {
             onAddConnectionToBookmark(command.data as SqluiCore.ConnectionProps);
           }
+          break;
+
+        // bookmark commands
+        case 'clientEvent/bookmark/show':
+          onShowBookmarks();
           break;
 
         // query commands

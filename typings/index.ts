@@ -305,5 +305,6 @@ export module SqluiEnums {
     | 'clientEvent/session/new'
     | 'clientEvent/session/rename'
     | 'clientEvent/session/switch'
-    | 'clientEvent/session/delete';
+    | 'clientEvent/session/delete'
+    | 'clientEvent/bookmark/show';
 }

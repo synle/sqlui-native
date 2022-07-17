@@ -12,7 +12,7 @@ import {
 
 export default function SessionSelectionModal() {
   const navigate = useNavigate();
-  const { modal, choice, confirm, prompt, alert, dismiss: dismissDialog } = useActionDialogs();
+  const { modal } = useActionDialogs();
   const { isLoading: loadingSessions } = useGetSessions();
   const { isLoading: loadingOpenedSessionIds } = useGetOpenedSessionIds();
   const { isLoading: loadingCurrentSession } = useGetCurrentSession();
