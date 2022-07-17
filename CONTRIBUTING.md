@@ -108,6 +108,7 @@ yarn dist
 C:\Users\some_username\AppData\Roaming\sqlui-native
 
 # Mac
+cd ~/Library/Application\ Support/sqlui-native/
 ```
 
 ## Sample Databases
