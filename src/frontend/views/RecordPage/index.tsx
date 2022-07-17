@@ -20,6 +20,10 @@ import {
   getUpdateWithValues as getUpdateWithValuesForCassandra,
 } from 'src/common/adapters/CassandraDataAdapter/scripts';
 import {
+  isDialectSupportCreateRecordForm,
+  isDialectSupportEditRecordForm,
+} from 'src/common/adapters/DataScriptFactory';
+import {
   getInsert as getInsertForMongoDB,
   getUpdateWithValues as getUpdateWithValuesForMongoDB,
 } from 'src/common/adapters/MongoDBDataAdapter/scripts';
@@ -61,23 +65,6 @@ type RecordFormProps = {
   isEditMode?: boolean;
   mode: 'edit' | 'create';
 };
-
-export function isRecordFormSupportedForDialect(dialect?: string) {
-  switch (dialect) {
-    case 'mysql':
-    case 'mariadb':
-    case 'mssql':
-    case 'postgres':
-    case 'sqlite':
-    case 'cassandra':
-    case 'mongodb':
-      return true;
-    // case 'redis':// TODO: to be implemented
-    case 'cosmosdb':
-    case 'aztable':
-      return true;
-  }
-}
 
 type RecordFormReponse = {
   query: Partial<SqluiFrontend.ConnectionQuery>;
@@ -309,7 +296,7 @@ function RecordForm(props) {
   }, []);
 
   const contentFormDataView: React.ReactElement[] = [];
-  if (!isRecordFormSupportedForDialect(connection?.dialect)) {
+  if (!isDialectSupportCreateRecordForm(connection?.dialect)) {
     contentFormDataView.push(
       <React.Fragment key='non_supported_dialect'>
         The dialect of this connection is not supported for RecordForm
@@ -830,7 +817,7 @@ export function EditRecordPage(props: RecordDetailsPageProps) {
         </>
       ) : (
         <>
-          {isRecordFormSupportedForDialect(connection?.dialect) && (
+          {isDialectSupportEditRecordForm(connection?.dialect) && (
             <Box>
               <Button variant='contained' onClick={() => setIsEdit(true)}>
                 Edit

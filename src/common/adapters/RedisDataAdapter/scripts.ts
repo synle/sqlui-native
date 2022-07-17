@@ -217,6 +217,18 @@ export class ConcreteDataScripts extends BaseDataScript {
     return 'javascript';
   }
 
+  supportMigration() {
+    return false;
+  }
+
+  supportCreateRecordForm() {
+    return false;
+  }
+
+  supportEditRecordForm() {
+    return true;
+  }
+
   getTableScripts() {
     return [
       getSetValue,
