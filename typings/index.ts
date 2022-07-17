@@ -27,7 +27,7 @@ export module SqluiCore {
   export type ServerConfigs = {
     storageDir: string;
     isElectron: boolean;
-  }
+  };
 
   export type CoreConnectionProps = {
     connection: string;

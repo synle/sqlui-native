@@ -7,7 +7,7 @@ import {
   getTables,
   resetConnectionMetaData,
 } from 'src/common/adapters/DataAdapterFactory';
-import PersistentStorage, {storageDir} from 'src/common/PersistentStorage';
+import PersistentStorage, { storageDir } from 'src/common/PersistentStorage';
 import * as sessionUtils from 'src/common/utils/sessionUtils';
 import { SqluiCore, SqluiEnums } from 'typings';
 let expressAppContext: Express | undefined;
