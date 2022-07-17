@@ -179,7 +179,13 @@ $ConnectionTreeIndentSize: 7px;
 
 
 // responsive
-@media (max-width: 600px) {
+@media (max-width: 800px) {
+  .App {
+    &__Section {
+      padding-bottom: 2rem;
+    }
+  }
+
   .LayoutTwoColumns {
     display: block !important;
     position: static;
@@ -198,6 +204,7 @@ $ConnectionTreeIndentSize: 7px;
     &__Row {
       flex-direction: column;
       align-items: start;
+      padding-inline: 0.5rem;
 
       > * {
         display: block;
