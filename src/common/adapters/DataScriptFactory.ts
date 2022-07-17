@@ -6,6 +6,8 @@ import RedisDataAdapterScripts from 'src/common/adapters/RedisDataAdapter/script
 import RelationalDataAdapterScripts from 'src/common/adapters/RelationalDataAdapter/scripts';
 import { formatJS, formatSQL } from 'src/frontend/utils/formatter';
 import { SqlAction, SqluiCore } from 'typings';
+import BaseDataScript from 'src/common/adapters/BaseDataAdapter/scripts';
+
 function _formatScripts(
   actionInput: SqlAction.TableInput | SqlAction.DatabaseInput | SqlAction.ConnectionInput,
   generatorFuncs:
@@ -52,6 +54,17 @@ function _getImplementation(dialect?: string) {
     case 'aztable':
       return AzureTableStorageAdapterScripts;
   }
+}
+
+function _getAllImplementations(): BaseDataScript[] {
+  return [
+    RelationalDataAdapterScripts,
+    CassandraDataAdapterScripts,
+    MongoDBDataAdapterScripts,
+    RedisDataAdapterScripts,
+    AzureCosmosDataAdapterScripts,
+    AzureTableStorageAdapterScripts,
+  ]
 }
 
 // generate the list of all supported dialects

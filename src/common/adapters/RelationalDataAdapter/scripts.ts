@@ -572,6 +572,18 @@ export class ConcreteDataScripts extends BaseDataScript {
     return 'sql';
   }
 
+  supportMigration(){
+    return true;
+  }
+
+  supportEditRecord(){
+    return true;
+  }
+
+  supportCreateRecord(){
+    return true;
+  }
+
   getTableScripts() {
     return [
       getSelectAllColumns,
