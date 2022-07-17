@@ -10,6 +10,7 @@ import Settings from 'src/frontend/components/Settings';
 import { downloadText } from 'src/frontend/data/file';
 import { getRandomSessionId } from 'src/frontend/data/session';
 import { useActionDialogs } from 'src/frontend/hooks/useActionDialogs';
+import { useGetServerConfigs } from 'src/frontend/hooks/useServerConfigs';
 import {
   useDeleteConnection,
   useDuplicateConnection,
@@ -110,6 +111,7 @@ export default function MissionControl() {
   const { command, selectCommand, dismissCommand } = useCommands();
   const { modal, choice, confirm, prompt, alert, dismiss: dismissDialog } = useActionDialogs();
   const { data: sessions, isLoading: loadingSessions } = useGetSessions();
+  const { data: serverConfigs} = useGetServerConfigs();
   const { data: openedSessionIds, isLoading: loadingOpenedSessionIds } = useGetOpenedSessionIds();
   const { mutateAsync: setOpenSession } = useSetOpenSession();
   const { data: currentSession, isLoading: loadingCurrentSession } = useGetCurrentSession();
@@ -713,8 +715,8 @@ export default function MissionControl() {
 
       contentDom = (
         <>
-          <Typography gutterBottom={true}>Your version {appPackage.version} </Typography>
-          <Typography gutterBottom={true}>Latest version {newVersion} </Typography>
+          <Typography gutterBottom={true}>Your version: {appPackage.version}</Typography>
+          <Typography gutterBottom={true}>Latest version: {newVersion}</Typography>
           <Typography gutterBottom={true} sx={{ mt: 3 }}>
             <Link onClick={onDownloadLatestVersion} sx={{ cursor: 'pointer' }}>
               Click here to download the new version
@@ -735,6 +737,7 @@ export default function MissionControl() {
       message: (
         <>
           {contentDom}
+          <Typography gutterBottom={true}>Data Location: {serverConfigs?.storageDir}</Typography>
           <Typography gutterBottom={true} sx={{ mt: 3 }}>
             <Link onClick={onGoToHomepage} sx={{ cursor: 'pointer' }}>
               synle.github.io/sqlui-native
