@@ -71,11 +71,10 @@ export function isRecordFormSupportedForDialect(dialect?: string) {
     case 'sqlite':
     case 'cassandra':
     case 'mongodb':
-      return true;
-    // case 'redis':// TODO: to be implemented
     case 'cosmosdb':
     case 'aztable':
       return true;
+    // case 'redis':// TODO: to be implemented
   }
 }
 

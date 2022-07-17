@@ -18,7 +18,7 @@ export default abstract class BaseDataScript implements IDataScript {
     return 'sql';
   }
 
-  isDialectSupportMigration(){
+  supportMigration(){
     return false;
   }
 
