@@ -176,3 +176,39 @@ $ConnectionTreeIndentSize: 7px;
     transition-duration: 0s !important;
   }
 }
+
+// responsive
+@media (max-width: 800px) {
+  .App {
+    &__Section {
+      padding-bottom: 2rem;
+    }
+  }
+
+  .LayoutTwoColumns {
+    display: block !important;
+    position: static;
+
+    &__LeftPane {
+      padding-bottom: 0;
+    }
+
+    &__RightPane {
+      margin-left: 0;
+      padding-bottom: 0;
+    }
+  }
+
+  .FormInput {
+    &__Row {
+      flex-direction: column;
+      align-items: start;
+      padding-inline: 0.5rem;
+
+      > * {
+        display: block;
+        width: 100%;
+      }
+    }
+  }
+}
