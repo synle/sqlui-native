@@ -18,15 +18,15 @@ export default abstract class BaseDataScript implements IDataScript {
     return 'sql';
   }
 
-  supportMigration(){
+  supportMigration() {
     return false;
   }
 
-  supportCreateRecordForm(){
+  supportCreateRecordForm() {
     return false;
   }
 
-  supportEditRecordForm(){
+  supportEditRecordForm() {
     return false;
   }
 

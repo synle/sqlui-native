@@ -20,6 +20,10 @@ import {
   getUpdateWithValues as getUpdateWithValuesForCassandra,
 } from 'src/common/adapters/CassandraDataAdapter/scripts';
 import {
+  isDialectSupportCreateRecordForm,
+  isDialectSupportEditRecordForm,
+} from 'src/common/adapters/DataScriptFactory';
+import {
   getInsert as getInsertForMongoDB,
   getUpdateWithValues as getUpdateWithValuesForMongoDB,
 } from 'src/common/adapters/MongoDBDataAdapter/scripts';
@@ -48,10 +52,7 @@ import LayoutTwoColumns from 'src/frontend/layout/LayoutTwoColumns';
 import { sortColumnNamesForUnknownData } from 'src/frontend/utils/commonUtils';
 import { formatJS, formatSQL } from 'src/frontend/utils/formatter';
 import { SqluiCore, SqluiFrontend } from 'typings';
-import {
-  isDialectSupportCreateRecordForm,
-  isDialectSupportEditRecordForm,
-} from 'src/common/adapters/DataScriptFactory';
+
 type RecordData = any;
 
 type RecordFormProps = {

@@ -217,15 +217,15 @@ export class ConcreteDataScripts extends BaseDataScript {
     return 'javascript';
   }
 
-  supportMigration(){
+  supportMigration() {
     return false;
   }
 
-  supportCreateRecordForm(){
+  supportCreateRecordForm() {
     return false;
   }
 
-  supportEditRecordForm(){
+  supportEditRecordForm() {
     return true;
   }
 

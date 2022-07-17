@@ -1,10 +1,15 @@
+import Box from '@mui/material/Box';
 import { useMemo } from 'react';
 import { getIsTableIdRequiredForQueryByDialect } from 'src/common/adapters/DataScriptFactory';
-import Select from 'src/frontend/components/Select';
-import { useGetConnectionById, useGetConnections, useGetDatabases, useGetTables } from 'src/frontend/hooks/useConnection';
-import { SqluiFrontend } from 'typings';
 import ConnectionTypeIcon from 'src/frontend/components/ConnectionTypeIcon';
-import Box from '@mui/material/Box';
+import Select from 'src/frontend/components/Select';
+import {
+  useGetConnectionById,
+  useGetConnections,
+  useGetDatabases,
+  useGetTables,
+} from 'src/frontend/hooks/useConnection';
+import { SqluiFrontend } from 'typings';
 
 type ConnectionDatabaseSelectorProps = {
   value: Partial<SqluiFrontend.ConnectionQuery>;
@@ -89,7 +94,7 @@ export default function ConnectionDatabaseSelector(props: ConnectionDatabaseSele
 
   return (
     <>
-      <Box sx={{display: 'flex', alignItems: 'center', gap: 1}}>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
         <ConnectionTypeIcon dialect={connection?.dialect} status={connection?.status} />
         <Select
           value={query.connectionId}

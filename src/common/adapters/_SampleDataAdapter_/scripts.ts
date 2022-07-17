@@ -55,17 +55,17 @@ export class ConcreteDataScripts extends BaseDataScript {
   }
 
   // TODO: implement me
-  supportMigration(){
+  supportMigration() {
     return false;
   }
 
   // TODO: implement me
-  supportCreateRecordForm(){
+  supportCreateRecordForm() {
     return false;
   }
 
   // TODO: implement me
-  supportEditRecordForm(){
+  supportEditRecordForm() {
     return false;
   }
 

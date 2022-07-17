@@ -20,10 +20,10 @@ import {
   getCreateTable as getCreateTableForCassandra,
 } from 'src/common/adapters/CassandraDataAdapter/scripts';
 import {
+  DIALECTS_SUPPORTING_MIGRATION,
   getSampleSelectQuery,
   getSyntaxModeByDialect,
   isDialectSupportMigration,
-  DIALECTS_SUPPORTING_MIGRATION,
 } from 'src/common/adapters/DataScriptFactory';
 import {
   getBulkInsert as getBulkInsertForMongoDB,
@@ -69,9 +69,9 @@ function DialectSelector(props: DialectSelectorProps) {
       label={label}
       value={value}
       onChange={(newValue) => onChange && onChange(newValue as SqluiCore.Dialect)}>
-      {
-        DIALECTS_SUPPORTING_MIGRATION.map(dialect => <option value={dialect}>{dialect}</option>)
-      }
+      {DIALECTS_SUPPORTING_MIGRATION.map((dialect) => (
+        <option value={dialect}>{dialect}</option>
+      ))}
     </Select>
   );
 }
