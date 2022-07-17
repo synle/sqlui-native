@@ -6,7 +6,7 @@ export default interface IDataScript {
   // misc methods
   getIsTableIdRequiredForQuery: () => boolean;
   getSyntaxMode: () => string;
-  supportMigration:() => boolean;
+  isDialectSupportMigration:() => boolean;
   supportEditRecord:() => boolean;
   supportCreateRecord:() => boolean;
 

@@ -55,7 +55,7 @@ export class ConcreteDataScripts extends BaseDataScript {
   }
 
   // TODO: implement me
-  supportMigration(){
+  isDialectSupportMigration(){
     return false;
   }
 

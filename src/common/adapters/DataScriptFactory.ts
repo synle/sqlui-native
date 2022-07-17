@@ -79,7 +79,7 @@ function _consolidateDialects(res: string[], script: BaseDataScript){
  */
 export const SUPPORTED_DIALECTS = _getAllImplementations().reduce<string[]>(_consolidateDialects, []);
 
-export const DIALECTS_SUPPORTING_MIGRATION = _getAllImplementations().filter((script) => script.supportMigration()).reduce<string[]>(_consolidateDialects, []);
+export const DIALECTS_SUPPORTING_MIGRATION = _getAllImplementations().filter((script) => script.isDialectSupportMigration()).reduce<string[]>(_consolidateDialects, []);
 
 export function isDialectSupportMigration(dialect?: string) {
   return dialect && DIALECTS_SUPPORTING_MIGRATION.indexOf(dialect) >= 0

@@ -572,7 +572,7 @@ export class ConcreteDataScripts extends BaseDataScript {
     return 'sql';
   }
 
-  supportMigration(){
+  isDialectSupportMigration(){
     return true;
   }
 

@@ -296,7 +296,7 @@ export class ConcreteDataScripts extends BaseDataScript {
     return 'javascript';
   }
 
-  supportMigration(){
+  isDialectSupportMigration(){
     return true;
   }
 
