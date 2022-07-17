@@ -18,6 +18,18 @@ export default abstract class BaseDataScript implements IDataScript {
     return 'sql';
   }
 
+  supportMigration() {
+    return false;
+  }
+
+  supportCreateRecordForm() {
+    return false;
+  }
+
+  supportEditRecordForm() {
+    return false;
+  }
+
   //
   getTableScripts(): SqlAction.TableActionScriptGenerator[] {
     return [];
