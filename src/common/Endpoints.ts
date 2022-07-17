@@ -76,6 +76,12 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
   //=========================================================================
   // config api endpoints
   //=========================================================================
+  addDataEndpoint('get', '/api/configs', async (req, res, apiCache) => {
+    res.status(200).json({
+      storageDir,
+      isElectron: !expressAppContext,
+    });
+  });
 
   //=========================================================================
   // connection api endpoints
