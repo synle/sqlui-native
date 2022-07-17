@@ -69,14 +69,7 @@ function _getAllImplementations(): BaseDataScript[] {
 
 // generate the list of all supported dialects
 const allScriptsSet = new Set<string>();
-[
-  RelationalDataAdapterScripts,
-  CassandraDataAdapterScripts,
-  MongoDBDataAdapterScripts,
-  RedisDataAdapterScripts,
-  AzureCosmosDataAdapterScripts,
-  AzureTableStorageAdapterScripts,
-].forEach((script) => {
+_getAllImplementations().forEach((script) => {
   for (const dialect of script.dialects) {
     allScriptsSet.add(dialect);
   }
@@ -86,6 +79,15 @@ const allScriptsSet = new Set<string>();
  * @type {Array} ordered list of supported dialects is shown in the connection hints
  */
 export const SUPPORTED_DIALECTS = [...allScriptsSet];
+
+export const DIALECTS_SUPPORTING_MIGRATION = _getAllImplementations().filter((script) => {
+  return script.supportMigration();
+}).reduce<string[]>((res, script) => {
+  for (const dialect of script.dialects) {
+    res.push(dialect);
+  }
+  return res;
+}, []);
 
 export function getSyntaxModeByDialect(dialect?: string) {
   return _getImplementation(dialect)?.getSyntaxMode() || 'sql';
