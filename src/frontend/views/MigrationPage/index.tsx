@@ -15,7 +15,7 @@ import { SqluiFrontend } from 'typings';
 function MigrationOption() {
   return (
     <>
-      <Box sx={{ display: 'flex', gap: 2, flexDirection: 'column' }}>
+      <Box className='FormInput__Container'>
         <Typography variant='h6'>Select a migration option:</Typography>
         <Link component={RouterLink} to='/migration/real_connection'>
           <Typography>Migrate Real Existing Connections</Typography>
