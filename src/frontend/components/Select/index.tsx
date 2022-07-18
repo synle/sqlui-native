@@ -51,7 +51,6 @@ export default function Select(props: SelectProps) {
           {label}
         </InputLabel>
         <NativeSelect
-          defaultValue={30}
           input={<OutlinedInput label={label} notched={true} />}
           inputProps={{
             id: controlId,
