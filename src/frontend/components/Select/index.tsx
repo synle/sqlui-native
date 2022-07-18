@@ -1,9 +1,9 @@
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import NativeSelect from '@mui/material/NativeSelect';
+import OutlinedInput from '@mui/material/OutlinedInput';
 import React from 'react';
 import { styled } from '@mui/system';
-import OutlinedInput from "@mui/material/OutlinedInput";
 
 const StyledSelect = styled('select')(({ theme }) => {
   return {
@@ -46,19 +46,18 @@ export default function Select(props: SelectProps) {
     // https://github.com/mui/material-ui/issues/32197
     const controlId = `select-${Date.now()}-${label.replace(/[ -_]/g, '-')}`;
     return (
-      <FormControl variant="outlined" size="small">
-        <InputLabel variant="outlined" htmlFor={controlId} shrink={true} margin='dense'>
+      <FormControl variant='outlined' size='small'>
+        <InputLabel variant='outlined' htmlFor={controlId} shrink={true} margin='dense'>
           {label}
         </InputLabel>
         <NativeSelect
           defaultValue={30}
           input={<OutlinedInput label={label} notched={true} />}
           inputProps={{
-            id: controlId
+            id: controlId,
           }}
           value={value}
-          onChange={(e) => onChange && onChange(e.target.value)}
-        >
+          onChange={(e) => onChange && onChange(e.target.value)}>
           {children}
         </NativeSelect>
       </FormControl>
@@ -66,7 +65,10 @@ export default function Select(props: SelectProps) {
   }
 
   return (
-    <StyledSelect onChange={(e) => onChange && onChange(e.target.value)} value={value} {...restProps}>
+    <StyledSelect
+      onChange={(e) => onChange && onChange(e.target.value)}
+      value={value}
+      {...restProps}>
       {children}
     </StyledSelect>
   );
