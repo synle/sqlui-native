@@ -395,7 +395,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     const newSessionId = req.params?.sessionId;
     const isNewSessionId = await sessionUtils.open(windowId, newSessionId);
 
-    if(isNewSessionId){
+    if (isNewSessionId) {
       // created
       res.status(201).json({
         outcome: 'create_new_session',

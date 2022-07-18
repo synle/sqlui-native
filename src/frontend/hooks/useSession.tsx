@@ -2,8 +2,8 @@ import { QueryClient, useMutation, useQuery, useQueryClient } from 'react-query'
 import { useNavigate } from 'react-router-dom';
 import dataApi from 'src/frontend/data/api';
 import { setCurrentSessionId } from 'src/frontend/data/session';
-import { SqluiCore } from 'typings';
 import { useActionDialogs } from 'src/frontend/hooks/useActionDialogs';
+import { SqluiCore } from 'typings';
 
 const QUERY_KEY_SESSIONS = 'sessions';
 
@@ -42,9 +42,9 @@ export function useSelectSession(suppressReload?: boolean) {
   const { alert, dismiss: dismissDialog } = useActionDialogs();
   return useMutation<void, void, string>(async (newSessionId: string) => {
     // set the new session id;
-    const {outcome} = await setOpenSession(newSessionId);
+    const { outcome } = await setOpenSession(newSessionId);
 
-    if(outcome === 'create_new_session'){
+    if (outcome === 'create_new_session') {
       // if this is a brand new session that we can focus on
       // go back to homepage before switching session
       navigate('/', { replace: true });

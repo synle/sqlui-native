@@ -18,7 +18,6 @@ import {
   useGetOpenedSessionIds,
   useGetSessions,
   useSelectSession,
-  useSetOpenSession,
   useUpsertSession,
 } from 'src/frontend/hooks/useSession';
 
@@ -81,7 +80,7 @@ export default function SessionSelectionForm(props: SessionSelectionFormProps) {
       }
 
       let disabled = false;
-      if(isSessionOpenedInAnotherWindow && isFirstTime){
+      if (isSessionOpenedInAnotherWindow && isFirstTime) {
         disabled = true;
       }
 

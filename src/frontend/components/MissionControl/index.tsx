@@ -30,7 +30,6 @@ import {
   useGetOpenedSessionIds,
   useGetSessions,
   useSelectSession,
-  useSetOpenSession,
   useUpsertSession,
 } from 'src/frontend/hooks/useSession';
 import { useSetting } from 'src/frontend/hooks/useSetting';

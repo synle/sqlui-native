@@ -36,9 +36,9 @@ export function listSessionIds() {
  * @param  {string}  sessionId [description]
  * @return {boolean} true if the sessionId has never been opened by any of existing windowId
  */
-export function open(windowId: string, sessionId: string) : boolean{
+export function open(windowId: string, sessionId: string): boolean {
   const foundWindowId = getWindowIdBySessionId(sessionId);
-  if(!foundWindowId){
+  if (!foundWindowId) {
     // set up this sessionId if it's not already selected
     openedSessions[windowId] = sessionId;
     return true;
