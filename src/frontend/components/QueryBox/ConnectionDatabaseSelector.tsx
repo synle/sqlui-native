@@ -29,7 +29,6 @@ export default function ConnectionDatabaseSelector(props: ConnectionDatabaseSele
     query.connectionId,
     query.databaseId,
   );
-  const { add: addToast } = useToaster();
   const isLoading = loadingDatabases || loadingConnections || loadingTables;
 
   const connectionOptions = useMemo(
@@ -92,23 +91,17 @@ export default function ConnectionDatabaseSelector(props: ConnectionDatabaseSele
     let shouldShowToast = false;
 
     // if there's only one database, then select that as well
-    if(databases?.length === 1 && query.databaseId !== databases[0].name){
+    if(databases && databases.length === 1){
       onDatabaseChange(databases[0].name);
       shouldShowToast = true;
     }
 
     // if there's only one table, then select that as well
-    if(tables?.length === 1 && query.tableId !== tables[0].name){
+    if(tables && tables.length === 1){
       onTableChange(tables[0].name);
       shouldShowToast = true;
     }
-
-    if(shouldShowToast){
-      addToast({
-        message: <>We have auto-selected the only database or table present in this connection.</>,
-      });
-    }
-  },[query, databases, tables])
+  },[databases, tables])
 
   return (
     <>
