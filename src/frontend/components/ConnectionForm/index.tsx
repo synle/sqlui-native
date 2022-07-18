@@ -46,7 +46,7 @@ export function NewConnectionForm() {
 
   if (showHint) {
     return (
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, pb: 4 }}>
+      <Box className='FormInput__Container'>
         <Typography>
           Select one of the following connection type. Or{' '}
           <Link onClick={onStartBlankConnection}>get started with an empty connection</Link>.

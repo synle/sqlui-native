@@ -46,7 +46,7 @@ export default function ChoiceDialog(props: ChoiceDialogProps) {
       <DialogTitle>{title}</DialogTitle>
       <DialogContent>
         {message}
-        <List sx={{ pt: 0 }}>
+        <List dense>
           {options.map((option) => (
             <ListItem
               button

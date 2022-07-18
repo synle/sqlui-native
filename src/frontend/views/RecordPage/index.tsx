@@ -430,7 +430,7 @@ function RecordForm(props) {
           deltaFields: [...deltaFields],
         });
       }}>
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+      <Box className='FormInput__Container'>
         <div className='FormInput__Row'>
           <ConnectionDatabaseSelector
             isTableIdRequired={true}
@@ -842,11 +842,11 @@ export function RecordDetailsPage(props: RecordDetailsPageProps) {
   const tabHeaders = [<>Form Display</>, <>Raw JSON</>];
 
   const tabContents = [
-    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }} key='formDisplay'>
+    <Box className='FormInput__Container' key='formDisplay'>
       <EditRecordPage data={data} isEditMode={!!isEditMode} />
     </Box>,
 
-    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }} key='rawJsonDisplay'>
+    <Box className='FormInput__Container' key='rawJsonDisplay'>
       <JsonFormatData data={data} />
     </Box>,
   ];
