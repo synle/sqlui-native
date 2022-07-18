@@ -649,7 +649,7 @@ export default function MissionControl() {
         return a._type.localeCompare(b._type); //note that query will go after connection (q > c)
       });
 
-      /// check for duplicate id
+      // check for duplicate id
       const hasDuplicateIds =
         new Set([...jsonRows.map((jsonRow) => jsonRow.id)]).size !== jsonRows.length;
       if (hasDuplicateIds) {
@@ -743,12 +743,13 @@ export default function MissionControl() {
           <Box className='FormInput__Row'>
             <label>Latest version:</label>
             {newVersion}
-          </Box>
-          <Box className='FormInput__Row' sx={{ mt: 3 }}>
-            <Link onClick={onDownloadLatestVersion} sx={{ cursor: 'pointer' }}>
-              Click here to download the new version
-            </Link>
-            .
+            <span>
+              (
+              <Link onClick={onDownloadLatestVersion} sx={{ cursor: 'pointer' }}>
+                Download it here
+              </Link>
+              )
+            </span>
           </Box>
         </>
       );
@@ -759,19 +760,22 @@ export default function MissionControl() {
       selectCommand({ event: 'clientEvent/openExternalUrl', data });
     };
 
+    const onRevealDataLocation = () => {
+      // copy the path to clipboard
+      navigator.clipboard.writeText(serverConfigs?.storageDir || '');
+    };
+
     await modal({
       title: 'Check for update',
       message: (
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+        <Box className='FormInput__Container FormInput__Container__sm'>
           {contentDom}
           <Box className='FormInput__Row'>
             <label>Data Location:</label>
-            {serverConfigs?.storageDir}
+            <Link onClick={onRevealDataLocation}>{serverConfigs?.storageDir}</Link>
           </Box>
           <Box sx={{ mt: 3 }}>
-            <Link onClick={onGoToHomepage} sx={{ cursor: 'pointer' }}>
-              synle.github.io/sqlui-native
-            </Link>
+            <Link onClick={onGoToHomepage}>synle.github.io/sqlui-native</Link>
           </Box>
         </Box>
       ),
