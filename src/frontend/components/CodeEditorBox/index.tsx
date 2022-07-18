@@ -60,7 +60,7 @@ export default function CodeEditorBox(props: CodeEditorProps) {
 
   const contentLanguageModeSelection = (
     <>
-      <Select onChange={(newLanguage) => setLanguageMode(newLanguage)} value={languageMode}>
+      <Select label='Syntax' onChange={(newLanguage) => setLanguageMode(newLanguage)} value={languageMode}>
         <option value=''>Auto Detected ({props.language})</option>
         <option value='javascript'>Javascript</option>
         <option value='sql'>SQL</option>
@@ -70,10 +70,10 @@ export default function CodeEditorBox(props: CodeEditorProps) {
 
   const contentHeightSelection = (
     <>
-      <Select onChange={(newHeight) => setHeight(newHeight)} value={height}>
-        <option value='20vh'>Small Editor</option>
-        <option value='40vh'>Medium Editor</option>
-        <option value='60vh'>Large Editor</option>
+      <Select label='Editor Size' onChange={(newHeight) => setHeight(newHeight)} value={height}>
+        <option value='20vh'>Small</option>
+        <option value='40vh'>Medium</option>
+        <option value='60vh'>Large</option>
       </Select>
     </>
   );
