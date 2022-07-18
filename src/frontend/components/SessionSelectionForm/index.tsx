@@ -18,7 +18,6 @@ import {
   useGetOpenedSessionIds,
   useGetSessions,
   useSelectSession,
-  useSetOpenSession,
   useUpsertSession,
 } from 'src/frontend/hooks/useSession';
 
@@ -40,7 +39,6 @@ export default function SessionSelectionForm(props: SessionSelectionFormProps) {
   const { data: sessions, isLoading: loadingSessions } = useGetSessions();
   const { data: openedSessionIds, isLoading: loadingOpenedSessionIds } = useGetOpenedSessionIds();
   const { data: currentSession, isLoading: loadingCurrentSession } = useGetCurrentSession();
-  const { mutateAsync: setOpenSession } = useSetOpenSession();
   const { mutateAsync: upsertSession } = useUpsertSession();
   const { mutateAsync: selectSession } = useSelectSession();
   const { selectCommand } = useCommands();
@@ -81,11 +79,16 @@ export default function SessionSelectionForm(props: SessionSelectionFormProps) {
         };
       }
 
+      let disabled = false;
+      if (isSessionOpenedInAnotherWindow && isFirstTime) {
+        disabled = true;
+      }
+
       return {
         label,
         subtitle: isSessionOpenedInAnotherWindow ? `Selected in another Window` : undefined,
         value,
-        disabled: isSessionOpenedInAnotherWindow,
+        disabled,
         selected: isSessionOpenedInAnotherWindow,
       };
     }),

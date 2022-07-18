@@ -393,9 +393,19 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     }
 
     const newSessionId = req.params?.sessionId;
-    await sessionUtils.open(windowId, newSessionId);
+    const isNewSessionId = await sessionUtils.open(windowId, newSessionId);
 
-    res.status(200).json(await sessionUtils.get());
+    if (isNewSessionId) {
+      // created
+      res.status(201).json({
+        outcome: 'create_new_session',
+      });
+    } else {
+      // accepted
+      res.status(202).json({
+        outcome: 'focus_on_old_session_id',
+      });
+    }
   });
 
   addDataEndpoint('post', '/api/session', async (req, res, apiCache) => {
