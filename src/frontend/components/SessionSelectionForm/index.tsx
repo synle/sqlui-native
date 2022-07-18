@@ -116,6 +116,7 @@ export default function SessionSelectionForm(props: SessionSelectionFormProps) {
               <Box sx={{display: 'flex', gap: 2}}>
                 <IconButton
                   edge='end'
+                  color='info'
                   aria-label='Edit'
                   onClick={(e) => {
                     selectCommand({ event: 'clientEvent/session/rename', data: targetSession });
@@ -126,6 +127,7 @@ export default function SessionSelectionForm(props: SessionSelectionFormProps) {
                 </IconButton>
                 <IconButton
                   edge='end'
+                  color='error'
                   aria-label='Delete'
                   onClick={(e) => {
                     selectCommand({ event: 'clientEvent/session/delete', data: targetSession });
@@ -140,7 +142,6 @@ export default function SessionSelectionForm(props: SessionSelectionFormProps) {
 
           return (
             <ListItem
-              button
               dense
               key={option.value}
               disabled={option.disabled}

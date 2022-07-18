@@ -468,7 +468,7 @@ export default function MissionControl() {
         return;
       }
 
-      await confirm(`Do you want to delete this session "${targetSession.name}"?`);
+      await confirm(`Do you want to delete this session "${targetSession.name}"? This will also close any window associated with this sessionId.`);
       await deleteSession(targetSession.id);
 
       if(targetSession.id === currentSession?.id){

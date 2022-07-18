@@ -448,13 +448,9 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     // delete it
     const response = await sessionsStorage.delete(sessionIdToDelete)
 
-    // get the window
-    const browserWindow = await sessionUtils.getWindowBySessionId(sessionIdToDelete);
-
-    if(browserWindow){
-      // if there's a matching window, let's close it
-      browserWindow.close();
-    }
+    // close the targeted windowId
+    // if there's a matching window, let's close it
+    await sessionUtils.close(await sessionUtils.getWindowIdBySessionId(sessionIdToDelete));
 
     res.status(202).json(response);
   });
