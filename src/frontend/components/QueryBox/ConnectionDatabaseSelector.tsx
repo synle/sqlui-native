@@ -1,5 +1,5 @@
 import Box from '@mui/material/Box';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { getIsTableIdRequiredForQueryByDialect } from 'src/common/adapters/DataScriptFactory';
 import ConnectionTypeIcon from 'src/frontend/components/ConnectionTypeIcon';
 import Select from 'src/frontend/components/Select';
@@ -23,8 +23,8 @@ type ConnectionDatabaseSelectorProps = {
 export default function ConnectionDatabaseSelector(props: ConnectionDatabaseSelectorProps) {
   const query = props.value;
   const { data: connections, isLoading: loadingConnections } = useGetConnections();
-  const { data: databases, isLoading: loadingDatabases } = useGetDatabases(query.connectionId);
   const { data: connection } = useGetConnectionById(query?.connectionId);
+  const { data: databases, isLoading: loadingDatabases } = useGetDatabases(query.connectionId);
   const { data: tables, isLoading: loadingTables } = useGetTables(
     query.connectionId,
     query.databaseId,
@@ -80,17 +80,30 @@ export default function ConnectionDatabaseSelector(props: ConnectionDatabaseSele
     </>;
   }
 
-  const onConnectionChange = (connectionId: string) => {
-    props.onChange(connectionId, '', '');
-  };
+  const onConnectionChange = (connectionId: string) => props.onChange(connectionId, '', '');
 
-  const onDatabaseChange = (databaseId: string) => {
+  const onDatabaseChange = (databaseId: string) =>
     props.onChange(query.connectionId, databaseId, '');
-  };
 
-  const onTableChange = (tableId: string) => {
+  const onTableChange = (tableId: string) =>
     props.onChange(query.connectionId, query.databaseId, tableId);
-  };
+
+  // side effect to select the only database or table
+  useEffect(() => {
+    let shouldShowToast = false;
+
+    // if there's only one database, then select that as well
+    if (databases && databases.length === 1) {
+      onDatabaseChange(databases[0].name);
+      shouldShowToast = true;
+    }
+
+    // if there's only one table, then select that as well
+    if (tables && tables.length === 1) {
+      onTableChange(tables[0].name);
+      shouldShowToast = true;
+    }
+  }, [databases, tables]);
 
   return (
     <>
