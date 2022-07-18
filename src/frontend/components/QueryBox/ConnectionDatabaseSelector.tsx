@@ -10,7 +10,7 @@ import {
   useGetTables,
 } from 'src/frontend/hooks/useConnection';
 import { SqluiFrontend } from 'typings';
-
+import useToaster from 'src/frontend/hooks/useToaster';
 type ConnectionDatabaseSelectorProps = {
   value: Partial<SqluiFrontend.ConnectionQuery>;
   onChange: (connectionId?: string, databaseId?: string, tableId?: string) => void;
@@ -23,12 +23,13 @@ type ConnectionDatabaseSelectorProps = {
 export default function ConnectionDatabaseSelector(props: ConnectionDatabaseSelectorProps) {
   const query = props.value;
   const { data: connections, isLoading: loadingConnections } = useGetConnections();
-  const { data: databases, isLoading: loadingDatabases } = useGetDatabases(query.connectionId);
   const { data: connection } = useGetConnectionById(query?.connectionId);
+  const { data: databases, isLoading: loadingDatabases } = useGetDatabases(query.connectionId);
   const { data: tables, isLoading: loadingTables } = useGetTables(
     query.connectionId,
     query.databaseId,
   );
+  const { add: addToast } = useToaster();
   const isLoading = loadingDatabases || loadingConnections || loadingTables;
 
   const connectionOptions = useMemo(
@@ -88,16 +89,26 @@ export default function ConnectionDatabaseSelector(props: ConnectionDatabaseSele
 
   // side effect to select the only database or table
   useEffect(() => {
+    let shouldShowToast = false;
+
     // if there's only one database, then select that as well
-    if(databases && databases.length === 1){
+    if(databases?.length === 1 && query.databaseId !== databases[0].name){
       onDatabaseChange(databases[0].name);
+      shouldShowToast = true;
     }
 
     // if there's only one table, then select that as well
-    if(tables && tables.length === 1){
+    if(tables?.length === 1 && query.tableId !== tables[0].name){
       onTableChange(tables[0].name);
+      shouldShowToast = true;
     }
-  },[databases, tables])
+
+    if(shouldShowToast){
+      addToast({
+        message: <>We have auto-selected the only database or table present in this connection.</>,
+      });
+    }
+  },[query, databases, tables])
 
   return (
     <>
