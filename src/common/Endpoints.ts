@@ -397,10 +397,14 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
 
     if(isNewSessionId){
       // created
-      res.status(201).json(await sessionUtils.get());
+      res.status(201).json({
+        outcome: 'create_new_session',
+      });
     } else {
       // accepted
-      res.status(202).json(await sessionUtils.get());
+      res.status(202).json({
+        outcome: 'focus_on_old_session_id',
+      });
     }
   });
 
