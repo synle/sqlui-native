@@ -473,9 +473,7 @@ export default function MissionControl() {
 
       if(targetSession.id === currentSession?.id){
         // after you delete a session, we should close it
-        if (window.isElectron) {
-          window.close();
-        } else {
+        if (!window.isElectron) {
           alert(`Session is deleted. Please close this windows.`);
         }
       }

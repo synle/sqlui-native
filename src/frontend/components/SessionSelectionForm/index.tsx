@@ -1,3 +1,4 @@
+import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -112,16 +113,28 @@ export default function SessionSelectionForm(props: SessionSelectionFormProps) {
             const targetSession = sessions.find((session) => session.id === option.value);
 
             secondaryAction = (
-              <IconButton
-                edge='end'
-                aria-label='Edit'
-                onClick={(e) => {
-                  selectCommand({ event: 'clientEvent/session/rename', data: targetSession });
-                  e.preventDefault();
-                  e.stopPropagation();
-                }}>
-                <EditIcon />
-              </IconButton>
+              <Box sx={{display: 'flex', gap: 2}}>
+                <IconButton
+                  edge='end'
+                  aria-label='Edit'
+                  onClick={(e) => {
+                    selectCommand({ event: 'clientEvent/session/rename', data: targetSession });
+                    e.preventDefault();
+                    e.stopPropagation();
+                  }}>
+                  <EditIcon />
+                </IconButton>
+                <IconButton
+                  edge='end'
+                  aria-label='Delete'
+                  onClick={(e) => {
+                    selectCommand({ event: 'clientEvent/session/delete', data: targetSession });
+                    e.preventDefault();
+                    e.stopPropagation();
+                  }}>
+                  <DeleteIcon />
+                </IconButton>
+              </Box>
             );
           }
 
