@@ -649,7 +649,7 @@ export default function MissionControl() {
         return a._type.localeCompare(b._type); //note that query will go after connection (q > c)
       });
 
-      /// check for duplicate id
+      // check for duplicate id
       const hasDuplicateIds =
         new Set([...jsonRows.map((jsonRow) => jsonRow.id)]).size !== jsonRows.length;
       if (hasDuplicateIds) {
@@ -743,12 +743,12 @@ export default function MissionControl() {
           <Box className='FormInput__Row'>
             <label>Latest version:</label>
             {newVersion}
-          </Box>
-          <Box className='FormInput__Row' sx={{ mt: 3 }}>
-            <Link onClick={onDownloadLatestVersion} sx={{ cursor: 'pointer' }}>
-              Click here to download the new version
-            </Link>
-            .
+            <span>
+              (<Link onClick={onDownloadLatestVersion} sx={{ cursor: 'pointer' }}>
+              Download it here
+            </Link>)
+              .
+            </span>
           </Box>
         </>
       );
