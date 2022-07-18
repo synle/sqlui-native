@@ -226,7 +226,7 @@ export class ConcreteDataScripts extends BaseDataScript {
   }
 
   supportEditRecordForm() {
-    return true;
+    return false;
   }
 
   getTableScripts() {
