@@ -181,7 +181,7 @@ export default function BookmarksPage() {
             },
           ]}
         />
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+        <Box className='FormInput__Container'>
           <BookmarksItemList />
         </Box>
       </>
