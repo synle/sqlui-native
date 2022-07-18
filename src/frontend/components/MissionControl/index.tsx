@@ -745,9 +745,9 @@ export default function MissionControl() {
             {newVersion}
             <span>
               (
-                <Link onClick={onDownloadLatestVersion} sx={{ cursor: 'pointer' }}>
-                  Download it here
-                </Link>
+              <Link onClick={onDownloadLatestVersion} sx={{ cursor: 'pointer' }}>
+                Download it here
+              </Link>
               )
             </span>
           </Box>
@@ -763,7 +763,7 @@ export default function MissionControl() {
     const onRevealDataLocation = () => {
       // copy the path to clipboard
       navigator.clipboard.writeText(serverConfigs?.storageDir || '');
-    }
+    };
 
     await modal({
       title: 'Check for update',
@@ -775,9 +775,7 @@ export default function MissionControl() {
             <Link onClick={onRevealDataLocation}>{serverConfigs?.storageDir}</Link>
           </Box>
           <Box sx={{ mt: 3 }}>
-            <Link onClick={onGoToHomepage}>
-              synle.github.io/sqlui-native
-            </Link>
+            <Link onClick={onGoToHomepage}>synle.github.io/sqlui-native</Link>
           </Box>
         </Box>
       ),

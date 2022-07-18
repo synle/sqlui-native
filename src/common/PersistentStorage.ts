@@ -121,15 +121,15 @@ export class PersistentStorage<T extends StorageEntry> {
 export default PersistentStorage;
 
 export async function getConnectionsStorage(sessionId: string) {
-  if(!sessionId){
-    throw `sessionId is required for getConnectionsStorage`
+  if (!sessionId) {
+    throw `sessionId is required for getConnectionsStorage`;
   }
   return await new PersistentStorage<SqluiCore.ConnectionProps>(sessionId, 'connection');
 }
 
 export async function getQueryStorage(sessionId: string) {
-  if(!sessionId){
-    throw `sessionId is required for getQueryStorage`
+  if (!sessionId) {
+    throw `sessionId is required for getQueryStorage`;
   }
   return await new PersistentStorage<SqluiCore.ConnectionQuery>(sessionId, 'query');
 }
@@ -139,8 +139,8 @@ export async function getSessionsStorage() {
 }
 
 export async function getFolderItemsStorage(folderId: 'bookmarks' | 'recycleBin' | string) {
-  if(!folderId){
-    throw `folderId is required for getFolderItemsStorage`
+  if (!folderId) {
+    throw `folderId is required for getFolderItemsStorage`;
   }
   return await new PersistentStorage<SqluiCore.FolderItem>('folders', folderId);
 }
