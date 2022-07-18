@@ -60,7 +60,10 @@ export default function CodeEditorBox(props: CodeEditorProps) {
 
   const contentLanguageModeSelection = (
     <>
-      <Select label='Syntax' onChange={(newLanguage) => setLanguageMode(newLanguage)} value={languageMode}>
+      <Select
+        label='Syntax'
+        onChange={(newLanguage) => setLanguageMode(newLanguage)}
+        value={languageMode}>
         <option value=''>Auto Detected ({props.language})</option>
         <option value='javascript'>Javascript</option>
         <option value='sql'>SQL</option>
