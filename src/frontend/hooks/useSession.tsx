@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import dataApi from 'src/frontend/data/api';
 import { setCurrentSessionId } from 'src/frontend/data/session';
 import { SqluiCore } from 'typings';
+import { useActionDialogs } from 'src/frontend/hooks/useActionDialogs';
 
 const QUERY_KEY_SESSIONS = 'sessions';
 
@@ -21,7 +22,7 @@ export function useGetOpenedSessionIds() {
 
 export function useSetOpenSession() {
   const queryClient = useQueryClient();
-  return useMutation<void, void, string>(dataApi.setOpenSession, {
+  return useMutation<Record<string, string>, void, string>(dataApi.setOpenSession, {
     onSuccess: async () => {
       queryClient.invalidateQueries(QUERY_KEY_SESSIONS);
     },
@@ -38,15 +39,23 @@ export function useSelectSession(suppressReload?: boolean) {
   const { mutateAsync: setOpenSession } = useSetOpenSession();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { alert, dismiss: dismissDialog } = useActionDialogs();
   return useMutation<void, void, string>(async (newSessionId: string) => {
     // set the new session id;
-    await setOpenSession(newSessionId);
+    const {outcome} = await setOpenSession(newSessionId);
 
-    // go back to homepage before switching session
-    navigate('/', { replace: true });
+    if(outcome === 'create_new_session'){
+      // if this is a brand new session that we can focus on
+      // go back to homepage before switching session
+      navigate('/', { replace: true });
 
-    // then set it as current session
-    await setCurrentSessionId(newSessionId, suppressReload);
+      // then set it as current session
+      await setCurrentSessionId(newSessionId, suppressReload);
+    } else {
+      // let's close this modal and show an alert
+      await dismissDialog();
+      await alert(`The window with this sessionId is now focused.`);
+    }
   });
 }
 

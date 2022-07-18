@@ -113,7 +113,6 @@ export default function MissionControl() {
   const { data: sessions, isLoading: loadingSessions } = useGetSessions();
   const { data: serverConfigs } = useGetServerConfigs();
   const { data: openedSessionIds, isLoading: loadingOpenedSessionIds } = useGetOpenedSessionIds();
-  const { mutateAsync: setOpenSession } = useSetOpenSession();
   const { data: currentSession, isLoading: loadingCurrentSession } = useGetCurrentSession();
   const { mutateAsync: upsertSession } = useUpsertSession();
   const { mutateAsync: selectSession } = useSelectSession();

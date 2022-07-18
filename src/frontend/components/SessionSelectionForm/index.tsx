@@ -40,7 +40,6 @@ export default function SessionSelectionForm(props: SessionSelectionFormProps) {
   const { data: sessions, isLoading: loadingSessions } = useGetSessions();
   const { data: openedSessionIds, isLoading: loadingOpenedSessionIds } = useGetOpenedSessionIds();
   const { data: currentSession, isLoading: loadingCurrentSession } = useGetCurrentSession();
-  const { mutateAsync: setOpenSession } = useSetOpenSession();
   const { mutateAsync: upsertSession } = useUpsertSession();
   const { mutateAsync: selectSession } = useSelectSession();
   const { selectCommand } = useCommands();
