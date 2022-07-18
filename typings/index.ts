@@ -5,6 +5,7 @@ declare global {
     toggleElectronMenu: (visible: boolean, menus: any[]) => void;
     openBrowserLink: (link: string) => void;
     ipcRenderer?: Electron.IpcRenderer;
+    requireElectron: (importPath: string) => any;
   }
 }
 
