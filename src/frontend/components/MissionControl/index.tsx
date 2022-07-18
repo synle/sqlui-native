@@ -468,10 +468,12 @@ export default function MissionControl() {
         return;
       }
 
-      await confirm(`Do you want to delete this session "${targetSession.name}"? This will also close any window associated with this sessionId.`);
+      await confirm(
+        `Do you want to delete this session "${targetSession.name}"? This will also close any window associated with this sessionId.`,
+      );
       await deleteSession(targetSession.id);
 
-      if(targetSession.id === currentSession?.id){
+      if (targetSession.id === currentSession?.id) {
         // after you delete a session, we should close it
         if (!window.isElectron) {
           alert(`Session is deleted. Please close this windows.`);

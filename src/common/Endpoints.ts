@@ -435,7 +435,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     apiCache.set('serverCacheKey/cacheMetaData', null);
 
     const sessionIdToDelete = req.params?.sessionId;
-    if(!sessionIdToDelete){
+    if (!sessionIdToDelete) {
       throw 'sessionId is required';
     }
 
@@ -446,7 +446,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     );
 
     // delete it
-    const response = await sessionsStorage.delete(sessionIdToDelete)
+    const response = await sessionsStorage.delete(sessionIdToDelete);
 
     // close the targeted windowId
     // if there's a matching window, let's close it

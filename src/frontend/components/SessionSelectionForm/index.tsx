@@ -113,7 +113,7 @@ export default function SessionSelectionForm(props: SessionSelectionFormProps) {
             const targetSession = sessions.find((session) => session.id === option.value);
 
             secondaryAction = (
-              <Box sx={{display: 'flex', gap: 2}}>
+              <Box sx={{ display: 'flex', gap: 2 }}>
                 <IconButton
                   edge='end'
                   color='info'

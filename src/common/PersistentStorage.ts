@@ -1,8 +1,8 @@
-import { SqluiCore, SqluiEnums } from 'typings';
 import { app } from 'electron';
 import fs from 'fs';
 import path from 'path';
 import { getGeneratedRandomId } from 'src/common/utils/commonUtils';
+import { SqluiCore } from 'typings';
 
 const homedir = require('os').homedir();
 
@@ -120,28 +120,18 @@ export class PersistentStorage<T extends StorageEntry> {
 
 export default PersistentStorage;
 
-
-export async function getConnectionsStorage(sessionId: string) {return await new PersistentStorage<SqluiCore.ConnectionProps>(
-  sessionId,
-  'connection',
-);
+export async function getConnectionsStorage(sessionId: string) {
+  return await new PersistentStorage<SqluiCore.ConnectionProps>(sessionId, 'connection');
 }
 
-export async function getQueryStorage(sessionId: string) {return await new PersistentStorage<SqluiCore.ConnectionQuery>(
-  sessionId,
-  'query',
-);
+export async function getQueryStorage(sessionId: string) {
+  return await new PersistentStorage<SqluiCore.ConnectionQuery>(sessionId, 'query');
 }
 
-export async function getSessionsStorage() {return await new PersistentStorage<SqluiCore.Session>(
-  'session',
-  'session',
-  'sessions',
-);
+export async function getSessionsStorage() {
+  return await new PersistentStorage<SqluiCore.Session>('session', 'session', 'sessions');
 }
 
-export async function getFolderItemsStorage(folderId: string | 'bookmarks' | 'recycleBin') {return await new PersistentStorage<SqluiCore.FolderItem>(
-  'folders',
-  folderId,
-);
+export async function getFolderItemsStorage(folderId: string | 'bookmarks' | 'recycleBin') {
+  return await new PersistentStorage<SqluiCore.FolderItem>('folders', folderId);
 }
