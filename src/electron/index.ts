@@ -67,6 +67,10 @@ async function createWindow(isFirstWindow?: boolean) {
     mainWindow.webContents.openDevTools();
   }
 
+  // save the window id for later used
+  // store the windows later to use with deletion
+  sessionUtils.registerWindow(targetWindowId, mainWindow);
+
   return mainWindow;
 }
 

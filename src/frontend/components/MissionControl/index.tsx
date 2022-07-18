@@ -437,6 +437,7 @@ export default function MissionControl() {
       }
     }
   };
+
   const onRenameSession = async (targetSession: SqluiCore.Session) => {
     try {
       if (!targetSession) {
@@ -458,6 +459,26 @@ export default function MissionControl() {
         ...targetSession,
         name: newSessionName,
       });
+    } catch (err) {}
+  };
+
+  const onDeleteSession = async (targetSession: SqluiCore.Session) => {
+    try {
+      if (!targetSession) {
+        return;
+      }
+
+      await confirm(
+        `Do you want to delete this session "${targetSession.name}"? This will also close any window associated with this sessionId.`,
+      );
+      await deleteSession(targetSession.id);
+
+      if (targetSession.id === currentSession?.id) {
+        // after you delete a session, we should close it
+        if (!window.isElectron) {
+          alert(`Session is deleted. Please close this windows.`);
+        }
+      }
     } catch (err) {}
   };
 
@@ -489,6 +510,7 @@ export default function MissionControl() {
   };
 
   const onNewConnection = useCallback(() => navigate('/connection/new'), []);
+
   const onDeleteConnection = async (connection: SqluiCore.ConnectionProps) => {
     let curToast;
     try {
@@ -1055,7 +1077,7 @@ export default function MissionControl() {
 
             if (command.data) {
               await onRenameSession(command.data as SqluiCore.Session);
-            } else if (activeQuery) {
+            } else if (currentSession) {
               await onRenameSession(currentSession as SqluiCore.Session);
             }
           } catch (err) {}
@@ -1063,21 +1085,12 @@ export default function MissionControl() {
           window.toggleElectronMenu(true, allMenuKeys);
           break;
         case 'clientEvent/session/delete':
-          // don't let them delete default session
-          if (!currentSession || !currentSession.id) {
-            return;
-          }
-
           try {
             window.toggleElectronMenu(false, allMenuKeys);
-            await confirm(`Do you want to delete this session?`);
-            await deleteSession(currentSession.id);
-
-            if (window.isElectron) {
-              // after you delete a session, we should close it
-              window.close();
-            } else {
-              alert(`Session is deleted. Please close this windows.`);
+            if (command.data) {
+              await onDeleteSession(command.data as SqluiCore.Session);
+            } else if (currentSession) {
+              await onDeleteSession(currentSession as SqluiCore.Session);
             }
           } catch (err) {}
 

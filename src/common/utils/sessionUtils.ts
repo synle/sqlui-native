@@ -1,26 +1,53 @@
-let openSessions: Record<string, string> = {};
+import { BrowserWindow } from 'electron';
+let openedSessions: Record<string, string> = {};
+let openedWindows: Record<string, BrowserWindow> = {};
 
 export function reset() {
-  openSessions = {};
+  openedSessions = {};
 }
 
 export function get() {
-  return openSessions;
+  return openedSessions;
 }
 
 export function getByWindowId(windowId: string) {
-  return openSessions[windowId];
+  return openedSessions[windowId];
+}
+
+export function getWindowIdBySessionId(targetSessionId: string) {
+  for (const windowId of Object.keys(openedSessions)) {
+    const sessionId = openedSessions[windowId];
+
+    if (targetSessionId === sessionId) {
+      return windowId;
+    }
+  }
+
+  return undefined;
 }
 
 export function listSessionIds() {
-  return Object.values(openSessions);
+  return Object.values(openedSessions);
 }
 
 export function open(windowId: string, sessionId: string) {
-  openSessions[windowId] = sessionId;
+  openedSessions[windowId] = sessionId;
   return sessionId;
 }
 
-export function close(windowId: string) {
-  delete openSessions[windowId];
+export async function close(windowId?: string) {
+  if (!windowId) {
+    return;
+  }
+
+  try {
+    openedWindows[windowId]?.close();
+  } catch (err) {}
+
+  delete openedSessions[windowId];
+  delete openedWindows[windowId];
+}
+
+export function registerWindow(windowId: string, browserWindow: BrowserWindow) {
+  openedWindows[windowId] = browserWindow;
 }

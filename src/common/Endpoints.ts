@@ -434,13 +434,25 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
   addDataEndpoint('delete', '/api/session/:sessionId', async (req, res, apiCache) => {
     apiCache.set('serverCacheKey/cacheMetaData', null);
 
+    const sessionIdToDelete = req.params?.sessionId;
+    if (!sessionIdToDelete) {
+      throw 'sessionId is required';
+    }
+
     const sessionsStorage = await new PersistentStorage<SqluiCore.Session>(
       'session',
       'session',
       'sessions',
     );
 
-    res.status(202).json(await sessionsStorage.delete(req.params?.sessionId));
+    // delete it
+    const response = await sessionsStorage.delete(sessionIdToDelete);
+
+    // close the targeted windowId
+    // if there's a matching window, let's close it
+    await sessionUtils.close(await sessionUtils.getWindowIdBySessionId(sessionIdToDelete));
+
+    res.status(202).json(response);
   });
   //=========================================================================
   // folder items endpoints used in bookmarks and recycle bin
