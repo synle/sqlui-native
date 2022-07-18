@@ -82,15 +82,15 @@ export const SUPPORTED_DIALECTS = _getAllImplementations().reduce<string[]>(
 );
 
 export const DIALECTS_SUPPORTING_MIGRATION = _getAllImplementations()
-  .filter((script) => script.supportMigration)
+  .filter((script) => script.supportMigration())
   .reduce<string[]>(_consolidateDialects, []);
 
 export const DIALECTS_SUPPORTING_CREATE_FORM = _getAllImplementations()
-  .filter((script) => script.supportCreateRecordForm)
+  .filter((script) => script.supportCreateRecordForm())
   .reduce<string[]>(_consolidateDialects, []);
 
 export const DIALECTS_SUPPORTING_EDIT_FORM = _getAllImplementations()
-  .filter((script) => script.supportEditRecordForm)
+  .filter((script) => script.supportEditRecordForm())
   .reduce<string[]>(_consolidateDialects, []);
 
 export function isDialectSupportMigration(dialect?: string) {

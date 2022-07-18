@@ -110,6 +110,7 @@ export default function ConnectionDatabaseSelector(props: ConnectionDatabaseSele
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
         <ConnectionTypeIcon dialect={connection?.dialect} status={connection?.status} />
         <Select
+          label='Connection'
           value={query.connectionId}
           onChange={(newValue) => onConnectionChange(newValue)}
           required
@@ -119,6 +120,7 @@ export default function ConnectionDatabaseSelector(props: ConnectionDatabaseSele
         </Select>
       </Box>
       <Select
+        label='Database'
         value={query.databaseId}
         onChange={(newValue) => onDatabaseChange(newValue)}
         disabled={!!props.disabledDatabase}
@@ -128,10 +130,11 @@ export default function ConnectionDatabaseSelector(props: ConnectionDatabaseSele
       </Select>
       {isTableIdRequired && (
         <Select
+          label='Table'
           value={query.tableId}
           onChange={(newValue) => onTableChange(newValue)}
           required={props.required}>
-          <option value=''>Pick a Table</option>
+          <option value=''>Pick a Table (Optional)</option>
           {tableOptions}
         </Select>
       )}
