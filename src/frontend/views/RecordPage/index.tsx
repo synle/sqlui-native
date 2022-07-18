@@ -430,7 +430,7 @@ function RecordForm(props) {
           deltaFields: [...deltaFields],
         });
       }}>
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+      <Box className='FormInput__Container'>
         <div className='FormInput__Row'>
           <ConnectionDatabaseSelector
             isTableIdRequired={true}
