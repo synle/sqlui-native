@@ -81,11 +81,16 @@ export default function SessionSelectionForm(props: SessionSelectionFormProps) {
         };
       }
 
+      let disabled = false;
+      if(isSessionOpenedInAnotherWindow && isFirstTime){
+        disabled = true;
+      }
+
       return {
         label,
         subtitle: isSessionOpenedInAnotherWindow ? `Selected in another Window` : undefined,
         value,
-        disabled: isSessionOpenedInAnotherWindow,
+        disabled,
         selected: isSessionOpenedInAnotherWindow,
       };
     }),

@@ -31,7 +31,15 @@ export function listSessionIds() {
 }
 
 export function open(windowId: string, sessionId: string) {
-  openedSessions[windowId] = sessionId;
+  const foundWindowId = getWindowIdBySessionId(sessionId);
+  if(!foundWindowId){
+    // set up this sessionId if it's not already selected
+    openedSessions[windowId] = sessionId;
+  } else {
+    // if it is already set up, then let's focus on that window
+    focus(foundWindowId);
+  }
+
   return sessionId;
 }
 
@@ -46,6 +54,16 @@ export async function close(windowId?: string) {
 
   delete openedSessions[windowId];
   delete openedWindows[windowId];
+}
+
+export async function focus(windowId?: string) {
+  if (!windowId) {
+    return;
+  }
+
+  try {
+    openedWindows[windowId]?.focus();
+  } catch (err) {}
 }
 
 export function registerWindow(windowId: string, browserWindow: BrowserWindow) {
