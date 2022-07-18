@@ -30,9 +30,23 @@ export function listSessionIds() {
   return Object.values(openedSessions);
 }
 
-export function open(windowId: string, sessionId: string) {
-  openedSessions[windowId] = sessionId;
-  return sessionId;
+/**
+ * This method attempt to open the sessionId associated with the windowId
+ * @param  {string}  windowId  [description]
+ * @param  {string}  sessionId [description]
+ * @return {boolean} true if the sessionId has never been opened by any of existing windowId
+ */
+export function open(windowId: string, sessionId: string): boolean {
+  const foundWindowId = getWindowIdBySessionId(sessionId);
+  if (!foundWindowId) {
+    // set up this sessionId if it's not already selected
+    openedSessions[windowId] = sessionId;
+    return true;
+  } else {
+    // if it is already set up, then let's focus on that window
+    focus(foundWindowId);
+    return false;
+  }
 }
 
 export async function close(windowId?: string) {
@@ -46,6 +60,16 @@ export async function close(windowId?: string) {
 
   delete openedSessions[windowId];
   delete openedWindows[windowId];
+}
+
+export async function focus(windowId?: string) {
+  if (!windowId) {
+    return;
+  }
+
+  try {
+    openedWindows[windowId]?.focus();
+  } catch (err) {}
 }
 
 export function registerWindow(windowId: string, browserWindow: BrowserWindow) {

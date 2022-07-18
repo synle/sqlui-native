@@ -158,7 +158,7 @@ export class ProxyApi {
   }
 
   static setOpenSession(sessionId: string) {
-    return _fetch<void>(`/api/sessions/opened/${sessionId}`, {
+    return _fetch<Record<string, string>>(`/api/sessions/opened/${sessionId}`, {
       method: 'post',
     });
   }
