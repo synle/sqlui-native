@@ -744,10 +744,11 @@ export default function MissionControl() {
             <label>Latest version:</label>
             {newVersion}
             <span>
-              (<Link onClick={onDownloadLatestVersion} sx={{ cursor: 'pointer' }}>
-              Download it here
-            </Link>)
-              .
+              (
+                <Link onClick={onDownloadLatestVersion} sx={{ cursor: 'pointer' }}>
+                  Download it here
+                </Link>
+              )
             </span>
           </Box>
         </>
@@ -762,7 +763,7 @@ export default function MissionControl() {
     await modal({
       title: 'Check for update',
       message: (
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+        <Box className='FormInput__Container FormInput__Container__sm'>
           {contentDom}
           <Box className='FormInput__Row'>
             <label>Data Location:</label>

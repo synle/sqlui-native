@@ -64,8 +64,18 @@ $ConnectionTreeIndentSize: 7px;
 .FormInput__Container {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1rem;
   padding-right: 1rem;
+
+  .FormInput__Row{
+    gap: 1rem;
+  }
+
+  &__sm{
+    .FormInput__Row{
+      gap: 0.5rem;
+    }
+  }
 }
 
 .FormInput {
@@ -76,7 +86,6 @@ $ConnectionTreeIndentSize: 7px;
   }
   &__Row {
     display: flex;
-    gap: 1rem;
     align-items: center;
 
     > * {
