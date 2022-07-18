@@ -1,7 +1,9 @@
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
 import TextField from '@mui/material/TextField';
 import fuzzysort from 'fuzzysort';
 import { useEffect, useRef, useState } from 'react';
-import { styled } from '@mui/system';
 import { Command as CoreCommand } from 'src/frontend/components/MissionControl';
 import { useGetConnectionById, useGetConnections } from 'src/frontend/hooks/useConnection';
 import {
@@ -9,9 +11,6 @@ import {
   useConnectionQueries,
 } from 'src/frontend/hooks/useConnectionQuery';
 import { SqluiEnums } from 'typings';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemText from '@mui/material/ListItemText';
 
 type Command = CoreCommand & {
   label: string;
@@ -299,7 +298,7 @@ export default function CommandPalette(props: CommandPaletteProps) {
           autoComplete='off'
         />
       </div>
-      <List dense sx={{mt: 1}}>
+      <List dense sx={{ mt: 1 }}>
         {optionsToShow.map((option, idx) => (
           <ListItem
             button
@@ -307,7 +306,7 @@ export default function CommandPalette(props: CommandPaletteProps) {
             key={`${option.event}.${idx}`}
             onClick={() => onSelectCommand(option)}
             title={option.event}>
-            <ListItemText primary={option.label}/>
+            <ListItemText primary={option.label} />
           </ListItem>
         ))}
       </List>
