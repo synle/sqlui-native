@@ -1,5 +1,5 @@
 import Box from '@mui/material/Box';
-import { useMemo, useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { getIsTableIdRequiredForQueryByDialect } from 'src/common/adapters/DataScriptFactory';
 import ConnectionTypeIcon from 'src/frontend/components/ConnectionTypeIcon';
 import Select from 'src/frontend/components/Select';
@@ -10,7 +10,7 @@ import {
   useGetTables,
 } from 'src/frontend/hooks/useConnection';
 import { SqluiFrontend } from 'typings';
-import useToaster from 'src/frontend/hooks/useToaster';
+
 type ConnectionDatabaseSelectorProps = {
   value: Partial<SqluiFrontend.ConnectionQuery>;
   onChange: (connectionId?: string, databaseId?: string, tableId?: string) => void;
@@ -82,26 +82,28 @@ export default function ConnectionDatabaseSelector(props: ConnectionDatabaseSele
 
   const onConnectionChange = (connectionId: string) => props.onChange(connectionId, '', '');
 
-  const onDatabaseChange = (databaseId: string) => props.onChange(query.connectionId, databaseId, '');
+  const onDatabaseChange = (databaseId: string) =>
+    props.onChange(query.connectionId, databaseId, '');
 
-  const onTableChange = (tableId: string) => props.onChange(query.connectionId, query.databaseId, tableId);
+  const onTableChange = (tableId: string) =>
+    props.onChange(query.connectionId, query.databaseId, tableId);
 
   // side effect to select the only database or table
   useEffect(() => {
     let shouldShowToast = false;
 
     // if there's only one database, then select that as well
-    if(databases && databases.length === 1){
+    if (databases && databases.length === 1) {
       onDatabaseChange(databases[0].name);
       shouldShowToast = true;
     }
 
     // if there's only one table, then select that as well
-    if(tables && tables.length === 1){
+    if (tables && tables.length === 1) {
       onTableChange(tables[0].name);
       shouldShowToast = true;
     }
-  },[databases, tables])
+  }, [databases, tables]);
 
   return (
     <>
