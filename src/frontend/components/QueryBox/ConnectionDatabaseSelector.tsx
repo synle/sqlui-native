@@ -1,5 +1,5 @@
 import Box from '@mui/material/Box';
-import { useMemo } from 'react';
+import { useMemo, useEffect } from 'react';
 import { getIsTableIdRequiredForQueryByDialect } from 'src/common/adapters/DataScriptFactory';
 import ConnectionTypeIcon from 'src/frontend/components/ConnectionTypeIcon';
 import Select from 'src/frontend/components/Select';
@@ -85,6 +85,19 @@ export default function ConnectionDatabaseSelector(props: ConnectionDatabaseSele
   const onDatabaseChange = (databaseId: string) => props.onChange(query.connectionId, databaseId, '');
 
   const onTableChange = (tableId: string) => props.onChange(query.connectionId, query.databaseId, tableId);
+
+  // side effect to select the only database or table
+  useEffect(() => {
+    // if there's only one database, then select that as well
+    if(databases && databases.length === 1){
+      onDatabaseChange(databases[0].name);
+    }
+
+    // if there's only one table, then select that as well
+    if(tables && tables.length === 1){
+      onTableChange(tables[0].name);
+    }
+  },[databases, tables])
 
   return (
     <>
