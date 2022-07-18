@@ -80,17 +80,11 @@ export default function ConnectionDatabaseSelector(props: ConnectionDatabaseSele
     </>;
   }
 
-  const onConnectionChange = (connectionId: string) => {
-    props.onChange(connectionId, '', '');
-  };
+  const onConnectionChange = (connectionId: string) => props.onChange(connectionId, '', '');
 
-  const onDatabaseChange = (databaseId: string) => {
-    props.onChange(query.connectionId, databaseId, '');
-  };
+  const onDatabaseChange = (databaseId: string) => props.onChange(query.connectionId, databaseId, '');
 
-  const onTableChange = (tableId: string) => {
-    props.onChange(query.connectionId, query.databaseId, tableId);
-  };
+  const onTableChange = (tableId: string) => props.onChange(query.connectionId, query.databaseId, tableId);
 
   return (
     <>
