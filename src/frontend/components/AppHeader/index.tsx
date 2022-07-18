@@ -19,6 +19,7 @@ import DropdownButton from 'src/frontend/components/DropdownButton';
 import { useCommands } from 'src/frontend/components/MissionControl';
 import { useGetCurrentSession, useGetSessions } from 'src/frontend/hooks/useSession';
 import appPackage from 'src/package.json';
+import InfoIcon from '@mui/icons-material/Info';
 
 export default function AppHeader() {
   const [open, setOpen] = useState(false);
@@ -87,6 +88,15 @@ export default function AppHeader() {
       onClick: () => selectCommand({ event: 'clientEvent/showSettings' }),
       startIcon: <SettingsIcon />,
     },
+
+    {
+      label: 'divider',
+    },
+    {
+      label: 'Check for update',
+      onClick: () => selectCommand({ event: 'clientEvent/checkForUpdate' }),
+      startIcon: <InfoIcon />,
+    },
   ];
 
   useEffect(() => {
@@ -123,7 +133,7 @@ export default function AppHeader() {
           options={options}
           onToggle={(newOpen) => setOpen(newOpen)}
           isLoading={isLoading}
-          maxHeight='400px'>
+          maxHeight='500px'>
           <IconButton aria-label='Table Actions' color='inherit'>
             <MenuIcon fontSize='inherit' color='inherit' />
           </IconButton>

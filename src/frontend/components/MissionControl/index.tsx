@@ -760,6 +760,11 @@ export default function MissionControl() {
       selectCommand({ event: 'clientEvent/openExternalUrl', data });
     };
 
+    const onRevealDataLocation = () => {
+      // copy the path to clipboard
+      navigator.clipboard.writeText(serverConfigs?.storageDir || '');
+    }
+
     await modal({
       title: 'Check for update',
       message: (
@@ -767,10 +772,10 @@ export default function MissionControl() {
           {contentDom}
           <Box className='FormInput__Row'>
             <label>Data Location:</label>
-            {serverConfigs?.storageDir}
+            <Link onClick={onRevealDataLocation}>{serverConfigs?.storageDir}</Link>
           </Box>
           <Box sx={{ mt: 3 }}>
-            <Link onClick={onGoToHomepage} sx={{ cursor: 'pointer' }}>
+            <Link onClick={onGoToHomepage}>
               synle.github.io/sqlui-native
             </Link>
           </Box>

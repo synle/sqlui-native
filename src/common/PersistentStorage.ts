@@ -132,6 +132,6 @@ export async function getSessionsStorage() {
   return await new PersistentStorage<SqluiCore.Session>('session', 'session', 'sessions');
 }
 
-export async function getFolderItemsStorage(folderId: string | 'bookmarks' | 'recycleBin') {
+export async function getFolderItemsStorage(folderId: 'bookmarks' | 'recycleBin' | string) {
   return await new PersistentStorage<SqluiCore.FolderItem>('folders', folderId);
 }
