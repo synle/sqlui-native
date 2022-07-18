@@ -98,7 +98,7 @@ export default function SessionSelectionForm(props: SessionSelectionFormProps) {
     options.length === 0 ? `New Session ${new Date().toLocaleDateString()}` : '';
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+    <Box className='FormInput__Container'>
       <Box>Please select a session from below:</Box>
 
       <List>

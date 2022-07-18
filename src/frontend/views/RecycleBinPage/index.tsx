@@ -162,7 +162,7 @@ export default function RecycleBinPage() {
             },
           ]}
         />
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+        <Box className='FormInput__Container'>
           <RecycleBinItemList />
         </Box>
       </>
