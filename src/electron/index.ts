@@ -68,12 +68,8 @@ async function createWindow(isFirstWindow?: boolean) {
   }
 
   // save the window id for later used
-  // @ts-ignore
-  mainWindow.windowId = targetWindowId;
-
   // store the windows later to use with deletion
-  global.openedWindows = global.openedWindows || {};
-  global.openedWindows[targetWindowId] = mainWindow;
+  sessionUtils.registerWindow(targetWindowId, mainWindow);
 
   return mainWindow;
 }
