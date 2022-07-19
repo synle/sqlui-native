@@ -16,16 +16,6 @@ describe('Configs', () => {
 describe('Sessions', () => {
   const mockedSessionId = `mocked-session-id.${Date.now()}`;
 
-  const mockedSessionValue1 = {
-    id: mockedSessionId,
-    name: 'Mocked Session Name Value 1',
-  };
-
-  const mockedSessionValue2 = {
-    id: mockedSessionId,
-    name: 'Mocked Session Name Value 2',
-  };
-
   const mockedConnection1 = {
     name: 'mysql Connection - 7/18/2022',
     connection: 'mysql://root:password@localhost:3306',
@@ -34,7 +24,12 @@ describe('Sessions', () => {
   const mockedQueryId1 = `mocked-query-id-1.${Date.now()}`;
   const mockedQueryId2 = `mocked-query-id-2.${Date.now()}`;
 
-  const mockedQueryValue1 = { id: mockedQueryId1, name: 'Query 1', sql: '--query one' };
+  const mockedQueryValue1 = {
+    id: mockedQueryId1,
+    name: 'Query 1',
+    sql: '--query one'
+  };
+
   const mockedQueryValue2 = {
     id: mockedQueryId2,
     name: 'Query 2',
@@ -48,7 +43,16 @@ describe('Sessions', () => {
   };
 
   test('Simple scenario Create Session / Get Session', async () => {
-    // here we create the session
+    const mockedSessionValue1 = {
+      id: mockedSessionId,
+      name: 'Mocked Session Name Value 1',
+    };
+
+    const mockedSessionValue2 = {
+      id: mockedSessionId,
+      name: 'Mocked Session Name Value 2',
+    };
+
     let res: any;
     res = await requestWithSupertest
       .put(`/api/session/${mockedSessionId}`)
@@ -82,13 +86,57 @@ describe('Sessions', () => {
       .send(mockedConnection1);
     expect(res.status).toEqual(201);
     expect(res.body).toEqual(expect.objectContaining(mockedConnection1));
+    const mockedConnectionId1 = res.body.id;
+    expect(mockedConnectionId1.length > 0).toBe(true)
+
+    // for simplicity, we will only assert this response headers once
+    expect(res.headers["sqlui-native-session-id"]).toEqual(commonHeaders["sqlui-native-session-id"])
+    expect(res.headers["sqlui-native-window-id"]).toEqual(commonHeaders["sqlui-native-window-id"])
 
     // delete connection
-    const mockedConnectionId1 = res.body.id;
     res = await requestWithSupertest
-      .post(`/api/connection/${mockedConnectionId1}`)
+      .delete(`/api/connection/${mockedConnectionId1}`)
       .set(commonHeaders);
     expect(res.status).toEqual(202);
+  });
+
+  test('Simple Queries', async () => {
+    let res: any;
+
+    // add 2 queries
+    res = await requestWithSupertest
+      .put(`/api/query/${mockedQueryValue1.id}`)
+      .set(commonHeaders)
+      .send(mockedQueryValue1);
+    expect(res.status).toEqual(202);
+    expect(res.body.id).toEqual(mockedQueryValue1.id);
+
+    res = await requestWithSupertest
+      .put(`/api/query/${mockedQueryValue2.id}`)
+      .set(commonHeaders)
+      .send(mockedQueryValue2);
+    expect(res.status).toEqual(202);
+    expect(res.body.id).toEqual(mockedQueryValue2.id);
+
+    // check the created queries
+    res = await requestWithSupertest
+      .get(`/api/queries`)
+      .set(commonHeaders)
+    expect(res.status).toEqual(200);
+    expect(res.body.length).toEqual(2);
+
+    // delete one query and test
+    res = await requestWithSupertest
+      .delete(`/api/query/${mockedQueryValue1.id}`)
+      .set(commonHeaders);
+    expect(res.status).toEqual(202);
+
+    // check the queries
+    res = await requestWithSupertest
+      .get(`/api/queries`)
+      .set(commonHeaders)
+    expect(res.status).toEqual(200);
+    expect(res.body.length).toEqual(1);
   });
 
   test('DELETE and Cleaning up the mocked session', async () => {
