@@ -15,7 +15,11 @@ jobs:
       package_version: ${{ steps.package-version.outputs.current-version }}
       release_upload_url: ${{ steps.create_release.outputs.upload_url }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '14'
+          cache: 'yarn'
       - run: npm version --no-git-tag-version patch
       - id: package-version
         uses: martinbeentjes/npm-get-version-action@master
@@ -44,7 +48,11 @@ jobs:
     runs-on: windows-latest
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '14'
+          cache: 'yarn'
       - run: npm version --no-git-tag-version patch
       - run: yarn install --network-timeout 1000000 --frozen-lockfile
       - run: yarn test-ci
@@ -66,7 +74,11 @@ jobs:
     runs-on: macos-latest
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '14'
+          cache: 'yarn'
       - run: npm version --no-git-tag-version patch
       - run: yarn install --network-timeout 1000000 --frozen-lockfile
       - run: yarn test-ci
@@ -88,7 +100,11 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '14'
+          cache: 'yarn'
       - run: npm version --no-git-tag-version patch
       - run: yarn install --network-timeout 1000000 --frozen-lockfile
       - run: yarn test-ci
@@ -131,9 +147,11 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 4
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
         with:
-          ref: ${{ github.head_ref }}
+          node-version: '14'
+          cache: 'yarn'
       - uses: dev-drprasad/delete-tag-and-release@v0.2.0
         with:
           delete_release: true
