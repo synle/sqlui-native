@@ -1,9 +1,9 @@
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Link from '@mui/material/Link';
-import { useQuery, useQueryClient } from 'react-query';
+import { useQueryClient } from 'react-query';
 import { useNavigate } from 'react-router-dom';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import CommandPalette from 'src/frontend/components/CommandPalette';
 import SessionSelectionForm from 'src/frontend/components/SessionSelectionForm';
 import Settings from 'src/frontend/components/Settings';
@@ -27,7 +27,6 @@ import { useGetServerConfigs } from 'src/frontend/hooks/useServerConfigs';
 import {
   useDeleteSession,
   useGetCurrentSession,
-  useGetOpenedSessionIds,
   useGetSessions,
   useSelectSession,
   useUpsertSession,
@@ -56,8 +55,6 @@ const _commands: Command[] = [];
 
 export function useCommands() {
   const queryClient = useQueryClient();
-
-  const { data, isLoading: loading } = useQuery(QUERY_KEY_COMMAND_PALETTE, () => _commands);
 
   const command = _commands[_commands.length - 1];
 
@@ -103,20 +100,18 @@ export const allMenuKeys = [
 
 export default function MissionControl() {
   const navigate = useNavigate();
-  const [init, setInit] = useState(false);
   const connectionQueries = useConnectionQueries();
-  const { queries, isLoading: loadingQueries } = connectionQueries;
+  const { queries } = connectionQueries;
   const { query: activeQuery, onChange: onChangeActiveQuery } = useActiveConnectionQuery();
   const { command, selectCommand, dismissCommand } = useCommands();
-  const { modal, choice, confirm, prompt, alert, dismiss: dismissDialog } = useActionDialogs();
-  const { data: sessions, isLoading: loadingSessions } = useGetSessions();
+  const { modal, confirm, prompt, alert, dismiss: dismissDialog } = useActionDialogs();
+  const { data: sessions,  } = useGetSessions();
   const { data: serverConfigs } = useGetServerConfigs();
-  const { data: openedSessionIds, isLoading: loadingOpenedSessionIds } = useGetOpenedSessionIds();
-  const { data: currentSession, isLoading: loadingCurrentSession } = useGetCurrentSession();
+  const { data: currentSession,  } = useGetCurrentSession();
   const { mutateAsync: upsertSession } = useUpsertSession();
   const { mutateAsync: selectSession } = useSelectSession();
   const { mutateAsync: importConnection } = useImportConnection();
-  const { data: connections, isLoading: loadingConnections } = useGetConnections();
+  const { data: connections,  } = useGetConnections();
   const { settings, onChange: onChangeSettings } = useSetting();
   const {
     onClear: onClearConnectionVisibles,
@@ -237,14 +232,14 @@ export default function MissionControl() {
   };
 
   const onDuplicateQuery = async (query: SqluiFrontend.ConnectionQuery) => {
-    const curToast = await addToast({
+    await addToast({
       message: `Duplicating "${query.name}", please wait...`,
     });
     await connectionQueries.onDuplicateQuery(query.id);
   };
 
   const onExportQuery = async (query: SqluiFrontend.ConnectionQuery) => {
-    const curToast = await addToast({
+    await addToast({
       message: `Exporting Query "${query.name}", please wait...`,
     });
 
@@ -271,7 +266,7 @@ export default function MissionControl() {
       data: restOfQuery,
     });
 
-    const curToast = await addToast({
+     await addToast({
       message: `Query "${newName}" added to Bookmarks.`,
     });
   };
@@ -313,7 +308,7 @@ export default function MissionControl() {
     }
 
     if (showOnlyRevealedConnection === false) {
-      const curToast = await addToast({
+      await addToast({
         message: `Revealed selected connection / database on the sidebar`,
       });
     }
@@ -481,7 +476,7 @@ export default function MissionControl() {
   };
 
   const onExportAll = async () => {
-    const curToast = await addToast({
+     await addToast({
       message: `Exporting All Connections and Queries, please wait...`,
     });
 
@@ -558,7 +553,7 @@ export default function MissionControl() {
       data: restOfConnectionMetaData,
     });
 
-    const curToast = await addToast({
+    await addToast({
       message: `Connection "${newName}" added to Bookmarks.`,
     });
   };
@@ -589,7 +584,7 @@ export default function MissionControl() {
   };
 
   const onDuplicateConnection = async (connection: SqluiCore.ConnectionProps) => {
-    const curToast = await addToast({
+     await addToast({
       message: `Duplicating connection "${connection.name}", please wait...`,
     });
 
@@ -597,7 +592,7 @@ export default function MissionControl() {
   };
 
   const onExportConnection = async (connection: SqluiCore.ConnectionProps) => {
-    const curToast = await addToast({
+     await addToast({
       message: `Exporting connection "${connection.name}", please wait...`,
     });
 
@@ -609,7 +604,7 @@ export default function MissionControl() {
   };
 
   const onSelectConnection = async (connection: SqluiCore.ConnectionProps) => {
-    const curToast = await addToast({
+     await addToast({
       message: `Connection "${connection.name}" selected for query`,
     });
 
@@ -1050,9 +1045,6 @@ export default function MissionControl() {
         case 'clientEvent/record/new':
           navigate('/record/new');
           break;
-        case 'clientEvent/record/edit':
-          // TODO to be implemented
-          break;
 
         // session commands
         case 'clientEvent/session/switch':
@@ -1137,8 +1129,6 @@ export default function MissionControl() {
     const onKeyboardShortcutEventForMockedServer = (e: KeyboardEvent) => {
       const hasModifierKey = e.altKey || e.ctrlKey || e.metaKey;
 
-      let onShowCommandPalette = false;
-      let preventDefault = false;
       let command: Command | undefined;
       const { key } = e;
 
