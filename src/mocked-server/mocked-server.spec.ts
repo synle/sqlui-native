@@ -3,7 +3,6 @@ import {app} from 'src/mocked-server/mocked-server';
 
 const requestWithSupertest = supertest(app);
 
-
 describe('Configs', () => {
   it('GET /api/configs should work', async () => {
     const res = await requestWithSupertest.get('/api/configs');
