@@ -16,6 +16,5 @@ module.exports = {
   rules: {
     'no-unused-vars': ['warn', { argsIgnorePattern: '^_', ignoreRestSiblings: true }],
     'no-debugger': ['warn'],
-    'react-hooks/exhaustive-deps': "off"
   },
 };
