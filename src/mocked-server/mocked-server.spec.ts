@@ -26,6 +26,17 @@ describe('Sessions', () => {
     "name":"Mocked Session Name Value 2"
   }
 
+  const mockedConnection1 = {
+      "name":"mysql Connection - 7/18/2022",
+      "connection":"mysql://root:password@localhost:3306"}
+
+  const commonHeaders = {
+  "sqlui-native-session-id":mockedSessionId,
+  "sqlui-native-window-id": "mocked-window-id"
+};
+
+
+
   it('Simple scenario Create Session / Get Session', async () => {
     // here we create the session
     let res: any;
@@ -47,5 +58,12 @@ describe('Sessions', () => {
     expect(res.status).toEqual(200);
     expect(res.type).toEqual(expect.stringContaining('json'));
     expect(res.body).toContainEqual(mockedSessionValue2);
+  });
+
+  it('Simple Connection & Query', async () => {
+    let res: any;
+    res = await requestWithSupertest.post('/api/connection').set(commonHeaders).send(mockedConnection1);
+    expect(res.status).toEqual(201);
+    expect(res.body).toEqual(expect.objectContaining(mockedConnection1));
   });
 });
