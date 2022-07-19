@@ -425,8 +425,8 @@ ipcMain.on('sqluiNativeEvent/fetch', async (event, data) => {
           params: matchedUrlObject?.params,
           body: body,
           headers: {
-            ['sqlui-native-session-id']: sessionId,
-            ['sqlui-native-window-id']: windowId,
+            'sqlui-native-session-id': sessionId,
+            'sqlui-native-window-id': windowId,
           },
         };
 

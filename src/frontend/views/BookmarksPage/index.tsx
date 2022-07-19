@@ -3,7 +3,6 @@ import EditIcon from '@mui/icons-material/Edit';
 import StarIcon from '@mui/icons-material/Star';
 import Backdrop from '@mui/material/Backdrop';
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
 import Chip from '@mui/material/Chip';
 import CircularProgress from '@mui/material/CircularProgress';
 import IconButton from '@mui/material/IconButton';
@@ -16,7 +15,6 @@ import ConnectionDescription from 'src/frontend/components/ConnectionDescription
 import DataTable from 'src/frontend/components/DataTable';
 import NewConnectionButton from 'src/frontend/components/NewConnectionButton';
 import { useActionDialogs } from 'src/frontend/hooks/useActionDialogs';
-import { useSideBarWidthPreference } from 'src/frontend/hooks/useClientSidePreference';
 import { useUpsertConnection } from 'src/frontend/hooks/useConnection';
 import { useConnectionQueries } from 'src/frontend/hooks/useConnectionQuery';
 import {
@@ -36,7 +34,6 @@ const columns = [
       const folderItem = data.row.original;
       const { onAddQuery } = useConnectionQueries();
       const navigate = useNavigate();
-      const { confirm, prompt } = useActionDialogs();
       const { mutateAsync: upsertConnection } = useUpsertConnection();
       const onOpenBookmarkItem = async (folderItem: SqluiCore.FolderItem) => {
         // here we handle restorable
@@ -76,10 +73,7 @@ const columns = [
     width: 80,
     Cell: (data: any) => {
       const folderItem = data.row.original;
-      const { onAddQuery } = useConnectionQueries();
-      const navigate = useNavigate();
       const { confirm, prompt } = useActionDialogs();
-      const { mutateAsync: upsertConnection } = useUpsertConnection();
       const { mutateAsync: deleteBookmarkItem } = useDeleteBookmarkItem();
       const { mutateAsync: updateBookmarkItem } = useUpdateBookmarkItem();
 
@@ -119,12 +113,7 @@ const columns = [
   },
 ];
 function BookmarksItemList() {
-  const navigate = useNavigate();
   const { data, isLoading: loadingRecycleBinItems } = useGetBookmarkItems();
-  const { mutateAsync: deleteRecyleBinItem, isLoading: loadingRestoreQuery } =
-    useDeleteBookmarkItem();
-  const { confirm } = useActionDialogs();
-
   const isLoading = loadingRecycleBinItems;
 
   if (isLoading) {
@@ -153,7 +142,6 @@ function BookmarksItemList() {
 }
 
 export default function BookmarksPage() {
-  const { value: width, onChange: onSetWidth } = useSideBarWidthPreference();
   const { setTreeActions } = useTreeActions();
 
   useEffect(() => {
