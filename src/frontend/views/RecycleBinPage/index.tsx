@@ -3,24 +3,21 @@ import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import RestoreIcon from '@mui/icons-material/Restore';
 import Backdrop from '@mui/material/Backdrop';
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
 import Chip from '@mui/material/Chip';
 import CircularProgress from '@mui/material/CircularProgress';
 import IconButton from '@mui/material/IconButton';
 import Link from '@mui/material/Link';
 import Typography from '@mui/material/Typography';
-import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import Breadcrumbs from 'src/frontend/components/Breadcrumbs';
 import ConnectionDescription from 'src/frontend/components/ConnectionDescription';
 import DataTable from 'src/frontend/components/DataTable';
 import NewConnectionButton from 'src/frontend/components/NewConnectionButton';
 import { useActionDialogs } from 'src/frontend/hooks/useActionDialogs';
-import { useSideBarWidthPreference } from 'src/frontend/hooks/useClientSidePreference';
 import {
   useDeletedRecycleBinItem,
   useGetRecycleBinItems,
-  useRestoreRecycleBinItem,
+  useRestoreRecycleBinItem
 } from 'src/frontend/hooks/useFolderItems';
 import useToaster from 'src/frontend/hooks/useToaster';
 import { useTreeActions } from 'src/frontend/hooks/useTreeActions';
@@ -87,7 +84,7 @@ const columns = [
 ];
 function RecycleBinItemList() {
   const { data, isLoading: loadingRecycleBinItems } = useGetRecycleBinItems();
-  const { mutateAsync: deleteRecyleBinItem, isLoading: loadingRestoreQuery } =
+  const { mutateAsync: deleteRecyleBinItem } =
     useDeletedRecycleBinItem();
   const { confirm } = useActionDialogs();
   const { add: addToast } = useToaster();
@@ -99,7 +96,7 @@ function RecycleBinItemList() {
       await Promise.all(
         (folderItems || []).map((folderItem) => deleteRecyleBinItem(folderItem.id)),
       );
-      const curToast = await addToast({
+      await addToast({
         message: `Recycle Bin emptied.`,
       });
     } catch (err) {}
@@ -133,9 +130,7 @@ function RecycleBinItemList() {
   );
 }
 export default function RecycleBinPage() {
-  const { value: width, onChange: onSetWidth } = useSideBarWidthPreference();
   const { setTreeActions } = useTreeActions();
-  const navigate = useNavigate();
 
   useEffect(() => {
     setTreeActions({
