@@ -9,6 +9,6 @@ describe('Configs', () => {
     expect(res.status).toEqual(200);
     expect(res.type).toEqual(expect.stringContaining('json'));
     expect(res.body).toHaveProperty('storageDir');
-    expect(res.body).toHaveProperty('isElectron')
+    expect(res.body).toHaveProperty('isElectron');
   });
 });
