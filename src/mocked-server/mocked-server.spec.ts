@@ -27,7 +27,7 @@ describe('Sessions', () => {
   const mockedQueryValue1 = {
     id: mockedQueryId1,
     name: 'Query 1',
-    sql: '--query one'
+    sql: '--query one',
   };
 
   const mockedQueryValue2 = {
@@ -87,11 +87,13 @@ describe('Sessions', () => {
     expect(res.status).toEqual(201);
     expect(res.body).toEqual(expect.objectContaining(mockedConnection1));
     const mockedConnectionId1 = res.body.id;
-    expect(mockedConnectionId1.length > 0).toBe(true)
+    expect(mockedConnectionId1.length > 0).toBe(true);
 
     // for simplicity, we will only assert this response headers once
-    expect(res.headers["sqlui-native-session-id"]).toEqual(commonHeaders["sqlui-native-session-id"])
-    expect(res.headers["sqlui-native-window-id"]).toEqual(commonHeaders["sqlui-native-window-id"])
+    expect(res.headers['sqlui-native-session-id']).toEqual(
+      commonHeaders['sqlui-native-session-id'],
+    );
+    expect(res.headers['sqlui-native-window-id']).toEqual(commonHeaders['sqlui-native-window-id']);
 
     // delete connection
     res = await requestWithSupertest
@@ -119,9 +121,7 @@ describe('Sessions', () => {
     expect(res.body.id).toEqual(mockedQueryValue2.id);
 
     // check the created queries
-    res = await requestWithSupertest
-      .get(`/api/queries`)
-      .set(commonHeaders)
+    res = await requestWithSupertest.get(`/api/queries`).set(commonHeaders);
     expect(res.status).toEqual(200);
     expect(res.body.length).toEqual(2);
 
@@ -132,9 +132,7 @@ describe('Sessions', () => {
     expect(res.status).toEqual(202);
 
     // check the queries
-    res = await requestWithSupertest
-      .get(`/api/queries`)
-      .set(commonHeaders)
+    res = await requestWithSupertest.get(`/api/queries`).set(commonHeaders);
     expect(res.status).toEqual(200);
     expect(res.body.length).toEqual(1);
   });
