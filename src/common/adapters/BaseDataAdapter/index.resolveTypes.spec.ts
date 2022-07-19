@@ -27,10 +27,10 @@ describe('BaseDataAdapter', () => {
     });
     test('complex objects with null', async () => {
       const actual = BaseDataAdapter.resolveTypes({
-        "id": 321,
-        "is_locked": 0,
-        "contact_id": null,
-        location: { zip: null } ,
+        id: 321,
+        is_locked: 0,
+        contact_id: null,
+        location: { zip: null },
       });
       expect(actual).toMatchSnapshot();
     });

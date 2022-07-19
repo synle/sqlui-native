@@ -24,7 +24,11 @@ describe.skip('cosmosdb', () => {
   });
 
   test('execute', async () => {
-    const actual = await adapter.execute('SELECT * FROM C OFFSET 1 LIMIT 2', 'sy-test-database1', 'sy-test-container1');
+    const actual = await adapter.execute(
+      'SELECT * FROM C OFFSET 1 LIMIT 2',
+      'sy-test-database1',
+      'sy-test-container1',
+    );
     expect(actual?.raw?.length).toBeGreaterThan(0);
   });
 });
