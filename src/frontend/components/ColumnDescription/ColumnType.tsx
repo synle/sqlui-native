@@ -9,6 +9,7 @@ const StyledColumnType = styled('i')(({ theme }) => {
     maxWidth: '50%',
     overflow: 'hidden',
     textOverflow: 'ellipsis',
+    textAlign: 'right',
     marginLeft: 'auto',
   };
 });
