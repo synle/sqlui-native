@@ -59,8 +59,6 @@ export function getSelectSpecificColumns(
   if (!input.columns) {
     return undefined;
   }
-
-
   const columns: any = {};
   for (const column of input.columns || []) {
     // construct nested object properly

@@ -105,13 +105,13 @@ export default function MissionControl() {
   const { query: activeQuery, onChange: onChangeActiveQuery } = useActiveConnectionQuery();
   const { command, selectCommand, dismissCommand } = useCommands();
   const { modal, confirm, prompt, alert, dismiss: dismissDialog } = useActionDialogs();
-  const { data: sessions,  } = useGetSessions();
+  const { data: sessions } = useGetSessions();
   const { data: serverConfigs } = useGetServerConfigs();
-  const { data: currentSession,  } = useGetCurrentSession();
+  const { data: currentSession } = useGetCurrentSession();
   const { mutateAsync: upsertSession } = useUpsertSession();
   const { mutateAsync: selectSession } = useSelectSession();
   const { mutateAsync: importConnection } = useImportConnection();
-  const { data: connections,  } = useGetConnections();
+  const { data: connections } = useGetConnections();
   const { settings, onChange: onChangeSettings } = useSetting();
   const {
     onClear: onClearConnectionVisibles,
@@ -266,7 +266,7 @@ export default function MissionControl() {
       data: restOfQuery,
     });
 
-     await addToast({
+    await addToast({
       message: `Query "${newName}" added to Bookmarks.`,
     });
   };
@@ -476,7 +476,7 @@ export default function MissionControl() {
   };
 
   const onExportAll = async () => {
-     await addToast({
+    await addToast({
       message: `Exporting All Connections and Queries, please wait...`,
     });
 
@@ -584,7 +584,7 @@ export default function MissionControl() {
   };
 
   const onDuplicateConnection = async (connection: SqluiCore.ConnectionProps) => {
-     await addToast({
+    await addToast({
       message: `Duplicating connection "${connection.name}", please wait...`,
     });
 
@@ -592,7 +592,7 @@ export default function MissionControl() {
   };
 
   const onExportConnection = async (connection: SqluiCore.ConnectionProps) => {
-     await addToast({
+    await addToast({
       message: `Exporting connection "${connection.name}", please wait...`,
     });
 
@@ -604,7 +604,7 @@ export default function MissionControl() {
   };
 
   const onSelectConnection = async (connection: SqluiCore.ConnectionProps) => {
-     await addToast({
+    await addToast({
       message: `Connection "${connection.name}" selected for query`,
     });
 

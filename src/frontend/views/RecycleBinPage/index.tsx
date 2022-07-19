@@ -17,7 +17,7 @@ import { useActionDialogs } from 'src/frontend/hooks/useActionDialogs';
 import {
   useDeletedRecycleBinItem,
   useGetRecycleBinItems,
-  useRestoreRecycleBinItem
+  useRestoreRecycleBinItem,
 } from 'src/frontend/hooks/useFolderItems';
 import useToaster from 'src/frontend/hooks/useToaster';
 import { useTreeActions } from 'src/frontend/hooks/useTreeActions';
@@ -84,8 +84,7 @@ const columns = [
 ];
 function RecycleBinItemList() {
   const { data, isLoading: loadingRecycleBinItems } = useGetRecycleBinItems();
-  const { mutateAsync: deleteRecyleBinItem } =
-    useDeletedRecycleBinItem();
+  const { mutateAsync: deleteRecyleBinItem } = useDeletedRecycleBinItem();
   const { confirm } = useActionDialogs();
   const { add: addToast } = useToaster();
   const isLoading = loadingRecycleBinItems;

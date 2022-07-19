@@ -13,7 +13,8 @@ export default function SessionSelectionModal() {
   const { isLoading: loadingSessions } = useGetSessions();
   const { isLoading: loadingOpenedSessionIds } = useGetOpenedSessionIds();
   const { isLoading: loadingCurrentSession } = useGetCurrentSession();
-  const isLoading = loadingSessions || loadingOpenedSessionIds || loadingOpenedSessionIds || loadingCurrentSession;
+  const isLoading =
+    loadingSessions || loadingOpenedSessionIds || loadingOpenedSessionIds || loadingCurrentSession;
 
   useEffect(() => {
     if (isLoading) {

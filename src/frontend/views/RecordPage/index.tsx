@@ -50,7 +50,7 @@ import { useTreeActions } from 'src/frontend/hooks/useTreeActions';
 import LayoutTwoColumns from 'src/frontend/layout/LayoutTwoColumns';
 import { sortColumnNamesForUnknownData } from 'src/frontend/utils/commonUtils';
 import { formatJS, formatSQL } from 'src/frontend/utils/formatter';
-import {  SqluiFrontend } from 'typings';
+import { SqluiFrontend } from 'typings';
 
 type RecordData = any;
 
@@ -137,11 +137,7 @@ function RecordForm(props) {
     ...props?.query,
   });
   const { data: connection } = useGetConnectionById(query?.connectionId);
-  const { data: columns } = useGetColumns(
-    query?.connectionId,
-    query?.databaseId,
-    query?.tableId,
-  );
+  const { data: columns } = useGetColumns(query?.connectionId, query?.databaseId, query?.tableId);
 
   const onDatabaseConnectionChange = (
     connectionId?: string,
@@ -183,7 +179,7 @@ function RecordForm(props) {
       },
       { replace: true },
     );
-  }, [query,]);
+  }, [query]);
 
   // generate the dummy data when selector changes
   useEffect(() => {
