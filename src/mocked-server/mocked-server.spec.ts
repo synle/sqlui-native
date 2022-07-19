@@ -13,21 +13,39 @@ describe('Configs', () => {
   });
 });
 
+
 describe('Sessions', () => {
   const mockedSessionId = `mocked-session-id.${Date.now()}`;
-  const mockedSessionValue = {
+  const mockedSessionValue1 = {
     "id":mockedSessionId,
-    "name":"Mocked Session Name"
+    "name":"Mocked Session Name Value 1"
   }
 
-  it('Simple scenario', async () => {
+  const mockedSessionValue2 = {
+    "id":mockedSessionId,
+    "name":"Mocked Session Name Value 2"
+  }
+
+  it('Simple scenario Create Session / Get Session', async () => {
+    // here we create the session
     let res: any;
-    res = await requestWithSupertest.put(`/api/session/${mockedSessionId}`).send(mockedSessionValue);
+    res = await requestWithSupertest.put(`/api/session/${mockedSessionId}`).send(mockedSessionValue1);
     expect(res.status).toEqual(202);
 
     res = await requestWithSupertest.get('/api/sessions');
     expect(res.status).toEqual(200);
     expect(res.type).toEqual(expect.stringContaining('json'));
-    expect(res.body).toContainEqual(mockedSessionValue);
+    expect(res.body).toContainEqual(mockedSessionValue1);
+    expect(res.body.length > 0).toEqual(true);
+
+
+    // rename the session
+    res = await requestWithSupertest.put(`/api/session/${mockedSessionId}`).send(mockedSessionValue2);
+    expect(res.status).toEqual(202);
+
+    res = await requestWithSupertest.get('/api/sessions');
+    expect(res.status).toEqual(200);
+    expect(res.type).toEqual(expect.stringContaining('json'));
+    expect(res.body).toContainEqual(mockedSessionValue2);
   });
 });
