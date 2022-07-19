@@ -40,7 +40,6 @@ import NewConnectionButton from 'src/frontend/components/NewConnectionButton';
 import ConnectionDatabaseSelector from 'src/frontend/components/QueryBox/ConnectionDatabaseSelector';
 import Tabs from 'src/frontend/components/Tabs';
 import { useActionDialogs } from 'src/frontend/hooks/useActionDialogs';
-import { useSideBarWidthPreference } from 'src/frontend/hooks/useClientSidePreference';
 import { useGetColumns, useGetConnectionById } from 'src/frontend/hooks/useConnection';
 import {
   useActiveConnectionQuery,
@@ -51,28 +50,10 @@ import { useTreeActions } from 'src/frontend/hooks/useTreeActions';
 import LayoutTwoColumns from 'src/frontend/layout/LayoutTwoColumns';
 import { sortColumnNamesForUnknownData } from 'src/frontend/utils/commonUtils';
 import { formatJS, formatSQL } from 'src/frontend/utils/formatter';
-import { SqluiCore, SqluiFrontend } from 'typings';
+import { SqluiFrontend } from 'typings';
 
 type RecordData = any;
 
-type RecordFormProps = {
-  onSave: (response: RecordFormReponse) => void;
-  onCancel: () => void;
-  onConnectionChanges?: (query: Partial<SqluiFrontend.ConnectionQuery>) => void;
-  query?: SqluiCore.ConnectionQuery;
-  data?: RecordData;
-  rawValue?: string;
-  isEditMode?: boolean;
-  mode: 'edit' | 'create';
-};
-
-type RecordFormReponse = {
-  query: Partial<SqluiFrontend.ConnectionQuery>;
-  connection?: SqluiCore.ConnectionProps;
-  columns?: SqluiCore.ColumnMetaData[];
-  data: RecordData;
-  deltaFields: string[];
-};
 /**
  * render the form in read only mode
  * @param {[type]} props: RecordDetailsPageProps [description]
@@ -93,7 +74,7 @@ function RecordView(props: RecordDetailsPageProps) {
           // boolean
           const booleanLabel = columnValue ? '<TRUE>' : '<FALSE>';
           contentColumnValueView = (
-            <TextField value={columnValue} size='small' margin='dense' disabled={true} />
+            <TextField value={booleanLabel} size='small' margin='dense' disabled={true} />
           );
         } else if (columnValue === null) {
           // null value
@@ -156,11 +137,7 @@ function RecordForm(props) {
     ...props?.query,
   });
   const { data: connection } = useGetConnectionById(query?.connectionId);
-  const { data: columns, isLoading: loadingColumns } = useGetColumns(
-    query?.connectionId,
-    query?.databaseId,
-    query?.tableId,
-  );
+  const { data: columns } = useGetColumns(query?.connectionId, query?.databaseId, query?.tableId);
 
   const onDatabaseConnectionChange = (
     connectionId?: string,
@@ -459,7 +436,6 @@ function RecordForm(props) {
 
 export function NewRecordPage() {
   const navigate = useNavigate();
-  const { value: width, onChange: onSetWidth } = useSideBarWidthPreference();
   const { setTreeActions } = useTreeActions();
   const { onAddQuery } = useConnectionQueries();
   const { add: addToast } = useToaster();
@@ -620,9 +596,6 @@ export function NewRecordPage() {
 
 export function EditRecordPage(props: RecordDetailsPageProps) {
   const { data } = props;
-  const navigate = useNavigate();
-  const { value: width, onChange: onSetWidth } = useSideBarWidthPreference();
-  const { setTreeActions } = useTreeActions();
   const { onAddQuery } = useConnectionQueries();
   const [isEdit, setIsEdit] = useState(!!props.isEditMode);
   const { query: activeQuery } = useActiveConnectionQuery();
