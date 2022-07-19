@@ -1,4 +1,6 @@
+import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
+import ActionDialogs from 'src/frontend/components/ActionDialogs';
 import { allMenuKeys } from 'src/frontend/components/MissionControl';
 import SessionSelectionForm from 'src/frontend/components/SessionSelectionForm';
 import { useActionDialogs } from 'src/frontend/hooks/useActionDialogs';
@@ -9,12 +11,12 @@ import {
 } from 'src/frontend/hooks/useSession';
 
 export default function SessionSelectionModal() {
-  const { modal } = useActionDialogs();
+  const navigate = useNavigate();
+  const { modal, choice, confirm, prompt, alert, dismiss: dismissDialog } = useActionDialogs();
   const { isLoading: loadingSessions } = useGetSessions();
   const { isLoading: loadingOpenedSessionIds } = useGetOpenedSessionIds();
   const { isLoading: loadingCurrentSession } = useGetCurrentSession();
-  const isLoading =
-    loadingSessions || loadingOpenedSessionIds || loadingOpenedSessionIds || loadingCurrentSession;
+  const isLoading = loadingSessions || loadingOpenedSessionIds || loadingOpenedSessionIds;
 
   useEffect(() => {
     if (isLoading) {

@@ -1,3 +1,4 @@
+import get from 'lodash.get';
 import set from 'lodash.set';
 import BaseDataScript, { getDivider } from 'src/common/adapters/BaseDataAdapter/scripts';
 import { SqlAction } from 'typings';
@@ -20,7 +21,7 @@ export function serializeJsonForMongoScript(object: any) {
 
   // here we construct ObjectId
   res = res.replace(/"ObjectId\('[a-z0-9_]*'\)"/, (a) => {
-    const id = a.replace(`ObjectId`, '').replace(/[()'"]/g, '');
+    const id = a.replace(`ObjectId`, '').replace(/[\(\)'"]/g, '');
     return `ObjectId("${id}")`;
   });
 
@@ -59,6 +60,9 @@ export function getSelectSpecificColumns(
   if (!input.columns) {
     return undefined;
   }
+
+  const columnString = `\n` + input.columns.map((col) => `  ${col.name}`).join(',\n');
+  const whereColumnString = input.columns.map((col) => `${col.name} = ''`).join('\n -- AND ');
   const columns: any = {};
   for (const column of input.columns || []) {
     // construct nested object properly
@@ -105,6 +109,9 @@ export function getInsert(
     return undefined;
   }
 
+  const columnString = input.columns.map((col) => col.name).join(',\n');
+  const insertValueString = input.columns.map((col) => `'_${col.name}_'`).join(',\n');
+
   let columns: any = {};
 
   if (value) {
@@ -136,6 +143,11 @@ export function getBulkInsert(
   if (!input.columns) {
     return undefined;
   }
+
+  const columns = input.columns || [];
+
+  const columnString = input.columns.map((col) => col.name).join(',\n');
+  const insertValueString = input.columns.map((col) => `'_${col.name}_'`).join(',\n');
 
   const rowsToInsert = rows || [];
 
@@ -223,6 +235,8 @@ export function getCreateCollection(input: SqlAction.TableInput): SqlAction.Outp
   if (!input.columns) {
     return undefined;
   }
+
+  let columnString: string = '';
 
   // TODO: figure out how to use the defaultval
 
