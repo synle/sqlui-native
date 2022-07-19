@@ -3,10 +3,8 @@ import RelationalDataAdapter from 'src/common/adapters/RelationalDataAdapter/ind
 
 describe('sqlite', () => {
   let adapter;
-  if(process.platform === 'win32'){
-    test('Skipped for win32', async () => {
-
-    });
+  if (process.platform === 'win32') {
+    test('Skipped for win32', async () => {});
     return;
   }
 
