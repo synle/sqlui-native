@@ -1,5 +1,5 @@
 import supertest from 'supertest';
-import {app} from 'src/mocked-server/mocked-server';
+import { app } from 'src/mocked-server/mocked-server';
 
 const requestWithSupertest = supertest(app);
 
