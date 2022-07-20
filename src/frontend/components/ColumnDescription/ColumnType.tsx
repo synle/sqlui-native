@@ -10,6 +10,7 @@ const StyledColumnType = styled('i')(({ theme }) => {
     overflow: 'hidden',
     textOverflow: 'ellipsis',
     textAlign: 'right',
+    textTransform: 'capitalize',
     marginLeft: 'auto',
   };
 });
@@ -17,7 +18,7 @@ const StyledColumnType = styled('i')(({ theme }) => {
 export default function ColumnType(props: { value: string }) {
   return (
     <Tooltip title={props.value}>
-      <StyledColumnType>{props.value}</StyledColumnType>
+      <StyledColumnType>{props.value?.toLowerCase()}</StyledColumnType>
     </Tooltip>
   );
 }

@@ -23,10 +23,10 @@ export default function ColumnAttributes(props: ColumnAttributesProps) {
         value = JSON.stringify(value);
       } else if (value === null) {
         value = 'null';
+      } else if (typeof value === 'string') {
+        value = value;
       } else {
         value = JSON.stringify(value, null, 2);
-        // remove the leading and trailing "
-        value = value.substr(value.indexOf('"') + 1, value.lastIndexOf('"') - 1);
       }
 
       return {

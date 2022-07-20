@@ -48,6 +48,9 @@ export module SqluiCore {
     [index: string]: any;
   };
 
+  type ColumnKindCassandra = 'partition_key' | 'clustering' | 'regular';
+  type ColumnKindRmdbs = 'foreign_key';
+
   export type ColumnMetaData = {
     name: string;
     type: string;
@@ -66,6 +69,15 @@ export module SqluiCore {
      * @type {string}
      */
     propertyPath?: string[];
+    /**
+     * for cassandra, value can be `partition_key` or `clustering` or `regular`
+     * for rdbms, value can be `foreign_key`
+     */
+    kind?: ColumnKindCassandra | ColumnKindRmdbs;
+    // these applies for foreignkeys information for rdmbs
+    constraintName?: string;
+    referencedTableName?: string;
+    referencedColumnName?: string;
     [index: string]: any;
   };
 
