@@ -66,6 +66,11 @@ export module SqluiCore {
      * @type {string}
      */
     propertyPath?: string[];
+    /**
+     * for cassandra, value can be partition_key or clustering
+     * for rdbms, value can be foreign_key
+     */
+    kind?: 'partition_key' | 'clustering' | 'foreign_key',
     [index: string]: any;
   };
 
