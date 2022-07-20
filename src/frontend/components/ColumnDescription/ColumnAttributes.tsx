@@ -23,9 +23,9 @@ export default function ColumnAttributes(props: ColumnAttributesProps) {
         value = JSON.stringify(value);
       } else if (value === null) {
         value = 'null';
-      } else if(typeof value === 'string'){
+      } else if (typeof value === 'string') {
         value = value;
-      }else{
+      } else {
         value = JSON.stringify(value, null, 2);
       }
 
