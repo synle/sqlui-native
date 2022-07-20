@@ -70,7 +70,7 @@ export default function ColumnDescription(props: ColumnDescriptionProps) {
           const key = [connectionId, databaseId, tableId, column.name].join(' > ');
           const isSelected = visibles[key];
           const shouldShowPrimaryKeyIcon = column.primaryKey || column.kind === 'partition_key';
-          const shouldShowSecondaryKeyIcon = column.kind === 'clustering';
+          const shouldShowSecondaryKeyIcon = column.kind === 'clustering' || column.kind === 'foreign';
 
           return (
             <React.Fragment key={column.name}>
