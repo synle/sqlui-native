@@ -270,6 +270,10 @@ export class ConcreteDataScripts extends BaseDataScript {
   getSampleConnectionString(dialect) {
     return `redis://localhost:6379`;
   }
+
+  getSampleSelectQuery(actionInput: SqlAction.TableInput) {
+    return '';
+  }
 }
 
 export default new ConcreteDataScripts();

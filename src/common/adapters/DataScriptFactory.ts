@@ -124,11 +124,7 @@ export function getTableActions(actionInput: SqlAction.TableInput) {
 }
 
 export function getSampleSelectQuery(actionInput: SqlAction.TableInput) {
-  const scriptsToUse: SqlAction.TableActionScriptGenerator[] =
-    _getImplementation(actionInput.dialect)?.getTableScripts() || [];
-  return _formatScripts(actionInput, scriptsToUse).filter((script) =>
-    script.label.includes('Select'),
-  )[0];
+  return _formatScripts(_getImplementation(actionInput.dialect)?.getSampleSelectQuery(actionInput));
 }
 
 export function getDatabaseActions(actionInput: SqlAction.DatabaseInput) {
