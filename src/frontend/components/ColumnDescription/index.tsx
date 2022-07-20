@@ -71,8 +71,7 @@ export default function ColumnDescription(props: ColumnDescriptionProps) {
           const isSelected = visibles[key];
           const shouldShowPrimaryKeyIcon = column.primaryKey || column.kind === 'partition_key';
           const shouldShowSecondaryKeyIcon = column.kind === 'clustering';
-          const shouldShowForeignKeyIcon =
-            !shouldShowPrimaryKeyIcon && column.kind === 'foreign_key';
+          const shouldShowForeignKeyIcon = column.kind === 'foreign_key';
 
           return (
             <React.Fragment key={column.name}>
@@ -97,7 +96,7 @@ export default function ColumnDescription(props: ColumnDescriptionProps) {
                 )}
                 {shouldShowForeignKeyIcon && (
                   <Tooltip
-                    title={`Foreign Key name=${column.constraintName} referencing table=${column.referencedTableName} column=${column.referencedColumnName}`}>
+                    title={`Foreign Key referencing table=${column.referencedTableName} column=${column.referencedColumnName}`}>
                     <i style={{ height: '15px' }}>
                       <KeyIcon fontSize='small' color='secondary' />{' '}
                     </i>
