@@ -43,4 +43,7 @@ export default abstract class BaseDataScript implements IDataScript {
   getSampleConnectionString(dialect?: SqluiCore.Dialect) {
     return '';
   }
+  getSampleSelectQuery(actionInput: SqlAction.TableInput) {
+    return '';
+  }
 }
