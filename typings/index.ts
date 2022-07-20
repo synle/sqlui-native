@@ -74,7 +74,8 @@ export module SqluiCore {
      * for rdbms, value can be `foreign_key`
      */
     kind?: ColumnKindCassandra | ColumnKindRmdbs,
-    // these two applies only to relational database
+    // these applies for foreignkeys information for rdmbs
+    constraintName?: string;
     referencedTableName?: string,
     referencedColumnName?: string,
     [index: string]: any;
