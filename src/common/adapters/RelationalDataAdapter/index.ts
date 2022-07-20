@@ -209,7 +209,6 @@ export default class RelationalDataAdapter extends BaseDataAdapter implements ID
             .getForeignKeyReferencesForTable(table)) as any[];
 
           for (const foreignKeyReference of foreignKeyReferences) {
-            const constraintName = foreignKeyReference.constraintName;
             const fromTableName = foreignKeyReference.tableName;
             const fromColumnName = foreignKeyReference.columnName;
             const toTableName = foreignKeyReference.referencedTableName;
@@ -220,7 +219,6 @@ export default class RelationalDataAdapter extends BaseDataAdapter implements ID
 
               if (targetColumn) {
                 targetColumn.kind = 'foreign_key';
-                targetColumn.constraintName = constraintName || `N/A`;
                 targetColumn.referencedTableName = toTableName;
                 targetColumn.referencedColumnName = toColumnName;
               }

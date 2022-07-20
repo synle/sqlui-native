@@ -75,7 +75,6 @@ export module SqluiCore {
      */
     kind?: ColumnKindCassandra | ColumnKindRmdbs;
     // these applies for foreignkeys information for rdmbs
-    constraintName?: string;
     referencedTableName?: string;
     referencedColumnName?: string;
     [index: string]: any;
