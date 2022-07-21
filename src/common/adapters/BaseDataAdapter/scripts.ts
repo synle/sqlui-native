@@ -34,13 +34,20 @@ export default abstract class BaseDataScript implements IDataScript {
   getTableScripts(): SqlAction.TableActionScriptGenerator[] {
     return [];
   }
+
   getDatabaseScripts(): SqlAction.DatabaseActionScriptGenerator[] {
     return [];
   }
+
   getConnectionScripts(): SqlAction.ConnectionActionScriptGenerator[] {
     return [];
   }
+
   getSampleConnectionString(dialect?: SqluiCore.Dialect) {
     return '';
+  }
+
+  getSampleSelectQuery(actionInput: SqlAction.TableInput): SqlAction.Output | undefined {
+    return undefined;
   }
 }

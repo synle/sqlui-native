@@ -7,6 +7,18 @@ import RedisDataAdapterScripts from 'src/common/adapters/RedisDataAdapter/script
 import RelationalDataAdapterScripts from 'src/common/adapters/RelationalDataAdapter/scripts';
 import { formatJS, formatSQL } from 'src/frontend/utils/formatter';
 import { SqlAction, SqluiCore } from 'typings';
+function _formatScript(formatter?: string, query?: string) {
+  query = query || '';
+  switch (formatter) {
+    case 'sql':
+      return formatSQL(query);
+      break;
+    case 'js':
+      return formatJS(query);
+      break;
+  }
+}
+
 function _formatScripts(
   actionInput: SqlAction.TableInput | SqlAction.DatabaseInput | SqlAction.ConnectionInput,
   generatorFuncs:
@@ -19,13 +31,8 @@ function _formatScripts(
     //@ts-ignore
     const action = fn(actionInput);
     if (action) {
-      switch (action.formatter) {
-        case 'sql':
-          action.query = formatSQL(action.query || '');
-          break;
-        case 'js':
-          action.query = formatJS(action.query || '');
-          break;
+      if (action.query) {
+        action.query = _formatScript(action?.formatter, action?.query);
       }
       actions.push(action);
     }
@@ -124,11 +131,8 @@ export function getTableActions(actionInput: SqlAction.TableInput) {
 }
 
 export function getSampleSelectQuery(actionInput: SqlAction.TableInput) {
-  const scriptsToUse: SqlAction.TableActionScriptGenerator[] =
-    _getImplementation(actionInput.dialect)?.getTableScripts() || [];
-  return _formatScripts(actionInput, scriptsToUse).filter((script) =>
-    script.label.includes('Select'),
-  )[0];
+  const action = _getImplementation(actionInput.dialect)?.getSampleSelectQuery(actionInput);
+  return _formatScript(action?.formatter, action?.query);
 }
 
 export function getDatabaseActions(actionInput: SqlAction.DatabaseInput) {

@@ -458,15 +458,15 @@ export default function MigrationBox(props: MigrationBoxProps) {
       const fromConnection = connections?.find(
         (connection) => connection.id === query.connectionId,
       );
-      const sampleSelectQuery = getSampleSelectQuery({
+      const sampleSelectQueryText = getSampleSelectQuery({
         ...fromConnection,
         ...query,
         querySize: 50,
       });
-      if (sampleSelectQuery?.query) {
+      if (sampleSelectQueryText) {
         setMigrationMetaData({
           ...migrationMetaData,
-          selectQuery: sampleSelectQuery.query,
+          selectQuery: sampleSelectQueryText,
         });
       }
     }

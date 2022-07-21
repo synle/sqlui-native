@@ -626,6 +626,10 @@ export class ConcreteDataScripts extends BaseDataScript {
         return '';
     }
   }
+
+  getSampleSelectQuery(actionInput: SqlAction.TableInput) {
+    return getSelectAllColumns(actionInput);
+  }
 }
 
 export default new ConcreteDataScripts();

@@ -335,6 +335,10 @@ export class ConcreteDataScripts extends BaseDataScript {
   getSampleConnectionString(dialect) {
     return `mongodb://localhost:27017`;
   }
+
+  getSampleSelectQuery(actionInput: SqlAction.TableInput) {
+    return getSelectAllColumns(actionInput);
+  }
 }
 
 export default new ConcreteDataScripts();
