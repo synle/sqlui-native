@@ -47,6 +47,7 @@ export default function ActionDialogs(props: ActionDialogsProps) {
           open={true}
           title='Confirmation'
           message={dialog.message}
+          yesLabel={dialog.yesLabel}
           onYesClick={onConfirmSubmit}
           onDismiss={onDimiss}
           isConfirm={true}

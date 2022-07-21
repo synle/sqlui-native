@@ -33,7 +33,7 @@ import {
   useSelectSession,
   useUpsertSession,
 } from 'src/frontend/hooks/useSession';
-import { useSetting } from 'src/frontend/hooks/useSetting';
+import { useIsSoftDeleteModeSetting, useSetting } from 'src/frontend/hooks/useSetting';
 import { useShowHide } from 'src/frontend/hooks/useShowHide';
 import useToaster from 'src/frontend/hooks/useToaster';
 import {
@@ -119,6 +119,7 @@ export default function MissionControl() {
   const { mutateAsync: importConnection } = useImportConnection();
   const { data: connections, isLoading: loadingConnections } = useGetConnections();
   const { settings, onChange: onChangeSettings } = useSetting();
+  const isSoftDeleteModeSetting = useIsSoftDeleteModeSetting();
   const {
     onClear: onClearConnectionVisibles,
     onToggle: onToggleConnectionVisible,
@@ -134,7 +135,10 @@ export default function MissionControl() {
 
   const onCloseQuery = async (query: SqluiFrontend.ConnectionQuery) => {
     try {
-      await confirm(`Do you want to delete this query "${query.name}"?`);
+      await confirm(
+        `Do you want to delete this query "${query.name}"?`,
+        isSoftDeleteModeSetting ? 'Put to Recycle Bin' : 'Delete',
+      );
 
       const onUndoConnection = async () => {
         curToast?.dismiss();
@@ -158,7 +162,10 @@ export default function MissionControl() {
 
   const onCloseOtherQueries = async (query: SqluiFrontend.ConnectionQuery) => {
     try {
-      await confirm(`Do you want to close other queries except "${query.name}"?`);
+      await confirm(
+        `Do you want to close other queries except "${query.name}"?`,
+        isSoftDeleteModeSetting ? 'Put to Recycle Bin' : 'Delete',
+      );
 
       const queriesToClose = queries?.filter((q) => q.id !== query.id) || [];
 
@@ -187,7 +194,10 @@ export default function MissionControl() {
       if (!queries || queries.length <= 1) {
         return;
       }
-      await confirm(`Do you want to close all the queries to the right of "${query.name}"?`);
+      await confirm(
+        `Do you want to close all the queries to the right of "${query.name}"?`,
+        isSoftDeleteModeSetting ? 'Put to Recycle Bin' : 'Delete',
+      );
 
       // find the target idx
       let targetIdx: number = -1;
@@ -513,7 +523,10 @@ export default function MissionControl() {
   const onDeleteConnection = async (connection: SqluiCore.ConnectionProps) => {
     let curToast;
     try {
-      await confirm('Delete this connection?');
+      await confirm(
+        `Delete this connection "${connection.name}"?`,
+        isSoftDeleteModeSetting ? 'Put to Recycle Bin' : 'Delete',
+      );
       await deleteConnection(connection.id);
 
       const onUndoConnection = async () => {
