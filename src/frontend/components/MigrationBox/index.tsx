@@ -307,7 +307,7 @@ export default function MigrationBox(props: MigrationBoxProps) {
   const isSaving = migrating;
 
   const isMigrationScriptVisible = !!migrationScript && !!migrationMetaData.toDialect;
-  const isLoading = loadingConnections || loadingConnection;
+  const isLoading = loadingColumns || loadingConnections || loadingConnection;
 
   // effects
   useEffect(() => {
