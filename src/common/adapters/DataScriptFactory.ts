@@ -130,7 +130,7 @@ export function getTableActions(actionInput: SqlAction.TableInput) {
 
 export function getSampleSelectQuery(actionInput: SqlAction.TableInput) {
   const action = _getImplementation(actionInput.dialect)?.getSampleSelectQuery(actionInput);
-  return _formatScripts(action?.formatter, action?.query);
+  return _formatScript(action?.formatter, action?.query);
 }
 
 export function getDatabaseActions(actionInput: SqlAction.DatabaseInput) {

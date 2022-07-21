@@ -272,7 +272,7 @@ export class ConcreteDataScripts extends BaseDataScript {
   }
 
   getSampleSelectQuery(actionInput: SqlAction.TableInput) {
-    return '';
+    return undefined;
   }
 }
 

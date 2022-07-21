@@ -80,8 +80,8 @@ export class ConcreteDataScripts extends BaseDataScript {
   }
 
   // TODO: implement me
-  getSampleSelectQuery(actionInput: SqlAction.TableInput) {
-    return '';
+  getSampleSelectQuery(actionInput: SqlAction.TableInput) : SqlAction.Output | undefined{
+    return undefined;
   }
 }
 
