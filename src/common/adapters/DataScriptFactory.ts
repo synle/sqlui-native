@@ -7,9 +7,8 @@ import RedisDataAdapterScripts from 'src/common/adapters/RedisDataAdapter/script
 import RelationalDataAdapterScripts from 'src/common/adapters/RelationalDataAdapter/scripts';
 import { formatJS, formatSQL } from 'src/frontend/utils/formatter';
 import { SqlAction, SqluiCore } from 'typings';
-
-function _formatScript(formatter?: string, query?: string){
-  query = query || '' ;
+function _formatScript(formatter?: string, query?: string) {
+  query = query || '';
   switch (formatter) {
     case 'sql':
       return formatSQL(query);
@@ -32,7 +31,7 @@ function _formatScripts(
     //@ts-ignore
     const action = fn(actionInput);
     if (action) {
-      if(action.query){
+      if (action.query) {
         action.query = _formatScript(action?.formatter, action?.query);
       }
       actions.push(action);

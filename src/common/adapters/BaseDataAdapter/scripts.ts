@@ -47,7 +47,7 @@ export default abstract class BaseDataScript implements IDataScript {
     return '';
   }
 
-  getSampleSelectQuery(actionInput: SqlAction.TableInput) : SqlAction.Output | undefined{
+  getSampleSelectQuery(actionInput: SqlAction.TableInput): SqlAction.Output | undefined {
     return undefined;
   }
 }
