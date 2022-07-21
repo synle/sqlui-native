@@ -4,6 +4,7 @@ import Link from '@mui/material/Link';
 import { useQuery, useQueryClient } from 'react-query';
 import { useNavigate } from 'react-router-dom';
 import React, { useCallback, useEffect, useState } from 'react';
+import { BookmarksItemListModalContent } from 'src/frontend/components/BookmarksItemList';
 import CommandPalette from 'src/frontend/components/CommandPalette';
 import SessionSelectionForm from 'src/frontend/components/SessionSelectionForm';
 import Settings from 'src/frontend/components/Settings';
@@ -43,7 +44,6 @@ import {
 import { RecordDetailsPage } from 'src/frontend/views/RecordPage';
 import appPackage from 'src/package.json';
 import { SqluiCore, SqluiEnums, SqluiFrontend } from 'typings';
-import {BookmarksItemListModalContent} from 'src/frontend/components/BookmarksItemList';
 
 export type Command = {
   event: SqluiEnums.ClientEventKey;
@@ -548,9 +548,9 @@ export default function MissionControl() {
     try {
       await modal({
         title: 'Bookmarks',
-        message: <BookmarksItemListModalContent onAfterSelect={dismissDialog}/>,
+        message: <BookmarksItemListModalContent onAfterSelect={dismissDialog} />,
         size: 'md',
-        showCloseButton: true
+        showCloseButton: true,
       });
     } catch (err) {}
   };
