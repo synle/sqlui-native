@@ -234,6 +234,11 @@ export module SqlAction {
     description?: string;
     icon?: JSX.Element;
     formatter?: 'sql' | 'js';
+    /**
+     * if true, will skip when we attempt to generate the guide docs
+     * @type {[type]}
+     */
+    skipGuide?: boolean;
   };
 
   export type TableActionScriptGenerator = (

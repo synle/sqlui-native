@@ -590,6 +590,7 @@ export function getCreateSampleTable(input: SqlAction.DatabaseInput): SqlAction.
     label,
     formatter,
     query,
+    skipGuide: true,
   };
 }
 
