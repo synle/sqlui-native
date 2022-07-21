@@ -29,7 +29,10 @@ import { useTreeActions } from 'src/frontend/hooks/useTreeActions';
 import LayoutTwoColumns from 'src/frontend/layout/LayoutTwoColumns';
 import { SqluiCore } from 'typings';
 
-const columns = [
+type OnAfterSelectCallback = () => void;
+
+const getColumns =(onAfterSelect?: OnAfterSelectCallback) => {
+  return  [
   {
     Header: 'Name',
     accessor: 'name',
@@ -45,11 +48,13 @@ const columns = [
           case 'Connection':
             await upsertConnection(folderItem.data);
             navigate('/'); // navigate back to the main page
+            onAfterSelect && onAfterSelect();
             break;
           case 'Query':
             // TODO: add check and handle restore of related connection
             await onAddQuery(folderItem.data);
             navigate('/'); // navigate back to the main page
+            onAfterSelect && onAfterSelect();
             break;
         }
       };
@@ -118,15 +123,17 @@ const columns = [
       );
     },
   },
-];
-export default function BookmarksItemList() {
-  const navigate = useNavigate();
-  const { data, isLoading: loadingRecycleBinItems } = useGetBookmarkItems();
-  const { mutateAsync: deleteRecyleBinItem, isLoading: loadingRestoreQuery } =
-    useDeleteBookmarkItem();
-  const { confirm } = useActionDialogs();
+]
+};
 
-  const isLoading = loadingRecycleBinItems;
+type BookmarksItemListProps = {
+  onAfterSelect?: OnAfterSelectCallback;
+}
+
+export default function BookmarksItemList(props: BookmarksItemListProps) {
+  const {onAfterSelect} = props;
+  const navigate = useNavigate();
+  const { data, isLoading } = useGetBookmarkItems();
 
   if (isLoading) {
     return (
@@ -148,16 +155,18 @@ export default function BookmarksItemList() {
   }
   return (
     <>
-      <DataTable data={folderItems} columns={columns} />
+      <DataTable data={folderItems} columns={getColumns(onAfterSelect)} />
     </>
   );
 }
 
-export function BookmarksItemListModalContent(){
+export function BookmarksItemListModalContent(props: BookmarksItemListProps){
+  const {onAfterSelect} = props;
+
   return <>
-    <BookmarksItemList />
+    <BookmarksItemList onAfterSelect={onAfterSelect} />
     <Box sx={{mt: 2}}>
-      <Link component={RouterLink} to='/bookmarks'>More Details</Link>
+      <Link component={RouterLink} to='/bookmarks' onClick={onAfterSelect}>More Details</Link>
     </Box>
   </>
 }

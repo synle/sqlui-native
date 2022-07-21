@@ -548,7 +548,7 @@ export default function MissionControl() {
     try {
       await modal({
         title: 'Bookmarks',
-        message: <BookmarksItemListModalContent />,
+        message: <BookmarksItemListModalContent onAfterSelect={dismissDialog}/>,
         size: 'lg',
         showCloseButton: true
       });
