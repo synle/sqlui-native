@@ -16,6 +16,9 @@ Array [
     "query": "CREATE DATABASE database1",
   },
   Object {
+    "label": "divider",
+  },
+  Object {
     "formatter": "sql",
     "label": "Select All Columns",
     "query": "SELECT
@@ -156,6 +159,9 @@ Array [
     "query": "CREATE DATABASE database1",
   },
   Object {
+    "label": "divider",
+  },
+  Object {
     "formatter": "sql",
     "label": "Select All Columns",
     "query": "SELECT
@@ -288,6 +294,9 @@ Array [
     "formatter": "sql",
     "label": "Create Database",
     "query": "CREATE DATABASE database1",
+  },
+  Object {
+    "label": "divider",
   },
   Object {
     "formatter": "sql",
@@ -430,6 +439,9 @@ Array [
     "query": "CREATE DATABASE database1",
   },
   Object {
+    "label": "divider",
+  },
+  Object {
     "formatter": "sql",
     "label": "Select All Columns",
     "query": "SELECT
@@ -568,6 +580,9 @@ Array [
     "formatter": "sql",
     "label": "Create Database",
     "query": "CREATE DATABASE database1",
+  },
+  Object {
+    "label": "divider",
   },
   Object {
     "formatter": "sql",
