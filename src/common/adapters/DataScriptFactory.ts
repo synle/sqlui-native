@@ -9,12 +9,13 @@ import { formatJS, formatSQL } from 'src/frontend/utils/formatter';
 import { SqlAction, SqluiCore } from 'typings';
 
 function _formatScript(formatter?: string, query?: string){
+  query = query || '' ;
   switch (formatter) {
     case 'sql':
-      return formatSQL(query || '');
+      return formatSQL(query);
       break;
     case 'js':
-      return formatJS(query || '');
+      return formatJS(query);
       break;
   }
 }
@@ -31,7 +32,9 @@ function _formatScripts(
     //@ts-ignore
     const action = fn(actionInput);
     if (action) {
-      action.query = _formatScript(action?.formatter, action?.query);
+      if(action.query){
+        action.query = _formatScript(action?.formatter, action?.query);
+      }
       actions.push(action);
     }
   }
