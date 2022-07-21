@@ -93,13 +93,13 @@ export default function ConnectionDatabaseSelector(props: ConnectionDatabaseSele
     let shouldShowToast = false;
 
     // if there's only one database, then select that as well
-    if (databases && databases.length === 1) {
+    if (databases && databases.length === 1 && databases[0].name !== query.databaseId) {
       onDatabaseChange(databases[0].name);
       shouldShowToast = true;
     }
 
     // if there's only one table, then select that as well
-    if (tables && tables.length === 1) {
+    if (tables && tables.length === 1 && tables[0].name !== query.tableId) {
       onTableChange(tables[0].name);
       shouldShowToast = true;
     }

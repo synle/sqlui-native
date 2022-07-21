@@ -399,6 +399,10 @@ export class ConcreteDataScripts extends BaseDataScript {
   getSampleConnectionString(dialect) {
     return `cassandra://username:password@localhost:9042`;
   }
+
+  getSampleSelectQuery(actionInput: SqlAction.TableInput) {
+    return getSelectAllColumns(actionInput);
+  }
 }
 
 export default new ConcreteDataScripts();

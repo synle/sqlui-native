@@ -418,6 +418,10 @@ export class ConcreteDataScripts extends BaseDataScript {
   getSampleConnectionString(dialect) {
     return `cosmosdb://AccountEndpoint=some_cosmos_endpoint;AccountKey=some_cosmos_account_key`;
   }
+
+  getSampleSelectQuery(actionInput: SqlAction.TableInput) {
+    return getSelectAllColumns(actionInput);
+  }
 }
 
 export default new ConcreteDataScripts();

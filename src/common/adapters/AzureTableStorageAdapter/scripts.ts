@@ -314,6 +314,10 @@ export class ConcreteDataScripts extends BaseDataScript {
   getSampleConnectionString(dialect) {
     return `aztable://DefaultEndpointsProtocol=https;AccountName=<your_account_name>;AccountKey=<your_account_key>;EndpointSuffix=core.windows.net`;
   }
+
+  getSampleSelectQuery(actionInput: SqlAction.TableInput) {
+    return getSelectAllColumns(actionInput);
+  }
 }
 
 export default new ConcreteDataScripts();

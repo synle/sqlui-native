@@ -78,6 +78,11 @@ export class ConcreteDataScripts extends BaseDataScript {
   getSampleConnectionString(dialect) {
     return `your_dialect://your_props`;
   }
+
+  // TODO: implement me
+  getSampleSelectQuery(actionInput: SqlAction.TableInput): SqlAction.Output | undefined {
+    return undefined;
+  }
 }
 
 export default new ConcreteDataScripts();
