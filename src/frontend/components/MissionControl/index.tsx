@@ -549,7 +549,7 @@ export default function MissionControl() {
       await modal({
         title: 'Bookmarks',
         message: <BookmarksItemListModalContent onAfterSelect={dismissDialog}/>,
-        size: 'lg',
+        size: 'md',
         showCloseButton: true
       });
     } catch (err) {}

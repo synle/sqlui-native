@@ -65,6 +65,7 @@ const getColumns =(onAfterSelect?: OnAfterSelectCallback) => {
   {
     Header: 'Type',
     accessor: 'type',
+    width: 100,
     Cell: (data: any) => {
       const folderItem = data.row.original;
       return (
@@ -78,7 +79,7 @@ const getColumns =(onAfterSelect?: OnAfterSelectCallback) => {
   },
   {
     Header: '',
-    accessor: 'id',
+    id: 'action',
     width: 80,
     Cell: (data: any) => {
       const folderItem = data.row.original;
@@ -128,10 +129,11 @@ const getColumns =(onAfterSelect?: OnAfterSelectCallback) => {
 
 type BookmarksItemListProps = {
   onAfterSelect?: OnAfterSelectCallback;
+  hideActions?: boolean;
 }
 
 export default function BookmarksItemList(props: BookmarksItemListProps) {
-  const {onAfterSelect} = props;
+  const {onAfterSelect, hideActions} = props;
   const navigate = useNavigate();
   const { data, isLoading } = useGetBookmarkItems();
 
@@ -153,9 +155,19 @@ export default function BookmarksItemList(props: BookmarksItemListProps) {
   if (folderItems.length === 0) {
     return <Typography>No bookmarks...</Typography>;
   }
+
+  const columns = getColumns(onAfterSelect).filter(column => {
+    if(!!hideActions){
+      if(column.id === 'action'){
+        return false;
+      }
+    }
+    return true;
+  })
+
   return (
     <>
-      <DataTable data={folderItems} columns={getColumns(onAfterSelect)} />
+      <DataTable data={folderItems} columns={columns} />
     </>
   );
 }
