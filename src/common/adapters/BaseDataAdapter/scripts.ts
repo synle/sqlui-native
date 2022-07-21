@@ -4,6 +4,7 @@ import { SqlAction, SqluiCore } from 'typings';
 export function getDivider(): SqlAction.Output {
   return {
     label: 'divider',
+    skipGuide: true,
   };
 }
 
