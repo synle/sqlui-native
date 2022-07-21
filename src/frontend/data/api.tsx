@@ -38,6 +38,10 @@ async function _fetch<T>(input: RequestInfo, initOptions?: RequestInit) {
 }
 
 export class ProxyApi {
+  static getConfigs() {
+    return _fetch<SqluiCore.ServerConfigs>(`/api/configs`);
+  }
+
   static getConnections() {
     return _fetch<SqluiCore.ConnectionProps[]>(`/api/connections`);
   }
@@ -154,7 +158,7 @@ export class ProxyApi {
   }
 
   static setOpenSession(sessionId: string) {
-    return _fetch<void>(`/api/sessions/opened/${sessionId}`, {
+    return _fetch<Record<string, string>>(`/api/sessions/opened/${sessionId}`, {
       method: 'post',
     });
   }

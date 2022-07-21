@@ -187,6 +187,7 @@ export default class RelationalDataAdapter extends BaseDataAdapter implements ID
       case 'mariadb':
       case 'mysql':
       default:
+        // first get all the columns
         const columns: SqluiCore.ColumnMetaData[] = [];
         try {
           const columnMap = await this.getConnection(database)
@@ -198,6 +199,30 @@ export default class RelationalDataAdapter extends BaseDataAdapter implements ID
               name: columnName,
               ...columnMap[columnName],
             });
+          }
+        } catch (err) {}
+
+        // then see if we attempt to add additional foreignKey constraint
+        try {
+          const foreignKeyReferences = (await this.getConnection(database)
+            .getQueryInterface()
+            .getForeignKeyReferencesForTable(table)) as any[];
+
+          for (const foreignKeyReference of foreignKeyReferences) {
+            const fromTableName = foreignKeyReference.tableName;
+            const fromColumnName = foreignKeyReference.columnName;
+            const toTableName = foreignKeyReference.referencedTableName;
+            const toColumnName = foreignKeyReference.referencedColumnName;
+
+            if (fromTableName === table) {
+              const targetColumn = columns.find((column) => column.name === fromColumnName);
+
+              if (targetColumn) {
+                targetColumn.kind = 'foreign_key';
+                targetColumn.referencedTableName = toTableName;
+                targetColumn.referencedColumnName = toColumnName;
+              }
+            }
           }
         } catch (err) {}
 

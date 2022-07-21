@@ -20,8 +20,10 @@ import {
   getCreateTable as getCreateTableForCassandra,
 } from 'src/common/adapters/CassandraDataAdapter/scripts';
 import {
+  DIALECTS_SUPPORTING_MIGRATION,
   getSampleSelectQuery,
   getSyntaxModeByDialect,
+  isDialectSupportMigration,
 } from 'src/common/adapters/DataScriptFactory';
 import {
   getBulkInsert as getBulkInsertForMongoDB,
@@ -67,17 +69,9 @@ function DialectSelector(props: DialectSelectorProps) {
       label={label}
       value={value}
       onChange={(newValue) => onChange && onChange(newValue as SqluiCore.Dialect)}>
-      <option value='mysql'>mysql</option>
-      <option value='mariadb'>mariadb</option>
-      <option value='mssql'>mssql</option>
-      <option value='postgres'>postgres</option>
-      <option value='sqlite'>sqlite</option>
-      {/*// TODO: to be implemented*/}
-      {/*<option value='redis'>redis</option>*/}
-      <option value='cassandra'>cassandra</option>
-      <option value='mongodb'>mongodb</option>
-      <option value='cosmosdb'>cosmosdb</option>
-      <option value='aztable'>aztable</option>
+      {DIALECTS_SUPPORTING_MIGRATION.map((dialect) => (
+        <option value={dialect}>{dialect}</option>
+      ))}
     </Select>
   );
 }
@@ -464,15 +458,14 @@ export default function MigrationBox(props: MigrationBoxProps) {
       const fromConnection = connections?.find(
         (connection) => connection.id === query.connectionId,
       );
-      const sampleSelectQuery = getSampleSelectQuery({
+      const sampleSelectQueryText = getSampleSelectQuery({
         ...fromConnection,
         ...query,
-        querySize: 50,
       });
-      if (sampleSelectQuery?.query) {
+      if (sampleSelectQueryText) {
         setMigrationMetaData({
           ...migrationMetaData,
-          selectQuery: sampleSelectQuery.query,
+          selectQuery: sampleSelectQueryText,
         });
       }
     }
@@ -499,12 +492,7 @@ export default function MigrationBox(props: MigrationBoxProps) {
     );
   }
 
-  let supportMigration = true;
-  switch (connection?.dialect) {
-    case 'redis': // TODO: to be implemented
-      supportMigration = false;
-      break;
-  }
+  const supportMigration = isDialectSupportMigration(connection?.dialect || '');
 
   if (!isRawJsonEditorVisible) {
     if (!supportMigration) {

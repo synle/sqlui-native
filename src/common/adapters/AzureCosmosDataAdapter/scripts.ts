@@ -377,6 +377,18 @@ export class ConcreteDataScripts extends BaseDataScript {
     return 'javascript';
   }
 
+  supportMigration() {
+    return true;
+  }
+
+  supportCreateRecordForm() {
+    return true;
+  }
+
+  supportEditRecordForm() {
+    return true;
+  }
+
   getTableScripts() {
     return [
       getSelectAllColumns,
@@ -405,6 +417,10 @@ export class ConcreteDataScripts extends BaseDataScript {
 
   getSampleConnectionString(dialect) {
     return `cosmosdb://AccountEndpoint=some_cosmos_endpoint;AccountKey=some_cosmos_account_key`;
+  }
+
+  getSampleSelectQuery(actionInput: SqlAction.TableInput) {
+    return getSelectAllColumns(actionInput);
   }
 }
 

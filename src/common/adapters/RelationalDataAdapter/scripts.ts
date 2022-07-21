@@ -542,6 +542,58 @@ export function getCreateDatabase(input: SqlAction.DatabaseInput): SqlAction.Out
   }
 }
 
+export function getCreateSampleTable(input: SqlAction.DatabaseInput): SqlAction.Output | undefined {
+  const label = `Create Table`;
+
+  let query = '';
+
+  switch (input.dialect) {
+    case 'mssql':
+      query = `
+        CREATE TABLE mocked_table
+        (
+          id INTEGER PRIMARY KEY IDENTITY NOT NULL,
+          name NVARCHAR(120)
+        );
+      `;
+      break;
+    case 'postgres':
+      query = `
+        CREATE TABLE mocked_table
+        (
+          id BIGSERIAL PRIMARY KEY,
+          name CHAR(120)
+        );
+      `;
+      break;
+    case 'sqlite':
+      query = `
+        CREATE TABLE mocked_table (
+          id INTEGER PRIMARY KEY NOT NULL,
+          name NVARCHAR(120)
+        )
+      `;
+      break;
+    case 'mariadb':
+    case 'mysql':
+      query = `
+        CREATE TABLE mocked_table
+        (
+          id INTEGER PRIMARY KEY AUTO_INCREMENT NOT NULL,
+          name NVARCHAR(120)
+        );
+      `;
+      break;
+  }
+
+  return {
+    label,
+    formatter,
+    query,
+    skipGuide: true,
+  };
+}
+
 export function getCreateConnectionDatabase(
   input: SqlAction.ConnectionInput,
 ): SqlAction.Output | undefined {
@@ -572,6 +624,18 @@ export class ConcreteDataScripts extends BaseDataScript {
     return 'sql';
   }
 
+  supportMigration() {
+    return true;
+  }
+
+  supportCreateRecordForm() {
+    return true;
+  }
+
+  supportEditRecordForm() {
+    return true;
+  }
+
   getTableScripts() {
     return [
       getSelectAllColumns,
@@ -591,7 +655,7 @@ export class ConcreteDataScripts extends BaseDataScript {
   }
 
   getDatabaseScripts() {
-    return [getDivider, getDropDatabase, getCreateDatabase];
+    return [getDivider, getDropDatabase, getCreateDatabase, getDivider, getCreateSampleTable];
   }
 
   getConnectionScripts() {
@@ -613,6 +677,10 @@ export class ConcreteDataScripts extends BaseDataScript {
       default: // Not supported dialect
         return '';
     }
+  }
+
+  getSampleSelectQuery(actionInput: SqlAction.TableInput) {
+    return getSelectAllColumns(actionInput);
   }
 }
 

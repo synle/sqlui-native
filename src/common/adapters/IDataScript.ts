@@ -3,12 +3,17 @@ import { SqlAction, SqluiCore } from 'typings';
 export default interface IDataScript {
   dialects?: SqluiCore.Dialect[] | string[];
 
+  // misc methods
   getIsTableIdRequiredForQuery: () => boolean;
   getSyntaxMode: () => string;
+  supportMigration: () => boolean;
+  supportCreateRecordForm: () => boolean;
+  supportEditRecordForm: () => boolean;
 
-  //
+  // core script methods
   getTableScripts: () => SqlAction.TableActionScriptGenerator[];
   getDatabaseScripts: () => SqlAction.DatabaseActionScriptGenerator[];
   getConnectionScripts: () => SqlAction.ConnectionActionScriptGenerator[];
   getSampleConnectionString: (dialect?: SqluiCore.Dialect) => string;
+  getSampleSelectQuery: (actionInput: SqlAction.TableInput) => SqlAction.Output | undefined;
 }

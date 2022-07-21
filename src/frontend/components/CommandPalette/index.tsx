@@ -1,7 +1,9 @@
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
 import TextField from '@mui/material/TextField';
 import fuzzysort from 'fuzzysort';
 import { useEffect, useRef, useState } from 'react';
-import { styled } from '@mui/system';
 import { Command as CoreCommand } from 'src/frontend/components/MissionControl';
 import { useGetConnectionById, useGetConnections } from 'src/frontend/hooks/useConnection';
 import {
@@ -9,37 +11,6 @@ import {
   useConnectionQueries,
 } from 'src/frontend/hooks/useConnectionQuery';
 import { SqluiEnums } from 'typings';
-
-const StyledCommandPalette = styled('section')(({ theme }) => {
-  return {
-    '.CommandPalette__SearchBox': {
-      marginBottom: theme.spacing(1),
-    },
-
-    '.CommandPalette__Options': {
-      display: 'flex',
-      flexDirection: 'column',
-    },
-
-    '.CommandPalette__Option': {
-      background: 'transparent',
-      border: 'none',
-      textAlign: 'left',
-      cursor: 'pointer',
-      color: theme.palette.primary.main,
-      padding: theme.spacing(1),
-
-      '&:hover, &:hover': {
-        background: theme.palette.action.focus,
-      },
-    },
-
-    '.CommandPalette__Highlight': {
-      fontWeight: 'bold',
-      textDecoration: 'underline',
-    },
-  };
-});
 
 type Command = CoreCommand & {
   label: string;
@@ -172,6 +143,7 @@ const ALL_COMMAND_PALETTE_OPTIONS: CommandOption[] = [
     label: 'Close Tabs to The Right Of Current Query',
     useCurrentQuery: true,
   },
+  { event: 'clientEvent/checkForUpdate', label: 'Check For Update' },
 ];
 
 export default function CommandPalette(props: CommandPaletteProps) {
@@ -314,8 +286,8 @@ export default function CommandPalette(props: CommandPaletteProps) {
   };
 
   return (
-    <StyledCommandPalette ref={refOption} onKeyDown={(e) => onTextboxKeyDown(e)}>
-      <div className='CommandPalette__SearchBox'>
+    <section ref={refOption} onKeyDown={(e) => onTextboxKeyDown(e)}>
+      <div>
         <TextField
           value={text}
           onChange={(e) => setText(e.target.value)}
@@ -326,17 +298,18 @@ export default function CommandPalette(props: CommandPaletteProps) {
           autoComplete='off'
         />
       </div>
-      <div className='CommandPalette__Options'>
+      <List dense sx={{ mt: 1 }}>
         {optionsToShow.map((option, idx) => (
-          <button
+          <ListItem
+            button
             className='CommandPalette__Option'
             key={`${option.event}.${idx}`}
             onClick={() => onSelectCommand(option)}
             title={option.event}>
-            <span dangerouslySetInnerHTML={{ __html: getFormattedLabel(option.label) }} />
-          </button>
+            <ListItemText primary={option.label} />
+          </ListItem>
         ))}
-      </div>
-    </StyledCommandPalette>
+      </List>
+    </section>
   );
 }

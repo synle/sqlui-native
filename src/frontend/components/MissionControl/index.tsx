@@ -1,6 +1,6 @@
+import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Link from '@mui/material/Link';
-import Typography from '@mui/material/Typography';
 import { useQuery, useQueryClient } from 'react-query';
 import { useNavigate } from 'react-router-dom';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -23,13 +23,13 @@ import {
   useConnectionQueries,
 } from 'src/frontend/hooks/useConnectionQuery';
 import { useAddBookmarkItem } from 'src/frontend/hooks/useFolderItems';
+import { useGetServerConfigs } from 'src/frontend/hooks/useServerConfigs';
 import {
   useDeleteSession,
   useGetCurrentSession,
   useGetOpenedSessionIds,
   useGetSessions,
   useSelectSession,
-  useSetOpenSession,
   useUpsertSession,
 } from 'src/frontend/hooks/useSession';
 import { useSetting } from 'src/frontend/hooks/useSetting';
@@ -111,8 +111,8 @@ export default function MissionControl() {
   const { command, selectCommand, dismissCommand } = useCommands();
   const { modal, choice, confirm, prompt, alert, dismiss: dismissDialog } = useActionDialogs();
   const { data: sessions, isLoading: loadingSessions } = useGetSessions();
+  const { data: serverConfigs } = useGetServerConfigs();
   const { data: openedSessionIds, isLoading: loadingOpenedSessionIds } = useGetOpenedSessionIds();
-  const { mutateAsync: setOpenSession } = useSetOpenSession();
   const { data: currentSession, isLoading: loadingCurrentSession } = useGetCurrentSession();
   const { mutateAsync: upsertSession } = useUpsertSession();
   const { mutateAsync: selectSession } = useSelectSession();
@@ -436,6 +436,7 @@ export default function MissionControl() {
       }
     }
   };
+
   const onRenameSession = async (targetSession: SqluiCore.Session) => {
     try {
       if (!targetSession) {
@@ -457,6 +458,26 @@ export default function MissionControl() {
         ...targetSession,
         name: newSessionName,
       });
+    } catch (err) {}
+  };
+
+  const onDeleteSession = async (targetSession: SqluiCore.Session) => {
+    try {
+      if (!targetSession) {
+        return;
+      }
+
+      await confirm(
+        `Do you want to delete this session "${targetSession.name}"? This will also close any window associated with this sessionId.`,
+      );
+      await deleteSession(targetSession.id);
+
+      if (targetSession.id === currentSession?.id) {
+        // after you delete a session, we should close it
+        if (!window.isElectron) {
+          alert(`Session is deleted. Please close this windows.`);
+        }
+      }
     } catch (err) {}
   };
 
@@ -488,6 +509,7 @@ export default function MissionControl() {
   };
 
   const onNewConnection = useCallback(() => navigate('/connection/new'), []);
+
   const onDeleteConnection = async (connection: SqluiCore.ConnectionProps) => {
     let curToast;
     try {
@@ -639,7 +661,7 @@ export default function MissionControl() {
         return a._type.localeCompare(b._type); //note that query will go after connection (q > c)
       });
 
-      /// check for duplicate id
+      // check for duplicate id
       const hasDuplicateIds =
         new Set([...jsonRows.map((jsonRow) => jsonRow.id)]).size !== jsonRows.length;
       if (hasDuplicateIds) {
@@ -706,10 +728,11 @@ export default function MissionControl() {
     if (newVersion === appPackage.version) {
       contentDom = (
         <>
-          <Typography gutterBottom={true}>sqlui-native is up to date</Typography>
-          <Typography gutterBottom={true} sx={{ mt: 3 }}>
-            Version {appPackage.version}
-          </Typography>
+          <Box className='FormInput__Row'>sqlui-native is up to date</Box>
+          <Box className='FormInput__Row'>
+            <label>Version:</label>
+            {appPackage.version}
+          </Box>
         </>
       );
     } else {
@@ -725,14 +748,21 @@ export default function MissionControl() {
 
       contentDom = (
         <>
-          <Typography gutterBottom={true}>Your version {appPackage.version} </Typography>
-          <Typography gutterBottom={true}>Latest version {newVersion} </Typography>
-          <Typography gutterBottom={true} sx={{ mt: 3 }}>
-            <Link onClick={onDownloadLatestVersion} sx={{ cursor: 'pointer' }}>
-              Click here to download the new version
-            </Link>
-            .
-          </Typography>
+          <Box className='FormInput__Row'>
+            <label>Your version:</label>
+            {appPackage.version}
+          </Box>
+          <Box className='FormInput__Row'>
+            <label>Latest version:</label>
+            {newVersion}
+            <span>
+              (
+              <Link onClick={onDownloadLatestVersion} sx={{ cursor: 'pointer' }}>
+                Download it here
+              </Link>
+              )
+            </span>
+          </Box>
         </>
       );
     }
@@ -742,17 +772,24 @@ export default function MissionControl() {
       selectCommand({ event: 'clientEvent/openExternalUrl', data });
     };
 
+    const onRevealDataLocation = () => {
+      // copy the path to clipboard
+      navigator.clipboard.writeText(serverConfigs?.storageDir || '');
+    };
+
     await modal({
       title: 'Check for update',
       message: (
-        <>
+        <Box className='FormInput__Container FormInput__Container__sm'>
           {contentDom}
-          <Typography gutterBottom={true} sx={{ mt: 3 }}>
-            <Link onClick={onGoToHomepage} sx={{ cursor: 'pointer' }}>
-              synle.github.io/sqlui-native
-            </Link>
-          </Typography>
-        </>
+          <Box className='FormInput__Row'>
+            <label>Data Location:</label>
+            <Link onClick={onRevealDataLocation}>{serverConfigs?.storageDir}</Link>
+          </Box>
+          <Box sx={{ mt: 3 }}>
+            <Link onClick={onGoToHomepage}>synle.github.io/sqlui-native</Link>
+          </Box>
+        </Box>
       ),
       showCloseButton: true,
       size: 'xs',
@@ -1059,7 +1096,7 @@ export default function MissionControl() {
 
             if (command.data) {
               await onRenameSession(command.data as SqluiCore.Session);
-            } else if (activeQuery) {
+            } else if (currentSession) {
               await onRenameSession(currentSession as SqluiCore.Session);
             }
           } catch (err) {}
@@ -1067,21 +1104,12 @@ export default function MissionControl() {
           window.toggleElectronMenu(true, allMenuKeys);
           break;
         case 'clientEvent/session/delete':
-          // don't let them delete default session
-          if (!currentSession || !currentSession.id) {
-            return;
-          }
-
           try {
             window.toggleElectronMenu(false, allMenuKeys);
-            await confirm(`Do you want to delete this session?`);
-            await deleteSession(currentSession.id);
-
-            if (window.isElectron) {
-              // after you delete a session, we should close it
-              window.close();
-            } else {
-              alert(`Session is deleted. Please close this windows.`);
+            if (command.data) {
+              await onDeleteSession(command.data as SqluiCore.Session);
+            } else if (currentSession) {
+              await onDeleteSession(currentSession as SqluiCore.Session);
             }
           } catch (err) {}
 

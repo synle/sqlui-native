@@ -2,6 +2,7 @@ import { app } from 'electron';
 import fs from 'fs';
 import path from 'path';
 import { getGeneratedRandomId } from 'src/common/utils/commonUtils';
+import { SqluiCore } from 'typings';
 
 const homedir = require('os').homedir();
 
@@ -30,6 +31,8 @@ try {
   } catch (err) {}
 }
 console.log('baseDir', baseDir);
+
+export const storageDir = baseDir;
 
 export class PersistentStorage<T extends StorageEntry> {
   instanceId: string;
@@ -116,3 +119,28 @@ export class PersistentStorage<T extends StorageEntry> {
 }
 
 export default PersistentStorage;
+
+export async function getConnectionsStorage(sessionId: string) {
+  if (!sessionId) {
+    throw `sessionId is required for getConnectionsStorage`;
+  }
+  return await new PersistentStorage<SqluiCore.ConnectionProps>(sessionId, 'connection');
+}
+
+export async function getQueryStorage(sessionId: string) {
+  if (!sessionId) {
+    throw `sessionId is required for getQueryStorage`;
+  }
+  return await new PersistentStorage<SqluiCore.ConnectionQuery>(sessionId, 'query');
+}
+
+export async function getSessionsStorage() {
+  return await new PersistentStorage<SqluiCore.Session>('session', 'session', 'sessions');
+}
+
+export async function getFolderItemsStorage(folderId: 'bookmarks' | 'recycleBin' | string) {
+  if (!folderId) {
+    throw `folderId is required for getFolderItemsStorage`;
+  }
+  return await new PersistentStorage<SqluiCore.FolderItem>('folders', folderId);
+}

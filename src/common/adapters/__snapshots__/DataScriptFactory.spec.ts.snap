@@ -3,9 +3,6 @@
 exports[`Scripts RDBMS - mariadb 1`] = `
 Array [
   Object {
-    "label": "divider",
-  },
-  Object {
     "formatter": "sql",
     "label": "Drop Database",
     "query": "DROP DATABASE database1",
@@ -68,9 +65,6 @@ LIMIT
   200",
   },
   Object {
-    "label": "divider",
-  },
-  Object {
     "formatter": "sql",
     "label": "Insert",
     "query": "INSERT INTO
@@ -101,9 +95,6 @@ WHERE
   id = ''
   AND column1 = ''
   AND column2 = ''",
-  },
-  Object {
-    "label": "divider",
   },
   Object {
     "formatter": "sql",
@@ -142,9 +133,6 @@ ALTER TABLE
 
 exports[`Scripts RDBMS - mssql 1`] = `
 Array [
-  Object {
-    "label": "divider",
-  },
   Object {
     "formatter": "sql",
     "label": "Drop Database",
@@ -202,9 +190,6 @@ WHERE
   AND column2 = ''",
   },
   Object {
-    "label": "divider",
-  },
-  Object {
     "formatter": "sql",
     "label": "Insert",
     "query": "INSERT INTO
@@ -235,9 +220,6 @@ WHERE
   id = ''
   AND column1 = ''
   AND column2 = ''",
-  },
-  Object {
-    "label": "divider",
   },
   Object {
     "formatter": "sql",
@@ -277,9 +259,6 @@ ALTER TABLE
 exports[`Scripts RDBMS - mysql 1`] = `
 Array [
   Object {
-    "label": "divider",
-  },
-  Object {
     "formatter": "sql",
     "label": "Drop Database",
     "query": "DROP DATABASE database1",
@@ -342,9 +321,6 @@ LIMIT
   200",
   },
   Object {
-    "label": "divider",
-  },
-  Object {
     "formatter": "sql",
     "label": "Insert",
     "query": "INSERT INTO
@@ -375,9 +351,6 @@ WHERE
   id = ''
   AND column1 = ''
   AND column2 = ''",
-  },
-  Object {
-    "label": "divider",
   },
   Object {
     "formatter": "sql",
@@ -417,9 +390,6 @@ ALTER TABLE
 exports[`Scripts RDBMS - postgres 1`] = `
 Array [
   Object {
-    "label": "divider",
-  },
-  Object {
     "formatter": "sql",
     "label": "Drop Database",
     "query": "DROP DATABASE database1",
@@ -482,9 +452,6 @@ LIMIT
   200",
   },
   Object {
-    "label": "divider",
-  },
-  Object {
     "formatter": "sql",
     "label": "Insert",
     "query": "INSERT INTO
@@ -515,9 +482,6 @@ WHERE
   id = ''
   AND column1 = ''
   AND column2 = ''",
-  },
-  Object {
-    "label": "divider",
   },
   Object {
     "formatter": "sql",
@@ -557,9 +521,6 @@ ALTER TABLE
 exports[`Scripts RDBMS - sqlite 1`] = `
 Array [
   Object {
-    "label": "divider",
-  },
-  Object {
     "formatter": "sql",
     "label": "Drop Database",
     "query": "DROP DATABASE database1",
@@ -622,9 +583,6 @@ LIMIT
   200",
   },
   Object {
-    "label": "divider",
-  },
-  Object {
     "formatter": "sql",
     "label": "Insert",
     "query": "INSERT INTO
@@ -655,9 +613,6 @@ WHERE
   id = ''
   AND column1 = ''
   AND column2 = ''",
-  },
-  Object {
-    "label": "divider",
   },
   Object {
     "formatter": "sql",
@@ -697,9 +652,6 @@ ALTER TABLE
 exports[`Scripts aztable 1`] = `
 Array [
   Object {
-    "label": "divider",
-  },
-  Object {
     "formatter": "js",
     "label": "Create Table",
     "query": "serviceClient.createTable('somenewtablename')",
@@ -722,9 +674,6 @@ Array [
     select: [\\"id\\", \\"column1\\", \\"column2\\"]
   }
 })",
-  },
-  Object {
-    "label": "divider",
   },
   Object {
     "formatter": "js",
@@ -756,9 +705,6 @@ Array [
     "query": "tableClient.deleteEntity('some_partition_key', 'some_row_key');",
   },
   Object {
-    "label": "divider",
-  },
-  Object {
     "formatter": "js",
     "label": "Create Table",
     "query": "serviceClient.createTable('table1')",
@@ -773,9 +719,6 @@ Array [
 
 exports[`Scripts cassandra 1`] = `
 Array [
-  Object {
-    "label": "divider",
-  },
   Object {
     "formatter": "sql",
     "label": "Create Keyspace",
@@ -822,9 +765,6 @@ VALUES
   (123, 123, '_column2_')",
   },
   Object {
-    "label": "divider",
-  },
-  Object {
     "formatter": "sql",
     "label": "Update",
     "query": "UPDATE
@@ -847,9 +787,6 @@ WHERE
   id = ''
   AND column1 = ''
   AND column2 = ''",
-  },
-  Object {
-    "label": "divider",
   },
   Object {
     "formatter": "sql",
@@ -885,9 +822,6 @@ ALTER TABLE
 exports[`Scripts cosmosdb 1`] = `
 Array [
   Object {
-    "label": "divider",
-  },
-  Object {
     "formatter": "js",
     "label": "Create Database",
     "query": "client
@@ -905,9 +839,6 @@ Array [
   .create({
     id: 'some_container_name'
   })",
-  },
-  Object {
-    "label": "divider",
   },
   Object {
     "formatter": "js",
@@ -967,9 +898,6 @@ Array [
   .fetchAll()",
   },
   Object {
-    "label": "divider",
-  },
-  Object {
     "formatter": "js",
     "label": "Read",
     "query": "client
@@ -1008,18 +936,12 @@ Array [
   .delete()",
   },
   Object {
-    "label": "divider",
-  },
-  Object {
     "formatter": "sql",
     "label": "Raw Select All Columns SQL",
     "query": "SELECT
   *
 FROM
   c",
-  },
-  Object {
-    "label": "divider",
   },
   Object {
     "formatter": "js",
@@ -1044,9 +966,6 @@ FROM
 
 exports[`Scripts mongodb 1`] = `
 Array [
-  Object {
-    "label": "divider",
-  },
   Object {
     "formatter": "js",
     "label": "Create Database",
@@ -1098,9 +1017,6 @@ Array [
   });",
   },
   Object {
-    "label": "divider",
-  },
-  Object {
     "formatter": "js",
     "label": "Insert",
     "query": "db.collection('table1')
@@ -1138,9 +1054,6 @@ Array [
   });",
   },
   Object {
-    "label": "divider",
-  },
-  Object {
     "formatter": "js",
     "label": "Create Collection",
     "query": "db.createCollection(\\"table1\\")",
@@ -1172,9 +1085,6 @@ Array [
     "query": "db.keys(\\"*\\")",
   },
   Object {
-    "label": "divider",
-  },
-  Object {
     "formatter": "js",
     "label": "Hashset > Set Value",
     "query": "db.hSet(\\"hash_key1\\", \\"field1\\", \\"value1\\")",
@@ -1193,9 +1103,6 @@ Array [
     "formatter": "js",
     "label": "Hashset > Check if key exists",
     "query": "db.hExists(\\"hash_key1\\", \\"field1\\")",
-  },
-  Object {
-    "label": "divider",
   },
   Object {
     "formatter": "js",
@@ -1223,9 +1130,6 @@ Array [
     "query": "db.rPop(\\"list_key1\\")",
   },
   Object {
-    "label": "divider",
-  },
-  Object {
     "formatter": "js",
     "label": "Set > Get Items",
     "query": "db.sMembers(\\"set_key1\\")",
@@ -1251,9 +1155,6 @@ Array [
     "query": "db.sPop(\\"set_key1\\")",
   },
   Object {
-    "label": "divider",
-  },
-  Object {
     "formatter": "js",
     "label": "Sorted Set > Get Items",
     "query": "db.zRange(\\"sorted_set_key1\\", 0, -1)",
@@ -1265,9 +1166,6 @@ Array [
   score: 1,
   value: \\"some_value\\"
 }])",
-  },
-  Object {
-    "label": "divider",
   },
   Object {
     "formatter": "js",

@@ -67,6 +67,10 @@ async function createWindow(isFirstWindow?: boolean) {
     mainWindow.webContents.openDevTools();
   }
 
+  // save the window id for later used
+  // store the windows later to use with deletion
+  sessionUtils.registerWindow(targetWindowId, mainWindow);
+
   return mainWindow;
 }
 
@@ -265,7 +269,7 @@ function setupMenu() {
           },
         },
         {
-          label: 'About / Check for update',
+          label: 'About sqlui-native (Check for update)',
           click: async (item, win) =>
             sendMessage(win as BrowserWindow, 'clientEvent/checkForUpdate'),
         },

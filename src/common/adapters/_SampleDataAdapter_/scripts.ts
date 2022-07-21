@@ -55,6 +55,21 @@ export class ConcreteDataScripts extends BaseDataScript {
   }
 
   // TODO: implement me
+  supportMigration() {
+    return false;
+  }
+
+  // TODO: implement me
+  supportCreateRecordForm() {
+    return false;
+  }
+
+  // TODO: implement me
+  supportEditRecordForm() {
+    return false;
+  }
+
+  // TODO: implement me
   getConnectionScripts() {
     return [];
   }
@@ -62,6 +77,11 @@ export class ConcreteDataScripts extends BaseDataScript {
   // TODO: implement me
   getSampleConnectionString(dialect) {
     return `your_dialect://your_props`;
+  }
+
+  // TODO: implement me
+  getSampleSelectQuery(actionInput: SqlAction.TableInput): SqlAction.Output | undefined {
+    return undefined;
   }
 }
 

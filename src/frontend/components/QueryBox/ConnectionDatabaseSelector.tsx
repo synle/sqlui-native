@@ -1,7 +1,14 @@
-import { useMemo } from 'react';
+import Box from '@mui/material/Box';
+import { useEffect, useMemo } from 'react';
 import { getIsTableIdRequiredForQueryByDialect } from 'src/common/adapters/DataScriptFactory';
+import ConnectionTypeIcon from 'src/frontend/components/ConnectionTypeIcon';
 import Select from 'src/frontend/components/Select';
-import { useGetConnections, useGetDatabases, useGetTables } from 'src/frontend/hooks/useConnection';
+import {
+  useGetConnectionById,
+  useGetConnections,
+  useGetDatabases,
+  useGetTables,
+} from 'src/frontend/hooks/useConnection';
 import { SqluiFrontend } from 'typings';
 
 type ConnectionDatabaseSelectorProps = {
@@ -16,6 +23,7 @@ type ConnectionDatabaseSelectorProps = {
 export default function ConnectionDatabaseSelector(props: ConnectionDatabaseSelectorProps) {
   const query = props.value;
   const { data: connections, isLoading: loadingConnections } = useGetConnections();
+  const { data: connection } = useGetConnectionById(query?.connectionId);
   const { data: databases, isLoading: loadingDatabases } = useGetDatabases(query.connectionId);
   const { data: tables, isLoading: loadingTables } = useGetTables(
     query.connectionId,
@@ -72,29 +80,47 @@ export default function ConnectionDatabaseSelector(props: ConnectionDatabaseSele
     </>;
   }
 
-  const onConnectionChange = (connectionId: string) => {
-    props.onChange(connectionId, '', '');
-  };
+  const onConnectionChange = (connectionId: string) => props.onChange(connectionId, '', '');
 
-  const onDatabaseChange = (databaseId: string) => {
+  const onDatabaseChange = (databaseId: string) =>
     props.onChange(query.connectionId, databaseId, '');
-  };
 
-  const onTableChange = (tableId: string) => {
+  const onTableChange = (tableId: string) =>
     props.onChange(query.connectionId, query.databaseId, tableId);
-  };
+
+  // side effect to select the only database or table
+  useEffect(() => {
+    let shouldShowToast = false;
+
+    // if there's only one database, then select that as well
+    if (databases && databases.length === 1 && databases[0].name !== query.databaseId) {
+      onDatabaseChange(databases[0].name);
+      shouldShowToast = true;
+    }
+
+    // if there's only one table, then select that as well
+    if (tables && tables.length === 1 && tables[0].name !== query.tableId) {
+      onTableChange(tables[0].name);
+      shouldShowToast = true;
+    }
+  }, [databases, tables]);
 
   return (
     <>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+        <ConnectionTypeIcon dialect={connection?.dialect} status={connection?.status} />
+        <Select
+          label='Connection'
+          value={query.connectionId}
+          onChange={(newValue) => onConnectionChange(newValue)}
+          required
+          disabled={!!props.disabledConnection}>
+          <option value=''>Pick a Connection</option>
+          {connectionOptions}
+        </Select>
+      </Box>
       <Select
-        value={query.connectionId}
-        onChange={(newValue) => onConnectionChange(newValue)}
-        required
-        disabled={!!props.disabledConnection}>
-        <option value=''>Pick a Connection</option>
-        {connectionOptions}
-      </Select>
-      <Select
+        label='Database'
         value={query.databaseId}
         onChange={(newValue) => onDatabaseChange(newValue)}
         disabled={!!props.disabledDatabase}
@@ -104,10 +130,11 @@ export default function ConnectionDatabaseSelector(props: ConnectionDatabaseSele
       </Select>
       {isTableIdRequired && (
         <Select
+          label='Table'
           value={query.tableId}
           onChange={(newValue) => onTableChange(newValue)}
           required={props.required}>
-          <option value=''>Pick a Table</option>
+          <option value=''>Pick a Table (Optional)</option>
           {tableOptions}
         </Select>
       )}

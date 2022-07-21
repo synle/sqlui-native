@@ -276,6 +276,18 @@ export class ConcreteDataScripts extends BaseDataScript {
     return 'javascript';
   }
 
+  supportMigration() {
+    return true;
+  }
+
+  supportCreateRecordForm() {
+    return true;
+  }
+
+  supportEditRecordForm() {
+    return true;
+  }
+
   getTableScripts() {
     return [
       getSelectAllColumns,
@@ -301,6 +313,10 @@ export class ConcreteDataScripts extends BaseDataScript {
 
   getSampleConnectionString(dialect) {
     return `aztable://DefaultEndpointsProtocol=https;AccountName=<your_account_name>;AccountKey=<your_account_key>;EndpointSuffix=core.windows.net`;
+  }
+
+  getSampleSelectQuery(actionInput: SqlAction.TableInput) {
+    return getSelectAllColumns(actionInput);
   }
 }
 

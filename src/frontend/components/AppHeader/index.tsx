@@ -3,6 +3,7 @@ import BackupIcon from '@mui/icons-material/Backup';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import HomeIcon from '@mui/icons-material/Home';
+import InfoIcon from '@mui/icons-material/Info';
 import KeyboardCommandKeyIcon from '@mui/icons-material/KeyboardCommandKey';
 import MenuIcon from '@mui/icons-material/Menu';
 import PhotoSizeSelectSmallIcon from '@mui/icons-material/PhotoSizeSelectSmall';
@@ -87,6 +88,15 @@ export default function AppHeader() {
       onClick: () => selectCommand({ event: 'clientEvent/showSettings' }),
       startIcon: <SettingsIcon />,
     },
+
+    {
+      label: 'divider',
+    },
+    {
+      label: 'Check for update',
+      onClick: () => selectCommand({ event: 'clientEvent/checkForUpdate' }),
+      startIcon: <InfoIcon />,
+    },
   ];
 
   useEffect(() => {
@@ -123,7 +133,7 @@ export default function AppHeader() {
           options={options}
           onToggle={(newOpen) => setOpen(newOpen)}
           isLoading={isLoading}
-          maxHeight='400px'>
+          maxHeight='500px'>
           <IconButton aria-label='Table Actions' color='inherit'>
             <MenuIcon fontSize='inherit' color='inherit' />
           </IconButton>

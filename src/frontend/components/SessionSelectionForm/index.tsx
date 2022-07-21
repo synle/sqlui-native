@@ -1,3 +1,4 @@
+import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -17,7 +18,6 @@ import {
   useGetOpenedSessionIds,
   useGetSessions,
   useSelectSession,
-  useSetOpenSession,
   useUpsertSession,
 } from 'src/frontend/hooks/useSession';
 
@@ -39,7 +39,6 @@ export default function SessionSelectionForm(props: SessionSelectionFormProps) {
   const { data: sessions, isLoading: loadingSessions } = useGetSessions();
   const { data: openedSessionIds, isLoading: loadingOpenedSessionIds } = useGetOpenedSessionIds();
   const { data: currentSession, isLoading: loadingCurrentSession } = useGetCurrentSession();
-  const { mutateAsync: setOpenSession } = useSetOpenSession();
   const { mutateAsync: upsertSession } = useUpsertSession();
   const { mutateAsync: selectSession } = useSelectSession();
   const { selectCommand } = useCommands();
@@ -80,11 +79,16 @@ export default function SessionSelectionForm(props: SessionSelectionFormProps) {
         };
       }
 
+      let disabled = false;
+      if (isSessionOpenedInAnotherWindow && isFirstTime) {
+        disabled = true;
+      }
+
       return {
         label,
         subtitle: isSessionOpenedInAnotherWindow ? `Selected in another Window` : undefined,
         value,
-        disabled: isSessionOpenedInAnotherWindow,
+        disabled,
         selected: isSessionOpenedInAnotherWindow,
       };
     }),
@@ -94,7 +98,7 @@ export default function SessionSelectionForm(props: SessionSelectionFormProps) {
     options.length === 0 ? `New Session ${new Date().toLocaleDateString()}` : '';
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+    <Box className='FormInput__Container'>
       <Box>Please select a session from below:</Box>
 
       <List>
@@ -112,22 +116,35 @@ export default function SessionSelectionForm(props: SessionSelectionFormProps) {
             const targetSession = sessions.find((session) => session.id === option.value);
 
             secondaryAction = (
-              <IconButton
-                edge='end'
-                aria-label='Edit'
-                onClick={(e) => {
-                  selectCommand({ event: 'clientEvent/session/rename', data: targetSession });
-                  e.preventDefault();
-                  e.stopPropagation();
-                }}>
-                <EditIcon />
-              </IconButton>
+              <Box sx={{ display: 'flex', gap: 2 }}>
+                <IconButton
+                  edge='end'
+                  color='info'
+                  aria-label='Edit'
+                  onClick={(e) => {
+                    selectCommand({ event: 'clientEvent/session/rename', data: targetSession });
+                    e.preventDefault();
+                    e.stopPropagation();
+                  }}>
+                  <EditIcon />
+                </IconButton>
+                <IconButton
+                  edge='end'
+                  color='error'
+                  aria-label='Delete'
+                  onClick={(e) => {
+                    selectCommand({ event: 'clientEvent/session/delete', data: targetSession });
+                    e.preventDefault();
+                    e.stopPropagation();
+                  }}>
+                  <DeleteIcon />
+                </IconButton>
+              </Box>
             );
           }
 
           return (
             <ListItem
-              button
               dense
               key={option.value}
               disabled={option.disabled}

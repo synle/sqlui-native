@@ -5,6 +5,7 @@ declare global {
     toggleElectronMenu: (visible: boolean, menus: any[]) => void;
     openBrowserLink: (link: string) => void;
     ipcRenderer?: Electron.IpcRenderer;
+    requireElectron: (importPath: string) => any;
   }
 }
 
@@ -24,6 +25,11 @@ export module SqluiCore {
     | 'cosmosdb'
     | 'aztable';
 
+  export type ServerConfigs = {
+    storageDir: string;
+    isElectron: boolean;
+  };
+
   export type CoreConnectionProps = {
     connection: string;
     name: string;
@@ -41,6 +47,9 @@ export module SqluiCore {
     key: string;
     [index: string]: any;
   };
+
+  type ColumnKindCassandra = 'partition_key' | 'clustering' | 'regular';
+  type ColumnKindRmdbs = 'foreign_key';
 
   export type ColumnMetaData = {
     name: string;
@@ -60,6 +69,14 @@ export module SqluiCore {
      * @type {string}
      */
     propertyPath?: string[];
+    /**
+     * for cassandra, value can be `partition_key` or `clustering` or `regular`
+     * for rdbms, value can be `foreign_key`
+     */
+    kind?: ColumnKindCassandra | ColumnKindRmdbs;
+    // these applies for foreignkeys information for rdmbs
+    referencedTableName?: string;
+    referencedColumnName?: string;
     [index: string]: any;
   };
 
@@ -217,6 +234,11 @@ export module SqlAction {
     description?: string;
     icon?: JSX.Element;
     formatter?: 'sql' | 'js';
+    /**
+     * if true, will skip when we attempt to generate the guide docs
+     * @type {[type]}
+     */
+    skipGuide?: boolean;
   };
 
   export type TableActionScriptGenerator = (

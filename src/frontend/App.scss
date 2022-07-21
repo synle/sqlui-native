@@ -1,5 +1,9 @@
 @import 'base';
 
+label {
+  user-select: none;
+}
+
 .App {
   min-height: 100vh;
 
@@ -60,8 +64,18 @@ $ConnectionTreeIndentSize: 7px;
 .FormInput__Container {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1rem;
   padding-right: 1rem;
+
+  .FormInput__Row {
+    gap: 1rem;
+  }
+
+  &__sm {
+    .FormInput__Row {
+      gap: 0.5rem;
+    }
+  }
 }
 
 .FormInput {
@@ -72,8 +86,11 @@ $ConnectionTreeIndentSize: 7px;
   }
   &__Row {
     display: flex;
-    gap: 2rem;
     align-items: center;
+
+    > * {
+      flex-shrink: 0;
+    }
   }
 }
 
@@ -170,5 +187,41 @@ $ConnectionTreeIndentSize: 7px;
 @media (prefers-reduced-motion) {
   * {
     transition-duration: 0s !important;
+  }
+}
+
+// responsive
+@media (max-width: 800px) {
+  .App {
+    &__Section {
+      padding-bottom: 2rem;
+    }
+  }
+
+  .LayoutTwoColumns {
+    display: block !important;
+    position: static;
+
+    &__LeftPane {
+      padding-bottom: 0;
+    }
+
+    &__RightPane {
+      margin-left: 0;
+      padding-bottom: 0;
+    }
+  }
+
+  .FormInput {
+    &__Row {
+      flex-direction: column;
+      align-items: start;
+      padding-inline: 0.5rem;
+
+      > * {
+        display: block;
+        width: 100%;
+      }
+    }
   }
 }

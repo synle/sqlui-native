@@ -40,7 +40,7 @@ export default (props: BreadcrumbProps) => {
   });
 
   return (
-    <Box role='presentation' sx={{ my: 2, userSelect: 'none' }}>
+    <Box role='presentation' sx={{ my: 2, userSelect: 'none' }} className='FormInput__Row'>
       <Breadcrumbs aria-label='breadcrumb' separator={<NavigateNextIcon fontSize='small' />}>
         {links.map((link, idx) => {
           if (!link.href || (links.length > 1 && idx === links.length - 1)) {

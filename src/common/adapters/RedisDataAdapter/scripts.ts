@@ -217,6 +217,18 @@ export class ConcreteDataScripts extends BaseDataScript {
     return 'javascript';
   }
 
+  supportMigration() {
+    return false;
+  }
+
+  supportCreateRecordForm() {
+    return false;
+  }
+
+  supportEditRecordForm() {
+    return false;
+  }
+
   getTableScripts() {
     return [
       getSetValue,
@@ -257,6 +269,10 @@ export class ConcreteDataScripts extends BaseDataScript {
 
   getSampleConnectionString(dialect) {
     return `redis://localhost:6379`;
+  }
+
+  getSampleSelectQuery(actionInput: SqlAction.TableInput) {
+    return undefined;
   }
 }
 

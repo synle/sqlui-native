@@ -296,6 +296,18 @@ export class ConcreteDataScripts extends BaseDataScript {
     return 'javascript';
   }
 
+  supportMigration() {
+    return true;
+  }
+
+  supportCreateRecordForm() {
+    return true;
+  }
+
+  supportEditRecordForm() {
+    return true;
+  }
+
   getTableScripts() {
     return [
       getSelectAllColumns,
@@ -322,6 +334,10 @@ export class ConcreteDataScripts extends BaseDataScript {
 
   getSampleConnectionString(dialect) {
     return `mongodb://localhost:27017`;
+  }
+
+  getSampleSelectQuery(actionInput: SqlAction.TableInput) {
+    return getSelectAllColumns(actionInput);
   }
 }
 
