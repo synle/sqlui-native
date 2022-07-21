@@ -52,7 +52,9 @@ function _getScript(dialect: SqluiCore.Dialect): GuideMetaData {
 
   return {
     connectionString: sampleConnectionString,
-    scripts: [...databaseActionScripts, ...tableActionScripts],
+    scripts: [...databaseActionScripts, ...tableActionScripts].filter(
+      (script) => !script.skipGuide,
+    ),
   };
 }
 
