@@ -72,7 +72,7 @@ export default function AppHeader() {
     },
     {
       label: 'Bookmarks',
-      onClick: () => navigate('/bookmarks'),
+      onClick: () => selectCommand({ event: 'clientEvent/bookmark/show' }), // () => navigate('/bookmarks')
       startIcon: <StarIcon />,
     },
     {
