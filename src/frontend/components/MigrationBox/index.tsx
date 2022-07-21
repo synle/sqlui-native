@@ -307,42 +307,42 @@ export default function MigrationBox(props: MigrationBoxProps) {
   const isSaving = migrating;
 
   const isMigrationScriptVisible = !!migrationScript && !!migrationMetaData.toDialect;
-  const isLoading = loadingColumns || loadingConnections || loadingConnection;
+  const isLoading = loadingConnections || loadingConnection;
 
   // effects
-  // useEffect(() => {
-  //   setSearchParams(
-  //     {
-  //       connectionId: query.connectionId || '',
-  //       databaseId: query.databaseId || '',
-  //       tableId: query.tableId || '',
-  //       toDialect: migrationMetaData.toDialect || 'sqlite',
-  //     },
-  //     { replace: true },
-  //   );
-  // }, [query, migrationMetaData]);
+  useEffect(() => {
+    setSearchParams(
+      {
+        connectionId: query.connectionId || '',
+        databaseId: query.databaseId || '',
+        tableId: query.tableId || '',
+        toDialect: migrationMetaData.toDialect || 'sqlite',
+      },
+      { replace: true },
+    );
+  }, [query, migrationMetaData]);
 
-  // useEffect(() => {
-  //   setQuery({
-  //     ...query,
-  //     connectionId: searchParams.get('connectionId') || '',
-  //     databaseId: searchParams.get('databaseId') || '',
-  //     tableId: searchParams.get('tableId') || '',
-  //   });
+  useEffect(() => {
+    setQuery({
+      ...query,
+      connectionId: searchParams.get('connectionId') || '',
+      databaseId: searchParams.get('databaseId') || '',
+      tableId: searchParams.get('tableId') || '',
+    });
 
-  //   migrationMetaData.toDialect = (searchParams.get('toDialect') as SqluiCore.Dialect) || 'sqlite';
+    migrationMetaData.toDialect = (searchParams.get('toDialect') as SqluiCore.Dialect) || 'sqlite';
 
-  //   setMigrationScript('');
-  // }, []);
+    setMigrationScript('');
+  }, []);
 
-  // useEffect(() => {
-  //   if (query.sql !== migrationMetaData.selectQuery) {
-  //     setQuery({
-  //       ...query,
-  //       sql: migrationMetaData.selectQuery,
-  //     });
-  //   }
-  // }, [query, migrationMetaData.selectQuery]);
+  useEffect(() => {
+    if (query.sql !== migrationMetaData.selectQuery) {
+      setQuery({
+        ...query,
+        sql: migrationMetaData.selectQuery,
+      });
+    }
+  }, [query, migrationMetaData.selectQuery]);
 
   // events
   const onDatabaseConnectionChange = (
