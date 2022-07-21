@@ -7,6 +7,7 @@ import RedisDataAdapterScripts from 'src/common/adapters/RedisDataAdapter/script
 import RelationalDataAdapterScripts from 'src/common/adapters/RelationalDataAdapter/scripts';
 import { formatJS, formatSQL } from 'src/frontend/utils/formatter';
 import { SqlAction, SqluiCore } from 'typings';
+
 function _formatScript(formatter?: string, query?: string) {
   query = query || '';
   switch (formatter) {
@@ -124,15 +125,17 @@ export function getSampleConnectionString(dialect?: string) {
   return _getImplementation(dialect)?.getSampleConnectionString(dialect as SqluiCore.Dialect) || '';
 }
 
+export function getSampleSelectQuery(actionInput: SqlAction.TableInput) {
+  actionInput.querySize = actionInput.querySize || 50;
+
+  const action = _getImplementation(actionInput.dialect)?.getSampleSelectQuery(actionInput);
+  return _formatScript(action?.formatter, action?.query);
+}
+
 export function getTableActions(actionInput: SqlAction.TableInput) {
   const scriptsToUse: SqlAction.TableActionScriptGenerator[] =
     _getImplementation(actionInput.dialect)?.getTableScripts() || [];
   return _formatScripts(actionInput, scriptsToUse);
-}
-
-export function getSampleSelectQuery(actionInput: SqlAction.TableInput) {
-  const action = _getImplementation(actionInput.dialect)?.getSampleSelectQuery(actionInput);
-  return _formatScript(action?.formatter, action?.query);
 }
 
 export function getDatabaseActions(actionInput: SqlAction.DatabaseInput) {
