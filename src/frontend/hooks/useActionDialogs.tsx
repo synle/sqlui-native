@@ -68,7 +68,7 @@ export function useActionDialogs() {
     });
   };
 
-  const confirm = (message: string,yesLabel?: string): Promise<void> => {
+  const confirm = (message: string, yesLabel?: string): Promise<void> => {
     return new Promise((resolve, reject) => {
       const newActionDialog: ActionDialog = {
         type: 'confirm',
