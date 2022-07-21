@@ -461,7 +461,6 @@ export default function MigrationBox(props: MigrationBoxProps) {
       const sampleSelectQueryText = getSampleSelectQuery({
         ...fromConnection,
         ...query,
-        querySize: 50,
       });
       if (sampleSelectQueryText) {
         setMigrationMetaData({
