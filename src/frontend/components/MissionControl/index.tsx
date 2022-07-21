@@ -32,7 +32,7 @@ import {
   useSelectSession,
   useUpsertSession,
 } from 'src/frontend/hooks/useSession';
-import { useSetting } from 'src/frontend/hooks/useSetting';
+import { useSetting, useIsSoftDeleteModeSetting } from 'src/frontend/hooks/useSetting';
 import { useShowHide } from 'src/frontend/hooks/useShowHide';
 import useToaster from 'src/frontend/hooks/useToaster';
 import {
@@ -118,6 +118,7 @@ export default function MissionControl() {
   const { mutateAsync: importConnection } = useImportConnection();
   const { data: connections, isLoading: loadingConnections } = useGetConnections();
   const { settings, onChange: onChangeSettings } = useSetting();
+  const isSoftDeleteModeSetting = useIsSoftDeleteModeSetting();
   const {
     onClear: onClearConnectionVisibles,
     onToggle: onToggleConnectionVisible,
@@ -512,7 +513,7 @@ export default function MissionControl() {
   const onDeleteConnection = async (connection: SqluiCore.ConnectionProps) => {
     let curToast;
     try {
-      await confirm('Delete this connection?');
+      await confirm(`Delete this connection "${connection.name}"?`);
       await deleteConnection(connection.id);
 
       const onUndoConnection = async () => {
