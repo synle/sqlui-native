@@ -555,7 +555,7 @@ export function getCreateSampleTable(input: SqlAction.DatabaseInput): SqlAction.
           id INTEGER PRIMARY KEY IDENTITY NOT NULL,
           name NVARCHAR(120)
         );
-      `
+      `;
       break;
     case 'postgres':
       query = `
@@ -564,7 +564,7 @@ export function getCreateSampleTable(input: SqlAction.DatabaseInput): SqlAction.
           id BIGSERIAL PRIMARY KEY,
           name CHAR(120)
         );
-      `
+      `;
       break;
     case 'sqlite':
       query = `
@@ -572,7 +572,7 @@ export function getCreateSampleTable(input: SqlAction.DatabaseInput): SqlAction.
           id INTEGER PRIMARY KEY NOT NULL,
           name NVARCHAR(120)
         )
-      `
+      `;
       break;
     case 'mariadb':
     case 'mysql':
@@ -582,7 +582,7 @@ export function getCreateSampleTable(input: SqlAction.DatabaseInput): SqlAction.
           id INTEGER PRIMARY KEY AUTO_INCREMENT NOT NULL,
           name NVARCHAR(120)
         );
-      `
+      `;
       break;
   }
 
