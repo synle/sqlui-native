@@ -14,6 +14,7 @@ type AlertActionDialog = AlertInput & {
 type ConfirmActionDialog = {
   type: 'confirm';
   message: string;
+  yesLabel?: string;
   onSubmit: (yesSelected: boolean) => void;
 };
 
@@ -66,11 +67,12 @@ export function useActionDialogs() {
     });
   };
 
-  const confirm = (message: string): Promise<void> => {
+  const confirm = (message: string, yesLabel?: string): Promise<void> => {
     return new Promise((resolve, reject) => {
       const newActionDialog: ActionDialog = {
         type: 'confirm',
         message,
+        yesLabel,
         onSubmit: (yesSelected) => {
           yesSelected ? resolve() : reject();
         },
