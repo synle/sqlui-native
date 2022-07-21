@@ -40,6 +40,7 @@ const columns = [
   {
     Header: 'Type',
     accessor: 'type',
+    width: 100,
     Cell: (data: any) => {
       const folderItem = data.row.original;
       return (

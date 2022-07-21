@@ -4,6 +4,7 @@ import Link from '@mui/material/Link';
 import { useQuery, useQueryClient } from 'react-query';
 import { useNavigate } from 'react-router-dom';
 import React, { useCallback, useEffect, useState } from 'react';
+import { BookmarksItemListModalContent } from 'src/frontend/components/BookmarksItemList';
 import CommandPalette from 'src/frontend/components/CommandPalette';
 import SessionSelectionForm from 'src/frontend/components/SessionSelectionForm';
 import Settings from 'src/frontend/components/Settings';
@@ -543,6 +544,17 @@ export default function MissionControl() {
     }
   };
 
+  const onShowBookmarks = async () => {
+    try {
+      await modal({
+        title: 'Bookmarks',
+        message: <BookmarksItemListModalContent onAfterSelect={dismissDialog} />,
+        size: 'md',
+        showCloseButton: true,
+      });
+    } catch (err) {}
+  };
+
   const onAddConnectionToBookmark = async (connection: SqluiCore.ConnectionProps) => {
     const newName = await prompt({
       title: 'Add connection to Bookmarks',
@@ -909,6 +921,11 @@ export default function MissionControl() {
           if (command.data) {
             onAddConnectionToBookmark(command.data as SqluiCore.ConnectionProps);
           }
+          break;
+
+        // bookmark commands
+        case 'clientEvent/bookmark/show':
+          onShowBookmarks();
           break;
 
         // query commands
