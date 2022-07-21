@@ -62,7 +62,6 @@ export function useActionDialogs() {
       };
 
       _actionDialogs = [..._actionDialogs, newActionDialog];
-
       _invalidateQueries();
     });
   };
@@ -78,7 +77,6 @@ export function useActionDialogs() {
       };
 
       _actionDialogs = [..._actionDialogs, newActionDialog];
-
       _invalidateQueries();
     });
   };
@@ -102,7 +100,6 @@ export function useActionDialogs() {
       };
 
       _actionDialogs = [..._actionDialogs, newActionDialog];
-
       _invalidateQueries();
     });
   };
@@ -115,7 +112,6 @@ export function useActionDialogs() {
       };
 
       _actionDialogs = [..._actionDialogs, newActionDialog];
-
       _invalidateQueries();
     });
   };
@@ -129,7 +125,6 @@ export function useActionDialogs() {
       };
 
       _actionDialogs = [..._actionDialogs, newActionDialog];
-
       _invalidateQueries();
     });
   };
