@@ -191,7 +191,7 @@ jobs:
           echo "{ \"version\": \"${{ needs.create_release.outputs.package_version }}\" }" > release.json
       - uses: EndBug/add-and-commit@v8
         with:
-          message: 'CI / CD - New Release ${{needs.create_release.outputs.package_version}}'
+          message: 'CI / CD - New Release ${{needs.create_release.outputs.package_version}} [skip ci]'
 
   roll_back_on_failure_or_canceled:
     if: failure() || cancelled()
