@@ -17,6 +17,7 @@ export type EditorRef =
   | undefined;
 
 export type CodeEditorProps = {
+  label?: string;
   language?: 'sql' | string;
   value?: string;
   autoFocus?: boolean;
@@ -36,6 +37,7 @@ export type DecoratedEditorProps = CodeEditorProps & {
 const DEFAULT_EDITOR_HEIGHT = '20vh';
 
 export default function CodeEditorBox(props: CodeEditorProps) {
+  const {label} = props;
   const globalWordWrap = useWordWrapSetting();
   const [wordWrap, setWordWrap] = useState(false);
   const [languageMode, setLanguageMode] = useState<string | undefined>();
