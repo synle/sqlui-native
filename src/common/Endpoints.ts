@@ -407,17 +407,21 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     const sessionsStorage = await getSessionsStorage();
 
     const newSession = await sessionsStorage.add({
-      connection: req.body?.name,
+      name,
     });
 
+    const newSessionId = newSession.id;
+
     // get a list of connections and queries from the old session
-    const connectionsStorage = await getConnectionsStorage(req.headers['sqlui-native-session-id']);
+    const connectionsStorage = await getConnectionsStorage(newSessionId);
     const connections = await connectionsStorage.list();
     await connectionsStorage.set(connections);
 
-    const queryStorage = await getQueryStorage(req.headers['sqlui-native-session-id']);
+    const queryStorage = await getQueryStorage(newSessionId);
     const queries = await queryStorage.list()
     await queryStorage.set(queries);
+
+    res.status(201).json(newSession);
   });
 
   addDataEndpoint('delete', '/api/session/:sessionId', async (req, res, apiCache) => {

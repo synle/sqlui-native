@@ -32,6 +32,7 @@ import {
   useGetSessions,
   useSelectSession,
   useUpsertSession,
+  useCloneSession,
 } from 'src/frontend/hooks/useSession';
 import { useIsSoftDeleteModeSetting, useSetting } from 'src/frontend/hooks/useSetting';
 import { useShowHide } from 'src/frontend/hooks/useShowHide';
@@ -115,6 +116,7 @@ export default function MissionControl() {
   const { data: openedSessionIds, isLoading: loadingOpenedSessionIds } = useGetOpenedSessionIds();
   const { data: currentSession, isLoading: loadingCurrentSession } = useGetCurrentSession();
   const { mutateAsync: upsertSession } = useUpsertSession();
+  const { mutateAsync: cloneSession } = useCloneSession();
   const { mutateAsync: selectSession } = useSelectSession();
   const { mutateAsync: importConnection } = useImportConnection();
   const { data: connections, isLoading: loadingConnections } = useGetConnections();
@@ -463,7 +465,7 @@ export default function MissionControl() {
         return;
       }
 
-      const newSession = await upsertSession({
+      const newSession = await cloneSession({
         id: getRandomSessionId(),
         name: newSessionName,
       });
@@ -1135,7 +1137,12 @@ export default function MissionControl() {
         case 'clientEvent/session/clone':
           try {
             window.toggleElectronMenu(false, allMenuKeys);
-            await onCloneSession(currentSession as SqluiCore.Session);
+
+            if (command.data) {
+              await onCloneSession(command.data as SqluiCore.Session);
+            } else if (currentSession) {
+              await onCloneSession(currentSession as SqluiCore.Session);
+            }
           } catch (err) {}
 
           window.toggleElectronMenu(true, allMenuKeys);

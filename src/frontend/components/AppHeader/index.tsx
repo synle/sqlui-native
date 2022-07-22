@@ -20,7 +20,7 @@ import DropdownButton from 'src/frontend/components/DropdownButton';
 import { useCommands } from 'src/frontend/components/MissionControl';
 import { useGetCurrentSession, useGetSessions } from 'src/frontend/hooks/useSession';
 import appPackage from 'src/package.json';
-
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 export default function AppHeader() {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
@@ -51,6 +51,11 @@ export default function AppHeader() {
       label: 'Rename Session',
       onClick: () => selectCommand({ event: 'clientEvent/session/rename' }),
       startIcon: <EditIcon />,
+    },
+    {
+      label: 'Clone Session',
+      onClick: () => selectCommand({ event: 'clientEvent/session/clone' }),
+      startIcon: <ContentCopyIcon />,
     },
     {
       label: 'Delete Session',
