@@ -466,7 +466,7 @@ export default function MissionControl() {
       }
 
       const newSession = await cloneSession({
-        id: getRandomSessionId(),
+        id: targetSession.id,
         name: newSessionName,
       });
 
