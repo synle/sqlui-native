@@ -26,6 +26,7 @@ import {
 import { useAddBookmarkItem } from 'src/frontend/hooks/useFolderItems';
 import { useGetServerConfigs } from 'src/frontend/hooks/useServerConfigs';
 import {
+  useCloneSession,
   useDeleteSession,
   useGetCurrentSession,
   useGetOpenedSessionIds,
@@ -115,6 +116,7 @@ export default function MissionControl() {
   const { data: openedSessionIds, isLoading: loadingOpenedSessionIds } = useGetOpenedSessionIds();
   const { data: currentSession, isLoading: loadingCurrentSession } = useGetCurrentSession();
   const { mutateAsync: upsertSession } = useUpsertSession();
+  const { mutateAsync: cloneSession } = useCloneSession();
   const { mutateAsync: selectSession } = useSelectSession();
   const { mutateAsync: importConnection } = useImportConnection();
   const { data: connections, isLoading: loadingConnections } = useGetConnections();
@@ -445,6 +447,35 @@ export default function MissionControl() {
         onClose();
       }
     }
+  };
+
+  const onCloneSession = async (targetSession: SqluiCore.Session) => {
+    try {
+      // create the new session
+      // if there is no session, let's create the session
+      const newSessionName = await prompt({
+        title: 'Clone Session',
+        message: 'New Session Name',
+        value: `Cloned Session ${new Date().toLocaleString()}`,
+        saveLabel: 'Save',
+        required: true,
+      });
+
+      if (!newSessionName) {
+        return;
+      }
+
+      const newSession = await cloneSession({
+        id: targetSession.id,
+        name: newSessionName,
+      });
+
+      if (!newSession) {
+        return;
+      }
+
+      selectSession(newSession.id);
+    } catch (err) {}
   };
 
   const onRenameSession = async (targetSession: SqluiCore.Session) => {
@@ -1098,6 +1129,20 @@ export default function MissionControl() {
           try {
             window.toggleElectronMenu(false, allMenuKeys);
             await onAddSession();
+          } catch (err) {}
+
+          window.toggleElectronMenu(true, allMenuKeys);
+          break;
+
+        case 'clientEvent/session/clone':
+          try {
+            window.toggleElectronMenu(false, allMenuKeys);
+
+            if (command.data) {
+              await onCloneSession(command.data as SqluiCore.Session);
+            } else if (currentSession) {
+              await onCloneSession(currentSession as SqluiCore.Session);
+            }
           } catch (err) {}
 
           window.toggleElectronMenu(true, allMenuKeys);
