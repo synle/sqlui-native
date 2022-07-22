@@ -62,7 +62,8 @@ jobs:
       - run: yarn dist
       - run: mv ./dist/sqlui-native*.exe ./dist/sqlui-native.exe
 
-      - uses: actions/upload-release-asset@v1
+      - name: Upload release binary
+        uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -70,6 +71,12 @@ jobs:
           asset_path: ./dist/sqlui-native.exe
           asset_name: sqlui-native-${{ needs.create_release.outputs.package_version }}.exe
           asset_content_type: application/octet-stream
+
+      - name: Upload artifact .exe
+        uses: actions/upload-artifact@v3
+        with:
+          name: sqlui-native.exe
+          path: ./dist/sqlui-native.exe
 
   build_macos:
     needs: [create_release]
@@ -88,7 +95,8 @@ jobs:
       - run: yarn dist
       - run: mv ./dist/sqlui-native*.dmg ./dist/sqlui-native.dmg
 
-      - uses: actions/upload-release-asset@v1
+      - name: Upload release binary
+        uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -96,6 +104,12 @@ jobs:
           asset_path: ./dist/sqlui-native.dmg
           asset_name: sqlui-native-${{ needs.create_release.outputs.package_version }}.dmg
           asset_content_type: application/octet-stream
+
+      - name: Upload artifact .dmg
+        uses: actions/upload-artifact@v3
+        with:
+          name: sqlui-native.dmg
+          path: ./dist/sqlui-native.dmg
 
   build_linux:
     needs: [create_release]
@@ -116,7 +130,8 @@ jobs:
       - run: mv ./dist/sqlui-native*.rpm ./dist/sqlui-native.rpm
       - run: mv ./dist/sqlui-native*.snap ./dist/sqlui-native.snap
 
-      - uses: actions/upload-release-asset@v1
+      - name: Upload release binary
+        uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -125,7 +140,8 @@ jobs:
           asset_name: sqlui-native-${{ needs.create_release.outputs.package_version }}.deb
           asset_content_type: application/octet-stream
 
-      - uses: actions/upload-release-asset@v1
+      - name: Upload release binary
+        uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -134,7 +150,8 @@ jobs:
           asset_name: sqlui-native-${{ needs.create_release.outputs.package_version }}.rpm
           asset_content_type: application/octet-stream
 
-      - uses: actions/upload-release-asset@v1
+      - name: Upload release binary
+        uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -142,6 +159,22 @@ jobs:
           asset_path: ./dist/sqlui-native.snap
           asset_name: sqlui-native-${{ needs.create_release.outputs.package_version }}.snap
           asset_content_type: application/octet-stream
+
+      - name: Upload artifact .deb
+        uses: actions/upload-artifact@v3
+        with:
+          name: sqlui-native.deb
+          path: ./dist/sqlui-native.deb
+      - name: Upload artifact .rpm
+        uses: actions/upload-artifact@v3
+        with:
+          name: sqlui-native.rpm
+          path: ./dist/sqlui-native.rpm
+      - name: Upload artifact .snap
+        uses: actions/upload-artifact@v3
+        with:
+          name: sqlui-native.snap
+          path: ./dist/sqlui-native.snap
 
   publish:
     needs: [create_release, build_windows, build_macos, build_linux]
