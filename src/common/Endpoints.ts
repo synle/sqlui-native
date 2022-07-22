@@ -395,6 +395,31 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     );
   });
 
+  addDataEndpoint('post', '/api/session/:sessionId/clone', async (req, res, apiCache) => {
+    apiCache.set('serverCacheKey/cacheMetaData', null);
+
+    const name = req.body?.name;
+
+    if(!name){
+      return res.status(400).send('`name` is required...');
+    }
+
+    const sessionsStorage = await getSessionsStorage();
+
+    const newSession = await sessionsStorage.add({
+      connection: req.body?.name,
+    });
+
+    // get a list of connections and queries from the old session
+    const connectionsStorage = await getConnectionsStorage(req.headers['sqlui-native-session-id']);
+    const connections = await connectionsStorage.list();
+    await connectionsStorage.set(connections);
+
+    const queryStorage = await getQueryStorage(req.headers['sqlui-native-session-id']);
+    const queries = await queryStorage.list()
+    await queryStorage.set(queries);
+  });
+
   addDataEndpoint('delete', '/api/session/:sessionId', async (req, res, apiCache) => {
     apiCache.set('serverCacheKey/cacheMetaData', null);
 
