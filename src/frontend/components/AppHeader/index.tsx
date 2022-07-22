@@ -1,5 +1,6 @@
 import AddIcon from '@mui/icons-material/Add';
 import BackupIcon from '@mui/icons-material/Backup';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import HomeIcon from '@mui/icons-material/Home';
@@ -51,6 +52,11 @@ export default function AppHeader() {
       label: 'Rename Session',
       onClick: () => selectCommand({ event: 'clientEvent/session/rename' }),
       startIcon: <EditIcon />,
+    },
+    {
+      label: 'Clone Session',
+      onClick: () => selectCommand({ event: 'clientEvent/session/clone' }),
+      startIcon: <ContentCopyIcon />,
     },
     {
       label: 'Delete Session',

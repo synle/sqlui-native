@@ -328,5 +328,6 @@ export module SqluiEnums {
     | 'clientEvent/session/rename'
     | 'clientEvent/session/switch'
     | 'clientEvent/session/delete'
+    | 'clientEvent/session/clone'
     | 'clientEvent/bookmark/show';
 }

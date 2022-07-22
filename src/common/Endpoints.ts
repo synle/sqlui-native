@@ -395,6 +395,39 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     );
   });
 
+  addDataEndpoint('post', '/api/session/:sessionId/clone', async (req, res, apiCache) => {
+    apiCache.set('serverCacheKey/cacheMetaData', null);
+
+    const name = req.body?.name;
+    const clonedFromSessionId = req.params?.sessionId;
+
+    if (!name) {
+      return res.status(400).send('`name` is required...');
+    }
+    const sessionsStorage = await getSessionsStorage();
+
+    const newSession = await sessionsStorage.add({
+      name,
+    });
+
+    const newSessionId = newSession.id;
+
+    // get a list of connections and queries from the old session
+    const connectionsStorage = await getConnectionsStorage(clonedFromSessionId);
+    const connections = await connectionsStorage.list();
+
+    const queryStorage = await getQueryStorage(clonedFromSessionId);
+    const queries = await queryStorage.list();
+
+    // here's the copy and clone of connections and queries
+    const newConnectionsStorage = await getConnectionsStorage(newSessionId);
+    const newQueryStorage = await getQueryStorage(newSessionId);
+    await newConnectionsStorage.set(connections);
+    await newQueryStorage.set(queries);
+
+    res.status(201).json(newSession);
+  });
+
   addDataEndpoint('delete', '/api/session/:sessionId', async (req, res, apiCache) => {
     apiCache.set('serverCacheKey/cacheMetaData', null);
 

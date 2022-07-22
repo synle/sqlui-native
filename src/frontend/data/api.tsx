@@ -178,6 +178,18 @@ export class ProxyApi {
     }
   }
 
+  static cloneSession(newSession: SqluiCore.CoreSession) {
+    const clonedFromSessionId = newSession.id;
+    const newName = newSession.name;
+
+    return _fetch<SqluiCore.Session>(`/api/session/${clonedFromSessionId}/clone`, {
+      method: 'post',
+      body: JSON.stringify({
+        name: newName,
+      }),
+    });
+  }
+
   static deleteSession(sessionId: string) {
     return _fetch<string>(`/api/session/${sessionId}`, {
       method: 'delete',
