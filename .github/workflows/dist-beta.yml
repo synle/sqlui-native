@@ -8,43 +8,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  create_release:
-    runs-on: ubuntu-latest
-    timeout-minutes: 4
-    outputs:
-      package_version: ${{ steps.package-version.outputs.current-version }}
-      release_upload_url: ${{ steps.create_release.outputs.upload_url }}
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: '14'
-          cache: 'yarn'
-      - run: npm version --no-git-tag-version patch
-      - id: package-version
-        uses: martinbeentjes/npm-get-version-action@master
-        with:
-          path: '.'
-      - uses: dev-drprasad/delete-tag-and-release@v0.2.0
-        with:
-          delete_release: true
-          tag_name: beta
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - uses: actions/create-release@v1
-        id: create_release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: beta
-          release_name: beta
-          body: |
-            Version: ${{ steps.package-version.outputs.current-version }}
-          draft: false
-          prerelease: true
-
   build_windows:
-    needs: [create_release]
     runs-on: windows-latest
     timeout-minutes: 30
     steps:
@@ -59,18 +23,13 @@ jobs:
       - run: yarn build
       - run: yarn dist
       - run: mv ./dist/sqlui-native*.exe ./dist/sqlui-native.exe
-
-      - uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Upload artifact .exe
+        uses: actions/upload-artifact@v3
         with:
-          upload_url: ${{ needs.create_release.outputs.release_upload_url }}
-          asset_path: ./dist/sqlui-native.exe
-          asset_name: sqlui-native-beta.exe
-          asset_content_type: application/octet-stream
+          name: sqlui-native.exe
+          path: ./dist/sqlui-native.exe
 
   build_macos:
-    needs: [create_release]
     runs-on: macos-latest
     timeout-minutes: 30
     steps:
@@ -85,18 +44,13 @@ jobs:
       - run: yarn build
       - run: yarn dist
       - run: mv ./dist/sqlui-native*.dmg ./dist/sqlui-native.dmg
-
-      - uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Upload artifact .dmg
+        uses: actions/upload-artifact@v3
         with:
-          upload_url: ${{ needs.create_release.outputs.release_upload_url }}
-          asset_path: ./dist/sqlui-native.dmg
-          asset_name: sqlui-native-beta.dmg
-          asset_content_type: application/octet-stream
+          name: sqlui-native.dmg
+          path: ./dist/sqlui-native.dmg
 
   build_linux:
-    needs: [create_release]
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
@@ -113,48 +67,18 @@ jobs:
       - run: mv ./dist/sqlui-native*.deb ./dist/sqlui-native.deb
       - run: mv ./dist/sqlui-native*.rpm ./dist/sqlui-native.rpm
       - run: mv ./dist/sqlui-native*.snap ./dist/sqlui-native.snap
-
-      - uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Upload artifact .deb
+        uses: actions/upload-artifact@v3
         with:
-          upload_url: ${{ needs.create_release.outputs.release_upload_url }}
-          asset_path: ./dist/sqlui-native.deb
-          asset_name: sqlui-native-beta.deb
-          asset_content_type: application/octet-stream
-
-      - uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          name: sqlui-native.deb
+          path: ./dist/sqlui-native.deb
+      - name: Upload artifact .rpm
+        uses: actions/upload-artifact@v3
         with:
-          upload_url: ${{ needs.create_release.outputs.release_upload_url }}
-          asset_path: ./dist/sqlui-native.rpm
-          asset_name: sqlui-native-beta.rpm
-          asset_content_type: application/octet-stream
-
-      - uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          name: sqlui-native.rpm
+          path: ./dist/sqlui-native.rpm
+      - name: Upload artifact .snap
+        uses: actions/upload-artifact@v3
         with:
-          upload_url: ${{ needs.create_release.outputs.release_upload_url }}
-          asset_path: ./dist/sqlui-native.snap
-          asset_name: sqlui-native-beta.snap
-          asset_content_type: application/octet-stream
-
-  roll_back_on_failure_or_canceled:
-    if: failure() || cancelled()
-    needs: [create_release, build_windows, build_macos, build_linux]
-    runs-on: ubuntu-latest
-    timeout-minutes: 4
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: '14'
-          cache: 'yarn'
-      - uses: dev-drprasad/delete-tag-and-release@v0.2.0
-        with:
-          delete_release: true
-          tag_name: '${{ needs.create_release.outputs.package_version }}'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          name: sqlui-native.snap
+          path: ./dist/sqlui-native.snap
