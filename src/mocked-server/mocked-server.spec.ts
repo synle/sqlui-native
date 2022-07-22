@@ -137,6 +137,37 @@ describe('Sessions', () => {
     expect(res.body.length).toEqual(1);
   });
 
+  test('Clone Session', async () => {
+    let res: any;
+
+    // add a connection
+    res = await requestWithSupertest
+      .post(`/api/connection`)
+      .set(commonHeaders)
+      .send(mockedConnection1);
+    expect(res.status).toEqual(201);
+    expect(res.body).toEqual(expect.objectContaining(mockedConnection1));
+    const mockedConnectionId1 = res.body.id;
+
+    // add 2 queries
+    res = await requestWithSupertest
+      .put(`/api/query/${mockedQueryValue1.id}`)
+      .set(commonHeaders)
+      .send(mockedQueryValue1);
+    expect(res.status).toEqual(202);
+
+    res = await requestWithSupertest
+      .put(`/api/query/${mockedQueryValue2.id}`)
+      .set(commonHeaders)
+      .send(mockedQueryValue2);
+    expect(res.status).toEqual(202);
+
+    // check the created queries
+    res = await requestWithSupertest.get(`/api/queries`).set(commonHeaders);
+    expect(res.status).toEqual(200);
+    expect(res.body.length).toEqual(2);
+  });
+
   test('DELETE and Cleaning up the mocked session', async () => {
     let res: any;
 
