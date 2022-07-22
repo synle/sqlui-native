@@ -69,6 +69,16 @@ export function useUpsertSession() {
   });
 }
 
+export function useCloneSession() {
+  const queryClient = useQueryClient();
+  return useMutation<SqluiCore.Session, void, SqluiCore.CoreSession>(dataApi.cloneSession, {
+    onSuccess: async (newSession) => {
+      queryClient.invalidateQueries(QUERY_KEY_SESSIONS);
+      return newSession;
+    },
+  });
+}
+
 export function useDeleteSession() {
   const queryClient = useQueryClient();
 

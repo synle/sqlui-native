@@ -110,6 +110,7 @@ const ALL_COMMAND_PALETTE_OPTIONS: CommandOption[] = [
   { event: 'clientEvent/session/new', label: 'New Session' },
   { event: 'clientEvent/session/rename', label: 'Rename Current Session' },
   { event: 'clientEvent/session/delete', label: 'Delete Current Session' },
+  { event: 'clientEvent/session/clone', label: 'Clone Current Session' },
 
   // connections
   { event: 'clientEvent/connection/new', label: 'New Connection' },
