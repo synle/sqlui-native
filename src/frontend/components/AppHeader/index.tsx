@@ -1,5 +1,6 @@
 import AddIcon from '@mui/icons-material/Add';
 import BackupIcon from '@mui/icons-material/Backup';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import HomeIcon from '@mui/icons-material/Home';
@@ -20,7 +21,7 @@ import DropdownButton from 'src/frontend/components/DropdownButton';
 import { useCommands } from 'src/frontend/components/MissionControl';
 import { useGetCurrentSession, useGetSessions } from 'src/frontend/hooks/useSession';
 import appPackage from 'src/package.json';
-import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+
 export default function AppHeader() {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();

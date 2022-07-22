@@ -401,11 +401,9 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     const name = req.body?.name;
     const clonedFromSessionId = req.params?.sessionId;
 
-    if(!name){
+    if (!name) {
       return res.status(400).send('`name` is required...');
     }
-
-
     const sessionsStorage = await getSessionsStorage();
 
     const newSession = await sessionsStorage.add({
@@ -419,7 +417,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     const connections = await connectionsStorage.list();
 
     const queryStorage = await getQueryStorage(clonedFromSessionId);
-    const queries = await queryStorage.list()
+    const queries = await queryStorage.list();
 
     // here's the copy and clone of connections and queries
     const newConnectionsStorage = await getConnectionsStorage(newSessionId);

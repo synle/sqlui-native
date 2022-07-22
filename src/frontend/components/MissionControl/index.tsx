@@ -26,13 +26,13 @@ import {
 import { useAddBookmarkItem } from 'src/frontend/hooks/useFolderItems';
 import { useGetServerConfigs } from 'src/frontend/hooks/useServerConfigs';
 import {
+  useCloneSession,
   useDeleteSession,
   useGetCurrentSession,
   useGetOpenedSessionIds,
   useGetSessions,
   useSelectSession,
   useUpsertSession,
-  useCloneSession,
 } from 'src/frontend/hooks/useSession';
 import { useIsSoftDeleteModeSetting, useSetting } from 'src/frontend/hooks/useSetting';
 import { useShowHide } from 'src/frontend/hooks/useShowHide';

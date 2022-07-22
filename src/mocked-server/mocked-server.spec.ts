@@ -3,7 +3,7 @@ import { app } from 'src/mocked-server/mocked-server';
 
 const requestWithSupertest = supertest(app);
 
-function _getCommonHeaders(mockedSessionId){
+function _getCommonHeaders(mockedSessionId) {
   return {
     'sqlui-native-session-id': mockedSessionId,
     'sqlui-native-window-id': 'mocked-window-id',
@@ -95,7 +95,9 @@ describe('Sessions', () => {
     expect(res.headers['sqlui-native-session-id']).toEqual(
       _getCommonHeaders(mockedSessionId)['sqlui-native-session-id'],
     );
-    expect(res.headers['sqlui-native-window-id']).toEqual(_getCommonHeaders(mockedSessionId)['sqlui-native-window-id']);
+    expect(res.headers['sqlui-native-window-id']).toEqual(
+      _getCommonHeaders(mockedSessionId)['sqlui-native-window-id'],
+    );
 
     // delete connection
     res = await requestWithSupertest
@@ -165,11 +167,9 @@ describe('Sessions', () => {
     expect(res.status).toEqual(202);
 
     // here let's do the clone (new session should have 1 connection and 2 queries)
-    res = await requestWithSupertest
-      .post(`/api/session/${mockedSessionId}/clone`)
-      .send({
-        name: 'New Cloned Session Name 123'
-      });
+    res = await requestWithSupertest.post(`/api/session/${mockedSessionId}/clone`).send({
+      name: 'New Cloned Session Name 123',
+    });
     expect(res.status).toEqual(201);
     const newClonedSessionId = res.body.id;
 
@@ -187,9 +187,9 @@ Object {
     res = await requestWithSupertest.get(`/api/queries`).set(_getCommonHeaders(newClonedSessionId));
     expect(res.status).toEqual(200);
     expect(res.body.length).toEqual(2);
-
-
-    res = await requestWithSupertest.get(`/api/connections`).set(_getCommonHeaders(newClonedSessionId));
+    res = await requestWithSupertest
+      .get(`/api/connections`)
+      .set(_getCommonHeaders(newClonedSessionId));
     expect(res.status).toEqual(200);
     expect(res.body.length).toEqual(1);
 
