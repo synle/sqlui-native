@@ -30,7 +30,6 @@ try {
     fs.mkdirSync(baseDir);
   } catch (err) {}
 }
-console.log('baseDir', baseDir);
 
 export const storageDir = baseDir;
 

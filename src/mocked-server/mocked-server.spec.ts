@@ -171,17 +171,31 @@ describe('Sessions', () => {
         name: 'New Cloned Session Name 123'
       });
     expect(res.status).toEqual(201);
-    expect(res.body.id).toBeDefined();
-    expect(res.body.name).toEqual('New Cloned Session Name 123');
-    expect(res.body.id !== mockedSessionId).toEqual(true);
-
     const newClonedSessionId = res.body.id;
 
+    expect(newClonedSessionId).toBeDefined();
+    expect(newClonedSessionId !== mockedSessionId).toEqual(true);
 
-    // check the created queries
+    delete res.body.id;
+    expect(res.body).toMatchInlineSnapshot(`
+Object {
+  "name": "New Cloned Session Name 123",
+}
+`);
+
+    // check the created queries and connections
     res = await requestWithSupertest.get(`/api/queries`).set(_getCommonHeaders(newClonedSessionId));
     expect(res.status).toEqual(200);
     expect(res.body.length).toEqual(2);
+
+
+    res = await requestWithSupertest.get(`/api/connections`).set(_getCommonHeaders(newClonedSessionId));
+    expect(res.status).toEqual(200);
+    expect(res.body.length).toEqual(1);
+
+    // delete the clone session
+    res = await requestWithSupertest.delete(`/api/session/${newClonedSessionId}`);
+    expect(res.status).toEqual(202);
   });
 
   test('DELETE and Cleaning up the mocked session', async () => {

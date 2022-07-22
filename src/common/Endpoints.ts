@@ -421,11 +421,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     const queryStorage = await getQueryStorage(clonedFromSessionId);
     const queries = await queryStorage.list()
 
-    console.log('old stuffs', clonedFromSessionId, connections.length, queries.length)
-
-    // here let's do the clone itself
-    console.log('new stuffs', newSession)
-
+    // here's the copy and clone of connections and queries
     const newConnectionsStorage = await getConnectionsStorage(newSessionId);
     const newQueryStorage = await getQueryStorage(newSessionId);
     await newConnectionsStorage.set(connections);
