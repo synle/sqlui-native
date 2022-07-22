@@ -399,10 +399,12 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     apiCache.set('serverCacheKey/cacheMetaData', null);
 
     const name = req.body?.name;
+    const clonedFromSessionId = req.params?.sessionId;
 
     if(!name){
       return res.status(400).send('`name` is required...');
     }
+
 
     const sessionsStorage = await getSessionsStorage();
 
@@ -413,13 +415,21 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     const newSessionId = newSession.id;
 
     // get a list of connections and queries from the old session
-    const connectionsStorage = await getConnectionsStorage(newSessionId);
+    const connectionsStorage = await getConnectionsStorage(clonedFromSessionId);
     const connections = await connectionsStorage.list();
-    await connectionsStorage.set(connections);
 
-    const queryStorage = await getQueryStorage(newSessionId);
+    const queryStorage = await getQueryStorage(clonedFromSessionId);
     const queries = await queryStorage.list()
-    await queryStorage.set(queries);
+
+    console.log('old stuffs', clonedFromSessionId, connections.length, queries.length)
+
+    // here let's do the clone itself
+    console.log('new stuffs', newSession)
+
+    const newConnectionsStorage = await getConnectionsStorage(newSessionId);
+    const newQueryStorage = await getQueryStorage(newSessionId);
+    await newConnectionsStorage.set(connections);
+    await newQueryStorage.set(queries);
 
     res.status(201).json(newSession);
   });

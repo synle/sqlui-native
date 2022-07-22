@@ -171,13 +171,15 @@ describe('Sessions', () => {
         name: 'New Cloned Session Name 123'
       });
     expect(res.status).toEqual(201);
-    expect(res.id).toBeDefined();
-    expect(res.name).toEqual('New Cloned Session Name 123');
-    expect(res.name !== mockedSessionId).toEqual(true);
+    expect(res.body.id).toBeDefined();
+    expect(res.body.name).toEqual('New Cloned Session Name 123');
+    expect(res.body.id !== mockedSessionId).toEqual(true);
+
+    const newClonedSessionId = res.body.id;
 
 
     // check the created queries
-    res = await requestWithSupertest.get(`/api/queries`).set(_getCommonHeaders(mockedSessionId));
+    res = await requestWithSupertest.get(`/api/queries`).set(_getCommonHeaders(newClonedSessionId));
     expect(res.status).toEqual(200);
     expect(res.body.length).toEqual(2);
   });
