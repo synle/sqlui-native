@@ -1,4 +1,5 @@
 import { SqluiCore, SqluiFrontend } from 'typings';
+
 // for exporting
 export function getExportedConnection(connectionProps: SqluiCore.ConnectionProps) {
   const { id, connection, name } = connectionProps;
@@ -6,9 +7,10 @@ export function getExportedConnection(connectionProps: SqluiCore.ConnectionProps
 }
 
 export function getExportedQuery(query: SqluiFrontend.ConnectionQuery) {
-  const { id, name, sql, connectionId, databaseId } = query;
-  return { _type: 'query', ...{ id, name, sql, connectionId, databaseId } };
+  const { id, name, sql, connectionId, databaseId, tableId } = query;
+  return { _type: 'query', ...{ id, name, sql, connectionId, databaseId, tableId } };
 }
+
 // misc utils
 const TO_BE_DELETED_LIST_ITEM = Symbol('to_be_deleted_list_item');
 

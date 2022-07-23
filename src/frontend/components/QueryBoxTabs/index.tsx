@@ -85,6 +85,12 @@ export default function QueryBoxTabs() {
     [selectCommand],
   );
 
+  const onPinQuery = useCallback(
+    (data: SqluiFrontend.ConnectionQuery, pinned: boolean) =>
+      selectCommand({ event: pinned ? 'clientEvent/query/pin' : 'clientEvent/query/unpin', data }),
+    [selectCommand],
+  );
+
   // add a dummy query to start
   useEffect(() => {
     if (!init && !isLoading) {

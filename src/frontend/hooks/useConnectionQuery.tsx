@@ -141,7 +141,7 @@ export function useConnectionQueries() {
         })
         .map((query) => {
           // here we should remove the isSelected flag
-          const { selected, ...restOfQuery } = query;
+          const { selected, pinned, ...restOfQuery } = query;
 
           return {
             type: 'Query',

@@ -365,6 +365,12 @@ export default function MissionControl() {
     }
   };
 
+  const onPinQuery = async (query: SqluiFrontend.ConnectionQuery, pinned: boolean) => {
+    await connectionQueries.onChangeQuery(query.id, {
+      pinned
+    });
+  }
+
   const onShowQueryHelp = async () => {
     let data: string;
 
@@ -1013,6 +1019,24 @@ export default function MissionControl() {
               command.data as SqluiFrontend.PartialConnectionQuery,
               true, // new-tab
               command.label,
+            );
+          }
+          break;
+
+        case 'clientEvent/query/pin':
+          if (command.data) {
+            onPinQuery(
+              command.data as SqluiFrontend.ConnectionQuery,
+              true,
+            );
+          }
+          break;
+
+        case 'clientEvent/query/unpin':
+          if (command.data) {
+            onPinQuery(
+              command.data as SqluiFrontend.ConnectionQuery,
+              false,
             );
           }
           break;

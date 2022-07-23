@@ -309,6 +309,7 @@ export module SqluiEnums {
     | 'clientEvent/query/apply/new' // create new query and apply
     | 'clientEvent/query/apply' // based on the setting use either new query or selected query
     | 'clientEvent/query/pin'
+    | 'clientEvent/query/unpin'
     | 'clientEvent/query/new'
     | 'clientEvent/query/rename'
     | 'clientEvent/query/export'
