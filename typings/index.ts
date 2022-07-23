@@ -114,11 +114,14 @@ export module SqluiCore {
     connectionId?: string;
     databaseId?: string;
     /**
-     * only applicable for a few dialect (Azure CosmosDB at the moment)
-     * @type {[type]}
+     * @type {string} only applicable for a few dialect (Azure CosmosDB at the moment)
      */
     tableId?: string;
     sql?: string;
+    /**
+     * @type {boolean} whether or not a query is pinned and can't be closed
+     */
+    pinned?: boolean;
   };
 
   export type ConnectionQuery = CoreConnectionQuery & {
@@ -305,6 +308,8 @@ export module SqluiEnums {
     | 'clientEvent/query/apply/active' // currently selected / active query only
     | 'clientEvent/query/apply/new' // create new query and apply
     | 'clientEvent/query/apply' // based on the setting use either new query or selected query
+    | 'clientEvent/query/pin'
+    | 'clientEvent/query/unpin'
     | 'clientEvent/query/new'
     | 'clientEvent/query/rename'
     | 'clientEvent/query/export'

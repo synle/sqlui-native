@@ -4,6 +4,8 @@ import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import CloseIcon from '@mui/icons-material/Close';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import EditIcon from '@mui/icons-material/Edit';
+import PushPinIcon from '@mui/icons-material/PushPin';
+import PushPinOutlinedIcon from '@mui/icons-material/PushPinOutlined';
 import StarIcon from '@mui/icons-material/Star';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
@@ -85,6 +87,12 @@ export default function QueryBoxTabs() {
     [selectCommand],
   );
 
+  const onPinQuery = useCallback(
+    (data: SqluiFrontend.ConnectionQuery, pinned: boolean) =>
+      selectCommand({ event: pinned ? 'clientEvent/query/pin' : 'clientEvent/query/unpin', data }),
+    [selectCommand],
+  );
+
   // add a dummy query to start
   useEffect(() => {
     if (!init && !isLoading) {
@@ -112,7 +120,7 @@ export default function QueryBoxTabs() {
   const tabHeaders: React.ReactNode[] = useMemo(
     () => [
       ...(queries || []).map((q, idx) => {
-        const options = [
+        let options = [
           {
             label: 'Add to Bookmark',
             onClick: () => onAddToBookmark(q),
@@ -134,28 +142,50 @@ export default function QueryBoxTabs() {
             onClick: () => onDuplicateQuery(q),
             startIcon: <ContentCopyIcon />,
           },
-          { label: 'divider' },
-          {
-            label: 'Close Tabs to The Right',
-            onClick: () => onCoseTabsToTheRight(q),
-            startIcon: <CloseIcon />,
-          },
-          {
-            label: 'Close Other Tabs',
-            onClick: () => onCloseOtherQueries(q),
-            startIcon: <CloseIcon />,
-          },
-          {
-            label: 'Close',
-            onClick: () => onCloseQuery(q),
-            startIcon: <CloseIcon />,
-          },
         ];
+
+        if (q.pinned) {
+          options = [
+            ...options,
+            { label: 'divider' },
+            {
+              label: 'Unpin',
+              onClick: () => onPinQuery(q, false),
+              startIcon: <PushPinIcon />,
+            },
+          ];
+        } else {
+          options = [
+            ...options,
+            {
+              label: 'Pin',
+              onClick: () => onPinQuery(q, true),
+              startIcon: <PushPinOutlinedIcon />,
+            },
+            { label: 'divider' },
+            {
+              label: 'Close Tabs to The Right',
+              onClick: () => onCoseTabsToTheRight(q),
+              startIcon: <CloseIcon />,
+            },
+            {
+              label: 'Close Other Tabs',
+              onClick: () => onCloseOtherQueries(q),
+              startIcon: <CloseIcon />,
+            },
+            {
+              label: 'Close',
+              onClick: () => onCloseQuery(q),
+              startIcon: <CloseIcon />,
+            },
+          ];
+        }
 
         tabKeys.push(q.name + '.' + idx);
 
         return (
           <>
+            {q.pinned && <PushPinIcon />}
             {q.name}
             <DropdownButton id='table-action-split-button' options={options}>
               <ArrowDropDownIcon fontSize='small' />
