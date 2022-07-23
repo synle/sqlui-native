@@ -141,7 +141,7 @@ export function useConnectionQueries() {
         })
         .map((query) => {
           // here we should remove the isSelected flag
-          const { selected, ...restOfQuery } = query;
+          const { selected, pinned, ...restOfQuery } = query;
 
           return {
             type: 'Query',
@@ -162,6 +162,9 @@ export function useConnectionQueries() {
     if (queryIds.length === 1) {
       const [queryId] = queryIds;
       _connectionQueries = _connectionQueries.filter((q, idx) => {
+        if (q.pinned) {
+          return true;
+        }
         if (q.id !== queryId) {
           return true;
         }
@@ -171,6 +174,10 @@ export function useConnectionQueries() {
       });
     } else {
       _connectionQueries = _connectionQueries.filter((q, idx) => {
+        if (q.pinned) {
+          return true;
+        }
+
         if (queryIds.indexOf(q.id) >= 0) {
           return false;
         }
