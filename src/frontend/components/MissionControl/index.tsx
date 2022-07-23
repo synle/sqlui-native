@@ -137,81 +137,51 @@ export default function MissionControl() {
 
   const onCloseQuery = async (query: SqluiFrontend.ConnectionQuery) => {
     try {
-      await confirm(
-        `Do you want to delete this query "${query.name}"?`,
-        isSoftDeleteModeSetting ? 'Put to Recycle Bin' : 'Delete',
-      );
+      const _onSubmit = async () => {
+        const onUndoConnection = async () => {
+          curToast?.dismiss();
+          await connectionQueries.onAddQuery({ ...query });
+        };
 
-      const onUndoConnection = async () => {
-        curToast?.dismiss();
-        await connectionQueries.onAddQuery({ ...query });
-      };
+        const curToast = await addToast({
+          message: <>Query "{query.name}" closed.</>,
+          action: (
+            <>
+              <Button size='small' onClick={onUndoConnection}>
+                UNDO
+              </Button>
+            </>
+          ),
+        });
 
-      const curToast = await addToast({
-        message: <>Query "{query.name}" closed.</>,
-        action: (
-          <>
-            <Button size='small' onClick={onUndoConnection}>
-              UNDO
-            </Button>
-          </>
-        ),
+        await connectionQueries.onDeleteQueries([query.id]);
+      }
+
+      await modal({
+        title: 'Confirmation?',
+        message:
+        <form onSubmit={e=> {e.preventDefault(); _onSubmit(); dismissDialog();}}>
+          <Box sx={{display: 'flex', flexDirection: 'column', gap: 2}}>
+            <Box>
+              Do you want to delete this query "{query.name}"?
+            </Box>
+            <Box sx={{mt: 2, ml: 'auto', display: 'flex', gap: 3, }}>
+              <Button size='small' onClick={dismissDialog}>Cancel</Button>
+              <Button type='submit' variant='contained' size='small'>{isSoftDeleteModeSetting ? 'Put to Recycle Bin' : 'Delete'}</Button>
+            </Box>
+          </Box>
+        </form>,
+        showCloseButton: true,
+        size: 'xs',
       });
 
-      await connectionQueries.onDeleteQueries([query.id]);
     } catch (err) {}
   };
 
   const onCloseOtherQueries = async (query: SqluiFrontend.ConnectionQuery) => {
     try {
-      await confirm(
-        `Do you want to close other queries except "${query.name}"?`,
-        isSoftDeleteModeSetting ? 'Put to Recycle Bin' : 'Delete',
-      );
-
-      const queriesToClose = queries?.filter((q) => q.id !== query.id) || [];
-
-      const onUndoQueries = async () => {
-        curToast?.dismiss();
-        await connectionQueries.onAddQueries(queriesToClose);
-      };
-
-      const curToast = await addToast({
-        message: <>Multiple queries closed.</>,
-        action: (
-          <>
-            <Button size='small' onClick={onUndoQueries}>
-              UNDO
-            </Button>
-          </>
-        ),
-      });
-
-      await connectionQueries.onDeleteQueries(queriesToClose?.map((q) => q.id));
-    } catch (err) {}
-  };
-
-  const onCloseQueriesToTheRight = async (query: SqluiFrontend.ConnectionQuery) => {
-    try {
-      if (!queries || queries.length <= 1) {
-        return;
-      }
-      await confirm(
-        `Do you want to close all the queries to the right of "${query.name}"?`,
-        isSoftDeleteModeSetting ? 'Put to Recycle Bin' : 'Delete',
-      );
-
-      // find the target idx
-      let targetIdx: number = -1;
-      for (let i = 0; i < queries.length; i++) {
-        if (queries[i].id === query.id) {
-          targetIdx = i;
-          break;
-        }
-      }
-
-      if (targetIdx >= 0) {
-        const queriesToClose = queries.filter((_q, idx) => idx > targetIdx);
+      const _onSubmit = async () => {
+        const queriesToClose = queries?.filter((q) => q.id !== query.id) || [];
 
         const onUndoQueries = async () => {
           curToast?.dismiss();
@@ -229,9 +199,90 @@ export default function MissionControl() {
           ),
         });
 
-        await connectionQueries.onDeleteQueries(queriesToClose.map((q) => q.id));
-        await connectionQueries.onShowQuery(query.id);
+        await connectionQueries.onDeleteQueries(queriesToClose?.map((q) => q.id));
       }
+
+      await modal({
+        title: 'Confirmation?',
+        message:
+        <form onSubmit={e=> {e.preventDefault(); _onSubmit(); dismissDialog();}}>
+          <Box sx={{display: 'flex', flexDirection: 'column', gap: 2}}>
+            <Box>
+              Do you want to close other queries except "{query.name}"?
+            </Box>
+            <Box sx={{mt: 2, ml: 'auto', display: 'flex', gap: 3, }}>
+              <Button size='small' onClick={dismissDialog}>Cancel</Button>
+              <Button type='submit' variant='contained' size='small'>{isSoftDeleteModeSetting ? 'Put to Recycle Bin' : 'Delete'}</Button>
+            </Box>
+          </Box>
+        </form>,
+        showCloseButton: true,
+        size: 'xs',
+      });
+
+      await _onSubmit();
+    } catch (err) {}
+  };
+
+  const onCloseQueriesToTheRight = async (query: SqluiFrontend.ConnectionQuery) => {
+    try {
+      const _onSubmit = async () => {
+        if (!queries || queries.length <= 1) {
+          return;
+        }
+
+        // find the target idx
+        let targetIdx: number = -1;
+        for (let i = 0; i < queries.length; i++) {
+          if (queries[i].id === query.id) {
+            targetIdx = i;
+            break;
+          }
+        }
+
+        if (targetIdx >= 0) {
+          const queriesToClose = queries.filter((_q, idx) => idx > targetIdx);
+
+          const onUndoQueries = async () => {
+            curToast?.dismiss();
+            await connectionQueries.onAddQueries(queriesToClose);
+          };
+
+          const curToast = await addToast({
+            message: <>Multiple queries closed.</>,
+            action: (
+              <>
+                <Button size='small' onClick={onUndoQueries}>
+                  UNDO
+                </Button>
+              </>
+            ),
+          });
+
+          await connectionQueries.onDeleteQueries(queriesToClose.map((q) => q.id));
+          await connectionQueries.onShowQuery(query.id);
+        }
+      }
+
+      await modal({
+        title: 'Confirmation?',
+        message:
+        <form onSubmit={e=> {e.preventDefault(); _onSubmit(); dismissDialog();}}>
+          <Box sx={{display: 'flex', flexDirection: 'column', gap: 2}}>
+            <Box>
+              Do you want to close all the queries to the right of "{query.name}"?
+            </Box>
+            <Box sx={{mt: 2, ml: 'auto', display: 'flex', gap: 3, }}>
+              <Button size='small' onClick={dismissDialog}>Cancel</Button>
+              <Button type='submit' variant='contained' size='small'>{isSoftDeleteModeSetting ? 'Put to Recycle Bin' : 'Delete'}</Button>
+            </Box>
+          </Box>
+        </form>,
+        showCloseButton: true,
+        size: 'xs',
+      });
+
+      await _onSubmit();
     } catch (err) {}
   };
 
