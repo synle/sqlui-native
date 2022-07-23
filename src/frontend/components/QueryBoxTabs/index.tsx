@@ -112,7 +112,7 @@ export default function QueryBoxTabs() {
   const tabHeaders: React.ReactNode[] = useMemo(
     () => [
       ...(queries || []).map((q, idx) => {
-        const options = [
+        let options = [
           {
             label: 'Add to Bookmark',
             onClick: () => onAddToBookmark(q),
@@ -134,23 +134,44 @@ export default function QueryBoxTabs() {
             onClick: () => onDuplicateQuery(q),
             startIcon: <ContentCopyIcon />,
           },
-          { label: 'divider' },
-          {
-            label: 'Close Tabs to The Right',
-            onClick: () => onCoseTabsToTheRight(q),
-            startIcon: <CloseIcon />,
-          },
-          {
-            label: 'Close Other Tabs',
-            onClick: () => onCloseOtherQueries(q),
-            startIcon: <CloseIcon />,
-          },
-          {
-            label: 'Close',
-            onClick: () => onCloseQuery(q),
-            startIcon: <CloseIcon />,
-          },
         ];
+
+        if(q.pinned){
+          options = [
+            ...options,
+            { label: 'divider' },
+            {
+              label: 'Unpin',
+              onClick: () => onCoseTabsToTheRight(q),
+              startIcon: <CloseIcon />,
+            },
+          ]
+        } else {
+          options = [
+            ...options,
+            {
+              label: 'Pin',
+              onClick: () => onCoseTabsToTheRight(q),
+              startIcon: <CloseIcon />,
+            },
+            { label: 'divider' },
+            {
+              label: 'Close Tabs to The Right',
+              onClick: () => onCoseTabsToTheRight(q),
+              startIcon: <CloseIcon />,
+            },
+            {
+              label: 'Close Other Tabs',
+              onClick: () => onCloseOtherQueries(q),
+              startIcon: <CloseIcon />,
+            },
+            {
+              label: 'Close',
+              onClick: () => onCloseQuery(q),
+              startIcon: <CloseIcon />,
+            },
+          ]
+        }
 
         tabKeys.push(q.name + '.' + idx);
 
