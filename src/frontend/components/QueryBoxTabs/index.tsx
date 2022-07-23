@@ -168,6 +168,7 @@ export default function QueryBoxTabs() {
         } else {
           options = [
             ...options,
+            { label: 'divider' },
             {
               label: 'Pin',
               onClick: () => onPinQuery(q, true),
