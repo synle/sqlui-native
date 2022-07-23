@@ -162,7 +162,7 @@ export function useConnectionQueries() {
     if (queryIds.length === 1) {
       const [queryId] = queryIds;
       _connectionQueries = _connectionQueries.filter((q, idx) => {
-        if(q.pinned){
+        if (q.pinned) {
           return true;
         }
         if (q.id !== queryId) {
@@ -174,7 +174,7 @@ export function useConnectionQueries() {
       });
     } else {
       _connectionQueries = _connectionQueries.filter((q, idx) => {
-        if(q.pinned){
+        if (q.pinned) {
           return true;
         }
 

@@ -4,6 +4,8 @@ import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import CloseIcon from '@mui/icons-material/Close';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import EditIcon from '@mui/icons-material/Edit';
+import PushPinIcon from '@mui/icons-material/PushPin';
+import PushPinOutlinedIcon from '@mui/icons-material/PushPinOutlined';
 import StarIcon from '@mui/icons-material/Star';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
@@ -18,8 +20,6 @@ import Tabs from 'src/frontend/components/Tabs';
 import { useConnectionQueries } from 'src/frontend/hooks/useConnectionQuery';
 import { useQueryTabOrientationSetting } from 'src/frontend/hooks/useSetting';
 import { SqluiFrontend } from 'typings';
-import PushPinIcon from '@mui/icons-material/PushPin';
-import PushPinOutlinedIcon from '@mui/icons-material/PushPinOutlined';
 
 export default function QueryBoxTabs() {
   const navigate = useNavigate();
@@ -144,7 +144,7 @@ export default function QueryBoxTabs() {
           },
         ];
 
-        if(q.pinned){
+        if (q.pinned) {
           options = [
             ...options,
             { label: 'divider' },
@@ -153,7 +153,7 @@ export default function QueryBoxTabs() {
               onClick: () => onPinQuery(q, false),
               startIcon: <PushPinIcon />,
             },
-          ]
+          ];
         } else {
           options = [
             ...options,
@@ -178,7 +178,7 @@ export default function QueryBoxTabs() {
               onClick: () => onCloseQuery(q),
               startIcon: <CloseIcon />,
             },
-          ]
+          ];
         }
 
         tabKeys.push(q.name + '.' + idx);
