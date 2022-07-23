@@ -22,23 +22,24 @@ describe('commonUtils', () => {
   describe('getExportedQuery', () => {
     test('should work with minimal inputs', async () => {
       const actual = commonUtils.getExportedQuery({
-        id: 'query.1643737746323.6184509846791006',
+        id: 'some_query_id',
         name: 'Query 2/1/2022, 9:49:06 AM',
         sql: 'SELECT\n  TOP 200 *\nFROM\n  albums',
-        connectionId: 'connection.1644098335891.8887562323718656',
-        databaseId: 'musicstores',
+        connectionId: 'some_connection_id',
+        databaseId: 'some_database_id',
       });
       expect(actual).toMatchInlineSnapshot(`
 Object {
   "_type": "query",
-  "connectionId": "connection.1644098335891.8887562323718656",
-  "databaseId": "musicstores",
-  "id": "query.1643737746323.6184509846791006",
+  "connectionId": "some_connection_id",
+  "databaseId": "some_database_id",
+  "id": "some_query_id",
   "name": "Query 2/1/2022, 9:49:06 AM",
   "sql": "SELECT
   TOP 200 *
 FROM
   albums",
+  "tableId": undefined,
 }
 `);
     });
@@ -46,12 +47,12 @@ FROM
     test('should work with more completed data inputs', async () => {
       //@ts-ignore
       const actual = commonUtils.getExportedQuery({
-        id: 'query.1643737746323.6184509846791006',
+        id: 'some_query_id',
         name: 'Query 2/1/2022, 9:49:06 AM',
         sql: 'SELECT\n  TOP 200 *\nFROM\n  albums',
-        connectionId: 'connection.1644098335891.8887562323718656',
+        connectionId: 'some_connection_id',
         selected: true,
-        databaseId: 'musicstores',
+        databaseId: 'some_database_id',
         executionStart: 123,
         executionEnd: 456,
         result: {
@@ -62,14 +63,40 @@ FROM
       expect(actual).toMatchInlineSnapshot(`
 Object {
   "_type": "query",
-  "connectionId": "connection.1644098335891.8887562323718656",
-  "databaseId": "musicstores",
-  "id": "query.1643737746323.6184509846791006",
+  "connectionId": "some_connection_id",
+  "databaseId": "some_database_id",
+  "id": "some_query_id",
   "name": "Query 2/1/2022, 9:49:06 AM",
   "sql": "SELECT
   TOP 200 *
 FROM
   albums",
+  "tableId": undefined,
+}
+`);
+    });
+
+    test('should also include tableId', async () => {
+      const actual = commonUtils.getExportedQuery({
+        id: 'some_query_id',
+        name: 'Query 2/1/2022, 9:49:06 AM',
+        sql: 'SELECT\n  TOP 200 *\nFROM\n  albums',
+        connectionId: 'some_connection_id',
+        databaseId: 'some_database_id',
+        tableId: 'some_table_id',
+      });
+      expect(actual).toMatchInlineSnapshot(`
+Object {
+  "_type": "query",
+  "connectionId": "some_connection_id",
+  "databaseId": "some_database_id",
+  "id": "some_query_id",
+  "name": "Query 2/1/2022, 9:49:06 AM",
+  "sql": "SELECT
+  TOP 200 *
+FROM
+  albums",
+  "tableId": "some_table_id",
 }
 `);
     });
