@@ -152,17 +152,40 @@ export default function Settings(props: SettingsProps) {
           </Tooltip>
         </Typography>
         <div className='FormInput__Row'>
-          <Select
-            value={settings.deleteMode || 'soft-delete'}
-            onChange={(newValue) => onSettingChange('deleteMode', newValue)}
-            sx={{ width: '100%' }}>
-            <option value='soft-delete'>Soft Delete (Put to Recycle Bin)</option>
-            <option value='hard-delete'>Hard Delete (Permanent Delete)</option>
-          </Select>
+          <ChangeSoftDeleteInput />
         </div>
       </>
     );
   }
 
   return <>{contentDom}</>;
+}
+
+export function ChangeSoftDeleteInput() {
+  const { isLoading, settings, onChange } = useSetting();
+
+  const onSettingChange = (key: SqluiFrontend.SettingKey, value: any) => {
+    if (!settings) {
+      return;
+    }
+
+    onChange({
+      ...settings,
+      ...{ [key]: value },
+    });
+  };
+
+  if (isLoading || !settings) {
+    return null;
+  }
+
+  return (
+    <Select
+      value={settings.deleteMode || 'soft-delete'}
+      onChange={(newValue) => onSettingChange('deleteMode', newValue)}
+      sx={{ width: '100%' }}>
+      <option value='soft-delete'>Soft Delete (Put to Recycle Bin)</option>
+      <option value='hard-delete'>Hard Delete (Permanent Delete)</option>
+    </Select>
+  );
 }

@@ -7,7 +7,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { BookmarksItemListModalContent } from 'src/frontend/components/BookmarksItemList';
 import CommandPalette from 'src/frontend/components/CommandPalette';
 import SessionSelectionForm from 'src/frontend/components/SessionSelectionForm';
-import Settings from 'src/frontend/components/Settings';
+import Settings, { ChangeSoftDeleteInput } from 'src/frontend/components/Settings';
 import { downloadText } from 'src/frontend/data/file';
 import { getRandomSessionId } from 'src/frontend/data/session';
 import { useActionDialogs } from 'src/frontend/hooks/useActionDialogs';
@@ -168,12 +168,13 @@ export default function MissionControl() {
             }}>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
               <Box>Do you want to delete this query "{query.name}"?</Box>
+              <ChangeSoftDeleteInput />
               <Box sx={{ mt: 2, ml: 'auto', display: 'flex', gap: 3 }}>
                 <Button size='small' onClick={dismissDialog}>
-                  Cancel
+                  No
                 </Button>
                 <Button type='submit' variant='contained' size='small'>
-                  {isSoftDeleteModeSetting ? 'Put to Recycle Bin' : 'Delete'}
+                  Yes
                 </Button>
               </Box>
             </Box>
@@ -220,12 +221,13 @@ export default function MissionControl() {
             }}>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
               <Box>Do you want to close other queries except "{query.name}"?</Box>
+              <ChangeSoftDeleteInput />
               <Box sx={{ mt: 2, ml: 'auto', display: 'flex', gap: 3 }}>
                 <Button size='small' onClick={dismissDialog}>
-                  Cancel
+                  No
                 </Button>
                 <Button type='submit' variant='contained' size='small'>
-                  {isSoftDeleteModeSetting ? 'Put to Recycle Bin' : 'Delete'}
+                  Yes
                 </Button>
               </Box>
             </Box>
@@ -290,12 +292,13 @@ export default function MissionControl() {
             }}>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
               <Box>Do you want to close all the queries to the right of "{query.name}"?</Box>
+              <ChangeSoftDeleteInput />
               <Box sx={{ mt: 2, ml: 'auto', display: 'flex', gap: 3 }}>
                 <Button size='small' onClick={dismissDialog}>
-                  Cancel
+                  No
                 </Button>
                 <Button type='submit' variant='contained' size='small'>
-                  {isSoftDeleteModeSetting ? 'Put to Recycle Bin' : 'Delete'}
+                  Yes
                 </Button>
               </Box>
             </Box>
