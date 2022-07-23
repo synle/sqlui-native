@@ -7,7 +7,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { BookmarksItemListModalContent } from 'src/frontend/components/BookmarksItemList';
 import CommandPalette from 'src/frontend/components/CommandPalette';
 import SessionSelectionForm from 'src/frontend/components/SessionSelectionForm';
-import Settings from 'src/frontend/components/Settings';
+import Settings, { ChangeSoftDeleteInput } from 'src/frontend/components/Settings';
 import { downloadText } from 'src/frontend/data/file';
 import { getRandomSessionId } from 'src/frontend/data/session';
 import { useActionDialogs } from 'src/frontend/hooks/useActionDialogs';
@@ -45,7 +45,7 @@ import {
 import { RecordDetailsPage } from 'src/frontend/views/RecordPage';
 import appPackage from 'src/package.json';
 import { SqluiCore, SqluiEnums, SqluiFrontend } from 'typings';
-import {ChangeSoftDeleteInput} from 'src/frontend/components/Settings';
+
 export type Command = {
   event: SqluiEnums.ClientEventKey;
   data?: unknown;
@@ -155,27 +155,34 @@ export default function MissionControl() {
         });
 
         await connectionQueries.onDeleteQueries([query.id]);
-      }
+      };
 
       await modal({
         title: 'Confirmation?',
-        message:
-        <form onSubmit={e=> {e.preventDefault(); _onSubmit(); dismissDialog();}}>
-          <Box sx={{display: 'flex', flexDirection: 'column', gap: 2}}>
-            <Box>
-              Do you want to delete this query "{query.name}"?
+        message: (
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              _onSubmit();
+              dismissDialog();
+            }}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              <Box>Do you want to delete this query "{query.name}"?</Box>
+              <ChangeSoftDeleteInput />
+              <Box sx={{ mt: 2, ml: 'auto', display: 'flex', gap: 3 }}>
+                <Button size='small' onClick={dismissDialog}>
+                  No
+                </Button>
+                <Button type='submit' variant='contained' size='small'>
+                  Yes
+                </Button>
+              </Box>
             </Box>
-            <ChangeSoftDeleteInput />
-            <Box sx={{mt: 2, ml: 'auto', display: 'flex', gap: 3, }}>
-              <Button size='small' onClick={dismissDialog}>No</Button>
-              <Button type='submit' variant='contained' size='small'>Yes</Button>
-            </Box>
-          </Box>
-        </form>,
+          </form>
+        ),
         showCloseButton: true,
         size: 'xs',
       });
-
     } catch (err) {}
   };
 
@@ -201,23 +208,31 @@ export default function MissionControl() {
         });
 
         await connectionQueries.onDeleteQueries(queriesToClose?.map((q) => q.id));
-      }
+      };
 
       await modal({
         title: 'Confirmation?',
-        message:
-        <form onSubmit={e=> {e.preventDefault(); _onSubmit(); dismissDialog();}}>
-          <Box sx={{display: 'flex', flexDirection: 'column', gap: 2}}>
-            <Box>
-              Do you want to close other queries except "{query.name}"?
+        message: (
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              _onSubmit();
+              dismissDialog();
+            }}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              <Box>Do you want to close other queries except "{query.name}"?</Box>
+              <ChangeSoftDeleteInput />
+              <Box sx={{ mt: 2, ml: 'auto', display: 'flex', gap: 3 }}>
+                <Button size='small' onClick={dismissDialog}>
+                  No
+                </Button>
+                <Button type='submit' variant='contained' size='small'>
+                  Yes
+                </Button>
+              </Box>
             </Box>
-            <ChangeSoftDeleteInput />
-            <Box sx={{mt: 2, ml: 'auto', display: 'flex', gap: 3, }}>
-              <Button size='small' onClick={dismissDialog}>No</Button>
-              <Button type='submit' variant='contained' size='small'>Yes</Button>
-            </Box>
-          </Box>
-        </form>,
+          </form>
+        ),
         showCloseButton: true,
         size: 'xs',
       });
@@ -264,23 +279,31 @@ export default function MissionControl() {
           await connectionQueries.onDeleteQueries(queriesToClose.map((q) => q.id));
           await connectionQueries.onShowQuery(query.id);
         }
-      }
+      };
 
       await modal({
         title: 'Confirmation?',
-        message:
-        <form onSubmit={e=> {e.preventDefault(); _onSubmit(); dismissDialog();}}>
-          <Box sx={{display: 'flex', flexDirection: 'column', gap: 2}}>
-            <Box>
-              Do you want to close all the queries to the right of "{query.name}"?
+        message: (
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              _onSubmit();
+              dismissDialog();
+            }}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              <Box>Do you want to close all the queries to the right of "{query.name}"?</Box>
+              <ChangeSoftDeleteInput />
+              <Box sx={{ mt: 2, ml: 'auto', display: 'flex', gap: 3 }}>
+                <Button size='small' onClick={dismissDialog}>
+                  No
+                </Button>
+                <Button type='submit' variant='contained' size='small'>
+                  Yes
+                </Button>
+              </Box>
             </Box>
-            <ChangeSoftDeleteInput />
-            <Box sx={{mt: 2, ml: 'auto', display: 'flex', gap: 3, }}>
-              <Button size='small' onClick={dismissDialog}>No</Button>
-              <Button type='submit' variant='contained' size='small'>Yes</Button>
-            </Box>
-          </Box>
-        </form>,
+          </form>
+        ),
         showCloseButton: true,
         size: 'xs',
       });

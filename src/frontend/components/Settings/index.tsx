@@ -161,7 +161,7 @@ export default function Settings(props: SettingsProps) {
   return <>{contentDom}</>;
 }
 
-export function ChangeSoftDeleteInput(){
+export function ChangeSoftDeleteInput() {
   const { isLoading, settings, onChange } = useSetting();
 
   const onSettingChange = (key: SqluiFrontend.SettingKey, value: any) => {
@@ -179,11 +179,13 @@ export function ChangeSoftDeleteInput(){
     return null;
   }
 
-  return <Select
-            value={settings.deleteMode || 'soft-delete'}
-            onChange={(newValue) => onSettingChange('deleteMode', newValue)}
-            sx={{ width: '100%' }}>
-            <option value='soft-delete'>Soft Delete (Put to Recycle Bin)</option>
-            <option value='hard-delete'>Hard Delete (Permanent Delete)</option>
-          </Select>;
+  return (
+    <Select
+      value={settings.deleteMode || 'soft-delete'}
+      onChange={(newValue) => onSettingChange('deleteMode', newValue)}
+      sx={{ width: '100%' }}>
+      <option value='soft-delete'>Soft Delete (Put to Recycle Bin)</option>
+      <option value='hard-delete'>Hard Delete (Permanent Delete)</option>
+    </Select>
+  );
 }
