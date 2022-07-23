@@ -641,38 +641,65 @@ export default function MissionControl() {
   const onDeleteConnection = async (connection: SqluiCore.ConnectionProps) => {
     let curToast;
     try {
-      await confirm(
-        `Delete this connection "${connection.name}"?`,
-        isSoftDeleteModeSetting ? 'Put to Recycle Bin' : 'Delete',
-      );
-      await deleteConnection(connection.id);
+      const _onSubmit = async () => {
+        try {
+          await deleteConnection(connection.id);
 
-      const onUndoConnection = async () => {
-        curToast?.dismiss();
-        await duplicateConnection(connection);
+          const onUndoConnection = async () => {
+            curToast?.dismiss();
+            await duplicateConnection(connection);
+          };
+
+          curToast = await addToast({
+            message: <>Connection "{connection.name}" deleted.</>,
+            action: (
+              <>
+                <Button size='small' onClick={onUndoConnection}>
+                  UNDO
+                </Button>
+              </>
+            ),
+          });
+
+          createSystemNotification(
+            `Connection "${connection.name}" (dialect=${connection.dialect || 'N/A'}) deleted`,
+          );
+        } catch (err1) {
+          curToast = await addToast({
+            message: `Failed to delete connection "${connection.name}" (dialect=${
+              connection.dialect || 'N/A'
+            })`,
+          });
+        }
       };
 
-      curToast = await addToast({
-        message: <>Connection "{connection.name}" deleted.</>,
-        action: (
-          <>
-            <Button size='small' onClick={onUndoConnection}>
-              UNDO
-            </Button>
-          </>
+      await modal({
+        title: 'Confirmation?',
+        message: (
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              _onSubmit();
+              dismissDialog();
+            }}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              <Box>Delete this connection {connection.name}?</Box>
+              <ChangeSoftDeleteInput />
+              <Box sx={{ mt: 2, ml: 'auto', display: 'flex', gap: 3 }}>
+                <Button size='small' onClick={dismissDialog}>
+                  No
+                </Button>
+                <Button type='submit' variant='contained' size='small'>
+                  Yes
+                </Button>
+              </Box>
+            </Box>
+          </form>
         ),
+        showCloseButton: true,
+        size: 'xs',
       });
-
-      createSystemNotification(
-        `Connection "${connection.name}" (dialect=${connection.dialect || 'N/A'}) deleted`,
-      );
-    } catch (err) {
-      curToast = await addToast({
-        message: `Failed to delete connection "${connection.name}" (dialect=${
-          connection.dialect || 'N/A'
-        })`,
-      });
-    }
+    } catch (err) {}
   };
 
   const onShowBookmarks = async () => {
