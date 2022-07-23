@@ -162,6 +162,9 @@ export function useConnectionQueries() {
     if (queryIds.length === 1) {
       const [queryId] = queryIds;
       _connectionQueries = _connectionQueries.filter((q, idx) => {
+        if(q.pinned){
+          return true;
+        }
         if (q.id !== queryId) {
           return true;
         }
@@ -171,6 +174,10 @@ export function useConnectionQueries() {
       });
     } else {
       _connectionQueries = _connectionQueries.filter((q, idx) => {
+        if(q.pinned){
+          return true;
+        }
+
         if (queryIds.indexOf(q.id) >= 0) {
           return false;
         }

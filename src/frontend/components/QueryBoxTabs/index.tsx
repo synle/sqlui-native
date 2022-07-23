@@ -18,6 +18,8 @@ import Tabs from 'src/frontend/components/Tabs';
 import { useConnectionQueries } from 'src/frontend/hooks/useConnectionQuery';
 import { useQueryTabOrientationSetting } from 'src/frontend/hooks/useSetting';
 import { SqluiFrontend } from 'typings';
+import PushPinIcon from '@mui/icons-material/PushPin';
+import PushPinOutlinedIcon from '@mui/icons-material/PushPinOutlined';
 
 export default function QueryBoxTabs() {
   const navigate = useNavigate();
@@ -148,8 +150,8 @@ export default function QueryBoxTabs() {
             { label: 'divider' },
             {
               label: 'Unpin',
-              onClick: () => onCoseTabsToTheRight(q),
-              startIcon: <CloseIcon />,
+              onClick: () => onPinQuery(q, false),
+              startIcon: <PushPinIcon />,
             },
           ]
         } else {
@@ -157,8 +159,8 @@ export default function QueryBoxTabs() {
             ...options,
             {
               label: 'Pin',
-              onClick: () => onCoseTabsToTheRight(q),
-              startIcon: <CloseIcon />,
+              onClick: () => onPinQuery(q, true),
+              startIcon: <PushPinOutlinedIcon />,
             },
             { label: 'divider' },
             {
@@ -183,6 +185,7 @@ export default function QueryBoxTabs() {
 
         return (
           <>
+            {q.pinned && <PushPinIcon />}
             {q.name}
             <DropdownButton id='table-action-split-button' options={options}>
               <ArrowDropDownIcon fontSize='small' />

@@ -370,7 +370,6 @@ export default function MissionControl() {
       pinned
     });
 
-
     await addToast({
       message: `Query "${query.name}" ${pinned ? 'pinned' : 'unpinned'}`,
     });
