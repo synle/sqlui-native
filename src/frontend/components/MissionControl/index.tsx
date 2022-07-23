@@ -369,6 +369,11 @@ export default function MissionControl() {
     await connectionQueries.onChangeQuery(query.id, {
       pinned
     });
+
+
+    await addToast({
+      message: `Query "${query.name}" ${pinned ? 'pinned' : 'unpinned'}`,
+    });
   }
 
   const onShowQueryHelp = async () => {
