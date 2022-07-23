@@ -139,6 +139,8 @@ const ALL_COMMAND_PALETTE_OPTIONS: CommandOption[] = [
   { event: 'clientEvent/query/close', label: 'Close Current Query', useCurrentQuery: true },
   { event: 'clientEvent/query/closeOther', label: 'Close Other Query', useCurrentQuery: true },
   { event: 'clientEvent/query/reveal', label: 'Reveal Query Connection', useCurrentQuery: true },
+  { event: 'clientEvent/query/pin', label: 'Pin Current Query', useCurrentQuery: true },
+  { event: 'clientEvent/query/unpin', label: 'Unpin Current Query', useCurrentQuery: true },
   {
     event: 'clientEvent/query/closeToTheRight',
     label: 'Close Tabs to The Right Of Current Query',
