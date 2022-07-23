@@ -123,10 +123,8 @@ $ConnectionTreeIndentSize: 7px;
     &__Header {
       display: inline-flex;
       align-items: center;
-
-      *:last-child {
-        margin-left: 10px;
-      }
+      text-transform: none;
+      gap: 0.5rem;
     }
     &__Body {
       padding-block: 15px;
