@@ -153,6 +153,17 @@ export default function QueryBoxTabs() {
               onClick: () => onPinQuery(q, false),
               startIcon: <PushPinIcon />,
             },
+            { label: 'divider' },
+            {
+              label: 'Close Tabs to The Right',
+              onClick: () => onCoseTabsToTheRight(q),
+              startIcon: <CloseIcon />,
+            },
+            {
+              label: 'Close Other Tabs',
+              onClick: () => onCloseOtherQueries(q),
+              startIcon: <CloseIcon />,
+            },
           ];
         } else {
           options = [
