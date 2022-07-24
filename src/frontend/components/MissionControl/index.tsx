@@ -934,7 +934,6 @@ export default function MissionControl() {
     const onRevealDataLocation = () => {
       const platform = window?.process?.platform;
       const storageDir = serverConfigs?.storageDir || '';
-      let shouldCopyToClipboard = true;
 
       if (!storageDir) {
         return;
