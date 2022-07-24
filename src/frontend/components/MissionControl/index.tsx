@@ -42,9 +42,13 @@ import {
   getExportedConnection,
   getExportedQuery,
 } from 'src/frontend/utils/commonUtils';
+
+import {execute} from 'src/frontend/utils/executeUtils';
 import { RecordDetailsPage } from 'src/frontend/views/RecordPage';
 import appPackage from 'src/package.json';
 import { SqluiCore, SqluiEnums, SqluiFrontend } from 'typings';
+
+
 
 export type Command = {
   event: SqluiEnums.ClientEventKey;
@@ -931,8 +935,26 @@ export default function MissionControl() {
     };
 
     const onRevealDataLocation = () => {
+      const platform = window?.process?.platform;
+      const storageDir = serverConfigs?.storageDir || '';
+      let shouldCopyToClipboard = true;
+
+      if(!storageDir){
+        return;
+      }
+
       // copy the path to clipboard
-      navigator.clipboard.writeText(serverConfigs?.storageDir || '');
+      navigator.clipboard.writeText(storageDir);
+
+      if(window.isElectron){
+        if(platform === 'win32'){
+          execute(`explorer.exe "${storageDir}"`)
+        } else if(platform === 'darwin'){
+          execute(`open "${storageDir}"`)
+        } else {
+          // anything else
+        }
+      }
     };
 
     await modal({
