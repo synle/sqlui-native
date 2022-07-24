@@ -1,5 +1,5 @@
 // @ts-ignore
-const { exec } =  window.requireElectron('child_process');
+const { exec } = window.requireElectron('child_process');
 
 export function execute(shellToRun: string, delay = 25): Promise<string> {
   return new Promise((resolve, reject) => {
