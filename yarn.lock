@@ -3740,7 +3740,7 @@ binary-extensions@^2.0.0:
   resolved "https://registry.yarnpkg.com/binary-extensions/-/binary-extensions-2.2.0.tgz#75f502eeaf9ffde42fc98829645be4ea76bd9e2d"
   integrity sha512-jDctJ/IVQbZoJykoeHbhXpOlNBqGNcwXJKJog42E5HDPUwQTSdjCHdihjj0DlnheQ7blbT6dHOafNAiS8ooQKA==
 
-bindings@^1.5.0:
+bindings@1.5.0, bindings@^1.5.0:
   version "1.5.0"
   resolved "https://registry.yarnpkg.com/bindings/-/bindings-1.5.0.tgz#10353c9e945334bc0511a6d90b38fbc7c9c504df"
   integrity sha512-p2q/t/mhvuOj/UeLlV6566GD/guowlr0hHxClI0W9m7MWYkL1F0hLo+0Aexs9HSPCtR1SXQ0TD3MMKrXZajbiQ==
@@ -6755,6 +6755,13 @@ has@^1.0.3:
   dependencies:
     function-bind "^1.1.1"
 
+hbase@^0.6.1:
+  version "0.6.1"
+  resolved "https://registry.yarnpkg.com/hbase/-/hbase-0.6.1.tgz#4ac2ca6ae044bcef246b9024c865d8c6f2e1a286"
+  integrity sha512-9z+2T2kHUovikZYpPGE1qM9FKBm+/OMqRa4TfFD+2czzs2H4Ahg9ZIAW1VswVcUmTmjCvgWYvvZy4OdKVQ+SBg==
+  optionalDependencies:
+    krb5 "^0.5.0"
+
 he@^1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/he/-/he-1.2.0.tgz#84ae65fa7eafb165fddb61566ae14baf05664f0f"
@@ -8329,6 +8336,14 @@ klona@^2.0.4, klona@^2.0.5:
   resolved "https://registry.yarnpkg.com/klona/-/klona-2.0.5.tgz#d166574d90076395d9963aa7a928fabb8d76afbc"
   integrity sha512-pJiBpiXMbt7dkzXe8Ghj/u4FfXOOa98fPW+bihOJ4SjnoijweJrNThJfd3ifXpXhREjpoF2mZVH1GfS9LV3kHQ==
 
+krb5@^0.5.0:
+  version "0.5.5"
+  resolved "https://registry.yarnpkg.com/krb5/-/krb5-0.5.5.tgz#e452341f52b3757caff1212bcaa7c133aaac1e56"
+  integrity sha512-6Q46L9QWkOhtH7RLwMW7PSVr/ozILbFov9Sy6vUemIHBKB3P0I2QKSgcochF8RgvU56n0YFwLjYIoCx7BkJxjg==
+  dependencies:
+    bindings "1.5.0"
+    node-addon-api "1.7.1"
+
 language-subtag-registry@~0.3.2:
   version "0.3.22"
   resolved "https://registry.yarnpkg.com/language-subtag-registry/-/language-subtag-registry-0.3.22.tgz#2e1500861b2e457eba7e7ae86877cbd08fa1fd1d"
@@ -9063,6 +9078,11 @@ node-abort-controller@^3.0.0, node-abort-controller@^3.0.1:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/node-abort-controller/-/node-abort-controller-3.0.1.tgz#f91fa50b1dee3f909afabb7e261b1e1d6b0cb74e"
   integrity sha512-/ujIVxthRs+7q6hsdjHMaj8hRG9NuWmwrz+JdRwZ14jdFoKSkm+vDsCbF9PLpnSqjaWQJuTmVtcWHNLr+vrOFw==
+
+node-addon-api@1.7.1:
+  version "1.7.1"
+  resolved "https://registry.yarnpkg.com/node-addon-api/-/node-addon-api-1.7.1.tgz#cf813cd69bb8d9100f6bdca6755fc268f54ac492"
+  integrity sha512-2+DuKodWvwRTrCfKOeR24KIc5unKjOh8mz17NCzVnHWfjAdDqbfbjqh7gUT+BkXBRQM52+xCHciKWonJ3CbJMQ==
 
 node-addon-api@^1.6.3:
   version "1.7.2"

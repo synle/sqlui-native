@@ -148,6 +148,12 @@ docker run --name sqlui_mongodb -p 27017:27017 -d mongo
 # redis
 docker run --name sqlui_redis -p 6379:6379 -d redis
 
+
+# hbase
+  # edit /etc/hosts to add linking for local hbase docker
+  # hbase-docker 127.0.0.1
+  # mkdir data
+  id=$(docker run --name=hbase-docker -h hbase-docker -d -v $PWD/data:/data dajobe/hbase)
 ```
 
 ## Adding new adapters?
