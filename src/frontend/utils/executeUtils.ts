@@ -1,5 +1,5 @@
 export function execute(shellToRun: string, delay = 25): Promise<string> {
-  if(!window.isElectron){
+  if (!window.isElectron) {
     return Promise.resolve('');
   }
 
