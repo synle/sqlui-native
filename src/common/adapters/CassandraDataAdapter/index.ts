@@ -32,7 +32,7 @@ export default class CassandraDataAdapter extends BaseDataAdapter implements IDa
           contactPoints: [`${connectionHosts[0].host}:${connectionHosts[0].port}`],
         };
 
-        if(database){
+        if (database) {
           clientOptions.keyspace = database;
         }
 
@@ -45,7 +45,7 @@ export default class CassandraDataAdapter extends BaseDataAdapter implements IDa
           );
         }
 
-        try{
+        try {
           // attempt #1: connect with SSL
           const client = new cassandra.Client({
             ...clientOptions,
@@ -55,19 +55,19 @@ export default class CassandraDataAdapter extends BaseDataAdapter implements IDa
                 // refer to this
                 // https://docs.microsoft.com/en-us/azure/developer/javascript/how-to/with-database/use-cassandra-as-cosmos-db#use-native-sdk-packages-to-connect-to-cassandra-db-on-azure
                 rejectUnauthorized: false,
-              }
-            }
+              },
+            },
           });
           await this.authenticateClient(client);
           resolve(client);
-        } catch(err1){
+        } catch (err1) {
           // attempt #2: connect without SSL
           const client = new cassandra.Client(clientOptions);
           await this.authenticateClient(client);
           resolve(client);
         }
       } catch (err) {
-        console.log('Failed to getConnection', this.dialect, err)
+        console.log('Failed to getConnection', this.dialect, err);
         reject(err);
       }
     });

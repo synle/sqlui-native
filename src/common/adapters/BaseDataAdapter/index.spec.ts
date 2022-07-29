@@ -65,13 +65,15 @@ Array [
 ]
 `);
     });
-
-
     test('input that needs to be encoded properly', async () => {
-      const config = BaseDataAdapter.getConnectionParameters('cassandra://sqlui-native-17823707621378612879:some_strong-PasswordMa+9T=]-G?We4Pp$wcUK==@sqlui-native-17823707621378612879.cassandra.cosmos.azure.com:10350');
+      const config = BaseDataAdapter.getConnectionParameters(
+        'cassandra://sqlui-native-17823707621378612879:some_strong-PasswordMa+9T=]-G?We4Pp$wcUK==@sqlui-native-17823707621378612879.cassandra.cosmos.azure.com:10350',
+      );
       expect(config?.scheme).toBe('cassandra');
-      expect(config?.username).toMatchInlineSnapshot(`"sqlui-native-17823707621378612879"`)
-      expect(config?.password).toMatchInlineSnapshot(`"some_strong-PasswordMa+9T=]-G?We4Pp$wcUK=="`)
+      expect(config?.username).toMatchInlineSnapshot(`"sqlui-native-17823707621378612879"`);
+      expect(config?.password).toMatchInlineSnapshot(
+        `"some_strong-PasswordMa+9T=]-G?We4Pp$wcUK=="`,
+      );
       expect(config?.hosts).toMatchInlineSnapshot(`
 Array [
   Object {
@@ -79,8 +81,7 @@ Array [
     "port": 10350,
   },
 ]
-`)
+`);
     });
-
   });
 });
