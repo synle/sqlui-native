@@ -29,12 +29,12 @@ export default class CassandraDataAdapter extends BaseDataAdapter implements IDa
         }
 
         const clientOptions: cassandra.ClientOptions = {
-          contactPoints: [connectionHosts[0].host],
-          protocolOptions: {
-            port: connectionHosts[0].port,
-          },
-          keyspace: database,
+          contactPoints: [`${connectionHosts[0].host}:${connectionHosts[0].port || 9042}`],
         };
+
+        if (database) {
+          clientOptions.keyspace = database;
+        }
 
         // client authentication
         let authProvider: cassandra.auth.PlainTextAuthProvider | undefined;
@@ -45,11 +45,29 @@ export default class CassandraDataAdapter extends BaseDataAdapter implements IDa
           );
         }
 
-        const client = new cassandra.Client(clientOptions);
-        await this.authenticateClient(client);
-
-        resolve(client);
+        try {
+          // attempt #1: connect with SSL
+          const client = new cassandra.Client({
+            ...clientOptions,
+            ...{
+              sslOptions: {
+                // for Cosmosdb (Cassandra API)
+                // refer to this
+                // https://docs.microsoft.com/en-us/azure/developer/javascript/how-to/with-database/use-cassandra-as-cosmos-db#use-native-sdk-packages-to-connect-to-cassandra-db-on-azure
+                rejectUnauthorized: false,
+              },
+            },
+          });
+          await this.authenticateClient(client);
+          resolve(client);
+        } catch (err1) {
+          // attempt #2: connect without SSL
+          const client = new cassandra.Client(clientOptions);
+          await this.authenticateClient(client);
+          resolve(client);
+        }
       } catch (err) {
+        console.log('Failed to getConnection', this.dialect, err);
         reject(err);
       }
     });
