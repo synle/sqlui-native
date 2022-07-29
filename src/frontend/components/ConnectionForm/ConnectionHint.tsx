@@ -1,5 +1,7 @@
-import { Link } from '@mui/material';
+import StarIcon from '@mui/icons-material/Star';
+import { Box, Link, Skeleton } from '@mui/material';
 import Avatar from '@mui/material/Avatar';
+import Divider from '@mui/material/Divider';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
@@ -9,14 +11,7 @@ import {
   SUPPORTED_DIALECTS,
 } from 'src/common/adapters/DataScriptFactory';
 import ConnectionTypeIcon from 'src/frontend/components/ConnectionTypeIcon';
-import {
-  useDeleteBookmarkItem,
-  useGetBookmarkItems,
-  useUpdateBookmarkItem,
-} from 'src/frontend/hooks/useFolderItems';
-import { Skeleton, Box } from '@mui/material';
-import StarIcon from '@mui/icons-material/Star';
-import Divider from '@mui/material/Divider';
+import { useGetBookmarkItems } from 'src/frontend/hooks/useFolderItems';
 import { SqluiCore } from 'typings';
 
 type ConnectionHintProps = {
@@ -28,27 +23,32 @@ export default function ConnectionHint(props: ConnectionHintProps) {
   const { data, isLoading } = useGetBookmarkItems();
   let bookmarkedConnectionsDom: any[] = [];
 
-  if(isLoading){
-    return <Box sx={{display: 'flex', flexDirection: 'column', gap: 2}}>
-      <Skeleton variant='rectangular' height={40} />
-      <Skeleton variant='rectangular' height={40} />
-      <Skeleton variant='rectangular' height={40} />
-      <Skeleton variant='rectangular' height={40} />
-      <Skeleton variant='rectangular' height={40} />
-    </Box>
+  if (isLoading) {
+    return (
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+        <Skeleton variant='rectangular' height={40} />
+        <Skeleton variant='rectangular' height={40} />
+        <Skeleton variant='rectangular' height={40} />
+        <Skeleton variant='rectangular' height={40} />
+        <Skeleton variant='rectangular' height={40} />
+      </Box>
+    );
   }
 
-  const connectionsFromBookmark = data?.filter(bookmark => bookmark.type === 'Connection')
+  const connectionsFromBookmark = data?.filter((bookmark) => bookmark.type === 'Connection');
 
-  if(props.showBookmarks === true && connectionsFromBookmark && connectionsFromBookmark.length > 0){
+  if (
+    props.showBookmarks === true &&
+    connectionsFromBookmark &&
+    connectionsFromBookmark.length > 0
+  ) {
     // pulling the connection string from bookmarks
     bookmarkedConnectionsDom = connectionsFromBookmark.map((connection) => {
-      const bookmark = connection.data as SqluiCore.ConnectionProps
+      const bookmark = connection.data as SqluiCore.ConnectionProps;
       const dialect = bookmark.dialect || '';
       const connectionToUse = bookmark.connection;
 
-      const onApplyThisConnectionHint = () =>
-        props.onChange(dialect, connectionToUse);
+      const onApplyThisConnectionHint = () => props.onChange(dialect, connectionToUse);
 
       return (
         <ListItem key={bookmark.id}>
@@ -59,7 +59,7 @@ export default function ConnectionHint(props: ConnectionHintProps) {
           </ListItemAvatar>
           <ListItemText
             primary={
-              <Box sx={{display: 'flex', gap: 0.5, alignItems: 'center'}}>
+              <Box sx={{ display: 'flex', gap: 0.5, alignItems: 'center' }}>
                 <StarIcon fontSize='small' />
                 <Link
                   underline='hover'
@@ -73,10 +73,10 @@ export default function ConnectionHint(props: ConnectionHintProps) {
           />
         </ListItem>
       );
-    })
+    });
 
     // add the divider in front
-    bookmarkedConnectionsDom.unshift(<Divider key='divider' />)
+    bookmarkedConnectionsDom.unshift(<Divider key='divider' />);
   }
 
   return (

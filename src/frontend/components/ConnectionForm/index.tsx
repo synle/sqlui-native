@@ -52,7 +52,7 @@ export function NewConnectionForm() {
           <Link onClick={onStartBlankConnection}>get started with an empty connection</Link>.
         </Typography>
         <ConnectionHint onChange={onApplyConnectionHint} showBookmarks={true} />
-        <Box sx={{display: 'flex', gap: 2}}>
+        <Box sx={{ display: 'flex', gap: 2 }}>
           <Button variant='contained' type='button' onClick={onStartBlankConnection}>
             New Blank Connection
           </Button>
