@@ -29,7 +29,7 @@ export default class CassandraDataAdapter extends BaseDataAdapter implements IDa
         }
 
         const clientOptions: cassandra.ClientOptions = {
-          contactPoints: [`${connectionHosts[0].host}:${connectionHosts[0].port}`],
+          contactPoints: [`${connectionHosts[0].host}:${connectionHosts[0].port || 9042}`],
         };
 
         if (database) {
