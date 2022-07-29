@@ -11,6 +11,7 @@ import {
 import ConnectionTypeIcon from 'src/frontend/components/ConnectionTypeIcon';
 
 type ConnectionHintProps = {
+  showBookmarks?: boolean;
   onChange: (dialect: string, connection: string) => void;
 };
 
