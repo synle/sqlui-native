@@ -263,6 +263,20 @@ VALUES
 
 Cassandra Keyspaces are mapped to sqlui-native databases. And Cassandra Column Families are mapped to sqlui-native table.
 
+#### How to get connection string for CosmosDB with Cassandra API?
+
+- Go to `Connection String` of the Azure CosmosDB Cassandra
+
+![image](https://user-images.githubusercontent.com/3792401/181765317-6a63b300-ee0e-4041-a49c-e4ec6a698b39.png)
+
+##### Sample CosmosDB with Cassandra API Connection String
+
+It will look something like this.
+
+```
+cassandra://USERNAME:PRIMARY PASSWORD@CONTACT POINT:PORT
+```
+
 ### MongoDB Limitations
 
 MongoDB Collections is mapped to sqlui-native table. We scan the first 5 Documents to come up with the schema for the columns.
@@ -285,14 +299,16 @@ Azure CosmosDB Databases are mapped to sqlui-native Databases. And Azure CosmosD
 
 Tested for Azure CosmosDB (with Core SQL).
 
-#### Setting up connection string
+#### How to get connection string for CosmosDB with Core SQL API?
 
 Here's how to set up the connection. Open your resource, and click on `Keys`. Then copy and use either `PRIMARY CONNECTION STRING` or `SECONDARY CONNECTION STRING`
 
 ![image](https://user-images.githubusercontent.com/3792401/168092880-28d066ad-725f-429a-8ebf-92bb7f4f6d68.png)
 ![image](https://user-images.githubusercontent.com/3792401/168093067-fe0aa98c-297c-4f11-a16e-8c60797de800.png)
 
-Sample connection will look like this
+##### Sample CosmosDB with Core SQL API Connection String
+
+It will look something like this.
 
 ```
 cosmosdb://<your_primary_connection_string>
