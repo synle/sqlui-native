@@ -18,7 +18,7 @@ type ResultBoxProps = {
   executing: boolean;
 };
 
-export default function ResultBox(props: ResultBoxProps) {
+export default function ResultBox(props: ResultBoxProps): JSX.Element | null {
   const { selectCommand } = useCommands();
   const [tabIdx, setTabIdx] = useState(0);
   const { query, executing } = props;
@@ -151,12 +151,12 @@ type FormatDataProps = {
   data: any[];
 };
 
-export function JsonFormatData(props: FormatDataProps) {
+export function JsonFormatData(props: FormatDataProps): JSX.Element | null {
   const { data } = props;
   return <CodeEditorBox value={JSON.stringify(data, null, 2)} language='json' />;
 }
 
-function CsvFormatData(props: FormatDataProps) {
+function CsvFormatData(props: FormatDataProps): JSX.Element | null {
   const { data } = props;
   const [csv, setCsv] = useState('');
 
@@ -177,7 +177,7 @@ type QueryTimeDescriptionProps = {
   query: SqluiFrontend.ConnectionQuery;
 };
 
-function QueryTimeDescription(props: QueryTimeDescriptionProps) {
+function QueryTimeDescription(props: QueryTimeDescriptionProps): JSX.Element | null {
   const { query } = props;
   return (
     <Alert severity='info'>

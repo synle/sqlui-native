@@ -8,7 +8,7 @@ type TestConnectionButtonProps = {
   connection: SqluiCore.CoreConnectionProps;
 };
 
-export default function TestConnectionButton(props: TestConnectionButtonProps) {
+export default function TestConnectionButton(props: TestConnectionButtonProps): JSX.Element | null {
   const [message, setMessage] = useState('');
   const { mutateAsync: testConnection } = useTestConnection();
   const { add: addToast, dismiss: dismissToast } = useToaster();

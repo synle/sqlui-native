@@ -19,7 +19,7 @@ type ConnectionHintProps = {
   onChange: (dialect: string, connection: string) => void;
 };
 
-export default function ConnectionHint(props: ConnectionHintProps) {
+export default function ConnectionHint(props: ConnectionHintProps): JSX.Element | null {
   const { data, isLoading } = useGetBookmarkItems();
   let bookmarkedConnectionsDom: any[] = [];
 

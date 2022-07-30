@@ -8,7 +8,9 @@ type ConnectionRevealButtonProps = {
   query: SqluiFrontend.ConnectionQuery;
 };
 
-export default function ConnectionRevealButton(props: ConnectionRevealButtonProps) {
+export default function ConnectionRevealButton(
+  props: ConnectionRevealButtonProps,
+): JSX.Element | null {
   const { query } = props;
   const { selectCommand } = useCommands();
 
