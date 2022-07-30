@@ -39,7 +39,7 @@ type SelectProps = {
   [key: string]: any;
 };
 
-export default function Select(props: SelectProps) {
+export default function Select(props: SelectProps): JSX.Element | null {
   const { value, label, children, onChange, ...restProps } = props;
 
   if (label) {

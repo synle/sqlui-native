@@ -1,15 +1,14 @@
 import CloseIcon from '@mui/icons-material/Close';
 import IconButton from '@mui/material/IconButton';
 import { useSnackbar } from 'notistack';
-import React from 'react';
 import { getGeneratedRandomId } from 'src/frontend/utils/commonUtils';
 
 const QUERY_KEY_TOASTS = 'toasts';
 
 type CoreToasterProps = {
-  message: string | React.ReactElement;
+  message: string | JSX.Element;
   autoHideDuration?: number;
-  action?: React.ReactElement;
+  action?: JSX.Element;
 };
 
 type ToasterProps = CoreToasterProps & {

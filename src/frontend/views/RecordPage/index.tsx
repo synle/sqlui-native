@@ -77,7 +77,7 @@ type RecordFormReponse = {
  * render the form in read only mode
  * @param {[type]} props: RecordDetailsPageProps [description]
  */
-function RecordView(props: RecordDetailsPageProps) {
+function RecordView(props: RecordDetailsPageProps): JSX.Element | null {
   const { data } = props;
   const columnNames = sortColumnNamesForUnknownData(Object.keys(data || {}));
 
@@ -295,7 +295,7 @@ function RecordForm(props) {
     });
   }, []);
 
-  const contentFormDataView: React.ReactElement[] = [];
+  const contentFormDataView: JSX.Element[] = [];
   if (!isDialectSupportCreateRecordForm(connection?.dialect)) {
     contentFormDataView.push(
       <React.Fragment key='non_supported_dialect'>
@@ -618,7 +618,7 @@ export function NewRecordPage() {
   );
 }
 
-export function EditRecordPage(props: RecordDetailsPageProps) {
+export function EditRecordPage(props: RecordDetailsPageProps): JSX.Element | null {
   const { data } = props;
   const navigate = useNavigate();
   const { value: width, onChange: onSetWidth } = useSideBarWidthPreference();
@@ -835,7 +835,7 @@ type RecordDetailsPageProps = {
   isEditMode?: boolean;
 };
 
-export function RecordDetailsPage(props: RecordDetailsPageProps) {
+export function RecordDetailsPage(props: RecordDetailsPageProps): JSX.Element | null {
   const { data, isEditMode } = props;
   const [tabIdx, setTabIdx] = useState(0);
 

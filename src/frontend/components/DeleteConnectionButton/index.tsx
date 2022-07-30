@@ -9,7 +9,9 @@ type DeleteConnectionButtonProps = {
   connectionId: string;
 };
 
-export default function DeleteConnectionButton(props: DeleteConnectionButtonProps) {
+export default function DeleteConnectionButton(
+  props: DeleteConnectionButtonProps,
+): JSX.Element | null {
   const { connectionId } = props;
   const { confirm } = useActionDialogs();
   const { mutateAsync } = useDeleteConnection();

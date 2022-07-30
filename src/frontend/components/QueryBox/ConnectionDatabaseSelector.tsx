@@ -20,7 +20,9 @@ type ConnectionDatabaseSelectorProps = {
   required?: boolean;
 };
 
-export default function ConnectionDatabaseSelector(props: ConnectionDatabaseSelectorProps) {
+export default function ConnectionDatabaseSelector(
+  props: ConnectionDatabaseSelectorProps,
+): JSX.Element | null {
   const query = props.value;
   const { data: connections, isLoading: loadingConnections } = useGetConnections();
   const { data: connection } = useGetConnectionById(query?.connectionId);

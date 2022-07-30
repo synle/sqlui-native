@@ -32,7 +32,7 @@ type MigrationPageProps = {
   mode?: SqluiFrontend.MigrationMode;
 };
 
-export default function MigrationPage(props: MigrationPageProps) {
+export default function MigrationPage(props: MigrationPageProps): JSX.Element | null {
   const { mode } = props;
   const { setTreeActions } = useTreeActions();
 

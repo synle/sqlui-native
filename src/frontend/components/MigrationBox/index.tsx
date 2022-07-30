@@ -61,7 +61,7 @@ type DialectSelectorProps = {
   onChange: (newVal: SqluiCore.Dialect) => void;
 };
 
-function DialectSelector(props: DialectSelectorProps) {
+function DialectSelector(props: DialectSelectorProps): JSX.Element | null {
   const { label, value, onChange } = props;
 
   return (
@@ -84,7 +84,7 @@ type ColumnSelectorProps = {
   columns?: SqluiCore.ColumnMetaData[];
 };
 
-function ColumnSelector(props: ColumnSelectorProps) {
+function ColumnSelector(props: ColumnSelectorProps): JSX.Element | null {
   const { label, value, columns, required, onChange } = props;
 
   if (!columns || columns.length === 0) {
@@ -272,7 +272,7 @@ async function generateMigrationScript(
 }
 
 // main migration box
-export default function MigrationBox(props: MigrationBoxProps) {
+export default function MigrationBox(props: MigrationBoxProps): JSX.Element | null {
   const { mode } = props;
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -599,7 +599,7 @@ type MigrationMetaDataInputsProps = {
   onChange: (newValue: MigrationMetaData) => void;
 };
 
-function MigrationMetaDataInputs(props: MigrationMetaDataInputsProps) {
+function MigrationMetaDataInputs(props: MigrationMetaDataInputsProps): JSX.Element | null {
   const { query, isMigratingRealConnection, value: migrationMetaData } = props;
   const { data: columns, isLoading: loadingColumns } = useGetColumns(
     query?.connectionId,
@@ -620,7 +620,7 @@ function MigrationMetaDataInputs(props: MigrationMetaDataInputsProps) {
     });
   };
 
-  let extraDoms: React.ReactElement[] = [];
+  let extraDoms: JSX.Element[] = [];
 
   let shouldShowNewDatabaseIdInput = true;
   switch (migrationMetaData.toDialect) {
