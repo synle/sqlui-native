@@ -10,7 +10,6 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import TextField from '@mui/material/TextField';
 import { useNavigate } from 'react-router-dom';
-import React from 'react';
 import { useCommands } from 'src/frontend/components/MissionControl';
 import { getRandomSessionId } from 'src/frontend/data/session';
 import {
@@ -33,7 +32,7 @@ type SessionSelectionFormProps = {
   isFirstTime: boolean;
 };
 
-export default function SessionSelectionForm(props: SessionSelectionFormProps) {
+export default function SessionSelectionForm(props: SessionSelectionFormProps): JSX.Element | null {
   const { isFirstTime } = props;
   const navigate = useNavigate();
   const { data: sessions, isLoading: loadingSessions } = useGetSessions();
@@ -111,7 +110,7 @@ export default function SessionSelectionForm(props: SessionSelectionFormProps) {
           };
           const labelId = `session-option-${option.value}`;
 
-          let secondaryAction: React.ReactElement | undefined;
+          let secondaryAction: JSX.Element | undefined;
           if (!isFirstTime) {
             const targetSession = sessions.find((session) => session.id === option.value);
 

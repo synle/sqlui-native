@@ -25,7 +25,7 @@ type SplitButtonProps = {
   options: SplitButtonOption[];
 };
 
-export default function SplitButton(props: SplitButtonProps) {
+export default function SplitButton(props: SplitButtonProps): JSX.Element | null {
   const { id, options, label } = props;
   const [open, setOpen] = React.useState(false);
   const anchorRef = React.useRef<HTMLDivElement>(null);
@@ -51,7 +51,7 @@ export default function SplitButton(props: SplitButtonProps) {
     setOpen(false);
   };
 
-  let popperBody: React.ReactElement = <></>;
+  let popperBody: JSX.Element = <></>;
   if (options.length === 0) {
     popperBody = <div style={{ padding: '10px 15px' }}>No options.</div>;
   } else {

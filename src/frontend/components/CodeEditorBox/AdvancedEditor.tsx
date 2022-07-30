@@ -21,7 +21,7 @@ const DEFAULT_OPTIONS = {
   },
 };
 
-export default function AdvancedEditor(props: AdvancedEditorProps) {
+export default function AdvancedEditor(props: AdvancedEditorProps): JSX.Element | null {
   const colorMode = useDarkModeSetting();
   const [editor, setEditor] = useState<monaco.editor.IStandaloneCodeEditor | null>(null);
   const monacoEl = useRef(null);

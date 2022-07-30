@@ -24,7 +24,7 @@ type PromptDialogProps = PromptInput & {
   onDismiss: () => void;
 };
 
-export default function PromptDialog(props: PromptDialogProps) {
+export default function PromptDialog(props: PromptDialogProps): JSX.Element | null {
   const [value, setValue] = useState(props.value || '');
 
   const handleClose = (forceClose = false) => {
