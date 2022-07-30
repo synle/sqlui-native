@@ -25,7 +25,7 @@ type ChoiceDialogProps = ChoiceInput & {
   onDismiss: () => void;
 };
 
-export default function ChoiceDialog(props: ChoiceDialogProps) : JSX.Element | null {
+export default function ChoiceDialog(props: ChoiceDialogProps): JSX.Element | null {
   const {
     title,
     message,

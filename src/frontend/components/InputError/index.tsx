@@ -3,7 +3,7 @@ type InputErrorProps = {
   sx: any;
 };
 
-export default function InputError(props: InputErrorProps) : JSX.Element | null {
+export default function InputError(props: InputErrorProps): JSX.Element | null {
   const _setCustomError = (e) => {
     e.target.setCustomValidity(props.message);
   };

@@ -27,7 +27,7 @@ type DropdownButtonProps = {
   maxHeight?: number | string;
 };
 
-export default function DropdownButton(props: DropdownButtonProps) : JSX.Element | null {
+export default function DropdownButton(props: DropdownButtonProps): JSX.Element | null {
   const { id, options, children, maxHeight } = props;
   const [open, setOpen] = React.useState(false);
   const anchorRef = React.useRef<HTMLDivElement>(null);

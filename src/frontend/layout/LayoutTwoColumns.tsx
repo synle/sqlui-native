@@ -8,7 +8,7 @@ type LayoutTwoColumnsProps = {
   children: ReactElement[];
 };
 
-export default function LayoutTwoColumns(props: LayoutTwoColumnsProps) : JSX.Element | null {
+export default function LayoutTwoColumns(props: LayoutTwoColumnsProps): JSX.Element | null {
   const { className = '', children } = props;
   const { value: width, onChange: onSetWidth } = useSideBarWidthPreference();
   const { setTreeActions } = useTreeActions();

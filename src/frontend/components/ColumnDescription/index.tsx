@@ -21,7 +21,7 @@ type ColumnDescriptionProps = {
   tableId: string;
 };
 
-export default function ColumnDescription(props: ColumnDescriptionProps) : JSX.Element | null {
+export default function ColumnDescription(props: ColumnDescriptionProps): JSX.Element | null {
   const { databaseId, connectionId, tableId } = props;
   const { query: activeQuery } = useActiveConnectionQuery();
   const {

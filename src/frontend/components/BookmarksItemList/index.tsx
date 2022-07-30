@@ -125,7 +125,7 @@ type BookmarksItemListProps = {
   hideActions?: boolean;
 };
 
-export default function BookmarksItemList(props: BookmarksItemListProps) : JSX.Element | null {
+export default function BookmarksItemList(props: BookmarksItemListProps): JSX.Element | null {
   const { onAfterSelect, hideActions } = props;
   const navigate = useNavigate();
   const { data, isLoading } = useGetBookmarkItems();
@@ -165,7 +165,7 @@ export default function BookmarksItemList(props: BookmarksItemListProps) : JSX.E
   );
 }
 
-export function BookmarksItemListModalContent(props: BookmarksItemListProps) : JSX.Element | null {
+export function BookmarksItemListModalContent(props: BookmarksItemListProps): JSX.Element | null {
   const { onAfterSelect } = props;
 
   return (

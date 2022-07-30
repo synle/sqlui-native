@@ -6,7 +6,7 @@ type ColumnAttributesProps = {
   column: SqluiCore.ColumnMetaData;
 };
 
-export default function ColumnAttributes(props: ColumnAttributesProps) : JSX.Element | null {
+export default function ColumnAttributes(props: ColumnAttributesProps): JSX.Element | null {
   const { column } = props;
 
   const keys = Object.keys(column);

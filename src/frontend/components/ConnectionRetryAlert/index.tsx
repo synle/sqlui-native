@@ -7,7 +7,7 @@ type ConnectionRetryAlertProps = {
   connectionId: string;
 };
 
-export default function ConnectionRetryAlert(props: ConnectionRetryAlertProps) : JSX.Element | null {
+export default function ConnectionRetryAlert(props: ConnectionRetryAlertProps): JSX.Element | null {
   const { connectionId } = props;
   const [retrying, setRetrying] = useState(false);
   const { mutateAsync: reconnectConnection, isLoading: reconnecting } = useRetryConnection();

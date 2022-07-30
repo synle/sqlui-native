@@ -1,7 +1,6 @@
 import CloseIcon from '@mui/icons-material/Close';
 import IconButton from '@mui/material/IconButton';
 import { useSnackbar } from 'notistack';
-import React from 'react';
 import { getGeneratedRandomId } from 'src/frontend/utils/commonUtils';
 
 const QUERY_KEY_TOASTS = 'toasts';

@@ -32,7 +32,7 @@ const StyledTabs = styled('section')(({ theme }) => {
   return {};
 });
 
-export default function MyTabs(props: TabsProps) : JSX.Element | null {
+export default function MyTabs(props: TabsProps): JSX.Element | null {
   const { id, tabIdx, tabHeaders, tabContents } = props;
   let { orientation } = props;
 

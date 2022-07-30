@@ -31,7 +31,7 @@ const StyledTextArea = styled('textarea')(({ theme }) => {
   };
 });
 
-export default function SimpleEditor(props: SimpleEditorProps) : JSX.Element | null {
+export default function SimpleEditor(props: SimpleEditorProps): JSX.Element | null {
   const textareaRef = useRef<HTMLTextareaElement>(null);
 
   const onInputKeyDown = useCallback((e) => {

@@ -19,7 +19,7 @@ type ConnectionActionsProps = {
   connection: SqluiCore.ConnectionProps;
 };
 
-export default function ConnectionActions(props: ConnectionActionsProps) : JSX.Element | null {
+export default function ConnectionActions(props: ConnectionActionsProps): JSX.Element | null {
   const { connection } = props;
   const navigate = useNavigate();
   const { selectCommand } = useCommands();

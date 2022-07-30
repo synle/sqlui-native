@@ -6,7 +6,7 @@ type TimerProps = {
   endTime?: number;
 };
 
-export default function _Timer(props: TimerProps) : JSX.Element | null {
+export default function _Timer(props: TimerProps): JSX.Element | null {
   const { startTime } = props;
   const intervalRef = useRef<ReturnType<typeof setInterval> | undefined>();
   const [endTime, setEndTime] = useState<number>(Date.now());

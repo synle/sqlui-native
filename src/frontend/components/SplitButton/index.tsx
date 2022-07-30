@@ -25,7 +25,7 @@ type SplitButtonProps = {
   options: SplitButtonOption[];
 };
 
-export default function SplitButton(props: SplitButtonProps) : JSX.Element | null {
+export default function SplitButton(props: SplitButtonProps): JSX.Element | null {
   const { id, options, label } = props;
   const [open, setOpen] = React.useState(false);
   const anchorRef = React.useRef<HTMLDivElement>(null);

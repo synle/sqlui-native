@@ -16,7 +16,7 @@ type DatabaseActionsProps = {
   databaseId: string;
 };
 
-export default function DatabaseActions(props: DatabaseActionsProps) : JSX.Element | null {
+export default function DatabaseActions(props: DatabaseActionsProps): JSX.Element | null {
   const [open, setOpen] = useState(false);
   const querySize = useQuerySizeSetting();
   let databaseId: string | undefined = props.databaseId;

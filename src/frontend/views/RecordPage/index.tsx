@@ -77,7 +77,7 @@ type RecordFormReponse = {
  * render the form in read only mode
  * @param {[type]} props: RecordDetailsPageProps [description]
  */
-function RecordView(props: RecordDetailsPageProps) : JSX.Element | null {
+function RecordView(props: RecordDetailsPageProps): JSX.Element | null {
   const { data } = props;
   const columnNames = sortColumnNamesForUnknownData(Object.keys(data || {}));
 
@@ -618,7 +618,7 @@ export function NewRecordPage() {
   );
 }
 
-export function EditRecordPage(props: RecordDetailsPageProps) : JSX.Element | null {
+export function EditRecordPage(props: RecordDetailsPageProps): JSX.Element | null {
   const { data } = props;
   const navigate = useNavigate();
   const { value: width, onChange: onSetWidth } = useSideBarWidthPreference();
@@ -835,7 +835,7 @@ type RecordDetailsPageProps = {
   isEditMode?: boolean;
 };
 
-export function RecordDetailsPage(props: RecordDetailsPageProps) : JSX.Element | null {
+export function RecordDetailsPage(props: RecordDetailsPageProps): JSX.Element | null {
   const { data, isEditMode } = props;
   const [tabIdx, setTabIdx] = useState(0);
 

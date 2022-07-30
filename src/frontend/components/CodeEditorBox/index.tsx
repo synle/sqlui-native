@@ -35,7 +35,7 @@ export type DecoratedEditorProps = CodeEditorProps & {
 
 const DEFAULT_EDITOR_HEIGHT = '20vh';
 
-export default function CodeEditorBox(props: CodeEditorProps) : JSX.Element | null {
+export default function CodeEditorBox(props: CodeEditorProps): JSX.Element | null {
   const globalWordWrap = useWordWrapSetting();
   const [wordWrap, setWordWrap] = useState(false);
   const [languageMode, setLanguageMode] = useState<string | undefined>();

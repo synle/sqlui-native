@@ -52,7 +52,7 @@ type AccordionHeaderProps = AccordionBodyProps & {
   onOrderChange?: (fromIdx: number, toIdx: number) => void;
 };
 
-export function AccordionHeader(props: AccordionHeaderProps) : JSX.Element | null {
+export function AccordionHeader(props: AccordionHeaderProps): JSX.Element | null {
   const { children, expanded, onToggle, className } = props;
 
   const onShowActions = (e: React.SyntheticEvent) => {
@@ -104,7 +104,7 @@ export function AccordionHeader(props: AccordionHeaderProps) : JSX.Element | nul
   );
 }
 
-export function AccordionBody(props: AccordionBodyProps) : JSX.Element | null {
+export function AccordionBody(props: AccordionBodyProps): JSX.Element | null {
   const { children, expanded } = props;
   return !expanded ? null : <>{children}</>;
 }

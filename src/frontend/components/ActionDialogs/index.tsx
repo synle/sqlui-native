@@ -6,7 +6,7 @@ import { useActionDialogs } from 'src/frontend/hooks/useActionDialogs';
 
 type ActionDialogsProps = {};
 
-export default function ActionDialogs(props: ActionDialogsProps) : JSX.Element | null {
+export default function ActionDialogs(props: ActionDialogsProps): JSX.Element | null {
   const { dialog, dismiss } = useActionDialogs();
 
   if (!dialog) {

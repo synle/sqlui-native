@@ -33,7 +33,7 @@ export const DEFAULT_TABLE_PAGE_SIZE = 50;
 
 const UNNAMED_PROPERTY_NAME = '<unnamed_property>';
 
-function TableContainerWrapper(props: any) : JSX.Element | null {
+function TableContainerWrapper(props: any): JSX.Element | null {
   return (
     <Paper square={true} variant='outlined' sx={{ overflow: 'auto' }}>
       {props.children}
@@ -62,7 +62,7 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
-export default function DataTable(props: DataTableProps) : JSX.Element | null {
+export default function DataTable(props: DataTableProps): JSX.Element | null {
   const { columns, data } = props;
   const [openContextMenuRowIdx, setOpenContextMenuRowIdx] = useState(-1);
   const anchorEl = useRef<HTMLElement | null>(null);

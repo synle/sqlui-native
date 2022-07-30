@@ -5,7 +5,6 @@ import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Link from '@mui/material/Link';
 import Typography from '@mui/material/Typography';
 import { Link as RouterLink } from 'react-router-dom';
-import React from 'react';
 import { useGetCurrentSession } from 'src/frontend/hooks/useSession';
 
 export type BreadcrumbLink = {
@@ -17,7 +16,7 @@ type BreadcrumbProps = {
   links: BreadcrumbLink[];
 };
 
-export default (props: BreadcrumbProps) : JSX.Element | null => {
+export default (props: BreadcrumbProps): JSX.Element | null => {
   const { links } = props;
   const { data: currentSession, isLoading } = useGetCurrentSession();
 

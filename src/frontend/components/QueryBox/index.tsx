@@ -45,7 +45,7 @@ type ConnectionActionsButtonProps = {
   query: SqluiCore.ConnectionQuery;
 };
 
-function ConnectionActionsButton(props: ConnectionActionsButtonProps) : JSX.Element | null {
+function ConnectionActionsButton(props: ConnectionActionsButtonProps): JSX.Element | null {
   const { query } = props;
   const { databaseId, connectionId, tableId } = query;
   const [open, setOpen] = useState(false);
@@ -109,7 +109,7 @@ function ConnectionActionsButton(props: ConnectionActionsButtonProps) : JSX.Elem
   );
 }
 
-export default function QueryBox(props: QueryBoxProps) : JSX.Element | null {
+export default function QueryBox(props: QueryBoxProps): JSX.Element | null {
   const { queryId } = props;
   const editorRef = useRef<EditorRef>();
   const { query, onChange, onDelete, isLoading: loadingConnection } = useConnectionQuery(queryId);

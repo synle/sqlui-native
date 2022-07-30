@@ -10,7 +10,7 @@ import { SqluiFrontend } from 'typings';
 
 type SettingsProps = {};
 
-export default function Settings(props: SettingsProps) : JSX.Element | null {
+export default function Settings(props: SettingsProps): JSX.Element | null {
   const { isLoading, settings, onChange } = useSetting();
   const querySize = useQuerySizeSetting();
 
