@@ -13,7 +13,7 @@ type TableDescriptionProps = {
   databaseId: string;
 };
 
-export default function TableDescription(props: TableDescriptionProps) {
+export default function TableDescription(props: TableDescriptionProps) : JSX.Element | null {
   const { databaseId, connectionId } = props;
   const { data: tables, isLoading } = useGetTables(connectionId, databaseId);
   const { visibles, onToggle } = useShowHide();

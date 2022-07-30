@@ -9,7 +9,7 @@ type SessionManagerProps = {
   children: any;
 };
 
-export default function SessionManager(props: SessionManagerProps) {
+export default function SessionManager(props: SessionManagerProps) : JSX.Element | null {
   const [status, setStatus] = useState<'pending_session' | 'no_session' | 'valid_session'>(
     'pending_session',
   );

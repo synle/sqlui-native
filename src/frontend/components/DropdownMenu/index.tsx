@@ -26,7 +26,7 @@ type DropdownMenuProps = {
   maxHeight?: number | string;
 };
 
-export default function DropdownMenu(props: DropdownMenuProps) {
+export default function DropdownMenu(props: DropdownMenuProps) : JSX.Element | null {
   const { id, options, maxHeight, anchorEl } = props;
   const [open, setOpen] = React.useState(false);
   const [selectedIndex, setSelectedIndex] = React.useState(1);

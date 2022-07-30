@@ -13,7 +13,7 @@ type DatabaseDescriptionProps = {
   connectionId: string;
 };
 
-export default function DatabaseDescription(props: DatabaseDescriptionProps) {
+export default function DatabaseDescription(props: DatabaseDescriptionProps) : JSX.Element | null {
   const { connectionId } = props;
   const { data: databases, isLoading, isError } = useGetDatabases(connectionId);
   const { visibles, onToggle } = useShowHide();

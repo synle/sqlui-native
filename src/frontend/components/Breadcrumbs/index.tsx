@@ -17,7 +17,7 @@ type BreadcrumbProps = {
   links: BreadcrumbLink[];
 };
 
-export default (props: BreadcrumbProps) => {
+export default (props: BreadcrumbProps) : JSX.Element | null => {
   const { links } = props;
   const { data: currentSession, isLoading } = useGetCurrentSession();
 

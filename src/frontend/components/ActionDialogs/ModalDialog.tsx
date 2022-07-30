@@ -22,7 +22,7 @@ type ModalProps = ModalInput & {
   onDismiss: () => void;
 };
 
-export default function Modal(props: ModalProps) {
+export default function Modal(props: ModalProps) : JSX.Element | null {
   const onBackdropClick = () => {
     if (props.disableBackdropClick !== true) {
       props.onDismiss();

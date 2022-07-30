@@ -76,7 +76,7 @@ export function NewConnectionForm() {
   );
 }
 
-export function EditConnectionForm(props: ConnectionFormProps) {
+export function EditConnectionForm(props: ConnectionFormProps) : JSX.Element | null {
   const { id } = props;
   const [name, setName] = useState('');
   const [connection, setConnection] = useState('');
@@ -135,7 +135,7 @@ type MainConnectionFormProps = {
   loading?: boolean;
 };
 
-function MainConnectionForm(props: MainConnectionFormProps) {
+function MainConnectionForm(props: MainConnectionFormProps) : JSX.Element | null {
   const navigate = useNavigate();
   const [showHint, setShowHint] = useState(false);
   const [showSqliteDatabasePathSelection, setShowSqliteDatabasePathSelection] = useState(false);

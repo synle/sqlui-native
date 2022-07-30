@@ -149,7 +149,7 @@ const ALL_COMMAND_PALETTE_OPTIONS: CommandOption[] = [
   { event: 'clientEvent/checkForUpdate', label: 'Check For Update' },
 ];
 
-export default function CommandPalette(props: CommandPaletteProps) {
+export default function CommandPalette(props: CommandPaletteProps) : JSX.Element | null {
   const [text, setText] = useState('');
   const [options, setOptions] = useState<Command[]>([]);
   const [allOptions, setAllOptions] = useState<Command[]>([]);

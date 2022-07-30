@@ -19,7 +19,7 @@ type AlertDialogProps = AlertInput & {
   onDismiss: () => void;
 };
 
-export default function AlertDialog(props: AlertDialogProps) {
+export default function AlertDialog(props: AlertDialogProps) : JSX.Element | null {
   return (
     <Dialog
       open={props.open}

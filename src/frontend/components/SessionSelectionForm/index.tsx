@@ -33,7 +33,7 @@ type SessionSelectionFormProps = {
   isFirstTime: boolean;
 };
 
-export default function SessionSelectionForm(props: SessionSelectionFormProps) {
+export default function SessionSelectionForm(props: SessionSelectionFormProps) : JSX.Element | null {
   const { isFirstTime } = props;
   const navigate = useNavigate();
   const { data: sessions, isLoading: loadingSessions } = useGetSessions();

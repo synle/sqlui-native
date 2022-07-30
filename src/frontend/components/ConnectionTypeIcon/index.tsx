@@ -6,7 +6,7 @@ type ConnectionTypeIconProps = {
   status?: string;
 };
 
-export default function ConnectionTypeIcon(props: ConnectionTypeIconProps) {
+export default function ConnectionTypeIcon(props: ConnectionTypeIconProps) : JSX.Element | null {
   const { dialect, status } = props;
 
   if (status !== 'online') {
