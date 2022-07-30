@@ -295,7 +295,7 @@ function RecordForm(props) {
     });
   }, []);
 
-  const contentFormDataView: React.ReactElement[] = [];
+  const contentFormDataView: JSX.Element[] = [];
   if (!isDialectSupportCreateRecordForm(connection?.dialect)) {
     contentFormDataView.push(
       <React.Fragment key='non_supported_dialect'>

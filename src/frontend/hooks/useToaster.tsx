@@ -7,9 +7,9 @@ import { getGeneratedRandomId } from 'src/frontend/utils/commonUtils';
 const QUERY_KEY_TOASTS = 'toasts';
 
 type CoreToasterProps = {
-  message: string | React.ReactElement;
+  message: string | JSX.Element;
   autoHideDuration?: number;
-  action?: React.ReactElement;
+  action?: JSX.Element;
 };
 
 type ToasterProps = CoreToasterProps & {

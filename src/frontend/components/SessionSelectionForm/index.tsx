@@ -111,7 +111,7 @@ export default function SessionSelectionForm(props: SessionSelectionFormProps) :
           };
           const labelId = `session-option-${option.value}`;
 
-          let secondaryAction: React.ReactElement | undefined;
+          let secondaryAction: JSX.Element | undefined;
           if (!isFirstTime) {
             const targetSession = sessions.find((session) => session.id === option.value);
 

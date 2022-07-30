@@ -620,7 +620,7 @@ function MigrationMetaDataInputs(props: MigrationMetaDataInputsProps) : JSX.Elem
     });
   };
 
-  let extraDoms: React.ReactElement[] = [];
+  let extraDoms: JSX.Element[] = [];
 
   let shouldShowNewDatabaseIdInput = true;
   switch (migrationMetaData.toDialect) {

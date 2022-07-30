@@ -9,7 +9,7 @@ import React from 'react';
 import { useGetCurrentSession } from 'src/frontend/hooks/useSession';
 
 export type BreadcrumbLink = {
-  label: string | React.ReactElement;
+  label: string | JSX.Element;
   href?: string;
 };
 

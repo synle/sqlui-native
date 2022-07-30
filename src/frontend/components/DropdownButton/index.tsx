@@ -65,7 +65,7 @@ export default function DropdownButton(props: DropdownButtonProps) : JSX.Element
     setOpen(!!props.open);
   }, [props.open]);
 
-  let popperBody: React.ReactElement = <></>;
+  let popperBody: JSX.Element = <></>;
   if (props.isLoading) {
     popperBody = (
       <div className='DropdownButton__Popper'>
