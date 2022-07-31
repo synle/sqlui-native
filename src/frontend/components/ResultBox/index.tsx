@@ -96,7 +96,7 @@ export default function ResultBox(props: ResultBoxProps): JSX.Element | null {
 
   const tabHeaders = [
     <>
-      Table{' '}
+      Table
       <Tooltip title='Download Result CSV'>
         <DownloadIcon fontSize='small' onClick={onDownloadCsv} />
       </Tooltip>
@@ -122,6 +122,9 @@ export default function ResultBox(props: ResultBoxProps): JSX.Element | null {
 
   const tabContents = [
     <div className='ResultBox__Content' key={`Table`}>
+      <Box sx={{mb: 2}}>
+        Query returned {data?.length || 0} Record(s)
+      </Box>
       <DataTableWithJSONList
         onRowClick={onShowRecordDetails}
         rowContextOptions={rowContextOptions}
