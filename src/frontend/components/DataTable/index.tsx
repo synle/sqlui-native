@@ -157,17 +157,10 @@ export default function DataTable(props: DataTableProps): JSX.Element | null {
   // The virtualizer
   const rowVirtualizer = useVirtualizer({
     count: page.length,
+    paddingStart: tableCellHeight,
     getScrollElement: () => parentRef.current,
     estimateSize: () => tableCellHeight,
   });
-
-  const columnVirtualizer = useVirtualizer({
-    horizontal: true,
-    count: columns.length,
-    getScrollElement: () => parentRef.current,
-    estimateSize: (i) => tableCellWidth,
-    overscan: 5,
-  })
 
   return (
     <>
@@ -202,25 +195,22 @@ export default function DataTable(props: DataTableProps): JSX.Element | null {
               ))}
             </StyledDivHeaderRow>
           ))}
-          {rowVirtualizer.getVirtualItems().map((rowVirtualItem) => {
-            const rowIdx = rowVirtualItem.index;
+          {rowVirtualizer.getVirtualItems().map((virtualItem) => {
+            let rowIdx = virtualItem.index;
             const row = page[rowIdx];
             prepareRow(row);
 
             return (
               <StyledDivContentRow
-                key={rowVirtualItem.key}
+                key={virtualItem.key}
                 onDoubleClick={() => props.onRowClick && props.onRowClick(row.original)}
                 onContextMenu={(e) => onRowContextMenuClick(e, rowIdx)}
                 style={{
                   cursor: props.onRowClick ? 'pointer' : '',
-                  height: `${rowVirtualItem.size}px`,
-                  transform: `translateY(${rowVirtualItem.start + tableCellHeight}px)`,
+                  height: `${virtualItem.size}px`,
+                  transform: `translateY(${virtualItem.start}px)`,
                 }}>
-                {columnVirtualizer.getVirtualItems().map((cellVirtualItem) => {
-                  const colIdx = rowVirtualItem.index;
-                  const cell = row.cells[colIdx];
-
+                {row.cells.map((cell, colIdx) => {
                   let dropdownContent: any;
                   if (colIdx === 0 && targetRowContextOptions.length > 0) {
                     dropdownContent = (
