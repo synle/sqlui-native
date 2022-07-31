@@ -13,6 +13,7 @@ import { DropdownButtonOption } from 'src/frontend/components/DropdownButton';
 import DropdownMenu from 'src/frontend/components/DropdownMenu';
 import { useTablePageSize } from 'src/frontend/hooks/useSetting';
 import { sortColumnNamesForUnknownData } from 'src/frontend/utils/commonUtils';
+import { useVirtualizer } from '@tanstack/react-virtual';
 
 type DataTableProps = {
   columns: any[];
@@ -125,10 +126,22 @@ export default function DataTable(props: DataTableProps): JSX.Element | null {
       rowContextOption.onClick && rowContextOption.onClick(data[openContextMenuRowIdx]),
   }));
 
+   // The scrollable element for your list
+  const parentRef = React.useRef<HTMLTableElement | null>(null)
+
+  // The virtualizer
+  const rowVirtualizer = useVirtualizer({
+    count: page.length,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => 55,
+  })
+
+  const tableHeight = '500px';
+
   return (
     <>
       <TableContainer component={TableContainerWrapper}>
-        <Table sx={{ minWidth: 650 }} size='small'>
+        <Table sx={{ minWidth: 650, height: tableHeight, overflow: 'auto' }} size='small' ref={parentRef}>
           <TableHead>
             {headerGroups.map((headerGroup) => (
               <TableRow {...headerGroup.getHeaderGroupProps()}>
@@ -142,8 +155,16 @@ export default function DataTable(props: DataTableProps): JSX.Element | null {
               </TableRow>
             ))}
           </TableHead>
-          <TableBody {...getTableBodyProps()} onContextMenu={(e) => onRowContextMenuClick(e)}>
-            {page.map((row, rowIdx) => {
+          <TableBody {...getTableBodyProps()} onContextMenu={(e) => onRowContextMenuClick(e)}
+           sx={{
+            height: `${rowVirtualizer.getTotalSize()}px`,
+            width: '100%',
+            position: 'relative',
+          }}
+          >
+            {rowVirtualizer.getVirtualItems().map((virtualItem) => {
+              const rowIdx = virtualItem.index;
+              const row = page[rowIdx];
               prepareRow(row);
               return (
                 <StyledTableRow
