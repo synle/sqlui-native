@@ -15,6 +15,7 @@ type DataTableProps = {
   data: any[];
   onRowClick?: (rowData: any) => void;
   rowContextOptions?: DropdownButtonOption[];
+  searchInputId?: string;
 };
 
 export const ALL_PAGE_SIZE_OPTIONS: any[] = [
@@ -164,14 +165,16 @@ export default function DataTable(props: DataTableProps): JSX.Element | null {
 
   return (
     <>
-      <TextField
-        label="Search Table"
-        size='small'
-        fullWidth
-        onChange={e => setGlobalFilter(e.target.value)}
-        sx={{mb: 2}}
-        variant="standard"
-      />
+      {
+        props.searchInputId && <TextField
+          id={props.searchInputId}
+              label="Search Table"
+              size='small'
+              fullWidth
+              onChange={e => setGlobalFilter(e.target.value)}
+              sx={{mb: 2}}
+              variant="standard"
+            />}
       {
         !page || page.length === 0 ? <Box>There is no data.</Box>
         : <Box
