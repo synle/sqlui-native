@@ -170,7 +170,15 @@ export default function DataTable(props: DataTableProps): JSX.Element | null {
                 <StyledTableRow
                   {...row.getRowProps()}
                   onClick={() => props.onRowClick && props.onRowClick(row.original)}
-                  style={{ cursor: props.onRowClick ? 'pointer' : '' }}>
+                  style={{
+                    cursor: props.onRowClick ? 'pointer' : '',
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    height: `${virtualItem.size}px`,
+                    transform: `translateY(${virtualItem.start}px)`,
+                  }}>
                   {row.cells.map((cell, colIdx) => {
                     let dropdownContent: any;
                     if (colIdx === 0 && targetRowContextOptions.length > 0) {
