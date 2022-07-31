@@ -132,40 +132,26 @@ export default function DataTable(props: DataTableProps): JSX.Element | null {
 
   // The virtualizer
   const rowVirtualizer = useVirtualizer({
-    count: page.length,
+    count: page.length + 1,
     getScrollElement: () => parentRef.current,
-    estimateSize: () => 55,
+    estimateSize: () => 30,
   })
 
   const tableHeight = '500px';
 
   return (
     <>
-      <Box>
-       {headerGroups.map((headerGroup) => (
-        <Box {...headerGroup.getHeaderGroupProps()}>
-          {headerGroup.headers.map((column, colIdx) => (
-            <Box
-              {...column.getHeaderProps()}
-              sx={{ width: columns[colIdx].width }}>
-              {column.render('Header')}
-            </Box>
-          ))}
-        </Box>
-      ))}
-      </Box>
-
        {/* The scrollable element for your list */}
       <Box
         ref={parentRef}
-        style={{
+        sx={{
           height: `400px`,
           overflow: 'auto', // Make it scroll!
         }}
       >
       {/* The large inner element to hold all of the items */}
         <Box
-          style={{
+          sx={{
             height: `${rowVirtualizer.getTotalSize()}px`,
             width: '100%',
             position: 'relative',
@@ -173,22 +159,40 @@ export default function DataTable(props: DataTableProps): JSX.Element | null {
         >
           {/* Only the visible items in the virtualizer, manually positioned to be in view */}
           {rowVirtualizer.getVirtualItems().map((virtualItem) => {
-            const rowIdx = virtualItem.index;
+            let rowIdx = virtualItem.index - 1;
+
+            if(rowIdx < 0){
+              return <Box>
+               {headerGroups.map((headerGroup) => (
+                <Box {...headerGroup.getHeaderGroupProps()}
+                 sx={{display: 'flex', gap: 2, }}>
+                  {headerGroup.headers.map((column, colIdx) => (
+                    <Box
+                      {...column.getHeaderProps()}
+                      sx={{ width: columns[colIdx].width }}>
+                      {column.render('Header')}
+                    </Box>
+                  ))}
+                </Box>
+              ))}
+              </Box>
+            }
+
             const row = page[rowIdx];
             prepareRow(row);
 
             return (
               <Box
                 key={virtualItem.key}
-                style={{
+                sx={{
                   position: 'absolute',
                   top: 0,
                   left: 0,
-                  width: '100%',
                   height: `${virtualItem.size}px`,
                   transform: `translateY(${virtualItem.start}px)`,
                   display: 'flex',
-                  gap: '2rem',
+                  alignItems: 'center',
+                  gap: 2,
                 }}
               >
                 {row.cells.map((cell, colIdx) => {
@@ -212,7 +216,7 @@ export default function DataTable(props: DataTableProps): JSX.Element | null {
                       );
                     }
                     return (
-                      <Box {...cell.getCellProps()}>
+                      <Box {...cell.getCellProps()} sx={{width: columns[colIdx].width}}>
                         {dropdownContent}
                         {cell.render('Cell')}
                       </Box>
