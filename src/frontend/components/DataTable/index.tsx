@@ -1,20 +1,14 @@
-import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
 import { styled } from '@mui/material/styles';
 import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell, { tableCellClasses } from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
 import TablePagination from '@mui/material/TablePagination';
-import TableRow from '@mui/material/TableRow';
+import { useVirtualizer } from '@tanstack/react-virtual';
 import { useFilters, useGlobalFilter, usePagination, useSortBy, useTable } from 'react-table';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { DropdownButtonOption } from 'src/frontend/components/DropdownButton';
 import DropdownMenu from 'src/frontend/components/DropdownMenu';
 import { useTablePageSize } from 'src/frontend/hooks/useSetting';
 import { sortColumnNamesForUnknownData } from 'src/frontend/utils/commonUtils';
-import { useVirtualizer } from '@tanstack/react-virtual';
 
 type DataTableProps = {
   columns: any[];
@@ -35,14 +29,48 @@ export const DEFAULT_TABLE_PAGE_SIZE = 50;
 
 const UNNAMED_PROPERTY_NAME = '<unnamed_property>';
 
-const StyledDivRow = styled('div')(({ theme }) => ({
+const tableCellHeight = 30;
+const tableCellWidth = 100
+
+const StyledDivHeaderRow = styled('div')(({ theme }) => ({
+  fontWeight: 'bold',
+  display: 'flex',
+  alignItems: 'center',
+  fontSize: '1rem',
+  flexWrap: 'nowrap',
+  position: 'sticky',
+  top: 0,
+  left: 0,
+  right: 0,
+  zIndex: theme.zIndex.drawer + 1,
+  backgroundColor: theme.palette.common.black,
+
+  '> div': {
+    flexShrink: 0,
+    width: `${tableCellWidth}px`,
+    height: `${tableCellHeight}px`,
+    backgroundColor: theme.palette.common.black,
+    color: theme.palette.common.white,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    boxSizing: 'border-box',
+    paddingInline: '0.5rem',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    wordBreak: 'break-all',
+    whiteSpace: 'nowrap',
+  },
+}));
+
+const StyledDivContentRow = styled('div')(({ theme }) => ({
   position: 'absolute',
   top: 0,
   left: 0,
   display: 'flex',
   alignItems: 'center',
-  gap: 2,
   fontSize: '1rem',
+  userSelect: 'none',
 
   '&:nth-of-type(odd)': {
     backgroundColor: theme.palette.action.hover,
@@ -57,11 +85,14 @@ const StyledDivRow = styled('div')(({ theme }) => ({
   '&:hover': {
     backgroundColor: theme.palette.action.focus,
   },
+
+  '> div': {
+    flexShrink: 0,
+    width: `${tableCellWidth}px`,
+  },
 }));
 
-const StyledDivContainer = styled('div')(({ theme }) => ({
-
-}));
+const StyledDivContainer = styled('div')(({ theme }) => ({}));
 
 export default function DataTable(props: DataTableProps): JSX.Element | null {
   const { columns, data } = props;
@@ -126,116 +157,88 @@ export default function DataTable(props: DataTableProps): JSX.Element | null {
       rowContextOption.onClick && rowContextOption.onClick(data[openContextMenuRowIdx]),
   }));
 
-   // The scrollable element for your list
-  const parentRef = React.useRef<HTMLTableElement | null>(null)
+  // The scrollable element for your list
+  const parentRef = React.useRef<HTMLTableElement | null>(null);
 
   // The virtualizer
   const rowVirtualizer = useVirtualizer({
-    count: page.length + 1,
+    count: page.length,
     getScrollElement: () => parentRef.current,
-    estimateSize: () => 30,
-  })
+    estimateSize: () => tableCellHeight,
+  });
 
   const tableHeight = '500px';
 
   return (
     <>
-       {/* The scrollable element for your list */}
+      {/* The scrollable element for your list */}
       <Box
         ref={parentRef}
         sx={{
-          height: `400px`,
+          height: tableHeight,
           overflow: 'auto', // Make it scroll!
-        }}
-      >
-      {/* The large inner element to hold all of the items */}
+        }}>
+        {/* The large inner element to hold all of the items */}
         <StyledDivContainer
           sx={{
             height: `${rowVirtualizer.getTotalSize()}px`,
             width: '100%',
             position: 'relative',
-          }}
-        >
+          }}>
+          {headerGroups.map((headerGroup, headerGroupIdx) => (
+            <StyledDivHeaderRow {...headerGroup.getHeaderGroupProps()}>
+              {headerGroup.headers.map((column, colIdx) => (
+                <Box {...column.getHeaderProps()}>{column.render('Header')}</Box>
+              ))}
+            </StyledDivHeaderRow>
+          ))}
           {/* Only the visible items in the virtualizer, manually positioned to be in view */}
           {rowVirtualizer.getVirtualItems().map((virtualItem) => {
-            let rowIdx = virtualItem.index - 1;
-
-            if(rowIdx < 0){
-              return <>
-               {headerGroups.map((headerGroup, headerGroupIdx) => (
-                <StyledDivRow
-                className='header'
-                sx={{
-                  height: `${virtualItem.size}px`,
-                  transform: `translateY(${virtualItem.start}px)`,
-                }}
-               {...headerGroup.getHeaderGroupProps()}>
-                  {headerGroup.headers.map((column, colIdx) => (
-                    <Box
-                      {...column.getHeaderProps()}
-                      sx={{ width: '100px' }}>
-                      {column.render('Header')}
-                    </Box>
-                  ))}
-                </StyledDivRow>
-              ))}
-              </>
-            }
-
+            let rowIdx = virtualItem.index;
             const row = page[rowIdx];
             prepareRow(row);
 
             return (
-              <StyledDivRow
+              <StyledDivContentRow
                 key={virtualItem.key}
+                onDoubleClick={() => props.onRowClick && props.onRowClick(row.original)}
                 style={{
+                  cursor:props.onRowClick? 'pointer': '',
                   height: `${virtualItem.size}px`,
-                  transform: `translateY(${virtualItem.start}px)`,
-                }}
-              >
+                  transform: `translateY(${virtualItem.start + tableCellHeight}px)`,
+                }}>
                 {row.cells.map((cell, colIdx) => {
-                    let dropdownContent: any;
-                    if (colIdx === 0 && targetRowContextOptions.length > 0) {
-                      dropdownContent = (
-                        <DropdownMenu
-                          id={`data-table-row-dropdown-${rowIdx}`}
-                          options={targetRowContextOptions}
-                          onToggle={(newOpen) => {
-                            if (newOpen) {
-                              setOpenContextMenuRowIdx(rowIdx);
-                            } else {
-                              setOpenContextMenuRowIdx(-1);
-                            }
-                          }}
-                          maxHeight='400px'
-                          anchorEl={anchorEl}
-                          open={openContextMenuRowIdx === rowIdx}
-                        />
-                      );
-                    }
-                    return (
-                      <Box {...cell.getCellProps()} sx={{width: '100px'}}>
-                        {dropdownContent}
-                        {cell.render('Cell')}
-                      </Box>
+                  let dropdownContent: any;
+                  if (colIdx === 0 && targetRowContextOptions.length > 0) {
+                    dropdownContent = (
+                      <DropdownMenu
+                        id={`data-table-row-dropdown-${rowIdx}`}
+                        options={targetRowContextOptions}
+                        onToggle={(newOpen) => {
+                          if (newOpen) {
+                            setOpenContextMenuRowIdx(rowIdx);
+                          } else {
+                            setOpenContextMenuRowIdx(-1);
+                          }
+                        }}
+                        maxHeight='400px'
+                        anchorEl={anchorEl}
+                        open={openContextMenuRowIdx === rowIdx}
+                      />
                     );
-                  })}
-              </StyledDivRow>
-            )})}
+                  }
+                  return (
+                    <Box {...cell.getCellProps()}>
+                      {dropdownContent}
+                      {cell.render('Cell')}
+                    </Box>
+                  );
+                })}
+              </StyledDivContentRow>
+            );
+          })}
         </StyledDivContainer>
-
       </Box>
-      <TablePagination
-        component='div'
-        count={data.length}
-        onPageChange={onPageChange}
-        onRowsPerPageChange={onRowsPerPageChange}
-        page={pageIndex}
-        rowsPerPage={pageSize}
-        rowsPerPageOptions={pageSizeOptions}
-        showFirstButton
-        showLastButton
-      />
     </>
   );
 }
