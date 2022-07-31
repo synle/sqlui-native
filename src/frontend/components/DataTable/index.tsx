@@ -99,8 +99,6 @@ export default function DataTable(props: DataTableProps): JSX.Element | null {
     pageSizeToUse = allRecordSize;
   }
 
-  const pageSizeOptions = ALL_PAGE_SIZE_OPTIONS.map((option) => ({ ...option }));
-  pageSizeOptions[pageSizeOptions.length - 1].value = allRecordSize;
 
   const {
     getTableBodyProps,
