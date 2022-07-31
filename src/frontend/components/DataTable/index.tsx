@@ -29,8 +29,9 @@ export const DEFAULT_TABLE_PAGE_SIZE = 50;
 const UNNAMED_PROPERTY_NAME = '<unnamed_property>';
 
 const tableCellHeight = 30;
+const tableCellWidth = 125;
 
-const tableCellWidth = 100;
+const StyledDivContainer = styled('div')(({ theme }) => ({}));
 
 const StyledDivHeaderRow = styled('div')(({ theme }) => ({
   fontWeight: 'bold',
@@ -41,21 +42,17 @@ const StyledDivHeaderRow = styled('div')(({ theme }) => ({
   position: 'sticky',
   top: 0,
   left: 0,
-  right: 0,
   zIndex: theme.zIndex.drawer + 1,
   backgroundColor: theme.palette.common.black,
+  color: theme.palette.common.white,
+  borderBottom: `1px solid ${theme.palette.divider}`,
 
   '> div': {
-    flexShrink: 0,
-    width: `${tableCellWidth}px`,
     height: `${tableCellHeight}px`,
     backgroundColor: theme.palette.common.black,
     color: theme.palette.common.white,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
+    paddingTop: '5px',
     boxSizing: 'border-box',
-    paddingInline: '0.5rem',
     overflow: 'hidden',
     textOverflow: 'ellipsis',
     wordBreak: 'break-all',
@@ -67,33 +64,26 @@ const StyledDivContentRow = styled('div')(({ theme }) => ({
   position: 'absolute',
   top: 0,
   left: 0,
-  right: 0,
   display: 'flex',
   alignItems: 'center',
   fontSize: '1rem',
   userSelect: 'none',
+  backgroundColor: theme.palette.action.selected,
 
   '&:nth-of-type(odd)': {
     backgroundColor: theme.palette.action.hover,
   },
 
-  '&.header': {
-    backgroundColor: theme.palette.common.black,
-    color: theme.palette.common.white,
-    fontWeight: 'bold',
-  },
-
   '&:hover': {
     backgroundColor: theme.palette.action.focus,
   },
-
-  '> div': {
-    flexShrink: 0,
-    width: `${tableCellWidth}px`,
-  },
 }));
 
-const StyledDivContainer = styled('div')(({ theme }) => ({}));
+const StyledDivContentCell = styled('div')(({ theme }) => ({
+  flexShrink: 0,
+  width: `${tableCellWidth}px`,
+  paddingInline: '0.5rem',
+}));
 
 export default function DataTable(props: DataTableProps): JSX.Element | null {
   const { columns, data } = props;
@@ -182,7 +172,7 @@ export default function DataTable(props: DataTableProps): JSX.Element | null {
           {headerGroups.map((headerGroup, headerGroupIdx) => (
             <StyledDivHeaderRow {...headerGroup.getHeaderGroupProps()}>
               {headerGroup.headers.map((column, colIdx) => (
-                <Box {...column.getHeaderProps()}>{column.render('Header')}</Box>
+                <StyledDivContentCell {...column.getHeaderProps()}>{column.render('Header')}</StyledDivContentCell>
               ))}
             </StyledDivHeaderRow>
           ))}
@@ -223,10 +213,10 @@ export default function DataTable(props: DataTableProps): JSX.Element | null {
                     );
                   }
                   return (
-                    <Box {...cell.getCellProps()}>
+                    <StyledDivContentCell {...cell.getCellProps()}>
                       {dropdownContent}
                       {cell.render('Cell')}
-                    </Box>
+                    </StyledDivContentCell>
                   );
                 })}
               </StyledDivContentRow>

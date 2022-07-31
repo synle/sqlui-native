@@ -122,7 +122,6 @@ export default function ResultBox(props: ResultBoxProps): JSX.Element | null {
 
   const tabContents = [
     <div className='ResultBox__Content' key={`Table`}>
-      <Box sx={{ mb: 2 }}>Query returned {data?.length || 0} Record(s)</Box>
       <DataTableWithJSONList
         onRowClick={onShowRecordDetails}
         rowContextOptions={rowContextOptions}
@@ -137,7 +136,7 @@ export default function ResultBox(props: ResultBoxProps): JSX.Element | null {
   return (
     <div className='ResultBox'>
       <Alert severity='info'>
-        Query took <Timer startTime={query?.executionStart} endTime={query?.executionEnd} />
+        Query took <Timer startTime={query?.executionStart} endTime={query?.executionEnd} />. {data?.length > 0 ? `And it returned ${data?.length || 0} records.` : ''}
       </Alert>
       <Tabs
         tabIdx={tabIdx}
