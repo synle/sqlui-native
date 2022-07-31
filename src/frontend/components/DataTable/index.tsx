@@ -1,7 +1,6 @@
 import Box from '@mui/material/Box';
 import { styled } from '@mui/material/styles';
 import Table from '@mui/material/Table';
-import TablePagination from '@mui/material/TablePagination';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { useFilters, useGlobalFilter, usePagination, useSortBy, useTable } from 'react-table';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
@@ -30,7 +29,8 @@ export const DEFAULT_TABLE_PAGE_SIZE = 50;
 const UNNAMED_PROPERTY_NAME = '<unnamed_property>';
 
 const tableCellHeight = 30;
-const tableCellWidth = 100
+
+const tableCellWidth = 100;
 
 const StyledDivHeaderRow = styled('div')(({ theme }) => ({
   fontWeight: 'bold',
@@ -137,7 +137,7 @@ export default function DataTable(props: DataTableProps): JSX.Element | null {
   }, []);
 
   const onRowContextMenuClick = (e: React.SyntheticEvent, rowIdx: number) => {
-    if(rowIdx >= 0){
+    if (rowIdx >= 0) {
       e.preventDefault();
       const target = e.target as HTMLElement;
       setOpenContextMenuRowIdx(rowIdx);
@@ -198,7 +198,7 @@ export default function DataTable(props: DataTableProps): JSX.Element | null {
                 onDoubleClick={() => props.onRowClick && props.onRowClick(row.original)}
                 onContextMenu={(e) => onRowContextMenuClick(e, rowIdx)}
                 style={{
-                  cursor:props.onRowClick? 'pointer': '',
+                  cursor: props.onRowClick ? 'pointer' : '',
                   height: `${virtualItem.size}px`,
                   transform: `translateY(${virtualItem.start + tableCellHeight}px)`,
                 }}>
