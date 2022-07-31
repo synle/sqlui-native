@@ -1,3 +1,4 @@
+import TextField from '@mui/material/TextField';
 import Box from '@mui/material/Box';
 import { styled } from '@mui/material/styles';
 import Table from '@mui/material/Table';
@@ -28,6 +29,7 @@ export const DEFAULT_TABLE_PAGE_SIZE = 50;
 
 const UNNAMED_PROPERTY_NAME = '<unnamed_property>';
 
+const tableHeight = '500px';
 const tableCellHeight = 30;
 const tableCellWidth = 125;
 
@@ -99,7 +101,16 @@ export default function DataTable(props: DataTableProps): JSX.Element | null {
   const pageSizeOptions = ALL_PAGE_SIZE_OPTIONS.map((option) => ({ ...option }));
   pageSizeOptions[pageSizeOptions.length - 1].value = allRecordSize;
 
-  const { getTableBodyProps, gotoPage, headerGroups, page, prepareRow, setPageSize, state } =
+  const {
+    getTableBodyProps,
+    gotoPage,
+    headerGroups,
+    page,
+    prepareRow,
+    setGlobalFilter,
+    setPageSize,
+    state,
+   } =
     useTable(
       {
         initialState: {
@@ -151,18 +162,22 @@ export default function DataTable(props: DataTableProps): JSX.Element | null {
     estimateSize: () => tableCellHeight,
   });
 
-  const tableHeight = '500px';
-
   return (
     <>
-      {/* The scrollable element for your list */}
+      <TextField
+        label="Search Table"
+        size='small'
+        fullWidth
+        onChange={e => setGlobalFilter(e.target.value)}
+        sx={{mb: 2}}
+        variant="standard"
+      />
       <Box
         ref={parentRef}
         sx={{
-          height: tableHeight,
+          maxHeight: tableHeight,
           overflow: 'auto', // Make it scroll!
         }}>
-        {/* The large inner element to hold all of the items */}
         <StyledDivContainer
           sx={{
             height: `${rowVirtualizer.getTotalSize()}px`,
@@ -176,7 +191,6 @@ export default function DataTable(props: DataTableProps): JSX.Element | null {
               ))}
             </StyledDivHeaderRow>
           ))}
-          {/* Only the visible items in the virtualizer, manually positioned to be in view */}
           {rowVirtualizer.getVirtualItems().map((virtualItem) => {
             let rowIdx = virtualItem.index;
             const row = page[rowIdx];
