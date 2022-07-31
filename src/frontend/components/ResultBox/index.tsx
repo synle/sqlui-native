@@ -29,7 +29,7 @@ export default function ResultBox(props: ResultBoxProps): JSX.Element | null {
   if (executing) {
     return (
       <Alert severity='info' icon={<CircularProgress size={15} />}>
-        Loading <Timer startTime={query?.executionStart} endTime={query?.executionEnd} />
+        Loading <Timer startTime={query?.executionStart} />
         ...
       </Alert>
     );
