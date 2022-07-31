@@ -1,4 +1,5 @@
 import Paper from '@mui/material/Paper';
+import Box from '@mui/material/Box';
 import { styled } from '@mui/material/styles';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -140,46 +141,57 @@ export default function DataTable(props: DataTableProps): JSX.Element | null {
 
   return (
     <>
-      <TableContainer component={TableContainerWrapper}>
-        <Table sx={{ minWidth: 650, height: tableHeight, overflow: 'auto' }} size='small' ref={parentRef}>
-          <TableHead>
-            {headerGroups.map((headerGroup) => (
-              <TableRow {...headerGroup.getHeaderGroupProps()}>
-                {headerGroup.headers.map((column, colIdx) => (
-                  <StyledTableCell
-                    {...column.getHeaderProps()}
-                    sx={{ width: columns[colIdx].width }}>
-                    {column.render('Header')}
-                  </StyledTableCell>
-                ))}
-              </TableRow>
-            ))}
-          </TableHead>
-          <TableBody {...getTableBodyProps()} onContextMenu={(e) => onRowContextMenuClick(e)}
-           sx={{
+      <Box>
+       {headerGroups.map((headerGroup) => (
+        <Box {...headerGroup.getHeaderGroupProps()}>
+          {headerGroup.headers.map((column, colIdx) => (
+            <Box
+              {...column.getHeaderProps()}
+              sx={{ width: columns[colIdx].width }}>
+              {column.render('Header')}
+            </Box>
+          ))}
+        </Box>
+      ))}
+      </Box>
+
+       {/* The scrollable element for your list */}
+      <Box
+        ref={parentRef}
+        style={{
+          height: `400px`,
+          overflow: 'auto', // Make it scroll!
+        }}
+      >
+      {/* The large inner element to hold all of the items */}
+        <Box
+          style={{
             height: `${rowVirtualizer.getTotalSize()}px`,
             width: '100%',
             position: 'relative',
           }}
-          >
-            {rowVirtualizer.getVirtualItems().map((virtualItem) => {
-              const rowIdx = virtualItem.index;
-              const row = page[rowIdx];
-              prepareRow(row);
-              return (
-                <StyledTableRow
-                  {...row.getRowProps()}
-                  onClick={() => props.onRowClick && props.onRowClick(row.original)}
-                  style={{
-                    cursor: props.onRowClick ? 'pointer' : '',
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    width: '100%',
-                    height: `${virtualItem.size}px`,
-                    transform: `translateY(${virtualItem.start}px)`,
-                  }}>
-                  {row.cells.map((cell, colIdx) => {
+        >
+          {/* Only the visible items in the virtualizer, manually positioned to be in view */}
+          {rowVirtualizer.getVirtualItems().map((virtualItem) => {
+            const rowIdx = virtualItem.index;
+            const row = page[rowIdx];
+            prepareRow(row);
+
+            return (
+              <Box
+                key={virtualItem.key}
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '100%',
+                  height: `${virtualItem.size}px`,
+                  transform: `translateY(${virtualItem.start}px)`,
+                  display: 'flex',
+                  gap: '2rem',
+                }}
+              >
+                {row.cells.map((cell, colIdx) => {
                     let dropdownContent: any;
                     if (colIdx === 0 && targetRowContextOptions.length > 0) {
                       dropdownContent = (
@@ -200,18 +212,17 @@ export default function DataTable(props: DataTableProps): JSX.Element | null {
                       );
                     }
                     return (
-                      <StyledTableCell {...cell.getCellProps()}>
+                      <Box {...cell.getCellProps()}>
                         {dropdownContent}
                         {cell.render('Cell')}
-                      </StyledTableCell>
+                      </Box>
                     );
                   })}
-                </StyledTableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
-      </TableContainer>
+              </Box>
+            )})}
+        </Box>
+
+      </Box>
       <TablePagination
         component='div'
         count={data.length}
