@@ -64,6 +64,15 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
+const StyledDivRow = styled('div')(({ theme }) => ({
+  position: 'absolute',
+  top: 0,
+  left: 0,
+  display: 'flex',
+  alignItems: 'center',
+  gap: 2,
+}));
+
 export default function DataTable(props: DataTableProps): JSX.Element | null {
   const { columns, data } = props;
   const [openContextMenuRowIdx, setOpenContextMenuRowIdx] = useState(-1);
@@ -164,16 +173,10 @@ export default function DataTable(props: DataTableProps): JSX.Element | null {
             if(rowIdx < 0){
               return <>
                {headerGroups.map((headerGroup, headerGroupIdx) => (
-                <Box
+                <StyledDivRow
                 sx={{
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
                   height: `${virtualItem.size}px`,
                   transform: `translateY(${virtualItem.start}px)`,
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 2,
                 }}
                {...headerGroup.getHeaderGroupProps()}>
                   {headerGroup.headers.map((column, colIdx) => (
@@ -183,7 +186,7 @@ export default function DataTable(props: DataTableProps): JSX.Element | null {
                       {column.render('Header')}
                     </Box>
                   ))}
-                </Box>
+                </StyledDivRow>
               ))}
               </>
             }
@@ -192,17 +195,11 @@ export default function DataTable(props: DataTableProps): JSX.Element | null {
             prepareRow(row);
 
             return (
-              <Box
+              <StyledDivRow
                 key={virtualItem.key}
-                sx={{
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
+                style={{
                   height: `${virtualItem.size}px`,
                   transform: `translateY(${virtualItem.start}px)`,
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 2,
                 }}
               >
                 {row.cells.map((cell, colIdx) => {
@@ -232,7 +229,7 @@ export default function DataTable(props: DataTableProps): JSX.Element | null {
                       </Box>
                     );
                   })}
-              </Box>
+              </StyledDivRow>
             )})}
         </Box>
 
