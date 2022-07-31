@@ -35,35 +35,6 @@ export const DEFAULT_TABLE_PAGE_SIZE = 50;
 
 const UNNAMED_PROPERTY_NAME = '<unnamed_property>';
 
-function TableContainerWrapper(props: any): JSX.Element | null {
-  return (
-    <Paper square={true} variant='outlined' sx={{ overflow: 'auto' }}>
-      {props.children}
-    </Paper>
-  );
-}
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
-  [`&.${tableCellClasses.head}`]: {
-    backgroundColor: theme.palette.common.black,
-    color: theme.palette.common.white,
-  },
-  [`&.${tableCellClasses.body}`]: {
-    fontSize: '1rem',
-  },
-}));
-
-const StyledTableRow = styled(TableRow)(({ theme }) => ({
-  '&:nth-of-type(odd)': {
-    backgroundColor: theme.palette.action.hover,
-  },
-  '&:last-child td, &:last-child th': {
-    border: 0,
-  },
-  '&:hover': {
-    backgroundColor: theme.palette.action.focus,
-  },
-}));
-
 const StyledDivRow = styled('div')(({ theme }) => ({
   position: 'absolute',
   top: 0,
@@ -71,6 +42,25 @@ const StyledDivRow = styled('div')(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
   gap: 2,
+  fontSize: '1rem',
+
+  '&:nth-of-type(odd)': {
+    backgroundColor: theme.palette.action.hover,
+  },
+
+  '&.header': {
+    backgroundColor: theme.palette.common.black,
+    color: theme.palette.common.white,
+    fontWeight: 'bold',
+  },
+
+  '&:hover': {
+    backgroundColor: theme.palette.action.focus,
+  },
+}));
+
+const StyledDivContainer = styled('div')(({ theme }) => ({
+
 }));
 
 export default function DataTable(props: DataTableProps): JSX.Element | null {
@@ -159,7 +149,7 @@ export default function DataTable(props: DataTableProps): JSX.Element | null {
         }}
       >
       {/* The large inner element to hold all of the items */}
-        <Box
+        <StyledDivContainer
           sx={{
             height: `${rowVirtualizer.getTotalSize()}px`,
             width: '100%',
@@ -174,6 +164,7 @@ export default function DataTable(props: DataTableProps): JSX.Element | null {
               return <>
                {headerGroups.map((headerGroup, headerGroupIdx) => (
                 <StyledDivRow
+                className='header'
                 sx={{
                   height: `${virtualItem.size}px`,
                   transform: `translateY(${virtualItem.start}px)`,
@@ -231,7 +222,7 @@ export default function DataTable(props: DataTableProps): JSX.Element | null {
                   })}
               </StyledDivRow>
             )})}
-        </Box>
+        </StyledDivContainer>
 
       </Box>
       <TablePagination
