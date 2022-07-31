@@ -172,7 +172,9 @@ export default function DataTable(props: DataTableProps): JSX.Element | null {
         sx={{mb: 2}}
         variant="standard"
       />
-      <Box
+      {
+        !page || page.length === 0 ? <Box>There is no data.</Box>
+        : <Box
         ref={parentRef}
         sx={{
           maxHeight: tableHeight,
@@ -238,6 +240,7 @@ export default function DataTable(props: DataTableProps): JSX.Element | null {
           })}
         </StyledDivContainer>
       </Box>
+      }
     </>
   );
 }
@@ -264,8 +267,13 @@ export function DataTableWithJSONList(props: Omit<DataTableProps, 'columns'>) {
     return sortColumnNamesForUnknownData([...newColumnNames]).map((columnName) => {
       return {
         Header: columnName,
-        accessor: (data: any) => data[columnName],
-        Cell: (data: any) => {
+        accessor: (data: any) => {
+          const columnValue = data[columnName];
+          const html = document.createElement('p');
+          html.innerHTML = columnValue;
+          return html.innerText;
+        },
+        Cell: (data: any,a,b,c) => {
           const columnValue = data.row.original[columnName];
           if (columnValue === null) {
             return <pre style={{ textTransform: 'uppercase', fontStyle: 'italic' }}>NULL</pre>;
