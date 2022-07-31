@@ -1350,11 +1350,11 @@ export default function MissionControl() {
             } catch (err) {}
             break;
           case 'f':
-            try{
+            try {
               (document.querySelector('#result-box-search-input') as HTMLInputElement)?.focus();
               e.stopPropagation();
               e.preventDefault();
-            }catch(err){}
+            } catch (err) {}
             break;
         }
       }

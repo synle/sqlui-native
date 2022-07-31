@@ -1,7 +1,7 @@
-import TextField from '@mui/material/TextField';
 import Box from '@mui/material/Box';
 import { styled } from '@mui/material/styles';
 import Table from '@mui/material/Table';
+import TextField from '@mui/material/TextField';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { useFilters, useGlobalFilter, usePagination, useSortBy, useTable } from 'react-table';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
@@ -31,6 +31,7 @@ export const DEFAULT_TABLE_PAGE_SIZE = 50;
 const UNNAMED_PROPERTY_NAME = '<unnamed_property>';
 
 const tableHeight = '500px';
+
 const tableCellHeight = 30;
 const tableCellWidth = 125;
 
@@ -98,8 +99,6 @@ export default function DataTable(props: DataTableProps): JSX.Element | null {
   if (pageSizeToUse === -1) {
     pageSizeToUse = allRecordSize;
   }
-
-
   const {
     getTableBodyProps,
     gotoPage,
@@ -109,20 +108,19 @@ export default function DataTable(props: DataTableProps): JSX.Element | null {
     setGlobalFilter,
     setPageSize,
     state,
-   } =
-    useTable(
-      {
-        initialState: {
-          pageSize: pageSizeToUse,
-        },
-        columns,
-        data,
+  } = useTable(
+    {
+      initialState: {
+        pageSize: pageSizeToUse,
       },
-      useFilters,
-      useGlobalFilter,
-      useSortBy,
-      usePagination,
-    );
+      columns,
+      data,
+    },
+    useFilters,
+    useGlobalFilter,
+    useSortBy,
+    usePagination,
+  );
   const { pageIndex, pageSize } = state;
 
   const onPageChange = useCallback(
@@ -164,85 +162,89 @@ export default function DataTable(props: DataTableProps): JSX.Element | null {
 
   return (
     <>
-      {
-        props.searchInputId && <TextField
+      {props.searchInputId && (
+        <TextField
           id={props.searchInputId}
-              label="Search Table"
-              size='small'
-              fullWidth
-              onChange={e => setGlobalFilter(e.target.value)}
-              sx={{mb: 2}}
-              variant="standard"
-            />}
-      {
-        !page || page.length === 0 ? <Box>There is no data.</Box>
-        : <Box
-        ref={parentRef}
-        sx={{
-          maxHeight: tableHeight,
-          overflow: 'auto', // Make it scroll!
-        }}>
-        <StyledDivContainer
+          label='Search Table'
+          size='small'
+          fullWidth
+          onChange={(e) => setGlobalFilter(e.target.value)}
+          sx={{ mb: 2 }}
+          variant='standard'
+        />
+      )}
+      {!page || page.length === 0 ? (
+        <Box>There is no data.</Box>
+      ) : (
+        <Box
+          ref={parentRef}
           sx={{
-            height: `${rowVirtualizer.getTotalSize()}px`,
-            width: '100%',
-            position: 'relative',
+            maxHeight: tableHeight,
+            overflow: 'auto', // Make it scroll!
           }}>
-          {headerGroups.map((headerGroup, headerGroupIdx) => (
-            <StyledDivHeaderRow {...headerGroup.getHeaderGroupProps()}>
-              {headerGroup.headers.map((column, colIdx) => (
-                <StyledDivContentCell {...column.getHeaderProps()}>{column.render('Header')}</StyledDivContentCell>
-              ))}
-            </StyledDivHeaderRow>
-          ))}
-          {rowVirtualizer.getVirtualItems().map((virtualItem) => {
-            let rowIdx = virtualItem.index;
-            const row = page[rowIdx];
-            prepareRow(row);
+          <StyledDivContainer
+            sx={{
+              height: `${rowVirtualizer.getTotalSize()}px`,
+              width: '100%',
+              position: 'relative',
+            }}>
+            {headerGroups.map((headerGroup, headerGroupIdx) => (
+              <StyledDivHeaderRow {...headerGroup.getHeaderGroupProps()}>
+                {headerGroup.headers.map((column, colIdx) => (
+                  <StyledDivContentCell {...column.getHeaderProps()}>
+                    {column.render('Header')}
+                  </StyledDivContentCell>
+                ))}
+              </StyledDivHeaderRow>
+            ))}
+            {rowVirtualizer.getVirtualItems().map((virtualItem) => {
+              let rowIdx = virtualItem.index;
+              const row = page[rowIdx];
+              prepareRow(row);
 
-            return (
-              <StyledDivContentRow
-                key={virtualItem.key}
-                onDoubleClick={() => props.onRowClick && props.onRowClick(row.original)}
-                onContextMenu={(e) => onRowContextMenuClick(e, rowIdx)}
-                style={{
-                  cursor: props.onRowClick ? 'pointer' : '',
-                  height: `${virtualItem.size}px`,
-                  transform: `translateY(${virtualItem.start}px)`,
-                }}>
-                {row.cells.map((cell, colIdx) => {
-                  let dropdownContent: any;
-                  if (colIdx === 0 && targetRowContextOptions.length > 0) {
-                    dropdownContent = (
-                      <DropdownMenu
-                        id={`data-table-row-dropdown-${rowIdx}`}
-                        options={targetRowContextOptions}
-                        onToggle={(newOpen) => {
-                          if (newOpen) {
-                            setOpenContextMenuRowIdx(rowIdx);
-                          } else {
-                            setOpenContextMenuRowIdx(-1);
-                          }
-                        }}
-                        maxHeight='400px'
-                        anchorEl={anchorEl}
-                        open={openContextMenuRowIdx === rowIdx}
-                      />
+              return (
+                <StyledDivContentRow
+                  key={virtualItem.key}
+                  onDoubleClick={() => props.onRowClick && props.onRowClick(row.original)}
+                  onContextMenu={(e) => onRowContextMenuClick(e, rowIdx)}
+                  style={{
+                    cursor: props.onRowClick ? 'pointer' : '',
+                    height: `${virtualItem.size}px`,
+                    transform: `translateY(${virtualItem.start}px)`,
+                  }}>
+                  {row.cells.map((cell, colIdx) => {
+                    let dropdownContent: any;
+                    if (colIdx === 0 && targetRowContextOptions.length > 0) {
+                      dropdownContent = (
+                        <DropdownMenu
+                          id={`data-table-row-dropdown-${rowIdx}`}
+                          options={targetRowContextOptions}
+                          onToggle={(newOpen) => {
+                            if (newOpen) {
+                              setOpenContextMenuRowIdx(rowIdx);
+                            } else {
+                              setOpenContextMenuRowIdx(-1);
+                            }
+                          }}
+                          maxHeight='400px'
+                          anchorEl={anchorEl}
+                          open={openContextMenuRowIdx === rowIdx}
+                        />
+                      );
+                    }
+                    return (
+                      <StyledDivContentCell {...cell.getCellProps()}>
+                        {dropdownContent}
+                        {cell.render('Cell')}
+                      </StyledDivContentCell>
                     );
-                  }
-                  return (
-                    <StyledDivContentCell {...cell.getCellProps()}>
-                      {dropdownContent}
-                      {cell.render('Cell')}
-                    </StyledDivContentCell>
-                  );
-                })}
-              </StyledDivContentRow>
-            );
-          })}
-        </StyledDivContainer>
-      </Box>
-      }
+                  })}
+                </StyledDivContentRow>
+              );
+            })}
+          </StyledDivContainer>
+        </Box>
+      )}
     </>
   );
 }
@@ -275,7 +277,7 @@ export function DataTableWithJSONList(props: Omit<DataTableProps, 'columns'>) {
           html.innerHTML = columnValue;
           return html.innerText;
         },
-        Cell: (data: any,a,b,c) => {
+        Cell: (data: any, a, b, c) => {
           const columnValue = data.row.original[columnName];
           if (columnValue === null) {
             return <pre style={{ textTransform: 'uppercase', fontStyle: 'italic' }}>NULL</pre>;

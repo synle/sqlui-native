@@ -137,7 +137,8 @@ export default function ResultBox(props: ResultBoxProps): JSX.Element | null {
   return (
     <div className='ResultBox'>
       <Alert severity='info'>
-        Query took <Timer startTime={query?.executionStart} endTime={query?.executionEnd} />. {data?.length > 0 ? `And it returned ${data?.length || 0} records.` : ''}
+        Query took <Timer startTime={query?.executionStart} endTime={query?.executionEnd} />.{' '}
+        {data?.length > 0 ? `And it returned ${data?.length || 0} records.` : ''}
       </Alert>
       <Tabs
         tabIdx={tabIdx}
