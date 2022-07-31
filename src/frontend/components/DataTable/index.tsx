@@ -161,6 +161,14 @@ export default function DataTable(props: DataTableProps): JSX.Element | null {
     estimateSize: () => tableCellHeight,
   });
 
+  const columnVirtualizer = useVirtualizer({
+    horizontal: true,
+    count: columns.length,
+    getScrollElement: () => parentRef.current,
+    estimateSize: (i) => tableCellWidth,
+    overscan: 5,
+  })
+
   return (
     <>
       {
@@ -194,22 +202,25 @@ export default function DataTable(props: DataTableProps): JSX.Element | null {
               ))}
             </StyledDivHeaderRow>
           ))}
-          {rowVirtualizer.getVirtualItems().map((virtualItem) => {
-            let rowIdx = virtualItem.index;
+          {rowVirtualizer.getVirtualItems().map((rowVirtualItem) => {
+            const rowIdx = rowVirtualItem.index;
             const row = page[rowIdx];
             prepareRow(row);
 
             return (
               <StyledDivContentRow
-                key={virtualItem.key}
+                key={rowVirtualItem.key}
                 onDoubleClick={() => props.onRowClick && props.onRowClick(row.original)}
                 onContextMenu={(e) => onRowContextMenuClick(e, rowIdx)}
                 style={{
                   cursor: props.onRowClick ? 'pointer' : '',
-                  height: `${virtualItem.size}px`,
-                  transform: `translateY(${virtualItem.start + tableCellHeight}px)`,
+                  height: `${rowVirtualItem.size}px`,
+                  transform: `translateY(${rowVirtualItem.start + tableCellHeight}px)`,
                 }}>
-                {row.cells.map((cell, colIdx) => {
+                {columnVirtualizer.getVirtualItems().map((cellVirtualItem) => {
+                  const colIdx = rowVirtualItem.index;
+                  const cell = row.cells[colIdx];
+
                   let dropdownContent: any;
                   if (colIdx === 0 && targetRowContextOptions.length > 0) {
                     dropdownContent = (
