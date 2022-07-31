@@ -250,6 +250,7 @@ export function DataTableWithJSONList(props: Omit<DataTableProps, 'columns'>) {
     return sortColumnNamesForUnknownData([...newColumnNames]).map((columnName) => {
       return {
         Header: columnName,
+        accessor: (data: any) => data[columnName],
         Cell: (data: any) => {
           const columnValue = data.row.original[columnName];
           if (columnValue === null) {
