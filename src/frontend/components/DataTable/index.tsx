@@ -67,6 +67,7 @@ const StyledDivContentRow = styled('div')(({ theme }) => ({
   position: 'absolute',
   top: 0,
   left: 0,
+  right: 0,
   display: 'flex',
   alignItems: 'center',
   fontSize: '1rem',
