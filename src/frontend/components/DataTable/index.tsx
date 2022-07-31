@@ -162,20 +162,30 @@ export default function DataTable(props: DataTableProps): JSX.Element | null {
             let rowIdx = virtualItem.index - 1;
 
             if(rowIdx < 0){
-              return <Box>
-               {headerGroups.map((headerGroup) => (
-                <Box {...headerGroup.getHeaderGroupProps()}
-                 sx={{display: 'flex', gap: 2, }}>
+              return <>
+               {headerGroups.map((headerGroup, headerGroupIdx) => (
+                <Box
+                sx={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  height: `${virtualItem.size}px`,
+                  transform: `translateY(${virtualItem.start}px)`,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 2,
+                }}
+               {...headerGroup.getHeaderGroupProps()}>
                   {headerGroup.headers.map((column, colIdx) => (
                     <Box
                       {...column.getHeaderProps()}
-                      sx={{ width: columns[colIdx].width }}>
+                      sx={{ width: '100px' }}>
                       {column.render('Header')}
                     </Box>
                   ))}
                 </Box>
               ))}
-              </Box>
+              </>
             }
 
             const row = page[rowIdx];
@@ -216,7 +226,7 @@ export default function DataTable(props: DataTableProps): JSX.Element | null {
                       );
                     }
                     return (
-                      <Box {...cell.getCellProps()} sx={{width: columns[colIdx].width}}>
+                      <Box {...cell.getCellProps()} sx={{width: '100px'}}>
                         {dropdownContent}
                         {cell.render('Cell')}
                       </Box>
