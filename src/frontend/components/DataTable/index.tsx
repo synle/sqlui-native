@@ -72,7 +72,7 @@ const StyledDivContentRow = styled('div')(({ theme }) => ({
   left: 0,
   display: 'flex',
   alignItems: 'center',
-  fontSize: '1rem',
+  fontSize: '0.9rem',
   userSelect: 'none',
   minWidth: '100%',
   backgroundColor: theme.palette.action.selected,
