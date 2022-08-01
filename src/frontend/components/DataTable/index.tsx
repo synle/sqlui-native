@@ -94,13 +94,12 @@ const StyledDivContentCell = styled('div')(({ theme }) => ({
   paddingInline: '0.5rem',
 }));
 
-
 const StyledDivContentCellLabel = styled('div')(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
   '> span': {
     flexGrow: 1,
-  }
+  },
 }));
 
 export default function DataTable(props: DataTableProps): JSX.Element | null {
@@ -225,13 +224,12 @@ export default function DataTable(props: DataTableProps): JSX.Element | null {
                     {...column.getHeaderProps()}>
                     <StyledDivContentCellLabel {...column.getSortByToggleProps()}>
                       <span>{column.render('Header')}</span>
-                      {column.isSorted && (
-                        column.isSortedDesc ? (
+                      {column.isSorted &&
+                        (column.isSortedDesc ? (
                           <ArrowDropDownIcon fontSize='small' />
                         ) : (
                           <ArrowDropUpIcon fontSize='small' />
-                        )
-                      )}
+                        ))}
                     </StyledDivContentCellLabel>
                   </StyledDivContentCell>
                 ))}
