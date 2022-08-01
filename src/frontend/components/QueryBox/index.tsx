@@ -245,73 +245,75 @@ export default function QueryBox(props: QueryBoxProps): JSX.Element | null {
 
   return (
     <>
-      <form className='QueryBox FormInput__Container' onSubmit={onSubmit}>
-        <div className='FormInput__Row'>
-          <ConnectionDatabaseSelector value={query} onChange={onDatabaseConnectionChange} />
-          <ConnectionRevealButton query={query} />
-          <ConnectionActionsButton query={query} />
-        </div>
-        <CodeEditorBox
-          value={query.sql}
-          placeholder={`Enter SQL for ` + query.name}
-          onChange={onSqlQueryChange}
-          language={language}
-          editorRef={editorRef}
-          autoFocus
-          required
-        />
-        <div className='FormInput__Row'>
-          <LoadingButton
-            id='btnExecuteCommand'
-            type='submit'
-            variant='contained'
-            loading={isExecuting}
-            startIcon={<SendIcon />}>
-            Execute
-          </LoadingButton>
-          <Tooltip title='Click here to see how to get started with some queries.'>
-            <Button
-              type='button'
-              variant='outlined'
-              onClick={() => selectCommand({ event: 'clientEvent/showQueryHelp' })}
-              startIcon={<HelpIcon />}>
-              Show Query Help
-            </Button>
-          </Tooltip>
-          <Tooltip title='Format the SQL query for readability.'>
-            <Button
-              type='button'
-              variant='outlined'
-              onClick={onFormatQuery}
-              startIcon={<FormatColorTextIcon />}>
-              Format
-            </Button>
-          </Tooltip>
-          {isMigrationVisible && (
-            <Tooltip title='Migrate this database and table.'>
+      <div className='QueryBox  FormInput__Container'>
+        <form onSubmit={onSubmit}>
+          <div className='FormInput__Row'>
+            <ConnectionDatabaseSelector value={query} onChange={onDatabaseConnectionChange} />
+            <ConnectionRevealButton query={query} />
+            <ConnectionActionsButton query={query} />
+          </div>
+          <CodeEditorBox
+            value={query.sql}
+            placeholder={`Enter SQL for ` + query.name}
+            onChange={onSqlQueryChange}
+            language={language}
+            editorRef={editorRef}
+            autoFocus
+            required
+          />
+          <div className='FormInput__Row'>
+            <LoadingButton
+              id='btnExecuteCommand'
+              type='submit'
+              variant='contained'
+              loading={isExecuting}
+              startIcon={<SendIcon />}>
+              Execute
+            </LoadingButton>
+            <Tooltip title='Click here to see how to get started with some queries.'>
               <Button
                 type='button'
                 variant='outlined'
-                onClick={onShowMigrationForThisDatabaseAndTable}
-                startIcon={<BackupIcon />}>
-                Migration
+                onClick={() => selectCommand({ event: 'clientEvent/showQueryHelp' })}
+                startIcon={<HelpIcon />}>
+                Show Query Help
               </Button>
             </Tooltip>
-          )}
-          {isCreateRecordVisible && (
-            <Tooltip title='Create new record for this database and connection.'>
+            <Tooltip title='Format the SQL query for readability.'>
               <Button
                 type='button'
                 variant='outlined'
-                onClick={onShowCreateNewRecordForThisDatabaseAndTable}
-                startIcon={<AddCircleIcon />}>
-                New Record
+                onClick={onFormatQuery}
+                startIcon={<FormatColorTextIcon />}>
+                Format
               </Button>
             </Tooltip>
-          )}
-        </div>
+            {isMigrationVisible && (
+              <Tooltip title='Migrate this database and table.'>
+                <Button
+                  type='button'
+                  variant='outlined'
+                  onClick={onShowMigrationForThisDatabaseAndTable}
+                  startIcon={<BackupIcon />}>
+                  Migration
+                </Button>
+              </Tooltip>
+            )}
+            {isCreateRecordVisible && (
+              <Tooltip title='Create new record for this database and connection.'>
+                <Button
+                  type='button'
+                  variant='outlined'
+                  onClick={onShowCreateNewRecordForThisDatabaseAndTable}
+                  startIcon={<AddCircleIcon />}>
+                  New Record
+                </Button>
+              </Tooltip>
+            )}
+          </div>
+        </form>
         <ResultBox query={query} executing={executing} />
-      </form>
+      </div>
     </>
   );
 }
