@@ -43,6 +43,7 @@ const StyledDivHeaderRow = styled('div')(({ theme }) => ({
   alignItems: 'center',
   fontSize: '1rem',
   flexWrap: 'nowrap',
+  minWidth: '100%',
   position: 'sticky',
   top: 0,
   left: 0,
@@ -72,6 +73,7 @@ const StyledDivContentRow = styled('div')(({ theme }) => ({
   alignItems: 'center',
   fontSize: '1rem',
   userSelect: 'none',
+  minWidth: '100%',
   backgroundColor: theme.palette.action.selected,
 
   '&:nth-of-type(odd)': {
@@ -85,7 +87,7 @@ const StyledDivContentRow = styled('div')(({ theme }) => ({
 
 const StyledDivContentCell = styled('div')(({ theme }) => ({
   flexShrink: 0,
-  width: `${tableCellWidth}px`,
+  maxWidth: `200px`,
   paddingInline: '0.5rem',
 }));
 
@@ -185,13 +187,14 @@ export default function DataTable(props: DataTableProps): JSX.Element | null {
           <StyledDivContainer
             sx={{
               height: `${rowVirtualizer.getTotalSize()}px`,
-              width: '100%',
               position: 'relative',
             }}>
             {headerGroups.map((headerGroup, headerGroupIdx) => (
               <StyledDivHeaderRow {...headerGroup.getHeaderGroupProps()}>
                 {headerGroup.headers.map((column, colIdx) => (
-                  <StyledDivContentCell {...column.getHeaderProps()}>
+                  <StyledDivContentCell
+                  style={{width: columns[colIdx].width || tableCellWidth}}
+                  {...column.getHeaderProps()}>
                     {column.render('Header')}
                   </StyledDivContentCell>
                 ))}
@@ -233,7 +236,9 @@ export default function DataTable(props: DataTableProps): JSX.Element | null {
                       );
                     }
                     return (
-                      <StyledDivContentCell {...cell.getCellProps()}>
+                      <StyledDivContentCell
+                      style={{width: columns[colIdx].width || tableCellWidth}}
+                      {...cell.getCellProps()}>
                         {dropdownContent}
                         {cell.render('Cell')}
                       </StyledDivContentCell>
