@@ -10,7 +10,7 @@ import { DataTableProps } from 'src/frontend/components/DataTable';
 import { GlobalFilter, SimpleColumnFilter } from 'src/frontend/components/DataTable/Filter';
 import DropdownMenu from 'src/frontend/components/DropdownMenu';
 
-const tableHeight = '500px';
+const tableHeight = '400px';
 
 const tableCellHeaderHeight = 75;
 
@@ -31,14 +31,14 @@ const StyledDivHeaderRow = styled('div')(({ theme }) => ({
   top: 0,
   left: 0,
   zIndex: theme.zIndex.drawer + 1,
-  backgroundColor: theme.palette.common.black,
-  color: theme.palette.common.white,
-  borderBottom: `1px solid ${theme.palette.divider}`,
+  backgroundColor: theme.palette.background.default,
+  color: theme.palette.text.primary,
+  border: `1px solid ${theme.palette.divider}`,
 
   '> div': {
     height: `${tableCellHeaderHeight}px`,
-    backgroundColor: theme.palette.common.black,
-    color: theme.palette.common.white,
+    backgroundColor: theme.palette.background.default,
+    color: theme.palette.text.primary,
     paddingTop: '5px',
     boxSizing: 'border-box',
     overflow: 'hidden',
@@ -184,7 +184,7 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
             <StyledDivHeaderRow {...headerGroup.getHeaderGroupProps()}>
               {headerGroup.headers.map((column, colIdx) => (
                 <StyledDivContentCell
-                  style={{
+                  sx={{
                     width: columns[colIdx].width,
                   }}
                   {...column.getHeaderProps()}>
@@ -213,7 +213,7 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
               <StyledDivContentRow
                 ref={measureRef}
                 data-row-idx={rowIdx}
-                style={{
+                sx={{
                   cursor: props.onRowClick ? 'pointer' : '',
                   transform: `translateY(${virtualItem.start}px)`,
                 }}
@@ -241,7 +241,7 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
                   }
                   return (
                     <StyledDivContentCell
-                      style={{
+                      sx={{
                         width: columns[colIdx].width,
                       }}
                       {...cell.getCellProps()}>
