@@ -1,3 +1,5 @@
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import Box from '@mui/material/Box';
 import { styled } from '@mui/material/styles';
 import Table from '@mui/material/Table';
@@ -90,6 +92,15 @@ const StyledDivContentCell = styled('div')(({ theme }) => ({
   flexShrink: 0,
   maxWidth: `200px`,
   paddingInline: '0.5rem',
+}));
+
+
+const StyledDivContentCellLabel = styled('div')(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  '> span': {
+    flexGrow: 1,
+  }
 }));
 
 export default function DataTable(props: DataTableProps): JSX.Element | null {
@@ -212,7 +223,16 @@ export default function DataTable(props: DataTableProps): JSX.Element | null {
                       width: columns[colIdx].width,
                     }}
                     {...column.getHeaderProps()}>
-                    {column.render('Header')}
+                    <StyledDivContentCellLabel {...column.getSortByToggleProps()}>
+                      <span>{column.render('Header')}</span>
+                      {column.isSorted && (
+                        column.isSortedDesc ? (
+                          <ArrowDropDownIcon fontSize='small' />
+                        ) : (
+                          <ArrowDropUpIcon fontSize='small' />
+                        )
+                      )}
+                    </StyledDivContentCellLabel>
                   </StyledDivContentCell>
                 ))}
               </StyledDivHeaderRow>
@@ -295,6 +315,7 @@ export function DataTableWithJSONList(props: Omit<DataTableProps, 'columns'>) {
     return sortColumnNamesForUnknownData([...newColumnNames]).map((columnName) => {
       return {
         Header: columnName,
+        sortable: true,
         accessor: (data: any) => {
           const columnValue = data[columnName];
           const html = document.createElement('p');
