@@ -33,7 +33,8 @@ const UNNAMED_PROPERTY_NAME = '<unnamed_property>';
 const tableHeight = '500px';
 
 const tableCellHeight = 30;
-const tableCellWidth = 125;
+
+const tableCellWidth = 200;
 
 const StyledDivContainer = styled('div')(({ theme }) => ({}));
 
@@ -71,7 +72,7 @@ const StyledDivContentRow = styled('div')(({ theme }) => ({
   left: 0,
   display: 'flex',
   alignItems: 'center',
-  fontSize: '1rem',
+  fontSize: '0.9rem',
   userSelect: 'none',
   minWidth: '100%',
   backgroundColor: theme.palette.action.selected,
@@ -87,7 +88,7 @@ const StyledDivContentRow = styled('div')(({ theme }) => ({
 
 const StyledDivContentCell = styled('div')(({ theme }) => ({
   flexShrink: 0,
-  width: `${tableCellWidth}px`,
+  maxWidth: `200px`,
   paddingInline: '0.5rem',
 }));
 
@@ -151,6 +152,14 @@ export default function DataTable(props: DataTableProps): JSX.Element | null {
       rowContextOption.onClick && rowContextOption.onClick(data[openContextMenuRowIdx]),
   }));
 
+  // figure out the width
+  const headers = headerGroups?.[0]?.headers || [];
+  for (let i = 0; i < headers.length; i++) {
+    const header = headers[i];
+    columns[i].width = Math.max(header.width as number, tableCellWidth);
+    columns[i].width = `${columns[i].width}px`;
+  }
+
   // The scrollable element for your list
   const parentRef = React.useRef<HTMLTableElement | null>(null);
 
@@ -160,6 +169,7 @@ export default function DataTable(props: DataTableProps): JSX.Element | null {
     paddingStart: tableCellHeight,
     getScrollElement: () => parentRef.current,
     estimateSize: () => tableCellHeight,
+    overscan: 5,
   });
 
   return (
@@ -192,7 +202,11 @@ export default function DataTable(props: DataTableProps): JSX.Element | null {
             {headerGroups.map((headerGroup, headerGroupIdx) => (
               <StyledDivHeaderRow {...headerGroup.getHeaderGroupProps()}>
                 {headerGroup.headers.map((column, colIdx) => (
-                  <StyledDivContentCell {...column.getHeaderProps()}>
+                  <StyledDivContentCell
+                    style={{
+                      width: columns[colIdx].width,
+                    }}
+                    {...column.getHeaderProps()}>
                     {column.render('Header')}
                   </StyledDivContentCell>
                 ))}
@@ -234,7 +248,11 @@ export default function DataTable(props: DataTableProps): JSX.Element | null {
                       );
                     }
                     return (
-                      <StyledDivContentCell {...cell.getCellProps()}>
+                      <StyledDivContentCell
+                        style={{
+                          width: columns[colIdx].width,
+                        }}
+                        {...cell.getCellProps()}>
                         {dropdownContent}
                         {cell.render('Cell')}
                       </StyledDivContentCell>
