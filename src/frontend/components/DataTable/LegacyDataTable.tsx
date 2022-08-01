@@ -36,8 +36,9 @@ function TableContainerWrapper(props: any) {
 }
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
-    backgroundColor: theme.palette.common.black,
-    color: theme.palette.common.white,
+    backgroundColor: theme.palette.background.default,
+    color: theme.palette.text.primary,
+    fontWeight: 'bold',
   },
   [`&.${tableCellClasses.body}`]: {
     fontSize: '1rem',
@@ -134,7 +135,7 @@ export default function LegacyDataTable(props: DataTableProps) {
       {props.searchInputId && <GlobalFilter id={props.searchInputId} onChange={setGlobalFilter} />}
       <TableContainer component={TableContainerWrapper}>
         <Table sx={{ minWidth: 650 }} size='small'>
-          <TableHead>
+          <TableHead sx={{    boxShadow: 4}}>
             {headerGroups.map((headerGroup) => (
               <TableRow {...headerGroup.getHeaderGroupProps()}>
                 {headerGroup.headers.map((column, colIdx) => (
@@ -168,7 +169,7 @@ export default function LegacyDataTable(props: DataTableProps) {
                     e.preventDefault();
                     props.onRowClick && props.onRowClick(row.original);
                   }}
-                  style={{ cursor: props.onRowClick ? 'pointer' : '' }}>
+                  sx={{ cursor: props.onRowClick ? 'pointer' : '' }}>
                   {row.cells.map((cell, colIdx) => {
                     let dropdownContent: any;
                     if (colIdx === 0 && targetRowContextOptions.length > 0) {
