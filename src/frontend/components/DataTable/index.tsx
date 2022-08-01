@@ -43,6 +43,7 @@ const StyledDivHeaderRow = styled('div')(({ theme }) => ({
   alignItems: 'center',
   fontSize: '1rem',
   flexWrap: 'nowrap',
+  minWidth: '100%',
   position: 'sticky',
   top: 0,
   left: 0,
@@ -72,6 +73,7 @@ const StyledDivContentRow = styled('div')(({ theme }) => ({
   alignItems: 'center',
   fontSize: '1rem',
   userSelect: 'none',
+  minWidth: '100%',
   backgroundColor: theme.palette.action.selected,
 
   '&:nth-of-type(odd)': {
@@ -185,7 +187,6 @@ export default function DataTable(props: DataTableProps): JSX.Element | null {
           <StyledDivContainer
             sx={{
               height: `${rowVirtualizer.getTotalSize()}px`,
-              width: '100%',
               position: 'relative',
             }}>
             {headerGroups.map((headerGroup, headerGroupIdx) => (
