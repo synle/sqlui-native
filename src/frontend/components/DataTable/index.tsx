@@ -11,6 +11,7 @@ import { DropdownButtonOption } from 'src/frontend/components/DropdownButton';
 import DropdownMenu from 'src/frontend/components/DropdownMenu';
 import { useTablePageSize } from 'src/frontend/hooks/useSetting';
 import { sortColumnNamesForUnknownData } from 'src/frontend/utils/commonUtils';
+import Chip from '@mui/material/Chip';
 
 type DataTableProps = {
   columns: any[];
@@ -37,7 +38,7 @@ const tableHeight = '500px';
 
 const tableCellHeaderHeight = 75;
 
-const tableCellHeight = 30;
+const tableCellHeight = 35;
 
 const tableCellWidth = 200;
 
@@ -362,13 +363,13 @@ export function DataTableWithJSONList(props: Omit<DataTableProps, 'columns'>) {
         Cell: (data: any, a, b, c) => {
           const columnValue = data.row.original[columnName];
           if (columnValue === null) {
-            return <pre style={{ textTransform: 'uppercase', fontStyle: 'italic' }}>null</pre>;
-          } else if (columnValue === true || columnValue === false) {
-            return (
-              <pre style={{ textTransform: 'uppercase', fontStyle: 'italic' }}>
-                {columnValue.toString()}
-              </pre>
-            );
+            return <Chip sx={{ textTransform: 'uppercase', fontStyle: 'italic' }} size='small' color='warning' label='null' />;
+          } else if (columnValue === undefined) {
+            return <Chip sx={{ textTransform: 'uppercase', fontStyle: 'italic' }} size='small' color='warning' label='undefined' />;
+          } else if (columnValue === true || columnValue?.toString()?.toLowerCase() === 'true') {
+            return <Chip sx={{ textTransform: 'uppercase', fontStyle: 'italic' }} size='small' color='success' label='true' />;
+          } else if (columnValue === false || columnValue?.toString()?.toLowerCase() === 'false') {
+            return <Chip sx={{ textTransform: 'uppercase', fontStyle: 'italic' }} size='small' color='error' label='false' />;
           } else if (typeof columnValue === 'number') {
             return <pre style={{ textTransform: 'uppercase' }}>{columnValue}</pre>;
           } else if (typeof columnValue === 'object') {
