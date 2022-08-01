@@ -1349,6 +1349,13 @@ export default function MissionControl() {
               e.preventDefault();
             } catch (err) {}
             break;
+          case 'f':
+            try {
+              (document.querySelector('#result-box-search-input') as HTMLInputElement)?.focus();
+              e.stopPropagation();
+              e.preventDefault();
+            } catch (err) {}
+            break;
         }
       }
     };

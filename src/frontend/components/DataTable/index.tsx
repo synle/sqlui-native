@@ -1,12 +1,8 @@
-import Paper from '@mui/material/Paper';
+import Box from '@mui/material/Box';
 import { styled } from '@mui/material/styles';
 import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell, { tableCellClasses } from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TablePagination from '@mui/material/TablePagination';
-import TableRow from '@mui/material/TableRow';
+import TextField from '@mui/material/TextField';
+import { useVirtualizer } from '@tanstack/react-virtual';
 import { useFilters, useGlobalFilter, usePagination, useSortBy, useTable } from 'react-table';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { DropdownButtonOption } from 'src/frontend/components/DropdownButton';
@@ -19,6 +15,7 @@ type DataTableProps = {
   data: any[];
   onRowClick?: (rowData: any) => void;
   rowContextOptions?: DropdownButtonOption[];
+  searchInputId?: string;
 };
 
 export const ALL_PAGE_SIZE_OPTIONS: any[] = [
@@ -33,33 +30,63 @@ export const DEFAULT_TABLE_PAGE_SIZE = 50;
 
 const UNNAMED_PROPERTY_NAME = '<unnamed_property>';
 
-function TableContainerWrapper(props: any): JSX.Element | null {
-  return (
-    <Paper square={true} variant='outlined' sx={{ overflow: 'auto' }}>
-      {props.children}
-    </Paper>
-  );
-}
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
-  [`&.${tableCellClasses.head}`]: {
+const tableHeight = '500px';
+
+const tableCellHeight = 30;
+const tableCellWidth = 125;
+
+const StyledDivContainer = styled('div')(({ theme }) => ({}));
+
+const StyledDivHeaderRow = styled('div')(({ theme }) => ({
+  fontWeight: 'bold',
+  display: 'flex',
+  alignItems: 'center',
+  fontSize: '1rem',
+  flexWrap: 'nowrap',
+  position: 'sticky',
+  top: 0,
+  left: 0,
+  zIndex: theme.zIndex.drawer + 1,
+  backgroundColor: theme.palette.common.black,
+  color: theme.palette.common.white,
+  borderBottom: `1px solid ${theme.palette.divider}`,
+
+  '> div': {
+    height: `${tableCellHeight}px`,
     backgroundColor: theme.palette.common.black,
     color: theme.palette.common.white,
-  },
-  [`&.${tableCellClasses.body}`]: {
-    fontSize: '1rem',
+    paddingTop: '5px',
+    boxSizing: 'border-box',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    wordBreak: 'break-all',
+    whiteSpace: 'nowrap',
   },
 }));
 
-const StyledTableRow = styled(TableRow)(({ theme }) => ({
+const StyledDivContentRow = styled('div')(({ theme }) => ({
+  position: 'absolute',
+  top: 0,
+  left: 0,
+  display: 'flex',
+  alignItems: 'center',
+  fontSize: '1rem',
+  userSelect: 'none',
+  backgroundColor: theme.palette.action.selected,
+
   '&:nth-of-type(odd)': {
     backgroundColor: theme.palette.action.hover,
   },
-  '&:last-child td, &:last-child th': {
-    border: 0,
-  },
+
   '&:hover': {
     backgroundColor: theme.palette.action.focus,
   },
+}));
+
+const StyledDivContentCell = styled('div')(({ theme }) => ({
+  flexShrink: 0,
+  width: `${tableCellWidth}px`,
+  paddingInline: '0.5rem',
 }));
 
 export default function DataTable(props: DataTableProps): JSX.Element | null {
@@ -72,24 +99,28 @@ export default function DataTable(props: DataTableProps): JSX.Element | null {
   if (pageSizeToUse === -1) {
     pageSizeToUse = allRecordSize;
   }
-
-  const pageSizeOptions = ALL_PAGE_SIZE_OPTIONS.map((option) => ({ ...option }));
-  pageSizeOptions[pageSizeOptions.length - 1].value = allRecordSize;
-
-  const { getTableBodyProps, gotoPage, headerGroups, page, prepareRow, setPageSize, state } =
-    useTable(
-      {
-        initialState: {
-          pageSize: pageSizeToUse,
-        },
-        columns,
-        data,
+  const {
+    getTableBodyProps,
+    gotoPage,
+    headerGroups,
+    page,
+    prepareRow,
+    setGlobalFilter,
+    setPageSize,
+    state,
+  } = useTable(
+    {
+      initialState: {
+        pageSize: pageSizeToUse,
       },
-      useFilters,
-      useGlobalFilter,
-      useSortBy,
-      usePagination,
-    );
+      columns,
+      data,
+    },
+    useFilters,
+    useGlobalFilter,
+    useSortBy,
+    usePagination,
+  );
   const { pageIndex, pageSize } = state;
 
   const onPageChange = useCallback(
@@ -103,19 +134,12 @@ export default function DataTable(props: DataTableProps): JSX.Element | null {
     setPageSize(e.target.value);
   }, []);
 
-  const onRowContextMenuClick = (e: React.SyntheticEvent) => {
-    const target = e.target as HTMLElement;
-    const tr = target.closest('tr');
-    const siblings = target.closest('tbody')?.children;
-    if (siblings) {
-      for (let rowIdx = 0; rowIdx < siblings.length; rowIdx++) {
-        if (siblings[rowIdx] === tr) {
-          e.preventDefault();
-          setOpenContextMenuRowIdx(rowIdx);
-          anchorEl.current = target;
-          break;
-        }
-      }
+  const onRowContextMenuClick = (e: React.SyntheticEvent, rowIdx: number) => {
+    if (rowIdx >= 0) {
+      e.preventDefault();
+      const target = e.target as HTMLElement;
+      setOpenContextMenuRowIdx(rowIdx);
+      anchorEl.current = target;
     }
   };
 
@@ -125,31 +149,69 @@ export default function DataTable(props: DataTableProps): JSX.Element | null {
       rowContextOption.onClick && rowContextOption.onClick(data[openContextMenuRowIdx]),
   }));
 
+  // The scrollable element for your list
+  const parentRef = React.useRef<HTMLTableElement | null>(null);
+
+  // The virtualizer
+  const rowVirtualizer = useVirtualizer({
+    count: page.length,
+    paddingStart: tableCellHeight,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => tableCellHeight,
+  });
+
   return (
     <>
-      <TableContainer component={TableContainerWrapper}>
-        <Table sx={{ minWidth: 650 }} size='small'>
-          <TableHead>
-            {headerGroups.map((headerGroup) => (
-              <TableRow {...headerGroup.getHeaderGroupProps()}>
+      {props.searchInputId && (
+        <TextField
+          id={props.searchInputId}
+          label='Search Table'
+          size='small'
+          fullWidth
+          onChange={(e) => setGlobalFilter(e.target.value)}
+          sx={{ mb: 2 }}
+          variant='standard'
+        />
+      )}
+      {!page || page.length === 0 ? (
+        <Box>There is no data.</Box>
+      ) : (
+        <Box
+          ref={parentRef}
+          sx={{
+            maxHeight: tableHeight,
+            overflow: 'auto', // Make it scroll!
+          }}>
+          <StyledDivContainer
+            sx={{
+              height: `${rowVirtualizer.getTotalSize()}px`,
+              width: '100%',
+              position: 'relative',
+            }}>
+            {headerGroups.map((headerGroup, headerGroupIdx) => (
+              <StyledDivHeaderRow {...headerGroup.getHeaderGroupProps()}>
                 {headerGroup.headers.map((column, colIdx) => (
-                  <StyledTableCell
-                    {...column.getHeaderProps()}
-                    sx={{ width: columns[colIdx].width }}>
+                  <StyledDivContentCell {...column.getHeaderProps()}>
                     {column.render('Header')}
-                  </StyledTableCell>
+                  </StyledDivContentCell>
                 ))}
-              </TableRow>
+              </StyledDivHeaderRow>
             ))}
-          </TableHead>
-          <TableBody {...getTableBodyProps()} onContextMenu={(e) => onRowContextMenuClick(e)}>
-            {page.map((row, rowIdx) => {
+            {rowVirtualizer.getVirtualItems().map((virtualItem) => {
+              let rowIdx = virtualItem.index;
+              const row = page[rowIdx];
               prepareRow(row);
+
               return (
-                <StyledTableRow
-                  {...row.getRowProps()}
-                  onClick={() => props.onRowClick && props.onRowClick(row.original)}
-                  style={{ cursor: props.onRowClick ? 'pointer' : '' }}>
+                <StyledDivContentRow
+                  key={virtualItem.key}
+                  onDoubleClick={() => props.onRowClick && props.onRowClick(row.original)}
+                  onContextMenu={(e) => onRowContextMenuClick(e, rowIdx)}
+                  style={{
+                    cursor: props.onRowClick ? 'pointer' : '',
+                    height: `${virtualItem.size}px`,
+                    transform: `translateY(${virtualItem.start}px)`,
+                  }}>
                   {row.cells.map((cell, colIdx) => {
                     let dropdownContent: any;
                     if (colIdx === 0 && targetRowContextOptions.length > 0) {
@@ -171,29 +233,18 @@ export default function DataTable(props: DataTableProps): JSX.Element | null {
                       );
                     }
                     return (
-                      <StyledTableCell {...cell.getCellProps()}>
+                      <StyledDivContentCell {...cell.getCellProps()}>
                         {dropdownContent}
                         {cell.render('Cell')}
-                      </StyledTableCell>
+                      </StyledDivContentCell>
                     );
                   })}
-                </StyledTableRow>
+                </StyledDivContentRow>
               );
             })}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      <TablePagination
-        component='div'
-        count={data.length}
-        onPageChange={onPageChange}
-        onRowsPerPageChange={onRowsPerPageChange}
-        page={pageIndex}
-        rowsPerPage={pageSize}
-        rowsPerPageOptions={pageSizeOptions}
-        showFirstButton
-        showLastButton
-      />
+          </StyledDivContainer>
+        </Box>
+      )}
     </>
   );
 }
@@ -220,7 +271,13 @@ export function DataTableWithJSONList(props: Omit<DataTableProps, 'columns'>) {
     return sortColumnNamesForUnknownData([...newColumnNames]).map((columnName) => {
       return {
         Header: columnName,
-        Cell: (data: any) => {
+        accessor: (data: any) => {
+          const columnValue = data[columnName];
+          const html = document.createElement('p');
+          html.innerHTML = columnValue;
+          return html.innerText;
+        },
+        Cell: (data: any, a, b, c) => {
           const columnValue = data.row.original[columnName];
           if (columnValue === null) {
             return <pre style={{ textTransform: 'uppercase', fontStyle: 'italic' }}>NULL</pre>;
