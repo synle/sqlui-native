@@ -137,7 +137,11 @@ export default function DataTable(props: DataTableProps): JSX.Element | null {
     setPageSize(e.target.value);
   }, []);
 
-  const onRowContextMenuClick = (e: React.SyntheticEvent, rowIdx: number) => {
+  const onRowContextMenuClick = (e: React.SyntheticEvent) => {
+    const target = e.target as HTMLElement;
+    const tr = target.closest('[role=row]') as HTMLElement;
+    const rowIdx = parseInt(tr?.dataset?.rowIdx || '');
+
     if (rowIdx >= 0) {
       e.preventDefault();
       const target = e.target as HTMLElement;
@@ -193,7 +197,8 @@ export default function DataTable(props: DataTableProps): JSX.Element | null {
           sx={{
             maxHeight: tableHeight,
             overflow: 'auto', // Make it scroll!
-          }}>
+          }}
+          onContextMenu={(e) => onRowContextMenuClick(e)}>
           <StyledDivContainer
             sx={{
               height: `${rowVirtualizer.getTotalSize()}px`,
@@ -219,14 +224,14 @@ export default function DataTable(props: DataTableProps): JSX.Element | null {
 
               return (
                 <StyledDivContentRow
-                  key={virtualItem.key}
                   onDoubleClick={() => props.onRowClick && props.onRowClick(row.original)}
-                  onContextMenu={(e) => onRowContextMenuClick(e, rowIdx)}
                   style={{
                     cursor: props.onRowClick ? 'pointer' : '',
                     height: `${virtualItem.size}px`,
                     transform: `translateY(${virtualItem.start}px)`,
-                  }}>
+                  }}
+                  data-row-idx={rowIdx}
+                  {...row.getRowProps()}>
                   {row.cells.map((cell, colIdx) => {
                     let dropdownContent: any;
                     if (colIdx === 0 && targetRowContextOptions.length > 0) {
