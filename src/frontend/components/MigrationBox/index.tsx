@@ -689,8 +689,8 @@ function MigrationMetaDataInputs(props: MigrationMetaDataInputsProps): JSX.Eleme
             onBlur={(e) => onChange('newDatabaseName', e.target.value)}
             required
             size='small'
-            fullWidth={true}
             autoComplete='off'
+            sx={{ flexGrow: 1 }}
           />
         )}
         <TextField
@@ -699,8 +699,8 @@ function MigrationMetaDataInputs(props: MigrationMetaDataInputsProps): JSX.Eleme
           onBlur={(e) => onChange('newTableName', e.target.value)}
           required
           size='small'
-          fullWidth={true}
           autoComplete='off'
+          sx={{ flexGrow: 1 }}
         />
       </div>
 
