@@ -137,7 +137,21 @@ export default function DataTable(props: DataTableProps): JSX.Element | null {
     setPageSize(e.target.value);
   }, []);
 
-  const onRowContextMenuClick = (e: React.SyntheticEvent, rowIdx: number) => {
+  const onRowContextMenuClick = (e: React.SyntheticEvent) => {
+    let rowIdx = -1;
+    const target = e.target as HTMLElement;
+    const tr = target.closest('[role=row]');
+    const siblings = tr?.parentElement?.children;
+    if (siblings) {
+      for (let i = 0; i < siblings.length; i++) {
+        if (siblings[i] === tr) {
+          // NOTE: we include the header as part of the table body
+          // so we need to deduct 1 here
+          rowIdx = i - 1;
+        }
+      }
+    }
+
     if (rowIdx >= 0) {
       e.preventDefault();
       const target = e.target as HTMLElement;
@@ -193,7 +207,8 @@ export default function DataTable(props: DataTableProps): JSX.Element | null {
           sx={{
             maxHeight: tableHeight,
             overflow: 'auto', // Make it scroll!
-          }}>
+          }}
+          onContextMenu={(e) => onRowContextMenuClick(e)}>
           <StyledDivContainer
             sx={{
               height: `${rowVirtualizer.getTotalSize()}px`,
@@ -219,14 +234,13 @@ export default function DataTable(props: DataTableProps): JSX.Element | null {
 
               return (
                 <StyledDivContentRow
-                  key={virtualItem.key}
                   onDoubleClick={() => props.onRowClick && props.onRowClick(row.original)}
-                  onContextMenu={(e) => onRowContextMenuClick(e, rowIdx)}
                   style={{
                     cursor: props.onRowClick ? 'pointer' : '',
                     height: `${virtualItem.size}px`,
                     transform: `translateY(${virtualItem.start}px)`,
-                  }}>
+                  }}
+                  {...row.getRowProps()}>
                   {row.cells.map((cell, colIdx) => {
                     let dropdownContent: any;
                     if (colIdx === 0 && targetRowContextOptions.length > 0) {
