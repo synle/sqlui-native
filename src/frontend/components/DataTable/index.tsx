@@ -34,7 +34,7 @@ const tableHeight = '500px';
 
 const tableCellHeight = 30;
 
-const tableCellWidth = 125;
+const tableCellWidth = 200;
 
 const StyledDivContainer = styled('div')(({ theme }) => ({}));
 
@@ -154,22 +154,11 @@ export default function DataTable(props: DataTableProps): JSX.Element | null {
 
   // figure out the width
   const headers = headerGroups?.[0]?.headers || [];
-  let widestCellWidth = 0;
-  let widestCellIdx = -1;
   for (let i = 0; i < headers.length; i++) {
     const header = headers[i];
-    columns[i].width = header.width || tableCellWidth;
-
-    if (widestCellWidth <= columns[i].width) {
-      widestCellIdx = i;
-      widestCellWidth = columns[i].width;
-    }
-
+    columns[i].width = Math.max(header.width as number, tableCellWidth);
     columns[i].width = `${columns[i].width}px`;
   }
-
-  // set the widest column
-  columns[widestCellIdx].width = '';
 
   // The scrollable element for your list
   const parentRef = React.useRef<HTMLTableElement | null>(null);
@@ -180,6 +169,7 @@ export default function DataTable(props: DataTableProps): JSX.Element | null {
     paddingStart: tableCellHeight,
     getScrollElement: () => parentRef.current,
     estimateSize: () => tableCellHeight,
+    overscan: 5,
   });
 
   return (
@@ -215,7 +205,6 @@ export default function DataTable(props: DataTableProps): JSX.Element | null {
                   <StyledDivContentCell
                     style={{
                       width: columns[colIdx].width,
-                      flexGrow: columns[colIdx].width ? 0 : 1,
                     }}
                     {...column.getHeaderProps()}>
                     {column.render('Header')}
@@ -262,7 +251,6 @@ export default function DataTable(props: DataTableProps): JSX.Element | null {
                       <StyledDivContentCell
                         style={{
                           width: columns[colIdx].width,
-                          flexGrow: columns[colIdx].width ? 0 : 1,
                         }}
                         {...cell.getCellProps()}>
                         {dropdownContent}
