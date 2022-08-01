@@ -245,7 +245,8 @@ export default function QueryBox(props: QueryBoxProps): JSX.Element | null {
 
   return (
     <>
-      <form className='QueryBox FormInput__Container' onSubmit={onSubmit}>
+      <div className='QueryBox  FormInput__Container'>
+      <form onSubmit={onSubmit}>
         <div className='FormInput__Row'>
           <ConnectionDatabaseSelector value={query} onChange={onDatabaseConnectionChange} />
           <ConnectionRevealButton query={query} />
@@ -310,8 +311,9 @@ export default function QueryBox(props: QueryBoxProps): JSX.Element | null {
             </Tooltip>
           )}
         </div>
-        <ResultBox query={query} executing={executing} />
       </form>
+      <ResultBox query={query} executing={executing} />
+      </div>
     </>
   );
 }
