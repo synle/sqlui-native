@@ -3,17 +3,12 @@ import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import Box from '@mui/material/Box';
 import { styled } from '@mui/material/styles';
 import Table from '@mui/material/Table';
-import TextField from '@mui/material/TextField';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { useFilters, useGlobalFilter, usePagination, useSortBy, useTable } from 'react-table';
-import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { DropdownButtonOption } from 'src/frontend/components/DropdownButton';
+import React, { useCallback, useRef, useState } from 'react';
+import { DataTableProps } from 'src/frontend/components/DataTable';
+import { GlobalFilter, SimpleColumnFilter } from 'src/frontend/components/DataTable/Filter';
 import DropdownMenu from 'src/frontend/components/DropdownMenu';
-import { useTablePageSize } from 'src/frontend/hooks/useSetting';
-import { sortColumnNamesForUnknownData } from 'src/frontend/utils/commonUtils';
-import Chip from '@mui/material/Chip';
-import {DataTableProps} from 'src/frontend/components/DataTable';
-import {SimpleColumnFilter, GlobalFilter} from 'src/frontend/components/DataTable/Filter';
 
 const tableHeight = '500px';
 
@@ -172,9 +167,7 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
 
   return (
     <>
-      {props.searchInputId && (
-        <GlobalFilter id={props.searchInputId} onChange={setGlobalFilter} />
-      )}
+      {props.searchInputId && <GlobalFilter id={props.searchInputId} onChange={setGlobalFilter} />}
       <Box
         ref={parentRef}
         sx={{

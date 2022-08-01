@@ -1,19 +1,10 @@
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
-import Box from '@mui/material/Box';
-import { styled } from '@mui/material/styles';
-import Table from '@mui/material/Table';
-import TextField from '@mui/material/TextField';
-import { useVirtualizer } from '@tanstack/react-virtual';
-import { useFilters, useGlobalFilter, usePagination, useSortBy, useTable } from 'react-table';
-import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { DropdownButtonOption } from 'src/frontend/components/DropdownButton';
-import DropdownMenu from 'src/frontend/components/DropdownMenu';
-import { useTablePageSize } from 'src/frontend/hooks/useSetting';
-import { sortColumnNamesForUnknownData } from 'src/frontend/utils/commonUtils';
 import Chip from '@mui/material/Chip';
+import Table from '@mui/material/Table';
+import { useMemo } from 'react';
 import LegacyDataTable from 'src/frontend/components/DataTable/LegacyDataTable';
 import ModernDataTable from 'src/frontend/components/DataTable/ModernDataTable';
+import { DropdownButtonOption } from 'src/frontend/components/DropdownButton';
+import { sortColumnNamesForUnknownData } from 'src/frontend/utils/commonUtils';
 
 export type DataTableProps = {
   columns: any[];
@@ -40,12 +31,11 @@ export function DataTableWithJSONList(props: Omit<DataTableProps, 'columns'>) {
   const { data } = props;
 
   let hasRawJson = useMemo(() => {
-    for(const value of data){
-      for(const columnValue of Object.values(value)){
+    for (const value of data) {
+      for (const columnValue of Object.values(value)) {
         if (typeof columnValue === 'object' && columnValue !== null) {
           return true;
         }
-
       }
     }
 
@@ -94,13 +84,41 @@ export function DataTableWithJSONList(props: Omit<DataTableProps, 'columns'>) {
         Cell: (data: any, a, b, c) => {
           const columnValue = data.row.original[columnName];
           if (columnValue === null) {
-            return <Chip sx={{ textTransform: 'uppercase', fontStyle: 'italic' }} size='small' color='info' label='null' />;
+            return (
+              <Chip
+                sx={{ textTransform: 'uppercase', fontStyle: 'italic' }}
+                size='small'
+                color='info'
+                label='null'
+              />
+            );
           } else if (columnValue === undefined) {
-            return <Chip sx={{ textTransform: 'uppercase', fontStyle: 'italic' }} size='small' color='default' label='undefined' />;
+            return (
+              <Chip
+                sx={{ textTransform: 'uppercase', fontStyle: 'italic' }}
+                size='small'
+                color='default'
+                label='undefined'
+              />
+            );
           } else if (columnValue === true || columnValue?.toString()?.toLowerCase() === 'true') {
-            return <Chip sx={{ textTransform: 'uppercase', fontStyle: 'italic' }} size='small' color='success' label='true' />;
+            return (
+              <Chip
+                sx={{ textTransform: 'uppercase', fontStyle: 'italic' }}
+                size='small'
+                color='success'
+                label='true'
+              />
+            );
           } else if (columnValue === false || columnValue?.toString()?.toLowerCase() === 'false') {
-            return <Chip sx={{ textTransform: 'uppercase', fontStyle: 'italic' }} size='small' color='error' label='false' />;
+            return (
+              <Chip
+                sx={{ textTransform: 'uppercase', fontStyle: 'italic' }}
+                size='small'
+                color='error'
+                label='false'
+              />
+            );
           } else if (typeof columnValue === 'number') {
             return <pre style={{ textTransform: 'uppercase' }}>{columnValue}</pre>;
           } else if (typeof columnValue === 'object') {
@@ -124,7 +142,7 @@ export function DataTableWithJSONList(props: Omit<DataTableProps, 'columns'>) {
     });
   }, [data]);
 
-  if(hasRawJson){
+  if (hasRawJson) {
     return <LegacyDataTable {...props} columns={columns} />;
   }
   return <ModernDataTable {...props} columns={columns} />;

@@ -1,5 +1,7 @@
-import Paper from '@mui/material/Paper';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import Box from '@mui/material/Box';
+import Paper from '@mui/material/Paper';
 import { styled } from '@mui/material/styles';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -9,14 +11,11 @@ import TableHead from '@mui/material/TableHead';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import { useFilters, useGlobalFilter, usePagination, useSortBy, useTable } from 'react-table';
-import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { DropdownButtonOption } from 'src/frontend/components/DropdownButton';
+import React, { useCallback, useRef, useState } from 'react';
+import { DataTableProps } from 'src/frontend/components/DataTable';
+import { GlobalFilter, SimpleColumnFilter } from 'src/frontend/components/DataTable/Filter';
 import DropdownMenu from 'src/frontend/components/DropdownMenu';
 import { useTablePageSize } from 'src/frontend/hooks/useSetting';
-import {DataTableProps} from 'src/frontend/components/DataTable';
-import {SimpleColumnFilter, GlobalFilter} from 'src/frontend/components/DataTable/Filter';
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 
 export const ALL_PAGE_SIZE_OPTIONS: any[] = [
   { label: '10', value: 10 },
@@ -71,22 +70,30 @@ export default function LegacyDataTable(props: DataTableProps) {
   const pageSizeOptions = ALL_PAGE_SIZE_OPTIONS.map((option) => ({ ...option }));
   pageSizeOptions[pageSizeOptions.length - 1].value = allRecordSize;
 
-  const { getTableBodyProps, gotoPage, headerGroups, page, prepareRow, setPageSize, state, setGlobalFilter } =
-    useTable(
-      {
-        initialState: {
-          pageSize: pageSizeToUse,
-        },
-        columns,
-        data,
-        // @ts-ignore
-      defaultColumn: { Filter: SimpleColumnFilter },
+  const {
+    getTableBodyProps,
+    gotoPage,
+    headerGroups,
+    page,
+    prepareRow,
+    setPageSize,
+    state,
+    setGlobalFilter,
+  } = useTable(
+    {
+      initialState: {
+        pageSize: pageSizeToUse,
       },
-      useFilters,
-      useGlobalFilter,
-      useSortBy,
-      usePagination,
-    );
+      columns,
+      data,
+      // @ts-ignore
+      defaultColumn: { Filter: SimpleColumnFilter },
+    },
+    useFilters,
+    useGlobalFilter,
+    useSortBy,
+    usePagination,
+  );
   const { pageIndex, pageSize } = state;
 
   const onPageChange = useCallback(
@@ -124,9 +131,7 @@ export default function LegacyDataTable(props: DataTableProps) {
 
   return (
     <>
-      {props.searchInputId && (
-        <GlobalFilter id={props.searchInputId} onChange={setGlobalFilter} />
-      )}
+      {props.searchInputId && <GlobalFilter id={props.searchInputId} onChange={setGlobalFilter} />}
       <TableContainer component={TableContainerWrapper}>
         <Table sx={{ minWidth: 650 }} size='small'>
           <TableHead>
@@ -136,7 +141,9 @@ export default function LegacyDataTable(props: DataTableProps) {
                   <StyledTableCell
                     {...column.getHeaderProps()}
                     sx={{ width: columns[colIdx].width }}>
-                    <Box {...column.getSortByToggleProps()} sx={{display: 'flex', alignItems:  'center'}}>
+                    <Box
+                      {...column.getSortByToggleProps()}
+                      sx={{ display: 'flex', alignItems: 'center' }}>
                       <span>{column.render('Header')}</span>
                       {column.isSorted &&
                         (column.isSortedDesc ? (
@@ -159,7 +166,7 @@ export default function LegacyDataTable(props: DataTableProps) {
                   {...row.getRowProps()}
                   onDoubleClick={(e) => {
                     e.preventDefault();
-                    props.onRowClick && props.onRowClick(row.original)
+                    props.onRowClick && props.onRowClick(row.original);
                   }}
                   style={{ cursor: props.onRowClick ? 'pointer' : '' }}>
                   {row.cells.map((cell, colIdx) => {
