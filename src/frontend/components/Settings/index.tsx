@@ -127,24 +127,26 @@ export default function Settings(props: SettingsProps): JSX.Element | null {
             type='number'
           />
         </div>
-        <Typography className='FormInput__Label' variant='subtitle1'>
-          Table Page Size
-          <Tooltip title='The default table page size used for results table. Note this change only apply to future results.'>
-            <HelpIcon fontSize='small' sx={{ ml: 1 }} />
-          </Tooltip>
-        </Typography>
-        <div className='FormInput__Row'>
-          <Select
-            value={settings.tablePageSize || DEFAULT_TABLE_PAGE_SIZE}
-            onChange={(newValue) => onSettingChange('tablePageSize', newValue)}
-            sx={{ width: '100%' }}>
-            {ALL_PAGE_SIZE_OPTIONS.map((pageSize) => (
-              <option value={pageSize.value} key={pageSize.value}>
-                {pageSize.label}
-              </option>
-            ))}
-          </Select>
-        </div>
+        {/*
+          <Typography className='FormInput__Label' variant='subtitle1'>
+            Table Page Size
+            <Tooltip title='The default table page size used for results table. Note this change only apply to future results.'>
+              <HelpIcon fontSize='small' sx={{ ml: 1 }} />
+            </Tooltip>
+          </Typography>
+          <div className='FormInput__Row'>
+            <Select
+              value={settings.tablePageSize || DEFAULT_TABLE_PAGE_SIZE}
+              onChange={(newValue) => onSettingChange('tablePageSize', newValue)}
+              sx={{ width: '100%' }}>
+              {ALL_PAGE_SIZE_OPTIONS.map((pageSize) => (
+                <option value={pageSize.value} key={pageSize.value}>
+                  {pageSize.label}
+                </option>
+              ))}
+            </Select>
+          </div>
+        */}
         <Typography className='FormInput__Label' variant='subtitle1'>
           Delete Mode
           <Tooltip title='Whether or not to do soft delete and put deleted items into the recycle bin or hard delete to delete it permanently.'>

@@ -29,7 +29,7 @@ export default function ResultBox(props: ResultBoxProps): JSX.Element | null {
   if (executing) {
     return (
       <Alert severity='info' icon={<CircularProgress size={15} />}>
-        Loading <Timer startTime={query?.executionStart} endTime={query?.executionEnd} />
+        Loading <Timer startTime={query?.executionStart} />
         ...
       </Alert>
     );
@@ -96,7 +96,7 @@ export default function ResultBox(props: ResultBoxProps): JSX.Element | null {
 
   const tabHeaders = [
     <>
-      Table{' '}
+      Table
       <Tooltip title='Download Result CSV'>
         <DownloadIcon fontSize='small' onClick={onDownloadCsv} />
       </Tooltip>
@@ -126,6 +126,7 @@ export default function ResultBox(props: ResultBoxProps): JSX.Element | null {
         onRowClick={onShowRecordDetails}
         rowContextOptions={rowContextOptions}
         data={data}
+        searchInputId='result-box-search-input'
       />
     </div>,
     <div className='ResultBox__Content' key={`JSON`}>
@@ -136,7 +137,8 @@ export default function ResultBox(props: ResultBoxProps): JSX.Element | null {
   return (
     <div className='ResultBox'>
       <Alert severity='info'>
-        Query took <Timer startTime={query?.executionStart} endTime={query?.executionEnd} />
+        Query took <Timer startTime={query?.executionStart} endTime={query?.executionEnd} />.{' '}
+        {data?.length > 0 ? `And it returned ${data?.length || 0} records.` : ''}
       </Alert>
       <Tabs
         tabIdx={tabIdx}
