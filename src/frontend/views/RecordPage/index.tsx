@@ -85,26 +85,53 @@ function RecordView(props: RecordDetailsPageProps): JSX.Element | null {
     <>
       {columnNames.map((columnName) => {
         const columnValue = data[columnName];
-        const columnLabelDom = <InputLabel sx={{ mt: 1, fontWeight: 'bold' }}>{columnName}</InputLabel>;
+        const columnLabelDom = (
+          <InputLabel sx={{ mt: 1, fontWeight: 'bold' }}>{columnName}</InputLabel>
+        );
 
         let contentColumnValueView = (
-          <TextField label={columnName} value={columnValue} size='small' margin='dense' disabled={true} multiline />
+          <TextField
+            label={columnName}
+            value={columnValue}
+            size='small'
+            margin='dense'
+            disabled={true}
+            multiline
+          />
         );
         if (columnValue === true || columnValue === false) {
           // boolean
           const booleanLabel = columnValue ? '<TRUE>' : '<FALSE>';
           contentColumnValueView = (
-            <TextField label={columnName} value={columnValue} size='small' margin='dense' disabled={true} />
+            <TextField
+              label={columnName}
+              value={columnValue}
+              size='small'
+              margin='dense'
+              disabled={true}
+            />
           );
         } else if (columnValue === null) {
           // null value
           contentColumnValueView = (
-            <TextField label={columnName} value='NULL' size='small' margin='dense' disabled={true} />
+            <TextField
+              label={columnName}
+              value='NULL'
+              size='small'
+              margin='dense'
+              disabled={true}
+            />
           );
         } else if (columnValue === undefined) {
           // undefined
           contentColumnValueView = (
-            <TextField label={columnName} value='undefined' size='small' margin='dense' disabled={true} />
+            <TextField
+              label={columnName}
+              value='undefined'
+              size='small'
+              margin='dense'
+              disabled={true}
+            />
           );
         } else if (
           columnValue?.toString()?.match(/<[a-z0-9]>+/gi) ||
@@ -136,12 +163,7 @@ function RecordView(props: RecordDetailsPageProps): JSX.Element | null {
           );
         }
 
-        return (
-          <React.Fragment key={columnName}>
-
-            {contentColumnValueView}
-          </React.Fragment>
-        );
+        return <React.Fragment key={columnName}>{contentColumnValueView}</React.Fragment>;
       })}
     </>
   );
