@@ -170,6 +170,10 @@ $ConnectionTreeIndentSize: 7px;
 }
 
 .RawHtmlRender {
+  ul {
+    list-style: disc inside;
+  }
+
   > * {
     &:first-child {
       margin-top: 0;

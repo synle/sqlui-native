@@ -85,25 +85,53 @@ function RecordView(props: RecordDetailsPageProps): JSX.Element | null {
     <>
       {columnNames.map((columnName) => {
         const columnValue = data[columnName];
+        const columnLabelDom = (
+          <InputLabel sx={{ mt: 1, fontWeight: 'bold' }}>{columnName}</InputLabel>
+        );
 
         let contentColumnValueView = (
-          <TextField value={columnValue} size='small' margin='dense' disabled={true} multiline />
+          <TextField
+            label={columnName}
+            value={columnValue}
+            size='small'
+            margin='dense'
+            disabled={true}
+            multiline
+          />
         );
         if (columnValue === true || columnValue === false) {
           // boolean
           const booleanLabel = columnValue ? '<TRUE>' : '<FALSE>';
           contentColumnValueView = (
-            <TextField value={columnValue} size='small' margin='dense' disabled={true} />
+            <TextField
+              label={columnName}
+              value={columnValue}
+              size='small'
+              margin='dense'
+              disabled={true}
+            />
           );
         } else if (columnValue === null) {
           // null value
           contentColumnValueView = (
-            <TextField value='<NULL>' size='small' margin='dense' disabled={true} />
+            <TextField
+              label={columnName}
+              value='NULL'
+              size='small'
+              margin='dense'
+              disabled={true}
+            />
           );
         } else if (columnValue === undefined) {
           // undefined
           contentColumnValueView = (
-            <TextField value='<undefined>' size='small' margin='dense' disabled={true} />
+            <TextField
+              label={columnName}
+              value='undefined'
+              size='small'
+              margin='dense'
+              disabled={true}
+            />
           );
         } else if (
           columnValue?.toString()?.match(/<[a-z0-9]>+/gi) ||
@@ -111,16 +139,20 @@ function RecordView(props: RecordDetailsPageProps): JSX.Element | null {
         ) {
           // raw HTML
           contentColumnValueView = (
-            <Box
-              className='RawHtmlRender'
-              dangerouslySetInnerHTML={{ __html: columnValue }}
-              sx={{ border: 1, borderRadius: 1, borderColor: 'divider', p: 1 }}
-            />
+            <>
+              {columnLabelDom}
+              <Box
+                className='RawHtmlRender'
+                dangerouslySetInnerHTML={{ __html: columnValue }}
+                sx={{ border: 1, borderRadius: 1, borderColor: 'divider', p: 1 }}
+              />
+            </>
           );
         } else if (Array.isArray(columnValue) || typeof columnValue === 'object') {
           // complex object (array or plain object)
           contentColumnValueView = (
             <TextField
+              label={columnName}
               value={JSON.stringify(columnValue, null, 2)}
               size='small'
               margin='dense'
@@ -131,12 +163,7 @@ function RecordView(props: RecordDetailsPageProps): JSX.Element | null {
           );
         }
 
-        return (
-          <React.Fragment key={columnName}>
-            <InputLabel sx={{ mt: 1, fontWeight: 'bold' }}>{columnName}</InputLabel>
-            {contentColumnValueView}
-          </React.Fragment>
-        );
+        return <React.Fragment key={columnName}>{contentColumnValueView}</React.Fragment>;
       })}
     </>
   );
