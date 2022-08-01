@@ -225,7 +225,7 @@ Here is the link where you can find information about how run this application l
 - [x] Make a build for other systems like Debian / Ubuntu and Redhat.
 - [x] Add a configuration / option page for color mode.
 - [x] Enhance the table with pagination.
-- [ ] Enhance the table for result with sorting, and searching.
+- [x] Enhance the table for result with sorting, and searching.
 - [x] Add quick query queries (such as select from a table or do update / insert).
 - [x] Add quick query to recreate the table definition (Create Table), Drop Table, etc....
 - [x] Add a full screen mode (F11)

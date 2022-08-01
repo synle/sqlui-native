@@ -30,3 +30,4 @@ upload
 yarn-debug.log*
 yarn-error.log*
 *.rej
+data
