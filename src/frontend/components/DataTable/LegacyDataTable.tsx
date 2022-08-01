@@ -1,4 +1,5 @@
 import Paper from '@mui/material/Paper';
+import Box from '@mui/material/Box';
 import { styled } from '@mui/material/styles';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -14,6 +15,8 @@ import DropdownMenu from 'src/frontend/components/DropdownMenu';
 import { useTablePageSize } from 'src/frontend/hooks/useSetting';
 import {DataTableProps} from 'src/frontend/components/DataTable';
 import {SimpleColumnFilter, GlobalFilter} from 'src/frontend/components/DataTable/Filter';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 
 export const ALL_PAGE_SIZE_OPTIONS: any[] = [
   { label: '10', value: 10 },
@@ -76,6 +79,8 @@ export default function LegacyDataTable(props: DataTableProps) {
         },
         columns,
         data,
+        // @ts-ignore
+      defaultColumn: { Filter: SimpleColumnFilter },
       },
       useFilters,
       useGlobalFilter,
@@ -131,7 +136,16 @@ export default function LegacyDataTable(props: DataTableProps) {
                   <StyledTableCell
                     {...column.getHeaderProps()}
                     sx={{ width: columns[colIdx].width }}>
-                    {column.render('Header')}
+                    <Box {...column.getSortByToggleProps()} sx={{display: 'flex', alignItems:  'center'}}>
+                      <span>{column.render('Header')}</span>
+                      {column.isSorted &&
+                        (column.isSortedDesc ? (
+                          <ArrowDropDownIcon fontSize='small' />
+                        ) : (
+                          <ArrowDropUpIcon fontSize='small' />
+                        ))}
+                    </Box>
+                    {column.canFilter && <Box sx={{ mt: 1 }}>{column.render('Filter')}</Box>}
                   </StyledTableCell>
                 ))}
               </TableRow>
