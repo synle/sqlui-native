@@ -138,19 +138,9 @@ export default function DataTable(props: DataTableProps): JSX.Element | null {
   }, []);
 
   const onRowContextMenuClick = (e: React.SyntheticEvent) => {
-    let rowIdx = -1;
     const target = e.target as HTMLElement;
-    const tr = target.closest('[role=row]');
-    const siblings = tr?.parentElement?.children;
-    if (siblings) {
-      for (let i = 0; i < siblings.length; i++) {
-        if (siblings[i] === tr) {
-          // NOTE: we include the header as part of the table body
-          // so we need to deduct 1 here
-          rowIdx = i - 1;
-        }
-      }
-    }
+    const tr = target.closest('[role=row]') as HTMLElement;
+    const rowIdx = parseInt(tr?.dataset?.rowIdx || '');
 
     if (rowIdx >= 0) {
       e.preventDefault();
@@ -240,6 +230,7 @@ export default function DataTable(props: DataTableProps): JSX.Element | null {
                     height: `${virtualItem.size}px`,
                     transform: `translateY(${virtualItem.start}px)`,
                   }}
+                  data-row-idx={rowIdx}
                   {...row.getRowProps()}>
                   {row.cells.map((cell, colIdx) => {
                     let dropdownContent: any;
