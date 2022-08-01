@@ -135,7 +135,7 @@ export default function LegacyDataTable(props: DataTableProps) {
       {props.searchInputId && <GlobalFilter id={props.searchInputId} onChange={setGlobalFilter} />}
       <TableContainer component={TableContainerWrapper}>
         <Table sx={{ minWidth: 650 }} size='small'>
-          <TableHead sx={{    boxShadow: 4}}>
+          <TableHead sx={{ boxShadow: 4 }}>
             {headerGroups.map((headerGroup) => (
               <TableRow {...headerGroup.getHeaderGroupProps()}>
                 {headerGroup.headers.map((column, colIdx) => (
