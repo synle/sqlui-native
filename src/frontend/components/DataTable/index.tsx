@@ -1,6 +1,7 @@
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import Box from '@mui/material/Box';
+import Chip from '@mui/material/Chip';
 import { styled } from '@mui/material/styles';
 import Table from '@mui/material/Table';
 import TextField from '@mui/material/TextField';
@@ -11,7 +12,6 @@ import { DropdownButtonOption } from 'src/frontend/components/DropdownButton';
 import DropdownMenu from 'src/frontend/components/DropdownMenu';
 import { useTablePageSize } from 'src/frontend/hooks/useSetting';
 import { sortColumnNamesForUnknownData } from 'src/frontend/utils/commonUtils';
-import Chip from '@mui/material/Chip';
 
 type DataTableProps = {
   columns: any[];
@@ -363,13 +363,41 @@ export function DataTableWithJSONList(props: Omit<DataTableProps, 'columns'>) {
         Cell: (data: any, a, b, c) => {
           const columnValue = data.row.original[columnName];
           if (columnValue === null) {
-            return <Chip sx={{ textTransform: 'uppercase', fontStyle: 'italic' }} size='small' color='warning' label='null' />;
+            return (
+              <Chip
+                sx={{ textTransform: 'uppercase', fontStyle: 'italic' }}
+                size='small'
+                color='warning'
+                label='null'
+              />
+            );
           } else if (columnValue === undefined) {
-            return <Chip sx={{ textTransform: 'uppercase', fontStyle: 'italic' }} size='small' color='warning' label='undefined' />;
+            return (
+              <Chip
+                sx={{ textTransform: 'uppercase', fontStyle: 'italic' }}
+                size='small'
+                color='warning'
+                label='undefined'
+              />
+            );
           } else if (columnValue === true || columnValue?.toString()?.toLowerCase() === 'true') {
-            return <Chip sx={{ textTransform: 'uppercase', fontStyle: 'italic' }} size='small' color='success' label='true' />;
+            return (
+              <Chip
+                sx={{ textTransform: 'uppercase', fontStyle: 'italic' }}
+                size='small'
+                color='success'
+                label='true'
+              />
+            );
           } else if (columnValue === false || columnValue?.toString()?.toLowerCase() === 'false') {
-            return <Chip sx={{ textTransform: 'uppercase', fontStyle: 'italic' }} size='small' color='error' label='false' />;
+            return (
+              <Chip
+                sx={{ textTransform: 'uppercase', fontStyle: 'italic' }}
+                size='small'
+                color='error'
+                label='false'
+              />
+            );
           } else if (typeof columnValue === 'number') {
             return <pre style={{ textTransform: 'uppercase' }}>{columnValue}</pre>;
           } else if (typeof columnValue === 'object') {
