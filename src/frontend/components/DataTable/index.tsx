@@ -33,6 +33,7 @@ const UNNAMED_PROPERTY_NAME = '<unnamed_property>';
 const tableHeight = '500px';
 
 const tableCellHeight = 30;
+
 const tableCellWidth = 125;
 
 const StyledDivContainer = styled('div')(({ theme }) => ({}));
@@ -151,6 +152,25 @@ export default function DataTable(props: DataTableProps): JSX.Element | null {
       rowContextOption.onClick && rowContextOption.onClick(data[openContextMenuRowIdx]),
   }));
 
+  // figure out the width
+  const headers = headerGroups?.[0]?.headers || [];
+  let widestCellWidth = 0;
+  let widestCellIdx = -1;
+  for (let i = 0; i < headers.length; i++) {
+    const header = headers[i];
+    columns[i].width = header.width || tableCellWidth;
+
+    if (widestCellWidth <= columns[i].width) {
+      widestCellIdx = i;
+      widestCellWidth = columns[i].width;
+    }
+
+    columns[i].width = `${columns[i].width}px`;
+  }
+
+  // set the widest column
+  columns[widestCellIdx].width = '';
+
   // The scrollable element for your list
   const parentRef = React.useRef<HTMLTableElement | null>(null);
 
@@ -193,8 +213,11 @@ export default function DataTable(props: DataTableProps): JSX.Element | null {
               <StyledDivHeaderRow {...headerGroup.getHeaderGroupProps()}>
                 {headerGroup.headers.map((column, colIdx) => (
                   <StyledDivContentCell
-                  style={{width: columns[colIdx].width || tableCellWidth}}
-                  {...column.getHeaderProps()}>
+                    style={{
+                      width: columns[colIdx].width,
+                      flexGrow: columns[colIdx].width ? 0 : 1,
+                    }}
+                    {...column.getHeaderProps()}>
                     {column.render('Header')}
                   </StyledDivContentCell>
                 ))}
@@ -237,8 +260,11 @@ export default function DataTable(props: DataTableProps): JSX.Element | null {
                     }
                     return (
                       <StyledDivContentCell
-                      style={{width: columns[colIdx].width || tableCellWidth}}
-                      {...cell.getCellProps()}>
+                        style={{
+                          width: columns[colIdx].width,
+                          flexGrow: columns[colIdx].width ? 0 : 1,
+                        }}
+                        {...cell.getCellProps()}>
                         {dropdownContent}
                         {cell.render('Cell')}
                       </StyledDivContentCell>
