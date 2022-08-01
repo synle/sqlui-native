@@ -18,6 +18,7 @@ type DataTableProps = {
   onRowClick?: (rowData: any) => void;
   rowContextOptions?: DropdownButtonOption[];
   searchInputId?: string;
+  enableColumnFilter?: boolean;
 };
 
 export const ALL_PAGE_SIZE_OPTIONS: any[] = [
@@ -33,6 +34,8 @@ export const DEFAULT_TABLE_PAGE_SIZE = 50;
 const UNNAMED_PROPERTY_NAME = '<unnamed_property>';
 
 const tableHeight = '500px';
+
+const tableCellHeaderHeight = 75;
 
 const tableCellHeight = 30;
 
@@ -56,7 +59,7 @@ const StyledDivHeaderRow = styled('div')(({ theme }) => ({
   borderBottom: `1px solid ${theme.palette.divider}`,
 
   '> div': {
-    height: `${tableCellHeight}px`,
+    height: `${tableCellHeaderHeight}px`,
     backgroundColor: theme.palette.common.black,
     color: theme.palette.common.white,
     paddingTop: '5px',
@@ -101,6 +104,26 @@ const StyledDivContentCellLabel = styled('div')(({ theme }) => ({
     flexGrow: 1,
   },
 }));
+// default filter (using text)
+type SimpleColumnFilterProps = {
+  column: {
+    filterValue?: string;
+    setFilter: (newFilterValue: string | undefined) => void;
+  };
+};
+
+export function SimpleColumnFilter({
+  column: { filterValue, setFilter },
+}: SimpleColumnFilterProps) {
+  return (
+    <TextField
+      size='small'
+      placeholder='Filter'
+      value={filterValue || ''}
+      onChange={(e) => setFilter(e.target.value || undefined)}
+    />
+  );
+}
 
 export default function DataTable(props: DataTableProps): JSX.Element | null {
   const { columns, data } = props;
@@ -128,6 +151,8 @@ export default function DataTable(props: DataTableProps): JSX.Element | null {
       },
       columns,
       data,
+      // @ts-ignore
+      defaultColumn: { Filter: SimpleColumnFilter },
     },
     useFilters,
     useGlobalFilter,
@@ -180,7 +205,7 @@ export default function DataTable(props: DataTableProps): JSX.Element | null {
   // The virtualizer
   const rowVirtualizer = useVirtualizer({
     count: page.length,
-    paddingStart: tableCellHeight,
+    paddingStart: tableCellHeaderHeight,
     getScrollElement: () => parentRef.current,
     estimateSize: () => tableCellHeight,
     overscan: 5,
@@ -193,100 +218,103 @@ export default function DataTable(props: DataTableProps): JSX.Element | null {
           id={props.searchInputId}
           label='Search Table'
           size='small'
+          variant='standard'
+          sx={{ mb: 2 }}
           fullWidth
           onChange={(e) => setGlobalFilter(e.target.value)}
-          sx={{ mb: 2 }}
-          variant='standard'
         />
       )}
-      {!page || page.length === 0 ? (
-        <Box>There is no data.</Box>
-      ) : (
-        <Box
-          ref={parentRef}
+      <Box
+        ref={parentRef}
+        sx={{
+          maxHeight: tableHeight,
+          overflow: 'auto', // Make it scroll!
+        }}
+        onContextMenu={(e) => onRowContextMenuClick(e)}>
+        <StyledDivContainer
           sx={{
-            maxHeight: tableHeight,
-            overflow: 'auto', // Make it scroll!
-          }}
-          onContextMenu={(e) => onRowContextMenuClick(e)}>
-          <StyledDivContainer
-            sx={{
-              height: `${rowVirtualizer.getTotalSize()}px`,
-              position: 'relative',
-            }}>
-            {headerGroups.map((headerGroup, headerGroupIdx) => (
-              <StyledDivHeaderRow {...headerGroup.getHeaderGroupProps()}>
-                {headerGroup.headers.map((column, colIdx) => (
-                  <StyledDivContentCell
-                    style={{
-                      width: columns[colIdx].width,
-                    }}
-                    {...column.getHeaderProps()}>
-                    <StyledDivContentCellLabel {...column.getSortByToggleProps()}>
-                      <span>{column.render('Header')}</span>
-                      {column.isSorted &&
-                        (column.isSortedDesc ? (
-                          <ArrowDropDownIcon fontSize='small' />
-                        ) : (
-                          <ArrowDropUpIcon fontSize='small' />
-                        ))}
-                    </StyledDivContentCellLabel>
-                  </StyledDivContentCell>
-                ))}
-              </StyledDivHeaderRow>
-            ))}
-            {rowVirtualizer.getVirtualItems().map((virtualItem) => {
-              let rowIdx = virtualItem.index;
-              const row = page[rowIdx];
-              prepareRow(row);
-
-              return (
-                <StyledDivContentRow
-                  onDoubleClick={() => props.onRowClick && props.onRowClick(row.original)}
+            height: `${rowVirtualizer.getTotalSize()}px`,
+            position: 'relative',
+          }}>
+          {headerGroups.map((headerGroup, headerGroupIdx) => (
+            <StyledDivHeaderRow {...headerGroup.getHeaderGroupProps()}>
+              {headerGroup.headers.map((column, colIdx) => (
+                <StyledDivContentCell
                   style={{
-                    cursor: props.onRowClick ? 'pointer' : '',
-                    height: `${virtualItem.size}px`,
-                    transform: `translateY(${virtualItem.start}px)`,
+                    width: columns[colIdx].width,
                   }}
-                  data-row-idx={rowIdx}
-                  {...row.getRowProps()}>
-                  {row.cells.map((cell, colIdx) => {
-                    let dropdownContent: any;
-                    if (colIdx === 0 && targetRowContextOptions.length > 0) {
-                      dropdownContent = (
-                        <DropdownMenu
-                          id={`data-table-row-dropdown-${rowIdx}`}
-                          options={targetRowContextOptions}
-                          onToggle={(newOpen) => {
-                            if (newOpen) {
-                              setOpenContextMenuRowIdx(rowIdx);
-                            } else {
-                              setOpenContextMenuRowIdx(-1);
-                            }
-                          }}
-                          maxHeight='400px'
-                          anchorEl={anchorEl}
-                          open={openContextMenuRowIdx === rowIdx}
-                        />
-                      );
-                    }
-                    return (
-                      <StyledDivContentCell
-                        style={{
-                          width: columns[colIdx].width,
+                  {...column.getHeaderProps()}>
+                  <StyledDivContentCellLabel {...column.getSortByToggleProps()}>
+                    <span>{column.render('Header')}</span>
+                    {column.isSorted &&
+                      (column.isSortedDesc ? (
+                        <ArrowDropDownIcon fontSize='small' />
+                      ) : (
+                        <ArrowDropUpIcon fontSize='small' />
+                      ))}
+                  </StyledDivContentCellLabel>
+                  {column.canFilter && <Box sx={{ mt: 1 }}>{column.render('Filter')}</Box>}
+                </StyledDivContentCell>
+              ))}
+            </StyledDivHeaderRow>
+          ))}
+          {rowVirtualizer.getVirtualItems().map((virtualItem) => {
+            let rowIdx = virtualItem.index;
+            const row = page[rowIdx];
+            prepareRow(row);
+
+            return (
+              <StyledDivContentRow
+                onDoubleClick={() => props.onRowClick && props.onRowClick(row.original)}
+                style={{
+                  cursor: props.onRowClick ? 'pointer' : '',
+                  height: `${virtualItem.size}px`,
+                  transform: `translateY(${virtualItem.start}px)`,
+                }}
+                data-row-idx={rowIdx}
+                {...row.getRowProps()}>
+                {row.cells.map((cell, colIdx) => {
+                  let dropdownContent: any;
+                  if (colIdx === 0 && targetRowContextOptions.length > 0) {
+                    dropdownContent = (
+                      <DropdownMenu
+                        id={`data-table-row-dropdown-${rowIdx}`}
+                        options={targetRowContextOptions}
+                        onToggle={(newOpen) => {
+                          if (newOpen) {
+                            setOpenContextMenuRowIdx(rowIdx);
+                          } else {
+                            setOpenContextMenuRowIdx(-1);
+                          }
                         }}
-                        {...cell.getCellProps()}>
-                        {dropdownContent}
-                        {cell.render('Cell')}
-                      </StyledDivContentCell>
+                        maxHeight='400px'
+                        anchorEl={anchorEl}
+                        open={openContextMenuRowIdx === rowIdx}
+                      />
                     );
-                  })}
-                </StyledDivContentRow>
-              );
-            })}
-          </StyledDivContainer>
-        </Box>
-      )}
+                  }
+                  return (
+                    <StyledDivContentCell
+                      style={{
+                        width: columns[colIdx].width,
+                      }}
+                      {...cell.getCellProps()}>
+                      {dropdownContent}
+                      {cell.render('Cell')}
+                    </StyledDivContentCell>
+                  );
+                })}
+              </StyledDivContentRow>
+            );
+          })}
+        </StyledDivContainer>
+        {!page ||
+          (page.length === 0 && (
+            <Box sx={{ paddingInline: 2, paddingBlock: 2 }}>
+              There is no data in the query with matching filters.
+            </Box>
+          ))}
+      </Box>
     </>
   );
 }
@@ -314,8 +342,19 @@ export function DataTableWithJSONList(props: Omit<DataTableProps, 'columns'>) {
       return {
         Header: columnName,
         sortable: true,
+        disableFilters: !props.enableColumnFilter,
         accessor: (data: any) => {
-          const columnValue = data[columnName];
+          let columnValue = data[columnName];
+          if (columnValue === null) {
+            columnValue = 'null';
+          } else if (columnValue === undefined) {
+            columnValue = 'undefined';
+          } else if (columnValue === true) {
+            columnValue = 'true';
+          } else if (columnValue === false) {
+            columnValue = 'false';
+          }
+
           const html = document.createElement('p');
           html.innerHTML = columnValue;
           return html.innerText;
@@ -323,7 +362,7 @@ export function DataTableWithJSONList(props: Omit<DataTableProps, 'columns'>) {
         Cell: (data: any, a, b, c) => {
           const columnValue = data.row.original[columnName];
           if (columnValue === null) {
-            return <pre style={{ textTransform: 'uppercase', fontStyle: 'italic' }}>NULL</pre>;
+            return <pre style={{ textTransform: 'uppercase', fontStyle: 'italic' }}>null</pre>;
           } else if (columnValue === true || columnValue === false) {
             return (
               <pre style={{ textTransform: 'uppercase', fontStyle: 'italic' }}>
