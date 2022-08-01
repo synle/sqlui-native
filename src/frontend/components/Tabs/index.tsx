@@ -115,6 +115,7 @@ export default function MyTabs(props: TabsProps): JSX.Element | null {
               label={<div className='Tab__Header'>{tabHeader}</div>}
               onContextMenu={onShowActions}
               onMouseDown={onMouseDown(idx)}
+              disableRipple={false}
               {...dragAndDropProps}></Tab>
           );
         })}
