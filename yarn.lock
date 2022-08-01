@@ -12081,10 +12081,10 @@ tar@^6.0.2, tar@^6.1.11, tar@^6.1.2:
     mkdirp "^1.0.3"
     yallist "^4.0.0"
 
-tedious@^14.5.0:
-  version "14.7.0"
-  resolved "https://registry.yarnpkg.com/tedious/-/tedious-14.7.0.tgz#4126eab68aa3f24ef42406f2e74af5aa96b64e50"
-  integrity sha512-d3qlmZcvZyt7akyPHiOdR+knfzObWZH3mW+gouQTSb7YTSwtpHuYHcvsQabfbY7oOvgbs51xRb7CwOahWK/t9w==
+tedious@^15.0.0:
+  version "15.0.0"
+  resolved "https://registry.yarnpkg.com/tedious/-/tedious-15.0.0.tgz#bdbbd5b7e91ef0b4c61757e6a28e87d5023cea3c"
+  integrity sha512-WCkCHl1hRSIhfNvHAKwbYF1eyN05IdmnZRnDzqknZ6JB9KXxuz54d/4a1vqqjq6zuVpZq+d6ha1MUnLpbVixYQ==
   dependencies:
     "@azure/identity" "^2.0.4"
     "@azure/keyvault-keys" "^4.4.0"
