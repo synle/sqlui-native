@@ -94,13 +94,13 @@ export default function PromptDialog(props: PromptDialogProps): JSX.Element | nu
             />
           )}
         </DialogContent>
-        {
-          props.readonly !== true && <DialogActions>
+        {props.readonly !== true && (
+          <DialogActions>
             <Button type='submit' disabled={isDisabled}>
               {props.saveLabel || 'Save Changes'}
             </Button>
           </DialogActions>
-        }
+        )}
       </form>
     </Dialog>
   );

@@ -2,6 +2,7 @@ import AddCircleIcon from '@mui/icons-material/AddCircle';
 import BackupIcon from '@mui/icons-material/Backup';
 import FormatColorTextIcon from '@mui/icons-material/FormatColorText';
 import HelpIcon from '@mui/icons-material/Help';
+import InfoIcon from '@mui/icons-material/Info';
 import MenuIcon from '@mui/icons-material/Menu';
 import SendIcon from '@mui/icons-material/Send';
 import LoadingButton from '@mui/lab/LoadingButton';
@@ -36,7 +37,6 @@ import { useQuerySizeSetting } from 'src/frontend/hooks/useSetting';
 import useToaster from 'src/frontend/hooks/useToaster';
 import { formatDuration, formatJS, formatSQL } from 'src/frontend/utils/formatter';
 import { SqluiCore } from 'typings';
-import InfoIcon from '@mui/icons-material/Info';
 
 type QueryBoxProps = {
   queryId: string;
@@ -127,8 +127,6 @@ export default function QueryBox(props: QueryBoxProps): JSX.Element | null {
     () => getSyntaxModeByDialect(selectedConnection?.dialect),
     [selectedConnection?.dialect, query?.sql],
   );
-
-
   const isLoading = loadingConnection;
   const isExecuting = executing;
   const isMigrationVisible = !!query?.connectionId && !!query?.databaseId;
@@ -317,11 +315,16 @@ export default function QueryBox(props: QueryBoxProps): JSX.Element | null {
             <Button
               type='button'
               variant='outlined'
-              onClick={() => selectCommand({ event: 'clientEvent/query/showSampleCodeSnippet', data: {
-                connection: selectedConnection,
-                language: 'javascript',
-                sql: query.sql
-              } })}
+              onClick={() =>
+                selectCommand({
+                  event: 'clientEvent/query/showSampleCodeSnippet',
+                  data: {
+                    connection: selectedConnection,
+                    language: 'javascript',
+                    sql: query.sql,
+                  },
+                })
+              }
               startIcon={<InfoIcon />}>
               Show Code Snippet
             </Button>

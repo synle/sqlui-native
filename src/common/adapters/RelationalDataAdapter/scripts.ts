@@ -1,7 +1,6 @@
 import BaseDataScript, { getDivider } from 'src/common/adapters/BaseDataAdapter/scripts';
 import { escapeSQLValue, isValueNumber } from 'src/frontend/utils/formatter';
-import { SqlAction } from 'typings';
-import { SqluiCore } from 'typings';
+import { SqlAction, SqluiCore } from 'typings';
 
 const formatter = 'sql';
 
@@ -686,7 +685,7 @@ export class ConcreteDataScripts extends BaseDataScript {
 
   // sample code snippet
   getCodeSnippet(connection: string, language: SqluiCore.LanguageMode, sql: string) {
-    switch(language){
+    switch (language) {
       case 'javascript':
         return `
 // install these extra dependencies if needed

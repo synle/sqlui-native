@@ -149,6 +149,11 @@ export function getConnectionActions(actionInput: SqlAction.ConnectionInput) {
   return _formatScripts(actionInput, scriptsToUse);
 }
 
-export function getCodeSnippet(dialect: string, connection: string, language: SqluiCore.LanguageMode, sql: string) {
+export function getCodeSnippet(
+  dialect: string,
+  connection: string,
+  language: SqluiCore.LanguageMode,
+  sql: string,
+) {
   return _getImplementation(dialect)?.getCodeSnippet(connection, language, sql) || '';
 }
