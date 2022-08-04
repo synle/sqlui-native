@@ -111,6 +111,44 @@ function ConnectionActionsButton(props: ConnectionActionsButtonProps): JSX.Eleme
   );
 }
 
+function CodeSnippetButton(props: QueryBoxProps){
+  const { queryId } = props;
+  const { query } = useConnectionQuery(queryId);
+  const { data: selectedConnection } = useGetConnectionById(query?.connectionId);
+  const { selectCommand } = useCommands();
+
+  if(!query){
+    return null;
+  }
+
+  const options = ['javascript', 'python'].map((language) => ({
+    label: language,
+    onClick: async () =>
+      selectCommand({
+        event: 'clientEvent/query/showSampleCodeSnippet',
+        data: {
+          connection: selectedConnection,
+          language,
+          sql: query.sql,
+        },
+      }),
+  }));
+
+  return (
+    <DropdownButton
+      id='session-action-split-button'
+      options={options}
+      maxHeight='400px'>
+        <Button
+          type='button'
+          variant='outlined'
+          startIcon={<InfoIcon />}>
+          Show Code Snippet
+        </Button>
+    </DropdownButton>
+  );
+}
+
 export default function QueryBox(props: QueryBoxProps): JSX.Element | null {
   const { queryId } = props;
   const editorRef = useRef<EditorRef>();
@@ -311,24 +349,7 @@ export default function QueryBox(props: QueryBoxProps): JSX.Element | null {
               </Button>
             </Tooltip>
           )}
-          <Tooltip title='This will generate sample code to connect to this database using your language of choice'>
-            <Button
-              type='button'
-              variant='outlined'
-              onClick={() =>
-                selectCommand({
-                  event: 'clientEvent/query/showSampleCodeSnippet',
-                  data: {
-                    connection: selectedConnection,
-                    language: 'javascript',
-                    sql: query.sql,
-                  },
-                })
-              }
-              startIcon={<InfoIcon />}>
-              Show Code Snippet
-            </Button>
-          </Tooltip>
+          <CodeSnippetButton {...props} />
         </div>
       </form>
       <ResultBox query={query} executing={executing} />
