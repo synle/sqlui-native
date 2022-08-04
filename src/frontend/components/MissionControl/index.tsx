@@ -1246,11 +1246,7 @@ export default function MissionControl() {
           if (command.data) {
             const { connection, query, language } = command.data as any;
 
-            const codeSnippet = getCodeSnippet(
-              connection,
-              query,
-              language,
-            );
+            const codeSnippet = getCodeSnippet(connection, query, language);
             await prompt({
               title: `Sample Code Snippet`,
               message: `LanguageMode = ${language}`,

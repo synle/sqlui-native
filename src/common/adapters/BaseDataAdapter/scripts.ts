@@ -53,7 +53,11 @@ export default abstract class BaseDataScript implements IDataScript {
   }
 
   // sample code snippet
-  getCodeSnippet(connection: SqluiCore.ConnectionProps, query: SqluiCore.ConnectionQuery, language: SqluiCore.LanguageMode) {
+  getCodeSnippet(
+    connection: SqluiCore.ConnectionProps,
+    query: SqluiCore.ConnectionQuery,
+    language: SqluiCore.LanguageMode,
+  ) {
     return '';
   }
 }

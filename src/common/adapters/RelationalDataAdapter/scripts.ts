@@ -684,7 +684,11 @@ export class ConcreteDataScripts extends BaseDataScript {
   }
 
   // sample code snippet
-  getCodeSnippet(connection: SqluiCore.ConnectionProps, query: SqluiCore.ConnectionQuery, language: SqluiCore.LanguageMode) {
+  getCodeSnippet(
+    connection: SqluiCore.ConnectionProps,
+    query: SqluiCore.ConnectionQuery,
+    language: SqluiCore.LanguageMode,
+  ) {
     let connectionString = connection.connection;
     let sql = query.sql;
     let database = query.databaseId;
@@ -727,11 +731,12 @@ _doWork();
         `.trim();
       case 'python':
         // NOTE: for sqlite, sqlalchemy needs an extra /
-        connectionString = connectionString.replace('sqlite://', 'sqlite:///')
-          .replace('postgres://', 'postgresql://')//SQLAlchemy used to accept both, but has removed support for the postgres name - https://stackoverflow.com/questions/62688256/sqlalchemy-exc-nosuchmoduleerror-cant-load-plugin-sqlalchemy-dialectspostgre
+        connectionString = connectionString
+          .replace('sqlite://', 'sqlite:///')
+          .replace('postgres://', 'postgresql://'); //SQLAlchemy used to accept both, but has removed support for the postgres name - https://stackoverflow.com/questions/62688256/sqlalchemy-exc-nosuchmoduleerror-cant-load-plugin-sqlalchemy-dialectspostgre
 
         // if there is a database, then append it
-        if (database){
+        if (database) {
           connectionString += `/${database}`;
         }
 
