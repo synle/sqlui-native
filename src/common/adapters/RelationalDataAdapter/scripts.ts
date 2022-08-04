@@ -684,7 +684,7 @@ export class ConcreteDataScripts extends BaseDataScript {
   }
 
   // sample code snippet
-  getCodeSnippet(connection: string, language: SqluiCore.LanguageMode, sql: string) {
+  getCodeSnippet(connection: string, database: string, language: SqluiCore.LanguageMode, sql: string) {
     switch (language) {
       case 'javascript':
         return `
@@ -720,6 +720,11 @@ _doWork();
         // NOTE: for sqlite, sqlalchemy needs an extra /
         connection = connection.replace('sqlite://', 'sqlite:///')
           .replace('postgres://', 'postgresql://')//SQLAlchemy used to accept both, but has removed support for the postgres name - https://stackoverflow.com/questions/62688256/sqlalchemy-exc-nosuchmoduleerror-cant-load-plugin-sqlalchemy-dialectspostgre
+
+        // if there is a database, then append it
+        if (database){
+          connection += `/${database}`;
+        }
 
         return `
 # python3 -m venv ./ # setting up virtual environment with

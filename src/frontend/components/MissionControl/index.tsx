@@ -1244,13 +1244,12 @@ export default function MissionControl() {
 
         case 'clientEvent/query/showSampleCodeSnippet':
           if (command.data) {
-            const { connection, language, sql } = command.data as any;
+            const { connection, query, language } = command.data as any;
 
             const codeSnippet = getCodeSnippet(
-              connection.dialect,
-              connection.connection,
+              connection,
+              query,
               language,
-              sql,
             );
             await prompt({
               title: `Sample Code Snippet`,
