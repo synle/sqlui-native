@@ -31,7 +31,7 @@ export default abstract class BaseDataScript implements IDataScript {
     return false;
   }
 
-  //
+  // sample data script
   getTableScripts(): SqlAction.TableActionScriptGenerator[] {
     return [];
   }
@@ -50,5 +50,10 @@ export default abstract class BaseDataScript implements IDataScript {
 
   getSampleSelectQuery(actionInput: SqlAction.TableInput): SqlAction.Output | undefined {
     return undefined;
+  }
+
+  // sample code snippet
+  getCodeSnippet(connection: string, language: SqluiCore.LanguageMode, sql: string) {
+    return '';
   }
 }

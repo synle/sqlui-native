@@ -62,9 +62,11 @@ export default function ActionDialogs(props: ActionDialogsProps): JSX.Element | 
           value={dialog.value}
           onSaveClick={onPromptSaveClick}
           onDismiss={onDimiss}
+          languageMode={dialog.languageMode}
           isLongPrompt={dialog.isLongPrompt}
           saveLabel={dialog.saveLabel}
           required={dialog.required}
+          readonly={dialog.readonly}
         />
       );
     case 'choice':
