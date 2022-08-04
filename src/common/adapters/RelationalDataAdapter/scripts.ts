@@ -692,6 +692,7 @@ export class ConcreteDataScripts extends BaseDataScript {
     let connectionString = connection.connection;
     let sql = query.sql;
     let database = query.databaseId;
+    let deps: string[] = [];
 
     switch (language) {
       case 'javascript':
@@ -700,14 +701,28 @@ export class ConcreteDataScripts extends BaseDataScript {
           connectionString += `/${database}`;
         }
 
+        switch (connection.dialect) {
+          case 'mssql':
+            deps.push(`// npm install --save tedious`);
+            break;
+          case 'postgres':
+            deps.push(`// npm install --save pg pg-hstore`);
+            break;
+          case 'sqlite':
+            deps.push(`// npm install --save sqlite3`);
+            break;
+          case 'mariadb':
+            deps.push(`// npm install --save mariadb`);
+            break;
+          case 'mysql':
+            deps.push(`// npm install --save mysql2`);
+            break;
+        }
+
         return `
 // install these extra dependencies if needed
 // npm install --save sequelize
-// npm install --save sqlite3 # optional
-// npm install --save mysql2 # optional - for MySQL
-// npm install --save pg pg-hstore # optional - for Postgres
-// npm install --save tedious # optional - for MSSQL (Microsoft SQL Server)
-// npm install --save mariadb # optional
+${deps.join('\n')}
 const {Sequelize} = require('sequelize');
 
 async function _doWork(){
@@ -730,24 +745,42 @@ async function _doWork(){
 _doWork();
         `.trim();
       case 'python':
-        // NOTE: for sqlite, sqlalchemy needs an extra /
-        connectionString = connectionString
-          .replace('sqlite://', 'sqlite:///')
-          .replace('postgres://', 'postgresql://'); //SQLAlchemy used to accept both, but has removed support for the postgres name - https://stackoverflow.com/questions/62688256/sqlalchemy-exc-nosuchmoduleerror-cant-load-plugin-sqlalchemy-dialectspostgre
+        // NOTE: for sqlite, sqlalchemy needs an extra `/`
+        connectionString = connectionString.replace('sqlite://', 'sqlite:///');
+
+        // NOTE: SQLAlchemy used to accept both, but has removed support for the postgres name
+        // https://stackoverflow.com/questions/62688256/sqlalchemy-exc-nosuchmoduleerror-cant-load-plugin-sqlalchemy-dialectspostgre
+        connectionString = connectionString.replace('postgres://', 'postgresql://');
+
+        // NOTE: for mssql, we need to update the protocol for SQLAlchemy
+        connectionString = connectionString.replace('mssql://', 'mssql+pymssql://');
 
         // if there is a database, then append it
         if (database) {
           connectionString += `/${database}`;
         }
 
+        switch (connection.dialect) {
+          case 'mssql':
+            deps.push(`# pip install pymssql`);
+            break;
+          case 'postgres':
+            deps.push(`# pip install psycopg2-binary`);
+            break;
+          case 'sqlite':
+            break;
+          case 'mariadb':
+            break;
+          case 'mysql':
+            deps.push(`# pip install mysqlclient`);
+            break;
+        }
+
         return `
 # python3 -m venv ./ # setting up virtual environment with
 # source bin/activate # activate the venv profile
 # pip install sqlalchemy
-# pip install mysqlclient # optional - for MySQL
-# pip install psycopg2-binary # optional - for Postgres
-# pip install pyodbc # optional - for MSSQL (Microsoft SQL Server)
-
+${deps.join('\n')}
 from sqlalchemy import create_engine
 
 engine = create_engine('${connectionString}', echo = True)
