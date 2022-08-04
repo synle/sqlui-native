@@ -142,10 +142,13 @@ export function DataTableWithJSONList(props: Omit<DataTableProps, 'columns'>) {
     });
   }, [data]);
 
-  if (hasRawJson) {
-    return <LegacyDataTable {...props} columns={columns} />;
-  }
-  return <ModernDataTable {...props} columns={columns} />;
+  // if (hasRawJson) {
+  //   return <LegacyDataTable {...props} columns={columns} />;
+  // }
+  // return <ModernDataTable {...props} columns={columns} />;
+
+  // always use legacy table for now
+  return <LegacyDataTable {...props} columns={columns} />;
 }
 
 export default LegacyDataTable;
