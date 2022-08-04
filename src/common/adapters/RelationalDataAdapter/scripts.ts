@@ -690,11 +690,11 @@ export class ConcreteDataScripts extends BaseDataScript {
         return `
 // install these extra dependencies if needed
 // npm install --save sequelize
-// npm install --save pg pg-hstore # Postgres
-// npm install --save mysql2
-// npm install --save mariadb
-// npm install --save sqlite3
-// npm install --save tedious # Microsoft SQL Server
+// npm install --save pg pg-hstore # optional - Postgres
+// npm install --save mysql2 # optional
+// npm install --save mariadb # optional
+// npm install --save sqlite3 # optional
+// npm install --save tedious # optional - Microsoft SQL Server
 const {Sequelize} = require('sequelize');
 
 async function _doWork(){
@@ -718,15 +718,22 @@ _doWork();
         `.trim();
       case 'python':
         // NOTE: for sqlite, sqlalchemy needs an extra /
-        connection = connection.replace('sqlite://', 'sqlite:///');
+        connection = connection.replace('sqlite://', 'sqlite:///')
+          .replace('postgres://', 'postgresql://')//SQLAlchemy used to accept both, but has removed support for the postgres name - https://stackoverflow.com/questions/62688256/sqlalchemy-exc-nosuchmoduleerror-cant-load-plugin-sqlalchemy-dialectspostgre
 
         return `
 # python3 -m venv ./ # setting up virtual environment with
 # source bin/activate # activate the venv profile
 # pip install sqlalchemy
+# pip install mysqlclient # optional - for MySQL
+# pip install psycopg2-binary # optional - for Postgres
+# pip install pyodbc # optional - for MSSQL
+
 from sqlalchemy import create_engine
 from sqlalchemy.sql import text
+
 engine = create_engine('${connection}', echo = True)
+
 with engine.connect() as con:
   rs = con.execute("""${sql}""")
 
