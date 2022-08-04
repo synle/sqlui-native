@@ -703,19 +703,19 @@ export class ConcreteDataScripts extends BaseDataScript {
 
         switch (connection.dialect) {
           case 'mssql':
-            deps.push(`// npm install --save tedious`)
+            deps.push(`// npm install --save tedious`);
             break;
           case 'postgres':
-            deps.push(`// npm install --save pg pg-hstore`)
+            deps.push(`// npm install --save pg pg-hstore`);
             break;
           case 'sqlite':
-            deps.push(`// npm install --save sqlite3`)
+            deps.push(`// npm install --save sqlite3`);
             break;
           case 'mariadb':
-            deps.push(`// npm install --save mariadb`)
+            deps.push(`// npm install --save mariadb`);
             break;
           case 'mysql':
-            deps.push(`// npm install --save mysql2`)
+            deps.push(`// npm install --save mysql2`);
             break;
         }
 
@@ -746,17 +746,14 @@ _doWork();
         `.trim();
       case 'python':
         // NOTE: for sqlite, sqlalchemy needs an extra `/`
-        connectionString = connectionString
-          .replace('sqlite://', 'sqlite:///')
+        connectionString = connectionString.replace('sqlite://', 'sqlite:///');
 
         // NOTE: SQLAlchemy used to accept both, but has removed support for the postgres name
         // https://stackoverflow.com/questions/62688256/sqlalchemy-exc-nosuchmoduleerror-cant-load-plugin-sqlalchemy-dialectspostgre
-        connectionString = connectionString
-          .replace('postgres://', 'postgresql://')
+        connectionString = connectionString.replace('postgres://', 'postgresql://');
 
         // NOTE: for mssql, we need to update the protocol for SQLAlchemy
-        connectionString = connectionString
-          .replace('mssql://', 'mssql+pymssql://')
+        connectionString = connectionString.replace('mssql://', 'mssql+pymssql://');
 
         // if there is a database, then append it
         if (database) {
@@ -765,17 +762,17 @@ _doWork();
 
         switch (connection.dialect) {
           case 'mssql':
-            deps.push(`# pip install pymssql`)
+            deps.push(`# pip install pymssql`);
             break;
           case 'postgres':
-            deps.push(`# pip install psycopg2-binary`)
+            deps.push(`# pip install psycopg2-binary`);
             break;
           case 'sqlite':
             break;
           case 'mariadb':
             break;
           case 'mysql':
-            deps.push(`# pip install mysqlclient`)
+            deps.push(`# pip install mysqlclient`);
             break;
         }
 
