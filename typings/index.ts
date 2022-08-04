@@ -25,7 +25,7 @@ export module SqluiCore {
     | 'cosmosdb'
     | 'aztable';
 
-  export type LanguageMode = 'javascript';
+  export type LanguageMode = 'javascript' | 'python' | 'java';
 
   export type ServerConfigs = {
     storageDir: string;
