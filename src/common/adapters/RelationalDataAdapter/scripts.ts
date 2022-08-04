@@ -684,21 +684,34 @@ export class ConcreteDataScripts extends BaseDataScript {
   }
 
   // sample code snippet
-  getCodeSnippet(connection: string, language: SqluiCore.LanguageMode, sql: string) {
+  getCodeSnippet(
+    connection: SqluiCore.ConnectionProps,
+    query: SqluiCore.ConnectionQuery,
+    language: SqluiCore.LanguageMode,
+  ) {
+    let connectionString = connection.connection;
+    let sql = query.sql;
+    let database = query.databaseId;
+
     switch (language) {
       case 'javascript':
+        // if there is a database, then append it
+        if (database) {
+          connectionString += `/${database}`;
+        }
+
         return `
 // install these extra dependencies if needed
 // npm install --save sequelize
-// npm install --save pg pg-hstore # Postgres
-// npm install --save mysql2
-// npm install --save mariadb
-// npm install --save sqlite3
-// npm install --save tedious # Microsoft SQL Server
+// npm install --save sqlite3 # optional
+// npm install --save mysql2 # optional - for MySQL
+// npm install --save pg pg-hstore # optional - for Postgres
+// npm install --save tedious # optional - for MSSQL (Microsoft SQL Server)
+// npm install --save mariadb # optional
 const {Sequelize} = require('sequelize');
 
 async function _doWork(){
-  const sequelize = new Sequelize('${connection}');
+  const sequelize = new Sequelize('${connectionString}');
 
   try{
     const [items, meta] = await sequelize.query(\`${sql}\`, {
@@ -718,15 +731,27 @@ _doWork();
         `.trim();
       case 'python':
         // NOTE: for sqlite, sqlalchemy needs an extra /
-        connection = connection.replace('sqlite://', 'sqlite:///');
+        connectionString = connectionString
+          .replace('sqlite://', 'sqlite:///')
+          .replace('postgres://', 'postgresql://'); //SQLAlchemy used to accept both, but has removed support for the postgres name - https://stackoverflow.com/questions/62688256/sqlalchemy-exc-nosuchmoduleerror-cant-load-plugin-sqlalchemy-dialectspostgre
+
+        // if there is a database, then append it
+        if (database) {
+          connectionString += `/${database}`;
+        }
 
         return `
 # python3 -m venv ./ # setting up virtual environment with
 # source bin/activate # activate the venv profile
 # pip install sqlalchemy
+# pip install mysqlclient # optional - for MySQL
+# pip install psycopg2-binary # optional - for Postgres
+# pip install pyodbc # optional - for MSSQL (Microsoft SQL Server)
+
 from sqlalchemy import create_engine
-from sqlalchemy.sql import text
-engine = create_engine('${connection}', echo = True)
+
+engine = create_engine('${connectionString}', echo = True)
+
 with engine.connect() as con:
   rs = con.execute("""${sql}""")
 

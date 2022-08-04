@@ -114,7 +114,7 @@ function ConnectionActionsButton(props: ConnectionActionsButtonProps): JSX.Eleme
 function CodeSnippetButton(props: QueryBoxProps) {
   const { queryId } = props;
   const { query } = useConnectionQuery(queryId);
-  const { data: selectedConnection } = useGetConnectionById(query?.connectionId);
+  const { data: connection } = useGetConnectionById(query?.connectionId);
   const { selectCommand } = useCommands();
 
   if (!query) {
@@ -127,9 +127,9 @@ function CodeSnippetButton(props: QueryBoxProps) {
       selectCommand({
         event: 'clientEvent/query/showSampleCodeSnippet',
         data: {
-          connection: selectedConnection,
+          connection,
           language,
-          sql: query.sql,
+          query,
         },
       }),
   }));
