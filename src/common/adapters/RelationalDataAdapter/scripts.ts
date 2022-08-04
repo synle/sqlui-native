@@ -1,6 +1,7 @@
 import BaseDataScript, { getDivider } from 'src/common/adapters/BaseDataAdapter/scripts';
 import { escapeSQLValue, isValueNumber } from 'src/frontend/utils/formatter';
 import { SqlAction } from 'typings';
+import { SqluiCore } from 'typings';
 
 const formatter = 'sql';
 
@@ -681,6 +682,44 @@ export class ConcreteDataScripts extends BaseDataScript {
 
   getSampleSelectQuery(actionInput: SqlAction.TableInput) {
     return getSelectAllColumns(actionInput);
+  }
+
+  // sample code snippet
+  getCodeSnippet(connection: string, language: SqluiCore.LanguageMode, sql: string) {
+    switch(language){
+      case 'javascript':
+        return `
+// install these extra dependencies if needed
+// npm install --save sequelize
+// npm install --save pg pg-hstore # Postgres
+// npm install --save mysql2
+// npm install --save mariadb
+// npm install --save sqlite3
+// npm install --save tedious # Microsoft SQL Server
+const {Sequelize} = require('sequelize');
+
+async function _doWork(){
+  const sequelize = new Sequelize('${connection}');
+
+  try{
+    const [items, meta] = await sequelize.query(\`${sql}\`, {
+      raw: true,
+      plain: false,
+    });
+
+    for(const item of items){
+      console.log(item);
+    }
+  } catch(err){
+    console.log('Failed to run query', err);
+  }
+}
+
+_doWork();
+        `.trim();
+      default:
+        return '';
+    }
   }
 }
 

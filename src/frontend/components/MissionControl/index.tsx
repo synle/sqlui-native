@@ -1,3 +1,4 @@
+import { getCodeSnippet } from 'src/common/adapters/DataScriptFactory';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Link from '@mui/material/Link';
@@ -1238,6 +1239,28 @@ export default function MissionControl() {
           // this reveal the current query connection
           if (command.data) {
             onAddQueryToBookmark(command.data as SqluiFrontend.ConnectionQuery);
+          }
+          break;
+
+        case 'clientEvent/query/showSampleCodeSnippet':
+          if (command.data) {
+            const {
+              connection,
+              language,
+              sql,
+            } = command.data as any;
+
+            const codeSnippet = getCodeSnippet(connection.dialect, connection.connection, language, sql);
+
+
+            await prompt({
+              title: `Sample Code Snippet`,
+              message: `LanguageMode = ${language}`,
+              value: codeSnippet,
+              isLongPrompt: true,
+              readonly: true,
+              languageMode:language,
+            });
           }
           break;
 

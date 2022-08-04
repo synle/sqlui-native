@@ -1,4 +1,5 @@
 import { SqlAction, SqluiCore } from 'typings';
+
 // this describe the static methods in the interface
 export default interface IDataScript {
   dialects?: SqluiCore.Dialect[] | string[];
@@ -16,4 +17,7 @@ export default interface IDataScript {
   getConnectionScripts: () => SqlAction.ConnectionActionScriptGenerator[];
   getSampleConnectionString: (dialect?: SqluiCore.Dialect) => string;
   getSampleSelectQuery: (actionInput: SqlAction.TableInput) => SqlAction.Output | undefined;
+
+  // snippet
+  getCodeSnippet: (connection: string, language: SqluiCore.LanguageMode, sql: string) => string;
 }

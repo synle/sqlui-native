@@ -36,6 +36,7 @@ import { useQuerySizeSetting } from 'src/frontend/hooks/useSetting';
 import useToaster from 'src/frontend/hooks/useToaster';
 import { formatDuration, formatJS, formatSQL } from 'src/frontend/utils/formatter';
 import { SqluiCore } from 'typings';
+import InfoIcon from '@mui/icons-material/Info';
 
 type QueryBoxProps = {
   queryId: string;
@@ -91,6 +92,7 @@ function ConnectionActionsButton(props: ConnectionActionsButtonProps): JSX.Eleme
         label: `Applied "${action.label}" to active query tab.`,
       }),
   }));
+
   if (!databaseId || !connectionId || !tableId) {
     return null;
   }
@@ -121,15 +123,14 @@ export default function QueryBox(props: QueryBoxProps): JSX.Element | null {
   const { add: addToast } = useToaster();
   const navigate = useNavigate();
 
-  const isLoading = loadingConnection;
-
   const language: string = useMemo(
     () => getSyntaxModeByDialect(selectedConnection?.dialect),
     [selectedConnection?.dialect, query?.sql],
   );
 
-  const isExecuting = executing;
 
+  const isLoading = loadingConnection;
+  const isExecuting = executing;
   const isMigrationVisible = !!query?.connectionId && !!query?.databaseId;
   const isCreateRecordVisible = isMigrationVisible;
 
@@ -312,6 +313,19 @@ export default function QueryBox(props: QueryBoxProps): JSX.Element | null {
               </Button>
             </Tooltip>
           )}
+          <Tooltip title='TODO'>
+            <Button
+              type='button'
+              variant='outlined'
+              onClick={() => selectCommand({ event: 'clientEvent/query/showSampleCodeSnippet', data: {
+                connection: selectedConnection,
+                language: 'javascript',
+                sql: query.sql
+              } })}
+              startIcon={<InfoIcon />}>
+              Show Code Snippet
+            </Button>
+          </Tooltip>
         </div>
       </form>
       <ResultBox query={query} executing={executing} />
