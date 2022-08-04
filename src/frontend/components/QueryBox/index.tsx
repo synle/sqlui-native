@@ -2,6 +2,7 @@ import AddCircleIcon from '@mui/icons-material/AddCircle';
 import BackupIcon from '@mui/icons-material/Backup';
 import FormatColorTextIcon from '@mui/icons-material/FormatColorText';
 import HelpIcon from '@mui/icons-material/Help';
+import InfoIcon from '@mui/icons-material/Info';
 import MenuIcon from '@mui/icons-material/Menu';
 import SendIcon from '@mui/icons-material/Send';
 import LoadingButton from '@mui/lab/LoadingButton';
@@ -91,6 +92,7 @@ function ConnectionActionsButton(props: ConnectionActionsButtonProps): JSX.Eleme
         label: `Applied "${action.label}" to active query tab.`,
       }),
   }));
+
   if (!databaseId || !connectionId || !tableId) {
     return null;
   }
@@ -121,15 +123,12 @@ export default function QueryBox(props: QueryBoxProps): JSX.Element | null {
   const { add: addToast } = useToaster();
   const navigate = useNavigate();
 
-  const isLoading = loadingConnection;
-
   const language: string = useMemo(
     () => getSyntaxModeByDialect(selectedConnection?.dialect),
     [selectedConnection?.dialect, query?.sql],
   );
-
+  const isLoading = loadingConnection;
   const isExecuting = executing;
-
   const isMigrationVisible = !!query?.connectionId && !!query?.databaseId;
   const isCreateRecordVisible = isMigrationVisible;
 
@@ -312,6 +311,24 @@ export default function QueryBox(props: QueryBoxProps): JSX.Element | null {
               </Button>
             </Tooltip>
           )}
+          <Tooltip title='This will generate sample code to connect to this database using your language of choice'>
+            <Button
+              type='button'
+              variant='outlined'
+              onClick={() =>
+                selectCommand({
+                  event: 'clientEvent/query/showSampleCodeSnippet',
+                  data: {
+                    connection: selectedConnection,
+                    language: 'javascript',
+                    sql: query.sql,
+                  },
+                })
+              }
+              startIcon={<InfoIcon />}>
+              Show Code Snippet
+            </Button>
+          </Tooltip>
         </div>
       </form>
       <ResultBox query={query} executing={executing} />

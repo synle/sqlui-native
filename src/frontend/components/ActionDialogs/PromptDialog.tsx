@@ -15,7 +15,9 @@ export type PromptInput = {
   value?: string;
   isLongPrompt?: boolean;
   saveLabel?: string;
+  languageMode?: string;
   required?: boolean;
+  readonly?: boolean;
 };
 
 type PromptDialogProps = PromptInput & {
@@ -75,7 +77,7 @@ export default function PromptDialog(props: PromptDialogProps): JSX.Element | nu
             <CodeEditorBox
               value={value}
               onChange={setValue}
-              language='json'
+              language={props.languageMode || 'json'}
               autoFocus={true}
               required={props.required}
               wordWrap={true}
@@ -92,11 +94,13 @@ export default function PromptDialog(props: PromptDialogProps): JSX.Element | nu
             />
           )}
         </DialogContent>
-        <DialogActions>
-          <Button type='submit' disabled={isDisabled}>
-            {props.saveLabel || 'Save Changes'}
-          </Button>
-        </DialogActions>
+        {props.readonly !== true && (
+          <DialogActions>
+            <Button type='submit' disabled={isDisabled}>
+              {props.saveLabel || 'Save Changes'}
+            </Button>
+          </DialogActions>
+        )}
       </form>
     </Dialog>
   );
