@@ -150,12 +150,8 @@ export function getConnectionActions(actionInput: SqlAction.ConnectionInput) {
 }
 
 export function getCodeSnippet(
-  dialect: string,
-  connection: string,
-  database: string,
-  language: SqluiCore.LanguageMode,
-  sql: string,
+  connection: SqluiCore.ConnectionProps, query: SqluiCore.ConnectionQuery, language: SqluiCore.LanguageMode
 ) {
-  return _getImplementation(dialect)?.getCodeSnippet(connection, database, language, sql) || '';
+  return _getImplementation(connection?.dialect)?.getCodeSnippet(connection, query, language) || '';
 }
 

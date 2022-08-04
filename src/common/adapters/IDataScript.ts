@@ -18,5 +18,5 @@ export default interface IDataScript {
   getSampleSelectQuery: (actionInput: SqlAction.TableInput) => SqlAction.Output | undefined;
 
   // snippet
-  getCodeSnippet: (connection: string, database: string, language: SqluiCore.LanguageMode, sql: string)  => string;
+  getCodeSnippet: (connection: SqluiCore.ConnectionProps, query: SqluiCore.ConnectionQuery, language: SqluiCore.LanguageMode)  => string;
 }
