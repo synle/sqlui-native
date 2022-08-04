@@ -1250,7 +1250,7 @@ export default function MissionControl() {
             await prompt({
               title: `Sample Code Snippet`,
               message: `LanguageMode = ${language}`,
-              value: codeSnippet,
+              value: codeSnippet || 'Not Supported Yet',
               isLongPrompt: true,
               readonly: true,
               languageMode: language,
