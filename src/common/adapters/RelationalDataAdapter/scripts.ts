@@ -690,7 +690,7 @@ export class ConcreteDataScripts extends BaseDataScript {
     language: SqluiCore.LanguageMode,
   ) {
     let connectionString = connection.connection;
-    let sql = query.sql;
+    let sql = query.sql || '';
     let database = query.databaseId;
     let deps: string[] = [];
 
@@ -745,35 +745,36 @@ async function _doWork(){
 _doWork();
         `.trim();
       case 'python':
-        // NOTE: for sqlite, sqlalchemy needs an extra `/`
-        connectionString = connectionString.replace('sqlite://', 'sqlite:///');
+        switch (connection.dialect) {
+          case 'mssql':
+            deps.push(`# pip install pymssql`);
 
-        // NOTE: SQLAlchemy used to accept both, but has removed support for the postgres name
-        // https://stackoverflow.com/questions/62688256/sqlalchemy-exc-nosuchmoduleerror-cant-load-plugin-sqlalchemy-dialectspostgre
-        connectionString = connectionString.replace('postgres://', 'postgresql://');
+            // NOTE: we need to update the protocol for SQLAlchemy
+            connectionString = connectionString.replace('mssql://', 'mssql+pymssql://');
+            break;
+          case 'postgres':
+            deps.push(`# pip install psycopg2-binary`);
 
-        // NOTE: for mssql, we need to update the protocol for SQLAlchemy
-        connectionString = connectionString.replace('mssql://', 'mssql+pymssql://');
+            // NOTE: SQLAlchemy used to accept both, but has removed support for the postgres name
+            // https://stackoverflow.com/questions/62688256/sqlalchemy-exc-nosuchmoduleerror-cant-load-plugin-sqlalchemy-dialectspostgre
+            connectionString = connectionString.replace('postgres://', 'postgresql://');
+            break;
+          case 'sqlite':
+            // NOTE: for sqlite, sqlalchemy needs an extra `/`
+            connectionString = connectionString.replace('sqlite://', 'sqlite:///');
+            break;
+          case 'mariadb':
+          case 'mysql':
+            deps.push(`# pip install pymysql`);
+
+            // NOTE: we need to update the protocol for SQLAlchemy
+            connectionString = connectionString.replace('mysql://', 'mysql+pymysql://');
+            break;
+        }
 
         // if there is a database, then append it
         if (database) {
           connectionString += `/${database}`;
-        }
-
-        switch (connection.dialect) {
-          case 'mssql':
-            deps.push(`# pip install pymssql`);
-            break;
-          case 'postgres':
-            deps.push(`# pip install psycopg2-binary`);
-            break;
-          case 'sqlite':
-            break;
-          case 'mariadb':
-            break;
-          case 'mysql':
-            deps.push(`# pip install mysqlclient`);
-            break;
         }
 
         return `

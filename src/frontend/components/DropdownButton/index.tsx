@@ -85,7 +85,7 @@ export default function DropdownButton(props: DropdownButtonProps): JSX.Element 
             content = (
               <MenuItem onClick={(event) => handleMenuItemClick(event, index)}>
                 {!option.startIcon ? null : <ListItemIcon>{option.startIcon}</ListItemIcon>}
-                <ListItemText>{option.label}</ListItemText>
+                <ListItemText sx={{ textTransform: 'capitalize' }}>{option.label}</ListItemText>
               </MenuItem>
             );
           }
