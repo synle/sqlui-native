@@ -81,6 +81,7 @@ export default function PromptDialog(props: PromptDialogProps): JSX.Element | nu
               autoFocus={true}
               required={props.required}
               wordWrap={true}
+              height='60vh'
             />
           ) : (
             <TextField

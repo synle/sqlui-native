@@ -26,11 +26,11 @@ export type CodeEditorProps = {
   disabled?: boolean;
   editorRef?: React.RefObject<EditorRef>;
   required?: boolean;
+  height?: string;
 };
 
 export type DecoratedEditorProps = CodeEditorProps & {
   onBlur?: (newValue: string) => void;
-  height: string;
 };
 
 const DEFAULT_EDITOR_HEIGHT = '20vh';
@@ -39,7 +39,7 @@ export default function CodeEditorBox(props: CodeEditorProps): JSX.Element | nul
   const globalWordWrap = useWordWrapSetting();
   const [wordWrap, setWordWrap] = useState(false);
   const [languageMode, setLanguageMode] = useState<string | undefined>();
-  const [height, setHeight] = useState<string>(DEFAULT_EDITOR_HEIGHT);
+  const [height, setHeight] = useState<string>(props.height || DEFAULT_EDITOR_HEIGHT);
   const editorModeToUse = useEditorModeSetting();
 
   const onChange = (newValue: string) => {
