@@ -724,21 +724,15 @@ _doWork();
 # python3 -m venv ./ # setting up virtual environment with
 # source bin/activate # activate the venv profile
 # pip install sqlalchemy
-
-
 from sqlalchemy import create_engine
 from sqlalchemy.sql import text
-
-
 engine = create_engine('${connection}', echo = True)
-
-
 with engine.connect() as con:
   rs = con.execute("""${sql}""")
 
   for row in rs:
     print(row)
-        `.trim()
+        `.trim();
       default:
         return '';
     }

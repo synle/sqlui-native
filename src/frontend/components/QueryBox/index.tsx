@@ -111,13 +111,13 @@ function ConnectionActionsButton(props: ConnectionActionsButtonProps): JSX.Eleme
   );
 }
 
-function CodeSnippetButton(props: QueryBoxProps){
+function CodeSnippetButton(props: QueryBoxProps) {
   const { queryId } = props;
   const { query } = useConnectionQuery(queryId);
   const { data: selectedConnection } = useGetConnectionById(query?.connectionId);
   const { selectCommand } = useCommands();
 
-  if(!query){
+  if (!query) {
     return null;
   }
 
@@ -135,16 +135,10 @@ function CodeSnippetButton(props: QueryBoxProps){
   }));
 
   return (
-    <DropdownButton
-      id='session-action-split-button'
-      options={options}
-      maxHeight='400px'>
-        <Button
-          type='button'
-          variant='outlined'
-          startIcon={<InfoIcon />}>
-          Show Code Snippet
-        </Button>
+    <DropdownButton id='session-action-split-button' options={options} maxHeight='400px'>
+      <Button type='button' variant='outlined' startIcon={<InfoIcon />}>
+        Show Code Snippet
+      </Button>
     </DropdownButton>
   );
 }
