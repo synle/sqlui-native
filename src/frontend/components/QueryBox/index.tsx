@@ -313,7 +313,7 @@ export default function QueryBox(props: QueryBoxProps): JSX.Element | null {
               </Button>
             </Tooltip>
           )}
-          <Tooltip title='TODO'>
+          <Tooltip title='This will generate sample code to connect to this database using your language of choice'>
             <Button
               type='button'
               variant='outlined'
