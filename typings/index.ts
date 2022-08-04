@@ -25,6 +25,8 @@ export module SqluiCore {
     | 'cosmosdb'
     | 'aztable';
 
+  export type LanguageMode = 'javascript';
+
   export type ServerConfigs = {
     storageDir: string;
     isElectron: boolean;
@@ -325,6 +327,7 @@ export module SqluiEnums {
     | 'clientEvent/query/reveal'
     | 'clientEvent/query/revealThisOnly'
     | 'clientEvent/query/addToBookmark'
+    | 'clientEvent/query/showSampleCodeSnippet'
     | 'clientEvent/record/showDetails'
     | 'clientEvent/record/edit'
     | 'clientEvent/record/new'
