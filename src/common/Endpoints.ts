@@ -298,6 +298,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
         name: req.body.name,
         connectionId: req.body?.connectionId,
         databaseId: req.body?.databaseId,
+        tableId: req.body?.tableId,
         sql: req.body?.sql,
       }),
     );
