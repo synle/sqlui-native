@@ -44,8 +44,9 @@ export default abstract class BaseDataScript implements IDataScript {
     return [];
   }
 
-  getSampleConnectionName(dialect?: SqluiCore.Dialect): string {
-    return dialect || '';
+  getDialectName(dialect?: SqluiCore.Dialect): string {
+    // capitlize the first letter
+    return (dialect || '').replace(/^\w/, (c) => c.toUpperCase());
   }
 
   getSampleConnectionString(dialect?: SqluiCore.Dialect) {

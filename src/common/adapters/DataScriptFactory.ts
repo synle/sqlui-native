@@ -122,8 +122,8 @@ export function getIsTableIdRequiredForQueryByDialect(dialect?: string) {
   return _getImplementation(dialect)?.getIsTableIdRequiredForQuery() || false;
 }
 
-export function getSampleConnectionName(dialect?: string) {
-  return _getImplementation(dialect)?.getSampleConnectionName(dialect as SqluiCore.Dialect) || '';
+export function getDialectName(dialect?: string) {
+  return _getImplementation(dialect)?.getDialectName(dialect as SqluiCore.Dialect) || '';
 }
 
 export function getSampleConnectionString(dialect?: string) {

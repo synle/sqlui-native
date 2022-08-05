@@ -8,7 +8,7 @@ import ListItemAvatar from '@mui/material/ListItemAvatar';
 import ListItemText from '@mui/material/ListItemText';
 import {
   getSampleConnectionString,
-  getSampleConnectionName,
+  getDialectName,
   SUPPORTED_DIALECTS,
 } from 'src/common/adapters/DataScriptFactory';
 import ConnectionTypeIcon from 'src/frontend/components/ConnectionTypeIcon';
@@ -99,7 +99,7 @@ export default function ConnectionHint(props: ConnectionHintProps): JSX.Element 
                   underline='hover'
                   onClick={onApplyThisConnectionHint}
                   sx={{ textTransform: 'uppercase', fontWeight: 'bold' }}>
-                  {getSampleConnectionName(dialect)}
+                  {getDialectName(dialect)}
                 </Link>
               }
               secondary={getSampleConnectionString(dialect)}

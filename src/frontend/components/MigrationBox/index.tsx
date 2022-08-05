@@ -48,6 +48,9 @@ import { useConnectionQueries } from 'src/frontend/hooks/useConnectionQuery';
 import useToaster from 'src/frontend/hooks/useToaster';
 import { formatJS, formatSQL } from 'src/frontend/utils/formatter';
 import { SqluiCore, SqluiFrontend } from 'typings';
+import {
+  getDialectName,
+} from 'src/common/adapters/DataScriptFactory';
 // TOOD: extract this
 const MESSAGE_NO_DATA_FOR_MIGRATION = `Warning - This migration doesn't contain any record. This might be an error with your query to get data.`;
 
@@ -70,7 +73,7 @@ function DialectSelector(props: DialectSelectorProps): JSX.Element | null {
       value={value}
       onChange={(newValue) => onChange && onChange(newValue as SqluiCore.Dialect)}>
       {DIALECTS_SUPPORTING_MIGRATION.map((dialect) => (
-        <option value={dialect}>{dialect}</option>
+        <option value={dialect}>{getDialectName(dialect)}</option>
       ))}
     </Select>
   );
