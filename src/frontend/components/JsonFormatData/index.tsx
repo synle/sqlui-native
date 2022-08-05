@@ -6,5 +6,5 @@ type FormatDataProps = {
 
 export default function JsonFormatData(props: FormatDataProps): JSX.Element | null {
   const { data } = props;
-  return <CodeEditorBox value={JSON.stringify(data, null, 2)} language='json' />;
+  return <CodeEditorBox value={JSON.stringify(data, null, 2)} language='json' height='60vh' />;
 }

@@ -12,10 +12,11 @@ function _formatScript(formatter?: string, query?: string) {
   switch (formatter) {
     case 'sql':
       return formatSQL(query);
-      break;
     case 'js':
+    case 'javascript':
       return formatJS(query);
-      break;
+    default:
+      return query;
   }
 }
 
@@ -154,5 +155,11 @@ export function getCodeSnippet(
   query: SqluiCore.ConnectionQuery,
   language: SqluiCore.LanguageMode,
 ) {
-  return _getImplementation(connection?.dialect)?.getCodeSnippet(connection, query, language) || '';
+  const cleanedUpQuery = { ...query };
+  cleanedUpQuery.sql = cleanedUpQuery.sql || '';
+
+  return _formatScript(
+    language,
+    _getImplementation(connection?.dialect)?.getCodeSnippet(connection, cleanedUpQuery, language),
+  );
 }
