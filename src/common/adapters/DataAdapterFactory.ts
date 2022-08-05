@@ -34,6 +34,7 @@ export function getDataAdapter(connection: string) {
       adapter = new MongoDBDataAdapter(connection);
       break;
     case 'redis':
+    case 'rediss':
       adapter = new RedisDataAdapter(connection);
       break;
     case 'cosmosdb':

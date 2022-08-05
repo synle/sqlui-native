@@ -55,6 +55,7 @@ function _getImplementation(dialect?: string) {
     case 'mongodb':
       return MongoDBDataAdapterScripts;
     case 'redis':
+    case 'rediss':
       return RedisDataAdapterScripts;
     case 'cosmosdb':
       return AzureCosmosDataAdapterScripts;
@@ -119,6 +120,10 @@ export function getSyntaxModeByDialect(dialect?: string) {
 
 export function getIsTableIdRequiredForQueryByDialect(dialect?: string) {
   return _getImplementation(dialect)?.getIsTableIdRequiredForQuery() || false;
+}
+
+export function getDialectName(dialect?: string) {
+  return _getImplementation(dialect)?.getDialectName(dialect as SqluiCore.Dialect) || '';
 }
 
 export function getSampleConnectionString(dialect?: string) {

@@ -21,6 +21,7 @@ import {
 } from 'src/common/adapters/CassandraDataAdapter/scripts';
 import {
   DIALECTS_SUPPORTING_MIGRATION,
+  getDialectName,
   getSampleSelectQuery,
   getSyntaxModeByDialect,
   isDialectSupportMigration,
@@ -70,7 +71,7 @@ function DialectSelector(props: DialectSelectorProps): JSX.Element | null {
       value={value}
       onChange={(newValue) => onChange && onChange(newValue as SqluiCore.Dialect)}>
       {DIALECTS_SUPPORTING_MIGRATION.map((dialect) => (
-        <option value={dialect}>{dialect}</option>
+        <option value={dialect}>{getDialectName(dialect)}</option>
       ))}
     </Select>
   );
