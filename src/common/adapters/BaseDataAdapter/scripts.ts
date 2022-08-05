@@ -58,6 +58,18 @@ export default abstract class BaseDataScript implements IDataScript {
     query: SqluiCore.ConnectionQuery,
     language: SqluiCore.LanguageMode,
   ) {
-    return '';
+    switch (language) {
+      case 'javascript':
+        // TODO: implement me
+        return '';
+      case 'python':
+        // TODO: implement me
+        return '';
+      case 'java':
+        // TODO: implement me
+        return '';
+      default:
+        return '';
+    }
   }
 }

@@ -1,6 +1,6 @@
 import DownloadIcon from '@mui/icons-material/Download';
 import Alert from '@mui/material/Alert';
-import Box from '@mui/material/Box';
+import JsonFormatData from 'src/frontend/components/JsonFormatData';
 import CircularProgress from '@mui/material/CircularProgress';
 import Tooltip from '@mui/material/Tooltip';
 import CsvEngine from 'json-2-csv';
@@ -153,11 +153,6 @@ export default function ResultBox(props: ResultBoxProps): JSX.Element | null {
 type FormatDataProps = {
   data: any[];
 };
-
-export function JsonFormatData(props: FormatDataProps): JSX.Element | null {
-  const { data } = props;
-  return <CodeEditorBox value={JSON.stringify(data, null, 2)} language='json' />;
-}
 
 function CsvFormatData(props: FormatDataProps): JSX.Element | null {
   const { data } = props;
