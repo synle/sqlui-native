@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import React, { useCallback, useEffect, useState } from 'react';
 import { getCodeSnippet } from 'src/common/adapters/DataScriptFactory';
 import { BookmarksItemListModalContent } from 'src/frontend/components/BookmarksItemList';
+import CodeEditorBox from 'src/frontend/components/CodeEditorBox';
 import CommandPalette from 'src/frontend/components/CommandPalette';
 import SessionSelectionForm from 'src/frontend/components/SessionSelectionForm';
 import Settings, { ChangeSoftDeleteInput } from 'src/frontend/components/Settings';
@@ -1247,13 +1248,44 @@ export default function MissionControl() {
             const { connection, query, language } = command.data as any;
 
             const codeSnippet = getCodeSnippet(connection, query, language);
-            await prompt({
-              title: `Sample Code Snippet`,
-              message: `LanguageMode = ${language}`,
-              value: codeSnippet || 'Not Supported Yet',
-              isLongPrompt: true,
-              readonly: true,
-              languageMode: language,
+
+            const onDownloadCodeSnippet = () => {
+              let extension = '';
+              switch (language) {
+                case 'javascript':
+                  extension = 'js';
+                  break;
+                case 'python':
+                  extension = 'py';
+                  break;
+                case 'java':
+                  extension = 'java';
+                  break;
+              }
+              if (extension) {
+                downloadText(
+                  `sample-code-snippet-${Date.now()}.${extension}`,
+                  codeSnippet,
+                  'text/plain',
+                );
+              }
+            };
+
+            modal({
+              title: 'Sample Code Snippet',
+              message: (
+                <Box className='FormInput__Container'>
+                  <Box>
+                    <strong>LanguageMode:</strong> {language}
+                  </Box>
+                  <CodeEditorBox value={codeSnippet} language={language} height='60vh' />
+                  <Box sx={{ display: 'flex', justifyContent: 'end' }}>
+                    <Button onClick={onDownloadCodeSnippet}>Download Code Snippet</Button>
+                  </Box>
+                </Box>
+              ),
+              showCloseButton: true,
+              size: 'md',
             });
           }
           break;
