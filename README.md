@@ -300,9 +300,9 @@ Due to the size of keys within Redis connection, we will not show all keys in th
 - Go to `Access Keys` on Azure Redis Cache.
   ![image](https://user-images.githubusercontent.com/3792401/183109606-5c07c993-fed7-4877-be31-798a1ea9676d.png)
 - Connection will look like
-  `rediss://:<password>@<your_redis_host>:<redis_port>`
-- Sample connection will look like this
-  `rediss://:Primary_Or_Secondary_Access_Key@syredis1.redis.cache.windows.net:6380`
+  `rediss://<username>:<password>@<your_redis_host>:<redis_port>`
+- Sample connection will look like this. Due to how the URL scheme is parsed, a non empty string is required for the username placeholder. It can be anything but empty string.
+  `rediss://azure:Primary_Or_Secondary_Access_Key@syredis1.redis.cache.windows.net:6380`
 
 ### Azure CosmosDB Limitations
 
