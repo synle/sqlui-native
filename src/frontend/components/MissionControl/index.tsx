@@ -1,4 +1,3 @@
-import CodeEditorBox from 'src/frontend/components/CodeEditorBox';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Link from '@mui/material/Link';
@@ -7,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import React, { useCallback, useEffect, useState } from 'react';
 import { getCodeSnippet } from 'src/common/adapters/DataScriptFactory';
 import { BookmarksItemListModalContent } from 'src/frontend/components/BookmarksItemList';
+import CodeEditorBox from 'src/frontend/components/CodeEditorBox';
 import CommandPalette from 'src/frontend/components/CommandPalette';
 import SessionSelectionForm from 'src/frontend/components/SessionSelectionForm';
 import Settings, { ChangeSoftDeleteInput } from 'src/frontend/components/Settings';
@@ -1269,7 +1269,7 @@ export default function MissionControl() {
                   'text/plain',
                 );
               }
-            }
+            };
 
             modal({
               title: 'Sample Code Snippet',
@@ -1279,7 +1279,7 @@ export default function MissionControl() {
                     <strong>LanguageMode:</strong> {language}
                   </Box>
                   <CodeEditorBox value={codeSnippet} language={language} height='60vh' />
-                  <Box sx={{display: 'flex', justifyContent: 'end'}}>
+                  <Box sx={{ display: 'flex', justifyContent: 'end' }}>
                     <Button onClick={onDownloadCodeSnippet}>Download Code Snippet</Button>
                   </Box>
                 </Box>
