@@ -21,6 +21,7 @@ import {
 } from 'src/common/adapters/CassandraDataAdapter/scripts';
 import {
   DIALECTS_SUPPORTING_MIGRATION,
+  getDialectName,
   getSampleSelectQuery,
   getSyntaxModeByDialect,
   isDialectSupportMigration,
@@ -48,9 +49,6 @@ import { useConnectionQueries } from 'src/frontend/hooks/useConnectionQuery';
 import useToaster from 'src/frontend/hooks/useToaster';
 import { formatJS, formatSQL } from 'src/frontend/utils/formatter';
 import { SqluiCore, SqluiFrontend } from 'typings';
-import {
-  getDialectName,
-} from 'src/common/adapters/DataScriptFactory';
 // TOOD: extract this
 const MESSAGE_NO_DATA_FOR_MIGRATION = `Warning - This migration doesn't contain any record. This might be an error with your query to get data.`;
 

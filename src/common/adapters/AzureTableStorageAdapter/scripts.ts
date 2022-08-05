@@ -312,7 +312,7 @@ export class ConcreteDataScripts extends BaseDataScript {
   }
 
   getDialectName(dialect) {
-    return 'Azure Table Storage'
+    return 'Azure Table Storage';
   }
 
   getSampleConnectionString(dialect) {

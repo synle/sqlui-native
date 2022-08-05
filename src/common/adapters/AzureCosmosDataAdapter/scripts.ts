@@ -416,7 +416,7 @@ export class ConcreteDataScripts extends BaseDataScript {
   }
 
   getDialectName(dialect) {
-    return 'Azure Cosmos DB'
+    return 'Azure Cosmos DB';
   }
 
   getSampleConnectionString(dialect) {

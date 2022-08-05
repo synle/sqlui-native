@@ -20,14 +20,14 @@ export default class RedisDataAdapter extends BaseDataAdapter implements IDataAd
 
         const options = BaseDataAdapter.getConnectionParameters(this.connectionOption) as any;
 
-        const {host, port} = options?.hosts[0];
-        const {scheme, username, password} = options;
+        const { host, port } = options?.hosts[0];
+        const { scheme, username, password } = options;
 
         const clientOptions: any = {
           url: `${scheme}://${host}:${port || 6379}`,
-        }
+        };
 
-        if(password){
+        if (password) {
           clientOptions.password = password;
         }
 

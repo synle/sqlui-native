@@ -278,7 +278,7 @@ export class ConcreteDataScripts extends BaseDataScript {
   }
 
   getSampleConnectionString(dialect) {
-    switch (dialect){
+    switch (dialect) {
       case 'rediss':
         return `rediss://username:password@localhost:6379`;
       case 'redis':
