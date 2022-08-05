@@ -1,5 +1,5 @@
 import BaseDataScript, { getDivider } from 'src/common/adapters/BaseDataAdapter/scripts';
-import { SqlAction } from 'typings';
+import { SqlAction, SqluiCore } from 'typings';
 
 const formatter = 'js';
 
@@ -82,6 +82,27 @@ export class ConcreteDataScripts extends BaseDataScript {
   // TODO: implement me
   getSampleSelectQuery(actionInput: SqlAction.TableInput): SqlAction.Output | undefined {
     return undefined;
+  }
+
+  // TODO: implement me
+  getCodeSnippet(
+    connection: SqluiCore.ConnectionProps,
+    query: SqluiCore.ConnectionQuery,
+    language: SqluiCore.LanguageMode,
+  ) {
+    switch (language) {
+      case 'javascript':
+        // TODO: implement me
+        return '';
+      case 'python':
+        // TODO: implement me
+        return '';
+      case 'java':
+        // TODO: implement me
+        return '';
+      default:
+        return '';
+    }
   }
 }
 

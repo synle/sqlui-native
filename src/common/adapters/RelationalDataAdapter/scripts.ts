@@ -690,7 +690,7 @@ export class ConcreteDataScripts extends BaseDataScript {
     language: SqluiCore.LanguageMode,
   ) {
     let connectionString = connection.connection;
-    let sql = query.sql || '';
+    let sql = query.sql;
     let database = query.databaseId;
     let deps: string[] = [];
 

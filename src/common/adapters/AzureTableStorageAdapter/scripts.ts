@@ -318,6 +318,50 @@ export class ConcreteDataScripts extends BaseDataScript {
   getSampleSelectQuery(actionInput: SqlAction.TableInput) {
     return getSelectAllColumns(actionInput);
   }
+
+  getCodeSnippet(
+    connection: SqluiCore.ConnectionProps,
+    query: SqluiCore.ConnectionQuery,
+    language: SqluiCore.LanguageMode,
+  ) {
+    const connectionString = connection.connection.replace('aztable://', '');
+
+    switch (language) {
+      case 'javascript':
+        // TODO: implement me
+        return `
+// npm install --save @azure/data-tables
+const { TableClient, TableServiceClient } = require('@azure/data-tables');
+
+async function _doWork(){
+  const connectionString = '${connectionString}';
+  const table = '${query.tableId}'
+
+  const serviceClient = TableServiceClient.fromConnectionString(connectionString);
+  const tableClient = table ? TableClient.fromConnectionString(connectionString, table) : undefined;
+
+  try{
+    const res = ${query.sql};
+    for await (const item of res) {
+      console.log(item);
+    }
+  } catch(err){
+    console.log('Failed to connect', err)
+  }
+}
+
+_doWork();
+        `.trim();
+      case 'python':
+        // TODO: implement me
+        return '';
+      case 'java':
+        // TODO: implement me
+        return '';
+      default:
+        return '';
+    }
+  }
 }
 
 export default new ConcreteDataScripts();

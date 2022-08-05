@@ -422,6 +422,49 @@ export class ConcreteDataScripts extends BaseDataScript {
   getSampleSelectQuery(actionInput: SqlAction.TableInput) {
     return getSelectAllColumns(actionInput);
   }
+
+  getCodeSnippet(
+    connection: SqluiCore.ConnectionProps,
+    query: SqluiCore.ConnectionQuery,
+    language: SqluiCore.LanguageMode,
+  ) {
+    const connectionString = connection.connection.replace('cosmosdb://', '');
+
+    switch (language) {
+      case 'javascript':
+        // TODO: implement me
+        return `
+// npm install @azure/cosmos
+const { CosmosClient } = require('@azure/cosmos');
+
+async function _doWork(){
+  const client = new CosmosClient('${connectionString}');
+
+  const res = await ${query.sql};
+
+  try{
+    const items = [].concat(res.item || res.resource || res.resources);
+    for(const item of items){
+      console.log(item);
+    }
+  } catch(err){
+    client.dispose();
+    console.log('Fail to connect to database');
+  }
+}
+
+_doWork();
+    `.trim();
+      case 'python':
+        // TODO: implement me
+        return '';
+      case 'java':
+        // TODO: implement me
+        return '';
+      default:
+        return '';
+    }
+  }
 }
 
 export default new ConcreteDataScripts();
