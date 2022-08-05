@@ -293,6 +293,17 @@ db.createDatabase('new-database-name');
 
 Due to the size of keys within Redis connection, we will not show all keys in the Redis cache.
 
+- As for SSL Redis support, use the `rediss://` connection scheme.
+
+#### How to get connection string for Azure Redis Cache?
+
+- Go to `Access Keys` on Azure Redis Cache.
+![image](https://user-images.githubusercontent.com/3792401/183109606-5c07c993-fed7-4877-be31-798a1ea9676d.png)
+- Connection will look like
+`rediss://:<password>@<your_redis_host>:<redis_port>`
+- Sample connection will look like this
+`rediss://:Primary_Or_Secondary_Access_Key@syredis1.redis.cache.windows.net:6380`
+
 ### Azure CosmosDB Limitations
 
 Azure CosmosDB Databases are mapped to sqlui-native Databases. And Azure CosmosDB Containers are mapped to sqlui-native Tables. We scan the first 5 items to come up with the schema for the columns.
