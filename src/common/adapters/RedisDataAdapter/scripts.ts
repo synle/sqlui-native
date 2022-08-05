@@ -207,7 +207,7 @@ export function getPublishMessage(input: SqlAction.TableInput): SqlAction.Output
 }
 
 export class ConcreteDataScripts extends BaseDataScript {
-  dialects = ['redis'];
+  dialects = ['redis', 'rediss'];
 
   getIsTableIdRequiredForQuery() {
     return false;
@@ -267,8 +267,24 @@ export class ConcreteDataScripts extends BaseDataScript {
     return [];
   }
 
+  getDialectName(dialect) {
+    switch (dialect) {
+      case 'rediss':
+        return `Redis with SSL`;
+      case 'redis':
+      default:
+        return `Redis`;
+    }
+  }
+
   getSampleConnectionString(dialect) {
-    return `redis://localhost:6379`;
+    switch (dialect) {
+      case 'rediss':
+        return `rediss://username:password@localhost:6379`;
+      case 'redis':
+      default:
+        return `redis://localhost:6379`;
+    }
   }
 
   getSampleSelectQuery(actionInput: SqlAction.TableInput) {

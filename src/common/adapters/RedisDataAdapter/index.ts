@@ -18,9 +18,20 @@ export default class RedisDataAdapter extends BaseDataAdapter implements IDataAd
       try {
         setTimeout(() => reject('Connection Timeout'), MAX_CONNECTION_TIMEOUT);
 
-        const client = createClient({
-          url: this.connectionOption,
-        });
+        const options = BaseDataAdapter.getConnectionParameters(this.connectionOption) as any;
+
+        const { host, port } = options?.hosts[0];
+        const { scheme, username, password } = options;
+
+        const clientOptions: any = {
+          url: `${scheme}://${host}:${port || 6379}`,
+        };
+
+        if (password) {
+          clientOptions.password = password;
+        }
+
+        const client = createClient(clientOptions);
 
         client.connect();
 
@@ -45,20 +56,8 @@ export default class RedisDataAdapter extends BaseDataAdapter implements IDataAd
   async authenticate() {
     return new Promise<void>(async (resolve, reject) => {
       try {
-        setTimeout(() => reject('Connection Timeout'), MAX_CONNECTION_TIMEOUT);
-
-        const client = createClient({
-          url: this.connectionOption,
-        });
-
-        client.connect();
-
-        client.on('ready', () =>
-          //@ts-ignore
-          resolve(),
-        );
-
-        client.on('error', (err) => reject(err));
+        await this.getConnection();
+        resolve();
       } catch (err) {
         reject(err);
       }
