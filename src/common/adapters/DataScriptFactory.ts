@@ -155,11 +155,11 @@ export function getCodeSnippet(
   query: SqluiCore.ConnectionQuery,
   language: SqluiCore.LanguageMode,
 ) {
-  const cleanedUpQuery = {...query};
+  const cleanedUpQuery = { ...query };
   cleanedUpQuery.sql = cleanedUpQuery.sql || '';
 
   return _formatScript(
     language,
-    _getImplementation(connection?.dialect)?.getCodeSnippet(connection, cleanedUpQuery, language)
+    _getImplementation(connection?.dialect)?.getCodeSnippet(connection, cleanedUpQuery, language),
   );
 }

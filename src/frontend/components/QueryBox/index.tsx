@@ -111,7 +111,7 @@ function ConnectionActionsButton(props: ConnectionActionsButtonProps): JSX.Eleme
   );
 }
 
-const ALL_CODE_SNIPPETS: SqluiCore.LanguageMode[] = ['javascript', 'python', 'java']
+const ALL_CODE_SNIPPETS: SqluiCore.LanguageMode[] = ['javascript', 'python', 'java'];
 
 function CodeSnippetButton(props: QueryBoxProps) {
   const { queryId } = props;
