@@ -55,6 +55,7 @@ function _getImplementation(dialect?: string) {
     case 'mongodb':
       return MongoDBDataAdapterScripts;
     case 'redis':
+    case 'rediss':
       return RedisDataAdapterScripts;
     case 'cosmosdb':
       return AzureCosmosDataAdapterScripts;
