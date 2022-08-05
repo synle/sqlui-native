@@ -267,6 +267,16 @@ export class ConcreteDataScripts extends BaseDataScript {
     return [];
   }
 
+  getSampleConnectionName(dialect) {
+    switch (dialect) {
+      case 'rediss':
+        return `Redis with SSL`;
+      case 'redis':
+      default:
+        return `Redis`;
+    }
+  }
+
   getSampleConnectionString(dialect) {
     switch (dialect){
       case 'rediss':

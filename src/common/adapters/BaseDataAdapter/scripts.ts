@@ -44,6 +44,10 @@ export default abstract class BaseDataScript implements IDataScript {
     return [];
   }
 
+  getSampleConnectionName(dialect?: SqluiCore.Dialect): string {
+    return dialect || '';
+  }
+
   getSampleConnectionString(dialect?: SqluiCore.Dialect) {
     return '';
   }
