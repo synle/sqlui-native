@@ -43,6 +43,9 @@ function _formatScripts(
 }
 
 function _getImplementation(dialect?: string) {
+  if(!dialect){
+    return undefined;
+  }
   if (RelationalDataAdapterScripts.isDialectSupported(dialect)) {
     return RelationalDataAdapterScripts;
   }
@@ -63,7 +66,7 @@ function _getImplementation(dialect?: string) {
   }
 }
 
-function _getAllImplementations(): BaseDataScript[] {
+export function _getAllImplementations(): BaseDataScript[] {
   return [
     RelationalDataAdapterScripts,
     CassandraDataAdapterScripts,
@@ -74,7 +77,11 @@ function _getAllImplementations(): BaseDataScript[] {
   ];
 }
 
-function _consolidateDialects(res: string[], script: BaseDataScript) {
+export function getDialectType(connection: string, dialect?: string) {
+  return _getImplementation(dialect)?.getDialectType(connection);
+}
+
+export function _consolidateDialects(res: string[], script: BaseDataScript) {
   for (const dialect of script.dialects) {
     res.push(dialect);
   }

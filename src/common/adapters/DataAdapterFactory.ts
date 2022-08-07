@@ -14,6 +14,7 @@ import RelationalDataAdapter from 'src/common/adapters/RelationalDataAdapter/ind
 import RelationalDataAdapterScripts from 'src/common/adapters/RelationalDataAdapter/scripts';
 import PersistentStorage from 'src/common/PersistentStorage';
 import { SqluiCore } from 'typings';
+import { getDialectType } from 'src/common/adapters/DataScriptFactory';
 
 const _adapterCache: { [index: string]: IDataAdapter } = {};
 
@@ -49,6 +50,9 @@ export function getDataAdapter(connection: string) {
   if (!adapter) {
     throw 'dialect not supported';
   }
+
+  // override with dialect
+  adapter.dialect = getDialectType(connection, targetDialect);
 
   _adapterCache[connection] = adapter;
   return adapter;

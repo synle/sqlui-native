@@ -1,6 +1,7 @@
 import BaseDataScript, { getDivider } from 'src/common/adapters/BaseDataAdapter/scripts';
 import { escapeSQLValue, isValueNumber } from 'src/frontend/utils/formatter';
 import { SqlAction, SqluiCore } from 'typings';
+import BaseDataAdapter from 'src/common/adapters/BaseDataAdapter/index';
 
 const formatter = 'sql';
 
@@ -615,6 +616,21 @@ export function getCreateConnectionDatabase(
 
 export class ConcreteDataScripts extends BaseDataScript {
   dialects = ['mysql', 'mariadb', 'mssql', 'postgres', 'sqlite'];
+
+  getDialectType(connectionString: string){
+    const dialect = BaseDataAdapter.getDialect(connectionString);
+
+    switch (dialect) {
+      case 'mysql':
+      case 'mariadb':
+      case 'mssql':
+      case 'postgres':
+      case 'sqlite':
+        return dialect;
+      default:
+        return undefined;
+    }
+  }
 
   getIsTableIdRequiredForQuery() {
     return false;

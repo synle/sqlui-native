@@ -22,8 +22,6 @@ type AzureTableConnectionOption = {
 const MAX_ITEM_COUNT_TO_SCAN = 5;
 
 export default class AzureTableStorageAdapter extends BaseDataAdapter implements IDataAdapter {
-  dialect: SqluiCore.Dialect = 'aztable';
-
   constructor(connectionOption: string) {
     super(connectionOption);
   }
