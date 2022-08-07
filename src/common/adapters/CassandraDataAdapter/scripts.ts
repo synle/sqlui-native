@@ -447,7 +447,14 @@ async function _doWork(){
 
 _doWork();
         `.trim();
+
       case 'python':
+        return `
+# python3 -m venv ./ # setting up virtual environment with
+# source bin/activate # activate the venv profile
+
+        `.trim();
+
       default:
         return ``;
     }
