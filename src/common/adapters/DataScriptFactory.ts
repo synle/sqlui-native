@@ -47,7 +47,7 @@ function _getImplementation(dialect?: string) {
     return undefined;
   }
 
-  for(const implementation of getAllImplementations()){
+  for (const implementation of getAllImplementations()) {
     if (implementation.isDialectSupported(dialect)) {
       return implementation;
     }
