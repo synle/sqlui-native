@@ -1,7 +1,7 @@
 import get from 'lodash.get';
 import set from 'lodash.set';
 import BaseDataScript, { getDivider } from 'src/common/adapters/BaseDataAdapter/scripts';
-import { SqlAction } from 'typings';
+import { SqlAction, SqluiCore } from 'typings';
 
 export const MONGO_ADAPTER_PREFIX = 'db';
 
@@ -338,6 +338,25 @@ export class ConcreteDataScripts extends BaseDataScript {
 
   getSampleSelectQuery(actionInput: SqlAction.TableInput) {
     return getSelectAllColumns(actionInput);
+  }
+
+  getCodeSnippet(
+    connection: SqluiCore.ConnectionProps,
+    query: SqluiCore.ConnectionQuery,
+    language: SqluiCore.LanguageMode,
+  ) {
+    let connectionString = connection.connection;
+    let sql = query.sql;
+    let database = query.databaseId;
+
+
+    switch (language) {
+      case 'javascript':
+        return ``;
+      case 'python':
+      default:
+        return ``;
+    }
   }
 }
 
