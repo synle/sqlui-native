@@ -38,6 +38,12 @@ describe('DataScriptFactory - Other Tests', () => {
       expect(getDialectType(connection, dialect)).toBe(dialect);
     });
 
+    test('mongodb', async () => {
+      const dialect = `mongodb`;
+      const connection = `mongodb+srv://localhost:27017`;
+      expect(getDialectType(connection, dialect)).toBe(dialect);
+    });
+
     test('mssql', async () => {
       const dialect = `mssql`;
       const connection = `mssql://sa:password123!@localhost:1433`;
