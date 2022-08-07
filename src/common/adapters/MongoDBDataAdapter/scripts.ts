@@ -352,7 +352,7 @@ export class ConcreteDataScripts extends BaseDataScript {
     switch (language) {
       case 'javascript':
         return `
-// npm install mongodb
+// npm install --save mongodb
 const { MongoClient, ObjectId } = require('mongodb');
 
 async function _doWork(){
