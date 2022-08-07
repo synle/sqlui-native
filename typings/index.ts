@@ -297,6 +297,7 @@ export module SqluiEnums {
     | 'clientEvent/clearShowHides'
     | 'clientEvent/changeQueryTabOrientation'
     | 'clientEvent/showQueryHelp'
+    | 'clientEvent/showConnectionHelper'
     | 'clientEvent/import'
     | 'clientEvent/exportAll'
     | 'clientEvent/changeQuerySelectionMode'
