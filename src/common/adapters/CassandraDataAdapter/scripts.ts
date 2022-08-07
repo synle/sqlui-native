@@ -452,6 +452,7 @@ _doWork();
         return `
 # python3 -m venv ./ # setting up virtual environment with
 # source bin/activate # activate the venv profile
+# pip install cassandra-driver
 
         `.trim();
 
