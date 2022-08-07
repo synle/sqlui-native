@@ -417,7 +417,7 @@ export class ConcreteDataScripts extends BaseDataScript {
     switch (language) {
       case 'javascript':
         return `
-// npm install cassandra-driver
+// npm install --save cassandra-driver
 const cassandra = require('cassandra-driver')
 
 async function _doWork(){
