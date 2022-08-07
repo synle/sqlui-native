@@ -460,7 +460,11 @@ from cassandra.auth import PlainTextAuthProvider
 # remove \`ssl_context=ssl_context\` to disable SSL (applicable for Cassandra in CosmosDB)
 ssl_context = SSLContext(PROTOCOL_TLSv1_2)
 ssl_context.verify_mode = CERT_NONE
-cluster = Cluster(['${clientOptions.host}'], port=${clientOptions.port}, auth_provider=PlainTextAuthProvider(username='${clientOptions?.authProvider?.username || ''}', password='${clientOptions?.authProvider?.password || ''}'), ssl_context=ssl_context)
+cluster = Cluster(['${clientOptions.host}'], port=${
+          clientOptions.port
+        }, auth_provider=PlainTextAuthProvider(username='${
+          clientOptions?.authProvider?.username || ''
+        }', password='${clientOptions?.authProvider?.password || ''}'), ssl_context=ssl_context)
 session = cluster.connect()
 
 session.execute('USE ${database || 'some_keyspace'}')
