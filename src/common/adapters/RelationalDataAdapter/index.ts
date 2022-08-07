@@ -27,28 +27,9 @@ export default class RelationalDataAdapter extends BaseDataAdapter implements ID
     this.connectionOption = connectionOption.replace('mariadb://', 'mysql://');
 
     sequelize = new Sequelize(connectionOption);
-    this.dialect = this.getDialect(sequelize);
-
-    if (connectionOption.includes('mariadb://')) {
-      this.dialect = 'mariadb';
-    }
 
     // save the root connection
     this.sequelizes[''] = sequelize;
-  }
-
-  private getDialect(sequelize: Sequelize) {
-    const parsedConnectionType = sequelize?.getDialect();
-    switch (parsedConnectionType) {
-      case 'mysql':
-      case 'mariadb':
-      case 'mssql':
-      case 'postgres':
-      case 'sqlite':
-        return parsedConnectionType;
-      default:
-        return undefined; // Not supported by relational database adapter
-    }
   }
 
   private getConnection(database?: string): Sequelize {

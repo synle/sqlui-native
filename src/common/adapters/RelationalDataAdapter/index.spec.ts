@@ -88,7 +88,7 @@ Array [
     expect(resp).toMatchInlineSnapshot(`
 Object {
   "affectedRows": undefined,
-  "meta": undefined,
+  "meta": Statement {},
   "ok": true,
   "raw": Array [
     Object {

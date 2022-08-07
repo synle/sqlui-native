@@ -3,6 +3,8 @@ import { SqlAction, SqluiCore } from 'typings';
 export default interface IDataScript {
   dialects?: SqluiCore.Dialect[] | string[];
 
+  getDialectType: (connectionString: string) => SqluiCore.Dialect | undefined;
+
   // misc methods
   isDialectSupported: (targetDialect?: string) => boolean;
   getIsTableIdRequiredForQuery: () => boolean;
