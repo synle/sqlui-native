@@ -5,7 +5,6 @@ import {
   getDataAdapter,
   getDatabases,
   getTables,
-  resetConnectionMetaData,
 } from 'src/common/adapters/DataAdapterFactory';
 import {
   getConnectionsStorage,
