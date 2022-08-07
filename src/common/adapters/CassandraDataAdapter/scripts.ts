@@ -1,7 +1,7 @@
 import BaseDataScript, { getDivider } from 'src/common/adapters/BaseDataAdapter/scripts';
+import { getClientOptions } from 'src/common/adapters/CassandraDataAdapter/utils';
 import { escapeSQLValue, isValueBoolean, isValueNumber } from 'src/frontend/utils/formatter';
 import { SqlAction, SqluiCore } from 'typings';
-import { getClientOptions } from 'src/common/adapters/CassandraDataAdapter/utils';
 
 const formatter = 'sql';
 

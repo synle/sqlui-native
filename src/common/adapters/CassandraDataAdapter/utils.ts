@@ -1,24 +1,21 @@
-import { createClient, RedisClientType } from 'redis';
-import BaseDataAdapter, { MAX_CONNECTION_TIMEOUT } from 'src/common/adapters/BaseDataAdapter/index';
-import IDataAdapter from 'src/common/adapters/IDataAdapter';
-import { SqluiCore } from 'typings';
+import BaseDataAdapter from 'src/common/adapters/BaseDataAdapter/index';
 
 type ClientOptions = {
-  contactPoints: string[],
-  keyspace?: string,
+  contactPoints: string[];
+  keyspace?: string;
   authProvider?: {
     username: string;
     password: string;
-  }
-}
+  };
+};
 
-export function getClientOptions(connectionOption: string, database?: string): ClientOptions{
+export function getClientOptions(connectionOption: string, database?: string): ClientOptions {
   const connectionParameters = BaseDataAdapter.getConnectionParameters(connectionOption);
 
   const connectionHosts = connectionParameters?.hosts || [];
   if (connectionHosts.length === 0) {
     // we need a host in the connection string
-    throw ('Invalid connection. Host and Port not found');
+    throw 'Invalid connection. Host and Port not found';
   }
 
   const clientOptions: ClientOptions = {
@@ -34,7 +31,7 @@ export function getClientOptions(connectionOption: string, database?: string): C
     clientOptions.authProvider = {
       username: connectionParameters?.username,
       password: connectionParameters?.password,
-    }
+    };
   }
 
   return clientOptions;
