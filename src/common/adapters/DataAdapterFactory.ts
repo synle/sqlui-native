@@ -1,17 +1,16 @@
 import AzureCosmosDataAdapter from 'src/common/adapters/AzureCosmosDataAdapter/index';
+import AzureCosmosDataAdapterScripts from 'src/common/adapters/AzureCosmosDataAdapter/scripts';
 import AzureTableStorageAdapter from 'src/common/adapters/AzureTableStorageAdapter/index';
+import AzureTableStorageAdapterScripts from 'src/common/adapters/AzureTableStorageAdapter/scripts';
 import BaseDataAdapter from 'src/common/adapters/BaseDataAdapter/index';
 import CassandraDataAdapter from 'src/common/adapters/CassandraDataAdapter/index';
+import CassandraDataAdapterScripts from 'src/common/adapters/CassandraDataAdapter/scripts';
 import IDataAdapter from 'src/common/adapters/IDataAdapter';
 import MongoDBDataAdapter from 'src/common/adapters/MongoDBDataAdapter/index';
-import RedisDataAdapter from 'src/common/adapters/RedisDataAdapter/index';
-import RelationalDataAdapter from 'src/common/adapters/RelationalDataAdapter/index';
-import AzureCosmosDataAdapterScripts from 'src/common/adapters/AzureCosmosDataAdapter/scripts';
-import AzureTableStorageAdapterScripts from 'src/common/adapters/AzureTableStorageAdapter/scripts';
-import BaseDataScript from 'src/common/adapters/BaseDataAdapter/scripts';
-import CassandraDataAdapterScripts from 'src/common/adapters/CassandraDataAdapter/scripts';
 import MongoDBDataAdapterScripts from 'src/common/adapters/MongoDBDataAdapter/scripts';
+import RedisDataAdapter from 'src/common/adapters/RedisDataAdapter/index';
 import RedisDataAdapterScripts from 'src/common/adapters/RedisDataAdapter/scripts';
+import RelationalDataAdapter from 'src/common/adapters/RelationalDataAdapter/index';
 import RelationalDataAdapterScripts from 'src/common/adapters/RelationalDataAdapter/scripts';
 import PersistentStorage from 'src/common/PersistentStorage';
 import { SqluiCore } from 'typings';
@@ -28,32 +27,26 @@ export function getDataAdapter(connection: string) {
   let adapter: IDataAdapter | undefined;
   const targetDialect = BaseDataAdapter.getDialect(connection);
 
-  if(RelationalDataAdapterScripts.isDialectSupported(targetDialect))
-  {
+  if (RelationalDataAdapterScripts.isDialectSupported(targetDialect)) {
     adapter = new RelationalDataAdapter(connection);
   }
-  if(CassandraDataAdapterScripts.isDialectSupported(targetDialect))
-  {
+  if (CassandraDataAdapterScripts.isDialectSupported(targetDialect)) {
     adapter = new CassandraDataAdapter(connection);
   }
-  if(MongoDBDataAdapterScripts.isDialectSupported(targetDialect))
-  {
+  if (MongoDBDataAdapterScripts.isDialectSupported(targetDialect)) {
     adapter = new MongoDBDataAdapter(connection);
   }
-  if(RedisDataAdapterScripts.isDialectSupported(targetDialect))
-  {
+  if (RedisDataAdapterScripts.isDialectSupported(targetDialect)) {
     adapter = new RedisDataAdapter(connection);
   }
-  if(AzureCosmosDataAdapterScripts.isDialectSupported(targetDialect))
-  {
+  if (AzureCosmosDataAdapterScripts.isDialectSupported(targetDialect)) {
     adapter = new AzureCosmosDataAdapter(connection);
   }
-  if(AzureTableStorageAdapterScripts.isDialectSupported(targetDialect))
-  {
+  if (AzureTableStorageAdapterScripts.isDialectSupported(targetDialect)) {
     adapter = new AzureTableStorageAdapter(connection);
   }
 
-  if(!adapter){
+  if (!adapter) {
     throw 'dialect not supported';
   }
 

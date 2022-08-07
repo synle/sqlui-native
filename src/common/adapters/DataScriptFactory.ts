@@ -43,22 +43,22 @@ function _formatScripts(
 }
 
 function _getImplementation(dialect?: string) {
-  if(RelationalDataAdapterScripts.isDialectSupported(dialect)) {
+  if (RelationalDataAdapterScripts.isDialectSupported(dialect)) {
     return RelationalDataAdapterScripts;
   }
-  if(CassandraDataAdapterScripts.isDialectSupported(dialect)) {
+  if (CassandraDataAdapterScripts.isDialectSupported(dialect)) {
     return CassandraDataAdapterScripts;
   }
-  if(MongoDBDataAdapterScripts.isDialectSupported(dialect)) {
+  if (MongoDBDataAdapterScripts.isDialectSupported(dialect)) {
     return MongoDBDataAdapterScripts;
   }
-  if(RedisDataAdapterScripts.isDialectSupported(dialect)) {
+  if (RedisDataAdapterScripts.isDialectSupported(dialect)) {
     return RedisDataAdapterScripts;
   }
-  if(AzureCosmosDataAdapterScripts.isDialectSupported(dialect)) {
+  if (AzureCosmosDataAdapterScripts.isDialectSupported(dialect)) {
     return AzureCosmosDataAdapterScripts;
   }
-  if(AzureTableStorageAdapterScripts.isDialectSupported(dialect)) {
+  if (AzureTableStorageAdapterScripts.isDialectSupported(dialect)) {
     return AzureTableStorageAdapterScripts;
   }
 }

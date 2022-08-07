@@ -11,7 +11,7 @@ export function getDivider(): SqlAction.Output {
 export default abstract class BaseDataScript implements IDataScript {
   dialects: string[] = [];
 
-  isDialectSupported(targetDialect?: string){
+  isDialectSupported(targetDialect?: string) {
     return !!targetDialect && this.dialects.indexOf(targetDialect) >= 0;
   }
 
