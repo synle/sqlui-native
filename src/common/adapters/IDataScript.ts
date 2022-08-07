@@ -4,6 +4,7 @@ export default interface IDataScript {
   dialects?: SqluiCore.Dialect[] | string[];
 
   // misc methods
+  isDialectSupported: (targetDialect: string) => boolean;
   getIsTableIdRequiredForQuery: () => boolean;
   getSyntaxMode: () => string;
   supportMigration: () => boolean;
