@@ -1,6 +1,7 @@
 import BaseDataScript, { getDivider } from 'src/common/adapters/BaseDataAdapter/scripts';
-import { SqlAction, SqluiCore } from 'typings';
 import { getClientOptions } from 'src/common/adapters/RedisDataAdapter/utils';
+import { SqlAction, SqluiCore } from 'typings';
+
 export const REDIS_ADAPTER_PREFIX = 'db';
 
 const formatter = 'js';

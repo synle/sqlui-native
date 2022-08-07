@@ -32,7 +32,7 @@ export function DataTableWithJSONList(props: Omit<DataTableProps, 'columns'>) {
 
   let hasRawJson = useMemo(() => {
     for (const value of data) {
-      if(value !== null){
+      if (value !== null) {
         for (const columnValue of Object.values(value)) {
           if (typeof columnValue === 'object' && columnValue !== null) {
             return true;

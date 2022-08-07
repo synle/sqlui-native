@@ -1,9 +1,6 @@
-import { createClient, RedisClientType } from 'redis';
-import BaseDataAdapter, { MAX_CONNECTION_TIMEOUT } from 'src/common/adapters/BaseDataAdapter/index';
-import IDataAdapter from 'src/common/adapters/IDataAdapter';
-import { SqluiCore } from 'typings';
+import BaseDataAdapter from 'src/common/adapters/BaseDataAdapter/index';
 
-export function getClientOptions(connectionOption: string){
+export function getClientOptions(connectionOption: string) {
   const options = BaseDataAdapter.getConnectionParameters(connectionOption) as any;
 
   const { host, port } = options?.hosts[0];

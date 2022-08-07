@@ -1,8 +1,8 @@
 import { createClient, RedisClientType } from 'redis';
 import BaseDataAdapter, { MAX_CONNECTION_TIMEOUT } from 'src/common/adapters/BaseDataAdapter/index';
 import IDataAdapter from 'src/common/adapters/IDataAdapter';
-import { SqluiCore } from 'typings';
 import { getClientOptions } from 'src/common/adapters/RedisDataAdapter/utils';
+import { SqluiCore } from 'typings';
 
 const REDIS_ADAPTER_PREFIX = 'db';
 
