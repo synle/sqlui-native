@@ -99,7 +99,7 @@ export default function ConnectionHint(props: ConnectionHintProps): JSX.Element 
                   underline='hover'
                   onClick={onApplyThisConnectionHint}
                   sx={{ textTransform: 'uppercase', fontWeight: 'bold' }}>
-                  {getDialectName(dialect)} ({dialect})
+                  {getDialectName(dialect)}
                 </Link>
               }
               secondary={getSampleConnectionString(dialect)}

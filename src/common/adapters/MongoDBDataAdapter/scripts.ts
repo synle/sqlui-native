@@ -333,7 +333,7 @@ export class ConcreteDataScripts extends BaseDataScript {
   }
 
   getSampleConnectionString(dialect) {
-    return `${dialect}://localhost:27017`;
+    return `${dialect}://username:password@localhost:27017`;
   }
 
   getSampleSelectQuery(actionInput: SqlAction.TableInput) {
