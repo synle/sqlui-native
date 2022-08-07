@@ -12,26 +12,30 @@ export default class RedisDataAdapter extends BaseDataAdapter implements IDataAd
     super(connectionOption);
   }
 
+  public static getClientOptions(connectionOption: string){
+    const options = BaseDataAdapter.getConnectionParameters(connectionOption) as any;
+
+    const { host, port } = options?.hosts[0];
+    const { scheme, username, password } = options;
+
+    const clientOptions: any = {
+      url: `${scheme}://${host}:${port || 6379}`,
+    };
+
+    if (password) {
+      clientOptions.password = password;
+    }
+
+    return clientOptions;
+  }
+
   private async getConnection(): Promise<RedisClientType> {
     // attempt to pull in connections
     return new Promise<RedisClientType>(async (resolve, reject) => {
       try {
         setTimeout(() => reject('Connection Timeout'), MAX_CONNECTION_TIMEOUT);
 
-        const options = BaseDataAdapter.getConnectionParameters(this.connectionOption) as any;
-
-        const { host, port } = options?.hosts[0];
-        const { scheme, username, password } = options;
-
-        const clientOptions: any = {
-          url: `${scheme}://${host}:${port || 6379}`,
-        };
-
-        if (password) {
-          clientOptions.password = password;
-        }
-
-        const client = createClient(clientOptions);
+        const client = createClient(RedisDataAdapter.getClientOptions(this.connectionOption));
 
         client.connect();
 
