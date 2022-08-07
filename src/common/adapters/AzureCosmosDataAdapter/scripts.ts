@@ -438,7 +438,7 @@ export class ConcreteDataScripts extends BaseDataScript {
       case 'javascript':
         // TODO: implement me
         return `
-// npm install @azure/cosmos
+// npm install --save @azure/cosmos
 const { CosmosClient } = require('@azure/cosmos');
 
 async function _doWork(){

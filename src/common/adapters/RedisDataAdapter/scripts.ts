@@ -304,7 +304,7 @@ export class ConcreteDataScripts extends BaseDataScript {
     switch (language) {
       case 'javascript':
         return `
-// npm install redis
+// npm install --save redis
 const { createClient, RedisClientType } = require('redis');
 
 async function _doWork(){
