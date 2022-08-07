@@ -367,7 +367,7 @@ export function getCreateConnectionDatabase(
 }
 
 export class ConcreteDataScripts extends BaseDataScript {
-  dialects = ['cosmosdb'];
+  dialects = ['cosmosdb', 'azcosmosdb'];
 
   getIsTableIdRequiredForQuery() {
     return true;

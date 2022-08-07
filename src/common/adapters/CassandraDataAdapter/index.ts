@@ -5,7 +5,6 @@ import IDataAdapter from 'src/common/adapters/IDataAdapter';
 import { SqluiCore } from 'typings';
 
 export default class CassandraDataAdapter extends BaseDataAdapter implements IDataAdapter {
-  dialect: SqluiCore.Dialect = 'cassandra';
   /**
    * cassandra version
    * @type {number}

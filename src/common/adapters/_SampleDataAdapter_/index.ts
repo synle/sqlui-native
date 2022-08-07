@@ -5,9 +5,6 @@ import { SqluiCore } from 'typings';
 type YOUR_ADAPTER_CLIENT = any;
 
 export default class YOUR_ADAPTER_NAME extends BaseDataAdapter implements IDataAdapter {
-  // TODO: implement me
-  // dialect: SqluiCore.Dialect = 'your_db_name';
-
   constructor(connectionOption: string) {
     super(connectionOption);
   }
