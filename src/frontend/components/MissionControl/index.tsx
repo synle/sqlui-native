@@ -8,6 +8,7 @@ import { getCodeSnippet } from 'src/common/adapters/DataScriptFactory';
 import { BookmarksItemListModalContent } from 'src/frontend/components/BookmarksItemList';
 import CodeEditorBox from 'src/frontend/components/CodeEditorBox';
 import CommandPalette from 'src/frontend/components/CommandPalette';
+import ConnectionHelper from 'src/frontend/components/ConnectionHelper';
 import SessionSelectionForm from 'src/frontend/components/SessionSelectionForm';
 import Settings, { ChangeSoftDeleteInput } from 'src/frontend/components/Settings';
 import { downloadText } from 'src/frontend/data/file';
@@ -1041,6 +1042,23 @@ export default function MissionControl() {
 
         case 'clientEvent/showQueryHelp':
           onShowQueryHelp();
+          break;
+
+        case 'clientEvent/showConnectionHelper':
+          if (command.data) {
+            const onApplyConnectionHelper = (newConnectionString: string) => {
+              dismissDialog();
+              //@ts-ignore
+              command.data(newConnectionString);
+            };
+
+            modal({
+              title: 'Connection Helper',
+              message: <ConnectionHelper onChange={onApplyConnectionHelper} />,
+              showCloseButton: true,
+              size: 'md',
+            });
+          }
           break;
 
         case 'clientEvent/openExternalUrl':

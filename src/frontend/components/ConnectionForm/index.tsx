@@ -4,6 +4,7 @@ import { Alert, Box, Button, Link, TextField, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import ConnectionHint from 'src/frontend/components/ConnectionForm/ConnectionHint';
+import { useCommands } from 'src/frontend/components/MissionControl';
 import TestConnectionButton from 'src/frontend/components/TestConnectionButton';
 import { useGetConnectionById, useUpsertConnection } from 'src/frontend/hooks/useConnection';
 import useToaster from 'src/frontend/hooks/useToaster';
@@ -140,6 +141,7 @@ function MainConnectionForm(props: MainConnectionFormProps): JSX.Element | null 
   const [showHint, setShowHint] = useState(false);
   const [showSqliteDatabasePathSelection, setShowSqliteDatabasePathSelection] = useState(false);
   const { add: addToast, dismiss: dismissToast } = useToaster();
+  const { selectCommand } = useCommands();
 
   // effects
   useEffect(() => {
@@ -243,6 +245,18 @@ function MainConnectionForm(props: MainConnectionFormProps): JSX.Element | null 
         <TestConnectionButton connection={connection} />
         <Button type='button' disabled={props.saving} onClick={() => setShowHint(!showHint)}>
           {showHint ? 'Hide Connection Hints' : 'Show Connection Hints'}
+        </Button>
+        <Button
+          type='button'
+          onClick={() =>
+            selectCommand({
+              event: 'clientEvent/showConnectionHelper',
+              data: (newConnection: string) => {
+                props.setConnection(newConnection);
+              },
+            })
+          }>
+          Show Connection Helper
         </Button>
       </div>
       {showHint && (
