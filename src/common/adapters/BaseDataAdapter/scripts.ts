@@ -15,6 +15,15 @@ export default abstract class BaseDataScript implements IDataScript {
     return !!targetDialect && this.dialects.indexOf(targetDialect) >= 0;
   }
 
+  getDialectType(connectionString: string) {
+    // attempt to return the first item in the dialects / schemes
+    if (this.dialects.length > 0) {
+      return this.dialects[0] as SqluiCore.Dialect;
+    }
+
+    return undefined;
+  }
+
   getIsTableIdRequiredForQuery() {
     return false;
   }

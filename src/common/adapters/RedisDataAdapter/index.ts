@@ -7,8 +7,6 @@ import { SqluiCore } from 'typings';
 const REDIS_ADAPTER_PREFIX = 'db';
 
 export default class RedisDataAdapter extends BaseDataAdapter implements IDataAdapter {
-  dialect: SqluiCore.Dialect = 'redis';
-
   constructor(connectionOption: string) {
     super(connectionOption);
   }

@@ -43,27 +43,18 @@ function _formatScripts(
 }
 
 function _getImplementation(dialect?: string) {
-  if (RelationalDataAdapterScripts.isDialectSupported(dialect)) {
-    return RelationalDataAdapterScripts;
+  if (!dialect) {
+    return undefined;
   }
-  if (CassandraDataAdapterScripts.isDialectSupported(dialect)) {
-    return CassandraDataAdapterScripts;
-  }
-  if (MongoDBDataAdapterScripts.isDialectSupported(dialect)) {
-    return MongoDBDataAdapterScripts;
-  }
-  if (RedisDataAdapterScripts.isDialectSupported(dialect)) {
-    return RedisDataAdapterScripts;
-  }
-  if (AzureCosmosDataAdapterScripts.isDialectSupported(dialect)) {
-    return AzureCosmosDataAdapterScripts;
-  }
-  if (AzureTableStorageAdapterScripts.isDialectSupported(dialect)) {
-    return AzureTableStorageAdapterScripts;
+
+  for (const implementation of getAllImplementations()) {
+    if (implementation.isDialectSupported(dialect)) {
+      return implementation;
+    }
   }
 }
 
-function _getAllImplementations(): BaseDataScript[] {
+export function getAllImplementations(): BaseDataScript[] {
   return [
     RelationalDataAdapterScripts,
     CassandraDataAdapterScripts,
@@ -74,7 +65,11 @@ function _getAllImplementations(): BaseDataScript[] {
   ];
 }
 
-function _consolidateDialects(res: string[], script: BaseDataScript) {
+export function getDialectType(connection: string, dialect?: string) {
+  return _getImplementation(dialect)?.getDialectType(connection);
+}
+
+export function consolidateDialects(res: string[], script: BaseDataScript) {
   for (const dialect of script.dialects) {
     res.push(dialect);
   }
@@ -84,22 +79,19 @@ function _consolidateDialects(res: string[], script: BaseDataScript) {
 /**
  * @type {Array} ordered list of supported dialects is shown in the connection hints
  */
-export const SUPPORTED_DIALECTS = _getAllImplementations().reduce<string[]>(
-  _consolidateDialects,
-  [],
-);
+export const SUPPORTED_DIALECTS = getAllImplementations().reduce<string[]>(consolidateDialects, []);
 
-export const DIALECTS_SUPPORTING_MIGRATION = _getAllImplementations()
+export const DIALECTS_SUPPORTING_MIGRATION = getAllImplementations()
   .filter((script) => script.supportMigration())
-  .reduce<string[]>(_consolidateDialects, []);
+  .reduce<string[]>(consolidateDialects, []);
 
-export const DIALECTS_SUPPORTING_CREATE_FORM = _getAllImplementations()
+export const DIALECTS_SUPPORTING_CREATE_FORM = getAllImplementations()
   .filter((script) => script.supportCreateRecordForm())
-  .reduce<string[]>(_consolidateDialects, []);
+  .reduce<string[]>(consolidateDialects, []);
 
-export const DIALECTS_SUPPORTING_EDIT_FORM = _getAllImplementations()
+export const DIALECTS_SUPPORTING_EDIT_FORM = getAllImplementations()
   .filter((script) => script.supportEditRecordForm())
-  .reduce<string[]>(_consolidateDialects, []);
+  .reduce<string[]>(consolidateDialects, []);
 
 export function isDialectSupportMigration(dialect?: string) {
   return dialect && DIALECTS_SUPPORTING_MIGRATION.indexOf(dialect) >= 0;

@@ -11,8 +11,6 @@ const MONGO_ADAPTER_PREFIX = 'db';
 const MAX_ITEM_COUNT_TO_SCAN = 5;
 
 export default class MongoDBDataAdapter extends BaseDataAdapter implements IDataAdapter {
-  dialect: SqluiCore.Dialect = 'mongodb';
-
   constructor(connectionOption: string) {
     super(connectionOption);
   }
