@@ -3,9 +3,6 @@ import {
   getDatabaseActions,
   getSampleConnectionString,
   getTableActions,
-  getDialectType,
-  _getAllImplementations,
-_consolidateDialects,
 } from 'src/common/adapters/DataScriptFactory';
 import { SqlAction, SqluiCore } from 'typings';
 

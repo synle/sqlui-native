@@ -1,6 +1,5 @@
 import IDataScript from 'src/common/adapters/IDataScript';
 import { SqlAction, SqluiCore } from 'typings';
-import BaseDataAdapter from 'src/common/adapters/BaseDataAdapter/index';
 
 export function getDivider(): SqlAction.Output {
   return {
@@ -16,9 +15,9 @@ export default abstract class BaseDataScript implements IDataScript {
     return !!targetDialect && this.dialects.indexOf(targetDialect) >= 0;
   }
 
-  getDialectType(connectionString: string){
+  getDialectType(connectionString: string) {
     // attempt to return the first item in the dialects / schemes
-    if(this.dialects.length > 0){
+    if (this.dialects.length > 0) {
       return this.dialects[0] as SqluiCore.Dialect;
     }
 

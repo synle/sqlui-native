@@ -5,6 +5,7 @@ import AzureTableStorageAdapterScripts from 'src/common/adapters/AzureTableStora
 import BaseDataAdapter from 'src/common/adapters/BaseDataAdapter/index';
 import CassandraDataAdapter from 'src/common/adapters/CassandraDataAdapter/index';
 import CassandraDataAdapterScripts from 'src/common/adapters/CassandraDataAdapter/scripts';
+import { getDialectType } from 'src/common/adapters/DataScriptFactory';
 import IDataAdapter from 'src/common/adapters/IDataAdapter';
 import MongoDBDataAdapter from 'src/common/adapters/MongoDBDataAdapter/index';
 import MongoDBDataAdapterScripts from 'src/common/adapters/MongoDBDataAdapter/scripts';
@@ -14,7 +15,6 @@ import RelationalDataAdapter from 'src/common/adapters/RelationalDataAdapter/ind
 import RelationalDataAdapterScripts from 'src/common/adapters/RelationalDataAdapter/scripts';
 import PersistentStorage from 'src/common/PersistentStorage';
 import { SqluiCore } from 'typings';
-import { getDialectType } from 'src/common/adapters/DataScriptFactory';
 
 const _adapterCache: { [index: string]: IDataAdapter } = {};
 
