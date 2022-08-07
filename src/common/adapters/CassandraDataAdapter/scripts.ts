@@ -417,7 +417,7 @@ export class ConcreteDataScripts extends BaseDataScript {
     switch (language) {
       case 'javascript':
         return `
-// npm install cassandra-driver
+// npm install --save cassandra-driver
 const cassandra = require('cassandra-driver')
 
 async function _doWork(){
@@ -447,7 +447,15 @@ async function _doWork(){
 
 _doWork();
         `.trim();
+
       case 'python':
+        return `
+# python3 -m venv ./ # setting up virtual environment with
+# source bin/activate # activate the venv profile
+# pip install cassandra-driver
+
+        `.trim();
+
       default:
         return ``;
     }
