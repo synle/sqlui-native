@@ -12,7 +12,7 @@ export default abstract class BaseDataAdapter {
   }
 
   protected getConnectionString(): string {
-    return this.connectionOption.replace(`${this.dialect}://`, '');
+    return this.connectionOption.replace(/^[a-z0-9]+:\/\//i, '');
   }
 
   /**
