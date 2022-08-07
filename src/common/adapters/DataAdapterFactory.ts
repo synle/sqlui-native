@@ -1,11 +1,17 @@
 import AzureCosmosDataAdapter from 'src/common/adapters/AzureCosmosDataAdapter/index';
+import AzureCosmosDataAdapterScripts from 'src/common/adapters/AzureCosmosDataAdapter/scripts';
 import AzureTableStorageAdapter from 'src/common/adapters/AzureTableStorageAdapter/index';
+import AzureTableStorageAdapterScripts from 'src/common/adapters/AzureTableStorageAdapter/scripts';
 import BaseDataAdapter from 'src/common/adapters/BaseDataAdapter/index';
 import CassandraDataAdapter from 'src/common/adapters/CassandraDataAdapter/index';
+import CassandraDataAdapterScripts from 'src/common/adapters/CassandraDataAdapter/scripts';
 import IDataAdapter from 'src/common/adapters/IDataAdapter';
 import MongoDBDataAdapter from 'src/common/adapters/MongoDBDataAdapter/index';
+import MongoDBDataAdapterScripts from 'src/common/adapters/MongoDBDataAdapter/scripts';
 import RedisDataAdapter from 'src/common/adapters/RedisDataAdapter/index';
+import RedisDataAdapterScripts from 'src/common/adapters/RedisDataAdapter/scripts';
 import RelationalDataAdapter from 'src/common/adapters/RelationalDataAdapter/index';
+import RelationalDataAdapterScripts from 'src/common/adapters/RelationalDataAdapter/scripts';
 import PersistentStorage from 'src/common/PersistentStorage';
 import { SqluiCore } from 'typings';
 
@@ -18,34 +24,30 @@ export function getDataAdapter(connection: string) {
 
   // TOOD: here we should initialize the connection based on type
   // of the connection string
-  let adapter: IDataAdapter;
-  switch (BaseDataAdapter.getDialect(connection)) {
-    case 'mysql':
-    case 'mariadb':
-    case 'mssql':
-    case 'postgres':
-    case 'sqlite':
-      adapter = new RelationalDataAdapter(connection);
-      break;
-    case 'cassandra':
-      adapter = new CassandraDataAdapter(connection);
-      break;
-    case 'mongodb':
-      adapter = new MongoDBDataAdapter(connection);
-      break;
-    case 'redis':
-    case 'rediss':
-      adapter = new RedisDataAdapter(connection);
-      break;
-    case 'cosmosdb':
-      adapter = new AzureCosmosDataAdapter(connection);
-      break;
-    case 'aztable':
-      adapter = new AzureTableStorageAdapter(connection);
-      break;
-    default:
-      throw 'dialect not supported';
-      break;
+  let adapter: IDataAdapter | undefined;
+  const targetDialect = BaseDataAdapter.getDialect(connection);
+
+  if (RelationalDataAdapterScripts.isDialectSupported(targetDialect)) {
+    adapter = new RelationalDataAdapter(connection);
+  }
+  if (CassandraDataAdapterScripts.isDialectSupported(targetDialect)) {
+    adapter = new CassandraDataAdapter(connection);
+  }
+  if (MongoDBDataAdapterScripts.isDialectSupported(targetDialect)) {
+    adapter = new MongoDBDataAdapter(connection);
+  }
+  if (RedisDataAdapterScripts.isDialectSupported(targetDialect)) {
+    adapter = new RedisDataAdapter(connection);
+  }
+  if (AzureCosmosDataAdapterScripts.isDialectSupported(targetDialect)) {
+    adapter = new AzureCosmosDataAdapter(connection);
+  }
+  if (AzureTableStorageAdapterScripts.isDialectSupported(targetDialect)) {
+    adapter = new AzureTableStorageAdapter(connection);
+  }
+
+  if (!adapter) {
+    throw 'dialect not supported';
   }
 
   _adapterCache[connection] = adapter;
