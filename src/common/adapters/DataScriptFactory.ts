@@ -43,24 +43,23 @@ function _formatScripts(
 }
 
 function _getImplementation(dialect?: string) {
-  switch (dialect) {
-    case 'mysql':
-    case 'mariadb':
-    case 'mssql':
-    case 'postgres':
-    case 'sqlite':
-      return RelationalDataAdapterScripts;
-    case 'cassandra':
-      return CassandraDataAdapterScripts;
-    case 'mongodb':
-      return MongoDBDataAdapterScripts;
-    case 'redis':
-    case 'rediss':
-      return RedisDataAdapterScripts;
-    case 'cosmosdb':
-      return AzureCosmosDataAdapterScripts;
-    case 'aztable':
-      return AzureTableStorageAdapterScripts;
+  if(RelationalDataAdapterScripts.isDialectSupported(dialect)) {
+    return RelationalDataAdapterScripts;
+  }
+  if(CassandraDataAdapterScripts.isDialectSupported(dialect)) {
+    return CassandraDataAdapterScripts;
+  }
+  if(MongoDBDataAdapterScripts.isDialectSupported(dialect)) {
+    return MongoDBDataAdapterScripts;
+  }
+  if(RedisDataAdapterScripts.isDialectSupported(dialect)) {
+    return RedisDataAdapterScripts;
+  }
+  if(AzureCosmosDataAdapterScripts.isDialectSupported(dialect)) {
+    return AzureCosmosDataAdapterScripts;
+  }
+  if(AzureTableStorageAdapterScripts.isDialectSupported(dialect)) {
+    return AzureTableStorageAdapterScripts;
   }
 }
 
