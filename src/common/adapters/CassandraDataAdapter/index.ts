@@ -2,6 +2,7 @@ import * as cassandra from 'cassandra-driver';
 import BaseDataAdapter from 'src/common/adapters/BaseDataAdapter/index';
 import IDataAdapter from 'src/common/adapters/IDataAdapter';
 import { SqluiCore } from 'typings';
+import { getClientOptions } from 'src/common/adapters/CassandraDataAdapter/utils';
 
 export default class CassandraDataAdapter extends BaseDataAdapter implements IDataAdapter {
   dialect: SqluiCore.Dialect = 'cassandra';
@@ -20,28 +21,19 @@ export default class CassandraDataAdapter extends BaseDataAdapter implements IDa
     // attempt to pull in connections
     return new Promise<cassandra.Client>(async (resolve, reject) => {
       try {
-        const connectionParameters = BaseDataAdapter.getConnectionParameters(this.connectionOption);
-
-        const connectionHosts = connectionParameters?.hosts || [];
-        if (connectionHosts.length === 0) {
-          // we need a host in the connection string
-          reject('Invalid connection. Host and Port not found');
-        }
+        const rawClientOptions = getClientOptions(this.connectionOption, database);
 
         const clientOptions: cassandra.ClientOptions = {
-          contactPoints: [`${connectionHosts[0].host}:${connectionHosts[0].port || 9042}`],
+          contactPoints: rawClientOptions.contactPoints,
+          keyspace: rawClientOptions.keyspace,
         };
-
-        if (database) {
-          clientOptions.keyspace = database;
-        }
 
         // client authentication
         let authProvider: cassandra.auth.PlainTextAuthProvider | undefined;
-        if (connectionParameters?.username && connectionParameters?.password) {
+        if (rawClientOptions.authProvider) {
           clientOptions.authProvider = new cassandra.auth.PlainTextAuthProvider(
-            connectionParameters?.username,
-            connectionParameters?.password,
+            rawClientOptions.authProvider.username,
+            rawClientOptions.authProvider.password,
           );
         }
 

@@ -1,6 +1,7 @@
 import BaseDataScript, { getDivider } from 'src/common/adapters/BaseDataAdapter/scripts';
 import { escapeSQLValue, isValueBoolean, isValueNumber } from 'src/frontend/utils/formatter';
 import { SqlAction, SqluiCore } from 'typings';
+import { getClientOptions } from 'src/common/adapters/CassandraDataAdapter/utils';
 
 const formatter = 'sql';
 
@@ -402,6 +403,54 @@ export class ConcreteDataScripts extends BaseDataScript {
 
   getSampleSelectQuery(actionInput: SqlAction.TableInput) {
     return getSelectAllColumns(actionInput);
+  }
+
+  getCodeSnippet(
+    connection: SqluiCore.ConnectionProps,
+    query: SqluiCore.ConnectionQuery,
+    language: SqluiCore.LanguageMode,
+  ) {
+    const sql = query.sql;
+    const database = query.databaseId;
+    const clientOptions = getClientOptions(connection.connection, database);
+
+    switch (language) {
+      case 'javascript':
+        return `
+// npm install cassandra-driver
+const cassandra = require('cassandra-driver')
+
+async function _doWork(){
+  try {
+    const clientOptions = ${JSON.stringify(clientOptions)};
+    const client = new cassandra.Client({
+      contactPoints: clientOptions.contactPoints,
+      keyspace: clientOptions.keyspace,
+      authProvider: clientOptions.authProvider ? new cassandra.auth.PlainTextAuthProvider(
+        clientOptions.authProvider.username,
+        clientOptions.authProvider.password,
+      ): undefined,
+      sslOptions: {
+        rejectUnauthorized: false, // optional, check to see if you need to disable this SSL check
+      }
+    });
+    await new Promise((resolve, reject) => {
+      client.connect((err) => err ? reject(err): resolve());
+    })
+
+    const res = await client.execute(\`${sql}\`);
+    console.log(res);
+  } catch(err){
+    console.log('Failed to connect', err);
+  }
+}
+
+_doWork();
+        `.trim();
+      case 'python':
+      default:
+        return ``;
+    }
   }
 }
 
