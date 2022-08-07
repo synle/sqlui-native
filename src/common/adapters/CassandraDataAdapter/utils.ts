@@ -1,6 +1,8 @@
 import BaseDataAdapter from 'src/common/adapters/BaseDataAdapter/index';
 
 type ClientOptions = {
+  host: string;
+  port: number;
   contactPoints: string[];
   keyspace?: string;
   authProvider?: {
@@ -18,8 +20,13 @@ export function getClientOptions(connectionOption: string, database?: string): C
     throw 'Invalid connection. Host and Port not found';
   }
 
+  const host = connectionHosts[0].host;
+  const port = connectionHosts[0].port || 9042;
+
   const clientOptions: ClientOptions = {
-    contactPoints: [`${connectionHosts[0].host}:${connectionHosts[0].port || 9042}`],
+    host,
+    port,
+    contactPoints: [`${host}:${port}`],
   };
 
   if (database) {
