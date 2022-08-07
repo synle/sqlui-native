@@ -39,10 +39,7 @@ export default class MongoDBDataAdapter extends BaseDataAdapter implements IData
   async authenticate() {
     return new Promise<void>(async (resolve, reject) => {
       try {
-        setTimeout(() => reject('Connection Timeout'), MAX_CONNECTION_TIMEOUT);
-
-        const client = new MongoClient(this.connectionOption);
-        await client.connect();
+        await this.getConnection();
         resolve();
       } catch (err) {
         reject(err);

@@ -943,7 +943,7 @@ ALTER TABLE
 
 This is a sample connection string you can use.
 ```
-mongodb://localhost:27017
+mongodb://username:password@localhost:27017
 ```
 
 
