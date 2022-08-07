@@ -367,7 +367,7 @@ export function getCreateConnectionDatabase(
 }
 
 export class ConcreteDataScripts extends BaseDataScript {
-  dialects = ['cosmosdb', 'azcosmosdb'];
+  dialects = ['cosmosdb'];
 
   getIsTableIdRequiredForQuery() {
     return true;
@@ -420,7 +420,7 @@ export class ConcreteDataScripts extends BaseDataScript {
   }
 
   getSampleConnectionString(dialect) {
-    return `cosmosdb://AccountEndpoint=some_cosmos_endpoint;AccountKey=some_cosmos_account_key`;
+    return `${dialect}://AccountEndpoint=some_cosmos_endpoint;AccountKey=some_cosmos_account_key`;
   }
 
   getSampleSelectQuery(actionInput: SqlAction.TableInput) {
