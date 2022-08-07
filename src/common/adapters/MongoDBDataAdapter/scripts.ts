@@ -349,10 +349,32 @@ export class ConcreteDataScripts extends BaseDataScript {
     let sql = query.sql;
     let database = query.databaseId;
 
-
     switch (language) {
       case 'javascript':
-        return ``;
+        return `
+// npm install mongodb
+const { MongoClient, ObjectId } = require('mongodb');
+
+async function _doWork(){
+  try {
+    const database = '${database}';
+
+    const client = new MongoClient('${connectionString}');
+    await client.connect();
+    const db = await client.db(database);
+    const res = await ${sql};
+
+    const items = [].concat(res);
+    for(const item of items){
+      console.log(item);
+    }
+  } catch(err){
+    console.log('Failed to connect', err);
+  }
+}
+
+_doWork();
+        `.trim();
       case 'python':
       default:
         return ``;
