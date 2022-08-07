@@ -9,6 +9,7 @@ import { useGetConnectionById, useUpsertConnection } from 'src/frontend/hooks/us
 import useToaster from 'src/frontend/hooks/useToaster';
 import { createSystemNotification } from 'src/frontend/utils/commonUtils';
 import { SqluiCore } from 'typings';
+import { useCommands } from 'src/frontend/components/MissionControl';
 
 type ConnectionFormProps = {
   id?: string;
@@ -140,6 +141,7 @@ function MainConnectionForm(props: MainConnectionFormProps): JSX.Element | null 
   const [showHint, setShowHint] = useState(false);
   const [showSqliteDatabasePathSelection, setShowSqliteDatabasePathSelection] = useState(false);
   const { add: addToast, dismiss: dismissToast } = useToaster();
+  const { selectCommand } = useCommands();
 
   // effects
   useEffect(() => {
@@ -243,6 +245,11 @@ function MainConnectionForm(props: MainConnectionFormProps): JSX.Element | null 
         <TestConnectionButton connection={connection} />
         <Button type='button' disabled={props.saving} onClick={() => setShowHint(!showHint)}>
           {showHint ? 'Hide Connection Hints' : 'Show Connection Hints'}
+        </Button>
+        <Button type='button' onClick={() => selectCommand({ event: 'clientEvent/showConnectionHelper', data: (newConnection:string) => {
+          props.setConnection(newConnection)
+        }})}>
+          Show Connection Helper
         </Button>
       </div>
       {showHint && (
