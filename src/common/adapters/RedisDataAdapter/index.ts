@@ -2,6 +2,7 @@ import { createClient, RedisClientType } from 'redis';
 import BaseDataAdapter, { MAX_CONNECTION_TIMEOUT } from 'src/common/adapters/BaseDataAdapter/index';
 import IDataAdapter from 'src/common/adapters/IDataAdapter';
 import { SqluiCore } from 'typings';
+import { getClientOptions } from 'src/common/adapters/RedisDataAdapter/utils';
 
 const REDIS_ADAPTER_PREFIX = 'db';
 
@@ -12,30 +13,13 @@ export default class RedisDataAdapter extends BaseDataAdapter implements IDataAd
     super(connectionOption);
   }
 
-  public static getClientOptions(connectionOption: string){
-    const options = BaseDataAdapter.getConnectionParameters(connectionOption) as any;
-
-    const { host, port } = options?.hosts[0];
-    const { scheme, username, password } = options;
-
-    const clientOptions: any = {
-      url: `${scheme}://${host}:${port || 6379}`,
-    };
-
-    if (password) {
-      clientOptions.password = password;
-    }
-
-    return clientOptions;
-  }
-
   private async getConnection(): Promise<RedisClientType> {
     // attempt to pull in connections
     return new Promise<RedisClientType>(async (resolve, reject) => {
       try {
         setTimeout(() => reject('Connection Timeout'), MAX_CONNECTION_TIMEOUT);
 
-        const client = createClient(RedisDataAdapter.getClientOptions(this.connectionOption));
+        const client = createClient(getClientOptions(this.connectionOption));
 
         client.connect();
 

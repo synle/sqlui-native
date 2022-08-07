@@ -32,9 +32,11 @@ export function DataTableWithJSONList(props: Omit<DataTableProps, 'columns'>) {
 
   let hasRawJson = useMemo(() => {
     for (const value of data) {
-      for (const columnValue of Object.values(value)) {
-        if (typeof columnValue === 'object' && columnValue !== null) {
-          return true;
+      if(value !== null){
+        for (const columnValue of Object.values(value)) {
+          if (typeof columnValue === 'object' && columnValue !== null) {
+            return true;
+          }
         }
       }
     }
@@ -46,7 +48,7 @@ export function DataTableWithJSONList(props: Omit<DataTableProps, 'columns'>) {
     const newColumnNames = new Set<string>();
     for (let i = 0; i < data.length; i++) {
       const row = data[i];
-      if (typeof row === 'object') {
+      if (typeof row === 'object' && row !== null) {
         // is an object, then render as a list of properties
         for (const header of Object.keys(row)) {
           newColumnNames.add(header);
