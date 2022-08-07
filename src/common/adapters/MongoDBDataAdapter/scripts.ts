@@ -286,7 +286,7 @@ export function getCreateConnectionDatabase(
 }
 
 export class ConcreteDataScripts extends BaseDataScript {
-  dialects = ['mongodb'];
+  dialects = ['mongodb', 'mongodb+srv'];
 
   getIsTableIdRequiredForQuery() {
     return false;
@@ -333,7 +333,7 @@ export class ConcreteDataScripts extends BaseDataScript {
   }
 
   getSampleConnectionString(dialect) {
-    return `mongodb://localhost:27017`;
+    return `${dialect}://localhost:27017`;
   }
 
   getSampleSelectQuery(actionInput: SqlAction.TableInput) {

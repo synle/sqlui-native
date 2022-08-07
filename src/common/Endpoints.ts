@@ -202,7 +202,8 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     } catch (err: any) {
       // here means we failed to connect, just set back 407 - Not Acceptable
       // here we return the barebone
-      res.status(406).json(await resetConnectionMetaData(connection));
+      res.status(406).json(`Failed to connect ${err.toString()}`);
+      console.log('Failed to connect', err);
     }
   });
 
