@@ -1,8 +1,8 @@
 import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
 import { useState } from 'react';
 import { SUPPORTED_DIALECTS } from 'src/common/adapters/DataScriptFactory';
 import Select from 'src/frontend/components/Select';
-import TextField from '@mui/material/TextField';
 
 type ConnectionHelperFormInputs = {
   scheme: string;
@@ -34,7 +34,7 @@ export default function ConnectionHelper(props: ConnectionHelper) {
     connection += `${value.username}:${value.password}`;
   }
   connection += `@${value.host}`;
-  if(value.port){
+  if (value.port) {
     connection += `${value.port}`;
   }
 
