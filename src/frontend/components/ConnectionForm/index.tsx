@@ -3,6 +3,7 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import { Alert, Box, Button, Link, TextField, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
+import BaseDataAdapter from 'src/common/adapters/BaseDataAdapter/index';
 import ConnectionHint from 'src/frontend/components/ConnectionForm/ConnectionHint';
 import { useCommands } from 'src/frontend/components/MissionControl';
 import TestConnectionButton from 'src/frontend/components/TestConnectionButton';
@@ -182,6 +183,8 @@ function MainConnectionForm(props: MainConnectionFormProps): JSX.Element | null 
     connection: props.connection,
   };
 
+  const parsedConnectionProps = BaseDataAdapter.getConnectionParameters(connection.connection);
+
   const onApplyConnectionHint = (dialect, connection) => {
     props.setName(`${dialect} Connection - ${new Date().toLocaleDateString()}`);
     props.setConnection(connection);
@@ -251,8 +254,15 @@ function MainConnectionForm(props: MainConnectionFormProps): JSX.Element | null 
           onClick={() =>
             selectCommand({
               event: 'clientEvent/showConnectionHelper',
-              data: (newConnection: string) => {
-                props.setConnection(newConnection);
+              data: {
+                scheme: parsedConnectionProps?.scheme,
+                username: parsedConnectionProps?.username,
+                password: parsedConnectionProps?.password,
+                host: parsedConnectionProps?.hosts[0]?.host,
+                port: parsedConnectionProps?.hosts[0]?.port,
+                onApply: (newConnection: string) => {
+                  props.setConnection(newConnection);
+                },
               },
             })
           }>
