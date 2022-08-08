@@ -10,14 +10,10 @@ type ConnectionHelperFormInputs = {
   password: string;
   host: string;
   port: string;
+  restOfConnectionString: string;
 };
 
-type ConnectionHelper = {
-  scheme: string;
-  username: string;
-  password: string;
-  host: string;
-  port: string;
+type ConnectionHelper = ConnectionHelperFormInputs & {
   onChange: (newConnection: string) => void;
 };
 
@@ -28,15 +24,10 @@ export default function ConnectionHelper(props: ConnectionHelper) {
     password: props.password || '',
     host: props.host || '',
     port: props.port || '',
+    restOfConnectionString: props.restOfConnectionString || '',
   });
+
   let connection = `${value.scheme}://`;
-  if (value.username && value.password) {
-    connection += `${value.username}:${value.password}`;
-  }
-  connection += `@${value.host}`;
-  if (value.port) {
-    connection += `${value.port}`;
-  }
 
   const onChange = (fieldKey: string, fieldValue: string) => {
     const newValue = {
@@ -50,6 +41,81 @@ export default function ConnectionHelper(props: ConnectionHelper) {
   // construct the final
   const onGenerateConnectionString = () => props.onChange(connection);
 
+  let formDom;
+  switch(value.scheme){
+    case 'aztable':
+    case 'cosmosdb':
+    connection += `${value.restOfConnectionString}`;
+
+    debugger
+
+    formDom= <>
+      <div className='FormInput__Row'>
+        <TextField
+          label='Primary Connection String'
+          value={value.restOfConnectionString}
+          onChange={(e) => onChange('restOfConnectionString', e.target.value)}
+          required
+          size='small'
+          fullWidth={true}
+        />
+      </div>
+    </>
+      break;
+    default:
+    if (value.username && value.password) {
+      connection += `${value.username}:${value.password}`;
+    }
+    connection += `@${value.host}`;
+    if (value.port) {
+      connection += `${value.port}`;
+    }
+
+    formDom = <>
+      <div className='FormInput__Row'>
+        <TextField
+          label='Username'
+          value={value.username}
+          onChange={(e) => onChange('username', e.target.value)}
+          required
+          size='small'
+          fullWidth={true}
+        />
+      </div>
+      <div className='FormInput__Row'>
+        <TextField
+          label='Password'
+          value={value.password}
+          onChange={(e) => onChange('password', e.target.value)}
+          required
+          size='small'
+          fullWidth={true}
+        />
+      </div>
+      <div className='FormInput__Row'>
+        <TextField
+          label='Host'
+          value={value.host}
+          onChange={(e) => onChange('host', e.target.value)}
+          required
+          size='small'
+          fullWidth={true}
+        />
+      </div>
+      <div className='FormInput__Row'>
+        <TextField
+          label='Port'
+          value={value.port}
+          onChange={(e) => onChange('port', e.target.value)}
+          size='small'
+          fullWidth={true}
+          type='number'
+        />
+      </div>
+      </>
+      break;
+  }
+
   return (
     <form
       className='FormInput__Container'
@@ -58,7 +124,7 @@ export default function ConnectionHelper(props: ConnectionHelper) {
         onGenerateConnectionString();
       }}>
       <div className='FormInput__Row'>
-        <Select
+                <Select
           required
           onChange={(newScheme) => onChange('scheme', newScheme)}
           value={value.scheme}>
@@ -70,46 +136,7 @@ export default function ConnectionHelper(props: ConnectionHelper) {
           ))}
         </Select>
       </div>
-      <div className='FormInput__Row'>
-        <TextField
-          label='Username'
-          defaultValue={value.username}
-          onChange={(e) => onChange('username', e.target.value)}
-          required
-          size='small'
-          fullWidth={true}
-        />
-      </div>
-      <div className='FormInput__Row'>
-        <TextField
-          label='Password'
-          defaultValue={value.password}
-          onChange={(e) => onChange('password', e.target.value)}
-          required
-          size='small'
-          fullWidth={true}
-        />
-      </div>
-      <div className='FormInput__Row'>
-        <TextField
-          label='Host'
-          defaultValue={value.host}
-          onChange={(e) => onChange('host', e.target.value)}
-          required
-          size='small'
-          fullWidth={true}
-        />
-      </div>
-      <div className='FormInput__Row'>
-        <TextField
-          label='Port'
-          defaultValue={value.port}
-          onChange={(e) => onChange('port', e.target.value)}
-          size='small'
-          fullWidth={true}
-          type='number'
-        />
-      </div>
+      {formDom}
       <div className='FormInput__Row'>
         <TextField
           label='Generated Connection String'
