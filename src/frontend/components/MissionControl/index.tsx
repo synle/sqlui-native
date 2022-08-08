@@ -1046,7 +1046,8 @@ export default function MissionControl() {
 
         case 'clientEvent/showConnectionHelper':
           if (command.data) {
-            const { scheme, username, password, host, port, onApply } = command.data as any;
+            const { scheme, username, password, host, port, restOfConnectionString, onApply } =
+              command.data as any;
 
             const onApplyConnectionHelper = (newConnectionString: string) => {
               dismissDialog();
@@ -1064,6 +1065,7 @@ export default function MissionControl() {
                   password={password}
                   host={host}
                   port={port}
+                  restOfConnectionString={restOfConnectionString}
                 />
               ),
               showCloseButton: true,
