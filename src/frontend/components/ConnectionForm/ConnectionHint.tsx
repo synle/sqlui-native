@@ -82,31 +82,33 @@ export default function ConnectionHint(props: ConnectionHintProps): JSX.Element 
 
   return (
     <List sx={{ bgcolor: 'background.paper', overflow: 'hidden', wordBreak: 'break-all' }}>
-      {SUPPORTED_DIALECTS.map((dialect) => {
-        const onApplyThisConnectionHint = () =>
-          props.onChange(dialect, getSampleConnectionString(dialect));
+      {SUPPORTED_DIALECTS.sort((a, b) => getDialectName(a).localeCompare(getDialectName(b))).map(
+        (dialect) => {
+          const onApplyThisConnectionHint = () =>
+            props.onChange(dialect, getSampleConnectionString(dialect));
 
-        return (
-          <ListItem key={dialect}>
-            <ListItemAvatar>
-              <Avatar>
-                <ConnectionTypeIcon dialect={dialect} status='online' />
-              </Avatar>
-            </ListItemAvatar>
-            <ListItemText
-              primary={
-                <Link
-                  underline='hover'
-                  onClick={onApplyThisConnectionHint}
-                  sx={{ textTransform: 'uppercase', fontWeight: 'bold' }}>
-                  {getDialectName(dialect)}
-                </Link>
-              }
-              secondary={getSampleConnectionString(dialect)}
-            />
-          </ListItem>
-        );
-      })}
+          return (
+            <ListItem key={dialect}>
+              <ListItemAvatar>
+                <Avatar>
+                  <ConnectionTypeIcon dialect={dialect} status='online' />
+                </Avatar>
+              </ListItemAvatar>
+              <ListItemText
+                primary={
+                  <Link
+                    underline='hover'
+                    onClick={onApplyThisConnectionHint}
+                    sx={{ textTransform: 'uppercase', fontWeight: 'bold' }}>
+                    {getDialectName(dialect)}
+                  </Link>
+                }
+                secondary={getSampleConnectionString(dialect)}
+              />
+            </ListItem>
+          );
+        },
+      )}
       {bookmarkedConnectionsDom}
     </List>
   );
