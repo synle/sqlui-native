@@ -1,3 +1,4 @@
+import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import { useState } from 'react';
@@ -47,12 +48,20 @@ export default function ConnectionHelper(props: ConnectionHelper) {
     case 'cosmosdb':
     connection += `${value.restOfConnectionString}`;
 
-    debugger
+    let label = 'Connection String';
+    switch(value.scheme){
+      case 'aztable':
+        label = 'Azure Table Storage Connection String';
+        break;
+      case 'cosmosdb':
+        label = 'CosmosDB Primary Connection String';
+        break;
+    }
 
     formDom= <>
       <div className='FormInput__Row'>
         <TextField
-          label='Primary Connection String'
+          label={label}
           value={value.restOfConnectionString}
           onChange={(e) => onChange('restOfConnectionString', e.target.value)}
           required
@@ -147,11 +156,11 @@ export default function ConnectionHelper(props: ConnectionHelper) {
           fullWidth={true}
         />
       </div>
-      <div>
+      <Box sx={{display: 'flex', justifyContent:'end'}}>
         <Button type='submit' sx={{ ml: 'auto' }}>
           Apply
         </Button>
-      </div>
+      </Box>
     </form>
   );
 }

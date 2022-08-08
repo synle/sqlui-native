@@ -256,7 +256,7 @@ function MainConnectionForm(props: MainConnectionFormProps): JSX.Element | null 
             selectCommand({
               event: 'clientEvent/showConnectionHelper',
               data: {
-                scheme: parsedConnectionProps?.scheme,
+                scheme: parsedConnectionProps?.scheme || connection.connection.match(/^[a-z0-9]+/)?.[0] || 0,
                 username: parsedConnectionProps?.username,
                 password: parsedConnectionProps?.password,
                 host: parsedConnectionProps?.hosts[0]?.host,
