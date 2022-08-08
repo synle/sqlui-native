@@ -71,8 +71,7 @@ export function getInsert(
   const columnString = input.columns.map((col) => col.name).join(',\n');
   const insertValueString = input.columns.map((col) => {
     let valToUse: string | null = '';
-    console.log(col.name, value?.[col.name]);
-    if (col.name === 'meeting_promoted') debugger;
+
     if (value) {
       if (value?.[col.name] === null) {
         valToUse = null;
