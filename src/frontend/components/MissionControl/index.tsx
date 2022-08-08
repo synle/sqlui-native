@@ -1046,15 +1046,29 @@ export default function MissionControl() {
 
         case 'clientEvent/showConnectionHelper':
           if (command.data) {
+            const {
+              scheme,
+              username,
+              password,
+              host,
+              port,
+              onApply,
+            } = command.data as any;
+
             const onApplyConnectionHelper = (newConnectionString: string) => {
               dismissDialog();
               //@ts-ignore
-              command.data(newConnectionString);
+              onApply(newConnectionString);
             };
 
             modal({
               title: 'Connection Helper',
-              message: <ConnectionHelper onChange={onApplyConnectionHelper} />,
+              message: <ConnectionHelper onChange={onApplyConnectionHelper}
+                                          scheme={scheme}
+                                          username={username}
+                                          password={password}
+                                          host={host}
+                                          port={port} />,
               showCloseButton: true,
               size: 'md',
             });

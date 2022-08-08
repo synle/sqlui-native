@@ -13,22 +13,30 @@ type ConnectionHelperFormInputs = {
 };
 
 type ConnectionHelper = {
+  scheme: string;
+  username: string;
+  password: string;
+  host: string;
+  port: string;
   onChange: (newConnection: string) => void;
 };
 
 export default function ConnectionHelper(props: ConnectionHelper) {
   const [value, setValue] = useState<ConnectionHelperFormInputs>({
-    scheme: '',
-    username: '',
-    password: '',
-    host: '',
-    port: '',
+    scheme: props.scheme || '',
+    username: props.username || '',
+    password: props.password || '',
+    host: props.host || '',
+    port: props.port || '',
   });
   let connection = `${value.scheme}://`;
   if (value.username && value.password) {
     connection += `${value.username}:${value.password}`;
   }
-  connection += `@${value.host}:${value.port}`;
+  connection += `@${value.host}`;
+  if(value.port){
+    connection += `${value.port}`;
+  }
 
   const onChange = (fieldKey: string, fieldValue: string) => {
     const newValue = {
@@ -97,7 +105,6 @@ export default function ConnectionHelper(props: ConnectionHelper) {
           label='Port'
           defaultValue={value.port}
           onChange={(e) => onChange('port', e.target.value)}
-          required
           size='small'
           fullWidth={true}
           type='number'

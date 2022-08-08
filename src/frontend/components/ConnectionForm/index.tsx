@@ -10,6 +10,7 @@ import { useGetConnectionById, useUpsertConnection } from 'src/frontend/hooks/us
 import useToaster from 'src/frontend/hooks/useToaster';
 import { createSystemNotification } from 'src/frontend/utils/commonUtils';
 import { SqluiCore } from 'typings';
+import BaseDataAdapter from 'src/common/adapters/BaseDataAdapter/index';
 
 type ConnectionFormProps = {
   id?: string;
@@ -182,6 +183,8 @@ function MainConnectionForm(props: MainConnectionFormProps): JSX.Element | null 
     connection: props.connection,
   };
 
+  const parsedConnectionProps = BaseDataAdapter.getConnectionParameters(connection.connection);
+
   const onApplyConnectionHint = (dialect, connection) => {
     props.setName(`${dialect} Connection - ${new Date().toLocaleDateString()}`);
     props.setConnection(connection);
@@ -251,8 +254,15 @@ function MainConnectionForm(props: MainConnectionFormProps): JSX.Element | null 
           onClick={() =>
             selectCommand({
               event: 'clientEvent/showConnectionHelper',
-              data: (newConnection: string) => {
-                props.setConnection(newConnection);
+              data: {
+                scheme: parsedConnectionProps?.scheme,
+                username: parsedConnectionProps?.username,
+                password: parsedConnectionProps?.password,
+                host: parsedConnectionProps?.hosts[0]?.host,
+                port:  parsedConnectionProps?.hosts[0]?.port,
+                onApply: (newConnection: string) => {
+                  props.setConnection(newConnection);
+                }
               },
             })
           }>
