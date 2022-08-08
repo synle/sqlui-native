@@ -184,7 +184,7 @@ function MainConnectionForm(props: MainConnectionFormProps): JSX.Element | null 
   };
 
   const parsedConnectionProps = BaseDataAdapter.getConnectionParameters(connection.connection);
-  const restOfConnectionString = connection.connection.replace(/[a-z0-9+]:\/\/+/,'');
+  const restOfConnectionString = connection.connection.replace(/[a-z0-9+]:\/\/+/, '');
 
   const onApplyConnectionHint = (dialect, connection) => {
     props.setName(`${dialect} Connection - ${new Date().toLocaleDateString()}`);
@@ -256,7 +256,10 @@ function MainConnectionForm(props: MainConnectionFormProps): JSX.Element | null 
             selectCommand({
               event: 'clientEvent/showConnectionHelper',
               data: {
-                scheme: parsedConnectionProps?.scheme || connection.connection.match(/^[a-z0-9]+/)?.[0] || 0,
+                scheme:
+                  parsedConnectionProps?.scheme ||
+                  connection.connection.match(/^[a-z0-9]+/)?.[0] ||
+                  0,
                 username: parsedConnectionProps?.username,
                 password: parsedConnectionProps?.password,
                 host: parsedConnectionProps?.hosts[0]?.host,
