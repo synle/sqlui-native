@@ -1060,6 +1060,7 @@ export default function MissionControl() {
               message: (
                 <ConnectionHelper
                   onChange={onApplyConnectionHelper}
+                  onClose={dismissDialog}
                   scheme={scheme}
                   username={username}
                   password={password}
