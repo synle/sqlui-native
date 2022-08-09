@@ -1302,7 +1302,6 @@ export default function MissionControl() {
                 case 'java':
                   extension = 'java';
                   break;
-
               }
               if (extension) {
                 downloadText(
@@ -1408,7 +1407,6 @@ export default function MissionControl() {
 
           window.toggleElectronMenu(true, allMenuKeys);
           break;
-
       }
     }
   }
@@ -1449,7 +1447,6 @@ export default function MissionControl() {
               e.preventDefault();
             } catch (err) {}
             break;
-
         }
       }
     };
@@ -1512,7 +1509,6 @@ export default function MissionControl() {
               event: 'clientEvent/query/showNext',
             };
             break;
-
         }
       } else {
         // no modifier key
@@ -1522,7 +1518,6 @@ export default function MissionControl() {
               event: 'clientEvent/query/rename',
             };
             break;
-
         }
       }
 

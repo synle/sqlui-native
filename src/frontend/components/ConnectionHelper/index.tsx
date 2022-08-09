@@ -63,7 +63,7 @@ export default function ConnectionHelper(props: ConnectionHelperProps) {
       </div>
     ) : (
       formInputs.map(([inputKey, inputLabel, optionalFlag]) => {
-        const isRequired = optionalFlag !== 'optional'
+        const isRequired = optionalFlag !== 'optional';
         return (
           <div className='FormInput__Row'>
             <TextField
