@@ -30,7 +30,7 @@ export default abstract class BaseDataScript implements IDataScript {
       ['password', 'Password'],
       ['host', 'Host'],
       ['port', 'Port'],
-    ]
+    ];
   }
 
   getIsTableIdRequiredForQuery() {

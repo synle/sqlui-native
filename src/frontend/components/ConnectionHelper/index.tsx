@@ -2,9 +2,8 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import { useState } from 'react';
-import { SUPPORTED_DIALECTS } from 'src/common/adapters/DataScriptFactory';
+import { getConnectionFormInputs, SUPPORTED_DIALECTS } from 'src/common/adapters/DataScriptFactory';
 import Select from 'src/frontend/components/Select';
-import { getConnectionFormInputs } from 'src/common/adapters/DataScriptFactory';
 
 type ConnectionHelperFormInputs = {
   scheme: string;
@@ -17,7 +16,7 @@ type ConnectionHelperFormInputs = {
 
 type ConnectionHelperProps = ConnectionHelperFormInputs & {
   onChange: (newConnection: string) => void;
-  onClose:() => void;
+  onClose: () => void;
 };
 
 export default function ConnectionHelper(props: ConnectionHelperProps) {
@@ -33,7 +32,7 @@ export default function ConnectionHelper(props: ConnectionHelperProps) {
   const formInputs = getConnectionFormInputs(value.scheme);
 
   let connection = `${value.scheme}://`;
-  if(formInputs.length === 1){
+  if (formInputs.length === 1) {
     connection += `${value[formInputs[0][0]]}`;
   } else {
     if (value.username && value.password) {
@@ -57,9 +56,15 @@ export default function ConnectionHelper(props: ConnectionHelperProps) {
   // construct the final
   const onApply = () => props.onChange(connection);
 
-  const formDom = formInputs.length === 0 ? <div className='FormInput__Row'>This database scheme is not supported by the connection helper</div>
-  : formInputs.map(([inputKey, inputLabel]) => {
-    return <div className='FormInput__Row'>
+  const formDom =
+    formInputs.length === 0 ? (
+      <div className='FormInput__Row'>
+        This database scheme is not supported by the connection helper
+      </div>
+    ) : (
+      formInputs.map(([inputKey, inputLabel]) => {
+        return (
+          <div className='FormInput__Row'>
             <TextField
               label={inputLabel}
               value={value[inputKey]}
@@ -69,7 +74,9 @@ export default function ConnectionHelper(props: ConnectionHelperProps) {
               fullWidth={true}
             />
           </div>
-  })
+        );
+      })
+    );
 
   return (
     <form

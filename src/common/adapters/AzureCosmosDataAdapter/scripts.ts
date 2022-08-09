@@ -378,9 +378,7 @@ export class ConcreteDataScripts extends BaseDataScript {
   }
 
   getConnectionFormInputs() {
-    return [
-      ['restOfConnectionString', 'Azure CosmosDB Primary Connection String'],
-    ]
+    return [['restOfConnectionString', 'Azure CosmosDB Primary Connection String']];
   }
 
   supportMigration() {
