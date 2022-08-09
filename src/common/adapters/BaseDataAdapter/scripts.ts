@@ -29,7 +29,7 @@ export default abstract class BaseDataScript implements IDataScript {
       ['username', 'Username'],
       ['password', 'Password'],
       ['host', 'Host'],
-      ['port', 'Port'],
+      ['port', 'Port', 'optional'],
     ];
   }
 

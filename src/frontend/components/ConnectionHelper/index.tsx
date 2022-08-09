@@ -40,7 +40,7 @@ export default function ConnectionHelper(props: ConnectionHelperProps) {
     }
     connection += `@${value.host}`;
     if (value.port) {
-      connection += `${value.port}`;
+      connection += `:${value.port}`;
     }
   }
 
@@ -62,14 +62,15 @@ export default function ConnectionHelper(props: ConnectionHelperProps) {
         This database scheme is not supported by the connection helper
       </div>
     ) : (
-      formInputs.map(([inputKey, inputLabel]) => {
+      formInputs.map(([inputKey, inputLabel, optionalFlag]) => {
+        const isRequired = optionalFlag !== 'optional'
         return (
           <div className='FormInput__Row'>
             <TextField
               label={inputLabel}
               value={value[inputKey]}
               onChange={(e) => onChange(inputKey, e.target.value)}
-              required
+              required={isRequired}
               size='small'
               fullWidth={true}
             />
