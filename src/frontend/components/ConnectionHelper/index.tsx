@@ -36,7 +36,7 @@ export default function ConnectionHelper(props: ConnectionHelperProps) {
     connection += `${value[formInputs[0][0]]}`;
   } else {
     if (value.username && value.password) {
-      connection += `${value.username}:${value.password}`;
+      connection += `${encodeURIComponent(value.username)}:${encodeURIComponent(value.password)}`;
     }
     connection += `@${value.host}`;
     if (value.port) {
