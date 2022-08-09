@@ -2,7 +2,7 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import { useState } from 'react';
-import { SUPPORTED_DIALECTS } from 'src/common/adapters/DataScriptFactory';
+import { getConnectionFormInputs, SUPPORTED_DIALECTS } from 'src/common/adapters/DataScriptFactory';
 import Select from 'src/frontend/components/Select';
 
 type ConnectionHelperFormInputs = {
@@ -14,11 +14,12 @@ type ConnectionHelperFormInputs = {
   restOfConnectionString: string;
 };
 
-type ConnectionHelper = ConnectionHelperFormInputs & {
+type ConnectionHelperProps = ConnectionHelperFormInputs & {
   onChange: (newConnection: string) => void;
+  onClose: () => void;
 };
 
-export default function ConnectionHelper(props: ConnectionHelper) {
+export default function ConnectionHelper(props: ConnectionHelperProps) {
   const [value, setValue] = useState<ConnectionHelperFormInputs>({
     scheme: props.scheme || '',
     username: props.username || '',
@@ -28,7 +29,20 @@ export default function ConnectionHelper(props: ConnectionHelper) {
     restOfConnectionString: props.restOfConnectionString || '',
   });
 
+  const formInputs = getConnectionFormInputs(value.scheme);
+
   let connection = `${value.scheme}://`;
+  if (formInputs.length === 1) {
+    connection += `${value[formInputs[0][0]]}`;
+  } else {
+    if (value.username && value.password) {
+      connection += `${encodeURIComponent(value.username)}:${encodeURIComponent(value.password)}`;
+    }
+    connection += `@${value.host}`;
+    if (value.port) {
+      connection += `:${value.port}`;
+    }
+  }
 
   const onChange = (fieldKey: string, fieldValue: string) => {
     const newValue = {
@@ -40,101 +54,37 @@ export default function ConnectionHelper(props: ConnectionHelper) {
   };
 
   // construct the final
-  const onGenerateConnectionString = () => props.onChange(connection);
+  const onApply = () => props.onChange(connection);
 
-  let formDom;
-  switch (value.scheme) {
-    case 'aztable':
-    case 'cosmosdb':
-      connection += `${value.restOfConnectionString}`;
-
-      let label = 'Connection String';
-      switch (value.scheme) {
-        case 'aztable':
-          label = 'Azure Table Storage Connection String';
-          break;
-        case 'cosmosdb':
-          label = 'CosmosDB Primary Connection String';
-          break;
-      }
-
-      formDom = (
-        <>
+  const formDom =
+    formInputs.length === 0 ? (
+      <div className='FormInput__Row'>
+        This database scheme is not supported by the connection helper
+      </div>
+    ) : (
+      formInputs.map(([inputKey, inputLabel, optionalFlag]) => {
+        const isRequired = optionalFlag !== 'optional';
+        return (
           <div className='FormInput__Row'>
             <TextField
-              label={label}
-              value={value.restOfConnectionString}
-              onChange={(e) => onChange('restOfConnectionString', e.target.value)}
-              required
+              label={inputLabel}
+              value={value[inputKey]}
+              onChange={(e) => onChange(inputKey, e.target.value)}
+              required={isRequired}
               size='small'
               fullWidth={true}
             />
           </div>
-        </>
-      );
-      break;
-    default:
-      if (value.username && value.password) {
-        connection += `${value.username}:${value.password}`;
-      }
-      connection += `@${value.host}`;
-      if (value.port) {
-        connection += `${value.port}`;
-      }
-
-      formDom = (
-        <>
-          <div className='FormInput__Row'>
-            <TextField
-              label='Username'
-              value={value.username}
-              onChange={(e) => onChange('username', e.target.value)}
-              required
-              size='small'
-              fullWidth={true}
-            />
-          </div>
-          <div className='FormInput__Row'>
-            <TextField
-              label='Password'
-              value={value.password}
-              onChange={(e) => onChange('password', e.target.value)}
-              required
-              size='small'
-              fullWidth={true}
-            />
-          </div>
-          <div className='FormInput__Row'>
-            <TextField
-              label='Host'
-              value={value.host}
-              onChange={(e) => onChange('host', e.target.value)}
-              required
-              size='small'
-              fullWidth={true}
-            />
-          </div>
-          <div className='FormInput__Row'>
-            <TextField
-              label='Port'
-              value={value.port}
-              onChange={(e) => onChange('port', e.target.value)}
-              size='small'
-              fullWidth={true}
-              type='number'
-            />
-          </div>
-        </>
-      );
-      break;
-  }
+        );
+      })
+    );
 
   return (
     <form
       className='FormInput__Container'
       onSubmit={(e) => {
         e.preventDefault();
-        onGenerateConnectionString();
+        onApply();
       }}>
       <div className='FormInput__Row'>
         <Select
@@ -160,9 +110,12 @@ export default function ConnectionHelper(props: ConnectionHelper) {
           fullWidth={true}
         />
       </div>
-      <Box sx={{ display: 'flex', justifyContent: 'end' }}>
-        <Button type='submit' sx={{ ml: 'auto' }}>
+      <Box sx={{ display: 'flex', justifyContent: 'end', gap: 2 }}>
+        <Button type='submit' variant='contained'>
           Apply
+        </Button>
+        <Button type='button' onClick={props.onClose}>
+          Cancel
         </Button>
       </Box>
     </form>

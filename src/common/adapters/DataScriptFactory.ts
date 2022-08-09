@@ -69,6 +69,10 @@ export function getDialectType(connection: string, dialect?: string) {
   return _getImplementation(dialect)?.getDialectType(connection);
 }
 
+export function getConnectionFormInputs(dialect?: string) {
+  return _getImplementation(dialect)?.getConnectionFormInputs() || [];
+}
+
 export function consolidateDialects(res: string[], script: BaseDataScript) {
   for (const dialect of script.dialects) {
     res.push(dialect);
