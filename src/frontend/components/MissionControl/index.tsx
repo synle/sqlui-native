@@ -839,6 +839,7 @@ export default function MissionControl() {
             case 'connection':
               await importConnection(rawImportMetaData);
               break;
+
             case 'query':
               await connectionQueries.onImportQuery(jsonRow);
               break;
@@ -1004,6 +1005,7 @@ export default function MissionControl() {
         case 'clientEvent/navigate':
           navigate(command.data as string);
           break;
+
         case 'clientEvent/showCommandPalette':
           onShowCommandPalette();
           break;
@@ -1060,6 +1062,7 @@ export default function MissionControl() {
               message: (
                 <ConnectionHelper
                   onChange={onApplyConnectionHelper}
+                  onClose={dismissDialog}
                   scheme={scheme}
                   username={username}
                   password={password}
@@ -1106,26 +1109,31 @@ export default function MissionControl() {
             onDeleteConnection(command.data as SqluiCore.ConnectionProps);
           }
           break;
+
         case 'clientEvent/connection/refresh':
           if (command.data) {
             onRefreshConnection(command.data as SqluiCore.ConnectionProps);
           }
           break;
+
         case 'clientEvent/connection/duplicate':
           if (command.data) {
             onDuplicateConnection(command.data as SqluiCore.ConnectionProps);
           }
           break;
+
         case 'clientEvent/connection/export':
           if (command.data) {
             onExportConnection(command.data as SqluiCore.ConnectionProps);
           }
           break;
+
         case 'clientEvent/connection/select':
           if (command.data) {
             onSelectConnection(command.data as SqluiCore.ConnectionProps);
           }
           break;
+
         case 'clientEvent/connection/addToBookmark':
           if (command.data) {
             onAddConnectionToBookmark(command.data as SqluiCore.ConnectionProps);
@@ -1286,9 +1294,11 @@ export default function MissionControl() {
                 case 'javascript':
                   extension = 'js';
                   break;
+
                 case 'python':
                   extension = 'py';
                   break;
+
                 case 'java':
                   extension = 'java';
                   break;
@@ -1327,16 +1337,15 @@ export default function MissionControl() {
             onShowRecordDetails(command.data, false);
           }
           break;
+
         case 'clientEvent/record/edit':
           if (command.data) {
             onShowRecordDetails(command.data, true);
           }
           break;
+
         case 'clientEvent/record/new':
           navigate('/record/new');
-          break;
-        case 'clientEvent/record/edit':
-          // TODO to be implemented
           break;
 
         // session commands
@@ -1385,6 +1394,7 @@ export default function MissionControl() {
 
           window.toggleElectronMenu(true, allMenuKeys);
           break;
+
         case 'clientEvent/session/delete':
           try {
             window.toggleElectronMenu(false, allMenuKeys);
@@ -1429,6 +1439,7 @@ export default function MissionControl() {
               e.preventDefault();
             } catch (err) {}
             break;
+
           case 'f':
             try {
               (document.querySelector('#result-box-search-input') as HTMLInputElement)?.focus();
@@ -1456,36 +1467,43 @@ export default function MissionControl() {
               event: 'clientEvent/showCommandPalette',
             };
             break;
+
           case 't':
             command = {
               event: 'clientEvent/query/new',
             };
             break;
+
           case 'o':
             command = {
               event: 'clientEvent/import',
             };
             break;
+
           case 's':
             command = {
               event: 'clientEvent/exportAll',
             };
             break;
+
           case 'n':
             command = {
               event: 'clientEvent/connection/new',
             };
             break;
+
           case 'w':
             command = {
               event: 'clientEvent/query/closeCurrentlySelected',
             };
             break;
+
           case '{':
             command = {
               event: 'clientEvent/query/showPrev',
             };
             break;
+
           case '}':
             command = {
               event: 'clientEvent/query/showNext',
