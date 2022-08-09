@@ -126,7 +126,11 @@ docker run --name sqlui_mysql -p 3306:3306 -e MYSQL_ROOT_PASSWORD=password -d my
 docker run --detach --name sqlui_mariadb -p 33061:3306 -e MARIADB_ROOT_PASSWORD=password mariadb:latest
 
 # MSSQL (https://hub.docker.com/_/microsoft-mssql-server)
-docker run --name sqlui_mssql -e "ACCEPT_EULA=Y" -e 'SA_PASSWORD=password123!' -p 1433:1433 -d mcr.microsoft.com/mssql/server:2019-latest
+  # for Windows WSL and Intel Based Macs
+  docker run --name sqlui_mssql -e "ACCEPT_EULA=Y" -e 'SA_PASSWORD=password123!' -p 1433:1433 -d mcr.microsoft.com/mssql/server:2019-latest
+
+  # for m1 Macs (https://docs.microsoft.com/en-us/answers/questions/654108/azure-sql-edge-on-mac-m1-using-docker.html)
+  docker run --name sqlui_mssql_m1 -e "ACCEPT_EULA=Y" -e 'SA_PASSWORD=password123!' -p 1433:1433 -d mcr.microsoft.com/azure-sql-edge
 
 # postgres (https://hub.docker.com/_/postgres)
 docker run --name sqlui_postgres -p 5432:5432 -e POSTGRES_PASSWORD=password -d postgres
