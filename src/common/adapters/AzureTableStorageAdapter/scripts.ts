@@ -268,6 +268,10 @@ export function getCreateDatabaseTable(
 export class ConcreteDataScripts extends BaseDataScript {
   dialects = ['aztable'];
 
+  getConnectionFormInputs() {
+    return [['restOfConnectionString', 'Azure Table Storage Connection String']];
+  }
+
   getIsTableIdRequiredForQuery() {
     return true;
   }

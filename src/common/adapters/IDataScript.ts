@@ -4,6 +4,7 @@ export default interface IDataScript {
   dialects?: SqluiCore.Dialect[] | string[];
 
   getDialectType: (connectionString: string) => SqluiCore.Dialect | undefined;
+  getConnectionFormInputs: () => string[][];
 
   // misc methods
   isDialectSupported: (targetDialect?: string) => boolean;

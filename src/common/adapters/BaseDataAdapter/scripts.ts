@@ -24,6 +24,15 @@ export default abstract class BaseDataScript implements IDataScript {
     return undefined;
   }
 
+  getConnectionFormInputs() {
+    return [
+      ['username', 'Username'],
+      ['password', 'Password'],
+      ['host', 'Host'],
+      ['port', 'Port', 'optional'],
+    ];
+  }
+
   getIsTableIdRequiredForQuery() {
     return false;
   }
