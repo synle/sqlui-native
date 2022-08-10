@@ -2,6 +2,7 @@ import { Sequelize } from 'sequelize';
 import BaseDataAdapter from 'src/common/adapters/BaseDataAdapter/index';
 import IDataAdapter from 'src/common/adapters/IDataAdapter';
 import { SqluiCore } from 'typings';
+import qs from 'qs';
 
 const DEFAULT_SEQUELIZE_OPTION = {
   logging: false,
@@ -56,9 +57,34 @@ export default class RelationalDataAdapter extends BaseDataAdapter implements ID
           break;
 
         default:
-          sequelizeInstanceToUse = new Sequelize(`${this.connectionOption}/${database}`, {
-            ...DEFAULT_SEQUELIZE_OPTION,
-          });
+          if(database){
+            //@ts-ignore
+            const {scheme, username, password, hosts, options} = BaseDataAdapter.getConnectionParameters(this.connectionOption);
+
+            let connectionUrl = `${scheme}://`
+            if(username && password){
+              connectionUrl += `${encodeURIComponent(username)}:${encodeURIComponent(password)}`
+            }
+
+            const [{host, port}] = hosts;
+            connectionUrl += `@${host}:${port}`;
+
+            if(database){
+              connectionUrl += `/${database}`
+            }
+
+            if(options){
+              connectionUrl += `?${qs.stringify(options)}`
+            }
+
+            sequelizeInstanceToUse = new Sequelize(connectionUrl, {
+              ...DEFAULT_SEQUELIZE_OPTION,
+            });
+          } else {
+            sequelizeInstanceToUse = new Sequelize(`${this.connectionOption}/${database}`, {
+              ...DEFAULT_SEQUELIZE_OPTION,
+            });
+          }
           break;
       }
 
