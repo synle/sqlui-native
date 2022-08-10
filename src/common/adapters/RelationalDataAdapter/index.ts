@@ -1,8 +1,8 @@
+import qs from 'qs';
 import { Sequelize } from 'sequelize';
 import BaseDataAdapter from 'src/common/adapters/BaseDataAdapter/index';
 import IDataAdapter from 'src/common/adapters/IDataAdapter';
 import { SqluiCore } from 'typings';
-import qs from 'qs';
 
 const DEFAULT_SEQUELIZE_OPTION = {
   logging: false,
@@ -57,24 +57,25 @@ export default class RelationalDataAdapter extends BaseDataAdapter implements ID
           break;
 
         default:
-          if(database){
+          if (database) {
             //@ts-ignore
-            const {scheme, username, password, hosts, options} = BaseDataAdapter.getConnectionParameters(this.connectionOption);
+            const { scheme, username, password, hosts, options } =
+              BaseDataAdapter.getConnectionParameters(this.connectionOption);
 
-            let connectionUrl = `${scheme}://`
-            if(username && password){
-              connectionUrl += `${encodeURIComponent(username)}:${encodeURIComponent(password)}`
+            let connectionUrl = `${scheme}://`;
+            if (username && password) {
+              connectionUrl += `${encodeURIComponent(username)}:${encodeURIComponent(password)}`;
             }
 
-            const [{host, port}] = hosts;
+            const [{ host, port }] = hosts;
             connectionUrl += `@${host}:${port}`;
 
-            if(database){
-              connectionUrl += `/${database}`
+            if (database) {
+              connectionUrl += `/${database}`;
             }
 
-            if(options){
-              connectionUrl += `?${qs.stringify(options)}`
+            if (options) {
+              connectionUrl += `?${qs.stringify(options)}`;
             }
 
             sequelizeInstanceToUse = new Sequelize(connectionUrl, {
