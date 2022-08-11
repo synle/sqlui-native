@@ -1,6 +1,6 @@
 {
   "name": "sqlui-native",
-  "version": "1.59.18",
+  "version": "1.60.0",
   "packageManager": "yarn@1.22.19",
   "private": true,
   "description": "A minimal native desktop client for most databases supporting MySQL, MariaDB, MS SQL Server, PostgresSQL, SQLite, Cassandra, MongoDB and Redis.",
@@ -106,6 +106,7 @@
     "notistack": "^2.0.5",
     "pg": "^8.7.3",
     "pg-hstore": "^2.3.4",
+    "qs": "^6.11.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-query": "^3.39.1",
