@@ -21,7 +21,6 @@ const DEFAULT_SEQUELIZE_OPTION = {
  */
 export default class RelationalDataAdapter extends BaseDataAdapter implements IDataAdapter {
   dialect?: SqluiCore.Dialect;
-  private sequelizes: Record<string, Sequelize> = {};
 
   constructor(connectionOption: string) {
     super(connectionOption);
@@ -32,37 +31,32 @@ export default class RelationalDataAdapter extends BaseDataAdapter implements ID
 
     // TODO: we don't support sslmode, this will attempt to override the option
     this.connectionOption = this.connectionOption.replace('sslmode=require', 'sslmode=no-verify');
-
-    // save the root connection
-    try{
-      this.sequelizes[''] = new Sequelize(this.connectionOption, DEFAULT_SEQUELIZE_OPTION);
-    } catch(err){
-      console.log('Failed to set up the root connection', this.connectionOption)
-    }
   }
 
   private getConnection(database: string = ''): Sequelize {
-    if (!this.sequelizes[database]) {
-      let connectionUrl: string;
-      let connectionPropOptions: any = { ...DEFAULT_SEQUELIZE_OPTION };
+    let connectionUrl: string;
+    let connectionPropOptions: any = { ...DEFAULT_SEQUELIZE_OPTION };
 
-      switch (this.dialect) {
-        case 'sqlite':
-          database = '';
+    switch (this.dialect) {
+      case 'sqlite':
+        database = '';
 
-          // special handling for sqlite path
-          let sqliteStorageOption = this.connectionOption
-            .replace('sqlite://', '')
-            .replace(/\\/g, '/'); // uses :memory: for in memory
+        // special handling for sqlite path
+        let sqliteStorageOption = this.connectionOption
+          .replace('sqlite://', '')
+          .replace(/\\/g, '/'); // uses :memory: for in memory
 
-          connectionUrl = `sqlite://`;
-          connectionPropOptions = {
-            ...connectionPropOptions,
-            storage: sqliteStorageOption, // applicable for sqlite
-          };
-          break;
+        connectionUrl = `sqlite://`;
+        connectionPropOptions = {
+          ...connectionPropOptions,
+          storage: sqliteStorageOption, // applicable for sqlite
+        };
+        break;
 
-        default:
+      default:
+        if(!database){
+          connectionUrl = this.connectionOption;
+        } else {
           //@ts-ignore
           const { scheme, username, password, hosts, options } =
             BaseDataAdapter.getConnectionParameters(this.connectionOption);
@@ -82,17 +76,16 @@ export default class RelationalDataAdapter extends BaseDataAdapter implements ID
           if (options) {
             connectionUrl += `?${qs.stringify(options)}`;
           }
-          break;
-      }
-
-      try{
-        this.sequelizes[database] = new Sequelize(connectionUrl, connectionPropOptions);
-      }catch(err){
-        console.log('Failed to set up Sequelize for RelationalDataAdapter', connectionUrl, connectionPropOptions);
-      }
+        }
+        break;
     }
 
-    return this.sequelizes[database];
+    try{
+      return new Sequelize(connectionUrl, connectionPropOptions);
+    }catch(err){
+      console.log('Failed to set up Sequelize for RelationalDataAdapter', connectionUrl, connectionPropOptions);
+      throw err;
+    }
   }
 
   async authenticate() {
