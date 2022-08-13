@@ -16,14 +16,9 @@ import RelationalDataAdapterScripts from 'src/common/adapters/RelationalDataAdap
 import PersistentStorage from 'src/common/PersistentStorage';
 import { SqluiCore } from 'typings';
 
-const _adapterCache: { [index: string]: IDataAdapter } = {};
-
 export function getDataAdapter(connection: string) {
-  if (_adapterCache[connection]) {
-    return _adapterCache[connection];
-  }
 
-  // TOOD: here we should initialize the connection based on type
+  // TODO: here we should initialize the connection based on type
   // of the connection string
   let adapter: IDataAdapter | undefined;
   const targetDialect = BaseDataAdapter.getDialect(connection);
@@ -54,7 +49,6 @@ export function getDataAdapter(connection: string) {
   // override with dialect
   adapter.dialect = getDialectType(connection, targetDialect);
 
-  _adapterCache[connection] = adapter;
   return adapter;
 }
 
@@ -99,8 +93,7 @@ export async function getConnectionMetaData(connection: SqluiCore.CoreConnection
     connItem.dialect = undefined;
     console.log('>> Server Error', err);
 
-    // also clean up the connection if there is error
-    delete _adapterCache[connection.connection];
+
   }
 
   return connItem;
@@ -115,8 +108,7 @@ export function resetConnectionMetaData(connection: SqluiCore.CoreConnectionProp
     status: 'offline',
   };
 
-  // also clean up the connection
-  delete _adapterCache[connection.connection];
+
 
   return connItem;
 }
