@@ -28,9 +28,6 @@ export default class RelationalDataAdapter extends BaseDataAdapter implements ID
 
     // TODO: we don't support sslmode, this will attempt to override the option
     this.connectionOption = this.connectionOption.replace('sslmode=require', 'sslmode=no-verify');
-
-    // save the root connection
-    this.sequelizes[''] = this.getConnection();
   }
 
   private getConnection(database: string = ''): Sequelize {
