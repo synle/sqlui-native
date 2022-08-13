@@ -31,6 +31,7 @@ You can also refer to this link for [General Queries](https://synle.github.io/sq
 - [MariaDB](https://synle.github.io/sqlui-native/guides#mariadb)
 - [Microsoft](https://synle.github.io/sqlui-native/guides#mssql)
 - [PostgresSQL](https://synle.github.io/sqlui-native/guides#postgres)
+- [CockroachDB] (Supported by using PostgresSQL driver)
 - [SQLite](https://synle.github.io/sqlui-native/guides#sqlite)
 - [Cassandra](https://synle.github.io/sqlui-native/guides#cassandra) (Limited Supported)
 - [MongoDB](https://synle.github.io/sqlui-native/guides#mongodb) (Limited Supported)
@@ -257,6 +258,16 @@ VALUES
   ('Queen'),
   ('Kiss'),
   ('Spyro Gyra')
+```
+
+### CockroachDB Limitations
+
+CockroachDB can be connected using postgresSQL. Replace `?sslmode=require` with `sslmode=no-verify`
+
+Sample connection will look like this
+
+```
+postgres://demo:demo26472@127.0.0.1:26257/movr?sslmode=no-verify
 ```
 
 ### Cassandra Limitations
