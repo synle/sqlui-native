@@ -1,15 +1,20 @@
 import qs from 'qs';
-import { Sequelize } from 'sequelize';
+import { Options, Sequelize } from 'sequelize';
 import BaseDataAdapter from 'src/common/adapters/BaseDataAdapter/index';
 import IDataAdapter from 'src/common/adapters/IDataAdapter';
 import { SqluiCore } from 'typings';
-
-const DEFAULT_SEQUELIZE_OPTION = {
-  logging: false,
-  dialectOptions: {
-    multipleStatements: true,
-  },
-};
+function _getDefaultSequelizeOptions(): Options {
+  return {
+    logging: false,
+    dialectOptions: {
+      multipleStatements: true,
+    },
+    pool: {
+      max: 1,
+      min: 0,
+    },
+  };
+}
 
 /**
  * mostly adapter for sequelize
@@ -17,82 +22,75 @@ const DEFAULT_SEQUELIZE_OPTION = {
  */
 export default class RelationalDataAdapter extends BaseDataAdapter implements IDataAdapter {
   dialect?: SqluiCore.Dialect;
-  private sequelizes: Record<string, Sequelize> = {};
 
   constructor(connectionOption: string) {
     super(connectionOption);
 
-    let sequelize;
     // since mariadb and mysql are fully compatible, let's use the same data
     // save the connection string
-    this.connectionOption = connectionOption.replace('mariadb://', 'mysql://');
+    this.connectionOption = this.connectionOption.replace('mariadb://', 'mysql://');
 
-    sequelize = new Sequelize(connectionOption);
-
-    // save the root connection
-    this.sequelizes[''] = sequelize;
+    // TODO: we don't support sslmode, this will attempt to override the option
+    this.connectionOption = this.connectionOption.replace('sslmode=require', 'sslmode=no-verify');
   }
 
-  private getConnection(database?: string): Sequelize {
-    if (!database) {
-      database = '';
-    }
+  private getConnection(database: string = ''): Sequelize {
+    let connectionUrl: string;
+    let connectionPropOptions = _getDefaultSequelizeOptions();
 
-    if (!this.sequelizes[database]) {
-      let sequelizeInstanceToUse: Sequelize;
+    switch (this.dialect) {
+      case 'sqlite':
+        database = '';
 
-      switch (this.dialect) {
-        case 'sqlite':
-          database = '';
+        // special handling for sqlite path
+        let sqliteStorageOption = this.connectionOption
+          .replace('sqlite://', '')
+          .replace(/\\/g, '/'); // uses :memory: for in memory
 
-          // special handling for sqlite path
-          let sqliteStorageOption = this.connectionOption
-            .replace('sqlite://', '')
-            .replace(/\\/g, '/'); // uses :memory: for in memory
+        connectionUrl = `sqlite://`;
+        connectionPropOptions = {
+          ...connectionPropOptions,
+          storage: sqliteStorageOption, // applicable for sqlite
+        };
+        break;
 
-          sequelizeInstanceToUse = new Sequelize(`sqlite://`, {
-            ...DEFAULT_SEQUELIZE_OPTION,
-            storage: sqliteStorageOption, // applicable for sqlite
-          });
-          break;
+      default:
+        if (!database) {
+          connectionUrl = this.connectionOption;
+        } else {
+          //@ts-ignore
+          const { scheme, username, password, hosts, options } =
+            BaseDataAdapter.getConnectionParameters(this.connectionOption);
 
-        default:
-          if (database) {
-            //@ts-ignore
-            const { scheme, username, password, hosts, options } =
-              BaseDataAdapter.getConnectionParameters(this.connectionOption);
-
-            let connectionUrl = `${scheme}://`;
-            if (username && password) {
-              connectionUrl += `${encodeURIComponent(username)}:${encodeURIComponent(password)}`;
-            }
-
-            const [{ host, port }] = hosts;
-            connectionUrl += `@${host}:${port}`;
-
-            if (database) {
-              connectionUrl += `/${database}`;
-            }
-
-            if (options) {
-              connectionUrl += `?${qs.stringify(options)}`;
-            }
-
-            sequelizeInstanceToUse = new Sequelize(connectionUrl, {
-              ...DEFAULT_SEQUELIZE_OPTION,
-            });
-          } else {
-            sequelizeInstanceToUse = new Sequelize(`${this.connectionOption}/${database}`, {
-              ...DEFAULT_SEQUELIZE_OPTION,
-            });
+          connectionUrl = `${scheme}://`;
+          if (username && password) {
+            connectionUrl += `${encodeURIComponent(username)}:${encodeURIComponent(password)}`;
           }
-          break;
-      }
 
-      this.sequelizes[database] = sequelizeInstanceToUse;
+          const [{ host, port }] = hosts;
+          connectionUrl += `@${host}:${port}`;
+
+          if (database) {
+            connectionUrl += `/${database}`;
+          }
+
+          if (options) {
+            connectionUrl += `?${qs.stringify(options)}`;
+          }
+        }
+        break;
     }
 
-    return this.sequelizes[database];
+    try {
+      return new Sequelize(connectionUrl, connectionPropOptions);
+    } catch (err) {
+      console.log(
+        'Failed to set up Sequelize for RelationalDataAdapter',
+        connectionUrl,
+        connectionPropOptions,
+      );
+      throw err;
+    }
   }
 
   async authenticate() {
