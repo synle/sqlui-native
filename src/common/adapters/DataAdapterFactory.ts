@@ -17,7 +17,6 @@ import PersistentStorage from 'src/common/PersistentStorage';
 import { SqluiCore } from 'typings';
 
 export function getDataAdapter(connection: string) {
-
   // TODO: here we should initialize the connection based on type
   // of the connection string
   let adapter: IDataAdapter | undefined;
@@ -92,8 +91,6 @@ export async function getConnectionMetaData(connection: SqluiCore.CoreConnection
     connItem.status = 'offline';
     connItem.dialect = undefined;
     console.log('>> Server Error', err);
-
-
   }
 
   return connItem;
@@ -107,9 +104,6 @@ export function resetConnectionMetaData(connection: SqluiCore.CoreConnectionProp
     databases: [] as SqluiCore.DatabaseMetaData[],
     status: 'offline',
   };
-
-
-
   return connItem;
 }
 

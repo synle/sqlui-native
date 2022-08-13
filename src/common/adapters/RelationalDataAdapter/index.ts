@@ -12,7 +12,7 @@ const DEFAULT_SEQUELIZE_OPTION = {
   pool: {
     max: 1,
     min: 0,
-  }
+  },
 };
 
 /**
@@ -54,7 +54,7 @@ export default class RelationalDataAdapter extends BaseDataAdapter implements ID
         break;
 
       default:
-        if(!database){
+        if (!database) {
           connectionUrl = this.connectionOption;
         } else {
           //@ts-ignore
@@ -80,10 +80,14 @@ export default class RelationalDataAdapter extends BaseDataAdapter implements ID
         break;
     }
 
-    try{
+    try {
       return new Sequelize(connectionUrl, connectionPropOptions);
-    }catch(err){
-      console.log('Failed to set up Sequelize for RelationalDataAdapter', connectionUrl, connectionPropOptions);
+    } catch (err) {
+      console.log(
+        'Failed to set up Sequelize for RelationalDataAdapter',
+        connectionUrl,
+        connectionPropOptions,
+      );
       throw err;
     }
   }
