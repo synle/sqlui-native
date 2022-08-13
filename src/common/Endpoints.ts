@@ -136,7 +136,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
 
     try {
       const engine = getDataAdapter(connection.connection);
-      await engine.getDatabases();
+      await engine.authenticate();
 
       connection.status = 'online';
       connection.dialect = engine.dialect;
