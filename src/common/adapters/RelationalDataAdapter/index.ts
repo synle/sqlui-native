@@ -1,19 +1,21 @@
 import qs from 'qs';
-import { Sequelize } from 'sequelize';
+import { Sequelize, Options } from 'sequelize';
 import BaseDataAdapter from 'src/common/adapters/BaseDataAdapter/index';
 import IDataAdapter from 'src/common/adapters/IDataAdapter';
 import { SqluiCore } from 'typings';
 
-const DEFAULT_SEQUELIZE_OPTION = {
-  logging: false,
-  dialectOptions: {
-    multipleStatements: true,
-  },
-  pool: {
-    max: 1,
-    min: 0,
-  },
-};
+function _getDefaultSequelizeOptions(): Options{
+  return {
+    logging: false,
+    dialectOptions: {
+      multipleStatements: true,
+    },
+    pool: {
+      max: 1,
+      min: 0,
+    },
+  };
+}
 
 /**
  * mostly adapter for sequelize
@@ -35,7 +37,7 @@ export default class RelationalDataAdapter extends BaseDataAdapter implements ID
 
   private getConnection(database: string = ''): Sequelize {
     let connectionUrl: string;
-    let connectionPropOptions: any = { ...DEFAULT_SEQUELIZE_OPTION };
+    let connectionPropOptions = _getDefaultSequelizeOptions();
 
     switch (this.dialect) {
       case 'sqlite':
