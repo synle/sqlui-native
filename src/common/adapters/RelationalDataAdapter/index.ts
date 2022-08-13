@@ -36,7 +36,7 @@ export default class RelationalDataAdapter extends BaseDataAdapter implements ID
   private getConnection(database: string = ''): Sequelize {
     if (!this.sequelizes[database]) {
       let connectionUrl: string;
-      let connectionPropOptions : any = {...DEFAULT_SEQUELIZE_OPTION};
+      let connectionPropOptions: any = { ...DEFAULT_SEQUELIZE_OPTION };
 
       switch (this.dialect) {
         case 'sqlite':
@@ -47,8 +47,9 @@ export default class RelationalDataAdapter extends BaseDataAdapter implements ID
             .replace('sqlite://', '')
             .replace(/\\/g, '/'); // uses :memory: for in memory
 
-          connectionUrl = `sqlite://`
-          connectionPropOptions = {...connectionPropOptions, ...{storage: sqliteStorageOption,}} // applicable for sqlite}}
+          connectionUrl = `sqlite://`;
+          connectionPropOptions = { ...connectionPropOptions, storage: sqliteStorageOption// applicable for sqlite
+           };
           break;
 
         default:
