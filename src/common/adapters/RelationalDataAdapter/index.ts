@@ -1,10 +1,9 @@
 import qs from 'qs';
-import { Sequelize, Options } from 'sequelize';
+import { Options, Sequelize } from 'sequelize';
 import BaseDataAdapter from 'src/common/adapters/BaseDataAdapter/index';
 import IDataAdapter from 'src/common/adapters/IDataAdapter';
 import { SqluiCore } from 'typings';
-
-function _getDefaultSequelizeOptions(): Options{
+function _getDefaultSequelizeOptions(): Options {
   return {
     logging: false,
     dialectOptions: {
