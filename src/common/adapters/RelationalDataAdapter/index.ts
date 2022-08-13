@@ -30,7 +30,7 @@ export default class RelationalDataAdapter extends BaseDataAdapter implements ID
     this.connectionOption = this.connectionOption.replace('sslmode=require', 'sslmode=no-verify');
 
     // save the root connection
-    this.sequelizes[''] = new Sequelize(this.connectionOption);
+    this.sequelizes[''] = this.getConnection();
   }
 
   private getConnection(database: string = ''): Sequelize {
@@ -38,41 +38,48 @@ export default class RelationalDataAdapter extends BaseDataAdapter implements ID
       let connectionUrl: string;
       let connectionPropOptions: any = { ...DEFAULT_SEQUELIZE_OPTION };
 
-      switch (this.dialect) {
-        case 'sqlite':
-          database = '';
+      if(database){
+        switch (this.dialect) {
+          case 'sqlite':
+            database = '';
 
-          // special handling for sqlite path
-          let sqliteStorageOption = this.connectionOption
-            .replace('sqlite://', '')
-            .replace(/\\/g, '/'); // uses :memory: for in memory
+            // special handling for sqlite path
+            let sqliteStorageOption = this.connectionOption
+              .replace('sqlite://', '')
+              .replace(/\\/g, '/'); // uses :memory: for in memory
 
-          connectionUrl = `sqlite://`;
-          connectionPropOptions = { ...connectionPropOptions, storage: sqliteStorageOption// applicable for sqlite
-           };
-          break;
+            connectionUrl = `sqlite://`;
+            connectionPropOptions = {
+              ...connectionPropOptions,
+              storage: sqliteStorageOption, // applicable for sqlite
+            };
+            break;
 
-        default:
-          //@ts-ignore
-          const { scheme, username, password, hosts, options } =
-            BaseDataAdapter.getConnectionParameters(this.connectionOption);
+          default:
+            //@ts-ignore
+            const { scheme, username, password, hosts, options } =
+              BaseDataAdapter.getConnectionParameters(this.connectionOption);
 
-          connectionUrl = `${scheme}://`;
-          if (username && password) {
-            connectionUrl += `${encodeURIComponent(username)}:${encodeURIComponent(password)}`;
-          }
+            connectionUrl = `${scheme}://`;
+            if (username && password) {
+              connectionUrl += `${encodeURIComponent(username)}:${encodeURIComponent(password)}`;
+            }
 
-          const [{ host, port }] = hosts;
-          connectionUrl += `@${host}:${port}`;
+            const [{ host, port }] = hosts;
+            connectionUrl += `@${host}:${port}`;
 
-          if (database) {
-            connectionUrl += `/${database}`;
-          }
+            if (database) {
+              connectionUrl += `/${database}`;
+            }
 
-          if (options) {
-            connectionUrl += `?${qs.stringify(options)}`;
-          }
-          break;
+            if (options) {
+              connectionUrl += `?${qs.stringify(options)}`;
+            }
+            break;
+        }
+      } else {
+        // for default database
+        connectionUrl = this.connectionOption
       }
 
       this.sequelizes[database] = new Sequelize(connectionUrl, connectionPropOptions);
