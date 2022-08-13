@@ -9,6 +9,10 @@ const DEFAULT_SEQUELIZE_OPTION = {
   dialectOptions: {
     multipleStatements: true,
   },
+  pool: {
+    max: 1,
+    min: 0,
+  }
 };
 
 /**
@@ -31,7 +35,7 @@ export default class RelationalDataAdapter extends BaseDataAdapter implements ID
 
     // save the root connection
     try{
-      this.sequelizes[''] = new Sequelize(this.connectionOption);
+      this.sequelizes[''] = new Sequelize(this.connectionOption, DEFAULT_SEQUELIZE_OPTION);
     } catch(err){
       console.log('Failed to set up the root connection', this.connectionOption)
     }
