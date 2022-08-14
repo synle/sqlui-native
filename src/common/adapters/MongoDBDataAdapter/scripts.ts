@@ -1,7 +1,7 @@
 import get from 'lodash.get';
 import set from 'lodash.set';
 import BaseDataScript, { getDivider } from 'src/common/adapters/BaseDataAdapter/scripts';
-import { SqlAction } from 'typings';
+import { SqlAction, SqluiCore } from 'typings';
 
 export const MONGO_ADAPTER_PREFIX = 'db';
 
@@ -309,6 +309,9 @@ export class ConcreteDataScripts extends BaseDataScript {
   }
 
   // dialect definitions
+  getDialectType(dialect) {
+    return `mongodb` as SqluiCore.Dialect;
+  }
   getDialectIcon(dialect) {
     return `${process.env.PUBLIC_URL}/assets/mongodb.png`;
   }

@@ -1,5 +1,8 @@
 import { ConnectionStringParser } from 'connection-string-parser';
-import { getDialectType } from 'src/common/adapters/DataScriptFactory';
+import {
+  getDialectType,
+  getDialectTypeFromConnectionString,
+} from 'src/common/adapters/DataScriptFactory';
 import { SqluiCore } from 'typings';
 
 export const MAX_CONNECTION_TIMEOUT = 3000;
@@ -23,7 +26,9 @@ export default abstract class BaseDataAdapter {
    * @param {string} connection in the uri scheme (cassandra://localhost:9042)
    */
   static getConnectionParameters(connection: string) {
-    const dialect = getDialectType(connection);
+    // NOTE: here we only want to parse,
+    // therefore will pull the database scheme from the URL
+    const dialect = getDialectTypeFromConnectionString(connection);
 
     if (dialect) {
       const connectionStringParser = new ConnectionStringParser({
