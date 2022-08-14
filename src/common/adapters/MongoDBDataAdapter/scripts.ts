@@ -336,7 +336,7 @@ export class ConcreteDataScripts extends BaseDataScript {
     return `${dialect}://username:password@localhost:27017`;
   }
 
-  getDialectIcon(dialect?: SqluiCore.Dialect) : string{
+  getDialectIcon(dialect?: SqluiCore.Dialect): string {
     return `${process.env.PUBLIC_URL}/assets/mongodb.png`;
   }
 

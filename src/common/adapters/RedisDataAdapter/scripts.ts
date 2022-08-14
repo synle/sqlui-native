@@ -278,7 +278,7 @@ export class ConcreteDataScripts extends BaseDataScript {
     }
   }
 
-  getDialectIcon(dialect?: SqluiCore.Dialect) : string{
+  getDialectIcon(dialect?: SqluiCore.Dialect): string {
     return `${process.env.PUBLIC_URL}/assets/redis.png`;
   }
 
