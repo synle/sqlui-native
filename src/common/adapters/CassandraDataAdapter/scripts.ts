@@ -404,11 +404,7 @@ export class ConcreteDataScripts extends BaseDataScript {
     return getSelectAllColumns(tableActionInput);
   }
 
-  getCodeSnippet(
-    connection,
-    query,
-    language,
-  ) {
+  getCodeSnippet(connection, query, language) {
     const sql = query.sql;
     const database = query.databaseId;
     const clientOptions = getClientOptions(connection.connection, database);

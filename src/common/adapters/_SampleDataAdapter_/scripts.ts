@@ -1,5 +1,5 @@
 import BaseDataScript, { getDivider } from 'src/common/adapters/BaseDataAdapter/scripts';
-import { SqlAction, SqluiCore } from 'typings';
+import { SqlAction } from 'typings';
 
 const formatter = 'js';
 
@@ -85,11 +85,7 @@ export class ConcreteDataScripts extends BaseDataScript {
   }
 
   // TODO: implement me
-  getCodeSnippet(
-    connection,
-    query,
-    language,
-  ) {
+  getCodeSnippet(connection, query, language) {
     switch (language) {
       case 'javascript':
         // TODO: implement me

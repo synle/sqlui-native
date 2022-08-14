@@ -1,6 +1,6 @@
 import BaseDataScript, { getDivider } from 'src/common/adapters/BaseDataAdapter/scripts';
 import { getClientOptions } from 'src/common/adapters/RedisDataAdapter/utils';
-import { SqlAction, SqluiCore } from 'typings';
+import { SqlAction } from 'typings';
 
 export const REDIS_ADAPTER_PREFIX = 'db';
 
@@ -298,11 +298,7 @@ export class ConcreteDataScripts extends BaseDataScript {
     return undefined;
   }
 
-  getCodeSnippet(
-    connection,
-    query,
-    language,
-  ) {
+  getCodeSnippet(connection, query, language) {
     const clientOptions = getClientOptions(connection.connection);
     const sql = query.sql;
     const database = query.databaseId;

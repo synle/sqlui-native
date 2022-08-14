@@ -431,11 +431,7 @@ export class ConcreteDataScripts extends BaseDataScript {
     return getSelectAllColumns(tableActionInput);
   }
 
-  getCodeSnippet(
-    connection,
-    query,
-    language,
-  ) {
+  getCodeSnippet(connection, query, language) {
     const connectionString = connection.connection.replace('cosmosdb://', '');
 
     switch (language) {

@@ -1,9 +1,9 @@
 import qs from 'qs';
 import BaseDataAdapter from 'src/common/adapters/BaseDataAdapter/index';
 import BaseDataScript, { getDivider } from 'src/common/adapters/BaseDataAdapter/scripts';
-import { escapeSQLValue, isValueNumber } from 'src/frontend/utils/formatter';
-import { SqlAction, SqluiCore } from 'typings';
 import { getDialectType } from 'src/common/adapters/DataScriptFactory';
+import { escapeSQLValue, isValueNumber } from 'src/frontend/utils/formatter';
+import { SqlAction } from 'typings';
 
 const formatter = 'sql';
 
@@ -730,11 +730,7 @@ export class ConcreteDataScripts extends BaseDataScript {
   }
 
   // sample code snippet
-  getCodeSnippet(
-    connection,
-    query,
-    language,
-  ) {
+  getCodeSnippet(connection, query, language) {
     let sql = query.sql;
     let database = query.databaseId;
     let deps: string[] = [];
