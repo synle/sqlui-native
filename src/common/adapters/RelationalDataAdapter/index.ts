@@ -55,12 +55,11 @@ export default class RelationalDataAdapter extends BaseDataAdapter implements ID
         break;
 
       default:
-        if (!database) {
-          connectionUrl = this.connectionOption;
-        } else {
+        connectionUrl = this.connectionOption;
+        if (database) {
           //@ts-ignore
           const { scheme, username, password, hosts, options } =
-            BaseDataAdapter.getConnectionParameters(this.connectionOption);
+            BaseDataAdapter.getConnectionParameters(connectionUrl);
 
           connectionUrl = `${scheme}://`;
           if (username && password) {

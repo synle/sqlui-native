@@ -1,3 +1,4 @@
+import qs from 'qs';
 import BaseDataAdapter from 'src/common/adapters/BaseDataAdapter/index';
 import BaseDataScript, { getDivider } from 'src/common/adapters/BaseDataAdapter/scripts';
 import { escapeSQLValue, isValueNumber } from 'src/frontend/utils/formatter';
@@ -705,18 +706,44 @@ export class ConcreteDataScripts extends BaseDataScript {
     query: SqluiCore.ConnectionQuery,
     language: SqluiCore.LanguageMode,
   ) {
-    let connectionString = connection.connection;
     let sql = query.sql;
     let database = query.databaseId;
     let deps: string[] = [];
 
+    // construct the connection url for code snippet
+    let connectionString = connection.connection;
+    connectionString = connectionString.replace('sslmode=require', 'sslmode=no-verify');
+    switch (connection.dialect) {
+      case 'sqlite':
+        break;
+      default:
+        if (database) {
+          //@ts-ignore
+          const { scheme, username, password, hosts, options } =
+            BaseDataAdapter.getConnectionParameters(connectionString);
+
+          connectionString = `${scheme}://`;
+          if (username && password) {
+            connectionString += `${encodeURIComponent(username)}:${encodeURIComponent(password)}`;
+          }
+
+          const [{ host, port }] = hosts;
+          connectionString += `@${host}:${port}`;
+
+          if (database) {
+            connectionString += `/${database}`;
+          }
+
+          if (options) {
+            connectionString += `?${qs.stringify(options)}`;
+          }
+        }
+        break;
+    }
+
     switch (language) {
       case 'javascript':
         // if there is a database, then append it
-        if (database) {
-          connectionString += `/${database}`;
-        }
-
         switch (connection.dialect) {
           case 'mssql':
             deps.push(`// npm install --save tedious`);
@@ -786,11 +813,6 @@ _doWork();
             // NOTE: we need to update the protocol for SQLAlchemy
             connectionString = connectionString.replace('mysql://', 'mysql+pymysql://');
             break;
-        }
-
-        // if there is a database, then append it
-        if (database) {
-          connectionString += `/${database}`;
         }
 
         return `
