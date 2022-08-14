@@ -19,6 +19,7 @@ export default interface IDataScript {
   getDatabaseScripts: () => SqlAction.DatabaseActionScriptGenerator[];
   getConnectionScripts: () => SqlAction.ConnectionActionScriptGenerator[];
   getDialectName: (dialect?: SqluiCore.Dialect) => string;
+  getDialectIcon: (dialect?: SqluiCore.Dialect) => string;
   getSampleConnectionString: (dialect?: SqluiCore.Dialect) => string;
   getSampleSelectQuery: (actionInput: SqlAction.TableInput) => SqlAction.Output | undefined;
 
