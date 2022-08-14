@@ -657,20 +657,6 @@ export class ConcreteDataScripts extends BaseDataScript {
   }
 
   // dialect definitions
-  getDialectType(dialect) {
-    switch (dialect) {
-      case 'mysql':
-      case 'mariadb':
-      case 'mssql':
-      case 'postgres':
-      case 'postgresql':
-      case 'sqlite':
-        return dialect;
-      default:
-        return undefined;
-    }
-  }
-
   getDialectIcon(dialect) {
     switch (dialect) {
       case 'postgresql':
