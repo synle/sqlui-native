@@ -148,7 +148,8 @@ async function generateMigrationScript(
     case 'mysql':
     case 'mariadb':
     case 'mssql':
-    case 'postgres': case 'postgresql':
+    case 'postgres':
+    case 'postgresql':
     case 'sqlite':
       res.push(`-- Schema Creation Script : ${migrationInfoMessage}`);
       res.push(formatSQL(getCreateDatabaseForRdbms(toQueryMetaData)?.query || ''));
@@ -208,7 +209,8 @@ async function generateMigrationScript(
       case 'mysql':
       case 'mariadb':
       case 'mssql':
-      case 'postgres': case 'postgresql':
+      case 'postgres':
+      case 'postgresql':
       case 'sqlite':
         res.push(`-- Data Migration Script`);
         if (hasSomeResults) {
@@ -629,7 +631,8 @@ function MigrationMetaDataInputs(props: MigrationMetaDataInputsProps): JSX.Eleme
     case 'mysql':
     case 'mariadb':
     case 'mssql':
-    case 'postgres': case 'postgresql':
+    case 'postgres':
+    case 'postgresql':
     case 'sqlite':
     case 'cassandra':
     case 'mongodb':

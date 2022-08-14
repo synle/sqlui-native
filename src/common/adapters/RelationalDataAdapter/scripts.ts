@@ -17,7 +17,8 @@ export function getSelectAllColumns(input: SqlAction.TableInput): SqlAction.Outp
         query: `SELECT TOP ${input.querySize} *
                 FROM ${input.tableId}`,
       };
-    case 'postgres': case 'postgresql':
+    case 'postgres':
+    case 'postgresql':
     case 'sqlite':
     case 'mariadb':
     case 'mysql':
@@ -42,7 +43,8 @@ export function getSelectCount(input: SqlAction.TableInput): SqlAction.Output | 
 
   switch (input.dialect) {
     case 'mssql':
-    case 'postgres': case 'postgresql':
+    case 'postgres':
+    case 'postgresql':
     case 'sqlite':
     case 'mariadb':
     case 'mysql':
@@ -77,7 +79,8 @@ export function getSelectSpecificColumns(
                 FROM ${input.tableId}
                 WHERE ${whereColumnString}`,
       };
-    case 'postgres': case 'postgresql':
+    case 'postgres':
+    case 'postgresql':
     case 'sqlite':
     case 'mariadb':
     case 'mysql':
@@ -113,7 +116,8 @@ export function getSelectDistinctValues(input: SqlAction.TableInput): SqlAction.
                 FROM ${input.tableId}
                 WHERE ${whereColumnString}`,
       };
-    case 'postgres': case 'postgresql':
+    case 'postgres':
+    case 'postgresql':
     case 'sqlite':
     case 'mariadb':
     case 'mysql':
@@ -155,7 +159,8 @@ export function getInsert(
 
   switch (input.dialect) {
     case 'mssql':
-    case 'postgres': case 'postgresql':
+    case 'postgres':
+    case 'postgresql':
     case 'sqlite':
     case 'mariadb':
     case 'mysql':
@@ -209,7 +214,8 @@ export function getBulkInsert(
 
   switch (input.dialect) {
     case 'mssql':
-    case 'postgres': case 'postgresql':
+    case 'postgres':
+    case 'postgresql':
     case 'sqlite':
     case 'mariadb':
     case 'mysql':
@@ -234,7 +240,8 @@ export function getUpdate(input: SqlAction.TableInput): SqlAction.Output | undef
 
   switch (input.dialect) {
     case 'mssql':
-    case 'postgres': case 'postgresql':
+    case 'postgres':
+    case 'postgresql':
     case 'sqlite':
     case 'mariadb':
     case 'mysql':
@@ -287,7 +294,8 @@ export function getUpdateWithValues(
 
   switch (input.dialect) {
     case 'mssql':
-    case 'postgres': case 'postgresql':
+    case 'postgres':
+    case 'postgresql':
     case 'sqlite':
     case 'mariadb':
     case 'mysql':
@@ -312,7 +320,8 @@ export function getDelete(input: SqlAction.TableInput): SqlAction.Output | undef
 
   switch (input.dialect) {
     case 'mssql':
-    case 'postgres': case 'postgresql':
+    case 'postgres':
+    case 'postgresql':
     case 'sqlite':
     case 'mariadb':
     case 'mysql':
@@ -359,7 +368,8 @@ export function getCreateTable(input: SqlAction.TableInput): SqlAction.Output | 
         formatter,
         query: `CREATE TABLE ${input.tableId} (${columnString})`,
       };
-    case 'postgres': case 'postgresql':
+    case 'postgres':
+    case 'postgresql':
       columnString = input.columns
         .map((col) => {
           const res = [col.name];
@@ -436,7 +446,8 @@ export function getDropTable(input: SqlAction.TableInput): SqlAction.Output | un
 
   switch (input.dialect) {
     case 'mssql':
-    case 'postgres': case 'postgresql':
+    case 'postgres':
+    case 'postgresql':
     case 'sqlite':
     case 'mariadb':
     case 'mysql':
@@ -459,7 +470,8 @@ export function getAddColumn(input: SqlAction.TableInput): SqlAction.Output | un
         query: `ALTER TABLE ${input.tableId}
                 ADD COLUMN newColumn1 NVARCHAR(200)`,
       };
-    case 'postgres': case 'postgresql':
+    case 'postgres':
+    case 'postgresql':
       return {
         label,
         formatter,
@@ -493,7 +505,8 @@ export function getDropColumns(input: SqlAction.TableInput): SqlAction.Output | 
 
   switch (input.dialect) {
     case 'mssql':
-    case 'postgres': case 'postgresql':
+    case 'postgres':
+    case 'postgresql':
     case 'sqlite':
     case 'mariadb':
     case 'mysql':
@@ -515,7 +528,8 @@ export function getDropDatabase(input: SqlAction.DatabaseInput): SqlAction.Outpu
 
   switch (input.dialect) {
     case 'mssql':
-    case 'postgres': case 'postgresql':
+    case 'postgres':
+    case 'postgresql':
     case 'sqlite':
     case 'mariadb':
     case 'mysql':
@@ -532,7 +546,8 @@ export function getCreateDatabase(input: SqlAction.DatabaseInput): SqlAction.Out
 
   switch (input.dialect) {
     case 'mssql':
-    case 'postgres': case 'postgresql':
+    case 'postgres':
+    case 'postgresql':
     case 'sqlite':
     case 'mariadb':
     case 'mysql':
@@ -559,7 +574,8 @@ export function getCreateSampleTable(input: SqlAction.DatabaseInput): SqlAction.
         );
       `;
       break;
-    case 'postgres': case 'postgresql':
+    case 'postgres':
+    case 'postgresql':
       query = `
         CREATE TABLE mocked_table
         (
@@ -603,7 +619,8 @@ export function getCreateConnectionDatabase(
 
   switch (input.dialect) {
     case 'mssql':
-    case 'postgres': case 'postgresql':
+    case 'postgres':
+    case 'postgresql':
     case 'sqlite':
     case 'mariadb':
     case 'mysql':
@@ -625,7 +642,8 @@ export class ConcreteDataScripts extends BaseDataScript {
       case 'mysql':
       case 'mariadb':
       case 'mssql':
-      case 'postgres': case 'postgresql':
+      case 'postgres':
+      case 'postgresql':
       case 'sqlite':
         return dialect;
       default:
@@ -692,7 +710,8 @@ export class ConcreteDataScripts extends BaseDataScript {
     switch (dialect) {
       case 'mssql':
         return `mssql://sa:password123!@localhost:1433`;
-      case 'postgres': case 'postgresql':
+      case 'postgres':
+      case 'postgresql':
         return `postgres://postgres:password@localhost:5432`;
       case 'sqlite':
         return `sqlite://test-db.sqlite`;
@@ -757,7 +776,8 @@ export class ConcreteDataScripts extends BaseDataScript {
           case 'mssql':
             deps.push(`// npm install --save tedious`);
             break;
-          case 'postgres': case 'postgresql':
+          case 'postgres':
+          case 'postgresql':
             deps.push(`// npm install --save pg pg-hstore`);
             break;
           case 'sqlite':
@@ -804,7 +824,8 @@ _doWork();
             // NOTE: we need to update the protocol for SQLAlchemy
             connectionString = connectionString.replace('mssql://', 'mssql+pymssql://');
             break;
-          case 'postgres': case 'postgresql':
+          case 'postgres':
+          case 'postgresql':
             deps.push(`# pip install psycopg2-binary`);
 
             // NOTE: SQLAlchemy used to accept both, but has removed support for the postgres name
