@@ -240,6 +240,7 @@ function RecordForm(props) {
         case 'mariadb':
         case 'mssql':
         case 'postgres':
+        case 'postgresql':
         case 'sqlite':
         case 'cassandra':
           newData = props.data;
@@ -274,6 +275,7 @@ function RecordForm(props) {
         case 'mariadb':
         case 'mssql':
         case 'postgres':
+        case 'postgresql':
         case 'sqlite':
         case 'cassandra':
           for (const column of columns) {
@@ -335,6 +337,7 @@ function RecordForm(props) {
       case 'mariadb':
       case 'mssql':
       case 'postgres':
+      case 'postgresql':
       case 'sqlite':
         if (columns && columns.length > 0) {
           for (const column of columns) {
@@ -499,6 +502,7 @@ export function NewRecordPage() {
       case 'mariadb':
       case 'mssql':
       case 'postgres':
+      case 'postgresql':
       case 'sqlite':
         sql = formatSQL(
           getInsertForRdmbs(
@@ -677,6 +681,7 @@ export function EditRecordPage(props: RecordDetailsPageProps): JSX.Element | nul
       case 'mariadb':
       case 'mssql':
       case 'postgres':
+      case 'postgresql':
       case 'sqlite':
         // find out the main condition
         for (const column of columns) {

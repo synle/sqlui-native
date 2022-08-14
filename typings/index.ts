@@ -18,6 +18,7 @@ export module SqluiCore {
     | 'mariadb'
     | 'mssql'
     | 'postgres'
+    | 'postgresql'
     | 'sqlite'
     | 'cassandra'
     | 'mongodb'
