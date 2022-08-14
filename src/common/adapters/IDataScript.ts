@@ -13,7 +13,7 @@ export default interface IDataScript {
   supportEditRecordForm: () => boolean;
 
   // dialect definitions
-  getDialectType: (dialect?: string) => SqluiCore.Dialect | undefined;
+  getDialectType: (dialect?: SqluiCore.Dialect) => SqluiCore.Dialect | undefined;
   getDialectName: (dialect?: SqluiCore.Dialect) => string;
   getDialectIcon: (dialect?: SqluiCore.Dialect) => string;
 
