@@ -1,7 +1,6 @@
 import qs from 'qs';
 import BaseDataAdapter from 'src/common/adapters/BaseDataAdapter/index';
 import BaseDataScript, { getDivider } from 'src/common/adapters/BaseDataAdapter/scripts';
-import { getDialectType } from 'src/common/adapters/DataScriptFactory';
 import { escapeSQLValue, isValueNumber } from 'src/frontend/utils/formatter';
 import { SqlAction } from 'typings';
 

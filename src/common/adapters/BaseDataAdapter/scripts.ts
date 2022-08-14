@@ -1,6 +1,6 @@
+import { getDialectType } from 'src/common/adapters/DataScriptFactory';
 import IDataScript from 'src/common/adapters/IDataScript';
 import { SqlAction, SqluiCore } from 'typings';
-import { getDialectType, getDialectTypeFromConnectionString } from 'src/common/adapters/DataScriptFactory';
 
 export function getDivider(): SqlAction.Output {
   return {
