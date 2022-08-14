@@ -187,6 +187,7 @@ async function generateMigrationScript(
       res.push(formatJS(getCreateCollectionForMongoDB(toQueryMetaData)?.query || ''));
       break;
     // case 'redis': // TODO: to be implemented
+    // case 'rediss': // TODO: to be implemented
     case 'cosmosdb':
       res.push(`// Schema Creation Script : ${migrationInfoMessage}`);
       res.push(formatJS(getCreateDatabaseForAzCosmosDb(toQueryMetaData)?.query || ''));
@@ -238,7 +239,8 @@ async function generateMigrationScript(
           errors.push(MESSAGE_NO_DATA_FOR_MIGRATION);
         }
         break;
-      // case 'redis':// TODO: to be implemented
+      // case 'redis': // TODO: to be implemented
+      // case 'rediss': // TODO: to be implemented
       case 'cosmosdb':
         res.push(`// Data Migration Script`);
         if (hasSomeResults) {
@@ -628,6 +630,7 @@ function MigrationMetaDataInputs(props: MigrationMetaDataInputsProps): JSX.Eleme
   let shouldShowNewDatabaseIdInput = true;
   switch (migrationMetaData.toDialect) {
     // case 'redis': // TODO: to be implemented
+    // case 'rediss': // TODO: to be implemented
     case 'mysql':
     case 'mariadb':
     case 'mssql':

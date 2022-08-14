@@ -23,6 +23,7 @@ export module SqluiCore {
     | 'cassandra'
     | 'mongodb'
     | 'redis'
+    | 'rediss'
     | 'cosmosdb'
     | 'aztable';
 

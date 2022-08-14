@@ -247,6 +247,7 @@ function RecordForm(props) {
           break;
         case 'mongodb':
         // case 'redis': // TODO: to be implemented
+        // case 'rediss': // TODO: to be implemented
         case 'cosmosdb':
           newRawValue = { ...props.data };
           break;
@@ -290,6 +291,7 @@ function RecordForm(props) {
           setRawValue(JSON.stringify(newData, null, 2));
           break;
         // case 'redis': // TODO: to be implemented
+        // case 'rediss': // TODO: to be implemented
         case 'cosmosdb':
           for (const column of columns.filter(
             (targetColumn) => targetColumn.name[0] !== '_' && !targetColumn.primaryKey,
@@ -421,6 +423,7 @@ function RecordForm(props) {
         break;
       case 'mongodb':
       // case 'redis': // TODO: to be implemented
+      // case 'rediss': // TODO: to be implemented
       case 'cosmosdb':
       case 'aztable':
         // js raw value
@@ -549,6 +552,7 @@ export function NewRecordPage() {
         }
         break;
       // case 'redis': // TODO: to be implemented
+      // case 'rediss': // TODO: to be implemented
       case 'cosmosdb':
         try {
           const jsonValue = JSON.parse(rawValue);
@@ -761,6 +765,7 @@ export function EditRecordPage(props: RecordDetailsPageProps): JSX.Element | nul
         }
         break;
       // case 'redis': // TODO: to be implemented
+      // case 'rediss': // TODO: to be implemented
       case 'cosmosdb':
         try {
           const jsonValue = JSON.parse(rawValue);
