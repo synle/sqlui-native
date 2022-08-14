@@ -1,7 +1,6 @@
 import qs from 'qs';
 import BaseDataAdapter from 'src/common/adapters/BaseDataAdapter/index';
 import BaseDataScript, { getDivider } from 'src/common/adapters/BaseDataAdapter/scripts';
-import { getDialectType } from 'src/common/adapters/DataScriptFactory';
 import { escapeSQLValue, isValueNumber } from 'src/frontend/utils/formatter';
 import { SqlAction } from 'typings';
 
@@ -657,20 +656,6 @@ export class ConcreteDataScripts extends BaseDataScript {
   }
 
   // dialect definitions
-  getDialectType(dialect) {
-    switch (dialect) {
-      case 'mysql':
-      case 'mariadb':
-      case 'mssql':
-      case 'postgres':
-      case 'postgresql':
-      case 'sqlite':
-        return dialect;
-      default:
-        return undefined;
-    }
-  }
-
   getDialectIcon(dialect) {
     switch (dialect) {
       case 'postgresql':
