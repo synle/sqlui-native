@@ -62,10 +62,10 @@ export default function ConnectionHelper(props: ConnectionHelperProps) {
         This database scheme is not supported by the connection helper
       </div>
     ) : (
-      formInputs.map(([inputKey, inputLabel, optionalFlag]) => {
+      formInputs.map(([inputKey, inputLabel, optionalFlag], idx) => {
         const isRequired = optionalFlag !== 'optional';
         return (
-          <div className='FormInput__Row'>
+          <div className='FormInput__Row' key={idx + inputKey}>
             <TextField
               label={inputLabel}
               value={value[inputKey]}
