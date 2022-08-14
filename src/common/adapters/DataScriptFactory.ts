@@ -116,7 +116,7 @@ export function getIsTableIdRequiredForQueryByDialect(dialect?: string) {
 export function getDialectType(connection: string) {
   // TODO: properly do this with regex
   const dialect = connection.substr(0, connection.indexOf(':')).toLowerCase();
-  return _getImplementation(dialect)?.getDialectType(dialect);
+  return _getImplementation(dialect)?.getDialectType(dialect as SqluiCore.Dialect);
 }
 
 export function getDialectName(dialect?: string) {
