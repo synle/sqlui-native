@@ -240,7 +240,7 @@ async function generateMigrationScript(
         }
         break;
       // case 'redis': // TODO: to be implemented
-    // case 'rediss': // TODO: to be implemented
+      // case 'rediss': // TODO: to be implemented
       case 'cosmosdb':
         res.push(`// Data Migration Script`);
         if (hasSomeResults) {

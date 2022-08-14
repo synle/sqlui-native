@@ -234,7 +234,8 @@ export class ConcreteDataScripts extends BaseDataScript {
   getDialectType(dialect) {
     switch (dialect) {
       case 'rediss':
-      case 'redis': case 'rediss':
+      case 'redis':
+      case 'rediss':
         return dialect;
       default:
         return undefined;
@@ -245,7 +246,8 @@ export class ConcreteDataScripts extends BaseDataScript {
     switch (dialect) {
       case 'rediss':
         return `Redis with SSL`;
-      case 'redis': case 'rediss':
+      case 'redis':
+      case 'rediss':
       default:
         return `Redis`;
     }
@@ -298,7 +300,8 @@ export class ConcreteDataScripts extends BaseDataScript {
     switch (dialect) {
       case 'rediss':
         return `rediss://username:password@localhost:6379`;
-      case 'redis': case 'rediss':
+      case 'redis':
+      case 'rediss':
       default:
         return `redis://localhost:6379`;
     }
