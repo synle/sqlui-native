@@ -11,17 +11,8 @@ export function getDivider(): SqlAction.Output {
 export default abstract class BaseDataScript implements IDataScript {
   dialects: string[] = [];
 
-  isDialectSupported(targetDialect?: string) {
-    return !!targetDialect && this.dialects.indexOf(targetDialect) >= 0;
-  }
-
-  getDialectType(connectionString: string) {
-    // attempt to return the first item in the dialects / schemes
-    if (this.dialects.length > 0) {
-      return this.dialects[0] as SqluiCore.Dialect;
-    }
-
-    return undefined;
+  isDialectSupported(dialect?: string) {
+    return !!dialect && this.dialects.indexOf(dialect) >= 0;
   }
 
   getConnectionFormInputs() {
@@ -53,6 +44,25 @@ export default abstract class BaseDataScript implements IDataScript {
     return false;
   }
 
+  // dialect definitions
+  getDialectType(dialect?: string) {
+    // attempt to return the first item in the dialects / schemes
+    if (this.dialects.length > 0) {
+      return this.dialects[0] as SqluiCore.Dialect;
+    }
+
+    return undefined;
+  }
+
+  getDialectName(dialect?: SqluiCore.Dialect): string {
+    // capitalize the first letter
+    return (dialect || '').replace(/^\w/, (c) => c.toUpperCase());
+  }
+
+  getDialectIcon(dialect?: SqluiCore.Dialect): string {
+    return `${process.env.PUBLIC_URL}/assets/${dialect}.png`;
+  }
+
   // sample data script
   getTableScripts(): SqlAction.TableActionScriptGenerator[] {
     return [];
@@ -64,15 +74,6 @@ export default abstract class BaseDataScript implements IDataScript {
 
   getConnectionScripts(): SqlAction.ConnectionActionScriptGenerator[] {
     return [];
-  }
-
-  getDialectName(dialect?: SqluiCore.Dialect): string {
-    // capitlize the first letter
-    return (dialect || '').replace(/^\w/, (c) => c.toUpperCase());
-  }
-
-  getDialectIcon(dialect?: SqluiCore.Dialect): string {
-    return `${process.env.PUBLIC_URL}/assets/${dialect}.png`;
   }
 
   getSampleConnectionString(dialect?: SqluiCore.Dialect) {

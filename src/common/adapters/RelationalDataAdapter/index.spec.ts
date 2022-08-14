@@ -85,26 +85,22 @@ Array [
   test('Execute Select', async () => {
     const resp = await adapter.execute(`SELECT * FROM artists ORDER BY Name ASC LIMIT 10`);
     expect(resp?.raw?.length).toBe(3);
-    expect(resp).toMatchInlineSnapshot(`
-Object {
-  "affectedRows": undefined,
-  "meta": Statement {},
-  "ok": true,
-  "raw": Array [
-    Object {
-      "ArtistId": 1,
-      "Name": "Test Artist 1",
-    },
-    Object {
-      "ArtistId": 2,
-      "Name": "Test Artist 2",
-    },
-    Object {
-      "ArtistId": 3,
-      "Name": "Test Artist 3",
-    },
-  ],
-}
+    expect(resp?.ok).toBe(true);
+    expect(resp.raw).toMatchInlineSnapshot(`
+Array [
+  Object {
+    "ArtistId": 1,
+    "Name": "Test Artist 1",
+  },
+  Object {
+    "ArtistId": 2,
+    "Name": "Test Artist 2",
+  },
+  Object {
+    "ArtistId": 3,
+    "Name": "Test Artist 3",
+  },
+]
 `);
   });
 
