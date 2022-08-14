@@ -1,5 +1,8 @@
 import CloudIcon from '@mui/icons-material/Cloud';
 import { SUPPORTED_DIALECTS } from 'src/common/adapters/DataScriptFactory';
+import {
+  getDialectIcon
+} from 'src/common/adapters/DataScriptFactory';
 
 type ConnectionTypeIconProps = {
   dialect?: string;
@@ -16,7 +19,7 @@ export default function ConnectionTypeIcon(props: ConnectionTypeIconProps): JSX.
   if (dialect && SUPPORTED_DIALECTS.indexOf(dialect) >= 0) {
     return (
       <img
-        src={`${process.env.PUBLIC_URL}/assets/${dialect}.png`}
+        src={getDialectIcon(dialect)}
         alt={dialect}
         title={dialect}
         width={25}

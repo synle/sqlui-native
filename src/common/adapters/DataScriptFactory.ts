@@ -121,6 +121,10 @@ export function getDialectName(dialect?: string) {
   return _getImplementation(dialect)?.getDialectName(dialect as SqluiCore.Dialect) || '';
 }
 
+export function getDialectIcon(dialect?: string) {
+  return _getImplementation(dialect)?.getDialectIcon(dialect as SqluiCore.Dialect) || '';
+}
+
 export function getSampleConnectionString(dialect?: string) {
   return _getImplementation(dialect)?.getSampleConnectionString(dialect as SqluiCore.Dialect) || '';
 }

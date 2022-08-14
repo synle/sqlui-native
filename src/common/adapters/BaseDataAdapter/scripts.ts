@@ -71,6 +71,10 @@ export default abstract class BaseDataScript implements IDataScript {
     return (dialect || '').replace(/^\w/, (c) => c.toUpperCase());
   }
 
+  getDialectIcon(dialect?: SqluiCore.Dialect) : string{
+    return `${process.env.PUBLIC_URL}/assets/${dialect}.png`;
+  }
+
   getSampleConnectionString(dialect?: SqluiCore.Dialect) {
     return '';
   }
