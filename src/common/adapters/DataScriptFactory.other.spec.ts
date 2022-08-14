@@ -1,9 +1,9 @@
 import {
   consolidateDialects,
   getAllImplementations,
-  getDialectType,
   getDialectIcon,
-  getDialectName
+  getDialectName,
+  getDialectType,
 } from 'src/common/adapters/DataScriptFactory';
 
 describe('DataScriptFactory - Other Tests', () => {
@@ -12,7 +12,7 @@ describe('DataScriptFactory - Other Tests', () => {
       const allDialects = getAllImplementations().reduce<string[]>(consolidateDialects, []);
       const uniqueDialects = [...new Set(allDialects)];
       expect(allDialects).toStrictEqual(uniqueDialects);
-      expect(allDialects.length > 0).toBe(true)
+      expect(allDialects.length > 0).toBe(true);
     });
   });
 

@@ -93,7 +93,9 @@ Array [
       );
       expect(config?.scheme).toMatchInlineSnapshot(`"mongodb+srv"`);
       expect(config?.username).toMatchInlineSnapshot(`"username"`);
-      expect(config?.password).toMatchInlineSnapshot(`"Mgvkgff8gjv6fp4ju4hag97%t/X(EB@n9)(T(7P)nm2ytsbmd2aw26ncsd54"`);
+      expect(config?.password).toMatchInlineSnapshot(
+        `"Mgvkgff8gjv6fp4ju4hag97%t/X(EB@n9)(T(7P)nm2ytsbmd2aw26ncsd54"`,
+      );
       expect(config?.endpoint).toMatchInlineSnapshot(`undefined`);
       expect(config?.options).toMatchInlineSnapshot(`undefined`);
       expect(config?.hosts).toMatchInlineSnapshot(`
@@ -171,9 +173,7 @@ Array [
     });
 
     test('redis simple example', async () => {
-      const config = BaseDataAdapter.getConnectionParameters(
-        'redis://localhost:6379',
-      );
+      const config = BaseDataAdapter.getConnectionParameters('redis://localhost:6379');
       expect(config?.scheme).toMatchInlineSnapshot(`"redis"`);
       expect(config?.username).toMatchInlineSnapshot(`undefined`);
       expect(config?.password).toMatchInlineSnapshot(`undefined`);
