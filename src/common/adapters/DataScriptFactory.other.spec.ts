@@ -63,5 +63,15 @@ describe('DataScriptFactory - Other Tests', () => {
       const connection = `mysql://root:password@localhost:3306`;
       expect(getDialectType(connection)).toMatchInlineSnapshot(`"mysql"`);
     });
+
+    test('redis', async () => {
+      const connection = `redis://localhost:6379`;
+      expect(getDialectType(connection)).toMatchInlineSnapshot(`"redis"`);
+    });
+
+    test('rediss', async () => {
+      const connection = `rediss://username:password@localhost:6379`;
+      expect(getDialectType(connection)).toMatchInlineSnapshot(`"rediss"`);
+    });
   });
 });
