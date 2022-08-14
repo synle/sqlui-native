@@ -152,6 +152,7 @@ export default abstract class BaseDataAdapter {
                   return 'FLOAT';
                 case 'mongodb':
                 case 'redis':
+                case 'rediss':
                 case 'cosmosdb':
                 case 'aztable':
                 default:
@@ -170,6 +171,7 @@ export default abstract class BaseDataAdapter {
                   return 'INT';
                 case 'mongodb':
                 case 'redis':
+                case 'rediss':
                 case 'cosmosdb':
                 case 'aztable':
                 default:
@@ -188,6 +190,7 @@ export default abstract class BaseDataAdapter {
                   return 'BOOLEAN';
                 case 'mongodb':
                 case 'redis':
+                case 'rediss':
                 case 'cosmosdb':
                 case 'aztable':
                 default:
@@ -206,6 +209,7 @@ export default abstract class BaseDataAdapter {
                   return 'TEXT';
                 case 'mongodb':
                 case 'redis':
+                case 'rediss':
                 case 'cosmosdb':
                 case 'aztable':
                 default:
