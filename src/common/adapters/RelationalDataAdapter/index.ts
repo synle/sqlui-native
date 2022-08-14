@@ -104,6 +104,7 @@ export default class RelationalDataAdapter extends BaseDataAdapter implements ID
         sql = `SELECT name AS 'database' FROM sys.databases`;
         break;
       case 'postgres':
+      case 'postgresql':
         sql = `SELECT datname AS database FROM pg_database`;
         break;
       case 'sqlite':
@@ -156,6 +157,7 @@ export default class RelationalDataAdapter extends BaseDataAdapter implements ID
         sql = `SELECT name AS 'tablename' FROM SYSOBJECTS WHERE xtype = 'U' ORDER BY tablename`;
         break;
       case 'postgres':
+      case 'postgresql':
         sql = `SELECT tablename FROM pg_tables WHERE schemaname='public' ORDER BY tablename`;
         break;
       default:
@@ -188,6 +190,7 @@ export default class RelationalDataAdapter extends BaseDataAdapter implements ID
     switch (this.dialect) {
       case 'mssql':
       case 'postgres':
+      case 'postgresql':
       case 'sqlite':
       case 'mariadb':
       case 'mysql':
@@ -253,6 +256,7 @@ export default class RelationalDataAdapter extends BaseDataAdapter implements ID
           affectedRows = metaToUse;
           break;
         case 'postgres':
+        case 'postgresql':
           if (metaToUse.rowCount >= 0) {
             affectedRows = metaToUse.rowCount;
           }

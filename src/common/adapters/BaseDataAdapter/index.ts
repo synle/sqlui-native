@@ -157,6 +157,7 @@ export default abstract class BaseDataAdapter {
                 case 'mariadb':
                 case 'mssql':
                 case 'postgres':
+                case 'postgresql':
                 case 'sqlite':
                 case 'cassandra':
                   return 'FLOAT';
@@ -173,6 +174,7 @@ export default abstract class BaseDataAdapter {
                 case 'mariadb':
                 case 'mssql':
                 case 'postgres':
+                case 'postgresql':
                 case 'sqlite':
                   return 'INTEGER';
                 case 'cassandra':
@@ -191,6 +193,7 @@ export default abstract class BaseDataAdapter {
                 case 'mysql':
                 case 'mariadb':
                 case 'postgres':
+                case 'postgresql':
                 case 'sqlite':
                 case 'cassandra':
                   return 'BOOLEAN';
@@ -208,6 +211,7 @@ export default abstract class BaseDataAdapter {
                 case 'mariadb':
                 case 'mssql':
                 case 'postgres':
+                case 'postgresql':
                 case 'sqlite':
                 case 'cassandra':
                   return 'TEXT';
