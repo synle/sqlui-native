@@ -308,6 +308,12 @@ export class ConcreteDataScripts extends BaseDataScript {
     return true;
   }
 
+  // dialect definitions
+  getDialectIcon(dialect) {
+    return `${process.env.PUBLIC_URL}/assets/mongodb.png`;
+  }
+
+  // core methods
   getTableScripts() {
     return [
       getSelectAllColumns,
@@ -336,18 +342,14 @@ export class ConcreteDataScripts extends BaseDataScript {
     return `${dialect}://username:password@localhost:27017`;
   }
 
-  getDialectIcon(dialect?: SqluiCore.Dialect): string {
-    return `${process.env.PUBLIC_URL}/assets/mongodb.png`;
-  }
-
-  getSampleSelectQuery(actionInput: SqlAction.TableInput) {
-    return getSelectAllColumns(actionInput);
+  getSampleSelectQuery(tableActionInput) {
+    return getSelectAllColumns(tableActionInput);
   }
 
   getCodeSnippet(
-    connection: SqluiCore.ConnectionProps,
-    query: SqluiCore.ConnectionQuery,
-    language: SqluiCore.LanguageMode,
+    connection,
+    query,
+    language,
   ) {
     let connectionString = connection.connection;
     let sql = query.sql;

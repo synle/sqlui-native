@@ -80,15 +80,15 @@ export class ConcreteDataScripts extends BaseDataScript {
   }
 
   // TODO: implement me
-  getSampleSelectQuery(actionInput: SqlAction.TableInput): SqlAction.Output | undefined {
+  getSampleSelectQuery(tableActionInput) {
     return undefined;
   }
 
   // TODO: implement me
   getCodeSnippet(
-    connection: SqluiCore.ConnectionProps,
-    query: SqluiCore.ConnectionQuery,
-    language: SqluiCore.LanguageMode,
+    connection,
+    query,
+    language,
   ) {
     switch (language) {
       case 'javascript':

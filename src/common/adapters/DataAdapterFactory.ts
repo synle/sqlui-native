@@ -20,7 +20,7 @@ export function getDataAdapter(connection: string) {
   // TODO: here we should initialize the connection based on type
   // of the connection string
   let adapter: IDataAdapter | undefined;
-  const targetDialect = BaseDataAdapter.getDialect(connection);
+  const targetDialect = getDialectType(connection);
 
   if (RelationalDataAdapterScripts.isDialectSupported(targetDialect)) {
     adapter = new RelationalDataAdapter(connection);

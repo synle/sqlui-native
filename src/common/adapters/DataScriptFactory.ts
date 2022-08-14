@@ -7,6 +7,8 @@ import RedisDataAdapterScripts from 'src/common/adapters/RedisDataAdapter/script
 import RelationalDataAdapterScripts from 'src/common/adapters/RelationalDataAdapter/scripts';
 import { formatJS, formatSQL } from 'src/frontend/utils/formatter';
 import { SqlAction, SqluiCore } from 'typings';
+import BaseDataAdapter from 'src/common/adapters/BaseDataAdapter/index';
+
 function _formatScript(formatter?: string, query?: string) {
   query = query || '';
   switch (formatter) {
@@ -65,10 +67,6 @@ export function getAllImplementations(): BaseDataScript[] {
   ];
 }
 
-export function getDialectType(connection: string, dialect?: string) {
-  return _getImplementation(dialect)?.getDialectType(connection);
-}
-
 export function getConnectionFormInputs(dialect?: string) {
   return _getImplementation(dialect)?.getConnectionFormInputs() || [];
 }
@@ -115,6 +113,12 @@ export function getSyntaxModeByDialect(dialect?: string) {
 
 export function getIsTableIdRequiredForQueryByDialect(dialect?: string) {
   return _getImplementation(dialect)?.getIsTableIdRequiredForQuery() || false;
+}
+
+export function getDialectType(connection: string) {
+  // TODO: properly do this with regex
+  const dialect = connection.substr(0, connection.indexOf(':')).toLowerCase();
+  return _getImplementation(dialect)?.getDialectType(dialect);
 }
 
 export function getDialectName(dialect?: string) {

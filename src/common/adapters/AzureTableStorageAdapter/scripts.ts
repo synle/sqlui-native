@@ -323,14 +323,14 @@ export class ConcreteDataScripts extends BaseDataScript {
     return `aztable://DefaultEndpointsProtocol=https;AccountName=<your_account_name>;AccountKey=<your_account_key>;EndpointSuffix=core.windows.net`;
   }
 
-  getSampleSelectQuery(actionInput: SqlAction.TableInput) {
-    return getSelectAllColumns(actionInput);
+  getSampleSelectQuery(tableActionInput) {
+    return getSelectAllColumns(tableActionInput);
   }
 
   getCodeSnippet(
-    connection: SqluiCore.ConnectionProps,
-    query: SqluiCore.ConnectionQuery,
-    language: SqluiCore.LanguageMode,
+    connection,
+    query,
+    language,
   ) {
     const connectionString = connection.connection.replace('aztable://', '');
 

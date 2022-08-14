@@ -400,14 +400,14 @@ export class ConcreteDataScripts extends BaseDataScript {
     return `cassandra://username:password@localhost:9042`;
   }
 
-  getSampleSelectQuery(actionInput: SqlAction.TableInput) {
-    return getSelectAllColumns(actionInput);
+  getSampleSelectQuery(tableActionInput) {
+    return getSelectAllColumns(tableActionInput);
   }
 
   getCodeSnippet(
-    connection: SqluiCore.ConnectionProps,
-    query: SqluiCore.ConnectionQuery,
-    language: SqluiCore.LanguageMode,
+    connection,
+    query,
+    language,
   ) {
     const sql = query.sql;
     const database = query.databaseId;
