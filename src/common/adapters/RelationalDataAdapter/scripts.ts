@@ -1,8 +1,9 @@
 import qs from 'qs';
 import BaseDataAdapter from 'src/common/adapters/BaseDataAdapter/index';
 import BaseDataScript, { getDivider } from 'src/common/adapters/BaseDataAdapter/scripts';
+import { getDialectType } from 'src/common/adapters/DataScriptFactory';
 import { escapeSQLValue, isValueNumber } from 'src/frontend/utils/formatter';
-import { SqlAction, SqluiCore } from 'typings';
+import { SqlAction } from 'typings';
 
 const formatter = 'sql';
 
@@ -635,22 +636,6 @@ export function getCreateConnectionDatabase(
 export class ConcreteDataScripts extends BaseDataScript {
   dialects = ['mysql', 'mariadb', 'mssql', 'postgres', 'postgresql', 'sqlite'];
 
-  getDialectType(connectionString: string) {
-    const dialect = BaseDataAdapter.getDialect(connectionString);
-
-    switch (dialect) {
-      case 'mysql':
-      case 'mariadb':
-      case 'mssql':
-      case 'postgres':
-      case 'postgresql':
-      case 'sqlite':
-        return dialect;
-      default:
-        return undefined;
-    }
-  }
-
   getIsTableIdRequiredForQuery() {
     return false;
   }
@@ -671,6 +656,31 @@ export class ConcreteDataScripts extends BaseDataScript {
     return true;
   }
 
+  // dialect definitions
+  getDialectType(dialect) {
+    switch (dialect) {
+      case 'mysql':
+      case 'mariadb':
+      case 'mssql':
+      case 'postgres':
+      case 'postgresql':
+      case 'sqlite':
+        return dialect;
+      default:
+        return undefined;
+    }
+  }
+
+  getDialectIcon(dialect) {
+    switch (dialect) {
+      case 'postgresql':
+        return `${process.env.PUBLIC_URL}/assets/postgres.png`;
+      default:
+        return super.getDialectIcon(dialect);
+    }
+  }
+
+  // core script methods
   getTableScripts() {
     return [
       getSelectAllColumns,
@@ -697,15 +707,6 @@ export class ConcreteDataScripts extends BaseDataScript {
     return [getDivider, getCreateConnectionDatabase];
   }
 
-  getDialectIcon(dialect?: SqluiCore.Dialect): string {
-    switch (dialect) {
-      case 'postgresql':
-        return `${process.env.PUBLIC_URL}/assets/postgres.png`;
-      default:
-        return super.getDialectIcon(dialect);
-    }
-  }
-
   getSampleConnectionString(dialect) {
     switch (dialect) {
       case 'mssql':
@@ -724,16 +725,12 @@ export class ConcreteDataScripts extends BaseDataScript {
     }
   }
 
-  getSampleSelectQuery(actionInput: SqlAction.TableInput) {
-    return getSelectAllColumns(actionInput);
+  getSampleSelectQuery(tableActionInput) {
+    return getSelectAllColumns(tableActionInput);
   }
 
   // sample code snippet
-  getCodeSnippet(
-    connection: SqluiCore.ConnectionProps,
-    query: SqluiCore.ConnectionQuery,
-    language: SqluiCore.LanguageMode,
-  ) {
+  getCodeSnippet(connection, query, language) {
     let sql = query.sql;
     let database = query.databaseId;
     let deps: string[] = [];

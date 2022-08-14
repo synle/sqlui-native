@@ -1,7 +1,7 @@
 import get from 'lodash.get';
 import set from 'lodash.set';
 import BaseDataScript, { getDivider } from 'src/common/adapters/BaseDataAdapter/scripts';
-import { SqlAction, SqluiCore } from 'typings';
+import { SqlAction } from 'typings';
 
 export const MONGO_ADAPTER_PREFIX = 'db';
 
@@ -308,6 +308,12 @@ export class ConcreteDataScripts extends BaseDataScript {
     return true;
   }
 
+  // dialect definitions
+  getDialectIcon(dialect) {
+    return `${process.env.PUBLIC_URL}/assets/mongodb.png`;
+  }
+
+  // core methods
   getTableScripts() {
     return [
       getSelectAllColumns,
@@ -336,19 +342,11 @@ export class ConcreteDataScripts extends BaseDataScript {
     return `${dialect}://username:password@localhost:27017`;
   }
 
-  getDialectIcon(dialect?: SqluiCore.Dialect): string {
-    return `${process.env.PUBLIC_URL}/assets/mongodb.png`;
+  getSampleSelectQuery(tableActionInput) {
+    return getSelectAllColumns(tableActionInput);
   }
 
-  getSampleSelectQuery(actionInput: SqlAction.TableInput) {
-    return getSelectAllColumns(actionInput);
-  }
-
-  getCodeSnippet(
-    connection: SqluiCore.ConnectionProps,
-    query: SqluiCore.ConnectionQuery,
-    language: SqluiCore.LanguageMode,
-  ) {
+  getCodeSnippet(connection, query, language) {
     let connectionString = connection.connection;
     let sql = query.sql;
     let database = query.databaseId;

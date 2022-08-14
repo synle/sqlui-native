@@ -1,4 +1,5 @@
 import { ConnectionStringParser } from 'connection-string-parser';
+import { getDialectType } from 'src/common/adapters/DataScriptFactory';
 import { SqluiCore } from 'typings';
 
 export const MAX_CONNECTION_TIMEOUT = 3000;
@@ -9,23 +10,11 @@ export default abstract class BaseDataAdapter {
 
   constructor(connectionOption: string) {
     this.connectionOption = connectionOption as string;
+    this.dialect = getDialectType(connectionOption);
   }
 
   protected getConnectionString(): string {
     return this.connectionOption.replace(/^[a-z0-9+]+:\/\//i, '');
-  }
-
-  /**
-   * get dialect string from a connection string
-   * @param {string} connection in the uri scheme (cassandra://localhost:9042)
-   * @return {string} the dialect, in this case, it's cassandra
-   */
-  static getDialect(connection: string): string | undefined {
-    try {
-      return connection.substr(0, connection.indexOf(':')).toLowerCase();
-    } catch (err) {
-      return undefined;
-    }
   }
 
   /**
@@ -34,7 +23,7 @@ export default abstract class BaseDataAdapter {
    * @param {string} connection in the uri scheme (cassandra://localhost:9042)
    */
   static getConnectionParameters(connection: string) {
-    const dialect = BaseDataAdapter.getDialect(connection);
+    const dialect = getDialectType(connection);
 
     if (dialect) {
       const connectionStringParser = new ConnectionStringParser({
