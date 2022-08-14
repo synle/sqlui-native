@@ -45,9 +45,6 @@ export function getDataAdapter(connection: string) {
     throw 'dialect not supported';
   }
 
-  // override with dialect
-  adapter.dialect = getDialectType(connection, targetDialect);
-
   return adapter;
 }
 

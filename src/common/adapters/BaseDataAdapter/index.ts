@@ -1,5 +1,6 @@
 import { ConnectionStringParser } from 'connection-string-parser';
 import { SqluiCore } from 'typings';
+import { getDialectType } from 'src/common/adapters/DataScriptFactory';
 
 export const MAX_CONNECTION_TIMEOUT = 3000;
 
@@ -9,6 +10,7 @@ export default abstract class BaseDataAdapter {
 
   constructor(connectionOption: string) {
     this.connectionOption = connectionOption as string;
+    this.dialect = getDialectType(connectionOption, BaseDataAdapter.getDialect(connectionOption));
   }
 
   protected getConnectionString(): string {
