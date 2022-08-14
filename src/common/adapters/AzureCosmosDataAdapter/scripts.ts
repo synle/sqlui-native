@@ -427,15 +427,11 @@ export class ConcreteDataScripts extends BaseDataScript {
     return `${dialect}://AccountEndpoint=some_cosmos_endpoint;AccountKey=some_cosmos_account_key`;
   }
 
-  getSampleSelectQuery(actionInput: SqlAction.TableInput) {
-    return getSelectAllColumns(actionInput);
+  getSampleSelectQuery(tableActionInput) {
+    return getSelectAllColumns(tableActionInput);
   }
 
-  getCodeSnippet(
-    connection: SqluiCore.ConnectionProps,
-    query: SqluiCore.ConnectionQuery,
-    language: SqluiCore.LanguageMode,
-  ) {
+  getCodeSnippet(connection, query, language) {
     const connectionString = connection.connection.replace('cosmosdb://', '');
 
     switch (language) {

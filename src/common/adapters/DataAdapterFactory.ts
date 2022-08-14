@@ -2,7 +2,6 @@ import AzureCosmosDataAdapter from 'src/common/adapters/AzureCosmosDataAdapter/i
 import AzureCosmosDataAdapterScripts from 'src/common/adapters/AzureCosmosDataAdapter/scripts';
 import AzureTableStorageAdapter from 'src/common/adapters/AzureTableStorageAdapter/index';
 import AzureTableStorageAdapterScripts from 'src/common/adapters/AzureTableStorageAdapter/scripts';
-import BaseDataAdapter from 'src/common/adapters/BaseDataAdapter/index';
 import CassandraDataAdapter from 'src/common/adapters/CassandraDataAdapter/index';
 import CassandraDataAdapterScripts from 'src/common/adapters/CassandraDataAdapter/scripts';
 import { getDialectType } from 'src/common/adapters/DataScriptFactory';
@@ -20,7 +19,7 @@ export function getDataAdapter(connection: string) {
   // TODO: here we should initialize the connection based on type
   // of the connection string
   let adapter: IDataAdapter | undefined;
-  const targetDialect = BaseDataAdapter.getDialect(connection);
+  const targetDialect = getDialectType(connection);
 
   if (RelationalDataAdapterScripts.isDialectSupported(targetDialect)) {
     adapter = new RelationalDataAdapter(connection);
@@ -44,9 +43,6 @@ export function getDataAdapter(connection: string) {
   if (!adapter) {
     throw 'dialect not supported';
   }
-
-  // override with dialect
-  adapter.dialect = getDialectType(connection, targetDialect);
 
   return adapter;
 }

@@ -1,6 +1,6 @@
 import BaseDataScript, { getDivider } from 'src/common/adapters/BaseDataAdapter/scripts';
 import { getClientOptions } from 'src/common/adapters/RedisDataAdapter/utils';
-import { SqlAction, SqluiCore } from 'typings';
+import { SqlAction } from 'typings';
 
 export const REDIS_ADAPTER_PREFIX = 'db';
 
@@ -230,6 +230,22 @@ export class ConcreteDataScripts extends BaseDataScript {
     return false;
   }
 
+  // dialect definitions
+  getDialectName(dialect) {
+    switch (dialect) {
+      case 'rediss':
+        return `Redis with SSL`;
+      case 'redis':
+      default:
+        return `Redis`;
+    }
+  }
+
+  getDialectIcon(dialect) {
+    return `${process.env.PUBLIC_URL}/assets/redis.png`;
+  }
+
+  // core methods
   getTableScripts() {
     return [
       getSetValue,
@@ -268,20 +284,6 @@ export class ConcreteDataScripts extends BaseDataScript {
     return [];
   }
 
-  getDialectName(dialect) {
-    switch (dialect) {
-      case 'rediss':
-        return `Redis with SSL`;
-      case 'redis':
-      default:
-        return `Redis`;
-    }
-  }
-
-  getDialectIcon(dialect?: SqluiCore.Dialect): string {
-    return `${process.env.PUBLIC_URL}/assets/redis.png`;
-  }
-
   getSampleConnectionString(dialect) {
     switch (dialect) {
       case 'rediss':
@@ -292,15 +294,11 @@ export class ConcreteDataScripts extends BaseDataScript {
     }
   }
 
-  getSampleSelectQuery(actionInput: SqlAction.TableInput) {
+  getSampleSelectQuery(tableActionInput) {
     return undefined;
   }
 
-  getCodeSnippet(
-    connection: SqluiCore.ConnectionProps,
-    query: SqluiCore.ConnectionQuery,
-    language: SqluiCore.LanguageMode,
-  ) {
+  getCodeSnippet(connection, query, language) {
     const clientOptions = getClientOptions(connection.connection);
     const sql = query.sql;
     const database = query.databaseId;

@@ -65,10 +65,6 @@ export function getAllImplementations(): BaseDataScript[] {
   ];
 }
 
-export function getDialectType(connection: string, dialect?: string) {
-  return _getImplementation(dialect)?.getDialectType(connection);
-}
-
 export function getConnectionFormInputs(dialect?: string) {
   return _getImplementation(dialect)?.getConnectionFormInputs() || [];
 }
@@ -115,6 +111,12 @@ export function getSyntaxModeByDialect(dialect?: string) {
 
 export function getIsTableIdRequiredForQueryByDialect(dialect?: string) {
   return _getImplementation(dialect)?.getIsTableIdRequiredForQuery() || false;
+}
+
+export function getDialectType(connection: string) {
+  // TODO: properly do this with regex
+  const dialect = connection.substr(0, connection.indexOf(':')).toLowerCase();
+  return _getImplementation(dialect)?.getDialectType(dialect);
 }
 
 export function getDialectName(dialect?: string) {
