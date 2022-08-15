@@ -195,15 +195,15 @@ export function useGetAllTableColumns(connectionId?: string, databaseId?: string
   return useQuery(
     [connectionId, databaseId, 'all_table_columns'],
     async () => {
-      if(!enabled){
+      if (!enabled) {
         return [];
       }
 
-      const tables = await dataApi.getConnectionTables(connectionId, databaseId)
-      const tableIds = tables.map(table => table.name);
+      const tables = await dataApi.getConnectionTables(connectionId, databaseId);
+      const tableIds = tables.map((table) => table.name);
 
       const res: Record<string, SqluiCore.ColumnMetaData[]> = {};
-      for(const tableId of tableIds){
+      for (const tableId of tableIds) {
         res[tableId] = await dataApi.getConnectionColumns(connectionId, databaseId, tableId);
       }
       return res;

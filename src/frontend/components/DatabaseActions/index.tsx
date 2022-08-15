@@ -1,6 +1,8 @@
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import SelectAllIcon from '@mui/icons-material/SelectAll';
+import SsidChartIcon from '@mui/icons-material/SsidChart';
 import IconButton from '@mui/material/IconButton';
+import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { getDatabaseActions } from 'src/common/adapters/DataScriptFactory';
 import DropdownButton from 'src/frontend/components/DropdownButton';
@@ -10,8 +12,6 @@ import { useActiveConnectionQuery } from 'src/frontend/hooks/useConnectionQuery'
 import { useQuerySizeSetting } from 'src/frontend/hooks/useSetting';
 import { useTreeActions } from 'src/frontend/hooks/useTreeActions';
 import { SqlAction } from 'typings';
-import { Link as RouterLink, useNavigate } from 'react-router-dom';
-import SsidChartIcon from '@mui/icons-material/SsidChart';
 
 type DatabaseActionsProps = {
   connectionId: string;
@@ -69,29 +69,29 @@ export default function DatabaseActions(props: DatabaseActionsProps): JSX.Elemen
         description: `Visualize all tables in this database.`,
         icon: <SsidChartIcon />,
         //@ts-ignore
-        onClick: () => navigate(`/relationship/${connectionId}/${databaseId}`)
-      })
+        onClick: () => navigate(`/relationship/${connectionId}/${databaseId}`),
+      });
       break;
   }
 
- const options = actions.map((action) => ({
+  const options = actions.map((action) => ({
     label: action.label,
     startIcon: action.icon,
     onClick: async () =>
       //@ts-ignore
       action?.onClick
-      //@ts-ignore
-      ? action.onClick()
-      : selectCommand({
-        event: 'clientEvent/query/apply',
-        data: {
-          connectionId,
-          databaseId,
-          tableId: '',
-          sql: action.query,
-        },
-        label: action.description || `Applied "${action.label}" to active query tab.`,
-      }),
+        ? //@ts-ignore
+          action.onClick()
+        : selectCommand({
+            event: 'clientEvent/query/apply',
+            data: {
+              connectionId,
+              databaseId,
+              tableId: '',
+              sql: action.query,
+            },
+            label: action.description || `Applied "${action.label}" to active query tab.`,
+          }),
   }));
 
   if (!treeActions.showContextMenu) {

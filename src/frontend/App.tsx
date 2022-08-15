@@ -103,22 +103,127 @@ export default function App() {
             }}
             onDrop={onDrop}
             onDragOver={onDragOver}>
-              <Routes>
-                <Route path='/' element={<><AppHeader /><section className='App__Section'><MainPage /></section></>} />
-                <Route path='/connection/new' element={<><AppHeader /><section className='App__Section'><NewConnectionPage /></section></>} />
-                <Route path='/connection/edit/:connectionId' element={<><AppHeader /><section className='App__Section'><EditConnectionPage /></section></>} />
-                <Route
-                  path='/migration/real_connection'
-                  element={<><AppHeader /><section className='App__Section'><MigrationPage mode='real_connection' /></section></>}
-                />
-                <Route path='/migration/raw_json' element={<><AppHeader /><section className='App__Section'><MigrationPage mode='raw_json' /></section></>} />
-                <Route path='/migration' element={<><AppHeader /><section className='App__Section'><MigrationPage /></section></>} />
-                <Route path='/recycle_bin' element={<><AppHeader /><section className='App__Section'><RecycleBinPage /></section></>} />
-                <Route path='/bookmarks' element={<><AppHeader /><section className='App__Section'><BookmarksPage /></section></>} />
-                <Route path='/record/new' element={<><AppHeader /><section className='App__Section'><NewRecordPage /></section></>} />
-                <Route path='/relationship/:connectionId/:databaseId' element={<><AppHeader /><RelationshipChartPage /></>} />
-                <Route path='/*' element={<><AppHeader /><section className='App__Section'><MainPage /></section></>} />
-              </Routes>
+            <Routes>
+              <Route
+                path='/'
+                element={
+                  <>
+                    <AppHeader />
+                    <section className='App__Section'>
+                      <MainPage />
+                    </section>
+                  </>
+                }
+              />
+              <Route
+                path='/connection/new'
+                element={
+                  <>
+                    <AppHeader />
+                    <section className='App__Section'>
+                      <NewConnectionPage />
+                    </section>
+                  </>
+                }
+              />
+              <Route
+                path='/connection/edit/:connectionId'
+                element={
+                  <>
+                    <AppHeader />
+                    <section className='App__Section'>
+                      <EditConnectionPage />
+                    </section>
+                  </>
+                }
+              />
+              <Route
+                path='/migration/real_connection'
+                element={
+                  <>
+                    <AppHeader />
+                    <section className='App__Section'>
+                      <MigrationPage mode='real_connection' />
+                    </section>
+                  </>
+                }
+              />
+              <Route
+                path='/migration/raw_json'
+                element={
+                  <>
+                    <AppHeader />
+                    <section className='App__Section'>
+                      <MigrationPage mode='raw_json' />
+                    </section>
+                  </>
+                }
+              />
+              <Route
+                path='/migration'
+                element={
+                  <>
+                    <AppHeader />
+                    <section className='App__Section'>
+                      <MigrationPage />
+                    </section>
+                  </>
+                }
+              />
+              <Route
+                path='/recycle_bin'
+                element={
+                  <>
+                    <AppHeader />
+                    <section className='App__Section'>
+                      <RecycleBinPage />
+                    </section>
+                  </>
+                }
+              />
+              <Route
+                path='/bookmarks'
+                element={
+                  <>
+                    <AppHeader />
+                    <section className='App__Section'>
+                      <BookmarksPage />
+                    </section>
+                  </>
+                }
+              />
+              <Route
+                path='/record/new'
+                element={
+                  <>
+                    <AppHeader />
+                    <section className='App__Section'>
+                      <NewRecordPage />
+                    </section>
+                  </>
+                }
+              />
+              <Route
+                path='/relationship/:connectionId/:databaseId'
+                element={
+                  <>
+                    <AppHeader />
+                    <RelationshipChartPage />
+                  </>
+                }
+              />
+              <Route
+                path='/*'
+                element={
+                  <>
+                    <AppHeader />
+                    <section className='App__Section'>
+                      <MainPage />
+                    </section>
+                  </>
+                }
+              />
+            </Routes>
           </Box>
           <MissionControl />
         </SessionManager>
@@ -128,5 +233,3 @@ export default function App() {
     </ThemeProvider>
   );
 }
-
-
