@@ -1,6 +1,6 @@
 {
   "name": "sqlui-native",
-  "version": "1.60.10",
+  "version": "1.61.0",
   "packageManager": "yarn@1.22.19",
   "private": true,
   "description": "A minimal native desktop client for most databases supporting MySQL, MariaDB, MS SQL Server, PostgresSQL, SQLite, Cassandra, MongoDB and Redis.",
@@ -109,6 +109,7 @@
     "qs": "^6.11.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
+    "react-flow-renderer": "^10.3.14",
     "react-query": "^3.39.1",
     "react-router-dom": "^6.2.2",
     "react-simple-resizer": "git+https://github.com/synle/react-simple-resizer.git",
