@@ -10,6 +10,8 @@ import { useActiveConnectionQuery } from 'src/frontend/hooks/useConnectionQuery'
 import { useQuerySizeSetting } from 'src/frontend/hooks/useSetting';
 import { useTreeActions } from 'src/frontend/hooks/useTreeActions';
 import { SqlAction } from 'typings';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import SsidChartIcon from '@mui/icons-material/SsidChart';
 
 type DatabaseActionsProps = {
   connectionId: string;
@@ -17,6 +19,7 @@ type DatabaseActionsProps = {
 };
 
 export default function DatabaseActions(props: DatabaseActionsProps): JSX.Element | null {
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const querySize = useQuerySizeSetting();
   let databaseId: string | undefined = props.databaseId;
@@ -52,11 +55,34 @@ export default function DatabaseActions(props: DatabaseActionsProps): JSX.Elemen
     ...actions,
   ];
 
+  switch (dialect) {
+    case 'mysql':
+    case 'mariadb':
+    case 'mssql':
+    case 'postgres':
+    case 'postgresql':
+    case 'sqlite':
+      actions.push({
+        label: 'Visualize',
+        description: `Visualize all tables in this database.`,
+        icon: <SsidChartIcon />,
+        //@ts-ignore
+        onClick: () => navigate(`/relationship/${connectionId}/${databaseId}`)
+      })
+      break;
+  }
+
+
+
   const options = actions.map((action) => ({
     label: action.label,
     startIcon: action.icon,
     onClick: async () =>
-      selectCommand({
+      //@ts-ignore
+      action?.onClick
+      //@ts-ignore
+      ? action.onClick()
+      : selectCommand({
         event: 'clientEvent/query/apply',
         data: {
           connectionId,

@@ -22,13 +22,9 @@ import MigrationPage from 'src/frontend/views/MigrationPage';
 import NewConnectionPage from 'src/frontend/views/NewConnectionPage';
 import { NewRecordPage } from 'src/frontend/views/RecordPage';
 import RecycleBinPage from 'src/frontend/views/RecycleBinPage';
+import RelationshipChartPage from 'src/frontend/views/RelationshipChartPage';
 import 'src/frontend/App.scss';
 import 'src/frontend/electronRenderer';
-
-
-import {useEffect, useState} from 'react'
-import ReactFlow from 'react-flow-renderer';
-import { useGetAllTableColumns } from 'src/frontend/hooks/useConnection';
 
 export default function App() {
   const { data: sessions, isLoading: loadingSessions } = useGetSessions();
@@ -120,7 +116,7 @@ export default function App() {
                 <Route path='/recycle_bin' element={<><AppHeader /><section className='App__Section'><RecycleBinPage /></section></>} />
                 <Route path='/bookmarks' element={<><AppHeader /><section className='App__Section'><BookmarksPage /></section></>} />
                 <Route path='/record/new' element={<><AppHeader /><section className='App__Section'><NewRecordPage /></section></>} />
-                <Route path='/relationship' element={<><AppHeader /><RelationshipChart /></>} />
+                <Route path='/relationship/:connectionId/:databaseId' element={<><AppHeader /><RelationshipChartPage /></>} />
                 <Route path='/*' element={<><AppHeader /><section className='App__Section'><MainPage /></section></>} />
               </Routes>
           </Box>
@@ -134,84 +130,3 @@ export default function App() {
 }
 
 
-type MyNode = any;
-type MyEdge = any;
-
-function RelationshipChart(){
-  const [nodes, setNodes] = useState<MyNode[]>([]);
-  const [edges, setEdges] = useState<MyEdge[]>([]);
-
-  const connectionId = 'connection.1660580754881.3239483339366116';
-  const databaseId = 'Sqlite';
-
-  const {
-    data,
-    isLoading: loadingColumns,
-  } = useGetAllTableColumns(connectionId, databaseId);
-
-  useEffect(() => {
-    if(!data){
-      return ;
-    }
-
-    const newNodes : MyNode[]= [];
-    const newEdges : MyEdge[] = [];
-
-    const mapNodeConnectionsCount : any= {}; // connection => count
-    debugger
-
-    let i = 0;
-    for(const tableName of Object.keys(data)){
-      newNodes.push({
-        id: tableName,
-        data: { label: tableName },
-        connectable: false,
-        position: { x: 200 * 3, y: i * 25 + i * 100},
-      })
-
-      i++;
-    }
-
-    for(const tableName of Object.keys(data)){
-      const tableColumns = data[tableName];
-
-      for(const tableColumn of tableColumns){
-        if(tableColumn.referencedColumnName && tableColumn.referencedTableName){
-          const foundEdge = newEdges.find(edge => edge.source === tableName && edge.target === tableColumn.referencedTableName)
-
-          newEdges.push({
-            id: `${tableName}.${tableColumn.name} => ${tableColumn.referencedTableName}.${tableColumn.referencedColumnName}`,
-            source: tableName,
-            target: tableColumn.referencedTableName,
-            label: `${tableColumn.name} => ${tableColumn.referencedTableName}.${tableColumn.referencedColumnName}`,
-            type: 'straight'
-          })
-
-          mapNodeConnectionsCount[tableColumn.referencedTableName] = mapNodeConnectionsCount[tableColumn.referencedTableName] || 0;
-          mapNodeConnectionsCount[tableColumn.referencedTableName]++;
-        }
-      }
-    }
-
-    const countGroups = [...new Set(Object.values(mapNodeConnectionsCount))].map(s => (s as number)).sort((a,b) => b - a);
-    const [firstGroup, secondGroup] = countGroups;
-
-    for(const node of newNodes){
-      const tableName = node.id;
-      const count = mapNodeConnectionsCount[tableName];
-
-      if(count === firstGroup){
-        node.position.x = 200 * 0
-      } else if(count === secondGroup) {
-        node.position.x = 200 * 2
-      }
-    }
-
-    setNodes(newNodes)
-    setEdges(newEdges)
-  }, [JSON.stringify(data)])
-
-  return <div style={{height: 'calc(100vh - 50px)'}}>
-    <ReactFlow defaultNodes={nodes} defaultEdges={edges} fitView />
-  </div>;
-}
