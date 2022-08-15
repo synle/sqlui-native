@@ -25,6 +25,11 @@ import RecycleBinPage from 'src/frontend/views/RecycleBinPage';
 import 'src/frontend/App.scss';
 import 'src/frontend/electronRenderer';
 
+
+import {useEffect, useState} from 'react'
+import ReactFlow from 'react-flow-renderer';
+
+
 export default function App() {
   const { data: sessions, isLoading: loadingSessions } = useGetSessions();
   const { data: currentSession, isLoading: loadingCurrentSession } = useGetCurrentSession();
@@ -117,6 +122,7 @@ export default function App() {
                 <Route path='/recycle_bin' element={<RecycleBinPage />} />
                 <Route path='/bookmarks' element={<BookmarksPage />} />
                 <Route path='/record/new' element={<NewRecordPage />} />
+                <Route path='/relationship' element={<RelationshipChart />} />
                 <Route path='/*' element={<MainPage />} />
               </Routes>
             </section>
@@ -128,4 +134,88 @@ export default function App() {
       <ElectronEventListener />
     </ThemeProvider>
   );
+}
+
+
+type MyNode = any;
+type MyEdge = any;
+
+function RelationshipChart(){
+  const [nodes, setNodes] = useState<MyNode[]>([]);
+  const [edges, setEdges] = useState<MyEdge[]>([]);
+
+  var data = {
+    promo_codes: [{"name":"code","type":"CHARACTER VARYING","allowNull":false,"defaultValue":null,"comment":null,"special":[],"primaryKey":true},{"name":"creation_time","type":"TIMESTAMP WITHOUT TIME ZONE","allowNull":true,"defaultValue":null,"comment":null,"special":[]},{"name":"description","type":"CHARACTER VARYING","allowNull":true,"defaultValue":null,"comment":null,"special":[]},{"name":"expiration_time","type":"TIMESTAMP WITHOUT TIME ZONE","allowNull":true,"defaultValue":null,"comment":null,"special":[]},{"name":"rules","type":"JSONB","allowNull":true,"defaultValue":null,"comment":null,"special":[]}],
+    user_promo_codes: [{"name":"city","type":"CHARACTER VARYING","allowNull":false,"defaultValue":null,"comment":null,"special":[],"primaryKey":true,"kind":"foreign_key","referencedTableName":"users","referencedColumnName":"id"},{"name":"code","type":"CHARACTER VARYING","allowNull":false,"defaultValue":null,"comment":null,"special":[],"primaryKey":true},{"name":"user_id","type":"UUID","allowNull":false,"defaultValue":null,"comment":null,"special":[],"primaryKey":true,"kind":"foreign_key","referencedTableName":"users","referencedColumnName":"id"},{"name":"timestamp","type":"TIMESTAMP WITHOUT TIME ZONE","allowNull":true,"defaultValue":null,"comment":null,"special":[]},{"name":"usage_count","type":"BIGINT","allowNull":true,"defaultValue":null,"comment":null,"special":[]}],
+    users: [{"name":"city","type":"CHARACTER VARYING","allowNull":false,"defaultValue":null,"comment":null,"special":[],"primaryKey":true},{"name":"id","type":"UUID","allowNull":false,"defaultValue":null,"comment":null,"special":[],"primaryKey":true},{"name":"address","type":"CHARACTER VARYING","allowNull":true,"defaultValue":null,"comment":null,"special":[]},{"name":"credit_card","type":"CHARACTER VARYING","allowNull":true,"defaultValue":null,"comment":null,"special":[]},{"name":"name","type":"CHARACTER VARYING","allowNull":true,"defaultValue":null,"comment":null,"special":[]}],
+    vehicles: [{"name":"city","type":"CHARACTER VARYING","allowNull":false,"defaultValue":null,"comment":null,"special":[],"primaryKey":true,"kind":"foreign_key","referencedTableName":"users","referencedColumnName":"id"},{"name":"id","type":"UUID","allowNull":false,"defaultValue":null,"comment":null,"special":[],"primaryKey":true},{"name":"creation_time","type":"TIMESTAMP WITHOUT TIME ZONE","allowNull":true,"defaultValue":null,"comment":null,"special":[]},{"name":"current_location","type":"CHARACTER VARYING","allowNull":true,"defaultValue":null,"comment":null,"special":[]},{"name":"ext","type":"JSONB","allowNull":true,"defaultValue":null,"comment":null,"special":[]},{"name":"owner_id","type":"UUID","allowNull":true,"defaultValue":null,"comment":null,"special":[],"kind":"foreign_key","referencedTableName":"users","referencedColumnName":"id"},{"name":"status","type":"CHARACTER VARYING","allowNull":true,"defaultValue":null,"comment":null,"special":[]},{"name":"type","type":"CHARACTER VARYING","allowNull":true,"defaultValue":null,"comment":null,"special":[]}],
+    rides: [{"name":"city","type":"CHARACTER VARYING","allowNull":false,"defaultValue":null,"comment":null,"special":[],"primaryKey":true,"kind":"foreign_key","referencedTableName":"users","referencedColumnName":"id"},{"name":"id","type":"UUID","allowNull":false,"defaultValue":null,"comment":null,"special":[],"primaryKey":true},{"name":"end_address","type":"CHARACTER VARYING","allowNull":true,"defaultValue":null,"comment":null,"special":[]},{"name":"end_time","type":"TIMESTAMP WITHOUT TIME ZONE","allowNull":true,"defaultValue":null,"comment":null,"special":[]},{"name":"revenue","type":"NUMERIC","allowNull":true,"defaultValue":null,"comment":null,"special":[]},{"name":"rider_id","type":"UUID","allowNull":true,"defaultValue":null,"comment":null,"special":[],"kind":"foreign_key","referencedTableName":"users","referencedColumnName":"id"},{"name":"start_address","type":"CHARACTER VARYING","allowNull":true,"defaultValue":null,"comment":null,"special":[]},{"name":"start_time","type":"TIMESTAMP WITHOUT TIME ZONE","allowNull":true,"defaultValue":null,"comment":null,"special":[]},{"name":"vehicle_city","type":"CHARACTER VARYING","allowNull":true,"defaultValue":null,"comment":null,"special":[],"kind":"foreign_key","referencedTableName":"vehicles","referencedColumnName":"id"},{"name":"vehicle_id","type":"UUID","allowNull":true,"defaultValue":null,"comment":null,"special":[],"kind":"foreign_key","referencedTableName":"vehicles","referencedColumnName":"id"}],
+    vehicle_location_histories: [{"name":"city","type":"CHARACTER VARYING","allowNull":false,"defaultValue":null,"comment":null,"special":[],"primaryKey":true,"kind":"foreign_key","referencedTableName":"rides","referencedColumnName":"id"},{"name":"ride_id","type":"UUID","allowNull":false,"defaultValue":null,"comment":null,"special":[],"primaryKey":true,"kind":"foreign_key","referencedTableName":"rides","referencedColumnName":"id"},{"name":"timestamp","type":"TIMESTAMP WITHOUT TIME ZONE","allowNull":false,"defaultValue":null,"comment":null,"special":[],"primaryKey":true},{"name":"lat","type":"DOUBLE PRECISION","allowNull":true,"defaultValue":null,"comment":null,"special":[]},{"name":"long","type":"DOUBLE PRECISION","allowNull":true,"defaultValue":null,"comment":null,"special":[]}],
+  }
+
+  // const initialNodes = [
+  //   {
+  //     id: '1',
+  //     type: 'input',
+  //     data: { label: 'Input Node' },
+  //     position: { x: 250, y: 25 },
+  //   },
+
+  //   {
+  //     id: '2',
+  //     // you can also pass a React component as a label
+  //     data: { label: <div>Default Node</div> },
+  //     position: { x: 100, y: 125 },
+  //   },
+  //   {
+  //     id: '3',
+  //     type: 'output',
+  //     data: { label: 'Output Node' },
+  //     position: { x: 250, y: 250 },
+  //   },
+  // ];
+
+  // const initialEdges = [
+  //   { id: 'e1-2', source: '1', target: '2' },
+  //   { id: 'e2-3', source: '2', target: '3', animated: true },
+  // ];
+
+  useEffect(() => {
+    const newNodes : MyNode[]= [];
+    const newEdges : MyEdge[] = [];
+
+    let i = 0;
+    for(const tableName of Object.keys(data)){
+      newNodes.push({
+        id: tableName,
+        data: { label: tableName },
+        position: { x: 10, y: i * 25 + i * 75},
+      })
+
+      i++;
+    }
+
+    for(const tableName of Object.keys(data)){
+      const tableCOlumns = data[tableName];
+
+      for(const tableColumn of tableCOlumns){
+        if(tableColumn.referencedColumnName && tableColumn.referencedTableName){
+          newEdges.push({
+            id: `${tableName} => ${tableColumn.referencedTableName}.${tableColumn.referencedColumnName}`,
+            source: tableName,
+            target: tableColumn.referencedTableName,
+            label: `${tableColumn.referencedTableName}.${tableColumn.referencedColumnName}`,
+            type: 'straight'
+          })
+        }
+      }
+    }
+
+    setNodes(newNodes)
+    setEdges(newEdges)
+  }, [JSON.stringify(data)])
+
+  return <div style={{height: 'calc(100vh - 50px)'}}>
+    <ReactFlow defaultNodes={nodes} defaultEdges={edges} fitView />
+  </div>;
 }
