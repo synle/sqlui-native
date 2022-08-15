@@ -19,25 +19,31 @@ export function getDataAdapter(connection: string) {
   // TODO: here we should initialize the connection based on type
   // of the connection string
   let adapter: IDataAdapter | undefined;
-  const targetDialect = getDialectType(connection);
 
-  if (RelationalDataAdapterScripts.isDialectSupported(targetDialect)) {
-    adapter = new RelationalDataAdapter(connection);
-  }
-  if (CassandraDataAdapterScripts.isDialectSupported(targetDialect)) {
-    adapter = new CassandraDataAdapter(connection);
-  }
-  if (MongoDBDataAdapterScripts.isDialectSupported(targetDialect)) {
-    adapter = new MongoDBDataAdapter(connection);
-  }
-  if (RedisDataAdapterScripts.isDialectSupported(targetDialect)) {
-    adapter = new RedisDataAdapter(connection);
-  }
-  if (AzureCosmosDataAdapterScripts.isDialectSupported(targetDialect)) {
-    adapter = new AzureCosmosDataAdapter(connection);
-  }
-  if (AzureTableStorageAdapterScripts.isDialectSupported(targetDialect)) {
-    adapter = new AzureTableStorageAdapter(connection);
+  try {
+    const targetDialect = getDialectType(connection);
+
+    if (RelationalDataAdapterScripts.isDialectSupported(targetDialect)) {
+      adapter = new RelationalDataAdapter(connection);
+    }
+    if (CassandraDataAdapterScripts.isDialectSupported(targetDialect)) {
+      adapter = new CassandraDataAdapter(connection);
+    }
+    if (MongoDBDataAdapterScripts.isDialectSupported(targetDialect)) {
+      adapter = new MongoDBDataAdapter(connection);
+    }
+    if (RedisDataAdapterScripts.isDialectSupported(targetDialect)) {
+      adapter = new RedisDataAdapter(connection);
+    }
+    if (AzureCosmosDataAdapterScripts.isDialectSupported(targetDialect)) {
+      adapter = new AzureCosmosDataAdapter(connection);
+    }
+    if (AzureTableStorageAdapterScripts.isDialectSupported(targetDialect)) {
+      adapter = new AzureTableStorageAdapter(connection);
+    }
+  } catch (err) {
+    console.log('Failed to connect to', connection, err);
+    throw err;
   }
 
   if (!adapter) {
