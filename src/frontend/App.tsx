@@ -107,25 +107,22 @@ export default function App() {
             }}
             onDrop={onDrop}
             onDragOver={onDragOver}>
-            <AppHeader />
-            <section className='App__Section'>
               <Routes>
-                <Route path='/' element={<MainPage />} />
-                <Route path='/connection/new' element={<NewConnectionPage />} />
-                <Route path='/connection/edit/:connectionId' element={<EditConnectionPage />} />
+                <Route path='/' element={<><AppHeader /><section className='App__Section'><MainPage /></section></>} />
+                <Route path='/connection/new' element={<><AppHeader /><section className='App__Section'><NewConnectionPage /></section></>} />
+                <Route path='/connection/edit/:connectionId' element={<><AppHeader /><section className='App__Section'><EditConnectionPage /></section></>} />
                 <Route
                   path='/migration/real_connection'
-                  element={<MigrationPage mode='real_connection' />}
+                  element={<><AppHeader /><section className='App__Section'><MigrationPage mode='real_connection' /></section></>}
                 />
-                <Route path='/migration/raw_json' element={<MigrationPage mode='raw_json' />} />
-                <Route path='/migration' element={<MigrationPage />} />
-                <Route path='/recycle_bin' element={<RecycleBinPage />} />
-                <Route path='/bookmarks' element={<BookmarksPage />} />
-                <Route path='/record/new' element={<NewRecordPage />} />
-                <Route path='/relationship' element={<RelationshipChart />} />
-                <Route path='/*' element={<MainPage />} />
+                <Route path='/migration/raw_json' element={<><AppHeader /><section className='App__Section'><MigrationPage mode='raw_json' /></section></>} />
+                <Route path='/migration' element={<><AppHeader /><section className='App__Section'><MigrationPage /></section></>} />
+                <Route path='/recycle_bin' element={<><AppHeader /><section className='App__Section'><RecycleBinPage /></section></>} />
+                <Route path='/bookmarks' element={<><AppHeader /><section className='App__Section'><BookmarksPage /></section></>} />
+                <Route path='/record/new' element={<><AppHeader /><section className='App__Section'><NewRecordPage /></section></>} />
+                <Route path='/relationship' element={<><RelationshipChart /></>} />
+                <Route path='/*' element={<><AppHeader /><section className='App__Section'><MainPage /></section></>} />
               </Routes>
-            </section>
           </Box>
           <MissionControl />
         </SessionManager>
@@ -184,38 +181,53 @@ function RelationshipChart(){
     const newNodes : MyNode[]= [];
     const newEdges : MyEdge[] = [];
 
+    const mapNodeConnectionsCount : any= {}; // connection => count
+
     let i = 0;
     for(const tableName of Object.keys(data)){
       newNodes.push({
         id: tableName,
         data: { label: tableName },
-        position: { x: 10, y: i * 25 + i * 75},
+        connectable: false,
+        position: { x: 10, y: i * 25 + i * 100},
       })
 
       i++;
     }
 
     for(const tableName of Object.keys(data)){
-      const tableCOlumns = data[tableName];
+      const tableColumns = data[tableName];
 
-      for(const tableColumn of tableCOlumns){
+      for(const tableColumn of tableColumns){
         if(tableColumn.referencedColumnName && tableColumn.referencedTableName){
-          newEdges.push({
-            id: `${tableName} => ${tableColumn.referencedTableName}.${tableColumn.referencedColumnName}`,
-            source: tableName,
-            target: tableColumn.referencedTableName,
-            label: `${tableColumn.referencedTableName}.${tableColumn.referencedColumnName}`,
-            type: 'straight'
-          })
+          const foundEdge = newEdges.find(edge => edge.source === tableName && edge.target === tableColumn.referencedTableName)
+
+          if(foundEdge){
+            foundEdge.label += `, ${tableColumn.name} => ${tableColumn.referencedTableName}.${tableColumn.referencedColumnName}`
+          } else {
+            newEdges.push({
+              id: `${tableName}.${tableColumn.name} => ${tableColumn.referencedTableName}.${tableColumn.referencedColumnName}`,
+              source: tableName,
+              target: tableColumn.referencedTableName,
+              label: `${tableColumn.name} => ${tableColumn.referencedTableName}.${tableColumn.referencedColumnName}`,
+              type: 'straight'
+            })
+          }
+
+          mapNodeConnectionsCount[tableColumn.referencedTableName] = mapNodeConnectionsCount[tableColumn.referencedTableName] || 0;
+          mapNodeConnectionsCount[tableColumn.referencedTableName]++;
         }
       }
     }
+
+    const countGroups = [...new Set(Object.values(mapNodeConnectionsCount))];
+    debugger
 
     setNodes(newNodes)
     setEdges(newEdges)
   }, [JSON.stringify(data)])
 
-  return <div style={{height: 'calc(100vh - 50px)'}}>
+  return <div style={{position: 'fixed', top: 0, left: 0, bottom: 0, right: 0, zIndex: 1}}>
     <ReactFlow defaultNodes={nodes} defaultEdges={edges} fitView />
   </div>;
 }
