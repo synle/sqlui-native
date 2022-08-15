@@ -120,7 +120,7 @@ export default function App() {
                 <Route path='/recycle_bin' element={<><AppHeader /><section className='App__Section'><RecycleBinPage /></section></>} />
                 <Route path='/bookmarks' element={<><AppHeader /><section className='App__Section'><BookmarksPage /></section></>} />
                 <Route path='/record/new' element={<><AppHeader /><section className='App__Section'><NewRecordPage /></section></>} />
-                <Route path='/relationship' element={<><RelationshipChart /></>} />
+                <Route path='/relationship' element={<><AppHeader /><RelationshipChart /></>} />
                 <Route path='/*' element={<><AppHeader /><section className='App__Section'><MainPage /></section></>} />
               </Routes>
           </Box>
@@ -150,33 +150,6 @@ function RelationshipChart(){
     vehicle_location_histories: [{"name":"city","type":"CHARACTER VARYING","allowNull":false,"defaultValue":null,"comment":null,"special":[],"primaryKey":true,"kind":"foreign_key","referencedTableName":"rides","referencedColumnName":"id"},{"name":"ride_id","type":"UUID","allowNull":false,"defaultValue":null,"comment":null,"special":[],"primaryKey":true,"kind":"foreign_key","referencedTableName":"rides","referencedColumnName":"id"},{"name":"timestamp","type":"TIMESTAMP WITHOUT TIME ZONE","allowNull":false,"defaultValue":null,"comment":null,"special":[],"primaryKey":true},{"name":"lat","type":"DOUBLE PRECISION","allowNull":true,"defaultValue":null,"comment":null,"special":[]},{"name":"long","type":"DOUBLE PRECISION","allowNull":true,"defaultValue":null,"comment":null,"special":[]}],
   }
 
-  // const initialNodes = [
-  //   {
-  //     id: '1',
-  //     type: 'input',
-  //     data: { label: 'Input Node' },
-  //     position: { x: 250, y: 25 },
-  //   },
-
-  //   {
-  //     id: '2',
-  //     // you can also pass a React component as a label
-  //     data: { label: <div>Default Node</div> },
-  //     position: { x: 100, y: 125 },
-  //   },
-  //   {
-  //     id: '3',
-  //     type: 'output',
-  //     data: { label: 'Output Node' },
-  //     position: { x: 250, y: 250 },
-  //   },
-  // ];
-
-  // const initialEdges = [
-  //   { id: 'e1-2', source: '1', target: '2' },
-  //   { id: 'e2-3', source: '2', target: '3', animated: true },
-  // ];
-
   useEffect(() => {
     const newNodes : MyNode[]= [];
     const newEdges : MyEdge[] = [];
@@ -189,7 +162,7 @@ function RelationshipChart(){
         id: tableName,
         data: { label: tableName },
         connectable: false,
-        position: { x: 10, y: i * 25 + i * 100},
+        position: { x: 200 * 3, y: i * 25 + i * 100},
       })
 
       i++;
@@ -202,17 +175,13 @@ function RelationshipChart(){
         if(tableColumn.referencedColumnName && tableColumn.referencedTableName){
           const foundEdge = newEdges.find(edge => edge.source === tableName && edge.target === tableColumn.referencedTableName)
 
-          if(foundEdge){
-            foundEdge.label += `, ${tableColumn.name} => ${tableColumn.referencedTableName}.${tableColumn.referencedColumnName}`
-          } else {
-            newEdges.push({
-              id: `${tableName}.${tableColumn.name} => ${tableColumn.referencedTableName}.${tableColumn.referencedColumnName}`,
-              source: tableName,
-              target: tableColumn.referencedTableName,
-              label: `${tableColumn.name} => ${tableColumn.referencedTableName}.${tableColumn.referencedColumnName}`,
-              type: 'straight'
-            })
-          }
+          newEdges.push({
+            id: `${tableName}.${tableColumn.name} => ${tableColumn.referencedTableName}.${tableColumn.referencedColumnName}`,
+            source: tableName,
+            target: tableColumn.referencedTableName,
+            label: `${tableColumn.name} => ${tableColumn.referencedTableName}.${tableColumn.referencedColumnName}`,
+            type: 'straight'
+          })
 
           mapNodeConnectionsCount[tableColumn.referencedTableName] = mapNodeConnectionsCount[tableColumn.referencedTableName] || 0;
           mapNodeConnectionsCount[tableColumn.referencedTableName]++;
@@ -220,14 +189,26 @@ function RelationshipChart(){
       }
     }
 
-    const countGroups = [...new Set(Object.values(mapNodeConnectionsCount))];
+    const countGroups = [...new Set(Object.values(mapNodeConnectionsCount))].map(s => (s as number)).sort((a,b) => b - a);
+    const [firstGroup, secondGroup] = countGroups;
+
     debugger
+    for(const node of newNodes){
+      const tableName = node.id;
+      const count = mapNodeConnectionsCount[tableName];
+
+      if(count === firstGroup){
+        node.position.x = 200 * 0
+      } else if(count === secondGroup) {
+        node.position.x = 200 * 2
+      }
+    }
 
     setNodes(newNodes)
     setEdges(newEdges)
   }, [JSON.stringify(data)])
 
-  return <div style={{position: 'fixed', top: 0, left: 0, bottom: 0, right: 0, zIndex: 1}}>
+  return <div style={{height: 'calc(100vh - 50px)'}}>
     <ReactFlow defaultNodes={nodes} defaultEdges={edges} fitView />
   </div>;
 }
