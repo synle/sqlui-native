@@ -55,6 +55,8 @@ export default function DatabaseActions(props: DatabaseActionsProps): JSX.Elemen
     ...actions,
   ];
 
+  // TODO: move this into the interface of script adapter
+  // supportVisualization
   switch (dialect) {
     case 'mysql':
     case 'mariadb':
@@ -72,9 +74,7 @@ export default function DatabaseActions(props: DatabaseActionsProps): JSX.Elemen
       break;
   }
 
-
-
-  const options = actions.map((action) => ({
+ const options = actions.map((action) => ({
     label: action.label,
     startIcon: action.icon,
     onClick: async () =>
