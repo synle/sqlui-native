@@ -60,7 +60,7 @@ export default function RelationshipChartPage(){
     const height = 25;
     const heightDelta = 100;
 
-    const mapNodeConnectionsCount : any= {}; // connection => count
+    const mapNodeConnectionsCount : Record<string, number>= {}; // connection => count
 
     let i = 0;
     for(const tableName of Object.keys(data)){

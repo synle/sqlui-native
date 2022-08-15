@@ -202,7 +202,7 @@ export function useGetAllTableColumns(connectionId?: string, databaseId?: string
       const tables = await dataApi.getConnectionTables(connectionId, databaseId)
       const tableIds = tables.map(table => table.name);
 
-      const res: any = {};
+      const res: Record<string, SqluiCore.ColumnMetaData[]> = {};
       for(const tableId of tableIds){
         res[tableId] = await dataApi.getConnectionColumns(connectionId, databaseId, tableId);
       }
