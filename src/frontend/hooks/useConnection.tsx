@@ -189,6 +189,32 @@ export function useGetTables(connectionId?: string, databaseId?: string) {
   );
 }
 
+export function useGetAllTableColumns(connectionId?: string, databaseId?: string) {
+  const enabled = !!connectionId && !!databaseId;
+
+  return useQuery(
+    [connectionId, databaseId, 'all_table_columns'],
+    async () => {
+      if(!enabled){
+        return [];
+      }
+
+      const tables = await dataApi.getConnectionTables(connectionId, databaseId)
+      const tableIds = tables.map(table => table.name);
+
+      const res: any = {};
+      for(const tableId of tableIds){
+        res[tableId] = await dataApi.getConnectionColumns(connectionId, databaseId, tableId);
+      }
+      return res;
+    },
+    {
+      enabled,
+      staleTime: DEFAULT_STALE_TIME,
+    },
+  );
+}
+
 export function useGetColumns(connectionId?: string, databaseId?: string, tableId?: string) {
   const enabled = !!connectionId && !!databaseId && !!tableId;
 

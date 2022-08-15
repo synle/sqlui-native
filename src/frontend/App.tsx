@@ -28,7 +28,7 @@ import 'src/frontend/electronRenderer';
 
 import {useEffect, useState} from 'react'
 import ReactFlow from 'react-flow-renderer';
-
+import { useGetAllTableColumns } from 'src/frontend/hooks/useConnection';
 
 export default function App() {
   const { data: sessions, isLoading: loadingSessions } = useGetSessions();
@@ -141,20 +141,24 @@ function RelationshipChart(){
   const [nodes, setNodes] = useState<MyNode[]>([]);
   const [edges, setEdges] = useState<MyEdge[]>([]);
 
-  var data = {
-    promo_codes: [{"name":"code","type":"CHARACTER VARYING","allowNull":false,"defaultValue":null,"comment":null,"special":[],"primaryKey":true},{"name":"creation_time","type":"TIMESTAMP WITHOUT TIME ZONE","allowNull":true,"defaultValue":null,"comment":null,"special":[]},{"name":"description","type":"CHARACTER VARYING","allowNull":true,"defaultValue":null,"comment":null,"special":[]},{"name":"expiration_time","type":"TIMESTAMP WITHOUT TIME ZONE","allowNull":true,"defaultValue":null,"comment":null,"special":[]},{"name":"rules","type":"JSONB","allowNull":true,"defaultValue":null,"comment":null,"special":[]}],
-    user_promo_codes: [{"name":"city","type":"CHARACTER VARYING","allowNull":false,"defaultValue":null,"comment":null,"special":[],"primaryKey":true,"kind":"foreign_key","referencedTableName":"users","referencedColumnName":"id"},{"name":"code","type":"CHARACTER VARYING","allowNull":false,"defaultValue":null,"comment":null,"special":[],"primaryKey":true},{"name":"user_id","type":"UUID","allowNull":false,"defaultValue":null,"comment":null,"special":[],"primaryKey":true,"kind":"foreign_key","referencedTableName":"users","referencedColumnName":"id"},{"name":"timestamp","type":"TIMESTAMP WITHOUT TIME ZONE","allowNull":true,"defaultValue":null,"comment":null,"special":[]},{"name":"usage_count","type":"BIGINT","allowNull":true,"defaultValue":null,"comment":null,"special":[]}],
-    users: [{"name":"city","type":"CHARACTER VARYING","allowNull":false,"defaultValue":null,"comment":null,"special":[],"primaryKey":true},{"name":"id","type":"UUID","allowNull":false,"defaultValue":null,"comment":null,"special":[],"primaryKey":true},{"name":"address","type":"CHARACTER VARYING","allowNull":true,"defaultValue":null,"comment":null,"special":[]},{"name":"credit_card","type":"CHARACTER VARYING","allowNull":true,"defaultValue":null,"comment":null,"special":[]},{"name":"name","type":"CHARACTER VARYING","allowNull":true,"defaultValue":null,"comment":null,"special":[]}],
-    vehicles: [{"name":"city","type":"CHARACTER VARYING","allowNull":false,"defaultValue":null,"comment":null,"special":[],"primaryKey":true,"kind":"foreign_key","referencedTableName":"users","referencedColumnName":"id"},{"name":"id","type":"UUID","allowNull":false,"defaultValue":null,"comment":null,"special":[],"primaryKey":true},{"name":"creation_time","type":"TIMESTAMP WITHOUT TIME ZONE","allowNull":true,"defaultValue":null,"comment":null,"special":[]},{"name":"current_location","type":"CHARACTER VARYING","allowNull":true,"defaultValue":null,"comment":null,"special":[]},{"name":"ext","type":"JSONB","allowNull":true,"defaultValue":null,"comment":null,"special":[]},{"name":"owner_id","type":"UUID","allowNull":true,"defaultValue":null,"comment":null,"special":[],"kind":"foreign_key","referencedTableName":"users","referencedColumnName":"id"},{"name":"status","type":"CHARACTER VARYING","allowNull":true,"defaultValue":null,"comment":null,"special":[]},{"name":"type","type":"CHARACTER VARYING","allowNull":true,"defaultValue":null,"comment":null,"special":[]}],
-    rides: [{"name":"city","type":"CHARACTER VARYING","allowNull":false,"defaultValue":null,"comment":null,"special":[],"primaryKey":true,"kind":"foreign_key","referencedTableName":"users","referencedColumnName":"id"},{"name":"id","type":"UUID","allowNull":false,"defaultValue":null,"comment":null,"special":[],"primaryKey":true},{"name":"end_address","type":"CHARACTER VARYING","allowNull":true,"defaultValue":null,"comment":null,"special":[]},{"name":"end_time","type":"TIMESTAMP WITHOUT TIME ZONE","allowNull":true,"defaultValue":null,"comment":null,"special":[]},{"name":"revenue","type":"NUMERIC","allowNull":true,"defaultValue":null,"comment":null,"special":[]},{"name":"rider_id","type":"UUID","allowNull":true,"defaultValue":null,"comment":null,"special":[],"kind":"foreign_key","referencedTableName":"users","referencedColumnName":"id"},{"name":"start_address","type":"CHARACTER VARYING","allowNull":true,"defaultValue":null,"comment":null,"special":[]},{"name":"start_time","type":"TIMESTAMP WITHOUT TIME ZONE","allowNull":true,"defaultValue":null,"comment":null,"special":[]},{"name":"vehicle_city","type":"CHARACTER VARYING","allowNull":true,"defaultValue":null,"comment":null,"special":[],"kind":"foreign_key","referencedTableName":"vehicles","referencedColumnName":"id"},{"name":"vehicle_id","type":"UUID","allowNull":true,"defaultValue":null,"comment":null,"special":[],"kind":"foreign_key","referencedTableName":"vehicles","referencedColumnName":"id"}],
-    vehicle_location_histories: [{"name":"city","type":"CHARACTER VARYING","allowNull":false,"defaultValue":null,"comment":null,"special":[],"primaryKey":true,"kind":"foreign_key","referencedTableName":"rides","referencedColumnName":"id"},{"name":"ride_id","type":"UUID","allowNull":false,"defaultValue":null,"comment":null,"special":[],"primaryKey":true,"kind":"foreign_key","referencedTableName":"rides","referencedColumnName":"id"},{"name":"timestamp","type":"TIMESTAMP WITHOUT TIME ZONE","allowNull":false,"defaultValue":null,"comment":null,"special":[],"primaryKey":true},{"name":"lat","type":"DOUBLE PRECISION","allowNull":true,"defaultValue":null,"comment":null,"special":[]},{"name":"long","type":"DOUBLE PRECISION","allowNull":true,"defaultValue":null,"comment":null,"special":[]}],
-  }
+  const connectionId = 'connection.1660580754881.3239483339366116';
+  const databaseId = 'Sqlite';
+
+  const {
+    data,
+    isLoading: loadingColumns,
+  } = useGetAllTableColumns(connectionId, databaseId);
 
   useEffect(() => {
+    if(!data){
+      return ;
+    }
+
     const newNodes : MyNode[]= [];
     const newEdges : MyEdge[] = [];
 
     const mapNodeConnectionsCount : any= {}; // connection => count
+    debugger
 
     let i = 0;
     for(const tableName of Object.keys(data)){
@@ -192,7 +196,6 @@ function RelationshipChart(){
     const countGroups = [...new Set(Object.values(mapNodeConnectionsCount))].map(s => (s as number)).sort((a,b) => b - a);
     const [firstGroup, secondGroup] = countGroups;
 
-    debugger
     for(const node of newNodes){
       const tableName = node.id;
       const count = mapNodeConnectionsCount[tableName];
