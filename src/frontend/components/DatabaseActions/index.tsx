@@ -46,7 +46,7 @@ export default function DatabaseActions(props: DatabaseActionsProps): JSX.Elemen
       label: 'Select',
       description: `Selected the related database and connection.`,
       icon: <SelectAllIcon />,
-    }
+    },
   ];
 
   // TODO: move this into the interface of script adapter
@@ -68,12 +68,15 @@ export default function DatabaseActions(props: DatabaseActionsProps): JSX.Elemen
       break;
   }
 
-  actions = [...actions, ...getDatabaseActions({
-    dialect,
-    connectionId,
-    databaseId,
-    querySize,
-  })]
+  actions = [
+    ...actions,
+    ...getDatabaseActions({
+      dialect,
+      connectionId,
+      databaseId,
+      querySize,
+    }),
+  ];
 
   const options = actions.map((action) => ({
     label: action.label,

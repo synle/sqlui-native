@@ -1,19 +1,19 @@
 import SsidChartIcon from '@mui/icons-material/SsidChart';
 import Backdrop from '@mui/material/Backdrop';
-import Typography from '@mui/material/Typography';
-import CircularProgress from '@mui/material/CircularProgress';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import CircularProgress from '@mui/material/CircularProgress';
+import Typography from '@mui/material/Typography';
 import { toPng } from 'html-to-image';
 import ReactFlow from 'react-flow-renderer';
 import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import Breadcrumbs from 'src/frontend/components/Breadcrumbs';
 import { downloadBlob } from 'src/frontend/data/file';
-import { useGetAllTableColumns } from 'src/frontend/hooks/useConnection';
+import { useGetAllTableColumns, useGetConnectionById } from 'src/frontend/hooks/useConnection';
 import 'src/frontend/App.scss';
 import 'src/frontend/electronRenderer';
-import { useGetConnectionById } from 'src/frontend/hooks/useConnection';
+
 type MyNode = any;
 
 type MyEdge = any;
@@ -27,8 +27,16 @@ export default function RelationshipChartPage() {
   const [edges, setEdges] = useState<MyEdge[]>([]);
   const [showLabels, setShowLabels] = useState(false);
 
-  const { data, error: errorAllColumns, isLoading: loadingAllColumns } = useGetAllTableColumns(connectionId, databaseId);
-  const { data: connection, error: errorConnection, isLoading: loadingConnection } = useGetConnectionById(connectionId);
+  const {
+    data,
+    error: errorAllColumns,
+    isLoading: loadingAllColumns,
+  } = useGetAllTableColumns(connectionId, databaseId);
+  const {
+    data: connection,
+    error: errorConnection,
+    isLoading: loadingConnection,
+  } = useGetConnectionById(connectionId);
 
   const onToggleShowLabels = () => setShowLabels(!showLabels);
 
@@ -38,7 +46,7 @@ export default function RelationshipChartPage() {
     await downloadBlob(`relationship-${connectionId}-${databaseId}-${new Date()}.png`, blob);
   };
 
-  const isLoading = loadingAllColumns|| loadingConnection;
+  const isLoading = loadingAllColumns || loadingConnection;
 
   useEffect(() => {
     if (!data) {
@@ -80,7 +88,7 @@ export default function RelationshipChartPage() {
             _label: `${tableColumn.name} => ${tableColumn.referencedTableName}.${tableColumn.referencedColumnName}`,
             id: `${tableName}.${tableColumn.name} => ${tableColumn.referencedTableName}.${tableColumn.referencedColumnName}`,
             source: tableName, // from
-            target: tableColumn.referencedTableName,// to
+            target: tableColumn.referencedTableName, // to
             type: 'straight',
           });
 
@@ -102,8 +110,8 @@ export default function RelationshipChartPage() {
 
       if (count === firstGroup) {
         node.position.x = width * 0 + widthDelta * 0;
-        node.sourcePosition = 'right'
-        node.targetPosition = 'right'
+        node.sourcePosition = 'right';
+        node.targetPosition = 'right';
       } else if (count === secondGroup) {
         node.position.x = width * 1 + widthDelta * 1;
       } else if (count === thirdGroup) {
@@ -134,14 +142,21 @@ export default function RelationshipChartPage() {
           zIndex: (theme) => theme.zIndex.drawer + 1,
         }}>
         <CircularProgress />
-        <Typography variant='h6' sx={{ml: 2}}>Loading Visualization...</Typography>
+        <Typography variant='h6' sx={{ ml: 2 }}>
+          Loading Visualization...
+        </Typography>
       </Backdrop>
     );
   }
 
   const hasError = errorAllColumns || errorConnection;
-  if(hasError){
-    return <Typography variant='h6' sx={{mx: 4, mt: 2, color: 'error.main'}}>There are some errors because we can't fetch the related connection or columns in this table.</Typography>
+  if (hasError) {
+    return (
+      <Typography variant='h6' sx={{ mx: 4, mt: 2, color: 'error.main' }}>
+        There are some errors because we can't fetch the related connection or columns in this
+        table.
+      </Typography>
+    );
   }
 
   return (
@@ -150,18 +165,10 @@ export default function RelationshipChartPage() {
         <Breadcrumbs
           links={[
             {
-              label: (
-                <>
-                  {connection?.name}
-                </>
-              ),
+              label: <>{connection?.name}</>,
             },
             {
-              label: (
-                <>
-                  {databaseId}
-                </>
-              ),
+              label: <>{databaseId}</>,
             },
             {
               label: (
@@ -188,28 +195,28 @@ export default function RelationshipChartPage() {
             let newNodes = nodes;
             let newEdges = edges;
 
-            for(const nodeChange of nodeChanges){
+            for (const nodeChange of nodeChanges) {
               //@ts-ignore
               const targetNodeId = nodeChange.id;
 
-              if(!targetNodeId){
+              if (!targetNodeId) {
                 continue;
               }
 
-              switch(nodeChange.type){
+              switch (nodeChange.type) {
                 case 'select':
                   newNodes = newNodes.map((node) => {
-                    if(node.id === targetNodeId){
+                    if (node.id === targetNodeId) {
                       node.selected = nodeChange.selected;
                     }
 
                     return node;
-                  })
+                  });
                   break;
                 case 'remove':
                   newNodes = newNodes.filter((node) => {
-                    return node.id !== targetNodeId
-                  })
+                    return node.id !== targetNodeId;
+                  });
                   break;
                 default:
                 case 'dimensions':
@@ -218,22 +225,22 @@ export default function RelationshipChartPage() {
             }
 
             const selectedNodes = new Set<string>();
-            for(const node of newNodes){
-              if(node.selected){
+            for (const node of newNodes) {
+              if (node.selected) {
                 selectedNodes.add(node.id);
               }
             }
 
             // handling path highlights
             // animate edges for selected node
-            newEdges = newEdges.map(edge => {
-              if(selectedNodes.has(edge.source) || selectedNodes.has(edge.target)){
+            newEdges = newEdges.map((edge) => {
+              if (selectedNodes.has(edge.source) || selectedNodes.has(edge.target)) {
                 edge.animated = true;
               } else {
                 edge.animated = false;
               }
               return edge;
-            })
+            });
 
             setNodes(newNodes);
             setEdges(newEdges);

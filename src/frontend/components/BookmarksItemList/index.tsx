@@ -139,7 +139,9 @@ export default function BookmarksItemList(props: BookmarksItemListProps): JSX.El
           zIndex: (theme) => theme.zIndex.drawer + 1,
         }}>
         <CircularProgress />
-        <Typography variant='h6' sx={{ml: 2}}>Loading...</Typography>
+        <Typography variant='h6' sx={{ ml: 2 }}>
+          Loading...
+        </Typography>
       </Backdrop>
     );
   }

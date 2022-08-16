@@ -115,7 +115,9 @@ function RecycleBinItemList() {
           zIndex: (theme) => theme.zIndex.drawer + 1,
         }}>
         <CircularProgress />
-        <Typography variant='h6' sx={{ml: 2}}>Loading...</Typography>
+        <Typography variant='h6' sx={{ ml: 2 }}>
+          Loading...
+        </Typography>
       </Backdrop>
     );
   }

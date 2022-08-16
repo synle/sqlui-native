@@ -232,12 +232,11 @@ $ConnectionTreeIndentSize: 7px;
   z-index: 5;
 }
 
-
-.react-flow{
-  &__node{
+.react-flow {
+  &__node {
     border: 4px solid #666;
 
-    &.selected{
+    &.selected {
       background: #efefef;
       color: blue;
       font-weight: bold;
@@ -245,8 +244,8 @@ $ConnectionTreeIndentSize: 7px;
     }
   }
 
-  &__edge.animated{
-    .react-flow__edge-path{
+  &__edge.animated {
+    .react-flow__edge-path {
       stroke: blue;
     }
   }
