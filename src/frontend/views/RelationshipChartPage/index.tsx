@@ -1,3 +1,4 @@
+import SsidChartIcon from '@mui/icons-material/SsidChart';
 import Box from '@mui/material/Box';
 import ReactFlow from 'react-flow-renderer';
 import { useParams } from 'react-router-dom';
@@ -5,8 +6,7 @@ import { useEffect, useState } from 'react';
 import { useGetAllTableColumns } from 'src/frontend/hooks/useConnection';
 import 'src/frontend/App.scss';
 import 'src/frontend/electronRenderer';
- import Breadcrumbs from 'src/frontend/components/Breadcrumbs';
-import SsidChartIcon from '@mui/icons-material/SsidChart';
+import Breadcrumbs from 'src/frontend/components/Breadcrumbs';
 
 type MyNode = any;
 type MyEdge = any;
@@ -100,19 +100,19 @@ export default function RelationshipChartPage() {
 
   return (
     <>
-      <Box sx={{mx: 2}}>
+      <Box sx={{ mx: 2 }}>
         <Breadcrumbs
-        links={[
-          {
-            label: (
-              <>
-                <SsidChartIcon fontSize='inherit' />
-                Visualization
-              </>
-            ),
-          },
-        ]}
-      />
+          links={[
+            {
+              label: (
+                <>
+                  <SsidChartIcon fontSize='inherit' />
+                  Visualization
+                </>
+              ),
+            },
+          ]}
+        />
       </Box>
       <Box sx={{ height: '100vh', zIndex: 0 }}>
         <ReactFlow defaultNodes={nodes} defaultEdges={edges} fitView />
