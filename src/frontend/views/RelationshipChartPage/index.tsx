@@ -105,6 +105,7 @@ export default function RelationshipChartPage() {
     setNodes(newNodes);
     setEdges(newEdges);
   }, [JSON.stringify(data)]);
+
   // show labels
   useEffect(() => {
     setEdges(
@@ -113,7 +114,7 @@ export default function RelationshipChartPage() {
         return edge;
       }),
     );
-  }, [JSON.stringify(edges), showLabels]);
+  }, [showLabels]);
 
   if (isLoading) {
     return <Box sx={{ padding: 2 }}>Loading...</Box>;
@@ -142,10 +143,19 @@ export default function RelationshipChartPage() {
       <Box id='relationship-chart' sx={{ height: '100vh', zIndex: 0 }}>
         <ReactFlow fitView defaultNodes={nodes} defaultEdges={edges} onNodeClick={(e, targetNode) => {
           setNodes(nodes.map(node => {
-            node.selected = node.id === targetNode.id;
+            if(node.id === targetNode.id){
+              node.selected = true;
+            }
             return node
           }))
-        }} />
+        }} onNodeDragStop={(e, targetNode) => {
+          setNodes(nodes.map(node => {
+            if(node.id === targetNode.id){
+              node.position = targetNode.position;
+            }
+            return node
+          }))
+        }}/>
       </Box>
     </>
   );
