@@ -1,4 +1,5 @@
 import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 import ReactFlow from 'react-flow-renderer';
 import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
@@ -18,8 +19,11 @@ export default function RelationshipChartPage() {
 
   const [nodes, setNodes] = useState<MyNode[]>([]);
   const [edges, setEdges] = useState<MyEdge[]>([]);
+  const [showLabels, setShowLabels] = useState(false);
 
   const { data, isLoading } = useGetAllTableColumns(connectionId, databaseId);
+
+  const onToggleShowLabels= () => setShowLabels(!showLabels);
 
   useEffect(() => {
     if (!data) {
@@ -61,7 +65,7 @@ export default function RelationshipChartPage() {
             id: `${tableName}.${tableColumn.name} => ${tableColumn.referencedTableName}.${tableColumn.referencedColumnName}`,
             source: tableName,
             target: tableColumn.referencedTableName,
-            // label: `${tableColumn.name} => ${tableColumn.referencedTableName}.${tableColumn.referencedColumnName}`,
+            label: showLabels ? undefined : `${tableColumn.name} => ${tableColumn.referencedTableName}.${tableColumn.referencedColumnName}`,
             type: 'straight',
           });
 
@@ -92,7 +96,7 @@ export default function RelationshipChartPage() {
 
     setNodes(newNodes);
     setEdges(newEdges);
-  }, [JSON.stringify(data)]);
+  }, [JSON.stringify(data), showLabels]);
 
   if (isLoading) {
     return <Box sx={{ padding: 2 }}>Loading...</Box>;
@@ -100,7 +104,7 @@ export default function RelationshipChartPage() {
 
   return (
     <>
-      <Box sx={{mx: 2}}>
+      <Box sx={{mx: 2, display: 'flex', alignItems: 'center'}}>
         <Breadcrumbs
         links={[
           {
@@ -113,6 +117,9 @@ export default function RelationshipChartPage() {
           },
         ]}
       />
+      <Box sx={{ml: 'auto'}}>
+        <Button onClick={onToggleShowLabels}>{showLabels ? 'Hide Labels': 'Show Labels'}</Button>
+      </Box>
       </Box>
       <Box sx={{ height: '100vh', zIndex: 0 }}>
         <ReactFlow defaultNodes={nodes} defaultEdges={edges} fitView />
