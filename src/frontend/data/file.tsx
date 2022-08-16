@@ -8,3 +8,12 @@ export function downloadText(downloadFileName: string, content: string, mimeType
 
   link.click(); // This will download the data file named "my_data.csv".
 }
+
+export function downloadBlob(downloadFileName: string, blobContent: string) {
+  let link = document.createElement('a');
+  link.setAttribute('href', blobContent);
+  link.setAttribute('download', downloadFileName);
+  document.body.appendChild(link); // Required for FF
+
+  link.click();
+}
