@@ -13,7 +13,7 @@ import { downloadBlob } from 'src/frontend/data/file';
 import { useGetAllTableColumns } from 'src/frontend/hooks/useConnection';
 import 'src/frontend/App.scss';
 import 'src/frontend/electronRenderer';
-
+import { useGetConnectionById } from 'src/frontend/hooks/useConnection';
 type MyNode = any;
 
 type MyEdge = any;
@@ -27,7 +27,8 @@ export default function RelationshipChartPage() {
   const [edges, setEdges] = useState<MyEdge[]>([]);
   const [showLabels, setShowLabels] = useState(false);
 
-  const { data, isLoading } = useGetAllTableColumns(connectionId, databaseId);
+  const { data, error: errorAllColumns, isLoading: loadingAllColumns } = useGetAllTableColumns(connectionId, databaseId);
+  const { data: connection, error: errorConnection, isLoading: loadingConnection } = useGetConnectionById(connectionId);
 
   const onToggleShowLabels = () => setShowLabels(!showLabels);
 
@@ -36,6 +37,8 @@ export default function RelationshipChartPage() {
     const blob = await toPng(node);
     await downloadBlob(`relationship-${connectionId}-${databaseId}-${new Date()}.png`, blob);
   };
+
+  const isLoading = loadingAllColumns|| loadingConnection;
 
   useEffect(() => {
     if (!data) {
@@ -131,9 +134,14 @@ export default function RelationshipChartPage() {
           zIndex: (theme) => theme.zIndex.drawer + 1,
         }}>
         <CircularProgress />
-        <Typography variant='h6'>Loading Visualization...</Typography>
+        <Typography variant='h6' sx={{ml: 2}}>Loading Visualization...</Typography>
       </Backdrop>
     );
+  }
+
+  const hasError = errorAllColumns || errorConnection;
+  if(hasError){
+    return <Typography variant='h6' sx={{mx: 4, mt: 2, color: 'error.main'}}>There are some errors because we can't fetch the related connection or columns in this table.</Typography>
   }
 
   return (
@@ -144,6 +152,20 @@ export default function RelationshipChartPage() {
             {
               label: (
                 <>
+                  {connection?.name}
+                </>
+              ),
+            },
+            {
+              label: (
+                <>
+                  {databaseId}
+                </>
+              ),
+            },
+            {
+              label: (
+                <>
                   <SsidChartIcon fontSize='inherit' />
                   Visualization
                 </>
@@ -151,7 +173,7 @@ export default function RelationshipChartPage() {
             },
           ]}
         />
-        <Box sx={{ ml: 'auto' }}>
+        <Box sx={{ ml: 'auto', display: 'flex', alignItems: 'center', gap: 2 }}>
           <Button onClick={onToggleShowLabels}>{showLabels ? 'Hide Labels' : 'Show Labels'}</Button>
           <Button onClick={onDownload}>Download</Button>
         </Box>
