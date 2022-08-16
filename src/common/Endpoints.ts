@@ -151,6 +151,20 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
       .json(await getDatabases(req.headers['sqlui-native-session-id'], req.params?.connectionId));
   });
 
+  addDataEndpoint('get', '/api/connection/:connectionId/database/:databaseId', async (req, res) => {
+    const databases = await getDatabases(
+      req.headers['sqlui-native-session-id'],
+      req.params?.connectionId,
+    );
+    const database = databases.find((db) => db.name === req.params?.databaseId);
+
+    if (!database) {
+      return res.status(404).send('Not Found');
+    }
+
+    res.status(200).json(database);
+  });
+
   addDataEndpoint(
     'get',
     '/api/connection/:connectionId/database/:databaseId/tables',
