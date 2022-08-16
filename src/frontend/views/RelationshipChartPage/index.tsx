@@ -1,3 +1,4 @@
+import SsidChartIcon from '@mui/icons-material/SsidChart';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import ReactFlow from 'react-flow-renderer';
@@ -6,8 +7,7 @@ import { useEffect, useState } from 'react';
 import { useGetAllTableColumns } from 'src/frontend/hooks/useConnection';
 import 'src/frontend/App.scss';
 import 'src/frontend/electronRenderer';
- import Breadcrumbs from 'src/frontend/components/Breadcrumbs';
-import SsidChartIcon from '@mui/icons-material/SsidChart';
+import Breadcrumbs from 'src/frontend/components/Breadcrumbs';
 
 type MyNode = any;
 type MyEdge = any;
@@ -23,7 +23,7 @@ export default function RelationshipChartPage() {
 
   const { data, isLoading } = useGetAllTableColumns(connectionId, databaseId);
 
-  const onToggleShowLabels= () => setShowLabels(!showLabels);
+  const onToggleShowLabels = () => setShowLabels(!showLabels);
 
   useEffect(() => {
     if (!data) {
@@ -65,7 +65,9 @@ export default function RelationshipChartPage() {
             id: `${tableName}.${tableColumn.name} => ${tableColumn.referencedTableName}.${tableColumn.referencedColumnName}`,
             source: tableName,
             target: tableColumn.referencedTableName,
-            label: !showLabels ? undefined : `${tableColumn.name} => ${tableColumn.referencedTableName}.${tableColumn.referencedColumnName}`,
+            label: !showLabels
+              ? undefined
+              : `${tableColumn.name} => ${tableColumn.referencedTableName}.${tableColumn.referencedColumnName}`,
             type: 'straight',
           });
 
@@ -104,22 +106,22 @@ export default function RelationshipChartPage() {
 
   return (
     <>
-      <Box sx={{mx: 2, display: 'flex', alignItems: 'center'}}>
+      <Box sx={{ mx: 2, display: 'flex', alignItems: 'center' }}>
         <Breadcrumbs
-        links={[
-          {
-            label: (
-              <>
-                <SsidChartIcon fontSize='inherit' />
-                Visualization
-              </>
-            ),
-          },
-        ]}
-      />
-      <Box sx={{ml: 'auto'}}>
-        <Button onClick={onToggleShowLabels}>{showLabels ? 'Hide Labels': 'Show Labels'}</Button>
-      </Box>
+          links={[
+            {
+              label: (
+                <>
+                  <SsidChartIcon fontSize='inherit' />
+                  Visualization
+                </>
+              ),
+            },
+          ]}
+        />
+        <Box sx={{ ml: 'auto' }}>
+          <Button onClick={onToggleShowLabels}>{showLabels ? 'Hide Labels' : 'Show Labels'}</Button>
+        </Box>
       </Box>
       <Box sx={{ height: '100vh', zIndex: 0 }}>
         <ReactFlow defaultNodes={nodes} defaultEdges={edges} fitView />
