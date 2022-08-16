@@ -9,7 +9,7 @@ import 'src/frontend/electronRenderer';
 import Breadcrumbs from 'src/frontend/components/Breadcrumbs';
 import SsidChartIcon from '@mui/icons-material/SsidChart';
 import { toPng, toJpeg, toBlob, toPixelData, toSvg } from 'html-to-image';
-
+import { downloadBlob } from 'src/frontend/data/file';
 
 type MyNode = any;
 type MyEdge = any;
@@ -28,9 +28,9 @@ export default function RelationshipChartPage() {
   const onToggleShowLabels= () => setShowLabels(!showLabels);
 
   const onDownload = async () => {
-    const node = document.querySelector('#relationship-chart');
+    const node = document.querySelector('#relationship-chart') as HTMLElement;
     const blob = await toPng(node);
-
+    await downloadBlob(`relationship-${connectionId}-${databaseId}-${new Date()}.png`, blob);
   }
 
   useEffect(() => {
@@ -70,10 +70,10 @@ export default function RelationshipChartPage() {
           );
 
           newEdges.push({
+            _label: `${tableColumn.name} => ${tableColumn.referencedTableName}.${tableColumn.referencedColumnName}`,
             id: `${tableName}.${tableColumn.name} => ${tableColumn.referencedTableName}.${tableColumn.referencedColumnName}`,
             source: tableName,
             target: tableColumn.referencedTableName,
-            label: !showLabels ? undefined : `${tableColumn.name} => ${tableColumn.referencedTableName}.${tableColumn.referencedColumnName}`,
             type: 'straight',
           });
 
@@ -104,7 +104,16 @@ export default function RelationshipChartPage() {
 
     setNodes(newNodes);
     setEdges(newEdges);
-  }, [JSON.stringify(data), showLabels]);
+  }, [JSON.stringify(data)]);
+
+
+  // show labels
+  useEffect(() => {
+    setEdges(edges.map((edge) => {
+      edge.label = showLabels ? edge._label : undefined;
+      return edge;
+    }))
+  },[JSON.stringify(edges), showLabels])
 
   if (isLoading) {
     return <Box sx={{ padding: 2 }}>Loading...</Box>;
