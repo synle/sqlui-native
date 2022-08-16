@@ -140,7 +140,12 @@ export default function RelationshipChartPage() {
         </Box>
       </Box>
       <Box id='relationship-chart' sx={{ height: '100vh', zIndex: 0 }}>
-        <ReactFlow defaultNodes={nodes} defaultEdges={edges} fitView />
+        <ReactFlow fitView defaultNodes={nodes} defaultEdges={edges} onNodeClick={(e, targetNode) => {
+          setNodes(nodes.map(node => {
+            node.selected = node.id === targetNode.id;
+            return node
+          }))
+        }} />
       </Box>
     </>
   );
