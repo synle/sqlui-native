@@ -208,7 +208,9 @@ export default function App() {
                 element={
                   <>
                     <AppHeader />
-                    <RelationshipChartPage />
+                    <section className='App__Section'>
+                      <RelationshipChartPage />
+                    </section>
                   </>
                 }
               />
