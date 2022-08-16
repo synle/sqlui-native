@@ -1,13 +1,15 @@
 import SsidChartIcon from '@mui/icons-material/SsidChart';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import { toPng } from 'html-to-image';
 import ReactFlow from 'react-flow-renderer';
 import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import Breadcrumbs from 'src/frontend/components/Breadcrumbs';
+import { downloadBlob } from 'src/frontend/data/file';
 import { useGetAllTableColumns } from 'src/frontend/hooks/useConnection';
 import 'src/frontend/App.scss';
 import 'src/frontend/electronRenderer';
-import Breadcrumbs from 'src/frontend/components/Breadcrumbs';
 
 type MyNode = any;
 type MyEdge = any;
@@ -24,6 +26,12 @@ export default function RelationshipChartPage() {
   const { data, isLoading } = useGetAllTableColumns(connectionId, databaseId);
 
   const onToggleShowLabels = () => setShowLabels(!showLabels);
+
+  const onDownload = async () => {
+    const node = document.querySelector('#relationship-chart') as HTMLElement;
+    const blob = await toPng(node);
+    await downloadBlob(`relationship-${connectionId}-${databaseId}-${new Date()}.png`, blob);
+  };
 
   useEffect(() => {
     if (!data) {
@@ -62,12 +70,10 @@ export default function RelationshipChartPage() {
           );
 
           newEdges.push({
+            _label: `${tableColumn.name} => ${tableColumn.referencedTableName}.${tableColumn.referencedColumnName}`,
             id: `${tableName}.${tableColumn.name} => ${tableColumn.referencedTableName}.${tableColumn.referencedColumnName}`,
             source: tableName,
             target: tableColumn.referencedTableName,
-            label: !showLabels
-              ? undefined
-              : `${tableColumn.name} => ${tableColumn.referencedTableName}.${tableColumn.referencedColumnName}`,
             type: 'straight',
           });
 
@@ -98,7 +104,16 @@ export default function RelationshipChartPage() {
 
     setNodes(newNodes);
     setEdges(newEdges);
-  }, [JSON.stringify(data), showLabels]);
+  }, [JSON.stringify(data)]);
+  // show labels
+  useEffect(() => {
+    setEdges(
+      edges.map((edge) => {
+        edge.label = showLabels ? edge._label : undefined;
+        return edge;
+      }),
+    );
+  }, [JSON.stringify(edges), showLabels]);
 
   if (isLoading) {
     return <Box sx={{ padding: 2 }}>Loading...</Box>;
@@ -121,9 +136,10 @@ export default function RelationshipChartPage() {
         />
         <Box sx={{ ml: 'auto' }}>
           <Button onClick={onToggleShowLabels}>{showLabels ? 'Hide Labels' : 'Show Labels'}</Button>
+          <Button onClick={onDownload}>Download</Button>
         </Box>
       </Box>
-      <Box sx={{ height: '100vh', zIndex: 0 }}>
+      <Box id='relationship-chart' sx={{ height: '100vh', zIndex: 0 }}>
         <ReactFlow defaultNodes={nodes} defaultEdges={edges} fitView />
       </Box>
     </>
