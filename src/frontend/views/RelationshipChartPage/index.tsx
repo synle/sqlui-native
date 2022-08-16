@@ -73,8 +73,8 @@ export default function RelationshipChartPage() {
           newEdges.push({
             _label: `${tableColumn.name} => ${tableColumn.referencedTableName}.${tableColumn.referencedColumnName}`,
             id: `${tableName}.${tableColumn.name} => ${tableColumn.referencedTableName}.${tableColumn.referencedColumnName}`,
-            source: tableName,
-            target: tableColumn.referencedTableName,
+            source: tableName, // from
+            target: tableColumn.referencedTableName,// to
             type: 'straight',
           });
 
@@ -96,6 +96,8 @@ export default function RelationshipChartPage() {
 
       if (count === firstGroup) {
         node.position.x = width * 0 + widthDelta * 0;
+        node.sourcePosition = 'right'
+        node.targetPosition = 'right'
       } else if (count === secondGroup) {
         node.position.x = width * 1 + widthDelta * 1;
       } else if (count === thirdGroup) {
@@ -144,17 +146,62 @@ export default function RelationshipChartPage() {
       <Box id='relationship-chart' sx={{ height: '100vh', zIndex: 0 }}>
         <ReactFlow
           fitView
+          snapToGrid
           defaultNodes={nodes}
           defaultEdges={edges}
-          onNodeClick={(e, targetNode) => {
-            setNodes(
-              nodes.map((node) => {
-                if (node.id === targetNode.id) {
-                  node.selected = true;
-                }
-                return node;
-              }),
-            );
+          onNodesChange={(nodeChanges) => {
+            let newNodes = nodes;
+            let newEdges = edges;
+
+            for(const nodeChange of nodeChanges){
+              //@ts-ignore
+              const targetNodeId = nodeChange.id;
+
+              if(!targetNodeId){
+                continue;
+              }
+
+              switch(nodeChange.type){
+                case 'select':
+                  newNodes = newNodes.map((node) => {
+                    if(node.id === targetNodeId){
+                      node.selected = nodeChange.selected;
+                    }
+
+                    return node;
+                  })
+                  break;
+                case 'remove':
+                  newNodes = newNodes.filter((node) => {
+                    return node.id !== targetNodeId
+                  })
+                  break;
+                default:
+                case 'dimensions':
+                  break;
+              }
+            }
+
+            const selectedNodes = new Set<string>();
+            for(const node of newNodes){
+              if(node.selected){
+                selectedNodes.add(node.id);
+              }
+            }
+
+            // handling path highlights
+            // animate edges for selected node
+            newEdges = newEdges.map(edge => {
+              if(selectedNodes.has(edge.source) || selectedNodes.has(edge.target)){
+                edge.animated = true;
+              } else {
+                edge.animated = false;
+              }
+              return edge;
+            })
+
+            setNodes(newNodes);
+            setEdges(newEdges);
           }}
           onNodeDragStop={(e, targetNode) => {
             setNodes(

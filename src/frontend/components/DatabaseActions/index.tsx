@@ -39,20 +39,14 @@ export default function DatabaseActions(props: DatabaseActionsProps): JSX.Elemen
 
   const isLoading = loadingConnection;
 
-  let actions: SqlAction.Output[] = getDatabaseActions({
-    dialect,
-    connectionId,
-    databaseId,
-    querySize,
-  });
+  let actions: SqlAction.Output[] = [];
 
   actions = [
     {
       label: 'Select',
       description: `Selected the related database and connection.`,
       icon: <SelectAllIcon />,
-    },
-    ...actions,
+    }
   ];
 
   // TODO: move this into the interface of script adapter
@@ -73,6 +67,13 @@ export default function DatabaseActions(props: DatabaseActionsProps): JSX.Elemen
       });
       break;
   }
+
+  actions = [...actions, ...getDatabaseActions({
+    dialect,
+    connectionId,
+    databaseId,
+    querySize,
+  })]
 
   const options = actions.map((action) => ({
     label: action.label,

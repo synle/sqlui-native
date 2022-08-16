@@ -231,3 +231,23 @@ $ConnectionTreeIndentSize: 7px;
 [data-popper-placement] {
   z-index: 5;
 }
+
+
+.react-flow{
+  &__node{
+    border: 4px solid #666;
+
+    &.selected{
+      background: #efefef;
+      color: blue;
+      font-weight: bold;
+      border: 4px solid blue;
+    }
+  }
+
+  &__edge.animated{
+    .react-flow__edge-path{
+      stroke: blue;
+    }
+  }
+}
