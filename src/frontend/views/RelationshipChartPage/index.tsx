@@ -1,4 +1,7 @@
 import SsidChartIcon from '@mui/icons-material/SsidChart';
+import Backdrop from '@mui/material/Backdrop';
+import Typography from '@mui/material/Typography';
+import CircularProgress from '@mui/material/CircularProgress';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import { toPng } from 'html-to-image';
@@ -120,7 +123,17 @@ export default function RelationshipChartPage() {
   }, [showLabels]);
 
   if (isLoading) {
-    return <Box sx={{ padding: 2 }}>Loading...</Box>;
+    return (
+      <Backdrop
+        open={true}
+        sx={{
+          bgcolor: 'background.paper',
+          zIndex: (theme) => theme.zIndex.drawer + 1,
+        }}>
+        <CircularProgress />
+        <Typography variant='h6'>Loading Visualization...</Typography>
+      </Backdrop>
+    );
   }
 
   return (
