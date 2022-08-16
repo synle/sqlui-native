@@ -1,13 +1,16 @@
 import SsidChartIcon from '@mui/icons-material/SsidChart';
+import Backdrop from '@mui/material/Backdrop';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import CircularProgress from '@mui/material/CircularProgress';
+import Typography from '@mui/material/Typography';
 import { toPng } from 'html-to-image';
 import ReactFlow from 'react-flow-renderer';
 import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import Breadcrumbs from 'src/frontend/components/Breadcrumbs';
 import { downloadBlob } from 'src/frontend/data/file';
-import { useGetAllTableColumns } from 'src/frontend/hooks/useConnection';
+import { useGetAllTableColumns, useGetConnectionById } from 'src/frontend/hooks/useConnection';
 import 'src/frontend/App.scss';
 import 'src/frontend/electronRenderer';
 
@@ -24,7 +27,16 @@ export default function RelationshipChartPage() {
   const [edges, setEdges] = useState<MyEdge[]>([]);
   const [showLabels, setShowLabels] = useState(false);
 
-  const { data, isLoading } = useGetAllTableColumns(connectionId, databaseId);
+  const {
+    data,
+    error: errorAllColumns,
+    isLoading: loadingAllColumns,
+  } = useGetAllTableColumns(connectionId, databaseId);
+  const {
+    data: connection,
+    error: errorConnection,
+    isLoading: loadingConnection,
+  } = useGetConnectionById(connectionId);
 
   const onToggleShowLabels = () => setShowLabels(!showLabels);
 
@@ -33,6 +45,8 @@ export default function RelationshipChartPage() {
     const blob = await toPng(node);
     await downloadBlob(`relationship-${connectionId}-${databaseId}-${new Date()}.png`, blob);
   };
+
+  const isLoading = loadingAllColumns || loadingConnection;
 
   useEffect(() => {
     if (!data) {
@@ -73,8 +87,8 @@ export default function RelationshipChartPage() {
           newEdges.push({
             _label: `${tableColumn.name} => ${tableColumn.referencedTableName}.${tableColumn.referencedColumnName}`,
             id: `${tableName}.${tableColumn.name} => ${tableColumn.referencedTableName}.${tableColumn.referencedColumnName}`,
-            source: tableName,
-            target: tableColumn.referencedTableName,
+            source: tableName, // from
+            target: tableColumn.referencedTableName, // to
             type: 'straight',
           });
 
@@ -96,6 +110,8 @@ export default function RelationshipChartPage() {
 
       if (count === firstGroup) {
         node.position.x = width * 0 + widthDelta * 0;
+        node.sourcePosition = 'right';
+        node.targetPosition = 'right';
       } else if (count === secondGroup) {
         node.position.x = width * 1 + widthDelta * 1;
       } else if (count === thirdGroup) {
@@ -118,7 +134,29 @@ export default function RelationshipChartPage() {
   }, [showLabels]);
 
   if (isLoading) {
-    return <Box sx={{ padding: 2 }}>Loading...</Box>;
+    return (
+      <Backdrop
+        open={true}
+        sx={{
+          bgcolor: 'background.paper',
+          zIndex: (theme) => theme.zIndex.drawer + 1,
+        }}>
+        <CircularProgress />
+        <Typography variant='h6' sx={{ ml: 2 }}>
+          Loading Visualization...
+        </Typography>
+      </Backdrop>
+    );
+  }
+
+  const hasError = errorAllColumns || errorConnection;
+  if (hasError) {
+    return (
+      <Typography variant='h6' sx={{ mx: 4, mt: 2, color: 'error.main' }}>
+        There are some errors because we can't fetch the related connection or columns in this
+        table.
+      </Typography>
+    );
   }
 
   return (
@@ -126,6 +164,12 @@ export default function RelationshipChartPage() {
       <Box sx={{ mx: 2, display: 'flex', alignItems: 'center' }}>
         <Breadcrumbs
           links={[
+            {
+              label: <>{connection?.name}</>,
+            },
+            {
+              label: <>{databaseId}</>,
+            },
             {
               label: (
                 <>
@@ -136,7 +180,7 @@ export default function RelationshipChartPage() {
             },
           ]}
         />
-        <Box sx={{ ml: 'auto' }}>
+        <Box sx={{ ml: 'auto', display: 'flex', alignItems: 'center', gap: 2 }}>
           <Button onClick={onToggleShowLabels}>{showLabels ? 'Hide Labels' : 'Show Labels'}</Button>
           <Button onClick={onDownload}>Download</Button>
         </Box>
@@ -144,17 +188,62 @@ export default function RelationshipChartPage() {
       <Box id='relationship-chart' sx={{ height: '100vh', zIndex: 0 }}>
         <ReactFlow
           fitView
+          snapToGrid
           defaultNodes={nodes}
           defaultEdges={edges}
-          onNodeClick={(e, targetNode) => {
-            setNodes(
-              nodes.map((node) => {
-                if (node.id === targetNode.id) {
-                  node.selected = true;
-                }
-                return node;
-              }),
-            );
+          onNodesChange={(nodeChanges) => {
+            let newNodes = nodes;
+            let newEdges = edges;
+
+            for (const nodeChange of nodeChanges) {
+              //@ts-ignore
+              const targetNodeId = nodeChange.id;
+
+              if (!targetNodeId) {
+                continue;
+              }
+
+              switch (nodeChange.type) {
+                case 'select':
+                  newNodes = newNodes.map((node) => {
+                    if (node.id === targetNodeId) {
+                      node.selected = nodeChange.selected;
+                    }
+
+                    return node;
+                  });
+                  break;
+                case 'remove':
+                  newNodes = newNodes.filter((node) => {
+                    return node.id !== targetNodeId;
+                  });
+                  break;
+                default:
+                case 'dimensions':
+                  break;
+              }
+            }
+
+            const selectedNodes = new Set<string>();
+            for (const node of newNodes) {
+              if (node.selected) {
+                selectedNodes.add(node.id);
+              }
+            }
+
+            // handling path highlights
+            // animate edges for selected node
+            newEdges = newEdges.map((edge) => {
+              if (selectedNodes.has(edge.source) || selectedNodes.has(edge.target)) {
+                edge.animated = true;
+              } else {
+                edge.animated = false;
+              }
+              return edge;
+            });
+
+            setNodes(newNodes);
+            setEdges(newEdges);
           }}
           onNodeDragStop={(e, targetNode) => {
             setNodes(
