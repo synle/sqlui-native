@@ -227,3 +227,7 @@ $ConnectionTreeIndentSize: 7px;
     }
   }
 }
+
+[data-popper-placement] {
+  z-index: 5;
+}
