@@ -6,8 +6,10 @@ import { useEffect, useState } from 'react';
 import { useGetAllTableColumns } from 'src/frontend/hooks/useConnection';
 import 'src/frontend/App.scss';
 import 'src/frontend/electronRenderer';
- import Breadcrumbs from 'src/frontend/components/Breadcrumbs';
+import Breadcrumbs from 'src/frontend/components/Breadcrumbs';
 import SsidChartIcon from '@mui/icons-material/SsidChart';
+import { toPng, toJpeg, toBlob, toPixelData, toSvg } from 'html-to-image';
+
 
 type MyNode = any;
 type MyEdge = any;
@@ -24,6 +26,9 @@ export default function RelationshipChartPage() {
   const { data, isLoading } = useGetAllTableColumns(connectionId, databaseId);
 
   const onToggleShowLabels= () => setShowLabels(!showLabels);
+  const onDownload = () => {
+
+  }
 
   useEffect(() => {
     if (!data) {
@@ -119,6 +124,7 @@ export default function RelationshipChartPage() {
       />
       <Box sx={{ml: 'auto'}}>
         <Button onClick={onToggleShowLabels}>{showLabels ? 'Hide Labels': 'Show Labels'}</Button>
+        <Button onClick={onDownload}>Download</Button>
       </Box>
       </Box>
       <Box sx={{ height: '100vh', zIndex: 0 }}>
