@@ -65,7 +65,7 @@ export default function RelationshipChartPage() {
             id: `${tableName}.${tableColumn.name} => ${tableColumn.referencedTableName}.${tableColumn.referencedColumnName}`,
             source: tableName,
             target: tableColumn.referencedTableName,
-            label: showLabels ? undefined : `${tableColumn.name} => ${tableColumn.referencedTableName}.${tableColumn.referencedColumnName}`,
+            label: !showLabels ? undefined : `${tableColumn.name} => ${tableColumn.referencedTableName}.${tableColumn.referencedColumnName}`,
             type: 'straight',
           });
 
