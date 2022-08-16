@@ -26,7 +26,10 @@ export default function RelationshipChartPage() {
   const { data, isLoading } = useGetAllTableColumns(connectionId, databaseId);
 
   const onToggleShowLabels= () => setShowLabels(!showLabels);
-  const onDownload = () => {
+
+  const onDownload = async () => {
+    const node = document.querySelector('#relationship-chart');
+    const blob = await toPng(node);
 
   }
 
@@ -127,7 +130,7 @@ export default function RelationshipChartPage() {
         <Button onClick={onDownload}>Download</Button>
       </Box>
       </Box>
-      <Box sx={{ height: '100vh', zIndex: 0 }}>
+      <Box id='relationship-chart' sx={{ height: '100vh', zIndex: 0 }}>
         <ReactFlow defaultNodes={nodes} defaultEdges={edges} fitView />
       </Box>
     </>
