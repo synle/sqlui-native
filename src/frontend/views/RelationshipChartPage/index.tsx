@@ -18,6 +18,12 @@ type MyNode = any;
 
 type MyEdge = any;
 
+const width = 200;
+
+const widthDelta = 10;
+const height = 80;
+const heightDelta = 25;
+
 export default function RelationshipChartPage() {
   const urlParams = useParams();
   const connectionId = urlParams.connectionId as string;
@@ -56,26 +62,19 @@ export default function RelationshipChartPage() {
     const newNodes: MyNode[] = [];
     const newEdges: MyEdge[] = [];
 
-    const width = 200;
-    const widthDelta = 100;
-    const height = 25;
-    const heightDelta = 100;
-
     const mapNodeConnectionsCount: Record<string, number> = {}; // connection => count
+    const nodesHasEdge = new Set<string>();
 
-    let i = 0;
     for (const tableName of Object.keys(data)) {
       newNodes.push({
         id: tableName,
         data: { label: tableName },
         connectable: false,
-        position: { x: width * 3 + widthDelta * 3, y: i * height + i * heightDelta },
+        position: { x: 0, y: 0 },
       });
-
-      i++;
     }
 
-    for (const tableName of Object.keys(data)) {
+    for (const tableName of Object.keys(data).sort()) {
       const tableColumns = data[tableName];
 
       for (const tableColumn of tableColumns) {
@@ -84,17 +83,22 @@ export default function RelationshipChartPage() {
             (edge) => edge.source === tableName && edge.target === tableColumn.referencedTableName,
           );
 
-          newEdges.push({
+          const newEdge = {
             _label: `${tableColumn.name} => ${tableColumn.referencedTableName}.${tableColumn.referencedColumnName}`,
             id: `${tableName}.${tableColumn.name} => ${tableColumn.referencedTableName}.${tableColumn.referencedColumnName}`,
             source: tableName, // from
             target: tableColumn.referencedTableName, // to
             type: 'straight',
-          });
+          };
 
           mapNodeConnectionsCount[tableColumn.referencedTableName] =
             mapNodeConnectionsCount[tableColumn.referencedTableName] || 0;
           mapNodeConnectionsCount[tableColumn.referencedTableName]++;
+
+          nodesHasEdge.add(newEdge.source);
+          nodesHasEdge.add(newEdge.target);
+
+          newEdges.push(newEdge);
         }
       }
     }
@@ -102,28 +106,36 @@ export default function RelationshipChartPage() {
     const countGroups = [...new Set(Object.values(mapNodeConnectionsCount))]
       .map((s) => s as number)
       .sort((a, b) => b - a);
-    const [firstGroup, secondGroup, thirdGroup] = countGroups;
 
+    let i = 0;
     for (const node of newNodes) {
       const tableName = node.id;
       const count = mapNodeConnectionsCount[tableName];
 
-      if (count === firstGroup) {
-        node.position.x = width * 0 + widthDelta * 0;
-        node.sourcePosition = 'right';
-        node.targetPosition = 'right';
-      } else if (count === secondGroup) {
-        node.position.x = width * 1 + widthDelta * 1;
-      } else if (count === thirdGroup) {
-        node.position.x = width * 2 + widthDelta * 2;
+      let foundIdx = countGroups.indexOf(count);
+      if (foundIdx === -1) {
+        if (nodesHasEdge.has(tableName)) {
+          // node that has some edges, then show them at second to last
+          // row
+          foundIdx = countGroups.length;
+        } else {
+          // these are nodes that doesn't have any dependency
+          // show them at the bottom
+          foundIdx = countGroups.length + 1;
+        }
       }
+
+      const colIdx = i++;
+      const rowIdx = foundIdx;
+      node.position.x = width * colIdx + widthDelta * colIdx;
+      node.position.y = height * rowIdx + heightDelta * rowIdx;
     }
 
     setNodes(newNodes);
     setEdges(newEdges);
   }, [JSON.stringify(data)]);
 
-  // show labels
+  // show or hide labels
   useEffect(() => {
     setEdges(
       edges.map((edge) => {
@@ -165,18 +177,18 @@ export default function RelationshipChartPage() {
         <Breadcrumbs
           links={[
             {
-              label: <>{connection?.name}</>,
-            },
-            {
-              label: <>{databaseId}</>,
-            },
-            {
               label: (
                 <>
                   <SsidChartIcon fontSize='inherit' />
                   Visualization
                 </>
               ),
+            },
+            {
+              label: <>{connection?.name}</>,
+            },
+            {
+              label: <>{databaseId}</>,
             },
           ]}
         />
