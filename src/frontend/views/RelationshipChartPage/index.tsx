@@ -32,6 +32,7 @@ const width = 200;
 const widthDelta = 10;
 
 const height = 80;
+
 const heightDelta = 25;
 
 export default function RelationshipChartPage() {
