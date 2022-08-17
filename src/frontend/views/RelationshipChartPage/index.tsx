@@ -10,7 +10,7 @@ import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import Breadcrumbs from 'src/frontend/components/Breadcrumbs';
 import { downloadBlob } from 'src/frontend/data/file';
-import { useGetAllTableColumns, useGetConnectionById } from 'src/frontend/hooks/useConnection';
+import { useGetAllTableColumns, useGetConnectionById, useGetColumns } from 'src/frontend/hooks/useConnection';
 import 'src/frontend/App.scss';
 import 'src/frontend/electronRenderer';
 
@@ -35,15 +35,20 @@ export default function RelationshipChartPage() {
   const [showLabels, setShowLabels] = useState(false);
 
   const {
-    data,
-    error: errorAllColumns,
-    isLoading: loadingAllColumns,
-  } = useGetAllTableColumns(connectionId, databaseId);
-  const {
     data: connection,
     error: errorConnection,
     isLoading: loadingConnection,
   } = useGetConnectionById(connectionId);
+
+  const {
+    data,
+    error: errorAllColumns,
+    isLoading: loadingAllColumns,
+  } = useGetAllTableColumns(connectionId, databaseId);
+
+  const { error: errorActiveTableColumns, isLoading: loadingActiveTableColumns } = useGetColumns(
+    connectionId, databaseId, tableId
+  );
 
   const onToggleShowLabels = () => setShowLabels(!showLabels);
 
@@ -53,7 +58,7 @@ export default function RelationshipChartPage() {
     await downloadBlob(`relationship-${connectionId}-${databaseId}-${new Date()}.png`, blob);
   };
 
-  const isLoading = loadingAllColumns || loadingConnection;
+  const isLoading = loadingAllColumns || loadingConnection || loadingActiveTableColumns;
 
   useEffect(() => {
     if (!data) {
@@ -175,7 +180,7 @@ export default function RelationshipChartPage() {
     );
   }
 
-  const hasError = errorAllColumns || errorConnection;
+  const hasError = errorAllColumns || errorConnection || errorActiveTableColumns;
   if (hasError) {
     return (
       <Typography variant='h6' sx={{ mx: 4, mt: 2, color: 'error.main' }}>
