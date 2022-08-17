@@ -204,7 +204,7 @@ export default function App() {
                 }
               />
               <Route
-                path='/relationship/:connectionId/:databaseId'
+                path='/visualization/:connectionId'
                 element={
                   <>
                     <AppHeader />
@@ -213,7 +213,16 @@ export default function App() {
                 }
               />
               <Route
-                path='/relationship/:connectionId/:databaseId/:tableId'
+                path='/visualization/:connectionId/:databaseId'
+                element={
+                  <>
+                    <AppHeader />
+                    <RelationshipChartPage />
+                  </>
+                }
+              />
+              <Route
+                path='/visualization/:connectionId/:databaseId/:tableId'
                 element={
                   <>
                     <AppHeader />

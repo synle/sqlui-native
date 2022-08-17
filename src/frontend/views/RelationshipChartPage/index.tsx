@@ -10,21 +10,26 @@ import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import Breadcrumbs from 'src/frontend/components/Breadcrumbs';
 import { downloadBlob } from 'src/frontend/data/file';
-import { useGetAllTableColumns, useGetConnectionById, useGetColumns } from 'src/frontend/hooks/useConnection';
+import { useGetAllTableColumns, useGetConnectionById, useGetColumns, useGetDatabases } from 'src/frontend/hooks/useConnection';
 import 'src/frontend/App.scss';
 import 'src/frontend/electronRenderer';
+import { useNavigate } from 'react-router-dom';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
 
 type MyNode = any;
-
 type MyEdge = any;
 
 const width = 200;
-
 const widthDelta = 10;
 const height = 80;
 const heightDelta = 25;
 
 export default function RelationshipChartPage() {
+  const navigate = useNavigate();
   const urlParams = useParams();
   const connectionId = urlParams.connectionId as string;
   const databaseId = urlParams.databaseId as string;
@@ -36,17 +41,30 @@ export default function RelationshipChartPage() {
 
   const {
     data: connection,
+    refetch: refetchConnection,
     error: errorConnection,
     isLoading: loadingConnection,
   } = useGetConnectionById(connectionId);
 
   const {
-    data,
+    data: databases,
+    refetch: refetchDatabases,
+    error: errorDatabases,
+    isLoading: loadingDatabases,
+  } = useGetDatabases(connectionId);
+
+  const {
+    data: allColumns,
+    refetch: refetchAllColumns,
     error: errorAllColumns,
     isLoading: loadingAllColumns,
   } = useGetAllTableColumns(connectionId, databaseId);
 
-  const { error: errorActiveTableColumns, isLoading: loadingActiveTableColumns } = useGetColumns(
+  const {
+    refetch: refetchActiveTableColumns,
+    error: errorActiveTableColumns,
+    isLoading: loadingActiveTableColumns
+  } = useGetColumns(
     connectionId, databaseId, tableId
   );
 
@@ -58,10 +76,21 @@ export default function RelationshipChartPage() {
     await downloadBlob(`relationship-${connectionId}-${databaseId}-${new Date()}.png`, blob);
   };
 
-  const isLoading = loadingAllColumns || loadingConnection || loadingActiveTableColumns;
+  const isLoading = loadingAllColumns || loadingConnection || loadingActiveTableColumns || loadingDatabases;
+  const hasError = errorAllColumns || errorConnection || errorActiveTableColumns || errorDatabases;
 
   useEffect(() => {
-    if (!data) {
+    setNodes([])
+    setEdges([])
+
+    refetchConnection();
+    refetchAllColumns();
+    refetchActiveTableColumns();
+    refetchDatabases();
+  }, [connectionId, databaseId, tableId])
+
+  useEffect(() => {
+    if (!allColumns) {
       return;
     }
 
@@ -71,7 +100,7 @@ export default function RelationshipChartPage() {
     const mapNodeConnectionsCount: Record<string, number> = {}; // connection => count
     const nodesHasEdge = new Set<string>();
 
-    for (const tableName of Object.keys(data)) {
+    for (const tableName of Object.keys(allColumns)) {
       newNodes.push({
         id: tableName,
         data: { label: tableName },
@@ -80,8 +109,8 @@ export default function RelationshipChartPage() {
       });
     }
 
-    for (const tableName of Object.keys(data).sort()) {
-      const tableColumns = data[tableName];
+    for (const tableName of Object.keys(allColumns).sort()) {
+      const tableColumns = allColumns[tableName];
 
       for (const tableColumn of tableColumns) {
         if (tableColumn.referencedColumnName && tableColumn.referencedTableName) {
@@ -96,10 +125,6 @@ export default function RelationshipChartPage() {
             target: tableColumn.referencedTableName, // to
             type: 'straight',
           };
-
-          mapNodeConnectionsCount[tableColumn.referencedTableName] =
-            mapNodeConnectionsCount[tableColumn.referencedTableName] || 0;
-          mapNodeConnectionsCount[tableColumn.referencedTableName]++;
 
           nodesHasEdge.add(newEdge.source);
           nodesHasEdge.add(newEdge.target);
@@ -120,6 +145,13 @@ export default function RelationshipChartPage() {
       }
 
       newNodes = newNodes.filter(node => nodesToKeep.has(node.id));
+    }
+
+    // doing the count for grouping of nodes
+    for(const edge of newEdges){
+      mapNodeConnectionsCount[edge.target] =
+        mapNodeConnectionsCount[edge.target] || 0;
+      mapNodeConnectionsCount[edge.target]++;
     }
 
     const countGroups = [...new Set(Object.values(mapNodeConnectionsCount))]
@@ -152,7 +184,7 @@ export default function RelationshipChartPage() {
 
     setNodes(newNodes);
     setEdges(newEdges);
-  }, [JSON.stringify(data)]);
+  }, [connectionId, databaseId, tableId, JSON.stringify(allColumns)]);
 
   // show or hide labels
   useEffect(() => {
@@ -180,7 +212,6 @@ export default function RelationshipChartPage() {
     );
   }
 
-  const hasError = errorAllColumns || errorConnection || errorActiveTableColumns;
   if (hasError) {
     return (
       <Typography variant='h6' sx={{ mx: 4, mt: 2, color: 'error.main' }}>
@@ -201,9 +232,11 @@ export default function RelationshipChartPage() {
     },
     {
       label: <>{connection?.name}</>,
+      href: `/visualization/${connectionId}`,
     },
     {
       label: <>{databaseId}</>,
+      href: `/visualization/${connectionId}/${databaseId}`,
     },
   ];
 
@@ -213,19 +246,34 @@ export default function RelationshipChartPage() {
     });
   }
 
+  let contentDom : JSX.Element;
+  if(!databaseId){
+    // here we show a list of database ids to let you select
+    if(databases && databases.length > 0){
+      contentDom = <>
+      <Typography variant='h6' sx={{ mx: 2}}>
+      Select one of the following database to visualize
+      </Typography>
+      <List>
+      {databases.map((database) => {
+        const onNavigateToDatabaseVisualization = () => {
+          navigate(`/visualization/${connectionId}/${database.name}`)
+        }
 
-  return (
-    <>
-      <Box sx={{ mx: 2, display: 'flex', alignItems: 'center' }}>
-        <Breadcrumbs
-          links={breadcrumbsData}
-        />
-        <Box sx={{ ml: 'auto', display: 'flex', alignItems: 'center', gap: 2 }}>
-          <Button onClick={onToggleShowLabels}>{showLabels ? 'Hide Labels' : 'Show Labels'}</Button>
-          <Button onClick={onDownload}>Download</Button>
-        </Box>
-      </Box>
-      <Box id='relationship-chart' sx={{ height: 'calc(100vh - 110px)', zIndex: 0 }}>
+        return <ListItem disablePadding>
+            <ListItemButton onClick={onNavigateToDatabaseVisualization}>
+              <ListItemText primary={database.name} />
+            </ListItemButton>
+          </ListItem>
+      })}
+        </List>
+        </>
+    } else {
+      contentDom = <Typography variant='h6' sx={{ mx:2, color: 'error.main' }}>This connection doesn't have any database</Typography>
+    }
+
+  } else {
+    contentDom  = <Box id='relationship-chart' sx={{ height: 'calc(100vh - 110px)', zIndex: 0 }}>
         <ReactFlow
           fitView
           snapToGrid
@@ -297,6 +345,20 @@ export default function RelationshipChartPage() {
           }}
         />
       </Box>
+  }
+
+  return (
+    <>
+      <Box sx={{ mx: 2, display: 'flex', alignItems: 'center' }}>
+        <Breadcrumbs
+          links={breadcrumbsData}
+        />
+        <Box sx={{ ml: 'auto', display: 'flex', alignItems: 'center', gap: 2 }}>
+          <Button onClick={onToggleShowLabels}>{showLabels ? 'Hide Labels' : 'Show Labels'}</Button>
+          <Button onClick={onDownload}>Download</Button>
+        </Box>
+      </Box>
+      {contentDom}
     </>
   );
 }
