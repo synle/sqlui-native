@@ -59,10 +59,11 @@ jobs:
       - run: yarn install --network-timeout 1000000 --frozen-lockfile
       - run: yarn test-ci
       - run: yarn build
+
+      # package and distribute .exe
       - run: yarn dist
       - run: mv ./dist/sqlui-native*.exe ./dist/sqlui-native.exe
-
-      - name: Upload release binary
+      - name: Upload release binary .exe
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -71,12 +72,30 @@ jobs:
           asset_path: ./dist/sqlui-native.exe
           asset_name: sqlui-native-${{ needs.create_release.outputs.package_version }}.exe
           asset_content_type: application/octet-stream
-
       - name: Upload artifact .exe
         uses: actions/upload-artifact@v3
         with:
           name: sqlui-native.exe
           path: ./dist/sqlui-native.exe
+
+      # package and distribute .appx
+      - run: yarn dist-win32-appx
+      - run: mv ./dist/sqlui-native*.appx ./dist/sqlui-native.appx
+      - name: Upload release binary .appx
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create_release.outputs.release_upload_url }}
+          asset_path: ./dist/sqlui-native.appx
+          asset_name: sqlui-native-${{ needs.create_release.outputs.package_version }}.appx
+          asset_content_type: application/octet-stream
+
+      - name: Upload artifact .appx
+        uses: actions/upload-artifact@v3
+        with:
+          name: sqlui-native.appx
+          path: ./dist/sqlui-native.appx
 
   build_macos:
     needs: [create_release]
