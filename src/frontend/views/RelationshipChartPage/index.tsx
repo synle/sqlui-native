@@ -19,6 +19,7 @@ type MyNode = any;
 type MyEdge = any;
 
 const width = 200;
+
 const widthDelta = 10;
 const height = 80;
 const heightDelta = 25;
@@ -82,13 +83,13 @@ export default function RelationshipChartPage() {
             (edge) => edge.source === tableName && edge.target === tableColumn.referencedTableName,
           );
 
-          const newEdge = ({
+          const newEdge = {
             _label: `${tableColumn.name} => ${tableColumn.referencedTableName}.${tableColumn.referencedColumnName}`,
             id: `${tableName}.${tableColumn.name} => ${tableColumn.referencedTableName}.${tableColumn.referencedColumnName}`,
             source: tableName, // from
             target: tableColumn.referencedTableName, // to
             type: 'straight',
-          });
+          };
 
           mapNodeConnectionsCount[tableColumn.referencedTableName] =
             mapNodeConnectionsCount[tableColumn.referencedTableName] || 0;
@@ -112,8 +113,8 @@ export default function RelationshipChartPage() {
       const count = mapNodeConnectionsCount[tableName];
 
       let foundIdx = countGroups.indexOf(count);
-      if(foundIdx === -1){
-        if(nodesHasEdge.has(tableName)){
+      if (foundIdx === -1) {
+        if (nodesHasEdge.has(tableName)) {
           // node that has some edges, then show them at second to last
           // row
           foundIdx = countGroups.length;
@@ -126,7 +127,7 @@ export default function RelationshipChartPage() {
 
       const colIdx = i++;
       const rowIdx = foundIdx;
-      node.position.x = width * colIdx + widthDelta * colIdx
+      node.position.x = width * colIdx + widthDelta * colIdx;
       node.position.y = height * rowIdx + heightDelta * rowIdx;
     }
 
