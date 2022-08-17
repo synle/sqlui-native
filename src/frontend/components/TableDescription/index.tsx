@@ -1,3 +1,4 @@
+import SsidChartIcon from '@mui/icons-material/SsidChart';
 import TableRowsIcon from '@mui/icons-material/TableRows';
 import Alert from '@mui/material/Alert';
 import CircularProgress from '@mui/material/CircularProgress';

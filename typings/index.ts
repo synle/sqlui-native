@@ -246,6 +246,8 @@ export module SqlAction {
      * @type {[type]}
      */
     skipGuide?: boolean;
+    onClick?:() => void;
+    startIcon?: JSX.Element;
   };
 
   export type TableActionScriptGenerator = (

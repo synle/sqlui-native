@@ -11,6 +11,7 @@ export default interface IDataScript {
   supportMigration: () => boolean;
   supportCreateRecordForm: () => boolean;
   supportEditRecordForm: () => boolean;
+  supportVisualization:() => boolean;
 
   // dialect definitions
   getDialectType: (dialect?: SqluiCore.Dialect) => SqluiCore.Dialect | undefined;

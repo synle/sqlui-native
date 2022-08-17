@@ -8,6 +8,11 @@ import { useGetColumns, useGetConnectionById } from 'src/frontend/hooks/useConne
 import { useActiveConnectionQuery } from 'src/frontend/hooks/useConnectionQuery';
 import { useQuerySizeSetting } from 'src/frontend/hooks/useSetting';
 import { useTreeActions } from 'src/frontend/hooks/useTreeActions';
+import {isDialectSupportVisualization} from 'src/common/adapters/DataScriptFactory';
+import SsidChartIcon from '@mui/icons-material/SsidChart';
+import { useNavigate } from 'react-router-dom';
+import { SqlAction } from 'typings';
+import BaseDataScript, { getDivider } from 'src/common/adapters/BaseDataAdapter/scripts';
 
 type TableActionsProps = {
   connectionId: string;
@@ -16,6 +21,7 @@ type TableActionsProps = {
 };
 
 export default function TableActions(props: TableActionsProps): JSX.Element | null {
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const querySize = useQuerySizeSetting();
   let databaseId: string | undefined = props.databaseId;
@@ -43,20 +49,39 @@ export default function TableActions(props: TableActionsProps): JSX.Element | nu
 
   const isLoading = loadingConnection || loadingColumns;
 
-  const actions = getTableActions({
+  let actions: SqlAction.Output[] = [];
+
+  if(isDialectSupportVisualization(dialect)){
+    actions = [
+    ...actions,
+    ({
+          label: 'Visualize',
+          description: `Visualize all tables in this database.`,
+          icon: <SsidChartIcon />,
+          onClick: () => navigate(`/relationship/${connectionId}/${databaseId}/${tableId}`),
+        }),
+    getDivider(),];
+  }
+
+  actions = [
+  ...actions,
+  ...getTableActions({
     dialect,
     connectionId,
     databaseId,
     tableId,
     columns: columns || [],
     querySize,
-  });
+  })
+  ]
 
   const options = actions.map((action) => ({
     label: action.label,
     startIcon: action.icon,
     onClick: async () =>
-      action.query &&
+      action?.onClick
+        ? action.onClick()
+      : action.query &&
       selectCommand({
         event: 'clientEvent/query/apply',
         data: {

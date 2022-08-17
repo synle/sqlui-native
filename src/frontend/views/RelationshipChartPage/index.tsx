@@ -28,6 +28,7 @@ export default function RelationshipChartPage() {
   const urlParams = useParams();
   const connectionId = urlParams.connectionId as string;
   const databaseId = urlParams.databaseId as string;
+  const tableId = urlParams.tableId as string;
 
   const [nodes, setNodes] = useState<MyNode[]>([]);
   const [edges, setEdges] = useState<MyEdge[]>([]);
@@ -59,8 +60,8 @@ export default function RelationshipChartPage() {
       return;
     }
 
-    const newNodes: MyNode[] = [];
-    const newEdges: MyEdge[] = [];
+    let newNodes: MyNode[] = [];
+    let newEdges: MyEdge[] = [];
 
     const mapNodeConnectionsCount: Record<string, number> = {}; // connection => count
     const nodesHasEdge = new Set<string>();
@@ -101,6 +102,19 @@ export default function RelationshipChartPage() {
           newEdges.push(newEdge);
         }
       }
+    }
+
+    // here we will filter out all the nodes and edges that doesn't have tableId
+    if(tableId){
+      newEdges = newEdges.filter(edge => edge.source === tableId || edge.target === tableId)
+
+      const nodesToKeep = new Set([tableId]);
+      for(const edge of newEdges){
+        nodesToKeep.add(edge.source);
+        nodesToKeep.add(edge.target);
+      }
+
+      newNodes = newNodes.filter(node => nodesToKeep.has(node.id));
     }
 
     const countGroups = [...new Set(Object.values(mapNodeConnectionsCount))]
@@ -171,26 +185,35 @@ export default function RelationshipChartPage() {
     );
   }
 
+  const breadcrumbsData = [
+    {
+      label: (
+        <>
+          <SsidChartIcon fontSize='inherit' />
+          Visualization
+        </>
+      ),
+    },
+    {
+      label: <>{connection?.name}</>,
+    },
+    {
+      label: <>{databaseId}</>,
+    },
+  ];
+
+  if(tableId){
+    breadcrumbsData.push({
+      label:<>{tableId}</>
+    });
+  }
+
+
   return (
     <>
       <Box sx={{ mx: 2, display: 'flex', alignItems: 'center' }}>
         <Breadcrumbs
-          links={[
-            {
-              label: (
-                <>
-                  <SsidChartIcon fontSize='inherit' />
-                  Visualization
-                </>
-              ),
-            },
-            {
-              label: <>{connection?.name}</>,
-            },
-            {
-              label: <>{databaseId}</>,
-            },
-          ]}
+          links={breadcrumbsData}
         />
         <Box sx={{ ml: 'auto', display: 'flex', alignItems: 'center', gap: 2 }}>
           <Button onClick={onToggleShowLabels}>{showLabels ? 'Hide Labels' : 'Show Labels'}</Button>

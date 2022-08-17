@@ -13,7 +13,7 @@ import { getConnectionActions } from 'src/common/adapters/DataScriptFactory';
 import DropdownButton from 'src/frontend/components/DropdownButton';
 import { useCommands } from 'src/frontend/components/MissionControl';
 import { useTreeActions } from 'src/frontend/hooks/useTreeActions';
-import { SqluiCore } from 'typings';
+import { SqluiCore, SqlAction } from 'typings';
 
 type ConnectionActionsProps = {
   connection: SqluiCore.ConnectionProps;
@@ -28,7 +28,7 @@ export default function ConnectionActions(props: ConnectionActionsProps): JSX.El
 
   const { dialect, id: connectionId } = connection;
 
-  const options = [
+  const options: SqlAction.Output[] = [
     {
       label: 'Add to Bookmark',
       onClick: () =>
