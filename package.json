@@ -3,7 +3,7 @@
   "version": "1.61.6",
   "packageManager": "yarn@1.22.19",
   "private": true,
-  "description": "A minimal native desktop client for most databases supporting MySQL, MariaDB, MS SQL Server, PostgresSQL, SQLite, Cassandra, MongoDB and Redis.",
+  "description": "A minimal native desktop client for most databases.",
   "browserslist": {
     "production": [
       ">0.2%",
@@ -23,6 +23,10 @@
     "extends": null,
     "win": {
       "icon": "build/logo512.png"
+    },
+    "appx": {
+        "publisherDisplayName": "Sy Le",
+        "applicationId": "sqluinative"
     },
     "mac": {
       "icon": "build/logo512.png"
@@ -54,7 +58,7 @@
     "start-webapp": "cross-env ENV_TYPE='mocked-server' BROWSER='none' react-scripts start",
     "start-mocked-server": "node build/mocked-server.js",
     "dev": "concurrently \"yarn start-mocked-server\" \"yarn start-webapp\"",
-    "dist": "electron-builder build --publish=never",
+    "dist": "electron-builder build --publish=never -w appx",
     "build-electron": "webpack --config webpack-electron.config.js && cpx package.json build",
     "build-mocked-sever": "webpack --config webpack-mocked-server.config.js",
     "build-react": "cross-env CI=\"\" react-scripts build",
