@@ -231,6 +231,15 @@ export default function App() {
                 }
               />
               <Route
+                path='/relationship/:connectionId/:databaseId/:tableId'
+                element={
+                  <>
+                    <AppHeader />
+                    <RelationshipChartPage />
+                  </>
+                }
+              />
+              <Route
                 path='/*'
                 element={
                   <>
