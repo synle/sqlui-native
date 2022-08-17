@@ -9,12 +9,12 @@ import StarIcon from '@mui/icons-material/Star';
 import { Button } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import { useNavigate } from 'react-router-dom';
+import { getDivider } from 'src/common/adapters/BaseDataAdapter/scripts';
 import { getConnectionActions } from 'src/common/adapters/DataScriptFactory';
 import DropdownButton from 'src/frontend/components/DropdownButton';
 import { useCommands } from 'src/frontend/components/MissionControl';
 import { useTreeActions } from 'src/frontend/hooks/useTreeActions';
 import { SqlAction, SqluiCore } from 'typings';
-import { getDivider } from 'src/common/adapters/BaseDataAdapter/scripts';
 
 type ConnectionActionsProps = {
   connection: SqluiCore.ConnectionProps;

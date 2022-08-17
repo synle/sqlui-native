@@ -12,7 +12,7 @@ import { toPng } from 'html-to-image';
 import ReactFlow from 'react-flow-renderer';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import Breadcrumbs, {BreadcrumbLink} from 'src/frontend/components/Breadcrumbs';
+import Breadcrumbs, { BreadcrumbLink } from 'src/frontend/components/Breadcrumbs';
 import { downloadBlob } from 'src/frontend/data/file';
 import {
   useGetAllTableColumns,
@@ -24,11 +24,13 @@ import 'src/frontend/App.scss';
 import 'src/frontend/electronRenderer';
 
 type MyNode = any;
+
 type MyEdge = any;
 
 const width = 200;
 
 const widthDelta = 10;
+
 const height = 80;
 const heightDelta = 25;
 
@@ -223,7 +225,7 @@ export default function RelationshipChartPage() {
     );
   }
 
-  const breadcrumbsData : BreadcrumbLink[]= [
+  const breadcrumbsData: BreadcrumbLink[] = [
     {
       label: (
         <>
@@ -281,7 +283,7 @@ export default function RelationshipChartPage() {
         </Typography>
       );
     }
-  } else if(nodes && nodes.length > 0){
+  } else if (nodes && nodes.length > 0) {
     contentDom = (
       <Box id='relationship-chart' sx={{ height: 'calc(100vh - 110px)', zIndex: 0 }}>
         <ReactFlow
@@ -358,10 +360,10 @@ export default function RelationshipChartPage() {
     );
   } else {
     contentDom = (
-        <Typography variant='h6' sx={{ mx: 2, color: 'error.main' }}>
-          This database "{databaseId}" doesn't have any table.
-        </Typography>
-      );
+      <Typography variant='h6' sx={{ mx: 2, color: 'error.main' }}>
+        This database "{databaseId}" doesn't have any table.
+      </Typography>
+    );
   }
 
   return (
