@@ -200,10 +200,6 @@ jobs:
     timeout-minutes: 4
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: '14'
-          cache: 'yarn'
       - uses: dev-drprasad/delete-tag-and-release@v0.2.0
         with:
           delete_release: true
