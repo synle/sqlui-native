@@ -24,6 +24,10 @@
     "win": {
       "icon": "build/logo512.png"
     },
+    "appx": {
+      "publisherDisplayName": "Sy Le",
+      "applicationId": "sqluiNative"
+    },
     "mac": {
       "icon": "build/logo512.png"
     },
@@ -55,6 +59,7 @@
     "start-mocked-server": "node build/mocked-server.js",
     "dev": "concurrently \"yarn start-mocked-server\" \"yarn start-webapp\"",
     "dist": "electron-builder build --publish=never",
+    "dist-win32-appx": "electron-builder build --publish=never -w appx",
     "build-electron": "webpack --config webpack-electron.config.js && cpx package.json build",
     "build-mocked-sever": "webpack --config webpack-mocked-server.config.js",
     "build-react": "cross-env CI=\"\" react-scripts build",
