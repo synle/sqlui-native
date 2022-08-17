@@ -21,6 +21,7 @@ type MyEdge = any;
 const width = 200;
 
 const widthDelta = 10;
+
 const height = 80;
 const heightDelta = 25;
 
@@ -105,16 +106,16 @@ export default function RelationshipChartPage() {
     }
 
     // here we will filter out all the nodes and edges that doesn't have tableId
-    if(tableId){
-      newEdges = newEdges.filter(edge => edge.source === tableId || edge.target === tableId)
+    if (tableId) {
+      newEdges = newEdges.filter((edge) => edge.source === tableId || edge.target === tableId);
 
       const nodesToKeep = new Set([tableId]);
-      for(const edge of newEdges){
+      for (const edge of newEdges) {
         nodesToKeep.add(edge.source);
         nodesToKeep.add(edge.target);
       }
 
-      newNodes = newNodes.filter(node => nodesToKeep.has(node.id));
+      newNodes = newNodes.filter((node) => nodesToKeep.has(node.id));
     }
 
     const countGroups = [...new Set(Object.values(mapNodeConnectionsCount))]
@@ -202,19 +203,15 @@ export default function RelationshipChartPage() {
     },
   ];
 
-  if(tableId){
+  if (tableId) {
     breadcrumbsData.push({
-      label:<>{tableId}</>
+      label: <>{tableId}</>,
     });
   }
-
-
   return (
     <>
       <Box sx={{ mx: 2, display: 'flex', alignItems: 'center' }}>
-        <Breadcrumbs
-          links={breadcrumbsData}
-        />
+        <Breadcrumbs links={breadcrumbsData} />
         <Box sx={{ ml: 'auto', display: 'flex', alignItems: 'center', gap: 2 }}>
           <Button onClick={onToggleShowLabels}>{showLabels ? 'Hide Labels' : 'Show Labels'}</Button>
           <Button onClick={onDownload}>Download</Button>

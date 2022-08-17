@@ -13,7 +13,7 @@ import { getConnectionActions } from 'src/common/adapters/DataScriptFactory';
 import DropdownButton from 'src/frontend/components/DropdownButton';
 import { useCommands } from 'src/frontend/components/MissionControl';
 import { useTreeActions } from 'src/frontend/hooks/useTreeActions';
-import { SqluiCore, SqlAction } from 'typings';
+import { SqlAction, SqluiCore } from 'typings';
 
 type ConnectionActionsProps = {
   connection: SqluiCore.ConnectionProps;

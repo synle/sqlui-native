@@ -246,7 +246,7 @@ export module SqlAction {
      * @type {[type]}
      */
     skipGuide?: boolean;
-    onClick?:() => void;
+    onClick?: () => void;
     startIcon?: JSX.Element;
   };
 
