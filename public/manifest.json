@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "sqlui-native",
+  "name": "sqlui-native",
   "icons": [
     {
       "src": "favicon.ico",
