@@ -70,6 +70,11 @@ export class ConcreteDataScripts extends BaseDataScript {
   }
 
   // TODO: implement me
+  supportVisualization() {
+    return false;
+  }
+
+  // TODO: implement me
   getConnectionScripts() {
     return [];
   }

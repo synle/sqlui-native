@@ -105,6 +105,10 @@ export function isDialectSupportEditRecordForm(dialect?: string) {
   return dialect && DIALECTS_SUPPORTING_EDIT_FORM.indexOf(dialect) >= 0;
 }
 
+export function isDialectSupportVisualization(dialect?: string) {
+  return _getImplementation(dialect)?.supportVisualization() || false;
+}
+
 export function getSyntaxModeByDialect(dialect?: string) {
   return _getImplementation(dialect)?.getSyntaxMode() || 'sql';
 }
