@@ -13,7 +13,8 @@ import { getConnectionActions } from 'src/common/adapters/DataScriptFactory';
 import DropdownButton from 'src/frontend/components/DropdownButton';
 import { useCommands } from 'src/frontend/components/MissionControl';
 import { useTreeActions } from 'src/frontend/hooks/useTreeActions';
-import { SqluiCore, SqlAction } from 'typings';
+import { SqlAction, SqluiCore } from 'typings';
+import { getDivider } from 'src/common/adapters/BaseDataAdapter/scripts';
 
 type ConnectionActionsProps = {
   connection: SqluiCore.ConnectionProps;
@@ -38,7 +39,7 @@ export default function ConnectionActions(props: ConnectionActionsProps): JSX.El
         }),
       startIcon: <StarIcon />,
     },
-    { label: 'divider' },
+    getDivider(),
     {
       label: 'Select',
       startIcon: <SelectAllIcon />,

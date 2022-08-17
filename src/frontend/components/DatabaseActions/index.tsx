@@ -4,7 +4,10 @@ import SsidChartIcon from '@mui/icons-material/SsidChart';
 import IconButton from '@mui/material/IconButton';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
-import { getDatabaseActions } from 'src/common/adapters/DataScriptFactory';
+import {
+  getDatabaseActions,
+  isDialectSupportVisualization,
+} from 'src/common/adapters/DataScriptFactory';
 import DropdownButton from 'src/frontend/components/DropdownButton';
 import { useCommands } from 'src/frontend/components/MissionControl';
 import { useGetConnectionById } from 'src/frontend/hooks/useConnection';
@@ -12,7 +15,6 @@ import { useActiveConnectionQuery } from 'src/frontend/hooks/useConnectionQuery'
 import { useQuerySizeSetting } from 'src/frontend/hooks/useSetting';
 import { useTreeActions } from 'src/frontend/hooks/useTreeActions';
 import { SqlAction } from 'typings';
-import {isDialectSupportVisualization} from 'src/common/adapters/DataScriptFactory';
 
 type DatabaseActionsProps = {
   connectionId: string;
@@ -40,7 +42,7 @@ export default function DatabaseActions(props: DatabaseActionsProps): JSX.Elemen
 
   const isLoading = loadingConnection;
 
-  let actions : SqlAction.Output[]  = [
+  let actions: SqlAction.Output[] = [
     {
       label: 'Select',
       description: `Selected the related database and connection.`,
@@ -48,7 +50,7 @@ export default function DatabaseActions(props: DatabaseActionsProps): JSX.Elemen
     },
   ];
 
-  if(isDialectSupportVisualization(dialect)){
+  if (isDialectSupportVisualization(dialect)) {
     actions.push({
       label: 'Visualize',
       description: `Visualize all tables in this database.`,

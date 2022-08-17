@@ -3,27 +3,31 @@ import Backdrop from '@mui/material/Backdrop';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
-import Typography from '@mui/material/Typography';
-import { toPng } from 'html-to-image';
-import ReactFlow from 'react-flow-renderer';
-import { useParams } from 'react-router-dom';
-import { useEffect, useState } from 'react';
-import Breadcrumbs from 'src/frontend/components/Breadcrumbs';
-import { downloadBlob } from 'src/frontend/data/file';
-import { useGetAllTableColumns, useGetConnectionById, useGetColumns, useGetDatabases } from 'src/frontend/hooks/useConnection';
-import 'src/frontend/App.scss';
-import 'src/frontend/electronRenderer';
-import { useNavigate } from 'react-router-dom';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
+import Typography from '@mui/material/Typography';
+import { toPng } from 'html-to-image';
+import ReactFlow from 'react-flow-renderer';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import Breadcrumbs, {BreadcrumbLink} from 'src/frontend/components/Breadcrumbs';
+import { downloadBlob } from 'src/frontend/data/file';
+import {
+  useGetAllTableColumns,
+  useGetColumns,
+  useGetConnectionById,
+  useGetDatabases,
+} from 'src/frontend/hooks/useConnection';
+import 'src/frontend/App.scss';
+import 'src/frontend/electronRenderer';
 
 type MyNode = any;
 type MyEdge = any;
 
 const width = 200;
+
 const widthDelta = 10;
 const height = 80;
 const heightDelta = 25;
@@ -63,10 +67,8 @@ export default function RelationshipChartPage() {
   const {
     refetch: refetchActiveTableColumns,
     error: errorActiveTableColumns,
-    isLoading: loadingActiveTableColumns
-  } = useGetColumns(
-    connectionId, databaseId, tableId
-  );
+    isLoading: loadingActiveTableColumns,
+  } = useGetColumns(connectionId, databaseId, tableId);
 
   const onToggleShowLabels = () => setShowLabels(!showLabels);
 
@@ -76,18 +78,19 @@ export default function RelationshipChartPage() {
     await downloadBlob(`relationship-${connectionId}-${databaseId}-${new Date()}.png`, blob);
   };
 
-  const isLoading = loadingAllColumns || loadingConnection || loadingActiveTableColumns || loadingDatabases;
+  const isLoading =
+    loadingAllColumns || loadingConnection || loadingActiveTableColumns || loadingDatabases;
   const hasError = errorAllColumns || errorConnection || errorActiveTableColumns || errorDatabases;
 
   useEffect(() => {
-    setNodes([])
-    setEdges([])
+    setNodes([]);
+    setEdges([]);
 
     refetchConnection();
     refetchAllColumns();
     refetchActiveTableColumns();
     refetchDatabases();
-  }, [connectionId, databaseId, tableId])
+  }, [connectionId, databaseId, tableId]);
 
   useEffect(() => {
     if (!allColumns) {
@@ -135,22 +138,21 @@ export default function RelationshipChartPage() {
     }
 
     // here we will filter out all the nodes and edges that doesn't have tableId
-    if(tableId){
-      newEdges = newEdges.filter(edge => edge.source === tableId || edge.target === tableId)
+    if (tableId) {
+      newEdges = newEdges.filter((edge) => edge.source === tableId || edge.target === tableId);
 
       const nodesToKeep = new Set([tableId]);
-      for(const edge of newEdges){
+      for (const edge of newEdges) {
         nodesToKeep.add(edge.source);
         nodesToKeep.add(edge.target);
       }
 
-      newNodes = newNodes.filter(node => nodesToKeep.has(node.id));
+      newNodes = newNodes.filter((node) => nodesToKeep.has(node.id));
     }
 
     // doing the count for grouping of nodes
-    for(const edge of newEdges){
-      mapNodeConnectionsCount[edge.target] =
-        mapNodeConnectionsCount[edge.target] || 0;
+    for (const edge of newEdges) {
+      mapNodeConnectionsCount[edge.target] = mapNodeConnectionsCount[edge.target] || 0;
       mapNodeConnectionsCount[edge.target]++;
     }
 
@@ -221,7 +223,7 @@ export default function RelationshipChartPage() {
     );
   }
 
-  const breadcrumbsData = [
+  const breadcrumbsData : BreadcrumbLink[]= [
     {
       label: (
         <>
@@ -240,40 +242,48 @@ export default function RelationshipChartPage() {
     },
   ];
 
-  if(tableId){
+  if (tableId) {
     breadcrumbsData.push({
-      label:<>{tableId}</>
+      label: <>{tableId}</>,
     });
   }
 
-  let contentDom : JSX.Element;
-  if(!databaseId){
+  let contentDom: JSX.Element;
+  if (!databaseId) {
     // here we show a list of database ids to let you select
-    if(databases && databases.length > 0){
-      contentDom = <>
-      <Typography variant='h6' sx={{ mx: 2}}>
-      Select one of the following database to visualize
-      </Typography>
-      <List>
-      {databases.map((database) => {
-        const onNavigateToDatabaseVisualization = () => {
-          navigate(`/visualization/${connectionId}/${database.name}`)
-        }
+    if (databases && databases.length > 0) {
+      contentDom = (
+        <>
+          <Typography variant='h6' sx={{ mx: 2 }}>
+            Select one of the following database to visualize:
+          </Typography>
+          <List>
+            {databases.map((database) => {
+              const onNavigateToDatabaseVisualization = () => {
+                navigate(`/visualization/${connectionId}/${database.name}`);
+              };
 
-        return <ListItem disablePadding>
-            <ListItemButton onClick={onNavigateToDatabaseVisualization}>
-              <ListItemText primary={database.name} />
-            </ListItemButton>
-          </ListItem>
-      })}
-        </List>
+              return (
+                <ListItem disablePadding>
+                  <ListItemButton onClick={onNavigateToDatabaseVisualization}>
+                    <ListItemText primary={database.name} />
+                  </ListItemButton>
+                </ListItem>
+              );
+            })}
+          </List>
         </>
+      );
     } else {
-      contentDom = <Typography variant='h6' sx={{ mx:2, color: 'error.main' }}>This connection doesn't have any database</Typography>
+      contentDom = (
+        <Typography variant='h6' sx={{ mx: 2, color: 'error.main' }}>
+          This connection doesn't have any database.
+        </Typography>
+      );
     }
-
-  } else {
-    contentDom  = <Box id='relationship-chart' sx={{ height: 'calc(100vh - 110px)', zIndex: 0 }}>
+  } else if(nodes && nodes.length > 0){
+    contentDom = (
+      <Box id='relationship-chart' sx={{ height: 'calc(100vh - 110px)', zIndex: 0 }}>
         <ReactFlow
           fitView
           snapToGrid
@@ -345,14 +355,19 @@ export default function RelationshipChartPage() {
           }}
         />
       </Box>
+    );
+  } else {
+    contentDom = (
+        <Typography variant='h6' sx={{ mx: 2, color: 'error.main' }}>
+          This database "{databaseId}" doesn't have any table.
+        </Typography>
+      );
   }
 
   return (
     <>
       <Box sx={{ mx: 2, display: 'flex', alignItems: 'center' }}>
-        <Breadcrumbs
-          links={breadcrumbsData}
-        />
+        <Breadcrumbs links={breadcrumbsData} />
         <Box sx={{ ml: 'auto', display: 'flex', alignItems: 'center', gap: 2 }}>
           <Button onClick={onToggleShowLabels}>{showLabels ? 'Hide Labels' : 'Show Labels'}</Button>
           <Button onClick={onDownload}>Download</Button>
