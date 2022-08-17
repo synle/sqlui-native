@@ -197,7 +197,7 @@ export default function RelationshipChartPage() {
           <Button onClick={onDownload}>Download</Button>
         </Box>
       </Box>
-      <Box id='relationship-chart' sx={{ height: '100vh', zIndex: 0 }}>
+      <Box id='relationship-chart' sx={{ height: 'calc(100vh - 110px)', zIndex: 0 }}>
         <ReactFlow
           fitView
           snapToGrid
