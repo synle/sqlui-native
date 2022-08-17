@@ -60,7 +60,7 @@ export default function TableActions(props: TableActionsProps): JSX.Element | nu
         label: 'Visualize',
         description: `Visualize all tables in this database.`,
         icon: <SsidChartIcon />,
-        onClick: () => navigate(`/relationship/${connectionId}/${databaseId}/${tableId}`),
+        onClick: () => navigate(`/visualization/${connectionId}/${databaseId}/${tableId}`),
       },
       getDivider(),
     ];
