@@ -1,11 +1,11 @@
 import { Bar, Container, Section } from 'react-simple-resizer';
-import { ReactElement, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useSideBarWidthPreference } from 'src/frontend/hooks/useClientSidePreference';
 import { useTreeActions } from 'src/frontend/hooks/useTreeActions';
 
 type LayoutTwoColumnsProps = {
   className?: string;
-  children: ReactElement[];
+  children: JSX.Element[];
 };
 
 export default function LayoutTwoColumns(props: LayoutTwoColumnsProps): JSX.Element | null {

@@ -45,6 +45,10 @@ export default abstract class BaseDataScript implements IDataScript {
     return false;
   }
 
+  supportVisualization() {
+    return false;
+  }
+
   // dialect definitions
   getDialectType(dialect?: SqluiCore.Dialect) {
     // attempt to return the first item in the dialects / schemes

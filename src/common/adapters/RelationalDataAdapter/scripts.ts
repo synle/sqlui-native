@@ -655,6 +655,10 @@ export class ConcreteDataScripts extends BaseDataScript {
     return true;
   }
 
+  supportVisualization() {
+    return true;
+  }
+
   // dialect definitions
   getDialectIcon(dialect) {
     switch (dialect) {
