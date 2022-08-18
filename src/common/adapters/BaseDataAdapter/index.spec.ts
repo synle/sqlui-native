@@ -32,7 +32,7 @@ describe('BaseDataAdapter', () => {
       );
       expect(actual?.scheme).toMatchInlineSnapshot(`undefined`);
       expect(actual?.username).toMatchInlineSnapshot(`undefined`);
-expect(actual?.password).toMatchInlineSnapshot(`undefined`);
+      expect(actual?.password).toMatchInlineSnapshot(`undefined`);
       expect(actual?.endpoint).toMatchInlineSnapshot(`undefined`);
       expect(actual?.options).toMatchInlineSnapshot(`undefined`);
       expect(actual?.hosts).toMatchInlineSnapshot(`undefined`);
@@ -44,7 +44,7 @@ expect(actual?.password).toMatchInlineSnapshot(`undefined`);
       );
       expect(actual?.scheme).toMatchInlineSnapshot(`"lldp-med"`);
       expect(actual?.username).toMatchInlineSnapshot(`undefined`);
-expect(actual?.password).toMatchInlineSnapshot(`undefined`);
+      expect(actual?.password).toMatchInlineSnapshot(`undefined`);
       expect(actual?.endpoint).toMatchInlineSnapshot(`"system_schema"`);
       expect(actual?.options).toMatchInlineSnapshot(`undefined`);
       expect(actual?.hosts).toMatchInlineSnapshot(`
@@ -61,7 +61,7 @@ Array [
       );
       expect(actual?.scheme).toMatchInlineSnapshot(`"lldp-med+tcp"`);
       expect(actual?.username).toMatchInlineSnapshot(`undefined`);
-expect(actual?.password).toMatchInlineSnapshot(`undefined`);
+      expect(actual?.password).toMatchInlineSnapshot(`undefined`);
       expect(actual?.endpoint).toMatchInlineSnapshot(`"system_schema"`);
       expect(actual?.options).toMatchInlineSnapshot(`undefined`);
       expect(actual?.hosts).toMatchInlineSnapshot(`
@@ -78,7 +78,7 @@ Array [
       let actual = BaseDataAdapter.getConnectionParameters('cassandra://localhost:9042');
       expect(actual?.scheme).toMatchInlineSnapshot(`"cassandra"`);
       expect(actual?.username).toMatchInlineSnapshot(`undefined`);
-expect(actual?.password).toMatchInlineSnapshot(`undefined`);
+      expect(actual?.password).toMatchInlineSnapshot(`undefined`);
       expect(actual?.endpoint).toMatchInlineSnapshot(`undefined`);
       expect(actual?.options).toMatchInlineSnapshot(`undefined`);
       expect(actual?.hosts).toMatchInlineSnapshot(`
@@ -97,7 +97,7 @@ Array [
       );
       expect(actual?.scheme).toMatchInlineSnapshot(`"cassandra"`);
       expect(actual?.username).toMatchInlineSnapshot(`undefined`);
-expect(actual?.password).toMatchInlineSnapshot(`undefined`);
+      expect(actual?.password).toMatchInlineSnapshot(`undefined`);
       expect(actual?.endpoint).toMatchInlineSnapshot(`"system_schema"`);
       expect(actual?.options).toMatchInlineSnapshot(`undefined`);
       expect(actual?.hosts).toMatchInlineSnapshot(`
