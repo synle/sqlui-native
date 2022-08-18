@@ -36,27 +36,27 @@ export default abstract class BaseDataAdapter {
         hosts: [],
       });
 
-      try{
+      try {
         let res = connectionStringParser.parse(connection);
 
-      if (!res || Object.keys(res).length === 0) {
-        try {
-          // here we attempt to encode and retry parser
-          let connectionParts = connection.replace(`${dialect}://`, '').split(/[:@]/);
-          if (connectionParts.length === 4) {
-            // there are 4 parts: username, password, host, port
-            const [username, password, host, port] = connectionParts.map(encodeURIComponent);
-            res = connectionStringParser.parse(
-              `${dialect}://${username}:${password}@${host}:${port}`,
-            );
-          }
-        } catch (err) {}
-      }
+        if (!res || Object.keys(res).length === 0) {
+          try {
+            // here we attempt to encode and retry parser
+            let connectionParts = connection.replace(`${dialect}://`, '').split(/[:@]/);
+            if (connectionParts.length === 4) {
+              // there are 4 parts: username, password, host, port
+              const [username, password, host, port] = connectionParts.map(encodeURIComponent);
+              res = connectionStringParser.parse(
+                `${dialect}://${username}:${password}@${host}:${port}`,
+              );
+            }
+          } catch (err) {}
+        }
 
-      if (Object.keys(res).length > 0) {
-        return res;
-      }
-    } catch(err2){}
+        if (Object.keys(res).length > 0) {
+          return res;
+        }
+      } catch (err2) {}
     }
 
     // not supported
