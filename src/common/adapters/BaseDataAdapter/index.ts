@@ -35,7 +35,9 @@ export default abstract class BaseDataAdapter {
         scheme: dialect,
         hosts: [],
       });
-      let res = connectionStringParser.parse(connection);
+
+      try{
+        let res = connectionStringParser.parse(connection);
 
       if (!res || Object.keys(res).length === 0) {
         try {
@@ -54,6 +56,7 @@ export default abstract class BaseDataAdapter {
       if (Object.keys(res).length > 0) {
         return res;
       }
+    } catch(err2){}
     }
 
     // not supported
