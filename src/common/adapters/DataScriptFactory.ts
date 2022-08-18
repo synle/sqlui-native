@@ -118,8 +118,11 @@ export function getIsTableIdRequiredForQueryByDialect(dialect?: string) {
 }
 
 export function getDialectTypeFromConnectionString(connection: string) {
-  // TODO: properly do this with regex
-  return connection.substr(0, connection.indexOf(':')).toLowerCase();
+  if(connection.match(/^[a-z0-9+-]+:\/\//i)){
+    return connection.substr(0, connection.indexOf(':')).toLowerCase();
+  }
+
+  return '';
 }
 
 export function getDialectType(connection: string) {
