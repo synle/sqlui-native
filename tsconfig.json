@@ -1,24 +1,7 @@
 {
+  "extends": "./tsconfig.base.json",
   "compilerOptions": {
-    "allowJs": true,
-    "allowSyntheticDefaultImports": true,
-    "baseUrl": "./",
-    "declaration": true,
-    "emitDecoratorMetadata": true,
-    "esModuleInterop": true,
-    "experimentalDecorators": true,
-    "forceConsistentCasingInFileNames": true,
-    "jsx": "react-jsx",
-    "module": "esNext",
-    "moduleResolution": "node",
-    "noFallthroughCasesInSwitch": false,
-    "noImplicitAny": false,
-    "outDir": "./build",
-    "removeComments": true,
-    "resolveJsonModule": true,
-    "skipLibCheck": true,
-    "sourceMap": true,
-    "strict": true,
-    "target": "es6"
+    "baseUrl": ".",
+    "noImplicitAny": false
   }
 }
