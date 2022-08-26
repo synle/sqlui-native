@@ -1,0 +1,10 @@
+import { BrowserWindow } from 'electron';
+export declare function reset(): void;
+export declare function get(): Record<string, string>;
+export declare function getByWindowId(windowId: string): string;
+export declare function getWindowIdBySessionId(targetSessionId: string): string;
+export declare function listSessionIds(): string[];
+export declare function open(windowId: string, sessionId: string): boolean;
+export declare function close(windowId?: string): Promise<void>;
+export declare function focus(windowId?: string): Promise<void>;
+export declare function registerWindow(windowId: string, browserWindow: BrowserWindow): void;
