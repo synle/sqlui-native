@@ -106,7 +106,7 @@
     "lodash.get": "^4.4.2",
     "lodash.set": "^4.3.2",
     "mariadb": "^3.0.1",
-    "monaco-editor": "^0.32.1",
+    "monaco-editor": "^0.34.0",
     "mongodb": "^4.8.1",
     "mysql2": "^2.3.3",
     "notistack": "^2.0.5",
