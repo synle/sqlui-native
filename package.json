@@ -101,7 +101,7 @@
     "connection-string-parser": "^1.0.4",
     "fuzzysort": "^1.2.1",
     "html-to-image": "^1.10.2",
-    "js-beautify": "^1.14.3",
+    "js-beautify": "^1.14.6",
     "json-2-csv": "^3.17.1",
     "lodash.get": "^4.4.2",
     "lodash.set": "^4.3.2",
