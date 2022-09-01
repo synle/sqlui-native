@@ -94,7 +94,7 @@
     "@emotion/react": "^11.10.0",
     "@emotion/styled": "^11.10.0",
     "@mui/icons-material": "^5.8.2",
-    "@mui/lab": "^5.0.0-alpha.92",
+    "@mui/lab": "^5.0.0-alpha.97",
     "@mui/material": "^5.9.2",
     "@tanstack/react-virtual": "^3.0.0-beta.14",
     "cassandra-driver": "^3.6.0",
