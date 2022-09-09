@@ -1,0 +1,16 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "npm",
+			"script": "prestart",
+			"problemMatcher": [90],
+			"label": "npm: prestart",
+			"detail": "yarn clean && yarn build",
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			}
+		}
+	]
+}

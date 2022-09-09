@@ -1,0 +1,21 @@
+{
+    "configurations": [efs: attach],
+        {
+            "type": "node",
+            "name": "vscode-jesttests.v2",
+            "request": "launch",
+            "console": "integratedTerminal",
+            "internalConsoleOptions": "neverOpen",
+            "program": "${workspaceFolder}\\Jest",
+            "cwd": "${workspaceFolder}",
+            "args": [
+                "--runInBand",
+                "--watchAll=false",
+                "--testNamePattern",
+                "${jest.testNamePattern}",
+                "--runTestsByPath",
+                "${jest.testFile}"
+            ]
+        }
+    ]
+}

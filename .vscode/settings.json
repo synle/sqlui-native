@@ -1,0 +1,10 @@
+{
+    "jest.jestCommandLine": "Jest",
+    "marquee.widgets.npm-stats.packageNames": [
+        "sqlui-native"
+    ],
+    "svn.ignoreMissingSvnWarning": true,
+    "cSpell.words": [
+        "fullinline"
+    ]
+}
