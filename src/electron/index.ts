@@ -8,6 +8,12 @@ import { SqluiCore, SqluiEnums } from 'typings';
 
 const isMac = process.platform === 'darwin';
 
+// disable smooth scrolling
+try{
+  app.commandLine.appendSwitch('--disable-smooth-scrolling');
+} catch(err){}
+
+
 async function createWindow(isFirstWindow?: boolean) {
   const mainWindow = new BrowserWindow({
     width: 1200,
@@ -306,7 +312,6 @@ app.on('window-all-closed', () => {
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
 // events
-
 ipcMain.handle('dark-mode:toggle', () => {
   if (nativeTheme.shouldUseDarkColors) {
     nativeTheme.themeSource = 'light';
