@@ -117,7 +117,7 @@
     "react-dom": "^17.0.2",
     "react-flow-renderer": "^10.3.14",
     "react-query": "^3.39.1",
-    "react-router-dom": "^6.2.2",
+    "react-router-dom": "^6.4.1",
     "react-simple-resizer": "git+https://github.com/synle/react-simple-resizer.git",
     "react-table": "^7.8.0",
     "redis": "^4.1.0",
