@@ -9,11 +9,9 @@ import { SqluiCore, SqluiEnums } from 'typings';
 const isMac = process.platform === 'darwin';
 
 // disable smooth scrolling
-try{
+try {
   app.commandLine.appendSwitch('--disable-smooth-scrolling');
-} catch(err){}
-
-
+} catch (err) {}
 async function createWindow(isFirstWindow?: boolean) {
   const mainWindow = new BrowserWindow({
     width: 1200,
