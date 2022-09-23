@@ -21,6 +21,8 @@ const DEFAULT_OPTIONS = {
   },
 };
 
+const EDITOR_MODELS_MAP : Record<string, any> = {};
+
 export default function AdvancedEditor(props: AdvancedEditorProps): JSX.Element | null {
   const colorMode = useDarkModeSetting();
   const [editor, setEditor] = useState<monaco.editor.IStandaloneCodeEditor | null>(null);
@@ -42,6 +44,12 @@ export default function AdvancedEditor(props: AdvancedEditorProps): JSX.Element 
         props.onBlur && props.onBlur(newEditor.getValue() || '');
       });
 
+      // clean up the model as we don't need it while it's active
+      if(props.id && EDITOR_MODELS_MAP[props.id]){
+        newEditor.setModel(EDITOR_MODELS_MAP[props.id]);
+        delete EDITOR_MODELS_MAP[props.id];
+      }
+
       setEditor(newEditor);
     }
   }, 100);
@@ -49,10 +57,24 @@ export default function AdvancedEditor(props: AdvancedEditorProps): JSX.Element 
   // this is used to clean up the editor
   useEffect(() => {
     return () => {
+      // dispose the editor
       editor?.dispose();
       setEditor(null);
     };
   }, []);
+
+
+  // this is used to clean up the editor
+  useEffect(() => {
+    return () => {
+      // keep track of the undo if we need it
+      if(editor && props.id){
+        // https://stackoverflow.com/questions/48210120/get-restore-monaco-editor-undoredo-stack
+        EDITOR_MODELS_MAP[props.id] = editor?.getModel();
+      }
+    };
+  }, [editor, props.id]);
+
 
   // we used this block to set the value of the editor
   useEffect(() => {
@@ -82,7 +104,7 @@ export default function AdvancedEditor(props: AdvancedEditorProps): JSX.Element 
         editor.setValue(newValue);
       }
     }
-  }, [editor, props.value]);
+  }, [editor, props.value, props.id]);
 
   useEffect(() => {
     if (editor && props.editorRef) {
