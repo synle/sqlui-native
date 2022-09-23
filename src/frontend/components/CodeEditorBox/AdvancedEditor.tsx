@@ -73,6 +73,8 @@ export default function AdvancedEditor(props: AdvancedEditorProps): JSX.Element 
           },
         ]);
 
+        editor.setSelection(new monaco.Selection(1, 1, 1, 1));
+
         // Indicates the above edit is a complete undo/redo change.
         editor.pushUndoStop();
       } else {
