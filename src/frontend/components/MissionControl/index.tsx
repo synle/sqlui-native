@@ -1432,8 +1432,8 @@ export default function MissionControl() {
             // traverse up until we find the code editor wrapper or reach the root html element
             let currentDomNode = activeElement;
             let shouldExecuteQuery = false;
-            while(currentDomNode){
-              if(currentDomNode.classList.contains('CodeEditorBox__QueryBox')){
+            while (currentDomNode) {
+              if (currentDomNode.classList.contains('CodeEditorBox__QueryBox')) {
                 shouldExecuteQuery = true;
                 break;
               }
@@ -1441,7 +1441,7 @@ export default function MissionControl() {
             }
 
             try {
-              if(shouldExecuteQuery){
+              if (shouldExecuteQuery) {
                 (
                   document.querySelector(
                     '.AdvancedEditorContainer .inputarea.monaco-mouse-cursor-text,.SimpleEditorContainer',
@@ -1460,12 +1460,14 @@ export default function MissionControl() {
           case 'f':
             try {
               // making sure we don't interfere Ctrl+f with other input
-              if(activeInputTagName === 'textarea' || activeInputTagName === 'input'){
+              if (activeInputTagName === 'textarea' || activeInputTagName === 'input') {
                 return;
               }
 
-              const resultSearchBox = document.querySelector('#result-box-search-input') as HTMLInputElement;
-              if(resultSearchBox){
+              const resultSearchBox = document.querySelector(
+                '#result-box-search-input',
+              ) as HTMLInputElement;
+              if (resultSearchBox) {
                 resultSearchBox.focus();
                 e.stopPropagation();
                 e.preventDefault();
