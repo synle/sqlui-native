@@ -11,7 +11,7 @@ import Typography from '@mui/material/Typography';
 import { toPng } from 'html-to-image';
 import ReactFlow from 'react-flow-renderer';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Breadcrumbs, { BreadcrumbLink } from 'src/frontend/components/Breadcrumbs';
 import { downloadBlob } from 'src/frontend/data/file';
 import {
@@ -81,7 +81,7 @@ export default function RelationshipChartPage() {
     // NOTE: reactflow had an example here
     // https://reactflow.dev/docs/examples/misc/download-image/
     // refer to it for how we export the flow as an image
-    if(!chartDomRef.current){
+    if (!chartDomRef.current) {
       return;
     }
     const node = chartDomRef.current as HTMLElement;
@@ -308,8 +308,7 @@ export default function RelationshipChartPage() {
     }
   } else if (nodes && nodes.length > 0) {
     contentDom = (
-      <Box sx={{ height: 'calc(100vh - 110px)', zIndex: 0 }} ref={chartDomRef}
-      >
+      <Box sx={{ height: 'calc(100vh - 110px)', zIndex: 0 }} ref={chartDomRef}>
         <ReactFlow
           fitView
           snapToGrid
