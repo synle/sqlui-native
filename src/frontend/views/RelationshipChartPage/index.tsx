@@ -8,7 +8,7 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
-import { toPng, toSvg  } from 'html-to-image';
+import { toPng } from 'html-to-image';
 import ReactFlow from 'react-flow-renderer';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
