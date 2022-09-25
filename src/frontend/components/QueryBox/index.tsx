@@ -289,6 +289,7 @@ export default function QueryBox(props: QueryBoxProps): JSX.Element | null {
         </div>
         <CodeEditorBox
           id={query.id}
+          className='CodeEditorBox__QueryBox'
           value={query.sql}
           placeholder={`Enter SQL for ` + query.name}
           onChange={onSqlQueryChange}

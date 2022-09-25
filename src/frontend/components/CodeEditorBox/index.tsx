@@ -19,6 +19,7 @@ export type EditorRef =
 export type CodeEditorProps = {
   id?: string;
   language?: 'sql' | string;
+  className?: string;
   value?: string;
   autoFocus?: boolean;
   onChange?: (newValue: string) => void;
@@ -101,7 +102,7 @@ export default function CodeEditorBox(props: CodeEditorProps): JSX.Element | nul
 
   if (editorModeToUse === 'simple') {
     return (
-      <div className='CodeEditorBox'>
+      <div className={'CodeEditorBox ' + props.className}>
         <SimpleEditor
           id={props.id}
           value={props.value}
@@ -121,7 +122,7 @@ export default function CodeEditorBox(props: CodeEditorProps): JSX.Element | nul
 
   return (
     <Box>
-      <Paper className='CodeEditorBox' variant='outlined'>
+      <Paper className={'CodeEditorBox ' + props.className} variant='outlined'>
         <AdvancedEditor
           id={props.id}
           language={languageToUse}
