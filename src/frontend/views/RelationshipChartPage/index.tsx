@@ -11,7 +11,7 @@ import Typography from '@mui/material/Typography';
 import { toPng } from 'html-to-image';
 import ReactFlow from 'react-flow-renderer';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Breadcrumbs, { BreadcrumbLink } from 'src/frontend/components/Breadcrumbs';
 import { downloadBlob } from 'src/frontend/data/file';
 import {
@@ -41,6 +41,8 @@ export default function RelationshipChartPage() {
   const connectionId = urlParams.connectionId as string;
   const databaseId = urlParams.databaseId as string;
   const tableId = urlParams.tableId as string;
+
+  const chartDomRef = useRef<HTMLDivElement>(null);
 
   const [nodes, setNodes] = useState<MyNode[]>([]);
   const [edges, setEdges] = useState<MyEdge[]>([]);
@@ -79,7 +81,10 @@ export default function RelationshipChartPage() {
     // NOTE: reactflow had an example here
     // https://reactflow.dev/docs/examples/misc/download-image/
     // refer to it for how we export the flow as an image
-    const node = document.querySelector('#relationship-chart') as HTMLElement;
+    if (!chartDomRef.current) {
+      return;
+    }
+    const node = chartDomRef.current as HTMLElement;
     const blob = await toPng(node, {
       pixelRatio: 5,
       filter: (node) => {
@@ -303,7 +308,7 @@ export default function RelationshipChartPage() {
     }
   } else if (nodes && nodes.length > 0) {
     contentDom = (
-      <Box id='relationship-chart' sx={{ height: 'calc(100vh - 110px)', zIndex: 0 }}>
+      <Box sx={{ height: 'calc(100vh - 110px)', zIndex: 0 }} ref={chartDomRef}>
         <ReactFlow
           fitView
           snapToGrid
