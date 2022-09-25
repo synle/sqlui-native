@@ -1422,29 +1422,56 @@ export default function MissionControl() {
 
       // here are keybindings that are used for both the electron and web mocked
       if (hasModifierKey) {
+        const activeElement = document.activeElement;
+        const activeInputTagName = activeElement?.tagName.toLowerCase();
+
         // with modifier key
         switch (key) {
           case 'Enter':
-            try {
-              (
-                document.querySelector(
-                  '.AdvancedEditorContainer .inputarea.monaco-mouse-cursor-text,.SimpleEditorContainer',
-                ) as HTMLTextAreaElement
-              ).blur();
+            // Ctrl+Enter to execute the query
+            // traverse up until we find the code editor wrapper or reach the root html element
+            let currentDomNode = activeElement;
+            let shouldExecuteQuery = false;
+            while (currentDomNode) {
+              if (currentDomNode.classList.contains('CodeEditorBox__QueryBox')) {
+                shouldExecuteQuery = true;
+                break;
+              }
+              currentDomNode = currentDomNode.parentElement;
+            }
 
-              setTimeout(() =>
-                (document.querySelector('#btnExecuteCommand') as HTMLButtonElement).click(),
-              );
-              e.stopPropagation();
-              e.preventDefault();
+            try {
+              if (shouldExecuteQuery) {
+                (
+                  document.querySelector(
+                    '.AdvancedEditorContainer .inputarea.monaco-mouse-cursor-text,.SimpleEditorContainer',
+                  ) as HTMLTextAreaElement
+                ).blur();
+
+                setTimeout(() =>
+                  (document.querySelector('#btnExecuteCommand') as HTMLButtonElement).click(),
+                );
+                e.stopPropagation();
+                e.preventDefault();
+              }
             } catch (err) {}
             break;
 
           case 'f':
             try {
-              (document.querySelector('#result-box-search-input') as HTMLInputElement)?.focus();
-              e.stopPropagation();
-              e.preventDefault();
+              // making sure we don't interfere Ctrl+f with other input
+              if (activeInputTagName === 'textarea' || activeInputTagName === 'input') {
+                return;
+              }
+
+              const resultSearchBox = document.querySelector(
+                '#result-box-search-input',
+              ) as HTMLInputElement;
+              if (resultSearchBox) {
+                resultSearchBox.focus();
+                e.stopPropagation();
+                e.preventDefault();
+              }
             } catch (err) {}
             break;
         }
