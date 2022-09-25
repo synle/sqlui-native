@@ -49,7 +49,7 @@ export default function App() {
         });
       }
     },
-    // @ts-ignore
+
     [globalMonaco],
   );
 
