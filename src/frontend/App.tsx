@@ -37,21 +37,17 @@ export default function App() {
 
   // @ts-ignore
   const globalMonaco = window.monaco;
-  useEffect(
-    () => {
-      if (globalMonaco) {
-        // disable auto complete  popup
-        // https://stackoverflow.com/questions/41581570/how-to-remove-autocompletions-for-monaco-editor-using-javascript
+  useEffect(() => {
+    if (globalMonaco) {
+      // disable auto complete  popup
+      // https://stackoverflow.com/questions/41581570/how-to-remove-autocompletions-for-monaco-editor-using-javascript
 
-        globalMonaco.languages.typescript.javascriptDefaults.setCompilerOptions({
-          noLib: true,
-          allowNonTsExtensions: true,
-        });
-      }
-    },
-
-    [globalMonaco],
-  );
+      globalMonaco.languages.typescript.javascriptDefaults.setCompilerOptions({
+        noLib: true,
+        allowNonTsExtensions: true,
+      });
+    }
+  }, [globalMonaco]);
 
   const myTheme = createTheme({
     // Theme settings
