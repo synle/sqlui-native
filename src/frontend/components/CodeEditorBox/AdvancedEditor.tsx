@@ -62,6 +62,7 @@ export default function AdvancedEditor(props: AdvancedEditorProps): JSX.Element 
       setEditor(null);
     };
   }, []);
+
   // this is used to clean up the editor
   useEffect(() => {
     return () => {
