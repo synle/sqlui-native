@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { HashRouter, Route, Routes } from 'react-router-dom';
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import ActionDialogs from 'src/frontend/components/ActionDialogs';
 import AppHeader from 'src/frontend/components/AppHeader';
 import ElectronEventListener from 'src/frontend/components/ElectronEventListener';
@@ -34,6 +34,20 @@ export default function App() {
   const { selectCommand } = useCommands();
   const { add: addToast } = useToaster();
   const toasterRef = useRef<ToasterHandler | undefined>();
+
+  // @ts-ignore
+  const globalMonaco = window.monaco;
+  useEffect(() => {
+    if (globalMonaco) {
+      // disable auto complete  popup
+      // https://stackoverflow.com/questions/41581570/how-to-remove-autocompletions-for-monaco-editor-using-javascript
+
+      globalMonaco.languages.typescript.javascriptDefaults.setCompilerOptions({
+        noLib: true,
+        allowNonTsExtensions: true,
+      });
+    }
+  }, [globalMonaco]);
 
   const myTheme = createTheme({
     // Theme settings
