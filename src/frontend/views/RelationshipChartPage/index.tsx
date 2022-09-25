@@ -76,8 +76,25 @@ export default function RelationshipChartPage() {
   const onToggleShowLabels = () => setShowLabels(!showLabels);
 
   const onDownload = async () => {
+    // NOTE: reactflow had an example here
+    // https://reactflow.dev/docs/examples/misc/download-image/
+    // refer to it for how we export the flow as an image
     const node = document.querySelector('#relationship-chart') as HTMLElement;
-    const blob = await toPng(node);
+    const blob = await toPng(node, {
+      pixelRatio: 5,
+      filter: (node) => {
+        // we don't want to add the minimap and the controls to the image
+        if (
+          node?.classList?.contains('react-flow__minimap') ||
+          node?.classList?.contains('react-flow__controls') ||
+          node?.classList?.contains('react-flow__attribution')
+        ) {
+          return false;
+        }
+
+        return true;
+      },
+    });
     await downloadBlob(`relationship-${connectionId}-${databaseId}-${new Date()}.png`, blob);
   };
 
