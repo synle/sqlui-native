@@ -1442,9 +1442,18 @@ export default function MissionControl() {
 
           case 'f':
             try {
-              (document.querySelector('#result-box-search-input') as HTMLInputElement)?.focus();
-              e.stopPropagation();
-              e.preventDefault();
+              // making sure we don't interfere Ctrl+f with other input
+              const activeInputTagName = document.activeElement?.tagName.toLowerCase();
+              if(activeInputTagName === 'textarea' || activeInputTagName === 'input'){
+                return;
+              }
+
+              const resultSearchBox = document.querySelector('#result-box-search-input') as HTMLInputElement;
+              if(resultSearchBox){
+                resultSearchBox.focus();
+                e.stopPropagation();
+                e.preventDefault();
+              }
             } catch (err) {}
             break;
         }
