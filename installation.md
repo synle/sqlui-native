@@ -64,5 +64,11 @@ sudo rpm -i sqlui-native*.rpm
 ## Arch Linux with pacman
 
 ```
+# download and install it with this command
 sudo pacman -U ./sqlui-native*.pacman
+
+
+# or run this command to download and install it in one command
+# replace the version for the latest build
+curl https://github.com/synle/sqlui-native/releases/download/1.61.16/sqlui-native-1.61.16.pacman -O -J -L && sudo pacman -U sqlui-native*.pacman && rm sqlui-native*.pacman
 ```
