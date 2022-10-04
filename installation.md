@@ -61,7 +61,6 @@ sudo dpkg -i sqlui-native*.deb
 sudo rpm -i sqlui-native*.rpm
 ```
 
-
 ## Arch Linux with pacman
 
 ```
