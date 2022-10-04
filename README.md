@@ -20,7 +20,7 @@ Refer to the following link for download information.
 - [Mac OS](https://synle.github.io/sqlui-native/installation#mac) (Tested on Mac OS Monterey)
 - [Debian / Ubuntu](https://synle.github.io/sqlui-native/installation#ubuntu--debian)
 - [Redhat / CentOS / Fedora](https://synle.github.io/sqlui-native/installation#redhat--centos--fedora) : Refer to this link for [Installation Instructions](https://synle.github.io/sqlui-native/installation)
-- [Arch Linux](https://synle.github.io/sqlui-native/installation#arch-linux-with-pacman)
+- [Arch Linux] (Tested on Steam Deck)(https://synle.github.io/sqlui-native/installation#arch-linux-with-pacman)
 
 ## Supported Database Adapters
 
