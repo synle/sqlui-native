@@ -1,5 +1,3 @@
-name: build-pr
-
 on:
   pull_request:
     branches: [master, main]
@@ -10,22 +8,7 @@ concurrency:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          ref: ${{ github.head_ref }}
-      - uses: actions/setup-node@v3
-        with:
-          node-version: '14'
-          cache: 'yarn'
-      - run: yarn install --network-timeout 1000000 --frozen-lockfile
-      - run: yarn check
-      - run: yarn format
-      - run: yarn test-ci
-      - run: yarn build
-      - uses: EndBug/add-and-commit@v8
-        with:
-          message: 'CI / CD - Format Updates Automatic Commit'
-        continue-on-error: true
+    # https://github.com/synle/gha-workflows/blob/main/.github/workflows/pr-js-yarn.yml
+    uses: synle/gha-workflows/.github/workflows/pr-js-yarn.yml@main
+    with:
+      os: ubuntu-latest
