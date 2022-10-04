@@ -135,6 +135,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
+      - name: install missing dependencies
+        run: sudo apt-get install -y libarchive-tools
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
@@ -145,40 +147,11 @@ jobs:
       - run: yarn test-ci
       - run: yarn build
       - run: yarn dist
-      - run: mv ./dist/sqlui-native*.deb ./dist/sqlui-native.deb
-      - run: mv ./dist/sqlui-native*.rpm ./dist/sqlui-native.rpm
-      - run: mv ./dist/sqlui-native*.snap ./dist/sqlui-native.snap
-
-      - name: Upload release binary
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.create_release.outputs.release_upload_url }}
-          asset_path: ./dist/sqlui-native.deb
-          asset_name: sqlui-native-${{ needs.create_release.outputs.package_version }}.deb
-          asset_content_type: application/octet-stream
-
-      - name: Upload release binary
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.create_release.outputs.release_upload_url }}
-          asset_path: ./dist/sqlui-native.rpm
-          asset_name: sqlui-native-${{ needs.create_release.outputs.package_version }}.rpm
-          asset_content_type: application/octet-stream
-
-      - name: Upload release binary
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.create_release.outputs.release_upload_url }}
-          asset_path: ./dist/sqlui-native.snap
-          asset_name: sqlui-native-${{ needs.create_release.outputs.package_version }}.snap
-          asset_content_type: application/octet-stream
-
+      - run: |
+          mv ./dist/sqlui-native*.deb ./dist/sqlui-native.deb
+          mv ./dist/sqlui-native*.rpm ./dist/sqlui-native.rpm
+          mv ./dist/sqlui-native*.snap ./dist/sqlui-native.snap
+          mv ./dist/sqlui-native*.pacman ./dist/sqlui-native.pacman
       - name: Upload artifact .deb
         uses: actions/upload-artifact@v3
         with:
@@ -194,6 +167,47 @@ jobs:
         with:
           name: sqlui-native.snap
           path: ./dist/sqlui-native.snap
+      - name: Upload artifact .pacman
+        uses: actions/upload-artifact@v3
+        with:
+          name: sqlui-native.pacman
+          path: ./dist/sqlui-native.pacman
+      - name: Upload release binary deb
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create_release.outputs.release_upload_url }}
+          asset_path: ./dist/sqlui-native.deb
+          asset_name: sqlui-native-${{ needs.create_release.outputs.package_version }}.deb
+          asset_content_type: application/octet-stream
+      - name: Upload release binary rpm
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create_release.outputs.release_upload_url }}
+          asset_path: ./dist/sqlui-native.rpm
+          asset_name: sqlui-native-${{ needs.create_release.outputs.package_version }}.rpm
+          asset_content_type: application/octet-stream
+      - name: Upload release binary snap
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create_release.outputs.release_upload_url }}
+          asset_path: ./dist/sqlui-native.snap
+          asset_name: sqlui-native-${{ needs.create_release.outputs.package_version }}.snap
+          asset_content_type: application/octet-stream
+      - name: Upload release binary pacman
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create_release.outputs.release_upload_url }}
+          asset_path: ./dist/sqlui-native.pacman
+          asset_name: sqlui-native-${{ needs.create_release.outputs.package_version }}.pacman
+          asset_content_type: application/octet-stream
 
   publish:
     needs: [create_release, build_windows, build_macos, build_linux]
