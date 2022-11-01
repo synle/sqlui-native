@@ -123,7 +123,7 @@
     "react-table": "^7.8.0",
     "redis": "^4.3.1",
     "sequelize": "^6.20.1",
-    "sql-formatter": "^4.0.2",
+    "sql-formatter": "^11.0.2",
     "sqlite3": "^5.1.1",
     "tedious": "^14.5.0"
   },
