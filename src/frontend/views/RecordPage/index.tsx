@@ -79,7 +79,7 @@ type RecordFormReponse = {
  */
 function RecordView(props: RecordDetailsPageProps): JSX.Element | null {
   const { data } = props;
-  const columnNames = sortColumnNamesForUnknownData(Object.keys(data || {}));
+  const columnNames = Object.keys(data || {});
 
   return (
     <>

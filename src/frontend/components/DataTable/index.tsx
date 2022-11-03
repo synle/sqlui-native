@@ -60,7 +60,7 @@ export function DataTableWithJSONList(props: Omit<DataTableProps, 'columns'>) {
       }
     }
 
-    return sortColumnNamesForUnknownData([...newColumnNames]).map((columnName) => {
+    return [...newColumnNames].map((columnName) => {
       return {
         Header: columnName,
         sortable: true,
