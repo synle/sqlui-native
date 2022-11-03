@@ -4,7 +4,6 @@ import { useMemo } from 'react';
 import LegacyDataTable from 'src/frontend/components/DataTable/LegacyDataTable';
 import ModernDataTable from 'src/frontend/components/DataTable/ModernDataTable';
 import { DropdownButtonOption } from 'src/frontend/components/DropdownButton';
-import { sortColumnNamesForUnknownData } from 'src/frontend/utils/commonUtils';
 
 export type DataTableProps = {
   columns: any[];
@@ -60,7 +59,7 @@ export function DataTableWithJSONList(props: Omit<DataTableProps, 'columns'>) {
       }
     }
 
-    return sortColumnNamesForUnknownData([...newColumnNames]).map((columnName) => {
+    return [...newColumnNames].map((columnName) => {
       return {
         Header: columnName,
         sortable: true,
