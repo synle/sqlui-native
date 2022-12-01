@@ -10,8 +10,10 @@ const isMac = process.platform === 'darwin';
 
 // disable smooth scrolling
 try {
-  app.commandLine.appendSwitch('--disable-smooth-scrolling');
+  app.commandLine.appendSwitch('disable-smooth-scrolling');
 } catch (err) {}
+
+// create the window
 async function createWindow(isFirstWindow?: boolean) {
   const mainWindow = new BrowserWindow({
     width: 1200,
