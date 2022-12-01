@@ -153,7 +153,7 @@
     "cross-env": "^7.0.3",
     "electron": "^20.2.0",
     "electron-builder": "^23.3.3",
-    "eslint": "^8.0.0",
+    "eslint": "^8.28.0",
     "express": "^4.18.1",
     "jest": "^27.5.1",
     "multer": "^1.4.4",
