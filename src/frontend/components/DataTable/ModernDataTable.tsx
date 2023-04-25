@@ -6,7 +6,15 @@ import IconButton from '@mui/material/IconButton';
 import { styled } from '@mui/material/styles';
 import Table from '@mui/material/Table';
 import { useVirtualizer } from '@tanstack/react-virtual';
-import { useFilters, useGlobalFilter, usePagination, useSortBy, useTable } from 'react-table';
+import {
+  useBlockLayout,
+  useFilters,
+  useGlobalFilter,
+  usePagination,
+  useResizeColumns,
+  useSortBy,
+  useTable,
+} from 'react-table';
 import React, { useCallback, useRef, useState } from 'react';
 import { DataTableProps } from 'src/frontend/components/DataTable';
 import { GlobalFilter, SimpleColumnFilter } from 'src/frontend/components/DataTable/Filter';
@@ -18,7 +26,7 @@ const tableCellHeaderHeight = 75;
 
 const tableCellHeight = 35;
 
-const tableCellWidth = 200;
+const tableCellWidth = 300;
 
 const StyledDivContainer = styled('div')(({ theme }) => ({}));
 
@@ -91,6 +99,22 @@ const StyledDivValueCell = styled('div')(({ theme }) => ({
   paddingInline: '0.5rem',
   display: 'flex',
   alignItems: 'center',
+  paddingTop: '7px',
+}));
+
+const ColumnResizer = styled('div')(({ theme }) => ({
+  background: theme.palette.text.primary,
+  cursor: 'col-resize',
+  userSelect: 'none',
+  height: '100%',
+  width: '8px',
+  position: 'absolute',
+  right: '0',
+  top: '0',
+  opacity: 0.05,
+  '&:hover': {
+    opacity: 1,
+  },
 }));
 
 export default function ModernDataTable(props: DataTableProps): JSX.Element | null {
@@ -98,6 +122,15 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
   const [openContextMenuRowIdx, setOpenContextMenuRowIdx] = useState(-1);
   const [tableHeight, setTableHeight] = useState(defaultTableHeight);
   const anchorEl = useRef<HTMLElement | null>(null);
+
+  // figure out the width
+  let tableCellWidthToUse = tableCellWidth;
+
+  // @ts-ignore
+  const totalWidth = document.querySelector('.LayoutTwoColumns__RightPane')?.offsetWidth - 20 || 0;
+  if (columns.length * tableCellWidth < totalWidth) {
+    tableCellWidthToUse = Math.floor(totalWidth / columns.length);
+  }
 
   const allRecordSize = data.length;
   const pageSizeToUse = allRecordSize;
@@ -118,12 +151,17 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
       columns,
       data,
       // @ts-ignore
-      defaultColumn: { Filter: SimpleColumnFilter },
+      defaultColumn: {
+        Filter: SimpleColumnFilter,
+        width: tableCellWidthToUse, // set default width for all columns
+      },
     },
     useFilters,
     useGlobalFilter,
     useSortBy,
     usePagination,
+    useBlockLayout,
+    useResizeColumns,
   );
   const { pageIndex, pageSize } = state;
 
@@ -156,24 +194,6 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
     onClick: () =>
       rowContextOption.onClick && rowContextOption.onClick(data[openContextMenuRowIdx]),
   }));
-
-  // figure out the width
-  const headers = headerGroups?.[0]?.headers || [];
-
-  // @ts-ignore
-  const totalWidth = document.querySelector('.LayoutTwoColumns__RightPane')?.offsetWidth || 0;
-
-  if (columns.length * tableCellWidth < totalWidth) {
-    for (let i = 0; i < headers.length; i++) {
-      const header = headers[i];
-      columns[i].width = Math.floor(totalWidth / columns.length);
-    }
-  } else {
-    for (let i = 0; i < headers.length; i++) {
-      const header = headers[i];
-      columns[i].width = Math.max(header.width as number, tableCellWidth);
-    }
-  }
   // The scrollable element for your list
   const parentRef = React.useRef<HTMLTableElement | null>(null);
 
@@ -213,11 +233,7 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
           {headerGroups.map((headerGroup, headerGroupIdx) => (
             <StyledDivHeaderRow {...headerGroup.getHeaderGroupProps()}>
               {headerGroup.headers.map((column, colIdx) => (
-                <StyledDivHeaderCell
-                  sx={{
-                    width: columns[colIdx].width,
-                  }}
-                  {...column.getHeaderProps()}>
+                <StyledDivHeaderCell {...column.getHeaderProps()}>
                   <StyledDivHeaderCellLabel {...column.getSortByToggleProps()}>
                     <span>{column.render('Header')}</span>
                     {column.isSorted &&
@@ -226,8 +242,18 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
                       ) : (
                         <ArrowDropUpIcon fontSize='small' />
                       ))}
+                    {/* Render the column resize handler */}
                   </StyledDivHeaderCellLabel>
                   {column.canFilter && <Box sx={{ mt: 1 }}>{column.render('Filter')}</Box>}
+                  {column.canResize && (
+                    <ColumnResizer
+                      {...column.getResizerProps()}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                      }}
+                    />
+                  )}
                 </StyledDivHeaderCell>
               ))}
             </StyledDivHeaderRow>
@@ -270,11 +296,7 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
                     );
                   }
                   return (
-                    <StyledDivValueCell
-                      sx={{
-                        width: columns[colIdx].width,
-                      }}
-                      {...cell.getCellProps()}>
+                    <StyledDivValueCell {...cell.getCellProps()}>
                       {dropdownContent}
                       {cell.render('Cell')}
                     </StyledDivValueCell>
