@@ -4,7 +4,7 @@ import Box from '@mui/material/Box';
 import { styled } from '@mui/material/styles';
 import Table from '@mui/material/Table';
 import { useVirtualizer } from '@tanstack/react-virtual';
-import { useFilters, useGlobalFilter, usePagination, useSortBy, useTable } from 'react-table';
+import { useFilters, useGlobalFilter, usePagination, useSortBy, useTable, useBlockLayout, useResizeColumns } from 'react-table';
 import React, { useCallback, useRef, useState } from 'react';
 import { DataTableProps } from 'src/frontend/components/DataTable';
 import { GlobalFilter, SimpleColumnFilter } from 'src/frontend/components/DataTable/Filter';
@@ -93,6 +93,23 @@ const StyledDivValueCell = styled('div')(({ theme }) => ({
   alignItems: 'center'
 }));
 
+const ColumnResizer = styled('div')(({ theme }) => ({
+  background: theme.palette.text.primary,
+  cursor: 'col-resize',
+  userSelect: 'none',
+  height: '100%',
+  width: '5px',
+  position: 'absolute',
+  right: '0',
+  top: '0',
+  opacity: 0.2,
+
+  '&:hover':{
+    opacity: 1
+  }
+}));
+
+
 export default function ModernDataTable(props: DataTableProps): JSX.Element | null {
   const { columns, data } = props;
   const [openContextMenuRowIdx, setOpenContextMenuRowIdx] = useState(-1);
@@ -124,6 +141,8 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
     useGlobalFilter,
     useSortBy,
     usePagination,
+    useBlockLayout,
+    useResizeColumns
   );
   const { pageIndex, pageSize } = state;
 
@@ -173,6 +192,11 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
       const header = headers[i];
       columns[i].width = Math.max(header.width as number, tableCellWidth);
     }
+  }
+
+  for (let i = 0; i < headers.length; i++) {
+    const header = headers[i];
+    columns[i].width = header.width as number;
   }
 
 
@@ -229,8 +253,15 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
                       ) : (
                         <ArrowDropUpIcon fontSize='small' />
                       ))}
+                      {/* Render the column resize handler */}
                   </StyledDivHeaderCellLabel>
                   {column.canFilter && <Box sx={{ mt: 1 }}>{column.render('Filter')}</Box>}
+                  {column.canResize && (
+                    <ColumnResizer
+                      {...column.getResizerProps()}
+                      onClick={(e) => {e.preventDefault(); e.stopPropagation()}}
+                    />
+                  )}
                 </StyledDivHeaderCell>
               ))}
             </StyledDivHeaderRow>
