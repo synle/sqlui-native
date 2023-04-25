@@ -1030,6 +1030,10 @@ export default function MissionControl() {
           onUpdateSetting('editorMode', command.data as string);
           break;
 
+        case 'clientEvent/tableRenderer':
+          onUpdateSetting('tableRenderer', command.data as string);
+          break;
+
         case 'clientEvent/changeWrapMode':
           onUpdateSetting('wordWrap', command.data as string);
           break;

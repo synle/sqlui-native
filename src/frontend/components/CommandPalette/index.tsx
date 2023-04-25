@@ -52,6 +52,16 @@ const ALL_COMMAND_PALETTE_OPTIONS: CommandOption[] = [
   { event: 'clientEvent/exportAll', label: 'Export All' },
   { event: 'clientEvent/changeDarkMode', label: 'Enable Dark Mode', data: 'dark' },
   {
+    event: 'clientEvent/tableRenderer',
+    label: 'Use advanced table renderer',
+    data: 'advanced',
+  },
+  {
+    event: 'clientEvent/tableRenderer',
+    label: 'Use simple table renderer',
+    data: 'simple',
+  },
+  {
     event: 'clientEvent/changeDarkMode',
     label: 'Disable Dark Mode (Use Light Mode)',
     data: 'light',

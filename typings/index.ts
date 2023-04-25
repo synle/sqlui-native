@@ -188,6 +188,7 @@ export module SqluiFrontend {
   export type Settings = {
     darkMode?: 'dark' | 'light';
     editorMode?: 'advanced' | 'simple';
+    tableRenderer?: 'advanced' | 'simple';
     wordWrap?: 'wrap';
     queryTabOrientation?: 'vertical' | 'horizontal';
     querySize?: number;
@@ -294,6 +295,7 @@ export module SqluiEnums {
     | 'clientEvent/showSettings'
     | 'clientEvent/changeDarkMode'
     | 'clientEvent/changeEditorMode'
+    | 'clientEvent/tableRenderer'
     | 'clientEvent/changeWrapMode'
     | 'clientEvent/checkForUpdate'
     | 'clientEvent/showCommandPalette'
