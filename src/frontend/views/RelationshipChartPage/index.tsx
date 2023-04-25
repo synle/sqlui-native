@@ -14,7 +14,12 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect, useRef, useState } from 'react';
 import Breadcrumbs, { BreadcrumbLink } from 'src/frontend/components/Breadcrumbs';
 import { downloadBlob } from 'src/frontend/data/file';
-import { useGetAllTableColumns, useGetColumns, useGetConnectionById, useGetDatabases } from 'src/frontend/hooks/useConnection';
+import {
+  useGetAllTableColumns,
+  useGetColumns,
+  useGetConnectionById,
+  useGetDatabases,
+} from 'src/frontend/hooks/useConnection';
 import 'src/frontend/App.scss';
 import 'src/frontend/electronRenderer';
 

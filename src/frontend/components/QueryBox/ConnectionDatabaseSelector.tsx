@@ -3,7 +3,12 @@ import { useEffect, useMemo } from 'react';
 import { getIsTableIdRequiredForQueryByDialect } from 'src/common/adapters/DataScriptFactory';
 import ConnectionTypeIcon from 'src/frontend/components/ConnectionTypeIcon';
 import Select from 'src/frontend/components/Select';
-import { useGetConnectionById, useGetConnections, useGetDatabases, useGetTables } from 'src/frontend/hooks/useConnection';
+import {
+  useGetConnectionById,
+  useGetConnections,
+  useGetDatabases,
+  useGetTables,
+} from 'src/frontend/hooks/useConnection';
 import { SqluiFrontend } from 'typings';
 
 type ConnectionDatabaseSelectorProps = {

@@ -4,7 +4,10 @@ import IconButton from '@mui/material/IconButton';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { getDivider } from 'src/common/adapters/BaseDataAdapter/scripts';
-import { getTableActions, isDialectSupportVisualization } from 'src/common/adapters/DataScriptFactory';
+import {
+  getTableActions,
+  isDialectSupportVisualization,
+} from 'src/common/adapters/DataScriptFactory';
 import DropdownButton from 'src/frontend/components/DropdownButton';
 import { useCommands } from 'src/frontend/components/MissionControl';
 import { useGetColumns, useGetConnectionById } from 'src/frontend/hooks/useConnection';

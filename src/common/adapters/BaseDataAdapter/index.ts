@@ -1,5 +1,8 @@
 import { ConnectionStringParser } from 'connection-string-parser';
-import { getDialectType, getDialectTypeFromConnectionString } from 'src/common/adapters/DataScriptFactory';
+import {
+  getDialectType,
+  getDialectTypeFromConnectionString,
+} from 'src/common/adapters/DataScriptFactory';
 import { SqluiCore } from 'typings';
 
 export const MAX_CONNECTION_TIMEOUT = 3000;

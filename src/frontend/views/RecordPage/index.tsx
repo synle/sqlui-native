@@ -6,12 +6,31 @@ import TextField, { TextFieldProps } from '@mui/material/TextField';
 import set from 'lodash.set';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
-import { getInsert as getInsertForAzCosmosDB, getUpdateWithValues as getUpdateWithValuesForAzCosmosDB } from 'src/common/adapters/AzureCosmosDataAdapter/scripts';
-import { AZTABLE_KEYS_TO_IGNORE_FOR_INSERT_AND_UPDATE, getInsert as getInsertForAzTable, getUpdateWithValues as getUpdateWithValuesForAzTable } from 'src/common/adapters/AzureTableStorageAdapter/scripts';
-import { getInsert as getInsertForCassandra, getUpdateWithValues as getUpdateWithValuesForCassandra } from 'src/common/adapters/CassandraDataAdapter/scripts';
-import { isDialectSupportCreateRecordForm, isDialectSupportEditRecordForm } from 'src/common/adapters/DataScriptFactory';
-import { getInsert as getInsertForMongoDB, getUpdateWithValues as getUpdateWithValuesForMongoDB } from 'src/common/adapters/MongoDBDataAdapter/scripts';
-import { getInsert as getInsertForRdmbs, getUpdateWithValues as getUpdateWithValuesForRdmbs } from 'src/common/adapters/RelationalDataAdapter/scripts';
+import {
+  getInsert as getInsertForAzCosmosDB,
+  getUpdateWithValues as getUpdateWithValuesForAzCosmosDB,
+} from 'src/common/adapters/AzureCosmosDataAdapter/scripts';
+import {
+  AZTABLE_KEYS_TO_IGNORE_FOR_INSERT_AND_UPDATE,
+  getInsert as getInsertForAzTable,
+  getUpdateWithValues as getUpdateWithValuesForAzTable,
+} from 'src/common/adapters/AzureTableStorageAdapter/scripts';
+import {
+  getInsert as getInsertForCassandra,
+  getUpdateWithValues as getUpdateWithValuesForCassandra,
+} from 'src/common/adapters/CassandraDataAdapter/scripts';
+import {
+  isDialectSupportCreateRecordForm,
+  isDialectSupportEditRecordForm,
+} from 'src/common/adapters/DataScriptFactory';
+import {
+  getInsert as getInsertForMongoDB,
+  getUpdateWithValues as getUpdateWithValuesForMongoDB,
+} from 'src/common/adapters/MongoDBDataAdapter/scripts';
+import {
+  getInsert as getInsertForRdmbs,
+  getUpdateWithValues as getUpdateWithValuesForRdmbs,
+} from 'src/common/adapters/RelationalDataAdapter/scripts';
 import Breadcrumbs from 'src/frontend/components/Breadcrumbs';
 import CodeEditorBox from 'src/frontend/components/CodeEditorBox';
 import ConnectionDescription from 'src/frontend/components/ConnectionDescription';
@@ -23,7 +42,10 @@ import Tabs from 'src/frontend/components/Tabs';
 import { useActionDialogs } from 'src/frontend/hooks/useActionDialogs';
 import { useSideBarWidthPreference } from 'src/frontend/hooks/useClientSidePreference';
 import { useGetColumns, useGetConnectionById } from 'src/frontend/hooks/useConnection';
-import { useActiveConnectionQuery, useConnectionQueries } from 'src/frontend/hooks/useConnectionQuery';
+import {
+  useActiveConnectionQuery,
+  useConnectionQueries,
+} from 'src/frontend/hooks/useConnectionQuery';
 import useToaster from 'src/frontend/hooks/useToaster';
 import { useTreeActions } from 'src/frontend/hooks/useTreeActions';
 import LayoutTwoColumns from 'src/frontend/layout/LayoutTwoColumns';

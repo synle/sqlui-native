@@ -1,5 +1,9 @@
 import fs from 'fs';
-import { getDatabaseActions, getSampleConnectionString, getTableActions } from 'src/common/adapters/DataScriptFactory';
+import {
+  getDatabaseActions,
+  getSampleConnectionString,
+  getTableActions,
+} from 'src/common/adapters/DataScriptFactory';
 import { SqlAction, SqluiCore } from 'typings';
 
 type GuideMetaData = {

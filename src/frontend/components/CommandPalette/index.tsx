@@ -6,7 +6,10 @@ import fuzzysort from 'fuzzysort';
 import { useEffect, useRef, useState } from 'react';
 import { Command as CoreCommand } from 'src/frontend/components/MissionControl';
 import { useGetConnectionById, useGetConnections } from 'src/frontend/hooks/useConnection';
-import { useActiveConnectionQuery, useConnectionQueries } from 'src/frontend/hooks/useConnectionQuery';
+import {
+  useActiveConnectionQuery,
+  useConnectionQueries,
+} from 'src/frontend/hooks/useConnectionQuery';
 import { SqluiEnums } from 'typings';
 
 type Command = CoreCommand & {

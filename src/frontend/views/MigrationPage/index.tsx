@@ -4,7 +4,10 @@ import { Link as RouterLink } from 'react-router-dom';
 import { useEffect } from 'react';
 import Breadcrumbs, { BreadcrumbLink } from 'src/frontend/components/Breadcrumbs';
 import ConnectionDescription from 'src/frontend/components/ConnectionDescription';
-import { RawJsonMigrationForm, RealConnectionMigrationMigrationForm } from 'src/frontend/components/MigrationForm';
+import {
+  RawJsonMigrationForm,
+  RealConnectionMigrationMigrationForm,
+} from 'src/frontend/components/MigrationForm';
 import NewConnectionButton from 'src/frontend/components/NewConnectionButton';
 import { useTreeActions } from 'src/frontend/hooks/useTreeActions';
 import LayoutTwoColumns from 'src/frontend/layout/LayoutTwoColumns';
