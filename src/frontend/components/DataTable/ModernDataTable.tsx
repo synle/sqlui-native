@@ -18,7 +18,7 @@ const tableCellHeaderHeight = 75;
 
 const tableCellHeight = 35;
 
-const tableCellWidth = 200;
+const tableCellWidth = 250;
 
 const StyledDivContainer = styled('div')(({ theme }) => ({}));
 
@@ -90,7 +90,8 @@ const StyledDivValueCell = styled('div')(({ theme }) => ({
   height: `${tableCellHeight}px`,
   paddingInline: '0.5rem',
   display: 'flex',
-  alignItems: 'center'
+  alignItems: 'center',
+  paddingTop: '7px'
 }));
 
 const ColumnResizer = styled('div')(({ theme }) => ({
@@ -103,6 +104,7 @@ const ColumnResizer = styled('div')(({ theme }) => ({
   right: '0',
   top: '0',
   opacity: 0.05,
+
 
   '&:hover':{
     opacity: 1
@@ -221,9 +223,6 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
             <StyledDivHeaderRow {...headerGroup.getHeaderGroupProps()}>
               {headerGroup.headers.map((column, colIdx) => (
                 <StyledDivHeaderCell
-                  sx={{
-                    width: columns[colIdx].width,
-                  }}
                   {...column.getHeaderProps()}>
                   <StyledDivHeaderCellLabel {...column.getSortByToggleProps()}>
                     <span>{column.render('Header')}</span>
@@ -285,9 +284,6 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
                   }
                   return (
                     <StyledDivValueCell
-                      sx={{
-                        width: columns[colIdx].width,
-                      }}
                       {...cell.getCellProps()}>
                       {dropdownContent}
                       {cell.render('Cell')}
