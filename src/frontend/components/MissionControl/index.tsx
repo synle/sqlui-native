@@ -177,7 +177,7 @@ export default function MissionControl() {
                 <Button size='small' onClick={dismissDialog}>
                   No
                 </Button>
-                <Button type='submit' variant='contained' size='small'>
+                <Button type='submit' variant='contained' size='small' autoFocus>
                   Yes
                 </Button>
               </Box>
@@ -230,7 +230,7 @@ export default function MissionControl() {
                 <Button size='small' onClick={dismissDialog}>
                   No
                 </Button>
-                <Button type='submit' variant='contained' size='small'>
+                <Button type='submit' variant='contained' size='small' autoFocus>
                   Yes
                 </Button>
               </Box>
@@ -301,7 +301,7 @@ export default function MissionControl() {
                 <Button size='small' onClick={dismissDialog}>
                   No
                 </Button>
-                <Button type='submit' variant='contained' size='small'>
+                <Button type='submit' variant='contained' size='small' autoFocus>
                   Yes
                 </Button>
               </Box>
@@ -693,7 +693,7 @@ export default function MissionControl() {
                 <Button size='small' onClick={dismissDialog}>
                   No
                 </Button>
-                <Button type='submit' variant='contained' size='small'>
+                <Button type='submit' variant='contained' size='small' autoFocus>
                   Yes
                 </Button>
               </Box>
