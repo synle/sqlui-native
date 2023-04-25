@@ -4,6 +4,7 @@ import { useMemo } from 'react';
 import LegacyDataTable from 'src/frontend/components/DataTable/LegacyDataTable';
 import ModernDataTable from 'src/frontend/components/DataTable/ModernDataTable';
 import { DropdownButtonOption } from 'src/frontend/components/DropdownButton';
+import { useTableRenderer } from 'src/frontend/hooks/useSetting';
 
 export type DataTableProps = {
   columns: any[];
@@ -28,6 +29,8 @@ const UNNAMED_PROPERTY_NAME = '<unnamed_property>';
 
 export function DataTableWithJSONList(props: Omit<DataTableProps, 'columns'>) {
   const { data } = props;
+
+  const tableRenderer = useTableRenderer();
 
   let hasRawJson = useMemo(() => {
     for (const value of data) {
@@ -133,7 +136,7 @@ export function DataTableWithJSONList(props: Omit<DataTableProps, 'columns'>) {
                 textOverflow: 'ellipsis',
                 wordBreak: 'break-all',
                 whiteSpace: 'nowrap',
-                maxWidth: '250px',
+                maxWidth: tableRenderer === 'advanced' ?  'fit-content': '250px',
               }}>
               {columnValue || ''}
             </span>
@@ -143,10 +146,11 @@ export function DataTableWithJSONList(props: Omit<DataTableProps, 'columns'>) {
     });
   }, [data]);
 
-  // if (hasRawJson) {
-  //   return <LegacyDataTable {...props} columns={columns} />;
-  // }
-  // return <ModernDataTable {...props} columns={columns} />;
+
+  if(tableRenderer === 'advanced'){
+    // use the modern table
+    return <ModernDataTable {...props} columns={columns} />;
+  }
 
   // always use legacy table for now
   return <LegacyDataTable {...props} columns={columns} />;

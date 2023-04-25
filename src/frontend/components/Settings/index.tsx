@@ -81,6 +81,21 @@ export default function Settings(props: SettingsProps): JSX.Element | null {
           </Select>
         </div>
         <Typography className='FormInput__Label' variant='subtitle1'>
+          Table Renderer
+          <Tooltip title='Which table renderer to use? Simple Editor vs Advanced Editor'>
+            <HelpIcon fontSize='small' sx={{ ml: 1 }} />
+          </Tooltip>
+        </Typography>
+        <div className='FormInput__Row'>
+          <Select
+            value={settings.tableRenderer || 'advanced'}
+            onChange={(newValue) => onSettingChange('tableRenderer', newValue)}
+            sx={{ width: '100%' }}>
+            <option value='advanced'>Advanced Mode</option>
+            <option value='simple'>Simple Mode</option>
+          </Select>
+        </div>
+        <Typography className='FormInput__Label' variant='subtitle1'>
           Editor Word Wrap
           <Tooltip title='Whether or not to wrap words inside of the editor by default'>
             <HelpIcon fontSize='small' sx={{ ml: 1 }} />
