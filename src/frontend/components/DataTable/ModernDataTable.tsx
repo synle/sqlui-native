@@ -18,7 +18,7 @@ const tableCellHeaderHeight = 75;
 
 const tableCellHeight = 35;
 
-const tableCellWidth = 250;
+const tableCellWidth = 300;
 
 const StyledDivContainer = styled('div')(({ theme }) => ({}));
 
@@ -118,6 +118,15 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
   const [tableHeight, setTableHeight] = useState(defaultTableHeight);
   const anchorEl = useRef<HTMLElement | null>(null);
 
+  // figure out the width
+  let tableCellWidthToUse = tableCellWidth
+
+  // @ts-ignore
+  const totalWidth = document.querySelector('.LayoutTwoColumns__RightPane')?.offsetWidth - 20 || 0;
+  if (columns.length * tableCellWidth < totalWidth) {
+    tableCellWidthToUse = Math.floor(totalWidth / columns.length);
+  }
+
   const allRecordSize = data.length;
   const pageSizeToUse = allRecordSize;
   const {
@@ -139,7 +148,7 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
       // @ts-ignore
       defaultColumn: {
         Filter: SimpleColumnFilter,
-        width: tableCellWidth, // set default width for all columns
+        width: tableCellWidthToUse, // set default width for all columns
       },
     },
     useFilters,
