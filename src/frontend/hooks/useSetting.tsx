@@ -57,6 +57,18 @@ export function useEditorModeSetting() {
   return value;
 }
 
+export function useTableRenderer() {
+  const { settings } = useSetting();
+
+  let value = settings?.tableRenderer;
+
+  if (value !== 'simple') {
+    value = 'advanced';
+  }
+
+  return value;
+}
+
 export function useWordWrapSetting() {
   const { settings } = useSetting();
   return settings?.wordWrap === 'wrap';
