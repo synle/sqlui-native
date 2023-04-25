@@ -98,7 +98,7 @@ const getColumns = (onAfterSelect?: OnAfterSelectCallback) => {
 
         const onDeleteBookmarkItem = async (folderItem: SqluiCore.FolderItem) => {
           try {
-            await confirm(`Do you want to delete this boookmark "${folderItem.name}"?`);
+            await confirm(`Do you want to delete this bookmark "${folderItem.name}"?`);
             await deleteBookmarkItem(folderItem.id);
           } catch (err) {}
         };
