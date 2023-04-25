@@ -125,13 +125,13 @@ export function DataTableWithJSONList(props: Omit<DataTableProps, 'columns'>) {
               />
             );
           } else if (typeof columnValue === 'number') {
-            if(isAdvancedTableRenderer){
-              return <span style={{fontFamily: 'monospace'}}>{columnValue}</span>
+            if (isAdvancedTableRenderer) {
+              return <span style={{ fontFamily: 'monospace' }}>{columnValue}</span>;
             }
             return <pre style={{ textTransform: 'uppercase' }}>{columnValue}</pre>;
           } else if (typeof columnValue === 'object') {
-            if(isAdvancedTableRenderer){
-              return <span style={{fontFamily: 'monospace'}}>{JSON.stringify(columnValue)}</span>
+            if (isAdvancedTableRenderer) {
+              return <span style={{ fontFamily: 'monospace' }}>{JSON.stringify(columnValue)}</span>;
             }
             return <pre>{JSON.stringify(columnValue, null, 2)}</pre>;
           }
@@ -143,7 +143,7 @@ export function DataTableWithJSONList(props: Omit<DataTableProps, 'columns'>) {
                 textOverflow: 'ellipsis',
                 wordBreak: 'break-all',
                 whiteSpace: 'nowrap',
-                maxWidth: isAdvancedTableRenderer ?  'fit-content': '250px',
+                maxWidth: isAdvancedTableRenderer ? 'fit-content' : '250px',
               }}>
               {columnValue || ''}
             </span>
@@ -152,9 +152,7 @@ export function DataTableWithJSONList(props: Omit<DataTableProps, 'columns'>) {
       };
     });
   }, [data]);
-
-
-  if(isAdvancedTableRenderer){
+  if (isAdvancedTableRenderer) {
     // use the modern table
     return <ModernDataTable {...props} columns={columns} />;
   }

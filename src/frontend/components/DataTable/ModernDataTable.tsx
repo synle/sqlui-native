@@ -1,16 +1,24 @@
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
+import ZoomOutMapIcon from '@mui/icons-material/ZoomOutMap';
 import Box from '@mui/material/Box';
+import IconButton from '@mui/material/IconButton';
 import { styled } from '@mui/material/styles';
 import Table from '@mui/material/Table';
 import { useVirtualizer } from '@tanstack/react-virtual';
-import { useFilters, useGlobalFilter, usePagination, useSortBy, useTable, useBlockLayout, useResizeColumns } from 'react-table';
+import {
+  useBlockLayout,
+  useFilters,
+  useGlobalFilter,
+  usePagination,
+  useResizeColumns,
+  useSortBy,
+  useTable,
+} from 'react-table';
 import React, { useCallback, useRef, useState } from 'react';
 import { DataTableProps } from 'src/frontend/components/DataTable';
 import { GlobalFilter, SimpleColumnFilter } from 'src/frontend/components/DataTable/Filter';
 import DropdownMenu from 'src/frontend/components/DropdownMenu';
-import ZoomOutMapIcon from '@mui/icons-material/ZoomOutMap';
-import IconButton from '@mui/material/IconButton';
 
 const defaultTableHeight = '450px';
 
@@ -91,7 +99,7 @@ const StyledDivValueCell = styled('div')(({ theme }) => ({
   paddingInline: '0.5rem',
   display: 'flex',
   alignItems: 'center',
-  paddingTop: '7px'
+  paddingTop: '7px',
 }));
 
 const ColumnResizer = styled('div')(({ theme }) => ({
@@ -104,13 +112,10 @@ const ColumnResizer = styled('div')(({ theme }) => ({
   right: '0',
   top: '0',
   opacity: 0.05,
-
-
-  '&:hover':{
-    opacity: 1
-  }
+  '&:hover': {
+    opacity: 1,
+  },
 }));
-
 
 export default function ModernDataTable(props: DataTableProps): JSX.Element | null {
   const { columns, data } = props;
@@ -119,7 +124,7 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
   const anchorEl = useRef<HTMLElement | null>(null);
 
   // figure out the width
-  let tableCellWidthToUse = tableCellWidth
+  let tableCellWidthToUse = tableCellWidth;
 
   // @ts-ignore
   const totalWidth = document.querySelector('.LayoutTwoColumns__RightPane')?.offsetWidth - 20 || 0;
@@ -156,7 +161,7 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
     useSortBy,
     usePagination,
     useBlockLayout,
-    useResizeColumns
+    useResizeColumns,
   );
   const { pageIndex, pageSize } = state;
 
@@ -189,8 +194,6 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
     onClick: () =>
       rowContextOption.onClick && rowContextOption.onClick(data[openContextMenuRowIdx]),
   }));
-
-
   // The scrollable element for your list
   const parentRef = React.useRef<HTMLTableElement | null>(null);
 
@@ -205,14 +208,13 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
 
   return (
     <>
-      <Box sx={{display: 'flex',}}>
-        <Box sx={{flexGrow: 1, mr: 2}}>
-          {props.searchInputId && <GlobalFilter id={props.searchInputId} onChange={setGlobalFilter} />}
+      <Box sx={{ display: 'flex' }}>
+        <Box sx={{ flexGrow: 1, mr: 2 }}>
+          {props.searchInputId && (
+            <GlobalFilter id={props.searchInputId} onChange={setGlobalFilter} />
+          )}
         </Box>
-        <IconButton
-            aria-label='Make table bigger'
-            onClick={() => setTableHeight('90vh')}
-            >
+        <IconButton aria-label='Make table bigger' onClick={() => setTableHeight('90vh')}>
           <ZoomOutMapIcon />
         </IconButton>
       </Box>
@@ -231,8 +233,7 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
           {headerGroups.map((headerGroup, headerGroupIdx) => (
             <StyledDivHeaderRow {...headerGroup.getHeaderGroupProps()}>
               {headerGroup.headers.map((column, colIdx) => (
-                <StyledDivHeaderCell
-                  {...column.getHeaderProps()}>
+                <StyledDivHeaderCell {...column.getHeaderProps()}>
                   <StyledDivHeaderCellLabel {...column.getSortByToggleProps()}>
                     <span>{column.render('Header')}</span>
                     {column.isSorted &&
@@ -241,13 +242,16 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
                       ) : (
                         <ArrowDropUpIcon fontSize='small' />
                       ))}
-                      {/* Render the column resize handler */}
+                    {/* Render the column resize handler */}
                   </StyledDivHeaderCellLabel>
                   {column.canFilter && <Box sx={{ mt: 1 }}>{column.render('Filter')}</Box>}
                   {column.canResize && (
                     <ColumnResizer
                       {...column.getResizerProps()}
-                      onClick={(e) => {e.preventDefault(); e.stopPropagation()}}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                      }}
                     />
                   )}
                 </StyledDivHeaderCell>
@@ -292,8 +296,7 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
                     );
                   }
                   return (
-                    <StyledDivValueCell
-                      {...cell.getCellProps()}>
+                    <StyledDivValueCell {...cell.getCellProps()}>
                       {dropdownContent}
                       {cell.render('Cell')}
                     </StyledDivValueCell>
