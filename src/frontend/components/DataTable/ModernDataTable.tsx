@@ -1,6 +1,8 @@
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
+import ZoomOutMapIcon from '@mui/icons-material/ZoomOutMap';
 import Box from '@mui/material/Box';
+import IconButton from '@mui/material/IconButton';
 import { styled } from '@mui/material/styles';
 import Table from '@mui/material/Table';
 import { useVirtualizer } from '@tanstack/react-virtual';
@@ -10,7 +12,7 @@ import { DataTableProps } from 'src/frontend/components/DataTable';
 import { GlobalFilter, SimpleColumnFilter } from 'src/frontend/components/DataTable/Filter';
 import DropdownMenu from 'src/frontend/components/DropdownMenu';
 
-const tableHeight = '400px';
+const defaultTableHeight = '450px';
 
 const tableCellHeaderHeight = 75;
 
@@ -24,7 +26,6 @@ const StyledDivHeaderRow = styled('div')(({ theme }) => ({
   fontWeight: 'bold',
   display: 'flex',
   alignItems: 'center',
-  fontSize: '1rem',
   flexWrap: 'nowrap',
   minWidth: '100%',
   position: 'sticky',
@@ -33,7 +34,8 @@ const StyledDivHeaderRow = styled('div')(({ theme }) => ({
   zIndex: theme.zIndex.drawer + 1,
   backgroundColor: theme.palette.background.default,
   color: theme.palette.text.primary,
-  border: `1px solid ${theme.palette.divider}`,
+  boxSizing: 'border-box',
+  fontSize: '1 rem',
 
   '> div': {
     height: `${tableCellHeaderHeight}px`,
@@ -54,27 +56,28 @@ const StyledDivContentRow = styled('div')(({ theme }) => ({
   left: 0,
   display: 'flex',
   alignItems: 'center',
-  fontSize: '0.9rem',
   userSelect: 'none',
   minWidth: '100%',
   backgroundColor: theme.palette.action.selected,
+  boxSizing: 'border-box',
+  fontSize: '0.95 rem',
 
   '&:nth-of-type(odd)': {
-    backgroundColor: theme.palette.action.hover,
+    backgroundColor: theme.palette.action.focus,
   },
 
   '&:hover': {
-    backgroundColor: theme.palette.action.focus,
+    backgroundColor: theme.palette.action.hover,
   },
 }));
 
-const StyledDivContentCell = styled('div')(({ theme }) => ({
+const StyledDivHeaderCell = styled('div')(({ theme }) => ({
   flexShrink: 0,
-  maxWidth: `200px`,
+  height: `${tableCellHeight}px`,
   paddingInline: '0.5rem',
 }));
 
-const StyledDivContentCellLabel = styled('div')(({ theme }) => ({
+const StyledDivHeaderCellLabel = styled('div')(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
   '> span': {
@@ -82,9 +85,18 @@ const StyledDivContentCellLabel = styled('div')(({ theme }) => ({
   },
 }));
 
+const StyledDivValueCell = styled('div')(({ theme }) => ({
+  flexShrink: 0,
+  height: `${tableCellHeight}px`,
+  paddingInline: '0.5rem',
+  display: 'flex',
+  alignItems: 'center',
+}));
+
 export default function ModernDataTable(props: DataTableProps): JSX.Element | null {
   const { columns, data } = props;
   const [openContextMenuRowIdx, setOpenContextMenuRowIdx] = useState(-1);
+  const [tableHeight, setTableHeight] = useState(defaultTableHeight);
   const anchorEl = useRef<HTMLElement | null>(null);
 
   const allRecordSize = data.length;
@@ -147,12 +159,21 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
 
   // figure out the width
   const headers = headerGroups?.[0]?.headers || [];
-  for (let i = 0; i < headers.length; i++) {
-    const header = headers[i];
-    columns[i].width = Math.max(header.width as number, tableCellWidth);
-    columns[i].width = `${columns[i].width}px`;
-  }
 
+  // @ts-ignore
+  const totalWidth = document.querySelector('.LayoutTwoColumns__RightPane')?.offsetWidth || 0;
+
+  if (columns.length * tableCellWidth < totalWidth) {
+    for (let i = 0; i < headers.length; i++) {
+      const header = headers[i];
+      columns[i].width = Math.floor(totalWidth / columns.length);
+    }
+  } else {
+    for (let i = 0; i < headers.length; i++) {
+      const header = headers[i];
+      columns[i].width = Math.max(header.width as number, tableCellWidth);
+    }
+  }
   // The scrollable element for your list
   const parentRef = React.useRef<HTMLTableElement | null>(null);
 
@@ -161,13 +182,22 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
     count: page.length,
     paddingStart: tableCellHeaderHeight,
     getScrollElement: () => parentRef.current,
-    estimateSize: () => tableCellHeight,
+    estimateSize: (rowIdx) => tableCellHeight,
     overscan: 5,
   });
 
   return (
     <>
-      {props.searchInputId && <GlobalFilter id={props.searchInputId} onChange={setGlobalFilter} />}
+      <Box sx={{ display: 'flex' }}>
+        <Box sx={{ flexGrow: 1, mr: 2 }}>
+          {props.searchInputId && (
+            <GlobalFilter id={props.searchInputId} onChange={setGlobalFilter} />
+          )}
+        </Box>
+        <IconButton aria-label='Make table bigger' onClick={() => setTableHeight('90vh')}>
+          <ZoomOutMapIcon />
+        </IconButton>
+      </Box>
       <Box
         ref={parentRef}
         sx={{
@@ -183,12 +213,12 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
           {headerGroups.map((headerGroup, headerGroupIdx) => (
             <StyledDivHeaderRow {...headerGroup.getHeaderGroupProps()}>
               {headerGroup.headers.map((column, colIdx) => (
-                <StyledDivContentCell
+                <StyledDivHeaderCell
                   sx={{
                     width: columns[colIdx].width,
                   }}
                   {...column.getHeaderProps()}>
-                  <StyledDivContentCellLabel {...column.getSortByToggleProps()}>
+                  <StyledDivHeaderCellLabel {...column.getSortByToggleProps()}>
                     <span>{column.render('Header')}</span>
                     {column.isSorted &&
                       (column.isSortedDesc ? (
@@ -196,9 +226,9 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
                       ) : (
                         <ArrowDropUpIcon fontSize='small' />
                       ))}
-                  </StyledDivContentCellLabel>
+                  </StyledDivHeaderCellLabel>
                   {column.canFilter && <Box sx={{ mt: 1 }}>{column.render('Filter')}</Box>}
-                </StyledDivContentCell>
+                </StyledDivHeaderCell>
               ))}
             </StyledDivHeaderRow>
           ))}
@@ -240,14 +270,14 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
                     );
                   }
                   return (
-                    <StyledDivContentCell
+                    <StyledDivValueCell
                       sx={{
                         width: columns[colIdx].width,
                       }}
                       {...cell.getCellProps()}>
                       {dropdownContent}
                       {cell.render('Cell')}
-                    </StyledDivContentCell>
+                    </StyledDivValueCell>
                   );
                 })}
               </StyledDivContentRow>
