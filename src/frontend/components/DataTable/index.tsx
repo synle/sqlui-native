@@ -31,6 +31,7 @@ export function DataTableWithJSONList(props: Omit<DataTableProps, 'columns'>) {
   const { data } = props;
 
   const tableRenderer = useTableRenderer();
+  const isAdvancedTableRenderer = tableRenderer === 'advanced';
 
   let hasRawJson = useMemo(() => {
     for (const value of data) {
@@ -124,8 +125,14 @@ export function DataTableWithJSONList(props: Omit<DataTableProps, 'columns'>) {
               />
             );
           } else if (typeof columnValue === 'number') {
+            if (isAdvancedTableRenderer) {
+              return <span style={{ fontFamily: 'monospace' }}>{columnValue}</span>;
+            }
             return <pre style={{ textTransform: 'uppercase' }}>{columnValue}</pre>;
           } else if (typeof columnValue === 'object') {
+            if (isAdvancedTableRenderer) {
+              return <span style={{ fontFamily: 'monospace' }}>{JSON.stringify(columnValue)}</span>;
+            }
             return <pre>{JSON.stringify(columnValue, null, 2)}</pre>;
           }
           return (
@@ -136,7 +143,7 @@ export function DataTableWithJSONList(props: Omit<DataTableProps, 'columns'>) {
                 textOverflow: 'ellipsis',
                 wordBreak: 'break-all',
                 whiteSpace: 'nowrap',
-                maxWidth: tableRenderer === 'advanced' ? 'fit-content' : '250px',
+                maxWidth: isAdvancedTableRenderer ? 'fit-content' : '250px',
               }}>
               {columnValue || ''}
             </span>
@@ -145,7 +152,7 @@ export function DataTableWithJSONList(props: Omit<DataTableProps, 'columns'>) {
       };
     });
   }, [data]);
-  if (tableRenderer === 'advanced') {
+  if (isAdvancedTableRenderer) {
     // use the modern table
     return <ModernDataTable {...props} columns={columns} />;
   }
