@@ -1,6 +1,8 @@
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
+import ZoomOutMapIcon from '@mui/icons-material/ZoomOutMap';
 import Box from '@mui/material/Box';
+import IconButton from '@mui/material/IconButton';
 import { styled } from '@mui/material/styles';
 import Table from '@mui/material/Table';
 import { useVirtualizer } from '@tanstack/react-virtual';
@@ -9,8 +11,6 @@ import React, { useCallback, useRef, useState } from 'react';
 import { DataTableProps } from 'src/frontend/components/DataTable';
 import { GlobalFilter, SimpleColumnFilter } from 'src/frontend/components/DataTable/Filter';
 import DropdownMenu from 'src/frontend/components/DropdownMenu';
-import ZoomOutMapIcon from '@mui/icons-material/ZoomOutMap';
-import IconButton from '@mui/material/IconButton';
 
 const defaultTableHeight = '450px';
 
@@ -90,7 +90,7 @@ const StyledDivValueCell = styled('div')(({ theme }) => ({
   height: `${tableCellHeight}px`,
   paddingInline: '0.5rem',
   display: 'flex',
-  alignItems: 'center'
+  alignItems: 'center',
 }));
 
 export default function ModernDataTable(props: DataTableProps): JSX.Element | null {
@@ -163,7 +163,7 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
   // @ts-ignore
   const totalWidth = document.querySelector('.LayoutTwoColumns__RightPane')?.offsetWidth || 0;
 
-  if(columns.length * tableCellWidth < totalWidth){
+  if (columns.length * tableCellWidth < totalWidth) {
     for (let i = 0; i < headers.length; i++) {
       const header = headers[i];
       columns[i].width = Math.floor(totalWidth / columns.length);
@@ -174,8 +174,6 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
       columns[i].width = Math.max(header.width as number, tableCellWidth);
     }
   }
-
-
   // The scrollable element for your list
   const parentRef = React.useRef<HTMLTableElement | null>(null);
 
@@ -190,14 +188,13 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
 
   return (
     <>
-      <Box sx={{display: 'flex',}}>
-        <Box sx={{flexGrow: 1, mr: 2}}>
-          {props.searchInputId && <GlobalFilter id={props.searchInputId} onChange={setGlobalFilter} />}
+      <Box sx={{ display: 'flex' }}>
+        <Box sx={{ flexGrow: 1, mr: 2 }}>
+          {props.searchInputId && (
+            <GlobalFilter id={props.searchInputId} onChange={setGlobalFilter} />
+          )}
         </Box>
-        <IconButton
-            aria-label='Make table bigger'
-            onClick={() => setTableHeight('90vh')}
-            >
+        <IconButton aria-label='Make table bigger' onClick={() => setTableHeight('90vh')}>
           <ZoomOutMapIcon />
         </IconButton>
       </Box>

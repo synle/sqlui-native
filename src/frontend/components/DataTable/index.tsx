@@ -136,7 +136,7 @@ export function DataTableWithJSONList(props: Omit<DataTableProps, 'columns'>) {
                 textOverflow: 'ellipsis',
                 wordBreak: 'break-all',
                 whiteSpace: 'nowrap',
-                maxWidth: tableRenderer === 'advanced' ?  'fit-content': '250px',
+                maxWidth: tableRenderer === 'advanced' ? 'fit-content' : '250px',
               }}>
               {columnValue || ''}
             </span>
@@ -145,9 +145,7 @@ export function DataTableWithJSONList(props: Omit<DataTableProps, 'columns'>) {
       };
     });
   }, [data]);
-
-
-  if(tableRenderer === 'advanced'){
+  if (tableRenderer === 'advanced') {
     // use the modern table
     return <ModernDataTable {...props} columns={columns} />;
   }
