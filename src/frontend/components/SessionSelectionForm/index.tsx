@@ -12,13 +12,7 @@ import TextField from '@mui/material/TextField';
 import { useNavigate } from 'react-router-dom';
 import { useCommands } from 'src/frontend/components/MissionControl';
 import { getRandomSessionId } from 'src/frontend/data/session';
-import {
-  useGetCurrentSession,
-  useGetOpenedSessionIds,
-  useGetSessions,
-  useSelectSession,
-  useUpsertSession,
-} from 'src/frontend/hooks/useSession';
+import { useGetCurrentSession, useGetOpenedSessionIds, useGetSessions, useSelectSession, useUpsertSession } from 'src/frontend/hooks/useSession';
 
 export type SessionOption = {
   label: string;

@@ -1,10 +1,4 @@
-import {
-  consolidateDialects,
-  getAllImplementations,
-  getDialectIcon,
-  getDialectName,
-  getDialectType,
-} from 'src/common/adapters/DataScriptFactory';
+import { consolidateDialects, getAllImplementations, getDialectIcon, getDialectName, getDialectType } from 'src/common/adapters/DataScriptFactory';
 
 describe('DataScriptFactory - Other Tests', () => {
   describe('getAllImplementations and consolidateDialects should work properly', () => {

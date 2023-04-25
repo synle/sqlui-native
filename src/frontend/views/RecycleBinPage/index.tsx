@@ -17,11 +17,7 @@ import DataTable from 'src/frontend/components/DataTable';
 import NewConnectionButton from 'src/frontend/components/NewConnectionButton';
 import { useActionDialogs } from 'src/frontend/hooks/useActionDialogs';
 import { useSideBarWidthPreference } from 'src/frontend/hooks/useClientSidePreference';
-import {
-  useDeletedRecycleBinItem,
-  useGetRecycleBinItems,
-  useRestoreRecycleBinItem,
-} from 'src/frontend/hooks/useFolderItems';
+import { useDeletedRecycleBinItem, useGetRecycleBinItems, useRestoreRecycleBinItem } from 'src/frontend/hooks/useFolderItems';
 import useToaster from 'src/frontend/hooks/useToaster';
 import { useTreeActions } from 'src/frontend/hooks/useTreeActions';
 import LayoutTwoColumns from 'src/frontend/layout/LayoutTwoColumns';

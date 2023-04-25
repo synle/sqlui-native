@@ -4,47 +4,18 @@ import { Button, Link, Skeleton, TextField, Typography } from '@mui/material';
 import get from 'lodash.get';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
-import {
-  getBulkInsert as getBulkInsertForCosmosDb,
-  getCreateContainer as getCreateContainerForAzCosmosDb,
-  getCreateDatabase as getCreateDatabaseForAzCosmosDb,
-} from 'src/common/adapters/AzureCosmosDataAdapter/scripts';
-import {
-  getBulkInsert as getBulkInsertForAzTable,
-  getCreateTable as getCreateTableForAzTable,
-} from 'src/common/adapters/AzureTableStorageAdapter/scripts';
+import { getBulkInsert as getBulkInsertForCosmosDb, getCreateContainer as getCreateContainerForAzCosmosDb, getCreateDatabase as getCreateDatabaseForAzCosmosDb } from 'src/common/adapters/AzureCosmosDataAdapter/scripts';
+import { getBulkInsert as getBulkInsertForAzTable, getCreateTable as getCreateTableForAzTable } from 'src/common/adapters/AzureTableStorageAdapter/scripts';
 import BaseDataAdapter from 'src/common/adapters/BaseDataAdapter/index';
-import {
-  getBulkInsert as getBulkInsertForCassandra,
-  getCreateKeyspace as getCreateKeyspaceForCassandra,
-  getCreateTable as getCreateTableForCassandra,
-} from 'src/common/adapters/CassandraDataAdapter/scripts';
-import {
-  DIALECTS_SUPPORTING_MIGRATION,
-  getDialectName,
-  getSampleSelectQuery,
-  getSyntaxModeByDialect,
-  isDialectSupportMigration,
-} from 'src/common/adapters/DataScriptFactory';
-import {
-  getBulkInsert as getBulkInsertForMongoDB,
-  getCreateCollection as getCreateCollectionForMongoDB,
-  getCreateDatabase as getCreateDatabaseForMongoDB,
-} from 'src/common/adapters/MongoDBDataAdapter/scripts';
-import {
-  getBulkInsert as getBulkInsertForRdbms,
-  getCreateDatabase as getCreateDatabaseForRdbms,
-  getCreateTable as getCreateTableForRdbms,
-} from 'src/common/adapters/RelationalDataAdapter/scripts';
+import { getBulkInsert as getBulkInsertForCassandra, getCreateKeyspace as getCreateKeyspaceForCassandra, getCreateTable as getCreateTableForCassandra } from 'src/common/adapters/CassandraDataAdapter/scripts';
+import { DIALECTS_SUPPORTING_MIGRATION, getDialectName, getSampleSelectQuery, getSyntaxModeByDialect, isDialectSupportMigration } from 'src/common/adapters/DataScriptFactory';
+import { getBulkInsert as getBulkInsertForMongoDB, getCreateCollection as getCreateCollectionForMongoDB, getCreateDatabase as getCreateDatabaseForMongoDB } from 'src/common/adapters/MongoDBDataAdapter/scripts';
+import { getBulkInsert as getBulkInsertForRdbms, getCreateDatabase as getCreateDatabaseForRdbms, getCreateTable as getCreateTableForRdbms } from 'src/common/adapters/RelationalDataAdapter/scripts';
 import CodeEditorBox from 'src/frontend/components/CodeEditorBox';
 import ConnectionDatabaseSelector from 'src/frontend/components/QueryBox/ConnectionDatabaseSelector';
 import Select from 'src/frontend/components/Select';
 import dataApi from 'src/frontend/data/api';
-import {
-  useGetColumns,
-  useGetConnectionById,
-  useGetConnections,
-} from 'src/frontend/hooks/useConnection';
+import { useGetColumns, useGetConnectionById, useGetConnections } from 'src/frontend/hooks/useConnection';
 import { useConnectionQueries } from 'src/frontend/hooks/useConnectionQuery';
 import useToaster from 'src/frontend/hooks/useToaster';
 import { formatJS, formatSQL } from 'src/frontend/utils/formatter';

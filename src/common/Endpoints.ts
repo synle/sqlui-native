@@ -1,18 +1,6 @@
 import { Express } from 'express';
-import {
-  getColumns,
-  getConnectionMetaData,
-  getDataAdapter,
-  getDatabases,
-  getTables,
-} from 'src/common/adapters/DataAdapterFactory';
-import {
-  getConnectionsStorage,
-  getFolderItemsStorage,
-  getQueryStorage,
-  getSessionsStorage,
-  storageDir,
-} from 'src/common/PersistentStorage';
+import { getColumns, getConnectionMetaData, getDataAdapter, getDatabases, getTables } from 'src/common/adapters/DataAdapterFactory';
+import { getConnectionsStorage, getFolderItemsStorage, getQueryStorage, getSessionsStorage, storageDir } from 'src/common/PersistentStorage';
 import * as sessionUtils from 'src/common/utils/sessionUtils';
 import { SqluiCore, SqluiEnums } from 'typings';
 let expressAppContext: Express | undefined;

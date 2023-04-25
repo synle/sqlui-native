@@ -6,11 +6,7 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import ListItemText from '@mui/material/ListItemText';
-import {
-  getDialectName,
-  getSampleConnectionString,
-  SUPPORTED_DIALECTS,
-} from 'src/common/adapters/DataScriptFactory';
+import { getDialectName, getSampleConnectionString, SUPPORTED_DIALECTS } from 'src/common/adapters/DataScriptFactory';
 import ConnectionTypeIcon from 'src/frontend/components/ConnectionTypeIcon';
 import { useGetBookmarkItems } from 'src/frontend/hooks/useFolderItems';
 import { SqluiCore } from 'typings';

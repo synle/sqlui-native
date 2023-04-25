@@ -13,11 +13,7 @@ import DataTable from 'src/frontend/components/DataTable';
 import { useActionDialogs } from 'src/frontend/hooks/useActionDialogs';
 import { useUpsertConnection } from 'src/frontend/hooks/useConnection';
 import { useConnectionQueries } from 'src/frontend/hooks/useConnectionQuery';
-import {
-  useDeleteBookmarkItem,
-  useGetBookmarkItems,
-  useUpdateBookmarkItem,
-} from 'src/frontend/hooks/useFolderItems';
+import { useDeleteBookmarkItem, useGetBookmarkItems, useUpdateBookmarkItem } from 'src/frontend/hooks/useFolderItems';
 import { SqluiCore } from 'typings';
 
 type OnAfterSelectCallback = () => void;
@@ -98,7 +94,7 @@ const getColumns = (onAfterSelect?: OnAfterSelectCallback) => {
 
         const onDeleteBookmarkItem = async (folderItem: SqluiCore.FolderItem) => {
           try {
-            await confirm(`Do you want to delete this boookmark "${folderItem.name}"?`);
+            await confirm(`Do you want to delete this bookmark "${folderItem.name}"?`);
             await deleteBookmarkItem(folderItem.id);
           } catch (err) {}
         };

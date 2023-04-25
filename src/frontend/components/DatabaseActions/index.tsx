@@ -4,10 +4,7 @@ import SsidChartIcon from '@mui/icons-material/SsidChart';
 import IconButton from '@mui/material/IconButton';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
-import {
-  getDatabaseActions,
-  isDialectSupportVisualization,
-} from 'src/common/adapters/DataScriptFactory';
+import { getDatabaseActions, isDialectSupportVisualization } from 'src/common/adapters/DataScriptFactory';
 import DropdownButton from 'src/frontend/components/DropdownButton';
 import { useCommands } from 'src/frontend/components/MissionControl';
 import { useGetConnectionById } from 'src/frontend/hooks/useConnection';

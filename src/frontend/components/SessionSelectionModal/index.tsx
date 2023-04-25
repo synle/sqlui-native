@@ -4,11 +4,7 @@ import ActionDialogs from 'src/frontend/components/ActionDialogs';
 import { allMenuKeys } from 'src/frontend/components/MissionControl';
 import SessionSelectionForm from 'src/frontend/components/SessionSelectionForm';
 import { useActionDialogs } from 'src/frontend/hooks/useActionDialogs';
-import {
-  useGetCurrentSession,
-  useGetOpenedSessionIds,
-  useGetSessions,
-} from 'src/frontend/hooks/useSession';
+import { useGetCurrentSession, useGetOpenedSessionIds, useGetSessions } from 'src/frontend/hooks/useSession';
 
 export default function SessionSelectionModal() {
   const navigate = useNavigate();

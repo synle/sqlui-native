@@ -14,37 +14,15 @@ import Settings, { ChangeSoftDeleteInput } from 'src/frontend/components/Setting
 import { downloadText } from 'src/frontend/data/file';
 import { getRandomSessionId } from 'src/frontend/data/session';
 import { useActionDialogs } from 'src/frontend/hooks/useActionDialogs';
-import {
-  useDeleteConnection,
-  useDuplicateConnection,
-  useGetConnectionById,
-  useGetConnections,
-  useImportConnection,
-  useRetryConnection,
-} from 'src/frontend/hooks/useConnection';
-import {
-  useActiveConnectionQuery,
-  useConnectionQueries,
-} from 'src/frontend/hooks/useConnectionQuery';
+import { useDeleteConnection, useDuplicateConnection, useGetConnectionById, useGetConnections, useImportConnection, useRetryConnection } from 'src/frontend/hooks/useConnection';
+import { useActiveConnectionQuery, useConnectionQueries } from 'src/frontend/hooks/useConnectionQuery';
 import { useAddBookmarkItem } from 'src/frontend/hooks/useFolderItems';
 import { useGetServerConfigs } from 'src/frontend/hooks/useServerConfigs';
-import {
-  useCloneSession,
-  useDeleteSession,
-  useGetCurrentSession,
-  useGetOpenedSessionIds,
-  useGetSessions,
-  useSelectSession,
-  useUpsertSession,
-} from 'src/frontend/hooks/useSession';
+import { useCloneSession, useDeleteSession, useGetCurrentSession, useGetOpenedSessionIds, useGetSessions, useSelectSession, useUpsertSession } from 'src/frontend/hooks/useSession';
 import { useIsSoftDeleteModeSetting, useSetting } from 'src/frontend/hooks/useSetting';
 import { useShowHide } from 'src/frontend/hooks/useShowHide';
 import useToaster from 'src/frontend/hooks/useToaster';
-import {
-  createSystemNotification,
-  getExportedConnection,
-  getExportedQuery,
-} from 'src/frontend/utils/commonUtils';
+import { createSystemNotification, getExportedConnection, getExportedQuery } from 'src/frontend/utils/commonUtils';
 import { execute } from 'src/frontend/utils/executeUtils';
 import { RecordDetailsPage } from 'src/frontend/views/RecordPage';
 import appPackage from 'src/package.json';
@@ -177,7 +155,7 @@ export default function MissionControl() {
                 <Button size='small' onClick={dismissDialog}>
                   No
                 </Button>
-                <Button type='submit' variant='contained' size='small'>
+                <Button type='submit' variant='contained' size='small' autoFocus>
                   Yes
                 </Button>
               </Box>
@@ -230,7 +208,7 @@ export default function MissionControl() {
                 <Button size='small' onClick={dismissDialog}>
                   No
                 </Button>
-                <Button type='submit' variant='contained' size='small'>
+                <Button type='submit' variant='contained' size='small' autoFocus>
                   Yes
                 </Button>
               </Box>
@@ -301,7 +279,7 @@ export default function MissionControl() {
                 <Button size='small' onClick={dismissDialog}>
                   No
                 </Button>
-                <Button type='submit' variant='contained' size='small'>
+                <Button type='submit' variant='contained' size='small' autoFocus>
                   Yes
                 </Button>
               </Box>
@@ -693,7 +671,7 @@ export default function MissionControl() {
                 <Button size='small' onClick={dismissDialog}>
                   No
                 </Button>
-                <Button type='submit' variant='contained' size='small'>
+                <Button type='submit' variant='contained' size='small' autoFocus>
                   Yes
                 </Button>
               </Box>

@@ -8,11 +8,7 @@ import ElectronEventListener from 'src/frontend/components/ElectronEventListener
 import MissionControl, { useCommands } from 'src/frontend/components/MissionControl';
 import SessionManager from 'src/frontend/components/SessionManager';
 import dataApi from 'src/frontend/data/api';
-import {
-  useGetCurrentSession,
-  useGetSessions,
-  useUpsertSession,
-} from 'src/frontend/hooks/useSession';
+import { useGetCurrentSession, useGetSessions, useUpsertSession } from 'src/frontend/hooks/useSession';
 import { useDarkModeSetting } from 'src/frontend/hooks/useSetting';
 import useToaster, { ToasterHandler } from 'src/frontend/hooks/useToaster';
 import BookmarksPage from 'src/frontend/views/BookmarksPage';
