@@ -29,7 +29,7 @@ export default function ResultBox(props: ResultBoxProps): JSX.Element | null {
   if (executing) {
     return (
       <Alert severity='info' icon={<CircularProgress size={15} />}>
-        Loading <Timer startTime={query?.executionStart} />
+        Executing started <strong>{new Date(query?.executionStart || Date.now()).toLocaleString()}</strong>
         ...
       </Alert>
     );
@@ -45,7 +45,7 @@ export default function ResultBox(props: ResultBoxProps): JSX.Element | null {
 
     return (
       <>
-        <QueryTimeDescription query={query} />
+        <Alert severity='info'><QueryTimeDescription query={query} /></Alert>
         <CodeEditorBox value={errorToDisplay} language='json' wordWrap={true} />
       </>
     );
@@ -138,8 +138,8 @@ export default function ResultBox(props: ResultBoxProps): JSX.Element | null {
   return (
     <div className='ResultBox'>
       <Alert severity='info'>
-        Query took <Timer startTime={query?.executionStart} endTime={query?.executionEnd} />.{' '}
-        {data?.length > 0 ? `And it returned ${data?.length || 0} records.` : ''}
+        <QueryTimeDescription query={query} />
+        {data?.length > 0 ? <>, and it returned <strong>${data?.length || 0}</strong> records.</> : ''}
       </Alert>
       <Tabs
         tabIdx={tabIdx}
@@ -178,8 +178,8 @@ type QueryTimeDescriptionProps = {
 function QueryTimeDescription(props: QueryTimeDescriptionProps): JSX.Element | null {
   const { query } = props;
   return (
-    <Alert severity='info'>
-      Query took <Timer startTime={query?.executionStart} endTime={query?.executionEnd} />
-    </Alert>
+    <>
+      Query started at <strong>{new Date(query?.executionStart || Date.now()).toLocaleString()}</strong> and finished at <strong>{new Date(Date.now()).toLocaleString()}</strong>
+    </>
   );
 }
