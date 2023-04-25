@@ -8,7 +8,7 @@ concurrency:
 
 jobs:
   build:
-    # https://github.com/synle/gha-workflows/blob/main/.github/workflows/pr-js-yarn.yml
-    uses: synle/gha-workflows/.github/workflows/pr-js-yarn.yml@main
+    # https://github.com/synle/gha-workflows/blob/main/.github/workflows/pr-js-yarn-16.yml
+    uses: synle/gha-workflows/.github/workflows/pr-js-yarn-16.yml@main
     with:
       os: ubuntu-latest
