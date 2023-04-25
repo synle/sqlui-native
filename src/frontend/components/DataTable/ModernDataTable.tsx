@@ -98,11 +98,11 @@ const ColumnResizer = styled('div')(({ theme }) => ({
   cursor: 'col-resize',
   userSelect: 'none',
   height: '100%',
-  width: '5px',
+  width: '8px',
   position: 'absolute',
   right: '0',
   top: '0',
-  opacity: 0.2,
+  opacity: 0.05,
 
   '&:hover':{
     opacity: 1
@@ -135,7 +135,10 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
       columns,
       data,
       // @ts-ignore
-      defaultColumn: { Filter: SimpleColumnFilter },
+      defaultColumn: {
+        Filter: SimpleColumnFilter,
+        width: tableCellWidth, // set default width for all columns
+      },
     },
     useFilters,
     useGlobalFilter,
@@ -175,29 +178,6 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
     onClick: () =>
       rowContextOption.onClick && rowContextOption.onClick(data[openContextMenuRowIdx]),
   }));
-
-  // figure out the width
-  const headers = headerGroups?.[0]?.headers || [];
-
-  // @ts-ignore
-  const totalWidth = document.querySelector('.LayoutTwoColumns__RightPane')?.offsetWidth || 0;
-
-  if(columns.length * tableCellWidth < totalWidth){
-    for (let i = 0; i < headers.length; i++) {
-      const header = headers[i];
-      columns[i].width = Math.floor(totalWidth / columns.length);
-    }
-  } else {
-    for (let i = 0; i < headers.length; i++) {
-      const header = headers[i];
-      columns[i].width = Math.max(header.width as number, tableCellWidth);
-    }
-  }
-
-  for (let i = 0; i < headers.length; i++) {
-    const header = headers[i];
-    columns[i].width = header.width as number;
-  }
 
 
   // The scrollable element for your list
