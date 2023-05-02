@@ -5,16 +5,9 @@ import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import { styled } from '@mui/material/styles';
 import Table from '@mui/material/Table';
-import { useVirtualizer } from '@tanstack/react-virtual';
-import {
-  useBlockLayout,
-  useFilters,
-  useGlobalFilter,
-  usePagination,
-  useResizeColumns,
-  useSortBy,
-  useTable,
-} from 'react-table';
+import { VariableSizeList } from '@tanstack/react-virtual';
+import { useBlockLayout, useFilters, useGlobalFilter, usePagination, useResizeColumns, useSortBy, useTable } from 'react-table';
+import { AutoSizer } from 'react-virtualized-auto-sizer';
 import React, { useCallback, useRef, useState } from 'react';
 import { DataTableProps } from 'src/frontend/components/DataTable';
 import { GlobalFilter, SimpleColumnFilter } from 'src/frontend/components/DataTable/Filter';
@@ -195,16 +188,16 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
       rowContextOption.onClick && rowContextOption.onClick(data[openContextMenuRowIdx]),
   }));
   // The scrollable element for your list
-  const parentRef = React.useRef<HTMLTableElement | null>(null);
+  // const parentRef = React.useRef<HTMLTableElement | null>(null);
 
   // The virtualizer
-  const rowVirtualizer = useVirtualizer({
-    count: page.length,
-    paddingStart: tableCellHeaderHeight,
-    getScrollElement: () => parentRef.current,
-    estimateSize: (rowIdx) => tableCellHeight,
-    overscan: 5,
-  });
+  // const rowVirtualizer = useVirtualizer({
+  //   count: page.length,
+  //   paddingStart: tableCellHeaderHeight,
+  //   getScrollElement: () => parentRef.current,
+  //   estimateSize: (rowIdx) => tableCellHeight,
+  //   overscan: 5,
+  // });
 
   return (
     <>
@@ -218,18 +211,15 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
           <ZoomOutMapIcon />
         </IconButton>
       </Box>
-      <Box
-        ref={parentRef}
-        sx={{
-          maxHeight: tableHeight,
-          overflow: 'auto', // Make it scroll!
-        }}
-        onContextMenu={(e) => onRowContextMenuClick(e)}>
-        <StyledDivContainer
-          sx={{
-            height: `${rowVirtualizer.getTotalSize()}px`,
-            position: 'relative',
-          }}>
+
+      <AutoSizer>
+      {({ height, width }) => (
+        <VariableSizeList
+          height={height}
+          itemCount={data.length}
+          itemSize={tableCellHeight}
+          // width={width}
+        >
           {headerGroups.map((headerGroup, headerGroupIdx) => (
             <StyledDivHeaderRow {...headerGroup.getHeaderGroupProps()}>
               {headerGroup.headers.map((column, colIdx) => (
@@ -258,7 +248,7 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
               ))}
             </StyledDivHeaderRow>
           ))}
-          {rowVirtualizer.getVirtualItems().map((virtualItem) => {
+          {data.map((virtualItem) => {
             let rowIdx = virtualItem.index;
             const row = page[rowIdx];
             //@ts-ignore
@@ -305,14 +295,9 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
               </StyledDivContentRow>
             );
           })}
-        </StyledDivContainer>
-        {!page ||
-          (page.length === 0 && (
-            <Box sx={{ paddingInline: 2, paddingBlock: 2 }}>
-              There is no data in the query with matching filters.
-            </Box>
-          ))}
-      </Box>
+        </VariableSizeList>
+      )}
+    </AutoSizer>
     </>
   );
 }
