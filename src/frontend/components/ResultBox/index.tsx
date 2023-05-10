@@ -121,7 +121,7 @@ export default function ResultBox(props: ResultBoxProps): JSX.Element | null {
   ];
 
   const tabContents = [
-    <div className='ResultBox__Content' key={`Table`}>
+    <div key={`Table`}>
       <DataTableWithJSONList
         onRowClick={onShowRecordDetails}
         rowContextOptions={rowContextOptions}
@@ -130,7 +130,7 @@ export default function ResultBox(props: ResultBoxProps): JSX.Element | null {
         enableColumnFilter={true}
       />
     </div>,
-    <div className='ResultBox__Content' key={`JSON`}>
+    <div key={`JSON`}>
       <JsonFormatData data={data} />
     </div>,
   ];

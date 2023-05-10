@@ -5,7 +5,6 @@ import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import { styled } from '@mui/material/styles';
 import Table from '@mui/material/Table';
-import { useVirtualizer } from '@tanstack/react-virtual';
 import {
   useBlockLayout,
   useFilters,
@@ -19,6 +18,8 @@ import React, { useCallback, useRef, useState } from 'react';
 import { DataTableProps } from 'src/frontend/components/DataTable';
 import { GlobalFilter, SimpleColumnFilter } from 'src/frontend/components/DataTable/Filter';
 import DropdownMenu from 'src/frontend/components/DropdownMenu';
+import { List, AutoSizer } from 'react-virtualized';
+
 
 const defaultTableHeight = '450px';
 
@@ -194,17 +195,52 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
     onClick: () =>
       rowContextOption.onClick && rowContextOption.onClick(data[openContextMenuRowIdx]),
   }));
-  // The scrollable element for your list
-  const parentRef = React.useRef<HTMLTableElement | null>(null);
 
-  // The virtualizer
-  const rowVirtualizer = useVirtualizer({
-    count: page.length,
-    paddingStart: tableCellHeaderHeight,
-    getScrollElement: () => parentRef.current,
-    estimateSize: (rowIdx) => tableCellHeight,
-    overscan: 5,
-  });
+  const renderRow = (virtualItem) => {
+    let rowIdx = virtualItem.index;
+    const row = page[rowIdx];
+    prepareRow(row);
+
+    return (
+      <StyledDivContentRow
+        data-row-idx={rowIdx}
+        sx={{
+          cursor: props.onRowClick ? 'pointer' : '',
+          height: tableCellHeight,
+        }}
+        onDoubleClick={() => props.onRowClick && props.onRowClick(row.original)}
+        {...row.getRowProps()}>
+        {row.cells.map((cell, colIdx) => {
+          let dropdownContent: any;
+          if (colIdx === 0 && targetRowContextOptions.length > 0) {
+            dropdownContent = (
+              <DropdownMenu
+                id={`data-table-row-dropdown-${rowIdx}`}
+                options={targetRowContextOptions}
+                onToggle={(newOpen) => {
+                  if (newOpen) {
+                    setOpenContextMenuRowIdx(rowIdx);
+                  } else {
+                    setOpenContextMenuRowIdx(-1);
+                  }
+                }}
+                maxHeight='400px'
+                anchorEl={anchorEl}
+                open={openContextMenuRowIdx === rowIdx}
+              />
+            );
+          }
+          return (
+            <StyledDivValueCell {...cell.getCellProps()}>
+              {dropdownContent}
+              {cell.render('Cell')}
+            </StyledDivValueCell>
+          );
+        })}
+      </StyledDivContentRow>
+    );
+  }
+
 
   return (
     <>
@@ -214,20 +250,10 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
             <GlobalFilter id={props.searchInputId} onChange={setGlobalFilter} />
           )}
         </Box>
-        <IconButton aria-label='Make table bigger' onClick={() => setTableHeight('90vh')}>
-          <ZoomOutMapIcon />
-        </IconButton>
       </Box>
-      <Box
-        ref={parentRef}
-        sx={{
-          maxHeight: tableHeight,
-          overflow: 'auto', // Make it scroll!
-        }}
-        onContextMenu={(e) => onRowContextMenuClick(e)}>
         <StyledDivContainer
           sx={{
-            height: `${rowVirtualizer.getTotalSize()}px`,
+            height: `${tableCellHeight}px`,
             position: 'relative',
           }}>
           {headerGroups.map((headerGroup, headerGroupIdx) => (
@@ -258,61 +284,33 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
               ))}
             </StyledDivHeaderRow>
           ))}
-          {rowVirtualizer.getVirtualItems().map((virtualItem) => {
-            let rowIdx = virtualItem.index;
-            const row = page[rowIdx];
-            //@ts-ignore
-            const measureRef = virtualItem.measureRef;
-            prepareRow(row);
-
-            return (
-              <StyledDivContentRow
-                ref={measureRef}
-                data-row-idx={rowIdx}
-                sx={{
-                  cursor: props.onRowClick ? 'pointer' : '',
-                  transform: `translateY(${virtualItem.start}px)`,
-                }}
-                onDoubleClick={() => props.onRowClick && props.onRowClick(row.original)}
-                {...row.getRowProps()}>
-                {row.cells.map((cell, colIdx) => {
-                  let dropdownContent: any;
-                  if (colIdx === 0 && targetRowContextOptions.length > 0) {
-                    dropdownContent = (
-                      <DropdownMenu
-                        id={`data-table-row-dropdown-${rowIdx}`}
-                        options={targetRowContextOptions}
-                        onToggle={(newOpen) => {
-                          if (newOpen) {
-                            setOpenContextMenuRowIdx(rowIdx);
-                          } else {
-                            setOpenContextMenuRowIdx(-1);
-                          }
-                        }}
-                        maxHeight='400px'
-                        anchorEl={anchorEl}
-                        open={openContextMenuRowIdx === rowIdx}
-                      />
-                    );
-                  }
-                  return (
-                    <StyledDivValueCell {...cell.getCellProps()}>
-                      {dropdownContent}
-                      {cell.render('Cell')}
-                    </StyledDivValueCell>
-                  );
-                })}
-              </StyledDivContentRow>
-            );
-          })}
         </StyledDivContainer>
-        {!page ||
-          (page.length === 0 && (
+
+        <Box onContextMenu={(e) => onRowContextMenuClick(e)}>
+          <AutoSizer>
+            {
+              ({ width, height }) => {
+                const _height = tableCellHeight * data.length;
+
+                return <List
+                  width={width}
+                  height={_height}
+                  rowHeight={tableCellHeight}
+                  rowRenderer={renderRow}
+                  rowCount={data.length}
+                  overscanRowCount={3} />
+              }
+            }
+          </AutoSizer>
+        </Box>
+
+        {/*empty data*/}
+        {!data ||
+          (data.length === 0 && (
             <Box sx={{ paddingInline: 2, paddingBlock: 2 }}>
               There is no data in the query with matching filters.
             </Box>
           ))}
-      </Box>
     </>
   );
 }
