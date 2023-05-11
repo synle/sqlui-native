@@ -509,4 +509,18 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
   addDataEndpoint('get', '/api/debug', async (req, res, apiCache) => {
     res.status(200).json(apiCache.json());
   });
+
+  let dataTableCache = {};
+  addDataEndpoint('get', '/api/data/:windowId', async (req, res) => {
+    const windowId = req.params?.windowId;
+    console.log('>>>>>  sytest',windowId)
+
+    // const resp = dataTableCache[windowId] || [{a: 1}, {a: 1},{a: 1}, {a: 1}];
+    res.status(200).json([{a: 1}, {a: 1},{a: 1}, {a: 1}]);
+  });
+
+  addDataEndpoint('put', '/api/data/:windowId', async (req, res) => {
+    const windowId = req.params?.windowId;
+    res.status(202).json(req.body.values);
+  });
 }

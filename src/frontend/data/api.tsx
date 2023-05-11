@@ -236,6 +236,18 @@ export class ProxyApi {
       method: 'delete',
     });
   }
+
+  // data api used for storing data for the window api
+  static getDataItem(windowId: string) {
+    return _fetch<SqluiCore.RawData>(`/api/data/${windowId}`);
+  }
+
+  static updateDataItem(windowId: string, dataItem: RawDataItem) {
+    return _fetch<RawDataItem>(`/api/data/${windowId}`, {
+      method: 'put',
+      body: JSON.stringify(dataItem),
+    });
+  }
 }
 
 // selectively pick up which api to use...

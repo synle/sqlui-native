@@ -23,8 +23,6 @@ import NewConnectionPage from 'src/frontend/views/NewConnectionPage';
 import { NewRecordPage } from 'src/frontend/views/RecordPage';
 import RecycleBinPage from 'src/frontend/views/RecycleBinPage';
 import RelationshipChartPage from 'src/frontend/views/RelationshipChartPage';
-import 'src/frontend/App.scss';
-import 'src/frontend/electronRenderer';
 
 export default function App() {
   const { data: sessions, isLoading: loadingSessions } = useGetSessions();

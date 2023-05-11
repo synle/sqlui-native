@@ -5,12 +5,15 @@ import { QueryClient, QueryClientProvider } from 'react-query';
 import { ReactQueryDevtools } from 'react-query/devtools';
 import React from 'react';
 import App from 'src/frontend/App';
+import DataView from 'src/frontend/DataView';
 import ActionDialogsContextProvider from 'src/frontend/hooks/useActionDialogs';
 import ConnectionQueryContextProvider from 'src/frontend/hooks/useConnectionQuery';
 import SettingContextProvider from 'src/frontend/hooks/useSetting';
 import ShowHideContextProvider from 'src/frontend/hooks/useShowHide';
 import TreeActionContextProvider from 'src/frontend/hooks/useTreeActions';
 import { HashRouter, Route, Routes } from 'react-router-dom';
+import 'src/frontend/App.scss';
+import 'src/frontend/electronRenderer';
 
 const CombinedContextProvider = ({ children }) => {
   return [
@@ -45,7 +48,7 @@ const renderApp = function () {
             path='/data-table/:windowId'
             element={
               <>
-                Hello
+                <DataView />
               </>
             }
           />
