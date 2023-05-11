@@ -11,6 +11,7 @@ const renderApp = function () {
     defaultOptions: {
       queries: {
         retry: false,
+        refetchOnWindowFocus: false,
       },
     },
   });

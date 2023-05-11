@@ -48,11 +48,26 @@ export default function CodeEditorBox(props: CodeEditorProps): JSX.Element | nul
     props.onChange && props.onChange(newValue);
   };
 
+  const onSetHeight = (newHeight: string) => {
+    setHeight(newHeight);
+    localStorage.setItem(`editorSize.${props.id}`, newHeight);
+  };
+
+  const onSetWrap = (newWordWrap: boolean) => {
+    setWordWrap(newWordWrap);
+    localStorage.setItem(`editorWrap.${props.id}`, newWordWrap ? '1' : '0');
+  };
+
+  const onSetLanguageMode = (newLanguage: string) => {
+    setLanguageMode(newLanguage);
+    localStorage.setItem(`editorLanguage.${props.id}`, newLanguage);
+  };
+
   const contentToggleWordWrapSelection = (
     <ToggleButton
       value='check'
       selected={wordWrap}
-      onChange={() => setWordWrap(!wordWrap)}
+      onChange={() => onSetWrap(!wordWrap)}
       size='small'
       color='primary'>
       {wordWrap ? <CheckBoxIcon /> : <CheckBoxOutlineBlankIcon />}
@@ -64,7 +79,7 @@ export default function CodeEditorBox(props: CodeEditorProps): JSX.Element | nul
     <>
       <Select
         label='Syntax'
-        onChange={(newLanguage) => setLanguageMode(newLanguage)}
+        onChange={(newLanguage) => onSetLanguageMode(newLanguage)}
         value={languageMode}>
         <option value=''>Auto Detected ({props.language})</option>
         <option value='javascript'>Javascript</option>
@@ -75,7 +90,7 @@ export default function CodeEditorBox(props: CodeEditorProps): JSX.Element | nul
 
   const contentHeightSelection = (
     <>
-      <Select label='Editor Size' onChange={(newHeight) => setHeight(newHeight)} value={height}>
+      <Select label='Editor Size' onChange={(newHeight) => onSetHeight(newHeight)} value={height}>
         <option value='20vh'>Small</option>
         <option value='40vh'>Medium</option>
         <option value='60vh'>Large</option>
@@ -99,6 +114,29 @@ export default function CodeEditorBox(props: CodeEditorProps): JSX.Element | nul
     () => !!props.required && !props.value,
     [!!props.required && !props.value],
   );
+
+  useEffect(() => {
+    if (props.id) {
+      let newHeight = '';
+      try {
+        newHeight = localStorage.getItem(`editorSize.${props.id}`) || '';
+      } catch (err) {}
+
+      if (!newHeight) {
+        newHeight = props.height || DEFAULT_EDITOR_HEIGHT;
+      }
+      onSetHeight(newHeight);
+
+      // set the wrap
+      onSetWrap(localStorage.getItem(`editorWrap.${props.id}`) === '1');
+
+      // set the language
+      let newLanguage = localStorage.getItem(`editorLanguage.${props.id}`);
+      if (newLanguage) {
+        onSetLanguageMode(newLanguage);
+      }
+    }
+  }, [props.height, props.id]);
 
   if (editorModeToUse === 'simple') {
     return (
