@@ -5,6 +5,9 @@ import { QueryClient, QueryClientProvider } from 'react-query';
 import { ReactQueryDevtools } from 'react-query/devtools';
 import React from 'react';
 import App from 'src/frontend/App';
+import SettingProvider from 'src/frontend/hooks/useSetting';
+import ShowHideContext from 'src/frontend/hooks/useShowHide';
+import TreeActionContext from 'src/frontend/hooks/useTreeActions';
 
 const renderApp = function () {
   const queryClient = new QueryClient({
@@ -21,7 +24,14 @@ const renderApp = function () {
       <QueryClientProvider client={queryClient}>
         <CssBaseline />
         <ReactQueryDevtools initialIsOpen={false} />
-        <App />
+
+        <TreeActionContext>
+          <ShowHideContext>
+            <SettingProvider>
+              <App />
+            </SettingProvider>
+          </ShowHideContext>
+        </TreeActionContext>
       </QueryClientProvider>
     </SnackbarProvider>,
     document.querySelector('#body'),
