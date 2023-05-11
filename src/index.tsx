@@ -26,11 +26,11 @@ const renderApp = function () {
         <ReactQueryDevtools initialIsOpen={false} />
 
         <TreeActionContext>
-        <ShowHideContext>
-          <SettingProvider>
-            <App />
-          </SettingProvider>
-        </ShowHideContext>
+          <ShowHideContext>
+            <SettingProvider>
+              <App />
+            </SettingProvider>
+          </ShowHideContext>
         </TreeActionContext>
       </QueryClientProvider>
     </SnackbarProvider>,

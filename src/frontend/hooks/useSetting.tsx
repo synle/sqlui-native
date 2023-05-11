@@ -3,7 +3,6 @@ import { useQuery } from 'react-query';
 import React, { createContext, useContext, useState } from 'react';
 import { LocalStorageConfig } from 'src/frontend/data/config';
 import { SqluiFrontend } from 'typings';
-
 // Settings
 let _settings = LocalStorageConfig.get<SqluiFrontend.Settings>('clientConfig/cache.settings', {});
 
