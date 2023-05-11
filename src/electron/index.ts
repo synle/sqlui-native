@@ -1,7 +1,7 @@
 import { app, BrowserWindow, ipcMain, Menu, nativeTheme, shell } from 'electron';
 import path from 'path';
 import { matchPath } from 'react-router-dom';
-import { setIndexHtmlFile, getEndpointHandlers, setUpDataEndpoints } from 'src/common/Endpoints';
+import { getEndpointHandlers, setUpDataEndpoints } from 'src/common/Endpoints';
 import PersistentStorage from 'src/common/PersistentStorage';
 import * as sessionUtils from 'src/common/utils/sessionUtils';
 import { SqluiCore, SqluiEnums } from 'typings';
@@ -68,10 +68,7 @@ async function createWindow(isFirstWindow?: boolean) {
 
   // and load the index.html of the app.
   mainWindow.loadFile('index.html');
-
-  var indexHtmlFile = path.join(__dirname, 'index.html');
-  global.indexHtmlFile = indexHtmlFile;
-  setIndexHtmlFile(indexHtmlFile)
+  global.indexHtmlPath = path.join(__dirname, 'index.html');
 
   // Open the DevTools.
   if (process.env.ENV_TYPE === 'electron-dev') {

@@ -77,11 +77,6 @@ export function getEndpointHandlers() {
   return electronEndpointHandlers;
 }
 
-let indexHtmlFile = ''
-export function setIndexHtmlFile(newIndexHtmlFile: string){
-  indexHtmlFile = newIndexHtmlFile
-}
-
 export function setUpDataEndpoints(anExpressAppContext?: Express) {
   expressAppContext = anExpressAppContext;
   // storageDir
@@ -518,13 +513,20 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
   });
 
   let dataTableCache = {};
-  addDataEndpoint('get', '/api/dataItem/:windowId', async (req, res) => {
-    const windowId = req.params?.windowId;
-    const values = dataTableCache[windowId];
+  addDataEndpoint('get', '/api/dataItem/:dataItemGroupKey', async (req, res) => {
+    const dataItemGroupKey = req.params?.dataItemGroupKey;
+    const values = dataTableCache[dataItemGroupKey];
     if (!values) {
       return res.status(404).send('Not Found');
     }
     res.status(200).json({values});
+  });
+
+  addDataEndpoint('put', '/api/dataItem/:dataItemGroupKey', async (req, res) => {
+    const dataItemGroupKey = req.params?.dataItemGroupKey;
+    const values = req.body.values;
+    dataTableCache[dataItemGroupKey] = values
+    res.status(202).json(values);
 
     try{
       const mainWindow = new BrowserWindow({
@@ -538,16 +540,9 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
         },
       });
 
-      //@ts-ignore
-      console.log('sytest TODO >>>', indexHtmlFile);
-      mainWindow.loadFile(`${indexHtmlFile}#/data-table/${windowId}`);
-    } catch(err){}
-  });
-
-  addDataEndpoint('put', '/api/dataItem/:windowId', async (req, res) => {
-    const windowId = req.params?.windowId;
-    const values = req.body.values;
-    dataTableCache[windowId] = values
-    res.status(202).json(values);
+      mainWindow.loadFile(global.indexHtmlPath, {hash: `/data-table/${dataItemGroupKey}`});
+    } catch(err){
+      console.log('sytest2 err', err)
+    }
   });
 }
