@@ -5,10 +5,11 @@ import { QueryClient, QueryClientProvider } from 'react-query';
 import { ReactQueryDevtools } from 'react-query/devtools';
 import React from 'react';
 import App from 'src/frontend/App';
+import ConnectionQueryContext from 'src/frontend/hooks/useConnectionQuery';
 import SettingProvider from 'src/frontend/hooks/useSetting';
 import ShowHideContext from 'src/frontend/hooks/useShowHide';
 import TreeActionContext from 'src/frontend/hooks/useTreeActions';
-import ConnectionQueryContext from 'src/frontend/hooks/useConnectionQuery';
+import ActionDialogsContext from 'src/frontend/hooks/useActionDialogs';
 
 const renderApp = function () {
   const queryClient = new QueryClient({
@@ -26,15 +27,17 @@ const renderApp = function () {
         <CssBaseline />
         <ReactQueryDevtools initialIsOpen={false} />
 
+        <ActionDialogsContext>
         <ConnectionQueryContext>
-        <TreeActionContext>
-        <ShowHideContext>
-          <SettingProvider>
-            <App />
-          </SettingProvider>
-        </ShowHideContext>
-        </TreeActionContext>
+          <TreeActionContext>
+            <ShowHideContext>
+              <SettingProvider>
+                <App />
+              </SettingProvider>
+            </ShowHideContext>
+          </TreeActionContext>
         </ConnectionQueryContext>
+        </ActionDialogsContext>
       </QueryClientProvider>
     </SnackbarProvider>,
     document.querySelector('#body'),

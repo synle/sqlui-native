@@ -1,7 +1,6 @@
 import React, { createContext, useContext, useState } from 'react';
 import { SessionStorageConfig } from 'src/frontend/data/config';
 import { SqluiFrontend } from 'typings';
-
 // used for show and hide the sidebar trees
 let _treeVisibles = SessionStorageConfig.get<SqluiFrontend.TreeVisibilities>(
   'clientConfig/cache.treeVisibles',
