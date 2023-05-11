@@ -1,9 +1,6 @@
-import { QueryClient, useQuery, useQueryClient } from 'react-query';
+import React, { createContext, useContext, useState } from 'react';
 import { SessionStorageConfig } from 'src/frontend/data/config';
 import { SqluiFrontend } from 'typings';
-import React, { createContext, useState, useContext } from 'react';
-
-const QUERY_KEY_TREEVISIBLES = 'treeVisibles';
 
 // used for show and hide the sidebar trees
 let _treeVisibles = SessionStorageConfig.get<SqluiFrontend.TreeVisibilities>(
@@ -18,7 +15,7 @@ const TargetContext = createContext({
   onSet: (newTreeVisibles: SqluiFrontend.TreeVisibilities) => {},
 });
 
-export default function ShowHideContext(props: {children: React.ReactNode}): JSX.Element | null {
+export default function WrappedContext(props: { children: React.ReactNode }): JSX.Element | null {
   // State to hold the theme value
   const [visibles, setVisibles] = useState(_treeVisibles);
 
@@ -48,21 +45,14 @@ export default function ShowHideContext(props: {children: React.ReactNode}): JSX
 
   // Provide the theme value and toggle function to the children components
   return (
-    <TargetContext.Provider value={{ visibles,
-    onToggle,
-    onClear,
-    onSet, }}>
+    <TargetContext.Provider value={{ visibles, onToggle, onClear, onSet }}>
       {props.children}
     </TargetContext.Provider>
   );
-};
+}
 
 export function useShowHide() {
-  const {
-    visibles,
-    onToggle,
-    onClear,
-    onSet, } = useContext(TargetContext)!;
+  const { visibles, onToggle, onClear, onSet } = useContext(TargetContext)!;
 
   return {
     visibles,

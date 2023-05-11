@@ -1,8 +1,8 @@
 import useMediaQuery from '@mui/material/useMediaQuery';
-import { QueryClient, useQuery, useQueryClient } from 'react-query';
+import { useQuery } from 'react-query';
+import React, { createContext, useContext, useState } from 'react';
 import { LocalStorageConfig } from 'src/frontend/data/config';
 import { SqluiFrontend } from 'typings';
-import React, { createContext, useState, useContext } from 'react';
 
 // Settings
 let _settings = LocalStorageConfig.get<SqluiFrontend.Settings>('clientConfig/cache.settings', {});
@@ -12,32 +12,25 @@ const TargetContext = createContext({
   onChange: (newSettings: SqluiFrontend.Settings) => {},
 });
 
-export default function SettingProvider(props: {children: React.ReactNode}): JSX.Element | null {
+export default function WrappedContext(props: { children: React.ReactNode }): JSX.Element | null {
   // State to hold the theme value
   const [settings, setSettings] = useState(_settings);
 
   // Function to toggle the theme
   const onChange = (newSettings: SqluiFrontend.Settings) => {
-    setSettings(newSettings)
+    setSettings(newSettings);
   };
 
   // Provide the theme value and toggle function to the children components
   return (
-    <TargetContext.Provider value={{ settings, onChange }}>
-      {props.children}
-    </TargetContext.Provider>
+    <TargetContext.Provider value={{ settings, onChange }}>{props.children}</TargetContext.Provider>
   );
-};
-
-
+}
 
 export function useSetting() {
-   const {
-    settings,
-    onChange, } = useContext(TargetContext)!;
+  const { settings, onChange } = useContext(TargetContext)!;
 
   return {
-
     settings,
     onChange,
   };

@@ -1,7 +1,5 @@
 import { QueryClient, useQuery, useQueryClient } from 'react-query';
-import { useCallback } from 'react';
-
-const QUERY_KEY_TREE_ACTIONS = 'treeActions';
+import React, { createContext, useState, useContext, useCallback } from 'react';
 
 type TreeActionProps = {
   showContextMenu: boolean;
@@ -14,26 +12,49 @@ let _treeActions: TreeActionProps = {
   onSelectCallback: () => {},
 };
 
-export function useTreeActions() {
-  const queryClient = useQueryClient();
+const TargetContext = createContext({
+  data: _treeActions,
+  setTreeActions: (newTreeActionProps: Partial<TreeActionProps>) => {}
+});
 
-  const { data, isLoading } = useQuery(QUERY_KEY_TREE_ACTIONS, () => _treeActions, {
-    notifyOnChangeProps: ['data', 'error'],
-  });
+export default function WrappedContext(props: {children: React.ReactNode}): JSX.Element | null {
+  // State to hold the theme value
+  const [data, setData] = useState(_treeActions);
 
   const setTreeActions = useCallback((newTreeActionProps: Partial<TreeActionProps>) => {
-    _treeActions.showContextMenu = newTreeActionProps.showContextMenu || false;
-    _treeActions.onSelectCallback = newTreeActionProps.onSelectCallback || undefined;
+    if(newTreeActionProps.showContextMenu !== undefined){
+      _treeActions.showContextMenu = newTreeActionProps.showContextMenu;
+    }
+
+    if(newTreeActionProps.onSelectCallback){
+      _treeActions.onSelectCallback = newTreeActionProps.onSelectCallback
+    }
+
     _treeActions = { ..._treeActions };
-    queryClient.setQueryData<TreeActionProps | undefined>(
-      QUERY_KEY_TREE_ACTIONS,
-      () => _treeActions,
-    );
-  }, []);
+
+    setData(_treeActions);
+  }, [])
+
+  // Provide the theme value and toggle function to the children components
+  return (
+    <TargetContext.Provider value={{
+      data,
+      setTreeActions
+    }}>
+      {props.children}
+    </TargetContext.Provider>
+  );
+};
+
+
+export function useTreeActions() {
+  const {
+      data,
+      setTreeActions} = useContext(TargetContext)!;
 
   return {
-    isLoading,
-    data: data || _treeActions,
-    setTreeActions,
+    isLoading: false,
+    data,
+    setTreeActions
   };
 }

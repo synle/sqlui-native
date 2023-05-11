@@ -5,70 +5,112 @@ import { useAddRecycleBinItem } from 'src/frontend/hooks/useFolderItems';
 import { useIsSoftDeleteModeSetting } from 'src/frontend/hooks/useSetting';
 import { getGeneratedRandomId, getUpdatedOrdersForList } from 'src/frontend/utils/commonUtils';
 import { SqluiCore, SqluiFrontend } from 'typings';
+import React, { createContext, useState, useContext, useCallback, useEffect } from 'react';
 
 const QUERY_KEY_QUERIES = 'queries';
 
 // connection queries
-let _connectionQueries: SqluiFrontend.ConnectionQuery[];
+let _connectionQueries: SqluiFrontend.ConnectionQuery[] = [];
 
-function _useConnectionQueries() {
-  return useQuery(
-    QUERY_KEY_QUERIES,
-    async () => {
-      if (!_connectionQueries) {
+
+const TargetContext = createContext({
+  data: _connectionQueries,
+  setData: (newConnectionQueries: SqluiFrontend.ConnectionQuery[]) => {},
+  isLoading: true,
+  isFetching: true,
+});
+
+export default function WrappedContext(props: {children: React.ReactNode}): JSX.Element | null {
+  // State to hold the theme value
+  const [data, setData] = useState(_connectionQueries);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isFetching, setIsFetching] = useState(true);
+
+  useEffect(() => {
+    async function _fetchData(){
+      try{
         // this is the first time
-        // try pulling it in from sessionStorage
-        _connectionQueries = SessionStorageConfig.get<SqluiFrontend.ConnectionQuery[]>(
-          'clientConfig/cache.connectionQueries',
-          [],
-        );
+    // try pulling it in from sessionStorage
+    _connectionQueries = SessionStorageConfig.get<SqluiFrontend.ConnectionQuery[]>(
+      'clientConfig/cache.connectionQueries',
+      [],
+    );
 
-        if (_connectionQueries.length === 0) {
-          // if config failed, attempt to get it from the api
-          try {
-            _connectionQueries = await dataApi.getQueries();
-          } catch (err) {}
-        }
+    if (_connectionQueries.length === 0) {
+      // if config failed, attempt to get it from the api
+      try {
+        _connectionQueries = await dataApi.getQueries();
+      } catch (err) {}
+    }
 
-        // at the end we want to remove executionStart so the query won't be run again
-        let toBeSelectedQuery = 0;
-        _connectionQueries = _connectionQueries.map((query, idx) => {
-          if (query.selected) {
-            query.selected = false;
-            toBeSelectedQuery = idx;
-          }
-
-          return query;
-        });
-
-        if (_connectionQueries[toBeSelectedQuery]) {
-          _connectionQueries[toBeSelectedQuery].selected = true;
-        }
+    // at the end we want to remove executionStart so the query won't be run again
+    let toBeSelectedQuery = 0;
+    _connectionQueries = _connectionQueries.map((query, idx) => {
+      if (query.selected) {
+        query.selected = false;
+        toBeSelectedQuery = idx;
       }
 
-      return _connectionQueries;
-    },
-    {
-      onSuccess: (data) => {
-        SessionStorageConfig.set('clientConfig/cache.connectionQueries', data);
-      },
-      notifyOnChangeProps: ['data', 'error'],
-    },
+      return query;
+    });
+
+    if (_connectionQueries[toBeSelectedQuery]) {
+      _connectionQueries[toBeSelectedQuery].selected = true;
+    }
+
+    // store it
+    SessionStorageConfig.set('clientConfig/cache.connectionQueries', _connectionQueries);
+
+    setData(_connectionQueries);
+  } finally{
+    setIsLoading(false)
+    setIsFetching(false)
+  }
+    }
+
+    _fetchData();
+  }, [])
+
+  // Provide the theme value and toggle function to the children components
+  return (
+    <TargetContext.Provider value={{
+      data,
+      setData,
+      isFetching,
+      isLoading,
+    }}>
+      {props.children}
+    </TargetContext.Provider>
   );
+};
+
+
+function _useConnectionQueries() {
+  const {
+      data,
+      setData,
+      isFetching,
+      isLoading,
+    } = useContext(TargetContext)!;
+
+  return {
+    data,
+      setData,
+      isFetching,
+      isLoading,
+  };
 }
 
 export function useConnectionQueries() {
   const queryClient = useQueryClient();
 
-  const { data: queries, isLoading, isFetching } = _useConnectionQueries();
+  const { data: queries, setData, isLoading, isFetching } = _useConnectionQueries();
   const { mutateAsync: addRecycleBinItem } = useAddRecycleBinItem();
   const isSoftDeleteModeSetting = useIsSoftDeleteModeSetting();
 
   function _invalidateQueries() {
-    queryClient.setQueryData<SqluiFrontend.ConnectionQuery[] | undefined>(
-      QUERY_KEY_QUERIES,
-      () => _connectionQueries,
-    );
+    // TODO: remove me
+    setData(_connectionQueries)
   }
 
   const onAddQueries = async (queries: (SqluiCore.CoreConnectionQuery | undefined)[]) => {

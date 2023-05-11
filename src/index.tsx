@@ -7,6 +7,8 @@ import React from 'react';
 import App from 'src/frontend/App';
 import SettingProvider from 'src/frontend/hooks/useSetting';
 import ShowHideContext from 'src/frontend/hooks/useShowHide';
+import TreeActionContext from 'src/frontend/hooks/useTreeActions';
+import ConnectionQueryContext from 'src/frontend/hooks/useConnectionQuery';
 
 const renderApp = function () {
   const queryClient = new QueryClient({
@@ -23,11 +25,16 @@ const renderApp = function () {
       <QueryClientProvider client={queryClient}>
         <CssBaseline />
         <ReactQueryDevtools initialIsOpen={false} />
+
+        <ConnectionQueryContext>
+        <TreeActionContext>
         <ShowHideContext>
-        <SettingProvider>
-          <App />
-        </SettingProvider>
+          <SettingProvider>
+            <App />
+          </SettingProvider>
         </ShowHideContext>
+        </TreeActionContext>
+        </ConnectionQueryContext>
       </QueryClientProvider>
     </SnackbarProvider>,
     document.querySelector('#body'),
