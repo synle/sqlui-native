@@ -1,5 +1,4 @@
-import { useQuery, useQueryClient } from 'react-query';
-import React from 'react';
+import React, { createContext, useContext, useState } from 'react';
 import { AlertInput } from 'src/frontend/components/ActionDialogs/AlertDialog';
 import { ChoiceInput, ChoiceOption } from 'src/frontend/components/ActionDialogs/ChoiceDialog';
 import { ModalInput } from 'src/frontend/components/ActionDialogs/ModalDialog';
@@ -43,12 +42,23 @@ type ActionDialog =
 const QUERY_KEY_ACTION_DIALOGS = 'actionDialogs';
 let _actionDialogs: ActionDialog[] = [];
 
-export function useActionDialogs() {
-  const queryClient = useQueryClient();
+//
+const TargetContext = createContext({
+  data: _actionDialogs,
+  setData: (newDialogs: ActionDialog[]) => {},
+});
 
-  const { data } = useQuery(QUERY_KEY_ACTION_DIALOGS, () => _actionDialogs, {
-    notifyOnChangeProps: ['data', 'error'],
-  });
+export default function WrappedContext(props: { children: React.ReactNode }): JSX.Element | null {
+  // State to hold the theme value
+  const [data, setData] = useState(_actionDialogs);
+  // Provide the theme value and toggle function to the children components
+  return (
+    <TargetContext.Provider value={{ data, setData }}>{props.children}</TargetContext.Provider>
+  );
+}
+
+export function useActionDialogs() {
+  const { data, setData } = useContext(TargetContext)!;
 
   const prompt = (props: PromptInput): Promise<string | undefined> => {
     return new Promise((resolve, reject) => {
@@ -149,7 +159,7 @@ export function useActionDialogs() {
   };
 
   function _invalidateQueries() {
-    queryClient.invalidateQueries(QUERY_KEY_ACTION_DIALOGS);
+    setData(_actionDialogs);
   }
 
   return {
