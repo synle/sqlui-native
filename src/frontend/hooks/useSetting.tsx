@@ -18,6 +18,7 @@ export default function WrappedContext(props: { children: React.ReactNode }): JS
   // Function to toggle the theme
   const onChange = (newSettings: SqluiFrontend.Settings) => {
     setSettings(newSettings);
+    LocalStorageConfig.set('clientConfig/cache.settings', newSettings);
   };
 
   // Provide the theme value and toggle function to the children components
