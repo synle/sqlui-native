@@ -132,6 +132,9 @@ export function useConnectionQueries() {
           id: newId,
           name: newQueryName,
           selected: true,
+          result: undefined,
+          executionEnd: undefined,
+          executionStart: undefined,
         };
       }
 
@@ -172,7 +175,11 @@ export function useConnectionQueries() {
         })
         .map((query) => {
           // here we should remove the isSelected flag
-          const { selected, pinned, ...restOfQuery } = query;
+          const { selected, pinned,
+result,
+executionEnd,
+executionStart,
+          ...restOfQuery } = query;
 
           return {
             type: 'Query',
