@@ -18,11 +18,8 @@ const CombinedContextProvider = ({ children }) => {
     TreeActionContextProvider,
     ShowHideContextProvider,
     SettingContextProvider,
-  ].reduceRight(
-    (acc, Provider) => <Provider>{acc}</Provider>,
-    children
-  );
-}
+  ].reduceRight((acc, Provider) => <Provider>{acc}</Provider>, children);
+};
 
 const renderApp = function () {
   const queryClient = new QueryClient({
