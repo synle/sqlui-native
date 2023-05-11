@@ -40,6 +40,7 @@ export default function WrappedContext(props: { children: React.ReactNode }): JS
   function _updateVisibles(newTreeVisibles: SqluiFrontend.TreeVisibilities) {
     _treeVisibles = { ...newTreeVisibles };
     setVisibles(_treeVisibles);
+    SessionStorageConfig.set('clientConfig/cache.treeVisibles', _treeVisibles);
   }
 
   // Provide the theme value and toggle function to the children components
