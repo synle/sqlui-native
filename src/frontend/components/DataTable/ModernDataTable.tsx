@@ -20,7 +20,7 @@ import { DataTableProps } from 'src/frontend/components/DataTable';
 import { GlobalFilter, SimpleColumnFilter } from 'src/frontend/components/DataTable/Filter';
 import DropdownMenu from 'src/frontend/components/DropdownMenu';
 
-const defaultTableHeight = '450px';
+const defaultTableHeight = '40vh';
 
 const tableCellHeaderHeight = 75;
 
@@ -214,7 +214,7 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
             <GlobalFilter id={props.searchInputId} onChange={setGlobalFilter} />
           )}
         </Box>
-        <IconButton aria-label='Make table bigger' onClick={() => setTableHeight('90vh')}>
+        <IconButton aria-label='Make table bigger' onClick={() => setTableHeight('95vh')}>
           <ZoomOutMapIcon />
         </IconButton>
       </Box>
