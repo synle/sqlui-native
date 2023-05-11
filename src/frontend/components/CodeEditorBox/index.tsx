@@ -50,18 +50,18 @@ export default function CodeEditorBox(props: CodeEditorProps): JSX.Element | nul
 
   const onSetHeight = (newHeight: string) => {
     setHeight(newHeight);
-    localStorage.setItem(`editorSize.${props.id}`, newHeight)
-  }
+    localStorage.setItem(`editorSize.${props.id}`, newHeight);
+  };
 
   const onSetWrap = (newWordWrap: boolean) => {
     setWordWrap(newWordWrap);
-    localStorage.setItem(`editorWrap.${props.id}`, newWordWrap ? '1' : '0')
-  }
+    localStorage.setItem(`editorWrap.${props.id}`, newWordWrap ? '1' : '0');
+  };
 
   const onSetLanguageMode = (newLanguage: string) => {
-    setLanguageMode(newLanguage)
-    localStorage.setItem(`editorLanguage.${props.id}`, newLanguage)
-  }
+    setLanguageMode(newLanguage);
+    localStorage.setItem(`editorLanguage.${props.id}`, newLanguage);
+  };
 
   const contentToggleWordWrapSelection = (
     <ToggleButton
@@ -116,14 +116,14 @@ export default function CodeEditorBox(props: CodeEditorProps): JSX.Element | nul
   );
 
   useEffect(() => {
-    if(props.id){
+    if (props.id) {
       let newHeight = '';
-      try{
-        newHeight = localStorage.getItem(`editorSize.${props.id}`) || ''
-      } catch(err){}
+      try {
+        newHeight = localStorage.getItem(`editorSize.${props.id}`) || '';
+      } catch (err) {}
 
-      if(!newHeight){
-        newHeight = props.height || DEFAULT_EDITOR_HEIGHT
+      if (!newHeight) {
+        newHeight = props.height || DEFAULT_EDITOR_HEIGHT;
       }
       onSetHeight(newHeight);
 
@@ -132,12 +132,11 @@ export default function CodeEditorBox(props: CodeEditorProps): JSX.Element | nul
 
       // set the language
       let newLanguage = localStorage.getItem(`editorLanguage.${props.id}`);
-      if(newLanguage){
-        onSetLanguageMode(newLanguage)
+      if (newLanguage) {
+        onSetLanguageMode(newLanguage);
       }
-
     }
-  }, [props.height, props.id])
+  }, [props.height, props.id]);
 
   if (editorModeToUse === 'simple') {
     return (
