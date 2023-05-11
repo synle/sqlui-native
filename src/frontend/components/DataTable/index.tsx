@@ -131,7 +131,19 @@ export function DataTableWithJSONList(props: Omit<DataTableProps, 'columns'>) {
             return <pre style={{ textTransform: 'uppercase' }}>{columnValue}</pre>;
           } else if (typeof columnValue === 'object') {
             if (isAdvancedTableRenderer) {
-              return <span style={{ width: '100%', display: 'inline-block', fontFamily: 'monospace', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>{JSON.stringify(columnValue)}</span>;
+              return (
+                <span
+                  style={{
+                    width: '100%',
+                    display: 'inline-block',
+                    fontFamily: 'monospace',
+                    overflow: 'hidden',
+                    whiteSpace: 'nowrap',
+                    textOverflow: 'ellipsis',
+                  }}>
+                  {JSON.stringify(columnValue)}
+                </span>
+              );
             }
             return <pre>{JSON.stringify(columnValue, null, 2)}</pre>;
           }
