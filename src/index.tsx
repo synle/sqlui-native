@@ -10,6 +10,7 @@ import ConnectionQueryContextProvider from 'src/frontend/hooks/useConnectionQuer
 import SettingContextProvider from 'src/frontend/hooks/useSetting';
 import ShowHideContextProvider from 'src/frontend/hooks/useShowHide';
 import TreeActionContextProvider from 'src/frontend/hooks/useTreeActions';
+import { HashRouter, Route, Routes } from 'react-router-dom';
 
 const CombinedContextProvider = ({ children }) => {
   return [
@@ -18,6 +19,7 @@ const CombinedContextProvider = ({ children }) => {
     TreeActionContextProvider,
     ShowHideContextProvider,
     SettingContextProvider,
+    HashRouter,
   ].reduceRight((acc, Provider) => <Provider>{acc}</Provider>, children);
 };
 
@@ -38,7 +40,24 @@ const renderApp = function () {
         <ReactQueryDevtools initialIsOpen={false} />
 
         <CombinedContextProvider>
-          <App />
+          <Routes>
+          <Route
+            path='/data-table/:windowId'
+            element={
+              <>
+                Hello
+              </>
+            }
+          />
+          <Route
+            path='/*'
+            element={
+              <>
+                <App />
+              </>
+            }
+          />
+          </Routes>
         </CombinedContextProvider>
       </QueryClientProvider>
     </SnackbarProvider>,

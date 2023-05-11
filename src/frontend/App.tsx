@@ -107,7 +107,6 @@ export default function App() {
 
   return (
     <ThemeProvider theme={myTheme}>
-      <HashRouter>
         <SessionManager>
           <Box
             className='App'
@@ -269,7 +268,6 @@ export default function App() {
           <MissionControl />
         </SessionManager>
         <ActionDialogs />
-      </HashRouter>
       <ElectronEventListener />
     </ThemeProvider>
   );
