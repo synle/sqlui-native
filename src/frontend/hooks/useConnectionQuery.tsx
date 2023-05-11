@@ -17,9 +17,9 @@ const TargetContext = createContext({
   isLoading: true,
 });
 
-function _persistQueries(){
+function _persistQueries() {
   // store to client
-  const toPersistQueries =  _connectionQueries.map(query => {
+  const toPersistQueries = _connectionQueries.map((query) => {
     const { selected, pinned, result, executionEnd, executionStart, ...restOfQuery } = query;
     return restOfQuery;
   });
@@ -63,7 +63,7 @@ export default function WrappedContext(props: { children: React.ReactNode }): JS
           _connectionQueries[toBeSelectedQuery].selected = true;
         }
 
-        _persistQueries()
+        _persistQueries();
 
         setData(_connectionQueries);
       } finally {
@@ -106,7 +106,7 @@ export function useConnectionQueries() {
   function _invalidateQueries() {
     setData(_connectionQueries);
 
-    _persistQueries()
+    _persistQueries();
   }
 
   const onAddQueries = async (queries: (SqluiCore.CoreConnectionQuery | undefined)[]) => {
