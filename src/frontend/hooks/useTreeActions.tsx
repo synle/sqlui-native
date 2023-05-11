@@ -50,7 +50,6 @@ export function useTreeActions() {
   const { data, setTreeActions } = useContext(TargetContext)!;
 
   return {
-    isLoading: false,
     data,
     setTreeActions,
   };

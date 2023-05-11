@@ -1,4 +1,5 @@
 import { QueryClient, useQuery, useQueryClient } from 'react-query';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 import dataApi from 'src/frontend/data/api';
 import { SessionStorageConfig } from 'src/frontend/data/config';
 import { useAddRecycleBinItem } from 'src/frontend/hooks/useFolderItems';
@@ -9,13 +10,21 @@ import { SqluiCore, SqluiFrontend } from 'typings';
 const QUERY_KEY_QUERIES = 'queries';
 
 // connection queries
-let _connectionQueries: SqluiFrontend.ConnectionQuery[];
+let _connectionQueries: SqluiFrontend.ConnectionQuery[] = [];
+const TargetContext = createContext({
+  data: _connectionQueries,
+  setData: (newConnectionQueries: SqluiFrontend.ConnectionQuery[]) => {},
+  isLoading: true,
+});
 
-function _useConnectionQueries() {
-  return useQuery(
-    QUERY_KEY_QUERIES,
-    async () => {
-      if (!_connectionQueries) {
+export default function WrappedContext(props: { children: React.ReactNode }): JSX.Element | null {
+  // State to hold the theme value
+  const [data, setData] = useState(_connectionQueries);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    async function _fetchData() {
+      try {
         // this is the first time
         // try pulling it in from sessionStorage
         _connectionQueries = SessionStorageConfig.get<SqluiFrontend.ConnectionQuery[]>(
@@ -44,31 +53,53 @@ function _useConnectionQueries() {
         if (_connectionQueries[toBeSelectedQuery]) {
           _connectionQueries[toBeSelectedQuery].selected = true;
         }
-      }
 
-      return _connectionQueries;
-    },
-    {
-      onSuccess: (data) => {
-        SessionStorageConfig.set('clientConfig/cache.connectionQueries', data);
-      },
-      notifyOnChangeProps: ['data', 'error'],
-    },
+        // store to client
+        SessionStorageConfig.set('clientConfig/cache.connectionQueries', _connectionQueries);
+
+        setData(_connectionQueries);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    _fetchData();
+  }, []);
+
+  // Provide the theme value and toggle function to the children components
+  return (
+    <TargetContext.Provider
+      value={{
+        data,
+        setData,
+        isLoading,
+      }}>
+      {props.children}
+    </TargetContext.Provider>
   );
+}
+function _useConnectionQueries() {
+  const { data, setData, isLoading } = useContext(TargetContext)!;
+
+  return {
+    data,
+    setData,
+    isLoading,
+  };
 }
 
 export function useConnectionQueries() {
   const queryClient = useQueryClient();
 
-  const { data: queries, isLoading, isFetching } = _useConnectionQueries();
+  const { data: queries, setData, isLoading } = _useConnectionQueries();
   const { mutateAsync: addRecycleBinItem } = useAddRecycleBinItem();
   const isSoftDeleteModeSetting = useIsSoftDeleteModeSetting();
 
   function _invalidateQueries() {
-    queryClient.setQueryData<SqluiFrontend.ConnectionQuery[] | undefined>(
-      QUERY_KEY_QUERIES,
-      () => _connectionQueries,
-    );
+    setData(_connectionQueries);
+
+    // store to client
+    SessionStorageConfig.set('clientConfig/cache.connectionQueries', _connectionQueries);
   }
 
   const onAddQueries = async (queries: (SqluiCore.CoreConnectionQuery | undefined)[]) => {
@@ -275,7 +306,6 @@ export function useConnectionQueries() {
 
   return {
     isLoading,
-    isFetching,
     queries,
     onAddQuery,
     onAddQueries,
@@ -292,7 +322,7 @@ export function useConnectionQueries() {
 export function useConnectionQuery(queryId: string) {
   const queryClient = useQueryClient();
 
-  const { queries, onChangeQuery, onDeleteQuery, isLoading, isFetching } = useConnectionQueries();
+  const { queries, onChangeQuery, onDeleteQuery, isLoading } = useConnectionQueries();
 
   const query = queries?.find((q) => q.id === queryId);
 
@@ -303,7 +333,6 @@ export function useConnectionQuery(queryId: string) {
 
   return {
     isLoading,
-    isFetching,
     query,
     onChange,
     onDelete,
@@ -313,7 +342,7 @@ export function useConnectionQuery(queryId: string) {
 export function useActiveConnectionQuery() {
   const queryClient = useQueryClient();
 
-  const { queries, onChangeQuery, onDeleteQuery, isLoading, isFetching } = useConnectionQueries();
+  const { queries, onChangeQuery, onDeleteQuery, isLoading } = useConnectionQueries();
 
   const query = queries?.find((q) => q.selected);
 
@@ -324,7 +353,6 @@ export function useActiveConnectionQuery() {
 
   return {
     isLoading,
-    isFetching,
     query,
     onChange,
     onDelete,
