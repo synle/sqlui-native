@@ -1,26 +1,26 @@
 import { QueryClient, useQuery, useQueryClient } from 'react-query';
 import { SessionStorageConfig } from 'src/frontend/data/config';
 import { SqluiFrontend } from 'typings';
+import React, { createContext, useState, useContext } from 'react';
 
 const QUERY_KEY_TREEVISIBLES = 'treeVisibles';
+
 // used for show and hide the sidebar trees
 let _treeVisibles = SessionStorageConfig.get<SqluiFrontend.TreeVisibilities>(
   'clientConfig/cache.treeVisibles',
   {},
 );
 
-export function useShowHide() {
-  const queryClient = useQueryClient();
+const TargetContext = createContext({
+  visibles: _treeVisibles,
+  onToggle: (key: string, isVisible?: boolean) => {},
+  onClear: () => {},
+  onSet: (newTreeVisibles: SqluiFrontend.TreeVisibilities) => {},
+});
 
-  const { data: visibles, isLoading: loading } = useQuery(
-    QUERY_KEY_TREEVISIBLES,
-    () => _treeVisibles,
-    {
-      onSuccess: (data) =>
-        SessionStorageConfig.set('clientConfig/cache.treeVisibles', _treeVisibles),
-      notifyOnChangeProps: ['data', 'error'],
-    },
-  );
+export default function ShowHideContext(props: {children: React.ReactNode}): JSX.Element | null {
+  // State to hold the theme value
+  const [visibles, setVisibles] = useState(_treeVisibles);
 
   const onToggle = (key: string, isVisible?: boolean) => {
     let newVisible: boolean;
@@ -31,8 +31,6 @@ export function useShowHide() {
     }
 
     _updateVisibles({ ..._treeVisibles, ...{ [key]: newVisible } });
-
-    queryClient.invalidateQueries(QUERY_KEY_TREEVISIBLES);
   };
 
   const onSet = (newTreeVisibles: SqluiFrontend.TreeVisibilities) => {
@@ -45,15 +43,29 @@ export function useShowHide() {
 
   function _updateVisibles(newTreeVisibles: SqluiFrontend.TreeVisibilities) {
     _treeVisibles = { ...newTreeVisibles };
-
-    queryClient.setQueryData<SqluiFrontend.TreeVisibilities | undefined>(
-      QUERY_KEY_TREEVISIBLES,
-      () => ({ ..._treeVisibles }),
-    );
+    setVisibles(_treeVisibles);
   }
 
+  // Provide the theme value and toggle function to the children components
+  return (
+    <TargetContext.Provider value={{ visibles,
+    onToggle,
+    onClear,
+    onSet, }}>
+      {props.children}
+    </TargetContext.Provider>
+  );
+};
+
+export function useShowHide() {
+  const {
+    visibles,
+    onToggle,
+    onClear,
+    onSet, } = useContext(TargetContext)!;
+
   return {
-    visibles: visibles || {},
+    visibles,
     onToggle,
     onClear,
     onSet,

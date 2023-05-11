@@ -2,31 +2,42 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import { QueryClient, useQuery, useQueryClient } from 'react-query';
 import { LocalStorageConfig } from 'src/frontend/data/config';
 import { SqluiFrontend } from 'typings';
-
-const QUERY_KEY_SETTINGS = 'settings';
+import React, { createContext, useState, useContext } from 'react';
 
 // Settings
 let _settings = LocalStorageConfig.get<SqluiFrontend.Settings>('clientConfig/cache.settings', {});
 
-export function useSetting() {
-  const queryClient = useQueryClient();
+const TargetContext = createContext({
+  settings: _settings,
+  onChange: (newSettings: SqluiFrontend.Settings) => {},
+});
 
-  const { data: settings, isLoading } = useQuery(QUERY_KEY_SETTINGS, () => _settings, {
-    onSuccess: (data) => LocalStorageConfig.set('clientConfig/cache.settings', _settings),
-    notifyOnChangeProps: ['data', 'error'],
-  });
+export default function SettingProvider(props: {children: React.ReactNode}): JSX.Element | null {
+  // State to hold the theme value
+  const [settings, setSettings] = useState(_settings);
 
+  // Function to toggle the theme
   const onChange = (newSettings: SqluiFrontend.Settings) => {
-    _settings = { ...newSettings };
-
-    queryClient.setQueryData<SqluiFrontend.Settings | undefined>(
-      QUERY_KEY_SETTINGS,
-      () => _settings,
-    );
+    setSettings(newSettings)
   };
 
+  // Provide the theme value and toggle function to the children components
+  return (
+    <TargetContext.Provider value={{ settings, onChange }}>
+      {props.children}
+    </TargetContext.Provider>
+  );
+};
+
+
+
+export function useSetting() {
+   const {
+    settings,
+    onChange, } = useContext(TargetContext)!;
+
   return {
-    isLoading,
+
     settings,
     onChange,
   };
@@ -85,10 +96,12 @@ export function useQuerySizeSetting() {
   const { settings } = useSetting();
   return parseInt(settings?.querySize + '') || DEFAULT_QUERY_SIZE;
 }
+
 export function useTablePageSize() {
   const { settings } = useSetting();
   return parseInt(settings?.tablePageSize + '');
 }
+
 export function useIsSoftDeleteModeSetting() {
   const { settings } = useSetting();
   return settings?.deleteMode !== 'hard-delete';
