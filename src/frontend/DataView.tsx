@@ -2,14 +2,13 @@ import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { DataTableWithJSONList } from 'src/frontend/components/DataTable';
 import dataApi from 'src/frontend/data/api';
-import { useQuery } from 'react-query';
-
-const QUERY_KEY_DATA_ITEM = `dataItem`;
+import {useDataItem} from 'src/frontend/hooks/useDataItem'
 
 export default function DataView(){
   const urlParams = useParams();
   const windowId = urlParams.windowId as string;
-  const {data, isLoading} = useQuery([QUERY_KEY_DATA_ITEM, windowId], () => dataApi.getDataItem(windowId));
+
+  const {data, isLoading} = useDataItem(windowId);
 
   const onShowRecordDetails = (rowData: any) => {
     // TODO:
@@ -17,10 +16,11 @@ export default function DataView(){
   };
 
   const rowContextOptions = [
-    {
-      label: 'Show Details',
-      onClick: onShowRecordDetails,
-    },
+    // TODO:
+    // {
+    //   label: 'Show Details',
+    //   onClick: onShowRecordDetails,
+    // },
   ];
 
   if(isLoading){
@@ -34,7 +34,7 @@ export default function DataView(){
   return <DataTableWithJSONList
         onRowClick={onShowRecordDetails}
         rowContextOptions={rowContextOptions}
-        data={data.values}
+        data={data}
         searchInputId='result-box-search-input'
         enableColumnFilter={true}
       />

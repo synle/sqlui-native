@@ -250,17 +250,6 @@ export default function App() {
                   </>
                 }
               />
-              <Route
-                path='/*'
-                element={
-                  <>
-                    <AppHeader />
-                    <section className='App__Section'>
-                      <MainPage />
-                    </section>
-                  </>
-                }
-              />
             </Routes>
           </Box>
           <MissionControl />

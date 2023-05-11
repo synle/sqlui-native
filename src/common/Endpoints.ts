@@ -511,16 +511,19 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
   });
 
   let dataTableCache = {};
-  addDataEndpoint('get', '/api/data/:windowId', async (req, res) => {
+  addDataEndpoint('get', '/api/dataItem/:windowId', async (req, res) => {
     const windowId = req.params?.windowId;
-    console.log('>>>>>  sytest',windowId)
-
-    // const resp = dataTableCache[windowId] || [{a: 1}, {a: 1},{a: 1}, {a: 1}];
-    res.status(200).json([{a: 1}, {a: 1},{a: 1}, {a: 1}]);
+    const values = dataTableCache[windowId];
+    if (!values) {
+      return res.status(404).send('Not Found');
+    }
+    res.status(200).json({values});
   });
 
-  addDataEndpoint('put', '/api/data/:windowId', async (req, res) => {
+  addDataEndpoint('put', '/api/dataItem/:windowId', async (req, res) => {
     const windowId = req.params?.windowId;
-    res.status(202).json(req.body.values);
+    const values = req.body.values;
+    dataTableCache[windowId] = values
+    res.status(202).json(values);
   });
 }

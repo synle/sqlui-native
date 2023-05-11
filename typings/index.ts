@@ -161,10 +161,10 @@ export module SqluiCore {
       }
   );
 
-  export type RawDataItem = Recorc<string, any>
+  export type RawDataItemDictionary = Record<string, any>
 
-  export type RawData = {
-    values: RawDataItem[]
+  export type RawDataItem = {
+    values: RawDataItemDictionary[]
   }
 }
 
