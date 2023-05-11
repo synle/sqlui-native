@@ -3,12 +3,15 @@ import { useEffect, useState } from 'react';
 import { DataTableWithJSONList } from 'src/frontend/components/DataTable';
 import dataApi from 'src/frontend/data/api';
 import {useDataItem} from 'src/frontend/hooks/useDataItem'
+import Box from '@mui/material/Box';
+import Alert from '@mui/material/Alert';
+import CircularProgress from '@mui/material/CircularProgress';
 
 export default function DataView(){
   const urlParams = useParams();
-  const windowId = urlParams.windowId as string;
+  const dataItemGroupKey = urlParams.dataItemGroupKey as string;
 
-  const {data, isLoading} = useDataItem(windowId);
+  const {data, isLoading} = useDataItem(dataItemGroupKey);
 
   const onShowRecordDetails = (rowData: any) => {
     // TODO:
@@ -24,18 +27,27 @@ export default function DataView(){
   ];
 
   if(isLoading){
-    return <>Loading...</>
+    return (
+      <Alert severity='info' icon={<CircularProgress size={15} />}>
+        Loading...
+      </Alert>
+    );
   }
 
   if(!data){
-    return <>No data...</>
+    return (
+      <Alert severity='error'>
+        No data
+      </Alert>
+    );
   }
 
-  return <DataTableWithJSONList
+  return <Box sx={{p:1}}><DataTableWithJSONList
         onRowClick={onShowRecordDetails}
         rowContextOptions={rowContextOptions}
         data={data}
         searchInputId='result-box-search-input'
         enableColumnFilter={true}
-      />
+        fullScreen={true}
+      /></Box>
 }

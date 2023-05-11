@@ -1,3 +1,5 @@
+import path from 'path';
+import { BrowserWindow } from 'electron';
 import { Express } from 'express';
 import {
   getColumns,
@@ -73,6 +75,11 @@ function addDataEndpoint(
 
 export function getEndpointHandlers() {
   return electronEndpointHandlers;
+}
+
+let indexHtmlFile = ''
+export function setIndexHtmlFile(newIndexHtmlFile: string){
+  indexHtmlFile = newIndexHtmlFile
 }
 
 export function setUpDataEndpoints(anExpressAppContext?: Express) {
@@ -518,6 +525,23 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
       return res.status(404).send('Not Found');
     }
     res.status(200).json({values});
+
+    try{
+      const mainWindow = new BrowserWindow({
+        width: 1200,
+        height: 800,
+        icon: __dirname + '/build/favicon.ico',
+        webPreferences: {
+          preload: path.join(__dirname, 'preload.js'),
+          nodeIntegration: true,
+          contextIsolation: false,
+        },
+      });
+
+      //@ts-ignore
+      console.log('sytest TODO >>>', indexHtmlFile);
+      mainWindow.loadFile(`${indexHtmlFile}#/data-table/${windowId}`);
+    } catch(err){}
   });
 
   addDataEndpoint('put', '/api/dataItem/:windowId', async (req, res) => {

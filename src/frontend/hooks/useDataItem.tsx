@@ -7,18 +7,18 @@ import { SqluiCore } from 'typings';
 
 const QUERY_KEY_DATA_ITEM = `dataItem`;
 
-export function useDataItem(windowId?: string) {
-  return useQuery([QUERY_KEY_DATA_ITEM, windowId], () => windowId ? dataApi.getDataItem(windowId) : null, {select: (resp) => resp?.values})
+export function useDataItem(dataItemGroupKey?: string) {
+  return useQuery([QUERY_KEY_DATA_ITEM, dataItemGroupKey], () => dataItemGroupKey ? dataApi.getDataItem(dataItemGroupKey) : null, {select: (resp) => resp?.values})
 }
 
 
 
-export function useAddDataItem(windowId?: string) {
+export function useAddDataItem() {
   const queryClient = useQueryClient();
 
-  return useMutation<void, void, any>(async (newDataItem) => {
-    if(windowId && newDataItem){
-      await dataApi.updateDataItem(windowId, newDataItem)
+  return useMutation<void, void, [string, any]>(async ([dataItemGroupKey, newDataItem]) => {
+    if(dataItemGroupKey && newDataItem){
+      await dataApi.updateDataItem(dataItemGroupKey, newDataItem)
     }
   });
 }

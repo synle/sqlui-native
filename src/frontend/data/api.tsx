@@ -238,12 +238,12 @@ export class ProxyApi {
   }
 
   // data api used for storing data for the window api
-  static getDataItem(windowId: string) {
-    return _fetch<SqluiCore.RawDataItem>(`/api/dataItem/${windowId}`);
+  static getDataItem(dataItemGroupKey: string) {
+    return _fetch<SqluiCore.RawDataItem>(`/api/dataItem/${dataItemGroupKey}`);
   }
 
-  static updateDataItem(windowId: string, dataItem: SqluiCore.RawDataItemDictionary) {
-    return _fetch<SqluiCore.RawDataItemDictionary>(`/api/dataItem/${windowId}`, {
+  static updateDataItem(dataItemGroupKey: string, dataItem: SqluiCore.RawDataItemDictionary) {
+    return _fetch<SqluiCore.RawDataItemDictionary>(`/api/dataItem/${dataItemGroupKey}`, {
       method: 'put',
       body: JSON.stringify({values: dataItem}),
     });

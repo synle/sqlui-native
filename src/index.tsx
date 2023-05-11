@@ -5,7 +5,7 @@ import { QueryClient, QueryClientProvider } from 'react-query';
 import { ReactQueryDevtools } from 'react-query/devtools';
 import React from 'react';
 import App from 'src/frontend/App';
-import DataView from 'src/frontend/DataView';
+import DataItemView from 'src/frontend/DataItemView';
 import ActionDialogsContextProvider from 'src/frontend/hooks/useActionDialogs';
 import ConnectionQueryContextProvider from 'src/frontend/hooks/useConnectionQuery';
 import SettingContextProvider from 'src/frontend/hooks/useSetting';
@@ -45,10 +45,10 @@ const renderApp = function () {
         <CombinedContextProvider>
           <Routes>
           <Route
-            path='/data-table/:windowId'
+            path='/data-table/:dataItemGroupKey'
             element={
               <>
-                <DataView />
+                <DataItemView />
               </>
             }
           />
