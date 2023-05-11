@@ -1,12 +1,10 @@
+import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
+import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
+import Fab from '@mui/material/Fab';
 import { Bar, Container, Section } from 'react-simple-resizer';
 import { useEffect, useState } from 'react';
 import { useSideBarWidthPreference } from 'src/frontend/hooks/useClientSidePreference';
 import { useTreeActions } from 'src/frontend/hooks/useTreeActions';
-import Fab from '@mui/material/Fab';
-import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
-import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
-
-
 
 type LayoutTwoColumnsProps = {
   className?: string;
@@ -23,7 +21,7 @@ export default function LayoutTwoColumns(props: LayoutTwoColumnsProps): JSX.Elem
     position: 'fixed',
     bottom: '1rem',
     left: '1.5rem',
-  }
+  };
 
   useEffect(() => {
     setTreeActions({
@@ -31,7 +29,7 @@ export default function LayoutTwoColumns(props: LayoutTwoColumnsProps): JSX.Elem
     });
   }, [setTreeActions]);
 
-  if(leftPaneExpanded){
+  if (leftPaneExpanded) {
     return (
       <Container className={`${className} LayoutTwoColumns`}>
         <Fab size='small' sx={fabStyle} onClick={() => setLeftPaneExpanded(false)}>
