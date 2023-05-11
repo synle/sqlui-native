@@ -11,7 +11,7 @@ import { SqluiFrontend } from 'typings';
 type SettingsProps = {};
 
 export default function Settings(props: SettingsProps): JSX.Element | null {
-  const { isLoading, settings, onChange } = useSetting();
+  const { settings, onChange } = useSetting();
   const querySize = useQuerySizeSetting();
 
   const onSettingChange = (key: SqluiFrontend.SettingKey, value: any) => {
@@ -27,9 +27,7 @@ export default function Settings(props: SettingsProps): JSX.Element | null {
 
   let contentDom: React.ReactNode;
 
-  if (isLoading) {
-    contentDom = <>Loading...</>;
-  } else if (!settings) {
+  if (!settings) {
     contentDom = null;
   } else {
     contentDom = (
@@ -179,7 +177,7 @@ export default function Settings(props: SettingsProps): JSX.Element | null {
 }
 
 export function ChangeSoftDeleteInput() {
-  const { isLoading, settings, onChange } = useSetting();
+  const { settings, onChange } = useSetting();
 
   const onSettingChange = (key: SqluiFrontend.SettingKey, value: any) => {
     if (!settings) {
@@ -192,7 +190,7 @@ export function ChangeSoftDeleteInput() {
     });
   };
 
-  if (isLoading || !settings) {
+  if (!settings) {
     return null;
   }
 
