@@ -17,6 +17,15 @@ const TargetContext = createContext({
   isLoading: true,
 });
 
+function _persistQueries(){
+  // store to client
+  const toPersistQueries =  _connectionQueries.map(query => {
+    const { selected, pinned, result, executionEnd, executionStart, ...restOfQuery } = query;
+    return restOfQuery;
+  });
+  SessionStorageConfig.set('clientConfig/cache.connectionQueries', toPersistQueries);
+}
+
 export default function WrappedContext(props: { children: React.ReactNode }): JSX.Element | null {
   // State to hold the theme value
   const [data, setData] = useState(_connectionQueries);
@@ -54,8 +63,7 @@ export default function WrappedContext(props: { children: React.ReactNode }): JS
           _connectionQueries[toBeSelectedQuery].selected = true;
         }
 
-        // store to client
-        SessionStorageConfig.set('clientConfig/cache.connectionQueries', _connectionQueries);
+        _persistQueries()
 
         setData(_connectionQueries);
       } finally {
@@ -98,8 +106,7 @@ export function useConnectionQueries() {
   function _invalidateQueries() {
     setData(_connectionQueries);
 
-    // store to client
-    SessionStorageConfig.set('clientConfig/cache.connectionQueries', _connectionQueries);
+    _persistQueries()
   }
 
   const onAddQueries = async (queries: (SqluiCore.CoreConnectionQuery | undefined)[]) => {
