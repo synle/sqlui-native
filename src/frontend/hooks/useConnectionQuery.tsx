@@ -109,7 +109,6 @@ export function useConnectionQueries() {
   const isSoftDeleteModeSetting = useIsSoftDeleteModeSetting();
 
   function _invalidateQueries() {
-    // TODO: remove me
     setData(_connectionQueries)
   }
 
