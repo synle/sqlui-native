@@ -53,7 +53,7 @@ export default function DataView() {
 
   return (
     <>
-      <Box sx={{ p: 1 }}>
+      <Box sx={{ px: 1 }}>
         <DataTableWithJSONList
           onRowClick={onShowRecordDetails}
           rowContextOptions={rowContextOptions}
