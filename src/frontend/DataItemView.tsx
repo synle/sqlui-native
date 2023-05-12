@@ -1,11 +1,11 @@
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
-import Paper from '@mui/material/Paper';
 import CircularProgress from '@mui/material/CircularProgress';
+import Paper from '@mui/material/Paper';
 import { useParams } from 'react-router-dom';
 import { DataTableWithJSONList } from 'src/frontend/components/DataTable';
-import { useDataItem } from 'src/frontend/hooks/useDataItem';
 import { useActionDialogs } from 'src/frontend/hooks/useActionDialogs';
+import { useDataItem } from 'src/frontend/hooks/useDataItem';
 
 export default function DataView() {
   const urlParams = useParams();
@@ -15,16 +15,19 @@ export default function DataView() {
   const { data, isLoading } = useDataItem(dataItemGroupKey);
 
   const onShowRecordDetails = async (rowData: any) => {
-    try{
+    try {
       await modal({
         title: 'Confirmation?',
         message: (
-          <Paper sx={{height: '90vh', p: 1}}><pre>{JSON.stringify(rowData, null, 2)}</pre></Paper>
+          <Paper sx={{ height: '90vh', p: 1 }}>
+            <pre>{JSON.stringify(rowData, null, 2)}</pre>
+          </Paper>
         ),
         showCloseButton: true,
         size: 'md',
       });
-    }finally{}
+    } finally {
+    }
   };
 
   const rowContextOptions = [

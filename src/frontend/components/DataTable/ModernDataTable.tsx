@@ -5,6 +5,7 @@ import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import { styled } from '@mui/material/styles';
 import Table from '@mui/material/Table';
+import Tooltip from '@mui/material/Tooltip';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import {
   useBlockLayout,
@@ -20,7 +21,6 @@ import { DataTableProps } from 'src/frontend/components/DataTable';
 import { GlobalFilter, SimpleColumnFilter } from 'src/frontend/components/DataTable/Filter';
 import DropdownMenu from 'src/frontend/components/DropdownMenu';
 import { useAddDataItem } from 'src/frontend/hooks/useDataItem';
-import Tooltip from '@mui/material/Tooltip';
 
 const defaultTableHeight = '40vh';
 
@@ -233,9 +233,9 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
         </Box>
         {!fullScreen && (
           <Tooltip title='Open this table fullscreen in another window'>
-          <IconButton aria-label='Make table bigger' onClick={onShowExpandedData} sx={{ ml: 2 }}>
-            <ZoomOutMapIcon />
-          </IconButton>
+            <IconButton aria-label='Make table bigger' onClick={onShowExpandedData} sx={{ ml: 2 }}>
+              <ZoomOutMapIcon />
+            </IconButton>
           </Tooltip>
         )}
       </Box>
