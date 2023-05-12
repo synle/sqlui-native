@@ -6,6 +6,7 @@ import { ReactQueryDevtools } from 'react-query/devtools';
 import { HashRouter, Route, Routes } from 'react-router-dom';
 import React from 'react';
 import App from 'src/frontend/App';
+import ActionDialogs from 'src/frontend/components/ActionDialogs';
 import DataItemView from 'src/frontend/DataItemView';
 import ActionDialogsContextProvider from 'src/frontend/hooks/useActionDialogs';
 import ConnectionQueryContextProvider from 'src/frontend/hooks/useConnectionQuery';
@@ -44,22 +45,8 @@ const renderApp = function () {
 
         <CombinedContextProvider>
           <Routes>
-            <Route
-              path='/data-table/:dataItemGroupKey'
-              element={
-                <>
-                  <DataItemView />
-                </>
-              }
-            />
-            <Route
-              path='/*'
-              element={
-                <>
-                  <App />
-                </>
-              }
-            />
+            <Route path='/data-table/:dataItemGroupKey' element={<DataItemView />} />
+            <Route path='/*' element={<App />} />
           </Routes>
         </CombinedContextProvider>
       </QueryClientProvider>
