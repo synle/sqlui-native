@@ -19,6 +19,7 @@ import React, { useCallback, useRef, useState } from 'react';
 import { DataTableProps } from 'src/frontend/components/DataTable';
 import { GlobalFilter, SimpleColumnFilter } from 'src/frontend/components/DataTable/Filter';
 import DropdownMenu from 'src/frontend/components/DropdownMenu';
+import { useAddDataItem } from 'src/frontend/hooks/useDataItem';
 
 const defaultTableHeight = '40vh';
 
@@ -119,8 +120,11 @@ const ColumnResizer = styled('div')(({ theme }) => ({
 
 export default function ModernDataTable(props: DataTableProps): JSX.Element | null {
   const { columns, data } = props;
+  //@ts-ignore
+  const fullScreen = props.fullScreen === true;
+  const { mutateAsync: addDataItem } = useAddDataItem();
   const [openContextMenuRowIdx, setOpenContextMenuRowIdx] = useState(-1);
-  const [tableHeight, setTableHeight] = useState(defaultTableHeight);
+  const [tableHeight, setTableHeight] = useState(fullScreen ? '100vh' : defaultTableHeight);
   const anchorEl = useRef<HTMLElement | null>(null);
 
   // figure out the width
@@ -206,17 +210,31 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
     overscan: 5,
   });
 
+  const onShowExpandedData = async () => {
+    const dataItemGroupKey = `dataItemGroupKey.${Date.now()}.${data?.length || 0}`;
+
+    try {
+      await addDataItem([dataItemGroupKey, data]);
+    } finally {
+      if (window.process.env.ENV_TYPE !== 'mocked-server') {
+        window.open(`/#/data-table/${dataItemGroupKey}`);
+      }
+    }
+  };
+
   return (
     <>
       <Box sx={{ display: 'flex' }}>
-        <Box sx={{ flexGrow: 1, mr: 2 }}>
+        <Box sx={{ flexGrow: 1 }}>
           {props.searchInputId && (
             <GlobalFilter id={props.searchInputId} onChange={setGlobalFilter} />
           )}
         </Box>
-        <IconButton aria-label='Make table bigger' onClick={() => setTableHeight('95vh')}>
-          <ZoomOutMapIcon />
-        </IconButton>
+        {!fullScreen && (
+          <IconButton aria-label='Make table bigger' onClick={onShowExpandedData} sx={{ ml: 2 }}>
+            <ZoomOutMapIcon />
+          </IconButton>
+        )}
       </Box>
       <Box
         ref={parentRef}
