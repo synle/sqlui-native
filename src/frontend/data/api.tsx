@@ -239,17 +239,23 @@ export class ProxyApi {
 
   // data api used for storing data for the window api
   static getDataSnapshots() {
-    return _fetch<SqluiCore.DataSnapshot[]>(`/api/dataItem`);
+    return _fetch<SqluiCore.DataSnapshot[]>(`/api/dataSnapshot`);
   }
 
   static getDataSnapshot(dataSnapshotId: string) {
-    return _fetch<SqluiCore.DataSnapshot>(`/api/dataItem/${dataSnapshotId}`);
+    return _fetch<SqluiCore.DataSnapshot>(`/api/dataSnapshot/${dataSnapshotId}`);
   }
 
-  static addDataSnapshot(dataItem : Partial<SqluiCore.DataSnapshot> & Required<Pick<SqluiCore.DataSnapshot, 'values' | 'description'>>) {
-    return _fetch<SqluiCore.DataSnapshot>(`/api/dataItem`, {
+  static addDataSnapshot(dataSnapshot : Partial<SqluiCore.DataSnapshot> & Required<Pick<SqluiCore.DataSnapshot, 'values' | 'description'>>) {
+    return _fetch<SqluiCore.DataSnapshot>(`/api/dataSnapshot`, {
       method: 'post',
-      body: JSON.stringify(dataItem),
+      body: JSON.stringify(dataSnapshot),
+    });
+  }
+
+  static deleteDataSnapshot(dataSnapshotId: string) {
+    return _fetch<void>(`/api/dataSnapshot/${dataSnapshotId}`, {
+      method: 'delete',
     });
   }
 }

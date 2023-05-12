@@ -10,14 +10,14 @@ import SimpleEditor from 'src/frontend/components/CodeEditorBox/SimpleEditor';
 import { DataTableWithJSONList } from 'src/frontend/components/DataTable';
 import ElectronEventListener from 'src/frontend/components/ElectronEventListener';
 import { useActionDialogs } from 'src/frontend/hooks/useActionDialogs';
-import { useDataSnapshot } from 'src/frontend/hooks/useDataItem';
+import { useGetDataSnapshot } from 'src/frontend/hooks/useDataSnapshot';
 
 export default function DataView() {
   const urlParams = useParams();
-  const dataItemGroupKey = urlParams.dataItemGroupKey as string;
+  const dataSnapshotId = urlParams.dataSnapshotId as string;
   const { modal } = useActionDialogs();
 
-  const { data, isLoading } = useDataSnapshot(dataItemGroupKey);
+  const { data, isLoading } = useGetDataSnapshot(dataSnapshotId);
 
   const onShowRecordDetails = async (rowData: any) => {
     try {
@@ -76,7 +76,7 @@ export default function DataView() {
   return (
     <>
       <Box
-        className='DataItemView'
+        className='DataSnapshotView'
         sx={{
           px: 1,
         }}>

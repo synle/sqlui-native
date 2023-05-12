@@ -20,7 +20,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { DataTableProps } from 'src/frontend/components/DataTable';
 import { GlobalFilter, SimpleColumnFilter } from 'src/frontend/components/DataTable/Filter';
 import DropdownMenu from 'src/frontend/components/DropdownMenu';
-import { useAddDataItem } from 'src/frontend/hooks/useDataItem';
+import { useAddDataSnapshot } from 'src/frontend/hooks/useDataSnapshot';
 
 const defaultTableHeight = '40vh';
 
@@ -124,8 +124,8 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
   //@ts-ignore
   const fullScreen = props.fullScreen === true;
   //@ts-ignore
-  const description = props.description || `Data Item - ${new Date()}`;
-  const { mutateAsync: addDataItem } = useAddDataItem();
+  const description = props.description || `Data Snapshot - ${new Date()}`;
+  const { mutateAsync: addDataSnapshot } = useAddDataSnapshot();
   const [openContextMenuRowIdx, setOpenContextMenuRowIdx] = useState(-1);
   const [tableHeight, setTableHeight] = useState(defaultTableHeight);
   const anchorEl = useRef<HTMLElement | null>(null);
@@ -215,7 +215,7 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
 
   const onShowExpandedData = async () => {
     try {
-      const dataSnapshot = await addDataItem({
+      const dataSnapshot = await addDataSnapshot({
         values: data,
         description,
       });

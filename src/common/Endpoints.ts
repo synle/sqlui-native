@@ -13,7 +13,7 @@ import {
   getFolderItemsStorage,
   getQueryStorage,
   getSessionsStorage,
-  getDataItemStorage,
+  getDataSnapshotStorage,
   storageDir,
 } from 'src/common/PersistentStorage';
 import * as sessionUtils from 'src/common/utils/sessionUtils';
@@ -514,30 +514,39 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
   });
 
 
-  // data item endpoints
-  addDataEndpoint('get', '/api/dataItem', async (req, res) => {
-    const dataItemStorage = await getDataItemStorage();
-    res.status(200).json(await dataItemStorage.list());
+  // data snapshot endpoints
+  addDataEndpoint('get', '/api/dataSnapshot', async (req, res) => {
+    const dataSnapshotStorage = await getDataSnapshotStorage();
+
+     // here we skip the description to save spaces
+    const dataSnapshots = (await dataSnapshotStorage.list()).map(dataSnapshot => {
+      const {description, ...restOfDataSnapshot} = dataSnapshot;
+      return {
+        ...restOfDataSnapshot
+      };
+    });
+
+    res.status(200).json(dataSnapshots);
   });
 
-  addDataEndpoint('get', '/api/dataItem/:dataItemGroupKey', async (req, res) => {
-    const dataItemStorage = await getDataItemStorage();
+  addDataEndpoint('get', '/api/dataSnapshot/:dataSnapshotId', async (req, res) => {
+    const dataSnapshotStorage = await getDataSnapshotStorage();
 
-    const dataItemGroupKey = req.params?.dataItemGroupKey;
+    const dataSnapshotId = req.params?.dataSnapshotId;
 
-    const dataItem = await dataItemStorage.get(dataItemGroupKey);
+    const dataSnapshot = await dataSnapshotStorage.get(dataSnapshotId);
 
-    if (!dataItem) {
+    if (!dataSnapshot) {
       return res.status(404).send('Not Found');
     }
-    res.status(200).json(dataItem);
+    res.status(200).json(dataSnapshot);
   });
 
-  addDataEndpoint('post', '/api/dataItem', async (req, res) => {
-    const dataItemStorage = await getDataItemStorage();
+  addDataEndpoint('post', '/api/dataSnapshot', async (req, res) => {
+    const dataSnapshotStorage = await getDataSnapshotStorage();
 
-    const dataItemGroupKey = req.params?.dataItemGroupKey;
-    const resp = await dataItemStorage.add({
+    const dataSnapshotId = req.params?.dataSnapshotId;
+    const resp = await dataSnapshotStorage.add({
       description: req.body.description,
       values: req.body.values,
       created : Date.now(),
@@ -557,7 +566,12 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
         },
       });
 
-      mainWindow.loadFile(global.indexHtmlPath, { hash: `/data-snapshot/${dataItemGroupKey}` });
+      mainWindow.loadFile(global.indexHtmlPath, { hash: `/data-snapshot/${dataSnapshotId}` });
     } catch (err) {}
+  });
+
+  addDataEndpoint('delete', '/api/dataSnapshot/:dataSnapshotId', async (req, res, apiCache) => {
+    const dataSnapshotStorage = await getDataSnapshotStorage();
+    res.status(202).json(await dataSnapshotStorage.delete(req.params?.dataSnapshotId));
   });
 }
