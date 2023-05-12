@@ -8,6 +8,7 @@ import { DataTableWithJSONList } from 'src/frontend/components/DataTable';
 import ElectronEventListener from 'src/frontend/components/ElectronEventListener';
 import { useActionDialogs } from 'src/frontend/hooks/useActionDialogs';
 import { useDataItem } from 'src/frontend/hooks/useDataItem';
+import SimpleEditor from 'src/frontend/components/CodeEditorBox/SimpleEditor';
 
 export default function DataView() {
   const urlParams = useParams();
@@ -21,12 +22,10 @@ export default function DataView() {
       await modal({
         title: 'Record Details',
         message: (
-          <Paper sx={{ height: '90vh', p: 1 }}>
-            <pre>{JSON.stringify(rowData, null, 2)}</pre>
-          </Paper>
+          <SimpleEditor value={JSON.stringify(rowData, null, 2)} height='85vh'/>
         ),
         showCloseButton: true,
-        size: 'md',
+        size: 'lg',
       });
     } finally {
     }
