@@ -4,6 +4,7 @@ declare global {
     isElectron: boolean;
     toggleElectronMenu: (visible: boolean, menus: any[]) => void;
     openBrowserLink: (link: string) => void;
+    openAppLink: (link: string) => void;
     ipcRenderer?: Electron.IpcRenderer;
     requireElectron: (importPath: string) => any;
   }
@@ -161,10 +162,13 @@ export module SqluiCore {
       }
   );
 
-  export type RawDataItemDictionary = Record<string, any>;
+  export type DataSnapshotItemDictionary = Record<string, any>;
 
-  export type RawDataItem = {
-    values: RawDataItemDictionary[];
+  export type DataSnapshot = {
+    id: string;
+    description: string;
+    values: DataSnapshotItemDictionary[];
+    created: number;
   };
 }
 
@@ -298,6 +302,7 @@ export module SqluiEnums {
    */
   export type ClientEventKey =
     | 'clientEvent/navigate'
+    | 'clientEvent/openAppWindow'
     | 'clientEvent/showSettings'
     | 'clientEvent/changeDarkMode'
     | 'clientEvent/changeEditorMode'

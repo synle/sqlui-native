@@ -128,6 +128,7 @@ export default function ResultBox(props: ResultBoxProps): JSX.Element | null {
         data={data}
         searchInputId='result-box-search-input'
         enableColumnFilter={true}
+        description={`connectionId=${query.connectionId}\ndatabaseId=${query.databaseId}\ntableId=${query.tableId}\n\n${query.sql}`}
       />
     </div>,
     <div className='ResultBox__Content' key={`JSON`}>

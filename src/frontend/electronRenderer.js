@@ -10,11 +10,15 @@ try {
   window.openBrowserLink = (link) => {
     window.open(link, '_blank');
   };
+  window.openAppLink = (hashLink) => {
+    window.open(`/#${hashLink}`);
+  };
   sessionStorage.setItem('sqlui-native.windowId', 'mocked-window-id'); // mocked to use a window id
 
   if (window.process.env.ENV_TYPE !== 'mocked-server') {
     const ipcRenderer = window.requireElectron('electron').ipcRenderer;
     const shell = window.requireElectron('electron').shell;
+
     window.ipcRenderer = ipcRenderer;
     window.isElectron = true;
     window.toggleElectronMenu = (visible, menus) => {
@@ -23,6 +27,18 @@ try {
     };
     window.openBrowserLink = (link) => {
       shell.openExternal(link);
+    };
+    window.openAppLink = (hashLink) => {
+      fetch(`/api/appWindow`, {
+        method: 'post',
+        body: JSON.stringify({
+          hashLink,
+        }),
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+      });
     };
 
     // here we are polyfilling fetch with ipcRenderer

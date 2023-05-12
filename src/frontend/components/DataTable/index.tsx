@@ -17,6 +17,7 @@ export type DataTableProps = {
 
 export type DataTableWithJSONListProps = Omit<DataTableProps, 'columns'> & {
   fullScreen?: boolean;
+  description?: string;
 };
 
 export const ALL_PAGE_SIZE_OPTIONS: any[] = [
