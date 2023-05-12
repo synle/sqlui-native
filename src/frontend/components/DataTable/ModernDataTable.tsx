@@ -218,7 +218,7 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
       await addDataItem([dataItemGroupKey, data]);
     } finally {
       if (window.isElectron !== true) {
-        window.open(`/#/data-table/${dataItemGroupKey}`);
+        window.open(`/#/data-item-view/${dataItemGroupKey}`);
       }
     }
   };
