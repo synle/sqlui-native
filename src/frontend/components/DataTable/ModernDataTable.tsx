@@ -28,7 +28,7 @@ const tableCellHeaderHeight = 75;
 
 const tableCellHeight = 35;
 
-const tableCellWidth = 300;
+const tableCellWidth = 160;
 
 const StyledDivContainer = styled('div')(({ theme }) => ({}));
 
