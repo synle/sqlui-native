@@ -123,6 +123,8 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
   const { columns, data } = props;
   //@ts-ignore
   const fullScreen = props.fullScreen === true;
+  //@ts-ignore
+  const description = props.description || `Data Item - ${new Date()}`;
   const { mutateAsync: addDataItem } = useAddDataItem();
   const [openContextMenuRowIdx, setOpenContextMenuRowIdx] = useState(-1);
   const [tableHeight, setTableHeight] = useState(defaultTableHeight);
@@ -212,15 +214,18 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
   });
 
   const onShowExpandedData = async () => {
-    const dataItemGroupKey = `dataItemGroupKey.${Date.now()}.${data?.length || 0}`;
-
     try {
-      await addDataItem([dataItemGroupKey, data]);
-    } finally {
+      const resp = await addDataItem({
+        values: data,
+        description,
+      });
+
       if (window.isElectron !== true) {
-        window.open(`/#/data-item-view/${dataItemGroupKey}`);
+        if(resp?.id){
+          window.open(`/#/data-item-view/${resp.id}`);
+        }
       }
-    }
+    } finally {}
   };
 
   useEffect(() => {
@@ -261,7 +266,7 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
 
   return (
     <>
-      <Box sx={{ display: 'flex' }}>
+      <Box sx={{ display: 'flex', gap: 2 }}>
         <Box sx={{ flexGrow: 1 }}>
           {props.searchInputId && (
             <GlobalFilter id={props.searchInputId} onChange={setGlobalFilter} />
@@ -269,7 +274,7 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
         </Box>
         {!fullScreen && (
           <Tooltip title='Open this table fullscreen in another window'>
-            <IconButton aria-label='Make table bigger' onClick={onShowExpandedData} sx={{ ml: 2 }}>
+            <IconButton aria-label='Make table bigger' onClick={onShowExpandedData}>
               <ZoomOutMapIcon />
             </IconButton>
           </Tooltip>

@@ -1,3 +1,4 @@
+import { SqluiCore, SqluiFrontend } from 'typings';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 import dataApi from 'src/frontend/data/api';
 
@@ -7,15 +8,15 @@ export function useDataItem(dataItemGroupKey?: string) {
   return useQuery(
     [QUERY_KEY_DATA_ITEM, dataItemGroupKey],
     () => (dataItemGroupKey ? dataApi.getDataItem(dataItemGroupKey) : null),
-    { select: (resp) => resp?.values },
   );
 }
 export function useAddDataItem() {
   const queryClient = useQueryClient();
 
-  return useMutation<void, void, [string, any]>(async ([dataItemGroupKey, newDataItem]) => {
-    if (dataItemGroupKey && newDataItem) {
-      await dataApi.updateDataItem(dataItemGroupKey, newDataItem);
+  return useMutation<SqluiCore.RawDataItem, void, Partial<SqluiCore.RawDataItem> & Required<Pick<SqluiCore.RawDataItem, 'values' | 'description'>>>(async (newDataItem) => {
+    if (newDataItem) {
+      return dataApi.updateDataItem(newDataItem);
     }
+    throw 'newDataItem is empty'
   });
 }

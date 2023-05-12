@@ -11,17 +11,17 @@ type LayoutTwoColumnsProps = {
   children: JSX.Element[];
 };
 
+const fabStyle = {
+    position: 'fixed',
+    bottom: '1rem',
+    left: '1.5rem',
+  };
+
 export default function LayoutTwoColumns(props: LayoutTwoColumnsProps): JSX.Element | null {
   const { className = '', children } = props;
   const { value: width, onChange: onSetWidth } = useSideBarWidthPreference();
   const { setTreeActions } = useTreeActions();
   const [leftPaneExpanded, setLeftPaneExpanded] = useState(true);
-
-  const fabStyle = {
-    position: 'fixed',
-    bottom: '1rem',
-    left: '1.5rem',
-  };
 
   useEffect(() => {
     setTreeActions({

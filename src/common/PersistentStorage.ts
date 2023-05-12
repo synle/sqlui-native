@@ -143,3 +143,7 @@ export async function getFolderItemsStorage(folderId: 'bookmarks' | 'recycleBin'
   }
   return await new PersistentStorage<SqluiCore.FolderItem>('folders', folderId);
 }
+
+export async function getDataItemStorage() {
+  return await new PersistentStorage<SqluiCore.RawDataItem>('dataItems', 'dataItems', 'dataItems');
+}

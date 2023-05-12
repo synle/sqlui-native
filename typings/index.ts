@@ -164,7 +164,10 @@ export module SqluiCore {
   export type RawDataItemDictionary = Record<string, any>;
 
   export type RawDataItem = {
+    id: string;
+    description: string;
     values: RawDataItemDictionary[];
+    created: number;
   };
 }
 

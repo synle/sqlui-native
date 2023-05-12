@@ -1,3 +1,6 @@
+import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
+import InputLabel from '@mui/material/InputLabel';
+import Fab from '@mui/material/Fab';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -21,6 +24,29 @@ export default function DataView() {
       await modal({
         title: 'Record Details',
         message: <SimpleEditor value={JSON.stringify(rowData, null, 2)} height='85vh' />,
+        showCloseButton: true,
+        size: 'lg',
+      });
+    } finally {
+    }
+  };
+
+  const onShowDescription = async () => {
+    if(!data){
+      return
+    }
+
+    try {
+      await modal({
+        title: 'Data Description',
+        message: <>
+          <InputLabel>ID</InputLabel>
+          <pre>{data.id}</pre>
+          <InputLabel>Total</InputLabel>
+          <pre>{data.values?.length || 0}</pre>
+          <InputLabel>Description</InputLabel>
+          <pre>{data.description}</pre>
+        </>,
         showCloseButton: true,
         size: 'lg',
       });
@@ -57,12 +83,19 @@ export default function DataView() {
         <DataTableWithJSONList
           onRowClick={onShowRecordDetails}
           rowContextOptions={rowContextOptions}
-          data={data}
+          data={data.values}
           searchInputId='result-box-search-input'
           enableColumnFilter={true}
           fullScreen={true}
         />
       </Box>
+      <Fab size='small' sx={{
+    position: 'fixed',
+    bottom: '1rem',
+    left: '1.5rem',
+  }} onClick={() => onShowDescription()}>
+        <KeyboardArrowRightIcon />
+      </Fab>
       <ActionDialogs />
       <ElectronEventListener />
     </>

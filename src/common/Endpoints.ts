@@ -13,6 +13,7 @@ import {
   getFolderItemsStorage,
   getQueryStorage,
   getSessionsStorage,
+  getDataItemStorage,
   storageDir,
 } from 'src/common/PersistentStorage';
 import * as sessionUtils from 'src/common/utils/sessionUtils';
@@ -512,22 +513,38 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     res.status(200).json(apiCache.json());
   });
 
-  let dataTableCache = {};
-  addDataEndpoint('get', '/api/dataItem/:dataItemGroupKey', async (req, res) => {
-    const dataItemGroupKey = req.params?.dataItemGroupKey;
-    const values = dataTableCache[dataItemGroupKey];
-    if (!values) {
-      return res.status(404).send('Not Found');
-    }
-    res.status(200).json({ values });
+
+  // data item endpoints
+  addDataEndpoint('get', '/api/dataItem', async (req, res) => {
+    const dataItemStorage = await getDataItemStorage();
+    res.status(200).json(await dataItemStorage.list());
   });
 
-  addDataEndpoint('put', '/api/dataItem/:dataItemGroupKey', async (req, res) => {
-    const dataItemGroupKey = req.params?.dataItemGroupKey;
-    const values = req.body.values;
-    dataTableCache[dataItemGroupKey] = values;
-    res.status(202).json(values);
+  addDataEndpoint('get', '/api/dataItem/:dataItemGroupKey', async (req, res) => {
+    const dataItemStorage = await getDataItemStorage();
 
+    const dataItemGroupKey = req.params?.dataItemGroupKey;
+
+    const dataItem = await dataItemStorage.get(dataItemGroupKey);
+
+    if (!dataItem) {
+      return res.status(404).send('Not Found');
+    }
+    res.status(200).json(dataItem);
+  });
+
+  addDataEndpoint('post', '/api/dataItem', async (req, res) => {
+    const dataItemStorage = await getDataItemStorage();
+
+    const dataItemGroupKey = req.params?.dataItemGroupKey;
+    const resp = await dataItemStorage.add({
+      description: req.body.description,
+      values: req.body.values,
+      created : Date.now(),
+    })
+    res.status(200).json(resp);
+
+    // attempting to open the window to show this data
     try {
       const mainWindow = new BrowserWindow({
         width: 1200,
@@ -541,8 +558,6 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
       });
 
       mainWindow.loadFile(global.indexHtmlPath, { hash: `/data-item-view/${dataItemGroupKey}` });
-    } catch (err) {
-      console.log('sytest2 err', err);
-    }
+    } catch (err) {}
   });
 }
