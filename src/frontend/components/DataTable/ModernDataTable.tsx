@@ -16,7 +16,7 @@ import {
   useSortBy,
   useTable,
 } from 'react-table';
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { DataTableProps } from 'src/frontend/components/DataTable';
 import { GlobalFilter, SimpleColumnFilter } from 'src/frontend/components/DataTable/Filter';
 import DropdownMenu from 'src/frontend/components/DropdownMenu';
@@ -125,7 +125,7 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
   const fullScreen = props.fullScreen === true;
   const { mutateAsync: addDataItem } = useAddDataItem();
   const [openContextMenuRowIdx, setOpenContextMenuRowIdx] = useState(-1);
-  const [tableHeight, setTableHeight] = useState(fullScreen ? '100vh' : defaultTableHeight);
+  const [tableHeight, setTableHeight] = useState(defaultTableHeight);
   const anchorEl = useRef<HTMLElement | null>(null);
 
   // figure out the width
@@ -223,6 +223,42 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
     }
   };
 
+  useEffect(() => {
+    if (!fullScreen) {
+      return;
+    }
+
+    function _updateHeight() {
+      function findOffsetRelativeToAncestor(element, ancestor) {
+        let offset = 0;
+        let currentElement = element;
+
+        while (currentElement && currentElement !== ancestor) {
+          offset += currentElement.offsetTop;
+          currentElement = currentElement.offsetParent;
+        }
+
+        return offset;
+      }
+
+      var element = document.querySelector('.DataTable__Header');
+      var ancestor = document.body;
+
+      var yOffset = findOffsetRelativeToAncestor(element, ancestor);
+      var newHeight = window.innerHeight - yOffset;
+
+      setTableHeight(newHeight + 'px');
+    }
+
+    _updateHeight();
+
+    window.addEventListener('resize', _updateHeight);
+
+    return () => {
+      window.removeEventListener('resize', _updateHeight);
+    };
+  }, [fullScreen]);
+
   return (
     <>
       <Box sx={{ display: 'flex' }}>
@@ -247,6 +283,7 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
         }}
         onContextMenu={(e) => onRowContextMenuClick(e)}>
         <StyledDivContainer
+          className='DataTable__Header'
           sx={{
             height: `${rowVirtualizer.getTotalSize()}px`,
             position: 'relative',
