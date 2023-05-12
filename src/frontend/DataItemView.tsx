@@ -1,14 +1,13 @@
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
-import Paper from '@mui/material/Paper';
 import { useParams } from 'react-router-dom';
 import ActionDialogs from 'src/frontend/components/ActionDialogs';
+import SimpleEditor from 'src/frontend/components/CodeEditorBox/SimpleEditor';
 import { DataTableWithJSONList } from 'src/frontend/components/DataTable';
 import ElectronEventListener from 'src/frontend/components/ElectronEventListener';
 import { useActionDialogs } from 'src/frontend/hooks/useActionDialogs';
 import { useDataItem } from 'src/frontend/hooks/useDataItem';
-import SimpleEditor from 'src/frontend/components/CodeEditorBox/SimpleEditor';
 
 export default function DataView() {
   const urlParams = useParams();
@@ -21,9 +20,7 @@ export default function DataView() {
     try {
       await modal({
         title: 'Record Details',
-        message: (
-          <SimpleEditor value={JSON.stringify(rowData, null, 2)} height='85vh'/>
-        ),
+        message: <SimpleEditor value={JSON.stringify(rowData, null, 2)} height='85vh' />,
         showCloseButton: true,
         size: 'lg',
       });
