@@ -12,6 +12,7 @@ import ConnectionQueryContextProvider from 'src/frontend/hooks/useConnectionQuer
 import SettingContextProvider from 'src/frontend/hooks/useSetting';
 import ShowHideContextProvider from 'src/frontend/hooks/useShowHide';
 import TreeActionContextProvider from 'src/frontend/hooks/useTreeActions';
+import ActionDialogs from 'src/frontend/components/ActionDialogs';
 import 'src/frontend/App.scss';
 import 'src/frontend/electronRenderer';
 
@@ -24,6 +25,12 @@ const CombinedContextProvider = ({ children }) => {
     SettingContextProvider,
     HashRouter,
   ].reduceRight((acc, Provider) => <Provider>{acc}</Provider>, children);
+};
+
+const CommonModules = () => {
+  return <>
+    <ActionDialogs />
+  </>
 };
 
 const renderApp = function () {
@@ -49,6 +56,7 @@ const renderApp = function () {
               element={
                 <>
                   <DataItemView />
+                  <CommonModules />
                 </>
               }
             />
@@ -57,6 +65,7 @@ const renderApp = function () {
               element={
                 <>
                   <App />
+                  <CommonModules />
                 </>
               }
             />
