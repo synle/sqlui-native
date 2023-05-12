@@ -19,7 +19,7 @@ import React, { useCallback, useRef, useState } from 'react';
 import { DataTableProps } from 'src/frontend/components/DataTable';
 import { GlobalFilter, SimpleColumnFilter } from 'src/frontend/components/DataTable/Filter';
 import DropdownMenu from 'src/frontend/components/DropdownMenu';
-import {useAddDataItem} from 'src/frontend/hooks/useDataItem'
+import { useAddDataItem } from 'src/frontend/hooks/useDataItem';
 
 const defaultTableHeight = '40vh';
 
@@ -122,7 +122,7 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
   const { columns, data } = props;
   //@ts-ignore
   const fullScreen = props.fullScreen === true;
-  const {mutateAsync: addDataItem} = useAddDataItem();
+  const { mutateAsync: addDataItem } = useAddDataItem();
   const [openContextMenuRowIdx, setOpenContextMenuRowIdx] = useState(-1);
   const [tableHeight, setTableHeight] = useState(fullScreen ? '100vh' : defaultTableHeight);
   const anchorEl = useRef<HTMLElement | null>(null);
@@ -210,17 +210,17 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
     overscan: 5,
   });
 
-  const onShowExpandedData  = async () => {
+  const onShowExpandedData = async () => {
     const dataItemGroupKey = `dataItemGroupKey.${Date.now()}.${data?.length || 0}`;
 
-    try{
+    try {
       await addDataItem([dataItemGroupKey, data]);
-    } finally{
+    } finally {
       if (window.process.env.ENV_TYPE !== 'mocked-server') {
-        window.open(`/#/data-table/${dataItemGroupKey}`)
+        window.open(`/#/data-table/${dataItemGroupKey}`);
       }
     }
-  }
+  };
 
   return (
     <>
@@ -230,9 +230,11 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
             <GlobalFilter id={props.searchInputId} onChange={setGlobalFilter} />
           )}
         </Box>
-        {!fullScreen && <IconButton aria-label='Make table bigger' onClick={onShowExpandedData} sx={{ml: 2}}>
-                  <ZoomOutMapIcon />
-                </IconButton>}
+        {!fullScreen && (
+          <IconButton aria-label='Make table bigger' onClick={onShowExpandedData} sx={{ ml: 2 }}>
+            <ZoomOutMapIcon />
+          </IconButton>
+        )}
       </Box>
       <Box
         ref={parentRef}

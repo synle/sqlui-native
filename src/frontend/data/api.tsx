@@ -245,7 +245,7 @@ export class ProxyApi {
   static updateDataItem(dataItemGroupKey: string, dataItem: SqluiCore.RawDataItemDictionary) {
     return _fetch<SqluiCore.RawDataItemDictionary>(`/api/dataItem/${dataItemGroupKey}`, {
       method: 'put',
-      body: JSON.stringify({values: dataItem}),
+      body: JSON.stringify({ values: dataItem }),
     });
   }
 }

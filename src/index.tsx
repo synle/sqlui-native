@@ -3,6 +3,7 @@ import { SnackbarProvider } from 'notistack';
 import ReactDOM from 'react-dom';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { ReactQueryDevtools } from 'react-query/devtools';
+import { HashRouter, Route, Routes } from 'react-router-dom';
 import React from 'react';
 import App from 'src/frontend/App';
 import DataItemView from 'src/frontend/DataItemView';
@@ -11,7 +12,6 @@ import ConnectionQueryContextProvider from 'src/frontend/hooks/useConnectionQuer
 import SettingContextProvider from 'src/frontend/hooks/useSetting';
 import ShowHideContextProvider from 'src/frontend/hooks/useShowHide';
 import TreeActionContextProvider from 'src/frontend/hooks/useTreeActions';
-import { HashRouter, Route, Routes } from 'react-router-dom';
 import 'src/frontend/App.scss';
 import 'src/frontend/electronRenderer';
 
@@ -44,22 +44,22 @@ const renderApp = function () {
 
         <CombinedContextProvider>
           <Routes>
-          <Route
-            path='/data-table/:dataItemGroupKey'
-            element={
-              <>
-                <DataItemView />
-              </>
-            }
-          />
-          <Route
-            path='/*'
-            element={
-              <>
-                <App />
-              </>
-            }
-          />
+            <Route
+              path='/data-table/:dataItemGroupKey'
+              element={
+                <>
+                  <DataItemView />
+                </>
+              }
+            />
+            <Route
+              path='/*'
+              element={
+                <>
+                  <App />
+                </>
+              }
+            />
           </Routes>
         </CombinedContextProvider>
       </QueryClientProvider>

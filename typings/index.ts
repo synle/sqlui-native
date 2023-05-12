@@ -161,11 +161,11 @@ export module SqluiCore {
       }
   );
 
-  export type RawDataItemDictionary = Record<string, any>
+  export type RawDataItemDictionary = Record<string, any>;
 
   export type RawDataItem = {
-    values: RawDataItemDictionary[]
-  }
+    values: RawDataItemDictionary[];
+  };
 }
 
 /**

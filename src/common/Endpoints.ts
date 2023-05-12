@@ -1,6 +1,6 @@
-import path from 'path';
 import { BrowserWindow } from 'electron';
 import { Express } from 'express';
+import path from 'path';
 import {
   getColumns,
   getConnectionMetaData,
@@ -519,16 +519,16 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     if (!values) {
       return res.status(404).send('Not Found');
     }
-    res.status(200).json({values});
+    res.status(200).json({ values });
   });
 
   addDataEndpoint('put', '/api/dataItem/:dataItemGroupKey', async (req, res) => {
     const dataItemGroupKey = req.params?.dataItemGroupKey;
     const values = req.body.values;
-    dataTableCache[dataItemGroupKey] = values
+    dataTableCache[dataItemGroupKey] = values;
     res.status(202).json(values);
 
-    try{
+    try {
       const mainWindow = new BrowserWindow({
         width: 1200,
         height: 800,
@@ -540,9 +540,9 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
         },
       });
 
-      mainWindow.loadFile(global.indexHtmlPath, {hash: `/data-table/${dataItemGroupKey}`});
-    } catch(err){
-      console.log('sytest2 err', err)
+      mainWindow.loadFile(global.indexHtmlPath, { hash: `/data-table/${dataItemGroupKey}` });
+    } catch (err) {
+      console.log('sytest2 err', err);
     }
   });
 }
