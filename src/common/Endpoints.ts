@@ -513,14 +513,37 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     res.status(200).json(apiCache.json());
   });
 
+  // for open in app window (ONLY for electro mode)
+  addDataEndpoint('post', '/api/appWindow', async (req, res) => {
+    const hashLink = req.body.hashLink;
+
+    // attempting to open the window to show this data
+    try {
+      const mainWindow = new BrowserWindow({
+        width: 1200,
+        height: 800,
+        icon: __dirname + '/build/favicon.ico',
+        webPreferences: {
+          preload: path.join(__dirname, 'preload.js'),
+          nodeIntegration: true,
+          contextIsolation: false,
+        },
+      });
+
+      mainWindow.loadFile(global.indexHtmlPath, { hash:hashLink });
+    } catch (err) {}
+
+    res.status(200).send();
+  });
+
 
   // data snapshot endpoints
-  addDataEndpoint('get', '/api/dataSnapshot', async (req, res) => {
+  addDataEndpoint('get', '/api/dataSnapshots', async (req, res) => {
     const dataSnapshotStorage = await getDataSnapshotStorage();
 
      // here we skip the description to save spaces
     const dataSnapshots = (await dataSnapshotStorage.list()).map(dataSnapshot => {
-      const {description, ...restOfDataSnapshot} = dataSnapshot;
+      const {values, ...restOfDataSnapshot} = dataSnapshot;
       return {
         ...restOfDataSnapshot
       };
@@ -544,30 +567,12 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
 
   addDataEndpoint('post', '/api/dataSnapshot', async (req, res) => {
     const dataSnapshotStorage = await getDataSnapshotStorage();
-
-    const dataSnapshotId = req.params?.dataSnapshotId;
     const resp = await dataSnapshotStorage.add({
       description: req.body.description,
       values: req.body.values,
       created : Date.now(),
     })
     res.status(200).json(resp);
-
-    // attempting to open the window to show this data
-    try {
-      const mainWindow = new BrowserWindow({
-        width: 1200,
-        height: 800,
-        icon: __dirname + '/build/favicon.ico',
-        webPreferences: {
-          preload: path.join(__dirname, 'preload.js'),
-          nodeIntegration: true,
-          contextIsolation: false,
-        },
-      });
-
-      mainWindow.loadFile(global.indexHtmlPath, { hash: `/data-snapshot/${dataSnapshotId}` });
-    } catch (err) {}
   });
 
   addDataEndpoint('delete', '/api/dataSnapshot/:dataSnapshotId', async (req, res, apiCache) => {

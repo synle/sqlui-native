@@ -10,11 +10,13 @@ import React from 'react';
 import App from 'src/frontend/App';
 import ActionDialogs from 'src/frontend/components/ActionDialogs';
 import DataSnapshotView from 'src/frontend/DataSnapshotView';
+import DataSnapshotListView from 'src/frontend/DataSnapshotListView';
 import ActionDialogsContextProvider from 'src/frontend/hooks/useActionDialogs';
 import ConnectionQueryContextProvider from 'src/frontend/hooks/useConnectionQuery';
 import SettingContextProvider, { useDarkModeSetting } from 'src/frontend/hooks/useSetting';
 import ShowHideContextProvider from 'src/frontend/hooks/useShowHide';
 import TreeActionContextProvider from 'src/frontend/hooks/useTreeActions';
+import ElectronEventListener from 'src/frontend/components/ElectronEventListener';
 import 'src/frontend/App.scss';
 import 'src/frontend/electronRenderer';
 
@@ -76,9 +78,12 @@ const renderApp = function () {
 
         <CombinedContextProvider>
           <Routes>
+            <Route path='/data-snapshot' element={<DataSnapshotListView />} />
             <Route path='/data-snapshot/:dataSnapshotId' element={<DataSnapshotView />} />
             <Route path='/*' element={<App />} />
           </Routes>
+          <ActionDialogs />
+          <ElectronEventListener />
         </CombinedContextProvider>
       </QueryClientProvider>
     </SnackbarProvider>,

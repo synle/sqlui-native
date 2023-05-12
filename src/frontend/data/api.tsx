@@ -239,7 +239,7 @@ export class ProxyApi {
 
   // data api used for storing data for the window api
   static getDataSnapshots() {
-    return _fetch<SqluiCore.DataSnapshot[]>(`/api/dataSnapshot`);
+    return _fetch<SqluiCore.DataSnapshot[]>(`/api/dataSnapshots`);
   }
 
   static getDataSnapshot(dataSnapshotId: string) {

@@ -1,4 +1,5 @@
-import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
+import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import InputLabel from '@mui/material/InputLabel';
 import Fab from '@mui/material/Fab';
 import Alert from '@mui/material/Alert';
@@ -11,8 +12,11 @@ import { DataTableWithJSONList } from 'src/frontend/components/DataTable';
 import ElectronEventListener from 'src/frontend/components/ElectronEventListener';
 import { useActionDialogs } from 'src/frontend/hooks/useActionDialogs';
 import { useGetDataSnapshot } from 'src/frontend/hooks/useDataSnapshot';
+import {useEffect} from 'react';
+import { useNavigate } from 'react-router-dom';
 
-export default function DataView() {
+export default function() {
+  const navigate = useNavigate();
   const urlParams = useParams();
   const dataSnapshotId = urlParams.dataSnapshotId as string;
   const { modal } = useActionDialogs();
@@ -54,12 +58,20 @@ export default function DataView() {
     }
   };
 
+  const onGoToDataSnapshotList = async () => {
+      navigate('/data-snapshot')
+  };
+
   const rowContextOptions = [
     {
       label: 'Show Details',
       onClick: onShowRecordDetails,
     },
   ];
+
+  useEffect(() => {
+    window.document.title = `Data Snapshot ${data?.description || ''}`.trim();
+  }, [data])
 
   if (isLoading) {
     return (
@@ -70,7 +82,7 @@ export default function DataView() {
   }
 
   if (!data) {
-    return <Alert severity='error'>No data</Alert>;
+    return <Alert severity='error'>No data for this snapshot</Alert>;
   }
 
   return (
@@ -93,11 +105,17 @@ export default function DataView() {
     position: 'fixed',
     bottom: '1rem',
     left: '1.5rem',
-  }} onClick={() => onShowDescription()}>
-        <KeyboardArrowRightIcon />
+  }} onClick={() => onGoToDataSnapshotList()}>
+        <KeyboardArrowLeftIcon />
       </Fab>
-      <ActionDialogs />
-      <ElectronEventListener />
+
+      <Fab size='small' sx={{
+    position: 'fixed',
+    bottom: '1rem',
+    right: '1.5rem',
+  }} onClick={() => onShowDescription()}>
+        <KeyboardArrowUpIcon />
+      </Fab>
     </>
   );
 }

@@ -86,6 +86,7 @@ const columns = [
     },
   },
 ];
+
 function RecycleBinItemList() {
   const { data, isLoading: loadingRecycleBinItems } = useGetRecycleBinItems();
   const { mutateAsync: deleteRecyleBinItem, isLoading: loadingRestoreQuery } =

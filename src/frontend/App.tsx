@@ -245,8 +245,6 @@ export default function App() {
         </Box>
         <MissionControl />
       </SessionManager>
-      <ActionDialogs />
-      <ElectronEventListener />
     </>
   );
 }
