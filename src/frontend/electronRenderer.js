@@ -32,14 +32,14 @@ try {
       fetch(`/api/appWindow`, {
         method: 'post',
         body: JSON.stringify({
-          hashLink
+          hashLink,
         }),
-        headers:{
+        headers: {
           'Content-Type': 'application/json',
           Accept: 'application/json',
-        }
-      })
-    }
+        },
+      });
+    };
 
     // here we are polyfilling fetch with ipcRenderer
     const origFetch = window.fetch;

@@ -246,7 +246,10 @@ export class ProxyApi {
     return _fetch<SqluiCore.DataSnapshot>(`/api/dataSnapshot/${dataSnapshotId}`);
   }
 
-  static addDataSnapshot(dataSnapshot : Partial<SqluiCore.DataSnapshot> & Required<Pick<SqluiCore.DataSnapshot, 'values' | 'description'>>) {
+  static addDataSnapshot(
+    dataSnapshot: Partial<SqluiCore.DataSnapshot> &
+      Required<Pick<SqluiCore.DataSnapshot, 'values' | 'description'>>,
+  ) {
     return _fetch<SqluiCore.DataSnapshot>(`/api/dataSnapshot`, {
       method: 'post',
       body: JSON.stringify(dataSnapshot),

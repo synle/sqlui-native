@@ -1,21 +1,19 @@
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-import InputLabel from '@mui/material/InputLabel';
-import Fab from '@mui/material/Fab';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
-import { useParams } from 'react-router-dom';
+import Fab from '@mui/material/Fab';
+import InputLabel from '@mui/material/InputLabel';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useEffect } from 'react';
 import ActionDialogs from 'src/frontend/components/ActionDialogs';
 import SimpleEditor from 'src/frontend/components/CodeEditorBox/SimpleEditor';
 import { DataTableWithJSONList } from 'src/frontend/components/DataTable';
-import ElectronEventListener from 'src/frontend/components/ElectronEventListener';
 import { useActionDialogs } from 'src/frontend/hooks/useActionDialogs';
 import { useGetDataSnapshot } from 'src/frontend/hooks/useDataSnapshot';
-import {useEffect} from 'react';
-import { useNavigate } from 'react-router-dom';
 
-export default function() {
+export default function () {
   const navigate = useNavigate();
   const urlParams = useParams();
   const dataSnapshotId = urlParams.dataSnapshotId as string;
@@ -36,21 +34,23 @@ export default function() {
   };
 
   const onShowDescription = async () => {
-    if(!data){
-      return
+    if (!data) {
+      return;
     }
 
     try {
       await modal({
         title: 'Data Description',
-        message: <>
-          <InputLabel>ID</InputLabel>
-          <pre>{data.id}</pre>
-          <InputLabel>Total</InputLabel>
-          <pre>{data.values?.length || 0}</pre>
-          <InputLabel>Description</InputLabel>
-          <pre>{data.description}</pre>
-        </>,
+        message: (
+          <>
+            <InputLabel>ID</InputLabel>
+            <pre>{data.id}</pre>
+            <InputLabel>Total</InputLabel>
+            <pre>{data.values?.length || 0}</pre>
+            <InputLabel>Description</InputLabel>
+            <pre>{data.description}</pre>
+          </>
+        ),
         showCloseButton: true,
         size: 'lg',
       });
@@ -59,7 +59,7 @@ export default function() {
   };
 
   const onGoToDataSnapshotList = async () => {
-      navigate('/data_snapshot')
+    navigate('/data_snapshot');
   };
 
   const rowContextOptions = [
@@ -71,7 +71,7 @@ export default function() {
 
   useEffect(() => {
     window.document.title = `Data Snapshot ${data?.description || ''}`.trim();
-  }, [data])
+  }, [data]);
 
   if (isLoading) {
     return (
@@ -101,19 +101,25 @@ export default function() {
           fullScreen={true}
         />
       </Box>
-      <Fab size='small' sx={{
-    position: 'fixed',
-    bottom: '1rem',
-    left: '1.5rem',
-  }} onClick={() => onGoToDataSnapshotList()}>
+      <Fab
+        size='small'
+        sx={{
+          position: 'fixed',
+          bottom: '1rem',
+          left: '1.5rem',
+        }}
+        onClick={() => onGoToDataSnapshotList()}>
         <KeyboardArrowLeftIcon />
       </Fab>
 
-      <Fab size='small' sx={{
-    position: 'fixed',
-    bottom: '1rem',
-    right: '1.5rem',
-  }} onClick={() => onShowDescription()}>
+      <Fab
+        size='small'
+        sx={{
+          position: 'fixed',
+          bottom: '1rem',
+          right: '1.5rem',
+        }}
+        onClick={() => onShowDescription()}>
         <KeyboardArrowUpIcon />
       </Fab>
     </>

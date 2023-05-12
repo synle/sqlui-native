@@ -10,10 +10,10 @@ import {
 } from 'src/common/adapters/DataAdapterFactory';
 import {
   getConnectionsStorage,
+  getDataSnapshotStorage,
   getFolderItemsStorage,
   getQueryStorage,
   getSessionsStorage,
-  getDataSnapshotStorage,
   storageDir,
 } from 'src/common/PersistentStorage';
 import * as sessionUtils from 'src/common/utils/sessionUtils';
@@ -530,22 +530,20 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
         },
       });
 
-      mainWindow.loadFile(global.indexHtmlPath, { hash:hashLink });
+      mainWindow.loadFile(global.indexHtmlPath, { hash: hashLink });
     } catch (err) {}
 
     res.status(200).send();
   });
-
-
   // data snapshot endpoints
   addDataEndpoint('get', '/api/dataSnapshots', async (req, res) => {
     const dataSnapshotStorage = await getDataSnapshotStorage();
 
-     // here we skip the description to save spaces
-    const dataSnapshots = (await dataSnapshotStorage.list()).map(dataSnapshot => {
-      const {values, ...restOfDataSnapshot} = dataSnapshot;
+    // here we skip the description to save spaces
+    const dataSnapshots = (await dataSnapshotStorage.list()).map((dataSnapshot) => {
+      const { values, ...restOfDataSnapshot } = dataSnapshot;
       return {
-        ...restOfDataSnapshot
+        ...restOfDataSnapshot,
       };
     });
 
@@ -570,8 +568,8 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     const resp = await dataSnapshotStorage.add({
       description: req.body.description,
       values: req.body.values,
-      created : Date.now(),
-    })
+      created: Date.now(),
+    });
     res.status(200).json(resp);
   });
 

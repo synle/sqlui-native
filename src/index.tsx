@@ -9,14 +9,14 @@ import { HashRouter, Route, Routes } from 'react-router-dom';
 import React from 'react';
 import App from 'src/frontend/App';
 import ActionDialogs from 'src/frontend/components/ActionDialogs';
-import DataSnapshotView from 'src/frontend/DataSnapshotView';
+import ElectronEventListener from 'src/frontend/components/ElectronEventListener';
 import DataSnapshotListView from 'src/frontend/DataSnapshotListView';
+import DataSnapshotView from 'src/frontend/DataSnapshotView';
 import ActionDialogsContextProvider from 'src/frontend/hooks/useActionDialogs';
 import ConnectionQueryContextProvider from 'src/frontend/hooks/useConnectionQuery';
 import SettingContextProvider, { useDarkModeSetting } from 'src/frontend/hooks/useSetting';
 import ShowHideContextProvider from 'src/frontend/hooks/useShowHide';
 import TreeActionContextProvider from 'src/frontend/hooks/useTreeActions';
-import ElectronEventListener from 'src/frontend/components/ElectronEventListener';
 import 'src/frontend/App.scss';
 import 'src/frontend/electronRenderer';
 

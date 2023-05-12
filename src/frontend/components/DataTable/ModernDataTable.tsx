@@ -220,10 +220,11 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
         description,
       });
 
-      if(dataSnapshot?.id){
-          window.openAppLink(`/data_snapshot/${dataSnapshot.id}`);
-        }
-    } finally {}
+      if (dataSnapshot?.id) {
+        window.openAppLink(`/data_snapshot/${dataSnapshot.id}`);
+      }
+    } finally {
+    }
   };
 
   useEffect(() => {

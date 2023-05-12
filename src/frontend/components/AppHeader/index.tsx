@@ -1,7 +1,7 @@
 import AddIcon from '@mui/icons-material/Add';
-import DataArrayIcon from '@mui/icons-material/DataArray';
 import BackupIcon from '@mui/icons-material/Backup';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import DataArrayIcon from '@mui/icons-material/DataArray';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import HomeIcon from '@mui/icons-material/Home';
@@ -89,7 +89,7 @@ export default function AppHeader() {
     },
     {
       label: 'Data Snapshots',
-      onClick: () => selectCommand({ event: 'clientEvent/openAppWindow', data: '/data_snapshot' },),
+      onClick: () => selectCommand({ event: 'clientEvent/openAppWindow', data: '/data_snapshot' }),
       startIcon: <DataArrayIcon />,
     },
     {

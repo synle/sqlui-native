@@ -1,22 +1,15 @@
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
-import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
-import InputLabel from '@mui/material/InputLabel';
-import Fab from '@mui/material/Fab';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
-import { useParams } from 'react-router-dom';
-import ActionDialogs from 'src/frontend/components/ActionDialogs';
-import SimpleEditor from 'src/frontend/components/CodeEditorBox/SimpleEditor';
-import { DataTableWithJSONList } from 'src/frontend/components/DataTable';
-import ElectronEventListener from 'src/frontend/components/ElectronEventListener';
-import { useActionDialogs } from 'src/frontend/hooks/useActionDialogs';
-import { useGetDataSnapshots, useDeleteDataSnapshot } from 'src/frontend/hooks/useDataSnapshot';
-import {useEffect} from 'react';
-import DataTable from 'src/frontend/components/DataTable';
 import IconButton from '@mui/material/IconButton';
 import Link from '@mui/material/Link';
 import { Link as RouterLink } from 'react-router-dom';
+import { useEffect } from 'react';
+import ActionDialogs from 'src/frontend/components/ActionDialogs';
+import DataTable from 'src/frontend/components/DataTable';
+import { useActionDialogs } from 'src/frontend/hooks/useActionDialogs';
+import { useDeleteDataSnapshot, useGetDataSnapshots } from 'src/frontend/hooks/useDataSnapshot';
 
 const columns = [
   {
@@ -24,9 +17,12 @@ const columns = [
     accessor: 'id',
     Cell: (data: any) => {
       const dataSnapshot = data.row.original;
-      const linkToUse = `/data_snapshot/${dataSnapshot.id}`
-      return <Link component={RouterLink}
-              to={linkToUse}>{dataSnapshot.id}</Link>;
+      const linkToUse = `/data_snapshot/${dataSnapshot.id}`;
+      return (
+        <Link component={RouterLink} to={linkToUse}>
+          {dataSnapshot.id}
+        </Link>
+      );
     },
   },
   {
@@ -62,17 +58,15 @@ const columns = [
   },
 ];
 
-export default function() {
+export default function () {
   const { modal } = useActionDialogs();
 
   const { data, isLoading } = useGetDataSnapshots();
-
-
   useEffect(() => {
     window.document.title = `Data Snapshots`;
-  }, [])
+  }, []);
 
-   if (isLoading) {
+  if (isLoading) {
     return (
       <Alert severity='info' icon={<CircularProgress size={15} />}>
         Loading...
@@ -84,7 +78,9 @@ export default function() {
     return <Alert severity='error'>No data snapshot available</Alert>;
   }
 
-  return <>
-    <DataTable data={data} columns={columns} />
-  </>
+  return (
+    <>
+      <DataTable data={data} columns={columns} />
+    </>
+  );
 }
