@@ -13,10 +13,29 @@ import ConnectionQueryContextProvider from 'src/frontend/hooks/useConnectionQuer
 import SettingContextProvider from 'src/frontend/hooks/useSetting';
 import ShowHideContextProvider from 'src/frontend/hooks/useShowHide';
 import TreeActionContextProvider from 'src/frontend/hooks/useTreeActions';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { useDarkModeSetting } from 'src/frontend/hooks/useSetting';
 import 'src/frontend/App.scss';
 import 'src/frontend/electronRenderer';
 
-const CombinedContextProvider = ({ children }) => {
+function AppliedTheme({children}){
+  const myTheme = createTheme({
+    palette: {
+      mode: useDarkModeSetting(),
+    },
+    components: {
+      MuiButtonBase: {
+        defaultProps: {
+          disableRipple: true,
+        },
+      },
+    },
+  });
+
+  return <ThemeProvider theme={myTheme}>{children}</ThemeProvider>
+}
+
+function CombinedContextProvider ({ children }) {
   return [
     ActionDialogsContextProvider,
     ConnectionQueryContextProvider,
@@ -24,6 +43,7 @@ const CombinedContextProvider = ({ children }) => {
     ShowHideContextProvider,
     SettingContextProvider,
     HashRouter,
+    AppliedTheme,
   ].reduceRight((acc, Provider) => <Provider>{acc}</Provider>, children);
 };
 

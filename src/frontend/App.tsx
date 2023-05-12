@@ -28,7 +28,6 @@ export default function App() {
   const { data: sessions, isLoading: loadingSessions } = useGetSessions();
   const { data: currentSession, isLoading: loadingCurrentSession } = useGetCurrentSession();
   const { mutateAsync: upsertSession } = useUpsertSession();
-  const colorMode = useDarkModeSetting();
   const { selectCommand } = useCommands();
   const { add: addToast } = useToaster();
   const toasterRef = useRef<ToasterHandler | undefined>();
@@ -47,10 +46,11 @@ export default function App() {
     }
   }, [globalMonaco]);
 
+
   const myTheme = createTheme({
     // Theme settings
     palette: {
-      mode: colorMode,
+      mode: useDarkModeSetting(),
     },
     components: {
       MuiButtonBase: {
@@ -104,7 +104,7 @@ export default function App() {
   };
 
   return (
-    <ThemeProvider theme={myTheme}>
+    <>
       <SessionManager>
         <Box
           className='App'
@@ -256,6 +256,6 @@ export default function App() {
       </SessionManager>
       <ActionDialogs />
       <ElectronEventListener />
-    </ThemeProvider>
+    </>
   );
 }

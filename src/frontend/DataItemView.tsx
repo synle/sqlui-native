@@ -53,7 +53,12 @@ export default function DataView() {
 
   return (
     <>
-      <Box sx={{ px: 1 }}>
+      <Box className='DataItemView'
+          sx={{
+            px: 1,
+            bgcolor: 'background.default',
+            color: 'text.primary',
+          }}>
         <DataTableWithJSONList
           onRowClick={onShowRecordDetails}
           rowContextOptions={rowContextOptions}
