@@ -106,10 +106,6 @@ export default function App() {
       <SessionManager>
         <Box
           className='App'
-          sx={{
-            bgcolor: 'background.default',
-            color: 'text.primary',
-          }}
           onDrop={onDrop}
           onDragOver={onDragOver}>
           <Routes>

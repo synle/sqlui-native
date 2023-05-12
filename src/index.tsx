@@ -1,3 +1,4 @@
+import Box from '@mui/material/Box';
 import CssBaseline from '@mui/material/CssBaseline';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { SnackbarProvider } from 'notistack';
@@ -31,7 +32,11 @@ function AppliedTheme({ children }) {
     },
   });
 
-  return <ThemeProvider theme={myTheme}>{children}</ThemeProvider>;
+  return <ThemeProvider theme={myTheme}><Box sx={{
+            minHeight: '100vh',
+            bgcolor: 'background.default',
+            color: 'text.primary',
+          }}>{children}</Box></ThemeProvider>;
 }
 
 function CombinedContextProvider({ children }) {
