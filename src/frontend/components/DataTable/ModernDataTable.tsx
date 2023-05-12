@@ -16,7 +16,7 @@ import {
   useSortBy,
   useTable,
 } from 'react-table';
-import React, { useCallback, useRef, useState, useEffect } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { DataTableProps } from 'src/frontend/components/DataTable';
 import { GlobalFilter, SimpleColumnFilter } from 'src/frontend/components/DataTable/Filter';
 import DropdownMenu from 'src/frontend/components/DropdownMenu';
@@ -224,11 +224,11 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
   };
 
   useEffect(() => {
-    if(!fullScreen){
+    if (!fullScreen) {
       return;
     }
 
-    function _updateHeight(){
+    function _updateHeight() {
       function findOffsetRelativeToAncestor(element, ancestor) {
         let offset = 0;
         let currentElement = element;
@@ -241,23 +241,23 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
         return offset;
       }
 
-      var element = document.querySelector('.DataTable__Header')
-      var ancestor = document.body
+      var element = document.querySelector('.DataTable__Header');
+      var ancestor = document.body;
 
       var yOffset = findOffsetRelativeToAncestor(element, ancestor);
-      var newHeight = window.innerHeight - yOffset
+      var newHeight = window.innerHeight - yOffset;
 
-      setTableHeight(newHeight + 'px')
+      setTableHeight(newHeight + 'px');
     }
 
     _updateHeight();
 
-    window.addEventListener("resize", _updateHeight);
+    window.addEventListener('resize', _updateHeight);
 
     return () => {
-      window.removeEventListener("resize", _updateHeight);
-    }
-  }, [fullScreen])
+      window.removeEventListener('resize', _updateHeight);
+    };
+  }, [fullScreen]);
 
   return (
     <>
