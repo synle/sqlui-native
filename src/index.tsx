@@ -1,4 +1,5 @@
 import CssBaseline from '@mui/material/CssBaseline';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { SnackbarProvider } from 'notistack';
 import ReactDOM from 'react-dom';
 import { QueryClient, QueryClientProvider } from 'react-query';
@@ -10,15 +11,13 @@ import ActionDialogs from 'src/frontend/components/ActionDialogs';
 import DataItemView from 'src/frontend/DataItemView';
 import ActionDialogsContextProvider from 'src/frontend/hooks/useActionDialogs';
 import ConnectionQueryContextProvider from 'src/frontend/hooks/useConnectionQuery';
-import SettingContextProvider from 'src/frontend/hooks/useSetting';
+import SettingContextProvider, { useDarkModeSetting } from 'src/frontend/hooks/useSetting';
 import ShowHideContextProvider from 'src/frontend/hooks/useShowHide';
 import TreeActionContextProvider from 'src/frontend/hooks/useTreeActions';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { useDarkModeSetting } from 'src/frontend/hooks/useSetting';
 import 'src/frontend/App.scss';
 import 'src/frontend/electronRenderer';
 
-function AppliedTheme({children}){
+function AppliedTheme({ children }) {
   const myTheme = createTheme({
     palette: {
       mode: useDarkModeSetting(),
@@ -32,10 +31,10 @@ function AppliedTheme({children}){
     },
   });
 
-  return <ThemeProvider theme={myTheme}>{children}</ThemeProvider>
+  return <ThemeProvider theme={myTheme}>{children}</ThemeProvider>;
 }
 
-function CombinedContextProvider ({ children }) {
+function CombinedContextProvider({ children }) {
   return [
     ActionDialogsContextProvider,
     ConnectionQueryContextProvider,
@@ -45,7 +44,7 @@ function CombinedContextProvider ({ children }) {
     HashRouter,
     AppliedTheme,
   ].reduceRight((acc, Provider) => <Provider>{acc}</Provider>, children);
-};
+}
 
 const renderApp = function () {
   const queryClient = new QueryClient({

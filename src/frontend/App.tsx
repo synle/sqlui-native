@@ -1,5 +1,5 @@
 import Box from '@mui/material/Box';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { createTheme } from '@mui/material/styles';
 import { Route, Routes } from 'react-router-dom';
 import { useEffect, useRef } from 'react';
 import ActionDialogs from 'src/frontend/components/ActionDialogs';
@@ -45,8 +45,6 @@ export default function App() {
       });
     }
   }, [globalMonaco]);
-
-
   const myTheme = createTheme({
     // Theme settings
     palette: {
