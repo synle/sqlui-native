@@ -160,6 +160,12 @@ export module SqluiCore {
         data: SqluiCore.ConnectionQuery;
       }
   );
+
+  export type RawDataItemDictionary = Record<string, any>;
+
+  export type RawDataItem = {
+    values: RawDataItemDictionary[];
+  };
 }
 
 /**

@@ -68,6 +68,7 @@ async function createWindow(isFirstWindow?: boolean) {
 
   // and load the index.html of the app.
   mainWindow.loadFile('index.html');
+  global.indexHtmlPath = path.join(__dirname, 'index.html');
 
   // Open the DevTools.
   if (process.env.ENV_TYPE === 'electron-dev') {

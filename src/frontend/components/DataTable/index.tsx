@@ -15,6 +15,10 @@ export type DataTableProps = {
   enableColumnFilter?: boolean;
 };
 
+export type DataTableWithJSONListProps = Omit<DataTableProps, 'columns'> & {
+  fullScreen?: boolean;
+};
+
 export const ALL_PAGE_SIZE_OPTIONS: any[] = [
   { label: '10', value: 10 },
   { label: '25', value: 25 },
@@ -27,7 +31,7 @@ export const DEFAULT_TABLE_PAGE_SIZE = 50;
 
 const UNNAMED_PROPERTY_NAME = '<unnamed_property>';
 
-export function DataTableWithJSONList(props: Omit<DataTableProps, 'columns'>) {
+export function DataTableWithJSONList(props: DataTableWithJSONListProps) {
   const { data } = props;
 
   const tableRenderer = useTableRenderer();
@@ -164,6 +168,7 @@ export function DataTableWithJSONList(props: Omit<DataTableProps, 'columns'>) {
       };
     });
   }, [data]);
+
   if (isAdvancedTableRenderer) {
     // use the modern table
     return <ModernDataTable {...props} columns={columns} />;

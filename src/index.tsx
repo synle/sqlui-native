@@ -3,13 +3,17 @@ import { SnackbarProvider } from 'notistack';
 import ReactDOM from 'react-dom';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { ReactQueryDevtools } from 'react-query/devtools';
+import { HashRouter, Route, Routes } from 'react-router-dom';
 import React from 'react';
 import App from 'src/frontend/App';
+import DataItemView from 'src/frontend/DataItemView';
 import ActionDialogsContextProvider from 'src/frontend/hooks/useActionDialogs';
 import ConnectionQueryContextProvider from 'src/frontend/hooks/useConnectionQuery';
 import SettingContextProvider from 'src/frontend/hooks/useSetting';
 import ShowHideContextProvider from 'src/frontend/hooks/useShowHide';
 import TreeActionContextProvider from 'src/frontend/hooks/useTreeActions';
+import 'src/frontend/App.scss';
+import 'src/frontend/electronRenderer';
 
 const CombinedContextProvider = ({ children }) => {
   return [
@@ -18,6 +22,7 @@ const CombinedContextProvider = ({ children }) => {
     TreeActionContextProvider,
     ShowHideContextProvider,
     SettingContextProvider,
+    HashRouter,
   ].reduceRight((acc, Provider) => <Provider>{acc}</Provider>, children);
 };
 
@@ -38,7 +43,24 @@ const renderApp = function () {
         <ReactQueryDevtools initialIsOpen={false} />
 
         <CombinedContextProvider>
-          <App />
+          <Routes>
+            <Route
+              path='/data-table/:dataItemGroupKey'
+              element={
+                <>
+                  <DataItemView />
+                </>
+              }
+            />
+            <Route
+              path='/*'
+              element={
+                <>
+                  <App />
+                </>
+              }
+            />
+          </Routes>
         </CombinedContextProvider>
       </QueryClientProvider>
     </SnackbarProvider>,

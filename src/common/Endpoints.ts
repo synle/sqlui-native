@@ -1,4 +1,6 @@
+import { BrowserWindow } from 'electron';
 import { Express } from 'express';
+import path from 'path';
 import {
   getColumns,
   getConnectionMetaData,
@@ -508,5 +510,39 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
   // debug endpoints
   addDataEndpoint('get', '/api/debug', async (req, res, apiCache) => {
     res.status(200).json(apiCache.json());
+  });
+
+  let dataTableCache = {};
+  addDataEndpoint('get', '/api/dataItem/:dataItemGroupKey', async (req, res) => {
+    const dataItemGroupKey = req.params?.dataItemGroupKey;
+    const values = dataTableCache[dataItemGroupKey];
+    if (!values) {
+      return res.status(404).send('Not Found');
+    }
+    res.status(200).json({ values });
+  });
+
+  addDataEndpoint('put', '/api/dataItem/:dataItemGroupKey', async (req, res) => {
+    const dataItemGroupKey = req.params?.dataItemGroupKey;
+    const values = req.body.values;
+    dataTableCache[dataItemGroupKey] = values;
+    res.status(202).json(values);
+
+    try {
+      const mainWindow = new BrowserWindow({
+        width: 1200,
+        height: 800,
+        icon: __dirname + '/build/favicon.ico',
+        webPreferences: {
+          preload: path.join(__dirname, 'preload.js'),
+          nodeIntegration: true,
+          contextIsolation: false,
+        },
+      });
+
+      mainWindow.loadFile(global.indexHtmlPath, { hash: `/data-table/${dataItemGroupKey}` });
+    } catch (err) {
+      console.log('sytest2 err', err);
+    }
   });
 }
