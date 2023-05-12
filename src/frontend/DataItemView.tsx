@@ -57,8 +57,6 @@ export default function DataView() {
         className='DataItemView'
         sx={{
           px: 1,
-          bgcolor: 'background.default',
-          color: 'text.primary',
         }}>
         <DataTableWithJSONList
           onRowClick={onShowRecordDetails}
