@@ -5,6 +5,7 @@ import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import { styled } from '@mui/material/styles';
 import Table from '@mui/material/Table';
+import Tooltip from '@mui/material/Tooltip';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import {
   useBlockLayout,
@@ -216,7 +217,7 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
     try {
       await addDataItem([dataItemGroupKey, data]);
     } finally {
-      if (window.process.env.ENV_TYPE !== 'mocked-server') {
+      if (window.isElectron !== true) {
         window.open(`/#/data-table/${dataItemGroupKey}`);
       }
     }
@@ -231,9 +232,11 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
           )}
         </Box>
         {!fullScreen && (
-          <IconButton aria-label='Make table bigger' onClick={onShowExpandedData} sx={{ ml: 2 }}>
-            <ZoomOutMapIcon />
-          </IconButton>
+          <Tooltip title='Open this table fullscreen in another window'>
+            <IconButton aria-label='Make table bigger' onClick={onShowExpandedData} sx={{ ml: 2 }}>
+              <ZoomOutMapIcon />
+            </IconButton>
+          </Tooltip>
         )}
       </Box>
       <Box
