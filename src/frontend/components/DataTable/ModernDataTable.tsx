@@ -20,6 +20,7 @@ import { DataTableProps } from 'src/frontend/components/DataTable';
 import { GlobalFilter, SimpleColumnFilter } from 'src/frontend/components/DataTable/Filter';
 import DropdownMenu from 'src/frontend/components/DropdownMenu';
 import { useAddDataItem } from 'src/frontend/hooks/useDataItem';
+import Tooltip from '@mui/material/Tooltip';
 
 const defaultTableHeight = '40vh';
 
@@ -216,7 +217,7 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
     try {
       await addDataItem([dataItemGroupKey, data]);
     } finally {
-      if (window.process.env.ENV_TYPE === 'mocked-server') {
+      if (window.isElectron !== true) {
         window.open(`/#/data-table/${dataItemGroupKey}`);
       }
     }
@@ -231,9 +232,11 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
           )}
         </Box>
         {!fullScreen && (
+          <Tooltip title='Open this table fullscreen in another window'>
           <IconButton aria-label='Make table bigger' onClick={onShowExpandedData} sx={{ ml: 2 }}>
             <ZoomOutMapIcon />
           </IconButton>
+          </Tooltip>
         )}
       </Box>
       <Box
