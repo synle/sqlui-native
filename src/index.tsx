@@ -45,18 +45,8 @@ const renderApp = function () {
 
         <CombinedContextProvider>
           <Routes>
-            <Route
-              path='/data-table/:dataItemGroupKey'
-              element={
-                <DataItemView />
-              }
-            />
-            <Route
-              path='/*'
-              element={
-                <App />
-              }
-            />
+            <Route path='/data-table/:dataItemGroupKey' element={<DataItemView />} />
+            <Route path='/*' element={<App />} />
           </Routes>
         </CombinedContextProvider>
       </QueryClientProvider>

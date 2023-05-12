@@ -1,11 +1,11 @@
-import ElectronEventListener from 'src/frontend/components/ElectronEventListener';
-import ActionDialogs from 'src/frontend/components/ActionDialogs';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import Paper from '@mui/material/Paper';
 import { useParams } from 'react-router-dom';
+import ActionDialogs from 'src/frontend/components/ActionDialogs';
 import { DataTableWithJSONList } from 'src/frontend/components/DataTable';
+import ElectronEventListener from 'src/frontend/components/ElectronEventListener';
 import { useActionDialogs } from 'src/frontend/hooks/useActionDialogs';
 import { useDataItem } from 'src/frontend/hooks/useDataItem';
 
@@ -53,18 +53,18 @@ export default function DataView() {
 
   return (
     <>
-    <Box sx={{ p: 1 }}>
-      <DataTableWithJSONList
-        onRowClick={onShowRecordDetails}
-        rowContextOptions={rowContextOptions}
-        data={data}
-        searchInputId='result-box-search-input'
-        enableColumnFilter={true}
-        fullScreen={true}
-      />
-    </Box>
-    <ActionDialogs />
-    <ElectronEventListener />
+      <Box sx={{ p: 1 }}>
+        <DataTableWithJSONList
+          onRowClick={onShowRecordDetails}
+          rowContextOptions={rowContextOptions}
+          data={data}
+          searchInputId='result-box-search-input'
+          enableColumnFilter={true}
+          fullScreen={true}
+        />
+      </Box>
+      <ActionDialogs />
+      <ElectronEventListener />
     </>
   );
 }
