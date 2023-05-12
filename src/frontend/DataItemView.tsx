@@ -10,14 +10,14 @@ import SimpleEditor from 'src/frontend/components/CodeEditorBox/SimpleEditor';
 import { DataTableWithJSONList } from 'src/frontend/components/DataTable';
 import ElectronEventListener from 'src/frontend/components/ElectronEventListener';
 import { useActionDialogs } from 'src/frontend/hooks/useActionDialogs';
-import { useDataItem } from 'src/frontend/hooks/useDataItem';
+import { useDataSnapshot } from 'src/frontend/hooks/useDataItem';
 
 export default function DataView() {
   const urlParams = useParams();
   const dataItemGroupKey = urlParams.dataItemGroupKey as string;
   const { modal } = useActionDialogs();
 
-  const { data, isLoading } = useDataItem(dataItemGroupKey);
+  const { data, isLoading } = useDataSnapshot(dataItemGroupKey);
 
   const onShowRecordDetails = async (rowData: any) => {
     try {

@@ -161,12 +161,12 @@ export module SqluiCore {
       }
   );
 
-  export type RawDataItemDictionary = Record<string, any>;
+  export type DataSnapshotItemDictionary = Record<string, any>;
 
-  export type RawDataItem = {
+  export type DataSnapshot = {
     id: string;
     description: string;
-    values: RawDataItemDictionary[];
+    values: DataSnapshotItemDictionary[];
     created: number;
   };
 }

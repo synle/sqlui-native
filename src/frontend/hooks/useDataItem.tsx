@@ -2,21 +2,27 @@ import { SqluiCore, SqluiFrontend } from 'typings';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 import dataApi from 'src/frontend/data/api';
 
-const QUERY_KEY_DATA_ITEM = `dataItem`;
+const QUERY_KEY_DATA_SNAPSHOT = `dataSnapshot`;
 
-export function useDataItem(dataItemGroupKey?: string) {
+export function useDataSnapshots() {
   return useQuery(
-    [QUERY_KEY_DATA_ITEM, dataItemGroupKey],
-    () => (dataItemGroupKey ? dataApi.getDataItem(dataItemGroupKey) : null),
+    [QUERY_KEY_DATA_SNAPSHOT],
+    () => dataApi.getDataSnapshots,
   );
 }
-export function useAddDataItem() {
-  const queryClient = useQueryClient();
 
-  return useMutation<SqluiCore.RawDataItem, void, Partial<SqluiCore.RawDataItem> & Required<Pick<SqluiCore.RawDataItem, 'values' | 'description'>>>(async (newDataItem) => {
-    if (newDataItem) {
-      return dataApi.updateDataItem(newDataItem);
+export function useDataSnapshot(dataSnapshotId?: string) {
+  return useQuery(
+    [QUERY_KEY_DATA_SNAPSHOT, dataSnapshotId],
+    () => (dataSnapshotId ? dataApi.getDataSnapshot(dataSnapshotId) : null),
+  );
+}
+
+export function useAddDataItem() {
+  return useMutation<SqluiCore.DataSnapshot, void, Partial<SqluiCore.DataSnapshot> & Required<Pick<SqluiCore.DataSnapshot, 'values' | 'description'>>>(async (newDataSnapshot) => {
+    if (newDataSnapshot) {
+      return dataApi.addDataSnapshot(newDataSnapshot);
     }
-    throw 'newDataItem is empty'
+    throw 'newDataSnapshot is empty'
   });
 }
