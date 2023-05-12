@@ -9,7 +9,9 @@ import { HashRouter, Route, Routes } from 'react-router-dom';
 import React from 'react';
 import App from 'src/frontend/App';
 import ActionDialogs from 'src/frontend/components/ActionDialogs';
-import DataItemView from 'src/frontend/DataItemView';
+import ElectronEventListener from 'src/frontend/components/ElectronEventListener';
+import DataSnapshotListView from 'src/frontend/DataSnapshotListView';
+import DataSnapshotView from 'src/frontend/DataSnapshotView';
 import ActionDialogsContextProvider from 'src/frontend/hooks/useActionDialogs';
 import ConnectionQueryContextProvider from 'src/frontend/hooks/useConnectionQuery';
 import SettingContextProvider, { useDarkModeSetting } from 'src/frontend/hooks/useSetting';
@@ -76,9 +78,12 @@ const renderApp = function () {
 
         <CombinedContextProvider>
           <Routes>
-            <Route path='/data-item-view/:dataItemGroupKey' element={<DataItemView />} />
+            <Route path='/data_snapshot' element={<DataSnapshotListView />} />
+            <Route path='/data_snapshot/:dataSnapshotId' element={<DataSnapshotView />} />
             <Route path='/*' element={<App />} />
           </Routes>
+          <ActionDialogs />
+          <ElectronEventListener />
         </CombinedContextProvider>
       </QueryClientProvider>
     </SnackbarProvider>,

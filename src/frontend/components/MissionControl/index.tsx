@@ -1006,6 +1006,9 @@ export default function MissionControl() {
           navigate(command.data as string);
           break;
 
+        case 'clientEvent/openAppWindow':
+          window.openAppLink(command.data as string);
+          break;
         case 'clientEvent/showCommandPalette':
           onShowCommandPalette();
           break;

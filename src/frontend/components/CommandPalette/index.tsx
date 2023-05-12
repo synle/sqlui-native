@@ -46,6 +46,7 @@ const ALL_COMMAND_PALETTE_OPTIONS: CommandOption[] = [
   { event: 'clientEvent/navigate', label: 'Open Main Query Page', data: '/' },
   { event: 'clientEvent/navigate', label: 'Open Data Migration', data: '/migration' },
   { event: 'clientEvent/navigate', label: 'Open Recycle Bin Page', data: '/recycle_bin' },
+  { event: 'clientEvent/openAppWindow', label: 'Open Data Snapshots', data: '/data_snapshot' },
   { event: 'clientEvent/navigate', label: 'Open Bookmarks Page', data: '/bookmarks' },
   { event: 'clientEvent/showSettings', label: 'Settings' },
   { event: 'clientEvent/import', label: 'Import' },

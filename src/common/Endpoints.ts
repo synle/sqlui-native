@@ -10,6 +10,7 @@ import {
 } from 'src/common/adapters/DataAdapterFactory';
 import {
   getConnectionsStorage,
+  getDataSnapshotStorage,
   getFolderItemsStorage,
   getQueryStorage,
   getSessionsStorage,
@@ -512,22 +513,11 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     res.status(200).json(apiCache.json());
   });
 
-  let dataTableCache = {};
-  addDataEndpoint('get', '/api/dataItem/:dataItemGroupKey', async (req, res) => {
-    const dataItemGroupKey = req.params?.dataItemGroupKey;
-    const values = dataTableCache[dataItemGroupKey];
-    if (!values) {
-      return res.status(404).send('Not Found');
-    }
-    res.status(200).json({ values });
-  });
+  // for open in app window (ONLY for electro mode)
+  addDataEndpoint('post', '/api/appWindow', async (req, res) => {
+    const hashLink = req.body.hashLink;
 
-  addDataEndpoint('put', '/api/dataItem/:dataItemGroupKey', async (req, res) => {
-    const dataItemGroupKey = req.params?.dataItemGroupKey;
-    const values = req.body.values;
-    dataTableCache[dataItemGroupKey] = values;
-    res.status(202).json(values);
-
+    // attempting to open the window to show this data
     try {
       const mainWindow = new BrowserWindow({
         width: 1200,
@@ -540,9 +530,51 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
         },
       });
 
-      mainWindow.loadFile(global.indexHtmlPath, { hash: `/data-item-view/${dataItemGroupKey}` });
-    } catch (err) {
-      console.log('sytest2 err', err);
+      mainWindow.loadFile(global.indexHtmlPath, { hash: hashLink });
+    } catch (err) {}
+
+    res.status(200).send();
+  });
+  // data snapshot endpoints
+  addDataEndpoint('get', '/api/dataSnapshots', async (req, res) => {
+    const dataSnapshotStorage = await getDataSnapshotStorage();
+
+    // here we skip the description to save spaces
+    const dataSnapshots = (await dataSnapshotStorage.list()).map((dataSnapshot) => {
+      const { values, ...restOfDataSnapshot } = dataSnapshot;
+      return {
+        ...restOfDataSnapshot,
+      };
+    });
+
+    res.status(200).json(dataSnapshots);
+  });
+
+  addDataEndpoint('get', '/api/dataSnapshot/:dataSnapshotId', async (req, res) => {
+    const dataSnapshotStorage = await getDataSnapshotStorage();
+
+    const dataSnapshotId = req.params?.dataSnapshotId;
+
+    const dataSnapshot = await dataSnapshotStorage.get(dataSnapshotId);
+
+    if (!dataSnapshot) {
+      return res.status(404).send('Not Found');
     }
+    res.status(200).json(dataSnapshot);
+  });
+
+  addDataEndpoint('post', '/api/dataSnapshot', async (req, res) => {
+    const dataSnapshotStorage = await getDataSnapshotStorage();
+    const resp = await dataSnapshotStorage.add({
+      description: req.body.description,
+      values: req.body.values,
+      created: Date.now(),
+    });
+    res.status(200).json(resp);
+  });
+
+  addDataEndpoint('delete', '/api/dataSnapshot/:dataSnapshotId', async (req, res, apiCache) => {
+    const dataSnapshotStorage = await getDataSnapshotStorage();
+    res.status(202).json(await dataSnapshotStorage.delete(req.params?.dataSnapshotId));
   });
 }
