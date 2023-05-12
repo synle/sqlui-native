@@ -76,7 +76,7 @@ const renderApp = function () {
 
         <CombinedContextProvider>
           <Routes>
-            <Route path='/data-item-view/:dataItemGroupKey' element={<DataItemView />} />
+            <Route path='/data-snapshot/:dataItemGroupKey' element={<DataItemView />} />
             <Route path='/*' element={<App />} />
           </Routes>
         </CombinedContextProvider>

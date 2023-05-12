@@ -215,14 +215,14 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
 
   const onShowExpandedData = async () => {
     try {
-      const resp = await addDataItem({
+      const dataSnapshot = await addDataItem({
         values: data,
         description,
       });
 
       if (window.isElectron !== true) {
-        if(resp?.id){
-          window.open(`/#/data-item-view/${resp.id}`);
+        if(dataSnapshot?.id){
+          window.open(`/#/data-snapshot/${dataSnapshot.id}`);
         }
       }
     } finally {}

@@ -557,7 +557,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
         },
       });
 
-      mainWindow.loadFile(global.indexHtmlPath, { hash: `/data-item-view/${dataItemGroupKey}` });
+      mainWindow.loadFile(global.indexHtmlPath, { hash: `/data-snapshot/${dataItemGroupKey}` });
     } catch (err) {}
   });
 }
