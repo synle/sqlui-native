@@ -104,10 +104,7 @@ export default function App() {
   return (
     <>
       <SessionManager>
-        <Box
-          className='App'
-          onDrop={onDrop}
-          onDragOver={onDragOver}>
+        <Box className='App' onDrop={onDrop} onDragOver={onDragOver}>
           <Routes>
             <Route
               path='/'

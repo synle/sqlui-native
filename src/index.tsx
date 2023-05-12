@@ -32,11 +32,18 @@ function AppliedTheme({ children }) {
     },
   });
 
-  return <ThemeProvider theme={myTheme}><Box sx={{
-            minHeight: '100vh',
-            bgcolor: 'background.default',
-            color: 'text.primary',
-          }}>{children}</Box></ThemeProvider>;
+  return (
+    <ThemeProvider theme={myTheme}>
+      <Box
+        sx={{
+          minHeight: '100vh',
+          bgcolor: 'background.default',
+          color: 'text.primary',
+        }}>
+        {children}
+      </Box>
+    </ThemeProvider>
+  );
 }
 
 function CombinedContextProvider({ children }) {
