@@ -2,6 +2,7 @@ import Box from '@mui/material/Box';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { Route, Routes } from 'react-router-dom';
 import { useEffect, useRef } from 'react';
+import ActionDialogs from 'src/frontend/components/ActionDialogs';
 import AppHeader from 'src/frontend/components/AppHeader';
 import ElectronEventListener from 'src/frontend/components/ElectronEventListener';
 import MissionControl, { useCommands } from 'src/frontend/components/MissionControl';
@@ -253,6 +254,7 @@ export default function App() {
         </Box>
         <MissionControl />
       </SessionManager>
+      <ActionDialogs />
       <ElectronEventListener />
     </ThemeProvider>
   );

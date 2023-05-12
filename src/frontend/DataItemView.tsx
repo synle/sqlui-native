@@ -1,3 +1,5 @@
+import ElectronEventListener from 'src/frontend/components/ElectronEventListener';
+import ActionDialogs from 'src/frontend/components/ActionDialogs';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -17,7 +19,7 @@ export default function DataView() {
   const onShowRecordDetails = async (rowData: any) => {
     try {
       await modal({
-        title: 'Confirmation?',
+        title: 'Record Details',
         message: (
           <Paper sx={{ height: '90vh', p: 1 }}>
             <pre>{JSON.stringify(rowData, null, 2)}</pre>
@@ -50,6 +52,7 @@ export default function DataView() {
   }
 
   return (
+    <>
     <Box sx={{ p: 1 }}>
       <DataTableWithJSONList
         onRowClick={onShowRecordDetails}
@@ -60,5 +63,8 @@ export default function DataView() {
         fullScreen={true}
       />
     </Box>
+    <ActionDialogs />
+    <ElectronEventListener />
+    </>
   );
 }

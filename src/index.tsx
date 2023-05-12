@@ -27,14 +27,6 @@ const CombinedContextProvider = ({ children }) => {
   ].reduceRight((acc, Provider) => <Provider>{acc}</Provider>, children);
 };
 
-const CommonModules = () => {
-  return (
-    <>
-      <ActionDialogs />
-    </>
-  );
-};
-
 const renderApp = function () {
   const queryClient = new QueryClient({
     defaultOptions: {
@@ -56,19 +48,13 @@ const renderApp = function () {
             <Route
               path='/data-table/:dataItemGroupKey'
               element={
-                <>
-                  <DataItemView />
-                  <CommonModules />
-                </>
+                <DataItemView />
               }
             />
             <Route
               path='/*'
               element={
-                <>
-                  <App />
-                  <CommonModules />
-                </>
+                <App />
               }
             />
           </Routes>
