@@ -216,7 +216,7 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
     try {
       await addDataItem([dataItemGroupKey, data]);
     } finally {
-      if (window.process.env.ENV_TYPE !== 'mocked-server') {
+      if (window.process.env.ENV_TYPE === 'mocked-server') {
         window.open(`/#/data-table/${dataItemGroupKey}`);
       }
     }
