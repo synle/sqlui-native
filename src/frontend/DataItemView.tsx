@@ -35,6 +35,8 @@ export default function DataView() {
     },
   ];
 
+  window.document.title = `Data Snapshot: ${data?.length || 0} items`
+
   if (isLoading) {
     return (
       <Alert severity='info' icon={<CircularProgress size={15} />}>
