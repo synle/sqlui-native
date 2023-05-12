@@ -540,7 +540,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
         },
       });
 
-      mainWindow.loadFile(global.indexHtmlPath, { hash: `/data-table/${dataItemGroupKey}` });
+      mainWindow.loadFile(global.indexHtmlPath, { hash: `/data-item-view/${dataItemGroupKey}` });
     } catch (err) {
       console.log('sytest2 err', err);
     }
