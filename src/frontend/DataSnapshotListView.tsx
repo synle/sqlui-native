@@ -24,7 +24,7 @@ const columns = [
     accessor: 'id',
     Cell: (data: any) => {
       const dataSnapshot = data.row.original;
-      const linkToUse = `/data-snapshot/${dataSnapshot.id}`
+      const linkToUse = `/data_snapshot/${dataSnapshot.id}`
       return <Link component={RouterLink}
               to={linkToUse}>{dataSnapshot.id}</Link>;
     },

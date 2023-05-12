@@ -78,8 +78,8 @@ const renderApp = function () {
 
         <CombinedContextProvider>
           <Routes>
-            <Route path='/data-snapshot' element={<DataSnapshotListView />} />
-            <Route path='/data-snapshot/:dataSnapshotId' element={<DataSnapshotView />} />
+            <Route path='/data_snapshot' element={<DataSnapshotListView />} />
+            <Route path='/data_snapshot/:dataSnapshotId' element={<DataSnapshotView />} />
             <Route path='/*' element={<App />} />
           </Routes>
           <ActionDialogs />

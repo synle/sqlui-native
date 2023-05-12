@@ -59,7 +59,7 @@ export default function() {
   };
 
   const onGoToDataSnapshotList = async () => {
-      navigate('/data-snapshot')
+      navigate('/data_snapshot')
   };
 
   const rowContextOptions = [

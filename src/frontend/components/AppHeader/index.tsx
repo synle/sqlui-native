@@ -1,4 +1,5 @@
 import AddIcon from '@mui/icons-material/Add';
+import DataArrayIcon from '@mui/icons-material/DataArray';
 import BackupIcon from '@mui/icons-material/Backup';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -85,6 +86,11 @@ export default function AppHeader() {
       label: 'Recycle Bin',
       onClick: () => navigate('/recycle_bin'),
       startIcon: <DeleteIcon />,
+    },
+    {
+      label: 'Data Snapshots',
+      onClick: () => selectCommand({ event: 'clientEvent/openAppWindow', data: '/data_snapshot' },),
+      startIcon: <DataArrayIcon />,
     },
     {
       label: 'divider',

@@ -302,6 +302,7 @@ export module SqluiEnums {
    */
   export type ClientEventKey =
     | 'clientEvent/navigate'
+    | 'clientEvent/openAppWindow'
     | 'clientEvent/showSettings'
     | 'clientEvent/changeDarkMode'
     | 'clientEvent/changeEditorMode'

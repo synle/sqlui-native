@@ -221,7 +221,7 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
       });
 
       if(dataSnapshot?.id){
-          window.openAppLink(`/data-snapshot/${dataSnapshot.id}`);
+          window.openAppLink(`/data_snapshot/${dataSnapshot.id}`);
         }
     } finally {}
   };
