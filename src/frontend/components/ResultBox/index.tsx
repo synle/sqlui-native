@@ -1,4 +1,3 @@
-import CsvEngine from 'json-2-csv';
 import DownloadIcon from '@mui/icons-material/Download';
 import Alert from '@mui/material/Alert';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -10,7 +9,7 @@ import JsonFormatData from 'src/frontend/components/JsonFormatData';
 import { useCommands } from 'src/frontend/components/MissionControl';
 import Tabs from 'src/frontend/components/Tabs';
 import Timer from 'src/frontend/components/Timer';
-import { downloadJSON, downloadCsv } from 'src/frontend/data/file';
+import { downloadCsv, downloadJSON } from 'src/frontend/data/file';
 import { SqluiFrontend } from 'typings';
 
 type ResultBoxProps = {
@@ -74,7 +73,7 @@ export default function ResultBox(props: ResultBoxProps): JSX.Element | null {
     e.stopPropagation();
     downloadJSON(
       `Result - ${new Date().toLocaleString()}.result.json`,
-      JSON.stringify(data, null, 2)
+      JSON.stringify(data, null, 2),
     );
   };
 
@@ -82,10 +81,7 @@ export default function ResultBox(props: ResultBoxProps): JSX.Element | null {
     e.preventDefault();
     e.stopPropagation();
 
-    downloadCsv(
-      `Result - ${new Date().toLocaleString()}.result.csv`,
-      data
-    )
+    downloadCsv(`Result - ${new Date().toLocaleString()}.result.csv`, data);
   };
 
   const onShowRecordDetails = (rowData: any) => {
@@ -147,27 +143,6 @@ export default function ResultBox(props: ResultBoxProps): JSX.Element | null {
         onTabChange={(newTabIdx) => setTabIdx(newTabIdx)}></Tabs>
     </div>
   );
-}
-
-type FormatDataProps = {
-  data: any[];
-};
-
-function CsvFormatData(props: FormatDataProps): JSX.Element | null {
-  const { data } = props;
-  const [csv, setCsv] = useState('');
-
-  useEffect(() => {
-    CsvEngine.json2csv(data, (err, newCsv) => {
-      if (!err && newCsv) {
-        setCsv(newCsv);
-      } else {
-        setCsv('');
-      }
-    });
-  }, [data]);
-
-  return <CodeEditorBox value={csv} />;
 }
 
 type QueryTimeDescriptionProps = {

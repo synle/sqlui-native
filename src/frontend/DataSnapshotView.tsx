@@ -1,31 +1,29 @@
-import { downloadText } from 'src/frontend/data/file';
+import DataArrayIcon from '@mui/icons-material/DataArray';
+import DescriptionIcon from '@mui/icons-material/Description';
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+import ListAltIcon from '@mui/icons-material/ListAlt';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
-import Fab from '@mui/material/Fab';
 import InputLabel from '@mui/material/InputLabel';
-import { useNavigate, useParams } from 'react-router-dom';
-import { useState, useEffect } from 'react';
-import SimpleEditor from 'src/frontend/components/CodeEditorBox/SimpleEditor';
-import { DataTableWithJSONList } from 'src/frontend/components/DataTable';
-import { useActionDialogs } from 'src/frontend/hooks/useActionDialogs';
-import { useGetDataSnapshot } from 'src/frontend/hooks/useDataSnapshot';
 import SpeedDial from '@mui/material/SpeedDial';
 import SpeedDialAction from '@mui/material/SpeedDialAction';
-import DescriptionIcon from '@mui/icons-material/Description';
-import DataArrayIcon from '@mui/icons-material/DataArray';
-import ListAltIcon from '@mui/icons-material/ListAlt';
-import { downloadJSON, downloadCsv } from 'src/frontend/data/file';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import SimpleEditor from 'src/frontend/components/CodeEditorBox/SimpleEditor';
+import { DataTableWithJSONList } from 'src/frontend/components/DataTable';
+import { downloadCsv, downloadJSON } from 'src/frontend/data/file';
+import { useActionDialogs } from 'src/frontend/hooks/useActionDialogs';
+import { useGetDataSnapshot } from 'src/frontend/hooks/useDataSnapshot';
 import useToaster from 'src/frontend/hooks/useToaster';
 
 type QuickActionDialProps = {
-  data: any// TODO: fix me
-}
+  data: any; // TODO: fix me
+};
 
-function QuickActionDial(props: QuickActionDialProps){
-  const{data} = props;
+function QuickActionDial(props: QuickActionDialProps) {
+  const { data } = props;
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
   const { modal } = useActionDialogs();
@@ -38,8 +36,6 @@ function QuickActionDial(props: QuickActionDialProps){
   const onClose = () => {
     setOpen(false);
   };
-
-
   const onGoToDataSnapshotList = async () => {
     navigate('/data_snapshot');
     onClose();
@@ -74,58 +70,53 @@ function QuickActionDial(props: QuickActionDialProps){
   };
 
   const onDownloadCSV = async () => {
-    const fileName=`Snapshot ${new Date().toLocaleString()}.csv`
+    const fileName = `Snapshot ${new Date().toLocaleString()}.csv`;
 
-    downloadCsv(
-      fileName,
-      data.values
-    );
+    downloadCsv(fileName, data.values);
 
-    addToast({message:`"${fileName}" download has started`})
+    addToast({ message: `"${fileName}" download has started` });
     onClose();
-  }
+  };
 
   const onDownloadJSON = async () => {
-    const fileName=`Snapshot ${new Date().toLocaleString()}.json`
+    const fileName = `Snapshot ${new Date().toLocaleString()}.json`;
 
-    downloadJSON(
-      fileName,
-      data.values
-    );
+    downloadJSON(fileName, data.values);
 
-    addToast({message:`"${fileName}" download has started`})
+    addToast({ message: `"${fileName}" download has started` });
     onClose();
-  }
+  };
 
-  return <SpeedDial
-        ariaLabel="Actions"
-        icon={<KeyboardArrowUpIcon />}
-        onClose={onClose}
-        onOpen={onOpen}
-        open={open}
-        sx={{position: 'fixed', bottom: 2, right: 2}}
-      >
-        <SpeedDialAction
-          icon={<KeyboardArrowLeftIcon />}
-          tooltipTitle="Go back to Data Snapshot List"
-          onClick={onGoToDataSnapshotList}
-        />
-        <SpeedDialAction
-          icon={<DescriptionIcon />}
-          tooltipTitle="Show Data Snapshot Detailed Description"
-          onClick={onShowDescription}
-        />
-        <SpeedDialAction
-          icon={<ListAltIcon />}
-          tooltipTitle="Download as CSV"
-          onClick={onDownloadCSV}
-        />
-        <SpeedDialAction
-          icon={<DataArrayIcon />}
-          tooltipTitle="Download as JSON"
-          onClick={onDownloadJSON}
-        />
-      </SpeedDial>
+  return (
+    <SpeedDial
+      ariaLabel='Actions'
+      icon={<KeyboardArrowUpIcon />}
+      onClose={onClose}
+      onOpen={onOpen}
+      open={open}
+      sx={{ position: 'fixed', bottom: 2, right: 2 }}>
+      <SpeedDialAction
+        icon={<KeyboardArrowLeftIcon />}
+        tooltipTitle='Go back to Data Snapshot List'
+        onClick={onGoToDataSnapshotList}
+      />
+      <SpeedDialAction
+        icon={<DescriptionIcon />}
+        tooltipTitle='Show Data Snapshot Detailed Description'
+        onClick={onShowDescription}
+      />
+      <SpeedDialAction
+        icon={<ListAltIcon />}
+        tooltipTitle='Download as CSV'
+        onClick={onDownloadCSV}
+      />
+      <SpeedDialAction
+        icon={<DataArrayIcon />}
+        tooltipTitle='Download as JSON'
+        onClick={onDownloadJSON}
+      />
+    </SpeedDial>
+  );
 }
 
 export default function DataSnapshotView() {

@@ -15,7 +15,6 @@ export function downloadJSON(downloadFileName: string, data) {
   downloadText(downloadFileName, JSON.stringify(data, null, 2), 'text/json');
 }
 
-
 export function downloadCsv(downloadFileName: string, data) {
   CsvEngine.json2csv(data, (err, newCsv) => {
     if (!err && newCsv) {
