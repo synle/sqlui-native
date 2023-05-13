@@ -1,4 +1,3 @@
-/* eslint-disable import/no-anonymous-default-export */
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import Alert from '@mui/material/Alert';
@@ -13,7 +12,7 @@ import SimpleEditor from 'src/frontend/components/CodeEditorBox/SimpleEditor';
 import { DataTableWithJSONList } from 'src/frontend/components/DataTable';
 import { useActionDialogs } from 'src/frontend/hooks/useActionDialogs';
 import { useGetDataSnapshot } from 'src/frontend/hooks/useDataSnapshot';
-
+/* eslint-disable import/no-anonymous-default-export */
 export default function () {
   const navigate = useNavigate();
   const urlParams = useParams();
@@ -73,8 +72,10 @@ export default function () {
   ];
 
   useEffect(() => {
-    if(data){
-      window.document.title = `${new Date(data.created).toLocaleString()} Snapshot - ${data.description || ''}`.trim();
+    if (data) {
+      window.document.title = `${new Date(data.created).toLocaleString()} Snapshot - ${
+        data.description || ''
+      }`.trim();
     } else {
       window.document.title = `Snapshot`.trim();
     }
