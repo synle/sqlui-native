@@ -130,21 +130,21 @@ export function DataTableWithJSONList(props: DataTableWithJSONListProps) {
               />
             );
           } else if (typeof columnValue === 'number') {
-              return <span style={{ fontFamily: 'monospace' }}>{columnValue}</span>;
+            return <span style={{ fontFamily: 'monospace' }}>{columnValue}</span>;
           } else if (typeof columnValue === 'object') {
-              return (
-                <span
-                  style={{
-                    width: '100%',
-                    display: 'inline-block',
-                    fontFamily: 'monospace',
-                    overflow: 'hidden',
-                    whiteSpace: 'nowrap',
-                    textOverflow: 'ellipsis',
-                  }}>
-                  {JSON.stringify(columnValue)}
-                </span>
-              );
+            return (
+              <span
+                style={{
+                  width: '100%',
+                  display: 'inline-block',
+                  fontFamily: 'monospace',
+                  overflow: 'hidden',
+                  whiteSpace: 'nowrap',
+                  textOverflow: 'ellipsis',
+                }}>
+                {JSON.stringify(columnValue)}
+              </span>
+            );
           }
           return (
             <span

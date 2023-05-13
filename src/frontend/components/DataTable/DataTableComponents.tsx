@@ -1,4 +1,3 @@
-import React, { useEffect, useRef, useState } from 'react';
 import { styled } from '@mui/material/styles';
 
 export const defaultTableHeight = '40vh';
@@ -33,10 +32,8 @@ export const StyledDivValueCell = styled('div')(({ theme }) => ({
   alignItems: 'center',
   paddingBlock: '7px',
   textOverflow: 'ellipsis',
-  wordBreak: 'break-all'
+  wordBreak: 'break-all',
 }));
-
-
 export const StyledDivHeaderRow = styled('div')(({ theme }) => ({
   fontWeight: 'bold',
   display: 'flex',
@@ -61,8 +58,6 @@ export const StyledDivHeaderRow = styled('div')(({ theme }) => ({
     whiteSpace: 'nowrap',
   },
 }));
-
-
 export const StyledDivContentRow = styled('div')(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
@@ -93,8 +88,6 @@ export const StyledDivHeaderCellLabel = styled('div')(({ theme }) => ({
     flexGrow: 1,
   },
 }));
-
-
 // for virtualized ones
 export const StyledDivContentRowForVirualized = styled(StyledDivContentRow)(({ theme }) => ({
   position: 'absolute',

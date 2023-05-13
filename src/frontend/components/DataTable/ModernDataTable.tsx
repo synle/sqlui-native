@@ -3,7 +3,6 @@ import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import ZoomOutMapIcon from '@mui/icons-material/ZoomOutMap';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
-import { styled } from '@mui/material/styles';
 import Tooltip from '@mui/material/Tooltip';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import {
@@ -17,20 +16,22 @@ import {
 } from 'react-table';
 import React, { useEffect, useRef, useState } from 'react';
 import { DataTableProps } from 'src/frontend/components/DataTable';
+import {
+  ColumnResizer,
+  defaultTableHeight,
+  StyledDivContainer,
+  StyledDivContentRowForVirualized as StyledDivContentRow,
+  StyledDivHeaderCellForVirtualized as StyledDivHeaderCell,
+  StyledDivHeaderCellLabel,
+  StyledDivHeaderRow,
+  StyledDivValueCellForVirtualized as StyledDivValueCell,
+  tableCellHeaderHeight,
+  tableCellHeight,
+  tableCellWidth,
+} from 'src/frontend/components/DataTable/DataTableComponents';
 import { GlobalFilter, SimpleColumnFilter } from 'src/frontend/components/DataTable/Filter';
 import DropdownMenu from 'src/frontend/components/DropdownMenu';
 import { useAddDataSnapshot } from 'src/frontend/hooks/useDataSnapshot';
-
-import {ColumnResizer, defaultTableHeight,
-tableCellHeaderHeight,
-tableCellHeight,
-StyledDivValueCellForVirtualized as StyledDivValueCell,
-StyledDivContainer,
-StyledDivHeaderCellForVirtualized as StyledDivHeaderCell,
-StyledDivHeaderCellLabel,
-StyledDivHeaderRow,
-StyledDivContentRowForVirualized as StyledDivContentRow,
-tableCellWidth,}  from 'src/frontend/components/DataTable/DataTableComponents';
 
 export default function ModernDataTable(props: DataTableProps): JSX.Element | null {
   const { columns, data } = props;
@@ -54,12 +55,7 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
 
   const allRecordSize = data.length;
   const pageSizeToUse = allRecordSize;
-  const {
-    headerGroups,
-    page,
-    prepareRow,
-    setGlobalFilter,
-  } = useTable(
+  const { headerGroups, page, prepareRow, setGlobalFilter } = useTable(
     {
       initialState: {
         pageSize: pageSizeToUse,
@@ -203,7 +199,9 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
                       ))}
                     {/* Render the column resize handler */}
                   </StyledDivHeaderCellLabel>
-                  {column.canFilter && column.Header && <Box sx={{ mt: 1 }}>{column.render('Filter')}</Box>}
+                  {column.canFilter && column.Header && (
+                    <Box sx={{ mt: 1 }}>{column.render('Filter')}</Box>
+                  )}
                   {column.canResize && (
                     <ColumnResizer
                       {...column.getResizerProps()}
@@ -275,4 +273,3 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
     </>
   );
 }
-
