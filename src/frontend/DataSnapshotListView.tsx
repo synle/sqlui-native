@@ -26,8 +26,21 @@ const columns = [
     },
   },
   {
+    Header: 'Location',
+    accessor: 'location',
+  },
+  {
     Header: 'Description',
     accessor: 'description',
+  },
+  {
+    Header: 'Created',
+    accessor: 'created',
+    width: '180px',
+    Cell: (data: any) => {
+      const dataSnapshot = data.row.original;
+      return new Date(dataSnapshot.created).toLocaleString();
+    }
   },
   {
     Header: '',
@@ -58,9 +71,7 @@ const columns = [
   },
 ];
 
-export default function () {
-  const { modal } = useActionDialogs();
-
+export default function DataSnapshotListView() {
   const { data, isLoading } = useGetDataSnapshots();
   useEffect(() => {
     window.document.title = `Data Snapshots`;

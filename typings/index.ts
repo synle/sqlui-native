@@ -166,6 +166,7 @@ export module SqluiCore {
 
   export type DataSnapshot = {
     id: string;
+    location: string;
     description: string;
     values: DataSnapshotItemDictionary[];
     created: number;

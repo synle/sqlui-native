@@ -15,6 +15,8 @@ import {
   getQueryStorage,
   getSessionsStorage,
   storageDir,
+  readJSON,
+  writeJSON,
 } from 'src/common/PersistentStorage';
 import * as sessionUtils from 'src/common/utils/sessionUtils';
 import { SqluiCore, SqluiEnums } from 'typings';
@@ -538,16 +540,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
   // data snapshot endpoints
   addDataEndpoint('get', '/api/dataSnapshots', async (req, res) => {
     const dataSnapshotStorage = await getDataSnapshotStorage();
-
-    // here we skip the description to save spaces
-    const dataSnapshots = (await dataSnapshotStorage.list()).map((dataSnapshot) => {
-      const { values, ...restOfDataSnapshot } = dataSnapshot;
-      return {
-        ...restOfDataSnapshot,
-      };
-    });
-
-    res.status(200).json(dataSnapshots);
+    res.status(200).json(await dataSnapshotStorage.list());
   });
 
   addDataEndpoint('get', '/api/dataSnapshot/:dataSnapshotId', async (req, res) => {
@@ -560,14 +553,29 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     if (!dataSnapshot) {
       return res.status(404).send('Not Found');
     }
+
+    try{
+      dataSnapshot.values = await readJSON(dataSnapshot.location)
+    } catch(err){
+      dataSnapshot.values = [{
+        error: `Failed to read content of data snapshot - file=${dataSnapshot.location}`
+      }]
+    }
+
     res.status(200).json(dataSnapshot);
   });
 
   addDataEndpoint('post', '/api/dataSnapshot', async (req, res) => {
     const dataSnapshotStorage = await getDataSnapshotStorage();
+
+    const dataSnapshotId = dataSnapshotStorage.getGeneratedRandomId();
+
+    const location = await writeJSON(dataSnapshotId, req.body.values);
+
     const resp = await dataSnapshotStorage.add({
+      id: dataSnapshotId,
       description: req.body.description,
-      values: req.body.values,
+      location,
       created: Date.now(),
     });
     res.status(200).json(resp);
@@ -575,6 +583,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
 
   addDataEndpoint('delete', '/api/dataSnapshot/:dataSnapshotId', async (req, res, apiCache) => {
     const dataSnapshotStorage = await getDataSnapshotStorage();
+    // TODO: should we delete the snapshot data too?
     res.status(202).json(await dataSnapshotStorage.delete(req.params?.dataSnapshotId));
   });
 }
