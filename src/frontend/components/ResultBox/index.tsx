@@ -2,7 +2,7 @@ import DownloadIcon from '@mui/icons-material/Download';
 import Alert from '@mui/material/Alert';
 import CircularProgress from '@mui/material/CircularProgress';
 import Tooltip from '@mui/material/Tooltip';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import CodeEditorBox from 'src/frontend/components/CodeEditorBox';
 import { DataTableWithJSONList } from 'src/frontend/components/DataTable';
 import JsonFormatData from 'src/frontend/components/JsonFormatData';

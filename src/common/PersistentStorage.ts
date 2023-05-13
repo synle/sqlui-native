@@ -62,8 +62,13 @@ export class PersistentStorage<T extends StorageEntry> {
     fs.writeFileSync(this.storageLocation, JSON.stringify(toSave, null, 2));
   }
 
+  getGeneratedRandomId() {
+    return getGeneratedRandomId(`${this.name}`);
+  }
+
   add<K>(entry: K): T {
-    const newId = getGeneratedRandomId(`${this.name}`);
+    //@ts-ignore
+    const newId = entry.id || this.getGeneratedRandomId();
 
     const caches = this.getData();
     caches[newId] = {
@@ -119,6 +124,24 @@ export class PersistentStorage<T extends StorageEntry> {
 
 export default PersistentStorage;
 
+// common misc utils
+export async function writeJSON(fileName: string, content: any, isRelative = true) {
+  let fullPath = fileName;
+
+  if (isRelative) {
+    fullPath = path.join(storageDir, fullPath);
+  }
+
+  fs.writeFileSync(fullPath, JSON.stringify(content, null, 2));
+
+  return fullPath;
+}
+
+export async function readJSON(fileName: string) {
+  return JSON.parse(fs.readFileSync(fileName, { encoding: 'utf8', flag: 'r' }).trim());
+}
+
+// all the storage
 export async function getConnectionsStorage(sessionId: string) {
   if (!sessionId) {
     throw `sessionId is required for getConnectionsStorage`;
