@@ -125,20 +125,20 @@ export class PersistentStorage<T extends StorageEntry> {
 export default PersistentStorage;
 
 // common misc utils
-export async function writeJSON(fileName: string, content: any, isRelative = true){
+export async function writeJSON(fileName: string, content: any, isRelative = true) {
   let fullPath = fileName;
 
-  if(isRelative){
+  if (isRelative) {
     fullPath = path.join(storageDir, fullPath);
   }
 
   fs.writeFileSync(fullPath, JSON.stringify(content, null, 2));
 
-  return fullPath
+  return fullPath;
 }
 
-export async function readJSON(fileName: string){
-  return JSON.parse(fs.readFileSync(fileName, { encoding: 'utf8', flag: 'r' }).trim())
+export async function readJSON(fileName: string) {
+  return JSON.parse(fs.readFileSync(fileName, { encoding: 'utf8', flag: 'r' }).trim());
 }
 
 // all the storage

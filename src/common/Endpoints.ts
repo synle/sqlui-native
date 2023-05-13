@@ -14,8 +14,8 @@ import {
   getFolderItemsStorage,
   getQueryStorage,
   getSessionsStorage,
-  storageDir,
   readJSON,
+  storageDir,
   writeJSON,
 } from 'src/common/PersistentStorage';
 import * as sessionUtils from 'src/common/utils/sessionUtils';
@@ -554,12 +554,14 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
       return res.status(404).send('Not Found');
     }
 
-    try{
-      dataSnapshot.values = await readJSON(dataSnapshot.location)
-    } catch(err){
-      dataSnapshot.values = [{
-        error: `Failed to read content of data snapshot - file=${dataSnapshot.location}`
-      }]
+    try {
+      dataSnapshot.values = await readJSON(dataSnapshot.location);
+    } catch (err) {
+      dataSnapshot.values = [
+        {
+          error: `Failed to read content of data snapshot - file=${dataSnapshot.location}`,
+        },
+      ];
     }
 
     res.status(200).json(dataSnapshot);

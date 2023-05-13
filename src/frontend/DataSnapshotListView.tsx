@@ -40,7 +40,7 @@ const columns = [
     Cell: (data: any) => {
       const dataSnapshot = data.row.original;
       return new Date(dataSnapshot.created).toLocaleString();
-    }
+    },
   },
   {
     Header: '',

@@ -89,8 +89,10 @@ function QuickActionDial(props: QuickActionDialProps) {
     onClose();
   };
 
-  const actionDoms = !data ? null : [
-    <SpeedDialAction
+  const actionDoms = !data
+    ? null
+    : [
+        <SpeedDialAction
           key='action_data_snapshot_detailed_description'
           icon={<DescriptionIcon />}
           tooltipTitle='Show Data Snapshot Detailed Description'
@@ -107,10 +109,8 @@ function QuickActionDial(props: QuickActionDialProps) {
           icon={<DataArrayIcon />}
           tooltipTitle='Download as JSON'
           onClick={onDownloadJSON}
-        />
-  ]
-
-
+        />,
+      ];
   return (
     <SpeedDial
       ariaLabel='Actions'
@@ -173,18 +173,20 @@ export default function DataSnapshotView() {
     );
   }
 
-  let content = <></>
+  let content = <></>;
   if (!data) {
     content = <Alert severity='error'>No data for this snapshot</Alert>;
   } else {
-content= <DataTableWithJSONList
-          onRowClick={onShowRecordDetails}
-          rowContextOptions={rowContextOptions}
-          data={data.values}
-          searchInputId='result-box-search-input'
-          enableColumnFilter={true}
-          fullScreen={true}
-        />
+    content = (
+      <DataTableWithJSONList
+        onRowClick={onShowRecordDetails}
+        rowContextOptions={rowContextOptions}
+        data={data.values}
+        searchInputId='result-box-search-input'
+        enableColumnFilter={true}
+        fullScreen={true}
+      />
+    );
   }
 
   return (
