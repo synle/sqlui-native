@@ -36,7 +36,7 @@ const columns = [
   {
     Header: 'Created',
     accessor: 'created',
-    width: '180px',
+    width: 180,
     Cell: (data: any) => {
       const dataSnapshot = data.row.original;
       return new Date(dataSnapshot.created).toLocaleString();
@@ -45,7 +45,7 @@ const columns = [
   {
     Header: '',
     id: 'action',
-    width: 80,
+    width: 40,
     Cell: (data: any) => {
       const dataSnapshot = data.row.original;
       const { confirm } = useActionDialogs();
