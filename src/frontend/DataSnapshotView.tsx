@@ -1,3 +1,4 @@
+import { downloadText } from 'src/frontend/data/file';
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import Alert from '@mui/material/Alert';
@@ -6,31 +7,42 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Fab from '@mui/material/Fab';
 import InputLabel from '@mui/material/InputLabel';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useEffect } from 'react';
-import ActionDialogs from 'src/frontend/components/ActionDialogs';
+import { useState, useEffect } from 'react';
 import SimpleEditor from 'src/frontend/components/CodeEditorBox/SimpleEditor';
 import { DataTableWithJSONList } from 'src/frontend/components/DataTable';
 import { useActionDialogs } from 'src/frontend/hooks/useActionDialogs';
 import { useGetDataSnapshot } from 'src/frontend/hooks/useDataSnapshot';
-/* eslint-disable import/no-anonymous-default-export */
-export default function () {
+import SpeedDial from '@mui/material/SpeedDial';
+import SpeedDialAction from '@mui/material/SpeedDialAction';
+import DescriptionIcon from '@mui/icons-material/Description';
+import DataArrayIcon from '@mui/icons-material/DataArray';
+import ListAltIcon from '@mui/icons-material/ListAlt';
+import { downloadJSON, downloadCsv } from 'src/frontend/data/file';
+import useToaster from 'src/frontend/hooks/useToaster';
+
+type QuickActionDialProps = {
+  data: any// TODO: fix me
+}
+
+function QuickActionDial(props: QuickActionDialProps){
+  const{data} = props;
+  const [open, setOpen] = useState(false);
   const navigate = useNavigate();
-  const urlParams = useParams();
-  const dataSnapshotId = urlParams.dataSnapshotId as string;
   const { modal } = useActionDialogs();
+  const { add: addToast } = useToaster();
 
-  const { data, isLoading } = useGetDataSnapshot(dataSnapshotId);
+  const onOpen = () => {
+    setOpen(true);
+  };
 
-  const onShowRecordDetails = async (rowData: any) => {
-    try {
-      await modal({
-        title: 'Record Details',
-        message: <SimpleEditor value={JSON.stringify(rowData, null, 2)} height='85vh' />,
-        showCloseButton: true,
-        size: 'lg',
-      });
-    } finally {
-    }
+  const onClose = () => {
+    setOpen(false);
+  };
+
+
+  const onGoToDataSnapshotList = async () => {
+    navigate('/data_snapshot');
+    onClose();
   };
 
   const onShowDescription = async () => {
@@ -58,10 +70,81 @@ export default function () {
       });
     } finally {
     }
+    onClose();
   };
 
-  const onGoToDataSnapshotList = async () => {
-    navigate('/data_snapshot');
+  const onDownloadCSV = async () => {
+    const fileName=`Snapshot ${new Date().toLocaleString()}.csv`
+
+    downloadCsv(
+      fileName,
+      data.values
+    );
+
+    addToast({message:`"${fileName}" download has started`})
+    onClose();
+  }
+
+  const onDownloadJSON = async () => {
+    const fileName=`Snapshot ${new Date().toLocaleString()}.json`
+
+    downloadJSON(
+      fileName,
+      data.values
+    );
+
+    addToast({message:`"${fileName}" download has started`})
+    onClose();
+  }
+
+  return <SpeedDial
+        ariaLabel="Actions"
+        icon={<KeyboardArrowUpIcon />}
+        onClose={onClose}
+        onOpen={onOpen}
+        open={open}
+        sx={{position: 'fixed', bottom: 2, right: 2}}
+      >
+        <SpeedDialAction
+          icon={<KeyboardArrowLeftIcon />}
+          tooltipTitle="Go back to Data Snapshot List"
+          onClick={onGoToDataSnapshotList}
+        />
+        <SpeedDialAction
+          icon={<DescriptionIcon />}
+          tooltipTitle="Show Data Snapshot Detailed Description"
+          onClick={onShowDescription}
+        />
+        <SpeedDialAction
+          icon={<ListAltIcon />}
+          tooltipTitle="Download as CSV"
+          onClick={onDownloadCSV}
+        />
+        <SpeedDialAction
+          icon={<DataArrayIcon />}
+          tooltipTitle="Download as JSON"
+          onClick={onDownloadJSON}
+        />
+      </SpeedDial>
+}
+
+export default function DataSnapshotView() {
+  const urlParams = useParams();
+  const dataSnapshotId = urlParams.dataSnapshotId as string;
+  const { modal } = useActionDialogs();
+
+  const { data, isLoading } = useGetDataSnapshot(dataSnapshotId);
+
+  const onShowRecordDetails = async (rowData: any) => {
+    try {
+      await modal({
+        title: 'Record Details',
+        message: <SimpleEditor value={JSON.stringify(rowData, null, 2)} height='85vh' />,
+        showCloseButton: true,
+        size: 'lg',
+      });
+    } finally {
+    }
   };
 
   const rowContextOptions = [
@@ -108,28 +191,8 @@ export default function () {
           enableColumnFilter={true}
           fullScreen={true}
         />
+        <QuickActionDial data={data} />
       </Box>
-      <Fab
-        size='small'
-        sx={{
-          position: 'fixed',
-          bottom: '1rem',
-          left: '1.5rem',
-        }}
-        onClick={() => onGoToDataSnapshotList()}>
-        <KeyboardArrowLeftIcon />
-      </Fab>
-
-      <Fab
-        size='small'
-        sx={{
-          position: 'fixed',
-          bottom: '1rem',
-          right: '1.5rem',
-        }}
-        onClick={() => onShowDescription()}>
-        <KeyboardArrowUpIcon />
-      </Fab>
     </>
   );
 }
