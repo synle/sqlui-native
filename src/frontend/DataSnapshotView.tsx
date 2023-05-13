@@ -53,6 +53,8 @@ function QuickActionDial(props: QuickActionDialProps) {
           <>
             <InputLabel>ID</InputLabel>
             <pre>{data.id}</pre>
+            <InputLabel>Location</InputLabel>
+            <pre>{data.location}</pre>
             <InputLabel>Total</InputLabel>
             <pre>{data.values?.length || 0}</pre>
             <InputLabel>Created</InputLabel>
@@ -87,6 +89,28 @@ function QuickActionDial(props: QuickActionDialProps) {
     onClose();
   };
 
+  const actionDoms = !data
+    ? null
+    : [
+        <SpeedDialAction
+          key='action_data_snapshot_detailed_description'
+          icon={<DescriptionIcon />}
+          tooltipTitle='Show Data Snapshot Detailed Description'
+          onClick={onShowDescription}
+        />,
+        <SpeedDialAction
+          key='action_download_as_csv'
+          icon={<ListAltIcon />}
+          tooltipTitle='Download as CSV'
+          onClick={onDownloadCSV}
+        />,
+        <SpeedDialAction
+          key='action_download_as_json'
+          icon={<DataArrayIcon />}
+          tooltipTitle='Download as JSON'
+          onClick={onDownloadJSON}
+        />,
+      ];
   return (
     <SpeedDial
       ariaLabel='Actions'
@@ -100,21 +124,7 @@ function QuickActionDial(props: QuickActionDialProps) {
         tooltipTitle='Go back to Data Snapshot List'
         onClick={onGoToDataSnapshotList}
       />
-      <SpeedDialAction
-        icon={<DescriptionIcon />}
-        tooltipTitle='Show Data Snapshot Detailed Description'
-        onClick={onShowDescription}
-      />
-      <SpeedDialAction
-        icon={<ListAltIcon />}
-        tooltipTitle='Download as CSV'
-        onClick={onDownloadCSV}
-      />
-      <SpeedDialAction
-        icon={<DataArrayIcon />}
-        tooltipTitle='Download as JSON'
-        onClick={onDownloadJSON}
-      />
+      {actionDoms}
     </SpeedDial>
   );
 }
@@ -163,8 +173,20 @@ export default function DataSnapshotView() {
     );
   }
 
+  let content = <></>;
   if (!data) {
-    return <Alert severity='error'>No data for this snapshot</Alert>;
+    content = <Alert severity='error'>No data for this snapshot</Alert>;
+  } else {
+    content = (
+      <DataTableWithJSONList
+        onRowClick={onShowRecordDetails}
+        rowContextOptions={rowContextOptions}
+        data={data.values}
+        searchInputId='result-box-search-input'
+        enableColumnFilter={true}
+        fullScreen={true}
+      />
+    );
   }
 
   return (
@@ -174,14 +196,7 @@ export default function DataSnapshotView() {
         sx={{
           px: 1,
         }}>
-        <DataTableWithJSONList
-          onRowClick={onShowRecordDetails}
-          rowContextOptions={rowContextOptions}
-          data={data.values}
-          searchInputId='result-box-search-input'
-          enableColumnFilter={true}
-          fullScreen={true}
-        />
+        {content}
         <QuickActionDial data={data} />
       </Box>
     </>
