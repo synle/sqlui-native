@@ -130,12 +130,8 @@ export function DataTableWithJSONList(props: DataTableWithJSONListProps) {
               />
             );
           } else if (typeof columnValue === 'number') {
-            if (isAdvancedTableRenderer) {
               return <span style={{ fontFamily: 'monospace' }}>{columnValue}</span>;
-            }
-            return <pre style={{ textTransform: 'uppercase' }}>{columnValue}</pre>;
           } else if (typeof columnValue === 'object') {
-            if (isAdvancedTableRenderer) {
               return (
                 <span
                   style={{
@@ -149,8 +145,6 @@ export function DataTableWithJSONList(props: DataTableWithJSONListProps) {
                   {JSON.stringify(columnValue)}
                 </span>
               );
-            }
-            return <pre>{JSON.stringify(columnValue, null, 2)}</pre>;
           }
           return (
             <span
@@ -160,7 +154,7 @@ export function DataTableWithJSONList(props: DataTableWithJSONListProps) {
                 textOverflow: 'ellipsis',
                 wordBreak: 'break-all',
                 whiteSpace: 'nowrap',
-                maxWidth: isAdvancedTableRenderer ? 'fit-content' : '250px',
+                maxWidth: 'fit-content',
               }}>
               {columnValue || ''}
             </span>
