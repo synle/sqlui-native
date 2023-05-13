@@ -12,7 +12,7 @@ import SimpleEditor from 'src/frontend/components/CodeEditorBox/SimpleEditor';
 import { DataTableWithJSONList } from 'src/frontend/components/DataTable';
 import { useActionDialogs } from 'src/frontend/hooks/useActionDialogs';
 import { useGetDataSnapshot } from 'src/frontend/hooks/useDataSnapshot';
-
+/* eslint-disable import/no-anonymous-default-export */
 export default function () {
   const navigate = useNavigate();
   const urlParams = useParams();
@@ -47,6 +47,8 @@ export default function () {
             <pre>{data.id}</pre>
             <InputLabel>Total</InputLabel>
             <pre>{data.values?.length || 0}</pre>
+            <InputLabel>Created</InputLabel>
+            <pre>{new Date(data.created).toLocaleString()}</pre>
             <InputLabel>Description</InputLabel>
             <pre>{data.description}</pre>
           </>
@@ -70,7 +72,13 @@ export default function () {
   ];
 
   useEffect(() => {
-    window.document.title = `Data Snapshot ${data?.description || ''}`.trim();
+    if (data) {
+      window.document.title = `${new Date(data.created).toLocaleString()} Snapshot - ${
+        data.description || ''
+      }`.trim();
+    } else {
+      window.document.title = `Snapshot`.trim();
+    }
   }, [data]);
 
   if (isLoading) {
