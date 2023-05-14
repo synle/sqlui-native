@@ -88,6 +88,7 @@ export default function MyTabs(props: TabsProps): JSX.Element | null {
   }
 
   return (
+    <>
     <StyledTabs
       id={id}
       className={orientation === 'vertical' ? 'Tabs Tabs__Vertical' : 'Tabs Tabs__Horizontal'}>
@@ -120,7 +121,8 @@ export default function MyTabs(props: TabsProps): JSX.Element | null {
           );
         })}
       </Tabs>
-      <div className='Tab__Body'>{tabContents[tabIdx]}</div>
     </StyledTabs>
+    <>{tabContents[tabIdx]}</>
+    </>
   );
 }

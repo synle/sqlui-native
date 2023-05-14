@@ -149,7 +149,6 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
           </Tooltip>
         )}
       </Box>
-      <Box sx={{ position: 'relative' }} onContextMenu={(e) => onRowContextMenuClick(e)}>
         {headerGroups.map((headerGroup, headerGroupIdx) => (
           <StyledDivHeaderRow {...headerGroup.getHeaderGroupProps()}>
             {headerGroup.headers.map((column, colIdx) => (
@@ -227,7 +226,6 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
               There is no data in the query with matching filters.
             </Box>
           ))}
-      </Box>
     </>
   );
 }

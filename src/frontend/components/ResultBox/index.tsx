@@ -2,7 +2,7 @@ import DownloadIcon from '@mui/icons-material/Download';
 import Alert from '@mui/material/Alert';
 import CircularProgress from '@mui/material/CircularProgress';
 import Tooltip from '@mui/material/Tooltip';
-import React, { useState } from 'react';
+import React, { Fragment, useState } from 'react';
 import CodeEditorBox from 'src/frontend/components/CodeEditorBox';
 import { DataTableWithJSONList } from 'src/frontend/components/DataTable';
 import JsonFormatData from 'src/frontend/components/JsonFormatData';
@@ -61,10 +61,10 @@ export default function ResultBox(props: ResultBoxProps): JSX.Element | null {
   if (!data || !Array.isArray(data) || data.length === 0) {
     // for inserts / update queries
     return (
-      <div className='ResultBox'>
+      <>
         <QueryTimeDescription query={query} />
         <JsonFormatData data={[queryResult.raw, queryResult.meta]} />
-      </div>
+      </>
     );
   }
 
@@ -115,7 +115,7 @@ export default function ResultBox(props: ResultBoxProps): JSX.Element | null {
   ];
 
   const tabContents = [
-    <div className='ResultBox__Content' key={`Table`}>
+    <React.Fragment key={`Table`}>
       <DataTableWithJSONList
         onRowClick={onShowRecordDetails}
         rowContextOptions={rowContextOptions}
@@ -124,14 +124,14 @@ export default function ResultBox(props: ResultBoxProps): JSX.Element | null {
         enableColumnFilter={true}
         description={`connectionId=${query.connectionId}\ndatabaseId=${query.databaseId}\ntableId=${query.tableId}\n\n${query.sql}`}
       />
-    </div>,
-    <div className='ResultBox__Content' key={`JSON`}>
+    </React.Fragment>,
+    <React.Fragment key={`JSON`}>
       <JsonFormatData data={data} />
-    </div>,
+    </React.Fragment>,
   ];
 
   return (
-    <div className='ResultBox'>
+    <>
       <Alert severity='info'>
         Query took <Timer startTime={query?.executionStart} endTime={query?.executionEnd} />.{' '}
         {data?.length > 0 ? `And it returned ${data?.length || 0} records.` : ''}
@@ -141,7 +141,7 @@ export default function ResultBox(props: ResultBoxProps): JSX.Element | null {
         tabHeaders={tabHeaders}
         tabContents={tabContents}
         onTabChange={(newTabIdx) => setTabIdx(newTabIdx)}></Tabs>
-    </div>
+    </>
   );
 }
 

@@ -164,10 +164,10 @@ export function DataTableWithJSONList(props: DataTableWithJSONListProps) {
     });
   }, [data]);
 
-  if (isAdvancedTableRenderer) {
-    // use the modern table
-    return <ModernDataTable {...props} columns={columns} />;
-  }
+  // if (isAdvancedTableRenderer) {
+  //   // use the modern table
+  //   return <ModernDataTable {...props} columns={columns} />;
+  // }
 
   // always use legacy table for now
   return <LegacyDataTable {...props} columns={columns} />;
