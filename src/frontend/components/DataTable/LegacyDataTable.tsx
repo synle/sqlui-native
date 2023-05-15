@@ -23,10 +23,13 @@ import {
   StyledDivHeaderRow,
   StyledDivValueCell,
   tableCellWidth,
+  tableCellHeight,
 } from 'src/frontend/components/DataTable/DataTableComponents';
 import { GlobalFilter, SimpleColumnFilter } from 'src/frontend/components/DataTable/Filter';
 import DropdownMenu from 'src/frontend/components/DropdownMenu';
 import { useAddDataSnapshot } from 'src/frontend/hooks/useDataSnapshot';
+import { WindowScroller, List } from 'react-virtualized';
+
 
 export default function ModernDataTable(props: DataTableProps): JSX.Element | null {
   const { data } = props;
@@ -133,6 +136,53 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
     } finally {
     }
   };
+
+  const rowRenderer = ({ index, key, style }) => {
+    const rowIdx = index
+    const row = page[rowIdx];
+    prepareRow(row);
+
+    return (
+      <StyledDivContentRow
+        data-row-idx={rowIdx}
+        style={style}
+        sx={{
+          cursor: props.onRowClick ? 'pointer' : '',
+        }}
+        onDoubleClick={() => props.onRowClick && props.onRowClick(row.original)}
+        {...row.getRowProps()}>
+        {row.cells.map((cell, colIdx) => {
+          let dropdownContent: any;
+          if (colIdx === 0 && targetRowContextOptions.length > 0) {
+            dropdownContent = (
+              <DropdownMenu
+                id={`data-table-row-dropdown-${rowIdx}`}
+                options={targetRowContextOptions}
+                onToggle={(newOpen) => {
+                  if (newOpen) {
+                    setOpenContextMenuRowIdx(rowIdx);
+                  } else {
+                    setOpenContextMenuRowIdx(-1);
+                  }
+                }}
+                maxHeight='400px'
+                anchorEl={anchorEl}
+                open={openContextMenuRowIdx === rowIdx}
+              />
+            );
+          }
+          return (
+            <StyledDivValueCell {...cell.getCellProps()}>
+              {dropdownContent}
+              {cell.render('Cell')}
+            </StyledDivValueCell>
+          );
+        })}
+      </StyledDivContentRow>
+    );
+  };
+
+
   return (
     <>
       <Box sx={{ display: 'flex', gap: 2 }}>
@@ -179,47 +229,21 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
             ))}
           </StyledDivHeaderRow>
         ))}
-        {page.map((row, rowIdx) => {
-          prepareRow(row);
-
-          return (
-            <StyledDivContentRow
-              data-row-idx={rowIdx}
-              sx={{
-                cursor: props.onRowClick ? 'pointer' : '',
-              }}
-              onDoubleClick={() => props.onRowClick && props.onRowClick(row.original)}
-              {...row.getRowProps()}>
-              {row.cells.map((cell, colIdx) => {
-                let dropdownContent: any;
-                if (colIdx === 0 && targetRowContextOptions.length > 0) {
-                  dropdownContent = (
-                    <DropdownMenu
-                      id={`data-table-row-dropdown-${rowIdx}`}
-                      options={targetRowContextOptions}
-                      onToggle={(newOpen) => {
-                        if (newOpen) {
-                          setOpenContextMenuRowIdx(rowIdx);
-                        } else {
-                          setOpenContextMenuRowIdx(-1);
-                        }
-                      }}
-                      maxHeight='400px'
-                      anchorEl={anchorEl}
-                      open={openContextMenuRowIdx === rowIdx}
-                    />
-                  );
-                }
-                return (
-                  <StyledDivValueCell {...cell.getCellProps()}>
-                    {dropdownContent}
-                    {cell.render('Cell')}
-                  </StyledDivValueCell>
-                );
-              })}
-            </StyledDivContentRow>
-          );
-        })}
+        <WindowScroller>
+          {({ height, isScrolling, onChildScroll, scrollTop }) => (
+            <List
+              autoHeight
+              height={height}
+              isScrolling={isScrolling}
+              onScroll={onChildScroll}
+              scrollTop={scrollTop}
+              rowCount={page.length} // Total number of items
+              rowHeight={tableCellHeight} // Height of each item
+              rowRenderer={rowRenderer}
+              width={1500} // Width of the list
+            />
+          )}
+        </WindowScroller>
         {!page ||
           (page.length === 0 && (
             <Box sx={{ paddingInline: 2, paddingBlock: 2 }}>
