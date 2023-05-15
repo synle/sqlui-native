@@ -23,11 +23,12 @@ import {
   StyledDivHeaderRow,
   StyledDivValueCell,
   tableCellWidth,
+  tableCellHeight,
 } from 'src/frontend/components/DataTable/DataTableComponents';
 import { GlobalFilter, SimpleColumnFilter } from 'src/frontend/components/DataTable/Filter';
 import DropdownMenu from 'src/frontend/components/DropdownMenu';
 import { useAddDataSnapshot } from 'src/frontend/hooks/useDataSnapshot';
-import { WindowScroller, List } from 'react-virtualized';
+import { AutoSizer, List, WindowScroller } from "react-virtualized";
 
 
 export default function FullPageDataTable(props: DataTableProps): JSX.Element | null {
@@ -103,19 +104,6 @@ export default function FullPageDataTable(props: DataTableProps): JSX.Element | 
     useResizeColumns,
   );
 
-  const onRowContextMenuClick = (e: React.SyntheticEvent) => {
-    const target = e.target as HTMLElement;
-    const tr = target.closest('[role=row]') as HTMLElement;
-    const rowIdx = parseInt(tr?.dataset?.rowIdx || '');
-
-    if (rowIdx >= 0) {
-      e.preventDefault();
-      const target = e.target as HTMLElement;
-      setOpenContextMenuRowIdx(rowIdx);
-      anchorEl.current = target;
-    }
-  };
-
   const targetRowContextOptions = (props.rowContextOptions || []).map((rowContextOption) => ({
     ...rowContextOption,
     onClick: () =>
@@ -135,6 +123,102 @@ export default function FullPageDataTable(props: DataTableProps): JSX.Element | 
     } finally {
     }
   };
+
+  // MainPage__RightPane
+  const [scrollTop, setScrollTop] = useState(0);
+
+  const rowRenderer = (props) => {
+    const { index, key, style, isVisible, isScrolling } = props;
+    const rowIdx = index;
+    const row = page[rowIdx];
+
+    try{
+      prepareRow(row);
+
+      return (
+        <StyledDivContentRow
+          key={key}
+          data-row-idx={rowIdx}
+          sx={{
+            cursor: props.onRowClick ? 'pointer' : '',
+          }}
+          onDoubleClick={() => props.onRowClick && props.onRowClick(row.original)}
+          style={style}>
+          {row.cells.map((cell, colIdx) => {
+            let dropdownContent: any;
+            if (colIdx === 0 && targetRowContextOptions.length > 0) {
+              dropdownContent = (
+                <DropdownMenu
+                  id={`data-table-row-dropdown-${rowIdx}`}
+                  options={targetRowContextOptions}
+                  onToggle={(newOpen) => {
+                    if (newOpen) {
+                      setOpenContextMenuRowIdx(rowIdx);
+                    } else {
+                      setOpenContextMenuRowIdx(-1);
+                    }
+                  }}
+                  maxHeight='400px'
+                  anchorEl={anchorEl}
+                  open={openContextMenuRowIdx === rowIdx}
+                />
+              );
+            }
+            return (
+              <StyledDivValueCell {...cell.getCellProps()}>
+                {dropdownContent}
+                {cell.render('Cell')}
+              </StyledDivValueCell>
+            );
+          })}
+        </StyledDivContentRow>
+      );
+    } catch(err){
+      return <StyledDivContentRow
+        key={key}
+        data-row-idx={rowIdx}>
+          Loading...
+        </StyledDivContentRow>
+    }
+  };
+
+  const rowHeight = tableCellHeight;
+  const totalHeight = rowHeight * data.length;
+  const height = totalHeight;
+  const width = tableCellWidth * columns.length;
+
+  useEffect(() => {
+    document.querySelector('#MainPage__RightPane')?.addEventListener(
+      'scroll',
+      (e) => {
+        let newScrollTop = (e.target as HTMLElement)?.scrollTop || 0;
+
+        function findOffsetRelativeToAncestor(element, ancestor) {
+          let offset = 0;
+          let currentElement = element;
+
+          while (currentElement && currentElement !== ancestor) {
+            offset += currentElement.offsetTop;
+            currentElement = currentElement.offsetParent;
+          }
+
+          return offset;
+        }
+        document.querySelector('.ReactVirtualized__Grid');
+
+        var element = document.querySelector('.ReactVirtualized__Grid');
+        var ancestor = document.querySelector('#MainPage__RightPane');
+
+        var yOffset = findOffsetRelativeToAncestor(element, ancestor);
+
+        console.log(newScrollTop, newScrollTop - yOffset);
+        newScrollTop = newScrollTop - yOffset
+
+        setScrollTop(newScrollTop)
+      }
+    )
+  }, [])
+
   return (
     <>
       <Box sx={{ display: 'flex', gap: 2 }}>
@@ -181,47 +265,15 @@ export default function FullPageDataTable(props: DataTableProps): JSX.Element | 
           ))}
         </StyledDivHeaderRow>
       ))}
-      {page.map((row, rowIdx) => {
-        prepareRow(row);
-
-        return (
-          <StyledDivContentRow
-            data-row-idx={rowIdx}
-            sx={{
-              cursor: props.onRowClick ? 'pointer' : '',
-            }}
-            onDoubleClick={() => props.onRowClick && props.onRowClick(row.original)}
-            {...row.getRowProps()}>
-            {row.cells.map((cell, colIdx) => {
-              let dropdownContent: any;
-              if (colIdx === 0 && targetRowContextOptions.length > 0) {
-                dropdownContent = (
-                  <DropdownMenu
-                    id={`data-table-row-dropdown-${rowIdx}`}
-                    options={targetRowContextOptions}
-                    onToggle={(newOpen) => {
-                      if (newOpen) {
-                        setOpenContextMenuRowIdx(rowIdx);
-                      } else {
-                        setOpenContextMenuRowIdx(-1);
-                      }
-                    }}
-                    maxHeight='400px'
-                    anchorEl={anchorEl}
-                    open={openContextMenuRowIdx === rowIdx}
-                  />
-                );
-              }
-              return (
-                <StyledDivValueCell {...cell.getCellProps()}>
-                  {dropdownContent}
-                  {cell.render('Cell')}
-                </StyledDivValueCell>
-              );
-            })}
-          </StyledDivContentRow>
-        );
-      })}
+      <List
+        width={width}
+        height={height}
+        rowCount={data.length}
+        rowHeight={rowHeight}
+        rowRenderer={rowRenderer}
+        scrollTop={scrollTop}
+        overscanRowCount={5}
+      />
       {!page ||
         (page.length === 0 && (
           <Box sx={{ paddingInline: 2, paddingBlock: 2 }}>

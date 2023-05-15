@@ -78,7 +78,7 @@ export function FixedLayoutTwoColumns(props: LayoutTwoColumnsProps): JSX.Element
       left: 0,
       width: '250px'
     }}>
-      <div className='LayoutTwoColumns__LeftPane'>{children[0]}</div>
+      {children[0]}
     </Box>
     <Box sx={{
       position: 'fixed',
@@ -89,7 +89,7 @@ export function FixedLayoutTwoColumns(props: LayoutTwoColumnsProps): JSX.Element
       right: 0
     }}
     id='MainPage__RightPane'>
-      <div className='LayoutTwoColumns__RightPane'>{children[1]}</div>
+      {children[1]}
     </Box>
     <Fab size='small' sx={fabStyle} onClick={() => setLeftPaneExpanded(true)}>
       <KeyboardArrowRightIcon />
