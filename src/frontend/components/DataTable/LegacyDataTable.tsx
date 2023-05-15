@@ -28,7 +28,7 @@ import {
 import { GlobalFilter, SimpleColumnFilter } from 'src/frontend/components/DataTable/Filter';
 import DropdownMenu from 'src/frontend/components/DropdownMenu';
 import { useAddDataSnapshot } from 'src/frontend/hooks/useDataSnapshot';
-import { WindowScroller, List } from 'react-virtualized';
+import { WindowScroller, List, AutoSizer } from 'react-virtualized';
 
 
 export default function ModernDataTable(props: DataTableProps): JSX.Element | null {
@@ -182,6 +182,8 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
     );
   };
 
+  const listRef = useRef();
+
 
   return (
     <>
@@ -229,21 +231,21 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
             ))}
           </StyledDivHeaderRow>
         ))}
-        <WindowScroller>
-          {({ height, isScrolling, onChildScroll, scrollTop }) => (
+        <AutoSizer>
+        {({ height, width }) => {
+          return (
             <List
-              autoHeight
+              ref={listRef}
               height={height}
-              isScrolling={isScrolling}
-              onScroll={onChildScroll}
-              scrollTop={scrollTop}
+              width={width}
               rowCount={page.length} // Total number of items
               rowHeight={tableCellHeight} // Height of each item
               rowRenderer={rowRenderer}
-              width={1500} // Width of the list
+              overscanRowCount={10} // Number of items to render above/below the visible area
             />
-          )}
-        </WindowScroller>
+          )
+          }}
+      </AutoSizer>
         {!page ||
           (page.length === 0 && (
             <Box sx={{ paddingInline: 2, paddingBlock: 2 }}>
