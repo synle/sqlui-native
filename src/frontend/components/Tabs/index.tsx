@@ -91,7 +91,8 @@ export default function MyTabs(props: TabsProps): JSX.Element | null {
     <>
     <StyledTabs
       id={id}
-      className={orientation === 'vertical' ? 'Tabs Tabs__Vertical' : 'Tabs Tabs__Horizontal'}>
+      className='Tabs Tabs__Horizontal'
+      sx={{mb:2}}>
       <Tabs
         value={tabIdx}
         onChange={(_e, newTabIdx) => onTabChange(newTabIdx)}

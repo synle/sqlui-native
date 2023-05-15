@@ -27,8 +27,10 @@ import {
 import { GlobalFilter, SimpleColumnFilter } from 'src/frontend/components/DataTable/Filter';
 import DropdownMenu from 'src/frontend/components/DropdownMenu';
 import { useAddDataSnapshot } from 'src/frontend/hooks/useDataSnapshot';
+import { WindowScroller, List } from 'react-virtualized';
 
-export default function ModernDataTable(props: DataTableProps): JSX.Element | null {
+
+export default function FullPageDataTable(props: DataTableProps): JSX.Element | null {
   const { data } = props;
   const [columns, setColumns] = useState([]);
   useEffect(() => {
@@ -149,85 +151,83 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
           </Tooltip>
         )}
       </Box>
-      <Box sx={{ position: 'relative' }} onContextMenu={(e) => onRowContextMenuClick(e)}>
-        {headerGroups.map((headerGroup, headerGroupIdx) => (
-          <StyledDivHeaderRow {...headerGroup.getHeaderGroupProps()}>
-            {headerGroup.headers.map((column, colIdx) => (
-              <StyledDivHeaderCell {...column.getHeaderProps()}>
-                <StyledDivHeaderCellLabel {...column.getSortByToggleProps()}>
-                  <span>{column.render('Header')}</span>
-                  {column.isSorted &&
-                    (column.isSortedDesc ? (
-                      <ArrowDropDownIcon fontSize='small' />
-                    ) : (
-                      <ArrowDropUpIcon fontSize='small' />
-                    ))}
-                  {/* Render the column resize handler */}
-                </StyledDivHeaderCellLabel>
-                {column.canFilter && column.Header && (
-                  <Box sx={{ mt: 1 }}>{column.render('Filter')}</Box>
-                )}
-                {column.canResize && (
-                  <ColumnResizer
-                    {...column.getResizerProps()}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                    }}
-                  />
-                )}
-              </StyledDivHeaderCell>
-            ))}
-          </StyledDivHeaderRow>
-        ))}
-        {page.map((row, rowIdx) => {
-          prepareRow(row);
-
-          return (
-            <StyledDivContentRow
-              data-row-idx={rowIdx}
-              sx={{
-                cursor: props.onRowClick ? 'pointer' : '',
-              }}
-              onDoubleClick={() => props.onRowClick && props.onRowClick(row.original)}
-              {...row.getRowProps()}>
-              {row.cells.map((cell, colIdx) => {
-                let dropdownContent: any;
-                if (colIdx === 0 && targetRowContextOptions.length > 0) {
-                  dropdownContent = (
-                    <DropdownMenu
-                      id={`data-table-row-dropdown-${rowIdx}`}
-                      options={targetRowContextOptions}
-                      onToggle={(newOpen) => {
-                        if (newOpen) {
-                          setOpenContextMenuRowIdx(rowIdx);
-                        } else {
-                          setOpenContextMenuRowIdx(-1);
-                        }
-                      }}
-                      maxHeight='400px'
-                      anchorEl={anchorEl}
-                      open={openContextMenuRowIdx === rowIdx}
-                    />
-                  );
-                }
-                return (
-                  <StyledDivValueCell {...cell.getCellProps()}>
-                    {dropdownContent}
-                    {cell.render('Cell')}
-                  </StyledDivValueCell>
-                );
-              })}
-            </StyledDivContentRow>
-          );
-        })}
-        {!page ||
-          (page.length === 0 && (
-            <Box sx={{ paddingInline: 2, paddingBlock: 2 }}>
-              There is no data in the query with matching filters.
-            </Box>
+      {headerGroups.map((headerGroup, headerGroupIdx) => (
+        <StyledDivHeaderRow {...headerGroup.getHeaderGroupProps()}>
+          {headerGroup.headers.map((column, colIdx) => (
+            <StyledDivHeaderCell {...column.getHeaderProps()}>
+              <StyledDivHeaderCellLabel {...column.getSortByToggleProps()}>
+                <span>{column.render('Header')}</span>
+                {column.isSorted &&
+                  (column.isSortedDesc ? (
+                    <ArrowDropDownIcon fontSize='small' />
+                  ) : (
+                    <ArrowDropUpIcon fontSize='small' />
+                  ))}
+                {/* Render the column resize handler */}
+              </StyledDivHeaderCellLabel>
+              {column.canFilter && column.Header && (
+                <Box sx={{ mt: 1 }}>{column.render('Filter')}</Box>
+              )}
+              {column.canResize && (
+                <ColumnResizer
+                  {...column.getResizerProps()}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                  }}
+                />
+              )}
+            </StyledDivHeaderCell>
           ))}
-      </Box>
+        </StyledDivHeaderRow>
+      ))}
+      {page.map((row, rowIdx) => {
+        prepareRow(row);
+
+        return (
+          <StyledDivContentRow
+            data-row-idx={rowIdx}
+            sx={{
+              cursor: props.onRowClick ? 'pointer' : '',
+            }}
+            onDoubleClick={() => props.onRowClick && props.onRowClick(row.original)}
+            {...row.getRowProps()}>
+            {row.cells.map((cell, colIdx) => {
+              let dropdownContent: any;
+              if (colIdx === 0 && targetRowContextOptions.length > 0) {
+                dropdownContent = (
+                  <DropdownMenu
+                    id={`data-table-row-dropdown-${rowIdx}`}
+                    options={targetRowContextOptions}
+                    onToggle={(newOpen) => {
+                      if (newOpen) {
+                        setOpenContextMenuRowIdx(rowIdx);
+                      } else {
+                        setOpenContextMenuRowIdx(-1);
+                      }
+                    }}
+                    maxHeight='400px'
+                    anchorEl={anchorEl}
+                    open={openContextMenuRowIdx === rowIdx}
+                  />
+                );
+              }
+              return (
+                <StyledDivValueCell {...cell.getCellProps()}>
+                  {dropdownContent}
+                  {cell.render('Cell')}
+                </StyledDivValueCell>
+              );
+            })}
+          </StyledDivContentRow>
+        );
+      })}
+      {!page ||
+        (page.length === 0 && (
+          <Box sx={{ paddingInline: 2, paddingBlock: 2 }}>
+            There is no data in the query with matching filters.
+          </Box>
+        ))}
     </>
   );
 }

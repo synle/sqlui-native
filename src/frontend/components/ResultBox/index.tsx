@@ -4,7 +4,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Tooltip from '@mui/material/Tooltip';
 import React, { Fragment, useState } from 'react';
 import CodeEditorBox from 'src/frontend/components/CodeEditorBox';
-import { DataTableWithJSONList } from 'src/frontend/components/DataTable';
+import { DataTableWithJSONListV2 as DataTableWithJSONList } from 'src/frontend/components/DataTable';
 import JsonFormatData from 'src/frontend/components/JsonFormatData';
 import { useCommands } from 'src/frontend/components/MissionControl';
 import Tabs from 'src/frontend/components/Tabs';

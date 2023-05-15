@@ -3,6 +3,7 @@ import Table from '@mui/material/Table';
 import { useMemo } from 'react';
 import LegacyDataTable from 'src/frontend/components/DataTable/LegacyDataTable';
 import ModernDataTable from 'src/frontend/components/DataTable/ModernDataTable';
+import FullPageDataTable from 'src/frontend/components/DataTable/FullPageDataTable';
 import { DropdownButtonOption } from 'src/frontend/components/DropdownButton';
 import { useTableRenderer } from 'src/frontend/hooks/useSetting';
 
@@ -32,27 +33,10 @@ export const DEFAULT_TABLE_PAGE_SIZE = 50;
 
 const UNNAMED_PROPERTY_NAME = '<unnamed_property>';
 
-export function DataTableWithJSONList(props: DataTableWithJSONListProps) {
+export function useComputedColumns(props: DataTableWithJSONListProps){
   const { data } = props;
 
-  const tableRenderer = useTableRenderer();
-  const isAdvancedTableRenderer = tableRenderer === 'advanced';
-
-  let hasRawJson = useMemo(() => {
-    for (const value of data) {
-      if (value !== null) {
-        for (const columnValue of Object.values(value)) {
-          if (typeof columnValue === 'object' && columnValue !== null) {
-            return true;
-          }
-        }
-      }
-    }
-
-    return false;
-  }, [data]);
-
-  const columns = useMemo(() => {
+  return useMemo(() => {
     const newColumnNames = new Set<string>();
     for (let i = 0; i < data.length; i++) {
       const row = data[i];
@@ -163,14 +147,46 @@ export function DataTableWithJSONList(props: DataTableWithJSONListProps) {
       };
     });
   }, [data]);
+}
 
-  // if (isAdvancedTableRenderer) {
-  //   // use the modern table
-  //   return <ModernDataTable {...props} columns={columns} />;
-  // }
+export function DataTableWithJSONList(props: DataTableWithJSONListProps) {
+  const { data } = props;
+
+  const tableRenderer = useTableRenderer();
+  const isAdvancedTableRenderer = tableRenderer === 'advanced';
+
+  let hasRawJson = useMemo(() => {
+    for (const value of data) {
+      if (value !== null) {
+        for (const columnValue of Object.values(value)) {
+          if (typeof columnValue === 'object' && columnValue !== null) {
+            return true;
+          }
+        }
+      }
+    }
+
+    return false;
+  }, [data]);
+
+  const columns = useComputedColumns(props);
+
+  if (isAdvancedTableRenderer) {
+    // use the modern table
+    return <ModernDataTable {...props} columns={columns} />;
+  }
 
   // always use legacy table for now
   return <LegacyDataTable {...props} columns={columns} />;
+}
+
+export function DataTableWithJSONListV2(props: DataTableWithJSONListProps) {
+  const { data } = props;
+
+  const columns = useComputedColumns(props);
+
+  // always use legacy table for now
+  return <FullPageDataTable {...props} columns={columns} />;
 }
 
 export default LegacyDataTable;
