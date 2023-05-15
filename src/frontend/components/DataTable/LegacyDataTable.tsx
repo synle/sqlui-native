@@ -185,6 +185,22 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
   const listRef = useRef();
 
 
+  useEffect(() => {
+    if (!listRef.current){
+      return
+    }
+
+    const handleScroll = () => {
+      //@ts-ignore
+      const scrollTop = document.querySelector('.LayoutTwoColumns__RightPane').scrollTop;
+
+      //@ts-ignore
+      listRef.current.scrollToPosition(scrollTop);
+    };
+
+    document.querySelector('.LayoutTwoColumns__RightPane')?.addEventListener('scroll', handleScroll)
+  }, [listRef.current]);
+
   return (
     <>
       <Box sx={{ display: 'flex', gap: 2 }}>
@@ -241,7 +257,6 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
               rowCount={page.length} // Total number of items
               rowHeight={tableCellHeight} // Height of each item
               rowRenderer={rowRenderer}
-              overscanRowCount={10} // Number of items to render above/below the visible area
             />
           )
           }}
