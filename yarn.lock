@@ -11732,10 +11732,10 @@ sql-formatter@^4.0.2:
   dependencies:
     argparse "^2.0.1"
 
-sqlite3@^5.1.1:
-  version "5.1.1"
-  resolved "https://registry.yarnpkg.com/sqlite3/-/sqlite3-5.1.1.tgz#c6561220fd875fd88eb2ef717631e0a11af1ec38"
-  integrity sha512-mMinkrQr/LKJqFiFF+AF7imPSzRCCpTCreusZO3D/ssJHVjZOrbu2Caz+zPH5KTmGGXBxXMGSRDssL+44CLxvg==
+sqlite3@^5.1.6:
+  version "5.1.6"
+  resolved "https://registry.yarnpkg.com/sqlite3/-/sqlite3-5.1.6.tgz#1d4fbc90fe4fbd51e952e0a90fd8f6c2b9098e97"
+  integrity sha512-olYkWoKFVNSSSQNvxVUfjiVbz3YtBwTJj+mfV5zpHmqW3sELx2Cf4QCdirMelhM5Zh+KDVaKgQHqCxrqiWHybw==
   dependencies:
     "@mapbox/node-pre-gyp" "^1.0.0"
     node-addon-api "^4.2.0"

@@ -124,7 +124,7 @@
     "redis": "^4.3.1",
     "sequelize": "^6.20.1",
     "sql-formatter": "^4.0.2",
-    "sqlite3": "^5.1.1",
+    "sqlite3": "^5.1.6",
     "tedious": "^16.1.0"
   },
   "eslintConfig": {
