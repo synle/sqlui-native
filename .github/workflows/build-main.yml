@@ -11,7 +11,7 @@ jobs:
     runs-on: windows-latest
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/setup-node@v3
         with:
           node-version: '16'
@@ -23,7 +23,7 @@ jobs:
       - run: yarn dist
       - run: mv ./dist/sqlui-native*.exe ./dist/sqlui-native.exe
       - name: Upload artifact .exe
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: sqlui-native.exe
           path: ./dist/sqlui-native.exe
@@ -32,7 +32,7 @@ jobs:
     runs-on: macos-latest
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/setup-node@v3
         with:
           node-version: '16'
@@ -44,7 +44,7 @@ jobs:
       - run: yarn dist
       - run: mv ./dist/sqlui-native*.dmg ./dist/sqlui-native.dmg
       - name: Upload artifact .dmg
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: sqlui-native.dmg
           path: ./dist/sqlui-native.dmg
@@ -55,7 +55,7 @@ jobs:
     steps:
       - name: install missing dependencies
         run: sudo apt-get install -y libarchive-tools
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/setup-node@v3
         with:
           node-version: '16'
@@ -71,22 +71,22 @@ jobs:
           mv ./dist/sqlui-native*.snap ./dist/sqlui-native.snap
           mv ./dist/sqlui-native*.pacman ./dist/sqlui-native.pacman
       - name: Upload artifact .deb
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: sqlui-native.deb
           path: ./dist/sqlui-native.deb
       - name: Upload artifact .rpm
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: sqlui-native.rpm
           path: ./dist/sqlui-native.rpm
       - name: Upload artifact .snap
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: sqlui-native.snap
           path: ./dist/sqlui-native.snap
       - name: Upload artifact .pacman
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: sqlui-native.pacman
           path: ./dist/sqlui-native.pacman
