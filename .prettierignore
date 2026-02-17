@@ -5,3 +5,6 @@ display-dj
 dist
 node_modules
 public/vs
+*.bundle.*
+*.min.*
+.build

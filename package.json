@@ -69,7 +69,7 @@
     "test": "jest --watch --verbose",
     "fix-import": "npx import-fixer --groupImport --aggressive --transformRelativeImport --importQuote=single",
     "preformat": "yarn fix-import",
-    "format": "npx prettier --config ./.prettierrc --no-error-on-unmatched-pattern --list-different --write **/*.{ts,tsx,js,jsx,scss,yml,html,json,md}",
+    "format": "prettier --write --ignore-unknown --cache '**/*.{js,jsx,ts,tsx,mjs,cjs,json,html,css,scss,less,md,yml,yaml,graphql,vue,xml}'",
     "lint": "eslint --fix --ext .tsx --ext .ts src"
   },
   "repository": "https://github.com/synle/sqlui-native",
