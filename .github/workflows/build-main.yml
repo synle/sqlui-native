@@ -1,6 +1,8 @@
 on:
   push:
     branches: [master, main]
+  pull_request:
+    branches: [master, main]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -11,13 +13,17 @@ env:
 
 jobs:
   build:
-    # https://github.com/synle/nav-generator/blob/main/.github/workflows/build-main.yml
-    uses: synle/gha-workflow/.github/workflows/build-and-commit-sh.yml@main
+    # https://github.com/synle/gha-workflows/blob/main/.github/workflows/build-and-commit-sh.yml
+    uses: synle/gha-workflows/.github/workflows/build-and-commit-sh.yml@main
     permissions:
       contents: write
+    with:
+      node-version: 18 # NODE_VERSION: 18
 
   patch_version:
+    if: github.event_name == 'push'
     needs: build
+    runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
@@ -32,6 +38,7 @@ jobs:
           path: package.json
 
   build_windows:
+    if: github.event_name == 'push'
     needs: patch_version
     runs-on: windows-latest
     timeout-minutes: 30
@@ -54,6 +61,7 @@ jobs:
           path: ./dist/sqlui-native.exe
 
   build_macos:
+    if: github.event_name == 'push'
     needs: patch_version
     runs-on: macos-latest
     timeout-minutes: 30
@@ -76,6 +84,7 @@ jobs:
           path: ./dist/sqlui-native.dmg
 
   build_linux:
+    if: github.event_name == 'push'
     needs: patch_version
     runs-on: ubuntu-latest
     timeout-minutes: 45
