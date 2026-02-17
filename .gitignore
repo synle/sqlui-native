@@ -6,10 +6,8 @@ src/package.json
 /node_modules
 .pnp
 .pnp.js
-
 # testing
 coverage
-
 # misc
 *.LICENSE.txt
 *.sqlite
@@ -31,6 +29,15 @@ yarn-debug.log*
 yarn-error.log*
 *.rej
 data
-
-
 *.db
+*storybook.log
+.claude
+.env
+.npmrc
+.nyc_output
+.prettier-cache
+.vs-code
+DEBUG
+Error
+node_modules
+yarn.lock
