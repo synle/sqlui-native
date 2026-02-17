@@ -202,6 +202,7 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
                   {column.canResize && (
                     <ColumnResizer
                       {...column.getResizerProps()}
+                      isResizing={column.isResizing}
                       onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
