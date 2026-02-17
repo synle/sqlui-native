@@ -12,17 +12,8 @@ env:
   NODE_VERSION: 18
 
 jobs:
-  build:
-    # https://github.com/synle/gha-workflows/blob/main/.github/workflows/build-and-commit-sh.yml
-    uses: synle/gha-workflows/.github/workflows/build-and-commit-sh.yml@main
-    permissions:
-      contents: write
-    with:
-      node-version: 18 # NODE_VERSION: 18
-
   patch_version:
     if: github.event_name == 'push'
-    needs: build
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -126,3 +117,13 @@ jobs:
         with:
           name: sqlui-native.pacman
           path: ./dist/sqlui-native.pacman
+
+  build:
+    # https://github.com/synle/gha-workflows/blob/main/.github/workflows/build-and-commit-sh.yml
+    needs: [build_windows, build_macos, build_linux]
+    if: always()
+    uses: synle/gha-workflows/.github/workflows/build-and-commit-sh.yml@main
+    permissions:
+      contents: write
+    with:
+      node-version: 18 # NODE_VERSION: 18
