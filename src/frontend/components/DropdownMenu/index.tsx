@@ -29,7 +29,6 @@ type DropdownMenuProps = {
 export default function DropdownMenu(props: DropdownMenuProps): JSX.Element | null {
   const { id, options, maxHeight, anchorEl } = props;
   const [open, setOpen] = React.useState(false);
-  const [selectedIndex, setSelectedIndex] = React.useState(1);
 
   const handleMenuItemClick = (e: React.MouseEvent<HTMLLIElement, MouseEvent>, index: number) => {
     e.preventDefault();
@@ -38,7 +37,7 @@ export default function DropdownMenu(props: DropdownMenuProps): JSX.Element | nu
     if (options[index].onClick) {
       // @ts-ignore
       options[index].onClick();
-      onClose();
+      onClose(e);
     }
   };
 
@@ -51,7 +50,10 @@ export default function DropdownMenu(props: DropdownMenuProps): JSX.Element | nu
     props.onToggle && props.onToggle(!open);
   };
 
-  const onClose = () => {
+  const onClose = (event: Event | React.SyntheticEvent) => {
+    if (anchorEl?.current && anchorEl.current.contains(event.target as HTMLElement)) {
+      return;
+    }
     props.onToggle && props.onToggle(false);
     setOpen(false);
   };
