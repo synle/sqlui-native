@@ -16,6 +16,4 @@ jobs:
         with:
           node-version: '16'
           cache: 'npm'
-      - run: npm install
-      - run: npm run test-ci
-      - run: npm run build
+      - run: bash build.sh

@@ -54,9 +54,7 @@ jobs:
           node-version: '16'
           cache: 'npm'
       - run: npm version --no-git-tag-version patch
-      - run: npm install
-      - run: npm run test-ci
-      - run: npm run build
+      - run: bash build.sh
 
       # package and distribute .exe
       - run: npm run dist
@@ -106,9 +104,7 @@ jobs:
           node-version: '16'
           cache: 'npm'
       - run: npm version --no-git-tag-version patch
-      - run: npm install
-      - run: npm run test-ci
-      - run: npm run build
+      - run: bash build.sh
       - run: npm run dist
       - run: mv ./dist/sqlui-native*.dmg ./dist/sqlui-native.dmg
 
@@ -141,9 +137,7 @@ jobs:
           node-version: '16'
           cache: 'npm'
       - run: npm version --no-git-tag-version patch
-      - run: npm install
-      - run: npm run test-ci
-      - run: npm run build
+      - run: bash build.sh
       - run: npm run dist
       - run: |
           mv ./dist/sqlui-native*.deb ./dist/sqlui-native.deb
