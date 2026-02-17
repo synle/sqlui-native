@@ -41,15 +41,6 @@ export default function DropdownMenu(props: DropdownMenuProps): JSX.Element | nu
     }
   };
 
-  const onToggle = (e: React.SyntheticEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    setOpen((prevOpen) => !prevOpen);
-
-    props.onToggle && props.onToggle(!open);
-  };
-
   const onClose = (event: Event | React.SyntheticEvent) => {
     if (anchorEl?.current && anchorEl.current.contains(event.target as HTMLElement)) {
       return;

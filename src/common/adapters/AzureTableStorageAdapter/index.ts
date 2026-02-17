@@ -3,19 +3,6 @@ import BaseDataAdapter, { MAX_CONNECTION_TIMEOUT } from 'src/common/adapters/Bas
 import IDataAdapter from 'src/common/adapters/IDataAdapter';
 import { SqluiCore } from 'typings';
 
-type AzureTableConnectionOption = {
-  DefaultEndpointsProtocol: string;
-  EndpointSuffix: string;
-  /**
-   * @type {string} for account and key auth
-   */
-  AccountName?: string;
-  /**
-   * @type {string} for account and key auth
-   */
-  AccountKey?: string;
-};
-
 /**
  * @type {Number} maximum number of items to scan for column metadata
  */
