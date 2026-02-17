@@ -3,13 +3,6 @@ import BaseDataAdapter, { MAX_CONNECTION_TIMEOUT } from 'src/common/adapters/Bas
 import IDataAdapter from 'src/common/adapters/IDataAdapter';
 import { SqluiCore } from 'typings';
 
-type AzureCosmosDBClient = CosmosClient;
-
-type AzureCosmosDBConnectionOption = {
-  AccountEndpoint: string;
-  AccountKey: string;
-};
-
 /**
  * @type {Number} maximum number of items to scan for column metadata
  */
@@ -22,9 +15,9 @@ export default class AzureCosmosDataAdapter extends BaseDataAdapter implements I
     super(connectionOption);
   }
 
-  private async getConnection(): Promise<AzureCosmosDBClient> {
+  private async getConnection(): Promise<CosmosClient> {
     // attempt to pull in connections
-    return new Promise<AzureCosmosDBClient>(async (resolve, reject) => {
+    return new Promise<CosmosClient>(async (resolve, reject) => {
       try {
         setTimeout(() => reject('Connection Timeout'), MAX_CONNECTION_TIMEOUT);
 
@@ -37,7 +30,7 @@ export default class AzureCosmosDataAdapter extends BaseDataAdapter implements I
     });
   }
 
-  private async closeConnection(client?: any) {
+  private async closeConnection() {
     try {
       const client = await this.getConnection();
       await client.dispose();

@@ -94,15 +94,15 @@ export const DIALECTS_SUPPORTING_EDIT_FORM = getAllImplementations()
   .reduce<string[]>(consolidateDialects, []);
 
 export function isDialectSupportMigration(dialect?: string) {
-  return dialect && DIALECTS_SUPPORTING_MIGRATION.indexOf(dialect) >= 0;
+  return dialect && DIALECTS_SUPPORTING_MIGRATION.includes(dialect);
 }
 
 export function isDialectSupportCreateRecordForm(dialect?: string) {
-  return dialect && DIALECTS_SUPPORTING_CREATE_FORM.indexOf(dialect) >= 0;
+  return dialect && DIALECTS_SUPPORTING_CREATE_FORM.includes(dialect);
 }
 
 export function isDialectSupportEditRecordForm(dialect?: string) {
-  return dialect && DIALECTS_SUPPORTING_EDIT_FORM.indexOf(dialect) >= 0;
+  return dialect && DIALECTS_SUPPORTING_EDIT_FORM.includes(dialect);
 }
 
 export function isDialectSupportVisualization(dialect?: string) {
@@ -119,7 +119,7 @@ export function getIsTableIdRequiredForQueryByDialect(dialect?: string) {
 
 export function getDialectTypeFromConnectionString(connection: string) {
   if (connection.match(/^[a-z0-9+-]+:\/\//i)) {
-    return connection.substr(0, connection.indexOf(':')).toLowerCase();
+    return connection.substring(0, connection.indexOf(':')).toLowerCase();
   }
 
   return '';

@@ -37,14 +37,7 @@ export default class MongoDBDataAdapter extends BaseDataAdapter implements IData
   }
 
   async authenticate() {
-    return new Promise<void>(async (resolve, reject) => {
-      try {
-        await this.getConnection();
-        resolve();
-      } catch (err) {
-        reject(err);
-      }
-    });
+    await this.getConnection();
   }
 
   async getDatabases(): Promise<SqluiCore.DatabaseMetaData[]> {

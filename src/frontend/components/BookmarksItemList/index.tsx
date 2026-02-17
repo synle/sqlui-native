@@ -152,7 +152,7 @@ export default function BookmarksItemList(props: BookmarksItemListProps): JSX.El
   }
 
   const columns = getColumns(onAfterSelect).filter((column) => {
-    if (!!hideActions) {
+    if (hideActions) {
       if (column.id === 'action') {
         return false;
       }
