@@ -49,37 +49,37 @@ describe('sqlite', () => {
   test('Get tables', async () => {
     const tables = await adapter.getTables();
     expect(tables).toMatchInlineSnapshot(`
-Array [
-  Object {
-    "columns": Array [],
-    "name": "artists",
-  },
-]
-`);
+      [
+        {
+          "columns": [],
+          "name": "artists",
+        },
+      ]
+    `);
   });
 
   test('Get columns', async () => {
     const columns = await adapter.getColumns('artists');
     expect(columns).toMatchInlineSnapshot(`
-Array [
-  Object {
-    "allowNull": false,
-    "defaultValue": undefined,
-    "name": "ArtistId",
-    "primaryKey": true,
-    "type": "INTEGER",
-    "unique": false,
-  },
-  Object {
-    "allowNull": true,
-    "defaultValue": undefined,
-    "name": "Name",
-    "primaryKey": false,
-    "type": "NVARCHAR(120)",
-    "unique": false,
-  },
-]
-`);
+      [
+        {
+          "allowNull": false,
+          "defaultValue": undefined,
+          "name": "ArtistId",
+          "primaryKey": true,
+          "type": "INTEGER",
+          "unique": false,
+        },
+        {
+          "allowNull": true,
+          "defaultValue": undefined,
+          "name": "Name",
+          "primaryKey": false,
+          "type": "NVARCHAR(120)",
+          "unique": false,
+        },
+      ]
+    `);
   });
 
   test('Execute Select', async () => {
@@ -87,21 +87,21 @@ Array [
     expect(resp?.raw?.length).toBe(3);
     expect(resp?.ok).toBe(true);
     expect(resp.raw).toMatchInlineSnapshot(`
-Array [
-  Object {
-    "ArtistId": 1,
-    "Name": "Test Artist 1",
-  },
-  Object {
-    "ArtistId": 2,
-    "Name": "Test Artist 2",
-  },
-  Object {
-    "ArtistId": 3,
-    "Name": "Test Artist 3",
-  },
-]
-`);
+      [
+        {
+          "ArtistId": 1,
+          "Name": "Test Artist 1",
+        },
+        {
+          "ArtistId": 2,
+          "Name": "Test Artist 2",
+        },
+        {
+          "ArtistId": 3,
+          "Name": "Test Artist 3",
+        },
+      ]
+    `);
   });
 
   test('Execute Update', async () => {

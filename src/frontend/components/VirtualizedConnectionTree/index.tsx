@@ -9,7 +9,7 @@ export default function VirtualizedConnectionTree() {
   const { rows, connections, connectionsLoading, onToggle, updateConnections } = useFlatTreeRows();
   const parentRef = useRef<HTMLDivElement>(null);
 
-  const virtualizer = useVirtualizer({
+  const virtualizer = useVirtualizer<HTMLDivElement, HTMLDivElement>({
     count: rows.length,
     getScrollElement: () => parentRef.current,
     estimateSize: (index) => {
@@ -58,7 +58,7 @@ export default function VirtualizedConnectionTree() {
           return (
             <div
               key={row.key}
-              ref={virtualItem.measureElement}
+              ref={virtualizer.measureElement}
               data-index={virtualItem.index}
               style={{
                 position: 'absolute',

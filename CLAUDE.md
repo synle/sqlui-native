@@ -70,4 +70,5 @@ Custom React hooks and context providers instead of Redux: `useSession`, `useCon
 - Electron main process: `webpack-electron.config.js` with `tsconfig-electron.json`
 - Mocked server: `webpack-mocked-server.config.js` with `tsconfig-mocked-server.json`
 - Prettier: 100 char width, single quotes, trailing commas, 2-space indent
-- Node 14+, npm
+- NODE_VERSION: 20
+- npm

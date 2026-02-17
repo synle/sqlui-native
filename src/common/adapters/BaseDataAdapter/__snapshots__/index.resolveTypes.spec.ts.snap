@@ -1,11 +1,11 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`BaseDataAdapter resolveTypes arrays 1`] = `
-Object {
-  "genre": Object {
+exports[`BaseDataAdapter > resolveTypes > arrays 1`] = `
+{
+  "genre": {
     "name": "genre",
     "nested": false,
-    "propertyPath": Array [
+    "propertyPath": [
       "genre",
     ],
     "type": "array",
@@ -13,20 +13,20 @@ Object {
 }
 `;
 
-exports[`BaseDataAdapter resolveTypes complex objects with null 1`] = `
-Object {
-  "id": Object {
+exports[`BaseDataAdapter > resolveTypes > complex objects with null 1`] = `
+{
+  "id": {
     "name": "id",
     "nested": false,
-    "propertyPath": Array [
+    "propertyPath": [
       "id",
     ],
     "type": "integer",
   },
-  "is_locked": Object {
+  "is_locked": {
     "name": "is_locked",
     "nested": false,
-    "propertyPath": Array [
+    "propertyPath": [
       "is_locked",
     ],
     "type": "integer",
@@ -34,47 +34,47 @@ Object {
 }
 `;
 
-exports[`BaseDataAdapter resolveTypes nested objects 1`] = `
-Object {
-  "_id": Object {
+exports[`BaseDataAdapter > resolveTypes > nested objects 1`] = `
+{
+  "_id": {
     "name": "_id",
     "nested": false,
-    "propertyPath": Array [
+    "propertyPath": [
       "_id",
     ],
     "type": "string",
   },
-  "genre": Object {
+  "genre": {
     "name": "genre",
     "nested": false,
-    "propertyPath": Array [
+    "propertyPath": [
       "genre",
     ],
     "type": "array",
   },
-  "location/county/name": Object {
+  "location/county/name": {
     "name": "location/county/name",
     "nested": true,
-    "propertyPath": Array [
+    "propertyPath": [
       "location",
       "county",
       "name",
     ],
     "type": "string",
   },
-  "location/zip": Object {
+  "location/zip": {
     "name": "location/zip",
     "nested": true,
-    "propertyPath": Array [
+    "propertyPath": [
       "location",
       "zip",
     ],
     "type": "integer",
   },
-  "name": Object {
+  "name": {
     "name": "name",
     "nested": false,
-    "propertyPath": Array [
+    "propertyPath": [
       "name",
     ],
     "type": "string",
@@ -82,28 +82,28 @@ Object {
 }
 `;
 
-exports[`BaseDataAdapter resolveTypes primitive types only 1`] = `
-Object {
-  "_id": Object {
+exports[`BaseDataAdapter > resolveTypes > primitive types only 1`] = `
+{
+  "_id": {
     "name": "_id",
     "nested": false,
-    "propertyPath": Array [
+    "propertyPath": [
       "_id",
     ],
     "type": "string",
   },
-  "name": Object {
+  "name": {
     "name": "name",
     "nested": false,
-    "propertyPath": Array [
+    "propertyPath": [
       "name",
     ],
     "type": "string",
   },
-  "zipcode": Object {
+  "zipcode": {
     "name": "zipcode",
     "nested": false,
-    "propertyPath": Array [
+    "propertyPath": [
       "zipcode",
     ],
     "type": "integer",

@@ -178,10 +178,10 @@ describe('Sessions', () => {
 
     delete res.body.id;
     expect(res.body).toMatchInlineSnapshot(`
-Object {
-  "name": "New Cloned Session Name 123",
-}
-`);
+      {
+        "name": "New Cloned Session Name 123",
+      }
+    `);
 
     // check the created queries and connections
     res = await requestWithSupertest.get(`/api/queries`).set(_getCommonHeaders(newClonedSessionId));

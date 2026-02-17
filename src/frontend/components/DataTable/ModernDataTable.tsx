@@ -98,7 +98,7 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
   const parentRef = useRef<HTMLDivElement | null>(null);
 
   // The virtualizers
-  const rowVirtualizer = useVirtualizer({
+  const rowVirtualizer = useVirtualizer<HTMLDivElement, HTMLDivElement>({
     count: page.length,
     getScrollElement: () => parentRef.current,
     estimateSize: useCallback(() => tableCellHeight, []),
@@ -256,7 +256,7 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
 
             return (
               <StyledDivContentRow
-                ref={virtualItem.measureElement}
+                ref={rowVirtualizer.measureElement}
                 data-index={virtualItem.index}
                 data-row-idx={rowIdx}
                 sx={{
