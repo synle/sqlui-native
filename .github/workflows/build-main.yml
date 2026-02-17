@@ -9,7 +9,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  NODE_VERSION: 16
+  NODE_VERSION: 20
 
 jobs:
   patch_version:
@@ -126,4 +126,4 @@ jobs:
     permissions:
       contents: write
     with:
-      node-version: 20 # NODE_VERSION: 16
+      node-version: 20 # NODE_VERSION: 20
