@@ -1,3 +1,6 @@
+*.bundle.*
+*.min.*
+.build
 _layouts/default.html
 build
 coverage

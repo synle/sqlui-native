@@ -117,7 +117,6 @@ export default class RelationalDataAdapter extends BaseDataAdapter implements ID
             tables: [], // TODO: will remove this entirely
           },
         ];
-        break;
       case 'mariadb':
       case 'mysql':
         sql = `show databases`;

@@ -1,7 +1,7 @@
 import SignalWifiStatusbar4BarIcon from '@mui/icons-material/SignalWifiStatusbar4Bar';
 import { useEffect } from 'react';
 import Breadcrumbs from 'src/frontend/components/Breadcrumbs';
-import ConnectionDescription from 'src/frontend/components/ConnectionDescription';
+import VirtualizedConnectionTree from 'src/frontend/components/VirtualizedConnectionTree';
 import { NewConnectionForm } from 'src/frontend/components/ConnectionForm';
 import NewConnectionButton from 'src/frontend/components/NewConnectionButton';
 import { useSideBarWidthPreference } from 'src/frontend/hooks/useClientSidePreference';
@@ -23,7 +23,7 @@ export default function NewConnectionPage() {
     <LayoutTwoColumns className='Page Page__NewConnection'>
       <>
         <NewConnectionButton />
-        <ConnectionDescription />
+        <VirtualizedConnectionTree />
       </>
       <>
         <Breadcrumbs

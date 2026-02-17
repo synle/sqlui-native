@@ -12,7 +12,7 @@ import Typography from '@mui/material/Typography';
 import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import Breadcrumbs from 'src/frontend/components/Breadcrumbs';
-import ConnectionDescription from 'src/frontend/components/ConnectionDescription';
+import VirtualizedConnectionTree from 'src/frontend/components/VirtualizedConnectionTree';
 import DataTable from 'src/frontend/components/DataTable';
 import NewConnectionButton from 'src/frontend/components/NewConnectionButton';
 import { useActionDialogs } from 'src/frontend/hooks/useActionDialogs';
@@ -151,7 +151,7 @@ export default function RecycleBinPage() {
     <LayoutTwoColumns className='Page Page__RecycleBin'>
       <>
         <NewConnectionButton />
-        <ConnectionDescription />
+        <VirtualizedConnectionTree />
       </>
       <>
         <Breadcrumbs

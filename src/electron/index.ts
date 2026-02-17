@@ -358,7 +358,6 @@ ipcMain.on('sqluiNativeEvent/fetch', async (event, data) => {
   } catch (err) {}
 
   console.log('>> Request', method, url, sessionId, body);
-  let matchedUrlObject: any;
   const matchCurrentUrlAgainst = (matchAgainstUrl: string) => {
     try {
       return matchPath(matchAgainstUrl, url);
