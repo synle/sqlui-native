@@ -15,12 +15,12 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '16'
-          cache: 'yarn'
+          cache: 'npm'
       - run: npm version --no-git-tag-version patch
-      - run: yarn install --network-timeout 1000000 --frozen-lockfile
-      - run: yarn test-ci
-      - run: yarn build
-      - run: yarn dist
+      - run: npm install
+      - run: npm run test-ci
+      - run: npm run build
+      - run: npm run dist
       - run: mv ./dist/sqlui-native*.exe ./dist/sqlui-native.exe
       - name: Upload artifact .exe
         uses: actions/upload-artifact@v4
@@ -36,12 +36,12 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '16'
-          cache: 'yarn'
+          cache: 'npm'
       - run: npm version --no-git-tag-version patch
-      - run: yarn install --network-timeout 1000000 --frozen-lockfile
-      - run: yarn test-ci
-      - run: yarn build
-      - run: yarn dist
+      - run: npm install
+      - run: npm run test-ci
+      - run: npm run build
+      - run: npm run dist
       - run: mv ./dist/sqlui-native*.dmg ./dist/sqlui-native.dmg
       - name: Upload artifact .dmg
         uses: actions/upload-artifact@v4
@@ -59,12 +59,12 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '16'
-          cache: 'yarn'
+          cache: 'npm'
       - run: npm version --no-git-tag-version patch
-      - run: yarn install --network-timeout 1000000 --frozen-lockfile
-      - run: yarn test-ci
-      - run: yarn build
-      - run: yarn dist
+      - run: npm install
+      - run: npm run test-ci
+      - run: npm run build
+      - run: npm run dist
       - run: |
           mv ./dist/sqlui-native*.deb ./dist/sqlui-native.deb
           mv ./dist/sqlui-native*.rpm ./dist/sqlui-native.rpm

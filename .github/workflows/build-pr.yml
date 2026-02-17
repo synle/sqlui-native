@@ -8,7 +8,14 @@ concurrency:
 
 jobs:
   build:
-    # https://github.com/synle/gha-workflows/blob/main/.github/workflows/pr-js-yarn-16-v2.yml
-    uses: synle/gha-workflows/.github/workflows/pr-js-yarn-16-v2.yml@main
-    with:
-      os: ubuntu-latest
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '16'
+          cache: 'npm'
+      - run: npm install
+      - run: npm run test-ci
+      - run: npm run build
