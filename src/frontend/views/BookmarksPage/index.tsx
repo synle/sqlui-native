@@ -4,7 +4,7 @@ import Button from '@mui/material/Button';
 import { useEffect } from 'react';
 import BookmarksItemList from 'src/frontend/components/BookmarksItemList';
 import Breadcrumbs from 'src/frontend/components/Breadcrumbs';
-import ConnectionDescription from 'src/frontend/components/ConnectionDescription';
+import VirtualizedConnectionTree from 'src/frontend/components/VirtualizedConnectionTree';
 import NewConnectionButton from 'src/frontend/components/NewConnectionButton';
 import { useSideBarWidthPreference } from 'src/frontend/hooks/useClientSidePreference';
 import { useTreeActions } from 'src/frontend/hooks/useTreeActions';
@@ -24,7 +24,7 @@ export default function BookmarksPage() {
     <LayoutTwoColumns className='Page Page__Bookmarks'>
       <>
         <NewConnectionButton />
-        <ConnectionDescription />
+        <VirtualizedConnectionTree />
       </>
       <>
         <Breadcrumbs

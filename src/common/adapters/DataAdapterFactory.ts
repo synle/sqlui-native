@@ -25,20 +25,15 @@ export function getDataAdapter(connection: string) {
 
     if (RelationalDataAdapterScripts.isDialectSupported(targetDialect)) {
       adapter = new RelationalDataAdapter(connection);
-    }
-    if (CassandraDataAdapterScripts.isDialectSupported(targetDialect)) {
+    } else if (CassandraDataAdapterScripts.isDialectSupported(targetDialect)) {
       adapter = new CassandraDataAdapter(connection);
-    }
-    if (MongoDBDataAdapterScripts.isDialectSupported(targetDialect)) {
+    } else if (MongoDBDataAdapterScripts.isDialectSupported(targetDialect)) {
       adapter = new MongoDBDataAdapter(connection);
-    }
-    if (RedisDataAdapterScripts.isDialectSupported(targetDialect)) {
+    } else if (RedisDataAdapterScripts.isDialectSupported(targetDialect)) {
       adapter = new RedisDataAdapter(connection);
-    }
-    if (AzureCosmosDataAdapterScripts.isDialectSupported(targetDialect)) {
+    } else if (AzureCosmosDataAdapterScripts.isDialectSupported(targetDialect)) {
       adapter = new AzureCosmosDataAdapter(connection);
-    }
-    if (AzureTableStorageAdapterScripts.isDialectSupported(targetDialect)) {
+    } else if (AzureTableStorageAdapterScripts.isDialectSupported(targetDialect)) {
       adapter = new AzureTableStorageAdapter(connection);
     }
   } catch (err) {
@@ -73,10 +68,8 @@ export async function getConnectionMetaData(connection: SqluiCore.CoreConnection
 
       try {
         database.tables = await engine.getTables(database.name);
-        //console.log('getting tables', database, tables);
       } catch (err) {
         database.tables = [];
-        //console.log('failed getting tables', database);
       }
 
       for (const table of database.tables) {
@@ -84,12 +77,10 @@ export async function getConnectionMetaData(connection: SqluiCore.CoreConnection
           table.columns = await engine.getColumns(table.name, database.name);
         } catch (err) {
           table.columns = [];
-          //console.log('failed getting columns', database, table);
         }
       }
     }
   } catch (err) {
-    // console.log('connection error', connection.name, err);
     connItem.status = 'offline';
     connItem.dialect = undefined;
     console.log('>> Server Error', err);

@@ -28,7 +28,7 @@ import { GlobalFilter, SimpleColumnFilter } from 'src/frontend/components/DataTa
 import DropdownMenu from 'src/frontend/components/DropdownMenu';
 import { useAddDataSnapshot } from 'src/frontend/hooks/useDataSnapshot';
 
-export default function ModernDataTable(props: DataTableProps): JSX.Element | null {
+export default function LegacyDataTable(props: DataTableProps): JSX.Element | null {
   const { data } = props;
   const [columns, setColumns] = useState([]);
   useEffect(() => {
@@ -90,7 +90,7 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
       // @ts-ignore
       defaultColumn: {
         Filter: SimpleColumnFilter,
-        width: tableCellWidthToUse, // set default width for all columns
+        width: tableCellWidthToUse,
       },
     },
     useFilters,
@@ -150,9 +150,9 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
         )}
       </Box>
       <Box sx={{ position: 'relative' }} onContextMenu={(e) => onRowContextMenuClick(e)}>
-        {headerGroups.map((headerGroup, headerGroupIdx) => (
+        {headerGroups.map((headerGroup) => (
           <StyledDivHeaderRow {...headerGroup.getHeaderGroupProps()}>
-            {headerGroup.headers.map((column, colIdx) => (
+            {headerGroup.headers.map((column) => (
               <StyledDivHeaderCell {...column.getHeaderProps()}>
                 <StyledDivHeaderCellLabel {...column.getSortByToggleProps()}>
                   <span>{column.render('Header')}</span>
@@ -162,7 +162,6 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
                     ) : (
                       <ArrowDropUpIcon fontSize='small' />
                     ))}
-                  {/* Render the column resize handler */}
                 </StyledDivHeaderCellLabel>
                 {column.canFilter && column.Header && (
                   <Box sx={{ mt: 1 }}>{column.render('Filter')}</Box>
@@ -170,6 +169,7 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
                 {column.canResize && (
                   <ColumnResizer
                     {...column.getResizerProps()}
+                    isResizing={column.isResizing}
                     onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
@@ -221,12 +221,11 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
             </StyledDivContentRow>
           );
         })}
-        {!page ||
-          (page.length === 0 && (
-            <Box sx={{ paddingInline: 2, paddingBlock: 2 }}>
-              There is no data in the query with matching filters.
-            </Box>
-          ))}
+        {page.length === 0 && (
+          <Box sx={{ paddingInline: 2, paddingBlock: 2 }}>
+            There is no data in the query with matching filters.
+          </Box>
+        )}
       </Box>
     </>
   );
