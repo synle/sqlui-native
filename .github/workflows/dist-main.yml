@@ -19,7 +19,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '16'
-          cache: 'yarn'
+          cache: 'npm'
       - run: npm version --no-git-tag-version patch
       - id: package-version
         uses: martinbeentjes/npm-get-version-action@master
@@ -52,14 +52,11 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '16'
-          cache: 'yarn'
+          cache: 'npm'
       - run: npm version --no-git-tag-version patch
-      - run: yarn install --network-timeout 1000000 --frozen-lockfile
-      - run: yarn test-ci
-      - run: yarn build
+      - run: bash dist.sh
 
       # package and distribute .exe
-      - run: yarn dist
       - run: mv ./dist/sqlui-native*.exe ./dist/sqlui-native.exe
       - name: Upload release binary .exe
         uses: actions/upload-release-asset@v1
@@ -77,7 +74,7 @@ jobs:
           path: ./dist/sqlui-native.exe
 
       # package and distribute .appx
-      - run: yarn dist-win32-appx
+      - run: npm run dist-win32-appx
       - run: mv ./dist/sqlui-native*.appx ./dist/sqlui-native.appx
       - name: Upload release binary .appx
         uses: actions/upload-release-asset@v1
@@ -104,12 +101,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '16'
-          cache: 'yarn'
+          cache: 'npm'
       - run: npm version --no-git-tag-version patch
-      - run: yarn install --network-timeout 1000000 --frozen-lockfile
-      - run: yarn test-ci
-      - run: yarn build
-      - run: yarn dist
+      - run: bash dist.sh
       - run: mv ./dist/sqlui-native*.dmg ./dist/sqlui-native.dmg
 
       - name: Upload release binary
@@ -139,12 +133,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '16'
-          cache: 'yarn'
+          cache: 'npm'
       - run: npm version --no-git-tag-version patch
-      - run: yarn install --network-timeout 1000000 --frozen-lockfile
-      - run: yarn test-ci
-      - run: yarn build
-      - run: yarn dist
+      - run: bash dist.sh
       - run: |
           mv ./dist/sqlui-native*.deb ./dist/sqlui-native.deb
           mv ./dist/sqlui-native*.rpm ./dist/sqlui-native.rpm
@@ -216,7 +207,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '16'
-          cache: 'yarn'
+          cache: 'npm'
       - run: npm version --no-git-tag-version patch
       - run: |
           echo "{ \"version\": \"${{ needs.create_release.outputs.package_version }}\" }" > release.json
