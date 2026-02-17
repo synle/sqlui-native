@@ -10,8 +10,14 @@ env:
   NODE_VERSION: 18
 
 jobs:
+  build:
+    # https://github.com/synle/nav-generator/blob/main/.github/workflows/build-main.yml
+    uses: synle/gha-workflow/.github/workflows/build-and-commit-sh.yml@main
+    permissions:
+      contents: write
+
   patch_version:
-    runs-on: ubuntu-latest
+    needs: build
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
