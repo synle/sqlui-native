@@ -97,12 +97,21 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
   // The scrollable element for the list
   const parentRef = useRef<HTMLDivElement | null>(null);
 
-  // The virtualizer
+  // The virtualizers
   const rowVirtualizer = useVirtualizer({
     count: page.length,
     getScrollElement: () => parentRef.current,
     estimateSize: useCallback(() => tableCellHeight, []),
     overscan: 10,
+  });
+
+  const columnCount = headerGroups[0]?.headers.length ?? 0;
+  const columnVirtualizer = useVirtualizer({
+    count: columnCount,
+    getScrollElement: () => parentRef.current,
+    estimateSize: useCallback(() => tableCellWidthToUse, [tableCellWidthToUse]),
+    horizontal: true,
+    overscan: 5,
   });
 
   const onShowExpandedData = async () => {
@@ -156,6 +165,7 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
   }, [fullScreen]);
 
   const virtualItems = rowVirtualizer.getVirtualItems();
+  const virtualColumns = columnVirtualizer.getVirtualItems();
 
   return (
     <>
@@ -184,33 +194,51 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
         {/* Sticky header */}
         <Box sx={{ position: 'sticky', top: 0, zIndex: (theme) => theme.zIndex.drawer + 1 }}>
           {headerGroups.map((headerGroup) => (
-            <StyledDivHeaderRow {...headerGroup.getHeaderGroupProps()}>
-              {headerGroup.headers.map((column) => (
-                <StyledDivHeaderCell {...column.getHeaderProps()}>
-                  <StyledDivHeaderCellLabel {...column.getSortByToggleProps()}>
-                    <span>{column.render('Header')}</span>
-                    {column.isSorted &&
-                      (column.isSortedDesc ? (
-                        <ArrowDropDownIcon fontSize='small' />
-                      ) : (
-                        <ArrowDropUpIcon fontSize='small' />
-                      ))}
-                  </StyledDivHeaderCellLabel>
-                  {column.canFilter && column.Header && (
-                    <Box sx={{ mt: 1 }}>{column.render('Filter')}</Box>
-                  )}
-                  {column.canResize && (
-                    <ColumnResizer
-                      {...column.getResizerProps()}
-                      isResizing={column.isResizing}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                      }}
-                    />
-                  )}
-                </StyledDivHeaderCell>
-              ))}
+            <StyledDivHeaderRow
+              {...headerGroup.getHeaderGroupProps()}
+              style={{
+                ...headerGroup.getHeaderGroupProps().style,
+                width: `${columnVirtualizer.getTotalSize()}px`,
+                position: 'relative',
+              }}>
+              {virtualColumns.map((virtualColumn) => {
+                const column = headerGroup.headers[virtualColumn.index];
+                return (
+                  <StyledDivHeaderCell
+                    {...column.getHeaderProps()}
+                    style={{
+                      ...column.getHeaderProps().style,
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      transform: `translateX(${virtualColumn.start}px)`,
+                      width: `${virtualColumn.size}px`,
+                    }}>
+                    <StyledDivHeaderCellLabel {...column.getSortByToggleProps()}>
+                      <span>{column.render('Header')}</span>
+                      {column.isSorted &&
+                        (column.isSortedDesc ? (
+                          <ArrowDropDownIcon fontSize='small' />
+                        ) : (
+                          <ArrowDropUpIcon fontSize='small' />
+                        ))}
+                    </StyledDivHeaderCellLabel>
+                    {column.canFilter && column.Header && (
+                      <Box sx={{ mt: 1 }}>{column.render('Filter')}</Box>
+                    )}
+                    {column.canResize && (
+                      <ColumnResizer
+                        {...column.getResizerProps()}
+                        isResizing={column.isResizing}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                        }}
+                      />
+                    )}
+                  </StyledDivHeaderCell>
+                );
+              })}
             </StyledDivHeaderRow>
           ))}
         </Box>
@@ -218,6 +246,7 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
         <StyledDivContainer
           sx={{
             height: `${rowVirtualizer.getTotalSize()}px`,
+            width: `${columnVirtualizer.getTotalSize()}px`,
             position: 'relative',
           }}>
           {virtualItems.map((virtualItem) => {
@@ -233,11 +262,14 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
                 sx={{
                   cursor: props.onRowClick ? 'pointer' : '',
                   transform: `translateY(${virtualItem.start}px)`,
-                  width: '100%',
+                  width: `${columnVirtualizer.getTotalSize()}px`,
+                  position: 'relative',
                 }}
                 onDoubleClick={() => props.onRowClick && props.onRowClick(row.original)}
                 {...row.getRowProps()}>
-                {row.cells.map((cell, colIdx) => {
+                {virtualColumns.map((virtualColumn) => {
+                  const colIdx = virtualColumn.index;
+                  const cell = row.cells[colIdx];
                   let dropdownContent: any;
                   if (colIdx === 0 && targetRowContextOptions.length > 0) {
                     dropdownContent = (
@@ -258,7 +290,16 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
                     );
                   }
                   return (
-                    <StyledDivValueCell {...cell.getCellProps()}>
+                    <StyledDivValueCell
+                      {...cell.getCellProps()}
+                      style={{
+                        ...cell.getCellProps().style,
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        transform: `translateX(${virtualColumn.start}px)`,
+                        width: `${virtualColumn.size}px`,
+                      }}>
                       {dropdownContent}
                       {cell.render('Cell')}
                     </StyledDivValueCell>
