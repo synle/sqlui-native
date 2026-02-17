@@ -1,18 +1,18 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`Scripts RDBMS - mariadb 1`] = `
-Array [
-  Object {
+exports[`Scripts > RDBMS - mariadb 1`] = `
+[
+  {
     "formatter": "sql",
     "label": "Drop Database",
     "query": "DROP DATABASE database1",
   },
-  Object {
+  {
     "formatter": "sql",
     "label": "Create Database",
     "query": "CREATE DATABASE database1",
   },
-  Object {
+  {
     "formatter": "sql",
     "label": "Select All Columns",
     "query": "SELECT
@@ -22,7 +22,7 @@ FROM
 LIMIT
   200",
   },
-  Object {
+  {
     "formatter": "sql",
     "label": "Select Count",
     "query": "SELECT
@@ -34,7 +34,7 @@ WHERE
   AND column1 = ''
   AND column2 = ''",
   },
-  Object {
+  {
     "formatter": "sql",
     "label": "Select Specific Columns",
     "query": "SELECT
@@ -50,7 +50,7 @@ WHERE
 LIMIT
   200",
   },
-  Object {
+  {
     "formatter": "sql",
     "label": "Select Distinct",
     "query": "SELECT
@@ -64,7 +64,7 @@ WHERE
 LIMIT
   200",
   },
-  Object {
+  {
     "formatter": "sql",
     "label": "Insert",
     "query": "INSERT INTO
@@ -72,7 +72,7 @@ LIMIT
 VALUES
   ('_id_', '_column1_', '_column2_')",
   },
-  Object {
+  {
     "formatter": "sql",
     "label": "Update",
     "query": "UPDATE
@@ -86,7 +86,7 @@ WHERE
   AND column1 = ''
   AND column2 = ''",
   },
-  Object {
+  {
     "formatter": "sql",
     "label": "Delete",
     "query": "DELETE FROM
@@ -96,7 +96,7 @@ WHERE
   AND column1 = ''
   AND column2 = ''",
   },
-  Object {
+  {
     "formatter": "sql",
     "label": "Create Table",
     "query": "CREATE TABLE table1 (
@@ -105,12 +105,12 @@ WHERE
   column2 VARCHAR(100) NOT NULL
 )",
   },
-  Object {
+  {
     "formatter": "sql",
     "label": "Drop Table",
     "query": "DROP TABLE table1",
   },
-  Object {
+  {
     "formatter": "sql",
     "label": "Add Column",
     "query": "ALTER TABLE
@@ -118,7 +118,7 @@ WHERE
 ADD
   COLUMN newColumn1 varchar(200)",
   },
-  Object {
+  {
     "formatter": "sql",
     "label": "Drop Column",
     "query": "ALTER TABLE
@@ -131,19 +131,19 @@ ALTER TABLE
 ]
 `;
 
-exports[`Scripts RDBMS - mssql 1`] = `
-Array [
-  Object {
+exports[`Scripts > RDBMS - mssql 1`] = `
+[
+  {
     "formatter": "sql",
     "label": "Drop Database",
     "query": "DROP DATABASE database1",
   },
-  Object {
+  {
     "formatter": "sql",
     "label": "Create Database",
     "query": "CREATE DATABASE database1",
   },
-  Object {
+  {
     "formatter": "sql",
     "label": "Select All Columns",
     "query": "SELECT
@@ -151,7 +151,7 @@ Array [
 FROM
   table1",
   },
-  Object {
+  {
     "formatter": "sql",
     "label": "Select Count",
     "query": "SELECT
@@ -163,7 +163,7 @@ WHERE
   AND column1 = ''
   AND column2 = ''",
   },
-  Object {
+  {
     "formatter": "sql",
     "label": "Select Specific Columns",
     "query": "SELECT
@@ -177,7 +177,7 @@ WHERE
   AND column1 = ''
   AND column2 = ''",
   },
-  Object {
+  {
     "formatter": "sql",
     "label": "Select Distinct",
     "query": "SELECT
@@ -189,7 +189,7 @@ WHERE
   AND column1 = ''
   AND column2 = ''",
   },
-  Object {
+  {
     "formatter": "sql",
     "label": "Insert",
     "query": "INSERT INTO
@@ -197,7 +197,7 @@ WHERE
 VALUES
   ('_id_', '_column1_', '_column2_')",
   },
-  Object {
+  {
     "formatter": "sql",
     "label": "Update",
     "query": "UPDATE
@@ -211,7 +211,7 @@ WHERE
   AND column1 = ''
   AND column2 = ''",
   },
-  Object {
+  {
     "formatter": "sql",
     "label": "Delete",
     "query": "DELETE FROM
@@ -221,7 +221,7 @@ WHERE
   AND column1 = ''
   AND column2 = ''",
   },
-  Object {
+  {
     "formatter": "sql",
     "label": "Create Table",
     "query": "CREATE TABLE table1 (
@@ -230,12 +230,12 @@ WHERE
   column2 VARCHAR(100) NOT NULL
 )",
   },
-  Object {
+  {
     "formatter": "sql",
     "label": "Drop Table",
     "query": "DROP TABLE table1",
   },
-  Object {
+  {
     "formatter": "sql",
     "label": "Add Column",
     "query": "ALTER TABLE
@@ -243,7 +243,7 @@ WHERE
 ADD
   COLUMN newColumn1 NVARCHAR(200)",
   },
-  Object {
+  {
     "formatter": "sql",
     "label": "Drop Column",
     "query": "ALTER TABLE
@@ -256,19 +256,19 @@ ALTER TABLE
 ]
 `;
 
-exports[`Scripts RDBMS - mysql 1`] = `
-Array [
-  Object {
+exports[`Scripts > RDBMS - mysql 1`] = `
+[
+  {
     "formatter": "sql",
     "label": "Drop Database",
     "query": "DROP DATABASE database1",
   },
-  Object {
+  {
     "formatter": "sql",
     "label": "Create Database",
     "query": "CREATE DATABASE database1",
   },
-  Object {
+  {
     "formatter": "sql",
     "label": "Select All Columns",
     "query": "SELECT
@@ -278,7 +278,7 @@ FROM
 LIMIT
   200",
   },
-  Object {
+  {
     "formatter": "sql",
     "label": "Select Count",
     "query": "SELECT
@@ -290,7 +290,7 @@ WHERE
   AND column1 = ''
   AND column2 = ''",
   },
-  Object {
+  {
     "formatter": "sql",
     "label": "Select Specific Columns",
     "query": "SELECT
@@ -306,7 +306,7 @@ WHERE
 LIMIT
   200",
   },
-  Object {
+  {
     "formatter": "sql",
     "label": "Select Distinct",
     "query": "SELECT
@@ -320,7 +320,7 @@ WHERE
 LIMIT
   200",
   },
-  Object {
+  {
     "formatter": "sql",
     "label": "Insert",
     "query": "INSERT INTO
@@ -328,7 +328,7 @@ LIMIT
 VALUES
   ('_id_', '_column1_', '_column2_')",
   },
-  Object {
+  {
     "formatter": "sql",
     "label": "Update",
     "query": "UPDATE
@@ -342,7 +342,7 @@ WHERE
   AND column1 = ''
   AND column2 = ''",
   },
-  Object {
+  {
     "formatter": "sql",
     "label": "Delete",
     "query": "DELETE FROM
@@ -352,7 +352,7 @@ WHERE
   AND column1 = ''
   AND column2 = ''",
   },
-  Object {
+  {
     "formatter": "sql",
     "label": "Create Table",
     "query": "CREATE TABLE table1 (
@@ -361,12 +361,12 @@ WHERE
   column2 VARCHAR(100) NOT NULL
 )",
   },
-  Object {
+  {
     "formatter": "sql",
     "label": "Drop Table",
     "query": "DROP TABLE table1",
   },
-  Object {
+  {
     "formatter": "sql",
     "label": "Add Column",
     "query": "ALTER TABLE
@@ -374,7 +374,7 @@ WHERE
 ADD
   COLUMN newColumn1 varchar(200)",
   },
-  Object {
+  {
     "formatter": "sql",
     "label": "Drop Column",
     "query": "ALTER TABLE
@@ -387,19 +387,19 @@ ALTER TABLE
 ]
 `;
 
-exports[`Scripts RDBMS - postgres 1`] = `
-Array [
-  Object {
+exports[`Scripts > RDBMS - postgres 1`] = `
+[
+  {
     "formatter": "sql",
     "label": "Drop Database",
     "query": "DROP DATABASE database1",
   },
-  Object {
+  {
     "formatter": "sql",
     "label": "Create Database",
     "query": "CREATE DATABASE database1",
   },
-  Object {
+  {
     "formatter": "sql",
     "label": "Select All Columns",
     "query": "SELECT
@@ -409,7 +409,7 @@ FROM
 LIMIT
   200",
   },
-  Object {
+  {
     "formatter": "sql",
     "label": "Select Count",
     "query": "SELECT
@@ -421,7 +421,7 @@ WHERE
   AND column1 = ''
   AND column2 = ''",
   },
-  Object {
+  {
     "formatter": "sql",
     "label": "Select Specific Columns",
     "query": "SELECT
@@ -437,7 +437,7 @@ WHERE
 LIMIT
   200",
   },
-  Object {
+  {
     "formatter": "sql",
     "label": "Select Distinct",
     "query": "SELECT
@@ -451,7 +451,7 @@ WHERE
 LIMIT
   200",
   },
-  Object {
+  {
     "formatter": "sql",
     "label": "Insert",
     "query": "INSERT INTO
@@ -459,7 +459,7 @@ LIMIT
 VALUES
   ('_id_', '_column1_', '_column2_')",
   },
-  Object {
+  {
     "formatter": "sql",
     "label": "Update",
     "query": "UPDATE
@@ -473,7 +473,7 @@ WHERE
   AND column1 = ''
   AND column2 = ''",
   },
-  Object {
+  {
     "formatter": "sql",
     "label": "Delete",
     "query": "DELETE FROM
@@ -483,7 +483,7 @@ WHERE
   AND column1 = ''
   AND column2 = ''",
   },
-  Object {
+  {
     "formatter": "sql",
     "label": "Create Table",
     "query": "CREATE TABLE table1 (
@@ -492,12 +492,12 @@ WHERE
   column2 VARCHAR(100) NOT NULL
 )",
   },
-  Object {
+  {
     "formatter": "sql",
     "label": "Drop Table",
     "query": "DROP TABLE table1",
   },
-  Object {
+  {
     "formatter": "sql",
     "label": "Add Column",
     "query": "ALTER TABLE
@@ -505,7 +505,7 @@ WHERE
 ADD
   COLUMN newColumn1 CHAR(200)",
   },
-  Object {
+  {
     "formatter": "sql",
     "label": "Drop Column",
     "query": "ALTER TABLE
@@ -518,19 +518,19 @@ ALTER TABLE
 ]
 `;
 
-exports[`Scripts RDBMS - sqlite 1`] = `
-Array [
-  Object {
+exports[`Scripts > RDBMS - sqlite 1`] = `
+[
+  {
     "formatter": "sql",
     "label": "Drop Database",
     "query": "DROP DATABASE database1",
   },
-  Object {
+  {
     "formatter": "sql",
     "label": "Create Database",
     "query": "CREATE DATABASE database1",
   },
-  Object {
+  {
     "formatter": "sql",
     "label": "Select All Columns",
     "query": "SELECT
@@ -540,7 +540,7 @@ FROM
 LIMIT
   200",
   },
-  Object {
+  {
     "formatter": "sql",
     "label": "Select Count",
     "query": "SELECT
@@ -552,7 +552,7 @@ WHERE
   AND column1 = ''
   AND column2 = ''",
   },
-  Object {
+  {
     "formatter": "sql",
     "label": "Select Specific Columns",
     "query": "SELECT
@@ -568,7 +568,7 @@ WHERE
 LIMIT
   200",
   },
-  Object {
+  {
     "formatter": "sql",
     "label": "Select Distinct",
     "query": "SELECT
@@ -582,7 +582,7 @@ WHERE
 LIMIT
   200",
   },
-  Object {
+  {
     "formatter": "sql",
     "label": "Insert",
     "query": "INSERT INTO
@@ -590,7 +590,7 @@ LIMIT
 VALUES
   ('_id_', '_column1_', '_column2_')",
   },
-  Object {
+  {
     "formatter": "sql",
     "label": "Update",
     "query": "UPDATE
@@ -604,7 +604,7 @@ WHERE
   AND column1 = ''
   AND column2 = ''",
   },
-  Object {
+  {
     "formatter": "sql",
     "label": "Delete",
     "query": "DELETE FROM
@@ -614,7 +614,7 @@ WHERE
   AND column1 = ''
   AND column2 = ''",
   },
-  Object {
+  {
     "formatter": "sql",
     "label": "Create Table",
     "query": "CREATE TABLE table1 (
@@ -623,12 +623,12 @@ WHERE
   column2 VARCHAR(100) NOT NULL
 )",
   },
-  Object {
+  {
     "formatter": "sql",
     "label": "Drop Table",
     "query": "DROP TABLE table1",
   },
-  Object {
+  {
     "formatter": "sql",
     "label": "Add Column",
     "query": "ALTER TABLE
@@ -636,7 +636,7 @@ WHERE
 ADD
   COLUMN newColumn1 TEXT",
   },
-  Object {
+  {
     "formatter": "sql",
     "label": "Drop Column",
     "query": "ALTER TABLE
@@ -649,14 +649,14 @@ ALTER TABLE
 ]
 `;
 
-exports[`Scripts aztable 1`] = `
-Array [
-  Object {
+exports[`Scripts > aztable 1`] = `
+[
+  {
     "formatter": "js",
     "label": "Create Table",
     "query": "serviceClient.createTable('somenewtablename')",
   },
-  Object {
+  {
     "formatter": "js",
     "label": "Select All Columns",
     "query": "tableClient.listEntities({
@@ -665,7 +665,7 @@ Array [
   }
 })",
   },
-  Object {
+  {
     "formatter": "js",
     "label": "Select Specific Columns",
     "query": "tableClient.listEntities({
@@ -675,7 +675,7 @@ Array [
   }
 })",
   },
-  Object {
+  {
     "formatter": "js",
     "label": "Insert",
     "query": "tableClient.createEntity({
@@ -683,7 +683,7 @@ Array [
   \\"partitionKey\\": \\"some_partition_key\\"
 })",
   },
-  Object {
+  {
     "formatter": "js",
     "label": "Update",
     "query": "tableClient.updateEntity({
@@ -691,7 +691,7 @@ Array [
   \\"partitionKey\\": \\"some_partition_key\\"
 })",
   },
-  Object {
+  {
     "formatter": "js",
     "label": "Upsert",
     "query": "tableClient.upsertEntity({
@@ -699,17 +699,17 @@ Array [
   \\"partitionKey\\": \\"some_partition_key\\"
 }, 'Replace')",
   },
-  Object {
+  {
     "formatter": "js",
     "label": "Delete",
     "query": "tableClient.deleteEntity('some_partition_key', 'some_row_key');",
   },
-  Object {
+  {
     "formatter": "js",
     "label": "Create Table",
     "query": "serviceClient.createTable('table1')",
   },
-  Object {
+  {
     "formatter": "js",
     "label": "Drop Table",
     "query": "serviceClient.deleteTable('table1')",
@@ -717,20 +717,20 @@ Array [
 ]
 `;
 
-exports[`Scripts cassandra 1`] = `
-Array [
-  Object {
+exports[`Scripts > cassandra 1`] = `
+[
+  {
     "formatter": "sql",
     "label": "Create Keyspace",
     "query": "CREATE KEYSPACE IF NOT EXISTS database1 WITH replication = { 'class': 'SimpleStrategy',
 'replication_factor': 3 };",
   },
-  Object {
+  {
     "formatter": "sql",
     "label": "Drop Keyspace",
     "query": "DROP KEYSPACE IF EXISTS database1;",
   },
-  Object {
+  {
     "formatter": "sql",
     "label": "Select All Columns",
     "query": "SELECT
@@ -740,7 +740,7 @@ FROM
 LIMIT
   200",
   },
-  Object {
+  {
     "formatter": "sql",
     "label": "Select Specific Columns",
     "query": "SELECT
@@ -756,7 +756,7 @@ WHERE
 LIMIT
   200",
   },
-  Object {
+  {
     "formatter": "sql",
     "label": "Insert",
     "query": "INSERT INTO
@@ -764,7 +764,7 @@ LIMIT
 VALUES
   (123, 123, '_column2_')",
   },
-  Object {
+  {
     "formatter": "sql",
     "label": "Update",
     "query": "UPDATE
@@ -778,7 +778,7 @@ WHERE
   AND column1 = 123
   AND column2 = '_column2_'",
   },
-  Object {
+  {
     "formatter": "sql",
     "label": "Delete",
     "query": "DELETE FROM
@@ -788,17 +788,17 @@ WHERE
   AND column1 = ''
   AND column2 = ''",
   },
-  Object {
+  {
     "formatter": "sql",
     "label": "Create Table",
     "query": "CREATE TABLE table1 (id INT PRIMARY KEY, column1 INT, column2 VARCHAR(100))",
   },
-  Object {
+  {
     "formatter": "sql",
     "label": "Drop Table",
     "query": "DROP TABLE table1",
   },
-  Object {
+  {
     "formatter": "sql",
     "label": "Add Column",
     "query": "ALTER TABLE
@@ -806,7 +806,7 @@ WHERE
 ADD
   new_column1 TEXT",
   },
-  Object {
+  {
     "formatter": "sql",
     "label": "Drop Column",
     "query": "ALTER TABLE
@@ -819,9 +819,9 @@ ALTER TABLE
 ]
 `;
 
-exports[`Scripts cosmosdb 1`] = `
-Array [
-  Object {
+exports[`Scripts > cosmosdb 1`] = `
+[
+  {
     "formatter": "js",
     "label": "Create Database",
     "query": "client
@@ -830,7 +830,7 @@ Array [
     id: 'database1'
   })",
   },
-  Object {
+  {
     "formatter": "js",
     "label": "Create Database Container",
     "query": "client
@@ -840,14 +840,14 @@ Array [
     id: 'some_container_name'
   })",
   },
-  Object {
+  {
     "formatter": "js",
     "label": "Drop Database",
     "query": "client
   .database('database1')
   .delete()",
   },
-  Object {
+  {
     "formatter": "js",
     "label": "Select All Columns",
     "query": "client
@@ -862,7 +862,7 @@ Array [
   })
   .fetchAll()",
   },
-  Object {
+  {
     "formatter": "js",
     "label": "Select Specific Columns",
     "query": "client
@@ -882,7 +882,7 @@ Array [
   })
   .fetchAll()",
   },
-  Object {
+  {
     "formatter": "js",
     "label": "Select By Id",
     "query": "client
@@ -897,7 +897,7 @@ Array [
   })
   .fetchAll()",
   },
-  Object {
+  {
     "formatter": "js",
     "label": "Read",
     "query": "client
@@ -906,7 +906,7 @@ Array [
   .item('some_id', 'some_partition_key')
   .read()",
   },
-  Object {
+  {
     "formatter": "js",
     "label": "Insert",
     "query": "client
@@ -915,7 +915,7 @@ Array [
   .items
   .create({})",
   },
-  Object {
+  {
     "formatter": "js",
     "label": "Update",
     "query": "client
@@ -926,7 +926,7 @@ Array [
     \\"id\\": \\"some_id\\"
   })",
   },
-  Object {
+  {
     "formatter": "js",
     "label": "Delete",
     "query": "client
@@ -935,7 +935,7 @@ Array [
   .item('some_id', 'some_partition_key')
   .delete()",
   },
-  Object {
+  {
     "formatter": "sql",
     "label": "Raw Select All Columns SQL",
     "query": "SELECT
@@ -943,7 +943,7 @@ Array [
 FROM
   c",
   },
-  Object {
+  {
     "formatter": "js",
     "label": "Create Container",
     "query": "client
@@ -953,7 +953,7 @@ FROM
     id: 'table1'
   })",
   },
-  Object {
+  {
     "formatter": "js",
     "label": "Drop Container",
     "query": "client
@@ -964,19 +964,19 @@ FROM
 ]
 `;
 
-exports[`Scripts mongodb 1`] = `
-Array [
-  Object {
+exports[`Scripts > mongodb 1`] = `
+[
+  {
     "formatter": "js",
     "label": "Create Database",
     "query": "db.createDatabase('database1')",
   },
-  Object {
+  {
     "formatter": "js",
     "label": "Drop Database",
     "query": "db.dropDatabase()",
   },
-  Object {
+  {
     "formatter": "js",
     "label": "Select All Columns",
     "query": "db.collection('table1')
@@ -984,7 +984,7 @@ Array [
   .limit(200)
   .toArray();",
   },
-  Object {
+  {
     "formatter": "js",
     "label": "Select Specific Columns",
     "query": "db.collection('table1')
@@ -996,7 +996,7 @@ Array [
   .limit(200)
   .toArray();",
   },
-  Object {
+  {
     "formatter": "js",
     "label": "Select Distinct",
     "query": "db.collection('table1')
@@ -1008,7 +1008,7 @@ Array [
     }
   )",
   },
-  Object {
+  {
     "formatter": "js",
     "label": "Select One Record",
     "query": "db.collection('table1')
@@ -1016,7 +1016,7 @@ Array [
     \\"_id\\": ObjectId(\\"some_id\\")
   });",
   },
-  Object {
+  {
     "formatter": "js",
     "label": "Insert",
     "query": "db.collection('table1')
@@ -1026,7 +1026,7 @@ Array [
     \\"column2\\": 123
   }]);",
   },
-  Object {
+  {
     "formatter": "js",
     "label": "Update",
     "query": "db.collection('table1')
@@ -1043,7 +1043,7 @@ Array [
     }
   });",
   },
-  Object {
+  {
     "formatter": "js",
     "label": "Delete",
     "query": "db.collection('table1')
@@ -1053,12 +1053,12 @@ Array [
     \\"column2\\": 123
   });",
   },
-  Object {
+  {
     "formatter": "js",
     "label": "Create Collection",
     "query": "db.createCollection(\\"table1\\")",
   },
-  Object {
+  {
     "formatter": "js",
     "label": "Drop Collection",
     "query": "db.collection('table1')
@@ -1067,99 +1067,99 @@ Array [
 ]
 `;
 
-exports[`Scripts redis 1`] = `
-Array [
-  Object {
+exports[`Scripts > redis 1`] = `
+[
+  {
     "formatter": "js",
     "label": "Set Value",
     "query": "db.set(\\"key\\", \\"value123\\")",
   },
-  Object {
+  {
     "formatter": "js",
     "label": "Get Value by Key",
     "query": "db.get(\\"key\\")",
   },
-  Object {
+  {
     "formatter": "js",
     "label": "Scan for keys",
     "query": "db.keys(\\"*\\")",
   },
-  Object {
+  {
     "formatter": "js",
     "label": "Hashset > Set Value",
     "query": "db.hSet(\\"hash_key1\\", \\"field1\\", \\"value1\\")",
   },
-  Object {
+  {
     "formatter": "js",
     "label": "Hashset > Get Value By Key",
     "query": "db.hGetAll(\\"hash_key1\\")",
   },
-  Object {
+  {
     "formatter": "js",
     "label": "Hashset > Values",
     "query": "db.hVals(\\"hash_key1\\")",
   },
-  Object {
+  {
     "formatter": "js",
     "label": "Hashset > Check if key exists",
     "query": "db.hExists(\\"hash_key1\\", \\"field1\\")",
   },
-  Object {
+  {
     "formatter": "js",
     "label": "List > Get Items",
     "query": "db.lRange(\\"list_key1\\", 0, -1)",
   },
-  Object {
+  {
     "formatter": "js",
     "label": "List > Push item to the front",
     "query": "db.lPush(\\"list_key1\\", \\"value\\")",
   },
-  Object {
+  {
     "formatter": "js",
     "label": "List > Push item to the back",
     "query": "db.rPush(\\"list_key1\\", \\"value\\")",
   },
-  Object {
+  {
     "formatter": "js",
     "label": "List > Delete item from the front",
     "query": "db.lPop(\\"list_key1\\")",
   },
-  Object {
+  {
     "formatter": "js",
     "label": "List > Delete item from the back",
     "query": "db.rPop(\\"list_key1\\")",
   },
-  Object {
+  {
     "formatter": "js",
     "label": "Set > Get Items",
     "query": "db.sMembers(\\"set_key1\\")",
   },
-  Object {
+  {
     "formatter": "js",
     "label": "Set > Add Item",
     "query": "db.sAdd(\\"set_key1\\", \\"value1\\")",
   },
-  Object {
+  {
     "formatter": "js",
     "label": "Set > Is a member of set",
     "query": "db.sIsMember(\\"set_key1\\", \\"value1\\")",
   },
-  Object {
+  {
     "formatter": "js",
     "label": "Set > Total Size",
     "query": "db.sCard(\\"set_key1\\")",
   },
-  Object {
+  {
     "formatter": "js",
     "label": "Set > Remove last item",
     "query": "db.sPop(\\"set_key1\\")",
   },
-  Object {
+  {
     "formatter": "js",
     "label": "Sorted Set > Get Items",
     "query": "db.zRange(\\"sorted_set_key1\\", 0, -1)",
   },
-  Object {
+  {
     "formatter": "js",
     "label": "Sorted Set > Add Item",
     "query": "db.zAdd(\\"sorted_set_key1\\", [{
@@ -1167,7 +1167,7 @@ Array [
   value: \\"some_value\\"
 }])",
   },
-  Object {
+  {
     "formatter": "js",
     "label": "Publish a message",
     "query": "db.publish(\\"pubsub_channel_key1\\", \\"some_message\\")",

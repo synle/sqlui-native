@@ -29,19 +29,19 @@ describe('commonUtils', () => {
         databaseId: 'some_database_id',
       });
       expect(actual).toMatchInlineSnapshot(`
-Object {
-  "_type": "query",
-  "connectionId": "some_connection_id",
-  "databaseId": "some_database_id",
-  "id": "some_query_id",
-  "name": "Query 2/1/2022, 9:49:06 AM",
-  "sql": "SELECT
-  TOP 200 *
-FROM
-  albums",
-  "tableId": undefined,
-}
-`);
+        {
+          "_type": "query",
+          "connectionId": "some_connection_id",
+          "databaseId": "some_database_id",
+          "id": "some_query_id",
+          "name": "Query 2/1/2022, 9:49:06 AM",
+          "sql": "SELECT
+          TOP 200 *
+        FROM
+          albums",
+          "tableId": undefined,
+        }
+      `);
     });
 
     test('should work with more completed data inputs', async () => {
@@ -61,19 +61,19 @@ FROM
         },
       });
       expect(actual).toMatchInlineSnapshot(`
-Object {
-  "_type": "query",
-  "connectionId": "some_connection_id",
-  "databaseId": "some_database_id",
-  "id": "some_query_id",
-  "name": "Query 2/1/2022, 9:49:06 AM",
-  "sql": "SELECT
-  TOP 200 *
-FROM
-  albums",
-  "tableId": undefined,
-}
-`);
+        {
+          "_type": "query",
+          "connectionId": "some_connection_id",
+          "databaseId": "some_database_id",
+          "id": "some_query_id",
+          "name": "Query 2/1/2022, 9:49:06 AM",
+          "sql": "SELECT
+          TOP 200 *
+        FROM
+          albums",
+          "tableId": undefined,
+        }
+      `);
     });
 
     test('should also include tableId', async () => {
@@ -86,19 +86,19 @@ FROM
         tableId: 'some_table_id',
       });
       expect(actual).toMatchInlineSnapshot(`
-Object {
-  "_type": "query",
-  "connectionId": "some_connection_id",
-  "databaseId": "some_database_id",
-  "id": "some_query_id",
-  "name": "Query 2/1/2022, 9:49:06 AM",
-  "sql": "SELECT
-  TOP 200 *
-FROM
-  albums",
-  "tableId": "some_table_id",
-}
-`);
+        {
+          "_type": "query",
+          "connectionId": "some_connection_id",
+          "databaseId": "some_database_id",
+          "id": "some_query_id",
+          "name": "Query 2/1/2022, 9:49:06 AM",
+          "sql": "SELECT
+          TOP 200 *
+        FROM
+          albums",
+          "tableId": "some_table_id",
+        }
+      `);
     });
   });
 

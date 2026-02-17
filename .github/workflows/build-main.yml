@@ -1,22 +1,48 @@
 on:
   push:
     branches: [master, main]
+  pull_request:
+    branches: [master, main]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  NODE_VERSION: 20
+
 jobs:
+  patch_version:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - run: npm version --no-git-tag-version patch
+      - name: Upload patched package.json
+        uses: actions/upload-artifact@v4
+        with:
+          name: patched-package-json
+          path: package.json
+
   build_windows:
+    if: github.event_name == 'push'
+    needs: patch_version
     runs-on: windows-latest
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
-          node-version: '16'
+          node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
-      - run: npm version --no-git-tag-version patch
+      - name: Download patched package.json
+        uses: actions/download-artifact@v4
+        with:
+          name: patched-package-json
       - run: bash dist.sh
       - run: mv ./dist/sqlui-native*.exe ./dist/sqlui-native.exe
       - name: Upload artifact .exe
@@ -26,15 +52,20 @@ jobs:
           path: ./dist/sqlui-native.exe
 
   build_macos:
+    if: github.event_name == 'push'
+    needs: patch_version
     runs-on: macos-latest
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
-          node-version: '16'
+          node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
-      - run: npm version --no-git-tag-version patch
+      - name: Download patched package.json
+        uses: actions/download-artifact@v4
+        with:
+          name: patched-package-json
       - run: bash dist.sh
       - run: mv ./dist/sqlui-native*.dmg ./dist/sqlui-native.dmg
       - name: Upload artifact .dmg
@@ -44,17 +75,22 @@ jobs:
           path: ./dist/sqlui-native.dmg
 
   build_linux:
+    if: github.event_name == 'push'
+    needs: patch_version
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
       - name: install missing dependencies
         run: sudo apt-get install -y libarchive-tools
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
-          node-version: '16'
+          node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
-      - run: npm version --no-git-tag-version patch
+      - name: Download patched package.json
+        uses: actions/download-artifact@v4
+        with:
+          name: patched-package-json
       - run: bash dist.sh
       - run: |
           mv ./dist/sqlui-native*.deb ./dist/sqlui-native.deb
@@ -81,3 +117,13 @@ jobs:
         with:
           name: sqlui-native.pacman
           path: ./dist/sqlui-native.pacman
+
+  build:
+    # https://github.com/synle/gha-workflows/blob/main/.github/workflows/build-and-commit-sh.yml
+    needs: [build_windows, build_macos, build_linux]
+    if: always()
+    uses: synle/gha-workflows/.github/workflows/build-and-commit-sh.yml@main
+    permissions:
+      contents: write
+    with:
+      node-version: 20 # NODE_VERSION: 20

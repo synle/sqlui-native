@@ -3,6 +3,9 @@
     "allowJs": true,
     "allowSyntheticDefaultImports": true,
     "baseUrl": ".",
+    "paths": {
+      "react-simple-resizer": ["./typings/react-simple-resizer.d.ts"]
+    },
     "declaration": true,
     "emitDecoratorMetadata": true,
     "esModuleInterop": true,
