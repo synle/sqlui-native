@@ -15,8 +15,8 @@ jobs:
       package_version: ${{ steps.package-version.outputs.current-version }}
       release_upload_url: ${{ steps.create_release.outputs.upload_url }}
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: '16'
           cache: 'yarn'
@@ -48,8 +48,8 @@ jobs:
     runs-on: windows-latest
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: '16'
           cache: 'yarn'
@@ -100,8 +100,8 @@ jobs:
     runs-on: macos-latest
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: '16'
           cache: 'yarn'
@@ -135,8 +135,8 @@ jobs:
     steps:
       - name: install missing dependencies
         run: sudo apt-get install -y libarchive-tools
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: '16'
           cache: 'yarn'
@@ -212,8 +212,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 4
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: '16'
           cache: 'yarn'
@@ -230,7 +230,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 4
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: dev-drprasad/delete-tag-and-release@v0.2.0
         with:
           delete_release: true
