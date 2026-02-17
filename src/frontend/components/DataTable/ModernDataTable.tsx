@@ -256,7 +256,7 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
 
             return (
               <StyledDivContentRow
-                ref={virtualItem.measureElement}
+                ref={rowVirtualizer.measureElement}
                 data-index={virtualItem.index}
                 data-row-idx={rowIdx}
                 sx={{

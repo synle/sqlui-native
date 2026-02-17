@@ -58,7 +58,7 @@ export default function VirtualizedConnectionTree() {
           return (
             <div
               key={row.key}
-              ref={virtualItem.measureElement}
+              ref={virtualizer.measureElement}
               data-index={virtualItem.index}
               style={{
                 position: 'absolute',
