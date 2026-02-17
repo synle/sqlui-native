@@ -110,7 +110,7 @@
     "monaco-editor": "^0.32.1",
     "mongodb": "^4.10.0",
     "mysql2": "^2.3.3",
-    "notistack": "^2.0.5",
+    "notistack": "^3.0.2",
     "pg": "^8.7.3",
     "pg-hstore": "^2.3.4",
     "qs": "^6.11.0",
