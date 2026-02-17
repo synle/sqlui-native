@@ -19,7 +19,6 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
-      - run: npm version --no-git-tag-version patch
       - run: bash dist.sh
       - run: mv ./dist/sqlui-native*.exe ./dist/sqlui-native.exe
       - name: Upload artifact .exe
@@ -37,7 +36,6 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
-      - run: npm version --no-git-tag-version patch
       - run: bash dist.sh
       - run: mv ./dist/sqlui-native*.dmg ./dist/sqlui-native.dmg
       - name: Upload artifact .dmg
@@ -57,7 +55,6 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
-      - run: npm version --no-git-tag-version patch
       - run: bash dist.sh
       - run: |
           mv ./dist/sqlui-native*.deb ./dist/sqlui-native.deb
