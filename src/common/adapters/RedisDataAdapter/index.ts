@@ -40,14 +40,7 @@ export default class RedisDataAdapter extends BaseDataAdapter implements IDataAd
   }
 
   async authenticate() {
-    return new Promise<void>(async (resolve, reject) => {
-      try {
-        await this.getConnection();
-        resolve();
-      } catch (err) {
-        reject(err);
-      }
-    });
+    await this.getConnection();
   }
 
   async getDatabases(): Promise<SqluiCore.DatabaseMetaData[]> {
@@ -62,10 +55,6 @@ export default class RedisDataAdapter extends BaseDataAdapter implements IDataAd
   async getTables(database?: string): Promise<SqluiCore.TableMetaData[]> {
     // TODO: this operation seems to work, but very slow
     // for now, we will just returned a hard coded value
-
-    // const db = await this.getConnection();
-    // const keys = await db.keys('*');
-    // return keys.map((name) => ({ name, columns: [] }));
 
     return [
       {

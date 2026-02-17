@@ -10,20 +10,34 @@ export const tableCellWidth = 160;
 
 export const StyledDivContainer = styled('div')(({ theme }) => ({}));
 
-export const ColumnResizer = styled('div')(({ theme }) => ({
-  background: theme.palette.text.primary,
-  cursor: 'col-resize',
-  userSelect: 'none',
-  height: '100%',
-  width: '8px',
-  position: 'absolute',
-  right: '0',
-  top: '0',
-  opacity: 0.05,
-  '&:hover': {
-    opacity: 1,
-  },
-}));
+export const ColumnResizer = styled('div')<{ isResizing?: boolean }>(
+  ({ theme, isResizing }) => ({
+    cursor: 'col-resize',
+    userSelect: 'none',
+    position: 'absolute',
+    right: 0,
+    top: 0,
+    height: '100%',
+    width: '12px',
+    // center a thin visible line inside the touch target
+    '&::after': {
+      content: '""',
+      position: 'absolute',
+      right: '4px',
+      top: '4px',
+      bottom: '4px',
+      width: '3px',
+      borderRadius: '2px',
+      background: isResizing
+        ? theme.palette.primary.main
+        : theme.palette.divider,
+      transition: 'background 0.15s',
+    },
+    '&:hover::after': {
+      background: theme.palette.primary.main,
+    },
+  }),
+);
 
 export const StyledDivValueCell = styled('div')(({ theme }) => ({
   flexShrink: 0,
@@ -52,7 +66,6 @@ export const StyledDivHeaderRow = styled('div')(({ theme }) => ({
     color: theme.palette.text.primary,
     paddingTop: '5px',
     boxSizing: 'border-box',
-    overflow: 'hidden',
     textOverflow: 'ellipsis',
     wordBreak: 'break-all',
     whiteSpace: 'nowrap',
@@ -79,6 +92,7 @@ export const StyledDivContentRow = styled('div')(({ theme }) => ({
 export const StyledDivHeaderCell = styled('div')(({ theme }) => ({
   flexShrink: 0,
   paddingInline: '0.5rem',
+  position: 'relative',
 }));
 
 export const StyledDivHeaderCellLabel = styled('div')(({ theme }) => ({

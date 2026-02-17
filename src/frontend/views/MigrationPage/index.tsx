@@ -3,7 +3,7 @@ import { Box, Link, Typography } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
 import { useEffect } from 'react';
 import Breadcrumbs, { BreadcrumbLink } from 'src/frontend/components/Breadcrumbs';
-import ConnectionDescription from 'src/frontend/components/ConnectionDescription';
+import VirtualizedConnectionTree from 'src/frontend/components/VirtualizedConnectionTree';
 import {
   RawJsonMigrationForm,
   RealConnectionMigrationMigrationForm,
@@ -66,7 +66,7 @@ export default function MigrationPage(props: MigrationPageProps): JSX.Element | 
     <LayoutTwoColumns className='Page Page__Migration'>
       <>
         <NewConnectionButton />
-        <ConnectionDescription />
+        <VirtualizedConnectionTree />
       </>
       <>
         <Breadcrumbs links={titleBreadcrumbs} />

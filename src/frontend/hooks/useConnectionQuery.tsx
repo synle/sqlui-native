@@ -1,4 +1,3 @@
-import { QueryClient, useQuery, useQueryClient } from 'react-query';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import dataApi from 'src/frontend/data/api';
 import { SessionStorageConfig } from 'src/frontend/data/config';
@@ -52,15 +51,17 @@ export default function WrappedContext(props: { children: React.ReactNode }): JS
         let toBeSelectedQuery = 0;
         _connectionQueries = _connectionQueries.map((query, idx) => {
           if (query.selected) {
-            query.selected = false;
             toBeSelectedQuery = idx;
           }
 
-          return query;
+          return { ...query, selected: false };
         });
 
         if (_connectionQueries[toBeSelectedQuery]) {
-          _connectionQueries[toBeSelectedQuery].selected = true;
+          _connectionQueries[toBeSelectedQuery] = {
+            ..._connectionQueries[toBeSelectedQuery],
+            selected: true,
+          };
         }
 
         _persistQueries();
@@ -97,8 +98,6 @@ function _useConnectionQueries() {
 }
 
 export function useConnectionQueries() {
-  const queryClient = useQueryClient();
-
   const { data: queries, setData, isLoading } = _useConnectionQueries();
   const { mutateAsync: addRecycleBinItem } = useAddRecycleBinItem();
   const isSoftDeleteModeSetting = useIsSoftDeleteModeSetting();
@@ -146,10 +145,10 @@ export function useConnectionQueries() {
       }
 
       _connectionQueries = [
-        ..._connectionQueries.map((q) => {
-          q.selected = false;
-          return q;
-        }),
+        ..._connectionQueries.map((q) => ({
+          ...q,
+          selected: false,
+        })),
         newQuery,
       ];
 
@@ -244,10 +243,10 @@ export function useConnectionQueries() {
   const onDeleteQuery = (queryId?: string) => queryId && onDeleteQueries([queryId]);
 
   const onShowQuery = (queryId: string) => {
-    _connectionQueries = _connectionQueries.map((q) => {
-      q.selected = q.id === queryId;
-      return q;
-    });
+    _connectionQueries = _connectionQueries.map((q) => ({
+      ...q,
+      selected: q.id === queryId,
+    }));
     _invalidateQueries();
   };
 
@@ -294,7 +293,7 @@ export function useConnectionQueries() {
   const onDuplicateQuery = (queryId?: string) => {
     const query = queries?.find((q) => q.id === queryId);
 
-    if (!query || !query) {
+    if (!query) {
       return;
     }
 
@@ -302,7 +301,7 @@ export function useConnectionQueries() {
   };
 
   const onImportQuery = (query?: SqluiFrontend.ConnectionQuery) => {
-    if (!query || !query) {
+    if (!query) {
       return;
     }
 
@@ -330,8 +329,6 @@ export function useConnectionQueries() {
 }
 
 export function useConnectionQuery(queryId: string) {
-  const queryClient = useQueryClient();
-
   const { queries, onChangeQuery, onDeleteQuery, isLoading } = useConnectionQueries();
 
   const query = queries?.find((q) => q.id === queryId);
@@ -350,8 +347,6 @@ export function useConnectionQuery(queryId: string) {
 }
 
 export function useActiveConnectionQuery() {
-  const queryClient = useQueryClient();
-
   const { queries, onChangeQuery, onDeleteQuery, isLoading } = useConnectionQueries();
 
   const query = queries?.find((q) => q.selected);

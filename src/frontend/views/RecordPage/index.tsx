@@ -33,7 +33,7 @@ import {
 } from 'src/common/adapters/RelationalDataAdapter/scripts';
 import Breadcrumbs from 'src/frontend/components/Breadcrumbs';
 import CodeEditorBox from 'src/frontend/components/CodeEditorBox';
-import ConnectionDescription from 'src/frontend/components/ConnectionDescription';
+import VirtualizedConnectionTree from 'src/frontend/components/VirtualizedConnectionTree';
 import JsonFormatData from 'src/frontend/components/JsonFormatData';
 import { useCommands } from 'src/frontend/components/MissionControl';
 import NewConnectionButton from 'src/frontend/components/NewConnectionButton';
@@ -626,7 +626,7 @@ export function NewRecordPage() {
     <LayoutTwoColumns className='Page Page__NewRecord'>
       <>
         <NewConnectionButton />
-        <ConnectionDescription />
+        <VirtualizedConnectionTree />
       </>
       <>
         <Breadcrumbs

@@ -145,18 +145,6 @@ export function getBulkInsert(
       ])
     `.trim(),
   };
-
-  // // TODO: azure table support a batch of 100 rows, we need to batch this accordingly
-  // // refer to this link for the API - https://docs.microsoft.com/en-us/azure/cosmos-db/table/how-to-use-nodejs#work-with-groups-of-entities
-  // const rowsActions = rows.map(
-  //   row => ['create', row]
-  // )
-
-  // return {
-  //   label,
-  //   formatter,
-  //   query: `${AZTABLE_TABLE_CLIENT_PREFIX}.submitTransaction(${JSON.stringify(rowsActions, null, 2)})`,
-  // };
 }
 
 export function getUpdateWithValues(

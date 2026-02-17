@@ -1,7 +1,7 @@
 import PageviewIcon from '@mui/icons-material/Pageview';
 import { useEffect } from 'react';
 import Breadcrumbs from 'src/frontend/components/Breadcrumbs';
-import ConnectionDescription from 'src/frontend/components/ConnectionDescription';
+import VirtualizedConnectionTree from 'src/frontend/components/VirtualizedConnectionTree';
 import NewConnectionButton from 'src/frontend/components/NewConnectionButton';
 import QueryBoxTabs from 'src/frontend/components/QueryBoxTabs';
 import { useTreeActions } from 'src/frontend/hooks/useTreeActions';
@@ -20,7 +20,7 @@ export default function MainPage() {
     <LayoutTwoColumns className='Page Page__MainPage'>
       <>
         <NewConnectionButton />
-        <ConnectionDescription />
+        <VirtualizedConnectionTree />
       </>
       <>
         <Breadcrumbs

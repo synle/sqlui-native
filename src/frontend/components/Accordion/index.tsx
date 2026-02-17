@@ -50,6 +50,7 @@ type AccordionHeaderProps = AccordionBodyProps & {
   onToggle: () => void;
   className?: string;
   onOrderChange?: (fromIdx: number, toIdx: number) => void;
+  connectionIndex?: number;
 };
 
 export function AccordionHeader(props: AccordionHeaderProps): JSX.Element | null {
@@ -63,7 +64,12 @@ export function AccordionHeader(props: AccordionHeaderProps): JSX.Element | null
   };
 
   const onDragStart = (e: React.DragEvent) => {
-    fromIdx = _getIndex(e.currentTarget);
+    if (props.connectionIndex !== undefined) {
+      fromIdx = props.connectionIndex;
+      e.dataTransfer.setData('text/plain', String(props.connectionIndex));
+    } else {
+      fromIdx = _getIndex(e.currentTarget);
+    }
     toIdx = undefined;
   };
 
@@ -72,7 +78,11 @@ export function AccordionHeader(props: AccordionHeaderProps): JSX.Element | null
   };
 
   const onDrop = (e: React.MouseEvent) => {
-    toIdx = _getIndex(e.currentTarget);
+    if (props.connectionIndex !== undefined) {
+      toIdx = props.connectionIndex;
+    } else {
+      toIdx = _getIndex(e.currentTarget);
+    }
 
     if (fromIdx !== undefined && toIdx !== undefined && props.onOrderChange !== undefined) {
       props.onOrderChange(fromIdx, toIdx);

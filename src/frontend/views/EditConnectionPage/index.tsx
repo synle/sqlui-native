@@ -2,7 +2,7 @@ import SignalWifiStatusbar4BarIcon from '@mui/icons-material/SignalWifiStatusbar
 import { useParams } from 'react-router-dom';
 import { useEffect } from 'react';
 import Breadcrumbs from 'src/frontend/components/Breadcrumbs';
-import ConnectionDescription from 'src/frontend/components/ConnectionDescription';
+import VirtualizedConnectionTree from 'src/frontend/components/VirtualizedConnectionTree';
 import { EditConnectionForm } from 'src/frontend/components/ConnectionForm';
 import NewConnectionButton from 'src/frontend/components/NewConnectionButton';
 import { useTreeActions } from 'src/frontend/hooks/useTreeActions';
@@ -27,7 +27,7 @@ export default function EditConnectionPage() {
     <LayoutTwoColumns className='Page Page__EditConnection'>
       <>
         <NewConnectionButton />
-        <ConnectionDescription />
+        <VirtualizedConnectionTree />
       </>
       <>
         <Breadcrumbs

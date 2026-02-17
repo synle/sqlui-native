@@ -15,8 +15,8 @@ jobs:
       package_version: ${{ steps.package-version.outputs.current-version }}
       release_upload_url: ${{ steps.create_release.outputs.upload_url }}
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: '16'
           cache: 'yarn'
@@ -48,8 +48,8 @@ jobs:
     runs-on: windows-latest
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: '16'
           cache: 'yarn'
@@ -71,7 +71,7 @@ jobs:
           asset_name: sqlui-native-${{ needs.create_release.outputs.package_version }}.exe
           asset_content_type: application/octet-stream
       - name: Upload artifact .exe
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: sqlui-native.exe
           path: ./dist/sqlui-native.exe
@@ -90,7 +90,7 @@ jobs:
           asset_content_type: application/octet-stream
 
       - name: Upload artifact .appx
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: sqlui-native.appx
           path: ./dist/sqlui-native.appx
@@ -100,8 +100,8 @@ jobs:
     runs-on: macos-latest
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: '16'
           cache: 'yarn'
@@ -123,7 +123,7 @@ jobs:
           asset_content_type: application/octet-stream
 
       - name: Upload artifact .dmg
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: sqlui-native.dmg
           path: ./dist/sqlui-native.dmg
@@ -135,8 +135,8 @@ jobs:
     steps:
       - name: install missing dependencies
         run: sudo apt-get install -y libarchive-tools
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: '16'
           cache: 'yarn'
@@ -151,22 +151,22 @@ jobs:
           mv ./dist/sqlui-native*.snap ./dist/sqlui-native.snap
           mv ./dist/sqlui-native*.pacman ./dist/sqlui-native.pacman
       - name: Upload artifact .deb
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: sqlui-native.deb
           path: ./dist/sqlui-native.deb
       - name: Upload artifact .rpm
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: sqlui-native.rpm
           path: ./dist/sqlui-native.rpm
       - name: Upload artifact .snap
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: sqlui-native.snap
           path: ./dist/sqlui-native.snap
       - name: Upload artifact .pacman
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: sqlui-native.pacman
           path: ./dist/sqlui-native.pacman
@@ -212,8 +212,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 4
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: '16'
           cache: 'yarn'
@@ -230,7 +230,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 4
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: dev-drprasad/delete-tag-and-release@v0.2.0
         with:
           delete_release: true
