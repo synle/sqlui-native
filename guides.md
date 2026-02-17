@@ -1485,3 +1485,4 @@ serviceClient.createTable('table1')
 ```js
 serviceClient.deleteTable('table1')
 ```
+

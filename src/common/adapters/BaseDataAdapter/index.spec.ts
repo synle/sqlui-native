@@ -48,13 +48,13 @@ describe('BaseDataAdapter', () => {
       expect(actual?.endpoint).toMatchInlineSnapshot(`"system_schema"`);
       expect(actual?.options).toMatchInlineSnapshot(`undefined`);
       expect(actual?.hosts).toMatchInlineSnapshot(`
-Array [
-  Object {
-    "host": "localhost",
-    "port": 9042,
-  },
-]
-`);
+        [
+          {
+            "host": "localhost",
+            "port": 9042,
+          },
+        ]
+      `);
 
       actual = BaseDataAdapter.getConnectionParameters(
         'lldp-med+tcp://localhost:9042/system_schema',
@@ -65,13 +65,13 @@ Array [
       expect(actual?.endpoint).toMatchInlineSnapshot(`"system_schema"`);
       expect(actual?.options).toMatchInlineSnapshot(`undefined`);
       expect(actual?.hosts).toMatchInlineSnapshot(`
-Array [
-  Object {
-    "host": "localhost",
-    "port": 9042,
-  },
-]
-`);
+        [
+          {
+            "host": "localhost",
+            "port": 9042,
+          },
+        ]
+      `);
     });
 
     test('basic input should work', async () => {
@@ -82,13 +82,13 @@ Array [
       expect(actual?.endpoint).toMatchInlineSnapshot(`undefined`);
       expect(actual?.options).toMatchInlineSnapshot(`undefined`);
       expect(actual?.hosts).toMatchInlineSnapshot(`
-Array [
-  Object {
-    "host": "localhost",
-    "port": 9042,
-  },
-]
-`);
+        [
+          {
+            "host": "localhost",
+            "port": 9042,
+          },
+        ]
+      `);
     });
 
     test('input with keyspace', async () => {
@@ -101,13 +101,13 @@ Array [
       expect(actual?.endpoint).toMatchInlineSnapshot(`"system_schema"`);
       expect(actual?.options).toMatchInlineSnapshot(`undefined`);
       expect(actual?.hosts).toMatchInlineSnapshot(`
-Array [
-  Object {
-    "host": "localhost",
-    "port": 9042,
-  },
-]
-`);
+        [
+          {
+            "host": "localhost",
+            "port": 9042,
+          },
+        ]
+      `);
     });
 
     test('input with username and password', async () => {
@@ -119,13 +119,13 @@ Array [
       expect(actual?.password).toMatchInlineSnapshot(`"password"`);
       expect(actual?.options).toMatchInlineSnapshot(`undefined`);
       expect(actual?.hosts).toMatchInlineSnapshot(`
-Array [
-  Object {
-    "host": "localhost",
-    "port": 9042,
-  },
-]
-`);
+        [
+          {
+            "host": "localhost",
+            "port": 9042,
+          },
+        ]
+      `);
     });
 
     test('input with username and password and database', async () => {
@@ -138,13 +138,13 @@ Array [
       expect(actual?.endpoint).toMatchInlineSnapshot(`"system_schema"`);
       expect(actual?.options).toMatchInlineSnapshot(`undefined`);
       expect(actual?.hosts).toMatchInlineSnapshot(`
-Array [
-  Object {
-    "host": "localhost",
-    "port": 9042,
-  },
-]
-`);
+        [
+          {
+            "host": "localhost",
+            "port": 9042,
+          },
+        ]
+      `);
     });
 
     test('input that needs to be encoded properly', async () => {
@@ -157,13 +157,13 @@ Array [
         `"some_strong-PasswordMa+9T=]-G?We4Pp$wcUK=="`,
       );
       expect(actual?.hosts).toMatchInlineSnapshot(`
-Array [
-  Object {
-    "host": "sqlui-native-17823707621378612879.cassandra.cosmos.azure.com",
-    "port": 10350,
-  },
-]
-`);
+        [
+          {
+            "host": "sqlui-native-17823707621378612879.cassandra.cosmos.azure.com",
+            "port": 10350,
+          },
+        ]
+      `);
     });
 
     test('input that needs further encoding', async () => {
@@ -178,12 +178,12 @@ Array [
       expect(actual?.endpoint).toMatchInlineSnapshot(`undefined`);
       expect(actual?.options).toMatchInlineSnapshot(`undefined`);
       expect(actual?.hosts).toMatchInlineSnapshot(`
-Array [
-  Object {
-    "host": "mongodb.azure.com",
-  },
-]
-`);
+        [
+          {
+            "host": "mongodb.azure.com",
+          },
+        ]
+      `);
     });
 
     test('postgresql complex example', async () => {
@@ -195,23 +195,23 @@ Array [
       expect(actual?.password).toMatchInlineSnapshot(`"demo13524"`);
       expect(actual?.endpoint).toMatchInlineSnapshot(`"movr"`);
       expect(actual?.options).toMatchInlineSnapshot(`
-Object {
-  "sslmode": "require",
-}
-`);
+        {
+          "sslmode": "require",
+        }
+      `);
       expect(actual?.options).toMatchInlineSnapshot(`
-Object {
-  "sslmode": "require",
-}
-`);
+        {
+          "sslmode": "require",
+        }
+      `);
       expect(actual?.hosts).toMatchInlineSnapshot(`
-Array [
-  Object {
-    "host": "127.0.0.1",
-    "port": 26257,
-  },
-]
-`);
+        [
+          {
+            "host": "127.0.0.1",
+            "port": 26257,
+          },
+        ]
+      `);
     });
 
     test('mongodb+srv complex example', async () => {
@@ -224,13 +224,13 @@ Array [
       expect(actual?.endpoint).toMatchInlineSnapshot(`undefined`);
       expect(actual?.options).toMatchInlineSnapshot(`undefined`);
       expect(actual?.hosts).toMatchInlineSnapshot(`
-Array [
-  Object {
-    "host": "localhost",
-    "port": 27017,
-  },
-]
-`);
+        [
+          {
+            "host": "localhost",
+            "port": 27017,
+          },
+        ]
+      `);
     });
 
     test('mongodb+srv with no port example', async () => {
@@ -243,12 +243,12 @@ Array [
       expect(actual?.endpoint).toMatchInlineSnapshot(`undefined`);
       expect(actual?.options).toMatchInlineSnapshot(`undefined`);
       expect(actual?.hosts).toMatchInlineSnapshot(`
-Array [
-  Object {
-    "host": "localhost",
-  },
-]
-`);
+        [
+          {
+            "host": "localhost",
+          },
+        ]
+      `);
     });
 
     test('redis simple example', async () => {
@@ -259,13 +259,13 @@ Array [
       expect(actual?.endpoint).toMatchInlineSnapshot(`undefined`);
       expect(actual?.options).toMatchInlineSnapshot(`undefined`);
       expect(actual?.hosts).toMatchInlineSnapshot(`
-Array [
-  Object {
-    "host": "localhost",
-    "port": 6379,
-  },
-]
-`);
+        [
+          {
+            "host": "localhost",
+            "port": 6379,
+          },
+        ]
+      `);
     });
 
     test('rediss complex example', async () => {
@@ -278,13 +278,13 @@ Array [
       expect(actual?.endpoint).toMatchInlineSnapshot(`undefined`);
       expect(actual?.options).toMatchInlineSnapshot(`undefined`);
       expect(actual?.hosts).toMatchInlineSnapshot(`
-Array [
-  Object {
-    "host": "localhost",
-    "port": 6379,
-  },
-]
-`);
+        [
+          {
+            "host": "localhost",
+            "port": 6379,
+          },
+        ]
+      `);
     });
   });
 });
