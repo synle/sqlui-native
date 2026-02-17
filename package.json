@@ -45,6 +45,7 @@
   "scripts": {
     "clean": "rm -rf upload .cache .parcel-cache dist build mocked-db.sqlite public/vs && cpx package.json src && cpx \"node_modules/monaco-editor/min/vs/**/*.{css,js}\" ./public/vs",
     "cleanSnapshot": "rm -rf src/common/adapters/__snapshots__/ src/common/adapters/BaseDataAdapter/__snapshots__/ && npm run test-ci -- --update",
+    "prebuild": "echo 'npm run prebuild scripts'",
     "prestart": "npm run clean && npm run build",
     "predev": "npm run prebuild",
     "prestart-mocked-server": "npm run build-mocked-sever",
