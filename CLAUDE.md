@@ -9,24 +9,24 @@ SQLUI Native is a cross-platform Electron desktop SQL/NoSQL database client supp
 ## Commands
 
 ```bash
-yarn                    # Install dependencies
-yarn start              # Run in Electron (dev mode)
-yarn dev                # Run mocked server + React dev server at http://localhost:3000
-yarn build              # Build React + Electron + mocked server
-yarn test               # Run Jest tests (watch mode)
-yarn test-ci            # Run Jest tests (CI, no watch)
-yarn lint               # ESLint with auto-fix
-yarn format             # Prettier formatting
-yarn fix-import         # Fix and organize imports
+npm install             # Install dependencies
+npm start               # Run in Electron (dev mode)
+npm run dev             # Run mocked server + React dev server at http://localhost:3000
+npm run build           # Build React + Electron + mocked server
+npm test                # Run Jest tests (watch mode)
+npm run test-ci         # Run Jest tests (CI, no watch)
+npm run lint            # ESLint with auto-fix
+npm run format          # Prettier formatting
+npm run fix-import      # Fix and organize imports
 ```
 
-**Packaging:** `yarn build && cd build && yarn && yarn dist`
+**Packaging:** `npm run build && cd build && npm install && npm run dist`
 
 ## Architecture
 
 ### Two Runtime Modes
 
-The app runs in **Electron mode** (`yarn start`) or **mocked server mode** (`yarn dev`). Both share the same backend code in `src/common/`. In Electron mode, the renderer communicates with the main process via IPC. In mocked server mode, an Express server on port 3001 serves the same endpoints over HTTP.
+The app runs in **Electron mode** (`npm start`) or **mocked server mode** (`npm run dev`). Both share the same backend code in `src/common/`. In Electron mode, the renderer communicates with the main process via IPC. In mocked server mode, an Express server on port 3001 serves the same endpoints over HTTP.
 
 ### Directory Structure
 
@@ -70,4 +70,4 @@ Custom React hooks and context providers instead of Redux: `useSession`, `useCon
 - Electron main process: `webpack-electron.config.js` with `tsconfig-electron.json`
 - Mocked server: `webpack-mocked-server.config.js` with `tsconfig-mocked-server.json`
 - Prettier: 100 char width, single quotes, trailing commas, 2-space indent
-- Node 14+, Yarn v1 (1.22.19)
+- Node 14+, npm

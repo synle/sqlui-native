@@ -1,5 +1,4 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-package-lock.json
 src/package.json
 # dependencies
 /node_modules
@@ -24,8 +23,6 @@ main.js
 npm-debug.log*
 public/vs
 upload
-yarn-debug.log*
-yarn-error.log*
 *.rej
 data
 *.db
@@ -40,3 +37,5 @@ DEBUG
 Error
 node_modules
 yarn.lock
+yarn-debug.log*
+yarn-error.log*
