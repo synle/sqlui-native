@@ -95,7 +95,7 @@
     "@mui/icons-material": "^5.8.2",
     "@mui/lab": "^5.0.0-alpha.100",
     "@mui/material": "^5.10.8",
-    "@tanstack/react-virtual": "^3.0.0-beta.14",
+    "@tanstack/react-virtual": "^3.13.18",
     "cassandra-driver": "^3.6.0",
     "connection-string-parser": "^1.0.4",
     "eslint-plugin-unused-imports": "^4.4.1",
