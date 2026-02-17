@@ -1,3 +1,6 @@
+*.bundle.*
+*.min.*
+.build
 _layouts/default.html
 build
 coverage
@@ -5,6 +8,3 @@ display-dj
 dist
 node_modules
 public/vs
-*.bundle.*
-*.min.*
-.build
