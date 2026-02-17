@@ -54,10 +54,9 @@ jobs:
           node-version: '16'
           cache: 'npm'
       - run: npm version --no-git-tag-version patch
-      - run: bash build.sh
+      - run: bash dist.sh
 
       # package and distribute .exe
-      - run: npm run dist
       - run: mv ./dist/sqlui-native*.exe ./dist/sqlui-native.exe
       - name: Upload release binary .exe
         uses: actions/upload-release-asset@v1
@@ -104,8 +103,7 @@ jobs:
           node-version: '16'
           cache: 'npm'
       - run: npm version --no-git-tag-version patch
-      - run: bash build.sh
-      - run: npm run dist
+      - run: bash dist.sh
       - run: mv ./dist/sqlui-native*.dmg ./dist/sqlui-native.dmg
 
       - name: Upload release binary
@@ -137,8 +135,7 @@ jobs:
           node-version: '16'
           cache: 'npm'
       - run: npm version --no-git-tag-version patch
-      - run: bash build.sh
-      - run: npm run dist
+      - run: bash dist.sh
       - run: |
           mv ./dist/sqlui-native*.deb ./dist/sqlui-native.deb
           mv ./dist/sqlui-native*.rpm ./dist/sqlui-native.rpm
