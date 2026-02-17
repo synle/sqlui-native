@@ -7,7 +7,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  NODE_VERSION: '24'
+  NODE_VERSION: 18
 
 jobs:
   build_windows:

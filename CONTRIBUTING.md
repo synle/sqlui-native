@@ -4,7 +4,7 @@
 
 ### Requirement
 
-- Node 14+
+- NODE_VERSION: 18
 - npm (bundled with Node)
 
 ### Starting guide
