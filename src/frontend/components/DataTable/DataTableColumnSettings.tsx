@@ -71,7 +71,27 @@ function DataTableColumnSettingsContent({ table }: DataTableColumnSettingsProps)
 
   return (
     <Box>
-      <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 1 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1, mb: 1 }}>
+        <Button
+          size='small'
+          onClick={() => {
+            const next: VisibilityState = {};
+            columnOrder.forEach((id) => (next[id] = true));
+            setColumnVisibility(next);
+            table.setColumnVisibility(next);
+          }}>
+          Select All
+        </Button>
+        <Button
+          size='small'
+          onClick={() => {
+            const next: VisibilityState = {};
+            columnOrder.forEach((id) => (next[id] = false));
+            setColumnVisibility(next);
+            table.setColumnVisibility(next);
+          }}>
+          Clear All
+        </Button>
         <Button size='small' onClick={onReset}>
           Reset
         </Button>
