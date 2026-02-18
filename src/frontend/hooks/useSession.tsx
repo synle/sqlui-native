@@ -1,4 +1,4 @@
-import { QueryClient, useMutation, useQuery, useQueryClient } from 'react-query';
+import { QueryClient, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import dataApi from 'src/frontend/data/api';
 import { setCurrentSessionId } from 'src/frontend/data/session';
@@ -24,7 +24,7 @@ export function useSetOpenSession() {
   const queryClient = useQueryClient();
   return useMutation<Record<string, string>, void, string>(dataApi.setOpenSession, {
     onSuccess: async () => {
-      queryClient.invalidateQueries(QUERY_KEY_SESSIONS);
+      queryClient.invalidateQueries([QUERY_KEY_SESSIONS]);
     },
   });
 }
@@ -63,7 +63,7 @@ export function useUpsertSession() {
   const queryClient = useQueryClient();
   return useMutation<SqluiCore.Session, void, SqluiCore.CoreSession>(dataApi.upsertSession, {
     onSuccess: async (newSession) => {
-      queryClient.invalidateQueries(QUERY_KEY_SESSIONS);
+      queryClient.invalidateQueries([QUERY_KEY_SESSIONS]);
       return newSession;
     },
   });
@@ -73,7 +73,7 @@ export function useCloneSession() {
   const queryClient = useQueryClient();
   return useMutation<SqluiCore.Session, void, SqluiCore.CoreSession>(dataApi.cloneSession, {
     onSuccess: async (newSession) => {
-      queryClient.invalidateQueries(QUERY_KEY_SESSIONS);
+      queryClient.invalidateQueries([QUERY_KEY_SESSIONS]);
       return newSession;
     },
   });
@@ -84,7 +84,7 @@ export function useDeleteSession() {
 
   return useMutation<string, void, string>(dataApi.deleteSession, {
     onSuccess: async (deletedSessionId) => {
-      queryClient.invalidateQueries(QUERY_KEY_SESSIONS);
+      queryClient.invalidateQueries([QUERY_KEY_SESSIONS]);
       return deletedSessionId;
     },
   });

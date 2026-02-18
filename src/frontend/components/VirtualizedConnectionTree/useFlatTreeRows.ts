@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { useQueries } from 'react-query';
+import { useQueries } from '@tanstack/react-query';
 import dataApi from 'src/frontend/data/api';
 import { useGetConnections, useUpdateConnections } from 'src/frontend/hooks/useConnection';
 import { useActiveConnectionQuery } from 'src/frontend/hooks/useConnectionQuery';
@@ -52,13 +52,13 @@ export function useFlatTreeRows() {
   }, [connections, visibles]);
 
   // Batch fetch databases for all expanded+online connections
-  const databaseQueries = useQueries(
-    expandedOnlineConnections.map((connectionId) => ({
+  const databaseQueries = useQueries({
+    queries: expandedOnlineConnections.map((connectionId) => ({
       queryKey: [connectionId, 'databases'],
       queryFn: () => dataApi.getConnectionDatabases(connectionId),
       staleTime: DEFAULT_STALE_TIME,
     })),
-  );
+  });
 
   const databaseResults = useMemo<DatabaseQueryResult[]>(() => {
     return expandedOnlineConnections.map((connectionId, i) => ({
@@ -85,13 +85,13 @@ export function useFlatTreeRows() {
   }, [databaseResults, visibles]);
 
   // Batch fetch tables for all expanded databases
-  const tableQueries = useQueries(
-    expandedDatabases.map(({ connectionId, databaseId }) => ({
+  const tableQueries = useQueries({
+    queries: expandedDatabases.map(({ connectionId, databaseId }) => ({
       queryKey: [connectionId, databaseId, 'tables'],
       queryFn: () => dataApi.getConnectionTables(connectionId, databaseId),
       staleTime: DEFAULT_STALE_TIME,
     })),
-  );
+  });
 
   const tableResults = useMemo<TableQueryResult[]>(() => {
     return expandedDatabases.map(({ connectionId, databaseId }, i) => ({
@@ -123,13 +123,13 @@ export function useFlatTreeRows() {
   }, [tableResults, visibles]);
 
   // Batch fetch columns for all expanded tables
-  const columnQueries = useQueries(
-    expandedTables.map(({ connectionId, databaseId, tableId }) => ({
+  const columnQueries = useQueries({
+    queries: expandedTables.map(({ connectionId, databaseId, tableId }) => ({
       queryKey: [connectionId, databaseId, tableId, 'columns'],
       queryFn: () => dataApi.getConnectionColumns(connectionId, databaseId, tableId),
       staleTime: DEFAULT_STALE_TIME,
     })),
-  );
+  });
 
   const columnResults = useMemo<ColumnQueryResult[]>(() => {
     return expandedTables.map(({ connectionId, databaseId, tableId }, i) => ({
