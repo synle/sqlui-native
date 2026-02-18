@@ -124,7 +124,7 @@ export default function MyTabs(props: TabsProps): JSX.Element | null {
               onContextMenu={onShowActions}
               onMouseDown={onMouseDown(idx)}
               disableRipple={false}
-              sx={isCompact ? { minHeight: TAB_HEIGHT_COMPACT, py: 0, fontSize: '0.9rem' } : { minHeight: TAB_HEIGHT_DEFAULT, fontSize: '0.9rem' }}
+              sx={isCompact ? { minHeight: TAB_HEIGHT_COMPACT, py: 0, fontSize: '0.8rem' } : { minHeight: TAB_HEIGHT_DEFAULT, fontSize: '0.9rem' }}
               {...dragAndDropProps}></Tab>
           );
         })}

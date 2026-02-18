@@ -2,6 +2,14 @@ import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import React from 'react';
 import { styled } from '@mui/system';
+import { useLayoutModeSetting } from 'src/frontend/hooks/useSetting';
+
+const ACCORDION_HEIGHT_DEFAULT = 37;
+const ACCORDION_HEIGHT_COMPACT = 28;
+const ACCORDION_FONT_SIZE_DEFAULT = '0.9rem';
+const ACCORDION_FONT_SIZE_COMPACT = '0.8rem';
+const ACCORDION_GAP_DEFAULT = '5px';
+const ACCORDION_GAP_COMPACT = '3px';
 // these are drag and drop index
 let fromIdx: number | undefined, toIdx: number | undefined;
 
@@ -15,13 +23,16 @@ function _getIndex(currentTarget: Element) {
   }
 }
 
-const StyledAccordionHeader = styled('div')(({ theme }) => {
+const StyledAccordionHeader = styled('div', {
+  shouldForwardProp: (prop) => prop !== 'compact',
+})<{ compact?: boolean }>(({ theme, compact }) => {
   return {
     cursor: 'pointer',
     display: 'flex',
     alignItems: 'center',
-    minHeight: '37px',
-    gap: '5px',
+    minHeight: compact ? ACCORDION_HEIGHT_COMPACT : ACCORDION_HEIGHT_DEFAULT,
+    gap: compact ? ACCORDION_GAP_COMPACT : ACCORDION_GAP_DEFAULT,
+    fontSize: compact ? ACCORDION_FONT_SIZE_COMPACT : ACCORDION_FONT_SIZE_DEFAULT,
 
     '&:hover, &:focus-within, &:focus': {
       backgroundColor: theme.palette.action.hover,
@@ -55,6 +66,7 @@ type AccordionHeaderProps = AccordionBodyProps & {
 
 export function AccordionHeader(props: AccordionHeaderProps): JSX.Element | null {
   const { children, expanded, onToggle, className } = props;
+  const isCompact = useLayoutModeSetting() === 'compact';
 
   const onShowActions = (e: React.SyntheticEvent) => {
     e.preventDefault();
@@ -101,6 +113,7 @@ export function AccordionHeader(props: AccordionHeaderProps): JSX.Element | null
   return (
     <StyledAccordionHeader
       {...dragAndDropProps}
+      compact={isCompact}
       onClick={() => onToggle()}
       className={'Accordion__Header ' + className}
       onContextMenu={onShowActions}>
