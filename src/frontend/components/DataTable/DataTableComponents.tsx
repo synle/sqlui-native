@@ -1,6 +1,6 @@
 import { styled } from '@mui/material/styles';
 
-export const defaultTableHeight = '40vh';
+export const defaultTableHeight = '80vh';
 
 export const tableCellHeaderHeight = 75;
 
