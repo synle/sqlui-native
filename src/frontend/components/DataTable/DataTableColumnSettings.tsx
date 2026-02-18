@@ -92,6 +92,17 @@ function DataTableColumnSettingsContent({ table }: DataTableColumnSettingsProps)
           }}>
           Clear All
         </Button>
+        <Button
+          size='small'
+          onClick={() => {
+            const visible = columnOrder.filter((id) => isVisible(id));
+            const hidden = columnOrder.filter((id) => !isVisible(id));
+            const newOrder = [...visible, ...hidden];
+            setColumnOrder(newOrder);
+            table.setColumnOrder(newOrder);
+          }}>
+          Pin Visible
+        </Button>
         <Button size='small' onClick={onReset}>
           Reset
         </Button>
