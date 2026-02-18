@@ -125,6 +125,8 @@ type BarInternalProps = BarProps & {
 export function Bar({ size, style, _onDrag, _onDragEnd, ...rest }: BarInternalProps) {
   const dragging = useRef(false);
   const lastX = useRef(0);
+  const pendingDelta = useRef(0);
+  const rafId = useRef(0);
 
   const onMouseDown = useCallback(
     (e: React.MouseEvent) => {
@@ -132,6 +134,7 @@ export function Bar({ size, style, _onDrag, _onDragEnd, ...rest }: BarInternalPr
       e.stopPropagation();
       dragging.current = true;
       lastX.current = e.clientX;
+      pendingDelta.current = 0;
 
       const preventSelect = (ev: Event) => ev.preventDefault();
 
@@ -140,11 +143,29 @@ export function Bar({ size, style, _onDrag, _onDragEnd, ...rest }: BarInternalPr
         ev.preventDefault();
         const delta = ev.clientX - lastX.current;
         lastX.current = ev.clientX;
-        _onDrag?.(delta);
+        pendingDelta.current += delta;
+
+        if (!rafId.current) {
+          rafId.current = requestAnimationFrame(() => {
+            rafId.current = 0;
+            if (pendingDelta.current !== 0) {
+              _onDrag?.(pendingDelta.current);
+              pendingDelta.current = 0;
+            }
+          });
+        }
       };
 
       const onMouseUp = () => {
         dragging.current = false;
+        if (rafId.current) {
+          cancelAnimationFrame(rafId.current);
+          rafId.current = 0;
+        }
+        if (pendingDelta.current !== 0) {
+          _onDrag?.(pendingDelta.current);
+          pendingDelta.current = 0;
+        }
         _onDragEnd?.();
         document.removeEventListener('mousemove', onMouseMove);
         document.removeEventListener('mouseup', onMouseUp);
