@@ -75,8 +75,6 @@
     "build": "npm run build-react-inline && concurrently \"npm run build-electron\" \"npm run build-mocked-sever\"",
     "test-ci": "vitest run",
     "test": "vitest --watch",
-    "fix-import": "npx import-fixer --groupImport --aggressive --transformRelativeImport --importQuote=single",
-    "preformat": "npm run fix-import",
     "format": "prettier --write --ignore-unknown --cache '**/*.{js,jsx,ts,tsx,mjs,cjs,json,html,css,scss,less,md,yml,yaml,graphql,vue,xml}'",
     "typecheck": "tsc --noEmit",
     "lint": "eslint --fix --ext .tsx --ext .ts src"
