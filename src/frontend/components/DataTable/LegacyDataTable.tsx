@@ -141,13 +141,11 @@ export default function LegacyDataTable(props: DataTableProps): JSX.Element | nu
             <GlobalFilter id={props.searchInputId} onChange={setGlobalFilter} />
           )}
         </Box>
-        {!fullScreen && (
-          <Tooltip title='Open this table fullscreen in another window'>
-            <IconButton aria-label='Make table bigger' onClick={onShowExpandedData}>
-              <ZoomOutMapIcon />
-            </IconButton>
-          </Tooltip>
-        )}
+        <Tooltip title='Open this table fullscreen in another window'>
+          <IconButton aria-label='Make table bigger' onClick={onShowExpandedData}>
+            <ZoomOutMapIcon />
+          </IconButton>
+        </Tooltip>
       </Box>
       <Box sx={{ position: 'relative' }} onContextMenu={(e) => onRowContextMenuClick(e)}>
         {headerGroups.map((headerGroup) => (
