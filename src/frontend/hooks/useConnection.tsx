@@ -1,4 +1,4 @@
-import { QueryClient, useMutation, useQuery, useQueryClient } from 'src/frontend/utils/reactQueryUtils';
+import { QueryClient, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import dataApi from 'src/frontend/data/api';
 import { useAddRecycleBinItem } from 'src/frontend/hooks/useFolderItems';
 import { useIsSoftDeleteModeSetting } from 'src/frontend/hooks/useSetting';
