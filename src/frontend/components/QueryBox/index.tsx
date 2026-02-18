@@ -5,10 +5,13 @@ import HelpIcon from '@mui/icons-material/Help';
 import InfoIcon from '@mui/icons-material/Info';
 import MenuIcon from '@mui/icons-material/Menu';
 import SendIcon from '@mui/icons-material/Send';
+import UnfoldLessIcon from '@mui/icons-material/UnfoldLess';
+import UnfoldMoreIcon from '@mui/icons-material/UnfoldMore';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { Button } from '@mui/material';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
 import CircularProgress from '@mui/material/CircularProgress';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
@@ -151,6 +154,7 @@ export default function QueryBox(props: QueryBoxProps): JSX.Element | null {
   const { query, onChange, onDelete, isLoading: loadingConnection } = useConnectionQuery(queryId);
   const { mutateAsync: executeQuery } = useExecute();
   const [executing, setExecuting] = useState(false);
+  const [expanded, setExpanded] = useState(true);
   const { data: selectedConnection } = useGetConnectionById(query?.connectionId);
   const queryClient = useQueryClient();
   const { selectCommand } = useCommands();
@@ -282,11 +286,13 @@ export default function QueryBox(props: QueryBoxProps): JSX.Element | null {
         className='QueryBox FormInput__Container'
         onSubmit={onSubmit}
         style={{ marginBottom: '1rem' }}>
-        <div className='FormInput__Row'>
-          <ConnectionDatabaseSelector value={query} onChange={onDatabaseConnectionChange} />
-          <ConnectionRevealButton query={query} />
-          <ConnectionActionsButton query={query} />
-        </div>
+        {expanded && (
+          <div className='FormInput__Row'>
+            <ConnectionDatabaseSelector value={query} onChange={onDatabaseConnectionChange} />
+            <ConnectionRevealButton query={query} />
+            <ConnectionActionsButton query={query} />
+          </div>
+        )}
         <CodeEditorBox
           id={query.id}
           className='CodeEditorBox__QueryBox'
@@ -307,50 +313,70 @@ export default function QueryBox(props: QueryBoxProps): JSX.Element | null {
             startIcon={<SendIcon />}>
             Execute
           </LoadingButton>
-          <Tooltip title='Click here to see how to get started with some queries.'>
-            <Button
-              type='button'
-              variant='outlined'
-              onClick={() => selectCommand({ event: 'clientEvent/showQueryHelp' })}
-              startIcon={<HelpIcon />}>
-              Show Query Help
-            </Button>
-          </Tooltip>
-          <Tooltip title='Format the SQL query for readability.'>
-            <Button
-              type='button'
-              variant='outlined'
-              onClick={onFormatQuery}
-              startIcon={<FormatColorTextIcon />}>
-              Format
-            </Button>
-          </Tooltip>
-          {isMigrationVisible && (
-            <Tooltip title='Migrate this database and table.'>
-              <Button
-                type='button'
-                variant='outlined'
-                onClick={onShowMigrationForThisDatabaseAndTable}
-                startIcon={<BackupIcon />}>
-                Migration
-              </Button>
-            </Tooltip>
+          {!expanded && (
+            <Typography variant='body2' color='text.secondary' sx={{ whiteSpace: 'nowrap' }}>
+              {[selectedConnection?.name, query.databaseId, query.tableId]
+                .filter(Boolean)
+                .join(' / ')}
+            </Typography>
           )}
-          {isCreateRecordVisible && (
-            <Tooltip title='Create new record for this database and connection.'>
-              <Button
-                type='button'
-                variant='outlined'
-                onClick={onShowCreateNewRecordForThisDatabaseAndTable}
-                startIcon={<AddCircleIcon />}>
-                New Record
-              </Button>
-            </Tooltip>
+          {expanded && (
+            <>
+              <Tooltip title='Click here to see how to get started with some queries.'>
+                <Button
+                  type='button'
+                  variant='outlined'
+                  onClick={() => selectCommand({ event: 'clientEvent/showQueryHelp' })}
+                  startIcon={<HelpIcon />}>
+                  Show Query Help
+                </Button>
+              </Tooltip>
+              <Tooltip title='Format the SQL query for readability.'>
+                <Button
+                  type='button'
+                  variant='outlined'
+                  onClick={onFormatQuery}
+                  startIcon={<FormatColorTextIcon />}>
+                  Format
+                </Button>
+              </Tooltip>
+              {isMigrationVisible && (
+                <Tooltip title='Migrate this database and table.'>
+                  <Button
+                    type='button'
+                    variant='outlined'
+                    onClick={onShowMigrationForThisDatabaseAndTable}
+                    startIcon={<BackupIcon />}>
+                    Migration
+                  </Button>
+                </Tooltip>
+              )}
+              {isCreateRecordVisible && (
+                <Tooltip title='Create new record for this database and connection.'>
+                  <Button
+                    type='button'
+                    variant='outlined'
+                    onClick={onShowCreateNewRecordForThisDatabaseAndTable}
+                    startIcon={<AddCircleIcon />}>
+                    New Record
+                  </Button>
+                </Tooltip>
+              )}
+              <CodeSnippetButton {...props} />
+            </>
           )}
-          <CodeSnippetButton {...props} />
+          <Tooltip title={expanded ? 'Collapse form' : 'Expand form'}>
+            <IconButton
+              aria-label='Toggle form collapse'
+              color='inherit'
+              onClick={() => setExpanded((prev) => !prev)}
+              style={{ marginLeft: 'auto' }}>
+              {expanded ? <UnfoldLessIcon /> : <UnfoldMoreIcon />}
+            </IconButton>
+          </Tooltip>
         </div>
       </form>
-      <ResultBox query={query} executing={executing} />
+      <ResultBox query={query} executing={executing} collapsed={!expanded} />
     </>
   );
 }
