@@ -1,7 +1,7 @@
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import Fab from '@mui/material/Fab';
-import { Bar, Container, Section } from 'react-simple-resizer';
+import { Bar, Container, Section } from 'src/frontend/components/Resizer';
 import { useEffect, useState } from 'react';
 import { useSideBarWidthPreference } from 'src/frontend/hooks/useClientSidePreference';
 import { useTreeActions } from 'src/frontend/hooks/useTreeActions';
