@@ -129,11 +129,15 @@ export function Bar({ size, style, _onDrag, _onDragEnd, ...rest }: BarInternalPr
   const onMouseDown = useCallback(
     (e: React.MouseEvent) => {
       e.preventDefault();
+      e.stopPropagation();
       dragging.current = true;
       lastX.current = e.clientX;
 
+      const preventSelect = (ev: Event) => ev.preventDefault();
+
       const onMouseMove = (ev: MouseEvent) => {
         if (!dragging.current) return;
+        ev.preventDefault();
         const delta = ev.clientX - lastX.current;
         lastX.current = ev.clientX;
         _onDrag?.(delta);
@@ -144,8 +148,10 @@ export function Bar({ size, style, _onDrag, _onDragEnd, ...rest }: BarInternalPr
         _onDragEnd?.();
         document.removeEventListener('mousemove', onMouseMove);
         document.removeEventListener('mouseup', onMouseUp);
+        document.removeEventListener('selectstart', preventSelect);
       };
 
+      document.addEventListener('selectstart', preventSelect);
       document.addEventListener('mousemove', onMouseMove);
       document.addEventListener('mouseup', onMouseUp);
     },
