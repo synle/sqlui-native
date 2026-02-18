@@ -11,6 +11,7 @@ import Link from '@mui/material/Link';
 import Typography from '@mui/material/Typography';
 import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
+import { ColumnDef } from '@tanstack/react-table';
 import Breadcrumbs from 'src/frontend/components/Breadcrumbs';
 import VirtualizedConnectionTree from 'src/frontend/components/VirtualizedConnectionTree';
 import DataTable from 'src/frontend/components/DataTable';
@@ -27,63 +28,69 @@ import { useTreeActions } from 'src/frontend/hooks/useTreeActions';
 import LayoutTwoColumns from 'src/frontend/layout/LayoutTwoColumns';
 import { SqluiCore } from 'typings';
 
-const columns = [
+function NameCell({ row }: { row: any }) {
+  const folderItem = row.original;
+  const { mutateAsync: restoreRecycleBinItem } = useRestoreRecycleBinItem();
+  return <Link onClick={() => restoreRecycleBinItem(folderItem)}>{folderItem.name}</Link>;
+}
+
+function TypeCell({ row }: { row: any }) {
+  const folderItem = row.original;
+  return (
+    <Chip
+      label={folderItem.type}
+      color={folderItem.type === 'Connection' ? 'success' : 'warning'}
+      size='small'
+    />
+  );
+}
+
+function ActionCell({ row }: { row: any }) {
+  const folderItem = row.original;
+  const { confirm } = useActionDialogs();
+  const { mutateAsync: restoreRecycleBinItem } = useRestoreRecycleBinItem();
+  const { mutateAsync: deleteRecyleBinItem } = useDeletedRecycleBinItem();
+
+  const onRestoreRecycleBinItem = restoreRecycleBinItem;
+
+  const onDeleteRecycleBin = async (folderItem: SqluiCore.FolderItem) => {
+    try {
+      await confirm(`Do you want to delete this item permanently "${folderItem.name}"?`);
+      await deleteRecyleBinItem(folderItem.id);
+    } catch (err) {}
+  };
+
+  return (
+    <Box sx={{ display: 'flex', gap: 1 }}>
+      <IconButton aria-label='Restore item' onClick={() => onRestoreRecycleBinItem(folderItem)}>
+        <RestoreIcon />
+      </IconButton>
+      <IconButton
+        aria-label='Delete item permanently'
+        onClick={() => onDeleteRecycleBin(folderItem)}>
+        <DeleteForeverIcon />
+      </IconButton>
+    </Box>
+  );
+}
+
+const columns: ColumnDef<any, any>[] = [
   {
-    Header: 'Name',
-    accessor: 'name',
-    Cell: (data: any) => {
-      const folderItem = data.row.original;
-      const { mutateAsync: restoreRecycleBinItem } = useRestoreRecycleBinItem();
-      return <Link onClick={() => restoreRecycleBinItem(folderItem)}>{folderItem.name}</Link>;
-    },
+    header: 'Name',
+    accessorKey: 'name',
+    cell: (info) => <NameCell row={info.row} />,
   },
   {
-    Header: 'Type',
-    accessor: 'type',
-    width: 100,
-    Cell: (data: any) => {
-      const folderItem = data.row.original;
-      return (
-        <Chip
-          label={folderItem.type}
-          color={folderItem.type === 'Connection' ? 'success' : 'warning'}
-          size='small'
-        />
-      );
-    },
+    header: 'Type',
+    accessorKey: 'type',
+    size: 100,
+    cell: (info) => <TypeCell row={info.row} />,
   },
   {
-    Header: '',
-    accessor: 'id',
-    width: 80,
-    Cell: (data: any) => {
-      const folderItem = data.row.original;
-      const { confirm } = useActionDialogs();
-      const { mutateAsync: restoreRecycleBinItem } = useRestoreRecycleBinItem();
-      const { mutateAsync: deleteRecyleBinItem } = useDeletedRecycleBinItem();
-
-      const onRestoreRecycleBinItem = restoreRecycleBinItem;
-
-      const onDeleteRecycleBin = async (folderItem: SqluiCore.FolderItem) => {
-        try {
-          await confirm(`Do you want to delete this item permanently "${folderItem.name}"?`);
-          await deleteRecyleBinItem(folderItem.id);
-        } catch (err) {}
-      };
-
-      return (
-        <Box sx={{ display: 'flex', gap: 1 }}>
-          <IconButton aria-label='Restore item' onClick={() => onRestoreRecycleBinItem(folderItem)}>
-            <RestoreIcon />
-          </IconButton>
-          <IconButton
-            aria-label='Delete item permanently'
-            onClick={() => onDeleteRecycleBin(folderItem)}>
-            <DeleteForeverIcon />
-          </IconButton>
-        </Box>
-      );
-    },
+    header: '',
+    accessorKey: 'id',
+    size: 80,
+    cell: (info) => <ActionCell row={info.row} />,
   },
 ];
 

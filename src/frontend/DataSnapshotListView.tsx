@@ -6,68 +6,75 @@ import IconButton from '@mui/material/IconButton';
 import Link from '@mui/material/Link';
 import { Link as RouterLink } from 'react-router-dom';
 import { useEffect } from 'react';
+import { ColumnDef } from '@tanstack/react-table';
 import ActionDialogs from 'src/frontend/components/ActionDialogs';
 import DataTable from 'src/frontend/components/DataTable';
 import { useActionDialogs } from 'src/frontend/hooks/useActionDialogs';
 import { useDeleteDataSnapshot, useGetDataSnapshots } from 'src/frontend/hooks/useDataSnapshot';
 
-const columns = [
+function IdCell({ row }: { row: any }) {
+  const dataSnapshot = row.original;
+  const linkToUse = `/data_snapshot/${dataSnapshot.id}`;
+  return (
+    <Link component={RouterLink} to={linkToUse}>
+      {dataSnapshot.id}
+    </Link>
+  );
+}
+
+function CreatedCell({ row }: { row: any }) {
+  const dataSnapshot = row.original;
+  return <>{new Date(dataSnapshot.created).toLocaleString()}</>;
+}
+
+function ActionCell({ row }: { row: any }) {
+  const dataSnapshot = row.original;
+  const { confirm } = useActionDialogs();
+  const { mutateAsync: deleteRecord } = useDeleteDataSnapshot();
+
+  const onDeleteRecycleBin = async (dataSnapshotId: string) => {
+    try {
+      await confirm(`Do you want to delete this item permanently "${dataSnapshotId}"?`);
+      await deleteRecord(dataSnapshotId);
+    } catch (err) {}
+  };
+
+  return (
+    <Box sx={{ display: 'flex', gap: 1 }}>
+      <IconButton
+        aria-label='Delete item permanently'
+        onClick={() => onDeleteRecycleBin(dataSnapshot.id)}>
+        <DeleteForeverIcon />
+      </IconButton>
+    </Box>
+  );
+}
+
+const columns: ColumnDef<any, any>[] = [
   {
-    Header: 'ID',
-    accessor: 'id',
-    Cell: (data: any) => {
-      const dataSnapshot = data.row.original;
-      const linkToUse = `/data_snapshot/${dataSnapshot.id}`;
-      return (
-        <Link component={RouterLink} to={linkToUse}>
-          {dataSnapshot.id}
-        </Link>
-      );
-    },
+    header: 'ID',
+    accessorKey: 'id',
+    cell: (info) => <IdCell row={info.row} />,
   },
   {
-    Header: 'Location',
-    accessor: 'location',
+    header: 'Location',
+    accessorKey: 'location',
   },
   {
-    Header: 'Description',
-    accessor: 'description',
+    header: 'Description',
+    accessorKey: 'description',
   },
   {
-    Header: 'Created',
-    accessor: 'created',
-    width: 180,
-    Cell: (data: any) => {
-      const dataSnapshot = data.row.original;
-      return new Date(dataSnapshot.created).toLocaleString();
-    },
+    header: 'Created',
+    accessorKey: 'created',
+    size: 180,
+    cell: (info) => <CreatedCell row={info.row} />,
   },
   {
-    Header: '',
+    header: '',
     id: 'action',
-    width: 40,
-    Cell: (data: any) => {
-      const dataSnapshot = data.row.original;
-      const { confirm } = useActionDialogs();
-      const { mutateAsync: deleteRecord } = useDeleteDataSnapshot();
-
-      const onDeleteRecycleBin = async (dataSnapshotId: string) => {
-        try {
-          await confirm(`Do you want to delete this item permanently "${dataSnapshotId}"?`);
-          await deleteRecord(dataSnapshotId);
-        } catch (err) {}
-      };
-
-      return (
-        <Box sx={{ display: 'flex', gap: 1 }}>
-          <IconButton
-            aria-label='Delete item permanently'
-            onClick={() => onDeleteRecycleBin(dataSnapshot.id)}>
-            <DeleteForeverIcon />
-          </IconButton>
-        </Box>
-      );
-    },
+    size: 40,
+    cell: (info) => <ActionCell row={info.row} />,
   },
 ];
 

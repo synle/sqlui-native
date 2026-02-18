@@ -1,6 +1,7 @@
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 import React, { useMemo } from 'react';
+import { Column } from '@tanstack/react-table';
 
 export function GlobalFilter(props: any) {
   return (
@@ -15,39 +16,34 @@ export function GlobalFilter(props: any) {
     />
   );
 }
-// default filter (using text)
+
 type SimpleColumnFilterProps = {
-  column: {
-    filterValue?: string;
-    setFilter: (newFilterValue: string | undefined) => void;
-    preFilteredRows?: any[];
-    id?: string;
-  };
+  column: Column<any, unknown>;
 };
 
-export function SimpleColumnFilter({
-  column: { filterValue, setFilter, preFilteredRows, id },
-}: SimpleColumnFilterProps) {
-  const ROWS_TO_SCAN = 1000;
+export function SimpleColumnFilter({ column }: SimpleColumnFilterProps) {
+  const filterValue = (column.getFilterValue() as string) ?? '';
+  const facetedValues = column.getFacetedUniqueValues();
+
   const options = useMemo(() => {
-    if (!preFilteredRows || !id) return [];
     const seen = new Set<string>();
-    const rowsToScan = preFilteredRows.slice(0, 100);
-    for (const row of rowsToScan) {
-      const val = row.values[id];
+    let count = 0;
+    facetedValues.forEach((_count, val) => {
+      if (count >= 100) return;
       if (val != null && val !== '') {
         seen.add(String(val));
+        count++;
       }
-    }
+    });
     return Array.from(seen).sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
-  }, [preFilteredRows, id]);
+  }, [facetedValues]);
 
   return (
     <Autocomplete
       freeSolo
       options={options}
-      value={filterValue || ''}
-      onInputChange={(_e, newValue) => setFilter(newValue || undefined)}
+      value={filterValue}
+      onInputChange={(_e, newValue) => column.setFilterValue(newValue || undefined)}
       filterOptions={(opts, state) => {
         const input = state.inputValue.toLowerCase();
         if (!input) return opts;
