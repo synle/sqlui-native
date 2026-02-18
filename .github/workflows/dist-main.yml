@@ -198,8 +198,36 @@ jobs:
           asset_name: sqlui-native-${{ needs.create_release.outputs.package_version }}.pacman
           asset_content_type: application/octet-stream
 
+  build_app_image_linux:
+    needs: [create_release]
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+      - run: bash build.sh
+      - run: npm run dist-linux-appimage
+      - run: mv ./dist/sqlui-native*.AppImage ./dist/sqlui-native.AppImage
+      - name: Upload artifact .AppImage
+        uses: actions/upload-artifact@v4
+        with:
+          name: sqlui-native.AppImage
+          path: ./dist/sqlui-native.AppImage
+      - name: Upload release binary AppImage
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create_release.outputs.release_upload_url }}
+          asset_path: ./dist/sqlui-native.AppImage
+          asset_name: sqlui-native-${{ needs.create_release.outputs.package_version }}.AppImage
+          asset_content_type: application/octet-stream
+
   publish:
-    needs: [create_release, build_windows, build_macos, build_linux]
+    needs: [create_release, build_windows, build_macos, build_linux, build_app_image_linux]
     runs-on: ubuntu-latest
     timeout-minutes: 4
     steps:
@@ -217,7 +245,7 @@ jobs:
 
   roll_back_on_failure_or_canceled:
     if: failure() || cancelled()
-    needs: [create_release, build_windows, build_macos, build_linux]
+    needs: [create_release, build_windows, build_macos, build_linux, build_app_image_linux]
     runs-on: ubuntu-latest
     timeout-minutes: 4
     steps:

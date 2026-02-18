@@ -118,9 +118,33 @@ jobs:
           name: sqlui-native.pacman
           path: ./dist/sqlui-native.pacman
 
+  build_app_image_linux:
+    if: github.event_name == 'push'
+    needs: patch_version
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+      - name: Download patched package.json
+        uses: actions/download-artifact@v4
+        with:
+          name: patched-package-json
+      - run: bash build.sh
+      - run: npm run dist-linux-appimage
+      - run: mv ./dist/sqlui-native*.AppImage ./dist/sqlui-native.AppImage
+      - name: Upload artifact .AppImage
+        uses: actions/upload-artifact@v4
+        with:
+          name: sqlui-native.AppImage
+          path: ./dist/sqlui-native.AppImage
+
   build:
     # https://github.com/synle/gha-workflows/blob/main/.github/workflows/build-and-commit-sh.yml
-    needs: [build_windows, build_macos, build_linux]
+    needs: [build_windows, build_macos, build_linux, build_app_image_linux]
     if: always()
     uses: synle/gha-workflows/.github/workflows/build-and-commit-sh.yml@main
     permissions:
