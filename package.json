@@ -3,20 +3,6 @@
   "version": "1.63.0",
   "private": true,
   "description": "A minimal native desktop client for most databases supporting MySQL, MariaDB, MS SQL Server, PostgresSQL, SQLite, Cassandra, MongoDB and Redis.",
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  },
-  "proxy": "http://localhost:3001",
-  "homepage": "./",
   "build": {
     "extends": null,
     "appId": "io.synle.github.sqlui-native",
@@ -59,7 +45,7 @@
     "pretest-ci": "npm run pretest",
     "start": "npm run start-electron",
     "start-electron": "cross-env ENV_TYPE='electron-dev' electron build/main.js",
-    "start-webapp": "cross-env ENV_TYPE='mocked-server' BROWSER='none' react-scripts start",
+    "start-webapp": "cross-env ENV_TYPE='mocked-server' vite",
     "start-mocked-server": "node build/mocked-server.js",
     "dev": "concurrently \"npm run start-mocked-server\" \"npm run start-webapp\"",
     "dist": "electron-builder build --publish=never",
@@ -68,9 +54,9 @@
     "dist-macos-x64": "electron-builder build --publish=never --mac --x64",
     "dist-linux-appimage": "electron-builder build --publish=never -l AppImage",
     "dist-win32-appx": "electron-builder build --publish=never -w appx",
-    "build-electron": "webpack --config webpack-electron.config.js",
-    "build-mocked-sever": "webpack --config webpack-mocked-server.config.js",
-    "build-react": "cross-env CI=\"\" react-scripts build",
+    "build-electron": "vite build --config vite-electron.config.ts",
+    "build-mocked-sever": "vite build --config vite-mocked-server.config.ts",
+    "build-react": "vite build",
     "build": "npm run build-react && concurrently \"npm run build-electron\" \"npm run build-mocked-sever\"",
     "test-ci": "vitest run",
     "test": "vitest --watch",
@@ -136,15 +122,7 @@
     "sqlite3": "^5.1.6",
     "tedious": "^16.1.0"
   },
-  "eslintConfig": {
-    "extends": [
-      "react-app"
-    ]
-  },
   "devDependencies": {
-    "@babel/core": "^7.21.0",
-    "@babel/plugin-syntax-flow": "^7.14.5",
-    "@babel/plugin-transform-react-jsx": "^7.14.9",
     "@testing-library/react": "^12.1.5",
     "@types/cassandra-driver": "^3.6.0",
     "@types/js-beautify": "^1.13.3",
@@ -153,6 +131,7 @@
     "@types/react-table": "^7.7.11",
     "@types/redis": "^4.0.11",
     "@types/supertest": "^2.0.12",
+    "@vitejs/plugin-react": "^4.2.1",
     "body-parser": "^1.20.0",
     "concurrently": "^7.4.0",
     "cross-env": "^7.0.3",
@@ -162,14 +141,11 @@
     "express": "^4.18.1",
     "multer": "^1.4.4",
     "prettier": "^2.8.8",
-    "react-scripts": "5.0.1",
     "sass": "^1.62.1",
     "supertest": "^6.3.3",
-    "ts-loader": "^9.3.0",
     "typescript": "^4.9.5",
-    "vitest": "^0.34.6",
-    "web-vitals": "^3.3.1",
-    "webpack": "^5.72.0",
-    "webpack-cli": "^4.9.2"
+    "vite": "^5.4.0",
+    "vite-plugin-singlefile": "^2.0.3",
+    "vitest": "^0.34.6"
   }
 }
