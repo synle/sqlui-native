@@ -58,7 +58,7 @@ export type Command = {
 
 const QUERY_KEY_COMMAND_PALETTE = 'commandPalette';
 
-const _commands: Command[] = [];
+let _commands: Command[] = [];
 
 export function useCommands() {
   const queryClient = useQueryClient();
@@ -68,13 +68,15 @@ export function useCommands() {
   const command = _commands[_commands.length - 1];
 
   const selectCommand = (command: Command) => {
-    _commands.push(command);
+    _commands = [..._commands, command]
     queryClient.invalidateQueries([QUERY_KEY_COMMAND_PALETTE]);
+
   };
 
   const dismissCommand = () => {
     if (_commands.length > 0) {
       _commands.pop();
+      _commands = [..._commands]
     }
     queryClient.invalidateQueries([QUERY_KEY_COMMAND_PALETTE]);
   };
