@@ -54,7 +54,7 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
 
   const allRecordSize = data.length;
   const pageSizeToUse = allRecordSize;
-  const { headerGroups, page, prepareRow, setGlobalFilter } = useTable(
+  const { headerGroups, page, prepareRow, setGlobalFilter, state } = useTable(
     {
       initialState: {
         pageSize: pageSizeToUse,
@@ -105,14 +105,25 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
     overscan: 10,
   });
 
-  const columnCount = headerGroups[0]?.headers.length ?? 0;
+  const headerColumns = headerGroups[0]?.headers ?? [];
+  const columnCount = headerColumns.length;
+  // @ts-ignore - columnResizing comes from useResizeColumns
+  const columnResizing = state.columnResizing;
   const columnVirtualizer = useVirtualizer({
     count: columnCount,
     getScrollElement: () => parentRef.current,
-    estimateSize: useCallback(() => tableCellWidthToUse, [tableCellWidthToUse]),
+    estimateSize: useCallback(
+      (index: number) => Number(headerColumns[index]?.width) || tableCellWidthToUse,
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      [columnResizing, tableCellWidthToUse],
+    ),
     horizontal: true,
     overscan: 5,
   });
+
+  useEffect(() => {
+    columnVirtualizer.measure();
+  }, [columnResizing, columnVirtualizer]);
 
   const onShowExpandedData = async () => {
     try {
