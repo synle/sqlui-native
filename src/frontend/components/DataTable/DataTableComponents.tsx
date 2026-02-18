@@ -29,8 +29,26 @@ type ColumnResizerProps = React.HTMLAttributes<HTMLDivElement> & {
   isResizing?: boolean;
 };
 
-export function ColumnResizer({ isResizing, ...rest }: ColumnResizerProps) {
-  return <StyledColumnResizer size={12} isResizing={isResizing} {...rest} />;
+export function ColumnResizer({ isResizing, onMouseDown, onTouchStart, ...rest }: ColumnResizerProps) {
+  const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    onMouseDown?.(e);
+  };
+  const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    onTouchStart?.(e);
+  };
+  return (
+    <StyledColumnResizer
+      size={12}
+      isResizing={isResizing}
+      onMouseDown={handleMouseDown}
+      onTouchStart={handleTouchStart}
+      {...rest}
+    />
+  );
 }
 
 export const StyledDivValueCell = styled('div')(({ theme }) => ({
