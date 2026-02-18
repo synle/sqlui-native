@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Link from '@mui/material/Link';
-import { useQuery, useQueryClient } from 'react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import React, { useCallback, useEffect, useState } from 'react';
 import { getCodeSnippet } from 'src/common/adapters/DataScriptFactory';
@@ -63,20 +63,20 @@ const _commands: Command[] = [];
 export function useCommands() {
   const queryClient = useQueryClient();
 
-  const { data, isLoading: loading } = useQuery(QUERY_KEY_COMMAND_PALETTE, () => _commands);
+  const { data, isLoading: loading } = useQuery([QUERY_KEY_COMMAND_PALETTE], () => _commands);
 
   const command = _commands[_commands.length - 1];
 
   const selectCommand = (command: Command) => {
     _commands.push(command);
-    queryClient.invalidateQueries(QUERY_KEY_COMMAND_PALETTE);
+    queryClient.invalidateQueries([QUERY_KEY_COMMAND_PALETTE]);
   };
 
   const dismissCommand = () => {
     if (_commands.length > 0) {
       _commands.pop();
     }
-    queryClient.invalidateQueries(QUERY_KEY_COMMAND_PALETTE);
+    queryClient.invalidateQueries([QUERY_KEY_COMMAND_PALETTE]);
   };
 
   return {
