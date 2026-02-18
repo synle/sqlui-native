@@ -62,23 +62,23 @@ let _commands: Command[] = [];
 
 export function useCommands() {
   const queryClient = useQueryClient();
-
-  // Fetch data from the cache
   const { data: commands = [] } = useQuery([QUERY_KEY_COMMAND_PALETTE], () => _commands);
-
-  // Derived state: get the last item
   const command = commands[commands.length - 1];
 
   const selectCommand = (newCommand: Command) => {
     _commands = [..._commands, newCommand];
-    queryClient.setQueryData([QUERY_KEY_COMMAND_PALETTE], _commands);
+
+    // Defer the update to the next tick to avoid the "unmounted" warning
+    setTimeout(() => queryClient.setQueryData([QUERY_KEY_COMMAND_PALETTE], _commands), 0);
   };
 
   const dismissCommand = () => {
     if (_commands.length > 0) {
       _commands.pop();
       _commands = [..._commands];
-      queryClient.setQueryData([QUERY_KEY_COMMAND_PALETTE], _commands);
+
+      // Defer the update to the next tick to avoid the "unmounted" warning
+      setTimeout(() => queryClient.setQueryData([QUERY_KEY_COMMAND_PALETTE], _commands), 0);
     }
   };
 
