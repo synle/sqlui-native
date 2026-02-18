@@ -28,7 +28,7 @@ jobs:
           name: patched-package-json
           path: package.json
 
-  build_windows:
+  build_windows_x64:
     if: github.event_name == 'push'
     needs: patch_version
     runs-on: windows-latest

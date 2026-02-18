@@ -46,7 +46,7 @@ jobs:
           draft: false
           prerelease: false
 
-  build_windows:
+  build_windows_x64:
     needs: [create_release]
     runs-on: windows-latest
     timeout-minutes: 30
@@ -56,24 +56,25 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
-      - run: bash dist.sh
+      - run: bash build.sh
 
       # package and distribute .exe
-      - run: mv ./dist/sqlui-native*.exe ./dist/sqlui-native.exe
+      - run: npm run dist-win-x64
+      - run: mv ./dist/sqlui-native*.exe ./dist/sqlui-native-x64.exe
       - name: Upload release binary .exe
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ needs.create_release.outputs.release_upload_url }}
-          asset_path: ./dist/sqlui-native.exe
-          asset_name: sqlui-native-${{ needs.create_release.outputs.package_version }}.exe
+          asset_path: ./dist/sqlui-native-x64.exe
+          asset_name: sqlui-native-${{ needs.create_release.outputs.package_version }}-x64.exe
           asset_content_type: application/octet-stream
       - name: Upload artifact .exe
         uses: actions/upload-artifact@v4
         with:
-          name: sqlui-native.exe
-          path: ./dist/sqlui-native.exe
+          name: sqlui-native-x64.exe
+          path: ./dist/sqlui-native-x64.exe
 
       # package and distribute .appx
       - run: npm run dist-win32-appx
