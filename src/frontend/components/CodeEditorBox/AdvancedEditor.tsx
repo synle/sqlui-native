@@ -1,6 +1,5 @@
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
-import { useAsyncDebounce } from 'react-table';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { styled } from '@mui/system';
 import { DecoratedEditorProps as AdvancedEditorProps } from 'src/frontend/components/CodeEditorBox';
 import { useDarkModeSetting } from 'src/frontend/hooks/useSetting';
@@ -27,32 +26,39 @@ export default function AdvancedEditor(props: AdvancedEditorProps): JSX.Element 
   const colorMode = useDarkModeSetting();
   const [editor, setEditor] = useState<monaco.editor.IStandaloneCodeEditor | null>(null);
   const monacoEl = useRef(null);
-  const onSetupMonacoEditor = useAsyncDebounce(() => {
-    editor?.dispose();
+  const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-    if (monacoEl.current) {
-      //@ts-ignore
-      const newEditor = window.monaco.editor.create(monacoEl.current!, {
-        value: props.value,
-        language: props.language,
-        theme: colorMode === 'dark' ? 'vs-dark' : 'light',
-        wordWrap: props.wordWrap === true ? 'on' : 'off',
-        ...DEFAULT_OPTIONS,
-      });
-
-      newEditor.onDidBlurEditorWidget(() => {
-        props.onBlur && props.onBlur(newEditor.getValue() || '');
-      });
-
-      // clean up the model as we don't need it while it's active
-      if (props.id && EDITOR_MODELS_MAP[props.id]) {
-        newEditor.setModel(EDITOR_MODELS_MAP[props.id]);
-        delete EDITOR_MODELS_MAP[props.id];
-      }
-
-      setEditor(newEditor);
+  const onSetupMonacoEditor = useCallback(() => {
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
     }
-  }, 100);
+    debounceTimerRef.current = setTimeout(() => {
+      editor?.dispose();
+
+      if (monacoEl.current) {
+        //@ts-ignore
+        const newEditor = window.monaco.editor.create(monacoEl.current!, {
+          value: props.value,
+          language: props.language,
+          theme: colorMode === 'dark' ? 'vs-dark' : 'light',
+          wordWrap: props.wordWrap === true ? 'on' : 'off',
+          ...DEFAULT_OPTIONS,
+        });
+
+        newEditor.onDidBlurEditorWidget(() => {
+          props.onBlur && props.onBlur(newEditor.getValue() || '');
+        });
+
+        // clean up the model as we don't need it while it's active
+        if (props.id && EDITOR_MODELS_MAP[props.id]) {
+          newEditor.setModel(EDITOR_MODELS_MAP[props.id]);
+          delete EDITOR_MODELS_MAP[props.id];
+        }
+
+        setEditor(newEditor);
+      }
+    }, 100);
+  }, [editor, props.value, props.language, props.wordWrap, props.id, props.onBlur, colorMode]);
 
   // this is used to clean up the editor
   useEffect(() => {

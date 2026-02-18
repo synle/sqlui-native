@@ -1,6 +1,7 @@
 import Chip from '@mui/material/Chip';
 import Table from '@mui/material/Table';
 import { useMemo } from 'react';
+import { ColumnDef } from '@tanstack/react-table';
 import LegacyDataTable from 'src/frontend/components/DataTable/LegacyDataTable';
 import ModernDataTable from 'src/frontend/components/DataTable/ModernDataTable';
 import { DropdownButtonOption } from 'src/frontend/components/DropdownButton';
@@ -52,7 +53,7 @@ export function DataTableWithJSONList(props: DataTableWithJSONListProps) {
     return false;
   }, [data]);
 
-  const columns = useMemo(() => {
+  const columns: ColumnDef<any, any>[] = useMemo(() => {
     const newColumnNames = new Set<string>();
     for (let i = 0; i < data.length; i++) {
       const row = data[i];
@@ -70,10 +71,10 @@ export function DataTableWithJSONList(props: DataTableWithJSONListProps) {
 
     return [...newColumnNames].map((columnName) => {
       return {
-        Header: columnName,
-        sortable: true,
-        disableFilters: !props.enableColumnFilter,
-        accessor: (data: any) => {
+        header: columnName,
+        enableSorting: true,
+        enableColumnFilter: !!props.enableColumnFilter,
+        accessorFn: (data: any) => {
           let columnValue = data[columnName];
           if (columnValue === null) {
             columnValue = 'null';
@@ -91,8 +92,8 @@ export function DataTableWithJSONList(props: DataTableWithJSONListProps) {
           html.innerHTML = columnValue;
           return html.innerText;
         },
-        Cell: (data: any, a, b, c) => {
-          const columnValue = data.row.original[columnName];
+        cell: (info: any) => {
+          const columnValue = info.row.original[columnName];
           if (columnValue === null) {
             return (
               <Chip
