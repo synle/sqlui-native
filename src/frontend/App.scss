@@ -1,4 +1,4 @@
-@import 'base';
+@import "base";
 
 label {
   user-select: none;
@@ -163,7 +163,7 @@ $ConnectionTreeIndentSize: 7px;
 
 .Resizer {
   &--Horizontal {
-    cursor: 'col-resize';
+    cursor: "col-resize";
     &:hover {
       background: #ccc;
     }
@@ -194,7 +194,7 @@ $ConnectionTreeIndentSize: 7px;
 }
 
 // animation off via setting
-.App[data-animation='off'] {
+.App[data-animation="off"] {
   *,
   *::before,
   *::after {

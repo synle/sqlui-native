@@ -1,27 +1,22 @@
-import SsidChartIcon from '@mui/icons-material/SsidChart';
-import Backdrop from '@mui/material/Backdrop';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import CircularProgress from '@mui/material/CircularProgress';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemText from '@mui/material/ListItemText';
-import Typography from '@mui/material/Typography';
-import { toPng } from 'html-to-image';
-import ReactFlow from 'react-flow-renderer';
-import { useNavigate, useParams } from 'react-router-dom';
-import { useEffect, useRef, useState } from 'react';
-import Breadcrumbs, { BreadcrumbLink } from 'src/frontend/components/Breadcrumbs';
-import { downloadBlob } from 'src/frontend/data/file';
-import {
-  useGetAllTableColumns,
-  useGetColumns,
-  useGetConnectionById,
-  useGetDatabases,
-} from 'src/frontend/hooks/useConnection';
-import 'src/frontend/App.scss';
-import 'src/frontend/electronRenderer';
+import SsidChartIcon from "@mui/icons-material/SsidChart";
+import Backdrop from "@mui/material/Backdrop";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import CircularProgress from "@mui/material/CircularProgress";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemButton from "@mui/material/ListItemButton";
+import ListItemText from "@mui/material/ListItemText";
+import Typography from "@mui/material/Typography";
+import { toPng } from "html-to-image";
+import ReactFlow from "react-flow-renderer";
+import { useNavigate, useParams } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+import Breadcrumbs, { BreadcrumbLink } from "src/frontend/components/Breadcrumbs";
+import { downloadBlob } from "src/frontend/data/file";
+import { useGetAllTableColumns, useGetColumns, useGetConnectionById, useGetDatabases } from "src/frontend/hooks/useConnection";
+import "src/frontend/App.scss";
+import "src/frontend/electronRenderer";
 
 type MyNode = any;
 
@@ -55,12 +50,7 @@ export default function RelationshipChartPage() {
     isLoading: loadingConnection,
   } = useGetConnectionById(connectionId);
 
-  const {
-    data: databases,
-    refetch: refetchDatabases,
-    error: errorDatabases,
-    isLoading: loadingDatabases,
-  } = useGetDatabases(connectionId);
+  const { data: databases, refetch: refetchDatabases, error: errorDatabases, isLoading: loadingDatabases } = useGetDatabases(connectionId);
 
   const {
     data: allColumns,
@@ -90,9 +80,9 @@ export default function RelationshipChartPage() {
       filter: (node) => {
         // we don't want to add the minimap and the controls to the image
         if (
-          node?.classList?.contains('react-flow__minimap') ||
-          node?.classList?.contains('react-flow__controls') ||
-          node?.classList?.contains('react-flow__attribution')
+          node?.classList?.contains("react-flow__minimap") ||
+          node?.classList?.contains("react-flow__controls") ||
+          node?.classList?.contains("react-flow__attribution")
         ) {
           return false;
         }
@@ -103,8 +93,7 @@ export default function RelationshipChartPage() {
     await downloadBlob(`relationship-${connectionId}-${databaseId}-${new Date()}.png`, blob);
   };
 
-  const isLoading =
-    loadingAllColumns || loadingConnection || loadingActiveTableColumns || loadingDatabases;
+  const isLoading = loadingAllColumns || loadingConnection || loadingActiveTableColumns || loadingDatabases;
   const hasError = errorAllColumns || errorConnection || errorActiveTableColumns || errorDatabases;
 
   useEffect(() => {
@@ -142,16 +131,14 @@ export default function RelationshipChartPage() {
 
       for (const tableColumn of tableColumns) {
         if (tableColumn.referencedColumnName && tableColumn.referencedTableName) {
-          const foundEdge = newEdges.find(
-            (edge) => edge.source === tableName && edge.target === tableColumn.referencedTableName,
-          );
+          const foundEdge = newEdges.find((edge) => edge.source === tableName && edge.target === tableColumn.referencedTableName);
 
           const newEdge = {
             _label: `${tableColumn.name} => ${tableColumn.referencedTableName}.${tableColumn.referencedColumnName}`,
             id: `${tableName}.${tableColumn.name} => ${tableColumn.referencedTableName}.${tableColumn.referencedColumnName}`,
             source: tableName, // from
             target: tableColumn.referencedTableName, // to
-            type: 'straight',
+            type: "straight",
           };
 
           nodesHasEdge.add(newEdge.source);
@@ -181,9 +168,7 @@ export default function RelationshipChartPage() {
       mapNodeConnectionsCount[edge.target]++;
     }
 
-    const countGroups = [...new Set(Object.values(mapNodeConnectionsCount))]
-      .map((s) => s as number)
-      .sort((a, b) => b - a);
+    const countGroups = [...new Set(Object.values(mapNodeConnectionsCount))].map((s) => s as number).sort((a, b) => b - a);
 
     let i = 0;
     for (const node of newNodes) {
@@ -228,11 +213,12 @@ export default function RelationshipChartPage() {
       <Backdrop
         open={true}
         sx={{
-          bgcolor: 'background.paper',
+          bgcolor: "background.paper",
           zIndex: (theme) => theme.zIndex.drawer + 1,
-        }}>
+        }}
+      >
         <CircularProgress />
-        <Typography variant='h6' sx={{ ml: 2 }}>
+        <Typography variant="h6" sx={{ ml: 2 }}>
           Loading Visualization...
         </Typography>
       </Backdrop>
@@ -241,9 +227,8 @@ export default function RelationshipChartPage() {
 
   if (hasError) {
     return (
-      <Typography variant='h6' sx={{ mx: 4, mt: 2, color: 'error.main' }}>
-        There are some errors because we can't fetch the related connection or columns in this
-        table.
+      <Typography variant="h6" sx={{ mx: 4, mt: 2, color: "error.main" }}>
+        There are some errors because we can't fetch the related connection or columns in this table.
       </Typography>
     );
   }
@@ -252,7 +237,7 @@ export default function RelationshipChartPage() {
     {
       label: (
         <>
-          <SsidChartIcon fontSize='inherit' />
+          <SsidChartIcon fontSize="inherit" />
           Visualization
         </>
       ),
@@ -279,7 +264,7 @@ export default function RelationshipChartPage() {
     if (databases && databases.length > 0) {
       contentDom = (
         <>
-          <Typography variant='h6' sx={{ mx: 2 }}>
+          <Typography variant="h6" sx={{ mx: 2 }}>
             Select one of the following database to visualize:
           </Typography>
           <List>
@@ -301,14 +286,14 @@ export default function RelationshipChartPage() {
       );
     } else {
       contentDom = (
-        <Typography variant='h6' sx={{ mx: 2, color: 'error.main' }}>
+        <Typography variant="h6" sx={{ mx: 2, color: "error.main" }}>
           This connection doesn't have any database.
         </Typography>
       );
     }
   } else if (nodes && nodes.length > 0) {
     contentDom = (
-      <Box sx={{ height: 'calc(100vh - 110px)', zIndex: 0 }} ref={chartDomRef}>
+      <Box sx={{ height: "calc(100vh - 110px)", zIndex: 0 }} ref={chartDomRef}>
         <ReactFlow
           fitView
           snapToGrid
@@ -327,7 +312,7 @@ export default function RelationshipChartPage() {
               }
 
               switch (nodeChange.type) {
-                case 'select':
+                case "select":
                   newNodes = newNodes.map((node) => {
                     if (node.id === targetNodeId) {
                       node.selected = nodeChange.selected;
@@ -336,13 +321,13 @@ export default function RelationshipChartPage() {
                     return node;
                   });
                   break;
-                case 'remove':
+                case "remove":
                   newNodes = newNodes.filter((node) => {
                     return node.id !== targetNodeId;
                   });
                   break;
                 default:
-                case 'dimensions':
+                case "dimensions":
                   break;
               }
             }
@@ -383,7 +368,7 @@ export default function RelationshipChartPage() {
     );
   } else {
     contentDom = (
-      <Typography variant='h6' sx={{ mx: 2, color: 'error.main' }}>
+      <Typography variant="h6" sx={{ mx: 2, color: "error.main" }}>
         This database "{databaseId}" doesn't have any table.
       </Typography>
     );
@@ -391,10 +376,10 @@ export default function RelationshipChartPage() {
 
   return (
     <>
-      <Box sx={{ mx: 2, display: 'flex', alignItems: 'center' }}>
+      <Box sx={{ mx: 2, display: "flex", alignItems: "center" }}>
         <Breadcrumbs links={breadcrumbsData} />
-        <Box sx={{ ml: 'auto', display: 'flex', alignItems: 'center', gap: 2 }}>
-          <Button onClick={onToggleShowLabels}>{showLabels ? 'Hide Labels' : 'Show Labels'}</Button>
+        <Box sx={{ ml: "auto", display: "flex", alignItems: "center", gap: 2 }}>
+          <Button onClick={onToggleShowLabels}>{showLabels ? "Hide Labels" : "Show Labels"}</Button>
           <Button onClick={onDownload}>Download</Button>
         </Box>
       </Box>

@@ -300,7 +300,7 @@ MongoDB Collections is mapped to sqlui-native table. We scan the first 5 Documen
 As of now (v1.27.0), you can create new mongodb using the following syntax
 
 ```js
-db.createDatabase('new-database-name');
+db.createDatabase("new-database-name");
 ```
 
 ### Redis Limitations

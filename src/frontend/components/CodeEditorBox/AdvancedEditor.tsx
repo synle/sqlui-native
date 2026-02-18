@@ -1,12 +1,12 @@
-import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { styled } from '@mui/system';
-import { DecoratedEditorProps as AdvancedEditorProps } from 'src/frontend/components/CodeEditorBox';
-import { useDarkModeSetting } from 'src/frontend/hooks/useSetting';
+import * as monaco from "monaco-editor/esm/vs/editor/editor.api";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { styled } from "@mui/system";
+import { DecoratedEditorProps as AdvancedEditorProps } from "src/frontend/components/CodeEditorBox";
+import { useDarkModeSetting } from "src/frontend/hooks/useSetting";
 
-const AdvancedEditorContainer = styled('div')(({ theme }) => {
+const AdvancedEditorContainer = styled("div")(({ theme }) => {
   return {
-    width: '100%',
+    width: "100%",
   };
 });
 
@@ -40,13 +40,13 @@ export default function AdvancedEditor(props: AdvancedEditorProps): JSX.Element 
         const newEditor = window.monaco.editor.create(monacoEl.current!, {
           value: props.value,
           language: props.language,
-          theme: colorMode === 'dark' ? 'vs-dark' : 'light',
-          wordWrap: props.wordWrap === true ? 'on' : 'off',
+          theme: colorMode === "dark" ? "vs-dark" : "light",
+          wordWrap: props.wordWrap === true ? "on" : "off",
           ...DEFAULT_OPTIONS,
         });
 
         newEditor.onDidBlurEditorWidget(() => {
-          props.onBlur && props.onBlur(newEditor.getValue() || '');
+          props.onBlur && props.onBlur(newEditor.getValue() || "");
         });
 
         // clean up the model as we don't need it while it's active
@@ -82,7 +82,7 @@ export default function AdvancedEditor(props: AdvancedEditorProps): JSX.Element 
   // we used this block to set the value of the editor
   useEffect(() => {
     if (editor) {
-      const newValue = props.value || '';
+      const newValue = props.value || "";
 
       // https://stackoverflow.com/questions/60965171/not-able-to-do-undo-in-monaco-editor
       // NOTE we can't do setValue here because it will wipe out the undo stack
@@ -130,10 +130,11 @@ export default function AdvancedEditor(props: AdvancedEditorProps): JSX.Element 
 
   return (
     <AdvancedEditorContainer
-      className='AdvancedEditorContainer'
+      className="AdvancedEditorContainer"
       ref={monacoEl}
       style={{
         height: props.height,
-      }}></AdvancedEditorContainer>
+      }}
+    ></AdvancedEditorContainer>
   );
 }

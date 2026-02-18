@@ -1,15 +1,15 @@
-import BaseDataScript, { getDivider } from 'src/common/adapters/BaseDataAdapter/scripts';
-import { SqlAction, SqluiCore } from 'typings';
+import BaseDataScript, { getDivider } from "src/common/adapters/BaseDataAdapter/scripts";
+import { SqlAction, SqluiCore } from "typings";
 
-export const COSMOSDB_ADAPTER_PREFIX = 'db';
+export const COSMOSDB_ADAPTER_PREFIX = "db";
 
-const COSMOSDB_TABLE_ALIAS_PREFIX = 'c';
+const COSMOSDB_TABLE_ALIAS_PREFIX = "c";
 
-const formatter = 'js';
+const formatter = "js";
 
 // https://docs.microsoft.com/en-us/azure/cosmos-db/sql/sql-api-nodejs-get-started?tabs=windows
 function _shouldIncludeField(col: SqluiCore.ColumnMetaData) {
-  if (col.name.indexOf('_') !== 0) {
+  if (col.name.indexOf("_") !== 0) {
     return true;
   }
 
@@ -21,13 +21,13 @@ function _getColMapForInsertAndUpdate(columns?: SqluiCore.ColumnMetaData[]) {
     columns?.reduce((res, col) => {
       if (_shouldIncludeField(col)) {
         switch (col.type) {
-          case 'string':
-            res[col.name] = '';
+          case "string":
+            res[col.name] = "";
             break;
-          case 'number':
+          case "number":
             res[col.name] = 123;
             break;
-          case 'array':
+          case "array":
             res[col.name] = [];
             break;
         }
@@ -44,7 +44,7 @@ export function getRawSelectAllColumns(input: SqlAction.TableInput): SqlAction.O
 
   return {
     label,
-    formatter: 'sql',
+    formatter: "sql",
     query: `SELECT * FROM c`,
   };
 }
@@ -112,17 +112,11 @@ export function getReadItemById(input: SqlAction.TableInput): SqlAction.Output |
   };
 }
 
-export function getSelectSpecificColumns(
-  input: SqlAction.TableInput,
-): SqlAction.Output | undefined {
+export function getSelectSpecificColumns(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Select Specific Columns`;
 
-  const columnString = input?.columns
-    ?.map((col) => `${COSMOSDB_TABLE_ALIAS_PREFIX}.${col.name}`)
-    .join(',\n  ');
-  const whereColumnString = input?.columns
-    ?.map((col) => `${COSMOSDB_TABLE_ALIAS_PREFIX}.${col.name} = ''`)
-    .join('\n  AND ');
+  const columnString = input?.columns?.map((col) => `${COSMOSDB_TABLE_ALIAS_PREFIX}.${col.name}`).join(",\n  ");
+  const whereColumnString = input?.columns?.map((col) => `${COSMOSDB_TABLE_ALIAS_PREFIX}.${col.name} = ''`).join("\n  AND ");
 
   const sql = `
   SELECT ${columnString}
@@ -146,10 +140,7 @@ export function getSelectSpecificColumns(
   };
 }
 
-export function getInsert(
-  input: SqlAction.TableInput,
-  value?: Record<string, any>,
-): SqlAction.Output | undefined {
+export function getInsert(input: SqlAction.TableInput, value?: Record<string, any>): SqlAction.Output | undefined {
   const label = `Insert`;
 
   let colMap: any = {};
@@ -174,10 +165,7 @@ export function getInsert(
   };
 }
 
-export function getBulkInsert(
-  input: SqlAction.TableInput,
-  rows?: Record<string, any>[],
-): SqlAction.Output | undefined {
+export function getBulkInsert(input: SqlAction.TableInput, rows?: Record<string, any>[]): SqlAction.Output | undefined {
   const label = `Insert`;
 
   if (!rows || rows.length === 0) {
@@ -208,7 +196,7 @@ export function getBulkInsert(
         .items;
 
       Promise.all(${rowsToInsert.map((value) => {
-        return 'containerItems.create(' + JSON.stringify(value) + ')';
+        return "containerItems.create(" + JSON.stringify(value) + ")";
       })})
     `,
   };
@@ -246,7 +234,7 @@ export function getUpdate(input: SqlAction.TableInput): SqlAction.Output | undef
   const label = `Update`;
 
   const colMap = _getColMapForInsertAndUpdate(input?.columns);
-  colMap['id'] = 'some_id';
+  colMap["id"] = "some_id";
 
   return {
     label,
@@ -320,9 +308,7 @@ export function getCreateDatabase(input: SqlAction.DatabaseInput): SqlAction.Out
   };
 }
 
-export function getCreateDatabaseContainer(
-  input: SqlAction.DatabaseInput,
-): SqlAction.Output | undefined {
+export function getCreateDatabaseContainer(input: SqlAction.DatabaseInput): SqlAction.Output | undefined {
   const label = `Create Database Container`;
 
   return {
@@ -350,9 +336,7 @@ export function getDropDatabase(input: SqlAction.DatabaseInput): SqlAction.Outpu
     `,
   };
 }
-export function getCreateConnectionDatabase(
-  input: SqlAction.ConnectionInput,
-): SqlAction.Output | undefined {
+export function getCreateConnectionDatabase(input: SqlAction.ConnectionInput): SqlAction.Output | undefined {
   const label = `Create Database`;
 
   return {
@@ -367,18 +351,18 @@ export function getCreateConnectionDatabase(
 }
 
 export class ConcreteDataScripts extends BaseDataScript {
-  dialects = ['cosmosdb'];
+  dialects = ["cosmosdb"];
 
   getIsTableIdRequiredForQuery() {
     return true;
   }
 
   getSyntaxMode() {
-    return 'javascript';
+    return "javascript";
   }
 
   getConnectionFormInputs() {
-    return [['restOfConnectionString', 'Azure CosmosDB Primary Connection String']];
+    return [["restOfConnectionString", "Azure CosmosDB Primary Connection String"]];
   }
 
   supportMigration() {
@@ -420,7 +404,7 @@ export class ConcreteDataScripts extends BaseDataScript {
   }
 
   getDialectName(dialect) {
-    return 'Azure Cosmos DB';
+    return "Azure Cosmos DB";
   }
 
   getSampleConnectionString(dialect) {
@@ -432,10 +416,10 @@ export class ConcreteDataScripts extends BaseDataScript {
   }
 
   getCodeSnippet(connection, query, language) {
-    const connectionString = connection.connection.replace('cosmosdb://', '');
+    const connectionString = connection.connection.replace("cosmosdb://", "");
 
     switch (language) {
-      case 'javascript':
+      case "javascript":
         // TODO: implement me
         return `
 // npm install --save @azure/cosmos
@@ -459,14 +443,14 @@ async function _doWork(){
 
 _doWork();
     `.trim();
-      case 'python':
+      case "python":
         // TODO: implement me
-        return '';
-      case 'java':
+        return "";
+      case "java":
         // TODO: implement me
-        return '';
+        return "";
       default:
-        return '';
+        return "";
     }
   }
 }

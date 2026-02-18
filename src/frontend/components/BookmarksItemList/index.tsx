@@ -1,25 +1,21 @@
-import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
-import EditIcon from '@mui/icons-material/Edit';
-import Backdrop from '@mui/material/Backdrop';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Chip from '@mui/material/Chip';
-import CircularProgress from '@mui/material/CircularProgress';
-import IconButton from '@mui/material/IconButton';
-import Link from '@mui/material/Link';
-import Typography from '@mui/material/Typography';
-import { Link as RouterLink, useNavigate } from 'react-router-dom';
-import { ColumnDef } from '@tanstack/react-table';
-import DataTable from 'src/frontend/components/DataTable';
-import { useActionDialogs } from 'src/frontend/hooks/useActionDialogs';
-import { useUpsertConnection } from 'src/frontend/hooks/useConnection';
-import { useConnectionQueries } from 'src/frontend/hooks/useConnectionQuery';
-import {
-  useDeleteBookmarkItem,
-  useGetBookmarkItems,
-  useUpdateBookmarkItem,
-} from 'src/frontend/hooks/useFolderItems';
-import { SqluiCore } from 'typings';
+import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
+import EditIcon from "@mui/icons-material/Edit";
+import Backdrop from "@mui/material/Backdrop";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Chip from "@mui/material/Chip";
+import CircularProgress from "@mui/material/CircularProgress";
+import IconButton from "@mui/material/IconButton";
+import Link from "@mui/material/Link";
+import Typography from "@mui/material/Typography";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
+import { ColumnDef } from "@tanstack/react-table";
+import DataTable from "src/frontend/components/DataTable";
+import { useActionDialogs } from "src/frontend/hooks/useActionDialogs";
+import { useUpsertConnection } from "src/frontend/hooks/useConnection";
+import { useConnectionQueries } from "src/frontend/hooks/useConnectionQuery";
+import { useDeleteBookmarkItem, useGetBookmarkItems, useUpdateBookmarkItem } from "src/frontend/hooks/useFolderItems";
+import { SqluiCore } from "typings";
 
 type OnAfterSelectCallback = () => void;
 
@@ -31,14 +27,14 @@ function NameCell({ row, onAfterSelect }: { row: any; onAfterSelect?: OnAfterSel
   const { mutateAsync: upsertConnection } = useUpsertConnection();
   const onOpenBookmarkItem = async (folderItem: SqluiCore.FolderItem) => {
     switch (folderItem.type) {
-      case 'Connection':
+      case "Connection":
         await upsertConnection(folderItem.data);
-        navigate('/');
+        navigate("/");
         onAfterSelect && onAfterSelect();
         break;
-      case 'Query':
+      case "Query":
         await onAddQuery(folderItem.data);
-        navigate('/');
+        navigate("/");
         onAfterSelect && onAfterSelect();
         break;
     }
@@ -49,13 +45,7 @@ function NameCell({ row, onAfterSelect }: { row: any; onAfterSelect?: OnAfterSel
 
 function TypeCell({ row }: { row: any }) {
   const folderItem = row.original;
-  return (
-    <Chip
-      label={folderItem.type}
-      color={folderItem.type === 'Connection' ? 'success' : 'warning'}
-      size='small'
-    />
-  );
+  return <Chip label={folderItem.type} color={folderItem.type === "Connection" ? "success" : "warning"} size="small" />;
 }
 
 function ActionCell({ row }: { row: any }) {
@@ -70,10 +60,10 @@ function ActionCell({ row }: { row: any }) {
   const onEditBookmark = async (folderItem: SqluiCore.FolderItem) => {
     try {
       const newName = await prompt({
-        title: 'Bookmark name?',
-        message: 'A bookmark name',
+        title: "Bookmark name?",
+        message: "A bookmark name",
         value: folderItem.name,
-        saveLabel: 'Save',
+        saveLabel: "Save",
       });
 
       folderItem.name = newName;
@@ -90,13 +80,11 @@ function ActionCell({ row }: { row: any }) {
   };
 
   return (
-    <Box sx={{ display: 'flex', gap: 1 }}>
-      <IconButton aria-label='Edit bookmark' onClick={() => onEditBookmark(folderItem)}>
+    <Box sx={{ display: "flex", gap: 1 }}>
+      <IconButton aria-label="Edit bookmark" onClick={() => onEditBookmark(folderItem)}>
         <EditIcon />
       </IconButton>
-      <IconButton
-        aria-label='Delete bookmark'
-        onClick={() => onDeleteBookmarkItem(folderItem)}>
+      <IconButton aria-label="Delete bookmark" onClick={() => onDeleteBookmarkItem(folderItem)}>
         <DeleteForeverIcon />
       </IconButton>
     </Box>
@@ -106,19 +94,19 @@ function ActionCell({ row }: { row: any }) {
 const getColumns = (onAfterSelect?: OnAfterSelectCallback): ColumnDef<any, any>[] => {
   return [
     {
-      header: 'Name',
-      accessorKey: 'name',
+      header: "Name",
+      accessorKey: "name",
       cell: (info) => <NameCell row={info.row} onAfterSelect={onAfterSelect} />,
     },
     {
-      header: 'Type',
-      accessorKey: 'type',
+      header: "Type",
+      accessorKey: "type",
       size: 100,
       cell: (info) => <TypeCell row={info.row} />,
     },
     {
-      header: '',
-      id: 'action',
+      header: "",
+      id: "action",
       size: 80,
       cell: (info) => <ActionCell row={info.row} />,
     },
@@ -140,11 +128,12 @@ export default function BookmarksItemList(props: BookmarksItemListProps): JSX.El
       <Backdrop
         open={true}
         sx={{
-          bgcolor: 'background.paper',
+          bgcolor: "background.paper",
           zIndex: (theme) => theme.zIndex.drawer + 1,
-        }}>
+        }}
+      >
         <CircularProgress />
-        <Typography variant='h6' sx={{ ml: 2 }}>
+        <Typography variant="h6" sx={{ ml: 2 }}>
           Loading...
         </Typography>
       </Backdrop>
@@ -158,7 +147,7 @@ export default function BookmarksItemList(props: BookmarksItemListProps): JSX.El
 
   const columns = getColumns(onAfterSelect).filter((column) => {
     if (hideActions) {
-      if (column.id === 'action') {
+      if (column.id === "action") {
         return false;
       }
     }
@@ -179,7 +168,7 @@ export function BookmarksItemListModalContent(props: BookmarksItemListProps): JS
     <>
       <BookmarksItemList onAfterSelect={onAfterSelect} />
       <Box sx={{ mt: 2 }}>
-        <Link component={RouterLink} to='/bookmarks' onClick={onAfterSelect}>
+        <Link component={RouterLink} to="/bookmarks" onClick={onAfterSelect}>
           More Details
         </Link>
       </Box>

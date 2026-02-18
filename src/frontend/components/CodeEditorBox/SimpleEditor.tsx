@@ -1,13 +1,13 @@
 // @ts-nocheck
-import { grey } from '@mui/material/colors';
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { styled } from '@mui/system';
-import { DecoratedEditorProps as SimpleEditorProps } from 'src/frontend/components/CodeEditorBox';
+import { grey } from "@mui/material/colors";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { styled } from "@mui/system";
+import { DecoratedEditorProps as SimpleEditorProps } from "src/frontend/components/CodeEditorBox";
 
-const StyledTextArea = styled('textarea')(({ theme }) => {
+const StyledTextArea = styled("textarea")(({ theme }) => {
   let backgroundColor, color;
 
-  if (theme.palette.mode === 'light') {
+  if (theme.palette.mode === "light") {
     backgroundColor = grey[100];
   } else {
     backgroundColor = grey[800];
@@ -18,14 +18,14 @@ const StyledTextArea = styled('textarea')(({ theme }) => {
   return {
     backgroundColor,
     color,
-    border: '2px solid transparent',
-    fontFamily: 'monospace',
-    fontWeight: '700',
-    width: '100%',
-    padding: '10px',
-    resize: 'vertical',
-    outline: 'none',
-    '&:hover, &:focus': {
+    border: "2px solid transparent",
+    fontFamily: "monospace",
+    fontWeight: "700",
+    width: "100%",
+    padding: "10px",
+    resize: "vertical",
+    outline: "none",
+    "&:hover, &:focus": {
       borderColor: theme.palette.primary.main,
     },
   };
@@ -35,9 +35,9 @@ export default function SimpleEditor(props: SimpleEditorProps): JSX.Element | nu
   const textareaRef = useRef<HTMLTextareaElement>(null);
 
   const onInputKeyDown = useCallback((e) => {
-    const TAB_INDENT = '  ';
+    const TAB_INDENT = "  ";
     switch (e.key) {
-      case 'Tab':
+      case "Tab":
         e.preventDefault();
         if (e.shiftKey === true) {
           _deleteIndentAtCursor(e.target, TAB_INDENT.length);
@@ -45,7 +45,7 @@ export default function SimpleEditor(props: SimpleEditorProps): JSX.Element | nu
           _insertIndentAtCursor(e.target, TAB_INDENT);
         }
         break;
-      case 'Enter':
+      case "Enter":
         // attempted to persist the last row indentation
         e.preventDefault();
         _persistTabIndent(e.target);
@@ -58,20 +58,14 @@ export default function SimpleEditor(props: SimpleEditorProps): JSX.Element | nu
 
       if (startPos === endPos) {
         // single line indentation
-        myField.value =
-          myField.value.substring(0, startPos) + myValue + myField.value.substring(endPos);
+        myField.value = myField.value.substring(0, startPos) + myValue + myField.value.substring(endPos);
         myField.setSelectionRange(startPos + myValue.length, endPos + myValue.length);
       } else {
         // multiple line indentation
         const [lineStart, lineEnd] = _getLineStartEnd(myField, startPos, endPos);
 
         // calculate where we should put the cursor
-        const [res, newStartPos, newEndPos] = _iterateOverRows(
-          myField.value.split('\n'),
-          lineStart,
-          lineEnd,
-          (row) => myValue + row,
-        );
+        const [res, newStartPos, newEndPos] = _iterateOverRows(myField.value.split("\n"), lineStart, lineEnd, (row) => myValue + row);
         myField.value = res;
         myField.setSelectionRange(newStartPos, newEndPos);
       }
@@ -87,19 +81,14 @@ export default function SimpleEditor(props: SimpleEditorProps): JSX.Element | nu
       } else {
         const [lineStart, lineEnd] = _getLineStartEnd(myField, startPos, endPos);
 
-        const [res, newStartPos, newEndPos] = _iterateOverRows(
-          myField.value.split('\n'),
-          lineStart,
-          lineEnd,
-          (row) => {
-            for (let i = 0; i < row.length; i++) {
-              if (row[i] !== ' ' || i === length) {
-                return row.substr(i);
-              }
+        const [res, newStartPos, newEndPos] = _iterateOverRows(myField.value.split("\n"), lineStart, lineEnd, (row) => {
+          for (let i = 0; i < row.length; i++) {
+            if (row[i] !== " " || i === length) {
+              return row.substr(i);
             }
-            return row;
-          },
-        );
+          }
+          return row;
+        });
 
         myField.value = res;
         myField.setSelectionRange(newStartPos, newEndPos);
@@ -108,13 +97,13 @@ export default function SimpleEditor(props: SimpleEditorProps): JSX.Element | nu
 
     function _persistTabIndent(myField) {
       try {
-        const rows = myField.value.substr(0, myField.selectionStart).split('\n');
+        const rows = myField.value.substr(0, myField.selectionStart).split("\n");
         const lastRow = rows[rows.length - 1];
         const lastRowIndent = lastRow.match(/^[ ]+/)[0];
 
-        _insertIndentAtCursor(e.target, '\n' + lastRowIndent);
+        _insertIndentAtCursor(e.target, "\n" + lastRowIndent);
       } catch (err) {
-        _insertIndentAtCursor(e.target, '\n');
+        _insertIndentAtCursor(e.target, "\n");
       }
     }
 
@@ -150,7 +139,7 @@ export default function SimpleEditor(props: SimpleEditorProps): JSX.Element | nu
         res.push(row);
       }
 
-      return [res.join('\n'), newStartPos, newEndPos];
+      return [res.join("\n"), newStartPos, newEndPos];
     }
 
     function _getLineStartEnd(myField, startPos, endPos) {
@@ -195,7 +184,7 @@ export default function SimpleEditor(props: SimpleEditorProps): JSX.Element | nu
   return (
     <StyledTextArea
       ref={textareaRef}
-      className='SimpleEditorContainer'
+      className="SimpleEditorContainer"
       value={text}
       onKeyDown={onInputKeyDown}
       onChange={onInputChange}
@@ -204,7 +193,7 @@ export default function SimpleEditor(props: SimpleEditorProps): JSX.Element | nu
       autoFocus={props.autoFocus}
       required={props.required}
       style={{
-        whiteSpace: props.wordWrap ? 'initial' : 'nowrap',
+        whiteSpace: props.wordWrap ? "initial" : "nowrap",
         minHeight: props.height,
       }}
     />

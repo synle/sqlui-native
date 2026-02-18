@@ -1,11 +1,11 @@
-import Tooltip from '@mui/material/Tooltip';
-import { styled } from '@mui/system';
+import Tooltip from "@mui/material/Tooltip";
+import { styled } from "@mui/system";
 
-const StyledColumnName = styled('span')(({ theme }) => {
+const StyledColumnName = styled("span")(({ theme }) => {
   return {
-    maxWidth: '50%',
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
+    maxWidth: "50%",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
   };
 });
 

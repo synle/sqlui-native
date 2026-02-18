@@ -1,13 +1,13 @@
-import CloseIcon from '@mui/icons-material/Close';
-import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogTitle from '@mui/material/DialogTitle';
-import IconButton from '@mui/material/IconButton';
-import TextField from '@mui/material/TextField';
-import React, { useState } from 'react';
-import CodeEditorBox from 'src/frontend/components/CodeEditorBox';
+import CloseIcon from "@mui/icons-material/Close";
+import Button from "@mui/material/Button";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogTitle from "@mui/material/DialogTitle";
+import IconButton from "@mui/material/IconButton";
+import TextField from "@mui/material/TextField";
+import React, { useState } from "react";
+import CodeEditorBox from "src/frontend/components/CodeEditorBox";
 
 export type PromptInput = {
   title?: string;
@@ -27,7 +27,7 @@ type PromptDialogProps = PromptInput & {
 };
 
 export default function PromptDialog(props: PromptDialogProps): JSX.Element | null {
-  const [value, setValue] = useState(props.value || '');
+  const [value, setValue] = useState(props.value || "");
 
   const handleClose = (forceClose = false) => {
     if (props.required && !forceClose) {
@@ -53,22 +53,24 @@ export default function PromptDialog(props: PromptDialogProps): JSX.Element | nu
   return (
     <Dialog
       onClose={() => handleClose(false)}
-      aria-labelledby='prompt-dialog-title'
+      aria-labelledby="prompt-dialog-title"
       open={props.open}
       fullWidth={true}
-      maxWidth={props.isLongPrompt ? 'lg' : 'sm'}>
+      maxWidth={props.isLongPrompt ? "lg" : "sm"}
+    >
       <form onSubmit={onSave}>
-        <DialogTitle id='prompt-dialog-title'>
-          {props.title || 'Prompt'}
+        <DialogTitle id="prompt-dialog-title">
+          {props.title || "Prompt"}
           <IconButton
-            aria-label='close'
+            aria-label="close"
             onClick={() => handleClose(true)}
             sx={{
-              position: 'absolute',
+              position: "absolute",
               right: 8,
               top: 8,
               color: (theme) => theme.palette.grey[500],
-            }}>
+            }}
+          >
             <CloseIcon />
           </IconButton>
         </DialogTitle>
@@ -77,11 +79,11 @@ export default function PromptDialog(props: PromptDialogProps): JSX.Element | nu
             <CodeEditorBox
               value={value}
               onChange={setValue}
-              language={props.languageMode || 'json'}
+              language={props.languageMode || "json"}
               autoFocus={true}
               required={props.required}
               wordWrap={true}
-              height='60vh'
+              height="60vh"
             />
           ) : (
             <TextField
@@ -89,7 +91,7 @@ export default function PromptDialog(props: PromptDialogProps): JSX.Element | nu
               value={value}
               onChange={(e) => setValue(e.target.value)}
               required={props.required}
-              size='small'
+              size="small"
               fullWidth
               autoFocus
             />
@@ -97,8 +99,8 @@ export default function PromptDialog(props: PromptDialogProps): JSX.Element | nu
         </DialogContent>
         {props.readonly !== true && (
           <DialogActions>
-            <Button type='submit' disabled={isDisabled}>
-              {props.saveLabel || 'Save Changes'}
+            <Button type="submit" disabled={isDisabled}>
+              {props.saveLabel || "Save Changes"}
             </Button>
           </DialogActions>
         )}

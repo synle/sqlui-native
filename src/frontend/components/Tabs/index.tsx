@@ -1,9 +1,9 @@
-import Tab from '@mui/material/Tab';
-import Tabs from '@mui/material/Tabs';
-import React from 'react';
-import { styled } from '@mui/system';
+import Tab from "@mui/material/Tab";
+import Tabs from "@mui/material/Tabs";
+import React from "react";
+import { styled } from "@mui/system";
 
-import { useLayoutModeSetting } from 'src/frontend/hooks/useSetting';
+import { useLayoutModeSetting } from "src/frontend/hooks/useSetting";
 
 const VERTICAL_TAB_THRESHOLD = 20;
 const TAB_HEIGHT_DEFAULT = 40;
@@ -24,7 +24,7 @@ type TabsProps = {
    */
   tabKeys?: string[];
   tabContents: React.ReactNode[];
-  orientation?: 'vertical' | 'horizontal';
+  orientation?: "vertical" | "horizontal";
   onMiddleMouseClicked?: (idx: number) => void;
   onOrderChange?: (fromIdx: number, toIdx: number) => void;
 };
@@ -32,7 +32,7 @@ type TabsProps = {
 // these are drag and drop index
 let fromIdx: number | undefined, toIdx: number | undefined;
 
-const StyledTabs = styled('section')(({ theme }) => {
+const StyledTabs = styled("section")(({ theme }) => {
   return {};
 });
 
@@ -40,7 +40,7 @@ export default function MyTabs(props: TabsProps): JSX.Element | null {
   const { id, tabIdx, tabHeaders, tabContents } = props;
   let { orientation } = props;
   const layoutMode = useLayoutModeSetting();
-  const isCompact = layoutMode === 'compact';
+  const isCompact = layoutMode === "compact";
   const tabHeight = isCompact ? TAB_HEIGHT_COMPACT : TAB_HEIGHT_DEFAULT;
 
   const visibleTab = tabContents[tabIdx];
@@ -53,7 +53,7 @@ export default function MyTabs(props: TabsProps): JSX.Element | null {
 
   const onShowActions = (e: React.SyntheticEvent) => {
     e.preventDefault();
-    const actionButton = e.currentTarget.querySelector('.DropdownButton') as HTMLButtonElement;
+    const actionButton = e.currentTarget.querySelector(".DropdownButton") as HTMLButtonElement;
     actionButton?.click?.();
   };
 
@@ -91,21 +91,20 @@ export default function MyTabs(props: TabsProps): JSX.Element | null {
   };
 
   if (!orientation) {
-    orientation = tabHeaders.length > VERTICAL_TAB_THRESHOLD ? 'vertical' : 'horizontal';
+    orientation = tabHeaders.length > VERTICAL_TAB_THRESHOLD ? "vertical" : "horizontal";
   }
 
   return (
-    <StyledTabs
-      id={id}
-      className={orientation === 'vertical' ? 'Tabs Tabs__Vertical' : 'Tabs Tabs__Horizontal'}>
+    <StyledTabs id={id} className={orientation === "vertical" ? "Tabs Tabs__Vertical" : "Tabs Tabs__Horizontal"}>
       <Tabs
         value={tabIdx}
         onChange={(_e, newTabIdx) => onTabChange(newTabIdx)}
-        variant='scrollable'
-        aria-label='Tabs'
+        variant="scrollable"
+        aria-label="Tabs"
         orientation={orientation}
-        className='Tab__Headers'
-        sx={{ minHeight: tabHeight }}>
+        className="Tab__Headers"
+        sx={{ minHeight: tabHeight }}
+      >
         {tabHeaders.map((tabHeader, idx) => {
           let dragAndDropProps: any = {};
           if (props.onOrderChange) {
@@ -120,17 +119,21 @@ export default function MyTabs(props: TabsProps): JSX.Element | null {
           return (
             <Tab
               key={tabKeys[idx] || idx}
-              label={<div className='Tab__Header'>{tabHeader}</div>}
+              label={<div className="Tab__Header">{tabHeader}</div>}
               onContextMenu={onShowActions}
               onMouseDown={onMouseDown(idx)}
               disableRipple={false}
-              sx={isCompact ? { minHeight: TAB_HEIGHT_COMPACT, py: 0, fontSize: '0.8rem' } : { minHeight: TAB_HEIGHT_DEFAULT, fontSize: '0.9rem' }}
-              {...dragAndDropProps}></Tab>
+              sx={
+                isCompact
+                  ? { minHeight: TAB_HEIGHT_COMPACT, py: 0, fontSize: "0.8rem" }
+                  : { minHeight: TAB_HEIGHT_DEFAULT, fontSize: "0.9rem" }
+              }
+              {...dragAndDropProps}
+            ></Tab>
           );
         })}
       </Tabs>
-      <div className='Tab__Body'>{tabContents[tabIdx]}</div>
+      <div className="Tab__Body">{tabContents[tabIdx]}</div>
     </StyledTabs>
   );
 }
-

@@ -1,12 +1,12 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import dataApi from 'src/frontend/data/api';
-import { SessionStorageConfig } from 'src/frontend/data/config';
-import { useAddRecycleBinItem } from 'src/frontend/hooks/useFolderItems';
-import { useIsSoftDeleteModeSetting } from 'src/frontend/hooks/useSetting';
-import { getGeneratedRandomId, getUpdatedOrdersForList } from 'src/frontend/utils/commonUtils';
-import { SqluiCore, SqluiFrontend } from 'typings';
+import React, { createContext, useContext, useEffect, useState } from "react";
+import dataApi from "src/frontend/data/api";
+import { SessionStorageConfig } from "src/frontend/data/config";
+import { useAddRecycleBinItem } from "src/frontend/hooks/useFolderItems";
+import { useIsSoftDeleteModeSetting } from "src/frontend/hooks/useSetting";
+import { getGeneratedRandomId, getUpdatedOrdersForList } from "src/frontend/utils/commonUtils";
+import { SqluiCore, SqluiFrontend } from "typings";
 
-const QUERY_KEY_QUERIES = 'queries';
+const QUERY_KEY_QUERIES = "queries";
 
 // connection queries
 let _connectionQueries: SqluiFrontend.ConnectionQuery[] = [];
@@ -22,7 +22,7 @@ function _persistQueries() {
     const { pinned, result, executionEnd, executionStart, ...restOfQuery } = query;
     return restOfQuery;
   });
-  SessionStorageConfig.set('clientConfig/cache.connectionQueries', toPersistQueries);
+  SessionStorageConfig.set("clientConfig/cache.connectionQueries", toPersistQueries);
 }
 
 export default function WrappedContext(props: { children: React.ReactNode }): JSX.Element | null {
@@ -35,10 +35,7 @@ export default function WrappedContext(props: { children: React.ReactNode }): JS
       try {
         // this is the first time
         // try pulling it in from sessionStorage
-        _connectionQueries = SessionStorageConfig.get<SqluiFrontend.ConnectionQuery[]>(
-          'clientConfig/cache.connectionQueries',
-          [],
-        );
+        _connectionQueries = SessionStorageConfig.get<SqluiFrontend.ConnectionQuery[]>("clientConfig/cache.connectionQueries", []);
 
         if (_connectionQueries.length === 0) {
           // if config failed, attempt to get it from the api
@@ -82,7 +79,8 @@ export default function WrappedContext(props: { children: React.ReactNode }): JS
         data,
         setData,
         isLoading,
-      }}>
+      }}
+    >
       {props.children}
     </TargetContext.Provider>
   );
@@ -120,7 +118,7 @@ export function useConnectionQueries() {
         newQuery = {
           id: newId,
           name: `Query ${new Date().toLocaleString()}`,
-          sql: '',
+          sql: "",
           selected: true,
         };
       } else {
@@ -175,7 +173,7 @@ export function useConnectionQueries() {
 
     if (isSoftDeleteModeSetting) {
       // generate the list of queries to store in recyclebin
-      const toRecycleQueriesFolderItems: Omit<SqluiCore.FolderItem, 'id'>[] = _connectionQueries
+      const toRecycleQueriesFolderItems: Omit<SqluiCore.FolderItem, "id">[] = _connectionQueries
         .filter((q) => {
           return queryIds.indexOf(q.id) >= 0;
         })
@@ -184,7 +182,7 @@ export function useConnectionQueries() {
           const { selected, pinned, result, executionEnd, executionStart, ...restOfQuery } = query;
 
           return {
-            type: 'Query',
+            type: "Query",
             name: query.name,
             data: restOfQuery,
           };
@@ -192,9 +190,7 @@ export function useConnectionQueries() {
 
       // attempt to make backups
       try {
-        await Promise.allSettled(
-          toRecycleQueriesFolderItems.map(async (folderItem) => addRecycleBinItem(folderItem)),
-        );
+        await Promise.allSettled(toRecycleQueriesFolderItems.map(async (folderItem) => addRecycleBinItem(folderItem)));
       } catch (err) {}
     }
 
@@ -250,10 +246,7 @@ export function useConnectionQueries() {
     _invalidateQueries();
   };
 
-  const onChangeQuery = async (
-    queryId: string | undefined,
-    partials: SqluiFrontend.PartialConnectionQuery,
-  ) => {
+  const onChangeQuery = async (queryId: string | undefined, partials: SqluiFrontend.PartialConnectionQuery) => {
     if (!queryId) {
       if (!queries || queries.length === 0) {
         // this is an edge case where users already closed all the query tab
@@ -333,8 +326,7 @@ export function useConnectionQuery(queryId: string) {
 
   const query = queries?.find((q) => q.id === queryId);
 
-  const onChange = (partials: SqluiFrontend.PartialConnectionQuery) =>
-    onChangeQuery(query?.id, partials);
+  const onChange = (partials: SqluiFrontend.PartialConnectionQuery) => onChangeQuery(query?.id, partials);
 
   const onDelete = () => onDeleteQuery(query?.id);
 
@@ -351,8 +343,7 @@ export function useActiveConnectionQuery() {
 
   const query = queries?.find((q) => q.selected);
 
-  const onChange = (partials: SqluiFrontend.PartialConnectionQuery) =>
-    onChangeQuery(query?.id, partials);
+  const onChange = (partials: SqluiFrontend.PartialConnectionQuery) => onChangeQuery(query?.id, partials);
 
   const onDelete = () => onDeleteQuery(query?.id);
 

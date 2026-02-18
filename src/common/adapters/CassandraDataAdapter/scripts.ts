@@ -1,23 +1,23 @@
-import BaseDataScript, { getDivider } from 'src/common/adapters/BaseDataAdapter/scripts';
-import { getClientOptions } from 'src/common/adapters/CassandraDataAdapter/utils';
-import { escapeSQLValue, isValueBoolean, isValueNumber } from 'src/frontend/utils/formatter';
-import { SqlAction, SqluiCore } from 'typings';
+import BaseDataScript, { getDivider } from "src/common/adapters/BaseDataAdapter/scripts";
+import { getClientOptions } from "src/common/adapters/CassandraDataAdapter/utils";
+import { escapeSQLValue, isValueBoolean, isValueNumber } from "src/frontend/utils/formatter";
+import { SqlAction, SqluiCore } from "typings";
 
-const formatter = 'sql';
+const formatter = "sql";
 
 function _isColumnNumberField(col: SqluiCore.ColumnMetaData) {
-  return col.type.toLowerCase().includes('int') || col.type.toLowerCase().includes('float');
+  return col.type.toLowerCase().includes("int") || col.type.toLowerCase().includes("float");
 }
 
 function _isColumnBooleanField(col: SqluiCore.ColumnMetaData) {
-  return col.type.toLowerCase().includes('boolean');
+  return col.type.toLowerCase().includes("boolean");
 }
 
 function _getDummyColumnValue(col: SqluiCore.ColumnMetaData) {
   if (_isColumnBooleanField(col)) {
-    return 'true';
+    return "true";
   } else if (_isColumnNumberField(col)) {
-    return '123';
+    return "123";
   } else {
     // other types need to be wrapped in single quote
     return `'_${col.name}_'`;
@@ -36,17 +36,15 @@ export function getSelectAllColumns(input: SqlAction.TableInput): SqlAction.Outp
   };
 }
 
-export function getSelectSpecificColumns(
-  input: SqlAction.TableInput,
-): SqlAction.Output | undefined {
+export function getSelectSpecificColumns(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Select Specific Columns`;
 
   if (!input.columns) {
     return undefined;
   }
 
-  const columnString = `\n` + input.columns.map((col) => `  ${col.name}`).join(',\n');
-  const whereColumnString = input.columns.map((col) => `${col.name} = ''`).join('\n AND ');
+  const columnString = `\n` + input.columns.map((col) => `  ${col.name}`).join(",\n");
+  const whereColumnString = input.columns.map((col) => `${col.name} = ''`).join("\n AND ");
 
   return {
     label,
@@ -58,19 +56,16 @@ export function getSelectSpecificColumns(
   };
 }
 
-export function getInsert(
-  input: SqlAction.TableInput,
-  value?: Record<string, any>,
-): SqlAction.Output | undefined {
+export function getInsert(input: SqlAction.TableInput, value?: Record<string, any>): SqlAction.Output | undefined {
   const label = `Insert`;
 
   if (!input.columns) {
     return undefined;
   }
 
-  const columnString = input.columns.map((col) => col.name).join(',\n');
+  const columnString = input.columns.map((col) => col.name).join(",\n");
   const insertValueString = input.columns.map((col) => {
-    let valToUse: string | null = '';
+    let valToUse: string | null = "";
 
     if (value) {
       if (value?.[col.name] === null) {
@@ -84,21 +79,21 @@ export function getInsert(
         valToUse = null;
       }
 
-      if (valToUse === null || valToUse === 'null') {
-        return 'null';
+      if (valToUse === null || valToUse === "null") {
+        return "null";
       }
 
       if (_isColumnBooleanField(col)) {
-        valToUse = (valToUse || '').toLowerCase();
-        if (valToUse === 'true' || valToUse === '1') {
-          return 'true';
+        valToUse = (valToUse || "").toLowerCase();
+        if (valToUse === "true" || valToUse === "1") {
+          return "true";
         }
 
-        if (valToUse === 'false' || valToUse === '0') {
-          return 'false';
+        if (valToUse === "false" || valToUse === "0") {
+          return "false";
         }
 
-        return 'null'; // no value, then returned as null
+        return "null"; // no value, then returned as null
       }
 
       if (_isColumnNumberField(col)) {
@@ -121,10 +116,7 @@ export function getInsert(
   };
 }
 
-export function getBulkInsert(
-  input: SqlAction.TableInput,
-  rows?: Record<string, any>[],
-): SqlAction.Output | undefined {
+export function getBulkInsert(input: SqlAction.TableInput, rows?: Record<string, any>[]): SqlAction.Output | undefined {
   const label = `Insert`;
 
   if (!input.columns) {
@@ -135,16 +127,14 @@ export function getBulkInsert(
     return undefined;
   }
 
-  const rowsToInsert = (rows || [])
-    .map((value) => getInsert(input, value))
-    .map((output) => output?.query);
+  const rowsToInsert = (rows || []).map((value) => getInsert(input, value)).map((output) => output?.query);
 
   return {
     label,
     formatter,
     query: `
     BEGIN BATCH
-    ${rowsToInsert.join(';\n')}
+    ${rowsToInsert.join(";\n")}
     APPLY BATCH
     `,
   };
@@ -172,7 +162,7 @@ export function getUpdateWithValues(
 
       return `${colName} = ${valToUse}`;
     })
-    .join(', \n');
+    .join(", \n");
 
   const whereColumnString = Object.keys(conditions)
     .map((colName) => {
@@ -185,7 +175,7 @@ export function getUpdateWithValues(
 
       return `${colName} = ${valToUse}`;
     })
-    .join(' AND \n');
+    .join(" AND \n");
 
   return {
     label,
@@ -203,12 +193,8 @@ export function getUpdate(input: SqlAction.TableInput): SqlAction.Output | undef
     return undefined;
   }
 
-  const columnString = input.columns
-    .map((col) => `${col.name} = ${_getDummyColumnValue(col)}`)
-    .join(',\n');
-  const whereColumnString = input.columns
-    .map((col) => `${col.name} = ${_getDummyColumnValue(col)}`)
-    .join(' AND \n');
+  const columnString = input.columns.map((col) => `${col.name} = ${_getDummyColumnValue(col)}`).join(",\n");
+  const whereColumnString = input.columns.map((col) => `${col.name} = ${_getDummyColumnValue(col)}`).join(" AND \n");
 
   return {
     label,
@@ -226,7 +212,7 @@ export function getDelete(input: SqlAction.TableInput): SqlAction.Output | undef
     return undefined;
   }
 
-  const whereColumnString = input.columns.map((col) => `${col.name} = ''`).join(' AND \n');
+  const whereColumnString = input.columns.map((col) => `${col.name} = ''`).join(" AND \n");
 
   return {
     label,
@@ -242,7 +228,7 @@ export function getCreateKeyspace(input: SqlAction.DatabaseInput): SqlAction.Out
   return {
     label,
     formatter,
-    query: `CREATE KEYSPACE IF NOT EXISTS ${input.databaseId || 'some_keyspace'}
+    query: `CREATE KEYSPACE IF NOT EXISTS ${input.databaseId || "some_keyspace"}
              WITH replication = {'class': 'SimpleStrategy', 'replication_factor' : 3};`,
   };
 }
@@ -257,9 +243,7 @@ export function getDropKeyspace(input: SqlAction.DatabaseInput): SqlAction.Outpu
   };
 }
 
-export function getCreateConnectionDatabase(
-  input: SqlAction.ConnectionInput,
-): SqlAction.Output | undefined {
+export function getCreateConnectionDatabase(input: SqlAction.ConnectionInput): SqlAction.Output | undefined {
   const label = `Create Connection Keyspace`;
 
   return {
@@ -277,28 +261,26 @@ export function getCreateTable(input: SqlAction.TableInput): SqlAction.Output | 
     return undefined;
   }
 
-  let columnString: string = '';
+  let columnString: string = "";
   // mapping column
-  columnString = input.columns
-    .map((col) => [col.name, col.type, col.primaryKey ? 'PRIMARY KEY' : ''].join(' '))
-    .join(',\n');
+  columnString = input.columns.map((col) => [col.name, col.type, col.primaryKey ? "PRIMARY KEY" : ""].join(" ")).join(",\n");
 
   // figuring out the keys
   let partitionKeys: string[] = [],
     clusteringKeys: string[] = [];
   for (const col of input.columns) {
-    if (col.kind === 'partition_key') {
+    if (col.kind === "partition_key") {
       partitionKeys.push(col.name);
-    } else if (col.kind === 'clustering') {
+    } else if (col.kind === "clustering") {
       clusteringKeys.push(col.name);
     }
   }
   if (partitionKeys.length > 0) {
     if (clusteringKeys.length > 0) {
-      columnString += `, PRIMARY KEY((${partitionKeys.join(', ')}), ${clusteringKeys.join(', ')})`;
+      columnString += `, PRIMARY KEY((${partitionKeys.join(", ")}), ${clusteringKeys.join(", ")})`;
     } else {
       // has only the partition key
-      columnString += `, PRIMARY KEY((${partitionKeys.join(', ')}))`;
+      columnString += `, PRIMARY KEY((${partitionKeys.join(", ")}))`;
     }
   }
 
@@ -341,19 +323,19 @@ export function getDropColumns(input: SqlAction.TableInput): SqlAction.Output | 
         (col) => `ALTER TABLE ${input.tableId}
                      DROP ${col.name};`,
       )
-      .join('\n'),
+      .join("\n"),
   };
 }
 
 export class ConcreteDataScripts extends BaseDataScript {
-  dialects = ['cassandra'];
+  dialects = ["cassandra"];
 
   getIsTableIdRequiredForQuery() {
     return false;
   }
 
   getSyntaxMode() {
-    return 'sql';
+    return "sql";
   }
 
   supportMigration() {
@@ -410,7 +392,7 @@ export class ConcreteDataScripts extends BaseDataScript {
     const clientOptions = getClientOptions(connection.connection, database);
 
     switch (language) {
-      case 'javascript':
+      case "javascript":
         return `
 // npm install --save cassandra-driver
 const cassandra = require('cassandra-driver')
@@ -443,7 +425,7 @@ async function _doWork(){
 _doWork();
         `.trim();
 
-      case 'python':
+      case "python":
         return `
 # python3 -m venv ./ # setting up virtual environment with
 # source bin/activate # activate the venv profile
@@ -455,14 +437,12 @@ from cassandra.auth import PlainTextAuthProvider
 # remove \`ssl_context=ssl_context\` to disable SSL (applicable for Cassandra in CosmosDB)
 ssl_context = SSLContext(PROTOCOL_TLSv1_2)
 ssl_context.verify_mode = CERT_NONE
-cluster = Cluster(['${clientOptions.host}'], port=${
-          clientOptions.port
-        }, auth_provider=PlainTextAuthProvider(username='${
-          clientOptions?.authProvider?.username || ''
-        }', password='${clientOptions?.authProvider?.password || ''}'), ssl_context=ssl_context)
+cluster = Cluster(['${clientOptions.host}'], port=${clientOptions.port}, auth_provider=PlainTextAuthProvider(username='${
+          clientOptions?.authProvider?.username || ""
+        }', password='${clientOptions?.authProvider?.password || ""}'), ssl_context=ssl_context)
 session = cluster.connect()
 
-session.execute('USE ${database || 'some_keyspace'}')
+session.execute('USE ${database || "some_keyspace"}')
 rows = session.execute("""${sql}""")
 for row in rows:
     print(row)

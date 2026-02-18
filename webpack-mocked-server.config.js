@@ -1,25 +1,21 @@
-const path = require('path');
-const webpack = require('webpack');
-const appPackage = require('./package.json');
+const path = require("path");
+const webpack = require("webpack");
+const appPackage = require("./package.json");
 
 const externals = {};
-const externalsDeps = [
-  'electron',
-  ...Object.keys(appPackage.optionalDependencies || []),
-  ...Object.keys(appPackage.dependencies || []),
-];
+const externalsDeps = ["electron", ...Object.keys(appPackage.optionalDependencies || []), ...Object.keys(appPackage.dependencies || [])];
 for (const dep of externalsDeps) {
   externals[dep] = `commonjs ${dep}`;
 }
 
 module.exports = {
-  mode: 'production',
-  target: ['node'],
-  entry: './src/mocked-server/index.ts',
+  mode: "production",
+  target: ["node"],
+  entry: "./src/mocked-server/index.ts",
   output: {
-    filename: 'mocked-server.js',
-    libraryTarget: 'this',
-    path: path.resolve(__dirname, 'build'),
+    filename: "mocked-server.js",
+    libraryTarget: "this",
+    path: path.resolve(__dirname, "build"),
   },
   externals,
   module: {
@@ -28,9 +24,9 @@ module.exports = {
         test: /\.tsx?$/,
         use: [
           {
-            loader: 'ts-loader',
+            loader: "ts-loader",
             options: {
-              configFile: 'tsconfig-mocked-server.json',
+              configFile: "tsconfig-mocked-server.json",
             },
           },
         ],
@@ -39,11 +35,11 @@ module.exports = {
     ],
   },
   resolve: {
-    extensions: ['.tsx', '.ts', '.js'],
+    extensions: [".tsx", ".ts", ".js"],
     alias: {
-      src: path.resolve(__dirname, 'src'),
-      electron: path.resolve(__dirname, 'electron'),
-      typings: path.resolve(__dirname, 'typings'),
+      src: path.resolve(__dirname, "src"),
+      electron: path.resolve(__dirname, "electron"),
+      typings: path.resolve(__dirname, "typings"),
     },
   },
 };

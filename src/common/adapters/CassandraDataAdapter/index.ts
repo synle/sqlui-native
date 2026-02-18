@@ -1,8 +1,8 @@
-import * as cassandra from 'cassandra-driver';
-import BaseDataAdapter from 'src/common/adapters/BaseDataAdapter/index';
-import { getClientOptions } from 'src/common/adapters/CassandraDataAdapter/utils';
-import IDataAdapter from 'src/common/adapters/IDataAdapter';
-import { SqluiCore } from 'typings';
+import * as cassandra from "cassandra-driver";
+import BaseDataAdapter from "src/common/adapters/BaseDataAdapter/index";
+import { getClientOptions } from "src/common/adapters/CassandraDataAdapter/utils";
+import IDataAdapter from "src/common/adapters/IDataAdapter";
+import { SqluiCore } from "typings";
 
 export default class CassandraDataAdapter extends BaseDataAdapter implements IDataAdapter {
   /**
@@ -58,7 +58,7 @@ export default class CassandraDataAdapter extends BaseDataAdapter implements IDa
           resolve(client);
         }
       } catch (err) {
-        console.log('Failed to getConnection', this.dialect, err);
+        console.log("Failed to getConnection", this.dialect, err);
         reject(err);
       }
     });
@@ -74,7 +74,7 @@ export default class CassandraDataAdapter extends BaseDataAdapter implements IDa
         }
 
         this.version = client?.getState().getConnectedHosts()[0].cassandraVersion;
-        this.isCassandra2 = this.version.indexOf('2.') === 0;
+        this.isCassandra2 = this.version.indexOf("2.") === 0;
 
         resolve();
       });

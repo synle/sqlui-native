@@ -1,4 +1,4 @@
-import React, { createContext, useCallback, useContext, useState } from 'react';
+import React, { createContext, useCallback, useContext, useState } from "react";
 
 type TreeActionProps = {
   showContextMenu: boolean;
@@ -40,7 +40,8 @@ export default function WrappedContext(props: { children: React.ReactNode }): JS
       value={{
         data,
         setTreeActions,
-      }}>
+      }}
+    >
       {props.children}
     </TargetContext.Provider>
   );

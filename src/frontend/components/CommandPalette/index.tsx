@@ -1,16 +1,13 @@
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemText from '@mui/material/ListItemText';
-import TextField from '@mui/material/TextField';
-import fuzzysort from 'fuzzysort';
-import { useEffect, useRef, useState } from 'react';
-import { Command as CoreCommand } from 'src/frontend/components/MissionControl';
-import { useGetConnectionById, useGetConnections } from 'src/frontend/hooks/useConnection';
-import {
-  useActiveConnectionQuery,
-  useConnectionQueries,
-} from 'src/frontend/hooks/useConnectionQuery';
-import { SqluiEnums } from 'typings';
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemText from "@mui/material/ListItemText";
+import TextField from "@mui/material/TextField";
+import fuzzysort from "fuzzysort";
+import { useEffect, useRef, useState } from "react";
+import { Command as CoreCommand } from "src/frontend/components/MissionControl";
+import { useGetConnectionById, useGetConnections } from "src/frontend/hooks/useConnection";
+import { useActiveConnectionQuery, useConnectionQueries } from "src/frontend/hooks/useConnectionQuery";
+import { SqluiEnums } from "typings";
 
 type Command = CoreCommand & {
   label: string;
@@ -43,137 +40,134 @@ type CommandOption = {
 };
 
 const ALL_COMMAND_PALETTE_OPTIONS: CommandOption[] = [
-  { event: 'clientEvent/navigate', label: 'Open Main Query Page', data: '/' },
-  { event: 'clientEvent/navigate', label: 'Open Data Migration', data: '/migration' },
-  { event: 'clientEvent/navigate', label: 'Open Recycle Bin Page', data: '/recycle_bin' },
-  { event: 'clientEvent/openAppWindow', label: 'Open Data Snapshots', data: '/data_snapshot' },
-  { event: 'clientEvent/navigate', label: 'Open Bookmarks Page', data: '/bookmarks' },
-  { event: 'clientEvent/showSettings', label: 'Settings' },
-  { event: 'clientEvent/import', label: 'Import' },
-  { event: 'clientEvent/exportAll', label: 'Export All' },
-  { event: 'clientEvent/changeDarkMode', label: 'Enable Dark Mode', data: 'dark' },
+  { event: "clientEvent/navigate", label: "Open Main Query Page", data: "/" },
+  { event: "clientEvent/navigate", label: "Open Data Migration", data: "/migration" },
+  { event: "clientEvent/navigate", label: "Open Recycle Bin Page", data: "/recycle_bin" },
+  { event: "clientEvent/openAppWindow", label: "Open Data Snapshots", data: "/data_snapshot" },
+  { event: "clientEvent/navigate", label: "Open Bookmarks Page", data: "/bookmarks" },
+  { event: "clientEvent/showSettings", label: "Settings" },
+  { event: "clientEvent/import", label: "Import" },
+  { event: "clientEvent/exportAll", label: "Export All" },
+  { event: "clientEvent/changeDarkMode", label: "Enable Dark Mode", data: "dark" },
   {
-    event: 'clientEvent/tableRenderer',
-    label: 'Use advanced table renderer',
-    data: 'advanced',
+    event: "clientEvent/tableRenderer",
+    label: "Use advanced table renderer",
+    data: "advanced",
   },
   {
-    event: 'clientEvent/tableRenderer',
-    label: 'Use simple table renderer',
-    data: 'simple',
+    event: "clientEvent/tableRenderer",
+    label: "Use simple table renderer",
+    data: "simple",
   },
   {
-    event: 'clientEvent/changeDarkMode',
-    label: 'Disable Dark Mode (Use Light Mode)',
-    data: 'light',
+    event: "clientEvent/changeDarkMode",
+    label: "Disable Dark Mode (Use Light Mode)",
+    data: "light",
   },
   {
-    event: 'clientEvent/changeEditorMode',
-    label: 'Use advanced editor mode',
-    data: 'advanced',
+    event: "clientEvent/changeEditorMode",
+    label: "Use advanced editor mode",
+    data: "advanced",
   },
   {
-    event: 'clientEvent/changeEditorMode',
-    label: 'Use simple editor mode',
-    data: 'simple',
+    event: "clientEvent/changeEditorMode",
+    label: "Use simple editor mode",
+    data: "simple",
   },
   {
-    event: 'clientEvent/changeWrapMode',
-    label: 'Enable word wrap',
-    data: 'wrap',
+    event: "clientEvent/changeWrapMode",
+    label: "Enable word wrap",
+    data: "wrap",
   },
   {
-    event: 'clientEvent/changeWrapMode',
-    label: 'Disable word wrap',
-    data: '',
+    event: "clientEvent/changeWrapMode",
+    label: "Disable word wrap",
+    data: "",
   },
   {
-    event: 'clientEvent/changeQueryTabOrientation',
-    label: 'Use Horizontal Tab Orientation',
-    data: 'horizontal',
+    event: "clientEvent/changeQueryTabOrientation",
+    label: "Use Horizontal Tab Orientation",
+    data: "horizontal",
   },
   {
-    event: 'clientEvent/changeQueryTabOrientation',
-    label: 'Use Vertical Tab Orientation',
-    data: 'vertical',
+    event: "clientEvent/changeQueryTabOrientation",
+    label: "Use Vertical Tab Orientation",
+    data: "vertical",
   },
   {
-    event: 'clientEvent/showQueryHelp',
-    label: 'Show Query Help',
+    event: "clientEvent/showQueryHelp",
+    label: "Show Query Help",
   },
-  { event: 'clientEvent/clearShowHides', label: 'Collapse All Connections' },
-  { event: 'clientEvent/changeDarkMode', label: 'Follows System Settings for Dark Mode', data: '' },
+  { event: "clientEvent/clearShowHides", label: "Collapse All Connections" },
+  { event: "clientEvent/changeDarkMode", label: "Follows System Settings for Dark Mode", data: "" },
 
   {
-    event: 'clientEvent/changeQuerySelectionMode',
-    label: 'Open queries in the same tab',
-    data: 'same-tab',
+    event: "clientEvent/changeQuerySelectionMode",
+    label: "Open queries in the same tab",
+    data: "same-tab",
   },
 
   {
-    event: 'clientEvent/changeQuerySelectionMode',
-    label: 'Open queries in a new tab',
-    data: 'new-tab',
+    event: "clientEvent/changeQuerySelectionMode",
+    label: "Open queries in a new tab",
+    data: "new-tab",
   },
 
   // sessions
-  { event: 'clientEvent/session/switch', label: 'Switch Session' },
-  { event: 'clientEvent/session/new', label: 'New Session' },
-  { event: 'clientEvent/session/rename', label: 'Rename Current Session' },
-  { event: 'clientEvent/session/delete', label: 'Delete Current Session' },
-  { event: 'clientEvent/session/clone', label: 'Clone Current Session' },
+  { event: "clientEvent/session/switch", label: "Switch Session" },
+  { event: "clientEvent/session/new", label: "New Session" },
+  { event: "clientEvent/session/rename", label: "Rename Current Session" },
+  { event: "clientEvent/session/delete", label: "Delete Current Session" },
+  { event: "clientEvent/session/clone", label: "Clone Current Session" },
 
   // connections
-  { event: 'clientEvent/connection/new', label: 'New Connection' },
+  { event: "clientEvent/connection/new", label: "New Connection" },
   {
-    event: 'clientEvent/connection/delete',
-    label: 'Delete Connection',
+    event: "clientEvent/connection/delete",
+    label: "Delete Connection",
     expandConnections: true,
   },
   {
-    event: 'clientEvent/connection/delete',
-    label: 'Delete Current Connection',
+    event: "clientEvent/connection/delete",
+    label: "Delete Current Connection",
     useCurrentConnection: true,
   },
   {
-    event: 'clientEvent/connection/refresh',
-    label: 'Refresh Current Connection',
+    event: "clientEvent/connection/refresh",
+    label: "Refresh Current Connection",
     useCurrentConnection: true,
   },
 
   // queries
-  { event: 'clientEvent/query/new', label: 'New Query' },
-  { event: 'clientEvent/query/show', label: 'Show Query', expandQueries: true },
-  { event: 'clientEvent/query/rename', label: 'Rename Current Query', useCurrentQuery: true },
-  { event: 'clientEvent/query/export', label: 'Export Current Query', useCurrentQuery: true },
-  { event: 'clientEvent/query/duplicate', label: 'Duplicate Current Query', useCurrentQuery: true },
-  { event: 'clientEvent/query/close', label: 'Close Current Query', useCurrentQuery: true },
-  { event: 'clientEvent/query/closeOther', label: 'Close Other Query', useCurrentQuery: true },
-  { event: 'clientEvent/query/reveal', label: 'Reveal Query Connection', useCurrentQuery: true },
-  { event: 'clientEvent/query/pin', label: 'Pin Current Query', useCurrentQuery: true },
-  { event: 'clientEvent/query/unpin', label: 'Unpin Current Query', useCurrentQuery: true },
+  { event: "clientEvent/query/new", label: "New Query" },
+  { event: "clientEvent/query/show", label: "Show Query", expandQueries: true },
+  { event: "clientEvent/query/rename", label: "Rename Current Query", useCurrentQuery: true },
+  { event: "clientEvent/query/export", label: "Export Current Query", useCurrentQuery: true },
+  { event: "clientEvent/query/duplicate", label: "Duplicate Current Query", useCurrentQuery: true },
+  { event: "clientEvent/query/close", label: "Close Current Query", useCurrentQuery: true },
+  { event: "clientEvent/query/closeOther", label: "Close Other Query", useCurrentQuery: true },
+  { event: "clientEvent/query/reveal", label: "Reveal Query Connection", useCurrentQuery: true },
+  { event: "clientEvent/query/pin", label: "Pin Current Query", useCurrentQuery: true },
+  { event: "clientEvent/query/unpin", label: "Unpin Current Query", useCurrentQuery: true },
   {
-    event: 'clientEvent/query/closeToTheRight',
-    label: 'Close Tabs to The Right Of Current Query',
+    event: "clientEvent/query/closeToTheRight",
+    label: "Close Tabs to The Right Of Current Query",
     useCurrentQuery: true,
   },
-  { event: 'clientEvent/checkForUpdate', label: 'Check For Update' },
+  { event: "clientEvent/checkForUpdate", label: "Check For Update" },
 ];
 
 export default function CommandPalette(props: CommandPaletteProps): JSX.Element | null {
-  const [text, setText] = useState('');
+  const [text, setText] = useState("");
   const [options, setOptions] = useState<Command[]>([]);
   const [allOptions, setAllOptions] = useState<Command[]>([]);
   const refOption = useRef<HTMLDivElement>(null);
   const { isLoading: loadingActiveQuery, query: activeQuery } = useActiveConnectionQuery();
   const { isLoading: loadingQueries, queries } = useConnectionQueries();
-  const { isLoading: loadingActiveConnection, data: activeConnection } = useGetConnectionById(
-    activeQuery?.connectionId,
-  );
+  const { isLoading: loadingActiveConnection, data: activeConnection } = useGetConnectionById(activeQuery?.connectionId);
   const { data: connections, isLoading: loadingConnections } = useGetConnections();
 
-  const isLoading =
-    loadingActiveQuery || loadingQueries || loadingActiveConnection || loadingConnections;
+  const isLoading = loadingActiveQuery || loadingQueries || loadingActiveConnection || loadingConnections;
 
   useEffect(() => {
     let newAllOptions: Command[] = [];
@@ -223,9 +217,7 @@ export default function CommandPalette(props: CommandPaletteProps): JSX.Element 
     let newOptions: Command[] = newAllOptions;
 
     if (text) {
-      newOptions = fuzzysort
-        .go(text, newOptions, { key: 'label', allowTypo: false })
-        .map((result) => result.obj);
+      newOptions = fuzzysort.go(text, newOptions, { key: "label", allowTypo: false }).map((result) => result.obj);
     }
 
     setOptions(newOptions);
@@ -243,15 +235,15 @@ export default function CommandPalette(props: CommandPaletteProps): JSX.Element 
     let moveDirection: number | undefined;
 
     switch (e.key) {
-      case 'Enter':
-        if ((e.target as HTMLInputElement).type === 'text') {
+      case "Enter":
+        if ((e.target as HTMLInputElement).type === "text") {
           moveDirection = -1;
         }
         break;
-      case 'ArrowDown':
+      case "ArrowDown":
         moveDirection = 1;
         break;
-      case 'ArrowUp':
+      case "ArrowUp":
         moveDirection = -1;
         break;
     }
@@ -259,9 +251,9 @@ export default function CommandPalette(props: CommandPaletteProps): JSX.Element 
     if (moveDirection !== undefined) {
       e.preventDefault();
 
-      const allOptions = [...refOption?.current?.querySelectorAll('.CommandPalette__Option')];
+      const allOptions = [...refOption?.current?.querySelectorAll(".CommandPalette__Option")];
 
-      let selectedElem = refOption?.current?.querySelector('.CommandPalette__Option:focus');
+      let selectedElem = refOption?.current?.querySelector(".CommandPalette__Option:focus");
       let nextIndex = selectedElem ? allOptions.indexOf(selectedElem) + moveDirection : 0;
 
       if (nextIndex < 0) {
@@ -272,11 +264,7 @@ export default function CommandPalette(props: CommandPaletteProps): JSX.Element 
         nextIndex = allOptions.length - 1;
       }
 
-      (
-        refOption?.current?.querySelectorAll('.CommandPalette__Option')[
-          nextIndex
-        ] as HTMLButtonElement
-      )?.focus();
+      (refOption?.current?.querySelectorAll(".CommandPalette__Option")[nextIndex] as HTMLButtonElement)?.focus();
     }
   };
 
@@ -284,15 +272,13 @@ export default function CommandPalette(props: CommandPaletteProps): JSX.Element 
     return null;
   }
 
-  let optionsToShow = options.sort((a, b) => (a.label || '').localeCompare(b.label || ''));
+  let optionsToShow = options.sort((a, b) => (a.label || "").localeCompare(b.label || ""));
 
   const getFormattedLabel = (label: string) => {
     if (text) {
       const res = fuzzysort.single(text, label);
       if (res) {
-        return (
-          fuzzysort.highlight(res, '<span class="CommandPalette__Highlight">', '</span>') || ''
-        );
+        return fuzzysort.highlight(res, '<span class="CommandPalette__Highlight">', "</span>") || "";
       }
     }
 
@@ -306,20 +292,21 @@ export default function CommandPalette(props: CommandPaletteProps): JSX.Element 
           value={text}
           onChange={(e) => setText(e.target.value)}
           autoFocus
-          placeholder='> Type a command here'
+          placeholder="> Type a command here"
           fullWidth
-          size='small'
-          autoComplete='off'
+          size="small"
+          autoComplete="off"
         />
       </div>
       <List dense sx={{ mt: 1 }}>
         {optionsToShow.map((option, idx) => (
           <ListItem
             button
-            className='CommandPalette__Option'
+            className="CommandPalette__Option"
             key={`${option.event}.${idx}`}
             onClick={() => onSelectCommand(option)}
-            title={option.event}>
+            title={option.event}
+          >
             <ListItemText primary={option.label} />
           </ListItem>
         ))}

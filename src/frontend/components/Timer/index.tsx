@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
-import { formatDuration } from 'src/frontend/utils/formatter';
+import { useEffect, useRef, useState } from "react";
+import { formatDuration } from "src/frontend/utils/formatter";
 
 type TimerProps = {
   startTime?: number;

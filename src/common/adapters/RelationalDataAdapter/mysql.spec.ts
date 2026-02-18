@@ -1,13 +1,13 @@
-import RelationalDataAdapter from 'src/common/adapters/RelationalDataAdapter/index';
+import RelationalDataAdapter from "src/common/adapters/RelationalDataAdapter/index";
 // this is a big integration, won't be run on smoke test
-describe.skip('mysql', () => {
+describe.skip("mysql", () => {
   let adapter;
 
   beforeAll(() => {
-    adapter = new RelationalDataAdapter('mysql://root:password@localhost:3306');
+    adapter = new RelationalDataAdapter("mysql://root:password@localhost:3306");
   });
-  test('Get tables', async () => {
-    const tables = await adapter.getTables('music_store');
+  test("Get tables", async () => {
+    const tables = await adapter.getTables("music_store");
     expect(tables).toMatchInlineSnapshot(`
 Array [
   Object {
@@ -58,8 +58,8 @@ Array [
 `);
   });
 
-  test('Get columns', async () => {
-    const columns = await adapter.getColumns('artists', 'music_store');
+  test("Get columns", async () => {
+    const columns = await adapter.getColumns("artists", "music_store");
     expect(columns).toMatchInlineSnapshot(`
 Array [
   Object {
@@ -84,21 +84,15 @@ Array [
 `);
   });
 
-  test('Execute Select', async () => {
-    const resp = await adapter.execute(
-      `SELECT * FROM artists ORDER BY Name ASC LIMIT 10`,
-      'music_store',
-    );
+  test("Execute Select", async () => {
+    const resp = await adapter.execute(`SELECT * FROM artists ORDER BY Name ASC LIMIT 10`, "music_store");
     //@ts-ignore
     expect(resp && resp.raw && resp.raw.length > 0 && resp.raw.length <= 10).toBe(true);
   });
 
-  test('Execute Update', async () => {
+  test("Execute Update", async () => {
     try {
-      const resp = await adapter.execute(
-        `UPDATE artists SET name = 'AC/DC' WHERE ArtistId = '1'`,
-        'music_store',
-      );
+      const resp = await adapter.execute(`UPDATE artists SET name = 'AC/DC' WHERE ArtistId = '1'`, "music_store");
       expect(1).toBe(1);
     } catch (err) {
       expect(err).toBeUndefined();

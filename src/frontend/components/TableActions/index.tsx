@@ -1,20 +1,17 @@
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import SsidChartIcon from '@mui/icons-material/SsidChart';
-import IconButton from '@mui/material/IconButton';
-import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
-import { getDivider } from 'src/common/adapters/BaseDataAdapter/scripts';
-import {
-  getTableActions,
-  isDialectSupportVisualization,
-} from 'src/common/adapters/DataScriptFactory';
-import DropdownButton from 'src/frontend/components/DropdownButton';
-import { useCommands } from 'src/frontend/components/MissionControl';
-import { useGetColumns, useGetConnectionById } from 'src/frontend/hooks/useConnection';
-import { useActiveConnectionQuery } from 'src/frontend/hooks/useConnectionQuery';
-import { useQuerySizeSetting } from 'src/frontend/hooks/useSetting';
-import { useTreeActions } from 'src/frontend/hooks/useTreeActions';
-import { SqlAction } from 'typings';
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import SsidChartIcon from "@mui/icons-material/SsidChart";
+import IconButton from "@mui/material/IconButton";
+import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { getDivider } from "src/common/adapters/BaseDataAdapter/scripts";
+import { getTableActions, isDialectSupportVisualization } from "src/common/adapters/DataScriptFactory";
+import DropdownButton from "src/frontend/components/DropdownButton";
+import { useCommands } from "src/frontend/components/MissionControl";
+import { useGetColumns, useGetConnectionById } from "src/frontend/hooks/useConnection";
+import { useActiveConnectionQuery } from "src/frontend/hooks/useConnectionQuery";
+import { useQuerySizeSetting } from "src/frontend/hooks/useSetting";
+import { useTreeActions } from "src/frontend/hooks/useTreeActions";
+import { SqlAction } from "typings";
 
 type TableActionsProps = {
   connectionId: string;
@@ -40,11 +37,7 @@ export default function TableActions(props: TableActionsProps): JSX.Element | nu
   }
 
   const { data: connection, isLoading: loadingConnection } = useGetConnectionById(connectionId);
-  const { data: columns, isLoading: loadingColumns } = useGetColumns(
-    connectionId,
-    databaseId,
-    tableId,
-  );
+  const { data: columns, isLoading: loadingColumns } = useGetColumns(connectionId, databaseId, tableId);
 
   const { query } = useActiveConnectionQuery();
   const dialect = connection?.dialect;
@@ -57,7 +50,7 @@ export default function TableActions(props: TableActionsProps): JSX.Element | nu
     actions = [
       ...actions,
       {
-        label: 'Visualize',
+        label: "Visualize",
         description: `Visualize all tables in this database.`,
         icon: <SsidChartIcon />,
         onClick: () => navigate(`/visualization/${connectionId}/${databaseId}/${tableId}`),
@@ -86,7 +79,7 @@ export default function TableActions(props: TableActionsProps): JSX.Element | nu
         ? action.onClick()
         : action.query &&
           selectCommand({
-            event: 'clientEvent/query/apply',
+            event: "clientEvent/query/apply",
             data: {
               connectionId,
               databaseId,
@@ -102,14 +95,10 @@ export default function TableActions(props: TableActionsProps): JSX.Element | nu
   }
 
   return (
-    <div className='TableActions'>
-      <DropdownButton
-        id='table-action-split-button'
-        options={options}
-        onToggle={(newOpen) => setOpen(newOpen)}
-        isLoading={isLoading}>
-        <IconButton aria-label='Table Actions' size='small' color='inherit'>
-          <ArrowDropDownIcon fontSize='inherit' color='inherit' />
+    <div className="TableActions">
+      <DropdownButton id="table-action-split-button" options={options} onToggle={(newOpen) => setOpen(newOpen)} isLoading={isLoading}>
+        <IconButton aria-label="Table Actions" size="small" color="inherit">
+          <ArrowDropDownIcon fontSize="inherit" color="inherit" />
         </IconButton>
       </DropdownButton>
     </div>

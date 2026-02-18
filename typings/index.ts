@@ -1,4 +1,4 @@
-import Electron from 'electron';
+import Electron from "electron";
 declare global {
   interface Window {
     isElectron: boolean;
@@ -15,20 +15,20 @@ declare global {
  */
 export module SqluiCore {
   export type Dialect =
-    | 'mysql'
-    | 'mariadb'
-    | 'mssql'
-    | 'postgres'
-    | 'postgresql'
-    | 'sqlite'
-    | 'cassandra'
-    | 'mongodb'
-    | 'redis'
-    | 'rediss'
-    | 'cosmosdb'
-    | 'aztable';
+    | "mysql"
+    | "mariadb"
+    | "mssql"
+    | "postgres"
+    | "postgresql"
+    | "sqlite"
+    | "cassandra"
+    | "mongodb"
+    | "redis"
+    | "rediss"
+    | "cosmosdb"
+    | "aztable";
 
-  export type LanguageMode = 'javascript' | 'python' | 'java';
+  export type LanguageMode = "javascript" | "python" | "java";
 
   export type ServerConfigs = {
     storageDir: string;
@@ -38,7 +38,7 @@ export module SqluiCore {
   export type CoreConnectionProps = {
     connection: string;
     name: string;
-    status?: 'online' | 'offline';
+    status?: "online" | "offline";
     dialect?: SqluiCore.Dialect;
     [index: string]: any;
   };
@@ -53,8 +53,8 @@ export module SqluiCore {
     [index: string]: any;
   };
 
-  type ColumnKindCassandra = 'partition_key' | 'clustering' | 'regular';
-  type ColumnKindRmdbs = 'foreign_key';
+  type ColumnKindCassandra = "partition_key" | "clustering" | "regular";
+  type ColumnKindRmdbs = "foreign_key";
 
   export type ColumnMetaData = {
     name: string;
@@ -146,18 +146,18 @@ export module SqluiCore {
     id: string;
   };
 
-  export type FolderType = 'recycleBin' | 'bookmarks' | string;
+  export type FolderType = "recycleBin" | "bookmarks" | string;
 
   export type FolderItem = {
     id: string;
     name?: string;
   } & (
     | {
-        type: 'Connection';
+        type: "Connection";
         data: SqluiCore.ConnectionProps;
       }
     | {
-        type: 'Query';
+        type: "Query";
         data: SqluiCore.ConnectionQuery;
       }
   );
@@ -197,36 +197,29 @@ export module SqluiFrontend {
   export type TreeVisibilities = { [index: string]: boolean };
 
   export type Settings = {
-    darkMode?: 'dark' | 'light';
-    animationMode?: '0' | '1';
-    layoutMode?: '0' | '1';
-    editorMode?: 'advanced' | 'simple';
-    tableRenderer?: 'advanced' | 'simple';
-    wordWrap?: 'wrap';
-    queryTabOrientation?: 'vertical' | 'horizontal';
+    darkMode?: "dark" | "light";
+    animationMode?: "0" | "1";
+    layoutMode?: "0" | "1";
+    editorMode?: "advanced" | "simple";
+    tableRenderer?: "advanced" | "simple";
+    wordWrap?: "wrap";
+    queryTabOrientation?: "vertical" | "horizontal";
     querySize?: number;
     tablePageSize?: number;
     /**
      * whether or not to open the bookmarked query in the same tab or new tab
      */
-    querySelectionMode?: 'same-tab' | 'new-tab';
-    deleteMode?: 'soft-delete' | 'hard-delete';
+    querySelectionMode?: "same-tab" | "new-tab";
+    deleteMode?: "soft-delete" | "hard-delete";
   };
 
   export type SettingKey = keyof Settings;
 
-  export type QueryKey =
-    | 'actionDialogs'
-    | 'missionControlCommand'
-    | 'connections'
-    | 'treeVisibles'
-    | 'queries'
-    | 'results'
-    | 'settings';
+  export type QueryKey = "actionDialogs" | "missionControlCommand" | "connections" | "treeVisibles" | "queries" | "results" | "settings";
 
-  export type MigrationType = 'insert' | 'create';
+  export type MigrationType = "insert" | "create";
 
-  export type MigrationMode = 'real_connection' | 'raw_json';
+  export type MigrationMode = "real_connection" | "raw_json";
 }
 
 export module SqlAction {
@@ -254,7 +247,7 @@ export module SqlAction {
     query?: string;
     description?: string;
     icon?: JSX.Element;
-    formatter?: 'sql' | 'js';
+    formatter?: "sql" | "js";
     /**
      * if true, will skip when we attempt to generate the guide docs
      * @type {[type]}
@@ -264,17 +257,11 @@ export module SqlAction {
     startIcon?: JSX.Element;
   };
 
-  export type TableActionScriptGenerator = (
-    input: SqlAction.TableInput,
-  ) => SqlAction.Output | undefined;
+  export type TableActionScriptGenerator = (input: SqlAction.TableInput) => SqlAction.Output | undefined;
 
-  export type DatabaseActionScriptGenerator = (
-    input: SqlAction.DatabaseInput,
-  ) => SqlAction.Output | undefined;
+  export type DatabaseActionScriptGenerator = (input: SqlAction.DatabaseInput) => SqlAction.Output | undefined;
 
-  export type ConnectionActionScriptGenerator = (
-    input: SqlAction.ConnectionInput,
-  ) => SqlAction.Output | undefined;
+  export type ConnectionActionScriptGenerator = (input: SqlAction.ConnectionInput) => SqlAction.Output | undefined;
 }
 
 /**
@@ -285,18 +272,18 @@ export module SqluiEnums {
    * in memory cache keys used in the server
    * @type {String}
    */
-  export type ServerApiCacheKey = 'serverCacheKey/cacheMetaData';
+  export type ServerApiCacheKey = "serverCacheKey/cacheMetaData";
 
   /**
    * client config key used for storage on the client side
    * @type {String}
    */
   export type ClientConfigKey =
-    | 'clientConfig/cache.connectionQueries'
-    | 'clientConfig/cache.treeVisibles'
-    | 'clientConfig/cache.settings'
-    | 'clientConfig/leftPanelWidth'
-    | 'clientConfig/api.sessionId';
+    | "clientConfig/cache.connectionQueries"
+    | "clientConfig/cache.treeVisibles"
+    | "clientConfig/cache.settings"
+    | "clientConfig/leftPanelWidth"
+    | "clientConfig/api.sessionId";
 
   /**
    * client side specific events, can be used by electron
@@ -304,59 +291,59 @@ export module SqluiEnums {
    * @type {String}
    */
   export type ClientEventKey =
-    | 'clientEvent/navigate'
-    | 'clientEvent/openAppWindow'
-    | 'clientEvent/showSettings'
-    | 'clientEvent/changeDarkMode'
-    | 'clientEvent/changeEditorMode'
-    | 'clientEvent/tableRenderer'
-    | 'clientEvent/changeWrapMode'
-    | 'clientEvent/checkForUpdate'
-    | 'clientEvent/showCommandPalette'
-    | 'clientEvent/openExternalUrl'
-    | 'clientEvent/clearShowHides'
-    | 'clientEvent/changeQueryTabOrientation'
-    | 'clientEvent/showQueryHelp'
-    | 'clientEvent/showConnectionHelper'
-    | 'clientEvent/import'
-    | 'clientEvent/exportAll'
-    | 'clientEvent/changeQuerySelectionMode'
-    | 'clientEvent/connection/new'
-    | 'clientEvent/connection/delete'
-    | 'clientEvent/connection/refresh'
-    | 'clientEvent/connection/duplicate'
-    | 'clientEvent/connection/export'
-    | 'clientEvent/connection/select'
-    | 'clientEvent/connection/addToBookmark'
-    | 'clientEvent/query/apply/active' // currently selected / active query only
-    | 'clientEvent/query/apply/new' // create new query and apply
-    | 'clientEvent/query/apply' // based on the setting use either new query or selected query
-    | 'clientEvent/query/pin'
-    | 'clientEvent/query/unpin'
-    | 'clientEvent/query/new'
-    | 'clientEvent/query/rename'
-    | 'clientEvent/query/export'
-    | 'clientEvent/query/duplicate'
-    | 'clientEvent/query/changeTabOrdering'
-    | 'clientEvent/query/show'
-    | 'clientEvent/query/showNext'
-    | 'clientEvent/query/showPrev'
-    | 'clientEvent/query/close'
-    | 'clientEvent/query/closeCurrentlySelected'
-    | 'clientEvent/query/closeOther'
-    | 'clientEvent/query/closeToTheRight'
-    | 'clientEvent/query/reveal'
-    | 'clientEvent/query/revealThisOnly'
-    | 'clientEvent/query/addToBookmark'
-    | 'clientEvent/query/showSampleCodeSnippet'
-    | 'clientEvent/record/showDetails'
-    | 'clientEvent/record/edit'
-    | 'clientEvent/record/new'
-    | 'clientEvent/record/edit' // TODO: to be implemented
-    | 'clientEvent/session/new'
-    | 'clientEvent/session/rename'
-    | 'clientEvent/session/switch'
-    | 'clientEvent/session/delete'
-    | 'clientEvent/session/clone'
-    | 'clientEvent/bookmark/show';
+    | "clientEvent/navigate"
+    | "clientEvent/openAppWindow"
+    | "clientEvent/showSettings"
+    | "clientEvent/changeDarkMode"
+    | "clientEvent/changeEditorMode"
+    | "clientEvent/tableRenderer"
+    | "clientEvent/changeWrapMode"
+    | "clientEvent/checkForUpdate"
+    | "clientEvent/showCommandPalette"
+    | "clientEvent/openExternalUrl"
+    | "clientEvent/clearShowHides"
+    | "clientEvent/changeQueryTabOrientation"
+    | "clientEvent/showQueryHelp"
+    | "clientEvent/showConnectionHelper"
+    | "clientEvent/import"
+    | "clientEvent/exportAll"
+    | "clientEvent/changeQuerySelectionMode"
+    | "clientEvent/connection/new"
+    | "clientEvent/connection/delete"
+    | "clientEvent/connection/refresh"
+    | "clientEvent/connection/duplicate"
+    | "clientEvent/connection/export"
+    | "clientEvent/connection/select"
+    | "clientEvent/connection/addToBookmark"
+    | "clientEvent/query/apply/active" // currently selected / active query only
+    | "clientEvent/query/apply/new" // create new query and apply
+    | "clientEvent/query/apply" // based on the setting use either new query or selected query
+    | "clientEvent/query/pin"
+    | "clientEvent/query/unpin"
+    | "clientEvent/query/new"
+    | "clientEvent/query/rename"
+    | "clientEvent/query/export"
+    | "clientEvent/query/duplicate"
+    | "clientEvent/query/changeTabOrdering"
+    | "clientEvent/query/show"
+    | "clientEvent/query/showNext"
+    | "clientEvent/query/showPrev"
+    | "clientEvent/query/close"
+    | "clientEvent/query/closeCurrentlySelected"
+    | "clientEvent/query/closeOther"
+    | "clientEvent/query/closeToTheRight"
+    | "clientEvent/query/reveal"
+    | "clientEvent/query/revealThisOnly"
+    | "clientEvent/query/addToBookmark"
+    | "clientEvent/query/showSampleCodeSnippet"
+    | "clientEvent/record/showDetails"
+    | "clientEvent/record/edit"
+    | "clientEvent/record/new"
+    | "clientEvent/record/edit" // TODO: to be implemented
+    | "clientEvent/session/new"
+    | "clientEvent/session/rename"
+    | "clientEvent/session/switch"
+    | "clientEvent/session/delete"
+    | "clientEvent/session/clone"
+    | "clientEvent/bookmark/show";
 }

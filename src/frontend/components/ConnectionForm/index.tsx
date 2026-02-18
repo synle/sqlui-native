@@ -1,24 +1,24 @@
-import SaveIcon from '@mui/icons-material/Save';
-import LoadingButton from '@mui/lab/LoadingButton';
-import { Alert, Box, Button, Link, TextField, Typography } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
-import React, { useEffect, useState } from 'react';
-import BaseDataAdapter from 'src/common/adapters/BaseDataAdapter/index';
-import ConnectionHint from 'src/frontend/components/ConnectionForm/ConnectionHint';
-import { useCommands } from 'src/frontend/components/MissionControl';
-import TestConnectionButton from 'src/frontend/components/TestConnectionButton';
-import { useGetConnectionById, useUpsertConnection } from 'src/frontend/hooks/useConnection';
-import useToaster from 'src/frontend/hooks/useToaster';
-import { createSystemNotification } from 'src/frontend/utils/commonUtils';
-import { SqluiCore } from 'typings';
+import SaveIcon from "@mui/icons-material/Save";
+import LoadingButton from "@mui/lab/LoadingButton";
+import { Alert, Box, Button, Link, TextField, Typography } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import BaseDataAdapter from "src/common/adapters/BaseDataAdapter/index";
+import ConnectionHint from "src/frontend/components/ConnectionForm/ConnectionHint";
+import { useCommands } from "src/frontend/components/MissionControl";
+import TestConnectionButton from "src/frontend/components/TestConnectionButton";
+import { useGetConnectionById, useUpsertConnection } from "src/frontend/hooks/useConnection";
+import useToaster from "src/frontend/hooks/useToaster";
+import { createSystemNotification } from "src/frontend/utils/commonUtils";
+import { SqluiCore } from "typings";
 
 type ConnectionFormProps = {
   id?: string;
 };
 
 export function NewConnectionForm() {
-  const [name, setName] = useState('');
-  const [connection, setConnection] = useState('');
+  const [name, setName] = useState("");
+  const [connection, setConnection] = useState("");
   const [showHint, setShowHint] = useState(true);
   const { mutateAsync, isLoading: saving } = useUpsertConnection();
   const navigate = useNavigate();
@@ -48,17 +48,17 @@ export function NewConnectionForm() {
 
   if (showHint) {
     return (
-      <Box className='FormInput__Container'>
+      <Box className="FormInput__Container">
         <Typography>
-          Select one of the following connection type. Or{' '}
-          <Link onClick={onStartBlankConnection}>get started with an empty connection</Link>.
+          Select one of the following connection type. Or <Link onClick={onStartBlankConnection}>get started with an empty connection</Link>
+          .
         </Typography>
         <ConnectionHint onChange={onApplyConnectionHint} showBookmarks={true} />
-        <Box sx={{ display: 'flex', gap: 2 }}>
-          <Button variant='contained' type='button' onClick={onStartBlankConnection}>
+        <Box sx={{ display: "flex", gap: 2 }}>
+          <Button variant="contained" type="button" onClick={onStartBlankConnection}>
             New Blank Connection
           </Button>
-          <Button variant='outlined' type='button' onClick={() => navigate('/')}>
+          <Button variant="outlined" type="button" onClick={() => navigate("/")}>
             Cancel
           </Button>
         </Box>
@@ -80,8 +80,8 @@ export function NewConnectionForm() {
 
 export function EditConnectionForm(props: ConnectionFormProps): JSX.Element | null {
   const { id } = props;
-  const [name, setName] = useState('');
-  const [connection, setConnection] = useState('');
+  const [name, setName] = useState("");
+  const [connection, setConnection] = useState("");
   const { data: initialConnection, isLoading: loading } = useGetConnectionById(id);
   const { mutateAsync, isLoading: saving } = useUpsertConnection();
   const navigate = useNavigate();
@@ -99,15 +99,15 @@ export function EditConnectionForm(props: ConnectionFormProps): JSX.Element | nu
 
   // set the data for existing form
   useEffect(() => {
-    setName(initialConnection?.name || '');
-    setConnection(initialConnection?.connection || '');
+    setName(initialConnection?.name || "");
+    setConnection(initialConnection?.connection || "");
   }, [initialConnection]);
 
   if (!loading && !initialConnection) {
     return (
-      <Alert severity='error'>
+      <Alert severity="error">
         This connection couldn't be found. It might have been deleted....
-        <strong onClick={() => navigate(`/`, { replace: true })} style={{ cursor: 'pointer' }}>
+        <strong onClick={() => navigate(`/`, { replace: true })} style={{ cursor: "pointer" }}>
           Click here to go back to the main query page
         </strong>
       </Alert>
@@ -146,7 +146,7 @@ function MainConnectionForm(props: MainConnectionFormProps): JSX.Element | null 
 
   // effects
   useEffect(() => {
-    setShowSqliteDatabasePathSelection(props.connection?.indexOf('sqlite://') === 0);
+    setShowSqliteDatabasePathSelection(props.connection?.indexOf("sqlite://") === 0);
   }, [props.connection]);
 
   // events
@@ -165,7 +165,7 @@ function MainConnectionForm(props: MainConnectionFormProps): JSX.Element | null 
     e.preventDefault();
 
     const toast = await addToast({
-      message: 'Saving Connection',
+      message: "Saving Connection",
     });
 
     try {
@@ -176,7 +176,7 @@ function MainConnectionForm(props: MainConnectionFormProps): JSX.Element | null 
   };
 
   if (props.loading) {
-    return <Alert severity='info'>Loading connection. Please wait....</Alert>;
+    return <Alert severity="info">Loading connection. Please wait....</Alert>;
   }
 
   const connection: SqluiCore.CoreConnectionProps = {
@@ -185,7 +185,7 @@ function MainConnectionForm(props: MainConnectionFormProps): JSX.Element | null 
   };
 
   const parsedConnectionProps = BaseDataAdapter.getConnectionParameters(connection.connection);
-  const restOfConnectionString = connection.connection.replace(/[a-z0-9+]:\/\/+/, '');
+  const restOfConnectionString = connection.connection.replace(/[a-z0-9+]:\/\/+/, "");
 
   const onApplyConnectionHint = (dialect, connection) => {
     props.setName(`${dialect} Connection - ${new Date().toLocaleDateString()}`);
@@ -194,73 +194,62 @@ function MainConnectionForm(props: MainConnectionFormProps): JSX.Element | null 
   };
 
   return (
-    <form className='ConnectionForm FormInput__Container' onSubmit={onSave}>
-      <div className='FormInput__Row'>
+    <form className="ConnectionForm FormInput__Container" onSubmit={onSave}>
+      <div className="FormInput__Row">
         <TextField
-          label='Name'
+          label="Name"
           value={props.name}
           onChange={(e) => props.setName(e.target.value)}
           required
-          size='small'
+          size="small"
           fullWidth={true}
-          autoComplete='off'
+          autoComplete="off"
           autoFocus
         />
       </div>
-      <div className='FormInput__Row'>
+      <div className="FormInput__Row">
         <TextField
-          label='Connection'
+          label="Connection"
           value={props.connection}
           onChange={(e) => props.setConnection(e.target.value)}
           required
-          size='small'
+          size="small"
           fullWidth={true}
         />
       </div>
       {showSqliteDatabasePathSelection && (
-        <div className='FormInput__Row'>
+        <div className="FormInput__Row">
           <input
-            type='file'
-            style={{ display: 'none' }}
+            type="file"
+            style={{ display: "none" }}
             onChange={(e) => onSqliteDatabaseFileSelectionChange(e.target.files)}
-            id='sqlite-file-selection'
+            id="sqlite-file-selection"
           />
-          <label htmlFor='sqlite-file-selection'>
-            <Button variant='contained' component='span'>
+          <label htmlFor="sqlite-file-selection">
+            <Button variant="contained" component="span">
               Browse for sqlite database
             </Button>
           </label>
         </div>
       )}
-      <div className='FormInput__Row'>
-        <LoadingButton
-          variant='contained'
-          type='submit'
-          loading={props.saving}
-          startIcon={<SaveIcon />}>
+      <div className="FormInput__Row">
+        <LoadingButton variant="contained" type="submit" loading={props.saving} startIcon={<SaveIcon />}>
           Save
         </LoadingButton>
-        <Button
-          variant='outlined'
-          type='button'
-          disabled={props.saving}
-          onClick={() => navigate('/')}>
+        <Button variant="outlined" type="button" disabled={props.saving} onClick={() => navigate("/")}>
           Cancel
         </Button>
         <TestConnectionButton connection={connection} />
-        <Button type='button' disabled={props.saving} onClick={() => setShowHint(!showHint)}>
-          {showHint ? 'Hide Connection Hints' : 'Show Connection Hints'}
+        <Button type="button" disabled={props.saving} onClick={() => setShowHint(!showHint)}>
+          {showHint ? "Hide Connection Hints" : "Show Connection Hints"}
         </Button>
         <Button
-          type='button'
+          type="button"
           onClick={() =>
             selectCommand({
-              event: 'clientEvent/showConnectionHelper',
+              event: "clientEvent/showConnectionHelper",
               data: {
-                scheme:
-                  parsedConnectionProps?.scheme ||
-                  connection.connection.match(/^[a-z0-9]+/)?.[0] ||
-                  0,
+                scheme: parsedConnectionProps?.scheme || connection.connection.match(/^[a-z0-9]+/)?.[0] || 0,
                 username: parsedConnectionProps?.username,
                 password: parsedConnectionProps?.password,
                 host: parsedConnectionProps?.hosts[0]?.host,
@@ -271,12 +260,13 @@ function MainConnectionForm(props: MainConnectionFormProps): JSX.Element | null 
                 },
               },
             })
-          }>
+          }
+        >
           Show Connection Helper
         </Button>
       </div>
       {showHint && (
-        <div className='FormInput__Container'>
+        <div className="FormInput__Container">
           <ConnectionHint onChange={onApplyConnectionHint} />
         </div>
       )}

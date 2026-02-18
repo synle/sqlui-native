@@ -1,4 +1,4 @@
-import BaseDataAdapter from 'src/common/adapters/BaseDataAdapter/index';
+import BaseDataAdapter from "src/common/adapters/BaseDataAdapter/index";
 
 export function getClientOptions(connectionOption: string) {
   const options = BaseDataAdapter.getConnectionParameters(connectionOption) as any;

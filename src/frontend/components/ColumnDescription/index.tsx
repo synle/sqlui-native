@@ -1,17 +1,17 @@
-import KeyIcon from '@mui/icons-material/Key';
-import ViewColumnIcon from '@mui/icons-material/ViewColumn';
-import Alert from '@mui/material/Alert';
-import Button from '@mui/material/Button';
-import CircularProgress from '@mui/material/CircularProgress';
-import Tooltip from '@mui/material/Tooltip';
-import React, { useEffect, useState } from 'react';
-import { AccordionBody, AccordionHeader } from 'src/frontend/components/Accordion';
-import ColumnAttributes from 'src/frontend/components/ColumnDescription/ColumnAttributes';
-import ColumnName from 'src/frontend/components/ColumnDescription/ColumnName';
-import ColumnType from 'src/frontend/components/ColumnDescription/ColumnType';
-import { useGetColumns } from 'src/frontend/hooks/useConnection';
-import { useActiveConnectionQuery } from 'src/frontend/hooks/useConnectionQuery';
-import { useShowHide } from 'src/frontend/hooks/useShowHide';
+import KeyIcon from "@mui/icons-material/Key";
+import ViewColumnIcon from "@mui/icons-material/ViewColumn";
+import Alert from "@mui/material/Alert";
+import Button from "@mui/material/Button";
+import CircularProgress from "@mui/material/CircularProgress";
+import Tooltip from "@mui/material/Tooltip";
+import React, { useEffect, useState } from "react";
+import { AccordionBody, AccordionHeader } from "src/frontend/components/Accordion";
+import ColumnAttributes from "src/frontend/components/ColumnDescription/ColumnAttributes";
+import ColumnName from "src/frontend/components/ColumnDescription/ColumnName";
+import ColumnType from "src/frontend/components/ColumnDescription/ColumnType";
+import { useGetColumns } from "src/frontend/hooks/useConnection";
+import { useActiveConnectionQuery } from "src/frontend/hooks/useConnectionQuery";
+import { useShowHide } from "src/frontend/hooks/useShowHide";
 
 const MAX_COLUMN_SIZE_TO_SHOW = 5;
 
@@ -24,13 +24,9 @@ type ColumnDescriptionProps = {
 export default function ColumnDescription(props: ColumnDescriptionProps): JSX.Element | null {
   const { databaseId, connectionId, tableId } = props;
   const { query: activeQuery } = useActiveConnectionQuery();
-  const {
-    data: columns,
-    isLoading: loadingColumns,
-    isError,
-  } = useGetColumns(connectionId, databaseId, tableId);
+  const { data: columns, isLoading: loadingColumns, isError } = useGetColumns(connectionId, databaseId, tableId);
   const { visibles, onToggle } = useShowHide();
-  const keyShowAllColumns = [connectionId, databaseId, tableId, '__ShowAllColumns__'].join(' > ');
+  const keyShowAllColumns = [connectionId, databaseId, tableId, "__ShowAllColumns__"].join(" > ");
   const [showAllColumns, setShowAllColumns] = useState(visibles[keyShowAllColumns]);
 
   const onShowAllColumns = () => {
@@ -48,18 +44,18 @@ export default function ColumnDescription(props: ColumnDescriptionProps): JSX.El
 
   if (isLoading) {
     return (
-      <Alert severity='info' icon={<CircularProgress size={15} />}>
+      <Alert severity="info" icon={<CircularProgress size={15} />}>
         Loading...
       </Alert>
     );
   }
 
   if (isError) {
-    return <Alert severity='error'>Error...</Alert>;
+    return <Alert severity="error">Error...</Alert>;
   }
 
   if (!columns || Object.keys(columns).length === 0) {
-    return <Alert severity='warning'>Not Available</Alert>;
+    return <Alert severity="warning">Not Available</Alert>;
   }
 
   return (
@@ -67,38 +63,38 @@ export default function ColumnDescription(props: ColumnDescriptionProps): JSX.El
       {columns
         .filter((column, idx) => showAllColumns || idx <= MAX_COLUMN_SIZE_TO_SHOW)
         .map((column) => {
-          const key = [connectionId, databaseId, tableId, column.name].join(' > ');
+          const key = [connectionId, databaseId, tableId, column.name].join(" > ");
           const isSelected = visibles[key];
-          const shouldShowPrimaryKeyIcon = column.primaryKey || column.kind === 'partition_key';
-          const shouldShowSecondaryKeyIcon = column.kind === 'clustering';
-          const shouldShowForeignKeyIcon = column.kind === 'foreign_key';
+          const shouldShowPrimaryKeyIcon = column.primaryKey || column.kind === "partition_key";
+          const shouldShowSecondaryKeyIcon = column.kind === "clustering";
+          const shouldShowForeignKeyIcon = column.kind === "foreign_key";
 
           return (
             <React.Fragment key={column.name}>
               <AccordionHeader
                 expanded={visibles[key]}
                 onToggle={() => onToggle(key)}
-                className={isSelected ? 'selected ColumnDescription' : 'ColumnDescription'}>
-                <ViewColumnIcon color='disabled' fontSize='inherit' />
+                className={isSelected ? "selected ColumnDescription" : "ColumnDescription"}
+              >
+                <ViewColumnIcon color="disabled" fontSize="inherit" />
                 {shouldShowPrimaryKeyIcon && (
-                  <Tooltip title='Primary Key'>
-                    <i style={{ height: '15px' }}>
-                      <KeyIcon fontSize='small' color='primary' />{' '}
+                  <Tooltip title="Primary Key">
+                    <i style={{ height: "15px" }}>
+                      <KeyIcon fontSize="small" color="primary" />{" "}
                     </i>
                   </Tooltip>
                 )}
                 {shouldShowSecondaryKeyIcon && (
-                  <Tooltip title='Secondary Key / Clustering Key / Partition Key'>
-                    <i style={{ height: '15px' }}>
-                      <KeyIcon fontSize='small' color='secondary' />{' '}
+                  <Tooltip title="Secondary Key / Clustering Key / Partition Key">
+                    <i style={{ height: "15px" }}>
+                      <KeyIcon fontSize="small" color="secondary" />{" "}
                     </i>
                   </Tooltip>
                 )}
                 {shouldShowForeignKeyIcon && (
-                  <Tooltip
-                    title={`Foreign Key referencing table=${column.referencedTableName} column=${column.referencedColumnName}`}>
-                    <i style={{ height: '15px' }}>
-                      <KeyIcon fontSize='small' color='secondary' />{' '}
+                  <Tooltip title={`Foreign Key referencing table=${column.referencedTableName} column=${column.referencedColumnName}`}>
+                    <i style={{ height: "15px" }}>
+                      <KeyIcon fontSize="small" color="secondary" />{" "}
                     </i>
                   </Tooltip>
                 )}
@@ -112,7 +108,7 @@ export default function ColumnDescription(props: ColumnDescriptionProps): JSX.El
           );
         })}
       {!showAllColumns && (
-        <div className='ShowAllColumnsButton'>
+        <div className="ShowAllColumnsButton">
           <Button onClick={() => onShowAllColumns()}>Show All Columns</Button>
         </div>
       )}

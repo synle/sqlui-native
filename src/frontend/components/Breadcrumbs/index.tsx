@@ -1,11 +1,11 @@
-import HomeIcon from '@mui/icons-material/Home';
-import NavigateNextIcon from '@mui/icons-material/NavigateNext';
-import Box from '@mui/material/Box';
-import Breadcrumbs from '@mui/material/Breadcrumbs';
-import Link from '@mui/material/Link';
-import Typography from '@mui/material/Typography';
-import { Link as RouterLink } from 'react-router-dom';
-import { useGetCurrentSession } from 'src/frontend/hooks/useSession';
+import HomeIcon from "@mui/icons-material/Home";
+import NavigateNextIcon from "@mui/icons-material/NavigateNext";
+import Box from "@mui/material/Box";
+import Breadcrumbs from "@mui/material/Breadcrumbs";
+import Link from "@mui/material/Link";
+import Typography from "@mui/material/Typography";
+import { Link as RouterLink } from "react-router-dom";
+import { useGetCurrentSession } from "src/frontend/hooks/useSession";
 
 export type BreadcrumbLink = {
   label: string | JSX.Element;
@@ -31,36 +31,28 @@ export default (props: BreadcrumbProps): JSX.Element | null => {
   links.unshift({
     label: (
       <>
-        <HomeIcon fontSize='inherit' />
+        <HomeIcon fontSize="inherit" />
         {currentSession.name}
       </>
     ),
-    href: '/',
+    href: "/",
   });
 
   return (
-    <Box role='presentation' sx={{ my: 2, userSelect: 'none' }} className='FormInput__Row'>
-      <Breadcrumbs aria-label='breadcrumb' separator={<NavigateNextIcon fontSize='small' />}>
+    <Box role="presentation" sx={{ my: 2, userSelect: "none" }} className="FormInput__Row">
+      <Breadcrumbs aria-label="breadcrumb" separator={<NavigateNextIcon fontSize="small" />}>
         {links.map((link, idx) => {
           if (!link.href || (links.length > 1 && idx === links.length - 1)) {
             return (
-              <Typography
-                key={idx}
-                sx={{ display: 'flex', gap: 1, alignItems: 'center' }}
-                variant='h6'>
+              <Typography key={idx} sx={{ display: "flex", gap: 1, alignItems: "center" }} variant="h6">
                 {link.label}
               </Typography>
             );
           }
 
           return (
-            <Link
-              key={idx}
-              underline='hover'
-              component={RouterLink}
-              to={link.href}
-              sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-              <Typography sx={{ display: 'flex', gap: 1, alignItems: 'center' }} variant='h6'>
+            <Link key={idx} underline="hover" component={RouterLink} to={link.href} sx={{ display: "flex", gap: 1, alignItems: "center" }}>
+              <Typography sx={{ display: "flex", gap: 1, alignItems: "center" }} variant="h6">
                 {link.label}
               </Typography>
             </Link>

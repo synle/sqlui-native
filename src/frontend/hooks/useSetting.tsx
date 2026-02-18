@@ -1,10 +1,10 @@
-import useMediaQuery from '@mui/material/useMediaQuery';
-import { useQuery } from '@tanstack/react-query';
-import React, { createContext, useContext, useState } from 'react';
-import { LocalStorageConfig } from 'src/frontend/data/config';
-import { SqluiFrontend } from 'typings';
+import useMediaQuery from "@mui/material/useMediaQuery";
+import { useQuery } from "@tanstack/react-query";
+import React, { createContext, useContext, useState } from "react";
+import { LocalStorageConfig } from "src/frontend/data/config";
+import { SqluiFrontend } from "typings";
 // Settings
-let _settings = LocalStorageConfig.get<SqluiFrontend.Settings>('clientConfig/cache.settings', {});
+let _settings = LocalStorageConfig.get<SqluiFrontend.Settings>("clientConfig/cache.settings", {});
 
 const TargetContext = createContext({
   settings: _settings,
@@ -18,13 +18,11 @@ export default function WrappedContext(props: { children: React.ReactNode }): JS
   // Function to toggle the theme
   const onChange = (newSettings: SqluiFrontend.Settings) => {
     setSettings({ ...newSettings });
-    LocalStorageConfig.set('clientConfig/cache.settings', newSettings);
+    LocalStorageConfig.set("clientConfig/cache.settings", newSettings);
   };
 
   // Provide the theme value and toggle function to the children components
-  return (
-    <TargetContext.Provider value={{ settings, onChange }}>{props.children}</TargetContext.Provider>
-  );
+  return <TargetContext.Provider value={{ settings, onChange }}>{props.children}</TargetContext.Provider>;
 }
 
 export function useSetting() {
@@ -38,12 +36,12 @@ export function useSetting() {
 
 export function useDarkModeSetting() {
   const { settings } = useSetting();
-  const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
+  const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
 
   let value = settings?.darkMode;
 
   if (!value) {
-    value = prefersDarkMode ? 'dark' : 'light';
+    value = prefersDarkMode ? "dark" : "light";
   }
 
   return value;
@@ -51,12 +49,12 @@ export function useDarkModeSetting() {
 
 export function useAnimationModeSetting() {
   const { settings } = useSetting();
-  const prefersReducedMotion = useMediaQuery('(prefers-reduced-motion)');
+  const prefersReducedMotion = useMediaQuery("(prefers-reduced-motion)");
 
   const value = settings?.animationMode;
 
-  if (value === '0') return false;
-  if (value === '1') return true;
+  if (value === "0") return false;
+  if (value === "1") return true;
 
   // follows system: animation on unless system prefers reduced motion
   return !prefersReducedMotion;
@@ -64,7 +62,7 @@ export function useAnimationModeSetting() {
 
 export function useLayoutModeSetting() {
   const { settings } = useSetting();
-  return settings?.layoutMode === '1' ? 'compact' : 'comfortable';
+  return settings?.layoutMode === "1" ? "compact" : "comfortable";
 }
 
 export function useEditorModeSetting() {
@@ -72,8 +70,8 @@ export function useEditorModeSetting() {
 
   let value = settings?.editorMode;
 
-  if (value !== 'simple') {
-    value = 'advanced';
+  if (value !== "simple") {
+    value = "advanced";
   }
 
   return value;
@@ -84,8 +82,8 @@ export function useTableRenderer() {
 
   let value = settings?.tableRenderer;
 
-  if (value !== 'simple') {
-    value = 'advanced';
+  if (value !== "simple") {
+    value = "advanced";
   }
 
   return value;
@@ -93,7 +91,7 @@ export function useTableRenderer() {
 
 export function useWordWrapSetting() {
   const { settings } = useSetting();
-  return settings?.wordWrap === 'wrap';
+  return settings?.wordWrap === "wrap";
 }
 
 export function useQueryTabOrientationSetting() {
@@ -105,15 +103,15 @@ export const DEFAULT_QUERY_SIZE = 100;
 
 export function useQuerySizeSetting() {
   const { settings } = useSetting();
-  return parseInt(settings?.querySize + '') || DEFAULT_QUERY_SIZE;
+  return parseInt(settings?.querySize + "") || DEFAULT_QUERY_SIZE;
 }
 
 export function useTablePageSize() {
   const { settings } = useSetting();
-  return parseInt(settings?.tablePageSize + '');
+  return parseInt(settings?.tablePageSize + "");
 }
 
 export function useIsSoftDeleteModeSetting() {
   const { settings } = useSetting();
-  return settings?.deleteMode !== 'hard-delete';
+  return settings?.deleteMode !== "hard-delete";
 }

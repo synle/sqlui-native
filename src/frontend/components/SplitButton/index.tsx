@@ -1,15 +1,15 @@
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import Button from '@mui/material/Button';
-import ButtonGroup from '@mui/material/ButtonGroup';
-import ClickAwayListener from '@mui/material/ClickAwayListener';
-import Grow from '@mui/material/Grow';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import MenuItem from '@mui/material/MenuItem';
-import MenuList from '@mui/material/MenuList';
-import Paper from '@mui/material/Paper';
-import Popper from '@mui/material/Popper';
-import React from 'react';
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import Button from "@mui/material/Button";
+import ButtonGroup from "@mui/material/ButtonGroup";
+import ClickAwayListener from "@mui/material/ClickAwayListener";
+import Grow from "@mui/material/Grow";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import ListItemText from "@mui/material/ListItemText";
+import MenuItem from "@mui/material/MenuItem";
+import MenuList from "@mui/material/MenuList";
+import Paper from "@mui/material/Paper";
+import Popper from "@mui/material/Popper";
+import React from "react";
 
 type SplitButtonOption = {
   label: string;
@@ -31,10 +31,7 @@ export default function SplitButton(props: SplitButtonProps): JSX.Element | null
   const anchorRef = React.useRef<HTMLDivElement>(null);
   const [selectedIndex, setSelectedIndex] = React.useState(1);
 
-  const handleMenuItemClick = (
-    event: React.MouseEvent<HTMLLIElement, MouseEvent>,
-    index: number,
-  ) => {
+  const handleMenuItemClick = (event: React.MouseEvent<HTMLLIElement, MouseEvent>, index: number) => {
     options[index].onClick();
     setOpen(false);
   };
@@ -53,7 +50,7 @@ export default function SplitButton(props: SplitButtonProps): JSX.Element | null
 
   let popperBody: JSX.Element = <></>;
   if (options.length === 0) {
-    popperBody = <div style={{ padding: '10px 15px' }}>No options.</div>;
+    popperBody = <div style={{ padding: "10px 15px" }}>No options.</div>;
   } else {
     popperBody = (
       <MenuList id={id}>
@@ -69,21 +66,23 @@ export default function SplitButton(props: SplitButtonProps): JSX.Element | null
 
   return (
     <React.Fragment>
-      <ButtonGroup variant='outlined' ref={anchorRef} aria-label={label}>
+      <ButtonGroup variant="outlined" ref={anchorRef} aria-label={label}>
         <Button
           onClick={() => {
             props.onClick();
             setOpen(false);
           }}
-          startIcon={props.startIcon}>
+          startIcon={props.startIcon}
+        >
           {label}
         </Button>
         <Button
           aria-controls={open ? id : undefined}
-          aria-expanded={open ? 'true' : undefined}
+          aria-expanded={open ? "true" : undefined}
           aria-label={label}
-          aria-haspopup='menu'
-          onClick={handleToggle}>
+          aria-haspopup="menu"
+          onClick={handleToggle}
+        >
           <ArrowDropDownIcon />
         </Button>
       </ButtonGroup>
@@ -92,8 +91,9 @@ export default function SplitButton(props: SplitButtonProps): JSX.Element | null
           <Grow
             {...TransitionProps}
             style={{
-              transformOrigin: placement === 'bottom' ? 'center top' : 'center bottom',
-            }}>
+              transformOrigin: placement === "bottom" ? "center top" : "center bottom",
+            }}
+          >
             <Paper>
               <ClickAwayListener onClickAway={handleClose}>{popperBody}</ClickAwayListener>
             </Paper>

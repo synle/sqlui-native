@@ -1,10 +1,10 @@
-import Alert from '@mui/material/Alert';
-import CircularProgress from '@mui/material/CircularProgress';
-import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { useVirtualizer } from '@tanstack/react-virtual';
-import { useLayoutModeSetting } from 'src/frontend/hooks/useSetting';
-import { TreeRowRenderer } from './TreeRowRenderer';
-import { useFlatTreeRows } from './useFlatTreeRows';
+import Alert from "@mui/material/Alert";
+import CircularProgress from "@mui/material/CircularProgress";
+import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useVirtualizer } from "@tanstack/react-virtual";
+import { useLayoutModeSetting } from "src/frontend/hooks/useSetting";
+import { TreeRowRenderer } from "./TreeRowRenderer";
+import { useFlatTreeRows } from "./useFlatTreeRows";
 
 const ROW_HEIGHT_DEFAULT = 37;
 const ROW_HEIGHT_COMPACT = 28;
@@ -14,7 +14,7 @@ export default function VirtualizedConnectionTree() {
   const { rows, connections, connectionsLoading, onToggle, updateConnections } = useFlatTreeRows();
   const parentRef = useRef<HTMLDivElement>(null);
   const layoutMode = useLayoutModeSetting();
-  const isCompact = layoutMode === 'compact';
+  const isCompact = layoutMode === "compact";
   const rowHeight = isCompact ? ROW_HEIGHT_COMPACT : ROW_HEIGHT_DEFAULT;
   const [transitioning, setTransitioning] = useState(false);
 
@@ -23,7 +23,7 @@ export default function VirtualizedConnectionTree() {
     getScrollElement: () => parentRef.current,
     estimateSize: (index) => {
       const row = rows[index];
-      if (row.type === 'column-attributes') {
+      if (row.type === "column-attributes") {
         return (Object.keys(row.column).length + 1) * ROW_HEIGHT_COLUMN_ATTRIBUTES;
       }
       return rowHeight;
@@ -51,14 +51,14 @@ export default function VirtualizedConnectionTree() {
 
   if (connectionsLoading) {
     return (
-      <Alert severity='info' icon={<CircularProgress size={15} />}>
+      <Alert severity="info" icon={<CircularProgress size={15} />}>
         Loading Connections...
       </Alert>
     );
   }
 
   if (!connections || connections.length === 0) {
-    return <Alert severity='info'>No connnections</Alert>;
+    return <Alert severity="info">No connnections</Alert>;
   }
 
   return (
@@ -66,15 +66,17 @@ export default function VirtualizedConnectionTree() {
       ref={parentRef}
       style={{
         flex: 1,
-        overflowY: 'auto',
-        contain: 'strict',
-      }}>
+        overflowY: "auto",
+        contain: "strict",
+      }}
+    >
       <div
         style={{
           height: virtualizer.getTotalSize(),
-          width: '100%',
-          position: 'relative',
-        }}>
+          width: "100%",
+          position: "relative",
+        }}
+      >
         {virtualizer.getVirtualItems().map((virtualItem) => {
           const row = rows[virtualItem.index];
           return (
@@ -83,17 +85,14 @@ export default function VirtualizedConnectionTree() {
               ref={transitioning ? undefined : virtualizer.measureElement}
               data-index={virtualItem.index}
               style={{
-                position: 'absolute',
+                position: "absolute",
                 top: 0,
                 left: 0,
-                width: '100%',
+                width: "100%",
                 transform: `translateY(${virtualItem.start}px)`,
-              }}>
-              <TreeRowRenderer
-                row={row}
-                onToggle={onToggle}
-                onConnectionOrderChange={onConnectionOrderChange}
-              />
+              }}
+            >
+              <TreeRowRenderer row={row} onToggle={onToggle} onConnectionOrderChange={onConnectionOrderChange} />
             </div>
           );
         })}

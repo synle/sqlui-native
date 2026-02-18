@@ -1,10 +1,10 @@
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
-import ZoomOutMapIcon from '@mui/icons-material/ZoomOutMap';
-import Box from '@mui/material/Box';
-import IconButton from '@mui/material/IconButton';
-import Tooltip from '@mui/material/Tooltip';
-import { useVirtualizer } from '@tanstack/react-virtual';
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
+import ZoomOutMapIcon from "@mui/icons-material/ZoomOutMap";
+import Box from "@mui/material/Box";
+import IconButton from "@mui/material/IconButton";
+import Tooltip from "@mui/material/Tooltip";
+import { useVirtualizer } from "@tanstack/react-virtual";
 import {
   useReactTable,
   getCoreRowModel,
@@ -14,11 +14,11 @@ import {
   getFacetedUniqueValues,
   flexRender,
   ColumnDef,
-} from '@tanstack/react-table';
-import { ColumnOrderState, VisibilityState } from '@tanstack/react-table';
-import React, { useCallback, useLayoutEffect, useRef, useState } from 'react';
-import { DataTableProps } from 'src/frontend/components/DataTable';
-import DataTableColumnSettings from 'src/frontend/components/DataTable/DataTableColumnSettings';
+} from "@tanstack/react-table";
+import { ColumnOrderState, VisibilityState } from "@tanstack/react-table";
+import React, { useCallback, useLayoutEffect, useRef, useState } from "react";
+import { DataTableProps } from "src/frontend/components/DataTable";
+import DataTableColumnSettings from "src/frontend/components/DataTable/DataTableColumnSettings";
 import {
   ColumnResizer,
   defaultTableHeight,
@@ -31,10 +31,10 @@ import {
   tableCellHeaderHeight,
   tableCellHeight,
   tableCellWidth,
-} from 'src/frontend/components/DataTable/DataTableComponents';
-import { GlobalFilter, SimpleColumnFilter } from 'src/frontend/components/DataTable/Filter';
-import DropdownMenu from 'src/frontend/components/DropdownMenu';
-import { useAddDataSnapshot } from 'src/frontend/hooks/useDataSnapshot';
+} from "src/frontend/components/DataTable/DataTableComponents";
+import { GlobalFilter, SimpleColumnFilter } from "src/frontend/components/DataTable/Filter";
+import DropdownMenu from "src/frontend/components/DropdownMenu";
+import { useAddDataSnapshot } from "src/frontend/hooks/useDataSnapshot";
 
 export default function ModernDataTable(props: DataTableProps): JSX.Element | null {
   const { columns, data } = props;
@@ -52,7 +52,7 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
   // figure out the width
   let tableCellWidthToUse = tableCellWidth;
   // @ts-ignore
-  const totalWidth = document.querySelector('.LayoutTwoColumns__RightPane')?.offsetWidth - 20 || 0;
+  const totalWidth = document.querySelector(".LayoutTwoColumns__RightPane")?.offsetWidth - 20 || 0;
   if (columns.length > 0 && columns.length * tableCellWidth < totalWidth) {
     tableCellWidthToUse = Math.floor(totalWidth / columns.length);
   }
@@ -69,7 +69,7 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
-    columnResizeMode: 'onChange',
+    columnResizeMode: "onChange",
     state: {
       columnVisibility,
       columnOrder,
@@ -87,8 +87,8 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
 
   const onRowContextMenuClick = (e: React.SyntheticEvent) => {
     const target = e.target as HTMLElement;
-    const tr = target.closest('[role=row]') as HTMLElement;
-    const rowIdx = parseInt(tr?.dataset?.rowIdx || '');
+    const tr = target.closest("[role=row]") as HTMLElement;
+    const rowIdx = parseInt(tr?.dataset?.rowIdx || "");
 
     if (rowIdx >= 0) {
       e.preventDefault();
@@ -100,8 +100,7 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
 
   const targetRowContextOptions = (props.rowContextOptions || []).map((rowContextOption) => ({
     ...rowContextOption,
-    onClick: () =>
-      rowContextOption.onClick && rowContextOption.onClick(data[openContextMenuRowIdx]),
+    onClick: () => rowContextOption.onClick && rowContextOption.onClick(data[openContextMenuRowIdx]),
   }));
 
   // The scrollable element for the list
@@ -167,21 +166,21 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
         return offset;
       }
 
-      const element = document.querySelector('.DataTable__Header') as HTMLElement;
+      const element = document.querySelector(".DataTable__Header") as HTMLElement;
       const ancestor = document.body;
 
       const yOffset = findOffsetRelativeToAncestor(element, ancestor);
       const newHeight = window.innerHeight - yOffset;
 
-      setTableHeight(newHeight + 'px');
+      setTableHeight(newHeight + "px");
     }
 
     _updateHeight();
 
-    window.addEventListener('resize', _updateHeight);
+    window.addEventListener("resize", _updateHeight);
 
     return () => {
-      window.removeEventListener('resize', _updateHeight);
+      window.removeEventListener("resize", _updateHeight);
     };
   }, [fullScreen]);
 
@@ -190,61 +189,63 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
 
   return (
     <>
-      <Box sx={{ display: 'flex', gap: 2 }}>
+      <Box sx={{ display: "flex", gap: 2 }}>
         <Box sx={{ flexGrow: 1 }}>
-          {props.searchInputId && (
-            <GlobalFilter id={props.searchInputId} onChange={(value: string) => table.setGlobalFilter(value)} />
-          )}
+          {props.searchInputId && <GlobalFilter id={props.searchInputId} onChange={(value: string) => table.setGlobalFilter(value)} />}
         </Box>
         <DataTableColumnSettings table={table} />
-        <Tooltip title='Open this table fullscreen in another window'>
-          <IconButton aria-label='Make table bigger' onClick={onShowExpandedData}>
+        <Tooltip title="Open this table fullscreen in another window">
+          <IconButton aria-label="Make table bigger" onClick={onShowExpandedData}>
             <ZoomOutMapIcon />
           </IconButton>
         </Tooltip>
       </Box>
       <Box
         ref={parentRef}
-        className='DataTable__Header'
+        className="DataTable__Header"
         sx={{
-          minHeight: '150px',
+          minHeight: "150px",
           maxHeight: tableHeight,
-          overflow: 'auto',
+          overflow: "auto",
         }}
-        onContextMenu={(e) => onRowContextMenuClick(e)}>
+        onContextMenu={(e) => onRowContextMenuClick(e)}
+      >
         {/* Sticky header */}
-        <Box sx={{ position: 'sticky', top: 0, zIndex: (theme) => theme.zIndex.drawer + 1, height: tableCellHeaderHeight }}>
+        <Box sx={{ position: "sticky", top: 0, zIndex: (theme) => theme.zIndex.drawer + 1, height: tableCellHeaderHeight }}>
           {headerGroups.map((headerGroup) => (
             <StyledDivHeaderRow
               key={headerGroup.id}
-              role='row'
+              role="row"
               style={{
-                display: 'flex',
+                display: "flex",
                 width: `${columnVirtualizer.getTotalSize()}px`,
-                position: 'relative',
-              }}>
+                position: "relative",
+              }}
+            >
               {virtualColumns.map((virtualColumn) => {
                 const header = headerGroup.headers[virtualColumn.index];
                 return (
                   <StyledDivHeaderCell
                     key={header.id}
-                    role='columnheader'
+                    role="columnheader"
                     style={{
-                      display: 'inline-block',
+                      display: "inline-block",
                       width: `${virtualColumn.size}px`,
-                      position: 'absolute',
+                      position: "absolute",
                       top: 0,
                       left: 0,
                       transform: `translateX(${virtualColumn.start}px)`,
-                    }}>
+                    }}
+                  >
                     <StyledDivHeaderCellLabel
                       onClick={header.column.getToggleSortingHandler()}
-                      style={{ cursor: header.column.getCanSort() ? 'pointer' : 'default' }}>
+                      style={{ cursor: header.column.getCanSort() ? "pointer" : "default" }}
+                    >
                       <span>{flexRender(header.column.columnDef.header, header.getContext())}</span>
-                      {header.column.getIsSorted() === 'desc' ? (
-                        <ArrowDropDownIcon fontSize='small' />
-                      ) : header.column.getIsSorted() === 'asc' ? (
-                        <ArrowDropUpIcon fontSize='small' />
+                      {header.column.getIsSorted() === "desc" ? (
+                        <ArrowDropDownIcon fontSize="small" />
+                      ) : header.column.getIsSorted() === "asc" ? (
+                        <ArrowDropUpIcon fontSize="small" />
                       ) : null}
                     </StyledDivHeaderCellLabel>
                     {header.column.getCanFilter() && header.column.columnDef.header && (
@@ -272,8 +273,9 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
           sx={{
             height: `${rowVirtualizer.getTotalSize()}px`,
             width: `${columnVirtualizer.getTotalSize()}px`,
-            position: 'relative',
-          }}>
+            position: "relative",
+          }}
+        >
           {virtualItems.map((virtualItem) => {
             const rowIdx = virtualItem.index;
             const row = rows[rowIdx];
@@ -283,14 +285,15 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
                 key={row.id}
                 data-index={virtualItem.index}
                 data-row-idx={rowIdx}
-                role='row'
+                role="row"
                 sx={{
-                  cursor: props.onRowClick ? 'pointer' : '',
+                  cursor: props.onRowClick ? "pointer" : "",
                   transform: `translateY(${virtualItem.start}px)`,
                   width: `${columnVirtualizer.getTotalSize()}px`,
                   height: `${tableCellHeight}px`,
                 }}
-                onDoubleClick={() => props.onRowClick && props.onRowClick(row.original)}>
+                onDoubleClick={() => props.onRowClick && props.onRowClick(row.original)}
+              >
                 {virtualColumns.map((virtualColumn) => {
                   const colIdx = virtualColumn.index;
                   const cell = row.getVisibleCells()[colIdx];
@@ -307,7 +310,7 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
                             setOpenContextMenuRowIdx(-1);
                           }
                         }}
-                        maxHeight='400px'
+                        maxHeight="400px"
                         anchorEl={anchorEl}
                         open={openContextMenuRowIdx === rowIdx}
                       />
@@ -316,15 +319,16 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
                   return (
                     <StyledDivValueCell
                       key={cell.id}
-                      role='cell'
+                      role="cell"
                       style={{
-                        display: 'inline-block',
+                        display: "inline-block",
                         width: `${virtualColumn.size}px`,
-                        position: 'absolute',
+                        position: "absolute",
                         top: 0,
                         left: 0,
                         transform: `translateX(${virtualColumn.start}px)`,
-                      }}>
+                      }}
+                    >
                       {dropdownContent}
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </StyledDivValueCell>
@@ -334,11 +338,7 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
             );
           })}
         </StyledDivContainer>
-        {rows.length === 0 && (
-          <Box sx={{ paddingInline: 2, paddingBlock: 2 }}>
-            There is no data in the query with matching filters.
-          </Box>
-        )}
+        {rows.length === 0 && <Box sx={{ paddingInline: 2, paddingBlock: 2 }}>There is no data in the query with matching filters.</Box>}
       </Box>
     </>
   );

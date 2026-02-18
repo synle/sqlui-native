@@ -1,10 +1,10 @@
-import { getDialectType } from 'src/common/adapters/DataScriptFactory';
-import IDataScript from 'src/common/adapters/IDataScript';
-import { SqlAction, SqluiCore } from 'typings';
+import { getDialectType } from "src/common/adapters/DataScriptFactory";
+import IDataScript from "src/common/adapters/IDataScript";
+import { SqlAction, SqluiCore } from "typings";
 
 export function getDivider(): SqlAction.Output {
   return {
-    label: 'divider',
+    label: "divider",
     skipGuide: true,
   };
 }
@@ -18,10 +18,10 @@ export default abstract class BaseDataScript implements IDataScript {
 
   getConnectionFormInputs() {
     return [
-      ['username', 'Username'],
-      ['password', 'Password'],
-      ['host', 'Host'],
-      ['port', 'Port', 'optional'],
+      ["username", "Username"],
+      ["password", "Password"],
+      ["host", "Host"],
+      ["port", "Port", "optional"],
     ];
   }
 
@@ -30,7 +30,7 @@ export default abstract class BaseDataScript implements IDataScript {
   }
 
   getSyntaxMode() {
-    return 'sql';
+    return "sql";
   }
 
   supportMigration() {
@@ -61,7 +61,7 @@ export default abstract class BaseDataScript implements IDataScript {
 
   getDialectName(dialect?: SqluiCore.Dialect): string {
     // capitalize the first letter
-    return (dialect || '').replace(/^\w/, (c) => c.toUpperCase());
+    return (dialect || "").replace(/^\w/, (c) => c.toUpperCase());
   }
 
   getDialectIcon(dialect?: SqluiCore.Dialect): string {
@@ -82,7 +82,7 @@ export default abstract class BaseDataScript implements IDataScript {
   }
 
   getSampleConnectionString(dialect?: SqluiCore.Dialect) {
-    return '';
+    return "";
   }
 
   getSampleSelectQuery(actionInput: SqlAction.TableInput): SqlAction.Output | undefined {
@@ -90,23 +90,19 @@ export default abstract class BaseDataScript implements IDataScript {
   }
 
   // sample code snippet
-  getCodeSnippet(
-    connection: SqluiCore.ConnectionProps,
-    query: SqluiCore.ConnectionQuery,
-    language: SqluiCore.LanguageMode,
-  ) {
+  getCodeSnippet(connection: SqluiCore.ConnectionProps, query: SqluiCore.ConnectionQuery, language: SqluiCore.LanguageMode) {
     switch (language) {
-      case 'javascript':
+      case "javascript":
         // TODO: implement me
-        return '';
-      case 'python':
+        return "";
+      case "python":
         // TODO: implement me
-        return '';
-      case 'java':
+        return "";
+      case "java":
         // TODO: implement me
-        return '';
+        return "";
       default:
-        return '';
+        return "";
     }
   }
 }
