@@ -21,9 +21,9 @@
     "extends": null,
     "appId": "io.synle.github.sqlui-native",
     "files": [
-      "build/**/*",
-      "main.js",
-      "node_modules/**/*"
+      "**/*",
+      "!mocked-server.js",
+      "!mocked-server.js.LICENSE.txt"
     ],
     "win": {
       "icon": "build/logo512.png"
