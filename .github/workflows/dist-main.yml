@@ -164,9 +164,10 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
       - run: bash build.sh
+      - run: |
+          node -e "require('fs').cpSync('build', '.', { recursive: true })"
       - run: npm run dist-macos-x64
       - run: mv ./dist/sqlui-native*.dmg ./dist/sqlui-native-x64.dmg
-
       - name: Upload release binary
         uses: actions/upload-release-asset@v1
         env:
@@ -269,6 +270,8 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
       - run: bash build.sh
+      - run: |
+          node -e "require('fs').cpSync('build', '.', { recursive: true })"
       - run: npm run dist-linux-appimage
       - run: mv ./dist/sqlui-native*.AppImage ./dist/sqlui-native.AppImage
       - name: Upload artifact .AppImage

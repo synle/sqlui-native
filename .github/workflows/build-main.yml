@@ -44,6 +44,8 @@ jobs:
         with:
           name: patched-package-json
       - run: bash build.sh
+      - run: |
+          node -e "require('fs').cpSync('build', '.', { recursive: true })"
       - run: npm run dist-win-x64
       - run: mv ./dist/sqlui-native*.exe ./dist/sqlui-native-x64.exe
       - name: Upload artifact .exe
@@ -68,6 +70,8 @@ jobs:
         with:
           name: patched-package-json
       - run: bash build.sh
+      - run: |
+          node -e "require('fs').cpSync('build', '.', { recursive: true })"
       - run: npm run dist-win-arm64
       - run: mv ./dist/sqlui-native*.exe ./dist/sqlui-native-arm64.exe
       - name: Upload artifact .exe
@@ -115,6 +119,8 @@ jobs:
         with:
           name: patched-package-json
       - run: bash build.sh
+      - run: |
+          node -e "require('fs').cpSync('build', '.', { recursive: true })"
       - run: npm run dist-macos-x64
       - run: mv ./dist/sqlui-native*.dmg ./dist/sqlui-native-x64.dmg
       - name: Upload artifact .dmg
@@ -183,6 +189,8 @@ jobs:
         with:
           name: patched-package-json
       - run: bash build.sh
+      - run: |
+          node -e "require('fs').cpSync('build', '.', { recursive: true })"
       - run: npm run dist-linux-appimage
       - run: mv ./dist/sqlui-native*.AppImage ./dist/sqlui-native.AppImage
       - name: Upload artifact .AppImage
