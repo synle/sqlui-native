@@ -49,7 +49,7 @@
   },
   "main": "main.js",
   "scripts": {
-    "clean": "bash clean.sh",
+    "clean": "node clean.js",
     "cleanSnapshot": "rm -rf src/common/adapters/__snapshots__/ src/common/adapters/BaseDataAdapter/__snapshots__/ && npm run test-ci -- --update",
     "prebuild": "node -e \"require('fs').copyFileSync('package.json','src/package.json')\"",
     "prestart": "npm run clean && npm run build",
@@ -64,7 +64,7 @@
     "dev": "concurrently \"npm run start-mocked-server\" \"npm run start-webapp\"",
     "dist": "electron-builder build --publish=never",
     "dist-win-x64": "electron-builder build --publish=never --win --x64",
-    "dist-win-arm64": "electron-builder build --publish=never --win --arm64",
+    "dist-win-arm64": "electron-builder build --publish=never --win --arm64 --config.npmRebuild=false",
     "dist-macos-x64": "electron-builder build --publish=never --mac --x64",
     "dist-linux-appimage": "electron-builder build --publish=never -l AppImage",
     "dist-win32-appx": "electron-builder build --publish=never -w appx",

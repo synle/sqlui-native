@@ -1,4 +1,3 @@
-node -e "
 const fs = require('fs');
 const path = require('path');
 
@@ -29,4 +28,3 @@ cpSync(
   path.join('public', 'vs'),
   function(src) { return fs.statSync(src).isDirectory() || /\.(css|js)$/.test(src); }
 );
-"

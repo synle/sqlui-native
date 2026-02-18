@@ -44,8 +44,6 @@ jobs:
         with:
           name: patched-package-json
       - run: bash build.sh
-      - run: |
-          node -e "require('fs').cpSync('build', '.', { recursive: true })"
       - run: npm run dist-win-x64
       - run: mv ./dist/sqlui-native*.exe ./dist/sqlui-native-x64.exe
       - name: Upload artifact .exe
@@ -69,9 +67,9 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: patched-package-json
+      - run: pip install setuptools
+        name: Install setuptools for node-gyp
       - run: bash build.sh
-      - run: |
-          node -e "require('fs').cpSync('build', '.', { recursive: true })"
       - run: npm run dist-win-arm64
       - run: mv ./dist/sqlui-native*.exe ./dist/sqlui-native-arm64.exe
       - name: Upload artifact .exe
@@ -106,7 +104,7 @@ jobs:
   build_macos_x86_intel:
     if: github.event_name == 'push'
     needs: patch_version
-    runs-on: macos-13
+    runs-on: macos-latest
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v6
@@ -119,8 +117,6 @@ jobs:
         with:
           name: patched-package-json
       - run: bash build.sh
-      - run: |
-          node -e "require('fs').cpSync('build', '.', { recursive: true })"
       - run: npm run dist-macos-x64
       - run: mv ./dist/sqlui-native*.dmg ./dist/sqlui-native-x64.dmg
       - name: Upload artifact .dmg
@@ -189,8 +185,6 @@ jobs:
         with:
           name: patched-package-json
       - run: bash build.sh
-      - run: |
-          node -e "require('fs').cpSync('build', '.', { recursive: true })"
       - run: npm run dist-linux-appimage
       - run: mv ./dist/sqlui-native*.AppImage ./dist/sqlui-native.AppImage
       - name: Upload artifact .AppImage
