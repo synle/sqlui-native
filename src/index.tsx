@@ -20,21 +20,6 @@ import TreeActionContextProvider from 'src/frontend/hooks/useTreeActions';
 import 'src/frontend/App.scss';
 import 'src/frontend/electronRenderer';
 
-// Suppress benign ResizeObserver loop errors that occur during rapid resizing
-// See: https://github.com/WICG/resize-observer/issues/38
-// Capture phase ensures this runs before CRA's dev overlay error handler
-const resizeObserverErr = 'ResizeObserver loop';
-window.addEventListener(
-  'error',
-  (e) => {
-    if (e.message === resizeObserverErr) {
-      e.stopImmediatePropagation();
-      e.stopPropagation();
-      e.preventDefault();
-    }
-  },
-  true,
-);
 
 
 function AppliedTheme({ children }) {
