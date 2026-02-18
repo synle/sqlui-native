@@ -2,9 +2,12 @@ import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 import React from 'react';
 import { styled } from '@mui/system';
+
 import { useLayoutModeSetting } from 'src/frontend/hooks/useSetting';
 
 const VERTICAL_TAB_THRESHOLD = 20;
+const TAB_HEIGHT_DEFAULT = 40;
+const TAB_HEIGHT_COMPACT = 32;
 
 type TabsProps = {
   id?: string;
@@ -38,6 +41,7 @@ export default function MyTabs(props: TabsProps): JSX.Element | null {
   let { orientation } = props;
   const layoutMode = useLayoutModeSetting();
   const isCompact = layoutMode === 'compact';
+  const tabHeight = isCompact ? TAB_HEIGHT_COMPACT : TAB_HEIGHT_DEFAULT;
 
   const visibleTab = tabContents[tabIdx];
 
@@ -101,7 +105,7 @@ export default function MyTabs(props: TabsProps): JSX.Element | null {
         aria-label='Tabs'
         orientation={orientation}
         className='Tab__Headers'
-        sx={isCompact ? { minHeight: 32 } : undefined}>
+        sx={{ minHeight: tabHeight }}>
         {tabHeaders.map((tabHeader, idx) => {
           let dragAndDropProps: any = {};
           if (props.onOrderChange) {
@@ -120,7 +124,7 @@ export default function MyTabs(props: TabsProps): JSX.Element | null {
               onContextMenu={onShowActions}
               onMouseDown={onMouseDown(idx)}
               disableRipple={false}
-              sx={isCompact ? { minHeight: 32, py: 0, fontSize: '0.8rem' } : undefined}
+              sx={isCompact ? { minHeight: TAB_HEIGHT_COMPACT, py: 0, fontSize: '0.9rem' } : { minHeight: TAB_HEIGHT_DEFAULT, fontSize: '0.9rem' }}
               {...dragAndDropProps}></Tab>
           );
         })}
@@ -129,3 +133,4 @@ export default function MyTabs(props: TabsProps): JSX.Element | null {
     </StyledTabs>
   );
 }
+
