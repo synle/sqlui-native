@@ -29,7 +29,8 @@ export default function AdvancedEditor(props: AdvancedEditorProps): JSX.Element 
   // disable autocomplete popups for javascript
   useEffect(() => {
     if (monaco) {
-      monaco.languages.typescript.javascriptDefaults.setCompilerOptions({
+      const ts = monaco.languages.typescript as any;
+      ts?.javascriptDefaults?.setCompilerOptions({
         noLib: true,
         allowNonTsExtensions: true,
       });
