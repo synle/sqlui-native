@@ -51,7 +51,7 @@
   "scripts": {
     "clean": "node scripts/clean.js",
     "cleanSnapshot": "rm -rf src/common/adapters/__snapshots__/ src/common/adapters/BaseDataAdapter/__snapshots__/ && npm run test-ci -- --update",
-    "prebuild": "node -e \"require('fs').copyFileSync('package.json','src/package.json')\"",
+    "prebuild": "npm run clean",
     "prestart": "npm run clean && npm run build",
     "predev": "npm run prebuild",
     "prestart-mocked-server": "npm run build-mocked-sever",
