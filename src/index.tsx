@@ -22,11 +22,19 @@ import 'src/frontend/electronRenderer';
 
 // Suppress benign ResizeObserver loop errors that occur during rapid resizing
 // See: https://github.com/WICG/resize-observer/issues/38
-window.addEventListener('error', (e) => {
-  if (e.message === 'ResizeObserver loop completed with undelivered notifications.') {
-    e.stopImmediatePropagation();
-  }
-});
+// Capture phase ensures this runs before CRA's dev overlay error handler
+const resizeObserverErr = 'ResizeObserver loop';
+window.addEventListener(
+  'error',
+  (e) => {
+    if (e.message === resizeObserverErr) {
+      e.stopImmediatePropagation();
+      e.stopPropagation();
+      e.preventDefault();
+    }
+  },
+  true,
+);
 
 
 function AppliedTheme({ children }) {
