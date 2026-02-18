@@ -1,6 +1,9 @@
-bash build.sh
+console.log(`
+========================================
+#<<<<< predist.js >>>>>>>>>>>>>>>>>>>>>>>>>>
+========================================
+`)
 
-node -e "
 const fs = require('fs');
 const path = require('path');
 
@@ -16,6 +19,3 @@ function cpSync(src, dest, filter) {
 }
 
 cpSync('build', '.');
-"
-
-npm run dist

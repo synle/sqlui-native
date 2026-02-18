@@ -16,11 +16,14 @@ Refer to the following link for download information.
 
 ## Supported OS's
 
-- [Windows](https://synle.github.io/sqlui-native/installation#windows) (Tested on Windows 10 and 11)
-- [Mac OS](https://synle.github.io/sqlui-native/installation#mac) (Tested on Mac OS Monterey)
+- [Windows x64](https://synle.github.io/sqlui-native/installation#windows) (Tested on Windows 10 and 11)
+- [Windows ARM64](https://synle.github.io/sqlui-native/installation#windows)
+- [Mac OS ARM64 (Apple Silicon)](https://synle.github.io/sqlui-native/installation#mac) (Tested on Mac OS Monterey)
+- [Mac OS Intel (x64)](https://synle.github.io/sqlui-native/installation#mac)
 - [Debian / Ubuntu](https://synle.github.io/sqlui-native/installation#ubuntu--debian)
+- [Linux AppImage](https://synle.github.io/sqlui-native/installation#linux-appimage)
 - [Redhat / CentOS / Fedora](https://synle.github.io/sqlui-native/installation#redhat--centos--fedora) : Refer to this link for [Installation Instructions](https://synle.github.io/sqlui-native/installation)
-- [Arch Linux] (Tested on Steam Deck)(https://synle.github.io/sqlui-native/installation#arch-linux-with-pacman)
+- [Arch Linux](https://synle.github.io/sqlui-native/installation#arch-linux-with-pacman) (Tested on Steam Deck)
 
 ## Supported Database Adapters
 
