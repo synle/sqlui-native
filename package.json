@@ -120,7 +120,7 @@
     "mariadb": "^3.1.2",
     "monaco-editor": "^0.32.1",
     "mongodb": "^4.10.0",
-    "mysql2": "^2.3.3",
+    "mysql2": "^3.17.2",
     "notistack": "^2.0.5",
     "pg": "^8.7.3",
     "pg-hstore": "^2.3.4",
