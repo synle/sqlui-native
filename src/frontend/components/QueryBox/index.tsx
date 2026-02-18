@@ -305,6 +305,12 @@ export default function QueryBox(props: QueryBoxProps): JSX.Element | null {
           required
         />
         <div className='FormInput__Row'>
+          {!expanded && (
+            <div className='FormInput__Row'>
+            <ConnectionDatabaseSelector value={query} onChange={onDatabaseConnectionChange} />
+            <ConnectionRevealButton query={query} />
+          </div>
+          )}
           <LoadingButton
             id='btnExecuteCommand'
             type='submit'
@@ -313,13 +319,6 @@ export default function QueryBox(props: QueryBoxProps): JSX.Element | null {
             startIcon={<SendIcon />}>
             Execute
           </LoadingButton>
-          {!expanded && (
-            <Typography variant='body2' color='text.secondary' sx={{ whiteSpace: 'nowrap' }}>
-              {[selectedConnection?.name, query.databaseId, query.tableId]
-                .filter(Boolean)
-                .join(' / ')}
-            </Typography>
-          )}
           {expanded && (
             <>
               <Tooltip title='Click here to see how to get started with some queries.'>

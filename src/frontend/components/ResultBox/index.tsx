@@ -123,7 +123,6 @@ export default function ResultBox(props: ResultBoxProps): JSX.Element | null {
         data={data}
         searchInputId='result-box-search-input'
         enableColumnFilter={true}
-        fullScreen={collapsed}
         description={`connectionId=${query.connectionId}\ndatabaseId=${query.databaseId}\ntableId=${query.tableId}\n\n${query.sql}`}
       />
     </div>,
