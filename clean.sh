@@ -1,6 +1,3 @@
-#!/bin/bash
-# Clean build artifacts and copy required files
-
 node -e "
 const fs = require('fs');
 const path = require('path');

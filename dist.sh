@@ -1,6 +1,3 @@
-#!/bin/bash
-set -e
-
 bash build.sh
 
 node -e "
