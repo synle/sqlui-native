@@ -136,7 +136,8 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: "npm"
-      - run: bash scripts/dist.sh true
+      - run: bash scripts/build.sh true
+      - run: npm run dist-macos-arm64
       - run: mv ./dist/sqlui-native*.dmg ./dist/sqlui-native-arm64.dmg
 
       - name: Upload release binary

@@ -66,6 +66,7 @@
     "dist-win-x64": "electron-builder build --publish=never --win --x64",
     "dist-win-arm64": "electron-builder build --publish=never --win --arm64 --config.npmRebuild=false",
     "dist-macos-x64": "electron-builder build --publish=never --mac --x64",
+    "dist-macos-arm64": "electron-builder build --publish=never --mac --arm64",
     "dist-linux-appimage": "electron-builder build --publish=never -l AppImage",
     "dist-win32-appx": "electron-builder build --publish=never -w appx",
     "build-electron": "webpack --config webpack-electron.config.js",
