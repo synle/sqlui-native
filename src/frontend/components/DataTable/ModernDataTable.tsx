@@ -256,14 +256,13 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
 
             return (
               <StyledDivContentRow
-                ref={rowVirtualizer.measureElement}
                 data-index={virtualItem.index}
                 data-row-idx={rowIdx}
                 sx={{
                   cursor: props.onRowClick ? 'pointer' : '',
                   transform: `translateY(${virtualItem.start}px)`,
                   width: `${columnVirtualizer.getTotalSize()}px`,
-                  position: 'relative',
+                  height: `${tableCellHeight}px`,
                 }}
                 onDoubleClick={() => props.onRowClick && props.onRowClick(row.original)}
                 {...row.getRowProps()}>
