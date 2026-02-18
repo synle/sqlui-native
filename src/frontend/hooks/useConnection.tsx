@@ -1,4 +1,4 @@
-import { QueryClient, useMutation, useQuery, useQueryClient } from 'react-query';
+import { QueryClient, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import dataApi from 'src/frontend/data/api';
 import { useAddRecycleBinItem } from 'src/frontend/hooks/useFolderItems';
 import { useIsSoftDeleteModeSetting } from 'src/frontend/hooks/useSetting';
@@ -23,7 +23,7 @@ export function useUpdateConnections(connections?: SqluiCore.ConnectionProps[]) 
       connections = getUpdatedOrdersForList(connections, from, to);
 
       queryClient.setQueryData<SqluiCore.ConnectionProps[] | undefined>(
-        QUERY_KEY_ALL_CONNECTIONS,
+        [QUERY_KEY_ALL_CONNECTIONS],
         connections,
       );
 
@@ -51,11 +51,11 @@ export function useUpsertConnection() {
     dataApi.upsertConnection,
     {
       onSuccess: async (newConnection) => {
-        queryClient.invalidateQueries(newConnection.id);
-        queryClient.invalidateQueries(QUERY_KEY_ALL_CONNECTIONS);
+        queryClient.invalidateQueries([newConnection.id]);
+        queryClient.invalidateQueries([QUERY_KEY_ALL_CONNECTIONS]);
 
         queryClient.setQueryData<SqluiCore.ConnectionProps[] | undefined>(
-          QUERY_KEY_ALL_CONNECTIONS,
+          [QUERY_KEY_ALL_CONNECTIONS],
           (oldData) => {
             // find that entry
             let isNew = true;
@@ -94,11 +94,11 @@ export function useDeleteConnection() {
 
   return useMutation<string, void, string>(dataApi.deleteConnection, {
     onSuccess: async (deletedConnectionId) => {
-      queryClient.invalidateQueries(deletedConnectionId);
-      queryClient.invalidateQueries(QUERY_KEY_ALL_CONNECTIONS);
+      queryClient.invalidateQueries([deletedConnectionId]);
+      queryClient.invalidateQueries([QUERY_KEY_ALL_CONNECTIONS]);
 
       queryClient.setQueryData<SqluiCore.ConnectionProps[] | undefined>(
-        QUERY_KEY_ALL_CONNECTIONS,
+        [QUERY_KEY_ALL_CONNECTIONS],
         (oldData) => {
           return oldData?.filter((connection) => connection.id !== deletedConnectionId);
         },
@@ -274,8 +274,8 @@ export function refreshAfterExecution(
   );
 
   if (shouldRefreshConnection) {
-    queryClient.invalidateQueries(query.connectionId);
-    queryClient.invalidateQueries(QUERY_KEY_ALL_CONNECTIONS);
+    queryClient.invalidateQueries([query.connectionId]);
+    queryClient.invalidateQueries([QUERY_KEY_ALL_CONNECTIONS]);
   }
 }
 
@@ -287,21 +287,21 @@ export function useRetryConnection() {
       onSettled: async (newSuccessConnection, newFailedConnection) => {
         // NOTE: here we used settled, because if the connection
         // went bad, we want to also refresh the data
-        queryClient.invalidateQueries(QUERY_KEY_ALL_CONNECTIONS);
+        queryClient.invalidateQueries([QUERY_KEY_ALL_CONNECTIONS]);
 
         queryClient.setQueryData<SqluiCore.ConnectionMetaData[] | undefined>(
-          QUERY_KEY_ALL_CONNECTIONS,
+          [QUERY_KEY_ALL_CONNECTIONS],
           (oldData) => {
             // find that entry
             oldData = oldData?.map((connection) => {
               if (connection.id === newSuccessConnection?.id) {
                 // good connnection
-                queryClient.invalidateQueries(newSuccessConnection.id);
+                queryClient.invalidateQueries([newSuccessConnection.id]);
                 return newSuccessConnection;
               }
               if (connection.id === newFailedConnection?.id) {
                 // bad connection
-                queryClient.invalidateQueries(newFailedConnection.id);
+                queryClient.invalidateQueries([newFailedConnection.id]);
                 return newFailedConnection;
               }
               return connection;
