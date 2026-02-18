@@ -96,7 +96,7 @@
     "connection-string-parser": "^1.0.4",
     "eslint-plugin-unused-imports": "^4.4.1",
     "fuzzysort": "^1.2.1",
-    "html-to-image": "^1.10.2",
+    "html-to-image": "^1.11.13",
     "js-beautify": "^1.14.3",
     "json-2-csv": "^3.17.1",
     "lodash.get": "^4.4.2",
