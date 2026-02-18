@@ -51,16 +51,16 @@ export default function SessionManager(props: SessionManagerProps): JSX.Element 
 
   const isLoading = loadingCurrentSession;
 
+  if (status === 'no_session') {
+    return <SessionSelectionModal />;
+  }
+
   if (isLoading || status === 'pending_session') {
     return (
       <Alert severity='info' icon={<CircularProgress size={15} />}>
         Loading sqlui-native, please wait...
       </Alert>
     );
-  }
-
-  if (status === 'no_session') {
-    return <SessionSelectionModal />;
   }
 
   return props.children;
