@@ -62,6 +62,11 @@ export function useAnimationModeSetting() {
   return !prefersReducedMotion;
 }
 
+export function useLayoutModeSetting() {
+  const { settings } = useSetting();
+  return settings?.layoutMode === '1' ? 'compact' : 'comfortable';
+}
+
 export function useEditorModeSetting() {
   const { settings } = useSetting();
 
