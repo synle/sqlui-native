@@ -73,6 +73,17 @@ html = html.replace(
   }
 );
 
+// Inline Monaco editor CSS (loaded dynamically at runtime by vs/loader)
+const monacoEditorCssPath = path.join(buildDir, 'vs', 'editor', 'editor.main.css');
+if (fs.existsSync(monacoEditorCssPath)) {
+  let monacoCss = fs.readFileSync(monacoEditorCssPath, 'utf8');
+  monacoCss = inlineFontsInCss(monacoCss, path.dirname(monacoEditorCssPath));
+  html = html.replace('</head>', `<style>${monacoCss}</style></head>`);
+  console.log('Inlined Monaco CSS: vs/editor/editor.main.css', `(${monacoCss.length} bytes)`);
+} else {
+  console.warn('Monaco CSS not found, skipping: vs/editor/editor.main.css');
+}
+
 // Inline images referenced in HTML (favicon, apple-touch-icon, etc.)
 html = html.replace(
   /<link\s+[^>]*href="([^"]+\.(ico|png|svg))"[^>]*>/g,
