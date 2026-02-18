@@ -51,8 +51,7 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
 
   // figure out the width
   let tableCellWidthToUse = tableCellWidth;
-  // @ts-ignore
-  const totalWidth = document.querySelector(".LayoutTwoColumns__RightPane")?.offsetWidth - 20 || 0;
+  const totalWidth = (document.querySelector(".LayoutTwoColumns__RightPane") as HTMLElement)?.offsetWidth - 20 || 0;
   if (columns.length > 0 && columns.length * tableCellWidth < totalWidth) {
     tableCellWidthToUse = Math.floor(totalWidth / columns.length);
   }
