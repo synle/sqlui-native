@@ -1,6 +1,6 @@
 import Alert from '@mui/material/Alert';
 import CircularProgress from '@mui/material/CircularProgress';
-import React, { useCallback, useLayoutEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { useLayoutModeSetting } from 'src/frontend/hooks/useSetting';
 import { TreeRowRenderer } from './TreeRowRenderer';
@@ -8,7 +8,7 @@ import { useFlatTreeRows } from './useFlatTreeRows';
 
 const ROW_HEIGHT_DEFAULT = 37;
 const ROW_HEIGHT_COMPACT = 28;
-const ROW_HEIGHT_COLUMN_ATTRIBUTES = 100;
+const ROW_HEIGHT_COLUMN_ATTRIBUTES = 35;
 
 export default function VirtualizedConnectionTree() {
   const { rows, connections, connectionsLoading, onToggle, updateConnections } = useFlatTreeRows();
@@ -16,13 +16,16 @@ export default function VirtualizedConnectionTree() {
   const layoutMode = useLayoutModeSetting();
   const isCompact = layoutMode === 'compact';
   const rowHeight = isCompact ? ROW_HEIGHT_COMPACT : ROW_HEIGHT_DEFAULT;
+  const [transitioning, setTransitioning] = useState(false);
 
   const virtualizer = useVirtualizer<HTMLDivElement, HTMLDivElement>({
     count: rows.length,
     getScrollElement: () => parentRef.current,
     estimateSize: (index) => {
       const row = rows[index];
-      if (row.type === 'column-attributes') return ROW_HEIGHT_COLUMN_ATTRIBUTES;
+      if (row.type === 'column-attributes') {
+        return (Object.keys(row.column).length + 1) * ROW_HEIGHT_COLUMN_ATTRIBUTES;
+      }
       return rowHeight;
     },
     overscan: 10,
@@ -35,9 +38,16 @@ export default function VirtualizedConnectionTree() {
     [updateConnections],
   );
 
+  const watchedRowsProps = rows.map((r) => ({
+    type: r.type,
+    key: r.key,
+    //@ts-ignore
+    isExpanded: r.isExpanded,
+  }));
+
   useLayoutEffect(() => {
     virtualizer.measure();
-  }, [layoutMode, connectionsLoading]);
+  }, [layoutMode, JSON.stringify(watchedRowsProps)]);
 
   if (connectionsLoading) {
     return (
@@ -70,7 +80,7 @@ export default function VirtualizedConnectionTree() {
           return (
             <div
               key={row.key}
-              ref={virtualizer.measureElement}
+              ref={transitioning ? undefined : virtualizer.measureElement}
               data-index={virtualItem.index}
               style={{
                 position: 'absolute',

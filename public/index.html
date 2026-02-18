@@ -8,6 +8,21 @@
       name="description"
       content="SQLUI Native - A minimal Electron application for Databases" />
     <script type="text/javascript">
+      // Suppress benign ResizeObserver loop errors before CRA overlay loads
+      var _origOnerror = window.onerror;
+      window.onerror = function(msg) {
+        if (typeof msg === 'string' && msg.indexOf('ResizeObserver loop') > -1) return true;
+        return _origOnerror ? _origOnerror.apply(this, arguments) : false;
+      };
+      window.addEventListener('error', function(e) {
+        if (e.message && e.message.indexOf('ResizeObserver loop') > -1) {
+          e.stopImmediatePropagation();
+          e.stopPropagation();
+          e.preventDefault();
+        }
+      }, true);
+    </script>
+    <script type="text/javascript">
       window.requireElectron = window.require; // keep an existing copy of electron require
 
       window.addEventListener('sqluiNativeEvent/init', function () {
