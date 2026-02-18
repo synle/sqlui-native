@@ -6,10 +6,10 @@ echo '''
 
 echo '''
 ========================================
-bash scripts/build.sh
+bash scripts/build.sh "$@"
 ========================================
 '''
-bash scripts/build.sh
+bash scripts/build.sh "$@"
 
 echo '''
 ========================================

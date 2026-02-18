@@ -4,6 +4,16 @@ echo '''
 ========================================
 '''
 
+PATCH_VERSION=$(echo "${1:-0}" | tr '[:upper:]' '[:lower:]')
+if [ "$PATCH_VERSION" = "1" ] || [ "$PATCH_VERSION" = "true" ]; then
+  echo '''
+========================================
+npm version --no-git-tag-version patch
+========================================
+'''
+  npm version --no-git-tag-version patch
+fi
+
 echo '''
 ========================================
 npm install

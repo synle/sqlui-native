@@ -12,25 +12,8 @@ env:
   NODE_VERSION: 20
 
 jobs:
-  patch_version:
-    if: github.event_name == 'push'
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-      - run: npm version --no-git-tag-version patch
-      - name: Upload patched package.json
-        uses: actions/upload-artifact@v4
-        with:
-          name: patched-package-json
-          path: package.json
-
   build_windows_x64:
     if: github.event_name == 'push'
-    needs: patch_version
     runs-on: windows-latest
     timeout-minutes: 30
     steps:
@@ -39,11 +22,7 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: "npm"
-      - name: Download patched package.json
-        uses: actions/download-artifact@v4
-        with:
-          name: patched-package-json
-      - run: bash scripts/build.sh
+      - run: bash scripts/build.sh true
       - run: npm run dist-win-x64
       - run: mv ./dist/sqlui-native*.exe ./dist/sqlui-native-x64.exe
       - name: Upload artifact .exe
@@ -54,7 +33,6 @@ jobs:
 
   build_windows_arm64:
     if: github.event_name == 'push'
-    needs: patch_version
     runs-on: windows-latest
     timeout-minutes: 30
     steps:
@@ -63,13 +41,9 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: "npm"
-      - name: Download patched package.json
-        uses: actions/download-artifact@v4
-        with:
-          name: patched-package-json
       - run: pip install setuptools
         name: Install setuptools for node-gyp
-      - run: bash scripts/build.sh
+      - run: bash scripts/build.sh true
       - run: npm run dist-win-arm64
       - run: mv ./dist/sqlui-native*.exe ./dist/sqlui-native-arm64.exe
       - name: Upload artifact .exe
@@ -80,7 +54,6 @@ jobs:
 
   build_macos_arm64:
     if: github.event_name == 'push'
-    needs: patch_version
     runs-on: macos-latest
     timeout-minutes: 30
     steps:
@@ -89,11 +62,7 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: "npm"
-      - name: Download patched package.json
-        uses: actions/download-artifact@v4
-        with:
-          name: patched-package-json
-      - run: bash scripts/dist.sh
+      - run: bash scripts/dist.sh true
       - run: mv ./dist/sqlui-native*.dmg ./dist/sqlui-native-arm64.dmg
       - name: Upload artifact .dmg
         uses: actions/upload-artifact@v4
@@ -103,7 +72,6 @@ jobs:
 
   build_macos_x86_intel:
     if: github.event_name == 'push'
-    needs: patch_version
     runs-on: macos-latest
     timeout-minutes: 30
     steps:
@@ -112,11 +80,7 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: "npm"
-      - name: Download patched package.json
-        uses: actions/download-artifact@v4
-        with:
-          name: patched-package-json
-      - run: bash scripts/build.sh
+      - run: bash scripts/build.sh true
       - run: npm run dist-macos-x64
       - run: mv ./dist/sqlui-native*.dmg ./dist/sqlui-native-x64.dmg
       - name: Upload artifact .dmg
@@ -127,7 +91,6 @@ jobs:
 
   build_linux:
     if: github.event_name == 'push'
-    needs: patch_version
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
@@ -138,11 +101,7 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: "npm"
-      - name: Download patched package.json
-        uses: actions/download-artifact@v4
-        with:
-          name: patched-package-json
-      - run: bash scripts/dist.sh
+      - run: bash scripts/dist.sh true
       - run: |
           mv ./dist/sqlui-native*.deb ./dist/sqlui-native.deb
           mv ./dist/sqlui-native*.rpm ./dist/sqlui-native.rpm
@@ -171,7 +130,6 @@ jobs:
 
   build_app_image_linux:
     if: github.event_name == 'push'
-    needs: patch_version
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
@@ -180,11 +138,7 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: "npm"
-      - name: Download patched package.json
-        uses: actions/download-artifact@v4
-        with:
-          name: patched-package-json
-      - run: bash scripts/build.sh
+      - run: bash scripts/build.sh true
       - run: npm run dist-linux-appimage
       - run: mv ./dist/sqlui-native*.AppImage ./dist/sqlui-native.AppImage
       - name: Upload artifact .AppImage
