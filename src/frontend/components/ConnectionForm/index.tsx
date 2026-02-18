@@ -152,10 +152,11 @@ function MainConnectionForm(props: MainConnectionFormProps): JSX.Element | null 
   // events
   const onSqliteDatabaseFileSelectionChange = (files: FileList | null) => {
     try {
-      if (files) {
+      if (files && files.length > 0) {
         const [file] = files;
-        let { path } = file;
-        props.setConnection(`sqlite://${path}`);
+        const { path, name } = file;
+        const pathToUse = path || name; // this is a fallback for mocked webserver
+        props.setConnection(`sqlite://${pathToUse}`);
       }
     } catch (err) {}
   };
