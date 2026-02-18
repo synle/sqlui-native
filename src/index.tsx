@@ -61,40 +61,31 @@ function CombinedContextProvider({ children }) {
   ].reduceRight((acc, Provider) => <Provider>{acc}</Provider>, children);
 }
 
-const renderApp = function () {
-  const queryClient = new QueryClient({
-    defaultOptions: {
-      queries: {
-        retry: false,
-        refetchOnWindowFocus: false,
-      },
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false,
+      refetchOnWindowFocus: false,
     },
-  });
+  },
+});
 
-  ReactDOM.render(
-    <SnackbarProvider maxSnack={4}>
-      <QueryClientProvider client={queryClient}>
-        <CssBaseline />
-        <ReactQueryDevtools initialIsOpen={false} />
+ReactDOM.render(
+  <SnackbarProvider maxSnack={4}>
+    <QueryClientProvider client={queryClient}>
+      <CssBaseline />
+      <ReactQueryDevtools initialIsOpen={false} />
 
-        <CombinedContextProvider>
-          <Routes>
-            <Route path="/data_snapshot" element={<DataSnapshotListView />} />
-            <Route path="/data_snapshot/:dataSnapshotId" element={<DataSnapshotView />} />
-            <Route path="/*" element={<App />} />
-          </Routes>
-          <ActionDialogs />
-          <ElectronEventListener />
-        </CombinedContextProvider>
-      </QueryClientProvider>
-    </SnackbarProvider>,
-    document.querySelector("#body"),
-  );
-
-  window.removeEventListener("sqluiNativeEvent/ready", renderApp);
-};
-
-window.addEventListener("sqluiNativeEvent/ready", renderApp, false);
-
-// tell the main app to get ready for initiation
-window.dispatchEvent(new Event("sqluiNativeEvent/init"));
+      <CombinedContextProvider>
+        <Routes>
+          <Route path="/data_snapshot" element={<DataSnapshotListView />} />
+          <Route path="/data_snapshot/:dataSnapshotId" element={<DataSnapshotView />} />
+          <Route path="/*" element={<App />} />
+        </Routes>
+        <ActionDialogs />
+        <ElectronEventListener />
+      </CombinedContextProvider>
+    </QueryClientProvider>
+  </SnackbarProvider>,
+  document.querySelector("#body"),
+);
