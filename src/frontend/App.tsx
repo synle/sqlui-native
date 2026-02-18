@@ -11,7 +11,7 @@ import {
   useGetSessions,
   useUpsertSession,
 } from 'src/frontend/hooks/useSession';
-import { useDarkModeSetting } from 'src/frontend/hooks/useSetting';
+import { useAnimationModeSetting, useDarkModeSetting } from 'src/frontend/hooks/useSetting';
 import useToaster, { ToasterHandler } from 'src/frontend/hooks/useToaster';
 import BookmarksPage from 'src/frontend/views/BookmarksPage';
 import EditConnectionPage from 'src/frontend/views/EditConnectionPage';
@@ -115,7 +115,7 @@ export default function App() {
   return (
     <>
       <SessionManager>
-        <Box className='App' onDrop={onDrop} onDragOver={onDragOver}>
+        <Box className='App' data-animation={useAnimationModeSetting() ? 'on' : 'off'} onDrop={onDrop} onDragOver={onDragOver}>
           <Routes>
             <Route
               path='/'

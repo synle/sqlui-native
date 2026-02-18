@@ -198,6 +198,7 @@ export module SqluiFrontend {
 
   export type Settings = {
     darkMode?: 'dark' | 'light';
+    animationMode?: '0' | '1';
     editorMode?: 'advanced' | 'simple';
     tableRenderer?: 'advanced' | 'simple';
     wordWrap?: 'wrap';
