@@ -72,7 +72,7 @@
     "build-mocked-sever": "webpack --config webpack-mocked-server.config.js",
     "build-react": "cross-env CI=\"\" react-scripts build",
     "build-react-inline": "npm run build-react && node scripts/inline-build.js",
-    "build": "npm run build-react && concurrently \"npm run build-electron\" \"npm run build-mocked-sever\"",
+    "build": "npm run build-react-inline && concurrently \"npm run build-electron\" \"npm run build-mocked-sever\"",
     "test-ci": "vitest run",
     "test": "vitest --watch",
     "format": "prettier --write --print-width 140 --ignore-unknown --cache '**/*.{js,jsx,ts,tsx,mjs,cjs,json,html,css,scss,less,md,yml,yaml,graphql,vue,xml}'",
