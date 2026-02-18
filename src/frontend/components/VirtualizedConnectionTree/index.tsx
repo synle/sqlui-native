@@ -28,16 +28,16 @@ export default function VirtualizedConnectionTree() {
     overscan: 10,
   });
 
-  useLayoutEffect(() => {
-    virtualizer.measure();
-  }, [layoutMode]);
-
   const onConnectionOrderChange = useCallback(
     (fromIdx: number, toIdx: number) => {
       updateConnections([fromIdx, toIdx]);
     },
     [updateConnections],
   );
+
+  useLayoutEffect(() => {
+    virtualizer.measure();
+  }, [layoutMode, connectionsLoading]);
 
   if (connectionsLoading) {
     return (
