@@ -84,6 +84,18 @@ if (fs.existsSync(monacoEditorCssPath)) {
   console.warn('Monaco CSS not found, skipping: vs/editor/editor.main.css');
 }
 
+// Inline Monaco workerMain.js (loaded dynamically as a Web Worker)
+const workerMainPath = path.join(buildDir, 'vs', 'base', 'worker', 'workerMain.js');
+if (fs.existsSync(workerMainPath)) {
+  const workerJs = fs.readFileSync(workerMainPath, 'utf8');
+  const workerBase64 = Buffer.from(workerJs).toString('base64');
+  const workerBootstrap = `<script>window.MonacoEnvironment=window.MonacoEnvironment||{};window.MonacoEnvironment.getWorker=function(workerId,label){var workerCode=atob("${workerBase64}");var blob=new Blob([workerCode],{type:"application/javascript"});var url=URL.createObjectURL(blob);return new Worker(url,{name:label});};</script>`;
+  html = html.replace('</head>', `${workerBootstrap}</head>`);
+  console.log('Inlined Monaco Worker: vs/base/worker/workerMain.js', `(${workerJs.length} bytes)`);
+} else {
+  console.warn('Monaco Worker not found, skipping: vs/base/worker/workerMain.js');
+}
+
 // Inline images referenced in HTML (favicon, apple-touch-icon, etc.)
 html = html.replace(
   /<link\s+[^>]*href="([^"]+\.(ico|png|svg))"[^>]*>/g,
