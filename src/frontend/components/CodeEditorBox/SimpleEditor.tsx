@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { grey } from '@mui/material/colors';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { styled } from '@mui/system';
 import { DecoratedEditorProps as SimpleEditorProps } from 'src/frontend/components/CodeEditorBox';
 
@@ -179,7 +179,7 @@ export default function SimpleEditor(props: SimpleEditorProps): JSX.Element | nu
 
   useEffect(() => setText(value), [value]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (textareaRef && props.editorRef) {
       // @ts-ignore
       // keep a copy of the editor for ref

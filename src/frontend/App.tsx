@@ -81,8 +81,12 @@ export default function App() {
         .map((item) => item.getAsFile())
         .filter((f) => f) as File[];
 
-      //@ts-ignore
       const file = files[0];
+      if (!file) {
+        await toasterRef.current?.dismiss();
+        toasterRef.current = undefined;
+        return;
+      }
       if (file.type === 'application/json') {
         selectCommand({ event: 'clientEvent/import', data: await dataApi.readFileContent(file) });
       } else {

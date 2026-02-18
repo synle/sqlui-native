@@ -14,7 +14,7 @@ import {
   useSortBy,
   useTable,
 } from 'react-table';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { DataTableProps } from 'src/frontend/components/DataTable';
 import {
   ColumnResizer,
@@ -121,7 +121,7 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
     overscan: 5,
   });
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     columnVirtualizer.measure();
   }, [columnResizing, columnVirtualizer]);
 
@@ -139,7 +139,7 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
     }
   };
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!fullScreen) {
       return;
     }

@@ -20,6 +20,15 @@ import TreeActionContextProvider from 'src/frontend/hooks/useTreeActions';
 import 'src/frontend/App.scss';
 import 'src/frontend/electronRenderer';
 
+// Suppress benign ResizeObserver loop errors that occur during rapid resizing
+// See: https://github.com/WICG/resize-observer/issues/38
+window.addEventListener('error', (e) => {
+  if (e.message === 'ResizeObserver loop completed with undelivered notifications.') {
+    e.stopImmediatePropagation();
+  }
+});
+
+
 function AppliedTheme({ children }) {
   const myTheme = createTheme({
     palette: {
