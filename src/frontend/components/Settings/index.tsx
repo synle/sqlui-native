@@ -70,6 +70,21 @@ export default function Settings(props: SettingsProps): JSX.Element | null {
           </Select>
         </div>
         <Typography className='FormInput__Label' variant='subtitle1'>
+          Layout
+          <Tooltip title='Controls the layout density. Comfortable shows expanded views, Compact collapses them by default.'>
+            <HelpIcon fontSize='small' sx={{ ml: 1 }} />
+          </Tooltip>
+        </Typography>
+        <div className='FormInput__Row'>
+          <Select
+            value={settings.layoutMode || '0'}
+            onChange={(newValue) => onSettingChange('layoutMode', newValue)}
+            sx={{ width: '100%' }}>
+            <option value='0'>Comfortable</option>
+            <option value='1'>Compact</option>
+          </Select>
+        </div>
+        <Typography className='FormInput__Label' variant='subtitle1'>
           Query Selection Mode
           <Tooltip title='Whether or not to open the bookmarked query in a new tab or in the same tab.'>
             <HelpIcon fontSize='small' sx={{ ml: 1 }} />
