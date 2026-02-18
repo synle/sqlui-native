@@ -870,10 +870,7 @@ export default function MissionControl() {
       );
     } else {
       const platform = window?.process?.platform;
-      const downloadLink =
-        platform === "darwin"
-          ? `https://github.com/synle/sqlui-native/releases/download/${newVersion}/sqlui-native-${newVersion}.dmg`
-          : `https://github.com/synle/sqlui-native/releases/download/${newVersion}/sqlui-native-${newVersion}.exe`;
+      const downloadLink = `https://synle.github.io/sqlui-native/`;
 
       const onDownloadLatestVersion = () => {
         selectCommand({ event: "clientEvent/openExternalUrl", data: downloadLink });
