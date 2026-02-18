@@ -2,7 +2,7 @@ import React from "react";
 import { styled } from "@mui/material/styles";
 import { Bar } from "src/frontend/components/Resizer";
 
-export const defaultTableHeight = "80vh";
+export const defaultTableHeight = "85vh";
 
 export const tableCellHeaderHeight = 75;
 
