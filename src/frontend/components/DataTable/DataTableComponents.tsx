@@ -19,9 +19,9 @@ const StyledColumnResizer = styled(Bar, {
   right: 0,
   top: 0,
   height: "100%",
-  background: isResizing ? theme.palette.primary.main : "transparent",
+  background: isResizing ? "#ccc" : "transparent",
   "&:hover": {
-    background: theme.palette.primary.main,
+    background: "#ccc",
   },
 }));
 
@@ -40,7 +40,7 @@ export function ColumnResizer({ isResizing, onMouseDown, onTouchStart, ...rest }
     e.stopPropagation();
     onTouchStart?.(e);
   };
-  return <StyledColumnResizer size={12} isResizing={isResizing} onMouseDown={handleMouseDown} onTouchStart={handleTouchStart} {...rest} />;
+  return <StyledColumnResizer size={5} isResizing={isResizing} onMouseDown={handleMouseDown} onTouchStart={handleTouchStart} {...rest} />;
 }
 
 export const StyledDivValueCell = styled("div")(({ theme }) => ({
