@@ -1,24 +1,24 @@
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Checkbox from '@mui/material/Checkbox';
-import IconButton from '@mui/material/IconButton';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import TextField from '@mui/material/TextField';
-import { useNavigate } from 'react-router-dom';
-import { useCommands } from 'src/frontend/components/MissionControl';
-import { getRandomSessionId } from 'src/frontend/data/session';
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Checkbox from "@mui/material/Checkbox";
+import IconButton from "@mui/material/IconButton";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import ListItemText from "@mui/material/ListItemText";
+import TextField from "@mui/material/TextField";
+import { useNavigate } from "react-router-dom";
+import { useCommands } from "src/frontend/components/MissionControl";
+import { getRandomSessionId } from "src/frontend/data/session";
 import {
   useGetCurrentSession,
   useGetOpenedSessionIds,
   useGetSessions,
   useSelectSession,
   useUpsertSession,
-} from 'src/frontend/hooks/useSession';
+} from "src/frontend/hooks/useSession";
 
 export type SessionOption = {
   label: string;
@@ -47,7 +47,7 @@ export default function SessionSelectionForm(props: SessionSelectionFormProps): 
   const shouldShowRename = !isFirstTime;
 
   const onCreateNewSession = async (formEl: HTMLElement) => {
-    const newSessionName = (formEl.querySelector('input') as HTMLInputElement).value;
+    const newSessionName = (formEl.querySelector("input") as HTMLInputElement).value;
 
     const newSession = await upsertSession({
       id: getRandomSessionId(),
@@ -63,8 +63,7 @@ export default function SessionSelectionForm(props: SessionSelectionFormProps): 
 
   const options: SessionOption[] = [
     ...sessions.map((session) => {
-      const isSessionOpenedInAnotherWindow =
-        openedSessionIds && openedSessionIds?.indexOf(session.id) >= 0;
+      const isSessionOpenedInAnotherWindow = openedSessionIds && openedSessionIds?.indexOf(session.id) >= 0;
 
       const label = session.name;
       const value = session.id;
@@ -93,11 +92,10 @@ export default function SessionSelectionForm(props: SessionSelectionFormProps): 
     }),
   ];
 
-  let defaultSessionName =
-    options.length === 0 ? `New Session ${new Date().toLocaleDateString()}` : '';
+  let defaultSessionName = options.length === 0 ? `New Session ${new Date().toLocaleDateString()}` : "";
 
   return (
-    <Box className='FormInput__Container'>
+    <Box className="FormInput__Container">
       <Box>Please select a session from below:</Box>
 
       <List>
@@ -115,27 +113,29 @@ export default function SessionSelectionForm(props: SessionSelectionFormProps): 
             const targetSession = sessions.find((session) => session.id === option.value);
 
             secondaryAction = (
-              <Box sx={{ display: 'flex', gap: 2 }}>
+              <Box sx={{ display: "flex", gap: 2 }}>
                 <IconButton
-                  edge='end'
-                  color='info'
-                  aria-label='Edit'
+                  edge="end"
+                  color="info"
+                  aria-label="Edit"
                   onClick={(e) => {
-                    selectCommand({ event: 'clientEvent/session/rename', data: targetSession });
+                    selectCommand({ event: "clientEvent/session/rename", data: targetSession });
                     e.preventDefault();
                     e.stopPropagation();
-                  }}>
+                  }}
+                >
                   <EditIcon />
                 </IconButton>
                 <IconButton
-                  edge='end'
-                  color='error'
-                  aria-label='Delete'
+                  edge="end"
+                  color="error"
+                  aria-label="Delete"
                   onClick={(e) => {
-                    selectCommand({ event: 'clientEvent/session/delete', data: targetSession });
+                    selectCommand({ event: "clientEvent/session/delete", data: targetSession });
                     e.preventDefault();
                     e.stopPropagation();
-                  }}>
+                  }}
+                >
                   <DeleteIcon />
                 </IconButton>
               </Box>
@@ -149,14 +149,10 @@ export default function SessionSelectionForm(props: SessionSelectionFormProps): 
               disabled={option.disabled}
               selected={option.selected}
               onClick={onSelectThisSession}
-              secondaryAction={secondaryAction}>
+              secondaryAction={secondaryAction}
+            >
               <ListItemIcon>
-                <Checkbox
-                  edge='start'
-                  checked={!!option.selected}
-                  tabIndex={-1}
-                  inputProps={{ 'aria-labelledby': labelId }}
-                />
+                <Checkbox edge="start" checked={!!option.selected} tabIndex={-1} inputProps={{ "aria-labelledby": labelId }} />
               </ListItemIcon>
               <ListItemText id={labelId} primary={option.label} secondary={option.subtitle} />
             </ListItem>
@@ -168,17 +164,18 @@ export default function SessionSelectionForm(props: SessionSelectionFormProps): 
         onSubmit={(e) => {
           e.preventDefault();
           onCreateNewSession(e.target as HTMLElement);
-        }}>
-        <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+        }}
+      >
+        <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
           <TextField
-            placeholder='Enter name for the new session'
-            label='New Session Name'
-            size='small'
+            placeholder="Enter name for the new session"
+            label="New Session Name"
+            size="small"
             required
             sx={{ flexGrow: 1 }}
             defaultValue={defaultSessionName}
           />
-          <Button type='submit' size='small'>
+          <Button type="submit" size="small">
             Create Session
           </Button>
         </Box>

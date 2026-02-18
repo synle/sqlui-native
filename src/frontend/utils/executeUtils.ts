@@ -1,10 +1,10 @@
 export function execute(shellToRun: string, delay = 25): Promise<string> {
   if (!window.isElectron) {
-    return Promise.resolve('');
+    return Promise.resolve("");
   }
 
   // @ts-ignore
-  const { exec } = window.requireElectron('child_process');
+  const { exec } = window.requireElectron("child_process");
 
   return new Promise((resolve, reject) => {
     setTimeout(() => {

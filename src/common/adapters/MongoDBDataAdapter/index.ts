@@ -1,9 +1,9 @@
-import { MongoClient } from 'mongodb';
-import BaseDataAdapter, { MAX_CONNECTION_TIMEOUT } from 'src/common/adapters/BaseDataAdapter/index';
-import IDataAdapter from 'src/common/adapters/IDataAdapter';
-import { SqluiCore } from 'typings';
+import { MongoClient } from "mongodb";
+import BaseDataAdapter, { MAX_CONNECTION_TIMEOUT } from "src/common/adapters/BaseDataAdapter/index";
+import IDataAdapter from "src/common/adapters/IDataAdapter";
+import { SqluiCore } from "typings";
 
-const MONGO_ADAPTER_PREFIX = 'db';
+const MONGO_ADAPTER_PREFIX = "db";
 
 /**
  * @type {Number} maximum number of items to scan for column metadata
@@ -19,7 +19,7 @@ export default class MongoDBDataAdapter extends BaseDataAdapter implements IData
     // attempt to pull in connections
     return new Promise<MongoClient>(async (resolve, reject) => {
       try {
-        setTimeout(() => reject('Connection Timeout'), MAX_CONNECTION_TIMEOUT);
+        setTimeout(() => reject("Connection Timeout"), MAX_CONNECTION_TIMEOUT);
 
         const client = new MongoClient(connectionToUse || this.connectionOption);
         await client.connect();
@@ -76,19 +76,12 @@ export default class MongoDBDataAdapter extends BaseDataAdapter implements IData
 
     try {
       //@ts-ignore
-      const items = await client
-        .db(database)
-        .collection(table)
-        .find()
-        .limit(MAX_ITEM_COUNT_TO_SCAN)
-        .toArray();
+      const items = await client.db(database).collection(table).find().limit(MAX_ITEM_COUNT_TO_SCAN).toArray();
 
-      return BaseDataAdapter.inferTypesFromItems(JSON.parse(JSON.stringify(items))).map(
-        (column) => ({
-          ...column,
-          primaryKey: column.name === '_id',
-        }),
-      );
+      return BaseDataAdapter.inferTypesFromItems(JSON.parse(JSON.stringify(items))).map((column) => ({
+        ...column,
+        primaryKey: column.name === "_id",
+      }));
     } finally {
       this.closeConnection(client);
     }
@@ -106,12 +99,12 @@ export default class MongoDBDataAdapter extends BaseDataAdapter implements IData
 
       for (const database of databases) {
         if (database.name === newDatabase) {
-          throw 'Database already existed, cannot create this database';
+          throw "Database already existed, cannot create this database";
         }
       }
 
       // create a dummy collection
-      await client.db(newDatabase).createCollection('test-collection');
+      await client.db(newDatabase).createCollection("test-collection");
     } finally {
       this.closeConnection(client);
     }
@@ -125,12 +118,12 @@ export default class MongoDBDataAdapter extends BaseDataAdapter implements IData
         throw `Invalid syntax. MongoDB syntax in sqlui-native starts with '${MONGO_ADAPTER_PREFIX}.'. Refer to the syntax help in this link https://synle.github.io/sqlui-native/guides#mongodb`;
       }
 
-      if ((sql.includes('db.create(') || sql.includes('db.createDatabase(')) && sql.includes(')')) {
+      if ((sql.includes("db.create(") || sql.includes("db.createDatabase(")) && sql.includes(")")) {
         // TODO: see if we need to be more strict with the regex
         let databaseName = sql
-          .replace(/[;'" )]/g, '')
-          .replace('db.create(', '')
-          .replace('db.createDatabase(', '')
+          .replace(/[;'" )]/g, "")
+          .replace("db.create(", "")
+          .replace("db.createDatabase(", "")
           .trim();
         await this.createDatabase(databaseName);
         return {
@@ -141,15 +134,14 @@ export default class MongoDBDataAdapter extends BaseDataAdapter implements IData
 
       const db = await client.db(database);
 
-      const { ObjectId } = require('mongodb');
+      const { ObjectId } = require("mongodb");
 
       //@ts-ignore
       const rawToUse: any = await eval(sql);
 
       if (rawToUse?.acknowledged === true) {
         // insert or insertOne
-        let affectedRows =
-          rawToUse.insertedCount || rawToUse.deletedCount || rawToUse.modifiedCount;
+        let affectedRows = rawToUse.insertedCount || rawToUse.deletedCount || rawToUse.modifiedCount;
         if (affectedRows === undefined) {
           affectedRows = 1;
         }
@@ -159,7 +151,7 @@ export default class MongoDBDataAdapter extends BaseDataAdapter implements IData
           meta: rawToUse,
           affectedRows,
         };
-      } else if (Array.isArray(rawToUse) || (typeof rawToUse === 'object' && rawToUse._id)) {
+      } else if (Array.isArray(rawToUse) || (typeof rawToUse === "object" && rawToUse._id)) {
         return {
           ok: true,
           raw: [].concat(rawToUse),
@@ -171,7 +163,7 @@ export default class MongoDBDataAdapter extends BaseDataAdapter implements IData
         };
       }
     } catch (err: any) {
-      console.log('Execute Error', err);
+      console.log("Execute Error", err);
       return {
         ok: false,
         error: err?.toString() || JSON.stringify(err),

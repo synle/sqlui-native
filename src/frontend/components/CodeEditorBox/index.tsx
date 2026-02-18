@@ -1,14 +1,14 @@
-import CheckBoxIcon from '@mui/icons-material/CheckBox';
-import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
-import Box from '@mui/material/Box';
-import Paper from '@mui/material/Paper';
-import ToggleButton from '@mui/material/ToggleButton';
-import React, { useEffect, useLayoutEffect, useMemo, useState } from 'react';
-import AdvancedEditor from 'src/frontend/components/CodeEditorBox/AdvancedEditor';
-import SimpleEditor from 'src/frontend/components/CodeEditorBox/SimpleEditor';
-import InputError from 'src/frontend/components/InputError';
-import Select from 'src/frontend/components/Select';
-import { useEditorModeSetting, useWordWrapSetting } from 'src/frontend/hooks/useSetting';
+import CheckBoxIcon from "@mui/icons-material/CheckBox";
+import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
+import Box from "@mui/material/Box";
+import Paper from "@mui/material/Paper";
+import ToggleButton from "@mui/material/ToggleButton";
+import React, { useEffect, useLayoutEffect, useMemo, useState } from "react";
+import AdvancedEditor from "src/frontend/components/CodeEditorBox/AdvancedEditor";
+import SimpleEditor from "src/frontend/components/CodeEditorBox/SimpleEditor";
+import InputError from "src/frontend/components/InputError";
+import Select from "src/frontend/components/Select";
+import { useEditorModeSetting, useWordWrapSetting } from "src/frontend/hooks/useSetting";
 
 export type EditorRef =
   | {
@@ -18,7 +18,7 @@ export type EditorRef =
 
 export type CodeEditorProps = {
   id?: string;
-  language?: 'sql' | string;
+  language?: "sql" | string;
   className?: string;
   value?: string;
   autoFocus?: boolean;
@@ -35,7 +35,7 @@ export type DecoratedEditorProps = CodeEditorProps & {
   onBlur?: (newValue: string) => void;
 };
 
-const DEFAULT_EDITOR_HEIGHT = '20vh';
+const DEFAULT_EDITOR_HEIGHT = "20vh";
 
 export default function CodeEditorBox(props: CodeEditorProps): JSX.Element | null {
   const globalWordWrap = useWordWrapSetting();
@@ -55,7 +55,7 @@ export default function CodeEditorBox(props: CodeEditorProps): JSX.Element | nul
 
   const onSetWrap = (newWordWrap: boolean) => {
     setWordWrap(newWordWrap);
-    localStorage.setItem(`editorWrap.${props.id}`, newWordWrap ? '1' : '0');
+    localStorage.setItem(`editorWrap.${props.id}`, newWordWrap ? "1" : "0");
   };
 
   const onSetLanguageMode = (newLanguage: string) => {
@@ -64,42 +64,34 @@ export default function CodeEditorBox(props: CodeEditorProps): JSX.Element | nul
   };
 
   const contentToggleWordWrapSelection = (
-    <ToggleButton
-      value='check'
-      selected={wordWrap}
-      onChange={() => onSetWrap(!wordWrap)}
-      size='small'
-      color='primary'>
+    <ToggleButton value="check" selected={wordWrap} onChange={() => onSetWrap(!wordWrap)} size="small" color="primary">
       {wordWrap ? <CheckBoxIcon /> : <CheckBoxOutlineBlankIcon />}
-      <span style={{ marginLeft: '5px' }}>Wrap</span>
+      <span style={{ marginLeft: "5px" }}>Wrap</span>
     </ToggleButton>
   );
 
   const contentLanguageModeSelection = (
     <>
-      <Select
-        label='Syntax'
-        onChange={(newLanguage) => onSetLanguageMode(newLanguage)}
-        value={languageMode}>
-        <option value=''>Auto Detected ({props.language})</option>
-        <option value='javascript'>Javascript</option>
-        <option value='sql'>SQL</option>
+      <Select label="Syntax" onChange={(newLanguage) => onSetLanguageMode(newLanguage)} value={languageMode}>
+        <option value="">Auto Detected ({props.language})</option>
+        <option value="javascript">Javascript</option>
+        <option value="sql">SQL</option>
       </Select>
     </>
   );
 
   const contentHeightSelection = (
     <>
-      <Select label='Editor Size' onChange={(newHeight) => onSetHeight(newHeight)} value={height}>
-        <option value='20vh'>Small</option>
-        <option value='40vh'>Medium</option>
-        <option value='60vh'>Large</option>
+      <Select label="Editor Size" onChange={(newHeight) => onSetHeight(newHeight)} value={height}>
+        <option value="20vh">Small</option>
+        <option value="40vh">Medium</option>
+        <option value="60vh">Large</option>
       </Select>
     </>
   );
 
   const editorOptionBox = (
-    <div className='CodeEditorBox__Commands'>
+    <div className="CodeEditorBox__Commands">
       {contentToggleWordWrapSelection}
       {contentHeightSelection}
       {contentLanguageModeSelection}
@@ -110,16 +102,13 @@ export default function CodeEditorBox(props: CodeEditorProps): JSX.Element | nul
 
   useEffect(() => setWordWrap(!!props.wordWrap || globalWordWrap), [globalWordWrap]);
 
-  const shouldShowRequiredError = useMemo(
-    () => !!props.required && !props.value,
-    [!!props.required && !props.value],
-  );
+  const shouldShowRequiredError = useMemo(() => !!props.required && !props.value, [!!props.required && !props.value]);
 
   useLayoutEffect(() => {
     if (props.id) {
-      let newHeight = '';
+      let newHeight = "";
       try {
-        newHeight = localStorage.getItem(`editorSize.${props.id}`) || '';
+        newHeight = localStorage.getItem(`editorSize.${props.id}`) || "";
       } catch (err) {}
 
       if (!newHeight) {
@@ -128,7 +117,7 @@ export default function CodeEditorBox(props: CodeEditorProps): JSX.Element | nul
       onSetHeight(newHeight);
 
       // set the wrap
-      onSetWrap(localStorage.getItem(`editorWrap.${props.id}`) === '1');
+      onSetWrap(localStorage.getItem(`editorWrap.${props.id}`) === "1");
 
       // set the language
       let newLanguage = localStorage.getItem(`editorLanguage.${props.id}`);
@@ -138,9 +127,9 @@ export default function CodeEditorBox(props: CodeEditorProps): JSX.Element | nul
     }
   }, [props.height, props.id]);
 
-  if (editorModeToUse === 'simple') {
+  if (editorModeToUse === "simple") {
     return (
-      <div className={'CodeEditorBox ' + props.className}>
+      <div className={"CodeEditorBox " + props.className}>
         <SimpleEditor
           id={props.id}
           value={props.value}
@@ -160,7 +149,7 @@ export default function CodeEditorBox(props: CodeEditorProps): JSX.Element | nul
 
   return (
     <Box>
-      <Paper className={'CodeEditorBox ' + props.className} variant='outlined'>
+      <Paper className={"CodeEditorBox " + props.className} variant="outlined">
         <AdvancedEditor
           id={props.id}
           language={languageToUse}
@@ -175,7 +164,7 @@ export default function CodeEditorBox(props: CodeEditorProps): JSX.Element | nul
         />
         {editorOptionBox}
       </Paper>
-      {shouldShowRequiredError && <InputError message='This field is required' sx={{ ml: 2 }} />}
+      {shouldShowRequiredError && <InputError message="This field is required" sx={{ ml: 2 }} />}
     </Box>
   );
 }

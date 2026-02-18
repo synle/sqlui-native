@@ -1,9 +1,9 @@
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
-import { useState } from 'react';
-import { getConnectionFormInputs, SUPPORTED_DIALECTS } from 'src/common/adapters/DataScriptFactory';
-import Select from 'src/frontend/components/Select';
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import TextField from "@mui/material/TextField";
+import { useState } from "react";
+import { getConnectionFormInputs, SUPPORTED_DIALECTS } from "src/common/adapters/DataScriptFactory";
+import Select from "src/frontend/components/Select";
 
 type ConnectionHelperFormInputs = {
   scheme: string;
@@ -21,12 +21,12 @@ type ConnectionHelperProps = ConnectionHelperFormInputs & {
 
 export default function ConnectionHelper(props: ConnectionHelperProps) {
   const [value, setValue] = useState<ConnectionHelperFormInputs>({
-    scheme: props.scheme || '',
-    username: props.username || '',
-    password: props.password || '',
-    host: props.host || '',
-    port: props.port || '',
-    restOfConnectionString: props.restOfConnectionString || '',
+    scheme: props.scheme || "",
+    username: props.username || "",
+    password: props.password || "",
+    host: props.host || "",
+    port: props.port || "",
+    restOfConnectionString: props.restOfConnectionString || "",
   });
 
   const formInputs = getConnectionFormInputs(value.scheme);
@@ -58,20 +58,18 @@ export default function ConnectionHelper(props: ConnectionHelperProps) {
 
   const formDom =
     formInputs.length === 0 ? (
-      <div className='FormInput__Row'>
-        This database scheme is not supported by the connection helper
-      </div>
+      <div className="FormInput__Row">This database scheme is not supported by the connection helper</div>
     ) : (
       formInputs.map(([inputKey, inputLabel, optionalFlag], idx) => {
-        const isRequired = optionalFlag !== 'optional';
+        const isRequired = optionalFlag !== "optional";
         return (
-          <div className='FormInput__Row' key={idx + inputKey}>
+          <div className="FormInput__Row" key={idx + inputKey}>
             <TextField
               label={inputLabel}
               value={value[inputKey]}
               onChange={(e) => onChange(inputKey, e.target.value)}
               required={isRequired}
-              size='small'
+              size="small"
               fullWidth={true}
             />
           </div>
@@ -81,17 +79,15 @@ export default function ConnectionHelper(props: ConnectionHelperProps) {
 
   return (
     <form
-      className='FormInput__Container'
+      className="FormInput__Container"
       onSubmit={(e) => {
         e.preventDefault();
         onApply();
-      }}>
-      <div className='FormInput__Row'>
-        <Select
-          required
-          onChange={(newScheme) => onChange('scheme', newScheme)}
-          value={value.scheme}>
-          <option value=''>Select a Scheme</option>
+      }}
+    >
+      <div className="FormInput__Row">
+        <Select required onChange={(newScheme) => onChange("scheme", newScheme)} value={value.scheme}>
+          <option value="">Select a Scheme</option>
           {SUPPORTED_DIALECTS.sort().map((dialect) => (
             <option key={dialect} value={dialect}>
               {dialect}
@@ -100,21 +96,14 @@ export default function ConnectionHelper(props: ConnectionHelperProps) {
         </Select>
       </div>
       {formDom}
-      <div className='FormInput__Row'>
-        <TextField
-          label='Generated Connection String'
-          value={connection}
-          disabled={true}
-          required
-          size='small'
-          fullWidth={true}
-        />
+      <div className="FormInput__Row">
+        <TextField label="Generated Connection String" value={connection} disabled={true} required size="small" fullWidth={true} />
       </div>
-      <Box sx={{ display: 'flex', justifyContent: 'end', gap: 2 }}>
-        <Button type='submit' variant='contained'>
+      <Box sx={{ display: "flex", justifyContent: "end", gap: 2 }}>
+        <Button type="submit" variant="contained">
           Apply
         </Button>
-        <Button type='button' onClick={props.onClose}>
+        <Button type="button" onClick={props.onClose}>
           Cancel
         </Button>
       </Box>

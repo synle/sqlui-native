@@ -10,9 +10,9 @@ export default function InputError(props: InputErrorProps): JSX.Element | null {
 
   return (
     <input
-      type='text'
+      type="text"
       required
-      value=''
+      value=""
       onChange={() => {}}
       onInvalid={_setCustomError}
       style={{
@@ -20,11 +20,11 @@ export default function InputError(props: InputErrorProps): JSX.Element | null {
         width: 0,
         padding: 0,
         margin: 0,
-        position: 'absolute',
-        borderColor: 'transparent',
-        background: 'transparent',
-        outline: 'none',
-        transform: 'scale(0.2)',
+        position: "absolute",
+        borderColor: "transparent",
+        background: "transparent",
+        outline: "none",
+        transform: "scale(0.2)",
       }}
     />
   );

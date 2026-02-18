@@ -1,7 +1,7 @@
-import { TableClient, TableServiceClient } from '@azure/data-tables';
-import BaseDataAdapter, { MAX_CONNECTION_TIMEOUT } from 'src/common/adapters/BaseDataAdapter/index';
-import IDataAdapter from 'src/common/adapters/IDataAdapter';
-import { SqluiCore } from 'typings';
+import { TableClient, TableServiceClient } from "@azure/data-tables";
+import BaseDataAdapter, { MAX_CONNECTION_TIMEOUT } from "src/common/adapters/BaseDataAdapter/index";
+import IDataAdapter from "src/common/adapters/IDataAdapter";
+import { SqluiCore } from "typings";
 
 /**
  * @type {Number} maximum number of items to scan for column metadata
@@ -20,7 +20,7 @@ export default class AzureTableStorageAdapter extends BaseDataAdapter implements
     // attempt to pull in connections
     return new Promise<TableServiceClient>(async (resolve, reject) => {
       try {
-        setTimeout(() => reject('Connection timeout'), MAX_CONNECTION_TIMEOUT);
+        setTimeout(() => reject("Connection timeout"), MAX_CONNECTION_TIMEOUT);
 
         const connectionString = this.getConnectionString();
         resolve(TableServiceClient.fromConnectionString(connectionString));
@@ -38,10 +38,10 @@ export default class AzureTableStorageAdapter extends BaseDataAdapter implements
     // attempt to pull in connections
     return new Promise<TableClient | undefined>(async (resolve, reject) => {
       try {
-        setTimeout(() => reject('Connection timeout'), MAX_CONNECTION_TIMEOUT);
+        setTimeout(() => reject("Connection timeout"), MAX_CONNECTION_TIMEOUT);
 
         if (!table) {
-          return reject('Table is required to initiate Azure Table TableClient');
+          return reject("Table is required to initiate Azure Table TableClient");
         }
 
         const connectionString = this.getConnectionString();
@@ -61,7 +61,7 @@ export default class AzureTableStorageAdapter extends BaseDataAdapter implements
   async authenticate() {
     return new Promise<void>(async (resolve, reject) => {
       try {
-        setTimeout(() => reject('Connection timeout'), MAX_CONNECTION_TIMEOUT);
+        setTimeout(() => reject("Connection timeout"), MAX_CONNECTION_TIMEOUT);
 
         const serviceClient = await this.getTableServiceClient();
         const props = await serviceClient.getProperties();
@@ -70,7 +70,7 @@ export default class AzureTableStorageAdapter extends BaseDataAdapter implements
           return resolve();
         }
 
-        throw 'Cannot connect to Azure Table';
+        throw "Cannot connect to Azure Table";
       } catch (err) {
         reject(err);
       }
@@ -80,7 +80,7 @@ export default class AzureTableStorageAdapter extends BaseDataAdapter implements
   async getDatabases(): Promise<SqluiCore.DatabaseMetaData[]> {
     return [
       {
-        name: 'Azure Table Storage',
+        name: "Azure Table Storage",
         tables: [],
       },
     ];
@@ -115,26 +115,23 @@ export default class AzureTableStorageAdapter extends BaseDataAdapter implements
     try {
       const tableClient = await this.getTableClient(table);
 
-      const page = await tableClient
-        ?.listEntities()
-        .byPage({ maxPageSize: MAX_ITEM_COUNT_TO_SCAN })
-        .next();
+      const page = await tableClient?.listEntities().byPage({ maxPageSize: MAX_ITEM_COUNT_TO_SCAN }).next();
 
       const items: any[] = [];
 
       if (page && !page.done) {
         for await (const entity of page.value) {
-          if (entity['rowKey']) {
+          if (entity["rowKey"]) {
             items.push(entity);
           }
         }
       }
 
       return BaseDataAdapter.inferTypesFromItems(items).map((column) => {
-        if (column.name == 'partitionKey') {
-          column.kind = 'clustering';
-        } else if (column.name == 'rowKey') {
-          column.kind = 'partition_key';
+        if (column.name == "partitionKey") {
+          column.kind = "clustering";
+        } else if (column.name == "rowKey") {
+          column.kind = "partition_key";
           column.primaryKey = true;
         }
 

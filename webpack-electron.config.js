@@ -1,28 +1,28 @@
-const path = require('path');
-const webpack = require('webpack');
-const appPackage = require('./package.json');
+const path = require("path");
+const webpack = require("webpack");
+const appPackage = require("./package.json");
 
 // Only externalize packages that contain native bindings or use
 // dynamic require() patterns. Everything else (pure JS) gets bundled
 // by webpack, avoiding missing transitive dependency issues in
 // electron-builder packaging.
 const nativeExternals = [
-  'electron',
+  "electron",
   // Native modules
-  'sqlite3',
-  'cassandra-driver',
-  'pg-native',
+  "sqlite3",
+  "cassandra-driver",
+  "pg-native",
   // Sequelize + drivers use dynamic require() to load dialects at runtime
-  'sequelize',
-  'mysql2',
-  'mariadb',
-  'pg',
-  'pg-hstore',
-  'tedious',
+  "sequelize",
+  "mysql2",
+  "mariadb",
+  "pg",
+  "pg-hstore",
+  "tedious",
   // MongoDB uses dynamic require() for optional deps
-  'mongodb',
+  "mongodb",
   // Redis has native optional bindings
-  'redis',
+  "redis",
 ];
 const externals = {};
 for (const dep of nativeExternals) {
@@ -30,13 +30,13 @@ for (const dep of nativeExternals) {
 }
 
 module.exports = {
-  mode: 'production',
-  target: ['node'],
-  entry: './src/electron/index.ts',
+  mode: "production",
+  target: ["node"],
+  entry: "./src/electron/index.ts",
   output: {
-    filename: 'main.js',
-    libraryTarget: 'this',
-    path: path.resolve(__dirname, 'build'),
+    filename: "main.js",
+    libraryTarget: "this",
+    path: path.resolve(__dirname, "build"),
   },
   externals,
   module: {
@@ -45,9 +45,9 @@ module.exports = {
         test: /\.tsx?$/,
         use: [
           {
-            loader: 'ts-loader',
+            loader: "ts-loader",
             options: {
-              configFile: 'tsconfig-electron.json',
+              configFile: "tsconfig-electron.json",
             },
           },
         ],
@@ -56,11 +56,11 @@ module.exports = {
     ],
   },
   resolve: {
-    extensions: ['.tsx', '.ts', '.js'],
+    extensions: [".tsx", ".ts", ".js"],
     alias: {
-      src: path.resolve(__dirname, 'src'),
-      electron: path.resolve(__dirname, 'electron'),
-      typings: path.resolve(__dirname, 'typings'),
+      src: path.resolve(__dirname, "src"),
+      electron: path.resolve(__dirname, "electron"),
+      typings: path.resolve(__dirname, "typings"),
     },
   },
 };

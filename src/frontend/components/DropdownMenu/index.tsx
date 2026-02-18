@@ -1,14 +1,14 @@
-import CircularProgress from '@mui/material/CircularProgress';
-import ClickAwayListener from '@mui/material/ClickAwayListener';
-import Divider from '@mui/material/Divider';
-import Grow from '@mui/material/Grow';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import MenuItem from '@mui/material/MenuItem';
-import MenuList from '@mui/material/MenuList';
-import Paper from '@mui/material/Paper';
-import Popper from '@mui/material/Popper';
-import React, { useEffect } from 'react';
+import CircularProgress from "@mui/material/CircularProgress";
+import ClickAwayListener from "@mui/material/ClickAwayListener";
+import Divider from "@mui/material/Divider";
+import Grow from "@mui/material/Grow";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import ListItemText from "@mui/material/ListItemText";
+import MenuItem from "@mui/material/MenuItem";
+import MenuList from "@mui/material/MenuList";
+import Paper from "@mui/material/Paper";
+import Popper from "@mui/material/Popper";
+import React, { useEffect } from "react";
 
 export type DropdownButtonOption = {
   label: string;
@@ -56,18 +56,18 @@ export default function DropdownMenu(props: DropdownMenuProps): JSX.Element | nu
   let popperBody: JSX.Element = <></>;
   if (props.isLoading) {
     popperBody = (
-      <div className='DropdownButton__Popper'>
+      <div className="DropdownButton__Popper">
         <CircularProgress size={15} /> Loading... Please wait.
       </div>
     );
   } else if (options.length === 0) {
-    popperBody = <div className='DropdownButton__Popper'>No options.</div>;
+    popperBody = <div className="DropdownButton__Popper">No options.</div>;
   } else {
     popperBody = (
       <MenuList id={id}>
         {options.map((option, index) => {
           let content;
-          if (option.label === 'divider') {
+          if (option.label === "divider") {
             return (content = <Divider key={index} sx={{ marginBlock: 1 }} />);
           } else {
             content = (
@@ -95,10 +95,11 @@ export default function DropdownMenu(props: DropdownMenuProps): JSX.Element | nu
           <Grow
             {...TransitionProps}
             style={{
-              transformOrigin: placement === 'bottom' ? 'right top' : 'right bottom',
-            }}>
-            <Paper sx={{ maxHeight: maxHeight || '325px', overflow: 'auto' }}>
-              <ClickAwayListener onClickAway={onClose} mouseEvent='onMouseDown'>
+              transformOrigin: placement === "bottom" ? "right top" : "right bottom",
+            }}
+          >
+            <Paper sx={{ maxHeight: maxHeight || "325px", overflow: "auto" }}>
+              <ClickAwayListener onClickAway={onClose} mouseEvent="onMouseDown">
                 {popperBody}
               </ClickAwayListener>
             </Paper>

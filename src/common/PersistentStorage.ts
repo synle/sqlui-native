@@ -1,10 +1,10 @@
-import { app } from 'electron';
-import fs from 'fs';
-import path from 'path';
-import { getGeneratedRandomId } from 'src/common/utils/commonUtils';
-import { SqluiCore } from 'typings';
+import { app } from "electron";
+import fs from "fs";
+import path from "path";
+import { getGeneratedRandomId } from "src/common/utils/commonUtils";
+import { SqluiCore } from "typings";
 
-const homedir = require('os').homedir();
+const homedir = require("os").homedir();
 
 // this section of the api is caches in memory
 type StorageContent = {
@@ -19,13 +19,13 @@ type StorageEntry = {
 let baseDir: string;
 try {
   // electron path
-  baseDir = path.join(app.getPath('appData'), 'sqlui-native');
+  baseDir = path.join(app.getPath("appData"), "sqlui-native");
   try {
     fs.mkdirSync(baseDir);
   } catch (err) {}
 } catch (err) {
   // fall back for mocked server
-  baseDir = path.join(homedir, '.sqlui-native');
+  baseDir = path.join(homedir, ".sqlui-native");
   try {
     fs.mkdirSync(baseDir);
   } catch (err) {}
@@ -50,9 +50,7 @@ export class PersistentStorage<T extends StorageEntry> {
 
   private getData(): StorageContent {
     try {
-      return JSON.parse(
-        fs.readFileSync(this.storageLocation, { encoding: 'utf8', flag: 'r' }).trim(),
-      );
+      return JSON.parse(fs.readFileSync(this.storageLocation, { encoding: "utf8", flag: "r" }).trim());
     } catch (err) {
       return {};
     }
@@ -138,7 +136,7 @@ export async function writeJSON(fileName: string, content: any, isRelative = tru
 }
 
 export async function readJSON(fileName: string) {
-  return JSON.parse(fs.readFileSync(fileName, { encoding: 'utf8', flag: 'r' }).trim());
+  return JSON.parse(fs.readFileSync(fileName, { encoding: "utf8", flag: "r" }).trim());
 }
 
 // all the storage
@@ -146,31 +144,27 @@ export async function getConnectionsStorage(sessionId: string) {
   if (!sessionId) {
     throw `sessionId is required for getConnectionsStorage`;
   }
-  return await new PersistentStorage<SqluiCore.ConnectionProps>(sessionId, 'connection');
+  return await new PersistentStorage<SqluiCore.ConnectionProps>(sessionId, "connection");
 }
 
 export async function getQueryStorage(sessionId: string) {
   if (!sessionId) {
     throw `sessionId is required for getQueryStorage`;
   }
-  return await new PersistentStorage<SqluiCore.ConnectionQuery>(sessionId, 'query');
+  return await new PersistentStorage<SqluiCore.ConnectionQuery>(sessionId, "query");
 }
 
 export async function getSessionsStorage() {
-  return await new PersistentStorage<SqluiCore.Session>('session', 'session', 'sessions');
+  return await new PersistentStorage<SqluiCore.Session>("session", "session", "sessions");
 }
 
-export async function getFolderItemsStorage(folderId: 'bookmarks' | 'recycleBin' | string) {
+export async function getFolderItemsStorage(folderId: "bookmarks" | "recycleBin" | string) {
   if (!folderId) {
     throw `folderId is required for getFolderItemsStorage`;
   }
-  return await new PersistentStorage<SqluiCore.FolderItem>('folders', folderId);
+  return await new PersistentStorage<SqluiCore.FolderItem>("folders", folderId);
 }
 
 export async function getDataSnapshotStorage() {
-  return await new PersistentStorage<SqluiCore.DataSnapshot>(
-    'dataSnapshots',
-    'dataSnapshots',
-    'dataSnapshots',
-  );
+  return await new PersistentStorage<SqluiCore.DataSnapshot>("dataSnapshots", "dataSnapshots", "dataSnapshots");
 }

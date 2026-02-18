@@ -1,17 +1,17 @@
-import { app, BrowserWindow, ipcMain, Menu, nativeTheme, shell } from 'electron';
-import path from 'path';
-import { matchPath } from 'react-router-dom';
-import { getEndpointHandlers, setUpDataEndpoints } from 'src/common/Endpoints';
-import PersistentStorage from 'src/common/PersistentStorage';
-import * as sessionUtils from 'src/common/utils/sessionUtils';
-import { SqluiCore, SqluiEnums } from 'typings';
+import { app, BrowserWindow, ipcMain, Menu, nativeTheme, shell } from "electron";
+import path from "path";
+import { matchPath } from "react-router-dom";
+import { getEndpointHandlers, setUpDataEndpoints } from "src/common/Endpoints";
+import PersistentStorage from "src/common/PersistentStorage";
+import * as sessionUtils from "src/common/utils/sessionUtils";
+import { SqluiCore, SqluiEnums } from "typings";
 
-const isMac = process.platform === 'darwin';
+const isMac = process.platform === "darwin";
 
 // disable smooth scrolling
 try {
-  app.commandLine.appendSwitch('disable-smooth-scrolling', '1');
-  app.commandLine.appendSwitch('enable-smooth-scrolling', '0');
+  app.commandLine.appendSwitch("disable-smooth-scrolling", "1");
+  app.commandLine.appendSwitch("enable-smooth-scrolling", "0");
 } catch (err) {}
 
 // create the window
@@ -19,9 +19,9 @@ async function createWindow(isFirstWindow?: boolean) {
   const mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
-    icon: __dirname + '/favicon.ico',
+    icon: __dirname + "/favicon.ico",
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js'),
+      preload: path.join(__dirname, "preload.js"),
       nodeIntegration: true,
       contextIsolation: false,
     },
@@ -31,11 +31,7 @@ async function createWindow(isFirstWindow?: boolean) {
 
   if (isFirstWindow === true) {
     // if this is the first window, let's attempt to open the first sessionId
-    const sessionsStorage = await new PersistentStorage<SqluiCore.Session>(
-      'session',
-      'session',
-      'sessions',
-    );
+    const sessionsStorage = await new PersistentStorage<SqluiCore.Session>("session", "session", "sessions");
 
     const sessions = await sessionsStorage.list();
 
@@ -47,19 +43,17 @@ async function createWindow(isFirstWindow?: boolean) {
   }
 
   // hook up events
-  mainWindow.webContents.on('did-finish-load', () => {
+  mainWindow.webContents.on("did-finish-load", () => {
     mainWindow.webContents.executeJavaScript(`
       sessionStorage.setItem('sqlui-native.windowId', '${targetWindowId}')
       console.log('hooking window.windowId', window.electronWindowId);
     `);
   });
 
-  mainWindow.on('close', async () => {
+  mainWindow.on("close", async () => {
     // on window close, we need to remove its sessionId
-    const targetSessionId = await mainWindow.webContents.executeJavaScript(
-      `sessionStorage.getItem('clientConfig/api.sessionId')`,
-    );
-    console.log('Window closed - freeing up the targetSessionId', targetSessionId);
+    const targetSessionId = await mainWindow.webContents.executeJavaScript(`sessionStorage.getItem('clientConfig/api.sessionId')`);
+    console.log("Window closed - freeing up the targetSessionId", targetSessionId);
     sessionUtils.close(targetWindowId);
   }); // win close
 
@@ -67,11 +61,11 @@ async function createWindow(isFirstWindow?: boolean) {
   mainWindow._windowId = targetWindowId;
 
   // and load the index.html of the app.
-  mainWindow.loadFile('index.html');
-  global.indexHtmlPath = path.join(__dirname, 'index.html');
+  mainWindow.loadFile("index.html");
+  global.indexHtmlPath = path.join(__dirname, "index.html");
 
   // Open the DevTools.
-  if (process.env.ENV_TYPE === 'electron-dev') {
+  if (process.env.ENV_TYPE === "electron-dev") {
     mainWindow.webContents.openDevTools();
   }
 
@@ -84,202 +78,192 @@ async function createWindow(isFirstWindow?: boolean) {
 
 function sendMessage(win: BrowserWindow, message: SqluiEnums.ClientEventKey) {
   if (win) {
-    win.webContents.send('sqluiNativeEvent/ipcElectronCommand', message, {});
+    win.webContents.send("sqluiNativeEvent/ipcElectronCommand", message, {});
   }
 }
 
 function setupMenu() {
   let menuTemplate: Electron.MenuItemConstructorOptions[] = [
     {
-      label: 'File',
+      label: "File",
       submenu: [
         {
-          label: 'New Window',
-          accelerator: isMac ? 'Cmd+Shift+N' : 'Ctrl+Shift+N',
+          label: "New Window",
+          accelerator: isMac ? "Cmd+Shift+N" : "Ctrl+Shift+N",
           click: async () => {
             const mainWindow = await createWindow();
 
             const newWindowHandler = () => {
               setTimeout(() => {
-                sendMessage(mainWindow, 'clientEvent/session/switch');
+                sendMessage(mainWindow, "clientEvent/session/switch");
                 mainWindow.webContents.executeJavaScript(`
                   console.log('Asking window to show switch session');
                 `);
               }, 1500);
-              mainWindow.webContents.removeListener('dom-ready', newWindowHandler);
+              mainWindow.webContents.removeListener("dom-ready", newWindowHandler);
             };
 
-            mainWindow.webContents.on('dom-ready', newWindowHandler);
+            mainWindow.webContents.on("dom-ready", newWindowHandler);
           },
         },
         {
-          type: 'separator',
+          type: "separator",
         },
         {
-          id: 'menu-connection-new',
-          label: 'New Connection',
-          accelerator: isMac ? 'Cmd+N' : 'Ctrl+N',
-          click: async (item, win) =>
-            sendMessage(win as BrowserWindow, 'clientEvent/connection/new'),
+          id: "menu-connection-new",
+          label: "New Connection",
+          accelerator: isMac ? "Cmd+N" : "Ctrl+N",
+          click: async (item, win) => sendMessage(win as BrowserWindow, "clientEvent/connection/new"),
         },
         {
-          type: 'separator',
+          type: "separator",
         },
         {
-          id: 'menu-import',
-          label: 'Import',
-          accelerator: isMac ? 'Cmd+O' : 'Ctrl+O',
-          click: async (item, win) => sendMessage(win as BrowserWindow, 'clientEvent/import'),
+          id: "menu-import",
+          label: "Import",
+          accelerator: isMac ? "Cmd+O" : "Ctrl+O",
+          click: async (item, win) => sendMessage(win as BrowserWindow, "clientEvent/import"),
         },
         {
-          id: 'menu-export',
-          label: 'Export',
-          accelerator: isMac ? 'Cmd+S' : 'Ctrl+S',
-          click: async (item, win) => sendMessage(win as BrowserWindow, 'clientEvent/exportAll'),
+          id: "menu-export",
+          label: "Export",
+          accelerator: isMac ? "Cmd+S" : "Ctrl+S",
+          click: async (item, win) => sendMessage(win as BrowserWindow, "clientEvent/exportAll"),
         },
         {
-          type: 'separator',
+          type: "separator",
         },
         {
-          label: 'Settings',
-          click: async (item, win) => sendMessage(win as BrowserWindow, 'clientEvent/showSettings'),
+          label: "Settings",
+          click: async (item, win) => sendMessage(win as BrowserWindow, "clientEvent/showSettings"),
         },
         {
-          type: 'separator',
+          type: "separator",
         },
-        isMac ? { role: 'close', accelerator: 'Cmd+Q' } : { role: 'quit', accelerator: 'Alt+F4' },
+        isMac ? { role: "close", accelerator: "Cmd+Q" } : { role: "quit", accelerator: "Alt+F4" },
       ],
     },
     {
-      label: 'Query',
+      label: "Query",
       submenu: [
         {
-          id: 'menu-query-new',
-          label: 'New Query',
-          accelerator: isMac ? 'Cmd+T' : 'Ctrl+T',
-          click: async (item, win) => sendMessage(win as BrowserWindow, 'clientEvent/query/new'),
+          id: "menu-query-new",
+          label: "New Query",
+          accelerator: isMac ? "Cmd+T" : "Ctrl+T",
+          click: async (item, win) => sendMessage(win as BrowserWindow, "clientEvent/query/new"),
         },
         {
-          id: 'menu-query-rename',
-          label: 'Rename Query',
-          accelerator: 'F2',
-          click: async (item, win) => sendMessage(win as BrowserWindow, 'clientEvent/query/rename'),
+          id: "menu-query-rename",
+          label: "Rename Query",
+          accelerator: "F2",
+          click: async (item, win) => sendMessage(win as BrowserWindow, "clientEvent/query/rename"),
         },
         {
-          id: 'menu-query-help',
-          label: 'Query Help',
-          click: async (item, win) =>
-            sendMessage(win as BrowserWindow, 'clientEvent/showQueryHelp'),
+          id: "menu-query-help",
+          label: "Query Help",
+          click: async (item, win) => sendMessage(win as BrowserWindow, "clientEvent/showQueryHelp"),
         },
         {
-          type: 'separator',
+          type: "separator",
         },
         {
-          id: 'menu-query-prev',
-          label: 'Prev Query',
-          accelerator: isMac ? 'Cmd+Shift+[' : 'Alt+Shift+[',
-          click: async (item, win) =>
-            sendMessage(win as BrowserWindow, 'clientEvent/query/showPrev'),
+          id: "menu-query-prev",
+          label: "Prev Query",
+          accelerator: isMac ? "Cmd+Shift+[" : "Alt+Shift+[",
+          click: async (item, win) => sendMessage(win as BrowserWindow, "clientEvent/query/showPrev"),
         },
         {
-          id: 'menu-query-next',
-          label: 'Next Query',
-          accelerator: isMac ? 'Cmd+Shift+]' : 'Alt+Shift+]',
-          click: async (item, win) =>
-            sendMessage(win as BrowserWindow, 'clientEvent/query/showNext'),
+          id: "menu-query-next",
+          label: "Next Query",
+          accelerator: isMac ? "Cmd+Shift+]" : "Alt+Shift+]",
+          click: async (item, win) => sendMessage(win as BrowserWindow, "clientEvent/query/showNext"),
         },
         {
-          type: 'separator',
+          type: "separator",
         },
         {
-          id: 'menu-query-close',
-          label: 'Close Query',
-          accelerator: isMac ? 'Cmd+W' : 'Ctrl+W',
-          click: async (item, win) =>
-            sendMessage(win as BrowserWindow, 'clientEvent/query/closeCurrentlySelected'),
+          id: "menu-query-close",
+          label: "Close Query",
+          accelerator: isMac ? "Cmd+W" : "Ctrl+W",
+          click: async (item, win) => sendMessage(win as BrowserWindow, "clientEvent/query/closeCurrentlySelected"),
         },
       ],
     },
     {
-      label: 'Session',
+      label: "Session",
       submenu: [
         {
-          id: 'menu-session-new',
-          label: 'New Session',
-          click: async (item, win) => sendMessage(win as BrowserWindow, 'clientEvent/session/new'),
+          id: "menu-session-new",
+          label: "New Session",
+          click: async (item, win) => sendMessage(win as BrowserWindow, "clientEvent/session/new"),
         },
         {
-          id: 'menu-session-rename',
-          label: 'Rename Session',
-          click: async (item, win) =>
-            sendMessage(win as BrowserWindow, 'clientEvent/session/rename'),
+          id: "menu-session-rename",
+          label: "Rename Session",
+          click: async (item, win) => sendMessage(win as BrowserWindow, "clientEvent/session/rename"),
         },
         {
-          id: 'menu-session-switch',
-          label: 'Switch Session',
-          click: async (item, win) =>
-            sendMessage(win as BrowserWindow, 'clientEvent/session/switch'),
+          id: "menu-session-switch",
+          label: "Switch Session",
+          click: async (item, win) => sendMessage(win as BrowserWindow, "clientEvent/session/switch"),
         },
         {
-          type: 'separator',
+          type: "separator",
         },
         {
-          id: 'menu-session-delete',
-          label: 'Delete Session',
-          click: async (item, win) =>
-            sendMessage(win as BrowserWindow, 'clientEvent/session/delete'),
+          id: "menu-session-delete",
+          label: "Delete Session",
+          click: async (item, win) => sendMessage(win as BrowserWindow, "clientEvent/session/delete"),
         },
       ],
     },
     {
-      label: 'Edit',
+      label: "Edit",
       submenu: [
-        { role: 'undo' },
-        { role: 'redo' },
-        { type: 'separator' },
-        { role: 'cut' },
-        { role: 'copy' },
-        { role: 'paste' },
-        { role: 'selectAll' },
-        { type: 'separator' },
-        { role: 'forceReload' },
-        { role: 'toggleDevTools' },
-        { type: 'separator' },
-        { role: 'resetZoom' },
-        { role: 'zoomIn' },
+        { role: "undo" },
+        { role: "redo" },
+        { type: "separator" },
+        { role: "cut" },
+        { role: "copy" },
+        { role: "paste" },
+        { role: "selectAll" },
+        { type: "separator" },
+        { role: "forceReload" },
+        { role: "toggleDevTools" },
+        { type: "separator" },
+        { role: "resetZoom" },
+        { role: "zoomIn" },
         {
-          role: 'zoomIn',
-          accelerator: isMac ? 'Cmd+=' : 'Ctrl+=',
+          role: "zoomIn",
+          accelerator: isMac ? "Cmd+=" : "Ctrl+=",
           visible: false,
           acceleratorWorksWhenHidden: true,
         },
-        { role: 'zoomOut' },
-        { type: 'separator' },
-        { role: 'togglefullscreen' },
+        { role: "zoomOut" },
+        { type: "separator" },
+        { role: "togglefullscreen" },
         {
-          id: 'menu-session-switch',
-          label: 'Command Palette',
-          accelerator: isMac ? 'Cmd+P' : 'Ctrl+P',
+          id: "menu-session-switch",
+          label: "Command Palette",
+          accelerator: isMac ? "Cmd+P" : "Ctrl+P",
           visible: false,
           acceleratorWorksWhenHidden: true,
-          click: async (item, win) =>
-            sendMessage(win as BrowserWindow, 'clientEvent/showCommandPalette'),
+          click: async (item, win) => sendMessage(win as BrowserWindow, "clientEvent/showCommandPalette"),
         },
       ],
     },
     {
-      label: 'Help',
+      label: "Help",
       submenu: [
         {
-          label: 'File a bug',
+          label: "File a bug",
           click: async () => {
-            await shell.openExternal('https://github.com/synle/sqlui-native/issues/new');
+            await shell.openExternal("https://github.com/synle/sqlui-native/issues/new");
           },
         },
         {
-          label: 'About sqlui-native (Check for update)',
-          click: async (item, win) =>
-            sendMessage(win as BrowserWindow, 'clientEvent/checkForUpdate'),
+          label: "About sqlui-native (Check for update)",
+          click: async (item, win) => sendMessage(win as BrowserWindow, "clientEvent/checkForUpdate"),
         },
       ],
     },
@@ -297,7 +281,7 @@ app.whenReady().then(async () => {
   await createWindow(true);
   setupMenu();
 
-  app.on('activate', () => {
+  app.on("activate", () => {
     // On macOS it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
@@ -307,27 +291,27 @@ app.whenReady().then(async () => {
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
 // explicitly with Cmd + Q.
-app.on('window-all-closed', () => {
+app.on("window-all-closed", () => {
   app.quit();
 });
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
 // events
-ipcMain.handle('dark-mode:toggle', () => {
+ipcMain.handle("dark-mode:toggle", () => {
   if (nativeTheme.shouldUseDarkColors) {
-    nativeTheme.themeSource = 'light';
+    nativeTheme.themeSource = "light";
   } else {
-    nativeTheme.themeSource = 'dark';
+    nativeTheme.themeSource = "dark";
   }
   return nativeTheme.shouldUseDarkColors;
 });
 
-ipcMain.handle('dark-mode:system', () => {
-  nativeTheme.themeSource = 'system';
+ipcMain.handle("dark-mode:system", () => {
+  nativeTheme.themeSource = "system";
 });
 
-ipcMain.on('sqluiNativeEvent/toggleMenus', (event, data) => {
+ipcMain.on("sqluiNativeEvent/toggleMenus", (event, data) => {
   const [enabled, ...targetMenuIds] = data;
   // console.log('>> Toggle Menus', enabled, targetMenuIds);
   for (const targetMenuId of targetMenuIds) {
@@ -336,28 +320,28 @@ ipcMain.on('sqluiNativeEvent/toggleMenus', (event, data) => {
       let menuItem: any = Menu.getApplicationMenu().getMenuItemById(targetMenuId);
       menuItem.enabled = enabled;
     } catch (err) {
-      console.log('>> Failed to toggle Menu', data, err);
+      console.log(">> Failed to toggle Menu", data, err);
     }
   }
 });
 
 // this is the event listener that will respond when we will request it in the web page
 const _apiCache = {};
-ipcMain.on('sqluiNativeEvent/fetch', async (event, data) => {
+ipcMain.on("sqluiNativeEvent/fetch", async (event, data) => {
   const { requestId, url, options } = data;
   const responseId = `server response ${Date.now()}`;
 
-  const method = (options.method || 'get').toLowerCase();
+  const method = (options.method || "get").toLowerCase();
 
-  const windowId = options?.headers['sqlui-native-window-id'];
-  const sessionId = options?.headers['sqlui-native-session-id'];
+  const windowId = options?.headers["sqlui-native-window-id"];
+  const sessionId = options?.headers["sqlui-native-session-id"];
 
   let body: any = {};
   try {
     body = JSON.parse(options.body);
   } catch (err) {}
 
-  console.log('>> Request', method, url, sessionId, body);
+  console.log(">> Request", method, url, sessionId, body);
   const matchCurrentUrlAgainst = (matchAgainstUrl: string) => {
     try {
       return matchPath(matchAgainstUrl, url);
@@ -368,12 +352,12 @@ ipcMain.on('sqluiNativeEvent/fetch', async (event, data) => {
 
   try {
     let returnedResponseHeaders: any = []; // array of [key, value]
-    const sendResponse = (responseData: any = '', status = 200) => {
+    const sendResponse = (responseData: any = "", status = 200) => {
       let ok = true;
       if (status >= 300 || status < 200) {
         ok = false;
       }
-      console.log('>> Response', status, method, url, sessionId, body, responseData);
+      console.log(">> Response", status, method, url, sessionId, body, responseData);
       event.reply(requestId, {
         ok,
         status,
@@ -431,8 +415,8 @@ ipcMain.on('sqluiNativeEvent/fetch', async (event, data) => {
           params: matchedUrlObject?.params,
           body: body,
           headers: {
-            'sqlui-native-session-id': sessionId,
-            'sqlui-native-window-id': windowId,
+            "sqlui-native-session-id": sessionId,
+            "sqlui-native-window-id": windowId,
           },
         };
 
@@ -441,8 +425,8 @@ ipcMain.on('sqluiNativeEvent/fetch', async (event, data) => {
     }
 
     // not found, then return 404
-    sendResponse('Resource Not Found...', 500);
+    sendResponse("Resource Not Found...", 500);
   } catch (err) {
-    console.log('error', err);
+    console.log("error", err);
   }
 });

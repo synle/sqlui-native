@@ -1,6 +1,6 @@
-import Tooltip from '@mui/material/Tooltip';
-import { styled } from '@mui/system';
-import { SqluiCore } from 'typings';
+import Tooltip from "@mui/material/Tooltip";
+import { styled } from "@mui/system";
+import { SqluiCore } from "typings";
 
 type ColumnAttributesProps = {
   column: SqluiCore.ColumnMetaData;
@@ -16,14 +16,14 @@ export default function ColumnAttributes(props: ColumnAttributesProps): JSX.Elem
       let value = column[key];
 
       if (value === true) {
-        value = 'Yes';
+        value = "Yes";
       } else if (value === false) {
-        value = 'No';
+        value = "No";
       } else if (Array.isArray(value)) {
         value = JSON.stringify(value);
       } else if (value === null) {
-        value = 'null';
-      } else if (typeof value === 'string') {
+        value = "null";
+      } else if (typeof value === "string") {
         value = value;
       } else {
         value = JSON.stringify(value, null, 2);
@@ -37,16 +37,16 @@ export default function ColumnAttributes(props: ColumnAttributesProps): JSX.Elem
     .filter((attribute) => !!attribute.value);
 
   return (
-    <StyledAttributeDescription className='ColumnAttributes'>
+    <StyledAttributeDescription className="ColumnAttributes">
       {attributes
-        .filter((attr) => ['name'].indexOf(attr.name) === -1)
+        .filter((attr) => ["name"].indexOf(attr.name) === -1)
         .map((attr) => (
           <div key={attr.name}>
-            <div className='AttributeLine'>
+            <div className="AttributeLine">
               <b>{attr.name}</b>
             </div>
             <Tooltip title={attr.value}>
-              <div className='AttributeLine'>{attr.value}</div>
+              <div className="AttributeLine">{attr.value}</div>
             </Tooltip>
           </div>
         ))}
@@ -54,14 +54,14 @@ export default function ColumnAttributes(props: ColumnAttributesProps): JSX.Elem
   );
 }
 
-const StyledAttributeDescription = styled('div')(({ theme }) => {
+const StyledAttributeDescription = styled("div")(({ theme }) => {
   return {
     color: theme.palette.text.disabled,
-    fontFamily: 'monospace',
+    fontFamily: "monospace",
 
-    '.AttributeLine': {
-      overflow: 'hidden',
-      textOverflow: 'ellipsis',
+    ".AttributeLine": {
+      overflow: "hidden",
+      textOverflow: "ellipsis",
     },
   };
 });

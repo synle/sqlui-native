@@ -1,17 +1,15 @@
-import DeleteIcon from '@mui/icons-material/Delete';
-import IconButton from '@mui/material/IconButton';
-import Tooltip from '@mui/material/Tooltip';
-import React from 'react';
-import { useActionDialogs } from 'src/frontend/hooks/useActionDialogs';
-import { useDeleteConnection } from 'src/frontend/hooks/useConnection';
+import DeleteIcon from "@mui/icons-material/Delete";
+import IconButton from "@mui/material/IconButton";
+import Tooltip from "@mui/material/Tooltip";
+import React from "react";
+import { useActionDialogs } from "src/frontend/hooks/useActionDialogs";
+import { useDeleteConnection } from "src/frontend/hooks/useConnection";
 
 type DeleteConnectionButtonProps = {
   connectionId: string;
 };
 
-export default function DeleteConnectionButton(
-  props: DeleteConnectionButtonProps,
-): JSX.Element | null {
+export default function DeleteConnectionButton(props: DeleteConnectionButtonProps): JSX.Element | null {
   const { connectionId } = props;
   const { confirm } = useActionDialogs();
   const { mutateAsync } = useDeleteConnection();
@@ -20,15 +18,15 @@ export default function DeleteConnectionButton(
     e.stopPropagation();
 
     try {
-      await confirm('Delete this connection?');
+      await confirm("Delete this connection?");
       await mutateAsync(connectionId);
     } catch (err) {}
   };
 
   return (
-    <Tooltip title='Delete Connection'>
-      <IconButton aria-label='Delete Connection' onClick={onDelete} size='small'>
-        <DeleteIcon fontSize='inherit' />
+    <Tooltip title="Delete Connection">
+      <IconButton aria-label="Delete Connection" onClick={onDelete} size="small">
+        <DeleteIcon fontSize="inherit" />
       </IconButton>
     </Tooltip>
   );

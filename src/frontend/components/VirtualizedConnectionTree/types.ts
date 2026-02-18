@@ -1,7 +1,7 @@
-import { SqluiCore } from 'typings';
+import { SqluiCore } from "typings";
 
 export type ConnectionHeaderRow = {
-  type: 'connection-header';
+  type: "connection-header";
   key: string;
   depth: 0;
   visibilityKey: string;
@@ -12,14 +12,14 @@ export type ConnectionHeaderRow = {
 };
 
 export type ConnectionRetryRow = {
-  type: 'connection-retry';
+  type: "connection-retry";
   key: string;
   depth: 1;
   connectionId: string;
 };
 
 export type DatabaseHeaderRow = {
-  type: 'database-header';
+  type: "database-header";
   key: string;
   depth: 1;
   visibilityKey: string;
@@ -30,7 +30,7 @@ export type DatabaseHeaderRow = {
 };
 
 export type TableHeaderRow = {
-  type: 'table-header';
+  type: "table-header";
   key: string;
   depth: 2;
   visibilityKey: string;
@@ -42,7 +42,7 @@ export type TableHeaderRow = {
 };
 
 export type ColumnHeaderRow = {
-  type: 'column-header';
+  type: "column-header";
   key: string;
   depth: 3;
   visibilityKey: string;
@@ -55,35 +55,35 @@ export type ColumnHeaderRow = {
 };
 
 export type ColumnAttributesRow = {
-  type: 'column-attributes';
+  type: "column-attributes";
   key: string;
   depth: 4;
   column: SqluiCore.ColumnMetaData;
 };
 
 export type ShowAllColumnsRow = {
-  type: 'show-all-columns';
+  type: "show-all-columns";
   key: string;
   depth: 4;
   showAllKey: string;
 };
 
 export type LoadingRow = {
-  type: 'loading';
+  type: "loading";
   key: string;
   depth: number;
   message?: string;
 };
 
 export type ErrorRow = {
-  type: 'error';
+  type: "error";
   key: string;
   depth: number;
   message?: string;
 };
 
 export type EmptyRow = {
-  type: 'empty';
+  type: "empty";
   key: string;
   depth: number;
   message?: string;

@@ -1,11 +1,8 @@
-import React, { createContext, useContext, useState } from 'react';
-import { SessionStorageConfig } from 'src/frontend/data/config';
-import { SqluiFrontend } from 'typings';
+import React, { createContext, useContext, useState } from "react";
+import { SessionStorageConfig } from "src/frontend/data/config";
+import { SqluiFrontend } from "typings";
 // used for show and hide the sidebar trees
-let _treeVisibles = SessionStorageConfig.get<SqluiFrontend.TreeVisibilities>(
-  'clientConfig/cache.treeVisibles',
-  {},
-);
+let _treeVisibles = SessionStorageConfig.get<SqluiFrontend.TreeVisibilities>("clientConfig/cache.treeVisibles", {});
 
 const TargetContext = createContext({
   visibles: _treeVisibles,
@@ -40,15 +37,11 @@ export default function WrappedContext(props: { children: React.ReactNode }): JS
   function _updateVisibles(newTreeVisibles: SqluiFrontend.TreeVisibilities) {
     _treeVisibles = { ...newTreeVisibles };
     setVisibles(_treeVisibles);
-    SessionStorageConfig.set('clientConfig/cache.treeVisibles', _treeVisibles);
+    SessionStorageConfig.set("clientConfig/cache.treeVisibles", _treeVisibles);
   }
 
   // Provide the theme value and toggle function to the children components
-  return (
-    <TargetContext.Provider value={{ visibles, onToggle, onClear, onSet }}>
-      {props.children}
-    </TargetContext.Provider>
-  );
+  return <TargetContext.Provider value={{ visibles, onToggle, onClear, onSet }}>{props.children}</TargetContext.Provider>;
 }
 
 export function useShowHide() {

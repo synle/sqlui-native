@@ -1,12 +1,12 @@
-import React, { useEffect } from 'react';
-import DropdownMenu from 'src/frontend/components/DropdownMenu';
+import React, { useEffect } from "react";
+import DropdownMenu from "src/frontend/components/DropdownMenu";
 
-export type { DropdownButtonOption } from 'src/frontend/components/DropdownMenu';
+export type { DropdownButtonOption } from "src/frontend/components/DropdownMenu";
 
 type DropdownButtonProps = {
   id: string;
   children: React.ReactNode;
-  options: import('src/frontend/components/DropdownMenu').DropdownButtonOption[];
+  options: import("src/frontend/components/DropdownMenu").DropdownButtonOption[];
   onToggle?: (open: boolean) => void;
   open?: boolean;
   isLoading?: boolean;
@@ -36,11 +36,12 @@ export default function DropdownButton(props: DropdownButtonProps): JSX.Element 
       <i
         ref={anchorRef}
         aria-controls={open ? id : undefined}
-        aria-expanded={open ? 'true' : undefined}
-        aria-label='actions dropdown'
-        aria-haspopup='menu'
+        aria-expanded={open ? "true" : undefined}
+        aria-label="actions dropdown"
+        aria-haspopup="menu"
         onClick={onToggle}
-        className='DropdownButton'>
+        className="DropdownButton"
+      >
         {children}
       </i>
       <DropdownMenu

@@ -22,16 +22,16 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
+          cache: "npm"
       - run: npm version --no-git-tag-version patch
       - id: package-version
         uses: martinbeentjes/npm-get-version-action@master
         with:
-          path: '.'
+          path: "."
       - uses: dev-drprasad/delete-tag-and-release@v0.2.1
         with:
           delete_release: true
-          tag_name: '${{ steps.package-version.outputs.current-version }}'
+          tag_name: "${{ steps.package-version.outputs.current-version }}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/create-release@v1
@@ -55,7 +55,7 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
+          cache: "npm"
       - run: bash scripts/build.sh
 
       # package and distribute .exe
@@ -103,7 +103,7 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
+          cache: "npm"
       - run: pip install setuptools
         name: Install setuptools for node-gyp
       - run: bash scripts/build.sh
@@ -135,7 +135,7 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
+          cache: "npm"
       - run: bash scripts/dist.sh
       - run: mv ./dist/sqlui-native*.dmg ./dist/sqlui-native-arm64.dmg
 
@@ -164,7 +164,7 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
+          cache: "npm"
       - run: bash scripts/build.sh
       - run: npm run dist-macos-x64
       - run: mv ./dist/sqlui-native*.dmg ./dist/sqlui-native-x64.dmg
@@ -195,7 +195,7 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
+          cache: "npm"
       - run: bash scripts/dist.sh
       - run: |
           mv ./dist/sqlui-native*.deb ./dist/sqlui-native.deb
@@ -268,7 +268,7 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
+          cache: "npm"
       - run: bash scripts/build.sh
       - run: npm run dist-linux-appimage
       - run: mv ./dist/sqlui-native*.AppImage ./dist/sqlui-native.AppImage
@@ -288,7 +288,8 @@ jobs:
           asset_content_type: application/octet-stream
 
   publish:
-    needs: [create_release, build_windows_x64, build_windows_arm64, build_macos_arm64, build_macos_x86_intel, build_linux, build_app_image_linux]
+    needs:
+      [create_release, build_windows_x64, build_windows_arm64, build_macos_arm64, build_macos_x86_intel, build_linux, build_app_image_linux]
     runs-on: ubuntu-latest
     timeout-minutes: 4
     steps:
@@ -296,18 +297,19 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
+          cache: "npm"
       - run: npm version --no-git-tag-version patch
       - run: |
           echo "{ \"version\": \"${{ needs.create_release.outputs.package_version }}\" }" > release.json
       - uses: EndBug/add-and-commit@v9
         with:
-          message: 'CI / CD - New Release ${{needs.create_release.outputs.package_version}}'
+          message: "CI / CD - New Release ${{needs.create_release.outputs.package_version}}"
           default_author: github_actions
 
   roll_back_on_failure_or_canceled:
     if: failure() || cancelled()
-    needs: [create_release, build_windows_x64, build_windows_arm64, build_macos_arm64, build_macos_x86_intel, build_linux, build_app_image_linux]
+    needs:
+      [create_release, build_windows_x64, build_windows_arm64, build_macos_arm64, build_macos_x86_intel, build_linux, build_app_image_linux]
     runs-on: ubuntu-latest
     timeout-minutes: 4
     steps:
@@ -315,6 +317,6 @@ jobs:
       - uses: dev-drprasad/delete-tag-and-release@v0.2.0
         with:
           delete_release: true
-          tag_name: '${{ needs.create_release.outputs.package_version }}'
+          tag_name: "${{ needs.create_release.outputs.package_version }}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

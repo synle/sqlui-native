@@ -1,10 +1,10 @@
-import fs from 'fs';
-import RelationalDataAdapter from 'src/common/adapters/RelationalDataAdapter/index';
+import fs from "fs";
+import RelationalDataAdapter from "src/common/adapters/RelationalDataAdapter/index";
 
-describe('sqlite', () => {
+describe("sqlite", () => {
   let adapter;
-  if (process.platform === 'win32') {
-    test('Skipped for win32', async () => {});
+  if (process.platform === "win32") {
+    test("Skipped for win32", async () => {});
     return;
   }
 
@@ -19,7 +19,7 @@ describe('sqlite', () => {
     adapter = new RelationalDataAdapter(`sqlite://${mockedDbFilePath}`);
   });
 
-  test('Create and insert table', async () => {
+  test("Create and insert table", async () => {
     try {
       // create the table
       await adapter.execute(`
@@ -46,7 +46,7 @@ describe('sqlite', () => {
     }
   });
 
-  test('Get tables', async () => {
+  test("Get tables", async () => {
     const tables = await adapter.getTables();
     expect(tables).toMatchInlineSnapshot(`
       [
@@ -58,8 +58,8 @@ describe('sqlite', () => {
     `);
   });
 
-  test('Get columns', async () => {
-    const columns = await adapter.getColumns('artists');
+  test("Get columns", async () => {
+    const columns = await adapter.getColumns("artists");
     expect(columns).toMatchInlineSnapshot(`
       [
         {
@@ -82,7 +82,7 @@ describe('sqlite', () => {
     `);
   });
 
-  test('Execute Select', async () => {
+  test("Execute Select", async () => {
     const resp = await adapter.execute(`SELECT * FROM artists ORDER BY Name ASC LIMIT 10`);
     expect(resp?.raw?.length).toBe(3);
     expect(resp?.ok).toBe(true);
@@ -104,7 +104,7 @@ describe('sqlite', () => {
     `);
   });
 
-  test('Execute Update', async () => {
+  test("Execute Update", async () => {
     try {
       const resp = await adapter.execute(`UPDATE artists SET name = 'AC/DC' WHERE ArtistId = '1'`);
       expect(1).toBe(1);

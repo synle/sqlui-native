@@ -1,19 +1,19 @@
-import AzureCosmosDataAdapterScripts from 'src/common/adapters/AzureCosmosDataAdapter/scripts';
-import AzureTableStorageAdapterScripts from 'src/common/adapters/AzureTableStorageAdapter/scripts';
-import BaseDataScript from 'src/common/adapters/BaseDataAdapter/scripts';
-import CassandraDataAdapterScripts from 'src/common/adapters/CassandraDataAdapter/scripts';
-import MongoDBDataAdapterScripts from 'src/common/adapters/MongoDBDataAdapter/scripts';
-import RedisDataAdapterScripts from 'src/common/adapters/RedisDataAdapter/scripts';
-import RelationalDataAdapterScripts from 'src/common/adapters/RelationalDataAdapter/scripts';
-import { formatJS, formatSQL } from 'src/frontend/utils/formatter';
-import { SqlAction, SqluiCore } from 'typings';
+import AzureCosmosDataAdapterScripts from "src/common/adapters/AzureCosmosDataAdapter/scripts";
+import AzureTableStorageAdapterScripts from "src/common/adapters/AzureTableStorageAdapter/scripts";
+import BaseDataScript from "src/common/adapters/BaseDataAdapter/scripts";
+import CassandraDataAdapterScripts from "src/common/adapters/CassandraDataAdapter/scripts";
+import MongoDBDataAdapterScripts from "src/common/adapters/MongoDBDataAdapter/scripts";
+import RedisDataAdapterScripts from "src/common/adapters/RedisDataAdapter/scripts";
+import RelationalDataAdapterScripts from "src/common/adapters/RelationalDataAdapter/scripts";
+import { formatJS, formatSQL } from "src/frontend/utils/formatter";
+import { SqlAction, SqluiCore } from "typings";
 function _formatScript(formatter?: string, query?: string) {
-  query = query || '';
+  query = query || "";
   switch (formatter) {
-    case 'sql':
+    case "sql":
       return formatSQL(query);
-    case 'js':
-    case 'javascript':
+    case "js":
+    case "javascript":
       return formatJS(query);
     default:
       return query;
@@ -22,9 +22,7 @@ function _formatScript(formatter?: string, query?: string) {
 
 function _formatScripts(
   actionInput: SqlAction.TableInput | SqlAction.DatabaseInput | SqlAction.ConnectionInput,
-  generatorFuncs:
-    | SqlAction.TableActionScriptGenerator[]
-    | SqlAction.DatabaseActionScriptGenerator[],
+  generatorFuncs: SqlAction.TableActionScriptGenerator[] | SqlAction.DatabaseActionScriptGenerator[],
 ) {
   const actions: SqlAction.Output[] = [];
 
@@ -110,7 +108,7 @@ export function isDialectSupportVisualization(dialect?: string) {
 }
 
 export function getSyntaxModeByDialect(dialect?: string) {
-  return _getImplementation(dialect)?.getSyntaxMode() || 'sql';
+  return _getImplementation(dialect)?.getSyntaxMode() || "sql";
 }
 
 export function getIsTableIdRequiredForQueryByDialect(dialect?: string) {
@@ -119,10 +117,10 @@ export function getIsTableIdRequiredForQueryByDialect(dialect?: string) {
 
 export function getDialectTypeFromConnectionString(connection: string) {
   if (connection.match(/^[a-z0-9+-]+:\/\//i)) {
-    return connection.substring(0, connection.indexOf(':')).toLowerCase();
+    return connection.substring(0, connection.indexOf(":")).toLowerCase();
   }
 
-  return '';
+  return "";
 }
 
 export function getDialectType(connection: string) {
@@ -131,15 +129,15 @@ export function getDialectType(connection: string) {
 }
 
 export function getDialectName(dialect?: string) {
-  return _getImplementation(dialect)?.getDialectName(dialect as SqluiCore.Dialect) || '';
+  return _getImplementation(dialect)?.getDialectName(dialect as SqluiCore.Dialect) || "";
 }
 
 export function getDialectIcon(dialect?: string) {
-  return _getImplementation(dialect)?.getDialectIcon(dialect as SqluiCore.Dialect) || '';
+  return _getImplementation(dialect)?.getDialectIcon(dialect as SqluiCore.Dialect) || "";
 }
 
 export function getSampleConnectionString(dialect?: string) {
-  return _getImplementation(dialect)?.getSampleConnectionString(dialect as SqluiCore.Dialect) || '';
+  return _getImplementation(dialect)?.getSampleConnectionString(dialect as SqluiCore.Dialect) || "";
 }
 
 export function getSampleSelectQuery(actionInput: SqlAction.TableInput) {
@@ -150,33 +148,23 @@ export function getSampleSelectQuery(actionInput: SqlAction.TableInput) {
 }
 
 export function getTableActions(actionInput: SqlAction.TableInput) {
-  const scriptsToUse: SqlAction.TableActionScriptGenerator[] =
-    _getImplementation(actionInput.dialect)?.getTableScripts() || [];
+  const scriptsToUse: SqlAction.TableActionScriptGenerator[] = _getImplementation(actionInput.dialect)?.getTableScripts() || [];
   return _formatScripts(actionInput, scriptsToUse);
 }
 
 export function getDatabaseActions(actionInput: SqlAction.DatabaseInput) {
-  const scriptsToUse: SqlAction.DatabaseActionScriptGenerator[] =
-    _getImplementation(actionInput.dialect)?.getDatabaseScripts() || [];
+  const scriptsToUse: SqlAction.DatabaseActionScriptGenerator[] = _getImplementation(actionInput.dialect)?.getDatabaseScripts() || [];
   return _formatScripts(actionInput, scriptsToUse);
 }
 
 export function getConnectionActions(actionInput: SqlAction.ConnectionInput) {
-  const scriptsToUse: SqlAction.DatabaseActionScriptGenerator[] =
-    _getImplementation(actionInput.dialect)?.getConnectionScripts() || [];
+  const scriptsToUse: SqlAction.DatabaseActionScriptGenerator[] = _getImplementation(actionInput.dialect)?.getConnectionScripts() || [];
   return _formatScripts(actionInput, scriptsToUse);
 }
 
-export function getCodeSnippet(
-  connection: SqluiCore.ConnectionProps,
-  query: SqluiCore.ConnectionQuery,
-  language: SqluiCore.LanguageMode,
-) {
+export function getCodeSnippet(connection: SqluiCore.ConnectionProps, query: SqluiCore.ConnectionQuery, language: SqluiCore.LanguageMode) {
   const cleanedUpQuery = { ...query };
-  cleanedUpQuery.sql = cleanedUpQuery.sql || '';
+  cleanedUpQuery.sql = cleanedUpQuery.sql || "";
 
-  return _formatScript(
-    language,
-    _getImplementation(connection?.dialect)?.getCodeSnippet(connection, cleanedUpQuery, language),
-  );
+  return _formatScript(language, _getImplementation(connection?.dialect)?.getCodeSnippet(connection, cleanedUpQuery, language));
 }

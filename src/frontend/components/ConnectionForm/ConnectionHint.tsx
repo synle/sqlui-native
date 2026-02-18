@@ -1,19 +1,15 @@
-import StarIcon from '@mui/icons-material/Star';
-import { Box, Link, Skeleton } from '@mui/material';
-import Avatar from '@mui/material/Avatar';
-import Divider from '@mui/material/Divider';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemAvatar from '@mui/material/ListItemAvatar';
-import ListItemText from '@mui/material/ListItemText';
-import {
-  getDialectName,
-  getSampleConnectionString,
-  SUPPORTED_DIALECTS,
-} from 'src/common/adapters/DataScriptFactory';
-import ConnectionTypeIcon from 'src/frontend/components/ConnectionTypeIcon';
-import { useGetBookmarkItems } from 'src/frontend/hooks/useFolderItems';
-import { SqluiCore } from 'typings';
+import StarIcon from "@mui/icons-material/Star";
+import { Box, Link, Skeleton } from "@mui/material";
+import Avatar from "@mui/material/Avatar";
+import Divider from "@mui/material/Divider";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemAvatar from "@mui/material/ListItemAvatar";
+import ListItemText from "@mui/material/ListItemText";
+import { getDialectName, getSampleConnectionString, SUPPORTED_DIALECTS } from "src/common/adapters/DataScriptFactory";
+import ConnectionTypeIcon from "src/frontend/components/ConnectionTypeIcon";
+import { useGetBookmarkItems } from "src/frontend/hooks/useFolderItems";
+import { SqluiCore } from "typings";
 
 type ConnectionHintProps = {
   showBookmarks?: boolean;
@@ -26,27 +22,23 @@ export default function ConnectionHint(props: ConnectionHintProps): JSX.Element 
 
   if (isLoading) {
     return (
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-        <Skeleton variant='rectangular' height={40} />
-        <Skeleton variant='rectangular' height={40} />
-        <Skeleton variant='rectangular' height={40} />
-        <Skeleton variant='rectangular' height={40} />
-        <Skeleton variant='rectangular' height={40} />
+      <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+        <Skeleton variant="rectangular" height={40} />
+        <Skeleton variant="rectangular" height={40} />
+        <Skeleton variant="rectangular" height={40} />
+        <Skeleton variant="rectangular" height={40} />
+        <Skeleton variant="rectangular" height={40} />
       </Box>
     );
   }
 
-  const connectionsFromBookmark = data?.filter((bookmark) => bookmark.type === 'Connection');
+  const connectionsFromBookmark = data?.filter((bookmark) => bookmark.type === "Connection");
 
-  if (
-    props.showBookmarks === true &&
-    connectionsFromBookmark &&
-    connectionsFromBookmark.length > 0
-  ) {
+  if (props.showBookmarks === true && connectionsFromBookmark && connectionsFromBookmark.length > 0) {
     // pulling the connection string from bookmarks
     bookmarkedConnectionsDom = connectionsFromBookmark.map((connection) => {
       const bookmark = connection.data as SqluiCore.ConnectionProps;
-      const dialect = bookmark.dialect || '';
+      const dialect = bookmark.dialect || "";
       const connectionToUse = bookmark.connection;
 
       const onApplyThisConnectionHint = () => props.onChange(dialect, connectionToUse);
@@ -55,17 +47,14 @@ export default function ConnectionHint(props: ConnectionHintProps): JSX.Element 
         <ListItem key={bookmark.id}>
           <ListItemAvatar>
             <Avatar>
-              <ConnectionTypeIcon dialect={dialect} status={dialect ? 'online' : ''} />
+              <ConnectionTypeIcon dialect={dialect} status={dialect ? "online" : ""} />
             </Avatar>
           </ListItemAvatar>
           <ListItemText
             primary={
-              <Box sx={{ display: 'flex', gap: 0.5, alignItems: 'center' }}>
-                <StarIcon fontSize='small' />
-                <Link
-                  underline='hover'
-                  onClick={onApplyThisConnectionHint}
-                  sx={{ textTransform: 'uppercase', fontWeight: 'bold' }}>
+              <Box sx={{ display: "flex", gap: 0.5, alignItems: "center" }}>
+                <StarIcon fontSize="small" />
+                <Link underline="hover" onClick={onApplyThisConnectionHint} sx={{ textTransform: "uppercase", fontWeight: "bold" }}>
                   {connection.name}
                 </Link>
               </Box>
@@ -77,38 +66,32 @@ export default function ConnectionHint(props: ConnectionHintProps): JSX.Element 
     });
 
     // add the divider in front
-    bookmarkedConnectionsDom.unshift(<Divider key='divider' />);
+    bookmarkedConnectionsDom.unshift(<Divider key="divider" />);
   }
 
   return (
-    <List sx={{ bgcolor: 'background.paper', overflow: 'hidden', wordBreak: 'break-all' }}>
-      {SUPPORTED_DIALECTS.sort((a, b) => getDialectName(a).localeCompare(getDialectName(b))).map(
-        (dialect) => {
-          const onApplyThisConnectionHint = () =>
-            props.onChange(dialect, getSampleConnectionString(dialect));
+    <List sx={{ bgcolor: "background.paper", overflow: "hidden", wordBreak: "break-all" }}>
+      {SUPPORTED_DIALECTS.sort((a, b) => getDialectName(a).localeCompare(getDialectName(b))).map((dialect) => {
+        const onApplyThisConnectionHint = () => props.onChange(dialect, getSampleConnectionString(dialect));
 
-          return (
-            <ListItem key={dialect}>
-              <ListItemAvatar>
-                <Avatar>
-                  <ConnectionTypeIcon dialect={dialect} status='online' />
-                </Avatar>
-              </ListItemAvatar>
-              <ListItemText
-                primary={
-                  <Link
-                    underline='hover'
-                    onClick={onApplyThisConnectionHint}
-                    sx={{ textTransform: 'uppercase', fontWeight: 'bold' }}>
-                    {getDialectName(dialect)}
-                  </Link>
-                }
-                secondary={getSampleConnectionString(dialect)}
-              />
-            </ListItem>
-          );
-        },
-      )}
+        return (
+          <ListItem key={dialect}>
+            <ListItemAvatar>
+              <Avatar>
+                <ConnectionTypeIcon dialect={dialect} status="online" />
+              </Avatar>
+            </ListItemAvatar>
+            <ListItemText
+              primary={
+                <Link underline="hover" onClick={onApplyThisConnectionHint} sx={{ textTransform: "uppercase", fontWeight: "bold" }}>
+                  {getDialectName(dialect)}
+                </Link>
+              }
+              secondary={getSampleConnectionString(dialect)}
+            />
+          </ListItem>
+        );
+      })}
       {bookmarkedConnectionsDom}
     </List>
   );

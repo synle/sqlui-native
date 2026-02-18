@@ -1,20 +1,20 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useNavigate } from 'react-router-dom';
-import dataApi from 'src/frontend/data/api';
-import { useUpsertConnection } from 'src/frontend/hooks/useConnection';
-import { useConnectionQueries } from 'src/frontend/hooks/useConnectionQuery';
-import { SqluiCore } from 'typings';
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
+import dataApi from "src/frontend/data/api";
+import { useUpsertConnection } from "src/frontend/hooks/useConnection";
+import { useConnectionQueries } from "src/frontend/hooks/useConnectionQuery";
+import { SqluiCore } from "typings";
 
-const QUERY_KEY_FOLDER_ITEMS = 'folderItems';
-const FOLDER_TYPE_RECYCLE_BIN = 'recycleBin';
-const FOLDER_TYPE_BOOKMARKS = 'bookmarks';
+const QUERY_KEY_FOLDER_ITEMS = "folderItems";
+const FOLDER_TYPE_RECYCLE_BIN = "recycleBin";
+const FOLDER_TYPE_BOOKMARKS = "bookmarks";
 
 export function useGetFolderItems(folderType: SqluiCore.FolderType) {
   return useQuery<SqluiCore.FolderItem[], void, SqluiCore.FolderItem[]>(
     [QUERY_KEY_FOLDER_ITEMS, folderType],
     async () => dataApi.getFolderItems(folderType),
     {
-      notifyOnChangeProps: ['data', 'error'],
+      notifyOnChangeProps: ["data", "error"],
     },
   );
 }
@@ -22,7 +22,7 @@ export function useGetFolderItems(folderType: SqluiCore.FolderType) {
 export function useAddFolderItem(folderType: SqluiCore.FolderType) {
   const queryClient = useQueryClient();
 
-  return useMutation<void, void, Omit<SqluiCore.FolderItem, 'id'>>(
+  return useMutation<void, void, Omit<SqluiCore.FolderItem, "id">>(
     async (folderItem) => {
       await dataApi.addFolderItem(folderType, folderItem);
     },
@@ -91,14 +91,14 @@ export function useRestoreRecycleBinItem() {
   return useMutation<void, void, SqluiCore.FolderItem>(async (folderItem) => {
     // here we handle restorable
     switch (folderItem.type) {
-      case 'Connection':
+      case "Connection":
         await Promise.all([upsertConnection(folderItem.data), deleteRecyleBinItem(folderItem.id)]);
-        navigate('/'); // navigate back to the main page
+        navigate("/"); // navigate back to the main page
         break;
-      case 'Query':
+      case "Query":
         // TODO: add check and handle restore of related connection
         await Promise.all([onAddQuery(folderItem.data), deleteRecyleBinItem(folderItem.id)]);
-        navigate('/'); // navigate back to the main page
+        navigate("/"); // navigate back to the main page
         break;
     }
   });

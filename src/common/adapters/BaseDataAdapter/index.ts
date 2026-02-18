@@ -1,9 +1,6 @@
-import { ConnectionStringParser } from 'connection-string-parser';
-import {
-  getDialectType,
-  getDialectTypeFromConnectionString,
-} from 'src/common/adapters/DataScriptFactory';
-import { SqluiCore } from 'typings';
+import { ConnectionStringParser } from "connection-string-parser";
+import { getDialectType, getDialectTypeFromConnectionString } from "src/common/adapters/DataScriptFactory";
+import { SqluiCore } from "typings";
 
 export const MAX_CONNECTION_TIMEOUT = 3000;
 
@@ -17,7 +14,7 @@ export default abstract class BaseDataAdapter {
   }
 
   protected getConnectionString(): string {
-    return this.connectionOption.replace(/^[a-z0-9+]+:\/\//i, '');
+    return this.connectionOption.replace(/^[a-z0-9+]+:\/\//i, "");
   }
 
   /**
@@ -42,13 +39,11 @@ export default abstract class BaseDataAdapter {
         if (!res || Object.keys(res).length === 0) {
           try {
             // here we attempt to encode and retry parser
-            let connectionParts = connection.replace(`${dialect}://`, '').split(/[:@]/);
+            let connectionParts = connection.replace(`${dialect}://`, "").split(/[:@]/);
             if (connectionParts.length === 4) {
               // there are 4 parts: username, password, host, port
               const [username, password, host, port] = connectionParts.map(encodeURIComponent);
-              res = connectionStringParser.parse(
-                `${dialect}://${username}:${password}@${host}:${port}`,
-              );
+              res = connectionStringParser.parse(`${dialect}://${username}:${password}@${host}:${port}`);
             }
           } catch (err) {}
         }
@@ -63,23 +58,20 @@ export default abstract class BaseDataAdapter {
     return undefined;
   }
 
-  static resolveTypes(
-    inputItem: any,
-    incomingTypeConverter?: (type: string, value: any) => string,
-  ) {
+  static resolveTypes(inputItem: any, incomingTypeConverter?: (type: string, value: any) => string) {
     const stack: {
       item: any;
       path: string[];
       key: string;
-    }[] = [{ item: inputItem, path: [], key: '' }];
+    }[] = [{ item: inputItem, path: [], key: "" }];
 
     const onTypeConverter = (type: string, value: any) => {
       // override the number to be more specific (integer vs float)
-      if (type === 'number') {
+      if (type === "number") {
         if (Number.isInteger(value)) {
-          type = 'integer';
+          type = "integer";
         } else {
-          type = 'float';
+          type = "float";
         }
       }
 
@@ -95,13 +87,13 @@ export default abstract class BaseDataAdapter {
     while (stack.length > 0) {
       //@ts-ignore
       const { item, path, key } = stack.pop();
-      const type = Array.isArray(item) ? 'array' : typeof item;
+      const type = Array.isArray(item) ? "array" : typeof item;
       if (item === null || item === undefined) {
         // TODO: if item has a null or undefined, let's set the allow null flag
-      } else if (type === 'object') {
+      } else if (type === "object") {
         for (const targetKey of Object.keys(item)) {
           const newPath = [...path, targetKey];
-          const newKey = newPath.join('/');
+          const newKey = newPath.join("/");
 
           if (!visited.has(newKey)) {
             stack.push({
@@ -148,78 +140,78 @@ export default abstract class BaseDataAdapter {
         ...columnsMap,
         ...BaseDataAdapter.resolveTypes(item, (type: string, val: any) => {
           switch (type) {
-            case 'float':
+            case "float":
               switch (toDialectHint) {
-                case 'mysql':
-                case 'mariadb':
-                case 'mssql':
-                case 'postgres':
-                case 'postgresql':
-                case 'sqlite':
-                case 'cassandra':
-                  return 'FLOAT';
-                case 'mongodb':
-                case 'redis':
-                case 'rediss':
-                case 'cosmosdb':
-                case 'aztable':
+                case "mysql":
+                case "mariadb":
+                case "mssql":
+                case "postgres":
+                case "postgresql":
+                case "sqlite":
+                case "cassandra":
+                  return "FLOAT";
+                case "mongodb":
+                case "redis":
+                case "rediss":
+                case "cosmosdb":
+                case "aztable":
                 default:
                   return type;
               }
-            case 'integer':
+            case "integer":
               switch (toDialectHint) {
-                case 'mysql':
-                case 'mariadb':
-                case 'mssql':
-                case 'postgres':
-                case 'postgresql':
-                case 'sqlite':
-                  return 'INTEGER';
-                case 'cassandra':
-                  return 'INT';
-                case 'mongodb':
-                case 'redis':
-                case 'rediss':
-                case 'cosmosdb':
-                case 'aztable':
+                case "mysql":
+                case "mariadb":
+                case "mssql":
+                case "postgres":
+                case "postgresql":
+                case "sqlite":
+                  return "INTEGER";
+                case "cassandra":
+                  return "INT";
+                case "mongodb":
+                case "redis":
+                case "rediss":
+                case "cosmosdb":
+                case "aztable":
                 default:
                   return type;
               }
-            case 'boolean':
+            case "boolean":
               switch (toDialectHint) {
-                case 'mssql':
-                  return 'BIT';
-                case 'mysql':
-                case 'mariadb':
-                case 'postgres':
-                case 'postgresql':
-                case 'sqlite':
-                case 'cassandra':
-                  return 'BOOLEAN';
-                case 'mongodb':
-                case 'redis':
-                case 'rediss':
-                case 'cosmosdb':
-                case 'aztable':
+                case "mssql":
+                  return "BIT";
+                case "mysql":
+                case "mariadb":
+                case "postgres":
+                case "postgresql":
+                case "sqlite":
+                case "cassandra":
+                  return "BOOLEAN";
+                case "mongodb":
+                case "redis":
+                case "rediss":
+                case "cosmosdb":
+                case "aztable":
                 default:
                   return type;
               }
             default:
               // TODO: should pick up nvarchar vs text instead of default to text
               switch (toDialectHint) {
-                case 'mysql':
-                case 'mariadb':
-                case 'mssql':
-                case 'postgres':
-                case 'postgresql':
-                case 'sqlite':
-                case 'cassandra':
-                  return 'TEXT';
-                case 'mongodb':
-                case 'redis':
-                case 'rediss':
-                case 'cosmosdb':
-                case 'aztable':
+                case "mysql":
+                case "mariadb":
+                case "mssql":
+                case "postgres":
+                case "postgresql":
+                case "sqlite":
+                case "cassandra":
+                  return "TEXT";
+                case "mongodb":
+                case "redis":
+                case "rediss":
+                case "cosmosdb":
+                case "aztable":
                 default:
                   return type;
               }

@@ -1,21 +1,17 @@
-import { useNavigate } from 'react-router-dom';
-import { useEffect } from 'react';
-import ActionDialogs from 'src/frontend/components/ActionDialogs';
-import { allMenuKeys } from 'src/frontend/components/MissionControl';
-import SessionSelectionForm from 'src/frontend/components/SessionSelectionForm';
-import { useActionDialogs } from 'src/frontend/hooks/useActionDialogs';
-import {
-  useGetCurrentSession,
-  useGetOpenedSessionIds,
-  useGetSessions,
-} from 'src/frontend/hooks/useSession';
+import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
+import ActionDialogs from "src/frontend/components/ActionDialogs";
+import { allMenuKeys } from "src/frontend/components/MissionControl";
+import SessionSelectionForm from "src/frontend/components/SessionSelectionForm";
+import { useActionDialogs } from "src/frontend/hooks/useActionDialogs";
+import { useGetCurrentSession, useGetOpenedSessionIds, useGetSessions } from "src/frontend/hooks/useSession";
 
 export default function SessionSelectionModal() {
   const navigate = useNavigate();
   const { modal } = useActionDialogs();
   const { isLoading: loadingSessions } = useGetSessions();
   const { isLoading: loadingOpenedSessionIds } = useGetOpenedSessionIds();
-  const { isLoading: loadingCurrentSession, data: currentSession, } = useGetCurrentSession();
+  const { isLoading: loadingCurrentSession, data: currentSession } = useGetCurrentSession();
   const isLoading = loadingSessions || loadingOpenedSessionIds || loadingCurrentSession;
 
   useEffect(() => {
@@ -29,12 +25,12 @@ export default function SessionSelectionModal() {
           window.toggleElectronMenu(false, allMenuKeys);
         } catch (err) {}
 
-        window.document.title = 'Choose a Session';
+        window.document.title = "Choose a Session";
 
         await modal({
-          title: 'Choose a Session',
+          title: "Choose a Session",
           message: <SessionSelectionForm isFirstTime={true} />,
-          size: 'sm',
+          size: "sm",
           disableBackdropClick: true,
         });
       } catch (err) {}

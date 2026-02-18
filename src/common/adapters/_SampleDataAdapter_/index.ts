@@ -1,6 +1,6 @@
-import BaseDataAdapter, { MAX_CONNECTION_TIMEOUT } from 'src/common/adapters/BaseDataAdapter/index';
-import IDataAdapter from 'src/common/adapters/IDataAdapter';
-import { SqluiCore } from 'typings';
+import BaseDataAdapter, { MAX_CONNECTION_TIMEOUT } from "src/common/adapters/BaseDataAdapter/index";
+import IDataAdapter from "src/common/adapters/IDataAdapter";
+import { SqluiCore } from "typings";
 // TODO: implement me
 type YOUR_ADAPTER_CLIENT = any;
 
@@ -13,7 +13,7 @@ export default class YOUR_ADAPTER_NAME extends BaseDataAdapter implements IDataA
     // attempt to pull in connections
     return new Promise<YOUR_ADAPTER_CLIENT>(async (resolve, reject) => {
       try {
-        setTimeout(() => reject('Connection timeout'), MAX_CONNECTION_TIMEOUT);
+        setTimeout(() => reject("Connection timeout"), MAX_CONNECTION_TIMEOUT);
 
         // TODO: implement me
         resolve({});
@@ -32,7 +32,7 @@ export default class YOUR_ADAPTER_NAME extends BaseDataAdapter implements IDataA
   async authenticate() {
     return new Promise<void>(async (resolve, reject) => {
       try {
-        setTimeout(() => reject('Connection timeout'), MAX_CONNECTION_TIMEOUT);
+        setTimeout(() => reject("Connection timeout"), MAX_CONNECTION_TIMEOUT);
 
         // TODO: implement me
         resolve();
@@ -46,7 +46,7 @@ export default class YOUR_ADAPTER_NAME extends BaseDataAdapter implements IDataA
     // TODO: implement me
     return [
       {
-        name: 'TODO Database1',
+        name: "TODO Database1",
         tables: [],
       },
     ];
@@ -56,7 +56,7 @@ export default class YOUR_ADAPTER_NAME extends BaseDataAdapter implements IDataA
     // TODO: implement me
     return [
       {
-        name: 'TODO Table2',
+        name: "TODO Table2",
         columns: [],
       },
     ];
@@ -70,7 +70,7 @@ export default class YOUR_ADAPTER_NAME extends BaseDataAdapter implements IDataA
   async execute(sql: string, database?: string, table?: string): Promise<SqluiCore.Result> {
     try {
       if (!database) {
-        throw 'Database is a required field';
+        throw "Database is a required field";
       }
 
       let raw = [];

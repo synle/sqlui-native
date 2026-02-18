@@ -1,4 +1,4 @@
-import { SqlAction, SqluiCore } from 'typings';
+import { SqlAction, SqluiCore } from "typings";
 // this describe the static methods in the interface
 export default interface IDataScript {
   dialects?: SqluiCore.Dialect[] | string[];

@@ -1,17 +1,17 @@
-import get from 'lodash.get';
-import set from 'lodash.set';
-import BaseDataScript, { getDivider } from 'src/common/adapters/BaseDataAdapter/scripts';
-import { SqlAction, SqluiCore } from 'typings';
+import get from "lodash.get";
+import set from "lodash.set";
+import BaseDataScript, { getDivider } from "src/common/adapters/BaseDataAdapter/scripts";
+import { SqlAction, SqluiCore } from "typings";
 
-export const MONGO_ADAPTER_PREFIX = 'db';
+export const MONGO_ADAPTER_PREFIX = "db";
 
-const formatter = 'js';
+const formatter = "js";
 
 export function serializeJsonForMongoScript(object: any) {
   let res = JSON.stringify(
     object,
     (k, v) => {
-      if (k === '_id') {
+      if (k === "_id") {
         return `ObjectId('${v}')`;
       }
       return v;
@@ -21,7 +21,7 @@ export function serializeJsonForMongoScript(object: any) {
 
   // here we construct ObjectId
   res = res.replace(/"ObjectId\('[a-z0-9_]*'\)"/, (a) => {
-    const id = a.replace(`ObjectId`, '').replace(/[\(\)'"]/g, '');
+    const id = a.replace(`ObjectId`, "").replace(/[\(\)'"]/g, "");
     return `ObjectId("${id}")`;
   });
 
@@ -41,33 +41,28 @@ export function getSelectAllColumns(input: SqlAction.TableInput): SqlAction.Outp
 export function getSelectOne(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Select One Record`;
 
-  const filters = { _id: 'some_id' };
+  const filters = { _id: "some_id" };
 
   return {
     label,
     formatter,
-    query: `${MONGO_ADAPTER_PREFIX}.collection('${
-      input.tableId
-    }').findOne(${serializeJsonForMongoScript(filters)});`,
+    query: `${MONGO_ADAPTER_PREFIX}.collection('${input.tableId}').findOne(${serializeJsonForMongoScript(filters)});`,
   };
 }
 
-export function getSelectSpecificColumns(
-  input: SqlAction.TableInput,
-): SqlAction.Output | undefined {
+export function getSelectSpecificColumns(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Select Specific Columns`;
 
   if (!input.columns) {
     return undefined;
   }
 
-  const columnString = `\n` + input.columns.map((col) => `  ${col.name}`).join(',\n');
-  const whereColumnString = input.columns.map((col) => `${col.name} = ''`).join('\n -- AND ');
+  const columnString = `\n` + input.columns.map((col) => `  ${col.name}`).join(",\n");
+  const whereColumnString = input.columns.map((col) => `${col.name} = ''`).join("\n -- AND ");
   const columns: any = {};
   for (const column of input.columns || []) {
     // construct nested object properly
-    columns[column.propertyPath ? column.propertyPath.join('.') : column.name] =
-      column.type === 'string' ? '_some_value_' : 123;
+    columns[column.propertyPath ? column.propertyPath.join(".") : column.name] = column.type === "string" ? "_some_value_" : 123;
   }
   return {
     label,
@@ -81,13 +76,12 @@ export function getSelectDistinctValues(input: SqlAction.TableInput): SqlAction.
   const label = `Select Distinct`;
   const columns = input.columns || [];
   const whereColumnString = columns.reduce((res: any, col) => {
-    res[col.name] = '';
+    res[col.name] = "";
     return res;
   }, {});
 
   // select something that is not _id or id
-  const distinctColumn =
-    columns.filter((col) => col.name !== '_id' && col.name !== 'id')?.[0]?.name || 'some_field';
+  const distinctColumn = columns.filter((col) => col.name !== "_id" && col.name !== "id")?.[0]?.name || "some_field";
 
   return {
     label,
@@ -99,18 +93,15 @@ export function getSelectDistinctValues(input: SqlAction.TableInput): SqlAction.
   };
 }
 
-export function getInsert(
-  input: SqlAction.TableInput,
-  value?: Record<string, any>,
-): SqlAction.Output | undefined {
+export function getInsert(input: SqlAction.TableInput, value?: Record<string, any>): SqlAction.Output | undefined {
   const label = `Insert`;
 
   if (!input.columns) {
     return undefined;
   }
 
-  const columnString = input.columns.map((col) => col.name).join(',\n');
-  const insertValueString = input.columns.map((col) => `'_${col.name}_'`).join(',\n');
+  const columnString = input.columns.map((col) => col.name).join(",\n");
+  const insertValueString = input.columns.map((col) => `'_${col.name}_'`).join(",\n");
 
   let columns: any = {};
 
@@ -118,8 +109,8 @@ export function getInsert(
     columns = value;
   } else {
     for (const column of input.columns) {
-      if (column.name !== '_id') {
-        const valueToUse: any = column.type === 'string' ? 'abc' : 123;
+      if (column.name !== "_id") {
+        const valueToUse: any = column.type === "string" ? "abc" : 123;
         set(columns, column.propertyPath || column.name, valueToUse);
       }
     }
@@ -134,10 +125,7 @@ export function getInsert(
   };
 }
 
-export function getBulkInsert(
-  input: SqlAction.TableInput,
-  rows?: Record<string, any>[],
-): SqlAction.Output | undefined {
+export function getBulkInsert(input: SqlAction.TableInput, rows?: Record<string, any>[]): SqlAction.Output | undefined {
   const label = `Insert`;
 
   if (!input.columns) {
@@ -146,8 +134,8 @@ export function getBulkInsert(
 
   const columns = input.columns || [];
 
-  const columnString = input.columns.map((col) => col.name).join(',\n');
-  const insertValueString = input.columns.map((col) => `'_${col.name}_'`).join(',\n');
+  const columnString = input.columns.map((col) => col.name).join(",\n");
+  const insertValueString = input.columns.map((col) => `'_${col.name}_'`).join(",\n");
 
   const rowsToInsert = rows || [];
 
@@ -186,15 +174,15 @@ export function getUpdate(input: SqlAction.TableInput): SqlAction.Output | undef
 
   const columns: any = {};
   for (const column of input.columns) {
-    if (column.name !== '_id') {
-      const valueToUse: any = column.type === 'string' ? 'abc' : 123;
+    if (column.name !== "_id") {
+      const valueToUse: any = column.type === "string" ? "abc" : 123;
       set(columns, column.propertyPath || column.name, valueToUse);
     }
   }
 
   const filters = {
     ...columns,
-    ...{ _id: 'some_id' },
+    ...{ _id: "some_id" },
   };
 
   return {
@@ -217,8 +205,7 @@ export function getDelete(input: SqlAction.TableInput): SqlAction.Output | undef
   const columns: any = {};
   for (const column of input.columns) {
     // construct nested object properly
-    columns[column.propertyPath ? column.propertyPath.join('.') : column.name] =
-      column.type === 'string' ? '_some_value_' : 123;
+    columns[column.propertyPath ? column.propertyPath.join(".") : column.name] = column.type === "string" ? "_some_value_" : 123;
   }
   return {
     label,
@@ -236,7 +223,7 @@ export function getCreateCollection(input: SqlAction.TableInput): SqlAction.Outp
     return undefined;
   }
 
-  let columnString: string = '';
+  let columnString: string = "";
 
   // TODO: figure out how to use the defaultval
 
@@ -274,9 +261,7 @@ export function getDropDatabase(input: SqlAction.DatabaseInput): SqlAction.Outpu
   };
 }
 
-export function getCreateConnectionDatabase(
-  input: SqlAction.ConnectionInput,
-): SqlAction.Output | undefined {
+export function getCreateConnectionDatabase(input: SqlAction.ConnectionInput): SqlAction.Output | undefined {
   const label = `Create Database`;
   return {
     label,
@@ -286,14 +271,14 @@ export function getCreateConnectionDatabase(
 }
 
 export class ConcreteDataScripts extends BaseDataScript {
-  dialects = ['mongodb', 'mongodb+srv'];
+  dialects = ["mongodb", "mongodb+srv"];
 
   getIsTableIdRequiredForQuery() {
     return false;
   }
 
   getSyntaxMode() {
-    return 'javascript';
+    return "javascript";
   }
 
   supportMigration() {
@@ -355,7 +340,7 @@ export class ConcreteDataScripts extends BaseDataScript {
     let database = query.databaseId;
 
     switch (language) {
-      case 'javascript':
+      case "javascript":
         return `
 // npm install --save mongodb
 const { MongoClient, ObjectId } = require('mongodb');
@@ -380,7 +365,7 @@ async function _doWork(){
 
 _doWork();
         `.trim();
-      case 'python':
+      case "python":
       default:
         return ``;
     }

@@ -8,35 +8,35 @@ try {
   window.isElectron = false;
   window.toggleElectronMenu = () => {};
   window.openBrowserLink = (link) => {
-    window.open(link, '_blank');
+    window.open(link, "_blank");
   };
   window.openAppLink = (hashLink) => {
     window.open(`/#${hashLink}`);
   };
-  sessionStorage.setItem('sqlui-native.windowId', 'mocked-window-id'); // mocked to use a window id
+  sessionStorage.setItem("sqlui-native.windowId", "mocked-window-id"); // mocked to use a window id
 
-  if (window.process.env.ENV_TYPE !== 'mocked-server') {
-    const ipcRenderer = window.requireElectron('electron').ipcRenderer;
-    const shell = window.requireElectron('electron').shell;
+  if (window.process.env.ENV_TYPE !== "mocked-server") {
+    const ipcRenderer = window.requireElectron("electron").ipcRenderer;
+    const shell = window.requireElectron("electron").shell;
 
     window.ipcRenderer = ipcRenderer;
     window.isElectron = true;
     window.toggleElectronMenu = (visible, menus) => {
       menus = [].concat(menus);
-      ipcRenderer.send('sqluiNativeEvent/toggleMenus', [visible, ...menus]);
+      ipcRenderer.send("sqluiNativeEvent/toggleMenus", [visible, ...menus]);
     };
     window.openBrowserLink = (link) => {
       shell.openExternal(link);
     };
     window.openAppLink = (hashLink) => {
       fetch(`/api/appWindow`, {
-        method: 'post',
+        method: "post",
         body: JSON.stringify({
           hashLink,
         }),
         headers: {
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
+          "Content-Type": "application/json",
+          Accept: "application/json",
         },
       });
     };
@@ -44,14 +44,12 @@ try {
     // here we are polyfilling fetch with ipcRenderer
     const origFetch = window.fetch;
     window.fetch = (url, options) => {
-      if (url.indexOf('/api') !== 0) {
+      if (url.indexOf("/api") !== 0) {
         // if not /api/, then use the original fetch
         return origFetch(url, options);
       }
       return new Promise((resolve, reject) => {
-        const requestId = `fetch.requestId.${Date.now()}.${Math.floor(
-          Math.random() * 10000000000000000,
-        )}`;
+        const requestId = `fetch.requestId.${Date.now()}.${Math.floor(Math.random() * 10000000000000000)}`;
         ipcRenderer.once(requestId, (event, data) => {
           const { ok, text, status, headers } = data;
 
@@ -62,13 +60,13 @@ try {
           } catch (err) {}
 
           console.log(
-            '>> Network',
-            ok ? 'Success' : 'Error:',
+            ">> Network",
+            ok ? "Success" : "Error:",
             status,
-            options.method || 'get',
+            options.method || "get",
             url,
-            options.headers['sqlui-native-window-id'],
-            options.headers['sqlui-native-session-id'],
+            options.headers["sqlui-native-window-id"],
+            options.headers["sqlui-native-session-id"],
             returnedData,
           );
 
@@ -78,7 +76,7 @@ try {
             headers,
           });
         });
-        ipcRenderer.send('sqluiNativeEvent/fetch', { requestId, url, options });
+        ipcRenderer.send("sqluiNativeEvent/fetch", { requestId, url, options });
       });
     };
   }

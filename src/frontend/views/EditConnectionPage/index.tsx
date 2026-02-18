@@ -1,12 +1,12 @@
-import SignalWifiStatusbar4BarIcon from '@mui/icons-material/SignalWifiStatusbar4Bar';
-import { useParams } from 'react-router-dom';
-import { useEffect } from 'react';
-import Breadcrumbs from 'src/frontend/components/Breadcrumbs';
-import VirtualizedConnectionTree from 'src/frontend/components/VirtualizedConnectionTree';
-import { EditConnectionForm } from 'src/frontend/components/ConnectionForm';
-import NewConnectionButton from 'src/frontend/components/NewConnectionButton';
-import { useTreeActions } from 'src/frontend/hooks/useTreeActions';
-import LayoutTwoColumns from 'src/frontend/layout/LayoutTwoColumns';
+import SignalWifiStatusbar4BarIcon from "@mui/icons-material/SignalWifiStatusbar4Bar";
+import { useParams } from "react-router-dom";
+import { useEffect } from "react";
+import Breadcrumbs from "src/frontend/components/Breadcrumbs";
+import VirtualizedConnectionTree from "src/frontend/components/VirtualizedConnectionTree";
+import { EditConnectionForm } from "src/frontend/components/ConnectionForm";
+import NewConnectionButton from "src/frontend/components/NewConnectionButton";
+import { useTreeActions } from "src/frontend/hooks/useTreeActions";
+import LayoutTwoColumns from "src/frontend/layout/LayoutTwoColumns";
 
 export default function EditConnectionPage() {
   const urlParams = useParams();
@@ -24,7 +24,7 @@ export default function EditConnectionPage() {
   }
 
   return (
-    <LayoutTwoColumns className='Page Page__EditConnection'>
+    <LayoutTwoColumns className="Page Page__EditConnection">
       <>
         <NewConnectionButton />
         <VirtualizedConnectionTree />
@@ -35,7 +35,7 @@ export default function EditConnectionPage() {
             {
               label: (
                 <>
-                  <SignalWifiStatusbar4BarIcon fontSize='inherit' />
+                  <SignalWifiStatusbar4BarIcon fontSize="inherit" />
                   Edit Connection
                 </>
               ),

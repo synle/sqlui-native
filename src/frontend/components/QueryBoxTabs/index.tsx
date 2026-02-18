@@ -1,25 +1,25 @@
-import AddIcon from '@mui/icons-material/Add';
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
-import CloseIcon from '@mui/icons-material/Close';
-import ContentCopyIcon from '@mui/icons-material/ContentCopy';
-import EditIcon from '@mui/icons-material/Edit';
-import PushPinIcon from '@mui/icons-material/PushPin';
-import PushPinOutlinedIcon from '@mui/icons-material/PushPinOutlined';
-import StarIcon from '@mui/icons-material/Star';
-import Alert from '@mui/material/Alert';
-import Box from '@mui/material/Box';
-import CircularProgress from '@mui/material/CircularProgress';
-import Link from '@mui/material/Link';
-import { useNavigate } from 'react-router-dom';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import DropdownButton from 'src/frontend/components/DropdownButton';
-import { allMenuKeys, useCommands } from 'src/frontend/components/MissionControl';
-import QueryBox from 'src/frontend/components/QueryBox';
-import Tabs from 'src/frontend/components/Tabs';
-import { useConnectionQueries } from 'src/frontend/hooks/useConnectionQuery';
-import { useQueryTabOrientationSetting } from 'src/frontend/hooks/useSetting';
-import { SqluiFrontend } from 'typings';
+import AddIcon from "@mui/icons-material/Add";
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
+import CloseIcon from "@mui/icons-material/Close";
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import EditIcon from "@mui/icons-material/Edit";
+import PushPinIcon from "@mui/icons-material/PushPin";
+import PushPinOutlinedIcon from "@mui/icons-material/PushPinOutlined";
+import StarIcon from "@mui/icons-material/Star";
+import Alert from "@mui/material/Alert";
+import Box from "@mui/material/Box";
+import CircularProgress from "@mui/material/CircularProgress";
+import Link from "@mui/material/Link";
+import { useNavigate } from "react-router-dom";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import DropdownButton from "src/frontend/components/DropdownButton";
+import { allMenuKeys, useCommands } from "src/frontend/components/MissionControl";
+import QueryBox from "src/frontend/components/QueryBox";
+import Tabs from "src/frontend/components/Tabs";
+import { useConnectionQueries } from "src/frontend/hooks/useConnectionQuery";
+import { useQueryTabOrientationSetting } from "src/frontend/hooks/useSetting";
+import { SqluiFrontend } from "typings";
 
 export default function QueryBoxTabs() {
   const navigate = useNavigate();
@@ -29,67 +29,55 @@ export default function QueryBoxTabs() {
   const queryTabOrientation = useQueryTabOrientationSetting();
 
   const onShowQuery = useCallback(
-    (data: SqluiFrontend.ConnectionQuery) =>
-      selectCommand({ event: 'clientEvent/query/show', data }),
+    (data: SqluiFrontend.ConnectionQuery) => selectCommand({ event: "clientEvent/query/show", data }),
     [selectCommand],
   );
 
-  const onAddQuery = useCallback(
-    () => selectCommand({ event: 'clientEvent/query/new' }),
-    [selectCommand],
-  );
+  const onAddQuery = useCallback(() => selectCommand({ event: "clientEvent/query/new" }), [selectCommand]);
 
   const onCloseQuery = useCallback(
-    (data: SqluiFrontend.ConnectionQuery) =>
-      selectCommand({ event: 'clientEvent/query/close', data }),
+    (data: SqluiFrontend.ConnectionQuery) => selectCommand({ event: "clientEvent/query/close", data }),
     [selectCommand],
   );
 
   const onCloseOtherQueries = useCallback(
-    (data: SqluiFrontend.ConnectionQuery) =>
-      selectCommand({ event: 'clientEvent/query/closeOther', data }),
+    (data: SqluiFrontend.ConnectionQuery) => selectCommand({ event: "clientEvent/query/closeOther", data }),
     [selectCommand],
   );
 
   const onCoseTabsToTheRight = useCallback(
-    (data: SqluiFrontend.ConnectionQuery) =>
-      selectCommand({ event: 'clientEvent/query/closeToTheRight', data }),
+    (data: SqluiFrontend.ConnectionQuery) => selectCommand({ event: "clientEvent/query/closeToTheRight", data }),
     [selectCommand],
   );
 
   const onRenameQuery = useCallback(
-    (data: SqluiFrontend.ConnectionQuery) =>
-      selectCommand({ event: 'clientEvent/query/rename', data }),
+    (data: SqluiFrontend.ConnectionQuery) => selectCommand({ event: "clientEvent/query/rename", data }),
     [selectCommand],
   );
 
   const onDuplicateQuery = useCallback(
-    (data: SqluiFrontend.ConnectionQuery) =>
-      selectCommand({ event: 'clientEvent/query/duplicate', data }),
+    (data: SqluiFrontend.ConnectionQuery) => selectCommand({ event: "clientEvent/query/duplicate", data }),
     [selectCommand],
   );
 
   const onExportQuery = useCallback(
-    (data: SqluiFrontend.ConnectionQuery) =>
-      selectCommand({ event: 'clientEvent/query/export', data }),
+    (data: SqluiFrontend.ConnectionQuery) => selectCommand({ event: "clientEvent/query/export", data }),
     [selectCommand],
   );
 
   const onAddToBookmark = useCallback(
-    (data: SqluiFrontend.ConnectionQuery) =>
-      selectCommand({ event: 'clientEvent/query/addToBookmark', data }),
+    (data: SqluiFrontend.ConnectionQuery) => selectCommand({ event: "clientEvent/query/addToBookmark", data }),
     [selectCommand],
   );
 
   const onChangeQueryTabOrdering = useCallback(
-    (from: number, to: number) =>
-      selectCommand({ event: 'clientEvent/query/changeTabOrdering', data: { from, to } }),
+    (from: number, to: number) => selectCommand({ event: "clientEvent/query/changeTabOrdering", data: { from, to } }),
     [selectCommand],
   );
 
   const onPinQuery = useCallback(
     (data: SqluiFrontend.ConnectionQuery, pinned: boolean) =>
-      selectCommand({ event: pinned ? 'clientEvent/query/pin' : 'clientEvent/query/unpin', data }),
+      selectCommand({ event: pinned ? "clientEvent/query/pin" : "clientEvent/query/unpin", data }),
     [selectCommand],
   );
 
@@ -122,23 +110,23 @@ export default function QueryBoxTabs() {
       ...(queries || []).map((q, idx) => {
         let options = [
           {
-            label: 'Add to Bookmark',
+            label: "Add to Bookmark",
             onClick: () => onAddToBookmark(q),
             startIcon: <StarIcon />,
           },
-          { label: 'divider' },
+          { label: "divider" },
           {
-            label: 'Rename',
+            label: "Rename",
             onClick: () => onRenameQuery(q),
             startIcon: <EditIcon />,
           },
           {
-            label: 'Export',
+            label: "Export",
             onClick: () => onExportQuery(q),
             startIcon: <ArrowUpwardIcon />,
           },
           {
-            label: 'Duplicate',
+            label: "Duplicate",
             onClick: () => onDuplicateQuery(q),
             startIcon: <ContentCopyIcon />,
           },
@@ -147,20 +135,20 @@ export default function QueryBoxTabs() {
         if (q.pinned) {
           options = [
             ...options,
-            { label: 'divider' },
+            { label: "divider" },
             {
-              label: 'Unpin',
+              label: "Unpin",
               onClick: () => onPinQuery(q, false),
               startIcon: <PushPinIcon />,
             },
-            { label: 'divider' },
+            { label: "divider" },
             {
-              label: 'Close Tabs to The Right',
+              label: "Close Tabs to The Right",
               onClick: () => onCoseTabsToTheRight(q),
               startIcon: <CloseIcon />,
             },
             {
-              label: 'Close Other Tabs',
+              label: "Close Other Tabs",
               onClick: () => onCloseOtherQueries(q),
               startIcon: <CloseIcon />,
             },
@@ -168,57 +156,54 @@ export default function QueryBoxTabs() {
         } else {
           options = [
             ...options,
-            { label: 'divider' },
+            { label: "divider" },
             {
-              label: 'Pin',
+              label: "Pin",
               onClick: () => onPinQuery(q, true),
               startIcon: <PushPinOutlinedIcon />,
             },
-            { label: 'divider' },
+            { label: "divider" },
             {
-              label: 'Close Tabs to The Right',
+              label: "Close Tabs to The Right",
               onClick: () => onCoseTabsToTheRight(q),
               startIcon: <CloseIcon />,
             },
             {
-              label: 'Close Other Tabs',
+              label: "Close Other Tabs",
               onClick: () => onCloseOtherQueries(q),
               startIcon: <CloseIcon />,
             },
             {
-              label: 'Close',
+              label: "Close",
               onClick: () => onCloseQuery(q),
               startIcon: <CloseIcon />,
             },
           ];
         }
 
-        tabKeys.push(q.name + '.' + idx);
+        tabKeys.push(q.name + "." + idx);
 
         return (
           <>
             {q.pinned && <PushPinIcon />}
             {q.name}
-            <DropdownButton id='table-action-split-button' options={options}>
-              <ArrowDropDownIcon fontSize='small' />
+            <DropdownButton id="table-action-split-button" options={options}>
+              <ArrowDropDownIcon fontSize="small" />
             </DropdownButton>
           </>
         );
       }),
       <>
-        <AddIcon fontSize='small' aria-label='Add query' /> Add Query
+        <AddIcon fontSize="small" aria-label="Add query" /> Add Query
       </>,
     ],
     [queries],
   );
 
-  const tabContents = useMemo(
-    () => (queries || []).map((q) => <QueryBox key={q.id} queryId={q.id} />),
-    [queries],
-  );
+  const tabContents = useMemo(() => (queries || []).map((q) => <QueryBox key={q.id} queryId={q.id} />), [queries]);
   if (isLoading) {
     return (
-      <Alert severity='info' icon={<CircularProgress size={15} />}>
+      <Alert severity="info" icon={<CircularProgress size={15} />}>
         Loading...
       </Alert>
     );
@@ -226,9 +211,9 @@ export default function QueryBoxTabs() {
 
   if (!queries || queries.length === 0) {
     return (
-      <Alert severity='info'>
-        No Query Yet.{' '}
-        <Link onClick={() => onAddQuery()} underline='none' sx={{ cursor: 'pointer' }}>
+      <Alert severity="info">
+        No Query Yet.{" "}
+        <Link onClick={() => onAddQuery()} underline="none" sx={{ cursor: "pointer" }}>
           Click here to add a new query.
         </Link>
       </Alert>
@@ -236,7 +221,7 @@ export default function QueryBoxTabs() {
   }
   return (
     <Tabs
-      id='QueryBoxTabs'
+      id="QueryBoxTabs"
       tabIdx={tabIdx}
       tabHeaders={tabHeaders}
       tabContents={tabContents}
@@ -253,6 +238,7 @@ export default function QueryBoxTabs() {
         if (queries && queries[idx]) {
           onCloseQuery(queries[idx]);
         }
-      }}></Tabs>
+      }}
+    ></Tabs>
   );
 }
