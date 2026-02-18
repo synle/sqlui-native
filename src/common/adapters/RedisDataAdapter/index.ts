@@ -1,10 +1,10 @@
-import { createClient, RedisClientType } from 'redis';
-import BaseDataAdapter, { MAX_CONNECTION_TIMEOUT } from 'src/common/adapters/BaseDataAdapter/index';
-import IDataAdapter from 'src/common/adapters/IDataAdapter';
-import { getClientOptions } from 'src/common/adapters/RedisDataAdapter/utils';
-import { SqluiCore } from 'typings';
+import { createClient, RedisClientType } from "redis";
+import BaseDataAdapter, { MAX_CONNECTION_TIMEOUT } from "src/common/adapters/BaseDataAdapter/index";
+import IDataAdapter from "src/common/adapters/IDataAdapter";
+import { getClientOptions } from "src/common/adapters/RedisDataAdapter/utils";
+import { SqluiCore } from "typings";
 
-const REDIS_ADAPTER_PREFIX = 'db';
+const REDIS_ADAPTER_PREFIX = "db";
 
 export default class RedisDataAdapter extends BaseDataAdapter implements IDataAdapter {
   constructor(connectionOption: string) {
@@ -15,18 +15,18 @@ export default class RedisDataAdapter extends BaseDataAdapter implements IDataAd
     // attempt to pull in connections
     return new Promise<RedisClientType>(async (resolve, reject) => {
       try {
-        setTimeout(() => reject('Connection Timeout'), MAX_CONNECTION_TIMEOUT);
+        setTimeout(() => reject("Connection Timeout"), MAX_CONNECTION_TIMEOUT);
 
         const client = createClient(getClientOptions(this.connectionOption));
 
         client.connect();
 
-        client.on('ready', () =>
+        client.on("ready", () =>
           //@ts-ignore
           resolve(client),
         );
 
-        client.on('error', (err) => reject(err));
+        client.on("error", (err) => reject(err));
       } catch (err) {
         reject(err);
       }
@@ -46,7 +46,7 @@ export default class RedisDataAdapter extends BaseDataAdapter implements IDataAd
   async getDatabases(): Promise<SqluiCore.DatabaseMetaData[]> {
     return [
       {
-        name: 'Redis Database',
+        name: "Redis Database",
         tables: [],
       },
     ];
@@ -58,7 +58,7 @@ export default class RedisDataAdapter extends BaseDataAdapter implements IDataAd
 
     return [
       {
-        name: 'Redis Table',
+        name: "Redis Table",
         columns: [],
       },
     ];
@@ -82,11 +82,11 @@ export default class RedisDataAdapter extends BaseDataAdapter implements IDataAd
       const resp: any = await eval(sql);
       console.log(resp);
 
-      if (resp === 'OK') {
+      if (resp === "OK") {
         return { ok: true };
       }
 
-      if (typeof resp === 'number' || typeof resp === 'string') {
+      if (typeof resp === "number" || typeof resp === "string") {
         //@ts-ignore
         return { ok: true, raw: [].concat({ value: resp }) };
       }
@@ -96,7 +96,7 @@ export default class RedisDataAdapter extends BaseDataAdapter implements IDataAd
         return { ok: true, raw: [].concat(resp.map((item) => ({ item: JSON.stringify(item) }))) };
       }
 
-      if (typeof resp === 'object') {
+      if (typeof resp === "object") {
         return { ok: true, raw: [resp] };
       }
 

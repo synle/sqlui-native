@@ -1,10 +1,10 @@
-import BaseDataScript, { getDivider } from 'src/common/adapters/BaseDataAdapter/scripts';
-import { getClientOptions } from 'src/common/adapters/RedisDataAdapter/utils';
-import { SqlAction } from 'typings';
+import BaseDataScript, { getDivider } from "src/common/adapters/BaseDataAdapter/scripts";
+import { getClientOptions } from "src/common/adapters/RedisDataAdapter/utils";
+import { SqlAction } from "typings";
 
-export const REDIS_ADAPTER_PREFIX = 'db';
+export const REDIS_ADAPTER_PREFIX = "db";
 
-const formatter = 'js';
+const formatter = "js";
 
 // for redis
 export function getSetValue(input: SqlAction.TableInput): SqlAction.Output | undefined {
@@ -208,14 +208,14 @@ export function getPublishMessage(input: SqlAction.TableInput): SqlAction.Output
 }
 
 export class ConcreteDataScripts extends BaseDataScript {
-  dialects = ['redis', 'rediss'];
+  dialects = ["redis", "rediss"];
 
   getIsTableIdRequiredForQuery() {
     return false;
   }
 
   getSyntaxMode() {
-    return 'javascript';
+    return "javascript";
   }
 
   supportMigration() {
@@ -233,9 +233,9 @@ export class ConcreteDataScripts extends BaseDataScript {
   // dialect definitions
   getDialectName(dialect) {
     switch (dialect) {
-      case 'rediss':
+      case "rediss":
         return `Redis with SSL`;
-      case 'redis':
+      case "redis":
       default:
         return `Redis`;
     }
@@ -286,10 +286,10 @@ export class ConcreteDataScripts extends BaseDataScript {
 
   getSampleConnectionString(dialect) {
     switch (dialect) {
-      case 'rediss':
+      case "rediss":
         return `rediss://username:password@localhost:6379`;
-      case 'redis':
-      case 'rediss':
+      case "redis":
+      case "rediss":
       default:
         return `redis://localhost:6379`;
     }
@@ -305,7 +305,7 @@ export class ConcreteDataScripts extends BaseDataScript {
     const database = query.databaseId;
 
     switch (language) {
-      case 'javascript':
+      case "javascript":
         return `
 // npm install --save redis
 const { createClient, RedisClientType } = require('redis');
@@ -328,7 +328,7 @@ async function _doWork(){
 
 _doWork();
         `.trim();
-      case 'python':
+      case "python":
       default:
         return ``;
     }

@@ -1,11 +1,11 @@
-import { useMemo } from 'react';
-import { useQueries } from '@tanstack/react-query';
-import dataApi from 'src/frontend/data/api';
-import { useGetConnections, useUpdateConnections } from 'src/frontend/hooks/useConnection';
-import { useActiveConnectionQuery } from 'src/frontend/hooks/useConnectionQuery';
-import { useShowHide } from 'src/frontend/hooks/useShowHide';
-import { SqluiCore } from 'typings';
-import { TreeRow } from './types';
+import { useMemo } from "react";
+import { useQueries } from "@tanstack/react-query";
+import dataApi from "src/frontend/data/api";
+import { useGetConnections, useUpdateConnections } from "src/frontend/hooks/useConnection";
+import { useActiveConnectionQuery } from "src/frontend/hooks/useConnectionQuery";
+import { useShowHide } from "src/frontend/hooks/useShowHide";
+import { SqluiCore } from "typings";
+import { TreeRow } from "./types";
 
 const DEFAULT_STALE_TIME = 300000; // 5 minutes
 const MAX_COLUMN_SIZE_TO_SHOW = 5;
@@ -46,7 +46,7 @@ export function useFlatTreeRows() {
     return connections
       .filter((c) => {
         const key = c.id;
-        return visibles[key] && c.status === 'online';
+        return visibles[key] && c.status === "online";
       })
       .map((c) => c.id);
   }, [connections, visibles]);
@@ -54,7 +54,7 @@ export function useFlatTreeRows() {
   // Batch fetch databases for all expanded+online connections
   const databaseQueries = useQueries({
     queries: expandedOnlineConnections.map((connectionId) => ({
-      queryKey: [connectionId, 'databases'],
+      queryKey: [connectionId, "databases"],
       queryFn: () => dataApi.getConnectionDatabases(connectionId),
       staleTime: DEFAULT_STALE_TIME,
     })),
@@ -75,7 +75,7 @@ export function useFlatTreeRows() {
     for (const dbResult of databaseResults) {
       if (!dbResult.data) continue;
       for (const db of dbResult.data) {
-        const key = [dbResult.connectionId, db.name].join(' > ');
+        const key = [dbResult.connectionId, db.name].join(" > ");
         if (visibles[key]) {
           result.push({ connectionId: dbResult.connectionId, databaseId: db.name });
         }
@@ -87,7 +87,7 @@ export function useFlatTreeRows() {
   // Batch fetch tables for all expanded databases
   const tableQueries = useQueries({
     queries: expandedDatabases.map(({ connectionId, databaseId }) => ({
-      queryKey: [connectionId, databaseId, 'tables'],
+      queryKey: [connectionId, databaseId, "tables"],
       queryFn: () => dataApi.getConnectionTables(connectionId, databaseId),
       staleTime: DEFAULT_STALE_TIME,
     })),
@@ -109,7 +109,7 @@ export function useFlatTreeRows() {
     for (const tblResult of tableResults) {
       if (!tblResult.data) continue;
       for (const tbl of tblResult.data) {
-        const key = [tblResult.connectionId, tblResult.databaseId, tbl.name].join(' > ');
+        const key = [tblResult.connectionId, tblResult.databaseId, tbl.name].join(" > ");
         if (visibles[key]) {
           result.push({
             connectionId: tblResult.connectionId,
@@ -125,7 +125,7 @@ export function useFlatTreeRows() {
   // Batch fetch columns for all expanded tables
   const columnQueries = useQueries({
     queries: expandedTables.map(({ connectionId, databaseId, tableId }) => ({
-      queryKey: [connectionId, databaseId, tableId, 'columns'],
+      queryKey: [connectionId, databaseId, tableId, "columns"],
       queryFn: () => dataApi.getConnectionColumns(connectionId, databaseId, tableId),
       staleTime: DEFAULT_STALE_TIME,
     })),
@@ -167,14 +167,12 @@ export function useFlatTreeRows() {
     for (let connIdx = 0; connIdx < connections.length; connIdx++) {
       const connection = connections[connIdx];
       const connKey = connection.id;
-      const isOnline = connection.status === 'online';
+      const isOnline = connection.status === "online";
       const connExpanded = !!visibles[connKey];
-      const connSelected = !!(
-        activeQuery?.connectionId && activeQuery.connectionId === connection.id
-      );
+      const connSelected = !!(activeQuery?.connectionId && activeQuery.connectionId === connection.id);
 
       result.push({
-        type: 'connection-header',
+        type: "connection-header",
         key: `conn-${connKey}`,
         depth: 0,
         visibilityKey: connKey,
@@ -188,7 +186,7 @@ export function useFlatTreeRows() {
 
       if (!isOnline) {
         result.push({
-          type: 'connection-retry',
+          type: "connection-retry",
           key: `retry-${connKey}`,
           depth: 1,
           connectionId: connection.id,
@@ -200,41 +198,39 @@ export function useFlatTreeRows() {
       const dbResult = dbMap.get(connection.id);
       if (!dbResult || dbResult.isLoading) {
         result.push({
-          type: 'loading',
+          type: "loading",
           key: `loading-db-${connKey}`,
           depth: 1,
-          message: 'Loading...',
+          message: "Loading...",
         });
         continue;
       }
       if (dbResult.isError) {
         result.push({
-          type: 'error',
+          type: "error",
           key: `error-db-${connKey}`,
           depth: 1,
-          message: 'Error...',
+          message: "Error...",
         });
         continue;
       }
       if (!dbResult.data || dbResult.data.length === 0) {
         result.push({
-          type: 'empty',
+          type: "empty",
           key: `empty-db-${connKey}`,
           depth: 1,
-          message: 'Not Available',
+          message: "Not Available",
         });
         continue;
       }
 
       for (const database of dbResult.data) {
-        const dbKey = [connection.id, database.name].join(' > ');
+        const dbKey = [connection.id, database.name].join(" > ");
         const dbExpanded = !!visibles[dbKey];
-        const dbSelected =
-          activeQuery?.connectionId === connection.id &&
-          activeQuery?.databaseId === database.name;
+        const dbSelected = activeQuery?.connectionId === connection.id && activeQuery?.databaseId === database.name;
 
         result.push({
-          type: 'database-header',
+          type: "database-header",
           key: `db-${dbKey}`,
           depth: 1,
           visibilityKey: dbKey,
@@ -250,29 +246,29 @@ export function useFlatTreeRows() {
         const tblResult = tableMap.get(`${connection.id}|${database.name}`);
         if (!tblResult || tblResult.isLoading) {
           result.push({
-            type: 'loading',
+            type: "loading",
             key: `loading-tbl-${dbKey}`,
             depth: 2,
-            message: 'Loading...',
+            message: "Loading...",
           });
           continue;
         }
         if (!tblResult.data || tblResult.data.length === 0) {
           result.push({
-            type: 'empty',
+            type: "empty",
             key: `empty-tbl-${dbKey}`,
             depth: 2,
-            message: 'Not Available',
+            message: "Not Available",
           });
           continue;
         }
 
         for (const table of tblResult.data) {
-          const tblKey = [connection.id, database.name, table.name].join(' > ');
+          const tblKey = [connection.id, database.name, table.name].join(" > ");
           const tblExpanded = !!visibles[tblKey];
 
           result.push({
-            type: 'table-header',
+            type: "table-header",
             key: `tbl-${tblKey}`,
             depth: 2,
             visibilityKey: tblKey,
@@ -289,48 +285,43 @@ export function useFlatTreeRows() {
           const colResult = colMap.get(`${connection.id}|${database.name}|${table.name}`);
           if (!colResult || colResult.isLoading) {
             result.push({
-              type: 'loading',
+              type: "loading",
               key: `loading-col-${tblKey}`,
               depth: 3,
-              message: 'Loading...',
+              message: "Loading...",
             });
             continue;
           }
           if (colResult.isError) {
             result.push({
-              type: 'error',
+              type: "error",
               key: `error-col-${tblKey}`,
               depth: 3,
-              message: 'Error...',
+              message: "Error...",
             });
             continue;
           }
           if (!colResult.data || colResult.data.length === 0) {
             result.push({
-              type: 'empty',
+              type: "empty",
               key: `empty-col-${tblKey}`,
               depth: 3,
-              message: 'Not Available',
+              message: "Not Available",
             });
             continue;
           }
 
-          const showAllKey = [connection.id, database.name, table.name, '__ShowAllColumns__'].join(
-            ' > ',
-          );
-          const showAll =
-            colResult.data.length <= MAX_COLUMN_SIZE_TO_SHOW || !!visibles[showAllKey];
+          const showAllKey = [connection.id, database.name, table.name, "__ShowAllColumns__"].join(" > ");
+          const showAll = colResult.data.length <= MAX_COLUMN_SIZE_TO_SHOW || !!visibles[showAllKey];
 
-          const columnsToShow = showAll
-            ? colResult.data
-            : colResult.data.slice(0, MAX_COLUMN_SIZE_TO_SHOW + 1);
+          const columnsToShow = showAll ? colResult.data : colResult.data.slice(0, MAX_COLUMN_SIZE_TO_SHOW + 1);
 
           for (const column of columnsToShow) {
-            const colKey = [connection.id, database.name, table.name, column.name].join(' > ');
+            const colKey = [connection.id, database.name, table.name, column.name].join(" > ");
             const colExpanded = !!visibles[colKey];
 
             result.push({
-              type: 'column-header',
+              type: "column-header",
               key: `col-${colKey}`,
               depth: 3,
               visibilityKey: colKey,
@@ -344,7 +335,7 @@ export function useFlatTreeRows() {
 
             if (colExpanded) {
               result.push({
-                type: 'column-attributes',
+                type: "column-attributes",
                 key: `colattr-${colKey}`,
                 depth: 4,
                 column,
@@ -354,7 +345,7 @@ export function useFlatTreeRows() {
 
           if (!showAll) {
             result.push({
-              type: 'show-all-columns',
+              type: "show-all-columns",
               key: `showall-${tblKey}`,
               depth: 4,
               showAllKey,

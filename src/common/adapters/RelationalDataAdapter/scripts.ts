@@ -1,27 +1,27 @@
-import qs from 'qs';
-import BaseDataAdapter from 'src/common/adapters/BaseDataAdapter/index';
-import BaseDataScript, { getDivider } from 'src/common/adapters/BaseDataAdapter/scripts';
-import { escapeSQLValue, isValueNumber } from 'src/frontend/utils/formatter';
-import { SqlAction } from 'typings';
+import qs from "qs";
+import BaseDataAdapter from "src/common/adapters/BaseDataAdapter/index";
+import BaseDataScript, { getDivider } from "src/common/adapters/BaseDataAdapter/scripts";
+import { escapeSQLValue, isValueNumber } from "src/frontend/utils/formatter";
+import { SqlAction } from "typings";
 
-const formatter = 'sql';
+const formatter = "sql";
 
 export function getSelectAllColumns(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Select All Columns`;
 
   switch (input.dialect) {
-    case 'mssql':
+    case "mssql":
       return {
         label,
         formatter,
         query: `SELECT TOP ${input.querySize} *
                 FROM ${input.tableId}`,
       };
-    case 'postgres':
-    case 'postgresql':
-    case 'sqlite':
-    case 'mariadb':
-    case 'mysql':
+    case "postgres":
+    case "postgresql":
+    case "sqlite":
+    case "mariadb":
+    case "mysql":
       return {
         label,
         formatter,
@@ -39,15 +39,15 @@ export function getSelectCount(input: SqlAction.TableInput): SqlAction.Output | 
     return undefined;
   }
 
-  const whereColumnString = input.columns.map((col) => `${col.name} = ''`).join(' AND \n');
+  const whereColumnString = input.columns.map((col) => `${col.name} = ''`).join(" AND \n");
 
   switch (input.dialect) {
-    case 'mssql':
-    case 'postgres':
-    case 'postgresql':
-    case 'sqlite':
-    case 'mariadb':
-    case 'mysql':
+    case "mssql":
+    case "postgres":
+    case "postgresql":
+    case "sqlite":
+    case "mariadb":
+    case "mysql":
       return {
         label,
         formatter,
@@ -58,20 +58,18 @@ export function getSelectCount(input: SqlAction.TableInput): SqlAction.Output | 
   }
 }
 
-export function getSelectSpecificColumns(
-  input: SqlAction.TableInput,
-): SqlAction.Output | undefined {
+export function getSelectSpecificColumns(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Select Specific Columns`;
 
   if (!input.columns) {
     return undefined;
   }
 
-  const columnString = `\n` + input.columns.map((col) => `  ${col.name}`).join(',\n');
-  const whereColumnString = input.columns.map((col) => `${col.name} = ''`).join('\n AND ');
+  const columnString = `\n` + input.columns.map((col) => `  ${col.name}`).join(",\n");
+  const whereColumnString = input.columns.map((col) => `${col.name} = ''`).join("\n AND ");
 
   switch (input.dialect) {
-    case 'mssql':
+    case "mssql":
       return {
         label,
         formatter,
@@ -79,11 +77,11 @@ export function getSelectSpecificColumns(
                 FROM ${input.tableId}
                 WHERE ${whereColumnString}`,
       };
-    case 'postgres':
-    case 'postgresql':
-    case 'sqlite':
-    case 'mariadb':
-    case 'mysql':
+    case "postgres":
+    case "postgresql":
+    case "sqlite":
+    case "mariadb":
+    case "mysql":
       return {
         label,
         formatter,
@@ -104,11 +102,11 @@ export function getSelectDistinctValues(input: SqlAction.TableInput): SqlAction.
 
   const columns = input.columns || [];
 
-  const distinctColumn = columns.filter((col) => !col.primaryKey)?.[0]?.name || 'some_field';
-  const whereColumnString = columns.map((col) => `${col.name} = ''`).join('\n AND ');
+  const distinctColumn = columns.filter((col) => !col.primaryKey)?.[0]?.name || "some_field";
+  const whereColumnString = columns.map((col) => `${col.name} = ''`).join("\n AND ");
 
   switch (input.dialect) {
-    case 'mssql':
+    case "mssql":
       return {
         label,
         formatter,
@@ -116,11 +114,11 @@ export function getSelectDistinctValues(input: SqlAction.TableInput): SqlAction.
                 FROM ${input.tableId}
                 WHERE ${whereColumnString}`,
       };
-    case 'postgres':
-    case 'postgresql':
-    case 'sqlite':
-    case 'mariadb':
-    case 'mysql':
+    case "postgres":
+    case "postgresql":
+    case "sqlite":
+    case "mariadb":
+    case "mysql":
       return {
         label,
         formatter,
@@ -132,10 +130,7 @@ export function getSelectDistinctValues(input: SqlAction.TableInput): SqlAction.
   }
 }
 
-export function getInsert(
-  input: SqlAction.TableInput,
-  value?: Record<string, any>,
-): SqlAction.Output | undefined {
+export function getInsert(input: SqlAction.TableInput, value?: Record<string, any>): SqlAction.Output | undefined {
   const label = `Insert`;
 
   if (!input.columns) {
@@ -143,7 +138,7 @@ export function getInsert(
   }
 
   const columns = input.columns;
-  const columnString = columns.map((col) => col.name).join(',\n');
+  const columnString = columns.map((col) => col.name).join(",\n");
   const insertValueString = columns
     .map((col) => {
       if (value?.[col.name] === null) {
@@ -155,15 +150,15 @@ export function getInsert(
       }
       return `'_${col.name}_'`; // use the default value
     })
-    .join(',');
+    .join(",");
 
   switch (input.dialect) {
-    case 'mssql':
-    case 'postgres':
-    case 'postgresql':
-    case 'sqlite':
-    case 'mariadb':
-    case 'mysql':
+    case "mssql":
+    case "postgres":
+    case "postgresql":
+    case "sqlite":
+    case "mariadb":
+    case "mysql":
       return {
         label,
         formatter,
@@ -174,10 +169,7 @@ export function getInsert(
 }
 
 // TODO: add a flag to allow keeping the primary key or consistent id
-export function getBulkInsert(
-  input: SqlAction.TableInput,
-  rows?: Record<string, any>[],
-): SqlAction.Output | undefined {
+export function getBulkInsert(input: SqlAction.TableInput, rows?: Record<string, any>[]): SqlAction.Output | undefined {
   const label = `Insert`;
 
   if (!input.columns) {
@@ -189,36 +181,36 @@ export function getBulkInsert(
   }
 
   const columns = input.columns;
-  const columnString = columns.map((col) => col.name).join(',\n');
+  const columnString = columns.map((col) => col.name).join(",\n");
 
   const insertValueRows = rows
     ?.map((row) => {
       const cells = columns
         .map((col) => {
-          let valToUse = '';
+          let valToUse = "";
           if (row?.[col.name] !== undefined) {
             // use the value if it's there
             valToUse = `'${escapeSQLValue(row[col.name])}'`;
           } else {
-            valToUse = 'null';
+            valToUse = "null";
           }
           return valToUse;
         })
-        .join(',');
+        .join(",");
 
       // TODO: see if we need to escape single tick (') for SQL here
 
       return `(${cells})`;
     })
-    .join(', \n');
+    .join(", \n");
 
   switch (input.dialect) {
-    case 'mssql':
-    case 'postgres':
-    case 'postgresql':
-    case 'sqlite':
-    case 'mariadb':
-    case 'mysql':
+    case "mssql":
+    case "postgres":
+    case "postgresql":
+    case "sqlite":
+    case "mariadb":
+    case "mysql":
       return {
         label,
         formatter,
@@ -235,16 +227,16 @@ export function getUpdate(input: SqlAction.TableInput): SqlAction.Output | undef
     return undefined;
   }
 
-  const columnString = input.columns.map((col) => `${col.name} = ''`).join(',\n');
-  const whereColumnString = input.columns.map((col) => `${col.name} = ''`).join(' AND \n');
+  const columnString = input.columns.map((col) => `${col.name} = ''`).join(",\n");
+  const whereColumnString = input.columns.map((col) => `${col.name} = ''`).join(" AND \n");
 
   switch (input.dialect) {
-    case 'mssql':
-    case 'postgres':
-    case 'postgresql':
-    case 'sqlite':
-    case 'mariadb':
-    case 'mysql':
+    case "mssql":
+    case "postgres":
+    case "postgresql":
+    case "sqlite":
+    case "mariadb":
+    case "mysql":
       return {
         label,
         formatter,
@@ -277,7 +269,7 @@ export function getUpdateWithValues(
 
       return `${colName} = ${valToUse}`;
     })
-    .join(', \n');
+    .join(", \n");
 
   const whereColumnString = Object.keys(conditions)
     .map((colName) => {
@@ -290,15 +282,15 @@ export function getUpdateWithValues(
 
       return `${colName} = ${valToUse}`;
     })
-    .join(' AND \n');
+    .join(" AND \n");
 
   switch (input.dialect) {
-    case 'mssql':
-    case 'postgres':
-    case 'postgresql':
-    case 'sqlite':
-    case 'mariadb':
-    case 'mysql':
+    case "mssql":
+    case "postgres":
+    case "postgresql":
+    case "sqlite":
+    case "mariadb":
+    case "mysql":
       return {
         label,
         formatter,
@@ -316,15 +308,15 @@ export function getDelete(input: SqlAction.TableInput): SqlAction.Output | undef
     return undefined;
   }
 
-  const whereColumnString = input.columns.map((col) => `${col.name} = ''`).join(' AND \n');
+  const whereColumnString = input.columns.map((col) => `${col.name} = ''`).join(" AND \n");
 
   switch (input.dialect) {
-    case 'mssql':
-    case 'postgres':
-    case 'postgresql':
-    case 'sqlite':
-    case 'mariadb':
-    case 'mysql':
+    case "mssql":
+    case "postgres":
+    case "postgresql":
+    case "sqlite":
+    case "mariadb":
+    case "mysql":
       return {
         label,
         formatter,
@@ -341,35 +333,35 @@ export function getCreateTable(input: SqlAction.TableInput): SqlAction.Output | 
     return undefined;
   }
 
-  let columnString: string = '';
+  let columnString: string = "";
 
   // map the nested column accordingly (using _ as a separator)
   input.columns = input.columns.map((col) => {
-    col.name = col.propertyPath?.join('_') || col.name;
+    col.name = col.propertyPath?.join("_") || col.name;
     return col;
   });
 
   // TODO: figure out how to use the defaultval
   switch (input.dialect) {
-    case 'mssql':
+    case "mssql":
       columnString = input.columns
         .map((col) =>
           [
             col.name,
             col.type,
-            col.primaryKey ? 'PRIMARY KEY' : '',
-            col.autoIncrement ? 'IDENTITY' : '',
-            col.allowNull ? '' : 'NOT NULL',
-          ].join(' '),
+            col.primaryKey ? "PRIMARY KEY" : "",
+            col.autoIncrement ? "IDENTITY" : "",
+            col.allowNull ? "" : "NOT NULL",
+          ].join(" "),
         )
-        .join(',\n');
+        .join(",\n");
       return {
         label,
         formatter,
         query: `CREATE TABLE ${input.tableId} (${columnString})`,
       };
-    case 'postgres':
-    case 'postgresql':
+    case "postgres":
+    case "postgresql":
       columnString = input.columns
         .map((col) => {
           const res = [col.name];
@@ -378,61 +370,57 @@ export function getCreateTable(input: SqlAction.TableInput): SqlAction.Output | 
 
           // TODO: better use regex here
           // nextval(employees_employeeid_seq::regclass)
-          if (
-            col.primaryKey &&
-            col?.defaultValue?.includes('nextval(') &&
-            col?.defaultValue?.includes('_seq::regclass)')
-          ) {
-            res.push('BIGSERIAL PRIMARY KEY');
+          if (col.primaryKey && col?.defaultValue?.includes("nextval(") && col?.defaultValue?.includes("_seq::regclass)")) {
+            res.push("BIGSERIAL PRIMARY KEY");
           } else {
-            if (colType.includes('INT') && col.primaryKey) {
-              res.push('BIGSERIAL PRIMARY KEY');
+            if (colType.includes("INT") && col.primaryKey) {
+              res.push("BIGSERIAL PRIMARY KEY");
             } else {
               res.push(col.type);
-              res.push(col.allowNull ? '' : 'NOT NULL');
+              res.push(col.allowNull ? "" : "NOT NULL");
             }
           }
 
-          return res.join(' ');
+          return res.join(" ");
         })
-        .join(',\n');
+        .join(",\n");
       return {
         label,
         formatter,
         query: `CREATE TABLE ${input.tableId} (${columnString})`,
       };
-    case 'sqlite':
+    case "sqlite":
       columnString = input.columns
         .map((col) => {
           const colType = col.type.toUpperCase();
 
           return [
             col.name,
-            colType.includes('INT') ? 'INTEGER' : colType,
-            col.primaryKey ? 'PRIMARY KEY' : '',
-            col.autoIncrement ? 'AUTOINCREMENT' : '',
-            col.allowNull ? '' : 'NOT NULL',
-          ].join(' ');
+            colType.includes("INT") ? "INTEGER" : colType,
+            col.primaryKey ? "PRIMARY KEY" : "",
+            col.autoIncrement ? "AUTOINCREMENT" : "",
+            col.allowNull ? "" : "NOT NULL",
+          ].join(" ");
         })
-        .join(',\n');
+        .join(",\n");
       return {
         label,
         formatter,
         query: `CREATE TABLE ${input.tableId} (${columnString})`,
       };
-    case 'mariadb':
-    case 'mysql':
+    case "mariadb":
+    case "mysql":
       columnString = input.columns
         .map((col) =>
           [
             col.name,
             col.type,
-            col.primaryKey ? 'PRIMARY KEY' : '',
-            col.autoIncrement ? 'AUTO_INCREMENT' : '',
-            col.allowNull ? '' : 'NOT NULL',
-          ].join(' '),
+            col.primaryKey ? "PRIMARY KEY" : "",
+            col.autoIncrement ? "AUTO_INCREMENT" : "",
+            col.allowNull ? "" : "NOT NULL",
+          ].join(" "),
         )
-        .join(',\n');
+        .join(",\n");
       return {
         label,
         formatter,
@@ -445,12 +433,12 @@ export function getDropTable(input: SqlAction.TableInput): SqlAction.Output | un
   const label = `Drop Table`;
 
   switch (input.dialect) {
-    case 'mssql':
-    case 'postgres':
-    case 'postgresql':
-    case 'sqlite':
-    case 'mariadb':
-    case 'mysql':
+    case "mssql":
+    case "postgres":
+    case "postgresql":
+    case "sqlite":
+    case "mariadb":
+    case "mysql":
       return {
         label,
         formatter,
@@ -463,30 +451,30 @@ export function getAddColumn(input: SqlAction.TableInput): SqlAction.Output | un
   const label = `Add Column`;
 
   switch (input.dialect) {
-    case 'mssql':
+    case "mssql":
       return {
         label,
         formatter,
         query: `ALTER TABLE ${input.tableId}
                 ADD COLUMN newColumn1 NVARCHAR(200)`,
       };
-    case 'postgres':
-    case 'postgresql':
+    case "postgres":
+    case "postgresql":
       return {
         label,
         formatter,
         query: `ALTER TABLE ${input.tableId}
                 ADD COLUMN newColumn1 CHAR(200)`,
       };
-    case 'sqlite':
+    case "sqlite":
       return {
         label,
         formatter,
         query: `ALTER TABLE ${input.tableId}
                 ADD COLUMN newColumn1 TEXT`,
       };
-    case 'mariadb':
-    case 'mysql':
+    case "mariadb":
+    case "mysql":
       return {
         label,
         formatter,
@@ -504,12 +492,12 @@ export function getDropColumns(input: SqlAction.TableInput): SqlAction.Output | 
   }
 
   switch (input.dialect) {
-    case 'mssql':
-    case 'postgres':
-    case 'postgresql':
-    case 'sqlite':
-    case 'mariadb':
-    case 'mysql':
+    case "mssql":
+    case "postgres":
+    case "postgresql":
+    case "sqlite":
+    case "mariadb":
+    case "mysql":
       return {
         label,
         formatter,
@@ -518,7 +506,7 @@ export function getDropColumns(input: SqlAction.TableInput): SqlAction.Output | 
             (col) => `ALTER TABLE ${input.tableId}
                          DROP COLUMN ${col.name};`,
           )
-          .join('\n'),
+          .join("\n"),
       };
   }
 }
@@ -527,12 +515,12 @@ export function getDropDatabase(input: SqlAction.DatabaseInput): SqlAction.Outpu
   const label = `Drop Database`;
 
   switch (input.dialect) {
-    case 'mssql':
-    case 'postgres':
-    case 'postgresql':
-    case 'sqlite':
-    case 'mariadb':
-    case 'mysql':
+    case "mssql":
+    case "postgres":
+    case "postgresql":
+    case "sqlite":
+    case "mariadb":
+    case "mysql":
       return {
         label,
         formatter,
@@ -545,12 +533,12 @@ export function getCreateDatabase(input: SqlAction.DatabaseInput): SqlAction.Out
   const label = `Create Database`;
 
   switch (input.dialect) {
-    case 'mssql':
-    case 'postgres':
-    case 'postgresql':
-    case 'sqlite':
-    case 'mariadb':
-    case 'mysql':
+    case "mssql":
+    case "postgres":
+    case "postgresql":
+    case "sqlite":
+    case "mariadb":
+    case "mysql":
       return {
         label,
         formatter,
@@ -562,10 +550,10 @@ export function getCreateDatabase(input: SqlAction.DatabaseInput): SqlAction.Out
 export function getCreateSampleTable(input: SqlAction.DatabaseInput): SqlAction.Output | undefined {
   const label = `Create Table`;
 
-  let query = '';
+  let query = "";
 
   switch (input.dialect) {
-    case 'mssql':
+    case "mssql":
       query = `
         CREATE TABLE mocked_table
         (
@@ -574,8 +562,8 @@ export function getCreateSampleTable(input: SqlAction.DatabaseInput): SqlAction.
         );
       `;
       break;
-    case 'postgres':
-    case 'postgresql':
+    case "postgres":
+    case "postgresql":
       query = `
         CREATE TABLE mocked_table
         (
@@ -584,7 +572,7 @@ export function getCreateSampleTable(input: SqlAction.DatabaseInput): SqlAction.
         );
       `;
       break;
-    case 'sqlite':
+    case "sqlite":
       query = `
         CREATE TABLE mocked_table (
           id INTEGER PRIMARY KEY NOT NULL,
@@ -592,8 +580,8 @@ export function getCreateSampleTable(input: SqlAction.DatabaseInput): SqlAction.
         )
       `;
       break;
-    case 'mariadb':
-    case 'mysql':
+    case "mariadb":
+    case "mysql":
       query = `
         CREATE TABLE mocked_table
         (
@@ -612,18 +600,16 @@ export function getCreateSampleTable(input: SqlAction.DatabaseInput): SqlAction.
   };
 }
 
-export function getCreateConnectionDatabase(
-  input: SqlAction.ConnectionInput,
-): SqlAction.Output | undefined {
+export function getCreateConnectionDatabase(input: SqlAction.ConnectionInput): SqlAction.Output | undefined {
   const label = `Create Database`;
 
   switch (input.dialect) {
-    case 'mssql':
-    case 'postgres':
-    case 'postgresql':
-    case 'sqlite':
-    case 'mariadb':
-    case 'mysql':
+    case "mssql":
+    case "postgres":
+    case "postgresql":
+    case "sqlite":
+    case "mariadb":
+    case "mysql":
       return {
         label,
         formatter,
@@ -633,14 +619,14 @@ export function getCreateConnectionDatabase(
 }
 
 export class ConcreteDataScripts extends BaseDataScript {
-  dialects = ['mysql', 'mariadb', 'mssql', 'postgres', 'postgresql', 'sqlite'];
+  dialects = ["mysql", "mariadb", "mssql", "postgres", "postgresql", "sqlite"];
 
   getIsTableIdRequiredForQuery() {
     return false;
   }
 
   getSyntaxMode() {
-    return 'sql';
+    return "sql";
   }
 
   supportMigration() {
@@ -662,7 +648,7 @@ export class ConcreteDataScripts extends BaseDataScript {
   // dialect definitions
   getDialectIcon(dialect) {
     switch (dialect) {
-      case 'postgresql':
+      case "postgresql":
         return `${process.env.PUBLIC_URL}/assets/postgres.png`;
       default:
         return super.getDialectIcon(dialect);
@@ -698,19 +684,19 @@ export class ConcreteDataScripts extends BaseDataScript {
 
   getSampleConnectionString(dialect) {
     switch (dialect) {
-      case 'mssql':
+      case "mssql":
         return `mssql://sa:password123!@localhost:1433`;
-      case 'postgres':
-      case 'postgresql':
+      case "postgres":
+      case "postgresql":
         return `postgres://postgres:password@localhost:5432`;
-      case 'sqlite':
+      case "sqlite":
         return `sqlite://test-db.sqlite`;
-      case 'mariadb':
+      case "mariadb":
         return `mariadb://root:password@localhost:3306`;
-      case 'mysql':
+      case "mysql":
         return `mysql://root:password@localhost:3306`;
       default: // Not supported dialect
-        return '';
+        return "";
     }
   }
 
@@ -726,15 +712,14 @@ export class ConcreteDataScripts extends BaseDataScript {
 
     // construct the connection url for code snippet
     let connectionString = connection.connection;
-    connectionString = connectionString.replace('sslmode=require', 'sslmode=no-verify');
+    connectionString = connectionString.replace("sslmode=require", "sslmode=no-verify");
     switch (connection.dialect) {
-      case 'sqlite':
+      case "sqlite":
         break;
       default:
         if (database) {
           //@ts-ignore
-          const { scheme, username, password, hosts, options } =
-            BaseDataAdapter.getConnectionParameters(connectionString);
+          const { scheme, username, password, hosts, options } = BaseDataAdapter.getConnectionParameters(connectionString);
 
           connectionString = `${scheme}://`;
           if (username && password) {
@@ -756,23 +741,23 @@ export class ConcreteDataScripts extends BaseDataScript {
     }
 
     switch (language) {
-      case 'javascript':
+      case "javascript":
         // if there is a database, then append it
         switch (connection.dialect) {
-          case 'mssql':
+          case "mssql":
             deps.push(`// npm install --save tedious`);
             break;
-          case 'postgres':
-          case 'postgresql':
+          case "postgres":
+          case "postgresql":
             deps.push(`// npm install --save pg pg-hstore`);
             break;
-          case 'sqlite':
+          case "sqlite":
             deps.push(`// npm install --save sqlite3`);
             break;
-          case 'mariadb':
+          case "mariadb":
             deps.push(`// npm install --save mariadb`);
             break;
-          case 'mysql':
+          case "mysql":
             deps.push(`// npm install --save mysql2`);
             break;
         }
@@ -780,7 +765,7 @@ export class ConcreteDataScripts extends BaseDataScript {
         return `
 // install these extra dependencies if needed
 // npm install --save sequelize
-${deps.join('\n')}
+${deps.join("\n")}
 const {Sequelize} = require('sequelize');
 
 async function _doWork(){
@@ -802,32 +787,32 @@ async function _doWork(){
 
 _doWork();
         `.trim();
-      case 'python':
+      case "python":
         switch (connection.dialect) {
-          case 'mssql':
+          case "mssql":
             deps.push(`# pip install pymssql`);
 
             // NOTE: we need to update the protocol for SQLAlchemy
-            connectionString = connectionString.replace('mssql://', 'mssql+pymssql://');
+            connectionString = connectionString.replace("mssql://", "mssql+pymssql://");
             break;
-          case 'postgres':
-          case 'postgresql':
+          case "postgres":
+          case "postgresql":
             deps.push(`# pip install psycopg2-binary`);
 
             // NOTE: SQLAlchemy used to accept both, but has removed support for the postgres name
             // https://stackoverflow.com/questions/62688256/sqlalchemy-exc-nosuchmoduleerror-cant-load-plugin-sqlalchemy-dialectspostgre
-            connectionString = connectionString.replace('postgres://', 'postgresql://');
+            connectionString = connectionString.replace("postgres://", "postgresql://");
             break;
-          case 'sqlite':
+          case "sqlite":
             // NOTE: for sqlite, sqlalchemy needs an extra `/`
-            connectionString = connectionString.replace('sqlite://', 'sqlite:///');
+            connectionString = connectionString.replace("sqlite://", "sqlite:///");
             break;
-          case 'mariadb':
-          case 'mysql':
+          case "mariadb":
+          case "mysql":
             deps.push(`# pip install pymysql`);
 
             // NOTE: we need to update the protocol for SQLAlchemy
-            connectionString = connectionString.replace('mysql://', 'mysql+pymysql://');
+            connectionString = connectionString.replace("mysql://", "mysql+pymysql://");
             break;
         }
 
@@ -835,7 +820,7 @@ _doWork();
 # python3 -m venv ./ # setting up virtual environment with
 # source bin/activate # activate the venv profile
 # pip install sqlalchemy
-${deps.join('\n')}
+${deps.join("\n")}
 from sqlalchemy import create_engine
 
 engine = create_engine('${connectionString}', echo = True)
@@ -847,7 +832,7 @@ with engine.connect() as con:
     print(row)
         `.trim();
       default:
-        return '';
+        return "";
     }
   }
 }

@@ -1,4 +1,4 @@
-import React, { useCallback, useLayoutEffect, useRef, useState } from 'react';
+import React, { useCallback, useLayoutEffect, useRef, useState } from "react";
 
 type ContainerProps = React.HTMLAttributes<HTMLDivElement> & {
   children: React.ReactNode;
@@ -28,12 +28,8 @@ export function Container({ children, style, ...rest }: ContainerProps) {
 
   // Extract first Section's props into the ref via effect (not during render)
   const childArray = React.Children.toArray(children);
-  const firstSectionChild = childArray.find(
-    (c) => React.isValidElement(c) && c.type === Section,
-  );
-  const firstSectionProps = React.isValidElement(firstSectionChild)
-    ? (firstSectionChild.props as SectionProps)
-    : undefined;
+  const firstSectionChild = childArray.find((c) => React.isValidElement(c) && c.type === Section);
+  const firstSectionProps = React.isValidElement(firstSectionChild) ? (firstSectionChild.props as SectionProps) : undefined;
 
   useLayoutEffect(() => {
     if (firstSectionProps) {
@@ -100,20 +96,13 @@ export function Container({ children, style, ...rest }: ContainerProps) {
   });
 
   return (
-    <div style={{ display: 'flex', ...style }} {...rest}>
+    <div style={{ display: "flex", ...style }} {...rest}>
       {rendered}
     </div>
   );
 }
 
-export function Section({
-  defaultSize,
-  minSize,
-  maxSize,
-  onSizeChanged,
-  children,
-  ...rest
-}: SectionProps) {
+export function Section({ defaultSize, minSize, maxSize, onSizeChanged, children, ...rest }: SectionProps) {
   return <div {...rest}>{children}</div>;
 }
 
@@ -167,14 +156,14 @@ export function Bar({ size, style, _onDrag, _onDragEnd, ...rest }: BarInternalPr
           pendingDelta.current = 0;
         }
         _onDragEnd?.();
-        document.removeEventListener('mousemove', onMouseMove);
-        document.removeEventListener('mouseup', onMouseUp);
-        document.removeEventListener('selectstart', preventSelect);
+        document.removeEventListener("mousemove", onMouseMove);
+        document.removeEventListener("mouseup", onMouseUp);
+        document.removeEventListener("selectstart", preventSelect);
       };
 
-      document.addEventListener('selectstart', preventSelect);
-      document.addEventListener('mousemove', onMouseMove);
-      document.addEventListener('mouseup', onMouseUp);
+      document.addEventListener("selectstart", preventSelect);
+      document.addEventListener("mousemove", onMouseMove);
+      document.addEventListener("mouseup", onMouseUp);
     },
     [_onDrag, _onDragEnd],
   );
@@ -184,7 +173,7 @@ export function Bar({ size, style, _onDrag, _onDragEnd, ...rest }: BarInternalPr
       style={{
         width: `${size}px`,
         flexShrink: 0,
-        cursor: 'col-resize',
+        cursor: "col-resize",
         ...style,
       }}
       onMouseDown={onMouseDown}

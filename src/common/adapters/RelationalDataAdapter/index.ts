@@ -1,8 +1,8 @@
-import qs from 'qs';
-import { Options, Sequelize } from 'sequelize';
-import BaseDataAdapter from 'src/common/adapters/BaseDataAdapter/index';
-import IDataAdapter from 'src/common/adapters/IDataAdapter';
-import { SqluiCore } from 'typings';
+import qs from "qs";
+import { Options, Sequelize } from "sequelize";
+import BaseDataAdapter from "src/common/adapters/BaseDataAdapter/index";
+import IDataAdapter from "src/common/adapters/IDataAdapter";
+import { SqluiCore } from "typings";
 function _getDefaultSequelizeOptions(): Options {
   return {
     logging: false,
@@ -28,24 +28,22 @@ export default class RelationalDataAdapter extends BaseDataAdapter implements ID
 
     // since mariadb and mysql are fully compatible, let's use the same data
     // save the connection string
-    this.connectionOption = this.connectionOption.replace('mariadb://', 'mysql://');
+    this.connectionOption = this.connectionOption.replace("mariadb://", "mysql://");
 
     // TODO: we don't support sslmode, this will attempt to override the option
-    this.connectionOption = this.connectionOption.replace('sslmode=require', 'sslmode=no-verify');
+    this.connectionOption = this.connectionOption.replace("sslmode=require", "sslmode=no-verify");
   }
 
-  private getConnection(database: string = ''): Sequelize {
+  private getConnection(database: string = ""): Sequelize {
     let connectionUrl: string;
     let connectionPropOptions = _getDefaultSequelizeOptions();
 
     switch (this.dialect) {
-      case 'sqlite':
-        database = '';
+      case "sqlite":
+        database = "";
 
         // special handling for sqlite path
-        let sqliteStorageOption = this.connectionOption
-          .replace('sqlite://', '')
-          .replace(/\\/g, '/'); // uses :memory: for in memory
+        let sqliteStorageOption = this.connectionOption.replace("sqlite://", "").replace(/\\/g, "/"); // uses :memory: for in memory
 
         connectionUrl = `sqlite://`;
         connectionPropOptions = {
@@ -58,8 +56,7 @@ export default class RelationalDataAdapter extends BaseDataAdapter implements ID
         connectionUrl = this.connectionOption;
         if (database) {
           //@ts-ignore
-          const { scheme, username, password, hosts, options } =
-            BaseDataAdapter.getConnectionParameters(connectionUrl);
+          const { scheme, username, password, hosts, options } = BaseDataAdapter.getConnectionParameters(connectionUrl);
 
           connectionUrl = `${scheme}://`;
           if (username && password) {
@@ -83,11 +80,7 @@ export default class RelationalDataAdapter extends BaseDataAdapter implements ID
     try {
       return new Sequelize(connectionUrl, connectionPropOptions);
     } catch (err) {
-      console.log(
-        'Failed to set up Sequelize for RelationalDataAdapter',
-        connectionUrl,
-        connectionPropOptions,
-      );
+      console.log("Failed to set up Sequelize for RelationalDataAdapter", connectionUrl, connectionPropOptions);
       throw err;
     }
   }
@@ -100,25 +93,25 @@ export default class RelationalDataAdapter extends BaseDataAdapter implements ID
     let sql;
 
     switch (this.dialect) {
-      case 'mssql':
+      case "mssql":
         sql = `SELECT name AS 'database' FROM sys.databases`;
         break;
-      case 'postgres':
-      case 'postgresql':
+      case "postgres":
+      case "postgresql":
         sql = `SELECT datname AS database FROM pg_database`;
         break;
-      case 'sqlite':
+      case "sqlite":
         // because SQLITE doesn't have a concept of database
         // so we will hard code this as sqlite here
         // so that the ui will show up
         return [
           {
-            name: 'Sqlite',
+            name: "Sqlite",
             tables: [], // TODO: will remove this entirely
           },
         ];
-      case 'mariadb':
-      case 'mysql':
+      case "mariadb":
+      case "mysql":
         sql = `show databases`;
         break;
     }
@@ -140,7 +133,7 @@ export default class RelationalDataAdapter extends BaseDataAdapter implements ID
         name,
         tables: [], // TODO: will remove this entirely
       }))
-      .sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+      .sort((a, b) => (a.name || "").localeCompare(b.name || ""));
   }
 
   async getTables(database?: string): Promise<SqluiCore.TableMetaData[]> {
@@ -152,19 +145,19 @@ export default class RelationalDataAdapter extends BaseDataAdapter implements ID
     let data;
 
     switch (this.dialect) {
-      case 'mssql':
+      case "mssql":
         sql = `SELECT name AS 'tablename' FROM SYSOBJECTS WHERE xtype = 'U' ORDER BY tablename`;
         break;
-      case 'postgres':
-      case 'postgresql':
+      case "postgres":
+      case "postgresql":
         sql = `SELECT tablename FROM pg_tables WHERE schemaname='public' ORDER BY tablename`;
         break;
       default:
-      case 'sqlite':
+      case "sqlite":
         sql = `SELECT name AS tablename FROM sqlite_master WHERE type='table' AND name NOT LIKE '%sqlite%' ORDER BY tablename`;
         break;
-      case 'mariadb':
-      case 'mysql':
+      case "mariadb":
+      case "mysql":
         sql = `SELECT TABLE_NAME as tablename FROM information_schema.tables WHERE TABLE_SCHEMA = '${database}' ORDER BY tablename`;
         break;
     }
@@ -182,24 +175,22 @@ export default class RelationalDataAdapter extends BaseDataAdapter implements ID
         name,
         columns: [], // TODO: will remove this entirely
       }))
-      .sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+      .sort((a, b) => (a.name || "").localeCompare(b.name || ""));
   }
 
   async getColumns(table: string, database?: string): Promise<SqluiCore.ColumnMetaData[]> {
     switch (this.dialect) {
-      case 'mssql':
-      case 'postgres':
-      case 'postgresql':
-      case 'sqlite':
-      case 'mariadb':
-      case 'mysql':
+      case "mssql":
+      case "postgres":
+      case "postgresql":
+      case "sqlite":
+      case "mariadb":
+      case "mysql":
       default:
         // first get all the columns
         const columns: SqluiCore.ColumnMetaData[] = [];
         try {
-          const columnMap = await this.getConnection(database)
-            .getQueryInterface()
-            .describeTable(table);
+          const columnMap = await this.getConnection(database).getQueryInterface().describeTable(table);
 
           for (const columnName of Object.keys(columnMap)) {
             columns.push({
@@ -225,7 +216,7 @@ export default class RelationalDataAdapter extends BaseDataAdapter implements ID
               const targetColumn = columns.find((column) => column.name === fromColumnName);
 
               if (targetColumn) {
-                targetColumn.kind = 'foreign_key';
+                targetColumn.kind = "foreign_key";
                 targetColumn.referencedTableName = toTableName;
                 targetColumn.referencedColumnName = toColumnName;
               }
@@ -251,26 +242,26 @@ export default class RelationalDataAdapter extends BaseDataAdapter implements ID
       let affectedRows;
 
       switch (this.dialect) {
-        case 'mssql':
+        case "mssql":
           affectedRows = metaToUse;
           break;
-        case 'postgres':
-        case 'postgresql':
+        case "postgres":
+        case "postgresql":
           if (metaToUse.rowCount >= 0) {
             affectedRows = metaToUse.rowCount;
           }
           // Postgres returns a lot of redundant data, best to remove it to save space...
           metaToUse = undefined;
           break;
-        case 'sqlite':
+        case "sqlite":
           if (metaToUse.changes >= 0) {
             affectedRows = metaToUse.changes;
           } else {
             metaToUse = undefined;
           }
           break;
-        case 'mariadb':
-        case 'mysql':
+        case "mariadb":
+        case "mysql":
           if (metaToUse?.affectedRows) {
             // these are likely insert / update calls
             // these don't need raw data
@@ -298,10 +289,7 @@ export default class RelationalDataAdapter extends BaseDataAdapter implements ID
     }
   }
 
-  private async _execute(
-    sql: string,
-    database?: string,
-  ): Promise<[SqluiCore.RawData, SqluiCore.MetaData]> {
+  private async _execute(sql: string, database?: string): Promise<[SqluiCore.RawData, SqluiCore.MetaData]> {
     // https://sequelize.org/master/manual/raw-queries.html
     //@ts-ignore
     return this.getConnection(database).query(sql, {

@@ -1,17 +1,17 @@
-import Tooltip from '@mui/material/Tooltip';
-import { styled } from '@mui/system';
+import Tooltip from "@mui/material/Tooltip";
+import { styled } from "@mui/system";
 
-const StyledColumnType = styled('i')(({ theme }) => {
+const StyledColumnType = styled("i")(({ theme }) => {
   return {
     color: theme.palette.text.disabled,
-    fontFamily: 'monospace',
+    fontFamily: "monospace",
     paddingRight: theme.spacing(1),
-    maxWidth: '50%',
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    textAlign: 'right',
-    textTransform: 'capitalize',
-    marginLeft: 'auto',
+    maxWidth: "50%",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    textAlign: "right",
+    textTransform: "capitalize",
+    marginLeft: "auto",
   };
 });
 

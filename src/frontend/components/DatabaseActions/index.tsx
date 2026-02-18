@@ -1,20 +1,17 @@
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import SelectAllIcon from '@mui/icons-material/SelectAll';
-import SsidChartIcon from '@mui/icons-material/SsidChart';
-import IconButton from '@mui/material/IconButton';
-import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
-import {
-  getDatabaseActions,
-  isDialectSupportVisualization,
-} from 'src/common/adapters/DataScriptFactory';
-import DropdownButton from 'src/frontend/components/DropdownButton';
-import { useCommands } from 'src/frontend/components/MissionControl';
-import { useGetConnectionById } from 'src/frontend/hooks/useConnection';
-import { useActiveConnectionQuery } from 'src/frontend/hooks/useConnectionQuery';
-import { useQuerySizeSetting } from 'src/frontend/hooks/useSetting';
-import { useTreeActions } from 'src/frontend/hooks/useTreeActions';
-import { SqlAction } from 'typings';
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import SelectAllIcon from "@mui/icons-material/SelectAll";
+import SsidChartIcon from "@mui/icons-material/SsidChart";
+import IconButton from "@mui/material/IconButton";
+import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { getDatabaseActions, isDialectSupportVisualization } from "src/common/adapters/DataScriptFactory";
+import DropdownButton from "src/frontend/components/DropdownButton";
+import { useCommands } from "src/frontend/components/MissionControl";
+import { useGetConnectionById } from "src/frontend/hooks/useConnection";
+import { useActiveConnectionQuery } from "src/frontend/hooks/useConnectionQuery";
+import { useQuerySizeSetting } from "src/frontend/hooks/useSetting";
+import { useTreeActions } from "src/frontend/hooks/useTreeActions";
+import { SqlAction } from "typings";
 
 type DatabaseActionsProps = {
   connectionId: string;
@@ -44,7 +41,7 @@ export default function DatabaseActions(props: DatabaseActionsProps): JSX.Elemen
 
   let actions: SqlAction.Output[] = [
     {
-      label: 'Select',
+      label: "Select",
       description: `Selected the related database and connection.`,
       icon: <SelectAllIcon />,
     },
@@ -52,7 +49,7 @@ export default function DatabaseActions(props: DatabaseActionsProps): JSX.Elemen
 
   if (isDialectSupportVisualization(dialect)) {
     actions.push({
-      label: 'Visualize',
+      label: "Visualize",
       description: `Visualize all tables in this database.`,
       icon: <SsidChartIcon />,
       onClick: () => navigate(`/visualization/${connectionId}/${databaseId}`),
@@ -76,11 +73,11 @@ export default function DatabaseActions(props: DatabaseActionsProps): JSX.Elemen
       action?.onClick
         ? action.onClick()
         : selectCommand({
-            event: 'clientEvent/query/apply',
+            event: "clientEvent/query/apply",
             data: {
               connectionId,
               databaseId,
-              tableId: '',
+              tableId: "",
               sql: action.query,
             },
             label: action.description || `Applied "${action.label}" to active query tab.`,
@@ -92,14 +89,10 @@ export default function DatabaseActions(props: DatabaseActionsProps): JSX.Elemen
   }
 
   return (
-    <div className='DatabaseActions'>
-      <DropdownButton
-        id='database-action-split-button'
-        options={options}
-        onToggle={(newOpen) => setOpen(newOpen)}
-        isLoading={isLoading}>
-        <IconButton aria-label='Database Actions' size='small' color='inherit'>
-          <ArrowDropDownIcon fontSize='inherit' color='inherit' />
+    <div className="DatabaseActions">
+      <DropdownButton id="database-action-split-button" options={options} onToggle={(newOpen) => setOpen(newOpen)} isLoading={isLoading}>
+        <IconButton aria-label="Database Actions" size="small" color="inherit">
+          <ArrowDropDownIcon fontSize="inherit" color="inherit" />
         </IconButton>
       </DropdownButton>
     </div>

@@ -1,8 +1,8 @@
-import AlertDialog from 'src/frontend/components/ActionDialogs/AlertDialog';
-import ChoiceDialog from 'src/frontend/components/ActionDialogs/ChoiceDialog';
-import ModalDialog from 'src/frontend/components/ActionDialogs/ModalDialog';
-import PromptDialog from 'src/frontend/components/ActionDialogs/PromptDialog';
-import { useActionDialogs } from 'src/frontend/hooks/useActionDialogs';
+import AlertDialog from "src/frontend/components/ActionDialogs/AlertDialog";
+import ChoiceDialog from "src/frontend/components/ActionDialogs/ChoiceDialog";
+import ModalDialog from "src/frontend/components/ActionDialogs/ModalDialog";
+import PromptDialog from "src/frontend/components/ActionDialogs/PromptDialog";
+import { useActionDialogs } from "src/frontend/hooks/useActionDialogs";
 
 type ActionDialogsProps = {};
 
@@ -31,21 +31,13 @@ export default function ActionDialogs(props: ActionDialogsProps): JSX.Element | 
   };
 
   switch (dialog.type) {
-    case 'alert':
+    case "alert":
+      return <AlertDialog open={true} title="Alert" message={dialog.message} onDismiss={onDimiss} isConfirm={false} />;
+    case "confirm":
       return (
         <AlertDialog
           open={true}
-          title='Alert'
-          message={dialog.message}
-          onDismiss={onDimiss}
-          isConfirm={false}
-        />
-      );
-    case 'confirm':
-      return (
-        <AlertDialog
-          open={true}
-          title='Confirmation'
+          title="Confirmation"
           message={dialog.message}
           yesLabel={dialog.yesLabel}
           onYesClick={onConfirmSubmit}
@@ -53,7 +45,7 @@ export default function ActionDialogs(props: ActionDialogsProps): JSX.Element | 
           isConfirm={true}
         />
       );
-    case 'prompt':
+    case "prompt":
       return (
         <PromptDialog
           open={true}
@@ -69,7 +61,7 @@ export default function ActionDialogs(props: ActionDialogsProps): JSX.Element | 
           readonly={dialog.readonly}
         />
       );
-    case 'choice':
+    case "choice":
       return (
         <ChoiceDialog
           open={true}
@@ -81,7 +73,7 @@ export default function ActionDialogs(props: ActionDialogsProps): JSX.Element | 
           required={dialog.required}
         />
       );
-    case 'modal':
+    case "modal":
       return (
         <ModalDialog
           open={true}

@@ -1,22 +1,22 @@
-import { QueryClient, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useNavigate } from 'react-router-dom';
-import dataApi from 'src/frontend/data/api';
-import { setCurrentSessionId } from 'src/frontend/data/session';
-import { useActionDialogs } from 'src/frontend/hooks/useActionDialogs';
-import { SqluiCore } from 'typings';
+import { QueryClient, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
+import dataApi from "src/frontend/data/api";
+import { setCurrentSessionId } from "src/frontend/data/session";
+import { useActionDialogs } from "src/frontend/hooks/useActionDialogs";
+import { SqluiCore } from "typings";
 
-const QUERY_KEY_SESSIONS = 'sessions';
+const QUERY_KEY_SESSIONS = "sessions";
 
 // for sessions
 export function useGetSessions() {
   return useQuery([QUERY_KEY_SESSIONS], dataApi.getSessions, {
-    notifyOnChangeProps: ['data', 'error'],
+    notifyOnChangeProps: ["data", "error"],
   });
 }
 
 export function useGetOpenedSessionIds() {
-  return useQuery([QUERY_KEY_SESSIONS, 'opened'], dataApi.getOpenedSessionIds, {
-    notifyOnChangeProps: ['data', 'error'],
+  return useQuery([QUERY_KEY_SESSIONS, "opened"], dataApi.getOpenedSessionIds, {
+    notifyOnChangeProps: ["data", "error"],
   });
 }
 
@@ -30,8 +30,8 @@ export function useSetOpenSession() {
 }
 
 export function useGetCurrentSession() {
-  return useQuery([QUERY_KEY_SESSIONS, 'current'], dataApi.getSession, {
-    notifyOnChangeProps: ['data', 'error'],
+  return useQuery([QUERY_KEY_SESSIONS, "current"], dataApi.getSession, {
+    notifyOnChangeProps: ["data", "error"],
   });
 }
 
@@ -44,10 +44,10 @@ export function useSelectSession(suppressReload?: boolean) {
     // set the new session id;
     const { outcome } = await setOpenSession(newSessionId);
 
-    if (outcome === 'create_new_session') {
+    if (outcome === "create_new_session") {
       // if this is a brand new session that we can focus on
       // go back to homepage before switching session
-      navigate('/', { replace: true });
+      navigate("/", { replace: true });
 
       // then set it as current session
       await setCurrentSessionId(newSessionId, suppressReload);

@@ -1,12 +1,12 @@
-import SignalWifiStatusbar4BarIcon from '@mui/icons-material/SignalWifiStatusbar4Bar';
-import { useEffect } from 'react';
-import Breadcrumbs from 'src/frontend/components/Breadcrumbs';
-import VirtualizedConnectionTree from 'src/frontend/components/VirtualizedConnectionTree';
-import { NewConnectionForm } from 'src/frontend/components/ConnectionForm';
-import NewConnectionButton from 'src/frontend/components/NewConnectionButton';
-import { useSideBarWidthPreference } from 'src/frontend/hooks/useClientSidePreference';
-import { useTreeActions } from 'src/frontend/hooks/useTreeActions';
-import LayoutTwoColumns from 'src/frontend/layout/LayoutTwoColumns';
+import SignalWifiStatusbar4BarIcon from "@mui/icons-material/SignalWifiStatusbar4Bar";
+import { useEffect } from "react";
+import Breadcrumbs from "src/frontend/components/Breadcrumbs";
+import VirtualizedConnectionTree from "src/frontend/components/VirtualizedConnectionTree";
+import { NewConnectionForm } from "src/frontend/components/ConnectionForm";
+import NewConnectionButton from "src/frontend/components/NewConnectionButton";
+import { useSideBarWidthPreference } from "src/frontend/hooks/useClientSidePreference";
+import { useTreeActions } from "src/frontend/hooks/useTreeActions";
+import LayoutTwoColumns from "src/frontend/layout/LayoutTwoColumns";
 
 export default function NewConnectionPage() {
   const { value: width, onChange: onSetWidth } = useSideBarWidthPreference();
@@ -20,7 +20,7 @@ export default function NewConnectionPage() {
   }, [setTreeActions]);
 
   return (
-    <LayoutTwoColumns className='Page Page__NewConnection'>
+    <LayoutTwoColumns className="Page Page__NewConnection">
       <>
         <NewConnectionButton />
         <VirtualizedConnectionTree />
@@ -31,7 +31,7 @@ export default function NewConnectionPage() {
             {
               label: (
                 <>
-                  <SignalWifiStatusbar4BarIcon fontSize='inherit' />
+                  <SignalWifiStatusbar4BarIcon fontSize="inherit" />
                   New Connection
                 </>
               ),

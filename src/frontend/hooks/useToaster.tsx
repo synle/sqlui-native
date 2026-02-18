@@ -1,9 +1,9 @@
-import CloseIcon from '@mui/icons-material/Close';
-import IconButton from '@mui/material/IconButton';
-import { useSnackbar } from 'notistack';
-import { getGeneratedRandomId } from 'src/frontend/utils/commonUtils';
+import CloseIcon from "@mui/icons-material/Close";
+import IconButton from "@mui/material/IconButton";
+import { useSnackbar } from "notistack";
+import { getGeneratedRandomId } from "src/frontend/utils/commonUtils";
 
-const QUERY_KEY_TOASTS = 'toasts';
+const QUERY_KEY_TOASTS = "toasts";
 
 type CoreToasterProps = {
   message: string | JSX.Element;
@@ -36,16 +36,12 @@ export default function useToaster() {
         action: (snackbarKey) => (
           <>
             {props.action}
-            <IconButton
-              onClick={() => closeSnackbar(snackbarKey)}
-              size='small'
-              aria-label='close'
-              color='inherit'>
-              <CloseIcon fontSize='small' />
+            <IconButton onClick={() => closeSnackbar(snackbarKey)} size="small" aria-label="close" color="inherit">
+              <CloseIcon fontSize="small" />
             </IconButton>
           </>
         ),
-        anchorOrigin: { horizontal: 'center', vertical: 'bottom' },
+        anchorOrigin: { horizontal: "center", vertical: "bottom" },
       });
 
       resolve({

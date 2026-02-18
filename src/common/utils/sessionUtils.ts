@@ -1,4 +1,4 @@
-import { BrowserWindow } from 'electron';
+import { BrowserWindow } from "electron";
 let openedSessions: Record<string, string> = {};
 let openedWindows: Record<string, BrowserWindow> = {};
 

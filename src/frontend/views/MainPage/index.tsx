@@ -1,11 +1,11 @@
-import PageviewIcon from '@mui/icons-material/Pageview';
-import { useEffect } from 'react';
-import Breadcrumbs from 'src/frontend/components/Breadcrumbs';
-import VirtualizedConnectionTree from 'src/frontend/components/VirtualizedConnectionTree';
-import NewConnectionButton from 'src/frontend/components/NewConnectionButton';
-import QueryBoxTabs from 'src/frontend/components/QueryBoxTabs';
-import { useTreeActions } from 'src/frontend/hooks/useTreeActions';
-import LayoutTwoColumns from 'src/frontend/layout/LayoutTwoColumns';
+import PageviewIcon from "@mui/icons-material/Pageview";
+import { useEffect } from "react";
+import Breadcrumbs from "src/frontend/components/Breadcrumbs";
+import VirtualizedConnectionTree from "src/frontend/components/VirtualizedConnectionTree";
+import NewConnectionButton from "src/frontend/components/NewConnectionButton";
+import QueryBoxTabs from "src/frontend/components/QueryBoxTabs";
+import { useTreeActions } from "src/frontend/hooks/useTreeActions";
+import LayoutTwoColumns from "src/frontend/layout/LayoutTwoColumns";
 
 export default function MainPage() {
   const { setTreeActions } = useTreeActions();
@@ -17,7 +17,7 @@ export default function MainPage() {
   }, [setTreeActions]);
 
   return (
-    <LayoutTwoColumns className='Page Page__MainPage'>
+    <LayoutTwoColumns className="Page Page__MainPage">
       <>
         <NewConnectionButton />
         <VirtualizedConnectionTree />
@@ -28,7 +28,7 @@ export default function MainPage() {
             {
               label: (
                 <>
-                  <PageviewIcon fontSize='inherit' />
+                  <PageviewIcon fontSize="inherit" />
                   Query Page
                 </>
               ),

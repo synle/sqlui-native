@@ -1,6 +1,6 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import dataApi from 'src/frontend/data/api';
-import { SqluiCore } from 'typings';
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import dataApi from "src/frontend/data/api";
+import { SqluiCore } from "typings";
 
 const QUERY_KEY_DATA_SNAPSHOT = `dataSnapshot`;
 
@@ -9,9 +9,7 @@ export function useGetDataSnapshots() {
 }
 
 export function useGetDataSnapshot(dataSnapshotId?: string) {
-  return useQuery([QUERY_KEY_DATA_SNAPSHOT, dataSnapshotId], () =>
-    dataSnapshotId ? dataApi.getDataSnapshot(dataSnapshotId) : null,
-  );
+  return useQuery([QUERY_KEY_DATA_SNAPSHOT, dataSnapshotId], () => (dataSnapshotId ? dataApi.getDataSnapshot(dataSnapshotId) : null));
 }
 
 export function useAddDataSnapshot() {
@@ -19,13 +17,12 @@ export function useAddDataSnapshot() {
   return useMutation<
     SqluiCore.DataSnapshot,
     void,
-    Partial<SqluiCore.DataSnapshot> &
-      Required<Pick<SqluiCore.DataSnapshot, 'values' | 'description'>>
+    Partial<SqluiCore.DataSnapshot> & Required<Pick<SqluiCore.DataSnapshot, "values" | "description">>
   >(async (newDataSnapshot) => {
     if (newDataSnapshot) {
       return dataApi.addDataSnapshot(newDataSnapshot);
     }
-    throw 'newDataSnapshot is empty';
+    throw "newDataSnapshot is empty";
   });
 }
 
@@ -36,7 +33,7 @@ export function useDeleteDataSnapshot() {
       if (dataSnapshotId) {
         return dataApi.deleteDataSnapshot(dataSnapshotId);
       }
-      throw 'dataSnapshotId is empty';
+      throw "dataSnapshotId is empty";
     },
     {
       onSettled: () => {

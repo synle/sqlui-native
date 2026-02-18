@@ -1,13 +1,13 @@
-import CassandraDataAdapter from 'src/common/adapters/CassandraDataAdapter/index';
+import CassandraDataAdapter from "src/common/adapters/CassandraDataAdapter/index";
 
-describe.skip('cassandra v4', () => {
+describe.skip("cassandra v4", () => {
   let adapter;
 
   beforeAll(() => {
-    adapter = new CassandraDataAdapter('cassandra://localhost:9042');
+    adapter = new CassandraDataAdapter("cassandra://localhost:9042");
   });
 
-  test('Get database', async () => {
+  test("Get database", async () => {
     const databases = await adapter.getDatabases();
     expect(databases).toMatchInlineSnapshot(`
 Array [
@@ -47,8 +47,8 @@ Array [
 `);
   });
 
-  test('Get tables', async () => {
-    const tables = await adapter.getTables('system');
+  test("Get tables", async () => {
+    const tables = await adapter.getTables("system");
     expect(tables).toMatchInlineSnapshot(`
 Array [
   Object {
@@ -135,8 +135,8 @@ Array [
 `);
   });
 
-  test('Get columns', async () => {
-    const columns = await adapter.getColumns('columns', 'system_schema');
+  test("Get columns", async () => {
+    const columns = await adapter.getColumns("columns", "system_schema");
     expect(columns).toMatchInlineSnapshot(`
 Array [
   Object {
@@ -183,8 +183,8 @@ Array [
 `);
   });
 
-  test('Execute Select', async () => {
-    const resp = await adapter.execute(`SELECT * FROM tables LIMIT 10`, 'system_schema');
+  test("Execute Select", async () => {
+    const resp = await adapter.execute(`SELECT * FROM tables LIMIT 10`, "system_schema");
     //@ts-ignore
     expect(resp.raw.length > 0).toBeTruthy();
   });

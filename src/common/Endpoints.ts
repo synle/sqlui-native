@@ -1,13 +1,7 @@
-import { BrowserWindow } from 'electron';
-import { Express } from 'express';
-import path from 'path';
-import {
-  getColumns,
-  getConnectionMetaData,
-  getDataAdapter,
-  getDatabases,
-  getTables,
-} from 'src/common/adapters/DataAdapterFactory';
+import { BrowserWindow } from "electron";
+import { Express } from "express";
+import path from "path";
+import { getColumns, getConnectionMetaData, getDataAdapter, getDatabases, getTables } from "src/common/adapters/DataAdapterFactory";
 import {
   getConnectionsStorage,
   getDataSnapshotStorage,
@@ -17,26 +11,26 @@ import {
   readJSON,
   storageDir,
   writeJSON,
-} from 'src/common/PersistentStorage';
-import * as sessionUtils from 'src/common/utils/sessionUtils';
-import { SqluiCore, SqluiEnums } from 'typings';
+} from "src/common/PersistentStorage";
+import * as sessionUtils from "src/common/utils/sessionUtils";
+import { SqluiCore, SqluiEnums } from "typings";
 let expressAppContext: Express | undefined;
 
 const _apiCache = {};
 
 const electronEndpointHandlers: any[] = [];
 function addDataEndpoint(
-  method: 'get' | 'post' | 'put' | 'delete',
+  method: "get" | "post" | "put" | "delete",
   url: string,
   incomingHandler: (req: any, res: any, cache: any) => void,
 ) {
   const handlerToUse = async (req: any, res: any, cache: any) => {
     try {
-      res.header('sqlui-native-session-id', req.headers['sqlui-native-session-id']);
-      res.header('sqlui-native-window-id', req.headers['sqlui-native-window-id']);
+      res.header("sqlui-native-session-id", req.headers["sqlui-native-session-id"]);
+      res.header("sqlui-native-window-id", req.headers["sqlui-native-window-id"]);
       await incomingHandler(req, res, cache);
     } catch (err: any) {
-      console.log('err', err);
+      console.log("err", err);
       res.status(500).send(err);
     }
   };
@@ -45,7 +39,7 @@ function addDataEndpoint(
     // set up the route in the context of express server
     expressAppContext[method](url, async (req, res) => {
       // here we simulate a delay for our mocked server
-      const cacheKey = req.headers['sqlui-native-session-id'];
+      const cacheKey = req.headers["sqlui-native-session-id"];
       const apiCache = {
         get(key: SqluiEnums.ServerApiCacheKey) {
           try {
@@ -86,7 +80,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
   //=========================================================================
   // config api endpoints
   //=========================================================================
-  addDataEndpoint('get', '/api/configs', async (req, res, apiCache) => {
+  addDataEndpoint("get", "/api/configs", async (req, res, apiCache) => {
     res.status(200).json({
       storageDir,
       isElectron: !expressAppContext,
@@ -96,8 +90,8 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
   //=========================================================================
   // connection api endpoints
   //=========================================================================
-  addDataEndpoint('get', '/api/connections', async (req, res, apiCache) => {
-    const connectionsStorage = await getConnectionsStorage(req.headers['sqlui-native-session-id']);
+  addDataEndpoint("get", "/api/connections", async (req, res, apiCache) => {
+    const connectionsStorage = await getConnectionsStorage(req.headers["sqlui-native-session-id"]);
 
     const connections = await connectionsStorage.list();
 
@@ -109,10 +103,10 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
             const engine = getDataAdapter(connection.connection);
             await engine.authenticate();
 
-            connection.status = 'online';
+            connection.status = "online";
             connection.dialect = engine.dialect;
           } catch (err: any) {
-            connection.status = 'offline';
+            connection.status = "offline";
             connection.dialect = undefined;
           }
 
@@ -126,16 +120,16 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     res.status(200).json(connections);
   });
 
-  addDataEndpoint('post', '/api/connections', async (req, res, apiCache) => {
-    const connectionsStorage = await getConnectionsStorage(req.headers['sqlui-native-session-id']);
+  addDataEndpoint("post", "/api/connections", async (req, res, apiCache) => {
+    const connectionsStorage = await getConnectionsStorage(req.headers["sqlui-native-session-id"]);
 
     const connections = await connectionsStorage.set(req.body);
 
     res.status(200).json(connections);
   });
 
-  addDataEndpoint('get', '/api/connection/:connectionId', async (req, res, apiCache) => {
-    const connectionsStorage = await getConnectionsStorage(req.headers['sqlui-native-session-id']);
+  addDataEndpoint("get", "/api/connection/:connectionId", async (req, res, apiCache) => {
+    const connectionsStorage = await getConnectionsStorage(req.headers["sqlui-native-session-id"]);
 
     const connection = await connectionsStorage.get(req.params?.connectionId);
 
@@ -143,71 +137,47 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
       const engine = getDataAdapter(connection.connection);
       await engine.authenticate();
 
-      connection.status = 'online';
+      connection.status = "online";
       connection.dialect = engine.dialect;
     } catch (err: any) {}
 
     res.status(200).json(connection);
   });
 
-  addDataEndpoint('get', '/api/connection/:connectionId/databases', async (req, res, apiCache) => {
-    res
-      .status(200)
-      .json(await getDatabases(req.headers['sqlui-native-session-id'], req.params?.connectionId));
+  addDataEndpoint("get", "/api/connection/:connectionId/databases", async (req, res, apiCache) => {
+    res.status(200).json(await getDatabases(req.headers["sqlui-native-session-id"], req.params?.connectionId));
   });
 
-  addDataEndpoint('get', '/api/connection/:connectionId/database/:databaseId', async (req, res) => {
-    const databases = await getDatabases(
-      req.headers['sqlui-native-session-id'],
-      req.params?.connectionId,
-    );
+  addDataEndpoint("get", "/api/connection/:connectionId/database/:databaseId", async (req, res) => {
+    const databases = await getDatabases(req.headers["sqlui-native-session-id"], req.params?.connectionId);
     const database = databases.find((db) => db.name === req.params?.databaseId);
 
     if (!database) {
-      return res.status(404).send('Not Found');
+      return res.status(404).send("Not Found");
     }
 
     res.status(200).json(database);
   });
 
-  addDataEndpoint(
-    'get',
-    '/api/connection/:connectionId/database/:databaseId/tables',
-    async (req, res) =>
-      res
-        .status(200)
-        .json(
-          await getTables(
-            req.headers['sqlui-native-session-id'],
-            req.params?.connectionId,
-            req.params?.databaseId,
-          ),
-        ),
+  addDataEndpoint("get", "/api/connection/:connectionId/database/:databaseId/tables", async (req, res) =>
+    res.status(200).json(await getTables(req.headers["sqlui-native-session-id"], req.params?.connectionId, req.params?.databaseId)),
   );
 
-  addDataEndpoint(
-    'get',
-    '/api/connection/:connectionId/database/:databaseId/table/:tableId/columns',
-    async (req, res) =>
-      res
-        .status(200)
-        .json(
-          await getColumns(
-            req.headers['sqlui-native-session-id'],
-            req.params?.connectionId,
-            req.params?.databaseId,
-            req.params?.tableId,
-          ),
-        ),
+  addDataEndpoint("get", "/api/connection/:connectionId/database/:databaseId/table/:tableId/columns", async (req, res) =>
+    res
+      .status(200)
+      .json(
+        await getColumns(req.headers["sqlui-native-session-id"], req.params?.connectionId, req.params?.databaseId, req.params?.tableId),
+      ),
   );
 
-  addDataEndpoint('post', '/api/connection/:connectionId/connect', async (req, res, apiCache) => {
-    const connectionsStorage = await getConnectionsStorage(req.headers['sqlui-native-session-id']);
+  addDataEndpoint("post", "/api/connection/:connectionId/connect", async (req, res, apiCache) => {
+    const connectionsStorage = await getConnectionsStorage(req.headers["sqlui-native-session-id"]);
 
     const connection = await connectionsStorage.get(req.params?.connectionId);
 
     if (!connection) {
-      return res.status(404).send('Not Found');
+      return res.status(404).send("Not Found");
     }
 
     try {
@@ -218,17 +188,17 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
       // here means we failed to connect, just set back 407 - Not Acceptable
       // here we return the barebone
       res.status(406).json(`Failed to connect ${err.toString()}`);
-      console.log('Failed to connect', err);
+      console.log("Failed to connect", err);
     }
   });
 
-  addDataEndpoint('post', '/api/connection/:connectionId/execute', async (req, res, apiCache) => {
-    const connectionsStorage = await getConnectionsStorage(req.headers['sqlui-native-session-id']);
+  addDataEndpoint("post", "/api/connection/:connectionId/execute", async (req, res, apiCache) => {
+    const connectionsStorage = await getConnectionsStorage(req.headers["sqlui-native-session-id"]);
 
     const connection = await connectionsStorage.get(req.params?.connectionId);
 
     if (!connection) {
-      return res.status(404).send('Not Found');
+      return res.status(404).send("Not Found");
     }
 
     const engine = getDataAdapter(connection.connection);
@@ -236,11 +206,11 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     res.status(200).json(await engine.execute(req.body?.sql, req.body?.database, req.body?.table));
   });
 
-  addDataEndpoint('post', '/api/connection/test', async (req, res, apiCache) => {
+  addDataEndpoint("post", "/api/connection/test", async (req, res, apiCache) => {
     const connection: SqluiCore.CoreConnectionProps = req.body;
 
     if (!connection.connection) {
-      return res.status(400).send('`connection` is required...');
+      return res.status(400).send("`connection` is required...");
     }
 
     const engine = getDataAdapter(connection.connection);
@@ -248,8 +218,8 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     res.status(200).json(await getConnectionMetaData(connection));
   });
 
-  addDataEndpoint('post', '/api/connection', async (req, res, apiCache) => {
-    const connectionsStorage = await getConnectionsStorage(req.headers['sqlui-native-session-id']);
+  addDataEndpoint("post", "/api/connection", async (req, res, apiCache) => {
+    const connectionsStorage = await getConnectionsStorage(req.headers["sqlui-native-session-id"]);
 
     res.status(201).json(
       await connectionsStorage.add({
@@ -259,8 +229,8 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     );
   });
 
-  addDataEndpoint('put', '/api/connection/:connectionId', async (req, res, apiCache) => {
-    const connectionsStorage = await getConnectionsStorage(req.headers['sqlui-native-session-id']);
+  addDataEndpoint("put", "/api/connection/:connectionId", async (req, res, apiCache) => {
+    const connectionsStorage = await getConnectionsStorage(req.headers["sqlui-native-session-id"]);
 
     res.status(202).json(
       await connectionsStorage.update({
@@ -271,22 +241,22 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     );
   });
 
-  addDataEndpoint('delete', '/api/connection/:connectionId', async (req, res, apiCache) => {
-    const connectionsStorage = await getConnectionsStorage(req.headers['sqlui-native-session-id']);
+  addDataEndpoint("delete", "/api/connection/:connectionId", async (req, res, apiCache) => {
+    const connectionsStorage = await getConnectionsStorage(req.headers["sqlui-native-session-id"]);
 
     res.status(202).json(await connectionsStorage.delete(req.params?.connectionId));
   });
   //=========================================================================
   // query api endpoints
   //=========================================================================
-  addDataEndpoint('get', '/api/queries', async (req, res, apiCache) => {
-    const queryStorage = await getQueryStorage(req.headers['sqlui-native-session-id']);
+  addDataEndpoint("get", "/api/queries", async (req, res, apiCache) => {
+    const queryStorage = await getQueryStorage(req.headers["sqlui-native-session-id"]);
 
     res.status(200).json(await queryStorage.list());
   });
 
-  addDataEndpoint('post', '/api/query', async (req, res, apiCache) => {
-    const queryStorage = await getQueryStorage(req.headers['sqlui-native-session-id']);
+  addDataEndpoint("post", "/api/query", async (req, res, apiCache) => {
+    const queryStorage = await getQueryStorage(req.headers["sqlui-native-session-id"]);
 
     res.status(201).json(
       await queryStorage.add({
@@ -295,8 +265,8 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     );
   });
 
-  addDataEndpoint('put', '/api/query/:queryId', async (req, res, apiCache) => {
-    const queryStorage = await getQueryStorage(req.headers['sqlui-native-session-id']);
+  addDataEndpoint("put", "/api/query/:queryId", async (req, res, apiCache) => {
+    const queryStorage = await getQueryStorage(req.headers["sqlui-native-session-id"]);
 
     res.status(202).json(
       await queryStorage.update({
@@ -310,8 +280,8 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     );
   });
 
-  addDataEndpoint('delete', '/api/query/:queryId', async (req, res, apiCache) => {
-    const queryStorage = await getQueryStorage(req.headers['sqlui-native-session-id']);
+  addDataEndpoint("delete", "/api/query/:queryId", async (req, res, apiCache) => {
+    const queryStorage = await getQueryStorage(req.headers["sqlui-native-session-id"]);
 
     res.status(202).json(await queryStorage.delete(req.params?.queryId));
   });
@@ -319,8 +289,8 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
   // session api endpoints
   //=========================================================================
   // get the current session
-  addDataEndpoint('get', '/api/session', async (req, res, apiCache) => {
-    const windowId = req.headers['sqlui-native-window-id'];
+  addDataEndpoint("get", "/api/session", async (req, res, apiCache) => {
+    const windowId = req.headers["sqlui-native-window-id"];
     if (!windowId) {
       // windowId is required
       return res.status(404).json(null);
@@ -342,20 +312,20 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     res.status(200).json(session);
   });
 
-  addDataEndpoint('get', '/api/sessions', async (req, res, apiCache) => {
+  addDataEndpoint("get", "/api/sessions", async (req, res, apiCache) => {
     const sessionsStorage = await getSessionsStorage();
 
     res.status(200).json(await sessionsStorage.list());
   });
 
-  addDataEndpoint('get', '/api/sessions/opened', async (req, res, apiCache) => {
+  addDataEndpoint("get", "/api/sessions/opened", async (req, res, apiCache) => {
     res.status(200).json(await sessionUtils.listSessionIds());
   });
 
-  addDataEndpoint('post', '/api/sessions/opened/:sessionId', async (req, res, apiCache) => {
-    const windowId = req.headers['sqlui-native-window-id'];
+  addDataEndpoint("post", "/api/sessions/opened/:sessionId", async (req, res, apiCache) => {
+    const windowId = req.headers["sqlui-native-window-id"];
     if (!windowId) {
-      throw 'windowId is required';
+      throw "windowId is required";
     }
 
     const newSessionId = req.params?.sessionId;
@@ -364,17 +334,17 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     if (isNewSessionId) {
       // created
       res.status(201).json({
-        outcome: 'create_new_session',
+        outcome: "create_new_session",
       });
     } else {
       // accepted
       res.status(202).json({
-        outcome: 'focus_on_old_session_id',
+        outcome: "focus_on_old_session_id",
       });
     }
   });
 
-  addDataEndpoint('post', '/api/session', async (req, res, apiCache) => {
+  addDataEndpoint("post", "/api/session", async (req, res, apiCache) => {
     const sessionsStorage = await getSessionsStorage();
 
     res.status(201).json(
@@ -384,7 +354,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     );
   });
 
-  addDataEndpoint('put', '/api/session/:sessionId', async (req, res, apiCache) => {
+  addDataEndpoint("put", "/api/session/:sessionId", async (req, res, apiCache) => {
     const sessionsStorage = await getSessionsStorage();
 
     res.status(202).json(
@@ -395,12 +365,12 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     );
   });
 
-  addDataEndpoint('post', '/api/session/:sessionId/clone', async (req, res, apiCache) => {
+  addDataEndpoint("post", "/api/session/:sessionId/clone", async (req, res, apiCache) => {
     const name = req.body?.name;
     const clonedFromSessionId = req.params?.sessionId;
 
     if (!name) {
-      return res.status(400).send('`name` is required...');
+      return res.status(400).send("`name` is required...");
     }
     const sessionsStorage = await getSessionsStorage();
 
@@ -425,10 +395,10 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     res.status(201).json(newSession);
   });
 
-  addDataEndpoint('delete', '/api/session/:sessionId', async (req, res, apiCache) => {
+  addDataEndpoint("delete", "/api/session/:sessionId", async (req, res, apiCache) => {
     const sessionIdToDelete = req.params?.sessionId;
     if (!sessionIdToDelete) {
-      throw 'sessionId is required';
+      throw "sessionId is required";
     }
     const sessionsStorage = await getSessionsStorage();
 
@@ -445,14 +415,14 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
   // folder items endpoints used in bookmarks and recycle bin
   //=========================================================================
   // this get a list of all items in a folder
-  addDataEndpoint('get', '/api/folder/:folderId', async (req, res, apiCache) => {
+  addDataEndpoint("get", "/api/folder/:folderId", async (req, res, apiCache) => {
     const folderItemsStorage = await getFolderItemsStorage(req.params?.folderId);
 
     res.status(200).json(await folderItemsStorage.list());
   });
 
   // adds item to recycle bin
-  addDataEndpoint('post', '/api/folder/:folderId', async (req, res, apiCache) => {
+  addDataEndpoint("post", "/api/folder/:folderId", async (req, res, apiCache) => {
     const folderItemsStorage = await getFolderItemsStorage(req.params?.folderId);
 
     res.status(202).json(
@@ -464,7 +434,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     );
   });
 
-  addDataEndpoint('put', '/api/folder/:folderId', async (req, res, apiCache) => {
+  addDataEndpoint("put", "/api/folder/:folderId", async (req, res, apiCache) => {
     const folderItemsStorage = await getFolderItemsStorage(req.params?.folderId);
 
     res.status(202).json(
@@ -478,14 +448,14 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
   });
 
   // can be used to delete items off the recycle permanently
-  addDataEndpoint('delete', '/api/folder/:folderId/:itemId', async (req, res, apiCache) => {
+  addDataEndpoint("delete", "/api/folder/:folderId/:itemId", async (req, res, apiCache) => {
     const folderItemsStorage = await getFolderItemsStorage(req.params?.folderId);
 
     res.status(202).json(await folderItemsStorage.delete(req.params?.itemId));
   });
 
   // for open in app window (ONLY for electro mode)
-  addDataEndpoint('post', '/api/appWindow', async (req, res) => {
+  addDataEndpoint("post", "/api/appWindow", async (req, res) => {
     const hashLink = req.body.hashLink;
 
     // attempting to open the window to show this data
@@ -493,9 +463,9 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
       const mainWindow = new BrowserWindow({
         width: 1200,
         height: 800,
-        icon: __dirname + '/build/favicon.ico',
+        icon: __dirname + "/build/favicon.ico",
         webPreferences: {
-          preload: path.join(__dirname, 'preload.js'),
+          preload: path.join(__dirname, "preload.js"),
           nodeIntegration: true,
           contextIsolation: false,
         },
@@ -507,12 +477,12 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     res.status(200).send();
   });
   // data snapshot endpoints
-  addDataEndpoint('get', '/api/dataSnapshots', async (req, res) => {
+  addDataEndpoint("get", "/api/dataSnapshots", async (req, res) => {
     const dataSnapshotStorage = await getDataSnapshotStorage();
     res.status(200).json(await dataSnapshotStorage.list());
   });
 
-  addDataEndpoint('get', '/api/dataSnapshot/:dataSnapshotId', async (req, res) => {
+  addDataEndpoint("get", "/api/dataSnapshot/:dataSnapshotId", async (req, res) => {
     const dataSnapshotStorage = await getDataSnapshotStorage();
 
     const dataSnapshotId = req.params?.dataSnapshotId;
@@ -520,7 +490,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     const dataSnapshot = await dataSnapshotStorage.get(dataSnapshotId);
 
     if (!dataSnapshot) {
-      return res.status(404).send('Not Found');
+      return res.status(404).send("Not Found");
     }
 
     try {
@@ -536,7 +506,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     res.status(200).json(dataSnapshot);
   });
 
-  addDataEndpoint('post', '/api/dataSnapshot', async (req, res) => {
+  addDataEndpoint("post", "/api/dataSnapshot", async (req, res) => {
     const dataSnapshotStorage = await getDataSnapshotStorage();
 
     const dataSnapshotId = dataSnapshotStorage.getGeneratedRandomId();
@@ -552,7 +522,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     res.status(200).json(resp);
   });
 
-  addDataEndpoint('delete', '/api/dataSnapshot/:dataSnapshotId', async (req, res, apiCache) => {
+  addDataEndpoint("delete", "/api/dataSnapshot/:dataSnapshotId", async (req, res, apiCache) => {
     const dataSnapshotStorage = await getDataSnapshotStorage();
     // TODO: should we delete the snapshot data too?
     res.status(202).json(await dataSnapshotStorage.delete(req.params?.dataSnapshotId));

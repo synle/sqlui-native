@@ -1,18 +1,18 @@
-import { QueryClient, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import dataApi from 'src/frontend/data/api';
-import { useAddRecycleBinItem } from 'src/frontend/hooks/useFolderItems';
-import { useIsSoftDeleteModeSetting } from 'src/frontend/hooks/useSetting';
-import { getUpdatedOrdersForList } from 'src/frontend/utils/commonUtils';
-import { SqluiCore, SqluiFrontend } from 'typings';
+import { QueryClient, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import dataApi from "src/frontend/data/api";
+import { useAddRecycleBinItem } from "src/frontend/hooks/useFolderItems";
+import { useIsSoftDeleteModeSetting } from "src/frontend/hooks/useSetting";
+import { getUpdatedOrdersForList } from "src/frontend/utils/commonUtils";
+import { SqluiCore, SqluiFrontend } from "typings";
 
-const QUERY_KEY_ALL_CONNECTIONS = 'connections';
+const QUERY_KEY_ALL_CONNECTIONS = "connections";
 
 const DEFAULT_STALE_TIME = 30000;
 
 export function useGetConnections() {
   return useQuery([QUERY_KEY_ALL_CONNECTIONS], dataApi.getConnections, {
     staleTime: DEFAULT_STALE_TIME,
-    notifyOnChangeProps: ['data', 'error'],
+    notifyOnChangeProps: ["data", "error"],
   });
 }
 
@@ -22,10 +22,7 @@ export function useUpdateConnections(connections?: SqluiCore.ConnectionProps[]) 
     if (connections) {
       connections = getUpdatedOrdersForList(connections, from, to);
 
-      queryClient.setQueryData<SqluiCore.ConnectionProps[] | undefined>(
-        [QUERY_KEY_ALL_CONNECTIONS],
-        connections,
-      );
+      queryClient.setQueryData<SqluiCore.ConnectionProps[] | undefined>([QUERY_KEY_ALL_CONNECTIONS], connections);
 
       return dataApi.update(connections);
     }
@@ -35,55 +32,45 @@ export function useUpdateConnections(connections?: SqluiCore.ConnectionProps[]) 
 }
 
 export function useGetConnectionById(connectionId?: string) {
-  return useQuery(
-    [connectionId],
-    () => (!connectionId ? undefined : dataApi.getConnection(connectionId)),
-    {
-      enabled: !!connectionId,
-      notifyOnChangeProps: ['data', 'error'],
-    },
-  );
+  return useQuery([connectionId], () => (!connectionId ? undefined : dataApi.getConnection(connectionId)), {
+    enabled: !!connectionId,
+    notifyOnChangeProps: ["data", "error"],
+  });
 }
 
 export function useUpsertConnection() {
   const queryClient = useQueryClient();
-  return useMutation<SqluiCore.ConnectionProps, void, SqluiCore.CoreConnectionProps>(
-    dataApi.upsertConnection,
-    {
-      onSuccess: async (newConnection) => {
-        queryClient.invalidateQueries([newConnection.id]);
-        queryClient.invalidateQueries([QUERY_KEY_ALL_CONNECTIONS]);
+  return useMutation<SqluiCore.ConnectionProps, void, SqluiCore.CoreConnectionProps>(dataApi.upsertConnection, {
+    onSuccess: async (newConnection) => {
+      queryClient.invalidateQueries([newConnection.id]);
+      queryClient.invalidateQueries([QUERY_KEY_ALL_CONNECTIONS]);
 
-        queryClient.setQueryData<SqluiCore.ConnectionProps[] | undefined>(
-          [QUERY_KEY_ALL_CONNECTIONS],
-          (oldData) => {
-            // find that entry
-            let isNew = true;
-            oldData = oldData?.map((connection) => {
-              if (connection.id === newConnection.id) {
-                isNew = false;
-                return {
-                  ...connection,
-                  ...newConnection,
-                };
-              }
-              return connection;
-            });
+      queryClient.setQueryData<SqluiCore.ConnectionProps[] | undefined>([QUERY_KEY_ALL_CONNECTIONS], (oldData) => {
+        // find that entry
+        let isNew = true;
+        oldData = oldData?.map((connection) => {
+          if (connection.id === newConnection.id) {
+            isNew = false;
+            return {
+              ...connection,
+              ...newConnection,
+            };
+          }
+          return connection;
+        });
 
-            if (isNew) {
-              oldData?.push({
-                ...newConnection,
-              });
-            }
+        if (isNew) {
+          oldData?.push({
+            ...newConnection,
+          });
+        }
 
-            return oldData;
-          },
-        );
+        return oldData;
+      });
 
-        return newConnection;
-      },
+      return newConnection;
     },
-  );
+  });
 }
 
 export function useDeleteConnection() {
@@ -97,25 +84,20 @@ export function useDeleteConnection() {
       queryClient.invalidateQueries([deletedConnectionId]);
       queryClient.invalidateQueries([QUERY_KEY_ALL_CONNECTIONS]);
 
-      queryClient.setQueryData<SqluiCore.ConnectionProps[] | undefined>(
-        [QUERY_KEY_ALL_CONNECTIONS],
-        (oldData) => {
-          return oldData?.filter((connection) => connection.id !== deletedConnectionId);
-        },
-      );
+      queryClient.setQueryData<SqluiCore.ConnectionProps[] | undefined>([QUERY_KEY_ALL_CONNECTIONS], (oldData) => {
+        return oldData?.filter((connection) => connection.id !== deletedConnectionId);
+      });
 
       try {
         if (isSoftDeleteModeSetting) {
           // generate the connection backup to store in recyclebin
-          const connectionToBackup = connections?.find(
-            (connection) => connection.id === deletedConnectionId,
-          );
+          const connectionToBackup = connections?.find((connection) => connection.id === deletedConnectionId);
 
           if (connectionToBackup) {
             // remove status before we backup.
             const { status, ...restOfConnectionMetaData } = connectionToBackup;
             await addRecycleBinItem({
-              type: 'Connection',
+              type: "Connection",
               name: restOfConnectionMetaData.name,
               data: restOfConnectionMetaData,
             });
@@ -166,21 +148,17 @@ export function useImportConnection() {
 export function useGetDatabases(connectionId?: string) {
   const enabled = !!connectionId;
 
-  return useQuery(
-    [connectionId, 'databases'],
-    () => (!enabled ? undefined : dataApi.getConnectionDatabases(connectionId)),
-    {
-      enabled,
-      staleTime: DEFAULT_STALE_TIME,
-    },
-  );
+  return useQuery([connectionId, "databases"], () => (!enabled ? undefined : dataApi.getConnectionDatabases(connectionId)), {
+    enabled,
+    staleTime: DEFAULT_STALE_TIME,
+  });
 }
 
 export function useGetTables(connectionId?: string, databaseId?: string) {
   const enabled = !!connectionId && !!databaseId;
 
   return useQuery(
-    [connectionId, databaseId, 'tables'],
+    [connectionId, databaseId, "tables"],
     () => (!enabled ? undefined : dataApi.getConnectionTables(connectionId, databaseId)),
     {
       enabled,
@@ -193,7 +171,7 @@ export function useGetAllTableColumns(connectionId?: string, databaseId?: string
   const enabled = !!connectionId && !!databaseId;
 
   return useQuery(
-    [connectionId, databaseId, 'all_table_columns'],
+    [connectionId, databaseId, "all_table_columns"],
     async () => {
       if (!enabled) {
         return [];
@@ -219,7 +197,7 @@ export function useGetColumns(connectionId?: string, databaseId?: string, tableI
   const enabled = !!connectionId && !!databaseId && !!tableId;
 
   return useQuery(
-    [connectionId, databaseId, tableId, 'columns'],
+    [connectionId, databaseId, tableId, "columns"],
     () => (!enabled ? undefined : dataApi.getConnectionColumns(connectionId, databaseId, tableId)),
     {
       enabled,
@@ -229,49 +207,44 @@ export function useGetColumns(connectionId?: string, databaseId?: string, tableI
 }
 
 export function useExecute() {
-  return useMutation<SqluiCore.Result, void, SqluiFrontend.ConnectionQuery>(
-    (query?: SqluiFrontend.ConnectionQuery) => dataApi.execute(query),
+  return useMutation<SqluiCore.Result, void, SqluiFrontend.ConnectionQuery>((query?: SqluiFrontend.ConnectionQuery) =>
+    dataApi.execute(query),
   );
 }
 
-export function refreshAfterExecution(
-  query: SqluiFrontend.ConnectionQuery,
-  queryClient: QueryClient,
-) {
+export function refreshAfterExecution(query: SqluiFrontend.ConnectionQuery, queryClient: QueryClient) {
   if (!query) {
     return;
   }
 
   // if we have any one of these keywords, let's refresh the table...
   const KEYWORDS_TO_REFRESH_CONNECTION = [
-    'DROP DATABASE',
-    'CREATE DATABASE',
-    'DROP TABLE',
-    'CREATE TABLE',
-    'ALTER TABLE',
-    'DROP COLUMN',
+    "DROP DATABASE",
+    "CREATE DATABASE",
+    "DROP TABLE",
+    "CREATE TABLE",
+    "ALTER TABLE",
+    "DROP COLUMN",
     // for cassandra
-    'CREATE KEYSPACE',
-    'ALTER KEYSPACE',
-    'DROP KEYSPACE',
+    "CREATE KEYSPACE",
+    "ALTER KEYSPACE",
+    "DROP KEYSPACE",
 
     // for mongo
-    '.INSERT',
-    '.DELETE',
-    '.UPDATE',
-    '.DROP',
-    '.CREATECOLLECTION',
-    '.CREATEDATABASE',
-    '.CREATE',
+    ".INSERT",
+    ".DELETE",
+    ".UPDATE",
+    ".DROP",
+    ".CREATECOLLECTION",
+    ".CREATEDATABASE",
+    ".CREATE",
 
     // for azure table storage
-    '.CREATETABLE',
-    '.DELETETABLE',
+    ".CREATETABLE",
+    ".DELETETABLE",
   ];
 
-  const shouldRefreshConnection = KEYWORDS_TO_REFRESH_CONNECTION.some((keyword) =>
-    query?.sql?.toUpperCase()?.includes(keyword),
-  );
+  const shouldRefreshConnection = KEYWORDS_TO_REFRESH_CONNECTION.some((keyword) => query?.sql?.toUpperCase()?.includes(keyword));
 
   if (shouldRefreshConnection) {
     queryClient.invalidateQueries([query.connectionId]);
@@ -281,43 +254,35 @@ export function refreshAfterExecution(
 
 export function useRetryConnection() {
   const queryClient = useQueryClient();
-  return useMutation<SqluiCore.ConnectionMetaData, SqluiCore.ConnectionMetaData, string>(
-    dataApi.reconnect,
-    {
-      onSettled: async (newSuccessConnection, newFailedConnection) => {
-        // NOTE: here we used settled, because if the connection
-        // went bad, we want to also refresh the data
-        queryClient.invalidateQueries([QUERY_KEY_ALL_CONNECTIONS]);
+  return useMutation<SqluiCore.ConnectionMetaData, SqluiCore.ConnectionMetaData, string>(dataApi.reconnect, {
+    onSettled: async (newSuccessConnection, newFailedConnection) => {
+      // NOTE: here we used settled, because if the connection
+      // went bad, we want to also refresh the data
+      queryClient.invalidateQueries([QUERY_KEY_ALL_CONNECTIONS]);
 
-        queryClient.setQueryData<SqluiCore.ConnectionMetaData[] | undefined>(
-          [QUERY_KEY_ALL_CONNECTIONS],
-          (oldData) => {
-            // find that entry
-            oldData = oldData?.map((connection) => {
-              if (connection.id === newSuccessConnection?.id) {
-                // good connnection
-                queryClient.invalidateQueries([newSuccessConnection.id]);
-                return newSuccessConnection;
-              }
-              if (connection.id === newFailedConnection?.id) {
-                // bad connection
-                queryClient.invalidateQueries([newFailedConnection.id]);
-                return newFailedConnection;
-              }
-              return connection;
-            });
+      queryClient.setQueryData<SqluiCore.ConnectionMetaData[] | undefined>([QUERY_KEY_ALL_CONNECTIONS], (oldData) => {
+        // find that entry
+        oldData = oldData?.map((connection) => {
+          if (connection.id === newSuccessConnection?.id) {
+            // good connnection
+            queryClient.invalidateQueries([newSuccessConnection.id]);
+            return newSuccessConnection;
+          }
+          if (connection.id === newFailedConnection?.id) {
+            // bad connection
+            queryClient.invalidateQueries([newFailedConnection.id]);
+            return newFailedConnection;
+          }
+          return connection;
+        });
 
-            return oldData;
-          },
-        );
-      },
+        return oldData;
+      });
     },
-  );
+  });
 }
 
 export function useTestConnection() {
   const queryClient = useQueryClient();
-  return useMutation<SqluiCore.CoreConnectionMetaData, void, SqluiCore.CoreConnectionProps>(
-    dataApi.test,
-  );
+  return useMutation<SqluiCore.CoreConnectionMetaData, void, SqluiCore.CoreConnectionProps>(dataApi.test);
 }

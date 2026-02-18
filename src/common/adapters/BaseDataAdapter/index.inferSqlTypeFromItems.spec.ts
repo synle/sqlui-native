@@ -1,20 +1,20 @@
-import BaseDataAdapter from 'src/common/adapters/BaseDataAdapter/index';
+import BaseDataAdapter from "src/common/adapters/BaseDataAdapter/index";
 
-describe('BaseDataAdapter', () => {
-  describe('inferSqlTypeFromItems', () => {
+describe("BaseDataAdapter", () => {
+  describe("inferSqlTypeFromItems", () => {
     const mockedObjects = [
       {
         cb: 22.22,
-        cd: 'asdsadsfdsafsadfdsa',
+        cd: "asdsadsfdsafsadfdsa",
       },
       {
         ca: 115,
         cc: true,
-        cd: 'asdsadsfdsafsadfdsa',
+        cd: "asdsadsfdsafsadfdsa",
       },
       {
         n: {
-          na: 'aa',
+          na: "aa",
           nb: 22,
           nc: {
             nc1: 99,
@@ -25,17 +25,17 @@ describe('BaseDataAdapter', () => {
     ];
 
     test.each([
-      ['mysql'],
-      ['mariadb'],
-      ['mssql'],
-      ['postgres'],
-      ['sqlite'],
-      ['cassandra'],
-      ['mongodb'],
-      ['redis'],
-      ['cosmosdb'],
-      ['aztable'],
-    ])('inferSqlTypeFromItems work correctly for dialect=%s', (inputDialect) => {
+      ["mysql"],
+      ["mariadb"],
+      ["mssql"],
+      ["postgres"],
+      ["sqlite"],
+      ["cassandra"],
+      ["mongodb"],
+      ["redis"],
+      ["cosmosdb"],
+      ["aztable"],
+    ])("inferSqlTypeFromItems work correctly for dialect=%s", (inputDialect) => {
       const actual = BaseDataAdapter.inferSqlTypeFromItems(mockedObjects, inputDialect);
       expect(actual).toMatchSnapshot();
     });

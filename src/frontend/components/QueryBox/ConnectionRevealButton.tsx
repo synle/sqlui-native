@@ -1,16 +1,14 @@
-import PreviewIcon from '@mui/icons-material/Preview';
-import { Button } from '@mui/material';
-import Tooltip from '@mui/material/Tooltip';
-import { useCommands } from 'src/frontend/components/MissionControl';
-import { SqluiFrontend } from 'typings';
+import PreviewIcon from "@mui/icons-material/Preview";
+import { Button } from "@mui/material";
+import Tooltip from "@mui/material/Tooltip";
+import { useCommands } from "src/frontend/components/MissionControl";
+import { SqluiFrontend } from "typings";
 
 type ConnectionRevealButtonProps = {
   query: SqluiFrontend.ConnectionQuery;
 };
 
-export default function ConnectionRevealButton(
-  props: ConnectionRevealButtonProps,
-): JSX.Element | null {
+export default function ConnectionRevealButton(props: ConnectionRevealButtonProps): JSX.Element | null {
   const { query } = props;
   const { selectCommand } = useCommands();
 
@@ -21,14 +19,15 @@ export default function ConnectionRevealButton(
   const disabled = !query.connectionId && !query.databaseId;
 
   return (
-    <Tooltip title='Reveal this Connection on the connection tree.'>
+    <Tooltip title="Reveal this Connection on the connection tree.">
       <span>
         <Button
-          type='button'
-          variant='outlined'
+          type="button"
+          variant="outlined"
           startIcon={<PreviewIcon />}
-          onClick={() => selectCommand({ event: 'clientEvent/query/reveal' })}
-          disabled={disabled}>
+          onClick={() => selectCommand({ event: "clientEvent/query/reveal" })}
+          disabled={disabled}
+        >
           Reveal
         </Button>
       </span>

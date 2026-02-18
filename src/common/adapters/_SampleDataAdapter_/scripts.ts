@@ -1,7 +1,7 @@
-import BaseDataScript, { getDivider } from 'src/common/adapters/BaseDataAdapter/scripts';
-import { SqlAction } from 'typings';
+import BaseDataScript, { getDivider } from "src/common/adapters/BaseDataAdapter/scripts";
+import { SqlAction } from "typings";
 
-const formatter = 'js';
+const formatter = "js";
 
 export function getSelectAllColumns(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Select All Columns`;
@@ -38,7 +38,7 @@ export function getDropDatabase(input: SqlAction.DatabaseInput): SqlAction.Outpu
 }
 
 export class ConcreteDataScripts extends BaseDataScript {
-  dialects = ['<your_dialect_name>'];
+  dialects = ["<your_dialect_name>"];
 
   // TODO: implement me
   getTableScripts() {
@@ -92,17 +92,17 @@ export class ConcreteDataScripts extends BaseDataScript {
   // TODO: implement me
   getCodeSnippet(connection, query, language) {
     switch (language) {
-      case 'javascript':
+      case "javascript":
         // TODO: implement me
-        return '';
-      case 'python':
+        return "";
+      case "python":
         // TODO: implement me
-        return '';
-      case 'java':
+        return "";
+      case "java":
         // TODO: implement me
-        return '';
+        return "";
       default:
-        return '';
+        return "";
     }
   }
 }

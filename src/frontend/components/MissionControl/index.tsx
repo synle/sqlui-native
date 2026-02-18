@@ -1,19 +1,19 @@
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Link from '@mui/material/Link';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { useNavigate } from 'react-router-dom';
-import React, { useCallback, useEffect, useState } from 'react';
-import { getCodeSnippet } from 'src/common/adapters/DataScriptFactory';
-import { BookmarksItemListModalContent } from 'src/frontend/components/BookmarksItemList';
-import CodeEditorBox from 'src/frontend/components/CodeEditorBox';
-import CommandPalette from 'src/frontend/components/CommandPalette';
-import ConnectionHelper from 'src/frontend/components/ConnectionHelper';
-import SessionSelectionForm from 'src/frontend/components/SessionSelectionForm';
-import Settings, { ChangeSoftDeleteInput } from 'src/frontend/components/Settings';
-import { downloadText } from 'src/frontend/data/file';
-import { getRandomSessionId } from 'src/frontend/data/session';
-import { useActionDialogs } from 'src/frontend/hooks/useActionDialogs';
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Link from "@mui/material/Link";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
+import React, { useCallback, useEffect, useState } from "react";
+import { getCodeSnippet } from "src/common/adapters/DataScriptFactory";
+import { BookmarksItemListModalContent } from "src/frontend/components/BookmarksItemList";
+import CodeEditorBox from "src/frontend/components/CodeEditorBox";
+import CommandPalette from "src/frontend/components/CommandPalette";
+import ConnectionHelper from "src/frontend/components/ConnectionHelper";
+import SessionSelectionForm from "src/frontend/components/SessionSelectionForm";
+import Settings, { ChangeSoftDeleteInput } from "src/frontend/components/Settings";
+import { downloadText } from "src/frontend/data/file";
+import { getRandomSessionId } from "src/frontend/data/session";
+import { useActionDialogs } from "src/frontend/hooks/useActionDialogs";
 import {
   useDeleteConnection,
   useDuplicateConnection,
@@ -21,13 +21,10 @@ import {
   useGetConnections,
   useImportConnection,
   useRetryConnection,
-} from 'src/frontend/hooks/useConnection';
-import {
-  useActiveConnectionQuery,
-  useConnectionQueries,
-} from 'src/frontend/hooks/useConnectionQuery';
-import { useAddBookmarkItem } from 'src/frontend/hooks/useFolderItems';
-import { useGetServerConfigs } from 'src/frontend/hooks/useServerConfigs';
+} from "src/frontend/hooks/useConnection";
+import { useActiveConnectionQuery, useConnectionQueries } from "src/frontend/hooks/useConnectionQuery";
+import { useAddBookmarkItem } from "src/frontend/hooks/useFolderItems";
+import { useGetServerConfigs } from "src/frontend/hooks/useServerConfigs";
 import {
   useCloneSession,
   useDeleteSession,
@@ -36,19 +33,15 @@ import {
   useGetSessions,
   useSelectSession,
   useUpsertSession,
-} from 'src/frontend/hooks/useSession';
-import { useIsSoftDeleteModeSetting, useSetting } from 'src/frontend/hooks/useSetting';
-import { useShowHide } from 'src/frontend/hooks/useShowHide';
-import useToaster from 'src/frontend/hooks/useToaster';
-import {
-  createSystemNotification,
-  getExportedConnection,
-  getExportedQuery,
-} from 'src/frontend/utils/commonUtils';
-import { execute } from 'src/frontend/utils/executeUtils';
-import { RecordDetailsPage } from 'src/frontend/views/RecordPage';
-import appPackage from 'src/package.json';
-import { SqluiCore, SqluiEnums, SqluiFrontend } from 'typings';
+} from "src/frontend/hooks/useSession";
+import { useIsSoftDeleteModeSetting, useSetting } from "src/frontend/hooks/useSetting";
+import { useShowHide } from "src/frontend/hooks/useShowHide";
+import useToaster from "src/frontend/hooks/useToaster";
+import { createSystemNotification, getExportedConnection, getExportedQuery } from "src/frontend/utils/commonUtils";
+import { execute } from "src/frontend/utils/executeUtils";
+import { RecordDetailsPage } from "src/frontend/views/RecordPage";
+import appPackage from "src/package.json";
+import { SqluiCore, SqluiEnums, SqluiFrontend } from "typings";
 
 export type Command = {
   event: SqluiEnums.ClientEventKey;
@@ -56,7 +49,7 @@ export type Command = {
   label?: string;
 };
 
-const QUERY_KEY_COMMAND_PALETTE = 'commandPalette';
+const QUERY_KEY_COMMAND_PALETTE = "commandPalette";
 
 let _commands: Command[] = [];
 
@@ -95,19 +88,19 @@ export function useCommands() {
  * @type {Array}
  */
 export const allMenuKeys = [
-  'menu-connection-new',
-  'menu-import',
-  'menu-export',
-  'menu-query-new',
-  'menu-query-rename',
-  'menu-query-help',
-  'menu-query-prev',
-  'menu-query-next',
-  'menu-query-close',
-  'menu-session-new',
-  'menu-session-rename',
-  'menu-session-switch',
-  'menu-session-delete',
+  "menu-connection-new",
+  "menu-import",
+  "menu-export",
+  "menu-query-new",
+  "menu-query-rename",
+  "menu-query-help",
+  "menu-query-prev",
+  "menu-query-next",
+  "menu-query-close",
+  "menu-session-new",
+  "menu-session-rename",
+  "menu-session-switch",
+  "menu-session-delete",
 ];
 
 export default function MissionControl() {
@@ -129,11 +122,7 @@ export default function MissionControl() {
   const { data: connections, isLoading: loadingConnections } = useGetConnections();
   const { settings, onChange: onChangeSettings } = useSetting();
   const isSoftDeleteModeSetting = useIsSoftDeleteModeSetting();
-  const {
-    onClear: onClearConnectionVisibles,
-    onToggle: onToggleConnectionVisible,
-    onSet: onSetConnectionVisible,
-  } = useShowHide();
+  const { onClear: onClearConnectionVisibles, onToggle: onToggleConnectionVisible, onSet: onSetConnectionVisible } = useShowHide();
   const { data: activeConnection } = useGetConnectionById(activeQuery?.connectionId);
   const { add: addToast } = useToaster();
   const { mutateAsync: deleteConnection } = useDeleteConnection();
@@ -154,7 +143,7 @@ export default function MissionControl() {
           message: <>Query "{query.name}" closed.</>,
           action: (
             <>
-              <Button size='small' onClick={onUndoConnection}>
+              <Button size="small" onClick={onUndoConnection}>
                 UNDO
               </Button>
             </>
@@ -165,22 +154,23 @@ export default function MissionControl() {
       };
 
       await modal({
-        title: 'Confirmation?',
+        title: "Confirmation?",
         message: (
           <form
             onSubmit={(e) => {
               e.preventDefault();
               _onSubmit();
               dismissDialog();
-            }}>
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            }}
+          >
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
               <Box>Do you want to delete this query "{query.name}"?</Box>
               <ChangeSoftDeleteInput />
-              <Box sx={{ mt: 2, ml: 'auto', display: 'flex', gap: 3 }}>
-                <Button size='small' onClick={dismissDialog}>
+              <Box sx={{ mt: 2, ml: "auto", display: "flex", gap: 3 }}>
+                <Button size="small" onClick={dismissDialog}>
                   No
                 </Button>
-                <Button type='submit' variant='contained' size='small' autoFocus>
+                <Button type="submit" variant="contained" size="small" autoFocus>
                   Yes
                 </Button>
               </Box>
@@ -188,7 +178,7 @@ export default function MissionControl() {
           </form>
         ),
         showCloseButton: true,
-        size: 'xs',
+        size: "xs",
       });
     } catch (err) {}
   };
@@ -207,7 +197,7 @@ export default function MissionControl() {
           message: <>Multiple queries closed.</>,
           action: (
             <>
-              <Button size='small' onClick={onUndoQueries}>
+              <Button size="small" onClick={onUndoQueries}>
                 UNDO
               </Button>
             </>
@@ -218,22 +208,23 @@ export default function MissionControl() {
       };
 
       await modal({
-        title: 'Confirmation?',
+        title: "Confirmation?",
         message: (
           <form
             onSubmit={(e) => {
               e.preventDefault();
               _onSubmit();
               dismissDialog();
-            }}>
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            }}
+          >
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
               <Box>Do you want to close other queries except "{query.name}"?</Box>
               <ChangeSoftDeleteInput />
-              <Box sx={{ mt: 2, ml: 'auto', display: 'flex', gap: 3 }}>
-                <Button size='small' onClick={dismissDialog}>
+              <Box sx={{ mt: 2, ml: "auto", display: "flex", gap: 3 }}>
+                <Button size="small" onClick={dismissDialog}>
                   No
                 </Button>
-                <Button type='submit' variant='contained' size='small' autoFocus>
+                <Button type="submit" variant="contained" size="small" autoFocus>
                   Yes
                 </Button>
               </Box>
@@ -241,7 +232,7 @@ export default function MissionControl() {
           </form>
         ),
         showCloseButton: true,
-        size: 'xs',
+        size: "xs",
       });
 
       await _onSubmit();
@@ -276,7 +267,7 @@ export default function MissionControl() {
             message: <>Multiple queries closed.</>,
             action: (
               <>
-                <Button size='small' onClick={onUndoQueries}>
+                <Button size="small" onClick={onUndoQueries}>
                   UNDO
                 </Button>
               </>
@@ -289,22 +280,23 @@ export default function MissionControl() {
       };
 
       await modal({
-        title: 'Confirmation?',
+        title: "Confirmation?",
         message: (
           <form
             onSubmit={(e) => {
               e.preventDefault();
               _onSubmit();
               dismissDialog();
-            }}>
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            }}
+          >
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
               <Box>Do you want to close all the queries to the right of "{query.name}"?</Box>
               <ChangeSoftDeleteInput />
-              <Box sx={{ mt: 2, ml: 'auto', display: 'flex', gap: 3 }}>
-                <Button size='small' onClick={dismissDialog}>
+              <Box sx={{ mt: 2, ml: "auto", display: "flex", gap: 3 }}>
+                <Button size="small" onClick={dismissDialog}>
                   No
                 </Button>
-                <Button type='submit' variant='contained' size='small' autoFocus>
+                <Button type="submit" variant="contained" size="small" autoFocus>
                   Yes
                 </Button>
               </Box>
@@ -312,7 +304,7 @@ export default function MissionControl() {
           </form>
         ),
         showCloseButton: true,
-        size: 'xs',
+        size: "xs",
       });
 
       await _onSubmit();
@@ -322,10 +314,10 @@ export default function MissionControl() {
   const onRenameQuery = async (query: SqluiFrontend.ConnectionQuery) => {
     try {
       const newName = await prompt({
-        title: 'Rename Query',
-        message: 'New Query Name',
+        title: "Rename Query",
+        message: "New Query Name",
         value: query.name,
-        saveLabel: 'Save',
+        saveLabel: "Save",
       });
       await connectionQueries.onChangeQuery(query.id, {
         name: newName,
@@ -345,25 +337,21 @@ export default function MissionControl() {
       message: `Exporting Query "${query.name}", please wait...`,
     });
 
-    downloadText(
-      `${query.name}.query.json`,
-      JSON.stringify([getExportedQuery(query)], null, 2),
-      'text/json',
-    );
+    downloadText(`${query.name}.query.json`, JSON.stringify([getExportedQuery(query)], null, 2), "text/json");
   };
 
   const onAddQueryToBookmark = async (query: SqluiFrontend.ConnectionQuery) => {
     const newName = await prompt({
-      title: 'Add query to Bookmarks',
-      message: 'A bookmark name',
-      value: `${query.name || ''} - ${new Date().toLocaleString()}`,
-      saveLabel: 'Save',
+      title: "Add query to Bookmarks",
+      message: "A bookmark name",
+      value: `${query.name || ""} - ${new Date().toLocaleString()}`,
+      saveLabel: "Save",
     });
 
     const { selected, ...restOfQuery } = query;
 
     addBookmarkItem({
-      type: 'Query',
+      type: "Query",
       name: newName,
       data: restOfQuery,
     });
@@ -373,10 +361,7 @@ export default function MissionControl() {
     });
   };
 
-  const onRevealQueryConnection = async (
-    query: SqluiFrontend.ConnectionQuery,
-    showOnlyRevealedConnection: boolean,
-  ) => {
+  const onRevealQueryConnection = async (query: SqluiFrontend.ConnectionQuery, showOnlyRevealedConnection: boolean) => {
     const { connectionId, databaseId, tableId } = query;
 
     if (!connectionId) {
@@ -386,10 +371,10 @@ export default function MissionControl() {
     const branchesToReveal: string[] = [connectionId];
 
     if (databaseId && connectionId) {
-      branchesToReveal.push([connectionId, databaseId].join(' > '));
+      branchesToReveal.push([connectionId, databaseId].join(" > "));
 
       if (tableId) {
-        branchesToReveal.push([connectionId, databaseId, tableId].join(' > '));
+        branchesToReveal.push([connectionId, databaseId, tableId].join(" > "));
       }
     }
 
@@ -417,16 +402,12 @@ export default function MissionControl() {
 
     // scroll to the selected dom
     setTimeout(() => {
-      const selectedHeaders = document.querySelectorAll('.Accordion__Header.selected');
+      const selectedHeaders = document.querySelectorAll(".Accordion__Header.selected");
       selectedHeaders[selectedHeaders.length - 1].scrollIntoView();
     }, 100);
   };
 
-  const onApplyQuery = async (
-    data: SqluiFrontend.PartialConnectionQuery,
-    openQueryInNewTab: boolean,
-    toastMessage: string | undefined,
-  ) => {
+  const onApplyQuery = async (data: SqluiFrontend.PartialConnectionQuery, openQueryInNewTab: boolean, toastMessage: string | undefined) => {
     if (openQueryInNewTab === true) {
       let newQueryTabName = `Query ${new Date().toLocaleString()}`;
 
@@ -455,7 +436,7 @@ export default function MissionControl() {
     });
 
     await addToast({
-      message: `Query "${query.name}" ${pinned ? 'pinned' : 'unpinned'}`,
+      message: `Query "${query.name}" ${pinned ? "pinned" : "unpinned"}`,
     });
   };
 
@@ -469,7 +450,7 @@ export default function MissionControl() {
       data = `https://synle.github.io/sqlui-native/guides`;
     }
 
-    selectCommand({ event: 'clientEvent/openExternalUrl', data });
+    selectCommand({ event: "clientEvent/openExternalUrl", data });
   };
 
   const onShowQueryWithDirection = async (direction: number) => {
@@ -503,9 +484,9 @@ export default function MissionControl() {
 
     try {
       await modal({
-        title: 'Change Session',
+        title: "Change Session",
         message: <SessionSelectionForm isFirstTime={false} />,
-        size: 'sm',
+        size: "sm",
       });
     } catch (err) {}
   };
@@ -515,10 +496,10 @@ export default function MissionControl() {
       // create the new session
       // if there is no session, let's create the session
       const newSessionName = await prompt({
-        title: 'New Session',
-        message: 'New Session Name',
+        title: "New Session",
+        message: "New Session Name",
         value: `Session ${new Date().toLocaleString()}`,
-        saveLabel: 'Save',
+        saveLabel: "Save",
         required: true,
       });
 
@@ -548,10 +529,10 @@ export default function MissionControl() {
       // create the new session
       // if there is no session, let's create the session
       const newSessionName = await prompt({
-        title: 'Clone Session',
-        message: 'New Session Name',
+        title: "Clone Session",
+        message: "New Session Name",
         value: `Cloned Session ${new Date().toLocaleString()}`,
-        saveLabel: 'Save',
+        saveLabel: "Save",
         required: true,
       });
 
@@ -579,10 +560,10 @@ export default function MissionControl() {
       }
 
       const newSessionName = await prompt({
-        title: 'Rename Session',
-        message: 'New Session Session',
+        title: "Rename Session",
+        message: "New Session Session",
         value: targetSession.name,
-        saveLabel: 'Save',
+        saveLabel: "Save",
       });
 
       if (!newSessionName) {
@@ -636,14 +617,10 @@ export default function MissionControl() {
       }
     }
 
-    downloadText(
-      `${new Date().toLocaleString()}.sqlui_native.json`,
-      JSON.stringify(jsonContent, null, 2),
-      'text/json',
-    );
+    downloadText(`${new Date().toLocaleString()}.sqlui_native.json`, JSON.stringify(jsonContent, null, 2), "text/json");
   };
 
-  const onNewConnection = useCallback(() => navigate('/connection/new'), []);
+  const onNewConnection = useCallback(() => navigate("/connection/new"), []);
 
   const onDeleteConnection = async (connection: SqluiCore.ConnectionProps) => {
     let curToast;
@@ -661,42 +638,39 @@ export default function MissionControl() {
             message: <>Connection "{connection.name}" deleted.</>,
             action: (
               <>
-                <Button size='small' onClick={onUndoConnection}>
+                <Button size="small" onClick={onUndoConnection}>
                   UNDO
                 </Button>
               </>
             ),
           });
 
-          createSystemNotification(
-            `Connection "${connection.name}" (dialect=${connection.dialect || 'N/A'}) deleted`,
-          );
+          createSystemNotification(`Connection "${connection.name}" (dialect=${connection.dialect || "N/A"}) deleted`);
         } catch (err1) {
           curToast = await addToast({
-            message: `Failed to delete connection "${connection.name}" (dialect=${
-              connection.dialect || 'N/A'
-            })`,
+            message: `Failed to delete connection "${connection.name}" (dialect=${connection.dialect || "N/A"})`,
           });
         }
       };
 
       await modal({
-        title: 'Confirmation?',
+        title: "Confirmation?",
         message: (
           <form
             onSubmit={(e) => {
               e.preventDefault();
               _onSubmit();
               dismissDialog();
-            }}>
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            }}
+          >
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
               <Box>Delete this connection {connection.name}?</Box>
               <ChangeSoftDeleteInput />
-              <Box sx={{ mt: 2, ml: 'auto', display: 'flex', gap: 3 }}>
-                <Button size='small' onClick={dismissDialog}>
+              <Box sx={{ mt: 2, ml: "auto", display: "flex", gap: 3 }}>
+                <Button size="small" onClick={dismissDialog}>
                   No
                 </Button>
-                <Button type='submit' variant='contained' size='small' autoFocus>
+                <Button type="submit" variant="contained" size="small" autoFocus>
                   Yes
                 </Button>
               </Box>
@@ -704,7 +678,7 @@ export default function MissionControl() {
           </form>
         ),
         showCloseButton: true,
-        size: 'xs',
+        size: "xs",
       });
     } catch (err) {}
   };
@@ -712,9 +686,9 @@ export default function MissionControl() {
   const onShowBookmarks = async () => {
     try {
       await modal({
-        title: 'Bookmarks',
+        title: "Bookmarks",
         message: <BookmarksItemListModalContent onAfterSelect={dismissDialog} />,
-        size: 'md',
+        size: "md",
         showCloseButton: true,
       });
     } catch (err) {}
@@ -722,15 +696,15 @@ export default function MissionControl() {
 
   const onAddConnectionToBookmark = async (connection: SqluiCore.ConnectionProps) => {
     const newName = await prompt({
-      title: 'Add connection to Bookmarks',
-      message: 'A bookmark name',
-      value: `${connection.name || ''} - ${new Date().toLocaleString()}`,
-      saveLabel: 'Save',
+      title: "Add connection to Bookmarks",
+      message: "A bookmark name",
+      value: `${connection.name || ""} - ${new Date().toLocaleString()}`,
+      saveLabel: "Save",
     });
     const { status, ...restOfConnectionMetaData } = connection;
 
     await addBookmarkItem({
-      type: 'Connection',
+      type: "Connection",
       name: restOfConnectionMetaData.name,
       data: restOfConnectionMetaData,
     });
@@ -747,12 +721,10 @@ export default function MissionControl() {
       message: `Refreshing connection "${connection.name}", please wait...`,
     });
 
-    let resultMessage = '';
+    let resultMessage = "";
     try {
       await reconnectConnection(connection.id);
-      resultMessage = `Successfully connected to "${connection.name}" (dialect=${
-        connection.dialect || 'N/A'
-      })`;
+      resultMessage = `Successfully connected to "${connection.name}" (dialect=${connection.dialect || "N/A"})`;
     } catch (err) {
       resultMessage = `Failed to connect to "${connection.name}"`;
     }
@@ -778,11 +750,7 @@ export default function MissionControl() {
       message: `Exporting connection "${connection.name}", please wait...`,
     });
 
-    downloadText(
-      `${connection.name}.connection.json`,
-      JSON.stringify([getExportedConnection(connection)], null, 2),
-      'text/json',
-    );
+    downloadText(`${connection.name}.connection.json`, JSON.stringify([getExportedConnection(connection)], null, 2), "text/json");
   };
 
   const onSelectConnection = async (connection: SqluiCore.ConnectionProps) => {
@@ -791,20 +759,20 @@ export default function MissionControl() {
     });
 
     selectCommand({
-      event: 'clientEvent/query/apply/active',
+      event: "clientEvent/query/apply/active",
       data: {
         connectionId: connection.id,
-        databaseId: '',
+        databaseId: "",
       },
     });
   };
 
-  const onImport = async (value = '') => {
+  const onImport = async (value = "") => {
     try {
       const rawJson = await prompt({
-        title: 'Import Connections / Queries',
-        message: 'Import',
-        saveLabel: 'Import',
+        title: "Import Connections / Queries",
+        message: "Import",
+        saveLabel: "Import",
         value: value,
         required: true,
         isLongPrompt: true,
@@ -812,13 +780,13 @@ export default function MissionControl() {
 
       let jsonRows: any[];
       try {
-        jsonRows = JSON.parse(rawJson || '');
+        jsonRows = JSON.parse(rawJson || "");
       } catch (err) {
         return alert(`Import failed. Invalid JSON config`);
       }
 
       const curToast = await addToast({
-        message: 'Importing, please wait...',
+        message: "Importing, please wait...",
       });
 
       // here we will attempt to import all the connections first before queries
@@ -827,8 +795,7 @@ export default function MissionControl() {
       });
 
       // check for duplicate id
-      const hasDuplicateIds =
-        new Set([...jsonRows.map((jsonRow) => jsonRow.id)]).size !== jsonRows.length;
+      const hasDuplicateIds = new Set([...jsonRows.map((jsonRow) => jsonRow.id)]).size !== jsonRows.length;
       if (hasDuplicateIds) {
         return alert(`Import failed. JSON Config includes duplicate IDs.`);
       }
@@ -839,17 +806,17 @@ export default function MissionControl() {
         try {
           const { _type, ...rawImportMetaData } = jsonRow;
           switch (_type) {
-            case 'connection':
+            case "connection":
               await importConnection(rawImportMetaData);
               break;
 
-            case 'query':
+            case "query":
               await connectionQueries.onImportQuery(jsonRow);
               break;
           }
           successCount++;
         } catch (err) {
-          console.log('>> Import Failed', jsonRow, err);
+          console.log(">> Import Failed", jsonRow, err);
           failedCount++;
         }
       }
@@ -866,9 +833,9 @@ export default function MissionControl() {
         _executeCommandPalette(command);
       };
       await modal({
-        title: 'Command Palette',
+        title: "Command Palette",
         message: <CommandPalette onSelectCommand={onSelectCommand} />,
-        size: 'sm',
+        size: "sm",
       });
     } catch (err) {}
   };
@@ -876,9 +843,9 @@ export default function MissionControl() {
   const onShowRecordDetails = async (data: any, isEditMode: boolean) => {
     try {
       await modal({
-        title: 'Record Details',
+        title: "Record Details",
         message: <RecordDetailsPage data={data} isEditMode={isEditMode} />,
-        size: 'md',
+        size: "md",
         showCloseButton: true,
       });
     } catch (err) {}
@@ -887,15 +854,15 @@ export default function MissionControl() {
   const onCheckForUpdate = async () => {
     let contentDom: React.ReactNode;
 
-    const newVersion = await fetch('https://synle.github.io/sqlui-native/package.json')
+    const newVersion = await fetch("https://synle.github.io/sqlui-native/package.json")
       .then((r) => r.json())
       .then((r) => r.version);
 
     if (newVersion === appPackage.version) {
       contentDom = (
         <>
-          <Box className='FormInput__Row'>sqlui-native is up to date</Box>
-          <Box className='FormInput__Row'>
+          <Box className="FormInput__Row">sqlui-native is up to date</Box>
+          <Box className="FormInput__Row">
             <label>Version:</label>
             {appPackage.version}
           </Box>
@@ -904,26 +871,26 @@ export default function MissionControl() {
     } else {
       const platform = window?.process?.platform;
       const downloadLink =
-        platform === 'darwin'
+        platform === "darwin"
           ? `https://github.com/synle/sqlui-native/releases/download/${newVersion}/sqlui-native-${newVersion}.dmg`
           : `https://github.com/synle/sqlui-native/releases/download/${newVersion}/sqlui-native-${newVersion}.exe`;
 
       const onDownloadLatestVersion = () => {
-        selectCommand({ event: 'clientEvent/openExternalUrl', data: downloadLink });
+        selectCommand({ event: "clientEvent/openExternalUrl", data: downloadLink });
       };
 
       contentDom = (
         <>
-          <Box className='FormInput__Row'>
+          <Box className="FormInput__Row">
             <label>Your version:</label>
             {appPackage.version}
           </Box>
-          <Box className='FormInput__Row'>
+          <Box className="FormInput__Row">
             <label>Latest version:</label>
             {newVersion}
             <span>
               (
-              <Link onClick={onDownloadLatestVersion} sx={{ cursor: 'pointer' }}>
+              <Link onClick={onDownloadLatestVersion} sx={{ cursor: "pointer" }}>
                 Download it here
               </Link>
               )
@@ -934,13 +901,13 @@ export default function MissionControl() {
     }
 
     const onGoToHomepage = () => {
-      const data = 'https://synle.github.io/sqlui-native/';
-      selectCommand({ event: 'clientEvent/openExternalUrl', data });
+      const data = "https://synle.github.io/sqlui-native/";
+      selectCommand({ event: "clientEvent/openExternalUrl", data });
     };
 
     const onRevealDataLocation = () => {
       const platform = window?.process?.platform;
-      const storageDir = serverConfigs?.storageDir || '';
+      const storageDir = serverConfigs?.storageDir || "";
 
       if (!storageDir) {
         return;
@@ -950,9 +917,9 @@ export default function MissionControl() {
       navigator.clipboard.writeText(storageDir);
 
       if (window.isElectron) {
-        if (platform === 'win32') {
+        if (platform === "win32") {
           execute(`explorer.exe "${storageDir}"`);
-        } else if (platform === 'darwin') {
+        } else if (platform === "darwin") {
           execute(`open "${storageDir}"`);
         } else {
           // anything else
@@ -961,11 +928,11 @@ export default function MissionControl() {
     };
 
     await modal({
-      title: 'Check for update',
+      title: "Check for update",
       message: (
-        <Box className='FormInput__Container FormInput__Container__sm'>
+        <Box className="FormInput__Container FormInput__Container__sm">
           {contentDom}
-          <Box className='FormInput__Row'>
+          <Box className="FormInput__Row">
             <label>Data Location:</label>
             <Link onClick={onRevealDataLocation}>{serverConfigs?.storageDir}</Link>
           </Box>
@@ -975,16 +942,16 @@ export default function MissionControl() {
         </Box>
       ),
       showCloseButton: true,
-      size: 'xs',
+      size: "xs",
     });
   };
 
   const onShowSettings = async () => {
     await modal({
-      title: 'Settings',
+      title: "Settings",
       message: <Settings />,
       showCloseButton: true,
-      size: 'xs',
+      size: "xs",
     });
   };
 
@@ -1005,61 +972,60 @@ export default function MissionControl() {
       dismissCommand();
 
       switch (command.event) {
-        case 'clientEvent/navigate':
+        case "clientEvent/navigate":
           navigate(command.data as string);
           break;
 
-        case 'clientEvent/openAppWindow':
+        case "clientEvent/openAppWindow":
           window.openAppLink(command.data as string);
           break;
-        case 'clientEvent/showCommandPalette':
+        case "clientEvent/showCommandPalette":
           onShowCommandPalette();
           break;
 
-        case 'clientEvent/checkForUpdate':
+        case "clientEvent/checkForUpdate":
           onCheckForUpdate();
           break;
 
-        case 'clientEvent/showSettings':
+        case "clientEvent/showSettings":
           onShowSettings();
           break;
 
-        case 'clientEvent/clearShowHides':
+        case "clientEvent/clearShowHides":
           onClearConnectionVisibles();
           break;
 
-        case 'clientEvent/changeDarkMode':
-          onUpdateSetting('darkMode', command.data as string);
+        case "clientEvent/changeDarkMode":
+          onUpdateSetting("darkMode", command.data as string);
           break;
 
-        case 'clientEvent/changeEditorMode':
-          onUpdateSetting('editorMode', command.data as string);
+        case "clientEvent/changeEditorMode":
+          onUpdateSetting("editorMode", command.data as string);
           break;
 
-        case 'clientEvent/tableRenderer':
-          onUpdateSetting('tableRenderer', command.data as string);
+        case "clientEvent/tableRenderer":
+          onUpdateSetting("tableRenderer", command.data as string);
           break;
 
-        case 'clientEvent/changeWrapMode':
-          onUpdateSetting('wordWrap', command.data as string);
+        case "clientEvent/changeWrapMode":
+          onUpdateSetting("wordWrap", command.data as string);
           break;
 
-        case 'clientEvent/changeQueryTabOrientation':
-          onUpdateSetting('queryTabOrientation', command.data as string);
+        case "clientEvent/changeQueryTabOrientation":
+          onUpdateSetting("queryTabOrientation", command.data as string);
           break;
 
-        case 'clientEvent/changeQuerySelectionMode':
-          onUpdateSetting('querySelectionMode', command.data as string);
+        case "clientEvent/changeQuerySelectionMode":
+          onUpdateSetting("querySelectionMode", command.data as string);
           break;
 
-        case 'clientEvent/showQueryHelp':
+        case "clientEvent/showQueryHelp":
           onShowQueryHelp();
           break;
 
-        case 'clientEvent/showConnectionHelper':
+        case "clientEvent/showConnectionHelper":
           if (command.data) {
-            const { scheme, username, password, host, port, restOfConnectionString, onApply } =
-              command.data as any;
+            const { scheme, username, password, host, port, restOfConnectionString, onApply } = command.data as any;
 
             const onApplyConnectionHelper = (newConnectionString: string) => {
               dismissDialog();
@@ -1068,7 +1034,7 @@ export default function MissionControl() {
             };
 
             modal({
-              title: 'Connection Helper',
+              title: "Connection Helper",
               message: (
                 <ConnectionHelper
                   onChange={onApplyConnectionHelper}
@@ -1082,12 +1048,12 @@ export default function MissionControl() {
                 />
               ),
               showCloseButton: true,
-              size: 'md',
+              size: "md",
             });
           }
           break;
 
-        case 'clientEvent/openExternalUrl':
+        case "clientEvent/openExternalUrl":
           const url = command.data as string;
           if (url) {
             window.openBrowserLink(url);
@@ -1095,7 +1061,7 @@ export default function MissionControl() {
           break;
 
         // overall commands
-        case 'clientEvent/import':
+        case "clientEvent/import":
           try {
             window.toggleElectronMenu(false, allMenuKeys);
             await onImport(command.data as string);
@@ -1105,82 +1071,78 @@ export default function MissionControl() {
           window.toggleElectronMenu(true, allMenuKeys);
           break;
 
-        case 'clientEvent/exportAll':
+        case "clientEvent/exportAll":
           onExportAll();
           break;
 
         // connection commands
-        case 'clientEvent/connection/new':
+        case "clientEvent/connection/new":
           onNewConnection();
           break;
 
-        case 'clientEvent/connection/delete':
+        case "clientEvent/connection/delete":
           if (command.data) {
             onDeleteConnection(command.data as SqluiCore.ConnectionProps);
           }
           break;
 
-        case 'clientEvent/connection/refresh':
+        case "clientEvent/connection/refresh":
           if (command.data) {
             onRefreshConnection(command.data as SqluiCore.ConnectionProps);
           }
           break;
 
-        case 'clientEvent/connection/duplicate':
+        case "clientEvent/connection/duplicate":
           if (command.data) {
             onDuplicateConnection(command.data as SqluiCore.ConnectionProps);
           }
           break;
 
-        case 'clientEvent/connection/export':
+        case "clientEvent/connection/export":
           if (command.data) {
             onExportConnection(command.data as SqluiCore.ConnectionProps);
           }
           break;
 
-        case 'clientEvent/connection/select':
+        case "clientEvent/connection/select":
           if (command.data) {
             onSelectConnection(command.data as SqluiCore.ConnectionProps);
           }
           break;
 
-        case 'clientEvent/connection/addToBookmark':
+        case "clientEvent/connection/addToBookmark":
           if (command.data) {
             onAddConnectionToBookmark(command.data as SqluiCore.ConnectionProps);
           }
           break;
 
         // bookmark commands
-        case 'clientEvent/bookmark/show':
+        case "clientEvent/bookmark/show":
           onShowBookmarks();
           break;
 
         // query commands
-        case 'clientEvent/query/new':
+        case "clientEvent/query/new":
           await connectionQueries.onAddQuery();
           break;
 
-        case 'clientEvent/query/show':
+        case "clientEvent/query/show":
           if (command.data) {
             await connectionQueries.onShowQuery((command.data as SqluiFrontend.ConnectionQuery).id);
           }
           break;
 
-        case 'clientEvent/query/apply': // based on the setting use either new query or selected query
+        case "clientEvent/query/apply": // based on the setting use either new query or selected query
           if (command.data) {
-            const querySelectionMode = settings?.querySelectionMode || 'new-tab';
+            const querySelectionMode = settings?.querySelectionMode || "new-tab";
 
-            onApplyQuery(
-              command.data as SqluiFrontend.PartialConnectionQuery,
-              querySelectionMode === 'new-tab',
-              command.label,
-            );
+            onApplyQuery(command.data as SqluiFrontend.PartialConnectionQuery, querySelectionMode === "new-tab", command.label);
 
-            document.querySelector('#QueryBoxTabs')?.scrollIntoView();
+            document.querySelector("#QueryBoxTabs")?.scrollIntoView();
           }
           break;
 
-        case 'clientEvent/query/apply/active': // currently selected / active query only
+        case "clientEvent/query/apply/active": // currently selected / active query only
           if (command.data) {
             onApplyQuery(
               command.data as SqluiFrontend.PartialConnectionQuery,
@@ -1190,7 +1152,7 @@ export default function MissionControl() {
           }
           break;
 
-        case 'clientEvent/query/apply/new': // create new query and apply
+        case "clientEvent/query/apply/new": // create new query and apply
           if (command.data) {
             onApplyQuery(
               command.data as SqluiFrontend.PartialConnectionQuery,
@@ -1200,31 +1162,31 @@ export default function MissionControl() {
           }
           break;
 
-        case 'clientEvent/query/pin':
+        case "clientEvent/query/pin":
           if (command.data) {
             onPinQuery(command.data as SqluiFrontend.ConnectionQuery, true);
           }
           break;
 
-        case 'clientEvent/query/unpin':
+        case "clientEvent/query/unpin":
           if (command.data) {
             onPinQuery(command.data as SqluiFrontend.ConnectionQuery, false);
           }
           break;
 
-        case 'clientEvent/query/changeTabOrdering':
+        case "clientEvent/query/changeTabOrdering":
           const { from, to } = command?.data as any;
           if (from !== undefined && to !== undefined) {
             await connectionQueries.onChangeTabOrdering(from, to);
           }
           break;
 
-        case 'clientEvent/query/showNext':
-        case 'clientEvent/query/showPrev':
-          onShowQueryWithDirection(command.event === 'clientEvent/query/showNext' ? 1 : -1);
+        case "clientEvent/query/showNext":
+        case "clientEvent/query/showPrev":
+          onShowQueryWithDirection(command.event === "clientEvent/query/showNext" ? 1 : -1);
           break;
 
-        case 'clientEvent/query/rename':
+        case "clientEvent/query/rename":
           if (command.data) {
             onRenameQuery(command.data as SqluiFrontend.ConnectionQuery);
           } else if (activeQuery) {
@@ -1232,44 +1194,44 @@ export default function MissionControl() {
           }
           break;
 
-        case 'clientEvent/query/export':
+        case "clientEvent/query/export":
           if (command.data) {
             onExportQuery(command.data as SqluiFrontend.ConnectionQuery);
           }
           break;
 
-        case 'clientEvent/query/duplicate':
+        case "clientEvent/query/duplicate":
           if (command.data) {
             onDuplicateQuery(command.data as SqluiFrontend.ConnectionQuery);
           }
           break;
 
-        case 'clientEvent/query/close':
+        case "clientEvent/query/close":
           if (command.data) {
             onCloseQuery(command.data as SqluiFrontend.ConnectionQuery);
           }
           break;
 
-        case 'clientEvent/query/closeOther':
+        case "clientEvent/query/closeOther":
           if (command.data) {
             onCloseOtherQueries(command.data as SqluiFrontend.ConnectionQuery);
           }
           break;
 
-        case 'clientEvent/query/closeToTheRight':
+        case "clientEvent/query/closeToTheRight":
           if (command.data) {
             onCloseQueriesToTheRight(command.data as SqluiFrontend.ConnectionQuery);
           }
           break;
 
-        case 'clientEvent/query/closeCurrentlySelected':
+        case "clientEvent/query/closeCurrentlySelected":
           // this closes the active query
           if (activeQuery) {
             onCloseQuery(activeQuery);
           }
           break;
 
-        case 'clientEvent/query/reveal':
+        case "clientEvent/query/reveal":
           // this reveal the current query connection
           // but keep the old state
           if (activeQuery) {
@@ -1277,7 +1239,7 @@ export default function MissionControl() {
           }
           break;
 
-        case 'clientEvent/query/revealThisOnly':
+        case "clientEvent/query/revealThisOnly":
           // this reveal ONLY the current query connection
           // and hide everything else
           if (command.data) {
@@ -1285,81 +1247,77 @@ export default function MissionControl() {
           }
           break;
 
-        case 'clientEvent/query/addToBookmark':
+        case "clientEvent/query/addToBookmark":
           // this reveal the current query connection
           if (command.data) {
             onAddQueryToBookmark(command.data as SqluiFrontend.ConnectionQuery);
           }
           break;
 
-        case 'clientEvent/query/showSampleCodeSnippet':
+        case "clientEvent/query/showSampleCodeSnippet":
           if (command.data) {
             const { connection, query, language } = command.data as any;
 
             const codeSnippet = getCodeSnippet(connection, query, language);
 
             const onDownloadCodeSnippet = () => {
-              let extension = '';
+              let extension = "";
               switch (language) {
-                case 'javascript':
-                  extension = 'js';
+                case "javascript":
+                  extension = "js";
                   break;
 
-                case 'python':
-                  extension = 'py';
+                case "python":
+                  extension = "py";
                   break;
 
-                case 'java':
-                  extension = 'java';
+                case "java":
+                  extension = "java";
                   break;
               }
               if (extension) {
-                downloadText(
-                  `sample-code-snippet-${Date.now()}.${extension}`,
-                  codeSnippet,
-                  'text/plain',
-                );
+                downloadText(`sample-code-snippet-${Date.now()}.${extension}`, codeSnippet, "text/plain");
               }
             };
 
             modal({
-              title: 'Sample Code Snippet',
+              title: "Sample Code Snippet",
               message: (
-                <Box className='FormInput__Container'>
+                <Box className="FormInput__Container">
                   <Box>
                     <strong>LanguageMode:</strong> {language}
                   </Box>
-                  <CodeEditorBox value={codeSnippet} language={language} height='60vh' />
-                  <Box sx={{ display: 'flex', justifyContent: 'end' }}>
+                  <CodeEditorBox value={codeSnippet} language={language} height="60vh" />
+                  <Box sx={{ display: "flex", justifyContent: "end" }}>
                     <Button onClick={onDownloadCodeSnippet}>Download Code Snippet</Button>
                   </Box>
                 </Box>
               ),
               showCloseButton: true,
-              size: 'md',
+              size: "md",
             });
           }
           break;
 
         // records command
-        case 'clientEvent/record/showDetails':
+        case "clientEvent/record/showDetails":
           if (command.data) {
             onShowRecordDetails(command.data, false);
           }
           break;
 
-        case 'clientEvent/record/edit':
+        case "clientEvent/record/edit":
           if (command.data) {
             onShowRecordDetails(command.data, true);
           }
           break;
 
-        case 'clientEvent/record/new':
-          navigate('/record/new');
+        case "clientEvent/record/new":
+          navigate("/record/new");
           break;
 
         // session commands
-        case 'clientEvent/session/switch':
+        case "clientEvent/session/switch":
           try {
             window.toggleElectronMenu(false, allMenuKeys);
             await onChangeSession();
@@ -1368,7 +1326,7 @@ export default function MissionControl() {
           window.toggleElectronMenu(true, allMenuKeys);
           break;
 
-        case 'clientEvent/session/new':
+        case "clientEvent/session/new":
           try {
             window.toggleElectronMenu(false, allMenuKeys);
             await onAddSession();
@@ -1377,7 +1335,7 @@ export default function MissionControl() {
           window.toggleElectronMenu(true, allMenuKeys);
           break;
 
-        case 'clientEvent/session/clone':
+        case "clientEvent/session/clone":
           try {
             window.toggleElectronMenu(false, allMenuKeys);
 
@@ -1391,7 +1349,7 @@ export default function MissionControl() {
           window.toggleElectronMenu(true, allMenuKeys);
           break;
 
-        case 'clientEvent/session/rename':
+        case "clientEvent/session/rename":
           try {
             window.toggleElectronMenu(false, allMenuKeys);
 
@@ -1405,7 +1363,7 @@ export default function MissionControl() {
           window.toggleElectronMenu(true, allMenuKeys);
           break;
 
-        case 'clientEvent/session/delete':
+        case "clientEvent/session/delete":
           try {
             window.toggleElectronMenu(false, allMenuKeys);
             if (command.data) {
@@ -1437,13 +1395,13 @@ export default function MissionControl() {
 
         // with modifier key
         switch (key) {
-          case 'Enter':
+          case "Enter":
             // Ctrl+Enter to execute the query
             // traverse up until we find the code editor wrapper or reach the root html element
             let currentDomNode = activeElement;
             let shouldExecuteQuery = false;
             while (currentDomNode) {
-              if (currentDomNode.classList.contains('CodeEditorBox__QueryBox')) {
+              if (currentDomNode.classList.contains("CodeEditorBox__QueryBox")) {
                 shouldExecuteQuery = true;
                 break;
               }
@@ -1454,29 +1412,25 @@ export default function MissionControl() {
               if (shouldExecuteQuery) {
                 (
                   document.querySelector(
-                    '.AdvancedEditorContainer .inputarea.monaco-mouse-cursor-text,.SimpleEditorContainer',
+                    ".AdvancedEditorContainer .inputarea.monaco-mouse-cursor-text,.SimpleEditorContainer",
                   ) as HTMLTextAreaElement
                 ).blur();
 
-                setTimeout(() =>
-                  (document.querySelector('#btnExecuteCommand') as HTMLButtonElement).click(),
-                );
+                setTimeout(() => (document.querySelector("#btnExecuteCommand") as HTMLButtonElement).click());
                 e.stopPropagation();
                 e.preventDefault();
               }
             } catch (err) {}
             break;
 
-          case 'f':
+          case "f":
             try {
               // making sure we don't interfere Ctrl+f with other input
-              if (activeInputTagName === 'textarea' || activeInputTagName === 'input') {
+              if (activeInputTagName === "textarea" || activeInputTagName === "input") {
                 return;
               }
 
-              const resultSearchBox = document.querySelector(
-                '#result-box-search-input',
-              ) as HTMLInputElement;
+              const resultSearchBox = document.querySelector("#result-box-search-input") as HTMLInputElement;
               if (resultSearchBox) {
                 resultSearchBox.focus();
                 e.stopPropagation();
@@ -1499,60 +1453,60 @@ export default function MissionControl() {
       if (hasModifierKey) {
         // with modifier key
         switch (key) {
-          case 'p':
+          case "p":
             command = {
-              event: 'clientEvent/showCommandPalette',
+              event: "clientEvent/showCommandPalette",
             };
             break;
 
-          case 't':
+          case "t":
             command = {
-              event: 'clientEvent/query/new',
+              event: "clientEvent/query/new",
             };
             break;
 
-          case 'o':
+          case "o":
             command = {
-              event: 'clientEvent/import',
+              event: "clientEvent/import",
             };
             break;
 
-          case 's':
+          case "s":
             command = {
-              event: 'clientEvent/exportAll',
+              event: "clientEvent/exportAll",
             };
             break;
 
-          case 'n':
+          case "n":
             command = {
-              event: 'clientEvent/connection/new',
+              event: "clientEvent/connection/new",
             };
             break;
 
-          case 'w':
+          case "w":
             command = {
-              event: 'clientEvent/query/closeCurrentlySelected',
+              event: "clientEvent/query/closeCurrentlySelected",
             };
             break;
 
-          case '{':
+          case "{":
             command = {
-              event: 'clientEvent/query/showPrev',
+              event: "clientEvent/query/showPrev",
             };
             break;
 
-          case '}':
+          case "}":
             command = {
-              event: 'clientEvent/query/showNext',
+              event: "clientEvent/query/showNext",
             };
             break;
         }
       } else {
         // no modifier key
         switch (key) {
-          case 'F2':
+          case "F2":
             command = {
-              event: 'clientEvent/query/rename',
+              event: "clientEvent/query/rename",
             };
             break;
         }
@@ -1568,13 +1522,11 @@ export default function MissionControl() {
       }
     };
 
-    document.addEventListener('keydown', onKeyboardShortcutEventForAll, true);
-    !window.isElectron &&
-      document.addEventListener('keydown', onKeyboardShortcutEventForMockedServer, true);
+    document.addEventListener("keydown", onKeyboardShortcutEventForAll, true);
+    !window.isElectron && document.addEventListener("keydown", onKeyboardShortcutEventForMockedServer, true);
     return () => {
-      document.removeEventListener('keydown', onKeyboardShortcutEventForAll);
-      !window.isElectron &&
-        document.removeEventListener('keydown', onKeyboardShortcutEventForMockedServer);
+      document.removeEventListener("keydown", onKeyboardShortcutEventForAll);
+      !window.isElectron && document.removeEventListener("keydown", onKeyboardShortcutEventForMockedServer);
     };
   }, []);
 

@@ -1,9 +1,9 @@
-import CloseIcon from '@mui/icons-material/Close';
-import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import DialogContent from '@mui/material/DialogContent';
-import DialogTitle from '@mui/material/DialogTitle';
-import IconButton from '@mui/material/IconButton';
+import CloseIcon from "@mui/icons-material/Close";
+import Button from "@mui/material/Button";
+import Dialog from "@mui/material/Dialog";
+import DialogContent from "@mui/material/DialogContent";
+import DialogTitle from "@mui/material/DialogTitle";
+import IconButton from "@mui/material/IconButton";
 
 export type ModalInput = {
   title: string;
@@ -14,7 +14,7 @@ export type ModalInput = {
   message: React.ReactNode;
   showCloseButton?: boolean;
   disableBackdropClick?: boolean;
-  size: 'xs' | 'sm' | 'md' | 'lg';
+  size: "xs" | "sm" | "md" | "lg";
 };
 
 type ModalProps = ModalInput & {
@@ -32,22 +32,24 @@ export default function Modal(props: ModalProps): JSX.Element | null {
     <Dialog
       open={props.open}
       onClose={onBackdropClick}
-      aria-labelledby='modal-dialog-title'
-      aria-describedby='modal-dialog-description'
+      aria-labelledby="modal-dialog-title"
+      aria-describedby="modal-dialog-description"
       fullWidth={true}
-      maxWidth={props.size}>
-      <DialogTitle id='modal-dialog-title'>
+      maxWidth={props.size}
+    >
+      <DialogTitle id="modal-dialog-title">
         {props.title}
         {props.showCloseButton && (
           <IconButton
-            aria-label='close'
+            aria-label="close"
             onClick={() => props.onDismiss()}
             sx={{
-              position: 'absolute',
+              position: "absolute",
               right: 8,
               top: 8,
               color: (theme) => theme.palette.grey[500],
-            }}>
+            }}
+          >
             <CloseIcon />
           </IconButton>
         )}

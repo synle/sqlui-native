@@ -1,6 +1,6 @@
-import { format as _formatSQL } from 'sql-formatter';
+import { format as _formatSQL } from "sql-formatter";
 
-const _formatJS = require('js-beautify').js;
+const _formatJS = require("js-beautify").js;
 
 export const formatSQL = (val: string) => {
   try {
@@ -8,9 +8,9 @@ export const formatSQL = (val: string) => {
   } catch (err) {
     // if it's not working, let's remove all the leading space
     val = val
-      .split('\n')
+      .split("\n")
       .map((s) => s.trim())
-      .join('\n');
+      .join("\n");
   }
   return val;
 };
@@ -31,26 +31,21 @@ export const formatDuration = (durationMs: number) => {
   const durationS = Math.floor(durationMs / 1000);
   if (durationS > 1) return `${durationS} seconds`;
 
-  return '<= 1 second';
+  return "<= 1 second";
 };
 
 export const escapeSQLValue = (value?: string) => {
   if (value === undefined) {
-    value = '';
+    value = "";
   }
   return value?.toString().replace(/'/g, `''`);
 };
 
 export const isValueNumber = (value: any) => {
   const parsed = parseFloat(value);
-  return typeof parsed === 'number' && !isNaN(value);
+  return typeof parsed === "number" && !isNaN(value);
 };
 
 export const isValueBoolean = (value: any) => {
-  return (
-    value === true ||
-    value === false ||
-    value.toString().toLowerCase() === 'true' ||
-    value.toString().toLowerCase() === 'false'
-  );
+  return value === true || value === false || value.toString().toLowerCase() === "true" || value.toString().toLowerCase() === "false";
 };

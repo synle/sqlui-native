@@ -1,28 +1,28 @@
-import BaseDataScript, { getDivider } from 'src/common/adapters/BaseDataAdapter/scripts';
-import { SqlAction, SqluiCore } from 'typings';
+import BaseDataScript, { getDivider } from "src/common/adapters/BaseDataAdapter/scripts";
+import { SqlAction, SqluiCore } from "typings";
 // https://docs.microsoft.com/en-us/azure/cosmos-db/table/how-to-use-nodejs
 // https://docs.microsoft.com/en-us/javascript/api/@azure/data-tables/?view=azure-node-latest
 
-const formatter = 'js';
+const formatter = "js";
 
-export const AZTABLE_TABLE_CLIENT_PREFIX = 'tableClient';
+export const AZTABLE_TABLE_CLIENT_PREFIX = "tableClient";
 
-export const AZTABLE_TABLE_SERVICE_PREFIX = 'serviceClient';
+export const AZTABLE_TABLE_SERVICE_PREFIX = "serviceClient";
 
-export const AZTABLE_KEYS_TO_IGNORE_FOR_INSERT_AND_UPDATE = 'etag,timestamp'.split(',');
+export const AZTABLE_KEYS_TO_IGNORE_FOR_INSERT_AND_UPDATE = "etag,timestamp".split(",");
 
 function _getColMapForInsertAndUpdate(columns?: SqluiCore.ColumnMetaData[]) {
   return (
     columns?.reduce((res, col) => {
       if (_shouldIncludeField(col)) {
         switch (col.type) {
-          case 'string':
-            res[col.name] = '';
+          case "string":
+            res[col.name] = "";
             break;
-          case 'number':
+          case "number":
             res[col.name] = 123;
             break;
-          case 'array':
+          case "array":
             res[col.name] = [];
             break;
         }
@@ -34,7 +34,7 @@ function _getColMapForInsertAndUpdate(columns?: SqluiCore.ColumnMetaData[]) {
 }
 
 function _shouldIncludeField(col: SqluiCore.ColumnMetaData) {
-  if (col.name === 'timestamp' || col.name === 'etag') {
+  if (col.name === "timestamp" || col.name === "etag") {
     return false;
   }
   return true;
@@ -54,9 +54,7 @@ export function getSelectAllColumns(input: SqlAction.TableInput): SqlAction.Outp
   };
 }
 
-export function getSelectSpecificColumns(
-  input: SqlAction.TableInput,
-): SqlAction.Output | undefined {
+export function getSelectSpecificColumns(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Select Specific Columns`;
 
   const columns = input?.columns?.map((col) => col.name);
@@ -75,15 +73,12 @@ export function getSelectSpecificColumns(
   };
 }
 
-export function getInsert(
-  input: SqlAction.TableInput,
-  value?: Record<string, any>,
-): SqlAction.Output | undefined {
+export function getInsert(input: SqlAction.TableInput, value?: Record<string, any>): SqlAction.Output | undefined {
   const label = `Insert`;
 
   const colMap = _getColMapForInsertAndUpdate(input?.columns);
-  colMap['rowKey'] = 'some_row_key';
-  colMap['partitionKey'] = 'some_partition_key';
+  colMap["rowKey"] = "some_row_key";
+  colMap["partitionKey"] = "some_partition_key";
 
   if (value) {
     for (const key of Object.keys(value)) {
@@ -118,7 +113,7 @@ export function getBulkInsert(
   // find out the primary key
   if (!rowKeyField) {
     for (const column of input.columns) {
-      if (column.primaryKey || column.kind === 'partition_key') {
+      if (column.primaryKey || column.kind === "partition_key") {
         // here is where we infer the rowKey for our record
         rowKeyField = column.name;
         break;
@@ -130,8 +125,8 @@ export function getBulkInsert(
 
   rows = rows.map((row) => ({
     ...row,
-    rowKey: rowKeyField ? row[rowKeyField]?.toString() : '<your_row_key>',
-    partitionKey: partitionKeyField ? row[partitionKeyField]?.toString() : '<your_partition_key>',
+    rowKey: rowKeyField ? row[rowKeyField]?.toString() : "<your_row_key>",
+    partitionKey: partitionKeyField ? row[partitionKeyField]?.toString() : "<your_partition_key>",
   }));
 
   return {
@@ -139,9 +134,7 @@ export function getBulkInsert(
     formatter,
     query: `
       Promise.all([
-        ${rows
-          .map((row) => `${AZTABLE_TABLE_CLIENT_PREFIX}.createEntity(${JSON.stringify(row)})`)
-          .join(',')}
+        ${rows.map((row) => `${AZTABLE_TABLE_CLIENT_PREFIX}.createEntity(${JSON.stringify(row)})`).join(",")}
       ])
     `.trim(),
   };
@@ -155,8 +148,8 @@ export function getUpdateWithValues(
   const label = `Update`;
 
   const colMap = _getColMapForInsertAndUpdate(input?.columns);
-  colMap['rowKey'] = 'some_row_key';
-  colMap['partitionKey'] = 'some_partition_key';
+  colMap["rowKey"] = "some_row_key";
+  colMap["partitionKey"] = "some_partition_key";
 
   if (value) {
     for (const key of Object.keys(value)) {
@@ -180,8 +173,8 @@ export function getUpdate(input: SqlAction.TableInput): SqlAction.Output | undef
   const label = `Update`;
 
   const colMap = _getColMapForInsertAndUpdate(input?.columns);
-  colMap['rowKey'] = 'some_row_key';
-  colMap['partitionKey'] = 'some_partition_key';
+  colMap["rowKey"] = "some_row_key";
+  colMap["partitionKey"] = "some_partition_key";
 
   return {
     label,
@@ -194,8 +187,8 @@ export function getUpsert(input: SqlAction.TableInput): SqlAction.Output | undef
   const label = `Upsert`;
 
   const colMap = _getColMapForInsertAndUpdate(input?.columns);
-  colMap['rowKey'] = 'some_row_key';
-  colMap['partitionKey'] = 'some_partition_key';
+  colMap["rowKey"] = "some_row_key";
+  colMap["partitionKey"] = "some_partition_key";
 
   return {
     label,
@@ -239,9 +232,7 @@ export function getCreateTable(input: SqlAction.TableInput): SqlAction.Output | 
     `,
   };
 }
-export function getCreateDatabaseTable(
-  input: SqlAction.DatabaseInput,
-): SqlAction.Output | undefined {
+export function getCreateDatabaseTable(input: SqlAction.DatabaseInput): SqlAction.Output | undefined {
   const label = `Create Table`;
 
   return {
@@ -254,10 +245,10 @@ export function getCreateDatabaseTable(
 }
 
 export class ConcreteDataScripts extends BaseDataScript {
-  dialects = ['aztable'];
+  dialects = ["aztable"];
 
   getConnectionFormInputs() {
-    return [['restOfConnectionString', 'Azure Table Storage Connection String']];
+    return [["restOfConnectionString", "Azure Table Storage Connection String"]];
   }
 
   getIsTableIdRequiredForQuery() {
@@ -265,7 +256,7 @@ export class ConcreteDataScripts extends BaseDataScript {
   }
 
   getSyntaxMode() {
-    return 'javascript';
+    return "javascript";
   }
 
   supportMigration() {
@@ -304,7 +295,7 @@ export class ConcreteDataScripts extends BaseDataScript {
   }
 
   getDialectName(dialect) {
-    return 'Azure Table Storage';
+    return "Azure Table Storage";
   }
 
   getSampleConnectionString(dialect) {
@@ -316,10 +307,10 @@ export class ConcreteDataScripts extends BaseDataScript {
   }
 
   getCodeSnippet(connection, query, language) {
-    const connectionString = connection.connection.replace('aztable://', '');
+    const connectionString = connection.connection.replace("aztable://", "");
 
     switch (language) {
-      case 'javascript':
+      case "javascript":
         // TODO: implement me
         return `
 // npm install --save @azure/data-tables
@@ -344,14 +335,14 @@ async function _doWork(){
 
 _doWork();
         `.trim();
-      case 'python':
+      case "python":
         // TODO: implement me
-        return '';
-      case 'java':
+        return "";
+      case "java":
         // TODO: implement me
-        return '';
+        return "";
       default:
-        return '';
+        return "";
     }
   }
 }

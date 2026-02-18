@@ -1,20 +1,20 @@
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
-import ContentCopyIcon from '@mui/icons-material/ContentCopy';
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
-import RefreshIcon from '@mui/icons-material/Refresh';
-import SelectAllIcon from '@mui/icons-material/SelectAll';
-import StarIcon from '@mui/icons-material/Star';
-import { Button } from '@mui/material';
-import IconButton from '@mui/material/IconButton';
-import { useNavigate } from 'react-router-dom';
-import { getDivider } from 'src/common/adapters/BaseDataAdapter/scripts';
-import { getConnectionActions } from 'src/common/adapters/DataScriptFactory';
-import DropdownButton from 'src/frontend/components/DropdownButton';
-import { useCommands } from 'src/frontend/components/MissionControl';
-import { useTreeActions } from 'src/frontend/hooks/useTreeActions';
-import { SqlAction, SqluiCore } from 'typings';
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
+import RefreshIcon from "@mui/icons-material/Refresh";
+import SelectAllIcon from "@mui/icons-material/SelectAll";
+import StarIcon from "@mui/icons-material/Star";
+import { Button } from "@mui/material";
+import IconButton from "@mui/material/IconButton";
+import { useNavigate } from "react-router-dom";
+import { getDivider } from "src/common/adapters/BaseDataAdapter/scripts";
+import { getConnectionActions } from "src/common/adapters/DataScriptFactory";
+import DropdownButton from "src/frontend/components/DropdownButton";
+import { useCommands } from "src/frontend/components/MissionControl";
+import { useTreeActions } from "src/frontend/hooks/useTreeActions";
+import { SqlAction, SqluiCore } from "typings";
 
 type ConnectionActionsProps = {
   connection: SqluiCore.ConnectionProps;
@@ -31,62 +31,62 @@ export default function ConnectionActions(props: ConnectionActionsProps): JSX.El
 
   const options: SqlAction.Output[] = [
     {
-      label: 'Add to Bookmark',
+      label: "Add to Bookmark",
       onClick: () =>
         selectCommand({
-          event: 'clientEvent/connection/addToBookmark',
+          event: "clientEvent/connection/addToBookmark",
           data,
         }),
       startIcon: <StarIcon />,
     },
     getDivider(),
     {
-      label: 'Select',
+      label: "Select",
       startIcon: <SelectAllIcon />,
       onClick: () =>
         selectCommand({
-          event: 'clientEvent/connection/select',
+          event: "clientEvent/connection/select",
           data,
         }),
     },
     {
-      label: 'Edit',
+      label: "Edit",
       startIcon: <EditIcon />,
       onClick: () => navigate(`/connection/edit/${connection.id}`),
     },
     {
-      label: 'Export',
+      label: "Export",
       startIcon: <ArrowUpwardIcon />,
       onClick: () =>
         selectCommand({
-          event: 'clientEvent/connection/export',
+          event: "clientEvent/connection/export",
           data,
         }),
     },
     {
-      label: 'Duplicate',
+      label: "Duplicate",
       startIcon: <ContentCopyIcon />,
       onClick: () =>
         selectCommand({
-          event: 'clientEvent/connection/duplicate',
+          event: "clientEvent/connection/duplicate",
           data,
         }),
     },
     {
-      label: 'Refresh',
+      label: "Refresh",
       startIcon: <RefreshIcon />,
       onClick: () =>
         selectCommand({
-          event: 'clientEvent/connection/refresh',
+          event: "clientEvent/connection/refresh",
           data,
         }),
     },
     {
-      label: 'Delete',
+      label: "Delete",
       startIcon: <DeleteIcon />,
       onClick: () =>
         selectCommand({
-          event: 'clientEvent/connection/delete',
+          event: "clientEvent/connection/delete",
           data,
         }),
     },
@@ -98,11 +98,11 @@ export default function ConnectionActions(props: ConnectionActionsProps): JSX.El
       startIcon: action.icon,
       onClick: async () =>
         selectCommand({
-          event: 'clientEvent/query/apply',
+          event: "clientEvent/query/apply",
           data: {
             connectionId,
-            databaseId: '',
-            tableId: '',
+            databaseId: "",
+            tableId: "",
             sql: action.query,
           },
           label: action.description || `Applied "${action.label}" to active query tab.`,
@@ -116,9 +116,9 @@ export default function ConnectionActions(props: ConnectionActionsProps): JSX.El
 
   return (
     <>
-      <DropdownButton id='connection-actions-split-button' options={options}>
-        <IconButton aria-label='Connection Actions' size='small' color='inherit'>
-          <ArrowDropDownIcon fontSize='inherit' color='inherit' />
+      <DropdownButton id="connection-actions-split-button" options={options}>
+        <IconButton aria-label="Connection Actions" size="small" color="inherit">
+          <ArrowDropDownIcon fontSize="inherit" color="inherit" />
         </IconButton>
       </DropdownButton>
     </>

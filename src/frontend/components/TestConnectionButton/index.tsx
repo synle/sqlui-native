@@ -1,25 +1,25 @@
-import { Button } from '@mui/material';
-import { useState } from 'react';
-import { useTestConnection } from 'src/frontend/hooks/useConnection';
-import useToaster from 'src/frontend/hooks/useToaster';
-import { SqluiCore } from 'typings';
+import { Button } from "@mui/material";
+import { useState } from "react";
+import { useTestConnection } from "src/frontend/hooks/useConnection";
+import useToaster from "src/frontend/hooks/useToaster";
+import { SqluiCore } from "typings";
 
 type TestConnectionButtonProps = {
   connection: SqluiCore.CoreConnectionProps;
 };
 
 export default function TestConnectionButton(props: TestConnectionButtonProps): JSX.Element | null {
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState("");
   const { mutateAsync: testConnection } = useTestConnection();
   const { add: addToast, dismiss: dismissToast } = useToaster();
   const toastId = `toast.connectionCheck.${props.connection.connection}`;
 
   const onTestConnection = async () => {
-    let message = '';
+    let message = "";
 
     await addToast({
       id: toastId,
-      message: 'Checking connection...',
+      message: "Checking connection...",
     });
 
     if (!props.connection.connection) {
@@ -44,7 +44,7 @@ export default function TestConnectionButton(props: TestConnectionButtonProps): 
 
   return (
     <>
-      <Button type='button' onClick={() => onTestConnection()}>
+      <Button type="button" onClick={() => onTestConnection()}>
         Test Connection
       </Button>
     </>
