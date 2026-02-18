@@ -193,7 +193,7 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
         }}
         onContextMenu={(e) => onRowContextMenuClick(e)}>
         {/* Sticky header */}
-        <Box sx={{ position: 'sticky', top: 0, zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+        <Box sx={{ position: 'sticky', top: 0, zIndex: (theme) => theme.zIndex.drawer + 1, height: tableCellHeaderHeight }}>
           {headerGroups.map((headerGroup) => (
             <StyledDivHeaderRow
               {...headerGroup.getHeaderGroupProps()}
