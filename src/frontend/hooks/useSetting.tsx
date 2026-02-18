@@ -49,6 +49,19 @@ export function useDarkModeSetting() {
   return value;
 }
 
+export function useAnimationModeSetting() {
+  const { settings } = useSetting();
+  const prefersReducedMotion = useMediaQuery('(prefers-reduced-motion)');
+
+  const value = settings?.animationMode;
+
+  if (value === '0') return false;
+  if (value === '1') return true;
+
+  // follows system: animation on unless system prefers reduced motion
+  return !prefersReducedMotion;
+}
+
 export function useEditorModeSetting() {
   const { settings } = useSetting();
 

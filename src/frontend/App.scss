@@ -193,6 +193,18 @@ $ConnectionTreeIndentSize: 7px;
   }
 }
 
+// animation off via setting
+.App[data-animation='off'] {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+    transition-duration: 0s !important;
+    transition-delay: 0s !important;
+  }
+}
+
 // responsive
 @media (max-width: 800px) {
   .App {

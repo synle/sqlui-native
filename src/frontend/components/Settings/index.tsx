@@ -54,6 +54,22 @@ export default function Settings(props: SettingsProps): JSX.Element | null {
           </Select>
         </div>
         <Typography className='FormInput__Label' variant='subtitle1'>
+          Animation
+          <Tooltip title='Control animation behavior. Follow system preference or explicitly enable/disable animations.'>
+            <HelpIcon fontSize='small' sx={{ ml: 1 }} />
+          </Tooltip>
+        </Typography>
+        <div className='FormInput__Row'>
+          <Select
+            value={settings.animationMode || ''}
+            onChange={(newValue) => onSettingChange('animationMode', newValue)}
+            sx={{ width: '100%' }}>
+            <option value=''>Follows System Settings</option>
+            <option value='0'>Prefer Animation Off</option>
+            <option value='1'>Prefer Animation On</option>
+          </Select>
+        </div>
+        <Typography className='FormInput__Label' variant='subtitle1'>
           Query Selection Mode
           <Tooltip title='Whether or not to open the bookmarked query in a new tab or in the same tab.'>
             <HelpIcon fontSize='small' sx={{ ml: 1 }} />
