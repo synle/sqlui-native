@@ -13,7 +13,7 @@ import {
   useSortBy,
   useTable,
 } from 'react-table';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useLayoutEffect, useRef, useState } from 'react';
 import { DataTableProps } from 'src/frontend/components/DataTable';
 import {
   ColumnResizer,
@@ -31,7 +31,7 @@ import { useAddDataSnapshot } from 'src/frontend/hooks/useDataSnapshot';
 export default function LegacyDataTable(props: DataTableProps): JSX.Element | null {
   const { data } = props;
   const [columns, setColumns] = useState([]);
-  useEffect(() => {
+  useLayoutEffect(() => {
     let newColumns = props.columns;
 
     // get the client width, then see if we need to subtract the left pane

@@ -3,7 +3,7 @@ import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import ToggleButton from '@mui/material/ToggleButton';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import AdvancedEditor from 'src/frontend/components/CodeEditorBox/AdvancedEditor';
 import SimpleEditor from 'src/frontend/components/CodeEditorBox/SimpleEditor';
 import InputError from 'src/frontend/components/InputError';
@@ -115,7 +115,7 @@ export default function CodeEditorBox(props: CodeEditorProps): JSX.Element | nul
     [!!props.required && !props.value],
   );
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (props.id) {
       let newHeight = '';
       try {

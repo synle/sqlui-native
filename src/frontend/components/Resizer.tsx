@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useLayoutEffect, useRef, useState } from 'react';
 
 type ContainerProps = React.HTMLAttributes<HTMLDivElement> & {
   children: React.ReactNode;
@@ -35,7 +35,7 @@ export function Container({ children, style, ...rest }: ContainerProps) {
     ? (firstSectionChild.props as SectionProps)
     : undefined;
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (firstSectionProps) {
       sectionPropsRef.current = {
         defaultSize: firstSectionProps.defaultSize,
