@@ -1,7 +1,7 @@
 import Alert from '@mui/material/Alert';
 import CircularProgress from '@mui/material/CircularProgress';
 import { useEffect, useRef, useState } from 'react';
-import { useQueryClient } from '@tanstack/react-query';
+import { useQueryClient } from 'src/frontend/utils/reactQueryUtils';
 import SessionSelectionModal from 'src/frontend/components/SessionSelectionModal';
 import { setCurrentSessionId } from 'src/frontend/data/session';
 import { useGetCurrentSession, useSelectSession } from 'src/frontend/hooks/useSession';
