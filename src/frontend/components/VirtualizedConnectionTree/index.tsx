@@ -1,24 +1,36 @@
 import Alert from '@mui/material/Alert';
 import CircularProgress from '@mui/material/CircularProgress';
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback, useLayoutEffect, useRef } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
+import { useLayoutModeSetting } from 'src/frontend/hooks/useSetting';
 import { TreeRowRenderer } from './TreeRowRenderer';
 import { useFlatTreeRows } from './useFlatTreeRows';
+
+const ROW_HEIGHT_DEFAULT = 37;
+const ROW_HEIGHT_COMPACT = 28;
+const ROW_HEIGHT_COLUMN_ATTRIBUTES = 100;
 
 export default function VirtualizedConnectionTree() {
   const { rows, connections, connectionsLoading, onToggle, updateConnections } = useFlatTreeRows();
   const parentRef = useRef<HTMLDivElement>(null);
+  const layoutMode = useLayoutModeSetting();
+  const isCompact = layoutMode === 'compact';
+  const rowHeight = isCompact ? ROW_HEIGHT_COMPACT : ROW_HEIGHT_DEFAULT;
 
   const virtualizer = useVirtualizer<HTMLDivElement, HTMLDivElement>({
     count: rows.length,
     getScrollElement: () => parentRef.current,
     estimateSize: (index) => {
       const row = rows[index];
-      if (row.type === 'column-attributes') return 100;
-      return 37;
+      if (row.type === 'column-attributes') return ROW_HEIGHT_COLUMN_ATTRIBUTES;
+      return rowHeight;
     },
     overscan: 10,
   });
+
+  useLayoutEffect(() => {
+    virtualizer.measure();
+  }, [layoutMode]);
 
   const onConnectionOrderChange = useCallback(
     (fromIdx: number, toIdx: number) => {
