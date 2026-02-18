@@ -9,7 +9,6 @@ export function GlobalFilter(props: any) {
       id={props.id}
       label="Search Table"
       size="small"
-      variant="standard"
       variant="outlined"
       fullWidth
       onChange={(e) => props.onChange(e.target.value)}
