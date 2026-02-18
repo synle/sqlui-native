@@ -10,7 +10,7 @@ export function GlobalFilter(props: any) {
       label="Search Table"
       size="small"
       variant="standard"
-      sx={{ mb: 2 }}
+      variant="outlined"
       fullWidth
       onChange={(e) => props.onChange(e.target.value)}
     />
