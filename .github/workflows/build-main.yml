@@ -193,10 +193,10 @@ jobs:
           name: sqlui-native.AppImage
           path: ./dist/sqlui-native.AppImage
 
-  build:
+  after_dist:
     # https://github.com/synle/gha-workflows/blob/main/.github/workflows/build-and-commit-sh.yml
     needs: [build_windows_x64, build_windows_arm64, build_macos_arm64, build_macos_x86_intel, build_linux, build_app_image_linux]
-    if: always()
+    if: always() && github.event_name == 'pull_request'
     uses: synle/gha-workflows/.github/workflows/build-and-commit-sh.yml@main
     permissions:
       contents: write
