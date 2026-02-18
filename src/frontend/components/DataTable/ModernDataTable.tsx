@@ -187,6 +187,7 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
         ref={parentRef}
         className='DataTable__Header'
         sx={{
+          minHeight: '150px',
           maxHeight: tableHeight,
           overflow: 'auto',
         }}
