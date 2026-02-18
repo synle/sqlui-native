@@ -5,14 +5,15 @@ import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import {
-  useBlockLayout,
-  useFilters,
-  useGlobalFilter,
-  usePagination,
-  useResizeColumns,
-  useSortBy,
-  useTable,
-} from 'react-table';
+  useReactTable,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getSortedRowModel,
+  getPaginationRowModel,
+  getFacetedUniqueValues,
+  flexRender,
+  ColumnDef,
+} from '@tanstack/react-table';
 import React, { useLayoutEffect, useRef, useState } from 'react';
 import { DataTableProps } from 'src/frontend/components/DataTable';
 import {
@@ -30,9 +31,9 @@ import { useAddDataSnapshot } from 'src/frontend/hooks/useDataSnapshot';
 
 export default function LegacyDataTable(props: DataTableProps): JSX.Element | null {
   const { data } = props;
-  const [columns, setColumns] = useState([]);
+  const [columns, setColumns] = useState<ColumnDef<any, any>[]>([]);
   useLayoutEffect(() => {
-    let newColumns = props.columns;
+    let newColumns = props.columns as ColumnDef<any, any>[];
 
     // get the client width, then see if we need to subtract the left pane
     let widthToUse = document.querySelector('.LayoutTwoColumns__LeftPane')?.clientWidth || 0;
@@ -43,9 +44,9 @@ export default function LegacyDataTable(props: DataTableProps): JSX.Element | nu
 
     let columnsToSize = newColumns.length;
     for (const column of newColumns) {
-      if (column.width) {
+      if (column.size) {
         columnsToSize--;
-        widthToUse -= column.width;
+        widthToUse -= column.size;
       }
     }
 
@@ -54,11 +55,10 @@ export default function LegacyDataTable(props: DataTableProps): JSX.Element | nu
     newColumns = newColumns.map((column) => {
       return {
         ...column,
-        width: column.width || widthToUse,
+        size: column.size || widthToUse,
       };
     });
 
-    //@ts-ignore
     setColumns(newColumns);
   }, [props.columns]);
   //@ts-ignore
@@ -78,28 +78,28 @@ export default function LegacyDataTable(props: DataTableProps): JSX.Element | nu
     tableCellWidthToUse = Math.floor(totalWidth / columns.length);
   }
 
-  const allRecordSize = data.length;
-  const pageSizeToUse = allRecordSize;
-  const { headerGroups, page, prepareRow, setGlobalFilter } = useTable(
-    {
-      initialState: {
-        pageSize: pageSizeToUse,
-      },
-      columns,
-      data,
-      // @ts-ignore
-      defaultColumn: {
-        Filter: SimpleColumnFilter,
-        width: tableCellWidthToUse,
+  const table = useReactTable({
+    columns,
+    data,
+    defaultColumn: {
+      size: tableCellWidthToUse,
+      enableColumnFilter: true,
+    },
+    getCoreRowModel: getCoreRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    getFacetedUniqueValues: getFacetedUniqueValues(),
+    columnResizeMode: 'onChange',
+    initialState: {
+      pagination: {
+        pageSize: data.length,
       },
     },
-    useFilters,
-    useGlobalFilter,
-    useSortBy,
-    usePagination,
-    useBlockLayout,
-    useResizeColumns,
-  );
+  });
+
+  const rows = table.getRowModel().rows;
+  const headerGroups = table.getHeaderGroups();
 
   const onRowContextMenuClick = (e: React.SyntheticEvent) => {
     const target = e.target as HTMLElement;
@@ -138,7 +138,7 @@ export default function LegacyDataTable(props: DataTableProps): JSX.Element | nu
       <Box sx={{ display: 'flex', gap: 2 }}>
         <Box sx={{ flexGrow: 1 }}>
           {props.searchInputId && (
-            <GlobalFilter id={props.searchInputId} onChange={setGlobalFilter} />
+            <GlobalFilter id={props.searchInputId} onChange={(value: string) => table.setGlobalFilter(value)} />
           )}
         </Box>
         <Tooltip title='Open this table fullscreen in another window'>
@@ -149,47 +149,55 @@ export default function LegacyDataTable(props: DataTableProps): JSX.Element | nu
       </Box>
       <Box sx={{ position: 'relative' }} onContextMenu={(e) => onRowContextMenuClick(e)}>
         {headerGroups.map((headerGroup) => (
-          <StyledDivHeaderRow {...headerGroup.getHeaderGroupProps()}>
-            {headerGroup.headers.map((column) => (
-              <StyledDivHeaderCell {...column.getHeaderProps()}>
-                <StyledDivHeaderCellLabel {...column.getSortByToggleProps()}>
-                  <span>{column.render('Header')}</span>
-                  {column.isSorted &&
-                    (column.isSortedDesc ? (
-                      <ArrowDropDownIcon fontSize='small' />
-                    ) : (
-                      <ArrowDropUpIcon fontSize='small' />
-                    ))}
+          <StyledDivHeaderRow key={headerGroup.id} role='row' style={{ display: 'flex' }}>
+            {headerGroup.headers.map((header) => (
+              <StyledDivHeaderCell
+                key={header.id}
+                role='columnheader'
+                style={{
+                  display: 'inline-block',
+                  width: `${header.getSize()}px`,
+                }}>
+                <StyledDivHeaderCellLabel
+                  onClick={header.column.getToggleSortingHandler()}
+                  style={{ cursor: header.column.getCanSort() ? 'pointer' : 'default' }}>
+                  <span>{flexRender(header.column.columnDef.header, header.getContext())}</span>
+                  {header.column.getIsSorted() === 'desc' ? (
+                    <ArrowDropDownIcon fontSize='small' />
+                  ) : header.column.getIsSorted() === 'asc' ? (
+                    <ArrowDropUpIcon fontSize='small' />
+                  ) : null}
                 </StyledDivHeaderCellLabel>
-                {column.canFilter && column.Header && (
-                  <Box sx={{ mt: 1 }}>{column.render('Filter')}</Box>
+                {header.column.getCanFilter() && header.column.columnDef.header && (
+                  <Box sx={{ mt: 1 }}>
+                    <SimpleColumnFilter column={header.column} />
+                  </Box>
                 )}
-                {column.canResize && (
-                  <ColumnResizer
-                    {...column.getResizerProps()}
-                    isResizing={column.isResizing}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                    }}
-                  />
-                )}
+                <ColumnResizer
+                  onMouseDown={header.getResizeHandler()}
+                  onTouchStart={header.getResizeHandler()}
+                  isResizing={header.column.getIsResizing()}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                  }}
+                />
               </StyledDivHeaderCell>
             ))}
           </StyledDivHeaderRow>
         ))}
-        {page.map((row, rowIdx) => {
-          prepareRow(row);
-
+        {rows.map((row, rowIdx) => {
           return (
             <StyledDivContentRow
+              key={row.id}
               data-row-idx={rowIdx}
+              role='row'
+              style={{ display: 'flex' }}
               sx={{
                 cursor: props.onRowClick ? 'pointer' : '',
               }}
-              onDoubleClick={() => props.onRowClick && props.onRowClick(row.original)}
-              {...row.getRowProps()}>
-              {row.cells.map((cell, colIdx) => {
+              onDoubleClick={() => props.onRowClick && props.onRowClick(row.original)}>
+              {row.getVisibleCells().map((cell, colIdx) => {
                 let dropdownContent: any;
                 if (colIdx === 0 && targetRowContextOptions.length > 0) {
                   dropdownContent = (
@@ -210,16 +218,22 @@ export default function LegacyDataTable(props: DataTableProps): JSX.Element | nu
                   );
                 }
                 return (
-                  <StyledDivValueCell {...cell.getCellProps()}>
+                  <StyledDivValueCell
+                    key={cell.id}
+                    role='cell'
+                    style={{
+                      display: 'inline-block',
+                      width: `${cell.column.getSize()}px`,
+                    }}>
                     {dropdownContent}
-                    {cell.render('Cell')}
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </StyledDivValueCell>
                 );
               })}
             </StyledDivContentRow>
           );
         })}
-        {page.length === 0 && (
+        {rows.length === 0 && (
           <Box sx={{ paddingInline: 2, paddingBlock: 2 }}>
             There is no data in the query with matching filters.
           </Box>

@@ -9,6 +9,7 @@ import IconButton from '@mui/material/IconButton';
 import Link from '@mui/material/Link';
 import Typography from '@mui/material/Typography';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { ColumnDef } from '@tanstack/react-table';
 import DataTable from 'src/frontend/components/DataTable';
 import { useActionDialogs } from 'src/frontend/hooks/useActionDialogs';
 import { useUpsertConnection } from 'src/frontend/hooks/useConnection';
@@ -22,100 +23,104 @@ import { SqluiCore } from 'typings';
 
 type OnAfterSelectCallback = () => void;
 
-const getColumns = (onAfterSelect?: OnAfterSelectCallback) => {
+function NameCell({ row, onAfterSelect }: { row: any; onAfterSelect?: OnAfterSelectCallback }) {
+  const folderItem = row.original;
+  const { onAddQuery } = useConnectionQueries();
+  const navigate = useNavigate();
+  const { confirm, prompt } = useActionDialogs();
+  const { mutateAsync: upsertConnection } = useUpsertConnection();
+  const onOpenBookmarkItem = async (folderItem: SqluiCore.FolderItem) => {
+    switch (folderItem.type) {
+      case 'Connection':
+        await upsertConnection(folderItem.data);
+        navigate('/');
+        onAfterSelect && onAfterSelect();
+        break;
+      case 'Query':
+        await onAddQuery(folderItem.data);
+        navigate('/');
+        onAfterSelect && onAfterSelect();
+        break;
+    }
+  };
+
+  return <Link onClick={() => onOpenBookmarkItem(folderItem)}>{folderItem.name}</Link>;
+}
+
+function TypeCell({ row }: { row: any }) {
+  const folderItem = row.original;
+  return (
+    <Chip
+      label={folderItem.type}
+      color={folderItem.type === 'Connection' ? 'success' : 'warning'}
+      size='small'
+    />
+  );
+}
+
+function ActionCell({ row }: { row: any }) {
+  const folderItem = row.original;
+  const { onAddQuery } = useConnectionQueries();
+  const navigate = useNavigate();
+  const { confirm, prompt } = useActionDialogs();
+  const { mutateAsync: upsertConnection } = useUpsertConnection();
+  const { mutateAsync: deleteBookmarkItem } = useDeleteBookmarkItem();
+  const { mutateAsync: updateBookmarkItem } = useUpdateBookmarkItem();
+
+  const onEditBookmark = async (folderItem: SqluiCore.FolderItem) => {
+    try {
+      const newName = await prompt({
+        title: 'Bookmark name?',
+        message: 'A bookmark name',
+        value: folderItem.name,
+        saveLabel: 'Save',
+      });
+
+      folderItem.name = newName;
+
+      await updateBookmarkItem(folderItem);
+    } catch (err) {}
+  };
+
+  const onDeleteBookmarkItem = async (folderItem: SqluiCore.FolderItem) => {
+    try {
+      await confirm(`Do you want to delete this bookmark "${folderItem.name}"?`);
+      await deleteBookmarkItem(folderItem.id);
+    } catch (err) {}
+  };
+
+  return (
+    <Box sx={{ display: 'flex', gap: 1 }}>
+      <IconButton aria-label='Edit bookmark' onClick={() => onEditBookmark(folderItem)}>
+        <EditIcon />
+      </IconButton>
+      <IconButton
+        aria-label='Delete bookmark'
+        onClick={() => onDeleteBookmarkItem(folderItem)}>
+        <DeleteForeverIcon />
+      </IconButton>
+    </Box>
+  );
+}
+
+const getColumns = (onAfterSelect?: OnAfterSelectCallback): ColumnDef<any, any>[] => {
   return [
     {
-      Header: 'Name',
-      accessor: 'name',
-      Cell: (data: any) => {
-        const folderItem = data.row.original;
-        const { onAddQuery } = useConnectionQueries();
-        const navigate = useNavigate();
-        const { confirm, prompt } = useActionDialogs();
-        const { mutateAsync: upsertConnection } = useUpsertConnection();
-        const onOpenBookmarkItem = async (folderItem: SqluiCore.FolderItem) => {
-          // here we handle restorable
-          switch (folderItem.type) {
-            case 'Connection':
-              await upsertConnection(folderItem.data);
-              navigate('/'); // navigate back to the main page
-              onAfterSelect && onAfterSelect();
-              break;
-            case 'Query':
-              // TODO: add check and handle restore of related connection
-              await onAddQuery(folderItem.data);
-              navigate('/'); // navigate back to the main page
-              onAfterSelect && onAfterSelect();
-              break;
-          }
-        };
-
-        return <Link onClick={() => onOpenBookmarkItem(folderItem)}>{folderItem.name}</Link>;
-      },
+      header: 'Name',
+      accessorKey: 'name',
+      cell: (info) => <NameCell row={info.row} onAfterSelect={onAfterSelect} />,
     },
     {
-      Header: 'Type',
-      accessor: 'type',
-      width: 100,
-      Cell: (data: any) => {
-        const folderItem = data.row.original;
-        return (
-          <Chip
-            label={folderItem.type}
-            color={folderItem.type === 'Connection' ? 'success' : 'warning'}
-            size='small'
-          />
-        );
-      },
+      header: 'Type',
+      accessorKey: 'type',
+      size: 100,
+      cell: (info) => <TypeCell row={info.row} />,
     },
     {
-      Header: '',
+      header: '',
       id: 'action',
-      width: 80,
-      Cell: (data: any) => {
-        const folderItem = data.row.original;
-        const { onAddQuery } = useConnectionQueries();
-        const navigate = useNavigate();
-        const { confirm, prompt } = useActionDialogs();
-        const { mutateAsync: upsertConnection } = useUpsertConnection();
-        const { mutateAsync: deleteBookmarkItem } = useDeleteBookmarkItem();
-        const { mutateAsync: updateBookmarkItem } = useUpdateBookmarkItem();
-
-        const onEditBookmark = async (folderItem: SqluiCore.FolderItem) => {
-          try {
-            const newName = await prompt({
-              title: 'Bookmark name?',
-              message: 'A bookmark name',
-              value: folderItem.name,
-              saveLabel: 'Save',
-            });
-
-            folderItem.name = newName;
-
-            await updateBookmarkItem(folderItem);
-          } catch (err) {}
-        };
-
-        const onDeleteBookmarkItem = async (folderItem: SqluiCore.FolderItem) => {
-          try {
-            await confirm(`Do you want to delete this bookmark "${folderItem.name}"?`);
-            await deleteBookmarkItem(folderItem.id);
-          } catch (err) {}
-        };
-
-        return (
-          <Box sx={{ display: 'flex', gap: 1 }}>
-            <IconButton aria-label='Edit bookmark' onClick={() => onEditBookmark(folderItem)}>
-              <EditIcon />
-            </IconButton>
-            <IconButton
-              aria-label='Delete bookmark'
-              onClick={() => onDeleteBookmarkItem(folderItem)}>
-              <DeleteForeverIcon />
-            </IconButton>
-          </Box>
-        );
-      },
+      size: 80,
+      cell: (info) => <ActionCell row={info.row} />,
     },
   ];
 };
