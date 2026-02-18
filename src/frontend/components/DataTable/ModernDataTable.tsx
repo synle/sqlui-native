@@ -15,8 +15,10 @@ import {
   flexRender,
   ColumnDef,
 } from '@tanstack/react-table';
+import { ColumnOrderState, VisibilityState } from '@tanstack/react-table';
 import React, { useCallback, useLayoutEffect, useRef, useState } from 'react';
 import { DataTableProps } from 'src/frontend/components/DataTable';
+import DataTableColumnSettings from 'src/frontend/components/DataTable/DataTableColumnSettings';
 import {
   ColumnResizer,
   defaultTableHeight,
@@ -41,6 +43,8 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
   //@ts-ignore
   const description = props.description || `Data Snapshot - ${new Date()}`;
   const { mutateAsync: addDataSnapshot } = useAddDataSnapshot();
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+  const [columnOrder, setColumnOrder] = useState<ColumnOrderState>([]);
   const [openContextMenuRowIdx, setOpenContextMenuRowIdx] = useState(-1);
   const [tableHeight, setTableHeight] = useState(defaultTableHeight);
   const anchorEl = useRef<HTMLElement | null>(null);
@@ -66,6 +70,12 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
     getPaginationRowModel: getPaginationRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
     columnResizeMode: 'onChange',
+    state: {
+      columnVisibility,
+      columnOrder,
+    },
+    onColumnVisibilityChange: setColumnVisibility,
+    onColumnOrderChange: setColumnOrder,
     initialState: {
       pagination: {
         pageSize: data.length,
@@ -186,6 +196,7 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
             <GlobalFilter id={props.searchInputId} onChange={(value: string) => table.setGlobalFilter(value)} />
           )}
         </Box>
+        <DataTableColumnSettings table={table} />
         <Tooltip title='Open this table fullscreen in another window'>
           <IconButton aria-label='Make table bigger' onClick={onShowExpandedData}>
             <ZoomOutMapIcon />
