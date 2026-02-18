@@ -36,7 +36,7 @@ import {
   useGetConnectionById,
 } from 'src/frontend/hooks/useConnection';
 import { useConnectionQuery } from 'src/frontend/hooks/useConnectionQuery';
-import { useQuerySizeSetting } from 'src/frontend/hooks/useSetting';
+import { useLayoutModeSetting, useQuerySizeSetting } from 'src/frontend/hooks/useSetting';
 import useToaster from 'src/frontend/hooks/useToaster';
 import { formatDuration, formatJS, formatSQL } from 'src/frontend/utils/formatter';
 import { SqluiCore } from 'typings';
@@ -154,7 +154,8 @@ export default function QueryBox(props: QueryBoxProps): JSX.Element | null {
   const { query, onChange, onDelete, isLoading: loadingConnection } = useConnectionQuery(queryId);
   const { mutateAsync: executeQuery } = useExecute();
   const [executing, setExecuting] = useState(false);
-  const [expanded, setExpanded] = useState(true);
+  const layoutMode = useLayoutModeSetting();
+  const [expanded, setExpanded] = useState(layoutMode !== 'compact');
   const { data: selectedConnection } = useGetConnectionById(query?.connectionId);
   const queryClient = useQueryClient();
   const { selectCommand } = useCommands();
