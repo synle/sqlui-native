@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from 'src/frontend/utils/reactQueryUtils';
 import dataApi from 'src/frontend/data/api';
 import { SqluiCore } from 'typings';
 

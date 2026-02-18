@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { useQueries } from '@tanstack/react-query';
+import { useQueries } from 'src/frontend/utils/reactQueryUtils';
 import dataApi from 'src/frontend/data/api';
 import { useGetConnections, useUpdateConnections } from 'src/frontend/hooks/useConnection';
 import { useActiveConnectionQuery } from 'src/frontend/hooks/useConnectionQuery';

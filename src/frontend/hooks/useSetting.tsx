@@ -1,5 +1,5 @@
 import useMediaQuery from '@mui/material/useMediaQuery';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery } from 'src/frontend/utils/reactQueryUtils';
 import React, { createContext, useContext, useState } from 'react';
 import { LocalStorageConfig } from 'src/frontend/data/config';
 import { SqluiFrontend } from 'typings';
