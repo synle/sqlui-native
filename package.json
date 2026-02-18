@@ -18,7 +18,13 @@
   "proxy": "http://localhost:3001",
   "homepage": "./",
   "build": {
+    "extends": null,
     "appId": "io.synle.github.sqlui-native",
+    "files": [
+      "build/**/*",
+      "main.js",
+      "node_modules/**/*"
+    ],
     "win": {
       "icon": "build/logo512.png"
     },
@@ -45,7 +51,7 @@
   "scripts": {
     "clean": "bash clean.sh",
     "cleanSnapshot": "rm -rf src/common/adapters/__snapshots__/ src/common/adapters/BaseDataAdapter/__snapshots__/ && npm run test-ci -- --update",
-    "prebuild": "echo 'npm run prebuild scripts'",
+    "prebuild": "node -e \"require('fs').copyFileSync('package.json','src/package.json')\"",
     "prestart": "npm run clean && npm run build",
     "predev": "npm run prebuild",
     "prestart-mocked-server": "npm run build-mocked-sever",
