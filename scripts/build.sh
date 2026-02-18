@@ -4,4 +4,4 @@ set -e
 npm install
 npm run test-ci
 npm run build
-node predist.js
+node scripts/predist.js

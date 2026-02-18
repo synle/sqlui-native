@@ -43,7 +43,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: patched-package-json
-      - run: bash build.sh
+      - run: bash scripts/build.sh
       - run: npm run dist-win-x64
       - run: mv ./dist/sqlui-native*.exe ./dist/sqlui-native-x64.exe
       - name: Upload artifact .exe
@@ -69,7 +69,7 @@ jobs:
           name: patched-package-json
       - run: pip install setuptools
         name: Install setuptools for node-gyp
-      - run: bash build.sh
+      - run: bash scripts/build.sh
       - run: npm run dist-win-arm64
       - run: mv ./dist/sqlui-native*.exe ./dist/sqlui-native-arm64.exe
       - name: Upload artifact .exe
@@ -93,7 +93,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: patched-package-json
-      - run: bash dist.sh
+      - run: bash scripts/dist.sh
       - run: mv ./dist/sqlui-native*.dmg ./dist/sqlui-native-arm64.dmg
       - name: Upload artifact .dmg
         uses: actions/upload-artifact@v4
@@ -116,7 +116,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: patched-package-json
-      - run: bash build.sh
+      - run: bash scripts/build.sh
       - run: npm run dist-macos-x64
       - run: mv ./dist/sqlui-native*.dmg ./dist/sqlui-native-x64.dmg
       - name: Upload artifact .dmg
@@ -142,7 +142,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: patched-package-json
-      - run: bash dist.sh
+      - run: bash scripts/dist.sh
       - run: |
           mv ./dist/sqlui-native*.deb ./dist/sqlui-native.deb
           mv ./dist/sqlui-native*.rpm ./dist/sqlui-native.rpm
@@ -184,7 +184,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: patched-package-json
-      - run: bash build.sh
+      - run: bash scripts/build.sh
       - run: npm run dist-linux-appimage
       - run: mv ./dist/sqlui-native*.AppImage ./dist/sqlui-native.AppImage
       - name: Upload artifact .AppImage

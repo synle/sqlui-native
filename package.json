@@ -49,7 +49,7 @@
   },
   "main": "main.js",
   "scripts": {
-    "clean": "node clean.js",
+    "clean": "node scripts/clean.js",
     "cleanSnapshot": "rm -rf src/common/adapters/__snapshots__/ src/common/adapters/BaseDataAdapter/__snapshots__/ && npm run test-ci -- --update",
     "prebuild": "node -e \"require('fs').copyFileSync('package.json','src/package.json')\"",
     "prestart": "npm run clean && npm run build",
