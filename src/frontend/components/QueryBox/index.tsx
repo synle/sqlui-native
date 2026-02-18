@@ -17,7 +17,7 @@ import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import { useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import {
   getIsTableIdRequiredForQueryByDialect,
   getSyntaxModeByDialect,
@@ -170,6 +170,10 @@ export default function QueryBox(props: QueryBoxProps): JSX.Element | null {
   const isExecuting = executing;
   const isMigrationVisible = !!query?.connectionId && !!query?.databaseId;
   const isCreateRecordVisible = isMigrationVisible;
+
+  useLayoutEffect(() => {
+    setExpanded(layoutMode !== 'compact');
+  }, [layoutMode]);
 
   const onDatabaseConnectionChange = useCallback(
     (connectionId?: string, databaseId?: string, tableId?: string) => {
