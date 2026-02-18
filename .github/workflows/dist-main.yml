@@ -88,14 +88,43 @@ jobs:
           asset_path: ./dist/sqlui-native.appx
           asset_name: sqlui-native-${{ needs.create_release.outputs.package_version }}.appx
           asset_content_type: application/octet-stream
-
       - name: Upload artifact .appx
         uses: actions/upload-artifact@v4
         with:
           name: sqlui-native.appx
           path: ./dist/sqlui-native.appx
 
-  build_macos:
+  build_windows_arm64:
+    needs: [create_release]
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+      - run: bash build.sh
+
+      # package and distribute .exe
+      - run: npm run dist-win-arm64
+      - run: mv ./dist/sqlui-native*.exe ./dist/sqlui-native-arm64.exe
+      - name: Upload release binary .exe
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create_release.outputs.release_upload_url }}
+          asset_path: ./dist/sqlui-native-arm64.exe
+          asset_name: sqlui-native-${{ needs.create_release.outputs.package_version }}-arm64.exe
+          asset_content_type: application/octet-stream
+      - name: Upload artifact .exe
+        uses: actions/upload-artifact@v4
+        with:
+          name: sqlui-native-arm64.exe
+          path: ./dist/sqlui-native-arm64.exe
+
+  build_macos_arm64:
     needs: [create_release]
     runs-on: macos-latest
     timeout-minutes: 30
@@ -106,7 +135,7 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
       - run: bash dist.sh
-      - run: mv ./dist/sqlui-native*.dmg ./dist/sqlui-native.dmg
+      - run: mv ./dist/sqlui-native*.dmg ./dist/sqlui-native-arm64.dmg
 
       - name: Upload release binary
         uses: actions/upload-release-asset@v1
@@ -114,15 +143,45 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ needs.create_release.outputs.release_upload_url }}
-          asset_path: ./dist/sqlui-native.dmg
-          asset_name: sqlui-native-${{ needs.create_release.outputs.package_version }}.dmg
+          asset_path: ./dist/sqlui-native-arm64.dmg
+          asset_name: sqlui-native-${{ needs.create_release.outputs.package_version }}-arm64.dmg
           asset_content_type: application/octet-stream
 
       - name: Upload artifact .dmg
         uses: actions/upload-artifact@v4
         with:
-          name: sqlui-native.dmg
-          path: ./dist/sqlui-native.dmg
+          name: sqlui-native-arm64.dmg
+          path: ./dist/sqlui-native-arm64.dmg
+
+  build_macos_x86_intel:
+    needs: [create_release]
+    runs-on: macos-13
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+      - run: bash build.sh
+      - run: npm run dist-macos-x64
+      - run: mv ./dist/sqlui-native*.dmg ./dist/sqlui-native-x64.dmg
+
+      - name: Upload release binary
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create_release.outputs.release_upload_url }}
+          asset_path: ./dist/sqlui-native-x64.dmg
+          asset_name: sqlui-native-${{ needs.create_release.outputs.package_version }}-x64.dmg
+          asset_content_type: application/octet-stream
+
+      - name: Upload artifact .dmg
+        uses: actions/upload-artifact@v4
+        with:
+          name: sqlui-native-x64.dmg
+          path: ./dist/sqlui-native-x64.dmg
 
   build_linux:
     needs: [create_release]
@@ -228,7 +287,7 @@ jobs:
           asset_content_type: application/octet-stream
 
   publish:
-    needs: [create_release, build_windows, build_macos, build_linux, build_app_image_linux]
+    needs: [create_release, build_windows_x64, build_windows_arm64, build_macos_arm64, build_macos_x86_intel, build_linux, build_app_image_linux]
     runs-on: ubuntu-latest
     timeout-minutes: 4
     steps:
@@ -246,7 +305,7 @@ jobs:
 
   roll_back_on_failure_or_canceled:
     if: failure() || cancelled()
-    needs: [create_release, build_windows, build_macos, build_linux, build_app_image_linux]
+    needs: [create_release, build_windows_x64, build_windows_arm64, build_macos_arm64, build_macos_x86_intel, build_linux, build_app_image_linux]
     runs-on: ubuntu-latest
     timeout-minutes: 4
     steps:

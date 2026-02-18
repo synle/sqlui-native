@@ -43,15 +43,40 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: patched-package-json
-      - run: bash dist.sh
-      - run: mv ./dist/sqlui-native*.exe ./dist/sqlui-native.exe
+      - run: bash build.sh
+      - run: npm run dist-win-x64
+      - run: mv ./dist/sqlui-native*.exe ./dist/sqlui-native-x64.exe
       - name: Upload artifact .exe
         uses: actions/upload-artifact@v4
         with:
-          name: sqlui-native.exe
-          path: ./dist/sqlui-native.exe
+          name: sqlui-native-x64.exe
+          path: ./dist/sqlui-native-x64.exe
 
-  build_macos:
+  build_windows_arm64:
+    if: github.event_name == 'push'
+    needs: patch_version
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+      - name: Download patched package.json
+        uses: actions/download-artifact@v4
+        with:
+          name: patched-package-json
+      - run: bash build.sh
+      - run: npm run dist-win-arm64
+      - run: mv ./dist/sqlui-native*.exe ./dist/sqlui-native-arm64.exe
+      - name: Upload artifact .exe
+        uses: actions/upload-artifact@v4
+        with:
+          name: sqlui-native-arm64.exe
+          path: ./dist/sqlui-native-arm64.exe
+
+  build_macos_arm64:
     if: github.event_name == 'push'
     needs: patch_version
     runs-on: macos-latest
@@ -67,12 +92,36 @@ jobs:
         with:
           name: patched-package-json
       - run: bash dist.sh
-      - run: mv ./dist/sqlui-native*.dmg ./dist/sqlui-native.dmg
+      - run: mv ./dist/sqlui-native*.dmg ./dist/sqlui-native-arm64.dmg
       - name: Upload artifact .dmg
         uses: actions/upload-artifact@v4
         with:
-          name: sqlui-native.dmg
-          path: ./dist/sqlui-native.dmg
+          name: sqlui-native-arm64.dmg
+          path: ./dist/sqlui-native-arm64.dmg
+
+  build_macos_x86_intel:
+    if: github.event_name == 'push'
+    needs: patch_version
+    runs-on: macos-13
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+      - name: Download patched package.json
+        uses: actions/download-artifact@v4
+        with:
+          name: patched-package-json
+      - run: bash build.sh
+      - run: npm run dist-macos-x64
+      - run: mv ./dist/sqlui-native*.dmg ./dist/sqlui-native-x64.dmg
+      - name: Upload artifact .dmg
+        uses: actions/upload-artifact@v4
+        with:
+          name: sqlui-native-x64.dmg
+          path: ./dist/sqlui-native-x64.dmg
 
   build_linux:
     if: github.event_name == 'push'
@@ -144,7 +193,7 @@ jobs:
 
   build:
     # https://github.com/synle/gha-workflows/blob/main/.github/workflows/build-and-commit-sh.yml
-    needs: [build_windows, build_macos, build_linux, build_app_image_linux]
+    needs: [build_windows_x64, build_windows_arm64, build_macos_arm64, build_macos_x86_intel, build_linux, build_app_image_linux]
     if: always()
     uses: synle/gha-workflows/.github/workflows/build-and-commit-sh.yml@main
     permissions:
