@@ -1,4 +1,4 @@
-import { QueryClient, useMutation, useQuery, useQueryClient } from 'src/frontend/utils/reactQueryUtils';
+import { QueryClient, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import dataApi from 'src/frontend/data/api';
 import { setCurrentSessionId } from 'src/frontend/data/session';
