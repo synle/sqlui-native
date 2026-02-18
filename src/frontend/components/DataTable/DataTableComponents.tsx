@@ -1,4 +1,6 @@
+import React from 'react';
 import { styled } from '@mui/material/styles';
+import { Bar } from 'src/frontend/components/Resizer';
 
 export const defaultTableHeight = '80vh';
 
@@ -10,34 +12,26 @@ export const tableCellWidth = 160;
 
 export const StyledDivContainer = styled('div')(({ theme }) => ({}));
 
-export const ColumnResizer = styled('div')<{ isResizing?: boolean }>(
-  ({ theme, isResizing }) => ({
-    cursor: 'col-resize',
-    userSelect: 'none',
-    position: 'absolute',
-    right: 0,
-    top: 0,
-    height: '100%',
-    width: '12px',
-    // center a thin visible line inside the touch target
-    '&::after': {
-      content: '""',
-      position: 'absolute',
-      right: '4px',
-      top: '4px',
-      bottom: '4px',
-      width: '3px',
-      borderRadius: '2px',
-      background: isResizing
-        ? theme.palette.primary.main
-        : theme.palette.divider,
-      transition: 'background 0.15s',
-    },
-    '&:hover::after': {
-      background: theme.palette.primary.main,
-    },
-  }),
-);
+const StyledColumnResizer = styled(Bar, {
+  shouldForwardProp: (prop) => prop !== 'isResizing',
+})<{ isResizing?: boolean }>(({ theme, isResizing }) => ({
+  position: 'absolute',
+  right: 0,
+  top: 0,
+  height: '100%',
+  background: isResizing ? theme.palette.primary.main : 'transparent',
+  '&:hover': {
+    background: theme.palette.primary.main,
+  },
+}));
+
+type ColumnResizerProps = React.HTMLAttributes<HTMLDivElement> & {
+  isResizing?: boolean;
+};
+
+export function ColumnResizer({ isResizing, ...rest }: ColumnResizerProps) {
+  return <StyledColumnResizer size={12} isResizing={isResizing} {...rest} />;
+}
 
 export const StyledDivValueCell = styled('div')(({ theme }) => ({
   flexShrink: 0,
