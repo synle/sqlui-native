@@ -15,11 +15,11 @@ export default function SessionSelectionModal() {
   const { modal } = useActionDialogs();
   const { isLoading: loadingSessions } = useGetSessions();
   const { isLoading: loadingOpenedSessionIds } = useGetOpenedSessionIds();
-  const { isLoading: loadingCurrentSession } = useGetCurrentSession();
+  const { isLoading: loadingCurrentSession, data: currentSession, } = useGetCurrentSession();
   const isLoading = loadingSessions || loadingOpenedSessionIds || loadingCurrentSession;
 
   useEffect(() => {
-    if (isLoading) {
+    if (isLoading && currentSession) {
       return;
     }
 
@@ -41,7 +41,7 @@ export default function SessionSelectionModal() {
     }
 
     _init();
-  }, [isLoading]);
+  }, [isLoading, currentSession]);
 
   return null;
 }
