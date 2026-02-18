@@ -15,12 +15,13 @@ import { SqluiFrontend } from 'typings';
 type ResultBoxProps = {
   query: SqluiFrontend.ConnectionQuery;
   executing: boolean;
+  collapsed?: boolean;
 };
 
 export default function ResultBox(props: ResultBoxProps): JSX.Element | null {
   const { selectCommand } = useCommands();
   const [tabIdx, setTabIdx] = useState(0);
-  const { query, executing } = props;
+  const { query, executing, collapsed } = props;
   const queryResult = query.result;
   const data = queryResult?.raw;
   const error = queryResult?.error;
@@ -122,6 +123,7 @@ export default function ResultBox(props: ResultBoxProps): JSX.Element | null {
         data={data}
         searchInputId='result-box-search-input'
         enableColumnFilter={true}
+        fullScreen={collapsed}
         description={`connectionId=${query.connectionId}\ndatabaseId=${query.databaseId}\ntableId=${query.tableId}\n\n${query.sql}`}
       />
     </div>,
