@@ -75,7 +75,7 @@
     "build": "npm run build-react-inline && concurrently \"npm run build-electron\" \"npm run build-mocked-sever\"",
     "test-ci": "vitest run",
     "test": "vitest --watch",
-    "format": "prettier --write --print-width 140 --ignore-unknown --cache '**/*.{js,jsx,ts,tsx,mjs,cjs,json,html,css,scss,less,md,yml,yaml,graphql,vue,xml}'",
+    "format": "prettier --write --print-width 140 --ignore-unknown --no-error-on-unmatched-pattern --cache '**/*.{js,jsx,ts,tsx,mjs,cjs,json,html,css,scss,less,md,yml,yaml,graphql,vue,xml}'",
     "typecheck": "tsc --noEmit",
     "lint": "eslint --fix --ext .tsx --ext .ts src"
   },
