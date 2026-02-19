@@ -253,6 +253,8 @@ Here is the link where you can find information about how run this application l
 On macOS with Apple Silicon (M1/M2/M3/M4), you may see the following error when attempting to open the app:
 
 > "sqlui-native.app" is damaged and can't be opened. You should move it to the Trash.
+<img width="866" height="999" alt="image" src="https://github.com/user-attachments/assets/9a1c12fd-2936-4b77-87a5-217c461ebd56" />
+
 
 This is caused by macOS quarantine attributes applied to unsigned apps. To fix this, open Terminal and run:
 
