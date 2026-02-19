@@ -19,7 +19,6 @@ concurrency:
 jobs:
   prebuild:
     runs-on: ubuntu-latest
-    timeout-minutes: ${{ fromJSON(inputs.timeout_minutes || '30') }}
     steps:
       - run: |
           echo "node_version: ${{ inputs.node_version }}"

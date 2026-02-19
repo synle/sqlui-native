@@ -2,6 +2,7 @@ on:
   workflow_dispatch:
     inputs:
       message:
+        description: "Release notes"
       node_version:
         description: "Node.js version"
         default: "20"
@@ -14,9 +15,17 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  create_release:
+  prebuild:
     runs-on: ubuntu-latest
-    timeout-minutes: ${{ fromJSON(inputs.timeout_minutes || '30') }}
+    steps:
+      - run: |
+          echo "node_version: ${{ inputs.node_version }}"
+          echo "timeout_minutes: ${{ inputs.timeout_minutes }}"
+          echo "message: ${{ inputs.message }}"
+
+  create_release:
+    needs: [prebuild]
+    runs-on: ubuntu-latest
     outputs:
       dist_version: ${{ steps.package-version.outputs.current-version }}
       release_upload_url: ${{ steps.create_release.outputs.upload_url }}
