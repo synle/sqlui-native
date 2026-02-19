@@ -24,9 +24,9 @@
       {% if site.github.is_project_page %}
         <a href="{{ site.github.repository_url }}" class="btn">GitHub</a>
       {% endif %}
-      <a id='download-link-mac-arm64' href="https://github.com/synle/sqlui-native/releases/download/APP_VERSION/sqlui-native-APP_VERSION-arm64.dmg" class="btn appVersion"><i class="fas fa-download" style="margin-right: 5px;"></i> Mac ARM64 (<b>.dmg</b>)</a>
-      <a id='download-link-mac-x64' href="https://github.com/synle/sqlui-native/releases/download/APP_VERSION/sqlui-native-APP_VERSION-x64.dmg" class="btn appVersion"><i class="fas fa-download" style="margin-right: 5px;"></i> Mac Intel (<b>.dmg</b>)</a>
-      <a id='download-link-windows-x64' href="https://github.com/synle/sqlui-native/releases/download/APP_VERSION/sqlui-native-APP_VERSION-x64.exe" class="btn appVersion"><i class="fas fa-download" style="margin-right: 5px;"></i> Windows x64 (<b>.exe</b>)</a>
+      <a id='download-link-mac-arm64' href="https://github.com/synle/sqlui-native/releases/download/APP_VERSION/sqlui-native-APP_VERSION-arm64.dmg" class="btn appVersion"><i class="fas fa-download" style="margin-right: 5px;"></i> macOS Apple Silicon M-Series (<b>.dmg</b>)</a>
+      <a id='download-link-mac-x64' href="https://github.com/synle/sqlui-native/releases/download/APP_VERSION/sqlui-native-APP_VERSION-x64.dmg" class="btn appVersion"><i class="fas fa-download" style="margin-right: 5px;"></i> macOS Intel x64 (<b>.dmg</b>)</a>
+      <a id='download-link-windows-x64' href="https://github.com/synle/sqlui-native/releases/download/APP_VERSION/sqlui-native-APP_VERSION-x64.exe" class="btn appVersion"><i class="fas fa-download" style="margin-right: 5px;"></i> Windows x64 / AMD64 (<b>.exe</b>)</a>
       <a id='download-link-windows-arm64' href="https://github.com/synle/sqlui-native/releases/download/APP_VERSION/sqlui-native-APP_VERSION-arm64.exe" class="btn appVersion"><i class="fas fa-download" style="margin-right: 5px;"></i> Windows ARM64 (<b>.exe</b>)</a>
       <a id='download-link-ubuntu' href="https://github.com/synle/sqlui-native/releases/download/APP_VERSION/sqlui-native-APP_VERSION.deb" class="btn appVersion"><i class="fas fa-download" style="margin-right: 5px;"></i> Ubuntu / Debian (<b>.deb</b>)</a>
       <a id='download-link-appimage' href="https://github.com/synle/sqlui-native/releases/download/APP_VERSION/sqlui-native-APP_VERSION.AppImage" class="btn appVersion"><i class="fas fa-download" style="margin-right: 5px;"></i> Linux (<b>.AppImage</b>)</a>
@@ -68,15 +68,15 @@
           if(innerText.includes('%')){
             if(innerText.includes('download-link-mac-arm64')){
               const link = document.querySelector('#download-link-mac-arm64').href;
-              li.innerHTML = `<a href="${link}">Download sqlui-native for Mac ARM64 (.dmg)</a>`
+              li.innerHTML = `<a href="${link}">Download sqlui-native for macOS Apple Silicon M-Series (.dmg)</a>`
             }
             if(innerText.includes('download-link-mac-x64')){
               const link = document.querySelector('#download-link-mac-x64').href;
-              li.innerHTML = `<a href="${link}">Download sqlui-native for Mac Intel (.dmg)</a>`
+              li.innerHTML = `<a href="${link}">Download sqlui-native for macOS Intel x64 (.dmg)</a>`
             }
             if(innerText.includes('download-link-windows-x64')){
               const link = document.querySelector('#download-link-windows-x64').href;
-              li.innerHTML = `<a href="${link}">Download sqlui-native for Windows x64 (.exe)</a>`
+              li.innerHTML = `<a href="${link}">Download sqlui-native for Windows x64 / AMD64 (.exe)</a>`
             }
             if(innerText.includes('download-link-windows-arm64')){
               const link = document.querySelector('#download-link-windows-arm64').href;
