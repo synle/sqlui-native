@@ -41,7 +41,7 @@ title: sqlui-native
 
 ### Mac Apple Silicon (M-Series) Troubleshooting
 
-On macOS with Apple Silicon (M1/M2/M3/M4), you may see the following error when attempting to open the app:
+On macOS 26+ with Apple Silicon (M1/M2/M3/M4), you may see the following error when attempting to open the app:
 
 > "sqlui-native.app" is damaged and can't be opened. You should move it to the Trash.
 

@@ -18,7 +18,7 @@ Refer to the following link for download information.
 
 - [Windows x64](https://synle.github.io/sqlui-native/installation#windows) (Tested on Windows 10 and 11)
 - [Windows ARM64](https://synle.github.io/sqlui-native/installation#windows)
-- [Mac OS ARM64 (Apple Silicon)](https://synle.github.io/sqlui-native/installation#mac) (Tested on Mac OS Monterey)
+- [Mac OS ARM64 (Apple Silicon)](https://synle.github.io/sqlui-native/installation#mac) (Tested on Mac OS Monterey) - See [quarantine troubleshooting](#mac-apple-silicon-m-series---app-is-damaged-error)
 - [Mac OS Intel (x64)](https://synle.github.io/sqlui-native/installation#mac)
 - [Debian / Ubuntu](https://synle.github.io/sqlui-native/installation#ubuntu--debian)
 - [Linux AppImage](https://synle.github.io/sqlui-native/installation#linux-appimage)
@@ -250,7 +250,7 @@ Here is the link where you can find information about how run this application l
 
 ### Mac Apple Silicon (M-Series) - "App is damaged" Error
 
-On macOS with Apple Silicon (M1/M2/M3/M4), you may see the following error when attempting to open the app:
+On macOS 26+ with Apple Silicon (M1/M2/M3/M4), you may see the following error when attempting to open the app:
 
 > "sqlui-native.app" is damaged and can't be opened. You should move it to the Trash.
 <img width="866" height="999" alt="image" src="https://github.com/user-attachments/assets/9a1c12fd-2936-4b77-87a5-217c461ebd56" />
