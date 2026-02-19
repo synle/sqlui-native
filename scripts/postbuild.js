@@ -22,13 +22,6 @@ cpSync("package.json", "build/package.json");
 cpSync("package.json", "src/package.json");
 cpSync("build", ".");
 
-// Copy monaco-editor vs files to public/vs
-cpSync(
-  path.join("node_modules", "monaco-editor", "min", "vs"),
-  path.join("public", "vs"),
-  (src) => fs.statSync(src).isDirectory() || /\.(css|js)$/.test(src),
-);
-
 log(`
 =========================================
 # consolidate and inline build
