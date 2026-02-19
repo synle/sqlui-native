@@ -1,5 +1,6 @@
 const fs = require("fs");
 const path = require("path");
+const log = console.log;
 
 const buildDir = path.join(__dirname, "..", "build");
 const indexPath = path.join(buildDir, "index.html");
@@ -21,10 +22,10 @@ function cpSync(src, dest, filter = () => true) {
     fs.mkdirSync(path.dirname(dest), { recursive: true });
     fs.copyFileSync(src, dest);
   }
-  console.log(`Copied: ${src} -> ${dest}`);
+  log(`Copied: ${src} -> ${dest}`);
 }
 
-console.log(`
+log(`
 =========================================
 # consolidate and inline build
 =========================================
@@ -56,7 +57,7 @@ function inlineFontsInCss(css, cssDir) {
     };
     const mime = mimeTypes[ext] || "application/octet-stream";
     const base64 = fs.readFileSync(fontPath).toString("base64");
-    console.log("  Inlined font:", cleanUrl);
+    log("  Inlined font:", cleanUrl);
     return `url(data:${mime};base64,${base64})`;
   });
 }
@@ -72,7 +73,7 @@ html = html.replace(/<link\s+[^>]*href="([^"]+\.css)"[^>]*>/g, (match, href) => 
   }
   let css = fs.readFileSync(cssPath, "utf8");
   css = inlineFontsInCss(css, path.dirname(cssPath));
-  console.log("Inlined CSS:", href, `(${css.length} bytes)`);
+  log("Inlined CSS:", href, `(${css.length} bytes)`);
   return `<style>${css}</style>`;
 });
 
@@ -84,7 +85,7 @@ html = html.replace(/<script\s+[^>]*src="([^"]+\.js)"[^>]*><\/script>/g, (match,
     return match;
   }
   const js = fs.readFileSync(jsPath, "utf8");
-  console.log("Inlined JS:", src, `(${js.length} bytes)`);
+  log("Inlined JS:", src, `(${js.length} bytes)`);
   // Preserve attributes like type="module", defer, etc.
   const attrs = [];
   if (match.includes('type="module"')) attrs.push('type="module"');
@@ -100,7 +101,7 @@ html = html.replace(/<script\s+[^>]*src="([^"]+\.js)"[^>]*><\/script>/g, (match,
 //   let monacoCss = fs.readFileSync(monacoEditorCssPath, "utf8");
 //   monacoCss = inlineFontsInCss(monacoCss, path.dirname(monacoEditorCssPath));
 //   html = html.replace("</head>", `<style>${monacoCss}</style></head>`);
-//   console.log("Inlined Monaco CSS: vs/editor/editor.main.css", `(${monacoCss.length} bytes)`);
+//   log("Inlined Monaco CSS: vs/editor/editor.main.css", `(${monacoCss.length} bytes)`);
 // } else {
 //   console.warn("Monaco CSS not found, skipping: vs/editor/editor.main.css");
 // }
@@ -112,7 +113,7 @@ html = html.replace(/<script\s+[^>]*src="([^"]+\.js)"[^>]*><\/script>/g, (match,
 //   const workerBase64 = Buffer.from(workerJs).toString("base64");
 //   const workerBootstrap = `<script>window.MonacoEnvironment=window.MonacoEnvironment||{};window.MonacoEnvironment.getWorker=function(workerId,label){var workerCode=atob("${workerBase64}");var blob=new Blob([workerCode],{type:"application/javascript"});var url=URL.createObjectURL(blob);return new Worker(url,{name:label});};</script>`;
 //   html = html.replace("</head>", `${workerBootstrap}</head>`);
-//   console.log("Inlined Monaco Worker: vs/base/worker/workerMain.js", `(${workerJs.length} bytes)`);
+//   log("Inlined Monaco Worker: vs/base/worker/workerMain.js", `(${workerJs.length} bytes)`);
 // } else {
 //   console.warn("Monaco Worker not found, skipping: vs/base/worker/workerMain.js");
 // }
@@ -126,16 +127,16 @@ html = html.replace(/<link\s+[^>]*href="([^"]+\.(ico|png|svg))"[^>]*>/g, (match,
   const base64 = fs.readFileSync(imgPath).toString("base64");
   const dataUri = `data:${mime};base64,${base64}`;
   const inlined = match.replace(href, dataUri);
-  console.log("Inlined image:", href, `(${base64.length} bytes base64)`);
+  log("Inlined image:", href, `(${base64.length} bytes base64)`);
   return inlined;
 });
 
 fs.writeFileSync(indexPath, html, "utf8");
 
 const finalSize = fs.statSync(indexPath).size;
-console.log(`\nDone! index.html is now ${(finalSize / 1024 / 1024).toFixed(2)} MB (self-contained)`);
+log(`\nDone! index.html is now ${(finalSize / 1024 / 1024).toFixed(2)} MB (self-contained)`);
 
-console.log(`
+log(`
 ========================================
 # move build content into root
 ========================================
