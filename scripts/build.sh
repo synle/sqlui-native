@@ -1,7 +1,7 @@
 
 input_lower=$(echo "$1" | tr '[:upper:]' '[:lower:]')
 if [[ "$input_lower" == "true" || "$input_lower" == "1" ]]; then
-  # do_npm_version_patch=1
+  do_npm_version_patch=1
 else
   do_npm_version_patch=0
 fi
@@ -45,14 +45,6 @@ echo """
 =================================================
 """
 npm run build
-
-
-echo """
-=================================================
-# npm run clean
-=================================================
-"""
-npm run clean
 
 
 echo """
