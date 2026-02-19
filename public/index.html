@@ -11,7 +11,44 @@
     <title>Loading...</title>
   </head>
   <body>
-    <div id="body">Loading...</div>
+    <div id="body">
+      <style>
+        /* A very subtle "breathing" effect */
+        @keyframes breathe {
+          0%,
+          100% {
+            opacity: 1;
+            transform: scale(1);
+          }
+          50% {
+            opacity: 0.9;
+            transform: scale(0.98);
+          }
+        }
+
+        #initial-app-loader {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: 100vh;
+          margin: 0;
+          padding: 0;
+          background: #000;
+          color: #fff;
+          font-family:
+            system-ui,
+            -apple-system,
+            sans-serif;
+          font-size: 4rem;
+          text-transform: uppercase;
+          font-weight: bold;
+          animation: breathe 3s ease-in-out infinite;
+        }
+      </style>
+
+      <div id="initial-app-loader">Loading...</div>
+      <noscript>You need to enable JavaScript to run this app.</noscript>
+    </div>
     <script type="text/javascript" script-id="suppress-resizer-error">
       // Suppress benign ResizeObserver loop errors before CRA overlay loads
       var _origOnerror = window.onerror;
