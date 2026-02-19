@@ -151,7 +151,6 @@ jobs:
           cache: "npm"
       - run: bash scripts/build.sh true
       - run: npm run dist-macos-arm64
-      - run: xattr -cr ./dist/mac-arm64/sqlui-native.app
       - run: mv ./dist/sqlui-native*.dmg ./dist/sqlui-native-arm64.dmg
 
       - name: Upload release binary
@@ -182,7 +181,6 @@ jobs:
           cache: "npm"
       - run: bash scripts/build.sh true
       - run: npm run dist-macos-x64
-      - run: xattr -cr ./dist/mac/sqlui-native.app
       - run: mv ./dist/sqlui-native*.dmg ./dist/sqlui-native-x64.dmg
       - name: Upload release binary
         uses: actions/upload-release-asset@v1
