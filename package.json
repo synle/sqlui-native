@@ -51,7 +51,6 @@
     "mac": {
       "icon": "build/logo512.png"
     },
-    "afterPack": "./scripts/afterPack.js",
     "linux": {
       "synopsis": "sqlui-native - A minimal native desktop client for most databases supporting MySQL, MariaDB, MS SQL Server, PostgresSQL, SQLite, Cassandra, MongoDB and Redis.",
       "icon": "build/logo256.icns",
@@ -121,8 +120,8 @@
   "dependencies": {
     "@azure/cosmos": "^3.17.1",
     "@azure/data-tables": "^13.1.1",
-    "@emotion/react": "^11.10.0",
-    "@emotion/styled": "^11.10.8",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
     "@mui/icons-material": "^5.8.2",
     "@mui/lab": "^5.0.0-alpha.100",
     "@mui/material": "^5.10.8",
@@ -185,7 +184,7 @@
     "react-scripts": "5.0.1",
     "sass": "^1.62.1",
     "supertest": "^6.3.3",
-    "ts-loader": "^9.3.0",
+    "ts-loader": "^9.5.4",
     "typescript": "^4.9.5",
     "vitest": "^0.34.6",
     "web-vitals": "^3.3.1",
