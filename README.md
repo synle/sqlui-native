@@ -246,6 +246,22 @@ Here is the link where you can find information about how run this application l
 - [x] Add supports for [Azure Table (Azure Table storage)](https://docs.microsoft.com/en-us/azure/storage/tables/table-storage-overview).
 - [ ] Add supports for AWS Redshift.
 
+## Troubleshooting
+
+### Mac Apple Silicon (M-Series) - "App is damaged" Error
+
+On macOS with Apple Silicon (M1/M2/M3/M4), you may see the following error when attempting to open the app:
+
+> "sqlui-native.app" is damaged and can't be opened. You should move it to the Trash.
+
+This is caused by macOS quarantine attributes applied to unsigned apps. To fix this, open Terminal and run:
+
+```
+xattr -cr /Applications/sqlui-native.app
+```
+
+After running the command, you should be able to open sqlui-native normally.
+
 ## Limitations
 
 ### sqlite Limitations
