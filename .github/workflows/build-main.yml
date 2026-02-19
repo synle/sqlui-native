@@ -19,7 +19,7 @@ concurrency:
 jobs:
   prebuild:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: ${{ fromJSON(inputs.timeout_minutes || '30') }}
     steps:
       - run: |
           echo "node_version: ${{ inputs.node_version }}"
@@ -29,7 +29,7 @@ jobs:
   dist_windows_x64:
     needs: [prebuild]
     runs-on: windows-latest
-    timeout-minutes: ${{ inputs.timeout_minutes }}
+    timeout-minutes: ${{ fromJSON(inputs.timeout_minutes || '30') }}
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
@@ -59,7 +59,7 @@ jobs:
   dist_windows_arm64:
     needs: [prebuild]
     runs-on: windows-latest
-    timeout-minutes: ${{ inputs.timeout_minutes }}
+    timeout-minutes: ${{ fromJSON(inputs.timeout_minutes || '30') }}
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
@@ -82,7 +82,7 @@ jobs:
   dist_macos_arm64:
     needs: [prebuild]
     runs-on: macos-latest
-    timeout-minutes: ${{ inputs.timeout_minutes }}
+    timeout-minutes: ${{ fromJSON(inputs.timeout_minutes || '30') }}
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
@@ -102,7 +102,7 @@ jobs:
   dist_macos_x86_intel:
     needs: [prebuild]
     runs-on: macos-latest
-    timeout-minutes: ${{ inputs.timeout_minutes }}
+    timeout-minutes: ${{ fromJSON(inputs.timeout_minutes || '30') }}
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
@@ -122,7 +122,7 @@ jobs:
   dist_linux:
     needs: [prebuild]
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: ${{ fromJSON(inputs.timeout_minutes || '30') }}
     steps:
       - name: install missing dependencies
         run: sudo apt-get install -y libarchive-tools
@@ -161,7 +161,7 @@ jobs:
   dist_app_image_linux:
     needs: [prebuild]
     runs-on: ubuntu-latest
-    timeout-minutes: ${{ inputs.timeout_minutes }}
+    timeout-minutes: ${{ fromJSON(inputs.timeout_minutes || '30') }}
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
