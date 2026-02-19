@@ -4,9 +4,29 @@ const path = require("path");
 const buildDir = path.join(__dirname, "..", "build");
 const indexPath = path.join(buildDir, "index.html");
 
+/**
+ * Utility: Synchronous Copy with directory support
+ */
+function cpSync(src, dest, filter = () => true) {
+  if (!fs.existsSync(src)) return;
+
+  if (fs.statSync(src).isDirectory()) {
+    fs.mkdirSync(dest, { recursive: true });
+    fs.readdirSync(src).forEach((file) => {
+      const srcFile = path.join(src, file);
+      const destFile = path.join(dest, file);
+      if (filter(srcFile)) cpSync(srcFile, destFile, filter);
+    });
+  } else {
+    fs.mkdirSync(path.dirname(dest), { recursive: true });
+    fs.copyFileSync(src, dest);
+  }
+  console.log(`Copied: ${src} -> ${dest}`);
+}
+
 console.log(`
 =========================================
-# inline-build.js
+# consolidate and inline build
 =========================================
 `);
 
@@ -73,28 +93,29 @@ html = html.replace(/<script\s+[^>]*src="([^"]+\.js)"[^>]*><\/script>/g, (match,
   return `<script${attrStr}>${js}</script>`;
 });
 
-// Inline Monaco editor CSS (loaded dynamically at runtime by vs/loader)
-const monacoEditorCssPath = path.join(buildDir, "vs", "editor", "editor.main.css");
-if (fs.existsSync(monacoEditorCssPath)) {
-  let monacoCss = fs.readFileSync(monacoEditorCssPath, "utf8");
-  monacoCss = inlineFontsInCss(monacoCss, path.dirname(monacoEditorCssPath));
-  html = html.replace("</head>", `<style>${monacoCss}</style></head>`);
-  console.log("Inlined Monaco CSS: vs/editor/editor.main.css", `(${monacoCss.length} bytes)`);
-} else {
-  console.warn("Monaco CSS not found, skipping: vs/editor/editor.main.css");
-}
+// might not be needed
+// // Inline Monaco editor CSS (loaded dynamically at runtime by vs/loader)
+// const monacoEditorCssPath = path.join(buildDir, "vs", "editor", "editor.main.css");
+// if (fs.existsSync(monacoEditorCssPath)) {
+//   let monacoCss = fs.readFileSync(monacoEditorCssPath, "utf8");
+//   monacoCss = inlineFontsInCss(monacoCss, path.dirname(monacoEditorCssPath));
+//   html = html.replace("</head>", `<style>${monacoCss}</style></head>`);
+//   console.log("Inlined Monaco CSS: vs/editor/editor.main.css", `(${monacoCss.length} bytes)`);
+// } else {
+//   console.warn("Monaco CSS not found, skipping: vs/editor/editor.main.css");
+// }
 
-// Inline Monaco workerMain.js (loaded dynamically as a Web Worker)
-const workerMainPath = path.join(buildDir, "vs", "base", "worker", "workerMain.js");
-if (fs.existsSync(workerMainPath)) {
-  const workerJs = fs.readFileSync(workerMainPath, "utf8");
-  const workerBase64 = Buffer.from(workerJs).toString("base64");
-  const workerBootstrap = `<script>window.MonacoEnvironment=window.MonacoEnvironment||{};window.MonacoEnvironment.getWorker=function(workerId,label){var workerCode=atob("${workerBase64}");var blob=new Blob([workerCode],{type:"application/javascript"});var url=URL.createObjectURL(blob);return new Worker(url,{name:label});};</script>`;
-  html = html.replace("</head>", `${workerBootstrap}</head>`);
-  console.log("Inlined Monaco Worker: vs/base/worker/workerMain.js", `(${workerJs.length} bytes)`);
-} else {
-  console.warn("Monaco Worker not found, skipping: vs/base/worker/workerMain.js");
-}
+// // Inline Monaco workerMain.js (loaded dynamically as a Web Worker)
+// const workerMainPath = path.join(buildDir, "vs", "base", "worker", "workerMain.js");
+// if (fs.existsSync(workerMainPath)) {
+//   const workerJs = fs.readFileSync(workerMainPath, "utf8");
+//   const workerBase64 = Buffer.from(workerJs).toString("base64");
+//   const workerBootstrap = `<script>window.MonacoEnvironment=window.MonacoEnvironment||{};window.MonacoEnvironment.getWorker=function(workerId,label){var workerCode=atob("${workerBase64}");var blob=new Blob([workerCode],{type:"application/javascript"});var url=URL.createObjectURL(blob);return new Worker(url,{name:label});};</script>`;
+//   html = html.replace("</head>", `${workerBootstrap}</head>`);
+//   console.log("Inlined Monaco Worker: vs/base/worker/workerMain.js", `(${workerJs.length} bytes)`);
+// } else {
+//   console.warn("Monaco Worker not found, skipping: vs/base/worker/workerMain.js");
+// }
 
 // Inline images referenced in HTML (favicon, apple-touch-icon, etc.)
 html = html.replace(/<link\s+[^>]*href="([^"]+\.(ico|png|svg))"[^>]*>/g, (match, href, ext) => {
@@ -113,3 +134,22 @@ fs.writeFileSync(indexPath, html, "utf8");
 
 const finalSize = fs.statSync(indexPath).size;
 console.log(`\nDone! index.html is now ${(finalSize / 1024 / 1024).toFixed(2)} MB (self-contained)`);
+
+console.log(`
+========================================
+# move build content into root
+========================================
+`);
+
+// Copy package.json to build and src
+fs.mkdirSync("build", { recursive: true });
+cpSync("package.json", "build/package.json");
+cpSync("package.json", "src/package.json");
+
+// Copy monaco-editor vs files to public/vs
+cpSync(
+  path.join("node_modules", "monaco-editor", "min", "vs"),
+  path.join("public", "vs"),
+  (src) => fs.statSync(src).isDirectory() || /\.(css|js)$/.test(src),
+);
+cpSync("build", ".");
