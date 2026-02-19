@@ -133,7 +133,7 @@
     "cassandra-driver": "^3.6.0",
     "connection-string-parser": "^1.0.4",
     "eslint-plugin-unused-imports": "^4.4.1",
-    "fuzzysort": "^1.2.1",
+    "fuzzysort": "^3.1.0",
     "html-to-image": "^1.10.2",
     "js-beautify": "^1.14.3",
     "json-2-csv": "^3.17.1",
