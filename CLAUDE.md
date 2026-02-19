@@ -20,7 +20,7 @@ npm run format          # Prettier formatting
 npm run fix-import      # Fix and organize imports
 ```
 
-**Packaging:** `npm run build && cd build && npm install && npm run dist`
+**Packaging:** `bash scripts/build.sh && npm run dist`
 
 ## Architecture
 
