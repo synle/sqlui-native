@@ -4,28 +4,24 @@ const buildDir = path.join(__dirname, "..", "build");
 const indexPath = path.join(buildDir, "index.html");
 
 log(`
-========================================
+=========================================================
 # postbuild.js
 buildDir = ${buildDir}
 indexPath = ${indexPath}
-========================================
+=========================================================
 `);
 
 log(`
-========================================
-# move build content into root (monaco)
-========================================
+=========================================================
+# move build content into root (monaco and built bundle)
+=========================================================
 `);
-fs.mkdirSync("build", { recursive: true });
-fs.mkdirSync("public", { recursive: true });
-cpSync("package.json", "build/package.json");
-cpSync("package.json", "src/package.json");
 cpSync("build", ".");
 
 log(`
-=========================================
+==========================================================
 # consolidate and inline build
-=========================================
+==========================================================
 `);
 
 let html = fs.readFileSync(indexPath, "utf8");
