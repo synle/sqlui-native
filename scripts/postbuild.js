@@ -11,12 +11,6 @@ indexPath = ${indexPath}
 =========================================================
 `);
 
-log(`
-=========================================================
-# move build content into root (monaco and built bundle)
-=========================================================
-`);
-cpSync("build", ".");
 
 log(`
 ==========================================================
@@ -128,3 +122,11 @@ fs.writeFileSync(indexPath, html, "utf8");
 
 const finalSize = fs.statSync(indexPath).size;
 log(`\nDone! index.html is now ${(finalSize / 1024 / 1024).toFixed(2)} MB (self-contained)`);
+
+
+log(`
+=========================================================
+# move build content into root (monaco and built bundle)
+=========================================================
+`);
+cpSync("build", ".");
