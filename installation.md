@@ -39,6 +39,20 @@ title: sqlui-native
 
 ![image](https://user-images.githubusercontent.com/3792401/153640735-8fe99a6e-c052-407e-95a9-13b00c3747f1.png)
 
+### Mac Apple Silicon (M-Series) Troubleshooting
+
+On macOS with Apple Silicon (M1/M2/M3/M4), you may see the following error when attempting to open the app:
+
+> "sqlui-native.app" is damaged and can't be opened. You should move it to the Trash.
+
+This is caused by macOS quarantine attributes applied to unsigned apps. To fix this, open Terminal and run:
+
+```
+xattr -cr /Applications/sqlui-native.app
+```
+
+After running the command, you should be able to open sqlui-native normally.
+
 ## Ubuntu / Debian
 
 - %download-link-ubuntu%
