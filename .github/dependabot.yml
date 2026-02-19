@@ -6,22 +6,35 @@ updates:
       interval: monthly
       time: "13:00"
       timezone: "America/Los_Angeles"
-    open-pull-requests-limit: 10
+    open-pull-requests-limit: 25
     versioning-strategy: auto
-    rebase-strategy: "auto"
-    
-    # Tweak: Grouping dependencies to reduce PR noise
+    rebase-strategy: auto
     groups:
-      dependencies:
+      # Group 1: UI & Styling (MUI, Emotion, Icons)
+      ui-framework:
         patterns:
-          - "*" # Groups everything into one "dependencies" PR
-          
-    # Tweak: Clean up your git history
-    commit-message:
-      prefix: "chore"
-      include: "scope"
-
-    # Tweak: Ensure someone actually sees them
-    assignees:
-      - "synle"
+          - "@mui/*"
+          - "@emotion/*"
       
+      # Group 2: React Core & Navigation
+      react-core:
+        patterns:
+          - "react"
+          - "react-dom"
+          - "react-router*"
+          - "react-flow-renderer"
+
+      # Group 3: Data Fetching (Tanstack)
+      tanstack:
+        patterns:
+          - "@tanstack/*"
+
+      # Group 4: Azure
+      database-drivers:
+        patterns:
+          - "@azure/*"
+
+      # Group 5: All TypeScript Definitions
+      types:
+        patterns:
+          - "@types/*"
