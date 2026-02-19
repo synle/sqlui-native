@@ -16,10 +16,10 @@ Refer to the following link for download information.
 
 ## Supported OS's
 
-- [Windows x64](https://synle.github.io/sqlui-native/installation#windows) (Tested on Windows 10 and 11)
+- [Windows x64 / AMD64](https://synle.github.io/sqlui-native/installation#windows) (Tested on Windows 10 and 11)
 - [Windows ARM64](https://synle.github.io/sqlui-native/installation#windows)
-- [Mac OS ARM64 (Apple Silicon)](https://synle.github.io/sqlui-native/installation#mac) (Tested on Mac OS Monterey) - See [quarantine troubleshooting](#mac-apple-silicon-m-series---app-is-damaged-error)
-- [Mac OS Intel (x64)](https://synle.github.io/sqlui-native/installation#mac)
+- [macOS Apple Silicon M-Series](https://synle.github.io/sqlui-native/installation#mac) (Tested on Mac OS Monterey and macOS 26) - See [quarantine troubleshooting](#mac-apple-silicon-m-series---app-is-damaged-error)
+- [macOS Intel x64](https://synle.github.io/sqlui-native/installation#mac)
 - [Debian / Ubuntu](https://synle.github.io/sqlui-native/installation#ubuntu--debian)
 - [Linux AppImage](https://synle.github.io/sqlui-native/installation#linux-appimage)
 - [Redhat / CentOS / Fedora](https://synle.github.io/sqlui-native/installation#redhat--centos--fedora) : Refer to this link for [Installation Instructions](https://synle.github.io/sqlui-native/installation)
