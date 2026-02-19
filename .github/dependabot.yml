@@ -5,5 +5,44 @@ updates:
     schedule:
       interval: monthly
       time: "13:00"
-    open-pull-requests-limit: 10
-    versioning-strategy: increase
+      timezone: "America/Los_Angeles"
+    open-pull-requests-limit: 15
+    versioning-strategy: auto
+    rebase-strategy: auto
+    groups:
+      # UI & Styling (MUI, Emotion, Icons)
+      ui-framework-mui:
+        patterns:
+          - "@mui/*"
+
+      ui-framework-mui:
+        patterns:
+          - "@emotion/*"
+
+      # React Core
+      react-core:
+        patterns:
+          - "react"
+          - "react-dom"
+          - "@types/react"
+          - "@types/react-dom"
+
+      # Data Fetching (Tanstack)
+      tanstack:
+        patterns:
+          - "@tanstack/react-query*"
+
+      # Database
+      database-drivers-azure:
+        patterns:
+          - "@azure/*"
+
+      database-drivers-azure:
+        patterns:
+          - "redis/*"
+          - "@types/redis/*"
+
+      # Misc
+      database-drivers:
+        patterns:
+          - "@babel/*"
