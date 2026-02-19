@@ -125,7 +125,7 @@
     "@emotion/styled": "^11.10.8",
     "@mui/icons-material": "^5.8.2",
     "@mui/lab": "^5.0.0-alpha.100",
-    "@mui/material": "^5.10.8",
+    "@mui/material": "^7.3.8",
     "@tanstack/react-query": "^4.43.0",
     "@tanstack/react-query-devtools": "^4.43.0",
     "@tanstack/react-table": "^8.21.3",
