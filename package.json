@@ -50,6 +50,7 @@
     "mac": {
       "icon": "build/logo512.png"
     },
+    "afterPack": "./scripts/afterPack.js",
     "linux": {
       "synopsis": "sqlui-native - A minimal native desktop client for most databases supporting MySQL, MariaDB, MS SQL Server, PostgresSQL, SQLite, Cassandra, MongoDB and Redis.",
       "icon": "build/logo256.icns",
