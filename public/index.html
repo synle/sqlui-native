@@ -14,7 +14,7 @@
   </head>
   <body>
     <div id="body">Loading...</div>
-    <script type="text/javascript">
+    <script type="text/javascript" script-id='suppress-resizer-error'>
       // Suppress benign ResizeObserver loop errors before CRA overlay loads
       var _origOnerror = window.onerror;
       window.onerror = function(msg) {
@@ -29,66 +29,111 @@
         }
       }, true);
     </script>
-    <script type="text/javascript">
-      window.requireElectron = window.require; // keep an existing copy of electron require
+    <script type="text/javascript" script-id='initialize-vs-code'>
+  (() => {
+    const FALLBACK_TIMEOUT_MS = 3000;
+    let hasInitialized = false;
+    let fallbackTimer = null;
+    let hasRetried = false;
 
-      window.addEventListener('sqluiNativeEvent/init', function () {
-        const vsCodeLoader = '%PUBLIC_URL%/vs/loader.js';
-        let amdRequire;
-        let amdDefine;
+    function handleSqluiNativeEventInit() {
+      if (hasInitialized) return;
+      hasInitialized = true;
 
-        function _loadjs(file, cb) {
-          var script = document.createElement('script');
-          script.type = 'text/javascript';
-          script.src = file;
-          script.onload = cb;
-          document.body.appendChild(script);
+      // Unbind immediately so it cannot fire twice
+      window.removeEventListener('sqluiNativeEvent/init', handleSqluiNativeEventInit);
+
+      const vsCodeLoader = '%PUBLIC_URL%/vs/loader.js';
+      let amdRequire;
+      let amdDefine;
+
+      function _loadjs(file, cb) {
+        const script = document.createElement('script');
+        script.type = 'text/javascript';
+        script.src = file;
+        script.onload = cb;
+        script.onerror = () => {
+          console.error('Failed loading:', file);
+          triggerFallback();
+        };
+        document.body.appendChild(script);
+      }
+
+      function triggerFallback() {
+        if (fallbackTimer) {
+          clearTimeout(fallbackTimer);
+          fallbackTimer = null;
         }
 
-        new Promise((resolve) => {
-          // Hide Node.js module system so Monaco loader uses browser code paths
-          // instead of Node's vm module (which is deprecated in Electron renderer)
-          self.module = undefined;
+        if (!hasRetried) {
+          hasRetried = true;
+          hasInitialized = false;
+          console.warn('Monaco not fully initialized, retrying...');
+          window.dispatchEvent(new Event('sqluiNativeEvent/init'));
+        } else {
+          console.error('Monaco failed after retry.');
+        }
+      }
 
-          try {
-            // Electron mode: compute file:// base URL for Monaco assets
-            var path = requireElectron('path');
+      // Start fallback timer
+      fallbackTimer = setTimeout(() => {
+        if (!window.monaco) {
+          console.warn('Initialization timeout reached.');
+          triggerFallback();
+        }
+      }, FALLBACK_TIMEOUT_MS);
 
-            function _uriFromPath(_path) {
-              var pathName = path.resolve(_path).replace(/\\/g, '/');
-              if (pathName.length > 0 && pathName.charAt(0) !== '/') {
-                pathName = '/' + pathName;
-              }
-              return encodeURI('file://' + pathName);
+      new Promise((resolve, reject) => {
+        self.module = undefined;
+
+        try {
+          const path = requireElectron('path');
+
+          function _uriFromPath(_path) {
+            let pathName = path.resolve(_path).replace(/\\/g, '/');
+            if (pathName.length > 0 && pathName.charAt(0) !== '/') {
+              pathName = '/' + pathName;
             }
-
-            var monacoBaseUrl = _uriFromPath(path.join(__dirname, '%PUBLIC_URL%'));
-
-            _loadjs(vsCodeLoader, function () {
-              amdRequire = window.require;
-              amdDefine = window.require.define;
-
-              amdRequire.config({
-                baseUrl: monacoBaseUrl,
-              });
-
-              resolve();
-            });
-          } catch (err) {
-            // Mocked web server mode: load via script tag with default paths
-            _loadjs(vsCodeLoader, function () {
-              amdRequire = window.require;
-              resolve();
-            });
+            return encodeURI('file://' + pathName);
           }
-        }).then(function () {
+
+          const monacoBaseUrl = _uriFromPath(path.join(__dirname, '%PUBLIC_URL%'));
+
+          _loadjs(vsCodeLoader, function () {
+            amdRequire = window.require;
+            amdDefine = window.require.define;
+
+            amdRequire.config({
+              baseUrl: monacoBaseUrl,
+            });
+
+            resolve();
+          });
+        } catch (err) {
+          _loadjs(vsCodeLoader, function () {
+            amdRequire = window.require;
+            resolve();
+          });
+        }
+      })
+        .then(function () {
           amdRequire(['vs/editor/editor.main'], function () {
             window.monaco = monaco;
 
+            if (fallbackTimer) {
+              clearTimeout(fallbackTimer);
+              fallbackTimer = null;
+            }
+
             window.dispatchEvent(new Event('sqluiNativeEvent/ready'));
           });
-        });
-      });
-    </script>
+        })
+        .catch(triggerFallback);
+    }
+
+    window.requireElectron = window.require;
+    window.addEventListener('sqluiNativeEvent/init', handleSqluiNativeEventInit);
+  })();
+</script>
   </body>
 </html>
