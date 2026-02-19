@@ -1,29 +1,33 @@
-const fs = require("fs");
-const path = require("path");
-const log = console.log;
+require("./common");
 
 const buildDir = path.join(__dirname, "..", "build");
 const indexPath = path.join(buildDir, "index.html");
 
-/**
- * Utility: Synchronous Copy with directory support
- */
-function cpSync(src, dest, filter = () => true) {
-  if (!fs.existsSync(src)) return;
+log(`
+========================================
+# postbuild.js
+buildDir = ${buildDir}
+indexPath = ${indexPath}
+========================================
+`);
 
-  if (fs.statSync(src).isDirectory()) {
-    fs.mkdirSync(dest, { recursive: true });
-    fs.readdirSync(src).forEach((file) => {
-      const srcFile = path.join(src, file);
-      const destFile = path.join(dest, file);
-      if (filter(srcFile)) cpSync(srcFile, destFile, filter);
-    });
-  } else {
-    fs.mkdirSync(path.dirname(dest), { recursive: true });
-    fs.copyFileSync(src, dest);
-  }
-  log(`Copied: ${src} -> ${dest}`);
-}
+log(`
+========================================
+# move build content into root (monaco)
+========================================
+`);
+fs.mkdirSync("build", { recursive: true });
+fs.mkdirSync("public", { recursive: true });
+cpSync("package.json", "build/package.json");
+cpSync("package.json", "src/package.json");
+cpSync("build", ".");
+
+// Copy monaco-editor vs files to public/vs
+cpSync(
+  path.join("node_modules", "monaco-editor", "min", "vs"),
+  path.join("public", "vs"),
+  (src) => fs.statSync(src).isDirectory() || /\.(css|js)$/.test(src),
+);
 
 log(`
 =========================================
@@ -135,22 +139,3 @@ fs.writeFileSync(indexPath, html, "utf8");
 
 const finalSize = fs.statSync(indexPath).size;
 log(`\nDone! index.html is now ${(finalSize / 1024 / 1024).toFixed(2)} MB (self-contained)`);
-
-log(`
-========================================
-# move build content into root
-========================================
-`);
-
-// Copy package.json to build and src
-fs.mkdirSync("build", { recursive: true });
-cpSync("package.json", "build/package.json");
-cpSync("package.json", "src/package.json");
-
-// Copy monaco-editor vs files to public/vs
-cpSync(
-  path.join("node_modules", "monaco-editor", "min", "vs"),
-  path.join("public", "vs"),
-  (src) => fs.statSync(src).isDirectory() || /\.(css|js)$/.test(src),
-);
-cpSync("build", ".");
