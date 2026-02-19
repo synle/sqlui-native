@@ -12,6 +12,7 @@ fs.mkdirSync("build", { recursive: true });
 fs.mkdirSync("public", { recursive: true });
 cpSync("package.json", "build/package.json");
 cpSync("package.json", "src/package.json");
+cpSync("package.json", "public/package.json");
 
 // Copy monaco-editor vs files to public/vs
 cpSync(
