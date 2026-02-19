@@ -4,9 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#000000" />
-    <meta
-      name="description"
-      content="SQLUI Native - A minimal Electron application for Databases" />
+    <meta name="description" content="SQLUI Native - A minimal Electron application for Databases" />
     <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
     <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo512.png" />
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
@@ -14,126 +12,130 @@
   </head>
   <body>
     <div id="body">Loading...</div>
-    <script type="text/javascript" script-id='suppress-resizer-error'>
+    <script type="text/javascript" script-id="suppress-resizer-error">
       // Suppress benign ResizeObserver loop errors before CRA overlay loads
       var _origOnerror = window.onerror;
-      window.onerror = function(msg) {
-        if (typeof msg === 'string' && msg.indexOf('ResizeObserver loop') > -1) return true;
+      window.onerror = function (msg) {
+        if (typeof msg === "string" && msg.indexOf("ResizeObserver loop") > -1) return true;
         return _origOnerror ? _origOnerror.apply(this, arguments) : false;
       };
-      window.addEventListener('error', function(e) {
-        if (e.message && e.message.indexOf('ResizeObserver loop') > -1) {
-          e.stopImmediatePropagation();
-          e.stopPropagation();
-          e.preventDefault();
-        }
-      }, true);
+      window.addEventListener(
+        "error",
+        function (e) {
+          if (e.message && e.message.indexOf("ResizeObserver loop") > -1) {
+            e.stopImmediatePropagation();
+            e.stopPropagation();
+            e.preventDefault();
+          }
+        },
+        true,
+      );
     </script>
-    <script type="text/javascript" script-id='initialize-vs-code'>
-  (() => {
-    const FALLBACK_TIMEOUT_MS = 3000;
-    let hasInitialized = false;
-    let fallbackTimer = null;
-    let hasRetried = false;
+    <script type="text/javascript" script-id="initialize-vs-code">
+      (() => {
+        const FALLBACK_TIMEOUT_MS = 2000;
+        let hasInitialized = false;
+        let fallbackTimer = null;
+        let hasRetried = false;
 
-    function handleSqluiNativeEventInit() {
-      if (hasInitialized) return;
-      hasInitialized = true;
+        function handleSqluiNativeEventInit() {
+          if (hasInitialized) return;
+          hasInitialized = true;
 
-      // Unbind immediately so it cannot fire twice
-      window.removeEventListener('sqluiNativeEvent/init', handleSqluiNativeEventInit);
+          // Unbind immediately so it cannot fire twice
+          window.removeEventListener("sqluiNativeEvent/init", handleSqluiNativeEventInit);
 
-      const vsCodeLoader = '%PUBLIC_URL%/vs/loader.js';
-      let amdRequire;
-      let amdDefine;
+          const vsCodeLoader = "%PUBLIC_URL%/vs/loader.js";
+          let amdRequire;
+          let amdDefine;
 
-      function _loadjs(file, cb) {
-        const script = document.createElement('script');
-        script.type = 'text/javascript';
-        script.src = file;
-        script.onload = cb;
-        script.onerror = () => {
-          console.error('Failed loading:', file);
-          triggerFallback();
-        };
-        document.body.appendChild(script);
-      }
-
-      function triggerFallback() {
-        if (fallbackTimer) {
-          clearTimeout(fallbackTimer);
-          fallbackTimer = null;
-        }
-
-        if (!hasRetried) {
-          hasRetried = true;
-          hasInitialized = false;
-          console.warn('Monaco not fully initialized, retrying...');
-          window.dispatchEvent(new Event('sqluiNativeEvent/init'));
-        } else {
-          console.error('Monaco failed after retry.');
-        }
-      }
-
-      // Start fallback timer
-      fallbackTimer = setTimeout(() => {
-        if (!window.monaco) {
-          console.warn('Initialization timeout reached.');
-          triggerFallback();
-        }
-      }, FALLBACK_TIMEOUT_MS);
-
-      new Promise((resolve, reject) => {
-        self.module = undefined;
-
-        try {
-          const path = requireElectron('path');
-
-          function _uriFromPath(_path) {
-            let pathName = path.resolve(_path).replace(/\\/g, '/');
-            if (pathName.length > 0 && pathName.charAt(0) !== '/') {
-              pathName = '/' + pathName;
-            }
-            return encodeURI('file://' + pathName);
+          function _loadjs(file, cb) {
+            const script = document.createElement("script");
+            script.type = "text/javascript";
+            script.src = file;
+            script.onload = cb;
+            script.onerror = () => {
+              console.error("Failed loading:", file);
+              triggerFallback();
+            };
+            document.body.appendChild(script);
           }
 
-          const monacoBaseUrl = _uriFromPath(path.join(__dirname, '%PUBLIC_URL%'));
-
-          _loadjs(vsCodeLoader, function () {
-            amdRequire = window.require;
-            amdDefine = window.require.define;
-
-            amdRequire.config({
-              baseUrl: monacoBaseUrl,
-            });
-
-            resolve();
-          });
-        } catch (err) {
-          _loadjs(vsCodeLoader, function () {
-            amdRequire = window.require;
-            resolve();
-          });
-        }
-      })
-        .then(function () {
-          amdRequire(['vs/editor/editor.main'], function () {
-            window.monaco = monaco;
-
+          function triggerFallback() {
             if (fallbackTimer) {
               clearTimeout(fallbackTimer);
               fallbackTimer = null;
             }
 
-            window.dispatchEvent(new Event('sqluiNativeEvent/ready'));
-          });
-        })
-        .catch(triggerFallback);
-    }
+            if (!hasRetried) {
+              hasRetried = true;
+              hasInitialized = false;
+              console.warn("Monaco not fully initialized, retrying...");
+              window.dispatchEvent(new Event("sqluiNativeEvent/init"));
+            } else {
+              console.error("Monaco failed after retry.");
+            }
+          }
 
-    window.requireElectron = window.require;
-    window.addEventListener('sqluiNativeEvent/init', handleSqluiNativeEventInit);
-  })();
-</script>
+          // Start fallback timer
+          fallbackTimer = setTimeout(() => {
+            if (!window.monaco) {
+              console.warn("Initialization timeout reached.");
+              triggerFallback();
+            }
+          }, FALLBACK_TIMEOUT_MS);
+
+          new Promise((resolve, reject) => {
+            self.module = undefined;
+
+            try {
+              const path = requireElectron("path");
+
+              function _uriFromPath(_path) {
+                let pathName = path.resolve(_path).replace(/\\/g, "/");
+                if (pathName.length > 0 && pathName.charAt(0) !== "/") {
+                  pathName = "/" + pathName;
+                }
+                return encodeURI("file://" + pathName);
+              }
+
+              const monacoBaseUrl = _uriFromPath(path.join(__dirname, "%PUBLIC_URL%"));
+
+              _loadjs(vsCodeLoader, function () {
+                amdRequire = window.require;
+                amdDefine = window.require.define;
+
+                amdRequire.config({
+                  baseUrl: monacoBaseUrl,
+                });
+
+                resolve();
+              });
+            } catch (err) {
+              _loadjs(vsCodeLoader, function () {
+                amdRequire = window.require;
+                resolve();
+              });
+            }
+          })
+            .then(function () {
+              amdRequire(["vs/editor/editor.main"], function () {
+                window.monaco = monaco;
+
+                if (fallbackTimer) {
+                  clearTimeout(fallbackTimer);
+                  fallbackTimer = null;
+                }
+
+                window.dispatchEvent(new Event("sqluiNativeEvent/ready"));
+              });
+            })
+            .catch(triggerFallback);
+        }
+
+        window.requireElectron = window.require;
+        window.addEventListener("sqluiNativeEvent/init", handleSqluiNativeEventInit);
+      })();
+    </script>
   </body>
 </html>
