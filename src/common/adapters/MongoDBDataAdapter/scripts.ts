@@ -1,4 +1,5 @@
-import { setByPath as set } from "src/common/utils/objectUtils";
+import get from "lodash.get";
+import set from "lodash.set";
 import BaseDataScript, { getDivider } from "src/common/adapters/BaseDataAdapter/scripts";
 import { SqlAction, SqluiCore } from "typings";
 
