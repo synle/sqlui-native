@@ -29,13 +29,23 @@
         const vsCodeLoader = '%PUBLIC_URL%/vs/loader.js';
         let amdRequire;
         let amdDefine;
+
+        function _loadjs(file, cb) {
+          var script = document.createElement('script');
+          script.type = 'text/javascript';
+          script.src = file;
+          script.onload = cb;
+          document.body.appendChild(script);
+        }
+
         new Promise((resolve) => {
+          // Hide Node.js module system so Monaco loader uses browser code paths
+          // instead of Node's vm module (which is deprecated in Electron renderer)
+          self.module = undefined;
+
           try {
-            // option 1: initiate monaco editor for electron version
-            const path = requireElectron('path');
-            const amdLoader = requireElectron(vsCodeLoader);
-            amdRequire = amdLoader.require;
-            amdDefine = amdLoader.require.define;
+            // Electron mode: compute file:// base URL for Monaco assets
+            var path = requireElectron('path');
 
             function _uriFromPath(_path) {
               var pathName = path.resolve(_path).replace(/\\/g, '/');
@@ -45,29 +55,26 @@
               return encodeURI('file://' + pathName);
             }
 
-            amdRequire.config({
-              baseUrl: _uriFromPath(path.join(__dirname, '%PUBLIC_URL%')),
+            var monacoBaseUrl = _uriFromPath(path.join(__dirname, '%PUBLIC_URL%'));
+
+            _loadjs(vsCodeLoader, function () {
+              amdRequire = window.require;
+              amdDefine = window.require.define;
+
+              amdRequire.config({
+                baseUrl: monacoBaseUrl,
+              });
+
+              resolve();
             });
-
-            resolve();
-
-            self.module = undefined; // workaround monaco-css not understanding the environment
           } catch (err) {
-            // option 2: initiate monaco editor for the mocked web server
-            function _loadjs(file, cb) {
-              var script = document.createElement('script');
-              script.type = 'text/javascript';
-              script.src = file;
-              script.onload = cb;
-              document.body.appendChild(script);
-            }
-
-            _loadjs(vsCodeLoader, () => {
+            // Mocked web server mode: load via script tag with default paths
+            _loadjs(vsCodeLoader, function () {
               amdRequire = window.require;
               resolve();
             });
           }
-        }).then(() => {
+        }).then(function () {
           amdRequire(['vs/editor/editor.main'], function () {
             window.monaco = monaco;
 
