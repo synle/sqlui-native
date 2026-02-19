@@ -5,9 +5,9 @@ const buildDir = path.join(__dirname, "..", "build");
 const indexPath = path.join(buildDir, "index.html");
 
 console.log(`
-========================================
-#<<<<< inline-build.js >>>>>>>>>>>>>>>>>>
-========================================
+=========================================
+# inline-build.js
+=========================================
 `);
 
 let html = fs.readFileSync(indexPath, "utf8");
