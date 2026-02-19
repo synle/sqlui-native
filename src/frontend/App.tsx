@@ -35,6 +35,19 @@ export default function App() {
   const { add: addToast } = useToaster();
   const toasterRef = useRef<ToasterHandler | undefined>();
 
+  // @ts-ignore
+  const globalMonaco = window.monaco;
+  useEffect(() => {
+    if (globalMonaco) {
+      // disable auto complete  popup
+      // https://stackoverflow.com/questions/41581570/how-to-remove-autocompletions-for-monaco-editor-using-javascript
+
+      globalMonaco.languages.typescript.javascriptDefaults.setCompilerOptions({
+        noLib: true,
+        allowNonTsExtensions: true,
+      });
+    }
+  }, [globalMonaco]);
   const myTheme = createTheme({
     // Theme settings
     palette: {

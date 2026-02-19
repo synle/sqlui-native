@@ -1409,7 +1409,7 @@ export default function MissionControl() {
               if (shouldExecuteQuery) {
                 (
                   document.querySelector(
-                    ".AdvancedEditorContainer textarea,.AdvancedEditorContainer .inputarea,.SimpleEditorContainer",
+                    ".AdvancedEditorContainer .inputarea.monaco-mouse-cursor-text,.SimpleEditorContainer",
                   ) as HTMLTextAreaElement
                 ).blur();
 
