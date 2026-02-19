@@ -289,7 +289,6 @@ export class ConcreteDataScripts extends BaseDataScript {
       case "rediss":
         return `rediss://username:password@localhost:6379`;
       case "redis":
-      case "rediss":
       default:
         return `redis://localhost:6379`;
     }

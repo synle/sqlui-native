@@ -11,18 +11,16 @@
     <title>Loading...</title>
   </head>
   <body>
-    <div id="body">
+    <div id="body" style='background: #333'>
       <style>
         /* A very subtle "breathing" effect */
         @keyframes breathe {
           0%,
           100% {
             opacity: 1;
-            transform: scale(1);
           }
           50% {
-            opacity: 0.9;
-            transform: scale(0.98);
+            opacity: 0.85;
           }
         }
 
@@ -30,19 +28,23 @@
           display: flex;
           justify-content: center;
           align-items: center;
-          height: 100vh;
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
           margin: 0;
           padding: 0;
-          background: #000;
-          color: #fff;
+          background: #000  !important;
+          color: #fff !important;
           font-family:
             system-ui,
             -apple-system,
-            sans-serif;
-          font-size: 4rem;
+            sans-serif  !important;
+          font-size: 60px !important;
           text-transform: uppercase;
           font-weight: bold;
-          animation: breathe 3s ease-in-out infinite;
+          animation: breathe 2s ease-in-out infinite;
         }
       </style>
 
