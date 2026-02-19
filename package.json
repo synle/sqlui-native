@@ -27,8 +27,6 @@
       "**/*.png",
       "*.css",
       "*.js",
-      "*.json",
-      "static/**/*",
       "appx/**/*",
       "assets/**/*",
       "index.html",
@@ -50,11 +48,7 @@
       "applicationId": "sqluiNative"
     },
     "mac": {
-      "icon": "build/logo512.png",
-      "hardenedRuntime": true,
-  "gatekeeperAssess": false,
-  "entitlements": "build/entitlements.mac.plist",
-  "entitlementsInherit": "build/entitlements.mac.plist"
+      "icon": "build/logo512.png"
     },
     "linux": {
       "synopsis": "sqlui-native - A minimal native desktop client for most databases supporting MySQL, MariaDB, MS SQL Server, PostgresSQL, SQLite, Cassandra, MongoDB and Redis.",
