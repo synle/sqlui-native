@@ -2,26 +2,29 @@ on:
   workflow_dispatch:
     inputs:
       message:
+      node_version:
+        description: "Node.js version"
+        default: "20"
+      timeout_minutes:
+        description: "Timeout in minutes"
+        default: "30"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-env:
-  NODE_VERSION: 20
-
 jobs:
   create_release:
     runs-on: ubuntu-latest
-    timeout-minutes: 4
+    timeout-minutes: ${{ inputs.timeout_minutes }}
     outputs:
-      package_version: ${{ steps.package-version.outputs.current-version }}
+      dist_version: ${{ steps.package-version.outputs.current-version }}
       release_upload_url: ${{ steps.create_release.outputs.upload_url }}
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version: ${{ inputs.node_version }}
           cache: "npm"
       - run: npm version --no-git-tag-version patch
       - id: package-version
@@ -46,15 +49,16 @@ jobs:
           draft: false
           prerelease: false
 
-  build_windows_x64:
+  # begin packaging tasks
+  dist_windows_x64:
     needs: [create_release]
     runs-on: windows-latest
-    timeout-minutes: 30
+    timeout-minutes: ${{ inputs.timeout_minutes }}
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version: ${{ inputs.node_version }}
           cache: "npm"
       - run: bash scripts/build.sh
 
@@ -68,7 +72,7 @@ jobs:
         with:
           upload_url: ${{ needs.create_release.outputs.release_upload_url }}
           asset_path: ./dist/sqlui-native-x64.exe
-          asset_name: sqlui-native-${{ needs.create_release.outputs.package_version }}-x64.exe
+          asset_name: sqlui-native-${{ needs.create_release.outputs.dist_version }}-x64.exe
           asset_content_type: application/octet-stream
       - name: Upload artifact .exe
         uses: actions/upload-artifact@v4
@@ -86,7 +90,7 @@ jobs:
         with:
           upload_url: ${{ needs.create_release.outputs.release_upload_url }}
           asset_path: ./dist/sqlui-native.appx
-          asset_name: sqlui-native-${{ needs.create_release.outputs.package_version }}.appx
+          asset_name: sqlui-native-${{ needs.create_release.outputs.dist_version }}.appx
           asset_content_type: application/octet-stream
       - name: Upload artifact .appx
         uses: actions/upload-artifact@v4
@@ -94,15 +98,15 @@ jobs:
           name: sqlui-native.appx
           path: ./dist/sqlui-native.appx
 
-  build_windows_arm64:
+  dist_windows_arm64:
     needs: [create_release]
     runs-on: windows-latest
-    timeout-minutes: 30
+    timeout-minutes: ${{ inputs.timeout_minutes }}
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version: ${{ inputs.node_version }}
           cache: "npm"
       - run: pip install setuptools
         name: Install setuptools for node-gyp
@@ -118,7 +122,7 @@ jobs:
         with:
           upload_url: ${{ needs.create_release.outputs.release_upload_url }}
           asset_path: ./dist/sqlui-native-arm64.exe
-          asset_name: sqlui-native-${{ needs.create_release.outputs.package_version }}-arm64.exe
+          asset_name: sqlui-native-${{ needs.create_release.outputs.dist_version }}-arm64.exe
           asset_content_type: application/octet-stream
       - name: Upload artifact .exe
         uses: actions/upload-artifact@v4
@@ -126,15 +130,15 @@ jobs:
           name: sqlui-native-arm64.exe
           path: ./dist/sqlui-native-arm64.exe
 
-  build_macos_arm64:
+  dist_macos_arm64:
     needs: [create_release]
     runs-on: macos-latest
-    timeout-minutes: 30
+    timeout-minutes: ${{ inputs.timeout_minutes }}
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version: ${{ inputs.node_version }}
           cache: "npm"
       - run: bash scripts/build.sh
       - run: npm run dist-macos-arm64
@@ -147,7 +151,7 @@ jobs:
         with:
           upload_url: ${{ needs.create_release.outputs.release_upload_url }}
           asset_path: ./dist/sqlui-native-arm64.dmg
-          asset_name: sqlui-native-${{ needs.create_release.outputs.package_version }}-arm64.dmg
+          asset_name: sqlui-native-${{ needs.create_release.outputs.dist_version }}-arm64.dmg
           asset_content_type: application/octet-stream
 
       - name: Upload artifact .dmg
@@ -156,15 +160,15 @@ jobs:
           name: sqlui-native-arm64.dmg
           path: ./dist/sqlui-native-arm64.dmg
 
-  build_macos_x86_intel:
+  dist_macos_x86_intel:
     needs: [create_release]
     runs-on: macos-latest
-    timeout-minutes: 30
+    timeout-minutes: ${{ inputs.timeout_minutes }}
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version: ${{ inputs.node_version }}
           cache: "npm"
       - run: bash scripts/build.sh
       - run: npm run dist-macos-x64
@@ -176,7 +180,7 @@ jobs:
         with:
           upload_url: ${{ needs.create_release.outputs.release_upload_url }}
           asset_path: ./dist/sqlui-native-x64.dmg
-          asset_name: sqlui-native-${{ needs.create_release.outputs.package_version }}-x64.dmg
+          asset_name: sqlui-native-${{ needs.create_release.outputs.dist_version }}-x64.dmg
           asset_content_type: application/octet-stream
 
       - name: Upload artifact .dmg
@@ -185,7 +189,7 @@ jobs:
           name: sqlui-native-x64.dmg
           path: ./dist/sqlui-native-x64.dmg
 
-  build_linux:
+  dist_linux:
     needs: [create_release]
     runs-on: ubuntu-latest
     timeout-minutes: 45
@@ -195,7 +199,7 @@ jobs:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version: ${{ inputs.node_version }}
           cache: "npm"
       - run: bash scripts/dist.sh
       - run: |
@@ -230,7 +234,7 @@ jobs:
         with:
           upload_url: ${{ needs.create_release.outputs.release_upload_url }}
           asset_path: ./dist/sqlui-native.deb
-          asset_name: sqlui-native-${{ needs.create_release.outputs.package_version }}.deb
+          asset_name: sqlui-native-${{ needs.create_release.outputs.dist_version }}.deb
           asset_content_type: application/octet-stream
       - name: Upload release binary rpm
         uses: actions/upload-release-asset@v1
@@ -239,7 +243,7 @@ jobs:
         with:
           upload_url: ${{ needs.create_release.outputs.release_upload_url }}
           asset_path: ./dist/sqlui-native.rpm
-          asset_name: sqlui-native-${{ needs.create_release.outputs.package_version }}.rpm
+          asset_name: sqlui-native-${{ needs.create_release.outputs.dist_version }}.rpm
           asset_content_type: application/octet-stream
       - name: Upload release binary snap
         uses: actions/upload-release-asset@v1
@@ -248,7 +252,7 @@ jobs:
         with:
           upload_url: ${{ needs.create_release.outputs.release_upload_url }}
           asset_path: ./dist/sqlui-native.snap
-          asset_name: sqlui-native-${{ needs.create_release.outputs.package_version }}.snap
+          asset_name: sqlui-native-${{ needs.create_release.outputs.dist_version }}.snap
           asset_content_type: application/octet-stream
       - name: Upload release binary pacman
         uses: actions/upload-release-asset@v1
@@ -257,18 +261,18 @@ jobs:
         with:
           upload_url: ${{ needs.create_release.outputs.release_upload_url }}
           asset_path: ./dist/sqlui-native.pacman
-          asset_name: sqlui-native-${{ needs.create_release.outputs.package_version }}.pacman
+          asset_name: sqlui-native-${{ needs.create_release.outputs.dist_version }}.pacman
           asset_content_type: application/octet-stream
 
-  build_app_image_linux:
+  dist_app_image_linux:
     needs: [create_release]
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: ${{ inputs.timeout_minutes }}
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version: ${{ inputs.node_version }}
           cache: "npm"
       - run: bash scripts/build.sh
       - run: npm run dist-linux-appimage
@@ -285,39 +289,38 @@ jobs:
         with:
           upload_url: ${{ needs.create_release.outputs.release_upload_url }}
           asset_path: ./dist/sqlui-native.AppImage
-          asset_name: sqlui-native-${{ needs.create_release.outputs.package_version }}.AppImage
+          asset_name: sqlui-native-${{ needs.create_release.outputs.dist_version }}.AppImage
           asset_content_type: application/octet-stream
+  # end packaging tasks
 
   publish:
-    needs:
-      [create_release, build_windows_x64, build_windows_arm64, build_macos_arm64, build_macos_x86_intel, build_linux, build_app_image_linux]
+    needs: [create_release, dist_windows_x64, dist_windows_arm64, dist_macos_arm64, dist_macos_x86_intel, dist_linux, dist_app_image_linux]
     runs-on: ubuntu-latest
-    timeout-minutes: 4
+    timeout-minutes: ${{ inputs.timeout_minutes }}
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version: ${{ inputs.node_version }}
           cache: "npm"
       - run: npm version --no-git-tag-version patch
       - run: |
-          echo "{ \"version\": \"${{ needs.create_release.outputs.package_version }}\" }" > release.json
+          echo "{ \"version\": \"${{ needs.create_release.outputs.dist_version }}\" }" > release.json
       - uses: EndBug/add-and-commit@v9
         with:
-          message: "CI / CD - New Release ${{needs.create_release.outputs.package_version}}"
+          message: "CI / CD - New Release ${{needs.create_release.outputs.dist_version}}"
           default_author: github_actions
 
   roll_back_on_failure_or_canceled:
     if: failure() || cancelled()
-    needs:
-      [create_release, build_windows_x64, build_windows_arm64, build_macos_arm64, build_macos_x86_intel, build_linux, build_app_image_linux]
+    needs: [create_release, dist_windows_x64, dist_windows_arm64, dist_macos_arm64, dist_macos_x86_intel, dist_linux, dist_app_image_linux]
     runs-on: ubuntu-latest
-    timeout-minutes: 4
+    timeout-minutes: ${{ inputs.timeout_minutes }}
     steps:
       - uses: actions/checkout@v6
       - uses: dev-drprasad/delete-tag-and-release@v0.2.0
         with:
           delete_release: true
-          tag_name: "${{ needs.create_release.outputs.package_version }}"
+          tag_name: "${{ needs.create_release.outputs.dist_version }}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
