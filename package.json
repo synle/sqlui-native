@@ -49,6 +49,7 @@
   },
   "main": "main.js",
   "scripts": {
+    "clean": "rm -rf build public/vs src/package.json",
     "cleanSnapshot": "rm -rf src/common/adapters/__snapshots__/ src/common/adapters/BaseDataAdapter/__snapshots__/ && npm run test-ci -- --update",
     "prestart": "npm run build",
     "predev": "npm run prebuild",
