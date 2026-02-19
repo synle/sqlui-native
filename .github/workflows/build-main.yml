@@ -35,7 +35,7 @@ jobs:
         with:
           node-version: ${{ inputs.node_version }}
           cache: "npm"
-      - run: bash scripts/build.sh false
+      - run: bash scripts/build.sh true
 
       # package and distribute .exe
       - run: npm run dist-win-x64
@@ -67,7 +67,7 @@ jobs:
           cache: "npm"
       - run: pip install setuptools
         name: Install setuptools for node-gyp
-      - run: bash scripts/build.sh false
+      - run: bash scripts/build.sh true
 
       # package and distribute .exe
       - run: npm run dist-win-arm64
@@ -88,7 +88,7 @@ jobs:
         with:
           node-version: ${{ inputs.node_version }}
           cache: "npm"
-      - run: bash scripts/build.sh false
+      - run: bash scripts/build.sh true
       - run: npm run dist-macos-arm64
       - run: mv ./dist/sqlui-native*.dmg ./dist/sqlui-native-arm64.dmg
 
@@ -108,7 +108,7 @@ jobs:
         with:
           node-version: ${{ inputs.node_version }}
           cache: "npm"
-      - run: bash scripts/build.sh false
+      - run: bash scripts/build.sh true
       - run: npm run dist-macos-x64
       - run: mv ./dist/sqlui-native*.dmg ./dist/sqlui-native-x64.dmg
 
@@ -130,7 +130,7 @@ jobs:
         with:
           node-version: ${{ inputs.node_version }}
           cache: "npm"
-      - run: bash scripts/build.sh false
+      - run: bash scripts/build.sh true
       - run: npm run dist
       - run: |
           mv ./dist/sqlui-native*.deb ./dist/sqlui-native.deb
@@ -168,7 +168,7 @@ jobs:
         with:
           node-version: ${{ inputs.node_version }}
           cache: "npm"
-      - run: bash scripts/build.sh false
+      - run: bash scripts/build.sh true
       - run: npm run dist-linux-appimage
       - run: mv ./dist/sqlui-native*.AppImage ./dist/sqlui-native.AppImage
       - name: Upload artifact .AppImage
