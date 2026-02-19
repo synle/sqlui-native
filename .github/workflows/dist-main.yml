@@ -16,7 +16,7 @@ concurrency:
 jobs:
   create_release:
     runs-on: ubuntu-latest
-    timeout-minutes: ${{ inputs.timeout_minutes }}
+    timeout-minutes: ${{ fromJSON(inputs.timeout_minutes || '30') }}
     outputs:
       dist_version: ${{ steps.package-version.outputs.current-version }}
       release_upload_url: ${{ steps.create_release.outputs.upload_url }}
@@ -53,14 +53,14 @@ jobs:
   dist_windows_x64:
     needs: [create_release]
     runs-on: windows-latest
-    timeout-minutes: ${{ inputs.timeout_minutes }}
+    timeout-minutes: ${{ fromJSON(inputs.timeout_minutes || '30') }}
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ inputs.node_version }}
           cache: "npm"
-      - run: bash scripts/build.sh
+      - run: bash scripts/build.sh true
 
       # package and distribute .exe
       - run: npm run dist-win-x64
@@ -101,7 +101,7 @@ jobs:
   dist_windows_arm64:
     needs: [create_release]
     runs-on: windows-latest
-    timeout-minutes: ${{ inputs.timeout_minutes }}
+    timeout-minutes: ${{ fromJSON(inputs.timeout_minutes || '30') }}
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
@@ -110,7 +110,7 @@ jobs:
           cache: "npm"
       - run: pip install setuptools
         name: Install setuptools for node-gyp
-      - run: bash scripts/build.sh
+      - run: bash scripts/build.sh true
 
       # package and distribute .exe
       - run: npm run dist-win-arm64
@@ -133,14 +133,14 @@ jobs:
   dist_macos_arm64:
     needs: [create_release]
     runs-on: macos-latest
-    timeout-minutes: ${{ inputs.timeout_minutes }}
+    timeout-minutes: ${{ fromJSON(inputs.timeout_minutes || '30') }}
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ inputs.node_version }}
           cache: "npm"
-      - run: bash scripts/build.sh
+      - run: bash scripts/build.sh true
       - run: npm run dist-macos-arm64
       - run: mv ./dist/sqlui-native*.dmg ./dist/sqlui-native-arm64.dmg
 
@@ -163,14 +163,14 @@ jobs:
   dist_macos_x86_intel:
     needs: [create_release]
     runs-on: macos-latest
-    timeout-minutes: ${{ inputs.timeout_minutes }}
+    timeout-minutes: ${{ fromJSON(inputs.timeout_minutes || '30') }}
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ inputs.node_version }}
           cache: "npm"
-      - run: bash scripts/build.sh
+      - run: bash scripts/build.sh true
       - run: npm run dist-macos-x64
       - run: mv ./dist/sqlui-native*.dmg ./dist/sqlui-native-x64.dmg
       - name: Upload release binary
@@ -192,7 +192,7 @@ jobs:
   dist_linux:
     needs: [create_release]
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: ${{ fromJSON(inputs.timeout_minutes || '30') }}
     steps:
       - name: install missing dependencies
         run: sudo apt-get install -y libarchive-tools
@@ -267,14 +267,14 @@ jobs:
   dist_app_image_linux:
     needs: [create_release]
     runs-on: ubuntu-latest
-    timeout-minutes: ${{ inputs.timeout_minutes }}
+    timeout-minutes: ${{ fromJSON(inputs.timeout_minutes || '30') }}
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ inputs.node_version }}
           cache: "npm"
-      - run: bash scripts/build.sh
+      - run: bash scripts/build.sh true
       - run: npm run dist-linux-appimage
       - run: mv ./dist/sqlui-native*.AppImage ./dist/sqlui-native.AppImage
       - name: Upload artifact .AppImage
@@ -296,7 +296,7 @@ jobs:
   publish:
     needs: [create_release, dist_windows_x64, dist_windows_arm64, dist_macos_arm64, dist_macos_x86_intel, dist_linux, dist_app_image_linux]
     runs-on: ubuntu-latest
-    timeout-minutes: ${{ inputs.timeout_minutes }}
+    timeout-minutes: ${{ fromJSON(inputs.timeout_minutes || '30') }}
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
@@ -315,7 +315,7 @@ jobs:
     if: failure() || cancelled()
     needs: [create_release, dist_windows_x64, dist_windows_arm64, dist_macos_arm64, dist_macos_x86_intel, dist_linux, dist_app_image_linux]
     runs-on: ubuntu-latest
-    timeout-minutes: ${{ inputs.timeout_minutes }}
+    timeout-minutes: ${{ fromJSON(inputs.timeout_minutes || '30') }}
     steps:
       - uses: actions/checkout@v6
       - uses: dev-drprasad/delete-tag-and-release@v0.2.0
