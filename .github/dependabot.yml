@@ -5,5 +5,23 @@ updates:
     schedule:
       interval: monthly
       time: "13:00"
-    open-pull-requests-limit: 30
+      timezone: "America/Los_Angeles"
+    open-pull-requests-limit: 10
     versioning-strategy: auto
+    rebase-strategy: "auto"
+    
+    # Tweak: Grouping dependencies to reduce PR noise
+    groups:
+      dependencies:
+        patterns:
+          - "*" # Groups everything into one "dependencies" PR
+          
+    # Tweak: Clean up your git history
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+
+    # Tweak: Ensure someone actually sees them
+    assignees:
+      - "synle"
+      
