@@ -83,7 +83,7 @@
     "prestart": "npm run build",
     "start": "npm run start-electron",
     "start-electron": "cross-env ENV_TYPE='electron-dev' electron build/main.js",
-    "start-webapp": "cross-env ENV_TYPE='mocked-server' BROWSER='none' react-scripts start",
+    "start-webapp": "cross-env ENV_TYPE='mocked-server' BROWSER='none' DISABLE_ESLINT_PLUGIN='true' NODE_OPTIONS='--max-old-space-size=4096' react-scripts start",
     "prestart-mocked-server": "npm run build-mocked-server",
     "start-mocked-server": "node build/mocked-server.js",
     "### Testing ###": "##################################################################################",
