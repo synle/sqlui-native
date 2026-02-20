@@ -325,9 +325,7 @@ export class ConcreteDataScripts extends BaseDataScript {
           pythonCommand: _pythonRedisCommand(sql),
         });
       case "java": {
-        const authLine = clientOptions.password
-          ? `jedis.auth("${clientOptions.password}");`
-          : `// jedis.auth("password");`;
+        const authLine = clientOptions.password ? `jedis.auth("${clientOptions.password}");` : `// jedis.auth("password");`;
 
         return renderCodeSnippet(
           "java",

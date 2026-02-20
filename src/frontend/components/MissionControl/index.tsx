@@ -1000,6 +1000,34 @@ export default function MissionControl() {
           onUpdateSetting("editorMode", command.data as string);
           break;
 
+        case "clientEvent/changeLayoutMode":
+          onUpdateSetting("layoutMode", command.data as string);
+          break;
+
+        case "clientEvent/changeLayoutMode/comfortable":
+          onUpdateSetting("layoutMode", "0");
+          break;
+
+        case "clientEvent/changeLayoutMode/compact":
+          onUpdateSetting("layoutMode", "1");
+          break;
+
+        case "clientEvent/changeAnimationMode":
+          onUpdateSetting("animationMode", command.data as string);
+          break;
+
+        case "clientEvent/changeAnimationMode/system":
+          onUpdateSetting("animationMode", "");
+          break;
+
+        case "clientEvent/changeAnimationMode/off":
+          onUpdateSetting("animationMode", "0");
+          break;
+
+        case "clientEvent/changeAnimationMode/on":
+          onUpdateSetting("animationMode", "1");
+          break;
+
         case "clientEvent/tableRenderer":
           onUpdateSetting("tableRenderer", command.data as string);
           break;

@@ -130,7 +130,7 @@ function CodeSnippetButton(props: QueryBoxProps) {
   return (
     <DropdownButton id="session-action-split-button" options={options} maxHeight="400px">
       <Button type="button" variant="outlined" startIcon={<InfoIcon />}>
-        Code Snippet
+        Snippet
       </Button>
     </DropdownButton>
   );
@@ -295,7 +295,14 @@ export default function QueryBox(props: QueryBoxProps): JSX.Element | null {
               <CodeSnippetButton {...props} />
             </div>
           )}
-          <LoadingButton id="btnExecuteCommand" type="submit" variant="contained" loading={isExecuting} startIcon={<SendIcon />}>
+          <LoadingButton
+            id="btnExecuteCommand"
+            type="submit"
+            variant="contained"
+            loading={isExecuting}
+            startIcon={<SendIcon />}
+            size="small"
+          >
             Execute
           </LoadingButton>
           {expanded && (
@@ -341,7 +348,7 @@ export default function QueryBox(props: QueryBoxProps): JSX.Element | null {
             <IconButton
               aria-label="Toggle form collapse"
               color="inherit"
-              onClick={() => setExpanded((prev) => !prev)}
+              onClick={() => selectCommand({ event: "clientEvent/changeLayoutMode", data: expanded ? "1" : "0" })}
               style={{ marginLeft: "auto" }}
             >
               {expanded ? <UnfoldLessIcon /> : <UnfoldMoreIcon />}
