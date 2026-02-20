@@ -1,3 +1,4 @@
+set -e
 
 input_lower=$(echo "$1" | tr '[:upper:]' '[:lower:]')
 if [[ "$input_lower" == "true" || "$input_lower" == "1" ]]; then
@@ -19,15 +20,6 @@ echo """
 ===================================================
 """
 npm ci || npm install
-
-
-echo """
-===================================================
-# npm run test-ci
-===================================================
-"""
-npm run test-ci
-
 
 if [ "$do_npm_version_patch" -eq 1 ]; then
     echo """
@@ -59,3 +51,11 @@ echo """
 """
 node scripts/postbuild.js
 
+
+echo """
+===================================================
+# npm run test-ci && npm run typecheck
+===================================================
+"""
+npm run test-ci
+npm run typecheck

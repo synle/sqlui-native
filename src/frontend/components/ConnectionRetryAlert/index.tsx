@@ -27,7 +27,7 @@ export default function ConnectionRetryAlert(props: ConnectionRetryAlertProps): 
 
   if (retrying) {
     return (
-      <Alert severity="info" size="small" icon={false}>
+      <Alert severity="info" icon={false}>
         Connecting to server...
       </Alert>
     );
@@ -36,7 +36,6 @@ export default function ConnectionRetryAlert(props: ConnectionRetryAlertProps): 
   return (
     <Alert
       severity="error"
-      size="small"
       icon={false}
       action={
         <Button color="inherit" size="small" onClick={() => onReconnect(connectionId)} sx={{ fontSize: "0.7rem" }}>

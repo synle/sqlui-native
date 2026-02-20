@@ -47,7 +47,7 @@ export function useDarkModeSetting() {
   return value;
 }
 
-export function useAnimationModeSetting() {
+export function useIsAnimationModeOn() {
   const { settings } = useSetting();
   const prefersReducedMotion = useMediaQuery("(prefers-reduced-motion)");
 

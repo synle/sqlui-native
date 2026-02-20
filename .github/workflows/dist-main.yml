@@ -22,6 +22,14 @@ jobs:
           echo "node_version: ${{ inputs.node_version }}"
           echo "timeout_minutes: ${{ inputs.timeout_minutes }}"
           echo "message: ${{ inputs.message }}"
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ inputs.node_version }}
+          cache: "npm"
+      - name: sqlui-native build.sh
+        run: |
+          bash scripts/build.sh false
 
   create_release:
     needs: [prebuild]
@@ -69,11 +77,14 @@ jobs:
         with:
           node-version: ${{ inputs.node_version }}
           cache: "npm"
-      - run: bash scripts/build.sh true
+      - run: |
+          bash scripts/build.sh true
 
       # package and distribute .exe
       - run: npm run dist-win-x64
+        name: sqlui-native npm run dist-win-x64
       - run: mv ./dist/sqlui-native*.exe ./dist/sqlui-native-x64.exe
+        name: mv ./dist/sqlui-native*.exe ./dist/sqlui-native-x64.exe
       - name: Upload release binary .exe
         uses: actions/upload-release-asset@v1
         env:
@@ -91,7 +102,9 @@ jobs:
 
       # package and distribute .appx
       - run: npm run dist-win32-appx
+        name: sqlui-native npm run dist-win32-appx
       - run: mv ./dist/sqlui-native*.appx ./dist/sqlui-native.appx
+        name: mv ./dist/sqlui-native*.appx ./dist/sqlui-native.appx
       - name: Upload release binary .appx
         uses: actions/upload-release-asset@v1
         env:
@@ -119,11 +132,14 @@ jobs:
           cache: "npm"
       - run: pip install setuptools
         name: Install setuptools for node-gyp
-      - run: bash scripts/build.sh true
+      - run: |
+          bash scripts/build.sh true
 
       # package and distribute .exe
       - run: npm run dist-win-arm64
+        name: sqlui-native npm run dist-win-arm64
       - run: mv ./dist/sqlui-native*.exe ./dist/sqlui-native-arm64.exe
+        name: mv ./dist/sqlui-native*.exe ./dist/sqlui-native-arm64.exe
       - name: Upload release binary .exe
         uses: actions/upload-release-asset@v1
         env:
@@ -149,9 +165,14 @@ jobs:
         with:
           node-version: ${{ inputs.node_version }}
           cache: "npm"
-      - run: bash scripts/build.sh true
+      - run: |
+          bash scripts/build.sh true
+
+      # package begins
       - run: npm run dist-macos-arm64
+        name: sqlui-native npm run dist-macos-arm64
       - run: mv ./dist/sqlui-native*.dmg ./dist/sqlui-native-arm64.dmg
+        name: mv ./dist/sqlui-native*.dmg ./dist/sqlui-native-arm64.dmg
 
       - name: Upload release binary
         uses: actions/upload-release-asset@v1
@@ -179,9 +200,14 @@ jobs:
         with:
           node-version: ${{ inputs.node_version }}
           cache: "npm"
-      - run: bash scripts/build.sh true
+      - run: |
+          bash scripts/build.sh true
+
+      # package begins
       - run: npm run dist-macos-x64
+        name: sqlui-native npm run dist-macos-x64
       - run: mv ./dist/sqlui-native*.dmg ./dist/sqlui-native-x64.dmg
+        name: mv ./dist/sqlui-native*.dmg ./dist/sqlui-native-x64.dmg
       - name: Upload release binary
         uses: actions/upload-release-asset@v1
         env:
@@ -210,8 +236,12 @@ jobs:
         with:
           node-version: ${{ inputs.node_version }}
           cache: "npm"
-      - run: bash scripts/build.sh true
+      - run: |
+          bash scripts/build.sh true
+
+      # package begins
       - run: npm run dist
+        name: sqlui-native npm run dist
       - run: |
           mv ./dist/sqlui-native*.deb ./dist/sqlui-native.deb
           mv ./dist/sqlui-native*.rpm ./dist/sqlui-native.rpm
@@ -284,9 +314,14 @@ jobs:
         with:
           node-version: ${{ inputs.node_version }}
           cache: "npm"
-      - run: bash scripts/build.sh true
+      - run: |
+          bash scripts/build.sh true
+
+      # package begins
       - run: npm run dist-linux-appimage
+        name: sqlui-native npm run dist-linux-appimage
       - run: mv ./dist/sqlui-native*.AppImage ./dist/sqlui-native.AppImage
+        name: mv ./dist/sqlui-native*.AppImage ./dist/sqlui-native.AppImage
       - name: Upload artifact .AppImage
         uses: actions/upload-artifact@v4
         with:
