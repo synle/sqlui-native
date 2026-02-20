@@ -1,6 +1,6 @@
 import CloudIcon from "@mui/icons-material/Cloud";
 import { getDialectIcon, SUPPORTED_DIALECTS } from "src/common/adapters/DataScriptFactory";
-import { useLayoutModeSetting, useAnimationModeSetting } from "src/frontend/hooks/useSetting";
+import { useLayoutModeSetting, useIsAnimationModeOn } from "src/frontend/hooks/useSetting";
 
 type ConnectionTypeIconProps = {
   dialect?: string;
