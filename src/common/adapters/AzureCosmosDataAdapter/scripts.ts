@@ -1,4 +1,4 @@
-import BaseDataScript, { getDivider } from "src/common/adapters/BaseDataAdapter/scripts";
+import BaseDataScript, { buildJavaGradleSnippet, getDivider } from "src/common/adapters/BaseDataAdapter/scripts";
 import { SqlAction, SqluiCore } from "typings";
 
 export const COSMOSDB_ADAPTER_PREFIX = "db";
@@ -420,7 +420,6 @@ export class ConcreteDataScripts extends BaseDataScript {
 
     switch (language) {
       case "javascript":
-        // TODO: implement me
         return `
 // npm install --save @azure/cosmos
 const { CosmosClient } = require('@azure/cosmos');
@@ -444,11 +443,86 @@ async function _doWork(){
 _doWork();
     `.trim();
       case "python":
-        // TODO: implement me
-        return "";
+        return `
+# python3 -m venv ./ # setting up virtual environment
+# source bin/activate # activate the venv profile
+# pip install azure-cosmos
+from azure.cosmos import CosmosClient
+
+def _do_work():
+    try:
+        client = CosmosClient.from_connection_string('${connectionString}')
+
+        # List databases
+        # for db in client.list_databases():
+        #     print(db['id'])
+
+        database = client.get_database_client('${query.databaseId}')
+        container = database.get_container_client('${query.tableId}')
+
+        # Query items
+        items = list(container.query_items(
+            query='SELECT * FROM c',
+            enable_cross_partition_query=True
+        ))
+        for item in items:
+            print(item)
+    except Exception as err:
+        print('Failed to connect', err)
+
+_do_work()
+        `.trim();
       case "java":
-        // TODO: implement me
-        return "";
+        return buildJavaGradleSnippet({
+          connectDescription: "Azure Cosmos DB",
+          gradleDep: `    implementation 'com.azure:azure-cosmos:4.53.1'`,
+          mainJavaComment: `/**
+ * src/main/java/Main.java
+ *
+ * Connects to:
+ * Azure Cosmos DB
+ *
+ * Run:
+ * ./gradlew run
+ */`,
+          mainJavaCode: `import com.azure.cosmos.CosmosClient;
+import com.azure.cosmos.CosmosClientBuilder;
+import com.azure.cosmos.CosmosContainer;
+import com.azure.cosmos.CosmosDatabase;
+import com.azure.cosmos.models.CosmosQueryRequestOptions;
+import com.azure.cosmos.util.CosmosPagedIterable;
+import com.fasterxml.jackson.databind.JsonNode;
+
+public class Main {
+    public static void main(String[] args) {
+        // Parse connection string for endpoint and key
+        String connectionString = "${connectionString}";
+        String endpoint = "";
+        String key = "";
+        for (String part : connectionString.split(";")) {
+            if (part.startsWith("AccountEndpoint=")) endpoint = part.substring("AccountEndpoint=".length());
+            if (part.startsWith("AccountKey=")) key = part.substring("AccountKey=".length());
+        }
+
+        try (CosmosClient client = new CosmosClientBuilder()
+                .endpoint(endpoint)
+                .key(key)
+                .buildClient()) {
+
+            CosmosDatabase database = client.getDatabase("${query.databaseId}");
+            CosmosContainer container = database.getContainer("${query.tableId}");
+
+            CosmosPagedIterable<JsonNode> items = container.queryItems(
+                "SELECT * FROM c", new CosmosQueryRequestOptions(), JsonNode.class);
+            for (JsonNode item : items) {
+                System.out.println(item);
+            }
+        } catch (Exception e) {
+            System.out.println("Failed to connect: " + e.getMessage());
+        }
+    }
+}`,
+        });
       default:
         return "";
     }

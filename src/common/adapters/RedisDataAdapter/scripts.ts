@@ -1,4 +1,4 @@
-import BaseDataScript, { getDivider } from "src/common/adapters/BaseDataAdapter/scripts";
+import BaseDataScript, { buildJavaGradleSnippet, getDivider } from "src/common/adapters/BaseDataAdapter/scripts";
 import { getClientOptions } from "src/common/adapters/RedisDataAdapter/utils";
 import { SqlAction } from "typings";
 
@@ -207,6 +207,15 @@ export function getPublishMessage(input: SqlAction.TableInput): SqlAction.Output
   };
 }
 
+/**
+ * Converts a JS redis command like `db.get("key")` to a Python-style redis call like `get("key")`.
+ * This is a best-effort conversion since the query uses JS client syntax.
+ */
+function _pythonRedisCommand(sql: string): string {
+  // strip the "db." prefix to get the method call
+  return sql.replace(/^db\./, "");
+}
+
 export class ConcreteDataScripts extends BaseDataScript {
   dialects = ["redis", "rediss"];
 
@@ -328,6 +337,47 @@ async function _doWork(){
 _doWork();
         `.trim();
       case "python":
+        return `
+# python3 -m venv ./ # setting up virtual environment
+# source bin/activate # activate the venv profile
+# pip install redis
+import redis
+
+def _do_work():
+    try:
+        client = redis.Redis.from_url('${clientOptions.url}'${clientOptions.password ? `, password='${clientOptions.password}'` : ""})
+        res = client.${_pythonRedisCommand(sql)}
+        print(res)
+    except Exception as err:
+        print('Failed to connect', err)
+
+_do_work()
+        `.trim();
+      case "java":
+        return buildJavaGradleSnippet({
+          gradleDep: `    implementation 'redis.clients:jedis:5.1.0'`,
+          mainJavaComment: `/**
+ * src/main/java/Main.java
+ *
+ * Run:
+ * ./gradlew run
+ */`,
+          mainJavaCode: `import redis.clients.jedis.Jedis;
+
+public class Main {
+    public static void main(String[] args) {
+        try (Jedis jedis = new Jedis("${clientOptions.url}")) {
+            ${clientOptions.password ? `jedis.auth("${clientOptions.password}");` : "// jedis.auth(\"password\");"}
+
+            // Example: get a key
+            String res = jedis.get("key");
+            System.out.println(res);
+        } catch (Exception e) {
+            System.out.println("Failed to connect: " + e.getMessage());
+        }
+    }
+}`,
+        });
       default:
         return ``;
     }

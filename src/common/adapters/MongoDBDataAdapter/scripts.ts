@@ -1,6 +1,6 @@
 import get from "lodash.get";
 import set from "lodash.set";
-import BaseDataScript, { getDivider } from "src/common/adapters/BaseDataAdapter/scripts";
+import BaseDataScript, { buildJavaGradleSnippet, getDivider } from "src/common/adapters/BaseDataAdapter/scripts";
 import { SqlAction, SqluiCore } from "typings";
 
 export const MONGO_ADAPTER_PREFIX = "db";
@@ -270,6 +270,17 @@ export function getCreateConnectionDatabase(input: SqlAction.ConnectionInput): S
   };
 }
 
+/**
+ * Best-effort conversion of JS MongoDB syntax to Python PyMongo syntax.
+ * Converts `db.collection('name').find(...)` to `db['name'].find(...)`.
+ */
+function _convertMongoJsToPython(sql: string): string {
+  return sql
+    .replace(/db\.collection\('([^']+)'\)/g, "db['$1']")
+    .replace(/\.toArray\(\)/g, "")
+    .replace(/\.limit\((\d+)\)/g, ".limit($1)");
+}
+
 export class ConcreteDataScripts extends BaseDataScript {
   dialects = ["mongodb", "mongodb+srv"];
 
@@ -366,6 +377,67 @@ async function _doWork(){
 _doWork();
         `.trim();
       case "python":
+        return `
+# python3 -m venv ./ # setting up virtual environment
+# source bin/activate # activate the venv profile
+# pip install pymongo
+from pymongo import MongoClient
+from bson.objectid import ObjectId
+
+def _do_work():
+    try:
+        database = '${database}'
+
+        client = MongoClient('${connectionString}')
+        db = client[database]
+
+        # Note: adjust the query below to use PyMongo syntax
+        # For example: db['collection_name'].find().limit(10)
+        res = list(${_convertMongoJsToPython(sql)})
+
+        for item in res if isinstance(res, list) else [res]:
+            print(item)
+    except Exception as err:
+        print('Failed to connect', err)
+
+_do_work()
+        `.trim();
+      case "java":
+        return buildJavaGradleSnippet({
+          connectDescription: connectionString,
+          gradleDep: `    implementation 'org.mongodb:mongodb-driver-sync:4.11.1'`,
+          mainJavaComment: `/**
+ * src/main/java/Main.java
+ *
+ * Connects to:
+ * ${connectionString}
+ *
+ * Run:
+ * ./gradlew run
+ */`,
+          mainJavaCode: `import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+import org.bson.Document;
+
+public class Main {
+    public static void main(String[] args) {
+        try (MongoClient client = MongoClients.create("${connectionString}")) {
+            MongoDatabase db = client.getDatabase("${database}");
+
+            // Adjust the query below to use the Java MongoDB driver syntax
+            // Example: find all documents in a collection
+            MongoCollection<Document> collection = db.getCollection("your_collection");
+            for (Document doc : collection.find()) {
+                System.out.println(doc.toJson());
+            }
+        } catch (Exception e) {
+            System.out.println("Failed to connect: " + e.getMessage());
+        }
+    }
+}`,
+        });
       default:
         return ``;
     }
