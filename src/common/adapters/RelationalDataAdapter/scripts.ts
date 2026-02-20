@@ -1,6 +1,6 @@
 import qs from "qs";
 import BaseDataAdapter from "src/common/adapters/BaseDataAdapter/index";
-import BaseDataScript, { getDivider } from "src/common/adapters/BaseDataAdapter/scripts";
+import BaseDataScript, { buildJavaGradleSnippet, getDivider } from "src/common/adapters/BaseDataAdapter/scripts";
 import { escapeSQLValue, isValueNumber } from "src/frontend/utils/formatter";
 import { SqlAction } from "typings";
 
@@ -831,6 +831,126 @@ with engine.connect() as con:
   for row in rs:
     print(row)
         `.trim();
+      case "java": {
+        let jdbcUrl = "";
+        let gradleDep = "";
+        let jdbcDriverClass = "";
+        let dbDescription = "";
+
+        switch (connection.dialect) {
+          case "sqlite":
+            jdbcUrl = `jdbc:sqlite:${connectionString.replace("sqlite://", "")}`;
+            gradleDep = `    implementation 'org.xerial:sqlite-jdbc:3.45.1.0'`;
+            jdbcDriverClass = "org.sqlite.JDBC";
+            dbDescription = jdbcUrl;
+            break;
+          case "mysql":
+            jdbcUrl = `jdbc:${connectionString}`;
+            gradleDep = `    implementation 'com.mysql:mysql-connector-j:8.3.0'`;
+            jdbcDriverClass = "com.mysql.cj.jdbc.Driver";
+            dbDescription = connectionString;
+            break;
+          case "mariadb":
+            jdbcUrl = `jdbc:${connectionString}`;
+            gradleDep = `    implementation 'org.mariadb.jdbc:mariadb-java-client:3.3.2'`;
+            jdbcDriverClass = "org.mariadb.jdbc.Driver";
+            dbDescription = connectionString;
+            break;
+          case "postgres":
+          case "postgresql": {
+            const pgConn = connectionString.replace(/^postgres(ql)?:\/\//, "");
+            jdbcUrl = `jdbc:postgresql://${pgConn}`;
+            gradleDep = `    implementation 'org.postgresql:postgresql:42.7.1'`;
+            jdbcDriverClass = "org.postgresql.Driver";
+            dbDescription = connectionString;
+            break;
+          }
+          case "mssql": {
+            // mssql://user:pass@host:port -> jdbc:sqlserver://host:port;user=...;password=...;databaseName=...
+            //@ts-ignore
+            const { username, password, hosts } = BaseDataAdapter.getConnectionParameters(connectionString);
+            const [{ host, port }] = hosts;
+            let mssqlJdbc = `jdbc:sqlserver://${host}:${port}`;
+            if (username) mssqlJdbc += `;user=${username}`;
+            if (password) mssqlJdbc += `;password=${password}`;
+            if (database) mssqlJdbc += `;databaseName=${database}`;
+            mssqlJdbc += `;encrypt=true;trustServerCertificate=true`;
+            jdbcUrl = mssqlJdbc;
+            gradleDep = `    implementation 'com.microsoft.sqlserver:mssql-jdbc:12.4.2.jre11'`;
+            jdbcDriverClass = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
+            dbDescription = connectionString;
+            break;
+          }
+          default:
+            return "";
+        }
+
+        const escapedSql = sql.replace(/"/g, '\\"');
+
+        return buildJavaGradleSnippet({
+          connectDescription: dbDescription,
+          gradleDep,
+          mainJavaComment: `/**
+ * src/main/java/Main.java
+ *
+ * Connects to:
+ * ${dbDescription}
+ *
+ * This example:
+ * - Connects to your DB
+ * - Runs the query and prints results
+ * - Does NOT modify anything (unless your query does)
+ *
+ * Run:
+ * ./gradlew run
+ */`,
+          mainJavaCode: `import java.sql.*;
+
+public class Main {
+
+    private static final String DB_URL =
+            "${jdbcUrl}";
+
+    public static void main(String[] args) {
+        try (Connection conn = DriverManager.getConnection(DB_URL)) {
+
+            if (conn != null) {
+                System.out.println("Connected to: " + DB_URL);
+                runQuery(conn);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void runQuery(Connection conn) throws SQLException {
+        String sql = "${escapedSql}";
+
+        try (Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+
+            ResultSetMetaData meta = rs.getMetaData();
+            int columnCount = meta.getColumnCount();
+
+            // Print column headers
+            for (int i = 1; i <= columnCount; i++) {
+                System.out.print(meta.getColumnName(i) + "\\t");
+            }
+            System.out.println();
+
+            // Print rows
+            while (rs.next()) {
+                for (int i = 1; i <= columnCount; i++) {
+                    System.out.print(rs.getString(i) + "\\t");
+                }
+                System.out.println();
+            }
+        }
+    }
+}`,
+        });
+      }
       default:
         return "";
     }

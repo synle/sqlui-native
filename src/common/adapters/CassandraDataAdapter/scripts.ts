@@ -1,4 +1,4 @@
-import BaseDataScript, { getDivider } from "src/common/adapters/BaseDataAdapter/scripts";
+import BaseDataScript, { buildJavaGradleSnippet, getDivider } from "src/common/adapters/BaseDataAdapter/scripts";
 import { getClientOptions } from "src/common/adapters/CassandraDataAdapter/utils";
 import { escapeSQLValue, isValueBoolean, isValueNumber } from "src/frontend/utils/formatter";
 import { SqlAction, SqluiCore } from "typings";
@@ -449,6 +449,45 @@ for row in rows:
 
         `.trim();
 
+      case "java": {
+        const escapedSql = sql.replace(/"/g, '\\"').replace(/\n/g, "\\n");
+        return buildJavaGradleSnippet({
+          connectDescription: `Cassandra at ${clientOptions.host}:${clientOptions.port}`,
+          gradleDep: `    implementation 'com.datastax.oss:java-driver-core:4.17.0'`,
+          mainJavaComment: `/**
+ * src/main/java/Main.java
+ *
+ * Connects to:
+ * Cassandra at ${clientOptions.host}:${clientOptions.port}
+ *
+ * Run:
+ * ./gradlew run
+ */`,
+          mainJavaCode: `import com.datastax.oss.driver.api.core.CqlSession;
+import com.datastax.oss.driver.api.core.cql.ResultSet;
+import com.datastax.oss.driver.api.core.cql.Row;
+import java.net.InetSocketAddress;
+
+public class Main {
+    public static void main(String[] args) {
+        try (CqlSession session = CqlSession.builder()
+                .addContactPoint(new InetSocketAddress("${clientOptions.host}", ${clientOptions.port}))
+                ${clientOptions.authProvider ? `.withAuthCredentials("${clientOptions.authProvider.username}", "${clientOptions.authProvider.password}")` : "// .withAuthCredentials(\"username\", \"password\")"}
+                .withLocalDatacenter("datacenter1")
+                .withKeyspace("${database || "some_keyspace"}")
+                .build()) {
+
+            ResultSet rs = session.execute("${escapedSql}");
+            for (Row row : rs) {
+                System.out.println(row.getFormattedContents());
+            }
+        } catch (Exception e) {
+            System.out.println("Failed to connect: " + e.getMessage());
+        }
+    }
+}`,
+        });
+      }
       default:
         return ``;
     }
