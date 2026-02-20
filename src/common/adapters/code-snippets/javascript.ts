@@ -1,7 +1,6 @@
 export const relational = `\
 // install these extra dependencies if needed
-// npm install --save sequelize
-{{{deps}}}
+// npm install --save sequelize {{{deps}}}
 const {Sequelize} = require('sequelize');
 
 async function _doWork(){

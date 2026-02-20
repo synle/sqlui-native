@@ -215,9 +215,7 @@ export default class RelationalDataAdapter extends BaseDataAdapter implements ID
         {
           const connection = this.getConnection(database);
           try {
-            const foreignKeyReferences = (await connection
-              .getQueryInterface()
-              .getForeignKeyReferencesForTable(table)) as any[];
+            const foreignKeyReferences = (await connection.getQueryInterface().getForeignKeyReferencesForTable(table)) as any[];
 
             for (const foreignKeyReference of foreignKeyReferences) {
               const fromTableName = foreignKeyReference.tableName;

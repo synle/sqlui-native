@@ -75,6 +75,26 @@ const ALL_COMMAND_PALETTE_OPTIONS: CommandOption[] = [
     data: "simple",
   },
   {
+    event: "clientEvent/changeAnimationMode/system",
+    label: "Use system's animation setting",
+  },
+  {
+    event: "clientEvent/changeAnimationMode/off",
+    label: "Prefer animation off",
+  },
+  {
+    event: "clientEvent/changeAnimationMode/on",
+    label: "Prefer animation on",
+  },
+  {
+    event: "clientEvent/changeLayoutMode/comfortable",
+    label: "Use comfortable layout",
+  },
+  {
+    event: "clientEvent/changeLayoutMode/compact",
+    label: "Use compact layout",
+  },
+  {
     event: "clientEvent/changeWrapMode",
     label: "Enable word wrap",
     data: "wrap",
@@ -162,12 +182,10 @@ export default function CommandPalette(props: CommandPaletteProps): JSX.Element 
   const [options, setOptions] = useState<Command[]>([]);
   const [allOptions, setAllOptions] = useState<Command[]>([]);
   const refOption = useRef<HTMLDivElement>(null);
-  const { isLoading: loadingActiveQuery, query: activeQuery } = useActiveConnectionQuery();
-  const { isLoading: loadingQueries, queries } = useConnectionQueries();
-  const { isLoading: loadingActiveConnection, data: activeConnection } = useGetConnectionById(activeQuery?.connectionId);
-  const { data: connections, isLoading: loadingConnections } = useGetConnections();
-
-  const isLoading = loadingActiveQuery || loadingQueries || loadingActiveConnection || loadingConnections;
+  const { query: activeQuery } = useActiveConnectionQuery();
+  const { queries } = useConnectionQueries();
+  const { data: activeConnection } = useGetConnectionById(activeQuery?.connectionId);
+  const { data: connections } = useGetConnections();
 
   useEffect(() => {
     let newAllOptions: Command[] = [];
@@ -267,10 +285,6 @@ export default function CommandPalette(props: CommandPaletteProps): JSX.Element 
       (refOption?.current?.querySelectorAll(".CommandPalette__Option")[nextIndex] as HTMLButtonElement)?.focus();
     }
   };
-
-  if (isLoading) {
-    return null;
-  }
 
   let optionsToShow = options.sort((a, b) => (a.label || "").localeCompare(b.label || ""));
 

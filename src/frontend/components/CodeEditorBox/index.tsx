@@ -29,13 +29,16 @@ export type CodeEditorProps = {
   editorRef?: React.RefObject<EditorRef>;
   required?: boolean;
   height?: string;
+
+  hideEditorSize?: boolean;
+  hideEditorSyntax?: boolean;
 };
 
 export type DecoratedEditorProps = CodeEditorProps & {
   onBlur?: (newValue: string) => void;
 };
 
-const DEFAULT_EDITOR_HEIGHT = "20vh";
+const DEFAULT_EDITOR_HEIGHT = "30vh";
 
 export default function CodeEditorBox(props: CodeEditorProps): JSX.Element | null {
   const globalWordWrap = useWordWrapSetting();
@@ -43,6 +46,9 @@ export default function CodeEditorBox(props: CodeEditorProps): JSX.Element | nul
   const [languageMode, setLanguageMode] = useState<string | undefined>();
   const [height, setHeight] = useState<string>(props.height || DEFAULT_EDITOR_HEIGHT);
   const editorModeToUse = useEditorModeSetting();
+
+  const hideEditorSize = !!props.hideEditorSize || props.height || false;
+  const hideEditorSyntax = !!props.hideEditorSyntax || false;
 
   const onChange = (newValue: string) => {
     props.onChange && props.onChange(newValue);
@@ -70,7 +76,7 @@ export default function CodeEditorBox(props: CodeEditorProps): JSX.Element | nul
     </ToggleButton>
   );
 
-  const contentLanguageModeSelection = (
+  const contentLanguageModeSelection = !hideEditorSyntax && (
     <>
       <Select label="Syntax" onChange={(newLanguage) => onSetLanguageMode(newLanguage)} value={languageMode}>
         <option value="">Auto Detected ({props.language})</option>
@@ -80,12 +86,12 @@ export default function CodeEditorBox(props: CodeEditorProps): JSX.Element | nul
     </>
   );
 
-  const contentHeightSelection = (
+  const contentHeightSelection = !hideEditorSize && (
     <>
       <Select label="Editor Size" onChange={(newHeight) => onSetHeight(newHeight)} value={height}>
-        <option value="20vh">Small</option>
-        <option value="40vh">Medium</option>
-        <option value="60vh">Large</option>
+        <option value={DEFAULT_EDITOR_HEIGHT}>Small</option>
+        <option value="45vh">Medium</option>
+        <option value="70vh">Large</option>
       </Select>
     </>
   );

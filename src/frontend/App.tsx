@@ -1,5 +1,4 @@
 import Box from "@mui/material/Box";
-import { createTheme } from "@mui/material/styles";
 import { Route, Routes } from "react-router-dom";
 import { useEffect, useRef } from "react";
 import AppHeader from "src/frontend/components/AppHeader";
@@ -7,7 +6,6 @@ import MissionControl, { useCommands } from "src/frontend/components/MissionCont
 import SessionManager from "src/frontend/components/SessionManager";
 import dataApi from "src/frontend/data/api";
 import { useGetCurrentSession, useGetSessions, useUpsertSession } from "src/frontend/hooks/useSession";
-import { useAnimationModeSetting, useDarkModeSetting } from "src/frontend/hooks/useSetting";
 import useToaster, { ToasterHandler } from "src/frontend/hooks/useToaster";
 import BookmarksPage from "src/frontend/views/BookmarksPage";
 import EditConnectionPage from "src/frontend/views/EditConnectionPage";
@@ -48,19 +46,6 @@ export default function App() {
       });
     }
   }, [globalMonaco]);
-  const myTheme = createTheme({
-    // Theme settings
-    palette: {
-      mode: useDarkModeSetting(),
-    },
-    components: {
-      MuiButtonBase: {
-        defaultProps: {
-          disableRipple: true,
-        },
-      },
-    },
-  });
 
   const onDrop = async (e: React.DragEvent) => {
     if (e.dataTransfer.items && e.dataTransfer.items.length === 1) {
@@ -109,7 +94,7 @@ export default function App() {
   return (
     <>
       <SessionManager>
-        <Box className="App" data-animation={useAnimationModeSetting() ? "on" : "off"} onDrop={onDrop} onDragOver={onDragOver}>
+        <Box className="App" onDrop={onDrop} onDragOver={onDragOver}>
           <Routes>
             <Route
               path="/"
