@@ -106,7 +106,7 @@ describe("sqlite", () => {
 
   test("Execute Update", async () => {
     try {
-      const resp = await adapter.execute(`UPDATE artists SET name = 'AC/DC' WHERE ArtistId = '1'`);
+      await adapter.execute(`UPDATE artists SET name = 'AC/DC' WHERE ArtistId = '1'`);
       expect(1).toBe(1);
     } catch (err) {
       expect(err).toBeUndefined();

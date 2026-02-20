@@ -379,7 +379,7 @@ export class ConcreteDataScripts extends BaseDataScript {
     return [getDivider, getCreateConnectionDatabase];
   }
 
-  getSampleConnectionString(dialect) {
+  getSampleConnectionString() {
     return `cassandra://username:password@localhost:9042`;
   }
 

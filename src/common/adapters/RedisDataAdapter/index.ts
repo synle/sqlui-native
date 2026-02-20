@@ -53,7 +53,7 @@ export default class RedisDataAdapter extends BaseDataAdapter implements IDataAd
     ];
   }
 
-  async getTables(database?: string): Promise<SqluiCore.TableMetaData[]> {
+  async getTables(): Promise<SqluiCore.TableMetaData[]> {
     // TODO: this operation seems to work, but very slow
     // for now, we will just returned a hard coded value
 
@@ -65,11 +65,11 @@ export default class RedisDataAdapter extends BaseDataAdapter implements IDataAd
     ];
   }
 
-  async getColumns(table: string, database?: string): Promise<SqluiCore.ColumnMetaData[]> {
+  async getColumns(): Promise<SqluiCore.ColumnMetaData[]> {
     return [];
   }
 
-  async execute(sql: string, database?: string): Promise<SqluiCore.Result> {
+  async execute(sql: string): Promise<SqluiCore.Result> {
     let db: RedisClientType | undefined;
 
     try {

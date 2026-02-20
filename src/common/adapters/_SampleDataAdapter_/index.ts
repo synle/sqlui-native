@@ -23,7 +23,7 @@ export default class YOUR_ADAPTER_NAME extends BaseDataAdapter implements IDataA
     });
   }
 
-  private async closeConnection(client?: any) {
+  private async closeConnection() {
     try {
       // TODO: implement me
     } catch (err) {}
@@ -52,7 +52,7 @@ export default class YOUR_ADAPTER_NAME extends BaseDataAdapter implements IDataA
     ];
   }
 
-  async getTables(database?: string): Promise<SqluiCore.TableMetaData[]> {
+  async getTables(): Promise<SqluiCore.TableMetaData[]> {
     // TODO: implement me
     return [
       {
@@ -62,12 +62,12 @@ export default class YOUR_ADAPTER_NAME extends BaseDataAdapter implements IDataA
     ];
   }
 
-  async getColumns(table: string, database?: string): Promise<SqluiCore.ColumnMetaData[]> {
+  async getColumns(): Promise<SqluiCore.ColumnMetaData[]> {
     // TODO: implement me
     return [];
   }
 
-  async execute(sql: string, database?: string, table?: string): Promise<SqluiCore.Result> {
+  async execute(sql: string, database?: string): Promise<SqluiCore.Result> {
     try {
       if (!database) {
         throw "Database is a required field";

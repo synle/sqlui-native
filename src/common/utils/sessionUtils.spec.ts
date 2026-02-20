@@ -101,10 +101,9 @@ describe("sessionUtils", () => {
   test("getWindowIdBySessionId", async () => {
     expect(sessionUtils.get()).toEqual({});
 
-    let isSessionCreated = false;
-    isSessionCreated = sessionUtils.open(w1, s1);
-    isSessionCreated = sessionUtils.open(w2, s2);
-    isSessionCreated = sessionUtils.open(w3, s3);
+    sessionUtils.open(w1, s1);
+    sessionUtils.open(w2, s2);
+    sessionUtils.open(w3, s3);
 
     expect(sessionUtils.getWindowIdBySessionId(s1)).toEqual("window_1");
     expect(sessionUtils.getWindowIdBySessionId(s2)).toEqual("window_2");

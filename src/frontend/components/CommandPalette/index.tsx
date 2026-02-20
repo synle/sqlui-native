@@ -180,7 +180,7 @@ const ALL_COMMAND_PALETTE_OPTIONS: CommandOption[] = [
 export default function CommandPalette(props: CommandPaletteProps): JSX.Element | null {
   const [text, setText] = useState("");
   const [options, setOptions] = useState<Command[]>([]);
-  const [allOptions, setAllOptions] = useState<Command[]>([]);
+  const [, setAllOptions] = useState<Command[]>([]);
   const refOption = useRef<HTMLDivElement>(null);
   const { query: activeQuery } = useActiveConnectionQuery();
   const { queries } = useConnectionQueries();
@@ -287,17 +287,6 @@ export default function CommandPalette(props: CommandPaletteProps): JSX.Element 
   };
 
   let optionsToShow = options.sort((a, b) => (a.label || "").localeCompare(b.label || ""));
-
-  const getFormattedLabel = (label: string) => {
-    if (text) {
-      const res = fuzzysort.single(text, label);
-      if (res) {
-        return fuzzysort.highlight(res, '<span class="CommandPalette__Highlight">', "</span>") || "";
-      }
-    }
-
-    return label;
-  };
 
   return (
     <section ref={refOption} onKeyDown={(e) => onTextboxKeyDown(e)}>

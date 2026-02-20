@@ -3,8 +3,6 @@ import IconButton from "@mui/material/IconButton";
 import { useSnackbar } from "notistack";
 import { getGeneratedRandomId } from "src/frontend/utils/commonUtils";
 
-const QUERY_KEY_TOASTS = "toasts";
-
 type CoreToasterProps = {
   message: string | JSX.Element;
   autoHideDuration?: number;
@@ -25,7 +23,7 @@ export default function useToaster() {
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
   const add = (props: ToasterProps): Promise<ToasterHandler> => {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       const toastId = props.id || getGeneratedRandomId(`toasterId`);
 
       enqueueSnackbar(props.message, {
@@ -53,7 +51,7 @@ export default function useToaster() {
   };
 
   const dismiss = (toastId: string, dismissDelay?: number): Promise<void> => {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       setTimeout(() => {
         closeSnackbar(toastId);
         resolve();

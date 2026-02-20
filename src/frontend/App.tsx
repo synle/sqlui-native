@@ -5,7 +5,7 @@ import AppHeader from "src/frontend/components/AppHeader";
 import MissionControl, { useCommands } from "src/frontend/components/MissionControl";
 import SessionManager from "src/frontend/components/SessionManager";
 import dataApi from "src/frontend/data/api";
-import { useGetCurrentSession, useGetSessions, useUpsertSession } from "src/frontend/hooks/useSession";
+import { useGetSessions } from "src/frontend/hooks/useSession";
 import useToaster, { ToasterHandler } from "src/frontend/hooks/useToaster";
 import BookmarksPage from "src/frontend/views/BookmarksPage";
 import EditConnectionPage from "src/frontend/views/EditConnectionPage";
@@ -26,9 +26,7 @@ function PageLayout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
-  const { data: sessions, isLoading: loadingSessions } = useGetSessions();
-  const { data: currentSession, isLoading: loadingCurrentSession } = useGetCurrentSession();
-  const { mutateAsync: upsertSession } = useUpsertSession();
+  useGetSessions();
   const { selectCommand } = useCommands();
   const { add: addToast } = useToaster();
   const toasterRef = useRef<ToasterHandler | undefined>();

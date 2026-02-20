@@ -10,11 +10,11 @@ export const tableCellHeight = 35;
 
 export const tableCellWidth = 160;
 
-export const StyledDivContainer = styled("div")(({ theme }) => ({}));
+export const StyledDivContainer = styled("div")(() => ({}));
 
 const StyledColumnResizer = styled(Bar, {
   shouldForwardProp: (prop) => prop !== "isResizing",
-})<{ isResizing?: boolean }>(({ theme, isResizing }) => ({
+})<{ isResizing?: boolean }>(({ isResizing }) => ({
   position: "absolute",
   right: 0,
   top: 0,
@@ -43,7 +43,7 @@ export function ColumnResizer({ isResizing, onMouseDown, onTouchStart, ...rest }
   return <StyledColumnResizer size={5} isResizing={isResizing} onMouseDown={handleMouseDown} onTouchStart={handleTouchStart} {...rest} />;
 }
 
-export const StyledDivValueCell = styled("div")(({ theme }) => ({
+export const StyledDivValueCell = styled("div")(() => ({
   flexShrink: 0,
   paddingInline: "0.5rem",
   display: "flex",
@@ -93,13 +93,13 @@ export const StyledDivContentRow = styled("div")(({ theme }) => ({
   },
 }));
 
-export const StyledDivHeaderCell = styled("div")(({ theme }) => ({
+export const StyledDivHeaderCell = styled("div")(() => ({
   flexShrink: 0,
   paddingInline: "0.5rem",
   position: "relative",
 }));
 
-export const StyledDivHeaderCellLabel = styled("div")(({ theme }) => ({
+export const StyledDivHeaderCellLabel = styled("div")(() => ({
   display: "flex",
   alignItems: "center",
   "> span": {

@@ -11,7 +11,7 @@ type ConnectionRetryAlertProps = {
 export default function ConnectionRetryAlert(props: ConnectionRetryAlertProps): JSX.Element | null {
   const { connectionId } = props;
   const [retrying, setRetrying] = useState(false);
-  const { mutateAsync: reconnectConnection, isLoading: reconnecting } = useRetryConnection();
+  const { mutateAsync: reconnectConnection } = useRetryConnection();
   const { add: addToast } = useToaster();
 
   const onReconnect = async (connectionId: string) => {

@@ -3,7 +3,6 @@ import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import BackupIcon from "@mui/icons-material/Backup";
 import UnfoldLessIcon from "@mui/icons-material/UnfoldLess";
-import { Button } from "@mui/material";
 import Box from "@mui/material/Box";
 import { useNavigate } from "react-router-dom";
 import { useCommands } from "src/frontend/components/MissionControl";

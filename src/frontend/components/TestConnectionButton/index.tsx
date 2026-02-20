@@ -1,5 +1,4 @@
 import { Button } from "@mui/material";
-import { useState } from "react";
 import { useTestConnection } from "src/frontend/hooks/useConnection";
 import useToaster from "src/frontend/hooks/useToaster";
 import { SqluiCore } from "typings";
@@ -9,7 +8,6 @@ type TestConnectionButtonProps = {
 };
 
 export default function TestConnectionButton(props: TestConnectionButtonProps): JSX.Element | null {
-  const [message, setMessage] = useState("");
   const { mutateAsync: testConnection } = useTestConnection();
   const { add: addToast, dismiss: dismissToast } = useToaster();
   const toastId = `toast.connectionCheck.${props.connection.connection}`;

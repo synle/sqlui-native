@@ -34,7 +34,6 @@ type ModalActionDialog = ModalInput & {
 
 type ActionDialog = AlertActionDialog | ConfirmActionDialog | PromptActionDialog | ChoiceActionDialog | ModalActionDialog;
 
-const QUERY_KEY_ACTION_DIALOGS = "actionDialogs";
 let _actionDialogs: ActionDialog[] = [];
 
 //
@@ -55,8 +54,6 @@ export function useActionDialogs() {
 
   const prompt = (props: PromptInput): Promise<string | undefined> => {
     return new Promise((resolve, reject) => {
-      const { message, value, isLongPrompt } = props;
-
       const newActionDialog: ActionDialog = {
         ...props,
         type: "prompt",
@@ -105,7 +102,7 @@ export function useActionDialogs() {
   };
 
   const alert = (message: string): Promise<void> => {
-    return new Promise((resolve, reject) => {
+    return new Promise(() => {
       const newActionDialog: ActionDialog = {
         type: "alert",
         message,
@@ -117,7 +114,7 @@ export function useActionDialogs() {
   };
 
   const modal = (props: ModalInput): Promise<void> => {
-    return new Promise((resolve, reject) => {
+    return new Promise(() => {
       const newActionDialog: ActionDialog = {
         type: "modal",
         onSubmit: () => {},

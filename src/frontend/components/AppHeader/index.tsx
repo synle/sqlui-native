@@ -17,17 +17,15 @@ import Toolbar from "@mui/material/Toolbar";
 import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
 import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import DropdownButton from "src/frontend/components/DropdownButton";
 import { useCommands } from "src/frontend/components/MissionControl";
-import { useGetCurrentSession, useGetSessions } from "src/frontend/hooks/useSession";
+import { useGetCurrentSession } from "src/frontend/hooks/useSession";
 import appPackage from "src/package.json";
 
 export default function AppHeader() {
-  const [open, setOpen] = useState(false);
   const navigate = useNavigate();
-  const { data: sessions, isLoading } = useGetSessions();
-  const { data: currentSession, isLoading: loadingCurrentSession } = useGetCurrentSession();
+  const { data: currentSession, isLoading } = useGetCurrentSession();
   const { selectCommand } = useCommands();
 
   const options = [
@@ -138,13 +136,7 @@ export default function AppHeader() {
           </Typography>
         </Tooltip>
 
-        <DropdownButton
-          id="session-action-split-button"
-          options={options}
-          onToggle={(newOpen) => setOpen(newOpen)}
-          isLoading={isLoading}
-          maxHeight="500px"
-        >
+        <DropdownButton id="session-action-split-button" options={options} isLoading={isLoading} maxHeight="500px">
           <IconButton aria-label="Table Actions" color="inherit">
             <MenuIcon fontSize="inherit" color="inherit" />
           </IconButton>

@@ -6,7 +6,7 @@ import ReactDOM from "react-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { HashRouter, Route, Routes } from "react-router-dom";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import App from "src/frontend/App";
 import ActionDialogs from "src/frontend/components/ActionDialogs";
 import ElectronEventListener from "src/frontend/components/ElectronEventListener";
