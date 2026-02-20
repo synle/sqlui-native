@@ -1,6 +1,6 @@
 import Alert from "@mui/material/Alert";
 import CircularProgress from "@mui/material/CircularProgress";
-import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useCallback, useLayoutEffect, useRef } from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { useLayoutModeSetting } from "src/frontend/hooks/useSetting";
 import { TreeRowRenderer } from "./TreeRowRenderer";
@@ -16,7 +16,6 @@ export default function VirtualizedConnectionTree() {
   const layoutMode = useLayoutModeSetting();
   const isCompact = layoutMode === "compact";
   const rowHeight = isCompact ? ROW_HEIGHT_COMPACT : ROW_HEIGHT_DEFAULT;
-  const [transitioning, setTransitioning] = useState(false);
 
   const virtualizer = useVirtualizer<HTMLDivElement, HTMLDivElement>({
     count: rows.length,
@@ -82,7 +81,7 @@ export default function VirtualizedConnectionTree() {
           return (
             <div
               key={row.key}
-              ref={transitioning ? undefined : virtualizer.measureElement}
+              ref={virtualizer.measureElement}
               data-index={virtualItem.index}
               style={{
                 position: "absolute",

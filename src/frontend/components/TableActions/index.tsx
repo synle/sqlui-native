@@ -8,7 +8,6 @@ import { getTableActions, isDialectSupportVisualization } from "src/common/adapt
 import DropdownButton from "src/frontend/components/DropdownButton";
 import { useCommands } from "src/frontend/components/MissionControl";
 import { useGetColumns, useGetConnectionById } from "src/frontend/hooks/useConnection";
-import { useActiveConnectionQuery } from "src/frontend/hooks/useConnectionQuery";
 import { useQuerySizeSetting } from "src/frontend/hooks/useSetting";
 import { useTreeActions } from "src/frontend/hooks/useTreeActions";
 import { SqlAction } from "typings";
@@ -39,7 +38,6 @@ export default function TableActions(props: TableActionsProps): JSX.Element | nu
   const { data: connection, isLoading: loadingConnection } = useGetConnectionById(connectionId);
   const { data: columns, isLoading: loadingColumns } = useGetColumns(connectionId, databaseId, tableId);
 
-  const { query } = useActiveConnectionQuery();
   const dialect = connection?.dialect;
 
   const isLoading = loadingConnection || loadingColumns;

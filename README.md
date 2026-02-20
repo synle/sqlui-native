@@ -16,13 +16,13 @@ Refer to the following link for download information.
 
 ## Supported OS's
 
-- [Windows x64 / AMD64](https://synle.github.io/sqlui-native/installation#windows) (Tested on Windows 10 and 11)
+- [Windows x64 - AMD / Intel](https://synle.github.io/sqlui-native/installation#windows) (Tested on Windows 10 and 11)
 - [Windows ARM64](https://synle.github.io/sqlui-native/installation#windows)
 - [macOS Apple Silicon M-Series](https://synle.github.io/sqlui-native/installation#mac) (Tested on Mac OS Monterey and macOS 26) - See [quarantine troubleshooting](#mac-apple-silicon-m-series---app-is-damaged-error)
-- [macOS Intel x64](https://synle.github.io/sqlui-native/installation#mac)
-- [Debian / Ubuntu](https://synle.github.io/sqlui-native/installation#ubuntu--debian)
-- [Linux AppImage](https://synle.github.io/sqlui-native/installation#linux-appimage)
-- [Redhat / CentOS / Fedora](https://synle.github.io/sqlui-native/installation#redhat--centos--fedora) : Refer to this link for [Installation Instructions](https://synle.github.io/sqlui-native/installation)
+- [macOS Intel x64](https://synle.github.io/sqlui-native/installation#mac) (Tested on Mac OS Monterey)
+- [Linux AppImage](https://synle.github.io/sqlui-native/installation#linux-appimage) (Tested on Linux Mint)
+- [Debian - Ubuntu - Linux Mint](https://synle.github.io/sqlui-native/installation#ubuntu--debian)
+- [Redhat - CentOS - Fedora](https://synle.github.io/sqlui-native/installation#redhat--centos--fedora) : Refer to this link for [Installation Instructions](https://synle.github.io/sqlui-native/installation)
 - [Arch Linux](https://synle.github.io/sqlui-native/installation#arch-linux-with-pacman) (Tested on Steam Deck)
 
 ## Supported Database Adapters

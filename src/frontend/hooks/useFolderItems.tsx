@@ -82,7 +82,6 @@ export function useUpdateRecycleBinItem() {
 }
 
 export function useRestoreRecycleBinItem() {
-  const queryClient = useQueryClient();
   const navigate = useNavigate();
   const { mutateAsync: upsertConnection } = useUpsertConnection();
   const { mutateAsync: deleteRecyleBinItem } = useDeletedRecycleBinItem();

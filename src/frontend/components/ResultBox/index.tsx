@@ -21,7 +21,7 @@ type ResultBoxProps = {
 export default function ResultBox(props: ResultBoxProps): JSX.Element | null {
   const { selectCommand } = useCommands();
   const [tabIdx, setTabIdx] = useState(0);
-  const { query, executing, collapsed } = props;
+  const { query, executing } = props;
   const queryResult = query.result;
   const data = queryResult?.raw;
   const error = queryResult?.error;

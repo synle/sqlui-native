@@ -404,7 +404,7 @@ export class ConcreteDataScripts extends BaseDataScript {
     return [getDivider, getCreateConnectionDatabase];
   }
 
-  getDialectName(dialect) {
+  getDialectName() {
     return "Azure Cosmos DB";
   }
 

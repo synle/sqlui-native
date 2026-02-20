@@ -32,7 +32,7 @@ type TabsProps = {
 // these are drag and drop index
 let fromIdx: number | undefined, toIdx: number | undefined;
 
-const StyledTabs = styled("section")(({ theme }) => {
+const StyledTabs = styled("section")(() => {
   return {};
 });
 
@@ -42,8 +42,6 @@ export default function MyTabs(props: TabsProps): JSX.Element | null {
   const layoutMode = useLayoutModeSetting();
   const isCompact = layoutMode === "compact";
   const tabHeight = isCompact ? TAB_HEIGHT_COMPACT : TAB_HEIGHT_DEFAULT;
-
-  const visibleTab = tabContents[tabIdx];
 
   const tabKeys = props.tabKeys || [];
 

@@ -1,5 +1,4 @@
 import Chip from "@mui/material/Chip";
-import Table from "@mui/material/Table";
 import { useMemo } from "react";
 import { ColumnDef } from "@tanstack/react-table";
 import LegacyDataTable from "src/frontend/components/DataTable/LegacyDataTable";
@@ -39,7 +38,7 @@ export function DataTableWithJSONList(props: DataTableWithJSONListProps) {
   const tableRenderer = useTableRenderer();
   const isAdvancedTableRenderer = tableRenderer === "advanced";
 
-  let hasRawJson = useMemo(() => {
+  useMemo(() => {
     for (const value of data) {
       if (value !== null) {
         for (const columnValue of Object.values(value)) {

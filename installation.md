@@ -53,7 +53,7 @@ xattr -cr /Applications/sqlui-native.app
 
 After running the command, you should be able to open sqlui-native normally.
 
-## Ubuntu / Debian
+## Ubuntu - Debian
 
 - %download-link-ubuntu%
 - Run the following shell command to install the above `.deb`
@@ -66,7 +66,7 @@ sudo dpkg -i sqlui-native*.deb
 
 ![image](https://user-images.githubusercontent.com/3792401/153638017-85896932-65b1-4670-9a05-b81bcb858d51.png)
 
-## Redhat / CentOS / Fedora
+## Redhat - CentOS - Fedora
 
 - Download the above `.rpm` file
 - Run the following shell command to install the above `.rpm`

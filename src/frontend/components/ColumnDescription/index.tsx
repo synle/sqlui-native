@@ -23,7 +23,7 @@ type ColumnDescriptionProps = {
 
 export default function ColumnDescription(props: ColumnDescriptionProps): JSX.Element | null {
   const { databaseId, connectionId, tableId } = props;
-  const { query: activeQuery } = useActiveConnectionQuery();
+  useActiveConnectionQuery();
   const { data: columns, isLoading: loadingColumns, isError } = useGetColumns(connectionId, databaseId, tableId);
   const { visibles, onToggle } = useShowHide();
   const keyShowAllColumns = [connectionId, databaseId, tableId, "__ShowAllColumns__"].join(" > ");
@@ -61,7 +61,7 @@ export default function ColumnDescription(props: ColumnDescriptionProps): JSX.El
   return (
     <>
       {columns
-        .filter((column, idx) => showAllColumns || idx <= MAX_COLUMN_SIZE_TO_SHOW)
+        .filter((_, idx) => showAllColumns || idx <= MAX_COLUMN_SIZE_TO_SHOW)
         .map((column) => {
           const key = [connectionId, databaseId, tableId, column.name].join(" > ");
           const isSelected = visibles[key];

@@ -13,7 +13,6 @@ export function useGetDataSnapshot(dataSnapshotId?: string) {
 }
 
 export function useAddDataSnapshot() {
-  const queryClient = useQueryClient();
   return useMutation<
     SqluiCore.DataSnapshot,
     void,

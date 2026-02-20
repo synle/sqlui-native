@@ -113,7 +113,7 @@ function setupMenu() {
           id: "menu-connection-new",
           label: "New Connection",
           accelerator: isMac ? "Cmd+N" : "Ctrl+N",
-          click: async (item, win) => sendMessage(win as BrowserWindow, "clientEvent/connection/new"),
+          click: async (...[, win]) => sendMessage(win as BrowserWindow, "clientEvent/connection/new"),
         },
         {
           type: "separator",
@@ -122,20 +122,20 @@ function setupMenu() {
           id: "menu-import",
           label: "Import",
           accelerator: isMac ? "Cmd+O" : "Ctrl+O",
-          click: async (item, win) => sendMessage(win as BrowserWindow, "clientEvent/import"),
+          click: async (...[, win]) => sendMessage(win as BrowserWindow, "clientEvent/import"),
         },
         {
           id: "menu-export",
           label: "Export",
           accelerator: isMac ? "Cmd+S" : "Ctrl+S",
-          click: async (item, win) => sendMessage(win as BrowserWindow, "clientEvent/exportAll"),
+          click: async (...[, win]) => sendMessage(win as BrowserWindow, "clientEvent/exportAll"),
         },
         {
           type: "separator",
         },
         {
           label: "Settings",
-          click: async (item, win) => sendMessage(win as BrowserWindow, "clientEvent/showSettings"),
+          click: async (...[, win]) => sendMessage(win as BrowserWindow, "clientEvent/showSettings"),
         },
         {
           type: "separator",
@@ -150,18 +150,18 @@ function setupMenu() {
           id: "menu-query-new",
           label: "New Query",
           accelerator: isMac ? "Cmd+T" : "Ctrl+T",
-          click: async (item, win) => sendMessage(win as BrowserWindow, "clientEvent/query/new"),
+          click: async (...[, win]) => sendMessage(win as BrowserWindow, "clientEvent/query/new"),
         },
         {
           id: "menu-query-rename",
           label: "Rename Query",
           accelerator: "F2",
-          click: async (item, win) => sendMessage(win as BrowserWindow, "clientEvent/query/rename"),
+          click: async (...[, win]) => sendMessage(win as BrowserWindow, "clientEvent/query/rename"),
         },
         {
           id: "menu-query-help",
           label: "Query Help",
-          click: async (item, win) => sendMessage(win as BrowserWindow, "clientEvent/showQueryHelp"),
+          click: async (...[, win]) => sendMessage(win as BrowserWindow, "clientEvent/showQueryHelp"),
         },
         {
           type: "separator",
@@ -170,13 +170,13 @@ function setupMenu() {
           id: "menu-query-prev",
           label: "Prev Query",
           accelerator: isMac ? "Cmd+Shift+[" : "Alt+Shift+[",
-          click: async (item, win) => sendMessage(win as BrowserWindow, "clientEvent/query/showPrev"),
+          click: async (...[, win]) => sendMessage(win as BrowserWindow, "clientEvent/query/showPrev"),
         },
         {
           id: "menu-query-next",
           label: "Next Query",
           accelerator: isMac ? "Cmd+Shift+]" : "Alt+Shift+]",
-          click: async (item, win) => sendMessage(win as BrowserWindow, "clientEvent/query/showNext"),
+          click: async (...[, win]) => sendMessage(win as BrowserWindow, "clientEvent/query/showNext"),
         },
         {
           type: "separator",
@@ -185,7 +185,7 @@ function setupMenu() {
           id: "menu-query-close",
           label: "Close Query",
           accelerator: isMac ? "Cmd+W" : "Ctrl+W",
-          click: async (item, win) => sendMessage(win as BrowserWindow, "clientEvent/query/closeCurrentlySelected"),
+          click: async (...[, win]) => sendMessage(win as BrowserWindow, "clientEvent/query/closeCurrentlySelected"),
         },
       ],
     },
@@ -195,17 +195,17 @@ function setupMenu() {
         {
           id: "menu-session-new",
           label: "New Session",
-          click: async (item, win) => sendMessage(win as BrowserWindow, "clientEvent/session/new"),
+          click: async (...[, win]) => sendMessage(win as BrowserWindow, "clientEvent/session/new"),
         },
         {
           id: "menu-session-rename",
           label: "Rename Session",
-          click: async (item, win) => sendMessage(win as BrowserWindow, "clientEvent/session/rename"),
+          click: async (...[, win]) => sendMessage(win as BrowserWindow, "clientEvent/session/rename"),
         },
         {
           id: "menu-session-switch",
           label: "Switch Session",
-          click: async (item, win) => sendMessage(win as BrowserWindow, "clientEvent/session/switch"),
+          click: async (...[, win]) => sendMessage(win as BrowserWindow, "clientEvent/session/switch"),
         },
         {
           type: "separator",
@@ -213,7 +213,7 @@ function setupMenu() {
         {
           id: "menu-session-delete",
           label: "Delete Session",
-          click: async (item, win) => sendMessage(win as BrowserWindow, "clientEvent/session/delete"),
+          click: async (...[, win]) => sendMessage(win as BrowserWindow, "clientEvent/session/delete"),
         },
       ],
     },
@@ -248,7 +248,7 @@ function setupMenu() {
           accelerator: isMac ? "Cmd+P" : "Ctrl+P",
           visible: false,
           acceleratorWorksWhenHidden: true,
-          click: async (item, win) => sendMessage(win as BrowserWindow, "clientEvent/showCommandPalette"),
+          click: async (...[, win]) => sendMessage(win as BrowserWindow, "clientEvent/showCommandPalette"),
         },
       ],
     },
@@ -263,7 +263,7 @@ function setupMenu() {
         },
         {
           label: "About sqlui-native (Check for update)",
-          click: async (item, win) => sendMessage(win as BrowserWindow, "clientEvent/checkForUpdate"),
+          click: async (...[, win]) => sendMessage(win as BrowserWindow, "clientEvent/checkForUpdate"),
         },
       ],
     },
@@ -311,7 +311,7 @@ ipcMain.handle("dark-mode:system", () => {
   nativeTheme.themeSource = "system";
 });
 
-ipcMain.on("sqluiNativeEvent/toggleMenus", (event, data) => {
+ipcMain.on("sqluiNativeEvent/toggleMenus", (...[, data]) => {
   const [enabled, ...targetMenuIds] = data;
   // console.log('>> Toggle Menus', enabled, targetMenuIds);
   for (const targetMenuId of targetMenuIds) {
@@ -329,7 +329,6 @@ ipcMain.on("sqluiNativeEvent/toggleMenus", (event, data) => {
 const _apiCache = {};
 ipcMain.on("sqluiNativeEvent/fetch", async (event, data) => {
   const { requestId, url, options } = data;
-  const responseId = `server response ${Date.now()}`;
 
   const method = (options.method || "get").toLowerCase();
 

@@ -10,15 +10,13 @@ import UnfoldMoreIcon from "@mui/icons-material/UnfoldMore";
 import LoadingButton from "@mui/lab/LoadingButton";
 import { Button } from "@mui/material";
 import Alert from "@mui/material/Alert";
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
 import CircularProgress from "@mui/material/CircularProgress";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
 import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import React, { useCallback, useLayoutEffect, useMemo, useRef, useState } from "react";
-import { getIsTableIdRequiredForQueryByDialect, getSyntaxModeByDialect, getTableActions } from "src/common/adapters/DataScriptFactory";
+import { getSyntaxModeByDialect, getTableActions } from "src/common/adapters/DataScriptFactory";
 import CodeEditorBox, { EditorRef } from "src/frontend/components/CodeEditorBox";
 import DropdownButton from "src/frontend/components/DropdownButton";
 import { useCommands } from "src/frontend/components/MissionControl";
@@ -43,7 +41,6 @@ type ConnectionActionsButtonProps = {
 function ConnectionActionsButton(props: ConnectionActionsButtonProps): JSX.Element | null {
   const { query } = props;
   const { databaseId, connectionId, tableId } = query;
-  const [open, setOpen] = useState(false);
   const querySize = useQuerySizeSetting();
 
   const { selectCommand } = useCommands();
@@ -54,8 +51,6 @@ function ConnectionActionsButton(props: ConnectionActionsButtonProps): JSX.Eleme
   const dialect = connection?.dialect;
 
   const isLoading = loadingConnection || loadingColumns;
-
-  const isTableIdRequiredForQuery = getIsTableIdRequiredForQueryByDialect(dialect);
 
   const actions = getTableActions({
     dialect,
@@ -88,13 +83,7 @@ function ConnectionActionsButton(props: ConnectionActionsButtonProps): JSX.Eleme
   }
 
   return (
-    <DropdownButton
-      id="session-action-split-button"
-      options={options}
-      onToggle={(newOpen) => setOpen(newOpen)}
-      isLoading={isLoading}
-      maxHeight="400px"
-    >
+    <DropdownButton id="session-action-split-button" options={options} isLoading={isLoading} maxHeight="400px">
       <IconButton aria-label="Table Actions" color="inherit">
         <MenuIcon fontSize="inherit" color="inherit" />
       </IconButton>
@@ -139,7 +128,7 @@ function CodeSnippetButton(props: QueryBoxProps) {
 export default function QueryBox(props: QueryBoxProps): JSX.Element | null {
   const { queryId } = props;
   const editorRef = useRef<EditorRef>();
-  const { query, onChange, onDelete, isLoading: loadingConnection } = useConnectionQuery(queryId);
+  const { query, onChange, isLoading: loadingConnection } = useConnectionQuery(queryId);
   const { mutateAsync: executeQuery } = useExecute();
   const [executing, setExecuting] = useState(false);
   const layoutMode = useLayoutModeSetting();

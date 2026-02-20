@@ -24,9 +24,7 @@ function useSettingChange() {
   return { settings, onSettingChange };
 }
 
-type SettingsProps = {};
-
-export default function Settings(props: SettingsProps): JSX.Element | null {
+export default function Settings(): JSX.Element | null {
   const { settings, onSettingChange } = useSettingChange();
   const querySize = useQuerySizeSetting();
 

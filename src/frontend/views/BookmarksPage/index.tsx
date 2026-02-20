@@ -1,6 +1,5 @@
 import StarIcon from "@mui/icons-material/Star";
 import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
 import { useEffect } from "react";
 import BookmarksItemList from "src/frontend/components/BookmarksItemList";
 import Breadcrumbs from "src/frontend/components/Breadcrumbs";
@@ -11,7 +10,7 @@ import { useTreeActions } from "src/frontend/hooks/useTreeActions";
 import LayoutTwoColumns from "src/frontend/layout/LayoutTwoColumns";
 
 export default function BookmarksPage() {
-  const { value: width, onChange: onSetWidth } = useSideBarWidthPreference();
+  useSideBarWidthPreference();
   const { setTreeActions } = useTreeActions();
 
   useEffect(() => {

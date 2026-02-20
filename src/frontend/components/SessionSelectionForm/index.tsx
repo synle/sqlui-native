@@ -9,7 +9,6 @@ import ListItem from "@mui/material/ListItem";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import TextField from "@mui/material/TextField";
-import { useNavigate } from "react-router-dom";
 import { useCommands } from "src/frontend/components/MissionControl";
 import { getRandomSessionId } from "src/frontend/data/session";
 import {
@@ -34,17 +33,14 @@ type SessionSelectionFormProps = {
 
 export default function SessionSelectionForm(props: SessionSelectionFormProps): JSX.Element | null {
   const { isFirstTime } = props;
-  const navigate = useNavigate();
   const { data: sessions, isLoading: loadingSessions } = useGetSessions();
   const { data: openedSessionIds, isLoading: loadingOpenedSessionIds } = useGetOpenedSessionIds();
-  const { data: currentSession, isLoading: loadingCurrentSession } = useGetCurrentSession();
+  const { data: currentSession } = useGetCurrentSession();
   const { mutateAsync: upsertSession } = useUpsertSession();
   const { mutateAsync: selectSession } = useSelectSession();
   const { selectCommand } = useCommands();
 
   const isLoading = loadingSessions || loadingOpenedSessionIds || loadingOpenedSessionIds;
-
-  const shouldShowRename = !isFirstTime;
 
   const onCreateNewSession = async (formEl: HTMLElement) => {
     const newSessionName = (formEl.querySelector("input") as HTMLInputElement).value;

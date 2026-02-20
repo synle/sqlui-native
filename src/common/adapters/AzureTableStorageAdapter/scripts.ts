@@ -295,11 +295,11 @@ export class ConcreteDataScripts extends BaseDataScript {
     return [];
   }
 
-  getDialectName(dialect) {
+  getDialectName() {
     return "Azure Table Storage";
   }
 
-  getSampleConnectionString(dialect) {
+  getSampleConnectionString() {
     return `aztable://DefaultEndpointsProtocol=https;AccountName=<your_account_name>;AccountKey=<your_account_key>;EndpointSuffix=core.windows.net`;
   }
 

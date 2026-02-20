@@ -1,7 +1,6 @@
 import Alert from "@mui/material/Alert";
 import CircularProgress from "@mui/material/CircularProgress";
 import { useEffect, useRef, useState } from "react";
-import { useQueryClient } from "@tanstack/react-query";
 import SessionSelectionModal from "src/frontend/components/SessionSelectionModal";
 import { setCurrentSessionId } from "src/frontend/data/session";
 import { useGetCurrentSession, useSelectSession } from "src/frontend/hooks/useSession";
@@ -13,8 +12,7 @@ type SessionManagerProps = {
 export default function SessionManager(props: SessionManagerProps): JSX.Element | null {
   const [status, setStatus] = useState<"pending_session" | "no_session" | "valid_session">("pending_session");
   const { data: currentSession, isLoading: loadingCurrentSession, refetch } = useGetCurrentSession();
-  const { mutateAsync: selectSession } = useSelectSession(true);
-  const queryClient = useQueryClient();
+  useSelectSession(true);
   const retryCountRef = useRef(0);
 
   useEffect(() => {

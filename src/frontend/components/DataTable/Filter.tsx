@@ -1,6 +1,6 @@
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
-import React, { useMemo } from "react";
+import { useMemo } from "react";
 import { Column } from "@tanstack/react-table";
 
 export function GlobalFilter(props: any) {

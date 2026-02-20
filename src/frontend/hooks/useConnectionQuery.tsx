@@ -6,8 +6,6 @@ import { useIsSoftDeleteModeSetting } from "src/frontend/hooks/useSetting";
 import { getGeneratedRandomId, getUpdatedOrdersForList } from "src/frontend/utils/commonUtils";
 import { SqluiCore, SqluiFrontend } from "typings";
 
-const QUERY_KEY_QUERIES = "queries";
-
 // connection queries
 let _connectionQueries: SqluiFrontend.ConnectionQuery[] = [];
 const TargetContext = createContext({
@@ -209,7 +207,7 @@ export function useConnectionQueries() {
         return false;
       });
     } else {
-      _connectionQueries = _connectionQueries.filter((q, idx) => {
+      _connectionQueries = _connectionQueries.filter((q) => {
         if (q.pinned) {
           return true;
         }

@@ -1,61 +1,30 @@
-set -e
+run_step() {
+  echo """
+===================================================
+# $1
+===================================================
+"""
+  eval "$1"
+}
 
 input_lower=$(echo "$1" | tr '[:upper:]' '[:lower:]')
 if [[ "$input_lower" == "true" || "$input_lower" == "1" ]]; then
-  do_npm_version_patch=1
+  # NOTE: used for deployment / packaging
+  run_step "npm ci || npm install"
+  run_step "npm version --no-git-tag-version patch"
+  run_step "node scripts/prebuild.js"
+  run_step "npm run build"
+  run_step "node scripts/postbuild.js"
+  # run_step "npm run test-ci"  # [Optional] here because we already run the test in prebuild
+  # run_step "npm run typecheck"  # [Optional] here because we already run the test in prebuild
 else
-  do_npm_version_patch=0
+  # NOTE: for prebuild, used to check everything
+  set -e
+  run_step "npm ci || npm install"
+  run_step "node scripts/prebuild.js"
+  run_step "npm run build"
+  run_step "node scripts/postbuild.js"
+  run_step "npm run test-ci"
+  run_step "npm run typecheck"
 fi
 
-echo """
-===================================================
-# do_npm_version_patch=$do_npm_version_patch
-===================================================
-"""
-
-
-echo """
-===================================================
-# npm install
-===================================================
-"""
-npm ci || npm install
-
-if [ "$do_npm_version_patch" -eq 1 ]; then
-    echo """
-===================================================
-# npm version --no-git-tag-version patch [Optional]
-===================================================
-    """
-    npm version --no-git-tag-version patch
-fi
-
-echo """
-===================================================
-# node scripts/prebuild.js
-===================================================
-"""
-node scripts/prebuild.js
-
-echo """
-===================================================
-# npm run build
-===================================================
-"""
-npm run build
-
-echo """
-===================================================
-# node scripts/postbuild.js
-===================================================
-"""
-node scripts/postbuild.js
-
-
-echo """
-===================================================
-# npm run test-ci && npm run typecheck
-===================================================
-"""
-npm run test-ci
-npm run typecheck

@@ -29,9 +29,8 @@ export default function SplitButton(props: SplitButtonProps): JSX.Element | null
   const { id, options, label } = props;
   const [open, setOpen] = React.useState(false);
   const anchorRef = React.useRef<HTMLDivElement>(null);
-  const [selectedIndex, setSelectedIndex] = React.useState(1);
 
-  const handleMenuItemClick = (event: React.MouseEvent<HTMLLIElement, MouseEvent>, index: number) => {
+  const handleMenuItemClick = (index: number) => {
     options[index].onClick();
     setOpen(false);
   };
@@ -55,7 +54,7 @@ export default function SplitButton(props: SplitButtonProps): JSX.Element | null
     popperBody = (
       <MenuList id={id}>
         {options.map((option, index) => (
-          <MenuItem key={option.label} onClick={(event) => handleMenuItemClick(event, index)}>
+          <MenuItem key={option.label} onClick={() => handleMenuItemClick(index)}>
             {!option.startIcon ? null : <ListItemIcon>{option.startIcon}</ListItemIcon>}
             <ListItemText sx={{ textAlign: "left" }}>{option.label}</ListItemText>
           </MenuItem>
