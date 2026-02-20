@@ -65,9 +65,14 @@ export default class CassandraDataAdapter extends BaseDataAdapter implements IDa
   }
 
   private async authenticateClient(client?: cassandra.Client) {
-    // TODO: To Be Implemented
     return new Promise<void>((resolve, reject) => {
+      const timeout = setTimeout(() => {
+        client?.shutdown();
+        reject("Connection Timeout");
+      }, 15000);
+
       client?.connect((err: unknown) => {
+        clearTimeout(timeout);
         if (err) {
           client?.shutdown();
           return reject(err);
@@ -82,18 +87,23 @@ export default class CassandraDataAdapter extends BaseDataAdapter implements IDa
   }
 
   async authenticate() {
-    await this.getConnection();
+    const client = await this.getConnection();
+    await client.shutdown();
   }
 
   async getDatabases(): Promise<SqluiCore.DatabaseMetaData[]> {
     const client = await this.getConnection();
 
-    //@ts-ignore
-    const keyspaces = Object.keys(client?.metadata?.keyspaces);
-    return keyspaces.map((keyspace) => ({
-      name: keyspace,
-      tables: [],
-    }));
+    try {
+      //@ts-ignore
+      const keyspaces = Object.keys(client?.metadata?.keyspaces);
+      return keyspaces.map((keyspace) => ({
+        name: keyspace,
+        tables: [],
+      }));
+    } finally {
+      await client.shutdown();
+    }
   }
 
   async getTables(database?: string): Promise<SqluiCore.TableMetaData[]> {

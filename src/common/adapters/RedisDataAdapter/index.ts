@@ -40,7 +40,8 @@ export default class RedisDataAdapter extends BaseDataAdapter implements IDataAd
   }
 
   async authenticate() {
-    await this.getConnection();
+    const client = await this.getConnection();
+    await this.closeConnection(client);
   }
 
   async getDatabases(): Promise<SqluiCore.DatabaseMetaData[]> {

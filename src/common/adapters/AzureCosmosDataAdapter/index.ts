@@ -11,6 +11,8 @@ const MAX_ITEM_COUNT_TO_SCAN = 5;
 export default class AzureCosmosDataAdapter extends BaseDataAdapter implements IDataAdapter {
   // https://docs.microsoft.com/en-us/azure/cosmos-db/sql/sql-api-nodejs-get-started?tabs=windows
 
+  private _client?: CosmosClient;
+
   constructor(connectionOption: string) {
     super(connectionOption);
   }
@@ -22,6 +24,7 @@ export default class AzureCosmosDataAdapter extends BaseDataAdapter implements I
         setTimeout(() => reject("Connection Timeout"), MAX_CONNECTION_TIMEOUT);
 
         const client = new CosmosClient(this.getConnectionString());
+        this._client = client;
 
         resolve(client);
       } catch (err) {
@@ -32,8 +35,8 @@ export default class AzureCosmosDataAdapter extends BaseDataAdapter implements I
 
   private async closeConnection() {
     try {
-      const client = await this.getConnection();
-      await client.dispose();
+      this._client?.dispose();
+      this._client = undefined;
     } catch (err) {}
   }
 
@@ -54,6 +57,8 @@ export default class AzureCosmosDataAdapter extends BaseDataAdapter implements I
         }
       } catch (err) {
         reject(err);
+      } finally {
+        await this.closeConnection();
       }
     });
   }
@@ -72,7 +77,7 @@ export default class AzureCosmosDataAdapter extends BaseDataAdapter implements I
     } catch (err) {
       return [];
     } finally {
-      this.closeConnection();
+      await this.closeConnection();
     }
   }
 
@@ -94,7 +99,7 @@ export default class AzureCosmosDataAdapter extends BaseDataAdapter implements I
     } catch (err) {
       return [];
     } finally {
-      this.closeConnection();
+      await this.closeConnection();
     }
   }
 
@@ -121,7 +126,7 @@ export default class AzureCosmosDataAdapter extends BaseDataAdapter implements I
     } catch (err) {
       return [];
     } finally {
-      this.closeConnection();
+      await this.closeConnection();
     }
   }
 
@@ -162,7 +167,7 @@ export default class AzureCosmosDataAdapter extends BaseDataAdapter implements I
       console.log(error);
       return { ok: false, error: JSON.stringify(error, null, 2) };
     } finally {
-      this.closeConnection();
+      await this.closeConnection();
     }
   }
 }

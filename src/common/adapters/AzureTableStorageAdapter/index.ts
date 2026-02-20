@@ -107,7 +107,7 @@ export default class AzureTableStorageAdapter extends BaseDataAdapter implements
     } catch (err) {
       return [];
     } finally {
-      this.closeConnection();
+      await this.closeConnection();
     }
   }
 
@@ -140,7 +140,7 @@ export default class AzureTableStorageAdapter extends BaseDataAdapter implements
     } catch (err) {
       return [];
     } finally {
-      this.closeConnection();
+      await this.closeConnection();
     }
   }
 
@@ -171,7 +171,7 @@ export default class AzureTableStorageAdapter extends BaseDataAdapter implements
       console.log(error);
       return { ok: false, error: error.toString() };
     } finally {
-      this.closeConnection();
+      await this.closeConnection();
     }
   }
 }

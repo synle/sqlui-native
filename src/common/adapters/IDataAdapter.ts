@@ -7,4 +7,5 @@ export default interface IDataAdapter {
   getTables: (database: string | undefined) => Promise<SqluiCore.TableMetaData[]>;
   getColumns: (table: string, database: string | undefined) => Promise<SqluiCore.ColumnMetaData[]>;
   execute: (sql: string, database: string | undefined, table: string | undefined) => Promise<SqluiCore.Result>;
+  disconnect?: () => Promise<void>;
 }
