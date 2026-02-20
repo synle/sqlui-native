@@ -37,7 +37,8 @@ export default class MongoDBDataAdapter extends BaseDataAdapter implements IData
   }
 
   async authenticate() {
-    await this.getConnection();
+    const client = await this.getConnection();
+    await this.closeConnection(client);
   }
 
   async getDatabases(): Promise<SqluiCore.DatabaseMetaData[]> {
@@ -51,7 +52,7 @@ export default class MongoDBDataAdapter extends BaseDataAdapter implements IData
         tables: [],
       }));
     } finally {
-      this.closeConnection(client);
+      await this.closeConnection(client);
     }
   }
 
@@ -67,7 +68,7 @@ export default class MongoDBDataAdapter extends BaseDataAdapter implements IData
         columns: [],
       }));
     } finally {
-      this.closeConnection(client);
+      await this.closeConnection(client);
     }
   }
 
@@ -83,7 +84,7 @@ export default class MongoDBDataAdapter extends BaseDataAdapter implements IData
         primaryKey: column.name === "_id",
       }));
     } finally {
-      this.closeConnection(client);
+      await this.closeConnection(client);
     }
   }
 
