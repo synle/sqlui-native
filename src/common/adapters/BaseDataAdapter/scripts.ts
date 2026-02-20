@@ -1,4 +1,3 @@
-import { getDialectType } from "src/common/adapters/DataScriptFactory";
 import IDataScript from "src/common/adapters/IDataScript";
 import { SqlAction, SqluiCore } from "typings";
 

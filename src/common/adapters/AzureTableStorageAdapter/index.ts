@@ -52,7 +52,7 @@ export default class AzureTableStorageAdapter extends BaseDataAdapter implements
     });
   }
 
-  private async closeConnection(client?: any) {
+  private async closeConnection() {
     try {
       // TODO: implement me
     } catch (err) {}
@@ -86,7 +86,7 @@ export default class AzureTableStorageAdapter extends BaseDataAdapter implements
     ];
   }
 
-  async getTables(database?: string): Promise<SqluiCore.TableMetaData[]> {
+  async getTables(): Promise<SqluiCore.TableMetaData[]> {
     // https://docs.microsoft.com/en-us/javascript/api/overview/azure/data-tables-readme?view=azure-node-latest#list-tables-in-the-account
     try {
       const serviceClient = await this.getTableServiceClient();
@@ -111,7 +111,7 @@ export default class AzureTableStorageAdapter extends BaseDataAdapter implements
     }
   }
 
-  async getColumns(table: string, database?: string): Promise<SqluiCore.ColumnMetaData[]> {
+  async getColumns(table: string): Promise<SqluiCore.ColumnMetaData[]> {
     try {
       const tableClient = await this.getTableClient(table);
 

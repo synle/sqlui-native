@@ -8,10 +8,8 @@ import PushPinIcon from "@mui/icons-material/PushPin";
 import PushPinOutlinedIcon from "@mui/icons-material/PushPinOutlined";
 import StarIcon from "@mui/icons-material/Star";
 import Alert from "@mui/material/Alert";
-import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
 import Link from "@mui/material/Link";
-import { useNavigate } from "react-router-dom";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import DropdownButton from "src/frontend/components/DropdownButton";
 import { allMenuKeys, useCommands } from "src/frontend/components/MissionControl";
@@ -22,7 +20,6 @@ import { useQueryTabOrientationSetting } from "src/frontend/hooks/useSetting";
 import { SqluiFrontend } from "typings";
 
 export default function QueryBoxTabs() {
-  const navigate = useNavigate();
   const [init, setInit] = useState(false);
   const { queries, isLoading } = useConnectionQueries();
   const { selectCommand } = useCommands();

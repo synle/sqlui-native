@@ -34,7 +34,7 @@ export default function DatabaseActions(props: DatabaseActionsProps): JSX.Elemen
   }
 
   const { data: connection, isLoading: loadingConnection } = useGetConnectionById(connectionId);
-  const { query } = useActiveConnectionQuery();
+  useActiveConnectionQuery();
   const dialect = connection?.dialect;
 
   const isLoading = loadingConnection;

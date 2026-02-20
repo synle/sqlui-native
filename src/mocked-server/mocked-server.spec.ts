@@ -133,7 +133,6 @@ describe("Sessions", () => {
     res = await requestWithSupertest.post(`/api/connection`).set(_getCommonHeaders(mockedSessionId)).send(mockedConnection1);
     expect(res.status).toEqual(201);
     expect(res.body).toEqual(expect.objectContaining(mockedConnection1));
-    const mockedConnectionId1 = res.body.id;
 
     // add 2 queries
     res = await requestWithSupertest

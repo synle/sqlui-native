@@ -1,4 +1,4 @@
-import { QueryClient, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import dataApi from "src/frontend/data/api";
 import { setCurrentSessionId } from "src/frontend/data/session";
@@ -38,7 +38,6 @@ export function useGetCurrentSession() {
 export function useSelectSession(suppressReload?: boolean) {
   const { mutateAsync: setOpenSession } = useSetOpenSession();
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
   const { alert, dismiss: dismissDialog } = useActionDialogs();
   return useMutation<void, void, string>(async (newSessionId: string) => {
     // set the new session id;

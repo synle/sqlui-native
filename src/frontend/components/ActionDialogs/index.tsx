@@ -4,9 +4,7 @@ import ModalDialog from "src/frontend/components/ActionDialogs/ModalDialog";
 import PromptDialog from "src/frontend/components/ActionDialogs/PromptDialog";
 import { useActionDialogs } from "src/frontend/hooks/useActionDialogs";
 
-type ActionDialogsProps = {};
-
-export default function ActionDialogs(props: ActionDialogsProps): JSX.Element | null {
+export default function ActionDialogs(): JSX.Element | null {
   const { dialog, dismiss } = useActionDialogs();
 
   if (!dialog) {

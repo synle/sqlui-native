@@ -80,7 +80,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
   //=========================================================================
   // config api endpoints
   //=========================================================================
-  addDataEndpoint("get", "/api/configs", async (req, res, apiCache) => {
+  addDataEndpoint("get", "/api/configs", async (req, res) => {
     res.status(200).json({
       storageDir,
       isElectron: !expressAppContext,
@@ -90,7 +90,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
   //=========================================================================
   // connection api endpoints
   //=========================================================================
-  addDataEndpoint("get", "/api/connections", async (req, res, apiCache) => {
+  addDataEndpoint("get", "/api/connections", async (req, res) => {
     const connectionsStorage = await getConnectionsStorage(req.headers["sqlui-native-session-id"]);
 
     const connections = await connectionsStorage.list();
@@ -120,7 +120,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     res.status(200).json(connections);
   });
 
-  addDataEndpoint("post", "/api/connections", async (req, res, apiCache) => {
+  addDataEndpoint("post", "/api/connections", async (req, res) => {
     const connectionsStorage = await getConnectionsStorage(req.headers["sqlui-native-session-id"]);
 
     const connections = await connectionsStorage.set(req.body);
@@ -128,7 +128,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     res.status(200).json(connections);
   });
 
-  addDataEndpoint("get", "/api/connection/:connectionId", async (req, res, apiCache) => {
+  addDataEndpoint("get", "/api/connection/:connectionId", async (req, res) => {
     const connectionsStorage = await getConnectionsStorage(req.headers["sqlui-native-session-id"]);
 
     const connection = await connectionsStorage.get(req.params?.connectionId);
@@ -144,7 +144,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     res.status(200).json(connection);
   });
 
-  addDataEndpoint("get", "/api/connection/:connectionId/databases", async (req, res, apiCache) => {
+  addDataEndpoint("get", "/api/connection/:connectionId/databases", async (req, res) => {
     res.status(200).json(await getDatabases(req.headers["sqlui-native-session-id"], req.params?.connectionId));
   });
 
@@ -171,7 +171,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
       ),
   );
 
-  addDataEndpoint("post", "/api/connection/:connectionId/connect", async (req, res, apiCache) => {
+  addDataEndpoint("post", "/api/connection/:connectionId/connect", async (req, res) => {
     const connectionsStorage = await getConnectionsStorage(req.headers["sqlui-native-session-id"]);
 
     const connection = await connectionsStorage.get(req.params?.connectionId);
@@ -192,7 +192,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     }
   });
 
-  addDataEndpoint("post", "/api/connection/:connectionId/execute", async (req, res, apiCache) => {
+  addDataEndpoint("post", "/api/connection/:connectionId/execute", async (req, res) => {
     const connectionsStorage = await getConnectionsStorage(req.headers["sqlui-native-session-id"]);
 
     const connection = await connectionsStorage.get(req.params?.connectionId);
@@ -206,7 +206,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     res.status(200).json(await engine.execute(req.body?.sql, req.body?.database, req.body?.table));
   });
 
-  addDataEndpoint("post", "/api/connection/test", async (req, res, apiCache) => {
+  addDataEndpoint("post", "/api/connection/test", async (req, res) => {
     const connection: SqluiCore.CoreConnectionProps = req.body;
 
     if (!connection.connection) {
@@ -218,7 +218,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     res.status(200).json(await getConnectionMetaData(connection));
   });
 
-  addDataEndpoint("post", "/api/connection", async (req, res, apiCache) => {
+  addDataEndpoint("post", "/api/connection", async (req, res) => {
     const connectionsStorage = await getConnectionsStorage(req.headers["sqlui-native-session-id"]);
 
     res.status(201).json(
@@ -229,7 +229,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     );
   });
 
-  addDataEndpoint("put", "/api/connection/:connectionId", async (req, res, apiCache) => {
+  addDataEndpoint("put", "/api/connection/:connectionId", async (req, res) => {
     const connectionsStorage = await getConnectionsStorage(req.headers["sqlui-native-session-id"]);
 
     res.status(202).json(
@@ -241,7 +241,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     );
   });
 
-  addDataEndpoint("delete", "/api/connection/:connectionId", async (req, res, apiCache) => {
+  addDataEndpoint("delete", "/api/connection/:connectionId", async (req, res) => {
     const connectionsStorage = await getConnectionsStorage(req.headers["sqlui-native-session-id"]);
 
     res.status(202).json(await connectionsStorage.delete(req.params?.connectionId));
@@ -249,13 +249,13 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
   //=========================================================================
   // query api endpoints
   //=========================================================================
-  addDataEndpoint("get", "/api/queries", async (req, res, apiCache) => {
+  addDataEndpoint("get", "/api/queries", async (req, res) => {
     const queryStorage = await getQueryStorage(req.headers["sqlui-native-session-id"]);
 
     res.status(200).json(await queryStorage.list());
   });
 
-  addDataEndpoint("post", "/api/query", async (req, res, apiCache) => {
+  addDataEndpoint("post", "/api/query", async (req, res) => {
     const queryStorage = await getQueryStorage(req.headers["sqlui-native-session-id"]);
 
     res.status(201).json(
@@ -265,7 +265,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     );
   });
 
-  addDataEndpoint("put", "/api/query/:queryId", async (req, res, apiCache) => {
+  addDataEndpoint("put", "/api/query/:queryId", async (req, res) => {
     const queryStorage = await getQueryStorage(req.headers["sqlui-native-session-id"]);
 
     res.status(202).json(
@@ -280,7 +280,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     );
   });
 
-  addDataEndpoint("delete", "/api/query/:queryId", async (req, res, apiCache) => {
+  addDataEndpoint("delete", "/api/query/:queryId", async (req, res) => {
     const queryStorage = await getQueryStorage(req.headers["sqlui-native-session-id"]);
 
     res.status(202).json(await queryStorage.delete(req.params?.queryId));
@@ -289,7 +289,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
   // session api endpoints
   //=========================================================================
   // get the current session
-  addDataEndpoint("get", "/api/session", async (req, res, apiCache) => {
+  addDataEndpoint("get", "/api/session", async (req, res) => {
     const windowId = req.headers["sqlui-native-window-id"];
     if (!windowId) {
       // windowId is required
@@ -312,17 +312,17 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     res.status(200).json(session);
   });
 
-  addDataEndpoint("get", "/api/sessions", async (req, res, apiCache) => {
+  addDataEndpoint("get", "/api/sessions", async (req, res) => {
     const sessionsStorage = await getSessionsStorage();
 
     res.status(200).json(await sessionsStorage.list());
   });
 
-  addDataEndpoint("get", "/api/sessions/opened", async (req, res, apiCache) => {
+  addDataEndpoint("get", "/api/sessions/opened", async (req, res) => {
     res.status(200).json(await sessionUtils.listSessionIds());
   });
 
-  addDataEndpoint("post", "/api/sessions/opened/:sessionId", async (req, res, apiCache) => {
+  addDataEndpoint("post", "/api/sessions/opened/:sessionId", async (req, res) => {
     const windowId = req.headers["sqlui-native-window-id"];
     if (!windowId) {
       throw "windowId is required";
@@ -344,7 +344,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     }
   });
 
-  addDataEndpoint("post", "/api/session", async (req, res, apiCache) => {
+  addDataEndpoint("post", "/api/session", async (req, res) => {
     const sessionsStorage = await getSessionsStorage();
 
     res.status(201).json(
@@ -354,7 +354,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     );
   });
 
-  addDataEndpoint("put", "/api/session/:sessionId", async (req, res, apiCache) => {
+  addDataEndpoint("put", "/api/session/:sessionId", async (req, res) => {
     const sessionsStorage = await getSessionsStorage();
 
     res.status(202).json(
@@ -365,7 +365,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     );
   });
 
-  addDataEndpoint("post", "/api/session/:sessionId/clone", async (req, res, apiCache) => {
+  addDataEndpoint("post", "/api/session/:sessionId/clone", async (req, res) => {
     const name = req.body?.name;
     const clonedFromSessionId = req.params?.sessionId;
 
@@ -395,7 +395,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     res.status(201).json(newSession);
   });
 
-  addDataEndpoint("delete", "/api/session/:sessionId", async (req, res, apiCache) => {
+  addDataEndpoint("delete", "/api/session/:sessionId", async (req, res) => {
     const sessionIdToDelete = req.params?.sessionId;
     if (!sessionIdToDelete) {
       throw "sessionId is required";
@@ -415,14 +415,14 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
   // folder items endpoints used in bookmarks and recycle bin
   //=========================================================================
   // this get a list of all items in a folder
-  addDataEndpoint("get", "/api/folder/:folderId", async (req, res, apiCache) => {
+  addDataEndpoint("get", "/api/folder/:folderId", async (req, res) => {
     const folderItemsStorage = await getFolderItemsStorage(req.params?.folderId);
 
     res.status(200).json(await folderItemsStorage.list());
   });
 
   // adds item to recycle bin
-  addDataEndpoint("post", "/api/folder/:folderId", async (req, res, apiCache) => {
+  addDataEndpoint("post", "/api/folder/:folderId", async (req, res) => {
     const folderItemsStorage = await getFolderItemsStorage(req.params?.folderId);
 
     res.status(202).json(
@@ -434,7 +434,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     );
   });
 
-  addDataEndpoint("put", "/api/folder/:folderId", async (req, res, apiCache) => {
+  addDataEndpoint("put", "/api/folder/:folderId", async (req, res) => {
     const folderItemsStorage = await getFolderItemsStorage(req.params?.folderId);
 
     res.status(202).json(
@@ -448,7 +448,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
   });
 
   // can be used to delete items off the recycle permanently
-  addDataEndpoint("delete", "/api/folder/:folderId/:itemId", async (req, res, apiCache) => {
+  addDataEndpoint("delete", "/api/folder/:folderId/:itemId", async (req, res) => {
     const folderItemsStorage = await getFolderItemsStorage(req.params?.folderId);
 
     res.status(202).json(await folderItemsStorage.delete(req.params?.itemId));
@@ -522,7 +522,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     res.status(200).json(resp);
   });
 
-  addDataEndpoint("delete", "/api/dataSnapshot/:dataSnapshotId", async (req, res, apiCache) => {
+  addDataEndpoint("delete", "/api/dataSnapshot/:dataSnapshotId", async (req, res) => {
     const dataSnapshotStorage = await getDataSnapshotStorage();
     // TODO: should we delete the snapshot data too?
     res.status(202).json(await dataSnapshotStorage.delete(req.params?.dataSnapshotId));

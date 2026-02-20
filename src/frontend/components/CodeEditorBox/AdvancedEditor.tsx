@@ -4,7 +4,7 @@ import { styled } from "@mui/system";
 import { DecoratedEditorProps as AdvancedEditorProps } from "src/frontend/components/CodeEditorBox";
 import { useDarkModeSetting } from "src/frontend/hooks/useSetting";
 
-const AdvancedEditorContainer = styled("div")(({ theme }) => {
+const AdvancedEditorContainer = styled("div")(() => {
   return {
     width: "100%",
   };

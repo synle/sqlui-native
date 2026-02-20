@@ -53,8 +53,6 @@ export default function ConnectionDatabaseSelector(props: ConnectionDatabaseSele
     [tables],
   );
 
-  const isDatabaseIdRequired = false;
-
   const isTableIdRequired =
     useMemo<boolean>(() => {
       const selectedConnection = connections?.find((connection) => connection.id === query.connectionId);
@@ -78,18 +76,14 @@ export default function ConnectionDatabaseSelector(props: ConnectionDatabaseSele
 
   // side effect to select the only database or table
   useEffect(() => {
-    let shouldShowToast = false;
-
     // if there's only one database, then select that as well
     if (databases && databases.length === 1 && databases[0].name !== query.databaseId) {
       onDatabaseChange(databases[0].name);
-      shouldShowToast = true;
     }
 
     // if there's only one table, then select that as well
     if (tables && tables.length === 1 && tables[0].name !== query.tableId) {
       onTableChange(tables[0].name);
-      shouldShowToast = true;
     }
   }, [databases, tables]);
 

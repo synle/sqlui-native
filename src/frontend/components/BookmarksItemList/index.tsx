@@ -2,7 +2,6 @@ import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import EditIcon from "@mui/icons-material/Edit";
 import Backdrop from "@mui/material/Backdrop";
 import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
 import Chip from "@mui/material/Chip";
 import CircularProgress from "@mui/material/CircularProgress";
 import IconButton from "@mui/material/IconButton";
@@ -23,7 +22,6 @@ function NameCell({ row, onAfterSelect }: { row: any; onAfterSelect?: OnAfterSel
   const folderItem = row.original;
   const { onAddQuery } = useConnectionQueries();
   const navigate = useNavigate();
-  const { confirm, prompt } = useActionDialogs();
   const { mutateAsync: upsertConnection } = useUpsertConnection();
   const onOpenBookmarkItem = async (folderItem: SqluiCore.FolderItem) => {
     switch (folderItem.type) {
@@ -50,10 +48,7 @@ function TypeCell({ row }: { row: any }) {
 
 function ActionCell({ row }: { row: any }) {
   const folderItem = row.original;
-  const { onAddQuery } = useConnectionQueries();
-  const navigate = useNavigate();
   const { confirm, prompt } = useActionDialogs();
-  const { mutateAsync: upsertConnection } = useUpsertConnection();
   const { mutateAsync: deleteBookmarkItem } = useDeleteBookmarkItem();
   const { mutateAsync: updateBookmarkItem } = useUpdateBookmarkItem();
 
@@ -120,7 +115,6 @@ type BookmarksItemListProps = {
 
 export default function BookmarksItemList(props: BookmarksItemListProps): JSX.Element | null {
   const { onAfterSelect, hideActions } = props;
-  const navigate = useNavigate();
   const { data, isLoading } = useGetBookmarkItems();
 
   if (isLoading) {

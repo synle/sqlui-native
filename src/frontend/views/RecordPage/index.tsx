@@ -48,17 +48,6 @@ import { SqluiCore, SqluiFrontend } from "typings";
 
 type RecordData = any;
 
-type RecordFormProps = {
-  onSave: (response: RecordFormReponse) => void;
-  onCancel: () => void;
-  onConnectionChanges?: (query: Partial<SqluiFrontend.ConnectionQuery>) => void;
-  query?: SqluiCore.ConnectionQuery;
-  data?: RecordData;
-  rawValue?: string;
-  isEditMode?: boolean;
-  mode: "edit" | "create";
-};
-
 type RecordFormReponse = {
   query: Partial<SqluiFrontend.ConnectionQuery>;
   connection?: SqluiCore.ConnectionProps;
@@ -85,7 +74,6 @@ function RecordView(props: RecordDetailsPageProps): JSX.Element | null {
         );
         if (columnValue === true || columnValue === false) {
           // boolean
-          const booleanLabel = columnValue ? "<TRUE>" : "<FALSE>";
           contentColumnValueView = <TextField label={columnName} value={columnValue} size="small" margin="dense" disabled={true} />;
         } else if (columnValue === null) {
           // null value
@@ -140,7 +128,7 @@ function RecordForm(props) {
     ...props?.query,
   });
   const { data: connection } = useGetConnectionById(query?.connectionId);
-  const { data: columns, isLoading: loadingColumns } = useGetColumns(query?.connectionId, query?.databaseId, query?.tableId);
+  const { data: columns } = useGetColumns(query?.connectionId, query?.databaseId, query?.tableId);
 
   const onDatabaseConnectionChange = (connectionId?: string, databaseId?: string, tableId?: string) => {
     if (props.onConnectionChanges) {
@@ -424,7 +412,7 @@ function RecordForm(props) {
 
 export function NewRecordPage() {
   const navigate = useNavigate();
-  const { value: width, onChange: onSetWidth } = useSideBarWidthPreference();
+  useSideBarWidthPreference();
   const { setTreeActions } = useTreeActions();
   const { onAddQuery } = useConnectionQueries();
   const { add: addToast } = useToaster();
@@ -582,9 +570,6 @@ export function NewRecordPage() {
 
 export function EditRecordPage(props: RecordDetailsPageProps): JSX.Element | null {
   const { data } = props;
-  const navigate = useNavigate();
-  const { value: width, onChange: onSetWidth } = useSideBarWidthPreference();
-  const { setTreeActions } = useTreeActions();
   const { onAddQuery } = useConnectionQueries();
   const [isEdit, setIsEdit] = useState(!!props.isEditMode);
   const { query: activeQuery } = useActiveConnectionQuery();

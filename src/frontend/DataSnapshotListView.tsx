@@ -7,7 +7,6 @@ import Link from "@mui/material/Link";
 import { Link as RouterLink } from "react-router-dom";
 import { useEffect } from "react";
 import { ColumnDef } from "@tanstack/react-table";
-import ActionDialogs from "src/frontend/components/ActionDialogs";
 import DataTable from "src/frontend/components/DataTable";
 import { useActionDialogs } from "src/frontend/hooks/useActionDialogs";
 import { useDeleteDataSnapshot, useGetDataSnapshots } from "src/frontend/hooks/useDataSnapshot";

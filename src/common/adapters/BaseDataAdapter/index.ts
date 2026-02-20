@@ -138,7 +138,7 @@ export default abstract class BaseDataAdapter {
     for (const item of items) {
       columnsMap = {
         ...columnsMap,
-        ...BaseDataAdapter.resolveTypes(item, (type: string, val: any) => {
+        ...BaseDataAdapter.resolveTypes(item, (type: string) => {
           switch (type) {
             case "float":
               switch (toDialectHint) {

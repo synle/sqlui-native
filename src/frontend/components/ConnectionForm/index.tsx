@@ -24,7 +24,7 @@ export function NewConnectionForm() {
   const navigate = useNavigate();
 
   const onSave = async () => {
-    const newConnection = await mutateAsync({
+    await mutateAsync({
       name,
       connection,
     });
@@ -141,7 +141,7 @@ function MainConnectionForm(props: MainConnectionFormProps): JSX.Element | null 
   const navigate = useNavigate();
   const [showHint, setShowHint] = useState(false);
   const [showSqliteDatabasePathSelection, setShowSqliteDatabasePathSelection] = useState(false);
-  const { add: addToast, dismiss: dismissToast } = useToaster();
+  const { add: addToast } = useToaster();
   const { selectCommand } = useCommands();
 
   // effects

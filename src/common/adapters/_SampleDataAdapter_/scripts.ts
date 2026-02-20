@@ -1,9 +1,9 @@
-import BaseDataScript, { getDivider } from "src/common/adapters/BaseDataAdapter/scripts";
+import BaseDataScript from "src/common/adapters/BaseDataAdapter/scripts";
 import { SqlAction } from "typings";
 
 const formatter = "js";
 
-export function getSelectAllColumns(input: SqlAction.TableInput): SqlAction.Output | undefined {
+export function getSelectAllColumns(): SqlAction.Output | undefined {
   const label = `Select All Columns`;
 
   return {
@@ -13,7 +13,7 @@ export function getSelectAllColumns(input: SqlAction.TableInput): SqlAction.Outp
   };
 }
 
-export function getCreateDatabase(input: SqlAction.DatabaseInput): SqlAction.Output | undefined {
+export function getCreateDatabase(): SqlAction.Output | undefined {
   const label = `Create Database`;
 
   return {
@@ -25,7 +25,7 @@ export function getCreateDatabase(input: SqlAction.DatabaseInput): SqlAction.Out
   };
 }
 
-export function getDropDatabase(input: SqlAction.DatabaseInput): SqlAction.Output | undefined {
+export function getDropDatabase(): SqlAction.Output | undefined {
   const label = `Drop Database`;
 
   return {
@@ -80,12 +80,12 @@ export class ConcreteDataScripts extends BaseDataScript {
   }
 
   // TODO: implement me
-  getSampleConnectionString(dialect) {
+  getSampleConnectionString() {
     return `your_dialect://your_props`;
   }
 
   // TODO: implement me
-  getSampleSelectQuery(tableActionInput) {
+  getSampleSelectQuery() {
     return undefined;
   }
 

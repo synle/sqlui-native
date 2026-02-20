@@ -131,8 +131,6 @@ export default function RelationshipChartPage() {
 
       for (const tableColumn of tableColumns) {
         if (tableColumn.referencedColumnName && tableColumn.referencedTableName) {
-          const foundEdge = newEdges.find((edge) => edge.source === tableName && edge.target === tableColumn.referencedTableName);
-
           const newEdge = {
             _label: `${tableColumn.name} => ${tableColumn.referencedTableName}.${tableColumn.referencedColumnName}`,
             id: `${tableName}.${tableColumn.name} => ${tableColumn.referencedTableName}.${tableColumn.referencedColumnName}`,

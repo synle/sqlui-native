@@ -28,7 +28,6 @@ export default class CassandraDataAdapter extends BaseDataAdapter implements IDa
         };
 
         // client authentication
-        let authProvider: cassandra.auth.PlainTextAuthProvider | undefined;
         if (rawClientOptions.authProvider) {
           clientOptions.authProvider = new cassandra.auth.PlainTextAuthProvider(
             rawClientOptions.authProvider.username,

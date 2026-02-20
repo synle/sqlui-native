@@ -251,7 +251,7 @@ export class ConcreteDataScripts extends BaseDataScript {
     }
   }
 
-  getDialectIcon(dialect) {
+  getDialectIcon() {
     return `${process.env.PUBLIC_URL}/assets/redis.png`;
   }
 
@@ -304,7 +304,7 @@ export class ConcreteDataScripts extends BaseDataScript {
     }
   }
 
-  getSampleSelectQuery(tableActionInput) {
+  getSampleSelectQuery() {
     return undefined;
   }
 
