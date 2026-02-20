@@ -57,7 +57,7 @@ export default function SplitButton(props: SplitButtonProps): JSX.Element | null
         {options.map((option, index) => (
           <MenuItem key={option.label} onClick={(event) => handleMenuItemClick(event, index)}>
             {!option.startIcon ? null : <ListItemIcon>{option.startIcon}</ListItemIcon>}
-            <ListItemText>{option.label}</ListItemText>
+            <ListItemText sx={{ textAlign: "left" }}>{option.label}</ListItemText>
           </MenuItem>
         ))}
       </MenuList>

@@ -745,25 +745,25 @@ export class ConcreteDataScripts extends BaseDataScript {
       case "javascript":
         switch (connection.dialect) {
           case "mssql":
-            deps.push(`// npm install --save tedious`);
+            deps.push(`tedious`);
             break;
           case "postgres":
           case "postgresql":
-            deps.push(`// npm install --save pg pg-hstore`);
+            deps.push(`pg pg-hstore`);
             break;
           case "sqlite":
-            deps.push(`// npm install --save sqlite3`);
+            deps.push(`sqlite3`);
             break;
           case "mariadb":
-            deps.push(`// npm install --save mariadb`);
+            deps.push(`mariadb`);
             break;
           case "mysql":
-            deps.push(`// npm install --save mysql2`);
+            deps.push(`mysql2`);
             break;
         }
 
         return renderCodeSnippet("javascript", "relational", {
-          deps: deps.join("\n"),
+          deps: deps.join(" "),
           connectionString,
           sql,
         });

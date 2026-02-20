@@ -1,12 +1,12 @@
 import Box from "@mui/material/Box";
 import CssBaseline from "@mui/material/CssBaseline";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { createTheme, Theme, ThemeProvider } from "@mui/material/styles";
 import { SnackbarProvider } from "notistack";
 import ReactDOM from "react-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { HashRouter, Route, Routes } from "react-router-dom";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import App from "src/frontend/App";
 import ActionDialogs from "src/frontend/components/ActionDialogs";
 import ElectronEventListener from "src/frontend/components/ElectronEventListener";
@@ -17,25 +17,93 @@ import ConnectionQueryContextProvider from "src/frontend/hooks/useConnectionQuer
 import SettingContextProvider, { useDarkModeSetting } from "src/frontend/hooks/useSetting";
 import ShowHideContextProvider from "src/frontend/hooks/useShowHide";
 import TreeActionContextProvider from "src/frontend/hooks/useTreeActions";
+import { useLayoutModeSetting, useAnimationModeSetting } from "src/frontend/hooks/useSetting";
 import "src/frontend/App.scss";
 import "src/frontend/electronRenderer";
 
 function AppliedTheme({ children }) {
-  const myTheme = createTheme({
-    palette: {
-      mode: useDarkModeSetting(),
-    },
-    components: {
-      MuiButtonBase: {
-        defaultProps: {
-          disableRipple: true,
+  const isCompact = useLayoutModeSetting() === "compact";
+  const darkmodeSetting = useDarkModeSetting();
+  const isAnimationOff = useAnimationModeSetting() === "0";
+
+  const [theme, setTheme] = useState<Theme>(createTheme());
+
+  useEffect(() => {
+    // Common settings regardless of mode
+    const baseTheme = {
+      MuiButtonBase: { defaultProps: { disableRipple: true } },
+    };
+
+    // Mode A: Compact (Small, No Icons, Dense)
+    const compactStyles = {
+      typography: { fontSize: 12 },
+      components: {
+        MuiButton: {
+          defaultProps: { size: "small" as const },
+          styleOverrides: {
+            root: {
+              "& .MuiButton-startIcon, & .MuiButton-endIcon": { display: "none" },
+              minWidth: "auto",
+              padding: "4px 8px",
+            },
+          },
         },
+        MuiTextField: { defaultProps: { size: "small" as const } },
+        MuiFormControl: { defaultProps: { size: "small" as const } },
+        MuiIconButton: { defaultProps: { size: "small" as const } },
+        MuiInputBase: { defaultProps: { margin: "dense" as const } },
       },
-    },
-  });
+    };
+
+    // Mode B: Comfortable (Standard MUI sizes)
+    const comfortableStyles = {
+      typography: { fontSize: 14 },
+      components: {
+        MuiButton: { defaultProps: { size: "medium" as const } },
+        MuiTextField: { defaultProps: { size: "medium" as const } },
+        MuiFormControl: { defaultProps: { size: "medium" as const } },
+        MuiIconButton: { defaultProps: { size: "medium" as const } },
+        MuiInputBase: { defaultProps: { margin: "none" as const } },
+      },
+    };
+
+    // 1. Determine active layout set
+    const activeLayout = isCompact ? compactStyles : comfortableStyles;
+
+    // 2. Build Global CSS (Animations & Custom Classes)
+    const globalOverrides: any = {};
+
+    if (isAnimationOff) {
+      globalOverrides["*, *::before, *::after"] = {
+        transitionDuration: "0s !important",
+        animationDuration: "0s !important",
+      };
+    }
+
+    if (isCompact) {
+      globalOverrides[".FormInput__Container"] = {
+        ".FormInput__Row": { gap: "0.5rem" },
+        "&.FormInput__Container__sm .FormInput__Row": { gap: "0.3rem" },
+      };
+    }
+
+    // 3. Stitch and Apply
+    setTheme(
+      createTheme({
+        palette: { mode: darkmodeSetting },
+        typography: activeLayout.typography,
+        components: {
+          ...baseTheme,
+          ...activeLayout.components,
+          MuiCssBaseline: { styleOverrides: globalOverrides },
+        },
+      }),
+    );
+  }, [isCompact, darkmodeSetting, isAnimationOff, setTheme]);
 
   return (
-    <ThemeProvider theme={myTheme}>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
       <Box
         sx={{
           minHeight: "100vh",
@@ -74,9 +142,7 @@ const renderApp = function () {
   ReactDOM.render(
     <SnackbarProvider maxSnack={4}>
       <QueryClientProvider client={queryClient}>
-        <CssBaseline />
         <ReactQueryDevtools initialIsOpen={false} />
-
         <CombinedContextProvider>
           <Routes>
             <Route path="/data_snapshot" element={<DataSnapshotListView />} />

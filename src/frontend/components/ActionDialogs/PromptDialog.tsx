@@ -56,7 +56,8 @@ export default function PromptDialog(props: PromptDialogProps): JSX.Element | nu
       aria-labelledby="prompt-dialog-title"
       open={props.open}
       fullWidth={true}
-      maxWidth={props.isLongPrompt ? "lg" : "sm"}
+      fullScreen={props.isLongPrompt}
+      maxWidth={"md"}
     >
       <form onSubmit={onSave}>
         <DialogTitle id="prompt-dialog-title">
@@ -83,7 +84,9 @@ export default function PromptDialog(props: PromptDialogProps): JSX.Element | nu
               autoFocus={true}
               required={props.required}
               wordWrap={true}
-              height="60vh"
+              height="72vh"
+              hideEditorSize={true}
+              hideEditorSyntax={true}
             />
           ) : (
             <TextField

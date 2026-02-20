@@ -70,6 +70,7 @@ $ConnectionTreeIndentSize: 7px;
 
   .FormInput__Row {
     gap: 1rem;
+    flex-wrap: wrap;
   }
 
   &__sm {
@@ -186,25 +187,6 @@ $ConnectionTreeIndentSize: 7px;
   }
 }
 
-// remove transition
-@media (prefers-reduced-motion) {
-  * {
-    transition-duration: 0s !important;
-  }
-}
-
-// animation off via setting
-.App[data-animation="off"] {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0s !important;
-    animation-delay: 0s !important;
-    transition-duration: 0s !important;
-    transition-delay: 0s !important;
-  }
-}
-
 // responsive
 @media (max-width: 800px) {
   .App {
@@ -261,5 +243,12 @@ $ConnectionTreeIndentSize: 7px;
     .react-flow__edge-path {
       stroke: blue;
     }
+  }
+}
+
+// remove transition
+@media (prefers-reduced-motion) {
+  * {
+    transition-duration: 0s !important;
   }
 }
