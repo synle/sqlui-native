@@ -1,4 +1,5 @@
-import BaseDataScript, { buildJavaGradleSnippet, getDivider } from "src/common/adapters/BaseDataAdapter/scripts";
+import BaseDataScript, { getDivider } from "src/common/adapters/BaseDataAdapter/scripts";
+import { renderCodeSnippet } from "src/common/adapters/code-snippets/renderCodeSnippet";
 import { getClientOptions } from "src/common/adapters/RedisDataAdapter/utils";
 import { SqlAction } from "typings";
 
@@ -310,74 +311,39 @@ export class ConcreteDataScripts extends BaseDataScript {
   getCodeSnippet(connection, query, language) {
     const clientOptions = getClientOptions(connection.connection);
     const sql = query.sql;
-    const database = query.databaseId;
 
     switch (language) {
       case "javascript":
-        return `
-// npm install --save redis
-const { createClient, RedisClientType } = require('redis');
-
-async function _doWork(){
-  try {
-    const db = await new Promise((resolve, reject) => {
-      const client = createClient(${JSON.stringify(clientOptions)});
-      client.connect();
-      client.on('ready', () => resolve(client));
-      client.on('error', (err) => reject(err));
-    });
-
-    const res = await ${sql};
-    console.log(res);
-  } catch(err){
-    console.log('Failed to connect', err);
-  }
-}
-
-_doWork();
-        `.trim();
+        return renderCodeSnippet("javascript", "redis", {
+          clientOptionsJson: JSON.stringify(clientOptions),
+          sql,
+        });
       case "python":
-        return `
-# python3 -m venv ./ # setting up virtual environment
-# source bin/activate # activate the venv profile
-# pip install redis
-import redis
+        return renderCodeSnippet("python", "redis", {
+          url: clientOptions.url,
+          passwordArg: clientOptions.password ? `, password='${clientOptions.password}'` : "",
+          pythonCommand: _pythonRedisCommand(sql),
+        });
+      case "java": {
+        const authLine = clientOptions.password
+          ? `jedis.auth("${clientOptions.password}");`
+          : `// jedis.auth("password");`;
 
-def _do_work():
-    try:
-        client = redis.Redis.from_url('${clientOptions.url}'${clientOptions.password ? `, password='${clientOptions.password}'` : ""})
-        res = client.${_pythonRedisCommand(sql)}
-        print(res)
-    except Exception as err:
-        print('Failed to connect', err)
-
-_do_work()
-        `.trim();
-      case "java":
-        return buildJavaGradleSnippet({
-          gradleDep: `    implementation 'redis.clients:jedis:5.1.0'`,
-          mainJavaComment: `/**
+        return renderCodeSnippet(
+          "java",
+          "redis",
+          { url: clientOptions.url, authLine },
+          {
+            gradleDep: `    implementation 'redis.clients:jedis:5.1.0'`,
+            mainJavaComment: `/**
  * src/main/java/Main.java
  *
  * Run:
  * ./gradlew run
  */`,
-          mainJavaCode: `import redis.clients.jedis.Jedis;
-
-public class Main {
-    public static void main(String[] args) {
-        try (Jedis jedis = new Jedis("${clientOptions.url}")) {
-            ${clientOptions.password ? `jedis.auth("${clientOptions.password}");` : "// jedis.auth(\"password\");"}
-
-            // Example: get a key
-            String res = jedis.get("key");
-            System.out.println(res);
-        } catch (Exception e) {
-            System.out.println("Failed to connect: " + e.getMessage());
-        }
-    }
-}`,
-        });
+          },
+        );
+      }
       default:
         return ``;
     }

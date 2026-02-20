@@ -1,6 +1,7 @@
 import qs from "qs";
 import BaseDataAdapter from "src/common/adapters/BaseDataAdapter/index";
-import BaseDataScript, { buildJavaGradleSnippet, getDivider } from "src/common/adapters/BaseDataAdapter/scripts";
+import BaseDataScript, { getDivider } from "src/common/adapters/BaseDataAdapter/scripts";
+import { renderCodeSnippet } from "src/common/adapters/code-snippets/renderCodeSnippet";
 import { escapeSQLValue, isValueNumber } from "src/frontend/utils/formatter";
 import { SqlAction } from "typings";
 
@@ -742,7 +743,6 @@ export class ConcreteDataScripts extends BaseDataScript {
 
     switch (language) {
       case "javascript":
-        // if there is a database, then append it
         switch (connection.dialect) {
           case "mssql":
             deps.push(`// npm install --save tedious`);
@@ -762,98 +762,58 @@ export class ConcreteDataScripts extends BaseDataScript {
             break;
         }
 
-        return `
-// install these extra dependencies if needed
-// npm install --save sequelize
-${deps.join("\n")}
-const {Sequelize} = require('sequelize');
-
-async function _doWork(){
-  const sequelize = new Sequelize('${connectionString}');
-
-  try{
-    const [items, meta] = await sequelize.query(\`${sql}\`, {
-      raw: true,
-      plain: false,
-    });
-
-    for(const item of items){
-      console.log(item);
-    }
-  } catch(err){
-    console.log('Failed to run query', err);
-  }
-}
-
-_doWork();
-        `.trim();
-      case "python":
+        return renderCodeSnippet("javascript", "relational", {
+          deps: deps.join("\n"),
+          connectionString,
+          sql,
+        });
+      case "python": {
+        let pythonConnStr = connectionString;
         switch (connection.dialect) {
           case "mssql":
             deps.push(`# pip install pymssql`);
-
-            // NOTE: we need to update the protocol for SQLAlchemy
-            connectionString = connectionString.replace("mssql://", "mssql+pymssql://");
+            pythonConnStr = pythonConnStr.replace("mssql://", "mssql+pymssql://");
             break;
           case "postgres":
           case "postgresql":
             deps.push(`# pip install psycopg2-binary`);
-
-            // NOTE: SQLAlchemy used to accept both, but has removed support for the postgres name
-            // https://stackoverflow.com/questions/62688256/sqlalchemy-exc-nosuchmoduleerror-cant-load-plugin-sqlalchemy-dialectspostgre
-            connectionString = connectionString.replace("postgres://", "postgresql://");
+            pythonConnStr = pythonConnStr.replace("postgres://", "postgresql://");
             break;
           case "sqlite":
-            // NOTE: for sqlite, sqlalchemy needs an extra `/`
-            connectionString = connectionString.replace("sqlite://", "sqlite:///");
+            pythonConnStr = pythonConnStr.replace("sqlite://", "sqlite:///");
             break;
           case "mariadb":
           case "mysql":
             deps.push(`# pip install pymysql`);
-
-            // NOTE: we need to update the protocol for SQLAlchemy
-            connectionString = connectionString.replace("mysql://", "mysql+pymysql://");
+            pythonConnStr = pythonConnStr.replace("mysql://", "mysql+pymysql://");
             break;
         }
 
-        return `
-# python3 -m venv ./ # setting up virtual environment with
-# source bin/activate # activate the venv profile
-# pip install sqlalchemy
-${deps.join("\n")}
-from sqlalchemy import create_engine
-
-engine = create_engine('${connectionString}', echo = True)
-
-with engine.connect() as con:
-  rs = con.execute("""${sql}""")
-
-  for row in rs:
-    print(row)
-        `.trim();
+        return renderCodeSnippet("python", "relational", {
+          deps: deps.join("\n"),
+          connectionString: pythonConnStr,
+          sql,
+        });
+      }
       case "java": {
         let jdbcUrl = "";
         let gradleDep = "";
-        let jdbcDriverClass = "";
         let dbDescription = "";
 
         switch (connection.dialect) {
           case "sqlite":
             jdbcUrl = `jdbc:sqlite:${connectionString.replace("sqlite://", "")}`;
             gradleDep = `    implementation 'org.xerial:sqlite-jdbc:3.45.1.0'`;
-            jdbcDriverClass = "org.sqlite.JDBC";
             dbDescription = jdbcUrl;
             break;
           case "mysql":
             jdbcUrl = `jdbc:${connectionString}`;
             gradleDep = `    implementation 'com.mysql:mysql-connector-j:8.3.0'`;
-            jdbcDriverClass = "com.mysql.cj.jdbc.Driver";
             dbDescription = connectionString;
             break;
           case "mariadb":
             jdbcUrl = `jdbc:${connectionString}`;
             gradleDep = `    implementation 'org.mariadb.jdbc:mariadb-java-client:3.3.2'`;
-            jdbcDriverClass = "org.mariadb.jdbc.Driver";
             dbDescription = connectionString;
             break;
           case "postgres":
@@ -861,12 +821,10 @@ with engine.connect() as con:
             const pgConn = connectionString.replace(/^postgres(ql)?:\/\//, "");
             jdbcUrl = `jdbc:postgresql://${pgConn}`;
             gradleDep = `    implementation 'org.postgresql:postgresql:42.7.1'`;
-            jdbcDriverClass = "org.postgresql.Driver";
             dbDescription = connectionString;
             break;
           }
           case "mssql": {
-            // mssql://user:pass@host:port -> jdbc:sqlserver://host:port;user=...;password=...;databaseName=...
             //@ts-ignore
             const { username, password, hosts } = BaseDataAdapter.getConnectionParameters(connectionString);
             const [{ host, port }] = hosts;
@@ -877,7 +835,6 @@ with engine.connect() as con:
             mssqlJdbc += `;encrypt=true;trustServerCertificate=true`;
             jdbcUrl = mssqlJdbc;
             gradleDep = `    implementation 'com.microsoft.sqlserver:mssql-jdbc:12.4.2.jre11'`;
-            jdbcDriverClass = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
             dbDescription = connectionString;
             break;
           }
@@ -887,10 +844,14 @@ with engine.connect() as con:
 
         const escapedSql = sql.replace(/"/g, '\\"');
 
-        return buildJavaGradleSnippet({
-          connectDescription: dbDescription,
-          gradleDep,
-          mainJavaComment: `/**
+        return renderCodeSnippet(
+          "java",
+          "relational",
+          { jdbcUrl, escapedSql },
+          {
+            connectDescription: dbDescription,
+            gradleDep,
+            mainJavaComment: `/**
  * src/main/java/Main.java
  *
  * Connects to:
@@ -904,52 +865,8 @@ with engine.connect() as con:
  * Run:
  * ./gradlew run
  */`,
-          mainJavaCode: `import java.sql.*;
-
-public class Main {
-
-    private static final String DB_URL =
-            "${jdbcUrl}";
-
-    public static void main(String[] args) {
-        try (Connection conn = DriverManager.getConnection(DB_URL)) {
-
-            if (conn != null) {
-                System.out.println("Connected to: " + DB_URL);
-                runQuery(conn);
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private static void runQuery(Connection conn) throws SQLException {
-        String sql = "${escapedSql}";
-
-        try (Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
-
-            ResultSetMetaData meta = rs.getMetaData();
-            int columnCount = meta.getColumnCount();
-
-            // Print column headers
-            for (int i = 1; i <= columnCount; i++) {
-                System.out.print(meta.getColumnName(i) + "\\t");
-            }
-            System.out.println();
-
-            // Print rows
-            while (rs.next()) {
-                for (int i = 1; i <= columnCount; i++) {
-                    System.out.print(rs.getString(i) + "\\t");
-                }
-                System.out.println();
-            }
-        }
-    }
-}`,
-        });
+          },
+        );
       }
       default:
         return "";
