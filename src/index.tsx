@@ -17,14 +17,14 @@ import ConnectionQueryContextProvider from "src/frontend/hooks/useConnectionQuer
 import SettingContextProvider, { useDarkModeSetting } from "src/frontend/hooks/useSetting";
 import ShowHideContextProvider from "src/frontend/hooks/useShowHide";
 import TreeActionContextProvider from "src/frontend/hooks/useTreeActions";
-import { useLayoutModeSetting, useAnimationModeSetting } from "src/frontend/hooks/useSetting";
+import { useLayoutModeSetting, useIsAnimationModeOn } from "src/frontend/hooks/useSetting";
 import "src/frontend/App.scss";
 import "src/frontend/electronRenderer";
 
 function AppliedTheme({ children }) {
   const isCompact = useLayoutModeSetting() === "compact";
   const darkmodeSetting = useDarkModeSetting();
-  const isAnimationOff = useAnimationModeSetting() === "0";
+  const isAnimationOff = useIsAnimationModeOn();
 
   const [theme, setTheme] = useState<Theme>(createTheme());
 
