@@ -1,4 +1,5 @@
-import BaseDataScript, { buildJavaGradleSnippet, getDivider } from "src/common/adapters/BaseDataAdapter/scripts";
+import BaseDataScript, { getDivider } from "src/common/adapters/BaseDataAdapter/scripts";
+import { renderCodeSnippet } from "src/common/adapters/code-snippets/renderCodeSnippet";
 import { SqlAction, SqluiCore } from "typings";
 // https://docs.microsoft.com/en-us/azure/cosmos-db/table/how-to-use-nodejs
 // https://docs.microsoft.com/en-us/javascript/api/@azure/data-tables/?view=azure-node-latest
@@ -308,66 +309,29 @@ export class ConcreteDataScripts extends BaseDataScript {
 
   getCodeSnippet(connection, query, language) {
     const connectionString = connection.connection.replace("aztable://", "");
+    const tableId = query.tableId;
 
     switch (language) {
       case "javascript":
-        return `
-// npm install --save @azure/data-tables
-const { TableClient, TableServiceClient } = require('@azure/data-tables');
-
-async function _doWork(){
-  const connectionString = '${connectionString}';
-  const table = '${query.tableId}'
-
-  const serviceClient = TableServiceClient.fromConnectionString(connectionString);
-  const tableClient = table ? TableClient.fromConnectionString(connectionString, table) : undefined;
-
-  try{
-    const res = ${query.sql};
-    for await (const item of res) {
-      console.log(item);
-    }
-  } catch(err){
-    console.log('Failed to connect', err)
-  }
-}
-
-_doWork();
-        `.trim();
+        return renderCodeSnippet("javascript", "aztable", {
+          connectionString,
+          tableId,
+          sql: query.sql,
+        });
       case "python":
-        return `
-# python3 -m venv ./ # setting up virtual environment
-# source bin/activate # activate the venv profile
-# pip install azure-data-tables
-from azure.data.tables import TableServiceClient, TableClient
-
-def _do_work():
-    try:
-        connection_string = '${connectionString}'
-        table = '${query.tableId}'
-
-        service_client = TableServiceClient.from_connection_string(connection_string)
-        table_client = TableClient.from_connection_string(connection_string, table) if table else None
-
-        # List tables
-        # for table in service_client.list_tables():
-        #     print(table.name)
-
-        # Query entities
-        if table_client:
-            entities = table_client.list_entities()
-            for entity in entities:
-                print(entity)
-    except Exception as err:
-        print('Failed to connect', err)
-
-_do_work()
-        `.trim();
+        return renderCodeSnippet("python", "aztable", {
+          connectionString,
+          tableId,
+        });
       case "java":
-        return buildJavaGradleSnippet({
-          connectDescription: "Azure Table Storage",
-          gradleDep: `    implementation 'com.azure:azure-data-tables:12.3.19'`,
-          mainJavaComment: `/**
+        return renderCodeSnippet(
+          "java",
+          "aztable",
+          { connectionString, tableId },
+          {
+            connectDescription: "Azure Table Storage",
+            gradleDep: `    implementation 'com.azure:azure-data-tables:12.3.19'`,
+            mainJavaComment: `/**
  * src/main/java/Main.java
  *
  * Connects to:
@@ -376,40 +340,8 @@ _do_work()
  * Run:
  * ./gradlew run
  */`,
-          mainJavaCode: `import com.azure.data.tables.TableClient;
-import com.azure.data.tables.TableClientBuilder;
-import com.azure.data.tables.TableServiceClient;
-import com.azure.data.tables.TableServiceClientBuilder;
-import com.azure.data.tables.models.TableEntity;
-import com.azure.data.tables.models.ListEntitiesOptions;
-
-public class Main {
-    public static void main(String[] args) {
-        String connectionString = "${connectionString}";
-        String table = "${query.tableId}";
-
-        try {
-            TableServiceClient serviceClient = new TableServiceClientBuilder()
-                .connectionString(connectionString)
-                .buildClient();
-
-            TableClient tableClient = new TableClientBuilder()
-                .connectionString(connectionString)
-                .tableName(table)
-                .buildClient();
-
-            // List entities
-            for (TableEntity entity : tableClient.listEntities()) {
-                System.out.println("PartitionKey: " + entity.getPartitionKey()
-                    + ", RowKey: " + entity.getRowKey()
-                    + ", Properties: " + entity.getProperties());
-            }
-        } catch (Exception e) {
-            System.out.println("Failed to connect: " + e.getMessage());
-        }
-    }
-}`,
-        });
+          },
+        );
       default:
         return "";
     }

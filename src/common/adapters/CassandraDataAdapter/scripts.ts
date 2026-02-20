@@ -1,5 +1,6 @@
-import BaseDataScript, { buildJavaGradleSnippet, getDivider } from "src/common/adapters/BaseDataAdapter/scripts";
+import BaseDataScript, { getDivider } from "src/common/adapters/BaseDataAdapter/scripts";
 import { getClientOptions } from "src/common/adapters/CassandraDataAdapter/utils";
+import { renderCodeSnippet } from "src/common/adapters/code-snippets/renderCodeSnippet";
 import { escapeSQLValue, isValueBoolean, isValueNumber } from "src/frontend/utils/formatter";
 import { SqlAction, SqluiCore } from "typings";
 
@@ -391,102 +392,53 @@ export class ConcreteDataScripts extends BaseDataScript {
     const database = query.databaseId;
     const clientOptions = getClientOptions(connection.connection, database);
 
+    const host = clientOptions.host;
+    const port = clientOptions.port;
+    const username = clientOptions?.authProvider?.username || "";
+    const password = clientOptions?.authProvider?.password || "";
+    const keyspace = database || "some_keyspace";
+
     switch (language) {
       case "javascript":
-        return `
-// npm install --save cassandra-driver
-const cassandra = require('cassandra-driver')
-
-async function _doWork(){
-  try {
-    const clientOptions = ${JSON.stringify(clientOptions)};
-    const client = new cassandra.Client({
-      contactPoints: clientOptions.contactPoints,
-      keyspace: clientOptions.keyspace,
-      authProvider: clientOptions.authProvider ? new cassandra.auth.PlainTextAuthProvider(
-        clientOptions.authProvider.username,
-        clientOptions.authProvider.password,
-      ): undefined,
-      sslOptions: {
-        rejectUnauthorized: false, // optional, check to see if you need to disable this SSL check
-      }
-    });
-    await new Promise((resolve, reject) => {
-      client.connect((err) => err ? reject(err): resolve());
-    })
-
-    const res = await client.execute(\`${sql}\`);
-    console.log(res);
-  } catch(err){
-    console.log('Failed to connect', err);
-  }
-}
-
-_doWork();
-        `.trim();
+        return renderCodeSnippet("javascript", "cassandra", {
+          clientOptionsJson: JSON.stringify(clientOptions),
+          sql,
+        });
 
       case "python":
-        return `
-# python3 -m venv ./ # setting up virtual environment with
-# source bin/activate # activate the venv profile
-# pip install cassandra-driver
-from cassandra.cluster import Cluster
-from ssl import PROTOCOL_TLSv1_2, SSLContext, CERT_NONE
-from cassandra.auth import PlainTextAuthProvider
-
-# remove \`ssl_context=ssl_context\` to disable SSL (applicable for Cassandra in CosmosDB)
-ssl_context = SSLContext(PROTOCOL_TLSv1_2)
-ssl_context.verify_mode = CERT_NONE
-cluster = Cluster(['${clientOptions.host}'], port=${clientOptions.port}, auth_provider=PlainTextAuthProvider(username='${
-          clientOptions?.authProvider?.username || ""
-        }', password='${clientOptions?.authProvider?.password || ""}'), ssl_context=ssl_context)
-session = cluster.connect()
-
-session.execute('USE ${database || "some_keyspace"}')
-rows = session.execute("""${sql}""")
-for row in rows:
-    print(row)
-
-        `.trim();
+        return renderCodeSnippet("python", "cassandra", {
+          host,
+          port,
+          username,
+          password,
+          keyspace,
+          sql,
+        });
 
       case "java": {
         const escapedSql = sql.replace(/"/g, '\\"').replace(/\n/g, "\\n");
-        return buildJavaGradleSnippet({
-          connectDescription: `Cassandra at ${clientOptions.host}:${clientOptions.port}`,
-          gradleDep: `    implementation 'com.datastax.oss:java-driver-core:4.17.0'`,
-          mainJavaComment: `/**
+        const authCredentialsLine = clientOptions.authProvider
+          ? `.withAuthCredentials("${username}", "${password}")`
+          : `// .withAuthCredentials("username", "password")`;
+
+        return renderCodeSnippet(
+          "java",
+          "cassandra",
+          { host, port, keyspace, escapedSql, authCredentialsLine },
+          {
+            connectDescription: `Cassandra at ${host}:${port}`,
+            gradleDep: `    implementation 'com.datastax.oss:java-driver-core:4.17.0'`,
+            mainJavaComment: `/**
  * src/main/java/Main.java
  *
  * Connects to:
- * Cassandra at ${clientOptions.host}:${clientOptions.port}
+ * Cassandra at ${host}:${port}
  *
  * Run:
  * ./gradlew run
  */`,
-          mainJavaCode: `import com.datastax.oss.driver.api.core.CqlSession;
-import com.datastax.oss.driver.api.core.cql.ResultSet;
-import com.datastax.oss.driver.api.core.cql.Row;
-import java.net.InetSocketAddress;
-
-public class Main {
-    public static void main(String[] args) {
-        try (CqlSession session = CqlSession.builder()
-                .addContactPoint(new InetSocketAddress("${clientOptions.host}", ${clientOptions.port}))
-                ${clientOptions.authProvider ? `.withAuthCredentials("${clientOptions.authProvider.username}", "${clientOptions.authProvider.password}")` : "// .withAuthCredentials(\"username\", \"password\")"}
-                .withLocalDatacenter("datacenter1")
-                .withKeyspace("${database || "some_keyspace"}")
-                .build()) {
-
-            ResultSet rs = session.execute("${escapedSql}");
-            for (Row row : rs) {
-                System.out.println(row.getFormattedContents());
-            }
-        } catch (Exception e) {
-            System.out.println("Failed to connect: " + e.getMessage());
-        }
-    }
-}`,
-        });
+          },
+        );
       }
       default:
         return ``;
