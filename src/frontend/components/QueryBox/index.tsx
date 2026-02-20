@@ -130,7 +130,7 @@ function CodeSnippetButton(props: QueryBoxProps) {
   return (
     <DropdownButton id="session-action-split-button" options={options} maxHeight="400px">
       <Button type="button" variant="outlined" startIcon={<InfoIcon />}>
-        Show Code Snippet
+        Code Snippet
       </Button>
     </DropdownButton>
   );
@@ -292,6 +292,7 @@ export default function QueryBox(props: QueryBoxProps): JSX.Element | null {
             <div className="FormInput__Row">
               <ConnectionDatabaseSelector value={query} onChange={onDatabaseConnectionChange} />
               <ConnectionRevealButton query={query} />
+              <CodeSnippetButton {...props} />
             </div>
           )}
           <LoadingButton id="btnExecuteCommand" type="submit" variant="contained" loading={isExecuting} startIcon={<SendIcon />}>
