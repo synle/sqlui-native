@@ -86,7 +86,12 @@ export default class RelationalDataAdapter extends BaseDataAdapter implements ID
   }
 
   async authenticate() {
-    return this.getConnection().authenticate();
+    const connection = this.getConnection();
+    try {
+      await connection.authenticate();
+    } finally {
+      await connection.close();
+    }
   }
 
   async getDatabases(): Promise<SqluiCore.DatabaseMetaData[]> {
@@ -189,40 +194,52 @@ export default class RelationalDataAdapter extends BaseDataAdapter implements ID
       default:
         // first get all the columns
         const columns: SqluiCore.ColumnMetaData[] = [];
-        try {
-          const columnMap = await this.getConnection(database).getQueryInterface().describeTable(table);
+        {
+          const connection = this.getConnection(database);
+          try {
+            const columnMap = await connection.getQueryInterface().describeTable(table);
 
-          for (const columnName of Object.keys(columnMap)) {
-            columns.push({
-              name: columnName,
-              ...columnMap[columnName],
-            });
+            for (const columnName of Object.keys(columnMap)) {
+              columns.push({
+                name: columnName,
+                ...columnMap[columnName],
+              });
+            }
+          } catch (err) {
+          } finally {
+            await connection.close();
           }
-        } catch (err) {}
+        }
 
         // then see if we attempt to add additional foreignKey constraint
-        try {
-          const foreignKeyReferences = (await this.getConnection(database)
-            .getQueryInterface()
-            .getForeignKeyReferencesForTable(table)) as any[];
+        {
+          const connection = this.getConnection(database);
+          try {
+            const foreignKeyReferences = (await connection
+              .getQueryInterface()
+              .getForeignKeyReferencesForTable(table)) as any[];
 
-          for (const foreignKeyReference of foreignKeyReferences) {
-            const fromTableName = foreignKeyReference.tableName;
-            const fromColumnName = foreignKeyReference.columnName;
-            const toTableName = foreignKeyReference.referencedTableName;
-            const toColumnName = foreignKeyReference.referencedColumnName;
+            for (const foreignKeyReference of foreignKeyReferences) {
+              const fromTableName = foreignKeyReference.tableName;
+              const fromColumnName = foreignKeyReference.columnName;
+              const toTableName = foreignKeyReference.referencedTableName;
+              const toColumnName = foreignKeyReference.referencedColumnName;
 
-            if (fromTableName === table) {
-              const targetColumn = columns.find((column) => column.name === fromColumnName);
+              if (fromTableName === table) {
+                const targetColumn = columns.find((column) => column.name === fromColumnName);
 
-              if (targetColumn) {
-                targetColumn.kind = "foreign_key";
-                targetColumn.referencedTableName = toTableName;
-                targetColumn.referencedColumnName = toColumnName;
+                if (targetColumn) {
+                  targetColumn.kind = "foreign_key";
+                  targetColumn.referencedTableName = toTableName;
+                  targetColumn.referencedColumnName = toColumnName;
+                }
               }
             }
+          } catch (err) {
+          } finally {
+            await connection.close();
           }
-        } catch (err) {}
+        }
 
         return columns;
     }
@@ -231,8 +248,9 @@ export default class RelationalDataAdapter extends BaseDataAdapter implements ID
   async execute(sql: string, database?: string): Promise<SqluiCore.Result> {
     // https://sequelize.org/master/manual/raw-queries.html
     //@ts-ignore
+    const connection = this.getConnection(database);
     try {
-      let [raw, meta] = await this.getConnection(database).query(sql, {
+      let [raw, meta] = await connection.query(sql, {
         raw: true,
         plain: false,
       });
@@ -286,15 +304,22 @@ export default class RelationalDataAdapter extends BaseDataAdapter implements ID
         ok: false,
         error,
       };
+    } finally {
+      await connection.close();
     }
   }
 
   private async _execute(sql: string, database?: string): Promise<[SqluiCore.RawData, SqluiCore.MetaData]> {
     // https://sequelize.org/master/manual/raw-queries.html
-    //@ts-ignore
-    return this.getConnection(database).query(sql, {
-      raw: true,
-      plain: false,
-    });
+    const connection = this.getConnection(database);
+    try {
+      //@ts-ignore
+      return await connection.query(sql, {
+        raw: true,
+        plain: false,
+      });
+    } finally {
+      await connection.close();
+    }
   }
 }
