@@ -30,7 +30,16 @@ export default function ActionDialogs(): JSX.Element | null {
 
   switch (dialog.type) {
     case "alert":
-      return <AlertDialog open={true} title="Alert" message={dialog.message} onDismiss={onDimiss} isConfirm={false} isFullScreen={dialog.isFullScreen} />;
+      return (
+        <AlertDialog
+          open={true}
+          title="Alert"
+          message={dialog.message}
+          onDismiss={onDimiss}
+          isConfirm={false}
+          isFullScreen={dialog.isFullScreen}
+        />
+      );
     case "confirm":
       return (
         <AlertDialog

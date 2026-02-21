@@ -29,10 +29,6 @@ export default class RelationalDataAdapter extends BaseDataAdapter implements ID
   constructor(connectionOption: string) {
     super(connectionOption);
 
-    // since mariadb and mysql are fully compatible, let's use the same data
-    // save the connection string
-    this.connectionOption = this.connectionOption.replace("mariadb://", "mysql://");
-
     // TODO: we don't support sslmode, this will attempt to override the option
     this.connectionOption = this.connectionOption.replace("sslmode=require", "sslmode=no-verify");
   }

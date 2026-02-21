@@ -35,7 +35,13 @@ export default function ChoiceDialog(props: ChoiceDialogProps): JSX.Element | nu
   }
 
   return (
-    <Dialog onClose={onClose} open={open} fullScreen={!!props.isFullScreen} fullWidth={!props.isFullScreen} maxWidth={props.isFullScreen ? false : "md"}>
+    <Dialog
+      onClose={onClose}
+      open={open}
+      fullScreen={!!props.isFullScreen}
+      fullWidth={!props.isFullScreen}
+      maxWidth={props.isFullScreen ? false : "md"}
+    >
       <DialogTitle>{title}</DialogTitle>
       <DialogContent>
         {message}
