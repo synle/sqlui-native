@@ -15,9 +15,15 @@ jobs:
         with:
           node-version: ${{ inputs.node_version }}
           cache: "npm"
-      - run: npm ci || npm install
+      - name: sqlui-native - Build Unit Tests
+        run: |
+          bash scripts/build.sh false
 
       # start all database containers
+      - name: sqlui-native - Pre Integration Tests - Starting Docker Images
+        run: |
+          echo '===== sqlui-native - Pre Integration Tests (Docker Images) === '
+
       - name: Start MySQL
         run: docker run --name sqlui_mysql -d -p 3306:3306 -e MYSQL_ROOT_PASSWORD='password123!' mysql
 
@@ -43,7 +49,7 @@ jobs:
         run: docker run --name sqlui_redis -d -p 6379:6379 redis
 
       # wait for databases to be ready
-      - name: Wait for databases to be ready
+      - name: sqlui-native - Pre Integration Tests - Pinging Docker Images
         run: |
           echo "Waiting for databases to initialize..."
 
@@ -106,7 +112,7 @@ jobs:
           echo "All databases should be ready."
 
       # run integration tests
-      - name: Run integration tests
+      - name: sqlui-native - Run integration tests
         run: npm run test-integration
 
       # cleanup
