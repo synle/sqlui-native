@@ -1,4 +1,5 @@
 import Button from "@mui/material/Button";
+import Divider from "@mui/material/Divider";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import TextField from "@mui/material/TextField";
@@ -6,7 +7,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { getToastHistory, ToastHistoryEntry } from "src/frontend/hooks/useToaster";
 
-const EXTRA_COLLAPSED_LENGTH = 100;
+const DETAIL_COLLAPSED_LENGTH = 100;
 const ESTIMATED_ROW_HEIGHT = 60;
 
 function formatTime(ts?: number) {
@@ -14,20 +15,35 @@ function formatTime(ts?: number) {
   return new Date(ts).toLocaleString();
 }
 
+function stringifyMetadata(metadata: any): string | undefined {
+  if (metadata === null || metadata === undefined) return undefined;
+  try {
+    return JSON.stringify(metadata, null, 2);
+  } catch {
+    return String(metadata);
+  }
+}
+
 function matchesFilter(entry: ToastHistoryEntry, filter: string): boolean {
   const lower = filter.toLowerCase();
   if (entry.id?.toLowerCase().includes(lower)) return true;
   if (typeof entry.message === "string" && entry.message.toLowerCase().includes(lower)) return true;
-  if (entry.extra && entry.extra.toLowerCase().includes(lower)) return true;
+  if (entry.detail && entry.detail.toLowerCase().includes(lower)) return true;
+  if (entry.metadata) {
+    const metaStr = stringifyMetadata(entry.metadata);
+    if (metaStr && metaStr.toLowerCase().includes(lower)) return true;
+  }
   return false;
 }
 
-function ExtraBlock({
-  extra,
+function CollapsibleBlock({
+  label,
+  content,
   expanded,
   onToggle,
 }: {
-  extra: string;
+  label: string;
+  content: string;
   expanded: boolean;
   onToggle: () => void;
 }) {
@@ -37,8 +53,8 @@ function ExtraBlock({
     setLocalExpanded(expanded);
   }, [expanded]);
 
-  const needsTruncation = extra.length > EXTRA_COLLAPSED_LENGTH;
-  const displayText = !localExpanded && needsTruncation ? extra.slice(0, EXTRA_COLLAPSED_LENGTH) + "..." : extra;
+  const needsTruncation = content.length > DETAIL_COLLAPSED_LENGTH;
+  const displayText = !localExpanded && needsTruncation ? content.slice(0, DETAIL_COLLAPSED_LENGTH) + "..." : content;
 
   const handleToggle = () => {
     setLocalExpanded(!localExpanded);
@@ -46,7 +62,8 @@ function ExtraBlock({
   };
 
   return (
-    <div style={{ marginBottom: "4px" }}>
+    <div style={{ marginBottom: "4px", padding: "0 12px" }}>
+      <div style={{ opacity: 0.6, fontSize: "0.7rem", marginBottom: "2px" }}>{label}</div>
       <pre
         style={{
           margin: 0,
@@ -80,7 +97,7 @@ export default function ToastHistoryList() {
 
   const history = getToastHistory();
 
-  const hasAnyExtra = history.some((entry) => !!entry.extra);
+  const hasAnyExpandable = history.some((entry) => !!entry.detail || !!entry.metadata);
   const filtered = filter ? history.filter((entry) => matchesFilter(entry, filter)) : history;
   const sorted = [...filtered].sort((a, b) =>
     sortOrder === "newest" ? b.createdTime - a.createdTime : a.createdTime - b.createdTime,
@@ -116,7 +133,7 @@ export default function ToastHistoryList() {
           <MenuItem value="newest">Newest First</MenuItem>
           <MenuItem value="oldest">Oldest First</MenuItem>
         </Select>
-        {hasAnyExtra && (
+        {hasAnyExpandable && (
           <Button size="small" variant="outlined" onClick={() => setExpandAll(!expandAll)}>
             {expandAll ? "Collapse All" : "Expand All"}
           </Button>
@@ -135,6 +152,7 @@ export default function ToastHistoryList() {
           >
             {virtualizer.getVirtualItems().map((virtualRow) => {
               const entry = sorted[virtualRow.index];
+              const metaStr = entry.metadata ? stringifyMetadata(entry.metadata) : undefined;
               return (
                 <div
                   key={`${entry.id}-${entry.createdTime}-${virtualRow.index}`}
@@ -151,7 +169,6 @@ export default function ToastHistoryList() {
                   <div
                     style={{
                       padding: "8px 12px",
-                      borderBottom: "1px solid rgba(128,128,128,0.2)",
                       fontSize: "0.85rem",
                     }}
                   >
@@ -167,7 +184,13 @@ export default function ToastHistoryList() {
                       )}
                     </div>
                   </div>
-                  {entry.extra && <ExtraBlock extra={entry.extra} expanded={expandAll} onToggle={remeasure} />}
+                  {entry.detail && (
+                    <CollapsibleBlock label="Detail" content={entry.detail} expanded={expandAll} onToggle={remeasure} />
+                  )}
+                  {metaStr && (
+                    <CollapsibleBlock label="Metadata" content={metaStr} expanded={expandAll} onToggle={remeasure} />
+                  )}
+                  <Divider sx={{ mt: 1 }} />
                 </div>
               );
             })}
