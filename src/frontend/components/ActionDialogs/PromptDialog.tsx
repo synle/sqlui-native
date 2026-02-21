@@ -18,6 +18,7 @@ export type PromptInput = {
   languageMode?: string;
   required?: boolean;
   readonly?: boolean;
+  isFullScreen?: boolean;
 };
 
 type PromptDialogProps = PromptInput & {
@@ -55,9 +56,9 @@ export default function PromptDialog(props: PromptDialogProps): JSX.Element | nu
       onClose={() => handleClose(false)}
       aria-labelledby="prompt-dialog-title"
       open={props.open}
-      fullWidth={true}
-      fullScreen={props.isLongPrompt}
-      maxWidth={"md"}
+      fullScreen={!!props.isFullScreen || !!props.isLongPrompt}
+      fullWidth={!props.isFullScreen && !props.isLongPrompt}
+      maxWidth={props.isFullScreen || props.isLongPrompt ? false : "md"}
     >
       <form onSubmit={onSave} style={props.isLongPrompt ? { display: "flex", flexDirection: "column", height: "100%" } : undefined}>
         <DialogTitle id="prompt-dialog-title">

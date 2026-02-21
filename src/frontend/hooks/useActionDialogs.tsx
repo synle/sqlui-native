@@ -14,6 +14,7 @@ type ConfirmActionDialog = {
   type: "confirm";
   message: string;
   yesLabel?: string;
+  isFullScreen?: boolean;
   onSubmit: (yesSelected: boolean) => void;
 };
 

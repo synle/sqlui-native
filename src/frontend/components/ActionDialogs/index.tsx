@@ -30,7 +30,7 @@ export default function ActionDialogs(): JSX.Element | null {
 
   switch (dialog.type) {
     case "alert":
-      return <AlertDialog open={true} title="Alert" message={dialog.message} onDismiss={onDimiss} isConfirm={false} />;
+      return <AlertDialog open={true} title="Alert" message={dialog.message} onDismiss={onDimiss} isConfirm={false} isFullScreen={dialog.isFullScreen} />;
     case "confirm":
       return (
         <AlertDialog
@@ -41,6 +41,7 @@ export default function ActionDialogs(): JSX.Element | null {
           onYesClick={onConfirmSubmit}
           onDismiss={onDimiss}
           isConfirm={true}
+          isFullScreen={dialog.isFullScreen}
         />
       );
     case "prompt":
@@ -57,6 +58,7 @@ export default function ActionDialogs(): JSX.Element | null {
           saveLabel={dialog.saveLabel}
           required={dialog.required}
           readonly={dialog.readonly}
+          isFullScreen={dialog.isFullScreen}
         />
       );
     case "choice":
@@ -69,6 +71,7 @@ export default function ActionDialogs(): JSX.Element | null {
           onSelect={onChoiceSelect}
           onDismiss={onDimiss}
           required={dialog.required}
+          isFullScreen={dialog.isFullScreen}
         />
       );
     case "modal":
@@ -81,6 +84,7 @@ export default function ActionDialogs(): JSX.Element | null {
           showCloseButton={!!dialog.showCloseButton}
           disableBackdropClick={!!dialog.disableBackdropClick}
           size={dialog.size}
+          isFullScreen={dialog.isFullScreen}
         />
       );
   }
