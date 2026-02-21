@@ -23,10 +23,7 @@ describe("cassandra v4 integration", () => {
     await adapter.execute(
       `CREATE KEYSPACE IF NOT EXISTS sqlui_test WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1}`,
     );
-    await adapter.execute(
-      `CREATE TABLE IF NOT EXISTS artists (artist_id int PRIMARY KEY, name text)`,
-      "sqlui_test",
-    );
+    await adapter.execute(`CREATE TABLE IF NOT EXISTS artists (artist_id int PRIMARY KEY, name text)`, "sqlui_test");
     await adapter.execute(`INSERT INTO artists (artist_id, name) VALUES (1, 'Test Artist 1')`, "sqlui_test");
     await adapter.execute(`INSERT INTO artists (artist_id, name) VALUES (2, 'Test Artist 2')`, "sqlui_test");
     await adapter.execute(`INSERT INTO artists (artist_id, name) VALUES (3, 'Test Artist 3')`, "sqlui_test");
@@ -80,10 +77,7 @@ describe("cassandra v2 integration", () => {
     await adapter.execute(
       `CREATE KEYSPACE IF NOT EXISTS sqlui_test WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1}`,
     );
-    await adapter.execute(
-      `CREATE TABLE IF NOT EXISTS artists (artist_id int PRIMARY KEY, name text)`,
-      "sqlui_test",
-    );
+    await adapter.execute(`CREATE TABLE IF NOT EXISTS artists (artist_id int PRIMARY KEY, name text)`, "sqlui_test");
     await adapter.execute(`INSERT INTO artists (artist_id, name) VALUES (1, 'Test Artist 1')`, "sqlui_test");
     await adapter.execute(`INSERT INTO artists (artist_id, name) VALUES (2, 'Test Artist 2')`, "sqlui_test");
     await adapter.execute(`INSERT INTO artists (artist_id, name) VALUES (3, 'Test Artist 3')`, "sqlui_test");
