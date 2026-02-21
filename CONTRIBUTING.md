@@ -22,31 +22,31 @@ Assuming you use the same database in the docker samples below:
     "_type": "connection",
     "id": "connection.1643485467072.6333713976068809",
     "connection": "mysql://root:password123!@127.0.0.1:3306",
-    "name": "Local Mysql"
+    "name": "Local MySQL"
   },
   {
     "_type": "connection",
     "id": "connection.1643485479951.8848237338571023",
     "connection": "mariadb://root:password123!@127.0.0.1:33061",
-    "name": "Local Mariadb"
+    "name": "Local MariaDB"
   },
   {
     "_type": "connection",
     "id": "connection.1643485495810.296972129680364",
     "connection": "mssql://sa:password123!@127.0.0.1:1433",
-    "name": "Local Ms Sql Server"
+    "name": "Local Microsoft SQL Server"
   },
   {
     "_type": "connection",
     "id": "connection.1643485516220.4798705129674932",
     "connection": "postgres://postgres:password123!@127.0.0.1:5432",
-    "name": "Local Postgres"
+    "name": "Local PostgresSQL"
   },
   {
     "_type": "connection",
     "id": "connection.1643485607366.2475344250499598",
     "connection": "sqlite://test.sqlite",
-    "name": "Local Sqlite"
+    "name": "Local SQLite"
   },
   {
     "_type": "connection",
@@ -64,7 +64,7 @@ Assuming you use the same database in the docker samples below:
     "_type": "connection",
     "id": "connection.1644343163858.95939920823759",
     "connection": "mongodb://127.0.0.1:27017",
-    "name": "Local Mongodb"
+    "name": "Local MongoDB"
   },
   {
     "_type": "connection",
@@ -242,11 +242,11 @@ Use the template in [src/common/adapters/\_SampleDataAdapter\_](https://github.c
 
 The template files use placeholder names that you need to replace with your actual values:
 
-| Placeholder in template | What to replace with | Example |
-|---|---|---|
-| `SampleDataAdapter` (class name) | PascalCase adapter class name | `MyDbDataAdapter` |
-| `AdapterClient` (type alias) | Client type from your database driver | `Client` (from `my-db-driver`) |
-| `your_dialect_name` (string) | Lowercase dialect identifier used in connection strings | `mydb` |
+| Placeholder in template          | What to replace with                                    | Example                        |
+| -------------------------------- | ------------------------------------------------------- | ------------------------------ |
+| `SampleDataAdapter` (class name) | PascalCase adapter class name                           | `MyDbDataAdapter`              |
+| `AdapterClient` (type alias)     | Client type from your database driver                   | `Client` (from `my-db-driver`) |
+| `your_dialect_name` (string)     | Lowercase dialect identifier used in connection strings | `mydb`                         |
 
 ### Step-by-step guide
 
@@ -281,15 +281,15 @@ You will have three files to implement:
 
 This class extends `BaseDataAdapter` and implements `IDataAdapter`. You must implement:
 
-| Method | Purpose |
-|---|---|
-| `getConnection()` | Create and return a connected client instance |
-| `closeConnection(client)` | Disconnect and clean up the client |
-| `authenticate()` | Verify the connection string is valid and the server is reachable |
-| `getDatabases()` | Return list of databases/keyspaces/namespaces |
-| `getTables(database)` | Return list of tables/collections in a database |
-| `getColumns(table, database)` | Return column metadata (name, type, primaryKey, etc.) |
-| `execute(sql, database, table)` | Execute a user query and return results |
+| Method                          | Purpose                                                           |
+| ------------------------------- | ----------------------------------------------------------------- |
+| `getConnection()`               | Create and return a connected client instance                     |
+| `closeConnection(client)`       | Disconnect and clean up the client                                |
+| `authenticate()`                | Verify the connection string is valid and the server is reachable |
+| `getDatabases()`                | Return list of databases/keyspaces/namespaces                     |
+| `getTables(database)`           | Return list of tables/collections in a database                   |
+| `getColumns(table, database)`   | Return column metadata (name, type, primaryKey, etc.)             |
+| `execute(sql, database, table)` | Execute a user query and return results                           |
 
 **`src/common/adapters/MyDbDataAdapter/scripts.ts`** -- Script generators
 
@@ -326,14 +326,11 @@ Open `src/common/adapters/DataScriptFactory.ts` and add your scripts:
 
 ```ts
 // 1. Add import at the top
-import MyDbDataAdapterScripts from 'src/common/adapters/MyDbDataAdapter/scripts';
+import MyDbDataAdapterScripts from "src/common/adapters/MyDbDataAdapter/scripts";
 
 // 2. Add to the getAllImplementations() array
 export function getAllImplementations(): BaseDataScript[] {
-  return [
-    ...
-    MyDbDataAdapterScripts,
-  ];
+  return [...MyDbDataAdapterScripts];
 }
 ```
 
