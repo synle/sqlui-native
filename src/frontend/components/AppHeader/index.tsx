@@ -8,6 +8,7 @@ import HomeIcon from "@mui/icons-material/Home";
 import InfoIcon from "@mui/icons-material/Info";
 import KeyboardCommandKeyIcon from "@mui/icons-material/KeyboardCommandKey";
 import MenuIcon from "@mui/icons-material/Menu";
+import NotificationsIcon from "@mui/icons-material/Notifications";
 import PhotoSizeSelectSmallIcon from "@mui/icons-material/PhotoSizeSelectSmall";
 import SettingsIcon from "@mui/icons-material/Settings";
 import StarIcon from "@mui/icons-material/Star";
@@ -20,13 +21,54 @@ import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import DropdownButton from "src/frontend/components/DropdownButton";
 import { useCommands } from "src/frontend/components/MissionControl";
+import { useActionDialogs } from "src/frontend/hooks/useActionDialogs";
 import { useGetCurrentSession } from "src/frontend/hooks/useSession";
+import { getToastHistory, ToastHistoryEntry } from "src/frontend/hooks/useToaster";
 import appPackage from "src/package.json";
+
+function formatTime(ts?: number) {
+  if (!ts) return "-";
+  return new Date(ts).toLocaleString();
+}
+
+function ToastHistoryList() {
+  const history = getToastHistory();
+  if (history.length === 0) {
+    return <div style={{ padding: "16px", textAlign: "center", opacity: 0.6 }}>No notifications yet.</div>;
+  }
+  return (
+    <div style={{ maxHeight: "400px", overflow: "auto" }}>
+      {[...history].reverse().map((entry: ToastHistoryEntry, idx: number) => (
+        <div
+          key={`${entry.id}-${entry.createdTime}-${idx}`}
+          style={{
+            padding: "8px 12px",
+            borderBottom: "1px solid rgba(128,128,128,0.2)",
+            fontSize: "0.85rem",
+          }}
+        >
+          <div style={{ marginBottom: "4px" }}>{entry.message}</div>
+          <div style={{ opacity: 0.6, fontSize: "0.75rem" }}>
+            {entry.id && <span>ID: {entry.id} | </span>}
+            Created: {formatTime(entry.createdTime)}
+            {entry.dismissTime && (
+              <span>
+                {" "}
+                | Dismissed: {formatTime(entry.dismissTime)} ({entry.dismissTriggered})
+              </span>
+            )}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
 
 export default function AppHeader() {
   const navigate = useNavigate();
   const { data: currentSession, isLoading } = useGetCurrentSession();
   const { selectCommand } = useCommands();
+  const { modal } = useActionDialogs();
 
   const options = [
     {
@@ -134,6 +176,26 @@ export default function AppHeader() {
           >
             ({currentSession?.name})
           </Typography>
+        </Tooltip>
+
+        <Tooltip title="Notification History">
+          <IconButton
+            aria-label="Notification History"
+            color="inherit"
+            onClick={async () => {
+              try {
+                await modal({
+                  title: "Notification History",
+                  message: <ToastHistoryList />,
+                  showCloseButton: true,
+                  size: "lg",
+                });
+              } finally {
+              }
+            }}
+          >
+            <NotificationsIcon fontSize="inherit" />
+          </IconButton>
         </Tooltip>
 
         <DropdownButton id="session-action-split-button" options={options} isLoading={isLoading} maxHeight="500px">
