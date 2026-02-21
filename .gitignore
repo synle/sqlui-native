@@ -30,7 +30,7 @@ boxart.png
 build
 connections-mocked-server.json
 coverage
-data
+/data
 DEBUG
 dist
 Error

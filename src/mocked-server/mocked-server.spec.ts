@@ -302,9 +302,7 @@ describe("Connections - CRUD", () => {
     expect(res.status).toEqual(201);
 
     // replace all connections with a new set
-    const replacementConnections = [
-      { id: "replacement-1", name: "Replaced Conn", connection: "sqlite://replaced.db" },
-    ];
+    const replacementConnections = [{ id: "replacement-1", name: "Replaced Conn", connection: "sqlite://replaced.db" }];
     res = await requestWithSupertest.post(`/api/connections`).set(_getCommonHeaders(mockedSessionId)).send(replacementConnections);
     expect(res.status).toEqual(200);
 
@@ -336,17 +334,14 @@ describe("Queries - CRUD", () => {
     const queryId = res.body.id;
 
     // update the query with SQL content
-    res = await requestWithSupertest
-      .put(`/api/query/${queryId}`)
-      .set(_getCommonHeaders(mockedSessionId))
-      .send({
-        id: queryId,
-        name: "Updated Query",
-        sql: "SELECT * FROM users",
-        connectionId: "conn-1",
-        databaseId: "db-1",
-        tableId: "users",
-      });
+    res = await requestWithSupertest.put(`/api/query/${queryId}`).set(_getCommonHeaders(mockedSessionId)).send({
+      id: queryId,
+      name: "Updated Query",
+      sql: "SELECT * FROM users",
+      connectionId: "conn-1",
+      databaseId: "db-1",
+      tableId: "users",
+    });
     expect(res.status).toEqual(202);
     expect(res.body.name).toEqual("Updated Query");
     expect(res.body.sql).toEqual("SELECT * FROM users");
@@ -428,9 +423,7 @@ describe("Sessions - Open/Close and Window Mapping", () => {
   });
 
   test("GET /api/session should return 404 for unknown window-id", async () => {
-    const res = await requestWithSupertest
-      .get(`/api/session`)
-      .set({ "sqlui-native-window-id": `non-existent-window.${Date.now()}` });
+    const res = await requestWithSupertest.get(`/api/session`).set({ "sqlui-native-window-id": `non-existent-window.${Date.now()}` });
     expect(res.status).toEqual(404);
   });
 });
@@ -581,14 +574,10 @@ describe("Data Snapshots", () => {
   test("Multiple snapshots can be created and listed", async () => {
     let res: any;
 
-    const snap1 = await requestWithSupertest
-      .post(`/api/dataSnapshot`)
-      .send({ description: "Snap 1", values: [{ a: 1 }] });
+    const snap1 = await requestWithSupertest.post(`/api/dataSnapshot`).send({ description: "Snap 1", values: [{ a: 1 }] });
     expect(snap1.status).toEqual(200);
 
-    const snap2 = await requestWithSupertest
-      .post(`/api/dataSnapshot`)
-      .send({ description: "Snap 2", values: [{ b: 2 }] });
+    const snap2 = await requestWithSupertest.post(`/api/dataSnapshot`).send({ description: "Snap 2", values: [{ b: 2 }] });
     expect(snap2.status).toEqual(200);
 
     // both should have different ids

@@ -8,11 +8,20 @@ import { SqluiCore, SqluiEnums } from "typings";
 
 const isMac = process.platform === "darwin";
 
-// disable smooth scrolling
+// performance: disable smooth scrolling
 try {
   app.commandLine.appendSwitch("disable-smooth-scrolling", "1");
   app.commandLine.appendSwitch("enable-smooth-scrolling", "0");
 } catch (err) {}
+
+// performance: GPU acceleration and rendering
+app.commandLine.appendSwitch("enable-gpu-rasterization");
+app.commandLine.appendSwitch("enable-zero-copy");
+app.commandLine.appendSwitch("ignore-gpu-blocklist");
+app.commandLine.appendSwitch("enable-features", "CanvasOopRasterization,BackForwardCache");
+
+// performance: reduce memory overhead
+app.commandLine.appendSwitch("js-flags", "--expose-gc");
 
 // create the window
 async function createWindow(isFirstWindow?: boolean) {
@@ -20,11 +29,20 @@ async function createWindow(isFirstWindow?: boolean) {
     width: 1200,
     height: 800,
     icon: __dirname + "/favicon.ico",
+    show: false, // performance: avoid white flash, show on ready-to-show
+    backgroundColor: nativeTheme.shouldUseDarkColors ? "#1e1e1e" : "#ffffff",
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
       nodeIntegration: true,
       contextIsolation: false,
+      spellcheck: false, // performance: no spellcheck needed for SQL editor
+      backgroundThrottling: false, // performance: keep queries running when window is in background
+      v8CacheOptions: "bypassHeatCheck", // performance: aggressively cache compiled JS bytecode
     },
+  });
+
+  mainWindow.on("ready-to-show", () => {
+    mainWindow.show();
   });
 
   const targetWindowId = `electron-window-${Date.now()}`;
@@ -327,6 +345,7 @@ ipcMain.on("sqluiNativeEvent/toggleMenus", (...[, data]) => {
 
 // this is the event listener that will respond when we will request it in the web page
 const _apiCache = {};
+let _cachedEndpoints: ReturnType<typeof getEndpointHandlers> | undefined;
 ipcMain.on("sqluiNativeEvent/fetch", async (event, data) => {
   const { requestId, url, options } = data;
 
@@ -382,8 +401,10 @@ ipcMain.on("sqluiNativeEvent/fetch", async (event, data) => {
       },
     };
 
-    const endpoints = getEndpointHandlers();
-    for (const endpoint of endpoints) {
+    if (!_cachedEndpoints) {
+      _cachedEndpoints = getEndpointHandlers();
+    }
+    for (const endpoint of _cachedEndpoints) {
       const [targetMethod, targetUrl, targetHandler] = endpoint;
       const matchedUrlObject = matchCurrentUrlAgainst(targetUrl);
       if (targetMethod === method && matchedUrlObject) {
