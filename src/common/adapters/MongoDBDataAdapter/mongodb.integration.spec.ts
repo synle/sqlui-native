@@ -51,10 +51,7 @@ describe("mongodb integration", () => {
   });
 
   test("execute findOne", async () => {
-    const resp = await adapter.execute(
-      `db.collection('artists').findOne({ name: 'Test Artist 1' })`,
-      "sqlui_test",
-    );
+    const resp = await adapter.execute(`db.collection('artists').findOne({ name: 'Test Artist 1' })`, "sqlui_test");
     expect(resp.ok).toBe(true);
     expect(resp.raw).toBeDefined();
   });
@@ -68,10 +65,7 @@ describe("mongodb integration", () => {
   });
 
   test("execute deleteOne", async () => {
-    const resp = await adapter.execute(
-      `db.collection('artists').deleteOne({ name: 'Updated Artist' })`,
-      "sqlui_test",
-    );
+    const resp = await adapter.execute(`db.collection('artists').deleteOne({ name: 'Updated Artist' })`, "sqlui_test");
     expect(resp.ok).toBe(true);
   });
 
