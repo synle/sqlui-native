@@ -59,7 +59,7 @@ export default function PromptDialog(props: PromptDialogProps): JSX.Element | nu
       fullScreen={props.isLongPrompt}
       maxWidth={"md"}
     >
-      <form onSubmit={onSave}>
+      <form onSubmit={onSave} style={props.isLongPrompt ? { display: "flex", flexDirection: "column", height: "100%" } : undefined}>
         <DialogTitle id="prompt-dialog-title">
           {props.title || "Prompt"}
           <IconButton
@@ -75,7 +75,7 @@ export default function PromptDialog(props: PromptDialogProps): JSX.Element | nu
             <CloseIcon />
           </IconButton>
         </DialogTitle>
-        <DialogContent dividers>
+        <DialogContent dividers sx={props.isLongPrompt ? { flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" } : undefined}>
           {props.isLongPrompt ? (
             <CodeEditorBox
               value={value}
@@ -84,7 +84,7 @@ export default function PromptDialog(props: PromptDialogProps): JSX.Element | nu
               autoFocus={true}
               required={props.required}
               wordWrap={true}
-              height="72vh"
+              fillHeight={true}
               hideEditorSize={true}
               hideEditorSyntax={true}
             />

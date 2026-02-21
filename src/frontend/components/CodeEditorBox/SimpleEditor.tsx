@@ -194,7 +194,7 @@ export default function SimpleEditor(props: SimpleEditorProps): JSX.Element | nu
       required={props.required}
       style={{
         whiteSpace: props.wordWrap ? "initial" : "nowrap",
-        minHeight: props.height,
+        ...(props.fillHeight ? { flex: 1, minHeight: 0 } : { minHeight: props.height }),
       }}
     />
   );
