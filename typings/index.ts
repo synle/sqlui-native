@@ -33,6 +33,12 @@ export module SqluiCore {
   export type ServerConfigs = {
     storageDir: string;
     isElectron: boolean;
+    [key: string]: any;
+  };
+
+  export type SettingsEntry = {
+    id: string;
+    [key: string]: any;
   };
 
   export type CoreConnectionProps = {

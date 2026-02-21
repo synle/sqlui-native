@@ -161,3 +161,7 @@ export async function getFolderItemsStorage(folderId: "bookmarks" | "recycleBin"
 export async function getDataSnapshotStorage() {
   return await new PersistentStorage<SqluiCore.DataSnapshot>("dataSnapshots", "dataSnapshots", "dataSnapshots");
 }
+
+export async function getSettingsStorage() {
+  return await new PersistentStorage<SqluiCore.SettingsEntry>("settings", "settings", "settings");
+}

@@ -1,31 +1,37 @@
 import useMediaQuery from "@mui/material/useMediaQuery";
-import React, { createContext, useContext, useState } from "react";
-import { LocalStorageConfig } from "src/frontend/data/config";
+import React, { useCallback } from "react";
+import { useGetServerConfigs, useUpdateServerConfigs } from "src/frontend/hooks/useServerConfigs";
 import { SqluiFrontend } from "typings";
-// Settings
-let _settings = LocalStorageConfig.get<SqluiFrontend.Settings>("clientConfig/cache.settings", {});
 
-const TargetContext = createContext({
-  settings: _settings,
-  onChange: (newSettings: SqluiFrontend.Settings) => {},
-});
-
-export default function WrappedContext(props: { children: React.ReactNode }): JSX.Element | null {
-  // State to hold the theme value
-  const [settings, setSettings] = useState(_settings);
-
-  // Function to toggle the theme
-  const onChange = (newSettings: SqluiFrontend.Settings) => {
-    setSettings({ ...newSettings });
-    LocalStorageConfig.set("clientConfig/cache.settings", newSettings);
-  };
-
-  // Provide the theme value and toggle function to the children components
-  return <TargetContext.Provider value={{ settings, onChange }}>{props.children}</TargetContext.Provider>;
+// Pass-through provider kept for backwards compatibility with CombinedContextProvider
+export default function SettingContextProvider(props: { children: React.ReactNode }): JSX.Element {
+  return <>{props.children}</>;
 }
 
 export function useSetting() {
-  const { settings, onChange } = useContext(TargetContext)!;
+  const { data: serverConfigs } = useGetServerConfigs();
+  const { mutate: updateConfigs } = useUpdateServerConfigs();
+
+  const settings: SqluiFrontend.Settings = {
+    darkMode: serverConfigs?.darkMode,
+    animationMode: serverConfigs?.animationMode,
+    layoutMode: serverConfigs?.layoutMode,
+    querySelectionMode: serverConfigs?.querySelectionMode,
+    editorMode: serverConfigs?.editorMode,
+    tableRenderer: serverConfigs?.tableRenderer,
+    wordWrap: serverConfigs?.wordWrap,
+    queryTabOrientation: serverConfigs?.queryTabOrientation,
+    querySize: serverConfigs?.querySize,
+    tablePageSize: serverConfigs?.tablePageSize,
+    deleteMode: serverConfigs?.deleteMode,
+  };
+
+  const onChange = useCallback(
+    (newSettings: SqluiFrontend.Settings) => {
+      updateConfigs(newSettings);
+    },
+    [updateConfigs],
+  );
 
   return {
     settings,
