@@ -23,46 +23,8 @@ import DropdownButton from "src/frontend/components/DropdownButton";
 import { useCommands } from "src/frontend/components/MissionControl";
 import { useActionDialogs } from "src/frontend/hooks/useActionDialogs";
 import { useGetCurrentSession } from "src/frontend/hooks/useSession";
-import { getToastHistory, ToastHistoryEntry } from "src/frontend/hooks/useToaster";
+import ToastHistoryList from "src/frontend/components/ToastHistoryList";
 import appPackage from "src/package.json";
-
-function formatTime(ts?: number) {
-  if (!ts) return "-";
-  return new Date(ts).toLocaleString();
-}
-
-function ToastHistoryList() {
-  const history = getToastHistory();
-  if (history.length === 0) {
-    return <div style={{ padding: "16px", textAlign: "center", opacity: 0.6 }}>No notifications yet.</div>;
-  }
-  return (
-    <div style={{ maxHeight: "400px", overflow: "auto" }}>
-      {[...history].reverse().map((entry: ToastHistoryEntry, idx: number) => (
-        <div
-          key={`${entry.id}-${entry.createdTime}-${idx}`}
-          style={{
-            padding: "8px 12px",
-            borderBottom: "1px solid rgba(128,128,128,0.2)",
-            fontSize: "0.85rem",
-          }}
-        >
-          <div style={{ marginBottom: "4px" }}>{entry.message}</div>
-          <div style={{ opacity: 0.6, fontSize: "0.75rem" }}>
-            {entry.id && <span>ID: {entry.id} | </span>}
-            Created: {formatTime(entry.createdTime)}
-            {entry.dismissTime && (
-              <span>
-                {" "}
-                | Dismissed: {formatTime(entry.dismissTime)} ({entry.dismissTriggered})
-              </span>
-            )}
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-}
 
 export default function AppHeader() {
   const navigate = useNavigate();
