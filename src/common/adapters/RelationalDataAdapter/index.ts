@@ -99,13 +99,18 @@ export default class RelationalDataAdapter extends BaseDataAdapter implements ID
     } catch (err) {
       // dialect module not available, let Sequelize handle the error
       console.log("RelationalDataAdapter.getConnection - Dialect module not available", connectionUrl, connectionPropOptions, err);
-      throw err
+      throw err;
     }
 
     try {
       return new Sequelize(connectionUrl, connectionPropOptions);
     } catch (err) {
-      console.log("RelationalDataAdapter.getConnection - Failed to set up Sequelize for RelationalDataAdapter", connectionUrl, connectionPropOptions, err);
+      console.log(
+        "RelationalDataAdapter.getConnection - Failed to set up Sequelize for RelationalDataAdapter",
+        connectionUrl,
+        connectionPropOptions,
+        err,
+      );
       throw err;
     }
   }

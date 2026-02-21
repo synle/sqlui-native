@@ -1,6 +1,6 @@
-import BaseDataAdapter, { MAX_CONNECTION_TIMEOUT } from 'src/common/adapters/BaseDataAdapter/index';
-import IDataAdapter from 'src/common/adapters/IDataAdapter';
-import { SqluiCore } from 'typings';
+import BaseDataAdapter, { MAX_CONNECTION_TIMEOUT } from "src/common/adapters/BaseDataAdapter/index";
+import IDataAdapter from "src/common/adapters/IDataAdapter";
+import { SqluiCore } from "typings";
 
 // Replace with the actual client type from your database driver package.
 // Example: import { Client } from 'your-db-driver';
@@ -36,7 +36,7 @@ export default class SampleDataAdapter extends BaseDataAdapter implements IDataA
   private async getConnection(): Promise<AdapterClient> {
     return new Promise<AdapterClient>(async (resolve, reject) => {
       try {
-        setTimeout(() => reject('Connection timeout'), MAX_CONNECTION_TIMEOUT);
+        setTimeout(() => reject("Connection timeout"), MAX_CONNECTION_TIMEOUT);
 
         // TODO: create and connect your client here
         // Example:
@@ -86,7 +86,7 @@ export default class SampleDataAdapter extends BaseDataAdapter implements IDataA
     //   return result.map(db => ({ name: db.name, tables: [] }));
     return [
       {
-        name: 'TODO_database_name',
+        name: "TODO_database_name",
         tables: [],
       },
     ];
@@ -106,7 +106,7 @@ export default class SampleDataAdapter extends BaseDataAdapter implements IDataA
     //   return result.map(t => ({ name: t.name, columns: [] }));
     return [
       {
-        name: 'TODO_table_name',
+        name: "TODO_table_name",
         columns: [],
       },
     ];
@@ -139,7 +139,7 @@ export default class SampleDataAdapter extends BaseDataAdapter implements IDataA
 
     try {
       if (!database) {
-        throw 'Database is a required field';
+        throw "Database is a required field";
       }
 
       client = await this.getConnection();

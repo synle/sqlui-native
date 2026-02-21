@@ -1,11 +1,11 @@
-import BaseDataScript, { getDivider } from 'src/common/adapters/BaseDataAdapter/scripts';
-import { SqlAction, SqluiCore } from 'typings';
+import BaseDataScript, { getDivider } from "src/common/adapters/BaseDataAdapter/scripts";
+import { SqlAction, SqluiCore } from "typings";
 
 /**
  * Formatter determines syntax highlighting in the query editor.
  * Use "sql" for SQL-based dialects, "js" or "javascript" for JS-based dialects (e.g., MongoDB, Redis).
  */
-const formatter = 'sql';
+const formatter = "sql";
 
 // ─── Table Action Script Generators ──────────────────────────────────────────
 // Each function below generates a pre-built query template shown in the UI's
@@ -67,7 +67,7 @@ export function getDropDatabase(input: SqlAction.DatabaseInput): SqlAction.Outpu
 export class ConcreteDataScripts extends BaseDataScript {
   // Must match the dialect string(s) registered in typings/index.ts.
   // Use multiple entries if your adapter handles variants (e.g., ["redis", "rediss"]).
-  dialects = ['your_dialect_name'];
+  dialects = ["your_dialect_name"];
 
   // ─── Feature Flags ───────────────────────────────────────────────────────
   // Return true to enable optional UI features for this dialect.
@@ -141,26 +141,22 @@ export class ConcreteDataScripts extends BaseDataScript {
   // See src/common/adapters/code-snippets/ for the renderCodeSnippet helper
   // and existing Mustache templates.
 
-  getCodeSnippet(
-    connection: SqluiCore.ConnectionProps,
-    query: SqluiCore.ConnectionQuery,
-    language: SqluiCore.LanguageMode,
-  ) {
+  getCodeSnippet(connection: SqluiCore.ConnectionProps, query: SqluiCore.ConnectionQuery, language: SqluiCore.LanguageMode) {
     const sql = query.sql;
 
     switch (language) {
-      case 'javascript':
+      case "javascript":
         // TODO: return a runnable JS code snippet
         // Example: return renderCodeSnippet('javascript', 'your_dialect', { sql });
-        return '';
-      case 'python':
+        return "";
+      case "python":
         // TODO: return a runnable Python code snippet
-        return '';
-      case 'java':
+        return "";
+      case "java":
         // TODO: return a runnable Java code snippet
-        return '';
+        return "";
       default:
-        return '';
+        return "";
     }
   }
 }

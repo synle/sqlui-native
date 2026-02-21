@@ -226,17 +226,15 @@ jobs:
       - run: bash scripts/build.sh
 
       - run: |
-          npm run dist
-
-      - run: |
-          npm run dist-linux-appimage
-
-      - run: |
-          mv ./dist/sqlui-native*.deb ./dist/sqlui-native.deb
-          mv ./dist/sqlui-native*.rpm ./dist/sqlui-native.rpm
-          mv ./dist/sqlui-native*.snap ./dist/sqlui-native.snap
-          mv ./dist/sqlui-native*.pacman ./dist/sqlui-native.pacman
-          mv ./dist/sqlui-native*.AppImage ./dist/sqlui-native.AppImage
+          source scripts/common.sh
+          run_step "npm run dist"
+          run_step "mv ./dist/sqlui-native*.deb ./dist/sqlui-native.deb"
+          run_step "mv ./dist/sqlui-native*.rpm ./dist/sqlui-native.rpm"
+          run_step "mv ./dist/sqlui-native*.snap ./dist/sqlui-native.snap"
+          run_step "mv ./dist/sqlui-native*.pacman ./dist/sqlui-native.pacman"
+          run_step "npm run dist-linux-appimage"
+          run_step "mv ./dist/sqlui-native*.AppImage ./dist/sqlui-native.AppImage"
+        name: npm run dist && npm run dist-linux-appimage
 
       - uses: actions/upload-artifact@v4
         with:

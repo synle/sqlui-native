@@ -24,13 +24,13 @@
       </h1>
       <h2 class="project-tagline">{{ page.description | default: site.description | default: site.github.project_tagline }}</h2>
 
-      {% if site.github.is_project_page %}
+
+
+      <div id="download-buttons-container">
+        {% if site.github.is_project_page %}
         <a href="{{ site.github.repository_url }}" class="btn">GitHub</a>
       {% endif %}
-
-      <div id="download-buttons-container" style="display: inline;"></div>
-
-      <a id="btn-other-releases" href="#" class="btn">Other Releases</a>
+      </div>
 
       <p style="margin-top: 10px; font-size: 0.85em; opacity: 0.9;">
         <i class="fas fa-info-circle" style="margin-right: 5px;"></i>
@@ -59,13 +59,22 @@
     <script>
       (async () => {
         const DOWNLOADS_CONFIG = [
-          { id: 'download-link-mac-arm64', suffix: '-arm64.dmg', label: 'macOS Apple Silicon M-Series (<b>.dmg</b>)' },
-          { id: 'download-link-mac-x64', suffix: '-x64.dmg', label: 'macOS Intel x64 (<b>.dmg</b>)' },
-          { id: 'download-link-windows-x64', suffix: '-x64.exe', label: 'Windows x64 - AMD / Intel (<b>.exe</b>)' },
-          { id: 'download-link-windows-arm64', suffix: '-arm64.exe', label: 'Windows ARM64 (<b>.exe</b>)' },
-          { id: 'download-link-ubuntu', suffix: '.deb', label: 'Ubuntu - Debian (<b>.deb</b>)' },
-          { id: 'download-link-appimage', suffix: '.AppImage', label: 'Linux (<b>.AppImage</b>)' }
-        ];
+          { id: "download-link-mac-arm64", suffix: "-arm64.dmg", name: "macOS / OSX (Apple Silicon M-Series)" },
+          { id: "download-link-mac-x64", suffix: "-x64.dmg", name: "macOS / OSX (Intel x64)" },
+          { id: "download-link-windows-x64", suffix: "-x64.exe", name: "Windows 10/11 (Intel - AMD x64)" },
+          { id: "download-link-windows-arm64", suffix: "-arm64.exe", name: "Windows 10/11 (ARM architecture)" },
+          { id: "download-link-ubuntu", suffix: ".deb", name: "Linux Mint / Ubuntu / Debian" },
+          { id: "download-link-redhat", suffix: ".rpm", name: "Linux Redhat / CentOS / Fedora" },
+          { id: "download-link-appimage", suffix: ".AppImage", name: "Linux Other Distro" },
+        ].map((item) => {
+          // Extract the extension (everything after the last dot)
+          const extension = item.suffix.split(".").pop();
+
+          return {
+            ...item,
+            name: `${item.name} (<b>.${extension}</b>)`,
+          };
+        });
 
         try {
           const response = await fetch('https://synle.github.io/sqlui-native/release.json');
@@ -79,11 +88,11 @@
           const container = document.getElementById('download-buttons-container');
           const baseUrl = `https://github.com/synle/sqlui-native/releases/download/${version}/sqlui-native-${version}`;
 
-          container.innerHTML = DOWNLOADS_CONFIG.map(cfg => `
+          container.innerHTML += DOWNLOADS_CONFIG.map(cfg => `
             <a id="${cfg.id}" href="${baseUrl}${cfg.suffix}" class="btn">
               <i class="fas fa-download" style="margin-right: 5px;"></i> ${cfg.label}
             </a>
-          `).join('');
+          `).join('') + `<a id="btn-other-releases" href="#" class="btn">Other Releases</a>`;
 
           // 3. Update instructions/links in the main content (<li> items)
           document.querySelectorAll('li').forEach(li => {
