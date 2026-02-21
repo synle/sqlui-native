@@ -1,7 +1,6 @@
 import Box from "@mui/material/Box";
 import CssBaseline from "@mui/material/CssBaseline";
 import { createTheme, Theme, ThemeProvider } from "@mui/material/styles";
-import { SnackbarProvider } from "notistack";
 import ReactDOM from "react-dom";
 import { QueryClient } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
@@ -148,20 +147,18 @@ const renderApp = function () {
   };
 
   ReactDOM.render(
-    <SnackbarProvider maxSnack={4}>
-      <PersistQueryClientProvider client={queryClient} persistOptions={persistOptions}>
-        <ReactQueryDevtools initialIsOpen={false} />
-        <CombinedContextProvider>
-          <Routes>
-            <Route path="/data_snapshot" element={<DataSnapshotListView />} />
-            <Route path="/data_snapshot/:dataSnapshotId" element={<DataSnapshotView />} />
-            <Route path="/*" element={<App />} />
-          </Routes>
-          <ActionDialogs />
-          <ElectronEventListener />
-        </CombinedContextProvider>
-      </PersistQueryClientProvider>
-    </SnackbarProvider>,
+    <PersistQueryClientProvider client={queryClient} persistOptions={persistOptions}>
+      <ReactQueryDevtools initialIsOpen={false} />
+      <CombinedContextProvider>
+        <Routes>
+          <Route path="/data_snapshot" element={<DataSnapshotListView />} />
+          <Route path="/data_snapshot/:dataSnapshotId" element={<DataSnapshotView />} />
+          <Route path="/*" element={<App />} />
+        </Routes>
+        <ActionDialogs />
+        <ElectronEventListener />
+      </CombinedContextProvider>
+    </PersistQueryClientProvider>,
     document.querySelector("#body"),
   );
 
