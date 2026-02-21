@@ -16,6 +16,7 @@ concurrency:
 
 jobs:
   prebuild:
+    name: 'Build and Unit Tests'
     runs-on: ubuntu-latest
     steps:
       - run: |
@@ -40,6 +41,7 @@ jobs:
           retention-days: 1
 
   create_release:
+    name: 'Tag and Create a Release'
     needs: [prebuild]
     runs-on: ubuntu-latest
     outputs:
