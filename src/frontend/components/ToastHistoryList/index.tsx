@@ -155,7 +155,6 @@ export default function ToastHistoryList() {
                       fontSize: "0.85rem",
                     }}
                   >
-                    {entry.extra && <ExtraBlock extra={entry.extra} expanded={expandAll} onToggle={remeasure} />}
                     <div style={{ marginBottom: "4px" }}>{entry.message}</div>
                     <div style={{ opacity: 0.6, fontSize: "0.75rem" }}>
                       {entry.id && <span>ID: {entry.id} | </span>}
@@ -168,6 +167,7 @@ export default function ToastHistoryList() {
                       )}
                     </div>
                   </div>
+                  {entry.extra && <ExtraBlock extra={entry.extra} expanded={expandAll} onToggle={remeasure} />}
                 </div>
               );
             })}
