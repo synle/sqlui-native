@@ -10,9 +10,8 @@ export default defineConfig({
   },
   test: {
     globals: true,
-    testTimeout: 10000,
-    include: ["**/*.spec.{ts,tsx}"],
-    exclude: ["**/*.integration.spec.{ts,tsx}", "**/node_modules/**"],
+    testTimeout: 30000,
+    include: ["**/*.integration.spec.{ts,tsx}"],
     setupFiles: ["./vitest.setup.ts"],
   },
 });
