@@ -8,7 +8,7 @@ import Select from "@mui/material/Select";
 import TextField from "@mui/material/TextField";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
-import { getToastHistory, dismissHistoryEntry, dismissAllHistoryEntries, ToastHistoryEntry } from "src/frontend/hooks/useToaster";
+import { getToastHistory, dismissHistoryEntry, dismissAllHistoryEntries, ToastHistoryEntry, useToastHistoryCount } from "src/frontend/hooks/useToaster";
 
 const COLLAPSED_LENGTH = 250;
 const ESTIMATED_ROW_HEIGHT = 60;
@@ -154,8 +154,12 @@ export default function ToastHistoryList() {
   const [filter, setFilter] = useState("");
   const [expandAll, setExpandAll] = useState(false);
   const parentRef = useRef<HTMLDivElement>(null);
+  const [history,setHistory] = useState(getToastHistory())
+  const toastHistoryCount = useToastHistoryCount();
 
-  const history = getToastHistory();
+  useEffect(() => {
+    setHistory(getToastHistory())
+  },[toastHistoryCount])
 
   const hasAnyExpandable = history.some((entry) => getExpandableContent(entry).length > 0);
   const filtered = filter ? history.filter((entry) => matchesFilter(entry, filter)) : history;
