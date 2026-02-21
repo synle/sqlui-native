@@ -12,6 +12,7 @@ type CoreToasterProps = {
 
 type ToasterProps = CoreToasterProps & {
   id?: string;
+  extra?: string | Record<string, unknown>;
 };
 
 export type ToasterHandler = {
@@ -21,6 +22,7 @@ export type ToasterHandler = {
 export type ToastHistoryEntry = {
   id: string;
   message: string | JSX.Element;
+  extra?: string | Record<string, unknown>;
   createdTime: number;
   dismissTime?: number;
   dismissTriggered?: "user" | "auto";
@@ -60,10 +62,11 @@ function _addToast(props: ToasterProps): string {
       action: props.action,
       autoHideDuration: props.autoHideDuration,
     };
-    // Also update the history entry's message
+    // Also update the history entry's message and extra
     const historyEntry = _toastHistory.find((h) => h.id === toastId && !h.dismissTime);
     if (historyEntry) {
       historyEntry.message = props.message;
+      historyEntry.extra = props.extra;
     }
     _activeToasts = [..._activeToasts];
   } else {
@@ -80,6 +83,7 @@ function _addToast(props: ToasterProps): string {
       {
         id: toastId,
         message: props.message,
+        extra: props.extra,
         createdTime: now,
       },
     ];
