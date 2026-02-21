@@ -16,14 +16,14 @@ Refer to the following link for download information.
 
 ## Supported OS's
 
-- [Windows x64 - AMD / Intel](https://synle.github.io/sqlui-native/installation#windows) (Tested on Windows 10 and 11)
-- [Windows ARM64](https://synle.github.io/sqlui-native/installation#windows)
-- [macOS Apple Silicon M-Series](https://synle.github.io/sqlui-native/installation#mac) (Tested on Mac OS Monterey and macOS 26) - See [quarantine troubleshooting](#mac-apple-silicon-m-series---app-is-damaged-error)
-- [macOS Intel x64](https://synle.github.io/sqlui-native/installation#mac) (Tested on Mac OS Monterey)
-- [Linux AppImage](https://synle.github.io/sqlui-native/installation#linux-appimage) (Tested on Linux Mint)
-- [Debian - Ubuntu - Linux Mint](https://synle.github.io/sqlui-native/installation#ubuntu--debian)
-- [Redhat - CentOS - Fedora](https://synle.github.io/sqlui-native/installation#redhat--centos--fedora) : Refer to this link for [Installation Instructions](https://synle.github.io/sqlui-native/installation)
-- [Arch Linux](https://synle.github.io/sqlui-native/installation#arch-linux-with-pacman) (Tested on Steam Deck)
+- [Windows 10/11 (Intel - AMD x64)](https://synle.github.io/sqlui-native/installation#windows)
+- [Windows 10/11 (ARM architecture)](https://synle.github.io/sqlui-native/installation#windows)
+- [macOS / OSX (Apple Silicon M-Series)](https://synle.github.io/sqlui-native/installation#mac) (Tested on Mac OS Monterey and macOS 26) - See [quarantine troubleshooting](#mac-apple-silicon-m-series---app-is-damaged-error)
+- [macOS / OSX (Intel x64)](https://synle.github.io/sqlui-native/installation#mac) (Tested on Mac OS Monterey)
+- [Linux Mint / Ubuntu / Debian](https://synle.github.io/sqlui-native/installation#ubuntu--debian)
+- [Linux Redhat / CentOS / Fedora](https://synle.github.io/sqlui-native/installation#redhat--centos--fedora) : Refer to this link for [Installation Instructions](https://synle.github.io/sqlui-native/installation)
+- [Linux Arch Linux](https://synle.github.io/sqlui-native/installation#arch-linux-with-pacman) (Tested on Steam Deck)
+- [Linux Other Distro](https://synle.github.io/sqlui-native/installation#linux-appimage) (Tested on Linux Mint)
 
 ## Supported Database Adapters
 
@@ -32,7 +32,7 @@ You can also refer to this link for [General Queries](https://synle.github.io/sq
 
 - [MySQL](https://synle.github.io/sqlui-native/guides#mysql)
 - [MariaDB](https://synle.github.io/sqlui-native/guides#mariadb)
-- [Microsoft](https://synle.github.io/sqlui-native/guides#mssql)
+- [Microsoft SQL Server](https://synle.github.io/sqlui-native/guides#mssql)
 - [PostgresSQL](https://synle.github.io/sqlui-native/guides#postgres)
 - [CockroachDB](https://github.com/synle/sqlui-native#cockroachdb-limitations) (Limited Supported by using PostgresSQL driver)
 - [SQLite](https://synle.github.io/sqlui-native/guides#sqlite)

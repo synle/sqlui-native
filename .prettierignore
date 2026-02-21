@@ -1,7 +1,7 @@
+_layouts/default.html
+.build
 *.bundle.*
 *.min.*
-.build
-_layouts/default.html
 build
 coverage
 display-dj
