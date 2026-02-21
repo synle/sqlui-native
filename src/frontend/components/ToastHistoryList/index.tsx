@@ -7,7 +7,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { getToastHistory, ToastHistoryEntry } from "src/frontend/hooks/useToaster";
 
-const DETAIL_COLLAPSED_LENGTH = 100;
+const COLLAPSED_LENGTH = 250;
 const ESTIMATED_ROW_HEIGHT = 60;
 
 function formatTime(ts?: number) {
@@ -24,6 +24,25 @@ function stringifyMetadata(metadata: any): string | undefined {
   }
 }
 
+function getExpandableContent(entry: ToastHistoryEntry): { label: string; content: string }[] {
+  const sections: { label: string; content: string }[] = [];
+  if (entry.detail) {
+    sections.push({ label: "Detail", content: entry.detail });
+  }
+  if (entry.metadata) {
+    const metaStr = stringifyMetadata(entry.metadata);
+    if (metaStr) {
+      sections.push({ label: "Metadata", content: metaStr });
+    }
+  }
+  return sections;
+}
+
+function needsTruncation(sections: { label: string; content: string }[]): boolean {
+  const totalLength = sections.reduce((sum, s) => sum + s.content.length, 0);
+  return totalLength > COLLAPSED_LENGTH;
+}
+
 function matchesFilter(entry: ToastHistoryEntry, filter: string): boolean {
   const lower = filter.toLowerCase();
   if (entry.id?.toLowerCase().includes(lower)) return true;
@@ -36,14 +55,23 @@ function matchesFilter(entry: ToastHistoryEntry, filter: string): boolean {
   return false;
 }
 
-function CollapsibleBlock({
-  label,
-  content,
+const preStyle: React.CSSProperties = {
+  margin: 0,
+  padding: "4px 8px",
+  background: "rgba(128,128,128,0.15)",
+  borderRadius: "4px",
+  fontSize: "0.75rem",
+  fontFamily: "monospace",
+  whiteSpace: "pre-wrap",
+  wordBreak: "break-all",
+};
+
+function ExpandableContent({
+  sections,
   expanded,
   onToggle,
 }: {
-  label: string;
-  content: string;
+  sections: { label: string; content: string }[];
   expanded: boolean;
   onToggle: () => void;
 }) {
@@ -53,32 +81,40 @@ function CollapsibleBlock({
     setLocalExpanded(expanded);
   }, [expanded]);
 
-  const needsTruncation = content.length > DETAIL_COLLAPSED_LENGTH;
-  const displayText = !localExpanded && needsTruncation ? content.slice(0, DETAIL_COLLAPSED_LENGTH) + "..." : content;
+  const truncatable = needsTruncation(sections);
+  const showFull = localExpanded || !truncatable;
 
   const handleToggle = () => {
     setLocalExpanded(!localExpanded);
     onToggle();
   };
 
+  const detailSection = sections.find((s) => s.label === "Detail");
+  const metadataSection = sections.find((s) => s.label === "Metadata");
+
   return (
-    <div style={{ marginBottom: "4px", padding: "0 12px" }}>
-      <div style={{ opacity: 0.6, fontSize: "0.7rem", marginBottom: "2px" }}>{label}</div>
-      <pre
-        style={{
-          margin: 0,
-          padding: "4px 8px",
-          background: "rgba(128,128,128,0.15)",
-          borderRadius: "4px",
-          fontSize: "0.75rem",
-          fontFamily: "monospace",
-          whiteSpace: "pre-wrap",
-          wordBreak: "break-all",
-        }}
-      >
-        {displayText}
-      </pre>
-      {needsTruncation && (
+    <div style={{ padding: "4px 12px 0" }}>
+      {showFull ? (
+        <div style={{ display: "flex", gap: "8px" }}>
+          {detailSection && (
+            <div style={{ flex: metadataSection ? "0 0 50%" : "1 1 100%", minWidth: 0 }}>
+              <div style={{ opacity: 0.6, fontSize: "0.7rem", marginBottom: "2px" }}>{detailSection.label}</div>
+              <pre style={preStyle}>{detailSection.content}</pre>
+            </div>
+          )}
+          {metadataSection && (
+            <div style={{ flex: detailSection ? "0 0 50%" : "1 1 100%", minWidth: 0 }}>
+              <div style={{ opacity: 0.6, fontSize: "0.7rem", marginBottom: "2px" }}>{metadataSection.label}</div>
+              <pre style={preStyle}>{metadataSection.content}</pre>
+            </div>
+          )}
+        </div>
+      ) : (
+        <pre style={preStyle}>
+          {sections.map((s) => s.content).join("\n").slice(0, COLLAPSED_LENGTH) + "..."}
+        </pre>
+      )}
+      {truncatable && (
         <Button size="small" onClick={handleToggle} sx={{ fontSize: "0.7rem", p: 0, mt: 0.5 }}>
           {localExpanded ? "Show less" : "Show more"}
         </Button>
@@ -97,7 +133,7 @@ export default function ToastHistoryList() {
 
   const history = getToastHistory();
 
-  const hasAnyExpandable = history.some((entry) => !!entry.detail || !!entry.metadata);
+  const hasAnyExpandable = history.some((entry) => getExpandableContent(entry).length > 0);
   const filtered = filter ? history.filter((entry) => matchesFilter(entry, filter)) : history;
   const sorted = [...filtered].sort((a, b) =>
     sortOrder === "newest" ? b.createdTime - a.createdTime : a.createdTime - b.createdTime,
@@ -111,7 +147,6 @@ export default function ToastHistoryList() {
   });
 
   const remeasure = useCallback(() => {
-    // Schedule a remeasure after the DOM updates from expand/collapse
     requestAnimationFrame(() => virtualizer.measure());
   }, [virtualizer]);
 
@@ -152,7 +187,7 @@ export default function ToastHistoryList() {
           >
             {virtualizer.getVirtualItems().map((virtualRow) => {
               const entry = sorted[virtualRow.index];
-              const metaStr = entry.metadata ? stringifyMetadata(entry.metadata) : undefined;
+              const sections = getExpandableContent(entry);
               return (
                 <div
                   key={`${entry.id}-${entry.createdTime}-${virtualRow.index}`}
@@ -184,11 +219,8 @@ export default function ToastHistoryList() {
                       )}
                     </div>
                   </div>
-                  {entry.detail && (
-                    <CollapsibleBlock label="Detail" content={entry.detail} expanded={expandAll} onToggle={remeasure} />
-                  )}
-                  {metaStr && (
-                    <CollapsibleBlock label="Metadata" content={metaStr} expanded={expandAll} onToggle={remeasure} />
+                  {sections.length > 0 && (
+                    <ExpandableContent sections={sections} expanded={expandAll} onToggle={remeasure} />
                   )}
                   <Divider sx={{ mt: 1 }} />
                 </div>
