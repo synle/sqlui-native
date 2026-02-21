@@ -119,18 +119,20 @@ function QuickActionDial(props: QuickActionDialProps) {
 export default function DataSnapshotView() {
   const urlParams = useParams();
   const dataSnapshotId = urlParams.dataSnapshotId as string;
-  const { modal } = useActionDialogs();
+  const { prompt } = useActionDialogs();
 
   const { data, isLoading } = useGetDataSnapshot(dataSnapshotId);
 
   const onShowRecordDetails = async (rowData: any) => {
     try {
-      await modal({
+      await prompt({
         title: "Record Details",
-        message: <SimpleEditor value={JSON.stringify(rowData, null, 2)} height="85vh" />,
-        showCloseButton: true,
-        size: "lg",
+        message: "Data",
+        value: JSON.stringify(rowData, null, 2),
+        readonly: true,
+        isLongPrompt: true,
       });
+    } catch (err) {
     } finally {
     }
   };
