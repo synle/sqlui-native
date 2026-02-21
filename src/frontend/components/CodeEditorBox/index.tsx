@@ -29,6 +29,7 @@ export type CodeEditorProps = {
   editorRef?: React.RefObject<EditorRef>;
   required?: boolean;
   height?: string;
+  fillHeight?: boolean;
 
   hideEditorSize?: boolean;
   hideEditorSyntax?: boolean;
@@ -133,9 +134,15 @@ export default function CodeEditorBox(props: CodeEditorProps): JSX.Element | nul
     }
   }, [props.height, props.id]);
 
+  const fillHeightStyle = props.fillHeight
+    ? { display: "flex", flexDirection: "column" as const, flex: 1, minHeight: 0 }
+    : undefined;
+
+  const editorHeight = props.fillHeight ? undefined : height;
+
   if (editorModeToUse === "simple") {
     return (
-      <div className={"CodeEditorBox " + props.className}>
+      <div className={"CodeEditorBox " + props.className} style={fillHeightStyle}>
         <SimpleEditor
           id={props.id}
           value={props.value}
@@ -145,7 +152,8 @@ export default function CodeEditorBox(props: CodeEditorProps): JSX.Element | nul
           required={props.required}
           disabled={props.disabled}
           wordWrap={wordWrap}
-          height={height}
+          height={editorHeight}
+          fillHeight={props.fillHeight}
           editorRef={props.editorRef}
         />
         {editorOptionBox}
@@ -154,8 +162,12 @@ export default function CodeEditorBox(props: CodeEditorProps): JSX.Element | nul
   }
 
   return (
-    <Box>
-      <Paper className={"CodeEditorBox " + props.className} variant="outlined">
+    <Box sx={props.fillHeight ? { display: "flex", flexDirection: "column", flex: 1, minHeight: 0 } : undefined}>
+      <Paper
+        className={"CodeEditorBox " + props.className}
+        variant="outlined"
+        sx={props.fillHeight ? { display: "flex", flexDirection: "column", flex: 1, minHeight: 0 } : undefined}
+      >
         <AdvancedEditor
           id={props.id}
           language={languageToUse}
@@ -164,7 +176,8 @@ export default function CodeEditorBox(props: CodeEditorProps): JSX.Element | nul
           wordWrap={wordWrap}
           placeholder={props.placeholder}
           disabled={props.disabled}
-          height={height}
+          height={editorHeight}
+          fillHeight={props.fillHeight}
           required={props.required}
           editorRef={props.editorRef}
         />
