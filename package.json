@@ -140,7 +140,6 @@
     "json-2-csv": "^3.17.1",
     "lodash.get": "^4.4.2",
     "lodash.set": "^4.3.2",
-    "mariadb": "^3.5.1",
     "monaco-editor": "^0.32.1",
     "mongodb": "^4.10.0",
     "mustache": "^4.2.0",
