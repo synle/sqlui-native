@@ -100,13 +100,27 @@ export default function PromptDialog(props: PromptDialogProps): JSX.Element | nu
             />
           )}
         </DialogContent>
-        {props.readonly !== true && (
-          <DialogActions>
+        <DialogActions>
+          {props.readonly === true ? (
+            <Button
+              onClick={() => {
+                const blob = new Blob([value], { type: "text/plain" });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = `${new Date().toISOString()}.txt`;
+                a.click();
+                URL.revokeObjectURL(url);
+              }}
+            >
+              Download
+            </Button>
+          ) : (
             <Button type="submit" disabled={isDisabled}>
               {props.saveLabel || "Save Changes"}
             </Button>
-          </DialogActions>
-        )}
+          )}
+        </DialogActions>
       </form>
     </Dialog>
   );
