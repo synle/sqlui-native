@@ -132,6 +132,15 @@ docker run --name sqlui_mysql -d -p 3306:3306 -e MYSQL_ROOT_PASSWORD='password12
 # MariaDB (https://hub.docker.com/_/mariadb)
 docker run --detach --name sqlui_mariadb -p 33061:3306 -e MARIADB_ROOT_PASSWORD='password123!' mariadb:latest
 
+  # Connect to MariaDB via the running container
+  docker exec -it sqlui_mariadb mariadb -uroot -p'password123!'
+
+  # Or connect using a disposable container
+  docker run -it --rm mariadb mariadb -uroot -p'password123!' -h host.docker.internal -P 33061
+
+  # Check if MariaDB is ready
+  docker exec sqlui_mariadb mariadb-admin ping -uroot -p'password123!' --silent
+
 # postgres (https://hub.docker.com/_/postgres)
 docker run --name sqlui_postgres -d -p 5432:5432 -e POSTGRES_PASSWORD='password123!' postgres
 
