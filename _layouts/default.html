@@ -32,9 +32,13 @@
       {% endif %}
       </div>
 
-      <p style="margin-top: 10px; font-size: 0.85em; opacity: 0.9;">
-        <i class="fas fa-info-circle" style="margin-right: 5px;"></i>
-        <b>macOS Apple Silicon (M-Series) users:</b> If you see an "app is damaged" error, run <code>xattr -cr /Applications/sqlui-native.app</code> in Terminal to fix it.
+      <p style="user-select: none; margin-top: 10px; font-size: 0.85em; opacity: 0.9;">
+        <b>macOS Apple Silicon (M-Series) users:</b>
+        If you see an "app is damaged" error, run
+        <code style="border: 2px solid grey; padding: 0.5rem; user-select: text; cursor: text;">
+          xattr -cr /Applications/sqlui-native.app
+        </code>
+        in Terminal to fix it.
       </p>
     </header>
 
@@ -72,7 +76,7 @@
 
           return {
             ...item,
-            name: `${item.name} (<b>.${extension}</b>)`,
+            label: `${item.name} (<b>.${extension}</b>)`,
           };
         });
 
@@ -82,7 +86,6 @@
 
           // 1. Update Version in Title and "Other Releases" link
           document.querySelectorAll('.appVersion').forEach(el => el.innerText = version);
-          document.getElementById('btn-other-releases').href = `https://github.com/synle/sqlui-native/releases/tag/${version}`;
 
           // 2. Generate Download Buttons
           const container = document.getElementById('download-buttons-container');
@@ -92,7 +95,7 @@
             <a id="${cfg.id}" href="${baseUrl}${cfg.suffix}" class="btn">
               <i class="fas fa-download" style="margin-right: 5px;"></i> ${cfg.label}
             </a>
-          `).join('') + `<a id="btn-other-releases" href="#" class="btn">Other Releases</a>`;
+          `).join('') + `<a id="btn-other-releases" href="https://github.com/synle/sqlui-native/releases/tag/${version}" class="btn">Other Releases</a>`;
 
           // 3. Update instructions/links in the main content (<li> items)
           document.querySelectorAll('li').forEach(li => {
