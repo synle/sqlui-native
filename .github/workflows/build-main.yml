@@ -1,3 +1,5 @@
+name: Build
+
 on:
   push:
     branches: [master, main]
@@ -14,122 +16,136 @@ on:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: ${{ github.event_name == 'push' && github.event.forced }}
+  cancel-in-progress: true
 
 jobs:
   prebuild:
-    name: 'Build and Unit Tests'
     runs-on: ubuntu-latest
     steps:
       - run: |
           echo "node_version: ${{ inputs.node_version }}"
           echo "timeout_minutes: ${{ inputs.timeout_minutes }}"
-      - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
-        with:
-          node-version: ${{ inputs.node_version }}
-          cache: "npm"
-      - name: sqlui-native build.sh
-        run: |
-          bash scripts/build.sh false
-      - name: sqlui-native format
-        run: |
-          npm run format
-      - name: Commit Changes
-        id: commit
-        uses: EndBug/add-and-commit@v9
-        with:
-          message: "CI / CD - Format code"
-          default_author: github_actions
-      - name: Archive prebuild workspace
-        run: tar -czf /tmp/prebuild-workspace.tar.gz --exclude='.git' .
-      - name: Upload prebuild workspace
-        uses: actions/upload-artifact@v4
-        with:
-          name: prebuild-workspace
-          path: /tmp/prebuild-workspace.tar.gz
-          retention-days: 1
 
-  # begin packaging tasks
+      # Fix me when done
+      # - uses: actions/checkout@v6
+
+      # - uses: actions/setup-node@v6
+      #   with:
+      #     node-version: ${{ inputs.node_version }}
+      #     cache: "npm"
+
+      # - name: sqlui-native build.sh
+      #   run: |
+      #     bash scripts/build.sh false
+
+      # - name: sqlui-native format
+      #   run: |
+      #     npm run format
+
+      # - name: Commit Changes
+      #   id: commit
+      #   uses: EndBug/add-and-commit@v9
+      #   with:
+      #     message: "CI / CD - Format code"
+      #     default_author: github_actions
+
+      # - name: Archive prebuild workspace
+      #   run: tar -czf /tmp/prebuild-workspace.tar.gz --exclude='.git' .
+
+      # - name: Upload prebuild workspace
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: prebuild-workspace
+      #     path: /tmp/prebuild-workspace.tar.gz
+      #     retention-days: 1
+
   dist_windows_x64:
     needs: [prebuild]
     runs-on: windows-latest
-    timeout-minutes: ${{ fromJSON(inputs.timeout_minutes || '30') }}
     steps:
       - uses: actions/checkout@v6
+
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ inputs.node_version }}
           cache: "npm"
-      - run: |
-          bash scripts/build.sh true
 
-      # package and distribute .exe
+      - run: bash scripts/build.sh true
+
       - run: npm run dist-win-x64
         name: sqlui-native npm run dist-win-x64
-      - run: mv ./dist/sqlui-native*.exe ./dist/sqlui-native-x64.exe
-        name: sqlui-native mv ./dist/sqlui-native*.exe ./dist/sqlui-native-x64.exe
+
+      - run: ls -R ./dist
+
+      - run: mv "./dist/sqlui-native Setup*.exe" ./dist/sqlui-native-x64.exe
+
       - name: Upload artifact .exe
         uses: actions/upload-artifact@v4
         with:
-          name: sqlui-native-x64 (Windows 10 - 11 x64).exe
+          name: sqlui-native Windows 10 - 11 (Intel - AMD x64).exe
           path: ./dist/sqlui-native-x64.exe
 
-      # package and distribute .appx
       - run: npm run dist-win32-appx
         name: sqlui-native npm run dist-win32-appx
+
+      - run: ls -R ./dist
+
       - run: mv ./dist/sqlui-native*.appx ./dist/sqlui-native.appx
-        name: sqlui-native mv ./dist/sqlui-native*.appx ./dist/sqlui-native.appx
+
       - name: Upload artifact .appx
         uses: actions/upload-artifact@v4
         with:
-          name: sqlui-native - Windows 10 - 11 x64.appx
+          name: sqlui-native Windows 10 - 11 (Intel - AMD x64).appx
           path: ./dist/sqlui-native.appx
 
   dist_windows_arm64:
     needs: [prebuild]
     runs-on: windows-latest
-    timeout-minutes: ${{ fromJSON(inputs.timeout_minutes || '30') }}
     steps:
       - uses: actions/checkout@v6
+
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ inputs.node_version }}
           cache: "npm"
+
       - run: pip install setuptools
         name: Install setuptools for node-gyp
-      - run: |
-          bash scripts/build.sh true
 
-      # package and distribute .exe
+      - run: bash scripts/build.sh true
+
       - run: npm run dist-win-arm64
         name: sqlui-native npm run dist-win-arm64
-      - run: mv ./dist/sqlui-native*.exe ./dist/sqlui-native-arm64.exe
-        name: sqlui-native mv ./dist/sqlui-native*.exe ./dist/sqlui-native-arm64.exe
+
+      - run: ls -R ./dist
+
+      - run: mv "./dist/sqlui-native Setup*.exe" ./dist/sqlui-native-arm64.exe
+
       - name: Upload artifact .exe
         uses: actions/upload-artifact@v4
         with:
-          name: sqlui-native - Windows 10 - 11 ARM64.exe
+          name: sqlui-native Windows 10 - 11 (ARM architecture).exe
           path: ./dist/sqlui-native-arm64.exe
 
   dist_macos_arm64:
     needs: [prebuild]
     runs-on: macos-latest
-    timeout-minutes: ${{ fromJSON(inputs.timeout_minutes || '30') }}
     steps:
       - uses: actions/checkout@v6
+
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ inputs.node_version }}
           cache: "npm"
-      - run: |
-          bash scripts/build.sh true
 
-      # package begins
+      - run: bash scripts/build.sh true
+
       - run: npm run dist-macos-arm64
         name: sqlui-native npm run dist-macos-arm64
+
+      - run: ls -R ./dist
+
       - run: mv ./dist/sqlui-native*.dmg ./dist/sqlui-native-arm64.dmg
-        name: sqlui-native mv ./dist/sqlui-native*.dmg ./dist/sqlui-native-arm64.dmg
 
       - name: Upload artifact .dmg
         uses: actions/upload-artifact@v4
@@ -140,83 +156,93 @@ jobs:
   dist_macos_x86_intel:
     needs: [prebuild]
     runs-on: macos-latest
-    timeout-minutes: ${{ fromJSON(inputs.timeout_minutes || '30') }}
     steps:
       - uses: actions/checkout@v6
+
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ inputs.node_version }}
           cache: "npm"
-      - run: |
-          bash scripts/build.sh true
 
-      # package begins
+      - run: bash scripts/build.sh true
+
       - run: npm run dist-macos-x64
         name: sqlui-native npm run dist-macos-x64
+
+      - run: ls -R ./dist
+
       - run: mv ./dist/sqlui-native*.dmg ./dist/sqlui-native-x64.dmg
-        name: sqlui-native mv ./dist/sqlui-native*.dmg ./dist/sqlui-native-x64.dmg
 
       - name: Upload artifact .dmg
         uses: actions/upload-artifact@v4
         with:
-          name: sqlui-native-x64 (macOS - OSX Intel x64).dmg
+          name: sqlui-native macOS - OSX (Intel x64).dmg
           path: ./dist/sqlui-native-x64.dmg
 
   dist_linux:
     needs: [prebuild]
     runs-on: ubuntu-latest
-    timeout-minutes: ${{ fromJSON(inputs.timeout_minutes || '30') }}
     steps:
       - name: install missing dependencies
         run: sudo apt-get install -y libarchive-tools
+
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ inputs.node_version }}
+
       - name: Download prebuild workspace
         uses: actions/download-artifact@v4
         with:
           name: prebuild-workspace
           path: /tmp
+
       - name: Extract prebuild workspace
         run: tar -xzf /tmp/prebuild-workspace.tar.gz
+
       - run: npm version --no-git-tag-version patch
 
-      # package begins
-      - run: |
-          npm version --no-git-tag-version patch
       - run: npm run dist
         name: sqlui-native npm run dist
+
+      - run: ls -R ./dist
+
       - run: |
           mv ./dist/sqlui-native*.deb ./dist/sqlui-native.deb
           mv ./dist/sqlui-native*.rpm ./dist/sqlui-native.rpm
           mv ./dist/sqlui-native*.snap ./dist/sqlui-native.snap
           mv ./dist/sqlui-native*.pacman ./dist/sqlui-native.pacman
+
       - name: Upload artifact .deb
         uses: actions/upload-artifact@v4
         with:
           name: sqlui-native - Debian Ubuntu.deb
           path: ./dist/sqlui-native.deb
+
       - name: Upload artifact .rpm
         uses: actions/upload-artifact@v4
         with:
           name: sqlui-native - Redhat CentOS Fedora.rpm
           path: ./dist/sqlui-native.rpm
+
       - name: Upload artifact .snap
         uses: actions/upload-artifact@v4
         with:
           name: sqlui-native - Ubuntu.snap
           path: ./dist/sqlui-native.snap
+
       - name: Upload artifact .pacman
         uses: actions/upload-artifact@v4
         with:
           name: sqlui-native - Arch Linux.pacman
           path: ./dist/sqlui-native.pacman
 
-      # package and distribute AppImage
       - run: npm run dist-linux-appimage
         name: sqlui-native npm run dist-linux-appimage
+
+      - run: ls -R ./dist
+
       - run: mv ./dist/sqlui-native*.AppImage ./dist/sqlui-native.AppImage
-        name: sqlui-native mv ./dist/sqlui-native*.AppImage ./dist/sqlui-native.AppImage
+
       - name: Upload artifact .AppImage
         uses: actions/upload-artifact@v4
         with:

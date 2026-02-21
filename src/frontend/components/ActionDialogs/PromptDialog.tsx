@@ -75,7 +75,10 @@ export default function PromptDialog(props: PromptDialogProps): JSX.Element | nu
             <CloseIcon />
           </IconButton>
         </DialogTitle>
-        <DialogContent dividers sx={props.isLongPrompt ? { flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" } : undefined}>
+        <DialogContent
+          dividers
+          sx={props.isLongPrompt ? { flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" } : undefined}
+        >
           {props.isLongPrompt ? (
             <CodeEditorBox
               value={value}
