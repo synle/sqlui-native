@@ -17,7 +17,7 @@ export type ToasterHandler = {
   dismiss: (dismissDelay?: number) => void;
 };
 
-const DEFAULT_AUTO_HIDE_DURATION = 6000;
+const DEFAULT_AUTO_HIDE_DURATION = 5000;
 
 export default function useToaster() {
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
