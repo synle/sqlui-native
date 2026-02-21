@@ -118,26 +118,19 @@ export class PersistentStorage<T extends StorageEntry> {
     delete caches[id];
     this.setData(caches);
   }
+
+  writeDataFile(fileName: string, content: any): string {
+    const fullPath = path.join(baseDir, fileName);
+    fs.writeFileSync(fullPath, JSON.stringify(content, null, 2));
+    return fullPath;
+  }
+
+  readDataFile(filePath: string): any {
+    return JSON.parse(fs.readFileSync(filePath, { encoding: "utf8", flag: "r" }).trim());
+  }
 }
 
 export default PersistentStorage;
-
-// common misc utils
-export async function writeJSON(fileName: string, content: any, isRelative = true) {
-  let fullPath = fileName;
-
-  if (isRelative) {
-    fullPath = path.join(storageDir, fullPath);
-  }
-
-  fs.writeFileSync(fullPath, JSON.stringify(content, null, 2));
-
-  return fullPath;
-}
-
-export async function readJSON(fileName: string) {
-  return JSON.parse(fs.readFileSync(fileName, { encoding: "utf8", flag: "r" }).trim());
-}
 
 // all the storage
 export async function getConnectionsStorage(sessionId: string) {

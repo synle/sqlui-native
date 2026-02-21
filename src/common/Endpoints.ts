@@ -8,9 +8,7 @@ import {
   getFolderItemsStorage,
   getQueryStorage,
   getSessionsStorage,
-  readJSON,
   storageDir,
-  writeJSON,
 } from "src/common/PersistentStorage";
 import * as sessionUtils from "src/common/utils/sessionUtils";
 import { SqluiCore, SqluiEnums } from "typings";
@@ -494,7 +492,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     }
 
     try {
-      dataSnapshot.values = await readJSON(dataSnapshot.location);
+      dataSnapshot.values = dataSnapshotStorage.readDataFile(dataSnapshot.location);
     } catch (err) {
       dataSnapshot.values = [
         {
@@ -511,7 +509,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
 
     const dataSnapshotId = dataSnapshotStorage.getGeneratedRandomId();
 
-    const location = await writeJSON(dataSnapshotId, req.body.values);
+    const location = dataSnapshotStorage.writeDataFile(dataSnapshotId, req.body.values);
 
     const resp = await dataSnapshotStorage.add({
       id: dataSnapshotId,
