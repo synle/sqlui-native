@@ -1,4 +1,8 @@
 import CloseIcon from "@mui/icons-material/Close";
+import OpenInFullIcon from "@mui/icons-material/OpenInFull";
+import Dialog from "@mui/material/Dialog";
+import DialogContent from "@mui/material/DialogContent";
+import DialogTitle from "@mui/material/DialogTitle";
 import IconButton from "@mui/material/IconButton";
 import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
@@ -12,7 +16,10 @@ type CoreToasterProps = {
 
 type ToasterProps = CoreToasterProps & {
   id?: string;
-  extra?: any;
+  /** Additional detail text (shown in expanded view) */
+  detail?: string;
+  /** Additional metadata object (shown in expanded view) */
+  metadata?: Record<string, any>;
 };
 
 export type ToasterHandler = {
@@ -22,19 +29,19 @@ export type ToasterHandler = {
 export type ToastHistoryEntry = {
   id: string;
   message: string | JSX.Element;
-  extra?: string;
+  detail?: string;
+  metadata?: Record<string, any>;
   createdTime: number;
   dismissTime?: number;
   dismissTriggered?: "user" | "auto";
 };
 
-function _stringifyExtra(extra: any): string | undefined {
-  if (extra === null || extra === undefined || extra === "") return undefined;
-  if (typeof extra === "string") return extra;
+function _stringifyMetadata(metadata: any): string | undefined {
+  if (metadata === null || metadata === undefined) return undefined;
   try {
-    return JSON.stringify(extra, null, 2);
+    return JSON.stringify(metadata, null, 2);
   } catch {
-    return String(extra);
+    return String(metadata);
   }
 }
 
@@ -45,6 +52,8 @@ type InternalToast = {
   message: string | JSX.Element;
   action?: JSX.Element;
   autoHideDuration?: number;
+  detail?: string;
+  metadata?: Record<string, any>;
   createdTime: number;
 };
 
@@ -71,12 +80,15 @@ function _addToast(props: ToasterProps): string {
       message: props.message,
       action: props.action,
       autoHideDuration: props.autoHideDuration,
+      detail: props.detail,
+      metadata: props.metadata,
     };
-    // Also update the history entry's message and extra
+    // Also update the history entry's detail and metadata
     const historyEntry = _toastHistory.find((h) => h.id === toastId && !h.dismissTime);
     if (historyEntry) {
       historyEntry.message = props.message;
-      historyEntry.extra = _stringifyExtra(props.extra);
+      historyEntry.detail = props.detail;
+      historyEntry.metadata = props.metadata;
     }
     _activeToasts = [..._activeToasts];
   } else {
@@ -85,6 +97,8 @@ function _addToast(props: ToasterProps): string {
       message: props.message,
       action: props.action,
       autoHideDuration: props.autoHideDuration,
+      detail: props.detail,
+      metadata: props.metadata,
       createdTime: now,
     };
     _activeToasts = [..._activeToasts, toast];
@@ -93,7 +107,8 @@ function _addToast(props: ToasterProps): string {
       {
         id: toastId,
         message: props.message,
-        extra: _stringifyExtra(props.extra),
+        detail: props.detail,
+        metadata: props.metadata,
         createdTime: now,
       },
     ];
@@ -123,10 +138,84 @@ export function getToastHistory(): ToastHistoryEntry[] {
   return _toastHistory;
 }
 
+function formatTime(ts?: number) {
+  if (!ts) return "-";
+  return new Date(ts).toLocaleString();
+}
+
+// Detail / metadata modal for a single toast
+function ToastDetailModal({ toast, open, onClose }: { toast: InternalToast; open: boolean; onClose: () => void }) {
+  return (
+    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+      <DialogTitle sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        Notification Detail
+        <IconButton onClick={onClose} size="small" aria-label="close">
+          <CloseIcon fontSize="small" />
+        </IconButton>
+      </DialogTitle>
+      <DialogContent dividers>
+        <div style={{ fontSize: "0.85rem" }}>
+          <div style={{ marginBottom: "12px" }}>
+            <div style={{ opacity: 0.6, fontSize: "0.75rem", marginBottom: "2px" }}>Message</div>
+            <div>{toast.message}</div>
+          </div>
+          <div style={{ marginBottom: "12px" }}>
+            <div style={{ opacity: 0.6, fontSize: "0.75rem", marginBottom: "2px" }}>ID</div>
+            <div style={{ fontFamily: "monospace", fontSize: "0.8rem" }}>{toast.id}</div>
+          </div>
+          <div style={{ marginBottom: "12px" }}>
+            <div style={{ opacity: 0.6, fontSize: "0.75rem", marginBottom: "2px" }}>Created</div>
+            <div>{formatTime(toast.createdTime)}</div>
+          </div>
+          {toast.detail && (
+            <div style={{ marginBottom: "12px" }}>
+              <div style={{ opacity: 0.6, fontSize: "0.75rem", marginBottom: "2px" }}>Detail</div>
+              <pre
+                style={{
+                  margin: 0,
+                  padding: "4px 8px",
+                  background: "rgba(128,128,128,0.15)",
+                  borderRadius: "4px",
+                  fontSize: "0.75rem",
+                  fontFamily: "monospace",
+                  whiteSpace: "pre-wrap",
+                  wordBreak: "break-all",
+                }}
+              >
+                {toast.detail}
+              </pre>
+            </div>
+          )}
+          {toast.metadata && (
+            <div style={{ marginBottom: "12px" }}>
+              <div style={{ opacity: 0.6, fontSize: "0.75rem", marginBottom: "2px" }}>Metadata</div>
+              <pre
+                style={{
+                  margin: 0,
+                  padding: "4px 8px",
+                  background: "rgba(128,128,128,0.15)",
+                  borderRadius: "4px",
+                  fontSize: "0.75rem",
+                  fontFamily: "monospace",
+                  whiteSpace: "pre-wrap",
+                  wordBreak: "break-all",
+                }}
+              >
+                {_stringifyMetadata(toast.metadata)}
+              </pre>
+            </div>
+          )}
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 // Toast item component
 function ToastItem({ toast }: { toast: InternalToast }) {
   const isHoveredRef = React.useRef(false);
   const timerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
 
   const startTimer = React.useCallback(() => {
     if (toast.autoHideDuration != null && toast.autoHideDuration <= 0) return;
@@ -166,30 +255,41 @@ function ToastItem({ toast }: { toast: InternalToast }) {
   };
 
   return (
-    <div
-      className="Toaster__Item"
-      onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}
-      style={{
-        display: "flex",
-        alignItems: "center",
-        gap: "8px",
-        padding: "6px 16px",
-        background: "#323232",
-        color: "#fff",
-        borderRadius: "4px",
-        boxShadow: "0 3px 5px -1px rgba(0,0,0,.2), 0 6px 10px 0 rgba(0,0,0,.14), 0 1px 18px 0 rgba(0,0,0,.12)",
-        fontSize: "0.875rem",
-        minWidth: "280px",
-        maxWidth: "500px",
-      }}
-    >
-      <span style={{ flex: 1 }}>{toast.message}</span>
-      {toast.action}
-      <IconButton onClick={() => _dismissToast(toast.id, "user")} size="small" aria-label="close" color="inherit">
-        <CloseIcon fontSize="small" />
-      </IconButton>
-    </div>
+    <>
+      <div
+        className="Toaster__Item"
+        onMouseEnter={onMouseEnter}
+        onMouseLeave={onMouseLeave}
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+          padding: "6px 16px",
+          background: "#323232",
+          color: "#fff",
+          borderRadius: "4px",
+          boxShadow: "0 3px 5px -1px rgba(0,0,0,.2), 0 6px 10px 0 rgba(0,0,0,.14), 0 1px 18px 0 rgba(0,0,0,.12)",
+          fontSize: "0.875rem",
+          minWidth: "280px",
+          maxWidth: "500px",
+        }}
+      >
+        <span style={{ flex: 1 }}>{toast.message}</span>
+        {toast.action}
+        <IconButton
+          onClick={() => setModalOpen(true)}
+          size="small"
+          aria-label="expand"
+          color="inherit"
+        >
+          <OpenInFullIcon sx={{ fontSize: "0.875rem" }} />
+        </IconButton>
+        <IconButton onClick={() => _dismissToast(toast.id, "user")} size="small" aria-label="close" color="inherit">
+          <CloseIcon fontSize="small" />
+        </IconButton>
+      </div>
+      <ToastDetailModal toast={toast} open={modalOpen} onClose={() => setModalOpen(false)} />
+    </>
   );
 }
 
