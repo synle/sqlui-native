@@ -1,4 +1,4 @@
-import { SqluiCore, SqluiFrontend } from 'typings';
+import { SqluiCore, SqluiFrontend } from "typings";
 async function _fetch<T>(input: RequestInfo, initOptions?: RequestInit) {
   let { headers, ...restInput } = initOptions || {};
 
@@ -6,10 +6,10 @@ async function _fetch<T>(input: RequestInfo, initOptions?: RequestInit) {
   headers = {
     ...headers,
     ...{
-      'sqlui-native-session-id': sessionStorage.getItem('sqlui-native.sessionId') || '',
-      'sqlui-native-window-id': sessionStorage.getItem('sqlui-native.windowId') || '',
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
+      "sqlui-native-session-id": sessionStorage.getItem("sqlui-native.sessionId") || "",
+      "sqlui-native-window-id": sessionStorage.getItem("sqlui-native.windowId") || "",
+      "Content-Type": "application/json",
+      Accept: "application/json",
     },
   };
 
@@ -44,7 +44,7 @@ export class ProxyApi {
 
   static updateConfigs(settings: SqluiFrontend.Settings) {
     return _fetch<SqluiCore.ServerConfigs>(`/api/configs`, {
-      method: 'PUT',
+      method: "PUT",
       body: JSON.stringify(settings),
     });
   }
@@ -62,20 +62,16 @@ export class ProxyApi {
   }
 
   static getConnectionTables(connectionId: string, databaseId: string) {
-    return _fetch<SqluiCore.TableMetaData[]>(
-      `/api/connection/${connectionId}/database/${databaseId}/tables`,
-    );
+    return _fetch<SqluiCore.TableMetaData[]>(`/api/connection/${connectionId}/database/${databaseId}/tables`);
   }
 
   static getConnectionColumns(connectionId: string, databaseId: string, tableId: string) {
-    return _fetch<SqluiCore.ColumnMetaData[]>(
-      `/api/connection/${connectionId}/database/${databaseId}/table/${tableId}/columns`,
-    );
+    return _fetch<SqluiCore.ColumnMetaData[]>(`/api/connection/${connectionId}/database/${databaseId}/table/${tableId}/columns`);
   }
 
   static deleteConnection(connectionId: string) {
     return _fetch<string>(`/api/connection/${connectionId}`, {
-      method: 'delete',
+      method: "delete",
     }).then(() => connectionId);
   }
 
@@ -83,12 +79,12 @@ export class ProxyApi {
     const { id } = newConnection;
     if (id) {
       return _fetch<SqluiCore.ConnectionProps>(`/api/connection/${id}`, {
-        method: 'put',
+        method: "put",
         body: JSON.stringify(newConnection),
       });
     } else {
       return _fetch<SqluiCore.ConnectionProps>(`/api/connection`, {
-        method: 'post',
+        method: "post",
         body: JSON.stringify(newConnection),
       });
     }
@@ -96,7 +92,7 @@ export class ProxyApi {
 
   static execute(query?: SqluiFrontend.ConnectionQuery) {
     return _fetch<SqluiCore.Result>(`/api/connection/${query?.connectionId}/execute`, {
-      method: 'post',
+      method: "post",
       body: JSON.stringify({
         sql: query?.sql,
         database: query?.databaseId,
@@ -107,20 +103,20 @@ export class ProxyApi {
 
   static reconnect(connectionId: string) {
     return _fetch<SqluiCore.ConnectionMetaData>(`/api/connection/${connectionId}/connect`, {
-      method: 'post',
+      method: "post",
     });
   }
 
   static test(connection: SqluiCore.CoreConnectionProps) {
     return _fetch<SqluiCore.CoreConnectionMetaData>(`/api/connection/test`, {
-      method: 'post',
+      method: "post",
       body: JSON.stringify(connection),
     });
   }
 
   static update(connections: SqluiCore.ConnectionProps[]) {
     return _fetch<SqluiCore.ConnectionProps[]>(`/api/connections`, {
-      method: 'post',
+      method: "post",
       body: JSON.stringify(connections),
     });
   }
@@ -134,12 +130,12 @@ export class ProxyApi {
     const { id } = newQuery;
     if (id) {
       return _fetch<SqluiCore.CoreConnectionQuery>(`/api/query/${newQuery.id}`, {
-        method: 'put',
+        method: "put",
         body: JSON.stringify(newQuery),
       });
     } else {
       return _fetch<SqluiCore.CoreConnectionQuery>(`/api/query`, {
-        method: 'post',
+        method: "post",
         body: JSON.stringify(newQuery),
       });
     }
@@ -147,7 +143,7 @@ export class ProxyApi {
 
   static deleteQuery(queryId: string) {
     return _fetch<string>(`/api/query/${queryId}`, {
-      method: 'delete',
+      method: "delete",
     }).then(() => queryId);
   }
 
@@ -166,7 +162,7 @@ export class ProxyApi {
 
   static setOpenSession(sessionId: string) {
     return _fetch<Record<string, string>>(`/api/sessions/opened/${sessionId}`, {
-      method: 'post',
+      method: "post",
     });
   }
 
@@ -174,12 +170,12 @@ export class ProxyApi {
     const { id } = newSession;
     if (id) {
       return _fetch<SqluiCore.Session>(`/api/session/${newSession.id}`, {
-        method: 'put',
+        method: "put",
         body: JSON.stringify(newSession),
       });
     } else {
       return _fetch<SqluiCore.Session>(`/api/session`, {
-        method: 'post',
+        method: "post",
         body: JSON.stringify(newSession),
       });
     }
@@ -190,7 +186,7 @@ export class ProxyApi {
     const newName = newSession.name;
 
     return _fetch<SqluiCore.Session>(`/api/session/${clonedFromSessionId}/clone`, {
-      method: 'post',
+      method: "post",
       body: JSON.stringify({
         name: newName,
       }),
@@ -199,7 +195,7 @@ export class ProxyApi {
 
   static deleteSession(sessionId: string) {
     return _fetch<string>(`/api/session/${sessionId}`, {
-      method: 'delete',
+      method: "delete",
     }).then(() => sessionId);
   }
 
@@ -207,13 +203,13 @@ export class ProxyApi {
   static readFileContent(file: File): Promise<string> {
     try {
       //@ts-ignore
-      const fs = window.requireElectron('fs');
-      return fs.readFileSync(file.path, { encoding: 'utf-8' });
+      const fs = window.requireElectron("fs");
+      return fs.readFileSync(file.path, { encoding: "utf-8" });
     } catch (err) {
       const form = new FormData();
-      form.append('file', file);
-      return fetch('/api/file', {
-        method: 'POST',
+      form.append("file", file);
+      return fetch("/api/file", {
+        method: "POST",
         body: form,
       }).then((r) => r.text());
     }
@@ -224,23 +220,23 @@ export class ProxyApi {
     return _fetch<SqluiCore.FolderItem[]>(`/api/folder/${folderId}`);
   }
 
-  static addFolderItem(folderId: string, folderItem: Omit<SqluiCore.FolderItem, 'id'>) {
+  static addFolderItem(folderId: string, folderItem: Omit<SqluiCore.FolderItem, "id">) {
     return _fetch<SqluiCore.FolderItem>(`/api/folder/${folderId}`, {
-      method: 'post',
+      method: "post",
       body: JSON.stringify(folderItem),
     });
   }
 
   static updateFolderItem(folderId: string, folderItem: SqluiCore.FolderItem) {
     return _fetch<SqluiCore.FolderItem>(`/api/folder/${folderId}`, {
-      method: 'put',
+      method: "put",
       body: JSON.stringify(folderItem),
     });
   }
 
   static deleteFolderItem(folderId: SqluiCore.FolderType, itemId: string) {
     return _fetch<void>(`/api/folder/${folderId}/${itemId}`, {
-      method: 'delete',
+      method: "delete",
     });
   }
 
@@ -253,19 +249,16 @@ export class ProxyApi {
     return _fetch<SqluiCore.DataSnapshot>(`/api/dataSnapshot/${dataSnapshotId}`);
   }
 
-  static addDataSnapshot(
-    dataSnapshot: Partial<SqluiCore.DataSnapshot> &
-      Required<Pick<SqluiCore.DataSnapshot, 'values' | 'description'>>,
-  ) {
+  static addDataSnapshot(dataSnapshot: Partial<SqluiCore.DataSnapshot> & Required<Pick<SqluiCore.DataSnapshot, "values" | "description">>) {
     return _fetch<SqluiCore.DataSnapshot>(`/api/dataSnapshot`, {
-      method: 'post',
+      method: "post",
       body: JSON.stringify(dataSnapshot),
     });
   }
 
   static deleteDataSnapshot(dataSnapshotId: string) {
     return _fetch<void>(`/api/dataSnapshot/${dataSnapshotId}`, {
-      method: 'delete',
+      method: "delete",
     });
   }
 }

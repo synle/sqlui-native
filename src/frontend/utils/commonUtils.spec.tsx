@@ -218,14 +218,7 @@ describe("commonUtils", () => {
     });
 
     test("should handle mixed special and regular columns", () => {
-      const actual = commonUtils.sortColumnNamesForUnknownData([
-        "description",
-        "id",
-        "userId",
-        "name",
-        "_id",
-        "createdAt",
-      ]);
+      const actual = commonUtils.sortColumnNamesForUnknownData(["description", "id", "userId", "name", "_id", "createdAt"]);
       // _id first, then id, then columns ending in Id, then alphabetical
       expect(actual[0]).toEqual("_id");
       expect(actual[1]).toEqual("id");

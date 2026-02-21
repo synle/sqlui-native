@@ -1,3 +1,5 @@
+name: Test (Unit / Integration Tests)
+
 on:
   workflow_dispatch:
     inputs:
@@ -6,52 +8,32 @@ on:
         default: "20"
 
 jobs:
-  prebuild:
+  unit_tests:
     runs-on: ubuntu-latest
-    name: 'Build and Unit Tests'
     steps:
-      - run: |
-          echo "node_version: ${{ inputs.node_version }}"
-          echo "timeout_minutes: ${{ inputs.timeout_minutes }}"
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ inputs.node_version }}
           cache: "npm"
-      - name: sqlui-native - Build Unit Tests
-        run: |
+      - run: |
           bash scripts/build.sh false
-      - name: Archive prebuild workspace
-        run: tar -czf /tmp/prebuild-workspace.tar.gz --exclude='.git' .
-      - name: Upload prebuild workspace
-        uses: actions/upload-artifact@v4
-        with:
-          name: prebuild-workspace
-          path: /tmp/prebuild-workspace.tar.gz
-          retention-days: 1
-
 
   integration_test:
-    needs: [prebuild]
     runs-on: ubuntu-latest
-    name: 'Integration Tests'
+    timeout-minutes: 60
     steps:
-      - name: install missing dependencies
-        run: sudo apt-get install -y libarchive-tools
+      - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ inputs.node_version }}
-      - name: Download prebuild workspace
-        uses: actions/download-artifact@v4
-        with:
-          name: prebuild-workspace
-          path: /tmp
+          cache: "npm"
+      - run: |
+          node scripts/prebuild.js
+          npm ci || npm install
+          node scripts/postbuild.js
 
       # start all database containers
-      - name: sqlui-native - Pre Integration Tests - Starting Docker Images
-        run: |
-          echo '===== sqlui-native - Pre Integration Tests (Docker Images) === '
-
       - name: Start MySQL
         run: docker run --name sqlui_mysql -d -p 3306:3306 -e MYSQL_ROOT_PASSWORD='password123!' mysql
 
@@ -77,75 +59,63 @@ jobs:
         run: docker run --name sqlui_redis -d -p 6379:6379 redis
 
       # wait for databases to be ready
-      - name: sqlui-native - Pre Integration Tests - Pinging Docker Images
+      - name: Wait for databases to be ready
         run: |
           echo "Waiting for databases to initialize..."
 
-          # MySQL
           echo "Waiting for MySQL..."
           for i in $(seq 1 30); do
             docker exec sqlui_mysql mysqladmin ping -uroot -p'password123!' --silent 2>/dev/null && break
-            sleep 2
+            sleep 5
           done
 
-          # MariaDB
           echo "Waiting for MariaDB..."
           for i in $(seq 1 30); do
             docker exec sqlui_mariadb mysqladmin ping -uroot -p'password123!' --silent 2>/dev/null && break
-            sleep 2
+            sleep 5
           done
 
-          # MSSQL
           echo "Waiting for MSSQL..."
           for i in $(seq 1 30); do
             docker exec sqlui_mssql /opt/mssql-tools*/bin/sqlcmd -S localhost -U sa -P 'password123!' -Q "SELECT 1" 2>/dev/null && break
-            sleep 2
+            sleep 5
           done
 
-          # PostgreSQL
           echo "Waiting for PostgreSQL..."
           for i in $(seq 1 30); do
             docker exec sqlui_postgres pg_isready -U postgres 2>/dev/null && break
-            sleep 2
+            sleep 5
           done
 
-          # Cassandra v4 (slow to start)
           echo "Waiting for Cassandra v4..."
-          for i in $(seq 1 60); do
+          for i in $(seq 1 30); do
             docker exec sqlui_cassandra_v4 cqlsh -e "DESCRIBE KEYSPACES" 2>/dev/null && break
-            sleep 3
+            sleep 10
           done
 
-          # Cassandra v2 (slow to start)
           echo "Waiting for Cassandra v2..."
-          for i in $(seq 1 60); do
+          for i in $(seq 1 30); do
             docker exec sqlui_cassandra_v2 cqlsh -e "DESCRIBE KEYSPACES" 2>/dev/null && break
-            sleep 3
+            sleep 10
           done
 
-          # MongoDB
           echo "Waiting for MongoDB..."
           for i in $(seq 1 30); do
             docker exec sqlui_mongodb mongosh --eval "db.runCommand({ ping: 1 })" 2>/dev/null && break
-            sleep 2
+            sleep 5
           done
 
-          # Redis
           echo "Waiting for Redis..."
           for i in $(seq 1 30); do
             docker exec sqlui_redis redis-cli ping 2>/dev/null | grep -q PONG && break
-            sleep 2
+            sleep 5
           done
-
           echo "All databases should be ready."
 
-      # run integration tests
-      - name: sqlui-native - Run integration tests
+      - name: Run integration tests
         run: npm run test-integration
 
-      # cleanup
-      - name: Cleanup containers
+      - name: Cleanup Containers
         if: always()
         run: |
-          docker rm -f sqlui_mysql sqlui_mariadb sqlui_mssql sqlui_postgres \
-            sqlui_cassandra_v4 sqlui_cassandra_v2 sqlui_mongodb sqlui_redis 2>/dev/null || true
+          docker rm -f $(docker ps -aqf "name=sqlui_") 2>/dev/null || true

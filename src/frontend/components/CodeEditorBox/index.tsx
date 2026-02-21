@@ -134,9 +134,7 @@ export default function CodeEditorBox(props: CodeEditorProps): JSX.Element | nul
     }
   }, [props.height, props.id]);
 
-  const fillHeightStyle = props.fillHeight
-    ? { display: "flex", flexDirection: "column" as const, flex: 1, minHeight: 0 }
-    : undefined;
+  const fillHeightStyle = props.fillHeight ? { display: "flex", flexDirection: "column" as const, flex: 1, minHeight: 0 } : undefined;
 
   const editorHeight = props.fillHeight ? undefined : height;
 

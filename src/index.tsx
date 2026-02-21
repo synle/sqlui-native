@@ -3,8 +3,10 @@ import CssBaseline from "@mui/material/CssBaseline";
 import { createTheme, Theme, ThemeProvider } from "@mui/material/styles";
 import { SnackbarProvider } from "notistack";
 import ReactDOM from "react-dom";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClient } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
+import { persister } from "src/frontend/data/cacheStorage";
 import { HashRouter, Route, Routes } from "react-router-dom";
 import { useEffect, useState } from "react";
 import App from "src/frontend/App";
@@ -135,13 +137,19 @@ const renderApp = function () {
       queries: {
         retry: false,
         refetchOnWindowFocus: false,
+        cacheTime: 1000 * 60 * 60 * 24, // 24 hours - keep entries long enough to be persisted
       },
     },
   });
 
+  const persistOptions = {
+    persister,
+    maxAge: 1000 * 60 * 60 * 24, // 24 hours
+  };
+
   ReactDOM.render(
     <SnackbarProvider maxSnack={4}>
-      <QueryClientProvider client={queryClient}>
+      <PersistQueryClientProvider client={queryClient} persistOptions={persistOptions}>
         <ReactQueryDevtools initialIsOpen={false} />
         <CombinedContextProvider>
           <Routes>
@@ -152,7 +160,7 @@ const renderApp = function () {
           <ActionDialogs />
           <ElectronEventListener />
         </CombinedContextProvider>
-      </QueryClientProvider>
+      </PersistQueryClientProvider>
     </SnackbarProvider>,
     document.querySelector("#body"),
   );
