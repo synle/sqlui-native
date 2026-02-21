@@ -81,18 +81,18 @@ export default class RelationalDataAdapter extends BaseDataAdapter implements ID
     // which fails in packaged Electron apps (e.g., tedious for mssql)
     try {
       switch (this.dialect) {
-        case 'mssql':
-          connectionPropOptions.dialectModule = require('tedious');
+        case "mssql":
+          connectionPropOptions.dialectModule = require("tedious");
           break;
-        case 'mariadb':
-          connectionPropOptions.dialectModule = require('mariadb');
+        case "mariadb":
+          connectionPropOptions.dialectModule = require("mariadb");
           break;
-        case 'mysql':
-          connectionPropOptions.dialectModule = require('mysql2');
+        case "mysql":
+          connectionPropOptions.dialectModule = require("mysql2");
           break;
-        case 'postgres':
-        case 'postgresql':
-          connectionPropOptions.dialectModule = require('pg');
+        case "postgres":
+        case "postgresql":
+          connectionPropOptions.dialectModule = require("pg");
           break;
       }
     } catch (_) {
