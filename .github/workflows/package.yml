@@ -37,14 +37,7 @@ jobs:
           node-version: ${{ inputs.node_version }}
           cache: "npm"
 
-      - run: |
-          npm ci || npm install
-
-      - run: |
-          npm run test-ci
-
-      - run: |
-          npm run typecheck
+      - run: bash scripts/test.sh
 
       - if: ${{ inputs.run_format }}
         run: |
@@ -58,20 +51,9 @@ jobs:
           message: "CI / CD - Format code"
           default_author: github_actions
 
-      - name: Archive prebuild workspace
-        run: tar -czf /tmp/prebuild-workspace.tar.gz --exclude='.git' .
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: prebuild-workspace
-          path: /tmp/prebuild-workspace.tar.gz
-          retention-days: 1
-          compression-level: 9
-
   dist_windows_x64:
     needs: [prebuild]
     runs-on: windows-latest
-    timeout-minutes: ${{ fromJSON(inputs.timeout_minutes || '30') }}
     steps:
       - uses: actions/checkout@v6
 
@@ -80,7 +62,7 @@ jobs:
           node-version: ${{ inputs.node_version }}
           cache: "npm"
 
-      - run: bash scripts/build.sh true
+      - run: bash scripts/build.sh
 
       - run: npm run dist-win-x64
         name: sqlui-native npm run dist-win-x64
@@ -127,7 +109,6 @@ jobs:
   dist_windows_arm64:
     needs: [prebuild]
     runs-on: windows-latest
-    timeout-minutes: ${{ fromJSON(inputs.timeout_minutes || '30') }}
     steps:
       - uses: actions/checkout@v6
 
@@ -139,7 +120,7 @@ jobs:
       - run: pip install setuptools
         name: Install setuptools for node-gyp
 
-      - run: bash scripts/build.sh true
+      - run: bash scripts/build.sh
 
       - run: npm run dist-win-arm64
         name: sqlui-native npm run dist-win-arm64
@@ -165,7 +146,6 @@ jobs:
   dist_macos_arm64:
     needs: [prebuild]
     runs-on: macos-latest
-    timeout-minutes: ${{ fromJSON(inputs.timeout_minutes || '30') }}
     steps:
       - uses: actions/checkout@v6
 
@@ -174,7 +154,7 @@ jobs:
           node-version: ${{ inputs.node_version }}
           cache: "npm"
 
-      - run: bash scripts/build.sh true
+      - run: bash scripts/build.sh
 
       - run: npm run dist-macos-arm64
         name: sqlui-native npm run dist-macos-arm64
@@ -200,7 +180,6 @@ jobs:
   dist_macos_x86_intel:
     needs: [prebuild]
     runs-on: macos-latest
-    timeout-minutes: ${{ fromJSON(inputs.timeout_minutes || '30') }}
     steps:
       - uses: actions/checkout@v6
 
@@ -209,7 +188,7 @@ jobs:
           node-version: ${{ inputs.node_version }}
           cache: "npm"
 
-      - run: bash scripts/build.sh true
+      - run: bash scripts/build.sh
 
       - run: npm run dist-macos-x64
         name: sqlui-native npm run dist-macos-x64
@@ -235,24 +214,15 @@ jobs:
   dist_linux:
     needs: [prebuild]
     runs-on: ubuntu-latest
-    timeout-minutes: ${{ fromJSON(inputs.timeout_minutes || '30') }}
     steps:
-      - name: install missing dependencies
-        run: sudo apt-get install -y libarchive-tools
+      - uses: actions/checkout@v6
 
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ inputs.node_version }}
+          cache: "npm"
 
-      - uses: actions/download-artifact@v4
-        with:
-          name: prebuild-workspace
-          path: /tmp
-
-      - name: Extract prebuild workspace
-        run: tar -xzf /tmp/prebuild-workspace.tar.gz
-
-      - run: npm version --no-git-tag-version patch
+      - run: bash scripts/build.sh
 
       - run: npm run dist
         name: sqlui-native npm run dist
