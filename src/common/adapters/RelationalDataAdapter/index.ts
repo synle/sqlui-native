@@ -84,7 +84,9 @@ export default class RelationalDataAdapter extends BaseDataAdapter implements ID
           connectionPropOptions.dialectModule = require("tedious");
           break;
         case "mariadb":
-          connectionPropOptions.dialectModule = require("mariadb");
+          // NOTES: because mariadb and mysql are compatbile, we can use mysql here to replace it...
+          connectionPropOptions.dialectModule = require("mysql2");
+          connectionUrl = connectionUrl.replace("mariadb://", "mysql://");
           break;
         case "mysql":
           connectionPropOptions.dialectModule = require("mysql2");
@@ -94,14 +96,16 @@ export default class RelationalDataAdapter extends BaseDataAdapter implements ID
           connectionPropOptions.dialectModule = require("pg");
           break;
       }
-    } catch (_) {
+    } catch (err) {
       // dialect module not available, let Sequelize handle the error
+      console.log("RelationalDataAdapter.getConnection - Dialect module not available", connectionUrl, connectionPropOptions, err);
+      throw err
     }
 
     try {
       return new Sequelize(connectionUrl, connectionPropOptions);
     } catch (err) {
-      console.log("Failed to set up Sequelize for RelationalDataAdapter", connectionUrl, connectionPropOptions);
+      console.log("RelationalDataAdapter.getConnection - Failed to set up Sequelize for RelationalDataAdapter", connectionUrl, connectionPropOptions, err);
       throw err;
     }
   }
