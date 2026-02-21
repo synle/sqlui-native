@@ -106,8 +106,7 @@ jobs:
       - run: npm run dist-win-x64
         name: sqlui-native npm run dist-win-x64
 
-      - run: mv ./dist/sqlui-native*.exe ./dist/sqlui-native-x64.exe
-        name: mv ./dist/sqlui-native*.exe ./dist/sqlui-native-x64.exe
+      - run: mv "./dist/sqlui-native Setup*.exe" ./dist/sqlui-native-x64.exe
 
       - name: Upload release binary .exe
         uses: actions/upload-release-asset@v1
@@ -124,6 +123,7 @@ jobs:
         with:
           name: sqlui-native Windows 10 - 11 (Intel - AMD x64).exe
           path: ./dist/sqlui-native-x64.exe
+          compression-level: 9
 
       # package and distribute .appx
 
@@ -131,7 +131,6 @@ jobs:
         name: sqlui-native npm run dist-win32-appx
 
       - run: mv ./dist/sqlui-native*.appx ./dist/sqlui-native.appx
-        name: mv ./dist/sqlui-native*.appx ./dist/sqlui-native.appx
 
       - name: Upload release binary .appx
         uses: actions/upload-release-asset@v1
@@ -148,6 +147,7 @@ jobs:
         with:
           name: sqlui-native Windows 10 - 11 (Intel - AMD x64).appx
           path: ./dist/sqlui-native.appx
+          compression-level: 9
 
   dist_windows_arm64:
     needs: [create_release]
@@ -172,8 +172,7 @@ jobs:
       - run: npm run dist-win-arm64
         name: sqlui-native npm run dist-win-arm64
 
-      - run: mv ./dist/sqlui-native*.exe ./dist/sqlui-native-arm64.exe
-        name: mv ./dist/sqlui-native*.exe ./dist/sqlui-native-arm64.exe
+      - run: mv "./dist/sqlui-native Setup*.exe" ./dist/sqlui-native-arm64.exe
 
       - name: Upload release binary .exe
         uses: actions/upload-release-asset@v1
@@ -190,6 +189,7 @@ jobs:
         with:
           name: sqlui-native Windows 10 - 11 (ARM architecture).exe
           path: ./dist/sqlui-native-arm64.exe
+          compression-level: 9
 
   dist_macos_arm64:
     needs: [create_release]
@@ -212,7 +212,6 @@ jobs:
         name: sqlui-native npm run dist-macos-arm64
 
       - run: mv ./dist/sqlui-native*.dmg ./dist/sqlui-native-arm64.dmg
-        name: mv ./dist/sqlui-native*.dmg ./dist/sqlui-native-arm64.dmg
 
       - name: Upload release binary
         uses: actions/upload-release-asset@v1
@@ -229,6 +228,7 @@ jobs:
         with:
           name: sqlui-native - macOS - OSX Apple Silicon M-Series.dmg
           path: ./dist/sqlui-native-arm64.dmg
+          compression-level: 9
 
   dist_macos_x86_intel:
     needs: [create_release]
@@ -251,7 +251,6 @@ jobs:
         name: sqlui-native npm run dist-macos-x64
 
       - run: mv ./dist/sqlui-native*.dmg ./dist/sqlui-native-x64.dmg
-        name: mv ./dist/sqlui-native*.dmg ./dist/sqlui-native-x64.dmg
 
       - name: Upload release binary
         uses: actions/upload-release-asset@v1
@@ -268,6 +267,7 @@ jobs:
         with:
           name: sqlui-native macOS - OSX (Intel x64).dmg
           path: ./dist/sqlui-native-x64.dmg
+          compression-level: 9
 
   dist_linux:
     needs: [create_release]
@@ -311,24 +311,28 @@ jobs:
         with:
           name: sqlui-native - Debian Ubuntu.deb
           path: ./dist/sqlui-native.deb
+          compression-level: 9
 
       - name: Upload artifact .rpm
         uses: actions/upload-artifact@v4
         with:
           name: sqlui-native - Redhat CentOS Fedora.rpm
           path: ./dist/sqlui-native.rpm
+          compression-level: 9
 
       - name: Upload artifact .snap
         uses: actions/upload-artifact@v4
         with:
           name: sqlui-native - Ubuntu.snap
           path: ./dist/sqlui-native.snap
+          compression-level: 9
 
       - name: Upload artifact .pacman
         uses: actions/upload-artifact@v4
         with:
           name: sqlui-native - Arch Linux.pacman
           path: ./dist/sqlui-native.pacman
+          compression-level: 9
 
       - name: Upload release binary deb
         uses: actions/upload-release-asset@v1
@@ -383,6 +387,7 @@ jobs:
         with:
           name: sqlui-native - Linux AppImage.AppImage
           path: ./dist/sqlui-native.AppImage
+          compression-level: 9
 
       - name: Upload release binary AppImage
         uses: actions/upload-release-asset@v1
