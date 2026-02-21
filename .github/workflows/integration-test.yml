@@ -40,8 +40,8 @@ jobs:
       mssql:
         image: mcr.microsoft.com/mssql/server:2022-latest
         env:
-          ACCEPT_EULA: 'Y'
-          MSSQL_SA_PASSWORD: 'password123!'
+          ACCEPT_EULA: "Y"
+          MSSQL_SA_PASSWORD: "password123!"
         ports:
           - 1433:1433
       postgres:
