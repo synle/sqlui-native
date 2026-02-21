@@ -1,3 +1,4 @@
+import CloseIcon from "@mui/icons-material/Close";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import Button from "@mui/material/Button";
 import Divider from "@mui/material/Divider";
@@ -7,7 +8,12 @@ import Select from "@mui/material/Select";
 import TextField from "@mui/material/TextField";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
-import { getToastHistory, ToastHistoryEntry } from "src/frontend/hooks/useToaster";
+import {
+  getToastHistory,
+  dismissHistoryEntry,
+  dismissAllHistoryEntries,
+  ToastHistoryEntry,
+} from "src/frontend/hooks/useToaster";
 
 const COLLAPSED_LENGTH = 250;
 const ESTIMATED_ROW_HEIGHT = 60;
@@ -193,6 +199,9 @@ export default function ToastHistoryList() {
             {expandAll ? "Collapse All" : "Expand All"}
           </Button>
         )}
+        <Button size="small" variant="outlined" color="error" onClick={() => dismissAllHistoryEntries()}>
+          Dismiss All
+        </Button>
       </div>
       <div ref={parentRef} style={{ flex: 1, overflow: "auto" }}>
         {sorted.length === 0 ? (
@@ -225,19 +234,32 @@ export default function ToastHistoryList() {
                     style={{
                       padding: "8px 12px",
                       fontSize: "0.85rem",
+                      display: "flex",
+                      alignItems: "flex-start",
+                      gap: "8px",
                     }}
                   >
-                    <div style={{ marginBottom: "4px" }}>{entry.message}</div>
-                    <div style={{ opacity: 0.6, fontSize: "0.75rem" }}>
-                      {entry.id && <span>ID: {entry.id} | </span>}
-                      Created: {formatTime(entry.createdTime)}
-                      {entry.dismissTime && (
-                        <span>
-                          {" "}
-                          | Dismissed: {formatTime(entry.dismissTime)} ({entry.dismissTriggered})
-                        </span>
-                      )}
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ marginBottom: "4px" }}>{entry.message}</div>
+                      <div style={{ opacity: 0.6, fontSize: "0.75rem" }}>
+                        {entry.id && <span>ID: {entry.id} | </span>}
+                        Created: {formatTime(entry.createdTime)}
+                        {entry.dismissTime && (
+                          <span>
+                            {" "}
+                            | Dismissed: {formatTime(entry.dismissTime)} ({entry.dismissTriggered})
+                          </span>
+                        )}
+                      </div>
                     </div>
+                    <IconButton
+                      size="small"
+                      onClick={() => dismissHistoryEntry(entry.createdTime)}
+                      sx={{ padding: "2px", opacity: 0.4, "&:hover": { opacity: 1 } }}
+                      aria-label="Dismiss notification"
+                    >
+                      <CloseIcon sx={{ fontSize: "0.85rem" }} />
+                    </IconButton>
                   </div>
                   {sections.length > 0 && (
                     <ExpandableContent sections={sections} expanded={expandAll} onToggle={remeasure} />

@@ -138,6 +138,28 @@ export function getToastHistory(): ToastHistoryEntry[] {
   return _toastHistory;
 }
 
+export function useToastHistoryCount(): number {
+  const [count, setCount] = useState(_toastHistory.length);
+  useEffect(() => {
+    const listener = () => setCount(_toastHistory.length);
+    _listeners.push(listener);
+    return () => {
+      _listeners = _listeners.filter((l) => l !== listener);
+    };
+  }, []);
+  return count;
+}
+
+export function dismissHistoryEntry(entryCreatedTime: number) {
+  _toastHistory = _toastHistory.filter((h) => h.createdTime !== entryCreatedTime);
+  _notify();
+}
+
+export function dismissAllHistoryEntries() {
+  _toastHistory = [];
+  _notify();
+}
+
 function formatTime(ts?: number) {
   if (!ts) return "-";
   return new Date(ts).toLocaleString();
