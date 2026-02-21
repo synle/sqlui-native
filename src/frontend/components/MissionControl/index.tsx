@@ -686,7 +686,6 @@ export default function MissionControl() {
       await modal({
         title: "Bookmarks",
         message: <BookmarksItemListModalContent onAfterSelect={dismissDialog} />,
-        size: "md",
         showCloseButton: true,
       });
     } catch (err) {}
@@ -843,7 +842,6 @@ export default function MissionControl() {
       await modal({
         title: "Record Details",
         message: <RecordDetailsPage data={data} isEditMode={isEditMode} />,
-        size: "md",
         showCloseButton: true,
       });
     } catch (err) {}
@@ -1070,8 +1068,7 @@ export default function MissionControl() {
                 />
               ),
               showCloseButton: true,
-              size: "md",
-            });
+                  });
           }
           break;
 
@@ -1316,8 +1313,7 @@ export default function MissionControl() {
                 </Box>
               ),
               showCloseButton: true,
-              size: "md",
-            });
+                  });
           }
           break;
 

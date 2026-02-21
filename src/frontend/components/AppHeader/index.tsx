@@ -150,7 +150,7 @@ export default function AppHeader() {
                   title: "Notification History",
                   message: <ToastHistoryList />,
                   showCloseButton: true,
-                  size: "lg",
+                  isFullScreen: true,
                 });
               } finally {
               }

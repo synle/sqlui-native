@@ -12,6 +12,7 @@ export type AlertInput = {
   onYesClick?: () => void;
   noLabel?: string;
   isConfirm?: boolean;
+  isFullScreen?: boolean;
 };
 
 type AlertDialogProps = AlertInput & {
@@ -21,8 +22,16 @@ type AlertDialogProps = AlertInput & {
 
 export default function AlertDialog(props: AlertDialogProps): JSX.Element | null {
   return (
-    <Dialog open={props.open} onClose={props.onDismiss} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
-      <div style={{ width: 400 }}>
+    <Dialog
+      open={props.open}
+      onClose={props.onDismiss}
+      aria-labelledby="alert-dialog-title"
+      aria-describedby="alert-dialog-description"
+      fullScreen={!!props.isFullScreen}
+      fullWidth={!props.isFullScreen}
+      maxWidth={props.isFullScreen ? false : "md"}
+    >
+      <div style={props.isFullScreen ? undefined : { width: 400 }}>
         <DialogTitle id="alert-dialog-title">{props.title || "Alert"}</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">{props.message}</DialogContentText>

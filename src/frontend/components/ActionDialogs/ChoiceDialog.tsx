@@ -17,6 +17,7 @@ export type ChoiceInput = {
   message: string | React.ReactNode;
   options: ChoiceOption[];
   required?: boolean;
+  isFullScreen?: boolean;
 };
 
 type ChoiceDialogProps = ChoiceInput & {
@@ -34,7 +35,7 @@ export default function ChoiceDialog(props: ChoiceDialogProps): JSX.Element | nu
   }
 
   return (
-    <Dialog onClose={onClose} open={open} fullWidth={true}>
+    <Dialog onClose={onClose} open={open} fullScreen={!!props.isFullScreen} fullWidth={!props.isFullScreen} maxWidth={props.isFullScreen ? false : "md"}>
       <DialogTitle>{title}</DialogTitle>
       <DialogContent>
         {message}
