@@ -18,6 +18,7 @@ concurrency:
 
 jobs:
   prebuild:
+    name: 'Build and Unit Tests'
     runs-on: ubuntu-latest
     steps:
       - run: |

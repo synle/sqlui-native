@@ -6,10 +6,13 @@ on:
         default: "20"
 
 jobs:
-  integration_test:
+  prebuild:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    name: 'Build and Unit Tests'
     steps:
+      - run: |
+          echo "node_version: ${{ inputs.node_version }}"
+          echo "timeout_minutes: ${{ inputs.timeout_minutes }}"
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
         with:
@@ -18,6 +21,31 @@ jobs:
       - name: sqlui-native - Build Unit Tests
         run: |
           bash scripts/build.sh false
+      - name: Archive prebuild workspace
+        run: tar -czf /tmp/prebuild-workspace.tar.gz --exclude='.git' .
+      - name: Upload prebuild workspace
+        uses: actions/upload-artifact@v4
+        with:
+          name: prebuild-workspace
+          path: /tmp/prebuild-workspace.tar.gz
+          retention-days: 1
+
+
+  integration_test:
+    needs: [prebuild]
+    runs-on: ubuntu-latest
+    name: 'Integration Tests'
+    steps:
+      - name: install missing dependencies
+        run: sudo apt-get install -y libarchive-tools
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ inputs.node_version }}
+      - name: Download prebuild workspace
+        uses: actions/download-artifact@v4
+        with:
+          name: prebuild-workspace
+          path: /tmp
 
       # start all database containers
       - name: sqlui-native - Pre Integration Tests - Starting Docker Images

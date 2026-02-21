@@ -159,4 +159,77 @@ describe("commonUtils", () => {
       expect(actual.join(",")).toMatchInlineSnapshot(`"11,22,33,44,55"`);
     });
   });
+
+  describe("getGeneratedRandomId", () => {
+    test("should start with the given prefix", () => {
+      const id = commonUtils.getGeneratedRandomId("connection");
+      expect(id.startsWith("connection.")).toBe(true);
+    });
+
+    test("should generate unique ids", () => {
+      const id1 = commonUtils.getGeneratedRandomId("test");
+      const id2 = commonUtils.getGeneratedRandomId("test");
+      expect(id1).not.toEqual(id2);
+    });
+
+    test("should have three parts separated by dots", () => {
+      const id = commonUtils.getGeneratedRandomId("prefix");
+      const parts = id.split(".");
+      expect(parts.length).toEqual(3);
+      expect(parts[0]).toEqual("prefix");
+      // second part is timestamp
+      expect(Number(parts[1])).toBeGreaterThan(0);
+      // third part is random number
+      expect(Number(parts[2])).toBeGreaterThanOrEqual(0);
+    });
+  });
+
+  describe("sortColumnNamesForUnknownData", () => {
+    test("should put _id and id first", () => {
+      const actual = commonUtils.sortColumnNamesForUnknownData(["name", "email", "_id", "id"]);
+      expect(actual[0]).toEqual("_id");
+      expect(actual[1]).toEqual("id");
+    });
+
+    test("should put special column names in order", () => {
+      const actual = commonUtils.sortColumnNamesForUnknownData(["etag", "partitionKey", "rowKey", "_id"]);
+      expect(actual).toEqual(["_id", "rowKey", "partitionKey", "etag"]);
+    });
+
+    test("should put columns ending with 'id' before other columns", () => {
+      const actual = commonUtils.sortColumnNamesForUnknownData(["name", "userId", "email", "orderId"]);
+      expect(actual.indexOf("userId")).toBeLessThan(actual.indexOf("name"));
+      expect(actual.indexOf("orderId")).toBeLessThan(actual.indexOf("email"));
+    });
+
+    test("should sort non-special columns alphabetically", () => {
+      const actual = commonUtils.sortColumnNamesForUnknownData(["zebra", "apple", "mango"]);
+      expect(actual).toEqual(["apple", "mango", "zebra"]);
+    });
+
+    test("should handle empty array", () => {
+      const actual = commonUtils.sortColumnNamesForUnknownData([]);
+      expect(actual).toEqual([]);
+    });
+
+    test("should handle single item", () => {
+      const actual = commonUtils.sortColumnNamesForUnknownData(["name"]);
+      expect(actual).toEqual(["name"]);
+    });
+
+    test("should handle mixed special and regular columns", () => {
+      const actual = commonUtils.sortColumnNamesForUnknownData([
+        "description",
+        "id",
+        "userId",
+        "name",
+        "_id",
+        "createdAt",
+      ]);
+      // _id first, then id, then columns ending in Id, then alphabetical
+      expect(actual[0]).toEqual("_id");
+      expect(actual[1]).toEqual("id");
+      expect(actual.indexOf("userId")).toBeLessThan(actual.indexOf("name"));
+    });
+  });
 });
