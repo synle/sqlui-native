@@ -1,5 +1,6 @@
 import qs from "qs";
 import { Options, Sequelize } from "sequelize";
+import { MAX_CONNECTION_TIMEOUT } from "src/common/adapters/BaseDataAdapter/index";
 import BaseDataAdapter from "src/common/adapters/BaseDataAdapter/index";
 import IDataAdapter from "src/common/adapters/IDataAdapter";
 import { SqluiCore } from "typings";
@@ -8,10 +9,12 @@ function _getDefaultSequelizeOptions(): Options {
     logging: false,
     dialectOptions: {
       multipleStatements: true,
+      connectTimeout: MAX_CONNECTION_TIMEOUT,
     },
     pool: {
       max: 1,
       min: 0,
+      acquire: MAX_CONNECTION_TIMEOUT,
     },
   };
 }

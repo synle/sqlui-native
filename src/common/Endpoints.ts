@@ -45,7 +45,12 @@ function addDataEndpoint(
       await incomingHandler(req, res, cache);
     } catch (err: any) {
       console.log("err", err);
-      res.status(500).send(err);
+      const message = err?.sqlMessage || err?.message || err?.toString?.() || "Internal Server Error";
+      try {
+        res.status(500).json({ error: message });
+      } catch (resErr) {
+        // response may have already been sent
+      }
     }
   };
 
@@ -188,31 +193,55 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
   });
 
   addDataEndpoint("get", "/api/connection/:connectionId/databases", async (req, res) => {
-    res.status(200).json(await getDatabases(req.headers["sqlui-native-session-id"], req.params?.connectionId));
+    try {
+      res.status(200).json(await getDatabases(req.headers["sqlui-native-session-id"], req.params?.connectionId));
+    } catch (err: any) {
+      const message = err?.sqlMessage || err?.message || err?.toString?.() || "Connection failed";
+      console.log("Failed to get databases", message);
+      res.status(500).json({ error: message });
+    }
   });
 
   addDataEndpoint("get", "/api/connection/:connectionId/database/:databaseId", async (req, res) => {
-    const databases = await getDatabases(req.headers["sqlui-native-session-id"], req.params?.connectionId);
-    const database = databases.find((db) => db.name === req.params?.databaseId);
+    try {
+      const databases = await getDatabases(req.headers["sqlui-native-session-id"], req.params?.connectionId);
+      const database = databases.find((db) => db.name === req.params?.databaseId);
 
-    if (!database) {
-      return res.status(404).send("Not Found");
+      if (!database) {
+        return res.status(404).send("Not Found");
+      }
+
+      res.status(200).json(database);
+    } catch (err: any) {
+      const message = err?.sqlMessage || err?.message || err?.toString?.() || "Connection failed";
+      console.log("Failed to get database", message);
+      res.status(500).json({ error: message });
     }
-
-    res.status(200).json(database);
   });
 
-  addDataEndpoint("get", "/api/connection/:connectionId/database/:databaseId/tables", async (req, res) =>
-    res.status(200).json(await getTables(req.headers["sqlui-native-session-id"], req.params?.connectionId, req.params?.databaseId)),
-  );
+  addDataEndpoint("get", "/api/connection/:connectionId/database/:databaseId/tables", async (req, res) => {
+    try {
+      res.status(200).json(await getTables(req.headers["sqlui-native-session-id"], req.params?.connectionId, req.params?.databaseId));
+    } catch (err: any) {
+      const message = err?.sqlMessage || err?.message || err?.toString?.() || "Connection failed";
+      console.log("Failed to get tables", message);
+      res.status(500).json({ error: message });
+    }
+  });
 
-  addDataEndpoint("get", "/api/connection/:connectionId/database/:databaseId/table/:tableId/columns", async (req, res) =>
-    res
-      .status(200)
-      .json(
-        await getColumns(req.headers["sqlui-native-session-id"], req.params?.connectionId, req.params?.databaseId, req.params?.tableId),
-      ),
-  );
+  addDataEndpoint("get", "/api/connection/:connectionId/database/:databaseId/table/:tableId/columns", async (req, res) => {
+    try {
+      res
+        .status(200)
+        .json(
+          await getColumns(req.headers["sqlui-native-session-id"], req.params?.connectionId, req.params?.databaseId, req.params?.tableId),
+        );
+    } catch (err: any) {
+      const message = err?.sqlMessage || err?.message || err?.toString?.() || "Connection failed";
+      console.log("Failed to get columns", message);
+      res.status(500).json({ error: message });
+    }
+  });
 
   addDataEndpoint("post", "/api/connection/:connectionId/connect", async (req, res) => {
     const connectionsStorage = await getConnectionsStorage(req.headers["sqlui-native-session-id"]);
@@ -244,9 +273,14 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
       return res.status(404).send("Not Found");
     }
 
-    const engine = getDataAdapter(connection.connection);
-
-    res.status(200).json(await engine.execute(req.body?.sql, req.body?.database, req.body?.table));
+    try {
+      const engine = getDataAdapter(connection.connection);
+      res.status(200).json(await engine.execute(req.body?.sql, req.body?.database, req.body?.table));
+    } catch (err: any) {
+      const message = err?.sqlMessage || err?.message || err?.toString?.() || "Query execution failed";
+      console.log("Failed to execute query", message);
+      res.status(200).json({ ok: false, error: message });
+    }
   });
 
   addDataEndpoint("post", "/api/connection/test", async (req, res) => {
@@ -256,9 +290,15 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
       return res.status(400).send("`connection` is required...");
     }
 
-    const engine = getDataAdapter(connection.connection);
-    await engine.authenticate();
-    res.status(200).json(await getConnectionMetaData(connection));
+    try {
+      const engine = getDataAdapter(connection.connection);
+      await engine.authenticate();
+      res.status(200).json(await getConnectionMetaData(connection));
+    } catch (err: any) {
+      const message = err?.sqlMessage || err?.message || err?.toString?.() || "Connection test failed";
+      console.log("Failed to test connection", message);
+      res.status(406).json({ error: message });
+    }
   });
 
   addDataEndpoint("post", "/api/connection", async (req, res) => {
