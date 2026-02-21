@@ -82,7 +82,7 @@ jobs:
       - name: Upload artifact .appx
         uses: actions/upload-artifact@v4
         with:
-          name: sqlui-native (Windows 10 - 11 x64).appx
+          name: sqlui-native - Windows 10 - 11 x64.appx
           path: ./dist/sqlui-native.appx
 
   dist_windows_arm64:
@@ -108,7 +108,7 @@ jobs:
       - name: Upload artifact .exe
         uses: actions/upload-artifact@v4
         with:
-          name: sqlui-native-arm64 (Windows 10 - 11 ARM64).exe
+          name: sqlui-native - Windows 10 - 11 ARM64.exe
           path: ./dist/sqlui-native-arm64.exe
 
   dist_macos_arm64:
@@ -133,7 +133,7 @@ jobs:
       - name: Upload artifact .dmg
         uses: actions/upload-artifact@v4
         with:
-          name: sqlui-native-arm64 (macOS - OSX Apple Silicon M-Series).dmg
+          name: sqlui-native - macOS - OSX Apple Silicon M-Series.dmg
           path: ./dist/sqlui-native-arm64.dmg
 
   dist_macos_x86_intel:
@@ -193,22 +193,22 @@ jobs:
       - name: Upload artifact .deb
         uses: actions/upload-artifact@v4
         with:
-          name: sqlui-native (Debian Ubuntu).deb
+          name: sqlui-native - Debian Ubuntu.deb
           path: ./dist/sqlui-native.deb
       - name: Upload artifact .rpm
         uses: actions/upload-artifact@v4
         with:
-          name: sqlui-native (Redhat CentOS Fedora).rpm
+          name: sqlui-native - Redhat CentOS Fedora.rpm
           path: ./dist/sqlui-native.rpm
       - name: Upload artifact .snap
         uses: actions/upload-artifact@v4
         with:
-          name: sqlui-native (Ubuntu).snap
+          name: sqlui-native - Ubuntu.snap
           path: ./dist/sqlui-native.snap
       - name: Upload artifact .pacman
         uses: actions/upload-artifact@v4
         with:
-          name: sqlui-native (Arch Linux).pacman
+          name: sqlui-native - Arch Linux.pacman
           path: ./dist/sqlui-native.pacman
 
       # package and distribute AppImage
@@ -219,5 +219,5 @@ jobs:
       - name: Upload artifact .AppImage
         uses: actions/upload-artifact@v4
         with:
-          name: sqlui-native (Linux AppImage).AppImage
+          name: sqlui-native - Linux AppImage.AppImage
           path: ./dist/sqlui-native.AppImage

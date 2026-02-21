@@ -4,8 +4,9 @@
 
 ### Requirement
 
-- NODE_VERSION: 16
+- NODE_VERSION: 20
 - npm (bundled with Node)
+- Docker (for integration tests)
 
 ### Starting guide
 
@@ -32,7 +33,7 @@ Assuming you use the same database in the docker samples below:
   {
     "_type": "connection",
     "id": "connection.1643485495810.296972129680364",
-    "connection": "mssql://sa:password123!123!@127.0.0.1:1433",
+    "connection": "mssql://sa:password123!@127.0.0.1:1433",
     "name": "local sql server"
   },
   {
@@ -154,6 +155,9 @@ docker run --detach --name sqlui_mariadb -p 33061:3306 -e MARIADB_ROOT_PASSWORD=
   # for m1 Macs (https://docs.microsoft.com/en-us/answers/questions/654108/azure-sql-edge-on-mac-m1-using-docker.html)
   docker run --name sqlui_mssql_m1 -d -e "ACCEPT_EULA=Y" -p 1433:1433 -e SA_PASSWORD='password123!' mcr.microsoft.com/azure-sql-edge
 
+    # Use this to test if the connection is alive
+    docker exec sqlui_mysql mysqladmin ping -uroot -p'password123!' --silent
+
 # postgres (https://hub.docker.com/_/postgres)
 docker run --name sqlui_postgres -d -p 5432:5432 -e POSTGRES_PASSWORD='password123!' postgres
 
@@ -178,6 +182,65 @@ docker run --name sqlui_redis -d -p 6379:6379 redis
   # https://www.cockroachlabs.com/docs/stable/install-cockroachdb-mac.html
   cockroach demo
 ```
+
+## Integration Tests
+
+Integration tests run against real database engines via Docker. They are separated from unit tests and use the `*.integration.spec.ts` naming convention.
+
+### Running integration tests locally
+
+```bash
+# 1. Start all database containers
+docker run --name sqlui_mysql -d -p 3306:3306 -e MYSQL_ROOT_PASSWORD='password123!' mysql
+docker run --name sqlui_mariadb -d -p 33061:3306 -e MARIADB_ROOT_PASSWORD='password123!' mariadb:latest
+docker run --name sqlui_mssql -d -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=password123!" -p 1433:1433 mcr.microsoft.com/mssql/server:2022-latest
+docker run --name sqlui_postgres -d -p 5432:5432 -e POSTGRES_PASSWORD='password123!' postgres
+docker run --name sqlui_cassandra_v4 -d -p 9042:9042 cassandra:4.0.1
+docker run --name sqlui_cassandra_v2 -d -p 9043:9042 cassandra:2.2.19
+docker run --name sqlui_mongodb -d -p 27017:27017 mongo
+docker run --name sqlui_redis -d -p 6379:6379 redis
+
+# for M-Series Macs, use this instead of the mssql line above
+# docker run --name sqlui_mssql -d -e "ACCEPT_EULA=Y" -p 1433:1433 -e SA_PASSWORD='password123!' mcr.microsoft.com/azure-sql-edge
+
+# 2. Wait for containers to be ready (Cassandra takes the longest ~60-90s)
+docker exec sqlui_mysql mysqladmin ping -uroot -p'password123!' --silent
+docker exec sqlui_postgres pg_isready -U postgres
+docker exec sqlui_cassandra_v4 cqlsh -e "DESCRIBE KEYSPACES"
+docker exec sqlui_redis redis-cli ping
+
+# 3. Install dependencies
+npm install
+
+# 4. Run all integration tests
+npm run test-integration
+
+# 5. Run a single adapter test
+npx vitest run --config vitest.integration.config.ts src/common/adapters/RelationalDataAdapter/mysql.integration.spec.ts
+
+# 6. Cleanup containers when done
+docker rm -f sqlui_mysql sqlui_mariadb sqlui_mssql sqlui_postgres sqlui_cassandra_v4 sqlui_cassandra_v2 sqlui_mongodb sqlui_redis
+```
+
+### Running integration tests via GitHub Actions
+
+The integration test workflow is available under `.github/workflows/integration-test.yml`. It is triggered manually via `workflow_dispatch` from the Actions tab on GitHub.
+
+### Test structure
+
+Integration tests live alongside their adapter source code:
+
+- `src/common/adapters/RelationalDataAdapter/mysql.integration.spec.ts`
+- `src/common/adapters/RelationalDataAdapter/mariadb.integration.spec.ts`
+- `src/common/adapters/RelationalDataAdapter/mssql.integration.spec.ts`
+- `src/common/adapters/RelationalDataAdapter/postgres.integration.spec.ts`
+- `src/common/adapters/CassandraDataAdapter/cassandra.integration.spec.ts` (v4 + v2)
+- `src/common/adapters/MongoDBDataAdapter/mongodb.integration.spec.ts`
+- `src/common/adapters/RedisDataAdapter/redis.integration.spec.ts`
+
+Each test covers: authenticate, create test data, getTables, getColumns, execute queries, cleanup.
+
+Integration tests are excluded from `npm run test-ci` and only run via `npm run test-integration`.
 
 ## Adding new adapters?
 

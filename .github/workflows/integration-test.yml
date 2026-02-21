@@ -1,0 +1,117 @@
+on:
+  workflow_dispatch:
+    inputs:
+      node_version:
+        description: "Node.js version"
+        default: "20"
+
+jobs:
+  integration_test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ inputs.node_version }}
+          cache: "npm"
+      - run: npm ci || npm install
+
+      # start all database containers
+      - name: Start MySQL
+        run: docker run --name sqlui_mysql -d -p 3306:3306 -e MYSQL_ROOT_PASSWORD='password123!' mysql
+
+      - name: Start MariaDB
+        run: docker run --name sqlui_mariadb -d -p 33061:3306 -e MARIADB_ROOT_PASSWORD='password123!' mariadb:latest
+
+      - name: Start MSSQL
+        run: docker run --name sqlui_mssql -d -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=password123!" -p 1433:1433 mcr.microsoft.com/mssql/server:2022-latest
+
+      - name: Start PostgreSQL
+        run: docker run --name sqlui_postgres -d -p 5432:5432 -e POSTGRES_PASSWORD='password123!' postgres
+
+      - name: Start Cassandra v4
+        run: docker run --name sqlui_cassandra_v4 -d -p 9042:9042 cassandra:4.0.1
+
+      - name: Start Cassandra v2
+        run: docker run --name sqlui_cassandra_v2 -d -p 9043:9042 cassandra:2.2.19
+
+      - name: Start MongoDB
+        run: docker run --name sqlui_mongodb -d -p 27017:27017 mongo
+
+      - name: Start Redis
+        run: docker run --name sqlui_redis -d -p 6379:6379 redis
+
+      # wait for databases to be ready
+      - name: Wait for databases to be ready
+        run: |
+          echo "Waiting for databases to initialize..."
+
+          # MySQL
+          echo "Waiting for MySQL..."
+          for i in $(seq 1 30); do
+            docker exec sqlui_mysql mysqladmin ping -uroot -p'password123!' --silent 2>/dev/null && break
+            sleep 2
+          done
+
+          # MariaDB
+          echo "Waiting for MariaDB..."
+          for i in $(seq 1 30); do
+            docker exec sqlui_mariadb mysqladmin ping -uroot -p'password123!' --silent 2>/dev/null && break
+            sleep 2
+          done
+
+          # MSSQL
+          echo "Waiting for MSSQL..."
+          for i in $(seq 1 30); do
+            docker exec sqlui_mssql /opt/mssql-tools*/bin/sqlcmd -S localhost -U sa -P 'password123!' -Q "SELECT 1" 2>/dev/null && break
+            sleep 2
+          done
+
+          # PostgreSQL
+          echo "Waiting for PostgreSQL..."
+          for i in $(seq 1 30); do
+            docker exec sqlui_postgres pg_isready -U postgres 2>/dev/null && break
+            sleep 2
+          done
+
+          # Cassandra v4 (slow to start)
+          echo "Waiting for Cassandra v4..."
+          for i in $(seq 1 60); do
+            docker exec sqlui_cassandra_v4 cqlsh -e "DESCRIBE KEYSPACES" 2>/dev/null && break
+            sleep 3
+          done
+
+          # Cassandra v2 (slow to start)
+          echo "Waiting for Cassandra v2..."
+          for i in $(seq 1 60); do
+            docker exec sqlui_cassandra_v2 cqlsh -e "DESCRIBE KEYSPACES" 2>/dev/null && break
+            sleep 3
+          done
+
+          # MongoDB
+          echo "Waiting for MongoDB..."
+          for i in $(seq 1 30); do
+            docker exec sqlui_mongodb mongosh --eval "db.runCommand({ ping: 1 })" 2>/dev/null && break
+            sleep 2
+          done
+
+          # Redis
+          echo "Waiting for Redis..."
+          for i in $(seq 1 30); do
+            docker exec sqlui_redis redis-cli ping 2>/dev/null | grep -q PONG && break
+            sleep 2
+          done
+
+          echo "All databases should be ready."
+
+      # run integration tests
+      - name: Run integration tests
+        run: npm run test-integration
+
+      # cleanup
+      - name: Cleanup containers
+        if: always()
+        run: |
+          docker rm -f sqlui_mysql sqlui_mariadb sqlui_mssql sqlui_postgres \
+            sqlui_cassandra_v4 sqlui_cassandra_v2 sqlui_mongodb sqlui_redis 2>/dev/null || true

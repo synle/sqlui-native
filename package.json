@@ -91,6 +91,7 @@
     "test": "vitest --watch",
     "pretest-ci": "npm run pretest",
     "test-ci": "vitest run",
+    "test-integration": "vitest run --config vitest.integration.config.ts",
     "### Distribution & Packaging ###": "##################################################################################",
     "dist": "electron-builder build --publish=never",
     "dist-win-x64": "electron-builder build --publish=never --win --x64",
