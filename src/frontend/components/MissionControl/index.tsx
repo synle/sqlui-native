@@ -1002,11 +1002,11 @@ export default function MissionControl() {
           break;
 
         case "clientEvent/changeLayoutMode/comfortable":
-          onUpdateSetting("layoutMode", "0");
+          onUpdateSetting("layoutMode", "comfortable");
           break;
 
         case "clientEvent/changeLayoutMode/compact":
-          onUpdateSetting("layoutMode", "1");
+          onUpdateSetting("layoutMode", "compact");
           break;
 
         case "clientEvent/changeAnimationMode":
@@ -1018,11 +1018,11 @@ export default function MissionControl() {
           break;
 
         case "clientEvent/changeAnimationMode/off":
-          onUpdateSetting("animationMode", "0");
+          onUpdateSetting("animationMode", "off");
           break;
 
         case "clientEvent/changeAnimationMode/on":
-          onUpdateSetting("animationMode", "1");
+          onUpdateSetting("animationMode", "on");
           break;
 
         case "clientEvent/tableRenderer":

@@ -61,8 +61,8 @@ export default function Settings(): JSX.Element | null {
             sx={{ width: "100%" }}
           >
             <option value="">Follows System Settings</option>
-            <option value="0">Prefer Animation Off</option>
-            <option value="1">Prefer Animation On</option>
+            <option value="off">Prefer Animation Off</option>
+            <option value="on">Prefer Animation On</option>
           </Select>
         </div>
         <Typography className="FormInput__Label" variant="subtitle1">
@@ -77,8 +77,8 @@ export default function Settings(): JSX.Element | null {
             onChange={(newValue) => onSettingChange("layoutMode", newValue)}
             sx={{ width: "100%" }}
           >
-            <option value="0">Comfortable</option>
-            <option value="1">Compact</option>
+            <option value="Comfortable">Comfortable</option>
+            <option value="Compact">Compact</option>
           </Select>
         </div>
         <Typography className="FormInput__Label" variant="subtitle1">
