@@ -77,6 +77,28 @@ export default class RelationalDataAdapter extends BaseDataAdapter implements ID
         break;
     }
 
+    // Pass dialectModule explicitly so Sequelize doesn't rely on dynamic require()
+    // which fails in packaged Electron apps (e.g., tedious for mssql)
+    try {
+      switch (this.dialect) {
+        case 'mssql':
+          connectionPropOptions.dialectModule = require('tedious');
+          break;
+        case 'mariadb':
+          connectionPropOptions.dialectModule = require('mariadb');
+          break;
+        case 'mysql':
+          connectionPropOptions.dialectModule = require('mysql2');
+          break;
+        case 'postgres':
+        case 'postgresql':
+          connectionPropOptions.dialectModule = require('pg');
+          break;
+      }
+    } catch (_) {
+      // dialect module not available, let Sequelize handle the error
+    }
+
     try {
       return new Sequelize(connectionUrl, connectionPropOptions);
     } catch (err) {
