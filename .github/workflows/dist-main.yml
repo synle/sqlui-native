@@ -7,46 +7,13 @@ on:
       node_version:
         description: "Node.js version"
         default: "20"
-      timeout_minutes:
-        description: "Timeout in minutes"
-        default: "30"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  prebuild:
-    runs-on: ubuntu-latest
-    steps:
-      - run: |
-          echo "node_version: ${{ inputs.node_version }}"
-          echo "timeout_minutes: ${{ inputs.timeout_minutes }}"
-          echo "message: ${{ inputs.message }}"
-
-      - uses: actions/checkout@v6
-
-      - uses: actions/setup-node@v6
-        with:
-          node-version: ${{ inputs.node_version }}
-          cache: "npm"
-
-      - name: sqlui-native build.sh
-        run: |
-          bash scripts/build.sh false
-
-      - name: Archive prebuild workspace
-        run: tar -czf /tmp/prebuild-workspace.tar.gz --exclude='.git' .
-
-      - name: Upload prebuild workspace
-        uses: actions/upload-artifact@v4
-        with:
-          name: prebuild-workspace
-          path: /tmp/prebuild-workspace.tar.gz
-          retention-days: 1
-
   create_release:
-    needs: [prebuild]
     runs-on: ubuntu-latest
     outputs:
       dist_version: ${{ steps.package-version.outputs.current-version }}
@@ -85,325 +52,19 @@ jobs:
           draft: false
           prerelease: false
 
-  # begin packaging tasks
-  dist_windows_x64:
+  package:
     needs: [create_release]
-    runs-on: windows-latest
-    timeout-minutes: ${{ fromJSON(inputs.timeout_minutes || '30') }}
-    steps:
-      - uses: actions/checkout@v6
-
-      - uses: actions/setup-node@v6
-        with:
-          node-version: ${{ inputs.node_version }}
-          cache: "npm"
-
-      - run: |
-          bash scripts/build.sh true
-
-      # package and distribute .exe
-
-      - run: npm run dist-win-x64
-        name: sqlui-native npm run dist-win-x64
-
-      - run: mv "./dist/sqlui-native Setup*.exe" ./dist/sqlui-native-x64.exe
-
-      - name: Upload release binary .exe
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.create_release.outputs.release_upload_url }}
-          asset_path: ./dist/sqlui-native-x64.exe
-          asset_name: sqlui-native-${{ needs.create_release.outputs.dist_version }}-x64.exe
-          asset_content_type: application/octet-stream
-
-      - name: Upload artifact .exe
-        uses: actions/upload-artifact@v4
-        with:
-          name: sqlui-native Windows 10 - 11 (Intel - AMD x64).exe
-          path: ./dist/sqlui-native-x64.exe
-          compression-level: 9
-
-      # package and distribute .appx
-
-      - run: npm run dist-win32-appx
-        name: sqlui-native npm run dist-win32-appx
-
-      - run: mv ./dist/sqlui-native*.appx ./dist/sqlui-native.appx
-
-      - name: Upload release binary .appx
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.create_release.outputs.release_upload_url }}
-          asset_path: ./dist/sqlui-native.appx
-          asset_name: sqlui-native-${{ needs.create_release.outputs.dist_version }}.appx
-          asset_content_type: application/octet-stream
-
-      - name: Upload artifact .appx
-        uses: actions/upload-artifact@v4
-        with:
-          name: sqlui-native Windows 10 - 11 (Intel - AMD x64).appx
-          path: ./dist/sqlui-native.appx
-          compression-level: 9
-
-  dist_windows_arm64:
-    needs: [create_release]
-    runs-on: windows-latest
-    timeout-minutes: ${{ fromJSON(inputs.timeout_minutes || '30') }}
-    steps:
-      - uses: actions/checkout@v6
-
-      - uses: actions/setup-node@v6
-        with:
-          node-version: ${{ inputs.node_version }}
-          cache: "npm"
-
-      - run: pip install setuptools
-        name: Install setuptools for node-gyp
-
-      - run: |
-          bash scripts/build.sh true
-
-      # package and distribute .exe
-
-      - run: npm run dist-win-arm64
-        name: sqlui-native npm run dist-win-arm64
-
-      - run: mv "./dist/sqlui-native Setup*.exe" ./dist/sqlui-native-arm64.exe
-
-      - name: Upload release binary .exe
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.create_release.outputs.release_upload_url }}
-          asset_path: ./dist/sqlui-native-arm64.exe
-          asset_name: sqlui-native-${{ needs.create_release.outputs.dist_version }}-arm64.exe
-          asset_content_type: application/octet-stream
-
-      - name: Upload artifact .exe
-        uses: actions/upload-artifact@v4
-        with:
-          name: sqlui-native Windows 10 - 11 (ARM architecture).exe
-          path: ./dist/sqlui-native-arm64.exe
-          compression-level: 9
-
-  dist_macos_arm64:
-    needs: [create_release]
-    runs-on: macos-latest
-    timeout-minutes: ${{ fromJSON(inputs.timeout_minutes || '30') }}
-    steps:
-      - uses: actions/checkout@v6
-
-      - uses: actions/setup-node@v6
-        with:
-          node-version: ${{ inputs.node_version }}
-          cache: "npm"
-
-      - run: |
-          bash scripts/build.sh true
-
-      # package begins
-
-      - run: npm run dist-macos-arm64
-        name: sqlui-native npm run dist-macos-arm64
-
-      - run: mv ./dist/sqlui-native*.dmg ./dist/sqlui-native-arm64.dmg
-
-      - name: Upload release binary
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.create_release.outputs.release_upload_url }}
-          asset_path: ./dist/sqlui-native-arm64.dmg
-          asset_name: sqlui-native-${{ needs.create_release.outputs.dist_version }}-arm64.dmg
-          asset_content_type: application/octet-stream
-
-      - name: Upload artifact .dmg
-        uses: actions/upload-artifact@v4
-        with:
-          name: sqlui-native - macOS - OSX Apple Silicon M-Series.dmg
-          path: ./dist/sqlui-native-arm64.dmg
-          compression-level: 9
-
-  dist_macos_x86_intel:
-    needs: [create_release]
-    runs-on: macos-latest
-    timeout-minutes: ${{ fromJSON(inputs.timeout_minutes || '30') }}
-    steps:
-      - uses: actions/checkout@v6
-
-      - uses: actions/setup-node@v6
-        with:
-          node-version: ${{ inputs.node_version }}
-          cache: "npm"
-
-      - run: |
-          bash scripts/build.sh true
-
-      # package begins
-
-      - run: npm run dist-macos-x64
-        name: sqlui-native npm run dist-macos-x64
-
-      - run: mv ./dist/sqlui-native*.dmg ./dist/sqlui-native-x64.dmg
-
-      - name: Upload release binary
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.create_release.outputs.release_upload_url }}
-          asset_path: ./dist/sqlui-native-x64.dmg
-          asset_name: sqlui-native-${{ needs.create_release.outputs.dist_version }}-x64.dmg
-          asset_content_type: application/octet-stream
-
-      - name: Upload artifact .dmg
-        uses: actions/upload-artifact@v4
-        with:
-          name: sqlui-native macOS - OSX (Intel x64).dmg
-          path: ./dist/sqlui-native-x64.dmg
-          compression-level: 9
-
-  dist_linux:
-    needs: [create_release]
-    runs-on: ubuntu-latest
-    timeout-minutes: ${{ fromJSON(inputs.timeout_minutes || '30') }}
-    steps:
-      - name: install missing dependencies
-        run: sudo apt-get install -y libarchive-tools
-
-      - uses: actions/setup-node@v6
-        with:
-          node-version: ${{ inputs.node_version }}
-
-      - name: Download prebuild workspace
-        uses: actions/download-artifact@v4
-        with:
-          name: prebuild-workspace
-          path: /tmp
-
-      - name: Extract prebuild workspace
-        run: tar -xzf /tmp/prebuild-workspace.tar.gz
-
-      - run: npm version --no-git-tag-version patch
-
-      # package begins
-
-      - run: |
-          npm version --no-git-tag-version patch
-
-      - run: npm run dist
-        name: sqlui-native npm run dist
-
-      - run: |
-          mv ./dist/sqlui-native*.deb ./dist/sqlui-native.deb
-          mv ./dist/sqlui-native*.rpm ./dist/sqlui-native.rpm
-          mv ./dist/sqlui-native*.snap ./dist/sqlui-native.snap
-          mv ./dist/sqlui-native*.pacman ./dist/sqlui-native.pacman
-
-      - name: Upload artifact .deb
-        uses: actions/upload-artifact@v4
-        with:
-          name: sqlui-native - Debian Ubuntu.deb
-          path: ./dist/sqlui-native.deb
-          compression-level: 9
-
-      - name: Upload artifact .rpm
-        uses: actions/upload-artifact@v4
-        with:
-          name: sqlui-native - Redhat CentOS Fedora.rpm
-          path: ./dist/sqlui-native.rpm
-          compression-level: 9
-
-      - name: Upload artifact .snap
-        uses: actions/upload-artifact@v4
-        with:
-          name: sqlui-native - Ubuntu.snap
-          path: ./dist/sqlui-native.snap
-          compression-level: 9
-
-      - name: Upload artifact .pacman
-        uses: actions/upload-artifact@v4
-        with:
-          name: sqlui-native - Arch Linux.pacman
-          path: ./dist/sqlui-native.pacman
-          compression-level: 9
-
-      - name: Upload release binary deb
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.create_release.outputs.release_upload_url }}
-          asset_path: ./dist/sqlui-native.deb
-          asset_name: sqlui-native-${{ needs.create_release.outputs.dist_version }}.deb
-          asset_content_type: application/octet-stream
-
-      - name: Upload release binary rpm
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.create_release.outputs.release_upload_url }}
-          asset_path: ./dist/sqlui-native.rpm
-          asset_name: sqlui-native-${{ needs.create_release.outputs.dist_version }}.rpm
-          asset_content_type: application/octet-stream
-
-      - name: Upload release binary snap
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.create_release.outputs.release_upload_url }}
-          asset_path: ./dist/sqlui-native.snap
-          asset_name: sqlui-native-${{ needs.create_release.outputs.dist_version }}.snap
-          asset_content_type: application/octet-stream
-
-      - name: Upload release binary pacman
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.create_release.outputs.release_upload_url }}
-          asset_path: ./dist/sqlui-native.pacman
-          asset_name: sqlui-native-${{ needs.create_release.outputs.dist_version }}.pacman
-          asset_content_type: application/octet-stream
-
-      # package and distribute AppImage
-
-      - run: npm run dist-linux-appimage
-        name: sqlui-native npm run dist-linux-appimage
-
-      - run: mv ./dist/sqlui-native*.AppImage ./dist/sqlui-native.AppImage
-        name: mv ./dist/sqlui-native*.AppImage ./dist/sqlui-native.AppImage
-
-      - name: Upload artifact .AppImage
-        uses: actions/upload-artifact@v4
-        with:
-          name: sqlui-native - Linux AppImage.AppImage
-          path: ./dist/sqlui-native.AppImage
-          compression-level: 9
-
-      - name: Upload release binary AppImage
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.create_release.outputs.release_upload_url }}
-          asset_path: ./dist/sqlui-native.AppImage
-          asset_name: sqlui-native-${{ needs.create_release.outputs.dist_version }}.AppImage
-          asset_content_type: application/octet-stream
-  # end packaging tasks
+    uses: ./.github/workflows/package.yml
+    with:
+      node_version: ${{ inputs.node_version }}
+      release_upload_url: ${{ needs.create_release.outputs.release_upload_url }}
+      dist_version: ${{ needs.create_release.outputs.dist_version }}
+    secrets:
+      TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   publish:
-    needs: [create_release, dist_windows_x64, dist_windows_arm64, dist_macos_arm64, dist_macos_x86_intel, dist_linux]
+    needs: [create_release, package]
     runs-on: ubuntu-latest
-    timeout-minutes: ${{ fromJSON(inputs.timeout_minutes || '30') }}
     steps:
       - uses: actions/checkout@v6
 
@@ -424,9 +85,8 @@ jobs:
 
   roll_back_on_failure_or_canceled:
     if: failure() || cancelled()
-    needs: [create_release, dist_windows_x64, dist_windows_arm64, dist_macos_arm64, dist_macos_x86_intel, dist_linux]
+    needs: [create_release, package]
     runs-on: ubuntu-latest
-    timeout-minutes: ${{ fromJSON(inputs.timeout_minutes || '30') }}
     steps:
       - uses: actions/checkout@v6
 
