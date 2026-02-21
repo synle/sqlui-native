@@ -226,10 +226,10 @@ jobs:
       - run: bash scripts/build.sh
 
       - run: |
-        npm run dist
+          npm run dist
 
       - run: |
-        npm run dist-linux-appimage
+          npm run dist-linux-appimage
 
       - run: |
           mv ./dist/sqlui-native*.deb ./dist/sqlui-native.deb
