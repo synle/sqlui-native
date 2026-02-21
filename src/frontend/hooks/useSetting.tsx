@@ -52,8 +52,8 @@ export function useIsAnimationModeOn() {
 
   const value = settings?.animationMode;
 
-  if (value === "0") return false;
-  if (value === "1") return true;
+  if (value === "off") return false;
+  if (value === "on") return true;
 
   // follows system: animation on unless system prefers reduced motion
   return !prefersReducedMotion;
@@ -61,7 +61,7 @@ export function useIsAnimationModeOn() {
 
 export function useLayoutModeSetting() {
   const { settings } = useSetting();
-  return settings?.layoutMode === "1" ? "compact" : "comfortable";
+  return settings?.layoutMode === "compact" ? "compact" : "comfortable";
 }
 
 export function useEditorModeSetting() {

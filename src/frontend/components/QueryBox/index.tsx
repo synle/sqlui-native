@@ -337,7 +337,7 @@ export default function QueryBox(props: QueryBoxProps): JSX.Element | null {
             <IconButton
               aria-label="Toggle form collapse"
               color="inherit"
-              onClick={() => selectCommand({ event: "clientEvent/changeLayoutMode", data: expanded ? "1" : "0" })}
+              onClick={() => selectCommand({ event: "clientEvent/changeLayoutMode", data: expanded ? "compact" : "comfortable" })}
               style={{ marginLeft: "auto" }}
             >
               {expanded ? <UnfoldLessIcon /> : <UnfoldMoreIcon />}
