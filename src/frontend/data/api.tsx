@@ -42,6 +42,13 @@ export class ProxyApi {
     return _fetch<SqluiCore.ServerConfigs>(`/api/configs`);
   }
 
+  static updateConfigs(settings: SqluiFrontend.Settings) {
+    return _fetch<SqluiCore.ServerConfigs>(`/api/configs`, {
+      method: 'PUT',
+      body: JSON.stringify(settings),
+    });
+  }
+
   static getConnections() {
     return _fetch<SqluiCore.ConnectionProps[]>(`/api/connections`);
   }

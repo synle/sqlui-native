@@ -8,11 +8,27 @@ import {
   getFolderItemsStorage,
   getQueryStorage,
   getSessionsStorage,
+  getSettingsStorage,
   storageDir,
 } from "src/common/PersistentStorage";
 import * as sessionUtils from "src/common/utils/sessionUtils";
 import { SqluiCore, SqluiEnums } from "typings";
 let expressAppContext: Express | undefined;
+
+const SETTINGS_ID = "app-settings";
+
+const DEFAULT_SETTINGS = {
+  darkMode: "dark",
+  animationMode: "on",
+  layoutMode: "compact",
+  querySelectionMode: "new-tab",
+  editorMode: "advanced",
+  tableRenderer: "advanced",
+  wordWrap: "wrap",
+  queryTabOrientation: "horizontal",
+  querySize: "1000",
+  deleteMode: "soft-delete",
+};
 
 const _apiCache = {};
 
@@ -79,9 +95,38 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
   // config api endpoints
   //=========================================================================
   addDataEndpoint("get", "/api/configs", async (req, res) => {
+    const settingsStorage = await getSettingsStorage();
+    let settings = settingsStorage.get(SETTINGS_ID);
+
+    if (!settings) {
+      // no settings saved yet, seed with defaults
+      settings = settingsStorage.add({ id: SETTINGS_ID, ...DEFAULT_SETTINGS });
+    }
+
+    const { id, ...settingsData } = settings;
+
     res.status(200).json({
       storageDir,
       isElectron: !expressAppContext,
+      ...settingsData,
+    });
+  });
+
+  addDataEndpoint("put", "/api/configs", async (req, res) => {
+    const settingsStorage = await getSettingsStorage();
+    const existing = settingsStorage.get(SETTINGS_ID);
+
+    const updated = settingsStorage[existing ? "update" : "add"]({
+      id: SETTINGS_ID,
+      ...req.body,
+    });
+
+    const { id, ...settingsData } = updated;
+
+    res.status(200).json({
+      storageDir,
+      isElectron: !expressAppContext,
+      ...settingsData,
     });
   });
 
