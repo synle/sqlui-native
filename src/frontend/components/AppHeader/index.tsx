@@ -13,6 +13,7 @@ import PhotoSizeSelectSmallIcon from "@mui/icons-material/PhotoSizeSelectSmall";
 import SettingsIcon from "@mui/icons-material/Settings";
 import StarIcon from "@mui/icons-material/Star";
 import AppBar from "@mui/material/AppBar";
+import Badge from "@mui/material/Badge";
 import IconButton from "@mui/material/IconButton";
 import Toolbar from "@mui/material/Toolbar";
 import Tooltip from "@mui/material/Tooltip";
@@ -24,6 +25,7 @@ import { useCommands } from "src/frontend/components/MissionControl";
 import { useActionDialogs } from "src/frontend/hooks/useActionDialogs";
 import { useGetCurrentSession } from "src/frontend/hooks/useSession";
 import ToastHistoryList from "src/frontend/components/ToastHistoryList";
+import { useToastHistoryCount } from "src/frontend/hooks/useToaster";
 import appPackage from "src/package.json";
 
 export default function AppHeader() {
@@ -31,6 +33,7 @@ export default function AppHeader() {
   const { data: currentSession, isLoading } = useGetCurrentSession();
   const { selectCommand } = useCommands();
   const { modal } = useActionDialogs();
+  const toastHistoryCount = useToastHistoryCount();
 
   const options = [
     {
@@ -156,7 +159,9 @@ export default function AppHeader() {
               }
             }}
           >
-            <NotificationsIcon fontSize="inherit" />
+            <Badge badgeContent={toastHistoryCount} color="error" max={99}>
+              <NotificationsIcon fontSize="inherit" />
+            </Badge>
           </IconButton>
         </Tooltip>
 
