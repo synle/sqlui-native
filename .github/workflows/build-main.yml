@@ -16,8 +16,30 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  code_format:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo "node_version: ${{ inputs.node_version }}"
+
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ inputs.node_version }}
+          cache: "npm"
+
+      - run: bash scripts/format.sh
+
+      - name: Commit Changes
+        if: ${{ inputs.run_format }}
+        id: commit
+        uses: EndBug/add-and-commit@v9
+        with:
+          message: "CI / CD - Format code"
+          default_author: github_actions
+
   package:
     uses: ./.github/workflows/package.yml
     with:
       node_version: ${{ inputs.node_version }}
-      run_format: true
