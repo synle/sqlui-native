@@ -1,11 +1,9 @@
 import CloseIcon from "@mui/icons-material/Close";
 import OpenInFullIcon from "@mui/icons-material/OpenInFull";
-import Dialog from "@mui/material/Dialog";
-import DialogContent from "@mui/material/DialogContent";
-import DialogTitle from "@mui/material/DialogTitle";
 import IconButton from "@mui/material/IconButton";
 import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
+import { useActionDialogs } from "src/frontend/hooks/useActionDialogs";
 import { getGeneratedRandomId } from "src/frontend/utils/commonUtils";
 
 type CoreToasterProps = {
@@ -165,76 +163,54 @@ function formatTime(ts?: number) {
   return new Date(ts).toLocaleString();
 }
 
-// Detail / metadata modal for a single toast
-function ToastDetailModal({ toast, open, onClose }: { toast: InternalToast; open: boolean; onClose: () => void }) {
+const preStyle: React.CSSProperties = {
+  margin: 0,
+  padding: "4px 8px",
+  background: "rgba(128,128,128,0.15)",
+  borderRadius: "4px",
+  fontSize: "0.75rem",
+  fontFamily: "monospace",
+  whiteSpace: "pre-wrap",
+  wordBreak: "break-all",
+};
+
+// Content component used inside useActionDialogs modal
+function ToastDetailContent({ toast }: { toast: InternalToast }) {
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        Notification Detail
-        <IconButton onClick={onClose} size="small" aria-label="close">
-          <CloseIcon fontSize="small" />
-        </IconButton>
-      </DialogTitle>
-      <DialogContent dividers>
-        <div style={{ fontSize: "0.85rem" }}>
-          <div style={{ marginBottom: "12px" }}>
-            <div style={{ opacity: 0.6, fontSize: "0.75rem", marginBottom: "2px" }}>Message</div>
-            <div>{toast.message}</div>
-          </div>
-          <div style={{ marginBottom: "12px" }}>
-            <div style={{ opacity: 0.6, fontSize: "0.75rem", marginBottom: "2px" }}>ID</div>
-            <div style={{ fontFamily: "monospace", fontSize: "0.8rem" }}>{toast.id}</div>
-          </div>
-          <div style={{ marginBottom: "12px" }}>
-            <div style={{ opacity: 0.6, fontSize: "0.75rem", marginBottom: "2px" }}>Created</div>
-            <div>{formatTime(toast.createdTime)}</div>
-          </div>
-          {toast.detail && (
-            <div style={{ marginBottom: "12px" }}>
-              <div style={{ opacity: 0.6, fontSize: "0.75rem", marginBottom: "2px" }}>Detail</div>
-              <pre
-                style={{
-                  margin: 0,
-                  padding: "4px 8px",
-                  background: "rgba(128,128,128,0.15)",
-                  borderRadius: "4px",
-                  fontSize: "0.75rem",
-                  fontFamily: "monospace",
-                  whiteSpace: "pre-wrap",
-                  wordBreak: "break-all",
-                }}
-              >
-                {toast.detail}
-              </pre>
-            </div>
-          )}
-          {toast.metadata && (
-            <div style={{ marginBottom: "12px" }}>
-              <div style={{ opacity: 0.6, fontSize: "0.75rem", marginBottom: "2px" }}>Metadata</div>
-              <pre
-                style={{
-                  margin: 0,
-                  padding: "4px 8px",
-                  background: "rgba(128,128,128,0.15)",
-                  borderRadius: "4px",
-                  fontSize: "0.75rem",
-                  fontFamily: "monospace",
-                  whiteSpace: "pre-wrap",
-                  wordBreak: "break-all",
-                }}
-              >
-                {_stringifyMetadata(toast.metadata)}
-              </pre>
-            </div>
-          )}
+    <div style={{ fontSize: "0.85rem" }}>
+      <div style={{ marginBottom: "12px" }}>
+        <div style={{ opacity: 0.6, fontSize: "0.75rem", marginBottom: "2px" }}>Message</div>
+        <div>{toast.message}</div>
+      </div>
+      <div style={{ marginBottom: "12px" }}>
+        <div style={{ opacity: 0.6, fontSize: "0.75rem", marginBottom: "2px" }}>ID</div>
+        <div style={{ fontFamily: "monospace", fontSize: "0.8rem" }}>{toast.id}</div>
+      </div>
+      <div style={{ marginBottom: "12px" }}>
+        <div style={{ opacity: 0.6, fontSize: "0.75rem", marginBottom: "2px" }}>Created</div>
+        <div>{formatTime(toast.createdTime)}</div>
+      </div>
+      {toast.detail && (
+        <div style={{ marginBottom: "12px" }}>
+          <div style={{ opacity: 0.6, fontSize: "0.75rem", marginBottom: "2px" }}>Detail</div>
+          <pre style={preStyle}>{toast.detail}</pre>
         </div>
-      </DialogContent>
-    </Dialog>
+      )}
+      {toast.metadata && (
+        <div style={{ marginBottom: "12px" }}>
+          <div style={{ opacity: 0.6, fontSize: "0.75rem", marginBottom: "2px" }}>Metadata</div>
+          <pre style={preStyle}>{_stringifyMetadata(toast.metadata)}</pre>
+        </div>
+      )}
+    </div>
   );
 }
 
+// Module-level callback bridge so the portal-rendered ToastItem can open the main tree's modal
+let _openDetailModal: ((toast: InternalToast) => void) | null = null;
+
 // Toast item component
-function ToastItem({ toast, onExpand }: { toast: InternalToast; onExpand: (toast: InternalToast) => void }) {
+function ToastItem({ toast }: { toast: InternalToast }) {
   const isHoveredRef = React.useRef(false);
   const timerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -276,7 +252,9 @@ function ToastItem({ toast, onExpand }: { toast: InternalToast; onExpand: (toast
   };
 
   const handleExpand = () => {
-    onExpand(toast);
+    if (_openDetailModal) {
+      _openDetailModal(toast);
+    }
     _dismissToast(toast.id, "user");
   };
 
@@ -314,7 +292,6 @@ function ToastItem({ toast, onExpand }: { toast: InternalToast; onExpand: (toast
 // Container component rendered via portal
 function ToasterContainer() {
   const [toasts, setToasts] = useState<InternalToast[]>(_activeToasts);
-  const [expandedToast, setExpandedToast] = useState<InternalToast | null>(null);
 
   useEffect(() => {
     const listener = () => setToasts([..._activeToasts]);
@@ -324,32 +301,27 @@ function ToasterContainer() {
     };
   }, []);
 
+  if (toasts.length === 0) return null;
+
   return ReactDOM.createPortal(
-    <>
-      {toasts.length > 0 && (
-        <div
-          className="Toaster__Container"
-          style={{
-            position: "fixed",
-            bottom: "16px",
-            left: "50%",
-            transform: "translateX(-50%)",
-            zIndex: 9999,
-            display: "flex",
-            flexDirection: "column-reverse",
-            gap: "8px",
-            pointerEvents: "auto",
-          }}
-        >
-          {toasts.map((toast) => (
-            <ToastItem key={toast.id} toast={toast} onExpand={setExpandedToast} />
-          ))}
-        </div>
-      )}
-      {expandedToast && (
-        <ToastDetailModal toast={expandedToast} open={true} onClose={() => setExpandedToast(null)} />
-      )}
-    </>,
+    <div
+      className="Toaster__Container"
+      style={{
+        position: "fixed",
+        bottom: "16px",
+        left: "50%",
+        transform: "translateX(-50%)",
+        zIndex: 9999,
+        display: "flex",
+        flexDirection: "column-reverse",
+        gap: "8px",
+        pointerEvents: "auto",
+      }}
+    >
+      {toasts.map((toast) => (
+        <ToastItem key={toast.id} toast={toast} />
+      ))}
+    </div>,
     document.body,
   );
 }
@@ -367,9 +339,23 @@ function _ensureContainerMounted() {
 }
 
 export default function useToaster() {
+  const { modal } = useActionDialogs();
+
   useEffect(() => {
     _ensureContainerMounted();
-  }, []);
+
+    _openDetailModal = (toast: InternalToast) => {
+      modal({
+        title: "Notification Detail",
+        message: <ToastDetailContent toast={toast} />,
+        showCloseButton: true,
+      });
+    };
+
+    return () => {
+      _openDetailModal = null;
+    };
+  }, [modal]);
 
   const add = (props: ToasterProps): Promise<ToasterHandler> => {
     return new Promise((resolve) => {
