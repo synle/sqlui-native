@@ -118,22 +118,6 @@ cd ~/Library/Application\ Support/sqlui-native/
 
 Docker can be used to spin off these database engines. Refer to [this repo for the SQL dumps](https://github.com/synle/sqlui-core).
 
-### One liner to start and connect to the db
-
-```bash
-docker run --name sqlui_mysql -d -p 3306:3306 -e MYSQL_ROOT_PASSWORD='password123!' mysql
-docker run --name sqlui_mariadb -d -p 33061:3306 -e MARIADB_ROOT_PASSWORD='password123!' mariadb:latest
-docker run --name sqlui_mssql -d -e "ACCEPT_EULA=Y" -p 1433:1433 -e SA_PASSWORD='password123!' mcr.microsoft.com
-docker run --name sqlui_mssql -d -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=password123!" -p 1433:1433 mcr.microsoft.com/mssql/server:2022-latest
-# for M Series Macs
-# docker run --name sqlui_mssql_m1 -d -e "ACCEPT_EULA=Y" -p 1433:1433 -e SA_PASSWORD='password123!' mcr.microsoft.com
-docker run --name sqlui_postgres -d -p 5432:5432 -e POSTGRES_PASSWORD='password123!' postgres
-docker run --name sqlui_cassandra_v4 -d -p 9042:9042 cassandra:4.0.1
-docker run --name sqlui_cassandra_v2 -d -p 9043:9042 cassandra:2.2.19
-docker run --name sqlui_mongodb -d -p 27017:27017 mongo
-docker run --name sqlui_redis -d -p 6379:6379 redis
-```
-
 ### More in depth
 
 ```bash
@@ -147,16 +131,6 @@ docker run --name sqlui_mysql -d -p 3306:3306 -e MYSQL_ROOT_PASSWORD='password12
 
 # MariaDB (https://hub.docker.com/_/mariadb)
 docker run --detach --name sqlui_mariadb -p 33061:3306 -e MARIADB_ROOT_PASSWORD='password123!' mariadb:latest
-
-# MSSQL (https://hub.docker.com/_/microsoft-mssql-server)
-  # for Windows WSL and Intel Based Macs
-  docker run --name sqlui_mssql -d -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=password123!" -p 1433:1433 mcr.microsoft.com/mssql/server:2022-latest
-
-  # for m1 Macs (https://docs.microsoft.com/en-us/answers/questions/654108/azure-sql-edge-on-mac-m1-using-docker.html)
-  docker run --name sqlui_mssql_m1 -d -e "ACCEPT_EULA=Y" -p 1433:1433 -e SA_PASSWORD='password123!' mcr.microsoft.com/azure-sql-edge
-
-    # Use this to test if the connection is alive
-    docker exec sqlui_mysql mysqladmin ping -uroot -p'password123!' --silent
 
 # postgres (https://hub.docker.com/_/postgres)
 docker run --name sqlui_postgres -d -p 5432:5432 -e POSTGRES_PASSWORD='password123!' postgres
@@ -178,9 +152,17 @@ docker run --name sqlui_mongodb -d -p 27017:27017 mongo
 # redis
 docker run --name sqlui_redis -d -p 6379:6379 redis
 
-# cockroachdb
-  # https://www.cockroachlabs.com/docs/stable/install-cockroachdb-mac.html
-  cockroach demo
+# cockroachdb - https://www.cockroachlabs.com/docs/stable/install-cockroachdb-mac.html `cockroach demo` (26257: sql port) (8080: ui port)
+docker run --name sqlui_cockroach_demo -d -p 26257:26257 -p 8080:8080 cockroachdb/cockroach:latest start-single-node --insecure
+
+# MSSQL (https://hub.docker.com/_/microsoft-mssql-server): for Windows WSL and Intel Based Macs
+docker run --name sqlui_mssql -d -p 1433:1433 -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=password123!" mcr.microsoft.com/mssql/server:2022-latest
+
+# MSSQL (https://hub.docker.com/_/microsoft-mssql-server): for m1 Macs (https://docs.microsoft.com/en-us/answers/questions/654108/azure-sql-edge-on-mac-m1-using-docker.html)
+docker run --name sqlui_mssql_m1 -d -e "ACCEPT_EULA=Y" -p 1433:1433 -e SA_PASSWORD='password123!' mcr.microsoft.com
+
+    # Use this to test if the connection is alive
+    docker exec sqlui_mysql mysqladmin ping -uroot -p'password123!' --silent
 ```
 
 ## Integration Tests
@@ -193,15 +175,18 @@ Integration tests run against real database engines via Docker. They are separat
 # 1. Start all database containers
 docker run --name sqlui_mysql -d -p 3306:3306 -e MYSQL_ROOT_PASSWORD='password123!' mysql
 docker run --name sqlui_mariadb -d -p 33061:3306 -e MARIADB_ROOT_PASSWORD='password123!' mariadb:latest
-docker run --name sqlui_mssql -d -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=password123!" -p 1433:1433 mcr.microsoft.com/mssql/server:2022-latest
 docker run --name sqlui_postgres -d -p 5432:5432 -e POSTGRES_PASSWORD='password123!' postgres
 docker run --name sqlui_cassandra_v4 -d -p 9042:9042 cassandra:4.0.1
 docker run --name sqlui_cassandra_v2 -d -p 9043:9042 cassandra:2.2.19
 docker run --name sqlui_mongodb -d -p 27017:27017 mongo
 docker run --name sqlui_redis -d -p 6379:6379 redis
+docker run --name sqlui_cockroach_demo -d -p 26257:26257 cockroachdb/cockroach:latest start-single-node --insecure
+docker run --name sqlui_mssql -d -p 1433:1433 -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=password123!" mcr.microsoft.com/mssql/server:2022-latest
+# for M Series Macs
+# docker run --name sqlui_mssql_m1 -d -e "ACCEPT_EULA=Y" -p 1433:1433 -e SA_PASSWORD='password123!' mcr.microsoft.com
 
 # for M-Series Macs, use this instead of the mssql line above
-# docker run --name sqlui_mssql -d -e "ACCEPT_EULA=Y" -p 1433:1433 -e SA_PASSWORD='password123!' mcr.microsoft.com/azure-sql-edge
+#/azure-sql-edge
 
 # 2. Wait for containers to be ready (Cassandra takes the longest ~60-90s)
 docker exec sqlui_mysql mysqladmin ping -uroot -p'password123!' --silent
@@ -219,7 +204,7 @@ npm run test-integration
 npx vitest run --config vitest.integration.config.ts src/common/adapters/RelationalDataAdapter/mysql.integration.spec.ts
 
 # 6. Cleanup containers when done
-docker rm -f sqlui_mysql sqlui_mariadb sqlui_mssql sqlui_postgres sqlui_cassandra_v4 sqlui_cassandra_v2 sqlui_mongodb sqlui_redis
+docker rm -f sqlui_mysql sqlui_mariadb sqlui_mssql sqlui_postgres sqlui_cassandra_v4 sqlui_cassandra_v2 sqlui_mongodb sqlui_redis sqlui_cockroach_demo
 ```
 
 ### Running integration tests via GitHub Actions
