@@ -1,5 +1,7 @@
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import Button from "@mui/material/Button";
 import Divider from "@mui/material/Divider";
+import IconButton from "@mui/material/IconButton";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import TextField from "@mui/material/TextField";
@@ -98,13 +100,31 @@ function ExpandableContent({
         <div style={{ display: "flex", gap: "8px" }}>
           {detailSection && (
             <div style={{ flex: metadataSection ? "0 0 50%" : "1 1 100%", minWidth: 0 }}>
-              <div style={{ opacity: 0.6, fontSize: "0.7rem", marginBottom: "2px" }}>{detailSection.label}</div>
+              <div style={{ display: "flex", alignItems: "center", gap: "4px", marginBottom: "2px" }}>
+                <span style={{ opacity: 0.6, fontSize: "0.7rem" }}>{detailSection.label}</span>
+                <IconButton
+                  size="small"
+                  onClick={() => navigator.clipboard.writeText(detailSection.content)}
+                  sx={{ padding: "1px", opacity: 0.5, "&:hover": { opacity: 1 } }}
+                >
+                  <ContentCopyIcon sx={{ fontSize: "0.7rem" }} />
+                </IconButton>
+              </div>
               <pre style={preStyle}>{detailSection.content}</pre>
             </div>
           )}
           {metadataSection && (
             <div style={{ flex: detailSection ? "0 0 50%" : "1 1 100%", minWidth: 0 }}>
-              <div style={{ opacity: 0.6, fontSize: "0.7rem", marginBottom: "2px" }}>{metadataSection.label}</div>
+              <div style={{ display: "flex", alignItems: "center", gap: "4px", marginBottom: "2px" }}>
+                <span style={{ opacity: 0.6, fontSize: "0.7rem" }}>{metadataSection.label}</span>
+                <IconButton
+                  size="small"
+                  onClick={() => navigator.clipboard.writeText(metadataSection.content)}
+                  sx={{ padding: "1px", opacity: 0.5, "&:hover": { opacity: 1 } }}
+                >
+                  <ContentCopyIcon sx={{ fontSize: "0.7rem" }} />
+                </IconButton>
+              </div>
               <pre style={preStyle}>{metadataSection.content}</pre>
             </div>
           )}
