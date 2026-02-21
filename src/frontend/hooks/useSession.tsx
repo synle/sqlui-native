@@ -31,7 +31,7 @@ export function useSetOpenSession() {
 
 export function useGetCurrentSession() {
   return useQuery([QUERY_KEY_SESSIONS, "current"], dataApi.getSession, {
-    notifyOnChangeProps: ["data", "error"],
+    notifyOnChangeProps: ["data", "error", "status"],
   });
 }
 

@@ -1,4 +1,4 @@
-import { SqluiEnums } from 'typings';
+import { SqluiEnums } from "typings";
 
 export const SessionStorageConfig = {
   set(key: SqluiEnums.ClientConfigKey, value: any) {
@@ -9,7 +9,7 @@ export const SessionStorageConfig = {
     let res;
 
     try {
-      res = JSON.parse(window.sessionStorage.getItem(key) || '');
+      res = JSON.parse(window.sessionStorage.getItem(key) || "");
     } catch (err) {
       res = defaultValue;
     }
@@ -31,7 +31,7 @@ export const LocalStorageConfig = {
     let res;
 
     try {
-      res = JSON.parse(window.localStorage.getItem(key) || '');
+      res = JSON.parse(window.localStorage.getItem(key) || "");
     } catch (err) {
       res = defaultValue;
     }
