@@ -10,9 +10,6 @@ on:
       node_version:
         description: "Node.js version"
         default: "20"
-      timeout_minutes:
-        description: "Timeout in minutes"
-        default: "30"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -21,43 +18,42 @@ concurrency:
 jobs:
   prebuild:
     runs-on: ubuntu-latest
+    name: Build, Unit Test and Code Format
     steps:
       - run: |
           echo "node_version: ${{ inputs.node_version }}"
-          echo "timeout_minutes: ${{ inputs.timeout_minutes }}"
 
-      # Fix me when done
-      # - uses: actions/checkout@v6
+      - uses: actions/checkout@v6
 
-      # - uses: actions/setup-node@v6
-      #   with:
-      #     node-version: ${{ inputs.node_version }}
-      #     cache: "npm"
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ inputs.node_version }}
+          cache: "npm"
 
-      # - name: sqlui-native build.sh
-      #   run: |
-      #     bash scripts/build.sh false
+      - name: sqlui-native build.sh
+        run: |
+          bash scripts/build.sh false
 
-      # - name: sqlui-native format
-      #   run: |
-      #     npm run format
+      - name: sqlui-native format
+        run: |
+          npm run format
 
-      # - name: Commit Changes
-      #   id: commit
-      #   uses: EndBug/add-and-commit@v9
-      #   with:
-      #     message: "CI / CD - Format code"
-      #     default_author: github_actions
+      - name: Commit Changes
+        id: commit
+        uses: EndBug/add-and-commit@v9
+        with:
+          message: "CI / CD - Format code"
+          default_author: github_actions
 
-      # - name: Archive prebuild workspace
-      #   run: tar -czf /tmp/prebuild-workspace.tar.gz --exclude='.git' .
+      - name: Archive prebuild workspace
+        run: tar -czf /tmp/prebuild-workspace.tar.gz --exclude='.git' .
 
-      # - name: Upload prebuild workspace
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: prebuild-workspace
-      #     path: /tmp/prebuild-workspace.tar.gz
-      #     retention-days: 1
+      - name: Upload prebuild workspace
+        uses: actions/upload-artifact@v4
+        with:
+          name: prebuild-workspace
+          path: /tmp/prebuild-workspace.tar.gz
+          retention-days: 1
 
   dist_windows_x64:
     needs: [prebuild]
@@ -75,28 +71,26 @@ jobs:
       - run: npm run dist-win-x64
         name: sqlui-native npm run dist-win-x64
 
-      - run: ls -R ./dist
-
       - run: mv "./dist/sqlui-native Setup*.exe" ./dist/sqlui-native-x64.exe
 
       - name: Upload artifact .exe
         uses: actions/upload-artifact@v4
         with:
-          name: sqlui-native Windows 10 - 11 (Intel - AMD x64).exe
+          name: Windows 10 - 11 (Intel - AMD x64).exe.zip
           path: ./dist/sqlui-native-x64.exe
+          compression-level: 9
 
       - run: npm run dist-win32-appx
         name: sqlui-native npm run dist-win32-appx
-
-      - run: ls -R ./dist
 
       - run: mv ./dist/sqlui-native*.appx ./dist/sqlui-native.appx
 
       - name: Upload artifact .appx
         uses: actions/upload-artifact@v4
         with:
-          name: sqlui-native Windows 10 - 11 (Intel - AMD x64).appx
+          name: Windows 10 - 11 (Intel - AMD x64).appx.zip
           path: ./dist/sqlui-native.appx
+          compression-level: 9
 
   dist_windows_arm64:
     needs: [prebuild]
@@ -117,15 +111,14 @@ jobs:
       - run: npm run dist-win-arm64
         name: sqlui-native npm run dist-win-arm64
 
-      - run: ls -R ./dist
-
       - run: mv "./dist/sqlui-native Setup*.exe" ./dist/sqlui-native-arm64.exe
 
       - name: Upload artifact .exe
         uses: actions/upload-artifact@v4
         with:
-          name: sqlui-native Windows 10 - 11 (ARM architecture).exe
+          name: Windows 10 - 11 (ARM architecture).exe.zip
           path: ./dist/sqlui-native-arm64.exe
+          compression-level: 9
 
   dist_macos_arm64:
     needs: [prebuild]
@@ -143,15 +136,14 @@ jobs:
       - run: npm run dist-macos-arm64
         name: sqlui-native npm run dist-macos-arm64
 
-      - run: ls -R ./dist
-
       - run: mv ./dist/sqlui-native*.dmg ./dist/sqlui-native-arm64.dmg
 
       - name: Upload artifact .dmg
         uses: actions/upload-artifact@v4
         with:
-          name: sqlui-native - macOS - OSX Apple Silicon M-Series.dmg
+          name: macOS - OSX (Apple Silicon M-Series).dmg.zip
           path: ./dist/sqlui-native-arm64.dmg
+          compression-level: 9
 
   dist_macos_x86_intel:
     needs: [prebuild]
@@ -169,15 +161,14 @@ jobs:
       - run: npm run dist-macos-x64
         name: sqlui-native npm run dist-macos-x64
 
-      - run: ls -R ./dist
-
       - run: mv ./dist/sqlui-native*.dmg ./dist/sqlui-native-x64.dmg
 
       - name: Upload artifact .dmg
         uses: actions/upload-artifact@v4
         with:
-          name: sqlui-native macOS - OSX (Intel x64).dmg
+          name: macOS - OSX (Intel x64).dmg.zip
           path: ./dist/sqlui-native-x64.dmg
+          compression-level: 9
 
   dist_linux:
     needs: [prebuild]
@@ -204,8 +195,6 @@ jobs:
       - run: npm run dist
         name: sqlui-native npm run dist
 
-      - run: ls -R ./dist
-
       - run: |
           mv ./dist/sqlui-native*.deb ./dist/sqlui-native.deb
           mv ./dist/sqlui-native*.rpm ./dist/sqlui-native.rpm
@@ -215,36 +204,39 @@ jobs:
       - name: Upload artifact .deb
         uses: actions/upload-artifact@v4
         with:
-          name: sqlui-native - Debian Ubuntu.deb
+          name: Debian Ubuntu.deb.zip
           path: ./dist/sqlui-native.deb
+          compression-level: 9
 
       - name: Upload artifact .rpm
         uses: actions/upload-artifact@v4
         with:
-          name: sqlui-native - Redhat CentOS Fedora.rpm
+          name: Redhat CentOS Fedora.rpm.zip
           path: ./dist/sqlui-native.rpm
+          compression-level: 9
 
       - name: Upload artifact .snap
         uses: actions/upload-artifact@v4
         with:
-          name: sqlui-native - Ubuntu.snap
+          name: Ubuntu.snap.zip
           path: ./dist/sqlui-native.snap
+          compression-level: 9
 
       - name: Upload artifact .pacman
         uses: actions/upload-artifact@v4
         with:
-          name: sqlui-native - Arch Linux.pacman
+          name: Arch Linux.pacman.zip
           path: ./dist/sqlui-native.pacman
+          compression-level: 9
 
       - run: npm run dist-linux-appimage
         name: sqlui-native npm run dist-linux-appimage
-
-      - run: ls -R ./dist
 
       - run: mv ./dist/sqlui-native*.AppImage ./dist/sqlui-native.AppImage
 
       - name: Upload artifact .AppImage
         uses: actions/upload-artifact@v4
         with:
-          name: sqlui-native - Linux AppImage.AppImage
+          name: Linux AppImage.AppImage.zip
           path: ./dist/sqlui-native.AppImage
+          compression-level: 9
