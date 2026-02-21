@@ -129,7 +129,6 @@
     "@mui/material": "^5.10.8",
     "@tanstack/react-query": "^4.43.0",
     "@tanstack/react-query-devtools": "^4.43.0",
-    "@tanstack/react-query-persist-client": "^4.43.0",
     "@tanstack/react-table": "^8.21.3",
     "@tanstack/react-virtual": "^3.13.18",
     "cassandra-driver": "^3.6.0",
