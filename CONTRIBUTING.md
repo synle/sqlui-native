@@ -22,55 +22,55 @@ Assuming you use the same database in the docker samples below:
     "_type": "connection",
     "id": "connection.1643485467072.6333713976068809",
     "connection": "mysql://root:password123!@127.0.0.1:3306",
-    "name": "local mysql"
+    "name": "Local Mysql"
   },
   {
     "_type": "connection",
     "id": "connection.1643485479951.8848237338571023",
     "connection": "mariadb://root:password123!@127.0.0.1:33061",
-    "name": "local mariadb"
+    "name": "Local Mariadb"
   },
   {
     "_type": "connection",
     "id": "connection.1643485495810.296972129680364",
     "connection": "mssql://sa:password123!@127.0.0.1:1433",
-    "name": "local sql server"
+    "name": "Local Ms Sql Server"
   },
   {
     "_type": "connection",
     "id": "connection.1643485516220.4798705129674932",
     "connection": "postgres://postgres:password123!@127.0.0.1:5432",
-    "name": "local postgres"
+    "name": "Local Postgres"
   },
   {
     "_type": "connection",
     "id": "connection.1643485607366.2475344250499598",
     "connection": "sqlite://test.sqlite",
-    "name": "local sqlite"
+    "name": "Local Sqlite"
   },
   {
     "_type": "connection",
     "id": "connection.1643921772969.1005383449983459",
     "connection": "cassandra://127.0.0.1:9043",
-    "name": "local cassandra v2"
+    "name": "Local Cassandra V2"
   },
   {
     "_type": "connection",
     "id": "connection.1643837396621.9385585085281324",
     "connection": "cassandra://127.0.0.1:9042",
-    "name": "local cassandra v4"
+    "name": "Local Cassandra V4"
   },
   {
     "_type": "connection",
     "id": "connection.1644343163858.95939920823759",
     "connection": "mongodb://127.0.0.1:27017",
-    "name": "local mongodb"
+    "name": "Local Mongodb"
   },
   {
     "_type": "connection",
     "id": "connection.1644456516996.9387746947534656",
     "connection": "redis://127.0.0.1:6379",
-    "name": "local redis"
+    "name": "Local Redis"
   }
 ]
 ```
