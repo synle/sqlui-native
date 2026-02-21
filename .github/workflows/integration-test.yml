@@ -71,7 +71,7 @@ jobs:
 
           echo "Waiting for MariaDB..."
           for i in $(seq 1 30); do
-            docker exec sqlui_mariadb mysqladmin ping -uroot -p'password123!' --silent 2>/dev/null && break
+            docker exec sqlui_mariadb mariadb-admin ping -uroot -p'password123!' --silent 2>/dev/null && break
             sleep 5
           done
 
