@@ -6,18 +6,19 @@ on:
       node_version:
         type: string
         default: "20"
-      timeout_minutes:
-        type: string
-        default: "30"
+        description: "Node.js version"
       release_upload_url:
         type: string
         default: ""
+        description: "Release URL"
       dist_version:
         type: string
         default: ""
+        description: "Release Version (will be pulled from package.json)"
       run_format:
         type: boolean
         default: false
+        description: "Whether or not to run format and commit code"
     secrets:
       TOKEN:
         required: false
@@ -224,14 +225,18 @@ jobs:
 
       - run: bash scripts/build.sh
 
-      - run: npm run dist
-        name: sqlui-native npm run dist
+      - run: |
+        npm run dist
+
+      - run: |
+        npm run dist-linux-appimage
 
       - run: |
           mv ./dist/sqlui-native*.deb ./dist/sqlui-native.deb
           mv ./dist/sqlui-native*.rpm ./dist/sqlui-native.rpm
           mv ./dist/sqlui-native*.snap ./dist/sqlui-native.snap
           mv ./dist/sqlui-native*.pacman ./dist/sqlui-native.pacman
+          mv ./dist/sqlui-native*.AppImage ./dist/sqlui-native.AppImage
 
       - uses: actions/upload-artifact@v4
         with:
@@ -296,11 +301,6 @@ jobs:
           asset_path: ./dist/sqlui-native.pacman
           asset_name: sqlui-native-${{ inputs.dist_version }}.pacman
           asset_content_type: application/octet-stream
-
-      - run: npm run dist-linux-appimage
-        name: sqlui-native npm run dist-linux-appimage
-
-      - run: mv ./dist/sqlui-native*.AppImage ./dist/sqlui-native.AppImage
 
       - uses: actions/upload-artifact@v4
         with:
