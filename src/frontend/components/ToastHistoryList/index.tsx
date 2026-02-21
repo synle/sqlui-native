@@ -2,10 +2,12 @@ import Button from "@mui/material/Button";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import TextField from "@mui/material/TextField";
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useVirtualizer } from "@tanstack/react-virtual";
 import { getToastHistory, ToastHistoryEntry } from "src/frontend/hooks/useToaster";
 
 const EXTRA_COLLAPSED_LENGTH = 100;
+const ESTIMATED_ROW_HEIGHT = 60;
 
 function formatTime(ts?: number) {
   if (!ts) return "-";
@@ -20,10 +22,28 @@ function matchesFilter(entry: ToastHistoryEntry, filter: string): boolean {
   return false;
 }
 
-function ExtraBlock({ extra, expanded }: { extra: string; expanded: boolean }) {
+function ExtraBlock({
+  extra,
+  expanded,
+  onToggle,
+}: {
+  extra: string;
+  expanded: boolean;
+  onToggle: () => void;
+}) {
   const [localExpanded, setLocalExpanded] = useState(expanded);
+
+  useEffect(() => {
+    setLocalExpanded(expanded);
+  }, [expanded]);
+
   const needsTruncation = extra.length > EXTRA_COLLAPSED_LENGTH;
   const displayText = !localExpanded && needsTruncation ? extra.slice(0, EXTRA_COLLAPSED_LENGTH) + "..." : extra;
+
+  const handleToggle = () => {
+    setLocalExpanded(!localExpanded);
+    onToggle();
+  };
 
   return (
     <div style={{ marginBottom: "4px" }}>
@@ -42,7 +62,7 @@ function ExtraBlock({ extra, expanded }: { extra: string; expanded: boolean }) {
         {displayText}
       </pre>
       {needsTruncation && (
-        <Button size="small" onClick={() => setLocalExpanded(!localExpanded)} sx={{ fontSize: "0.7rem", p: 0, mt: 0.5 }}>
+        <Button size="small" onClick={handleToggle} sx={{ fontSize: "0.7rem", p: 0, mt: 0.5 }}>
           {localExpanded ? "Show less" : "Show more"}
         </Button>
       )}
@@ -56,12 +76,9 @@ export default function ToastHistoryList() {
   const [sortOrder, setSortOrder] = useState<SortOrder>("newest");
   const [filter, setFilter] = useState("");
   const [expandAll, setExpandAll] = useState(false);
+  const parentRef = useRef<HTMLDivElement>(null);
 
   const history = getToastHistory();
-
-  if (history.length === 0) {
-    return <div style={{ padding: "16px", textAlign: "center", opacity: 0.6 }}>No notifications yet.</div>;
-  }
 
   const hasAnyExtra = history.some((entry) => !!entry.extra);
   const filtered = filter ? history.filter((entry) => matchesFilter(entry, filter)) : history;
@@ -69,9 +86,25 @@ export default function ToastHistoryList() {
     sortOrder === "newest" ? b.createdTime - a.createdTime : a.createdTime - b.createdTime,
   );
 
+  const virtualizer = useVirtualizer({
+    count: sorted.length,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => ESTIMATED_ROW_HEIGHT,
+    overscan: 10,
+  });
+
+  const remeasure = useCallback(() => {
+    // Schedule a remeasure after the DOM updates from expand/collapse
+    requestAnimationFrame(() => virtualizer.measure());
+  }, [virtualizer]);
+
+  if (history.length === 0) {
+    return <div style={{ padding: "16px", textAlign: "center", opacity: 0.6 }}>No notifications yet.</div>;
+  }
+
   return (
-    <div>
-      <div style={{ display: "flex", gap: "8px", marginBottom: "8px", alignItems: "center" }}>
+    <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
+      <div style={{ display: "flex", gap: "8px", marginBottom: "8px", alignItems: "center", flexShrink: 0 }}>
         <TextField
           size="small"
           placeholder="Filter notifications..."
@@ -89,32 +122,56 @@ export default function ToastHistoryList() {
           </Button>
         )}
       </div>
-      <div style={{ maxHeight: "400px", overflow: "auto" }}>
-        {sorted.map((entry: ToastHistoryEntry, idx: number) => (
+      <div ref={parentRef} style={{ flex: 1, overflow: "auto" }}>
+        {sorted.length === 0 ? (
+          <div style={{ padding: "16px", textAlign: "center", opacity: 0.6 }}>No matching notifications.</div>
+        ) : (
           <div
-            key={`${entry.id}-${entry.createdTime}-${idx}`}
             style={{
-              padding: "8px 12px",
-              borderBottom: "1px solid rgba(128,128,128,0.2)",
-              fontSize: "0.85rem",
+              height: virtualizer.getTotalSize(),
+              width: "100%",
+              position: "relative",
             }}
           >
-            {entry.extra && <ExtraBlock extra={entry.extra} expanded={expandAll} />}
-            <div style={{ marginBottom: "4px" }}>{entry.message}</div>
-            <div style={{ opacity: 0.6, fontSize: "0.75rem" }}>
-              {entry.id && <span>ID: {entry.id} | </span>}
-              Created: {formatTime(entry.createdTime)}
-              {entry.dismissTime && (
-                <span>
-                  {" "}
-                  | Dismissed: {formatTime(entry.dismissTime)} ({entry.dismissTriggered})
-                </span>
-              )}
-            </div>
+            {virtualizer.getVirtualItems().map((virtualRow) => {
+              const entry = sorted[virtualRow.index];
+              return (
+                <div
+                  key={`${entry.id}-${entry.createdTime}-${virtualRow.index}`}
+                  data-index={virtualRow.index}
+                  ref={virtualizer.measureElement}
+                  style={{
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    width: "100%",
+                    transform: `translateY(${virtualRow.start}px)`,
+                  }}
+                >
+                  <div
+                    style={{
+                      padding: "8px 12px",
+                      borderBottom: "1px solid rgba(128,128,128,0.2)",
+                      fontSize: "0.85rem",
+                    }}
+                  >
+                    {entry.extra && <ExtraBlock extra={entry.extra} expanded={expandAll} onToggle={remeasure} />}
+                    <div style={{ marginBottom: "4px" }}>{entry.message}</div>
+                    <div style={{ opacity: 0.6, fontSize: "0.75rem" }}>
+                      {entry.id && <span>ID: {entry.id} | </span>}
+                      Created: {formatTime(entry.createdTime)}
+                      {entry.dismissTime && (
+                        <span>
+                          {" "}
+                          | Dismissed: {formatTime(entry.dismissTime)} ({entry.dismissTriggered})
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
           </div>
-        ))}
-        {sorted.length === 0 && (
-          <div style={{ padding: "16px", textAlign: "center", opacity: 0.6 }}>No matching notifications.</div>
         )}
       </div>
     </div>
