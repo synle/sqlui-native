@@ -238,19 +238,120 @@ Integration tests are excluded from `npm run test-ci` and only run via `npm run 
 
 ## Adding new adapters?
 
-Refer to this folder for files related to adding a new adapter.
+Use the template in [src/common/adapters/\_SampleDataAdapter\_](https://github.com/synle/sqlui-native/tree/main/src/common/adapters/_SampleDataAdapter_) as your starting point. Also see this [Sample PR (Adding Support For Azure Table)](https://github.com/synle/sqlui-native/pull/321/files) for a real-world example.
 
-- [Adapter Core Files](https://github.com/synle/sqlui-native/tree/main/src/common/adapters/_SampleDataAdapter_)
-- [Sample PR (Adding Support For Azure Table)](https://github.com/synle/sqlui-native/pull/321/files)
+The template files use placeholder names that you need to replace with your actual values:
 
-Overall the process requires that you do:
+| Placeholder in template | What to replace with | Example |
+|---|---|---|
+| `SampleDataAdapter` (class name) | PascalCase adapter class name | `MyDbDataAdapter` |
+| `AdapterClient` (type alias) | Client type from your database driver | `Client` (from `my-db-driver`) |
+| `your_dialect_name` (string) | Lowercase dialect identifier used in connection strings | `mydb` |
 
-- Create a new dialect value in the typings `typings/index.ts`
-- Create a new adapter (refer to this folder https://github.com/synle/sqlui-native/tree/main/src/common/adapters/_SampleDataAdapter_)
-- Hook it up with the Data Adapter Factory.
-- Hook it up with the Data Script Factory.
-- Create the icon for the new dialect. File is located in `public/assets` and must match the dialect name and ended in `png`.
-- Add the script spec into the Data Script Factory Test.
+### Step-by-step guide
+
+Below we use `MyDb` as an example adapter name and `mydb` as the dialect name. Replace these with your actual values.
+
+#### Step 1: Add the dialect to typings
+
+Open `typings/index.ts` and add your new dialect to the `Dialect` type:
+
+```ts
+// In typings/index.ts, find the Dialect type and add your dialect
+export type Dialect = 'mysql' | 'mariadb' | ... | 'mydb';
+```
+
+#### Step 2: Install your database driver
+
+```bash
+npm install your-db-driver
+```
+
+#### Step 3: Create the adapter directory
+
+Copy the sample adapter folder and rename it:
+
+```bash
+cp -r src/common/adapters/_SampleDataAdapter_ src/common/adapters/MyDbDataAdapter
+```
+
+You will have three files to implement:
+
+**`src/common/adapters/MyDbDataAdapter/index.ts`** -- The data adapter class
+
+This class extends `BaseDataAdapter` and implements `IDataAdapter`. You must implement:
+
+| Method | Purpose |
+|---|---|
+| `getConnection()` | Create and return a connected client instance |
+| `closeConnection(client)` | Disconnect and clean up the client |
+| `authenticate()` | Verify the connection string is valid and the server is reachable |
+| `getDatabases()` | Return list of databases/keyspaces/namespaces |
+| `getTables(database)` | Return list of tables/collections in a database |
+| `getColumns(table, database)` | Return column metadata (name, type, primaryKey, etc.) |
+| `execute(sql, database, table)` | Execute a user query and return results |
+
+**`src/common/adapters/MyDbDataAdapter/scripts.ts`** -- Script generators
+
+This file defines pre-built query templates shown in the UI dropdowns and code snippets for the "Export as Code" feature. You must:
+
+- Set `dialects = ['mydb']` to match your dialect from Step 1.
+- Implement script generator functions (e.g., `getSelectAllColumns`, `getCreateDatabase`).
+- Wire them into `getTableScripts()` and `getDatabaseScripts()`.
+- Provide a sample connection string in `getSampleConnectionString()`.
+- Optionally implement `getCodeSnippet()` for JavaScript, Python, and Java exports.
+
+**`src/common/adapters/MyDbDataAdapter/index.spec.ts`** -- Tests
+
+Uncomment and fill in the test skeleton. At minimum, test `authenticate`, `getDatabases`, `getTables`, `getColumns`, and `execute`.
+
+#### Step 4: Register in DataAdapterFactory
+
+Open `src/common/adapters/DataAdapterFactory.ts` and add your adapter:
+
+```ts
+// 1. Add imports at the top
+import MyDbDataAdapter from 'src/common/adapters/MyDbDataAdapter/index';
+import MyDbDataAdapterScripts from 'src/common/adapters/MyDbDataAdapter/scripts';
+
+// 2. Add an else-if branch inside getDataAdapter()
+} else if (MyDbDataAdapterScripts.isDialectSupported(targetDialect)) {
+  adapter = new MyDbDataAdapter(connection);
+}
+```
+
+#### Step 5: Register in DataScriptFactory
+
+Open `src/common/adapters/DataScriptFactory.ts` and add your scripts:
+
+```ts
+// 1. Add import at the top
+import MyDbDataAdapterScripts from 'src/common/adapters/MyDbDataAdapter/scripts';
+
+// 2. Add to the getAllImplementations() array
+export function getAllImplementations(): BaseDataScript[] {
+  return [
+    ...
+    MyDbDataAdapterScripts,
+  ];
+}
+```
+
+#### Step 6: Add the dialect icon
+
+Add a PNG icon to `public/assets/mydb.png`. The filename **must** match your dialect name exactly.
+
+#### Step 7: Add script spec tests
+
+Open `src/common/adapters/DataScriptFactory.spec.ts` and add your dialect to the test cases so that table/database action scripts are snapshot-tested.
+
+#### Step 8: Verify
+
+```bash
+npm run lint          # check for lint errors
+npm run test-ci       # run unit tests
+npm start             # test in Electron -- try adding a connection with your dialect
+```
 
 ## Sample runbooks
 
