@@ -69,6 +69,7 @@
     "clean": "rm -rf build public/vs src/package.json",
     "cleanSnapshot": "rm -rf src/common/adapters/__snapshots__/ src/common/adapters/BaseDataAdapter/__snapshots__/ && npm run test-ci -- --update",
     "format": "prettier --write --cache --ignore-unknown --no-error-on-unmatched-pattern --print-width 140 .",
+    "format:ci": "prettier --write --ignore-unknown --no-error-on-unmatched-pattern --print-width 140 .",
     "format:check": "prettier --check --cache --ignore-unknown --print-width 140 .",
     "lint": "eslint --fix --ext .tsx --ext .ts src",
     "typecheck": "cross-env NODE_OPTIONS=--max-old-space-size=4096 tsc --noEmit",
