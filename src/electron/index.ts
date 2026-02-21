@@ -8,6 +8,15 @@ import { SqluiCore, SqluiEnums } from "typings";
 
 const isMac = process.platform === "darwin";
 
+// prevent process crashes from unhandled connection errors (e.g. mariadb timeout)
+process.on("uncaughtException", (err) => {
+  console.error("Uncaught Exception:", err?.message || err);
+});
+
+process.on("unhandledRejection", (reason) => {
+  console.error("Unhandled Rejection:", reason);
+});
+
 // performance: disable smooth scrolling
 try {
   app.commandLine.appendSwitch("disable-smooth-scrolling", "1");

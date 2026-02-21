@@ -228,7 +228,7 @@ export default function QueryBox(props: QueryBoxProps): JSX.Element | null {
       message: `Query "${queryToExecute.name}" executed ${
         success ? "successfully" : "unsuccessfully"
       } and took about ${formatDuration(executionEnd - executionStart)}...`,
-      extra: query.sql
+      extra: query
     });
   };
 

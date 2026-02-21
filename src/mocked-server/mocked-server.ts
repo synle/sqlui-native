@@ -4,6 +4,15 @@ import fs from "fs";
 import multer from "multer";
 import { setUpDataEndpoints } from "src/common/Endpoints";
 
+// prevent process crashes from unhandled connection errors (e.g. mariadb timeout)
+process.on("uncaughtException", (err) => {
+  console.error("Uncaught Exception:", err?.message || err);
+});
+
+process.on("unhandledRejection", (reason) => {
+  console.error("Unhandled Rejection:", reason);
+});
+
 export const app = express();
 
 const upload = multer({ dest: "./upload" });
