@@ -55,7 +55,11 @@ export default function Modal(props: ModalProps): JSX.Element | null {
           </IconButton>
         )}
       </DialogTitle>
-      <DialogContent>{props.message}</DialogContent>
+      <DialogContent
+        sx={props.isFullScreen ? { display: "flex", flexDirection: "column", overflow: "hidden" } : undefined}
+      >
+        {props.message}
+      </DialogContent>
     </Dialog>
   );
 }
