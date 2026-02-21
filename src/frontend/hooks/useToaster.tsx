@@ -212,10 +212,9 @@ function ToastDetailModal({ toast, open, onClose }: { toast: InternalToast; open
 }
 
 // Toast item component
-function ToastItem({ toast }: { toast: InternalToast }) {
+function ToastItem({ toast, onExpand }: { toast: InternalToast; onExpand: (toast: InternalToast) => void }) {
   const isHoveredRef = React.useRef(false);
   const timerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
-  const [modalOpen, setModalOpen] = useState(false);
 
   const startTimer = React.useCallback(() => {
     if (toast.autoHideDuration != null && toast.autoHideDuration <= 0) return;
@@ -254,48 +253,46 @@ function ToastItem({ toast }: { toast: InternalToast }) {
     }
   };
 
+  const handleExpand = () => {
+    onExpand(toast);
+    _dismissToast(toast.id, "user");
+  };
+
   return (
-    <>
-      <div
-        className="Toaster__Item"
-        onMouseEnter={onMouseEnter}
-        onMouseLeave={onMouseLeave}
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "8px",
-          padding: "6px 16px",
-          background: "#323232",
-          color: "#fff",
-          borderRadius: "4px",
-          boxShadow: "0 3px 5px -1px rgba(0,0,0,.2), 0 6px 10px 0 rgba(0,0,0,.14), 0 1px 18px 0 rgba(0,0,0,.12)",
-          fontSize: "0.875rem",
-          minWidth: "280px",
-          maxWidth: "500px",
-        }}
-      >
-        <span style={{ flex: 1 }}>{toast.message}</span>
-        {toast.action}
-        <IconButton
-          onClick={() => setModalOpen(true)}
-          size="small"
-          aria-label="expand"
-          color="inherit"
-        >
-          <OpenInFullIcon sx={{ fontSize: "0.875rem" }} />
-        </IconButton>
-        <IconButton onClick={() => _dismissToast(toast.id, "user")} size="small" aria-label="close" color="inherit">
-          <CloseIcon fontSize="small" />
-        </IconButton>
-      </div>
-      <ToastDetailModal toast={toast} open={modalOpen} onClose={() => setModalOpen(false)} />
-    </>
+    <div
+      className="Toaster__Item"
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+      style={{
+        display: "flex",
+        alignItems: "center",
+        gap: "8px",
+        padding: "6px 16px",
+        background: "#323232",
+        color: "#fff",
+        borderRadius: "4px",
+        boxShadow: "0 3px 5px -1px rgba(0,0,0,.2), 0 6px 10px 0 rgba(0,0,0,.14), 0 1px 18px 0 rgba(0,0,0,.12)",
+        fontSize: "0.875rem",
+        minWidth: "280px",
+        maxWidth: "500px",
+      }}
+    >
+      <span style={{ flex: 1 }}>{toast.message}</span>
+      {toast.action}
+      <IconButton onClick={handleExpand} size="small" aria-label="expand" color="inherit">
+        <OpenInFullIcon sx={{ fontSize: "0.875rem" }} />
+      </IconButton>
+      <IconButton onClick={() => _dismissToast(toast.id, "user")} size="small" aria-label="close" color="inherit">
+        <CloseIcon fontSize="small" />
+      </IconButton>
+    </div>
   );
 }
 
 // Container component rendered via portal
 function ToasterContainer() {
   const [toasts, setToasts] = useState<InternalToast[]>(_activeToasts);
+  const [expandedToast, setExpandedToast] = useState<InternalToast | null>(null);
 
   useEffect(() => {
     const listener = () => setToasts([..._activeToasts]);
@@ -305,27 +302,32 @@ function ToasterContainer() {
     };
   }, []);
 
-  if (toasts.length === 0) return null;
-
   return ReactDOM.createPortal(
-    <div
-      className="Toaster__Container"
-      style={{
-        position: "fixed",
-        bottom: "16px",
-        left: "50%",
-        transform: "translateX(-50%)",
-        zIndex: 9999,
-        display: "flex",
-        flexDirection: "column-reverse",
-        gap: "8px",
-        pointerEvents: "auto",
-      }}
-    >
-      {toasts.map((toast) => (
-        <ToastItem key={toast.id} toast={toast} />
-      ))}
-    </div>,
+    <>
+      {toasts.length > 0 && (
+        <div
+          className="Toaster__Container"
+          style={{
+            position: "fixed",
+            bottom: "16px",
+            left: "50%",
+            transform: "translateX(-50%)",
+            zIndex: 9999,
+            display: "flex",
+            flexDirection: "column-reverse",
+            gap: "8px",
+            pointerEvents: "auto",
+          }}
+        >
+          {toasts.map((toast) => (
+            <ToastItem key={toast.id} toast={toast} onExpand={setExpandedToast} />
+          ))}
+        </div>
+      )}
+      {expandedToast && (
+        <ToastDetailModal toast={expandedToast} open={true} onClose={() => setExpandedToast(null)} />
+      )}
+    </>,
     document.body,
   );
 }
