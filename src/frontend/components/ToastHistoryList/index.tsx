@@ -8,12 +8,7 @@ import Select from "@mui/material/Select";
 import TextField from "@mui/material/TextField";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
-import {
-  getToastHistory,
-  dismissHistoryEntry,
-  dismissAllHistoryEntries,
-  ToastHistoryEntry,
-} from "src/frontend/hooks/useToaster";
+import { getToastHistory, dismissHistoryEntry, dismissAllHistoryEntries, ToastHistoryEntry } from "src/frontend/hooks/useToaster";
 
 const COLLAPSED_LENGTH = 250;
 const ESTIMATED_ROW_HEIGHT = 60;
@@ -137,7 +132,10 @@ function ExpandableContent({
         </div>
       ) : (
         <pre style={preStyle}>
-          {sections.map((s) => s.content).join("\n").slice(0, COLLAPSED_LENGTH) + "..."}
+          {sections
+            .map((s) => s.content)
+            .join("\n")
+            .slice(0, COLLAPSED_LENGTH) + "..."}
         </pre>
       )}
       {truncatable && (
@@ -161,9 +159,7 @@ export default function ToastHistoryList() {
 
   const hasAnyExpandable = history.some((entry) => getExpandableContent(entry).length > 0);
   const filtered = filter ? history.filter((entry) => matchesFilter(entry, filter)) : history;
-  const sorted = [...filtered].sort((a, b) =>
-    sortOrder === "newest" ? b.createdTime - a.createdTime : a.createdTime - b.createdTime,
-  );
+  const sorted = [...filtered].sort((a, b) => (sortOrder === "newest" ? b.createdTime - a.createdTime : a.createdTime - b.createdTime));
 
   const virtualizer = useVirtualizer({
     count: sorted.length,
@@ -261,9 +257,7 @@ export default function ToastHistoryList() {
                       <CloseIcon sx={{ fontSize: "0.85rem" }} />
                     </IconButton>
                   </div>
-                  {sections.length > 0 && (
-                    <ExpandableContent sections={sections} expanded={expandAll} onToggle={remeasure} />
-                  )}
+                  {sections.length > 0 && <ExpandableContent sections={sections} expanded={expandAll} onToggle={remeasure} />}
                   <Divider sx={{ mt: 1 }} />
                 </div>
               );

@@ -36,7 +36,7 @@ export default function Modal(props: ModalProps): JSX.Element | null {
       aria-describedby="modal-dialog-description"
       fullScreen={!!props.isFullScreen}
       fullWidth={!props.isFullScreen}
-      maxWidth={props.isFullScreen ? false : (props.size || "md")}
+      maxWidth={props.isFullScreen ? false : props.size || "md"}
     >
       <DialogTitle id="modal-dialog-title">
         {props.title}
@@ -55,9 +55,7 @@ export default function Modal(props: ModalProps): JSX.Element | null {
           </IconButton>
         )}
       </DialogTitle>
-      <DialogContent
-        sx={props.isFullScreen ? { display: "flex", flexDirection: "column", overflow: "hidden" } : undefined}
-      >
+      <DialogContent sx={props.isFullScreen ? { display: "flex", flexDirection: "column", overflow: "hidden" } : undefined}>
         {props.message}
       </DialogContent>
     </Dialog>

@@ -1068,7 +1068,7 @@ export default function MissionControl() {
                 />
               ),
               showCloseButton: true,
-                  });
+            });
           }
           break;
 
@@ -1313,7 +1313,7 @@ export default function MissionControl() {
                 </Box>
               ),
               showCloseButton: true,
-                  });
+            });
           }
           break;
 

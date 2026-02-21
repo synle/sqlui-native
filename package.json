@@ -140,12 +140,12 @@
     "json-2-csv": "^3.17.1",
     "lodash.get": "^4.4.2",
     "lodash.set": "^4.3.2",
-    "mariadb": "^3.1.2",
+    "mariadb": "^3.5.1",
     "monaco-editor": "^0.32.1",
     "mongodb": "^4.10.0",
     "mustache": "^4.2.0",
     "mysql2": "^2.3.3",
-    "pg": "^8.7.3",
+    "pg": "^8.18.0",
     "pg-hstore": "^2.3.4",
     "qs": "^6.11.0",
     "react": "^17.0.2",
@@ -153,10 +153,10 @@
     "react-flow-renderer": "^10.3.14",
     "react-router-dom": "^6.2.2",
     "redis": "^4.3.1",
-    "sequelize": "^6.20.1",
+    "sequelize": "^6.37.7",
     "sql-formatter": "^4.0.2",
-    "sqlite3": "^5.1.6",
-    "tedious": "^16.1.0"
+    "sqlite3": "^5.1.7",
+    "tedious": "^19.0.0"
   },
   "eslintConfig": {
     "extends": [
