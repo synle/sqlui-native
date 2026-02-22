@@ -72,3 +72,36 @@ describe("mssql integration", () => {
     await adapter.execute(`DROP DATABASE IF EXISTS sqlui_test`);
   });
 });
+
+describe.skip("mssql legacy", () => {
+  let adapter;
+
+  beforeAll(() => {
+    adapter = new RelationalDataAdapter("mssql://sa:password123!@127.0.0.1:1433");
+  });
+
+  test("Get tables", async () => {
+    const tables = await adapter.getTables("music_store");
+    expect(tables.length).toBeGreaterThan(0);
+  });
+
+  test("Get columns", async () => {
+    const columns = await adapter.getColumns("artists", "music_store");
+    expect(columns.length).toBe(2);
+  });
+
+  test("Execute Select", async () => {
+    const resp = await adapter.execute(`SELECT * FROM artists ORDER BY Name ASC LIMIT 10`, "music_store");
+    //@ts-ignore
+    expect(resp && resp.raw && resp.raw.length > 0 && resp.raw.length <= 10).toBe(true);
+  });
+
+  test("Execute Update", async () => {
+    try {
+      await adapter.execute(`UPDATE artists SET name = 'AC/DC' WHERE ArtistId = '1'`, "music_store");
+      expect(1).toBe(1);
+    } catch (err) {
+      expect(err).toBeUndefined();
+    }
+  });
+});

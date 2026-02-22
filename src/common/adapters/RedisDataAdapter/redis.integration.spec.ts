@@ -60,3 +60,21 @@ describe("redis integration", () => {
     await adapter.execute(`db.del('sqlui_test_hash')`);
   });
 });
+
+describe.skip("redis legacy", () => {
+  const adapter = new RedisDataAdapter("redis://127.0.0.1:6379");
+
+  test("Set", async () => {
+    await adapter.execute(`db.set('key', 'value123');`);
+  });
+
+  test("Get", async () => {
+    await adapter.execute(`db.get('key');`);
+  });
+
+  test("Scan", async () => {
+    const actual = await adapter.getTables();
+    expect(actual.length).toBeGreaterThan(0);
+    expect(actual[0].name).toBeDefined();
+  });
+});
