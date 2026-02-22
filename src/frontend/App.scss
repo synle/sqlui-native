@@ -246,9 +246,19 @@ $ConnectionTreeIndentSize: 7px;
   }
 }
 
-// remove transition
+// remove transition but keep loading indicators faster
 @media (prefers-reduced-motion) {
-  * {
+  *:not(.MuiCircularProgress-root):not(.MuiCircularProgress-svg):not(.MuiCircularProgress-circle):not(.MuiLinearProgress-root):not(.MuiLinearProgress-bar):not(.MuiLinearProgress-bar1):not(.MuiLinearProgress-bar2):not(.MuiSkeleton-root) {
     transition-duration: 0s !important;
+  }
+  .MuiCircularProgress-root,
+  .MuiCircularProgress-svg,
+  .MuiCircularProgress-circle,
+  .MuiLinearProgress-root,
+  .MuiLinearProgress-bar,
+  .MuiLinearProgress-bar1,
+  .MuiLinearProgress-bar2,
+  .MuiSkeleton-root {
+    animation-duration: 0.5s !important;
   }
 }
