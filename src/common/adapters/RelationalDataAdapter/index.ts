@@ -74,7 +74,7 @@ export default class RelationalDataAdapter extends BaseDataAdapter implements ID
           }
         }
 
-        if(this.dialect === "mariadb"){
+        if (this.dialect === "mariadb") {
           // NOTES: because mariadb and mysql are compatbile, we can use mysql here to replace it...
           connectionUrl = connectionUrl.replace("mariadb://", "mysql://");
         }
