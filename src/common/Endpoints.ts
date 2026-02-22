@@ -501,7 +501,19 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
   addDataEndpoint("get", "/api/folder/:folderId", async (req, res) => {
     const folderItemsStorage = await getFolderItemsStorage(req.params?.folderId);
 
-    res.status(200).json(await folderItemsStorage.list());
+    const items = await folderItemsStorage.list();
+
+    // backfill deletedAt for existing items that were created before this field existed
+    let hasUpdates = false;
+    for (const item of items) {
+      if (!item.deletedAt) {
+        item.deletedAt = Date.now();
+        folderItemsStorage.update(item);
+        hasUpdates = true;
+      }
+    }
+
+    res.status(200).json(items);
   });
 
   // adds item to recycle bin
@@ -513,6 +525,8 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
         name: req.body.name,
         type: req.body.type,
         data: req.body.data,
+        connections: req.body.connections,
+        deletedAt: Date.now(),
       }),
     );
   });
