@@ -18,6 +18,8 @@ type ToasterProps = CoreToasterProps & {
   detail?: string;
   /** Additional metadata object (shown in expanded view) */
   metadata?: Record<string, any>;
+  /** When true, the toast is stored in history. When false/undefined, it is not persisted to history. */
+  persisted?: boolean;
 };
 
 export type ToasterHandler = {
@@ -81,12 +83,14 @@ function _addToast(props: ToasterProps): string {
       detail: props.detail,
       metadata: props.metadata,
     };
-    // Also update the history entry's detail and metadata
-    const historyEntry = _toastHistory.find((h) => h.id === toastId && !h.dismissTime);
-    if (historyEntry) {
-      historyEntry.message = props.message;
-      historyEntry.detail = props.detail;
-      historyEntry.metadata = props.metadata;
+    // Also update the history entry's detail and metadata (only if persisted)
+    if (props.persisted) {
+      const historyEntry = _toastHistory.find((h) => h.id === toastId && !h.dismissTime);
+      if (historyEntry) {
+        historyEntry.message = props.message;
+        historyEntry.detail = props.detail;
+        historyEntry.metadata = props.metadata;
+      }
     }
     _activeToasts = [..._activeToasts];
   } else {
@@ -100,16 +104,18 @@ function _addToast(props: ToasterProps): string {
       createdTime: now,
     };
     _activeToasts = [..._activeToasts, toast];
-    _toastHistory = [
-      ..._toastHistory,
-      {
-        id: toastId,
-        message: props.message,
-        detail: props.detail,
-        metadata: props.metadata,
-        createdTime: now,
-      },
-    ];
+    if (props.persisted) {
+      _toastHistory = [
+        ..._toastHistory,
+        {
+          id: toastId,
+          message: props.message,
+          detail: props.detail,
+          metadata: props.metadata,
+          createdTime: now,
+        },
+      ];
+    }
   }
 
   _notify();

@@ -241,6 +241,7 @@ export default function QueryBox(props: QueryBoxProps): JSX.Element | null {
       metadata: {
         ...toastMetaData,
       },
+      persisted: true,
     });
   };
 
