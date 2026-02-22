@@ -6,7 +6,6 @@ import Alert from "@mui/material/Alert";
 import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
 import Tooltip from "@mui/material/Tooltip";
-import React from "react";
 import { AccordionHeader } from "src/frontend/components/Accordion";
 import ColumnAttributes from "src/frontend/components/ColumnDescription/ColumnAttributes";
 import ColumnName from "src/frontend/components/ColumnDescription/ColumnName";
@@ -24,7 +23,7 @@ type TreeRowRendererProps = {
   onConnectionOrderChange: (fromIdx: number, toIdx: number) => void;
 };
 
-export const TreeRowRenderer = React.memo(function TreeRowRenderer(props: TreeRowRendererProps) {
+export function TreeRowRenderer(props: TreeRowRendererProps) {
   const { row, onToggle, onConnectionOrderChange } = props;
 
   switch (row.type) {
@@ -148,4 +147,4 @@ export const TreeRowRenderer = React.memo(function TreeRowRenderer(props: TreeRo
     default:
       return null;
   }
-});
+}
