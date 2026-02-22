@@ -32,6 +32,10 @@ module.exports = {
         ],
         exclude: /node_modules/,
       },
+      {
+        test: /\.(png|jpg|jpeg|gif|svg|ico|webp|bmp)$/,
+        type: "asset/inline",
+      },
     ],
   },
   resolve: {
