@@ -8,17 +8,11 @@ const describeIfEnv = shouldRun ? describe : describe.skip;
 
 describeIfEnv("AzureTableStorageAdapter integration", () => {
   let adapter: AzureTableStorageAdapter;
-  let tableName: string;
+  const testTableName = `testintegration${Date.now()}`;
 
   beforeAll(async () => {
-    adapter = new AzureTableStorageAdapter(`aztable://${connectionString}`);
+    adapter = new AzureTableStorageAdapter(connectionString!);
     await adapter.authenticate();
-
-    // discover a table to use for subsequent tests
-    const tables = await adapter.getTables();
-    if (tables.length > 0) {
-      tableName = tables[0].name;
-    }
   });
 
   test("authenticate", async () => {
@@ -35,53 +29,109 @@ describeIfEnv("AzureTableStorageAdapter integration", () => {
     ]);
   });
 
-  test("getTables", async () => {
-    const tables = await adapter.getTables();
-    expect(tables.length).toBeGreaterThan(0);
-    expect(tables[0].name).toBeDefined();
-  });
-
-  test("getColumns", async () => {
-    if (!tableName) {
-      return;
-    }
-    const columns = await adapter.getColumns(tableName);
-    expect(columns.length).toBeGreaterThan(0);
-    expect(columns[0].name).toBeDefined();
-  });
-
-  test("execute - list entities", async () => {
-    if (!tableName) {
-      return;
-    }
-    const result = await adapter.execute("tableClient.listEntities()", "Azure Table Storage", tableName);
-    expect(result.ok).toBe(true);
-    expect(result.raw).toBeDefined();
-    expect(Array.isArray(result.raw)).toBe(true);
-  });
-
-  test("execute - create and drop table", async () => {
-    const testTableName = `testintegration${Date.now()}`;
-
-    // create table
-    const createResult = await adapter.execute(
+  test("execute - create table", async () => {
+    const result = await adapter.execute(
       `serviceClient.createTable('${testTableName}')`,
       "Azure Table Storage",
       testTableName,
     );
-    expect(createResult.ok).toBe(true);
+    expect(result.ok).toBe(true);
+  });
 
-    // verify table exists
+  test("getTables - should include created table", async () => {
     const tables = await adapter.getTables();
+    expect(tables.length).toBeGreaterThan(0);
     const found = tables.some((t) => t.name === testTableName);
     expect(found).toBe(true);
+  });
 
-    // drop table
-    const dropResult = await adapter.execute(
+  test("execute - insert entity", async () => {
+    const result = await adapter.execute(
+      `tableClient.createEntity({\n  "rowKey": "row1",\n  "partitionKey": "partition1"\n})`,
+      "Azure Table Storage",
+      testTableName,
+    );
+    expect(result.ok).toBe(true);
+  });
+
+  test("execute - select all entities", async () => {
+    const result = await adapter.execute(
+      `tableClient.listEntities({\n  queryOptions: {\n    filter: \`\`\n  }\n})`,
+      "Azure Table Storage",
+      testTableName,
+    );
+    expect(result.ok).toBe(true);
+    expect(result.raw).toBeDefined();
+    expect(Array.isArray(result.raw)).toBe(true);
+    expect(result.raw!.length).toBeGreaterThan(0);
+  });
+
+  test("execute - select with filter", async () => {
+    const result = await adapter.execute(
+      `tableClient.listEntities({\n  queryOptions: {\n    filter: \`PartitionKey eq 'partition1'\`,\n    select: ["rowKey", "partitionKey", "etag", "timestamp"]\n  }\n})`,
+      "Azure Table Storage",
+      testTableName,
+    );
+    expect(result.ok).toBe(true);
+    expect(result.raw).toBeDefined();
+    expect(Array.isArray(result.raw)).toBe(true);
+    expect(result.raw!.length).toBeGreaterThan(0);
+  });
+
+  test("execute - update entity", async () => {
+    const result = await adapter.execute(
+      `tableClient.updateEntity({\n  "rowKey": "row1",\n  "partitionKey": "partition1"\n})`,
+      "Azure Table Storage",
+      testTableName,
+    );
+    expect(result.ok).toBe(true);
+  });
+
+  test("execute - upsert entity", async () => {
+    const result = await adapter.execute(
+      `tableClient.upsertEntity({\n  "rowKey": "row2",\n  "partitionKey": "partition1"\n}, 'Replace')`,
+      "Azure Table Storage",
+      testTableName,
+    );
+    expect(result.ok).toBe(true);
+  });
+
+  test("getColumns - should return columns from test table", async () => {
+    const columns = await adapter.getColumns(testTableName);
+    expect(columns.length).toBeGreaterThan(0);
+    expect(columns[0].name).toBeDefined();
+  });
+
+  test("execute - delete entity", async () => {
+    const result = await adapter.execute(
+      `tableClient.deleteEntity('partition1', 'row1')`,
+      "Azure Table Storage",
+      testTableName,
+    );
+    expect(result.ok).toBe(true);
+  });
+
+  test("execute - delete second entity", async () => {
+    const result = await adapter.execute(
+      `tableClient.deleteEntity('partition1', 'row2')`,
+      "Azure Table Storage",
+      testTableName,
+    );
+    expect(result.ok).toBe(true);
+  });
+
+  test("execute - drop table", async () => {
+    const result = await adapter.execute(
       `serviceClient.deleteTable('${testTableName}')`,
       "Azure Table Storage",
       testTableName,
     );
-    expect(dropResult.ok).toBe(true);
+    expect(result.ok).toBe(true);
+  });
+
+  test("execute - error does not throw", async () => {
+    const result = await adapter.execute("invalid query that should fail");
+    expect(result.ok).toBe(false);
+    expect(result.error).toBeDefined();
   });
 });
