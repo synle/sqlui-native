@@ -6,24 +6,7 @@ const appPackage = require("./package.json");
 // dynamic require() patterns. Everything else (pure JS) gets bundled
 // by webpack, avoiding missing transitive dependency issues in
 // electron-builder packaging.
-const nativeExternals = [
-  "electron",
-  // Native modules
-  "sqlite3",
-  "cassandra-driver",
-  "pg-native",
-  // Sequelize + drivers use dynamic require() to load dialects at runtime
-  "sequelize",
-  "mysql2",
-  "mariadb",
-  "pg",
-  "pg-hstore",
-  "tedious",
-  // MongoDB uses dynamic require() for optional deps
-  "mongodb",
-  // Redis has native optional bindings
-  "redis",
-];
+const nativeExternals = ["electron", ...Object.keys(appPackage.optionalDependencies || []), ...Object.keys(appPackage.dependencies || [])];
 const externals = {};
 for (const dep of nativeExternals) {
   externals[dep] = `commonjs ${dep}`;
