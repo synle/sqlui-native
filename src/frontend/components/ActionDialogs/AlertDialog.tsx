@@ -13,6 +13,7 @@ export type AlertInput = {
   noLabel?: string;
   isConfirm?: boolean;
   isFullScreen?: boolean;
+  size?: "xs" | "sm" | "md" | "lg";
 };
 
 type AlertDialogProps = AlertInput & {
@@ -29,9 +30,8 @@ export default function AlertDialog(props: AlertDialogProps): JSX.Element | null
       aria-describedby="alert-dialog-description"
       fullScreen={!!props.isFullScreen}
       fullWidth={!props.isFullScreen}
-      maxWidth={props.isFullScreen ? false : "md"}
+      maxWidth={props.isFullScreen ? false : props?.size || "sm"}
     >
-      <div style={props.isFullScreen ? undefined : { width: 400 }}>
         <DialogTitle id="alert-dialog-title">{props.title || "Alert"}</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">{props.message}</DialogContentText>
@@ -52,7 +52,6 @@ export default function AlertDialog(props: AlertDialogProps): JSX.Element | null
             </>
           )}
         </DialogActions>
-      </div>
     </Dialog>
   );
 }
