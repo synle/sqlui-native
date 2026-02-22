@@ -28,6 +28,15 @@ function NameCell({ row }: { row: any }) {
   return <Link onClick={() => restoreRecycleBinItem(folderItem)}>{folderItem.name}</Link>;
 }
 
+function DetailCell({ row }: { row: any }) {
+  const folderItem: SqluiCore.FolderItem = row.original;
+  if (folderItem.type === "Session" && folderItem.connections?.length) {
+    const count = folderItem.connections.length;
+    return <Typography variant="body2">{count} connection{count !== 1 ? "s" : ""}</Typography>;
+  }
+  return null;
+}
+
 function TypeCell({ row }: { row: any }) {
   const folderItem = row.original;
   const colorMap: Record<string, "success" | "warning" | "info"> = {
@@ -76,6 +85,12 @@ const columns: ColumnDef<any, any>[] = [
     accessorKey: "type",
     size: 100,
     cell: (info) => <TypeCell row={info.row} />,
+  },
+  {
+    header: "Details",
+    accessorKey: "connections",
+    size: 150,
+    cell: (info) => <DetailCell row={info.row} />,
   },
   {
     header: "",
