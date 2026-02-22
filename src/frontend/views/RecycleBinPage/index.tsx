@@ -8,7 +8,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import IconButton from "@mui/material/IconButton";
 import Link from "@mui/material/Link";
 import Typography from "@mui/material/Typography";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { ColumnDef } from "@tanstack/react-table";
 import Breadcrumbs from "src/frontend/components/Breadcrumbs";
 import VirtualizedConnectionTree from "src/frontend/components/VirtualizedConnectionTree";
@@ -30,11 +30,19 @@ function NameCell({ row }: { row: any }) {
 
 function DetailCell({ row }: { row: any }) {
   const folderItem: SqluiCore.FolderItem = row.original;
-  if (folderItem.type === "Session" && folderItem.connections?.length) {
-    const count = folderItem.connections.length;
+  if (folderItem.type === "Session") {
+    const count = folderItem.connections?.length ?? 0;
     return <Typography variant="body2">{count} connection{count !== 1 ? "s" : ""}</Typography>;
   }
   return null;
+}
+
+function DeletedAtCell({ row }: { row: any }) {
+  const folderItem: SqluiCore.FolderItem = row.original;
+  if (!folderItem.deletedAt) {
+    return null;
+  }
+  return <Typography variant="body2">{new Date(folderItem.deletedAt).toLocaleString()}</Typography>;
 }
 
 function TypeCell({ row }: { row: any }) {
@@ -93,6 +101,12 @@ const columns: ColumnDef<any, any>[] = [
     cell: (info) => <DetailCell row={info.row} />,
   },
   {
+    header: "Deleted",
+    accessorKey: "deletedAt",
+    size: 180,
+    cell: (info) => <DeletedAtCell row={info.row} />,
+  },
+  {
     header: "",
     accessorKey: "id",
     size: 80,
@@ -107,10 +121,15 @@ function RecycleBinItemList() {
   const { add: addToast } = useToaster();
   const isLoading = loadingRecycleBinItems;
 
+  const folderItems = useMemo(() => {
+    const items = data || [];
+    return [...items].sort((a, b) => (b.deletedAt ?? 0) - (a.deletedAt ?? 0));
+  }, [data]);
+
   const onEmptyTrash = async () => {
     try {
       await confirm(`Do you want to empty the recycle bin? This action cannot be undone.`);
-      await Promise.all((folderItems || []).map((folderItem) => deleteRecyleBinItem(folderItem.id)));
+      await Promise.all(folderItems.map((folderItem) => deleteRecyleBinItem(folderItem.id)));
       await addToast({
         message: `Recycle Bin emptied.`,
       });
@@ -134,7 +153,6 @@ function RecycleBinItemList() {
     );
   }
 
-  const folderItems = data || [];
   if (folderItems.length === 0) {
     return <Typography>Recycle Bin is empty...</Typography>;
   }
