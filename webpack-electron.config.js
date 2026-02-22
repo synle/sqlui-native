@@ -15,7 +15,7 @@ for (const dep of nativeExternals) {
 module.exports = {
   mode: "production",
   target: ["node"],
-  entry: "./src/electron/index.ts",
+  entry: ["./src/electron/polyfills.ts", "./src/electron/index.ts"],
   output: {
     filename: "main.js",
     libraryTarget: "this",
