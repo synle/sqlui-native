@@ -20,5 +20,6 @@ jobs:
       node_version: ${{ inputs.node_version }}
       release_mode: "draft"
       run_format: true
+      release_notes: "Beta"
     secrets:
       TOKEN: ${{ secrets.GITHUB_TOKEN }}

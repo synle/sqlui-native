@@ -19,6 +19,10 @@ on:
         type: number
         default: 5
         description: "Number of most recent draft releases to keep during cleanup"
+      release_notes:
+        type: string
+        default: ""
+        description: "Release notes for the GitHub release"
     secrets:
       TOKEN:
         required: false
@@ -107,6 +111,7 @@ jobs:
           release_name: ${{ steps.package-version.outputs.current-version }}
           body: |
             Release ${{ steps.package-version.outputs.current-version }}
+            ${{ inputs.release_notes }}
           draft: ${{ inputs.release_mode == 'draft' }}
           prerelease: ${{ inputs.release_mode == 'draft' }}
 
