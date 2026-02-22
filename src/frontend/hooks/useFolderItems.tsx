@@ -1,8 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import dataApi from "src/frontend/data/api";
+import { useCommands } from "src/frontend/components/MissionControl";
 import { useUpsertConnection } from "src/frontend/hooks/useConnection";
 import { useConnectionQueries } from "src/frontend/hooks/useConnectionQuery";
+import { useUpsertSession } from "src/frontend/hooks/useSession";
 import { SqluiCore } from "typings";
 
 const QUERY_KEY_FOLDER_ITEMS = "folderItems";
@@ -84,8 +86,10 @@ export function useUpdateRecycleBinItem() {
 export function useRestoreRecycleBinItem() {
   const navigate = useNavigate();
   const { mutateAsync: upsertConnection } = useUpsertConnection();
+  const { mutateAsync: upsertSession } = useUpsertSession();
   const { mutateAsync: deleteRecyleBinItem } = useDeletedRecycleBinItem();
   const { onAddQuery } = useConnectionQueries();
+  const { selectCommand } = useCommands();
 
   return useMutation<void, void, SqluiCore.FolderItem>(async (folderItem) => {
     // here we handle restorable
@@ -97,6 +101,11 @@ export function useRestoreRecycleBinItem() {
       case "Query":
         // TODO: add check and handle restore of related connection
         await Promise.all([onAddQuery(folderItem.data), deleteRecyleBinItem(folderItem.id)]);
+        navigate("/"); // navigate back to the main page
+        break;
+      case "Session":
+        await Promise.all([upsertSession(folderItem.data), deleteRecyleBinItem(folderItem.id)]);
+        selectCommand({ event: "clientEvent/session/switch" });
         navigate("/"); // navigate back to the main page
         break;
     }
