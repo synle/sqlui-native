@@ -95,7 +95,7 @@
     "test-ci": "vitest run",
     "test-integration": "vitest run --config vitest.integration.config.ts",
     "### Distribution & Packaging ###": "##################################################################################",
-    "version-stamp:draft": "npm version patch --no-git-tag-version --preid=beta-$(date +%Y%m%d%H%M%S)",
+    "version-stamp:draft": "npm version prepatch --no-git-tag-version --preid=beta-$(date +%Y%m%d%H%M%S)",
     "version-stamp:release": "npm version patch --no-git-tag-version",
     "dist": "electron-builder build --publish=never",
     "dist-win-x64": "electron-builder build --publish=never --win --x64",
