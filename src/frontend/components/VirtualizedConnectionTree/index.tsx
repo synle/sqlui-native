@@ -1,6 +1,6 @@
 import Alert from "@mui/material/Alert";
 import CircularProgress from "@mui/material/CircularProgress";
-import { useCallback, useLayoutEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { useLayoutModeSetting } from "src/frontend/hooks/useSetting";
 import { TreeRowRenderer } from "./TreeRowRenderer";
@@ -11,7 +11,7 @@ const ROW_HEIGHT_COMPACT = 28;
 const ROW_HEIGHT_COLUMN_ATTRIBUTES = 35;
 
 export default function VirtualizedConnectionTree() {
-  const { rows, connections, connectionsLoading, onToggle, updateConnections } = useFlatTreeRows();
+  const { rows, rowFingerprint, connections, connectionsLoading, onToggle, updateConnections } = useFlatTreeRows();
   const parentRef = useRef<HTMLDivElement>(null);
   const layoutMode = useLayoutModeSetting();
   const isCompact = layoutMode === "compact";
@@ -27,7 +27,6 @@ export default function VirtualizedConnectionTree() {
       }
       return rowHeight;
     },
-    overscan: 10,
   });
 
   const onConnectionOrderChange = useCallback(
@@ -37,16 +36,9 @@ export default function VirtualizedConnectionTree() {
     [updateConnections],
   );
 
-  const watchedRowsProps = rows.map((r) => ({
-    type: r.type,
-    key: r.key,
-    //@ts-ignore
-    isExpanded: r.isExpanded,
-  }));
-
-  useLayoutEffect(() => {
+  useEffect(() => {
     virtualizer.measure();
-  }, [layoutMode, JSON.stringify(watchedRowsProps)]);
+  }, [layoutMode, rowFingerprint]);
 
   if (connectionsLoading) {
     return (
