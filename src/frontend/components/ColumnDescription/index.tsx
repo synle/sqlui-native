@@ -13,7 +13,7 @@ import { useGetColumns } from "src/frontend/hooks/useConnection";
 import { useActiveConnectionQuery } from "src/frontend/hooks/useConnectionQuery";
 import { useShowHide } from "src/frontend/hooks/useShowHide";
 
-const MAX_COLUMN_SIZE_TO_SHOW = 5;
+const MAX_COLUMN_SIZE_TO_SHOW = 40; // max number of properties to show
 
 type ColumnDescriptionProps = {
   connectionId: string;
