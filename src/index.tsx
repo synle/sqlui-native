@@ -74,8 +74,8 @@ function AppliedTheme({ children }) {
 
     if (isAnimationOff) {
       globalOverrides["*, *::before, *::after"] = {
-        transitionDuration: "0.01s !important",
-        animationDuration: "0.01s !important",
+        transitionDuration: "0s !important",
+        animationDuration: "0s !important",
         transitionTimingFunction: "linear !important",
         animationTimingFunction: "linear !important",
       };
