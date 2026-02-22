@@ -16,13 +16,16 @@ function renderWithTheme(ui: React.ReactElement) {
 }
 
 describe("AccordionBody", () => {
-  test("renders nothing when expanded is false (collapsed)", () => {
+  test("renders content hidden via CSS when expanded is false (collapsed)", () => {
     const { container } = render(
       <AccordionBody expanded={false}>
         <div>Body Content</div>
       </AccordionBody>,
     );
-    expect(container.textContent).toEqual("");
+    // Content is in the DOM but visually hidden via grid-template-rows: 0fr + overflow: hidden
+    const inner = container.querySelector(".Accordion__Body__Inner");
+    expect(inner).toBeTruthy();
+    expect(inner!.textContent).toEqual("Body Content");
   });
 
   test("renders children when expanded is true", () => {
