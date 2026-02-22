@@ -28,10 +28,7 @@ describeIfEnv("AzureCosmosDataAdapter integration", () => {
   });
 
   test("execute - create database", async () => {
-    const result = await adapter.execute(
-      `client.databases.create({ id: '${testDbName}' })`,
-      testDbName,
-    );
+    const result = await adapter.execute(`client.databases.create({ id: '${testDbName}' })`, testDbName);
     expect(result.ok).toBe(true);
   });
 
@@ -67,11 +64,7 @@ describeIfEnv("AzureCosmosDataAdapter integration", () => {
   });
 
   test("execute - select all with raw SQL", async () => {
-    const result = await adapter.execute(
-      `SELECT * FROM c`,
-      testDbName,
-      testContainerName,
-    );
+    const result = await adapter.execute(`SELECT * FROM c`, testDbName, testContainerName);
     expect(result.ok).toBe(true);
     expect(result.raw).toBeDefined();
     expect(Array.isArray(result.raw)).toBe(true);
@@ -137,10 +130,7 @@ describeIfEnv("AzureCosmosDataAdapter integration", () => {
   });
 
   test("execute - drop database", async () => {
-    const result = await adapter.execute(
-      `client.database('${testDbName}').delete()`,
-      testDbName,
-    );
+    const result = await adapter.execute(`client.database('${testDbName}').delete()`, testDbName);
     expect(result.ok).toBe(true);
   });
 

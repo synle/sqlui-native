@@ -4,9 +4,13 @@ run_step() {
   local START_TIME=$(date +%s)
   local START_STR=$(date +'%H:%M:%S')
 
-  echo "::group::🚀 $1  [Started: $START_STR]"
+  # "$*" joins all arguments into a single string for the label
+  echo "::group::🚀 $* [Started: $START_STR]"
 
-  eval "$1"
+  # eval "$*" allows it to handle both:
+  # 1. run_step "mv a b" (single string)
+  # 2. run_step mv a b (multiple arguments)
+  eval "$*"
   local EXIT_CODE=$?
 
   local END_TIME=$(date +%s)
@@ -21,6 +25,5 @@ run_step() {
 
   echo "::endgroup::"
 
-  # Return the actual exit code so the CI fails if the command fails
   return $EXIT_CODE
 }

@@ -111,7 +111,9 @@ export default class MongoDBDataAdapter extends BaseDataAdapter implements IData
 
     try {
       if (!sql.includes(`${MONGO_ADAPTER_PREFIX}.`)) {
-        throw new Error(`Invalid syntax. MongoDB syntax in sqlui-native starts with '${MONGO_ADAPTER_PREFIX}.'. Refer to the syntax help in this link https://synle.github.io/sqlui-native/guides#mongodb`);
+        throw new Error(
+          `Invalid syntax. MongoDB syntax in sqlui-native starts with '${MONGO_ADAPTER_PREFIX}.'. Refer to the syntax help in this link https://synle.github.io/sqlui-native/guides#mongodb`,
+        );
       }
 
       const createDbMatch = sql.match(/db\.(?:create|createDatabase)\(\s*['"]([^'"]+)['"]\s*\)/);

@@ -50,11 +50,7 @@ describe("MongoDBDataAdapter unit", () => {
 
   test("getDatabases", async () => {
     mockListDatabases.mockResolvedValue({
-      databases: [
-        { name: "admin" },
-        { name: "local" },
-        { name: "test_db" },
-      ],
+      databases: [{ name: "admin" }, { name: "local" }, { name: "test_db" }],
     });
     const databases = await adapter.getDatabases();
     expect(databases.length).toBe(3);
@@ -64,10 +60,7 @@ describe("MongoDBDataAdapter unit", () => {
   });
 
   test("getTables", async () => {
-    mockListCollections.mockResolvedValue([
-      { name: "users" },
-      { name: "orders" },
-    ]);
+    mockListCollections.mockResolvedValue([{ name: "users" }, { name: "orders" }]);
     const tables = await adapter.getTables("test_db");
     expect(tables.length).toBe(2);
     expect(tables[0].name).toBe("users");
@@ -75,9 +68,7 @@ describe("MongoDBDataAdapter unit", () => {
   });
 
   test("getColumns", async () => {
-    mockFind.mockResolvedValue([
-      { _id: "abc123", name: "Test User", age: 25 },
-    ]);
+    mockFind.mockResolvedValue([{ _id: "abc123", name: "Test User", age: 25 }]);
     const columns = await adapter.getColumns("users", "test_db");
     expect(columns.length).toBeGreaterThan(0);
     const names = columns.map((c) => c.name);

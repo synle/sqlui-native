@@ -13,7 +13,6 @@ fi
 
 # Build begins
 run_step "npm ci || npm install"
-run_step "npm version --no-git-tag-version patch"
 run_step "node scripts/prebuild.js"
 run_step "npm run build"
 run_step "node scripts/postbuild.js"
