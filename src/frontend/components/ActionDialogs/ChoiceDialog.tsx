@@ -18,6 +18,7 @@ export type ChoiceInput = {
   options: ChoiceOption[];
   required?: boolean;
   isFullScreen?: boolean;
+  size?: "xs" | "sm" | "md" | "lg";
 };
 
 type ChoiceDialogProps = ChoiceInput & {
@@ -40,7 +41,7 @@ export default function ChoiceDialog(props: ChoiceDialogProps): JSX.Element | nu
       open={open}
       fullScreen={!!props.isFullScreen}
       fullWidth={!props.isFullScreen}
-      maxWidth={props.isFullScreen ? false : "md"}
+      maxWidth={props.isFullScreen ? false : props.size || "md"}
     >
       <DialogTitle>{title}</DialogTitle>
       <DialogContent>

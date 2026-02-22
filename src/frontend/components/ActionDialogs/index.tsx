@@ -37,6 +37,7 @@ export default function ActionDialogs(): JSX.Element | null {
           message={dialog.message}
           onDismiss={onDimiss}
           isConfirm={false}
+          size={dialog.size}
           isFullScreen={dialog.isFullScreen}
         />
       );
@@ -50,6 +51,7 @@ export default function ActionDialogs(): JSX.Element | null {
           onYesClick={onConfirmSubmit}
           onDismiss={onDimiss}
           isConfirm={true}
+          size={dialog.size}
           isFullScreen={dialog.isFullScreen}
         />
       );
@@ -67,6 +69,7 @@ export default function ActionDialogs(): JSX.Element | null {
           saveLabel={dialog.saveLabel}
           required={dialog.required}
           readonly={dialog.readonly}
+          size={dialog.size}
           isFullScreen={dialog.isFullScreen}
         />
       );
@@ -80,6 +83,7 @@ export default function ActionDialogs(): JSX.Element | null {
           onSelect={onChoiceSelect}
           onDismiss={onDimiss}
           required={dialog.required}
+          size={dialog.size}
           isFullScreen={dialog.isFullScreen}
         />
       );
