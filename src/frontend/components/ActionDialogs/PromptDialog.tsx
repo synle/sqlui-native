@@ -19,6 +19,7 @@ export type PromptInput = {
   required?: boolean;
   readonly?: boolean;
   isFullScreen?: boolean;
+  size?: "xs" | "sm" | "md" | "lg";
 };
 
 type PromptDialogProps = PromptInput & {
@@ -58,7 +59,7 @@ export default function PromptDialog(props: PromptDialogProps): JSX.Element | nu
       open={props.open}
       fullScreen={!!props.isFullScreen || !!props.isLongPrompt}
       fullWidth={!props.isFullScreen && !props.isLongPrompt}
-      maxWidth={props.isFullScreen || props.isLongPrompt ? false : "md"}
+      maxWidth={props.isFullScreen || props.isLongPrompt ? false : props.size || "sm"}
     >
       <form onSubmit={onSave} style={props.isLongPrompt ? { display: "flex", flexDirection: "column", height: "100%" } : undefined}>
         <DialogTitle id="prompt-dialog-title">
