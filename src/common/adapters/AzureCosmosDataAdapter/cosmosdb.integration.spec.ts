@@ -8,22 +8,13 @@ const describeIfEnv = shouldRun ? describe : describe.skip;
 
 describeIfEnv("AzureCosmosDataAdapter integration", () => {
   let adapter: AzureCosmosDataAdapter;
-  let databaseName: string;
-  let containerName: string;
+  const testDbName = `testintegration${Date.now()}`;
+  const testContainerName = `testcontainer${Date.now()}`;
+  const testItemId = `testitem${Date.now()}`;
 
   beforeAll(async () => {
-    adapter = new AzureCosmosDataAdapter(`cosmosdb://${connectionString}`);
+    adapter = new AzureCosmosDataAdapter(connectionString!);
     await adapter.authenticate();
-
-    // discover a database and container to use for subsequent tests
-    const databases = await adapter.getDatabases();
-    if (databases.length > 0) {
-      databaseName = databases[0].name;
-      const tables = await adapter.getTables(databaseName);
-      if (tables.length > 0) {
-        containerName = tables[0].name;
-      }
-    }
   });
 
   test("authenticate", async () => {
@@ -36,93 +27,124 @@ describeIfEnv("AzureCosmosDataAdapter integration", () => {
     expect(databases[0].name).toBeDefined();
   });
 
-  test("getTables", async () => {
-    if (!databaseName) {
-      return;
-    }
-    const tables = await adapter.getTables(databaseName);
-    expect(tables.length).toBeGreaterThan(0);
-    expect(tables[0].name).toBeDefined();
+  test("execute - create database", async () => {
+    const result = await adapter.execute(
+      `client.databases.create({ id: '${testDbName}' })`,
+      testDbName,
+    );
+    expect(result.ok).toBe(true);
   });
 
-  test("getColumns", async () => {
-    if (!databaseName || !containerName) {
-      return;
-    }
-    const columns = await adapter.getColumns(containerName, databaseName);
+  test("getDatabases - should include created database", async () => {
+    const databases = await adapter.getDatabases();
+    const found = databases.some((db) => db.name === testDbName);
+    expect(found).toBe(true);
+  });
+
+  test("execute - create container", async () => {
+    const result = await adapter.execute(
+      `client.database('${testDbName}').containers.create({ id: '${testContainerName}', partitionKey: { paths: ['/id'] } })`,
+      testDbName,
+      testContainerName,
+    );
+    expect(result.ok).toBe(true);
+  });
+
+  test("getTables - should include created container", async () => {
+    const tables = await adapter.getTables(testDbName);
+    expect(tables.length).toBeGreaterThan(0);
+    const found = tables.some((t) => t.name === testContainerName);
+    expect(found).toBe(true);
+  });
+
+  test("execute - insert item", async () => {
+    const result = await adapter.execute(
+      `client.database('${testDbName}').container('${testContainerName}').items.create({ "id": "${testItemId}" })`,
+      testDbName,
+      testContainerName,
+    );
+    expect(result.ok).toBe(true);
+  });
+
+  test("execute - select all with raw SQL", async () => {
+    const result = await adapter.execute(
+      `SELECT * FROM c`,
+      testDbName,
+      testContainerName,
+    );
+    expect(result.ok).toBe(true);
+    expect(result.raw).toBeDefined();
+    expect(Array.isArray(result.raw)).toBe(true);
+    expect(result.raw!.length).toBeGreaterThan(0);
+  });
+
+  test("execute - select by id with client query", async () => {
+    const result = await adapter.execute(
+      `client.database('${testDbName}').container('${testContainerName}').items.query({ query: \`SELECT * FROM c WHERE c.id = '${testItemId}'\` }).fetchAll()`,
+      testDbName,
+      testContainerName,
+    );
+    expect(result.ok).toBe(true);
+    expect(result.raw).toBeDefined();
+    expect(Array.isArray(result.raw)).toBe(true);
+    expect(result.raw!.length).toBe(1);
+  });
+
+  test("execute - select specific columns with client query", async () => {
+    const result = await adapter.execute(
+      `client.database('${testDbName}').container('${testContainerName}').items.query({ query: \`SELECT c.id, c._etag, c._rid, c._self, c._ts FROM c WHERE c.id = '${testItemId}' OFFSET 0 LIMIT 1000\` }).fetchAll()`,
+      testDbName,
+      testContainerName,
+    );
+    expect(result.ok).toBe(true);
+    expect(result.raw).toBeDefined();
+    expect(Array.isArray(result.raw)).toBe(true);
+    expect(result.raw!.length).toBeGreaterThan(0);
+  });
+
+  test("execute - read item", async () => {
+    const result = await adapter.execute(
+      `client.database('${testDbName}').container('${testContainerName}').item('${testItemId}', '${testItemId}').read()`,
+      testDbName,
+      testContainerName,
+    );
+    expect(result.ok).toBe(true);
+  });
+
+  test("execute - update item", async () => {
+    const result = await adapter.execute(
+      `client.database('${testDbName}').container('${testContainerName}').item('${testItemId}', '${testItemId}').replace({ "id": "${testItemId}" })`,
+      testDbName,
+      testContainerName,
+    );
+    expect(result.ok).toBe(true);
+  });
+
+  test("getColumns - should return columns from test container", async () => {
+    const columns = await adapter.getColumns(testContainerName, testDbName);
     expect(columns.length).toBeGreaterThan(0);
     expect(columns[0].name).toBeDefined();
     expect(columns[0].type).toBeDefined();
   });
 
-  test("execute - SQL query", async () => {
-    if (!databaseName || !containerName) {
-      return;
-    }
-    const result = await adapter.execute("SELECT * FROM c OFFSET 0 LIMIT 5", databaseName, containerName);
-    expect(result.ok).toBe(true);
-    expect(result.raw).toBeDefined();
-    expect(Array.isArray(result.raw)).toBe(true);
-  });
-
-  test("execute - raw client query", async () => {
-    if (!databaseName || !containerName) {
-      return;
-    }
+  test("execute - delete item", async () => {
     const result = await adapter.execute(
-      `client.database('${databaseName}').container('${containerName}').items.query({ query: 'SELECT * FROM c OFFSET 0 LIMIT 2' }).fetchAll()`,
-      databaseName,
-      containerName,
+      `client.database('${testDbName}').container('${testContainerName}').item('${testItemId}', '${testItemId}').delete()`,
+      testDbName,
+      testContainerName,
     );
     expect(result.ok).toBe(true);
-    expect(result.raw).toBeDefined();
   });
 
-  test("execute - create and drop database", async () => {
-    const testDbName = `test-integration-${Date.now()}`;
-
-    // create database
-    const createResult = await adapter.execute(`client.databases.create({id: '${testDbName}'})`, testDbName);
-    expect(createResult.ok).toBe(true);
-
-    // verify database exists
-    const databases = await adapter.getDatabases();
-    const found = databases.some((db) => db.name === testDbName);
-    expect(found).toBe(true);
-
-    // drop database
-    const dropResult = await adapter.execute(`client.database('${testDbName}').delete()`, testDbName);
-    expect(dropResult.ok).toBe(true);
-  });
-
-  test("execute - create and drop container", async () => {
-    if (!databaseName) {
-      return;
-    }
-    const testContainerName = `test-container-${Date.now()}`;
-
-    // create container
-    const createResult = await adapter.execute(
-      `client.database('${databaseName}').containers.create({id: '${testContainerName}'})`,
-      databaseName,
+  test("execute - drop database", async () => {
+    const result = await adapter.execute(
+      `client.database('${testDbName}').delete()`,
+      testDbName,
     );
-    expect(createResult.ok).toBe(true);
-
-    // verify container exists
-    const tables = await adapter.getTables(databaseName);
-    const found = tables.some((t) => t.name === testContainerName);
-    expect(found).toBe(true);
-
-    // drop container
-    const dropResult = await adapter.execute(
-      `client.database('${databaseName}').container('${testContainerName}').delete()`,
-      databaseName,
-    );
-    expect(dropResult.ok).toBe(true);
+    expect(result.ok).toBe(true);
   });
 
-  test("execute - error does not throw on circular JSON", async () => {
-    // this tests the fix for "Converting circular structure to JSON"
+  test("execute - error does not throw", async () => {
     const result = await adapter.execute("invalid query that should fail");
     expect(result.ok).toBe(false);
     expect(result.error).toBeDefined();
