@@ -139,7 +139,7 @@ export default class SampleDataAdapter extends BaseDataAdapter implements IDataA
 
     try {
       if (!database) {
-        throw "Database is a required field";
+        throw new Error("Database is a required field");
       }
 
       client = await this.getConnection();

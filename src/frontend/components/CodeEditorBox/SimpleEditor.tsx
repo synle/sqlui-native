@@ -157,7 +157,7 @@ export default function SimpleEditor(props: SimpleEditorProps): JSX.Element | nu
     }
   }, []);
 
-  const { value, ...restProps } = props;
+  const { value } = props;
   const [text, setText] = useState(value);
 
   const onInputChange = (e) => setText(e.target.value);

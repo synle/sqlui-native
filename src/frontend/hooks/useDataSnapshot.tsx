@@ -21,7 +21,7 @@ export function useAddDataSnapshot() {
     if (newDataSnapshot) {
       return dataApi.addDataSnapshot(newDataSnapshot);
     }
-    throw "newDataSnapshot is empty";
+    throw new Error("newDataSnapshot is empty");
   });
 }
 
@@ -32,7 +32,7 @@ export function useDeleteDataSnapshot() {
       if (dataSnapshotId) {
         return dataApi.deleteDataSnapshot(dataSnapshotId);
       }
-      throw "dataSnapshotId is empty";
+      throw new Error("dataSnapshotId is empty");
     },
     {
       onSettled: () => {

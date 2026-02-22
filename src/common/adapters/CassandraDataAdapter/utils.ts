@@ -17,7 +17,7 @@ export function getClientOptions(connectionOption: string, database?: string): C
   const connectionHosts = connectionParameters?.hosts || [];
   if (connectionHosts.length === 0) {
     // we need a host in the connection string
-    throw "Invalid connection. Host and Port not found";
+    throw new Error("Invalid connection. Host and Port not found");
   }
 
   const host = connectionHosts[0].host;
