@@ -1,4 +1,3 @@
-import { useMemo } from "react";
 import { useQueries } from "@tanstack/react-query";
 import dataApi from "src/frontend/data/api";
 import { useGetConnections, useUpdateConnections } from "src/frontend/hooks/useConnection";
@@ -41,15 +40,14 @@ export function useFlatTreeRows() {
   const { mutateAsync: updateConnections } = useUpdateConnections(connections);
 
   // Determine which connections are expanded and online
-  const expandedOnlineConnections = useMemo(() => {
-    if (!connections) return [];
-    return connections
-      .filter((c) => {
-        const key = c.id;
-        return visibles[key] && c.status === "online";
-      })
-      .map((c) => c.id);
-  }, [connections, visibles]);
+  const expandedOnlineConnections: string[] = [];
+  if (connections) {
+    for (const c of connections) {
+      if (visibles[c.id] && c.status === "online") {
+        expandedOnlineConnections.push(c.id);
+      }
+    }
+  }
 
   // Batch fetch databases for all expanded+online connections
   const databaseQueries = useQueries({
@@ -60,29 +58,24 @@ export function useFlatTreeRows() {
     })),
   });
 
-  const databaseResults = useMemo<DatabaseQueryResult[]>(() => {
-    return expandedOnlineConnections.map((connectionId, i) => ({
-      connectionId,
-      data: databaseQueries[i]?.data as SqluiCore.DatabaseMetaData[] | undefined,
-      isLoading: databaseQueries[i]?.isLoading ?? true,
-      isError: databaseQueries[i]?.isError ?? false,
-    }));
-  }, [expandedOnlineConnections, databaseQueries]);
+  const databaseResults: DatabaseQueryResult[] = expandedOnlineConnections.map((connectionId, i) => ({
+    connectionId,
+    data: databaseQueries[i]?.data as SqluiCore.DatabaseMetaData[] | undefined,
+    isLoading: databaseQueries[i]?.isLoading ?? true,
+    isError: databaseQueries[i]?.isError ?? false,
+  }));
 
   // Determine which databases are expanded
-  const expandedDatabases = useMemo(() => {
-    const result: { connectionId: string; databaseId: string }[] = [];
-    for (const dbResult of databaseResults) {
-      if (!dbResult.data) continue;
-      for (const db of dbResult.data) {
-        const key = [dbResult.connectionId, db.name].join(" > ");
-        if (visibles[key]) {
-          result.push({ connectionId: dbResult.connectionId, databaseId: db.name });
-        }
+  const expandedDatabases: { connectionId: string; databaseId: string }[] = [];
+  for (const dbResult of databaseResults) {
+    if (!dbResult.data) continue;
+    for (const db of dbResult.data) {
+      const key = [dbResult.connectionId, db.name].join(" > ");
+      if (visibles[key]) {
+        expandedDatabases.push({ connectionId: dbResult.connectionId, databaseId: db.name });
       }
     }
-    return result;
-  }, [databaseResults, visibles]);
+  }
 
   // Batch fetch tables for all expanded databases
   const tableQueries = useQueries({
@@ -93,34 +86,29 @@ export function useFlatTreeRows() {
     })),
   });
 
-  const tableResults = useMemo<TableQueryResult[]>(() => {
-    return expandedDatabases.map(({ connectionId, databaseId }, i) => ({
-      connectionId,
-      databaseId,
-      data: tableQueries[i]?.data as SqluiCore.TableMetaData[] | undefined,
-      isLoading: tableQueries[i]?.isLoading ?? true,
-      isError: tableQueries[i]?.isError ?? false,
-    }));
-  }, [expandedDatabases, tableQueries]);
+  const tableResults: TableQueryResult[] = expandedDatabases.map(({ connectionId, databaseId }, i) => ({
+    connectionId,
+    databaseId,
+    data: tableQueries[i]?.data as SqluiCore.TableMetaData[] | undefined,
+    isLoading: tableQueries[i]?.isLoading ?? true,
+    isError: tableQueries[i]?.isError ?? false,
+  }));
 
   // Determine which tables are expanded
-  const expandedTables = useMemo(() => {
-    const result: { connectionId: string; databaseId: string; tableId: string }[] = [];
-    for (const tblResult of tableResults) {
-      if (!tblResult.data) continue;
-      for (const tbl of tblResult.data) {
-        const key = [tblResult.connectionId, tblResult.databaseId, tbl.name].join(" > ");
-        if (visibles[key]) {
-          result.push({
-            connectionId: tblResult.connectionId,
-            databaseId: tblResult.databaseId,
-            tableId: tbl.name,
-          });
-        }
+  const expandedTables: { connectionId: string; databaseId: string; tableId: string }[] = [];
+  for (const tblResult of tableResults) {
+    if (!tblResult.data) continue;
+    for (const tbl of tblResult.data) {
+      const key = [tblResult.connectionId, tblResult.databaseId, tbl.name].join(" > ");
+      if (visibles[key]) {
+        expandedTables.push({
+          connectionId: tblResult.connectionId,
+          databaseId: tblResult.databaseId,
+          tableId: tbl.name,
+        });
       }
     }
-    return result;
-  }, [tableResults, visibles]);
+  }
 
   // Batch fetch columns for all expanded tables
   const columnQueries = useQueries({
@@ -131,23 +119,19 @@ export function useFlatTreeRows() {
     })),
   });
 
-  const columnResults = useMemo<ColumnQueryResult[]>(() => {
-    return expandedTables.map(({ connectionId, databaseId, tableId }, i) => ({
-      connectionId,
-      databaseId,
-      tableId,
-      data: columnQueries[i]?.data as SqluiCore.ColumnMetaData[] | undefined,
-      isLoading: columnQueries[i]?.isLoading ?? true,
-      isError: columnQueries[i]?.isError ?? false,
-    }));
-  }, [expandedTables, columnQueries]);
+  const columnResults: ColumnQueryResult[] = expandedTables.map(({ connectionId, databaseId, tableId }, i) => ({
+    connectionId,
+    databaseId,
+    tableId,
+    data: columnQueries[i]?.data as SqluiCore.ColumnMetaData[] | undefined,
+    isLoading: columnQueries[i]?.isLoading ?? true,
+    isError: columnQueries[i]?.isError ?? false,
+  }));
 
   // Build flat row array
-  const rows = useMemo<TreeRow[]>(() => {
-    if (!connections) return [];
+  const rows: TreeRow[] = [];
 
-    const result: TreeRow[] = [];
-
+  if (connections) {
     // Build lookup maps for databases, tables, columns
     const dbMap = new Map<string, DatabaseQueryResult>();
     for (const dbr of databaseResults) {
@@ -171,7 +155,7 @@ export function useFlatTreeRows() {
       const connExpanded = !!visibles[connKey];
       const connSelected = !!(activeQuery?.connectionId && activeQuery.connectionId === connection.id);
 
-      result.push({
+      rows.push({
         type: "connection-header",
         key: `conn-${connKey}`,
         depth: 0,
@@ -185,7 +169,7 @@ export function useFlatTreeRows() {
       if (!connExpanded) continue;
 
       if (!isOnline) {
-        result.push({
+        rows.push({
           type: "connection-retry",
           key: `retry-${connKey}`,
           depth: 1,
@@ -197,7 +181,7 @@ export function useFlatTreeRows() {
       // Databases
       const dbResult = dbMap.get(connection.id);
       if (!dbResult || dbResult.isLoading) {
-        result.push({
+        rows.push({
           type: "loading",
           key: `loading-db-${connKey}`,
           depth: 1,
@@ -206,7 +190,7 @@ export function useFlatTreeRows() {
         continue;
       }
       if (dbResult.isError) {
-        result.push({
+        rows.push({
           type: "error",
           key: `error-db-${connKey}`,
           depth: 1,
@@ -215,7 +199,7 @@ export function useFlatTreeRows() {
         continue;
       }
       if (!dbResult.data || dbResult.data.length === 0) {
-        result.push({
+        rows.push({
           type: "empty",
           key: `empty-db-${connKey}`,
           depth: 1,
@@ -229,7 +213,7 @@ export function useFlatTreeRows() {
         const dbExpanded = !!visibles[dbKey];
         const dbSelected = activeQuery?.connectionId === connection.id && activeQuery?.databaseId === database.name;
 
-        result.push({
+        rows.push({
           type: "database-header",
           key: `db-${dbKey}`,
           depth: 1,
@@ -245,7 +229,7 @@ export function useFlatTreeRows() {
         // Tables
         const tblResult = tableMap.get(`${connection.id}|${database.name}`);
         if (!tblResult || tblResult.isLoading) {
-          result.push({
+          rows.push({
             type: "loading",
             key: `loading-tbl-${dbKey}`,
             depth: 2,
@@ -254,7 +238,7 @@ export function useFlatTreeRows() {
           continue;
         }
         if (!tblResult.data || tblResult.data.length === 0) {
-          result.push({
+          rows.push({
             type: "empty",
             key: `empty-tbl-${dbKey}`,
             depth: 2,
@@ -267,7 +251,7 @@ export function useFlatTreeRows() {
           const tblKey = [connection.id, database.name, table.name].join(" > ");
           const tblExpanded = !!visibles[tblKey];
 
-          result.push({
+          rows.push({
             type: "table-header",
             key: `tbl-${tblKey}`,
             depth: 2,
@@ -284,7 +268,7 @@ export function useFlatTreeRows() {
           // Columns
           const colResult = colMap.get(`${connection.id}|${database.name}|${table.name}`);
           if (!colResult || colResult.isLoading) {
-            result.push({
+            rows.push({
               type: "loading",
               key: `loading-col-${tblKey}`,
               depth: 3,
@@ -293,7 +277,7 @@ export function useFlatTreeRows() {
             continue;
           }
           if (colResult.isError) {
-            result.push({
+            rows.push({
               type: "error",
               key: `error-col-${tblKey}`,
               depth: 3,
@@ -302,7 +286,7 @@ export function useFlatTreeRows() {
             continue;
           }
           if (!colResult.data || colResult.data.length === 0) {
-            result.push({
+            rows.push({
               type: "empty",
               key: `empty-col-${tblKey}`,
               depth: 3,
@@ -320,7 +304,7 @@ export function useFlatTreeRows() {
             const colKey = [connection.id, database.name, table.name, column.name].join(" > ");
             const colExpanded = !!visibles[colKey];
 
-            result.push({
+            rows.push({
               type: "column-header",
               key: `col-${colKey}`,
               depth: 3,
@@ -334,7 +318,7 @@ export function useFlatTreeRows() {
             });
 
             if (colExpanded) {
-              result.push({
+              rows.push({
                 type: "column-attributes",
                 key: `colattr-${colKey}`,
                 depth: 4,
@@ -344,7 +328,7 @@ export function useFlatTreeRows() {
           }
 
           if (!showAll) {
-            result.push({
+            rows.push({
               type: "show-all-columns",
               key: `showall-${tblKey}`,
               depth: 4,
@@ -354,12 +338,14 @@ export function useFlatTreeRows() {
         }
       }
     }
+  }
 
-    return result;
-  }, [connections, visibles, activeQuery, databaseResults, tableResults, columnResults]);
+  // Build a structural fingerprint so consumers can detect tree shape changes
+  const rowFingerprint = rows.map((r) => r.key).join("|");
 
   return {
     rows,
+    rowFingerprint,
     connections,
     connectionsLoading,
     onToggle,
