@@ -224,14 +224,23 @@ export default function QueryBox(props: QueryBoxProps): JSX.Element | null {
     const executionEnd = Date.now();
     onChange({ executionEnd });
 
-    const { sql, ...toastMetaData } = query;
+    const { sql, ...queryExtra } = query;
+    const { selected, result, ...toastMetaData } = queryExtra;
+
+    let toastMessage = `Query "${queryToExecute.name}" executed ${
+      success ? "successfully" : "unsuccessfully"
+    } and took about ${formatDuration(executionEnd - executionStart)}...`;
+
+    if (result?.raw?.length > 0) {
+      toastMessage += ` And the query returned a total of ${result?.raw?.length} records.`;
+    }
 
     await addToast({
-      message: `Query "${queryToExecute.name}" executed ${
-        success ? "successfully" : "unsuccessfully"
-      } and took about ${formatDuration(executionEnd - executionStart)}...`,
+      message: toastMessage,
       detail: sql,
-      metadata: toastMetaData,
+      metadata: {
+        ...toastMetaData,
+      },
     });
   };
 
