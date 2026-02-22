@@ -64,8 +64,6 @@ export default function LegacyDataTable(props: DataTableProps): JSX.Element | nu
     setColumns(newColumns);
   }, [props.columns]);
   //@ts-ignore
-  const fullScreen = props.fullScreen === true;
-  //@ts-ignore
   const description = props.description || `Data Snapshot - ${new Date()}`;
   const { mutateAsync: addDataSnapshot } = useAddDataSnapshot();
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});

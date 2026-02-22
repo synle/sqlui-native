@@ -42,7 +42,7 @@ export function getDataAdapter(connection: string) {
   }
 
   if (!adapter) {
-    throw "dialect not supported";
+    throw new Error("dialect not supported");
   }
 
   return adapter;

@@ -13,10 +13,6 @@ export default class AzureCosmosDataAdapter extends BaseDataAdapter implements I
 
   private _client?: CosmosClient;
 
-  constructor(connectionOption: string) {
-    super(connectionOption);
-  }
-
   private async getConnection(): Promise<CosmosClient> {
     // attempt to pull in connections
     return new Promise<CosmosClient>(async (resolve, reject) => {
@@ -53,7 +49,7 @@ export default class AzureCosmosDataAdapter extends BaseDataAdapter implements I
         if (readEndpoint) {
           resolve();
         } else {
-          throw "Failed to connect to Azure CosmosDB - Empty read endpoint";
+          throw new Error("Failed to connect to Azure CosmosDB - Empty read endpoint");
         }
       } catch (err) {
         reject(err);
@@ -84,7 +80,7 @@ export default class AzureCosmosDataAdapter extends BaseDataAdapter implements I
   async getTables(database?: string): Promise<SqluiCore.TableMetaData[]> {
     // https://azure.github.io/azure-cosmos-js/classes/containers.html#readall
     if (!database) {
-      throw "Database is a required field for Azure CosmosDB";
+      throw new Error("Database is a required field for Azure CosmosDB");
     }
 
     try {
@@ -105,7 +101,7 @@ export default class AzureCosmosDataAdapter extends BaseDataAdapter implements I
 
   async getColumns(table: string, database?: string): Promise<SqluiCore.ColumnMetaData[]> {
     if (!database) {
-      throw "Database is a required field for Azure CosmosDB";
+      throw new Error("Database is a required field for Azure CosmosDB");
     }
 
     try {
@@ -139,17 +135,17 @@ export default class AzureCosmosDataAdapter extends BaseDataAdapter implements I
       if ((sql.includes("db") || sql.includes("client")) && (sql.includes(".database") || sql.includes(".container"))) {
         // run as raw query
         //@ts-ignore
-        const res: any = await eval(sql);
+        const res: any = await eval(sql); // eslint-disable-line no-eval
 
         items = res.item || res.resource || res.resources;
       } else {
         // run as sql query
         if (!table) {
-          throw "Table is a required field for Azure CosmosDB in raw SQL mode";
+          throw new Error("Table is a required field for Azure CosmosDB in raw SQL mode");
         }
 
         if (!database) {
-          throw "Database is a required field for Azure CosmosDB in raw SQL mode";
+          throw new Error("Database is a required field for Azure CosmosDB in raw SQL mode");
         }
 
         const res = await client

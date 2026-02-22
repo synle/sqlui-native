@@ -151,8 +151,6 @@ export class ConcreteDataScripts extends BaseDataScript {
   // and existing Mustache templates.
 
   getCodeSnippet(connection: SqluiCore.ConnectionProps, query: SqluiCore.ConnectionQuery, language: SqluiCore.LanguageMode) {
-    const sql = query.sql;
-
     switch (language) {
       case "javascript":
         // TODO: return a runnable JS code snippet

@@ -11,7 +11,6 @@ import SpeedDial from "@mui/material/SpeedDial";
 import SpeedDialAction from "@mui/material/SpeedDialAction";
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import SimpleEditor from "src/frontend/components/CodeEditorBox/SimpleEditor";
 import { DataTableWithJSONList } from "src/frontend/components/DataTable";
 import { downloadCsv, downloadJSON } from "src/frontend/data/file";
 import { useActionDialogs } from "src/frontend/hooks/useActionDialogs";

@@ -11,10 +11,6 @@ const MONGO_ADAPTER_PREFIX = "db";
 const MAX_ITEM_COUNT_TO_SCAN = 5;
 
 export default class MongoDBDataAdapter extends BaseDataAdapter implements IDataAdapter {
-  constructor(connectionOption: string) {
-    super(connectionOption);
-  }
-
   private async getConnection(connectionToUse?: string): Promise<MongoClient> {
     // attempt to pull in connections
     return new Promise<MongoClient>(async (resolve, reject) => {
@@ -99,7 +95,7 @@ export default class MongoDBDataAdapter extends BaseDataAdapter implements IData
 
       for (const database of databases) {
         if (database.name === newDatabase) {
-          throw "Database already existed, cannot create this database";
+          throw new Error("Database already existed, cannot create this database");
         }
       }
 
@@ -115,7 +111,7 @@ export default class MongoDBDataAdapter extends BaseDataAdapter implements IData
 
     try {
       if (!sql.includes(`${MONGO_ADAPTER_PREFIX}.`)) {
-        throw `Invalid syntax. MongoDB syntax in sqlui-native starts with '${MONGO_ADAPTER_PREFIX}.'. Refer to the syntax help in this link https://synle.github.io/sqlui-native/guides#mongodb`;
+        throw new Error(`Invalid syntax. MongoDB syntax in sqlui-native starts with '${MONGO_ADAPTER_PREFIX}.'. Refer to the syntax help in this link https://synle.github.io/sqlui-native/guides#mongodb`);
       }
 
       const createDbMatch = sql.match(/db\.(?:create|createDatabase)\(\s*['"]([^'"]+)['"]\s*\)/);
@@ -128,12 +124,10 @@ export default class MongoDBDataAdapter extends BaseDataAdapter implements IData
         };
       }
 
-      const db = await client.db(database);
-
-      const { ObjectId } = require("mongodb");
+      const db = await client.db(database); // eslint-disable-line @typescript-eslint/no-unused-vars
 
       //@ts-ignore
-      const rawToUse: any = await eval(sql);
+      const rawToUse: any = await eval(sql); // eslint-disable-line no-eval
 
       if (rawToUse?.acknowledged === true) {
         // insert or insertOne
