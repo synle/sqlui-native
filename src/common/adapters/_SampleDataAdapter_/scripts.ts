@@ -1,4 +1,6 @@
 import BaseDataScript, { getDivider } from "src/common/adapters/BaseDataAdapter/scripts";
+// TODO: replace with the actual path to your dialect icon PNG
+// import mydbIcon from "src/common/adapters/MyDbDataAdapter/mydb.png";
 import { SqlAction, SqluiCore } from "typings";
 
 /**
@@ -68,6 +70,13 @@ export class ConcreteDataScripts extends BaseDataScript {
   // Must match the dialect string(s) registered in typings/index.ts.
   // Use multiple entries if your adapter handles variants (e.g., ["redis", "rediss"]).
   dialects = ["your_dialect_name"];
+
+  // ─── Dialect Icon ─────────────────────────────────────────────────────────
+  // Return the imported icon asset. Webpack resolves the import to a URL string.
+  // TODO: uncomment and update the import above, then uncomment this method.
+  // getDialectIcon() {
+  //   return mydbIcon;
+  // }
 
   // ─── Feature Flags ───────────────────────────────────────────────────────
   // Return true to enable optional UI features for this dialect.

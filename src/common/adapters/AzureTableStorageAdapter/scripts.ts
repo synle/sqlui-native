@@ -1,4 +1,5 @@
 import BaseDataScript, { getDivider } from "src/common/adapters/BaseDataAdapter/scripts";
+import aztableIcon from "src/common/adapters/AzureTableStorageAdapter/aztable.png";
 import { renderCodeSnippet } from "src/common/adapters/code-snippets/renderCodeSnippet";
 import { SqlAction, SqluiCore } from "typings";
 // https://docs.microsoft.com/en-us/azure/cosmos-db/table/how-to-use-nodejs
@@ -293,6 +294,10 @@ export class ConcreteDataScripts extends BaseDataScript {
 
   getConnectionScripts() {
     return [];
+  }
+
+  getDialectIcon() {
+    return aztableIcon;
   }
 
   getDialectName() {

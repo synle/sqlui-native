@@ -9,6 +9,7 @@ This directory contains a starter template for creating a new database adapter. 
 | `index.ts`      | Data adapter class -- handles connect, authenticate, query metadata, and execute    |
 | `scripts.ts`    | Script generator -- provides pre-built query templates and code snippets for the UI |
 | `index.spec.ts` | Test template -- skeleton Jest tests for the adapter                                |
+| `mydb.png`      | Dialect icon -- PNG imported in `scripts.ts` and returned from `getDialectIcon()`   |
 
 ## Quick Start
 

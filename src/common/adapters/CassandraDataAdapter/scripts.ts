@@ -1,4 +1,5 @@
 import BaseDataScript, { getDivider } from "src/common/adapters/BaseDataAdapter/scripts";
+import cassandraIcon from "src/common/adapters/CassandraDataAdapter/cassandra.png";
 import { getClientOptions } from "src/common/adapters/CassandraDataAdapter/utils";
 import { renderCodeSnippet } from "src/common/adapters/code-snippets/renderCodeSnippet";
 import { escapeSQLValue, isValueBoolean, isValueNumber } from "src/frontend/utils/formatter";
@@ -330,6 +331,10 @@ export function getDropColumns(input: SqlAction.TableInput): SqlAction.Output | 
 
 export class ConcreteDataScripts extends BaseDataScript {
   dialects = ["cassandra"];
+
+  getDialectIcon() {
+    return cassandraIcon;
+  }
 
   getIsTableIdRequiredForQuery() {
     return false;

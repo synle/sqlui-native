@@ -336,7 +336,16 @@ export function getAllImplementations(): BaseDataScript[] {
 
 #### Step 6: Add the dialect icon
 
-Add a PNG icon to `public/assets/mydb.png`. The filename **must** match your dialect name exactly.
+Add a PNG icon to your adapter directory at `src/common/adapters/MyDbDataAdapter/mydb.png`, then import it in your `scripts.ts` and return it from `getDialectIcon()`:
+
+```ts
+import mydbIcon from "src/common/adapters/MyDbDataAdapter/mydb.png";
+
+// inside ConcreteDataScripts class:
+getDialectIcon() {
+  return mydbIcon;
+}
+```
 
 #### Step 7: Add script spec tests
 
