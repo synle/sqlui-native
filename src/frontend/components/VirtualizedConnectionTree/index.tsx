@@ -60,12 +60,7 @@ export default function VirtualizedConnectionTree() {
       }}
     >
       {rows.map((row) => (
-        <TreeRowRenderer
-          key={row.key}
-          row={row}
-          onToggle={onToggle}
-          onConnectionOrderChange={onConnectionOrderChange}
-        />
+        <TreeRowRenderer key={row.key} row={row} onToggle={onToggle} onConnectionOrderChange={onConnectionOrderChange} />
       ))}
     </div>
   );

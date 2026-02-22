@@ -70,7 +70,9 @@ export default class RedisDataAdapter extends BaseDataAdapter implements IDataAd
 
     try {
       if (!sql.includes(`${REDIS_ADAPTER_PREFIX}.`)) {
-        throw new Error(`Invalid syntax. Redis syntax in sqlui-native starts with '${REDIS_ADAPTER_PREFIX}.'. Refer to the syntax help in this link https://synle.github.io/sqlui-native/guides#redis`);
+        throw new Error(
+          `Invalid syntax. Redis syntax in sqlui-native starts with '${REDIS_ADAPTER_PREFIX}.'. Refer to the syntax help in this link https://synle.github.io/sqlui-native/guides#redis`,
+        );
       }
 
       db = await this.getConnection();
