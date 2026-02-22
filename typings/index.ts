@@ -166,6 +166,10 @@ export module SqluiCore {
         type: "Query";
         data: SqluiCore.ConnectionQuery;
       }
+    | {
+        type: "Session";
+        data: SqluiCore.Session;
+      }
   );
 
   export type DataSnapshotItemDictionary = Record<string, any>;

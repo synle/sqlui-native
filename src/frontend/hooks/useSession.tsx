@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import dataApi from "src/frontend/data/api";
 import { setCurrentSessionId } from "src/frontend/data/session";
 import { useActionDialogs } from "src/frontend/hooks/useActionDialogs";
+import { useAddRecycleBinItem } from "src/frontend/hooks/useFolderItems";
+import { useIsSoftDeleteModeSetting } from "src/frontend/hooks/useSetting";
 import { SqluiCore } from "typings";
 
 const QUERY_KEY_SESSIONS = "sessions";
@@ -80,10 +82,30 @@ export function useCloneSession() {
 
 export function useDeleteSession() {
   const queryClient = useQueryClient();
+  const { mutateAsync: addRecycleBinItem } = useAddRecycleBinItem();
+  const { data: sessions } = useGetSessions();
+  const isSoftDeleteModeSetting = useIsSoftDeleteModeSetting();
 
   return useMutation<string, void, string>(dataApi.deleteSession, {
     onSuccess: async (deletedSessionId) => {
       queryClient.invalidateQueries([QUERY_KEY_SESSIONS]);
+
+      try {
+        if (isSoftDeleteModeSetting) {
+          const sessionToBackup = sessions?.find((session) => session.id === deletedSessionId);
+
+          if (sessionToBackup) {
+            await addRecycleBinItem({
+              type: "Session",
+              name: sessionToBackup.name,
+              data: sessionToBackup,
+            });
+          }
+        }
+      } catch (err) {
+        // TODO: add error handling
+      }
+
       return deletedSessionId;
     },
   });

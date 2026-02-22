@@ -30,7 +30,12 @@ function NameCell({ row }: { row: any }) {
 
 function TypeCell({ row }: { row: any }) {
   const folderItem = row.original;
-  return <Chip label={folderItem.type} color={folderItem.type === "Connection" ? "success" : "warning"} size="small" />;
+  const colorMap: Record<string, "success" | "warning" | "info"> = {
+    Connection: "success",
+    Query: "warning",
+    Session: "info",
+  };
+  return <Chip label={folderItem.type} color={colorMap[folderItem.type] ?? "default"} size="small" />;
 }
 
 function ActionCell({ row }: { row: any }) {
