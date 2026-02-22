@@ -86,27 +86,47 @@ export function useDeleteSession() {
   const { data: sessions } = useGetSessions();
   const isSoftDeleteModeSetting = useIsSoftDeleteModeSetting();
 
-  return useMutation<string, void, string>(dataApi.deleteSession, {
-    onSuccess: async (deletedSessionId) => {
-      queryClient.invalidateQueries([QUERY_KEY_SESSIONS]);
-
-      try {
-        if (isSoftDeleteModeSetting) {
-          const sessionToBackup = sessions?.find((session) => session.id === deletedSessionId);
-
-          if (sessionToBackup) {
-            await addRecycleBinItem({
-              type: "Session",
-              name: sessionToBackup.name,
-              data: sessionToBackup,
-            });
-          }
+  return useMutation<{ deletedSessionId: string; connections: SqluiCore.ConnectionProps[] }, void, string>(
+    async (sessionId: string) => {
+      // fetch connections before deleting, so we can back them up
+      let connections: SqluiCore.ConnectionProps[] = [];
+      if (isSoftDeleteModeSetting) {
+        try {
+          connections = await dataApi.getConnectionsBySessionId(sessionId);
+        } catch (err) {
+          // if we can't fetch connections, proceed with session-only backup
         }
-      } catch (err) {
-        // TODO: add error handling
       }
 
-      return deletedSessionId;
+      const deletedSessionId = await dataApi.deleteSession(sessionId);
+      return { deletedSessionId, connections };
     },
-  });
+    {
+      onSuccess: async ({ deletedSessionId, connections }) => {
+        queryClient.invalidateQueries([QUERY_KEY_SESSIONS]);
+
+        try {
+          if (isSoftDeleteModeSetting) {
+            const sessionToBackup = sessions?.find((session) => session.id === deletedSessionId);
+
+            if (sessionToBackup) {
+              // strip status from connections before backup
+              const connectionsToBackup = connections.map(({ status, ...rest }) => rest as SqluiCore.ConnectionProps);
+
+              await addRecycleBinItem({
+                type: "Session",
+                name: sessionToBackup.name,
+                data: sessionToBackup,
+                connections: connectionsToBackup,
+              });
+            }
+          }
+        } catch (err) {
+          // TODO: add error handling
+        }
+
+        return deletedSessionId;
+      },
+    },
+  );
 }

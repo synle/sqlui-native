@@ -157,6 +157,8 @@ export module SqluiCore {
   export type FolderItem = {
     id: string;
     name?: string;
+    /** Associated connections, used when backing up a Session to the recycle bin */
+    connections?: SqluiCore.ConnectionProps[];
   } & (
     | {
         type: "Connection";
