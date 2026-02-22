@@ -2,11 +2,29 @@ const path = require("path");
 const webpack = require("webpack");
 const appPackage = require("./package.json");
 
-// Only externalize packages that contain native bindings or use
-// dynamic require() patterns. Everything else (pure JS) gets bundled
-// by webpack, avoiding missing transitive dependency issues in
-// electron-builder packaging.
-const nativeExternals = ["electron", ...Object.keys(appPackage.optionalDependencies || []), ...Object.keys(appPackage.dependencies || [])];
+// Only externalize packages with native bindings that webpack cannot
+// bundle. Everything else (pure JS) gets bundled by webpack.
+const nativeExternals = [
+  'electron',
+  'cassandra-driver',
+  'connection-string-parser',
+  'eslint-plugin-unused-imports',
+  'fuzzysort',
+  'html-to-image',
+  'js-beautify',
+  'json-2-csv',
+  'monaco-editor',
+  'mongodb',
+  'mustache',
+  'mysql2',
+  'pg',
+  'pg-hstore',
+  'qs',
+  'redis',
+  'sequelize',
+  'sqlite3',
+  'tedious'
+];
 const externals = {};
 for (const dep of nativeExternals) {
   externals[dep] = `commonjs ${dep}`;
@@ -15,13 +33,21 @@ for (const dep of nativeExternals) {
 module.exports = {
   mode: "production",
   target: ["node"],
-  entry: ["./src/electron/polyfills.ts", "./src/electron/index.ts"],
+  entry: "./src/electron/index.ts",
   output: {
     filename: "main.js",
     libraryTarget: "this",
     path: path.resolve(__dirname, "build"),
   },
   externals,
+  plugins: [
+    // @typespec/ts-http-runtime (used by @azure/data-tables) references the
+    // global `crypto` object (Web Crypto API). Provide Node's crypto module
+    // so the bundled code can resolve it.
+    new webpack.ProvidePlugin({
+      crypto: "crypto",
+    }),
+  ],
   module: {
     rules: [
       {
