@@ -231,7 +231,7 @@ export default function QueryBox(props: QueryBoxProps): JSX.Element | null {
       success ? "successfully" : "unsuccessfully"
     } and took about ${formatDuration(executionEnd - executionStart)}...`;
 
-    if (result?.raw?.length > 0) {
+    if (result?.raw && result?.raw?.length > 0) {
       toastMessage += ` And the query returned a total of ${result?.raw?.length} records.`;
     }
 
