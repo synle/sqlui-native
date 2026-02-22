@@ -59,9 +59,7 @@ describe("AzureTableStorageAdapter unit", () => {
   });
 
   test("getColumns", async () => {
-    const entityIterator = [
-      { rowKey: "row1", partitionKey: "pk1", etag: "etag1", timestamp: "2024-01-01" },
-    ];
+    const entityIterator = [{ rowKey: "row1", partitionKey: "pk1", etag: "etag1", timestamp: "2024-01-01" }];
     const pageIterator = {
       next: vi.fn().mockResolvedValue({
         done: false,

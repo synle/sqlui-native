@@ -32,7 +32,11 @@ function DetailCell({ row }: { row: any }) {
   const folderItem: SqluiCore.FolderItem = row.original;
   if (folderItem.type === "Session") {
     const count = folderItem.connections?.length ?? 0;
-    return <Typography variant="body2">{count} connection{count !== 1 ? "s" : ""}</Typography>;
+    return (
+      <Typography variant="body2">
+        {count} connection{count !== 1 ? "s" : ""}
+      </Typography>
+    );
   }
   return null;
 }

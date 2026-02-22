@@ -5,18 +5,18 @@ const appPackage = require("./package.json");
 // Only externalize packages with native bindings that webpack cannot
 // bundle. Everything else (pure JS) gets bundled by webpack.
 const nativeExternals = [
-  'electron',
-  'cassandra-driver',
-  'monaco-editor',
-  'mongodb',
-  'mustache',
-  'mysql2',
-  'pg',
-  'pg-hstore',
-  'redis',
-  'sequelize',
-  'sqlite3',
-  'tedious'
+  "electron",
+  "cassandra-driver",
+  "monaco-editor",
+  "mongodb",
+  "mustache",
+  "mysql2",
+  "pg",
+  "pg-hstore",
+  "redis",
+  "sequelize",
+  "sqlite3",
+  "tedious",
 ];
 const externals = {};
 for (const dep of nativeExternals) {

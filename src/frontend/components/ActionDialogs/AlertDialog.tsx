@@ -32,26 +32,26 @@ export default function AlertDialog(props: AlertDialogProps): JSX.Element | null
       fullWidth={!props.isFullScreen}
       maxWidth={props.isFullScreen ? false : props?.size || "sm"}
     >
-        <DialogTitle id="alert-dialog-title">{props.title || "Alert"}</DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">{props.message}</DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          {props.isConfirm ? (
-            <>
-              <Button onClick={props.onDismiss}>{props.noLabel || "No"}</Button>
-              <Button onClick={props.onYesClick} autoFocus variant="contained">
-                {props.yesLabel || "Yes"}
-              </Button>{" "}
-            </>
-          ) : (
-            <>
-              <Button onClick={props.onDismiss} autoFocus variant="contained">
-                {props.yesLabel || "OK"}
-              </Button>
-            </>
-          )}
-        </DialogActions>
+      <DialogTitle id="alert-dialog-title">{props.title || "Alert"}</DialogTitle>
+      <DialogContent>
+        <DialogContentText id="alert-dialog-description">{props.message}</DialogContentText>
+      </DialogContent>
+      <DialogActions>
+        {props.isConfirm ? (
+          <>
+            <Button onClick={props.onDismiss}>{props.noLabel || "No"}</Button>
+            <Button onClick={props.onYesClick} autoFocus variant="contained">
+              {props.yesLabel || "Yes"}
+            </Button>{" "}
+          </>
+        ) : (
+          <>
+            <Button onClick={props.onDismiss} autoFocus variant="contained">
+              {props.yesLabel || "OK"}
+            </Button>
+          </>
+        )}
+      </DialogActions>
     </Dialog>
   );
 }

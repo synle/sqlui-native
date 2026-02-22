@@ -8,3 +8,4 @@ dist
 node_modules
 public/vs
 vs
+.github/workflows
