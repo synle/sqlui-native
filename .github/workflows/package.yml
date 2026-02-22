@@ -15,6 +15,10 @@ on:
         type: boolean
         default: false
         description: "Whether to run code formatting and commit"
+      draft_keep_count:
+        type: number
+        default: 5
+        description: "Number of most recent draft releases to keep during cleanup"
     secrets:
       TOKEN:
         required: false
@@ -111,9 +115,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo "Cleaning up old draft releases, keeping the last 15..."
+          echo "Cleaning up old draft releases, keeping the last ${{ inputs.draft_keep_count }}..."
           gh release list --json tagName,isDraft --limit 100 | \
-            jq -r '[.[] | select(.isDraft == true)] | sort_by(.tagName) | reverse | .[15:] | .[].tagName' | \
+            jq -r '[.[] | select(.isDraft == true)] | sort_by(.tagName) | reverse | .[${{ inputs.draft_keep_count }}:] | .[].tagName' | \
             while read -r tag; do
               echo "Deleting old draft release: $tag"
               gh release delete "$tag" --yes --cleanup-tag || true
