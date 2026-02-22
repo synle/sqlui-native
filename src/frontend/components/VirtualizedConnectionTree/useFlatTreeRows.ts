@@ -7,7 +7,7 @@ import { SqluiCore } from "typings";
 import { TreeRow } from "./types";
 
 const DEFAULT_STALE_TIME = 300000; // 5 minutes
-const MAX_COLUMN_SIZE_TO_SHOW = 5;
+const MAX_COLUMN_SIZE_TO_SHOW = 20; // max number of columns to show
 
 type DatabaseQueryResult = {
   connectionId: string;
