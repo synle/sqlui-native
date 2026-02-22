@@ -17,5 +17,5 @@
     "target": "es6"
   },
   "exclude": ["node_modules"],
-  "include": ["./src/mocked-server/index.ts"]
+  "include": ["./src/mocked-server/index.ts", "./src/assets.d.ts"]
 }
