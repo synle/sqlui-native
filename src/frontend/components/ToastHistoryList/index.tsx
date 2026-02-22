@@ -165,6 +165,8 @@ export default function ToastHistoryList() {
 
   useEffect(() => {
     setHistory(getToastHistory());
+    // Remeasure virtualizer when history changes (e.g. dismiss)
+    requestAnimationFrame(() => virtualizer.measure());
   }, [toastHistoryCount]);
 
   const hasAnyExpandable = history.some((entry) => getExpandableContent(entry).length > 0);
@@ -181,6 +183,11 @@ export default function ToastHistoryList() {
   const remeasure = useCallback(() => {
     requestAnimationFrame(() => virtualizer.measure());
   }, [virtualizer]);
+
+  // Remeasure when expandAll toggles (all rows change height)
+  useEffect(() => {
+    requestAnimationFrame(() => virtualizer.measure());
+  }, [expandAll]);
 
   if (history.length === 0) {
     return <div style={{ padding: "16px", textAlign: "center", opacity: 0.6 }}>No notifications yet.</div>;
