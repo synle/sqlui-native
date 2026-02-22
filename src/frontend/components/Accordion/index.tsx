@@ -124,7 +124,20 @@ export function AccordionHeader(props: AccordionHeaderProps): JSX.Element | null
   );
 }
 
+const StyledAccordionBody = styled("div")<{ expanded: boolean }>(({ expanded }) => ({
+  display: "grid",
+  gridTemplateRows: expanded ? "1fr" : "0fr",
+  transition: "grid-template-rows 0.2s ease-out",
+  "& > .Accordion__Body__Inner": {
+    overflow: "hidden",
+  },
+}));
+
 export function AccordionBody(props: AccordionBodyProps): JSX.Element | null {
   const { children, expanded } = props;
-  return !expanded ? null : <>{children}</>;
+  return (
+    <StyledAccordionBody expanded={expanded}>
+      <div className="Accordion__Body__Inner">{children}</div>
+    </StyledAccordionBody>
+  );
 }
