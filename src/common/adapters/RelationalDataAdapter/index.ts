@@ -51,6 +51,9 @@ export default class RelationalDataAdapter extends BaseDataAdapter implements ID
         };
         break;
 
+      case "mariadb":
+        // NOTES: because mariadb and mysql are compatbile, we can use mysql here to replace it...
+        connectionUrl = connectionUrl.replace("mariadb://", "mysql://");
       default:
         connectionUrl = this.connectionOption;
         if (database) {
@@ -74,32 +77,6 @@ export default class RelationalDataAdapter extends BaseDataAdapter implements ID
           }
         }
         break;
-    }
-
-    // Pass dialectModule explicitly so Sequelize doesn't rely on dynamic require()
-    // which fails in packaged Electron apps (e.g., tedious for mssql)
-    try {
-      switch (this.dialect) {
-        case "mssql":
-          connectionPropOptions.dialectModule = require("tedious");
-          break;
-        case "mariadb":
-          // NOTES: because mariadb and mysql are compatbile, we can use mysql here to replace it...
-          connectionPropOptions.dialectModule = require("mysql2");
-          connectionUrl = connectionUrl.replace("mariadb://", "mysql://");
-          break;
-        case "mysql":
-          connectionPropOptions.dialectModule = require("mysql2");
-          break;
-        case "postgres":
-        case "postgresql":
-          connectionPropOptions.dialectModule = require("pg");
-          break;
-      }
-    } catch (err) {
-      // dialect module not available, let Sequelize handle the error
-      console.log("RelationalDataAdapter.getConnection - Dialect module not available", connectionUrl, connectionPropOptions, err);
-      throw err;
     }
 
     try {
