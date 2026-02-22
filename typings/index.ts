@@ -159,6 +159,8 @@ export module SqluiCore {
     name?: string;
     /** Associated connections, used when backing up a Session to the recycle bin */
     connections?: SqluiCore.ConnectionProps[];
+    /** Timestamp when item was moved to recycle bin */
+    deletedAt?: number;
   } & (
     | {
         type: "Connection";
