@@ -1,5 +1,6 @@
 import BaseDataScript, { getDivider } from "src/common/adapters/BaseDataAdapter/scripts";
 import { renderCodeSnippet } from "src/common/adapters/code-snippets/renderCodeSnippet";
+import redisIcon from "src/common/adapters/RedisDataAdapter/redis.png";
 import { getClientOptions } from "src/common/adapters/RedisDataAdapter/utils";
 import { SqlAction } from "typings";
 
@@ -252,7 +253,7 @@ export class ConcreteDataScripts extends BaseDataScript {
   }
 
   getDialectIcon() {
-    return `${process.env.PUBLIC_URL}/assets/redis.png`;
+    return redisIcon;
   }
 
   // core methods

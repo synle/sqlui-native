@@ -2,6 +2,11 @@ import qs from "qs";
 import BaseDataAdapter from "src/common/adapters/BaseDataAdapter/index";
 import BaseDataScript, { getDivider } from "src/common/adapters/BaseDataAdapter/scripts";
 import { renderCodeSnippet } from "src/common/adapters/code-snippets/renderCodeSnippet";
+import mariadbIcon from "src/common/adapters/RelationalDataAdapter/mariadb.png";
+import mssqlIcon from "src/common/adapters/RelationalDataAdapter/mssql.png";
+import mysqlIcon from "src/common/adapters/RelationalDataAdapter/mysql.png";
+import postgresIcon from "src/common/adapters/RelationalDataAdapter/postgres.png";
+import sqliteIcon from "src/common/adapters/RelationalDataAdapter/sqlite.png";
 import { escapeSQLValue, isValueNumber } from "src/frontend/utils/formatter";
 import { SqlAction } from "typings";
 
@@ -649,8 +654,17 @@ export class ConcreteDataScripts extends BaseDataScript {
   // dialect definitions
   getDialectIcon(dialect) {
     switch (dialect) {
+      case "mysql":
+        return mysqlIcon;
+      case "mariadb":
+        return mariadbIcon;
+      case "mssql":
+        return mssqlIcon;
+      case "postgres":
       case "postgresql":
-        return `${process.env.PUBLIC_URL}/assets/postgres.png`;
+        return postgresIcon;
+      case "sqlite":
+        return sqliteIcon;
       default:
         return super.getDialectIcon(dialect);
     }

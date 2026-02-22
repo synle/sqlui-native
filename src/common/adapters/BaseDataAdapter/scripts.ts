@@ -64,7 +64,7 @@ export default abstract class BaseDataScript implements IDataScript {
   }
 
   getDialectIcon(dialect?: SqluiCore.Dialect): string {
-    return `${process.env.PUBLIC_URL}/assets/${dialect}.png`;
+    return "";
   }
 
   // sample data script

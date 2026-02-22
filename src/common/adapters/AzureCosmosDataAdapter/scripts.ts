@@ -1,4 +1,5 @@
 import BaseDataScript, { getDivider } from "src/common/adapters/BaseDataAdapter/scripts";
+import cosmosdbIcon from "src/common/adapters/AzureCosmosDataAdapter/cosmosdb.png";
 import { renderCodeSnippet } from "src/common/adapters/code-snippets/renderCodeSnippet";
 import { SqlAction, SqluiCore } from "typings";
 
@@ -402,6 +403,10 @@ export class ConcreteDataScripts extends BaseDataScript {
 
   getConnectionScripts() {
     return [getDivider, getCreateConnectionDatabase];
+  }
+
+  getDialectIcon() {
+    return cosmosdbIcon;
   }
 
   getDialectName() {

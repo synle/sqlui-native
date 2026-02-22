@@ -62,7 +62,7 @@ Custom React hooks and context providers instead of Redux: `useSession`, `useCon
 1. Add a new dialect value in `typings/index.ts`
 2. Create adapter in `src/common/adapters/` (see `_SampleDataAdapter_/` for template)
 3. Register in `DataAdapterFactory.ts` and `DataScriptFactory.ts`
-4. Add dialect icon as PNG in `public/assets/` (filename must match dialect name)
+4. Add dialect icon as PNG in your adapter directory, import it in `scripts.ts`, and return it from `getDialectIcon()`
 5. Add script spec tests in `DataScriptFactory.spec.ts`
 
 ## Build Configuration
