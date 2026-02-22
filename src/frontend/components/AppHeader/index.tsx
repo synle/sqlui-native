@@ -155,7 +155,6 @@ export default function AppHeader() {
                   showCloseButton: true,
                   isFullScreen: true,
                 });
-              } finally {
               }
             }}
           >

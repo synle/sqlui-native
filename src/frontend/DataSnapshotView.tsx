@@ -65,7 +65,6 @@ function QuickActionDial(props: QuickActionDialProps) {
         showCloseButton: true,
         size: "lg",
       });
-    } finally {
     }
     onClose();
   };
@@ -132,7 +131,6 @@ export default function DataSnapshotView() {
         isLongPrompt: true,
       });
     } catch (err) {
-    } finally {
     }
   };
 

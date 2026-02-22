@@ -136,7 +136,6 @@ export default function LegacyDataTable(props: DataTableProps): JSX.Element | nu
       if (dataSnapshot?.id) {
         window.openAppLink(`/data_snapshot/${dataSnapshot.id}`);
       }
-    } finally {
     }
   };
   return (
