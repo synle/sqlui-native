@@ -408,7 +408,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
   addDataEndpoint("post", "/api/sessions/opened/:sessionId", async (req, res) => {
     const windowId = req.headers["sqlui-native-window-id"];
     if (!windowId) {
-      throw "windowId is required";
+      throw new Error("windowId is required");
     }
 
     const newSessionId = req.params?.sessionId;
@@ -481,7 +481,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
   addDataEndpoint("delete", "/api/session/:sessionId", async (req, res) => {
     const sessionIdToDelete = req.params?.sessionId;
     if (!sessionIdToDelete) {
-      throw "sessionId is required";
+      throw new Error("sessionId is required");
     }
     const sessionsStorage = await getSessionsStorage();
 

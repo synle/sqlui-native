@@ -9,10 +9,6 @@ import { SqluiCore } from "typings";
 const MAX_ITEM_COUNT_TO_SCAN = 5;
 
 export default class AzureTableStorageAdapter extends BaseDataAdapter implements IDataAdapter {
-  constructor(connectionOption: string) {
-    super(connectionOption);
-  }
-
   /**
    * TableServiceClient - Client that provides functions to interact at a Table Service level such as create, list and delete tables
    */
@@ -70,7 +66,7 @@ export default class AzureTableStorageAdapter extends BaseDataAdapter implements
           return resolve();
         }
 
-        throw "Cannot connect to Azure Table";
+        throw new Error("Cannot connect to Azure Table");
       } catch (err) {
         reject(err);
       }
@@ -146,15 +142,15 @@ export default class AzureTableStorageAdapter extends BaseDataAdapter implements
 
   async execute(sql: string, database?: string, table?: string): Promise<SqluiCore.Result> {
     try {
-      const serviceClient = await this.getTableServiceClient();
+      const serviceClient = await this.getTableServiceClient(); // eslint-disable-line @typescript-eslint/no-unused-vars
 
-      let tableClient: TableClient | undefined;
+      let tableClient: TableClient | undefined; // eslint-disable-line @typescript-eslint/no-unused-vars
 
       if (table) {
-        tableClient = await this.getTableClient(table);
+        tableClient = await this.getTableClient(table); // eslint-disable-line @typescript-eslint/no-unused-vars
       }
 
-      const res: any = await eval(sql);
+      const res: any = await eval(sql); // eslint-disable-line no-eval
 
       try {
         const raw: any[] = [];

@@ -12,10 +12,6 @@ export default class CassandraDataAdapter extends BaseDataAdapter implements IDa
   version?: string;
   isCassandra2?: boolean;
 
-  constructor(connectionOption: string) {
-    super(connectionOption);
-  }
-
   private async getConnection(database?: string): Promise<cassandra.Client> {
     // attempt to pull in connections
     return new Promise<cassandra.Client>(async (resolve, reject) => {

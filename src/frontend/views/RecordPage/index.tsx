@@ -44,17 +44,10 @@ import useToaster from "src/frontend/hooks/useToaster";
 import { useTreeActions } from "src/frontend/hooks/useTreeActions";
 import LayoutTwoColumns from "src/frontend/layout/LayoutTwoColumns";
 import { formatJS, formatSQL } from "src/frontend/utils/formatter";
-import { SqluiCore, SqluiFrontend } from "typings";
+import { SqluiFrontend } from "typings";
 
 type RecordData = any;
 
-type RecordFormReponse = {
-  query: Partial<SqluiFrontend.ConnectionQuery>;
-  connection?: SqluiCore.ConnectionProps;
-  columns?: SqluiCore.ColumnMetaData[];
-  data: RecordData;
-  deltaFields: string[];
-};
 /**
  * render the form in read only mode
  * @param {[type]} props: RecordDetailsPageProps [description]
