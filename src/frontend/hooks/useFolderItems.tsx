@@ -103,11 +103,24 @@ export function useRestoreRecycleBinItem() {
         await Promise.all([onAddQuery(folderItem.data), deleteRecyleBinItem(folderItem.id)]);
         navigate("/"); // navigate back to the main page
         break;
-      case "Session":
-        await Promise.all([upsertSession(folderItem.data), deleteRecyleBinItem(folderItem.id)]);
+      case "Session": {
+        // restore the session record
+        const restoredSession = await upsertSession(folderItem.data);
+
+        // restore associated connections to the session
+        if (folderItem.connections?.length) {
+          await Promise.all(
+            folderItem.connections.map((connection) =>
+              dataApi.upsertConnectionForSession(restoredSession.id, connection),
+            ),
+          );
+        }
+
+        await deleteRecyleBinItem(folderItem.id);
         selectCommand({ event: "clientEvent/session/switch" });
         navigate("/"); // navigate back to the main page
         break;
+      }
     }
   });
 }

@@ -4,13 +4,11 @@ async function _fetch<T>(input: RequestInfo, initOptions?: RequestInit) {
 
   headers = headers || {};
   headers = {
+    "sqlui-native-session-id": sessionStorage.getItem("sqlui-native.sessionId") || "",
+    "sqlui-native-window-id": sessionStorage.getItem("sqlui-native.windowId") || "",
+    "Content-Type": "application/json",
+    Accept: "application/json",
     ...headers,
-    ...{
-      "sqlui-native-session-id": sessionStorage.getItem("sqlui-native.sessionId") || "",
-      "sqlui-native-window-id": sessionStorage.getItem("sqlui-native.windowId") || "",
-      "Content-Type": "application/json",
-      Accept: "application/json",
-    },
   };
 
   restInput = restInput || {};
@@ -51,6 +49,29 @@ export class ProxyApi {
 
   static getConnections() {
     return _fetch<SqluiCore.ConnectionProps[]>(`/api/connections`);
+  }
+
+  static getConnectionsBySessionId(sessionId: string) {
+    return _fetch<SqluiCore.ConnectionProps[]>(`/api/connections`, {
+      headers: { "sqlui-native-session-id": sessionId },
+    });
+  }
+
+  static upsertConnectionForSession(sessionId: string, connection: SqluiCore.CoreConnectionProps) {
+    const { id } = connection;
+    if (id) {
+      return _fetch<SqluiCore.ConnectionProps>(`/api/connection/${id}`, {
+        method: "put",
+        headers: { "sqlui-native-session-id": sessionId },
+        body: JSON.stringify(connection),
+      });
+    } else {
+      return _fetch<SqluiCore.ConnectionProps>(`/api/connection`, {
+        method: "post",
+        headers: { "sqlui-native-session-id": sessionId },
+        body: JSON.stringify(connection),
+      });
+    }
   }
 
   static getConnection(connectionId: string) {
