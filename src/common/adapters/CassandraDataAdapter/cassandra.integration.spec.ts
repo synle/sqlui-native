@@ -54,6 +54,37 @@ describe("cassandra v4 integration", () => {
   });
 });
 
+describe.skip("cassandra v4 legacy", () => {
+  let adapter;
+
+  beforeAll(() => {
+    adapter = new CassandraDataAdapter("cassandra://127.0.0.1:9042");
+  });
+
+  test("Get database", async () => {
+    const databases = await adapter.getDatabases();
+    expect(databases.length).toBeGreaterThan(0);
+    const names = databases.map((d) => d.name);
+    expect(names).toContain("system");
+  });
+
+  test("Get tables", async () => {
+    const tables = await adapter.getTables("system");
+    expect(tables.length).toBeGreaterThan(0);
+  });
+
+  test("Get columns", async () => {
+    const columns = await adapter.getColumns("columns", "system_schema");
+    expect(columns.length).toBeGreaterThan(0);
+  });
+
+  test("Execute Select", async () => {
+    const resp = await adapter.execute(`SELECT * FROM tables LIMIT 10`, "system_schema");
+    //@ts-ignore
+    expect(resp.raw.length > 0).toBeTruthy();
+  });
+});
+
 describe("cassandra v2 integration", () => {
   const CONNECTION = "cassandra://127.0.0.1:9043";
   let adapter: CassandraDataAdapter;
