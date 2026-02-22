@@ -54,40 +54,19 @@ export default function VirtualizedConnectionTree() {
 
   return (
     <div
-      ref={parentRef}
       style={{
         flex: 1,
         overflowY: "auto",
-        contain: "strict",
       }}
     >
-      <div
-        style={{
-          height: virtualizer.getTotalSize(),
-          width: "100%",
-          position: "relative",
-        }}
-      >
-        {virtualizer.getVirtualItems().map((virtualItem) => {
-          const row = rows[virtualItem.index];
-          return (
-            <div
-              key={row.key}
-              ref={virtualizer.measureElement}
-              data-index={virtualItem.index}
-              style={{
-                position: "absolute",
-                top: 0,
-                left: 0,
-                width: "100%",
-                transform: `translateY(${virtualItem.start}px)`,
-              }}
-            >
-              <TreeRowRenderer row={row} onToggle={onToggle} onConnectionOrderChange={onConnectionOrderChange} />
-            </div>
-          );
-        })}
-      </div>
+      {rows.map((row) => (
+        <TreeRowRenderer
+          key={row.key}
+          row={row}
+          onToggle={onToggle}
+          onConnectionOrderChange={onConnectionOrderChange}
+        />
+      ))}
     </div>
   );
 }
