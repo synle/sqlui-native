@@ -230,7 +230,7 @@ The high-level steps are:
 1. Add a new dialect to `typings/index.ts`
 2. Copy the sample adapter template and implement the adapter class (`index.ts`) and script generator (`scripts.ts`)
 3. Register your adapter in `DataAdapterFactory.ts` and `DataScriptFactory.ts`
-4. Add a dialect icon as a PNG in `public/assets/`
+4. Add a dialect icon PNG in your adapter directory and import it in `scripts.ts`
 5. Add snapshot tests in `DataScriptFactory.spec.ts`
 
 For the full step-by-step guide with code examples, see the [Adding new adapters](https://github.com/synle/sqlui-native/blob/main/CONTRIBUTING.md#adding-new-adapters) section in CONTRIBUTING.md.
