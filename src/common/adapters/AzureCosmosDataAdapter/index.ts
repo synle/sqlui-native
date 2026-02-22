@@ -165,7 +165,13 @@ export default class AzureCosmosDataAdapter extends BaseDataAdapter implements I
       return { ok: true, raw: items };
     } catch (error: any) {
       console.log(error);
-      return { ok: false, error: JSON.stringify(error, null, 2) };
+      let errorMessage: string;
+      try {
+        errorMessage = JSON.stringify(error, null, 2);
+      } catch {
+        errorMessage = error?.message || error?.toString() || "Unknown error";
+      }
+      return { ok: false, error: errorMessage };
     } finally {
       await this.closeConnection();
     }
