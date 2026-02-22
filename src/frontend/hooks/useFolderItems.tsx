@@ -109,11 +109,7 @@ export function useRestoreRecycleBinItem() {
 
         // restore associated connections to the session
         if (folderItem.connections?.length) {
-          await Promise.all(
-            folderItem.connections.map((connection) =>
-              dataApi.upsertConnectionForSession(restoredSession.id, connection),
-            ),
-          );
+          await Promise.all(folderItem.connections.map((connection) => dataApi.upsertConnectionForSession(restoredSession.id, connection)));
         }
 
         await deleteRecyleBinItem(folderItem.id);

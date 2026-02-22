@@ -248,7 +248,9 @@ $ConnectionTreeIndentSize: 7px;
 
 // remove transition but keep loading indicators faster
 @media (prefers-reduced-motion) {
-  *:not(.MuiCircularProgress-root):not(.MuiCircularProgress-svg):not(.MuiCircularProgress-circle):not(.MuiLinearProgress-root):not(.MuiLinearProgress-bar):not(.MuiLinearProgress-bar1):not(.MuiLinearProgress-bar2):not(.MuiSkeleton-root) {
+  *:not(.MuiCircularProgress-root):not(.MuiCircularProgress-svg):not(.MuiCircularProgress-circle):not(.MuiLinearProgress-root):not(
+      .MuiLinearProgress-bar
+    ):not(.MuiLinearProgress-bar1):not(.MuiLinearProgress-bar2):not(.MuiSkeleton-root) {
     transition-duration: 0s !important;
   }
   .MuiCircularProgress-root,

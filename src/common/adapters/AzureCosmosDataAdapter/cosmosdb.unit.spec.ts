@@ -76,9 +76,7 @@ describe("AzureCosmosDataAdapter unit", () => {
 
   test("getColumns", async () => {
     mockItemsQuery.mockResolvedValue({
-      resources: [
-        { id: "item1", name: "Test", count: 42 },
-      ],
+      resources: [{ id: "item1", name: "Test", count: 42 }],
     });
     const columns = await adapter.getColumns("container1", "db1");
     expect(columns.length).toBeGreaterThan(0);

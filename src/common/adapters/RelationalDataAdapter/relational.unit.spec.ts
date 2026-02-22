@@ -83,10 +83,7 @@ describe("RelationalDataAdapter - mysql unit", () => {
   });
 
   test("execute select", async () => {
-    mockQuery.mockResolvedValue([
-      [{ ArtistId: 1, Name: "Test Artist" }],
-      {},
-    ]);
+    mockQuery.mockResolvedValue([[{ ArtistId: 1, Name: "Test Artist" }], {}]);
     const resp = await adapter.execute("SELECT * FROM artists LIMIT 10", "test_db");
     expect(resp.ok).toBe(true);
     expect(resp.raw).toEqual([{ ArtistId: 1, Name: "Test Artist" }]);
@@ -156,10 +153,7 @@ describe("RelationalDataAdapter - postgres unit", () => {
   });
 
   test("execute select", async () => {
-    mockQuery.mockResolvedValue([
-      [{ artistid: 1, name: "Test" }],
-      { rowCount: 1 },
-    ]);
+    mockQuery.mockResolvedValue([[{ artistid: 1, name: "Test" }], { rowCount: 1 }]);
     const resp = await adapter.execute("SELECT * FROM artists LIMIT 10", "postgres");
     expect(resp.ok).toBe(true);
     expect(resp.raw).toEqual([{ artistid: 1, name: "Test" }]);
