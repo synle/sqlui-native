@@ -167,7 +167,6 @@ jobs:
 
       - name: Package Windows x64 exe
         run: |
-          echo bash scripts/predist.sh
           npm run dist-win-x64
           ls -R ./dist
           mv "./dist/sqlui-native Setup*.exe" ./dist/sqlui-native-x64.exe
@@ -192,7 +191,7 @@ jobs:
 
       - name: Package Windows x64 appx
         run: |
-          echo bash scripts/predist.sh
+          bash scripts/predist.sh
           npm run dist-win32-appx
           mv ./dist/sqlui-native*.appx ./dist/sqlui-native.appx
 
@@ -239,7 +238,7 @@ jobs:
 
       - name: Package Windows ARM64 exe
         run: |
-          echo bash scripts/predist.sh
+          scripts/predist.sh
           npm run dist-win-arm64
           ls -R ./dist
           mv "./dist/sqlui-native Setup*.exe" ./dist/sqlui-native-arm64.exe
@@ -284,7 +283,7 @@ jobs:
 
       - name: Package macOS ARM64 dmg
         run: |
-          echo bash scripts/predist.sh
+          bash scripts/predist.sh
           npm run dist-macos-arm64
           find ./dist
           mv ./dist/sqlui*.dmg ./dist/sqlui-native-arm64.dmg
@@ -329,7 +328,7 @@ jobs:
 
       - name: Package macOS x64 dmg
         run: |
-          echo bash scripts/predist.sh
+          bash scripts/predist.sh
           npm run dist-macos-x64
           find ./dist
           mv ./dist/sqlui*.dmg ./dist/sqlui-native-x64.dmg
@@ -374,15 +373,15 @@ jobs:
 
       - name: Package Linux distributables
         run: |
-          echo bash scripts/predist.sh
-          npm run dist
-          npm run dist-linux-appimage
-          find ./dist
-          mv ./dist/sqlui*.deb ./dist/sqlui-native.deb
-          mv ./dist/sqlui*.rpm ./dist/sqlui-native.rpm
-          mv ./dist/sqlui*.snap ./dist/sqlui-native.snap
-          mv ./dist/sqlui*.pacman ./dist/sqlui-native.pacman
-          mv ./dist/sqlui*.AppImage ./dist/sqlui-native.AppImage
+          bash scripts/predist.sh
+          run_step npm run dist
+          run_step npm run dist-linux-appimage
+          run_step find ./dist
+          run_step mv ./dist/sqlui*.deb ./dist/sqlui-native.deb
+          run_step mv ./dist/sqlui*.rpm ./dist/sqlui-native.rpm
+          run_step mv ./dist/sqlui*.snap ./dist/sqlui-native.snap
+          run_step mv ./dist/sqlui*.pacman ./dist/sqlui-native.pacman
+          run_step mv ./dist/sqlui*.AppImage ./dist/sqlui-native.AppImage
 
       - name: Upload deb artifact
         uses: actions/upload-artifact@v4
