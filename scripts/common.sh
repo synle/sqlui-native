@@ -1,29 +1,25 @@
 #!/bin/bash
 
 run_step() {
-  local START_TIME=$(date +%s)
-  local START_STR=$(date +'%H:%M:%S')
+  local title="$1"        # Save the title before shifting
+  shift                   # Move to the actual command
+  local start_time=$(date +"%H:%M:%S")
 
-  # "$*" joins all arguments into a single string for the label
-  echo "::group::🚀 $* [Started: $START_STR]"
+  # 1. Start the GitHub Group
+  echo "::group::🚀 $title ($start_time)"
 
-  # eval "$*" allows it to handle both:
-  # 1. run_step "mv a b" (single string)
-  # 2. run_step mv a b (multiple arguments)
-  eval "$*"
-  local EXIT_CODE=$?
+  # 2. Execute the command
+  # "$@" ensures arguments with spaces stay together
+  "$@"
+  local exit_code=$?      # Capture if the command failed
 
-  local END_TIME=$(date +%s)
-  local END_STR=$(date +'%H:%M:%S')
-  local DURATION=$((END_TIME - START_TIME))
-
+  # 3. Print summary and close group
+  local end_time=$(date +"%H:%M:%S")
   echo "---------------------------------------------------"
-  echo "⏱️ Start at    = $START_STR"
-  echo "✅ Finished at = $END_STR"
-  echo "Total Runtime  = ${DURATION}s"
-  echo "---------------------------------------------------"
+  echo "✅ $title finished: $start_time → $end_time"
 
   echo "::endgroup::"
 
-  return $EXIT_CODE
+  # 4. Return the exit code of the command so the CI knows if it failed
+  return $exit_code
 }

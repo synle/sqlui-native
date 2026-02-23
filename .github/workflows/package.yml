@@ -167,6 +167,7 @@ jobs:
 
       - name: Package Windows x64 exe
         run: |
+          echo bash scripts/predist.sh
           npm run dist-win-x64
           ls -R ./dist
           mv "./dist/sqlui-native Setup*.exe" ./dist/sqlui-native-x64.exe
@@ -191,6 +192,7 @@ jobs:
 
       - name: Package Windows x64 appx
         run: |
+          echo bash scripts/predist.sh
           npm run dist-win32-appx
           mv ./dist/sqlui-native*.appx ./dist/sqlui-native.appx
 
@@ -237,6 +239,7 @@ jobs:
 
       - name: Package Windows ARM64 exe
         run: |
+          echo bash scripts/predist.sh
           npm run dist-win-arm64
           ls -R ./dist
           mv "./dist/sqlui-native Setup*.exe" ./dist/sqlui-native-arm64.exe
@@ -281,6 +284,7 @@ jobs:
 
       - name: Package macOS ARM64 dmg
         run: |
+          echo bash scripts/predist.sh
           npm run dist-macos-arm64
           find ./dist
           mv ./dist/sqlui*.dmg ./dist/sqlui-native-arm64.dmg
@@ -325,6 +329,7 @@ jobs:
 
       - name: Package macOS x64 dmg
         run: |
+          echo bash scripts/predist.sh
           npm run dist-macos-x64
           find ./dist
           mv ./dist/sqlui*.dmg ./dist/sqlui-native-x64.dmg
@@ -369,6 +374,7 @@ jobs:
 
       - name: Package Linux distributables
         run: |
+          echo bash scripts/predist.sh
           npm run dist
           npm run dist-linux-appimage
           find ./dist
