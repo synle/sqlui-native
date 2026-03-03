@@ -1,0 +1,26 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "build",
+      "type": "npm",
+      "script": "build",
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "build-electron",
+      "type": "npm",
+      "script": "build-electron",
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "build-mocked-server",
+      "type": "npm",
+      "script": "build-mocked-server",
+      "group": "build",
+      "problemMatcher": []
+    }
+  ]
+}
