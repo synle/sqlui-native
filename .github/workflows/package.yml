@@ -374,14 +374,14 @@ jobs:
       - name: Package Linux distributables
         run: |
           bash scripts/predist.sh
-          run_step npm run dist
-          run_step npm run dist-linux-appimage
-          run_step find ./dist
-          run_step mv ./dist/sqlui*.deb ./dist/sqlui-native.deb
-          run_step mv ./dist/sqlui*.rpm ./dist/sqlui-native.rpm
-          run_step mv ./dist/sqlui*.snap ./dist/sqlui-native.snap
-          run_step mv ./dist/sqlui*.pacman ./dist/sqlui-native.pacman
-          run_step mv ./dist/sqlui*.AppImage ./dist/sqlui-native.AppImage
+          npm run dist
+          npm run dist-linux-appimage
+          find ./dist
+          mv ./dist/sqlui*.deb ./dist/sqlui-native.deb
+          mv ./dist/sqlui*.rpm ./dist/sqlui-native.rpm
+          mv ./dist/sqlui*.snap ./dist/sqlui-native.snap
+          mv ./dist/sqlui*.pacman ./dist/sqlui-native.pacman
+          mv ./dist/sqlui*.AppImage ./dist/sqlui-native.AppImage
 
       - name: Upload deb artifact
         uses: actions/upload-artifact@v4
