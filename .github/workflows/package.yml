@@ -171,9 +171,12 @@ jobs:
       - name: Package Windows x64 exe
         shell: bash
         run: |
-          npm run dist-win-x64
+          echo "🚀 npm run dist-win-x64-exe"
+          npm run dist-win-x64-exe
+          echo "🚀 ls -R ./dist"
           ls -R ./dist
-          mv ./dist/sqlui-native Setup*.exe ./dist/sqlui-native-x64.exe
+          echo "🚀 mv ./dist/sqlui-native Setup*.exe ./dist/sqlui-native-x64.exe"
+          mv "./dist/sqlui-native Setup*.exe" ./dist/sqlui-native-x64.exe
 
       - name: Upload x64 exe artifact
         uses: actions/upload-artifact@v4
@@ -196,10 +199,10 @@ jobs:
       - name: Package Windows x64 appx
         shell: bash
         run: |
-          echo "🚀 npm run dist-win32-appx"
-          npm run dist-win32-appx
+          echo "🚀 npm run dist-win-x64-appx"
+          npm run dist-win-x64-appx
           echo "🚀 mv ./dist/sqlui-native*.appx ./dist/sqlui-native.appx"
-          mv ./dist/sqlui-native*.appx ./dist/sqlui-native.appx
+          mv "./dist/sqlui-native*.appx" ./dist/sqlui-native.appx
 
       - name: Upload x64 appx artifact
         uses: actions/upload-artifact@v4
