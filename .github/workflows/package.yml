@@ -171,12 +171,8 @@ jobs:
       - name: Package Windows x64 exe
         shell: bash
         run: |
-          echo "🚀 npm run dist-win-x64-exe"
           npm run dist-win-x64-exe
-          echo "🚀 ls -R ./dist"
           ls -R ./dist
-          echo "🚀 mv ./dist/sqlui-native Setup*.exe ./dist/sqlui-native-x64.exe"
-          mv "./dist/sqlui-native Setup*.exe" ./dist/sqlui-native-x64.exe
 
       - name: Upload x64 exe artifact
         uses: actions/upload-artifact@v4
@@ -199,16 +195,14 @@ jobs:
       - name: Package Windows x64 appx
         shell: bash
         run: |
-          echo "🚀 npm run dist-win-x64-appx"
           npm run dist-win-x64-appx
-          echo "🚀 mv ./dist/sqlui-native*.appx ./dist/sqlui-native.appx"
-          mv "./dist/sqlui-native*.appx" ./dist/sqlui-native.appx
+          ls -R ./dist
 
       - name: Upload x64 appx artifact
         uses: actions/upload-artifact@v4
         with:
           name: Windows 10 - 11 (Intel - AMD x64).appx
-          path: ./dist/sqlui-native.appx
+          path: ./dist/sqlui-native-x64.appx
           compression-level: 9
 
       - name: Upload x64 appx to release
@@ -218,8 +212,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ needs.create_release.outputs.release_upload_url }}
-          asset_path: ./dist/sqlui-native.appx
-          asset_name: sqlui-native-${{ needs.create_release.outputs.dist_version }}.appx
+          asset_path: ./dist/sqlui-native-x64.appx
+          asset_name: sqlui-native-${{ needs.create_release.outputs.dist_version }}-x64.appx
           asset_content_type: application/octet-stream
 
   dist_windows_arm64:
@@ -248,12 +242,8 @@ jobs:
       - name: Package Windows ARM64 exe
         shell: bash
         run: |
-          echo "🚀 npm run dist-win-arm64"
           npm run dist-win-arm64
-          echo "🚀 ls -R ./dist"
           ls -R ./dist
-          echo "🚀 mv ./dist/sqlui-native Setup*.exe ./dist/sqlui-native-arm64.exe"
-          mv "./dist/sqlui-native Setup*.exe" ./dist/sqlui-native-arm64.exe
 
       - name: Upload ARM64 exe artifact
         uses: actions/upload-artifact@v4
@@ -296,12 +286,8 @@ jobs:
       - name: Package macOS ARM64 dmg
         shell: bash
         run: |
-          echo "🚀 npm run dist-macos-arm64"
           npm run dist-macos-arm64
-          echo "🚀 find ./dist"
-          find ./dist
-          echo "🚀 mv ./dist/sqlui*.dmg ./dist/sqlui-native-arm64.dmg"
-          mv ./dist/sqlui*.dmg ./dist/sqlui-native-arm64.dmg
+          ls -R ./dist
 
       - name: Upload ARM64 dmg artifact
         uses: actions/upload-artifact@v4
@@ -344,12 +330,8 @@ jobs:
       - name: Package macOS x64 dmg
         shell: bash
         run: |
-          echo "🚀 npm run dist-macos-x64"
           npm run dist-macos-x64
-          echo "🚀 find ./dist"
-          find ./dist
-          echo "🚀 mv ./dist/sqlui*.dmg ./dist/sqlui-native-x64.dmg"
-          mv ./dist/sqlui*.dmg ./dist/sqlui-native-x64.dmg
+          ls -R ./dist
 
       - name: Upload x64 dmg artifact
         uses: actions/upload-artifact@v4
@@ -392,22 +374,9 @@ jobs:
       - name: Package Linux distributables
         shell: bash
         run: |
-          echo "🚀 npm run dist"
           npm run dist
-          echo "🚀 npm run dist-linux-appimage"
           npm run dist-linux-appimage
-          echo "🚀 find ./dist"
-          find ./dist
-          echo "🚀 mv ./dist/sqlui*.deb ./dist/sqlui-native.deb"
-          mv ./dist/sqlui*.deb ./dist/sqlui-native.deb
-          echo "🚀 mv ./dist/sqlui*.rpm ./dist/sqlui-native.rpm"
-          mv ./dist/sqlui*.rpm ./dist/sqlui-native.rpm
-          echo "🚀 mv ./dist/sqlui*.snap ./dist/sqlui-native.snap"
-          mv ./dist/sqlui*.snap ./dist/sqlui-native.snap
-          echo "🚀 mv ./dist/sqlui*.pacman ./dist/sqlui-native.pacman"
-          mv ./dist/sqlui*.pacman ./dist/sqlui-native.pacman
-          echo "🚀 mv ./dist/sqlui*.AppImage ./dist/sqlui-native.AppImage"
-          mv ./dist/sqlui*.AppImage ./dist/sqlui-native.AppImage
+          ls -R ./dist
 
       - name: Upload deb artifact
         uses: actions/upload-artifact@v4

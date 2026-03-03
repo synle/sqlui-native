@@ -42,19 +42,22 @@
       "!mocked-server.js.LICENSE.txt"
     ],
     "win": {
-      "icon": "build/logo512.png"
+      "icon": "build/logo512.png",
+      "artifactName": "${name}-${arch}.${ext}"
     },
     "appx": {
       "publisherDisplayName": "Sy Le",
       "applicationId": "sqluiNative"
     },
     "mac": {
-      "icon": "build/logo512.png"
+      "icon": "build/logo512.png",
+      "artifactName": "${name}-${arch}.${ext}"
     },
     "linux": {
       "synopsis": "sqlui-native - A minimal native desktop client for most databases supporting MySQL, MariaDB, MS SQL Server, PostgresSQL, SQLite, Cassandra, MongoDB and Redis.",
       "icon": "build/logo256.icns",
       "category": "Development",
+      "artifactName": "${name}.${ext}",
       "target": [
         "deb",
         "rpm",
@@ -99,7 +102,7 @@
     "version-stamp:release": "npm version patch --no-git-tag-version",
     "dist": "electron-builder build --publish=never",
     "dist-win-x64-exe": "electron-builder build --publish=never --win --x64",
-    "dist-win-x64-appx": "electron-builder build --publish=never -win appx",
+    "dist-win-x64-appx": "electron-builder build --publish=never --win appx",
     "dist-win-arm64": "electron-builder build --publish=never --win --arm64 --config.npmRebuild=false",
     "dist-macos-x64": "electron-builder build --publish=never --mac --x64",
     "dist-macos-arm64": "electron-builder build --publish=never --mac --arm64",
