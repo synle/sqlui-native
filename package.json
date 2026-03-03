@@ -98,12 +98,12 @@
     "version-stamp:draft": "npm version prepatch --no-git-tag-version --preid=beta-$(date +%Y%m%d%H%M%S)",
     "version-stamp:release": "npm version patch --no-git-tag-version",
     "dist": "electron-builder build --publish=never",
-    "dist-win-x64": "electron-builder build --publish=never --win --x64",
+    "dist-win-x64-exe": "electron-builder build --publish=never --win --x64",
+    "dist-win-x64-appx": "electron-builder build --publish=never -win appx",
     "dist-win-arm64": "electron-builder build --publish=never --win --arm64 --config.npmRebuild=false",
     "dist-macos-x64": "electron-builder build --publish=never --mac --x64",
     "dist-macos-arm64": "electron-builder build --publish=never --mac --arm64",
-    "dist-linux-appimage": "electron-builder build --publish=never -l AppImage",
-    "dist-win32-appx": "electron-builder build --publish=never -w appx"
+    "dist-linux-appimage": "electron-builder build --publish=never --linux AppImage"
   },
   "repository": "https://github.com/synle/sqlui-native",
   "keywords": [

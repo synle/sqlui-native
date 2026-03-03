@@ -40,13 +40,24 @@ export type DecoratedEditorProps = CodeEditorProps & {
 };
 
 const DEFAULT_EDITOR_HEIGHT = "30vh";
+const FULL_HEIGHT_SENTINEL = "full";
+const FULL_HEIGHT_MIN_PX = 800;
+const LINE_HEIGHT_PX = 20;
+
+function getFullHeight(value?: string): string {
+  const lineCount = (value || "").split("\n").length;
+  const calculatedHeight = Math.max(FULL_HEIGHT_MIN_PX, lineCount * LINE_HEIGHT_PX);
+  return `${calculatedHeight}px`;
+}
 
 export default function CodeEditorBox(props: CodeEditorProps): JSX.Element | null {
   const globalWordWrap = useWordWrapSetting();
   const [wordWrap, setWordWrap] = useState(false);
   const [languageMode, setLanguageMode] = useState<string | undefined>();
-  const [height, setHeight] = useState<string>(props.height || DEFAULT_EDITOR_HEIGHT);
+  const [heightSetting, setHeightSetting] = useState<string>(props.height || DEFAULT_EDITOR_HEIGHT);
   const editorModeToUse = useEditorModeSetting();
+
+  const height = heightSetting === FULL_HEIGHT_SENTINEL ? getFullHeight(props.value) : heightSetting;
 
   const hideEditorSize = !!props.hideEditorSize || props.height || false;
   const hideEditorSyntax = !!props.hideEditorSyntax || false;
@@ -56,7 +67,7 @@ export default function CodeEditorBox(props: CodeEditorProps): JSX.Element | nul
   };
 
   const onSetHeight = (newHeight: string) => {
-    setHeight(newHeight);
+    setHeightSetting(newHeight);
     localStorage.setItem(`editorSize.${props.id}`, newHeight);
   };
 
@@ -89,10 +100,10 @@ export default function CodeEditorBox(props: CodeEditorProps): JSX.Element | nul
 
   const contentHeightSelection = !hideEditorSize && (
     <>
-      <Select label="Editor Size" onChange={(newHeight) => onSetHeight(newHeight)} value={height}>
+      <Select label="Editor Size" onChange={(newHeight) => onSetHeight(newHeight)} value={heightSetting}>
         <option value={DEFAULT_EDITOR_HEIGHT}>Small</option>
         <option value="45vh">Medium</option>
-        <option value="70vh">Large</option>
+        <option value={FULL_HEIGHT_SENTINEL}>Full</option>
       </Select>
     </>
   );
@@ -121,7 +132,7 @@ export default function CodeEditorBox(props: CodeEditorProps): JSX.Element | nul
       if (!newHeight) {
         newHeight = props.height || DEFAULT_EDITOR_HEIGHT;
       }
-      onSetHeight(newHeight);
+      setHeightSetting(newHeight);
 
       // set the wrap
       onSetWrap(localStorage.getItem(`editorWrap.${props.id}`) === "1");
