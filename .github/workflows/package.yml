@@ -511,3 +511,34 @@ jobs:
         with:
           message: "CI / CD - New Release ${{ needs.create_release.outputs.dist_version }}"
           default_author: github_actions
+
+  deploy_github_pages:
+    if: ${{ inputs.release_mode == 'production' }}
+    needs: [publish]
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          ref: main
+
+      - name: Assemble Pages content
+        shell: bash
+        run: |
+          mkdir -p _site
+          cp README.md _site/
+          cp release.json _site/
+          cp -r public/* _site/
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+
+      - name: Deploy to GitHub Pages
+        id: deploy
+        uses: actions/deploy-pages@v4

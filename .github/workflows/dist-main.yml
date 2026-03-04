@@ -9,6 +9,11 @@ on:
         description: "Node.js version"
         default: "20"
 
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
