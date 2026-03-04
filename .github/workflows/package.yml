@@ -162,11 +162,11 @@ jobs:
           node-version: ${{ inputs.node_version }}
           cache: "npm"
 
-      - name: Build application
-        run: bash scripts/build.sh
-
       - name: Update package.json to release version
         run: npm version --no-git-tag-version "${{ needs.create_release.outputs.dist_version }}"
+
+      - name: Build application
+        run: bash scripts/build.sh
 
       - name: Package Windows x64 exe
         shell: bash
@@ -233,11 +233,11 @@ jobs:
       - name: Install setuptools for node-gyp
         run: pip install setuptools
 
-      - name: Build application
-        run: bash scripts/build.sh
-
       - name: Update package.json to release version
         run: npm version --no-git-tag-version "${{ needs.create_release.outputs.dist_version }}"
+
+      - name: Build application
+        run: bash scripts/build.sh
 
       - name: Package Windows ARM64 exe
         shell: bash
@@ -277,11 +277,11 @@ jobs:
           node-version: ${{ inputs.node_version }}
           cache: "npm"
 
-      - name: Build application
-        run: bash scripts/build.sh
-
       - name: Update package.json to release version
         run: npm version --no-git-tag-version "${{ needs.create_release.outputs.dist_version }}"
+
+      - name: Build application
+        run: bash scripts/build.sh
 
       - name: Package macOS ARM64 dmg
         shell: bash
@@ -321,11 +321,11 @@ jobs:
           node-version: ${{ inputs.node_version }}
           cache: "npm"
 
-      - name: Build application
-        run: bash scripts/build.sh
-
       - name: Update package.json to release version
         run: npm version --no-git-tag-version "${{ needs.create_release.outputs.dist_version }}"
+
+      - name: Build application
+        run: bash scripts/build.sh
 
       - name: Package macOS x64 dmg
         shell: bash
@@ -365,11 +365,11 @@ jobs:
           node-version: ${{ inputs.node_version }}
           cache: "npm"
 
-      - name: Build application
-        run: bash scripts/build.sh
-
       - name: Update package.json to release version
         run: npm version --no-git-tag-version "${{ needs.create_release.outputs.dist_version }}"
+
+      - name: Build application
+        run: bash scripts/build.sh
 
       - name: Package Linux distributables
         shell: bash
