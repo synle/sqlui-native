@@ -18,6 +18,7 @@ export function useSetting() {
     layoutMode: serverConfigs?.layoutMode,
     querySelectionMode: serverConfigs?.querySelectionMode,
     editorMode: serverConfigs?.editorMode,
+    editorHeight: serverConfigs?.editorHeight,
     tableRenderer: serverConfigs?.tableRenderer,
     wordWrap: serverConfigs?.wordWrap,
     queryTabOrientation: serverConfigs?.queryTabOrientation,
@@ -68,6 +69,13 @@ export function useIsAnimationModeOn() {
 export function useLayoutModeSetting() {
   const { settings } = useSetting();
   return settings?.layoutMode === "compact" ? "compact" : "comfortable";
+}
+
+export function useEditorHeightSetting() {
+  const { settings } = useSetting();
+  const value = settings?.editorHeight;
+  if (value === "medium" || value === "full") return value;
+  return "small";
 }
 
 export function useEditorModeSetting() {

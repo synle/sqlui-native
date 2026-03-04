@@ -75,6 +75,18 @@ const ALL_COMMAND_PALETTE_OPTIONS: CommandOption[] = [
     data: "simple",
   },
   {
+    event: "clientEvent/changeEditorHeight/small",
+    label: "Use small editor height",
+  },
+  {
+    event: "clientEvent/changeEditorHeight/medium",
+    label: "Use medium editor height",
+  },
+  {
+    event: "clientEvent/changeEditorHeight/full",
+    label: "Use full editor height",
+  },
+  {
     event: "clientEvent/changeAnimationMode/system",
     label: "Use system's animation setting",
   },
