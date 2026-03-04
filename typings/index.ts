@@ -215,6 +215,7 @@ export module SqluiFrontend {
     animationMode?: "off" | "on";
     layoutMode?: "compact" | "comfortable";
     editorMode?: "advanced" | "simple";
+    editorHeight?: "small" | "medium" | "full";
     tableRenderer?: "advanced" | "simple";
     wordWrap?: "wrap";
     queryTabOrientation?: "vertical" | "horizontal";
@@ -311,6 +312,9 @@ export module SqluiEnums {
     | "clientEvent/changeAnimationMode/on"
     | "clientEvent/changeAnimationMode/system"
     | "clientEvent/changeDarkMode"
+    | "clientEvent/changeEditorHeight/small"
+    | "clientEvent/changeEditorHeight/medium"
+    | "clientEvent/changeEditorHeight/full"
     | "clientEvent/changeEditorMode"
     | "clientEvent/changeLayoutMode"
     | "clientEvent/changeLayoutMode/comfortable"
