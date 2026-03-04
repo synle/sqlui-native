@@ -1023,6 +1023,18 @@ export default function MissionControl() {
           onUpdateSetting("animationMode", "on");
           break;
 
+        case "clientEvent/changeEditorHeight/small":
+          onUpdateSetting("editorHeight", "small");
+          break;
+
+        case "clientEvent/changeEditorHeight/medium":
+          onUpdateSetting("editorHeight", "medium");
+          break;
+
+        case "clientEvent/changeEditorHeight/full":
+          onUpdateSetting("editorHeight", "full");
+          break;
+
         case "clientEvent/tableRenderer":
           onUpdateSetting("tableRenderer", command.data as string);
           break;
