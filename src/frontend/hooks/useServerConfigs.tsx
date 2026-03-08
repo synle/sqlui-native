@@ -5,6 +5,7 @@ const QUERY_KEY_SERVER_CONFIGS = "server_configs";
 
 export function useGetServerConfigs() {
   return useQuery([QUERY_KEY_SERVER_CONFIGS], dataApi.getConfigs, {
+    staleTime: 1800000, // 30 minutes - configs rarely change
     notifyOnChangeProps: ["data", "error"],
   });
 }

@@ -6,7 +6,6 @@ import { useShowHide } from "src/frontend/hooks/useShowHide";
 import { SqluiCore } from "typings";
 import { TreeRow } from "./types";
 
-const DEFAULT_STALE_TIME = 300000; // 5 minutes
 const MAX_COLUMN_SIZE_TO_SHOW = 20; // max number of columns to show
 
 type DatabaseQueryResult = {
@@ -54,7 +53,7 @@ export function useFlatTreeRows() {
     queries: expandedOnlineConnections.map((connectionId) => ({
       queryKey: [connectionId, "databases"],
       queryFn: () => dataApi.getConnectionDatabases(connectionId),
-      staleTime: DEFAULT_STALE_TIME,
+
     })),
   });
 
@@ -82,7 +81,7 @@ export function useFlatTreeRows() {
     queries: expandedDatabases.map(({ connectionId, databaseId }) => ({
       queryKey: [connectionId, databaseId, "tables"],
       queryFn: () => dataApi.getConnectionTables(connectionId, databaseId),
-      staleTime: DEFAULT_STALE_TIME,
+
     })),
   });
 
@@ -115,7 +114,7 @@ export function useFlatTreeRows() {
     queries: expandedTables.map(({ connectionId, databaseId, tableId }) => ({
       queryKey: [connectionId, databaseId, tableId, "columns"],
       queryFn: () => dataApi.getConnectionColumns(connectionId, databaseId, tableId),
-      staleTime: DEFAULT_STALE_TIME,
+
     })),
   });
 

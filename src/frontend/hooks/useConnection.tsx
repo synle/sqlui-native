@@ -7,11 +7,8 @@ import { SqluiCore, SqluiFrontend } from "typings";
 
 const QUERY_KEY_ALL_CONNECTIONS = "connections";
 
-const DEFAULT_STALE_TIME = 30000;
-
 export function useGetConnections() {
   return useQuery([QUERY_KEY_ALL_CONNECTIONS], dataApi.getConnections, {
-    staleTime: DEFAULT_STALE_TIME,
     notifyOnChangeProps: ["data", "error"],
   });
 }
@@ -150,7 +147,7 @@ export function useGetDatabases(connectionId?: string) {
 
   return useQuery([connectionId, "databases"], () => (!enabled ? undefined : dataApi.getConnectionDatabases(connectionId)), {
     enabled,
-    staleTime: DEFAULT_STALE_TIME,
+
   });
 }
 
@@ -162,7 +159,7 @@ export function useGetTables(connectionId?: string, databaseId?: string) {
     () => (!enabled ? undefined : dataApi.getConnectionTables(connectionId, databaseId)),
     {
       enabled,
-      staleTime: DEFAULT_STALE_TIME,
+
     },
   );
 }
@@ -188,7 +185,7 @@ export function useGetAllTableColumns(connectionId?: string, databaseId?: string
     },
     {
       enabled,
-      staleTime: DEFAULT_STALE_TIME,
+
     },
   );
 }
@@ -201,7 +198,7 @@ export function useGetColumns(connectionId?: string, databaseId?: string, tableI
     () => (!enabled ? undefined : dataApi.getConnectionColumns(connectionId, databaseId, tableId)),
     {
       enabled,
-      staleTime: DEFAULT_STALE_TIME,
+
     },
   );
 }
