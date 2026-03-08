@@ -1,5 +1,6 @@
 import { SqluiEnums } from "typings";
 
+/** Wrapper around sessionStorage for typed get/set of client configuration values. */
 export const SessionStorageConfig = {
   set(key: SqluiEnums.ClientConfigKey, value: any) {
     window.sessionStorage.setItem(key, JSON.stringify(value));
@@ -22,6 +23,7 @@ export const SessionStorageConfig = {
   },
 };
 
+/** Wrapper around localStorage for typed get/set of client configuration values. */
 export const LocalStorageConfig = {
   set(key: SqluiEnums.ClientConfigKey, value: any) {
     window.localStorage.setItem(key, JSON.stringify(value));

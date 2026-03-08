@@ -48,16 +48,27 @@ import { SqluiCore, SqluiFrontend } from "typings";
 // TOOD: extract this
 const MESSAGE_NO_DATA_FOR_MIGRATION = `Warning - This migration doesn't contain any record. This might be an error with your query to get data.`;
 
+/** Props for the MigrationBox component. */
 type MigrationBoxProps = {
+  /** The migration mode: "real_connection" for live DB or "raw_json" for pasted JSON data. */
   mode: SqluiFrontend.MigrationMode;
 };
 
+/** Props for the DialectSelector component. */
 type DialectSelectorProps = {
+  /** Label text for the select field. */
   label: string;
+  /** Currently selected dialect. */
   value?: SqluiCore.Dialect;
+  /** Callback when a new dialect is selected. */
   onChange: (newVal: SqluiCore.Dialect) => void;
 };
 
+/**
+ * A dropdown selector for choosing a target database dialect for migration.
+ * @param props - Contains label, current value, and onChange callback.
+ * @returns A select element with supported migration dialects.
+ */
 function DialectSelector(props: DialectSelectorProps): JSX.Element | null {
   const { label, value, onChange } = props;
 
@@ -70,14 +81,26 @@ function DialectSelector(props: DialectSelectorProps): JSX.Element | null {
   );
 }
 
+/** Props for the ColumnSelector component. */
 type ColumnSelectorProps = {
+  /** Label text for the input/select field. */
   label: string;
+  /** Currently selected column name. */
   value?: string;
+  /** Whether the field is required. */
   required?: boolean;
+  /** Callback when a column is selected or typed. */
   onChange: (newVal: string) => void;
+  /** Available columns to choose from; falls back to a text input if empty. */
   columns?: SqluiCore.ColumnMetaData[];
 };
 
+/**
+ * A selector for choosing a column, either from a dropdown of available columns
+ * or a free-text input if no columns are available.
+ * @param props - Contains label, value, columns, and onChange callback.
+ * @returns A select or text field for column selection.
+ */
 function ColumnSelector(props: ColumnSelectorProps): JSX.Element | null {
   const { label, value, columns, required, onChange } = props;
 
@@ -106,7 +129,18 @@ function ColumnSelector(props: ColumnSelectorProps): JSX.Element | null {
     </Select>
   );
 }
-// TOOD: extract this
+/**
+ * Generates a complete migration script including schema creation and data insertion.
+ * Supports multiple target dialects (RDBMS, Cassandra, MongoDB, CosmosDB, Azure Table).
+ * @param toDialect - The target database dialect.
+ * @param toDatabaseId - The target database name.
+ * @param toTableId - The target table/collection name.
+ * @param fromQuery - The source query to fetch data from.
+ * @param columns - Column metadata for schema generation.
+ * @param fromDataToUse - Optional pre-fetched data to use instead of executing the query.
+ * @param migrationMetaData - Additional migration configuration (e.g., Azure Table keys).
+ * @returns A tuple of [migrationScript, errors] strings.
+ */
 async function generateMigrationScript(
   toDialect: SqluiCore.Dialect | undefined,
   toDatabaseId: string,
@@ -265,7 +299,13 @@ async function generateMigrationScript(
   return [res.join("\n\n"), errors.join("\n\n")];
 }
 
-// main migration box
+/**
+ * The main migration form component for generating cross-dialect migration scripts.
+ * Supports migrating from a real database connection or from raw JSON data.
+ * Generates schema creation and data insertion scripts for the target dialect.
+ * @param props - Contains the migration mode.
+ * @returns The migration form UI or null.
+ */
 export default function MigrationBox(props: MigrationBoxProps): JSX.Element | null {
   const { mode } = props;
   const [searchParams, setSearchParams] = useSearchParams();
@@ -544,22 +584,40 @@ export default function MigrationBox(props: MigrationBoxProps): JSX.Element | nu
   );
 }
 
+/** Metadata describing the migration target configuration. */
 type MigrationMetaData = {
+  /** The target database dialect. */
   toDialect?: SqluiCore.Dialect;
+  /** Name for the new database to create. */
   newDatabaseName: string;
+  /** Name for the new table/collection to create. */
   newTableName: string;
+  /** Azure Table Storage row key field (aztable dialect only). */
   azTableRowKeyField?: string;
+  /** Azure Table Storage partition key field (aztable dialect only). */
   azTablePartitionKeyField?: string;
+  /** SQL query to fetch source data for migration. */
   selectQuery?: string;
 };
 
+/** Props for the MigrationMetaDataInputs component. */
 type MigrationMetaDataInputsProps = {
+  /** Whether migrating from a real database connection (vs. raw JSON). */
   isMigratingRealConnection: boolean;
+  /** The source connection query. */
   query: SqluiFrontend.ConnectionQuery;
+  /** Current migration metadata values. */
   value: MigrationMetaData;
+  /** Callback when migration metadata changes. */
   onChange: (newValue: MigrationMetaData) => void;
 };
 
+/**
+ * Form inputs for configuring migration target metadata (dialect, database name, table name).
+ * Renders additional fields for dialect-specific options like Azure Table keys.
+ * @param props - Contains migration state, query info, and onChange callback.
+ * @returns Migration metadata form fields or null while loading.
+ */
 function MigrationMetaDataInputs(props: MigrationMetaDataInputsProps): JSX.Element | null {
   const { query, isMigratingRealConnection, value: migrationMetaData } = props;
   const { data: columns, isLoading: loadingColumns } = useGetColumns(query?.connectionId, query?.databaseId, query?.tableId);

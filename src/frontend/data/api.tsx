@@ -35,11 +35,21 @@ async function _fetch<T>(input: RequestInfo, initOptions?: RequestInit) {
     });
 }
 
+/**
+ * API client for communicating with the backend via HTTP requests.
+ * Used in both Electron IPC and mocked server modes.
+ */
 export class ProxyApi {
+  /** Fetches server configuration settings. */
   static getConfigs() {
     return _fetch<SqluiCore.ServerConfigs>(`/api/configs`);
   }
 
+  /**
+   * Updates server configuration settings.
+   * @param settings - The settings to apply.
+   * @returns The updated server configs.
+   */
   static updateConfigs(settings: SqluiFrontend.Settings) {
     return _fetch<SqluiCore.ServerConfigs>(`/api/configs`, {
       method: "PUT",
@@ -47,16 +57,26 @@ export class ProxyApi {
     });
   }
 
+  /** Fetches all connections for the current session. */
   static getConnections() {
     return _fetch<SqluiCore.ConnectionProps[]>(`/api/connections`);
   }
 
+  /**
+   * Fetches all connections for a specific session.
+   * @param sessionId - The session ID to fetch connections for.
+   */
   static getConnectionsBySessionId(sessionId: string) {
     return _fetch<SqluiCore.ConnectionProps[]>(`/api/connections`, {
       headers: { "sqlui-native-session-id": sessionId },
     });
   }
 
+  /**
+   * Creates or updates a connection within a specific session.
+   * @param sessionId - The target session ID.
+   * @param connection - The connection properties to upsert.
+   */
   static upsertConnectionForSession(sessionId: string, connection: SqluiCore.CoreConnectionProps) {
     const { id } = connection;
     if (id) {
@@ -74,28 +94,56 @@ export class ProxyApi {
     }
   }
 
+  /**
+   * Fetches a single connection by ID.
+   * @param connectionId - The connection ID.
+   */
   static getConnection(connectionId: string) {
     return _fetch<SqluiCore.ConnectionProps>(`/api/connection/${connectionId}`);
   }
 
+  /**
+   * Fetches databases for a given connection.
+   * @param connectionId - The connection ID.
+   */
   static getConnectionDatabases(connectionId: string) {
     return _fetch<SqluiCore.DatabaseMetaData[]>(`/api/connection/${connectionId}/databases`);
   }
 
+  /**
+   * Fetches tables for a given connection and database.
+   * @param connectionId - The connection ID.
+   * @param databaseId - The database ID.
+   */
   static getConnectionTables(connectionId: string, databaseId: string) {
     return _fetch<SqluiCore.TableMetaData[]>(`/api/connection/${connectionId}/database/${databaseId}/tables`);
   }
 
+  /**
+   * Fetches columns for a given table.
+   * @param connectionId - The connection ID.
+   * @param databaseId - The database ID.
+   * @param tableId - The table ID.
+   */
   static getConnectionColumns(connectionId: string, databaseId: string, tableId: string) {
     return _fetch<SqluiCore.ColumnMetaData[]>(`/api/connection/${connectionId}/database/${databaseId}/table/${tableId}/columns`);
   }
 
+  /**
+   * Deletes a connection by ID.
+   * @param connectionId - The connection ID to delete.
+   * @returns The deleted connection ID.
+   */
   static deleteConnection(connectionId: string) {
     return _fetch<string>(`/api/connection/${connectionId}`, {
       method: "delete",
     }).then(() => connectionId);
   }
 
+  /**
+   * Creates or updates a connection in the current session.
+   * @param newConnection - The connection properties to upsert.
+   */
   static upsertConnection(newConnection: SqluiCore.CoreConnectionProps) {
     const { id } = newConnection;
     if (id) {
@@ -111,6 +159,11 @@ export class ProxyApi {
     }
   }
 
+  /**
+   * Executes a SQL/NoSQL query against a connection.
+   * @param query - The query to execute, including connection, database, and SQL.
+   * @returns The query execution result.
+   */
   static execute(query?: SqluiFrontend.ConnectionQuery) {
     return _fetch<SqluiCore.Result>(`/api/connection/${query?.connectionId}/execute`, {
       method: "post",
@@ -122,12 +175,20 @@ export class ProxyApi {
     });
   }
 
+  /**
+   * Reconnects to a database connection.
+   * @param connectionId - The connection ID to reconnect.
+   */
   static reconnect(connectionId: string) {
     return _fetch<SqluiCore.ConnectionMetaData>(`/api/connection/${connectionId}/connect`, {
       method: "post",
     });
   }
 
+  /**
+   * Tests a database connection without persisting it.
+   * @param connection - The connection properties to test.
+   */
   static test(connection: SqluiCore.CoreConnectionProps) {
     return _fetch<SqluiCore.CoreConnectionMetaData>(`/api/connection/test`, {
       method: "post",
@@ -135,6 +196,10 @@ export class ProxyApi {
     });
   }
 
+  /**
+   * Bulk updates all connections.
+   * @param connections - The full list of connections to persist.
+   */
   static update(connections: SqluiCore.ConnectionProps[]) {
     return _fetch<SqluiCore.ConnectionProps[]>(`/api/connections`, {
       method: "post",
@@ -142,11 +207,15 @@ export class ProxyApi {
     });
   }
 
-  // queries endpoints
+  /** Fetches all saved queries for the current session. */
   static getQueries() {
     return _fetch<SqluiCore.ConnectionQuery[]>(`/api/queries`);
   }
 
+  /**
+   * Creates or updates a query.
+   * @param newQuery - The query to upsert.
+   */
   static upsertQuery(newQuery: SqluiCore.CoreConnectionQuery) {
     const { id } = newQuery;
     if (id) {
@@ -162,31 +231,46 @@ export class ProxyApi {
     }
   }
 
+  /**
+   * Deletes a query by ID.
+   * @param queryId - The query ID to delete.
+   * @returns The deleted query ID.
+   */
   static deleteQuery(queryId: string) {
     return _fetch<string>(`/api/query/${queryId}`, {
       method: "delete",
     }).then(() => queryId);
   }
 
-  // sessions api
+  /** Fetches the current session. */
   static getSession() {
     return _fetch<SqluiCore.Session>(`/api/session`);
   }
 
+  /** Fetches all sessions. */
   static getSessions() {
     return _fetch<SqluiCore.Session[]>(`/api/sessions`);
   }
 
+  /** Fetches IDs of all currently opened sessions. */
   static getOpenedSessionIds() {
     return _fetch<string[]>(`/api/sessions/opened`);
   }
 
+  /**
+   * Marks a session as opened.
+   * @param sessionId - The session ID to mark as open.
+   */
   static setOpenSession(sessionId: string) {
     return _fetch<Record<string, string>>(`/api/sessions/opened/${sessionId}`, {
       method: "post",
     });
   }
 
+  /**
+   * Creates or updates a session.
+   * @param newSession - The session to upsert.
+   */
   static upsertSession(newSession: SqluiCore.CoreSession) {
     const { id } = newSession;
     if (id) {
@@ -202,6 +286,10 @@ export class ProxyApi {
     }
   }
 
+  /**
+   * Clones an existing session with a new name.
+   * @param newSession - Session to clone; id is the source, name is the new name.
+   */
   static cloneSession(newSession: SqluiCore.CoreSession) {
     const clonedFromSessionId = newSession.id;
     const newName = newSession.name;
@@ -214,13 +302,22 @@ export class ProxyApi {
     });
   }
 
+  /**
+   * Deletes a session by ID.
+   * @param sessionId - The session ID to delete.
+   * @returns The deleted session ID.
+   */
   static deleteSession(sessionId: string) {
     return _fetch<string>(`/api/session/${sessionId}`, {
       method: "delete",
     }).then(() => sessionId);
   }
 
-  // used to read uploaded file content
+  /**
+   * Reads the content of an uploaded file. Uses Electron fs in desktop mode, HTTP upload otherwise.
+   * @param file - The File object to read.
+   * @returns The file content as a string.
+   */
   static readFileContent(file: File): Promise<string> {
     try {
       //@ts-ignore
@@ -236,11 +333,19 @@ export class ProxyApi {
     }
   }
 
-  // folders api
+  /**
+   * Fetches all items in a folder (e.g., recycle bin, bookmarks).
+   * @param folderId - The folder ID.
+   */
   static getFolderItems(folderId: string) {
     return _fetch<SqluiCore.FolderItem[]>(`/api/folder/${folderId}`);
   }
 
+  /**
+   * Adds an item to a folder.
+   * @param folderId - The folder ID.
+   * @param folderItem - The item to add (without ID).
+   */
   static addFolderItem(folderId: string, folderItem: Omit<SqluiCore.FolderItem, "id">) {
     return _fetch<SqluiCore.FolderItem>(`/api/folder/${folderId}`, {
       method: "post",
@@ -248,6 +353,11 @@ export class ProxyApi {
     });
   }
 
+  /**
+   * Updates an existing folder item.
+   * @param folderId - The folder ID.
+   * @param folderItem - The updated folder item.
+   */
   static updateFolderItem(folderId: string, folderItem: SqluiCore.FolderItem) {
     return _fetch<SqluiCore.FolderItem>(`/api/folder/${folderId}`, {
       method: "put",
@@ -255,21 +365,34 @@ export class ProxyApi {
     });
   }
 
+  /**
+   * Deletes an item from a folder.
+   * @param folderId - The folder type/ID.
+   * @param itemId - The item ID to delete.
+   */
   static deleteFolderItem(folderId: SqluiCore.FolderType, itemId: string) {
     return _fetch<void>(`/api/folder/${folderId}/${itemId}`, {
       method: "delete",
     });
   }
 
-  // data api used for storing data for the window api
+  /** Fetches all data snapshots. */
   static getDataSnapshots() {
     return _fetch<SqluiCore.DataSnapshot[]>(`/api/dataSnapshots`);
   }
 
+  /**
+   * Fetches a single data snapshot by ID.
+   * @param dataSnapshotId - The data snapshot ID.
+   */
   static getDataSnapshot(dataSnapshotId: string) {
     return _fetch<SqluiCore.DataSnapshot>(`/api/dataSnapshot/${dataSnapshotId}`);
   }
 
+  /**
+   * Creates a new data snapshot.
+   * @param dataSnapshot - The snapshot data with required values and description.
+   */
   static addDataSnapshot(dataSnapshot: Partial<SqluiCore.DataSnapshot> & Required<Pick<SqluiCore.DataSnapshot, "values" | "description">>) {
     return _fetch<SqluiCore.DataSnapshot>(`/api/dataSnapshot`, {
       method: "post",
@@ -277,6 +400,10 @@ export class ProxyApi {
     });
   }
 
+  /**
+   * Deletes a data snapshot by ID.
+   * @param dataSnapshotId - The data snapshot ID to delete.
+   */
   static deleteDataSnapshot(dataSnapshotId: string) {
     return _fetch<void>(`/api/dataSnapshot/${dataSnapshotId}`, {
       method: "delete",

@@ -19,18 +19,32 @@ import {
   useUpsertSession,
 } from "src/frontend/hooks/useSession";
 
+/** Represents a session option in the session selection list. */
 export type SessionOption = {
+  /** Display name of the session. */
   label: string;
+  /** Additional context (e.g., "Current Session" or "Selected in another Window"). */
   subtitle?: string;
+  /** Session ID. */
   value: string;
+  /** Whether this session is currently selected. */
   selected?: boolean;
+  /** Whether this session is unavailable for selection. */
   disabled?: boolean;
 };
 
+/** Props for the SessionSelectionForm component. */
 type SessionSelectionFormProps = {
+  /** Whether this is the initial session selection (affects which sessions can be selected). */
   isFirstTime: boolean;
 };
 
+/**
+ * Form for selecting, creating, renaming, and deleting sessions.
+ * Displays available sessions with their status and allows creating new ones.
+ * @param props - Contains isFirstTime flag to control UI behavior.
+ * @returns The session selection form or null while loading.
+ */
 export default function SessionSelectionForm(props: SessionSelectionFormProps): JSX.Element | null {
   const { isFirstTime } = props;
   const { data: sessions, isLoading: loadingSessions } = useGetSessions();

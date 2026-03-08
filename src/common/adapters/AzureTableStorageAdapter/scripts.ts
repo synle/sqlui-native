@@ -7,10 +7,13 @@ import { SqlAction, SqluiCore } from "typings";
 
 const formatter = "js";
 
+/** Prefix for the TableClient variable in generated Azure Table Storage scripts. */
 export const AZTABLE_TABLE_CLIENT_PREFIX = "tableClient";
 
+/** Prefix for the TableServiceClient variable in generated Azure Table Storage scripts. */
 export const AZTABLE_TABLE_SERVICE_PREFIX = "serviceClient";
 
+/** Column names to exclude from insert and update operations (system-managed fields). */
 export const AZTABLE_KEYS_TO_IGNORE_FOR_INSERT_AND_UPDATE = "etag,timestamp".split(",");
 
 function _getColMapForInsertAndUpdate(columns?: SqluiCore.ColumnMetaData[]) {
@@ -42,6 +45,11 @@ function _shouldIncludeField(col: SqluiCore.ColumnMetaData) {
   return true;
 }
 
+/**
+ * Generates a script to list all entities from an Azure Table.
+ * @param input - Table context including table identifier.
+ * @returns Script output using the tableClient.listEntities() method.
+ */
 export function getSelectAllColumns(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Select All Columns`;
 
@@ -56,6 +64,11 @@ export function getSelectAllColumns(input: SqlAction.TableInput): SqlAction.Outp
   };
 }
 
+/**
+ * Generates a script to list entities with specific columns and a partition key filter.
+ * @param input - Table context including columns and table identifier.
+ * @returns Script output with column selection and filter options.
+ */
 export function getSelectSpecificColumns(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Select Specific Columns`;
 
@@ -75,6 +88,12 @@ export function getSelectSpecificColumns(input: SqlAction.TableInput): SqlAction
   };
 }
 
+/**
+ * Generates a script to insert (create) a single entity in an Azure Table.
+ * @param input - Table context including columns.
+ * @param value - Optional pre-populated values for the new entity.
+ * @returns Script output using the tableClient.createEntity() method.
+ */
 export function getInsert(input: SqlAction.TableInput, value?: Record<string, any>): SqlAction.Output | undefined {
   const label = `Insert`;
 
@@ -95,6 +114,14 @@ export function getInsert(input: SqlAction.TableInput, value?: Record<string, an
   };
 }
 
+/**
+ * Generates a script to bulk insert multiple entities into an Azure Table.
+ * @param input - Table context including columns for key inference.
+ * @param rows - Array of row data to insert.
+ * @param rowKeyField - Optional field name to use as the row key.
+ * @param partitionKeyField - Optional field name to use as the partition key.
+ * @returns Script output using Promise.all with createEntity(), or undefined if no rows.
+ */
 export function getBulkInsert(
   input: SqlAction.TableInput,
   rows?: Record<string, any>[],
@@ -142,6 +169,13 @@ export function getBulkInsert(
   };
 }
 
+/**
+ * Generates a script to update an entity with specific values in an Azure Table.
+ * @param input - Table context including columns.
+ * @param value - New field values to apply.
+ * @param conditions - Conditions identifying the entity to update.
+ * @returns Script output using the tableClient.updateEntity() method.
+ */
 export function getUpdateWithValues(
   input: SqlAction.TableInput,
   value: Record<string, any>,
@@ -171,6 +205,11 @@ export function getUpdateWithValues(
   };
 }
 
+/**
+ * Generates a script to update an entity using a template with placeholder values.
+ * @param input - Table context including columns.
+ * @returns Script output using the tableClient.updateEntity() method.
+ */
 export function getUpdate(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Update`;
 
@@ -185,6 +224,11 @@ export function getUpdate(input: SqlAction.TableInput): SqlAction.Output | undef
   };
 }
 
+/**
+ * Generates a script to upsert (insert or replace) an entity in an Azure Table.
+ * @param input - Table context including columns.
+ * @returns Script output using the tableClient.upsertEntity() method.
+ */
 export function getUpsert(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Upsert`;
 
@@ -199,6 +243,11 @@ export function getUpsert(input: SqlAction.TableInput): SqlAction.Output | undef
   };
 }
 
+/**
+ * Generates a script to delete an entity by partition key and row key.
+ * @param input - Table context.
+ * @returns Script output using the tableClient.deleteEntity() method.
+ */
 export function getDelete(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Delete`;
 
@@ -211,6 +260,11 @@ export function getDelete(input: SqlAction.TableInput): SqlAction.Output | undef
   };
 }
 
+/**
+ * Generates a script to drop (delete) a table from Azure Table Storage.
+ * @param input - Table context including the table identifier.
+ * @returns Script output using the serviceClient.deleteTable() method.
+ */
 export function getDropTable(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Drop Table`;
 
@@ -223,6 +277,11 @@ export function getDropTable(input: SqlAction.TableInput): SqlAction.Output | un
   };
 }
 
+/**
+ * Generates a script to create a new table in Azure Table Storage.
+ * @param input - Table context including the table identifier.
+ * @returns Script output using the serviceClient.createTable() method.
+ */
 export function getCreateTable(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Create Table`;
 
@@ -234,6 +293,11 @@ export function getCreateTable(input: SqlAction.TableInput): SqlAction.Output | 
     `,
   };
 }
+/**
+ * Generates a script to create a new table at the database level in Azure Table Storage.
+ * @param input - Database context.
+ * @returns Script output using the serviceClient.createTable() method with a placeholder name.
+ */
 export function getCreateDatabaseTable(input: SqlAction.DatabaseInput): SqlAction.Output | undefined {
   const label = `Create Table`;
 
@@ -246,6 +310,9 @@ export function getCreateDatabaseTable(input: SqlAction.DatabaseInput): SqlActio
   };
 }
 
+/**
+ * Script generator for Azure Table Storage, providing query templates, connection form inputs, and code snippets.
+ */
 export class ConcreteDataScripts extends BaseDataScript {
   dialects = ["aztable"];
 

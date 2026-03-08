@@ -39,6 +39,7 @@ type CommandOption = {
   data?: any;
 };
 
+/** All available command palette options for navigation, settings, sessions, connections, and queries. */
 const ALL_COMMAND_PALETTE_OPTIONS: CommandOption[] = [
   { event: "clientEvent/navigate", label: "Open Main Query Page", data: "/" },
   { event: "clientEvent/navigate", label: "Open Data Migration", data: "/migration" },
@@ -189,6 +190,12 @@ const ALL_COMMAND_PALETTE_OPTIONS: CommandOption[] = [
   { event: "clientEvent/checkForUpdate", label: "Check For Update" },
 ];
 
+/**
+ * Searchable command palette for quickly executing application commands via fuzzy text matching.
+ * Supports keyboard navigation (arrow keys, Enter) through the filtered command list.
+ * @param props - Configuration including the command selection callback.
+ * @returns The rendered command palette with search input and command list.
+ */
 export default function CommandPalette(props: CommandPaletteProps): JSX.Element | null {
   const [text, setText] = useState("");
   const [options, setOptions] = useState<Command[]>([]);

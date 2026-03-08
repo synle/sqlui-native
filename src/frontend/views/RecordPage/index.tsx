@@ -47,6 +47,7 @@ import LayoutTwoColumns from "src/frontend/layout/LayoutTwoColumns";
 import { formatJS, formatSQL } from "src/frontend/utils/formatter";
 import { SqluiFrontend } from "typings";
 
+/** Generic type for record data (key-value pairs). */
 type RecordData = any;
 
 /**
@@ -404,6 +405,10 @@ function RecordForm(props) {
   );
 }
 
+/**
+ * Page for creating a new database record. Generates dialect-specific insert queries
+ * and attaches them as new query tabs.
+ */
 export function NewRecordPage() {
   const navigate = useNavigate();
   useSideBarWidthPreference();
@@ -562,6 +567,11 @@ export function NewRecordPage() {
   );
 }
 
+/**
+ * Component for viewing and editing a database record. Generates dialect-specific update queries.
+ * @param props - Contains record data and edit mode flag.
+ * @returns The record view/edit form or null if no active query/connection.
+ */
 export function EditRecordPage(props: RecordDetailsPageProps): JSX.Element | null {
   const { data } = props;
   const { onAddQuery } = useConnectionQueries();
@@ -766,11 +776,19 @@ export function EditRecordPage(props: RecordDetailsPageProps): JSX.Element | nul
     </>
   );
 }
+/** Props for RecordDetailsPage and EditRecordPage components. */
 type RecordDetailsPageProps = {
+  /** The record data to display or edit. */
   data: any;
+  /** Whether the form starts in edit mode. */
   isEditMode?: boolean;
 };
 
+/**
+ * Tabbed view of a record with a form display tab and a raw JSON tab.
+ * @param props - Contains record data and optional edit mode flag.
+ * @returns Tabbed record detail view.
+ */
 export function RecordDetailsPage(props: RecordDetailsPageProps): JSX.Element | null {
   const { data, isEditMode } = props;
   const [tabIdx, setTabIdx] = useState(0);

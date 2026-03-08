@@ -15,8 +15,10 @@ import * as sessionUtils from "src/common/utils/sessionUtils";
 import { SqluiCore, SqluiEnums } from "typings";
 let expressAppContext: Express | undefined;
 
+/** Storage key for the application settings entry. */
 const SETTINGS_ID = "app-settings";
 
+/** Default application settings applied when no saved settings exist. */
 const DEFAULT_SETTINGS = {
   darkMode: "dark",
   animationMode: "on",
@@ -89,10 +91,19 @@ function addDataEndpoint(
   }
 }
 
+/**
+ * Returns the accumulated endpoint handlers for use in Electron IPC mode.
+ * @returns Array of [method, url, handler] tuples registered via addDataEndpoint.
+ */
 export function getEndpointHandlers() {
   return electronEndpointHandlers;
 }
 
+/**
+ * Registers all API endpoint handlers for connections, queries, sessions, folders, and data snapshots.
+ * Works in both Express (mocked server) and Electron IPC modes.
+ * @param anExpressAppContext - Optional Express app; if provided, routes are registered as HTTP endpoints.
+ */
 export function setUpDataEndpoints(anExpressAppContext?: Express) {
   expressAppContext = anExpressAppContext;
   // storageDir

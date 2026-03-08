@@ -8,6 +8,9 @@ import { SqluiCore } from "typings";
  */
 const MAX_ITEM_COUNT_TO_SCAN = 5;
 
+/**
+ * Data adapter for Azure Cosmos DB, handling connections, metadata retrieval, and query execution.
+ */
 export default class AzureCosmosDataAdapter extends BaseDataAdapter implements IDataAdapter {
   // https://docs.microsoft.com/en-us/azure/cosmos-db/sql/sql-api-nodejs-get-started?tabs=windows
 

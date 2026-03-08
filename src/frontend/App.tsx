@@ -25,6 +25,9 @@ function PageLayout({ children }: { children: React.ReactNode }) {
   );
 }
 
+/**
+ * Main application component. Handles routing, drag-and-drop import, and Monaco editor configuration.
+ */
 export default function App() {
   useGetSessions();
   const { selectCommand } = useCommands();

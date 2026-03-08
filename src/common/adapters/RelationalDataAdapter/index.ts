@@ -20,8 +20,9 @@ function _getDefaultSequelizeOptions(): Options {
 }
 
 /**
- * mostly adapter for sequelize
- * https://sequelize.org/master/class/lib/dialects/abstract/query-interface.js~QueryInterface.html
+ * Data adapter for relational databases (MySQL, MariaDB, MSSQL, PostgreSQL, SQLite)
+ * using Sequelize as the underlying ORM.
+ * @see https://sequelize.org/master/class/lib/dialects/abstract/query-interface.js~QueryInterface.html
  */
 export default class RelationalDataAdapter extends BaseDataAdapter implements IDataAdapter {
   dialect?: SqluiCore.Dialect;
@@ -94,6 +95,7 @@ export default class RelationalDataAdapter extends BaseDataAdapter implements ID
     }
   }
 
+  /** Tests the database connection by authenticating and then closing. */
   async authenticate() {
     const connection = this.getConnection();
     try {
@@ -103,6 +105,7 @@ export default class RelationalDataAdapter extends BaseDataAdapter implements ID
     }
   }
 
+  /** Retrieves all databases using dialect-specific SQL queries. */
   async getDatabases(): Promise<SqluiCore.DatabaseMetaData[]> {
     let sql;
 
@@ -150,6 +153,10 @@ export default class RelationalDataAdapter extends BaseDataAdapter implements ID
       .sort((a, b) => (a.name || "").localeCompare(b.name || ""));
   }
 
+  /**
+   * Retrieves all tables for a given database using dialect-specific SQL.
+   * @param database - The database name.
+   */
   async getTables(database?: string): Promise<SqluiCore.TableMetaData[]> {
     // https://github.com/knex/knex/issues/360
     // PostgreSQL: SELECT tablename FROM pg_tables WHERE schemaname='public''
@@ -192,6 +199,11 @@ export default class RelationalDataAdapter extends BaseDataAdapter implements ID
       .sort((a, b) => (a.name || "").localeCompare(b.name || ""));
   }
 
+  /**
+   * Retrieves column metadata and foreign key references for a table.
+   * @param table - The table name.
+   * @param database - The database name.
+   */
   async getColumns(table: string, database?: string): Promise<SqluiCore.ColumnMetaData[]> {
     switch (this.dialect) {
       case "mssql":
@@ -252,6 +264,12 @@ export default class RelationalDataAdapter extends BaseDataAdapter implements ID
     }
   }
 
+  /**
+   * Executes a raw SQL query and returns the result with dialect-specific metadata handling.
+   * @param sql - The SQL query string to execute.
+   * @param database - The target database name.
+   * @returns The query result including raw data, metadata, and affected rows.
+   */
   async execute(sql: string, database?: string): Promise<SqluiCore.Result> {
     // https://sequelize.org/master/manual/raw-queries.html
     //@ts-ignore

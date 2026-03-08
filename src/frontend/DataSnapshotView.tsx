@@ -116,6 +116,10 @@ function QuickActionDial(props: QuickActionDialProps) {
   );
 }
 
+/**
+ * View for displaying a single data snapshot's records in a searchable, filterable data table.
+ * Includes a speed dial with actions for viewing description, downloading CSV/JSON, and navigation.
+ */
 export default function DataSnapshotView() {
   const urlParams = useParams();
   const dataSnapshotId = urlParams.dataSnapshotId as string;

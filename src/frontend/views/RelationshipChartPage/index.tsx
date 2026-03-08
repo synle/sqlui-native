@@ -31,6 +31,10 @@ const height = 80;
 
 const heightDelta = 25;
 
+/**
+ * Interactive visualization page showing table relationships using ReactFlow.
+ * Displays foreign key connections between tables with drag, select, and export-to-PNG capabilities.
+ */
 export default function RelationshipChartPage() {
   const navigate = useNavigate();
   const urlParams = useParams();

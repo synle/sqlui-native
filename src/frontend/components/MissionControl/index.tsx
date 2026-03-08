@@ -43,16 +43,26 @@ import { RecordDetailsPage } from "src/frontend/views/RecordPage";
 import appPackage from "src/package.json";
 import { SqluiCore, SqluiEnums, SqluiFrontend } from "typings";
 
+/** Represents a command dispatched through the MissionControl system. */
 export type Command = {
+  /** The client event key identifying the command type. */
   event: SqluiEnums.ClientEventKey;
+  /** Optional payload data for the command. */
   data?: unknown;
+  /** Optional human-readable label describing the command action. */
   label?: string;
 };
 
+/** React Query cache key for the command palette state. */
 const QUERY_KEY_COMMAND_PALETTE = "commandPalette";
 
 let _commands: Command[] = [];
 
+/**
+ * Hook for managing the command queue used by MissionControl.
+ * Provides the current command, a method to dispatch new commands, and a method to dismiss them.
+ * @returns An object with command, selectCommand, and dismissCommand.
+ */
 export function useCommands() {
   const queryClient = useQueryClient();
   const { data: commands = [] } = useQuery([QUERY_KEY_COMMAND_PALETTE], () => _commands);
@@ -83,9 +93,8 @@ export function useCommands() {
 }
 
 /**
- * These are all the menu keys that should be disabled when the query tab
- * is not visible. Triggering these events in the background will be confusing
- * @type {Array}
+ * All Electron menu keys that should be disabled during modal dialogs.
+ * Prevents confusing background actions when the query tab is not visible.
  */
 export const allMenuKeys = [
   "menu-connection-new",
@@ -103,6 +112,13 @@ export const allMenuKeys = [
   "menu-session-delete",
 ];
 
+/**
+ * The central command dispatcher component for the application.
+ * Listens for commands from the command queue and executes corresponding actions
+ * such as navigation, connection management, query operations, session handling,
+ * import/export, and keyboard shortcuts. Renders nothing (returns null).
+ * @returns null
+ */
 export default function MissionControl() {
   const navigate = useNavigate();
   const connectionQueries = useConnectionQueries();

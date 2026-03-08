@@ -19,6 +19,11 @@ type ConnectionActionsProps = {
   connection: SqluiCore.ConnectionProps;
 };
 
+/**
+ * Dropdown menu of actions available for a database connection (bookmark, edit, export, duplicate, refresh, delete, etc.).
+ * @param props - Props containing the connection to display actions for.
+ * @returns The rendered dropdown action button, or null if context menus are hidden.
+ */
 export default function ConnectionActions(props: ConnectionActionsProps): JSX.Element | null {
   const { connection } = props;
   const navigate = useNavigate();

@@ -12,12 +12,22 @@ import { useQuerySizeSetting } from "src/frontend/hooks/useSetting";
 import { useTreeActions } from "src/frontend/hooks/useTreeActions";
 import { SqlAction } from "typings";
 
+/** Props for the TableActions component. */
 type TableActionsProps = {
+  /** ID of the connection. */
   connectionId: string;
+  /** ID of the database. */
   databaseId: string;
+  /** ID/name of the table. */
   tableId: string;
 };
 
+/**
+ * Dropdown button showing available actions for a specific table (e.g., select, insert, visualize).
+ * Lazily fetches columns only when the dropdown is opened.
+ * @param props - Contains connectionId, databaseId, and tableId to determine available actions.
+ * @returns The dropdown button or null if context menu is disabled.
+ */
 export default function TableActions(props: TableActionsProps): JSX.Element | null {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);

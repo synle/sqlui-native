@@ -31,6 +31,13 @@ import { GlobalFilter, SimpleColumnFilter } from "src/frontend/components/DataTa
 import DropdownMenu from "src/frontend/components/DropdownMenu";
 import { useAddDataSnapshot } from "src/frontend/hooks/useDataSnapshot";
 
+/**
+ * A non-virtualized data table using TanStack React Table.
+ * Renders all rows in the DOM; suitable for smaller datasets.
+ * Supports sorting, filtering, column resizing, context menus, and data snapshots.
+ * @param props - Data table properties including columns, data, and optional callbacks.
+ * @returns The rendered data table or null.
+ */
 export default function LegacyDataTable(props: DataTableProps): JSX.Element | null {
   const { data } = props;
   const [columns, setColumns] = useState<ColumnDef<any, any>[]>([]);

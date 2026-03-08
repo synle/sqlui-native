@@ -6,8 +6,10 @@ import { useShowHide } from "src/frontend/hooks/useShowHide";
 import { SqluiCore } from "typings";
 import { TreeRow } from "./types";
 
-const MAX_COLUMN_SIZE_TO_SHOW = 20; // max number of columns to show
+/** Maximum number of columns to display before showing a "Show All" button. */
+const MAX_COLUMN_SIZE_TO_SHOW = 20;
 
+/** Result of a database metadata query for a connection. */
 type DatabaseQueryResult = {
   connectionId: string;
   data?: SqluiCore.DatabaseMetaData[];
@@ -15,6 +17,7 @@ type DatabaseQueryResult = {
   isError: boolean;
 };
 
+/** Result of a table metadata query for a database. */
 type TableQueryResult = {
   connectionId: string;
   databaseId: string;
@@ -23,6 +26,7 @@ type TableQueryResult = {
   isError: boolean;
 };
 
+/** Result of a column metadata query for a table. */
 type ColumnQueryResult = {
   connectionId: string;
   databaseId: string;
@@ -32,6 +36,11 @@ type ColumnQueryResult = {
   isError: boolean;
 };
 
+/**
+ * Hook that builds a flat array of tree rows from connections, databases, tables, and columns.
+ * Batches data fetching for expanded nodes and tracks visibility/selection state.
+ * @returns Flat row array, fingerprint string, connections data, loading state, toggle handler, and update function.
+ */
 export function useFlatTreeRows() {
   const { data: connections, isLoading: connectionsLoading } = useGetConnections();
   const { visibles, onToggle } = useShowHide();

@@ -8,6 +8,9 @@ import { SqluiCore } from "typings";
  */
 const MAX_ITEM_COUNT_TO_SCAN = 5;
 
+/**
+ * Data adapter for Azure Table Storage, handling connections, metadata retrieval, and query execution.
+ */
 export default class AzureTableStorageAdapter extends BaseDataAdapter implements IDataAdapter {
   /**
    * TableServiceClient - Client that provides functions to interact at a Table Service level such as create, list and delete tables

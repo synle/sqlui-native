@@ -23,6 +23,11 @@ function _persistQueries() {
   SessionStorageConfig.set("clientConfig/cache.connectionQueries", toPersistQueries);
 }
 
+/**
+ * Context provider for connection queries. Loads persisted queries from session storage or API on mount.
+ * @param props - Component props containing child elements.
+ * @returns The context provider wrapping children.
+ */
 export default function WrappedContext(props: { children: React.ReactNode }): JSX.Element | null {
   // State to hold the theme value
   const [data, setData] = useState(_connectionQueries);
@@ -93,6 +98,11 @@ function _useConnectionQueries() {
   };
 }
 
+/**
+ * Hook providing CRUD operations for connection queries (tabs).
+ * Manages adding, deleting, selecting, duplicating, importing, and reordering query tabs.
+ * @returns Query list, loading state, and mutation handlers.
+ */
 export function useConnectionQueries() {
   const { data: queries, setData, isLoading } = _useConnectionQueries();
   const { mutateAsync: addRecycleBinItem } = useAddRecycleBinItem();
@@ -319,6 +329,11 @@ export function useConnectionQueries() {
   };
 }
 
+/**
+ * Hook to access and manage a single connection query by ID.
+ * @param queryId - The ID of the query to retrieve.
+ * @returns The query object, loading state, and onChange/onDelete handlers.
+ */
 export function useConnectionQuery(queryId: string) {
   const { queries, onChangeQuery, onDeleteQuery, isLoading } = useConnectionQueries();
 
@@ -336,6 +351,10 @@ export function useConnectionQuery(queryId: string) {
   };
 }
 
+/**
+ * Hook to access and manage the currently selected (active) connection query.
+ * @returns The active query object, loading state, and onChange/onDelete handlers.
+ */
 export function useActiveConnectionQuery() {
   const { queries, onChangeQuery, onDeleteQuery, isLoading } = useConnectionQueries();
 

@@ -5,10 +5,17 @@ import React from "react";
 import { useActionDialogs } from "src/frontend/hooks/useActionDialogs";
 import { useDeleteConnection } from "src/frontend/hooks/useConnection";
 
+/** Props for the DeleteConnectionButton component. */
 type DeleteConnectionButtonProps = {
+  /** The ID of the connection to delete. */
   connectionId: string;
 };
 
+/**
+ * An icon button that deletes a database connection after user confirmation.
+ * @param props - Contains the connectionId to delete.
+ * @returns A delete icon button with tooltip.
+ */
 export default function DeleteConnectionButton(props: DeleteConnectionButtonProps): JSX.Element | null {
   const { connectionId } = props;
   const { confirm } = useActionDialogs();

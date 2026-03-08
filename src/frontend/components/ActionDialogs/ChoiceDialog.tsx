@@ -5,6 +5,7 @@ import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemText from "@mui/material/ListItemText";
 
+/** Represents a single selectable option in a choice dialog. */
 export type ChoiceOption = {
   startIcon?: React.ReactNode;
   label: string | React.ReactNode;
@@ -12,6 +13,7 @@ export type ChoiceOption = {
   disabled?: boolean;
 };
 
+/** Input configuration for creating a choice dialog with a list of options. */
 export type ChoiceInput = {
   title: string;
   message: string | React.ReactNode;
@@ -27,6 +29,11 @@ type ChoiceDialogProps = ChoiceInput & {
   onDismiss: () => void;
 };
 
+/**
+ * Dialog component that presents a list of selectable options to the user.
+ * @param props - Choice dialog configuration including title, message, options, and selection callback.
+ * @returns The rendered choice dialog element.
+ */
 export default function ChoiceDialog(props: ChoiceDialogProps): JSX.Element | null {
   const { title, message, options, open, required, onDismiss: handleClose, onSelect: handleListItemClick } = props;
 

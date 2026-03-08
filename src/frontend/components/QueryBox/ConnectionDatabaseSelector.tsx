@@ -6,15 +6,28 @@ import Select from "src/frontend/components/Select";
 import { useGetConnectionById, useGetConnections, useGetDatabases, useGetTables } from "src/frontend/hooks/useConnection";
 import { SqluiFrontend } from "typings";
 
+/** Props for the ConnectionDatabaseSelector component. */
 type ConnectionDatabaseSelectorProps = {
+  /** Current query values including connectionId, databaseId, and tableId. */
   value: Partial<SqluiFrontend.ConnectionQuery>;
+  /** Callback when connection, database, or table selection changes. */
   onChange: (connectionId?: string, databaseId?: string, tableId?: string) => void;
+  /** Whether the table selector is required. */
   isTableIdRequired?: boolean;
+  /** Whether the connection selector is disabled. */
   disabledConnection?: boolean;
+  /** Whether the database selector is disabled. */
   disabledDatabase?: boolean;
+  /** Whether form fields are required. */
   required?: boolean;
 };
 
+/**
+ * Cascading selector for choosing a connection, database, and table.
+ * Auto-selects when only one option is available.
+ * @param props - Configuration for the selector including current values and change handler.
+ * @returns The selector dropdowns or null.
+ */
 export default function ConnectionDatabaseSelector(props: ConnectionDatabaseSelectorProps): JSX.Element | null {
   const query = props.value;
   const { data: connections, isLoading: loadingConnections } = useGetConnections();

@@ -4,12 +4,14 @@ import { ChoiceInput, ChoiceOption } from "src/frontend/components/ActionDialogs
 import { ModalInput } from "src/frontend/components/ActionDialogs/ModalDialog";
 import { PromptInput } from "src/frontend/components/ActionDialogs/PromptDialog";
 
+/** Action dialog configuration for alert-type dialogs. */
 type AlertActionDialog = AlertInput & {
   type: "alert";
   message: string;
   onSubmit?: () => void;
 };
 
+/** Action dialog configuration for confirm-type dialogs. */
 type ConfirmActionDialog = {
   type: "confirm";
   message: string;
@@ -18,16 +20,19 @@ type ConfirmActionDialog = {
   onSubmit: (yesSelected: boolean) => void;
 };
 
+/** Action dialog configuration for choice-type dialogs with selectable options. */
 type ChoiceActionDialog = ChoiceInput & {
   type: "choice";
   onSubmit: (yesSelected: boolean, selectedChoice?: string) => void;
 };
 
+/** Action dialog configuration for prompt-type dialogs with text input. */
 type PromptActionDialog = PromptInput & {
   type: "prompt";
   onSubmit: (yesSelected: boolean, newValue?: string) => void;
 };
 
+/** Action dialog configuration for modal-type dialogs with custom content. */
 type ModalActionDialog = ModalInput & {
   type: "modal";
   onSubmit: (closed: boolean) => void;
@@ -43,6 +48,11 @@ const TargetContext = createContext({
   setData: (newDialogs: ActionDialog[]) => {},
 });
 
+/**
+ * Context provider for the action dialogs system.
+ * @param props - Component props containing child elements.
+ * @returns The context provider wrapping children.
+ */
 export default function WrappedContext(props: { children: React.ReactNode }): JSX.Element | null {
   // State to hold the theme value
   const [data, setData] = useState(_actionDialogs);
@@ -50,6 +60,10 @@ export default function WrappedContext(props: { children: React.ReactNode }): JS
   return <TargetContext.Provider value={{ data, setData }}>{props.children}</TargetContext.Provider>;
 }
 
+/**
+ * Hook providing methods to show alert, confirm, prompt, choice, and modal dialogs.
+ * @returns Dialog state and methods to trigger and dismiss dialogs.
+ */
 export function useActionDialogs() {
   const { data, setData } = useContext(TargetContext)!;
 

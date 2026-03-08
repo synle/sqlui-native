@@ -15,6 +15,10 @@ type ConnectionFormProps = {
   id?: string;
 };
 
+/**
+ * Form for creating a new database connection, starting with a dialect selection hint screen.
+ * @returns The rendered new connection form or dialect selection screen.
+ */
 export function NewConnectionForm() {
   const [name, setName] = useState("");
   const [connection, setConnection] = useState("");
@@ -77,6 +81,11 @@ export function NewConnectionForm() {
   );
 }
 
+/**
+ * Form for editing an existing database connection, loading its current name and connection string.
+ * @param props - Props containing the connection ID to edit.
+ * @returns The rendered edit connection form, a loading indicator, or an error message if not found.
+ */
 export function EditConnectionForm(props: ConnectionFormProps): JSX.Element | null {
   const { id } = props;
   const [name, setName] = useState("");

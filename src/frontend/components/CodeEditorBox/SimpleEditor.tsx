@@ -31,6 +31,11 @@ const StyledTextArea = styled("textarea")(({ theme }) => {
   };
 });
 
+/**
+ * Lightweight textarea-based code editor with tab indentation and auto-indent support.
+ * @param props - Editor configuration including value, language, word wrap, and editor ref.
+ * @returns The rendered textarea editor.
+ */
 export default function SimpleEditor(props: SimpleEditorProps): JSX.Element | null {
   const textareaRef = useRef<HTMLTextareaElement>(null);
 

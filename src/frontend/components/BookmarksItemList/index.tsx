@@ -17,6 +17,7 @@ import { useConnectionQueries } from "src/frontend/hooks/useConnectionQuery";
 import { useDeleteBookmarkItem, useGetBookmarkItems, useUpdateBookmarkItem } from "src/frontend/hooks/useFolderItems";
 import { SqluiCore } from "typings";
 
+/** Callback invoked after a bookmark item is selected and applied. */
 type OnAfterSelectCallback = () => void;
 
 function NameCell({ row, onAfterSelect }: { row: any; onAfterSelect?: OnAfterSelectCallback }) {
@@ -109,11 +110,17 @@ const getColumns = (onAfterSelect?: OnAfterSelectCallback): ColumnDef<any, any>[
   ];
 };
 
+/** Props for the BookmarksItemList component. */
 type BookmarksItemListProps = {
   onAfterSelect?: OnAfterSelectCallback;
   hideActions?: boolean;
 };
 
+/**
+ * Displays a data table of bookmarked connections and queries with edit/delete actions.
+ * @param props - Configuration including optional after-select callback and whether to hide action buttons.
+ * @returns The rendered bookmarks list, a loading indicator, or an empty state message.
+ */
 export default function BookmarksItemList(props: BookmarksItemListProps): JSX.Element | null {
   const { onAfterSelect, hideActions } = props;
   const { data, isLoading } = useGetBookmarkItems();
@@ -156,6 +163,11 @@ export default function BookmarksItemList(props: BookmarksItemListProps): JSX.El
   );
 }
 
+/**
+ * Wrapper around BookmarksItemList intended for use inside a modal, with a link to the full bookmarks page.
+ * @param props - Configuration including optional after-select callback.
+ * @returns The rendered bookmarks modal content.
+ */
 export function BookmarksItemListModalContent(props: BookmarksItemListProps): JSX.Element | null {
   const { onAfterSelect } = props;
 

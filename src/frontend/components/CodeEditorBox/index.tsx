@@ -10,12 +10,14 @@ import InputError from "src/frontend/components/InputError";
 import Select from "src/frontend/components/Select";
 import { useEditorModeSetting, useWordWrapSetting } from "src/frontend/hooks/useSetting";
 
+/** Ref type for accessing editor methods like getting selected text. */
 export type EditorRef =
   | {
       getSelectedText: () => string | undefined;
     }
   | undefined;
 
+/** Props for the CodeEditorBox component. */
 export type CodeEditorProps = {
   id?: string;
   language?: "sql" | string;
@@ -35,13 +37,18 @@ export type CodeEditorProps = {
   hideEditorSyntax?: boolean;
 };
 
+/** Extended editor props with blur callback, used by AdvancedEditor and SimpleEditor implementations. */
 export type DecoratedEditorProps = CodeEditorProps & {
   onBlur?: (newValue: string) => void;
 };
 
+/** Default editor height when no explicit height is provided. */
 const DEFAULT_EDITOR_HEIGHT = "30vh";
+/** Sentinel value indicating the editor should use full calculated height. */
 const FULL_HEIGHT_SENTINEL = "full";
+/** Minimum height in pixels when using full height mode. */
 const FULL_HEIGHT_MIN_PX = 800;
+/** Approximate line height in pixels used for full height calculation. */
 const LINE_HEIGHT_PX = 20;
 
 function getFullHeight(value?: string): string {
@@ -50,6 +57,12 @@ function getFullHeight(value?: string): string {
   return `${calculatedHeight}px`;
 }
 
+/**
+ * Code editor component that switches between Monaco (advanced) and textarea (simple) editors
+ * based on user settings. Supports configurable height, word wrap, syntax highlighting, and language modes.
+ * @param props - Editor configuration including value, language, height, and editor mode options.
+ * @returns The rendered code editor with toolbar controls.
+ */
 export default function CodeEditorBox(props: CodeEditorProps): JSX.Element | null {
   const globalWordWrap = useWordWrapSetting();
   const [wordWrap, setWordWrap] = useState(false);

@@ -25,10 +25,18 @@ function MigrationOption() {
   );
 }
 
+/** Props for the MigrationPage component. */
 type MigrationPageProps = {
+  /** Migration mode: 'real_connection' for existing connections, 'raw_json' for raw data, or undefined for selection. */
   mode?: SqluiFrontend.MigrationMode;
 };
 
+/**
+ * Page for data migration between databases. Shows migration mode selection or the appropriate
+ * migration form based on the mode prop.
+ * @param props - Contains the migration mode.
+ * @returns The migration page layout.
+ */
 export default function MigrationPage(props: MigrationPageProps): JSX.Element | null {
   const { mode } = props;
   const { setTreeActions } = useTreeActions();

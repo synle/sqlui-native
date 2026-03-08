@@ -13,6 +13,7 @@ process.on("unhandledRejection", (reason) => {
   console.error("Unhandled Rejection:", reason);
 });
 
+/** Express application instance for the mocked development server. */
 export const app = express();
 
 const upload = multer({ dest: "./upload" });
@@ -31,4 +32,5 @@ app.post("/api/file", upload.single("file"), async (req, res) => {
 });
 setUpDataEndpoints(app);
 
+/** Port number the mocked server listens on. */
 export const port = 3001;

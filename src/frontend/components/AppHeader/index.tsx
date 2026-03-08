@@ -28,6 +28,10 @@ import ToastHistoryList from "src/frontend/components/ToastHistoryList";
 import { useToastHistoryCount } from "src/frontend/hooks/useToaster";
 import appPackage from "src/package.json";
 
+/**
+ * Application header bar with session management, navigation, notifications, and command palette access.
+ * @returns The rendered app header toolbar.
+ */
 export default function AppHeader() {
   const navigate = useNavigate();
   const { data: currentSession, isLoading } = useGetCurrentSession();

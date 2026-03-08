@@ -31,6 +31,11 @@ export function getSelectAllColumns(input: SqlAction.TableInput): SqlAction.Outp
 // ─── Database Action Script Generators ───────────────────────────────────────
 // These appear in the database-level action dropdown in the sidebar.
 
+/**
+ * Generates a CREATE DATABASE script template.
+ * @param input - Database context including the database identifier.
+ * @returns Script output with a CREATE DATABASE statement.
+ */
 export function getCreateDatabase(input: SqlAction.DatabaseInput): SqlAction.Output | undefined {
   const label = `Create Database`;
 
@@ -42,6 +47,11 @@ export function getCreateDatabase(input: SqlAction.DatabaseInput): SqlAction.Out
   };
 }
 
+/**
+ * Generates a DROP DATABASE script template.
+ * @param input - Database context including the database identifier.
+ * @returns Script output with a DROP DATABASE statement.
+ */
 export function getDropDatabase(input: SqlAction.DatabaseInput): SqlAction.Output | undefined {
   const label = `Drop Database`;
 

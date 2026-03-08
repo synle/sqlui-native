@@ -1,21 +1,34 @@
 import React, { useCallback, useLayoutEffect, useRef, useState } from "react";
 
+/** Props for the resizable Container component. */
 type ContainerProps = React.HTMLAttributes<HTMLDivElement> & {
   children: React.ReactNode;
 };
 
+/** Props for a resizable Section within a Container. */
 type SectionProps = React.HTMLAttributes<HTMLDivElement> & {
+  /** Initial width in pixels. */
   defaultSize?: number;
+  /** Minimum allowed width in pixels. */
   minSize?: number;
+  /** Maximum allowed width in pixels. */
   maxSize?: number;
+  /** Callback fired when the section is resized (on drag end). */
   onSizeChanged?: (size: number) => void;
   children: React.ReactNode;
 };
 
+/** Props for the draggable resize Bar between sections. */
 type BarProps = React.HTMLAttributes<HTMLDivElement> & {
+  /** Width of the drag handle in pixels. */
   size: number;
 };
 
+/**
+ * Flex container that manages resizable sections separated by draggable bars.
+ * The first Section child is resizable; subsequent sections fill remaining space.
+ * @param props - Standard div props plus children (Section and Bar components).
+ */
 export function Container({ children, style, ...rest }: ContainerProps) {
   const [sectionSize, setSectionSize] = useState<number | null>(null);
   const sizeRef = useRef<number | null>(null);
@@ -102,15 +115,23 @@ export function Container({ children, style, ...rest }: ContainerProps) {
   );
 }
 
+/**
+ * A resizable section within a Container. The first Section is width-constrained; others flex to fill.
+ */
 export function Section({ defaultSize, minSize, maxSize, onSizeChanged, children, ...rest }: SectionProps) {
   return <div {...rest}>{children}</div>;
 }
 
+/** Internal props for Bar including drag callbacks injected by Container. */
 type BarInternalProps = BarProps & {
   _onDrag?: (deltaX: number) => void;
   _onDragEnd?: () => void;
 };
 
+/**
+ * Draggable bar handle placed between sections to resize them horizontally.
+ * @param props - Includes size (width in px) and internal drag callbacks injected by Container.
+ */
 export function Bar({ size, style, _onDrag, _onDragEnd, ...rest }: BarInternalProps) {
   const dragging = useRef(false);
   const lastX = useRef(0);

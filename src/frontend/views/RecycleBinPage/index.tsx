@@ -169,6 +169,9 @@ function RecycleBinItemList() {
     </>
   );
 }
+/**
+ * Page displaying soft-deleted items (connections, queries, sessions) with restore and permanent delete options.
+ */
 export default function RecycleBinPage() {
   useSideBarWidthPreference();
   const { setTreeActions } = useTreeActions();

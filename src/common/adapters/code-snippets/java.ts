@@ -1,3 +1,4 @@
+/** Mustache template for a Java JDBC code snippet connecting to relational databases. */
 export const relational = `\
 import java.sql.*;
 
@@ -47,6 +48,7 @@ public class Main {
     }
 }`;
 
+/** Mustache template for a Java code snippet connecting to Cassandra via the DataStax driver. */
 export const cassandra = `\
 import com.datastax.oss.driver.api.core.CqlSession;
 import com.datastax.oss.driver.api.core.cql.ResultSet;
@@ -72,6 +74,7 @@ public class Main {
     }
 }`;
 
+/** Mustache template for a Java code snippet connecting to MongoDB via the MongoDB Java driver. */
 export const mongodb = `\
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
@@ -96,6 +99,7 @@ public class Main {
     }
 }`;
 
+/** Mustache template for a Java code snippet connecting to Redis via Jedis. */
 export const redis = `\
 import redis.clients.jedis.Jedis;
 
@@ -113,6 +117,7 @@ public class Main {
     }
 }`;
 
+/** Mustache template for a Java code snippet connecting to Azure Cosmos DB. */
 export const cosmosdb = `\
 import com.azure.cosmos.CosmosClient;
 import com.azure.cosmos.CosmosClientBuilder;
@@ -152,6 +157,7 @@ public class Main {
     }
 }`;
 
+/** Mustache template for a Java code snippet connecting to Azure Table Storage. */
 export const aztable = `\
 import com.azure.data.tables.TableClient;
 import com.azure.data.tables.TableClientBuilder;

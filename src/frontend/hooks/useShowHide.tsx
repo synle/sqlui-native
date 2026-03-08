@@ -11,6 +11,11 @@ const TargetContext = createContext({
   onSet: (newTreeVisibles: SqluiFrontend.TreeVisibilities) => {},
 });
 
+/**
+ * Context provider for sidebar tree visibility state. Persists visibility to session storage.
+ * @param props - Component props containing child elements.
+ * @returns The context provider wrapping children.
+ */
 export default function WrappedContext(props: { children: React.ReactNode }): JSX.Element | null {
   // State to hold the theme value
   const [visibles, setVisibles] = useState(_treeVisibles);
@@ -44,6 +49,10 @@ export default function WrappedContext(props: { children: React.ReactNode }): JS
   return <TargetContext.Provider value={{ visibles, onToggle, onClear, onSet }}>{props.children}</TargetContext.Provider>;
 }
 
+/**
+ * Hook providing visibility state and toggle/clear/set methods for sidebar tree nodes.
+ * @returns Visibility map and handlers to toggle, clear, or set visibility.
+ */
 export function useShowHide() {
   const { visibles, onToggle, onClear, onSet } = useContext(TargetContext)!;
 

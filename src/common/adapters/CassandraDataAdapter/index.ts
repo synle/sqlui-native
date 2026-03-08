@@ -4,12 +4,14 @@ import { getClientOptions } from "src/common/adapters/CassandraDataAdapter/utils
 import IDataAdapter from "src/common/adapters/IDataAdapter";
 import { SqluiCore } from "typings";
 
+/** Data adapter for Apache Cassandra connections (including CosmosDB Cassandra API). */
 export default class CassandraDataAdapter extends BaseDataAdapter implements IDataAdapter {
   /**
    * cassandra version
    * @type {number}
    */
   version?: string;
+  /** Whether the connected Cassandra instance is version 2.x. */
   isCassandra2?: boolean;
 
   private async getConnection(database?: string): Promise<cassandra.Client> {
@@ -81,11 +83,16 @@ export default class CassandraDataAdapter extends BaseDataAdapter implements IDa
     });
   }
 
+  /** Authenticates by establishing and shutting down a Cassandra connection. */
   async authenticate() {
     const client = await this.getConnection();
     await client.shutdown();
   }
 
+  /**
+   * Retrieves all keyspaces from the Cassandra cluster.
+   * @returns Array of database (keyspace) metadata objects.
+   */
   async getDatabases(): Promise<SqluiCore.DatabaseMetaData[]> {
     const client = await this.getConnection();
 
@@ -101,6 +108,11 @@ export default class CassandraDataAdapter extends BaseDataAdapter implements IDa
     }
   }
 
+  /**
+   * Retrieves all tables in the specified keyspace.
+   * @param database - The keyspace name.
+   * @returns Array of table metadata objects.
+   */
   async getTables(database?: string): Promise<SqluiCore.TableMetaData[]> {
     if (!database) {
       return [];
@@ -129,6 +141,12 @@ export default class CassandraDataAdapter extends BaseDataAdapter implements IDa
     }));
   }
 
+  /**
+   * Retrieves column metadata for a table in the specified keyspace.
+   * @param table - The table name.
+   * @param database - The keyspace name.
+   * @returns Array of column metadata objects.
+   */
   async getColumns(table: string, database?: string): Promise<SqluiCore.ColumnMetaData[]> {
     if (!database) {
       return [];
@@ -171,6 +189,12 @@ export default class CassandraDataAdapter extends BaseDataAdapter implements IDa
     }
   }
 
+  /**
+   * Executes a CQL query against the Cassandra cluster.
+   * @param sql - The CQL query string to execute.
+   * @param database - The keyspace to execute against.
+   * @returns The query result with rows or error information.
+   */
   async execute(sql: string, database?: string): Promise<SqluiCore.Result> {
     let rawToUse: any | undefined;
     let metaToUse: any | undefined;

@@ -75,6 +75,9 @@ const columns: ColumnDef<any, any>[] = [
   },
 ];
 
+/**
+ * View listing all saved data snapshots in a table with links to view each snapshot and delete actions.
+ */
 export default function DataSnapshotListView() {
   const { data, isLoading } = useGetDataSnapshots();
   useEffect(() => {

@@ -3,6 +3,7 @@ import cosmosdbIcon from "src/common/adapters/AzureCosmosDataAdapter/cosmosdb.pn
 import { renderCodeSnippet } from "src/common/adapters/code-snippets/renderCodeSnippet";
 import { SqlAction, SqluiCore } from "typings";
 
+/** Prefix used for the CosmosDB client variable in generated scripts. */
 export const COSMOSDB_ADAPTER_PREFIX = "db";
 
 const COSMOSDB_TABLE_ALIAS_PREFIX = "c";
@@ -40,7 +41,11 @@ function _getColMapForInsertAndUpdate(columns?: SqluiCore.ColumnMetaData[]) {
   );
 }
 
-// for cosmosdb
+/**
+ * Generates a raw SQL SELECT query for all columns in a CosmosDB container.
+ * @param input - Table context including database and table identifiers.
+ * @returns Script output with raw SQL syntax.
+ */
 export function getRawSelectAllColumns(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Raw Select All Columns SQL`;
 
@@ -51,6 +56,11 @@ export function getRawSelectAllColumns(input: SqlAction.TableInput): SqlAction.O
   };
 }
 
+/**
+ * Generates a JS SDK script to select all columns from a CosmosDB container with pagination.
+ * @param input - Table context including database, table, and query size.
+ * @returns Script output with JS SDK syntax.
+ */
 export function getSelectAllColumns(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Select All Columns`;
 
@@ -74,6 +84,11 @@ export function getSelectAllColumns(input: SqlAction.TableInput): SqlAction.Outp
     `,
   };
 }
+/**
+ * Generates a JS SDK script to select an item by its ID from a CosmosDB container.
+ * @param input - Table context including database and table identifiers.
+ * @returns Script output with a WHERE clause filtering by ID.
+ */
 export function getSelectById(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Select By Id`;
 
@@ -98,6 +113,11 @@ export function getSelectById(input: SqlAction.TableInput): SqlAction.Output | u
   };
 }
 
+/**
+ * Generates a JS SDK script to read a single item by ID and partition key.
+ * @param input - Table context including database and table identifiers.
+ * @returns Script output using the item().read() SDK method.
+ */
 export function getReadItemById(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Read`;
 
@@ -114,6 +134,11 @@ export function getReadItemById(input: SqlAction.TableInput): SqlAction.Output |
   };
 }
 
+/**
+ * Generates a JS SDK script to select specific columns with WHERE conditions.
+ * @param input - Table context including columns, database, and table identifiers.
+ * @returns Script output with column-specific SELECT and WHERE clauses.
+ */
 export function getSelectSpecificColumns(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Select Specific Columns`;
 
@@ -142,6 +167,12 @@ export function getSelectSpecificColumns(input: SqlAction.TableInput): SqlAction
   };
 }
 
+/**
+ * Generates a JS SDK script to insert a single item into a CosmosDB container.
+ * @param input - Table context including columns, database, and table identifiers.
+ * @param value - Optional pre-populated values for the new item.
+ * @returns Script output using the items.create() SDK method.
+ */
 export function getInsert(input: SqlAction.TableInput, value?: Record<string, any>): SqlAction.Output | undefined {
   const label = `Insert`;
 
@@ -167,6 +198,12 @@ export function getInsert(input: SqlAction.TableInput, value?: Record<string, an
   };
 }
 
+/**
+ * Generates a JS SDK script to bulk insert multiple items into a CosmosDB container.
+ * @param input - Table context including columns, database, and table identifiers.
+ * @param rows - Array of row data to insert.
+ * @returns Script output using Promise.all with items.create(), or undefined if no rows.
+ */
 export function getBulkInsert(input: SqlAction.TableInput, rows?: Record<string, any>[]): SqlAction.Output | undefined {
   const label = `Insert`;
 
@@ -204,6 +241,13 @@ export function getBulkInsert(input: SqlAction.TableInput, rows?: Record<string,
   };
 }
 
+/**
+ * Generates a JS SDK script to update (replace) an item with specific values.
+ * @param input - Table context including columns, database, and table identifiers.
+ * @param value - New field values to apply.
+ * @param conditions - Conditions identifying the item to update.
+ * @returns Script output using the item().replace() SDK method.
+ */
 export function getUpdateWithValues(
   input: SqlAction.TableInput,
   value: Record<string, any>,
@@ -232,6 +276,11 @@ export function getUpdateWithValues(
   };
 }
 
+/**
+ * Generates a JS SDK script to update (replace) an item using a template with placeholder values.
+ * @param input - Table context including columns, database, and table identifiers.
+ * @returns Script output using the item().replace() SDK method.
+ */
 export function getUpdate(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Update`;
 
@@ -251,6 +300,11 @@ export function getUpdate(input: SqlAction.TableInput): SqlAction.Output | undef
   };
 }
 
+/**
+ * Generates a JS SDK script to delete an item by ID and partition key.
+ * @param input - Table context including database and table identifiers.
+ * @returns Script output using the item().delete() SDK method.
+ */
 export function getDelete(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Delete`;
 
@@ -266,6 +320,11 @@ export function getDelete(input: SqlAction.TableInput): SqlAction.Output | undef
     `,
   };
 }
+/**
+ * Generates a JS SDK script to create a new container in a CosmosDB database.
+ * @param input - Table context including database and table identifiers.
+ * @returns Script output using the containers.create() SDK method.
+ */
 export function getCreateContainer(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Create Container`;
 
@@ -281,6 +340,11 @@ export function getCreateContainer(input: SqlAction.TableInput): SqlAction.Outpu
   };
 }
 
+/**
+ * Generates a JS SDK script to drop (delete) a container from a CosmosDB database.
+ * @param input - Table context including database and table identifiers.
+ * @returns Script output using the container().delete() SDK method.
+ */
 export function getDropContainer(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Drop Container`;
 
@@ -296,6 +360,11 @@ export function getDropContainer(input: SqlAction.TableInput): SqlAction.Output 
   };
 }
 
+/**
+ * Generates a JS SDK script to create a new CosmosDB database.
+ * @param input - Database context including the database identifier.
+ * @returns Script output using the databases.create() SDK method.
+ */
 export function getCreateDatabase(input: SqlAction.DatabaseInput): SqlAction.Output | undefined {
   const label = `Create Database`;
 
@@ -310,6 +379,11 @@ export function getCreateDatabase(input: SqlAction.DatabaseInput): SqlAction.Out
   };
 }
 
+/**
+ * Generates a JS SDK script to create a new container within a CosmosDB database.
+ * @param input - Database context including the database identifier.
+ * @returns Script output using the containers.create() SDK method.
+ */
 export function getCreateDatabaseContainer(input: SqlAction.DatabaseInput): SqlAction.Output | undefined {
   const label = `Create Database Container`;
 
@@ -325,6 +399,11 @@ export function getCreateDatabaseContainer(input: SqlAction.DatabaseInput): SqlA
   };
 }
 
+/**
+ * Generates a JS SDK script to drop (delete) a CosmosDB database.
+ * @param input - Database context including the database identifier.
+ * @returns Script output using the database().delete() SDK method.
+ */
 export function getDropDatabase(input: SqlAction.DatabaseInput): SqlAction.Output | undefined {
   const label = `Drop Database`;
 
@@ -338,6 +417,11 @@ export function getDropDatabase(input: SqlAction.DatabaseInput): SqlAction.Outpu
     `,
   };
 }
+/**
+ * Generates a JS SDK script to create a new database at the connection level.
+ * @param input - Connection context.
+ * @returns Script output using the databases.create() SDK method with a placeholder name.
+ */
 export function getCreateConnectionDatabase(input: SqlAction.ConnectionInput): SqlAction.Output | undefined {
   const label = `Create Database`;
 
@@ -352,6 +436,9 @@ export function getCreateConnectionDatabase(input: SqlAction.ConnectionInput): S
   };
 }
 
+/**
+ * Script generator for Azure Cosmos DB, providing query templates, connection form inputs, and code snippets.
+ */
 export class ConcreteDataScripts extends BaseDataScript {
   dialects = ["cosmosdb"];
 
