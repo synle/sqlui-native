@@ -19,6 +19,7 @@ export default defineConfig({
       external: externalsDeps,
       output: {
         entryFileNames: "mocked-server.js",
+        format: "cjs",
       },
     },
     target: "node18",

@@ -64,6 +64,14 @@ Custom React hooks and context providers instead of Redux: `useSession`, `useCon
 4. Add dialect icon as PNG in your adapter directory, import it in `scripts.ts`, and return it from `getDialectIcon()`
 5. Add script spec tests in `DataScriptFactory.spec.ts`
 
+## Build Verification
+
+After any build-related or Vite config change, run the affected build task to verify it works:
+- Frontend changes (`vite.frontend.config.ts`, `index.html`, `src/frontend/`): `npm run build`
+- Electron changes (`vite.electron.config.ts`, `src/electron/`): `npm run build-electron`
+- Mocked server changes (`vite.mocked-server.config.ts`, `src/mocked-server/`): `npm run build-mocked-server`
+- Shared backend changes (`src/common/`): run all three builds
+
 ## Build Configuration
 
 - React app: Vite (`vite.frontend.config.ts`) - dev server on port 3000 with proxy to mocked server on port 3001

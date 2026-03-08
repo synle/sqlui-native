@@ -28,6 +28,7 @@ export default defineConfig({
       external: nativeExternals,
       output: {
         entryFileNames: "main.js",
+        format: "cjs",
       },
     },
     target: "node18",
