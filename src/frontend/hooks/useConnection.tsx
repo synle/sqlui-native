@@ -180,7 +180,6 @@ export function useGetDatabases(connectionId?: string) {
 
   return useQuery([connectionId, "databases"], () => (!enabled ? undefined : dataApi.getConnectionDatabases(connectionId)), {
     enabled,
-
   });
 }
 
@@ -198,7 +197,6 @@ export function useGetTables(connectionId?: string, databaseId?: string) {
     () => (!enabled ? undefined : dataApi.getConnectionTables(connectionId, databaseId)),
     {
       enabled,
-
     },
   );
 }
@@ -230,7 +228,6 @@ export function useGetAllTableColumns(connectionId?: string, databaseId?: string
     },
     {
       enabled,
-
     },
   );
 }
@@ -250,7 +247,6 @@ export function useGetColumns(connectionId?: string, databaseId?: string, tableI
     () => (!enabled ? undefined : dataApi.getConnectionColumns(connectionId, databaseId, tableId)),
     {
       enabled,
-
     },
   );
 }

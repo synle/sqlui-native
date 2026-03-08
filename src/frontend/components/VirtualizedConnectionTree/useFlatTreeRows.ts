@@ -62,7 +62,6 @@ export function useFlatTreeRows() {
     queries: expandedOnlineConnections.map((connectionId) => ({
       queryKey: [connectionId, "databases"],
       queryFn: () => dataApi.getConnectionDatabases(connectionId),
-
     })),
   });
 
@@ -90,7 +89,6 @@ export function useFlatTreeRows() {
     queries: expandedDatabases.map(({ connectionId, databaseId }) => ({
       queryKey: [connectionId, databaseId, "tables"],
       queryFn: () => dataApi.getConnectionTables(connectionId, databaseId),
-
     })),
   });
 
@@ -123,7 +121,6 @@ export function useFlatTreeRows() {
     queries: expandedTables.map(({ connectionId, databaseId, tableId }) => ({
       queryKey: [connectionId, databaseId, tableId, "columns"],
       queryFn: () => dataApi.getConnectionColumns(connectionId, databaseId, tableId),
-
     })),
   });
 
