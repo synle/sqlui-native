@@ -142,7 +142,7 @@
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-flow-renderer": "^10.3.14",
-    "react-router-dom": "^6.2.2",
+    "react-router-dom": "^7.13.1",
     "redis": "^4.3.1",
     "sequelize": "^6.37.7",
     "sql-formatter": "^4.0.2",
