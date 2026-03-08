@@ -67,9 +67,9 @@ Custom React hooks and context providers instead of Redux: `useSession`, `useCon
 
 ## Build Configuration
 
-- React app: Create React App (react-scripts)
+- React app: Vite (`vite.frontend.config.ts`) - dev server on port 3000 with proxy to mocked server on port 3001
 - Electron main process: `webpack-electron.config.js` with `tsconfig-electron.json`
 - Mocked server: `webpack-mocked-server.config.js` with `tsconfig-mocked-server.json`
 - Prettier: 100 char width, single quotes, trailing commas, 2-space indent
-- NODE_VERSION: 20
+- NODE_VERSION: 24
 - npm
