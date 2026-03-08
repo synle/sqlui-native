@@ -1,6 +1,5 @@
 import { format as _formatSQL } from "sql-formatter";
-
-const _formatJS = require("js-beautify").js;
+import { js as _formatJS } from "js-beautify";
 
 export const formatSQL = (val: string) => {
   try {
