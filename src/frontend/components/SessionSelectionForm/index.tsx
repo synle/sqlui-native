@@ -74,7 +74,11 @@ export default function SessionSelectionForm(props: SessionSelectionFormProps): 
       }
 
       let disabled = false;
-      if (isSessionOpenedInAnotherWindow && isFirstTime) {
+      if (isSessionOpenedInAnotherWindow && isFirstTime && currentSession) {
+        // Only disable sessions opened in other windows when we already have
+        // a current session. On first load (currentSession is undefined),
+        // the opened list may contain a session auto-assigned to this window
+        // or stale entries from a previous process — neither should block selection.
         disabled = true;
       }
 
