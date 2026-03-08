@@ -2,7 +2,7 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Link from "@mui/material/Link";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom";
+
 import React, { useCallback, useEffect } from "react";
 import { getCodeSnippet } from "src/common/adapters/DataScriptFactory";
 import { BookmarksItemListModalContent } from "src/frontend/components/BookmarksItemList";
@@ -37,7 +37,7 @@ import {
 import { useSetting } from "src/frontend/hooks/useSetting";
 import { useShowHide } from "src/frontend/hooks/useShowHide";
 import useToaster from "src/frontend/hooks/useToaster";
-import { createSystemNotification, getExportedConnection, getExportedQuery } from "src/frontend/utils/commonUtils";
+import { createSystemNotification, getExportedConnection, getExportedQuery, useNavigate } from "src/frontend/utils/commonUtils";
 import { execute } from "src/frontend/utils/executeUtils";
 import { RecordDetailsPage } from "src/frontend/views/RecordPage";
 import appPackage from "src/package.json";

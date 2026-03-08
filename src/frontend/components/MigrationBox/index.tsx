@@ -1,7 +1,8 @@
 import BackupIcon from "@mui/icons-material/Backup";
 import LoadingButton from "@mui/lab/LoadingButton";
 import { Button, Link, Skeleton, TextField, Typography } from "@mui/material";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
+import { useNavigate } from "src/frontend/utils/commonUtils";
 import React, { useEffect, useState } from "react";
 import {
   getBulkInsert as getBulkInsertForCosmosDb,

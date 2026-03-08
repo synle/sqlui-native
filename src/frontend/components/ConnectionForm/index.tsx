@@ -1,7 +1,6 @@
 import SaveIcon from "@mui/icons-material/Save";
 import LoadingButton from "@mui/lab/LoadingButton";
 import { Alert, Box, Button, Link, TextField, Typography } from "@mui/material";
-import { useNavigate } from "react-router-dom";
 import React, { useEffect, useState } from "react";
 import BaseDataAdapter from "src/common/adapters/BaseDataAdapter/index";
 import ConnectionHint from "src/frontend/components/ConnectionForm/ConnectionHint";
@@ -9,7 +8,7 @@ import { useCommands } from "src/frontend/components/MissionControl";
 import TestConnectionButton from "src/frontend/components/TestConnectionButton";
 import { useGetConnectionById, useUpsertConnection } from "src/frontend/hooks/useConnection";
 import useToaster from "src/frontend/hooks/useToaster";
-import { createSystemNotification } from "src/frontend/utils/commonUtils";
+import { createSystemNotification, useNavigate } from "src/frontend/utils/commonUtils";
 import { SqluiCore } from "typings";
 
 type ConnectionFormProps = {

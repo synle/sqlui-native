@@ -1,3 +1,5 @@
+import { useCallback } from "react";
+import { useNavigate as useReactRouterNavigate, NavigateFunction } from "react-router-dom";
 import { SqluiCore, SqluiFrontend } from "typings";
 // for exporting
 export function getExportedConnection(connectionProps: SqluiCore.ConnectionProps) {
@@ -37,6 +39,18 @@ export async function createSystemNotification(message: string) {
     await Notification.requestPermission();
     new Notification(message);
   } catch (err) {}
+}
+
+// Wraps react-router's useNavigate with setTimeout(0) to defer navigation,
+// preventing "state update on unmounted component" warnings in React 17.
+export function useNavigate(): NavigateFunction {
+  const navigate = useReactRouterNavigate();
+  return useCallback<NavigateFunction>(
+    (...args: Parameters<NavigateFunction>) => {
+      setTimeout(() => (navigate as Function)(...args), 0);
+    },
+    [navigate],
+  ) as NavigateFunction;
 }
 
 export function sortColumnNamesForUnknownData(colNames: string[]) {

@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "src/frontend/utils/commonUtils";
 import dataApi from "src/frontend/data/api";
 import { setCurrentSessionId } from "src/frontend/data/session";
 import { useActionDialogs } from "src/frontend/hooks/useActionDialogs";

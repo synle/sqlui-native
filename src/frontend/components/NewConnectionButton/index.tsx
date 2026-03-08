@@ -4,7 +4,7 @@ import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import BackupIcon from "@mui/icons-material/Backup";
 import UnfoldLessIcon from "@mui/icons-material/UnfoldLess";
 import Box from "@mui/material/Box";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "src/frontend/utils/commonUtils";
 import { useCommands } from "src/frontend/components/MissionControl";
 import SplitButton from "src/frontend/components/SplitButton";
 

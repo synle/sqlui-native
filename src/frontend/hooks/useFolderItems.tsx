@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "src/frontend/utils/commonUtils";
 import dataApi from "src/frontend/data/api";
 import { useCommands } from "src/frontend/components/MissionControl";
 import { useUpsertConnection } from "src/frontend/hooks/useConnection";

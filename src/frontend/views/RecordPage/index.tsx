@@ -4,7 +4,8 @@ import Button from "@mui/material/Button";
 import InputLabel from "@mui/material/InputLabel";
 import TextField, { TextFieldProps } from "@mui/material/TextField";
 import set from "lodash.set";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
+import { useNavigate } from "src/frontend/utils/commonUtils";
 import React, { useEffect, useState } from "react";
 import {
   getInsert as getInsertForAzCosmosDB,

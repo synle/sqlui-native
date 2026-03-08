@@ -14,7 +14,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
 import { useQueryClient } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "src/frontend/utils/commonUtils";
 import React, { useCallback, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { getSyntaxModeByDialect, getTableActions } from "src/common/adapters/DataScriptFactory";
 import CodeEditorBox, { EditorRef } from "src/frontend/components/CodeEditorBox";

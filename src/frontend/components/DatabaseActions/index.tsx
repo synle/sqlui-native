@@ -2,7 +2,7 @@ import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import SelectAllIcon from "@mui/icons-material/SelectAll";
 import SsidChartIcon from "@mui/icons-material/SsidChart";
 import IconButton from "@mui/material/IconButton";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "src/frontend/utils/commonUtils";
 import { useState } from "react";
 import { getDatabaseActions, isDialectSupportVisualization } from "src/common/adapters/DataScriptFactory";
 import DropdownButton from "src/frontend/components/DropdownButton";
