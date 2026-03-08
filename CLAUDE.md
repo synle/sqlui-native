@@ -11,13 +11,12 @@ SQLUI Native is a cross-platform Electron desktop SQL/NoSQL database client supp
 ```bash
 npm install             # Install dependencies
 npm start               # Run in Electron (dev mode)
-npm run dev             # Run mocked server + React dev server at http://localhost:3000
-npm run build           # Build React + Electron + mocked server
-npm test                # Run Jest tests (watch mode)
-npm run test-ci         # Run Jest tests (CI, no watch)
+npm run dev             # Run mocked server + Vite dev server at http://localhost:3000
+npm run build           # Build frontend (Vite) + Electron + mocked server
+npm test                # Run Vitest tests (watch mode)
+npm run test-ci         # Run Vitest tests (CI, no watch)
 npm run lint            # ESLint with auto-fix
 npm run format          # Prettier formatting
-npm run fix-import      # Fix and organize imports
 ```
 
 **Packaging:** `bash scripts/build.sh && npm run dist`
@@ -68,8 +67,8 @@ Custom React hooks and context providers instead of Redux: `useSession`, `useCon
 ## Build Configuration
 
 - React app: Vite (`vite.frontend.config.ts`) - dev server on port 3000 with proxy to mocked server on port 3001
-- Electron main process: `webpack-electron.config.js` with `tsconfig-electron.json`
-- Mocked server: `webpack-mocked-server.config.js` with `tsconfig-mocked-server.json`
+- Electron main process: Vite SSR (`vite.electron.config.ts`) - outputs `build/main.js`
+- Mocked server: Vite SSR (`vite.mocked-server.config.ts`) - outputs `build/mocked-server.js`
 - Prettier: 100 char width, single quotes, trailing commas, 2-space indent
 - NODE_VERSION: 24
 - npm
