@@ -28,6 +28,16 @@ export default defineConfig(({ command }) => ({
       },
     },
   },
+  optimizeDeps: {
+    include: [
+      "@mui/material",
+      "@mui/material/styles",
+      "@mui/icons-material",
+      "@mui/lab",
+      "@emotion/react",
+      "@emotion/styled",
+    ],
+  },
   build: {
     outDir: "build",
     emptyOutDir: false,
