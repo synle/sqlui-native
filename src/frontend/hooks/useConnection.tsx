@@ -39,9 +39,6 @@ export function useUpsertConnection() {
   const queryClient = useQueryClient();
   return useMutation<SqluiCore.ConnectionProps, void, SqluiCore.CoreConnectionProps>(dataApi.upsertConnection, {
     onSuccess: async (newConnection) => {
-      queryClient.invalidateQueries([newConnection.id]);
-      queryClient.invalidateQueries([QUERY_KEY_ALL_CONNECTIONS]);
-
       queryClient.setQueryData<SqluiCore.ConnectionProps[] | undefined>([QUERY_KEY_ALL_CONNECTIONS], (oldData) => {
         // find that entry
         let isNew = true;
@@ -78,9 +75,6 @@ export function useDeleteConnection() {
 
   return useMutation<string, void, string>(dataApi.deleteConnection, {
     onSuccess: async (deletedConnectionId) => {
-      queryClient.invalidateQueries([deletedConnectionId]);
-      queryClient.invalidateQueries([QUERY_KEY_ALL_CONNECTIONS]);
-
       queryClient.setQueryData<SqluiCore.ConnectionProps[] | undefined>([QUERY_KEY_ALL_CONNECTIONS], (oldData) => {
         return oldData?.filter((connection) => connection.id !== deletedConnectionId);
       });
@@ -255,8 +249,6 @@ export function useRetryConnection() {
     onSettled: async (newSuccessConnection, newFailedConnection) => {
       // NOTE: here we used settled, because if the connection
       // went bad, we want to also refresh the data
-      queryClient.invalidateQueries([QUERY_KEY_ALL_CONNECTIONS]);
-
       queryClient.setQueryData<SqluiCore.ConnectionMetaData[] | undefined>([QUERY_KEY_ALL_CONNECTIONS], (oldData) => {
         // find that entry
         oldData = oldData?.map((connection) => {
