@@ -2,10 +2,10 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
 
-export default defineConfig({
+export default defineConfig(({ command }) => ({
   plugins: [react()],
   root: ".",
-  base: "./",
+  base: command === "serve" ? "/" : "./",
   publicDir: "public",
   envFile: false,
   resolve: {
@@ -33,4 +33,4 @@ export default defineConfig({
     emptyOutDir: false,
     sourcemap: true,
   },
-});
+}));
