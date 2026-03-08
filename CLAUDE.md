@@ -37,12 +37,14 @@ The app runs in **Electron mode** (`npm start`) or **mocked server mode** (`npm 
 
 ### Database Adapter Pattern
 
-All database engines implement `IDataAdapter` (authenticate, getDatabases, getTables, getColumns, execute). `DataAdapterFactory` creates the correct adapter based on connection dialect. `DataScriptFactory` generates dialect-specific SQL/query scripts.
+All database engines implement `IDataAdapter` (authenticate, getDatabases, getTables, getColumns, execute). `DataAdapterFactory` creates the correct adapter based on connection dialect. `DataScriptFactory` generates dialect-specific SQL/query scripts. `BaseDataAdapter` provides shared logic (connection string parsing, type inference/resolution). `BaseDataScript` provides shared script generation (select, insert, update, delete, DDL) with dialect-specific overrides.
 
 Adapter implementations live in `src/common/adapters/`:
 
 - `RelationalDataAdapter` - MySQL, MariaDB, Postgres, MSSQL, SQLite (via Sequelize)
 - `CassandraDataAdapter`, `MongoDBDataAdapter`, `RedisDataAdapter`, `AzureCosmosDataAdapter`, `AzureTableStorageAdapter`
+
+Each adapter directory contains `index.ts` (adapter class) and `scripts.ts` (ConcreteDataScripts class with dialect-specific query generators). Some also have `utils.ts` for client configuration helpers.
 
 ### Endpoint Pattern
 
@@ -51,6 +53,19 @@ Adapter implementations live in `src/common/adapters/`:
 ### Frontend State Management
 
 Custom React hooks and context providers instead of Redux: `useSession`, `useConnection`, `useConnectionQuery`, `useSetting`, `useActionDialogs`, `useShowHide`, `useTreeActions`, `useFolderItems`.
+
+Additional hooks: `useToaster` (toast notifications with history), `useClientSidePreference` (localStorage-backed preferences), `useServerConfigs` (server configuration), `useDataSnapshot` (import/export snapshots).
+
+### Frontend Data Layer
+
+- **`src/frontend/data/api.tsx`** - `ProxyApi` static class wraps all backend calls (works in both Electron IPC and HTTP modes)
+- **`src/frontend/data/config.ts`** - `SessionStorageConfig` and `LocalStorageConfig` constants for storage keys
+- **`src/frontend/data/file.tsx`** - File download utilities (text, JSON, CSV, blob)
+- **`src/frontend/data/session.tsx`** - Session ID generation and management
+
+### Code Snippets
+
+`src/common/adapters/code-snippets/` contains connection code templates for Java, JavaScript, and Python. `renderCodeSnippet.ts` renders templates with dialect-specific values. Used by `BaseDataScript.getCodeSnippet()`.
 
 ### Persistent Storage
 
@@ -63,6 +78,28 @@ Custom React hooks and context providers instead of Redux: `useSession`, `useCon
 3. Register in `DataAdapterFactory.ts` and `DataScriptFactory.ts`
 4. Add dialect icon as PNG in your adapter directory, import it in `scripts.ts`, and return it from `getDialectIcon()`
 5. Add script spec tests in `DataScriptFactory.spec.ts`
+
+### Key Frontend Components
+
+- **`QueryBox`** - SQL/query editor with Monaco editor, connection/database selectors, and execution controls
+- **`ResultBox`** - Displays query results with DataTable (legacy and modern/virtualized variants)
+- **`VirtualizedConnectionTree`** - Tree view of connections/databases/tables/columns using virtualized flat rows
+- **`ActionDialogs`** - Global dialog system (alert, choice, prompt, modal) managed via `useActionDialogs` context
+- **`MissionControl`** - Command palette with keyboard shortcut support
+- **`ConnectionForm`** - New/edit connection forms with dialect-specific hints
+- **`MigrationBox`** - Data migration between connections with column mapping
+
+### Views (Pages)
+
+`src/frontend/views/` contains route-level page components: `MainPage`, `NewConnectionPage`, `EditConnectionPage`, `BookmarksPage`, `RecycleBinPage`, `MigrationPage`, `RecordPage`, `RelationshipChartPage`.
+
+## Testing
+
+- Tests use Vitest (config in `vite.frontend.config.ts`)
+- Unit tests are co-located with source files as `*.spec.ts`/`*.spec.tsx`
+- Integration tests exist for each adapter (require running database instances)
+- Known: `jsdom` environment tests may show errors if the package is not installed; this doesn't affect test results
+- Run `npm run test-ci` for CI mode (no watch), `npm test` for watch mode
 
 ## Build Verification
 
@@ -81,3 +118,7 @@ After any build-related or Vite config change, run the affected build task to ve
 - Prettier: 100 char width, single quotes, trailing commas, 2-space indent
 - NODE_VERSION: 24
 - npm
+
+## Documentation
+
+All source files in `src/` have JSDoc documentation on exported functions, classes, interfaces, types, and components. When adding new exports, follow the existing JSDoc style: concise 1-2 line descriptions with `@param` and `@returns` tags where applicable.
