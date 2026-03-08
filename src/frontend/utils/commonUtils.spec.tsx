@@ -225,4 +225,39 @@ describe("commonUtils", () => {
       expect(actual.indexOf("userId")).toBeLessThan(actual.indexOf("name"));
     });
   });
+
+  describe("createSystemNotification", () => {
+    const originalNotification = global.Notification;
+
+    beforeEach(() => {
+      // @ts-ignore
+      global.Notification = class MockNotification {
+        constructor(public message: string) {}
+        static requestPermission = vi.fn().mockResolvedValue("granted");
+      };
+    });
+
+    afterEach(() => {
+      global.Notification = originalNotification;
+    });
+
+    test("should request permission and create notification", async () => {
+      await commonUtils.createSystemNotification("test message");
+      expect(Notification.requestPermission).toHaveBeenCalled();
+    });
+
+    test("should not throw when Notification API is unavailable", async () => {
+      // @ts-ignore
+      global.Notification = undefined;
+      await expect(commonUtils.createSystemNotification("test")).resolves.toBeUndefined();
+    });
+
+    test("should not throw when requestPermission rejects", async () => {
+      // @ts-ignore
+      global.Notification = {
+        requestPermission: vi.fn().mockRejectedValue(new Error("denied")),
+      };
+      await expect(commonUtils.createSystemNotification("test")).resolves.toBeUndefined();
+    });
+  });
 });
