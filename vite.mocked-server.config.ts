@@ -3,11 +3,7 @@ import path from "path";
 import appPackage from "./package.json";
 
 // Externalize all dependencies (they'll be available via node_modules at runtime)
-const externalsDeps = [
-  "electron",
-  ...Object.keys(appPackage.optionalDependencies || {}),
-  ...Object.keys(appPackage.dependencies || {}),
-];
+const externalsDeps = ["electron", ...Object.keys(appPackage.optionalDependencies || {}), ...Object.keys(appPackage.dependencies || {})];
 
 export default defineConfig({
   build: {

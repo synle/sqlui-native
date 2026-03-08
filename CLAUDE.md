@@ -67,6 +67,7 @@ Custom React hooks and context providers instead of Redux: `useSession`, `useCon
 ## Build Verification
 
 After any build-related or Vite config change, run the affected build task to verify it works:
+
 - Frontend changes (`vite.frontend.config.ts`, `index.html`, `src/frontend/`): `npm run build`
 - Electron changes (`vite.electron.config.ts`, `src/electron/`): `npm run build-electron`
 - Mocked server changes (`vite.mocked-server.config.ts`, `src/mocked-server/`): `npm run build-mocked-server`
