@@ -31,8 +31,8 @@ export function NewConnectionForm() {
 
     createSystemNotification(`Connection "${name}" created`);
 
-    // when done, go back to the main page
-    navigate(`/`, { replace: true });
+    // when done, go back to the main page (added delay to prevent operation on unmounted component errors)
+    setTimeout(() => navigate(`/`, { replace: true }), 0)
   };
 
   const onApplyConnectionHint = (dialect, connection) => {

@@ -39,6 +39,9 @@ export function useUpsertConnection() {
   const queryClient = useQueryClient();
   return useMutation<SqluiCore.ConnectionProps, void, SqluiCore.CoreConnectionProps>(dataApi.upsertConnection, {
     onSuccess: async (newConnection) => {
+      queryClient.invalidateQueries([newConnection.id]);
+      queryClient.invalidateQueries([QUERY_KEY_ALL_CONNECTIONS]);
+
       queryClient.setQueryData<SqluiCore.ConnectionProps[] | undefined>([QUERY_KEY_ALL_CONNECTIONS], (oldData) => {
         // find that entry
         let isNew = true;
