@@ -30,13 +30,16 @@ export default defineConfig(({ command }) => ({
   },
   optimizeDeps: {
     include: [
-      "@mui/material",
-      "@mui/material/styles",
-      "@mui/icons-material",
-      "@mui/lab",
       "@emotion/react",
       "@emotion/styled",
+      "@mui/icons-material",
+      "@mui/lab",
+      "@mui/material",
     ],
+    esbuildOptions: {
+      resolveExtensions: [".mjs", ".js", ".mts", ".ts", ".jsx", ".tsx", ".json"],
+      mainFields: ["main", "module"],
+    },
   },
   build: {
     outDir: "build",
