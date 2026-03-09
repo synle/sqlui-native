@@ -6,6 +6,7 @@ import Alert from "@mui/material/Alert";
 import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
 import Tooltip from "@mui/material/Tooltip";
+import { useTheme } from "@mui/material/styles";
 import { AccordionHeader } from "src/frontend/components/Accordion";
 import ColumnAttributes from "src/frontend/components/ColumnDescription/ColumnAttributes";
 import ColumnName from "src/frontend/components/ColumnDescription/ColumnName";
@@ -15,6 +16,7 @@ import ConnectionRetryAlert from "src/frontend/components/ConnectionRetryAlert";
 import ConnectionTypeIcon from "src/frontend/components/ConnectionTypeIcon";
 import DatabaseActions from "src/frontend/components/DatabaseActions";
 import TableActions from "src/frontend/components/TableActions";
+import { getSanitizedConnectionUrl } from "src/frontend/utils/commonUtils";
 import { TreeRow } from "./types";
 
 /** Props for the TreeRowRenderer component. */
@@ -34,10 +36,12 @@ type TreeRowRendererProps = {
  */
 export function TreeRowRenderer(props: TreeRowRendererProps) {
   const { row, onToggle, onConnectionOrderChange } = props;
+  const theme = useTheme();
 
   switch (row.type) {
     case "connection-header": {
       const { connection, isSelected, isExpanded, visibilityKey, connectionIndex } = row;
+      const sanitizedUrl = getSanitizedConnectionUrl(connection.connection);
       return (
         <AccordionHeader
           expanded={isExpanded}
@@ -47,7 +51,24 @@ export function TreeRowRenderer(props: TreeRowRendererProps) {
           connectionIndex={connectionIndex}
         >
           <ConnectionTypeIcon dialect={connection.dialect} status={connection.status} />
-          <span>{connection.name}</span>
+          <span>
+            {connection.name}
+            {sanitizedUrl && (
+              <Tooltip title={sanitizedUrl} placement="bottom-start">
+                <span
+                  style={{
+                    display: "block",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                    color: theme.palette.text.disabled,
+                  }}
+                >
+                  {sanitizedUrl}
+                </span>
+              </Tooltip>
+            )}
+          </span>
           <ConnectionActions connection={connection} />
         </AccordionHeader>
       );
