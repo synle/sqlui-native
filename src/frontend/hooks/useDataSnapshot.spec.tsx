@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { renderHook } from "@testing-library/react";
+import { renderHook, waitFor } from "@testing-library/react";
 import { vi } from "vitest";
 import React from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -23,18 +23,18 @@ function createWrapper() {
 }
 
 describe("useDataSnapshot", () => {
-  test("useGetDataSnapshots returns data property", () => {
+  test("useGetDataSnapshots returns data property", async () => {
     const { result } = renderHook(() => useGetDataSnapshots(), {
       wrapper: createWrapper(),
     });
-    expect(result.current.data).toBeDefined();
+    await waitFor(() => expect(result.current.data).toBeDefined());
   });
 
-  test("useGetDataSnapshot returns data property", () => {
+  test("useGetDataSnapshot returns data property", async () => {
     const { result } = renderHook(() => useGetDataSnapshot("snap1"), {
       wrapper: createWrapper(),
     });
-    expect(result.current.data).toBeDefined();
+    await waitFor(() => expect(result.current.data).toBeDefined());
   });
 
   test("useAddDataSnapshot returns mutateAsync", () => {

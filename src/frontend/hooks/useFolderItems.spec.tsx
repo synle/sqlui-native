@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { renderHook } from "@testing-library/react";
+import { renderHook, waitFor } from "@testing-library/react";
 import { vi } from "vitest";
 import React from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -54,11 +54,11 @@ function createWrapper() {
 }
 
 describe("useFolderItems", () => {
-  test("useGetFolderItems returns data property", () => {
+  test("useGetFolderItems returns data property", async () => {
     const { result } = renderHook(() => useGetFolderItems("recycleBin"), {
       wrapper: createWrapper(),
     });
-    expect(result.current.data).toBeDefined();
+    await waitFor(() => expect(result.current.data).toBeDefined());
   });
 
   test("useAddFolderItem returns mutateAsync", () => {
@@ -82,17 +82,17 @@ describe("useFolderItems", () => {
     expect(result.current.mutateAsync).toBeDefined();
   });
 
-  test("useGetRecycleBinItems returns data property", () => {
+  test("useGetRecycleBinItems returns data property", async () => {
     const { result } = renderHook(() => useGetRecycleBinItems(), {
       wrapper: createWrapper(),
     });
-    expect(result.current.data).toBeDefined();
+    await waitFor(() => expect(result.current.data).toBeDefined());
   });
 
-  test("useGetBookmarkItems returns data property", () => {
+  test("useGetBookmarkItems returns data property", async () => {
     const { result } = renderHook(() => useGetBookmarkItems(), {
       wrapper: createWrapper(),
     });
-    expect(result.current.data).toBeDefined();
+    await waitFor(() => expect(result.current.data).toBeDefined());
   });
 });

@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { renderHook } from "@testing-library/react";
+import { renderHook, waitFor } from "@testing-library/react";
 import { vi } from "vitest";
 import React from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -21,11 +21,11 @@ function createWrapper() {
 }
 
 describe("useServerConfigs", () => {
-  test("useGetServerConfigs returns data property", () => {
+  test("useGetServerConfigs returns data property", async () => {
     const { result } = renderHook(() => useGetServerConfigs(), {
       wrapper: createWrapper(),
     });
-    expect(result.current.data).toBeDefined();
+    await waitFor(() => expect(result.current.data).toBeDefined());
   });
 
   test("useUpdateServerConfigs returns mutate function", () => {

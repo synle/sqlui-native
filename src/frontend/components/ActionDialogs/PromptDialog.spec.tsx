@@ -10,27 +10,27 @@ import PromptDialog from "src/frontend/components/ActionDialogs/PromptDialog";
 
 describe("PromptDialog", () => {
   test("renders the message as label", () => {
-    const { container } = render(<PromptDialog open={true} message="Enter name" onSaveClick={() => {}} onDismiss={() => {}} />);
-    expect(container.textContent).toContain("Enter name");
+    render(<PromptDialog open={true} message="Enter name" onSaveClick={() => {}} onDismiss={() => {}} />);
+    expect(document.body.textContent).toContain("Enter name");
   });
 
   test("renders the title", () => {
-    const { container } = render(<PromptDialog open={true} message="msg" title="My Prompt" onSaveClick={() => {}} onDismiss={() => {}} />);
-    expect(container.textContent).toContain("My Prompt");
+    render(<PromptDialog open={true} message="msg" title="My Prompt" onSaveClick={() => {}} onDismiss={() => {}} />);
+    expect(document.body.textContent).toContain("My Prompt");
   });
 
   test("renders default title 'Prompt' when none given", () => {
-    const { container } = render(<PromptDialog open={true} message="msg" onSaveClick={() => {}} onDismiss={() => {}} />);
-    expect(container.textContent).toContain("Prompt");
+    render(<PromptDialog open={true} message="msg" onSaveClick={() => {}} onDismiss={() => {}} />);
+    expect(document.body.textContent).toContain("Prompt");
   });
 
   test("renders save button with custom label", () => {
-    const { container } = render(<PromptDialog open={true} message="msg" saveLabel="Apply" onSaveClick={() => {}} onDismiss={() => {}} />);
-    expect(container.textContent).toContain("Apply");
+    render(<PromptDialog open={true} message="msg" saveLabel="Apply" onSaveClick={() => {}} onDismiss={() => {}} />);
+    expect(document.body.textContent).toContain("Apply");
   });
 
   test("renders default save label 'Save Changes'", () => {
-    const { container } = render(<PromptDialog open={true} message="msg" value="something" onSaveClick={() => {}} onDismiss={() => {}} />);
-    expect(container.textContent).toContain("Save Changes");
+    render(<PromptDialog open={true} message="msg" value="something" onSaveClick={() => {}} onDismiss={() => {}} />);
+    expect(document.body.textContent).toContain("Save Changes");
   });
 });

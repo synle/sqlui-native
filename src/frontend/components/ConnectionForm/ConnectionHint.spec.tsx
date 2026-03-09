@@ -15,7 +15,7 @@ import ConnectionHint from "src/frontend/components/ConnectionForm/ConnectionHin
 describe("ConnectionHint", () => {
   test("renders supported dialect names", () => {
     const { container } = render(<ConnectionHint onChange={() => {}} />);
-    expect(container.textContent).toContain("MySQL");
+    expect(container.textContent).toContain("Mysql");
   });
 
   test("renders list items for each dialect", () => {

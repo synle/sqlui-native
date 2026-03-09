@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { render, fireEvent } from "@testing-library/react";
+import { render, fireEvent, act } from "@testing-library/react";
 import { vi } from "vitest";
 
 const mockTestConnection = vi.fn().mockResolvedValue(undefined);
@@ -25,11 +25,13 @@ describe("TestConnectionButton", () => {
     expect(button).toBeTruthy();
   });
 
-  test("calls testConnection when clicked with a connection string", () => {
+  test("calls testConnection when clicked with a connection string", async () => {
     const conn = { connection: "mysql://localhost" } as any;
     const { container } = render(<TestConnectionButton connection={conn} />);
     const button = container.querySelector("button") as HTMLButtonElement;
-    fireEvent.click(button);
+    await act(async () => {
+      fireEvent.click(button);
+    });
     expect(mockTestConnection).toHaveBeenCalled();
   });
 });

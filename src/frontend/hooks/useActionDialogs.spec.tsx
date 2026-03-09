@@ -38,13 +38,14 @@ describe("useActionDialogs", () => {
   });
 
   test("dismiss removes a dialog", () => {
-    const { getByTestId, getByText } = renderWithProvider();
+    const { getByTestId, getByRole } = renderWithProvider();
     act(() => {
-      getByText("alert").click();
+      getByRole("button", { name: "alert" }).click();
     });
+    const countAfterAlert = Number(getByTestId("count").textContent);
     act(() => {
-      getByText("dismiss").click();
+      getByRole("button", { name: "dismiss" }).click();
     });
-    expect(getByTestId("count").textContent).toContain("0");
+    expect(Number(getByTestId("count").textContent)).toBe(countAfterAlert - 1);
   });
 });

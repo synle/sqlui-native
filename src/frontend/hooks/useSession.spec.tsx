@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { renderHook } from "@testing-library/react";
+import { renderHook, waitFor } from "@testing-library/react";
 import { vi } from "vitest";
 import React from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -52,19 +52,19 @@ function createWrapper() {
 }
 
 describe("useSession", () => {
-  test("useGetSessions returns data property", () => {
+  test("useGetSessions returns data property", async () => {
     const { result } = renderHook(() => useGetSessions(), { wrapper: createWrapper() });
-    expect(result.current.data).toBeDefined();
+    await waitFor(() => expect(result.current.data).toBeDefined());
   });
 
-  test("useGetOpenedSessionIds returns data property", () => {
+  test("useGetOpenedSessionIds returns data property", async () => {
     const { result } = renderHook(() => useGetOpenedSessionIds(), { wrapper: createWrapper() });
-    expect(result.current.data).toBeDefined();
+    await waitFor(() => expect(result.current.data).toBeDefined());
   });
 
-  test("useGetCurrentSession returns data property", () => {
+  test("useGetCurrentSession returns data property", async () => {
     const { result } = renderHook(() => useGetCurrentSession(), { wrapper: createWrapper() });
-    expect(result.current.data).toBeDefined();
+    await waitFor(() => expect(result.current.data).toBeDefined());
   });
 
   test("useUpsertSession returns mutateAsync", () => {

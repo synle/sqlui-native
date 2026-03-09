@@ -47,8 +47,8 @@ describe("Resizer", () => {
         <Section>right</Section>
       </Container>,
     );
-    const sections = container.querySelectorAll("div > div");
-    const firstSection = sections[0] as HTMLElement;
+    const flexContainer = container.firstElementChild as HTMLElement;
+    const firstSection = flexContainer.children[0] as HTMLElement;
     expect(firstSection.style.width).toContain("200px");
   });
 });

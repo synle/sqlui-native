@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { render } from "@testing-library/react";
+import { render, act } from "@testing-library/react";
 import DropdownMenu from "src/frontend/components/DropdownMenu";
 
 describe("DropdownMenu", () => {
@@ -14,8 +14,10 @@ describe("DropdownMenu", () => {
     document.body.appendChild(anchor);
     const anchorRef = { current: anchor };
 
-    const { container } = render(<DropdownMenu id="test" options={[]} anchorEl={anchorRef} open={true} isLoading={true} />);
-    expect(container.textContent).toContain("Loading");
+    act(() => {
+      render(<DropdownMenu id="test" options={[]} anchorEl={anchorRef} open={true} isLoading={true} />);
+    });
+    expect(document.body.textContent).toContain("Loading");
     document.body.removeChild(anchor);
   });
 
@@ -24,8 +26,10 @@ describe("DropdownMenu", () => {
     document.body.appendChild(anchor);
     const anchorRef = { current: anchor };
 
-    const { container } = render(<DropdownMenu id="test" options={[]} anchorEl={anchorRef} open={true} />);
-    expect(container.textContent).toContain("No options.");
+    act(() => {
+      render(<DropdownMenu id="test" options={[]} anchorEl={anchorRef} open={true} />);
+    });
+    expect(document.body.textContent).toContain("No options.");
     document.body.removeChild(anchor);
   });
 });

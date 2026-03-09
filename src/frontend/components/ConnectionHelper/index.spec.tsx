@@ -1,5 +1,6 @@
 // @vitest-environment jsdom
 import { render, fireEvent } from "@testing-library/react";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { vi } from "vitest";
 
 vi.mock("src/common/adapters/DataScriptFactory", () => ({
@@ -17,6 +18,12 @@ vi.mock("src/common/adapters/DataScriptFactory", () => ({
 
 import ConnectionHelper from "src/frontend/components/ConnectionHelper";
 
+const theme = createTheme();
+
+function renderWithTheme(ui: React.ReactElement) {
+  return render(<ThemeProvider theme={theme}>{ui}</ThemeProvider>);
+}
+
 describe("ConnectionHelper", () => {
   const defaultProps = {
     scheme: "mysql",
@@ -30,30 +37,30 @@ describe("ConnectionHelper", () => {
   };
 
   test("renders Apply button", () => {
-    const { container } = render(<ConnectionHelper {...defaultProps} />);
+    const { container } = renderWithTheme(<ConnectionHelper {...defaultProps} />);
     expect(container.textContent).toContain("Apply");
   });
 
   test("renders Cancel button", () => {
-    const { container } = render(<ConnectionHelper {...defaultProps} />);
+    const { container } = renderWithTheme(<ConnectionHelper {...defaultProps} />);
     expect(container.textContent).toContain("Cancel");
   });
 
   test("renders scheme selector", () => {
-    const { container } = render(<ConnectionHelper {...defaultProps} />);
+    const { container } = renderWithTheme(<ConnectionHelper {...defaultProps} />);
     expect(container.textContent).toContain("mysql");
   });
 
   test("calls onClose when Cancel is clicked", () => {
     const onClose = vi.fn();
-    const { container } = render(<ConnectionHelper {...defaultProps} onClose={onClose} />);
+    const { container } = renderWithTheme(<ConnectionHelper {...defaultProps} onClose={onClose} />);
     const cancelButton = Array.from(container.querySelectorAll("button")).find((b) => b.textContent?.includes("Cancel"));
     if (cancelButton) fireEvent.click(cancelButton);
     expect(onClose).toHaveBeenCalled();
   });
 
   test("shows unsupported message for unknown scheme", () => {
-    const { container } = render(<ConnectionHelper {...defaultProps} scheme="unknown" />);
+    const { container } = renderWithTheme(<ConnectionHelper {...defaultProps} scheme="unknown" />);
     expect(container.textContent).toContain("not supported");
   });
 });

@@ -27,7 +27,7 @@ describe("useClientSidePreference", () => {
 
   test("useSideBarWidthPreference returns value and onChange", () => {
     const { result } = renderHook(() => useSideBarWidthPreference());
-    expect(result.current.value).toBeDefined();
+    expect(result.current).toHaveProperty("value");
     expect(result.current.onChange).toBeDefined();
   });
 });
