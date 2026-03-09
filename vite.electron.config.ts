@@ -29,6 +29,7 @@ export default defineConfig({
       output: {
         entryFileNames: "main.js",
         format: "cjs",
+        banner: `if(typeof globalThis.crypto==="undefined"){globalThis.crypto=require("crypto");}`,
       },
     },
     target: "node18",
