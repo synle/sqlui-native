@@ -226,6 +226,82 @@ describe("commonUtils", () => {
     });
   });
 
+  describe("getSanitizedConnectionUrl", () => {
+    test("should return empty string for empty input", () => {
+      expect(commonUtils.getSanitizedConnectionUrl("")).toBe("");
+    });
+
+    test("should strip protocol and credentials", () => {
+      expect(
+        commonUtils.getSanitizedConnectionUrl("mysql://fake_user:fake_pass123@fake-mysql-host.example.com:3306"),
+      ).toBe("fake-mysql-host.example.com:3306");
+    });
+
+    test("should strip protocol when no credentials", () => {
+      expect(commonUtils.getSanitizedConnectionUrl("mssql://fake-mssql-host.example.com:1433")).toBe(
+        "fake-mssql-host.example.com:1433",
+      );
+    });
+
+    test("should preserve database path", () => {
+      expect(
+        commonUtils.getSanitizedConnectionUrl("mysql://fake-db-host.example.com:3306/fake_database"),
+      ).toBe("fake-db-host.example.com:3306/fake_database");
+    });
+
+    test("should strip query params", () => {
+      expect(
+        commonUtils.getSanitizedConnectionUrl("redis://fake-redis-host.example.com:6379?timeout=5000"),
+      ).toBe("fake-redis-host.example.com:6379");
+    });
+
+    test("should handle @ in password", () => {
+      expect(
+        commonUtils.getSanitizedConnectionUrl(
+          "mssql://fake_admin!*((:fake_p@ssw0rd!@fake-sql-host.example.net:1433",
+        ),
+      ).toBe("fake-sql-host.example.net:1433");
+    });
+
+    test("should handle sqlite file path", () => {
+      expect(commonUtils.getSanitizedConnectionUrl("sqlite:///tmp/fake/fake-app.sqlite")).toContain(
+        "tmp/fake/fake-app.sqlite",
+      );
+    });
+
+    test("should strip credentials with special characters", () => {
+      expect(
+        commonUtils.getSanitizedConnectionUrl(
+          "mssql://fake_svc_user!*((:F@ke_P@ss!@fake-db-server.example.com:1433",
+        ),
+      ).toBe("fake-db-server.example.com:1433");
+    });
+
+    test("should construct host from aztable EndpointSuffix", () => {
+      expect(
+        commonUtils.getSanitizedConnectionUrl(
+          "aztable://DefaultEndpointsProtocol=https;AccountName=fakestorageacct;AccountKey=FaKeKeY123+abc/def==;EndpointSuffix=core.windows.net",
+        ),
+      ).toBe("core.windows.net");
+    });
+
+    test("should extract host from cosmosdb AccountEndpoint", () => {
+      expect(
+        commonUtils.getSanitizedConnectionUrl(
+          "cosmosdb://AccountEndpoint=https://fake-cosmos-acct.mongo.cosmos.azure.com:10255;AccountKey=FaKeCoSmOsKeY123==",
+        ),
+      ).toBe("fake-cosmos-acct.mongo.cosmos.azure.com:10255");
+    });
+
+    test("should strip leading and trailing slashes", () => {
+      expect(
+        commonUtils.getSanitizedConnectionUrl(
+          "mongodb://fake_mongo_user:fake_mongo_pass@fake-mongo-host.example.com:27017/",
+        ),
+      ).toBe("fake-mongo-host.example.com:27017");
+    });
+  });
+
   describe("createSystemNotification", () => {
     const originalNotification = global.Notification;
 

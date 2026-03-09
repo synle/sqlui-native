@@ -88,6 +88,52 @@ export function useNavigate() {
  * @param colNames - The array of column names to sort.
  * @returns The sorted array.
  */
+/**
+ * Strips the protocol, username, password, and query params from a connection URL,
+ * returning just the host/path portion for display.
+ * @param connectionString - The raw connection string.
+ * @returns The sanitized URL string, or empty string if parsing fails.
+ */
+export function getSanitizedConnectionUrl(connectionString: string): string {
+  if (!connectionString) return "";
+
+  let input = connectionString;
+
+  // Special handling for CosmosDB and Azure Table Storage connection strings,
+  // which use a key=value;key=value format instead of standard URLs.
+  // e.g. cosmosdb://AccountEndpoint=https://host:port;AccountKey=...
+  // e.g. aztable://DefaultEndpointsProtocol=https;AccountName=...;EndpointSuffix=core.windows.net
+  if (input.startsWith("cosmosdb://") || input.startsWith("aztable://")) {
+    // Try to extract the domain (with optional port) from an embedded https:// URL
+    const urlMatch = input.match(/https?:\/\/([a-zA-Z0-9.-]+(?::\d+)?)/i);
+    if (urlMatch) {
+      return urlMatch[1];
+    }
+
+    // No embedded URL found — fall back to EndpointSuffix param (e.g. core.windows.net)
+    const endpointSuffix = input.match(/EndpointSuffix=([^;]+)/i)?.[1];
+    if (endpointSuffix) return endpointSuffix;
+  }
+
+  // Strip protocol (e.g. mysql://, mssql://, sqlite://, redis://)
+  let result = input.replace(/^[a-zA-Z][a-zA-Z0-9+.-]*:\/\//, "");
+
+  // Strip credentials — use lastIndexOf to handle passwords containing @ characters
+  if (result.includes("@")) {
+    result = result.substring(result.lastIndexOf("@") + 1);
+  }
+
+  // Strip query string params
+  if (result.includes("?")) {
+    result = result.substring(0, result.indexOf("?"));
+  }
+
+  // Strip leading/trailing slashes
+  result = result.replace(/^\/+|\/+$/g, "");
+
+  return result;
+}
+
 export function sortColumnNamesForUnknownData(colNames: string[]) {
   return colNames.sort((a, b) => {
     // do sorting on columnname
