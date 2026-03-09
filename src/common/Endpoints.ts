@@ -521,12 +521,10 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     const items = await folderItemsStorage.list();
 
     // backfill deletedAt for existing items that were created before this field existed
-    let hasUpdates = false;
     for (const item of items) {
       if (!item.deletedAt) {
         item.deletedAt = Date.now();
         folderItemsStorage.update(item);
-        hasUpdates = true;
       }
     }
 
