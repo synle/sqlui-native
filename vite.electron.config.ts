@@ -47,5 +47,4 @@ export default defineConfig({
       typings: path.resolve(__dirname, "typings"),
     },
   },
-  envFile: false,
-});
+} as any);

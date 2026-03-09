@@ -29,7 +29,7 @@ export const formatJS = (val: string) => {
     val = _formatJS(val, {
       indent_size: 2,
       space_in_empty_paren: true,
-      break_chained_methods: 2,
+      break_chained_methods: true,
     });
   } catch (err) {}
 

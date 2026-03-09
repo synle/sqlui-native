@@ -71,9 +71,9 @@ export async function createSystemNotification(message: string) {
  * preventing "state update on unmounted component" warnings in React 17.
  * @returns A deferred NavigateFunction.
  */
-export function useNavigate(): NavigateFunction {
+export function useNavigate() {
   const navigate = useReactRouterNavigate();
-  return useCallback<NavigateFunction>(
+  return useCallback(
     (...args: Parameters<NavigateFunction>) => {
       setTimeout(() => (navigate as Function)(...args), 0);
     },
