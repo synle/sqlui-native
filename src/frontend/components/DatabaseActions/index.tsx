@@ -2,7 +2,7 @@ import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import SelectAllIcon from "@mui/icons-material/SelectAll";
 import SsidChartIcon from "@mui/icons-material/SsidChart";
 import IconButton from "@mui/material/IconButton";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "src/frontend/utils/commonUtils";
 import { useState } from "react";
 import { getDatabaseActions, isDialectSupportVisualization } from "src/common/adapters/DataScriptFactory";
 import DropdownButton from "src/frontend/components/DropdownButton";
@@ -13,11 +13,20 @@ import { useQuerySizeSetting } from "src/frontend/hooks/useSetting";
 import { useTreeActions } from "src/frontend/hooks/useTreeActions";
 import { SqlAction } from "typings";
 
+/** Props for the DatabaseActions component. */
 type DatabaseActionsProps = {
+  /** The ID of the connection this database belongs to. */
   connectionId: string;
+  /** The name/ID of the database to show actions for. */
   databaseId: string;
 };
 
+/**
+ * A dropdown button that displays available actions for a specific database.
+ * Includes select, visualize, and dialect-specific database operations.
+ * @param props - Contains connectionId and databaseId.
+ * @returns A dropdown button with database actions, or null if context menu is hidden.
+ */
 export default function DatabaseActions(props: DatabaseActionsProps): JSX.Element | null {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);

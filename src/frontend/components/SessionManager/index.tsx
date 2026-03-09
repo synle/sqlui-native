@@ -5,10 +5,18 @@ import SessionSelectionModal from "src/frontend/components/SessionSelectionModal
 import { setCurrentSessionId } from "src/frontend/data/session";
 import { useGetCurrentSession, useSelectSession } from "src/frontend/hooks/useSession";
 
+/** Props for the SessionManager component. */
 type SessionManagerProps = {
+  /** Child components to render once a valid session is established. */
   children: any;
 };
 
+/**
+ * Guards the app behind session selection. Shows a session selection modal if no valid session exists,
+ * a loading indicator while resolving, or renders children once a session is established.
+ * @param props - Contains child components to render after session validation.
+ * @returns Children, a loading alert, or the session selection modal.
+ */
 export default function SessionManager(props: SessionManagerProps): JSX.Element | null {
   const [status, setStatus] = useState<"pending_session" | "no_session" | "valid_session">("pending_session");
   const { data: currentSession, isLoading: loadingCurrentSession, refetch } = useGetCurrentSession();

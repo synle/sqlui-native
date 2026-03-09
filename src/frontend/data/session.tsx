@@ -1,10 +1,19 @@
 import { SessionStorageConfig } from "src/frontend/data/config";
 import { getGeneratedRandomId } from "src/frontend/utils/commonUtils";
 
+/**
+ * Generates a random session ID with a "sessionId" prefix.
+ * @returns A unique session ID string.
+ */
 export function getRandomSessionId() {
   return getGeneratedRandomId(`sessionId`);
 }
 
+/**
+ * Sets the current session ID in sessionStorage and optionally reloads the page.
+ * @param newSessionId - The new session ID to set.
+ * @param suppressReload - If true, skip page reload after switching sessions.
+ */
 export function setCurrentSessionId(newSessionId: string, suppressReload = false) {
   const currentWindowId = sessionStorage.getItem("sqlui-native.windowId") || "";
 

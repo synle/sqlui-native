@@ -2,14 +2,19 @@ import React from "react";
 import { styled } from "@mui/material/styles";
 import { Bar } from "src/frontend/components/Resizer";
 
+/** Default height for the data table container. */
 export const defaultTableHeight = "85vh";
 
+/** Height in pixels for table header cells. */
 export const tableCellHeaderHeight = 75;
 
+/** Height in pixels for table data cells. */
 export const tableCellHeight = 35;
 
+/** Default width in pixels for table cells. */
 export const tableCellWidth = 160;
 
+/** Generic styled div container for the data table. */
 export const StyledDivContainer = styled("div")(() => ({}));
 
 const StyledColumnResizer = styled(Bar, {
@@ -25,10 +30,18 @@ const StyledColumnResizer = styled(Bar, {
   },
 }));
 
+/** Props for the ColumnResizer component. */
 type ColumnResizerProps = React.HTMLAttributes<HTMLDivElement> & {
+  /** Whether the column is currently being resized. */
   isResizing?: boolean;
 };
 
+/**
+ * A draggable column resize handle for data table headers.
+ * Prevents event propagation to avoid triggering sort on resize.
+ * @param props - Resizer properties including isResizing state and event handlers.
+ * @returns A styled resize bar element.
+ */
 export function ColumnResizer({ isResizing, onMouseDown, onTouchStart, ...rest }: ColumnResizerProps) {
   const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -43,6 +56,7 @@ export function ColumnResizer({ isResizing, onMouseDown, onTouchStart, ...rest }
   return <StyledColumnResizer size={5} isResizing={isResizing} onMouseDown={handleMouseDown} onTouchStart={handleTouchStart} {...rest} />;
 }
 
+/** Styled div for table value cells with text ellipsis overflow. */
 export const StyledDivValueCell = styled("div")(() => ({
   flexShrink: 0,
   paddingInline: "0.5rem",
@@ -52,6 +66,7 @@ export const StyledDivValueCell = styled("div")(() => ({
   textOverflow: "ellipsis",
   wordBreak: "break-all",
 }));
+/** Styled div for the table header row with bold text and theme background. */
 export const StyledDivHeaderRow = styled("div")(({ theme }) => ({
   fontWeight: "bold",
   display: "flex",
@@ -75,6 +90,7 @@ export const StyledDivHeaderRow = styled("div")(({ theme }) => ({
     whiteSpace: "nowrap",
   },
 }));
+/** Styled div for table content rows with alternating background colors and hover effect. */
 export const StyledDivContentRow = styled("div")(({ theme }) => ({
   display: "flex",
   alignItems: "center",
@@ -93,12 +109,14 @@ export const StyledDivContentRow = styled("div")(({ theme }) => ({
   },
 }));
 
+/** Styled div for individual table header cells. */
 export const StyledDivHeaderCell = styled("div")(() => ({
   flexShrink: 0,
   paddingInline: "0.5rem",
   position: "relative",
 }));
 
+/** Styled div for header cell labels with flex layout. */
 export const StyledDivHeaderCellLabel = styled("div")(() => ({
   display: "flex",
   alignItems: "center",
@@ -106,18 +124,20 @@ export const StyledDivHeaderCellLabel = styled("div")(() => ({
     flexGrow: 1,
   },
 }));
-// for virtualized ones
-export const StyledDivContentRowForVirualized = styled(StyledDivContentRow)(({ theme }) => ({
+/** Styled content row for virtualized table rendering with absolute positioning. */
+export const StyledDivContentRowForVirualized = styled(StyledDivContentRow)(() => ({
   position: "absolute",
   top: 0,
   left: 0,
 }));
 
-export const StyledDivHeaderCellForVirtualized = styled(StyledDivHeaderCell)(({ theme }) => ({
+/** Styled header cell for virtualized table rendering with fixed height. */
+export const StyledDivHeaderCellForVirtualized = styled(StyledDivHeaderCell)(() => ({
   height: `${tableCellHeight}px`,
 }));
 
-export const StyledDivValueCellForVirtualized = styled(StyledDivValueCell)(({ theme }) => ({
+/** Styled value cell for virtualized table rendering with fixed height. */
+export const StyledDivValueCellForVirtualized = styled(StyledDivValueCell)(() => ({
   height: `${tableCellHeight}px`,
   paddingBottom: 0,
 }));

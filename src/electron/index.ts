@@ -21,7 +21,9 @@ process.on("unhandledRejection", (reason) => {
 try {
   app.commandLine.appendSwitch("disable-smooth-scrolling", "1");
   app.commandLine.appendSwitch("enable-smooth-scrolling", "0");
-} catch (err) {}
+} catch (err) {
+  console.error("index.ts:appendSwitch", err);
+}
 
 // performance: GPU acceleration and rendering
 app.commandLine.appendSwitch("enable-gpu-rasterization");
@@ -110,7 +112,7 @@ function sendMessage(win: BrowserWindow, message: SqluiEnums.ClientEventKey) {
 }
 
 function setupMenu() {
-  let menuTemplate: Electron.MenuItemConstructorOptions[] = [
+  const menuTemplate: Electron.MenuItemConstructorOptions[] = [
     {
       label: "File",
       submenu: [
@@ -296,7 +298,7 @@ function setupMenu() {
     },
   ];
 
-  let menu = Menu.buildFromTemplate(menuTemplate);
+  const menu = Menu.buildFromTemplate(menuTemplate);
   Menu.setApplicationMenu(menu);
 }
 
@@ -344,10 +346,10 @@ ipcMain.on("sqluiNativeEvent/toggleMenus", (...[, data]) => {
   for (const targetMenuId of targetMenuIds) {
     try {
       //@ts-ignore
-      let menuItem: any = Menu.getApplicationMenu().getMenuItemById(targetMenuId);
+      const menuItem: any = Menu.getApplicationMenu().getMenuItemById(targetMenuId);
       menuItem.enabled = enabled;
     } catch (err) {
-      console.log(">> Failed to toggle Menu", data, err);
+      console.error("index.ts:toggleMenu", data, err);
     }
   }
 });
@@ -366,19 +368,22 @@ ipcMain.on("sqluiNativeEvent/fetch", async (event, data) => {
   let body: any = {};
   try {
     body = JSON.parse(options.body);
-  } catch (err) {}
+  } catch (err) {
+    console.error("index.ts:parse", err);
+  }
 
   console.log(">> Request", method, url, sessionId, body);
   const matchCurrentUrlAgainst = (matchAgainstUrl: string) => {
     try {
       return matchPath(matchAgainstUrl, url);
     } catch (err) {
+      console.error("index.ts:matchPath", err);
       return undefined;
     }
   };
 
   try {
-    let returnedResponseHeaders: any = []; // array of [key, value]
+    const returnedResponseHeaders: any = []; // array of [key, value]
     const sendResponse = (responseData: any = "", status = 200) => {
       let ok = true;
       if (status >= 300 || status < 200) {
@@ -423,6 +428,7 @@ ipcMain.on("sqluiNativeEvent/fetch", async (event, data) => {
               //@ts-ignore
               return _apiCache[sessionId][key];
             } catch (err) {
+              console.error("index.ts:get", err);
               return undefined;
             }
           },
@@ -433,7 +439,9 @@ ipcMain.on("sqluiNativeEvent/fetch", async (event, data) => {
 
               //@ts-ignore
               _apiCache[sessionId][key] = value;
-            } catch (err) {}
+            } catch (err) {
+              console.error("index.ts:set", err);
+            }
           },
           json() {
             return JSON.stringify(_apiCache);
@@ -456,6 +464,6 @@ ipcMain.on("sqluiNativeEvent/fetch", async (event, data) => {
     // not found, then return 404
     sendResponse("Resource Not Found...", 500);
   } catch (err) {
-    console.log("error", err);
+    console.error("index.ts:ipcMain.handle", err);
   }
 });

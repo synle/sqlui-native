@@ -8,6 +8,9 @@ import { SqluiCore } from "typings";
  */
 const MAX_ITEM_COUNT_TO_SCAN = 5;
 
+/**
+ * Data adapter for Azure Cosmos DB, handling connections, metadata retrieval, and query execution.
+ */
 export default class AzureCosmosDataAdapter extends BaseDataAdapter implements IDataAdapter {
   // https://docs.microsoft.com/en-us/azure/cosmos-db/sql/sql-api-nodejs-get-started?tabs=windows
 
@@ -24,6 +27,7 @@ export default class AzureCosmosDataAdapter extends BaseDataAdapter implements I
 
         resolve(client);
       } catch (err) {
+        console.error("AzureCosmosDataAdapter:getConnection", err);
         reject(err);
       }
     });
@@ -33,7 +37,9 @@ export default class AzureCosmosDataAdapter extends BaseDataAdapter implements I
     try {
       this._client?.dispose();
       this._client = undefined;
-    } catch (err) {}
+    } catch (err) {
+      console.error("index.ts:dispose", err);
+    }
   }
 
   async authenticate() {
@@ -52,6 +58,7 @@ export default class AzureCosmosDataAdapter extends BaseDataAdapter implements I
           throw new Error("Failed to connect to Azure CosmosDB - Empty read endpoint");
         }
       } catch (err) {
+        console.error("AzureCosmosDataAdapter:authenticate", err);
         reject(err);
       } finally {
         await this.closeConnection();
@@ -71,6 +78,7 @@ export default class AzureCosmosDataAdapter extends BaseDataAdapter implements I
         tables: [],
       }));
     } catch (err) {
+      console.error("index.ts:map", err);
       return [];
     } finally {
       await this.closeConnection();
@@ -93,6 +101,7 @@ export default class AzureCosmosDataAdapter extends BaseDataAdapter implements I
         columns: [],
       }));
     } catch (err) {
+      console.error("index.ts:map", err);
       return [];
     } finally {
       await this.closeConnection();
@@ -120,6 +129,7 @@ export default class AzureCosmosDataAdapter extends BaseDataAdapter implements I
         primaryKey: column.name === "id",
       }));
     } catch (err) {
+      console.error("index.ts:inferTypesFromItems", err);
       return [];
     } finally {
       await this.closeConnection();
@@ -160,7 +170,7 @@ export default class AzureCosmosDataAdapter extends BaseDataAdapter implements I
 
       return { ok: true, raw: items };
     } catch (error: any) {
-      console.log(error);
+      console.error("AzureCosmosDataAdapter:execute", error);
       let errorMessage: string;
       try {
         errorMessage = JSON.stringify(error, null, 2);

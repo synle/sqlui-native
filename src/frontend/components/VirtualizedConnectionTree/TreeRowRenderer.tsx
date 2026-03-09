@@ -17,12 +17,21 @@ import DatabaseActions from "src/frontend/components/DatabaseActions";
 import TableActions from "src/frontend/components/TableActions";
 import { TreeRow } from "./types";
 
+/** Props for the TreeRowRenderer component. */
 type TreeRowRendererProps = {
+  /** The tree row data to render. */
   row: TreeRow;
+  /** Callback to toggle expand/collapse of a tree node by key. */
   onToggle: (key: string, isVisible?: boolean) => void;
+  /** Callback to reorder connections via drag-and-drop. */
   onConnectionOrderChange: (fromIdx: number, toIdx: number) => void;
 };
 
+/**
+ * Renders a single row in the connection tree based on its type (connection, database, table, column, etc.).
+ * @param props - Contains the row data, toggle handler, and connection reorder handler.
+ * @returns The appropriate UI for the row type.
+ */
 export function TreeRowRenderer(props: TreeRowRendererProps) {
   const { row, onToggle, onConnectionOrderChange } = props;
 

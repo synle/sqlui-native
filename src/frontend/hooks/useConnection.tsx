@@ -5,17 +5,24 @@ import { useIsSoftDeleteModeSetting } from "src/frontend/hooks/useSetting";
 import { getUpdatedOrdersForList } from "src/frontend/utils/commonUtils";
 import { SqluiCore, SqluiFrontend } from "typings";
 
+/** React Query cache key for all connections. */
 const QUERY_KEY_ALL_CONNECTIONS = "connections";
 
-const DEFAULT_STALE_TIME = 30000;
-
+/**
+ * Hook to fetch all database connections.
+ * @returns React Query result containing an array of connections.
+ */
 export function useGetConnections() {
   return useQuery([QUERY_KEY_ALL_CONNECTIONS], dataApi.getConnections, {
-    staleTime: DEFAULT_STALE_TIME,
     notifyOnChangeProps: ["data", "error"],
   });
 }
 
+/**
+ * Hook to reorder connections via drag-and-drop.
+ * @param connections - Current list of connections to reorder.
+ * @returns Mutation that accepts [fromIndex, toIndex] to reorder.
+ */
 export function useUpdateConnections(connections?: SqluiCore.ConnectionProps[]) {
   const queryClient = useQueryClient();
   return useMutation<SqluiCore.ConnectionProps[] | undefined, void, number[]>(([from, to]) => {
@@ -31,6 +38,11 @@ export function useUpdateConnections(connections?: SqluiCore.ConnectionProps[]) 
   });
 }
 
+/**
+ * Hook to fetch a single connection by ID.
+ * @param connectionId - The connection ID to fetch.
+ * @returns React Query result containing the connection or undefined.
+ */
 export function useGetConnectionById(connectionId?: string) {
   return useQuery([connectionId], () => (!connectionId ? undefined : dataApi.getConnection(connectionId)), {
     enabled: !!connectionId,
@@ -38,6 +50,10 @@ export function useGetConnectionById(connectionId?: string) {
   });
 }
 
+/**
+ * Hook to create or update a connection. Optimistically updates the query cache.
+ * @returns Mutation that accepts connection properties and returns the upserted connection.
+ */
 export function useUpsertConnection() {
   const queryClient = useQueryClient();
   return useMutation<SqluiCore.ConnectionProps, void, SqluiCore.CoreConnectionProps>(dataApi.upsertConnection, {
@@ -73,6 +89,10 @@ export function useUpsertConnection() {
   });
 }
 
+/**
+ * Hook to delete a connection. Optionally backs up to recycle bin if soft delete is enabled.
+ * @returns Mutation that accepts a connection ID to delete.
+ */
 export function useDeleteConnection() {
   const queryClient = useQueryClient();
   const { mutateAsync: addRecycleBinItem } = useAddRecycleBinItem();
@@ -81,9 +101,6 @@ export function useDeleteConnection() {
 
   return useMutation<string, void, string>(dataApi.deleteConnection, {
     onSuccess: async (deletedConnectionId) => {
-      queryClient.invalidateQueries([deletedConnectionId]);
-      queryClient.invalidateQueries([QUERY_KEY_ALL_CONNECTIONS]);
-
       queryClient.setQueryData<SqluiCore.ConnectionProps[] | undefined>([QUERY_KEY_ALL_CONNECTIONS], (oldData) => {
         return oldData?.filter((connection) => connection.id !== deletedConnectionId);
       });
@@ -104,6 +121,7 @@ export function useDeleteConnection() {
           }
         }
       } catch (err) {
+        console.error("useConnection.tsx:addRecycleBinItem", err);
         // TODO: add error handling
       }
 
@@ -112,6 +130,10 @@ export function useDeleteConnection() {
   });
 }
 
+/**
+ * Hook to duplicate an existing connection with a new name and ID.
+ * @returns Mutation that accepts connection properties to duplicate.
+ */
 export function useDuplicateConnection() {
   const { mutateAsync: upsertConnection, isLoading } = useUpsertConnection();
 
@@ -128,6 +150,10 @@ export function useDuplicateConnection() {
   };
 }
 
+/**
+ * Hook to import a connection, preserving its original ID and name.
+ * @returns Mutation that accepts connection properties to import.
+ */
 export function useImportConnection() {
   const { mutateAsync: upsertConnection, isLoading } = useUpsertConnection();
 
@@ -145,15 +171,25 @@ export function useImportConnection() {
   };
 }
 
+/**
+ * Hook to fetch databases for a given connection.
+ * @param connectionId - The connection ID to fetch databases for.
+ * @returns React Query result containing an array of database metadata.
+ */
 export function useGetDatabases(connectionId?: string) {
   const enabled = !!connectionId;
 
   return useQuery([connectionId, "databases"], () => (!enabled ? undefined : dataApi.getConnectionDatabases(connectionId)), {
     enabled,
-    staleTime: DEFAULT_STALE_TIME,
   });
 }
 
+/**
+ * Hook to fetch tables for a given connection and database.
+ * @param connectionId - The connection ID.
+ * @param databaseId - The database ID.
+ * @returns React Query result containing an array of table metadata.
+ */
 export function useGetTables(connectionId?: string, databaseId?: string) {
   const enabled = !!connectionId && !!databaseId;
 
@@ -162,11 +198,16 @@ export function useGetTables(connectionId?: string, databaseId?: string) {
     () => (!enabled ? undefined : dataApi.getConnectionTables(connectionId, databaseId)),
     {
       enabled,
-      staleTime: DEFAULT_STALE_TIME,
     },
   );
 }
 
+/**
+ * Hook to fetch columns for all tables in a given connection and database.
+ * @param connectionId - The connection ID.
+ * @param databaseId - The database ID.
+ * @returns React Query result containing a record mapping table names to column metadata arrays.
+ */
 export function useGetAllTableColumns(connectionId?: string, databaseId?: string) {
   const enabled = !!connectionId && !!databaseId;
 
@@ -188,11 +229,17 @@ export function useGetAllTableColumns(connectionId?: string, databaseId?: string
     },
     {
       enabled,
-      staleTime: DEFAULT_STALE_TIME,
     },
   );
 }
 
+/**
+ * Hook to fetch columns for a specific table.
+ * @param connectionId - The connection ID.
+ * @param databaseId - The database ID.
+ * @param tableId - The table ID.
+ * @returns React Query result containing an array of column metadata.
+ */
 export function useGetColumns(connectionId?: string, databaseId?: string, tableId?: string) {
   const enabled = !!connectionId && !!databaseId && !!tableId;
 
@@ -201,17 +248,25 @@ export function useGetColumns(connectionId?: string, databaseId?: string, tableI
     () => (!enabled ? undefined : dataApi.getConnectionColumns(connectionId, databaseId, tableId)),
     {
       enabled,
-      staleTime: DEFAULT_STALE_TIME,
     },
   );
 }
 
+/**
+ * Hook to execute a SQL/NoSQL query against a connection.
+ * @returns Mutation that accepts a ConnectionQuery and returns the result.
+ */
 export function useExecute() {
   return useMutation<SqluiCore.Result, void, SqluiFrontend.ConnectionQuery>((query?: SqluiFrontend.ConnectionQuery) =>
     dataApi.execute(query),
   );
 }
 
+/**
+ * Invalidates relevant query caches after executing DDL or data-modifying statements.
+ * @param query - The executed query to check for DDL/DML keywords.
+ * @param queryClient - The React Query client used to invalidate caches.
+ */
 export function refreshAfterExecution(query: SqluiFrontend.ConnectionQuery, queryClient: QueryClient) {
   if (!query) {
     return;
@@ -252,14 +307,16 @@ export function refreshAfterExecution(query: SqluiFrontend.ConnectionQuery, quer
   }
 }
 
+/**
+ * Hook to retry/reconnect a failed connection and refresh its cache data.
+ * @returns Mutation that accepts a connection ID to reconnect.
+ */
 export function useRetryConnection() {
   const queryClient = useQueryClient();
   return useMutation<SqluiCore.ConnectionMetaData, SqluiCore.ConnectionMetaData, string>(dataApi.reconnect, {
     onSettled: async (newSuccessConnection, newFailedConnection) => {
       // NOTE: here we used settled, because if the connection
       // went bad, we want to also refresh the data
-      queryClient.invalidateQueries([QUERY_KEY_ALL_CONNECTIONS]);
-
       queryClient.setQueryData<SqluiCore.ConnectionMetaData[] | undefined>([QUERY_KEY_ALL_CONNECTIONS], (oldData) => {
         // find that entry
         oldData = oldData?.map((connection) => {
@@ -282,6 +339,10 @@ export function useRetryConnection() {
   });
 }
 
+/**
+ * Hook to test a connection without persisting it.
+ * @returns Mutation that accepts connection properties and returns test results.
+ */
 export function useTestConnection() {
   return useMutation<SqluiCore.CoreConnectionMetaData, void, SqluiCore.CoreConnectionProps>(dataApi.test);
 }

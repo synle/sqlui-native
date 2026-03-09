@@ -9,6 +9,9 @@ import { useSideBarWidthPreference } from "src/frontend/hooks/useClientSidePrefe
 import { useTreeActions } from "src/frontend/hooks/useTreeActions";
 import LayoutTwoColumns from "src/frontend/layout/LayoutTwoColumns";
 
+/**
+ * Page displaying saved query bookmarks with a connection tree sidebar.
+ */
 export default function BookmarksPage() {
   useSideBarWidthPreference();
   const { setTreeActions } = useTreeActions();

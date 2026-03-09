@@ -16,7 +16,9 @@ import {
   useToastHistoryCount,
 } from "src/frontend/hooks/useToaster";
 
+/** Maximum character length before content is truncated in collapsed view. */
 const COLLAPSED_LENGTH = 250;
+/** Estimated row height in pixels for the virtualizer. */
 const ESTIMATED_ROW_HEIGHT = 60;
 
 function formatTime(ts?: number) {
@@ -153,8 +155,13 @@ function ExpandableContent({
   );
 }
 
+/** Sort direction for toast history entries. */
 type SortOrder = "newest" | "oldest";
 
+/**
+ * Virtualized list of toast notification history with filtering, sorting, expand/collapse,
+ * and dismiss functionality. Supports newest/oldest sort order and bulk actions.
+ */
 export default function ToastHistoryList() {
   const [sortOrder, setSortOrder] = useState<SortOrder>("newest");
   const [filter, setFilter] = useState("");

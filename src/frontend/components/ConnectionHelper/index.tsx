@@ -5,6 +5,7 @@ import { useState } from "react";
 import { getConnectionFormInputs, SUPPORTED_DIALECTS } from "src/common/adapters/DataScriptFactory";
 import Select from "src/frontend/components/Select";
 
+/** Form input fields for building a database connection string. */
 type ConnectionHelperFormInputs = {
   scheme: string;
   username: string;
@@ -14,11 +15,20 @@ type ConnectionHelperFormInputs = {
   restOfConnectionString: string;
 };
 
+/** Props for the ConnectionHelper component, extending form inputs with callbacks. */
 type ConnectionHelperProps = ConnectionHelperFormInputs & {
+  /** Called with the generated connection string when the user clicks Apply. */
   onChange: (newConnection: string) => void;
+  /** Called when the user cancels the connection helper. */
   onClose: () => void;
 };
 
+/**
+ * A form-based helper for constructing database connection strings.
+ * Displays dialect-specific input fields and generates the connection URL.
+ * @param props - Connection helper properties including initial values and callbacks.
+ * @returns The connection helper form.
+ */
 export default function ConnectionHelper(props: ConnectionHelperProps) {
   const [value, setValue] = useState<ConnectionHelperFormInputs>({
     scheme: props.scheme || "",

@@ -4,10 +4,16 @@ import { renderCodeSnippet } from "src/common/adapters/code-snippets/renderCodeS
 import mongodbIcon from "src/common/adapters/MongoDBDataAdapter/mongodb.png";
 import { SqlAction, SqluiCore } from "typings";
 
+/** Prefix used for MongoDB query syntax in sqlui-native. */
 export const MONGO_ADAPTER_PREFIX = "db";
 
 const formatter = "js";
 
+/**
+ * Serializes an object to JSON suitable for MongoDB scripts, converting `_id` values to `ObjectId()`.
+ * @param object - The object to serialize.
+ * @returns A JSON string with ObjectId references properly formatted.
+ */
 export function serializeJsonForMongoScript(object: any) {
   let res = JSON.stringify(
     object,
@@ -22,13 +28,18 @@ export function serializeJsonForMongoScript(object: any) {
 
   // here we construct ObjectId
   res = res.replace(/"ObjectId\('[a-z0-9_]*'\)"/, (a) => {
-    const id = a.replace(`ObjectId`, "").replace(/[\(\)'"]/g, "");
+    const id = a.replace(`ObjectId`, "").replace(/[()'"]/g, "");
     return `ObjectId("${id}")`;
   });
 
   return res;
 }
 
+/**
+ * Generates a script to select all documents from a collection.
+ * @param input - Table input containing the collection name and query size.
+ * @returns Script output with the find query.
+ */
 export function getSelectAllColumns(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Select All Columns`;
 
@@ -39,6 +50,11 @@ export function getSelectAllColumns(input: SqlAction.TableInput): SqlAction.Outp
   };
 }
 
+/**
+ * Generates a script to select a single document by _id.
+ * @param input - Table input containing the collection name.
+ * @returns Script output with the findOne query.
+ */
 export function getSelectOne(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Select One Record`;
 
@@ -51,6 +67,11 @@ export function getSelectOne(input: SqlAction.TableInput): SqlAction.Output | un
   };
 }
 
+/**
+ * Generates a script to find documents matching specific column values.
+ * @param input - Table input containing columns and query size.
+ * @returns Script output with the find query, or undefined if no columns.
+ */
 export function getSelectSpecificColumns(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Select Specific Columns`;
 
@@ -71,6 +92,11 @@ export function getSelectSpecificColumns(input: SqlAction.TableInput): SqlAction
         ).limit(${input.querySize}).toArray();`,
   };
 }
+/**
+ * Generates a script to select distinct values for a field in a collection.
+ * @param input - Table input containing columns for the distinct query.
+ * @returns Script output with the distinct query.
+ */
 export function getSelectDistinctValues(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Select Distinct`;
   const columns = input.columns || [];
@@ -92,6 +118,12 @@ export function getSelectDistinctValues(input: SqlAction.TableInput): SqlAction.
   };
 }
 
+/**
+ * Generates an insertMany script for a single document.
+ * @param input - Table input containing columns.
+ * @param value - Optional pre-populated values to insert.
+ * @returns Script output with the insertMany query, or undefined if no columns.
+ */
 export function getInsert(input: SqlAction.TableInput, value?: Record<string, any>): SqlAction.Output | undefined {
   const label = `Insert`;
 
@@ -121,6 +153,12 @@ export function getInsert(input: SqlAction.TableInput, value?: Record<string, an
   };
 }
 
+/**
+ * Generates an insertMany script for multiple documents.
+ * @param input - Table input containing columns.
+ * @param rows - Array of row objects to insert.
+ * @returns Script output with the insertMany query, or undefined if no columns.
+ */
 export function getBulkInsert(input: SqlAction.TableInput, rows?: Record<string, any>[]): SqlAction.Output | undefined {
   const label = `Insert`;
 
@@ -139,6 +177,13 @@ export function getBulkInsert(input: SqlAction.TableInput, rows?: Record<string,
   };
 }
 
+/**
+ * Generates an update script with specific values and conditions.
+ * @param input - Table input containing the collection name.
+ * @param value - Field values to set.
+ * @param conditions - Filter conditions for the update.
+ * @returns Script output with the update query.
+ */
 export function getUpdateWithValues(
   input: SqlAction.TableInput,
   value: Record<string, any>,
@@ -156,6 +201,11 @@ export function getUpdateWithValues(
   };
 }
 
+/**
+ * Generates an update script template with dummy values derived from columns.
+ * @param input - Table input containing columns.
+ * @returns Script output with the update query, or undefined if no columns.
+ */
 export function getUpdate(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Update`;
 
@@ -186,6 +236,11 @@ export function getUpdate(input: SqlAction.TableInput): SqlAction.Output | undef
   };
 }
 
+/**
+ * Generates a deleteMany script template.
+ * @param input - Table input containing columns for the delete filter.
+ * @returns Script output with the deleteMany query, or undefined if no columns.
+ */
 export function getDelete(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Delete`;
 
@@ -207,6 +262,11 @@ export function getDelete(input: SqlAction.TableInput): SqlAction.Output | undef
   };
 }
 
+/**
+ * Generates a createCollection script.
+ * @param input - Table input containing the collection name to create.
+ * @returns Script output with the createCollection query, or undefined if no columns.
+ */
 export function getCreateCollection(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Create Collection`;
 
@@ -223,6 +283,11 @@ export function getCreateCollection(input: SqlAction.TableInput): SqlAction.Outp
   };
 }
 
+/**
+ * Generates a drop collection script.
+ * @param input - Table input containing the collection name to drop.
+ * @returns Script output with the drop query.
+ */
 export function getDropCollection(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Drop Collection`;
   return {
@@ -232,6 +297,11 @@ export function getDropCollection(input: SqlAction.TableInput): SqlAction.Output
   };
 }
 
+/**
+ * Generates a create database script.
+ * @param input - Database input containing the database name.
+ * @returns Script output with the createDatabase query.
+ */
 export function getCreateDatabase(input: SqlAction.DatabaseInput): SqlAction.Output | undefined {
   const label = `Create Database`;
   return {
@@ -241,7 +311,12 @@ export function getCreateDatabase(input: SqlAction.DatabaseInput): SqlAction.Out
   };
 }
 
-export function getDropDatabase(input: SqlAction.DatabaseInput): SqlAction.Output | undefined {
+/**
+ * Generates a drop database script.
+ * @param input - Database input containing the database name.
+ * @returns Script output with the dropDatabase query.
+ */
+export function getDropDatabase(_input: SqlAction.DatabaseInput): SqlAction.Output | undefined {
   const label = `Drop Database`;
   return {
     label,
@@ -250,7 +325,12 @@ export function getDropDatabase(input: SqlAction.DatabaseInput): SqlAction.Outpu
   };
 }
 
-export function getCreateConnectionDatabase(input: SqlAction.ConnectionInput): SqlAction.Output | undefined {
+/**
+ * Generates a create database script at the connection level with a placeholder name.
+ * @param input - Connection input.
+ * @returns Script output with the createDatabase query.
+ */
+export function getCreateConnectionDatabase(_input: SqlAction.ConnectionInput): SqlAction.Output | undefined {
   const label = `Create Database`;
   return {
     label,
@@ -270,6 +350,7 @@ function _convertMongoJsToPython(sql: string): string {
     .replace(/\.limit\((\d+)\)/g, ".limit($1)");
 }
 
+/** Script generator for MongoDB and MongoDB+SRV dialects. */
 export class ConcreteDataScripts extends BaseDataScript {
   dialects = ["mongodb", "mongodb+srv"];
 
@@ -294,10 +375,10 @@ export class ConcreteDataScripts extends BaseDataScript {
   }
 
   // dialect definitions
-  getDialectType(dialect) {
+  getDialectType(_dialect) {
     return `mongodb` as SqluiCore.Dialect;
   }
-  getDialectIcon(dialect) {
+  getDialectIcon(_dialect) {
     return mongodbIcon;
   }
 

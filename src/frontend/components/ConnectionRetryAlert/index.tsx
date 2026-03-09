@@ -4,10 +4,18 @@ import { useState } from "react";
 import { useRetryConnection } from "src/frontend/hooks/useConnection";
 import useToaster from "src/frontend/hooks/useToaster";
 
+/** Props for ConnectionRetryAlert. */
 type ConnectionRetryAlertProps = {
+  /** The ID of the connection to retry. */
   connectionId: string;
 };
 
+/**
+ * Displays an error alert when a database connection fails, with a Reconnect button.
+ * Shows a loading state while the reconnection attempt is in progress.
+ * @param props - Contains the connectionId to retry.
+ * @returns An alert element or null.
+ */
 export default function ConnectionRetryAlert(props: ConnectionRetryAlertProps): JSX.Element | null {
   const { connectionId } = props;
   const [retrying, setRetrying] = useState(false);
@@ -19,6 +27,7 @@ export default function ConnectionRetryAlert(props: ConnectionRetryAlertProps): 
     try {
       await reconnectConnection(connectionId);
     } catch (err) {
+      console.error("ConnectionRetryAlert:reconnectConnection", err);
       addToast({ id: connectionId, message: `Connection to ${connectionId} failed with ${err}` });
     } finally {
       setRetrying(false);

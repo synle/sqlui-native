@@ -5,6 +5,7 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 
+/** Input configuration for creating an alert or confirmation dialog. */
 export type AlertInput = {
   title?: string;
   message: string;
@@ -21,6 +22,11 @@ type AlertDialogProps = AlertInput & {
   onDismiss: () => void;
 };
 
+/**
+ * Dialog component for displaying alerts and confirmation prompts.
+ * @param props - Alert dialog configuration including message, labels, and callbacks.
+ * @returns The rendered alert dialog element.
+ */
 export default function AlertDialog(props: AlertDialogProps): JSX.Element | null {
   return (
     <Dialog

@@ -7,6 +7,7 @@ import Typography from "@mui/material/Typography";
 import { Link as RouterLink } from "react-router-dom";
 import { useGetCurrentSession } from "src/frontend/hooks/useSession";
 
+/** Represents a single breadcrumb navigation link with a label and optional URL. */
 export type BreadcrumbLink = {
   label: string | JSX.Element;
   href?: string;
@@ -16,6 +17,11 @@ type BreadcrumbProps = {
   links: BreadcrumbLink[];
 };
 
+/**
+ * Breadcrumb navigation component that prepends the current session as the home link.
+ * @param props - Configuration containing the list of breadcrumb links.
+ * @returns The rendered breadcrumb navigation, or null while loading.
+ */
 export default (props: BreadcrumbProps): JSX.Element | null => {
   const { links } = props;
   const { data: currentSession, isLoading } = useGetCurrentSession();

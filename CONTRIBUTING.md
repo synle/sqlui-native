@@ -4,7 +4,7 @@
 
 ### Requirement
 
-- NODE_VERSION: 20
+- NODE_VERSION: 24
 - npm (bundled with Node)
 - Docker (for integration tests)
 

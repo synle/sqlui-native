@@ -5,11 +5,16 @@ import { styled } from "@mui/system";
 
 import { useLayoutModeSetting } from "src/frontend/hooks/useSetting";
 
+/** Tab count threshold above which vertical orientation is used by default. */
 const VERTICAL_TAB_THRESHOLD = 20;
+/** Default tab height in pixels. */
 const TAB_HEIGHT_DEFAULT = 40;
+/** Compact mode tab height in pixels. */
 const TAB_HEIGHT_COMPACT = 32;
 
+/** Props for the MyTabs component. */
 type TabsProps = {
+  /** Optional HTML id for the tabs container. */
   id?: string;
   /**
    * selected tab index
@@ -36,6 +41,12 @@ const StyledTabs = styled("section")(() => {
   return {};
 });
 
+/**
+ * Reusable tabbed interface supporting horizontal/vertical orientation, drag-and-drop reordering,
+ * middle-click to close, and context menu actions.
+ * @param props - Tab configuration including headers, contents, orientation, and event handlers.
+ * @returns The tabbed UI.
+ */
 export default function MyTabs(props: TabsProps): JSX.Element | null {
   const { id, tabIdx, tabHeaders, tabContents } = props;
   let { orientation } = props;

@@ -6,8 +6,11 @@ import { useEffect, useState } from "react";
 import { useSideBarWidthPreference } from "src/frontend/hooks/useClientSidePreference";
 import { useTreeActions } from "src/frontend/hooks/useTreeActions";
 
+/** Props for the LayoutTwoColumns component. */
 type LayoutTwoColumnsProps = {
+  /** Optional CSS class name for the container. */
   className?: string;
+  /** Two child elements: [0] = left pane content, [1] = right pane content. */
   children: JSX.Element[];
 };
 
@@ -17,6 +20,12 @@ const fabStyle = {
   left: "1.5rem",
 };
 
+/**
+ * Two-column layout with a collapsible, resizable left sidebar and a main content area.
+ * The left pane width is persisted via user preferences. A floating button toggles sidebar visibility.
+ * @param props - Contains className and two children for left and right panes.
+ * @returns The two-column layout or single-column when sidebar is collapsed.
+ */
 export default function LayoutTwoColumns(props: LayoutTwoColumnsProps): JSX.Element | null {
   const { className = "", children } = props;
   const { value: width, onChange: onSetWidth } = useSideBarWidthPreference();

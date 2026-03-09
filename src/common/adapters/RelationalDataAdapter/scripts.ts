@@ -10,8 +10,14 @@ import sqliteIcon from "src/common/adapters/RelationalDataAdapter/sqlite.png";
 import { escapeSQLValue, isValueNumber } from "src/frontend/utils/formatter";
 import { SqlAction } from "typings";
 
+/** The formatter identifier used for all relational SQL scripts. */
 const formatter = "sql";
 
+/**
+ * Generates a SELECT * query for the given table.
+ * @param input - The table input containing dialect, table ID, and query size.
+ * @returns The action output with the query, or undefined if dialect not supported.
+ */
 export function getSelectAllColumns(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Select All Columns`;
 
@@ -38,6 +44,10 @@ export function getSelectAllColumns(input: SqlAction.TableInput): SqlAction.Outp
   }
 }
 
+/**
+ * Generates a SELECT COUNT(*) query with WHERE clause for all columns.
+ * @param input - The table input containing dialect, table ID, and columns.
+ */
 export function getSelectCount(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Select Count`;
 
@@ -64,6 +74,10 @@ export function getSelectCount(input: SqlAction.TableInput): SqlAction.Output | 
   }
 }
 
+/**
+ * Generates a SELECT query listing all columns individually with a WHERE clause.
+ * @param input - The table input containing dialect, table ID, columns, and query size.
+ */
 export function getSelectSpecificColumns(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Select Specific Columns`;
 
@@ -99,6 +113,10 @@ export function getSelectSpecificColumns(input: SqlAction.TableInput): SqlAction
   }
 }
 
+/**
+ * Generates a SELECT DISTINCT query on the first non-primary-key column.
+ * @param input - The table input containing dialect, table ID, columns, and query size.
+ */
 export function getSelectDistinctValues(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Select Distinct`;
 
@@ -136,6 +154,11 @@ export function getSelectDistinctValues(input: SqlAction.TableInput): SqlAction.
   }
 }
 
+/**
+ * Generates an INSERT INTO query for a single row.
+ * @param input - The table input containing dialect, table ID, and columns.
+ * @param value - Optional record of column values to insert.
+ */
 export function getInsert(input: SqlAction.TableInput, value?: Record<string, any>): SqlAction.Output | undefined {
   const label = `Insert`;
 
@@ -174,7 +197,11 @@ export function getInsert(input: SqlAction.TableInput, value?: Record<string, an
   }
 }
 
-// TODO: add a flag to allow keeping the primary key or consistent id
+/**
+ * Generates a bulk INSERT INTO query for multiple rows.
+ * @param input - The table input containing dialect, table ID, and columns.
+ * @param rows - Array of row records to insert.
+ */
 export function getBulkInsert(input: SqlAction.TableInput, rows?: Record<string, any>[]): SqlAction.Output | undefined {
   const label = `Insert`;
 
@@ -226,6 +253,10 @@ export function getBulkInsert(input: SqlAction.TableInput, rows?: Record<string,
   }
 }
 
+/**
+ * Generates a template UPDATE query with placeholder values for all columns.
+ * @param input - The table input containing dialect, table ID, and columns.
+ */
 export function getUpdate(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Update`;
 
@@ -253,6 +284,12 @@ export function getUpdate(input: SqlAction.TableInput): SqlAction.Output | undef
   }
 }
 
+/**
+ * Generates an UPDATE query with actual values and WHERE conditions.
+ * @param input - The table input containing dialect, table ID, and columns.
+ * @param value - Record of column names to new values for the SET clause.
+ * @param conditions - Record of column names to values for the WHERE clause.
+ */
 export function getUpdateWithValues(
   input: SqlAction.TableInput,
   value: Record<string, any>,
@@ -307,6 +344,10 @@ export function getUpdateWithValues(
   }
 }
 
+/**
+ * Generates a DELETE FROM query with a WHERE clause template for all columns.
+ * @param input - The table input containing dialect, table ID, and columns.
+ */
 export function getDelete(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Delete`;
 
@@ -332,6 +373,10 @@ export function getDelete(input: SqlAction.TableInput): SqlAction.Output | undef
   }
 }
 
+/**
+ * Generates a CREATE TABLE query with dialect-specific column definitions.
+ * @param input - The table input containing dialect, table ID, and columns with type info.
+ */
 export function getCreateTable(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Create Table`;
 
@@ -435,6 +480,10 @@ export function getCreateTable(input: SqlAction.TableInput): SqlAction.Output | 
   }
 }
 
+/**
+ * Generates a DROP TABLE query.
+ * @param input - The table input containing dialect and table ID.
+ */
 export function getDropTable(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Drop Table`;
 
@@ -453,6 +502,10 @@ export function getDropTable(input: SqlAction.TableInput): SqlAction.Output | un
   }
 }
 
+/**
+ * Generates an ALTER TABLE ADD COLUMN query with dialect-specific default type.
+ * @param input - The table input containing dialect and table ID.
+ */
 export function getAddColumn(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Add Column`;
 
@@ -490,6 +543,10 @@ export function getAddColumn(input: SqlAction.TableInput): SqlAction.Output | un
   }
 }
 
+/**
+ * Generates ALTER TABLE DROP COLUMN queries for all columns in the table.
+ * @param input - The table input containing dialect, table ID, and columns.
+ */
 export function getDropColumns(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Drop Column`;
 
@@ -517,6 +574,10 @@ export function getDropColumns(input: SqlAction.TableInput): SqlAction.Output | 
   }
 }
 
+/**
+ * Generates a DROP DATABASE query.
+ * @param input - The database input containing dialect and database ID.
+ */
 export function getDropDatabase(input: SqlAction.DatabaseInput): SqlAction.Output | undefined {
   const label = `Drop Database`;
 
@@ -535,6 +596,10 @@ export function getDropDatabase(input: SqlAction.DatabaseInput): SqlAction.Outpu
   }
 }
 
+/**
+ * Generates a CREATE DATABASE query.
+ * @param input - The database input containing dialect and database ID.
+ */
 export function getCreateDatabase(input: SqlAction.DatabaseInput): SqlAction.Output | undefined {
   const label = `Create Database`;
 
@@ -553,6 +618,10 @@ export function getCreateDatabase(input: SqlAction.DatabaseInput): SqlAction.Out
   }
 }
 
+/**
+ * Generates a CREATE TABLE query for a sample "mocked_table" with dialect-specific syntax.
+ * @param input - The database input containing dialect info.
+ */
 export function getCreateSampleTable(input: SqlAction.DatabaseInput): SqlAction.Output | undefined {
   const label = `Create Table`;
 
@@ -606,6 +675,10 @@ export function getCreateSampleTable(input: SqlAction.DatabaseInput): SqlAction.
   };
 }
 
+/**
+ * Generates a CREATE DATABASE template query for connection-level actions.
+ * @param input - The connection input containing dialect info.
+ */
 export function getCreateConnectionDatabase(input: SqlAction.ConnectionInput): SqlAction.Output | undefined {
   const label = `Create Database`;
 
@@ -624,6 +697,10 @@ export function getCreateConnectionDatabase(input: SqlAction.ConnectionInput): S
   }
 }
 
+/**
+ * Concrete script implementation for relational databases (MySQL, MariaDB, MSSQL, PostgreSQL, SQLite).
+ * Provides SQL script generation, dialect icons, sample connections, and code snippets.
+ */
 export class ConcreteDataScripts extends BaseDataScript {
   dialects = ["mysql", "mariadb", "mssql", "postgres", "postgresql", "sqlite"];
 
@@ -721,9 +798,9 @@ export class ConcreteDataScripts extends BaseDataScript {
 
   // sample code snippet
   getCodeSnippet(connection, query, language) {
-    let sql = query.sql;
-    let database = query.databaseId;
-    let deps: string[] = [];
+    const sql = query.sql;
+    const database = query.databaseId;
+    const deps: string[] = [];
 
     // construct the connection url for code snippet
     let connectionString = connection.connection;

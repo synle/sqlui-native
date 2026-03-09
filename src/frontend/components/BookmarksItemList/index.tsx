@@ -7,7 +7,8 @@ import CircularProgress from "@mui/material/CircularProgress";
 import IconButton from "@mui/material/IconButton";
 import Link from "@mui/material/Link";
 import Typography from "@mui/material/Typography";
-import { Link as RouterLink, useNavigate } from "react-router-dom";
+import { Link as RouterLink } from "react-router-dom";
+import { useNavigate } from "src/frontend/utils/commonUtils";
 import { ColumnDef } from "@tanstack/react-table";
 import DataTable from "src/frontend/components/DataTable";
 import { useActionDialogs } from "src/frontend/hooks/useActionDialogs";
@@ -16,6 +17,7 @@ import { useConnectionQueries } from "src/frontend/hooks/useConnectionQuery";
 import { useDeleteBookmarkItem, useGetBookmarkItems, useUpdateBookmarkItem } from "src/frontend/hooks/useFolderItems";
 import { SqluiCore } from "typings";
 
+/** Callback invoked after a bookmark item is selected and applied. */
 type OnAfterSelectCallback = () => void;
 
 function NameCell({ row, onAfterSelect }: { row: any; onAfterSelect?: OnAfterSelectCallback }) {
@@ -64,14 +66,18 @@ function ActionCell({ row }: { row: any }) {
       folderItem.name = newName;
 
       await updateBookmarkItem(folderItem);
-    } catch (err) {}
+    } catch (err) {
+      console.error("index.tsx:updateBookmarkItem", err);
+    }
   };
 
   const onDeleteBookmarkItem = async (folderItem: SqluiCore.FolderItem) => {
     try {
       await confirm(`Do you want to delete this bookmark "${folderItem.name}"?`);
       await deleteBookmarkItem(folderItem.id);
-    } catch (err) {}
+    } catch (err) {
+      console.error("index.tsx:deleteBookmarkItem", err);
+    }
   };
 
   return (
@@ -108,11 +114,17 @@ const getColumns = (onAfterSelect?: OnAfterSelectCallback): ColumnDef<any, any>[
   ];
 };
 
+/** Props for the BookmarksItemList component. */
 type BookmarksItemListProps = {
   onAfterSelect?: OnAfterSelectCallback;
   hideActions?: boolean;
 };
 
+/**
+ * Displays a data table of bookmarked connections and queries with edit/delete actions.
+ * @param props - Configuration including optional after-select callback and whether to hide action buttons.
+ * @returns The rendered bookmarks list, a loading indicator, or an empty state message.
+ */
 export default function BookmarksItemList(props: BookmarksItemListProps): JSX.Element | null {
   const { onAfterSelect, hideActions } = props;
   const { data, isLoading } = useGetBookmarkItems();
@@ -155,6 +167,11 @@ export default function BookmarksItemList(props: BookmarksItemListProps): JSX.El
   );
 }
 
+/**
+ * Wrapper around BookmarksItemList intended for use inside a modal, with a link to the full bookmarks page.
+ * @param props - Configuration including optional after-select callback.
+ * @returns The rendered bookmarks modal content.
+ */
 export function BookmarksItemListModalContent(props: BookmarksItemListProps): JSX.Element | null {
   const { onAfterSelect } = props;
 

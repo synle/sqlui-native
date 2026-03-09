@@ -10,6 +10,7 @@ const AdvancedEditorContainer = styled("div")(() => {
   };
 });
 
+/** Default Monaco editor configuration options. */
 const DEFAULT_OPTIONS = {
   // lineNumbers: 'off',
   glyphMargin: false,
@@ -22,6 +23,11 @@ const DEFAULT_OPTIONS = {
 
 const EDITOR_MODELS_MAP: Record<string, any> = {};
 
+/**
+ * Monaco-based code editor with undo/redo stack preservation, dark mode support, and selection text retrieval.
+ * @param props - Editor configuration including value, language, word wrap, and editor ref.
+ * @returns The rendered Monaco editor container.
+ */
 export default function AdvancedEditor(props: AdvancedEditorProps): JSX.Element | null {
   const colorMode = useDarkModeSetting();
   const [editor, setEditor] = useState<monaco.editor.IStandaloneCodeEditor | null>(null);

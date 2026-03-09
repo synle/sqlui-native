@@ -4,10 +4,17 @@ import Tooltip from "@mui/material/Tooltip";
 import { useCommands } from "src/frontend/components/MissionControl";
 import { SqluiFrontend } from "typings";
 
+/** Props for the ConnectionRevealButton component. */
 type ConnectionRevealButtonProps = {
+  /** The query whose connection should be revealed in the tree. */
   query: SqluiFrontend.ConnectionQuery;
 };
 
+/**
+ * Button that reveals the current query's connection in the connection tree sidebar.
+ * @param props - Contains the query to reveal.
+ * @returns The reveal button or null if no query is provided.
+ */
 export default function ConnectionRevealButton(props: ConnectionRevealButtonProps): JSX.Element | null {
   const { query } = props;
   const { selectCommand } = useCommands();

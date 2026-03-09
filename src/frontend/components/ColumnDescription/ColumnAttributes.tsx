@@ -6,6 +6,11 @@ type ColumnAttributesProps = {
   column: SqluiCore.ColumnMetaData;
 };
 
+/**
+ * Displays all metadata attributes of a database column in a key-value format.
+ * @param props - Props containing the column metadata to display.
+ * @returns The rendered column attributes list.
+ */
 export default function ColumnAttributes(props: ColumnAttributesProps): JSX.Element | null {
   const { column } = props;
 

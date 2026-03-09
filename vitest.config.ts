@@ -12,7 +12,7 @@ export default defineConfig({
     globals: true,
     testTimeout: 10000,
     include: ["**/*.spec.{ts,tsx}"],
-    exclude: ["**/*.integration.spec.{ts,tsx}", "**/node_modules/**"],
+    exclude: ["**/*.integration.spec.{ts,tsx}", "**/node_modules/**", "**/_SampleDataAdapter_/**"],
     setupFiles: ["./vitest.setup.ts"],
   },
 });
