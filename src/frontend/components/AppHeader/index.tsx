@@ -159,8 +159,7 @@ export default function AppHeader() {
                   showCloseButton: true,
                   isFullScreen: true,
                 });
-              } finally {
-              }
+              } catch (_err) {}
             }}
           >
             <Badge badgeContent={toastHistoryCount} color="error" max={99}>

@@ -108,6 +108,7 @@ After any code change, you MUST run these commands and ensure they all pass befo
 ```bash
 npm run format           # Prettier formatting
 npm run lint             # ESLint (must have 0 errors)
+npm run typecheck        # TypeScript type check (must have 0 errors)
 npm run test-ci          # All tests must pass
 ```
 
@@ -125,6 +126,16 @@ In catch blocks, always use `console.error` (never `console.log`) with a label i
 - For endpoint handlers, include the HTTP method and URL: `console.error(\`Endpoints.ts:handler [GET /api/...]\`, err)`.
 - Never leave catch blocks empty — always log with `console.error`.
 - Unused function parameters should be prefixed with `_` (e.g., `_input`, `_dialect`).
+
+**Exception — `useActionDialogs` wraps:** Catch blocks that wrap `useActionDialogs` methods (`alert`, `modal`, `choice`, `prompt`, `dismiss`) should NOT use `console.error`. These rejections are expected (e.g. user dismissing a dialog). Instead, use `_err` to silence the lint warning:
+
+```typescript
+} catch (_err) {
+  // user dismissed dialog
+}
+```
+
+Never use an empty `finally` block — replace it with `catch (_err) {}` when wrapping dialog actions.
 
 ## Build Verification
 

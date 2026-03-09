@@ -125,19 +125,19 @@ export const StyledDivHeaderCellLabel = styled("div")(() => ({
   },
 }));
 /** Styled content row for virtualized table rendering with absolute positioning. */
-export const StyledDivContentRowForVirualized = styled(StyledDivContentRow)(({ _theme }) => ({
+export const StyledDivContentRowForVirualized = styled(StyledDivContentRow)(() => ({
   position: "absolute",
   top: 0,
   left: 0,
 }));
 
 /** Styled header cell for virtualized table rendering with fixed height. */
-export const StyledDivHeaderCellForVirtualized = styled(StyledDivHeaderCell)(({ _theme }) => ({
+export const StyledDivHeaderCellForVirtualized = styled(StyledDivHeaderCell)(() => ({
   height: `${tableCellHeight}px`,
 }));
 
 /** Styled value cell for virtualized table rendering with fixed height. */
-export const StyledDivValueCellForVirtualized = styled(StyledDivValueCell)(({ _theme }) => ({
+export const StyledDivValueCellForVirtualized = styled(StyledDivValueCell)(() => ({
   height: `${tableCellHeight}px`,
   paddingBottom: 0,
 }));

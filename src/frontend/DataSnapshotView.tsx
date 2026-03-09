@@ -66,8 +66,7 @@ function QuickActionDial(props: QuickActionDialProps) {
         showCloseButton: true,
         size: "lg",
       });
-    } finally {
-    }
+    } catch (_err) {}
     onClose();
   };
 
@@ -136,10 +135,7 @@ export default function DataSnapshotView() {
         readonly: true,
         isLongPrompt: true,
       });
-    } catch (err) {
-      console.error("DataSnapshotView.tsx:stringify", err);
-    } finally {
-    }
+    } catch (_err) {}
   };
 
   const rowContextOptions = [
