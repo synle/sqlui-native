@@ -101,6 +101,27 @@ Additional hooks: `useToaster` (toast notifications with history), `useClientSid
 - Known: `jsdom` environment tests may show errors if the package is not installed; this doesn't affect test results
 - Run `npm run test-ci` for CI mode (no watch), `npm test` for watch mode
 
+### Frontend Test Conventions
+
+- All `jsdom` tests must start with `// @vitest-environment jsdom`
+- Use `@testing-library/react` (`render`, `fireEvent`, `act`) for component tests
+- When MUI theme is needed, wrap with `renderWithTheme` helper using `createTheme()` + `ThemeProvider`
+- Mock hooks with `vi.mock("src/frontend/hooks/...")` at the top of the file
+- Mock `useSetting` with `useLayoutModeSetting: () => "compact"` when components use layout mode
+- Mock `CodeEditorBox` when testing components that use Monaco editor
+- Prefer `toContain` for text assertions over exact `toEqual`
+- Use `toMatchInlineSnapshot` for empty/null render checks
+- For stub assertions, `toHaveBeenCalled()` is sufficient — no need to assert call count
+- Avoid `toEqual` for text — use `toContain` where it makes sense
+
+### Frontend Test Coverage
+
+Tests exist for:
+- **Components:** Accordion, Select, Timer, InputError, ConnectionTypeIcon, ColumnName, ColumnType, ColumnAttributes, SplitButton, Resizer, Filter (GlobalFilter), Tabs, DropdownButton, DropdownMenu, JsonFormatData, ConnectionRetryAlert, NewConnectionButton, DeleteConnectionButton, TestConnectionButton, ConnectionHint, ConnectionRevealButton, AlertDialog, ChoiceDialog, PromptDialog, ModalDialog
+- **Hooks:** useShowHide, useActionDialogs, useTreeActions, useToaster (history helpers), useConnection (refreshAfterExecution)
+- **Data layer:** config (SessionStorageConfig, LocalStorageConfig), session (getRandomSessionId, setCurrentSessionId), file (downloadText, downloadJSON, downloadBlob)
+- **Utils:** formatter, executeUtils, commonUtils
+
 ## Pre-commit Checklist
 
 After any code change, you MUST run these commands and ensure they all pass before considering the task complete:
