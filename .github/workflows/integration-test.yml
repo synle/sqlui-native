@@ -53,11 +53,17 @@ jobs:
 
       # NoSQL & Caching
       cassandra_v4:
-        image: cassandra:4.0.1
+        image: cassandra:4
+        env:
+          CASSANDRA_USERNAME: cassandra
+          CASSANDRA_PASSWORD: cassandra
         ports:
           - 9042:9042
       cassandra_v2:
-        image: cassandra:2.2.19
+        image: cassandra:2
+        env:
+          CASSANDRA_USERNAME: cassandra
+          CASSANDRA_PASSWORD: cassandra
         ports:
           - 9043:9042
       mongodb:
