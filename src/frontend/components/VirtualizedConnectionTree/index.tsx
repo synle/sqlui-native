@@ -6,10 +6,17 @@ import { useLayoutModeSetting } from "src/frontend/hooks/useSetting";
 import { TreeRowRenderer } from "./TreeRowRenderer";
 import { useFlatTreeRows } from "./useFlatTreeRows";
 
+/** Default row height in pixels for tree rows. */
 const ROW_HEIGHT_DEFAULT = 37;
+/** Compact mode row height in pixels. */
 const ROW_HEIGHT_COMPACT = 28;
+/** Row height in pixels for column attribute detail rows. */
 const ROW_HEIGHT_COLUMN_ATTRIBUTES = 35;
 
+/**
+ * Virtualized tree view of all database connections, databases, tables, and columns.
+ * Supports expanding/collapsing nodes and drag-and-drop reordering of connections.
+ */
 export default function VirtualizedConnectionTree() {
   const { rows, rowFingerprint, connections, connectionsLoading, onToggle, updateConnections } = useFlatTreeRows();
   const parentRef = useRef<HTMLDivElement>(null);

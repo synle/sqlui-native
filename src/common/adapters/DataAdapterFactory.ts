@@ -15,6 +15,12 @@ import RelationalDataAdapterScripts from "src/common/adapters/RelationalDataAdap
 import PersistentStorage from "src/common/PersistentStorage";
 import { SqluiCore } from "typings";
 
+/**
+ * Creates and returns the appropriate data adapter for the given connection string.
+ * @param connection - The connection string URI (e.g., "mysql://user:pass@host:port").
+ * @returns An IDataAdapter instance for the detected dialect.
+ * @throws Error if the dialect is not supported or connection fails.
+ */
 export function getDataAdapter(connection: string) {
   // TODO: here we should initialize the connection based on type
   // of the connection string
@@ -37,7 +43,7 @@ export function getDataAdapter(connection: string) {
       adapter = new AzureTableStorageAdapter(connection);
     }
   } catch (err) {
-    console.log("Failed to connect to", connection, err);
+    console.error("DataAdapterFactory.ts:getDataAdapter", connection, err);
     throw err;
   }
 
@@ -48,6 +54,11 @@ export function getDataAdapter(connection: string) {
   return adapter;
 }
 
+/**
+ * Fetches full metadata (databases, tables, columns) for a connection.
+ * @param connection - The core connection properties including name, id, and connection string.
+ * @returns Connection metadata with status ("online" or "offline") and nested database/table/column info.
+ */
 export async function getConnectionMetaData(connection: SqluiCore.CoreConnectionProps) {
   const connItem: SqluiCore.CoreConnectionMetaData = {
     name: connection.name,
@@ -69,6 +80,7 @@ export async function getConnectionMetaData(connection: SqluiCore.CoreConnection
       try {
         database.tables = await engine.getTables(database.name);
       } catch (err) {
+        console.error("DataAdapterFactory.ts:getTables", err);
         database.tables = [];
       }
 
@@ -76,6 +88,7 @@ export async function getConnectionMetaData(connection: SqluiCore.CoreConnection
         try {
           table.columns = await engine.getColumns(table.name, database.name);
         } catch (err) {
+          console.error("DataAdapterFactory.ts:getColumns", err);
           table.columns = [];
         }
       }
@@ -83,12 +96,17 @@ export async function getConnectionMetaData(connection: SqluiCore.CoreConnection
   } catch (err) {
     connItem.status = "offline";
     connItem.dialect = undefined;
-    console.log(">> Server Error", err);
+    console.error("DataAdapterFactory.ts:getConnectionItem", err);
   }
 
   return connItem;
 }
 
+/**
+ * Returns a reset (offline, empty) metadata object for a connection.
+ * @param connection - The core connection properties.
+ * @returns Connection metadata with "offline" status and empty databases.
+ */
 export function resetConnectionMetaData(connection: SqluiCore.CoreConnectionProps) {
   const connItem: SqluiCore.CoreConnectionMetaData = {
     name: connection.name,
@@ -100,18 +118,39 @@ export function resetConnectionMetaData(connection: SqluiCore.CoreConnectionProp
   return connItem;
 }
 
+/**
+ * Retrieves and returns a sorted list of databases for a stored connection.
+ * @param sessionId - The session identifier for persistent storage lookup.
+ * @param connectionId - The connection identifier.
+ * @returns Sorted array of database metadata.
+ */
 export async function getDatabases(sessionId: string, connectionId: string) {
   const connection = await new PersistentStorage<SqluiCore.ConnectionProps>(sessionId, "connection").get(connectionId);
 
   return (await getDataAdapter(connection.connection).getDatabases()).sort((a, b) => (a.name || "").localeCompare(b.name || ""));
 }
 
+/**
+ * Retrieves and returns a sorted list of tables for a given database.
+ * @param sessionId - The session identifier for persistent storage lookup.
+ * @param connectionId - The connection identifier.
+ * @param databaseId - The database name to list tables from.
+ * @returns Sorted array of table metadata.
+ */
 export async function getTables(sessionId: string, connectionId: string, databaseId: string) {
   const connection = await new PersistentStorage<SqluiCore.ConnectionProps>(sessionId, "connection").get(connectionId);
 
   return (await getDataAdapter(connection.connection).getTables(databaseId)).sort((a, b) => (a.name || "").localeCompare(b.name || ""));
 }
 
+/**
+ * Retrieves columns for a table, cleans up metadata, and sorts by key importance then name.
+ * @param sessionId - The session identifier for persistent storage lookup.
+ * @param connectionId - The connection identifier.
+ * @param databaseId - The database name.
+ * @param tableId - The table name.
+ * @returns Sorted array of column metadata with cleaned-up properties.
+ */
 export async function getColumns(sessionId: string, connectionId: string, databaseId: string, tableId: string) {
   const connection = await new PersistentStorage<SqluiCore.ConnectionProps>(sessionId, "connection").get(connectionId);
 

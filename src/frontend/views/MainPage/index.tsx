@@ -7,6 +7,9 @@ import QueryBoxTabs from "src/frontend/components/QueryBoxTabs";
 import { useTreeActions } from "src/frontend/hooks/useTreeActions";
 import LayoutTwoColumns from "src/frontend/layout/LayoutTwoColumns";
 
+/**
+ * Main application page with the connection tree sidebar and query editor tabs.
+ */
 export default function MainPage() {
   const { setTreeActions } = useTreeActions();
 

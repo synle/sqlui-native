@@ -36,6 +36,13 @@ import { GlobalFilter, SimpleColumnFilter } from "src/frontend/components/DataTa
 import DropdownMenu from "src/frontend/components/DropdownMenu";
 import { useAddDataSnapshot } from "src/frontend/hooks/useDataSnapshot";
 
+/**
+ * A virtualized data table using TanStack React Table and TanStack Virtual.
+ * Efficiently renders large datasets by only rendering visible rows and columns.
+ * Supports sorting, filtering, column resizing, context menus, and data snapshots.
+ * @param props - Data table properties including columns, data, and optional callbacks.
+ * @returns The rendered virtualized data table or null.
+ */
 export default function ModernDataTable(props: DataTableProps): JSX.Element | null {
   const { columns, data } = props;
   //@ts-ignore
@@ -122,7 +129,6 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
     getScrollElement: () => parentRef.current,
     estimateSize: useCallback(
       (index: number) => headerColumns[index]?.getSize() || tableCellWidthToUse,
-      // eslint-disable-next-line react-hooks/exhaustive-deps
       [columnSizingInfo, tableCellWidthToUse],
     ),
     horizontal: true,
@@ -143,8 +149,7 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
       if (dataSnapshot?.id) {
         window.openAppLink(`/data_snapshot/${dataSnapshot.id}`);
       }
-    } finally {
-    }
+    } catch (_err) {}
   };
 
   useLayoutEffect(() => {

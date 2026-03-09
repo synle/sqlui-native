@@ -2,16 +2,30 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import dataApi from "src/frontend/data/api";
 import { SqluiCore } from "typings";
 
+/** React Query cache key for data snapshots. */
 const QUERY_KEY_DATA_SNAPSHOT = `dataSnapshot`;
 
+/**
+ * Hook to fetch all data snapshots.
+ * @returns React Query result containing an array of data snapshots.
+ */
 export function useGetDataSnapshots() {
   return useQuery([QUERY_KEY_DATA_SNAPSHOT], dataApi.getDataSnapshots);
 }
 
+/**
+ * Hook to fetch a single data snapshot by ID.
+ * @param dataSnapshotId - The snapshot ID to fetch.
+ * @returns React Query result containing the snapshot or null.
+ */
 export function useGetDataSnapshot(dataSnapshotId?: string) {
   return useQuery([QUERY_KEY_DATA_SNAPSHOT, dataSnapshotId], () => (dataSnapshotId ? dataApi.getDataSnapshot(dataSnapshotId) : null));
 }
 
+/**
+ * Hook to create a new data snapshot.
+ * @returns Mutation that accepts snapshot data with required values and description.
+ */
 export function useAddDataSnapshot() {
   return useMutation<
     SqluiCore.DataSnapshot,
@@ -25,6 +39,10 @@ export function useAddDataSnapshot() {
   });
 }
 
+/**
+ * Hook to delete a data snapshot by ID. Invalidates the snapshot cache on success.
+ * @returns Mutation that accepts a snapshot ID to delete.
+ */
 export function useDeleteDataSnapshot() {
   const queryClient = useQueryClient();
   return useMutation<void, void, string>(

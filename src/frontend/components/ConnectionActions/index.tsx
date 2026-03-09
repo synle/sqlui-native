@@ -7,7 +7,7 @@ import RefreshIcon from "@mui/icons-material/Refresh";
 import SelectAllIcon from "@mui/icons-material/SelectAll";
 import StarIcon from "@mui/icons-material/Star";
 import IconButton from "@mui/material/IconButton";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "src/frontend/utils/commonUtils";
 import { getDivider } from "src/common/adapters/BaseDataAdapter/scripts";
 import { getConnectionActions } from "src/common/adapters/DataScriptFactory";
 import DropdownButton from "src/frontend/components/DropdownButton";
@@ -19,6 +19,11 @@ type ConnectionActionsProps = {
   connection: SqluiCore.ConnectionProps;
 };
 
+/**
+ * Dropdown menu of actions available for a database connection (bookmark, edit, export, duplicate, refresh, delete, etc.).
+ * @param props - Props containing the connection to display actions for.
+ * @returns The rendered dropdown action button, or null if context menus are hidden.
+ */
 export default function ConnectionActions(props: ConnectionActionsProps): JSX.Element | null {
   const { connection } = props;
   const navigate = useNavigate();

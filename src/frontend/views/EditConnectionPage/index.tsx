@@ -8,6 +8,10 @@ import NewConnectionButton from "src/frontend/components/NewConnectionButton";
 import { useTreeActions } from "src/frontend/hooks/useTreeActions";
 import LayoutTwoColumns from "src/frontend/layout/LayoutTwoColumns";
 
+/**
+ * Page for editing an existing database connection's properties.
+ * Reads the connectionId from URL params.
+ */
 export default function EditConnectionPage() {
   const urlParams = useParams();
   const connectionId = urlParams.connectionId as string;

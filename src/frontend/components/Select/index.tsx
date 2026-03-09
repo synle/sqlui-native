@@ -31,14 +31,25 @@ const StyledSelect = styled("select")(({ theme }) => {
   };
 });
 
+/** Props for the Select component. */
 type SelectProps = {
+  /** Optional label displayed above the select. When provided, uses MUI outlined variant. */
   label?: string;
+  /** Whether the field is required. */
   required?: boolean;
+  /** Option elements to render inside the select. */
   children?: React.ReactNode;
+  /** Callback fired when the selected value changes. */
   onChange?: (newValue: string) => void;
   [key: string]: any;
 };
 
+/**
+ * Themed select dropdown. Renders as MUI NativeSelect with label when label is provided,
+ * otherwise renders as a styled native select element.
+ * @param props - Select configuration including label, value, children, and onChange handler.
+ * @returns The select element.
+ */
 export default function Select(props: SelectProps): JSX.Element | null {
   const { value, label, children, onChange, ...restProps } = props;
 

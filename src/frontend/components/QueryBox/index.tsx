@@ -14,7 +14,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
 import { useQueryClient } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "src/frontend/utils/commonUtils";
 import React, { useCallback, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { getSyntaxModeByDialect, getTableActions } from "src/common/adapters/DataScriptFactory";
 import CodeEditorBox, { EditorRef } from "src/frontend/components/CodeEditorBox";
@@ -30,11 +30,15 @@ import useToaster from "src/frontend/hooks/useToaster";
 import { formatDuration, formatJS, formatSQL } from "src/frontend/utils/formatter";
 import { SqluiCore } from "typings";
 
+/** Props for the QueryBox component. */
 type QueryBoxProps = {
+  /** Unique identifier for the query tab. */
   queryId: string;
 };
 
+/** Props for the ConnectionActionsButton component. */
 type ConnectionActionsButtonProps = {
+  /** The connection query containing connectionId, databaseId, and tableId. */
   query: SqluiCore.ConnectionQuery;
 };
 
@@ -91,6 +95,7 @@ function ConnectionActionsButton(props: ConnectionActionsButtonProps): JSX.Eleme
   );
 }
 
+/** Supported language modes for code snippet generation. */
 const ALL_CODE_SNIPPETS: SqluiCore.LanguageMode[] = ["javascript", "python", "java"];
 
 function CodeSnippetButton(props: QueryBoxProps) {
@@ -125,6 +130,11 @@ function CodeSnippetButton(props: QueryBoxProps) {
   );
 }
 
+/**
+ * Main query editor component with connection/database selectors, code editor, execute button, and result display.
+ * @param props - Contains the queryId identifying which query tab to render.
+ * @returns The query box UI or null/loading indicator.
+ */
 export default function QueryBox(props: QueryBoxProps): JSX.Element | null {
   const { queryId } = props;
   const editorRef = useRef<EditorRef>();
@@ -208,7 +218,9 @@ export default function QueryBox(props: QueryBoxProps): JSX.Element | null {
       if (sql) {
         queryToExecute.sql = sql;
       }
-    } catch (err) {}
+    } catch (err) {
+      console.error("index.tsx:getSelectedText", err);
+    }
 
     try {
       const newResult = await executeQuery(queryToExecute);
@@ -217,6 +229,7 @@ export default function QueryBox(props: QueryBoxProps): JSX.Element | null {
 
       success = newResult.ok;
     } catch (err) {
+      console.error("index.tsx:refreshAfterExecution", err);
       // here query failed...
     }
     setExecuting(false);

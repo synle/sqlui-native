@@ -20,8 +20,9 @@ function _getDefaultSequelizeOptions(): Options {
 }
 
 /**
- * mostly adapter for sequelize
- * https://sequelize.org/master/class/lib/dialects/abstract/query-interface.js~QueryInterface.html
+ * Data adapter for relational databases (MySQL, MariaDB, MSSQL, PostgreSQL, SQLite)
+ * using Sequelize as the underlying ORM.
+ * @see https://sequelize.org/master/class/lib/dialects/abstract/query-interface.js~QueryInterface.html
  */
 export default class RelationalDataAdapter extends BaseDataAdapter implements IDataAdapter {
   dialect?: SqluiCore.Dialect;
@@ -42,7 +43,7 @@ export default class RelationalDataAdapter extends BaseDataAdapter implements ID
         database = "";
 
         // special handling for sqlite path
-        let sqliteStorageOption = this.connectionOption.replace("sqlite://", "").replace(/\\/g, "/"); // uses :memory: for in memory
+        const sqliteStorageOption = this.connectionOption.replace("sqlite://", "").replace(/\\/g, "/"); // uses :memory: for in memory
 
         connectionUrl = `sqlite://`;
         connectionPropOptions = {
@@ -84,16 +85,12 @@ export default class RelationalDataAdapter extends BaseDataAdapter implements ID
     try {
       return new Sequelize(connectionUrl, connectionPropOptions);
     } catch (err) {
-      console.log(
-        "RelationalDataAdapter.getConnection - Failed to set up Sequelize for RelationalDataAdapter",
-        connectionUrl,
-        connectionPropOptions,
-        err,
-      );
+      console.error("RelationalDataAdapter:getConnection", connectionUrl, connectionPropOptions, err);
       throw err;
     }
   }
 
+  /** Tests the database connection by authenticating and then closing. */
   async authenticate() {
     const connection = this.getConnection();
     try {
@@ -103,6 +100,7 @@ export default class RelationalDataAdapter extends BaseDataAdapter implements ID
     }
   }
 
+  /** Retrieves all databases using dialect-specific SQL queries. */
   async getDatabases(): Promise<SqluiCore.DatabaseMetaData[]> {
     let sql;
 
@@ -150,13 +148,16 @@ export default class RelationalDataAdapter extends BaseDataAdapter implements ID
       .sort((a, b) => (a.name || "").localeCompare(b.name || ""));
   }
 
+  /**
+   * Retrieves all tables for a given database using dialect-specific SQL.
+   * @param database - The database name.
+   */
   async getTables(database?: string): Promise<SqluiCore.TableMetaData[]> {
     // https://github.com/knex/knex/issues/360
     // PostgreSQL: SELECT tablename FROM pg_tables WHERE schemaname='public''
     // MySQL: SELECT TABLE_SCHEMA FROM information_schema.tables GROUP BY TABLE_SCHEMA;
     // SQLite3: SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE '%sqlite%';
     let sql;
-    let data;
 
     switch (this.dialect) {
       case "mssql":
@@ -180,7 +181,7 @@ export default class RelationalDataAdapter extends BaseDataAdapter implements ID
       return [];
     }
 
-    [data] = await this._execute(sql, database);
+    const [data] = await this._execute(sql, database);
 
     return data
       .map((row: any) => row.tablename)
@@ -192,6 +193,11 @@ export default class RelationalDataAdapter extends BaseDataAdapter implements ID
       .sort((a, b) => (a.name || "").localeCompare(b.name || ""));
   }
 
+  /**
+   * Retrieves column metadata and foreign key references for a table.
+   * @param table - The table name.
+   * @param database - The database name.
+   */
   async getColumns(table: string, database?: string): Promise<SqluiCore.ColumnMetaData[]> {
     switch (this.dialect) {
       case "mssql":
@@ -215,6 +221,7 @@ export default class RelationalDataAdapter extends BaseDataAdapter implements ID
               });
             }
           } catch (err) {
+            console.error("index.ts:push", err);
           } finally {
             await connection.close();
           }
@@ -243,6 +250,7 @@ export default class RelationalDataAdapter extends BaseDataAdapter implements ID
               }
             }
           } catch (err) {
+            console.error("index.ts:find", err);
           } finally {
             await connection.close();
           }
@@ -252,12 +260,18 @@ export default class RelationalDataAdapter extends BaseDataAdapter implements ID
     }
   }
 
+  /**
+   * Executes a raw SQL query and returns the result with dialect-specific metadata handling.
+   * @param sql - The SQL query string to execute.
+   * @param database - The target database name.
+   * @returns The query result including raw data, metadata, and affected rows.
+   */
   async execute(sql: string, database?: string): Promise<SqluiCore.Result> {
     // https://sequelize.org/master/manual/raw-queries.html
     //@ts-ignore
     const connection = this.getConnection(database);
     try {
-      let [raw, meta] = await connection.query(sql, {
+      const [raw, meta] = await connection.query(sql, {
         raw: true,
         plain: false,
       });
@@ -307,6 +321,7 @@ export default class RelationalDataAdapter extends BaseDataAdapter implements ID
         affectedRows,
       };
     } catch (error) {
+      console.error("RelationalDataAdapter:execute", error);
       return {
         ok: false,
         error,

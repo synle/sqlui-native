@@ -1,5 +1,6 @@
 import { SqluiCore } from "typings";
 
+/** Row representing a connection header in the tree. */
 export type ConnectionHeaderRow = {
   type: "connection-header";
   key: string;
@@ -11,6 +12,7 @@ export type ConnectionHeaderRow = {
   isExpanded: boolean;
 };
 
+/** Row showing a retry prompt for an offline connection. */
 export type ConnectionRetryRow = {
   type: "connection-retry";
   key: string;
@@ -18,6 +20,7 @@ export type ConnectionRetryRow = {
   connectionId: string;
 };
 
+/** Row representing a database header in the tree. */
 export type DatabaseHeaderRow = {
   type: "database-header";
   key: string;
@@ -29,6 +32,7 @@ export type DatabaseHeaderRow = {
   isExpanded: boolean;
 };
 
+/** Row representing a table header in the tree. */
 export type TableHeaderRow = {
   type: "table-header";
   key: string;
@@ -41,6 +45,7 @@ export type TableHeaderRow = {
   isExpanded: boolean;
 };
 
+/** Row representing a column header in the tree. */
 export type ColumnHeaderRow = {
   type: "column-header";
   key: string;
@@ -54,6 +59,7 @@ export type ColumnHeaderRow = {
   isExpanded: boolean;
 };
 
+/** Row displaying expanded column attribute details. */
 export type ColumnAttributesRow = {
   type: "column-attributes";
   key: string;
@@ -61,6 +67,7 @@ export type ColumnAttributesRow = {
   column: SqluiCore.ColumnMetaData;
 };
 
+/** Row with a button to reveal all columns when the list is truncated. */
 export type ShowAllColumnsRow = {
   type: "show-all-columns";
   key: string;
@@ -68,6 +75,7 @@ export type ShowAllColumnsRow = {
   showAllKey: string;
 };
 
+/** Row displaying a loading indicator. */
 export type LoadingRow = {
   type: "loading";
   key: string;
@@ -75,6 +83,7 @@ export type LoadingRow = {
   message?: string;
 };
 
+/** Row displaying an error message. */
 export type ErrorRow = {
   type: "error";
   key: string;
@@ -82,6 +91,7 @@ export type ErrorRow = {
   message?: string;
 };
 
+/** Row displaying an empty/not-available message. */
 export type EmptyRow = {
   type: "empty";
   key: string;
@@ -89,6 +99,7 @@ export type EmptyRow = {
   message?: string;
 };
 
+/** Union type of all possible tree row types in the connection tree. */
 export type TreeRow =
   | ConnectionHeaderRow
   | ConnectionRetryRow

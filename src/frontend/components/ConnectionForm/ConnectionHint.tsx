@@ -16,6 +16,12 @@ type ConnectionHintProps = {
   onChange: (dialect: string, connection: string) => void;
 };
 
+/**
+ * Displays a list of supported database dialects with sample connection strings, plus optional bookmarked connections.
+ * Clicking an item applies its dialect and connection string to the parent form.
+ * @param props - Configuration including onChange callback and whether to show bookmarked connections.
+ * @returns The rendered connection hint list.
+ */
 export default function ConnectionHint(props: ConnectionHintProps): JSX.Element | null {
   const { data, isLoading } = useGetBookmarkItems();
   let bookmarkedConnectionsDom: any[] = [];

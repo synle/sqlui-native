@@ -8,11 +8,19 @@ import TableActions from "src/frontend/components/TableActions";
 import { useGetTables } from "src/frontend/hooks/useConnection";
 import { useShowHide } from "src/frontend/hooks/useShowHide";
 
+/** Props for the TableDescription component. */
 type TableDescriptionProps = {
+  /** ID of the connection. */
   connectionId: string;
+  /** ID of the database whose tables are displayed. */
   databaseId: string;
 };
 
+/**
+ * Accordion list of tables in a database, each expandable to show column descriptions.
+ * @param props - Contains connectionId and databaseId to fetch tables.
+ * @returns The table accordion list, a loading indicator, or a warning if no tables exist.
+ */
 export default function TableDescription(props: TableDescriptionProps): JSX.Element | null {
   const { databaseId, connectionId } = props;
   const { data: tables, isLoading } = useGetTables(connectionId, databaseId);

@@ -8,6 +8,9 @@ import { SqluiCore } from "typings";
  */
 const MAX_ITEM_COUNT_TO_SCAN = 5;
 
+/**
+ * Data adapter for Azure Table Storage, handling connections, metadata retrieval, and query execution.
+ */
 export default class AzureTableStorageAdapter extends BaseDataAdapter implements IDataAdapter {
   /**
    * TableServiceClient - Client that provides functions to interact at a Table Service level such as create, list and delete tables
@@ -21,6 +24,7 @@ export default class AzureTableStorageAdapter extends BaseDataAdapter implements
         const connectionString = this.getConnectionString();
         resolve(TableServiceClient.fromConnectionString(connectionString));
       } catch (err) {
+        console.error("AzureTableStorageAdapter:getTableServiceClient", err);
         reject(err);
       }
     });
@@ -43,6 +47,7 @@ export default class AzureTableStorageAdapter extends BaseDataAdapter implements
         const connectionString = this.getConnectionString();
         resolve(TableClient.fromConnectionString(connectionString, table));
       } catch (err) {
+        console.error("AzureTableStorageAdapter:getTableClient", err);
         reject(err);
       }
     });
@@ -51,7 +56,9 @@ export default class AzureTableStorageAdapter extends BaseDataAdapter implements
   private async closeConnection() {
     try {
       // TODO: implement me
-    } catch (err) {}
+    } catch (err) {
+      console.error("index.ts:closeConnection", err);
+    }
   }
 
   async authenticate() {
@@ -68,6 +75,7 @@ export default class AzureTableStorageAdapter extends BaseDataAdapter implements
 
         throw new Error("Cannot connect to Azure Table");
       } catch (err) {
+        console.error("AzureTableStorageAdapter:authenticate", err);
         reject(err);
       }
     });
@@ -101,6 +109,7 @@ export default class AzureTableStorageAdapter extends BaseDataAdapter implements
 
       return tables;
     } catch (err) {
+      console.error("index.ts:push", err);
       return [];
     } finally {
       await this.closeConnection();
@@ -134,6 +143,7 @@ export default class AzureTableStorageAdapter extends BaseDataAdapter implements
         return column;
       });
     } catch (err) {
+      console.error("index.ts:inferTypesFromItems", err);
       return [];
     } finally {
       await this.closeConnection();
@@ -160,11 +170,12 @@ export default class AzureTableStorageAdapter extends BaseDataAdapter implements
 
         return { ok: true, raw };
       } catch (err) {
+        console.error("index.ts:push", err);
         // object is not iterrable
         return { ok: true, meta: res };
       }
     } catch (error: any) {
-      console.log(error);
+      console.error("AzureTableStorageAdapter:execute", error);
       return { ok: false, error: error.toString() };
     } finally {
       await this.closeConnection();

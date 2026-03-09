@@ -26,6 +26,11 @@ function _getDummyColumnValue(col: SqluiCore.ColumnMetaData) {
   }
 }
 
+/**
+ * Generates a CQL SELECT * query for a table.
+ * @param input - Table input containing the table name and query size.
+ * @returns Script output with the select query.
+ */
 export function getSelectAllColumns(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Select All Columns`;
 
@@ -38,6 +43,11 @@ export function getSelectAllColumns(input: SqlAction.TableInput): SqlAction.Outp
   };
 }
 
+/**
+ * Generates a CQL SELECT query for specific columns with a WHERE clause template.
+ * @param input - Table input containing columns and query size.
+ * @returns Script output with the select query, or undefined if no columns.
+ */
 export function getSelectSpecificColumns(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Select Specific Columns`;
 
@@ -58,6 +68,12 @@ export function getSelectSpecificColumns(input: SqlAction.TableInput): SqlAction
   };
 }
 
+/**
+ * Generates a CQL INSERT statement.
+ * @param input - Table input containing columns.
+ * @param value - Optional pre-populated values to insert.
+ * @returns Script output with the insert query, or undefined if no columns.
+ */
 export function getInsert(input: SqlAction.TableInput, value?: Record<string, any>): SqlAction.Output | undefined {
   const label = `Insert`;
 
@@ -118,6 +134,12 @@ export function getInsert(input: SqlAction.TableInput, value?: Record<string, an
   };
 }
 
+/**
+ * Generates a CQL BATCH INSERT for multiple rows.
+ * @param input - Table input containing columns.
+ * @param rows - Array of row objects to insert.
+ * @returns Script output with a BATCH statement, or undefined if no columns or rows.
+ */
 export function getBulkInsert(input: SqlAction.TableInput, rows?: Record<string, any>[]): SqlAction.Output | undefined {
   const label = `Insert`;
 
@@ -142,6 +164,13 @@ export function getBulkInsert(input: SqlAction.TableInput, rows?: Record<string,
   };
 }
 
+/**
+ * Generates a CQL UPDATE statement with specific values and WHERE conditions.
+ * @param input - Table input containing columns.
+ * @param value - Field values to set.
+ * @param conditions - WHERE clause conditions.
+ * @returns Script output with the update query, or undefined if no columns.
+ */
 export function getUpdateWithValues(
   input: SqlAction.TableInput,
   value: Record<string, any>,
@@ -188,6 +217,11 @@ export function getUpdateWithValues(
   };
 }
 
+/**
+ * Generates a CQL UPDATE template with dummy values derived from columns.
+ * @param input - Table input containing columns.
+ * @returns Script output with the update query, or undefined if no columns.
+ */
 export function getUpdate(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Update`;
 
@@ -207,6 +241,11 @@ export function getUpdate(input: SqlAction.TableInput): SqlAction.Output | undef
   };
 }
 
+/**
+ * Generates a CQL DELETE statement template.
+ * @param input - Table input containing columns for the WHERE clause.
+ * @returns Script output with the delete query, or undefined if no columns.
+ */
 export function getDelete(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Delete`;
 
@@ -224,6 +263,11 @@ export function getDelete(input: SqlAction.TableInput): SqlAction.Output | undef
   };
 }
 
+/**
+ * Generates a CQL CREATE KEYSPACE statement with SimpleStrategy replication.
+ * @param input - Database input containing the keyspace name.
+ * @returns Script output with the create keyspace query.
+ */
 export function getCreateKeyspace(input: SqlAction.DatabaseInput): SqlAction.Output | undefined {
   const label = `Create Keyspace`;
 
@@ -235,6 +279,11 @@ export function getCreateKeyspace(input: SqlAction.DatabaseInput): SqlAction.Out
   };
 }
 
+/**
+ * Generates a CQL DROP KEYSPACE statement.
+ * @param input - Database input containing the keyspace name.
+ * @returns Script output with the drop keyspace query.
+ */
 export function getDropKeyspace(input: SqlAction.DatabaseInput): SqlAction.Output | undefined {
   const label = `Drop Keyspace`;
 
@@ -245,7 +294,12 @@ export function getDropKeyspace(input: SqlAction.DatabaseInput): SqlAction.Outpu
   };
 }
 
-export function getCreateConnectionDatabase(input: SqlAction.ConnectionInput): SqlAction.Output | undefined {
+/**
+ * Generates a CREATE KEYSPACE script at the connection level with a placeholder name.
+ * @param input - Connection input.
+ * @returns Script output with the create keyspace query.
+ */
+export function getCreateConnectionDatabase(_input: SqlAction.ConnectionInput): SqlAction.Output | undefined {
   const label = `Create Connection Keyspace`;
 
   return {
@@ -256,6 +310,11 @@ export function getCreateConnectionDatabase(input: SqlAction.ConnectionInput): S
   };
 }
 
+/**
+ * Generates a CQL CREATE TABLE statement with partition and clustering keys.
+ * @param input - Table input containing columns with type and key information.
+ * @returns Script output with the create table query, or undefined if no columns.
+ */
 export function getCreateTable(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Create Table`;
 
@@ -268,7 +327,7 @@ export function getCreateTable(input: SqlAction.TableInput): SqlAction.Output | 
   columnString = input.columns.map((col) => [col.name, col.type, col.primaryKey ? "PRIMARY KEY" : ""].join(" ")).join(",\n");
 
   // figuring out the keys
-  let partitionKeys: string[] = [],
+  const partitionKeys: string[] = [],
     clusteringKeys: string[] = [];
   for (const col of input.columns) {
     if (col.kind === "partition_key") {
@@ -293,6 +352,11 @@ export function getCreateTable(input: SqlAction.TableInput): SqlAction.Output | 
   };
 }
 
+/**
+ * Generates a CQL DROP TABLE statement.
+ * @param input - Table input containing the table name.
+ * @returns Script output with the drop table query.
+ */
 export function getDropTable(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Drop Table`;
 
@@ -303,6 +367,11 @@ export function getDropTable(input: SqlAction.TableInput): SqlAction.Output | un
   };
 }
 
+/**
+ * Generates a CQL ALTER TABLE ADD column statement.
+ * @param input - Table input containing the table name.
+ * @returns Script output with the alter table query.
+ */
 export function getAddColumn(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Add Column`;
 
@@ -314,6 +383,11 @@ export function getAddColumn(input: SqlAction.TableInput): SqlAction.Output | un
   };
 }
 
+/**
+ * Generates CQL ALTER TABLE DROP statements for each column.
+ * @param input - Table input containing the columns to drop.
+ * @returns Script output with the alter table drop queries.
+ */
 export function getDropColumns(input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Drop Column`;
 
@@ -329,6 +403,7 @@ export function getDropColumns(input: SqlAction.TableInput): SqlAction.Output | 
   };
 }
 
+/** Script generator for the Cassandra dialect. */
 export class ConcreteDataScripts extends BaseDataScript {
   dialects = ["cassandra"];
 

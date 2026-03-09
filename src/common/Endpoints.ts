@@ -15,8 +15,10 @@ import * as sessionUtils from "src/common/utils/sessionUtils";
 import { SqluiCore, SqluiEnums } from "typings";
 let expressAppContext: Express | undefined;
 
+/** Storage key for the application settings entry. */
 const SETTINGS_ID = "app-settings";
 
+/** Default application settings applied when no saved settings exist. */
 const DEFAULT_SETTINGS = {
   darkMode: "dark",
   animationMode: "on",
@@ -44,12 +46,12 @@ function addDataEndpoint(
       res.header("sqlui-native-window-id", req.headers["sqlui-native-window-id"]);
       await incomingHandler(req, res, cache);
     } catch (err: any) {
-      console.log("err", err);
+      console.error(`Endpoints.ts:addDataEndpoint [${method.toUpperCase()} ${url}] error`, err);
       const message = err?.sqlMessage || err?.message || err?.toString?.() || "Internal Server Error";
       try {
         res.status(500).json({ error: message });
       } catch (resErr) {
-        // response may have already been sent
+        console.error(`Endpoints.ts:addDataEndpoint [${method.toUpperCase()} ${url}] resError`, resErr);
       }
     }
   };
@@ -65,6 +67,7 @@ function addDataEndpoint(
             //@ts-ignore
             return _apiCache[cacheKey][key];
           } catch (err: any) {
+            console.error("Endpoints.ts:get", err);
             return undefined;
           }
         },
@@ -75,7 +78,9 @@ function addDataEndpoint(
 
             //@ts-ignore
             _apiCache[cacheKey][key] = value;
-          } catch (err: any) {}
+          } catch (err: any) {
+            console.error("Endpoints.ts:set", err);
+          }
         },
         json() {
           return JSON.stringify(_apiCache);
@@ -89,10 +94,19 @@ function addDataEndpoint(
   }
 }
 
+/**
+ * Returns the accumulated endpoint handlers for use in Electron IPC mode.
+ * @returns Array of [method, url, handler] tuples registered via addDataEndpoint.
+ */
 export function getEndpointHandlers() {
   return electronEndpointHandlers;
 }
 
+/**
+ * Registers all API endpoint handlers for connections, queries, sessions, folders, and data snapshots.
+ * Works in both Express (mocked server) and Electron IPC modes.
+ * @param anExpressAppContext - Optional Express app; if provided, routes are registered as HTTP endpoints.
+ */
 export function setUpDataEndpoints(anExpressAppContext?: Express) {
   expressAppContext = anExpressAppContext;
   // storageDir
@@ -154,6 +168,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
             connection.status = "online";
             connection.dialect = engine.dialect;
           } catch (err: any) {
+            console.error("Endpoints.ts:authenticate", err);
             connection.status = "offline";
             connection.dialect = undefined;
           }
@@ -187,7 +202,9 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
 
       connection.status = "online";
       connection.dialect = engine.dialect;
-    } catch (err: any) {}
+    } catch (err: any) {
+      console.error("Endpoints.ts:authenticate", err);
+    }
 
     res.status(200).json(connection);
   });
@@ -197,7 +214,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
       res.status(200).json(await getDatabases(req.headers["sqlui-native-session-id"], req.params?.connectionId));
     } catch (err: any) {
       const message = err?.sqlMessage || err?.message || err?.toString?.() || "Connection failed";
-      console.log("Failed to get databases", message);
+      console.error("Endpoints.ts:getDatabases", err);
       res.status(500).json({ error: message });
     }
   });
@@ -214,7 +231,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
       res.status(200).json(database);
     } catch (err: any) {
       const message = err?.sqlMessage || err?.message || err?.toString?.() || "Connection failed";
-      console.log("Failed to get database", message);
+      console.error("Endpoints.ts:getDatabase", err);
       res.status(500).json({ error: message });
     }
   });
@@ -224,7 +241,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
       res.status(200).json(await getTables(req.headers["sqlui-native-session-id"], req.params?.connectionId, req.params?.databaseId));
     } catch (err: any) {
       const message = err?.sqlMessage || err?.message || err?.toString?.() || "Connection failed";
-      console.log("Failed to get tables", message);
+      console.error("Endpoints.ts:getTables", err);
       res.status(500).json({ error: message });
     }
   });
@@ -238,7 +255,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
         );
     } catch (err: any) {
       const message = err?.sqlMessage || err?.message || err?.toString?.() || "Connection failed";
-      console.log("Failed to get columns", message);
+      console.error("Endpoints.ts:getColumns", err);
       res.status(500).json({ error: message });
     }
   });
@@ -260,7 +277,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
       // here means we failed to connect, just set back 407 - Not Acceptable
       // here we return the barebone
       res.status(406).json(`Failed to connect ${err.toString()}`);
-      console.log("Failed to connect", err);
+      console.error("Endpoints.ts:execute", err);
     }
   });
 
@@ -278,7 +295,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
       res.status(200).json(await engine.execute(req.body?.sql, req.body?.database, req.body?.table));
     } catch (err: any) {
       const message = err?.sqlMessage || err?.message || err?.toString?.() || "Query execution failed";
-      console.log("Failed to execute query", message);
+      console.error("Endpoints.ts:execute", err);
       res.status(200).json({ ok: false, error: message });
     }
   });
@@ -296,7 +313,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
       res.status(200).json(await getConnectionMetaData(connection));
     } catch (err: any) {
       const message = err?.sqlMessage || err?.message || err?.toString?.() || "Connection test failed";
-      console.log("Failed to test connection", message);
+      console.error("Endpoints.ts:testConnection", err);
       res.status(406).json({ error: message });
     }
   });
@@ -379,7 +396,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
       return res.status(404).json(null);
     }
 
-    let sessionId = await sessionUtils.getByWindowId(windowId);
+    const sessionId = await sessionUtils.getByWindowId(windowId);
     if (!sessionId) {
       return res.status(404).json(null);
     }
@@ -504,12 +521,10 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     const items = await folderItemsStorage.list();
 
     // backfill deletedAt for existing items that were created before this field existed
-    let hasUpdates = false;
     for (const item of items) {
       if (!item.deletedAt) {
         item.deletedAt = Date.now();
         folderItemsStorage.update(item);
-        hasUpdates = true;
       }
     }
 
@@ -569,7 +584,9 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
       });
 
       mainWindow.loadFile(global.indexHtmlPath, { hash: hashLink });
-    } catch (err) {}
+    } catch (err) {
+      console.error("Endpoints.ts:loadFile", err);
+    }
 
     res.status(200).send();
   });
@@ -593,6 +610,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     try {
       dataSnapshot.values = dataSnapshotStorage.readDataFile(dataSnapshot.location);
     } catch (err) {
+      console.error("Endpoints.ts:readDataFile", err);
       dataSnapshot.values = [
         {
           error: `Failed to read content of data snapshot - file=${dataSnapshot.location}`,
