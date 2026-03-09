@@ -293,6 +293,7 @@ async function generateMigrationScript(
         break;
     }
   } catch (err) {
+    console.error("MigrationBox:execute", err);
     errors.push(`Select query failed. ${JSON.stringify(err)}`);
   }
 

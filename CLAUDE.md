@@ -111,6 +111,21 @@ npm run lint             # ESLint (must have 0 errors)
 npm run test-ci          # All tests must pass
 ```
 
+## Error Handling Convention
+
+In catch blocks, always use `console.error` (never `console.log`) with a label in the format `"FileName:functionName"`:
+
+```typescript
+} catch (err) {
+  console.error("FileName:functionName", err);
+}
+```
+
+- The label should include the file name and the enclosing function/method name.
+- For endpoint handlers, include the HTTP method and URL: `console.error(\`Endpoints.ts:handler [GET /api/...]\`, err)`.
+- Never leave catch blocks empty — always log with `console.error`.
+- Unused function parameters should be prefixed with `_` (e.g., `_input`, `_dialect`).
+
 ## Build Verification
 
 After any build-related or Vite config change, run the affected build task to verify it works:

@@ -24,6 +24,7 @@ export default class AzureTableStorageAdapter extends BaseDataAdapter implements
         const connectionString = this.getConnectionString();
         resolve(TableServiceClient.fromConnectionString(connectionString));
       } catch (err) {
+        console.error("AzureTableStorageAdapter:getTableServiceClient", err);
         reject(err);
       }
     });
@@ -46,6 +47,7 @@ export default class AzureTableStorageAdapter extends BaseDataAdapter implements
         const connectionString = this.getConnectionString();
         resolve(TableClient.fromConnectionString(connectionString, table));
       } catch (err) {
+        console.error("AzureTableStorageAdapter:getTableClient", err);
         reject(err);
       }
     });
@@ -73,6 +75,7 @@ export default class AzureTableStorageAdapter extends BaseDataAdapter implements
 
         throw new Error("Cannot connect to Azure Table");
       } catch (err) {
+        console.error("AzureTableStorageAdapter:authenticate", err);
         reject(err);
       }
     });
@@ -172,7 +175,7 @@ export default class AzureTableStorageAdapter extends BaseDataAdapter implements
         return { ok: true, meta: res };
       }
     } catch (error: any) {
-      console.log(error);
+      console.error("AzureTableStorageAdapter:execute", error);
       return { ok: false, error: error.toString() };
     } finally {
       await this.closeConnection();

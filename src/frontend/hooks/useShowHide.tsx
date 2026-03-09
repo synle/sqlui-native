@@ -6,9 +6,9 @@ let _treeVisibles = SessionStorageConfig.get<SqluiFrontend.TreeVisibilities>("cl
 
 const TargetContext = createContext({
   visibles: _treeVisibles,
-  onToggle: (key: string, isVisible?: boolean) => {},
+  onToggle: (_key: string, _isVisible?: boolean) => {},
   onClear: () => {},
-  onSet: (newTreeVisibles: SqluiFrontend.TreeVisibilities) => {},
+  onSet: (_newTreeVisibles: SqluiFrontend.TreeVisibilities) => {},
 });
 
 /**

@@ -27,6 +27,7 @@ export default class AzureCosmosDataAdapter extends BaseDataAdapter implements I
 
         resolve(client);
       } catch (err) {
+        console.error("AzureCosmosDataAdapter:getConnection", err);
         reject(err);
       }
     });
@@ -57,6 +58,7 @@ export default class AzureCosmosDataAdapter extends BaseDataAdapter implements I
           throw new Error("Failed to connect to Azure CosmosDB - Empty read endpoint");
         }
       } catch (err) {
+        console.error("AzureCosmosDataAdapter:authenticate", err);
         reject(err);
       } finally {
         await this.closeConnection();
@@ -168,7 +170,7 @@ export default class AzureCosmosDataAdapter extends BaseDataAdapter implements I
 
       return { ok: true, raw: items };
     } catch (error: any) {
-      console.log(error);
+      console.error("AzureCosmosDataAdapter:execute", error);
       let errorMessage: string;
       try {
         errorMessage = JSON.stringify(error, null, 2);

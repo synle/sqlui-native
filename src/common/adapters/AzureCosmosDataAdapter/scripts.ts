@@ -46,7 +46,7 @@ function _getColMapForInsertAndUpdate(columns?: SqluiCore.ColumnMetaData[]) {
  * @param input - Table context including database and table identifiers.
  * @returns Script output with raw SQL syntax.
  */
-export function getRawSelectAllColumns(input: SqlAction.TableInput): SqlAction.Output | undefined {
+export function getRawSelectAllColumns(_input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Raw Select All Columns SQL`;
 
   return {
@@ -251,7 +251,7 @@ export function getBulkInsert(input: SqlAction.TableInput, rows?: Record<string,
 export function getUpdateWithValues(
   input: SqlAction.TableInput,
   value: Record<string, any>,
-  conditions: Record<string, any>,
+  _conditions: Record<string, any>,
 ): SqlAction.Output | undefined {
   const label = `Update`;
 
@@ -422,7 +422,7 @@ export function getDropDatabase(input: SqlAction.DatabaseInput): SqlAction.Outpu
  * @param input - Connection context.
  * @returns Script output using the databases.create() SDK method with a placeholder name.
  */
-export function getCreateConnectionDatabase(input: SqlAction.ConnectionInput): SqlAction.Output | undefined {
+export function getCreateConnectionDatabase(_input: SqlAction.ConnectionInput): SqlAction.Output | undefined {
   const label = `Create Database`;
 
   return {

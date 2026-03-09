@@ -349,7 +349,7 @@ ipcMain.on("sqluiNativeEvent/toggleMenus", (...[, data]) => {
       const menuItem: any = Menu.getApplicationMenu().getMenuItemById(targetMenuId);
       menuItem.enabled = enabled;
     } catch (err) {
-      console.log(">> Failed to toggle Menu", data, err);
+      console.error("index.ts:toggleMenu", data, err);
     }
   }
 });
@@ -464,6 +464,6 @@ ipcMain.on("sqluiNativeEvent/fetch", async (event, data) => {
     // not found, then return 404
     sendResponse("Resource Not Found...", 500);
   } catch (err) {
-    console.log("error", err);
+    console.error("index.ts:ipcMain.handle", err);
   }
 });

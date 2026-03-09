@@ -67,7 +67,9 @@ export default abstract class BaseDataAdapter {
         if (Object.keys(res).length > 0) {
           return res;
         }
-      } catch (err2) {}
+      } catch (err2) {
+        console.error("BaseDataAdapter:parseConnectionString", err2);
+      }
     }
 
     // not supported

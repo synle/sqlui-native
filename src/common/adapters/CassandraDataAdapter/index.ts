@@ -49,13 +49,14 @@ export default class CassandraDataAdapter extends BaseDataAdapter implements IDa
           await this.authenticateClient(client);
           resolve(client);
         } catch (err1) {
+          console.error("CassandraDataAdapter:authenticate attempt#1", err1);
           // attempt #2: connect without SSL
           const client = new cassandra.Client(clientOptions);
           await this.authenticateClient(client);
           resolve(client);
         }
       } catch (err) {
-        console.log("Failed to getConnection", this.dialect, err);
+        console.error("CassandraDataAdapter:getConnection", this.dialect, err);
         reject(err);
       }
     });
@@ -184,6 +185,7 @@ export default class CassandraDataAdapter extends BaseDataAdapter implements IDa
       client?.shutdown();
       return res;
     } catch (err) {
+      console.error("CassandraDataAdapter:getTables", err);
       client?.shutdown();
       throw err;
     }
@@ -223,6 +225,7 @@ export default class CassandraDataAdapter extends BaseDataAdapter implements IDa
         meta: metaToUse,
       };
     } catch (error) {
+      console.error("CassandraDataAdapter:execute", error);
       return {
         ok: false,
         error,

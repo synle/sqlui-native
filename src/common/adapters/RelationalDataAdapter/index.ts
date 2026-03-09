@@ -85,12 +85,7 @@ export default class RelationalDataAdapter extends BaseDataAdapter implements ID
     try {
       return new Sequelize(connectionUrl, connectionPropOptions);
     } catch (err) {
-      console.log(
-        "RelationalDataAdapter.getConnection - Failed to set up Sequelize for RelationalDataAdapter",
-        connectionUrl,
-        connectionPropOptions,
-        err,
-      );
+      console.error("RelationalDataAdapter:getConnection", connectionUrl, connectionPropOptions, err);
       throw err;
     }
   }
@@ -326,6 +321,7 @@ export default class RelationalDataAdapter extends BaseDataAdapter implements ID
         affectedRows,
       };
     } catch (error) {
+      console.error("RelationalDataAdapter:execute", error);
       return {
         ok: false,
         error,

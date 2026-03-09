@@ -96,7 +96,7 @@ export default abstract class BaseDataScript implements IDataScript {
    * Returns the icon for a dialect. Override in subclasses to provide dialect-specific icons.
    * @param dialect - The dialect identifier.
    */
-  getDialectIcon(dialect?: SqluiCore.Dialect): string {
+  getDialectIcon(_dialect?: SqluiCore.Dialect): string {
     return "";
   }
 
@@ -119,7 +119,7 @@ export default abstract class BaseDataScript implements IDataScript {
    * Returns a sample connection string for the given dialect. Override to provide examples.
    * @param dialect - The dialect identifier.
    */
-  getSampleConnectionString(dialect?: SqluiCore.Dialect) {
+  getSampleConnectionString(_dialect?: SqluiCore.Dialect) {
     return "";
   }
 
@@ -127,7 +127,7 @@ export default abstract class BaseDataScript implements IDataScript {
    * Returns a sample SELECT query for a given table. Override to provide dialect-specific queries.
    * @param actionInput - The table input with dialect, table, and column info.
    */
-  getSampleSelectQuery(actionInput: SqlAction.TableInput): SqlAction.Output | undefined {
+  getSampleSelectQuery(_actionInput: SqlAction.TableInput): SqlAction.Output | undefined {
     return undefined;
   }
 

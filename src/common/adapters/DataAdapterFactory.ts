@@ -43,7 +43,7 @@ export function getDataAdapter(connection: string) {
       adapter = new AzureTableStorageAdapter(connection);
     }
   } catch (err) {
-    console.log("Failed to connect to", connection, err);
+    console.error("DataAdapterFactory.ts:getDataAdapter", connection, err);
     throw err;
   }
 
@@ -96,7 +96,7 @@ export async function getConnectionMetaData(connection: SqluiCore.CoreConnection
   } catch (err) {
     connItem.status = "offline";
     connItem.dialect = undefined;
-    console.log(">> Server Error", err);
+    console.error("DataAdapterFactory.ts:getConnectionItem", err);
   }
 
   return connItem;

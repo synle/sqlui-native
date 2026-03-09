@@ -45,7 +45,7 @@ let _actionDialogs: ActionDialog[] = [];
 //
 const TargetContext = createContext({
   data: _actionDialogs,
-  setData: (newDialogs: ActionDialog[]) => {},
+  setData: (_newDialogs: ActionDialog[]) => {},
 });
 
 /**

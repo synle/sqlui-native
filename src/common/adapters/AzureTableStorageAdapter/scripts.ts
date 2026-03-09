@@ -50,7 +50,7 @@ function _shouldIncludeField(col: SqluiCore.ColumnMetaData) {
  * @param input - Table context including table identifier.
  * @returns Script output using the tableClient.listEntities() method.
  */
-export function getSelectAllColumns(input: SqlAction.TableInput): SqlAction.Output | undefined {
+export function getSelectAllColumns(_input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Select All Columns`;
 
   return {
@@ -179,7 +179,7 @@ export function getBulkInsert(
 export function getUpdateWithValues(
   input: SqlAction.TableInput,
   value: Record<string, any>,
-  conditions: Record<string, any>,
+  _conditions: Record<string, any>,
 ): SqlAction.Output | undefined {
   const label = `Update`;
 
@@ -248,7 +248,7 @@ export function getUpsert(input: SqlAction.TableInput): SqlAction.Output | undef
  * @param input - Table context.
  * @returns Script output using the tableClient.deleteEntity() method.
  */
-export function getDelete(input: SqlAction.TableInput): SqlAction.Output | undefined {
+export function getDelete(_input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Delete`;
 
   return {
@@ -298,7 +298,7 @@ export function getCreateTable(input: SqlAction.TableInput): SqlAction.Output | 
  * @param input - Database context.
  * @returns Script output using the serviceClient.createTable() method with a placeholder name.
  */
-export function getCreateDatabaseTable(input: SqlAction.DatabaseInput): SqlAction.Output | undefined {
+export function getCreateDatabaseTable(_input: SqlAction.DatabaseInput): SqlAction.Output | undefined {
   const label = `Create Table`;
 
   return {

@@ -23,6 +23,7 @@ export default class MongoDBDataAdapter extends BaseDataAdapter implements IData
         await client.connect();
         resolve(client);
       } catch (err) {
+        console.error("MongoDBDataAdapter:getConnection", err);
         reject(err);
       }
     });
@@ -180,7 +181,7 @@ export default class MongoDBDataAdapter extends BaseDataAdapter implements IData
         };
       }
     } catch (err: any) {
-      console.log("Execute Error", err);
+      console.error("MongoDBDataAdapter:execute", err);
       return {
         ok: false,
         error: err?.toString() || JSON.stringify(err),

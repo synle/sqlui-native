@@ -299,7 +299,7 @@ export function getDropKeyspace(input: SqlAction.DatabaseInput): SqlAction.Outpu
  * @param input - Connection input.
  * @returns Script output with the create keyspace query.
  */
-export function getCreateConnectionDatabase(input: SqlAction.ConnectionInput): SqlAction.Output | undefined {
+export function getCreateConnectionDatabase(_input: SqlAction.ConnectionInput): SqlAction.Output | undefined {
   const label = `Create Connection Keyspace`;
 
   return {

@@ -46,12 +46,12 @@ function addDataEndpoint(
       res.header("sqlui-native-window-id", req.headers["sqlui-native-window-id"]);
       await incomingHandler(req, res, cache);
     } catch (err: any) {
-      console.log("err", err);
+      console.error(`Endpoints.ts:addDataEndpoint [${method.toUpperCase()} ${url}] error`, err);
       const message = err?.sqlMessage || err?.message || err?.toString?.() || "Internal Server Error";
       try {
         res.status(500).json({ error: message });
       } catch (resErr) {
-        // response may have already been sent
+        console.error(`Endpoints.ts:addDataEndpoint [${method.toUpperCase()} ${url}] resError`, resErr);
       }
     }
   };
@@ -214,7 +214,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
       res.status(200).json(await getDatabases(req.headers["sqlui-native-session-id"], req.params?.connectionId));
     } catch (err: any) {
       const message = err?.sqlMessage || err?.message || err?.toString?.() || "Connection failed";
-      console.log("Failed to get databases", message);
+      console.error("Endpoints.ts:getDatabases", err);
       res.status(500).json({ error: message });
     }
   });
@@ -231,7 +231,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
       res.status(200).json(database);
     } catch (err: any) {
       const message = err?.sqlMessage || err?.message || err?.toString?.() || "Connection failed";
-      console.log("Failed to get database", message);
+      console.error("Endpoints.ts:getDatabase", err);
       res.status(500).json({ error: message });
     }
   });
@@ -241,7 +241,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
       res.status(200).json(await getTables(req.headers["sqlui-native-session-id"], req.params?.connectionId, req.params?.databaseId));
     } catch (err: any) {
       const message = err?.sqlMessage || err?.message || err?.toString?.() || "Connection failed";
-      console.log("Failed to get tables", message);
+      console.error("Endpoints.ts:getTables", err);
       res.status(500).json({ error: message });
     }
   });
@@ -255,7 +255,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
         );
     } catch (err: any) {
       const message = err?.sqlMessage || err?.message || err?.toString?.() || "Connection failed";
-      console.log("Failed to get columns", message);
+      console.error("Endpoints.ts:getColumns", err);
       res.status(500).json({ error: message });
     }
   });
@@ -277,7 +277,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
       // here means we failed to connect, just set back 407 - Not Acceptable
       // here we return the barebone
       res.status(406).json(`Failed to connect ${err.toString()}`);
-      console.log("Failed to connect", err);
+      console.error("Endpoints.ts:execute", err);
     }
   });
 
@@ -295,7 +295,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
       res.status(200).json(await engine.execute(req.body?.sql, req.body?.database, req.body?.table));
     } catch (err: any) {
       const message = err?.sqlMessage || err?.message || err?.toString?.() || "Query execution failed";
-      console.log("Failed to execute query", message);
+      console.error("Endpoints.ts:execute", err);
       res.status(200).json({ ok: false, error: message });
     }
   });
@@ -313,7 +313,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
       res.status(200).json(await getConnectionMetaData(connection));
     } catch (err: any) {
       const message = err?.sqlMessage || err?.message || err?.toString?.() || "Connection test failed";
-      console.log("Failed to test connection", message);
+      console.error("Endpoints.ts:testConnection", err);
       res.status(406).json({ error: message });
     }
   });

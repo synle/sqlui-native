@@ -14,7 +14,7 @@ let _treeActions: TreeActionProps = {
 
 const TargetContext = createContext({
   data: _treeActions,
-  setTreeActions: (newTreeActionProps: Partial<TreeActionProps>) => {},
+  setTreeActions: (_newTreeActionProps: Partial<TreeActionProps>) => {},
 });
 
 /**

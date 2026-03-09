@@ -14,7 +14,7 @@ const formatter = "js";
  * @param input - Table input (unused for Redis but required by interface).
  * @returns Script output with the SET command.
  */
-export function getSetValue(input: SqlAction.TableInput): SqlAction.Output | undefined {
+export function getSetValue(_input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Set Value`;
 
   return {
@@ -29,7 +29,7 @@ export function getSetValue(input: SqlAction.TableInput): SqlAction.Output | und
  * @param input - Table input.
  * @returns Script output with the GET command.
  */
-export function getGet(input: SqlAction.TableInput): SqlAction.Output | undefined {
+export function getGet(_input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Get Value by Key`;
 
   return {
@@ -44,7 +44,7 @@ export function getGet(input: SqlAction.TableInput): SqlAction.Output | undefine
  * @param input - Table input.
  * @returns Script output with the KEYS command.
  */
-export function getScan(input: SqlAction.TableInput): SqlAction.Output | undefined {
+export function getScan(_input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Scan for keys`;
 
   return {
@@ -59,7 +59,7 @@ export function getScan(input: SqlAction.TableInput): SqlAction.Output | undefin
  * @param input - Table input.
  * @returns Script output with the HSET command.
  */
-export function getHset(input: SqlAction.TableInput): SqlAction.Output | undefined {
+export function getHset(_input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Hashset > Set Value`;
 
   return {
@@ -74,7 +74,7 @@ export function getHset(input: SqlAction.TableInput): SqlAction.Output | undefin
  * @param input - Table input.
  * @returns Script output with the HGETALL command.
  */
-export function getHget(input: SqlAction.TableInput): SqlAction.Output | undefined {
+export function getHget(_input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Hashset > Get Value By Key`;
 
   return {
@@ -89,7 +89,7 @@ export function getHget(input: SqlAction.TableInput): SqlAction.Output | undefin
  * @param input - Table input.
  * @returns Script output with the HVALS command.
  */
-export function getHvals(input: SqlAction.TableInput): SqlAction.Output | undefined {
+export function getHvals(_input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Hashset > Values`;
 
   return {
@@ -104,7 +104,7 @@ export function getHvals(input: SqlAction.TableInput): SqlAction.Output | undefi
  * @param input - Table input.
  * @returns Script output with the HEXISTS command.
  */
-export function getHexist(input: SqlAction.TableInput): SqlAction.Output | undefined {
+export function getHexist(_input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Hashset > Check if key exists`;
 
   return {
@@ -119,7 +119,7 @@ export function getHexist(input: SqlAction.TableInput): SqlAction.Output | undef
  * @param input - Table input.
  * @returns Script output with the LPUSH command.
  */
-export function getListLPush(input: SqlAction.TableInput): SqlAction.Output | undefined {
+export function getListLPush(_input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `List > Push item to the front`;
 
   return {
@@ -134,7 +134,7 @@ export function getListLPush(input: SqlAction.TableInput): SqlAction.Output | un
  * @param input - Table input.
  * @returns Script output with the RPUSH command.
  */
-export function getListRPush(input: SqlAction.TableInput): SqlAction.Output | undefined {
+export function getListRPush(_input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `List > Push item to the back`;
 
   return {
@@ -149,7 +149,7 @@ export function getListRPush(input: SqlAction.TableInput): SqlAction.Output | un
  * @param input - Table input.
  * @returns Script output with the LPOP command.
  */
-export function getListLPop(input: SqlAction.TableInput): SqlAction.Output | undefined {
+export function getListLPop(_input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `List > Delete item from the front`;
 
   return {
@@ -164,7 +164,7 @@ export function getListLPop(input: SqlAction.TableInput): SqlAction.Output | und
  * @param input - Table input.
  * @returns Script output with the RPOP command.
  */
-export function getListRPop(input: SqlAction.TableInput): SqlAction.Output | undefined {
+export function getListRPop(_input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `List > Delete item from the back`;
 
   return {
@@ -179,7 +179,7 @@ export function getListRPop(input: SqlAction.TableInput): SqlAction.Output | und
  * @param input - Table input.
  * @returns Script output with the LRANGE command.
  */
-export function getListGetItems(input: SqlAction.TableInput): SqlAction.Output | undefined {
+export function getListGetItems(_input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `List > Get Items`;
 
   return {
@@ -194,7 +194,7 @@ export function getListGetItems(input: SqlAction.TableInput): SqlAction.Output |
  * @param input - Table input.
  * @returns Script output with the SMEMBERS command.
  */
-export function getSetGetItems(input: SqlAction.TableInput): SqlAction.Output | undefined {
+export function getSetGetItems(_input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Set > Get Items`;
 
   return {
@@ -209,7 +209,7 @@ export function getSetGetItems(input: SqlAction.TableInput): SqlAction.Output | 
  * @param input - Table input.
  * @returns Script output with the SADD command.
  */
-export function getSetAddItems(input: SqlAction.TableInput): SqlAction.Output | undefined {
+export function getSetAddItems(_input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Set > Add Item`;
 
   return {
@@ -224,7 +224,7 @@ export function getSetAddItems(input: SqlAction.TableInput): SqlAction.Output | 
  * @param input - Table input.
  * @returns Script output with the SISMEMBER command.
  */
-export function getSetIsMember(input: SqlAction.TableInput): SqlAction.Output | undefined {
+export function getSetIsMember(_input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Set > Is a member of set`;
 
   return {
@@ -239,7 +239,7 @@ export function getSetIsMember(input: SqlAction.TableInput): SqlAction.Output | 
  * @param input - Table input.
  * @returns Script output with the SCARD command.
  */
-export function getSetCount(input: SqlAction.TableInput): SqlAction.Output | undefined {
+export function getSetCount(_input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Set > Total Size`;
 
   return {
@@ -254,7 +254,7 @@ export function getSetCount(input: SqlAction.TableInput): SqlAction.Output | und
  * @param input - Table input.
  * @returns Script output with the SPOP command.
  */
-export function getSetRemoveLastItem(input: SqlAction.TableInput): SqlAction.Output | undefined {
+export function getSetRemoveLastItem(_input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Set > Remove last item`;
 
   return {
@@ -269,7 +269,7 @@ export function getSetRemoveLastItem(input: SqlAction.TableInput): SqlAction.Out
  * @param input - Table input.
  * @returns Script output with the ZRANGE command.
  */
-export function getSortedSetGetItems(input: SqlAction.TableInput): SqlAction.Output | undefined {
+export function getSortedSetGetItems(_input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Sorted Set > Get Items`;
 
   return {
@@ -284,7 +284,7 @@ export function getSortedSetGetItems(input: SqlAction.TableInput): SqlAction.Out
  * @param input - Table input.
  * @returns Script output with the ZADD command.
  */
-export function getSortedSetAddItem(input: SqlAction.TableInput): SqlAction.Output | undefined {
+export function getSortedSetAddItem(_input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Sorted Set > Add Item`;
 
   return {
@@ -299,7 +299,7 @@ export function getSortedSetAddItem(input: SqlAction.TableInput): SqlAction.Outp
  * @param input - Table input.
  * @returns Script output with the PUBLISH command.
  */
-export function getPublishMessage(input: SqlAction.TableInput): SqlAction.Output | undefined {
+export function getPublishMessage(_input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Publish a message`;
 
   return {

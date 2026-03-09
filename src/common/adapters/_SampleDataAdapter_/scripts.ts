@@ -36,7 +36,7 @@ export function getSelectAllColumns(input: SqlAction.TableInput): SqlAction.Outp
  * @param input - Database context including the database identifier.
  * @returns Script output with a CREATE DATABASE statement.
  */
-export function getCreateDatabase(input: SqlAction.DatabaseInput): SqlAction.Output | undefined {
+export function getCreateDatabase(_input: SqlAction.DatabaseInput): SqlAction.Output | undefined {
   const label = `Create Database`;
 
   // TODO: replace with your dialect's create database syntax
@@ -143,7 +143,7 @@ export class ConcreteDataScripts extends BaseDataScript {
    * Sample connection string shown as placeholder text in the "new connection" form.
    * Must use the dialect prefix that matches your dialect name.
    */
-  getSampleConnectionString(dialect?: SqluiCore.Dialect) {
+  getSampleConnectionString(_dialect?: SqluiCore.Dialect) {
     return `your_dialect_name://username:password@localhost:port`;
   }
 

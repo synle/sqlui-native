@@ -26,6 +26,7 @@ export default class RedisDataAdapter extends BaseDataAdapter implements IDataAd
 
         client.on("error", (err) => reject(err));
       } catch (err) {
+        console.error("RedisDataAdapter:getConnection", err);
         reject(err);
       }
     });
@@ -123,7 +124,7 @@ export default class RedisDataAdapter extends BaseDataAdapter implements IDataAd
 
       return { ok: true, meta: resp };
     } catch (error: any) {
-      console.log(error);
+      console.error("RedisDataAdapter:execute", error);
       return { ok: false, error: error.toString() };
     } finally {
       this.closeConnection(db);

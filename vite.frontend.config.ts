@@ -3,7 +3,7 @@ import react from "@vitejs/plugin-react";
 import path from "path";
 
 export default defineConfig(({ command }) => ({
-  plugins: [react({ fastRefresh: false })],
+  plugins: [react()],
   root: ".",
   base: command === "serve" ? "/" : "./",
   publicDir: "public",

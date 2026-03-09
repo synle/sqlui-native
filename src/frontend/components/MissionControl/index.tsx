@@ -678,6 +678,7 @@ export default function MissionControl() {
 
           createSystemNotification(`Connection "${connection.name}" (dialect=${connection.dialect || "N/A"}) deleted`);
         } catch (err1) {
+          console.error("MissionControl:deleteConnection", err1);
           curToast = await addToast({
             message: `Failed to delete connection "${connection.name}" (dialect=${connection.dialect || "N/A"})`,
           });
@@ -852,7 +853,7 @@ export default function MissionControl() {
           }
           successCount++;
         } catch (err) {
-          console.log(">> Import Failed", jsonRow, err);
+          console.error("MissionControl:importConnection", jsonRow, err);
           failedCount++;
         }
       }

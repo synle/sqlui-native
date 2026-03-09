@@ -34,6 +34,7 @@ export default function TestConnectionButton(props: TestConnectionButtonProps): 
         await testConnection(props.connection);
         message = `Successfully connected to Server.`;
       } catch (err) {
+        console.error("TestConnectionButton:testConnection", err);
         message = `Failed to connect to Server. ${JSON.stringify(err)}.`;
       }
     }

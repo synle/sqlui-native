@@ -27,6 +27,7 @@ export default function ConnectionRetryAlert(props: ConnectionRetryAlertProps): 
     try {
       await reconnectConnection(connectionId);
     } catch (err) {
+      console.error("ConnectionRetryAlert:reconnectConnection", err);
       addToast({ id: connectionId, message: `Connection to ${connectionId} failed with ${err}` });
     } finally {
       setRetrying(false);

@@ -10,7 +10,7 @@ import { SqluiCore, SqluiFrontend } from "typings";
 let _connectionQueries: SqluiFrontend.ConnectionQuery[] = [];
 const TargetContext = createContext({
   data: _connectionQueries,
-  setData: (newConnectionQueries: SqluiFrontend.ConnectionQuery[]) => {},
+  setData: (_newConnectionQueries: SqluiFrontend.ConnectionQuery[]) => {},
   isLoading: true,
 });
 

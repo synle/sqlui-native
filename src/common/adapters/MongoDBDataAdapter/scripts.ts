@@ -316,7 +316,7 @@ export function getCreateDatabase(input: SqlAction.DatabaseInput): SqlAction.Out
  * @param input - Database input containing the database name.
  * @returns Script output with the dropDatabase query.
  */
-export function getDropDatabase(input: SqlAction.DatabaseInput): SqlAction.Output | undefined {
+export function getDropDatabase(_input: SqlAction.DatabaseInput): SqlAction.Output | undefined {
   const label = `Drop Database`;
   return {
     label,
@@ -330,7 +330,7 @@ export function getDropDatabase(input: SqlAction.DatabaseInput): SqlAction.Outpu
  * @param input - Connection input.
  * @returns Script output with the createDatabase query.
  */
-export function getCreateConnectionDatabase(input: SqlAction.ConnectionInput): SqlAction.Output | undefined {
+export function getCreateConnectionDatabase(_input: SqlAction.ConnectionInput): SqlAction.Output | undefined {
   const label = `Create Database`;
   return {
     label,
@@ -375,10 +375,10 @@ export class ConcreteDataScripts extends BaseDataScript {
   }
 
   // dialect definitions
-  getDialectType(dialect) {
+  getDialectType(_dialect) {
     return `mongodb` as SqluiCore.Dialect;
   }
-  getDialectIcon(dialect) {
+  getDialectIcon(_dialect) {
     return mongodbIcon;
   }
 
