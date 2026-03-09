@@ -1,7 +1,7 @@
 import CassandraDataAdapter from "src/common/adapters/CassandraDataAdapter/index";
 
 describe("cassandra v4 integration", () => {
-  const CONNECTION = "cassandra://127.0.0.1:9042";
+  const CONNECTION = "cassandra://cassandra:cassandra@127.0.0.1:9042";
   let adapter: CassandraDataAdapter;
 
   beforeAll(() => {
@@ -58,7 +58,7 @@ describe.skip("cassandra v4 legacy", () => {
   let adapter;
 
   beforeAll(() => {
-    adapter = new CassandraDataAdapter("cassandra://127.0.0.1:9042");
+    adapter = new CassandraDataAdapter("cassandra://cassandra:cassandra@127.0.0.1:9042");
   });
 
   test("Get database", async () => {
@@ -86,7 +86,7 @@ describe.skip("cassandra v4 legacy", () => {
 });
 
 describe("cassandra v2 integration", () => {
-  const CONNECTION = "cassandra://127.0.0.1:9043";
+  const CONNECTION = "cassandra://cassandra:cassandra@127.0.0.1:9043";
   let adapter: CassandraDataAdapter;
 
   beforeAll(() => {
