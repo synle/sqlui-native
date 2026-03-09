@@ -460,7 +460,7 @@ export class ConcreteDataScripts extends BaseDataScript {
   }
 
   getSampleConnectionString() {
-    return `cassandra://username:password@localhost:9042`;
+    return `cassandra://cassandra:cassandra@localhost:9042`;
   }
 
   getSampleSelectQuery(tableActionInput) {

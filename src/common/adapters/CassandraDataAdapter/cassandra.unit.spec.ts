@@ -34,7 +34,7 @@ describe("CassandraDataAdapter unit", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockConnect.mockImplementation((cb) => cb(null));
-    adapter = new CassandraDataAdapter("cassandra://127.0.0.1:9042");
+    adapter = new CassandraDataAdapter("cassandra://cassandra:cassandra@127.0.0.1:9042");
   });
 
   test("authenticate", async () => {
