@@ -9,7 +9,8 @@ import CircularProgress from "@mui/material/CircularProgress";
 import InputLabel from "@mui/material/InputLabel";
 import SpeedDial from "@mui/material/SpeedDial";
 import SpeedDialAction from "@mui/material/SpeedDialAction";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
+import { useNavigate } from "src/frontend/utils/commonUtils";
 import { useEffect, useState } from "react";
 import { DataTableWithJSONList } from "src/frontend/components/DataTable";
 import { downloadCsv, downloadJSON } from "src/frontend/data/file";
@@ -65,8 +66,7 @@ function QuickActionDial(props: QuickActionDialProps) {
         showCloseButton: true,
         size: "lg",
       });
-    } finally {
-    }
+    } catch (_err) {}
     onClose();
   };
 
@@ -115,6 +115,10 @@ function QuickActionDial(props: QuickActionDialProps) {
   );
 }
 
+/**
+ * View for displaying a single data snapshot's records in a searchable, filterable data table.
+ * Includes a speed dial with actions for viewing description, downloading CSV/JSON, and navigation.
+ */
 export default function DataSnapshotView() {
   const urlParams = useParams();
   const dataSnapshotId = urlParams.dataSnapshotId as string;
@@ -131,9 +135,7 @@ export default function DataSnapshotView() {
         readonly: true,
         isLongPrompt: true,
       });
-    } catch (err) {
-    } finally {
-    }
+    } catch (_err) {}
   };
 
   const rowContextOptions = [

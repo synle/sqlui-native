@@ -9,6 +9,11 @@ const StyledColumnName = styled("span")(() => {
   };
 });
 
+/**
+ * Displays a column name with text overflow ellipsis and a tooltip showing the full name.
+ * @param props - Props containing the column name value.
+ * @returns The rendered column name element.
+ */
 export default function ColumnName(props: { value: string }) {
   return (
     <Tooltip title={props.value}>

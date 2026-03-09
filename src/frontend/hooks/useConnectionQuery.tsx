@@ -10,7 +10,7 @@ import { SqluiCore, SqluiFrontend } from "typings";
 let _connectionQueries: SqluiFrontend.ConnectionQuery[] = [];
 const TargetContext = createContext({
   data: _connectionQueries,
-  setData: (newConnectionQueries: SqluiFrontend.ConnectionQuery[]) => {},
+  setData: (_newConnectionQueries: SqluiFrontend.ConnectionQuery[]) => {},
   isLoading: true,
 });
 
@@ -23,6 +23,11 @@ function _persistQueries() {
   SessionStorageConfig.set("clientConfig/cache.connectionQueries", toPersistQueries);
 }
 
+/**
+ * Context provider for connection queries. Loads persisted queries from session storage or API on mount.
+ * @param props - Component props containing child elements.
+ * @returns The context provider wrapping children.
+ */
 export default function WrappedContext(props: { children: React.ReactNode }): JSX.Element | null {
   // State to hold the theme value
   const [data, setData] = useState(_connectionQueries);
@@ -39,7 +44,9 @@ export default function WrappedContext(props: { children: React.ReactNode }): JS
           // if config failed, attempt to get it from the api
           try {
             _connectionQueries = await dataApi.getQueries();
-          } catch (err) {}
+          } catch (err) {
+            console.error("useConnectionQuery.tsx:getQueries", err);
+          }
         }
 
         // at the end we want to remove executionStart so the query won't be run again
@@ -93,6 +100,11 @@ function _useConnectionQueries() {
   };
 }
 
+/**
+ * Hook providing CRUD operations for connection queries (tabs).
+ * Manages adding, deleting, selecting, duplicating, importing, and reordering query tabs.
+ * @returns Query list, loading state, and mutation handlers.
+ */
 export function useConnectionQueries() {
   const { data: queries, setData, isLoading } = _useConnectionQueries();
   const { mutateAsync: addRecycleBinItem } = useAddRecycleBinItem();
@@ -152,12 +164,16 @@ export function useConnectionQueries() {
 
       try {
         dataApi.upsertQuery(newQuery); // make an api call to persists and this is fire and forget
-      } catch (err) {}
+      } catch (err) {
+        console.error("useConnectionQuery.tsx:upsertQuery", err);
+      }
     }
 
     try {
       _invalidateQueries();
-    } catch (err) {}
+    } catch (err) {
+      console.error("useConnectionQuery.tsx:_invalidateQueries", err);
+    }
 
     return res;
   };
@@ -189,7 +205,9 @@ export function useConnectionQueries() {
       // attempt to make backups
       try {
         await Promise.allSettled(toRecycleQueriesFolderItems.map(async (folderItem) => addRecycleBinItem(folderItem)));
-      } catch (err) {}
+      } catch (err) {
+        console.error("useConnectionQuery.tsx:allSettled", err);
+      }
     }
 
     let toBeSelected = 0;
@@ -278,7 +296,9 @@ export function useConnectionQueries() {
     try {
       _invalidateQueries();
       dataApi.upsertQuery(query); // make an api call to persists and this is fire and forget
-    } catch (err) {}
+    } catch (err) {
+      console.error("useConnectionQuery.tsx:upsertQuery", err);
+    }
   };
 
   const onDuplicateQuery = (queryId?: string) => {
@@ -319,6 +339,11 @@ export function useConnectionQueries() {
   };
 }
 
+/**
+ * Hook to access and manage a single connection query by ID.
+ * @param queryId - The ID of the query to retrieve.
+ * @returns The query object, loading state, and onChange/onDelete handlers.
+ */
 export function useConnectionQuery(queryId: string) {
   const { queries, onChangeQuery, onDeleteQuery, isLoading } = useConnectionQueries();
 
@@ -336,6 +361,10 @@ export function useConnectionQuery(queryId: string) {
   };
 }
 
+/**
+ * Hook to access and manage the currently selected (active) connection query.
+ * @returns The active query object, loading state, and onChange/onDelete handlers.
+ */
 export function useActiveConnectionQuery() {
   const { queries, onChangeQuery, onDeleteQuery, isLoading } = useConnectionQueries();
 

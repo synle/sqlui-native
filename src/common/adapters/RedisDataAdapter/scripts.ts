@@ -4,12 +4,17 @@ import redisIcon from "src/common/adapters/RedisDataAdapter/redis.png";
 import { getClientOptions } from "src/common/adapters/RedisDataAdapter/utils";
 import { SqlAction } from "typings";
 
+/** Prefix used for Redis query syntax in sqlui-native. */
 export const REDIS_ADAPTER_PREFIX = "db";
 
 const formatter = "js";
 
-// for redis
-export function getSetValue(input: SqlAction.TableInput): SqlAction.Output | undefined {
+/**
+ * Generates a Redis SET command script.
+ * @param input - Table input (unused for Redis but required by interface).
+ * @returns Script output with the SET command.
+ */
+export function getSetValue(_input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Set Value`;
 
   return {
@@ -19,7 +24,12 @@ export function getSetValue(input: SqlAction.TableInput): SqlAction.Output | und
   };
 }
 
-export function getGet(input: SqlAction.TableInput): SqlAction.Output | undefined {
+/**
+ * Generates a Redis GET command script.
+ * @param input - Table input.
+ * @returns Script output with the GET command.
+ */
+export function getGet(_input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Get Value by Key`;
 
   return {
@@ -29,7 +39,12 @@ export function getGet(input: SqlAction.TableInput): SqlAction.Output | undefine
   };
 }
 
-export function getScan(input: SqlAction.TableInput): SqlAction.Output | undefined {
+/**
+ * Generates a Redis KEYS command script to scan for keys matching a pattern.
+ * @param input - Table input.
+ * @returns Script output with the KEYS command.
+ */
+export function getScan(_input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Scan for keys`;
 
   return {
@@ -39,7 +54,12 @@ export function getScan(input: SqlAction.TableInput): SqlAction.Output | undefin
   };
 }
 
-export function getHset(input: SqlAction.TableInput): SqlAction.Output | undefined {
+/**
+ * Generates a Redis HSET command script for hash sets.
+ * @param input - Table input.
+ * @returns Script output with the HSET command.
+ */
+export function getHset(_input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Hashset > Set Value`;
 
   return {
@@ -49,7 +69,12 @@ export function getHset(input: SqlAction.TableInput): SqlAction.Output | undefin
   };
 }
 
-export function getHget(input: SqlAction.TableInput): SqlAction.Output | undefined {
+/**
+ * Generates a Redis HGETALL command script for hash sets.
+ * @param input - Table input.
+ * @returns Script output with the HGETALL command.
+ */
+export function getHget(_input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Hashset > Get Value By Key`;
 
   return {
@@ -59,7 +84,12 @@ export function getHget(input: SqlAction.TableInput): SqlAction.Output | undefin
   };
 }
 
-export function getHvals(input: SqlAction.TableInput): SqlAction.Output | undefined {
+/**
+ * Generates a Redis HVALS command script for hash set values.
+ * @param input - Table input.
+ * @returns Script output with the HVALS command.
+ */
+export function getHvals(_input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Hashset > Values`;
 
   return {
@@ -69,7 +99,12 @@ export function getHvals(input: SqlAction.TableInput): SqlAction.Output | undefi
   };
 }
 
-export function getHexist(input: SqlAction.TableInput): SqlAction.Output | undefined {
+/**
+ * Generates a Redis HEXISTS command script to check if a hash field exists.
+ * @param input - Table input.
+ * @returns Script output with the HEXISTS command.
+ */
+export function getHexist(_input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Hashset > Check if key exists`;
 
   return {
@@ -79,7 +114,12 @@ export function getHexist(input: SqlAction.TableInput): SqlAction.Output | undef
   };
 }
 
-export function getListLPush(input: SqlAction.TableInput): SqlAction.Output | undefined {
+/**
+ * Generates a Redis LPUSH command script to push an item to the front of a list.
+ * @param input - Table input.
+ * @returns Script output with the LPUSH command.
+ */
+export function getListLPush(_input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `List > Push item to the front`;
 
   return {
@@ -89,7 +129,12 @@ export function getListLPush(input: SqlAction.TableInput): SqlAction.Output | un
   };
 }
 
-export function getListRPush(input: SqlAction.TableInput): SqlAction.Output | undefined {
+/**
+ * Generates a Redis RPUSH command script to push an item to the back of a list.
+ * @param input - Table input.
+ * @returns Script output with the RPUSH command.
+ */
+export function getListRPush(_input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `List > Push item to the back`;
 
   return {
@@ -99,7 +144,12 @@ export function getListRPush(input: SqlAction.TableInput): SqlAction.Output | un
   };
 }
 
-export function getListLPop(input: SqlAction.TableInput): SqlAction.Output | undefined {
+/**
+ * Generates a Redis LPOP command script to remove an item from the front of a list.
+ * @param input - Table input.
+ * @returns Script output with the LPOP command.
+ */
+export function getListLPop(_input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `List > Delete item from the front`;
 
   return {
@@ -109,7 +159,12 @@ export function getListLPop(input: SqlAction.TableInput): SqlAction.Output | und
   };
 }
 
-export function getListRPop(input: SqlAction.TableInput): SqlAction.Output | undefined {
+/**
+ * Generates a Redis RPOP command script to remove an item from the back of a list.
+ * @param input - Table input.
+ * @returns Script output with the RPOP command.
+ */
+export function getListRPop(_input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `List > Delete item from the back`;
 
   return {
@@ -119,7 +174,12 @@ export function getListRPop(input: SqlAction.TableInput): SqlAction.Output | und
   };
 }
 
-export function getListGetItems(input: SqlAction.TableInput): SqlAction.Output | undefined {
+/**
+ * Generates a Redis LRANGE command script to get all items in a list.
+ * @param input - Table input.
+ * @returns Script output with the LRANGE command.
+ */
+export function getListGetItems(_input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `List > Get Items`;
 
   return {
@@ -129,7 +189,12 @@ export function getListGetItems(input: SqlAction.TableInput): SqlAction.Output |
   };
 }
 
-export function getSetGetItems(input: SqlAction.TableInput): SqlAction.Output | undefined {
+/**
+ * Generates a Redis SMEMBERS command script to get all members of a set.
+ * @param input - Table input.
+ * @returns Script output with the SMEMBERS command.
+ */
+export function getSetGetItems(_input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Set > Get Items`;
 
   return {
@@ -139,7 +204,12 @@ export function getSetGetItems(input: SqlAction.TableInput): SqlAction.Output | 
   };
 }
 
-export function getSetAddItems(input: SqlAction.TableInput): SqlAction.Output | undefined {
+/**
+ * Generates a Redis SADD command script to add an item to a set.
+ * @param input - Table input.
+ * @returns Script output with the SADD command.
+ */
+export function getSetAddItems(_input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Set > Add Item`;
 
   return {
@@ -149,7 +219,12 @@ export function getSetAddItems(input: SqlAction.TableInput): SqlAction.Output | 
   };
 }
 
-export function getSetIsMember(input: SqlAction.TableInput): SqlAction.Output | undefined {
+/**
+ * Generates a Redis SISMEMBER command script to check set membership.
+ * @param input - Table input.
+ * @returns Script output with the SISMEMBER command.
+ */
+export function getSetIsMember(_input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Set > Is a member of set`;
 
   return {
@@ -159,7 +234,12 @@ export function getSetIsMember(input: SqlAction.TableInput): SqlAction.Output | 
   };
 }
 
-export function getSetCount(input: SqlAction.TableInput): SqlAction.Output | undefined {
+/**
+ * Generates a Redis SCARD command script to get the total size of a set.
+ * @param input - Table input.
+ * @returns Script output with the SCARD command.
+ */
+export function getSetCount(_input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Set > Total Size`;
 
   return {
@@ -169,7 +249,12 @@ export function getSetCount(input: SqlAction.TableInput): SqlAction.Output | und
   };
 }
 
-export function getSetRemoveLastItem(input: SqlAction.TableInput): SqlAction.Output | undefined {
+/**
+ * Generates a Redis SPOP command script to remove and return a random set member.
+ * @param input - Table input.
+ * @returns Script output with the SPOP command.
+ */
+export function getSetRemoveLastItem(_input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Set > Remove last item`;
 
   return {
@@ -179,7 +264,12 @@ export function getSetRemoveLastItem(input: SqlAction.TableInput): SqlAction.Out
   };
 }
 
-export function getSortedSetGetItems(input: SqlAction.TableInput): SqlAction.Output | undefined {
+/**
+ * Generates a Redis ZRANGE command script to get items from a sorted set.
+ * @param input - Table input.
+ * @returns Script output with the ZRANGE command.
+ */
+export function getSortedSetGetItems(_input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Sorted Set > Get Items`;
 
   return {
@@ -189,7 +279,12 @@ export function getSortedSetGetItems(input: SqlAction.TableInput): SqlAction.Out
   };
 }
 
-export function getSortedSetAddItem(input: SqlAction.TableInput): SqlAction.Output | undefined {
+/**
+ * Generates a Redis ZADD command script to add an item to a sorted set.
+ * @param input - Table input.
+ * @returns Script output with the ZADD command.
+ */
+export function getSortedSetAddItem(_input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Sorted Set > Add Item`;
 
   return {
@@ -199,7 +294,12 @@ export function getSortedSetAddItem(input: SqlAction.TableInput): SqlAction.Outp
   };
 }
 
-export function getPublishMessage(input: SqlAction.TableInput): SqlAction.Output | undefined {
+/**
+ * Generates a Redis PUBLISH command script to publish a message to a channel.
+ * @param input - Table input.
+ * @returns Script output with the PUBLISH command.
+ */
+export function getPublishMessage(_input: SqlAction.TableInput): SqlAction.Output | undefined {
   const label = `Publish a message`;
 
   return {
@@ -218,6 +318,7 @@ function _pythonRedisCommand(sql: string): string {
   return sql.replace(/^db\./, "");
 }
 
+/** Script generator for Redis and Redis with SSL (rediss) dialects. */
 export class ConcreteDataScripts extends BaseDataScript {
   dialects = ["redis", "rediss"];
 

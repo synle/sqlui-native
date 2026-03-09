@@ -10,7 +10,8 @@ import ListItemText from "@mui/material/ListItemText";
 import Typography from "@mui/material/Typography";
 import { toPng } from "html-to-image";
 import ReactFlow from "react-flow-renderer";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
+import { useNavigate } from "src/frontend/utils/commonUtils";
 import { useEffect, useRef, useState } from "react";
 import Breadcrumbs, { BreadcrumbLink } from "src/frontend/components/Breadcrumbs";
 import { downloadBlob } from "src/frontend/data/file";
@@ -30,6 +31,10 @@ const height = 80;
 
 const heightDelta = 25;
 
+/**
+ * Interactive visualization page showing table relationships using ReactFlow.
+ * Displays foreign key connections between tables with drag, select, and export-to-PNG capabilities.
+ */
 export default function RelationshipChartPage() {
   const navigate = useNavigate();
   const urlParams = useParams();

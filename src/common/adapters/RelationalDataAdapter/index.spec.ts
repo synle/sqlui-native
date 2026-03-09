@@ -14,7 +14,9 @@ describe("sqlite", () => {
     // try remove the mocked db before starting this test
     try {
       fs.unlinkSync(mockedDbFilePath);
-    } catch (err) {}
+    } catch (err) {
+      console.error("index.spec.ts:unlinkSync", err);
+    }
 
     adapter = new RelationalDataAdapter(`sqlite://${mockedDbFilePath}`);
   });

@@ -24,6 +24,11 @@ function useSettingChange() {
   return { settings, onSettingChange };
 }
 
+/**
+ * Settings panel for configuring application preferences including theme, layout, editor mode,
+ * query size, animation, table renderer, word wrap, query tab orientation, and delete mode.
+ * @returns The settings form or null if settings are not loaded.
+ */
 export default function Settings(): JSX.Element | null {
   const { settings, onSettingChange } = useSettingChange();
   const querySize = useQuerySizeSetting();
@@ -190,6 +195,10 @@ export default function Settings(): JSX.Element | null {
   return <>{contentDom}</>;
 }
 
+/**
+ * Standalone select input for toggling between soft delete (recycle bin) and hard delete (permanent).
+ * @returns The delete mode selector or null if settings are not loaded.
+ */
 export function ChangeSoftDeleteInput() {
   const { settings, onSettingChange } = useSettingChange();
 

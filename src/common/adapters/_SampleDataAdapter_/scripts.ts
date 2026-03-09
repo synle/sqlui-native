@@ -31,7 +31,12 @@ export function getSelectAllColumns(input: SqlAction.TableInput): SqlAction.Outp
 // ─── Database Action Script Generators ───────────────────────────────────────
 // These appear in the database-level action dropdown in the sidebar.
 
-export function getCreateDatabase(input: SqlAction.DatabaseInput): SqlAction.Output | undefined {
+/**
+ * Generates a CREATE DATABASE script template.
+ * @param input - Database context including the database identifier.
+ * @returns Script output with a CREATE DATABASE statement.
+ */
+export function getCreateDatabase(_input: SqlAction.DatabaseInput): SqlAction.Output | undefined {
   const label = `Create Database`;
 
   // TODO: replace with your dialect's create database syntax
@@ -42,6 +47,11 @@ export function getCreateDatabase(input: SqlAction.DatabaseInput): SqlAction.Out
   };
 }
 
+/**
+ * Generates a DROP DATABASE script template.
+ * @param input - Database context including the database identifier.
+ * @returns Script output with a DROP DATABASE statement.
+ */
 export function getDropDatabase(input: SqlAction.DatabaseInput): SqlAction.Output | undefined {
   const label = `Drop Database`;
 
@@ -133,7 +143,7 @@ export class ConcreteDataScripts extends BaseDataScript {
    * Sample connection string shown as placeholder text in the "new connection" form.
    * Must use the dialect prefix that matches your dialect name.
    */
-  getSampleConnectionString(dialect?: SqluiCore.Dialect) {
+  getSampleConnectionString(_dialect?: SqluiCore.Dialect) {
     return `your_dialect_name://username:password@localhost:port`;
   }
 

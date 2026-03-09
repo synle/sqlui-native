@@ -135,7 +135,8 @@ const renderApp = function () {
     defaultOptions: {
       queries: {
         retry: false,
-        refetchOnWindowFocus: false,
+        staleTime: 600000, // 10 minutes - avoid unnecessary refetches
+        refetchOnWindowFocus: true, // always refresh when user returns to the app
       },
     },
   });

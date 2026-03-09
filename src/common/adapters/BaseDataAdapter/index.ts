@@ -2,17 +2,31 @@ import { ConnectionStringParser } from "connection-string-parser";
 import { getDialectType, getDialectTypeFromConnectionString } from "src/common/adapters/DataScriptFactory";
 import { SqluiCore } from "typings";
 
+/** Maximum timeout in milliseconds for establishing a database connection. */
 export const MAX_CONNECTION_TIMEOUT = 3000;
 
+/**
+ * Abstract base class for all database adapters. Provides shared utilities
+ * for connection string parsing and type inference.
+ */
 export default abstract class BaseDataAdapter {
+  /** The raw connection string/option used to connect. */
   protected connectionOption: string;
+  /** The resolved database dialect. */
   public dialect?: SqluiCore.Dialect;
 
+  /**
+   * @param connectionOption - The connection string URI (e.g., "mysql://user:pass@host:port").
+   */
   constructor(connectionOption: string) {
     this.connectionOption = connectionOption as string;
     this.dialect = getDialectType(connectionOption);
   }
 
+  /**
+   * Returns the connection string with the protocol scheme stripped.
+   * @returns The connection string without the leading scheme (e.g., "mysql://").
+   */
   protected getConnectionString(): string {
     return this.connectionOption.replace(/^[a-z0-9+]+:\/\//i, "");
   }
@@ -39,25 +53,35 @@ export default abstract class BaseDataAdapter {
         if (!res || Object.keys(res).length === 0) {
           try {
             // here we attempt to encode and retry parser
-            let connectionParts = connection.replace(`${dialect}://`, "").split(/[:@]/);
+            const connectionParts = connection.replace(`${dialect}://`, "").split(/[:@]/);
             if (connectionParts.length === 4) {
               // there are 4 parts: username, password, host, port
               const [username, password, host, port] = connectionParts.map(encodeURIComponent);
               res = connectionStringParser.parse(`${dialect}://${username}:${password}@${host}:${port}`);
             }
-          } catch (err) {}
+          } catch (err) {
+            console.error("index.ts:parse", err);
+          }
         }
 
         if (Object.keys(res).length > 0) {
           return res;
         }
-      } catch (err2) {}
+      } catch (err2) {
+        console.error("BaseDataAdapter:parseConnectionString", err2);
+      }
     }
 
     // not supported
     return undefined;
   }
 
+  /**
+   * Recursively resolves types from a nested object, producing a flat column metadata map.
+   * @param inputItem - The object to resolve types from.
+   * @param incomingTypeConverter - Optional function to convert type strings to dialect-specific types.
+   * @returns A map of column paths to their metadata.
+   */
   static resolveTypes(inputItem: any, incomingTypeConverter?: (type: string, value: any) => string) {
     const stack: {
       item: any;
@@ -120,6 +144,11 @@ export default abstract class BaseDataAdapter {
     return columnsMap;
   }
 
+  /**
+   * Infers column metadata (names and JavaScript types) from an array of data items.
+   * @param items - Array of objects to infer types from.
+   * @returns Array of column metadata with inferred types.
+   */
   static inferTypesFromItems(items: any[]): SqluiCore.ColumnMetaData[] {
     let columnsMap: Record<string, SqluiCore.ColumnMetaData> = {};
 
@@ -132,6 +161,12 @@ export default abstract class BaseDataAdapter {
 
     return Object.values(columnsMap);
   }
+  /**
+   * Infers column metadata with dialect-specific SQL types from an array of data items.
+   * @param items - Array of objects to infer types from.
+   * @param toDialectHint - Optional dialect hint to produce dialect-specific type names (e.g., "INTEGER", "TEXT").
+   * @returns Array of column metadata with SQL-compatible types.
+   */
   static inferSqlTypeFromItems(items: any[], toDialectHint?: string): SqluiCore.ColumnMetaData[] {
     let columnsMap: Record<string, SqluiCore.ColumnMetaData> = {};
 

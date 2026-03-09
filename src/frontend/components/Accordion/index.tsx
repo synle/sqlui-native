@@ -4,11 +4,17 @@ import React from "react";
 import { styled } from "@mui/system";
 import { useLayoutModeSetting } from "src/frontend/hooks/useSetting";
 
+/** Default height in pixels for accordion headers in comfortable layout. */
 const ACCORDION_HEIGHT_DEFAULT = 37;
+/** Height in pixels for accordion headers in compact layout. */
 const ACCORDION_HEIGHT_COMPACT = 28;
+/** Font size for accordion headers in comfortable layout. */
 const ACCORDION_FONT_SIZE_DEFAULT = "0.9rem";
+/** Font size for accordion headers in compact layout. */
 const ACCORDION_FONT_SIZE_COMPACT = "0.8rem";
+/** Gap between accordion header elements in comfortable layout. */
 const ACCORDION_GAP_DEFAULT = "5px";
+/** Gap between accordion header elements in compact layout. */
 const ACCORDION_GAP_COMPACT = "3px";
 // these are drag and drop index
 let fromIdx: number | undefined, toIdx: number | undefined;
@@ -52,11 +58,13 @@ const StyledAccordionHeader = styled("div", {
   };
 });
 
+/** Props for the AccordionBody component. */
 type AccordionBodyProps = {
   children: React.ReactNode[] | React.ReactNode;
   expanded: boolean;
 };
 
+/** Props for the AccordionHeader component, extending AccordionBodyProps with toggle and drag-and-drop support. */
 type AccordionHeaderProps = AccordionBodyProps & {
   onToggle: () => void;
   className?: string;
@@ -64,6 +72,11 @@ type AccordionHeaderProps = AccordionBodyProps & {
   connectionIndex?: number;
 };
 
+/**
+ * Clickable accordion header with expand/collapse toggle and optional drag-and-drop reordering.
+ * @param props - Header configuration including children, expanded state, and toggle handler.
+ * @returns The rendered accordion header element.
+ */
 export function AccordionHeader(props: AccordionHeaderProps): JSX.Element | null {
   const { children, expanded, onToggle, className } = props;
   const isCompact = useLayoutModeSetting() === "compact";
@@ -133,6 +146,11 @@ const StyledAccordionBody = styled("div")<{ expanded: boolean }>(({ expanded }) 
   },
 }));
 
+/**
+ * Collapsible accordion body with animated expand/collapse transition.
+ * @param props - Body configuration including children and expanded state.
+ * @returns The rendered accordion body element.
+ */
 export function AccordionBody(props: AccordionBodyProps): JSX.Element | null {
   const { children, expanded } = props;
   return (

@@ -1,3 +1,4 @@
+/** Multi-line comment string containing step-by-step Gradle setup instructions for Java code snippets. */
 export const javaGradleInstructions = ` * INSTRUCTIONS
  *
  * 1. Install Java 17+:

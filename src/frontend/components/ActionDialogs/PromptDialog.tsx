@@ -9,6 +9,7 @@ import TextField from "@mui/material/TextField";
 import React, { useState } from "react";
 import CodeEditorBox from "src/frontend/components/CodeEditorBox";
 
+/** Input configuration for creating a prompt dialog that accepts user text input. */
 export type PromptInput = {
   title?: string;
   message: string;
@@ -28,6 +29,11 @@ type PromptDialogProps = PromptInput & {
   onDismiss: () => void;
 };
 
+/**
+ * Dialog component for prompting user text input, with support for simple text fields or a full code editor.
+ * @param props - Prompt dialog configuration including message, initial value, and save callback.
+ * @returns The rendered prompt dialog element.
+ */
 export default function PromptDialog(props: PromptDialogProps): JSX.Element | null {
   const [value, setValue] = useState(props.value || "");
 

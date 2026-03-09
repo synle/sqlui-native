@@ -13,7 +13,9 @@ import { Table, VisibilityState } from "@tanstack/react-table";
 import React, { useState } from "react";
 import { useActionDialogs } from "src/frontend/hooks/useActionDialogs";
 
+/** Props for DataTableColumnSettings and its content component. */
 type DataTableColumnSettingsProps = {
+  /** The TanStack table instance to configure columns for. */
   table: Table<any>;
 };
 
@@ -135,6 +137,11 @@ function DataTableColumnSettingsContent({ table }: DataTableColumnSettingsProps)
   );
 }
 
+/**
+ * A settings button that opens a modal for configuring column visibility and order.
+ * @param props - Contains the TanStack table instance.
+ * @returns An icon button that triggers the column settings modal.
+ */
 export default function DataTableColumnSettings({ table }: DataTableColumnSettingsProps) {
   const { modal } = useActionDialogs();
 

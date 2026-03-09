@@ -18,7 +18,7 @@ import IconButton from "@mui/material/IconButton";
 import Toolbar from "@mui/material/Toolbar";
 import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "src/frontend/utils/commonUtils";
 import { useEffect } from "react";
 import DropdownButton from "src/frontend/components/DropdownButton";
 import { useCommands } from "src/frontend/components/MissionControl";
@@ -28,6 +28,10 @@ import ToastHistoryList from "src/frontend/components/ToastHistoryList";
 import { useToastHistoryCount } from "src/frontend/hooks/useToaster";
 import appPackage from "src/package.json";
 
+/**
+ * Application header bar with session management, navigation, notifications, and command palette access.
+ * @returns The rendered app header toolbar.
+ */
 export default function AppHeader() {
   const navigate = useNavigate();
   const { data: currentSession, isLoading } = useGetCurrentSession();
@@ -155,8 +159,7 @@ export default function AppHeader() {
                   showCloseButton: true,
                   isFullScreen: true,
                 });
-              } finally {
-              }
+              } catch (_err) {}
             }}
           >
             <Badge badgeContent={toastHistoryCount} color="error" max={99}>

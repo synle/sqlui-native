@@ -3,6 +3,11 @@ import TextField from "@mui/material/TextField";
 import { useMemo } from "react";
 import { Column } from "@tanstack/react-table";
 
+/**
+ * A global search/filter input for the entire data table.
+ * @param props - Contains id and onChange callback for filter value changes.
+ * @returns A search text field.
+ */
 export function GlobalFilter(props: any) {
   return (
     <TextField
@@ -16,10 +21,18 @@ export function GlobalFilter(props: any) {
   );
 }
 
+/** Props for the SimpleColumnFilter component. */
 type SimpleColumnFilterProps = {
+  /** The TanStack table column to filter. */
   column: Column<any, unknown>;
 };
 
+/**
+ * An autocomplete filter input for a single table column.
+ * Suggests up to 100 unique faceted values from the column data.
+ * @param props - Contains the column to filter.
+ * @returns An autocomplete text field for column filtering.
+ */
 export function SimpleColumnFilter({ column }: SimpleColumnFilterProps) {
   const filterValue = (column.getFilterValue() as string) ?? "";
   const facetedValues = column.getFacetedUniqueValues();

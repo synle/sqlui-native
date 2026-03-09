@@ -13,7 +13,8 @@ import { useGetColumns } from "src/frontend/hooks/useConnection";
 import { useActiveConnectionQuery } from "src/frontend/hooks/useConnectionQuery";
 import { useShowHide } from "src/frontend/hooks/useShowHide";
 
-const MAX_COLUMN_SIZE_TO_SHOW = 40; // max number of properties to show
+/** Maximum number of columns to display before showing a "Show All" button. */
+const MAX_COLUMN_SIZE_TO_SHOW = 40;
 
 type ColumnDescriptionProps = {
   connectionId: string;
@@ -21,6 +22,11 @@ type ColumnDescriptionProps = {
   tableId: string;
 };
 
+/**
+ * Displays an expandable list of table columns with name, type, key indicators, and detailed attributes.
+ * @param props - Props containing connectionId, databaseId, and tableId to fetch columns for.
+ * @returns The rendered column list with accordion-style expand/collapse for each column.
+ */
 export default function ColumnDescription(props: ColumnDescriptionProps): JSX.Element | null {
   const { databaseId, connectionId, tableId } = props;
   useActiveConnectionQuery();

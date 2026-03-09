@@ -19,6 +19,10 @@ import { useConnectionQueries } from "src/frontend/hooks/useConnectionQuery";
 import { useQueryTabOrientationSetting } from "src/frontend/hooks/useSetting";
 import { SqluiFrontend } from "typings";
 
+/**
+ * Tabbed container for multiple query editors. Supports adding, closing, renaming, duplicating,
+ * pinning, reordering, and bookmarking query tabs.
+ */
 export default function QueryBoxTabs() {
   const [init, setInit] = useState(false);
   const { queries, isLoading } = useConnectionQueries();

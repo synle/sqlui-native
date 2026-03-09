@@ -5,7 +5,7 @@ import { styled } from "@mui/system";
 import { DecoratedEditorProps as SimpleEditorProps } from "src/frontend/components/CodeEditorBox";
 
 const StyledTextArea = styled("textarea")(({ theme }) => {
-  let backgroundColor, color;
+  let backgroundColor;
 
   if (theme.palette.mode === "light") {
     backgroundColor = grey[100];
@@ -13,7 +13,7 @@ const StyledTextArea = styled("textarea")(({ theme }) => {
     backgroundColor = grey[800];
   }
 
-  color = theme.palette.getContrastText(backgroundColor);
+  const color = theme.palette.getContrastText(backgroundColor);
 
   return {
     backgroundColor,
@@ -31,6 +31,11 @@ const StyledTextArea = styled("textarea")(({ theme }) => {
   };
 });
 
+/**
+ * Lightweight textarea-based code editor with tab indentation and auto-indent support.
+ * @param props - Editor configuration including value, language, word wrap, and editor ref.
+ * @returns The rendered textarea editor.
+ */
 export default function SimpleEditor(props: SimpleEditorProps): JSX.Element | null {
   const textareaRef = useRef<HTMLTextareaElement>(null);
 
@@ -53,8 +58,8 @@ export default function SimpleEditor(props: SimpleEditorProps): JSX.Element | nu
     }
 
     function _insertIndentAtCursor(myField, myValue) {
-      let startPos = myField.selectionStart;
-      let endPos = myField.selectionEnd;
+      const startPos = myField.selectionStart;
+      const endPos = myField.selectionEnd;
 
       if (startPos === endPos) {
         // single line indentation
@@ -72,8 +77,8 @@ export default function SimpleEditor(props: SimpleEditorProps): JSX.Element | nu
     }
 
     function _deleteIndentAtCursor(myField, length) {
-      let startPos = myField.selectionStart;
-      let endPos = myField.selectionEnd;
+      const startPos = myField.selectionStart;
+      const endPos = myField.selectionEnd;
 
       if (startPos === endPos) {
         myField.value = myField.value.substring(0, startPos - 2) + myField.value.substring(endPos);
@@ -103,6 +108,7 @@ export default function SimpleEditor(props: SimpleEditorProps): JSX.Element | nu
 
         _insertIndentAtCursor(e.target, "\n" + lastRowIndent);
       } catch (err) {
+        console.error("SimpleEditor.tsx:_insertIndentAtCursor", err);
         _insertIndentAtCursor(e.target, "\n");
       }
     }
@@ -147,11 +153,15 @@ export default function SimpleEditor(props: SimpleEditorProps): JSX.Element | nu
         lineEnd = 0;
       try {
         lineStart = myField.value.substr(0, startPos).match(/\n/g).length;
-      } catch (err) {}
+      } catch (err) {
+        console.error("SimpleEditor.tsx:_getLineStartEnd", err);
+      }
 
       try {
         lineEnd = myField.value.substr(0, endPos).match(/\n/g).length;
-      } catch (err) {}
+      } catch (err) {
+        console.error("SimpleEditor.tsx:_getLineStartEnd", err);
+      }
 
       return [lineStart, lineEnd];
     }

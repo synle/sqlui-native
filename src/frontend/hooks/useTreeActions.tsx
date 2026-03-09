@@ -1,5 +1,6 @@
 import React, { createContext, useCallback, useContext, useState } from "react";
 
+/** Configuration for sidebar tree action behavior. */
 type TreeActionProps = {
   showContextMenu: boolean;
   onSelectCallback?: (connectionId?: string, databaseId?: string, tableId?: string) => void;
@@ -13,9 +14,14 @@ let _treeActions: TreeActionProps = {
 
 const TargetContext = createContext({
   data: _treeActions,
-  setTreeActions: (newTreeActionProps: Partial<TreeActionProps>) => {},
+  setTreeActions: (_newTreeActionProps: Partial<TreeActionProps>) => {},
 });
 
+/**
+ * Context provider for sidebar tree actions (context menu visibility and selection callbacks).
+ * @param props - Component props containing child elements.
+ * @returns The context provider wrapping children.
+ */
 export default function WrappedContext(props: { children: React.ReactNode }): JSX.Element | null {
   // State to hold the theme value
   const [data, setData] = useState(_treeActions);
@@ -47,6 +53,10 @@ export default function WrappedContext(props: { children: React.ReactNode }): JS
   );
 }
 
+/**
+ * Hook providing tree action state and a setter to configure context menu and selection callbacks.
+ * @returns The current tree action data and setTreeActions updater.
+ */
 export function useTreeActions() {
   const { data, setTreeActions } = useContext(TargetContext)!;
 

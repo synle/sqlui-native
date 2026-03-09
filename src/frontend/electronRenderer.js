@@ -57,7 +57,9 @@ try {
 
           try {
             returnedData = JSON.parse(text);
-          } catch (err) {}
+          } catch (err) {
+            console.error("electronRenderer.js:parse", err);
+          }
 
           console.log(
             ">> Network",
@@ -80,4 +82,6 @@ try {
       });
     };
   }
-} catch (err) {}
+} catch (err) {
+  console.error("electronRenderer.js:send", err);
+}

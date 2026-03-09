@@ -12,12 +12,22 @@ import Timer from "src/frontend/components/Timer";
 import { downloadCsv, downloadJSON } from "src/frontend/data/file";
 import { SqluiFrontend } from "typings";
 
+/** Props for the ResultBox component. */
 type ResultBoxProps = {
+  /** The query whose results are displayed. */
   query: SqluiFrontend.ConnectionQuery;
+  /** Whether the query is currently executing. */
   executing: boolean;
+  /** Whether the result box is in collapsed mode. */
   collapsed?: boolean;
 };
 
+/**
+ * Displays query execution results as a table or JSON, with download options for CSV and JSON.
+ * Shows loading state during execution and error details on failure.
+ * @param props - The query, execution state, and collapse flag.
+ * @returns The result display or null if no results.
+ */
 export default function ResultBox(props: ResultBoxProps): JSX.Element | null {
   const { selectCommand } = useCommands();
   const [tabIdx, setTabIdx] = useState(0);
@@ -139,7 +149,9 @@ export default function ResultBox(props: ResultBoxProps): JSX.Element | null {
   );
 }
 
+/** Props for the QueryTimeDescription component. */
 type QueryTimeDescriptionProps = {
+  /** The query whose execution time is displayed. */
   query: SqluiFrontend.ConnectionQuery;
 };
 
