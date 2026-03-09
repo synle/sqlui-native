@@ -35,7 +35,9 @@ function ActionCell({ row }: { row: any }) {
     try {
       await confirm(`Do you want to delete this item permanently "${dataSnapshotId}"?`);
       await deleteRecord(dataSnapshotId);
-    } catch (err) {}
+    } catch (err) {
+      console.error("DataSnapshotListView.tsx:deleteRecord", err);
+    }
   };
 
   return (
@@ -75,6 +77,9 @@ const columns: ColumnDef<any, any>[] = [
   },
 ];
 
+/**
+ * View listing all saved data snapshots in a table with links to view each snapshot and delete actions.
+ */
 export default function DataSnapshotListView() {
   const { data, isLoading } = useGetDataSnapshots();
   useEffect(() => {

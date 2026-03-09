@@ -6,20 +6,31 @@ import ModernDataTable from "src/frontend/components/DataTable/ModernDataTable";
 import { DropdownButtonOption } from "src/frontend/components/DropdownButton";
 import { useTableRenderer } from "src/frontend/hooks/useSetting";
 
+/** Props shared by all DataTable implementations (Legacy and Modern). */
 export type DataTableProps = {
+  /** Column definitions for the table. */
   columns: any[];
+  /** Row data to display in the table. */
   data: any[];
+  /** Optional callback triggered on row double-click. */
   onRowClick?: (rowData: any) => void;
+  /** Optional context menu options for each row. */
   rowContextOptions?: DropdownButtonOption[];
+  /** Optional DOM ID for the global search input. */
   searchInputId?: string;
+  /** Whether per-column filtering is enabled. */
   enableColumnFilter?: boolean;
 };
 
+/** Props for DataTableWithJSONList, which auto-generates columns from JSON data. */
 export type DataTableWithJSONListProps = Omit<DataTableProps, "columns"> & {
+  /** Whether the table should render in full-screen mode. */
   fullScreen?: boolean;
+  /** Description used for data snapshot labeling. */
   description?: string;
 };
 
+/** Available page size options for table pagination. */
 export const ALL_PAGE_SIZE_OPTIONS: any[] = [
   { label: "10", value: 10 },
   { label: "25", value: 25 },
@@ -28,10 +39,19 @@ export const ALL_PAGE_SIZE_OPTIONS: any[] = [
   { label: "Show All", value: -1 },
 ];
 
+/** Default number of rows per page in the table. */
 export const DEFAULT_TABLE_PAGE_SIZE = 50;
 
 const UNNAMED_PROPERTY_NAME = "<unnamed_property>";
 
+/**
+ * A data table that auto-generates columns from a JSON array.
+ * Dynamically infers column definitions from the data keys and renders values
+ * with type-appropriate styling (chips for booleans/null, monospace for numbers).
+ * Uses LegacyDataTable or ModernDataTable based on the table renderer setting.
+ * @param props - Contains data array and optional table configuration.
+ * @returns The rendered data table component.
+ */
 export function DataTableWithJSONList(props: DataTableWithJSONListProps) {
   const { data } = props;
 

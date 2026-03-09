@@ -11,20 +11,35 @@ import Paper from "@mui/material/Paper";
 import Popper from "@mui/material/Popper";
 import React from "react";
 
+/** An option in the SplitButton dropdown menu. */
 type SplitButtonOption = {
+  /** Display text for the menu item. */
   label: string;
+  /** Optional icon displayed before the label. */
   startIcon?: React.ReactNode;
+  /** Callback when this option is clicked. */
   onClick: () => void;
 };
 
+/** Props for the SplitButton component. */
 type SplitButtonProps = {
+  /** Unique identifier for the button group. */
   id: string;
+  /** Label for the primary action button. */
   label: string;
+  /** Optional icon for the primary button. */
   startIcon?: React.ReactNode;
+  /** Callback for the primary button click. */
   onClick: () => void;
+  /** Dropdown menu options. */
   options: SplitButtonOption[];
 };
 
+/**
+ * A button group with a primary action button and a dropdown arrow revealing additional options.
+ * @param props - Configuration including id, label, primary click handler, and dropdown options.
+ * @returns The split button group with dropdown menu.
+ */
 export default function SplitButton(props: SplitButtonProps): JSX.Element | null {
   const { id, options, label } = props;
   const [open, setOpen] = React.useState(false);

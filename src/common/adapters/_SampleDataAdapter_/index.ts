@@ -45,6 +45,7 @@ export default class SampleDataAdapter extends BaseDataAdapter implements IDataA
         //   resolve(client);
         resolve({});
       } catch (err) {
+        console.error("SampleDataAdapter:getConnection", err);
         reject(err);
       }
     });
@@ -56,12 +57,14 @@ export default class SampleDataAdapter extends BaseDataAdapter implements IDataA
    *
    * @param client - The client instance returned by getConnection().
    */
-  private async closeConnection(client?: AdapterClient) {
+  private async closeConnection(_client?: AdapterClient) {
     try {
       // TODO: disconnect and clean up your client
       // Example:
       //   await client?.disconnect();
-    } catch (err) {}
+    } catch (err) {
+      console.error("index.ts:disconnect", err);
+    }
   }
 
   /**
@@ -97,7 +100,7 @@ export default class SampleDataAdapter extends BaseDataAdapter implements IDataA
    *
    * @param database - The database name from getDatabases().
    */
-  async getTables(database?: string): Promise<SqluiCore.TableMetaData[]> {
+  async getTables(_database?: string): Promise<SqluiCore.TableMetaData[]> {
     // TODO: query your database engine for the list of tables in `database`
     // Example:
     //   const client = await this.getConnection();
@@ -119,7 +122,7 @@ export default class SampleDataAdapter extends BaseDataAdapter implements IDataA
    * @param table - The table name from getTables().
    * @param database - The database name from getDatabases().
    */
-  async getColumns(table?: string, database?: string): Promise<SqluiCore.ColumnMetaData[]> {
+  async getColumns(_table?: string, _database?: string): Promise<SqluiCore.ColumnMetaData[]> {
     // TODO: query your database engine for columns in `database`.`table`
     // Example:
     //   return [{ name: 'id', type: 'INT', primaryKey: true }, { name: 'value', type: 'TEXT' }];
@@ -134,7 +137,7 @@ export default class SampleDataAdapter extends BaseDataAdapter implements IDataA
    * @param database - The selected database context.
    * @param table - The selected table context (optional, some adapters use this).
    */
-  async execute(sql: string, database?: string, table?: string): Promise<SqluiCore.Result> {
+  async execute(sql: string, database?: string, _table?: string): Promise<SqluiCore.Result> {
     let client: AdapterClient | undefined;
 
     try {
@@ -148,11 +151,11 @@ export default class SampleDataAdapter extends BaseDataAdapter implements IDataA
       // Example:
       //   const result = await client.query(sql);
       //   return { ok: true, raw: result.rows };
-      let raw = [];
+      const raw = [];
 
       return { ok: true, raw };
     } catch (error: any) {
-      console.log(error);
+      console.error("SampleDataAdapter:execute", error);
       return { ok: false, error: JSON.stringify(error, null, 2) };
     } finally {
       this.closeConnection(client);

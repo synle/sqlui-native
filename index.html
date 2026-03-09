@@ -1,17 +1,17 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#000000" />
     <meta name="description" content="SQLUI Native - A minimal Electron application for Databases" />
-    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
-    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo512.png" />
-    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    <link rel="icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" href="/logo512.png" />
+    <link rel="manifest" href="/manifest.json" />
     <title>Loading...</title>
   </head>
   <body>
-    <div id="body" style='background: #333'>
+    <div id="body" style="background: #333">
       <style>
         /* A very subtle "breathing" effect */
         @keyframes breathe {
@@ -35,12 +35,12 @@
           bottom: 0;
           margin: 0;
           padding: 0;
-          background: #000  !important;
+          background: #000 !important;
           color: #fff !important;
           font-family:
             system-ui,
             -apple-system,
-            sans-serif  !important;
+            sans-serif !important;
           font-size: 60px !important;
           text-transform: uppercase;
           font-weight: bold;
@@ -52,7 +52,7 @@
       <noscript>You need to enable JavaScript to run this app.</noscript>
     </div>
     <script type="text/javascript" script-id="suppress-resizer-error">
-      // Suppress benign ResizeObserver loop errors before CRA overlay loads
+      // Suppress benign ResizeObserver loop errors
       var _origOnerror = window.onerror;
       window.onerror = function (msg) {
         if (typeof msg === "string" && msg.indexOf("ResizeObserver loop") > -1) return true;
@@ -84,7 +84,7 @@
           // Unbind immediately so it cannot fire twice
           window.removeEventListener("sqluiNativeEvent/init", handleSqluiNativeEventInit);
 
-          const vsCodeLoader = "%PUBLIC_URL%/vs/loader.js";
+          const vsCodeLoader = "./vs/loader.js";
           let amdRequire;
           let amdDefine;
 
@@ -138,7 +138,7 @@
                 return encodeURI("file://" + pathName);
               }
 
-              const monacoBaseUrl = _uriFromPath(path.join(__dirname, "%PUBLIC_URL%"));
+              const monacoBaseUrl = _uriFromPath(path.join(__dirname, "."));
 
               _loadjs(vsCodeLoader, function () {
                 amdRequire = window.require;
@@ -176,5 +176,6 @@
         window.addEventListener("sqluiNativeEvent/init", handleSqluiNativeEventInit);
       })();
     </script>
+    <script type="module" src="/src/index.tsx"></script>
   </body>
 </html>

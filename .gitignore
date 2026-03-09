@@ -35,7 +35,6 @@ DEBUG
 dist
 Error
 favicon.ico
-index.html
 logo256.icns
 logo256.png
 logo32.png
@@ -56,3 +55,4 @@ yarn-debug.log*
 yarn-error.log*
 yarn.lock
 public/package.json
+*.map

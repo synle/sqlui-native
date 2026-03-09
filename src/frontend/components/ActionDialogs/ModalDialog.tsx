@@ -4,6 +4,7 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import IconButton from "@mui/material/IconButton";
 
+/** Input configuration for creating a modal dialog with custom content. */
 export type ModalInput = {
   title: string;
   /**
@@ -22,6 +23,11 @@ type ModalProps = ModalInput & {
   onDismiss: () => void;
 };
 
+/**
+ * Generic modal dialog component with optional close button and backdrop click handling.
+ * @param props - Modal configuration including title, content, and dismiss behavior.
+ * @returns The rendered modal dialog element.
+ */
 export default function Modal(props: ModalProps): JSX.Element | null {
   const onBackdropClick = () => {
     if (props.disableBackdropClick !== true) {

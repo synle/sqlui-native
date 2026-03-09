@@ -4,7 +4,10 @@ import * as javaTemplates from "./java";
 import * as javascriptTemplates from "./javascript";
 import * as pythonTemplates from "./python";
 
+/** Supported database engine types for code snippet generation. */
 type Engine = "relational" | "cassandra" | "mongodb" | "redis" | "cosmosdb" | "aztable";
+
+/** Supported programming languages for code snippet generation. */
 type Language = "javascript" | "python" | "java";
 
 const templates: Record<Language, Record<Engine, string>> = {
@@ -50,6 +53,15 @@ ${options.mainJavaComment}
 ${options.mainJavaCode}`.trim();
 }
 
+/**
+ * Renders a code snippet by applying Mustache templating to a language/engine-specific template.
+ * For Java, optionally wraps the output in a Gradle project structure.
+ * @param language - The target programming language.
+ * @param engine - The database engine type.
+ * @param context - Template variables to interpolate (e.g., connectionString, sql).
+ * @param javaGradleOptions - Optional Gradle build configuration for Java snippets.
+ * @returns The rendered code snippet string, or empty string if no template exists.
+ */
 export function renderCodeSnippet(
   language: Language,
   engine: Engine,

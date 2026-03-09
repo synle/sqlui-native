@@ -39,6 +39,7 @@ type CommandOption = {
   data?: any;
 };
 
+/** All available command palette options for navigation, settings, sessions, connections, and queries. */
 const ALL_COMMAND_PALETTE_OPTIONS: CommandOption[] = [
   { event: "clientEvent/navigate", label: "Open Main Query Page", data: "/" },
   { event: "clientEvent/navigate", label: "Open Data Migration", data: "/migration" },
@@ -189,6 +190,12 @@ const ALL_COMMAND_PALETTE_OPTIONS: CommandOption[] = [
   { event: "clientEvent/checkForUpdate", label: "Check For Update" },
 ];
 
+/**
+ * Searchable command palette for quickly executing application commands via fuzzy text matching.
+ * Supports keyboard navigation (arrow keys, Enter) through the filtered command list.
+ * @param props - Configuration including the command selection callback.
+ * @returns The rendered command palette with search input and command list.
+ */
 export default function CommandPalette(props: CommandPaletteProps): JSX.Element | null {
   const [text, setText] = useState("");
   const [options, setOptions] = useState<Command[]>([]);
@@ -200,7 +207,7 @@ export default function CommandPalette(props: CommandPaletteProps): JSX.Element 
   const { data: connections } = useGetConnections();
 
   useEffect(() => {
-    let newAllOptions: Command[] = [];
+    const newAllOptions: Command[] = [];
     ALL_COMMAND_PALETTE_OPTIONS.forEach((commandOption) => {
       if (commandOption.expandQueries === true) {
         if (queries && queries?.length > 0) {
@@ -283,7 +290,7 @@ export default function CommandPalette(props: CommandPaletteProps): JSX.Element 
 
       const allOptions = [...refOption?.current?.querySelectorAll(".CommandPalette__Option")];
 
-      let selectedElem = refOption?.current?.querySelector(".CommandPalette__Option:focus");
+      const selectedElem = refOption?.current?.querySelector(".CommandPalette__Option:focus");
       let nextIndex = selectedElem ? allOptions.indexOf(selectedElem) + moveDirection : 0;
 
       if (nextIndex < 0) {
@@ -298,7 +305,7 @@ export default function CommandPalette(props: CommandPaletteProps): JSX.Element 
     }
   };
 
-  let optionsToShow = options.sort((a, b) => (a.label || "").localeCompare(b.label || ""));
+  const optionsToShow = options.sort((a, b) => (a.label || "").localeCompare(b.label || ""));
 
   return (
     <section ref={refOption} onKeyDown={(e) => onTextboxKeyDown(e)}>

@@ -10,6 +10,11 @@ import { useGetConnections, useUpdateConnections } from "src/frontend/hooks/useC
 import { useActiveConnectionQuery } from "src/frontend/hooks/useConnectionQuery";
 import { useShowHide } from "src/frontend/hooks/useShowHide";
 
+/**
+ * Displays all database connections as an accordion list with drag-and-drop reordering,
+ * connection status icons, action menus, and expandable database details.
+ * @returns The rendered list of connection accordions, a loading indicator, or an empty state.
+ */
 export default function ConnectionDescription() {
   const { data: connections, isLoading } = useGetConnections();
   const { visibles, onToggle } = useShowHide();

@@ -3,6 +3,7 @@ import BaseDataAdapter, { MAX_CONNECTION_TIMEOUT } from "src/common/adapters/Bas
 import IDataAdapter from "src/common/adapters/IDataAdapter";
 import { SqluiCore } from "typings";
 
+/** Prefix used for MongoDB query syntax in sqlui-native. */
 const MONGO_ADAPTER_PREFIX = "db";
 
 /**
@@ -10,6 +11,7 @@ const MONGO_ADAPTER_PREFIX = "db";
  */
 const MAX_ITEM_COUNT_TO_SCAN = 5;
 
+/** Data adapter for MongoDB and MongoDB+SRV connections. */
 export default class MongoDBDataAdapter extends BaseDataAdapter implements IDataAdapter {
   private async getConnection(connectionToUse?: string): Promise<MongoClient> {
     // attempt to pull in connections
@@ -21,6 +23,7 @@ export default class MongoDBDataAdapter extends BaseDataAdapter implements IData
         await client.connect();
         resolve(client);
       } catch (err) {
+        console.error("MongoDBDataAdapter:getConnection", err);
         reject(err);
       }
     });
@@ -29,14 +32,20 @@ export default class MongoDBDataAdapter extends BaseDataAdapter implements IData
   private async closeConnection(client?: MongoClient) {
     try {
       await client?.close();
-    } catch (err) {}
+    } catch (err) {
+      console.error("index.ts:close", err);
+    }
   }
 
+  /** Authenticates by establishing and closing a MongoDB connection. */
   async authenticate() {
     const client = await this.getConnection();
     await this.closeConnection(client);
   }
 
+  /** Retrieves all database names from the MongoDB server.
+   * @returns Array of database metadata objects.
+   */
   async getDatabases(): Promise<SqluiCore.DatabaseMetaData[]> {
     const client = await this.getConnection();
 
@@ -52,6 +61,11 @@ export default class MongoDBDataAdapter extends BaseDataAdapter implements IData
     }
   }
 
+  /**
+   * Retrieves all collections in the specified database.
+   * @param database - The database name to list collections from.
+   * @returns Array of table (collection) metadata objects.
+   */
   async getTables(database?: string): Promise<SqluiCore.TableMetaData[]> {
     const client = await this.getConnection();
 
@@ -68,6 +82,12 @@ export default class MongoDBDataAdapter extends BaseDataAdapter implements IData
     }
   }
 
+  /**
+   * Infers column metadata by scanning sample documents from a collection.
+   * @param table - The collection name to scan.
+   * @param database - The database containing the collection.
+   * @returns Array of inferred column metadata objects.
+   */
   async getColumns(table: string, database?: string): Promise<SqluiCore.ColumnMetaData[]> {
     const client = await this.getConnection();
 
@@ -106,6 +126,12 @@ export default class MongoDBDataAdapter extends BaseDataAdapter implements IData
     }
   }
 
+  /**
+   * Executes a MongoDB query string using eval-based syntax.
+   * @param sql - The MongoDB query string (e.g., `db.collection('x').find()`).
+   * @param database - The database to execute against.
+   * @returns The query result with data or error information.
+   */
   async execute(sql: string, database?: string): Promise<SqluiCore.Result> {
     const client = await this.getConnection();
 
@@ -118,7 +144,7 @@ export default class MongoDBDataAdapter extends BaseDataAdapter implements IData
 
       const createDbMatch = sql.match(/db\.(?:create|createDatabase)\(\s*['"]([^'"]+)['"]\s*\)/);
       if (createDbMatch) {
-        let databaseName = createDbMatch[1].trim();
+        const databaseName = createDbMatch[1].trim();
         await this.createDatabase(databaseName);
         return {
           ok: true,
@@ -155,7 +181,7 @@ export default class MongoDBDataAdapter extends BaseDataAdapter implements IData
         };
       }
     } catch (err: any) {
-      console.log("Execute Error", err);
+      console.error("MongoDBDataAdapter:execute", err);
       return {
         ok: false,
         error: err?.toString() || JSON.stringify(err),

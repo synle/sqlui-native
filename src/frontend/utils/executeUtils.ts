@@ -1,3 +1,10 @@
+/**
+ * Executes a shell command in Electron mode using child_process.exec.
+ * Returns an empty string in non-Electron environments.
+ * @param shellToRun - The shell command to execute.
+ * @param delay - Delay in milliseconds before execution (default: 25).
+ * @returns The stdout output of the command.
+ */
 export function execute(shellToRun: string, delay = 25): Promise<string> {
   if (!window.isElectron) {
     return Promise.resolve("");

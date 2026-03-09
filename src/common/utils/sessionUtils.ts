@@ -1,19 +1,36 @@
 import { BrowserWindow } from "electron";
 let openedSessions: Record<string, string> = {};
-let openedWindows: Record<string, BrowserWindow> = {};
+const openedWindows: Record<string, BrowserWindow> = {};
 
+/**
+ * Resets all tracked session-to-window mappings.
+ */
 export function reset() {
   openedSessions = {};
 }
 
+/**
+ * Returns the full mapping of window IDs to session IDs.
+ * @returns Record of windowId to sessionId.
+ */
 export function get() {
   return openedSessions;
 }
 
+/**
+ * Gets the session ID associated with a given window ID.
+ * @param windowId - The window identifier.
+ * @returns The associated session ID, or undefined if not found.
+ */
 export function getByWindowId(windowId: string) {
   return openedSessions[windowId];
 }
 
+/**
+ * Finds the window ID that has a given session ID open.
+ * @param targetSessionId - The session ID to search for.
+ * @returns The matching window ID, or undefined if not found.
+ */
 export function getWindowIdBySessionId(targetSessionId: string) {
   for (const windowId of Object.keys(openedSessions)) {
     const sessionId = openedSessions[windowId];
@@ -26,6 +43,10 @@ export function getWindowIdBySessionId(targetSessionId: string) {
   return undefined;
 }
 
+/**
+ * Returns a list of all currently opened session IDs.
+ * @returns Array of session ID strings.
+ */
 export function listSessionIds() {
   return Object.values(openedSessions);
 }
@@ -49,6 +70,10 @@ export function open(windowId: string, sessionId: string): boolean {
   }
 }
 
+/**
+ * Closes a window and removes its session mapping.
+ * @param windowId - The window ID to close; no-op if undefined.
+ */
 export async function close(windowId?: string) {
   if (!windowId) {
     return;
@@ -56,12 +81,18 @@ export async function close(windowId?: string) {
 
   try {
     openedWindows[windowId]?.close();
-  } catch (err) {}
+  } catch (err) {
+    console.error("sessionUtils.ts:close", err);
+  }
 
   delete openedSessions[windowId];
   delete openedWindows[windowId];
 }
 
+/**
+ * Brings a window to the foreground by its window ID.
+ * @param windowId - The window ID to focus; no-op if undefined.
+ */
 export async function focus(windowId?: string) {
   if (!windowId) {
     return;
@@ -69,9 +100,16 @@ export async function focus(windowId?: string) {
 
   try {
     openedWindows[windowId]?.focus();
-  } catch (err) {}
+  } catch (err) {
+    console.error("sessionUtils.ts:focus", err);
+  }
 }
 
+/**
+ * Registers a BrowserWindow instance for tracking, enabling close/focus operations.
+ * @param windowId - The unique window identifier.
+ * @param browserWindow - The Electron BrowserWindow instance to register.
+ */
 export function registerWindow(windowId: string, browserWindow: BrowserWindow) {
   openedWindows[windowId] = browserWindow;
 }

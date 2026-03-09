@@ -4,8 +4,10 @@ import IDataAdapter from "src/common/adapters/IDataAdapter";
 import { getClientOptions } from "src/common/adapters/RedisDataAdapter/utils";
 import { SqluiCore } from "typings";
 
+/** Prefix used for Redis query syntax in sqlui-native. */
 const REDIS_ADAPTER_PREFIX = "db";
 
+/** Data adapter for Redis and Redis with SSL (rediss) connections. */
 export default class RedisDataAdapter extends BaseDataAdapter implements IDataAdapter {
   private async getConnection(): Promise<RedisClientType> {
     // attempt to pull in connections
@@ -24,6 +26,7 @@ export default class RedisDataAdapter extends BaseDataAdapter implements IDataAd
 
         client.on("error", (err) => reject(err));
       } catch (err) {
+        console.error("RedisDataAdapter:getConnection", err);
         reject(err);
       }
     });
@@ -32,14 +35,21 @@ export default class RedisDataAdapter extends BaseDataAdapter implements IDataAd
   private async closeConnection(client?: RedisClientType) {
     try {
       await client?.disconnect();
-    } catch (err) {}
+    } catch (err) {
+      console.error("index.ts:disconnect", err);
+    }
   }
 
+  /** Authenticates by establishing and closing a Redis connection. */
   async authenticate() {
     const client = await this.getConnection();
     await this.closeConnection(client);
   }
 
+  /**
+   * Returns a single hard-coded database entry for Redis.
+   * @returns Array with one database metadata object.
+   */
   async getDatabases(): Promise<SqluiCore.DatabaseMetaData[]> {
     return [
       {
@@ -49,6 +59,10 @@ export default class RedisDataAdapter extends BaseDataAdapter implements IDataAd
     ];
   }
 
+  /**
+   * Returns a single hard-coded table entry for Redis.
+   * @returns Array with one table metadata object.
+   */
   async getTables(): Promise<SqluiCore.TableMetaData[]> {
     // TODO: this operation seems to work, but very slow
     // for now, we will just returned a hard coded value
@@ -61,10 +75,19 @@ export default class RedisDataAdapter extends BaseDataAdapter implements IDataAd
     ];
   }
 
+  /**
+   * Returns an empty array since Redis is a key-value store without column schemas.
+   * @returns Empty array.
+   */
   async getColumns(): Promise<SqluiCore.ColumnMetaData[]> {
     return [];
   }
 
+  /**
+   * Executes a Redis command string using eval-based syntax.
+   * @param sql - The Redis command string (e.g., `db.get("key")`).
+   * @returns The command result with data or error information.
+   */
   async execute(sql: string): Promise<SqluiCore.Result> {
     let db: RedisClientType | undefined;
 
@@ -101,7 +124,7 @@ export default class RedisDataAdapter extends BaseDataAdapter implements IDataAd
 
       return { ok: true, meta: resp };
     } catch (error: any) {
-      console.log(error);
+      console.error("RedisDataAdapter:execute", error);
       return { ok: false, error: error.toString() };
     } finally {
       this.closeConnection(db);

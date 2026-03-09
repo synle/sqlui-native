@@ -15,6 +15,11 @@ const StyledColumnType = styled("i")(({ theme }) => {
   };
 });
 
+/**
+ * Displays a column data type in italicized monospace with a tooltip showing the full type.
+ * @param props - Props containing the column type value.
+ * @returns The rendered column type element.
+ */
 export default function ColumnType(props: { value: string }) {
   return (
     <Tooltip title={props.value}>

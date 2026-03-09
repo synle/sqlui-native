@@ -8,6 +8,9 @@ import { useSideBarWidthPreference } from "src/frontend/hooks/useClientSidePrefe
 import { useTreeActions } from "src/frontend/hooks/useTreeActions";
 import LayoutTwoColumns from "src/frontend/layout/LayoutTwoColumns";
 
+/**
+ * Page for creating a new database connection with the connection form.
+ */
 export default function NewConnectionPage() {
   useSideBarWidthPreference();
 

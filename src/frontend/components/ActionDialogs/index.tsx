@@ -4,6 +4,11 @@ import ModalDialog from "src/frontend/components/ActionDialogs/ModalDialog";
 import PromptDialog from "src/frontend/components/ActionDialogs/PromptDialog";
 import { useActionDialogs } from "src/frontend/hooks/useActionDialogs";
 
+/**
+ * Central dialog dispatcher that renders the appropriate dialog type (alert, confirm, prompt, choice, modal)
+ * based on the current dialog state from useActionDialogs.
+ * @returns The rendered dialog component matching the current dialog type, or null if no dialog is active.
+ */
 export default function ActionDialogs(): JSX.Element | null {
   const { dialog, dismiss } = useActionDialogs();
 

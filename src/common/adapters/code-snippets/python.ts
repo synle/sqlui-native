@@ -1,3 +1,4 @@
+/** Mustache template for a Python code snippet connecting to relational databases via SQLAlchemy. */
 export const relational = `\
 # python3 -m venv ./ # setting up virtual environment with
 # source bin/activate # activate the venv profile
@@ -13,6 +14,7 @@ with engine.connect() as con:
   for row in rs:
     print(row)`;
 
+/** Mustache template for a Python code snippet connecting to Cassandra via cassandra-driver. */
 export const cassandra = `\
 # python3 -m venv ./ # setting up virtual environment with
 # source bin/activate # activate the venv profile
@@ -32,6 +34,7 @@ rows = session.execute("""{{{sql}}}""")
 for row in rows:
     print(row)`;
 
+/** Mustache template for a Python code snippet connecting to MongoDB via PyMongo. */
 export const mongodb = `\
 # python3 -m venv ./ # setting up virtual environment
 # source bin/activate # activate the venv profile
@@ -57,6 +60,7 @@ def _do_work():
 
 _do_work()`;
 
+/** Mustache template for a Python code snippet connecting to Redis. */
 export const redis = `\
 # python3 -m venv ./ # setting up virtual environment
 # source bin/activate # activate the venv profile
@@ -73,6 +77,7 @@ def _do_work():
 
 _do_work()`;
 
+/** Mustache template for a Python code snippet connecting to Azure Cosmos DB. */
 export const cosmosdb = `\
 # python3 -m venv ./ # setting up virtual environment
 # source bin/activate # activate the venv profile
@@ -102,6 +107,7 @@ def _do_work():
 
 _do_work()`;
 
+/** Mustache template for a Python code snippet connecting to Azure Table Storage. */
 export const aztable = `\
 # python3 -m venv ./ # setting up virtual environment
 # source bin/activate # activate the venv profile

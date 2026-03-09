@@ -3,11 +3,19 @@ import React, { useCallback } from "react";
 import { useGetServerConfigs, useUpdateServerConfigs } from "src/frontend/hooks/useServerConfigs";
 import { SqluiFrontend } from "typings";
 
-// Pass-through provider kept for backwards compatibility with CombinedContextProvider
+/**
+ * Pass-through provider kept for backwards compatibility with CombinedContextProvider.
+ * @param props - Component props containing child elements.
+ * @returns The children as-is without additional wrapping.
+ */
 export default function SettingContextProvider(props: { children: React.ReactNode }): JSX.Element {
   return <>{props.children}</>;
 }
 
+/**
+ * Hook providing the current application settings and an onChange handler to update them.
+ * @returns The settings object and an onChange callback.
+ */
 export function useSetting() {
   const { data: serverConfigs } = useGetServerConfigs();
   const { mutate: updateConfigs } = useUpdateServerConfigs();
@@ -40,6 +48,10 @@ export function useSetting() {
   };
 }
 
+/**
+ * Hook returning the effective dark mode setting, falling back to system preference.
+ * @returns "dark" or "light".
+ */
 export function useDarkModeSetting() {
   const { settings } = useSetting();
   const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
@@ -53,6 +65,10 @@ export function useDarkModeSetting() {
   return value;
 }
 
+/**
+ * Hook returning whether animations are enabled, respecting system reduced motion preference.
+ * @returns True if animations are enabled.
+ */
 export function useIsAnimationModeOn() {
   const { settings } = useSetting();
   const prefersReducedMotion = useMediaQuery("(prefers-reduced-motion)");
@@ -66,11 +82,19 @@ export function useIsAnimationModeOn() {
   return !prefersReducedMotion;
 }
 
+/**
+ * Hook returning the layout mode setting.
+ * @returns "compact" or "comfortable".
+ */
 export function useLayoutModeSetting() {
   const { settings } = useSetting();
   return settings?.layoutMode === "compact" ? "compact" : "comfortable";
 }
 
+/**
+ * Hook returning the editor height setting.
+ * @returns "small", "medium", or "full".
+ */
 export function useEditorHeightSetting() {
   const { settings } = useSetting();
   const value = settings?.editorHeight;
@@ -78,6 +102,10 @@ export function useEditorHeightSetting() {
   return "small";
 }
 
+/**
+ * Hook returning the editor mode setting.
+ * @returns "simple" or "advanced".
+ */
 export function useEditorModeSetting() {
   const { settings } = useSetting();
 
@@ -90,6 +118,10 @@ export function useEditorModeSetting() {
   return value;
 }
 
+/**
+ * Hook returning the table renderer setting.
+ * @returns "simple" or "advanced".
+ */
 export function useTableRenderer() {
   const { settings } = useSetting();
 
@@ -102,28 +134,49 @@ export function useTableRenderer() {
   return value;
 }
 
+/**
+ * Hook returning whether word wrap is enabled in the editor.
+ * @returns True if word wrap is enabled.
+ */
 export function useWordWrapSetting() {
   const { settings } = useSetting();
   return settings?.wordWrap === "wrap";
 }
 
+/**
+ * Hook returning the query tab orientation setting.
+ * @returns The query tab orientation value.
+ */
 export function useQueryTabOrientationSetting() {
   const { settings } = useSetting();
   return settings?.queryTabOrientation;
 }
 
+/** Default number of rows to return per query execution. */
 export const DEFAULT_QUERY_SIZE = 100;
 
+/**
+ * Hook returning the configured query result size limit.
+ * @returns The maximum number of rows per query, defaulting to DEFAULT_QUERY_SIZE.
+ */
 export function useQuerySizeSetting() {
   const { settings } = useSetting();
   return parseInt(settings?.querySize + "") || DEFAULT_QUERY_SIZE;
 }
 
+/**
+ * Hook returning the number of rows per page in table results.
+ * @returns The table page size as a number.
+ */
 export function useTablePageSize() {
   const { settings } = useSetting();
   return parseInt(settings?.tablePageSize + "");
 }
 
+/**
+ * Hook returning whether soft delete mode is enabled (items go to recycle bin instead of permanent deletion).
+ * @returns True if soft delete mode is active.
+ */
 export function useIsSoftDeleteModeSetting() {
   const { settings } = useSetting();
   return settings?.deleteMode !== "hard-delete";

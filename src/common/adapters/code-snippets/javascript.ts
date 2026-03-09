@@ -1,3 +1,4 @@
+/** Mustache template for a JavaScript/Node.js code snippet connecting to relational databases via Sequelize. */
 export const relational = `\
 // install these extra dependencies if needed
 // npm install --save sequelize {{{deps}}}
@@ -22,6 +23,7 @@ async function _doWork(){
 
 _doWork();`;
 
+/** Mustache template for a JavaScript/Node.js code snippet connecting to Cassandra. */
 export const cassandra = `\
 // npm install --save cassandra-driver
 const cassandra = require('cassandra-driver')
@@ -53,6 +55,7 @@ async function _doWork(){
 
 _doWork();`;
 
+/** Mustache template for a JavaScript/Node.js code snippet connecting to MongoDB. */
 export const mongodb = `\
 // npm install --save mongodb
 const { MongoClient, ObjectId } = require('mongodb');
@@ -77,6 +80,7 @@ async function _doWork(){
 
 _doWork();`;
 
+/** Mustache template for a JavaScript/Node.js code snippet connecting to Redis. */
 export const redis = `\
 // npm install --save redis
 const { createClient, RedisClientType } = require('redis');
@@ -99,6 +103,7 @@ async function _doWork(){
 
 _doWork();`;
 
+/** Mustache template for a JavaScript/Node.js code snippet connecting to Azure Cosmos DB. */
 export const cosmosdb = `\
 // npm install --save @azure/cosmos
 const { CosmosClient } = require('@azure/cosmos');
@@ -121,6 +126,7 @@ async function _doWork(){
 
 _doWork();`;
 
+/** Mustache template for a JavaScript/Node.js code snippet connecting to Azure Table Storage. */
 export const aztable = `\
 // npm install --save @azure/data-tables
 const { TableClient, TableServiceClient } = require('@azure/data-tables');

@@ -6,6 +6,7 @@ import ReactDOM from "react-dom";
 import { useActionDialogs } from "src/frontend/hooks/useActionDialogs";
 import { getGeneratedRandomId } from "src/frontend/utils/commonUtils";
 
+/** Base properties for creating a toast notification. */
 type CoreToasterProps = {
   message: string | JSX.Element;
   autoHideDuration?: number;
@@ -22,10 +23,12 @@ type ToasterProps = CoreToasterProps & {
   persisted?: boolean;
 };
 
+/** Handle returned after adding a toast, allowing programmatic dismissal. */
 export type ToasterHandler = {
   dismiss: (dismissDelay?: number) => void;
 };
 
+/** Represents a persisted toast notification in the history log. */
 export type ToastHistoryEntry = {
   id: string;
   message: string | JSX.Element;
@@ -45,6 +48,7 @@ function _stringifyMetadata(metadata: any): string | undefined {
   }
 }
 
+/** Default duration in milliseconds before a toast auto-dismisses. */
 const DEFAULT_AUTO_HIDE_DURATION = 5000;
 
 type InternalToast = {
@@ -138,10 +142,18 @@ function _dismissToast(toastId: string, trigger: "user" | "auto") {
   _notify();
 }
 
+/**
+ * Returns the current toast notification history.
+ * @returns Array of toast history entries.
+ */
 export function getToastHistory(): ToastHistoryEntry[] {
   return _toastHistory;
 }
 
+/**
+ * Hook returning the current count of toast history entries. Re-renders on changes.
+ * @returns The number of entries in the toast history.
+ */
 export function useToastHistoryCount(): number {
   const [count, setCount] = useState(_toastHistory.length);
   useEffect(() => {
@@ -154,11 +166,16 @@ export function useToastHistoryCount(): number {
   return count;
 }
 
+/**
+ * Removes a single toast history entry by its creation timestamp.
+ * @param entryCreatedTime - The createdTime of the history entry to remove.
+ */
 export function dismissHistoryEntry(entryCreatedTime: number) {
   _toastHistory = _toastHistory.filter((h) => h.createdTime !== entryCreatedTime);
   _notify();
 }
 
+/** Clears all entries from the toast notification history. */
 export function dismissAllHistoryEntries() {
   _toastHistory = [];
   _notify();
@@ -344,6 +361,10 @@ function _ensureContainerMounted() {
   ReactDOM.render(<ToasterContainer />, container);
 }
 
+/**
+ * Hook for showing and dismissing toast notifications. Mounts the toast container on first use.
+ * @returns Methods to add and dismiss toast notifications.
+ */
 export default function useToaster() {
   const { modal } = useActionDialogs();
 

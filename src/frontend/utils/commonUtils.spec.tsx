@@ -110,52 +110,52 @@ describe("commonUtils", () => {
     });
 
     test("should work for from=4, to=2", async () => {
-      let actual = commonUtils.getUpdatedOrdersForList(items, 4, 2);
+      const actual = commonUtils.getUpdatedOrdersForList(items, 4, 2);
       expect(actual.join(",")).toMatchInlineSnapshot(`"11,22,55,33,44"`);
     });
 
     test("should work for from=4, to=3", async () => {
-      let actual = commonUtils.getUpdatedOrdersForList(items, 4, 3);
+      const actual = commonUtils.getUpdatedOrdersForList(items, 4, 3);
       expect(actual.join(",")).toMatchInlineSnapshot(`"11,22,33,55,44"`);
     });
 
     test("should work for from=4, to=0", async () => {
-      let actual = commonUtils.getUpdatedOrdersForList(items, 4, 0);
+      const actual = commonUtils.getUpdatedOrdersForList(items, 4, 0);
       expect(actual.join(",")).toMatchInlineSnapshot(`"55,11,22,33,44"`);
     });
 
     test("should work for from=0, to=1", async () => {
-      let actual = commonUtils.getUpdatedOrdersForList(items, 0, 1);
+      const actual = commonUtils.getUpdatedOrdersForList(items, 0, 1);
       expect(actual.join(",")).toMatchInlineSnapshot(`"22,11,33,44,55"`);
     });
 
     test("should work for from=0, to=4", async () => {
-      let actual = commonUtils.getUpdatedOrdersForList(items, 0, 4);
+      const actual = commonUtils.getUpdatedOrdersForList(items, 0, 4);
       expect(actual.join(",")).toMatchInlineSnapshot(`"22,33,44,55,11"`);
     });
 
     test("should work for from=0, to=3", async () => {
-      let actual = commonUtils.getUpdatedOrdersForList(items, 0, 3);
+      const actual = commonUtils.getUpdatedOrdersForList(items, 0, 3);
       expect(actual.join(",")).toMatchInlineSnapshot(`"22,33,44,11,55"`);
     });
 
     test("should work for from=1, to=3", async () => {
-      let actual = commonUtils.getUpdatedOrdersForList(items, 1, 3);
+      const actual = commonUtils.getUpdatedOrdersForList(items, 1, 3);
       expect(actual.join(",")).toMatchInlineSnapshot(`"11,33,44,22,55"`);
     });
 
     test("should work for from=0, to=0 (no change in order)", async () => {
-      let actual = commonUtils.getUpdatedOrdersForList(items, 0, 0);
+      const actual = commonUtils.getUpdatedOrdersForList(items, 0, 0);
       expect(actual.join(",")).toMatchInlineSnapshot(`"11,22,33,44,55"`);
     });
 
     test("should work for from=3, to=3 (no change in order)", async () => {
-      let actual = commonUtils.getUpdatedOrdersForList(items, 3, 3);
+      const actual = commonUtils.getUpdatedOrdersForList(items, 3, 3);
       expect(actual.join(",")).toMatchInlineSnapshot(`"11,22,33,44,55"`);
     });
 
     test("should work for from=4, to=4 (no change in order)", async () => {
-      let actual = commonUtils.getUpdatedOrdersForList(items, 4, 4);
+      const actual = commonUtils.getUpdatedOrdersForList(items, 4, 4);
       expect(actual.join(",")).toMatchInlineSnapshot(`"11,22,33,44,55"`);
     });
   });
@@ -223,6 +223,41 @@ describe("commonUtils", () => {
       expect(actual[0]).toEqual("_id");
       expect(actual[1]).toEqual("id");
       expect(actual.indexOf("userId")).toBeLessThan(actual.indexOf("name"));
+    });
+  });
+
+  describe("createSystemNotification", () => {
+    const originalNotification = global.Notification;
+
+    beforeEach(() => {
+      // @ts-ignore
+      global.Notification = class MockNotification {
+        constructor(public message: string) {}
+        static requestPermission = vi.fn().mockResolvedValue("granted");
+      };
+    });
+
+    afterEach(() => {
+      global.Notification = originalNotification;
+    });
+
+    test("should request permission and create notification", async () => {
+      await commonUtils.createSystemNotification("test message");
+      expect(Notification.requestPermission).toHaveBeenCalled();
+    });
+
+    test("should not throw when Notification API is unavailable", async () => {
+      // @ts-ignore
+      global.Notification = undefined;
+      await expect(commonUtils.createSystemNotification("test")).resolves.toBeUndefined();
+    });
+
+    test("should not throw when requestPermission rejects", async () => {
+      // @ts-ignore
+      global.Notification = {
+        requestPermission: vi.fn().mockRejectedValue(new Error("denied")),
+      };
+      await expect(commonUtils.createSystemNotification("test")).resolves.toBeUndefined();
     });
   });
 });

@@ -1,7 +1,6 @@
 import SaveIcon from "@mui/icons-material/Save";
 import LoadingButton from "@mui/lab/LoadingButton";
 import { Alert, Box, Button, Link, TextField, Typography } from "@mui/material";
-import { useNavigate } from "react-router-dom";
 import React, { useEffect, useState } from "react";
 import BaseDataAdapter from "src/common/adapters/BaseDataAdapter/index";
 import ConnectionHint from "src/frontend/components/ConnectionForm/ConnectionHint";
@@ -9,13 +8,17 @@ import { useCommands } from "src/frontend/components/MissionControl";
 import TestConnectionButton from "src/frontend/components/TestConnectionButton";
 import { useGetConnectionById, useUpsertConnection } from "src/frontend/hooks/useConnection";
 import useToaster from "src/frontend/hooks/useToaster";
-import { createSystemNotification } from "src/frontend/utils/commonUtils";
+import { createSystemNotification, useNavigate } from "src/frontend/utils/commonUtils";
 import { SqluiCore } from "typings";
 
 type ConnectionFormProps = {
   id?: string;
 };
 
+/**
+ * Form for creating a new database connection, starting with a dialect selection hint screen.
+ * @returns The rendered new connection form or dialect selection screen.
+ */
 export function NewConnectionForm() {
   const [name, setName] = useState("");
   const [connection, setConnection] = useState("");
@@ -31,8 +34,8 @@ export function NewConnectionForm() {
 
     createSystemNotification(`Connection "${name}" created`);
 
-    // when done, go back to the main page
-    navigate(`/`, { replace: true });
+    // when done, go back to the main page (added delay to prevent operation on unmounted component errors)
+    setTimeout(() => navigate(`/`, { replace: true }), 0);
   };
 
   const onApplyConnectionHint = (dialect, connection) => {
@@ -78,6 +81,11 @@ export function NewConnectionForm() {
   );
 }
 
+/**
+ * Form for editing an existing database connection, loading its current name and connection string.
+ * @param props - Props containing the connection ID to edit.
+ * @returns The rendered edit connection form, a loading indicator, or an error message if not found.
+ */
 export function EditConnectionForm(props: ConnectionFormProps): JSX.Element | null {
   const { id } = props;
   const [name, setName] = useState("");
@@ -158,7 +166,9 @@ function MainConnectionForm(props: MainConnectionFormProps): JSX.Element | null 
         const pathToUse = path || name; // this is a fallback for mocked webserver
         props.setConnection(`sqlite://${pathToUse}`);
       }
-    } catch (err) {}
+    } catch (err) {
+      console.error("index.tsx:setConnection", err);
+    }
   };
 
   const onSave = async (e: React.SyntheticEvent) => {
@@ -170,7 +180,9 @@ function MainConnectionForm(props: MainConnectionFormProps): JSX.Element | null 
 
     try {
       await props.onSave();
-    } catch (err) {}
+    } catch (err) {
+      console.error("index.tsx:onSave", err);
+    }
 
     await toast?.dismiss();
   };
