@@ -11,7 +11,7 @@
     "forceConsistentCasingInFileNames": true,
     "jsx": "react-jsx",
     "module": "ESNext",
-    "moduleResolution": "bundler",
+    "moduleResolution": "node",
     "noFallthroughCasesInSwitch": false,
     "noImplicitAny": false,
     "outDir": "./build",
