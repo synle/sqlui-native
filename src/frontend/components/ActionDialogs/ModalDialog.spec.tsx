@@ -5,16 +5,12 @@ import ModalDialog from "src/frontend/components/ActionDialogs/ModalDialog";
 
 describe("ModalDialog", () => {
   test("renders the title", () => {
-    const { container } = render(
-      <ModalDialog open={true} title="My Modal" message={<div>Body</div>} onDismiss={() => {}} />,
-    );
+    const { container } = render(<ModalDialog open={true} title="My Modal" message={<div>Body</div>} onDismiss={() => {}} />);
     expect(container.textContent).toContain("My Modal");
   });
 
   test("renders the message content", () => {
-    const { container } = render(
-      <ModalDialog open={true} title="Title" message={<span>Modal Body Content</span>} onDismiss={() => {}} />,
-    );
+    const { container } = render(<ModalDialog open={true} title="Title" message={<span>Modal Body Content</span>} onDismiss={() => {}} />);
     expect(container.textContent).toContain("Modal Body Content");
   });
 
@@ -27,9 +23,7 @@ describe("ModalDialog", () => {
   });
 
   test("does not render close button when showCloseButton is false", () => {
-    const { container } = render(
-      <ModalDialog open={true} title="Title" message={<div>Body</div>} onDismiss={() => {}} />,
-    );
+    const { container } = render(<ModalDialog open={true} title="Title" message={<div>Body</div>} onDismiss={() => {}} />);
     const closeButton = container.querySelector("[aria-label='close']");
     expect(closeButton).toBeNull();
   });

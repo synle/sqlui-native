@@ -117,6 +117,7 @@ Additional hooks: `useToaster` (toast notifications with history), `useClientSid
 ### Frontend Test Coverage
 
 Tests exist for:
+
 - **Components:** Accordion, Select, Timer, InputError, ConnectionTypeIcon, ColumnName, ColumnType, ColumnAttributes, SplitButton, Resizer, Filter (GlobalFilter), Tabs, DropdownButton, DropdownMenu, JsonFormatData, ConnectionRetryAlert, NewConnectionButton, DeleteConnectionButton, TestConnectionButton, ConnectionHint, ConnectionRevealButton, AlertDialog, ChoiceDialog, PromptDialog, ModalDialog
 - **Hooks:** useShowHide, useActionDialogs, useTreeActions, useToaster (history helpers), useConnection (refreshAfterExecution)
 - **Data layer:** config (SessionStorageConfig, LocalStorageConfig), session (getRandomSessionId, setCurrentSessionId), file (downloadText, downloadJSON, downloadBlob)

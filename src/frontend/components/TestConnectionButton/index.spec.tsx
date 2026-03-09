@@ -15,16 +15,12 @@ import TestConnectionButton from "src/frontend/components/TestConnectionButton";
 
 describe("TestConnectionButton", () => {
   test("renders Test Connection button", () => {
-    const { container } = render(
-      <TestConnectionButton connection={{ connection: "mysql://localhost" } as any} />,
-    );
+    const { container } = render(<TestConnectionButton connection={{ connection: "mysql://localhost" } as any} />);
     expect(container.textContent).toContain("Test Connection");
   });
 
   test("renders a button element", () => {
-    const { container } = render(
-      <TestConnectionButton connection={{ connection: "mysql://localhost" } as any} />,
-    );
+    const { container } = render(<TestConnectionButton connection={{ connection: "mysql://localhost" } as any} />);
     const button = container.querySelector("button");
     expect(button).toBeTruthy();
   });

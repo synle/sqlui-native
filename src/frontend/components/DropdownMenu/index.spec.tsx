@@ -5,9 +5,7 @@ import DropdownMenu from "src/frontend/components/DropdownMenu";
 describe("DropdownMenu", () => {
   test("returns null when anchorEl ref is empty", () => {
     const anchorRef = { current: null };
-    const { container } = render(
-      <DropdownMenu id="test" options={[]} anchorEl={anchorRef as any} />,
-    );
+    const { container } = render(<DropdownMenu id="test" options={[]} anchorEl={anchorRef as any} />);
     expect(container.innerHTML).toMatchInlineSnapshot(`""`);
   });
 
@@ -16,9 +14,7 @@ describe("DropdownMenu", () => {
     document.body.appendChild(anchor);
     const anchorRef = { current: anchor };
 
-    const { container } = render(
-      <DropdownMenu id="test" options={[]} anchorEl={anchorRef} open={true} isLoading={true} />,
-    );
+    const { container } = render(<DropdownMenu id="test" options={[]} anchorEl={anchorRef} open={true} isLoading={true} />);
     expect(container.textContent).toContain("Loading");
     document.body.removeChild(anchor);
   });
@@ -28,9 +24,7 @@ describe("DropdownMenu", () => {
     document.body.appendChild(anchor);
     const anchorRef = { current: anchor };
 
-    const { container } = render(
-      <DropdownMenu id="test" options={[]} anchorEl={anchorRef} open={true} />,
-    );
+    const { container } = render(<DropdownMenu id="test" options={[]} anchorEl={anchorRef} open={true} />);
     expect(container.textContent).toContain("No options.");
     document.body.removeChild(anchor);
   });
