@@ -59,7 +59,9 @@ export default abstract class BaseDataAdapter {
               const [username, password, host, port] = connectionParts.map(encodeURIComponent);
               res = connectionStringParser.parse(`${dialect}://${username}:${password}@${host}:${port}`);
             }
-          } catch (err) {}
+          } catch (err) {
+            console.error("index.ts:parse", err);
+          }
         }
 
         if (Object.keys(res).length > 0) {

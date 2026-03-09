@@ -108,6 +108,7 @@ export default function SimpleEditor(props: SimpleEditorProps): JSX.Element | nu
 
         _insertIndentAtCursor(e.target, "\n" + lastRowIndent);
       } catch (err) {
+        console.error("SimpleEditor.tsx:_insertIndentAtCursor", err);
         _insertIndentAtCursor(e.target, "\n");
       }
     }
@@ -152,11 +153,15 @@ export default function SimpleEditor(props: SimpleEditorProps): JSX.Element | nu
         lineEnd = 0;
       try {
         lineStart = myField.value.substr(0, startPos).match(/\n/g).length;
-      } catch (err) {}
+      } catch (err) {
+        console.error("SimpleEditor.tsx:_getLineStartEnd", err);
+      }
 
       try {
         lineEnd = myField.value.substr(0, endPos).match(/\n/g).length;
-      } catch (err) {}
+      } catch (err) {
+        console.error("SimpleEditor.tsx:_getLineStartEnd", err);
+      }
 
       return [lineStart, lineEnd];
     }

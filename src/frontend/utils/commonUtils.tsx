@@ -63,7 +63,9 @@ export async function createSystemNotification(message: string) {
   try {
     await Notification.requestPermission();
     new Notification(message);
-  } catch (err) {}
+  } catch (err) {
+    console.error("commonUtils.tsx:Notification", err);
+  }
 }
 
 /**

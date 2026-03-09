@@ -10,6 +10,7 @@ export const formatSQL = (val: string) => {
   try {
     val = _formatSQL(val);
   } catch (err) {
+    console.error("formatter.tsx:_formatSQL", err);
     // if it's not working, let's remove all the leading space
     val = val
       .split("\n")
@@ -31,7 +32,9 @@ export const formatJS = (val: string) => {
       space_in_empty_paren: true,
       break_chained_methods: true,
     });
-  } catch (err) {}
+  } catch (err) {
+    console.error("formatter.tsx:formatJS", err);
+  }
 
   return val;
 };

@@ -127,6 +127,7 @@ export function useDeleteSession() {
         try {
           connections = await dataApi.getConnectionsBySessionId(sessionId);
         } catch (err) {
+          console.error("useSession.tsx:getConnectionsBySessionId", err);
           // if we can't fetch connections, proceed with session-only backup
         }
       }
@@ -155,6 +156,7 @@ export function useDeleteSession() {
             }
           }
         } catch (err) {
+          console.error("useSession.tsx:addRecycleBinItem", err);
           // TODO: add error handling
         }
 

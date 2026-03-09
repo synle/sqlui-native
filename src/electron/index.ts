@@ -21,7 +21,9 @@ process.on("unhandledRejection", (reason) => {
 try {
   app.commandLine.appendSwitch("disable-smooth-scrolling", "1");
   app.commandLine.appendSwitch("enable-smooth-scrolling", "0");
-} catch (err) {}
+} catch (err) {
+  console.error("index.ts:appendSwitch", err);
+}
 
 // performance: GPU acceleration and rendering
 app.commandLine.appendSwitch("enable-gpu-rasterization");
@@ -366,13 +368,16 @@ ipcMain.on("sqluiNativeEvent/fetch", async (event, data) => {
   let body: any = {};
   try {
     body = JSON.parse(options.body);
-  } catch (err) {}
+  } catch (err) {
+    console.error("index.ts:parse", err);
+  }
 
   console.log(">> Request", method, url, sessionId, body);
   const matchCurrentUrlAgainst = (matchAgainstUrl: string) => {
     try {
       return matchPath(matchAgainstUrl, url);
     } catch (err) {
+      console.error("index.ts:matchPath", err);
       return undefined;
     }
   };
@@ -423,6 +428,7 @@ ipcMain.on("sqluiNativeEvent/fetch", async (event, data) => {
               //@ts-ignore
               return _apiCache[sessionId][key];
             } catch (err) {
+              console.error("index.ts:get", err);
               return undefined;
             }
           },
@@ -433,7 +439,9 @@ ipcMain.on("sqluiNativeEvent/fetch", async (event, data) => {
 
               //@ts-ignore
               _apiCache[sessionId][key] = value;
-            } catch (err) {}
+            } catch (err) {
+              console.error("index.ts:set", err);
+            }
           },
           json() {
             return JSON.stringify(_apiCache);

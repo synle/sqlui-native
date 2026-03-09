@@ -24,6 +24,7 @@ async function _fetch<T>(input: RequestInfo, initOptions?: RequestInit) {
       try {
         responseToUse = JSON.parse(response);
       } catch (err) {
+        console.error("api.tsx:parse", err);
         responseToUse = response;
       }
 
@@ -324,6 +325,7 @@ export class ProxyApi {
       const fs = window.requireElectron("fs");
       return fs.readFileSync(file.path, { encoding: "utf-8" });
     } catch (err) {
+      console.error("api.tsx:readFileSync", err);
       const form = new FormData();
       form.append("file", file);
       return fetch("/api/file", {

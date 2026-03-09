@@ -80,6 +80,7 @@ export async function getConnectionMetaData(connection: SqluiCore.CoreConnection
       try {
         database.tables = await engine.getTables(database.name);
       } catch (err) {
+        console.error("DataAdapterFactory.ts:getTables", err);
         database.tables = [];
       }
 
@@ -87,6 +88,7 @@ export async function getConnectionMetaData(connection: SqluiCore.CoreConnection
         try {
           table.columns = await engine.getColumns(table.name, database.name);
         } catch (err) {
+          console.error("DataAdapterFactory.ts:getColumns", err);
           table.columns = [];
         }
       }

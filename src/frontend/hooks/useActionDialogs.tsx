@@ -147,6 +147,7 @@ export function useActionDialogs() {
       dialog = data[data.length - 1];
     }
   } catch (err) {
+    console.error("useActionDialogs.tsx:_invalidateQueries", err);
     dialog = undefined;
   }
 

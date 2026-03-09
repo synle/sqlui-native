@@ -25,7 +25,9 @@ export default function SessionSelectionModal() {
       try {
         try {
           window.toggleElectronMenu(false, allMenuKeys);
-        } catch (err) {}
+        } catch (err) {
+          console.error("index.tsx:toggleElectronMenu", err);
+        }
 
         window.document.title = "Choose a Session";
 
@@ -35,7 +37,9 @@ export default function SessionSelectionModal() {
           size: "sm",
           disableBackdropClick: true,
         });
-      } catch (err) {}
+      } catch (err) {
+        console.error("index.tsx:modal", err);
+      }
     }
 
     _init();

@@ -61,7 +61,9 @@ export default class SampleDataAdapter extends BaseDataAdapter implements IDataA
       // TODO: disconnect and clean up your client
       // Example:
       //   await client?.disconnect();
-    } catch (err) {}
+    } catch (err) {
+      console.error("index.ts:disconnect", err);
+    }
   }
 
   /**

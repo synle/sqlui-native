@@ -35,7 +35,9 @@ function ActionCell({ row }: { row: any }) {
     try {
       await confirm(`Do you want to delete this item permanently "${dataSnapshotId}"?`);
       await deleteRecord(dataSnapshotId);
-    } catch (err) {}
+    } catch (err) {
+      console.error("DataSnapshotListView.tsx:deleteRecord", err);
+    }
   };
 
   return (

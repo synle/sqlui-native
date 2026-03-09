@@ -140,7 +140,9 @@ export default function CodeEditorBox(props: CodeEditorProps): JSX.Element | nul
       let newHeight = "";
       try {
         newHeight = localStorage.getItem(`editorSize.${props.id}`) || "";
-      } catch (err) {}
+      } catch (err) {
+        console.error("index.tsx:getItem", err);
+      }
 
       if (!newHeight) {
         newHeight = props.height || DEFAULT_EDITOR_HEIGHT;

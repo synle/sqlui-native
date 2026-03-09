@@ -81,7 +81,9 @@ export async function close(windowId?: string) {
 
   try {
     openedWindows[windowId]?.close();
-  } catch (err) {}
+  } catch (err) {
+    console.error("sessionUtils.ts:close", err);
+  }
 
   delete openedSessions[windowId];
   delete openedWindows[windowId];
@@ -98,7 +100,9 @@ export async function focus(windowId?: string) {
 
   try {
     openedWindows[windowId]?.focus();
-  } catch (err) {}
+  } catch (err) {
+    console.error("sessionUtils.ts:focus", err);
+  }
 }
 
 /**

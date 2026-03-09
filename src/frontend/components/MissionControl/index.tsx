@@ -194,7 +194,9 @@ export default function MissionControl() {
         showCloseButton: true,
         size: "xs",
       });
-    } catch (err) {}
+    } catch (err) {
+      console.error("index.tsx:dismissDialog", err);
+    }
   };
 
   const onCloseOtherQueries = async (query: SqluiFrontend.ConnectionQuery) => {
@@ -250,7 +252,9 @@ export default function MissionControl() {
       });
 
       await _onSubmit();
-    } catch (err) {}
+    } catch (err) {
+      console.error("index.tsx:_onSubmit", err);
+    }
   };
 
   const onCloseQueriesToTheRight = async (query: SqluiFrontend.ConnectionQuery) => {
@@ -322,7 +326,9 @@ export default function MissionControl() {
       });
 
       await _onSubmit();
-    } catch (err) {}
+    } catch (err) {
+      console.error("index.tsx:_onSubmit", err);
+    }
   };
 
   const onRenameQuery = async (query: SqluiFrontend.ConnectionQuery) => {
@@ -336,7 +342,9 @@ export default function MissionControl() {
       await connectionQueries.onChangeQuery(query.id, {
         name: newName,
       });
-    } catch (err) {}
+    } catch (err) {
+      console.error("index.tsx:onChangeQuery", err);
+    }
   };
 
   const onDuplicateQuery = async (query: SqluiFrontend.ConnectionQuery) => {
@@ -502,7 +510,9 @@ export default function MissionControl() {
         message: <SessionSelectionForm isFirstTime={false} />,
         size: "sm",
       });
-    } catch (err) {}
+    } catch (err) {
+      console.error("index.tsx:modal", err);
+    }
   };
 
   const onAddSession = async (onClose?: () => void) => {
@@ -532,6 +542,7 @@ export default function MissionControl() {
 
       selectSession(newSession.id);
     } catch (err) {
+      console.error("index.tsx:selectSession", err);
       if (onClose) {
         onClose();
       }
@@ -564,7 +575,9 @@ export default function MissionControl() {
       }
 
       selectSession(newSession.id);
-    } catch (err) {}
+    } catch (err) {
+      console.error("index.tsx:selectSession", err);
+    }
   };
 
   const onRenameSession = async (targetSession: SqluiCore.Session) => {
@@ -588,7 +601,9 @@ export default function MissionControl() {
         ...targetSession,
         name: newSessionName,
       });
-    } catch (err) {}
+    } catch (err) {
+      console.error("index.tsx:upsertSession", err);
+    }
   };
 
   const onDeleteSession = async (targetSession: SqluiCore.Session) => {
@@ -608,7 +623,9 @@ export default function MissionControl() {
           alert(`Session is deleted. Please close this windows.`);
         }
       }
-    } catch (err) {}
+    } catch (err) {
+      console.error("index.tsx:alert", err);
+    }
   };
 
   const onExportAll = async () => {
@@ -694,7 +711,9 @@ export default function MissionControl() {
         showCloseButton: true,
         size: "xs",
       });
-    } catch (err) {}
+    } catch (err) {
+      console.error("index.tsx:dismissDialog", err);
+    }
   };
 
   const onShowBookmarks = async () => {
@@ -704,7 +723,9 @@ export default function MissionControl() {
         message: <BookmarksItemListModalContent onAfterSelect={dismissDialog} />,
         showCloseButton: true,
       });
-    } catch (err) {}
+    } catch (err) {
+      console.error("index.tsx:modal", err);
+    }
   };
 
   const onAddConnectionToBookmark = async (connection: SqluiCore.ConnectionProps) => {
@@ -739,6 +760,7 @@ export default function MissionControl() {
       await reconnectConnection(connection.id);
       resultMessage = `Successfully connected to "${connection.name}" (dialect=${connection.dialect || "N/A"})`;
     } catch (err) {
+      console.error("index.tsx:reconnectConnection", err);
       resultMessage = `Failed to connect to "${connection.name}"`;
     }
 
@@ -795,6 +817,7 @@ export default function MissionControl() {
       try {
         jsonRows = JSON.parse(rawJson || "");
       } catch (err) {
+        console.error("index.tsx:parse", err);
         return alert(`Import failed. Invalid JSON config`);
       }
 
@@ -836,7 +859,9 @@ export default function MissionControl() {
 
       await curToast.dismiss();
       alert(`Import finished with ${successCount} successes and ${failedCount} failures`);
-    } catch (err) {}
+    } catch (err) {
+      console.error("index.tsx:alert", err);
+    }
   };
 
   const onShowCommandPalette = async () => {
@@ -850,7 +875,9 @@ export default function MissionControl() {
         message: <CommandPalette onSelectCommand={onSelectCommand} />,
         size: "sm",
       });
-    } catch (err) {}
+    } catch (err) {
+      console.error("index.tsx:modal", err);
+    }
   };
 
   const onShowRecordDetails = async (data: any, isEditMode: boolean) => {
@@ -860,7 +887,9 @@ export default function MissionControl() {
         message: <RecordDetailsPage data={data} isEditMode={isEditMode} />,
         showCloseButton: true,
       });
-    } catch (err) {}
+    } catch (err) {
+      console.error("index.tsx:modal", err);
+    }
   };
 
   const onCheckForUpdate = async () => {
@@ -1112,7 +1141,9 @@ export default function MissionControl() {
           try {
             window.toggleElectronMenu(false, allMenuKeys);
             await onImport(command.data as string);
-          } catch (err) {}
+          } catch (err) {
+            console.error("index.tsx:onImport", err);
+          }
 
           //@ts-ignore
           window.toggleElectronMenu(true, allMenuKeys);
@@ -1367,7 +1398,9 @@ export default function MissionControl() {
           try {
             window.toggleElectronMenu(false, allMenuKeys);
             await onChangeSession();
-          } catch (err) {}
+          } catch (err) {
+            console.error("index.tsx:onChangeSession", err);
+          }
 
           window.toggleElectronMenu(true, allMenuKeys);
           break;
@@ -1376,7 +1409,9 @@ export default function MissionControl() {
           try {
             window.toggleElectronMenu(false, allMenuKeys);
             await onAddSession();
-          } catch (err) {}
+          } catch (err) {
+            console.error("index.tsx:onAddSession", err);
+          }
 
           window.toggleElectronMenu(true, allMenuKeys);
           break;
@@ -1390,7 +1425,9 @@ export default function MissionControl() {
             } else if (currentSession) {
               await onCloneSession(currentSession as SqluiCore.Session);
             }
-          } catch (err) {}
+          } catch (err) {
+            console.error("index.tsx:onCloneSession", err);
+          }
 
           window.toggleElectronMenu(true, allMenuKeys);
           break;
@@ -1404,7 +1441,9 @@ export default function MissionControl() {
             } else if (currentSession) {
               await onRenameSession(currentSession as SqluiCore.Session);
             }
-          } catch (err) {}
+          } catch (err) {
+            console.error("index.tsx:onRenameSession", err);
+          }
 
           window.toggleElectronMenu(true, allMenuKeys);
           break;
@@ -1417,7 +1456,9 @@ export default function MissionControl() {
             } else if (currentSession) {
               await onDeleteSession(currentSession as SqluiCore.Session);
             }
-          } catch (err) {}
+          } catch (err) {
+            console.error("index.tsx:onDeleteSession", err);
+          }
 
           window.toggleElectronMenu(true, allMenuKeys);
           break;
@@ -1466,7 +1507,9 @@ export default function MissionControl() {
                 e.stopPropagation();
                 e.preventDefault();
               }
-            } catch (err) {}
+            } catch (err) {
+              console.error("index.tsx:preventDefault", err);
+            }
             break;
 
           case "f":
@@ -1482,7 +1525,9 @@ export default function MissionControl() {
                 e.stopPropagation();
                 e.preventDefault();
               }
-            } catch (err) {}
+            } catch (err) {
+              console.error("index.tsx:preventDefault", err);
+            }
             break;
         }
       }

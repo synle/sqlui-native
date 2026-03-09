@@ -54,7 +54,9 @@ export default class AzureTableStorageAdapter extends BaseDataAdapter implements
   private async closeConnection() {
     try {
       // TODO: implement me
-    } catch (err) {}
+    } catch (err) {
+      console.error("index.ts:closeConnection", err);
+    }
   }
 
   async authenticate() {
@@ -104,6 +106,7 @@ export default class AzureTableStorageAdapter extends BaseDataAdapter implements
 
       return tables;
     } catch (err) {
+      console.error("index.ts:push", err);
       return [];
     } finally {
       await this.closeConnection();
@@ -137,6 +140,7 @@ export default class AzureTableStorageAdapter extends BaseDataAdapter implements
         return column;
       });
     } catch (err) {
+      console.error("index.ts:inferTypesFromItems", err);
       return [];
     } finally {
       await this.closeConnection();
@@ -163,6 +167,7 @@ export default class AzureTableStorageAdapter extends BaseDataAdapter implements
 
         return { ok: true, raw };
       } catch (err) {
+        console.error("index.ts:push", err);
         // object is not iterrable
         return { ok: true, meta: res };
       }

@@ -226,6 +226,7 @@ export default class RelationalDataAdapter extends BaseDataAdapter implements ID
               });
             }
           } catch (err) {
+            console.error("index.ts:push", err);
           } finally {
             await connection.close();
           }
@@ -254,6 +255,7 @@ export default class RelationalDataAdapter extends BaseDataAdapter implements ID
               }
             }
           } catch (err) {
+            console.error("index.ts:find", err);
           } finally {
             await connection.close();
           }

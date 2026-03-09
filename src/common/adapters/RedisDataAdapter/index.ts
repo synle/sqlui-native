@@ -34,7 +34,9 @@ export default class RedisDataAdapter extends BaseDataAdapter implements IDataAd
   private async closeConnection(client?: RedisClientType) {
     try {
       await client?.disconnect();
-    } catch (err) {}
+    } catch (err) {
+      console.error("index.ts:disconnect", err);
+    }
   }
 
   /** Authenticates by establishing and closing a Redis connection. */

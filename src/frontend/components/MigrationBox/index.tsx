@@ -453,7 +453,9 @@ export default function MigrationBox(props: MigrationBoxProps): JSX.Element | nu
           message: error,
         });
       }
-    } catch (err) {}
+    } catch (err) {
+      console.error("index.tsx:addToast", err);
+    }
     setMigrating(false);
   };
 

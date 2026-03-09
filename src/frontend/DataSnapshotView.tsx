@@ -137,6 +137,7 @@ export default function DataSnapshotView() {
         isLongPrompt: true,
       });
     } catch (err) {
+      console.error("DataSnapshotView.tsx:stringify", err);
     } finally {
     }
   };

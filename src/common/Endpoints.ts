@@ -67,6 +67,7 @@ function addDataEndpoint(
             //@ts-ignore
             return _apiCache[cacheKey][key];
           } catch (err: any) {
+            console.error("Endpoints.ts:get", err);
             return undefined;
           }
         },
@@ -77,7 +78,9 @@ function addDataEndpoint(
 
             //@ts-ignore
             _apiCache[cacheKey][key] = value;
-          } catch (err: any) {}
+          } catch (err: any) {
+            console.error("Endpoints.ts:set", err);
+          }
         },
         json() {
           return JSON.stringify(_apiCache);
@@ -165,6 +168,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
             connection.status = "online";
             connection.dialect = engine.dialect;
           } catch (err: any) {
+            console.error("Endpoints.ts:authenticate", err);
             connection.status = "offline";
             connection.dialect = undefined;
           }
@@ -198,7 +202,9 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
 
       connection.status = "online";
       connection.dialect = engine.dialect;
-    } catch (err: any) {}
+    } catch (err: any) {
+      console.error("Endpoints.ts:authenticate", err);
+    }
 
     res.status(200).json(connection);
   });
@@ -580,7 +586,9 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
       });
 
       mainWindow.loadFile(global.indexHtmlPath, { hash: hashLink });
-    } catch (err) {}
+    } catch (err) {
+      console.error("Endpoints.ts:loadFile", err);
+    }
 
     res.status(200).send();
   });
@@ -604,6 +612,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     try {
       dataSnapshot.values = dataSnapshotStorage.readDataFile(dataSnapshot.location);
     } catch (err) {
+      console.error("Endpoints.ts:readDataFile", err);
       dataSnapshot.values = [
         {
           error: `Failed to read content of data snapshot - file=${dataSnapshot.location}`,

@@ -44,7 +44,9 @@ export default function WrappedContext(props: { children: React.ReactNode }): JS
           // if config failed, attempt to get it from the api
           try {
             _connectionQueries = await dataApi.getQueries();
-          } catch (err) {}
+          } catch (err) {
+            console.error("useConnectionQuery.tsx:getQueries", err);
+          }
         }
 
         // at the end we want to remove executionStart so the query won't be run again
@@ -162,12 +164,16 @@ export function useConnectionQueries() {
 
       try {
         dataApi.upsertQuery(newQuery); // make an api call to persists and this is fire and forget
-      } catch (err) {}
+      } catch (err) {
+        console.error("useConnectionQuery.tsx:upsertQuery", err);
+      }
     }
 
     try {
       _invalidateQueries();
-    } catch (err) {}
+    } catch (err) {
+      console.error("useConnectionQuery.tsx:_invalidateQueries", err);
+    }
 
     return res;
   };
@@ -199,7 +205,9 @@ export function useConnectionQueries() {
       // attempt to make backups
       try {
         await Promise.allSettled(toRecycleQueriesFolderItems.map(async (folderItem) => addRecycleBinItem(folderItem)));
-      } catch (err) {}
+      } catch (err) {
+        console.error("useConnectionQuery.tsx:allSettled", err);
+      }
     }
 
     let toBeSelected = 0;
@@ -288,7 +296,9 @@ export function useConnectionQueries() {
     try {
       _invalidateQueries();
       dataApi.upsertQuery(query); // make an api call to persists and this is fire and forget
-    } catch (err) {}
+    } catch (err) {
+      console.error("useConnectionQuery.tsx:upsertQuery", err);
+    }
   };
 
   const onDuplicateQuery = (queryId?: string) => {

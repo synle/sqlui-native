@@ -218,7 +218,9 @@ export default function QueryBox(props: QueryBoxProps): JSX.Element | null {
       if (sql) {
         queryToExecute.sql = sql;
       }
-    } catch (err) {}
+    } catch (err) {
+      console.error("index.tsx:getSelectedText", err);
+    }
 
     try {
       const newResult = await executeQuery(queryToExecute);
@@ -227,6 +229,7 @@ export default function QueryBox(props: QueryBoxProps): JSX.Element | null {
 
       success = newResult.ok;
     } catch (err) {
+      console.error("index.tsx:refreshAfterExecution", err);
       // here query failed...
     }
     setExecuting(false);

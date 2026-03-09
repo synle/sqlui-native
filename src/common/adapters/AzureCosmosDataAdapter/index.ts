@@ -36,7 +36,9 @@ export default class AzureCosmosDataAdapter extends BaseDataAdapter implements I
     try {
       this._client?.dispose();
       this._client = undefined;
-    } catch (err) {}
+    } catch (err) {
+      console.error("index.ts:dispose", err);
+    }
   }
 
   async authenticate() {
@@ -74,6 +76,7 @@ export default class AzureCosmosDataAdapter extends BaseDataAdapter implements I
         tables: [],
       }));
     } catch (err) {
+      console.error("index.ts:map", err);
       return [];
     } finally {
       await this.closeConnection();
@@ -96,6 +99,7 @@ export default class AzureCosmosDataAdapter extends BaseDataAdapter implements I
         columns: [],
       }));
     } catch (err) {
+      console.error("index.ts:map", err);
       return [];
     } finally {
       await this.closeConnection();
@@ -123,6 +127,7 @@ export default class AzureCosmosDataAdapter extends BaseDataAdapter implements I
         primaryKey: column.name === "id",
       }));
     } catch (err) {
+      console.error("index.ts:inferTypesFromItems", err);
       return [];
     } finally {
       await this.closeConnection();

@@ -166,7 +166,9 @@ function MainConnectionForm(props: MainConnectionFormProps): JSX.Element | null 
         const pathToUse = path || name; // this is a fallback for mocked webserver
         props.setConnection(`sqlite://${pathToUse}`);
       }
-    } catch (err) {}
+    } catch (err) {
+      console.error("index.tsx:setConnection", err);
+    }
   };
 
   const onSave = async (e: React.SyntheticEvent) => {
@@ -178,7 +180,9 @@ function MainConnectionForm(props: MainConnectionFormProps): JSX.Element | null 
 
     try {
       await props.onSave();
-    } catch (err) {}
+    } catch (err) {
+      console.error("index.tsx:onSave", err);
+    }
 
     await toast?.dismiss();
   };

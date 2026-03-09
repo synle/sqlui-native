@@ -121,6 +121,7 @@ export function useDeleteConnection() {
           }
         }
       } catch (err) {
+        console.error("useConnection.tsx:addRecycleBinItem", err);
         // TODO: add error handling
       }
 

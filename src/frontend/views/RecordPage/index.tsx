@@ -464,6 +464,7 @@ export function NewRecordPage() {
             )?.query || "",
           );
         } catch (err) {
+          console.error("index.tsx:getInsertForMongoDB", err);
           await addToast({
             message: `Dialect "${connection?.dialect}" value needs to be a valid JSON object. Input provided is not a valid JSON...`,
           });
@@ -487,6 +488,7 @@ export function NewRecordPage() {
             )?.query || "",
           );
         } catch (err) {
+          console.error("index.tsx:getInsertForAzCosmosDB", err);
           await addToast({
             message: `Dialect "${connection?.dialect}" value needs to be a valid JSON object. Input provided is not a valid JSON...`,
           });
@@ -508,6 +510,7 @@ export function NewRecordPage() {
             )?.query || "",
           );
         } catch (err) {
+          console.error("index.tsx:getInsertForAzTable", err);
           await addToast({
             message: `Dialect "${connection?.dialect}" value needs to be a valid JSON object. Input provided is not a valid JSON...`,
           });
@@ -674,6 +677,7 @@ export function EditRecordPage(props: RecordDetailsPageProps): JSX.Element | nul
 
           setIsEdit(false);
         } catch (err) {
+          console.error("index.tsx:setIsEdit", err);
           await addToast({
             message: `Dialect "${connection?.dialect}" value needs to be a valid JSON object. Input provided is not a valid JSON...`,
           });
@@ -700,6 +704,7 @@ export function EditRecordPage(props: RecordDetailsPageProps): JSX.Element | nul
 
           setIsEdit(false);
         } catch (err) {
+          console.error("index.tsx:setIsEdit", err);
           await addToast({
             message: `Dialect "${connection?.dialect}" value needs to be a valid JSON object. Input provided is not a valid JSON...`,
           });
@@ -724,6 +729,7 @@ export function EditRecordPage(props: RecordDetailsPageProps): JSX.Element | nul
 
           setIsEdit(false);
         } catch (err) {
+          console.error("index.tsx:setIsEdit", err);
           await addToast({
             message: `Dialect "${connection?.dialect}" value needs to be a valid JSON object. Input provided is not a valid JSON...`,
           });

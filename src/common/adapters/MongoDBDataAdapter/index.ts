@@ -31,7 +31,9 @@ export default class MongoDBDataAdapter extends BaseDataAdapter implements IData
   private async closeConnection(client?: MongoClient) {
     try {
       await client?.close();
-    } catch (err) {}
+    } catch (err) {
+      console.error("index.ts:close", err);
+    }
   }
 
   /** Authenticates by establishing and closing a MongoDB connection. */

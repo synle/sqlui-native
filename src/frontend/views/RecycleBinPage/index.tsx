@@ -71,7 +71,9 @@ function ActionCell({ row }: { row: any }) {
     try {
       await confirm(`Do you want to delete this item permanently "${folderItem.name}"?`);
       await deleteRecyleBinItem(folderItem.id);
-    } catch (err) {}
+    } catch (err) {
+      console.error("index.tsx:deleteRecyleBinItem", err);
+    }
   };
 
   return (
@@ -137,7 +139,9 @@ function RecycleBinItemList() {
       await addToast({
         message: `Recycle Bin emptied.`,
       });
-    } catch (err) {}
+    } catch (err) {
+      console.error("index.tsx:addToast", err);
+    }
   };
 
   if (isLoading) {
