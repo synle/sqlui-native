@@ -97,7 +97,7 @@ export function useNavigate() {
 export function getSanitizedConnectionUrl(connectionString: string): string {
   if (!connectionString) return "";
 
-  let input = connectionString;
+  const input = connectionString;
 
   // Special handling for CosmosDB and Azure Table Storage connection strings,
   // which use a key=value;key=value format instead of standard URLs.
