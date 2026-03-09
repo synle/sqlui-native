@@ -37,4 +37,4 @@ describe.skip("SampleDataAdapter", () => {
   });
 });
 
-export {} // NOTE: this is to bypass warning from vite
+export {}; // NOTE: this is to bypass warning from vite
