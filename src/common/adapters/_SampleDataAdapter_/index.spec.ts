@@ -36,3 +36,5 @@ describe.skip("SampleDataAdapter", () => {
     expect(1).toBe(1);
   });
 });
+
+export {} // NOTE: this is to bypass warning from vite
