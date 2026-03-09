@@ -15,9 +15,7 @@ describe("ModalDialog", () => {
   });
 
   test("renders close button when showCloseButton is true", () => {
-    render(
-      <ModalDialog open={true} title="Title" message={<div>Body</div>} showCloseButton={true} onDismiss={() => {}} />,
-    );
+    render(<ModalDialog open={true} title="Title" message={<div>Body</div>} showCloseButton={true} onDismiss={() => {}} />);
     const closeButton = document.body.querySelector("[aria-label='close']");
     expect(closeButton).toBeTruthy();
   });
@@ -30,9 +28,7 @@ describe("ModalDialog", () => {
 
   test("calls onDismiss when close button is clicked", () => {
     const onDismiss = vi.fn();
-    render(
-      <ModalDialog open={true} title="Title" message={<div>Body</div>} showCloseButton={true} onDismiss={onDismiss} />,
-    );
+    render(<ModalDialog open={true} title="Title" message={<div>Body</div>} showCloseButton={true} onDismiss={onDismiss} />);
     const closeButton = document.body.querySelector("[aria-label='close']") as HTMLButtonElement;
     fireEvent.click(closeButton);
     expect(onDismiss).toHaveBeenCalled();
