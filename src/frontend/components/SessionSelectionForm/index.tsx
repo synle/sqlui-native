@@ -106,7 +106,7 @@ export default function SessionSelectionForm(props: SessionSelectionFormProps): 
     }),
   ];
 
-  let defaultSessionName = options.length === 0 ? `New Session ${new Date().toLocaleDateString()}` : "";
+  const defaultSessionName = options.length === 0 ? `New Session ${new Date().toLocaleDateString()}` : "";
 
   return (
     <Box className="FormInput__Container">

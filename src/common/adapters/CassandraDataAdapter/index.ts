@@ -180,7 +180,7 @@ export default class CassandraDataAdapter extends BaseDataAdapter implements IDa
   private async _execute(sql: string, params?: string[], database?: string) {
     const client = await this.getConnection(database);
     try {
-      let res = await client.execute(sql, params || [], { prepare: true });
+      const res = await client.execute(sql, params || [], { prepare: true });
       client?.shutdown();
       return res;
     } catch (err) {

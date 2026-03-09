@@ -207,7 +207,7 @@ export default function CommandPalette(props: CommandPaletteProps): JSX.Element 
   const { data: connections } = useGetConnections();
 
   useEffect(() => {
-    let newAllOptions: Command[] = [];
+    const newAllOptions: Command[] = [];
     ALL_COMMAND_PALETTE_OPTIONS.forEach((commandOption) => {
       if (commandOption.expandQueries === true) {
         if (queries && queries?.length > 0) {
@@ -290,7 +290,7 @@ export default function CommandPalette(props: CommandPaletteProps): JSX.Element 
 
       const allOptions = [...refOption?.current?.querySelectorAll(".CommandPalette__Option")];
 
-      let selectedElem = refOption?.current?.querySelector(".CommandPalette__Option:focus");
+      const selectedElem = refOption?.current?.querySelector(".CommandPalette__Option:focus");
       let nextIndex = selectedElem ? allOptions.indexOf(selectedElem) + moveDirection : 0;
 
       if (nextIndex < 0) {
@@ -305,7 +305,7 @@ export default function CommandPalette(props: CommandPaletteProps): JSX.Element 
     }
   };
 
-  let optionsToShow = options.sort((a, b) => (a.label || "").localeCompare(b.label || ""));
+  const optionsToShow = options.sort((a, b) => (a.label || "").localeCompare(b.label || ""));
 
   return (
     <section ref={refOption} onKeyDown={(e) => onTextboxKeyDown(e)}>

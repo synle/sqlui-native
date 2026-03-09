@@ -41,7 +41,7 @@ export default function MigrationPage(props: MigrationPageProps): JSX.Element | 
   const { mode } = props;
   const { setTreeActions } = useTreeActions();
 
-  let titleBreadcrumbs: BreadcrumbLink[] = [
+  const titleBreadcrumbs: BreadcrumbLink[] = [
     {
       label: (
         <>

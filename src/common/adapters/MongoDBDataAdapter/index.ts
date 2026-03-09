@@ -141,7 +141,7 @@ export default class MongoDBDataAdapter extends BaseDataAdapter implements IData
 
       const createDbMatch = sql.match(/db\.(?:create|createDatabase)\(\s*['"]([^'"]+)['"]\s*\)/);
       if (createDbMatch) {
-        let databaseName = createDbMatch[1].trim();
+        const databaseName = createDbMatch[1].trim();
         await this.createDatabase(databaseName);
         return {
           ok: true,

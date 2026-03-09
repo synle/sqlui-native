@@ -99,8 +99,8 @@ export function sortColumnNamesForUnknownData(colNames: string[]) {
     posb = posb === -1 ? 100000 : posb;
 
     // here keep track of its position if it has an id in name
-    let ida = a.toLowerCase().endsWith("id") ? 0 : 1;
-    let idb = b.toLowerCase().endsWith("id") ? 0 : 1;
+    const ida = a.toLowerCase().endsWith("id") ? 0 : 1;
+    const idb = b.toLowerCase().endsWith("id") ? 0 : 1;
 
     const sa = `${posa.toString().padStart(6, "0")}.${ida}.${a}`;
     const sb = `${posb.toString().padStart(6, "0")}.${idb}.${b}`;

@@ -390,7 +390,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
       return res.status(404).json(null);
     }
 
-    let sessionId = await sessionUtils.getByWindowId(windowId);
+    const sessionId = await sessionUtils.getByWindowId(windowId);
     if (!sessionId) {
       return res.status(404).json(null);
     }

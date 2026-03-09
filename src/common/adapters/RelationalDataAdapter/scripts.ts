@@ -798,9 +798,9 @@ export class ConcreteDataScripts extends BaseDataScript {
 
   // sample code snippet
   getCodeSnippet(connection, query, language) {
-    let sql = query.sql;
-    let database = query.databaseId;
-    let deps: string[] = [];
+    const sql = query.sql;
+    const database = query.databaseId;
+    const deps: string[] = [];
 
     // construct the connection url for code snippet
     let connectionString = connection.connection;

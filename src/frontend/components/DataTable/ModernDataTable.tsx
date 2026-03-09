@@ -129,7 +129,6 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
     getScrollElement: () => parentRef.current,
     estimateSize: useCallback(
       (index: number) => headerColumns[index]?.getSize() || tableCellWidthToUse,
-      // eslint-disable-next-line react-hooks/exhaustive-deps
       [columnSizingInfo, tableCellWidthToUse],
     ),
     horizontal: true,

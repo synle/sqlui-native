@@ -327,7 +327,7 @@ export function getCreateTable(input: SqlAction.TableInput): SqlAction.Output | 
   columnString = input.columns.map((col) => [col.name, col.type, col.primaryKey ? "PRIMARY KEY" : ""].join(" ")).join(",\n");
 
   // figuring out the keys
-  let partitionKeys: string[] = [],
+  const partitionKeys: string[] = [],
     clusteringKeys: string[] = [];
   for (const col of input.columns) {
     if (col.kind === "partition_key") {

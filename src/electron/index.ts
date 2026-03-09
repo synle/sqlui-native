@@ -110,7 +110,7 @@ function sendMessage(win: BrowserWindow, message: SqluiEnums.ClientEventKey) {
 }
 
 function setupMenu() {
-  let menuTemplate: Electron.MenuItemConstructorOptions[] = [
+  const menuTemplate: Electron.MenuItemConstructorOptions[] = [
     {
       label: "File",
       submenu: [
@@ -296,7 +296,7 @@ function setupMenu() {
     },
   ];
 
-  let menu = Menu.buildFromTemplate(menuTemplate);
+  const menu = Menu.buildFromTemplate(menuTemplate);
   Menu.setApplicationMenu(menu);
 }
 
@@ -344,7 +344,7 @@ ipcMain.on("sqluiNativeEvent/toggleMenus", (...[, data]) => {
   for (const targetMenuId of targetMenuIds) {
     try {
       //@ts-ignore
-      let menuItem: any = Menu.getApplicationMenu().getMenuItemById(targetMenuId);
+      const menuItem: any = Menu.getApplicationMenu().getMenuItemById(targetMenuId);
       menuItem.enabled = enabled;
     } catch (err) {
       console.log(">> Failed to toggle Menu", data, err);
@@ -378,7 +378,7 @@ ipcMain.on("sqluiNativeEvent/fetch", async (event, data) => {
   };
 
   try {
-    let returnedResponseHeaders: any = []; // array of [key, value]
+    const returnedResponseHeaders: any = []; // array of [key, value]
     const sendResponse = (responseData: any = "", status = 200) => {
       let ok = true;
       if (status >= 300 || status < 200) {

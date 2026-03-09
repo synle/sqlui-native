@@ -148,7 +148,7 @@ export default class SampleDataAdapter extends BaseDataAdapter implements IDataA
       // Example:
       //   const result = await client.query(sql);
       //   return { ok: true, raw: result.rows };
-      let raw = [];
+      const raw = [];
 
       return { ok: true, raw };
     } catch (error: any) {

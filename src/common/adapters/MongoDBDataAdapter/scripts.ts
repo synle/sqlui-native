@@ -28,7 +28,7 @@ export function serializeJsonForMongoScript(object: any) {
 
   // here we construct ObjectId
   res = res.replace(/"ObjectId\('[a-z0-9_]*'\)"/, (a) => {
-    const id = a.replace(`ObjectId`, "").replace(/[\(\)'"]/g, "");
+    const id = a.replace(`ObjectId`, "").replace(/[()'"]/g, "");
     return `ObjectId("${id}")`;
   });
 

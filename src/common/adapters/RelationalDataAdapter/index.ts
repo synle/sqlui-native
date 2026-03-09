@@ -43,7 +43,7 @@ export default class RelationalDataAdapter extends BaseDataAdapter implements ID
         database = "";
 
         // special handling for sqlite path
-        let sqliteStorageOption = this.connectionOption.replace("sqlite://", "").replace(/\\/g, "/"); // uses :memory: for in memory
+        const sqliteStorageOption = this.connectionOption.replace("sqlite://", "").replace(/\\/g, "/"); // uses :memory: for in memory
 
         connectionUrl = `sqlite://`;
         connectionPropOptions = {
@@ -163,7 +163,6 @@ export default class RelationalDataAdapter extends BaseDataAdapter implements ID
     // MySQL: SELECT TABLE_SCHEMA FROM information_schema.tables GROUP BY TABLE_SCHEMA;
     // SQLite3: SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE '%sqlite%';
     let sql;
-    let data;
 
     switch (this.dialect) {
       case "mssql":
@@ -187,7 +186,7 @@ export default class RelationalDataAdapter extends BaseDataAdapter implements ID
       return [];
     }
 
-    [data] = await this._execute(sql, database);
+    const [data] = await this._execute(sql, database);
 
     return data
       .map((row: any) => row.tablename)
@@ -275,7 +274,7 @@ export default class RelationalDataAdapter extends BaseDataAdapter implements ID
     //@ts-ignore
     const connection = this.getConnection(database);
     try {
-      let [raw, meta] = await connection.query(sql, {
+      const [raw, meta] = await connection.query(sql, {
         raw: true,
         plain: false,
       });

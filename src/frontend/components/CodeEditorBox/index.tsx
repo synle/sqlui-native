@@ -151,7 +151,7 @@ export default function CodeEditorBox(props: CodeEditorProps): JSX.Element | nul
       onSetWrap(localStorage.getItem(`editorWrap.${props.id}`) === "1");
 
       // set the language
-      let newLanguage = localStorage.getItem(`editorLanguage.${props.id}`);
+      const newLanguage = localStorage.getItem(`editorLanguage.${props.id}`);
       if (newLanguage) {
         onSetLanguageMode(newLanguage);
       }

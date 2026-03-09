@@ -1,6 +1,6 @@
 import { BrowserWindow } from "electron";
 let openedSessions: Record<string, string> = {};
-let openedWindows: Record<string, BrowserWindow> = {};
+const openedWindows: Record<string, BrowserWindow> = {};
 
 /**
  * Resets all tracked session-to-window mappings.

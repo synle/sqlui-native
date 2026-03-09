@@ -616,7 +616,7 @@ export default function MissionControl() {
       message: `Exporting All Connections and Queries, please wait...`,
     });
 
-    let jsonContent: any[] = [];
+    const jsonContent: any[] = [];
 
     // TODO: implement export all
     if (connections) {

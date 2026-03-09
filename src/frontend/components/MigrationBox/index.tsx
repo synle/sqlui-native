@@ -424,7 +424,7 @@ export default function MigrationBox(props: MigrationBoxProps): JSX.Element | nu
           tableId: `mocked_raw_json_table_id`,
         };
 
-        let columnsToUse = BaseDataAdapter.inferSqlTypeFromItems(parsedRawJson, toDialect).map((col) => {
+        const columnsToUse = BaseDataAdapter.inferSqlTypeFromItems(parsedRawJson, toDialect).map((col) => {
           return {
             ...col,
             allowNull: true,
@@ -633,7 +633,7 @@ function MigrationMetaDataInputs(props: MigrationMetaDataInputsProps): JSX.Eleme
     });
   };
 
-  let extraDoms: JSX.Element[] = [];
+  const extraDoms: JSX.Element[] = [];
 
   let shouldShowNewDatabaseIdInput = true;
   switch (migrationMetaData.toDialect) {

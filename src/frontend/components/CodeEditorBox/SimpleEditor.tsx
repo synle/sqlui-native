@@ -5,7 +5,7 @@ import { styled } from "@mui/system";
 import { DecoratedEditorProps as SimpleEditorProps } from "src/frontend/components/CodeEditorBox";
 
 const StyledTextArea = styled("textarea")(({ theme }) => {
-  let backgroundColor, color;
+  let backgroundColor;
 
   if (theme.palette.mode === "light") {
     backgroundColor = grey[100];
@@ -13,7 +13,7 @@ const StyledTextArea = styled("textarea")(({ theme }) => {
     backgroundColor = grey[800];
   }
 
-  color = theme.palette.getContrastText(backgroundColor);
+  const color = theme.palette.getContrastText(backgroundColor);
 
   return {
     backgroundColor,
@@ -58,8 +58,8 @@ export default function SimpleEditor(props: SimpleEditorProps): JSX.Element | nu
     }
 
     function _insertIndentAtCursor(myField, myValue) {
-      let startPos = myField.selectionStart;
-      let endPos = myField.selectionEnd;
+      const startPos = myField.selectionStart;
+      const endPos = myField.selectionEnd;
 
       if (startPos === endPos) {
         // single line indentation
@@ -77,8 +77,8 @@ export default function SimpleEditor(props: SimpleEditorProps): JSX.Element | nu
     }
 
     function _deleteIndentAtCursor(myField, length) {
-      let startPos = myField.selectionStart;
-      let endPos = myField.selectionEnd;
+      const startPos = myField.selectionStart;
+      const endPos = myField.selectionEnd;
 
       if (startPos === endPos) {
         myField.value = myField.value.substring(0, startPos - 2) + myField.value.substring(endPos);
