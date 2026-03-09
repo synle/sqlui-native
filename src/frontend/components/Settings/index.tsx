@@ -82,8 +82,8 @@ export default function Settings(): JSX.Element | null {
             onChange={(newValue) => onSettingChange("layoutMode", newValue)}
             sx={{ width: "100%" }}
           >
-            <option value="Comfortable">Comfortable</option>
-            <option value="Compact">Compact</option>
+            <option value="comfortable">Comfortable</option>
+            <option value="compact">Compact</option>
           </Select>
         </div>
         <Typography className="FormInput__Label" variant="subtitle1">
