@@ -101,6 +101,16 @@ Additional hooks: `useToaster` (toast notifications with history), `useClientSid
 - Known: `jsdom` environment tests may show errors if the package is not installed; this doesn't affect test results
 - Run `npm run test-ci` for CI mode (no watch), `npm test` for watch mode
 
+## Pre-commit Checklist
+
+After any code change, you MUST run these commands and ensure they all pass before considering the task complete:
+
+```bash
+npm run format           # Prettier formatting
+npm run lint             # ESLint (must have 0 errors)
+npm run test-ci          # All tests must pass
+```
+
 ## Build Verification
 
 After any build-related or Vite config change, run the affected build task to verify it works:
