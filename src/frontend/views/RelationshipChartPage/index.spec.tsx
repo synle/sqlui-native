@@ -67,10 +67,7 @@ describe("RelationshipChartPage", () => {
     const { container } = render(
       <MemoryRouter initialEntries={["/visualization/c1"]}>
         <Routes>
-          <Route
-            path="/visualization/:connectionId"
-            element={<RelationshipChartPage />}
-          />
+          <Route path="/visualization/:connectionId" element={<RelationshipChartPage />} />
         </Routes>
       </MemoryRouter>,
     );
@@ -81,15 +78,10 @@ describe("RelationshipChartPage", () => {
     const { container } = render(
       <MemoryRouter initialEntries={["/visualization/c1"]}>
         <Routes>
-          <Route
-            path="/visualization/:connectionId"
-            element={<RelationshipChartPage />}
-          />
+          <Route path="/visualization/:connectionId" element={<RelationshipChartPage />} />
         </Routes>
       </MemoryRouter>,
     );
-    expect(container.textContent).toContain(
-      "Select one of the following database",
-    );
+    expect(container.textContent).toContain("Select one of the following database");
   });
 });
