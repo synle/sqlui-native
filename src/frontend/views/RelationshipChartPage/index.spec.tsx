@@ -13,9 +13,16 @@ vi.mock("src/frontend/data/file", () => ({
 vi.mock("html-to-image", () => ({
   toPng: vi.fn(),
 }));
-vi.mock("react-flow-renderer", () => ({
-  default: () => <div>ReactFlow</div>,
+vi.mock("@xyflow/react", () => ({
+  ReactFlow: () => <div>ReactFlow</div>,
+  ReactFlowProvider: ({ children }: any) => <div>{children}</div>,
+  Background: () => null,
+  Panel: ({ children }: any) => <div>{children}</div>,
+  useNodesState: (init: any) => [init, vi.fn(), vi.fn()],
+  useEdgesState: (init: any) => [init, vi.fn(), vi.fn()],
+  useReactFlow: () => ({ fitView: vi.fn() }),
 }));
+vi.mock("@xyflow/react/dist/style.css", () => ({}));
 vi.mock("src/frontend/App.scss", () => ({}));
 vi.mock("src/frontend/electronRenderer", () => ({}));
 vi.mock("src/frontend/utils/commonUtils", () => ({
@@ -23,7 +30,12 @@ vi.mock("src/frontend/utils/commonUtils", () => ({
 }));
 vi.mock("src/frontend/hooks/useConnection", () => ({
   useGetConnectionById: () => ({
-    data: { id: "c1", name: "TestConn", dialect: "mysql", connection: "mysql://localhost" },
+    data: {
+      id: "c1",
+      name: "TestConn",
+      dialect: "mysql",
+      connection: "mysql://localhost",
+    },
     refetch: vi.fn(),
     error: null,
     isLoading: false,
