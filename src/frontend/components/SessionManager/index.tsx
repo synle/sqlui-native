@@ -2,8 +2,12 @@ import Alert from "@mui/material/Alert";
 import CircularProgress from "@mui/material/CircularProgress";
 import { useEffect, useRef, useState } from "react";
 import SessionSelectionModal from "src/frontend/components/SessionSelectionModal";
+import dataApi from "src/frontend/data/api";
 import { setCurrentSessionId } from "src/frontend/data/session";
 import { useGetCurrentSession, useSelectSession } from "src/frontend/hooks/useSession";
+
+/** Interval in milliseconds between session ping requests. */
+const SESSION_PING_INTERVAL_MS = 60 * 1000; // 1 minute
 
 /** Props for the SessionManager component. */
 type SessionManagerProps = {
@@ -48,6 +52,28 @@ export default function SessionManager(props: SessionManagerProps): JSX.Element 
 
     setStatus("no_session");
   }, [currentSession, loadingCurrentSession]);
+
+  // Periodically ping the server to keep the session alive, and on window focus
+  useEffect(() => {
+    if (status !== "valid_session") {
+      return;
+    }
+
+    const doPing = () => dataApi.pingSession().catch((_err) => {});
+
+    // Ping immediately on session establishment
+    doPing();
+
+    const intervalId = setInterval(doPing, SESSION_PING_INTERVAL_MS);
+
+    const onFocus = () => doPing();
+    window.addEventListener("focus", onFocus);
+
+    return () => {
+      clearInterval(intervalId);
+      window.removeEventListener("focus", onFocus);
+    };
+  }, [status]);
 
   const isLoading = loadingCurrentSession;
 
