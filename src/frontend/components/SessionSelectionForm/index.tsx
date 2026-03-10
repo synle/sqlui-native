@@ -127,9 +127,7 @@ export default function SessionSelectionForm(props: SessionSelectionFormProps): 
         return;
       }
       await deleteSession(targetSession.id);
-      await alert(
-        "This session has been deleted and can no longer be used. Please close this window and open a new one.",
-      );
+      await alert("This session has been deleted and can no longer be used. Please close this window and open a new one.");
     } else {
       try {
         await confirm(`Do you want to delete the session "${targetSession.name}"?`);
