@@ -100,25 +100,44 @@ Additional hooks: `useToaster` (toast notifications with history), `useClientSid
 **Library:** Uses `@xyflow/react` (React Flow v12) for the diagram and `html-to-image` for PNG export.
 
 **Architecture:**
+
 - `RelationshipChartPage` (outer) — Handles data fetching, routing, breadcrumb with table dropdown, and tab switching
 - `RelationshipChart` (inner, inside `ReactFlowProvider`) — Renders the interactive diagram using React Flow hooks
 - `RelationshipTable` — Sortable MUI Table showing relationships in tabular form
 - `TableNode` — Custom React Flow node with handles on all 4 sides (top/right/bottom/left) for optimal edge routing
+- `RelationshipEdgeComponent` — Custom edge using `EdgeLabelRenderer` for HTML labels with MUI Tooltip on hover
 
 **Key helpers:**
+
 - `buildRelationships()` — Extracts FK edges from `ColumnMetaData.referencedTableName`/`referencedColumnName`
 - `countRelationships()` — Counts refs (outgoing FKs) and deps (incoming FKs) per table
-- `computeLayout()` — Radial layout: pivot table centered, related tables arranged in a circle
+- `classifyTables()` — Categorizes related tables as ref-only, dep-only, or hybrid (both directions)
+- `computeLayout()` — 3-column (horizontal) or 3-row (vertical) layout with wrapping overflow
 - `pickBestHandles()` — Selects closest handle pair (source/target side) based on node positions
+- `placeColumnsWrapped()` / `placeRowsWrapped()` — Position tables with overflow wrapping (max 8 per column, 10 per row)
+- `getCollapsedLabel()` — Generates summary label like "2 refs" or "1 dep"
+
+**Layout modes:**
+
+- **Horizontal (default):** 3 columns — left (refs), center (pivot + hybrid), right (deps). Wraps after `MAX_PER_COL=8` items per column.
+- **Vertical:** 3 rows — top (refs), center (pivot + hybrid), bottom (deps). Wraps after `MAX_PER_ROW=10` items per row.
+- Overflow wraps inward toward center. Side groups are positioned at container edges.
 
 **Features:**
+
 - Two tabs: **Diagram** (React Flow) and **Table** (MUI Table with sortable columns and Chip-based FK details)
 - Tabs use `display: none` (not conditional rendering) so diagram state is preserved when switching
 - Breadcrumb dropdown lists all tables with relationship counts: `table (N: X refs, Y deps)`
-- Multiple FKs between same table pair are grouped into one edge with multiline label
-- Edges use arrows (`MarkerType.ArrowClosed`) pointing from source to target (FK direction)
-- Node selection highlights connected edges; show/hide labels toggle; PNG download
-- Zoom (scroll), pan (drag), and draggable nodes built into React Flow
+- Multiple FKs between same table pair are grouped into one edge
+- **Expand/collapse labels:** Collapsed (default) shows summary ("2 refs"), expanded shows full FK details joined by `|`
+- **Tooltip on collapsed labels:** Hovering shows chip-styled FK details (same format as table view)
+- **Edge click cycling:** Clicking an edge label selects the source node, clicking again selects the target
+- Edges use arrows (`MarkerType.ArrowClosed`) pointing from source to target (FK direction), consistent size on selection
+- **Orientation toggle:** Switch between 3-column and 3-row layouts
+- **Redraw button:** Force re-layout after window resize
+- PNG download, zoom (scroll), pan (drag), and draggable nodes
+
+**Constants (top of file):** `NODE_WIDTH`, `NODE_HEIGHT`, `EDGE_LABEL_FONT_SIZE`, `COL_GAP`, `ROW_GAP`, `WRAP_PAD`, `MAX_PER_COL`, `MAX_PER_ROW`
 
 **Terminology:** "Ref" = the table has a FK pointing outward (references another table). "Dep" = another table has a FK pointing to this table (depends on it).
 
