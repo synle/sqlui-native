@@ -1463,6 +1463,9 @@ export default function MissionControl() {
 
           window.toggleElectronMenu(true, allMenuKeys);
           break;
+        case "clientEvent/toggleDevtools":
+          window.dispatchEvent(new KeyboardEvent("keydown", { key: "D", ctrlKey: true, shiftKey: true, altKey: true }));
+          break;
       }
     }
   }
