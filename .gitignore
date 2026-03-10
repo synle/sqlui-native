@@ -56,3 +56,4 @@ yarn-error.log*
 yarn.lock
 public/package.json
 *.map
+*.patch

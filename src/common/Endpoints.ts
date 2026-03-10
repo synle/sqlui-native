@@ -398,7 +398,11 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     res.status(200).json(await sessionsStorage.list());
   });
 
+  /** Sessions not pinged within this threshold are considered stale and removed. */
+  const SESSION_STALE_THRESHOLD_MS = 10 * 60 * 1000; // 10 minutes
+
   addDataEndpoint("get", "/api/sessions/opened", async (req, res) => {
+    sessionUtils.cleanupStaleSessions(SESSION_STALE_THRESHOLD_MS);
     res.status(200).json(await sessionUtils.listSessionIds());
   });
 
@@ -430,6 +434,14 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
       await sessionUtils.close(windowId);
     }
     res.status(200).json({ outcome: "closed" });
+  });
+
+  addDataEndpoint("post", "/api/sessions/ping", async (req, res) => {
+    const windowId = req.headers["sqlui-native-window-id"];
+    if (windowId) {
+      sessionUtils.ping(windowId);
+    }
+    res.status(200).json({ outcome: "pinged" });
   });
 
   addDataEndpoint("post", "/api/session", async (req, res) => {

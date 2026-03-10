@@ -417,6 +417,27 @@ describe("Sessions - Open/Close and Window Mapping", () => {
     await requestWithSupertest.delete(`/api/session/${res.body.id}`);
   });
 
+  test("POST /api/sessions/ping should keep session alive", async () => {
+    const sessionId = `test-ping-session.${Date.now()}`;
+    const windowId = `test-ping-window.${Date.now()}`;
+
+    // open a session first
+    await requestWithSupertest
+      .post(`/api/sessions/opened/${sessionId}`)
+      .set({ "sqlui-native-session-id": sessionId, "sqlui-native-window-id": windowId });
+
+    // ping it
+    const res = await requestWithSupertest
+      .post(`/api/sessions/ping`)
+      .set({ "sqlui-native-session-id": sessionId, "sqlui-native-window-id": windowId });
+    expect(res.status).toEqual(200);
+    expect(res.body.outcome).toEqual("pinged");
+
+    // session should still appear in opened list
+    const openedRes = await requestWithSupertest.get(`/api/sessions/opened`);
+    expect(openedRes.body).toContain(sessionId);
+  });
+
   test("GET /api/session should return 404 without window-id header", async () => {
     const res = await requestWithSupertest.get(`/api/session`);
     expect(res.status).toEqual(404);
