@@ -181,16 +181,5 @@ const renderApp = function () {
 
 window.addEventListener("sqluiNativeEvent/ready", renderApp, false);
 
-// Clean up storage and close the opened session when the window is closed
-window.addEventListener("beforeunload", () => {
-  try {
-    dataApi.closeOpenedSession();
-  } catch (_err) {
-    // best-effort cleanup
-  }
-  sessionStorage.clear();
-  localStorage.clear();
-});
-
 // tell the main app to get ready for initiation
 window.dispatchEvent(new Event("sqluiNativeEvent/init"));

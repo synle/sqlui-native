@@ -1,6 +1,7 @@
 import { BrowserWindow } from "electron";
 let openedSessions: Record<string, string> = {};
 const openedWindows: Record<string, BrowserWindow> = {};
+const lastPing: Record<string, number> = {};
 
 /**
  * Resets all tracked session-to-window mappings.
@@ -44,6 +45,29 @@ export function getWindowIdBySessionId(targetSessionId: string) {
 }
 
 /**
+ * Records a ping for the given window ID, keeping its session alive.
+ * @param windowId - The window identifier to ping.
+ */
+export function ping(windowId: string) {
+  lastPing[windowId] = Date.now();
+}
+
+/**
+ * Removes opened sessions that haven't been pinged within the stale threshold.
+ * @param staleThresholdMs - Max age in milliseconds before a session is considered stale.
+ */
+export function cleanupStaleSessions(staleThresholdMs: number) {
+  const now = Date.now();
+  for (const windowId of Object.keys(openedSessions)) {
+    const lastPingTime = lastPing[windowId];
+    if (lastPingTime === undefined || now - lastPingTime > staleThresholdMs) {
+      delete openedSessions[windowId];
+      delete lastPing[windowId];
+    }
+  }
+}
+
+/**
  * Returns a list of all currently opened session IDs.
  * @returns Array of session ID strings.
  */
@@ -62,6 +86,7 @@ export function open(windowId: string, sessionId: string): boolean {
   if (!foundWindowId) {
     // set up this sessionId if it's not already selected
     openedSessions[windowId] = sessionId;
+    lastPing[windowId] = Date.now();
     return true;
   } else {
     // if it is already set up, then let's focus on that window
@@ -87,6 +112,7 @@ export async function close(windowId?: string) {
 
   delete openedSessions[windowId];
   delete openedWindows[windowId];
+  delete lastPing[windowId];
 }
 
 /**
