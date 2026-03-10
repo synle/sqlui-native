@@ -19,6 +19,17 @@ npm run lint            # ESLint with auto-fix
 npm run format          # Prettier formatting
 ```
 
+**Run a single test file:**
+```bash
+npx vitest run src/path/to/file.spec.ts
+```
+
+**Run integration tests** (requires Docker containers — see CONTRIBUTING.md):
+```bash
+npm run test-integration
+npx vitest run --config vitest.integration.config.ts src/common/adapters/RelationalDataAdapter/mysql.integration.spec.ts
+```
+
 **Packaging:** `bash scripts/build.sh && npm run dist`
 
 ## Architecture
@@ -29,11 +40,15 @@ The app runs in **Electron mode** (`npm start`) or **mocked server mode** (`npm 
 
 ### Directory Structure
 
-- **`src/frontend/`** - React 17 UI (MUI v5, React Query, Monaco Editor, React Router v6)
+- **`src/frontend/`** - React 18 UI (MUI v5, React Query, Monaco Editor, React Router v6)
 - **`src/electron/`** - Electron main process (window management, IPC handlers, menus)
 - **`src/common/`** - Shared backend: database adapters, API endpoint handlers, persistent storage
 - **`src/mocked-server/`** - Express server wrapping the shared backend for browser-based dev
 - **`typings/index.ts`** - Central type definitions (`SqluiCore`, `SqluiFrontend`, `SqlAction`, `SqluiEnums`)
+
+### Import Paths
+
+`tsconfig.json` uses `baseUrl: "."`, so imports are root-relative: `import Foo from 'src/common/adapters/...'` (not `../../`).
 
 ### Database Adapter Pattern
 
@@ -78,6 +93,8 @@ Additional hooks: `useToaster` (toast notifications with history), `useClientSid
 3. Register in `DataAdapterFactory.ts` and `DataScriptFactory.ts`
 4. Add dialect icon as PNG in your adapter directory, import it in `scripts.ts`, and return it from `getDialectIcon()`
 5. Add script spec tests in `DataScriptFactory.spec.ts`
+
+See CONTRIBUTING.md for the full step-by-step guide with code examples.
 
 ### Key Frontend Components
 
@@ -147,7 +164,8 @@ Additional hooks: `useToaster` (toast notifications with history), `useClientSid
 
 - Tests use Vitest (config in `vite.frontend.config.ts`)
 - Unit tests are co-located with source files as `*.spec.ts`/`*.spec.tsx`
-- Integration tests exist for each adapter (require running database instances)
+- Integration tests exist for each adapter (require running database instances, run via `npm run test-integration`)
+- Integration tests use `*.integration.spec.ts` naming and are excluded from `npm run test-ci`
 - Known: `jsdom` environment tests may show errors if the package is not installed; this doesn't affect test results
 - Run `npm run test-ci` for CI mode (no watch), `npm test` for watch mode
 
@@ -163,17 +181,6 @@ Additional hooks: `useToaster` (toast notifications with history), `useClientSid
 - Use `toMatchInlineSnapshot` for empty/null render checks
 - For stub assertions, `toHaveBeenCalled()` is sufficient — no need to assert call count
 - Avoid `toEqual` for text — use `toContain` where it makes sense
-
-### Frontend Test Coverage
-
-Tests exist for:
-
-- **Components:** Accordion, Select, Timer, InputError, ConnectionTypeIcon, ColumnName, ColumnType, ColumnAttributes, SplitButton, Resizer, Filter (GlobalFilter), Tabs, DropdownButton, DropdownMenu, JsonFormatData, ConnectionRetryAlert, NewConnectionButton, DeleteConnectionButton, TestConnectionButton, ConnectionHint, ConnectionRevealButton, AlertDialog, ChoiceDialog, PromptDialog, ModalDialog, ConnectionHelper, ConnectionActions, Settings, ElectronEventListener, SessionSelectionModal, Breadcrumbs, SessionManager, ToastHistoryList
-- **Hooks:** useShowHide, useActionDialogs, useTreeActions, useToaster (history helpers), useConnection (refreshAfterExecution), useClientSidePreference, useSetting, useServerConfigs, useDataSnapshot, useFolderItems, useSession, useConnectionQuery
-- **Data layer:** config (SessionStorageConfig, LocalStorageConfig), session (getRandomSessionId, setCurrentSessionId), file (downloadText, downloadJSON, downloadBlob), api (ProxyApi static methods)
-- **Layout:** LayoutTwoColumns
-- **Views:** BookmarksPage, RecycleBinPage, NewConnectionPage, EditConnectionPage, MainPage, MigrationPage, RecordPage, RelationshipChartPage
-- **Utils:** formatter, executeUtils, commonUtils
 
 ## Pre-commit Checklist
 
@@ -226,7 +233,7 @@ After any build-related or Vite config change, run the affected build task to ve
 - Electron main process: Vite SSR (`vite.electron.config.ts`) - outputs `build/main.js`
 - Mocked server: Vite SSR (`vite.mocked-server.config.ts`) - outputs `build/mocked-server.js`
 - Prettier: 100 char width, single quotes, trailing commas, 2-space indent
-- NODE_VERSION: 24
+- NODE_VERSION: 24 (use `fnm` to switch: `fnm use 24`)
 - npm
 
 ## Documentation

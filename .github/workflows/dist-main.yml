@@ -7,7 +7,7 @@ on:
         description: "Release notes"
       node_version:
         description: "Node.js version"
-        default: "20"
+        default: "24"
 
 permissions:
   contents: write

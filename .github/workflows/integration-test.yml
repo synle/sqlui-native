@@ -5,7 +5,7 @@ on:
     inputs:
       node_version:
         description: "Node.js version"
-        default: "20"
+        default: "24"
 
 jobs:
   unit_tests:
