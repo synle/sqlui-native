@@ -1,6 +1,6 @@
 import { useQueries } from "@tanstack/react-query";
 import dataApi from "src/frontend/data/api";
-import { useGetConnections, useUpdateConnections } from "src/frontend/hooks/useConnection";
+import { useGetConnections, useUpdateConnections, useAutoConnectAll } from "src/frontend/hooks/useConnection";
 import { useActiveConnectionQuery } from "src/frontend/hooks/useConnectionQuery";
 import { useShowHide } from "src/frontend/hooks/useShowHide";
 import { SqluiCore } from "typings";
@@ -43,6 +43,7 @@ type ColumnQueryResult = {
  */
 export function useFlatTreeRows() {
   const { data: connections, isLoading: connectionsLoading } = useGetConnections();
+  useAutoConnectAll(connections);
   const { visibles, onToggle } = useShowHide();
   const { query: activeQuery } = useActiveConnectionQuery();
   const { mutateAsync: updateConnections } = useUpdateConnections(connections);
@@ -172,6 +173,16 @@ export function useFlatTreeRows() {
       });
 
       if (!connExpanded) continue;
+
+      if (connection.status === "loading") {
+        rows.push({
+          type: "loading",
+          key: `connecting-${connKey}`,
+          depth: 1,
+          message: "Connecting to server...",
+        });
+        continue;
+      }
 
       if (!isOnline) {
         rows.push({

@@ -1,4 +1,5 @@
 import { QueryClient, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useEffect, useRef } from "react";
 import dataApi from "src/frontend/data/api";
 import { useAddRecycleBinItem } from "src/frontend/hooks/useFolderItems";
 import { useIsSoftDeleteModeSetting } from "src/frontend/hooks/useSetting";
@@ -345,4 +346,49 @@ export function useRetryConnection() {
  */
 export function useTestConnection() {
   return useMutation<SqluiCore.CoreConnectionMetaData, void, SqluiCore.CoreConnectionProps>(dataApi.test);
+}
+
+/**
+ * Hook that auto-triggers individual auth checks for connections without a status.
+ * Sets status to "loading" immediately, then resolves to "online" or "offline" per connection.
+ * Each connection is checked independently so failures don't block others.
+ * @param connections - The current list of connections from useGetConnections.
+ */
+export function useAutoConnectAll(connections?: SqluiCore.ConnectionProps[]) {
+  const queryClient = useQueryClient();
+  const checkedRef = useRef<Set<string>>(new Set());
+
+  useEffect(() => {
+    if (!connections) return;
+
+    const unchecked = connections.filter((c) => !c.status && !checkedRef.current.has(c.id));
+    if (unchecked.length === 0) return;
+
+    for (const conn of unchecked) {
+      checkedRef.current.add(conn.id);
+    }
+
+    // Mark all unchecked connections as "loading" immediately
+    queryClient.setQueryData<SqluiCore.ConnectionProps[] | undefined>([QUERY_KEY_ALL_CONNECTIONS], (oldData) => {
+      if (!oldData) return oldData;
+      return oldData.map((c) => (checkedRef.current.has(c.id) && !c.status ? { ...c, status: "loading" as const } : c));
+    });
+
+    // Fire individual auth checks in parallel — each resolves independently
+    for (const conn of unchecked) {
+      dataApi
+        .reconnect(conn.id)
+        .then((result) => {
+          queryClient.setQueryData<SqluiCore.ConnectionProps[] | undefined>([QUERY_KEY_ALL_CONNECTIONS], (oldData) =>
+            oldData?.map((c) => (c.id === conn.id ? { ...c, ...result } : c)),
+          );
+          queryClient.invalidateQueries([conn.id]);
+        })
+        .catch(() => {
+          queryClient.setQueryData<SqluiCore.ConnectionProps[] | undefined>([QUERY_KEY_ALL_CONNECTIONS], (oldData) =>
+            oldData?.map((c) => (c.id === conn.id ? { ...c, status: "offline" as const } : c)),
+          );
+        });
+    }
+  }, [connections, queryClient]);
 }

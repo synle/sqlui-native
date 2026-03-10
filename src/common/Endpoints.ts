@@ -157,33 +157,9 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
 
     const connections = await connectionsStorage.list();
 
-    const AUTH_TIMEOUT_MS = 8000;
-    const promisesCheckConnections: Promise<void>[] = [];
-    for (const connection of connections) {
-      promisesCheckConnections.push(
-        new Promise(async (resolve) => {
-          try {
-            const engine = getDataAdapter(connection.connection);
-            await Promise.race([
-              engine.authenticate(),
-              new Promise((_, reject) => setTimeout(() => reject(new Error("authenticate timeout")), AUTH_TIMEOUT_MS)),
-            ]);
-
-            connection.status = "online";
-            connection.dialect = engine.dialect;
-          } catch (err: any) {
-            console.error("Endpoints.ts:authenticate", err);
-            connection.status = "offline";
-            connection.dialect = undefined;
-          }
-
-          resolve();
-        }),
-      );
-    }
-
-    await Promise.all(promisesCheckConnections);
-
+    // Return connections immediately without blocking on auth checks.
+    // Each connection starts with status undefined — the frontend
+    // triggers individual /api/connection/:id/connect calls to check status.
     res.status(200).json(connections);
   });
 
