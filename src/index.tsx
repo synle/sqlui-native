@@ -17,6 +17,7 @@ import SettingContextProvider, { useDarkModeSetting } from "src/frontend/hooks/u
 import ShowHideContextProvider from "src/frontend/hooks/useShowHide";
 import TreeActionContextProvider from "src/frontend/hooks/useTreeActions";
 import { useLayoutModeSetting, useIsAnimationModeOn } from "src/frontend/hooks/useSetting";
+import dataApi from "src/frontend/data/api";
 import "src/frontend/App.scss";
 import "src/frontend/electronRenderer";
 
@@ -161,6 +162,17 @@ const renderApp = function () {
 };
 
 window.addEventListener("sqluiNativeEvent/ready", renderApp, false);
+
+// Clean up storage and close the opened session when the window is closed
+window.addEventListener("beforeunload", () => {
+  try {
+    dataApi.closeOpenedSession();
+  } catch (_err) {
+    // best-effort cleanup
+  }
+  sessionStorage.clear();
+  localStorage.clear();
+});
 
 // tell the main app to get ready for initiation
 window.dispatchEvent(new Event("sqluiNativeEvent/init"));
