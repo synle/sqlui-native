@@ -20,11 +20,13 @@ npm run format          # Prettier formatting
 ```
 
 **Run a single test file:**
+
 ```bash
 npx vitest run src/path/to/file.spec.ts
 ```
 
 **Run integration tests** (requires Docker containers — see CONTRIBUTING.md):
+
 ```bash
 npm run test-integration
 npx vitest run --config vitest.integration.config.ts src/common/adapters/RelationalDataAdapter/mysql.integration.spec.ts
