@@ -1,6 +1,9 @@
+import AutorenewIcon from "@mui/icons-material/Autorenew";
 import DownloadIcon from "@mui/icons-material/Download";
-import LabelIcon from "@mui/icons-material/Label";
-import LabelOffIcon from "@mui/icons-material/LabelOff";
+import SwapHorizIcon from "@mui/icons-material/SwapHoriz";
+import SwapVertIcon from "@mui/icons-material/SwapVert";
+import UnfoldLessIcon from "@mui/icons-material/UnfoldLess";
+import UnfoldMoreIcon from "@mui/icons-material/UnfoldMore";
 import SsidChartIcon from "@mui/icons-material/SsidChart";
 import Backdrop from "@mui/material/Backdrop";
 import Chip from "@mui/material/Chip";
@@ -26,7 +29,11 @@ import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
 import {
   Background,
+  BaseEdge,
   type Edge,
+  type EdgeProps,
+  EdgeLabelRenderer,
+  getBezierPath,
   Handle,
   MarkerType,
   type Node,
@@ -52,6 +59,12 @@ import "src/frontend/electronRenderer";
 
 const NODE_WIDTH = 180;
 const NODE_HEIGHT = 50;
+const EDGE_LABEL_FONT_SIZE = 11;
+const COL_GAP = 280;
+const ROW_GAP = 120;
+const WRAP_PAD = 60;
+const MAX_PER_COL = 8;
+const MAX_PER_ROW = 10;
 
 /**
  * Custom node with handles on all four sides for optimal edge routing.
@@ -85,6 +98,82 @@ function TableNode({ data }: NodeProps) {
 }
 
 const nodeTypes = { tableNode: TableNode };
+
+/**
+ * Custom edge with an HTML label rendered via EdgeLabelRenderer.
+ * Collapsed labels show a summary ("2 refs"), expanded show full FK details.
+ * Tooltip on collapsed labels shows chip-styled FK details.
+ */
+function RelationshipEdgeComponent({
+  id,
+  sourceX,
+  sourceY,
+  targetX,
+  targetY,
+  sourcePosition,
+  targetPosition,
+  data,
+  style,
+  markerEnd,
+  selected,
+}: EdgeProps) {
+  const [edgePath, labelX, labelY] = getBezierPath({ sourceX, sourceY, targetX, targetY, sourcePosition, targetPosition });
+  const labels: string[] = (data?.labels as string[]) || [];
+  const expanded = (data?.expanded as boolean) || false;
+  const displayText = expanded ? labels.join(" | ") : getCollapsedLabel(labels, data?.pivotTable as string);
+
+  const tooltipContent = (
+    <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5, p: 0.5 }}>
+      {labels.map((label, i) => {
+        const parts = label.split(" = ");
+        return (
+          <Box key={i} sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+            <Chip label={parts[0]} size="small" color="primary" variant="outlined" />
+            <span>=</span>
+            <Chip label={parts[1]} size="small" color="secondary" variant="outlined" />
+          </Box>
+        );
+      })}
+    </Box>
+  );
+
+  return (
+    <>
+      <BaseEdge
+        id={id}
+        path={edgePath}
+        style={{
+          ...style,
+          strokeWidth: selected ? 2.5 : (style?.strokeWidth ?? 1.5),
+        }}
+        markerEnd={markerEnd}
+      />
+      <EdgeLabelRenderer>
+        <Tooltip title={expanded ? "" : tooltipContent} placement="top">
+          <div
+            style={{
+              position: "absolute",
+              transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
+              fontSize: EDGE_LABEL_FONT_SIZE,
+              color: "#aaa",
+              background: "rgba(42, 42, 42, 0.9)",
+              padding: "4px 6px",
+              borderRadius: 4,
+              pointerEvents: "all",
+              cursor: "pointer",
+              whiteSpace: "nowrap",
+            }}
+            className="nodrag nopan"
+          >
+            {displayText}
+          </div>
+        </Tooltip>
+      </EdgeLabelRenderer>
+    </>
+  );
+}
+
+const edgeTypes = { relationship: RelationshipEdgeComponent };
 
 /**
  * Picks the best handle pair (source side, target side) based on node center positions.
@@ -171,35 +260,158 @@ function formatRelationshipCount(count: RelationshipCount | undefined): string {
 }
 
 /**
- * Computes a radial layout around the pivot table for related tables.
+ * Generates a collapsed summary label for grouped edges, e.g. "2 refs" or "1 dep".
+ */
+function getCollapsedLabel(labels: string[], pivotTable: string): string {
+  if (labels.length <= 1) return labels[0] || "";
+  // Count how many are refs (source = pivot) vs deps (target = pivot)
+  let refs = 0;
+  let deps = 0;
+  for (const label of labels) {
+    const sourceTable = label.split(".")[0];
+    if (sourceTable === pivotTable) {
+      refs++;
+    } else {
+      deps++;
+    }
+  }
+  const parts: string[] = [];
+  if (refs > 0) parts.push(`${refs} ref${refs > 1 ? "s" : ""}`);
+  if (deps > 0) parts.push(`${deps} dep${deps > 1 ? "s" : ""}`);
+  return parts.join(", ");
+}
+
+/**
+ * Classifies tables related to the pivot as ref-only, dep-only, or hybrid.
+ */
+function classifyTables(pivotTable: string, relationships: RelationshipEdge[]): { refOnly: string[]; depOnly: string[]; hybrid: string[] } {
+  const refs = new Set<string>();
+  const deps = new Set<string>();
+  for (const rel of relationships) {
+    if (rel.sourceTable === pivotTable) {
+      refs.add(rel.targetTable);
+    }
+    if (rel.targetTable === pivotTable) {
+      deps.add(rel.sourceTable);
+    }
+  }
+  const refOnly: string[] = [];
+  const depOnly: string[] = [];
+  const hybrid: string[] = [];
+  const allTables = new Set([...refs, ...deps]);
+  for (const table of [...allTables].sort()) {
+    const isRef = refs.has(table);
+    const isDep = deps.has(table);
+    if (isRef && isDep) {
+      hybrid.push(table);
+    } else if (isRef) {
+      refOnly.push(table);
+    } else {
+      depOnly.push(table);
+    }
+  }
+  return { refOnly, depOnly, hybrid };
+}
+
+/**
+ * Places items in columns that wrap after maxPerCol, returning positions.
+ * Columns grow inward (toward centerX) from the starting x.
+ */
+function placeColumnsWrapped(
+  items: string[],
+  startX: number,
+  centerY: number,
+  direction: 1 | -1,
+): Record<string, { x: number; y: number }> {
+  const positions: Record<string, { x: number; y: number }> = {};
+  if (items.length === 0) return positions;
+  const totalHeight = Math.min(items.length, MAX_PER_COL) * (NODE_HEIGHT + WRAP_PAD);
+  const startY = centerY - totalHeight / 2;
+  items.forEach((table, i) => {
+    const col = Math.floor(i / MAX_PER_COL);
+    const row = i % MAX_PER_COL;
+    positions[table] = {
+      x: startX + col * (NODE_WIDTH + WRAP_PAD) * direction,
+      y: startY + row * (NODE_HEIGHT + WRAP_PAD),
+    };
+  });
+  return positions;
+}
+
+/**
+ * Places items in rows that wrap after maxPerRow, returning positions.
+ * Rows grow inward (toward centerY) from the starting y.
+ */
+function placeRowsWrapped(items: string[], centerX: number, startY: number, direction: 1 | -1): Record<string, { x: number; y: number }> {
+  const positions: Record<string, { x: number; y: number }> = {};
+  if (items.length === 0) return positions;
+  const totalWidth = Math.min(items.length, MAX_PER_ROW) * (NODE_WIDTH + WRAP_PAD);
+  const startX = centerX - totalWidth / 2;
+  items.forEach((table, i) => {
+    const row = Math.floor(i / MAX_PER_ROW);
+    const col = i % MAX_PER_ROW;
+    positions[table] = {
+      x: startX + col * (NODE_WIDTH + WRAP_PAD),
+      y: startY + row * (NODE_HEIGHT + WRAP_PAD) * direction,
+    };
+  });
+  return positions;
+}
+
+type Orientation = "horizontal" | "vertical";
+
+/**
+ * Computes a 3-column (horizontal) or 3-row (vertical) layout.
+ * Horizontal: left (refs), center (pivot + hybrid), right (deps).
+ * Vertical: top (refs), center (pivot + hybrid), bottom (deps).
  */
 function computeLayout(
   pivotTable: string,
-  relatedTables: string[],
+  relationships: RelationshipEdge[],
   containerWidth: number,
   containerHeight: number,
+  orientation: Orientation,
 ): Record<string, { x: number; y: number }> {
+  const { refOnly, depOnly, hybrid } = classifyTables(pivotTable, relationships);
   const positions: Record<string, { x: number; y: number }> = {};
 
   const centerX = containerWidth / 2 - NODE_WIDTH / 2;
   const centerY = containerHeight / 2 - NODE_HEIGHT / 2;
 
+  // Place pivot at center
   positions[pivotTable] = { x: centerX, y: centerY };
 
-  const others = relatedTables.filter((t) => t !== pivotTable);
-  if (others.length === 0) return positions;
+  if (orientation === "horizontal") {
+    // Center column: pivot + hybrid
+    const centerItems = hybrid;
+    const centerStartY = centerY + NODE_HEIGHT + WRAP_PAD;
+    centerItems.forEach((table, i) => {
+      positions[table] = { x: centerX, y: centerStartY + i * (NODE_HEIGHT + WRAP_PAD) };
+    });
 
-  const radius = Math.min(containerWidth, containerHeight) * 0.35;
-  const angleStep = (2 * Math.PI) / others.length;
-  const startAngle = -Math.PI / 2;
+    // Left column: refs (pivot references these)
+    const leftX = centerX - COL_GAP;
+    Object.assign(positions, placeColumnsWrapped(refOnly, leftX, centerY, -1));
 
-  others.forEach((table, i) => {
-    const angle = startAngle + i * angleStep;
-    positions[table] = {
-      x: centerX + radius * Math.cos(angle),
-      y: centerY + radius * Math.sin(angle),
-    };
-  });
+    // Right column: deps (these depend on pivot)
+    const rightX = centerX + COL_GAP;
+    Object.assign(positions, placeColumnsWrapped(depOnly, rightX, centerY, 1));
+  } else {
+    // Center row: pivot + hybrid
+    const centerItems = hybrid;
+    const centerStartX = centerX + NODE_WIDTH + WRAP_PAD;
+    centerItems.forEach((table, i) => {
+      positions[table] = { x: centerStartX + i * (NODE_WIDTH + WRAP_PAD), y: centerY };
+    });
+
+    // Top row: refs
+    const topY = centerY - ROW_GAP * 2;
+    Object.assign(positions, placeRowsWrapped(refOnly, centerX, topY, -1));
+
+    // Bottom row: deps
+    const bottomY = centerY + ROW_GAP * 2;
+    Object.assign(positions, placeRowsWrapped(depOnly, centerX, bottomY, 1));
+  }
 
   return positions;
 }
@@ -216,8 +428,10 @@ function RelationshipChart({
   pivotTable: string;
   containerRef: React.RefObject<HTMLDivElement | null>;
 }) {
-  const [showLabels, setShowLabels] = useState(true);
+  const [expanded, setExpanded] = useState(false);
+  const [orientation, setOrientation] = useState<Orientation>("horizontal");
   const { fitView } = useReactFlow();
+  const layoutKeyRef = useRef(0);
 
   const allRelationships = useMemo(() => buildRelationships(allColumns), [allColumns]);
 
@@ -235,85 +449,106 @@ function RelationshipChart({
     return [...tables];
   }, [filteredRelationships, pivotTable]);
 
-  const initialLayout = useMemo(() => {
+  const buildLayout = useCallback(() => {
     const w = containerRef.current?.clientWidth || 1200;
     const h = containerRef.current?.clientHeight || 700;
-    return computeLayout(pivotTable, relatedTables, w, h);
-  }, [pivotTable, relatedTables]);
+    return computeLayout(pivotTable, filteredRelationships, w, h, orientation);
+  }, [pivotTable, filteredRelationships, orientation]);
 
-  const initialNodes: Node[] = useMemo(
-    () =>
-      relatedTables.map((table) => ({
+  const buildNodesAndEdges = useCallback(
+    (layout: Record<string, { x: number; y: number }>) => {
+      const newNodes: Node[] = relatedTables.map((table) => ({
         id: table,
         type: "tableNode",
-        position: initialLayout[table] || { x: 0, y: 0 },
+        position: layout[table] || { x: 0, y: 0 },
         data: { label: table, isPivot: table === pivotTable },
-      })),
-    [relatedTables, initialLayout, pivotTable],
+      }));
+
+      const grouped: Record<string, { source: string; target: string; labels: string[] }> = {};
+      for (const rel of filteredRelationships) {
+        const key = `${rel.sourceTable}||${rel.targetTable}`;
+        if (!grouped[key]) {
+          grouped[key] = { source: rel.sourceTable, target: rel.targetTable, labels: [] };
+        }
+        grouped[key].labels.push(rel.label);
+      }
+
+      const newEdges: Edge[] = Object.entries(grouped).map(([key, group]) => {
+        const sourcePos = layout[group.source] || { x: 0, y: 0 };
+        const targetPos = layout[group.target] || { x: 0, y: 0 };
+        const { sourceHandle, targetHandle } = pickBestHandles(sourcePos, targetPos);
+        return {
+          id: `e-${key}`,
+          source: group.source,
+          target: group.target,
+          sourceHandle,
+          targetHandle,
+          type: "relationship",
+          animated: false,
+          style: { stroke: "#888", strokeWidth: 1.5 },
+          markerEnd: {
+            type: MarkerType.ArrowClosed,
+            color: "#e0e0e0",
+            width: 20,
+            height: 20,
+          },
+          data: { labels: group.labels, expanded, pivotTable },
+        };
+      });
+
+      return { newNodes, newEdges };
+    },
+    [relatedTables, filteredRelationships, pivotTable, expanded],
   );
 
-  const initialEdges: Edge[] = useMemo(() => {
-    const grouped: Record<string, { source: string; target: string; labels: string[] }> = {};
-    for (const rel of filteredRelationships) {
-      const key = `${rel.sourceTable}||${rel.targetTable}`;
-      if (!grouped[key]) {
-        grouped[key] = {
-          source: rel.sourceTable,
-          target: rel.targetTable,
-          labels: [],
-        };
-      }
-      grouped[key].labels.push(rel.label);
-    }
-
-    return Object.entries(grouped).map(([key, group]) => {
-      const sourcePos = initialLayout[group.source] || { x: 0, y: 0 };
-      const targetPos = initialLayout[group.target] || { x: 0, y: 0 };
-      const { sourceHandle, targetHandle } = pickBestHandles(sourcePos, targetPos);
-      return {
-        id: `e-${key}`,
-        source: group.source,
-        target: group.target,
-        sourceHandle,
-        targetHandle,
-        label: showLabels ? group.labels.join(" | ") : undefined,
-        type: "default",
-        animated: false,
-        style: { stroke: "#888", strokeWidth: 1.5 },
-        markerEnd: {
-          type: MarkerType.ArrowClosed,
-          color: "#e0e0e0",
-          width: 20,
-          height: 20,
-        },
-        labelStyle: { fontSize: 11, fill: "#aaa" },
-        labelBgStyle: { fill: "#2a2a2a", fillOpacity: 0.9 },
-        labelBgPadding: [6, 4] as [number, number],
-        data: { labels: group.labels },
-      };
-    });
-  }, [filteredRelationships, showLabels, initialLayout]);
+  const initialLayout = useMemo(() => buildLayout(), [buildLayout]);
+  const { newNodes: initialNodes, newEdges: initialEdges } = useMemo(
+    () => buildNodesAndEdges(initialLayout),
+    [initialLayout, buildNodesAndEdges],
+  );
 
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
 
   useEffect(() => {
-    setNodes(initialNodes);
-    setEdges(initialEdges);
+    layoutKeyRef.current++;
+    const layout = buildLayout();
+    const { newNodes, newEdges } = buildNodesAndEdges(layout);
+    setNodes(newNodes);
+    setEdges(newEdges);
     setTimeout(() => fitView({ padding: 0.3 }), 100);
-  }, [pivotTable, JSON.stringify(Object.keys(allColumns))]);
+  }, [pivotTable, orientation, JSON.stringify(Object.keys(allColumns))]);
 
+  // Update edge data when expand/collapse changes
   useEffect(() => {
     setEdges((eds) =>
-      eds.map((edge) => {
-        const labels = (edge.data?.labels as string[]) || [];
-        return {
-          ...edge,
-          label: showLabels ? labels.join(" | ") : undefined,
-        };
-      }),
+      eds.map((edge) => ({
+        ...edge,
+        data: { ...edge.data, expanded },
+      })),
     );
-  }, [showLabels]);
+  }, [expanded]);
+
+  // Edge click cycling: first click selects source, second selects target
+  const lastClickedEdgeRef = useRef<string | null>(null);
+  const onEdgeClick = useCallback(
+    (_event: React.MouseEvent, edge: Edge) => {
+      const selectNode = (nodeId: string) => {
+        setNodes((nds) => nds.map((n) => ({ ...n, selected: n.id === nodeId })));
+      };
+
+      if (lastClickedEdgeRef.current === edge.id) {
+        // Second click on same edge — select target
+        selectNode(edge.target);
+        lastClickedEdgeRef.current = null;
+      } else {
+        // First click — select source
+        selectNode(edge.source);
+        lastClickedEdgeRef.current = edge.id;
+      }
+    },
+    [setNodes],
+  );
 
   const onSelectionChange = useCallback(
     ({ nodes: selectedNodes }: { nodes: Node[] }) => {
@@ -335,6 +570,14 @@ function RelationshipChart({
     },
     [setEdges],
   );
+
+  const onRedraw = useCallback(() => {
+    const layout = buildLayout();
+    const { newNodes, newEdges } = buildNodesAndEdges(layout);
+    setNodes(newNodes);
+    setEdges(newEdges);
+    setTimeout(() => fitView({ padding: 0.3 }), 100);
+  }, [buildLayout, buildNodesAndEdges, fitView, setNodes, setEdges]);
 
   // Export the diagram container as a high-res PNG (5x pixel ratio)
   const onDownload = useCallback(async () => {
@@ -366,8 +609,10 @@ function RelationshipChart({
       nodes={nodes}
       edges={edges}
       nodeTypes={nodeTypes}
+      edgeTypes={edgeTypes}
       onNodesChange={onNodesChange}
       onEdgesChange={onEdgesChange}
+      onEdgeClick={onEdgeClick}
       onSelectionChange={onSelectionChange}
       fitView
       snapToGrid
@@ -380,9 +625,23 @@ function RelationshipChart({
       <Background gap={20} size={1} />
       <Panel position="top-right">
         <Box sx={{ display: "flex", gap: 0.5 }}>
-          <Tooltip title={showLabels ? "Hide Labels" : "Show Labels"}>
-            <IconButton size="small" onClick={() => setShowLabels(!showLabels)} sx={{ color: "text.secondary" }}>
-              {showLabels ? <LabelOffIcon /> : <LabelIcon />}
+          <Tooltip title={expanded ? "Collapse Labels" : "Expand Labels"}>
+            <IconButton size="small" onClick={() => setExpanded(!expanded)} sx={{ color: "text.secondary" }}>
+              {expanded ? <UnfoldLessIcon /> : <UnfoldMoreIcon />}
+            </IconButton>
+          </Tooltip>
+          <Tooltip title={orientation === "horizontal" ? "Switch to Vertical" : "Switch to Horizontal"}>
+            <IconButton
+              size="small"
+              onClick={() => setOrientation(orientation === "horizontal" ? "vertical" : "horizontal")}
+              sx={{ color: "text.secondary" }}
+            >
+              {orientation === "horizontal" ? <SwapVertIcon /> : <SwapHorizIcon />}
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Redraw Layout">
+            <IconButton size="small" onClick={onRedraw} sx={{ color: "text.secondary" }}>
+              <AutorenewIcon />
             </IconButton>
           </Tooltip>
           <Tooltip title="Download as PNG">
@@ -529,7 +788,7 @@ function RelationshipTable({ relationships, pivotTable }: { relationships: Relat
  * Route: /visualization/:connectionId/:databaseId/:tableId
  *
  * Two tabs (using display:none to preserve diagram state across switches):
- * - Diagram: React Flow interactive graph with radial layout
+ * - Diagram: React Flow interactive graph with 3-column/3-row layout
  * - Table: Sortable MUI table with Ref/Dep types and chip-based FK details
  *
  * The breadcrumb includes a dropdown to select the pivot table, showing
