@@ -614,9 +614,7 @@ export default function MissionControl() {
 
       // Check if the session is opened in another window (not our own)
       const isOpenedElsewhere =
-        targetSession.id !== currentSession?.id &&
-        openedSessionIds &&
-        openedSessionIds.indexOf(targetSession.id) >= 0;
+        targetSession.id !== currentSession?.id && openedSessionIds && openedSessionIds.indexOf(targetSession.id) >= 0;
 
       if (isOpenedElsewhere) {
         await alert(`Cannot delete the session "${targetSession.name}" because it is opened in another window.`);
@@ -627,9 +625,7 @@ export default function MissionControl() {
       await deleteSession(targetSession.id);
 
       if (targetSession.id === currentSession?.id) {
-        await alert(
-          "This session has been deleted and can no longer be used. Please close this window and open a new one.",
-        );
+        await alert("This session has been deleted and can no longer be used. Please close this window and open a new one.");
       }
     } catch (err) {
       console.error("index.tsx:onDeleteSession", err);
