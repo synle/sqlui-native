@@ -69,6 +69,15 @@ Each adapter directory contains `index.ts` (adapter class) and `scripts.ts` (Con
 
 `src/common/Endpoints.ts` defines API handlers that work in both modes. In Electron, handlers are registered via IPC. In mocked server mode, they're mounted as Express routes. Session ID and Window ID are passed in request headers.
 
+### Session Ping / Keep-Alive
+
+Opened sessions are tracked in-memory by `src/common/utils/sessionUtils.ts` (windowId → sessionId mapping). To prevent stale sessions from blocking selection (e.g., after a browser tab closes without cleanup), a ping/keep-alive mechanism is used:
+
+- **`POST /api/sessions/ping`** — Records a timestamp for the calling window. Called by `SessionManager` on mount, every 1 minute, and on window focus.
+- **`GET /api/sessions/opened`** — Before returning, cleans up sessions not pinged within `SESSION_STALE_THRESHOLD_MS` (10 minutes, defined in `Endpoints.ts`). Sessions with no ping record (legacy) are also treated as stale.
+- **`sessionUtils.ping(windowId)`** — Updates `lastPing` map. Called on `open()` as well.
+- **`sessionUtils.cleanupStaleSessions(thresholdMs)`** — Removes entries from `openedSessions` and `lastPing` where the ping is missing or older than the threshold.
+
 ### Frontend State Management
 
 Custom React hooks and context providers instead of Redux: `useSession`, `useConnection`, `useConnectionQuery`, `useSetting`, `useActionDialogs`, `useShowHide`, `useTreeActions`, `useFolderItems`.

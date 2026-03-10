@@ -258,6 +258,13 @@ export class ProxyApi {
     return _fetch<string[]>(`/api/sessions/opened`);
   }
 
+  /** Pings the server to keep the current window's session alive. */
+  static pingSession() {
+    return _fetch<void>(`/api/sessions/ping`, {
+      method: "post",
+    });
+  }
+
   /** Removes the current window's session from the opened sessions list. */
   static closeOpenedSession() {
     return _fetch<void>(`/api/sessions/opened`, {
