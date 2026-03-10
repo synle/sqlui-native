@@ -410,5 +410,6 @@ export module SqluiEnums {
     | "clientEvent/showConnectionHelper"
     | "clientEvent/showQueryHelp"
     | "clientEvent/showSettings"
-    | "clientEvent/tableRenderer";
+    | "clientEvent/tableRenderer"
+    | "clientEvent/toggleDevtools";
 }

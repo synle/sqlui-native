@@ -188,6 +188,7 @@ const ALL_COMMAND_PALETTE_OPTIONS: CommandOption[] = [
     useCurrentQuery: true,
   },
   { event: "clientEvent/checkForUpdate", label: "Check For Update" },
+  { event: "clientEvent/toggleDevtools", label: "Toggle React Query Devtools" },
 ];
 
 /**
