@@ -11,8 +11,7 @@ export const SessionStorageConfig = {
 
     try {
       res = JSON.parse(window.sessionStorage.getItem(key) || "");
-    } catch (err) {
-      console.error("config.ts:parse", err);
+    } catch (_err) {
       res = defaultValue;
     }
 
@@ -35,8 +34,7 @@ export const LocalStorageConfig = {
 
     try {
       res = JSON.parse(window.localStorage.getItem(key) || "");
-    } catch (err) {
-      console.error("config.ts:parse", err);
+    } catch (_err) {
       res = defaultValue;
     }
 
