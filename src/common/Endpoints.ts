@@ -157,13 +157,17 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
 
     const connections = await connectionsStorage.list();
 
+    const AUTH_TIMEOUT_MS = 8000;
     const promisesCheckConnections: Promise<void>[] = [];
     for (const connection of connections) {
       promisesCheckConnections.push(
         new Promise(async (resolve) => {
           try {
             const engine = getDataAdapter(connection.connection);
-            await engine.authenticate();
+            await Promise.race([
+              engine.authenticate(),
+              new Promise((_, reject) => setTimeout(() => reject(new Error("authenticate timeout")), AUTH_TIMEOUT_MS)),
+            ]);
 
             connection.status = "online";
             connection.dialect = engine.dialect;
@@ -442,6 +446,14 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
         outcome: "focus_on_old_session_id",
       });
     }
+  });
+
+  addDataEndpoint("delete", "/api/sessions/opened", async (req, res) => {
+    const windowId = req.headers["sqlui-native-window-id"];
+    if (windowId) {
+      await sessionUtils.close(windowId);
+    }
+    res.status(200).json({ outcome: "closed" });
   });
 
   addDataEndpoint("post", "/api/session", async (req, res) => {
