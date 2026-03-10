@@ -34,6 +34,8 @@ npx vitest run --config vitest.integration.config.ts src/common/adapters/Relatio
 
 **Packaging:** `bash scripts/build.sh && npm run dist`
 
+**Debug shortcut:** `Ctrl+Shift+Alt+D` (Windows/Linux) or `Cmd+Shift+Option+D` (Mac) toggles React Query Devtools in packaged builds. Also available via Command Palette (`Cmd+P` / `Ctrl+P`) as "Toggle React Query Devtools".
+
 ## Architecture
 
 ### Two Runtime Modes
@@ -104,7 +106,8 @@ See CONTRIBUTING.md for the full step-by-step guide with code examples.
 - **`ResultBox`** - Displays query results with DataTable (legacy and modern/virtualized variants)
 - **`VirtualizedConnectionTree`** - Tree view of connections/databases/tables/columns using virtualized flat rows
 - **`ActionDialogs`** - Global dialog system (alert, choice, prompt, modal) managed via `useActionDialogs` context
-- **`MissionControl`** - Command palette with keyboard shortcut support
+- **`MissionControl`** - Central event handler that wires up all application commands (session, connection, query, settings, navigation). Processes commands from the `CommandPalette`, keyboard shortcuts, and Electron menu events
+- **`CommandPalette`** - Fuzzy-searchable command list (`Cmd+P` / `Ctrl+P`). Options defined in `ALL_COMMAND_PALETTE_OPTIONS` array in `CommandPalette/index.tsx`. Supports expanding per-connection/per-query commands. When adding new app-wide actions, add a `ClientEventKey` in `typings/index.ts`, a command option in `CommandPalette`, and a `case` in `MissionControl`'s `_executeCommandPalette` switch
 - **`ConnectionForm`** - New/edit connection forms with dialect-specific hints
 - **`MigrationBox`** - Data migration between connections with column mapping
 

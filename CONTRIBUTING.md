@@ -75,6 +75,10 @@ Assuming you use the same database in the docker samples below:
 ]
 ```
 
+### Debugging
+
+- **React Query Devtools:** Press `Ctrl+Shift+Alt+D` (Windows/Linux) or `Cmd+Shift+Option+D` (Mac) to toggle React Query Devtools in any build (including packaged/production builds). Useful for inspecting query cache, stale states, and in-flight requests.
+
 ### How to run locally?
 
 #### In an electron container
