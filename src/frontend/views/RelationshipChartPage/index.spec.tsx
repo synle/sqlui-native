@@ -17,7 +17,10 @@ vi.mock("@xyflow/react", () => ({
   ReactFlow: () => <div>ReactFlow</div>,
   ReactFlowProvider: ({ children }: any) => <div>{children}</div>,
   Background: () => null,
+  Handle: () => null,
+  MarkerType: { ArrowClosed: "arrowclosed" },
   Panel: ({ children }: any) => <div>{children}</div>,
+  Position: { Top: "top", Right: "right", Bottom: "bottom", Left: "left" },
   useNodesState: (init: any) => [init, vi.fn(), vi.fn()],
   useEdgesState: (init: any) => [init, vi.fn(), vi.fn()],
   useReactFlow: () => ({ fitView: vi.fn() }),
@@ -67,7 +70,10 @@ describe("RelationshipChartPage", () => {
     const { container } = render(
       <MemoryRouter initialEntries={["/visualization/c1"]}>
         <Routes>
-          <Route path="/visualization/:connectionId" element={<RelationshipChartPage />} />
+          <Route
+            path="/visualization/:connectionId"
+            element={<RelationshipChartPage />}
+          />
         </Routes>
       </MemoryRouter>,
     );
@@ -78,10 +84,15 @@ describe("RelationshipChartPage", () => {
     const { container } = render(
       <MemoryRouter initialEntries={["/visualization/c1"]}>
         <Routes>
-          <Route path="/visualization/:connectionId" element={<RelationshipChartPage />} />
+          <Route
+            path="/visualization/:connectionId"
+            element={<RelationshipChartPage />}
+          />
         </Routes>
       </MemoryRouter>,
     );
-    expect(container.textContent).toContain("Select one of the following database");
+    expect(container.textContent).toContain(
+      "Select one of the following database",
+    );
   });
 });
