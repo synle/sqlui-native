@@ -13,10 +13,7 @@ export default defineConfig(({ command }) => ({
       src: path.resolve(__dirname, "src"),
       // Bypass the NODE_ENV !== 'development' check in the default export
       // so React Query DevTools can be toggled in packaged/production builds.
-      "@tanstack/react-query-devtools": path.resolve(
-        __dirname,
-        "node_modules/@tanstack/react-query-devtools/build/lib/index.prod.mjs",
-      ),
+      "@tanstack/react-query-devtools": path.resolve(__dirname, "node_modules/@tanstack/react-query-devtools/build/lib/index.prod.mjs"),
     },
   },
   css: {
