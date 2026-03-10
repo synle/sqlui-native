@@ -258,6 +258,13 @@ export class ProxyApi {
     return _fetch<string[]>(`/api/sessions/opened`);
   }
 
+  /** Removes the current window's session from the opened sessions list. */
+  static closeOpenedSession() {
+    return _fetch<void>(`/api/sessions/opened`, {
+      method: "delete",
+    });
+  }
+
   /**
    * Marks a session as opened.
    * @param sessionId - The session ID to mark as open.
