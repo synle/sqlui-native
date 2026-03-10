@@ -1,5 +1,7 @@
 import AutorenewIcon from "@mui/icons-material/Autorenew";
 import DownloadIcon from "@mui/icons-material/Download";
+import LabelIcon from "@mui/icons-material/Label";
+import LabelOffIcon from "@mui/icons-material/LabelOff";
 import SwapHorizIcon from "@mui/icons-material/SwapHoriz";
 import SwapVertIcon from "@mui/icons-material/SwapVert";
 import UnfoldLessIcon from "@mui/icons-material/UnfoldLess";
@@ -373,10 +375,8 @@ function RelationshipChart({
       nodes={nodes}
       edges={edges}
       nodeTypes={nodeTypes}
-      edgeTypes={edgeTypes}
       onNodesChange={onNodesChange}
       onEdgesChange={onEdgesChange}
-      onEdgeClick={onEdgeClick}
       onSelectionChange={onSelectionChange}
       fitView
       snapToGrid

@@ -5,7 +5,7 @@ on:
     inputs:
       node_version:
         type: string
-        default: "20"
+        default: "24"
         description: "Node.js version"
       release_mode:
         type: string

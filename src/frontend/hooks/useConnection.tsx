@@ -215,7 +215,7 @@ export function useGetAllTableColumns(connectionId?: string, databaseId?: string
     [connectionId, databaseId, "all_table_columns"],
     async () => {
       if (!enabled) {
-        return [];
+        return {} as Record<string, SqluiCore.ColumnMetaData[]>;
       }
 
       const tables = await dataApi.getConnectionTables(connectionId, databaseId);
