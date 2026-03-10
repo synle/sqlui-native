@@ -4,7 +4,7 @@ import { vi } from "vitest";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 
 vi.mock("src/frontend/components/Breadcrumbs", () => ({
-  default: (props: any) => <div>Breadcrumbs</div>,
+  default: (_props: any) => <div>Breadcrumbs</div>,
   BreadcrumbLink: {},
 }));
 vi.mock("src/frontend/data/file", () => ({
