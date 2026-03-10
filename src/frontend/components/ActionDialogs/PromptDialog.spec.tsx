@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { render, fireEvent } from "@testing-library/react";
+import { render } from "@testing-library/react";
 import { vi } from "vitest";
 
 vi.mock("src/frontend/components/CodeEditorBox", () => ({

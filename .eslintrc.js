@@ -34,4 +34,5 @@ module.exports = {
     "no-debugger": ["warn"],
     "no-empty": ["warn", { allowEmptyCatch: true }],
   },
+  ignorePatterns: ["*.spec.ts", "*.spec.tsx"],
 };

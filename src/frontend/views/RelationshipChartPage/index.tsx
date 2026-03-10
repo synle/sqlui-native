@@ -1,11 +1,6 @@
-import AutorenewIcon from "@mui/icons-material/Autorenew";
 import DownloadIcon from "@mui/icons-material/Download";
 import LabelIcon from "@mui/icons-material/Label";
 import LabelOffIcon from "@mui/icons-material/LabelOff";
-import SwapHorizIcon from "@mui/icons-material/SwapHoriz";
-import SwapVertIcon from "@mui/icons-material/SwapVert";
-import UnfoldLessIcon from "@mui/icons-material/UnfoldLess";
-import UnfoldMoreIcon from "@mui/icons-material/UnfoldMore";
 import SsidChartIcon from "@mui/icons-material/SsidChart";
 import Backdrop from "@mui/material/Backdrop";
 import Chip from "@mui/material/Chip";
@@ -31,11 +26,7 @@ import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
 import {
   Background,
-  BaseEdge,
   type Edge,
-  type EdgeProps,
-  EdgeLabelRenderer,
-  getBezierPath,
   Handle,
   MarkerType,
   type Node,

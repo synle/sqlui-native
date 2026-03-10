@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { render, fireEvent, screen } from "@testing-library/react";
+import { render, fireEvent } from "@testing-library/react";
 import { vi } from "vitest";
 import AlertDialog from "src/frontend/components/ActionDialogs/AlertDialog";
 
