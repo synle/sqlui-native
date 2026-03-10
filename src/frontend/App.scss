@@ -223,19 +223,16 @@ $ConnectionTreeIndentSize: 7px;
 
 .react-flow {
   &__node {
-    border: 4px solid #666;
+    border: 3px solid #666;
+    border-radius: 6px;
+    background: #fff;
 
     &.selected {
-      background: #efefef;
-      color: blue;
+      background: #f0f4ff;
+      color: #1a5eff;
       font-weight: bold;
-      border: 4px solid blue;
-    }
-  }
-
-  &__edge.animated {
-    .react-flow__edge-path {
-      stroke: blue;
+      border: 3px solid #4a9eff;
+      box-shadow: 0 0 12px rgba(74, 158, 255, 0.4);
     }
   }
 }

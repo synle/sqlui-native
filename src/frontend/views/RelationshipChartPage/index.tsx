@@ -1,38 +1,343 @@
+import DownloadIcon from "@mui/icons-material/Download";
+import LabelIcon from "@mui/icons-material/Label";
+import LabelOffIcon from "@mui/icons-material/LabelOff";
 import SsidChartIcon from "@mui/icons-material/SsidChart";
 import Backdrop from "@mui/material/Backdrop";
 import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
+import IconButton from "@mui/material/IconButton";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemText from "@mui/material/ListItemText";
+import MenuItem from "@mui/material/MenuItem";
+import Select from "@mui/material/Select";
+import Tab from "@mui/material/Tab";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
+import Tabs from "@mui/material/Tabs";
+import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
+import {
+  Background,
+  type Edge,
+  type Node,
+  Panel,
+  ReactFlow,
+  ReactFlowProvider,
+  useEdgesState,
+  useNodesState,
+  useReactFlow,
+} from "@xyflow/react";
+import "@xyflow/react/dist/style.css";
 import { toPng } from "html-to-image";
-import ReactFlow from "react-flow-renderer";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
-import { useNavigate } from "src/frontend/utils/commonUtils";
-import { useEffect, useRef, useState } from "react";
 import Breadcrumbs, { BreadcrumbLink } from "src/frontend/components/Breadcrumbs";
 import { downloadBlob } from "src/frontend/data/file";
 import { useGetAllTableColumns, useGetColumns, useGetConnectionById, useGetDatabases } from "src/frontend/hooks/useConnection";
+import { useNavigate } from "src/frontend/utils/commonUtils";
 import "src/frontend/App.scss";
 import "src/frontend/electronRenderer";
 
-type MyNode = any;
+const NODE_WIDTH = 180;
+const NODE_HEIGHT = 50;
 
-type MyEdge = any;
-
-const width = 200;
-
-const widthDelta = 10;
-
-const height = 80;
-
-const heightDelta = 25;
+type RelationshipEdge = {
+  sourceTable: string;
+  targetTable: string;
+  sourceColumn: string;
+  targetColumn: string;
+  label: string;
+};
 
 /**
- * Interactive visualization page showing table relationships using ReactFlow.
+ * Builds relationship edges from column metadata for all tables.
+ */
+function buildRelationships(allColumns: Record<string, any[]>): RelationshipEdge[] {
+  const relationships: RelationshipEdge[] = [];
+  for (const tableName of Object.keys(allColumns).sort()) {
+    const tableColumns = allColumns[tableName];
+    for (const col of tableColumns) {
+      if (col.referencedColumnName && col.referencedTableName) {
+        relationships.push({
+          sourceTable: tableName,
+          targetTable: col.referencedTableName,
+          sourceColumn: col.name,
+          targetColumn: col.referencedColumnName,
+          label: `${col.name} => ${col.referencedTableName}.${col.referencedColumnName}`,
+        });
+      }
+    }
+  }
+  return relationships;
+}
+
+/**
+ * Counts the number of relationships involving each table.
+ */
+function countRelationships(relationships: RelationshipEdge[]): Record<string, number> {
+  const counts: Record<string, number> = {};
+  for (const rel of relationships) {
+    counts[rel.sourceTable] = (counts[rel.sourceTable] || 0) + 1;
+    counts[rel.targetTable] = (counts[rel.targetTable] || 0) + 1;
+  }
+  return counts;
+}
+
+/**
+ * Computes a radial layout around the pivot table for related tables.
+ */
+function computeLayout(
+  pivotTable: string,
+  relatedTables: string[],
+  containerWidth: number,
+  containerHeight: number,
+): Record<string, { x: number; y: number }> {
+  const positions: Record<string, { x: number; y: number }> = {};
+
+  const centerX = containerWidth / 2 - NODE_WIDTH / 2;
+  const centerY = containerHeight / 2 - NODE_HEIGHT / 2;
+
+  positions[pivotTable] = { x: centerX, y: centerY };
+
+  const others = relatedTables.filter((t) => t !== pivotTable);
+  if (others.length === 0) return positions;
+
+  const radius = Math.min(containerWidth, containerHeight) * 0.35;
+  const angleStep = (2 * Math.PI) / others.length;
+  const startAngle = -Math.PI / 2;
+
+  others.forEach((table, i) => {
+    const angle = startAngle + i * angleStep;
+    positions[table] = {
+      x: centerX + radius * Math.cos(angle),
+      y: centerY + radius * Math.sin(angle),
+    };
+  });
+
+  return positions;
+}
+
+/**
+ * Inner component that uses the React Flow hooks (must be inside ReactFlowProvider).
+ */
+function RelationshipChart({
+  allColumns,
+  pivotTable,
+  containerRef,
+}: {
+  allColumns: Record<string, any[]>;
+  pivotTable: string;
+  containerRef: React.RefObject<HTMLDivElement | null>;
+}) {
+  const [showLabels, setShowLabels] = useState(false);
+  const { fitView } = useReactFlow();
+
+  const allRelationships = useMemo(() => buildRelationships(allColumns), [allColumns]);
+
+  const filteredRelationships = useMemo(
+    () => allRelationships.filter((r) => r.sourceTable === pivotTable || r.targetTable === pivotTable),
+    [allRelationships, pivotTable],
+  );
+
+  const relatedTables = useMemo(() => {
+    const tables = new Set<string>([pivotTable]);
+    for (const rel of filteredRelationships) {
+      tables.add(rel.sourceTable);
+      tables.add(rel.targetTable);
+    }
+    return [...tables];
+  }, [filteredRelationships, pivotTable]);
+
+  const initialLayout = useMemo(() => {
+    const w = containerRef.current?.clientWidth || 1200;
+    const h = containerRef.current?.clientHeight || 700;
+    return computeLayout(pivotTable, relatedTables, w, h);
+  }, [pivotTable, relatedTables]);
+
+  const initialNodes: Node[] = useMemo(
+    () =>
+      relatedTables.map((table) => ({
+        id: table,
+        position: initialLayout[table] || { x: 0, y: 0 },
+        data: { label: table },
+        style: {
+          width: NODE_WIDTH,
+          height: NODE_HEIGHT,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          fontSize: 14,
+          fontWeight: table === pivotTable ? 700 : 400,
+          cursor: "grab",
+        },
+      })),
+    [relatedTables, initialLayout, pivotTable],
+  );
+
+  const initialEdges: Edge[] = useMemo(
+    () =>
+      filteredRelationships.map((rel, i) => ({
+        id: `e-${i}-${rel.sourceTable}.${rel.sourceColumn}-${rel.targetTable}.${rel.targetColumn}`,
+        source: rel.sourceTable,
+        target: rel.targetTable,
+        label: showLabels ? rel.label : undefined,
+        type: "default",
+        animated: false,
+        style: { stroke: "#888", strokeWidth: 1.5 },
+        labelStyle: { fontSize: 11, fill: "#ccc" },
+        labelBgStyle: { fill: "#1e1e1e", fillOpacity: 0.85 },
+        labelBgPadding: [6, 3] as [number, number],
+        data: { fullLabel: rel.label },
+      })),
+    [filteredRelationships, showLabels],
+  );
+
+  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
+  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+
+  useEffect(() => {
+    setNodes(initialNodes);
+    setEdges(initialEdges);
+    setTimeout(() => fitView({ padding: 0.2 }), 50);
+  }, [pivotTable, JSON.stringify(Object.keys(allColumns))]);
+
+  useEffect(() => {
+    setEdges((eds) =>
+      eds.map((edge) => ({
+        ...edge,
+        label: showLabels ? (edge.data?.fullLabel as string) : undefined,
+      })),
+    );
+  }, [showLabels]);
+
+  const onSelectionChange = useCallback(
+    ({ nodes: selectedNodes }: { nodes: Node[] }) => {
+      const selectedIds = new Set(selectedNodes.map((n) => n.id));
+
+      setEdges((eds) =>
+        eds.map((edge) => {
+          const isHighlighted = selectedIds.has(edge.source) || selectedIds.has(edge.target);
+          return {
+            ...edge,
+            animated: isHighlighted,
+            style: {
+              ...edge.style,
+              stroke: isHighlighted ? "#4a9eff" : "#888",
+              strokeWidth: isHighlighted ? 2.5 : 1.5,
+              strokeDasharray: isHighlighted ? "6 3" : undefined,
+            },
+          };
+        }),
+      );
+    },
+    [setEdges],
+  );
+
+  const onDownload = useCallback(async () => {
+    if (!containerRef.current) return;
+    try {
+      const dataUrl = await toPng(containerRef.current, {
+        pixelRatio: 5,
+        filter: (node) => {
+          if (
+            node?.classList?.contains("react-flow__minimap") ||
+            node?.classList?.contains("react-flow__controls") ||
+            node?.classList?.contains("react-flow__attribution") ||
+            node?.classList?.contains("react-flow__panel")
+          ) {
+            return false;
+          }
+          return true;
+        },
+      });
+      await downloadBlob(`relationship-${pivotTable}-${new Date().toISOString()}.png`, dataUrl);
+    } catch (err) {
+      console.error("RelationshipChartPage:onDownload", err);
+    }
+  }, [pivotTable]);
+
+  return (
+    <ReactFlow
+      nodes={nodes}
+      edges={edges}
+      onNodesChange={onNodesChange}
+      onEdgesChange={onEdgesChange}
+      onSelectionChange={onSelectionChange}
+      fitView
+      snapToGrid
+      minZoom={0.1}
+      maxZoom={4}
+      panOnDrag
+      zoomOnScroll
+      selectNodesOnDrag={false}
+    >
+      <Background gap={20} size={1} />
+      <Panel position="top-right">
+        <Box sx={{ display: "flex", gap: 0.5 }}>
+          <Tooltip title={showLabels ? "Hide Labels" : "Show Labels"}>
+            <IconButton size="small" onClick={() => setShowLabels(!showLabels)} sx={{ color: "text.secondary" }}>
+              {showLabels ? <LabelOffIcon /> : <LabelIcon />}
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Download as PNG">
+            <IconButton size="small" onClick={onDownload} sx={{ color: "text.secondary" }}>
+              <DownloadIcon />
+            </IconButton>
+          </Tooltip>
+        </Box>
+      </Panel>
+    </ReactFlow>
+  );
+}
+
+/**
+ * Table view showing relationships as rows with source table, destination table, and relationship details.
+ */
+function RelationshipTable({ relationships, pivotTable }: { relationships: RelationshipEdge[]; pivotTable: string }) {
+  const filtered = relationships.filter((r) => r.sourceTable === pivotTable || r.targetTable === pivotTable);
+
+  if (filtered.length === 0) {
+    return (
+      <Typography variant="body1" sx={{ mx: 2, mt: 2, color: "text.secondary" }}>
+        No relationships found for table &quot;{pivotTable}&quot;.
+      </Typography>
+    );
+  }
+
+  return (
+    <TableContainer sx={{ maxHeight: "calc(100vh - 160px)" }}>
+      <Table stickyHeader size="small">
+        <TableHead>
+          <TableRow>
+            <TableCell sx={{ fontWeight: 700 }}>Source Table</TableCell>
+            <TableCell sx={{ fontWeight: 700 }}>Destination Table</TableCell>
+            <TableCell sx={{ fontWeight: 700 }}>Relationship</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {filtered.map((rel, i) => (
+            <TableRow key={i}>
+              <TableCell>{rel.sourceTable}</TableCell>
+              <TableCell>{rel.targetTable}</TableCell>
+              <TableCell>
+                {rel.sourceTable}.{rel.sourceColumn} =&gt; {rel.targetTable}.{rel.targetColumn}
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
+  );
+}
+
+/**
+ * Interactive visualization page showing table relationships using React Flow.
  * Displays foreign key connections between tables with drag, select, and export-to-PNG capabilities.
  */
 export default function RelationshipChartPage() {
@@ -42,11 +347,9 @@ export default function RelationshipChartPage() {
   const databaseId = urlParams.databaseId as string;
   const tableId = urlParams.tableId as string;
 
-  const chartDomRef = useRef<HTMLDivElement>(null);
-
-  const [nodes, setNodes] = useState<MyNode[]>([]);
-  const [edges, setEdges] = useState<MyEdge[]>([]);
-  const [showLabels, setShowLabels] = useState(false);
+  const chartContainerRef = useRef<HTMLDivElement>(null);
+  const [selectedTable, setSelectedTable] = useState<string>(tableId || "");
+  const [tabIdx, setTabIdx] = useState(0);
 
   const {
     data: connection,
@@ -70,41 +373,23 @@ export default function RelationshipChartPage() {
     isLoading: loadingActiveTableColumns,
   } = useGetColumns(connectionId, databaseId, tableId);
 
-  const onToggleShowLabels = () => setShowLabels(!showLabels);
-
-  const onDownload = async () => {
-    // NOTE: reactflow had an example here
-    // https://reactflow.dev/docs/examples/misc/download-image/
-    // refer to it for how we export the flow as an image
-    if (!chartDomRef.current) {
-      return;
-    }
-    const node = chartDomRef.current as HTMLElement;
-    const blob = await toPng(node, {
-      pixelRatio: 5,
-      filter: (node) => {
-        // we don't want to add the minimap and the controls to the image
-        if (
-          node?.classList?.contains("react-flow__minimap") ||
-          node?.classList?.contains("react-flow__controls") ||
-          node?.classList?.contains("react-flow__attribution")
-        ) {
-          return false;
-        }
-
-        return true;
-      },
-    });
-    await downloadBlob(`relationship-${connectionId}-${databaseId}-${new Date()}.png`, blob);
-  };
-
   const isLoading = loadingAllColumns || loadingConnection || loadingActiveTableColumns || loadingDatabases;
   const hasError = errorAllColumns || errorConnection || errorActiveTableColumns || errorDatabases;
 
-  useEffect(() => {
-    setNodes([]);
-    setEdges([]);
+  const allRelationships = useMemo(() => (allColumns ? buildRelationships(allColumns) : []), [allColumns]);
 
+  const relationshipCounts = useMemo(() => countRelationships(allRelationships), [allRelationships]);
+
+  const tablesWithRelationships = useMemo(() => {
+    const tables = new Set<string>();
+    for (const rel of allRelationships) {
+      tables.add(rel.sourceTable);
+      tables.add(rel.targetTable);
+    }
+    return [...tables].sort();
+  }, [allRelationships]);
+
+  useEffect(() => {
     refetchConnection();
     refetchAllColumns();
     refetchActiveTableColumns();
@@ -112,104 +397,12 @@ export default function RelationshipChartPage() {
   }, [connectionId, databaseId, tableId]);
 
   useEffect(() => {
-    if (!allColumns) {
-      return;
-    }
-
-    let newNodes: MyNode[] = [];
-    let newEdges: MyEdge[] = [];
-
-    const mapNodeConnectionsCount: Record<string, number> = {}; // connection => count
-    const nodesHasEdge = new Set<string>();
-
-    for (const tableName of Object.keys(allColumns)) {
-      newNodes.push({
-        id: tableName,
-        data: { label: tableName },
-        connectable: false,
-        position: { x: 0, y: 0 },
-      });
-    }
-
-    for (const tableName of Object.keys(allColumns).sort()) {
-      const tableColumns = allColumns[tableName];
-
-      for (const tableColumn of tableColumns) {
-        if (tableColumn.referencedColumnName && tableColumn.referencedTableName) {
-          const newEdge = {
-            _label: `${tableColumn.name} => ${tableColumn.referencedTableName}.${tableColumn.referencedColumnName}`,
-            id: `${tableName}.${tableColumn.name} => ${tableColumn.referencedTableName}.${tableColumn.referencedColumnName}`,
-            source: tableName, // from
-            target: tableColumn.referencedTableName, // to
-            type: "straight",
-          };
-
-          nodesHasEdge.add(newEdge.source);
-          nodesHasEdge.add(newEdge.target);
-
-          newEdges.push(newEdge);
-        }
-      }
-    }
-
-    // here we will filter out all the nodes and edges that doesn't have tableId
     if (tableId) {
-      newEdges = newEdges.filter((edge) => edge.source === tableId || edge.target === tableId);
-
-      const nodesToKeep = new Set([tableId]);
-      for (const edge of newEdges) {
-        nodesToKeep.add(edge.source);
-        nodesToKeep.add(edge.target);
-      }
-
-      newNodes = newNodes.filter((node) => nodesToKeep.has(node.id));
+      setSelectedTable(tableId);
+    } else if (tablesWithRelationships.length > 0 && !selectedTable) {
+      setSelectedTable(tablesWithRelationships[0]);
     }
-
-    // doing the count for grouping of nodes
-    for (const edge of newEdges) {
-      mapNodeConnectionsCount[edge.target] = mapNodeConnectionsCount[edge.target] || 0;
-      mapNodeConnectionsCount[edge.target]++;
-    }
-
-    const countGroups = [...new Set(Object.values(mapNodeConnectionsCount))].map((s) => s as number).sort((a, b) => b - a);
-
-    let i = 0;
-    for (const node of newNodes) {
-      const tableName = node.id;
-      const count = mapNodeConnectionsCount[tableName];
-
-      let foundIdx = countGroups.indexOf(count);
-      if (foundIdx === -1) {
-        if (nodesHasEdge.has(tableName)) {
-          // node that has some edges, then show them at second to last
-          // row
-          foundIdx = countGroups.length;
-        } else {
-          // these are nodes that doesn't have any dependency
-          // show them at the bottom
-          foundIdx = countGroups.length + 1;
-        }
-      }
-
-      const colIdx = i++;
-      const rowIdx = foundIdx;
-      node.position.x = width * colIdx + widthDelta * colIdx;
-      node.position.y = height * rowIdx + heightDelta * rowIdx;
-    }
-
-    setNodes(newNodes);
-    setEdges(newEdges);
-  }, [connectionId, databaseId, tableId, JSON.stringify(allColumns)]);
-
-  // show or hide labels
-  useEffect(() => {
-    setEdges(
-      edges.map((edge) => {
-        edge.label = showLabels ? edge._label : undefined;
-        return edge;
-      }),
-    );
-  }, [showLabels]);
+  }, [tableId, tablesWithRelationships]);
 
   if (isLoading) {
     return (
@@ -231,7 +424,7 @@ export default function RelationshipChartPage() {
   if (hasError) {
     return (
       <Typography variant="h6" sx={{ mx: 4, mt: 2, color: "error.main" }}>
-        There are some errors because we can't fetch the related connection or columns in this table.
+        There are some errors because we can&apos;t fetch the related connection or columns in this table.
       </Typography>
     );
   }
@@ -255,15 +448,36 @@ export default function RelationshipChartPage() {
     },
   ];
 
-  if (tableId) {
+  if (databaseId && tablesWithRelationships.length > 0) {
     breadcrumbsData.push({
-      label: <>{tableId}</>,
+      label: (
+        <Select
+          size="small"
+          variant="standard"
+          value={selectedTable}
+          onChange={(e) => {
+            const newTable = e.target.value as string;
+            setSelectedTable(newTable);
+            navigate(`/visualization/${connectionId}/${databaseId}/${newTable}`);
+          }}
+          sx={{
+            fontSize: "inherit",
+            "& .MuiSelect-select": { py: 0 },
+            "&:before": { borderBottom: "none" },
+          }}
+        >
+          {tablesWithRelationships.map((table) => (
+            <MenuItem key={table} value={table}>
+              {table} ({relationshipCounts[table] || 0})
+            </MenuItem>
+          ))}
+        </Select>
+      ),
     });
   }
 
   let contentDom: JSX.Element;
   if (!databaseId) {
-    // here we show a list of database ids to let you select
     if (databases && databases.length > 0) {
       contentDom = (
         <>
@@ -275,9 +489,8 @@ export default function RelationshipChartPage() {
               const onNavigateToDatabaseVisualization = () => {
                 navigate(`/visualization/${connectionId}/${database.name}`);
               };
-
               return (
-                <ListItem disablePadding>
+                <ListItem key={database.name} disablePadding>
                   <ListItemButton onClick={onNavigateToDatabaseVisualization}>
                     <ListItemText primary={database.name} />
                   </ListItemButton>
@@ -290,89 +503,51 @@ export default function RelationshipChartPage() {
     } else {
       contentDom = (
         <Typography variant="h6" sx={{ mx: 2, color: "error.main" }}>
-          This connection doesn't have any database.
+          This connection doesn&apos;t have any database.
         </Typography>
       );
     }
-  } else if (nodes && nodes.length > 0) {
+  } else if (allColumns && selectedTable && tablesWithRelationships.includes(selectedTable)) {
     contentDom = (
-      <Box sx={{ height: "calc(100vh - 110px)", zIndex: 0 }} ref={chartDomRef}>
-        <ReactFlow
-          fitView
-          snapToGrid
-          defaultNodes={nodes}
-          defaultEdges={edges}
-          onNodesChange={(nodeChanges) => {
-            let newNodes = nodes;
-            let newEdges = edges;
-
-            for (const nodeChange of nodeChanges) {
-              //@ts-ignore
-              const targetNodeId = nodeChange.id;
-
-              if (!targetNodeId) {
-                continue;
-              }
-
-              switch (nodeChange.type) {
-                case "select":
-                  newNodes = newNodes.map((node) => {
-                    if (node.id === targetNodeId) {
-                      node.selected = nodeChange.selected;
-                    }
-
-                    return node;
-                  });
-                  break;
-                case "remove":
-                  newNodes = newNodes.filter((node) => {
-                    return node.id !== targetNodeId;
-                  });
-                  break;
-                default:
-                case "dimensions":
-                  break;
-              }
-            }
-
-            const selectedNodes = new Set<string>();
-            for (const node of newNodes) {
-              if (node.selected) {
-                selectedNodes.add(node.id);
-              }
-            }
-
-            // handling path highlights
-            // animate edges for selected node
-            newEdges = newEdges.map((edge) => {
-              if (selectedNodes.has(edge.source) || selectedNodes.has(edge.target)) {
-                edge.animated = true;
-              } else {
-                edge.animated = false;
-              }
-              return edge;
-            });
-
-            setNodes(newNodes);
-            setEdges(newEdges);
+      <>
+        <Box sx={{ borderBottom: 1, borderColor: "divider", mx: 2 }}>
+          <Tabs value={tabIdx} onChange={(_e, newIdx) => setTabIdx(newIdx)} aria-label="visualization tabs">
+            <Tab label="Diagram" />
+            <Tab label="Table" />
+          </Tabs>
+        </Box>
+        <Box
+          sx={{
+            height: "calc(100vh - 160px)",
+            zIndex: 0,
+            display: tabIdx === 0 ? "block" : "none",
           }}
-          onNodeDragStop={(e, targetNode) => {
-            setNodes(
-              nodes.map((node) => {
-                if (node.id === targetNode.id) {
-                  node.position = targetNode.position;
-                }
-                return node;
-              }),
-            );
+          ref={chartContainerRef}
+        >
+          <ReactFlowProvider>
+            <RelationshipChart allColumns={allColumns} pivotTable={selectedTable} containerRef={chartContainerRef} />
+          </ReactFlowProvider>
+        </Box>
+        <Box
+          sx={{
+            display: tabIdx === 1 ? "block" : "none",
+            mx: 2,
           }}
-        />
-      </Box>
+        >
+          <RelationshipTable relationships={allRelationships} pivotTable={selectedTable} />
+        </Box>
+      </>
+    );
+  } else if (allColumns && Object.keys(allColumns).length > 0 && tablesWithRelationships.length === 0) {
+    contentDom = (
+      <Typography variant="h6" sx={{ mx: 2, color: "text.secondary" }}>
+        No foreign key relationships found in database &quot;{databaseId}&quot;.
+      </Typography>
     );
   } else {
     contentDom = (
       <Typography variant="h6" sx={{ mx: 2, color: "error.main" }}>
-        This database "{databaseId}" doesn't have any table.
+        This database &quot;{databaseId}&quot; doesn&apos;t have any table.
       </Typography>
     );
   }
@@ -381,10 +556,6 @@ export default function RelationshipChartPage() {
     <>
       <Box sx={{ mx: 2, display: "flex", alignItems: "center" }}>
         <Breadcrumbs links={breadcrumbsData} />
-        <Box sx={{ ml: "auto", display: "flex", alignItems: "center", gap: 2 }}>
-          <Button onClick={onToggleShowLabels}>{showLabels ? "Hide Labels" : "Show Labels"}</Button>
-          <Button onClick={onDownload}>Download</Button>
-        </Box>
       </Box>
       {contentDom}
     </>
