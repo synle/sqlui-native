@@ -105,47 +105,44 @@ function ExpandableContent({
 
   return (
     <div style={{ padding: "4px 12px 0" }}>
-      {showFull ? (
-        <div style={{ display: "flex", gap: "8px" }}>
-          {detailSection && (
-            <div style={{ flex: metadataSection ? "0 0 50%" : "1 1 100%", minWidth: 0 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: "4px", marginBottom: "2px" }}>
-                <span style={{ opacity: 0.6, fontSize: "0.7rem" }}>{detailSection.label}</span>
-                <IconButton
-                  size="small"
-                  onClick={() => navigator.clipboard.writeText(detailSection.content)}
-                  sx={{ padding: "1px", opacity: 0.5, "&:hover": { opacity: 1 } }}
-                >
-                  <ContentCopyIcon sx={{ fontSize: "0.7rem" }} />
-                </IconButton>
-              </div>
-              <pre style={preStyle}>{detailSection.content}</pre>
+      <div
+        style={{
+          display: "flex",
+          gap: "8px",
+          ...(showFull ? {} : { maxHeight: "180px", overflow: "hidden" }),
+        }}
+      >
+        {detailSection && (
+          <div style={{ flex: metadataSection ? "0 0 50%" : "1 1 100%", minWidth: 0 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "4px", marginBottom: "2px" }}>
+              <span style={{ opacity: 0.6, fontSize: "0.7rem" }}>{detailSection.label}</span>
+              <IconButton
+                size="small"
+                onClick={() => navigator.clipboard.writeText(detailSection.content)}
+                sx={{ padding: "1px", opacity: 0.5, "&:hover": { opacity: 1 } }}
+              >
+                <ContentCopyIcon sx={{ fontSize: "0.7rem" }} />
+              </IconButton>
             </div>
-          )}
-          {metadataSection && (
-            <div style={{ flex: detailSection ? "0 0 50%" : "1 1 100%", minWidth: 0 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: "4px", marginBottom: "2px" }}>
-                <span style={{ opacity: 0.6, fontSize: "0.7rem" }}>{metadataSection.label}</span>
-                <IconButton
-                  size="small"
-                  onClick={() => navigator.clipboard.writeText(metadataSection.content)}
-                  sx={{ padding: "1px", opacity: 0.5, "&:hover": { opacity: 1 } }}
-                >
-                  <ContentCopyIcon sx={{ fontSize: "0.7rem" }} />
-                </IconButton>
-              </div>
-              <pre style={preStyle}>{metadataSection.content}</pre>
+            <pre style={preStyle}>{detailSection.content}</pre>
+          </div>
+        )}
+        {metadataSection && (
+          <div style={{ flex: detailSection ? "0 0 50%" : "1 1 100%", minWidth: 0 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "4px", marginBottom: "2px" }}>
+              <span style={{ opacity: 0.6, fontSize: "0.7rem" }}>{metadataSection.label}</span>
+              <IconButton
+                size="small"
+                onClick={() => navigator.clipboard.writeText(metadataSection.content)}
+                sx={{ padding: "1px", opacity: 0.5, "&:hover": { opacity: 1 } }}
+              >
+                <ContentCopyIcon sx={{ fontSize: "0.7rem" }} />
+              </IconButton>
             </div>
-          )}
-        </div>
-      ) : (
-        <pre style={preStyle}>
-          {sections
-            .map((s) => s.content)
-            .join("\n")
-            .slice(0, COLLAPSED_LENGTH) + "..."}
-        </pre>
-      )}
+            <pre style={preStyle}>{metadataSection.content}</pre>
+          </div>
+        )}
+      </div>
       {truncatable && (
         <Button size="small" onClick={handleToggle} sx={{ fontSize: "0.7rem", p: 0, mt: 0.5 }}>
           {localExpanded ? "Show less" : "Show more"}
