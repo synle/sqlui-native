@@ -131,6 +131,24 @@ function CombinedContextProvider({ children }) {
   ].reduceRight((acc, Provider) => <Provider>{acc}</Provider>, children);
 }
 
+function DevtoolsToggle() {
+  const [show, setShow] = useState(false);
+
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      // Ctrl+Shift+Alt+D (Windows/Linux) or Cmd+Shift+Option+D (Mac) to toggle React Query devtools
+      if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.altKey && e.key === "D") {
+        setShow((prev) => !prev);
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, []);
+
+  if (!show) return null;
+  return <ReactQueryDevtools initialIsOpen={true} />;
+}
+
 const renderApp = function () {
   const queryClient = new QueryClient({
     defaultOptions: {
@@ -144,7 +162,7 @@ const renderApp = function () {
 
   ReactDOM.render(
     <QueryClientProvider client={queryClient}>
-      <ReactQueryDevtools initialIsOpen={false} />
+      <DevtoolsToggle />
       <CombinedContextProvider>
         <Routes>
           <Route path="/data_snapshot" element={<DataSnapshotListView />} />
