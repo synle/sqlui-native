@@ -15,7 +15,7 @@ vi.mock("src/frontend/components/QueryBox/ConnectionDatabaseSelector", () => ({
   default: () => <div>ConnectionDatabaseSelector</div>,
 }));
 vi.mock("src/frontend/components/Tabs", () => ({
-  default: (props: any) => <div>Tabs</div>,
+  default: (_props: any) => <div>Tabs</div>,
 }));
 vi.mock("src/frontend/layout/LayoutTwoColumns", () => ({
   default: (props: any) => <div>{props.children}</div>,
