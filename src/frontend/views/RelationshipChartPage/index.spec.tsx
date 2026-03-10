@@ -17,6 +17,9 @@ vi.mock("@xyflow/react", () => ({
   ReactFlow: () => <div>ReactFlow</div>,
   ReactFlowProvider: ({ children }: any) => <div>{children}</div>,
   Background: () => null,
+  BaseEdge: () => null,
+  EdgeLabelRenderer: ({ children }: any) => <div>{children}</div>,
+  getBezierPath: () => ["M0,0", 0, 0],
   Handle: () => null,
   MarkerType: { ArrowClosed: "arrowclosed" },
   Panel: ({ children }: any) => <div>{children}</div>,
@@ -70,10 +73,7 @@ describe("RelationshipChartPage", () => {
     const { container } = render(
       <MemoryRouter initialEntries={["/visualization/c1"]}>
         <Routes>
-          <Route
-            path="/visualization/:connectionId"
-            element={<RelationshipChartPage />}
-          />
+          <Route path="/visualization/:connectionId" element={<RelationshipChartPage />} />
         </Routes>
       </MemoryRouter>,
     );
@@ -84,15 +84,10 @@ describe("RelationshipChartPage", () => {
     const { container } = render(
       <MemoryRouter initialEntries={["/visualization/c1"]}>
         <Routes>
-          <Route
-            path="/visualization/:connectionId"
-            element={<RelationshipChartPage />}
-          />
+          <Route path="/visualization/:connectionId" element={<RelationshipChartPage />} />
         </Routes>
       </MemoryRouter>,
     );
-    expect(container.textContent).toContain(
-      "Select one of the following database",
-    );
+    expect(container.textContent).toContain("Select one of the following database");
   });
 });
