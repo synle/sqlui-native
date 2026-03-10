@@ -50,7 +50,7 @@ export module SqluiCore {
   export type CoreConnectionProps = {
     connection: string;
     name: string;
-    status?: "online" | "offline";
+    status?: "online" | "offline" | "loading";
     dialect?: SqluiCore.Dialect;
     [index: string]: any;
   };

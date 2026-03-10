@@ -3,7 +3,9 @@ import CssBaseline from "@mui/material/CssBaseline";
 import { createTheme, Theme, ThemeProvider } from "@mui/material/styles";
 import ReactDOM from "react-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+// Import directly from devtools.mjs to bypass the NODE_ENV !== 'development' check
+// that returns null in production builds. This lets the toggle work in packaged builds.
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools/build/lib/devtools.mjs";
 import { HashRouter, Route, Routes } from "react-router-dom";
 import { useEffect, useState } from "react";
 import App from "src/frontend/App";
