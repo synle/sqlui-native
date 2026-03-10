@@ -128,7 +128,7 @@ export default function MissionControl() {
   const { modal, confirm, prompt, alert, dismiss: dismissDialog } = useActionDialogs();
   const { data: sessions } = useGetSessions();
   const { data: serverConfigs } = useGetServerConfigs();
-  useGetOpenedSessionIds();
+  const { data: openedSessionIds } = useGetOpenedSessionIds();
   const { data: currentSession } = useGetCurrentSession();
   const { mutateAsync: upsertSession } = useUpsertSession();
   const { mutateAsync: cloneSession } = useCloneSession();
@@ -612,19 +612,27 @@ export default function MissionControl() {
         return;
       }
 
-      await confirm(
-        `Do you want to delete this session "${targetSession.name}"? This will also close any window associated with this sessionId.`,
-      );
+      // Check if the session is opened in another window (not our own)
+      const isOpenedElsewhere =
+        targetSession.id !== currentSession?.id &&
+        openedSessionIds &&
+        openedSessionIds.indexOf(targetSession.id) >= 0;
+
+      if (isOpenedElsewhere) {
+        await alert(`Cannot delete the session "${targetSession.name}" because it is opened in another window.`);
+        return;
+      }
+
+      await confirm(`Do you want to delete this session "${targetSession.name}"?`);
       await deleteSession(targetSession.id);
 
       if (targetSession.id === currentSession?.id) {
-        // after you delete a session, we should close it
-        if (!window.isElectron) {
-          alert(`Session is deleted. Please close this windows.`);
-        }
+        await alert(
+          "This session has been deleted and can no longer be used. Please close this window and open a new one.",
+        );
       }
     } catch (err) {
-      console.error("index.tsx:alert", err);
+      console.error("index.tsx:onDeleteSession", err);
     }
   };
 
