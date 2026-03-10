@@ -93,6 +93,37 @@ Additional hooks: `useToaster` (toast notifications with history), `useClientSid
 
 `src/frontend/views/` contains route-level page components: `MainPage`, `NewConnectionPage`, `EditConnectionPage`, `BookmarksPage`, `RecycleBinPage`, `MigrationPage`, `RecordPage`, `RelationshipChartPage`.
 
+### Visualization (RelationshipChartPage)
+
+`src/frontend/views/RelationshipChartPage/index.tsx` — Interactive foreign key relationship visualization for relational databases only (MySQL, MariaDB, MSSQL, PostgreSQL, SQLite).
+
+**Library:** Uses `@xyflow/react` (React Flow v12) for the diagram and `html-to-image` for PNG export.
+
+**Architecture:**
+- `RelationshipChartPage` (outer) — Handles data fetching, routing, breadcrumb with table dropdown, and tab switching
+- `RelationshipChart` (inner, inside `ReactFlowProvider`) — Renders the interactive diagram using React Flow hooks
+- `RelationshipTable` — Sortable MUI Table showing relationships in tabular form
+- `TableNode` — Custom React Flow node with handles on all 4 sides (top/right/bottom/left) for optimal edge routing
+
+**Key helpers:**
+- `buildRelationships()` — Extracts FK edges from `ColumnMetaData.referencedTableName`/`referencedColumnName`
+- `countRelationships()` — Counts refs (outgoing FKs) and deps (incoming FKs) per table
+- `computeLayout()` — Radial layout: pivot table centered, related tables arranged in a circle
+- `pickBestHandles()` — Selects closest handle pair (source/target side) based on node positions
+
+**Features:**
+- Two tabs: **Diagram** (React Flow) and **Table** (MUI Table with sortable columns and Chip-based FK details)
+- Tabs use `display: none` (not conditional rendering) so diagram state is preserved when switching
+- Breadcrumb dropdown lists all tables with relationship counts: `table (N: X refs, Y deps)`
+- Multiple FKs between same table pair are grouped into one edge with multiline label
+- Edges use arrows (`MarkerType.ArrowClosed`) pointing from source to target (FK direction)
+- Node selection highlights connected edges; show/hide labels toggle; PNG download
+- Zoom (scroll), pan (drag), and draggable nodes built into React Flow
+
+**Terminology:** "Ref" = the table has a FK pointing outward (references another table). "Dep" = another table has a FK pointing to this table (depends on it).
+
+**Routes:** `/visualization/:connectionId`, `/visualization/:connectionId/:databaseId`, `/visualization/:connectionId/:databaseId/:tableId`
+
 ## Testing
 
 - Tests use Vitest (config in `vite.frontend.config.ts`)
