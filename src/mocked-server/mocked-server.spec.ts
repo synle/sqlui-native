@@ -369,45 +369,7 @@ describe("Queries - CRUD", () => {
   });
 });
 
-describe("Sessions - Open/Close and Window Mapping", () => {
-  test("GET /api/sessions/opened should return list of opened session ids", async () => {
-    const res = await requestWithSupertest.get(`/api/sessions/opened`);
-    expect(res.status).toEqual(200);
-    expect(Array.isArray(res.body)).toBe(true);
-  });
-
-  test("POST /api/sessions/opened/:sessionId should open a new session", async () => {
-    const newSessionId = `test-open-session.${Date.now()}`;
-    const windowId = `test-window.${Date.now()}`;
-
-    const res = await requestWithSupertest
-      .post(`/api/sessions/opened/${newSessionId}`)
-      .set({ "sqlui-native-session-id": newSessionId, "sqlui-native-window-id": windowId });
-    expect(res.status).toEqual(201);
-    expect(res.body.outcome).toEqual("create_new_session");
-  });
-
-  test("POST /api/sessions/opened/:sessionId should detect existing session", async () => {
-    const sessionId = `test-existing-session.${Date.now()}`;
-    const windowId1 = `test-window-1.${Date.now()}`;
-    const windowId2 = `test-window-2.${Date.now()}`;
-
-    // open session first time
-    let res: any;
-    res = await requestWithSupertest
-      .post(`/api/sessions/opened/${sessionId}`)
-      .set({ "sqlui-native-session-id": sessionId, "sqlui-native-window-id": windowId1 });
-    expect(res.status).toEqual(201);
-    expect(res.body.outcome).toEqual("create_new_session");
-
-    // open same session from different window - should indicate focus
-    res = await requestWithSupertest
-      .post(`/api/sessions/opened/${sessionId}`)
-      .set({ "sqlui-native-session-id": sessionId, "sqlui-native-window-id": windowId2 });
-    expect(res.status).toEqual(202);
-    expect(res.body.outcome).toEqual("focus_on_old_session_id");
-  });
-
+describe("Sessions", () => {
   test("POST /api/session should create a new session", async () => {
     const res = await requestWithSupertest.post(`/api/session`).send({ name: "Brand New Session" });
     expect(res.status).toEqual(201);
@@ -417,34 +379,13 @@ describe("Sessions - Open/Close and Window Mapping", () => {
     await requestWithSupertest.delete(`/api/session/${res.body.id}`);
   });
 
-  test("POST /api/sessions/ping should keep session alive", async () => {
-    const sessionId = `test-ping-session.${Date.now()}`;
-    const windowId = `test-ping-window.${Date.now()}`;
-
-    // open a session first
-    await requestWithSupertest
-      .post(`/api/sessions/opened/${sessionId}`)
-      .set({ "sqlui-native-session-id": sessionId, "sqlui-native-window-id": windowId });
-
-    // ping it
-    const res = await requestWithSupertest
-      .post(`/api/sessions/ping`)
-      .set({ "sqlui-native-session-id": sessionId, "sqlui-native-window-id": windowId });
-    expect(res.status).toEqual(200);
-    expect(res.body.outcome).toEqual("pinged");
-
-    // session should still appear in opened list
-    const openedRes = await requestWithSupertest.get(`/api/sessions/opened`);
-    expect(openedRes.body).toContain(sessionId);
-  });
-
-  test("GET /api/session should return 404 without window-id header", async () => {
+  test("GET /api/session should return 404 without session-id header", async () => {
     const res = await requestWithSupertest.get(`/api/session`);
     expect(res.status).toEqual(404);
   });
 
-  test("GET /api/session should return 404 for unknown window-id", async () => {
-    const res = await requestWithSupertest.get(`/api/session`).set({ "sqlui-native-window-id": `non-existent-window.${Date.now()}` });
+  test("GET /api/session should return 404 for unknown session-id", async () => {
+    const res = await requestWithSupertest.get(`/api/session`).set({ "sqlui-native-session-id": `non-existent-session.${Date.now()}` });
     expect(res.status).toEqual(404);
   });
 });

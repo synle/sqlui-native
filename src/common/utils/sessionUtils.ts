@@ -1,102 +1,8 @@
 import { BrowserWindow } from "electron";
-let openedSessions: Record<string, string> = {};
 const openedWindows: Record<string, BrowserWindow> = {};
-const lastPing: Record<string, number> = {};
 
 /**
- * Resets all tracked session-to-window mappings.
- */
-export function reset() {
-  openedSessions = {};
-}
-
-/**
- * Returns the full mapping of window IDs to session IDs.
- * @returns Record of windowId to sessionId.
- */
-export function get() {
-  return openedSessions;
-}
-
-/**
- * Gets the session ID associated with a given window ID.
- * @param windowId - The window identifier.
- * @returns The associated session ID, or undefined if not found.
- */
-export function getByWindowId(windowId: string) {
-  return openedSessions[windowId];
-}
-
-/**
- * Finds the window ID that has a given session ID open.
- * @param targetSessionId - The session ID to search for.
- * @returns The matching window ID, or undefined if not found.
- */
-export function getWindowIdBySessionId(targetSessionId: string) {
-  for (const windowId of Object.keys(openedSessions)) {
-    const sessionId = openedSessions[windowId];
-
-    if (targetSessionId === sessionId) {
-      return windowId;
-    }
-  }
-
-  return undefined;
-}
-
-/**
- * Records a ping for the given window ID, keeping its session alive.
- * @param windowId - The window identifier to ping.
- */
-export function ping(windowId: string) {
-  lastPing[windowId] = Date.now();
-}
-
-/**
- * Removes opened sessions that haven't been pinged within the stale threshold.
- * @param staleThresholdMs - Max age in milliseconds before a session is considered stale.
- */
-export function cleanupStaleSessions(staleThresholdMs: number) {
-  const now = Date.now();
-  for (const windowId of Object.keys(openedSessions)) {
-    const lastPingTime = lastPing[windowId];
-    if (lastPingTime === undefined || now - lastPingTime > staleThresholdMs) {
-      delete openedSessions[windowId];
-      delete lastPing[windowId];
-    }
-  }
-}
-
-/**
- * Returns a list of all currently opened session IDs.
- * @returns Array of session ID strings.
- */
-export function listSessionIds() {
-  return Object.values(openedSessions);
-}
-
-/**
- * This method attempt to open the sessionId associated with the windowId
- * @param  {string}  windowId  [description]
- * @param  {string}  sessionId [description]
- * @return {boolean} true if the sessionId has never been opened by any of existing windowId
- */
-export function open(windowId: string, sessionId: string): boolean {
-  const foundWindowId = getWindowIdBySessionId(sessionId);
-  if (!foundWindowId) {
-    // set up this sessionId if it's not already selected
-    openedSessions[windowId] = sessionId;
-    lastPing[windowId] = Date.now();
-    return true;
-  } else {
-    // if it is already set up, then let's focus on that window
-    focus(foundWindowId);
-    return false;
-  }
-}
-
-/**
- * Closes a window and removes its session mapping.
+ * Closes a BrowserWindow by its window ID.
  * @param windowId - The window ID to close; no-op if undefined.
  */
 export async function close(windowId?: string) {
@@ -110,9 +16,7 @@ export async function close(windowId?: string) {
     console.error("sessionUtils.ts:close", err);
   }
 
-  delete openedSessions[windowId];
   delete openedWindows[windowId];
-  delete lastPing[windowId];
 }
 
 /**

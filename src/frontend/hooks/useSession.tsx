@@ -2,7 +2,6 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "src/frontend/utils/commonUtils";
 import dataApi from "src/frontend/data/api";
 import { setCurrentSessionId } from "src/frontend/data/session";
-import { useActionDialogs } from "src/frontend/hooks/useActionDialogs";
 import { useAddRecycleBinItem } from "src/frontend/hooks/useFolderItems";
 import { useIsSoftDeleteModeSetting } from "src/frontend/hooks/useSetting";
 import { SqluiCore } from "typings";
@@ -21,29 +20,6 @@ export function useGetSessions() {
 }
 
 /**
- * Hook to fetch IDs of currently opened sessions across windows.
- * @returns React Query result containing opened session IDs.
- */
-export function useGetOpenedSessionIds() {
-  return useQuery([QUERY_KEY_SESSIONS, "opened"], dataApi.getOpenedSessionIds, {
-    notifyOnChangeProps: ["data", "error"],
-  });
-}
-
-/**
- * Hook to mark a session as open. Invalidates the sessions cache on success.
- * @returns Mutation that accepts a session ID to open.
- */
-export function useSetOpenSession() {
-  const queryClient = useQueryClient();
-  return useMutation<Record<string, string>, void, string>(dataApi.setOpenSession, {
-    onSuccess: async () => {
-      queryClient.invalidateQueries([QUERY_KEY_SESSIONS]);
-    },
-  });
-}
-
-/**
  * Hook to fetch the current active session for this window.
  * @returns React Query result containing the current session.
  */
@@ -54,30 +30,15 @@ export function useGetCurrentSession() {
 }
 
 /**
- * Hook to switch to a different session. Creates a new window session or focuses an existing one.
+ * Hook to switch to a different session.
  * @param suppressReload - If true, suppresses page reload after switching sessions.
  * @returns Mutation that accepts a session ID to select.
  */
 export function useSelectSession(suppressReload?: boolean) {
-  const { mutateAsync: setOpenSession } = useSetOpenSession();
   const navigate = useNavigate();
-  const { alert, dismiss: dismissDialog } = useActionDialogs();
   return useMutation<void, void, string>(async (newSessionId: string) => {
-    // set the new session id;
-    const { outcome } = await setOpenSession(newSessionId);
-
-    if (outcome === "create_new_session") {
-      // if this is a brand new session that we can focus on
-      // go back to homepage before switching session
-      navigate("/", { replace: true });
-
-      // then set it as current session
-      await setCurrentSessionId(newSessionId, suppressReload);
-    } else {
-      // let's close this modal and show an alert
-      await dismissDialog();
-      await alert(`The window with this sessionId is now focused.`);
-    }
+    navigate("/", { replace: true });
+    await setCurrentSessionId(newSessionId, suppressReload);
   });
 }
 

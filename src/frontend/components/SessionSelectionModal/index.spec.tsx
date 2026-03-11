@@ -16,7 +16,6 @@ vi.mock("src/frontend/hooks/useActionDialogs", () => ({
 
 vi.mock("src/frontend/hooks/useSession", () => ({
   useGetSessions: () => ({ isLoading: false }),
-  useGetOpenedSessionIds: () => ({ isLoading: false }),
   useGetCurrentSession: () => ({ isLoading: false, data: null }),
 }));
 
