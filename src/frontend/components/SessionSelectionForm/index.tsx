@@ -9,35 +9,23 @@ import ListItem from "@mui/material/ListItem";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import TextField from "@mui/material/TextField";
-import Tooltip from "@mui/material/Tooltip";
 import { useCommands } from "src/frontend/components/MissionControl";
 import { getRandomSessionId } from "src/frontend/data/session";
-import {
-  useGetCurrentSession,
-  useGetOpenedSessionIds,
-  useGetSessions,
-  useSelectSession,
-  useUpsertSession,
-  useDeleteSession,
-} from "src/frontend/hooks/useSession";
+import { useGetCurrentSession, useGetSessions, useSelectSession, useUpsertSession, useDeleteSession } from "src/frontend/hooks/useSession";
 import { useActionDialogs } from "src/frontend/hooks/useActionDialogs";
 
 /** Represents a session option in the session selection list. */
 export type SessionOption = {
   /** Display name of the session. */
   label: string;
-  /** Additional context (e.g., "Current Session" or "Selected in another Window"). */
+  /** Additional context (e.g., "Current Session"). */
   subtitle?: string;
   /** Session ID. */
   value: string;
   /** Whether this session is currently selected. */
   selected?: boolean;
-  /** Whether this session is unavailable for selection. */
-  disabled?: boolean;
   /** Whether this session is the current window's session. */
   isCurrent?: boolean;
-  /** Whether this session is opened in another window. */
-  isOpenedElsewhere?: boolean;
 };
 
 /** Props for the SessionSelectionForm component. */
@@ -49,27 +37,18 @@ type SessionSelectionFormProps = {
 /**
  * Form for selecting, creating, renaming, and deleting sessions.
  * Displays available sessions with their status and allows creating new ones.
- *
- * Rules:
- * - Cannot switch to a session already opened in another window.
- * - Cannot delete sessions opened in other windows.
- * - Can delete any unopened session.
- * - Deleting your own session shows a message telling user to close the window.
  * @param props - Contains isFirstTime flag to control UI behavior.
  * @returns The session selection form or null while loading.
  */
 export default function SessionSelectionForm(props: SessionSelectionFormProps): JSX.Element | null {
   const { isFirstTime } = props;
   const { data: sessions, isLoading: loadingSessions } = useGetSessions();
-  const { data: openedSessionIds, isLoading: loadingOpenedSessionIds } = useGetOpenedSessionIds();
   const { data: currentSession } = useGetCurrentSession();
   const { mutateAsync: upsertSession } = useUpsertSession();
   const { mutateAsync: selectSession } = useSelectSession();
   const { mutateAsync: deleteSession } = useDeleteSession();
   const { selectCommand } = useCommands();
   const { alert, confirm } = useActionDialogs();
-
-  const isLoading = loadingSessions || loadingOpenedSessionIds;
 
   const onCreateNewSession = async (formEl: HTMLElement) => {
     const newSessionName = (formEl.querySelector("input") as HTMLInputElement).value;
@@ -82,13 +61,12 @@ export default function SessionSelectionForm(props: SessionSelectionFormProps): 
     selectSession(newSession.id);
   };
 
-  if (isLoading || !sessions) {
+  if (loadingSessions || !sessions) {
     return null;
   }
 
   const options: SessionOption[] = sessions.map((session) => {
     const isCurrent = session.id === currentSession?.id;
-    const isOpenedElsewhere = !isCurrent && !!openedSessionIds && openedSessionIds.indexOf(session.id) >= 0;
 
     const label = session.name;
     const value = session.id;
@@ -100,19 +78,14 @@ export default function SessionSelectionForm(props: SessionSelectionFormProps): 
         value,
         selected: true,
         isCurrent: true,
-        isOpenedElsewhere: false,
       };
     }
 
     return {
       label,
-      subtitle: isOpenedElsewhere ? "Opened in another Window" : undefined,
       value,
-      // Cannot switch to sessions opened in other windows
-      disabled: isOpenedElsewhere,
       selected: false,
       isCurrent: false,
-      isOpenedElsewhere,
     };
   });
 
@@ -147,16 +120,9 @@ export default function SessionSelectionForm(props: SessionSelectionFormProps): 
       <List>
         {options.map((option) => {
           const onSelectThisSession = () => {
-            if (!option.disabled) {
-              selectSession(option.value);
-            }
+            selectSession(option.value);
           };
           const labelId = `session-option-${option.value}`;
-
-          // Determine which actions are available
-          const canEdit = !option.isOpenedElsewhere;
-          // Can delete: own session or any unopened session. Cannot delete sessions opened in other windows.
-          const canDelete = !option.isOpenedElsewhere;
 
           let secondaryAction: JSX.Element | undefined;
           if (!isFirstTime) {
@@ -164,55 +130,36 @@ export default function SessionSelectionForm(props: SessionSelectionFormProps): 
 
             secondaryAction = (
               <Box sx={{ display: "flex", gap: 2 }}>
-                {canEdit && (
-                  <IconButton
-                    edge="end"
-                    color="info"
-                    aria-label="Edit"
-                    onClick={(e) => {
-                      selectCommand({ event: "clientEvent/session/rename", data: targetSession });
-                      e.preventDefault();
-                      e.stopPropagation();
-                    }}
-                  >
-                    <EditIcon />
-                  </IconButton>
-                )}
-                {canDelete ? (
-                  <IconButton
-                    edge="end"
-                    color="error"
-                    aria-label="Delete"
-                    onClick={(e) => {
-                      onDeleteSessionOption(option);
-                      e.preventDefault();
-                      e.stopPropagation();
-                    }}
-                  >
-                    <DeleteIcon />
-                  </IconButton>
-                ) : (
-                  <Tooltip title="Cannot delete a session opened in another window">
-                    <span>
-                      <IconButton edge="end" color="error" aria-label="Delete" disabled>
-                        <DeleteIcon />
-                      </IconButton>
-                    </span>
-                  </Tooltip>
-                )}
+                <IconButton
+                  edge="end"
+                  color="info"
+                  aria-label="Edit"
+                  onClick={(e) => {
+                    selectCommand({ event: "clientEvent/session/rename", data: targetSession });
+                    e.preventDefault();
+                    e.stopPropagation();
+                  }}
+                >
+                  <EditIcon />
+                </IconButton>
+                <IconButton
+                  edge="end"
+                  color="error"
+                  aria-label="Delete"
+                  onClick={(e) => {
+                    onDeleteSessionOption(option);
+                    e.preventDefault();
+                    e.stopPropagation();
+                  }}
+                >
+                  <DeleteIcon />
+                </IconButton>
               </Box>
             );
           }
 
           return (
-            <ListItem
-              dense
-              key={option.value}
-              disabled={option.disabled}
-              selected={option.selected}
-              onClick={onSelectThisSession}
-              secondaryAction={secondaryAction}
-            >
+            <ListItem dense key={option.value} selected={option.selected} onClick={onSelectThisSession} secondaryAction={secondaryAction}>
               <ListItemIcon>
                 <Checkbox edge="start" checked={!!option.selected} tabIndex={-1} inputProps={{ "aria-labelledby": labelId }} />
               </ListItemIcon>

@@ -253,35 +253,6 @@ export class ProxyApi {
     return _fetch<SqluiCore.Session[]>(`/api/sessions`);
   }
 
-  /** Fetches IDs of all currently opened sessions. */
-  static getOpenedSessionIds() {
-    return _fetch<string[]>(`/api/sessions/opened`);
-  }
-
-  /** Pings the server to keep the current window's session alive. */
-  static pingSession() {
-    return _fetch<void>(`/api/sessions/ping`, {
-      method: "post",
-    });
-  }
-
-  /** Removes the current window's session from the opened sessions list. */
-  static closeOpenedSession() {
-    return _fetch<void>(`/api/sessions/opened`, {
-      method: "delete",
-    });
-  }
-
-  /**
-   * Marks a session as opened.
-   * @param sessionId - The session ID to mark as open.
-   */
-  static setOpenSession(sessionId: string) {
-    return _fetch<Record<string, string>>(`/api/sessions/opened/${sessionId}`, {
-      method: "post",
-    });
-  }
-
   /**
    * Creates or updates a session.
    * @param newSession - The session to upsert.
