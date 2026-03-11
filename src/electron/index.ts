@@ -59,32 +59,39 @@ async function createWindow(isFirstWindow?: boolean) {
   const targetWindowId = `electron-window-${Date.now()}`;
 
   if (isFirstWindow === true) {
-    // if this is the first window, let's attempt to open the first sessionId
+    // if this is the first window, let's attempt to set the first sessionId
     const sessionsStorage = await new PersistentStorage<SqluiCore.Session>("session", "session", "sessions");
 
     const sessions = await sessionsStorage.list();
 
     if (sessions && sessions.length > 0) {
-      // TODO: add the ability to allow setting default session
       const sessionId = sessions[0].id;
-      sessionUtils.open(targetWindowId, sessionId);
+      // Set the sessionId in sessionStorage so the frontend picks it up
+      mainWindow.webContents.on("did-finish-load", () => {
+        mainWindow.webContents.executeJavaScript(`
+          sessionStorage.setItem('sqlui-native.windowId', '${targetWindowId}');
+          sessionStorage.setItem('sqlui-native.sessionId', '${sessionId}');
+        `);
+      });
+    } else {
+      mainWindow.webContents.on("did-finish-load", () => {
+        mainWindow.webContents.executeJavaScript(`
+          sessionStorage.setItem('sqlui-native.windowId', '${targetWindowId}');
+        `);
+      });
     }
+  } else {
+    // hook up events
+    mainWindow.webContents.on("did-finish-load", () => {
+      mainWindow.webContents.executeJavaScript(`
+        sessionStorage.setItem('sqlui-native.windowId', '${targetWindowId}');
+      `);
+    });
   }
 
-  // hook up events
-  mainWindow.webContents.on("did-finish-load", () => {
-    mainWindow.webContents.executeJavaScript(`
-      sessionStorage.setItem('sqlui-native.windowId', '${targetWindowId}')
-      console.log('hooking window.windowId', window.electronWindowId);
-    `);
-  });
-
   mainWindow.on("close", async () => {
-    // on window close, we need to remove its sessionId
-    const targetSessionId = await mainWindow.webContents.executeJavaScript(`sessionStorage.getItem('clientConfig/api.sessionId')`);
-    console.log("Window closed - freeing up the targetSessionId", targetSessionId);
     sessionUtils.close(targetWindowId);
-  }); // win close
+  });
 
   //@ts-ignore
   mainWindow._windowId = targetWindowId;

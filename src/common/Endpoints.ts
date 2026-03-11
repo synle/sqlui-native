@@ -11,7 +11,6 @@ import {
   getSettingsStorage,
   storageDir,
 } from "src/common/PersistentStorage";
-import * as sessionUtils from "src/common/utils/sessionUtils";
 import { SqluiCore, SqluiEnums } from "typings";
 let expressAppContext: Express | undefined;
 
@@ -370,21 +369,14 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
   //=========================================================================
   // get the current session
   addDataEndpoint("get", "/api/session", async (req, res) => {
-    const windowId = req.headers["sqlui-native-window-id"];
-    if (!windowId) {
-      // windowId is required
-      return res.status(404).json(null);
-    }
-
-    const sessionId = await sessionUtils.getByWindowId(windowId);
+    const sessionId = req.headers["sqlui-native-session-id"];
     if (!sessionId) {
       return res.status(404).json(null);
     }
-    const sessionsStorage = await getSessionsStorage();
 
+    const sessionsStorage = await getSessionsStorage();
     const session = await sessionsStorage.get(sessionId);
 
-    // TODO see if we need to start over with a new session
     if (!session) {
       return res.status(404).json(null);
     }
@@ -396,52 +388,6 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     const sessionsStorage = await getSessionsStorage();
 
     res.status(200).json(await sessionsStorage.list());
-  });
-
-  /** Sessions not pinged within this threshold are considered stale and removed. */
-  const SESSION_STALE_THRESHOLD_MS = 10 * 60 * 1000; // 10 minutes
-
-  addDataEndpoint("get", "/api/sessions/opened", async (req, res) => {
-    sessionUtils.cleanupStaleSessions(SESSION_STALE_THRESHOLD_MS);
-    res.status(200).json(await sessionUtils.listSessionIds());
-  });
-
-  addDataEndpoint("post", "/api/sessions/opened/:sessionId", async (req, res) => {
-    const windowId = req.headers["sqlui-native-window-id"];
-    if (!windowId) {
-      throw new Error("windowId is required");
-    }
-
-    const newSessionId = req.params?.sessionId;
-    const isNewSessionId = await sessionUtils.open(windowId, newSessionId);
-
-    if (isNewSessionId) {
-      // created
-      res.status(201).json({
-        outcome: "create_new_session",
-      });
-    } else {
-      // accepted
-      res.status(202).json({
-        outcome: "focus_on_old_session_id",
-      });
-    }
-  });
-
-  addDataEndpoint("delete", "/api/sessions/opened", async (req, res) => {
-    const windowId = req.headers["sqlui-native-window-id"];
-    if (windowId) {
-      await sessionUtils.close(windowId);
-    }
-    res.status(200).json({ outcome: "closed" });
-  });
-
-  addDataEndpoint("post", "/api/sessions/ping", async (req, res) => {
-    const windowId = req.headers["sqlui-native-window-id"];
-    if (windowId) {
-      sessionUtils.ping(windowId);
-    }
-    res.status(200).json({ outcome: "pinged" });
   });
 
   addDataEndpoint("post", "/api/session", async (req, res) => {
@@ -502,12 +448,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     }
     const sessionsStorage = await getSessionsStorage();
 
-    // delete it
     const response = await sessionsStorage.delete(sessionIdToDelete);
-
-    // close the targeted windowId
-    // if there's a matching window, let's close it
-    await sessionUtils.close(await sessionUtils.getWindowIdBySessionId(sessionIdToDelete));
 
     res.status(202).json(response);
   });

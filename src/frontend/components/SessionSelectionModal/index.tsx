@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { allMenuKeys } from "src/frontend/components/MissionControl";
 import SessionSelectionForm from "src/frontend/components/SessionSelectionForm";
 import { useActionDialogs } from "src/frontend/hooks/useActionDialogs";
-import { useGetCurrentSession, useGetOpenedSessionIds, useGetSessions } from "src/frontend/hooks/useSession";
+import { useGetCurrentSession, useGetSessions } from "src/frontend/hooks/useSession";
 
 /**
  * Modal dialog for initial session selection. Shown when no valid session is detected.
@@ -12,9 +12,8 @@ import { useGetCurrentSession, useGetOpenedSessionIds, useGetSessions } from "sr
 export default function SessionSelectionModal() {
   const { modal } = useActionDialogs();
   const { isLoading: loadingSessions } = useGetSessions();
-  const { isLoading: loadingOpenedSessionIds } = useGetOpenedSessionIds();
   const { isLoading: loadingCurrentSession, data: currentSession } = useGetCurrentSession();
-  const isLoading = loadingSessions || loadingOpenedSessionIds || loadingCurrentSession;
+  const isLoading = loadingSessions || loadingCurrentSession;
 
   useEffect(() => {
     if (isLoading && currentSession) {
