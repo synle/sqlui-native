@@ -29,7 +29,6 @@ import {
   useCloneSession,
   useDeleteSession,
   useGetCurrentSession,
-  useGetOpenedSessionIds,
   useGetSessions,
   useSelectSession,
   useUpsertSession,
@@ -128,7 +127,6 @@ export default function MissionControl() {
   const { modal, confirm, prompt, alert, dismiss: dismissDialog } = useActionDialogs();
   const { data: sessions } = useGetSessions();
   const { data: serverConfigs } = useGetServerConfigs();
-  const { data: openedSessionIds } = useGetOpenedSessionIds();
   const { data: currentSession } = useGetCurrentSession();
   const { mutateAsync: upsertSession } = useUpsertSession();
   const { mutateAsync: cloneSession } = useCloneSession();
@@ -609,15 +607,6 @@ export default function MissionControl() {
   const onDeleteSession = async (targetSession: SqluiCore.Session) => {
     try {
       if (!targetSession) {
-        return;
-      }
-
-      // Check if the session is opened in another window (not our own)
-      const isOpenedElsewhere =
-        targetSession.id !== currentSession?.id && openedSessionIds && openedSessionIds.indexOf(targetSession.id) >= 0;
-
-      if (isOpenedElsewhere) {
-        await alert(`Cannot delete the session "${targetSession.name}" because it is opened in another window.`);
         return;
       }
 

@@ -1,6 +1,8 @@
 // @vitest-environment jsdom
 import { render } from "@testing-library/react";
 import { vi } from "vitest";
+import React from "react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 vi.mock("src/frontend/components/SessionSelectionModal", () => ({
   default: () => <div>SessionModal</div>,
@@ -17,12 +19,16 @@ vi.mock("src/frontend/hooks/useSession", () => ({
 
 import SessionManager from "src/frontend/components/SessionManager";
 
+const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+
 describe("SessionManager", () => {
   test("renders children when session is valid", async () => {
     const { container } = render(
-      <SessionManager>
-        <div>App Content</div>
-      </SessionManager>,
+      <QueryClientProvider client={queryClient}>
+        <SessionManager>
+          <div>App Content</div>
+        </SessionManager>
+      </QueryClientProvider>,
     );
     // Wait for useEffect to set status
     await vi.waitFor(() => {
