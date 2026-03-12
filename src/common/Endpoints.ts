@@ -84,7 +84,7 @@ function addDataEndpoint(
         },
       };
 
-      handlerToUse(req, res, apiCache);
+      await handlerToUse(req, res, apiCache);
     });
   } else {
     electronEndpointHandlers.push([method, url, handlerToUse]);
