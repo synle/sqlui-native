@@ -23,6 +23,7 @@ vi.mock("src/frontend/utils/commonUtils", async (importOriginal) => {
 
 vi.mock("src/frontend/hooks/useSession", () => ({
   useGetCurrentSession: () => ({ data: { id: "s1", name: "Test" }, isLoading: false, refetch: vi.fn() }),
+  useGetSessions: () => ({ data: [{ id: "s1", name: "Test" }], refetch: vi.fn() }),
   useSelectSession: () => ({ mutateAsync: vi.fn() }),
 }));
 
