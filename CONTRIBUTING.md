@@ -412,6 +412,145 @@ CREATE TABLE artists(
 )
 ```
 
+## TLS / SSL Certificate-Based Authentication
+
+### Generating Self-Signed Certificates
+
+Use the following commands to generate a CA, server certificate, and client certificate for local testing:
+
+```bash
+# Create a directory for certificates
+mkdir -p certs && cd certs
+
+# 1. Generate CA key and certificate
+openssl genrsa 2048 > ca-key.pem
+openssl req -new -x509 -nodes -days 3650 -key ca-key.pem -out ca.pem -subj "/CN=Test CA"
+
+# 2. Generate server key and certificate signed by CA
+openssl req -newkey rsa:2048 -nodes -keyout server-key.pem -out server-req.pem -subj "/CN=localhost"
+openssl x509 -req -in server-req.pem -days 3650 -CA ca.pem -CAkey ca-key.pem -set_serial 01 -out server-cert.pem
+
+# 3. Generate client key and certificate signed by CA
+openssl req -newkey rsa:2048 -nodes -keyout client-key.pem -out client-req.pem -subj "/CN=client"
+openssl x509 -req -in client-req.pem -days 3650 -CA ca.pem -CAkey ca-key.pem -set_serial 02 -out client-cert.pem
+
+# 4. Clean up intermediate request files
+rm -f server-req.pem client-req.pem
+
+cd ..
+```
+
+This produces:
+
+| File              | Purpose                             |
+| ----------------- | ----------------------------------- |
+| `ca.pem`          | CA certificate (used by both sides) |
+| `server-key.pem`  | Server private key                  |
+| `server-cert.pem` | Server certificate                  |
+| `client-key.pem`  | Client private key                  |
+| `client-cert.pem` | Client certificate                  |
+
+### Docker Containers with TLS Certificate Authentication
+
+These containers require client certificates for authentication instead of username/password.
+
+```bash
+# Notes: mount the certs directory into the container
+
+CERTS_DIR="$(pwd)/certs"
+
+##########################################################################################
+# MySQL with TLS (require client certificate)
+docker run --name sqlui_mysql_tls -d -p 3307:3306 \
+  -v "$CERTS_DIR":/certs \
+  -e MYSQL_ROOT_PASSWORD='password123!' \
+  mysql \
+  --ssl-ca=/certs/ca.pem \
+  --ssl-cert=/certs/server-cert.pem \
+  --ssl-key=/certs/server-key.pem \
+  --require-secure-transport=ON
+
+  # After container is ready, require X509 for the root user:
+  docker exec -it sqlui_mysql_tls mysql -uroot -p'password123!' -e "
+    ALTER USER 'root'@'%' REQUIRE X509;
+    FLUSH PRIVILEGES;
+  "
+
+  # Connection string: mysql://root@127.0.0.1:3307
+  # SSL CA Path:       /path/to/certs/ca.pem
+  # SSL Cert Path:     /path/to/certs/client-cert.pem
+  # SSL Key Path:      /path/to/certs/client-key.pem
+
+
+##########################################################################################
+# MariaDB with TLS (require client certificate)
+docker run --name sqlui_mariadb_tls -d -p 33062:3306 \
+  -v "$CERTS_DIR":/certs \
+  -e MARIADB_ROOT_PASSWORD='password123!' \
+  mariadb:latest \
+  --ssl-ca=/certs/ca.pem \
+  --ssl-cert=/certs/server-cert.pem \
+  --ssl-key=/certs/server-key.pem \
+  --require-secure-transport=ON
+
+  # After container is ready:
+  docker exec -it sqlui_mariadb_tls mariadb -uroot -p'password123!' -e "
+    ALTER USER 'root'@'%' REQUIRE X509;
+    FLUSH PRIVILEGES;
+  "
+
+  # Connection string: mariadb://root@127.0.0.1:33062
+  # SSL CA Path:       /path/to/certs/ca.pem
+  # SSL Cert Path:     /path/to/certs/client-cert.pem
+  # SSL Key Path:      /path/to/certs/client-key.pem
+
+
+##########################################################################################
+# PostgreSQL with TLS (require client certificate)
+# PostgreSQL needs specific file permissions and pg_hba.conf changes
+
+# Create a pg_hba.conf that requires client certs
+cat > certs/pg_hba.conf << 'PGEOF'
+hostssl all all 0.0.0.0/0 cert clientcert=verify-ca
+local   all all                trust
+PGEOF
+
+docker run --name sqlui_postgres_tls -d -p 5433:5432 \
+  -v "$CERTS_DIR":/certs \
+  -e POSTGRES_PASSWORD='password123!' \
+  postgres \
+  -c ssl=on \
+  -c ssl_ca_file=/certs/ca.pem \
+  -c ssl_cert_file=/certs/server-cert.pem \
+  -c ssl_key_file=/certs/server-key.pem \
+  -c hba_file=/certs/pg_hba.conf
+
+  # Note: PostgreSQL requires the server key to be owned by the postgres user.
+  # You may need to: docker exec sqlui_postgres_tls chown postgres /certs/server-key.pem
+  # Then restart:    docker restart sqlui_postgres_tls
+
+  # Connection string: postgres://postgres@127.0.0.1:5433
+  # SSL CA Path:       /path/to/certs/ca.pem
+  # SSL Cert Path:     /path/to/certs/client-cert.pem
+  # SSL Key Path:      /path/to/certs/client-key.pem
+
+
+##########################################################################################
+# Cleanup TLS containers
+docker rm -f sqlui_mysql_tls sqlui_mariadb_tls sqlui_postgres_tls
+```
+
+### Using TLS Certificates in sqlui-native
+
+In the **New Connection** or **Edit Connection** form, fill in:
+
+1. **Connection** — the connection string (e.g., `mysql://root@127.0.0.1:3307`)
+2. **SSL CA Certificate Path** — absolute path to `ca.pem`
+3. **SSL Client Certificate Path** — absolute path to `client-cert.pem`
+4. **SSL Client Key Path** — absolute path to `client-key.pem`
+
+The SSL fields are optional. Leave them empty for standard username/password connections.
+
 ## CI / CD Notes
 
 Self hosted runners

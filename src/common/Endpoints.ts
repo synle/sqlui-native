@@ -174,7 +174,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     const connection = await connectionsStorage.get(req.params?.connectionId);
 
     try {
-      const engine = getDataAdapter(connection.connection);
+      const engine = getDataAdapter(connection.connection, connection.ssl);
       await engine.authenticate();
 
       connection.status = "online";
@@ -247,7 +247,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     }
 
     try {
-      const engine = getDataAdapter(connection.connection);
+      const engine = getDataAdapter(connection.connection, connection.ssl);
       await engine.authenticate();
       res.status(200).json(await getConnectionMetaData(connection));
     } catch (err: any) {
@@ -268,7 +268,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     }
 
     try {
-      const engine = getDataAdapter(connection.connection);
+      const engine = getDataAdapter(connection.connection, connection.ssl);
       res.status(200).json(await engine.execute(req.body?.sql, req.body?.database, req.body?.table));
     } catch (err: any) {
       const message = err?.sqlMessage || err?.message || err?.toString?.() || "Query execution failed";
@@ -285,7 +285,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     }
 
     try {
-      const engine = getDataAdapter(connection.connection);
+      const engine = getDataAdapter(connection.connection, connection.ssl);
       await engine.authenticate();
       res.status(200).json(await getConnectionMetaData(connection));
     } catch (err: any) {
@@ -302,6 +302,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
       await connectionsStorage.add({
         connection: req.body?.connection,
         name: req.body?.name,
+        ssl: req.body?.ssl,
       }),
     );
   });
@@ -314,6 +315,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
         id: req.params?.connectionId,
         connection: req.body?.connection,
         name: req.body?.name,
+        ssl: req.body?.ssl,
       }),
     );
   });
