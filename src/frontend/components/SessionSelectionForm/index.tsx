@@ -65,7 +65,11 @@ export default function SessionSelectionForm(props: SessionSelectionFormProps): 
   };
 
   if (loadingSessions || !sessions) {
-    return null;
+    return (
+      <Box sx={{ display: "flex", justifyContent: "center", padding: 3 }}>
+        <CircularProgress size={24} />
+      </Box>
+    );
   }
 
   const options: SessionOption[] = sessions.map((session) => {
