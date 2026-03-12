@@ -71,6 +71,39 @@ Assuming you use the same database in the docker samples below:
     "id": "connection.1644456516996.9387746947534656",
     "connection": "redis://127.0.0.1:6379",
     "name": "Local Redis"
+  },
+  {
+    "_type": "connection",
+    "id": "connection.1700000000001.0000000000000001",
+    "connection": "mysql://certuser@127.0.0.1:3308",
+    "name": "Local MySQL (TLS Cert)",
+    "ssl": {
+      "sslCaPath": "/path/to/certs/ca.pem",
+      "sslCertPath": "/path/to/certs/client-cert.pem",
+      "sslKeyPath": "/path/to/certs/client-key.pem"
+    }
+  },
+  {
+    "_type": "connection",
+    "id": "connection.1700000000002.0000000000000002",
+    "connection": "mariadb://certuser@127.0.0.1:33063",
+    "name": "Local MariaDB (TLS Cert)",
+    "ssl": {
+      "sslCaPath": "/path/to/certs/ca.pem",
+      "sslCertPath": "/path/to/certs/client-cert.pem",
+      "sslKeyPath": "/path/to/certs/client-key.pem"
+    }
+  },
+  {
+    "_type": "connection",
+    "id": "connection.1700000000003.0000000000000003",
+    "connection": "postgres://postgres@127.0.0.1:5434",
+    "name": "Local PostgreSQL (TLS Cert)",
+    "ssl": {
+      "sslCaPath": "/path/to/certs/ca.pem",
+      "sslCertPath": "/path/to/certs/client-cert.pem",
+      "sslKeyPath": "/path/to/certs/client-key.pem"
+    }
   }
 ]
 ```
@@ -213,6 +246,26 @@ docker run --name sqlui_mssql -d -p 1433:1433 -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PA
 # for M-Series Macs, use this instead of the mssql line above
 # docker run --name sqlui_mssql -d -e "ACCEPT_EULA=Y" -p 1433:1433 -e SA_PASSWORD='password123!' mcr.microsoft.com/azure-sql-edge
 
+# TLS cert-based containers (generate certs first — see "Generating Self-Signed Certificates" section)
+CERTS_DIR="$(pwd)/certs"
+SSL_CA="$CERTS_DIR/ca.pem"
+SSL_CERT="$CERTS_DIR/client-cert.pem"
+SSL_KEY="$CERTS_DIR/client-key.pem"
+
+docker run --name sqlui_mysql_tls -d -p 3308:3306 -v "$CERTS_DIR":/certs -e MYSQL_ROOT_PASSWORD='password123!' mysql --ssl-ca=/certs/ca.pem --ssl-cert=/certs/server-cert.pem --ssl-key=/certs/server-key.pem --require-secure-transport=ON
+docker run --name sqlui_mariadb_tls -d -p 33063:3306 -v "$CERTS_DIR":/certs -e MARIADB_ROOT_PASSWORD='password123!' mariadb:latest --ssl-ca=/certs/ca.pem --ssl-cert=/certs/server-cert.pem --ssl-key=/certs/server-key.pem --require-secure-transport=ON
+docker run --name sqlui_postgres_tls -d -p 5434:5432 -v "$CERTS_DIR":/certs -e POSTGRES_PASSWORD='password123!' postgres -c ssl=on -c ssl_ca_file=/certs/ca.pem -c ssl_cert_file=/certs/server-cert.pem -c ssl_key_file=/certs/server-key.pem
+
+# Wait for TLS containers, then create cert-only users
+sleep 10
+docker exec sqlui_mysql_tls mysql -uroot -p'password123!' -e "CREATE USER 'certuser'@'%' REQUIRE X509; GRANT ALL PRIVILEGES ON *.* TO 'certuser'@'%'; FLUSH PRIVILEGES;"
+docker exec sqlui_mariadb_tls mariadb -uroot -p'password123!' -e "CREATE USER 'certuser'@'%' REQUIRE X509; GRANT ALL PRIVILEGES ON *.* TO 'certuser'@'%'; FLUSH PRIVILEGES;"
+
+# TLS connection strings (use $SSL_CA, $SSL_CERT, $SSL_KEY as the 3 SSL paths in the app):
+#   mysql://certuser@127.0.0.1:3308
+#   mariadb://certuser@127.0.0.1:33063
+#   postgres://postgres@127.0.0.1:5434
+
 # 2. Wait for containers to be ready (Cassandra takes the longest ~60-90s)
 docker exec sqlui_mysql mysqladmin ping -uroot -p'password123!' --silent
 docker exec sqlui_postgres pg_isready -U postgres
@@ -229,7 +282,7 @@ npm run test-integration
 npx vitest run --config vitest.integration.config.ts src/common/adapters/RelationalDataAdapter/mysql.integration.spec.ts
 
 # 6. Cleanup containers when done
-docker rm -f sqlui_mysql sqlui_mariadb sqlui_mssql sqlui_postgres sqlui_cassandra_v4 sqlui_cassandra_v2 sqlui_mongodb sqlui_redis sqlui_cockroach_demo
+docker rm -f sqlui_mysql sqlui_mariadb sqlui_mssql sqlui_postgres sqlui_cassandra_v4 sqlui_cassandra_v2 sqlui_mongodb sqlui_redis sqlui_cockroach_demo sqlui_mysql_tls sqlui_mariadb_tls sqlui_postgres_tls
 ```
 
 ### Running integration tests via GitHub Actions
@@ -461,7 +514,7 @@ CERTS_DIR="$(pwd)/certs"
 
 ##########################################################################################
 # MySQL with TLS (require client certificate)
-docker run --name sqlui_mysql_tls -d -p 3307:3306 \
+docker run --name sqlui_mysql_tls -d -p 3308:3306 \
   -v "$CERTS_DIR":/certs \
   -e MYSQL_ROOT_PASSWORD='password123!' \
   mysql \
@@ -470,13 +523,14 @@ docker run --name sqlui_mysql_tls -d -p 3307:3306 \
   --ssl-key=/certs/server-key.pem \
   --require-secure-transport=ON
 
-  # After container is ready, require X509 for the root user:
+  # After container is ready, create a cert-only user (no password):
   docker exec -it sqlui_mysql_tls mysql -uroot -p'password123!' -e "
-    ALTER USER 'root'@'%' REQUIRE X509;
+    CREATE USER 'certuser'@'%' REQUIRE X509;
+    GRANT ALL PRIVILEGES ON *.* TO 'certuser'@'%';
     FLUSH PRIVILEGES;
   "
 
-  # Connection string: mysql://root@127.0.0.1:3307
+  # Connection string: mysql://certuser@127.0.0.1:3308
   # SSL CA Path:       /path/to/certs/ca.pem
   # SSL Cert Path:     /path/to/certs/client-cert.pem
   # SSL Key Path:      /path/to/certs/client-key.pem
@@ -484,7 +538,7 @@ docker run --name sqlui_mysql_tls -d -p 3307:3306 \
 
 ##########################################################################################
 # MariaDB with TLS (require client certificate)
-docker run --name sqlui_mariadb_tls -d -p 33062:3306 \
+docker run --name sqlui_mariadb_tls -d -p 33063:3306 \
   -v "$CERTS_DIR":/certs \
   -e MARIADB_ROOT_PASSWORD='password123!' \
   mariadb:latest \
@@ -493,13 +547,14 @@ docker run --name sqlui_mariadb_tls -d -p 33062:3306 \
   --ssl-key=/certs/server-key.pem \
   --require-secure-transport=ON
 
-  # After container is ready:
+  # After container is ready, create a cert-only user (no password):
   docker exec -it sqlui_mariadb_tls mariadb -uroot -p'password123!' -e "
-    ALTER USER 'root'@'%' REQUIRE X509;
+    CREATE USER 'certuser'@'%' REQUIRE X509;
+    GRANT ALL PRIVILEGES ON *.* TO 'certuser'@'%';
     FLUSH PRIVILEGES;
   "
 
-  # Connection string: mariadb://root@127.0.0.1:33062
+  # Connection string: mariadb://certuser@127.0.0.1:33063
   # SSL CA Path:       /path/to/certs/ca.pem
   # SSL Cert Path:     /path/to/certs/client-cert.pem
   # SSL Key Path:      /path/to/certs/client-key.pem
@@ -515,7 +570,7 @@ hostssl all all 0.0.0.0/0 cert clientcert=verify-ca
 local   all all                trust
 PGEOF
 
-docker run --name sqlui_postgres_tls -d -p 5433:5432 \
+docker run --name sqlui_postgres_tls -d -p 5434:5432 \
   -v "$CERTS_DIR":/certs \
   -e POSTGRES_PASSWORD='password123!' \
   postgres \
@@ -529,7 +584,7 @@ docker run --name sqlui_postgres_tls -d -p 5433:5432 \
   # You may need to: docker exec sqlui_postgres_tls chown postgres /certs/server-key.pem
   # Then restart:    docker restart sqlui_postgres_tls
 
-  # Connection string: postgres://postgres@127.0.0.1:5433
+  # Connection string: postgres://postgres@127.0.0.1:5434 (PostgreSQL uses the cert CN for auth, no password needed)
   # SSL CA Path:       /path/to/certs/ca.pem
   # SSL Cert Path:     /path/to/certs/client-cert.pem
   # SSL Key Path:      /path/to/certs/client-key.pem
