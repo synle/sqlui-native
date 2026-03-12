@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "src/frontend/utils/commonUtils";
 import dataApi from "src/frontend/data/api";
-import { getCurrentSessionId, setCurrentSessionId, setSessionIdIfNotDefined } from "src/frontend/data/session";
+import { getCurrentSessionId, setCurrentSessionId } from "src/frontend/data/session";
 import { useAddRecycleBinItem } from "src/frontend/hooks/useFolderItems";
 import { useIsSoftDeleteModeSetting } from "src/frontend/hooks/useSetting";
 import { SqluiCore } from "typings";
@@ -16,11 +16,6 @@ const QUERY_KEY_SESSIONS = "sessions";
 export function useGetSessions() {
   return useQuery([QUERY_KEY_SESSIONS], dataApi.getSessions, {
     notifyOnChangeProps: ["data", "error"],
-    onSuccess: (sessions) => {
-      if (sessions && sessions.length > 0) {
-        setSessionIdIfNotDefined(sessions[0].id);
-      }
-    },
   });
 }
 

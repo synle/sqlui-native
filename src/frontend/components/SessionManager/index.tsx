@@ -28,6 +28,13 @@ export default function SessionManager(props: SessionManagerProps): JSX.Element 
   const navigate = useNavigate();
 
   useEffect(() => {
+    // No session ID in sessionStorage — go straight to session select
+    if (!getCurrentSessionId()) {
+      setStatus("no_session");
+      navigate("/session_select", { replace: true });
+      return;
+    }
+
     if (loadingCurrentSession) {
       return;
     }
@@ -39,9 +46,9 @@ export default function SessionManager(props: SessionManagerProps): JSX.Element 
       return;
     }
 
-    // If sessionId isn't in sessionStorage yet (Electron race condition),
-    // retry a few times before concluding there's no session
-    if (!getCurrentSessionId() && retryCountRef.current < 10) {
+    // Session ID exists in sessionStorage but server didn't return it —
+    // retry a few times (Electron race condition) before giving up
+    if (retryCountRef.current < 10) {
       retryCountRef.current += 1;
       const timer = setTimeout(() => {
         refetch();
