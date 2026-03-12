@@ -42,7 +42,6 @@ function addDataEndpoint(
   const handlerToUse = async (req: any, res: any, cache: any) => {
     try {
       res.header("sqlui-native-session-id", req.headers["sqlui-native-session-id"]);
-      res.header("sqlui-native-window-id", req.headers["sqlui-native-window-id"]);
       await incomingHandler(req, res, cache);
     } catch (err: any) {
       console.error(`Endpoints.ts:addDataEndpoint [${method.toUpperCase()} ${url}] error`, err);
@@ -387,7 +386,16 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
   addDataEndpoint("get", "/api/sessions", async (req, res) => {
     const sessionsStorage = await getSessionsStorage();
 
-    res.status(200).json(await sessionsStorage.list());
+    let sessions = sessionsStorage.list();
+
+    if (sessions.length === 0) {
+      sessionsStorage.add({
+        name: `New Session ${new Date().toLocaleString()}`,
+      });
+      sessions = sessionsStorage.list();
+    }
+
+    res.status(200).json(sessions);
   });
 
   addDataEndpoint("post", "/api/session", async (req, res) => {

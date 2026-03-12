@@ -3,7 +3,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import { useEffect, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import SessionSelectionModal from "src/frontend/components/SessionSelectionModal";
-import { setCurrentSessionId } from "src/frontend/data/session";
+import { getCurrentSessionId, setCurrentSessionId } from "src/frontend/data/session";
 import { useGetCurrentSession, useSelectSession } from "src/frontend/hooks/useSession";
 
 /** Props for the SessionManager component. */
@@ -38,10 +38,9 @@ export default function SessionManager(props: SessionManagerProps): JSX.Element 
       return;
     }
 
-    // If windowId isn't in sessionStorage yet (Electron race condition),
+    // If sessionId isn't in sessionStorage yet (Electron race condition),
     // retry a few times before concluding there's no session
-    const windowId = sessionStorage.getItem("sqlui-native.windowId");
-    if (!windowId && retryCountRef.current < 10) {
+    if (!getCurrentSessionId() && retryCountRef.current < 10) {
       retryCountRef.current += 1;
       const timer = setTimeout(() => {
         refetch();

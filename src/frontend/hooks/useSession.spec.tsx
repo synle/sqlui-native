@@ -16,6 +16,7 @@ vi.mock("src/frontend/data/api", () => ({
 }));
 
 vi.mock("src/frontend/data/session", () => ({
+  getCurrentSessionId: () => sessionStorage.getItem("sqlui-native.sessionId") || "",
   setCurrentSessionId: vi.fn(),
 }));
 
@@ -39,6 +40,10 @@ function createWrapper() {
 }
 
 describe("useSession", () => {
+  beforeEach(() => {
+    sessionStorage.setItem("sqlui-native.sessionId", "test-session");
+  });
+
   test("useGetSessions returns data property", async () => {
     const { result } = renderHook(() => useGetSessions(), { wrapper: createWrapper() });
     await waitFor(() => expect(result.current.data).toBeDefined());

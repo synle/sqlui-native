@@ -24,10 +24,4 @@ describe("setCurrentSessionId", () => {
     setCurrentSessionId("test-session-123", true);
     expect(sessionStorage.getItem("sqlui-native.sessionId")).toContain("test-session-123");
   });
-
-  test("preserves windowId after setting session", () => {
-    sessionStorage.setItem("sqlui-native.windowId", "window-42");
-    setCurrentSessionId("test-session-456", true);
-    expect(sessionStorage.getItem("sqlui-native.windowId")).toContain("window-42");
-  });
 });

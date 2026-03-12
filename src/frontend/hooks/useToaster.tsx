@@ -3,6 +3,7 @@ import OpenInFullIcon from "@mui/icons-material/OpenInFull";
 import IconButton from "@mui/material/IconButton";
 import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 import { useActionDialogs } from "src/frontend/hooks/useActionDialogs";
 import { getGeneratedRandomId } from "src/frontend/utils/commonUtils";
 
@@ -357,7 +358,7 @@ function _ensureContainerMounted() {
   const container = document.createElement("div");
   container.id = "toaster-root";
   document.body.appendChild(container);
-  ReactDOM.render(<ToasterContainer />, container);
+  createRoot(container).render(<ToasterContainer />);
 }
 
 /**
