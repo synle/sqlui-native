@@ -15,6 +15,14 @@ type ConnectionFormProps = {
   id?: string;
 };
 
+/** Returns the ssl config only if both client cert and client key are provided. */
+function getValidatedSsl(ssl?: SqluiCore.ConnectionSslConfig): SqluiCore.ConnectionSslConfig | undefined {
+  if (!ssl?.sslCertPath || !ssl?.sslKeyPath) {
+    return undefined;
+  }
+  return ssl;
+}
+
 /**
  * Form for creating a new database connection, starting with a dialect selection hint screen.
  * @returns The rendered new connection form or dialect selection screen.
@@ -28,11 +36,10 @@ export function NewConnectionForm() {
   const navigate = useNavigate();
 
   const onSave = async () => {
-    const hasSsl = ssl.sslCaPath || ssl.sslCertPath || ssl.sslKeyPath;
     await mutateAsync({
       name,
       connection,
-      ssl: hasSsl ? ssl : undefined,
+      ssl: getValidatedSsl(ssl),
     });
 
     createSystemNotification(`Connection "${name}" created`);
@@ -101,12 +108,11 @@ export function EditConnectionForm(props: ConnectionFormProps): JSX.Element | nu
   const navigate = useNavigate();
 
   const onSave = async () => {
-    const hasSsl = ssl.sslCaPath || ssl.sslCertPath || ssl.sslKeyPath;
     await mutateAsync({
       id,
       name,
       connection,
-      ssl: hasSsl ? ssl : undefined,
+      ssl: getValidatedSsl(ssl),
     });
 
     // when done, go back to the main page
@@ -204,11 +210,10 @@ function MainConnectionForm(props: MainConnectionFormProps): JSX.Element | null 
     return <Alert severity="info">Loading connection. Please wait....</Alert>;
   }
 
-  const hasSsl = props.ssl?.sslCaPath || props.ssl?.sslCertPath || props.ssl?.sslKeyPath;
   const connection: SqluiCore.CoreConnectionProps = {
     name: props.name,
     connection: props.connection,
-    ssl: hasSsl ? props.ssl : undefined,
+    ssl: getValidatedSsl(props.ssl),
   };
 
   const parsedConnectionProps = BaseDataAdapter.getConnectionParameters(connection.connection);
