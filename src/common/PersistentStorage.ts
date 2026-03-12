@@ -20,21 +20,11 @@ let baseDir: string;
 try {
   // electron path
   baseDir = path.join(app.getPath("appData"), "sqlui-native");
-  try {
-    fs.mkdirSync(baseDir);
-  } catch (err) {
-    console.error("PersistentStorage.ts:mkdirSync", err);
-  }
-} catch (err) {
-  console.error("PersistentStorage.ts:mkdirSync", err);
+} catch (_err) {
   // fall back for mocked server
   baseDir = path.join(homedir, ".sqlui-native");
-  try {
-    fs.mkdirSync(baseDir);
-  } catch (err) {
-    console.error("PersistentStorage.ts:mkdirSync", err);
-  }
 }
+fs.mkdirSync(baseDir, { recursive: true });
 
 /** Absolute path to the directory where all persistent storage JSON files are saved. */
 export const storageDir = baseDir;
@@ -67,6 +57,10 @@ export class PersistentStorage<T extends StorageEntry> {
 
   private getData(): StorageContent {
     try {
+      if (!fs.existsSync(this.storageLocation)) {
+        this.setData({});
+        return {};
+      }
       return JSON.parse(fs.readFileSync(this.storageLocation, { encoding: "utf8", flag: "r" }).trim());
     } catch (err) {
       console.error("PersistentStorage.ts:parse", err);

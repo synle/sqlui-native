@@ -6,7 +6,6 @@ const requestWithSupertest = supertest(app);
 function _getCommonHeaders(mockedSessionId) {
   return {
     "sqlui-native-session-id": mockedSessionId,
-    "sqlui-native-window-id": "mocked-window-id",
   };
 }
 
@@ -115,7 +114,6 @@ describe("Sessions", () => {
 
     // for simplicity, we will only assert this response headers once
     expect(res.headers["sqlui-native-session-id"]).toEqual(_getCommonHeaders(mockedSessionId)["sqlui-native-session-id"]);
-    expect(res.headers["sqlui-native-window-id"]).toEqual(_getCommonHeaders(mockedSessionId)["sqlui-native-window-id"]);
 
     // delete connection
     res = await requestWithSupertest.delete(`/api/connection/${mockedConnectionId1}`).set(_getCommonHeaders(mockedSessionId));
@@ -552,17 +550,14 @@ describe("Data Snapshots", () => {
 });
 
 describe("Response Headers", () => {
-  test("Response should echo back session-id and window-id headers", async () => {
+  test("Response should echo back session-id header", async () => {
     const sessionId = `header-test.${Date.now()}`;
-    const windowId = `window-header-test.${Date.now()}`;
 
     const res = await requestWithSupertest.get(`/api/configs`).set({
       "sqlui-native-session-id": sessionId,
-      "sqlui-native-window-id": windowId,
     });
 
     expect(res.headers["sqlui-native-session-id"]).toEqual(sessionId);
-    expect(res.headers["sqlui-native-window-id"]).toEqual(windowId);
   });
 });
 

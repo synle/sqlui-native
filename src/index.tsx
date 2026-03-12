@@ -1,7 +1,7 @@
 import Box from "@mui/material/Box";
 import CssBaseline from "@mui/material/CssBaseline";
 import { createTheme, Theme, ThemeProvider } from "@mui/material/styles";
-import ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { HashRouter, Route, Routes } from "react-router-dom";
@@ -17,7 +17,6 @@ import SettingContextProvider, { useDarkModeSetting } from "src/frontend/hooks/u
 import ShowHideContextProvider from "src/frontend/hooks/useShowHide";
 import TreeActionContextProvider from "src/frontend/hooks/useTreeActions";
 import { useLayoutModeSetting, useIsAnimationModeOn } from "src/frontend/hooks/useSetting";
-import dataApi from "src/frontend/data/api";
 import "src/frontend/App.scss";
 import "src/frontend/electronRenderer";
 
@@ -119,6 +118,10 @@ function AppliedTheme({ children }) {
   );
 }
 
+function FutureHashRouter({ children }) {
+  return <HashRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>{children}</HashRouter>;
+}
+
 function CombinedContextProvider({ children }) {
   return [
     ActionDialogsContextProvider,
@@ -126,7 +129,7 @@ function CombinedContextProvider({ children }) {
     TreeActionContextProvider,
     ShowHideContextProvider,
     SettingContextProvider,
-    HashRouter,
+    FutureHashRouter,
     AppliedTheme,
   ].reduceRight((acc, Provider) => <Provider>{acc}</Provider>, children);
 }
@@ -160,7 +163,8 @@ const renderApp = function () {
     },
   });
 
-  ReactDOM.render(
+  const root = createRoot(document.querySelector("#body")!);
+  root.render(
     <QueryClientProvider client={queryClient}>
       <DevtoolsToggle />
       <CombinedContextProvider>
@@ -173,7 +177,6 @@ const renderApp = function () {
         <ElectronEventListener />
       </CombinedContextProvider>
     </QueryClientProvider>,
-    document.querySelector("#body"),
   );
 
   window.removeEventListener("sqluiNativeEvent/ready", renderApp);
