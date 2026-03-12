@@ -21,7 +21,7 @@ type SessionManagerProps = {
  */
 export default function SessionManager(props: SessionManagerProps): JSX.Element | null {
   const [status, setStatus] = useState<"pending_session" | "no_session" | "valid_session">("pending_session");
-  const { data: currentSession, isLoading: loadingCurrentSession, refetch } = useGetCurrentSession();
+  const { data: currentSession, isLoading: loadingCurrentSession, error: sessionError, refetch } = useGetCurrentSession();
   useSelectSession(true);
   const retryCountRef = useRef(0);
   const queryClient = useQueryClient();
@@ -36,6 +36,13 @@ export default function SessionManager(props: SessionManagerProps): JSX.Element 
     }
 
     if (loadingCurrentSession) {
+      return;
+    }
+
+    // Session ID exists but server returned an error (e.g. 404 — session deleted)
+    if (sessionError) {
+      setStatus("no_session");
+      navigate("/session_expired", { replace: true });
       return;
     }
 
@@ -58,7 +65,7 @@ export default function SessionManager(props: SessionManagerProps): JSX.Element 
 
     setStatus("no_session");
     navigate("/session_select", { replace: true });
-  }, [currentSession, loadingCurrentSession]);
+  }, [currentSession, loadingCurrentSession, sessionError]);
 
   // Refetch all data when the window regains focus
   useEffect(() => {
