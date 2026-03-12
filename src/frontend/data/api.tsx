@@ -1,11 +1,11 @@
+import { getCurrentSessionId } from "src/frontend/data/session";
 import { SqluiCore, SqluiFrontend } from "typings";
 async function _fetch<T>(input: RequestInfo, initOptions?: RequestInit) {
   let { headers, ...restInput } = initOptions || {};
 
   headers = headers || {};
   headers = {
-    "sqlui-native-session-id": sessionStorage.getItem("sqlui-native.sessionId") || "",
-    "sqlui-native-window-id": sessionStorage.getItem("sqlui-native.windowId") || "",
+    "sqlui-native-session-id": getCurrentSessionId(),
     "Content-Type": "application/json",
     Accept: "application/json",
     ...headers,

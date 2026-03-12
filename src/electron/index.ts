@@ -3,7 +3,6 @@ import path from "path";
 import { matchPath } from "react-router-dom";
 import { getEndpointHandlers, setUpDataEndpoints } from "src/common/Endpoints";
 import PersistentStorage from "src/common/PersistentStorage";
-import * as sessionUtils from "src/common/utils/sessionUtils";
 import { SqluiCore, SqluiEnums } from "typings";
 
 const isMac = process.platform === "darwin";
@@ -56,48 +55,30 @@ async function createWindow(isFirstWindow?: boolean) {
     mainWindow.show();
   });
 
-  const targetWindowId = `electron-window-${Date.now()}`;
-
-  // Determine the default sessionId for new windows (first available session)
-  let defaultSessionId: string | undefined;
+  // For the first window, auto-select the first available session if none is set
   if (isFirstWindow === true) {
     const sessionsStorage = await new PersistentStorage<SqluiCore.Session>("session", "session", "sessions");
     const sessions = await sessionsStorage.list();
     if (sessions && sessions.length > 0) {
-      defaultSessionId = sessions[0].id;
+      const defaultSessionId = sessions[0].id;
+      mainWindow.webContents.on("did-finish-load", () => {
+        mainWindow.webContents.executeJavaScript(`
+          if (!sessionStorage.getItem('sqlui-native.sessionId')) {
+            sessionStorage.setItem('sqlui-native.sessionId', '${defaultSessionId}');
+          }
+        `);
+      });
     }
   }
-
-  // Always set windowId; only set sessionId if not already present (preserves user selection across reloads)
-  mainWindow.webContents.on("did-finish-load", () => {
-    const setDefault = defaultSessionId
-      ? `if (!sessionStorage.getItem('sqlui-native.sessionId')) { sessionStorage.setItem('sqlui-native.sessionId', '${defaultSessionId}'); }`
-      : "";
-    mainWindow.webContents.executeJavaScript(`
-      sessionStorage.setItem('sqlui-native.windowId', '${targetWindowId}');
-      ${setDefault}
-    `);
-  });
-
-  mainWindow.on("close", async () => {
-    sessionUtils.close(targetWindowId);
-  });
-
-  //@ts-ignore
-  mainWindow._windowId = targetWindowId;
 
   // and load the index.html of the app.
   mainWindow.loadFile("index.html");
   global.indexHtmlPath = path.join(__dirname, "index.html");
 
   // Open the DevTools.
-  if (process.env.ENV_TYPE === "electron-dev") {
+  if (process?.env?.ENV_TYPE === "electron-dev") {
     mainWindow.webContents.openDevTools();
   }
-
-  // save the window id for later used
-  // store the windows later to use with deletion
-  sessionUtils.registerWindow(targetWindowId, mainWindow);
 
   return mainWindow;
 }
@@ -359,7 +340,6 @@ ipcMain.on("sqluiNativeEvent/fetch", async (event, data) => {
 
   const method = (options.method || "get").toLowerCase();
 
-  const windowId = options?.headers["sqlui-native-window-id"];
   const sessionId = options?.headers["sqlui-native-session-id"];
 
   let body: any = {};
@@ -450,7 +430,6 @@ ipcMain.on("sqluiNativeEvent/fetch", async (event, data) => {
           body: body,
           headers: {
             "sqlui-native-session-id": sessionId,
-            "sqlui-native-window-id": windowId,
           },
         };
 

@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import dataApi from "src/frontend/data/api";
 import { SessionStorageConfig } from "src/frontend/data/config";
+import { getCurrentSessionId } from "src/frontend/data/session";
 import { useAddRecycleBinItem } from "src/frontend/hooks/useFolderItems";
 import { useIsSoftDeleteModeSetting } from "src/frontend/hooks/useSetting";
 import { getGeneratedRandomId, getUpdatedOrdersForList } from "src/frontend/utils/commonUtils";
@@ -40,8 +41,8 @@ export default function WrappedContext(props: { children: React.ReactNode }): JS
         // try pulling it in from sessionStorage
         _connectionQueries = SessionStorageConfig.get<SqluiFrontend.ConnectionQuery[]>("clientConfig/cache.connectionQueries", []);
 
-        if (_connectionQueries.length === 0) {
-          // if config failed, attempt to get it from the api
+        if (_connectionQueries.length === 0 && getCurrentSessionId()) {
+          // if config failed, attempt to get it from the api (only if a session is selected)
           try {
             _connectionQueries = await dataApi.getQueries();
           } catch (err) {

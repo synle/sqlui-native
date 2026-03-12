@@ -13,9 +13,14 @@ try {
   window.openAppLink = (hashLink) => {
     window.open(`/#${hashLink}`);
   };
-  sessionStorage.setItem("sqlui-native.windowId", "mocked-window-id"); // mocked to use a window id
 
-  if (window.process.env.ENV_TYPE !== "mocked-server") {
+  if (!window?.process?.env?.ENV_TYPE) {
+    window.process = window.process || {};
+    window.process.env = window.process.env || {};
+    window.process.env.ENV_TYPE = "mocked-server";
+  }
+
+  if (window?.process?.env?.ENV_TYPE !== "mocked-server") {
     const ipcRenderer = window.requireElectron("electron").ipcRenderer;
     const shell = window.requireElectron("electron").shell;
 
@@ -67,7 +72,6 @@ try {
             status,
             options.method || "get",
             url,
-            options.headers["sqlui-native-window-id"],
             options.headers["sqlui-native-session-id"],
             returnedData,
           );
