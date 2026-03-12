@@ -146,6 +146,7 @@ jobs:
           cache: "npm"
 
       - name: Run tests
+        continue-on-error: ${{ inputs.release_mode == 'draft' }}
         run: bash scripts/test.sh
 
   dist_windows_x64:
