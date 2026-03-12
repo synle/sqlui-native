@@ -1,5 +1,6 @@
 import { BrowserWindow } from "electron";
 import { Express } from "express";
+import fs from "fs";
 import path from "path";
 import { getColumns, getConnectionMetaData, getDataAdapter, getDatabases, getTables } from "src/common/adapters/DataAdapterFactory";
 import {
@@ -282,6 +283,32 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
 
     if (!connection.connection) {
       return res.status(400).send("`connection` is required...");
+    }
+
+    // validate SSL certificate files if any are provided
+    if (connection.ssl) {
+      const sslPaths: { label: string; path?: string }[] = [
+        { label: "SSL CA Certificate", path: connection.ssl.sslCaPath },
+        { label: "SSL Client Certificate", path: connection.ssl.sslCertPath },
+        { label: "SSL Client Key", path: connection.ssl.sslKeyPath },
+      ];
+
+      for (const { label, path: filePath } of sslPaths) {
+        if (!filePath) {
+          continue;
+        }
+
+        try {
+          fs.accessSync(filePath, fs.constants.R_OK);
+        } catch (_err) {
+          return res.status(406).json({ error: `${label}: file not found or not readable at "${filePath}"` });
+        }
+
+        const stat = fs.statSync(filePath);
+        if (stat.size === 0) {
+          return res.status(406).json({ error: `${label}: file is empty at "${filePath}"` });
+        }
+      }
     }
 
     try {
