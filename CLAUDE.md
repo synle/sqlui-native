@@ -56,7 +56,7 @@ The app runs in **Electron mode** (`npm start`) or **mocked server mode** (`npm 
 
 ### Database Adapter Pattern
 
-All database engines implement `IDataAdapter` (authenticate, getDatabases, getTables, getColumns, execute). `DataAdapterFactory` creates the correct adapter based on connection dialect. `DataScriptFactory` generates dialect-specific SQL/query scripts. `BaseDataAdapter` provides shared logic (connection string parsing, type inference/resolution). `BaseDataScript` provides shared script generation (select, insert, update, delete, DDL) with dialect-specific overrides.
+All database engines implement `IDataAdapter` (authenticate, getDatabases, getTables, getColumns, execute). `DataAdapterFactory` creates the correct adapter based on connection dialect and passes optional SSL config. `DataScriptFactory` generates dialect-specific SQL/query scripts. `BaseDataAdapter` provides shared logic (connection string parsing, type inference/resolution, SSL config storage). `BaseDataScript` provides shared script generation (select, insert, update, delete, DDL) with dialect-specific overrides.
 
 Adapter implementations live in `src/common/adapters/`:
 
@@ -64,6 +64,16 @@ Adapter implementations live in `src/common/adapters/`:
 - `CassandraDataAdapter`, `MongoDBDataAdapter`, `RedisDataAdapter`, `AzureCosmosDataAdapter`, `AzureTableStorageAdapter`
 
 Each adapter directory contains `index.ts` (adapter class) and `scripts.ts` (ConcreteDataScripts class with dialect-specific query generators). Some also have `utils.ts` for client configuration helpers.
+
+### SSL/TLS Certificate Authentication
+
+Connections support optional SSL/TLS client certificate authentication via `ConnectionSslConfig` (`sslCaPath`, `sslCertPath`, `sslKeyPath`) stored on `CoreConnectionProps.ssl`. The SSL fields are shown in the connection form for all dialects except SQLite.
+
+**Data flow:** `ConnectionForm` → `Endpoints.ts` (persists `ssl` on connection object) → `DataAdapterFactory.getDataAdapter(connection, ssl)` → `BaseDataAdapter` constructor stores `this.ssl` → adapter-specific `getConnection()` reads cert files and injects into driver options.
+
+**Currently implemented:** `RelationalDataAdapter` reads cert files via `fs.readFileSync` and passes them to Sequelize's `dialectOptions.ssl` (supports MySQL, MariaDB, PostgreSQL, MSSQL). Other adapters receive the SSL config in `BaseDataAdapter` but do not yet use it.
+
+See `CONTRIBUTING.md` for self-signed certificate generation and Docker setup instructions.
 
 ### Endpoint Pattern
 
@@ -117,7 +127,7 @@ See CONTRIBUTING.md for the full step-by-step guide with code examples.
 - **`ActionDialogs`** - Global dialog system (alert, choice, prompt, modal) managed via `useActionDialogs` context
 - **`MissionControl`** - Central event handler that wires up all application commands (session, connection, query, settings, navigation). Processes commands from the `CommandPalette`, keyboard shortcuts, and Electron menu events
 - **`CommandPalette`** - Fuzzy-searchable command list (`Cmd+P` / `Ctrl+P`). Options defined in `ALL_COMMAND_PALETTE_OPTIONS` array in `CommandPalette/index.tsx`. Supports expanding per-connection/per-query commands. When adding new app-wide actions, add a `ClientEventKey` in `typings/index.ts`, a command option in `CommandPalette`, and a `case` in `MissionControl`'s `_executeCommandPalette` switch
-- **`ConnectionForm`** - New/edit connection forms with dialect-specific hints
+- **`ConnectionForm`** - New/edit connection forms with dialect-specific hints and optional SSL certificate path fields (hidden for SQLite)
 - **`MigrationBox`** - Data migration between connections with column mapping
 
 ### Views (Pages)

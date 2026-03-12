@@ -46,12 +46,23 @@ export module SqluiCore {
     [key: string]: any;
   };
 
+  /** SSL/TLS certificate configuration for database connections. */
+  export type ConnectionSslConfig = {
+    /** Path to the CA certificate file (PEM format). */
+    sslCaPath?: string;
+    /** Path to the client certificate file (PEM format). */
+    sslCertPath?: string;
+    /** Path to the client private key file (PEM format). */
+    sslKeyPath?: string;
+  };
+
   /** Core connection properties without an ID (used for creation). */
   export type CoreConnectionProps = {
     connection: string;
     name: string;
     status?: "online" | "offline" | "loading";
     dialect?: SqluiCore.Dialect;
+    ssl?: ConnectionSslConfig;
     [index: string]: any;
   };
 
