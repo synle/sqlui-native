@@ -57,7 +57,6 @@ function addDataEndpoint(
   if (expressAppContext) {
     // set up the route in the context of express server
     expressAppContext[method](url, async (req, res) => {
-      // here we simulate a delay for our mocked server
       const cacheKey = req.headers["sqlui-native-session-id"];
       const apiCache = {
         get(key: SqluiEnums.ServerApiCacheKey) {
@@ -85,7 +84,7 @@ function addDataEndpoint(
         },
       };
 
-      setTimeout(() => handlerToUse(req, res, apiCache), 100);
+      handlerToUse(req, res, apiCache);
     });
   } else {
     electronEndpointHandlers.push([method, url, handlerToUse]);
