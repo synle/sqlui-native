@@ -1,9 +1,8 @@
 import Alert from "@mui/material/Alert";
 import CircularProgress from "@mui/material/CircularProgress";
 import { useEffect, useRef, useState } from "react";
-import { useQueryClient } from "@tanstack/react-query";
 import { getCurrentSessionId, setCurrentSessionId } from "src/frontend/data/session";
-import { useGetCurrentSession, useSelectSession } from "src/frontend/hooks/useSession";
+import { useGetCurrentSession, useGetSessions, useSelectSession } from "src/frontend/hooks/useSession";
 import { useNavigate } from "src/frontend/utils/commonUtils";
 
 /** Props for the SessionManager component. */
@@ -24,7 +23,6 @@ export default function SessionManager(props: SessionManagerProps): JSX.Element 
   const { data: currentSession, isLoading: loadingCurrentSession, error: sessionError, refetch } = useGetCurrentSession();
   useSelectSession(true);
   const retryCountRef = useRef(0);
-  const queryClient = useQueryClient();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -67,21 +65,34 @@ export default function SessionManager(props: SessionManagerProps): JSX.Element 
     navigate("/session_select", { replace: true });
   }, [currentSession, loadingCurrentSession, sessionError]);
 
-  // Refetch all data when the window regains focus
+  // Refresh session list on focus and check if current session still exists
+  const { data: sessions, refetch: refetchSessions } = useGetSessions();
+
   useEffect(() => {
     if (status !== "valid_session") {
       return;
     }
 
     const onFocus = () => {
-      queryClient.invalidateQueries();
+      refetchSessions();
     };
     window.addEventListener("focus", onFocus);
 
     return () => {
       window.removeEventListener("focus", onFocus);
     };
-  }, [status, queryClient]);
+  }, [status, refetchSessions]);
+
+  useEffect(() => {
+    if (status !== "valid_session" || !sessions) {
+      return;
+    }
+
+    const currentId = getCurrentSessionId();
+    if (currentId && !sessions.some((s) => s.id === currentId)) {
+      navigate("/session_expired", { replace: true });
+    }
+  }, [status, sessions, navigate]);
 
   const isLoading = loadingCurrentSession;
 
