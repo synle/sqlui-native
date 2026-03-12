@@ -2,9 +2,9 @@ import Alert from "@mui/material/Alert";
 import CircularProgress from "@mui/material/CircularProgress";
 import { useEffect, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import SessionSelectionModal from "src/frontend/components/SessionSelectionModal";
 import { getCurrentSessionId, setCurrentSessionId } from "src/frontend/data/session";
 import { useGetCurrentSession, useSelectSession } from "src/frontend/hooks/useSession";
+import { useNavigate } from "src/frontend/utils/commonUtils";
 
 /** Props for the SessionManager component. */
 type SessionManagerProps = {
@@ -25,6 +25,7 @@ export default function SessionManager(props: SessionManagerProps): JSX.Element 
   useSelectSession(true);
   const retryCountRef = useRef(0);
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (loadingCurrentSession) {
@@ -49,6 +50,7 @@ export default function SessionManager(props: SessionManagerProps): JSX.Element 
     }
 
     setStatus("no_session");
+    navigate("/session_select", { replace: true });
   }, [currentSession, loadingCurrentSession]);
 
   // Refetch all data when the window regains focus
@@ -70,7 +72,7 @@ export default function SessionManager(props: SessionManagerProps): JSX.Element 
   const isLoading = loadingCurrentSession;
 
   if (status === "no_session") {
-    return <SessionSelectionModal />;
+    return null;
   }
 
   if (isLoading || status === "pending_session") {
