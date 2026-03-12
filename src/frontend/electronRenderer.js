@@ -14,13 +14,7 @@ try {
     window.open(`/#${hashLink}`);
   };
 
-  if (!window?.process?.env?.ENV_TYPE) {
-    window.process = window.process || {};
-    window.process.env = window.process.env || {};
-    window.process.env.ENV_TYPE = "mocked-server";
-  }
-
-  if (window?.process?.env?.ENV_TYPE !== "mocked-server") {
+  if (window?.process?.env?.ENV_TYPE !== "mocked-server" && window.requireElectron) {
     const ipcRenderer = window.requireElectron("electron").ipcRenderer;
     const shell = window.requireElectron("electron").shell;
 
