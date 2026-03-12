@@ -58,36 +58,26 @@ async function createWindow(isFirstWindow?: boolean) {
 
   const targetWindowId = `electron-window-${Date.now()}`;
 
+  // Determine the default sessionId for new windows (first available session)
+  let defaultSessionId: string | undefined;
   if (isFirstWindow === true) {
-    // if this is the first window, let's attempt to set the first sessionId
     const sessionsStorage = await new PersistentStorage<SqluiCore.Session>("session", "session", "sessions");
-
     const sessions = await sessionsStorage.list();
-
     if (sessions && sessions.length > 0) {
-      const sessionId = sessions[0].id;
-      // Set the sessionId in sessionStorage so the frontend picks it up
-      mainWindow.webContents.on("did-finish-load", () => {
-        mainWindow.webContents.executeJavaScript(`
-          sessionStorage.setItem('sqlui-native.windowId', '${targetWindowId}');
-          sessionStorage.setItem('sqlui-native.sessionId', '${sessionId}');
-        `);
-      });
-    } else {
-      mainWindow.webContents.on("did-finish-load", () => {
-        mainWindow.webContents.executeJavaScript(`
-          sessionStorage.setItem('sqlui-native.windowId', '${targetWindowId}');
-        `);
-      });
+      defaultSessionId = sessions[0].id;
     }
-  } else {
-    // hook up events
-    mainWindow.webContents.on("did-finish-load", () => {
-      mainWindow.webContents.executeJavaScript(`
-        sessionStorage.setItem('sqlui-native.windowId', '${targetWindowId}');
-      `);
-    });
   }
+
+  // Always set windowId; only set sessionId if not already present (preserves user selection across reloads)
+  mainWindow.webContents.on("did-finish-load", () => {
+    const setDefault = defaultSessionId
+      ? `if (!sessionStorage.getItem('sqlui-native.sessionId')) { sessionStorage.setItem('sqlui-native.sessionId', '${defaultSessionId}'); }`
+      : "";
+    mainWindow.webContents.executeJavaScript(`
+      sessionStorage.setItem('sqlui-native.windowId', '${targetWindowId}');
+      ${setDefault}
+    `);
+  });
 
   mainWindow.on("close", async () => {
     sessionUtils.close(targetWindowId);
