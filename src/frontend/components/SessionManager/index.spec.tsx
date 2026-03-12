@@ -10,7 +10,16 @@ vi.mock("src/frontend/components/SessionSelectionModal", () => ({
 
 vi.mock("src/frontend/data/session", () => ({
   setCurrentSessionId: vi.fn(),
+  getCurrentSessionId: () => "s1",
 }));
+
+vi.mock("src/frontend/utils/commonUtils", async (importOriginal) => {
+  const original = (await importOriginal()) as any;
+  return {
+    ...original,
+    useNavigate: () => vi.fn(),
+  };
+});
 
 vi.mock("src/frontend/hooks/useSession", () => ({
   useGetCurrentSession: () => ({ data: { id: "s1", name: "Test" }, isLoading: false, refetch: vi.fn() }),
