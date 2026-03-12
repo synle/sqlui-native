@@ -2,8 +2,7 @@ import { app, BrowserWindow, ipcMain, Menu, nativeTheme, shell } from "electron"
 import path from "path";
 import { matchPath } from "react-router-dom";
 import { getEndpointHandlers, setUpDataEndpoints } from "src/common/Endpoints";
-import PersistentStorage from "src/common/PersistentStorage";
-import { SqluiCore, SqluiEnums } from "typings";
+import { SqluiEnums } from "typings";
 
 const isMac = process.platform === "darwin";
 
@@ -34,7 +33,7 @@ app.commandLine.appendSwitch("enable-features", "CanvasOopRasterization,BackForw
 app.commandLine.appendSwitch("js-flags", "--expose-gc");
 
 // create the window
-async function createWindow(isFirstWindow?: boolean) {
+async function createWindow() {
   const mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
@@ -54,22 +53,6 @@ async function createWindow(isFirstWindow?: boolean) {
   mainWindow.on("ready-to-show", () => {
     mainWindow.show();
   });
-
-  // For the first window, auto-select the first available session if none is set
-  if (isFirstWindow === true) {
-    const sessionsStorage = await new PersistentStorage<SqluiCore.Session>("session", "session", "sessions");
-    const sessions = await sessionsStorage.list();
-    if (sessions && sessions.length > 0) {
-      const defaultSessionId = sessions[0].id;
-      mainWindow.webContents.on("did-finish-load", () => {
-        mainWindow.webContents.executeJavaScript(`
-          if (!sessionStorage.getItem('sqlui-native.sessionId')) {
-            sessionStorage.setItem('sqlui-native.sessionId', '${defaultSessionId}');
-          }
-        `);
-      });
-    }
-  }
 
   // and load the index.html of the app.
   mainWindow.loadFile("index.html");
@@ -285,7 +268,7 @@ function setupMenu() {
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(async () => {
   setUpDataEndpoints();
-  await createWindow(true);
+  await createWindow();
   setupMenu();
 
   app.on("activate", () => {
