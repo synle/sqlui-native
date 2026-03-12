@@ -28,6 +28,14 @@ export function setSessionIdIfNotDefined(sessionId: string) {
 }
 
 /**
+ * Clears the current session ID and all session configs from sessionStorage.
+ */
+export function clearCurrentSessionId() {
+  SessionStorageConfig.clear();
+  sessionStorage.removeItem("sqlui-native.sessionId");
+}
+
+/**
  * Sets the current session ID in sessionStorage and optionally reloads the page.
  * @param newSessionId - The new session ID to set.
  * @param suppressReload - If true, skip page reload after switching sessions.
@@ -39,8 +47,9 @@ export function setCurrentSessionId(newSessionId: string, suppressReload = false
   // set the new sessionId
   sessionStorage.setItem("sqlui-native.sessionId", newSessionId);
 
-  // reload the page
+  // navigate to root and reload
   if (suppressReload === false) {
+    window.location.hash = "#/";
     window.location.reload();
   }
 }

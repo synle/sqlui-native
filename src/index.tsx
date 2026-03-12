@@ -7,6 +7,8 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { HashRouter, Route, Routes } from "react-router-dom";
 import { useEffect, useState } from "react";
 import App from "src/frontend/App";
+import SessionExpiredPage from "src/frontend/views/SessionExpiredPage";
+import SessionSelectPage from "src/frontend/views/SessionSelectPage";
 import ActionDialogs from "src/frontend/components/ActionDialogs";
 import ElectronEventListener from "src/frontend/components/ElectronEventListener";
 import DataSnapshotListView from "src/frontend/DataSnapshotListView";
@@ -171,6 +173,8 @@ const renderApp = function () {
         <Routes>
           <Route path="/data_snapshot" element={<DataSnapshotListView />} />
           <Route path="/data_snapshot/:dataSnapshotId" element={<DataSnapshotView />} />
+          <Route path="/session_expired" element={<SessionExpiredPage />} />
+          <Route path="/session_select" element={<SessionSelectPage />} />
           <Route path="/*" element={<App />} />
         </Routes>
         <ActionDialogs />
