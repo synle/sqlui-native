@@ -614,7 +614,7 @@ export default function MissionControl() {
       await deleteSession(targetSession.id);
 
       if (targetSession.id === currentSession?.id) {
-        await alert("This session has been deleted and can no longer be used. Please close this window and open a new one.");
+        navigate("/session_expired", { replace: true });
       }
     } catch (err) {
       console.error("index.tsx:onDeleteSession", err);

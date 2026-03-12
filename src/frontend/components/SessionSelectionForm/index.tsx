@@ -3,6 +3,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Checkbox from "@mui/material/Checkbox";
+import CircularProgress from "@mui/material/CircularProgress";
 import IconButton from "@mui/material/IconButton";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
@@ -13,6 +14,7 @@ import { useCommands } from "src/frontend/components/MissionControl";
 import { getRandomSessionId } from "src/frontend/data/session";
 import { useGetCurrentSession, useGetSessions, useSelectSession, useUpsertSession, useDeleteSession } from "src/frontend/hooks/useSession";
 import { useActionDialogs } from "src/frontend/hooks/useActionDialogs";
+import { useNavigate } from "src/frontend/utils/commonUtils";
 
 /** Represents a session option in the session selection list. */
 export type SessionOption = {
@@ -44,11 +46,12 @@ export default function SessionSelectionForm(props: SessionSelectionFormProps): 
   const { isFirstTime } = props;
   const { data: sessions, isLoading: loadingSessions } = useGetSessions();
   const { data: currentSession } = useGetCurrentSession();
-  const { mutateAsync: upsertSession } = useUpsertSession();
+  const { mutateAsync: upsertSession, isLoading: isCreating } = useUpsertSession();
   const { mutateAsync: selectSession } = useSelectSession();
   const { mutateAsync: deleteSession } = useDeleteSession();
   const { selectCommand } = useCommands();
-  const { alert, confirm } = useActionDialogs();
+  const { confirm } = useActionDialogs();
+  const navigate = useNavigate();
 
   const onCreateNewSession = async (formEl: HTMLElement) => {
     const newSessionName = (formEl.querySelector("input") as HTMLInputElement).value;
@@ -100,7 +103,7 @@ export default function SessionSelectionForm(props: SessionSelectionFormProps): 
         return;
       }
       await deleteSession(targetSession.id);
-      await alert("This session has been deleted and can no longer be used. Please close this window and open a new one.");
+      navigate("/session_expired", { replace: true });
     } else {
       try {
         await confirm(`Do you want to delete the session "${targetSession.name}"?`);
@@ -181,11 +184,12 @@ export default function SessionSelectionForm(props: SessionSelectionFormProps): 
             label="New Session Name"
             size="small"
             required
+            disabled={isCreating}
             sx={{ flexGrow: 1 }}
             defaultValue={defaultSessionName}
           />
-          <Button type="submit" size="small">
-            Create Session
+          <Button type="submit" size="small" disabled={isCreating} startIcon={isCreating ? <CircularProgress size={16} /> : undefined}>
+            {isCreating ? "Creating..." : "Create Session"}
           </Button>
         </Box>
       </form>
