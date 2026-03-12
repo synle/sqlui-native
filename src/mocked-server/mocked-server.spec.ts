@@ -222,11 +222,12 @@ describe("Sessions", () => {
     res = await requestWithSupertest.delete(`/api/session/${mockedSessionId}`);
     expect(res.status).toEqual(202);
 
-    // check the session
+    // check the session - note: GET /api/sessions auto-creates a session when list is empty,
+    // so the minimum length is 1
     res = await requestWithSupertest.get(`/api/sessions`).set(_getCommonHeaders(mockedSessionId));
     expect(res.status).toEqual(200);
     expect(res.type).toEqual(expect.stringContaining("json"));
-    expect(res.body.length).toEqual(sizeBeforeDeleteSesssion - 1);
+    expect(res.body.length).toEqual(Math.max(1, sizeBeforeDeleteSesssion - 1));
   });
 });
 
