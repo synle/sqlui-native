@@ -15,14 +15,6 @@ type ConnectionFormProps = {
   id?: string;
 };
 
-/** Returns the ssl config only if both client cert and client key are provided. */
-function getValidatedSsl(ssl?: SqluiCore.ConnectionSslConfig): SqluiCore.ConnectionSslConfig | undefined {
-  if (!ssl?.sslCertPath || !ssl?.sslKeyPath) {
-    return undefined;
-  }
-  return ssl;
-}
-
 /**
  * Form for creating a new database connection, starting with a dialect selection hint screen.
  * @returns The rendered new connection form or dialect selection screen.
@@ -30,7 +22,6 @@ function getValidatedSsl(ssl?: SqluiCore.ConnectionSslConfig): SqluiCore.Connect
 export function NewConnectionForm() {
   const [name, setName] = useState("");
   const [connection, setConnection] = useState("");
-  const [ssl, setSsl] = useState<SqluiCore.ConnectionSslConfig>({});
   const [showHint, setShowHint] = useState(true);
   const { mutateAsync, isLoading: saving } = useUpsertConnection();
   const navigate = useNavigate();
@@ -39,7 +30,6 @@ export function NewConnectionForm() {
     await mutateAsync({
       name,
       connection,
-      ssl: getValidatedSsl(ssl),
     });
 
     createSystemNotification(`Connection "${name}" created`);
@@ -86,8 +76,6 @@ export function NewConnectionForm() {
       setName={setName}
       connection={connection}
       setConnection={setConnection}
-      ssl={ssl}
-      setSsl={setSsl}
       saving={saving}
     />
   );
@@ -102,7 +90,6 @@ export function EditConnectionForm(props: ConnectionFormProps): JSX.Element | nu
   const { id } = props;
   const [name, setName] = useState("");
   const [connection, setConnection] = useState("");
-  const [ssl, setSsl] = useState<SqluiCore.ConnectionSslConfig>({});
   const { data: initialConnection, isLoading: loading } = useGetConnectionById(id);
   const { mutateAsync, isLoading: saving } = useUpsertConnection();
   const navigate = useNavigate();
@@ -112,7 +99,6 @@ export function EditConnectionForm(props: ConnectionFormProps): JSX.Element | nu
       id,
       name,
       connection,
-      ssl: getValidatedSsl(ssl),
     });
 
     // when done, go back to the main page
@@ -123,7 +109,6 @@ export function EditConnectionForm(props: ConnectionFormProps): JSX.Element | nu
   useEffect(() => {
     setName(initialConnection?.name || "");
     setConnection(initialConnection?.connection || "");
-    setSsl(initialConnection?.ssl || {});
   }, [initialConnection]);
 
   if (!loading && !initialConnection) {
@@ -144,8 +129,6 @@ export function EditConnectionForm(props: ConnectionFormProps): JSX.Element | nu
       setName={setName}
       connection={connection}
       setConnection={setConnection}
-      ssl={ssl}
-      setSsl={setSsl}
       saving={saving}
       loading={loading}
     />
@@ -158,8 +141,6 @@ type MainConnectionFormProps = {
   setName: (newVal: string) => void;
   connection: string;
   setConnection: (newVal: string) => void;
-  ssl: SqluiCore.ConnectionSslConfig;
-  setSsl: (newVal: SqluiCore.ConnectionSslConfig) => void;
   saving?: boolean;
   loading?: boolean;
 };
@@ -213,7 +194,6 @@ function MainConnectionForm(props: MainConnectionFormProps): JSX.Element | null 
   const connection: SqluiCore.CoreConnectionProps = {
     name: props.name,
     connection: props.connection,
-    ssl: getValidatedSsl(props.ssl),
   };
 
   const parsedConnectionProps = BaseDataAdapter.getConnectionParameters(connection.connection);
@@ -249,43 +229,6 @@ function MainConnectionForm(props: MainConnectionFormProps): JSX.Element | null 
           fullWidth={true}
         />
       </div>
-      {!showSqliteDatabasePathSelection && (
-        <>
-          <div className="FormInput__Row">
-            <TextField
-              label="SSL CA Certificate Path"
-              value={props.ssl?.sslCaPath || ""}
-              onChange={(e) => props.setSsl({ ...props.ssl, sslCaPath: e.target.value || undefined })}
-              size="small"
-              fullWidth={true}
-              placeholder="/path/to/ca.pem"
-              autoComplete="off"
-            />
-          </div>
-          <div className="FormInput__Row">
-            <TextField
-              label="SSL Client Certificate Path"
-              value={props.ssl?.sslCertPath || ""}
-              onChange={(e) => props.setSsl({ ...props.ssl, sslCertPath: e.target.value || undefined })}
-              size="small"
-              fullWidth={true}
-              placeholder="/path/to/client-cert.pem"
-              autoComplete="off"
-            />
-          </div>
-          <div className="FormInput__Row">
-            <TextField
-              label="SSL Client Key Path"
-              value={props.ssl?.sslKeyPath || ""}
-              onChange={(e) => props.setSsl({ ...props.ssl, sslKeyPath: e.target.value || undefined })}
-              size="small"
-              fullWidth={true}
-              placeholder="/path/to/client-key.pem"
-              autoComplete="off"
-            />
-          </div>
-        </>
-      )}
       {showSqliteDatabasePathSelection && (
         <div className="FormInput__Row">
           <input
