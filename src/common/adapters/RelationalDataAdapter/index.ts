@@ -1,4 +1,3 @@
-import fs from "fs";
 import qs from "qs";
 import { Options, Sequelize } from "sequelize";
 import { MAX_CONNECTION_TIMEOUT } from "src/common/adapters/BaseDataAdapter/index";
@@ -28,46 +27,16 @@ function _getDefaultSequelizeOptions(): Options {
 export default class RelationalDataAdapter extends BaseDataAdapter implements IDataAdapter {
   dialect?: SqluiCore.Dialect;
 
-  constructor(connectionOption: string, ssl?: SqluiCore.ConnectionSslConfig) {
-    super(connectionOption, ssl);
+  constructor(connectionOption: string) {
+    super(connectionOption);
 
     // TODO: we don't support sslmode, this will attempt to override the option
     this.connectionOption = this.connectionOption.replace("sslmode=require", "sslmode=no-verify");
   }
 
-  private _getSslDialectOptions(): Record<string, any> | undefined {
-    if (!this.ssl?.sslCaPath && !this.ssl?.sslCertPath && !this.ssl?.sslKeyPath) {
-      return undefined;
-    }
-
-    const sslOptions: Record<string, any> = {
-      rejectUnauthorized: false,
-    };
-    if (this.ssl.sslCaPath) {
-      sslOptions.ca = fs.readFileSync(this.ssl.sslCaPath);
-    }
-    if (this.ssl.sslCertPath) {
-      sslOptions.cert = fs.readFileSync(this.ssl.sslCertPath);
-    }
-    if (this.ssl.sslKeyPath) {
-      sslOptions.key = fs.readFileSync(this.ssl.sslKeyPath);
-    }
-
-    return sslOptions;
-  }
-
   private getConnection(database: string = ""): Sequelize {
     let connectionUrl: string;
     let connectionPropOptions = _getDefaultSequelizeOptions();
-
-    // inject SSL certificate options if configured
-    const sslOptions = this._getSslDialectOptions();
-    if (sslOptions) {
-      connectionPropOptions.dialectOptions = {
-        ...connectionPropOptions.dialectOptions,
-        ssl: sslOptions,
-      };
-    }
 
     switch (this.dialect) {
       case "sqlite":
