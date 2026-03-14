@@ -40,10 +40,10 @@ describe("RelationalDataAdapter - mysql unit", () => {
   });
 
   test("getDatabases", async () => {
-    mockQuery.mockResolvedValue([[{ Database: "test_db" }, { Database: "information_schema" }], {}]);
+    mockQuery.mockResolvedValue([[{ Database: "test_db" }, { Database: "app_db" }], {}]);
     const databases = await adapter.getDatabases();
     expect(databases.length).toBe(2);
-    expect(databases[0].name).toBe("information_schema");
+    expect(databases[0].name).toBe("app_db");
     expect(databases[1].name).toBe("test_db");
   });
 
@@ -111,11 +111,11 @@ describe("RelationalDataAdapter - postgres unit", () => {
   });
 
   test("getDatabases", async () => {
-    mockQuery.mockResolvedValue([[{ database: "postgres" }, { database: "template1" }], {}]);
+    mockQuery.mockResolvedValue([[{ database: "postgres" }, { database: "app_db" }], {}]);
     const databases = await adapter.getDatabases();
     expect(databases.length).toBe(2);
-    expect(databases[0].name).toBe("postgres");
-    expect(databases[1].name).toBe("template1");
+    expect(databases[0].name).toBe("app_db");
+    expect(databases[1].name).toBe("postgres");
   });
 
   test("getTables", async () => {
