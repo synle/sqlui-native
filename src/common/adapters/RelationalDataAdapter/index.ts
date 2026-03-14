@@ -40,7 +40,9 @@ export default class RelationalDataAdapter extends BaseDataAdapter implements ID
       return undefined;
     }
 
-    const sslOptions: Record<string, any> = {};
+    const sslOptions: Record<string, any> = {
+      rejectUnauthorized: false,
+    };
     if (this.ssl.sslCaPath) {
       sslOptions.ca = fs.readFileSync(this.ssl.sslCaPath);
     }
