@@ -17,7 +17,10 @@ describe("mariadb integration", () => {
     const databases = await adapter.getDatabases();
     expect(databases.length).toBeGreaterThan(0);
     const names = databases.map((d) => d.name);
-    expect(names).toContain("information_schema");
+    expect(names).not.toContain("information_schema");
+    expect(names).not.toContain("performance_schema");
+    expect(names).not.toContain("mysql");
+    expect(names).not.toContain("sys");
   });
 
   test("create test database and table", async () => {
