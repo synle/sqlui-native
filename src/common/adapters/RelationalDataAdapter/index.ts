@@ -134,6 +134,14 @@ export default class RelationalDataAdapter extends BaseDataAdapter implements ID
 
     const [data] = await this._execute(sql);
 
+    const SYSTEM_DATABASES: Record<string, string[]> = {
+      mysql: ["information_schema", "performance_schema", "mysql", "sys"],
+      mariadb: ["information_schema", "performance_schema", "mysql", "sys"],
+      mssql: ["master", "tempdb", "model", "msdb"],
+      postgres: ["template0", "template1"],
+      postgresql: ["template0", "template1"],
+    };
+
     return data
       .map(
         (row: any) =>
@@ -141,6 +149,10 @@ export default class RelationalDataAdapter extends BaseDataAdapter implements ID
           row.database, // postgres
       )
       .filter((db) => db)
+      .filter((db) => {
+        const excluded = SYSTEM_DATABASES[this.dialect || ""] || [];
+        return !excluded.includes(db.toLowerCase());
+      })
       .map((name) => ({
         name,
         tables: [], // TODO: will remove this entirely
