@@ -1,6 +1,5 @@
 import { BrowserWindow } from "electron";
 import { Express } from "express";
-import fs from "fs";
 import path from "path";
 import { getColumns, getConnectionMetaData, getDataAdapter, getDatabases, getTables } from "src/common/adapters/DataAdapterFactory";
 import {
@@ -175,7 +174,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     const connection = await connectionsStorage.get(req.params?.connectionId);
 
     try {
-      const engine = getDataAdapter(connection.connection, connection.ssl);
+      const engine = getDataAdapter(connection.connection);
       await engine.authenticate();
 
       connection.status = "online";
@@ -248,7 +247,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     }
 
     try {
-      const engine = getDataAdapter(connection.connection, connection.ssl);
+      const engine = getDataAdapter(connection.connection);
       await engine.authenticate();
       res.status(200).json(await getConnectionMetaData(connection));
     } catch (err: any) {
@@ -269,7 +268,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     }
 
     try {
-      const engine = getDataAdapter(connection.connection, connection.ssl);
+      const engine = getDataAdapter(connection.connection);
       res.status(200).json(await engine.execute(req.body?.sql, req.body?.database, req.body?.table));
     } catch (err: any) {
       const message = err?.sqlMessage || err?.message || err?.toString?.() || "Query execution failed";
@@ -285,34 +284,8 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
       return res.status(400).send("`connection` is required...");
     }
 
-    // validate SSL certificate files if any are provided
-    if (connection.ssl) {
-      const sslPaths: { label: string; path?: string }[] = [
-        { label: "SSL CA Certificate", path: connection.ssl.sslCaPath },
-        { label: "SSL Client Certificate", path: connection.ssl.sslCertPath },
-        { label: "SSL Client Key", path: connection.ssl.sslKeyPath },
-      ];
-
-      for (const { label, path: filePath } of sslPaths) {
-        if (!filePath) {
-          continue;
-        }
-
-        try {
-          fs.accessSync(filePath, fs.constants.R_OK);
-        } catch (_err) {
-          return res.status(406).json({ error: `${label}: file not found or not readable at "${filePath}"` });
-        }
-
-        const stat = fs.statSync(filePath);
-        if (stat.size === 0) {
-          return res.status(406).json({ error: `${label}: file is empty at "${filePath}"` });
-        }
-      }
-    }
-
     try {
-      const engine = getDataAdapter(connection.connection, connection.ssl);
+      const engine = getDataAdapter(connection.connection);
       await engine.authenticate();
       res.status(200).json(await getConnectionMetaData(connection));
     } catch (err: any) {
@@ -329,7 +302,6 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
       await connectionsStorage.add({
         connection: req.body?.connection,
         name: req.body?.name,
-        ssl: req.body?.ssl,
       }),
     );
   });
@@ -342,7 +314,6 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
         id: req.params?.connectionId,
         connection: req.body?.connection,
         name: req.body?.name,
-        ssl: req.body?.ssl,
       }),
     );
   });

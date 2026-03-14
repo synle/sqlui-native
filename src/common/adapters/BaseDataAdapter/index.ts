@@ -14,17 +14,13 @@ export default abstract class BaseDataAdapter {
   protected connectionOption: string;
   /** The resolved database dialect. */
   public dialect?: SqluiCore.Dialect;
-  /** Optional SSL/TLS certificate configuration. */
-  protected ssl?: SqluiCore.ConnectionSslConfig;
 
   /**
    * @param connectionOption - The connection string URI (e.g., "mysql://user:pass@host:port").
-   * @param ssl - Optional SSL/TLS certificate paths for secure connections.
    */
-  constructor(connectionOption: string, ssl?: SqluiCore.ConnectionSslConfig) {
+  constructor(connectionOption: string) {
     this.connectionOption = connectionOption as string;
     this.dialect = getDialectType(connectionOption);
-    this.ssl = ssl;
   }
 
   /**
