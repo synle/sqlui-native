@@ -17,7 +17,10 @@ describe("mssql integration", () => {
     const databases = await adapter.getDatabases();
     expect(databases.length).toBeGreaterThan(0);
     const names = databases.map((d) => d.name);
-    expect(names).toContain("master");
+    expect(names).not.toContain("master");
+    expect(names).not.toContain("tempdb");
+    expect(names).not.toContain("model");
+    expect(names).not.toContain("msdb");
   });
 
   test("create test database and table", async () => {
