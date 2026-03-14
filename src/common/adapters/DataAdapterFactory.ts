@@ -18,11 +18,10 @@ import { SqluiCore } from "typings";
 /**
  * Creates and returns the appropriate data adapter for the given connection string.
  * @param connection - The connection string URI (e.g., "mysql://user:pass@host:port").
- * @param ssl - Optional SSL/TLS certificate paths for secure connections.
  * @returns An IDataAdapter instance for the detected dialect.
  * @throws Error if the dialect is not supported or connection fails.
  */
-export function getDataAdapter(connection: string, ssl?: SqluiCore.ConnectionSslConfig) {
+export function getDataAdapter(connection: string) {
   // TODO: here we should initialize the connection based on type
   // of the connection string
   let adapter: IDataAdapter | undefined;
@@ -31,17 +30,17 @@ export function getDataAdapter(connection: string, ssl?: SqluiCore.ConnectionSsl
     const targetDialect = getDialectType(connection);
 
     if (RelationalDataAdapterScripts.isDialectSupported(targetDialect)) {
-      adapter = new RelationalDataAdapter(connection, ssl);
+      adapter = new RelationalDataAdapter(connection);
     } else if (CassandraDataAdapterScripts.isDialectSupported(targetDialect)) {
-      adapter = new CassandraDataAdapter(connection, ssl);
+      adapter = new CassandraDataAdapter(connection);
     } else if (MongoDBDataAdapterScripts.isDialectSupported(targetDialect)) {
-      adapter = new MongoDBDataAdapter(connection, ssl);
+      adapter = new MongoDBDataAdapter(connection);
     } else if (RedisDataAdapterScripts.isDialectSupported(targetDialect)) {
-      adapter = new RedisDataAdapter(connection, ssl);
+      adapter = new RedisDataAdapter(connection);
     } else if (AzureCosmosDataAdapterScripts.isDialectSupported(targetDialect)) {
-      adapter = new AzureCosmosDataAdapter(connection, ssl);
+      adapter = new AzureCosmosDataAdapter(connection);
     } else if (AzureTableStorageAdapterScripts.isDialectSupported(targetDialect)) {
-      adapter = new AzureTableStorageAdapter(connection, ssl);
+      adapter = new AzureTableStorageAdapter(connection);
     }
   } catch (err) {
     console.error("DataAdapterFactory.ts:getDataAdapter", connection, err);
@@ -69,7 +68,7 @@ export async function getConnectionMetaData(connection: SqluiCore.CoreConnection
   };
 
   try {
-    const engine = getDataAdapter(connection.connection, connection.ssl);
+    const engine = getDataAdapter(connection.connection);
     const databases = await engine.getDatabases();
 
     connItem.status = "online";
@@ -128,9 +127,7 @@ export function resetConnectionMetaData(connection: SqluiCore.CoreConnectionProp
 export async function getDatabases(sessionId: string, connectionId: string) {
   const connection = await new PersistentStorage<SqluiCore.ConnectionProps>(sessionId, "connection").get(connectionId);
 
-  return (await getDataAdapter(connection.connection, connection.ssl).getDatabases()).sort((a, b) =>
-    (a.name || "").localeCompare(b.name || ""),
-  );
+  return (await getDataAdapter(connection.connection).getDatabases()).sort((a, b) => (a.name || "").localeCompare(b.name || ""));
 }
 
 /**
@@ -143,9 +140,7 @@ export async function getDatabases(sessionId: string, connectionId: string) {
 export async function getTables(sessionId: string, connectionId: string, databaseId: string) {
   const connection = await new PersistentStorage<SqluiCore.ConnectionProps>(sessionId, "connection").get(connectionId);
 
-  return (await getDataAdapter(connection.connection, connection.ssl).getTables(databaseId)).sort((a, b) =>
-    (a.name || "").localeCompare(b.name || ""),
-  );
+  return (await getDataAdapter(connection.connection).getTables(databaseId)).sort((a, b) => (a.name || "").localeCompare(b.name || ""));
 }
 
 /**
@@ -159,7 +154,7 @@ export async function getTables(sessionId: string, connectionId: string, databas
 export async function getColumns(sessionId: string, connectionId: string, databaseId: string, tableId: string) {
   const connection = await new PersistentStorage<SqluiCore.ConnectionProps>(sessionId, "connection").get(connectionId);
 
-  return (await getDataAdapter(connection.connection, connection.ssl).getColumns(tableId, databaseId))
+  return (await getDataAdapter(connection.connection).getColumns(tableId, databaseId))
     .map((column) => {
       // here clean up unnecessary property
       if (column.primaryKey !== true) {
