@@ -249,6 +249,8 @@ export function useGetColumns(connectionId?: string, databaseId?: string, tableI
     () => (!enabled ? undefined : dataApi.getConnectionColumns(connectionId, databaseId, tableId)),
     {
       enabled,
+      staleTime: 60000, // refetch in background after 1 minute
+      keepPreviousData: true, // show cached data while refetching
     },
   );
 }

@@ -15,6 +15,36 @@ import RelationalDataAdapterScripts from "src/common/adapters/RelationalDataAdap
 import PersistentStorage from "src/common/PersistentStorage";
 import { SqluiCore } from "typings";
 
+type ColumnCacheEntry = { id: string; data: SqluiCore.ColumnMetaData[]; timestamp: number };
+
+const columnCacheStorage = new PersistentStorage<ColumnCacheEntry>("cache", "columns", "cache.columns");
+
+function getColumnCacheKey(connectionId: string, databaseId: string, tableId: string) {
+  return `${connectionId}:${databaseId}:${tableId}`;
+}
+
+function getCachedColumns(connectionId: string, databaseId: string, tableId: string): SqluiCore.ColumnMetaData[] | undefined {
+  try {
+    const key = getColumnCacheKey(connectionId, databaseId, tableId);
+    const entry = columnCacheStorage.get(key);
+    if (entry?.data) {
+      return entry.data;
+    }
+  } catch (_err) {
+    // cache miss on read error
+  }
+  return undefined;
+}
+
+function setCachedColumns(connectionId: string, databaseId: string, tableId: string, data: SqluiCore.ColumnMetaData[]) {
+  try {
+    const key = getColumnCacheKey(connectionId, databaseId, tableId);
+    columnCacheStorage.add({ id: key, data, timestamp: Date.now() });
+  } catch (_err) {
+    // best-effort cache write
+  }
+}
+
 /**
  * Creates and returns the appropriate data adapter for the given connection string.
  * @param connection - The connection string URI (e.g., "mysql://user:pass@host:port").
@@ -86,7 +116,10 @@ export async function getConnectionMetaData(connection: SqluiCore.CoreConnection
 
       for (const table of database.tables) {
         try {
-          table.columns = await engine.getColumns(table.name, database.name);
+          table.columns = cleanAndSortColumns(await engine.getColumns(table.name, database.name));
+          if (connection.id) {
+            setCachedColumns(connection.id, database.name, table.name, table.columns);
+          }
         } catch (err) {
           console.error("DataAdapterFactory.ts:getColumns", err);
           table.columns = [];
@@ -143,20 +176,9 @@ export async function getTables(sessionId: string, connectionId: string, databas
   return (await getDataAdapter(connection.connection).getTables(databaseId)).sort((a, b) => (a.name || "").localeCompare(b.name || ""));
 }
 
-/**
- * Retrieves columns for a table, cleans up metadata, and sorts by key importance then name.
- * @param sessionId - The session identifier for persistent storage lookup.
- * @param connectionId - The connection identifier.
- * @param databaseId - The database name.
- * @param tableId - The table name.
- * @returns Sorted array of column metadata with cleaned-up properties.
- */
-export async function getColumns(sessionId: string, connectionId: string, databaseId: string, tableId: string) {
-  const connection = await new PersistentStorage<SqluiCore.ConnectionProps>(sessionId, "connection").get(connectionId);
-
-  return (await getDataAdapter(connection.connection).getColumns(tableId, databaseId))
+function cleanAndSortColumns(columns: SqluiCore.ColumnMetaData[]): SqluiCore.ColumnMetaData[] {
+  return columns
     .map((column) => {
-      // here clean up unnecessary property
       if (column.primaryKey !== true) {
         delete column.primaryKey;
       }
@@ -196,4 +218,40 @@ export async function getColumns(sessionId: string, connectionId: string, databa
 
       return (a.name || "").localeCompare(b.name || "");
     });
+}
+
+/**
+ * Retrieves columns for a table, cleans up metadata, and sorts by key importance then name.
+ * Returns cached data immediately if available; fetches fresh data in the background to update the cache.
+ * @param sessionId - The session identifier for persistent storage lookup.
+ * @param connectionId - The connection identifier.
+ * @param databaseId - The database name.
+ * @param tableId - The table name.
+ * @returns Sorted array of column metadata with cleaned-up properties.
+ */
+export async function getColumns(sessionId: string, connectionId: string, databaseId: string, tableId: string) {
+  const cached = getCachedColumns(connectionId, databaseId, tableId);
+
+  // Background refresh: fetch fresh data and update the cache for next call
+  const refreshCache = async () => {
+    try {
+      const connection = await new PersistentStorage<SqluiCore.ConnectionProps>(sessionId, "connection").get(connectionId);
+      const columns = cleanAndSortColumns(await getDataAdapter(connection.connection).getColumns(tableId, databaseId));
+      setCachedColumns(connectionId, databaseId, tableId, columns);
+      return columns;
+    } catch (err) {
+      console.error("DataAdapterFactory.ts:refreshCache", err);
+      return undefined;
+    }
+  };
+
+  if (cached) {
+    // Return cached data immediately; refresh in background for next time
+    refreshCache();
+    return cached;
+  }
+
+  // No cache — must wait for fresh data
+  const columns = await refreshCache();
+  return columns || [];
 }
