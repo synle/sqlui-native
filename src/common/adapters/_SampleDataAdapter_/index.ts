@@ -67,6 +67,11 @@ export default class SampleDataAdapter extends BaseDataAdapter implements IDataA
     }
   }
 
+  /** Disconnects and cleans up resources. */
+  async disconnect() {
+    await this.closeConnection();
+  }
+
   /**
    * Verifies that the connection string is valid and the database is reachable.
    * Called when the user first adds or refreshes a connection.

@@ -90,6 +90,9 @@ export default class RelationalDataAdapter extends BaseDataAdapter implements ID
     }
   }
 
+  /** Disconnects and cleans up resources. No-op since connections are per-operation. */
+  async disconnect() {}
+
   /** Tests the database connection by authenticating and then closing. */
   async authenticate() {
     const connection = this.getConnection();

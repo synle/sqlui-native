@@ -180,14 +180,20 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
 
     const connection = await connectionsStorage.get(req.params?.connectionId);
 
+    const engine = getDataAdapter(connection.connection);
     try {
-      const engine = getDataAdapter(connection.connection);
       await engine.authenticate();
 
       connection.status = "online";
       connection.dialect = engine.dialect;
     } catch (err: any) {
       console.error("Endpoints.ts:authenticate", err);
+    } finally {
+      try {
+        await engine.disconnect();
+      } catch (_err) {
+        // best-effort cleanup
+      }
     }
 
     res.status(200).json(connection);
@@ -270,7 +276,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     } finally {
       // Dispose of the adapter connection/driver immediately
       try {
-        await engine.disconnect?.();
+        await engine.disconnect();
       } catch (_err) {
         // best-effort cleanup
       }
@@ -286,13 +292,19 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
       return res.status(404).send("Not Found");
     }
 
+    const engine = getDataAdapter(connection.connection);
     try {
-      const engine = getDataAdapter(connection.connection);
       res.status(200).json(await engine.execute(req.body?.sql, req.body?.database, req.body?.table));
     } catch (err: any) {
       const message = err?.sqlMessage || err?.message || err?.toString?.() || "Query execution failed";
       console.error("Endpoints.ts:execute", err);
       res.status(200).json({ ok: false, error: message });
+    } finally {
+      try {
+        await engine.disconnect();
+      } catch (_err) {
+        // best-effort cleanup
+      }
     }
   });
 
@@ -303,14 +315,20 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
       return res.status(400).send("`connection` is required...");
     }
 
+    const engine = getDataAdapter(connection.connection);
     try {
-      const engine = getDataAdapter(connection.connection);
       await engine.authenticate();
       res.status(200).json(await getConnectionMetaData(connection));
     } catch (err: any) {
       const message = err?.sqlMessage || err?.message || err?.toString?.() || "Connection test failed";
       console.error("Endpoints.ts:testConnection", err);
       res.status(406).json({ error: message });
+    } finally {
+      try {
+        await engine.disconnect();
+      } catch (_err) {
+        // best-effort cleanup
+      }
     }
   });
 
