@@ -7,14 +7,16 @@ import CsvEngine from "json-2-csv";
  * @param mimeType - The MIME type of the content (defaults to "text/csv").
  */
 export function downloadText(downloadFileName: string, content: string, mimeType = "text/csv") {
-  const encodedContent = `data:${mimeType};charset=utf-8,${content}`;
-  const encodedUri = encodeURI(encodedContent);
+  const blob = new Blob([content], { type: `${mimeType};charset=utf-8` });
+  const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
-  link.setAttribute("href", encodedUri);
+  link.setAttribute("href", url);
   link.setAttribute("download", downloadFileName);
   document.body.appendChild(link); // Required for FF
 
-  link.click(); // This will download the data file named "my_data.csv".
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
 }
 
 /**

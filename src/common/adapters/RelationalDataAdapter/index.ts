@@ -211,64 +211,52 @@ export default class RelationalDataAdapter extends BaseDataAdapter implements ID
    * @param database - The database name.
    */
   async getColumns(table: string, database?: string): Promise<SqluiCore.ColumnMetaData[]> {
-    switch (this.dialect) {
-      case "mssql":
-      case "postgres":
-      case "postgresql":
-      case "sqlite":
-      case "mariadb":
-      case "mysql":
-      default:
-        // first get all the columns
-        const columns: SqluiCore.ColumnMetaData[] = [];
-        {
-          const connection = this.getConnection(database);
-          try {
-            const columnMap = await connection.getQueryInterface().describeTable(table);
+    const connection = this.getConnection(database);
+    try {
+      const queryInterface = connection.getQueryInterface();
 
-            for (const columnName of Object.keys(columnMap)) {
-              columns.push({
-                name: columnName,
-                ...columnMap[columnName],
-              });
+      // first get all the columns
+      const columns: SqluiCore.ColumnMetaData[] = [];
+      try {
+        const columnMap = await queryInterface.describeTable(table);
+
+        for (const columnName of Object.keys(columnMap)) {
+          columns.push({
+            name: columnName,
+            ...columnMap[columnName],
+          });
+        }
+      } catch (err) {
+        console.error("RelationalDataAdapter:getColumns:describeTable", err);
+      }
+
+      // then see if we attempt to add additional foreignKey constraint
+      try {
+        const foreignKeyReferences = (await queryInterface.getForeignKeyReferencesForTable(table)) as any[];
+
+        for (const foreignKeyReference of foreignKeyReferences) {
+          const fromTableName = foreignKeyReference.tableName;
+          const fromColumnName = foreignKeyReference.columnName;
+          const toTableName = foreignKeyReference.referencedTableName;
+          const toColumnName = foreignKeyReference.referencedColumnName;
+
+          if (fromTableName === table) {
+            const targetColumn = columns.find((column) => column.name === fromColumnName);
+
+            if (targetColumn) {
+              targetColumn.kind = "foreign_key";
+              targetColumn.referencedTableName = toTableName;
+              targetColumn.referencedColumnName = toColumnName;
             }
-          } catch (err) {
-            console.error("index.ts:push", err);
-          } finally {
-            await connection.close();
           }
         }
+      } catch (err) {
+        console.error("RelationalDataAdapter:getColumns:getForeignKeyReferences", err);
+      }
 
-        // then see if we attempt to add additional foreignKey constraint
-        {
-          const connection = this.getConnection(database);
-          try {
-            const foreignKeyReferences = (await connection.getQueryInterface().getForeignKeyReferencesForTable(table)) as any[];
-
-            for (const foreignKeyReference of foreignKeyReferences) {
-              const fromTableName = foreignKeyReference.tableName;
-              const fromColumnName = foreignKeyReference.columnName;
-              const toTableName = foreignKeyReference.referencedTableName;
-              const toColumnName = foreignKeyReference.referencedColumnName;
-
-              if (fromTableName === table) {
-                const targetColumn = columns.find((column) => column.name === fromColumnName);
-
-                if (targetColumn) {
-                  targetColumn.kind = "foreign_key";
-                  targetColumn.referencedTableName = toTableName;
-                  targetColumn.referencedColumnName = toColumnName;
-                }
-              }
-            }
-          } catch (err) {
-            console.error("index.ts:find", err);
-          } finally {
-            await connection.close();
-          }
-        }
-
-        return columns;
+      return columns;
+    } finally {
+      await connection.close();
     }
   }
 
