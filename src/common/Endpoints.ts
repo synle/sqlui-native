@@ -1,7 +1,14 @@
 import { BrowserWindow } from "electron";
 import { Express } from "express";
 import path from "path";
-import { getColumns, getConnectionMetaData, getDataAdapter, getDatabases, getTables } from "src/common/adapters/DataAdapterFactory";
+import {
+  clearCachedColumns,
+  getColumns,
+  getConnectionMetaData,
+  getDataAdapter,
+  getDatabases,
+  getTables,
+} from "src/common/adapters/DataAdapterFactory";
 import {
   getConnectionsStorage,
   getDataSnapshotStorage,
@@ -246,15 +253,27 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
       return res.status(404).send("Not Found");
     }
 
+    // Clear backend column cache for this connection before reconnecting
+    if (connection.id) {
+      clearCachedColumns(connection.id);
+    }
+
+    const engine = getDataAdapter(connection.connection);
     try {
-      const engine = getDataAdapter(connection.connection);
       await engine.authenticate();
       res.status(200).json(await getConnectionMetaData(connection));
     } catch (err: any) {
       // here means we failed to connect, just set back 407 - Not Acceptable
       // here we return the barebone
       res.status(406).json(`Failed to connect ${err.toString()}`);
-      console.error("Endpoints.ts:execute", err);
+      console.error("Endpoints.ts:connect", err);
+    } finally {
+      // Dispose of the adapter connection/driver immediately
+      try {
+        await engine.disconnect?.();
+      } catch (_err) {
+        // best-effort cleanup
+      }
     }
   });
 
