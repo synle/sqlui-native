@@ -88,7 +88,14 @@ export function DataTableWithJSONList(props: DataTableWithJSONListProps) {
       }
     }
 
-    return [...newColumnNames].map((columnName) => {
+    const rowNumberColumn: ColumnDef<any, any> = {
+      header: "#",
+      enableSorting: false,
+      enableColumnFilter: false,
+      cell: (info: any) => <span style={{ fontFamily: "monospace", opacity: 0.5 }}>{info.row.index + 1}</span>,
+    };
+
+    return [rowNumberColumn, ...[...newColumnNames].map((columnName) => {
       return {
         header: columnName,
         enableSorting: true,
@@ -155,7 +162,7 @@ export function DataTableWithJSONList(props: DataTableWithJSONListProps) {
           );
         },
       };
-    });
+    })];
   }, [data]);
 
   if (isAdvancedTableRenderer) {
