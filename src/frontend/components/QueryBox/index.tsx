@@ -17,13 +17,21 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "src/frontend/utils/commonUtils";
 import React, { useCallback, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { getSyntaxModeByDialect, getTableActions } from "src/common/adapters/DataScriptFactory";
-import CodeEditorBox, { EditorRef } from "src/frontend/components/CodeEditorBox";
+import CodeEditorBox, { CompletionItem, EditorRef } from "src/frontend/components/CodeEditorBox";
 import DropdownButton from "src/frontend/components/DropdownButton";
 import { useCommands } from "src/frontend/components/MissionControl";
 import ConnectionDatabaseSelector from "src/frontend/components/QueryBox/ConnectionDatabaseSelector";
 import ConnectionRevealButton from "src/frontend/components/QueryBox/ConnectionRevealButton";
 import ResultBox from "src/frontend/components/ResultBox";
-import { refreshAfterExecution, useExecute, useGetColumns, useGetConnectionById } from "src/frontend/hooks/useConnection";
+import {
+  refreshAfterExecution,
+  useExecute,
+  useGetAllTableColumns,
+  useGetColumns,
+  useGetConnectionById,
+  useGetDatabases,
+  useGetTables,
+} from "src/frontend/hooks/useConnection";
 import { useConnectionQuery } from "src/frontend/hooks/useConnectionQuery";
 import { useLayoutModeSetting, useQuerySizeSetting } from "src/frontend/hooks/useSetting";
 import useToaster from "src/frontend/hooks/useToaster";
@@ -149,6 +157,44 @@ export default function QueryBox(props: QueryBoxProps): JSX.Element | null {
   const { selectCommand } = useCommands();
   const { add: addToast } = useToaster();
   const navigate = useNavigate();
+
+  const { data: databases } = useGetDatabases(query?.connectionId);
+  const { data: tables } = useGetTables(query?.connectionId, query?.databaseId);
+  const { data: allTableColumns } = useGetAllTableColumns(query?.connectionId, query?.databaseId);
+
+  const completionItems: CompletionItem[] = useMemo(() => {
+    const items: CompletionItem[] = [];
+
+    if (databases) {
+      for (const db of databases) {
+        items.push({ label: db.name, kind: "database", detail: "Database" });
+      }
+    }
+
+    if (tables) {
+      for (const table of tables) {
+        items.push({ label: table.name, kind: "table", detail: "Table" });
+      }
+    }
+
+    if (allTableColumns) {
+      const seen = new Set<string>();
+      for (const [tableName, columns] of Object.entries(allTableColumns)) {
+        for (const col of columns) {
+          // add plain column name (deduplicated)
+          if (!seen.has(col.name)) {
+            seen.add(col.name);
+            items.push({ label: col.name, kind: "column", detail: `Column (${tableName} - ${col.type})` });
+          }
+          // add table.column prefixed version
+          const prefixed = `${tableName}.${col.name}`;
+          items.push({ label: prefixed, kind: "column", detail: `Column (${col.type})` });
+        }
+      }
+    }
+
+    return items;
+  }, [databases, tables, allTableColumns]);
 
   const language: string = useMemo(() => getSyntaxModeByDialect(selectedConnection?.dialect), [selectedConnection?.dialect, query?.sql]);
   const isLoading = loadingConnection;
@@ -315,6 +361,7 @@ export default function QueryBox(props: QueryBoxProps): JSX.Element | null {
           editorRef={editorRef}
           autoFocus
           required
+          completionItems={completionItems}
         />
         <div className="FormInput__Row">
           {!expanded && (
