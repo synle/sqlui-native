@@ -46,6 +46,24 @@ function setCachedColumns(connectionId: string, databaseId: string, tableId: str
 }
 
 /**
+ * Clears all cached column data for a given connection.
+ * @param connectionId - The connection ID whose cached columns should be removed.
+ */
+export function clearCachedColumns(connectionId: string) {
+  try {
+    const allEntries = columnCacheStorage.list();
+    const prefix = `${connectionId}:`;
+    for (const entry of allEntries) {
+      if (entry.id.startsWith(prefix)) {
+        columnCacheStorage.delete(entry.id);
+      }
+    }
+  } catch (_err) {
+    // best-effort cache clear
+  }
+}
+
+/**
  * Creates and returns the appropriate data adapter for the given connection string.
  * @param connection - The connection string URI (e.g., "mysql://user:pass@host:port").
  * @returns An IDataAdapter instance for the detected dialect.
