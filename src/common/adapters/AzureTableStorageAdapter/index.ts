@@ -61,6 +61,11 @@ export default class AzureTableStorageAdapter extends BaseDataAdapter implements
     }
   }
 
+  /** Disconnects and cleans up resources. */
+  async disconnect() {
+    await this.closeConnection();
+  }
+
   async authenticate() {
     return new Promise<void>(async (resolve, reject) => {
       try {
