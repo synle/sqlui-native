@@ -82,7 +82,7 @@ export default function ResultBox(props: ResultBoxProps): JSX.Element | null {
   const onDownloadJson = async (e: React.SyntheticEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    downloadJSON(`Result - ${new Date().toLocaleString()}.result.json`, JSON.stringify(data, null, 2));
+    downloadJSON(`Result - ${new Date().toLocaleString()}.result.json`, data);
   };
 
   const onDownloadCsv = async (e: React.SyntheticEvent) => {
