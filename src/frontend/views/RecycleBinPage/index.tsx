@@ -90,6 +90,13 @@ function ActionCell({ row }: { row: any }) {
 
 const columns: ColumnDef<any, any>[] = [
   {
+    header: "#",
+    enableSorting: false,
+    enableColumnFilter: false,
+    size: 50,
+    cell: (info) => <span style={{ fontFamily: "monospace", opacity: 0.5 }}>{info.row.index + 1}</span>,
+  },
+  {
     header: "Name",
     accessorKey: "name",
     cell: (info) => <NameCell row={info.row} />,

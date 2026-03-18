@@ -114,7 +114,8 @@ function DataTableColumnSettingsContent({ table }: DataTableColumnSettingsProps)
         {columnOrder.map((columnId, idx) => {
           const column = allColumns.find((c) => c.id === columnId);
           if (!column) return null;
-          const header = typeof column.columnDef.header === "string" ? column.columnDef.header : column.id;
+          const rawHeader = typeof column.columnDef.header === "string" ? column.columnDef.header : "";
+          const header = rawHeader || column.id;
           return (
             <ListItem
               key={columnId}

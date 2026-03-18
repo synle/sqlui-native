@@ -716,6 +716,7 @@ export default function MissionControl() {
         title: "Bookmarks",
         message: <BookmarksItemListModalContent onAfterSelect={dismissDialog} />,
         showCloseButton: true,
+        isFullScreen: true,
       });
     } catch (err) {
       console.error("index.tsx:modal", err);
