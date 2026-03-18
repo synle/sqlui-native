@@ -9,6 +9,8 @@ const REDIS_ADAPTER_PREFIX = "db";
 
 /** Data adapter for Redis and Redis with SSL (rediss) connections. */
 export default class RedisDataAdapter extends BaseDataAdapter implements IDataAdapter {
+  private _connection?: RedisClientType;
+
   private async getConnection(): Promise<RedisClientType> {
     // attempt to pull in connections
     return new Promise<RedisClientType>(async (resolve, reject) => {
@@ -19,10 +21,12 @@ export default class RedisDataAdapter extends BaseDataAdapter implements IDataAd
 
         client.connect();
 
-        client.on("ready", () =>
+        client.on("ready", () => {
           //@ts-ignore
-          resolve(client),
-        );
+          this._connection = client;
+          //@ts-ignore
+          resolve(client);
+        });
 
         client.on("error", (err) => reject(err));
       } catch (err) {
@@ -32,21 +36,19 @@ export default class RedisDataAdapter extends BaseDataAdapter implements IDataAd
     });
   }
 
-  private async closeConnection(client?: RedisClientType) {
+  /** Disconnects the Redis client held by this adapter. */
+  async disconnect() {
     try {
-      await client?.disconnect();
+      await this._connection?.disconnect();
     } catch (err) {
-      console.error("index.ts:disconnect", err);
+      console.error("RedisDataAdapter:disconnect", err);
     }
+    this._connection = undefined;
   }
 
-  /** Disconnects and cleans up resources. No-op since connections are per-operation. */
-  async disconnect() {}
-
-  /** Authenticates by establishing and closing a Redis connection. */
+  /** Authenticates by establishing a Redis connection. */
   async authenticate() {
-    const client = await this.getConnection();
-    await this.closeConnection(client);
+    await this.getConnection();
   }
 
   /**
@@ -92,8 +94,6 @@ export default class RedisDataAdapter extends BaseDataAdapter implements IDataAd
    * @returns The command result with data or error information.
    */
   async execute(sql: string): Promise<SqluiCore.Result> {
-    let db: RedisClientType | undefined;
-
     try {
       if (!sql.includes(`${REDIS_ADAPTER_PREFIX}.`)) {
         throw new Error(
@@ -101,7 +101,7 @@ export default class RedisDataAdapter extends BaseDataAdapter implements IDataAd
         );
       }
 
-      db = await this.getConnection();
+      const db = await this.getConnection(); // eslint-disable-line @typescript-eslint/no-unused-vars
 
       //@ts-ignore
       const resp: any = await eval(sql); // eslint-disable-line no-eval
@@ -129,8 +129,6 @@ export default class RedisDataAdapter extends BaseDataAdapter implements IDataAd
     } catch (error: any) {
       console.error("RedisDataAdapter:execute", error);
       return { ok: false, error: error.toString() };
-    } finally {
-      this.closeConnection(db);
     }
   }
 }

@@ -56,7 +56,7 @@ The app runs in **Electron mode** (`npm start`) or **mocked server mode** (`npm 
 
 ### Database Adapter Pattern
 
-All database engines implement `IDataAdapter` (authenticate, getDatabases, getTables, getColumns, execute). `DataAdapterFactory` creates the correct adapter based on connection dialect. `DataScriptFactory` generates dialect-specific SQL/query scripts. `BaseDataAdapter` provides shared logic (connection string parsing, type inference/resolution). `BaseDataScript` provides shared script generation (select, insert, update, delete, DDL) with dialect-specific overrides.
+All database engines implement `IDataAdapter` (authenticate, getDatabases, getTables, getColumns, execute, disconnect). `DataAdapterFactory` creates the correct adapter based on connection dialect. `DataScriptFactory` generates dialect-specific SQL/query scripts. `BaseDataAdapter` provides shared logic (connection string parsing, type inference/resolution). `BaseDataScript` provides shared script generation (select, insert, update, delete, DDL) with dialect-specific overrides.
 
 Adapter implementations live in `src/common/adapters/`:
 
@@ -64,6 +64,12 @@ Adapter implementations live in `src/common/adapters/`:
 - `CassandraDataAdapter`, `MongoDBDataAdapter`, `RedisDataAdapter`, `AzureCosmosDataAdapter`, `AzureTableStorageAdapter`
 
 Each adapter directory contains `index.ts` (adapter class) and `scripts.ts` (ConcreteDataScripts class with dialect-specific query generators). Some also have `utils.ts` for client configuration helpers.
+
+**Adapter Connection Lifecycle:**
+
+- Each adapter holds exactly ONE connection as instance state (`private _connection`). `getConnection()` creates and stores it.
+- Adapter methods (authenticate, getDatabases, getTables, getColumns, execute) use `getConnection()` without closing the connection.
+- `disconnect()` is the SOLE cleanup method — it closes `this._connection` and sets it to `undefined`. It must **never** be called internally by adapter methods. It is called exclusively by the **caller** (`Endpoints.ts`, `DataAdapterFactory`, or tests) in `finally` blocks after all operations complete.
 
 ### Endpoint Pattern
 
