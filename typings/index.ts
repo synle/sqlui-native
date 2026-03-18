@@ -247,6 +247,7 @@ export module SqluiFrontend {
     queryTabOrientation?: "vertical" | "horizontal";
     querySize?: number;
     tablePageSize?: number;
+    maxToasts?: number;
     /**
      * whether or not to open the bookmarked query in the same tab or new tab
      */
