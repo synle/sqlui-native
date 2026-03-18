@@ -95,74 +95,77 @@ export function DataTableWithJSONList(props: DataTableWithJSONListProps) {
       cell: (info: any) => <span style={{ fontFamily: "monospace", opacity: 0.5 }}>{info.row.index + 1}</span>,
     };
 
-    return [rowNumberColumn, ...[...newColumnNames].map((columnName) => {
-      return {
-        header: columnName,
-        enableSorting: true,
-        enableColumnFilter: !!props.enableColumnFilter,
-        accessorFn: (data: any) => {
-          let columnValue = data[columnName];
-          if (columnValue === null) {
-            columnValue = "null";
-          } else if (columnValue === undefined) {
-            columnValue = "undefined";
-          } else if (columnValue === true) {
-            columnValue = "true";
-          } else if (columnValue === false) {
-            columnValue = "false";
-          } else if (typeof columnValue === "object") {
-            columnValue = JSON.stringify(columnValue);
-          }
+    return [
+      rowNumberColumn,
+      ...[...newColumnNames].map((columnName) => {
+        return {
+          header: columnName,
+          enableSorting: true,
+          enableColumnFilter: !!props.enableColumnFilter,
+          accessorFn: (data: any) => {
+            let columnValue = data[columnName];
+            if (columnValue === null) {
+              columnValue = "null";
+            } else if (columnValue === undefined) {
+              columnValue = "undefined";
+            } else if (columnValue === true) {
+              columnValue = "true";
+            } else if (columnValue === false) {
+              columnValue = "false";
+            } else if (typeof columnValue === "object") {
+              columnValue = JSON.stringify(columnValue);
+            }
 
-          const html = document.createElement("p");
-          html.innerHTML = columnValue;
-          return html.innerText;
-        },
-        cell: (info: any) => {
-          const columnValue = info.row.original[columnName];
-          if (columnValue === null) {
-            return <Chip sx={{ textTransform: "uppercase", fontStyle: "italic" }} size="small" color="info" label="null" />;
-          } else if (columnValue === undefined) {
-            return <Chip sx={{ textTransform: "uppercase", fontStyle: "italic" }} size="small" color="default" label="undefined" />;
-          } else if (columnValue === true || columnValue?.toString()?.toLowerCase() === "true") {
-            return <Chip sx={{ textTransform: "uppercase", fontStyle: "italic" }} size="small" color="success" label="true" />;
-          } else if (columnValue === false || columnValue?.toString()?.toLowerCase() === "false") {
-            return <Chip sx={{ textTransform: "uppercase", fontStyle: "italic" }} size="small" color="error" label="false" />;
-          } else if (typeof columnValue === "number") {
-            return <span style={{ fontFamily: "monospace" }}>{columnValue}</span>;
-          } else if (typeof columnValue === "object") {
+            const html = document.createElement("p");
+            html.innerHTML = columnValue;
+            return html.innerText;
+          },
+          cell: (info: any) => {
+            const columnValue = info.row.original[columnName];
+            if (columnValue === null) {
+              return <Chip sx={{ textTransform: "uppercase", fontStyle: "italic" }} size="small" color="info" label="null" />;
+            } else if (columnValue === undefined) {
+              return <Chip sx={{ textTransform: "uppercase", fontStyle: "italic" }} size="small" color="default" label="undefined" />;
+            } else if (columnValue === true || columnValue?.toString()?.toLowerCase() === "true") {
+              return <Chip sx={{ textTransform: "uppercase", fontStyle: "italic" }} size="small" color="success" label="true" />;
+            } else if (columnValue === false || columnValue?.toString()?.toLowerCase() === "false") {
+              return <Chip sx={{ textTransform: "uppercase", fontStyle: "italic" }} size="small" color="error" label="false" />;
+            } else if (typeof columnValue === "number") {
+              return <span style={{ fontFamily: "monospace" }}>{columnValue}</span>;
+            } else if (typeof columnValue === "object") {
+              return (
+                <span
+                  style={{
+                    width: "100%",
+                    display: "inline-block",
+                    fontFamily: "monospace",
+                    overflow: "hidden",
+                    whiteSpace: "nowrap",
+                    textOverflow: "ellipsis",
+                  }}
+                >
+                  {JSON.stringify(columnValue)}
+                </span>
+              );
+            }
             return (
               <span
                 style={{
-                  width: "100%",
-                  display: "inline-block",
-                  fontFamily: "monospace",
+                  display: "block",
                   overflow: "hidden",
-                  whiteSpace: "nowrap",
                   textOverflow: "ellipsis",
+                  wordBreak: "break-all",
+                  whiteSpace: "nowrap",
+                  maxWidth: "fit-content",
                 }}
               >
-                {JSON.stringify(columnValue)}
+                {columnValue || ""}
               </span>
             );
-          }
-          return (
-            <span
-              style={{
-                display: "block",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                wordBreak: "break-all",
-                whiteSpace: "nowrap",
-                maxWidth: "fit-content",
-              }}
-            >
-              {columnValue || ""}
-            </span>
-          );
-        },
-      };
-    })];
+          },
+        };
+      }),
+    ];
   }, [data]);
 
   if (isAdvancedTableRenderer) {
