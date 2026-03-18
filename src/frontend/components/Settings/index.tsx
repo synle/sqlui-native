@@ -4,7 +4,7 @@ import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
 import React from "react";
 import Select from "src/frontend/components/Select";
-import { useQuerySizeSetting, useSetting } from "src/frontend/hooks/useSetting";
+import { useMaxToastsSetting, useQuerySizeSetting, useSetting } from "src/frontend/hooks/useSetting";
 import { SqluiFrontend } from "typings";
 
 function useSettingChange() {
@@ -32,6 +32,7 @@ function useSettingChange() {
 export default function Settings(): JSX.Element | null {
   const { settings, onSettingChange } = useSettingChange();
   const querySize = useQuerySizeSetting();
+  const maxToasts = useMaxToastsSetting();
 
   let contentDom: React.ReactNode;
 
@@ -177,6 +178,23 @@ export default function Settings(): JSX.Element | null {
             size="small"
             fullWidth={true}
             type="number"
+          />
+        </div>
+        <Typography className="FormInput__Label" variant="subtitle1">
+          Max Toasts
+          <Tooltip title="Maximum number of toast notifications to display at once. Oldest toasts are auto-dismissed when the limit is exceeded.">
+            <HelpIcon fontSize="small" sx={{ ml: 1 }} />
+          </Tooltip>
+        </Typography>
+        <div className="FormInput__Row">
+          <TextField
+            defaultValue={settings.maxToasts || maxToasts}
+            onBlur={(e) => onSettingChange("maxToasts", e.target.value)}
+            required
+            size="small"
+            fullWidth={true}
+            type="number"
+            inputProps={{ min: 3, max: 10, step: 1 }}
           />
         </div>
         <Typography className="FormInput__Label" variant="subtitle1">

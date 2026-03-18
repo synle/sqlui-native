@@ -5,6 +5,7 @@ import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
 import { createRoot } from "react-dom/client";
 import { useActionDialogs } from "src/frontend/hooks/useActionDialogs";
+import { DEFAULT_MAX_TOASTS, useMaxToastsSetting } from "src/frontend/hooks/useSetting";
 import { getGeneratedRandomId } from "src/frontend/utils/commonUtils";
 
 /** Base properties for creating a toast notification. */
@@ -66,6 +67,7 @@ type InternalToast = {
 let _activeToasts: InternalToast[] = [];
 let _toastHistory: ToastHistoryEntry[] = [];
 let _listeners: Array<() => void> = [];
+let _maxToasts: number = DEFAULT_MAX_TOASTS;
 
 function _notify() {
   for (const listener of _listeners) {
@@ -109,6 +111,13 @@ function _addToast(props: ToasterProps): string {
       createdTime: now,
     };
     _activeToasts = [..._activeToasts, toast];
+
+    // Evict oldest toasts if over the limit
+    while (_activeToasts.length > _maxToasts) {
+      const oldest = _activeToasts[0];
+      _dismissToast(oldest.id, "auto");
+    }
+
     if (props.persisted) {
       _toastHistory = [
         ..._toastHistory,
@@ -365,8 +374,18 @@ function _ensureContainerMounted() {
  * Hook for showing and dismissing toast notifications. Mounts the toast container on first use.
  * @returns Methods to add and dismiss toast notifications.
  */
+/** Updates the module-level max toasts limit. Called from the hook to sync settings. */
+export function setMaxToasts(value: number) {
+  _maxToasts = value;
+}
+
 export default function useToaster() {
   const { modal } = useActionDialogs();
+  const maxToasts = useMaxToastsSetting();
+
+  useEffect(() => {
+    setMaxToasts(maxToasts);
+  }, [maxToasts]);
 
   useEffect(() => {
     _ensureContainerMounted();

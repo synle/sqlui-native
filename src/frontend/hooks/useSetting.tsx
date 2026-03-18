@@ -32,6 +32,7 @@ export function useSetting() {
     queryTabOrientation: serverConfigs?.queryTabOrientation,
     querySize: serverConfigs?.querySize,
     tablePageSize: serverConfigs?.tablePageSize,
+    maxToasts: serverConfigs?.maxToasts,
     deleteMode: serverConfigs?.deleteMode,
   };
 
@@ -177,6 +178,19 @@ export function useTablePageSize() {
  * Hook returning whether soft delete mode is enabled (items go to recycle bin instead of permanent deletion).
  * @returns True if soft delete mode is active.
  */
+/** Default maximum number of concurrent toast notifications displayed. */
+export const DEFAULT_MAX_TOASTS = 3;
+
+/**
+ * Hook returning the maximum number of toast notifications to display at once.
+ * @returns The max toasts setting, defaulting to DEFAULT_MAX_TOASTS.
+ */
+export function useMaxToastsSetting() {
+  const { settings } = useSetting();
+  const parsed = parseInt(settings?.maxToasts + "") || DEFAULT_MAX_TOASTS;
+  return Math.min(10, Math.max(3, parsed));
+}
+
 export function useIsSoftDeleteModeSetting() {
   const { settings } = useSetting();
   return settings?.deleteMode !== "hard-delete";
