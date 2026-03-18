@@ -37,6 +37,9 @@ export default class MongoDBDataAdapter extends BaseDataAdapter implements IData
     }
   }
 
+  /** Disconnects and cleans up resources. No-op since connections are per-operation. */
+  async disconnect() {}
+
   /** Authenticates by establishing and closing a MongoDB connection. */
   async authenticate() {
     const client = await this.getConnection();
