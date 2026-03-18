@@ -138,6 +138,7 @@ function CodeSnippetButton(props: QueryBoxProps) {
 export default function QueryBox(props: QueryBoxProps): JSX.Element | null {
   const { queryId } = props;
   const editorRef = useRef<EditorRef>();
+  const executionIdRef = useRef(0);
   const { query, onChange, isLoading: loadingConnection } = useConnectionQuery(queryId);
   const { mutateAsync: executeQuery } = useExecute();
   const [executing, setExecuting] = useState(false);
@@ -202,10 +203,13 @@ export default function QueryBox(props: QueryBoxProps): JSX.Element | null {
     e.preventDefault();
     setExecuting(true);
 
+    const currentExecutionId = ++executionIdRef.current;
+
     const executionStart = Date.now();
-    onChange({ executionStart, result: {} as SqluiCore.Result });
+    onChange({ executionStart, result: undefined, executionEnd: undefined });
 
     let success = false;
+    let newResult: SqluiCore.Result | undefined;
 
     const queryToExecute = {
       ...query,
@@ -223,7 +227,13 @@ export default function QueryBox(props: QueryBoxProps): JSX.Element | null {
     }
 
     try {
-      const newResult = await executeQuery(queryToExecute);
+      newResult = await executeQuery(queryToExecute);
+
+      // only apply results if this is still the latest execution
+      if (currentExecutionId !== executionIdRef.current) {
+        return;
+      }
+
       onChange({ result: newResult });
       refreshAfterExecution(queryToExecute, queryClient);
 
@@ -231,6 +241,9 @@ export default function QueryBox(props: QueryBoxProps): JSX.Element | null {
     } catch (err) {
       console.error("index.tsx:refreshAfterExecution", err);
       // here query failed...
+      if (currentExecutionId !== executionIdRef.current) {
+        return;
+      }
     }
     setExecuting(false);
 
@@ -238,14 +251,14 @@ export default function QueryBox(props: QueryBoxProps): JSX.Element | null {
     onChange({ executionEnd });
 
     const { sql, ...queryExtra } = query;
-    const { selected, result, ...toastMetaData } = queryExtra;
+    const { selected, result: _result, ...toastMetaData } = queryExtra;
 
     let toastMessage = `Query "${queryToExecute.name}" executed ${
       success ? "successfully" : "unsuccessfully"
     } and took about ${formatDuration(executionEnd - executionStart)}...`;
 
-    if (result?.raw && result?.raw?.length > 0) {
-      toastMessage += ` And the query returned a total of ${result?.raw?.length} records.`;
+    if (newResult?.raw && newResult?.raw?.length > 0) {
+      toastMessage += ` And the query returned a total of ${newResult?.raw?.length} records.`;
     }
 
     await addToast({
