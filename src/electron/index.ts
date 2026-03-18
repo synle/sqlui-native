@@ -326,10 +326,12 @@ ipcMain.on("sqluiNativeEvent/fetch", async (event, data) => {
   const sessionId = options?.headers["sqlui-native-session-id"];
 
   let body: any = {};
-  try {
-    body = JSON.parse(options.body);
-  } catch (err) {
-    console.error("index.ts:parse", err);
+  if (options.body) {
+    try {
+      body = JSON.parse(options.body);
+    } catch (err) {
+      console.error("index.ts:parse", options.body, err);
+    }
   }
 
   console.log(">> Request", method, url, sessionId, body);
