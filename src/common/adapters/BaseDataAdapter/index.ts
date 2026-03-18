@@ -3,7 +3,7 @@ import { getDialectType, getDialectTypeFromConnectionString } from "src/common/a
 import { SqluiCore } from "typings";
 
 /** Maximum timeout in milliseconds for establishing a database connection. */
-export const MAX_CONNECTION_TIMEOUT = 3000;
+export const MAX_CONNECTION_TIMEOUT = 15000;
 
 /**
  * Abstract base class for all database adapters. Provides shared utilities

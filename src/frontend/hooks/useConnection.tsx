@@ -270,44 +270,10 @@ export function useExecute() {
  * @param query - The executed query to check for DDL/DML keywords.
  * @param queryClient - The React Query client used to invalidate caches.
  */
-export function refreshAfterExecution(query: SqluiFrontend.ConnectionQuery, queryClient: QueryClient) {
-  if (!query) {
-    return;
-  }
-
-  // if we have any one of these keywords, let's refresh the table...
-  const KEYWORDS_TO_REFRESH_CONNECTION = [
-    "DROP DATABASE",
-    "CREATE DATABASE",
-    "DROP TABLE",
-    "CREATE TABLE",
-    "ALTER TABLE",
-    "DROP COLUMN",
-    // for cassandra
-    "CREATE KEYSPACE",
-    "ALTER KEYSPACE",
-    "DROP KEYSPACE",
-
-    // for mongo
-    ".INSERT",
-    ".DELETE",
-    ".UPDATE",
-    ".DROP",
-    ".CREATECOLLECTION",
-    ".CREATEDATABASE",
-    ".CREATE",
-
-    // for azure table storage
-    ".CREATETABLE",
-    ".DELETETABLE",
-  ];
-
-  const shouldRefreshConnection = KEYWORDS_TO_REFRESH_CONNECTION.some((keyword) => query?.sql?.toUpperCase()?.includes(keyword));
-
-  if (shouldRefreshConnection) {
-    queryClient.invalidateQueries([query.connectionId]);
-    queryClient.invalidateQueries([QUERY_KEY_ALL_CONNECTIONS]);
-  }
+export function refreshAfterExecution(_query: SqluiFrontend.ConnectionQuery, _queryClient: QueryClient) {
+  // No-op: DDL detection previously triggered automatic cache invalidation
+  // which caused expensive reconnection cascades on slow connections.
+  // Users should manually refresh/reconnect to pick up schema changes.
 }
 
 /**
