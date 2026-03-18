@@ -40,6 +40,9 @@ export default class RedisDataAdapter extends BaseDataAdapter implements IDataAd
     }
   }
 
+  /** Disconnects and cleans up resources. No-op since connections are per-operation. */
+  async disconnect() {}
+
   /** Authenticates by establishing and closing a Redis connection. */
   async authenticate() {
     const client = await this.getConnection();

@@ -30,5 +30,5 @@ export default interface IDataAdapter {
    */
   execute: (sql: string, database: string | undefined, table: string | undefined) => Promise<SqluiCore.Result>;
   /** Disconnects from the database and cleans up resources. */
-  disconnect?: () => Promise<void>;
+  disconnect: () => Promise<void>;
 }

@@ -115,8 +115,8 @@ export async function getConnectionMetaData(connection: SqluiCore.CoreConnection
     databases: [] as SqluiCore.DatabaseMetaData[],
   };
 
+  const engine = getDataAdapter(connection.connection);
   try {
-    const engine = getDataAdapter(connection.connection);
     const databases = await engine.getDatabases();
 
     connItem.status = "online";
@@ -148,6 +148,12 @@ export async function getConnectionMetaData(connection: SqluiCore.CoreConnection
     connItem.status = "offline";
     connItem.dialect = undefined;
     console.error("DataAdapterFactory.ts:getConnectionItem", err);
+  } finally {
+    try {
+      await engine.disconnect();
+    } catch (_err) {
+      // best-effort cleanup
+    }
   }
 
   return connItem;
@@ -178,7 +184,16 @@ export function resetConnectionMetaData(connection: SqluiCore.CoreConnectionProp
 export async function getDatabases(sessionId: string, connectionId: string) {
   const connection = await new PersistentStorage<SqluiCore.ConnectionProps>(sessionId, "connection").get(connectionId);
 
-  return (await getDataAdapter(connection.connection).getDatabases()).sort((a, b) => (a.name || "").localeCompare(b.name || ""));
+  const engine = getDataAdapter(connection.connection);
+  try {
+    return (await engine.getDatabases()).sort((a, b) => (a.name || "").localeCompare(b.name || ""));
+  } finally {
+    try {
+      await engine.disconnect();
+    } catch (_err) {
+      // best-effort cleanup
+    }
+  }
 }
 
 /**
@@ -191,7 +206,16 @@ export async function getDatabases(sessionId: string, connectionId: string) {
 export async function getTables(sessionId: string, connectionId: string, databaseId: string) {
   const connection = await new PersistentStorage<SqluiCore.ConnectionProps>(sessionId, "connection").get(connectionId);
 
-  return (await getDataAdapter(connection.connection).getTables(databaseId)).sort((a, b) => (a.name || "").localeCompare(b.name || ""));
+  const engine = getDataAdapter(connection.connection);
+  try {
+    return (await engine.getTables(databaseId)).sort((a, b) => (a.name || "").localeCompare(b.name || ""));
+  } finally {
+    try {
+      await engine.disconnect();
+    } catch (_err) {
+      // best-effort cleanup
+    }
+  }
 }
 
 function cleanAndSortColumns(columns: SqluiCore.ColumnMetaData[]): SqluiCore.ColumnMetaData[] {
@@ -252,14 +276,21 @@ export async function getColumns(sessionId: string, connectionId: string, databa
 
   // Background refresh: fetch fresh data and update the cache for next call
   const refreshCache = async () => {
+    const connection = await new PersistentStorage<SqluiCore.ConnectionProps>(sessionId, "connection").get(connectionId);
+    const engine = getDataAdapter(connection.connection);
     try {
-      const connection = await new PersistentStorage<SqluiCore.ConnectionProps>(sessionId, "connection").get(connectionId);
-      const columns = cleanAndSortColumns(await getDataAdapter(connection.connection).getColumns(tableId, databaseId));
+      const columns = cleanAndSortColumns(await engine.getColumns(tableId, databaseId));
       setCachedColumns(connectionId, databaseId, tableId, columns);
       return columns;
     } catch (err) {
       console.error("DataAdapterFactory.ts:refreshCache", err);
       return undefined;
+    } finally {
+      try {
+        await engine.disconnect();
+      } catch (_err) {
+        // best-effort cleanup
+      }
     }
   };
 

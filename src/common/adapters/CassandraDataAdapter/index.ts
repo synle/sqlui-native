@@ -84,6 +84,9 @@ export default class CassandraDataAdapter extends BaseDataAdapter implements IDa
     });
   }
 
+  /** Disconnects and cleans up resources. No-op since connections are per-operation. */
+  async disconnect() {}
+
   /** Authenticates by establishing and shutting down a Cassandra connection. */
   async authenticate() {
     const client = await this.getConnection();

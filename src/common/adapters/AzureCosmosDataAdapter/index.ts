@@ -42,6 +42,11 @@ export default class AzureCosmosDataAdapter extends BaseDataAdapter implements I
     }
   }
 
+  /** Disconnects from Azure Cosmos DB and cleans up the client. */
+  async disconnect() {
+    await this.closeConnection();
+  }
+
   async authenticate() {
     return new Promise<void>(async (resolve, reject) => {
       try {
