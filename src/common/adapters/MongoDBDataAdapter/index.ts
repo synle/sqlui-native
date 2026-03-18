@@ -9,10 +9,12 @@ const MONGO_ADAPTER_PREFIX = "db";
 /**
  * @type {Number} maximum number of items to scan for column metadata
  */
-const MAX_ITEM_COUNT_TO_SCAN = 5;
+const MAX_ITEM_COUNT_TO_SCAN = 10;
 
 /** Data adapter for MongoDB and MongoDB+SRV connections. */
 export default class MongoDBDataAdapter extends BaseDataAdapter implements IDataAdapter {
+  private _connection?: MongoClient;
+
   private async getConnection(connectionToUse?: string): Promise<MongoClient> {
     // attempt to pull in connections
     return new Promise<MongoClient>(async (resolve, reject) => {
@@ -21,6 +23,7 @@ export default class MongoDBDataAdapter extends BaseDataAdapter implements IData
 
         const client = new MongoClient(connectionToUse || this.connectionOption);
         await client.connect();
+        this._connection = client;
         resolve(client);
       } catch (err) {
         console.error("MongoDBDataAdapter:getConnection", err);
@@ -29,21 +32,19 @@ export default class MongoDBDataAdapter extends BaseDataAdapter implements IData
     });
   }
 
-  private async closeConnection(client?: MongoClient) {
+  /** Closes the MongoDB connection held by this adapter. */
+  async disconnect() {
     try {
-      await client?.close();
+      await this._connection?.close();
     } catch (err) {
-      console.error("index.ts:close", err);
+      console.error("MongoDBDataAdapter:disconnect", err);
     }
+    this._connection = undefined;
   }
 
-  /** Disconnects and cleans up resources. No-op since connections are per-operation. */
-  async disconnect() {}
-
-  /** Authenticates by establishing and closing a MongoDB connection. */
+  /** Authenticates by establishing a MongoDB connection. */
   async authenticate() {
-    const client = await this.getConnection();
-    await this.closeConnection(client);
+    await this.getConnection();
   }
 
   /** Retrieves all database names from the MongoDB server.
@@ -52,16 +53,12 @@ export default class MongoDBDataAdapter extends BaseDataAdapter implements IData
   async getDatabases(): Promise<SqluiCore.DatabaseMetaData[]> {
     const client = await this.getConnection();
 
-    try {
-      //@ts-ignore
-      const res = await client.db().admin().listDatabases();
-      return res.databases.map((database: any) => ({
-        name: database.name,
-        tables: [],
-      }));
-    } finally {
-      await this.closeConnection(client);
-    }
+    //@ts-ignore
+    const res = await client.db().admin().listDatabases();
+    return res.databases.map((database: any) => ({
+      name: database.name,
+      tables: [],
+    }));
   }
 
   /**
@@ -72,17 +69,13 @@ export default class MongoDBDataAdapter extends BaseDataAdapter implements IData
   async getTables(database?: string): Promise<SqluiCore.TableMetaData[]> {
     const client = await this.getConnection();
 
-    try {
-      //@ts-ignore
-      const collections = await client.db(database).listCollections().toArray();
+    //@ts-ignore
+    const collections = await client.db(database).listCollections().toArray();
 
-      return (collections || []).map((collection) => ({
-        name: collection.name,
-        columns: [],
-      }));
-    } finally {
-      await this.closeConnection(client);
-    }
+    return (collections || []).map((collection) => ({
+      name: collection.name,
+      columns: [],
+    }));
   }
 
   /**
@@ -94,17 +87,13 @@ export default class MongoDBDataAdapter extends BaseDataAdapter implements IData
   async getColumns(table: string, database?: string): Promise<SqluiCore.ColumnMetaData[]> {
     const client = await this.getConnection();
 
-    try {
-      //@ts-ignore
-      const items = await client.db(database).collection(table).find().limit(MAX_ITEM_COUNT_TO_SCAN).toArray();
+    //@ts-ignore
+    const items = await client.db(database).collection(table).find().limit(MAX_ITEM_COUNT_TO_SCAN).toArray();
 
-      return BaseDataAdapter.inferTypesFromItems(JSON.parse(JSON.stringify(items))).map((column) => ({
-        ...column,
-        primaryKey: column.name === "_id",
-      }));
-    } finally {
-      await this.closeConnection(client);
-    }
+    return BaseDataAdapter.inferTypesFromItems(JSON.parse(JSON.stringify(items))).map((column) => ({
+      ...column,
+      primaryKey: column.name === "_id",
+    }));
   }
 
   private async createDatabase(newDatabase: string): Promise<void> {
@@ -113,20 +102,16 @@ export default class MongoDBDataAdapter extends BaseDataAdapter implements IData
     // connect to this client
     const client = await this.getConnection(connectionToUse);
 
-    try {
-      const databases = await this.getDatabases();
+    const databases = await this.getDatabases();
 
-      for (const database of databases) {
-        if (database.name === newDatabase) {
-          throw new Error("Database already existed, cannot create this database");
-        }
+    for (const database of databases) {
+      if (database.name === newDatabase) {
+        throw new Error("Database already existed, cannot create this database");
       }
-
-      // create a dummy collection
-      await client.db(newDatabase).createCollection("test-collection");
-    } finally {
-      this.closeConnection(client);
     }
+
+    // create a dummy collection
+    await client.db(newDatabase).createCollection("test-collection");
   }
 
   /**
@@ -189,8 +174,6 @@ export default class MongoDBDataAdapter extends BaseDataAdapter implements IData
         ok: false,
         error: err?.toString() || JSON.stringify(err),
       };
-    } finally {
-      this.closeConnection(client);
     }
   }
 }

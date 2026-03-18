@@ -13,6 +13,7 @@ export default class CassandraDataAdapter extends BaseDataAdapter implements IDa
   version?: string;
   /** Whether the connected Cassandra instance is version 2.x. */
   isCassandra2?: boolean;
+  private _connection?: cassandra.Client;
 
   private async getConnection(database?: string): Promise<cassandra.Client> {
     // attempt to pull in connections
@@ -47,12 +48,14 @@ export default class CassandraDataAdapter extends BaseDataAdapter implements IDa
             },
           });
           await this.authenticateClient(client);
+          this._connection = client;
           resolve(client);
         } catch (err1) {
           console.error("CassandraDataAdapter:authenticate attempt#1", err1);
           // attempt #2: connect without SSL
           const client = new cassandra.Client(clientOptions);
           await this.authenticateClient(client);
+          this._connection = client;
           resolve(client);
         }
       } catch (err) {
@@ -84,13 +87,19 @@ export default class CassandraDataAdapter extends BaseDataAdapter implements IDa
     });
   }
 
-  /** Disconnects and cleans up resources. No-op since connections are per-operation. */
-  async disconnect() {}
+  /** Shuts down the Cassandra client held by this adapter. */
+  async disconnect() {
+    try {
+      await this._connection?.shutdown();
+    } catch (err) {
+      console.error("CassandraDataAdapter:disconnect", err);
+    }
+    this._connection = undefined;
+  }
 
-  /** Authenticates by establishing and shutting down a Cassandra connection. */
+  /** Authenticates by establishing a Cassandra connection. */
   async authenticate() {
-    const client = await this.getConnection();
-    await client.shutdown();
+    await this.getConnection();
   }
 
   /**
@@ -100,16 +109,12 @@ export default class CassandraDataAdapter extends BaseDataAdapter implements IDa
   async getDatabases(): Promise<SqluiCore.DatabaseMetaData[]> {
     const client = await this.getConnection();
 
-    try {
-      //@ts-ignore
-      const keyspaces = Object.keys(client?.metadata?.keyspaces);
-      return keyspaces.map((keyspace) => ({
-        name: keyspace,
-        tables: [],
-      }));
-    } finally {
-      await client.shutdown();
-    }
+    //@ts-ignore
+    const keyspaces = Object.keys(client?.metadata?.keyspaces);
+    return keyspaces.map((keyspace) => ({
+      name: keyspace,
+      tables: [],
+    }));
   }
 
   /**
@@ -183,15 +188,7 @@ export default class CassandraDataAdapter extends BaseDataAdapter implements IDa
 
   private async _execute(sql: string, params?: string[], database?: string) {
     const client = await this.getConnection(database);
-    try {
-      const res = await client.execute(sql, params || [], { prepare: true });
-      client?.shutdown();
-      return res;
-    } catch (err) {
-      console.error("CassandraDataAdapter:getTables", err);
-      client?.shutdown();
-      throw err;
-    }
+    return await client.execute(sql, params || [], { prepare: true });
   }
 
   /**

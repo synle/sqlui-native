@@ -53,18 +53,8 @@ export default class AzureTableStorageAdapter extends BaseDataAdapter implements
     });
   }
 
-  private async closeConnection() {
-    try {
-      // TODO: implement me
-    } catch (err) {
-      console.error("index.ts:closeConnection", err);
-    }
-  }
-
-  /** Disconnects and cleans up resources. */
-  async disconnect() {
-    await this.closeConnection();
-  }
+  /** Disconnects and cleans up resources. No-op for Azure Table Storage (stateless HTTP clients). */
+  async disconnect() {}
 
   async authenticate() {
     return new Promise<void>(async (resolve, reject) => {
@@ -116,8 +106,6 @@ export default class AzureTableStorageAdapter extends BaseDataAdapter implements
     } catch (err) {
       console.error("index.ts:push", err);
       return [];
-    } finally {
-      await this.closeConnection();
     }
   }
 
@@ -150,8 +138,6 @@ export default class AzureTableStorageAdapter extends BaseDataAdapter implements
     } catch (err) {
       console.error("index.ts:inferTypesFromItems", err);
       return [];
-    } finally {
-      await this.closeConnection();
     }
   }
 
@@ -182,8 +168,6 @@ export default class AzureTableStorageAdapter extends BaseDataAdapter implements
     } catch (error: any) {
       console.error("AzureTableStorageAdapter:execute", error);
       return { ok: false, error: error.toString() };
-    } finally {
-      await this.closeConnection();
     }
   }
 }
