@@ -316,30 +316,43 @@ export function refreshAfterExecution(query: SqluiFrontend.ConnectionQuery, quer
  */
 export function useRetryConnection() {
   const queryClient = useQueryClient();
-  return useMutation<SqluiCore.ConnectionMetaData, SqluiCore.ConnectionMetaData, string>(dataApi.reconnect, {
-    onSettled: async (newSuccessConnection, newFailedConnection) => {
-      // NOTE: here we used settled, because if the connection
-      // went bad, we want to also refresh the data
-      queryClient.setQueryData<SqluiCore.ConnectionMetaData[] | undefined>([QUERY_KEY_ALL_CONNECTIONS], (oldData) => {
-        // find that entry
-        oldData = oldData?.map((connection) => {
-          if (connection.id === newSuccessConnection?.id) {
-            // good connnection
-            queryClient.invalidateQueries([newSuccessConnection.id]);
-            return newSuccessConnection;
-          }
-          if (connection.id === newFailedConnection?.id) {
-            // bad connection
-            queryClient.invalidateQueries([newFailedConnection.id]);
-            return newFailedConnection;
-          }
-          return connection;
+  return useMutation<SqluiCore.ConnectionMetaData, SqluiCore.ConnectionMetaData, string>(
+    async (connectionId: string) => {
+      // Clear all client-side caches for this connection before reconnecting
+      // This removes cached databases, tables, columns, and all_table_columns
+      queryClient.removeQueries({
+        predicate: (query) => {
+          const key = query.queryKey;
+          return Array.isArray(key) && key[0] === connectionId;
+        },
+      });
+      return dataApi.reconnect(connectionId);
+    },
+    {
+      onSettled: async (newSuccessConnection, newFailedConnection) => {
+        // NOTE: here we used settled, because if the connection
+        // went bad, we want to also refresh the data
+        const connectionId = newSuccessConnection?.id || newFailedConnection?.id;
+
+        queryClient.setQueryData<SqluiCore.ConnectionMetaData[] | undefined>([QUERY_KEY_ALL_CONNECTIONS], (oldData) => {
+          return oldData?.map((connection) => {
+            if (connection.id === newSuccessConnection?.id) {
+              return newSuccessConnection;
+            }
+            if (connection.id === newFailedConnection?.id) {
+              return newFailedConnection;
+            }
+            return connection;
+          });
         });
 
-        return oldData;
-      });
+        // Invalidate to trigger fresh refetch of connection-related data
+        if (connectionId) {
+          queryClient.invalidateQueries([connectionId]);
+        }
+      },
     },
-  });
+  );
 }
 
 /**
