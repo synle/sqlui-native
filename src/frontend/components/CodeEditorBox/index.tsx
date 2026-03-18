@@ -17,6 +17,13 @@ export type EditorRef =
     }
   | undefined;
 
+/** A completion suggestion item for the Monaco editor autocomplete. */
+export type CompletionItem = {
+  label: string;
+  kind: "database" | "table" | "column";
+  detail?: string;
+};
+
 /** Props for the CodeEditorBox component. */
 export type CodeEditorProps = {
   id?: string;
@@ -35,6 +42,7 @@ export type CodeEditorProps = {
 
   hideEditorSize?: boolean;
   hideEditorSyntax?: boolean;
+  completionItems?: CompletionItem[];
 };
 
 /** Extended editor props with blur callback, used by AdvancedEditor and SimpleEditor implementations. */
@@ -204,6 +212,7 @@ export default function CodeEditorBox(props: CodeEditorProps): JSX.Element | nul
           fillHeight={props.fillHeight}
           required={props.required}
           editorRef={props.editorRef}
+          completionItems={props.completionItems}
         />
         {editorOptionBox}
       </Paper>

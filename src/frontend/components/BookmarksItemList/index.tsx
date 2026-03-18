@@ -95,6 +95,13 @@ function ActionCell({ row }: { row: any }) {
 const getColumns = (onAfterSelect?: OnAfterSelectCallback): ColumnDef<any, any>[] => {
   return [
     {
+      header: "#",
+      enableSorting: false,
+      enableColumnFilter: false,
+      size: 50,
+      cell: (info) => <span style={{ fontFamily: "monospace", opacity: 0.5 }}>{info.row.index + 1}</span>,
+    },
+    {
       header: "Name",
       accessorKey: "name",
       cell: (info) => <NameCell row={info.row} onAfterSelect={onAfterSelect} />,

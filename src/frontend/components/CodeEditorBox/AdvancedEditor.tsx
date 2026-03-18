@@ -1,7 +1,7 @@
 import * as monaco from "monaco-editor/esm/vs/editor/editor.api";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { styled } from "@mui/system";
-import { DecoratedEditorProps as AdvancedEditorProps } from "src/frontend/components/CodeEditorBox";
+import { CompletionItem, DecoratedEditorProps as AdvancedEditorProps } from "src/frontend/components/CodeEditorBox";
 import { useDarkModeSetting } from "src/frontend/hooks/useSetting";
 
 const AdvancedEditorContainer = styled("div")(() => {
@@ -129,6 +129,50 @@ export default function AdvancedEditor(props: AdvancedEditorProps): JSX.Element 
       };
     }
   }, [editor, props.editorRef]);
+
+  // register autocomplete suggestions from connection metadata
+  useEffect(() => {
+    if (!props.completionItems || props.completionItems.length === 0) {
+      return;
+    }
+
+    const globalMonaco = (window as any).monaco as typeof monaco | undefined;
+    if (!globalMonaco) {
+      return;
+    }
+
+    const kindMap: Record<CompletionItem["kind"], monaco.languages.CompletionItemKind> = {
+      database: globalMonaco.languages.CompletionItemKind.Module,
+      table: globalMonaco.languages.CompletionItemKind.Struct,
+      column: globalMonaco.languages.CompletionItemKind.Field,
+    };
+
+    const language = props.language || "sql";
+
+    const disposable = globalMonaco.languages.registerCompletionItemProvider(language, {
+      provideCompletionItems(_model, position) {
+        const word = _model.getWordUntilPosition(position);
+        const range = {
+          startLineNumber: position.lineNumber,
+          endLineNumber: position.lineNumber,
+          startColumn: word.startColumn,
+          endColumn: word.endColumn,
+        };
+
+        const suggestions: monaco.languages.CompletionItem[] = (props.completionItems || []).map((item) => ({
+          label: item.label,
+          kind: kindMap[item.kind],
+          detail: item.detail,
+          insertText: item.label,
+          range,
+        }));
+
+        return { suggestions };
+      },
+    });
+
+    return () => disposable.dispose();
+  }, [props.completionItems, props.language]);
 
   // here we will initiate the editor
   // and can be also be used to update the settings
