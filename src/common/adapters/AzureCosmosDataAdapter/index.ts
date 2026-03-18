@@ -14,7 +14,7 @@ const MAX_ITEM_COUNT_TO_SCAN = 5;
 export default class AzureCosmosDataAdapter extends BaseDataAdapter implements IDataAdapter {
   // https://docs.microsoft.com/en-us/azure/cosmos-db/sql/sql-api-nodejs-get-started?tabs=windows
 
-  private _client?: CosmosClient;
+  private _connection?: CosmosClient;
 
   private async getConnection(): Promise<CosmosClient> {
     // attempt to pull in connections
@@ -23,7 +23,7 @@ export default class AzureCosmosDataAdapter extends BaseDataAdapter implements I
         setTimeout(() => reject("Connection Timeout"), MAX_CONNECTION_TIMEOUT);
 
         const client = new CosmosClient(this.getConnectionString());
-        this._client = client;
+        this._connection = client;
 
         resolve(client);
       } catch (err) {
@@ -33,18 +33,14 @@ export default class AzureCosmosDataAdapter extends BaseDataAdapter implements I
     });
   }
 
-  private async closeConnection() {
-    try {
-      this._client?.dispose();
-      this._client = undefined;
-    } catch (err) {
-      console.error("index.ts:dispose", err);
-    }
-  }
-
-  /** Disconnects from Azure Cosmos DB and cleans up the client. */
+  /** Disposes the Cosmos DB client held by this adapter. */
   async disconnect() {
-    await this.closeConnection();
+    try {
+      this._connection?.dispose();
+    } catch (err) {
+      console.error("AzureCosmosDataAdapter:disconnect", err);
+    }
+    this._connection = undefined;
   }
 
   async authenticate() {
@@ -65,8 +61,6 @@ export default class AzureCosmosDataAdapter extends BaseDataAdapter implements I
       } catch (err) {
         console.error("AzureCosmosDataAdapter:authenticate", err);
         reject(err);
-      } finally {
-        await this.closeConnection();
       }
     });
   }
@@ -83,10 +77,8 @@ export default class AzureCosmosDataAdapter extends BaseDataAdapter implements I
         tables: [],
       }));
     } catch (err) {
-      console.error("index.ts:map", err);
+      console.error("AzureCosmosDataAdapter:getDatabases", err);
       return [];
-    } finally {
-      await this.closeConnection();
     }
   }
 
@@ -106,10 +98,8 @@ export default class AzureCosmosDataAdapter extends BaseDataAdapter implements I
         columns: [],
       }));
     } catch (err) {
-      console.error("index.ts:map", err);
+      console.error("AzureCosmosDataAdapter:getTables", err);
       return [];
-    } finally {
-      await this.closeConnection();
     }
   }
 
@@ -134,10 +124,8 @@ export default class AzureCosmosDataAdapter extends BaseDataAdapter implements I
         primaryKey: column.name === "id",
       }));
     } catch (err) {
-      console.error("index.ts:inferTypesFromItems", err);
+      console.error("AzureCosmosDataAdapter:getColumns", err);
       return [];
-    } finally {
-      await this.closeConnection();
     }
   }
 
@@ -183,8 +171,6 @@ export default class AzureCosmosDataAdapter extends BaseDataAdapter implements I
         errorMessage = error?.message || error?.toString() || "Unknown error";
       }
       return { ok: false, error: errorMessage };
-    } finally {
-      await this.closeConnection();
     }
   }
 }
