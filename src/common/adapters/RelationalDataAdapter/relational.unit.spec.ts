@@ -33,10 +33,14 @@ describe("RelationalDataAdapter - mysql unit", () => {
     adapter = new RelationalDataAdapter("mysql://root:password123!@127.0.0.1:3306");
   });
 
+  afterEach(async () => {
+    await adapter.disconnect();
+    expect(mockClose).toHaveBeenCalled();
+  });
+
   test("authenticate", async () => {
     await adapter.authenticate();
     expect(mockAuthenticate).toHaveBeenCalled();
-    expect(mockClose).toHaveBeenCalled();
   });
 
   test("getDatabases", async () => {
@@ -103,6 +107,11 @@ describe("RelationalDataAdapter - postgres unit", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     adapter = new RelationalDataAdapter("postgres://postgres:password123!@127.0.0.1:5432");
+  });
+
+  afterEach(async () => {
+    await adapter.disconnect();
+    expect(mockClose).toHaveBeenCalled();
   });
 
   test("authenticate", async () => {

@@ -26,6 +26,7 @@ function _getDefaultSequelizeOptions(): Options {
  */
 export default class RelationalDataAdapter extends BaseDataAdapter implements IDataAdapter {
   dialect?: SqluiCore.Dialect;
+  private _connection?: Sequelize;
 
   constructor(connectionOption: string) {
     super(connectionOption);
@@ -83,24 +84,28 @@ export default class RelationalDataAdapter extends BaseDataAdapter implements ID
     }
 
     try {
-      return new Sequelize(connectionUrl, connectionPropOptions);
+      this._connection = new Sequelize(connectionUrl, connectionPropOptions);
+      return this._connection;
     } catch (err) {
       console.error("RelationalDataAdapter:getConnection", connectionUrl, connectionPropOptions, err);
       throw err;
     }
   }
 
-  /** Disconnects and cleans up resources. No-op since connections are per-operation. */
-  async disconnect() {}
+  /** Closes the Sequelize connection held by this adapter. */
+  async disconnect() {
+    try {
+      await this._connection?.close();
+    } catch (err) {
+      console.error("RelationalDataAdapter:disconnect", err);
+    }
+    this._connection = undefined;
+  }
 
-  /** Tests the database connection by authenticating and then closing. */
+  /** Tests the database connection by authenticating. */
   async authenticate() {
     const connection = this.getConnection();
-    try {
-      await connection.authenticate();
-    } finally {
-      await connection.close();
-    }
+    await connection.authenticate();
   }
 
   /** Retrieves all databases using dialect-specific SQL queries. */
@@ -215,52 +220,48 @@ export default class RelationalDataAdapter extends BaseDataAdapter implements ID
    */
   async getColumns(table: string, database?: string): Promise<SqluiCore.ColumnMetaData[]> {
     const connection = this.getConnection(database);
+    const queryInterface = connection.getQueryInterface();
+
+    // first get all the columns
+    const columns: SqluiCore.ColumnMetaData[] = [];
     try {
-      const queryInterface = connection.getQueryInterface();
+      const columnMap = await queryInterface.describeTable(table);
 
-      // first get all the columns
-      const columns: SqluiCore.ColumnMetaData[] = [];
-      try {
-        const columnMap = await queryInterface.describeTable(table);
-
-        for (const columnName of Object.keys(columnMap)) {
-          columns.push({
-            name: columnName,
-            ...columnMap[columnName],
-          });
-        }
-      } catch (err) {
-        console.error("RelationalDataAdapter:getColumns:describeTable", err);
+      for (const columnName of Object.keys(columnMap)) {
+        columns.push({
+          name: columnName,
+          ...columnMap[columnName],
+        });
       }
+    } catch (err) {
+      console.error("RelationalDataAdapter:getColumns:describeTable", err);
+    }
 
-      // then see if we attempt to add additional foreignKey constraint
-      try {
-        const foreignKeyReferences = (await queryInterface.getForeignKeyReferencesForTable(table)) as any[];
+    // then see if we attempt to add additional foreignKey constraint
+    try {
+      const foreignKeyReferences = (await queryInterface.getForeignKeyReferencesForTable(table)) as any[];
 
-        for (const foreignKeyReference of foreignKeyReferences) {
-          const fromTableName = foreignKeyReference.tableName;
-          const fromColumnName = foreignKeyReference.columnName;
-          const toTableName = foreignKeyReference.referencedTableName;
-          const toColumnName = foreignKeyReference.referencedColumnName;
+      for (const foreignKeyReference of foreignKeyReferences) {
+        const fromTableName = foreignKeyReference.tableName;
+        const fromColumnName = foreignKeyReference.columnName;
+        const toTableName = foreignKeyReference.referencedTableName;
+        const toColumnName = foreignKeyReference.referencedColumnName;
 
-          if (fromTableName === table) {
-            const targetColumn = columns.find((column) => column.name === fromColumnName);
+        if (fromTableName === table) {
+          const targetColumn = columns.find((column) => column.name === fromColumnName);
 
-            if (targetColumn) {
-              targetColumn.kind = "foreign_key";
-              targetColumn.referencedTableName = toTableName;
-              targetColumn.referencedColumnName = toColumnName;
-            }
+          if (targetColumn) {
+            targetColumn.kind = "foreign_key";
+            targetColumn.referencedTableName = toTableName;
+            targetColumn.referencedColumnName = toColumnName;
           }
         }
-      } catch (err) {
-        console.error("RelationalDataAdapter:getColumns:getForeignKeyReferences", err);
       }
-
-      return columns;
-    } finally {
-      await connection.close();
+    } catch (err) {
+      console.error("RelationalDataAdapter:getColumns:getForeignKeyReferences", err);
     }
+
+    return columns;
   }
 
   /**
@@ -329,22 +330,16 @@ export default class RelationalDataAdapter extends BaseDataAdapter implements ID
         ok: false,
         error,
       };
-    } finally {
-      await connection.close();
     }
   }
 
   private async _execute(sql: string, database?: string): Promise<[SqluiCore.RawData, SqluiCore.MetaData]> {
     // https://sequelize.org/master/manual/raw-queries.html
     const connection = this.getConnection(database);
-    try {
-      //@ts-ignore
-      return await connection.query(sql, {
-        raw: true,
-        plain: false,
-      });
-    } finally {
-      await connection.close();
-    }
+    //@ts-ignore
+    return await connection.query(sql, {
+      raw: true,
+      plain: false,
+    });
   }
 }

@@ -20,18 +20,22 @@ type AdapterClient = any;
  *   5. Register in DataAdapterFactory.ts and DataScriptFactory.ts (see CONTRIBUTING.md).
  */
 export default class SampleDataAdapter extends BaseDataAdapter implements IDataAdapter {
+  private _connection?: AdapterClient;
+
   constructor(connectionOption: string) {
     super(connectionOption);
   }
 
   /**
    * Creates and returns a connected database client instance.
+   * Stores the client in `this._connection` for reuse across adapter methods.
    * Uses MAX_CONNECTION_TIMEOUT to prevent hanging connections.
    *
    * Implementation checklist:
    *   - Parse `this.connectionOption` to extract host, port, credentials, etc.
    *   - Instantiate the database client from your driver.
    *   - Call the client's connect method and resolve once connected.
+   *   - Store the client in `this._connection`.
    */
   private async getConnection(): Promise<AdapterClient> {
     return new Promise<AdapterClient>(async (resolve, reject) => {
@@ -42,8 +46,10 @@ export default class SampleDataAdapter extends BaseDataAdapter implements IDataA
         // Example:
         //   const client = new Client({ connectionString: this.connectionOption });
         //   await client.connect();
+        //   this._connection = client;
         //   resolve(client);
-        resolve({});
+        this._connection = {};
+        resolve(this._connection);
       } catch (err) {
         console.error("SampleDataAdapter:getConnection", err);
         reject(err);
@@ -52,24 +58,21 @@ export default class SampleDataAdapter extends BaseDataAdapter implements IDataA
   }
 
   /**
-   * Closes and cleans up the database connection.
-   * Called in `finally` blocks after operations to avoid connection leaks.
+   * Disconnects and cleans up resources.
+   * Called by the caller (Endpoints.ts / DataAdapterFactory / tests) — never internally.
    *
-   * @param client - The client instance returned by getConnection().
+   * TODO: close and clean up `this._connection` here.
+   * Example:
+   *   await this._connection?.disconnect();
    */
-  private async closeConnection(_client?: AdapterClient) {
-    try {
-      // TODO: disconnect and clean up your client
-      // Example:
-      //   await client?.disconnect();
-    } catch (err) {
-      console.error("index.ts:disconnect", err);
-    }
-  }
-
-  /** Disconnects and cleans up resources. */
   async disconnect() {
-    await this.closeConnection();
+    try {
+      // TODO: close the connection
+      // Example: await this._connection?.close();
+    } catch (err) {
+      console.error("SampleDataAdapter:disconnect", err);
+    }
+    this._connection = undefined;
   }
 
   /**
@@ -77,8 +80,7 @@ export default class SampleDataAdapter extends BaseDataAdapter implements IDataA
    * Called when the user first adds or refreshes a connection.
    */
   async authenticate() {
-    const client = await this.getConnection();
-    await this.closeConnection(client);
+    await this.getConnection();
   }
 
   /**
@@ -90,7 +92,6 @@ export default class SampleDataAdapter extends BaseDataAdapter implements IDataA
     // Example:
     //   const client = await this.getConnection();
     //   const result = await client.listDatabases();
-    //   await this.closeConnection(client);
     //   return result.map(db => ({ name: db.name, tables: [] }));
     return [
       {
@@ -110,7 +111,6 @@ export default class SampleDataAdapter extends BaseDataAdapter implements IDataA
     // Example:
     //   const client = await this.getConnection();
     //   const result = await client.listTables(database);
-    //   await this.closeConnection(client);
     //   return result.map(t => ({ name: t.name, columns: [] }));
     return [
       {
@@ -143,14 +143,12 @@ export default class SampleDataAdapter extends BaseDataAdapter implements IDataA
    * @param table - The selected table context (optional, some adapters use this).
    */
   async execute(sql: string, database?: string, _table?: string): Promise<SqluiCore.Result> {
-    let client: AdapterClient | undefined;
-
     try {
       if (!database) {
         throw new Error("Database is a required field");
       }
 
-      client = await this.getConnection();
+      const client = await this.getConnection();
 
       // TODO: execute the query using your client
       // Example:
@@ -162,8 +160,6 @@ export default class SampleDataAdapter extends BaseDataAdapter implements IDataA
     } catch (error: any) {
       console.error("SampleDataAdapter:execute", error);
       return { ok: false, error: JSON.stringify(error, null, 2) };
-    } finally {
-      this.closeConnection(client);
     }
   }
 }
