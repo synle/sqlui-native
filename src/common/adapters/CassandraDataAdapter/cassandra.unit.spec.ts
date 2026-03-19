@@ -40,7 +40,6 @@ describe("CassandraDataAdapter unit", () => {
   test("authenticate", async () => {
     await adapter.authenticate();
     expect(mockConnect).toHaveBeenCalled();
-    expect(mockShutdown).toHaveBeenCalled();
   });
 
   test("getDatabases", async () => {

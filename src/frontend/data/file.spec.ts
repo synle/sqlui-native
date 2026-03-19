@@ -1,5 +1,8 @@
 // @vitest-environment jsdom
 import { vi } from "vitest";
+
+globalThis.URL.createObjectURL = vi.fn().mockReturnValue("blob:http://localhost/mock");
+
 import { downloadText, downloadJSON, downloadBlob } from "src/frontend/data/file";
 
 describe("downloadText", () => {
