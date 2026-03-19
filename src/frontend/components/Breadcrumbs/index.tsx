@@ -38,7 +38,7 @@ export default (props: BreadcrumbProps): JSX.Element | null => {
     label: (
       <>
         <HomeIcon fontSize="inherit" />
-        {currentSession.name}
+        Home
       </>
     ),
     href: "/",
