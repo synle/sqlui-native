@@ -16,56 +16,45 @@ export const DEBOUNCE_MS = 3000;
 
 /** Hook to fetch all query version history entries. */
 export function useGetQueryVersionHistory() {
-  return useQuery<SqluiCore.QueryVersionEntry[]>(
-    [QUERY_KEY],
-    () => dataApi.getQueryVersionHistory(),
-    {
-      notifyOnChangeProps: ["data", "error"],
-    },
-  );
+  return useQuery<SqluiCore.QueryVersionEntry[]>([QUERY_KEY], () => dataApi.getQueryVersionHistory(), {
+    notifyOnChangeProps: ["data", "error"],
+  });
 }
 
 /** Hook to add a query version history entry. */
 export function useAddQueryVersionHistory() {
   const queryClient = useQueryClient();
 
-  return useMutation<
-    SqluiCore.QueryVersionEntry,
-    void,
-    Omit<SqluiCore.QueryVersionEntry, "id" | "createdAt">
-  >((entry) => dataApi.addQueryVersionHistory(entry), {
-    onSuccess: () => {
-      queryClient.invalidateQueries([QUERY_KEY]);
+  return useMutation<SqluiCore.QueryVersionEntry, void, Omit<SqluiCore.QueryVersionEntry, "id" | "createdAt">>(
+    (entry) => dataApi.addQueryVersionHistory(entry),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries([QUERY_KEY]);
+      },
     },
-  });
+  );
 }
 
 /** Hook to delete a single query version history entry. */
 export function useDeleteQueryVersionHistory() {
   const queryClient = useQueryClient();
 
-  return useMutation<void, void, string>(
-    (entryId) => dataApi.deleteQueryVersionHistory(entryId),
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries([QUERY_KEY]);
-      },
+  return useMutation<void, void, string>((entryId) => dataApi.deleteQueryVersionHistory(entryId), {
+    onSuccess: () => {
+      queryClient.invalidateQueries([QUERY_KEY]);
     },
-  );
+  });
 }
 
 /** Hook to clear all query version history entries. */
 export function useClearQueryVersionHistory() {
   const queryClient = useQueryClient();
 
-  return useMutation<void, void, void>(
-    () => dataApi.clearQueryVersionHistory(),
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries([QUERY_KEY]);
-      },
+  return useMutation<void, void, void>(() => dataApi.clearQueryVersionHistory(), {
+    onSuccess: () => {
+      queryClient.invalidateQueries([QUERY_KEY]);
     },
-  );
+  });
 }
 
 /**
