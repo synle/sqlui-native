@@ -1,8 +1,12 @@
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
+import DeleteSweepIcon from "@mui/icons-material/DeleteSweep";
 import HistoryIcon from "@mui/icons-material/History";
 import RestoreIcon from "@mui/icons-material/Restore";
+import UnfoldLessIcon from "@mui/icons-material/UnfoldLess";
+import UnfoldMoreIcon from "@mui/icons-material/UnfoldMore";
 import Backdrop from "@mui/material/Backdrop";
 import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
 import Chip from "@mui/material/Chip";
 import CircularProgress from "@mui/material/CircularProgress";
 import IconButton from "@mui/material/IconButton";
@@ -30,30 +34,32 @@ import LayoutTwoColumns from "src/frontend/layout/LayoutTwoColumns";
 import { useNavigate } from "src/frontend/utils/commonUtils";
 import { SqluiCore } from "typings";
 
-const MAX_SNIPPET_LENGTH = 80;
+function QueryDetailCell({ row, allExpanded }: { row: any; allExpanded: boolean }) {
+  const entry: SqluiCore.QueryVersionEntry = row.original;
+  const [localExpanded, setLocalExpanded] = useState<boolean | null>(null);
+  const expanded = localExpanded ?? allExpanded;
+  const sql = entry.sql || "";
+  if (!sql) return null;
 
-function QuerySnippet({ sql, expanded }: { sql: string; expanded: boolean }) {
-  if (expanded || sql.length <= MAX_SNIPPET_LENGTH) {
-    return (
+  return (
+    <Box sx={{ display: "flex", alignItems: "flex-start", gap: 0.5 }}>
+      <IconButton size="small" onClick={() => setLocalExpanded(!expanded)} sx={{ p: 0, minWidth: 0 }}>
+        {expanded ? <UnfoldLessIcon fontSize="small" /> : <UnfoldMoreIcon fontSize="small" />}
+      </IconButton>
       <Typography
         variant="body2"
         sx={{
-          whiteSpace: "pre-wrap",
           fontFamily: "monospace",
           fontSize: "0.8rem",
+          whiteSpace: expanded ? "pre-wrap" : "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          maxWidth: expanded ? "none" : 300,
         }}
       >
         {sql}
       </Typography>
-    );
-  }
-  return (
-    <Typography
-      variant="body2"
-      sx={{ fontFamily: "monospace", fontSize: "0.8rem" }}
-    >
-      {sql.slice(0, MAX_SNIPPET_LENGTH)}...
-    </Typography>
+    </Box>
   );
 }
 
@@ -63,9 +69,7 @@ function useRestoreEntry() {
   const navigate = useNavigate();
 
   return async (entry: SqluiCore.QueryVersionEntry) => {
-    const connectionStillExists = connections?.some(
-      (c) => c.id === entry.connectionId,
-    );
+    const connectionStillExists = connections?.some((c) => c.id === entry.connectionId);
     await onAddQuery({
       connectionId: connectionStillExists ? entry.connectionId : undefined,
       sql: entry.sql,
@@ -75,25 +79,15 @@ function useRestoreEntry() {
   };
 }
 
-function QueryCell({ row }: { row: any }) {
+function NameCell({ row }: { row: any }) {
   const entry: SqluiCore.QueryVersionEntry = row.original;
-  const [expanded, setExpanded] = useState(false);
   const onRestore = useRestoreEntry();
+  const label = entry.sql.length > 60 ? entry.sql.slice(0, 60) + "..." : entry.sql;
 
   return (
-    <Box>
-      <Link onClick={() => onRestore(entry)} sx={{ cursor: "pointer" }}>
-        <QuerySnippet sql={entry.sql} expanded={expanded} />
-      </Link>
-      {entry.sql.length > MAX_SNIPPET_LENGTH && (
-        <Link
-          onClick={() => setExpanded(!expanded)}
-          sx={{ cursor: "pointer", fontSize: "0.75rem", ml: 1 }}
-        >
-          {expanded ? "collapse" : "expand"}
-        </Link>
-      )}
-    </Box>
+    <Link onClick={() => onRestore(entry)} underline="none" sx={{ cursor: "pointer" }}>
+      {label}
+    </Link>
   );
 }
 
@@ -113,10 +107,7 @@ function ConnectionNameCell({ row }: { row: any }) {
   const { data: connections } = useGetConnections();
   const connection = connections?.find((c) => c.id === entry.connectionId);
   return (
-    <Typography
-      variant="body2"
-      sx={!connection ? { opacity: 0.5, fontStyle: "italic" } : undefined}
-    >
+    <Typography variant="body2" sx={!connection ? { opacity: 0.5, fontStyle: "italic" } : undefined}>
       {connection?.name || "N/A (deleted)"}
     </Typography>
   );
@@ -124,11 +115,7 @@ function ConnectionNameCell({ row }: { row: any }) {
 
 function DateCell({ row }: { row: any }) {
   const entry: SqluiCore.QueryVersionEntry = row.original;
-  return (
-    <Typography variant="body2">
-      {new Date(entry.createdAt).toLocaleString()}
-    </Typography>
-  );
+  return <Typography variant="body2">{new Date(entry.createdAt).toLocaleString()}</Typography>;
 }
 
 function ActionCell({ row }: { row: any }) {
@@ -160,22 +147,24 @@ function ActionCell({ row }: { row: any }) {
   );
 }
 
-const columns: ColumnDef<any, any>[] = [
+const getColumns = (allExpanded: boolean): ColumnDef<any, any>[] => [
   {
     header: "#",
     enableSorting: false,
     enableColumnFilter: false,
     size: 50,
-    cell: (info) => (
-      <span style={{ fontFamily: "monospace", opacity: 0.5 }}>
-        {info.row.index + 1}
-      </span>
-    ),
+    cell: (info) => <span style={{ fontFamily: "monospace", opacity: 0.5 }}>{info.row.index + 1}</span>,
   },
   {
     header: "Query",
     accessorKey: "sql",
-    cell: (info) => <QueryCell row={info.row} />,
+    size: 250,
+    cell: (info) => <NameCell row={info.row} />,
+  },
+  {
+    header: "Details",
+    id: "details",
+    cell: (info) => <QueryDetailCell row={info.row} allExpanded={allExpanded} />,
   },
   {
     header: "Type",
@@ -208,6 +197,7 @@ function QueryHistoryList() {
   const { mutateAsync: clearHistory } = useClearQueryVersionHistory();
   const { confirm } = useActionDialogs();
   const { add: addToast } = useToaster();
+  const [allExpanded, setAllExpanded] = useState(false);
 
   const entries = useMemo(() => {
     const items = data || [];
@@ -243,12 +233,19 @@ function QueryHistoryList() {
     return <Typography>No query history yet...</Typography>;
   }
 
+  const columns = getColumns(allExpanded);
+
   return (
     <>
-      <Box>
-        <Link onClick={onClearHistory} sx={{ cursor: "pointer" }}>
+      <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
+        <Button variant="outlined" color="error" size="small" startIcon={<DeleteSweepIcon />} onClick={onClearHistory}>
           Clear History
-        </Link>
+        </Button>
+        <Tooltip title={allExpanded ? "Collapse all details" : "Expand all details"}>
+          <IconButton size="small" onClick={() => setAllExpanded(!allExpanded)}>
+            {allExpanded ? <UnfoldLessIcon fontSize="small" /> : <UnfoldMoreIcon fontSize="small" />}
+          </IconButton>
+        </Tooltip>
       </Box>
       <DataTable data={entries} columns={columns} />
     </>

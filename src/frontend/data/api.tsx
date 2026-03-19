@@ -78,10 +78,7 @@ export class ProxyApi {
    * @param sessionId - The target session ID.
    * @param connection - The connection properties to upsert.
    */
-  static upsertConnectionForSession(
-    sessionId: string,
-    connection: SqluiCore.CoreConnectionProps,
-  ) {
+  static upsertConnectionForSession(sessionId: string, connection: SqluiCore.CoreConnectionProps) {
     const { id } = connection;
     if (id) {
       return _fetch<SqluiCore.ConnectionProps>(`/api/connection/${id}`, {
@@ -111,9 +108,7 @@ export class ProxyApi {
    * @param connectionId - The connection ID.
    */
   static getConnectionDatabases(connectionId: string) {
-    return _fetch<SqluiCore.DatabaseMetaData[]>(
-      `/api/connection/${connectionId}/databases`,
-    );
+    return _fetch<SqluiCore.DatabaseMetaData[]>(`/api/connection/${connectionId}/databases`);
   }
 
   /**
@@ -122,9 +117,7 @@ export class ProxyApi {
    * @param databaseId - The database ID.
    */
   static getConnectionTables(connectionId: string, databaseId: string) {
-    return _fetch<SqluiCore.TableMetaData[]>(
-      `/api/connection/${connectionId}/database/${databaseId}/tables`,
-    );
+    return _fetch<SqluiCore.TableMetaData[]>(`/api/connection/${connectionId}/database/${databaseId}/tables`);
   }
 
   /**
@@ -133,14 +126,8 @@ export class ProxyApi {
    * @param databaseId - The database ID.
    * @param tableId - The table ID.
    */
-  static getConnectionColumns(
-    connectionId: string,
-    databaseId: string,
-    tableId: string,
-  ) {
-    return _fetch<SqluiCore.ColumnMetaData[]>(
-      `/api/connection/${connectionId}/database/${databaseId}/table/${tableId}/columns`,
-    );
+  static getConnectionColumns(connectionId: string, databaseId: string, tableId: string) {
+    return _fetch<SqluiCore.ColumnMetaData[]>(`/api/connection/${connectionId}/database/${databaseId}/table/${tableId}/columns`);
   }
 
   /**
@@ -179,17 +166,14 @@ export class ProxyApi {
    * @returns The query execution result.
    */
   static execute(query?: SqluiFrontend.ConnectionQuery) {
-    return _fetch<SqluiCore.Result>(
-      `/api/connection/${query?.connectionId}/execute`,
-      {
-        method: "post",
-        body: JSON.stringify({
-          sql: query?.sql,
-          database: query?.databaseId,
-          table: query?.tableId,
-        }),
-      },
-    );
+    return _fetch<SqluiCore.Result>(`/api/connection/${query?.connectionId}/execute`, {
+      method: "post",
+      body: JSON.stringify({
+        sql: query?.sql,
+        database: query?.databaseId,
+        table: query?.tableId,
+      }),
+    });
   }
 
   /**
@@ -197,12 +181,9 @@ export class ProxyApi {
    * @param connectionId - The connection ID to reconnect.
    */
   static reconnect(connectionId: string) {
-    return _fetch<SqluiCore.ConnectionMetaData>(
-      `/api/connection/${connectionId}/connect`,
-      {
-        method: "post",
-      },
-    );
+    return _fetch<SqluiCore.ConnectionMetaData>(`/api/connection/${connectionId}/connect`, {
+      method: "post",
+    });
   }
 
   /**
@@ -239,13 +220,10 @@ export class ProxyApi {
   static upsertQuery(newQuery: SqluiCore.CoreConnectionQuery) {
     const { id } = newQuery;
     if (id) {
-      return _fetch<SqluiCore.CoreConnectionQuery>(
-        `/api/query/${newQuery.id}`,
-        {
-          method: "put",
-          body: JSON.stringify(newQuery),
-        },
-      );
+      return _fetch<SqluiCore.CoreConnectionQuery>(`/api/query/${newQuery.id}`, {
+        method: "put",
+        body: JSON.stringify(newQuery),
+      });
     } else {
       return _fetch<SqluiCore.CoreConnectionQuery>(`/api/query`, {
         method: "post",
@@ -302,15 +280,12 @@ export class ProxyApi {
     const clonedFromSessionId = newSession.id;
     const newName = newSession.name;
 
-    return _fetch<SqluiCore.Session>(
-      `/api/session/${clonedFromSessionId}/clone`,
-      {
-        method: "post",
-        body: JSON.stringify({
-          name: newName,
-        }),
-      },
-    );
+    return _fetch<SqluiCore.Session>(`/api/session/${clonedFromSessionId}/clone`, {
+      method: "post",
+      body: JSON.stringify({
+        name: newName,
+      }),
+    });
   }
 
   /**
@@ -358,10 +333,7 @@ export class ProxyApi {
    * @param folderId - The folder ID.
    * @param folderItem - The item to add (without ID).
    */
-  static addFolderItem(
-    folderId: string,
-    folderItem: Omit<SqluiCore.FolderItem, "id">,
-  ) {
+  static addFolderItem(folderId: string, folderItem: Omit<SqluiCore.FolderItem, "id">) {
     return _fetch<SqluiCore.FolderItem>(`/api/folder/${folderId}`, {
       method: "post",
       body: JSON.stringify(folderItem),
@@ -401,19 +373,14 @@ export class ProxyApi {
    * @param dataSnapshotId - The data snapshot ID.
    */
   static getDataSnapshot(dataSnapshotId: string) {
-    return _fetch<SqluiCore.DataSnapshot>(
-      `/api/dataSnapshot/${dataSnapshotId}`,
-    );
+    return _fetch<SqluiCore.DataSnapshot>(`/api/dataSnapshot/${dataSnapshotId}`);
   }
 
   /**
    * Creates a new data snapshot.
    * @param dataSnapshot - The snapshot data with required values and description.
    */
-  static addDataSnapshot(
-    dataSnapshot: Partial<SqluiCore.DataSnapshot> &
-      Required<Pick<SqluiCore.DataSnapshot, "values" | "description">>,
-  ) {
+  static addDataSnapshot(dataSnapshot: Partial<SqluiCore.DataSnapshot> & Required<Pick<SqluiCore.DataSnapshot, "values" | "description">>) {
     return _fetch<SqluiCore.DataSnapshot>(`/api/dataSnapshot`, {
       method: "post",
       body: JSON.stringify(dataSnapshot),
@@ -439,9 +406,7 @@ export class ProxyApi {
    * Adds a new query version history entry.
    * @param entry - The entry to add (without ID and createdAt).
    */
-  static addQueryVersionHistory(
-    entry: Omit<SqluiCore.QueryVersionEntry, "id" | "createdAt">,
-  ) {
+  static addQueryVersionHistory(entry: Omit<SqluiCore.QueryVersionEntry, "id" | "createdAt">) {
     return _fetch<SqluiCore.QueryVersionEntry>(`/api/queryVersionHistory`, {
       method: "post",
       body: JSON.stringify(entry),

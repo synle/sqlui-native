@@ -1,13 +1,19 @@
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import EditIcon from "@mui/icons-material/Edit";
+import OpenInNewIcon from "@mui/icons-material/OpenInNew";
+import UnfoldLessIcon from "@mui/icons-material/UnfoldLess";
+import UnfoldMoreIcon from "@mui/icons-material/UnfoldMore";
 import Backdrop from "@mui/material/Backdrop";
 import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
 import Chip from "@mui/material/Chip";
 import CircularProgress from "@mui/material/CircularProgress";
 import IconButton from "@mui/material/IconButton";
 import Link from "@mui/material/Link";
+import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
 import { Link as RouterLink } from "react-router-dom";
+import { useState } from "react";
 import { useNavigate } from "src/frontend/utils/commonUtils";
 import { ColumnDef } from "@tanstack/react-table";
 import DataTable from "src/frontend/components/DataTable";
@@ -46,6 +52,37 @@ function NameCell({ row, onAfterSelect }: { row: any; onAfterSelect?: OnAfterSel
 function TypeCell({ row }: { row: any }) {
   const folderItem = row.original;
   return <Chip label={folderItem.type} color={folderItem.type === "Connection" ? "success" : "warning"} size="small" />;
+}
+
+function QueryDetailCell({ row, allExpanded }: { row: any; allExpanded: boolean }) {
+  const folderItem: SqluiCore.FolderItem = row.original;
+  const [localExpanded, setLocalExpanded] = useState<boolean | null>(null);
+  const expanded = localExpanded ?? allExpanded;
+
+  if (folderItem.type !== "Query") return null;
+  const sql = folderItem.data.sql || "";
+  if (!sql) return null;
+
+  return (
+    <Box sx={{ display: "flex", alignItems: "flex-start", gap: 0.5 }}>
+      <IconButton size="small" onClick={() => setLocalExpanded(!expanded)} sx={{ p: 0, minWidth: 0 }}>
+        {expanded ? <UnfoldLessIcon fontSize="small" /> : <UnfoldMoreIcon fontSize="small" />}
+      </IconButton>
+      <Typography
+        variant="body2"
+        sx={{
+          fontFamily: "monospace",
+          fontSize: "0.8rem",
+          whiteSpace: expanded ? "pre-wrap" : "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          maxWidth: expanded ? "none" : 300,
+        }}
+      >
+        {sql}
+      </Typography>
+    </Box>
+  );
 }
 
 function ActionCell({ row }: { row: any }) {
@@ -92,7 +129,7 @@ function ActionCell({ row }: { row: any }) {
   );
 }
 
-const getColumns = (onAfterSelect?: OnAfterSelectCallback): ColumnDef<any, any>[] => {
+const getColumns = (onAfterSelect?: OnAfterSelectCallback, allExpanded?: boolean): ColumnDef<any, any>[] => {
   return [
     {
       header: "#",
@@ -104,7 +141,13 @@ const getColumns = (onAfterSelect?: OnAfterSelectCallback): ColumnDef<any, any>[
     {
       header: "Name",
       accessorKey: "name",
+      size: 250,
       cell: (info) => <NameCell row={info.row} onAfterSelect={onAfterSelect} />,
+    },
+    {
+      header: "Details",
+      id: "details",
+      cell: (info) => <QueryDetailCell row={info.row} allExpanded={allExpanded ?? false} />,
     },
     {
       header: "Type",
@@ -135,6 +178,7 @@ type BookmarksItemListProps = {
 export default function BookmarksItemList(props: BookmarksItemListProps): JSX.Element | null {
   const { onAfterSelect, hideActions } = props;
   const { data, isLoading } = useGetBookmarkItems();
+  const [allExpanded, setAllExpanded] = useState(false);
 
   if (isLoading) {
     return (
@@ -158,7 +202,9 @@ export default function BookmarksItemList(props: BookmarksItemListProps): JSX.El
     return <Typography>No bookmarks...</Typography>;
   }
 
-  const columns = getColumns(onAfterSelect).filter((column) => {
+  const hasQueryItems = folderItems.some((item) => item.type === "Query" && item.data?.sql);
+
+  const columns = getColumns(onAfterSelect, allExpanded).filter((column) => {
     if (hideActions) {
       if (column.id === "action") {
         return false;
@@ -169,6 +215,15 @@ export default function BookmarksItemList(props: BookmarksItemListProps): JSX.El
 
   return (
     <>
+      {hasQueryItems && (
+        <Box sx={{ display: "flex", gap: 2, alignItems: "center", mb: 1 }}>
+          <Tooltip title={allExpanded ? "Collapse all details" : "Expand all details"}>
+            <IconButton size="small" onClick={() => setAllExpanded(!allExpanded)}>
+              {allExpanded ? <UnfoldLessIcon fontSize="small" /> : <UnfoldMoreIcon fontSize="small" />}
+            </IconButton>
+          </Tooltip>
+        </Box>
+      )}
       <DataTable data={folderItems} columns={columns} />
     </>
   );
@@ -186,9 +241,16 @@ export function BookmarksItemListModalContent(props: BookmarksItemListProps): JS
     <>
       <BookmarksItemList onAfterSelect={onAfterSelect} />
       <Box sx={{ mt: 2 }}>
-        <Link component={RouterLink} to="/bookmarks" onClick={onAfterSelect}>
+        <Button
+          component={RouterLink}
+          to="/bookmarks"
+          onClick={onAfterSelect}
+          variant="outlined"
+          size="small"
+          startIcon={<OpenInNewIcon />}
+        >
           More Details
-        </Link>
+        </Button>
       </Box>
     </>
   );

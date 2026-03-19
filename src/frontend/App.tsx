@@ -2,9 +2,7 @@ import Box from "@mui/material/Box";
 import { Route, Routes } from "react-router-dom";
 import { useEffect, useRef } from "react";
 import AppHeader from "src/frontend/components/AppHeader";
-import MissionControl, {
-  useCommands,
-} from "src/frontend/components/MissionControl";
+import MissionControl, { useCommands } from "src/frontend/components/MissionControl";
 import SessionManager from "src/frontend/components/SessionManager";
 import dataApi from "src/frontend/data/api";
 import { useGetSessions } from "src/frontend/hooks/useSession";
@@ -62,9 +60,7 @@ export default function App() {
       });
 
       // TODO: right now only support one file for drop...
-      const files = [...e.dataTransfer.items]
-        .map((item) => item.getAsFile())
-        .filter((f) => f) as File[];
+      const files = [...e.dataTransfer.items].map((item) => item.getAsFile()).filter((f) => f) as File[];
 
       const file = files[0];
       if (!file) {

@@ -49,28 +49,15 @@ function addDataEndpoint(
 ) {
   const handlerToUse = async (req: any, res: any, cache: any) => {
     try {
-      res.header(
-        "sqlui-native-session-id",
-        req.headers["sqlui-native-session-id"],
-      );
+      res.header("sqlui-native-session-id", req.headers["sqlui-native-session-id"]);
       await incomingHandler(req, res, cache);
     } catch (err: any) {
-      console.error(
-        `Endpoints.ts:addDataEndpoint [${method.toUpperCase()} ${url}] error`,
-        err,
-      );
-      const message =
-        err?.sqlMessage ||
-        err?.message ||
-        err?.toString?.() ||
-        "Internal Server Error";
+      console.error(`Endpoints.ts:addDataEndpoint [${method.toUpperCase()} ${url}] error`, err);
+      const message = err?.sqlMessage || err?.message || err?.toString?.() || "Internal Server Error";
       try {
         res.status(500).json({ error: message });
       } catch (resErr) {
-        console.error(
-          `Endpoints.ts:addDataEndpoint [${method.toUpperCase()} ${url}] resError`,
-          resErr,
-        );
+        console.error(`Endpoints.ts:addDataEndpoint [${method.toUpperCase()} ${url}] resError`, resErr);
       }
     }
   };
@@ -171,9 +158,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
   // connection api endpoints
   //=========================================================================
   addDataEndpoint("get", "/api/connections", async (req, res) => {
-    const connectionsStorage = await getConnectionsStorage(
-      req.headers["sqlui-native-session-id"],
-    );
+    const connectionsStorage = await getConnectionsStorage(req.headers["sqlui-native-session-id"]);
 
     const connections = await connectionsStorage.list();
 
@@ -184,9 +169,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
   });
 
   addDataEndpoint("post", "/api/connections", async (req, res) => {
-    const connectionsStorage = await getConnectionsStorage(
-      req.headers["sqlui-native-session-id"],
-    );
+    const connectionsStorage = await getConnectionsStorage(req.headers["sqlui-native-session-id"]);
 
     const connections = await connectionsStorage.set(req.body);
 
@@ -194,9 +177,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
   });
 
   addDataEndpoint("get", "/api/connection/:connectionId", async (req, res) => {
-    const connectionsStorage = await getConnectionsStorage(
-      req.headers["sqlui-native-session-id"],
-    );
+    const connectionsStorage = await getConnectionsStorage(req.headers["sqlui-native-session-id"]);
 
     const connection = await connectionsStorage.get(req.params?.connectionId);
 
@@ -219,195 +200,114 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     res.status(200).json(connection);
   });
 
-  addDataEndpoint(
-    "get",
-    "/api/connection/:connectionId/databases",
-    async (req, res) => {
-      try {
-        res
-          .status(200)
-          .json(
-            await getDatabases(
-              req.headers["sqlui-native-session-id"],
-              req.params?.connectionId,
-            ),
-          );
-      } catch (err: any) {
-        const message =
-          err?.sqlMessage ||
-          err?.message ||
-          err?.toString?.() ||
-          "Connection failed";
-        console.error("Endpoints.ts:getDatabases", err);
-        res.status(500).json({ error: message });
-      }
-    },
-  );
+  addDataEndpoint("get", "/api/connection/:connectionId/databases", async (req, res) => {
+    try {
+      res.status(200).json(await getDatabases(req.headers["sqlui-native-session-id"], req.params?.connectionId));
+    } catch (err: any) {
+      const message = err?.sqlMessage || err?.message || err?.toString?.() || "Connection failed";
+      console.error("Endpoints.ts:getDatabases", err);
+      res.status(500).json({ error: message });
+    }
+  });
 
-  addDataEndpoint(
-    "get",
-    "/api/connection/:connectionId/database/:databaseId",
-    async (req, res) => {
-      try {
-        const databases = await getDatabases(
-          req.headers["sqlui-native-session-id"],
-          req.params?.connectionId,
-        );
-        const database = databases.find(
-          (db) => db.name === req.params?.databaseId,
-        );
+  addDataEndpoint("get", "/api/connection/:connectionId/database/:databaseId", async (req, res) => {
+    try {
+      const databases = await getDatabases(req.headers["sqlui-native-session-id"], req.params?.connectionId);
+      const database = databases.find((db) => db.name === req.params?.databaseId);
 
-        if (!database) {
-          return res.status(404).send("Not Found");
-        }
-
-        res.status(200).json(database);
-      } catch (err: any) {
-        const message =
-          err?.sqlMessage ||
-          err?.message ||
-          err?.toString?.() ||
-          "Connection failed";
-        console.error("Endpoints.ts:getDatabase", err);
-        res.status(500).json({ error: message });
-      }
-    },
-  );
-
-  addDataEndpoint(
-    "get",
-    "/api/connection/:connectionId/database/:databaseId/tables",
-    async (req, res) => {
-      try {
-        res
-          .status(200)
-          .json(
-            await getTables(
-              req.headers["sqlui-native-session-id"],
-              req.params?.connectionId,
-              req.params?.databaseId,
-            ),
-          );
-      } catch (err: any) {
-        const message =
-          err?.sqlMessage ||
-          err?.message ||
-          err?.toString?.() ||
-          "Connection failed";
-        console.error("Endpoints.ts:getTables", err);
-        res.status(500).json({ error: message });
-      }
-    },
-  );
-
-  addDataEndpoint(
-    "get",
-    "/api/connection/:connectionId/database/:databaseId/table/:tableId/columns",
-    async (req, res) => {
-      try {
-        res
-          .status(200)
-          .json(
-            await getColumns(
-              req.headers["sqlui-native-session-id"],
-              req.params?.connectionId,
-              req.params?.databaseId,
-              req.params?.tableId,
-            ),
-          );
-      } catch (err: any) {
-        const message =
-          err?.sqlMessage ||
-          err?.message ||
-          err?.toString?.() ||
-          "Connection failed";
-        console.error("Endpoints.ts:getColumns", err);
-        res.status(500).json({ error: message });
-      }
-    },
-  );
-
-  addDataEndpoint(
-    "post",
-    "/api/connection/:connectionId/connect",
-    async (req, res) => {
-      const connectionsStorage = await getConnectionsStorage(
-        req.headers["sqlui-native-session-id"],
-      );
-
-      const connection = await connectionsStorage.get(req.params?.connectionId);
-
-      if (!connection) {
+      if (!database) {
         return res.status(404).send("Not Found");
       }
 
-      // Clear backend column cache for this connection before reconnecting
-      if (connection.id) {
-        clearCachedColumns(connection.id);
-      }
+      res.status(200).json(database);
+    } catch (err: any) {
+      const message = err?.sqlMessage || err?.message || err?.toString?.() || "Connection failed";
+      console.error("Endpoints.ts:getDatabase", err);
+      res.status(500).json({ error: message });
+    }
+  });
 
-      const engine = getDataAdapter(connection.connection);
+  addDataEndpoint("get", "/api/connection/:connectionId/database/:databaseId/tables", async (req, res) => {
+    try {
+      res.status(200).json(await getTables(req.headers["sqlui-native-session-id"], req.params?.connectionId, req.params?.databaseId));
+    } catch (err: any) {
+      const message = err?.sqlMessage || err?.message || err?.toString?.() || "Connection failed";
+      console.error("Endpoints.ts:getTables", err);
+      res.status(500).json({ error: message });
+    }
+  });
+
+  addDataEndpoint("get", "/api/connection/:connectionId/database/:databaseId/table/:tableId/columns", async (req, res) => {
+    try {
+      res
+        .status(200)
+        .json(
+          await getColumns(req.headers["sqlui-native-session-id"], req.params?.connectionId, req.params?.databaseId, req.params?.tableId),
+        );
+    } catch (err: any) {
+      const message = err?.sqlMessage || err?.message || err?.toString?.() || "Connection failed";
+      console.error("Endpoints.ts:getColumns", err);
+      res.status(500).json({ error: message });
+    }
+  });
+
+  addDataEndpoint("post", "/api/connection/:connectionId/connect", async (req, res) => {
+    const connectionsStorage = await getConnectionsStorage(req.headers["sqlui-native-session-id"]);
+
+    const connection = await connectionsStorage.get(req.params?.connectionId);
+
+    if (!connection) {
+      return res.status(404).send("Not Found");
+    }
+
+    // Clear backend column cache for this connection before reconnecting
+    if (connection.id) {
+      clearCachedColumns(connection.id);
+    }
+
+    const engine = getDataAdapter(connection.connection);
+    try {
+      await engine.authenticate();
+      res.status(200).json(await getConnectionMetaData(connection));
+    } catch (err: any) {
+      // here means we failed to connect, just set back 407 - Not Acceptable
+      // here we return the barebone
+      res.status(406).json(`Failed to connect ${err.toString()}`);
+      console.error("Endpoints.ts:connect", err);
+    } finally {
+      // Dispose of the adapter connection/driver immediately
       try {
-        await engine.authenticate();
-        res.status(200).json(await getConnectionMetaData(connection));
-      } catch (err: any) {
-        // here means we failed to connect, just set back 407 - Not Acceptable
-        // here we return the barebone
-        res.status(406).json(`Failed to connect ${err.toString()}`);
-        console.error("Endpoints.ts:connect", err);
-      } finally {
-        // Dispose of the adapter connection/driver immediately
-        try {
-          await engine.disconnect();
-        } catch (_err) {
-          // best-effort cleanup
-        }
+        await engine.disconnect();
+      } catch (_err) {
+        // best-effort cleanup
       }
-    },
-  );
+    }
+  });
 
-  addDataEndpoint(
-    "post",
-    "/api/connection/:connectionId/execute",
-    async (req, res) => {
-      const connectionsStorage = await getConnectionsStorage(
-        req.headers["sqlui-native-session-id"],
-      );
+  addDataEndpoint("post", "/api/connection/:connectionId/execute", async (req, res) => {
+    const connectionsStorage = await getConnectionsStorage(req.headers["sqlui-native-session-id"]);
 
-      const connection = await connectionsStorage.get(req.params?.connectionId);
+    const connection = await connectionsStorage.get(req.params?.connectionId);
 
-      if (!connection) {
-        return res.status(404).send("Not Found");
-      }
+    if (!connection) {
+      return res.status(404).send("Not Found");
+    }
 
-      const engine = getDataAdapter(connection.connection);
+    const engine = getDataAdapter(connection.connection);
+    try {
+      res.status(200).json(await engine.execute(req.body?.sql, req.body?.database, req.body?.table));
+    } catch (err: any) {
+      const message = err?.sqlMessage || err?.message || err?.toString?.() || "Query execution failed";
+      console.error("Endpoints.ts:execute", err);
+      res.status(200).json({ ok: false, error: message });
+    } finally {
       try {
-        res
-          .status(200)
-          .json(
-            await engine.execute(
-              req.body?.sql,
-              req.body?.database,
-              req.body?.table,
-            ),
-          );
-      } catch (err: any) {
-        const message =
-          err?.sqlMessage ||
-          err?.message ||
-          err?.toString?.() ||
-          "Query execution failed";
-        console.error("Endpoints.ts:execute", err);
-        res.status(200).json({ ok: false, error: message });
-      } finally {
-        try {
-          await engine.disconnect();
-        } catch (_err) {
-          // best-effort cleanup
-        }
+        await engine.disconnect();
+      } catch (_err) {
+        // best-effort cleanup
       }
-    },
-  );
+    }
+  });
 
   addDataEndpoint("post", "/api/connection/test", async (req, res) => {
     const connection: SqluiCore.CoreConnectionProps = req.body;
@@ -421,11 +321,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
       await engine.authenticate();
       res.status(200).json(await getConnectionMetaData(connection));
     } catch (err: any) {
-      const message =
-        err?.sqlMessage ||
-        err?.message ||
-        err?.toString?.() ||
-        "Connection test failed";
+      const message = err?.sqlMessage || err?.message || err?.toString?.() || "Connection test failed";
       console.error("Endpoints.ts:testConnection", err);
       res.status(406).json({ error: message });
     } finally {
@@ -438,9 +334,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
   });
 
   addDataEndpoint("post", "/api/connection", async (req, res) => {
-    const connectionsStorage = await getConnectionsStorage(
-      req.headers["sqlui-native-session-id"],
-    );
+    const connectionsStorage = await getConnectionsStorage(req.headers["sqlui-native-session-id"]);
 
     res.status(201).json(
       await connectionsStorage.add({
@@ -451,9 +345,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
   });
 
   addDataEndpoint("put", "/api/connection/:connectionId", async (req, res) => {
-    const connectionsStorage = await getConnectionsStorage(
-      req.headers["sqlui-native-session-id"],
-    );
+    const connectionsStorage = await getConnectionsStorage(req.headers["sqlui-native-session-id"]);
 
     res.status(202).json(
       await connectionsStorage.update({
@@ -464,34 +356,22 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     );
   });
 
-  addDataEndpoint(
-    "delete",
-    "/api/connection/:connectionId",
-    async (req, res) => {
-      const connectionsStorage = await getConnectionsStorage(
-        req.headers["sqlui-native-session-id"],
-      );
+  addDataEndpoint("delete", "/api/connection/:connectionId", async (req, res) => {
+    const connectionsStorage = await getConnectionsStorage(req.headers["sqlui-native-session-id"]);
 
-      res
-        .status(202)
-        .json(await connectionsStorage.delete(req.params?.connectionId));
-    },
-  );
+    res.status(202).json(await connectionsStorage.delete(req.params?.connectionId));
+  });
   //=========================================================================
   // query api endpoints
   //=========================================================================
   addDataEndpoint("get", "/api/queries", async (req, res) => {
-    const queryStorage = await getQueryStorage(
-      req.headers["sqlui-native-session-id"],
-    );
+    const queryStorage = await getQueryStorage(req.headers["sqlui-native-session-id"]);
 
     res.status(200).json(await queryStorage.list());
   });
 
   addDataEndpoint("post", "/api/query", async (req, res) => {
-    const queryStorage = await getQueryStorage(
-      req.headers["sqlui-native-session-id"],
-    );
+    const queryStorage = await getQueryStorage(req.headers["sqlui-native-session-id"]);
 
     res.status(201).json(
       await queryStorage.add({
@@ -501,9 +381,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
   });
 
   addDataEndpoint("put", "/api/query/:queryId", async (req, res) => {
-    const queryStorage = await getQueryStorage(
-      req.headers["sqlui-native-session-id"],
-    );
+    const queryStorage = await getQueryStorage(req.headers["sqlui-native-session-id"]);
 
     res.status(202).json(
       await queryStorage.update({
@@ -518,9 +396,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
   });
 
   addDataEndpoint("delete", "/api/query/:queryId", async (req, res) => {
-    const queryStorage = await getQueryStorage(
-      req.headers["sqlui-native-session-id"],
-    );
+    const queryStorage = await getQueryStorage(req.headers["sqlui-native-session-id"]);
 
     res.status(202).json(await queryStorage.delete(req.params?.queryId));
   });
@@ -626,9 +502,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
   //=========================================================================
   // this get a list of all items in a folder
   addDataEndpoint("get", "/api/folder/:folderId", async (req, res) => {
-    const folderItemsStorage = await getFolderItemsStorage(
-      req.params?.folderId,
-    );
+    const folderItemsStorage = await getFolderItemsStorage(req.params?.folderId);
 
     const items = await folderItemsStorage.list();
 
@@ -645,9 +519,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
 
   // adds item to recycle bin
   addDataEndpoint("post", "/api/folder/:folderId", async (req, res) => {
-    const folderItemsStorage = await getFolderItemsStorage(
-      req.params?.folderId,
-    );
+    const folderItemsStorage = await getFolderItemsStorage(req.params?.folderId);
 
     res.status(202).json(
       await folderItemsStorage.add({
@@ -661,9 +533,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
   });
 
   addDataEndpoint("put", "/api/folder/:folderId", async (req, res) => {
-    const folderItemsStorage = await getFolderItemsStorage(
-      req.params?.folderId,
-    );
+    const folderItemsStorage = await getFolderItemsStorage(req.params?.folderId);
 
     res.status(202).json(
       await folderItemsStorage.update({
@@ -676,17 +546,11 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
   });
 
   // can be used to delete items off the recycle permanently
-  addDataEndpoint(
-    "delete",
-    "/api/folder/:folderId/:itemId",
-    async (req, res) => {
-      const folderItemsStorage = await getFolderItemsStorage(
-        req.params?.folderId,
-      );
+  addDataEndpoint("delete", "/api/folder/:folderId/:itemId", async (req, res) => {
+    const folderItemsStorage = await getFolderItemsStorage(req.params?.folderId);
 
-      res.status(202).json(await folderItemsStorage.delete(req.params?.itemId));
-    },
-  );
+    res.status(202).json(await folderItemsStorage.delete(req.params?.itemId));
+  });
 
   // for open in app window (ONLY for electro mode)
   addDataEndpoint("post", "/api/appWindow", async (req, res) => {
@@ -718,46 +582,37 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     res.status(200).json(await dataSnapshotStorage.list());
   });
 
-  addDataEndpoint(
-    "get",
-    "/api/dataSnapshot/:dataSnapshotId",
-    async (req, res) => {
-      const dataSnapshotStorage = await getDataSnapshotStorage();
+  addDataEndpoint("get", "/api/dataSnapshot/:dataSnapshotId", async (req, res) => {
+    const dataSnapshotStorage = await getDataSnapshotStorage();
 
-      const dataSnapshotId = req.params?.dataSnapshotId;
+    const dataSnapshotId = req.params?.dataSnapshotId;
 
-      const dataSnapshot = await dataSnapshotStorage.get(dataSnapshotId);
+    const dataSnapshot = await dataSnapshotStorage.get(dataSnapshotId);
 
-      if (!dataSnapshot) {
-        return res.status(404).send("Not Found");
-      }
+    if (!dataSnapshot) {
+      return res.status(404).send("Not Found");
+    }
 
-      try {
-        dataSnapshot.values = dataSnapshotStorage.readDataFile(
-          dataSnapshot.location,
-        );
-      } catch (err) {
-        console.error("Endpoints.ts:readDataFile", err);
-        dataSnapshot.values = [
-          {
-            error: `Failed to read content of data snapshot - file=${dataSnapshot.location}`,
-          },
-        ];
-      }
+    try {
+      dataSnapshot.values = dataSnapshotStorage.readDataFile(dataSnapshot.location);
+    } catch (err) {
+      console.error("Endpoints.ts:readDataFile", err);
+      dataSnapshot.values = [
+        {
+          error: `Failed to read content of data snapshot - file=${dataSnapshot.location}`,
+        },
+      ];
+    }
 
-      res.status(200).json(dataSnapshot);
-    },
-  );
+    res.status(200).json(dataSnapshot);
+  });
 
   addDataEndpoint("post", "/api/dataSnapshot", async (req, res) => {
     const dataSnapshotStorage = await getDataSnapshotStorage();
 
     const dataSnapshotId = dataSnapshotStorage.getGeneratedRandomId();
 
-    const location = dataSnapshotStorage.writeDataFile(
-      dataSnapshotId,
-      req.body.values,
-    );
+    const location = dataSnapshotStorage.writeDataFile(dataSnapshotId, req.body.values);
 
     const resp = await dataSnapshotStorage.add({
       id: dataSnapshotId,
@@ -768,17 +623,11 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     res.status(200).json(resp);
   });
 
-  addDataEndpoint(
-    "delete",
-    "/api/dataSnapshot/:dataSnapshotId",
-    async (req, res) => {
-      const dataSnapshotStorage = await getDataSnapshotStorage();
-      // TODO: should we delete the snapshot data too?
-      res
-        .status(202)
-        .json(await dataSnapshotStorage.delete(req.params?.dataSnapshotId));
-    },
-  );
+  addDataEndpoint("delete", "/api/dataSnapshot/:dataSnapshotId", async (req, res) => {
+    const dataSnapshotStorage = await getDataSnapshotStorage();
+    // TODO: should we delete the snapshot data too?
+    res.status(202).json(await dataSnapshotStorage.delete(req.params?.dataSnapshotId));
+  });
 
   //=========================================================================
   // query version history endpoints
@@ -786,16 +635,12 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
   const MAX_QUERY_VERSION_ENTRIES = 200;
 
   addDataEndpoint("get", "/api/queryVersionHistory", async (req, res) => {
-    const storage = await getQueryVersionHistoryStorage(
-      req.headers["sqlui-native-session-id"],
-    );
+    const storage = await getQueryVersionHistoryStorage(req.headers["sqlui-native-session-id"]);
     res.status(200).json(await storage.list());
   });
 
   addDataEndpoint("post", "/api/queryVersionHistory", async (req, res) => {
-    const storage = await getQueryVersionHistoryStorage(
-      req.headers["sqlui-native-session-id"],
-    );
+    const storage = await getQueryVersionHistoryStorage(req.headers["sqlui-native-session-id"]);
 
     const entry = await storage.add({
       sessionId: req.headers["sqlui-native-session-id"],
@@ -829,21 +674,13 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     res.status(201).json(entry);
   });
 
-  addDataEndpoint(
-    "delete",
-    "/api/queryVersionHistory/:entryId",
-    async (req, res) => {
-      const storage = await getQueryVersionHistoryStorage(
-        req.headers["sqlui-native-session-id"],
-      );
-      res.status(202).json(await storage.delete(req.params?.entryId));
-    },
-  );
+  addDataEndpoint("delete", "/api/queryVersionHistory/:entryId", async (req, res) => {
+    const storage = await getQueryVersionHistoryStorage(req.headers["sqlui-native-session-id"]);
+    res.status(202).json(await storage.delete(req.params?.entryId));
+  });
 
   addDataEndpoint("delete", "/api/queryVersionHistory", async (req, res) => {
-    const storage = await getQueryVersionHistoryStorage(
-      req.headers["sqlui-native-session-id"],
-    );
+    const storage = await getQueryVersionHistoryStorage(req.headers["sqlui-native-session-id"]);
     await storage.set([]);
     res.status(202).json([]);
   });

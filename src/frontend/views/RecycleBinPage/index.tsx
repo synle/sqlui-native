@@ -1,14 +1,19 @@
 import DeleteIcon from "@mui/icons-material/Delete";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
+import DeleteSweepIcon from "@mui/icons-material/DeleteSweep";
 import RestoreIcon from "@mui/icons-material/Restore";
+import UnfoldLessIcon from "@mui/icons-material/UnfoldLess";
+import UnfoldMoreIcon from "@mui/icons-material/UnfoldMore";
 import Backdrop from "@mui/material/Backdrop";
 import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
 import Chip from "@mui/material/Chip";
 import CircularProgress from "@mui/material/CircularProgress";
 import IconButton from "@mui/material/IconButton";
 import Link from "@mui/material/Link";
+import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ColumnDef } from "@tanstack/react-table";
 import Breadcrumbs from "src/frontend/components/Breadcrumbs";
 import VirtualizedConnectionTree from "src/frontend/components/VirtualizedConnectionTree";
@@ -28,8 +33,35 @@ function NameCell({ row }: { row: any }) {
   return <Link onClick={() => restoreRecycleBinItem(folderItem)}>{folderItem.name}</Link>;
 }
 
-function DetailCell({ row }: { row: any }) {
+function QueryDetailCell({ row, allExpanded }: { row: any; allExpanded: boolean }) {
   const folderItem: SqluiCore.FolderItem = row.original;
+  const [localExpanded, setLocalExpanded] = useState<boolean | null>(null);
+  const expanded = localExpanded ?? allExpanded;
+
+  if (folderItem.type === "Query") {
+    const sql = folderItem.data.sql || "";
+    if (!sql) return null;
+    return (
+      <Box sx={{ display: "flex", alignItems: "flex-start", gap: 0.5 }}>
+        <IconButton size="small" onClick={() => setLocalExpanded(!expanded)} sx={{ p: 0, minWidth: 0 }}>
+          {expanded ? <UnfoldLessIcon fontSize="small" /> : <UnfoldMoreIcon fontSize="small" />}
+        </IconButton>
+        <Typography
+          variant="body2"
+          sx={{
+            fontFamily: "monospace",
+            fontSize: "0.8rem",
+            whiteSpace: expanded ? "pre-wrap" : "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            maxWidth: expanded ? "none" : 300,
+          }}
+        >
+          {sql}
+        </Typography>
+      </Box>
+    );
+  }
   if (folderItem.type === "Session") {
     const count = folderItem.connections?.length ?? 0;
     return (
@@ -88,7 +120,7 @@ function ActionCell({ row }: { row: any }) {
   );
 }
 
-const columns: ColumnDef<any, any>[] = [
+const getColumns = (allExpanded: boolean): ColumnDef<any, any>[] => [
   {
     header: "#",
     enableSorting: false,
@@ -99,19 +131,19 @@ const columns: ColumnDef<any, any>[] = [
   {
     header: "Name",
     accessorKey: "name",
+    size: 250,
     cell: (info) => <NameCell row={info.row} />,
+  },
+  {
+    header: "Details",
+    accessorKey: "connections",
+    cell: (info) => <QueryDetailCell row={info.row} allExpanded={allExpanded} />,
   },
   {
     header: "Type",
     accessorKey: "type",
     size: 100,
     cell: (info) => <TypeCell row={info.row} />,
-  },
-  {
-    header: "Details",
-    accessorKey: "connections",
-    size: 150,
-    cell: (info) => <DetailCell row={info.row} />,
   },
   {
     header: "Deleted",
@@ -133,11 +165,14 @@ function RecycleBinItemList() {
   const { confirm } = useActionDialogs();
   const { add: addToast } = useToaster();
   const isLoading = loadingRecycleBinItems;
+  const [allExpanded, setAllExpanded] = useState(false);
 
   const folderItems = useMemo(() => {
     const items = data || [];
     return [...items].sort((a, b) => (b.deletedAt ?? 0) - (a.deletedAt ?? 0));
   }, [data]);
+
+  const hasQueryItems = folderItems.some((item) => item.type === "Query" && item.data?.sql);
 
   const onEmptyTrash = async () => {
     try {
@@ -171,10 +206,22 @@ function RecycleBinItemList() {
   if (folderItems.length === 0) {
     return <Typography>Recycle Bin is empty...</Typography>;
   }
+
+  const columns = getColumns(allExpanded);
+
   return (
     <>
-      <Box>
-        <Link onClick={() => onEmptyTrash()}>Empty Trash</Link>
+      <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
+        <Button variant="outlined" color="error" size="small" startIcon={<DeleteSweepIcon />} onClick={() => onEmptyTrash()}>
+          Empty Trash
+        </Button>
+        {hasQueryItems && (
+          <Tooltip title={allExpanded ? "Collapse all details" : "Expand all details"}>
+            <IconButton size="small" onClick={() => setAllExpanded(!allExpanded)}>
+              {allExpanded ? <UnfoldLessIcon fontSize="small" /> : <UnfoldMoreIcon fontSize="small" />}
+            </IconButton>
+          </Tooltip>
+        )}
       </Box>
       <DataTable data={folderItems} columns={columns} />
     </>
