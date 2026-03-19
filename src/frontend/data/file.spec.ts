@@ -2,6 +2,7 @@
 import { vi } from "vitest";
 
 globalThis.URL.createObjectURL = vi.fn().mockReturnValue("blob:http://localhost/mock");
+globalThis.URL.revokeObjectURL = vi.fn();
 
 import { downloadText, downloadJSON, downloadBlob } from "src/frontend/data/file";
 
@@ -13,6 +14,7 @@ describe("downloadText", () => {
       click: clickSpy,
     } as any);
     vi.spyOn(document.body, "appendChild").mockImplementation((node) => node);
+    vi.spyOn(document.body, "removeChild").mockImplementation((node) => node);
 
     downloadText("test.csv", "a,b,c");
 
@@ -30,6 +32,7 @@ describe("downloadJSON", () => {
       click: clickSpy,
     } as any);
     vi.spyOn(document.body, "appendChild").mockImplementation((node) => node);
+    vi.spyOn(document.body, "removeChild").mockImplementation((node) => node);
 
     downloadJSON("test.json", { hello: "world" });
 
