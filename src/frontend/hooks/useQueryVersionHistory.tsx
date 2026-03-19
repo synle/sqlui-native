@@ -16,7 +16,7 @@ export const DEBOUNCE_MS = 3000;
 
 /** Hook to fetch all query version history entries. */
 export function useGetQueryVersionHistory() {
-  return useQuery<SqluiCore.QueryVersionEntry[]>([QUERY_KEY], () => dataApi.getQueryVersionHistory(), {
+  return useQuery<SqluiCore.FolderItem[]>([QUERY_KEY], () => dataApi.getQueryVersionHistory(), {
     notifyOnChangeProps: ["data", "error"],
   });
 }
@@ -25,7 +25,7 @@ export function useGetQueryVersionHistory() {
 export function useAddQueryVersionHistory() {
   const queryClient = useQueryClient();
 
-  return useMutation<SqluiCore.QueryVersionEntry, void, Omit<SqluiCore.QueryVersionEntry, "id" | "createdAt">>(
+  return useMutation<SqluiCore.FolderItem, void, { connectionId: string; sql: string; auditType: SqluiCore.QueryVersionAuditType }>(
     (entry) => dataApi.addQueryVersionHistory(entry),
     {
       onSuccess: () => {

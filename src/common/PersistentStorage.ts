@@ -246,15 +246,3 @@ export async function getDataSnapshotStorage() {
 export async function getSettingsStorage() {
   return await new PersistentStorage<SqluiCore.SettingsEntry>("settings", "settings", "settings");
 }
-
-/**
- * Returns a PersistentStorage instance for query version history scoped to a session.
- * @param sessionId - The session ID to scope the storage to.
- * @returns A PersistentStorage instance for QueryVersionEntry entries.
- */
-export async function getQueryVersionHistoryStorage(sessionId: string) {
-  if (!sessionId) {
-    throw new Error(`sessionId is required for getQueryVersionHistoryStorage`);
-  }
-  return await new PersistentStorage<SqluiCore.QueryVersionEntry>(sessionId, "queryVersionHistory");
-}
