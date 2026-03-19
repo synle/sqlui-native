@@ -127,6 +127,9 @@
           new Promise((resolve, reject) => {
             self.module = undefined;
 
+            // When served from a dev server (http/https), use HTTP URLs for Monaco
+            const isDevServer = window.location.protocol === "http:" || window.location.protocol === "https:";
+
             try {
               const path = requireElectron("path");
 
@@ -138,7 +141,9 @@
                 return encodeURI("file://" + pathName);
               }
 
-              const monacoBaseUrl = _uriFromPath(path.join(__dirname, "."));
+              const monacoBaseUrl = isDevServer
+                ? window.location.origin
+                : _uriFromPath(path.join(__dirname, "."));
 
               _loadjs(vsCodeLoader, function () {
                 amdRequire = window.require;
@@ -146,6 +151,7 @@
 
                 amdRequire.config({
                   baseUrl: monacoBaseUrl,
+                  preferScriptTags: isDevServer,
                 });
 
                 resolve();
