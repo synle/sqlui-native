@@ -51,7 +51,10 @@ export class PersistentStorage<T extends StorageEntry> {
     if (storageLocation) {
       this.storageLocation = path.join(baseDir, `${storageLocation}.json`);
     } else {
-      this.storageLocation = path.join(baseDir, `${this.instanceId}.${this.name}.json`);
+      this.storageLocation = path.join(
+        baseDir,
+        `${this.instanceId}.${this.name}.json`,
+      );
     }
   }
 
@@ -61,7 +64,11 @@ export class PersistentStorage<T extends StorageEntry> {
         this.setData({});
         return {};
       }
-      return JSON.parse(fs.readFileSync(this.storageLocation, { encoding: "utf8", flag: "r" }).trim());
+      return JSON.parse(
+        fs
+          .readFileSync(this.storageLocation, { encoding: "utf8", flag: "r" })
+          .trim(),
+      );
     } catch (err) {
       console.error("PersistentStorage.ts:parse", err);
       return {};
@@ -181,7 +188,9 @@ export class PersistentStorage<T extends StorageEntry> {
    * @returns The parsed JSON content.
    */
   readDataFile(filePath: string): any {
-    return JSON.parse(fs.readFileSync(filePath, { encoding: "utf8", flag: "r" }).trim());
+    return JSON.parse(
+      fs.readFileSync(filePath, { encoding: "utf8", flag: "r" }).trim(),
+    );
   }
 }
 
@@ -196,7 +205,10 @@ export async function getConnectionsStorage(sessionId: string) {
   if (!sessionId) {
     throw new Error(`sessionId is required for getConnectionsStorage`);
   }
-  return await new PersistentStorage<SqluiCore.ConnectionProps>(sessionId, "connection");
+  return await new PersistentStorage<SqluiCore.ConnectionProps>(
+    sessionId,
+    "connection",
+  );
 }
 
 /**
@@ -208,7 +220,10 @@ export async function getQueryStorage(sessionId: string) {
   if (!sessionId) {
     throw new Error(`sessionId is required for getQueryStorage`);
   }
-  return await new PersistentStorage<SqluiCore.ConnectionQuery>(sessionId, "query");
+  return await new PersistentStorage<SqluiCore.ConnectionQuery>(
+    sessionId,
+    "query",
+  );
 }
 
 /**
@@ -216,7 +231,11 @@ export async function getQueryStorage(sessionId: string) {
  * @returns A PersistentStorage instance for Session entries.
  */
 export async function getSessionsStorage() {
-  return await new PersistentStorage<SqluiCore.Session>("session", "session", "sessions");
+  return await new PersistentStorage<SqluiCore.Session>(
+    "session",
+    "session",
+    "sessions",
+  );
 }
 
 /**
@@ -224,7 +243,9 @@ export async function getSessionsStorage() {
  * @param folderId - The folder identifier (e.g., "bookmarks", "recycleBin").
  * @returns A PersistentStorage instance for FolderItem entries.
  */
-export async function getFolderItemsStorage(folderId: "bookmarks" | "recycleBin" | string) {
+export async function getFolderItemsStorage(
+  folderId: "bookmarks" | "recycleBin" | string,
+) {
   if (!folderId) {
     throw new Error(`folderId is required for getFolderItemsStorage`);
   }
@@ -236,7 +257,11 @@ export async function getFolderItemsStorage(folderId: "bookmarks" | "recycleBin"
  * @returns A PersistentStorage instance for DataSnapshot entries.
  */
 export async function getDataSnapshotStorage() {
-  return await new PersistentStorage<SqluiCore.DataSnapshot>("dataSnapshots", "dataSnapshots", "dataSnapshots");
+  return await new PersistentStorage<SqluiCore.DataSnapshot>(
+    "dataSnapshots",
+    "dataSnapshots",
+    "dataSnapshots",
+  );
 }
 
 /**
@@ -244,5 +269,24 @@ export async function getDataSnapshotStorage() {
  * @returns A PersistentStorage instance for SettingsEntry entries.
  */
 export async function getSettingsStorage() {
-  return await new PersistentStorage<SqluiCore.SettingsEntry>("settings", "settings", "settings");
+  return await new PersistentStorage<SqluiCore.SettingsEntry>(
+    "settings",
+    "settings",
+    "settings",
+  );
+}
+
+/**
+ * Returns a PersistentStorage instance for query version history scoped to a session.
+ * @param sessionId - The session ID to scope the storage to.
+ * @returns A PersistentStorage instance for QueryVersionEntry entries.
+ */
+export async function getQueryVersionHistoryStorage(sessionId: string) {
+  if (!sessionId) {
+    throw new Error(`sessionId is required for getQueryVersionHistoryStorage`);
+  }
+  return await new PersistentStorage<SqluiCore.QueryVersionEntry>(
+    sessionId,
+    "queryVersionHistory",
+  );
 }
