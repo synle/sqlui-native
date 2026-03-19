@@ -25,14 +25,15 @@ export function useGetQueryVersionHistory() {
 export function useAddQueryVersionHistory() {
   const queryClient = useQueryClient();
 
-  return useMutation<SqluiCore.FolderItem, void, { connectionId: string; sql: string; auditType: SqluiCore.QueryVersionAuditType }>(
-    (entry) => dataApi.addQueryVersionHistory(entry),
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries([QUERY_KEY]);
-      },
+  return useMutation<
+    SqluiCore.FolderItem,
+    void,
+    { connectionId: string; sql: string; auditType: SqluiCore.QueryVersionAuditType; name?: string }
+  >((entry) => dataApi.addQueryVersionHistory(entry), {
+    onSuccess: () => {
+      queryClient.invalidateQueries([QUERY_KEY]);
     },
-  );
+  });
 }
 
 /** Hook to delete a single query version history entry. */
