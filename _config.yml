@@ -1,2 +1,17 @@
 title: sqlui-native
 theme: jekyll-theme-cayman
+exclude:
+  - index.html
+  - node_modules
+  - src
+  - build
+  - dist
+  - scripts
+  - typings
+  - "*.config.ts"
+  - "*.config.js"
+  - package.json
+  - package-lock.json
+  - tsconfig.json
+  - CONTRIBUTING.md
+  - CLAUDE.md

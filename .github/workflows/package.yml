@@ -522,13 +522,16 @@ jobs:
         with:
           ref: main
 
-      - name: Assemble Pages content
+      - name: Build with Jekyll
+        uses: actions/jekyll-build-pages@v1
+        with:
+          source: ./
+          destination: ./_site
+
+      - name: Copy release.json into site
         shell: bash
         run: |
-          mkdir -p _site
-          cp README.md _site/
-          cp release.json _site/
-          cp -r public/* _site/
+          cp release.json _site/ 2>/dev/null || true
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
