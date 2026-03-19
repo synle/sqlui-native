@@ -333,7 +333,7 @@ export class ProxyApi {
    * @param folderId - The folder ID.
    * @param folderItem - The item to add (without ID).
    */
-  static addFolderItem(folderId: string, folderItem: Omit<SqluiCore.FolderItem, "id">) {
+  static addFolderItem(folderId: string, folderItem: SqluiCore.FolderItemInput) {
     return _fetch<SqluiCore.FolderItem>(`/api/folder/${folderId}`, {
       method: "post",
       body: JSON.stringify(folderItem),
