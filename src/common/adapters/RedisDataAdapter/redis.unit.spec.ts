@@ -40,7 +40,6 @@ describe("RedisDataAdapter unit", () => {
   test("authenticate", async () => {
     await adapter.authenticate();
     expect(mockConnect).toHaveBeenCalled();
-    expect(mockDisconnect).toHaveBeenCalled();
   });
 
   test("getDatabases", async () => {

@@ -22,6 +22,7 @@ vi.mock("src/frontend/hooks/useSetting", () => ({
     onChange: vi.fn(),
   }),
   useQuerySizeSetting: () => 100,
+  useMaxToastsSetting: () => 50,
 }));
 
 import Settings, { ChangeSoftDeleteInput } from "src/frontend/components/Settings";

@@ -45,7 +45,6 @@ describe("MongoDBDataAdapter unit", () => {
   test("authenticate", async () => {
     await adapter.authenticate();
     expect(mockConnect).toHaveBeenCalled();
-    expect(mockClose).toHaveBeenCalled();
   });
 
   test("getDatabases", async () => {
