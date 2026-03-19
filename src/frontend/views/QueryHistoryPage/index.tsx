@@ -54,10 +54,11 @@ function QueryDetailCell({ row, allExpanded }: { row: any; allExpanded: boolean 
           whiteSpace: expanded ? "pre-wrap" : "nowrap",
           overflow: "hidden",
           textOverflow: "ellipsis",
-          maxWidth: expanded ? "none" : 300,
+          flex: 1,
+          minWidth: 0,
         }}
       >
-        {sql}
+        {expanded ? sql : sql.replace(/\s+/g, " ")}
       </Typography>
     </Box>
   );
