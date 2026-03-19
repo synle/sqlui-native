@@ -14,7 +14,6 @@ import {
   getDataSnapshotStorage,
   getFolderItemsStorage,
   getQueryStorage,
-  getQueryVersionHistoryStorage,
   getSessionsStorage,
   getSettingsStorage,
   storageDir,
@@ -506,10 +505,10 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
 
     const items = await folderItemsStorage.list();
 
-    // backfill deletedAt for existing items that were created before this field existed
+    // backfill createdAt for existing items that were created before this field existed
     for (const item of items) {
-      if (!item.deletedAt) {
-        item.deletedAt = Date.now();
+      if (!item.createdAt) {
+        item.createdAt = Date.now();
         folderItemsStorage.update(item);
       }
     }
@@ -527,7 +526,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
         type: req.body.type,
         data: req.body.data,
         connections: req.body.connections,
-        deletedAt: Date.now(),
+        createdAt: Date.now(),
       }),
     );
   });
@@ -635,17 +634,20 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
   const MAX_QUERY_VERSION_ENTRIES = 200;
 
   addDataEndpoint("get", "/api/queryVersionHistory", async (req, res) => {
-    const storage = await getQueryVersionHistoryStorage(req.headers["sqlui-native-session-id"]);
+    const storage = await getFolderItemsStorage(`queryHistory_${req.headers["sqlui-native-session-id"]}`);
     res.status(200).json(await storage.list());
   });
 
   addDataEndpoint("post", "/api/queryVersionHistory", async (req, res) => {
-    const storage = await getQueryVersionHistoryStorage(req.headers["sqlui-native-session-id"]);
+    const storage = await getFolderItemsStorage(`queryHistory_${req.headers["sqlui-native-session-id"]}`);
 
     const entry = await storage.add({
-      sessionId: req.headers["sqlui-native-session-id"],
-      connectionId: req.body.connectionId,
-      sql: req.body.sql,
+      name: req.body.name,
+      type: "Query",
+      data: {
+        connectionId: req.body.connectionId,
+        sql: req.body.sql,
+      },
       auditType: req.body.auditType,
       createdAt: Date.now(),
     });
@@ -654,13 +656,14 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     const allEntries = await storage.list();
     const byConnection: Record<string, typeof allEntries> = {};
     for (const e of allEntries) {
-      (byConnection[e.connectionId] ??= []).push(e);
+      const connId = e.type === "Query" ? e.data.connectionId : undefined;
+      if (connId) (byConnection[connId] ??= []).push(e);
     }
 
     const toDelete: string[] = [];
     for (const entries of Object.values(byConnection)) {
       if (entries.length > MAX_QUERY_VERSION_ENTRIES) {
-        entries.sort((a, b) => b.createdAt - a.createdAt);
+        entries.sort((a, b) => (b.createdAt ?? 0) - (a.createdAt ?? 0));
         for (let i = MAX_QUERY_VERSION_ENTRIES; i < entries.length; i++) {
           toDelete.push(entries[i].id);
         }
@@ -675,12 +678,12 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
   });
 
   addDataEndpoint("delete", "/api/queryVersionHistory/:entryId", async (req, res) => {
-    const storage = await getQueryVersionHistoryStorage(req.headers["sqlui-native-session-id"]);
+    const storage = await getFolderItemsStorage(`queryHistory_${req.headers["sqlui-native-session-id"]}`);
     res.status(202).json(await storage.delete(req.params?.entryId));
   });
 
   addDataEndpoint("delete", "/api/queryVersionHistory", async (req, res) => {
-    const storage = await getQueryVersionHistoryStorage(req.headers["sqlui-native-session-id"]);
+    const storage = await getFolderItemsStorage(`queryHistory_${req.headers["sqlui-native-session-id"]}`);
     await storage.set([]);
     res.status(202).json([]);
   });

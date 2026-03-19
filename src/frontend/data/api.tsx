@@ -397,17 +397,17 @@ export class ProxyApi {
     });
   }
 
-  /** Fetches all query version history entries. */
+  /** Fetches all query version history entries as folder items. */
   static getQueryVersionHistory() {
-    return _fetch<SqluiCore.QueryVersionEntry[]>(`/api/queryVersionHistory`);
+    return _fetch<SqluiCore.FolderItem[]>(`/api/queryVersionHistory`);
   }
 
   /**
-   * Adds a new query version history entry.
-   * @param entry - The entry to add (without ID and createdAt).
+   * Adds a new query version history entry as a folder item.
+   * @param entry - The entry data to add.
    */
-  static addQueryVersionHistory(entry: Omit<SqluiCore.QueryVersionEntry, "id" | "createdAt">) {
-    return _fetch<SqluiCore.QueryVersionEntry>(`/api/queryVersionHistory`, {
+  static addQueryVersionHistory(entry: { connectionId: string; sql: string; auditType: SqluiCore.QueryVersionAuditType; name?: string }) {
+    return _fetch<SqluiCore.FolderItem>(`/api/queryVersionHistory`, {
       method: "post",
       body: JSON.stringify(entry),
     });
