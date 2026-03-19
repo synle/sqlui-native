@@ -2,7 +2,9 @@ import Box from "@mui/material/Box";
 import { Route, Routes } from "react-router-dom";
 import { useEffect, useRef } from "react";
 import AppHeader from "src/frontend/components/AppHeader";
-import MissionControl, { useCommands } from "src/frontend/components/MissionControl";
+import MissionControl, {
+  useCommands,
+} from "src/frontend/components/MissionControl";
 import SessionManager from "src/frontend/components/SessionManager";
 import dataApi from "src/frontend/data/api";
 import { useGetSessions } from "src/frontend/hooks/useSession";
@@ -13,6 +15,7 @@ import MainPage from "src/frontend/views/MainPage";
 import MigrationPage from "src/frontend/views/MigrationPage";
 import NewConnectionPage from "src/frontend/views/NewConnectionPage";
 import { NewRecordPage } from "src/frontend/views/RecordPage";
+import QueryHistoryPage from "src/frontend/views/QueryHistoryPage";
 import RecycleBinPage from "src/frontend/views/RecycleBinPage";
 import RelationshipChartPage from "src/frontend/views/RelationshipChartPage";
 
@@ -59,7 +62,9 @@ export default function App() {
       });
 
       // TODO: right now only support one file for drop...
-      const files = [...e.dataTransfer.items].map((item) => item.getAsFile()).filter((f) => f) as File[];
+      const files = [...e.dataTransfer.items]
+        .map((item) => item.getAsFile())
+        .filter((f) => f) as File[];
 
       const file = files[0];
       if (!file) {
@@ -68,7 +73,10 @@ export default function App() {
         return;
       }
       if (file.type === "application/json") {
-        selectCommand({ event: "clientEvent/import", data: await dataApi.readFileContent(file) });
+        selectCommand({
+          event: "clientEvent/import",
+          data: await dataApi.readFileContent(file),
+        });
       } else {
         await addToast({
           message: `File not supported for import. Only application/json file type is supported.`,
@@ -142,6 +150,14 @@ export default function App() {
               element={
                 <PageLayout>
                   <MigrationPage />
+                </PageLayout>
+              }
+            />
+            <Route
+              path="/query_history"
+              element={
+                <PageLayout>
+                  <QueryHistoryPage />
                 </PageLayout>
               }
             />
