@@ -55,7 +55,11 @@ async function createWindow() {
   });
 
   // and load the index.html of the app.
-  mainWindow.loadFile("index.html");
+  if (process?.env?.VITE_DEV_SERVER_URL) {
+    mainWindow.loadURL(process.env.VITE_DEV_SERVER_URL);
+  } else {
+    mainWindow.loadFile("index.html");
+  }
   global.indexHtmlPath = path.join(__dirname, "index.html");
 
   // Open the DevTools.
