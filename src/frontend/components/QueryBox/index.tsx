@@ -15,22 +15,9 @@ import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
 import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "src/frontend/utils/commonUtils";
-import React, {
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
-import {
-  getSyntaxModeByDialect,
-  getTableActions,
-} from "src/common/adapters/DataScriptFactory";
-import CodeEditorBox, {
-  CompletionItem,
-  EditorRef,
-} from "src/frontend/components/CodeEditorBox";
+import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { getSyntaxModeByDialect, getTableActions } from "src/common/adapters/DataScriptFactory";
+import CodeEditorBox, { CompletionItem, EditorRef } from "src/frontend/components/CodeEditorBox";
 import DropdownButton from "src/frontend/components/DropdownButton";
 import { useCommands } from "src/frontend/components/MissionControl";
 import ConnectionDatabaseSelector from "src/frontend/components/QueryBox/ConnectionDatabaseSelector";
@@ -46,10 +33,7 @@ import {
   useGetTables,
 } from "src/frontend/hooks/useConnection";
 import { useConnectionQuery } from "src/frontend/hooks/useConnectionQuery";
-import {
-  useLayoutModeSetting,
-  useQuerySizeSetting,
-} from "src/frontend/hooks/useSetting";
+import { useLayoutModeSetting, useQuerySizeSetting } from "src/frontend/hooks/useSetting";
 import useToaster from "src/frontend/hooks/useToaster";
 import {
   DEBOUNCE_MS,
@@ -58,11 +42,7 @@ import {
   normalizeSql,
   useAddQueryVersionHistory,
 } from "src/frontend/hooks/useQueryVersionHistory";
-import {
-  formatDuration,
-  formatJS,
-  formatSQL,
-} from "src/frontend/utils/formatter";
+import { formatDuration, formatJS, formatSQL } from "src/frontend/utils/formatter";
 import { SqluiCore } from "typings";
 
 /** Props for the QueryBox component. */
@@ -77,22 +57,15 @@ type ConnectionActionsButtonProps = {
   query: SqluiCore.ConnectionQuery;
 };
 
-function ConnectionActionsButton(
-  props: ConnectionActionsButtonProps,
-): JSX.Element | null {
+function ConnectionActionsButton(props: ConnectionActionsButtonProps): JSX.Element | null {
   const { query } = props;
   const { databaseId, connectionId, tableId } = query;
   const querySize = useQuerySizeSetting();
 
   const { selectCommand } = useCommands();
 
-  const { data: connection, isLoading: loadingConnection } =
-    useGetConnectionById(connectionId);
-  const { data: columns, isLoading: loadingColumns } = useGetColumns(
-    connectionId,
-    databaseId,
-    tableId,
-  );
+  const { data: connection, isLoading: loadingConnection } = useGetConnectionById(connectionId);
+  const { data: columns, isLoading: loadingColumns } = useGetColumns(connectionId, databaseId, tableId);
 
   const dialect = connection?.dialect;
 
@@ -129,12 +102,7 @@ function ConnectionActionsButton(
   }
 
   return (
-    <DropdownButton
-      id="session-action-split-button"
-      options={options}
-      isLoading={isLoading}
-      maxHeight="400px"
-    >
+    <DropdownButton id="session-action-split-button" options={options} isLoading={isLoading} maxHeight="400px">
       <IconButton aria-label="Table Actions" color="inherit">
         <MenuIcon fontSize="inherit" color="inherit" />
       </IconButton>
@@ -143,11 +111,7 @@ function ConnectionActionsButton(
 }
 
 /** Supported language modes for code snippet generation. */
-const ALL_CODE_SNIPPETS: SqluiCore.LanguageMode[] = [
-  "javascript",
-  "python",
-  "java",
-];
+const ALL_CODE_SNIPPETS: SqluiCore.LanguageMode[] = ["javascript", "python", "java"];
 
 function CodeSnippetButton(props: QueryBoxProps) {
   const { queryId } = props;
@@ -173,11 +137,7 @@ function CodeSnippetButton(props: QueryBoxProps) {
   }));
 
   return (
-    <DropdownButton
-      id="session-action-split-button"
-      options={options}
-      maxHeight="400px"
-    >
+    <DropdownButton id="session-action-split-button" options={options} maxHeight="400px">
       <Button type="button" variant="outlined" startIcon={<InfoIcon />}>
         Snippet
       </Button>
@@ -194,18 +154,12 @@ export default function QueryBox(props: QueryBoxProps): JSX.Element | null {
   const { queryId } = props;
   const editorRef = useRef<EditorRef>();
   const executionIdRef = useRef(0);
-  const {
-    query,
-    onChange,
-    isLoading: loadingConnection,
-  } = useConnectionQuery(queryId);
+  const { query, onChange, isLoading: loadingConnection } = useConnectionQuery(queryId);
   const { mutateAsync: executeQuery } = useExecute();
   const [executing, setExecuting] = useState(false);
   const layoutMode = useLayoutModeSetting();
   const [expanded, setExpanded] = useState(layoutMode !== "compact");
-  const { data: selectedConnection } = useGetConnectionById(
-    query?.connectionId,
-  );
+  const { data: selectedConnection } = useGetConnectionById(query?.connectionId);
   const queryClient = useQueryClient();
   const { selectCommand } = useCommands();
   const { add: addToast } = useToaster();
@@ -254,10 +208,7 @@ export default function QueryBox(props: QueryBoxProps): JSX.Element | null {
 
   const { data: databases } = useGetDatabases(query?.connectionId);
   const { data: tables } = useGetTables(query?.connectionId, query?.databaseId);
-  const { data: allTableColumns } = useGetAllTableColumns(
-    query?.connectionId,
-    query?.databaseId,
-  );
+  const { data: allTableColumns } = useGetAllTableColumns(query?.connectionId, query?.databaseId);
 
   const completionItems: CompletionItem[] = useMemo(() => {
     const items: CompletionItem[] = [];
@@ -301,10 +252,7 @@ export default function QueryBox(props: QueryBoxProps): JSX.Element | null {
     return items;
   }, [databases, tables, allTableColumns]);
 
-  const language: string = useMemo(
-    () => getSyntaxModeByDialect(selectedConnection?.dialect),
-    [selectedConnection?.dialect, query?.sql],
-  );
+  const language: string = useMemo(() => getSyntaxModeByDialect(selectedConnection?.dialect), [selectedConnection?.dialect, query?.sql]);
   const isLoading = loadingConnection;
   const isExecuting = executing;
   const isMigrationVisible = !!query?.connectionId && !!query?.databaseId;
@@ -439,9 +387,7 @@ export default function QueryBox(props: QueryBoxProps): JSX.Element | null {
   };
 
   const onShowCreateNewRecordForThisDatabaseAndTable = () => {
-    navigate(
-      `/record/new?connectionId=${query?.connectionId || ""}&databaseId=${query?.databaseId || ""}&tableId=${query?.tableId || ""}`,
-    );
+    navigate(`/record/new?connectionId=${query?.connectionId || ""}&databaseId=${query?.databaseId || ""}&tableId=${query?.tableId || ""}`);
   };
 
   if (isLoading) {
@@ -458,17 +404,10 @@ export default function QueryBox(props: QueryBoxProps): JSX.Element | null {
 
   return (
     <>
-      <form
-        className="QueryBox FormInput__Container"
-        onSubmit={onSubmit}
-        style={{ marginBottom: "1rem" }}
-      >
+      <form className="QueryBox FormInput__Container" onSubmit={onSubmit} style={{ marginBottom: "1rem" }}>
         {expanded && (
           <div className="FormInput__Row">
-            <ConnectionDatabaseSelector
-              value={query}
-              onChange={onDatabaseConnectionChange}
-            />
+            <ConnectionDatabaseSelector value={query} onChange={onDatabaseConnectionChange} />
             <ConnectionRevealButton query={query} />
             <ConnectionActionsButton query={query} />
           </div>
@@ -488,10 +427,7 @@ export default function QueryBox(props: QueryBoxProps): JSX.Element | null {
         <div className="FormInput__Row">
           {!expanded && (
             <div className="FormInput__Row">
-              <ConnectionDatabaseSelector
-                value={query}
-                onChange={onDatabaseConnectionChange}
-              />
+              <ConnectionDatabaseSelector value={query} onChange={onDatabaseConnectionChange} />
               <ConnectionRevealButton query={query} />
               <CodeSnippetButton {...props} />
             </div>
@@ -512,32 +448,20 @@ export default function QueryBox(props: QueryBoxProps): JSX.Element | null {
                 <Button
                   type="button"
                   variant="outlined"
-                  onClick={() =>
-                    selectCommand({ event: "clientEvent/showQueryHelp" })
-                  }
+                  onClick={() => selectCommand({ event: "clientEvent/showQueryHelp" })}
                   startIcon={<HelpIcon />}
                 >
                   Show Query Help
                 </Button>
               </Tooltip>
               <Tooltip title="Format the SQL query for readability.">
-                <Button
-                  type="button"
-                  variant="outlined"
-                  onClick={onFormatQuery}
-                  startIcon={<FormatColorTextIcon />}
-                >
+                <Button type="button" variant="outlined" onClick={onFormatQuery} startIcon={<FormatColorTextIcon />}>
                   Format
                 </Button>
               </Tooltip>
               {isMigrationVisible && (
                 <Tooltip title="Migrate this database and table.">
-                  <Button
-                    type="button"
-                    variant="outlined"
-                    onClick={onShowMigrationForThisDatabaseAndTable}
-                    startIcon={<BackupIcon />}
-                  >
+                  <Button type="button" variant="outlined" onClick={onShowMigrationForThisDatabaseAndTable} startIcon={<BackupIcon />}>
                     Migration
                   </Button>
                 </Tooltip>

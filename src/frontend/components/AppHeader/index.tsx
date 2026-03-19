@@ -4,6 +4,7 @@ import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import DataArrayIcon from "@mui/icons-material/DataArray";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
+import HistoryIcon from "@mui/icons-material/History";
 import HomeIcon from "@mui/icons-material/Home";
 import InfoIcon from "@mui/icons-material/Info";
 import KeyboardCommandKeyIcon from "@mui/icons-material/KeyboardCommandKey";
@@ -95,6 +96,11 @@ export default function AppHeader() {
       label: "Recycle Bin",
       onClick: () => navigate("/recycle_bin"),
       startIcon: <DeleteIcon />,
+    },
+    {
+      label: "Query History",
+      onClick: () => navigate("/query_history"),
+      startIcon: <HistoryIcon />,
     },
     {
       label: "Data Snapshots",

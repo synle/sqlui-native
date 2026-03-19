@@ -5,14 +5,8 @@ import TextField from "@mui/material/TextField";
 import fuzzysort from "fuzzysort";
 import { useEffect, useRef, useState } from "react";
 import { Command as CoreCommand } from "src/frontend/components/MissionControl";
-import {
-  useGetConnectionById,
-  useGetConnections,
-} from "src/frontend/hooks/useConnection";
-import {
-  useActiveConnectionQuery,
-  useConnectionQueries,
-} from "src/frontend/hooks/useConnectionQuery";
+import { useGetConnectionById, useGetConnections } from "src/frontend/hooks/useConnection";
+import { useActiveConnectionQuery, useConnectionQueries } from "src/frontend/hooks/useConnectionQuery";
 import { SqluiEnums } from "typings";
 
 type Command = CoreCommand & {
@@ -264,18 +258,14 @@ const ALL_COMMAND_PALETTE_OPTIONS: CommandOption[] = [
  * @param props - Configuration including the command selection callback.
  * @returns The rendered command palette with search input and command list.
  */
-export default function CommandPalette(
-  props: CommandPaletteProps,
-): JSX.Element | null {
+export default function CommandPalette(props: CommandPaletteProps): JSX.Element | null {
   const [text, setText] = useState("");
   const [options, setOptions] = useState<Command[]>([]);
   const [, setAllOptions] = useState<Command[]>([]);
   const refOption = useRef<HTMLDivElement>(null);
   const { query: activeQuery } = useActiveConnectionQuery();
   const { queries } = useConnectionQueries();
-  const { data: activeConnection } = useGetConnectionById(
-    activeQuery?.connectionId,
-  );
+  const { data: activeConnection } = useGetConnectionById(activeQuery?.connectionId);
   const { data: connections } = useGetConnections();
 
   useEffect(() => {
@@ -326,9 +316,7 @@ export default function CommandPalette(
     let newOptions: Command[] = newAllOptions;
 
     if (text) {
-      newOptions = fuzzysort
-        .go(text, newOptions, { key: "label", allowTypo: false })
-        .map((result) => result.obj);
+      newOptions = fuzzysort.go(text, newOptions, { key: "label", allowTypo: false }).map((result) => result.obj);
     }
 
     setOptions(newOptions);
@@ -362,16 +350,10 @@ export default function CommandPalette(
     if (moveDirection !== undefined) {
       e.preventDefault();
 
-      const allOptions = [
-        ...refOption?.current?.querySelectorAll(".CommandPalette__Option"),
-      ];
+      const allOptions = [...refOption?.current?.querySelectorAll(".CommandPalette__Option")];
 
-      const selectedElem = refOption?.current?.querySelector(
-        ".CommandPalette__Option:focus",
-      );
-      let nextIndex = selectedElem
-        ? allOptions.indexOf(selectedElem) + moveDirection
-        : 0;
+      const selectedElem = refOption?.current?.querySelector(".CommandPalette__Option:focus");
+      let nextIndex = selectedElem ? allOptions.indexOf(selectedElem) + moveDirection : 0;
 
       if (nextIndex < 0) {
         nextIndex = 0;
@@ -381,17 +363,11 @@ export default function CommandPalette(
         nextIndex = allOptions.length - 1;
       }
 
-      (
-        refOption?.current?.querySelectorAll(".CommandPalette__Option")[
-          nextIndex
-        ] as HTMLButtonElement
-      )?.focus();
+      (refOption?.current?.querySelectorAll(".CommandPalette__Option")[nextIndex] as HTMLButtonElement)?.focus();
     }
   };
 
-  const optionsToShow = options.sort((a, b) =>
-    (a.label || "").localeCompare(b.label || ""),
-  );
+  const optionsToShow = options.sort((a, b) => (a.label || "").localeCompare(b.label || ""));
 
   return (
     <section ref={refOption} onKeyDown={(e) => onTextboxKeyDown(e)}>
