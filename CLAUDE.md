@@ -17,6 +17,7 @@ npm test                # Run Vitest tests (watch mode)
 npm run test-ci         # Run Vitest tests (CI, no watch)
 npm run lint            # ESLint with auto-fix
 npm run format          # Prettier formatting
+npm run typecheck       # TypeScript type check (tsc --noEmit)
 ```
 
 **Run a single test file:**
