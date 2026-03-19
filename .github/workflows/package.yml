@@ -67,7 +67,6 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       dist_version: ${{ steps.package-version.outputs.current-version }}
-      release_upload_url: ${{ steps.create_release.outputs.upload_url }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
@@ -96,26 +95,29 @@ jobs:
           path: "."
 
       - name: Delete existing tag and release
-        uses: dev-drprasad/delete-tag-and-release@v0.2.1
-        with:
-          delete_release: true
-          tag_name: "${{ steps.package-version.outputs.current-version }}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          TAG="${{ steps.package-version.outputs.current-version }}"
+          echo "Deleting existing release and tag for $TAG (if any)..."
+          gh release delete "$TAG" --yes --cleanup-tag 2>/dev/null || true
 
       - name: Create GitHub release
-        uses: actions/create-release@v1
-        id: create_release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ steps.package-version.outputs.current-version }}
-          release_name: ${{ steps.package-version.outputs.current-version }}
-          body: |
-            Release ${{ steps.package-version.outputs.current-version }}
-            ${{ inputs.release_notes }}
-          draft: ${{ inputs.release_mode == 'draft' }}
-          prerelease: ${{ inputs.release_mode == 'draft' }}
+        shell: bash
+        run: |
+          TAG="${{ steps.package-version.outputs.current-version }}"
+          DRAFT_FLAGS=""
+          if [ "${{ inputs.release_mode }}" = "draft" ]; then
+            DRAFT_FLAGS="--draft --prerelease"
+          fi
+          gh release create "$TAG" \
+            --title "$TAG" \
+            --notes "Release $TAG
+          ${{ inputs.release_notes }}" \
+            $DRAFT_FLAGS
 
       - name: Cleanup old draft releases
         if: ${{ inputs.release_mode == 'draft' }}
@@ -183,15 +185,14 @@ jobs:
           compression-level: 9
 
       - name: Upload x64 exe to release
-        if: ${{ needs.create_release.outputs.release_upload_url != '' }}
-        uses: actions/upload-release-asset@v1
+        if: ${{ needs.create_release.outputs.dist_version != '' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.create_release.outputs.release_upload_url }}
-          asset_path: ./dist/sqlui-native-x64.exe
-          asset_name: sqlui-native-${{ needs.create_release.outputs.dist_version }}-x64.exe
-          asset_content_type: application/octet-stream
+        shell: bash
+        run: |
+          gh release upload "${{ needs.create_release.outputs.dist_version }}" \
+            "./dist/sqlui-native-x64.exe#sqlui-native-${{ needs.create_release.outputs.dist_version }}-x64.exe" \
+            --clobber
 
       - name: Package Windows x64 appx
         shell: bash
@@ -207,15 +208,14 @@ jobs:
           compression-level: 9
 
       - name: Upload x64 appx to release
-        if: ${{ needs.create_release.outputs.release_upload_url != '' }}
-        uses: actions/upload-release-asset@v1
+        if: ${{ needs.create_release.outputs.dist_version != '' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.create_release.outputs.release_upload_url }}
-          asset_path: ./dist/sqlui-native-x64.appx
-          asset_name: sqlui-native-${{ needs.create_release.outputs.dist_version }}-x64.appx
-          asset_content_type: application/octet-stream
+        shell: bash
+        run: |
+          gh release upload "${{ needs.create_release.outputs.dist_version }}" \
+            "./dist/sqlui-native-x64.appx#sqlui-native-${{ needs.create_release.outputs.dist_version }}-x64.appx" \
+            --clobber
 
   dist_windows_arm64:
     needs: [prebuild, create_release]
@@ -254,15 +254,14 @@ jobs:
           compression-level: 9
 
       - name: Upload ARM64 exe to release
-        if: ${{ needs.create_release.outputs.release_upload_url != '' }}
-        uses: actions/upload-release-asset@v1
+        if: ${{ needs.create_release.outputs.dist_version != '' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.create_release.outputs.release_upload_url }}
-          asset_path: ./dist/sqlui-native-arm64.exe
-          asset_name: sqlui-native-${{ needs.create_release.outputs.dist_version }}-arm64.exe
-          asset_content_type: application/octet-stream
+        shell: bash
+        run: |
+          gh release upload "${{ needs.create_release.outputs.dist_version }}" \
+            "./dist/sqlui-native-arm64.exe#sqlui-native-${{ needs.create_release.outputs.dist_version }}-arm64.exe" \
+            --clobber
 
   dist_macos_arm64:
     needs: [prebuild, create_release]
@@ -298,15 +297,14 @@ jobs:
           compression-level: 9
 
       - name: Upload ARM64 dmg to release
-        if: ${{ needs.create_release.outputs.release_upload_url != '' }}
-        uses: actions/upload-release-asset@v1
+        if: ${{ needs.create_release.outputs.dist_version != '' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.create_release.outputs.release_upload_url }}
-          asset_path: ./dist/sqlui-native-arm64.dmg
-          asset_name: sqlui-native-${{ needs.create_release.outputs.dist_version }}-arm64.dmg
-          asset_content_type: application/octet-stream
+        shell: bash
+        run: |
+          gh release upload "${{ needs.create_release.outputs.dist_version }}" \
+            "./dist/sqlui-native-arm64.dmg#sqlui-native-${{ needs.create_release.outputs.dist_version }}-arm64.dmg" \
+            --clobber
 
   dist_macos_intel_x64:
     needs: [prebuild, create_release]
@@ -342,15 +340,14 @@ jobs:
           compression-level: 9
 
       - name: Upload x64 dmg to release
-        if: ${{ needs.create_release.outputs.release_upload_url != '' }}
-        uses: actions/upload-release-asset@v1
+        if: ${{ needs.create_release.outputs.dist_version != '' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.create_release.outputs.release_upload_url }}
-          asset_path: ./dist/sqlui-native-x64.dmg
-          asset_name: sqlui-native-${{ needs.create_release.outputs.dist_version }}-x64.dmg
-          asset_content_type: application/octet-stream
+        shell: bash
+        run: |
+          gh release upload "${{ needs.create_release.outputs.dist_version }}" \
+            "./dist/sqlui-native-x64.dmg#sqlui-native-${{ needs.create_release.outputs.dist_version }}-x64.dmg" \
+            --clobber
 
   dist_linux:
     needs: [prebuild, create_release]
@@ -387,15 +384,14 @@ jobs:
           compression-level: 9
 
       - name: Upload deb to release
-        if: ${{ needs.create_release.outputs.release_upload_url != '' }}
-        uses: actions/upload-release-asset@v1
+        if: ${{ needs.create_release.outputs.dist_version != '' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.create_release.outputs.release_upload_url }}
-          asset_path: ./dist/sqlui-native.deb
-          asset_name: sqlui-native-${{ needs.create_release.outputs.dist_version }}.deb
-          asset_content_type: application/octet-stream
+        shell: bash
+        run: |
+          gh release upload "${{ needs.create_release.outputs.dist_version }}" \
+            "./dist/sqlui-native.deb#sqlui-native-${{ needs.create_release.outputs.dist_version }}.deb" \
+            --clobber
 
       - name: Upload rpm artifact
         uses: actions/upload-artifact@v4
@@ -405,15 +401,14 @@ jobs:
           compression-level: 9
 
       - name: Upload rpm to release
-        if: ${{ needs.create_release.outputs.release_upload_url != '' }}
-        uses: actions/upload-release-asset@v1
+        if: ${{ needs.create_release.outputs.dist_version != '' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.create_release.outputs.release_upload_url }}
-          asset_path: ./dist/sqlui-native.rpm
-          asset_name: sqlui-native-${{ needs.create_release.outputs.dist_version }}.rpm
-          asset_content_type: application/octet-stream
+        shell: bash
+        run: |
+          gh release upload "${{ needs.create_release.outputs.dist_version }}" \
+            "./dist/sqlui-native.rpm#sqlui-native-${{ needs.create_release.outputs.dist_version }}.rpm" \
+            --clobber
 
       - name: Upload snap artifact
         uses: actions/upload-artifact@v4
@@ -423,15 +418,14 @@ jobs:
           compression-level: 9
 
       - name: Upload snap to release
-        if: ${{ needs.create_release.outputs.release_upload_url != '' }}
-        uses: actions/upload-release-asset@v1
+        if: ${{ needs.create_release.outputs.dist_version != '' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.create_release.outputs.release_upload_url }}
-          asset_path: ./dist/sqlui-native.snap
-          asset_name: sqlui-native-${{ needs.create_release.outputs.dist_version }}.snap
-          asset_content_type: application/octet-stream
+        shell: bash
+        run: |
+          gh release upload "${{ needs.create_release.outputs.dist_version }}" \
+            "./dist/sqlui-native.snap#sqlui-native-${{ needs.create_release.outputs.dist_version }}.snap" \
+            --clobber
 
       - name: Upload pacman artifact
         uses: actions/upload-artifact@v4
@@ -441,15 +435,14 @@ jobs:
           compression-level: 9
 
       - name: Upload pacman to release
-        if: ${{ needs.create_release.outputs.release_upload_url != '' }}
-        uses: actions/upload-release-asset@v1
+        if: ${{ needs.create_release.outputs.dist_version != '' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.create_release.outputs.release_upload_url }}
-          asset_path: ./dist/sqlui-native.pacman
-          asset_name: sqlui-native-${{ needs.create_release.outputs.dist_version }}.pacman
-          asset_content_type: application/octet-stream
+        shell: bash
+        run: |
+          gh release upload "${{ needs.create_release.outputs.dist_version }}" \
+            "./dist/sqlui-native.pacman#sqlui-native-${{ needs.create_release.outputs.dist_version }}.pacman" \
+            --clobber
 
       - name: Upload AppImage artifact
         uses: actions/upload-artifact@v4
@@ -459,15 +452,14 @@ jobs:
           compression-level: 9
 
       - name: Upload AppImage to release
-        if: ${{ needs.create_release.outputs.release_upload_url != '' }}
-        uses: actions/upload-release-asset@v1
+        if: ${{ needs.create_release.outputs.dist_version != '' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.create_release.outputs.release_upload_url }}
-          asset_path: ./dist/sqlui-native.AppImage
-          asset_name: sqlui-native-${{ needs.create_release.outputs.dist_version }}.AppImage
-          asset_content_type: application/octet-stream
+        shell: bash
+        run: |
+          gh release upload "${{ needs.create_release.outputs.dist_version }}" \
+            "./dist/sqlui-native.AppImage#sqlui-native-${{ needs.create_release.outputs.dist_version }}.AppImage" \
+            --clobber
 
   roll_back_on_failure_or_canceled:
     if: ${{ always() && inputs.release_mode != 'no_release' && needs.create_release.result == 'success' && (needs.dist_windows_x64.result == 'failure' || needs.dist_windows_arm64.result == 'failure' || needs.dist_macos_arm64.result == 'failure' || needs.dist_macos_intel_x64.result == 'failure' || needs.dist_linux.result == 'failure' || needs.dist_windows_x64.result == 'cancelled' || needs.dist_windows_arm64.result == 'cancelled' || needs.dist_macos_arm64.result == 'cancelled' || needs.dist_macos_intel_x64.result == 'cancelled' || needs.dist_linux.result == 'cancelled') }}
@@ -478,12 +470,13 @@ jobs:
         uses: actions/checkout@v6
 
       - name: Delete failed release tag and assets
-        uses: dev-drprasad/delete-tag-and-release@v0.2.1
-        with:
-          delete_release: true
-          tag_name: "${{ needs.create_release.outputs.dist_version }}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          TAG="${{ needs.create_release.outputs.dist_version }}"
+          echo "Deleting failed release: $TAG"
+          gh release delete "$TAG" --yes --cleanup-tag 2>/dev/null || true
 
   publish:
     if: ${{ inputs.release_mode == 'production' }}
