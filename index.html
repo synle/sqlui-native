@@ -141,9 +141,7 @@
                 return encodeURI("file://" + pathName);
               }
 
-              const monacoBaseUrl = isDevServer
-                ? window.location.origin
-                : _uriFromPath(path.join(__dirname, "."));
+              const monacoBaseUrl = isDevServer ? window.location.origin : _uriFromPath(path.join(__dirname, "."));
 
               _loadjs(vsCodeLoader, function () {
                 amdRequire = window.require;
