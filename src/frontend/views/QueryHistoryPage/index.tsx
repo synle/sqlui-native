@@ -40,7 +40,7 @@ function QueryDetailCell({ row, allExpanded }: { row: any; allExpanded: boolean 
   const [localExpanded, setLocalExpanded] = useState<boolean | null>(null);
   const expanded = localExpanded ?? allExpanded;
 
-  if (folderItem.type !== "Query") return null;
+  if (folderItem.type !== "execution" && folderItem.type !== "delta") return null;
   const sql = folderItem.data.sql || "";
   if (!sql) return null;
 
@@ -73,7 +73,7 @@ function useRestoreEntry() {
   const navigate = useNavigate();
 
   return async (folderItem: SqluiCore.FolderItem) => {
-    if (folderItem.type !== "Query") return;
+    if (folderItem.type !== "execution" && folderItem.type !== "delta") return;
     const connectionId = folderItem.data.connectionId;
     const connectionStillExists = connections?.some((c) => c.id === connectionId);
     await onAddQuery({
@@ -89,7 +89,7 @@ function NameCell({ row }: { row: any }) {
   const folderItem: SqluiCore.FolderItem = row.original;
   const onRestore = useRestoreEntry();
 
-  if (folderItem.type !== "Query") return null;
+  if (folderItem.type !== "execution" && folderItem.type !== "delta") return null;
   const sql = folderItem.data.sql || "";
   const label = sql.length > 60 ? sql.slice(0, 60) + "..." : sql;
 
@@ -104,8 +104,8 @@ function AuditTypeCell({ row }: { row: any }) {
   const folderItem: SqluiCore.FolderItem = row.original;
   return (
     <Chip
-      label={folderItem.auditType === "execution" ? "Execution" : "Delta"}
-      color={folderItem.auditType === "execution" ? "warning" : "info"}
+      label={folderItem.type === "execution" ? "Execution" : "Delta"}
+      color={folderItem.type === "execution" ? "warning" : "info"}
       size="small"
     />
   );
@@ -114,11 +114,11 @@ function AuditTypeCell({ row }: { row: any }) {
 function ConnectionNameCell({ row }: { row: any }) {
   const folderItem: SqluiCore.FolderItem = row.original;
   const { data: connections } = useGetConnections();
-  const connectionId = folderItem.type === "Query" ? folderItem.data.connectionId : undefined;
+  const connectionId = folderItem.type === "execution" || folderItem.type === "delta" ? folderItem.data.connectionId : undefined;
   const connection = connections?.find((c) => c.id === connectionId);
   return (
     <Typography variant="body2" sx={!connection ? { opacity: 0.5, fontStyle: "italic" } : undefined}>
-      {connection?.name || "N/A (deleted)"}
+      {connection?.name || folderItem.name || "N/A (deleted)"}
     </Typography>
   );
 }
@@ -173,7 +173,7 @@ const getColumns = (allExpanded: boolean): ColumnDef<any, any>[] => [
   },
   {
     header: "Type",
-    accessorKey: "auditType",
+    accessorKey: "type",
     size: 100,
     cell: (info) => <AuditTypeCell row={info.row} />,
   },
