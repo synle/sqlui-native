@@ -188,7 +188,7 @@ export function useConnectionQueries() {
 
     if (isSoftDeleteModeSetting) {
       // generate the list of queries to store in recyclebin
-      const toRecycleQueriesFolderItems: Omit<SqluiCore.FolderItem, "id">[] = _connectionQueries
+      const toRecycleQueriesFolderItems: SqluiCore.FolderItemInput[] = _connectionQueries
         .filter((q) => {
           return queryIds.indexOf(q.id) >= 0;
         })

@@ -179,25 +179,14 @@ export module SqluiCore {
    * Used in three contexts:
    * - **Recycle Bin** — Connection, Query, or Session items backed up on deletion.
    * - **Bookmarks** — Connection or Query items saved by the user.
-   * - **Query Version History** — Query items tracked on execution or delta changes.
-   *
-   * | Field         | Connection          | Query (Bookmarks/Bin) | Query (History)     | Session (Bin only)  |
-   * |---------------|---------------------|-----------------------|---------------------|---------------------|
-   * | `name`        | connection name     | query name            | query name          | session name        |
-   * | `connections` | —                   | —                     | —                   | backed-up connections |
-   * | `createdAt`   | set server-side     | set server-side       | set server-side     | set server-side     |
-   * | `auditType`   | —                   | —                     | "execution"/"delta" | —                   |
+   * - **Query Version History** — Query items tracked on execution or delta changes (`type` is "execution" or "delta").
    */
   export type FolderItem = {
     id: string;
     /** Display name for the item (connection name, query name, or session name). Always set on creation. */
     name?: string;
-    /** Backed-up connections from a deleted session. Only used when `type` is "Session" (recycle bin). */
-    connections?: SqluiCore.ConnectionProps[];
     /** Creation timestamp. Set server-side in Endpoints.ts when the item is added to a folder. */
     createdAt?: number;
-    /** Audit type. Only used when `type` is "Query" in query version history ("execution" or "delta"). */
-    auditType?: QueryVersionAuditType;
   } & (
     | {
         /** A saved or deleted connection (used in bookmarks and recycle bin). */
@@ -205,29 +194,32 @@ export module SqluiCore {
         data: SqluiCore.ConnectionProps;
       }
     | {
-        /** A saved, deleted, or history-tracked query (used in bookmarks, recycle bin, and version history). */
+        /** A saved or deleted query (used in bookmarks and recycle bin). */
         type: "Query";
         data: SqluiCore.ConnectionQuery;
       }
     | {
-        /** A deleted session backup (used in recycle bin only). Includes `connections` field. */
+        /** A deleted session backup (used in recycle bin only). */
         type: "Session";
         data: SqluiCore.Session;
+        /** Backed-up connections from the deleted session. */
+        connections?: SqluiCore.ConnectionProps[];
+      }
+    | {
+        /** A query history entry tracked on execution or delta change. */
+        type: QueryVersionAuditType;
+        data: SqluiCore.ConnectionQuery;
       }
   );
 
+  /** Distributive Omit that preserves union discrimination. */
+  type DistributiveOmit<T, K extends keyof any> = T extends any ? Omit<T, K> : never;
+
+  /** A folder item without the server-generated `id` field, used when creating new items. */
+  export type FolderItemInput = DistributiveOmit<FolderItem, "id">;
+
   /** Audit type for query version history entries. */
   export type QueryVersionAuditType = "execution" | "delta";
-
-  /** A version history entry tracking a query change or execution. */
-  export type QueryVersionEntry = {
-    id: string;
-    sessionId?: string;
-    connectionId: string;
-    sql: string;
-    auditType: QueryVersionAuditType;
-    createdAt: number;
-  };
 
   /** Dictionary of key-value pairs representing a single data snapshot row. */
   export type DataSnapshotItemDictionary = Record<string, any>;
@@ -255,8 +247,7 @@ export module SqluiFrontend {
   };
 
   /** Full frontend connection query combining core and frontend-specific fields. */
-  export type ConnectionQuery = SqluiCore.ConnectionQuery &
-    SqluiFrontend.PartialConnectionQuery;
+  export type ConnectionQuery = SqluiCore.ConnectionQuery & SqluiFrontend.PartialConnectionQuery;
 
   /** Properties for a selectable connection option in the UI. */
   export interface AvailableConnectionProps {
@@ -293,14 +284,7 @@ export module SqluiFrontend {
   export type SettingKey = keyof Settings;
 
   /** React Query cache key identifiers used for data fetching. */
-  export type QueryKey =
-    | "actionDialogs"
-    | "missionControlCommand"
-    | "connections"
-    | "treeVisibles"
-    | "queries"
-    | "results"
-    | "settings";
+  export type QueryKey = "actionDialogs" | "missionControlCommand" | "connections" | "treeVisibles" | "queries" | "results" | "settings";
 
   /** Type of migration operation to perform. */
   export type MigrationType = "insert" | "create";
@@ -353,19 +337,13 @@ export module SqlAction {
   };
 
   /** Function that generates a script action for a table-level operation. */
-  export type TableActionScriptGenerator = (
-    input: SqlAction.TableInput,
-  ) => SqlAction.Output | undefined;
+  export type TableActionScriptGenerator = (input: SqlAction.TableInput) => SqlAction.Output | undefined;
 
   /** Function that generates a script action for a database-level operation. */
-  export type DatabaseActionScriptGenerator = (
-    input: SqlAction.DatabaseInput,
-  ) => SqlAction.Output | undefined;
+  export type DatabaseActionScriptGenerator = (input: SqlAction.DatabaseInput) => SqlAction.Output | undefined;
 
   /** Function that generates a script action for a connection-level operation. */
-  export type ConnectionActionScriptGenerator = (
-    input: SqlAction.ConnectionInput,
-  ) => SqlAction.Output | undefined;
+  export type ConnectionActionScriptGenerator = (input: SqlAction.ConnectionInput) => SqlAction.Output | undefined;
 }
 
 /**

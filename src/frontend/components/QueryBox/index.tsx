@@ -182,9 +182,10 @@ export default function QueryBox(props: QueryBoxProps): JSX.Element | null {
         connectionId: query.connectionId,
         sql,
         auditType,
+        name: selectedConnection?.name,
       }).catch((err) => console.error("QueryBox:trackVersion", err));
     },
-    [query?.connectionId, addVersionEntry],
+    [query?.connectionId, addVersionEntry, selectedConnection?.name],
   );
 
   // debounced delta tracking on sql change

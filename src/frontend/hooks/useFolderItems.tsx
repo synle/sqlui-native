@@ -37,7 +37,7 @@ export function useGetFolderItems(folderType: SqluiCore.FolderType) {
 export function useAddFolderItem(folderType: SqluiCore.FolderType) {
   const queryClient = useQueryClient();
 
-  return useMutation<void, void, Omit<SqluiCore.FolderItem, "id">>(
+  return useMutation<void, void, SqluiCore.FolderItemInput>(
     async (folderItem) => {
       await dataApi.addFolderItem(folderType, folderItem);
     },

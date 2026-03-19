@@ -643,12 +643,11 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
 
     const entry = await storage.add({
       name: req.body.name,
-      type: "Query",
+      type: req.body.auditType,
       data: {
         connectionId: req.body.connectionId,
         sql: req.body.sql,
       },
-      auditType: req.body.auditType,
       createdAt: Date.now(),
     });
 
@@ -656,7 +655,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     const allEntries = await storage.list();
     const byConnection: Record<string, typeof allEntries> = {};
     for (const e of allEntries) {
-      const connId = e.type === "Query" ? e.data.connectionId : undefined;
+      const connId = e.type === "execution" || e.type === "delta" ? e.data.connectionId : undefined;
       if (connId) (byConnection[connId] ??= []).push(e);
     }
 
