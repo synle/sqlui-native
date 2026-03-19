@@ -16,6 +16,7 @@ import Typography from "@mui/material/Typography";
 import { useEffect, useMemo, useState } from "react";
 import { ColumnDef } from "@tanstack/react-table";
 import Breadcrumbs from "src/frontend/components/Breadcrumbs";
+import DateCell from "src/frontend/components/DateCell";
 import VirtualizedConnectionTree from "src/frontend/components/VirtualizedConnectionTree";
 import DataTable from "src/frontend/components/DataTable";
 import NewConnectionButton from "src/frontend/components/NewConnectionButton";
@@ -72,14 +73,6 @@ function QueryDetailCell({ row, allExpanded }: { row: any; allExpanded: boolean 
     );
   }
   return null;
-}
-
-function DeletedAtCell({ row }: { row: any }) {
-  const folderItem: SqluiCore.FolderItem = row.original;
-  if (!folderItem.deletedAt) {
-    return null;
-  }
-  return <Typography variant="body2">{new Date(folderItem.deletedAt).toLocaleString()}</Typography>;
 }
 
 function TypeCell({ row }: { row: any }) {
@@ -147,10 +140,10 @@ const getColumns = (allExpanded: boolean): ColumnDef<any, any>[] => [
     cell: (info) => <TypeCell row={info.row} />,
   },
   {
-    header: "Deleted",
-    accessorKey: "deletedAt",
-    size: 180,
-    cell: (info) => <DeletedAtCell row={info.row} />,
+    header: "Created",
+    accessorKey: "createdAt",
+    size: 120,
+    cell: (info) => <DateCell timestamp={info.row.original.createdAt} />,
   },
   {
     header: "",
@@ -170,7 +163,7 @@ function RecycleBinItemList() {
 
   const folderItems = useMemo(() => {
     const items = data || [];
-    return [...items].sort((a, b) => (b.deletedAt ?? 0) - (a.deletedAt ?? 0));
+    return [...items].sort((a, b) => (b.createdAt ?? 0) - (a.createdAt ?? 0));
   }, [data]);
 
   const hasQueryItems = folderItems.some((item) => item.type === "Query" && item.data?.sql);

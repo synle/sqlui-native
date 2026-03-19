@@ -173,24 +173,44 @@ export module SqluiCore {
   /** Folder type identifier (e.g., "recycleBin", "bookmarks", or custom). */
   export type FolderType = "recycleBin" | "bookmarks" | string;
 
-  /** An item stored in a folder, discriminated by type (Connection, Query, or Session). */
+  /**
+   * An item stored in a folder, discriminated by `type`.
+   *
+   * Used in three contexts:
+   * - **Recycle Bin** — Connection, Query, or Session items backed up on deletion.
+   * - **Bookmarks** — Connection or Query items saved by the user.
+   * - **Query Version History** — Query items tracked on execution or delta changes.
+   *
+   * | Field         | Connection          | Query (Bookmarks/Bin) | Query (History)     | Session (Bin only)  |
+   * |---------------|---------------------|-----------------------|---------------------|---------------------|
+   * | `name`        | connection name     | query name            | query name          | session name        |
+   * | `connections` | —                   | —                     | —                   | backed-up connections |
+   * | `createdAt`   | set server-side     | set server-side       | set server-side     | set server-side     |
+   * | `auditType`   | —                   | —                     | "execution"/"delta" | —                   |
+   */
   export type FolderItem = {
     id: string;
+    /** Display name for the item (connection name, query name, or session name). Always set on creation. */
     name?: string;
-    /** Associated connections, used when backing up a Session to the recycle bin */
+    /** Backed-up connections from a deleted session. Only used when `type` is "Session" (recycle bin). */
     connections?: SqluiCore.ConnectionProps[];
-    /** Timestamp when item was moved to recycle bin */
-    deletedAt?: number;
+    /** Creation timestamp. Set server-side in Endpoints.ts when the item is added to a folder. */
+    createdAt?: number;
+    /** Audit type. Only used when `type` is "Query" in query version history ("execution" or "delta"). */
+    auditType?: QueryVersionAuditType;
   } & (
     | {
+        /** A saved or deleted connection (used in bookmarks and recycle bin). */
         type: "Connection";
         data: SqluiCore.ConnectionProps;
       }
     | {
+        /** A saved, deleted, or history-tracked query (used in bookmarks, recycle bin, and version history). */
         type: "Query";
         data: SqluiCore.ConnectionQuery;
       }
     | {
+        /** A deleted session backup (used in recycle bin only). Includes `connections` field. */
         type: "Session";
         data: SqluiCore.Session;
       }
@@ -235,7 +255,8 @@ export module SqluiFrontend {
   };
 
   /** Full frontend connection query combining core and frontend-specific fields. */
-  export type ConnectionQuery = SqluiCore.ConnectionQuery & SqluiFrontend.PartialConnectionQuery;
+  export type ConnectionQuery = SqluiCore.ConnectionQuery &
+    SqluiFrontend.PartialConnectionQuery;
 
   /** Properties for a selectable connection option in the UI. */
   export interface AvailableConnectionProps {
@@ -272,7 +293,14 @@ export module SqluiFrontend {
   export type SettingKey = keyof Settings;
 
   /** React Query cache key identifiers used for data fetching. */
-  export type QueryKey = "actionDialogs" | "missionControlCommand" | "connections" | "treeVisibles" | "queries" | "results" | "settings";
+  export type QueryKey =
+    | "actionDialogs"
+    | "missionControlCommand"
+    | "connections"
+    | "treeVisibles"
+    | "queries"
+    | "results"
+    | "settings";
 
   /** Type of migration operation to perform. */
   export type MigrationType = "insert" | "create";
@@ -325,13 +353,19 @@ export module SqlAction {
   };
 
   /** Function that generates a script action for a table-level operation. */
-  export type TableActionScriptGenerator = (input: SqlAction.TableInput) => SqlAction.Output | undefined;
+  export type TableActionScriptGenerator = (
+    input: SqlAction.TableInput,
+  ) => SqlAction.Output | undefined;
 
   /** Function that generates a script action for a database-level operation. */
-  export type DatabaseActionScriptGenerator = (input: SqlAction.DatabaseInput) => SqlAction.Output | undefined;
+  export type DatabaseActionScriptGenerator = (
+    input: SqlAction.DatabaseInput,
+  ) => SqlAction.Output | undefined;
 
   /** Function that generates a script action for a connection-level operation. */
-  export type ConnectionActionScriptGenerator = (input: SqlAction.ConnectionInput) => SqlAction.Output | undefined;
+  export type ConnectionActionScriptGenerator = (
+    input: SqlAction.ConnectionInput,
+  ) => SqlAction.Output | undefined;
 }
 
 /**
