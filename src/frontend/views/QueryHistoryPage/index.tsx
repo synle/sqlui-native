@@ -16,6 +16,7 @@ import Typography from "@mui/material/Typography";
 import { useEffect, useMemo, useState } from "react";
 import { ColumnDef } from "@tanstack/react-table";
 import Breadcrumbs from "src/frontend/components/Breadcrumbs";
+import DateCell from "src/frontend/components/DateCell";
 import VirtualizedConnectionTree from "src/frontend/components/VirtualizedConnectionTree";
 import DataTable from "src/frontend/components/DataTable";
 import NewConnectionButton from "src/frontend/components/NewConnectionButton";
@@ -35,10 +36,12 @@ import { useNavigate } from "src/frontend/utils/commonUtils";
 import { SqluiCore } from "typings";
 
 function QueryDetailCell({ row, allExpanded }: { row: any; allExpanded: boolean }) {
-  const entry: SqluiCore.QueryVersionEntry = row.original;
+  const folderItem: SqluiCore.FolderItem = row.original;
   const [localExpanded, setLocalExpanded] = useState<boolean | null>(null);
   const expanded = localExpanded ?? allExpanded;
-  const sql = entry.sql || "";
+
+  if (folderItem.type !== "Query") return null;
+  const sql = folderItem.data.sql || "";
   if (!sql) return null;
 
   return (
@@ -69,11 +72,13 @@ function useRestoreEntry() {
   const { data: connections } = useGetConnections();
   const navigate = useNavigate();
 
-  return async (entry: SqluiCore.QueryVersionEntry) => {
-    const connectionStillExists = connections?.some((c) => c.id === entry.connectionId);
+  return async (folderItem: SqluiCore.FolderItem) => {
+    if (folderItem.type !== "Query") return;
+    const connectionId = folderItem.data.connectionId;
+    const connectionStillExists = connections?.some((c) => c.id === connectionId);
     await onAddQuery({
-      connectionId: connectionStillExists ? entry.connectionId : undefined,
-      sql: entry.sql,
+      connectionId: connectionStillExists ? connectionId : undefined,
+      sql: folderItem.data.sql,
       name: `Restored ${new Date().toLocaleString()}`,
     });
     navigate("/");
@@ -81,32 +86,36 @@ function useRestoreEntry() {
 }
 
 function NameCell({ row }: { row: any }) {
-  const entry: SqluiCore.QueryVersionEntry = row.original;
+  const folderItem: SqluiCore.FolderItem = row.original;
   const onRestore = useRestoreEntry();
-  const label = entry.sql.length > 60 ? entry.sql.slice(0, 60) + "..." : entry.sql;
+
+  if (folderItem.type !== "Query") return null;
+  const sql = folderItem.data.sql || "";
+  const label = sql.length > 60 ? sql.slice(0, 60) + "..." : sql;
 
   return (
-    <Link onClick={() => onRestore(entry)} underline="none" sx={{ cursor: "pointer" }}>
+    <Link onClick={() => onRestore(folderItem)} underline="none" sx={{ cursor: "pointer" }}>
       {label}
     </Link>
   );
 }
 
 function AuditTypeCell({ row }: { row: any }) {
-  const entry: SqluiCore.QueryVersionEntry = row.original;
+  const folderItem: SqluiCore.FolderItem = row.original;
   return (
     <Chip
-      label={entry.auditType === "execution" ? "Execution" : "Delta"}
-      color={entry.auditType === "execution" ? "warning" : "info"}
+      label={folderItem.auditType === "execution" ? "Execution" : "Delta"}
+      color={folderItem.auditType === "execution" ? "warning" : "info"}
       size="small"
     />
   );
 }
 
 function ConnectionNameCell({ row }: { row: any }) {
-  const entry: SqluiCore.QueryVersionEntry = row.original;
+  const folderItem: SqluiCore.FolderItem = row.original;
   const { data: connections } = useGetConnections();
-  const connection = connections?.find((c) => c.id === entry.connectionId);
+  const connectionId = folderItem.type === "Query" ? folderItem.data.connectionId : undefined;
+  const connection = connections?.find((c) => c.id === connectionId);
   return (
     <Typography variant="body2" sx={!connection ? { opacity: 0.5, fontStyle: "italic" } : undefined}>
       {connection?.name || "N/A (deleted)"}
@@ -114,13 +123,8 @@ function ConnectionNameCell({ row }: { row: any }) {
   );
 }
 
-function DateCell({ row }: { row: any }) {
-  const entry: SqluiCore.QueryVersionEntry = row.original;
-  return <Typography variant="body2">{new Date(entry.createdAt).toLocaleString()}</Typography>;
-}
-
 function ActionCell({ row }: { row: any }) {
-  const entry: SqluiCore.QueryVersionEntry = row.original;
+  const folderItem: SqluiCore.FolderItem = row.original;
   const onRestore = useRestoreEntry();
   const { confirm } = useActionDialogs();
   const { mutateAsync: deleteEntry } = useDeleteQueryVersionHistory();
@@ -128,14 +132,14 @@ function ActionCell({ row }: { row: any }) {
   const onDelete = async () => {
     try {
       await confirm(`Delete this history entry?`);
-      await deleteEntry(entry.id);
+      await deleteEntry(folderItem.id);
     } catch (_err) {}
   };
 
   return (
     <Box sx={{ display: "flex", gap: 1 }}>
       <Tooltip title="Restore as new query tab">
-        <IconButton aria-label="Restore" onClick={() => onRestore(entry)}>
+        <IconButton aria-label="Restore" onClick={() => onRestore(folderItem)}>
           <RestoreIcon />
         </IconButton>
       </Tooltip>
@@ -158,7 +162,7 @@ const getColumns = (allExpanded: boolean): ColumnDef<any, any>[] => [
   },
   {
     header: "Query",
-    accessorKey: "sql",
+    accessorKey: "name",
     size: 250,
     cell: (info) => <NameCell row={info.row} />,
   },
@@ -175,15 +179,15 @@ const getColumns = (allExpanded: boolean): ColumnDef<any, any>[] => [
   },
   {
     header: "Connection",
-    accessorKey: "connectionId",
+    id: "connection",
     size: 150,
     cell: (info) => <ConnectionNameCell row={info.row} />,
   },
   {
-    header: "Date",
+    header: "Created",
     accessorKey: "createdAt",
-    size: 180,
-    cell: (info) => <DateCell row={info.row} />,
+    size: 120,
+    cell: (info) => <DateCell timestamp={info.row.original.createdAt} />,
   },
   {
     header: "",
@@ -202,7 +206,7 @@ function QueryHistoryList() {
 
   const entries = useMemo(() => {
     const items = data || [];
-    return [...items].sort((a, b) => b.createdAt - a.createdAt);
+    return [...items].sort((a, b) => (b.createdAt ?? 0) - (a.createdAt ?? 0));
   }, [data]);
 
   const onClearHistory = async () => {
