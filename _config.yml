@@ -10,7 +10,6 @@ exclude:
   - typings
   - "*.config.ts"
   - "*.config.js"
-  - package.json
   - package-lock.json
   - tsconfig.json
   - CONTRIBUTING.md
