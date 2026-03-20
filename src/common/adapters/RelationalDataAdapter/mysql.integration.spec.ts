@@ -33,18 +33,9 @@ describe("mysql integration", () => {
       )`,
       "sqlui_test",
     );
-    await adapter.execute(
-      `INSERT INTO artists (Name) VALUES ('Test Artist 1')`,
-      "sqlui_test",
-    );
-    await adapter.execute(
-      `INSERT INTO artists (Name) VALUES ('Test Artist 2')`,
-      "sqlui_test",
-    );
-    await adapter.execute(
-      `INSERT INTO artists (Name) VALUES ('Test Artist 3')`,
-      "sqlui_test",
-    );
+    await adapter.execute(`INSERT INTO artists (Name) VALUES ('Test Artist 1')`, "sqlui_test");
+    await adapter.execute(`INSERT INTO artists (Name) VALUES ('Test Artist 2')`, "sqlui_test");
+    await adapter.execute(`INSERT INTO artists (Name) VALUES ('Test Artist 3')`, "sqlui_test");
   });
 
   test("getTables", async () => {
@@ -62,27 +53,18 @@ describe("mysql integration", () => {
   });
 
   test("execute select", async () => {
-    const resp = await adapter.execute(
-      `SELECT * FROM artists ORDER BY Name ASC LIMIT 10`,
-      "sqlui_test",
-    );
+    const resp = await adapter.execute(`SELECT * FROM artists ORDER BY Name ASC LIMIT 10`, "sqlui_test");
     expect(resp.ok).toBe(true);
     expect(resp.raw?.length).toBe(3);
   });
 
   test("execute update", async () => {
-    const resp = await adapter.execute(
-      `UPDATE artists SET Name = 'Updated Artist' WHERE ArtistId = 1`,
-      "sqlui_test",
-    );
+    const resp = await adapter.execute(`UPDATE artists SET Name = 'Updated Artist' WHERE ArtistId = 1`, "sqlui_test");
     expect(resp.ok).toBe(true);
   });
 
   test("execute delete", async () => {
-    const resp = await adapter.execute(
-      `DELETE FROM artists WHERE ArtistId = 1`,
-      "sqlui_test",
-    );
+    const resp = await adapter.execute(`DELETE FROM artists WHERE ArtistId = 1`, "sqlui_test");
     expect(resp.ok).toBe(true);
   });
 
@@ -95,9 +77,7 @@ describe.skip("mysql legacy", () => {
   let adapter;
 
   beforeAll(() => {
-    adapter = new RelationalDataAdapter(
-      "mysql://root:password123!@127.0.0.1:3306",
-    );
+    adapter = new RelationalDataAdapter("mysql://root:password123!@127.0.0.1:3306");
   });
 
   test("Get tables", async () => {
@@ -111,22 +91,14 @@ describe.skip("mysql legacy", () => {
   });
 
   test("Execute Select", async () => {
-    const resp = await adapter.execute(
-      `SELECT * FROM artists ORDER BY Name ASC LIMIT 10`,
-      "music_store",
-    );
+    const resp = await adapter.execute(`SELECT * FROM artists ORDER BY Name ASC LIMIT 10`, "music_store");
     //@ts-ignore
-    expect(
-      resp && resp.raw && resp.raw.length > 0 && resp.raw.length <= 10,
-    ).toBe(true);
+    expect(resp && resp.raw && resp.raw.length > 0 && resp.raw.length <= 10).toBe(true);
   });
 
   test("Execute Update", async () => {
     try {
-      await adapter.execute(
-        `UPDATE artists SET name = 'AC/DC' WHERE ArtistId = '1'`,
-        "music_store",
-      );
+      await adapter.execute(`UPDATE artists SET name = 'AC/DC' WHERE ArtistId = '1'`, "music_store");
       expect(1).toBe(1);
     } catch (err) {
       expect(err).toBeUndefined();
