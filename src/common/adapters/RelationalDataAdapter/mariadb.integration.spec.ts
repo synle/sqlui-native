@@ -5,8 +5,9 @@ const CONNECTION = "mariadb://root:password123!@127.0.0.1:33061";
 describe("mariadb integration", () => {
   let adapter: RelationalDataAdapter;
 
-  beforeAll(() => {
+  beforeAll(async () => {
     adapter = new RelationalDataAdapter(CONNECTION);
+    await adapter.execute(`CREATE DATABASE IF NOT EXISTS sqlui_test`);
   });
 
   test("authenticate", async () => {
@@ -17,14 +18,14 @@ describe("mariadb integration", () => {
     const databases = await adapter.getDatabases();
     expect(databases.length).toBeGreaterThan(0);
     const names = databases.map((d) => d.name);
+    expect(names).toContain("sqlui_test");
     expect(names).not.toContain("information_schema");
     expect(names).not.toContain("performance_schema");
     expect(names).not.toContain("mysql");
     expect(names).not.toContain("sys");
   });
 
-  test("create test database and table", async () => {
-    await adapter.execute(`CREATE DATABASE IF NOT EXISTS sqlui_test`);
+  test("create test table", async () => {
     await adapter.execute(
       `CREATE TABLE IF NOT EXISTS artists (
         ArtistId INTEGER PRIMARY KEY AUTO_INCREMENT,
@@ -32,9 +33,18 @@ describe("mariadb integration", () => {
       )`,
       "sqlui_test",
     );
-    await adapter.execute(`INSERT INTO artists (Name) VALUES ('Test Artist 1')`, "sqlui_test");
-    await adapter.execute(`INSERT INTO artists (Name) VALUES ('Test Artist 2')`, "sqlui_test");
-    await adapter.execute(`INSERT INTO artists (Name) VALUES ('Test Artist 3')`, "sqlui_test");
+    await adapter.execute(
+      `INSERT INTO artists (Name) VALUES ('Test Artist 1')`,
+      "sqlui_test",
+    );
+    await adapter.execute(
+      `INSERT INTO artists (Name) VALUES ('Test Artist 2')`,
+      "sqlui_test",
+    );
+    await adapter.execute(
+      `INSERT INTO artists (Name) VALUES ('Test Artist 3')`,
+      "sqlui_test",
+    );
   });
 
   test("getTables", async () => {
@@ -52,18 +62,27 @@ describe("mariadb integration", () => {
   });
 
   test("execute select", async () => {
-    const resp = await adapter.execute(`SELECT * FROM artists ORDER BY Name ASC LIMIT 10`, "sqlui_test");
+    const resp = await adapter.execute(
+      `SELECT * FROM artists ORDER BY Name ASC LIMIT 10`,
+      "sqlui_test",
+    );
     expect(resp.ok).toBe(true);
     expect(resp.raw?.length).toBe(3);
   });
 
   test("execute update", async () => {
-    const resp = await adapter.execute(`UPDATE artists SET Name = 'Updated Artist' WHERE ArtistId = 1`, "sqlui_test");
+    const resp = await adapter.execute(
+      `UPDATE artists SET Name = 'Updated Artist' WHERE ArtistId = 1`,
+      "sqlui_test",
+    );
     expect(resp.ok).toBe(true);
   });
 
   test("execute delete", async () => {
-    const resp = await adapter.execute(`DELETE FROM artists WHERE ArtistId = 1`, "sqlui_test");
+    const resp = await adapter.execute(
+      `DELETE FROM artists WHERE ArtistId = 1`,
+      "sqlui_test",
+    );
     expect(resp.ok).toBe(true);
   });
 
@@ -76,7 +95,9 @@ describe.skip("mariadb legacy", () => {
   let adapter;
 
   beforeAll(() => {
-    adapter = new RelationalDataAdapter("mariadb://root:password123!@127.0.0.1:33061");
+    adapter = new RelationalDataAdapter(
+      "mariadb://root:password123!@127.0.0.1:33061",
+    );
   });
 
   test("Get tables", async () => {
@@ -90,14 +111,22 @@ describe.skip("mariadb legacy", () => {
   });
 
   test("Execute Select", async () => {
-    const resp = await adapter.execute(`SELECT * FROM artists ORDER BY Name ASC LIMIT 10`, "music_store");
+    const resp = await adapter.execute(
+      `SELECT * FROM artists ORDER BY Name ASC LIMIT 10`,
+      "music_store",
+    );
     //@ts-ignore
-    expect(resp && resp.raw && resp.raw.length > 0 && resp.raw.length <= 10).toBe(true);
+    expect(
+      resp && resp.raw && resp.raw.length > 0 && resp.raw.length <= 10,
+    ).toBe(true);
   });
 
   test("Execute Update", async () => {
     try {
-      await adapter.execute(`UPDATE artists SET name = 'AC/DC' WHERE ArtistId = '1'`, "music_store");
+      await adapter.execute(
+        `UPDATE artists SET name = 'AC/DC' WHERE ArtistId = '1'`,
+        "music_store",
+      );
       expect(1).toBe(1);
     } catch (err) {
       expect(err).toBeUndefined();
