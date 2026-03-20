@@ -12,6 +12,8 @@ import RedisDataAdapter from "src/common/adapters/RedisDataAdapter/index";
 import RedisDataAdapterScripts from "src/common/adapters/RedisDataAdapter/scripts";
 import RelationalDataAdapter from "src/common/adapters/RelationalDataAdapter/index";
 import RelationalDataAdapterScripts from "src/common/adapters/RelationalDataAdapter/scripts";
+import SalesforceDataAdapter from "src/common/adapters/SalesforceDataAdapter/index";
+import SalesforceDataAdapterScripts from "src/common/adapters/SalesforceDataAdapter/scripts";
 import PersistentStorage from "src/common/PersistentStorage";
 import { SqluiCore } from "typings";
 
@@ -111,6 +113,8 @@ export function getDataAdapter(connection: string) {
       adapter = new AzureCosmosDataAdapter(connection);
     } else if (AzureTableStorageAdapterScripts.isDialectSupported(targetDialect)) {
       adapter = new AzureTableStorageAdapter(connection);
+    } else if (SalesforceDataAdapterScripts.isDialectSupported(targetDialect)) {
+      adapter = new SalesforceDataAdapter(connection);
     }
   } catch (err) {
     console.error("DataAdapterFactory.ts:getDataAdapter", connection, err);

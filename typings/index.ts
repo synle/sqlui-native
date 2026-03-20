@@ -28,7 +28,8 @@ export module SqluiCore {
     | "redis"
     | "rediss"
     | "cosmosdb"
-    | "aztable";
+    | "aztable"
+    | "sfdc";
 
   /** Supported programming language modes for code generation. */
   export type LanguageMode = "javascript" | "python" | "java";

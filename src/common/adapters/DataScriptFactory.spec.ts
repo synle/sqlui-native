@@ -150,6 +150,12 @@ Query Guides:
     addGuideText("aztable", connectionString, scripts);
   });
 
+  test("sfdc", async () => {
+    const { connectionString, scripts } = _getScript("sfdc");
+    expect(scripts).toMatchSnapshot();
+    addGuideText("sfdc", connectionString, scripts);
+  });
+
   test("Consolidate the guide into a command", async () => {
     const newGuide = commandGuides.join("\n");
     fs.writeFileSync("./guides.md", newGuide);

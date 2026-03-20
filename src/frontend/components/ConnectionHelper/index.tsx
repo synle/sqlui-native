@@ -2,7 +2,7 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import { useState } from "react";
-import { getConnectionFormInputs, SUPPORTED_DIALECTS } from "src/common/adapters/DataScriptFactory";
+import { getConnectionFormInputs, getConnectionStringFormat, SUPPORTED_DIALECTS } from "src/common/adapters/DataScriptFactory";
 import Select from "src/frontend/components/Select";
 
 /** Form input fields for building a database connection string. */
@@ -24,13 +24,49 @@ type ConnectionHelperProps = ConnectionHelperFormInputs & {
 };
 
 /**
+ * Builds a connection string from form values based on the dialect's format.
+ * @param formValues - All form field values keyed by field name.
+ * @param formInputs - The dialect-specific form input definitions.
+ * @returns The generated connection string.
+ */
+function buildConnectionString(formValues: Record<string, string>, formInputs: string[][]): string {
+  const format = getConnectionStringFormat(formValues.scheme);
+
+  let connection = `${formValues.scheme}://`;
+
+  if (format === "json") {
+    // JSON format: scheme://{"field1":"val1","field2":"val2"}
+    const jsonObj: Record<string, string> = {};
+    for (const [inputKey] of formInputs) {
+      if (formValues[inputKey]) {
+        jsonObj[inputKey] = formValues[inputKey];
+      }
+    }
+    connection += JSON.stringify(jsonObj);
+  } else if (formInputs.length === 1) {
+    connection += `${formValues[formInputs[0][0]] || ""}`;
+  } else {
+    if (formValues.username && formValues.password) {
+      connection += `${encodeURIComponent(formValues.username)}:${encodeURIComponent(formValues.password)}`;
+    }
+    connection += `@${formValues.host || ""}`;
+    if (formValues.port) {
+      connection += `:${formValues.port}`;
+    }
+  }
+
+  return connection;
+}
+
+/**
  * A form-based helper for constructing database connection strings.
  * Displays dialect-specific input fields and generates the connection URL.
+ * Supports URL-based (default) and JSON-based connection string formats.
  * @param props - Connection helper properties including initial values and callbacks.
  * @returns The connection helper form.
  */
 export default function ConnectionHelper(props: ConnectionHelperProps) {
-  const [value, setValue] = useState<ConnectionHelperFormInputs>({
+  const [formValues, setFormValues] = useState<Record<string, string>>({
     scheme: props.scheme || "",
     username: props.username || "",
     password: props.password || "",
@@ -39,28 +75,11 @@ export default function ConnectionHelper(props: ConnectionHelperProps) {
     restOfConnectionString: props.restOfConnectionString || "",
   });
 
-  const formInputs = getConnectionFormInputs(value.scheme);
-
-  let connection = `${value.scheme}://`;
-  if (formInputs.length === 1) {
-    connection += `${value[formInputs[0][0]]}`;
-  } else {
-    if (value.username && value.password) {
-      connection += `${encodeURIComponent(value.username)}:${encodeURIComponent(value.password)}`;
-    }
-    connection += `@${value.host}`;
-    if (value.port) {
-      connection += `:${value.port}`;
-    }
-  }
+  const formInputs = getConnectionFormInputs(formValues.scheme);
+  const connection = buildConnectionString(formValues, formInputs);
 
   const onChange = (fieldKey: string, fieldValue: string) => {
-    const newValue = {
-      ...value,
-      [fieldKey]: fieldValue,
-    };
-
-    setValue(newValue);
+    setFormValues((prev) => ({ ...prev, [fieldKey]: fieldValue }));
   };
 
   // construct the final
@@ -76,7 +95,7 @@ export default function ConnectionHelper(props: ConnectionHelperProps) {
           <div className="FormInput__Row" key={idx + inputKey}>
             <TextField
               label={inputLabel}
-              value={value[inputKey]}
+              value={formValues[inputKey] || ""}
               onChange={(e) => onChange(inputKey, e.target.value)}
               required={isRequired}
               size="small"
@@ -96,7 +115,7 @@ export default function ConnectionHelper(props: ConnectionHelperProps) {
       }}
     >
       <div className="FormInput__Row">
-        <Select required onChange={(newScheme) => onChange("scheme", newScheme)} value={value.scheme}>
+        <Select required onChange={(newScheme) => onChange("scheme", newScheme)} value={formValues.scheme}>
           <option value="">Select a Scheme</option>
           {SUPPORTED_DIALECTS.sort().map((dialect) => (
             <option key={dialect} value={dialect}>
