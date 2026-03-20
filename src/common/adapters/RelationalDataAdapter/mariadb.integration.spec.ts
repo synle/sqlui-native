@@ -5,8 +5,9 @@ const CONNECTION = "mariadb://root:password123!@127.0.0.1:33061";
 describe("mariadb integration", () => {
   let adapter: RelationalDataAdapter;
 
-  beforeAll(() => {
+  beforeAll(async () => {
     adapter = new RelationalDataAdapter(CONNECTION);
+    await adapter.execute(`CREATE DATABASE IF NOT EXISTS sqlui_test`);
   });
 
   test("authenticate", async () => {
@@ -17,14 +18,14 @@ describe("mariadb integration", () => {
     const databases = await adapter.getDatabases();
     expect(databases.length).toBeGreaterThan(0);
     const names = databases.map((d) => d.name);
+    expect(names).toContain("sqlui_test");
     expect(names).not.toContain("information_schema");
     expect(names).not.toContain("performance_schema");
     expect(names).not.toContain("mysql");
     expect(names).not.toContain("sys");
   });
 
-  test("create test database and table", async () => {
-    await adapter.execute(`CREATE DATABASE IF NOT EXISTS sqlui_test`);
+  test("create test table", async () => {
     await adapter.execute(
       `CREATE TABLE IF NOT EXISTS artists (
         ArtistId INTEGER PRIMARY KEY AUTO_INCREMENT,
