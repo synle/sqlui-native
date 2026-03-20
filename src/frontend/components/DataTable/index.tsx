@@ -42,6 +42,7 @@ export const ALL_PAGE_SIZE_OPTIONS: any[] = [
 /** Default number of rows per page in the table. */
 export const DEFAULT_TABLE_PAGE_SIZE = 50;
 
+/** Placeholder column name used when a row value is not an object. */
 const UNNAMED_PROPERTY_NAME = "<unnamed_property>";
 
 /**

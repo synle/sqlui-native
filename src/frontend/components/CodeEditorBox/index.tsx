@@ -59,6 +59,11 @@ const FULL_HEIGHT_MIN_PX = 800;
 /** Approximate line height in pixels used for full height calculation. */
 const LINE_HEIGHT_PX = 20;
 
+/**
+ * Calculates the editor height in pixels based on the number of lines in the value.
+ * @param value - The editor content whose line count determines the height.
+ * @returns A CSS pixel string (e.g., "800px").
+ */
 function getFullHeight(value?: string): string {
   const lineCount = (value || "").split("\n").length;
   const calculatedHeight = Math.max(FULL_HEIGHT_MIN_PX, lineCount * LINE_HEIGHT_PX);

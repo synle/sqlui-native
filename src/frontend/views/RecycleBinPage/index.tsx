@@ -28,12 +28,21 @@ import { useTreeActions } from "src/frontend/hooks/useTreeActions";
 import LayoutTwoColumns from "src/frontend/layout/LayoutTwoColumns";
 import { SqluiCore } from "typings";
 
+/**
+ * Table cell showing the item name as a link that restores it from the recycle bin when clicked.
+ * @param row - The TanStack table row containing a FolderItem.
+ */
 function NameCell({ row }: { row: any }) {
   const folderItem = row.original;
   const { mutateAsync: restoreRecycleBinItem } = useRestoreRecycleBinItem();
   return <Link onClick={() => restoreRecycleBinItem(folderItem)}>{folderItem.name}</Link>;
 }
 
+/**
+ * Table cell rendering query SQL or session connection count depending on item type.
+ * @param row - The TanStack table row containing a FolderItem.
+ * @param allExpanded - Whether all rows should be globally expanded.
+ */
 function QueryDetailCell({ row, allExpanded }: { row: any; allExpanded: boolean }) {
   const folderItem: SqluiCore.FolderItem = row.original;
   const [localExpanded, setLocalExpanded] = useState<boolean | null>(null);
@@ -75,6 +84,10 @@ function QueryDetailCell({ row, allExpanded }: { row: any; allExpanded: boolean 
   return null;
 }
 
+/**
+ * Table cell that renders a color-coded chip for the folder item type (Connection, Query, Session).
+ * @param row - The TanStack table row containing a FolderItem.
+ */
 function TypeCell({ row }: { row: any }) {
   const folderItem = row.original;
   const colorMap: Record<string, "success" | "warning" | "info"> = {
@@ -85,6 +98,10 @@ function TypeCell({ row }: { row: any }) {
   return <Chip label={folderItem.type} color={colorMap[folderItem.type] ?? "default"} size="small" />;
 }
 
+/**
+ * Table cell with restore and permanent-delete action buttons for a recycle bin item.
+ * @param row - The TanStack table row containing a FolderItem.
+ */
 function ActionCell({ row }: { row: any }) {
   const folderItem = row.original;
   const { confirm } = useActionDialogs();
@@ -114,6 +131,11 @@ function ActionCell({ row }: { row: any }) {
   );
 }
 
+/**
+ * Returns the column definitions for the recycle bin table.
+ * @param allExpanded - Whether all detail rows should render in expanded state.
+ * @returns Array of TanStack table column definitions.
+ */
 const getColumns = (allExpanded: boolean): ColumnDef<any, any>[] => [
   {
     header: "#",
@@ -153,6 +175,9 @@ const getColumns = (allExpanded: boolean): ColumnDef<any, any>[] => [
   },
 ];
 
+/**
+ * Sorted table of all recycle bin items with empty-trash, expand/collapse, restore, and delete actions.
+ */
 function RecycleBinItemList() {
   const { data, isLoading: loadingRecycleBinItems } = useGetRecycleBinItems();
   const { mutateAsync: deleteRecyleBinItem } = useDeletedRecycleBinItem();

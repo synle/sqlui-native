@@ -13,6 +13,7 @@ export type BreadcrumbLink = {
   href?: string;
 };
 
+/** Props for the Breadcrumbs navigation component. */
 type BreadcrumbProps = {
   links: BreadcrumbLink[];
 };

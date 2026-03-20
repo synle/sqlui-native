@@ -38,6 +38,7 @@ type ModalActionDialog = ModalInput & {
   onSubmit: (closed: boolean) => void;
 };
 
+/** Union type representing any action dialog configuration. */
 type ActionDialog = AlertActionDialog | ConfirmActionDialog | PromptActionDialog | ChoiceActionDialog | ModalActionDialog;
 
 let _actionDialogs: ActionDialog[] = [];

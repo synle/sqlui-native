@@ -17,6 +17,7 @@ export type AlertInput = {
   size?: "xs" | "sm" | "md" | "lg";
 };
 
+/** Internal props for the AlertDialog component, combining AlertInput with open/dismiss state. */
 type AlertDialogProps = AlertInput & {
   open: boolean;
   onDismiss: () => void;

@@ -35,6 +35,11 @@ import LayoutTwoColumns from "src/frontend/layout/LayoutTwoColumns";
 import { useNavigate } from "src/frontend/utils/commonUtils";
 import { SqluiCore } from "typings";
 
+/**
+ * Table cell that renders the SQL query text with expand/collapse toggle.
+ * @param row - The TanStack table row containing a FolderItem.
+ * @param allExpanded - Whether all rows should be expanded globally.
+ */
 function QueryDetailCell({ row, allExpanded }: { row: any; allExpanded: boolean }) {
   const folderItem: SqluiCore.FolderItem = row.original;
   const [localExpanded, setLocalExpanded] = useState<boolean | null>(null);
@@ -67,6 +72,10 @@ function QueryDetailCell({ row, allExpanded }: { row: any; allExpanded: boolean 
   );
 }
 
+/**
+ * Hook that returns an async function to restore a query history entry as a new query tab.
+ * @returns An async handler that adds the restored query and navigates to the main page.
+ */
 function useRestoreEntry() {
   const { onAddQuery } = useConnectionQueries();
   const { data: connections } = useGetConnections();
@@ -85,6 +94,10 @@ function useRestoreEntry() {
   };
 }
 
+/**
+ * Table cell showing a truncated SQL label that restores the entry when clicked.
+ * @param row - The TanStack table row containing a FolderItem.
+ */
 function NameCell({ row }: { row: any }) {
   const folderItem: SqluiCore.FolderItem = row.original;
   const onRestore = useRestoreEntry();
@@ -100,6 +113,10 @@ function NameCell({ row }: { row: any }) {
   );
 }
 
+/**
+ * Table cell that renders a color-coded chip for the audit entry type (Execution or Delta).
+ * @param row - The TanStack table row containing a FolderItem.
+ */
 function AuditTypeCell({ row }: { row: any }) {
   const folderItem: SqluiCore.FolderItem = row.original;
   return (
@@ -111,6 +128,10 @@ function AuditTypeCell({ row }: { row: any }) {
   );
 }
 
+/**
+ * Table cell displaying the connection name associated with a history entry, or "N/A (deleted)" if gone.
+ * @param row - The TanStack table row containing a FolderItem.
+ */
 function ConnectionNameCell({ row }: { row: any }) {
   const folderItem: SqluiCore.FolderItem = row.original;
   const { data: connections } = useGetConnections();
@@ -123,6 +144,10 @@ function ConnectionNameCell({ row }: { row: any }) {
   );
 }
 
+/**
+ * Table cell with restore and delete action buttons for a query history entry.
+ * @param row - The TanStack table row containing a FolderItem.
+ */
 function ActionCell({ row }: { row: any }) {
   const folderItem: SqluiCore.FolderItem = row.original;
   const onRestore = useRestoreEntry();
@@ -152,6 +177,11 @@ function ActionCell({ row }: { row: any }) {
   );
 }
 
+/**
+ * Returns the column definitions for the query history table.
+ * @param allExpanded - Whether all detail rows should be rendered in expanded state.
+ * @returns Array of TanStack table column definitions.
+ */
 const getColumns = (allExpanded: boolean): ColumnDef<any, any>[] => [
   {
     header: "#",
@@ -197,6 +227,9 @@ const getColumns = (allExpanded: boolean): ColumnDef<any, any>[] => [
   },
 ];
 
+/**
+ * Sortable table listing all query version history entries with clear, restore, and delete actions.
+ */
 function QueryHistoryList() {
   const { data, isLoading } = useGetQueryVersionHistory();
   const { mutateAsync: clearHistory } = useClearQueryVersionHistory();

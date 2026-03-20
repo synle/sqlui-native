@@ -174,10 +174,6 @@ export function useTablePageSize() {
   return parseInt(settings?.tablePageSize + "");
 }
 
-/**
- * Hook returning whether soft delete mode is enabled (items go to recycle bin instead of permanent deletion).
- * @returns True if soft delete mode is active.
- */
 /** Default maximum number of concurrent toast notifications displayed. */
 export const DEFAULT_MAX_TOASTS = 3;
 
@@ -191,6 +187,10 @@ export function useMaxToastsSetting() {
   return Math.min(10, Math.max(3, parsed));
 }
 
+/**
+ * Hook returning whether soft delete mode is enabled (items go to recycle bin instead of permanent deletion).
+ * @returns True if soft delete mode is active.
+ */
 export function useIsSoftDeleteModeSetting() {
   const { settings } = useSetting();
   return settings?.deleteMode !== "hard-delete";

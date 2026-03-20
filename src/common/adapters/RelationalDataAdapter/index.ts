@@ -28,6 +28,10 @@ export default class RelationalDataAdapter extends BaseDataAdapter implements ID
   dialect?: SqluiCore.Dialect;
   private _connection?: Sequelize;
 
+  /**
+   * Creates a RelationalDataAdapter instance, normalizing SSL mode in the connection string.
+   * @param connectionOption - The connection URL string for the relational database.
+   */
   constructor(connectionOption: string) {
     super(connectionOption);
 
