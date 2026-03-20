@@ -62,9 +62,17 @@ All database engines implement `IDataAdapter` (authenticate, getDatabases, getTa
 Adapter implementations live in `src/common/adapters/`:
 
 - `RelationalDataAdapter` - MySQL, MariaDB, Postgres, MSSQL, SQLite (via Sequelize)
-- `CassandraDataAdapter`, `MongoDBDataAdapter`, `RedisDataAdapter`, `AzureCosmosDataAdapter`, `AzureTableStorageAdapter`
+- `CassandraDataAdapter`, `MongoDBDataAdapter`, `RedisDataAdapter`, `AzureCosmosDataAdapter`, `AzureTableStorageAdapter`, `SalesforceDataAdapter`
 
 Each adapter directory contains `index.ts` (adapter class) and `scripts.ts` (ConcreteDataScripts class with dialect-specific query generators). Some also have `utils.ts` for client configuration helpers.
+
+**Connection String Formats:**
+
+Connection strings are prefixed with a dialect scheme (`dialect://...`) but the format after the scheme varies:
+
+- **URL** (relational databases, Cassandra, MongoDB, Redis): Standard URI — `dialect://user:pass@host:port` (e.g., `mysql://root:pass@localhost:3306`)
+- **JSON** (SFDC): JSON object — `sfdc://{"username":"...","password":"...","securityToken":"..."}`
+- **Microsoft-style** (Azure Table Storage, CosmosDB): Semicolon-delimited key=value pairs — `aztable://DefaultEndpointsProtocol=https;AccountName=...;AccountKey=...`
 
 **Adapter Connection Lifecycle:**
 

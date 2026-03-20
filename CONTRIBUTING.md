@@ -303,15 +303,15 @@ You will have three files to implement:
 
 This class extends `BaseDataAdapter` and implements `IDataAdapter`. You must implement:
 
-| Method                          | Purpose                                                           |
-| ------------------------------- | ----------------------------------------------------------------- |
-| `getConnection()`               | Create and return a connected client instance                     |
-| `closeConnection(client)`       | Disconnect and clean up the client                                |
-| `authenticate()`                | Verify the connection string is valid and the server is reachable |
-| `getDatabases()`                | Return list of databases/keyspaces/namespaces                     |
-| `getTables(database)`           | Return list of tables/collections in a database                   |
-| `getColumns(table, database)`   | Return column metadata (name, type, primaryKey, etc.)             |
-| `execute(sql, database, table)` | Execute a user query and return results                           |
+| Method                          | Purpose                                                                                                                       |
+| ------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| `getConnection()`               | Create and return a connected client instance                                                                                 |
+| `closeConnection(client)`       | Disconnect and clean up the client                                                                                            |
+| `authenticate()`                | Quick, lightweight check that the connection is valid and the server is reachable — no extra work beyond testing connectivity |
+| `getDatabases()`                | Return list of databases/keyspaces/namespaces                                                                                 |
+| `getTables(database)`           | Return list of tables/collections in a database                                                                               |
+| `getColumns(table, database)`   | Return column metadata (name, type, primaryKey, etc.)                                                                         |
+| `execute(sql, database, table)` | Execute a user query and return results                                                                                       |
 
 **`src/common/adapters/MyDbDataAdapter/scripts.ts`** -- Script generators
 
@@ -321,7 +321,14 @@ This file defines pre-built query templates shown in the UI dropdowns and code s
 - Implement script generator functions (e.g., `getSelectAllColumns`, `getCreateDatabase`).
 - Wire them into `getTableScripts()` and `getDatabaseScripts()`.
 - Provide a sample connection string in `getSampleConnectionString()`.
+- If your adapter uses a non-URL connection format, override `getConnectionStringFormat()` to return `"json"` (see below).
 - Optionally implement `getCodeSnippet()` for JavaScript, Python, and Java exports.
+
+> **Connection string formats:** All connection strings are prefixed with a dialect scheme (`dialect://...`). The format after the scheme depends on the adapter:
+>
+> - **URL** (default) — Standard URI: `dialect://user:pass@host:port` (relational databases, Cassandra, MongoDB, Redis)
+> - **JSON** — JSON object: `sfdc://{"username":"...","password":"..."}` (SFDC). Override `getConnectionStringFormat()` to return `"json"` in your scripts class.
+> - **Microsoft-style** — Semicolon-delimited key=value pairs: `aztable://DefaultEndpointsProtocol=https;AccountName=...;AccountKey=...` (Azure Table Storage, CosmosDB)
 
 **`src/common/adapters/MyDbDataAdapter/index.spec.ts`** -- Tests
 
@@ -505,7 +512,12 @@ sfdc://{"username":"you@yourcompany.dev","password":"MyP@ss!123"}
 When using the UI connection helper, select `sfdc` as the scheme and paste the JSON into the connection string field:
 
 ```json
-{ "username": "you@yourcompany.dev", "password": "your_password", "securityToken": "your_token", "loginUrl": "login.salesforce.com" }
+{
+  "username": "you@yourcompany.dev",
+  "password": "your_password",
+  "securityToken": "your_token",
+  "loginUrl": "login.salesforce.com"
+}
 ```
 
 The `loginUrl` field defaults to `login.salesforce.com` if omitted.
