@@ -49,6 +49,12 @@ export module SqluiCore {
 
   /** Core connection properties without an ID (used for creation). */
   export type CoreConnectionProps = {
+    /**
+     * The connection string, prefixed with a dialect scheme (`dialect://...`). Format varies by dialect:
+     * - **URL** (relational databases, Cassandra, MongoDB, Redis): `dialect://user:pass@host:port`
+     * - **JSON** (SFDC): `sfdc://{"username":"...","password":"...","securityToken":"..."}`
+     * - **Microsoft-style** (Azure Table Storage, CosmosDB): `aztable://DefaultEndpointsProtocol=https;AccountName=...;AccountKey=...`
+     */
     connection: string;
     name: string;
     status?: "online" | "offline" | "loading";
