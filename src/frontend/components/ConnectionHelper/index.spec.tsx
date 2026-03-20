@@ -13,6 +13,7 @@ vi.mock("src/common/adapters/DataScriptFactory", () => ({
           ["port", "Port"],
         ]
       : [],
+  getConnectionStringFormat: () => "url",
   SUPPORTED_DIALECTS: ["mysql", "postgres", "sqlite"],
 }));
 

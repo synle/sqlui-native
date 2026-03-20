@@ -6,7 +6,7 @@ import { SqluiCore } from "typings";
 export default interface IDataAdapter {
   /** The database dialect (e.g., mysql, postgres, sqlite). */
   dialect?: SqluiCore.Dialect;
-  /** Tests the connection to the database. */
+  /** Performs a quick, lightweight check to verify the database connection is valid. Should not do any extra work beyond establishing and validating the connection. */
   authenticate: () => Promise<void>;
   /** Retrieves all databases from the connection. */
   getDatabases: () => Promise<SqluiCore.DatabaseMetaData[]>;
