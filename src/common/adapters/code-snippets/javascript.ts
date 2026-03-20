@@ -126,6 +126,50 @@ async function _doWork(){
 
 _doWork();`;
 
+/** Mustache template for a JavaScript/Node.js code snippet connecting to Salesforce via jsforce. */
+export const sfdc = `\
+// npm install --save jsforce
+const jsforce = require('jsforce');
+
+async function _doWork(){
+  const conn = new jsforce.Connection({
+    loginUrl: 'https://login.salesforce.com'
+  });
+
+  try {
+    await conn.login('your_username', 'your_password' + 'your_security_token');
+
+    // SOQL Query
+    const result = await conn.query(\`{{{sql}}}\`);
+    console.log('Total records:', result.totalSize);
+    for (const record of result.records) {
+      console.log(record);
+    }
+
+    // Insert
+    // const created = await conn.sobject('Account').create({ Name: 'New Account' });
+    // console.log('Created:', created.id);
+
+    // Update
+    // const updated = await conn.sobject('Account').update({ Id: 'some_id', Name: 'Updated Name' });
+    // console.log('Updated:', updated.success);
+
+    // Delete
+    // const deleted = await conn.sobject('Account').destroy('some_id');
+    // console.log('Deleted:', deleted.success);
+
+    // SOSL Search
+    // const searchResult = await conn.search('FIND {keyword} IN ALL FIELDS RETURNING Account(Id, Name)');
+    // console.log('Search:', searchResult.searchRecords);
+
+    await conn.logout();
+  } catch(err) {
+    console.log('Failed to connect', err);
+  }
+}
+
+_doWork();`;
+
 /** Mustache template for a JavaScript/Node.js code snippet connecting to Azure Table Storage. */
 export const aztable = `\
 // npm install --save @azure/data-tables

@@ -1486,3 +1486,225 @@ serviceClient.createTable('table1')
 serviceClient.deleteTable('table1')
 ```
 
+
+## sfdc
+
+### Sample Connection String
+
+This is a sample connection string you can use.
+```
+sfdc://{"username":"your_username","password":"your_password","securityToken":"your_token","loginUrl":"login.salesforce.com"}
+```
+
+
+### Select All Columns
+
+```sql
+SELECT
+  id,
+  column1,
+  column2
+FROM
+  table1
+LIMIT
+  200
+```
+
+
+### Select Specific Columns
+
+```sql
+SELECT
+  id,
+  column1,
+  column2
+FROM
+  table1
+LIMIT
+  200
+```
+
+
+### Select By Id
+
+```sql
+SELECT
+  Id,
+  Name
+FROM
+  table1
+WHERE
+  Id = 'some_record_id'
+LIMIT
+  1
+```
+
+
+### Count Records
+
+```sql
+SELECT
+  COUNT()
+FROM
+  table1
+```
+
+
+### Group By
+
+```sql
+SELECT
+  Type,
+  COUNT(Id) cnt
+FROM
+  table1
+GROUP BY
+  Type
+ORDER BY
+  COUNT(Id) DESC
+```
+
+
+### Search By Name (SOQL)
+
+```sql
+SELECT
+  Id,
+  Name
+FROM
+  table1
+WHERE
+  Name LIKE '%keyword%'
+LIMIT
+  200
+```
+
+
+### Recent Records
+
+```sql
+SELECT
+  Id,
+  Name,
+  CreatedDate,
+  LastModifiedDate
+FROM
+  table1
+ORDER BY
+  CreatedDate DESC
+LIMIT
+  200
+```
+
+
+### Select By Date Range
+
+```sql
+SELECT
+  Id,
+  Name,
+  CreatedDate
+FROM
+  table1
+WHERE
+  CreatedDate = LAST_N_DAYS: 7
+LIMIT
+  200
+```
+
+
+### Subquery (Child Records)
+
+```sql
+SELECT
+  Id,
+  Name,
+  (
+    SELECT
+      Id,
+      Name
+    FROM
+      Contacts
+  )
+FROM
+  table1
+LIMIT
+  200
+```
+
+
+### Search (SOSL)
+
+```sql
+FIND { keyword } IN ALL FIELDS RETURNING table1(Id, Name)
+LIMIT
+  200
+```
+
+
+### Insert Record (API)
+
+```js
+conn.sobject('table1')
+  .create({
+    "id": "",
+    "column1": "",
+    "column2": ""
+  })
+```
+
+
+### Update Record (API)
+
+```js
+conn.sobject('table1')
+  .update({
+    "Id": "record_id_here",
+    "id": "",
+    "column1": "",
+    "column2": ""
+  })
+```
+
+
+### Delete Record (API)
+
+```js
+conn.sobject('table1')
+  .destroy('record_id_here')
+```
+
+
+### Upsert Record (API)
+
+```js
+conn.sobject('table1')
+  .upsert({
+    "External_Id__c": "external_id_value",
+    "Name": "Record Name"
+  }, 'External_Id__c')
+```
+
+
+### Describe Object (Fields)
+
+```sql
+SELECT
+  QualifiedApiName,
+  DataType,
+  Label
+FROM
+  FieldDefinition
+WHERE
+  EntityDefinition.QualifiedApiName = 'table1'
+LIMIT
+  200
+```
+
+
+### Describe Object (API)
+
+```js
+conn.sobject('table1')
+  .describe()
+```

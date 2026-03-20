@@ -39,6 +39,16 @@ export default abstract class BaseDataScript implements IDataScript {
     ];
   }
 
+  /**
+   * Returns the connection string format used by the connection helper form.
+   * "url" (default) builds `scheme://user:pass@host:port`.
+   * "json" builds `scheme://{"field1":"val1","field2":"val2"}` from form fields.
+   * Override in subclasses that use JSON-based connection strings.
+   */
+  getConnectionStringFormat(): "url" | "json" {
+    return "url";
+  }
+
   /** Returns false by default; override if queries require a table ID. */
   getIsTableIdRequiredForQuery() {
     return false;

@@ -87,6 +87,11 @@ describe("DataScriptFactory - Other Tests", () => {
       const input = `rediss://username:password@localhost:6379`;
       expect(getDialectType(input)).toMatchInlineSnapshot(`"rediss"`);
     });
+
+    test("sfdc", async () => {
+      const input = `sfdc://{"username":"user@example.com","password":"pass","securityToken":"token"}`;
+      expect(getDialectType(input)).toMatchInlineSnapshot(`"sfdc"`);
+    });
   });
 
   describe("getDialectName", () => {
@@ -159,6 +164,11 @@ describe("DataScriptFactory - Other Tests", () => {
       const input = `rediss`;
       expect(getDialectName(input)).toMatchInlineSnapshot(`"Redis with SSL"`);
     });
+
+    test("sfdc", async () => {
+      const input = `sfdc`;
+      expect(getDialectName(input)).toMatchInlineSnapshot(`"Salesforce"`);
+    });
   });
 
   describe("getDialectIcon", () => {
@@ -230,6 +240,11 @@ describe("DataScriptFactory - Other Tests", () => {
     test("rediss", async () => {
       const input = `rediss`;
       expect(getDialectIcon(input)).toContain(`/redis.png`);
+    });
+
+    test("sfdc", async () => {
+      const input = `sfdc`;
+      expect(getDialectIcon(input)).toContain(`/salesforce.png`);
     });
   });
 });

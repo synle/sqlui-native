@@ -5,6 +5,7 @@ import CassandraDataAdapterScripts from "src/common/adapters/CassandraDataAdapte
 import MongoDBDataAdapterScripts from "src/common/adapters/MongoDBDataAdapter/scripts";
 import RedisDataAdapterScripts from "src/common/adapters/RedisDataAdapter/scripts";
 import RelationalDataAdapterScripts from "src/common/adapters/RelationalDataAdapter/scripts";
+import SalesforceDataAdapterScripts from "src/common/adapters/SalesforceDataAdapter/scripts";
 import { formatJS, formatSQL } from "src/frontend/utils/formatter";
 import { SqlAction, SqluiCore } from "typings";
 /**
@@ -81,6 +82,7 @@ export function getAllImplementations(): BaseDataScript[] {
     RedisDataAdapterScripts,
     AzureCosmosDataAdapterScripts,
     AzureTableStorageAdapterScripts,
+    SalesforceDataAdapterScripts,
   ];
 }
 
@@ -90,6 +92,14 @@ export function getAllImplementations(): BaseDataScript[] {
  */
 export function getConnectionFormInputs(dialect?: string) {
   return _getImplementation(dialect)?.getConnectionFormInputs() || [];
+}
+
+/**
+ * Returns the connection string format for the given dialect ("url" or "json").
+ * @param dialect - The dialect identifier.
+ */
+export function getConnectionStringFormat(dialect?: string): "url" | "json" {
+  return _getImplementation(dialect)?.getConnectionStringFormat() || "url";
 }
 
 /**

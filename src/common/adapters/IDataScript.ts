@@ -9,6 +9,8 @@ export default interface IDataScript {
   dialects?: SqluiCore.Dialect[] | string[];
   /** Returns the connection form input field definitions for this dialect. */
   getConnectionFormInputs: () => string[][];
+  /** Returns the connection string format: "url" (default) or "json" for JSON-based connection strings. */
+  getConnectionStringFormat: () => "url" | "json";
 
   // misc methods
   /**
