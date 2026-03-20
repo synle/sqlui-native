@@ -205,10 +205,10 @@ See CONTRIBUTING.md for the full step-by-step guide with code examples.
 
 ## Pre-commit Checklist
 
-After any code change, you MUST run these commands and ensure they all pass before considering the task complete:
+After any code change, you MUST run these commands and ensure they all pass before considering the task complete. **Running `npm run format` is mandatory after every change — no exceptions.**
 
 ```bash
-npm run format           # Prettier formatting
+npm run format           # Prettier formatting (MANDATORY after every change)
 npm run lint             # ESLint (must have 0 errors)
 npm run typecheck        # TypeScript type check (must have 0 errors)
 npm run test-ci          # All tests must pass
@@ -259,4 +259,4 @@ After any build-related or Vite config change, run the affected build task to ve
 
 ## Documentation
 
-All source files in `src/` have JSDoc documentation on exported functions, classes, interfaces, types, and components. When adding new exports, follow the existing JSDoc style: concise 1-2 line descriptions with `@param` and `@returns` tags where applicable.
+**JSDoc is mandatory on every change.** All tracked source files (`.ts`, `.tsx`, `.js`) must have JSDoc documentation on all exported functions, classes, interfaces, types, constants, and components. This is a non-negotiable part of every code change — no PR or commit should be made without ensuring JSDoc coverage. Follow the existing JSDoc style: concise 1-2 line descriptions with `@param` and `@returns` tags where applicable. Excluded: test files (`*.spec.*`), `_Sample*` files, and `sw*.js` files.

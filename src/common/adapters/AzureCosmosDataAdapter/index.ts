@@ -43,6 +43,7 @@ export default class AzureCosmosDataAdapter extends BaseDataAdapter implements I
     this._connection = undefined;
   }
 
+  /** Authenticates by verifying the CosmosDB read endpoint is accessible. */
   async authenticate() {
     return new Promise<void>(async (resolve, reject) => {
       try {
@@ -65,6 +66,10 @@ export default class AzureCosmosDataAdapter extends BaseDataAdapter implements I
     });
   }
 
+  /**
+   * Retrieves all databases from the Azure Cosmos DB account.
+   * @returns Array of database metadata objects, or empty array on error.
+   */
   async getDatabases(): Promise<SqluiCore.DatabaseMetaData[]> {
     // https://azure.github.io/azure-cosmos-js/classes/databases.html#readall
     try {
@@ -82,6 +87,11 @@ export default class AzureCosmosDataAdapter extends BaseDataAdapter implements I
     }
   }
 
+  /**
+   * Retrieves all containers in the specified Cosmos DB database.
+   * @param database - The Cosmos DB database identifier.
+   * @returns Array of table (container) metadata objects, or empty array on error.
+   */
   async getTables(database?: string): Promise<SqluiCore.TableMetaData[]> {
     // https://azure.github.io/azure-cosmos-js/classes/containers.html#readall
     if (!database) {
@@ -103,6 +113,12 @@ export default class AzureCosmosDataAdapter extends BaseDataAdapter implements I
     }
   }
 
+  /**
+   * Infers column metadata by scanning sample items from a Cosmos DB container.
+   * @param table - The container name.
+   * @param database - The Cosmos DB database identifier.
+   * @returns Array of inferred column metadata objects, or empty array on error.
+   */
   async getColumns(table: string, database?: string): Promise<SqluiCore.ColumnMetaData[]> {
     if (!database) {
       throw new Error("Database is a required field for Azure CosmosDB");
@@ -129,6 +145,13 @@ export default class AzureCosmosDataAdapter extends BaseDataAdapter implements I
     }
   }
 
+  /**
+   * Executes a Cosmos DB query or SDK expression against a container.
+   * @param sql - A raw SQL query or JS SDK expression targeting a Cosmos DB container.
+   * @param database - The Cosmos DB database identifier (required for raw SQL mode).
+   * @param table - The container name (required for raw SQL mode).
+   * @returns The query result with items or error information.
+   */
   async execute(sql: string, database?: string, table?: string): Promise<SqluiCore.Result> {
     try {
       const client = await this.getConnection();

@@ -84,11 +84,6 @@ export function useNavigate() {
 }
 
 /**
- * Sorts column names with common primary key names first, then ID-suffix columns, then alphabetically.
- * @param colNames - The array of column names to sort.
- * @returns The sorted array.
- */
-/**
  * Strips the protocol, username, password, and query params from a connection URL,
  * returning just the host/path portion for display.
  * @param connectionString - The raw connection string.
@@ -134,6 +129,11 @@ export function getSanitizedConnectionUrl(connectionString: string): string {
   return result;
 }
 
+/**
+ * Sorts column names with common primary key names first, then ID-suffix columns, then alphabetically.
+ * @param colNames - The array of column names to sort.
+ * @returns The sorted array.
+ */
 export function sortColumnNamesForUnknownData(colNames: string[]) {
   return colNames.sort((a, b) => {
     // do sorting on columnname

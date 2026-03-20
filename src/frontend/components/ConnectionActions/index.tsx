@@ -15,6 +15,7 @@ import { useCommands } from "src/frontend/components/MissionControl";
 import { useTreeActions } from "src/frontend/hooks/useTreeActions";
 import { SqlAction, SqluiCore } from "typings";
 
+/** Props for the ConnectionActions component. */
 type ConnectionActionsProps = {
   connection: SqluiCore.ConnectionProps;
 };

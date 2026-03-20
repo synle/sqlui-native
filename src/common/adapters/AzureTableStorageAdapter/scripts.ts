@@ -316,30 +316,43 @@ export function getCreateDatabaseTable(_input: SqlAction.DatabaseInput): SqlActi
 export class ConcreteDataScripts extends BaseDataScript {
   dialects = ["aztable"];
 
+  /**
+   * Returns the connection form field definitions for Azure Table Storage.
+   * @returns Array of [fieldName, label] tuples for the connection form UI.
+   */
   getConnectionFormInputs() {
     return [["restOfConnectionString", "Azure Table Storage Connection String"]];
   }
 
+  /** Returns true because Azure Table Storage requires a table ID to scope queries. */
   getIsTableIdRequiredForQuery() {
     return true;
   }
 
+  /** Returns the Monaco syntax mode identifier for Azure Table Storage scripts. */
   getSyntaxMode() {
     return "javascript";
   }
 
+  /** Returns true because Azure Table Storage supports data migration. */
   supportMigration() {
     return true;
   }
 
+  /** Returns true because Azure Table Storage supports the create record form. */
   supportCreateRecordForm() {
     return true;
   }
 
+  /** Returns true because Azure Table Storage supports the edit record form. */
   supportEditRecordForm() {
     return true;
   }
 
+  /**
+   * Returns the ordered list of table-level script generators for Azure Table Storage.
+   * @returns Array of script generator functions for table entity operations.
+   */
   getTableScripts() {
     return [
       getSelectAllColumns,
@@ -355,30 +368,50 @@ export class ConcreteDataScripts extends BaseDataScript {
     ];
   }
 
+  /**
+   * Returns the ordered list of database-level script generators for Azure Table Storage.
+   * @returns Array of script generator functions for table creation at the database level.
+   */
   getDatabaseScripts() {
     return [getDivider, getCreateDatabaseTable];
   }
 
+  /** Returns an empty array because Azure Table Storage has no connection-level script operations. */
   getConnectionScripts() {
     return [];
   }
 
+  /** Returns the Azure Table Storage dialect icon asset. */
   getDialectIcon() {
     return aztableIcon;
   }
 
+  /** Returns the display name for the Azure Table Storage dialect. */
   getDialectName() {
     return "Azure Table Storage";
   }
 
+  /** Returns a sample Azure Table Storage connection string. */
   getSampleConnectionString() {
     return `aztable://DefaultEndpointsProtocol=https;AccountName=<your_account_name>;AccountKey=<your_account_key>;EndpointSuffix=core.windows.net`;
   }
 
+  /**
+   * Returns a sample listEntities query for the given table input.
+   * @param tableActionInput - The table context for which to generate the sample query.
+   * @returns Script output with the sample select query.
+   */
   getSampleSelectQuery(tableActionInput) {
     return getSelectAllColumns(tableActionInput);
   }
 
+  /**
+   * Generates a connection code snippet for the given language.
+   * @param connection - The connection metadata including the connection string.
+   * @param query - The query context including table identifier and SQL expression.
+   * @param language - The target language ("javascript", "python", or "java").
+   * @returns A rendered code snippet string, or empty string if unsupported.
+   */
   getCodeSnippet(connection, query, language) {
     const connectionString = connection.connection.replace("aztable://", "");
     const tableId = query.tableId;

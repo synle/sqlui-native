@@ -9,6 +9,9 @@ import NewConnectionButton from "src/frontend/components/NewConnectionButton";
 import { useTreeActions } from "src/frontend/hooks/useTreeActions";
 import LayoutTwoColumns from "src/frontend/layout/LayoutTwoColumns";
 import { SqluiFrontend } from "typings";
+/**
+ * Selection screen offering links to the two migration modes: real connection and raw JSON.
+ */
 function MigrationOption() {
   return (
     <>

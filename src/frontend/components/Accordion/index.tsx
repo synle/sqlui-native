@@ -19,6 +19,11 @@ const ACCORDION_GAP_COMPACT = "3px";
 // these are drag and drop index
 let fromIdx: number | undefined, toIdx: number | undefined;
 
+/**
+ * Returns the DOM index of an accordion header element among all connection accordion headers.
+ * @param currentTarget - The element to find the index of.
+ * @returns The zero-based index, or undefined if not found.
+ */
 function _getIndex(currentTarget: Element) {
   const connectionElems = document.querySelectorAll(".Accordion__Header.ConnectionDescription");
   for (let i = 0; i < connectionElems.length; i++) {

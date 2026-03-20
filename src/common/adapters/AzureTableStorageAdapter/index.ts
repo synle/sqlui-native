@@ -56,6 +56,7 @@ export default class AzureTableStorageAdapter extends BaseDataAdapter implements
   /** Disconnects and cleans up resources. No-op for Azure Table Storage (stateless HTTP clients). */
   async disconnect() {}
 
+  /** Authenticates by verifying the Azure Table Storage service is accessible. */
   async authenticate() {
     return new Promise<void>(async (resolve, reject) => {
       try {
@@ -76,6 +77,10 @@ export default class AzureTableStorageAdapter extends BaseDataAdapter implements
     });
   }
 
+  /**
+   * Returns a single hard-coded database entry for Azure Table Storage.
+   * @returns Array with one database metadata object.
+   */
   async getDatabases(): Promise<SqluiCore.DatabaseMetaData[]> {
     return [
       {
@@ -85,6 +90,10 @@ export default class AzureTableStorageAdapter extends BaseDataAdapter implements
     ];
   }
 
+  /**
+   * Retrieves all tables from the Azure Table Storage account.
+   * @returns Array of table metadata objects, or empty array on error.
+   */
   async getTables(): Promise<SqluiCore.TableMetaData[]> {
     // https://docs.microsoft.com/en-us/javascript/api/overview/azure/data-tables-readme?view=azure-node-latest#list-tables-in-the-account
     try {
@@ -109,6 +118,11 @@ export default class AzureTableStorageAdapter extends BaseDataAdapter implements
     }
   }
 
+  /**
+   * Infers column metadata by scanning sample entities from an Azure Table.
+   * @param table - The table name to scan.
+   * @returns Array of inferred column metadata objects, or empty array on error.
+   */
   async getColumns(table: string): Promise<SqluiCore.ColumnMetaData[]> {
     try {
       const tableClient = await this.getTableClient(table);
@@ -141,6 +155,13 @@ export default class AzureTableStorageAdapter extends BaseDataAdapter implements
     }
   }
 
+  /**
+   * Executes an Azure Table Storage SDK expression using eval-based syntax.
+   * @param sql - The SDK expression to evaluate (e.g., using tableClient or serviceClient).
+   * @param database - Unused for Azure Table Storage.
+   * @param table - Optional table name used to instantiate the TableClient.
+   * @returns The result with raw entities or error information.
+   */
   async execute(sql: string, database?: string, table?: string): Promise<SqluiCore.Result> {
     try {
       const serviceClient = await this.getTableServiceClient(); // eslint-disable-line @typescript-eslint/no-unused-vars

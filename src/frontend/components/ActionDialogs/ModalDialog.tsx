@@ -18,6 +18,7 @@ export type ModalInput = {
   isFullScreen?: boolean;
 };
 
+/** Internal props for the Modal dialog component, combining ModalInput with open/dismiss state. */
 type ModalProps = ModalInput & {
   open: boolean;
   onDismiss: () => void;
