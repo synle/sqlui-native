@@ -82,17 +82,21 @@ export class PersistentStorage<T extends StorageEntry> {
 
   /**
    * Adds a new entry to storage, auto-generating an ID if not provided.
+   * Automatically sets `createdAt` and `updatedAt` timestamps.
    * @param entry - The entry data to add.
    * @returns The saved entry with its assigned ID.
    */
   add<K>(entry: K): T {
     //@ts-ignore
     const newId = entry.id || this.getGeneratedRandomId();
+    const now = Date.now();
 
     const caches = this.getData();
     caches[newId] = {
       id: newId,
       ...entry,
+      createdAt: now,
+      updatedAt: now,
     };
 
     this.setData(caches);
@@ -102,6 +106,7 @@ export class PersistentStorage<T extends StorageEntry> {
 
   /**
    * Updates an existing entry by merging new values with the stored entry.
+   * Automatically sets `updatedAt` timestamp.
    * @param entry - The entry with updated fields; must include `id`.
    * @returns The merged and saved entry.
    */
@@ -110,6 +115,7 @@ export class PersistentStorage<T extends StorageEntry> {
     caches[entry.id] = {
       ...caches[entry.id],
       ...entry,
+      updatedAt: Date.now(),
     };
 
     this.setData(caches);

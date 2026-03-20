@@ -104,9 +104,9 @@ const getColumns = (allExpanded: boolean): ColumnDef<any, any>[] => [
   },
   {
     header: "Created",
-    accessorKey: "created",
+    accessorKey: "createdAt",
     size: 120,
-    cell: (info) => <DateCell timestamp={info.row.original.created} />,
+    cell: (info) => <DateCell timestamp={info.row.original.createdAt} />,
   },
   {
     header: "",

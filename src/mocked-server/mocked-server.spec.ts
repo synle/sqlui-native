@@ -90,7 +90,7 @@ describe("Sessions", () => {
     res = await requestWithSupertest.get(`/api/sessions`);
     expect(res.status).toEqual(200);
     expect(res.type).toEqual(expect.stringContaining("json"));
-    expect(res.body).toContainEqual(mockedSessionValue1);
+    expect(res.body).toContainEqual(expect.objectContaining(mockedSessionValue1));
     expect(res.body.length > 0).toEqual(true);
     // rename the session
     res = await requestWithSupertest.put(`/api/session/${mockedSessionId}`).send(mockedSessionValue2);
@@ -99,7 +99,7 @@ describe("Sessions", () => {
     res = await requestWithSupertest.get(`/api/sessions`);
     expect(res.status).toEqual(200);
     expect(res.type).toEqual(expect.stringContaining("json"));
-    expect(res.body).toContainEqual(mockedSessionValue2);
+    expect(res.body).toContainEqual(expect.objectContaining(mockedSessionValue2));
   });
 
   test("Simple Connection", async () => {
@@ -185,11 +185,13 @@ describe("Sessions", () => {
     expect(newClonedSessionId !== mockedSessionId).toEqual(true);
 
     delete res.body.id;
-    expect(res.body).toMatchInlineSnapshot(`
-      {
-        "name": "New Cloned Session Name 123",
-      }
-    `);
+    expect(res.body).toEqual(
+      expect.objectContaining({
+        name: "New Cloned Session Name 123",
+        createdAt: expect.any(Number),
+        updatedAt: expect.any(Number),
+      }),
+    );
 
     // check the created queries and connections
     res = await requestWithSupertest.get(`/api/queries`).set(_getCommonHeaders(newClonedSessionId));
@@ -501,7 +503,7 @@ describe("Data Snapshots", () => {
     expect(res.body.id).toBeDefined();
     expect(res.body.description).toEqual("Test Snapshot");
     expect(res.body.location).toBeDefined();
-    expect(res.body.created).toBeDefined();
+    expect(res.body.createdAt).toBeDefined();
     const snapshotId = res.body.id;
 
     // list snapshots - should have one more

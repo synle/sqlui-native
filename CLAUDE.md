@@ -43,6 +43,14 @@ npx vitest run --config vitest.integration.config.ts src/common/adapters/Relatio
 
 The app runs in **Electron mode** (`npm start`) or **mocked server mode** (`npm run dev`). Both share the same backend code in `src/common/`. In Electron mode, the renderer communicates with the main process via IPC. In mocked server mode, an Express server on port 3001 serves the same endpoints over HTTP.
 
+### Naming Convention
+
+All property names in type definitions and data models use **camelCase** — never snake_case. This applies to all fields including timestamps (`createdAt`, `updatedAt`), identifiers (`connectionId`, `sessionId`), and flags (`allowNull`, `primaryKey`). Follow this convention when adding new properties.
+
+### Timestamps
+
+All persisted models (`Session`, `ConnectionProps`, `ConnectionQuery`, `FolderItem`, `DataSnapshot`) include `createdAt` and `updatedAt` fields (epoch ms). These are **auto-set by `PersistentStorage`** — `createdAt` and `updatedAt` on `add()`, `updatedAt` on `update()`. Do NOT set them manually in endpoint handlers.
+
 ### Directory Structure
 
 - **`src/frontend/`** - React 18 UI (MUI v5, React Query, Monaco Editor, React Router v6)
