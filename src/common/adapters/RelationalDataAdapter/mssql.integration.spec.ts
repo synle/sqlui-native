@@ -5,8 +5,12 @@ const CONNECTION = "mssql://sa:password123!@127.0.0.1:1433";
 describe("mssql integration", () => {
   let adapter: RelationalDataAdapter;
 
-  beforeAll(() => {
+  beforeAll(async () => {
     adapter = new RelationalDataAdapter(CONNECTION);
+    await adapter.execute(`
+      IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = 'sqlui_test')
+      CREATE DATABASE sqlui_test
+    `);
   });
 
   test("authenticate", async () => {
@@ -17,17 +21,14 @@ describe("mssql integration", () => {
     const databases = await adapter.getDatabases();
     expect(databases.length).toBeGreaterThan(0);
     const names = databases.map((d) => d.name);
+    expect(names).toContain("sqlui_test");
     expect(names).not.toContain("master");
     expect(names).not.toContain("tempdb");
     expect(names).not.toContain("model");
     expect(names).not.toContain("msdb");
   });
 
-  test("create test database and table", async () => {
-    await adapter.execute(`
-      IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = 'sqlui_test')
-      CREATE DATABASE sqlui_test
-    `);
+  test("create test table", async () => {
     await adapter.execute(
       `IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='artists' AND xtype='U')
       CREATE TABLE artists (
