@@ -16,7 +16,9 @@ export default abstract class BaseDataAdapter {
   public dialect?: SqluiCore.Dialect;
 
   /**
-   * @param connectionOption - The connection string URI (e.g., "mysql://user:pass@host:port").
+   * @param connectionOption - The connection string. Format varies by dialect: a standard URL
+   *   (e.g., `mysql://user:pass@host:port`), JSON (e.g., `sfdc://{"username":"..."}`),
+   *   or Microsoft-style (e.g., `aztable://DefaultEndpointsProtocol=https;AccountName=...;AccountKey=...`).
    */
   constructor(connectionOption: string) {
     this.connectionOption = connectionOption as string;

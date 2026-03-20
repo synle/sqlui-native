@@ -6,7 +6,14 @@ import { SqluiCore } from "typings";
 export default interface IDataAdapter {
   /** The database dialect (e.g., mysql, postgres, sqlite). */
   dialect?: SqluiCore.Dialect;
-  /** Performs a quick, lightweight check to verify the database connection is valid. Should not do any extra work beyond establishing and validating the connection. */
+  /**
+   * Performs a quick, lightweight check to verify the database connection is valid.
+   * Should not do any extra work beyond establishing and validating the connection.
+   * The connection string format varies by dialect: a standard URL for relational databases
+   * (e.g., `mysql://user:pass@host:port`), a JSON object for SFDC (e.g., `sfdc://{"username":"...","password":"..."}`),
+   * or a Microsoft-style connection string for Azure Table Storage and CosmosDB
+   * (e.g., `aztable://DefaultEndpointsProtocol=https;AccountName=...;AccountKey=...`).
+   */
   authenticate: () => Promise<void>;
   /** Retrieves all databases from the connection. */
   getDatabases: () => Promise<SqluiCore.DatabaseMetaData[]>;
