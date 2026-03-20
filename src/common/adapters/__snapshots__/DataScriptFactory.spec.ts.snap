@@ -1174,3 +1174,191 @@ exports[`Scripts > redis 1`] = `
   },
 ]
 `;
+
+exports[`Scripts > sfdc 1`] = `
+[
+  {
+    "formatter": "sql",
+    "label": "Select All Columns",
+    "query": "SELECT
+  id,
+  column1,
+  column2
+FROM
+  table1
+LIMIT
+  200",
+  },
+  {
+    "formatter": "sql",
+    "label": "Select Specific Columns",
+    "query": "SELECT
+  id,
+  column1,
+  column2
+FROM
+  table1
+LIMIT
+  200",
+  },
+  {
+    "formatter": "sql",
+    "label": "Select By Id",
+    "query": "SELECT
+  Id,
+  Name
+FROM
+  table1
+WHERE
+  Id = 'some_record_id'
+LIMIT
+  1",
+  },
+  {
+    "formatter": "sql",
+    "label": "Count Records",
+    "query": "SELECT
+  COUNT()
+FROM
+  table1",
+  },
+  {
+    "formatter": "sql",
+    "label": "Group By",
+    "query": "SELECT
+  Type,
+  COUNT(Id) cnt
+FROM
+  table1
+GROUP BY
+  Type
+ORDER BY
+  COUNT(Id) DESC",
+  },
+  {
+    "formatter": "sql",
+    "label": "Search By Name (SOQL)",
+    "query": "SELECT
+  Id,
+  Name
+FROM
+  table1
+WHERE
+  Name LIKE '%keyword%'
+LIMIT
+  200",
+  },
+  {
+    "formatter": "sql",
+    "label": "Recent Records",
+    "query": "SELECT
+  Id,
+  Name,
+  CreatedDate,
+  LastModifiedDate
+FROM
+  table1
+ORDER BY
+  CreatedDate DESC
+LIMIT
+  200",
+  },
+  {
+    "formatter": "sql",
+    "label": "Select By Date Range",
+    "query": "SELECT
+  Id,
+  Name,
+  CreatedDate
+FROM
+  table1
+WHERE
+  CreatedDate = LAST_N_DAYS: 7
+LIMIT
+  200",
+  },
+  {
+    "description": "Modify the subquery to match your object's child relationships",
+    "formatter": "sql",
+    "label": "Subquery (Child Records)",
+    "query": "SELECT
+  Id,
+  Name,
+  (
+    SELECT
+      Id,
+      Name
+    FROM
+      Contacts
+  )
+FROM
+  table1
+LIMIT
+  200",
+  },
+  {
+    "formatter": "sql",
+    "label": "Search (SOSL)",
+    "query": "FIND { keyword } IN ALL FIELDS RETURNING table1(Id, Name)
+LIMIT
+  200",
+  },
+  {
+    "formatter": "js",
+    "label": "Insert Record (API)",
+    "query": "conn.sobject('table1')
+  .create({
+    \\"id\\": \\"\\",
+    \\"column1\\": \\"\\",
+    \\"column2\\": \\"\\"
+  })",
+  },
+  {
+    "formatter": "js",
+    "label": "Update Record (API)",
+    "query": "conn.sobject('table1')
+  .update({
+    \\"Id\\": \\"record_id_here\\",
+    \\"id\\": \\"\\",
+    \\"column1\\": \\"\\",
+    \\"column2\\": \\"\\"
+  })",
+  },
+  {
+    "formatter": "js",
+    "label": "Delete Record (API)",
+    "query": "conn.sobject('table1')
+  .destroy('record_id_here')",
+  },
+  {
+    "description": "Upsert using external ID field: External_Id__c",
+    "formatter": "js",
+    "label": "Upsert Record (API)",
+    "query": "conn.sobject('table1')
+  .upsert({
+    \\"External_Id__c\\": \\"external_id_value\\",
+    \\"Name\\": \\"Record Name\\"
+  }, 'External_Id__c')",
+  },
+  {
+    "formatter": "sql",
+    "label": "Describe Object (Fields)",
+    "query": "SELECT
+  QualifiedApiName,
+  DataType,
+  Label
+FROM
+  FieldDefinition
+WHERE
+  EntityDefinition.QualifiedApiName = 'table1'
+LIMIT
+  200",
+  },
+  {
+    "formatter": "js",
+    "label": "Describe Object (API)",
+    "query": "conn.sobject('table1')
+  .describe()",
+  },
+]
+`;
