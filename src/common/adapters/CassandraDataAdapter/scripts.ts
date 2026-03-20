@@ -407,30 +407,40 @@ export function getDropColumns(input: SqlAction.TableInput): SqlAction.Output | 
 export class ConcreteDataScripts extends BaseDataScript {
   dialects = ["cassandra"];
 
+  /** Returns the Cassandra dialect icon asset. */
   getDialectIcon() {
     return cassandraIcon;
   }
 
+  /** Returns false because table ID is inferred from the query for Cassandra. */
   getIsTableIdRequiredForQuery() {
     return false;
   }
 
+  /** Returns the Monaco syntax mode identifier for Cassandra CQL. */
   getSyntaxMode() {
     return "sql";
   }
 
+  /** Returns true because Cassandra supports data migration. */
   supportMigration() {
     return true;
   }
 
+  /** Returns true because Cassandra supports the create record form. */
   supportCreateRecordForm() {
     return true;
   }
 
+  /** Returns true because Cassandra supports the edit record form. */
   supportEditRecordForm() {
     return true;
   }
 
+  /**
+   * Returns the ordered list of table-level script generators for Cassandra.
+   * @returns Array of script generator functions for table operations.
+   */
   getTableScripts() {
     return [
       getSelectAllColumns,
@@ -447,6 +457,10 @@ export class ConcreteDataScripts extends BaseDataScript {
     ];
   }
 
+  /**
+   * Returns the ordered list of database-level script generators for Cassandra.
+   * @returns Array of script generator functions for keyspace operations.
+   */
   getDatabaseScripts() {
     return [
       getDivider,
@@ -455,18 +469,38 @@ export class ConcreteDataScripts extends BaseDataScript {
     ];
   }
 
+  /**
+   * Returns the ordered list of connection-level script generators for Cassandra.
+   * @returns Array of script generator functions for connection operations.
+   */
   getConnectionScripts() {
     return [getDivider, getCreateConnectionDatabase];
   }
 
+  /**
+   * Returns a sample Cassandra connection string.
+   * @returns A sample connection URL string.
+   */
   getSampleConnectionString() {
     return `cassandra://cassandra:cassandra@localhost:9042`;
   }
 
+  /**
+   * Returns a sample SELECT * query for the given table input.
+   * @param tableActionInput - The table context for which to generate the sample query.
+   * @returns Script output with the sample select query.
+   */
   getSampleSelectQuery(tableActionInput) {
     return getSelectAllColumns(tableActionInput);
   }
 
+  /**
+   * Generates a connection code snippet for the given language.
+   * @param connection - The connection metadata including connection string.
+   * @param query - The query context including SQL and database identifier.
+   * @param language - The target language ("javascript", "python", or "java").
+   * @returns A rendered code snippet string, or empty string if unsupported.
+   */
   getCodeSnippet(connection, query, language) {
     const sql = query.sql;
     const database = query.databaseId;

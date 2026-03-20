@@ -10,12 +10,21 @@ type Engine = "relational" | "cassandra" | "mongodb" | "redis" | "cosmosdb" | "a
 /** Supported programming languages for code snippet generation. */
 type Language = "javascript" | "python" | "java";
 
+/** Lookup table mapping each language to its per-engine Mustache template strings. */
 const templates: Record<Language, Record<Engine, string>> = {
   javascript: javascriptTemplates,
   python: pythonTemplates,
   java: javaTemplates,
 };
 
+/**
+ * Assembles a complete Gradle project snippet combining build.gradle instructions and Java source code.
+ * @param options.connectDescription - Optional human-readable description of what the snippet connects to.
+ * @param options.gradleDep - The Gradle dependency block string to embed in build.gradle.
+ * @param options.mainJavaComment - A block comment placed above the Main.java source code.
+ * @param options.mainJavaCode - The rendered Main.java source code to embed.
+ * @returns The full Gradle project snippet as a single string.
+ */
 function buildJavaGradleSnippet(options: {
   connectDescription?: string;
   gradleDep: string;

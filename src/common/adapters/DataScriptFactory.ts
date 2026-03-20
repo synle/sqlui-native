@@ -7,6 +7,12 @@ import RedisDataAdapterScripts from "src/common/adapters/RedisDataAdapter/script
 import RelationalDataAdapterScripts from "src/common/adapters/RelationalDataAdapter/scripts";
 import { formatJS, formatSQL } from "src/frontend/utils/formatter";
 import { SqlAction, SqluiCore } from "typings";
+/**
+ * Formats a query string using the specified formatter (sql, js/javascript, or none).
+ * @param formatter - The formatter name to apply ("sql", "js", "javascript", or undefined for no-op).
+ * @param query - The raw query string to format.
+ * @returns The formatted query string.
+ */
 function _formatScript(formatter?: string, query?: string) {
   query = query || "";
   switch (formatter) {
@@ -20,6 +26,12 @@ function _formatScript(formatter?: string, query?: string) {
   }
 }
 
+/**
+ * Runs a list of script generator functions against an action input and formats each resulting query.
+ * @param actionInput - The table, database, or connection input to pass to each generator.
+ * @param generatorFuncs - Array of script generator functions to invoke.
+ * @returns Array of formatted action outputs (undefined-producing generators are skipped).
+ */
 function _formatScripts(
   actionInput: SqlAction.TableInput | SqlAction.DatabaseInput | SqlAction.ConnectionInput,
   generatorFuncs: SqlAction.TableActionScriptGenerator[] | SqlAction.DatabaseActionScriptGenerator[],
@@ -40,6 +52,11 @@ function _formatScripts(
   return actions;
 }
 
+/**
+ * Finds and returns the script implementation that supports the given dialect.
+ * @param dialect - The dialect identifier to look up.
+ * @returns The matching BaseDataScript instance, or undefined if not found.
+ */
 function _getImplementation(dialect?: string) {
   if (!dialect) {
     return undefined;

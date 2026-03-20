@@ -57,6 +57,11 @@ type ConnectionActionsButtonProps = {
   query: SqluiCore.ConnectionQuery;
 };
 
+/**
+ * Dropdown button listing available table actions (select, insert, update, delete, etc.) for the current query's table.
+ * @param props - Contains the connection query with connectionId, databaseId, and tableId.
+ * @returns A dropdown button with table actions, or null if connection/table are not selected.
+ */
 function ConnectionActionsButton(props: ConnectionActionsButtonProps): JSX.Element | null {
   const { query } = props;
   const { databaseId, connectionId, tableId } = query;
@@ -113,6 +118,11 @@ function ConnectionActionsButton(props: ConnectionActionsButtonProps): JSX.Eleme
 /** Supported language modes for code snippet generation. */
 const ALL_CODE_SNIPPETS: SqluiCore.LanguageMode[] = ["javascript", "python", "java"];
 
+/**
+ * Dropdown button for generating and displaying sample code snippets in JavaScript, Python, or Java.
+ * @param props - Contains the queryId to look up the current query and connection.
+ * @returns A dropdown button with language options, or null if no query is active.
+ */
 function CodeSnippetButton(props: QueryBoxProps) {
   const { queryId } = props;
   const { query } = useConnectionQuery(queryId);

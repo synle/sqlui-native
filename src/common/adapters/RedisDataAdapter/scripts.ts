@@ -322,27 +322,36 @@ function _pythonRedisCommand(sql: string): string {
 export class ConcreteDataScripts extends BaseDataScript {
   dialects = ["redis", "rediss"];
 
+  /** Returns false because table ID is not applicable for Redis. */
   getIsTableIdRequiredForQuery() {
     return false;
   }
 
+  /** Returns the Monaco syntax mode identifier for Redis scripts. */
   getSyntaxMode() {
     return "javascript";
   }
 
+  /** Returns false because Redis does not support data migration. */
   supportMigration() {
     return false;
   }
 
+  /** Returns false because Redis does not support the create record form. */
   supportCreateRecordForm() {
     return false;
   }
 
+  /** Returns false because Redis does not support the edit record form. */
   supportEditRecordForm() {
     return false;
   }
 
-  // dialect definitions
+  /**
+   * Returns a human-readable dialect name for the given Redis variant.
+   * @param dialect - The dialect identifier ("redis" or "rediss").
+   * @returns The display name for the dialect.
+   */
   getDialectName(dialect) {
     switch (dialect) {
       case "rediss":
@@ -353,11 +362,15 @@ export class ConcreteDataScripts extends BaseDataScript {
     }
   }
 
+  /** Returns the Redis dialect icon asset. */
   getDialectIcon() {
     return redisIcon;
   }
 
-  // core methods
+  /**
+   * Returns the ordered list of table-level script generators for Redis.
+   * @returns Array of script generator functions for Redis commands.
+   */
   getTableScripts() {
     return [
       getSetValue,
@@ -388,14 +401,21 @@ export class ConcreteDataScripts extends BaseDataScript {
     ];
   }
 
+  /** Returns an empty array because Redis has no database-level script operations. */
   getDatabaseScripts() {
     return [];
   }
 
+  /** Returns an empty array because Redis has no connection-level script operations. */
   getConnectionScripts() {
     return [];
   }
 
+  /**
+   * Returns a sample Redis connection string for the given dialect.
+   * @param dialect - The dialect identifier ("redis" or "rediss").
+   * @returns A sample connection URL string.
+   */
   getSampleConnectionString(dialect) {
     switch (dialect) {
       case "rediss":
@@ -406,10 +426,18 @@ export class ConcreteDataScripts extends BaseDataScript {
     }
   }
 
+  /** Returns undefined because Redis has no concept of a select query. */
   getSampleSelectQuery() {
     return undefined;
   }
 
+  /**
+   * Generates a connection code snippet for the given language.
+   * @param connection - The connection metadata including the connection string.
+   * @param query - The query context including the Redis command SQL.
+   * @param language - The target language ("javascript", "python", or "java").
+   * @returns A rendered code snippet string, or empty string if unsupported.
+   */
   getCodeSnippet(connection, query, language) {
     const clientOptions = getClientOptions(connection.connection);
     const sql = query.sql;

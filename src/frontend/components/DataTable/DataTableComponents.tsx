@@ -14,7 +14,10 @@ export const tableCellHeight = 35;
 /** Default width in pixels for table cells. */
 export const tableCellWidth = 160;
 
-/** Generic styled div container for the data table. */
+/**
+ * Generic styled div container for the data table.
+ * Used as the virtualized row container in ModernDataTable.
+ */
 export const StyledDivContainer = styled("div")(() => ({}));
 
 const StyledColumnResizer = styled(Bar, {

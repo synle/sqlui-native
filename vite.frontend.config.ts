@@ -2,6 +2,12 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
 
+/**
+ * Vite build configuration for the React frontend.
+ * Dev server runs on port 3000 and proxies /api requests to the mocked server on port 3001.
+ * @param {{ command: string }} env - Vite config environment with the current command ("serve" or "build").
+ * @returns {import('vite').UserConfig} The resolved Vite configuration object.
+ */
 export default defineConfig(({ command }) => ({
   plugins: [react()],
   root: ".",

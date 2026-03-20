@@ -26,6 +26,11 @@ import { SqluiCore } from "typings";
 /** Callback invoked after a bookmark item is selected and applied. */
 type OnAfterSelectCallback = () => void;
 
+/**
+ * Table cell that renders a bookmark name as a clickable link to open the connection or query.
+ * @param props - Contains the table row and optional after-select callback.
+ * @returns A link element that opens the bookmark item.
+ */
 function NameCell({ row, onAfterSelect }: { row: any; onAfterSelect?: OnAfterSelectCallback }) {
   const folderItem = row.original;
   const { onAddQuery } = useConnectionQueries();
@@ -49,11 +54,21 @@ function NameCell({ row, onAfterSelect }: { row: any; onAfterSelect?: OnAfterSel
   return <Link onClick={() => onOpenBookmarkItem(folderItem)}>{folderItem.name}</Link>;
 }
 
+/**
+ * Table cell that renders a colored chip indicating the bookmark type (Connection or Query).
+ * @param props - Contains the table row with the bookmark item.
+ * @returns A MUI Chip with the bookmark type label.
+ */
 function TypeCell({ row }: { row: any }) {
   const folderItem = row.original;
   return <Chip label={folderItem.type} color={folderItem.type === "Connection" ? "success" : "warning"} size="small" />;
 }
 
+/**
+ * Table cell that renders the SQL of a Query bookmark with expand/collapse toggle.
+ * @param props - Contains the table row and global allExpanded state.
+ * @returns The SQL preview element, or null for non-Query bookmarks.
+ */
 function QueryDetailCell({ row, allExpanded }: { row: any; allExpanded: boolean }) {
   const folderItem: SqluiCore.FolderItem = row.original;
   const [localExpanded, setLocalExpanded] = useState<boolean | null>(null);
@@ -86,6 +101,11 @@ function QueryDetailCell({ row, allExpanded }: { row: any; allExpanded: boolean 
   );
 }
 
+/**
+ * Table cell with edit and delete action buttons for a bookmark item.
+ * @param props - Contains the table row with the bookmark item.
+ * @returns A box with icon buttons for editing and deleting the bookmark.
+ */
 function ActionCell({ row }: { row: any }) {
   const folderItem = row.original;
   const { confirm, prompt } = useActionDialogs();
@@ -130,6 +150,12 @@ function ActionCell({ row }: { row: any }) {
   );
 }
 
+/**
+ * Builds the column definitions for the bookmarks data table.
+ * @param onAfterSelect - Optional callback invoked after a bookmark is selected.
+ * @param allExpanded - Whether all query detail rows should be expanded by default.
+ * @returns An array of TanStack column definitions.
+ */
 const getColumns = (onAfterSelect?: OnAfterSelectCallback, allExpanded?: boolean): ColumnDef<any, any>[] => {
   return [
     {

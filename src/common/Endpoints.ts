@@ -38,9 +38,19 @@ const DEFAULT_SETTINGS = {
   deleteMode: "soft-delete",
 };
 
+/** In-memory per-session cache shared across API endpoint handlers. */
 const _apiCache = {};
 
+/** Accumulated endpoint handler tuples used in Electron IPC mode. */
 const electronEndpointHandlers: any[] = [];
+
+/**
+ * Registers a single API endpoint in either Express or Electron IPC mode.
+ * Wraps the handler with error handling and session ID header forwarding.
+ * @param method - HTTP method ("get", "post", "put", "delete").
+ * @param url - URL pattern (Express-style) for the endpoint.
+ * @param incomingHandler - Async handler receiving (req, res, cache).
+ */
 function addDataEndpoint(
   method: "get" | "post" | "put" | "delete",
   url: string,

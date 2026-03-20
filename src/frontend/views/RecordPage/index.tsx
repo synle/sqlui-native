@@ -47,7 +47,9 @@ import LayoutTwoColumns from "src/frontend/layout/LayoutTwoColumns";
 import { formatJS, formatSQL } from "src/frontend/utils/formatter";
 import { SqluiFrontend } from "typings";
 
-/** Generic type for record data (key-value pairs). */
+/**
+ * Generic type for a database record represented as a plain key-value object.
+ */
 type RecordData = any;
 
 /**
@@ -110,8 +112,9 @@ function RecordView(props: RecordDetailsPageProps): JSX.Element | null {
 }
 
 /**
- * render the form in editable / creatable mode
- * @param {[type]} props [description]
+ * Form for creating or editing a database record. Renders dialect-specific input fields
+ * and a code editor for document-style databases (MongoDB, CosmosDB, AzTable).
+ * @param props - Record data, query context, mode flags, and save/cancel callbacks.
  */
 function RecordForm(props) {
   const [searchParams, setSearchParams] = useSearchParams();

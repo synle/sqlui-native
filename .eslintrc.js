@@ -1,3 +1,7 @@
+/**
+ * ESLint configuration for the sqlui-native project.
+ * Extends eslint:recommended and @typescript-eslint/recommended with project-specific rule overrides.
+ */
 module.exports = {
   env: {
     browser: true,

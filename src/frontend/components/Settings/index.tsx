@@ -7,6 +7,10 @@ import Select from "src/frontend/components/Select";
 import { useMaxToastsSetting, useQuerySizeSetting, useSetting } from "src/frontend/hooks/useSetting";
 import { SqluiFrontend } from "typings";
 
+/**
+ * Hook that provides settings state and a typed change handler for updating individual setting keys.
+ * @returns Current settings object and an `onSettingChange` callback.
+ */
 function useSettingChange() {
   const { settings, onChange } = useSetting();
 

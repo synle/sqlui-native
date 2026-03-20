@@ -704,31 +704,41 @@ export function getCreateConnectionDatabase(input: SqlAction.ConnectionInput): S
 export class ConcreteDataScripts extends BaseDataScript {
   dialects = ["mysql", "mariadb", "mssql", "postgres", "postgresql", "sqlite"];
 
+  /** Returns false because table ID is inferred from the query for relational databases. */
   getIsTableIdRequiredForQuery() {
     return false;
   }
 
+  /** Returns the Monaco syntax mode identifier for relational SQL. */
   getSyntaxMode() {
     return "sql";
   }
 
+  /** Returns true because relational databases support data migration. */
   supportMigration() {
     return true;
   }
 
+  /** Returns true because relational databases support the create record form. */
   supportCreateRecordForm() {
     return true;
   }
 
+  /** Returns true because relational databases support the edit record form. */
   supportEditRecordForm() {
     return true;
   }
 
+  /** Returns true because relational databases support the relationship visualization chart. */
   supportVisualization() {
     return true;
   }
 
-  // dialect definitions
+  /**
+   * Returns the icon asset for the given relational dialect.
+   * @param dialect - The SQL dialect identifier (e.g., "mysql", "postgres").
+   * @returns The imported PNG icon for the dialect.
+   */
   getDialectIcon(dialect) {
     switch (dialect) {
       case "mysql":
@@ -747,7 +757,10 @@ export class ConcreteDataScripts extends BaseDataScript {
     }
   }
 
-  // core script methods
+  /**
+   * Returns the ordered list of table-level script generators for relational databases.
+   * @returns Array of script generator functions for table operations.
+   */
   getTableScripts() {
     return [
       getSelectAllColumns,
@@ -766,14 +779,27 @@ export class ConcreteDataScripts extends BaseDataScript {
     ];
   }
 
+  /**
+   * Returns the ordered list of database-level script generators for relational databases.
+   * @returns Array of script generator functions for database operations.
+   */
   getDatabaseScripts() {
     return [getDivider, getDropDatabase, getCreateDatabase, getDivider, getCreateSampleTable];
   }
 
+  /**
+   * Returns the ordered list of connection-level script generators for relational databases.
+   * @returns Array of script generator functions for connection operations.
+   */
   getConnectionScripts() {
     return [getDivider, getCreateConnectionDatabase];
   }
 
+  /**
+   * Returns a sample connection string for the given relational dialect.
+   * @param dialect - The SQL dialect identifier.
+   * @returns A sample connection URL string.
+   */
   getSampleConnectionString(dialect) {
     switch (dialect) {
       case "mssql":
@@ -792,11 +818,22 @@ export class ConcreteDataScripts extends BaseDataScript {
     }
   }
 
+  /**
+   * Returns a sample SELECT * query for the given table input.
+   * @param tableActionInput - The table context for which to generate the sample query.
+   * @returns Script output with the sample select query.
+   */
   getSampleSelectQuery(tableActionInput) {
     return getSelectAllColumns(tableActionInput);
   }
 
-  // sample code snippet
+  /**
+   * Generates a connection code snippet for the given language and dialect.
+   * @param connection - The connection metadata including dialect and connection string.
+   * @param query - The query context including SQL, database, and table identifiers.
+   * @param language - The target language ("javascript", "python", or "java").
+   * @returns A rendered code snippet string, or empty string if unsupported.
+   */
   getCodeSnippet(connection, query, language) {
     const sql = query.sql;
     const database = query.databaseId;
