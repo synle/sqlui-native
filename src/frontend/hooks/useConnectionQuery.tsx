@@ -317,7 +317,9 @@ export function useConnectionQueries() {
       return;
     }
 
-    return onAddQuery(query);
+    // strip timestamps — they are auto-set by PersistentStorage on creation
+    const { createdAt: _ca, updatedAt: _ua, ...queryWithoutTimestamps } = query;
+    return onAddQuery(queryWithoutTimestamps);
   };
 
   const onChangeTabOrdering = (from: number, to: number) => {

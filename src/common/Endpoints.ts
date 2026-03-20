@@ -171,6 +171,16 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
 
     const connections = await connectionsStorage.list();
 
+    // backfill legacy connections missing timestamps
+    for (const conn of connections) {
+      if (!conn.createdAt || !conn.updatedAt) {
+        if (!conn.createdAt) conn.createdAt = Date.now();
+        if (!conn.updatedAt) conn.updatedAt = Date.now();
+        console.log(`Endpoints.ts:GET /api/connections - backfilled timestamps for connection ${conn.id}`);
+        connectionsStorage.update(conn);
+      }
+    }
+
     // Return connections immediately without blocking on auth checks.
     // Each connection starts with status undefined — the frontend
     // triggers individual /api/connection/:id/connect calls to check status.
@@ -376,7 +386,19 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
   addDataEndpoint("get", "/api/queries", async (req, res) => {
     const queryStorage = await getQueryStorage(req.headers["sqlui-native-session-id"]);
 
-    res.status(200).json(await queryStorage.list());
+    const queries = await queryStorage.list();
+
+    // backfill legacy queries missing timestamps
+    for (const query of queries) {
+      if (!query.createdAt || !query.updatedAt) {
+        if (!query.createdAt) query.createdAt = Date.now();
+        if (!query.updatedAt) query.updatedAt = Date.now();
+        console.log(`Endpoints.ts:GET /api/queries - backfilled timestamps for query ${query.id}`);
+        queryStorage.update(query);
+      }
+    }
+
+    res.status(200).json(queries);
   });
 
   addDataEndpoint("post", "/api/query", async (req, res) => {
@@ -438,6 +460,54 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
       sessionsStorage.add({
         name: `New Session ${new Date().toLocaleString()}`,
       });
+      sessions = sessionsStorage.list();
+    }
+
+    // backfill legacy sessions: fix missing names and timestamps
+    let dirty = false;
+    for (const session of sessions) {
+      let needsUpdate = false;
+
+      // fix sessions with no name
+      if (!session.name) {
+        const fallbackDate = session.createdAt ? new Date(session.createdAt).toLocaleString() : new Date().toLocaleString();
+        session.name = `Session ${fallbackDate}`;
+        console.log(`Endpoints.ts:GET /api/sessions - backfilled missing name for session ${session.id}: "${session.name}"`);
+        needsUpdate = true;
+      }
+
+      // migrate legacy field names (created → createdAt, lastUpdated → updatedAt)
+      const legacy = session as any;
+      if (legacy.created && !session.createdAt) {
+        session.createdAt = legacy.created;
+        delete legacy.created;
+        needsUpdate = true;
+      }
+      if (legacy.lastUpdated && !session.updatedAt) {
+        session.updatedAt = legacy.lastUpdated;
+        delete legacy.lastUpdated;
+        needsUpdate = true;
+      }
+
+      // backfill missing timestamps
+      if (!session.createdAt) {
+        session.createdAt = Date.now();
+        console.log(`Endpoints.ts:GET /api/sessions - backfilled missing createdAt for session ${session.id}`);
+        needsUpdate = true;
+      }
+      if (!session.updatedAt) {
+        session.updatedAt = Date.now();
+        console.log(`Endpoints.ts:GET /api/sessions - backfilled missing updatedAt for session ${session.id}`);
+        needsUpdate = true;
+      }
+
+      if (needsUpdate) {
+        sessionsStorage.update(session);
+        dirty = true;
+      }
+    }
+
+    if (dirty) {
       sessions = sessionsStorage.list();
     }
 
@@ -536,7 +606,6 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
         type: req.body.type,
         data: req.body.data,
         connections: req.body.connections,
-        createdAt: Date.now(),
       }),
     );
   });
@@ -588,7 +657,33 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
   // data snapshot endpoints
   addDataEndpoint("get", "/api/dataSnapshots", async (req, res) => {
     const dataSnapshotStorage = await getDataSnapshotStorage();
-    res.status(200).json(await dataSnapshotStorage.list());
+
+    const snapshots = await dataSnapshotStorage.list();
+
+    // backfill legacy snapshots: migrate "created" → "createdAt" and add missing timestamps
+    for (const snapshot of snapshots) {
+      let needsUpdate = false;
+      const legacy = snapshot as any;
+      if (legacy.created && !snapshot.createdAt) {
+        snapshot.createdAt = legacy.created;
+        delete legacy.created;
+        needsUpdate = true;
+      }
+      if (!snapshot.createdAt) {
+        snapshot.createdAt = Date.now();
+        needsUpdate = true;
+      }
+      if (!snapshot.updatedAt) {
+        snapshot.updatedAt = Date.now();
+        needsUpdate = true;
+      }
+      if (needsUpdate) {
+        console.log(`Endpoints.ts:GET /api/dataSnapshots - backfilled timestamps for snapshot ${snapshot.id}`);
+        dataSnapshotStorage.update(snapshot);
+      }
+    }
+
+    res.status(200).json(snapshots);
   });
 
   addDataEndpoint("get", "/api/dataSnapshot/:dataSnapshotId", async (req, res) => {
@@ -627,7 +722,6 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
       id: dataSnapshotId,
       description: req.body.description,
       location,
-      created: Date.now(),
     });
     res.status(200).json(resp);
   });
@@ -658,7 +752,6 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
         connectionId: req.body.connectionId,
         sql: req.body.sql,
       },
-      createdAt: Date.now(),
     });
 
     // trim to MAX entries per connection, keeping the newest

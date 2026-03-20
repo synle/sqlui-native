@@ -59,6 +59,10 @@ export module SqluiCore {
     name: string;
     status?: "online" | "offline" | "loading";
     dialect?: SqluiCore.Dialect;
+    /** Creation timestamp (epoch ms). Auto-set by PersistentStorage on add. */
+    createdAt?: number;
+    /** Last update timestamp (epoch ms). Auto-set by PersistentStorage on add/update. */
+    updatedAt?: number;
     [index: string]: any;
   };
 
@@ -156,6 +160,10 @@ export module SqluiCore {
      * @type {boolean} whether or not a query is pinned and can't be closed
      */
     pinned?: boolean;
+    /** Creation timestamp (epoch ms). Auto-set by PersistentStorage on add. */
+    createdAt?: number;
+    /** Last update timestamp (epoch ms). Auto-set by PersistentStorage on add/update. */
+    updatedAt?: number;
   };
 
   /** Persisted query with required ID and name. */
@@ -168,8 +176,10 @@ export module SqluiCore {
   export type CoreSession = {
     id?: string;
     name: string;
-    created?: number;
-    lastUpdated?: number;
+    /** Creation timestamp (epoch ms). Auto-set by PersistentStorage on add. */
+    createdAt?: number;
+    /** Last update timestamp (epoch ms). Auto-set by PersistentStorage on add/update. */
+    updatedAt?: number;
   };
 
   /** Persisted session with a required ID. */
@@ -192,8 +202,10 @@ export module SqluiCore {
     id: string;
     /** Display name for the item (connection name, query name, or session name). Always set on creation. */
     name?: string;
-    /** Creation timestamp. Set server-side in Endpoints.ts when the item is added to a folder. */
+    /** Creation timestamp (epoch ms). Auto-set by PersistentStorage on add. */
     createdAt?: number;
+    /** Last update timestamp (epoch ms). Auto-set by PersistentStorage on add/update. */
+    updatedAt?: number;
   } & (
     | {
         /** A saved or deleted connection (used in bookmarks and recycle bin). */
@@ -237,7 +249,10 @@ export module SqluiCore {
     location: string;
     description: string;
     values: DataSnapshotItemDictionary[];
-    created: number;
+    /** Creation timestamp (epoch ms). Auto-set by PersistentStorage on add. */
+    createdAt?: number;
+    /** Last update timestamp (epoch ms). Auto-set by PersistentStorage on add/update. */
+    updatedAt?: number;
   };
 }
 
