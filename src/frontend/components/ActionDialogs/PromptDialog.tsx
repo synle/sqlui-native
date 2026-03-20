@@ -1,4 +1,5 @@
 import CloseIcon from "@mui/icons-material/Close";
+import Alert from "@mui/material/Alert";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
@@ -37,6 +38,7 @@ type PromptDialogProps = PromptInput & {
  */
 export default function PromptDialog(props: PromptDialogProps): JSX.Element | null {
   const [value, setValue] = useState(props.value || "");
+  const showRequiredError = props.isLongPrompt && !!props.required && !value.trim();
 
   const handleClose = (forceClose = false) => {
     if (props.required && !forceClose) {
@@ -49,15 +51,13 @@ export default function PromptDialog(props: PromptDialogProps): JSX.Element | nu
 
   const onSave = (e: React.SyntheticEvent) => {
     e.preventDefault();
-    if (props.required && !value) {
-      // needs to fill out an input
-      // we don't want to allow user to click outside
+
+    if (showRequiredError) {
       return;
     }
+
     props.onSaveClick(value.trim());
   };
-
-  const isDisabled = !(value?.length > 0);
 
   return (
     <Dialog
@@ -86,7 +86,16 @@ export default function PromptDialog(props: PromptDialogProps): JSX.Element | nu
         </DialogTitle>
         <DialogContent
           dividers
-          sx={props.isLongPrompt ? { flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" } : undefined}
+          sx={
+            props.isLongPrompt
+              ? {
+                  flex: 1,
+                  display: "flex",
+                  flexDirection: "column",
+                  overflow: "hidden",
+                }
+              : undefined
+          }
         >
           {props.isLongPrompt ? (
             <CodeEditorBox
@@ -112,9 +121,10 @@ export default function PromptDialog(props: PromptDialogProps): JSX.Element | nu
             />
           )}
         </DialogContent>
-        <DialogActions>
+        <DialogActions sx={{ gap: 1 }}>
           {props.readonly === true ? (
             <Button
+              variant="outlined"
               onClick={() => {
                 const blob = new Blob([value], { type: "text/plain" });
                 const url = URL.createObjectURL(blob);
@@ -128,9 +138,16 @@ export default function PromptDialog(props: PromptDialogProps): JSX.Element | nu
               Download
             </Button>
           ) : (
-            <Button type="submit" disabled={isDisabled}>
-              {props.saveLabel || "Save Changes"}
-            </Button>
+            <>
+              {showRequiredError && (
+                <Alert severity="error" sx={{ py: 0 }}>
+                  This input is required
+                </Alert>
+              )}
+              <Button type="submit" variant="outlined">
+                {props.saveLabel || "Save Changes"}
+              </Button>
+            </>
           )}
         </DialogActions>
       </form>
