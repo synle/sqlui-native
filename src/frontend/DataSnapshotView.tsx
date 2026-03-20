@@ -58,7 +58,7 @@ function QuickActionDial(props: QuickActionDialProps) {
             <InputLabel>Total</InputLabel>
             <pre>{data.values?.length || 0}</pre>
             <InputLabel>Created</InputLabel>
-            <pre>{new Date(data.created).toLocaleString()}</pre>
+            <pre>{new Date(data.createdAt ?? 0).toLocaleString()}</pre>
             <InputLabel>Description</InputLabel>
             <pre>{data.description}</pre>
           </>
@@ -147,7 +147,7 @@ export default function DataSnapshotView() {
 
   useEffect(() => {
     if (data) {
-      window.document.title = `${new Date(data.created).toLocaleString()} Snapshot - ${data.description || ""}`.trim();
+      window.document.title = `${new Date(data.createdAt ?? 0).toLocaleString()} Snapshot - ${data.description || ""}`.trim();
     } else {
       window.document.title = `Snapshot`.trim();
     }
