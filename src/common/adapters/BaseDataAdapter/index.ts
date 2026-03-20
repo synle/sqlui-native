@@ -190,6 +190,7 @@ export default abstract class BaseDataAdapter {
                 case "rediss":
                 case "cosmosdb":
                 case "aztable":
+                case "sfdc":
                 default:
                   return type;
               }
@@ -209,6 +210,7 @@ export default abstract class BaseDataAdapter {
                 case "rediss":
                 case "cosmosdb":
                 case "aztable":
+                case "sfdc":
                 default:
                   return type;
               }
@@ -228,6 +230,7 @@ export default abstract class BaseDataAdapter {
                 case "rediss":
                 case "cosmosdb":
                 case "aztable":
+                case "sfdc":
                 default:
                   return type;
               }
@@ -247,6 +250,7 @@ export default abstract class BaseDataAdapter {
                 case "rediss":
                 case "cosmosdb":
                 case "aztable":
+                case "sfdc":
                 default:
                   return type;
               }

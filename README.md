@@ -4,7 +4,7 @@
 
 ![64](https://user-images.githubusercontent.com/3792401/160178384-638de88f-1712-4419-aed4-b1ef79e5d82a.png)
 
-`sqlui-native` is a simple UI client for most SQL Engines written in Electron. It is compatible with most desktop OS's and support most dialects of RDBMS like MySQL, Microsoft SQL Server, Postgres, SQLite, Cassandra, MongoDB, Redis, Azure CosmosDB and Azure Storage Table.
+`sqlui-native` is a simple UI client for most SQL Engines written in Electron. It is compatible with most desktop OS's and support most dialects of RDBMS like MySQL, Microsoft SQL Server, Postgres, SQLite, Cassandra, MongoDB, Redis, Azure CosmosDB, Azure Storage Table, and Salesforce.
 
 It supports multiple Windows, so you can have different sets of queries and connections side by side. The connections and queries are all stored locally, so you can continue where you left off in later visits.
 
@@ -41,6 +41,7 @@ You can also refer to this link for [General Queries](https://synle.github.io/sq
 - [Redis](https://synle.github.io/sqlui-native/guides#redis) (Limited Supported)
 - [Azure CosmosDB](https://synle.github.io/sqlui-native/guides#cosmosdb) (Limited Supported)
 - [Azure Table Storage (Azure Table)](https://synle.github.io/sqlui-native/guides#aztable) (Limited Supported)
+- [Salesforce (SFDC)](https://synle.github.io/sqlui-native/guides#sfdc) (Limited Supported)
 
 ## Features
 
@@ -258,6 +259,7 @@ For the full step-by-step guide with code examples, see the [Adding new adapters
 - [x] Add supports for Cassandra.
 - [x] Add supports for Azure CosmosDB.
 - [x] Add supports for [Azure Table (Azure Table storage)](https://docs.microsoft.com/en-us/azure/storage/tables/table-storage-overview).
+- [x] Add supports for Salesforce (SFDC).
 - [ ] Add supports for AWS Redshift.
 
 ## Troubleshooting
@@ -372,6 +374,50 @@ cosmosdb://<your_primary_connection_string>
 or
 
 cosmosdb://<your_secondary_connection_string>
+```
+
+### Salesforce (SFDC) Limitations
+
+Salesforce SObjects are mapped to sqlui-native Tables, and Salesforce Fields are mapped to sqlui-native Columns. Each connection represents a single Salesforce Org (mapped as a single database).
+
+The adapter supports three query modes:
+
+- **SOQL** (read-only) -- Queries starting with `SELECT` are executed as SOQL
+- **SOSL** (read-only search) -- Queries starting with `FIND` are executed as SOSL
+- **JS API** (mutations) -- Queries containing `conn.` are executed as JavaScript for create, update, delete, and upsert operations
+
+#### Setting up connection string
+
+1. Sign up for a free Developer Org at [developer.salesforce.com/signup](https://developer.salesforce.com/signup)
+2. Get your Security Token: **Avatar > Settings > My Personal Information > Reset My Security Token**
+3. Use JSON format for the connection string:
+
+```
+sfdc://{"username":"you@yourcompany.dev","password":"your_password","securityToken":"your_token","loginUrl":"login.salesforce.com"}
+```
+
+- `loginUrl` defaults to `login.salesforce.com` if omitted. Use `test.salesforce.com` for sandbox orgs.
+- `securityToken` can be omitted if your IP is whitelisted.
+
+#### Sample queries
+
+```sql
+-- SOQL: Select accounts
+SELECT Id, Name, Industry FROM Account LIMIT 10
+
+-- SOSL: Search across objects
+FIND {keyword} IN ALL FIELDS RETURNING Account(Id, Name), Contact(Id, Name) LIMIT 20
+```
+
+```js
+// JS API: Insert a record
+conn.sobject("Account").create({ Name: "New Account", Industry: "Technology" });
+
+// JS API: Update a record
+conn.sobject("Account").update({ Id: "001xxx", Name: "Updated Name" });
+
+// JS API: Delete a record
+conn.sobject("Account").destroy("001xxx");
 ```
 
 ### Azure Table Storage Limitations
