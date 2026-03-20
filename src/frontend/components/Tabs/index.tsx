@@ -21,16 +21,21 @@ type TabsProps = {
    * @type {number}
    */
   tabIdx: number;
+  /** Callback fired when the selected tab changes. */
   onTabChange: (newTabIdx: number) => void;
+  /** Array of tab header labels or React nodes. */
   tabHeaders: string[] | React.ReactNode[];
   /**
-   * This is optional, if none provided, we will use
-   * index as tab keys
+   * Optional stable keys for each tab. If not provided, the index is used.
    */
   tabKeys?: string[];
+  /** Content rendered for each tab at the matching index. */
   tabContents: React.ReactNode[];
+  /** Tab layout direction; auto-selected based on count if omitted. */
   orientation?: "vertical" | "horizontal";
+  /** Called when a tab is closed via middle-mouse click. */
   onMiddleMouseClicked?: (idx: number) => void;
+  /** Called when a tab is drag-and-drop reordered. */
   onOrderChange?: (fromIdx: number, toIdx: number) => void;
 };
 

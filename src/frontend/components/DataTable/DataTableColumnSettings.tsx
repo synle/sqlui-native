@@ -19,6 +19,11 @@ type DataTableColumnSettingsProps = {
   table: Table<any>;
 };
 
+/**
+ * Modal content component for configuring column visibility and order via drag-and-drop.
+ * @param props - Contains the TanStack table instance to configure.
+ * @returns A list of draggable, checkable column items with select/clear/pin/reset controls.
+ */
 function DataTableColumnSettingsContent({ table }: DataTableColumnSettingsProps) {
   const allColumns = table.getAllColumns();
   const defaultOrder = allColumns.map((c) => c.id);

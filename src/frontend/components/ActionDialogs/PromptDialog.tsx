@@ -23,6 +23,7 @@ export type PromptInput = {
   size?: "xs" | "sm" | "md" | "lg";
 };
 
+/** Internal props for the PromptDialog component, combining PromptInput with open/save/dismiss state. */
 type PromptDialogProps = PromptInput & {
   open: boolean;
   onSaveClick: (newValue: string) => void;

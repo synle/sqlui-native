@@ -442,30 +442,43 @@ export function getCreateConnectionDatabase(_input: SqlAction.ConnectionInput): 
 export class ConcreteDataScripts extends BaseDataScript {
   dialects = ["cosmosdb"];
 
+  /** Returns true because Cosmos DB requires a table/container ID to scope queries. */
   getIsTableIdRequiredForQuery() {
     return true;
   }
 
+  /** Returns the Monaco syntax mode identifier for Cosmos DB scripts. */
   getSyntaxMode() {
     return "javascript";
   }
 
+  /**
+   * Returns the connection form field definitions for Cosmos DB.
+   * @returns Array of [fieldName, label] tuples for the connection form UI.
+   */
   getConnectionFormInputs() {
     return [["restOfConnectionString", "Azure CosmosDB Primary Connection String"]];
   }
 
+  /** Returns true because Cosmos DB supports data migration. */
   supportMigration() {
     return true;
   }
 
+  /** Returns true because Cosmos DB supports the create record form. */
   supportCreateRecordForm() {
     return true;
   }
 
+  /** Returns true because Cosmos DB supports the edit record form. */
   supportEditRecordForm() {
     return true;
   }
 
+  /**
+   * Returns the ordered list of table-level script generators for Cosmos DB.
+   * @returns Array of script generator functions for container operations.
+   */
   getTableScripts() {
     return [
       getSelectAllColumns,
@@ -484,30 +497,57 @@ export class ConcreteDataScripts extends BaseDataScript {
     ];
   }
 
+  /**
+   * Returns the ordered list of database-level script generators for Cosmos DB.
+   * @returns Array of script generator functions for database operations.
+   */
   getDatabaseScripts() {
     return [getDivider, getCreateDatabase, getCreateDatabaseContainer, getDivider, getDropDatabase];
   }
 
+  /**
+   * Returns the ordered list of connection-level script generators for Cosmos DB.
+   * @returns Array of script generator functions for connection operations.
+   */
   getConnectionScripts() {
     return [getDivider, getCreateConnectionDatabase];
   }
 
+  /** Returns the Cosmos DB dialect icon asset. */
   getDialectIcon() {
     return cosmosdbIcon;
   }
 
+  /** Returns the display name for the Azure Cosmos DB dialect. */
   getDialectName() {
     return "Azure Cosmos DB";
   }
 
+  /**
+   * Returns a sample Cosmos DB connection string for the given dialect.
+   * @param dialect - The dialect identifier (e.g., "cosmosdb").
+   * @returns A sample connection URL string.
+   */
   getSampleConnectionString(dialect) {
     return `${dialect}://AccountEndpoint=some_cosmos_endpoint;AccountKey=some_cosmos_account_key`;
   }
 
+  /**
+   * Returns a sample SELECT * query for the given table input.
+   * @param tableActionInput - The table context for which to generate the sample query.
+   * @returns Script output with the sample select query.
+   */
   getSampleSelectQuery(tableActionInput) {
     return getSelectAllColumns(tableActionInput);
   }
 
+  /**
+   * Generates a connection code snippet for the given language.
+   * @param connection - The connection metadata including the connection string.
+   * @param query - The query context including SQL, database, and table identifiers.
+   * @param language - The target language ("javascript", "python", or "java").
+   * @returns A rendered code snippet string, or empty string if unsupported.
+   */
   getCodeSnippet(connection, query, language) {
     const connectionString = connection.connection.replace("cosmosdb://", "");
     const databaseId = query.databaseId;

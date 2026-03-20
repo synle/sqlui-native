@@ -2,13 +2,20 @@ import { defineConfig } from "vite";
 import path from "path";
 import appPackage from "./package.json";
 
-// Externalize all dependencies (they'll be available via node_modules at runtime)
+/**
+ * All runtime dependencies (from package.json) that should remain external in the mocked-server bundle.
+ * These are available via node_modules at runtime and do not need to be inlined.
+ */
 const externalsDeps = [
   "electron",
   ...Object.keys((appPackage as any).optionalDependencies || {}),
   ...Object.keys(appPackage.dependencies || {}),
 ];
 
+/**
+ * Vite build configuration for the mocked Express server.
+ * Outputs a CommonJS bundle at build/mocked-server.js targeting Node 18.
+ */
 export default defineConfig({
   build: {
     outDir: "build",

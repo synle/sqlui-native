@@ -9,14 +9,18 @@ import { useGetConnectionById, useGetConnections } from "src/frontend/hooks/useC
 import { useActiveConnectionQuery, useConnectionQueries } from "src/frontend/hooks/useConnectionQuery";
 import { SqluiEnums } from "typings";
 
+/** A command with a required display label, extending the base MissionControl Command. */
 type Command = CoreCommand & {
   label: string;
 };
 
+/** Props for the CommandPalette component. */
 type CommandPaletteProps = {
+  /** Callback invoked when the user selects a command. */
   onSelectCommand: (command: Command) => void;
 };
 
+/** Defines a single command palette option with its event, label, and expansion behavior. */
 type CommandOption = {
   event: SqluiEnums.ClientEventKey;
   label: string;

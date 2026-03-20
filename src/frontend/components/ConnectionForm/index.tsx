@@ -11,6 +11,7 @@ import useToaster from "src/frontend/hooks/useToaster";
 import { createSystemNotification, useNavigate } from "src/frontend/utils/commonUtils";
 import { SqluiCore } from "typings";
 
+/** Props for the EditConnectionForm component. */
 type ConnectionFormProps = {
   id?: string;
 };
@@ -135,6 +136,7 @@ export function EditConnectionForm(props: ConnectionFormProps): JSX.Element | nu
   );
 }
 
+/** Props for the internal MainConnectionForm component. */
 type MainConnectionFormProps = {
   onSave: () => Promise<void>;
   name: string;
@@ -145,6 +147,11 @@ type MainConnectionFormProps = {
   loading?: boolean;
 };
 
+/**
+ * The core connection form with name/connection string fields, hint panel, and save/test actions.
+ * @param props - Form state, setters, and submit handler.
+ * @returns The rendered connection form.
+ */
 function MainConnectionForm(props: MainConnectionFormProps): JSX.Element | null {
   const navigate = useNavigate();
   const [showHint, setShowHint] = useState(false);

@@ -4,6 +4,7 @@ import { matchPath } from "react-router-dom";
 import { getEndpointHandlers, setUpDataEndpoints } from "src/common/Endpoints";
 import { SqluiEnums } from "typings";
 
+/** Whether the current platform is macOS. */
 const isMac = process.platform === "darwin";
 
 // prevent process crashes from unhandled connection errors (e.g. mariadb timeout)
@@ -32,7 +33,10 @@ app.commandLine.appendSwitch("enable-features", "CanvasOopRasterization,BackForw
 // performance: reduce memory overhead
 app.commandLine.appendSwitch("js-flags", "--expose-gc");
 
-// create the window
+/**
+ * Creates and returns the main Electron BrowserWindow, loading the app URL or built index.html.
+ * @returns The created BrowserWindow instance.
+ */
 async function createWindow() {
   const mainWindow = new BrowserWindow({
     width: 1200,
@@ -70,12 +74,20 @@ async function createWindow() {
   return mainWindow;
 }
 
+/**
+ * Sends a client event message to a BrowserWindow via IPC.
+ * @param win - The target BrowserWindow.
+ * @param message - The client event key to dispatch.
+ */
 function sendMessage(win: BrowserWindow, message: SqluiEnums.ClientEventKey) {
   if (win) {
     win.webContents.send("sqluiNativeEvent/ipcElectronCommand", message, {});
   }
 }
 
+/**
+ * Builds and sets the native application menu with File, Query, Session, Edit, and Help items.
+ */
 function setupMenu() {
   const menuTemplate: Electron.MenuItemConstructorOptions[] = [
     {

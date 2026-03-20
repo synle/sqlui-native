@@ -22,6 +22,10 @@ import { useLayoutModeSetting, useIsAnimationModeOn } from "src/frontend/hooks/u
 import "src/frontend/App.scss";
 import "src/frontend/electronRenderer";
 
+/**
+ * Applies the active MUI theme (dark/light, compact/comfortable, animations) to its subtree.
+ * @param {{ children: React.ReactNode }} props - Component children to wrap with the theme.
+ */
 function AppliedTheme({ children }) {
   const isCompact = useLayoutModeSetting() === "compact";
   const darkmodeSetting = useDarkModeSetting();
@@ -120,10 +124,18 @@ function AppliedTheme({ children }) {
   );
 }
 
+/**
+ * HashRouter pre-configured with React Router v7 future flags to suppress deprecation warnings.
+ * @param {{ children: React.ReactNode }} props - Component children to wrap with the router.
+ */
 function FutureHashRouter({ children }) {
   return <HashRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>{children}</HashRouter>;
 }
 
+/**
+ * Composes all application context providers and the router into a single wrapper.
+ * @param {{ children: React.ReactNode }} props - The root application tree to wrap.
+ */
 function CombinedContextProvider({ children }) {
   return [
     ActionDialogsContextProvider,
@@ -136,6 +148,10 @@ function CombinedContextProvider({ children }) {
   ].reduceRight((acc, Provider) => <Provider>{acc}</Provider>, children);
 }
 
+/**
+ * Renders React Query Devtools when toggled via Ctrl+Shift+Alt+D (Win/Linux) or Cmd+Shift+Option+D (Mac).
+ * Renders nothing when the panel is hidden.
+ */
 function DevtoolsToggle() {
   const [show, setShow] = useState(false);
 
@@ -154,6 +170,10 @@ function DevtoolsToggle() {
   return <ReactQueryDevtools initialIsOpen={true} />;
 }
 
+/**
+ * Initializes the React Query client and mounts the full application into the #body DOM node.
+ * Called once when the "sqluiNativeEvent/ready" event fires.
+ */
 const renderApp = function () {
   const queryClient = new QueryClient({
     defaultOptions: {

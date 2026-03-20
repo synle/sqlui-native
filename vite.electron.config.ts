@@ -1,8 +1,10 @@
 import { defineConfig } from "vite";
 import path from "path";
 
-// Only externalize packages with native bindings that vite cannot
-// bundle. Everything else (pure JS) gets bundled.
+/**
+ * Packages with native bindings that Vite cannot bundle and must remain external.
+ * Pure-JS dependencies are bundled directly into the output.
+ */
 const nativeExternals = [
   "electron",
   "cassandra-driver",
@@ -18,6 +20,10 @@ const nativeExternals = [
   "tedious",
 ];
 
+/**
+ * Vite build configuration for the Electron main process.
+ * Outputs a CommonJS bundle at build/main.js targeting Node 18.
+ */
 export default defineConfig({
   build: {
     outDir: "build",

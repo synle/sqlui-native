@@ -15,6 +15,7 @@ type CoreToasterProps = {
   action?: JSX.Element;
 };
 
+/** Full properties for a toast notification, extending core props with history/detail fields. */
 type ToasterProps = CoreToasterProps & {
   id?: string;
   /** Additional detail text (shown in expanded view) */
@@ -371,14 +372,17 @@ function _ensureContainerMounted() {
 }
 
 /**
- * Hook for showing and dismissing toast notifications. Mounts the toast container on first use.
- * @returns Methods to add and dismiss toast notifications.
+ * Updates the module-level max toasts limit. Called from the hook to sync settings.
+ * @param value - The new maximum number of concurrent toasts.
  */
-/** Updates the module-level max toasts limit. Called from the hook to sync settings. */
 export function setMaxToasts(value: number) {
   _maxToasts = value;
 }
 
+/**
+ * Hook for showing and dismissing toast notifications. Mounts the toast container on first use.
+ * @returns Methods to add and dismiss toast notifications.
+ */
 export default function useToaster() {
   const { modal } = useActionDialogs();
   const maxToasts = useMaxToastsSetting();

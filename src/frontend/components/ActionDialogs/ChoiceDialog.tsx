@@ -23,6 +23,7 @@ export type ChoiceInput = {
   size?: "xs" | "sm" | "md" | "lg";
 };
 
+/** Internal props for the ChoiceDialog component, combining ChoiceInput with open/select/dismiss state. */
 type ChoiceDialogProps = ChoiceInput & {
   open: boolean;
   onSelect: (newValue: string) => void;

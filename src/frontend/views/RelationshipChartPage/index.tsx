@@ -57,13 +57,21 @@ import { useNavigate } from "src/frontend/utils/commonUtils";
 import "src/frontend/App.scss";
 import "src/frontend/electronRenderer";
 
+/** Width in pixels for each table node in the diagram. */
 const NODE_WIDTH = 180;
+/** Height in pixels for each table node in the diagram. */
 const NODE_HEIGHT = 50;
+/** Font size in pixels for edge label text. */
 const EDGE_LABEL_FONT_SIZE = 11;
+/** Horizontal gap in pixels between columns in the layout. */
 const COL_GAP = 280;
+/** Vertical gap in pixels between rows in the layout. */
 const ROW_GAP = 120;
+/** Padding in pixels used when wrapping overflow nodes. */
 const WRAP_PAD = 60;
+/** Maximum number of nodes per column before wrapping in horizontal layout. */
 const MAX_PER_COL = 8;
+/** Maximum number of nodes per row before wrapping in vertical layout. */
 const MAX_PER_ROW = 10;
 
 /**
@@ -191,11 +199,17 @@ function pickBestHandles(
   return dy > 0 ? { sourceHandle: "bottom", targetHandle: "top" } : { sourceHandle: "top", targetHandle: "bottom" };
 }
 
+/** Represents a single foreign key relationship edge between two tables. */
 type RelationshipEdge = {
+  /** Table that holds the foreign key. */
   sourceTable: string;
+  /** Table being referenced by the foreign key. */
   targetTable: string;
+  /** Column in the source table that is the foreign key. */
   sourceColumn: string;
+  /** Column in the target table being referenced. */
   targetColumn: string;
+  /** Human-readable label for the relationship (e.g. "orders.userId = users.id"). */
   label: string;
 };
 
@@ -221,9 +235,13 @@ function buildRelationships(allColumns: Record<string, any[]>): RelationshipEdge
   return relationships;
 }
 
+/** Aggregated relationship counts for a single table. */
 type RelationshipCount = {
+  /** Total number of FK relationships (references + referencedBy). */
   total: number;
+  /** Number of outgoing FKs (this table references other tables). */
   references: number;
+  /** Number of incoming FKs (other tables reference this table). */
   referencedBy: number;
 };
 
@@ -358,6 +376,7 @@ function placeRowsWrapped(items: string[], centerX: number, startY: number, dire
   return positions;
 }
 
+/** Layout orientation for the relationship diagram. */
 type Orientation = "horizontal" | "vertical";
 
 /**
@@ -655,7 +674,9 @@ function RelationshipChart({
   );
 }
 
+/** Column keys available for sorting the relationship table. */
 type SortColumn = "sourceTable" | "targetTable" | "type";
+/** Sort direction for the relationship table. */
 type SortDirection = "asc" | "desc";
 
 /**

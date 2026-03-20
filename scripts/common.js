@@ -3,7 +3,10 @@ globalThis.path = require("path");
 globalThis.log = console.log;
 
 /**
- * Utility: Synchronous Copy with directory support
+ * Recursively copies a file or directory from src to dest, optionally filtered.
+ * @param {string} src - Source file or directory path.
+ * @param {string} dest - Destination file or directory path.
+ * @param {function(string): boolean} [filter] - Optional predicate; return false to skip a path.
  */
 globalThis.cpSync = function cpSync(src, dest, filter = () => true) {
   if (!fs.existsSync(src)) return;

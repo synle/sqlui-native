@@ -10,6 +10,7 @@ import SplitButton from "src/frontend/components/SplitButton";
 
 /**
  * Button with split dropdown for creating new connections, importing/exporting, migration, and collapsing all connections.
+ * @returns The new connection split button UI.
  */
 export default function NewConnectionButton() {
   const navigate = useNavigate();

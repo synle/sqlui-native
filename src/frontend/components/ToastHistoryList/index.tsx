@@ -21,11 +21,21 @@ const COLLAPSED_LENGTH = 250;
 /** Estimated row height in pixels for the virtualizer. */
 const ESTIMATED_ROW_HEIGHT = 60;
 
+/**
+ * Formats a timestamp as a locale date/time string.
+ * @param ts - Unix timestamp in milliseconds.
+ * @returns Formatted date/time string, or "-" if not provided.
+ */
 function formatTime(ts?: number) {
   if (!ts) return "-";
   return new Date(ts).toLocaleString();
 }
 
+/**
+ * Safely JSON-stringifies metadata for display.
+ * @param metadata - Any value to serialize.
+ * @returns Formatted JSON string, or undefined if metadata is null/undefined.
+ */
 function stringifyMetadata(metadata: any): string | undefined {
   if (metadata === null || metadata === undefined) return undefined;
   try {
@@ -35,6 +45,11 @@ function stringifyMetadata(metadata: any): string | undefined {
   }
 }
 
+/**
+ * Extracts expandable detail and metadata sections from a toast history entry.
+ * @param entry - The toast history entry to inspect.
+ * @returns Array of labeled content sections (Detail, Metadata).
+ */
 function getExpandableContent(entry: ToastHistoryEntry): { label: string; content: string }[] {
   const sections: { label: string; content: string }[] = [];
   if (entry.detail) {
@@ -49,11 +64,22 @@ function getExpandableContent(entry: ToastHistoryEntry): { label: string; conten
   return sections;
 }
 
+/**
+ * Returns true if the combined content of all sections exceeds the collapsed length threshold.
+ * @param sections - Labeled content sections to measure.
+ * @returns Whether truncation should be applied.
+ */
 function needsTruncation(sections: { label: string; content: string }[]): boolean {
   const totalLength = sections.reduce((sum, s) => sum + s.content.length, 0);
   return totalLength > COLLAPSED_LENGTH;
 }
 
+/**
+ * Checks whether a toast history entry matches the given filter string.
+ * @param entry - The entry to test.
+ * @param filter - The filter string (case-insensitive substring match).
+ * @returns True if the entry matches on id, message, detail, or metadata.
+ */
 function matchesFilter(entry: ToastHistoryEntry, filter: string): boolean {
   const lower = filter.toLowerCase();
   if (entry.id?.toLowerCase().includes(lower)) return true;
@@ -77,6 +103,12 @@ const preStyle: React.CSSProperties = {
   wordBreak: "break-all",
 };
 
+/**
+ * Renders detail and metadata sections for a toast entry with expand/collapse support.
+ * @param sections - Labeled content sections (Detail, Metadata) to display.
+ * @param expanded - Whether the content is currently expanded.
+ * @param onToggle - Callback invoked when the user toggles expand/collapse.
+ */
 function ExpandableContent({
   sections,
   expanded,

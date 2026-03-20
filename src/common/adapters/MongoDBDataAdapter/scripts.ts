@@ -354,35 +354,53 @@ function _convertMongoJsToPython(sql: string): string {
 export class ConcreteDataScripts extends BaseDataScript {
   dialects = ["mongodb", "mongodb+srv"];
 
+  /** Returns false because table ID is inferred from the query for MongoDB. */
   getIsTableIdRequiredForQuery() {
     return false;
   }
 
+  /** Returns the Monaco syntax mode identifier for MongoDB scripts. */
   getSyntaxMode() {
     return "javascript";
   }
 
+  /** Returns true because MongoDB supports data migration. */
   supportMigration() {
     return true;
   }
 
+  /** Returns true because MongoDB supports the create record form. */
   supportCreateRecordForm() {
     return true;
   }
 
+  /** Returns true because MongoDB supports the edit record form. */
   supportEditRecordForm() {
     return true;
   }
 
-  // dialect definitions
+  /**
+   * Returns the normalized MongoDB dialect type regardless of variant (mongodb+srv, etc.).
+   * @param _dialect - The raw dialect string.
+   * @returns The canonical "mongodb" dialect identifier.
+   */
   getDialectType(_dialect) {
     return `mongodb` as SqluiCore.Dialect;
   }
+
+  /**
+   * Returns the MongoDB dialect icon asset.
+   * @param _dialect - The dialect string (unused).
+   * @returns The imported MongoDB PNG icon.
+   */
   getDialectIcon(_dialect) {
     return mongodbIcon;
   }
 
-  // core methods
+  /**
+   * Returns the ordered list of table-level script generators for MongoDB.
+   * @returns Array of script generator functions for collection operations.
+   */
   getTableScripts() {
     return [
       getSelectAllColumns,
@@ -399,22 +417,47 @@ export class ConcreteDataScripts extends BaseDataScript {
     ];
   }
 
+  /**
+   * Returns the ordered list of database-level script generators for MongoDB.
+   * @returns Array of script generator functions for database operations.
+   */
   getDatabaseScripts() {
     return [getDivider, getCreateDatabase, getDropDatabase];
   }
 
+  /**
+   * Returns the ordered list of connection-level script generators for MongoDB.
+   * @returns Array of script generator functions for connection operations.
+   */
   getConnectionScripts() {
     return [getDivider, getCreateConnectionDatabase];
   }
 
+  /**
+   * Returns a sample MongoDB connection string for the given dialect.
+   * @param dialect - The dialect identifier (e.g., "mongodb" or "mongodb+srv").
+   * @returns A sample connection URL string.
+   */
   getSampleConnectionString(dialect) {
     return `${dialect}://username:password@localhost:27017`;
   }
 
+  /**
+   * Returns a sample find() query for the given table input.
+   * @param tableActionInput - The table context for which to generate the sample query.
+   * @returns Script output with the sample select query.
+   */
   getSampleSelectQuery(tableActionInput) {
     return getSelectAllColumns(tableActionInput);
   }
 
+  /**
+   * Generates a connection code snippet for the given language.
+   * @param connection - The connection metadata including connection string and database.
+   * @param query - The query context including SQL and database identifier.
+   * @param language - The target language ("javascript", "python", or "java").
+   * @returns A rendered code snippet string, or empty string if unsupported.
+   */
   getCodeSnippet(connection, query, language) {
     const connectionString = connection.connection;
     const sql = query.sql;

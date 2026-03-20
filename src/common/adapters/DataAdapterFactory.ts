@@ -15,14 +15,29 @@ import RelationalDataAdapterScripts from "src/common/adapters/RelationalDataAdap
 import PersistentStorage from "src/common/PersistentStorage";
 import { SqluiCore } from "typings";
 
+/** Cache entry shape for storing column metadata on disk. */
 type ColumnCacheEntry = { id: string; data: SqluiCore.ColumnMetaData[]; timestamp: number };
 
 const columnCacheStorage = new PersistentStorage<ColumnCacheEntry>("cache", "columns", "cache.columns");
 
+/**
+ * Builds a unique cache key for a connection/database/table combination.
+ * @param connectionId - The connection identifier.
+ * @param databaseId - The database name.
+ * @param tableId - The table name.
+ * @returns A colon-separated cache key string.
+ */
 function getColumnCacheKey(connectionId: string, databaseId: string, tableId: string) {
   return `${connectionId}:${databaseId}:${tableId}`;
 }
 
+/**
+ * Retrieves cached column metadata for a given connection/database/table, if available.
+ * @param connectionId - The connection identifier.
+ * @param databaseId - The database name.
+ * @param tableId - The table name.
+ * @returns The cached column metadata array, or undefined on a cache miss.
+ */
 function getCachedColumns(connectionId: string, databaseId: string, tableId: string): SqluiCore.ColumnMetaData[] | undefined {
   try {
     const key = getColumnCacheKey(connectionId, databaseId, tableId);
@@ -36,6 +51,13 @@ function getCachedColumns(connectionId: string, databaseId: string, tableId: str
   return undefined;
 }
 
+/**
+ * Persists column metadata to the disk cache for a given connection/database/table.
+ * @param connectionId - The connection identifier.
+ * @param databaseId - The database name.
+ * @param tableId - The table name.
+ * @param data - The column metadata array to cache.
+ */
 function setCachedColumns(connectionId: string, databaseId: string, tableId: string, data: SqluiCore.ColumnMetaData[]) {
   try {
     const key = getColumnCacheKey(connectionId, databaseId, tableId);
@@ -218,6 +240,12 @@ export async function getTables(sessionId: string, connectionId: string, databas
   }
 }
 
+/**
+ * Strips falsy optional flags from column metadata and sorts columns by key importance then name.
+ * Primary keys and partition keys sort first, then unique columns, then clustering keys, then alphabetically.
+ * @param columns - The raw column metadata array to clean and sort.
+ * @returns The cleaned and sorted column metadata array.
+ */
 function cleanAndSortColumns(columns: SqluiCore.ColumnMetaData[]): SqluiCore.ColumnMetaData[] {
   return columns
     .map((column) => {

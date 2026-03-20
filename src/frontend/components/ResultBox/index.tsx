@@ -155,6 +155,11 @@ type QueryTimeDescriptionProps = {
   query: SqluiFrontend.ConnectionQuery;
 };
 
+/**
+ * Displays the execution duration of a query as an info alert.
+ * @param props - Contains the query whose execution start/end times are shown.
+ * @returns An alert with the query duration.
+ */
 function QueryTimeDescription(props: QueryTimeDescriptionProps): JSX.Element | null {
   const { query } = props;
   return (
