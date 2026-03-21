@@ -324,6 +324,11 @@ export class ConcreteDataScripts extends BaseDataScript {
     return [["restOfConnectionString", "Azure Table Storage Connection String"]];
   }
 
+  /** Returns "ado" because Azure Table Storage uses ADO.NET-style semicolon-delimited key=value connection strings. */
+  getConnectionStringFormat(): "url" | "json" | "ado" {
+    return "ado";
+  }
+
   /** Returns true because Azure Table Storage requires a table ID to scope queries. */
   getIsTableIdRequiredForQuery() {
     return true;

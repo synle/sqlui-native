@@ -43,9 +43,10 @@ export default abstract class BaseDataScript implements IDataScript {
    * Returns the connection string format used by the connection helper form.
    * "url" (default) builds `scheme://user:pass@host:port`.
    * "json" builds `scheme://{"field1":"val1","field2":"val2"}` from form fields.
-   * Override in subclasses that use JSON-based connection strings.
+   * "ado" is ADO.NET-style `scheme://Key1=val1;Key2=val2` (Azure Table Storage, CosmosDB).
+   * Override in subclasses that use non-URL connection strings.
    */
-  getConnectionStringFormat(): "url" | "json" {
+  getConnectionStringFormat(): "url" | "json" | "ado" {
     return "url";
   }
 

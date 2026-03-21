@@ -460,6 +460,11 @@ export class ConcreteDataScripts extends BaseDataScript {
     return [["restOfConnectionString", "Azure CosmosDB Primary Connection String"]];
   }
 
+  /** Returns "ado" because CosmosDB uses ADO.NET-style semicolon-delimited key=value connection strings. */
+  getConnectionStringFormat(): "url" | "json" | "ado" {
+    return "ado";
+  }
+
   /** Returns true because Cosmos DB supports data migration. */
   supportMigration() {
     return true;
