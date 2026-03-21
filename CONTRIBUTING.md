@@ -272,8 +272,28 @@ Integration tests live alongside their adapter source code:
 - `src/common/adapters/CassandraDataAdapter/cassandra.integration.spec.ts` (v4 + v2)
 - `src/common/adapters/MongoDBDataAdapter/mongodb.integration.spec.ts`
 - `src/common/adapters/RedisDataAdapter/redis.integration.spec.ts`
+- `src/common/adapters/AzureTableStorageAdapter/aztable.integration.spec.ts` (requires `TEST_AZ_TABLE_STORAGE_CONNECTION`)
+- `src/common/adapters/AzureCosmosDataAdapter/cosmosdb.integration.spec.ts` (requires `TEST_AZ_COSMOSDB_CONNECTION`)
+- `src/common/adapters/SalesforceDataAdapter/sfdc.integration.spec.ts` (requires `TEST_SFDC_CONNECTION`)
 
 Each test covers: authenticate, create test data, getTables, getColumns, execute queries, cleanup.
+
+Cloud-based adapters (Azure Table Storage, Azure CosmosDB, Salesforce) don't use Docker — they connect to real cloud services. Their integration tests require connection strings via environment variables and auto-skip when the env var is not set:
+
+| Env Variable                       | Adapter             |
+| ---------------------------------- | ------------------- |
+| `TEST_AZ_TABLE_STORAGE_CONNECTION` | Azure Table Storage |
+| `TEST_AZ_COSMOSDB_CONNECTION`      | Azure CosmosDB      |
+| `TEST_SFDC_CONNECTION`             | Salesforce          |
+
+To run these locally, export the env var before running tests:
+
+```bash
+export TEST_SFDC_CONNECTION='sfdc://{"username":"...","password":"...","securityToken":"..."}'
+npm run test-integration
+```
+
+In CI, these are mapped from GitHub secrets in `.github/workflows/integration-test.yml`. To add or update a secret: GitHub repo > Settings > Secrets and variables > Actions > New repository secret.
 
 Integration tests are excluded from `npm run test-ci` and only run via `npm run test-integration`.
 

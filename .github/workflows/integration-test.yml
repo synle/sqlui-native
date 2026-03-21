@@ -93,5 +93,14 @@ jobs:
           echo "Waiting for databases to initialize..."
           sleep 5m  # sleep for n mins
 
+      # Export all GitHub secrets matching TEST_*_CONNECTION as env vars.
+      # This auto-maps any secret like TEST_SFDC_CONNECTION, TEST_AZ_COSMOSDB_CONNECTION, etc.
+      # To add a new one: GitHub repo > Settings > Secrets and variables > Actions > New repository secret.
+      - name: Export TEST_ secrets as env vars
+        run: |
+          while IFS='=' read -r key value; do
+            echo "${key}=${value}" >> "$GITHUB_ENV"
+          done < <(echo '${{ toJSON(secrets) }}' | jq -r 'to_entries[] | select(.key | startswith("TEST_") and endswith("_CONNECTION")) | "\(.key)=\(.value)"')
+
       - name: Run integration tests
         run: npm run test-integration
