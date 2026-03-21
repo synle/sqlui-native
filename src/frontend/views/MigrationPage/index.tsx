@@ -66,7 +66,7 @@ export default function MigrationPage(props: MigrationPageProps): JSX.Element | 
 
   useEffect(() => {
     setTreeActions({
-      showContextMenu: false,
+      showContextMenu: true,
     });
   }, [setTreeActions]);
 

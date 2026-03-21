@@ -4,7 +4,7 @@ import { SessionStorageConfig } from "src/frontend/data/config";
 import { getCurrentSessionId } from "src/frontend/data/session";
 import { useAddRecycleBinItem } from "src/frontend/hooks/useFolderItems";
 import { useIsSoftDeleteModeSetting } from "src/frontend/hooks/useSetting";
-import { getGeneratedRandomId, getUpdatedOrdersForList } from "src/frontend/utils/commonUtils";
+import { formatShortDate, getGeneratedRandomId, getUpdatedOrdersForList } from "src/frontend/utils/commonUtils";
 import { SqluiCore, SqluiFrontend } from "typings";
 
 // connection queries
@@ -128,17 +128,17 @@ export function useConnectionQueries() {
       if (!query) {
         newQuery = {
           id: newId,
-          name: `Query ${new Date().toLocaleString()}`,
+          name: `Query ${formatShortDate()}`,
           sql: "",
           selected: true,
         };
       } else {
-        let newQueryName = query.name || `Query ${new Date().toLocaleString()}`;
+        let newQueryName = query.name || `Query ${formatShortDate()}`;
 
         for (const query of _connectionQueries) {
           if (query.name === newQueryName) {
             // replace it with a new anme
-            newQueryName = `Duplicated Query ${new Date().toLocaleString()}`;
+            newQueryName = `Duplicated Query ${formatShortDate()}`;
           }
         }
 
@@ -272,7 +272,7 @@ export function useConnectionQueries() {
         // this is an edge case where users already closed all the query tab
         const newQuery = await onAddQuery({
           id: getGeneratedRandomId(`queryId`),
-          name: `Query ${new Date().toLocaleString()}`,
+          name: `Query ${formatShortDate()}`,
           ...partials,
         });
 

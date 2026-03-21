@@ -13,7 +13,7 @@ vi.mock("src/frontend/layout/LayoutTwoColumns", () => ({
   default: (props: any) => <div>{props.children}</div>,
 }));
 vi.mock("src/frontend/hooks/useTreeActions", () => ({
-  useTreeActions: () => ({ data: { showContextMenu: false }, setTreeActions: vi.fn() }),
+  useTreeActions: () => ({ data: { showContextMenu: true }, setTreeActions: vi.fn() }),
 }));
 
 import EditConnectionPage from "src/frontend/views/EditConnectionPage";

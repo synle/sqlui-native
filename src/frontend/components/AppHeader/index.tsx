@@ -180,7 +180,7 @@ export default function AppHeader() {
           </IconButton>
         </Tooltip>
 
-        <DropdownButton id="session-action-split-button" options={options} isLoading={isLoading} maxHeight="500px">
+        <DropdownButton id="session-action-split-button" options={options} isLoading={isLoading}>
           <IconButton aria-label="Table Actions" color="inherit">
             <MenuIcon fontSize="inherit" color="inherit" />
           </IconButton>
