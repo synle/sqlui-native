@@ -256,6 +256,12 @@ function setupMenu() {
           acceleratorWorksWhenHidden: true,
           click: async (...[, win]) => sendMessage(win as BrowserWindow, "clientEvent/showCommandPalette"),
         },
+        {
+          id: "menu-schema-search",
+          label: "Search Schema",
+          accelerator: isMac ? "Cmd+Shift+F" : "Ctrl+Shift+F",
+          click: async (...[, win]) => sendMessage(win as BrowserWindow, "clientEvent/schema/search"),
+        },
       ],
     },
     {
@@ -350,10 +356,20 @@ ipcMain.on("sqluiNativeEvent/fetch", async (event, data) => {
     }
   }
 
+  // Separate path from query string for route matching and query param parsing
+  const [urlPath, urlQueryString] = url.split("?");
+  const query: Record<string, string> = {};
+  if (urlQueryString) {
+    for (const part of urlQueryString.split("&")) {
+      const [key, val] = part.split("=");
+      if (key) query[decodeURIComponent(key)] = decodeURIComponent(val || "");
+    }
+  }
+
   console.log(">> Request", method, url, sessionId, body);
   const matchCurrentUrlAgainst = (matchAgainstUrl: string) => {
     try {
-      return matchPath(matchAgainstUrl, url);
+      return matchPath(matchAgainstUrl, urlPath);
     } catch (err) {
       console.error("index.ts:matchPath", err);
       return undefined;
@@ -428,6 +444,7 @@ ipcMain.on("sqluiNativeEvent/fetch", async (event, data) => {
 
         const req = {
           params: matchedUrlObject?.params,
+          query,
           body: body,
           headers: {
             "sqlui-native-session-id": sessionId,
