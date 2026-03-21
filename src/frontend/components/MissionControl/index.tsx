@@ -40,6 +40,7 @@ import { useShowHide } from "src/frontend/hooks/useShowHide";
 import useToaster from "src/frontend/hooks/useToaster";
 import {
   createSystemNotification,
+  formatShortDate,
   getExportedBookmark,
   getExportedConnection,
   getExportedQuery,
@@ -432,11 +433,16 @@ export default function MissionControl() {
 
   const onApplyQuery = async (data: SqluiFrontend.PartialConnectionQuery, openQueryInNewTab: boolean, toastMessage: string | undefined) => {
     if (openQueryInNewTab === true) {
-      let newQueryTabName = `Query ${new Date().toLocaleString()}`;
-
-      if (data.databaseId) {
-        newQueryTabName += ` - ${data.databaseId}`;
+      const parts: string[] = [];
+      if (data.connectionId) {
+        const conn = connections?.find((c) => c.id === data.connectionId);
+        if (conn?.name) parts.push(conn.name);
       }
+      if (data.databaseId) parts.push(data.databaseId);
+      if (data.tableId) parts.push(data.tableId);
+
+      const prefix = parts.length > 0 ? `${parts.join(" / ")} ` : "";
+      const newQueryTabName = `${prefix}Query ${formatShortDate()}`;
 
       await connectionQueries.onAddQuery({
         ...data,
@@ -1296,6 +1302,7 @@ export default function MissionControl() {
 
             onApplyQuery(command.data as SqluiFrontend.PartialConnectionQuery, querySelectionMode === "new-tab", command.label);
 
+            navigate("/");
             document.querySelector("#QueryBoxTabs")?.scrollIntoView();
           }
           break;
@@ -1307,6 +1314,7 @@ export default function MissionControl() {
               false, // same-tab
               command.label,
             );
+            navigate("/");
           }
           break;
 
@@ -1317,6 +1325,7 @@ export default function MissionControl() {
               true, // new-tab
               command.label,
             );
+            navigate("/");
           }
           break;
 

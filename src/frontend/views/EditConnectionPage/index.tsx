@@ -19,7 +19,7 @@ export default function EditConnectionPage() {
 
   useEffect(() => {
     setTreeActions({
-      showContextMenu: false,
+      showContextMenu: true,
     });
   }, [setTreeActions]);
 

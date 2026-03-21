@@ -18,7 +18,7 @@ export default function BookmarksPage() {
 
   useEffect(() => {
     setTreeActions({
-      showContextMenu: false,
+      showContextMenu: true,
     });
   }, [setTreeActions]);
 

@@ -544,7 +544,7 @@ export function NewRecordPage() {
 
   useEffect(() => {
     setTreeActions({
-      showContextMenu: false,
+      showContextMenu: true,
     });
   }, [setTreeActions]);
 
