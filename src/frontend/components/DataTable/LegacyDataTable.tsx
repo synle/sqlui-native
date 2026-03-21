@@ -27,6 +27,7 @@ import {
   StyledDivValueCell,
   tableCellWidth,
 } from "src/frontend/components/DataTable/DataTableComponents";
+import { useLayoutModeSetting } from "src/frontend/hooks/useSetting";
 import { GlobalFilter, SimpleColumnFilter } from "src/frontend/components/DataTable/Filter";
 import DropdownMenu from "src/frontend/components/DropdownMenu";
 import { useAddDataSnapshot } from "src/frontend/hooks/useDataSnapshot";
@@ -40,6 +41,7 @@ import { useAddDataSnapshot } from "src/frontend/hooks/useDataSnapshot";
  */
 export default function LegacyDataTable(props: DataTableProps): JSX.Element | null {
   const { data } = props;
+  const isCompact = useLayoutModeSetting() === "compact";
   const [columns, setColumns] = useState<ColumnDef<any, any>[]>([]);
   useLayoutEffect(() => {
     let newColumns = props.columns as ColumnDef<any, any>[];
@@ -146,7 +148,7 @@ export default function LegacyDataTable(props: DataTableProps): JSX.Element | nu
     } catch (_err) {}
   };
   return (
-    <>
+    <div className={isCompact ? "DataTable--compact" : ""}>
       <Box sx={{ display: "flex", gap: 2 }}>
         <Box sx={{ flexGrow: 1 }}>
           {props.searchInputId && <GlobalFilter id={props.searchInputId} onChange={(value: string) => table.setGlobalFilter(value)} />}
@@ -250,6 +252,6 @@ export default function LegacyDataTable(props: DataTableProps): JSX.Element | nu
         })}
         {rows.length === 0 && <Box sx={{ paddingInline: 2, paddingBlock: 2 }}>There is no data in the query with matching filters.</Box>}
       </Box>
-    </>
+    </div>
   );
 }
