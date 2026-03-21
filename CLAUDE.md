@@ -225,6 +225,8 @@ See CONTRIBUTING.md for the full step-by-step guide with code examples.
 
 After any code change, you MUST run these commands **in order** and ensure they all pass before considering the task complete. **Running `npm run format` is mandatory after every change — no exceptions.**
 
+1. **Always add JSDoc for ALL code in every change.** JSDoc is mandatory on every function, constant, type, interface, and any code you touch — JavaScript and TypeScript alike, no exceptions. Script files must start with a single-line `/** Description. */` file header.
+
 ```bash
 npm run lint             # ESLint (must have 0 errors)
 npm run typecheck        # TypeScript type check (must have 0 errors)
