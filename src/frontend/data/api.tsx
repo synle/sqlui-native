@@ -353,6 +353,25 @@ export class ProxyApi {
   }
 
   /**
+   * Upserts a folder item: updates if the item has an ID and already exists, otherwise adds.
+   * Used by the import flow to preserve original bookmark IDs.
+   * @param folderId - The folder ID.
+   * @param folderItem - The folder item to upsert.
+   */
+  static upsertFolderItem(folderId: string, folderItem: SqluiCore.FolderItem) {
+    if (folderItem.id) {
+      return _fetch<SqluiCore.FolderItem>(`/api/folder/${folderId}`, {
+        method: "put",
+        body: JSON.stringify(folderItem),
+      });
+    }
+    return _fetch<SqluiCore.FolderItem>(`/api/folder/${folderId}`, {
+      method: "post",
+      body: JSON.stringify(folderItem),
+    });
+  }
+
+  /**
    * Deletes an item from a folder.
    * @param folderId - The folder type/ID.
    * @param itemId - The item ID to delete.

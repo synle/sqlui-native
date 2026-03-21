@@ -23,7 +23,7 @@ import {
   useRetryConnection,
 } from "src/frontend/hooks/useConnection";
 import { useActiveConnectionQuery, useConnectionQueries } from "src/frontend/hooks/useConnectionQuery";
-import { useAddBookmarkItem } from "src/frontend/hooks/useFolderItems";
+import { useAddBookmarkItem, useGetBookmarkItems, useImportBookmarkItem } from "src/frontend/hooks/useFolderItems";
 import { useGetServerConfigs } from "src/frontend/hooks/useServerConfigs";
 import {
   useCloneSession,
@@ -36,7 +36,13 @@ import {
 import { useSetting } from "src/frontend/hooks/useSetting";
 import { useShowHide } from "src/frontend/hooks/useShowHide";
 import useToaster from "src/frontend/hooks/useToaster";
-import { createSystemNotification, getExportedConnection, getExportedQuery, useNavigate } from "src/frontend/utils/commonUtils";
+import {
+  createSystemNotification,
+  getExportedBookmark,
+  getExportedConnection,
+  getExportedQuery,
+  useNavigate,
+} from "src/frontend/utils/commonUtils";
 import { execute } from "src/frontend/utils/executeUtils";
 import { RecordDetailsPage } from "src/frontend/views/RecordPage";
 import appPackage from "src/package.json";
@@ -142,6 +148,8 @@ export default function MissionControl() {
   const { mutateAsync: duplicateConnection } = useDuplicateConnection();
   const { mutateAsync: deleteSession } = useDeleteSession();
   const { mutateAsync: addBookmarkItem } = useAddBookmarkItem();
+  const { data: bookmarkItems } = useGetBookmarkItems();
+  const { mutateAsync: importBookmarkItem } = useImportBookmarkItem();
 
   const onCloseQuery = async (query: SqluiFrontend.ConnectionQuery) => {
     try {
@@ -623,12 +631,11 @@ export default function MissionControl() {
 
   const onExportAll = async () => {
     await addToast({
-      message: `Exporting All Connections and Queries, please wait...`,
+      message: `Exporting All Connections, Queries, and Bookmarks, please wait...`,
     });
 
     const jsonContent: any[] = [];
 
-    // TODO: implement export all
     if (connections) {
       for (const connection of connections) {
         jsonContent.push(getExportedConnection(connection));
@@ -638,6 +645,12 @@ export default function MissionControl() {
     if (queries) {
       for (const query of queries) {
         jsonContent.push(getExportedQuery(query));
+      }
+    }
+
+    if (bookmarkItems) {
+      for (const bookmark of bookmarkItems) {
+        jsonContent.push(getExportedBookmark(bookmark));
       }
     }
 
@@ -800,7 +813,7 @@ export default function MissionControl() {
   const onImport = async (value = "") => {
     try {
       const rawJson = await prompt({
-        title: "Import Connections / Queries",
+        title: "Import Connections / Queries / Bookmarks",
         message: "Import",
         saveLabel: "Import",
         value: value,
@@ -820,9 +833,10 @@ export default function MissionControl() {
         message: "Importing, please wait...",
       });
 
-      // here we will attempt to import all the connections first before queries
+      // import order: connections first, then queries, then bookmarks
+      const importOrder: Record<string, number> = { connection: 0, query: 1, bookmark: 2 };
       jsonRows = jsonRows.sort((a, b) => {
-        return a._type.localeCompare(b._type); //note that query will go after connection (q > c)
+        return (importOrder[a._type] ?? 99) - (importOrder[b._type] ?? 99);
       });
 
       // check for duplicate id
@@ -838,16 +852,22 @@ export default function MissionControl() {
           const { _type, ...rawImportMetaData } = jsonRow;
           switch (_type) {
             case "connection":
+              // upsert: updates existing connection if ID matches, otherwise creates new
               await importConnection(rawImportMetaData);
               break;
 
             case "query":
               await connectionQueries.onImportQuery(jsonRow);
               break;
+
+            case "bookmark":
+              // upsert: updates existing bookmark if ID matches, otherwise creates new
+              await importBookmarkItem(rawImportMetaData as SqluiCore.FolderItem);
+              break;
           }
           successCount++;
         } catch (err) {
-          console.error("MissionControl:importConnection", jsonRow, err);
+          console.error("MissionControl:onImport", jsonRow, err);
           failedCount++;
         }
       }

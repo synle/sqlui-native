@@ -21,6 +21,17 @@ export function getExportedQuery(query: SqluiFrontend.ConnectionQuery) {
   return { _type: "query", ...{ id, name, sql, connectionId, databaseId, tableId } };
 }
 
+/**
+ * Converts a bookmark (folder item) to an exportable format with a type marker.
+ * Strips `createdAt`, `updatedAt`, and `type` fields; uses `_type: "bookmark"` instead.
+ * @param bookmark - The bookmark folder item to export.
+ * @returns An object with `_type: "bookmark"` and key bookmark fields.
+ */
+export function getExportedBookmark(bookmark: SqluiCore.FolderItem) {
+  const { createdAt: _ca, updatedAt: _ua, type: _type, ...rest } = bookmark;
+  return { _type: "bookmark", ...rest };
+}
+
 // misc utils
 const TO_BE_DELETED_LIST_ITEM = Symbol("to_be_deleted_list_item");
 
