@@ -98,9 +98,12 @@ jobs:
       # To add a new one: GitHub repo > Settings > Secrets and variables > Actions > New repository secret.
       - name: Export TEST_ secrets as env vars
         run: |
-          while IFS='=' read -r key value; do
-            echo "${key}=${value}" >> "$GITHUB_ENV"
-          done < <(echo '${{ toJSON(secrets) }}' | jq -r 'to_entries[] | select(.key | startswith("TEST_") and endswith("_CONNECTION")) | "\(.key)=\(.value)"')
+          echo '${{ toJSON(secrets) }}' | jq -r 'to_entries[] | select(.key | startswith("TEST_") and endswith("_CONNECTION")) | .key + "\n" + .value' | while read -r key && read -r value; do
+            delimiter="$(openssl rand -hex 16)"
+            echo "${key}<<${delimiter}" >> "$GITHUB_ENV"
+            echo "${value}" >> "$GITHUB_ENV"
+            echo "${delimiter}" >> "$GITHUB_ENV"
+          done
 
       - name: Run integration tests
         run: npm run test-integration
