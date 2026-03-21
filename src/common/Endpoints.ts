@@ -8,6 +8,7 @@ import {
   getDataAdapter,
   getDatabases,
   getTables,
+  listAllCachedColumns,
 } from "src/common/adapters/DataAdapterFactory";
 import {
   getConnectionsStorage,
@@ -268,6 +269,47 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
       console.error("Endpoints.ts:getColumns", err);
       res.status(500).json({ error: message });
     }
+  });
+
+  addDataEndpoint("get", "/api/schema/search", async (req, res) => {
+    const query = (req.query?.q || "").toString().toLowerCase().trim();
+
+    if (!query) {
+      return res.status(200).json([]);
+    }
+
+    const connectionsStorage = await getConnectionsStorage(req.headers["sqlui-native-session-id"]);
+    const connections = await connectionsStorage.list();
+    const connectionMap: Record<string, SqluiCore.ConnectionProps> = {};
+    for (const conn of connections) {
+      connectionMap[conn.id] = conn;
+    }
+
+    const allCached = listAllCachedColumns();
+    const results: SqluiCore.SchemaSearchResult[] = [];
+
+    for (const entry of allCached) {
+      const [connectionId, databaseId, tableId] = entry.id.split(":");
+      const conn = connectionMap[connectionId];
+      if (!conn) continue;
+
+      const tableMatches = tableId.toLowerCase().includes(query);
+
+      for (const column of entry.data) {
+        if (tableMatches || column.name.toLowerCase().includes(query) || column.type.toLowerCase().includes(query)) {
+          results.push({
+            connectionId,
+            connectionName: conn.name,
+            connectionString: conn.connection,
+            databaseId,
+            tableId,
+            column,
+          });
+        }
+      }
+    }
+
+    res.status(200).json(results);
   });
 
   addDataEndpoint("post", "/api/connection/:connectionId/connect", async (req, res) => {
