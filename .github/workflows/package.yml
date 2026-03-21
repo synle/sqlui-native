@@ -217,8 +217,8 @@ jobs:
           echo "| Lint | ${{ steps.lint.outcome == 'success' && ':white_check_mark: Passed' || ':x: Failed' }} |" >> $GITHUB_STEP_SUMMARY
 
   dist_windows_x64:
-    needs: [prebuild, create_release]
-    if: ${{ always() && needs.prebuild.result == 'success' }}
+    needs: [code_format, create_release]
+    if: ${{ always() && needs.code_format.result == 'success' }}
     runs-on: windows-latest
     steps:
       - name: Checkout repository
@@ -283,8 +283,8 @@ jobs:
             --clobber
 
   dist_windows_arm64:
-    needs: [prebuild, create_release]
-    if: ${{ always() && needs.prebuild.result == 'success' }}
+    needs: [code_format, create_release]
+    if: ${{ always() && needs.code_format.result == 'success' }}
     runs-on: windows-latest
     steps:
       - name: Checkout repository
@@ -329,8 +329,8 @@ jobs:
             --clobber
 
   dist_macos_arm64:
-    needs: [prebuild, create_release]
-    if: ${{ always() && needs.prebuild.result == 'success' }}
+    needs: [code_format, create_release]
+    if: ${{ always() && needs.code_format.result == 'success' }}
     runs-on: macos-latest
     steps:
       - name: Checkout repository
@@ -372,8 +372,8 @@ jobs:
             --clobber
 
   dist_macos_intel_x64:
-    needs: [prebuild, create_release]
-    if: ${{ always() && needs.prebuild.result == 'success' }}
+    needs: [code_format, create_release]
+    if: ${{ always() && needs.code_format.result == 'success' }}
     runs-on: macos-latest
     steps:
       - name: Checkout repository
@@ -415,8 +415,8 @@ jobs:
             --clobber
 
   dist_linux:
-    needs: [prebuild, create_release]
-    if: ${{ always() && needs.prebuild.result == 'success' }}
+    needs: [code_format, create_release]
+    if: ${{ always() && needs.code_format.result == 'success' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
