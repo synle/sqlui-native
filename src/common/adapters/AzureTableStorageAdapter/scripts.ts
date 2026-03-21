@@ -401,6 +401,17 @@ export class ConcreteDataScripts extends BaseDataScript {
     return `aztable://DefaultEndpointsProtocol=https;AccountName=<your_account_name>;AccountKey=<your_account_key>;EndpointSuffix=core.windows.net`;
   }
 
+  /** Returns Azure Table Storage-specific setup guide HTML for the connection form. */
+  getConnectionSetupGuide(): string {
+    return `
+      <strong>Azure Table Storage Setup</strong>
+      <ol>
+        <li><strong>Connection String</strong> -- Go to <strong>Azure Portal &gt; Storage Account &gt; Access keys</strong> and copy the full connection string.</li>
+        <li><strong>Format</strong> -- Prefix with <code>aztable://</code> followed by the connection string: <code>aztable://DefaultEndpointsProtocol=https;AccountName=...;AccountKey=...;EndpointSuffix=core.windows.net</code></li>
+      </ol>
+    `;
+  }
+
   /**
    * Returns a sample listEntities query for the given table input.
    * @param tableActionInput - The table context for which to generate the sample query.

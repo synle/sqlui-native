@@ -726,6 +726,20 @@ export class ConcreteDataScripts extends BaseDataScript {
     return `sfdc://{"username":"your_username","password":"your_password","securityToken":"your_token","loginUrl":"login.salesforce.com"}`;
   }
 
+  /** Returns Salesforce-specific setup guide HTML with checklist for configuring API access. */
+  getConnectionSetupGuide(): string {
+    return `
+      <strong>Salesforce Setup Checklist</strong>
+      <ol>
+        <li><strong>Security Token</strong> -- Go to Salesforce <strong>Setup &gt; My Personal Information &gt; Reset My Security Token</strong> and add the token from your email to the connection.</li>
+        <li><strong>Enable SOAP API Login</strong> -- Go to <strong>Setup &gt; Profiles &gt; [Your Profile] &gt; Edit</strong> and check <strong>"SOAP API Login Allowed"</strong> under Administrative Permissions.</li>
+        <li><strong>Enable OAuth Username-Password Flows</strong> -- Go to <strong>Setup &gt; OAuth and OpenID Connect Settings</strong> and turn on <strong>"Allow OAuth Username-Password Flows"</strong>.</li>
+        <li><strong>Connected App (optional)</strong> -- If SOAP API cannot be enabled, create a Connected App in <strong>Setup &gt; App Manager</strong> and add <code>clientId</code> and <code>clientSecret</code> to the connection JSON.</li>
+      </ol>
+      <a href="https://github.com/synle/sqlui-native/blob/main/CONTRIBUTING.md#salesforce-sfdc" target="_blank" rel="noopener">Full Salesforce setup guide</a>
+    `;
+  }
+
   /**
    * Returns a sample SELECT query for the given table input.
    * @param tableActionInput - The table context for which to generate the sample query.
