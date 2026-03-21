@@ -203,6 +203,7 @@ See CONTRIBUTING.md for the full step-by-step guide with code examples.
 - Unit tests are co-located with source files as `*.spec.ts`/`*.spec.tsx`
 - Integration tests exist for each adapter (require running database instances, run via `npm run test-integration`)
 - Integration tests use `*.integration.spec.ts` naming and are excluded from `npm run test-ci`
+- Cloud-based adapters (Azure Table Storage, Azure CosmosDB, Salesforce) require connection strings via environment variables (`TEST_AZ_TABLE_STORAGE_CONNECTION`, `TEST_AZ_COSMOSDB_CONNECTION`, `TEST_SFDC_CONNECTION`). Tests auto-skip when the env var is not set. In CI, these are mapped from GitHub secrets in `.github/workflows/integration-test.yml`
 - Known: `jsdom` environment tests may show errors if the package is not installed; this doesn't affect test results
 - Run `npm run test-ci` for CI mode (no watch), `npm test` for watch mode
 
