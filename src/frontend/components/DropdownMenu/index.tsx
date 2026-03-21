@@ -89,7 +89,7 @@ export default function DropdownMenu(props: DropdownMenuProps): JSX.Element | nu
             return (content = <Divider key={index} sx={{ marginBlock: 1 }} />);
           } else {
             content = (
-              <MenuItem onClick={(event) => handleMenuItemClick(event, index)}>
+              <MenuItem dense onClick={(event) => handleMenuItemClick(event, index)}>
                 {!option.startIcon ? null : <ListItemIcon>{option.startIcon}</ListItemIcon>}
                 <ListItemText>{option.label}</ListItemText>
               </MenuItem>
@@ -116,7 +116,7 @@ export default function DropdownMenu(props: DropdownMenuProps): JSX.Element | nu
               transformOrigin: placement === "bottom" ? "right top" : "right bottom",
             }}
           >
-            <Paper sx={{ maxHeight: maxHeight || "325px", overflow: "auto" }}>
+            <Paper sx={{ maxHeight: maxHeight || "70vh", overflow: "auto" }}>
               <ClickAwayListener onClickAway={onClose} mouseEvent="onMouseDown">
                 {popperBody}
               </ClickAwayListener>

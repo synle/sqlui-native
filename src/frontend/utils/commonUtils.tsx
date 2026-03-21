@@ -81,6 +81,23 @@ export async function createSystemNotification(message: string) {
 }
 
 /**
+ * Formats a date as a short locale string without seconds and with 2-digit year.
+ * @param date - The date to format (defaults to now).
+ * @returns A short date string like "3/21/26, 12:22 PM".
+ */
+export function formatShortDate(date: Date = new Date()): string {
+  return date
+    .toLocaleString(undefined, {
+      year: "2-digit",
+      month: "numeric",
+      day: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+    })
+    .replace(",", "");
+}
+
+/**
  * Wraps react-router's useNavigate with setTimeout(0) to defer navigation,
  * preventing "state update on unmounted component" warnings in React 17.
  * @returns A deferred NavigateFunction.
