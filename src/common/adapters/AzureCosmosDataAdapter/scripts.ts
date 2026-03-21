@@ -537,6 +537,17 @@ export class ConcreteDataScripts extends BaseDataScript {
     return `${dialect}://AccountEndpoint=some_cosmos_endpoint;AccountKey=some_cosmos_account_key`;
   }
 
+  /** Returns Azure CosmosDB-specific setup guide HTML for the connection form. */
+  getConnectionSetupGuide(): string {
+    return `
+      <strong>Azure CosmosDB Setup</strong>
+      <ol>
+        <li><strong>Connection String</strong> -- Go to <strong>Azure Portal &gt; CosmosDB Account &gt; Keys</strong> and copy the <strong>AccountEndpoint</strong> and <strong>AccountKey</strong>.</li>
+        <li><strong>Format</strong> -- Prefix with <code>cosmosdb://</code> followed by semicolon-delimited key=value pairs: <code>cosmosdb://AccountEndpoint=https://your-account.documents.azure.com:443/;AccountKey=your_key</code></li>
+      </ol>
+    `;
+  }
+
   /**
    * Returns a sample SELECT * query for the given table input.
    * @param tableActionInput - The table context for which to generate the sample query.

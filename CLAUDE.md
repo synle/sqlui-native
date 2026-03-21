@@ -47,6 +47,22 @@ The app runs in **Electron mode** (`npm start`) or **mocked server mode** (`npm 
 
 All property names in type definitions and data models use **camelCase** — never snake_case. This applies to all fields including timestamps (`createdAt`, `updatedAt`), identifiers (`connectionId`, `sessionId`), and flags (`allowNull`, `primaryKey`). Follow this convention when adding new properties.
 
+### HTML Strings
+
+When returning multi-line HTML strings (e.g., from adapter methods like `getConnectionSetupGuide`), use **template literals** (backticks) with the HTML written inline — do NOT use array `.join("")`. Example:
+
+```typescript
+getConnectionSetupGuide(): string {
+  return `
+    <strong>Title</strong>
+    <ol>
+      <li><strong>Step 1</strong> -- Description here.</li>
+      <li><strong>Step 2</strong> -- Another description.</li>
+    </ol>
+  `;
+}
+```
+
 ### Timestamps
 
 All persisted models (`Session`, `ConnectionProps`, `ConnectionQuery`, `FolderItem`, `DataSnapshot`) include `createdAt` and `updatedAt` fields (epoch ms). These are **auto-set by `PersistentStorage`** — `createdAt` and `updatedAt` on `add()`, `updatedAt` on `update()`. Do NOT set them manually in endpoint handlers.

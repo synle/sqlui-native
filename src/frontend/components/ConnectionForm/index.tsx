@@ -3,8 +3,9 @@ import LoadingButton from "@mui/lab/LoadingButton";
 import { Alert, Box, Button, Link, TextField, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import BaseDataAdapter from "src/common/adapters/BaseDataAdapter/index";
-import { getDialectTypeFromConnectionString, getSampleConnectionString } from "src/common/adapters/DataScriptFactory";
+import { getConnectionSetupGuide, getDialectTypeFromConnectionString } from "src/common/adapters/DataScriptFactory";
 import ConnectionHint from "src/frontend/components/ConnectionForm/ConnectionHint";
+import HTMLContent from "src/frontend/components/HTMLContent";
 import { useCommands } from "src/frontend/components/MissionControl";
 import TestConnectionButton from "src/frontend/components/TestConnectionButton";
 import { useGetConnectionById, useUpsertConnection } from "src/frontend/hooks/useConnection";
@@ -240,89 +241,7 @@ function MainConnectionForm(props: MainConnectionFormProps): JSX.Element | null 
           maxRows={10}
         />
       </div>
-      {getDialectTypeFromConnectionString(props.connection) === "sfdc" && (
-        <Alert severity="info" sx={{ my: 1 }}>
-          <Typography variant="subtitle2" sx={{ fontWeight: "bold", mb: 0.5 }}>
-            Salesforce Setup Checklist
-          </Typography>
-          <Typography variant="body2" component="div">
-            <ol style={{ margin: 0, paddingLeft: "1.2em" }}>
-              <li>
-                <strong>Security Token</strong> -- Go to Salesforce{" "}
-                <strong>Setup &gt; My Personal Information &gt; Reset My Security Token</strong> and add the token from your email to the
-                connection.
-              </li>
-              <li>
-                <strong>Enable SOAP API Login</strong> -- Go to <strong>Setup &gt; Profiles &gt; [Your Profile] &gt; Edit</strong> and check{" "}
-                <strong>"SOAP API Login Allowed"</strong> under Administrative Permissions.
-              </li>
-              <li>
-                <strong>Enable OAuth Username-Password Flows</strong> -- Go to <strong>Setup &gt; OAuth and OpenID Connect Settings</strong>{" "}
-                and turn on <strong>"Allow OAuth Username-Password Flows"</strong>.
-              </li>
-              <li>
-                <strong>Connected App (optional)</strong> -- If SOAP API cannot be enabled, create a Connected App in{" "}
-                <strong>Setup &gt; App Manager</strong> and add <code>clientId</code> and <code>clientSecret</code> to the connection JSON.
-              </li>
-            </ol>
-            <Link
-              href="https://github.com/synle/sqlui-native/blob/main/CONTRIBUTING.md#salesforce-sfdc"
-              target="_blank"
-              rel="noopener"
-              sx={{ mt: 0.5, display: "inline-block" }}
-            >
-              Full Salesforce setup guide
-            </Link>
-          </Typography>
-        </Alert>
-      )}
-      {getDialectTypeFromConnectionString(props.connection) === "aztable" && (
-        <Alert severity="info" sx={{ my: 1 }}>
-          <Typography variant="subtitle2" sx={{ fontWeight: "bold", mb: 0.5 }}>
-            Azure Table Storage Setup
-          </Typography>
-          <Typography variant="body2" component="div">
-            <ol style={{ margin: 0, paddingLeft: "1.2em" }}>
-              <li>
-                <strong>Connection String</strong> -- Go to <strong>Azure Portal &gt; Storage Account &gt; Access keys</strong> and copy the
-                full connection string.
-              </li>
-              <li>
-                <strong>Format</strong> -- Prefix with <code>aztable://</code> followed by the connection string:{" "}
-                <code>aztable://DefaultEndpointsProtocol=https;AccountName=...;AccountKey=...;EndpointSuffix=core.windows.net</code>
-              </li>
-            </ol>
-          </Typography>
-        </Alert>
-      )}
-      {getDialectTypeFromConnectionString(props.connection) === "cosmosdb" && (
-        <Alert severity="info" sx={{ my: 1 }}>
-          <Typography variant="subtitle2" sx={{ fontWeight: "bold", mb: 0.5 }}>
-            Azure CosmosDB Setup
-          </Typography>
-          <Typography variant="body2" component="div">
-            <ol style={{ margin: 0, paddingLeft: "1.2em" }}>
-              <li>
-                <strong>Connection String</strong> -- Go to <strong>Azure Portal &gt; CosmosDB Account &gt; Keys</strong> and copy the{" "}
-                <strong>AccountEndpoint</strong> and <strong>AccountKey</strong>.
-              </li>
-              <li>
-                <strong>Format</strong> -- Prefix with <code>cosmosdb://</code> followed by semicolon-delimited key=value pairs:{" "}
-                <code>cosmosdb://AccountEndpoint=https://your-account.documents.azure.com:443/;AccountKey=your_key</code>
-              </li>
-            </ol>
-          </Typography>
-        </Alert>
-      )}
-      {["mysql", "mariadb", "mssql", "postgres", "postgresql", "sqlite", "cassandra", "mongodb", "mongodb+srv", "redis", "rediss"].includes(
-        getDialectTypeFromConnectionString(props.connection),
-      ) && (
-        <Alert severity="info" sx={{ my: 1 }}>
-          <Typography variant="body2">
-            <strong>Expected format:</strong> <code>{getSampleConnectionString(getDialectTypeFromConnectionString(props.connection))}</code>
-          </Typography>
-        </Alert>
-      )}
+      <ConnectionSetupGuideAlert dialect={getDialectTypeFromConnectionString(props.connection)} />
       {showSqliteDatabasePathSelection && (
         <div className="FormInput__Row">
           <input
@@ -377,5 +296,23 @@ function MainConnectionForm(props: MainConnectionFormProps): JSX.Element | null 
         </div>
       )}
     </form>
+  );
+}
+
+/**
+ * Renders a setup guide alert for the detected dialect, showing connection string format and setup steps.
+ * @param props - Contains the detected dialect string.
+ * @returns The rendered alert, or null if no guide is available.
+ */
+function ConnectionSetupGuideAlert(props: { dialect: string }): JSX.Element | null {
+  const guide = getConnectionSetupGuide(props.dialect);
+  if (!guide) {
+    return null;
+  }
+
+  return (
+    <Alert severity="info" sx={{ my: 1 }}>
+      <HTMLContent html={guide} />
+    </Alert>
   );
 }
