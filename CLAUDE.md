@@ -223,13 +223,13 @@ See CONTRIBUTING.md for the full step-by-step guide with code examples.
 
 ## Pre-commit Checklist
 
-After any code change, you MUST run these commands and ensure they all pass before considering the task complete. **Running `npm run format` is mandatory after every change — no exceptions.**
+After any code change, you MUST run these commands **in order** and ensure they all pass before considering the task complete. **Running `npm run format` is mandatory after every change — no exceptions.**
 
 ```bash
-npm run format           # Prettier formatting (MANDATORY after every change)
 npm run lint             # ESLint (must have 0 errors)
 npm run typecheck        # TypeScript type check (must have 0 errors)
 npm run test-ci          # All tests must pass
+npm run format           # Prettier formatting (MANDATORY — always run LAST)
 ```
 
 ## Error Handling Convention
