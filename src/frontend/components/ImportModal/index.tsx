@@ -7,7 +7,7 @@ import FormControl from "@mui/material/FormControl";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Radio from "@mui/material/Radio";
 import RadioGroup from "@mui/material/RadioGroup";
-import React, { useRef, useState } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import CodeEditorBox from "src/frontend/components/CodeEditorBox";
 import useToaster from "src/frontend/hooks/useToaster";
 
@@ -29,9 +29,53 @@ type ImportModalProps = {
 export default function ImportModal(props: ImportModalProps): JSX.Element {
   const [value, setValue] = useState(props.initialValue || "");
   const [mode, setMode] = useState<ImportMode>("keepIds");
-  const hasValue = !!value.trim();
+  const [hasContent, setHasContent] = useState(!!props.initialValue?.trim());
+  const [error, setError] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const liveValueRef = useRef(props.initialValue || "");
   const { add: addToast } = useToaster();
+
+  /** Supported _type values for import rows. */
+  const VALID_TYPES = ["connection", "query", "bookmark"];
+
+  /**
+   * Validates the raw JSON string and returns an error message or empty string if valid.
+   * @param raw - The raw JSON string to validate.
+   * @returns Error message string, or empty string if valid.
+   */
+  const validate = (raw: string): string => {
+    if (!raw.trim()) return "";
+    let parsed: any;
+    try {
+      parsed = JSON.parse(raw);
+    } catch (_err) {
+      return "Invalid JSON format. Please check your input.";
+    }
+    const rows = Array.isArray(parsed) ? parsed : [parsed];
+    for (const row of rows) {
+      if (!row._type || !VALID_TYPES.includes(row._type)) {
+        return `Each entry must have a valid _type (${VALID_TYPES.join(", ")}). Please check your input.`;
+      }
+    }
+    return "";
+  };
+
+  /** Handles live content changes from the editor without updating value state. */
+  const onLiveChange = useCallback((newValue: string) => {
+    liveValueRef.current = newValue;
+    const trimmed = newValue.trim();
+    setHasContent(!!trimmed);
+    setError(trimmed ? validate(trimmed) : "");
+  }, []);
+
+  /** Updates value state and syncs hasContent flag, live ref, and validation. */
+  const updateValue = (newValue: string) => {
+    setValue(newValue);
+    liveValueRef.current = newValue;
+    const trimmed = newValue.trim();
+    setHasContent(!!trimmed);
+    setError(trimmed ? validate(trimmed) : "");
+  };
 
   /** Reads a file and sets its text content into the editor. */
   const loadFile = (file: File) => {
@@ -39,7 +83,7 @@ export default function ImportModal(props: ImportModalProps): JSX.Element {
     const reader = new FileReader();
     reader.onload = () => {
       if (typeof reader.result === "string") {
-        setValue(reader.result);
+        updateValue(reader.result);
       }
     };
     reader.readAsText(file);
@@ -82,7 +126,8 @@ export default function ImportModal(props: ImportModalProps): JSX.Element {
       <Box sx={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
         <CodeEditorBox
           value={value}
-          onChange={setValue}
+          onChange={updateValue}
+          onLiveChange={onLiveChange}
           language="json"
           autoFocus={true}
           wordWrap={true}
@@ -93,7 +138,7 @@ export default function ImportModal(props: ImportModalProps): JSX.Element {
       </Box>
       <Box>
         <input ref={fileInputRef} type="file" accept=".json" onChange={onFileSelected} style={{ display: "none" }} />
-        <Button variant="text" size="small" startIcon={<FileOpenIcon />} onClick={() => fileInputRef.current?.click()}>
+        <Button variant="outlined" size="small" startIcon={<FileOpenIcon />} onClick={() => fileInputRef.current?.click()}>
           Load from File
         </Button>
       </Box>
@@ -104,12 +149,29 @@ export default function ImportModal(props: ImportModalProps): JSX.Element {
         </RadioGroup>
       </FormControl>
       <Box sx={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 1 }}>
-        {!hasValue && (
+        {!hasContent && (
           <Alert severity="error" sx={{ py: 0 }}>
             This input is required
           </Alert>
         )}
-        <Button variant="outlined" disabled={!hasValue} onClick={() => props.onImport(value.trim(), mode)}>
+        {hasContent && error && (
+          <Alert severity="error" sx={{ py: 0 }}>
+            {error}
+          </Alert>
+        )}
+        <Button
+          variant="contained"
+          disabled={!hasContent || !!error}
+          onClick={() => {
+            const raw = (liveValueRef.current || value).trim();
+            const validationError = validate(raw);
+            if (validationError) {
+              setError(validationError);
+              return;
+            }
+            props.onImport(raw, mode);
+          }}
+        >
           Import
         </Button>
       </Box>

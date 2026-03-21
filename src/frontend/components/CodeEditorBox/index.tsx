@@ -43,6 +43,8 @@ export type CodeEditorProps = {
   hideEditorSize?: boolean;
   hideEditorSyntax?: boolean;
   completionItems?: CompletionItem[];
+  /** Fires on every content change (debounced) without feeding back into value. */
+  onLiveChange?: (newValue: string) => void;
 };
 
 /** Extended editor props with blur callback, used by AdvancedEditor and SimpleEditor implementations. */
@@ -185,6 +187,7 @@ export default function CodeEditorBox(props: CodeEditorProps): JSX.Element | nul
           value={props.value}
           placeholder={props.placeholder}
           onBlur={onChange}
+          onLiveChange={props.onLiveChange}
           autoFocus={props.autoFocus}
           required={props.required}
           disabled={props.disabled}
@@ -210,6 +213,7 @@ export default function CodeEditorBox(props: CodeEditorProps): JSX.Element | nul
           language={languageToUse}
           value={props.value}
           onBlur={onChange}
+          onLiveChange={props.onLiveChange}
           wordWrap={wordWrap}
           placeholder={props.placeholder}
           disabled={props.disabled}
