@@ -911,7 +911,7 @@ export default function MissionControl() {
   const onCheckForUpdate = async () => {
     let contentDom: React.ReactNode;
 
-    const newVersion = await fetch("https://synle.github.io/sqlui-native/package.json")
+    const newVersion = await fetch("https://synle.github.io/sqlui-native/release.json")
       .then((r) => r.json())
       .then((r) => r.version);
 
@@ -926,11 +926,36 @@ export default function MissionControl() {
         </>
       );
     } else {
-      const downloadLink = `https://synle.github.io/sqlui-native/`;
+      const baseDownloadUrl = `https://github.com/synle/sqlui-native/releases/download/${newVersion}/sqlui-native`;
+      const releasePageUrl = `https://github.com/synle/sqlui-native/releases/tag/${newVersion}`;
 
-      const onDownloadLatestVersion = () => {
-        selectCommand({ event: "clientEvent/openExternalUrl", data: downloadLink });
+      /** Returns platform-specific download links based on the user's OS. */
+      const getDownloadLinks = (): { label: string; url: string }[] => {
+        const platform = window?.process?.platform;
+
+        if (platform === "darwin") {
+          return [
+            { label: "macOS (Apple Silicon)", url: `${baseDownloadUrl}-${newVersion}-arm64.dmg` },
+            { label: "macOS (Intel x64)", url: `${baseDownloadUrl}-${newVersion}-x64.dmg` },
+          ];
+        }
+
+        if (platform === "win32") {
+          return [
+            { label: "Windows (x64)", url: `${baseDownloadUrl}-${newVersion}-x64.exe` },
+            { label: "Windows (ARM64)", url: `${baseDownloadUrl}-${newVersion}-arm64.exe` },
+          ];
+        }
+
+        // Linux or unknown
+        return [
+          { label: "Linux (.deb)", url: `${baseDownloadUrl}-${newVersion}.deb` },
+          { label: "Linux (.rpm)", url: `${baseDownloadUrl}-${newVersion}.rpm` },
+          { label: "Linux (.AppImage)", url: `${baseDownloadUrl}-${newVersion}.AppImage` },
+        ];
       };
+
+      const downloadLinks = getDownloadLinks();
 
       contentDom = (
         <>
@@ -941,13 +966,21 @@ export default function MissionControl() {
           <Box className="FormInput__Row">
             <label>Latest version:</label>
             {newVersion}
-            <span>
-              (
-              <Link onClick={onDownloadLatestVersion} sx={{ cursor: "pointer" }}>
-                Download it here
+          </Box>
+          <Box className="FormInput__Row" sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+            <label>Download:</label>
+            {downloadLinks.map((link) => (
+              <Link
+                key={link.label}
+                onClick={() => selectCommand({ event: "clientEvent/openExternalUrl", data: link.url })}
+                sx={{ cursor: "pointer" }}
+              >
+                {link.label}
               </Link>
-              )
-            </span>
+            ))}
+            <Link onClick={() => selectCommand({ event: "clientEvent/openExternalUrl", data: releasePageUrl })} sx={{ cursor: "pointer" }}>
+              All Downloads
+            </Link>
           </Box>
         </>
       );
