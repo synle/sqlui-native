@@ -230,6 +230,14 @@ export function getSampleConnectionString(dialect?: string) {
 }
 
 /**
+ * Returns an HTML string with setup instructions for the connection form.
+ * @param dialect - The dialect identifier.
+ */
+export function getConnectionSetupGuide(dialect?: string): string {
+  return _getImplementation(dialect)?.getConnectionSetupGuide(dialect as SqluiCore.Dialect) || "";
+}
+
+/**
  * Generates and formats a sample SELECT query for a given table input.
  * @param actionInput - The table input containing dialect, table, column, and query size info.
  * @returns The formatted query string, or empty string if not supported.

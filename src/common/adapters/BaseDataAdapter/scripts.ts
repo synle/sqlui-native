@@ -135,6 +135,19 @@ export default abstract class BaseDataScript implements IDataScript {
   }
 
   /**
+   * Returns an HTML string with setup instructions for the connection form.
+   * Default shows the sample connection string. Override for dialect-specific guides.
+   * @param dialect - The dialect identifier.
+   */
+  getConnectionSetupGuide(dialect?: SqluiCore.Dialect): string {
+    const sample = this.getSampleConnectionString(dialect);
+    if (!sample) {
+      return "";
+    }
+    return `<strong>Expected format:</strong> <code>${sample}</code>`;
+  }
+
+  /**
    * Returns a sample SELECT query for a given table. Override to provide dialect-specific queries.
    * @param actionInput - The table input with dialect, table, and column info.
    */

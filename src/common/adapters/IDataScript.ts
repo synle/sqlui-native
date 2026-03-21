@@ -66,6 +66,12 @@ export default interface IDataScript {
    */
   getSampleConnectionString: (dialect?: SqluiCore.Dialect) => string;
   /**
+   * Returns an HTML string with setup instructions for the connection form.
+   * Displayed inside an info alert to help users build their connection string.
+   * @param dialect - The dialect identifier.
+   */
+  getConnectionSetupGuide: (dialect?: SqluiCore.Dialect) => string;
+  /**
    * Returns a sample SELECT query for a given table.
    * @param tableActionInput - The table input containing dialect, table, and column info.
    */
