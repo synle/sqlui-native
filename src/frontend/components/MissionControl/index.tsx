@@ -917,29 +917,32 @@ export default function MissionControl() {
     const baseDownloadUrl = `https://github.com/synle/sqlui-native/releases/download/${newVersion}/sqlui-native`;
     const releasePageUrl = `https://github.com/synle/sqlui-native/releases/tag/${newVersion}`;
 
-    /** Returns platform-specific download links based on the user's OS. */
-    const getDownloadLinks = (): { label: string; url: string }[] => {
+    /** Returns platform-specific download links with the recommended one first based on OS and architecture. */
+    const getDownloadLinks = (): { label: string; url: string; recommended: boolean }[] => {
       const platform = window?.process?.platform;
+      const arch = window?.process?.arch || "";
 
       if (platform === "darwin") {
+        const isArm = arch === "arm64";
         return [
-          { label: "macOS (Apple Silicon)", url: `${baseDownloadUrl}-${newVersion}-arm64.dmg` },
-          { label: "macOS (Intel x64)", url: `${baseDownloadUrl}-${newVersion}-x64.dmg` },
+          { label: "macOS (Apple Silicon)", url: `${baseDownloadUrl}-${newVersion}-arm64.dmg`, recommended: isArm },
+          { label: "macOS (Intel x64)", url: `${baseDownloadUrl}-${newVersion}-x64.dmg`, recommended: !isArm },
         ];
       }
 
       if (platform === "win32") {
+        const isArm = arch === "arm64";
         return [
-          { label: "Windows (x64)", url: `${baseDownloadUrl}-${newVersion}-x64.exe` },
-          { label: "Windows (ARM64)", url: `${baseDownloadUrl}-${newVersion}-arm64.exe` },
+          { label: "Windows (x64)", url: `${baseDownloadUrl}-${newVersion}-x64.exe`, recommended: !isArm },
+          { label: "Windows (ARM64)", url: `${baseDownloadUrl}-${newVersion}-arm64.exe`, recommended: isArm },
         ];
       }
 
-      // Linux or unknown
+      // Linux or unknown — no architecture detection, show all
       return [
-        { label: "Linux (.deb)", url: `${baseDownloadUrl}-${newVersion}.deb` },
-        { label: "Linux (.rpm)", url: `${baseDownloadUrl}-${newVersion}.rpm` },
-        { label: "Linux (.AppImage)", url: `${baseDownloadUrl}-${newVersion}.AppImage` },
+        { label: "Linux (.deb)", url: `${baseDownloadUrl}-${newVersion}.deb`, recommended: false },
+        { label: "Linux (.rpm)", url: `${baseDownloadUrl}-${newVersion}.rpm`, recommended: false },
+        { label: "Linux (.AppImage)", url: `${baseDownloadUrl}-${newVersion}.AppImage`, recommended: false },
       ];
     };
 
@@ -964,9 +967,10 @@ export default function MissionControl() {
             <Link
               key={link.label}
               onClick={() => selectCommand({ event: "clientEvent/openExternalUrl", data: link.url })}
-              sx={{ cursor: "pointer" }}
+              sx={{ cursor: "pointer", fontWeight: link.recommended ? "bold" : "normal" }}
             >
               {link.label}
+              {link.recommended ? " (Recommended)" : ""}
             </Link>
           ))}
           <Link onClick={() => selectCommand({ event: "clientEvent/openExternalUrl", data: releasePageUrl })} sx={{ cursor: "pointer" }}>
