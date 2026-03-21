@@ -95,15 +95,17 @@ export function TreeRowRenderer(props: TreeRowRendererProps) {
     case "table-header": {
       const { connectionId, databaseId, tableName, isSelected, isExpanded, visibilityKey } = row;
       return (
-        <AccordionHeader
-          expanded={isExpanded}
-          onToggle={() => onToggle(visibilityKey)}
-          className={isSelected ? "selected TableDescription" : "TableDescription"}
-        >
-          <TableRowsIcon color="success" fontSize="inherit" />
-          <span>{tableName}</span>
-          <TableActions connectionId={connectionId} databaseId={databaseId} tableId={tableName} />
-        </AccordionHeader>
+        <div data-tree-key={visibilityKey}>
+          <AccordionHeader
+            expanded={isExpanded}
+            onToggle={() => onToggle(visibilityKey)}
+            className={isSelected ? "selected TableDescription" : "TableDescription"}
+          >
+            <TableRowsIcon color="success" fontSize="inherit" />
+            <span>{tableName}</span>
+            <TableActions connectionId={connectionId} databaseId={databaseId} tableId={tableName} />
+          </AccordionHeader>
+        </div>
       );
     }
 

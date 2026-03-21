@@ -240,6 +240,16 @@ export module SqluiCore {
   /** Audit type for query version history entries. */
   export type QueryVersionAuditType = "execution" | "delta";
 
+  /** A single result from a schema search, identifying a matched column and its location. */
+  export type SchemaSearchResult = {
+    connectionId: string;
+    connectionName: string;
+    connectionString: string;
+    databaseId: string;
+    tableId: string;
+    column: ColumnMetaData;
+  };
+
   /** Dictionary of key-value pairs representing a single data snapshot row. */
   export type DataSnapshotItemDictionary = Record<string, any>;
 
@@ -458,6 +468,7 @@ export module SqluiEnums {
     | "clientEvent/showCommandPalette"
     | "clientEvent/showConnectionHelper"
     | "clientEvent/showQueryHelp"
+    | "clientEvent/schema/search"
     | "clientEvent/showSettings"
     | "clientEvent/tableRenderer"
     | "clientEvent/toggleDevtools";

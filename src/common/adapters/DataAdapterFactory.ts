@@ -70,6 +70,19 @@ function setCachedColumns(connectionId: string, databaseId: string, tableId: str
 }
 
 /**
+ * Returns all cached column entries from disk storage.
+ * Each entry has an ID in the format "connectionId:databaseId:tableId" and a data array of columns.
+ * @returns All cached column entries.
+ */
+export function listAllCachedColumns() {
+  try {
+    return columnCacheStorage.list();
+  } catch (_err) {
+    return [];
+  }
+}
+
+/**
  * Clears all cached column data for a given connection.
  * @param connectionId - The connection ID whose cached columns should be removed.
  */

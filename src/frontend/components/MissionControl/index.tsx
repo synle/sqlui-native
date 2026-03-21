@@ -9,6 +9,7 @@ import { BookmarksItemListModalContent } from "src/frontend/components/Bookmarks
 import CodeEditorBox from "src/frontend/components/CodeEditorBox";
 import CommandPalette from "src/frontend/components/CommandPalette";
 import ConnectionHelper from "src/frontend/components/ConnectionHelper";
+import SchemaSearchModal from "src/frontend/components/SchemaSearchModal";
 import SessionSelectionForm from "src/frontend/components/SessionSelectionForm";
 import Settings, { ChangeSoftDeleteInput } from "src/frontend/components/Settings";
 import { downloadText } from "src/frontend/data/file";
@@ -998,6 +999,48 @@ export default function MissionControl() {
     });
   };
 
+  const onSchemaSearch = async () => {
+    try {
+      const onNavigate = (connectionId: string, databaseId: string, tableId: string) => {
+        dismissDialog();
+
+        // Check if the connection still exists
+        const conn = connections?.find((c) => c.id === connectionId);
+        if (!conn) {
+          alert("This connection no longer exists in the current session.");
+          return;
+        }
+
+        // Expand the tree path: connection > database > table
+        const branchesToReveal = [connectionId, [connectionId, databaseId].join(" > "), [connectionId, databaseId, tableId].join(" > ")];
+
+        for (const branch of branchesToReveal) {
+          onToggleConnectionVisible(branch, true);
+        }
+
+        // Scroll to and flash the target element after DOM updates
+        setTimeout(() => {
+          const targetKey = [connectionId, databaseId, tableId].join(" > ");
+          const targetEl = document.querySelector(`[data-tree-key="${CSS.escape(targetKey)}"]`);
+          if (targetEl) {
+            targetEl.scrollIntoView({ block: "center" });
+            targetEl.classList.add("schema-search-flash");
+            setTimeout(() => targetEl.classList.remove("schema-search-flash"), 2000);
+          }
+        }, 200);
+      };
+
+      await modal({
+        title: "Schema Search",
+        message: <SchemaSearchModal onNavigate={onNavigate} />,
+        showCloseButton: true,
+        size: "md",
+      });
+    } catch (_err) {
+      // user dismissed dialog
+    }
+  };
+
   const onShowSettings = async () => {
     await modal({
       title: "Settings",
@@ -1037,6 +1080,10 @@ export default function MissionControl() {
 
         case "clientEvent/checkForUpdate":
           onCheckForUpdate();
+          break;
+
+        case "clientEvent/schema/search":
+          onSchemaSearch();
           break;
 
         case "clientEvent/showSettings":
@@ -1527,6 +1574,15 @@ export default function MissionControl() {
               }
             } catch (err) {
               console.error("index.tsx:preventDefault", err);
+            }
+            break;
+
+          case "F":
+            // Cmd+Shift+F / Ctrl+Shift+F / Alt+Shift+F to open Schema Search
+            if (e.shiftKey) {
+              e.stopPropagation();
+              e.preventDefault();
+              selectCommand({ event: "clientEvent/schema/search" });
             }
             break;
 

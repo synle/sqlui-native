@@ -416,6 +416,15 @@ export class ProxyApi {
     });
   }
 
+  /**
+   * Searches the cached schema metadata for columns/tables matching a query string.
+   * @param query - The search term to match against table names, column names, and column types.
+   * @returns Array of schema search results.
+   */
+  static searchSchema(query: string) {
+    return _fetch<SqluiCore.SchemaSearchResult[]>(`/api/schema/search?q=${encodeURIComponent(query)}`);
+  }
+
   /** Fetches all query version history entries as folder items. */
   static getQueryVersionHistory() {
     return _fetch<SqluiCore.FolderItem[]>(`/api/queryVersionHistory`);

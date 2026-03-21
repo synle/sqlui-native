@@ -9,6 +9,7 @@ import HomeIcon from "@mui/icons-material/Home";
 import InfoIcon from "@mui/icons-material/Info";
 import KeyboardCommandKeyIcon from "@mui/icons-material/KeyboardCommandKey";
 import MenuIcon from "@mui/icons-material/Menu";
+import SearchIcon from "@mui/icons-material/Search";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import PhotoSizeSelectSmallIcon from "@mui/icons-material/PhotoSizeSelectSmall";
 import SettingsIcon from "@mui/icons-material/Settings";
@@ -81,6 +82,11 @@ export default function AppHeader() {
       label: "Command Palette",
       onClick: () => selectCommand({ event: "clientEvent/showCommandPalette" }),
       startIcon: <KeyboardCommandKeyIcon />,
+    },
+    {
+      label: "Search Schema",
+      onClick: () => selectCommand({ event: "clientEvent/schema/search" }),
+      startIcon: <SearchIcon />,
     },
     {
       label: "Data Migration",
