@@ -55,6 +55,16 @@ export default function AdvancedEditor(props: AdvancedEditorProps): JSX.Element 
           props.onBlur && props.onBlur(newEditor.getValue() || "");
         });
 
+        if (props.onLiveChange) {
+          let liveTimer: ReturnType<typeof setTimeout> | null = null;
+          newEditor.onDidChangeModelContent(() => {
+            if (liveTimer) clearTimeout(liveTimer);
+            liveTimer = setTimeout(() => {
+              props.onLiveChange!(newEditor.getValue() || "");
+            }, 400);
+          });
+        }
+
         // clean up the model as we don't need it while it's active
         if (props.id && EDITOR_MODELS_MAP[props.id]) {
           newEditor.setModel(EDITOR_MODELS_MAP[props.id]);
