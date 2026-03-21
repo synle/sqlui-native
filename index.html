@@ -24,6 +24,21 @@
           }
         }
 
+        @keyframes schema-search-flash {
+          0%,
+          100% {
+            background-color: transparent;
+          }
+          25%,
+          75% {
+            background-color: rgba(25, 118, 210, 0.25);
+          }
+        }
+
+        .schema-search-flash .Accordion__Header {
+          animation: schema-search-flash 0.6s ease-in-out 3;
+        }
+
         #initial-app-loader {
           display: flex;
           justify-content: center;
