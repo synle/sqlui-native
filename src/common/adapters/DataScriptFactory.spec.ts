@@ -1,5 +1,12 @@
 import fs from "fs";
-import { getDatabaseActions, getSampleConnectionString, getTableActions } from "src/common/adapters/DataScriptFactory";
+import {
+  getCodeSnippet,
+  getConnectionActions,
+  getConnectionSetupGuide,
+  getDatabaseActions,
+  getSampleConnectionString,
+  getTableActions,
+} from "src/common/adapters/DataScriptFactory";
 import { SqlAction, SqluiCore } from "typings";
 
 type GuideMetaData = {
@@ -155,6 +162,71 @@ Query Guides:
     expect(scripts).toMatchSnapshot();
     addGuideText("sfdc", connectionString, scripts);
   });
+
+  // Connection actions tests
+  const connectionDialects: SqluiCore.Dialect[] = [
+    "mysql",
+    "mariadb",
+    "mssql",
+    "postgres",
+    "sqlite",
+    "cassandra",
+    "mongodb",
+    "redis",
+    "cosmosdb",
+    "aztable",
+    "sfdc",
+  ];
+
+  for (const dialect of connectionDialects) {
+    test(`Connection actions - ${dialect}`, () => {
+      const actions = getConnectionActions({
+        dialect,
+        connectionId: "connection1",
+      });
+      expect(Array.isArray(actions)).toBe(true);
+    });
+  }
+
+  // Connection setup guide tests
+  for (const dialect of connectionDialects) {
+    test(`Connection setup guide - ${dialect}`, () => {
+      const guide = getConnectionSetupGuide(dialect);
+      expect(typeof guide).toBe("string");
+    });
+  }
+
+  // Code snippet tests
+  const codeSnippetLanguages: SqluiCore.LanguageMode[] = ["javascript", "python", "java"];
+  const snippetDialects: Array<{ dialect: SqluiCore.Dialect; connection: string }> = [
+    { dialect: "mysql", connection: "mysql://root:pass@localhost:3306" },
+    { dialect: "postgres", connection: "postgres://user:pass@localhost:5432" },
+    { dialect: "mssql", connection: "mssql://sa:pass@localhost:1433" },
+    { dialect: "sqlite", connection: "sqlite://test.db" },
+    { dialect: "mariadb", connection: "mariadb://root:pass@localhost:3306" },
+    { dialect: "cassandra", connection: "cassandra://user:pass@localhost:9042" },
+    { dialect: "mongodb", connection: "mongodb://localhost:27017" },
+    { dialect: "redis", connection: "redis://localhost:6379" },
+    { dialect: "cosmosdb", connection: "cosmosdb://AccountEndpoint=https://host:443;AccountKey=key" },
+    {
+      dialect: "aztable",
+      connection: "aztable://DefaultEndpointsProtocol=https;AccountName=acct;AccountKey=key;EndpointSuffix=core.windows.net",
+    },
+    { dialect: "sfdc", connection: 'sfdc://{"username":"u","password":"p","securityToken":"t","loginUrl":"https://login.salesforce.com"}' },
+  ];
+
+  for (const { dialect, connection } of snippetDialects) {
+    for (const language of codeSnippetLanguages) {
+      test(`Code snippet - ${dialect} / ${language}`, () => {
+        const snippet = getCodeSnippet(
+          { dialect, connection, id: "c1", name: "Test" } as any,
+          { sql: "SELECT 1", databaseId: "db1", tableId: "t1" } as any,
+          language,
+        );
+        expect(typeof snippet).toBe("string");
+      });
+    }
+  }
 
   test("Consolidate the guide into a command", async () => {
     const header =

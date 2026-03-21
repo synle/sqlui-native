@@ -48,4 +48,14 @@ describe("RecycleBinPage", () => {
     );
     expect(container.textContent).toContain("empty");
   });
+
+  test("renders Tree and NewConn", () => {
+    const { container } = render(
+      <MemoryRouter>
+        <RecycleBinPage />
+      </MemoryRouter>,
+    );
+    expect(container.textContent).toContain("Tree");
+    expect(container.textContent).toContain("NewConn");
+  });
 });
