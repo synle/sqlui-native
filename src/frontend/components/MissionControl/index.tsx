@@ -8,6 +8,7 @@ import { getCodeSnippet } from "src/common/adapters/DataScriptFactory";
 import { BookmarksItemListModalContent } from "src/frontend/components/BookmarksItemList";
 import CodeEditorBox from "src/frontend/components/CodeEditorBox";
 import CommandPalette from "src/frontend/components/CommandPalette";
+import ImportModal, { ImportMode } from "src/frontend/components/ImportModal";
 import ConnectionHelper from "src/frontend/components/ConnectionHelper";
 import SchemaSearchModal from "src/frontend/components/SchemaSearchModal";
 import SessionSelectionForm from "src/frontend/components/SessionSelectionForm";
@@ -811,72 +812,83 @@ export default function MissionControl() {
     });
   };
 
-  const onImport = async (value = "") => {
+  /** Processes the raw JSON import data with the selected import mode. */
+  const _processImport = async (rawJson: string, mode: ImportMode) => {
+    dismissDialog();
+
+    let jsonRows: any[];
     try {
-      const rawJson = await prompt({
-        title: "Import Connections / Queries / Bookmarks",
-        message: "Import",
-        saveLabel: "Import",
-        value: value,
-        required: true,
-        isLongPrompt: true,
-      });
+      jsonRows = JSON.parse(rawJson || "");
+    } catch (err) {
+      console.error("MissionControl:_processImport:parse", err);
+      return alert(`Import failed. Invalid JSON config`);
+    }
 
-      let jsonRows: any[];
-      try {
-        jsonRows = JSON.parse(rawJson || "");
-      } catch (err) {
-        console.error("index.tsx:parse", err);
-        return alert(`Import failed. Invalid JSON config`);
-      }
+    const curToast = await addToast({
+      message: "Importing, please wait...",
+    });
 
-      const curToast = await addToast({
-        message: "Importing, please wait...",
-      });
+    // import order: connections first, then queries, then bookmarks
+    const importOrder: Record<string, number> = { connection: 0, query: 1, bookmark: 2 };
+    jsonRows = jsonRows.sort((a, b) => {
+      return (importOrder[a._type] ?? 99) - (importOrder[b._type] ?? 99);
+    });
 
-      // import order: connections first, then queries, then bookmarks
-      const importOrder: Record<string, number> = { connection: 0, query: 1, bookmark: 2 };
-      jsonRows = jsonRows.sort((a, b) => {
-        return (importOrder[a._type] ?? 99) - (importOrder[b._type] ?? 99);
-      });
+    // strip IDs if mode is "stripIds" so imports create new entries
+    if (mode === "stripIds") {
+      jsonRows = jsonRows.map(({ id, connectionId, ...rest }) => rest);
+    }
 
-      // check for duplicate id
+    // check for duplicate id (only relevant when keeping IDs)
+    if (mode === "keepIds") {
       const hasDuplicateIds = new Set([...jsonRows.map((jsonRow) => jsonRow.id)]).size !== jsonRows.length;
       if (hasDuplicateIds) {
         return alert(`Import failed. JSON Config includes duplicate IDs.`);
       }
+    }
 
-      let failedCount = 0,
-        successCount = 0;
-      for (const jsonRow of jsonRows) {
-        try {
-          const { _type, ...rawImportMetaData } = jsonRow;
-          switch (_type) {
-            case "connection":
-              // upsert: updates existing connection if ID matches, otherwise creates new
-              await importConnection(rawImportMetaData);
-              break;
+    let failedCount = 0,
+      successCount = 0;
+    for (const jsonRow of jsonRows) {
+      try {
+        const { _type, ...rawImportMetaData } = jsonRow;
+        switch (_type) {
+          case "connection":
+            // upsert: updates existing connection if ID matches, otherwise creates new
+            await importConnection(rawImportMetaData);
+            break;
 
-            case "query":
-              await connectionQueries.onImportQuery(jsonRow);
-              break;
+          case "query":
+            await connectionQueries.onImportQuery(jsonRow);
+            break;
 
-            case "bookmark":
-              // upsert: updates existing bookmark if ID matches, otherwise creates new
-              await importBookmarkItem(rawImportMetaData as SqluiCore.FolderItem);
-              break;
-          }
-          successCount++;
-        } catch (err) {
-          console.error("MissionControl:onImport", jsonRow, err);
-          failedCount++;
+          case "bookmark":
+            // upsert: updates existing bookmark if ID matches, otherwise creates new
+            await importBookmarkItem(rawImportMetaData as SqluiCore.FolderItem);
+            break;
         }
+        successCount++;
+      } catch (err) {
+        console.error("MissionControl:_processImport", jsonRow, err);
+        failedCount++;
       }
+    }
 
-      await curToast.dismiss();
-      alert(`Import finished with ${successCount} successes and ${failedCount} failures`);
-    } catch (err) {
-      console.error("index.tsx:alert", err);
+    await curToast.dismiss();
+    alert(`Import finished with ${successCount} successes and ${failedCount} failures`);
+  };
+
+  const onImport = async (value = "") => {
+    try {
+      await modal({
+        title: "Import Connections / Queries / Bookmarks",
+        message: <ImportModal initialValue={value} onImport={_processImport} />,
+        showCloseButton: true,
+        isFullScreen: true,
+        disableBackdropClick: true,
+      });
+    } catch (_err) {
+      // user dismissed dialog
     }
   };
 
