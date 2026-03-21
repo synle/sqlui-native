@@ -909,82 +909,72 @@ export default function MissionControl() {
   };
 
   const onCheckForUpdate = async () => {
-    let contentDom: React.ReactNode;
-
     const newVersion = await fetch("https://synle.github.io/sqlui-native/release.json")
       .then((r) => r.json())
       .then((r) => r.version);
 
-    if (newVersion === appPackage.version) {
-      contentDom = (
-        <>
-          <Box className="FormInput__Row">sqlui-native is up to date</Box>
-          <Box className="FormInput__Row">
-            <label>Version:</label>
-            {appPackage.version}
-          </Box>
-        </>
-      );
-    } else {
-      const baseDownloadUrl = `https://github.com/synle/sqlui-native/releases/download/${newVersion}/sqlui-native`;
-      const releasePageUrl = `https://github.com/synle/sqlui-native/releases/tag/${newVersion}`;
+    const isUpToDate = newVersion === appPackage.version;
+    const baseDownloadUrl = `https://github.com/synle/sqlui-native/releases/download/${newVersion}/sqlui-native`;
+    const releasePageUrl = `https://github.com/synle/sqlui-native/releases/tag/${newVersion}`;
 
-      /** Returns platform-specific download links based on the user's OS. */
-      const getDownloadLinks = (): { label: string; url: string }[] => {
-        const platform = window?.process?.platform;
+    /** Returns platform-specific download links based on the user's OS. */
+    const getDownloadLinks = (): { label: string; url: string }[] => {
+      const platform = window?.process?.platform;
 
-        if (platform === "darwin") {
-          return [
-            { label: "macOS (Apple Silicon)", url: `${baseDownloadUrl}-${newVersion}-arm64.dmg` },
-            { label: "macOS (Intel x64)", url: `${baseDownloadUrl}-${newVersion}-x64.dmg` },
-          ];
-        }
-
-        if (platform === "win32") {
-          return [
-            { label: "Windows (x64)", url: `${baseDownloadUrl}-${newVersion}-x64.exe` },
-            { label: "Windows (ARM64)", url: `${baseDownloadUrl}-${newVersion}-arm64.exe` },
-          ];
-        }
-
-        // Linux or unknown
+      if (platform === "darwin") {
         return [
-          { label: "Linux (.deb)", url: `${baseDownloadUrl}-${newVersion}.deb` },
-          { label: "Linux (.rpm)", url: `${baseDownloadUrl}-${newVersion}.rpm` },
-          { label: "Linux (.AppImage)", url: `${baseDownloadUrl}-${newVersion}.AppImage` },
+          { label: "macOS (Apple Silicon)", url: `${baseDownloadUrl}-${newVersion}-arm64.dmg` },
+          { label: "macOS (Intel x64)", url: `${baseDownloadUrl}-${newVersion}-x64.dmg` },
         ];
-      };
+      }
 
-      const downloadLinks = getDownloadLinks();
+      if (platform === "win32") {
+        return [
+          { label: "Windows (x64)", url: `${baseDownloadUrl}-${newVersion}-x64.exe` },
+          { label: "Windows (ARM64)", url: `${baseDownloadUrl}-${newVersion}-arm64.exe` },
+        ];
+      }
 
-      contentDom = (
-        <>
-          <Box className="FormInput__Row">
-            <label>Your version:</label>
-            {appPackage.version}
-          </Box>
-          <Box className="FormInput__Row">
-            <label>Latest version:</label>
-            {newVersion}
-          </Box>
-          <Box className="FormInput__Row" sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
-            <label>Download:</label>
-            {downloadLinks.map((link) => (
-              <Link
-                key={link.label}
-                onClick={() => selectCommand({ event: "clientEvent/openExternalUrl", data: link.url })}
-                sx={{ cursor: "pointer" }}
-              >
-                {link.label}
-              </Link>
-            ))}
-            <Link onClick={() => selectCommand({ event: "clientEvent/openExternalUrl", data: releasePageUrl })} sx={{ cursor: "pointer" }}>
-              All Downloads
+      // Linux or unknown
+      return [
+        { label: "Linux (.deb)", url: `${baseDownloadUrl}-${newVersion}.deb` },
+        { label: "Linux (.rpm)", url: `${baseDownloadUrl}-${newVersion}.rpm` },
+        { label: "Linux (.AppImage)", url: `${baseDownloadUrl}-${newVersion}.AppImage` },
+      ];
+    };
+
+    const downloadLinks = getDownloadLinks();
+
+    const contentDom = (
+      <>
+        <Box className="FormInput__Row">
+          <strong>{isUpToDate ? "You are on the latest version." : "A new version is available."}</strong>
+        </Box>
+        <Box className="FormInput__Row">
+          <label>Your version:</label>
+          {appPackage.version}
+        </Box>
+        <Box className="FormInput__Row">
+          <label>Latest version:</label>
+          {newVersion}
+        </Box>
+        <Box className="FormInput__Row" sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+          <label>Download latest version:</label>
+          {downloadLinks.map((link) => (
+            <Link
+              key={link.label}
+              onClick={() => selectCommand({ event: "clientEvent/openExternalUrl", data: link.url })}
+              sx={{ cursor: "pointer" }}
+            >
+              {link.label}
             </Link>
-          </Box>
-        </>
-      );
-    }
+          ))}
+          <Link onClick={() => selectCommand({ event: "clientEvent/openExternalUrl", data: releasePageUrl })} sx={{ cursor: "pointer" }}>
+            All Downloads
+          </Link>
+        </Box>
+      </>
+    );
 
     const onGoToHomepage = () => {
       const data = "https://synle.github.io/sqlui-native/";
