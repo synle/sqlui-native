@@ -10,6 +10,9 @@ on:
 jobs:
   unit_tests:
     runs-on: ubuntu-latest
+    permissions:
+      checks: write
+      contents: read
     steps:
       - uses: actions/checkout@v6
 
@@ -18,11 +21,67 @@ jobs:
           node-version: ${{ inputs.node_version }}
           cache: "npm"
 
-      - run: bash scripts/test.sh
+      - name: Install dependencies
+        run: npm ci || npm install
+
+      - name: Run unit tests
+        id: tests
+        run: npx vitest run --reporter=default --reporter=junit --outputFile.junit=unit-test-results.xml
+
+      - name: Publish unit test results
+        if: ${{ always() && steps.tests.outcome != 'skipped' }}
+        uses: dorny/test-reporter@v2
+        with:
+          name: Unit Test Results
+          path: unit-test-results.xml
+          reporter: java-junit
+          fail-on-error: false
+          fail-on-empty: false
+
+      - name: Write test summary
+        if: ${{ always() && steps.tests.outcome == 'failure' }}
+        shell: bash
+        run: |
+          echo "## :x: Unit Tests Failed" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ -f unit-test-results.xml ]; then
+            TOTAL=$(grep -o 'tests="[0-9]*"' unit-test-results.xml | head -1 | grep -o '[0-9]*')
+            FAILURES=$(grep -o 'failures="[0-9]*"' unit-test-results.xml | head -1 | grep -o '[0-9]*')
+            ERRORS=$(grep -o 'errors="[0-9]*"' unit-test-results.xml | head -1 | grep -o '[0-9]*')
+            echo "| Metric | Count |" >> $GITHUB_STEP_SUMMARY
+            echo "|--------|-------|" >> $GITHUB_STEP_SUMMARY
+            echo "| Total tests | ${TOTAL:-0} |" >> $GITHUB_STEP_SUMMARY
+            echo "| Failures | ${FAILURES:-0} |" >> $GITHUB_STEP_SUMMARY
+            echo "| Errors | ${ERRORS:-0} |" >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Run typecheck
+        id: typecheck
+        run: npm run typecheck
+
+      - name: Run lint
+        id: lint
+        run: npm run lint
+
+      - name: Summary of all checks
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## Build Checks Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Check | Result |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Unit Tests | ${{ steps.tests.outcome == 'success' && ':white_check_mark: Passed' || ':x: Failed' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| TypeCheck | ${{ steps.typecheck.outcome == 'success' && ':white_check_mark: Passed' || ':x: Failed' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Lint | ${{ steps.lint.outcome == 'success' && ':white_check_mark: Passed' || ':x: Failed' }} |" >> $GITHUB_STEP_SUMMARY
 
   integration_test:
     runs-on: ubuntu-latest
     timeout-minutes: 60
+    permissions:
+      checks: write
+      contents: read
     services:
       # Relational Databases
       mysql:
@@ -94,6 +153,7 @@ jobs:
           sleep 5m  # sleep for n mins
 
       - name: Run integration tests
+        id: integration_tests
         # Integration test secrets for cloud-based adapters (not containerized via Docker).
         # Each secret must be mapped here manually (one per line).
         # When adding a new cloud adapter integration test, add its secret here too.
@@ -102,4 +162,37 @@ jobs:
           TEST_AZ_TABLE_STORAGE_CONNECTION: ${{ secrets.TEST_AZ_TABLE_STORAGE_CONNECTION }}
           TEST_AZ_COSMOSDB_CONNECTION: ${{ secrets.TEST_AZ_COSMOSDB_CONNECTION }}
           TEST_SFDC_CONNECTION: ${{ secrets.TEST_SFDC_CONNECTION }}
-        run: npm run test-integration
+        run: npx vitest run --config vitest.integration.config.ts --reporter=default --reporter=junit --outputFile.junit=integration-test-results.xml
+
+      - name: Publish integration test results
+        if: ${{ always() && steps.integration_tests.outcome != 'skipped' }}
+        uses: dorny/test-reporter@v2
+        with:
+          name: Integration Test Results
+          path: integration-test-results.xml
+          reporter: java-junit
+          fail-on-error: false
+          fail-on-empty: false
+
+      - name: Write integration test summary
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          if [ "${{ steps.integration_tests.outcome }}" = "failure" ]; then
+            echo "## :x: Integration Tests Failed" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "## :white_check_mark: Integration Tests Passed" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "See the **Integration Test Results** check for per-test details." >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ -f integration-test-results.xml ]; then
+            TOTAL=$(grep -o 'tests="[0-9]*"' integration-test-results.xml | head -1 | grep -o '[0-9]*')
+            FAILURES=$(grep -o 'failures="[0-9]*"' integration-test-results.xml | head -1 | grep -o '[0-9]*')
+            ERRORS=$(grep -o 'errors="[0-9]*"' integration-test-results.xml | head -1 | grep -o '[0-9]*')
+            echo "| Metric | Count |" >> $GITHUB_STEP_SUMMARY
+            echo "|--------|-------|" >> $GITHUB_STEP_SUMMARY
+            echo "| Total tests | ${TOTAL:-0} |" >> $GITHUB_STEP_SUMMARY
+            echo "| Failures | ${FAILURES:-0} |" >> $GITHUB_STEP_SUMMARY
+            echo "| Errors | ${ERRORS:-0} |" >> $GITHUB_STEP_SUMMARY
+          fi

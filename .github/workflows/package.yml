@@ -137,6 +137,9 @@ jobs:
     needs: [code_format]
     runs-on: ubuntu-latest
     name: Build, Smoke Test and Code Format
+    permissions:
+      checks: write
+      contents: read
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
@@ -147,14 +150,65 @@ jobs:
           node-version: ${{ inputs.node_version }}
           cache: "npm"
 
-      - name: Run tests
+      - name: Install dependencies
+        run: npm ci || npm install
+
+      - name: Run unit tests
         id: tests
         continue-on-error: ${{ inputs.release_mode == 'draft' }}
-        run: bash scripts/test.sh
+        run: npx vitest run --reporter=default --reporter=junit --outputFile.junit=test-results.xml
 
-      - name: Warn if tests failed
-        if: ${{ steps.tests.outcome == 'failure' }}
-        run: echo "::warning::Unit tests failed but were skipped for draft build"
+      - name: Publish test results
+        if: ${{ always() && steps.tests.outcome != 'skipped' }}
+        uses: dorny/test-reporter@v2
+        with:
+          name: Unit Test Results
+          path: test-results.xml
+          reporter: java-junit
+          fail-on-error: false
+          fail-on-empty: false
+
+      - name: Write test summary
+        if: ${{ always() && steps.tests.outcome == 'failure' }}
+        shell: bash
+        run: |
+          echo "## :x: Unit Tests Failed" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Some unit tests failed during this build. See the **Unit Test Results** check for details." >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ -f test-results.xml ]; then
+            TOTAL=$(grep -o 'tests="[0-9]*"' test-results.xml | head -1 | grep -o '[0-9]*')
+            FAILURES=$(grep -o 'failures="[0-9]*"' test-results.xml | head -1 | grep -o '[0-9]*')
+            ERRORS=$(grep -o 'errors="[0-9]*"' test-results.xml | head -1 | grep -o '[0-9]*')
+            echo "| Metric | Count |" >> $GITHUB_STEP_SUMMARY
+            echo "|--------|-------|" >> $GITHUB_STEP_SUMMARY
+            echo "| Total tests | ${TOTAL:-0} |" >> $GITHUB_STEP_SUMMARY
+            echo "| Failures | ${FAILURES:-0} |" >> $GITHUB_STEP_SUMMARY
+            echo "| Errors | ${ERRORS:-0} |" >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Run typecheck
+        id: typecheck
+        continue-on-error: ${{ inputs.release_mode == 'draft' }}
+        run: npm run typecheck
+
+      - name: Run lint
+        id: lint
+        continue-on-error: ${{ inputs.release_mode == 'draft' }}
+        run: npm run lint
+
+      - name: Summary of all checks
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## Build Checks Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Check | Result |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Unit Tests | ${{ steps.tests.outcome == 'success' && ':white_check_mark: Passed' || ':x: Failed' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| TypeCheck | ${{ steps.typecheck.outcome == 'success' && ':white_check_mark: Passed' || ':x: Failed' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Lint | ${{ steps.lint.outcome == 'success' && ':white_check_mark: Passed' || ':x: Failed' }} |" >> $GITHUB_STEP_SUMMARY
 
   dist_windows_x64:
     needs: [prebuild, create_release]
