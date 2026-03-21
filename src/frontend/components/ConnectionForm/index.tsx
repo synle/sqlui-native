@@ -3,7 +3,7 @@ import LoadingButton from "@mui/lab/LoadingButton";
 import { Alert, Box, Button, Link, TextField, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import BaseDataAdapter from "src/common/adapters/BaseDataAdapter/index";
-import { getDialectTypeFromConnectionString } from "src/common/adapters/DataScriptFactory";
+import { getDialectTypeFromConnectionString, getSampleConnectionString } from "src/common/adapters/DataScriptFactory";
 import ConnectionHint from "src/frontend/components/ConnectionForm/ConnectionHint";
 import { useCommands } from "src/frontend/components/MissionControl";
 import TestConnectionButton from "src/frontend/components/TestConnectionButton";
@@ -235,6 +235,9 @@ function MainConnectionForm(props: MainConnectionFormProps): JSX.Element | null 
           required
           size="small"
           fullWidth={true}
+          multiline
+          minRows={1}
+          maxRows={10}
         />
       </div>
       {getDialectTypeFromConnectionString(props.connection) === "sfdc" && (
@@ -270,6 +273,53 @@ function MainConnectionForm(props: MainConnectionFormProps): JSX.Element | null 
             >
               Full Salesforce setup guide
             </Link>
+          </Typography>
+        </Alert>
+      )}
+      {getDialectTypeFromConnectionString(props.connection) === "aztable" && (
+        <Alert severity="info" sx={{ my: 1 }}>
+          <Typography variant="subtitle2" sx={{ fontWeight: "bold", mb: 0.5 }}>
+            Azure Table Storage Setup
+          </Typography>
+          <Typography variant="body2" component="div">
+            <ol style={{ margin: 0, paddingLeft: "1.2em" }}>
+              <li>
+                <strong>Connection String</strong> -- Go to <strong>Azure Portal &gt; Storage Account &gt; Access keys</strong> and copy the
+                full connection string.
+              </li>
+              <li>
+                <strong>Format</strong> -- Prefix with <code>aztable://</code> followed by the connection string:{" "}
+                <code>aztable://DefaultEndpointsProtocol=https;AccountName=...;AccountKey=...;EndpointSuffix=core.windows.net</code>
+              </li>
+            </ol>
+          </Typography>
+        </Alert>
+      )}
+      {getDialectTypeFromConnectionString(props.connection) === "cosmosdb" && (
+        <Alert severity="info" sx={{ my: 1 }}>
+          <Typography variant="subtitle2" sx={{ fontWeight: "bold", mb: 0.5 }}>
+            Azure CosmosDB Setup
+          </Typography>
+          <Typography variant="body2" component="div">
+            <ol style={{ margin: 0, paddingLeft: "1.2em" }}>
+              <li>
+                <strong>Connection String</strong> -- Go to <strong>Azure Portal &gt; CosmosDB Account &gt; Keys</strong> and copy the{" "}
+                <strong>AccountEndpoint</strong> and <strong>AccountKey</strong>.
+              </li>
+              <li>
+                <strong>Format</strong> -- Prefix with <code>cosmosdb://</code> followed by semicolon-delimited key=value pairs:{" "}
+                <code>cosmosdb://AccountEndpoint=https://your-account.documents.azure.com:443/;AccountKey=your_key</code>
+              </li>
+            </ol>
+          </Typography>
+        </Alert>
+      )}
+      {["mysql", "mariadb", "mssql", "postgres", "postgresql", "sqlite", "cassandra", "mongodb", "mongodb+srv", "redis", "rediss"].includes(
+        getDialectTypeFromConnectionString(props.connection),
+      ) && (
+        <Alert severity="info" sx={{ my: 1 }}>
+          <Typography variant="body2">
+            <strong>Expected format:</strong> <code>{getSampleConnectionString(getDialectTypeFromConnectionString(props.connection))}</code>
           </Typography>
         </Alert>
       )}
