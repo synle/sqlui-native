@@ -192,6 +192,22 @@ If you want to permanently delete those and not put it in the recycle bin, you c
 
 ![image](https://user-images.githubusercontent.com/3792401/176343562-0f4400b2-881d-4a55-becc-3ad82c564bc6.png)
 
+### Relationship Chart (FK Visualization)
+
+For relational databases (MySQL, MariaDB, MSSQL, PostgreSQL, SQLite), you can visualize foreign key relationships between tables as an interactive diagram.
+
+- Access it from the context menu on a table name and choose `Show Relationships`
+- The diagram shows tables as nodes and foreign keys as edges with arrows
+- Switch between **Diagram** (interactive React Flow chart) and **Table** (sortable MUI table) views
+- Toggle between horizontal (3-column) and vertical (3-row) layouts
+- Expand/collapse edge labels to see full FK details or a summary
+- Export the diagram as a PNG image
+- Zoom, pan, and drag nodes to rearrange
+
+### Code Snippets
+
+Generate ready-to-use connection code snippets for your database in **Java**, **JavaScript**, and **Python**. Access code snippets from the query script dropdown for any connection.
+
 ### Record Pages
 
 #### New Record Page
@@ -398,6 +414,14 @@ sfdc://{"username":"you@yourcompany.dev","password":"your_password","securityTok
 
 - `loginUrl` defaults to `login.salesforce.com` if omitted. Use `test.salesforce.com` for sandbox orgs.
 - `securityToken` can be omitted if your IP is whitelisted.
+
+#### OAuth2 Client Credentials Flow
+
+For orgs using Connected Apps, you can authenticate without a username/password by providing `clientId` and `clientSecret`:
+
+```
+sfdc://{"clientId":"your_connected_app_client_id","clientSecret":"your_connected_app_client_secret","loginUrl":"your-org.my.salesforce.com"}
+```
 
 #### Sample queries
 

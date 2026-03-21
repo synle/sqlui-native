@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-SQLUI Native is a cross-platform Electron desktop SQL/NoSQL database client supporting MySQL, MariaDB, MSSQL, PostgreSQL, SQLite, Cassandra, MongoDB, Redis, Azure CosmosDB, and Azure Table Storage.
+SQLUI Native is a cross-platform Electron desktop SQL/NoSQL database client supporting MySQL, MariaDB, MSSQL, PostgreSQL, SQLite, Cassandra, MongoDB, Redis, Azure CosmosDB, Azure Table Storage, and Salesforce (SFDC).
 
 ## Commands
 
@@ -79,7 +79,7 @@ Each adapter directory contains `index.ts` (adapter class) and `scripts.ts` (Con
 Connection strings are prefixed with a dialect scheme (`dialect://...`) but the format after the scheme varies:
 
 - **URL** (relational databases, Cassandra, MongoDB, Redis): Standard URI — `dialect://user:pass@host:port` (e.g., `mysql://root:pass@localhost:3306`)
-- **JSON** (SFDC): JSON object — `sfdc://{"username":"...","password":"...","securityToken":"..."}`
+- **JSON** (SFDC): JSON object — `sfdc://{"username":"...","password":"...","securityToken":"..."}` (also supports OAuth2 Client Credentials flow with just `clientId`/`clientSecret`/`loginUrl`, no username/password)
 - **Microsoft-style** (Azure Table Storage, CosmosDB): Semicolon-delimited key=value pairs — `aztable://DefaultEndpointsProtocol=https;AccountName=...;AccountKey=...`
 
 **Adapter Connection Lifecycle:**
@@ -128,7 +128,7 @@ Additional hooks: `useToaster` (toast notifications with history), `useClientSid
 2. Create adapter in `src/common/adapters/` (see `_SampleDataAdapter_/` for template)
 3. Register in `DataAdapterFactory.ts` and `DataScriptFactory.ts`
 4. Add dialect icon as PNG in your adapter directory, import it in `scripts.ts`, and return it from `getDialectIcon()`
-5. Add script spec tests in `DataScriptFactory.spec.ts`
+5. Add script spec tests in `DataScriptFactory.spec.ts` (this test also auto-generates `guides.md` — never edit that file manually)
 
 See CONTRIBUTING.md for the full step-by-step guide with code examples.
 
@@ -226,12 +226,15 @@ See CONTRIBUTING.md for the full step-by-step guide with code examples.
 After any code change, you MUST run these commands **in order** and ensure they all pass before considering the task complete. **Running `npm run format` is mandatory after every change — no exceptions.**
 
 1. **Always add JSDoc for ALL code in every change.** JSDoc is mandatory on every function, constant, type, interface, and any code you touch — JavaScript and TypeScript alike, no exceptions. Script files must start with a single-line `/** Description. */` file header.
+2. **Update docs** when making significant changes:
+   - **CONTRIBUTING.md** — Update when adding or modifying database adapters (new auth flows, connection formats, query modes, setup instructions, integration tests).
+   - **README.md** — Update for new features and adapter changes (new adapters, significant changes to existing ones). Only for semi-major or new features, not minor tweaks.
 
 ```bash
 npm run lint             # ESLint (must have 0 errors)
 npm run typecheck        # TypeScript type check (must have 0 errors)
 npm run test-ci          # All tests must pass
-npm run format           # Prettier formatting (MANDATORY — always run LAST)
+npm run format           # Prettier formatting (MANDATORY — always run LAST, because tests regenerate guides.md)
 ```
 
 ## Error Handling Convention
