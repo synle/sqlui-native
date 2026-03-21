@@ -93,17 +93,13 @@ jobs:
           echo "Waiting for databases to initialize..."
           sleep 5m  # sleep for n mins
 
-      # Export all GitHub secrets matching TEST_*_CONNECTION as env vars.
-      # This auto-maps any secret like TEST_SFDC_CONNECTION, TEST_AZ_COSMOSDB_CONNECTION, etc.
-      # To add a new one: GitHub repo > Settings > Secrets and variables > Actions > New repository secret.
-      - name: Export TEST_ secrets as env vars
-        run: |
-          echo '${{ toJSON(secrets) }}' | jq -r 'to_entries[] | select(.key | startswith("TEST_") and endswith("_CONNECTION")) | .key + "\n" + .value' | while read -r key && read -r value; do
-            delimiter="$(openssl rand -hex 16)"
-            echo "${key}<<${delimiter}" >> "$GITHUB_ENV"
-            echo "${value}" >> "$GITHUB_ENV"
-            echo "${delimiter}" >> "$GITHUB_ENV"
-          done
-
       - name: Run integration tests
+        # Integration test secrets for cloud-based adapters (not containerized via Docker).
+        # Each secret must be mapped here manually (one per line).
+        # When adding a new cloud adapter integration test, add its secret here too.
+        # SECURITY: These contain real credentials. Never log or echo these values.
+        env:
+          TEST_AZ_TABLE_STORAGE_CONNECTION: ${{ secrets.TEST_AZ_TABLE_STORAGE_CONNECTION }}
+          TEST_AZ_COSMOSDB_CONNECTION: ${{ secrets.TEST_AZ_COSMOSDB_CONNECTION }}
+          TEST_SFDC_CONNECTION: ${{ secrets.TEST_SFDC_CONNECTION }}
         run: npm run test-integration
