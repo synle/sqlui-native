@@ -276,6 +276,8 @@ export module SqluiFrontend {
     executionStart?: number;
     executionEnd?: number;
     result?: SqluiCore.Result;
+    /** Whether this query's result is a restored snapshot (from bookmark or recycle bin). */
+    isSnapshot?: boolean;
   };
 
   /** Full frontend connection query combining core and frontend-specific fields. */

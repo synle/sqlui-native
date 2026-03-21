@@ -138,12 +138,22 @@ export default function ResultBox(props: ResultBoxProps): JSX.Element | null {
     </div>,
   ];
 
+  const snapshotInfo = query.isSnapshot ? (
+    <Alert severity="warning" sx={{ mb: 0.5 }}>
+      Restored snapshot — query took <Timer startTime={query?.executionStart} endTime={query?.executionEnd} />.{" "}
+      {query?.executionEnd ? `Originally executed on ${new Date(query.executionEnd).toLocaleString()}.` : ""}{" "}
+      {data?.length > 0 ? `${data.length} records.` : ""}
+    </Alert>
+  ) : (
+    <Alert severity="info">
+      Query took <Timer startTime={query?.executionStart} endTime={query?.executionEnd} />.{" "}
+      {data?.length > 0 ? `And it returned ${data?.length || 0} records.` : ""}
+    </Alert>
+  );
+
   return (
     <div className="ResultBox">
-      <Alert severity="info">
-        Query took <Timer startTime={query?.executionStart} endTime={query?.executionEnd} />.{" "}
-        {data?.length > 0 ? `And it returned ${data?.length || 0} records.` : ""}
-      </Alert>
+      {snapshotInfo}
       <Tabs tabIdx={tabIdx} tabHeaders={tabHeaders} tabContents={tabContents} onTabChange={(newTabIdx) => setTabIdx(newTabIdx)}></Tabs>
     </div>
   );

@@ -129,11 +129,12 @@ export function useRestoreRecycleBinItem() {
         await Promise.all([upsertConnection(folderItem.data), deleteRecyleBinItem(folderItem.id)]);
         navigate("/"); // navigate back to the main page
         break;
-      case "Query":
-        // TODO: add check and handle restore of related connection
-        await Promise.all([onAddQuery(folderItem.data), deleteRecyleBinItem(folderItem.id)]);
+      case "Query": {
+        const hasResult = !!(folderItem.data as any)?.result;
+        await Promise.all([onAddQuery(folderItem.data, { preserveResult: hasResult }), deleteRecyleBinItem(folderItem.id)]);
         navigate("/"); // navigate back to the main page
         break;
+      }
       case "Session": {
         // restore the session record
         const restoredSession = await upsertSession(folderItem.data);
