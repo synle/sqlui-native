@@ -30,6 +30,9 @@ on:
       dist_version:
         value: ${{ jobs.create_release.outputs.dist_version }}
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   code_format:
     runs-on: ubuntu-latest
