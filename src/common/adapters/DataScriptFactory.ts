@@ -95,10 +95,11 @@ export function getConnectionFormInputs(dialect?: string) {
 }
 
 /**
- * Returns the connection string format for the given dialect ("url" or "json").
+ * Returns the connection string format for the given dialect.
  * @param dialect - The dialect identifier.
+ * @returns "url", "json", or "ado".
  */
-export function getConnectionStringFormat(dialect?: string): "url" | "json" {
+export function getConnectionStringFormat(dialect?: string): "url" | "json" | "ado" {
   return _getImplementation(dialect)?.getConnectionStringFormat() || "url";
 }
 

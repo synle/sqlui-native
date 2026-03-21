@@ -9,8 +9,13 @@ export default interface IDataScript {
   dialects?: SqluiCore.Dialect[] | string[];
   /** Returns the connection form input field definitions for this dialect. */
   getConnectionFormInputs: () => string[][];
-  /** Returns the connection string format: "url" (default) or "json" for JSON-based connection strings. */
-  getConnectionStringFormat: () => "url" | "json";
+  /**
+   * Returns the connection string format describing the structure after the scheme prefix.
+   * - "url": Standard URI — `dialect://user:pass@host:port` (relational DBs, Cassandra, MongoDB, Redis)
+   * - "json": JSON object — `dialect://{"key":"value",...}` (Salesforce)
+   * - "ado": ADO.NET-style semicolon-delimited key=value pairs — `dialect://Key1=val1;Key2=val2` (Azure Table Storage, CosmosDB)
+   */
+  getConnectionStringFormat: () => "url" | "json" | "ado";
 
   // misc methods
   /**

@@ -593,7 +593,7 @@ export class ConcreteDataScripts extends BaseDataScript {
   }
 
   /** Returns "json" because Salesforce uses JSON-based connection strings. */
-  getConnectionStringFormat(): "url" | "json" {
+  getConnectionStringFormat(): "url" | "json" | "ado" {
     return "json";
   }
 
