@@ -1,18 +1,17 @@
+import CameraAltIcon from "@mui/icons-material/CameraAlt";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import EditIcon from "@mui/icons-material/Edit";
-import OpenInNewIcon from "@mui/icons-material/OpenInNew";
+import LinkIcon from "@mui/icons-material/Link";
 import UnfoldLessIcon from "@mui/icons-material/UnfoldLess";
 import UnfoldMoreIcon from "@mui/icons-material/UnfoldMore";
 import Backdrop from "@mui/material/Backdrop";
 import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
 import Chip from "@mui/material/Chip";
 import CircularProgress from "@mui/material/CircularProgress";
 import IconButton from "@mui/material/IconButton";
 import Link from "@mui/material/Link";
 import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
-import { Link as RouterLink } from "react-router-dom";
 import { useState } from "react";
 import { useNavigate } from "src/frontend/utils/commonUtils";
 import { ColumnDef } from "@tanstack/react-table";
@@ -27,7 +26,28 @@ import { SqluiCore } from "typings";
 type OnAfterSelectCallback = () => void;
 
 /**
+ * Checks if a Query folder item has a result snapshot attached.
+ * @param folderItem - The folder item to check.
+ * @returns True if the item is a Query with result data.
+ */
+function hasResultSnapshot(folderItem: SqluiCore.FolderItem): boolean {
+  return folderItem.type === "Query" && !!(folderItem.data as any)?.result;
+}
+
+/**
+ * Checks if a Query folder item has a connection association.
+ * @param folderItem - The folder item to check.
+ * @returns True if the item is a Query with connectionId, databaseId, or tableId.
+ */
+function hasConnectionAssociation(folderItem: SqluiCore.FolderItem): boolean {
+  if (folderItem.type !== "Query") return false;
+  const data = folderItem.data;
+  return !!(data.connectionId || data.databaseId || data.tableId);
+}
+
+/**
  * Table cell that renders a bookmark name as a clickable link to open the connection or query.
+ * When restoring a query with result snapshot, preserves the result data.
  * @param props - Contains the table row and optional after-select callback.
  * @returns A link element that opens the bookmark item.
  */
@@ -44,7 +64,7 @@ function NameCell({ row, onAfterSelect }: { row: any; onAfterSelect?: OnAfterSel
         onAfterSelect && onAfterSelect();
         break;
       case "Query":
-        await onAddQuery(folderItem.data);
+        await onAddQuery(folderItem.data, { preserveResult: hasResultSnapshot(folderItem) });
         navigate("/");
         onAfterSelect && onAfterSelect();
         break;
@@ -62,6 +82,31 @@ function NameCell({ row, onAfterSelect }: { row: any; onAfterSelect?: OnAfterSel
 function TypeCell({ row }: { row: any }) {
   const folderItem = row.original;
   return <Chip label={folderItem.type} color={folderItem.type === "Connection" ? "success" : "warning"} size="small" />;
+}
+
+/**
+ * Table cell showing indicator chips for result snapshot and connection association.
+ * @param props - Contains the table row with the bookmark item.
+ * @returns Indicator chips or null for non-Query items.
+ */
+function InfoCell({ row }: { row: any }) {
+  const folderItem: SqluiCore.FolderItem = row.original;
+  if (folderItem.type !== "Query") return null;
+
+  return (
+    <Box sx={{ display: "flex", gap: 0.5 }}>
+      {hasResultSnapshot(folderItem) && (
+        <Tooltip title="Has result snapshot">
+          <CameraAltIcon fontSize="small" color="info" />
+        </Tooltip>
+      )}
+      {hasConnectionAssociation(folderItem) && (
+        <Tooltip title="Linked to connection">
+          <LinkIcon fontSize="small" color="action" />
+        </Tooltip>
+      )}
+    </Box>
+  );
 }
 
 /**
@@ -183,6 +228,13 @@ const getColumns = (onAfterSelect?: OnAfterSelectCallback, allExpanded?: boolean
       cell: (info) => <TypeCell row={info.row} />,
     },
     {
+      header: "Info",
+      id: "info",
+      size: 80,
+      enableColumnFilter: false,
+      cell: (info) => <InfoCell row={info.row} />,
+    },
+    {
       header: "",
       id: "action",
       size: 80,
@@ -252,33 +304,6 @@ export default function BookmarksItemList(props: BookmarksItemListProps): JSX.El
         </Box>
       )}
       <DataTable data={folderItems} columns={columns} />
-    </>
-  );
-}
-
-/**
- * Wrapper around BookmarksItemList intended for use inside a modal, with a link to the full bookmarks page.
- * @param props - Configuration including optional after-select callback.
- * @returns The rendered bookmarks modal content.
- */
-export function BookmarksItemListModalContent(props: BookmarksItemListProps): JSX.Element | null {
-  const { onAfterSelect } = props;
-
-  return (
-    <>
-      <BookmarksItemList onAfterSelect={onAfterSelect} />
-      <Box sx={{ mt: 2 }}>
-        <Button
-          component={RouterLink}
-          to="/bookmarks"
-          onClick={onAfterSelect}
-          variant="outlined"
-          size="small"
-          startIcon={<OpenInNewIcon />}
-        >
-          More Details
-        </Button>
-      </Box>
     </>
   );
 }

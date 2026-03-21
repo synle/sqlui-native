@@ -117,7 +117,7 @@ export function useConnectionQueries() {
     _persistQueries();
   }
 
-  const onAddQueries = async (queries: (SqluiCore.CoreConnectionQuery | undefined)[]) => {
+  const onAddQueries = async (queries: (SqluiCore.CoreConnectionQuery | undefined)[], options?: { preserveResult?: boolean }) => {
     queries = queries || [];
 
     const res: SqluiCore.CoreConnectionQuery[] = [];
@@ -142,14 +142,16 @@ export function useConnectionQueries() {
           }
         }
 
+        const queryAny = query as any;
         newQuery = {
           ...query,
           id: newId,
           name: newQueryName,
           selected: true,
-          result: undefined,
-          executionEnd: undefined,
-          executionStart: undefined,
+          result: options?.preserveResult ? queryAny.result : undefined,
+          executionEnd: options?.preserveResult ? queryAny.executionEnd : undefined,
+          executionStart: options?.preserveResult ? queryAny.executionStart : undefined,
+          isSnapshot: options?.preserveResult && !!queryAny.result ? true : undefined,
         };
       }
 
@@ -179,7 +181,8 @@ export function useConnectionQueries() {
     return res;
   };
 
-  const onAddQuery = async (query?: SqluiCore.CoreConnectionQuery) => onAddQueries([query])[0];
+  const onAddQuery = async (query?: SqluiCore.CoreConnectionQuery, options?: { preserveResult?: boolean }) =>
+    onAddQueries([query], options)[0];
 
   const onDeleteQueries = async (queryIds?: string[]) => {
     if (!queryIds || queryIds.length === 0) {

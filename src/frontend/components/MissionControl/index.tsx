@@ -5,7 +5,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 import React, { useCallback, useEffect } from "react";
 import { getCodeSnippet } from "src/common/adapters/DataScriptFactory";
-import { BookmarksItemListModalContent } from "src/frontend/components/BookmarksItemList";
+import { AddBookmarkConnectionContent, AddBookmarkQueryContent } from "src/frontend/components/AddBookmarkModal";
 import CodeEditorBox from "src/frontend/components/CodeEditorBox";
 import CommandPalette from "src/frontend/components/CommandPalette";
 import ImportModal, { ImportMode } from "src/frontend/components/ImportModal";
@@ -25,7 +25,7 @@ import {
   useRetryConnection,
 } from "src/frontend/hooks/useConnection";
 import { useActiveConnectionQuery, useConnectionQueries } from "src/frontend/hooks/useConnectionQuery";
-import { useAddBookmarkItem, useGetBookmarkItems, useImportBookmarkItem } from "src/frontend/hooks/useFolderItems";
+import { useGetBookmarkItems, useImportBookmarkItem } from "src/frontend/hooks/useFolderItems";
 import { useGetServerConfigs } from "src/frontend/hooks/useServerConfigs";
 import {
   useCloneSession,
@@ -149,7 +149,6 @@ export default function MissionControl() {
   const { mutateAsync: reconnectConnection } = useRetryConnection();
   const { mutateAsync: duplicateConnection } = useDuplicateConnection();
   const { mutateAsync: deleteSession } = useDeleteSession();
-  const { mutateAsync: addBookmarkItem } = useAddBookmarkItem();
   const { data: bookmarkItems } = useGetBookmarkItems();
   const { mutateAsync: importBookmarkItem } = useImportBookmarkItem();
 
@@ -371,24 +370,18 @@ export default function MissionControl() {
   };
 
   const onAddQueryToBookmark = async (query: SqluiFrontend.ConnectionQuery) => {
-    const newName = await prompt({
-      title: "Add query to Bookmarks",
-      message: "A bookmark name",
-      value: `${query.name || ""} - ${new Date().toLocaleString()}`,
-      saveLabel: "Save",
-    });
-
     const { selected, ...restOfQuery } = query;
 
-    addBookmarkItem({
-      type: "Query",
-      name: newName,
-      data: restOfQuery,
-    });
-
-    await addToast({
-      message: `Query "${newName}" added to Bookmarks.`,
-    });
+    try {
+      await modal({
+        title: "Add query to Bookmarks",
+        message: <AddBookmarkQueryContent query={restOfQuery} onDone={dismissDialog} />,
+        showCloseButton: true,
+        size: "sm",
+      });
+    } catch (_err) {
+      // user dismissed dialog
+    }
   };
 
   const onRevealQueryConnection = async (query: SqluiFrontend.ConnectionQuery, showOnlyRevealedConnection: boolean) => {
@@ -725,37 +718,23 @@ export default function MissionControl() {
     }
   };
 
-  const onShowBookmarks = async () => {
-    try {
-      await modal({
-        title: "Bookmarks",
-        message: <BookmarksItemListModalContent onAfterSelect={dismissDialog} />,
-        showCloseButton: true,
-        isFullScreen: true,
-      });
-    } catch (err) {
-      console.error("index.tsx:modal", err);
-    }
+  const onShowBookmarks = () => {
+    navigate("/bookmarks");
   };
 
   const onAddConnectionToBookmark = async (connection: SqluiCore.ConnectionProps) => {
-    const newName = await prompt({
-      title: "Add connection to Bookmarks",
-      message: "A bookmark name",
-      value: `${connection.name || ""} - ${new Date().toLocaleString()}`,
-      saveLabel: "Save",
-    });
     const { status, ...restOfConnectionMetaData } = connection;
 
-    await addBookmarkItem({
-      type: "Connection",
-      name: restOfConnectionMetaData.name,
-      data: restOfConnectionMetaData,
-    });
-
-    await addToast({
-      message: `Connection "${newName}" added to Bookmarks.`,
-    });
+    try {
+      await modal({
+        title: "Add connection to Bookmarks",
+        message: <AddBookmarkConnectionContent connection={restOfConnectionMetaData} onDone={dismissDialog} />,
+        showCloseButton: true,
+        size: "sm",
+      });
+    } catch (_err) {
+      // user dismissed dialog
+    }
   };
 
   const onRefreshConnection = async (connection: SqluiCore.ConnectionProps) => {

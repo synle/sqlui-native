@@ -627,10 +627,27 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
 
     const items = await folderItemsStorage.list();
 
-    // backfill createdAt for existing items that were created before this field existed
+    // backfill createdAt and type for existing items that were created before these fields existed
     for (const item of items) {
+      let needsUpdate = false;
+
       if (!item.createdAt) {
         item.createdAt = Date.now();
+        needsUpdate = true;
+      }
+
+      if (!(item as any).type) {
+        // infer type from data shape: if it has sql, it's a Query; if it has dialect, it's a Connection
+        const itemData = (item as any).data;
+        if (itemData?.sql !== undefined) {
+          (item as any).type = "Query";
+        } else if (itemData?.dialect !== undefined) {
+          (item as any).type = "Connection";
+        }
+        needsUpdate = true;
+      }
+
+      if (needsUpdate) {
         folderItemsStorage.update(item);
       }
     }
