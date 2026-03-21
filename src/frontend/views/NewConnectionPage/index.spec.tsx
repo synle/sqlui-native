@@ -16,7 +16,7 @@ vi.mock("src/frontend/hooks/useClientSidePreference", () => ({
   useSideBarWidthPreference: () => ({ value: 300, onChange: vi.fn() }),
 }));
 vi.mock("src/frontend/hooks/useTreeActions", () => ({
-  useTreeActions: () => ({ data: { showContextMenu: false }, setTreeActions: vi.fn() }),
+  useTreeActions: () => ({ data: { showContextMenu: true }, setTreeActions: vi.fn() }),
 }));
 
 import NewConnectionPage from "src/frontend/views/NewConnectionPage";
