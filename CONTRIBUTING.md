@@ -81,6 +81,25 @@ Assuming you use the same database in the docker samples below:
 ]
 ```
 
+> **Import behavior (upsert):** When importing connections, queries, or bookmarks, if an item with the same `id` already exists, it will be **updated** (overwritten) rather than duplicated. Items without a matching `id` are created as new entries.
+
+The import JSON also supports bookmarks with `_type: "bookmark"`:
+
+```json
+[
+  {
+    "_type": "bookmark",
+    "id": "bookmarks.1774045514367.1978295883505956",
+    "name": "Query 3/11/2026, 7:11:44 PM - 3/20/2026, 3:25:13 PM",
+    "data": {
+      "id": "queryId.1773281504922.3058967618941833",
+      "name": "Query 3/11/2026, 7:11:44 PM",
+      "sql": "select * from test"
+    }
+  }
+]
+```
+
 ### Debugging
 
 - **React Query Devtools:** Press `Ctrl+Shift+Alt+D` (Windows/Linux) or `Cmd+Shift+Option+D` (Mac) to toggle React Query Devtools in any build (including packaged/production builds). Useful for inspecting query cache, stale states, and in-flight requests.

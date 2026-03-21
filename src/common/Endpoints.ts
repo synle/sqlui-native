@@ -596,18 +596,23 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     res.status(200).json(items);
   });
 
-  // adds item to recycle bin
+  // adds item to a folder (bookmarks or recycle bin)
   addDataEndpoint("post", "/api/folder/:folderId", async (req, res) => {
     const folderItemsStorage = await getFolderItemsStorage(req.params?.folderId);
 
-    res.status(202).json(
-      await folderItemsStorage.add({
-        name: req.body.name,
-        type: req.body.type,
-        data: req.body.data,
-        connections: req.body.connections,
-      }),
-    );
+    const entry: Record<string, any> = {
+      name: req.body.name,
+      type: req.body.type,
+      data: req.body.data,
+      connections: req.body.connections,
+    };
+
+    // allow callers (e.g. import) to preserve the original ID
+    if (req.body.id) {
+      entry.id = req.body.id;
+    }
+
+    res.status(202).json(await folderItemsStorage.add(entry));
   });
 
   addDataEndpoint("put", "/api/folder/:folderId", async (req, res) => {

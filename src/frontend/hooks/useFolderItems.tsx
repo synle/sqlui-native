@@ -171,3 +171,25 @@ export function useDeleteBookmarkItem() {
 export function useUpdateBookmarkItem() {
   return useUpdateFolderItem(FOLDER_TYPE_BOOKMARKS);
 }
+
+/**
+ * Hook to import (upsert) a bookmark item. If the bookmark has an ID, it is
+ * sent as a PUT (update); otherwise as a POST (add). This preserves the
+ * original bookmark ID on import and performs an upsert when a matching ID
+ * already exists.
+ * @returns Mutation that accepts a folder item to import.
+ */
+export function useImportBookmarkItem() {
+  const queryClient = useQueryClient();
+
+  return useMutation<void, void, SqluiCore.FolderItem>(
+    async (folderItem) => {
+      await dataApi.upsertFolderItem(FOLDER_TYPE_BOOKMARKS, folderItem);
+    },
+    {
+      onSuccess: async () => {
+        queryClient.invalidateQueries([QUERY_KEY_FOLDER_ITEMS, FOLDER_TYPE_BOOKMARKS]);
+      },
+    },
+  );
+}
