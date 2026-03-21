@@ -15,7 +15,7 @@ function parseSfdcConnectionString(connectionOption: string) {
 
   try {
     const parsed = JSON.parse(withoutScheme);
-    let loginUrl = (parsed.loginUrl || "login.salesforce.com").replace(/\/+$/, "");
+    let loginUrl = (parsed.loginUrl || "login.salesforce.com").replace(/\s/g, "").replace(/\/+$/, "");
     if (loginUrl && !loginUrl.startsWith("http")) {
       loginUrl = `https://${loginUrl}`;
     }
