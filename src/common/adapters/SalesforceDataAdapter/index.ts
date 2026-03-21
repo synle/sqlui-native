@@ -127,9 +127,8 @@ export default class SalesforceDataAdapter extends BaseDataAdapter implements ID
    */
   private async getConnection(): Promise<Connection> {
     return new Promise<Connection>(async (resolve, reject) => {
+      const timer = setTimeout(() => reject(new Error("Connection timeout — check your login URL and network")), MAX_CONNECTION_TIMEOUT);
       try {
-        setTimeout(() => reject(new Error("Connection timeout — check your login URL and network")), MAX_CONNECTION_TIMEOUT);
-
         const { username, password, securityToken, loginUrl, clientId, clientSecret } = parseSfdcConnectionString(this.connectionOption);
 
         const connOptions: any = { loginUrl };
@@ -146,9 +145,11 @@ export default class SalesforceDataAdapter extends BaseDataAdapter implements ID
         const conn = new Connection(connOptions);
         await conn.login(username, password + securityToken);
 
+        clearTimeout(timer);
         this._connection = conn;
         resolve(conn);
       } catch (err: any) {
+        clearTimeout(timer);
         console.error("SalesforceDataAdapter:getConnection", err);
         reject(new Error(getSfdcErrorMessage(err)));
       }
