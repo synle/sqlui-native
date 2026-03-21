@@ -292,6 +292,76 @@ describe("commonUtils", () => {
     });
   });
 
+  describe("getExportedBookmark", () => {
+    test("should export bookmark with essential fields", () => {
+      const actual = commonUtils.getExportedBookmark({
+        id: "bookmark1",
+        name: "My Bookmark",
+        type: "Query",
+        data: {
+          connectionId: "conn1",
+          databaseId: "db1",
+          tableId: "tbl1",
+          sql: "SELECT * FROM users",
+          extra: "should be stripped",
+        },
+        createdAt: 123,
+        updatedAt: 456,
+      } as any);
+      expect(actual).toStrictEqual({
+        _type: "bookmark",
+        id: "bookmark1",
+        name: "My Bookmark",
+        data: {
+          connectionId: "conn1",
+          databaseId: "db1",
+          tableId: "tbl1",
+          sql: "SELECT * FROM users",
+        },
+      });
+    });
+
+    test("should handle missing data fields gracefully", () => {
+      const actual = commonUtils.getExportedBookmark({
+        id: "bookmark2",
+        name: "Empty Bookmark",
+        type: "Query",
+        data: {},
+      } as any);
+      expect(actual._type).toEqual("bookmark");
+      expect(actual.id).toEqual("bookmark2");
+      expect(actual.data.sql).toBeUndefined();
+    });
+  });
+
+  describe("formatShortDate", () => {
+    test("should format a specific date", () => {
+      const date = new Date(2024, 0, 15, 14, 30);
+      const result = commonUtils.formatShortDate(date);
+      expect(result).toContain("1/15/24");
+      expect(result).toContain("30");
+    });
+
+    test("should use current date when no argument", () => {
+      const result = commonUtils.formatShortDate();
+      expect(typeof result).toBe("string");
+      expect(result.length).toBeGreaterThan(0);
+    });
+
+    test("should remove commas", () => {
+      const date = new Date(2024, 5, 1, 9, 5);
+      const result = commonUtils.formatShortDate(date);
+      // The comma after date is replaced
+      expect(result).not.toContain(",");
+    });
+
+    test("should use 2-digit year", () => {
+      const date = new Date(2025, 11, 25, 12, 0);
+      const result = commonUtils.formatShortDate(date);
+      expect(result).toContain("25");
+    });
+  });
+
   describe("createSystemNotification", () => {
     const originalNotification = global.Notification;
 
