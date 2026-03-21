@@ -148,7 +148,7 @@ export default class SampleDataAdapter extends BaseDataAdapter implements IDataA
         throw new Error("Database is a required field");
       }
 
-      const client = await this.getConnection();
+      const _client = await this.getConnection();
 
       // TODO: execute the query using your client
       // Example:
