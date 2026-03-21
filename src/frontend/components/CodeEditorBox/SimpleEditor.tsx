@@ -170,7 +170,10 @@ export default function SimpleEditor(props: SimpleEditorProps): JSX.Element | nu
   const { value } = props;
   const [text, setText] = useState(value);
 
-  const onInputChange = (e) => setText(e.target.value);
+  const onInputChange = (e) => {
+    setText(e.target.value);
+    props.onLiveChange?.(e.target.value);
+  };
 
   const onInputBlur = (e) => {
     props.onBlur && props.onBlur(e.target.value);
