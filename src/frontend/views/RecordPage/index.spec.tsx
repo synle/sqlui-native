@@ -73,7 +73,7 @@ vi.mock("src/common/adapters/RelationalDataAdapter/scripts", () => ({
   getUpdateWithValues: vi.fn(),
 }));
 
-import { NewRecordPage } from "src/frontend/views/RecordPage";
+import { NewRecordPage, EditRecordPage, RecordDetailsPage } from "src/frontend/views/RecordPage";
 
 describe("RecordPage", () => {
   test("renders Breadcrumbs", () => {
@@ -92,5 +92,45 @@ describe("RecordPage", () => {
       </MemoryRouter>,
     );
     expect(container.textContent).toContain("NewConn");
+  });
+
+  test("renders Tree sidebar", () => {
+    const { container } = render(
+      <MemoryRouter>
+        <NewRecordPage />
+      </MemoryRouter>,
+    );
+    expect(container.textContent).toContain("Tree");
+  });
+
+  test("renders ConnectionDatabaseSelector", () => {
+    const { container } = render(
+      <MemoryRouter>
+        <NewRecordPage />
+      </MemoryRouter>,
+    );
+    expect(container.textContent).toContain("ConnectionDatabaseSelector");
+  });
+});
+
+describe("EditRecordPage", () => {
+  test("returns null when no active query", () => {
+    const { container } = render(
+      <MemoryRouter>
+        <EditRecordPage data={{ name: "test" }} />
+      </MemoryRouter>,
+    );
+    expect(container.innerHTML).toMatchInlineSnapshot(`""`);
+  });
+});
+
+describe("RecordDetailsPage", () => {
+  test("renders Tabs component", () => {
+    const { container } = render(
+      <MemoryRouter>
+        <RecordDetailsPage data={{ name: "test" }} />
+      </MemoryRouter>,
+    );
+    expect(container.textContent).toContain("Tabs");
   });
 });

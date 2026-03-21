@@ -564,6 +564,100 @@ describe("Response Headers", () => {
   });
 });
 
+describe("Schema Search", () => {
+  test("GET /api/schema/search should return empty array for empty query", async () => {
+    const res = await requestWithSupertest.get(`/api/schema/search`);
+    expect(res.status).toEqual(200);
+    expect(res.body).toEqual([]);
+  });
+
+  test("GET /api/schema/search?q= should return empty array for blank query", async () => {
+    const res = await requestWithSupertest.get(`/api/schema/search?q=`);
+    expect(res.status).toEqual(200);
+    expect(res.body).toEqual([]);
+  });
+
+  test("GET /api/schema/search?q=nonexistent should return empty for no matches", async () => {
+    const sessionId = `schema-search.${Date.now()}`;
+    const res = await requestWithSupertest.get(`/api/schema/search?q=nonexistenttable12345`).set(_getCommonHeaders(sessionId));
+    expect(res.status).toEqual(200);
+    expect(Array.isArray(res.body)).toBe(true);
+  });
+});
+
+describe("Query Version History", () => {
+  const mockedSessionId = `mocked-history.${Date.now()}`;
+
+  test("GET /api/queryVersionHistory should return empty array initially", async () => {
+    const res = await requestWithSupertest.get(`/api/queryVersionHistory`).set(_getCommonHeaders(mockedSessionId));
+    expect(res.status).toEqual(200);
+    expect(Array.isArray(res.body)).toBe(true);
+    expect(res.body.length).toEqual(0);
+  });
+
+  test("POST /api/queryVersionHistory should add an entry", async () => {
+    const entry = {
+      name: "Test History Entry",
+      auditType: "execution",
+      connectionId: "conn-1",
+      sql: "SELECT * FROM users",
+    };
+
+    const res = await requestWithSupertest.post(`/api/queryVersionHistory`).set(_getCommonHeaders(mockedSessionId)).send(entry);
+    expect(res.status).toEqual(201);
+    expect(res.body.id).toBeDefined();
+    expect(res.body.name).toEqual("Test History Entry");
+    expect(res.body.type).toEqual("execution");
+  });
+
+  test("POST /api/queryVersionHistory should store SQL in data", async () => {
+    const entry = {
+      name: "SQL History",
+      auditType: "delta",
+      connectionId: "conn-2",
+      sql: "INSERT INTO orders VALUES (1)",
+    };
+
+    const res = await requestWithSupertest.post(`/api/queryVersionHistory`).set(_getCommonHeaders(mockedSessionId)).send(entry);
+    expect(res.status).toEqual(201);
+    expect(res.body.data.sql).toEqual("INSERT INTO orders VALUES (1)");
+    expect(res.body.data.connectionId).toEqual("conn-2");
+  });
+
+  test("GET /api/queryVersionHistory should list added entries", async () => {
+    const res = await requestWithSupertest.get(`/api/queryVersionHistory`).set(_getCommonHeaders(mockedSessionId));
+    expect(res.status).toEqual(200);
+    expect(res.body.length).toBeGreaterThanOrEqual(2);
+  });
+
+  test("DELETE /api/queryVersionHistory/:entryId should remove a single entry", async () => {
+    // add an entry
+    const entry = {
+      name: "To Delete",
+      auditType: "execution",
+      connectionId: "conn-1",
+      sql: "SELECT 1",
+    };
+    let res = await requestWithSupertest.post(`/api/queryVersionHistory`).set(_getCommonHeaders(mockedSessionId)).send(entry);
+    expect(res.status).toEqual(201);
+    const entryId = res.body.id;
+
+    // delete it
+    res = await requestWithSupertest.delete(`/api/queryVersionHistory/${entryId}`).set(_getCommonHeaders(mockedSessionId));
+    expect(res.status).toEqual(202);
+  });
+
+  test("DELETE /api/queryVersionHistory should clear all entries", async () => {
+    let res = await requestWithSupertest.delete(`/api/queryVersionHistory`).set(_getCommonHeaders(mockedSessionId));
+    expect(res.status).toEqual(202);
+
+    // verify cleared
+    res = await requestWithSupertest.get(`/api/queryVersionHistory`).set(_getCommonHeaders(mockedSessionId));
+    expect(res.status).toEqual(200);
+    expect(res.body.length).toEqual(0);
+  });
+});
+
 describe("Session Isolation", () => {
   test("Connections from one session should not appear in another", async () => {
     const sessionA = `session-a.${Date.now()}`;
