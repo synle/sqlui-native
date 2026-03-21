@@ -148,8 +148,13 @@ jobs:
           cache: "npm"
 
       - name: Run tests
+        id: tests
         continue-on-error: ${{ inputs.release_mode == 'draft' }}
         run: bash scripts/test.sh
+
+      - name: Warn if tests failed
+        if: ${{ steps.tests.outcome == 'failure' }}
+        run: echo "::warning::Unit tests failed but were skipped for draft build"
 
   dist_windows_x64:
     needs: [prebuild, create_release]
