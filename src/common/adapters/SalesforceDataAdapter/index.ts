@@ -133,7 +133,7 @@ export default class SalesforceDataAdapter extends BaseDataAdapter implements ID
 
         const connOptions: any = { loginUrl };
 
-        // Use OAuth2 username-password flow when clientId is provided
+        // Use OAuth2 flow when clientId is provided
         if (clientId) {
           connOptions.oauth2 = {
             loginUrl,
@@ -143,7 +143,19 @@ export default class SalesforceDataAdapter extends BaseDataAdapter implements ID
         }
 
         const conn = new Connection(connOptions);
-        await conn.login(username, password + securityToken);
+
+        if (clientId && !username) {
+          // OAuth2 Client Credentials flow (no username/password)
+          const tokenResponse = await conn.oauth2.requestToken({
+            grant_type: "client_credentials",
+          });
+          (conn as any)._establish({
+            instanceUrl: tokenResponse.instance_url,
+            accessToken: tokenResponse.access_token,
+          });
+        } else {
+          await conn.login(username, password + securityToken);
+        }
 
         clearTimeout(timer);
         this._connection = conn;
