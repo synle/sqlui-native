@@ -160,10 +160,10 @@ jobs:
       - name: Run prebuild
         run: npm run prebuild
 
-      - name: Run unit tests
+      - name: Run unit tests with coverage
         id: tests
         continue-on-error: ${{ inputs.release_mode == 'draft' }}
-        run: npx vitest run --reporter=default --reporter=junit --outputFile.junit=test-results.xml
+        run: npx vitest run --reporter=default --reporter=junit --outputFile.junit=test-results.xml --coverage.enabled
 
       - name: Publish test results
         if: ${{ always() && steps.tests.outcome != 'skipped' }}
@@ -175,14 +175,21 @@ jobs:
           fail-on-error: false
           fail-on-empty: false
 
-      - name: Write test summary
-        if: ${{ always() && steps.tests.outcome == 'failure' }}
+      - name: Write test and coverage summary
+        if: ${{ always() && steps.tests.outcome != 'skipped' }}
         shell: bash
         run: |
-          echo "## :x: Unit Tests Failed" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "Some unit tests failed during this build. See the **Unit Test Results** check for details." >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
+          # --- Test results ---
+          if [ "${{ steps.tests.outcome }}" = "failure" ]; then
+            echo "## :x: Unit Tests Failed" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "Some unit tests failed during this build. See the **Unit Test Results** check for details." >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "## :white_check_mark: Unit Tests Passed" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+          fi
+
           if [ -f test-results.xml ]; then
             TOTAL=$(grep -o 'tests="[0-9]*"' test-results.xml | head -1 | grep -o '[0-9]*')
             FAILURES=$(grep -o 'failures="[0-9]*"' test-results.xml | head -1 | grep -o '[0-9]*')
@@ -192,6 +199,26 @@ jobs:
             echo "| Total tests | ${TOTAL:-0} |" >> $GITHUB_STEP_SUMMARY
             echo "| Failures | ${FAILURES:-0} |" >> $GITHUB_STEP_SUMMARY
             echo "| Errors | ${ERRORS:-0} |" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          # --- Code coverage ---
+          if [ -f coverage/coverage-summary.json ]; then
+            echo "## :bar_chart: Code Coverage" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+
+            STMTS=$(node -e "const c=require('./coverage/coverage-summary.json').total.statements; console.log(c.pct)")
+            BRANCH=$(node -e "const c=require('./coverage/coverage-summary.json').total.branches; console.log(c.pct)")
+            FUNCS=$(node -e "const c=require('./coverage/coverage-summary.json').total.functions; console.log(c.pct)")
+            LINES=$(node -e "const c=require('./coverage/coverage-summary.json').total.lines; console.log(c.pct)")
+
+            echo "| Category | Coverage |" >> $GITHUB_STEP_SUMMARY
+            echo "|----------|----------|" >> $GITHUB_STEP_SUMMARY
+            echo "| Statements | ${STMTS}% |" >> $GITHUB_STEP_SUMMARY
+            echo "| Branches | ${BRANCH}% |" >> $GITHUB_STEP_SUMMARY
+            echo "| Functions | ${FUNCS}% |" >> $GITHUB_STEP_SUMMARY
+            echo "| Lines | ${LINES}% |" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
           fi
 
       - name: Run typecheck
@@ -211,9 +238,18 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "## Build Checks Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Coverage badge value
+          COV_BADGE=""
+          if [ -f coverage/coverage-summary.json ]; then
+            COV_PCT=$(node -e "console.log(require('./coverage/coverage-summary.json').total.statements.pct)")
+            COV_BADGE=" (${COV_PCT}%)"
+          fi
+
           echo "| Check | Result |" >> $GITHUB_STEP_SUMMARY
           echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
           echo "| Unit Tests | ${{ steps.tests.outcome == 'success' && ':white_check_mark: Passed' || ':x: Failed' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Coverage | ${COV_BADGE:- :warning: N/A} |" >> $GITHUB_STEP_SUMMARY
           echo "| TypeCheck | ${{ steps.typecheck.outcome == 'success' && ':white_check_mark: Passed' || ':x: Failed' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Lint | ${{ steps.lint.outcome == 'success' && ':white_check_mark: Passed' || ':x: Failed' }} |" >> $GITHUB_STEP_SUMMARY
 
