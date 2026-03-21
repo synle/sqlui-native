@@ -5,11 +5,17 @@ import { Bar } from "src/frontend/components/Resizer";
 /** Default height for the data table container. */
 export const defaultTableHeight = "85vh";
 
-/** Height in pixels for table header cells. */
+/** Height in pixels for table header cells in comfortable mode. */
 export const tableCellHeaderHeight = 75;
 
-/** Height in pixels for table data cells. */
+/** Height in pixels for table header cells in compact mode. */
+export const tableCellHeaderHeightCompact = 60;
+
+/** Height in pixels for table data cells in comfortable mode. */
 export const tableCellHeight = 35;
+
+/** Height in pixels for table data cells in compact mode. */
+export const tableCellHeightCompact = 28;
 
 /** Default width in pixels for table cells. */
 export const tableCellWidth = 160;
@@ -68,6 +74,10 @@ export const StyledDivValueCell = styled("div")(() => ({
   paddingBlock: "7px",
   textOverflow: "ellipsis",
   wordBreak: "break-all",
+  ".DataTable--compact &": {
+    paddingInline: "0.35rem",
+    paddingBlock: "3px",
+  },
 }));
 /** Styled div for the table header row with bold text and theme background. */
 export const StyledDivHeaderRow = styled("div")(({ theme }) => ({
@@ -91,6 +101,13 @@ export const StyledDivHeaderRow = styled("div")(({ theme }) => ({
     textOverflow: "ellipsis",
     wordBreak: "break-all",
     whiteSpace: "nowrap",
+  },
+
+  ".DataTable--compact &": {
+    "> div": {
+      height: `${tableCellHeaderHeightCompact}px`,
+      paddingTop: "3px",
+    },
   },
 }));
 /** Styled div for table content rows with alternating background colors and hover effect. */
@@ -117,6 +134,9 @@ export const StyledDivHeaderCell = styled("div")(() => ({
   flexShrink: 0,
   paddingInline: "0.5rem",
   position: "relative",
+  ".DataTable--compact &": {
+    paddingInline: "0.35rem",
+  },
 }));
 
 /** Styled div for header cell labels with flex layout. */
@@ -137,10 +157,16 @@ export const StyledDivContentRowForVirualized = styled(StyledDivContentRow)(() =
 /** Styled header cell for virtualized table rendering with fixed height. */
 export const StyledDivHeaderCellForVirtualized = styled(StyledDivHeaderCell)(() => ({
   height: `${tableCellHeight}px`,
+  ".DataTable--compact &": {
+    height: `${tableCellHeightCompact}px`,
+  },
 }));
 
 /** Styled value cell for virtualized table rendering with fixed height. */
 export const StyledDivValueCellForVirtualized = styled(StyledDivValueCell)(() => ({
   height: `${tableCellHeight}px`,
   paddingBottom: 0,
+  ".DataTable--compact &": {
+    height: `${tableCellHeightCompact}px`,
+  },
 }));
