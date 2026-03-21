@@ -4,7 +4,7 @@
 
 ### Requirement
 
-- NODE_VERSION: 24
+- NODE_VERSION: 24 (use `fnm` to switch: `fnm use 24`)
 - npm (bundled with Node)
 - Docker (for integration tests)
 
@@ -422,8 +422,10 @@ Open `src/common/adapters/DataScriptFactory.spec.ts` and add your dialect to the
 #### Step 8: Verify
 
 ```bash
-npm run lint          # check for lint errors
-npm run test-ci       # run unit tests
+npm run lint          # check for lint errors (must have 0 errors)
+npm run typecheck     # TypeScript type check (must have 0 errors)
+npm run test-ci       # run unit tests (all tests must pass)
+npm run format        # Prettier formatting (always run LAST)
 npm start             # test in Electron -- try adding a connection with your dialect
 ```
 
@@ -513,11 +515,21 @@ If you cannot enable SOAP API login, you can create a Connected App and use OAut
 5. Add **"Full access (full)"** to Selected OAuth Scopes.
 6. Save and wait a few minutes for it to activate.
 7. Copy the **Consumer Key** (Client ID) and **Consumer Secret** (Client Secret).
-8. Add them to your connection string:
+8. Add them to your connection string. Two options:
+
+**With username/password (OAuth2 Username-Password flow):**
 
 ```
 sfdc://{"username":"you@yourcompany.dev","password":"your_password","securityToken":"your_token","clientId":"your_consumer_key","clientSecret":"your_consumer_secret"}
 ```
+
+**Without username/password (OAuth2 Client Credentials flow):**
+
+```
+sfdc://{"clientId":"your_consumer_key","clientSecret":"your_consumer_secret","loginUrl":"your-org.my.salesforce.com"}
+```
+
+The Client Credentials flow is useful for service-to-service integrations where no user credentials are available.
 
 #### Connection String Format
 
