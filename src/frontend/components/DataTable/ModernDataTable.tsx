@@ -29,12 +29,15 @@ import {
   StyledDivHeaderRow,
   StyledDivValueCellForVirtualized as StyledDivValueCell,
   tableCellHeaderHeight,
+  tableCellHeaderHeightCompact,
   tableCellHeight,
+  tableCellHeightCompact,
   tableCellWidth,
 } from "src/frontend/components/DataTable/DataTableComponents";
 import { GlobalFilter, SimpleColumnFilter } from "src/frontend/components/DataTable/Filter";
 import DropdownMenu from "src/frontend/components/DropdownMenu";
 import { useAddDataSnapshot } from "src/frontend/hooks/useDataSnapshot";
+import { useLayoutModeSetting } from "src/frontend/hooks/useSetting";
 
 /**
  * A virtualized data table using TanStack React Table and TanStack Virtual.
@@ -45,6 +48,9 @@ import { useAddDataSnapshot } from "src/frontend/hooks/useDataSnapshot";
  */
 export default function ModernDataTable(props: DataTableProps): JSX.Element | null {
   const { columns, data } = props;
+  const isCompact = useLayoutModeSetting() === "compact";
+  const cellHeight = isCompact ? tableCellHeightCompact : tableCellHeight;
+  const headerHeight = isCompact ? tableCellHeaderHeightCompact : tableCellHeaderHeight;
   //@ts-ignore
   const fullScreen = props.fullScreen === true;
   //@ts-ignore
@@ -116,7 +122,7 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
   const rowVirtualizer = useVirtualizer<HTMLDivElement, HTMLDivElement>({
     count: rows.length,
     getScrollElement: () => parentRef.current,
-    estimateSize: useCallback(() => tableCellHeight, []),
+    estimateSize: useCallback(() => cellHeight, [cellHeight]),
     overscan: 10,
   });
 
@@ -192,7 +198,7 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
   const virtualColumns = columnVirtualizer.getVirtualItems();
 
   return (
-    <>
+    <div className={isCompact ? "DataTable--compact" : ""}>
       <Box sx={{ display: "flex", gap: 2 }}>
         <Box sx={{ flexGrow: 1 }}>
           {props.searchInputId && <GlobalFilter id={props.searchInputId} onChange={(value: string) => table.setGlobalFilter(value)} />}
@@ -215,7 +221,7 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
         onContextMenu={(e) => onRowContextMenuClick(e)}
       >
         {/* Sticky header */}
-        <Box sx={{ position: "sticky", top: 0, zIndex: (theme) => theme.zIndex.drawer + 1, height: tableCellHeaderHeight }}>
+        <Box sx={{ position: "sticky", top: 0, zIndex: (theme) => theme.zIndex.drawer + 1, height: headerHeight }}>
           {headerGroups.map((headerGroup) => (
             <StyledDivHeaderRow
               key={headerGroup.id}
@@ -294,7 +300,7 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
                   cursor: props.onRowClick ? "pointer" : "",
                   transform: `translateY(${virtualItem.start}px)`,
                   width: `${columnVirtualizer.getTotalSize()}px`,
-                  height: `${tableCellHeight}px`,
+                  height: `${cellHeight}px`,
                 }}
                 onDoubleClick={() => props.onRowClick && props.onRowClick(row.original)}
               >
@@ -344,6 +350,6 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
         </StyledDivContainer>
         {rows.length === 0 && <Box sx={{ paddingInline: 2, paddingBlock: 2 }}>There is no data in the query with matching filters.</Box>}
       </Box>
-    </>
+    </div>
   );
 }
