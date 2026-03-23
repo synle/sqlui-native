@@ -1,18 +1,48 @@
 name: Test (Unit / Integration Tests)
 
 on:
+  schedule:
+    - cron: "0 0 * * *" # daily, midnight UTC
   workflow_dispatch:
     inputs:
       node_version:
         description: "Node.js version"
         default: "24"
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
   ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
 
 jobs:
+  # ---- Check if there are recent changes ----
+  check:
+    runs-on: ubuntu-latest
+    outputs:
+      has_changes: ${{ steps.check.outputs.has_changes }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - name: Check for changes in the last 24 hours
+        id: check
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "has_changes=true" >> "$GITHUB_OUTPUT"
+          elif [ -n "$(git log --since='24 hours ago' --oneline)" ]; then
+            echo "has_changes=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "No changes in the last 24 hours, skipping."
+            echo "has_changes=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  # ---- Unit Tests ----
   unit_tests:
+    needs: check
+    if: needs.check.outputs.has_changes == 'true'
     runs-on: ubuntu-latest
     permissions:
       checks: write
@@ -22,7 +52,7 @@ jobs:
 
       - uses: actions/setup-node@v6
         with:
-          node-version: ${{ inputs.node_version }}
+          node-version: ${{ inputs.node_version || '24' }}
           cache: "npm"
 
       - name: Install dependencies
@@ -83,7 +113,10 @@ jobs:
           echo "| TypeCheck | ${{ steps.typecheck.outcome == 'success' && ':white_check_mark: Passed' || ':x: Failed' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Lint | ${{ steps.lint.outcome == 'success' && ':white_check_mark: Passed' || ':x: Failed' }} |" >> $GITHUB_STEP_SUMMARY
 
+  # ---- Integration Tests ----
   integration_test:
+    needs: check
+    if: needs.check.outputs.has_changes == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 60
     permissions:
@@ -145,7 +178,7 @@ jobs:
 
       - uses: actions/setup-node@v6
         with:
-          node-version: ${{ inputs.node_version }}
+          node-version: ${{ inputs.node_version || '24' }}
           cache: "npm"
 
       - run: |
