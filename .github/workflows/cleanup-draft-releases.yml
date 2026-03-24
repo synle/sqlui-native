@@ -16,8 +16,13 @@ jobs:
   cleanup:
     runs-on: ubuntu-latest
     steps:
+      - name: Record job start time
+        run: echo "JOB_START=$(date +%s)" >> $GITHUB_ENV
+
       - name: Checkout repository
         uses: actions/checkout@v6
+        with:
+          ref: ${{ github.ref }} # fetch latest branch tip (includes prep commits)
 
       - name: Delete old draft releases (keeping last ${{ inputs.keep_count }})
         env:
@@ -30,3 +35,16 @@ jobs:
               echo "Deleting draft release: $tag"
               gh release delete "$tag" --yes --cleanup-tag || true
             done
+
+      - name: Cleanup job summary
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          JOB_END=$(date +%s)
+          DUR=$(( JOB_END - ${JOB_START:-$JOB_END} ))
+          if [ "$DUR" -ge 60 ]; then FORMATTED=$(printf "%dm %ds" $((DUR / 60)) $((DUR % 60))); else FORMATTED="${DUR}s"; fi
+          echo "## :broom: Cleanup Draft Releases Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Metric | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|--------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| **Total Duration** | **${FORMATTED}** |" >> $GITHUB_STEP_SUMMARY

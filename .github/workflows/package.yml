@@ -38,6 +38,9 @@ jobs:
   code_format:
     runs-on: ubuntu-latest
     steps:
+      - name: Record job start time
+        run: echo "JOB_START=$(date +%s)" >> $GITHUB_ENV
+
       - name: Print input parameters
         shell: bash
         run: |
@@ -65,6 +68,19 @@ jobs:
           message: "CI / CD - Format code"
           default_author: github_actions
 
+      - name: Code format job summary
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          JOB_END=$(date +%s)
+          DUR=$(( JOB_END - ${JOB_START:-$JOB_END} ))
+          if [ "$DUR" -ge 60 ]; then FORMATTED=$(printf "%dm %ds" $((DUR / 60)) $((DUR % 60))); else FORMATTED="${DUR}s"; fi
+          echo "## :art: Code Format Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Metric | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|--------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| **Total Duration** | **${FORMATTED}** |" >> $GITHUB_STEP_SUMMARY
+
   create_release:
     if: ${{ inputs.release_mode != 'no_release' }}
     needs: [code_format]
@@ -72,8 +88,13 @@ jobs:
     outputs:
       dist_version: ${{ steps.package-version.outputs.current-version }}
     steps:
+      - name: Record job start time
+        run: echo "JOB_START=$(date +%s)" >> $GITHUB_ENV
+
       - name: Checkout repository
         uses: actions/checkout@v6
+        with:
+          ref: ${{ github.ref }} # fetch latest branch tip (includes prep commits)
 
       - name: Setup Node.js
         uses: actions/setup-node@v6
@@ -137,6 +158,19 @@ jobs:
               gh release delete "$tag" --yes --cleanup-tag || true
             done
 
+      - name: Create release job summary
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          JOB_END=$(date +%s)
+          DUR=$(( JOB_END - ${JOB_START:-$JOB_END} ))
+          if [ "$DUR" -ge 60 ]; then FORMATTED=$(printf "%dm %ds" $((DUR / 60)) $((DUR % 60))); else FORMATTED="${DUR}s"; fi
+          echo "## :rocket: Create Release Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Metric | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|--------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| **Total Duration** | **${FORMATTED}** |" >> $GITHUB_STEP_SUMMARY
+
   prebuild:
     needs: [code_format]
     runs-on: ubuntu-latest
@@ -147,6 +181,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
+        with:
+          ref: ${{ github.ref }} # fetch latest branch tip (includes prep commits)
 
       - name: Setup Node.js
         uses: actions/setup-node@v6
@@ -154,16 +190,26 @@ jobs:
           node-version: ${{ inputs.node_version }}
           cache: "npm"
 
+      - name: Record job start time
+        run: echo "JOB_START=$(date +%s)" >> $GITHUB_ENV
+
       - name: Install dependencies
         run: npm ci || npm install
 
       - name: Run prebuild
         run: npm run prebuild
 
+      - name: Record tests start time
+        run: echo "TESTS_START=$(date +%s)" >> $GITHUB_ENV
+
       - name: Run unit tests with coverage
         id: tests
         continue-on-error: ${{ inputs.release_mode == 'draft' }}
         run: npx vitest run --reporter=default --reporter=junit --outputFile.junit=test-results.xml --coverage.enabled
+
+      - name: Record tests end time
+        if: ${{ always() }}
+        run: echo "TESTS_END=$(date +%s)" >> $GITHUB_ENV
 
       - name: Publish test results
         if: ${{ always() && steps.tests.outcome != 'skipped' }}
@@ -221,20 +267,49 @@ jobs:
             echo "" >> $GITHUB_STEP_SUMMARY
           fi
 
+      - name: Record typecheck start time
+        if: ${{ always() }}
+        run: echo "TYPECHECK_START=$(date +%s)" >> $GITHUB_ENV
+
       - name: Run typecheck
         id: typecheck
         continue-on-error: ${{ inputs.release_mode == 'draft' }}
         run: npm run typecheck
+
+      - name: Record typecheck end / lint start time
+        if: ${{ always() }}
+        run: |
+          echo "TYPECHECK_END=$(date +%s)" >> $GITHUB_ENV
+          echo "LINT_START=$(date +%s)" >> $GITHUB_ENV
 
       - name: Run lint
         id: lint
         continue-on-error: ${{ inputs.release_mode == 'draft' }}
         run: npm run lint
 
+      - name: Record lint end time
+        if: ${{ always() }}
+        run: echo "LINT_END=$(date +%s)" >> $GITHUB_ENV
+
       - name: Summary of all checks
         if: ${{ always() }}
         shell: bash
         run: |
+          format_duration() {
+            local s=$1
+            if [ "${s:-0}" -ge 60 ]; then
+              printf "%dm %ds" $((s / 60)) $((s % 60))
+            else
+              printf "%ds" "${s:-0}"
+            fi
+          }
+
+          JOB_END=$(date +%s)
+          TESTS_DUR=$(( ${TESTS_END:-$JOB_END} - ${TESTS_START:-$JOB_END} ))
+          TYPECHECK_DUR=$(( ${TYPECHECK_END:-$JOB_END} - ${TYPECHECK_START:-$JOB_END} ))
+          LINT_DUR=$(( ${LINT_END:-$JOB_END} - ${LINT_START:-$JOB_END} ))
+          TOTAL_DUR=$(( JOB_END - ${JOB_START:-$JOB_END} ))
+
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "## Build Checks Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
@@ -246,12 +321,13 @@ jobs:
             COV_BADGE=" (${COV_PCT}%)"
           fi
 
-          echo "| Check | Result |" >> $GITHUB_STEP_SUMMARY
-          echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
-          echo "| Unit Tests | ${{ steps.tests.outcome == 'success' && ':white_check_mark: Passed' || ':x: Failed' }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Coverage | ${COV_BADGE:- :warning: N/A} |" >> $GITHUB_STEP_SUMMARY
-          echo "| TypeCheck | ${{ steps.typecheck.outcome == 'success' && ':white_check_mark: Passed' || ':x: Failed' }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Lint | ${{ steps.lint.outcome == 'success' && ':white_check_mark: Passed' || ':x: Failed' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Check | Result | Duration |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|--------|----------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Unit Tests | ${{ steps.tests.outcome == 'success' && ':white_check_mark: Passed' || ':x: Failed' }} | $(format_duration $TESTS_DUR) |" >> $GITHUB_STEP_SUMMARY
+          echo "| Coverage | ${COV_BADGE:- :warning: N/A} | - |" >> $GITHUB_STEP_SUMMARY
+          echo "| TypeCheck | ${{ steps.typecheck.outcome == 'success' && ':white_check_mark: Passed' || ':x: Failed' }} | $(format_duration $TYPECHECK_DUR) |" >> $GITHUB_STEP_SUMMARY
+          echo "| Lint | ${{ steps.lint.outcome == 'success' && ':white_check_mark: Passed' || ':x: Failed' }} | $(format_duration $LINT_DUR) |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Total** | | **$(format_duration $TOTAL_DUR)** |" >> $GITHUB_STEP_SUMMARY
 
   dist_windows_x64:
     needs: [code_format, create_release]
@@ -260,6 +336,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
+        with:
+          ref: ${{ github.ref }} # fetch latest branch tip (includes prep commits)
 
       - name: Setup Node.js
         uses: actions/setup-node@v6
@@ -270,8 +348,18 @@ jobs:
       - name: Update package.json to release version
         run: npm version --no-git-tag-version "${{ needs.create_release.outputs.dist_version }}"
 
+      - name: Record build start time
+        run: echo "BUILD_START=$(date +%s)" >> $GITHUB_ENV
+
       - name: Build application
         run: bash scripts/build.sh
+
+      - name: Record build end / package start time
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          echo "BUILD_END=$(date +%s)" >> $GITHUB_ENV
+          echo "PACKAGE_START=$(date +%s)" >> $GITHUB_ENV
 
       - name: Package Windows x64 exe
         shell: bash
@@ -319,6 +407,26 @@ jobs:
             "./dist/sqlui-native-x64.appx#sqlui-native-${{ needs.create_release.outputs.dist_version }}-x64.appx" \
             --clobber
 
+      - name: Windows x64 job summary
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          format_duration() {
+            local s=$1
+            if [ "${s:-0}" -ge 60 ]; then printf "%dm %ds" $((s / 60)) $((s % 60)); else printf "%ds" "${s:-0}"; fi
+          }
+          JOB_END=$(date +%s)
+          BUILD_DUR=$(( ${BUILD_END:-$JOB_END} - ${BUILD_START:-$JOB_END} ))
+          PACKAGE_DUR=$(( JOB_END - ${PACKAGE_START:-$JOB_END} ))
+          TOTAL_DUR=$(( JOB_END - ${BUILD_START:-$JOB_END} ))
+          echo "## :package: Windows x64 Build Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Task | Duration |" >> $GITHUB_STEP_SUMMARY
+          echo "|------|----------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Build | $(format_duration $BUILD_DUR) |" >> $GITHUB_STEP_SUMMARY
+          echo "| Package + Upload | $(format_duration $PACKAGE_DUR) |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Total** | **$(format_duration $TOTAL_DUR)** |" >> $GITHUB_STEP_SUMMARY
+
   dist_windows_arm64:
     needs: [code_format, create_release]
     if: ${{ always() && needs.code_format.result == 'success' }}
@@ -326,6 +434,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
+        with:
+          ref: ${{ github.ref }} # fetch latest branch tip (includes prep commits)
 
       - name: Setup Node.js
         uses: actions/setup-node@v6
@@ -339,8 +449,18 @@ jobs:
       - name: Update package.json to release version
         run: npm version --no-git-tag-version "${{ needs.create_release.outputs.dist_version }}"
 
+      - name: Record build start time
+        run: echo "BUILD_START=$(date +%s)" >> $GITHUB_ENV
+
       - name: Build application
         run: bash scripts/build.sh
+
+      - name: Record build end / package start time
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          echo "BUILD_END=$(date +%s)" >> $GITHUB_ENV
+          echo "PACKAGE_START=$(date +%s)" >> $GITHUB_ENV
 
       - name: Package Windows ARM64 exe
         shell: bash
@@ -365,6 +485,26 @@ jobs:
             "./dist/sqlui-native-arm64.exe#sqlui-native-${{ needs.create_release.outputs.dist_version }}-arm64.exe" \
             --clobber
 
+      - name: Windows ARM64 job summary
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          format_duration() {
+            local s=$1
+            if [ "${s:-0}" -ge 60 ]; then printf "%dm %ds" $((s / 60)) $((s % 60)); else printf "%ds" "${s:-0}"; fi
+          }
+          JOB_END=$(date +%s)
+          BUILD_DUR=$(( ${BUILD_END:-$JOB_END} - ${BUILD_START:-$JOB_END} ))
+          PACKAGE_DUR=$(( JOB_END - ${PACKAGE_START:-$JOB_END} ))
+          TOTAL_DUR=$(( JOB_END - ${BUILD_START:-$JOB_END} ))
+          echo "## :package: Windows ARM64 Build Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Task | Duration |" >> $GITHUB_STEP_SUMMARY
+          echo "|------|----------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Build | $(format_duration $BUILD_DUR) |" >> $GITHUB_STEP_SUMMARY
+          echo "| Package + Upload | $(format_duration $PACKAGE_DUR) |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Total** | **$(format_duration $TOTAL_DUR)** |" >> $GITHUB_STEP_SUMMARY
+
   dist_macos_arm64:
     needs: [code_format, create_release]
     if: ${{ always() && needs.code_format.result == 'success' }}
@@ -372,6 +512,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
+        with:
+          ref: ${{ github.ref }} # fetch latest branch tip (includes prep commits)
 
       - name: Setup Node.js
         uses: actions/setup-node@v6
@@ -382,8 +524,18 @@ jobs:
       - name: Update package.json to release version
         run: npm version --no-git-tag-version "${{ needs.create_release.outputs.dist_version }}"
 
+      - name: Record build start time
+        run: echo "BUILD_START=$(date +%s)" >> $GITHUB_ENV
+
       - name: Build application
         run: bash scripts/build.sh
+
+      - name: Record build end / package start time
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          echo "BUILD_END=$(date +%s)" >> $GITHUB_ENV
+          echo "PACKAGE_START=$(date +%s)" >> $GITHUB_ENV
 
       - name: Package macOS ARM64 dmg
         shell: bash
@@ -408,6 +560,26 @@ jobs:
             "./dist/sqlui-native-arm64.dmg#sqlui-native-${{ needs.create_release.outputs.dist_version }}-arm64.dmg" \
             --clobber
 
+      - name: macOS ARM64 job summary
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          format_duration() {
+            local s=$1
+            if [ "${s:-0}" -ge 60 ]; then printf "%dm %ds" $((s / 60)) $((s % 60)); else printf "%ds" "${s:-0}"; fi
+          }
+          JOB_END=$(date +%s)
+          BUILD_DUR=$(( ${BUILD_END:-$JOB_END} - ${BUILD_START:-$JOB_END} ))
+          PACKAGE_DUR=$(( JOB_END - ${PACKAGE_START:-$JOB_END} ))
+          TOTAL_DUR=$(( JOB_END - ${BUILD_START:-$JOB_END} ))
+          echo "## :package: macOS ARM64 Build Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Task | Duration |" >> $GITHUB_STEP_SUMMARY
+          echo "|------|----------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Build | $(format_duration $BUILD_DUR) |" >> $GITHUB_STEP_SUMMARY
+          echo "| Package + Upload | $(format_duration $PACKAGE_DUR) |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Total** | **$(format_duration $TOTAL_DUR)** |" >> $GITHUB_STEP_SUMMARY
+
   dist_macos_intel_x64:
     needs: [code_format, create_release]
     if: ${{ always() && needs.code_format.result == 'success' }}
@@ -415,6 +587,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
+        with:
+          ref: ${{ github.ref }} # fetch latest branch tip (includes prep commits)
 
       - name: Setup Node.js
         uses: actions/setup-node@v6
@@ -425,8 +599,18 @@ jobs:
       - name: Update package.json to release version
         run: npm version --no-git-tag-version "${{ needs.create_release.outputs.dist_version }}"
 
+      - name: Record build start time
+        run: echo "BUILD_START=$(date +%s)" >> $GITHUB_ENV
+
       - name: Build application
         run: bash scripts/build.sh
+
+      - name: Record build end / package start time
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          echo "BUILD_END=$(date +%s)" >> $GITHUB_ENV
+          echo "PACKAGE_START=$(date +%s)" >> $GITHUB_ENV
 
       - name: Package macOS x64 dmg
         shell: bash
@@ -451,6 +635,26 @@ jobs:
             "./dist/sqlui-native-x64.dmg#sqlui-native-${{ needs.create_release.outputs.dist_version }}-x64.dmg" \
             --clobber
 
+      - name: macOS Intel x64 job summary
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          format_duration() {
+            local s=$1
+            if [ "${s:-0}" -ge 60 ]; then printf "%dm %ds" $((s / 60)) $((s % 60)); else printf "%ds" "${s:-0}"; fi
+          }
+          JOB_END=$(date +%s)
+          BUILD_DUR=$(( ${BUILD_END:-$JOB_END} - ${BUILD_START:-$JOB_END} ))
+          PACKAGE_DUR=$(( JOB_END - ${PACKAGE_START:-$JOB_END} ))
+          TOTAL_DUR=$(( JOB_END - ${BUILD_START:-$JOB_END} ))
+          echo "## :package: macOS Intel x64 Build Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Task | Duration |" >> $GITHUB_STEP_SUMMARY
+          echo "|------|----------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Build | $(format_duration $BUILD_DUR) |" >> $GITHUB_STEP_SUMMARY
+          echo "| Package + Upload | $(format_duration $PACKAGE_DUR) |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Total** | **$(format_duration $TOTAL_DUR)** |" >> $GITHUB_STEP_SUMMARY
+
   dist_linux:
     needs: [code_format, create_release]
     if: ${{ always() && needs.code_format.result == 'success' }}
@@ -458,6 +662,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
+        with:
+          ref: ${{ github.ref }} # fetch latest branch tip (includes prep commits)
 
       - name: Setup Node.js
         uses: actions/setup-node@v6
@@ -468,8 +674,18 @@ jobs:
       - name: Update package.json to release version
         run: npm version --no-git-tag-version "${{ needs.create_release.outputs.dist_version }}"
 
+      - name: Record build start time
+        run: echo "BUILD_START=$(date +%s)" >> $GITHUB_ENV
+
       - name: Build application
         run: bash scripts/build.sh
+
+      - name: Record build end / package start time
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          echo "BUILD_END=$(date +%s)" >> $GITHUB_ENV
+          echo "PACKAGE_START=$(date +%s)" >> $GITHUB_ENV
 
       - name: Package Linux distributables
         shell: bash
@@ -563,6 +779,26 @@ jobs:
             "./dist/sqlui-native.AppImage#sqlui-native-${{ needs.create_release.outputs.dist_version }}.AppImage" \
             --clobber
 
+      - name: Linux job summary
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          format_duration() {
+            local s=$1
+            if [ "${s:-0}" -ge 60 ]; then printf "%dm %ds" $((s / 60)) $((s % 60)); else printf "%ds" "${s:-0}"; fi
+          }
+          JOB_END=$(date +%s)
+          BUILD_DUR=$(( ${BUILD_END:-$JOB_END} - ${BUILD_START:-$JOB_END} ))
+          PACKAGE_DUR=$(( JOB_END - ${PACKAGE_START:-$JOB_END} ))
+          TOTAL_DUR=$(( JOB_END - ${BUILD_START:-$JOB_END} ))
+          echo "## :package: Linux Build Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Task | Duration |" >> $GITHUB_STEP_SUMMARY
+          echo "|------|----------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Build | $(format_duration $BUILD_DUR) |" >> $GITHUB_STEP_SUMMARY
+          echo "| Package + Upload | $(format_duration $PACKAGE_DUR) |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Total** | **$(format_duration $TOTAL_DUR)** |" >> $GITHUB_STEP_SUMMARY
+
   roll_back_on_failure_or_canceled:
     if: ${{ always() && inputs.release_mode != 'no_release' && needs.create_release.result == 'success' && (needs.dist_windows_x64.result == 'failure' || needs.dist_windows_arm64.result == 'failure' || needs.dist_macos_arm64.result == 'failure' || needs.dist_macos_intel_x64.result == 'failure' || needs.dist_linux.result == 'failure' || needs.dist_windows_x64.result == 'cancelled' || needs.dist_windows_arm64.result == 'cancelled' || needs.dist_macos_arm64.result == 'cancelled' || needs.dist_macos_intel_x64.result == 'cancelled' || needs.dist_linux.result == 'cancelled') }}
     needs: [create_release, dist_windows_x64, dist_windows_arm64, dist_macos_arm64, dist_macos_intel_x64, dist_linux]
@@ -570,6 +806,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
+        with:
+          ref: ${{ github.ref }} # fetch latest branch tip (includes prep commits)
 
       - name: Delete failed release tag and assets
         env:
@@ -580,13 +818,26 @@ jobs:
           echo "Deleting failed release: $TAG"
           gh release delete "$TAG" --yes --cleanup-tag 2>/dev/null || true
 
+      - name: Rollback job summary
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          echo "## :rewind: Rollback Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Rolled back release **${{ needs.create_release.outputs.dist_version }}** due to dist job failure." >> $GITHUB_STEP_SUMMARY
+
   publish:
     if: ${{ inputs.release_mode == 'production' }}
     needs: [create_release, dist_windows_x64, dist_windows_arm64, dist_macos_arm64, dist_macos_intel_x64, dist_linux]
     runs-on: ubuntu-latest
     steps:
+      - name: Record job start time
+        run: echo "JOB_START=$(date +%s)" >> $GITHUB_ENV
+
       - name: Checkout repository
         uses: actions/checkout@v6
+        with:
+          ref: ${{ github.ref }} # fetch latest branch tip (includes prep commits)
 
       - name: Setup Node.js
         uses: actions/setup-node@v6
@@ -608,6 +859,20 @@ jobs:
           message: "CI / CD - New Release ${{ needs.create_release.outputs.dist_version }}"
           default_author: github_actions
 
+      - name: Publish job summary
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          JOB_END=$(date +%s)
+          DUR=$(( JOB_END - ${JOB_START:-$JOB_END} ))
+          if [ "$DUR" -ge 60 ]; then FORMATTED=$(printf "%dm %ds" $((DUR / 60)) $((DUR % 60))); else FORMATTED="${DUR}s"; fi
+          echo "## :bookmark: Publish Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Metric | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|--------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Version | ${{ needs.create_release.outputs.dist_version }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Total Duration** | **${FORMATTED}** |" >> $GITHUB_STEP_SUMMARY
+
   deploy_github_pages:
     if: ${{ inputs.release_mode == 'production' }}
     needs: [publish]
@@ -619,10 +884,13 @@ jobs:
       name: github-pages
       url: ${{ steps.deploy.outputs.page_url }}
     steps:
+      - name: Record job start time
+        run: echo "JOB_START=$(date +%s)" >> $GITHUB_ENV
+
       - name: Checkout repository
         uses: actions/checkout@v6
         with:
-          ref: main
+          ref: ${{ github.ref }} # fetch latest branch tip (includes prep commits)
 
       - name: Build with Jekyll
         uses: actions/jekyll-build-pages@v1
@@ -641,3 +909,16 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deploy
         uses: actions/deploy-pages@v4
+
+      - name: Deploy job summary
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          JOB_END=$(date +%s)
+          DUR=$(( JOB_END - ${JOB_START:-$JOB_END} ))
+          if [ "$DUR" -ge 60 ]; then FORMATTED=$(printf "%dm %ds" $((DUR / 60)) $((DUR % 60))); else FORMATTED="${DUR}s"; fi
+          echo "## :globe_with_meridians: Deploy GitHub Pages Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Metric | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|--------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| **Total Duration** | **${FORMATTED}** |" >> $GITHUB_STEP_SUMMARY
