@@ -26,6 +26,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
         with:
+          ref: ${{ github.ref }} # fetch latest branch tip (includes prep commits)
           fetch-depth: 0
       - name: Check for changes in the last 24 hours
         id: check
@@ -49,11 +50,16 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.ref }} # fetch latest branch tip (includes prep commits)
 
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ inputs.node_version || '24' }}
           cache: "npm"
+
+      - name: Record job start time
+        run: echo "JOB_START=$(date +%s)" >> $GITHUB_ENV
 
       - name: Install dependencies
         run: npm ci || npm install
@@ -61,9 +67,16 @@ jobs:
       - name: Run prebuild
         run: npm run prebuild
 
+      - name: Record tests start time
+        run: echo "TESTS_START=$(date +%s)" >> $GITHUB_ENV
+
       - name: Run unit tests
         id: tests
         run: npx vitest run --reporter=default --reporter=junit --outputFile.junit=unit-test-results.xml
+
+      - name: Record tests end time
+        if: ${{ always() }}
+        run: echo "TESTS_END=$(date +%s)" >> $GITHUB_ENV
 
       - name: Publish unit test results
         if: ${{ always() && steps.tests.outcome != 'skipped' }}
@@ -92,26 +105,56 @@ jobs:
             echo "| Errors | ${ERRORS:-0} |" >> $GITHUB_STEP_SUMMARY
           fi
 
+      - name: Record typecheck start time
+        if: ${{ always() }}
+        run: echo "TYPECHECK_START=$(date +%s)" >> $GITHUB_ENV
+
       - name: Run typecheck
         id: typecheck
         run: npm run typecheck
+
+      - name: Record typecheck end / lint start time
+        if: ${{ always() }}
+        run: |
+          echo "TYPECHECK_END=$(date +%s)" >> $GITHUB_ENV
+          echo "LINT_START=$(date +%s)" >> $GITHUB_ENV
 
       - name: Run lint
         id: lint
         run: npm run lint
 
+      - name: Record lint end time
+        if: ${{ always() }}
+        run: echo "LINT_END=$(date +%s)" >> $GITHUB_ENV
+
       - name: Summary of all checks
         if: ${{ always() }}
         shell: bash
         run: |
+          format_duration() {
+            local s=$1
+            if [ "${s:-0}" -ge 60 ]; then
+              printf "%dm %ds" $((s / 60)) $((s % 60))
+            else
+              printf "%ds" "${s:-0}"
+            fi
+          }
+
+          JOB_END=$(date +%s)
+          TESTS_DUR=$(( ${TESTS_END:-$JOB_END} - ${TESTS_START:-$JOB_END} ))
+          TYPECHECK_DUR=$(( ${TYPECHECK_END:-$JOB_END} - ${TYPECHECK_START:-$JOB_END} ))
+          LINT_DUR=$(( ${LINT_END:-$JOB_END} - ${LINT_START:-$JOB_END} ))
+          TOTAL_DUR=$(( JOB_END - ${JOB_START:-$JOB_END} ))
+
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "## Build Checks Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "| Check | Result |" >> $GITHUB_STEP_SUMMARY
-          echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
-          echo "| Unit Tests | ${{ steps.tests.outcome == 'success' && ':white_check_mark: Passed' || ':x: Failed' }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| TypeCheck | ${{ steps.typecheck.outcome == 'success' && ':white_check_mark: Passed' || ':x: Failed' }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Lint | ${{ steps.lint.outcome == 'success' && ':white_check_mark: Passed' || ':x: Failed' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Check | Result | Duration |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|--------|----------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Unit Tests | ${{ steps.tests.outcome == 'success' && ':white_check_mark: Passed' || ':x: Failed' }} | $(format_duration $TESTS_DUR) |" >> $GITHUB_STEP_SUMMARY
+          echo "| TypeCheck | ${{ steps.typecheck.outcome == 'success' && ':white_check_mark: Passed' || ':x: Failed' }} | $(format_duration $TYPECHECK_DUR) |" >> $GITHUB_STEP_SUMMARY
+          echo "| Lint | ${{ steps.lint.outcome == 'success' && ':white_check_mark: Passed' || ':x: Failed' }} | $(format_duration $LINT_DUR) |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Total** | | **$(format_duration $TOTAL_DUR)** |" >> $GITHUB_STEP_SUMMARY
 
   # ---- Integration Tests ----
   integration_test:
@@ -175,6 +218,8 @@ jobs:
           - 6379:6379
     steps:
       - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.ref }} # fetch latest branch tip (includes prep commits)
 
       - uses: actions/setup-node@v6
         with:
@@ -187,10 +232,16 @@ jobs:
           node scripts/postbuild.js
 
       # wait for databases to be ready
+      - name: Record job start time
+        run: echo "JOB_START=$(date +%s)" >> $GITHUB_ENV
+
       - name: Wait for databases to be ready
         run: |
           echo "Waiting for databases to initialize..."
           sleep 5m  # sleep for n mins
+
+      - name: Record integration tests start time
+        run: echo "TESTS_START=$(date +%s)" >> $GITHUB_ENV
 
       - name: Run integration tests
         id: integration_tests
@@ -203,6 +254,10 @@ jobs:
           TEST_AZ_COSMOSDB_CONNECTION: ${{ secrets.TEST_AZ_COSMOSDB_CONNECTION }}
           TEST_SFDC_CONNECTION: ${{ secrets.TEST_SFDC_CONNECTION }}
         run: npx vitest run --config vitest.integration.config.ts --reporter=default --reporter=junit --outputFile.junit=integration-test-results.xml
+
+      - name: Record integration tests end time
+        if: ${{ always() }}
+        run: echo "TESTS_END=$(date +%s)" >> $GITHUB_ENV
 
       - name: Publish integration test results
         if: ${{ always() && steps.integration_tests.outcome != 'skipped' }}
@@ -218,6 +273,19 @@ jobs:
         if: ${{ always() }}
         shell: bash
         run: |
+          format_duration() {
+            local s=$1
+            if [ "${s:-0}" -ge 60 ]; then
+              printf "%dm %ds" $((s / 60)) $((s % 60))
+            else
+              printf "%ds" "${s:-0}"
+            fi
+          }
+
+          JOB_END=$(date +%s)
+          TESTS_DUR=$(( ${TESTS_END:-$JOB_END} - ${TESTS_START:-$JOB_END} ))
+          TOTAL_DUR=$(( JOB_END - ${JOB_START:-$JOB_END} ))
+
           if [ "${{ steps.integration_tests.outcome }}" = "failure" ]; then
             echo "## :x: Integration Tests Failed" >> $GITHUB_STEP_SUMMARY
           else
@@ -236,3 +304,8 @@ jobs:
             echo "| Failures | ${FAILURES:-0} |" >> $GITHUB_STEP_SUMMARY
             echo "| Errors | ${ERRORS:-0} |" >> $GITHUB_STEP_SUMMARY
           fi
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Task | Duration |" >> $GITHUB_STEP_SUMMARY
+          echo "|------|----------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Integration Tests | $(format_duration $TESTS_DUR) |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Total (incl. DB wait)** | **$(format_duration $TOTAL_DUR)** |" >> $GITHUB_STEP_SUMMARY
