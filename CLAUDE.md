@@ -293,7 +293,7 @@ After any build-related or Vite config change, run the affected build task to ve
 - React app: Vite (`vite.frontend.config.ts`) - dev server on port 3000 with proxy to mocked server on port 3001
 - Electron main process: Vite SSR (`vite.electron.config.ts`) - outputs `build/main.js`
 - Mocked server: Vite SSR (`vite.mocked-server.config.ts`) - outputs `build/mocked-server.js`
-- Prettier: 100 char width, single quotes, trailing commas, 2-space indent
+- Prettier: 140 char width, single quotes, trailing commas, 2-space indent
 - NODE_VERSION: 24 (use `fnm` to switch: `fnm use 24`)
 - npm
 
