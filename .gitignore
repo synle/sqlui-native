@@ -1,59 +1,74 @@
-# dependencies
-# misc
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-# testing
-*.db
-*.LICENSE.txt
-*.rej
-*.sqlite
-*storybook.log
-.cache
-.claude
-.DS_Store
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+yarn.lock
+
+# Build output
+build/
+dist/
+appx/
+main.js
+mocked-server.js
+preload.js
+
+# Static / generated assets
+assets/
+static/
+public/vs
+vs/
+favicon.ico
+logo32.png
+logo256.png
+logo256.icns
+logo512.png
+boxart.png
+robots.txt
+manifest.json
+asset-manifest.json
+public/package.json
+src/package.json
+
+# Environment & config
 .env
-.env.development.local
 .env.local
+.env.development.local
 .env.production.local
 .env.test.local
 .npmrc
-.nyc_output
-.parcel-cache
-.pnp
-.pnp.js
-.prettier-cache
+
+# IDE & OS
+.DS_Store
 .vs-code
-/node_modules
-appx
-asset-manifest.json
-assets
-boxart.png
-build
-connections-mocked-server.json
-coverage
-/data
-DEBUG
-dist
-Error
-favicon.ico
-logo256.icns
-logo256.png
-logo32.png
-logo512.png
-main.js
-manifest.json
-mocked-server.js
-node_modules
+.claude/*
+!.claude/settings.json
+
+# Testing & coverage
+coverage/
+.nyc_output
+
+# Caches
+.cache
+.parcel-cache
+.prettier-cache
+
+# Logs
 npm-debug.log*
-preload.js
-public/vs
-robots.txt
-src/package.json
-static
-upload
-vs
 yarn-debug.log*
 yarn-error.log*
-yarn.lock
-public/package.json
+*storybook.log
+DEBUG
+Error
+
+# Data & uploads
+/data
+connections-mocked-server.json
+upload/
+
+# Misc
+*.db
+*.sqlite
 *.map
 *.patch
+*.rej
+*.LICENSE.txt
