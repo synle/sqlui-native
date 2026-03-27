@@ -292,7 +292,7 @@ export function useRetryConnection() {
           return Array.isArray(key) && key[0] === connectionId;
         },
       });
-      return dataApi.reconnect(connectionId);
+      return dataApi.refreshConnection(connectionId);
     },
     {
       onSettled: async (newSuccessConnection, newFailedConnection) => {
@@ -319,6 +319,44 @@ export function useRetryConnection() {
       },
     },
   );
+}
+
+/**
+ * Hook to refresh (clear backend + frontend cache and refetch) data for a specific database.
+ * Clears the backend disk cache then invalidates frontend React Query cache for tables and columns.
+ * @returns A callback that accepts connectionId and databaseId to refresh.
+ */
+export function useRefreshDatabase() {
+  const queryClient = useQueryClient();
+  return async (connectionId: string, databaseId: string) => {
+    // Clear backend disk cache for this database
+    await dataApi.refreshDatabase(connectionId, databaseId);
+    // Invalidate frontend cache to trigger refetch for active queries
+    queryClient.invalidateQueries([connectionId, databaseId, "tables"]);
+    queryClient.invalidateQueries([connectionId, databaseId, "all_table_columns"]);
+    queryClient.invalidateQueries({
+      predicate: (query) => {
+        const key = query.queryKey;
+        return Array.isArray(key) && key[0] === connectionId && key[1] === databaseId && key[3] === "columns";
+      },
+    });
+  };
+}
+
+/**
+ * Hook to refresh (clear backend + frontend cache and refetch) column data for a specific table.
+ * Clears the backend disk cache then invalidates frontend React Query cache for columns.
+ * @returns A callback that accepts connectionId, databaseId, and tableId to refresh.
+ */
+export function useRefreshTable() {
+  const queryClient = useQueryClient();
+  return async (connectionId: string, databaseId: string, tableId: string) => {
+    // Clear backend disk cache for this table
+    await dataApi.refreshTable(connectionId, databaseId, tableId);
+    // Invalidate frontend cache to trigger refetch for active queries
+    queryClient.invalidateQueries([connectionId, databaseId, tableId, "columns"]);
+    queryClient.invalidateQueries([connectionId, databaseId, "all_table_columns"]);
+  };
 }
 
 /**
