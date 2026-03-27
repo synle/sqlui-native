@@ -1114,6 +1114,10 @@ export default function MissionControl() {
           onShowSettings();
           break;
 
+        case "clientEvent/toggleSidebar":
+          document.dispatchEvent(new Event("toggleSidebar"));
+          break;
+
         case "clientEvent/clearShowHides":
           onClearConnectionVisibles();
           break;
@@ -1602,6 +1606,13 @@ export default function MissionControl() {
             } catch (err) {
               console.error("index.tsx:preventDefault", err);
             }
+            break;
+
+          case "\\":
+            // Cmd+\ / Alt+\ to toggle sidebar
+            document.dispatchEvent(new Event("toggleSidebar"));
+            e.stopPropagation();
+            e.preventDefault();
             break;
 
           case "F":
