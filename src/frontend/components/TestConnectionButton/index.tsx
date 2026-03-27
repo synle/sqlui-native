@@ -2,8 +2,9 @@ import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import { Box, Button, CircularProgress, Typography } from "@mui/material";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { getConnectionFormInputs, getConnectionStringFormat } from "src/common/adapters/DataScriptFactory";
+import { ProxyApi } from "src/frontend/data/api";
 import { useActionDialogs } from "src/frontend/hooks/useActionDialogs";
-import { useTestConnection } from "src/frontend/hooks/useConnection";
 import { SqluiCore } from "typings";
 
 /** Props for the TestConnectionButton component. */
@@ -13,7 +14,13 @@ type TestConnectionButtonProps = {
 };
 
 /** Status of the test connection attempt. */
-type TestStatus = "loading" | "success" | "error";
+type TestStatus = "loading" | "success" | "error" | "cancelled";
+
+/** A parsed key-value detail from a connection string. */
+type ConnectionDetail = {
+  label: string;
+  value: string;
+};
 
 /** Props for the modal body that displays connection test progress and results. */
 type TestConnectionModalBodyProps = {
@@ -24,28 +31,92 @@ type TestConnectionModalBodyProps = {
 };
 
 /**
- * Extracts the host portion from a connection string (e.g. "mysql://user:pass@host:3306" → "host:3306").
- * Returns the raw connection string segment after `@`, or falls back to the part after `://`.
- * @param connectionString - The full connection string.
- * @returns The extracted server host or an empty string if unparseable.
+ * Parses a connection string into labeled key-value details using the same field definitions
+ * as the Connection Helper form. Reverses the build logic from ConnectionHelper.
+ * @param connectionString - The full connection string (e.g. "mysql://user:pass@host:3306").
+ * @returns An array of labeled connection details.
  */
-function parseServerHost(connectionString: string): string {
+function parseConnectionDetails(connectionString: string): ConnectionDetail[] {
   try {
-    const withoutScheme = connectionString.replace(/^[^:]+:\/\//, "");
-    // For JSON-style connections (e.g. sfdc://{"username":...}), return empty
-    if (withoutScheme.startsWith("{")) {
-      return "";
+    const schemeMatch = connectionString.match(/^([^:]+):\/\//);
+    if (!schemeMatch) {
+      return [];
     }
-    // For Microsoft-style connections (e.g. aztable://DefaultEndpointsProtocol=...)
-    if (withoutScheme.includes(";")) {
-      return "";
+    const scheme = schemeMatch[1];
+    const body = connectionString.replace(`${scheme}://`, "");
+    const format = getConnectionStringFormat(scheme);
+    const formInputs = getConnectionFormInputs(scheme);
+
+    if (formInputs.length === 0) {
+      return [];
     }
-    // Standard URL: user:pass@host:port/db or host:port/db
-    const afterAt = withoutScheme.includes("@") ? withoutScheme.split("@")[1] : withoutScheme;
-    // Remove path/query
-    return afterAt.split("/")[0].split("?")[0];
+
+    const details: ConnectionDetail[] = [];
+
+    if (format === "json") {
+      // JSON format: {"field1":"val1","field2":"val2"}
+      try {
+        const parsed = JSON.parse(body);
+        for (const [inputKey, inputLabel] of formInputs) {
+          if (parsed[inputKey]) {
+            // Mask sensitive fields
+            const isSensitive = /password|secret|token|key|clientId/i.test(inputKey);
+            details.push({ label: inputLabel, value: isSensitive ? "••••••••" : parsed[inputKey] });
+          }
+        }
+      } catch (_err) {
+        // unparseable JSON
+      }
+    } else if (format === "ado") {
+      // ADO format: Key1=val1;Key2=val2
+      if (formInputs.length === 1) {
+        // Single field (e.g. Azure Table Storage connection string) — show truncated
+        const truncated = body.length > 40 ? body.substring(0, 40) + "…" : body;
+        details.push({ label: formInputs[0][1], value: truncated });
+      }
+    } else {
+      // URL format: user:pass@host:port
+      if (body.includes("@")) {
+        const [credentials, hostPart] = body.split("@");
+        const [username] = credentials.split(":");
+        if (username) {
+          details.push({ label: "Username", value: decodeURIComponent(username) });
+        }
+        // Password is always masked
+        if (credentials.includes(":")) {
+          details.push({ label: "Password", value: "••••••••" });
+        }
+        const [host, portAndPath] = hostPart.split(":");
+        if (host) {
+          details.push({ label: "Host", value: decodeURIComponent(host) });
+        }
+        if (portAndPath) {
+          const port = portAndPath.split("/")[0].split("?")[0];
+          if (port) {
+            details.push({ label: "Port", value: port });
+          }
+        }
+      } else if (formInputs.length === 1) {
+        // Single field (e.g. SQLite path)
+        details.push({ label: formInputs[0][1], value: body });
+      } else {
+        // host:port without credentials
+        const [host, portAndPath] = body.split(":");
+        if (host) {
+          details.push({ label: "Host", value: decodeURIComponent(host) });
+        }
+        if (portAndPath) {
+          const port = portAndPath.split("/")[0].split("?")[0];
+          if (port) {
+            details.push({ label: "Port", value: port });
+          }
+        }
+      }
+    }
+
+    return details;
   } catch (_err) {
-    return "";
+    return [];
   }
 }
 
@@ -71,61 +142,131 @@ function MetadataRow(props: { label: string; value: string }): JSX.Element | nul
     return null;
   }
   return (
-    <Box sx={{ display: "flex", gap: 1 }}>
-      <Typography variant="body2" color="text.secondary" sx={{ minWidth: 80 }}>
+    <Box sx={{ display: "flex", gap: 1, minWidth: 0 }}>
+      <Typography variant="body2" color="text.secondary" sx={{ flexShrink: 0, maxWidth: 120 }}>
         {props.label}:
       </Typography>
-      <Typography variant="body2">{props.value}</Typography>
+      <Typography variant="body2" sx={{ wordBreak: "break-all", overflow: "hidden", minWidth: 0 }}>
+        {props.value}
+      </Typography>
     </Box>
   );
 }
 
 /**
- * Modal body component that runs the connection test and shows loading, success, or error state
- * with metadata (server, dialect, elapsed time) and Close/Retry buttons.
+ * Displays a live-updating elapsed timer that ticks every second.
+ * @param props - Contains the start timestamp (epoch ms).
+ * @returns The live timer element.
+ */
+function LiveTimer(props: { startTime: number }): JSX.Element {
+  const [now, setNow] = useState(Date.now());
+
+  useEffect(() => {
+    const interval = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  return <Typography variant="body2">{formatElapsed(now - props.startTime)}</Typography>;
+}
+
+/**
+ * Modal body component that runs the connection test and shows loading (with live timer),
+ * success, or error state with parsed connection details and Close/Retry/Cancel buttons.
  * @param props - Connection props and dismiss callback.
  * @returns The modal body element.
  */
-function TestConnectionModalBody(props: TestConnectionModalBodyProps): JSX.Element {
+export function TestConnectionModalBody(props: TestConnectionModalBodyProps): JSX.Element {
   const { connection, onDismiss } = props;
-  const { mutateAsync: testConnection } = useTestConnection();
   const [status, setStatus] = useState<TestStatus>("loading");
   const [errorMessage, setErrorMessage] = useState("");
   const [elapsed, setElapsed] = useState(0);
   const [dialect, setDialect] = useState("");
-  const startTimeRef = useRef(0);
+  const startTimeRef = useRef(Date.now());
+  const abortControllerRef = useRef<AbortController | null>(null);
 
-  const serverHost = parseServerHost(connection.connection);
+  const connectionDetails = parseConnectionDetails(connection.connection);
 
   const runTest = useCallback(async () => {
+    // Abort any previous in-flight request
+    abortControllerRef.current?.abort();
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+
     setStatus("loading");
     setErrorMessage("");
     setElapsed(0);
     setDialect("");
     startTimeRef.current = Date.now();
     try {
-      const result = await testConnection(connection);
+      const result = await ProxyApi.test(connection, controller.signal);
+      if (controller.signal.aborted) {
+        return;
+      }
       setElapsed(Date.now() - startTimeRef.current);
       setDialect(result?.dialect || "");
       setStatus("success");
     } catch (err) {
+      if (controller.signal.aborted) {
+        return;
+      }
       setElapsed(Date.now() - startTimeRef.current);
       console.error("TestConnectionButton:testConnection", err);
       setStatus("error");
       setErrorMessage(err instanceof Error ? err.message : JSON.stringify(err));
     }
-  }, [testConnection, connection]);
+  }, [connection]);
+
+  /** Cancels the in-flight test connection request. */
+  const onCancel = useCallback(() => {
+    abortControllerRef.current?.abort();
+    abortControllerRef.current = null;
+    setElapsed(Date.now() - startTimeRef.current);
+    setStatus("cancelled");
+  }, []);
 
   useEffect(() => {
     runTest();
+    return () => {
+      abortControllerRef.current?.abort();
+    };
   }, [runTest]);
+
+  /** Renders the connection info rows (name + parsed connection details). */
+  const renderConnectionInfo = () => (
+    <>
+      {connection.name && <MetadataRow label="Name" value={connection.name} />}
+      {connectionDetails.map((detail, idx) => (
+        <MetadataRow key={idx} label={detail.label} value={detail.value} />
+      ))}
+    </>
+  );
+
+  /** Renders the full metadata section with connection info, dialect, and elapsed time. */
+  const renderMetadata = (showDialect: boolean) => (
+    <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5, ml: 0.5 }}>
+      {renderConnectionInfo()}
+      {showDialect && <MetadataRow label="Dialect" value={dialect} />}
+      <MetadataRow label="Time" value={formatElapsed(elapsed)} />
+    </Box>
+  );
 
   return (
     <Box sx={{ py: 1 }}>
       {status === "loading" && (
-        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-          <CircularProgress size={24} />
-          <Typography>Testing connection...</Typography>
+        <Box>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+            <CircularProgress size={24} />
+            <Typography>Testing connection...</Typography>
+          </Box>
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5, mt: 1.5, ml: 0.5 }}>
+            {renderConnectionInfo()}
+            <Box sx={{ display: "flex", gap: 1 }}>
+              <Typography variant="body2" color="text.secondary">
+                Elapsed:
+              </Typography>
+              <LiveTimer startTime={startTimeRef.current} />
+            </Box>
+          </Box>
         </Box>
       )}
 
@@ -135,12 +276,7 @@ function TestConnectionModalBody(props: TestConnectionModalBodyProps): JSX.Eleme
             <CheckCircleOutlineIcon color="success" />
             <Typography>Successfully connected to Server.</Typography>
           </Box>
-          <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5, ml: 0.5 }}>
-            {connection.name && <MetadataRow label="Name" value={connection.name} />}
-            <MetadataRow label="Server" value={serverHost} />
-            <MetadataRow label="Dialect" value={dialect} />
-            <MetadataRow label="Time" value={formatElapsed(elapsed)} />
-          </Box>
+          {renderMetadata(true)}
         </Box>
       )}
 
@@ -150,11 +286,7 @@ function TestConnectionModalBody(props: TestConnectionModalBodyProps): JSX.Eleme
             <ErrorOutlineIcon color="error" />
             <Typography>Failed to connect to Server.</Typography>
           </Box>
-          <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5, ml: 0.5, mb: 1 }}>
-            {connection.name && <MetadataRow label="Name" value={connection.name} />}
-            <MetadataRow label="Server" value={serverHost} />
-            <MetadataRow label="Time" value={formatElapsed(elapsed)} />
-          </Box>
+          {renderMetadata(false)}
           <Typography
             variant="body2"
             sx={{
@@ -165,6 +297,7 @@ function TestConnectionModalBody(props: TestConnectionModalBodyProps): JSX.Eleme
               borderRadius: 1,
               maxHeight: 200,
               overflow: "auto",
+              mt: 1,
             }}
           >
             {errorMessage}
@@ -172,9 +305,29 @@ function TestConnectionModalBody(props: TestConnectionModalBodyProps): JSX.Eleme
         </Box>
       )}
 
+      {status === "cancelled" && (
+        <Box>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
+            <ErrorOutlineIcon color="warning" />
+            <Typography>Connection test cancelled.</Typography>
+          </Box>
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5, ml: 0.5 }}>
+            <MetadataRow label="Time" value={formatElapsed(elapsed)} />
+          </Box>
+        </Box>
+      )}
+
+      {status === "loading" && (
+        <Box sx={{ display: "flex", gap: 1, mt: 2, justifyContent: "flex-end" }}>
+          <Button variant="outlined" size="small" color="warning" onClick={onCancel}>
+            Cancel
+          </Button>
+        </Box>
+      )}
+
       {status !== "loading" && (
         <Box sx={{ display: "flex", gap: 1, mt: 2, justifyContent: "flex-end" }}>
-          {status === "error" && (
+          {(status === "error" || status === "cancelled") && (
             <Button variant="contained" size="small" onClick={runTest}>
               Retry
             </Button>
@@ -189,8 +342,28 @@ function TestConnectionModalBody(props: TestConnectionModalBodyProps): JSX.Eleme
 }
 
 /**
+ * Opens the test connection modal dialog for a given connection.
+ * Reusable by any component that has access to useActionDialogs.
+ * @param connection - The connection properties to test.
+ * @param modal - The modal function from useActionDialogs.
+ * @param dismiss - The dismiss function from useActionDialogs.
+ */
+export function showTestConnectionModal(
+  connection: SqluiCore.CoreConnectionProps,
+  modal: ReturnType<typeof useActionDialogs>["modal"],
+  dismiss: ReturnType<typeof useActionDialogs>["dismiss"],
+) {
+  modal({
+    title: "Test Connection",
+    message: <TestConnectionModalBody connection={connection} onDismiss={() => dismiss()} />,
+    disableBackdropClick: true,
+    size: "sm",
+  });
+}
+
+/**
  * Button that tests a database connection and displays the result via a blocking modal dialog
- * with retry support on failure.
+ * with parsed connection details, live timer, cancel, and retry support.
  * @param props - Contains the connection properties to test.
  * @returns The test connection button.
  */
@@ -207,12 +380,7 @@ export default function TestConnectionButton(props: TestConnectionButtonProps): 
       return;
     }
 
-    modal({
-      title: "Test Connection",
-      message: <TestConnectionModalBody connection={props.connection} onDismiss={() => dismiss()} />,
-      disableBackdropClick: true,
-      size: "sm",
-    });
+    showTestConnectionModal(props.connection, modal, dismiss);
   };
 
   return (
