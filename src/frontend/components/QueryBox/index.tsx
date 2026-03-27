@@ -169,6 +169,10 @@ function QueryBox(props: QueryBoxProps): JSX.Element | null {
   const { query, onChange, isLoading: loadingConnection } = useConnectionQuery(queryId);
   const { mutateAsync: executeQuery } = useExecute();
   const [executing, setExecuting] = useState(false);
+  /** Syncs the local executing state into the query context for tab-level visibility. */
+  useEffect(() => {
+    onChange({ executing });
+  }, [executing]);
   const layoutMode = useLayoutModeSetting();
   const [expanded, setExpanded] = useState(layoutMode !== "compact");
   const { data: selectedConnection } = useGetConnectionById(query?.connectionId);
@@ -339,7 +343,7 @@ function QueryBox(props: QueryBoxProps): JSX.Element | null {
     const currentExecutionId = ++executionIdRef.current;
 
     const executionStart = Date.now();
-    onChange({ executionStart, result: undefined, executionEnd: undefined });
+    onChange({ executionStart, result: undefined, executionEnd: undefined, executionDetails: undefined });
 
     let success = false;
     let newResult: SqluiCore.Result | undefined;
@@ -364,6 +368,17 @@ function QueryBox(props: QueryBoxProps): JSX.Element | null {
     } catch (err) {
       console.error("index.tsx:getEditorValue", err);
     }
+
+    // capture execution details — the actual query/connection/database/table at execution time
+    onChange({
+      executionDetails: {
+        sql: queryToExecute.sql,
+        connectionId: queryToExecute.connectionId,
+        connectionName: selectedConnection?.name,
+        databaseId: queryToExecute.databaseId,
+        tableId: queryToExecute.tableId,
+      },
+    });
 
     try {
       newResult = await executeQuery(queryToExecute);

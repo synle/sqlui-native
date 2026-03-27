@@ -273,11 +273,26 @@ export module SqluiFrontend {
   /** Partial query with optional frontend-specific execution state. */
   export type PartialConnectionQuery = SqluiCore.CoreConnectionQuery & {
     selected?: boolean;
+    /** Whether the query is currently being executed. Ephemeral — not persisted. */
+    executing?: boolean;
     executionStart?: number;
     executionEnd?: number;
     result?: SqluiCore.Result;
     /** Whether this query's result is a restored snapshot (from bookmark or recycle bin). */
     isSnapshot?: boolean;
+    /** Metadata captured at execution time — the actual query, connection, database, and table used. */
+    executionDetails?: {
+      /** The actual SQL/query string that was sent for execution. */
+      sql?: string;
+      /** The connection ID used at execution time. */
+      connectionId?: string;
+      /** The connection name at execution time. */
+      connectionName?: string;
+      /** The database ID used at execution time. */
+      databaseId?: string;
+      /** The table ID used at execution time. */
+      tableId?: string;
+    };
   };
 
   /** Full frontend connection query combining core and frontend-specific fields. */

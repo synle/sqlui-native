@@ -1,4 +1,5 @@
 import DownloadIcon from "@mui/icons-material/Download";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import Alert from "@mui/material/Alert";
 import CircularProgress from "@mui/material/CircularProgress";
 import Tooltip from "@mui/material/Tooltip";
@@ -96,6 +97,8 @@ export default function ResultBox(props: ResultBoxProps): JSX.Element | null {
     selectCommand({ event: "clientEvent/record/showDetails", data: rowData });
   };
 
+  const executionDetails = query.executionDetails;
+
   const tabHeaders = [
     <>
       Table
@@ -109,6 +112,14 @@ export default function ResultBox(props: ResultBoxProps): JSX.Element | null {
         <DownloadIcon fontSize="small" onClick={onDownloadJson} />
       </Tooltip>
     </>,
+    ...(executionDetails
+      ? [
+          <>
+            <InfoOutlinedIcon fontSize="small" sx={{ mr: 0.5 }} />
+            Query Details
+          </>,
+        ]
+      : []),
   ];
 
   const rowContextOptions = [
@@ -136,6 +147,17 @@ export default function ResultBox(props: ResultBoxProps): JSX.Element | null {
     <div className="ResultBox__Content" key={`JSON`}>
       <JsonFormatData data={data} />
     </div>,
+    ...(executionDetails
+      ? [
+          <div className="ResultBox__Content" key={`QueryDetails`}>
+            <QueryDetailsPanel
+              executionDetails={executionDetails}
+              executionStart={query.executionStart}
+              executionEnd={query.executionEnd}
+            />
+          </div>,
+        ]
+      : []),
   ];
 
   const snapshotInfo = query.isSnapshot ? (
@@ -176,5 +198,54 @@ function QueryTimeDescription(props: QueryTimeDescriptionProps): JSX.Element | n
     <Alert severity="info">
       Query took <Timer startTime={query?.executionStart} endTime={query?.executionEnd} />
     </Alert>
+  );
+}
+
+/** Props for the QueryDetailsPanel component. */
+type QueryDetailsPanelProps = {
+  /** The execution details captured at query execution time. */
+  executionDetails: NonNullable<SqluiFrontend.ConnectionQuery["executionDetails"]>;
+  /** The execution start timestamp (epoch ms). */
+  executionStart?: number;
+  /** The execution end timestamp (epoch ms). */
+  executionEnd?: number;
+};
+
+/**
+ * Displays detailed information about the executed query including connection, database, table, timing, and the actual SQL.
+ * @param props - Execution details and timing information.
+ * @returns A panel showing query execution metadata and the SQL that was run.
+ */
+function QueryDetailsPanel(props: QueryDetailsPanelProps): JSX.Element {
+  const { executionDetails, executionStart, executionEnd } = props;
+
+  const detailRows: { label: string; value: string | undefined }[] = [
+    { label: "Connection", value: executionDetails.connectionName || executionDetails.connectionId },
+    { label: "Database", value: executionDetails.databaseId },
+    { label: "Table", value: executionDetails.tableId },
+    { label: "Executed At", value: executionStart ? new Date(executionStart).toLocaleString() : undefined },
+    {
+      label: "Duration",
+      value: executionStart && executionEnd ? `${((executionEnd - executionStart) / 1000).toFixed(2)}s` : undefined,
+    },
+  ];
+
+  return (
+    <div style={{ padding: "0.75rem" }}>
+      <table style={{ borderCollapse: "collapse", marginBottom: "1rem", width: "100%" }}>
+        <tbody>
+          {detailRows
+            .filter((row) => row.value)
+            .map((row) => (
+              <tr key={row.label}>
+                <td style={{ padding: "4px 12px 4px 0", fontWeight: 600, whiteSpace: "nowrap", verticalAlign: "top" }}>{row.label}</td>
+                <td style={{ padding: "4px 0" }}>{row.value}</td>
+              </tr>
+            ))}
+        </tbody>
+      </table>
+      <div style={{ fontWeight: 600, marginBottom: "0.5rem" }}>Executed Query</div>
+      <CodeEditorBox value={executionDetails.sql || ""} language="sql" wordWrap={true} readOnly={true} />
+    </div>
   );
 }
