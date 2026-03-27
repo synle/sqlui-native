@@ -315,6 +315,46 @@ describe("Connections - CRUD", () => {
   });
 });
 
+describe("Connection - Refresh Endpoints", () => {
+  const mockedSessionId = `mocked-refresh.${Date.now()}`;
+
+  let connectionId: string;
+
+  beforeAll(async () => {
+    const res = await requestWithSupertest.post(`/api/connection`).set(_getCommonHeaders(mockedSessionId)).send({
+      name: "Refresh Test Connection",
+      connection: "postgres://user:pass@localhost:5432/testdb",
+    });
+    connectionId = res.body.id;
+  });
+
+  test("POST /api/connection/:connectionId/refresh should return 406 for unreachable connection", async () => {
+    const res = await requestWithSupertest.post(`/api/connection/${connectionId}/refresh`).set(_getCommonHeaders(mockedSessionId));
+    expect(res.status).toEqual(406);
+  });
+
+  test("POST /api/connection/:connectionId/refresh should return 404 for unknown connection", async () => {
+    const res = await requestWithSupertest.post(`/api/connection/nonexistent/refresh`).set(_getCommonHeaders(mockedSessionId));
+    expect(res.status).toEqual(404);
+  });
+
+  test("POST /api/connection/:connectionId/database/:databaseId/refresh should return 200", async () => {
+    const res = await requestWithSupertest
+      .post(`/api/connection/${connectionId}/database/testdb/refresh`)
+      .set(_getCommonHeaders(mockedSessionId));
+    expect(res.status).toEqual(200);
+    expect(res.body).toEqual({ success: true });
+  });
+
+  test("POST /api/connection/:connectionId/database/:databaseId/table/:tableId/refresh should return 200", async () => {
+    const res = await requestWithSupertest
+      .post(`/api/connection/${connectionId}/database/testdb/table/users/refresh`)
+      .set(_getCommonHeaders(mockedSessionId));
+    expect(res.status).toEqual(200);
+    expect(res.body).toEqual({ success: true });
+  });
+});
+
 describe("Connection - Test Endpoint", () => {
   test("POST /api/connection/test should return 400 without connection string", async () => {
     const res = await requestWithSupertest.post(`/api/connection/test`).send({});
