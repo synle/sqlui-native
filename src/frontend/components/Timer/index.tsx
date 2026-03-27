@@ -30,12 +30,18 @@ export default function _Timer(props: TimerProps): JSX.Element | null {
     if (props.endTime) {
       setEndTime(props.endTime);
       intervalRef.current && clearInterval(intervalRef.current);
+      intervalRef.current = undefined;
       return;
-    } else {
-      intervalRef.current = setInterval(() => {
-        setEndTime(Date.now());
-      }, 1000);
     }
+
+    intervalRef.current = setInterval(() => {
+      setEndTime(Date.now());
+    }, 1000);
+
+    return () => {
+      intervalRef.current && clearInterval(intervalRef.current);
+      intervalRef.current = undefined;
+    };
   }, [props.endTime]);
 
   if (!startTime) {
