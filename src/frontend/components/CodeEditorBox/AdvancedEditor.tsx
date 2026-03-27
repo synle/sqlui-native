@@ -48,6 +48,7 @@ export default function AdvancedEditor(props: AdvancedEditorProps): JSX.Element 
           language: props.language,
           theme: colorMode === "dark" ? "vs-dark" : "light",
           wordWrap: props.wordWrap === true ? "on" : "off",
+          readOnly: !!props.readOnly,
           ...DEFAULT_OPTIONS,
         });
 
