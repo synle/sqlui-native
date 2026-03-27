@@ -17,17 +17,62 @@ import SalesforceDataAdapterScripts from "src/common/adapters/SalesforceDataAdap
 import PersistentStorage from "src/common/PersistentStorage";
 import { SqluiCore } from "typings";
 
+/** Cache entry shape for storing database metadata on disk. */
+type DatabaseCacheEntry = { id: string; data: SqluiCore.DatabaseMetaData[]; timestamp: number };
+
 /** Cache entry shape for storing table metadata on disk. */
 type TableCacheEntry = { id: string; data: SqluiCore.TableMetaData[]; timestamp: number };
 
 /** Cache entry shape for storing column metadata on disk. */
 type ColumnCacheEntry = { id: string; data: SqluiCore.ColumnMetaData[]; timestamp: number };
 
+const databaseCacheStorage = new PersistentStorage<DatabaseCacheEntry>("cache", "databases", "cache.databases");
 const tableCacheStorage = new PersistentStorage<TableCacheEntry>("cache", "tables", "cache.tables");
 const columnCacheStorage = new PersistentStorage<ColumnCacheEntry>("cache", "columns", "cache.columns");
 
 /** Tracks in-flight background refreshes to prevent duplicate concurrent fetches. */
 const pendingRefreshes = new Set<string>();
+
+/**
+ * Builds a unique cache key for a connection's databases.
+ * @param connectionId - The connection identifier.
+ * @returns A prefixed cache key string.
+ */
+function getDatabaseCacheKey(connectionId: string) {
+  return `databases:${connectionId}`;
+}
+
+/**
+ * Retrieves cached database metadata for a given connection, if available.
+ * @param connectionId - The connection identifier.
+ * @returns The cached database metadata array, or undefined on a cache miss.
+ */
+function getCachedDatabases(connectionId: string): SqluiCore.DatabaseMetaData[] | undefined {
+  try {
+    const key = getDatabaseCacheKey(connectionId);
+    const entry = databaseCacheStorage.get(key);
+    if (entry?.data) {
+      return entry.data;
+    }
+  } catch (_err) {
+    // cache miss on read error
+  }
+  return undefined;
+}
+
+/**
+ * Persists database metadata to the disk cache for a given connection.
+ * @param connectionId - The connection identifier.
+ * @param data - The database metadata array to cache.
+ */
+function setCachedDatabases(connectionId: string, data: SqluiCore.DatabaseMetaData[]) {
+  try {
+    const key = getDatabaseCacheKey(connectionId);
+    databaseCacheStorage.add({ id: key, data, timestamp: Date.now() });
+  } catch (_err) {
+    // best-effort cache write
+  }
+}
 
 /**
  * Builds a unique cache key for a connection/database combination.
@@ -134,10 +179,17 @@ export function listAllCachedColumns() {
 }
 
 /**
- * Clears all cached table and column data for a given connection.
+ * Clears all cached database, table, and column data for a given connection.
  * @param connectionId - The connection ID whose cached data should be removed.
  */
 export function clearCachedColumns(connectionId: string) {
+  try {
+    const dbKey = getDatabaseCacheKey(connectionId);
+    databaseCacheStorage.delete(dbKey);
+  } catch (_err) {
+    // best-effort database cache clear
+  }
+
   try {
     const allTableEntries = tableCacheStorage.list();
     for (const entry of allTableEntries) {
@@ -218,10 +270,32 @@ export async function getConnectionMetaData(connection: SqluiCore.CoreConnection
 
   const engine = getDataAdapter(connection.connection);
   try {
-    const databases = await engine.getDatabases();
-
-    connItem.status = "online";
     connItem.dialect = engine.dialect;
+
+    // Use cached databases if available; fetch fresh in background
+    const cachedDatabases = connection.id ? getCachedDatabases(connection.id) : undefined;
+    let databases: SqluiCore.DatabaseMetaData[];
+    if (cachedDatabases) {
+      databases = cachedDatabases;
+      connItem.status = "online";
+      // Background refresh databases (deduplicated)
+      const dbRefreshKey = getDatabaseCacheKey(connection.id!);
+      if (!pendingRefreshes.has(dbRefreshKey)) {
+        pendingRefreshes.add(dbRefreshKey);
+        const connId = connection.id!;
+        engine
+          .getDatabases()
+          .then((dbs) => setCachedDatabases(connId, dbs))
+          .catch((err) => console.error("DataAdapterFactory.ts:backgroundRefreshDatabases", err))
+          .finally(() => pendingRefreshes.delete(dbRefreshKey));
+      }
+    } else {
+      databases = await engine.getDatabases();
+      connItem.status = "online";
+      if (connection.id) {
+        setCachedDatabases(connection.id, databases);
+      }
+    }
 
     for (const database of databases) {
       connItem.databases.push(database);
@@ -299,18 +373,41 @@ export function resetConnectionMetaData(connection: SqluiCore.CoreConnectionProp
  * @returns Sorted array of database metadata.
  */
 export async function getDatabases(sessionId: string, connectionId: string) {
-  const connection = await new PersistentStorage<SqluiCore.ConnectionProps>(sessionId, "connection").get(connectionId);
+  const cached = getCachedDatabases(connectionId);
 
-  const engine = getDataAdapter(connection.connection);
-  try {
-    return (await engine.getDatabases()).sort((a, b) => (a.name || "").localeCompare(b.name || ""));
-  } finally {
+  // Background refresh: fetch fresh data and update the cache for next call
+  const refreshCache = async () => {
+    const connection = await new PersistentStorage<SqluiCore.ConnectionProps>(sessionId, "connection").get(connectionId);
+    const engine = getDataAdapter(connection.connection);
     try {
-      await engine.disconnect();
-    } catch (_err) {
-      // best-effort cleanup
+      const databases = (await engine.getDatabases()).sort((a, b) => (a.name || "").localeCompare(b.name || ""));
+      setCachedDatabases(connectionId, databases);
+      return databases;
+    } catch (err) {
+      console.error("DataAdapterFactory.ts:refreshDatabaseCache", err);
+      return undefined;
+    } finally {
+      try {
+        await engine.disconnect();
+      } catch (_err) {
+        // best-effort cleanup
+      }
     }
+  };
+
+  if (cached) {
+    // Return cached data immediately; refresh in background for next time (deduplicated)
+    const refreshKey = getDatabaseCacheKey(connectionId);
+    if (!pendingRefreshes.has(refreshKey)) {
+      pendingRefreshes.add(refreshKey);
+      refreshCache().finally(() => pendingRefreshes.delete(refreshKey));
+    }
+    return cached;
   }
+
+  // No cache — must wait for fresh data
+  const databases = await refreshCache();
+  return databases || [];
 }
 
 /**
