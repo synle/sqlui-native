@@ -36,6 +36,8 @@ export type CodeEditorProps = {
   wordWrap?: boolean;
   placeholder?: string;
   disabled?: boolean;
+  /** When true, the editor is non-editable, auto-fits to content height, and hides the editor size control. */
+  readOnly?: boolean;
   editorRef?: React.RefObject<EditorRef>;
   required?: boolean;
   height?: string;
@@ -52,6 +54,8 @@ export type CodeEditorProps = {
 export type DecoratedEditorProps = CodeEditorProps & {
   onBlur?: (newValue: string) => void;
   onLiveChange?: (newValue: string) => void;
+  /** When true, the editor is non-editable (passed through from CodeEditorBox). */
+  readOnly?: boolean;
 };
 
 /** Default debounce delay in ms for live typing onChange calls. */
@@ -94,7 +98,7 @@ export default function CodeEditorBox(props: CodeEditorProps): JSX.Element | nul
 
   const height = heightSetting === FULL_HEIGHT_SENTINEL ? getFullHeight(props.value) : heightSetting;
 
-  const hideEditorSize = !!props.hideEditorSize || props.height || false;
+  const hideEditorSize = !!props.hideEditorSize || !!props.readOnly || props.height || false;
   const hideEditorSyntax = !!props.hideEditorSyntax || false;
 
   /** Tracks the last value emitted via onChange to avoid duplicate calls. */
@@ -222,7 +226,7 @@ export default function CodeEditorBox(props: CodeEditorProps): JSX.Element | nul
           onLiveChange={onLiveChange}
           autoFocus={props.autoFocus}
           required={props.required}
-          disabled={props.disabled}
+          disabled={props.disabled || props.readOnly}
           wordWrap={wordWrap}
           height={editorHeight}
           fillHeight={props.fillHeight}
@@ -249,6 +253,7 @@ export default function CodeEditorBox(props: CodeEditorProps): JSX.Element | nul
           wordWrap={wordWrap}
           placeholder={props.placeholder}
           disabled={props.disabled}
+          readOnly={props.readOnly}
           height={editorHeight}
           fillHeight={props.fillHeight}
           required={props.required}

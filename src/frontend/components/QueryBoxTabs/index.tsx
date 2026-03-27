@@ -187,6 +187,7 @@ export default function QueryBoxTabs() {
 
         return (
           <>
+            {q.executing && <CircularProgress size={14} sx={{ mr: 0.5 }} />}
             {q.pinned && <PushPinIcon />}
             {q.name}
             <DropdownButton id="table-action-split-button" options={options}>
