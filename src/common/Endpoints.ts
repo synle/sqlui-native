@@ -3,6 +3,8 @@ import { Express } from "express";
 import path from "path";
 import {
   clearCachedColumns,
+  clearCachedDatabase,
+  clearCachedTable,
   getColumns,
   getConnectionMetaData,
   getDataAdapter,
@@ -267,6 +269,63 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     } catch (err: any) {
       const message = err?.sqlMessage || err?.message || err?.toString?.() || "Connection failed";
       console.error("Endpoints.ts:getColumns", err);
+      res.status(500).json({ error: message });
+    }
+  });
+
+  addDataEndpoint("post", "/api/connection/:connectionId/refresh", async (req, res) => {
+    const connectionsStorage = await getConnectionsStorage(req.headers["sqlui-native-session-id"]);
+
+    const connection = await connectionsStorage.get(req.params?.connectionId);
+
+    if (!connection) {
+      return res.status(404).send("Not Found");
+    }
+
+    // Clear backend cache for this connection before reconnecting
+    if (connection.id) {
+      clearCachedColumns(connection.id);
+    }
+
+    const engine = getDataAdapter(connection.connection);
+    try {
+      await engine.authenticate();
+      res.status(200).json(await getConnectionMetaData(connection));
+    } catch (err: any) {
+      res.status(406).json(`Failed to connect ${err.toString()}`);
+      console.error("Endpoints.ts:handler [POST /api/connection/:connectionId/refresh]", err);
+    } finally {
+      try {
+        await engine.disconnect();
+      } catch (_err) {
+        // best-effort cleanup
+      }
+    }
+  });
+
+  addDataEndpoint("post", "/api/connection/:connectionId/database/:databaseId/refresh", async (req, res) => {
+    try {
+      const connectionId = req.params?.connectionId;
+      const databaseId = req.params?.databaseId;
+      clearCachedDatabase(connectionId, databaseId);
+      res.status(200).json({ success: true });
+    } catch (err: any) {
+      const message = err?.sqlMessage || err?.message || err?.toString?.() || "Refresh failed";
+      console.error("Endpoints.ts:handler [POST /api/connection/:connectionId/database/:databaseId/refresh]", err);
+      res.status(500).json({ error: message });
+    }
+  });
+
+  addDataEndpoint("post", "/api/connection/:connectionId/database/:databaseId/table/:tableId/refresh", async (req, res) => {
+    try {
+      const connectionId = req.params?.connectionId;
+      const databaseId = req.params?.databaseId;
+      const tableId = req.params?.tableId;
+      clearCachedTable(connectionId, databaseId, tableId);
+      res.status(200).json({ success: true });
+    } catch (err: any) {
+      const message = err?.sqlMessage || err?.message || err?.toString?.() || "Refresh failed";
+      console.error("Endpoints.ts:handler [POST /api/connection/:connectionId/database/:databaseId/table/:tableId/refresh]", err);
       res.status(500).json({ error: message });
     }
   });

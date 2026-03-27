@@ -187,6 +187,39 @@ export class ProxyApi {
   }
 
   /**
+   * Refreshes a connection by clearing backend cache and re-authenticating.
+   * @param connectionId - The connection ID to refresh.
+   */
+  static refreshConnection(connectionId: string) {
+    return _fetch<SqluiCore.ConnectionMetaData>(`/api/connection/${connectionId}/refresh`, {
+      method: "post",
+    });
+  }
+
+  /**
+   * Refreshes a database by clearing its backend cache (tables and columns).
+   * @param connectionId - The connection ID.
+   * @param databaseId - The database name to refresh.
+   */
+  static refreshDatabase(connectionId: string, databaseId: string) {
+    return _fetch(`/api/connection/${connectionId}/database/${databaseId}/refresh`, {
+      method: "post",
+    });
+  }
+
+  /**
+   * Refreshes a table by clearing its backend column cache.
+   * @param connectionId - The connection ID.
+   * @param databaseId - The database name.
+   * @param tableId - The table name to refresh.
+   */
+  static refreshTable(connectionId: string, databaseId: string, tableId: string) {
+    return _fetch(`/api/connection/${connectionId}/database/${databaseId}/table/${tableId}/refresh`, {
+      method: "post",
+    });
+  }
+
+  /**
    * Tests a database connection without persisting it.
    * @param connection - The connection properties to test.
    */

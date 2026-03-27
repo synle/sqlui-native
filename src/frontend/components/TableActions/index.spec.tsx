@@ -26,6 +26,7 @@ vi.mock("src/frontend/components/MissionControl", () => ({
 vi.mock("src/frontend/hooks/useConnection", () => ({
   useGetConnectionById: () => ({ data: { dialect: "mysql" }, isLoading: false }),
   useGetColumns: () => ({ data: [], isLoading: false }),
+  useRefreshTable: () => vi.fn(),
 }));
 
 vi.mock("src/frontend/hooks/useSetting", () => ({

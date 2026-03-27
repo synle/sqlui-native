@@ -1,13 +1,15 @@
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import RefreshIcon from "@mui/icons-material/Refresh";
 import SelectAllIcon from "@mui/icons-material/SelectAll";
 import SsidChartIcon from "@mui/icons-material/SsidChart";
 import IconButton from "@mui/material/IconButton";
 import { useNavigate } from "src/frontend/utils/commonUtils";
 import { useState } from "react";
+import { getDivider } from "src/common/adapters/BaseDataAdapter/scripts";
 import { getDatabaseActions, isDialectSupportVisualization } from "src/common/adapters/DataScriptFactory";
 import DropdownButton from "src/frontend/components/DropdownButton";
 import { useCommands } from "src/frontend/components/MissionControl";
-import { useGetConnectionById } from "src/frontend/hooks/useConnection";
+import { useGetConnectionById, useRefreshDatabase } from "src/frontend/hooks/useConnection";
 import { useActiveConnectionQuery } from "src/frontend/hooks/useConnectionQuery";
 import { useQuerySizeSetting } from "src/frontend/hooks/useSetting";
 import { useTreeActions } from "src/frontend/hooks/useTreeActions";
@@ -35,6 +37,7 @@ export default function DatabaseActions(props: DatabaseActionsProps): JSX.Elemen
   let connectionId: string | undefined = props.connectionId;
   const { selectCommand } = useCommands();
   const { data: treeActions } = useTreeActions();
+  const refreshDatabase = useRefreshDatabase();
 
   if (!open) {
     // if table action is not opened, hen we don't need to do this...
@@ -73,6 +76,17 @@ export default function DatabaseActions(props: DatabaseActionsProps): JSX.Elemen
       databaseId,
       querySize,
     }),
+    getDivider(),
+    {
+      label: "Refresh",
+      description: "Refresh database tables and columns cache.",
+      icon: <RefreshIcon />,
+      onClick: () => {
+        if (props.connectionId && props.databaseId) {
+          refreshDatabase(props.connectionId, props.databaseId);
+        }
+      },
+    },
   ];
 
   const options = actions.map((action) => ({
