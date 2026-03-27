@@ -1,6 +1,6 @@
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
-import Fab from "@mui/material/Fab";
+import IconButton from "@mui/material/IconButton";
 import { Bar, Container, Section } from "src/frontend/components/Resizer";
 import { useCallback, useEffect, useState } from "react";
 import { useSideBarWidthPreference } from "src/frontend/hooks/useClientSidePreference";
@@ -14,15 +14,22 @@ type LayoutTwoColumnsProps = {
   children: JSX.Element[];
 };
 
-const fabStyle = {
+/** Style for the sidebar toggle button. */
+const toggleButtonStyle = {
   position: "fixed",
-  bottom: "1rem",
-  left: "1.5rem",
+  bottom: "0.5rem",
+  left: "0.5rem",
+  width: 24,
+  height: 24,
+  fontSize: "1rem",
+  opacity: 0.6,
+  "&:hover": { opacity: 1 },
 };
 
 /**
  * Two-column layout with a collapsible, resizable left sidebar and a main content area.
- * The left pane width is persisted via user preferences. A floating button toggles sidebar visibility.
+ * The left pane width is persisted via user preferences. Toggle sidebar with Cmd+\ (Mac) or Alt+\ (Windows/Linux),
+ * or via the "Toggle Sidebar" command in the Command Palette, or the small arrow button at the bottom-left.
  * @param props - Contains className and two children for left and right panes.
  * @returns The two-column layout or single-column when sidebar is collapsed.
  */
@@ -56,9 +63,9 @@ export default function LayoutTwoColumns(props: LayoutTwoColumnsProps): JSX.Elem
   if (leftPaneExpanded) {
     return (
       <Container className={`${className} LayoutTwoColumns`}>
-        <Fab size="small" sx={fabStyle} onClick={() => setLeftPaneExpanded(false)}>
-          <KeyboardArrowLeftIcon />
-        </Fab>
+        <IconButton size="small" sx={toggleButtonStyle} onClick={() => setLeftPaneExpanded(false)}>
+          <KeyboardArrowLeftIcon fontSize="small" />
+        </IconButton>
         <Section defaultSize={width} onSizeChanged={onSetWidth} minSize={250} maxSize={600}>
           <div className="LayoutTwoColumns__LeftPane">{children[0]}</div>
         </Section>
@@ -72,9 +79,9 @@ export default function LayoutTwoColumns(props: LayoutTwoColumnsProps): JSX.Elem
 
   return (
     <>
-      <Fab size="small" sx={fabStyle} onClick={() => setLeftPaneExpanded(true)}>
-        <KeyboardArrowRightIcon />
-      </Fab>
+      <IconButton size="small" sx={toggleButtonStyle} onClick={() => setLeftPaneExpanded(true)}>
+        <KeyboardArrowRightIcon fontSize="small" />
+      </IconButton>
       <div className="LayoutTwoColumns__RightPane">{children[1]}</div>
     </>
   );
