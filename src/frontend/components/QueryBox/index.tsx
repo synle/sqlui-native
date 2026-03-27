@@ -26,7 +26,7 @@ import ResultBox from "src/frontend/components/ResultBox";
 import {
   refreshAfterExecution,
   useExecute,
-  useGetAllTableColumns,
+  useGetCachedColumns,
   useGetColumns,
   useGetConnectionById,
   useGetDatabases,
@@ -219,7 +219,7 @@ export default function QueryBox(props: QueryBoxProps): JSX.Element | null {
 
   const { data: databases } = useGetDatabases(query?.connectionId);
   const { data: tables } = useGetTables(query?.connectionId, query?.databaseId);
-  const { data: allTableColumns } = useGetAllTableColumns(query?.connectionId, query?.databaseId);
+  const { data: cachedColumns } = useGetCachedColumns(query?.connectionId, query?.databaseId);
 
   const completionItems: CompletionItem[] = useMemo(() => {
     const items: CompletionItem[] = [];
@@ -236,11 +236,10 @@ export default function QueryBox(props: QueryBoxProps): JSX.Element | null {
       }
     }
 
-    if (allTableColumns) {
+    if (cachedColumns) {
       const seen = new Set<string>();
-      for (const [tableName, columns] of Object.entries(allTableColumns)) {
+      for (const [tableName, columns] of Object.entries(cachedColumns) as [string, SqluiCore.ColumnMetaData[]][]) {
         for (const col of columns) {
-          // add plain column name (deduplicated)
           if (!seen.has(col.name)) {
             seen.add(col.name);
             items.push({
@@ -249,10 +248,8 @@ export default function QueryBox(props: QueryBoxProps): JSX.Element | null {
               detail: `Column (${tableName} - ${col.type})`,
             });
           }
-          // add table.column prefixed version
-          const prefixed = `${tableName}.${col.name}`;
           items.push({
-            label: prefixed,
+            label: `${tableName}.${col.name}`,
             kind: "column",
             detail: `Column (${col.type})`,
           });
@@ -261,7 +258,7 @@ export default function QueryBox(props: QueryBoxProps): JSX.Element | null {
     }
 
     return items;
-  }, [databases, tables, allTableColumns]);
+  }, [databases, tables, cachedColumns]);
 
   const language: string = useMemo(() => getSyntaxModeByDialect(selectedConnection?.dialect), [selectedConnection?.dialect, query?.sql]);
   const isLoading = loadingConnection;
