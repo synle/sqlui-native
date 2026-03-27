@@ -190,6 +190,9 @@ export default function SimpleEditor(props: SimpleEditorProps): JSX.Element | nu
           const textarea = textareaRef.current;
           return textarea.value.substring(textarea.selectionStart, textarea.selectionEnd);
         },
+        getValue: () => {
+          return textareaRef.current?.value || undefined;
+        },
       };
     }
   }, [textareaRef, props.editorRef]);
