@@ -77,6 +77,12 @@ Assuming you use the same database in the docker samples below:
     "id": "connection.1700000000000.1234567890123456",
     "connection": "sfdc://{\"username\":\"you@yourcompany.dev\",\"password\":\"your_password\",\"securityToken\":\"your_token\",\"loginUrl\":\"login.salesforce.com\"}",
     "name": "Salesforce Developer Org"
+  },
+  {
+    "_type": "connection",
+    "id": "connection.1711500000000.1234567890123456",
+    "connection": "restapi://{\"HOST\":\"https://httpbin.org\"}",
+    "name": "httpbin REST API"
   }
 ]
 ```
