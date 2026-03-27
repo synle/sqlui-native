@@ -473,5 +473,6 @@ export module SqluiEnums {
     | "clientEvent/schema/search"
     | "clientEvent/showSettings"
     | "clientEvent/tableRenderer"
-    | "clientEvent/toggleDevtools";
+    | "clientEvent/toggleDevtools"
+    | "clientEvent/toggleSidebar";
 }

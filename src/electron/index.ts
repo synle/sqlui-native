@@ -257,6 +257,12 @@ function setupMenu() {
           click: async (...[, win]) => sendMessage(win as BrowserWindow, "clientEvent/showCommandPalette"),
         },
         {
+          id: "menu-toggle-sidebar",
+          label: "Toggle Sidebar",
+          accelerator: isMac ? "Cmd+\\" : "Alt+\\",
+          click: async (...[, win]) => sendMessage(win as BrowserWindow, "clientEvent/toggleSidebar"),
+        },
+        {
           id: "menu-schema-search",
           label: "Search Schema",
           accelerator: isMac ? "Cmd+Shift+F" : "Ctrl+Shift+F",

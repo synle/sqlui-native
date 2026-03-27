@@ -252,6 +252,7 @@ const ALL_COMMAND_PALETTE_OPTIONS: CommandOption[] = [
     label: "Close Tabs to The Right Of Current Query",
     useCurrentQuery: true,
   },
+  { event: "clientEvent/toggleSidebar", label: "Toggle Sidebar" },
   { event: "clientEvent/schema/search", label: "Search Schema" },
   { event: "clientEvent/checkForUpdate", label: "Check For Update" },
   { event: "clientEvent/toggleDevtools", label: "Toggle React Query Devtools" },

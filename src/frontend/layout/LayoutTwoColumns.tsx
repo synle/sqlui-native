@@ -2,7 +2,7 @@ import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import Fab from "@mui/material/Fab";
 import { Bar, Container, Section } from "src/frontend/components/Resizer";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useSideBarWidthPreference } from "src/frontend/hooks/useClientSidePreference";
 import { useTreeActions } from "src/frontend/hooks/useTreeActions";
 
@@ -32,11 +32,26 @@ export default function LayoutTwoColumns(props: LayoutTwoColumnsProps): JSX.Elem
   const { setTreeActions } = useTreeActions();
   const [leftPaneExpanded, setLeftPaneExpanded] = useState(true);
 
+  /** Toggles the left pane expanded state. */
+  const toggleLeftPane = useCallback(() => {
+    setLeftPaneExpanded((prev) => !prev);
+  }, []);
+
   useEffect(() => {
     setTreeActions({
       showContextMenu: true,
     });
   }, [setTreeActions]);
+
+  useEffect(() => {
+    /** Handles the custom toggleSidebar event dispatched by MissionControl or the Electron menu. */
+    const onToggleSidebar = () => toggleLeftPane();
+
+    document.addEventListener("toggleSidebar", onToggleSidebar);
+    return () => {
+      document.removeEventListener("toggleSidebar", onToggleSidebar);
+    };
+  }, [toggleLeftPane]);
 
   if (leftPaneExpanded) {
     return (
