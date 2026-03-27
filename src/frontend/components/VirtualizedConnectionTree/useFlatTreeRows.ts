@@ -15,6 +15,7 @@ type DatabaseQueryResult = {
   data?: SqluiCore.DatabaseMetaData[];
   isLoading: boolean;
   isError: boolean;
+  error?: unknown;
 };
 
 /** Result of a table metadata query for a database. */
@@ -24,6 +25,7 @@ type TableQueryResult = {
   data?: SqluiCore.TableMetaData[];
   isLoading: boolean;
   isError: boolean;
+  error?: unknown;
 };
 
 /** Result of a column metadata query for a table. */
@@ -34,7 +36,24 @@ type ColumnQueryResult = {
   data?: SqluiCore.ColumnMetaData[];
   isLoading: boolean;
   isError: boolean;
+  error?: unknown;
 };
+
+/**
+ * Extracts a human-readable error message from a query error.
+ * Handles backend error objects ({ error: string }), Error instances, and plain strings.
+ * @param error - The error value from a React Query result.
+ * @returns A user-friendly error message string.
+ */
+function getErrorMessage(error: unknown): string {
+  if (!error) return "Error";
+  if (typeof error === "object" && error !== null && "error" in error) {
+    return String((error as { error: string }).error);
+  }
+  if (error instanceof Error) return error.message;
+  if (typeof error === "string") return error;
+  return "Error";
+}
 
 /**
  * Hook that builds a flat array of tree rows from connections, databases, tables, and columns.
@@ -71,6 +90,7 @@ export function useFlatTreeRows() {
     data: databaseQueries[i]?.data as SqluiCore.DatabaseMetaData[] | undefined,
     isLoading: databaseQueries[i]?.isLoading ?? true,
     isError: databaseQueries[i]?.isError ?? false,
+    error: databaseQueries[i]?.error,
   }));
 
   // Determine which databases are expanded
@@ -99,6 +119,7 @@ export function useFlatTreeRows() {
     data: tableQueries[i]?.data as SqluiCore.TableMetaData[] | undefined,
     isLoading: tableQueries[i]?.isLoading ?? true,
     isError: tableQueries[i]?.isError ?? false,
+    error: tableQueries[i]?.error,
   }));
 
   // Determine which tables are expanded
@@ -132,6 +153,7 @@ export function useFlatTreeRows() {
     data: columnQueries[i]?.data as SqluiCore.ColumnMetaData[] | undefined,
     isLoading: columnQueries[i]?.isLoading ?? true,
     isError: columnQueries[i]?.isError ?? false,
+    error: columnQueries[i]?.error,
   }));
 
   // Build flat row array
@@ -210,7 +232,7 @@ export function useFlatTreeRows() {
           type: "error",
           key: `error-db-${connKey}`,
           depth: 1,
-          message: "Error...",
+          message: getErrorMessage(dbResult.error),
         });
         continue;
       }
@@ -250,6 +272,15 @@ export function useFlatTreeRows() {
             key: `loading-tbl-${dbKey}`,
             depth: 2,
             message: "Loading...",
+          });
+          continue;
+        }
+        if (tblResult.isError) {
+          rows.push({
+            type: "error",
+            key: `error-tbl-${dbKey}`,
+            depth: 2,
+            message: getErrorMessage(tblResult.error),
           });
           continue;
         }
@@ -297,7 +328,7 @@ export function useFlatTreeRows() {
               type: "error",
               key: `error-col-${tblKey}`,
               depth: 3,
-              message: "Error...",
+              message: getErrorMessage(colResult.error),
             });
             continue;
           }
