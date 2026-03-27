@@ -30,7 +30,7 @@ export default defineConfig({
       },
     },
     target: "node18",
-    minify: true,
+    minify: false,
     ssr: true,
   },
   ssr: {
