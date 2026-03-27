@@ -143,8 +143,12 @@ export class ProxyApi {
    * @param databaseId - The database ID.
    * @returns A record mapping table names to their cached column metadata arrays.
    */
-  static getCachedColumns(connectionId: string, databaseId: string) {
-    return _fetch<Record<string, SqluiCore.ColumnMetaData[]>>(`/api/connection/${connectionId}/database/${databaseId}/columns/cached`);
+  static getCachedSchema(connectionId: string, databaseId: string) {
+    return _fetch<{
+      databases: SqluiCore.DatabaseMetaData[];
+      tables: SqluiCore.TableMetaData[];
+      columns: Record<string, SqluiCore.ColumnMetaData[]>;
+    }>(`/api/connection/${connectionId}/database/${databaseId}/schema/cached`);
   }
 
   /**

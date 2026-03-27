@@ -209,12 +209,12 @@ export function useGetTables(connectionId?: string, databaseId?: string) {
  * @param databaseId - The database ID.
  * @returns React Query result containing a record mapping table names to column metadata arrays.
  */
-export function useGetCachedColumns(connectionId?: string, databaseId?: string) {
+export function useGetCachedSchema(connectionId?: string, databaseId?: string) {
   const enabled = !!connectionId && !!databaseId;
 
   return useQuery(
-    [connectionId, databaseId, "cached_columns"],
-    () => (!enabled ? {} : dataApi.getCachedColumns(connectionId, databaseId)),
+    [connectionId, databaseId, "cached_schema"],
+    () => (!enabled ? undefined : dataApi.getCachedSchema(connectionId, databaseId)),
     {
       enabled,
       staleTime: 30 * 1000,
