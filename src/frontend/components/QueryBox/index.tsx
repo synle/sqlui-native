@@ -460,9 +460,9 @@ function QueryBox(props: QueryBoxProps): JSX.Element | null {
           required
           completionItems={completionItems}
         />
-        <div className="FormInput__Row">
+        <div className="FormInput__Row" style={{ flexWrap: "nowrap" }}>
           {!expanded && (
-            <div className="FormInput__Row">
+            <div className="FormInput__Row" style={{ flexShrink: 1, minWidth: 0, flexWrap: "nowrap" }}>
               <ConnectionDatabaseSelector value={query} onChange={onDatabaseConnectionChange} />
               <ConnectionRevealButton query={query} />
               <CodeSnippetButton {...props} />

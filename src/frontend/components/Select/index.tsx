@@ -51,13 +51,13 @@ type SelectProps = {
  * @returns The select element.
  */
 export default function Select(props: SelectProps): JSX.Element | null {
-  const { value, label, children, onChange, ...restProps } = props;
+  const { value, label, children, onChange, sx, ...restProps } = props;
 
   if (label) {
     // https://github.com/mui/material-ui/issues/32197
     const controlId = `select-${Date.now()}-${label.replace(/[ -_]/g, "-")}`;
     return (
-      <FormControl variant="outlined" size="small">
+      <FormControl variant="outlined" size="small" sx={sx}>
         <InputLabel variant="outlined" htmlFor={controlId} shrink={true} margin="dense">
           {label}
         </InputLabel>
