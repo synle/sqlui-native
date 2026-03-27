@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-SQLUI Native is a cross-platform Electron desktop SQL/NoSQL database client supporting MySQL, MariaDB, MSSQL, PostgreSQL, SQLite, Cassandra, MongoDB, Redis, Azure CosmosDB, Azure Table Storage, and Salesforce (SFDC).
+SQLUI Native is a cross-platform Electron desktop SQL/NoSQL database client and REST API client supporting MySQL, MariaDB, MSSQL, PostgreSQL, SQLite, Cassandra, MongoDB, Redis, Azure CosmosDB, Azure Table Storage, Salesforce (SFDC), and REST API (curl/fetch).
 
 ## Commands
 
@@ -87,6 +87,7 @@ Adapter implementations live in `src/common/adapters/`:
 
 - `RelationalDataAdapter` - MySQL, MariaDB, Postgres, MSSQL, SQLite (via Sequelize)
 - `CassandraDataAdapter`, `MongoDBDataAdapter`, `RedisDataAdapter`, `AzureCosmosDataAdapter`, `AzureTableStorageAdapter`, `SalesforceDataAdapter`
+- `RestApiDataAdapter` - REST API client (curl/fetch syntax, executed via system curl)
 
 Each adapter directory contains `index.ts` (adapter class) and `scripts.ts` (ConcreteDataScripts class with dialect-specific query generators). Some also have `utils.ts` for client configuration helpers.
 
@@ -95,7 +96,7 @@ Each adapter directory contains `index.ts` (adapter class) and `scripts.ts` (Con
 Connection strings are prefixed with a dialect scheme (`dialect://...`) but the format after the scheme varies:
 
 - **URL** (relational databases, Cassandra, MongoDB, Redis): Standard URI — `dialect://user:pass@host:port` (e.g., `mysql://root:pass@localhost:3306`)
-- **JSON** (SFDC): JSON object — `sfdc://{"username":"...","password":"...","securityToken":"..."}` (also supports OAuth2 Client Credentials flow with just `clientId`/`clientSecret`/`loginUrl`, no username/password)
+- **JSON** (SFDC, REST API): JSON object — `sfdc://{"username":"...","password":"..."}` or `restapi://{"HOST":"https://api.example.com"}` (also `rest://` as alias)
 - **Microsoft-style** (Azure Table Storage, CosmosDB): Semicolon-delimited key=value pairs — `aztable://DefaultEndpointsProtocol=https;AccountName=...;AccountKey=...`
 
 **Adapter Connection Lifecycle:**
@@ -104,6 +105,27 @@ Connection strings are prefixed with a dialect scheme (`dialect://...`) but the 
 - Adapter methods (authenticate, getDatabases, getTables, getColumns, execute) use `getConnection()` without closing the connection.
 - `disconnect()` is the SOLE cleanup method — it closes `this._connection` and sets it to `undefined`. It must **never** be called internally by adapter methods. It is called exclusively by the **caller** (`Endpoints.ts`, `DataAdapterFactory`, or tests) in `finally` blocks after all operations complete.
 - **SFDC auto-refresh:** The `SalesforceDataAdapter` wraps all operations in `withAutoRefresh()`, which detects `INVALID_SESSION_ID` / `Session expired` errors and automatically re-authenticates (for Client Credentials flow where no refresh token is available). The OAuth2 token request uses Node's native `https` module instead of jsforce's internal HTTP client, which hangs in bundled Electron builds.
+- **REST API (stateless):** The `RestApiDataAdapter` has no persistent connection. Each `execute()` call parses the curl/fetch command, resolves `{{VAR}}` placeholders, and spawns a `curl` subprocess. `authenticate()` just validates the JSON config. `disconnect()` is a no-op. The `HOST` field from the connection string JSON is auto-injected as the `{{HOST}}` variable.
+
+### REST API Adapter
+
+`RestApiDataAdapter` maps the standard adapter interface to HTTP requests:
+
+- **Connection** = API collection (e.g., "GitHub API") with a `HOST` and variables
+- **Database** = Folder for organizing requests (default: "Default")
+- **Table** = Saved request (e.g., "GET /users")
+- **Columns** = Request metadata fields (method, url, headers, params, body, bodyType)
+- **execute()** = Parse curl/fetch syntax → resolve variables → spawn curl → return response
+
+**Connection string:** `restapi://{"HOST":"https://api.example.com","variables":[{"key":"TOKEN","value":"abc","enabled":true}]}` (also accepts `rest://` as alias)
+
+**Dual syntax:** Auto-detects `curl` vs `fetch()` input. Both are parsed into `RestApiRequest` and executed via the system `curl` binary. `curlParser.ts` and `fetchParser.ts` handle parsing; `requestParser.ts` auto-routes.
+
+**Variable system:** `{{VAR}}` placeholders resolved by `variableResolver.ts`. 4-layer priority (folder > environment > collection > global). Built-in dynamic variables: `{{$timestamp}}`, `{{$isoTimestamp}}`, `{{$randomUUID}}`, `{{$randomInt}}`.
+
+**Execution:** `curlExecutor.ts` spawns `curl` with `--write-out` for timing metrics (DNS, connect, TLS, TTFB, total) and `-i` for response headers. Response is parsed into structured `RestApiResponse` with status, headers, body, cookies, timing, and size.
+
+**Context menus:** Database (folder) context menu shows "New Request" templates (curl/fetch × GET/POST JSON/POST form/PUT JSON/PUT form/PATCH/DELETE). Connection context menu hides "Refresh" and "Test Connection" (not applicable for stateless HTTP).
 
 ### Backend Schema Caching
 
