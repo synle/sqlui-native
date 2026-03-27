@@ -10,8 +10,8 @@ import {
   getDataAdapter,
   getDatabases,
   getTables,
+  getCachedSchema,
   listAllCachedColumns,
-  listCachedColumnsByDatabase,
 } from "src/common/adapters/DataAdapterFactory";
 import {
   getConnectionsStorage,
@@ -274,13 +274,13 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     }
   });
 
-  addDataEndpoint("get", "/api/connection/:connectionId/database/:databaseId/columns/cached", async (req, res) => {
+  addDataEndpoint("get", "/api/connection/:connectionId/database/:databaseId/schema/cached", async (req, res) => {
     try {
-      const result = listCachedColumnsByDatabase(req.params?.connectionId, req.params?.databaseId);
+      const result = getCachedSchema(req.params?.connectionId, req.params?.databaseId);
       res.status(200).json(result);
     } catch (err: any) {
       const message = err?.sqlMessage || err?.message || err?.toString?.() || "Connection failed";
-      console.error(`Endpoints.ts:handler [GET /api/.../columns/cached]`, err);
+      console.error(`Endpoints.ts:handler [GET /api/.../schema/cached]`, err);
       res.status(500).json({ error: message });
     }
   });

@@ -203,6 +203,30 @@ export function listCachedColumnsByDatabase(connectionId: string, databaseId: st
 }
 
 /**
+ * Consolidated cache response containing databases, tables, and columns for a connection+database.
+ */
+export type CachedSchemaResult = {
+  databases: SqluiCore.DatabaseMetaData[];
+  tables: SqluiCore.TableMetaData[];
+  columns: Record<string, SqluiCore.ColumnMetaData[]>;
+};
+
+/**
+ * Returns all cached schema data (databases, tables, columns) for a connection+database
+ * in a single call. Reads only from disk cache — no network queries are made.
+ * @param connectionId - The connection identifier.
+ * @param databaseId - The database name.
+ * @returns Consolidated cache data with databases, tables, and columns.
+ */
+export function getCachedSchema(connectionId: string, databaseId: string): CachedSchemaResult {
+  return {
+    databases: getCachedDatabases(connectionId) || [],
+    tables: getCachedTables(connectionId, databaseId) || [],
+    columns: listCachedColumnsByDatabase(connectionId, databaseId),
+  };
+}
+
+/**
  * Clears all cached database, table, and column data for a given connection.
  * @param connectionId - The connection ID whose cached data should be removed.
  */
