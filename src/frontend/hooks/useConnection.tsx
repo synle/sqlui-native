@@ -209,6 +209,28 @@ export function useGetTables(connectionId?: string, databaseId?: string) {
  * @param databaseId - The database ID.
  * @returns React Query result containing a record mapping table names to column metadata arrays.
  */
+export function useGetCachedColumns(connectionId?: string, databaseId?: string) {
+  const enabled = !!connectionId && !!databaseId;
+
+  return useQuery(
+    [connectionId, databaseId, "cached_columns"],
+    () => (!enabled ? {} : dataApi.getCachedColumns(connectionId, databaseId)),
+    {
+      enabled,
+      staleTime: 30 * 1000,
+      cacheTime: 5 * 60 * 1000,
+      refetchInterval: 30 * 1000,
+    },
+  );
+}
+
+/**
+ * Fetches columns for ALL tables in a database by making individual API calls.
+ * Use sparingly — prefer useGetCachedColumns for read-only access to already-cached data.
+ * @param connectionId - The connection ID.
+ * @param databaseId - The database ID.
+ * @returns React Query result containing a record mapping table names to column metadata arrays.
+ */
 export function useGetAllTableColumns(connectionId?: string, databaseId?: string) {
   const enabled = !!connectionId && !!databaseId;
 
@@ -223,13 +245,20 @@ export function useGetAllTableColumns(connectionId?: string, databaseId?: string
       const tableIds = tables.map((table) => table.name);
 
       const res: Record<string, SqluiCore.ColumnMetaData[]> = {};
-      for (const tableId of tableIds) {
-        res[tableId] = await dataApi.getConnectionColumns(connectionId, databaseId, tableId);
+      const concurrency = 3;
+      for (let i = 0; i < tableIds.length; i += concurrency) {
+        const batch = tableIds.slice(i, i + concurrency);
+        const results = await Promise.all(batch.map((tableId) => dataApi.getConnectionColumns(connectionId, databaseId, tableId)));
+        for (let j = 0; j < batch.length; j++) {
+          res[batch[j]] = results[j];
+        }
       }
       return res;
     },
     {
       enabled,
+      staleTime: 5 * 60 * 1000,
+      cacheTime: 10 * 60 * 1000,
     },
   );
 }
