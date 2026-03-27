@@ -9,8 +9,8 @@ vi.mock("src/frontend/hooks/useActionDialogs", () => ({
   useActionDialogs: () => ({ modal: mockModal, alert: mockAlert, dismiss: mockDismiss }),
 }));
 
-vi.mock("src/frontend/hooks/useConnection", () => ({
-  useTestConnection: () => ({ mutateAsync: vi.fn().mockResolvedValue(undefined) }),
+vi.mock("src/frontend/data/api", () => ({
+  ProxyApi: { test: vi.fn().mockResolvedValue({ dialect: "mysql" }) },
 }));
 
 import TestConnectionButton from "src/frontend/components/TestConnectionButton";
