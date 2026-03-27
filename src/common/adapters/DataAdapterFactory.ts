@@ -22,6 +22,9 @@ type ColumnCacheEntry = { id: string; data: SqluiCore.ColumnMetaData[]; timestam
 
 const columnCacheStorage = new PersistentStorage<ColumnCacheEntry>("cache", "columns", "cache.columns");
 
+/** Tracks in-flight background column refreshes to prevent duplicate concurrent fetches. */
+const pendingRefreshes = new Set<string>();
+
 /**
  * Builds a unique cache key for a connection/database/table combination.
  * @param connectionId - The connection identifier.
@@ -171,16 +174,11 @@ export async function getConnectionMetaData(connection: SqluiCore.CoreConnection
         database.tables = [];
       }
 
+      // Use cached columns if available; skip API calls for tables without cached data.
+      // Columns are fetched lazily via /api/columns when the user expands a table in the tree.
       for (const table of database.tables) {
-        try {
-          table.columns = cleanAndSortColumns(await engine.getColumns(table.name, database.name));
-          if (connection.id) {
-            setCachedColumns(connection.id, database.name, table.name, table.columns);
-          }
-        } catch (err) {
-          console.error("DataAdapterFactory.ts:getColumns", err);
-          table.columns = [];
-        }
+        const cached = connection.id ? getCachedColumns(connection.id, database.name, table.name) : undefined;
+        table.columns = cached || [];
       }
     }
   } catch (err) {
@@ -340,8 +338,12 @@ export async function getColumns(sessionId: string, connectionId: string, databa
   };
 
   if (cached) {
-    // Return cached data immediately; refresh in background for next time
-    refreshCache();
+    // Return cached data immediately; refresh in background for next time (deduplicated)
+    const refreshKey = getColumnCacheKey(connectionId, databaseId, tableId);
+    if (!pendingRefreshes.has(refreshKey)) {
+      pendingRefreshes.add(refreshKey);
+      refreshCache().finally(() => pendingRefreshes.delete(refreshKey));
+    }
     return cached;
   }
 
