@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
 import dataApi from "src/frontend/data/api";
 import { SessionStorageConfig } from "src/frontend/data/config";
 import { getCurrentSessionId } from "src/frontend/data/session";
@@ -78,18 +78,11 @@ export default function WrappedContext(props: { children: React.ReactNode }): JS
     _fetchData();
   }, []);
 
+  /** Memoized context value to prevent unnecessary re-renders of consumers. */
+  const contextValue = useMemo(() => ({ data, setData, isLoading }), [data, setData, isLoading]);
+
   // Provide the theme value and toggle function to the children components
-  return (
-    <TargetContext.Provider
-      value={{
-        data,
-        setData,
-        isLoading,
-      }}
-    >
-      {props.children}
-    </TargetContext.Provider>
-  );
+  return <TargetContext.Provider value={contextValue}>{props.children}</TargetContext.Provider>;
 }
 function _useConnectionQueries() {
   const { data, setData, isLoading } = useContext(TargetContext)!;

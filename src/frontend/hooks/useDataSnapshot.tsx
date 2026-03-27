@@ -10,7 +10,9 @@ const QUERY_KEY_DATA_SNAPSHOT = `dataSnapshot`;
  * @returns React Query result containing an array of data snapshots.
  */
 export function useGetDataSnapshots() {
-  return useQuery([QUERY_KEY_DATA_SNAPSHOT], dataApi.getDataSnapshots);
+  return useQuery([QUERY_KEY_DATA_SNAPSHOT], dataApi.getDataSnapshots, {
+    notifyOnChangeProps: ["data", "error"],
+  });
 }
 
 /**
@@ -19,7 +21,9 @@ export function useGetDataSnapshots() {
  * @returns React Query result containing the snapshot or null.
  */
 export function useGetDataSnapshot(dataSnapshotId?: string) {
-  return useQuery([QUERY_KEY_DATA_SNAPSHOT, dataSnapshotId], () => (dataSnapshotId ? dataApi.getDataSnapshot(dataSnapshotId) : null));
+  return useQuery([QUERY_KEY_DATA_SNAPSHOT, dataSnapshotId], () => (dataSnapshotId ? dataApi.getDataSnapshot(dataSnapshotId) : null), {
+    notifyOnChangeProps: ["data", "error"],
+  });
 }
 
 /**

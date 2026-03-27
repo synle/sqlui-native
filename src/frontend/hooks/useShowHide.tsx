@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useCallback, useContext, useMemo, useState } from "react";
 import { SessionStorageConfig } from "src/frontend/data/config";
 import { SqluiFrontend } from "typings";
 // used for show and hide the sidebar trees
@@ -20,33 +20,36 @@ export default function WrappedContext(props: { children: React.ReactNode }): JS
   // State to hold the theme value
   const [visibles, setVisibles] = useState(_treeVisibles);
 
-  const onToggle = (key: string, isVisible?: boolean) => {
-    let newVisible: boolean;
-    if (isVisible === undefined) {
-      newVisible = !_treeVisibles[key];
-    } else {
-      newVisible = isVisible;
-    }
-
-    _updateVisibles({ ..._treeVisibles, ...{ [key]: newVisible } });
-  };
-
-  const onSet = (newTreeVisibles: SqluiFrontend.TreeVisibilities) => {
-    _updateVisibles(newTreeVisibles);
-  };
-
-  const onClear = () => {
-    _updateVisibles({});
-  };
-
-  function _updateVisibles(newTreeVisibles: SqluiFrontend.TreeVisibilities) {
+  const _updateVisibles = useCallback((newTreeVisibles: SqluiFrontend.TreeVisibilities) => {
     _treeVisibles = { ...newTreeVisibles };
     setVisibles(_treeVisibles);
     SessionStorageConfig.set("clientConfig/cache.treeVisibles", _treeVisibles);
-  }
+  }, []);
+
+  const onToggle = useCallback(
+    (key: string, isVisible?: boolean) => {
+      const newVisible = isVisible === undefined ? !_treeVisibles[key] : isVisible;
+      _updateVisibles({ ..._treeVisibles, [key]: newVisible });
+    },
+    [_updateVisibles],
+  );
+
+  const onSet = useCallback(
+    (newTreeVisibles: SqluiFrontend.TreeVisibilities) => {
+      _updateVisibles(newTreeVisibles);
+    },
+    [_updateVisibles],
+  );
+
+  const onClear = useCallback(() => {
+    _updateVisibles({});
+  }, [_updateVisibles]);
+
+  /** Memoized context value to prevent unnecessary re-renders of consumers. */
+  const contextValue = useMemo(() => ({ visibles, onToggle, onClear, onSet }), [visibles, onToggle, onClear, onSet]);
 
   // Provide the theme value and toggle function to the children components
-  return <TargetContext.Provider value={{ visibles, onToggle, onClear, onSet }}>{props.children}</TargetContext.Provider>;
+  return <TargetContext.Provider value={contextValue}>{props.children}</TargetContext.Provider>;
 }
 
 /**

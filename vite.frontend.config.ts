@@ -47,6 +47,16 @@ export default defineConfig(({ command }) => ({
   build: {
     outDir: "build",
     emptyOutDir: false,
-    sourcemap: true,
+    sourcemap: false,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          "vendor-react": ["react", "react-dom", "react-router-dom"],
+          "vendor-mui": ["@mui/material", "@mui/icons-material", "@mui/lab"],
+          "vendor-tanstack": ["@tanstack/react-query", "@tanstack/react-table", "@tanstack/react-virtual"],
+          "vendor-xyflow": ["@xyflow/react"],
+        },
+      },
+    },
   },
 }));

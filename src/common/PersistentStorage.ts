@@ -29,9 +29,14 @@ fs.mkdirSync(baseDir, { recursive: true });
 /** Absolute path to the directory where all persistent storage JSON files are saved. */
 export const storageDir = baseDir;
 
+/** In-memory cache keyed by file path to avoid repeated disk reads. */
+const memoryCache = new Map<string, StorageContent>();
+
 /**
  * Generic JSON file-based persistent storage for CRUD operations on typed entries.
  * Each instance maps to a single JSON file on disk in the app data directory.
+ * Uses an in-memory cache to avoid repeated disk reads and async writes to
+ * avoid blocking the event loop on mutations.
  * @template T - The entry type, must have an `id` string property.
  */
 export class PersistentStorage<T extends StorageEntry> {
@@ -56,12 +61,17 @@ export class PersistentStorage<T extends StorageEntry> {
   }
 
   private getData(): StorageContent {
+    const cached = memoryCache.get(this.storageLocation);
+    if (cached) return cached;
+
     try {
       if (!fs.existsSync(this.storageLocation)) {
         this.setData({});
         return {};
       }
-      return JSON.parse(fs.readFileSync(this.storageLocation, { encoding: "utf8", flag: "r" }).trim());
+      const data = JSON.parse(fs.readFileSync(this.storageLocation, { encoding: "utf8", flag: "r" }).trim());
+      memoryCache.set(this.storageLocation, data);
+      return data;
     } catch (err) {
       console.error("PersistentStorage.ts:parse", err);
       return {};
@@ -69,7 +79,11 @@ export class PersistentStorage<T extends StorageEntry> {
   }
 
   private setData(toSave: StorageContent) {
-    fs.writeFileSync(this.storageLocation, JSON.stringify(toSave, null, 2));
+    memoryCache.set(this.storageLocation, toSave);
+    const json = JSON.stringify(toSave, null, 2);
+    fs.promises.writeFile(this.storageLocation, json).catch((err) => {
+      console.error("PersistentStorage.ts:setData", err);
+    });
   }
 
   /**

@@ -90,7 +90,7 @@ export default class MongoDBDataAdapter extends BaseDataAdapter implements IData
     //@ts-ignore
     const items = await client.db(database).collection(table).find().limit(MAX_ITEM_COUNT_TO_SCAN).toArray();
 
-    return BaseDataAdapter.inferTypesFromItems(JSON.parse(JSON.stringify(items))).map((column) => ({
+    return BaseDataAdapter.inferTypesFromItems(structuredClone(items)).map((column) => ({
       ...column,
       primaryKey: column.name === "_id",
     }));

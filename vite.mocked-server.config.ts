@@ -20,7 +20,7 @@ export default defineConfig({
   build: {
     outDir: "build",
     emptyOutDir: false,
-    sourcemap: true,
+    sourcemap: false,
     rollupOptions: {
       input: "./src/mocked-server/index.ts",
       external: externalsDeps,
@@ -30,7 +30,7 @@ export default defineConfig({
       },
     },
     target: "node18",
-    minify: false,
+    minify: true,
     ssr: true,
   },
   ssr: {

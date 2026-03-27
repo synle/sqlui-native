@@ -42,8 +42,27 @@ const DEFAULT_SETTINGS = {
   deleteMode: "soft-delete",
 };
 
+/** Maximum age (ms) before an _apiCache session entry is evicted. */
+const API_CACHE_TTL_MS = 30 * 60 * 1000;
+
 /** In-memory per-session cache shared across API endpoint handlers. */
-const _apiCache = {};
+const _apiCache: Record<string, { data: Record<string, any>; lastAccessed: number }> = {};
+
+/**
+ * Evicts stale _apiCache entries older than API_CACHE_TTL_MS.
+ * Runs periodically to prevent unbounded memory growth.
+ */
+function evictStaleApiCacheEntries() {
+  const now = Date.now();
+  for (const key of Object.keys(_apiCache)) {
+    if (now - _apiCache[key].lastAccessed > API_CACHE_TTL_MS) {
+      delete _apiCache[key];
+    }
+  }
+}
+
+/** Run cache eviction every 10 minutes. */
+setInterval(evictStaleApiCacheEntries, 10 * 60 * 1000);
 
 /** Accumulated endpoint handler tuples used in Electron IPC mode. */
 const electronEndpointHandlers: any[] = [];
@@ -82,8 +101,12 @@ function addDataEndpoint(
       const apiCache = {
         get(key: SqluiEnums.ServerApiCacheKey) {
           try {
-            //@ts-ignore
-            return _apiCache[cacheKey][key];
+            const entry = _apiCache[cacheKey];
+            if (entry) {
+              entry.lastAccessed = Date.now();
+              return entry.data[key];
+            }
+            return undefined;
           } catch (err: any) {
             console.error("Endpoints.ts:get", err);
             return undefined;
@@ -91,11 +114,11 @@ function addDataEndpoint(
         },
         set(key: SqluiEnums.ServerApiCacheKey, value: any) {
           try {
-            //@ts-ignore
-            _apiCache[cacheKey] = _apiCache[cacheKey] || {};
-
-            //@ts-ignore
-            _apiCache[cacheKey][key] = value;
+            if (!_apiCache[cacheKey]) {
+              _apiCache[cacheKey] = { data: {}, lastAccessed: Date.now() };
+            }
+            _apiCache[cacheKey].data[key] = value;
+            _apiCache[cacheKey].lastAccessed = Date.now();
           } catch (err: any) {
             console.error("Endpoints.ts:set", err);
           }
@@ -175,14 +198,18 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
 
     const connections = await connectionsStorage.list();
 
-    // backfill legacy connections missing timestamps
+    // backfill legacy connections missing timestamps (batch write)
+    let connectionsDirty = false;
     for (const conn of connections) {
       if (!conn.createdAt || !conn.updatedAt) {
         if (!conn.createdAt) conn.createdAt = Date.now();
         if (!conn.updatedAt) conn.updatedAt = Date.now();
         console.log(`Endpoints.ts:GET /api/connections - backfilled timestamps for connection ${conn.id}`);
-        connectionsStorage.update(conn);
+        connectionsDirty = true;
       }
+    }
+    if (connectionsDirty) {
+      connectionsStorage.set(connections);
     }
 
     // Return connections immediately without blocking on auth checks.
@@ -507,14 +534,18 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
 
     const queries = await queryStorage.list();
 
-    // backfill legacy queries missing timestamps
+    // backfill legacy queries missing timestamps (batch write)
+    let queriesDirty = false;
     for (const query of queries) {
       if (!query.createdAt || !query.updatedAt) {
         if (!query.createdAt) query.createdAt = Date.now();
         if (!query.updatedAt) query.updatedAt = Date.now();
         console.log(`Endpoints.ts:GET /api/queries - backfilled timestamps for query ${query.id}`);
-        queryStorage.update(query);
+        queriesDirty = true;
       }
+    }
+    if (queriesDirty) {
+      queryStorage.set(queries);
     }
 
     res.status(200).json(queries);
@@ -582,8 +613,8 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
       sessions = sessionsStorage.list();
     }
 
-    // backfill legacy sessions: fix missing names and timestamps
-    let dirty = false;
+    // backfill legacy sessions: fix missing names and timestamps (batch write)
+    let sessionsDirty = false;
     for (const session of sessions) {
       let needsUpdate = false;
 
@@ -621,13 +652,12 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
       }
 
       if (needsUpdate) {
-        sessionsStorage.update(session);
-        dirty = true;
+        sessionsDirty = true;
       }
     }
 
-    if (dirty) {
-      sessions = sessionsStorage.list();
+    if (sessionsDirty) {
+      sessionsStorage.set(sessions);
     }
 
     res.status(200).json(sessions);
@@ -704,7 +734,8 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
 
     const items = await folderItemsStorage.list();
 
-    // backfill createdAt and type for existing items that were created before these fields existed
+    // backfill createdAt and type for existing items that were created before these fields existed (batch write)
+    let folderDirty = false;
     for (const item of items) {
       let needsUpdate = false;
 
@@ -725,8 +756,11 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
       }
 
       if (needsUpdate) {
-        folderItemsStorage.update(item);
+        folderDirty = true;
       }
+    }
+    if (folderDirty) {
+      folderItemsStorage.set(items);
     }
 
     res.status(200).json(items);
@@ -801,7 +835,8 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
 
     const snapshots = await dataSnapshotStorage.list();
 
-    // backfill legacy snapshots: migrate "created" → "createdAt" and add missing timestamps
+    // backfill legacy snapshots: migrate "created" → "createdAt" and add missing timestamps (batch write)
+    let snapshotsDirty = false;
     for (const snapshot of snapshots) {
       let needsUpdate = false;
       const legacy = snapshot as any;
@@ -820,8 +855,11 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
       }
       if (needsUpdate) {
         console.log(`Endpoints.ts:GET /api/dataSnapshots - backfilled timestamps for snapshot ${snapshot.id}`);
-        dataSnapshotStorage.update(snapshot);
+        snapshotsDirty = true;
       }
+    }
+    if (snapshotsDirty) {
+      dataSnapshotStorage.set(snapshots);
     }
 
     res.status(200).json(snapshots);
