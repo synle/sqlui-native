@@ -12,6 +12,8 @@ import RedisDataAdapter from "src/common/adapters/RedisDataAdapter/index";
 import RedisDataAdapterScripts from "src/common/adapters/RedisDataAdapter/scripts";
 import RelationalDataAdapter from "src/common/adapters/RelationalDataAdapter/index";
 import RelationalDataAdapterScripts from "src/common/adapters/RelationalDataAdapter/scripts";
+import RestApiDataAdapter from "src/common/adapters/RestApiDataAdapter/index";
+import RestApiDataAdapterScripts from "src/common/adapters/RestApiDataAdapter/scripts";
 import SalesforceDataAdapter from "src/common/adapters/SalesforceDataAdapter/index";
 import SalesforceDataAdapterScripts from "src/common/adapters/SalesforceDataAdapter/scripts";
 import PersistentStorage from "src/common/PersistentStorage";
@@ -366,6 +368,8 @@ export function getDataAdapter(connection: string) {
       adapter = new AzureTableStorageAdapter(connection);
     } else if (SalesforceDataAdapterScripts.isDialectSupported(targetDialect)) {
       adapter = new SalesforceDataAdapter(connection);
+    } else if (RestApiDataAdapterScripts.isDialectSupported(targetDialect)) {
+      adapter = new RestApiDataAdapter(connection);
     }
   } catch (err) {
     console.error("DataAdapterFactory.ts:getDataAdapter", connection, err);
