@@ -17,13 +17,27 @@ import SalesforceDataAdapterScripts from "src/common/adapters/SalesforceDataAdap
 import PersistentStorage from "src/common/PersistentStorage";
 import { SqluiCore } from "typings";
 
+/** Cache entry shape for storing table metadata on disk. */
+type TableCacheEntry = { id: string; data: SqluiCore.TableMetaData[]; timestamp: number };
+
 /** Cache entry shape for storing column metadata on disk. */
 type ColumnCacheEntry = { id: string; data: SqluiCore.ColumnMetaData[]; timestamp: number };
 
+const tableCacheStorage = new PersistentStorage<TableCacheEntry>("cache", "tables", "cache.tables");
 const columnCacheStorage = new PersistentStorage<ColumnCacheEntry>("cache", "columns", "cache.columns");
 
-/** Tracks in-flight background column refreshes to prevent duplicate concurrent fetches. */
+/** Tracks in-flight background refreshes to prevent duplicate concurrent fetches. */
 const pendingRefreshes = new Set<string>();
+
+/**
+ * Builds a unique cache key for a connection/database combination.
+ * @param connectionId - The connection identifier.
+ * @param databaseId - The database name.
+ * @returns A colon-separated cache key string.
+ */
+function getTableCacheKey(connectionId: string, databaseId: string) {
+  return `tables:${connectionId}:${databaseId}`;
+}
 
 /**
  * Builds a unique cache key for a connection/database/table combination.
@@ -34,6 +48,40 @@ const pendingRefreshes = new Set<string>();
  */
 function getColumnCacheKey(connectionId: string, databaseId: string, tableId: string) {
   return `${connectionId}:${databaseId}:${tableId}`;
+}
+
+/**
+ * Retrieves cached table metadata for a given connection/database, if available.
+ * @param connectionId - The connection identifier.
+ * @param databaseId - The database name.
+ * @returns The cached table metadata array, or undefined on a cache miss.
+ */
+function getCachedTables(connectionId: string, databaseId: string): SqluiCore.TableMetaData[] | undefined {
+  try {
+    const key = getTableCacheKey(connectionId, databaseId);
+    const entry = tableCacheStorage.get(key);
+    if (entry?.data) {
+      return entry.data;
+    }
+  } catch (_err) {
+    // cache miss on read error
+  }
+  return undefined;
+}
+
+/**
+ * Persists table metadata to the disk cache for a given connection/database.
+ * @param connectionId - The connection identifier.
+ * @param databaseId - The database name.
+ * @param data - The table metadata array to cache.
+ */
+function setCachedTables(connectionId: string, databaseId: string, data: SqluiCore.TableMetaData[]) {
+  try {
+    const key = getTableCacheKey(connectionId, databaseId);
+    tableCacheStorage.add({ id: key, data, timestamp: Date.now() });
+  } catch (_err) {
+    // best-effort cache write
+  }
 }
 
 /**
@@ -86,10 +134,21 @@ export function listAllCachedColumns() {
 }
 
 /**
- * Clears all cached column data for a given connection.
- * @param connectionId - The connection ID whose cached columns should be removed.
+ * Clears all cached table and column data for a given connection.
+ * @param connectionId - The connection ID whose cached data should be removed.
  */
 export function clearCachedColumns(connectionId: string) {
+  try {
+    const allTableEntries = tableCacheStorage.list();
+    for (const entry of allTableEntries) {
+      if (entry.id.includes(connectionId)) {
+        tableCacheStorage.delete(entry.id);
+      }
+    }
+  } catch (_err) {
+    // best-effort table cache clear
+  }
+
   try {
     const allEntries = columnCacheStorage.list();
     const prefix = `${connectionId}:`;
@@ -99,7 +158,7 @@ export function clearCachedColumns(connectionId: string) {
       }
     }
   } catch (_err) {
-    // best-effort cache clear
+    // best-effort column cache clear
   }
 }
 
@@ -167,11 +226,32 @@ export async function getConnectionMetaData(connection: SqluiCore.CoreConnection
     for (const database of databases) {
       connItem.databases.push(database);
 
-      try {
-        database.tables = await engine.getTables(database.name);
-      } catch (err) {
-        console.error("DataAdapterFactory.ts:getTables", err);
-        database.tables = [];
+      // Use cached tables if available; fetch fresh in background
+      const cachedTables = connection.id ? getCachedTables(connection.id, database.name) : undefined;
+      if (cachedTables) {
+        database.tables = cachedTables;
+        // Background refresh tables (deduplicated)
+        const tableRefreshKey = getTableCacheKey(connection.id!, database.name);
+        if (!pendingRefreshes.has(tableRefreshKey)) {
+          pendingRefreshes.add(tableRefreshKey);
+          const dbName = database.name;
+          const connId = connection.id!;
+          engine
+            .getTables(dbName)
+            .then((tables) => setCachedTables(connId, dbName, tables))
+            .catch((err) => console.error("DataAdapterFactory.ts:backgroundRefreshTables", err))
+            .finally(() => pendingRefreshes.delete(tableRefreshKey));
+        }
+      } else {
+        try {
+          database.tables = await engine.getTables(database.name);
+          if (connection.id) {
+            setCachedTables(connection.id, database.name, database.tables);
+          }
+        } catch (err) {
+          console.error("DataAdapterFactory.ts:getTables", err);
+          database.tables = [];
+        }
       }
 
       // Use cached columns if available; skip API calls for tables without cached data.
@@ -241,18 +321,41 @@ export async function getDatabases(sessionId: string, connectionId: string) {
  * @returns Sorted array of table metadata.
  */
 export async function getTables(sessionId: string, connectionId: string, databaseId: string) {
-  const connection = await new PersistentStorage<SqluiCore.ConnectionProps>(sessionId, "connection").get(connectionId);
+  const cached = getCachedTables(connectionId, databaseId);
 
-  const engine = getDataAdapter(connection.connection);
-  try {
-    return (await engine.getTables(databaseId)).sort((a, b) => (a.name || "").localeCompare(b.name || ""));
-  } finally {
+  // Background refresh: fetch fresh data and update the cache for next call
+  const refreshCache = async () => {
+    const connection = await new PersistentStorage<SqluiCore.ConnectionProps>(sessionId, "connection").get(connectionId);
+    const engine = getDataAdapter(connection.connection);
     try {
-      await engine.disconnect();
-    } catch (_err) {
-      // best-effort cleanup
+      const tables = (await engine.getTables(databaseId)).sort((a, b) => (a.name || "").localeCompare(b.name || ""));
+      setCachedTables(connectionId, databaseId, tables);
+      return tables;
+    } catch (err) {
+      console.error("DataAdapterFactory.ts:refreshTableCache", err);
+      return undefined;
+    } finally {
+      try {
+        await engine.disconnect();
+      } catch (_err) {
+        // best-effort cleanup
+      }
     }
+  };
+
+  if (cached) {
+    // Return cached data immediately; refresh in background for next time (deduplicated)
+    const refreshKey = getTableCacheKey(connectionId, databaseId);
+    if (!pendingRefreshes.has(refreshKey)) {
+      pendingRefreshes.add(refreshKey);
+      refreshCache().finally(() => pendingRefreshes.delete(refreshKey));
+    }
+    return cached;
   }
+
+  // No cache — must wait for fresh data
+  const tables = await refreshCache();
+  return tables || [];
 }
 
 /**
