@@ -372,7 +372,6 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
 
   addDataEndpoint("post", "/api/connection/test", async (req, res) => {
     const connection: SqluiCore.CoreConnectionProps = req.body;
-
     if (!connection.connection) {
       return res.status(400).send("`connection` is required...");
     }
@@ -380,7 +379,14 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     const engine = getDataAdapter(connection.connection);
     try {
       await engine.authenticate();
-      res.status(200).json(await getConnectionMetaData(connection));
+      res.status(200).json({
+        name: connection.name,
+        id: connection?.id,
+        connection: connection.connection,
+        status: "online",
+        dialect: engine.dialect,
+        databases: [],
+      });
     } catch (err: any) {
       const message = err?.sqlMessage || err?.message || err?.toString?.() || "Connection test failed";
       console.error("Endpoints.ts:testConnection", err);
