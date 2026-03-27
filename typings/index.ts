@@ -29,7 +29,9 @@ export module SqluiCore {
     | "rediss"
     | "cosmosdb"
     | "aztable"
-    | "sfdc";
+    | "sfdc"
+    | "restapi"
+    | "rest";
 
   /** Supported programming language modes for code generation. */
   export type LanguageMode = "javascript" | "python" | "java";
@@ -375,7 +377,7 @@ export module SqlAction {
     query?: string;
     description?: string;
     icon?: JSX.Element;
-    formatter?: "sql" | "js";
+    formatter?: "sql" | "js" | "shell";
     /**
      * if true, will skip when we attempt to generate the guide docs
      * @type {[type]}
