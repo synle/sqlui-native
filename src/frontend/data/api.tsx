@@ -1,3 +1,4 @@
+import { columnFetchThrottle } from "src/frontend/data/connectionThrottle";
 import { getCurrentSessionId } from "src/frontend/data/session";
 import { SqluiCore, SqluiFrontend } from "typings";
 async function _fetch<T>(input: RequestInfo, initOptions?: RequestInit) {
@@ -126,8 +127,13 @@ export class ProxyApi {
    * @param databaseId - The database ID.
    * @param tableId - The table ID.
    */
-  static getConnectionColumns(connectionId: string, databaseId: string, tableId: string) {
-    return _fetch<SqluiCore.ColumnMetaData[]>(`/api/connection/${connectionId}/database/${databaseId}/table/${tableId}/columns`);
+  static async getConnectionColumns(connectionId: string, databaseId: string, tableId: string) {
+    const release = await columnFetchThrottle.acquire(connectionId);
+    try {
+      return await _fetch<SqluiCore.ColumnMetaData[]>(`/api/connection/${connectionId}/database/${databaseId}/table/${tableId}/columns`);
+    } finally {
+      release();
+    }
   }
 
   /**
