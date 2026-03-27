@@ -28,7 +28,7 @@ export default defineConfig(({ command }) => ({
     },
   },
   server: {
-    port: 3000,
+    port: 8080,
     open: false,
     proxy: {
       "/api": {
