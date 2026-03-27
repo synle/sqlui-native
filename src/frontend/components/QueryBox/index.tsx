@@ -347,15 +347,21 @@ function QueryBox(props: QueryBoxProps): JSX.Element | null {
       ...query,
     };
 
-    // here we attempted to pull in the highlighted text
+    // read the latest value directly from the editor to avoid stale React state
+    // (e.g. when the user types and clicks Execute before blur propagates)
     try {
-      const sql = editorRef?.current?.getSelectedText();
-
-      if (sql) {
-        queryToExecute.sql = sql;
+      const selectedSql = editorRef?.current?.getSelectedText();
+      if (selectedSql) {
+        queryToExecute.sql = selectedSql;
+      } else {
+        const currentSql = editorRef?.current?.getValue();
+        if (currentSql !== undefined) {
+          queryToExecute.sql = currentSql;
+          onChange({ sql: currentSql });
+        }
       }
     } catch (err) {
-      console.error("index.tsx:getSelectedText", err);
+      console.error("index.tsx:getEditorValue", err);
     }
 
     try {
