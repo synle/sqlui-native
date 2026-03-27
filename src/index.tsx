@@ -80,7 +80,7 @@ function AppliedTheme({ children }) {
     const globalOverrides: any = {};
 
     if (isAnimationOff) {
-      globalOverrides["*, *::before, *::after"] = {
+      globalOverrides["*:not(.MuiTooltip-popper, .MuiTooltip-popper *), *::before, *::after"] = {
         transitionDuration: "0s !important",
         animationDuration: "0s !important",
         transitionTimingFunction: "linear !important",
