@@ -18,7 +18,7 @@ const TargetContext = createContext({
 function _persistQueries() {
   // store to client
   const toPersistQueries = _connectionQueries.map((query) => {
-    const { pinned, result, executionEnd, executionStart, ...restOfQuery } = query;
+    const { pinned, result, executionEnd, executionStart, executing, executionDetails, ...restOfQuery } = query;
     return restOfQuery;
   });
   SessionStorageConfig.set("clientConfig/cache.connectionQueries", toPersistQueries);
@@ -190,7 +190,7 @@ export function useConnectionQueries() {
         })
         .map((query) => {
           // here we should remove the isSelected flag
-          const { selected, pinned, result, executionEnd, executionStart, ...restOfQuery } = query;
+          const { selected, pinned, result, executionEnd, executionStart, executing, executionDetails, ...restOfQuery } = query;
 
           return {
             type: "Query",
