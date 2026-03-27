@@ -138,11 +138,13 @@ export function useFlatTreeRows() {
     }
   }
 
-  // Batch fetch columns for all expanded tables
+  // Batch fetch columns for all expanded tables (staggered via connectionThrottle)
   const columnQueries = useQueries({
     queries: expandedTables.map(({ connectionId, databaseId, tableId }) => ({
       queryKey: [connectionId, databaseId, tableId, "columns"],
       queryFn: () => dataApi.getConnectionColumns(connectionId, databaseId, tableId),
+      staleTime: 5 * 60 * 1000,
+      cacheTime: 10 * 60 * 1000,
     })),
   });
 
