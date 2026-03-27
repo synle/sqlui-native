@@ -60,6 +60,15 @@ const StyledAccordionHeader = styled("div", {
       overflow: "hidden",
       textOverflow: "ellipsis",
     },
+
+    ...(compact && {
+      ".DropdownButton": {
+        display: "none",
+      },
+      "&:hover .DropdownButton, &:focus-within .DropdownButton": {
+        display: "inline-flex",
+      },
+    }),
   };
 });
 
@@ -136,7 +145,8 @@ export function AccordionHeader(props: AccordionHeaderProps): JSX.Element | null
       className={"Accordion__Header " + className}
       onContextMenu={onShowActions}
     >
-      {!expanded ? <ExpandLessIcon fontSize="inherit" color="inherit" /> : <ExpandMoreIcon fontSize="inherit" color="inherit" />}
+      {!isCompact &&
+        (!expanded ? <ExpandLessIcon fontSize="inherit" color="inherit" /> : <ExpandMoreIcon fontSize="inherit" color="inherit" />)}
       {children}
     </StyledAccordionHeader>
   );
