@@ -10,10 +10,11 @@ import InputError from "src/frontend/components/InputError";
 import Select from "src/frontend/components/Select";
 import { useEditorModeSetting, useWordWrapSetting } from "src/frontend/hooks/useSetting";
 
-/** Ref type for accessing editor methods like getting selected text. */
+/** Ref type for accessing editor methods like getting selected text or current value. */
 export type EditorRef =
   | {
       getSelectedText: () => string | undefined;
+      getValue: () => string | undefined;
     }
   | undefined;
 

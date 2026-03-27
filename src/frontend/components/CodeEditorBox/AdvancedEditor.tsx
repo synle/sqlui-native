@@ -136,6 +136,9 @@ export default function AdvancedEditor(props: AdvancedEditorProps): JSX.Element 
             return editor?.getModel()?.getValueInRange(selection);
           }
         },
+        getValue: () => {
+          return editor.getValue() || undefined;
+        },
       };
     }
   }, [editor, props.editorRef]);
