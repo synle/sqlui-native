@@ -6,6 +6,10 @@ vi.mock("src/frontend/utils/commonUtils", () => ({
   useNavigate: () => vi.fn(),
 }));
 
+vi.mock("src/common/adapters/BaseDataAdapter/scripts", () => ({
+  getDivider: () => ({ divider: true }),
+}));
+
 vi.mock("src/common/adapters/DataScriptFactory", () => ({
   getDatabaseActions: () => [],
   isDialectSupportVisualization: () => false,
@@ -21,6 +25,7 @@ vi.mock("src/frontend/components/MissionControl", () => ({
 
 vi.mock("src/frontend/hooks/useConnection", () => ({
   useGetConnectionById: () => ({ data: { dialect: "mysql" }, isLoading: false }),
+  useRefreshDatabase: () => vi.fn(),
 }));
 
 vi.mock("src/frontend/hooks/useConnectionQuery", () => ({
