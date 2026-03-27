@@ -103,6 +103,33 @@ Connection strings are prefixed with a dialect scheme (`dialect://...`) but the 
 - Each adapter holds exactly ONE connection as instance state (`private _connection`). `getConnection()` creates and stores it.
 - Adapter methods (authenticate, getDatabases, getTables, getColumns, execute) use `getConnection()` without closing the connection.
 - `disconnect()` is the SOLE cleanup method — it closes `this._connection` and sets it to `undefined`. It must **never** be called internally by adapter methods. It is called exclusively by the **caller** (`Endpoints.ts`, `DataAdapterFactory`, or tests) in `finally` blocks after all operations complete.
+- **SFDC auto-refresh:** The `SalesforceDataAdapter` wraps all operations in `withAutoRefresh()`, which detects `INVALID_SESSION_ID` / `Session expired` errors and automatically re-authenticates (for Client Credentials flow where no refresh token is available). The OAuth2 token request uses Node's native `https` module instead of jsforce's internal HTTP client, which hangs in bundled Electron builds.
+
+### Backend Schema Caching
+
+`DataAdapterFactory.ts` implements a three-tier persistent disk cache for schema metadata:
+
+- **Databases** (`cache.databases.json`) — cached per connection (`connectionId` key)
+- **Tables** (`cache.tables.json`) — cached per database (`connectionId:databaseId` key)
+- **Columns** (`cache.columns.json`) — cached per table (`connectionId:databaseId:tableId` key)
+
+All caches use `PersistentStorage` (JSON files in the app data directory). The pattern is **cache-first with background refresh**: on a cache hit, the cached data is returned immediately and a non-blocking background fetch updates the cache for the next call. Background refreshes are deduplicated via a `pendingRefreshes` Set to prevent concurrent fetches for the same resource.
+
+Key functions: `getCachedDatabases`/`setCachedDatabases`, `getCachedTables`/`setCachedTables`, `getCachedColumns`/`setCachedColumns`, `listCachedColumnsByDatabase`, `getCachedSchema` (consolidated read). Clear functions: `clearCachedColumns` (all for a connection), `clearCachedDatabase` (tables + columns for a database), `clearCachedTable` (columns for a table).
+
+**Refresh endpoints** allow users to manually clear caches and re-fetch:
+
+- `POST /api/connection/:connectionId/refresh` — clears all caches, re-authenticates
+- `POST /api/connection/:connectionId/database/:databaseId/refresh` — clears table + column caches
+- `POST /api/connection/:connectionId/database/:databaseId/table/:tableId/refresh` — clears column cache
+
+**Cached schema endpoint** for lightweight reads (no DB queries):
+
+- `GET /api/connection/:connectionId/database/:databaseId/schema/cached` — returns `{ databases, tables, columns }` from disk cache in one call. Used by QueryBox for autocomplete.
+
+### Frontend Request Throttling
+
+`src/frontend/data/connectionThrottle.ts` provides a per-connection semaphore (`ConnectionThrottle`) that limits concurrent column fetch requests to 3 per connection. This prevents flooding the server when expanding a database with many tables in the tree view.
 
 ### Endpoint Pattern
 

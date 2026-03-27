@@ -423,6 +423,8 @@ For orgs using Connected Apps, you can authenticate without a username/password 
 sfdc://{"clientId":"your_connected_app_client_id","clientSecret":"your_connected_app_client_secret","loginUrl":"your-org.my.salesforce.com"}
 ```
 
+Sessions are automatically refreshed when they expire — no manual reconnection needed.
+
 #### Sample queries
 
 ```sql
