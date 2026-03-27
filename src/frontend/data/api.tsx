@@ -137,6 +137,17 @@ export class ProxyApi {
   }
 
   /**
+   * Fetches all cached column data for a connection+database from the backend disk cache.
+   * Returns only what's already cached — no new database queries are made.
+   * @param connectionId - The connection ID.
+   * @param databaseId - The database ID.
+   * @returns A record mapping table names to their cached column metadata arrays.
+   */
+  static getCachedColumns(connectionId: string, databaseId: string) {
+    return _fetch<Record<string, SqluiCore.ColumnMetaData[]>>(`/api/connection/${connectionId}/database/${databaseId}/columns/cached`);
+  }
+
+  /**
    * Deletes a connection by ID.
    * @param connectionId - The connection ID to delete.
    * @returns The deleted connection ID.

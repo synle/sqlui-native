@@ -179,6 +179,30 @@ export function listAllCachedColumns() {
 }
 
 /**
+ * Returns all cached column data for a given connection and database.
+ * Reads from the disk cache without making any network calls.
+ * @param connectionId - The connection identifier.
+ * @param databaseId - The database name.
+ * @returns A record mapping table names to their cached column metadata arrays.
+ */
+export function listCachedColumnsByDatabase(connectionId: string, databaseId: string): Record<string, SqluiCore.ColumnMetaData[]> {
+  const prefix = `${connectionId}:${databaseId}:`;
+  const result: Record<string, SqluiCore.ColumnMetaData[]> = {};
+  try {
+    const allCached = columnCacheStorage.list();
+    for (const entry of allCached) {
+      if (entry.id.startsWith(prefix)) {
+        const tableId = entry.id.slice(prefix.length);
+        result[tableId] = entry.data;
+      }
+    }
+  } catch (_err) {
+    // cache read failure — return empty
+  }
+  return result;
+}
+
+/**
  * Clears all cached database, table, and column data for a given connection.
  * @param connectionId - The connection ID whose cached data should be removed.
  */
