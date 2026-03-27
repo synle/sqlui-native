@@ -26,11 +26,10 @@ import ResultBox from "src/frontend/components/ResultBox";
 import {
   refreshAfterExecution,
   useExecute,
-  useGetCachedColumns,
+  useGetCachedSchema,
   useGetColumns,
   useGetConnectionById,
-  useGetDatabases,
-  useGetTables,
+  useGetConnections,
 } from "src/frontend/hooks/useConnection";
 import { useConnectionQuery } from "src/frontend/hooks/useConnectionQuery";
 import { useLayoutModeSetting, useQuerySizeSetting } from "src/frontend/hooks/useSetting";
@@ -44,6 +43,9 @@ import {
 } from "src/frontend/hooks/useQueryVersionHistory";
 import { formatDuration, formatJS, formatSQL } from "src/frontend/utils/formatter";
 import { SqluiCore } from "typings";
+
+/** Maximum number of connections before column autocomplete is limited to the selected table only. */
+const MAX_CONNECTIONS_FOR_FULL_AUTOCOMPLETE = 5;
 
 /** Props for the QueryBox component. */
 type QueryBoxProps = {
@@ -217,48 +219,68 @@ export default function QueryBox(props: QueryBoxProps): JSX.Element | null {
     };
   }, [query?.sql, query?.connectionId, trackVersion]);
 
-  const { data: databases } = useGetDatabases(query?.connectionId);
-  const { data: tables } = useGetTables(query?.connectionId, query?.databaseId);
-  const { data: cachedColumns } = useGetCachedColumns(query?.connectionId, query?.databaseId);
+  const { data: connections } = useGetConnections();
+  const { data: cachedSchema } = useGetCachedSchema(query?.connectionId, query?.databaseId);
 
   const completionItems: CompletionItem[] = useMemo(() => {
     const items: CompletionItem[] = [];
+    const selectedTableId = query?.tableId;
 
-    if (databases) {
-      for (const db of databases) {
+    if (cachedSchema?.databases) {
+      for (const db of cachedSchema.databases) {
         items.push({ label: db.name, kind: "database", detail: "Database" });
       }
     }
 
-    if (tables) {
-      for (const table of tables) {
+    if (cachedSchema?.tables) {
+      for (const table of cachedSchema.tables) {
         items.push({ label: table.name, kind: "table", detail: "Table" });
       }
     }
 
-    if (cachedColumns) {
-      const seen = new Set<string>();
-      for (const [tableName, columns] of Object.entries(cachedColumns) as [string, SqluiCore.ColumnMetaData[]][]) {
-        for (const col of columns) {
-          if (!seen.has(col.name)) {
-            seen.add(col.name);
+    if (cachedSchema?.columns) {
+      if (selectedTableId) {
+        // Table is selected — only show columns for that table
+        const selectedColumns = cachedSchema.columns[selectedTableId] as SqluiCore.ColumnMetaData[] | undefined;
+        if (selectedColumns) {
+          for (const col of selectedColumns) {
             items.push({
               label: col.name,
               kind: "column",
-              detail: `Column (${tableName} - ${col.type})`,
+              detail: `Column (${selectedTableId} - ${col.type})`,
+            });
+            items.push({
+              label: `${selectedTableId}.${col.name}`,
+              kind: "column",
+              detail: `Column (${col.type})`,
             });
           }
-          items.push({
-            label: `${tableName}.${col.name}`,
-            kind: "column",
-            detail: `Column (${col.type})`,
-          });
+        }
+      } else if (!connections || connections.length <= MAX_CONNECTIONS_FOR_FULL_AUTOCOMPLETE) {
+        // No table selected, few connections — show all cached columns
+        const seen = new Set<string>();
+        for (const [tableName, columns] of Object.entries(cachedSchema.columns) as [string, SqluiCore.ColumnMetaData[]][]) {
+          for (const col of columns) {
+            if (!seen.has(col.name)) {
+              seen.add(col.name);
+              items.push({
+                label: col.name,
+                kind: "column",
+                detail: `Column (${tableName} - ${col.type})`,
+              });
+            }
+            items.push({
+              label: `${tableName}.${col.name}`,
+              kind: "column",
+              detail: `Column (${col.type})`,
+            });
+          }
         }
       }
     }
 
     return items;
-  }, [databases, tables, cachedColumns]);
+  }, [cachedSchema, query?.tableId, connections]);
 
   const language: string = useMemo(() => getSyntaxModeByDialect(selectedConnection?.dialect), [selectedConnection?.dialect, query?.sql]);
   const isLoading = loadingConnection;
