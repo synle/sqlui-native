@@ -102,7 +102,7 @@ export default function ConnectionDatabaseSelector(props: ConnectionDatabaseSele
 
   return (
     <>
-      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+      <Box sx={{ display: "flex", alignItems: "center", gap: 1, flexShrink: 1, minWidth: 0 }}>
         <ConnectionTypeIcon dialect={connection?.dialect} status={connection?.status} />
         <Select
           label="Connection"
@@ -110,6 +110,7 @@ export default function ConnectionDatabaseSelector(props: ConnectionDatabaseSele
           onChange={(newValue) => onConnectionChange(newValue)}
           required
           disabled={!!props.disabledConnection}
+          sx={{ flexShrink: 1, minWidth: 0 }}
         >
           <option value="">Pick a Connection</option>
           {connectionOptions}
@@ -121,12 +122,19 @@ export default function ConnectionDatabaseSelector(props: ConnectionDatabaseSele
         onChange={(newValue) => onDatabaseChange(newValue)}
         disabled={!!props.disabledDatabase}
         required={props.required}
+        sx={{ flexShrink: 1, minWidth: 0 }}
       >
         <option value="">Pick a Database (Optional)</option>
         {databaseOptions}
       </Select>
       {isTableIdRequired && (
-        <Select label="Table" value={query.tableId} onChange={(newValue) => onTableChange(newValue)} required={props.required}>
+        <Select
+          label="Table"
+          value={query.tableId}
+          onChange={(newValue) => onTableChange(newValue)}
+          required={props.required}
+          sx={{ flexShrink: 1, minWidth: 0 }}
+        >
           <option value="">Pick a Table (Optional)</option>
           {tableOptions}
         </Select>
