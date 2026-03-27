@@ -1,21 +1,24 @@
 import Box from "@mui/material/Box";
+import CircularProgress from "@mui/material/CircularProgress";
 import { Route, Routes } from "react-router-dom";
-import { useEffect, useRef } from "react";
+import { Suspense, lazy, useEffect, useRef } from "react";
 import AppHeader from "src/frontend/components/AppHeader";
 import MissionControl, { useCommands } from "src/frontend/components/MissionControl";
 import SessionManager from "src/frontend/components/SessionManager";
 import dataApi from "src/frontend/data/api";
 import { useGetSessions } from "src/frontend/hooks/useSession";
 import useToaster, { ToasterHandler } from "src/frontend/hooks/useToaster";
-import BookmarksPage from "src/frontend/views/BookmarksPage";
-import EditConnectionPage from "src/frontend/views/EditConnectionPage";
-import MainPage from "src/frontend/views/MainPage";
-import MigrationPage from "src/frontend/views/MigrationPage";
-import NewConnectionPage from "src/frontend/views/NewConnectionPage";
-import { NewRecordPage } from "src/frontend/views/RecordPage";
-import QueryHistoryPage from "src/frontend/views/QueryHistoryPage";
-import RecycleBinPage from "src/frontend/views/RecycleBinPage";
-import RelationshipChartPage from "src/frontend/views/RelationshipChartPage";
+
+/** Lazy-loaded route pages for code splitting. */
+const BookmarksPage = lazy(() => import("src/frontend/views/BookmarksPage"));
+const EditConnectionPage = lazy(() => import("src/frontend/views/EditConnectionPage"));
+const MainPage = lazy(() => import("src/frontend/views/MainPage"));
+const MigrationPage = lazy(() => import("src/frontend/views/MigrationPage"));
+const NewConnectionPage = lazy(() => import("src/frontend/views/NewConnectionPage"));
+const NewRecordPage = lazy(() => import("src/frontend/views/RecordPage").then((m) => ({ default: m.NewRecordPage })));
+const QueryHistoryPage = lazy(() => import("src/frontend/views/QueryHistoryPage"));
+const RecycleBinPage = lazy(() => import("src/frontend/views/RecycleBinPage"));
+const RelationshipChartPage = lazy(() => import("src/frontend/views/RelationshipChartPage"));
 
 function PageLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -100,120 +103,122 @@ export default function App() {
     <>
       <SessionManager>
         <Box className="App" onDrop={onDrop} onDragOver={onDragOver}>
-          <Routes>
-            <Route
-              path="/"
-              element={
-                <PageLayout>
-                  <MainPage />
-                </PageLayout>
-              }
-            />
-            <Route
-              path="/connection/new"
-              element={
-                <PageLayout>
-                  <NewConnectionPage />
-                </PageLayout>
-              }
-            />
-            <Route
-              path="/connection/edit/:connectionId"
-              element={
-                <PageLayout>
-                  <EditConnectionPage />
-                </PageLayout>
-              }
-            />
-            <Route
-              path="/migration/real_connection"
-              element={
-                <PageLayout>
-                  <MigrationPage mode="real_connection" />
-                </PageLayout>
-              }
-            />
-            <Route
-              path="/migration/raw_json"
-              element={
-                <PageLayout>
-                  <MigrationPage mode="raw_json" />
-                </PageLayout>
-              }
-            />
-            <Route
-              path="/migration"
-              element={
-                <PageLayout>
-                  <MigrationPage />
-                </PageLayout>
-              }
-            />
-            <Route
-              path="/query_history"
-              element={
-                <PageLayout>
-                  <QueryHistoryPage />
-                </PageLayout>
-              }
-            />
-            <Route
-              path="/recycle_bin"
-              element={
-                <PageLayout>
-                  <RecycleBinPage />
-                </PageLayout>
-              }
-            />
-            <Route
-              path="/bookmarks"
-              element={
-                <PageLayout>
-                  <BookmarksPage />
-                </PageLayout>
-              }
-            />
-            <Route
-              path="/record/new"
-              element={
-                <PageLayout>
-                  <NewRecordPage />
-                </PageLayout>
-              }
-            />
-            <Route
-              path="/visualization/:connectionId"
-              element={
-                <PageLayout>
-                  <RelationshipChartPage />
-                </PageLayout>
-              }
-            />
-            <Route
-              path="/visualization/:connectionId/:databaseId"
-              element={
-                <PageLayout>
-                  <RelationshipChartPage />
-                </PageLayout>
-              }
-            />
-            <Route
-              path="/visualization/:connectionId/:databaseId/:tableId"
-              element={
-                <PageLayout>
-                  <RelationshipChartPage />
-                </PageLayout>
-              }
-            />
-            <Route
-              path="/relationship/:connectionId/:databaseId/:tableId"
-              element={
-                <PageLayout>
-                  <RelationshipChartPage />
-                </PageLayout>
-              }
-            />
-          </Routes>
+          <Suspense fallback={<CircularProgress sx={{ margin: "auto" }} />}>
+            <Routes>
+              <Route
+                path="/"
+                element={
+                  <PageLayout>
+                    <MainPage />
+                  </PageLayout>
+                }
+              />
+              <Route
+                path="/connection/new"
+                element={
+                  <PageLayout>
+                    <NewConnectionPage />
+                  </PageLayout>
+                }
+              />
+              <Route
+                path="/connection/edit/:connectionId"
+                element={
+                  <PageLayout>
+                    <EditConnectionPage />
+                  </PageLayout>
+                }
+              />
+              <Route
+                path="/migration/real_connection"
+                element={
+                  <PageLayout>
+                    <MigrationPage mode="real_connection" />
+                  </PageLayout>
+                }
+              />
+              <Route
+                path="/migration/raw_json"
+                element={
+                  <PageLayout>
+                    <MigrationPage mode="raw_json" />
+                  </PageLayout>
+                }
+              />
+              <Route
+                path="/migration"
+                element={
+                  <PageLayout>
+                    <MigrationPage />
+                  </PageLayout>
+                }
+              />
+              <Route
+                path="/query_history"
+                element={
+                  <PageLayout>
+                    <QueryHistoryPage />
+                  </PageLayout>
+                }
+              />
+              <Route
+                path="/recycle_bin"
+                element={
+                  <PageLayout>
+                    <RecycleBinPage />
+                  </PageLayout>
+                }
+              />
+              <Route
+                path="/bookmarks"
+                element={
+                  <PageLayout>
+                    <BookmarksPage />
+                  </PageLayout>
+                }
+              />
+              <Route
+                path="/record/new"
+                element={
+                  <PageLayout>
+                    <NewRecordPage />
+                  </PageLayout>
+                }
+              />
+              <Route
+                path="/visualization/:connectionId"
+                element={
+                  <PageLayout>
+                    <RelationshipChartPage />
+                  </PageLayout>
+                }
+              />
+              <Route
+                path="/visualization/:connectionId/:databaseId"
+                element={
+                  <PageLayout>
+                    <RelationshipChartPage />
+                  </PageLayout>
+                }
+              />
+              <Route
+                path="/visualization/:connectionId/:databaseId/:tableId"
+                element={
+                  <PageLayout>
+                    <RelationshipChartPage />
+                  </PageLayout>
+                }
+              />
+              <Route
+                path="/relationship/:connectionId/:databaseId/:tableId"
+                element={
+                  <PageLayout>
+                    <RelationshipChartPage />
+                  </PageLayout>
+                }
+              />
+            </Routes>
+          </Suspense>
         </Box>
         <MissionControl />
       </SessionManager>

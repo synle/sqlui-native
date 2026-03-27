@@ -33,6 +33,24 @@ const columnCacheStorage = new PersistentStorage<ColumnCacheEntry>("cache", "col
 /** Tracks in-flight background refreshes to prevent duplicate concurrent fetches. */
 const pendingRefreshes = new Set<string>();
 
+/** Maximum time (ms) a pending refresh is allowed before being force-evicted from the set. */
+const PENDING_REFRESH_TIMEOUT_MS = 60 * 1000;
+
+/**
+ * Adds a key to pendingRefreshes with automatic eviction after PENDING_REFRESH_TIMEOUT_MS.
+ * Prevents hung connections from permanently blocking future refreshes.
+ * @param key - The cache key to track.
+ */
+function addPendingRefresh(key: string) {
+  pendingRefreshes.add(key);
+  setTimeout(() => {
+    if (pendingRefreshes.has(key)) {
+      console.error(`DataAdapterFactory.ts:addPendingRefresh - force-evicting stale refresh key: ${key}`);
+      pendingRefreshes.delete(key);
+    }
+  }, PENDING_REFRESH_TIMEOUT_MS);
+}
+
 /** Minimum age (ms) a cache entry must reach before a background refresh is triggered. */
 const CACHE_REFRESH_THRESHOLD_MS = 5 * 60 * 1000;
 
@@ -388,7 +406,7 @@ export async function getConnectionMetaData(connection: SqluiCore.CoreConnection
       if (isCacheStale(cachedDatabasesEntry.timestamp)) {
         const dbRefreshKey = getDatabaseCacheKey(connection.id!);
         if (!pendingRefreshes.has(dbRefreshKey)) {
-          pendingRefreshes.add(dbRefreshKey);
+          addPendingRefresh(dbRefreshKey);
           const connId = connection.id!;
           engine
             .getDatabases()
@@ -405,6 +423,8 @@ export async function getConnectionMetaData(connection: SqluiCore.CoreConnection
       }
     }
 
+    // Separate databases into cached and uncached for table metadata
+    const uncachedDatabases: SqluiCore.DatabaseMetaData[] = [];
     for (const database of databases) {
       connItem.databases.push(database);
 
@@ -416,7 +436,7 @@ export async function getConnectionMetaData(connection: SqluiCore.CoreConnection
         if (isCacheStale(cachedTablesEntry.timestamp)) {
           const tableRefreshKey = getTableCacheKey(connection.id!, database.name);
           if (!pendingRefreshes.has(tableRefreshKey)) {
-            pendingRefreshes.add(tableRefreshKey);
+            addPendingRefresh(tableRefreshKey);
             const dbName = database.name;
             const connId = connection.id!;
             engine
@@ -427,19 +447,31 @@ export async function getConnectionMetaData(connection: SqluiCore.CoreConnection
           }
         }
       } else {
-        try {
-          database.tables = await engine.getTables(database.name);
+        uncachedDatabases.push(database);
+      }
+    }
+
+    // Fetch tables for uncached databases in parallel instead of sequentially
+    if (uncachedDatabases.length > 0) {
+      const tableResults = await Promise.allSettled(uncachedDatabases.map((db) => engine.getTables(db.name)));
+      for (let i = 0; i < uncachedDatabases.length; i++) {
+        const result = tableResults[i];
+        const database = uncachedDatabases[i];
+        if (result.status === "fulfilled") {
+          database.tables = result.value;
           if (connection.id) {
             setCachedTables(connection.id, database.name, database.tables);
           }
-        } catch (err) {
-          console.error("DataAdapterFactory.ts:getTables", err);
+        } else {
+          console.error("DataAdapterFactory.ts:getTables", result.reason);
           database.tables = [];
         }
       }
+    }
 
-      // Use cached columns if available; skip API calls for tables without cached data.
-      // Columns are fetched lazily via /api/columns when the user expands a table in the tree.
+    // Use cached columns if available; skip API calls for tables without cached data.
+    // Columns are fetched lazily via /api/columns when the user expands a table in the tree.
+    for (const database of databases) {
       for (const table of database.tables) {
         const cached = connection.id ? getCachedColumns(connection.id, database.name, table.name) : undefined;
         table.columns = cached?.data || [];
@@ -510,7 +542,7 @@ export async function getDatabases(sessionId: string, connectionId: string) {
     if (isCacheStale(cached.timestamp)) {
       const refreshKey = getDatabaseCacheKey(connectionId);
       if (!pendingRefreshes.has(refreshKey)) {
-        pendingRefreshes.add(refreshKey);
+        addPendingRefresh(refreshKey);
         refreshCache().finally(() => pendingRefreshes.delete(refreshKey));
       }
     }
@@ -557,7 +589,7 @@ export async function getTables(sessionId: string, connectionId: string, databas
     if (isCacheStale(cached.timestamp)) {
       const refreshKey = getTableCacheKey(connectionId, databaseId);
       if (!pendingRefreshes.has(refreshKey)) {
-        pendingRefreshes.add(refreshKey);
+        addPendingRefresh(refreshKey);
         refreshCache().finally(() => pendingRefreshes.delete(refreshKey));
       }
     }
@@ -656,7 +688,7 @@ export async function getColumns(sessionId: string, connectionId: string, databa
     if (isCacheStale(cached.timestamp)) {
       const refreshKey = getColumnCacheKey(connectionId, databaseId, tableId);
       if (!pendingRefreshes.has(refreshKey)) {
-        pendingRefreshes.add(refreshKey);
+        addPendingRefresh(refreshKey);
         refreshCache().finally(() => pendingRefreshes.delete(refreshKey));
       }
     }

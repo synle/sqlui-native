@@ -182,6 +182,7 @@ export function useGetDatabases(connectionId?: string) {
 
   return useQuery([connectionId, "databases"], () => (!enabled ? undefined : dataApi.getConnectionDatabases(connectionId)), {
     enabled,
+    notifyOnChangeProps: ["data", "error"],
   });
 }
 
@@ -199,6 +200,7 @@ export function useGetTables(connectionId?: string, databaseId?: string) {
     () => (!enabled ? undefined : dataApi.getConnectionTables(connectionId, databaseId)),
     {
       enabled,
+      notifyOnChangeProps: ["data", "error"],
     },
   );
 }
@@ -219,7 +221,7 @@ export function useGetCachedSchema(connectionId?: string, databaseId?: string) {
       enabled,
       staleTime: 30 * 1000,
       cacheTime: 5 * 60 * 1000,
-      refetchInterval: 30 * 1000,
+      notifyOnChangeProps: ["data", "error"],
     },
   );
 }
@@ -259,6 +261,7 @@ export function useGetAllTableColumns(connectionId?: string, databaseId?: string
       enabled,
       staleTime: 5 * 60 * 1000,
       cacheTime: 10 * 60 * 1000,
+      notifyOnChangeProps: ["data", "error"],
     },
   );
 }
@@ -280,6 +283,7 @@ export function useGetColumns(connectionId?: string, databaseId?: string, tableI
       enabled,
       staleTime: 60000, // refetch in background after 1 minute
       keepPreviousData: true, // show cached data while refetching
+      notifyOnChangeProps: ["data", "error"],
     },
   );
 }
