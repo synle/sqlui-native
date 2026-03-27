@@ -1,4 +1,5 @@
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import RefreshIcon from "@mui/icons-material/Refresh";
 import SsidChartIcon from "@mui/icons-material/SsidChart";
 import IconButton from "@mui/material/IconButton";
 import { useNavigate } from "src/frontend/utils/commonUtils";
@@ -7,7 +8,7 @@ import { getDivider } from "src/common/adapters/BaseDataAdapter/scripts";
 import { getTableActions, isDialectSupportVisualization } from "src/common/adapters/DataScriptFactory";
 import DropdownButton from "src/frontend/components/DropdownButton";
 import { useCommands } from "src/frontend/components/MissionControl";
-import { useGetColumns, useGetConnectionById } from "src/frontend/hooks/useConnection";
+import { useGetColumns, useGetConnectionById, useRefreshTable } from "src/frontend/hooks/useConnection";
 import { useQuerySizeSetting } from "src/frontend/hooks/useSetting";
 import { useTreeActions } from "src/frontend/hooks/useTreeActions";
 import { SqlAction } from "typings";
@@ -37,6 +38,7 @@ export default function TableActions(props: TableActionsProps): JSX.Element | nu
   let tableId: string | undefined = props.tableId;
   const { selectCommand } = useCommands();
   const { data: treeActions } = useTreeActions();
+  const refreshTable = useRefreshTable();
 
   if (!open) {
     // if table action is not opened, hen we don't need to do this...
@@ -77,6 +79,17 @@ export default function TableActions(props: TableActionsProps): JSX.Element | nu
       columns: columns || [],
       querySize,
     }),
+    getDivider(),
+    {
+      label: "Refresh",
+      description: "Refresh table columns cache.",
+      icon: <RefreshIcon />,
+      onClick: () => {
+        if (props.connectionId && props.databaseId && props.tableId) {
+          refreshTable(props.connectionId, props.databaseId, props.tableId);
+        }
+      },
+    },
   ];
 
   const options = actions.map((action) => ({

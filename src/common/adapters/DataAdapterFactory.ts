@@ -215,6 +215,47 @@ export function clearCachedColumns(connectionId: string) {
 }
 
 /**
+ * Clears cached table and column data for a specific database within a connection.
+ * @param connectionId - The connection ID.
+ * @param databaseId - The database name whose cached tables and columns should be removed.
+ */
+export function clearCachedDatabase(connectionId: string, databaseId: string) {
+  try {
+    const tableKey = getTableCacheKey(connectionId, databaseId);
+    tableCacheStorage.delete(tableKey);
+  } catch (_err) {
+    // best-effort table cache clear
+  }
+
+  try {
+    const allEntries = columnCacheStorage.list();
+    const prefix = `${connectionId}:${databaseId}:`;
+    for (const entry of allEntries) {
+      if (entry.id.startsWith(prefix)) {
+        columnCacheStorage.delete(entry.id);
+      }
+    }
+  } catch (_err) {
+    // best-effort column cache clear
+  }
+}
+
+/**
+ * Clears cached column data for a specific table within a connection and database.
+ * @param connectionId - The connection ID.
+ * @param databaseId - The database name.
+ * @param tableId - The table name whose cached columns should be removed.
+ */
+export function clearCachedTable(connectionId: string, databaseId: string, tableId: string) {
+  try {
+    const key = getColumnCacheKey(connectionId, databaseId, tableId);
+    columnCacheStorage.delete(key);
+  } catch (_err) {
+    // best-effort column cache clear
+  }
+}
+
+/**
  * Creates and returns the appropriate data adapter for the given connection string.
  * @param connection - The connection string URI (e.g., "mysql://user:pass@host:port").
  * @returns An IDataAdapter instance for the detected dialect.
