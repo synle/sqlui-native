@@ -7,6 +7,7 @@ import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
 import Tooltip from "@mui/material/Tooltip";
 import { useTheme } from "@mui/material/styles";
+import React from "react";
 import { AccordionHeader } from "src/frontend/components/Accordion";
 import ColumnAttributes from "src/frontend/components/ColumnDescription/ColumnAttributes";
 import ColumnName from "src/frontend/components/ColumnDescription/ColumnName";
@@ -34,7 +35,7 @@ type TreeRowRendererProps = {
  * @param props - Contains the row data, toggle handler, and connection reorder handler.
  * @returns The appropriate UI for the row type.
  */
-export function TreeRowRenderer(props: TreeRowRendererProps) {
+export const TreeRowRenderer = React.memo(function TreeRowRenderer(props: TreeRowRendererProps) {
   const { row, onToggle, onConnectionOrderChange } = props;
   const theme = useTheme();
 
@@ -179,4 +180,4 @@ export function TreeRowRenderer(props: TreeRowRendererProps) {
     default:
       return null;
   }
-}
+});

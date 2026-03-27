@@ -28,7 +28,7 @@ export default defineConfig({
   build: {
     outDir: "build",
     emptyOutDir: false,
-    sourcemap: true,
+    sourcemap: false,
     rollupOptions: {
       input: "./src/electron/index.ts",
       external: nativeExternals,

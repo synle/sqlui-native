@@ -162,7 +162,7 @@ function CodeSnippetButton(props: QueryBoxProps) {
  * @param props - Contains the queryId identifying which query tab to render.
  * @returns The query box UI or null/loading indicator.
  */
-export default function QueryBox(props: QueryBoxProps): JSX.Element | null {
+function QueryBox(props: QueryBoxProps): JSX.Element | null {
   const { queryId } = props;
   const editorRef = useRef<EditorRef>();
   const executionIdRef = useRef(0);
@@ -532,3 +532,5 @@ export default function QueryBox(props: QueryBoxProps): JSX.Element | null {
     </>
   );
 }
+
+export default React.memo(QueryBox);
