@@ -243,11 +243,13 @@ export class ProxyApi {
   /**
    * Tests a database connection without persisting it.
    * @param connection - The connection properties to test.
+   * @param signal - Optional AbortSignal to cancel the request.
    */
-  static test(connection: SqluiCore.CoreConnectionProps) {
+  static test(connection: SqluiCore.CoreConnectionProps, signal?: AbortSignal) {
     return _fetch<SqluiCore.CoreConnectionMetaData>(`/api/connection/test`, {
       method: "post",
       body: JSON.stringify(connection),
+      signal,
     });
   }
 

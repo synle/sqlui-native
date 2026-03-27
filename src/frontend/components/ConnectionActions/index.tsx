@@ -3,6 +3,7 @@ import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
+import NetworkCheckIcon from "@mui/icons-material/NetworkCheck";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import SelectAllIcon from "@mui/icons-material/SelectAll";
 import StarIcon from "@mui/icons-material/Star";
@@ -12,6 +13,8 @@ import { getDivider } from "src/common/adapters/BaseDataAdapter/scripts";
 import { getConnectionActions } from "src/common/adapters/DataScriptFactory";
 import DropdownButton from "src/frontend/components/DropdownButton";
 import { useCommands } from "src/frontend/components/MissionControl";
+import { showTestConnectionModal } from "src/frontend/components/TestConnectionButton";
+import { useActionDialogs } from "src/frontend/hooks/useActionDialogs";
 import { useTreeActions } from "src/frontend/hooks/useTreeActions";
 import { SqlAction, SqluiCore } from "typings";
 
@@ -29,6 +32,7 @@ export default function ConnectionActions(props: ConnectionActionsProps): JSX.El
   const { connection } = props;
   const navigate = useNavigate();
   const { selectCommand } = useCommands();
+  const { modal, dismiss } = useActionDialogs();
   const data = connection;
   const { data: treeActions } = useTreeActions();
 
@@ -85,6 +89,11 @@ export default function ConnectionActions(props: ConnectionActionsProps): JSX.El
           event: "clientEvent/connection/refresh",
           data,
         }),
+    },
+    {
+      label: "Test Connection",
+      startIcon: <NetworkCheckIcon />,
+      onClick: () => showTestConnectionModal(connection, modal, dismiss),
     },
     {
       label: "Delete",
