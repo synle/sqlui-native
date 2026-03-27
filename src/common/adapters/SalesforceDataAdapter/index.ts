@@ -1,7 +1,60 @@
-import Connection from "jsforce/lib/connection";
+import https from "https";
+import { Connection } from "jsforce/lib/connection";
 import BaseDataAdapter, { MAX_CONNECTION_TIMEOUT } from "src/common/adapters/BaseDataAdapter/index";
 import IDataAdapter from "src/common/adapters/IDataAdapter";
 import { SqluiCore } from "typings";
+
+/**
+ * Requests an OAuth2 token from Salesforce using the Client Credentials flow.
+ * Uses native https module to avoid jsforce's internal HTTP client which can hang in bundled environments.
+ * @param loginUrl - The Salesforce login URL (must include https://).
+ * @param clientId - The Connected App client ID.
+ * @param clientSecret - The Connected App client secret.
+ * @returns The parsed token response containing access_token and instance_url.
+ */
+function requestOAuth2Token(
+  loginUrl: string,
+  clientId: string,
+  clientSecret: string,
+): Promise<{ access_token: string; instance_url: string }> {
+  return new Promise((resolve, reject) => {
+    const postData = `grant_type=client_credentials&client_id=${encodeURIComponent(clientId)}&client_secret=${encodeURIComponent(clientSecret)}`;
+    const url = new URL(`${loginUrl}/services/oauth2/token`);
+
+    const req = https.request(
+      {
+        hostname: url.hostname,
+        port: url.port || 443,
+        path: url.pathname,
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          "Content-Length": Buffer.byteLength(postData),
+        },
+      },
+      (res) => {
+        let body = "";
+        res.on("data", (chunk: string) => (body += chunk));
+        res.on("end", () => {
+          try {
+            const parsed = JSON.parse(body);
+            if (parsed.error) {
+              reject(new Error(parsed.error_description || parsed.error));
+            } else {
+              resolve(parsed);
+            }
+          } catch (_err) {
+            reject(new Error(`Invalid OAuth2 response: ${body}`));
+          }
+        });
+      },
+    );
+
+    req.on("error", reject);
+    req.write(postData);
+    req.end();
+  });
+}
 
 /**
  * Parses an SFDC connection string into login credentials.
@@ -120,12 +173,20 @@ function cleanSalesforceRecord(obj: any): any {
  */
 export default class SalesforceDataAdapter extends BaseDataAdapter implements IDataAdapter {
   private _connection?: Connection;
+  /** Whether this adapter uses the OAuth2 Client Credentials flow (no refresh token available). */
+  private _isClientCredentials = false;
 
   /**
    * Establishes and caches a jsforce connection to Salesforce.
+   * Returns the cached connection if one already exists. For Client Credentials flow,
+   * automatically re-authenticates if the session has expired (no refresh token available).
    * @returns A connected jsforce Connection instance.
    */
   private async getConnection(): Promise<Connection> {
+    if (this._connection) {
+      return this._connection;
+    }
+
     return new Promise<Connection>(async (resolve, reject) => {
       const timer = setTimeout(() => reject(new Error("Connection timeout — check your login URL and network")), MAX_CONNECTION_TIMEOUT);
       try {
@@ -146,9 +207,9 @@ export default class SalesforceDataAdapter extends BaseDataAdapter implements ID
 
         if (clientId && !username) {
           // OAuth2 Client Credentials flow (no username/password)
-          const tokenResponse = await conn.oauth2.requestToken({
-            grant_type: "client_credentials",
-          });
+          // Uses native https instead of jsforce's oauth2.requestToken which hangs in bundled builds
+          this._isClientCredentials = true;
+          const tokenResponse = await requestOAuth2Token(loginUrl, clientId, clientSecret);
           (conn as any)._establish({
             instanceUrl: tokenResponse.instance_url,
             accessToken: tokenResponse.access_token,
@@ -166,6 +227,40 @@ export default class SalesforceDataAdapter extends BaseDataAdapter implements ID
         reject(new Error(getSfdcErrorMessage(err)));
       }
     });
+  }
+
+  /**
+   * Refreshes the connection by clearing the cached connection and re-authenticating.
+   * Used for Client Credentials flow where no refresh token is available.
+   * @returns A freshly authenticated jsforce Connection instance.
+   */
+  private async refreshConnection(): Promise<Connection> {
+    this._connection = undefined;
+    return this.getConnection();
+  }
+
+  /**
+   * Executes an async operation with automatic retry on session expiry.
+   * For Client Credentials flow, if the operation fails due to an expired/invalid session,
+   * the token is re-fetched and the operation is retried once.
+   * @param operation - The async function to execute with a jsforce Connection.
+   * @returns The result of the operation.
+   */
+  private async withAutoRefresh<T>(operation: (conn: Connection) => Promise<T>): Promise<T> {
+    const conn = await this.getConnection();
+    try {
+      return await operation(conn);
+    } catch (err: any) {
+      const msg = err?.message || "";
+      if (
+        this._isClientCredentials &&
+        (msg.includes("refresh token") || msg.includes("INVALID_SESSION_ID") || msg.includes("Session expired"))
+      ) {
+        const freshConn = await this.refreshConnection();
+        return await operation(freshConn);
+      }
+      throw err;
+    }
   }
 
   /** Closes the Salesforce connection held by this adapter. */
@@ -189,16 +284,17 @@ export default class SalesforceDataAdapter extends BaseDataAdapter implements ID
    * @returns Array with a single database metadata entry named with the org ID.
    */
   async getDatabases(): Promise<SqluiCore.DatabaseMetaData[]> {
-    const conn = await this.getConnection();
-    const identity = await conn.identity();
-    const orgName = identity.organization_id || "Salesforce Org";
+    return this.withAutoRefresh(async (conn) => {
+      const identity = await conn.identity();
+      const orgName = identity.organization_id || "Salesforce Org";
 
-    return [
-      {
-        name: orgName,
-        tables: [],
-      },
-    ];
+      return [
+        {
+          name: orgName,
+          tables: [],
+        },
+      ];
+    });
   }
 
   /**
@@ -207,15 +303,16 @@ export default class SalesforceDataAdapter extends BaseDataAdapter implements ID
    * @returns Array of table metadata for each queryable SObject.
    */
   async getTables(_database?: string): Promise<SqluiCore.TableMetaData[]> {
-    const conn = await this.getConnection();
-    const globalDescribe = await conn.describeGlobal();
+    return this.withAutoRefresh(async (conn) => {
+      const globalDescribe = await conn.describeGlobal();
 
-    return globalDescribe.sobjects
-      .filter((obj: any) => obj.queryable)
-      .map((obj: any) => ({
-        name: obj.name,
-        columns: [],
-      }));
+      return globalDescribe.sobjects
+        .filter((obj: any) => obj.queryable)
+        .map((obj: any) => ({
+          name: obj.name,
+          columns: [],
+        }));
+    });
   }
 
   /**
@@ -225,16 +322,17 @@ export default class SalesforceDataAdapter extends BaseDataAdapter implements ID
    * @returns Array of column metadata with Salesforce field types.
    */
   async getColumns(table: string, _database?: string): Promise<SqluiCore.ColumnMetaData[]> {
-    const conn = await this.getConnection();
-    const describe = await conn.sobject(table).describe();
+    return this.withAutoRefresh(async (conn) => {
+      const describe = await conn.sobject(table).describe();
 
-    return describe.fields.map((field: any) => ({
-      name: field.name,
-      type: field.type,
-      primaryKey: field.name === "Id",
-      allowNull: field.nillable,
-      comment: field.label,
-    }));
+      return describe.fields.map((field: any) => ({
+        name: field.name,
+        type: field.type,
+        primaryKey: field.name === "Id",
+        allowNull: field.nillable,
+        comment: field.label,
+      }));
+    });
   }
 
   /**
@@ -248,96 +346,73 @@ export default class SalesforceDataAdapter extends BaseDataAdapter implements ID
    * @returns The query result with records or error information.
    */
   async execute(sql: string, _database?: string, _table?: string): Promise<SqluiCore.Result> {
-    const conn = await this.getConnection(); // eslint-disable-line @typescript-eslint/no-unused-vars
-
     try {
-      const trimmed = sql.trim();
+      return await this.withAutoRefresh(async (conn) => {
+        const trimmed = sql.trim();
 
-      // Mode 1: JS API mode (conn.sobject(...).create/update/delete/etc.)
-      if (trimmed.includes("conn.")) {
-        //@ts-ignore
-        const res: any = await eval(trimmed); // eslint-disable-line no-eval
+        // Mode 1: JS API mode (conn.sobject(...).create/update/delete/etc.)
+        if (trimmed.includes("conn.")) {
+          //@ts-ignore
+          const res: any = await eval(trimmed); // eslint-disable-line no-eval
 
-        // Handle array results (e.g., bulk operations)
-        if (Array.isArray(res)) {
+          // Handle array results (e.g., bulk operations)
+          if (Array.isArray(res)) {
+            return { ok: true, raw: res };
+          }
+
+          // Handle DML results with success/id/errors pattern
+          if (res && typeof res === "object" && "success" in res) {
+            return { ok: true, raw: [res], affectedRows: res.success ? 1 : 0 };
+          }
+
+          // Handle describe results
+          if (res && typeof res === "object" && res.fields) {
+            return {
+              ok: true,
+              raw: res.fields.map((f: any) => ({
+                name: f.name,
+                label: f.label,
+                type: f.type,
+                length: f.length,
+                nillable: f.nillable,
+                unique: f.unique,
+              })),
+            };
+          }
+
+          // Handle query results from conn.query()
+          if (res && res.records) {
+            return { ok: true, raw: cleanSalesforceRecord(res.records), meta: { totalSize: res.totalSize, done: res.done } };
+          }
+
+          // Generic result
+          return { ok: true, raw: res ? [].concat(res) : [], meta: res };
+        }
+
+        // Mode 2: SOSL search (FIND { ... })
+        if (trimmed.toUpperCase().startsWith("FIND")) {
+          const result: any = await conn.search(trimmed);
+          const records = result.searchRecords || result;
           return {
             ok: true,
-            raw: res,
+            raw: cleanSalesforceRecord(Array.isArray(records) ? records : [records]),
+            meta: { totalSize: Array.isArray(records) ? records.length : 1 },
           };
         }
 
-        // Handle DML results with success/id/errors pattern
-        if (res && typeof res === "object" && "success" in res) {
+        // Mode 3: SOQL query (SELECT ...)
+        const result: any = await conn.query(trimmed);
+
+        if (result.records) {
           return {
             ok: true,
-            raw: [res],
-            affectedRows: res.success ? 1 : 0,
+            raw: cleanSalesforceRecord(result.records),
+            meta: { totalSize: result.totalSize, done: result.done },
           };
         }
 
-        // Handle describe results
-        if (res && typeof res === "object" && res.fields) {
-          return {
-            ok: true,
-            raw: res.fields.map((f: any) => ({
-              name: f.name,
-              label: f.label,
-              type: f.type,
-              length: f.length,
-              nillable: f.nillable,
-              unique: f.unique,
-            })),
-          };
-        }
-
-        // Handle query results from conn.query()
-        if (res && res.records) {
-          return {
-            ok: true,
-            raw: cleanSalesforceRecord(res.records),
-            meta: { totalSize: res.totalSize, done: res.done },
-          };
-        }
-
-        // Generic result
-        return {
-          ok: true,
-          raw: res ? [].concat(res) : [],
-          meta: res,
-        };
-      }
-
-      // Mode 2: SOSL search (FIND { ... })
-      if (trimmed.toUpperCase().startsWith("FIND")) {
-        const result: any = await conn.search(trimmed);
-        const records = result.searchRecords || result;
-        return {
-          ok: true,
-          raw: cleanSalesforceRecord(Array.isArray(records) ? records : [records]),
-          meta: {
-            totalSize: Array.isArray(records) ? records.length : 1,
-          },
-        };
-      }
-
-      // Mode 3: SOQL query (SELECT ...)
-      const result: any = await conn.query(trimmed);
-
-      if (result.records) {
-        return {
-          ok: true,
-          raw: cleanSalesforceRecord(result.records),
-          meta: {
-            totalSize: result.totalSize,
-            done: result.done,
-          },
-        };
-      }
-
-      return {
-        ok: true,
-        meta: result,
-      };
+        return { ok: true, meta: result };
+      });
     } catch (err: any) {
       console.error("SalesforceDataAdapter:execute", err);
       return {
