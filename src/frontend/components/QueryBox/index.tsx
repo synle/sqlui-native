@@ -169,10 +169,6 @@ function QueryBox(props: QueryBoxProps): JSX.Element | null {
   const { query, onChange, isLoading: loadingConnection } = useConnectionQuery(queryId);
   const { mutateAsync: executeQuery } = useExecute();
   const [executing, setExecuting] = useState(false);
-  /** Syncs the local executing state into the query context for tab-level visibility. */
-  useEffect(() => {
-    onChange({ executing });
-  }, [executing]);
   const layoutMode = useLayoutModeSetting();
   const [expanded, setExpanded] = useState(layoutMode !== "compact");
   const { data: selectedConnection } = useGetConnectionById(query?.connectionId);
@@ -343,7 +339,7 @@ function QueryBox(props: QueryBoxProps): JSX.Element | null {
     const currentExecutionId = ++executionIdRef.current;
 
     const executionStart = Date.now();
-    onChange({ executionStart, result: undefined, executionEnd: undefined, executionDetails: undefined });
+    onChange({ executing: true, executionStart, result: undefined, executionEnd: undefined, executionDetails: undefined });
 
     let success = false;
     let newResult: SqluiCore.Result | undefined;
@@ -407,7 +403,7 @@ function QueryBox(props: QueryBoxProps): JSX.Element | null {
     setExecuting(false);
 
     const executionEnd = Date.now();
-    onChange({ executionEnd });
+    onChange({ executing: false, executionEnd });
 
     const { sql, ...queryExtra } = query;
     const { selected, result: _result, ...toastMetaData } = queryExtra;
