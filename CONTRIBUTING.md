@@ -529,7 +529,7 @@ sfdc://{"username":"you@yourcompany.dev","password":"your_password","securityTok
 sfdc://{"clientId":"your_consumer_key","clientSecret":"your_consumer_secret","loginUrl":"your-org.my.salesforce.com"}
 ```
 
-The Client Credentials flow is useful for service-to-service integrations where no user credentials are available.
+The Client Credentials flow is useful for service-to-service integrations where no user credentials are available. The adapter uses Node's native `https` module for the OAuth2 token request (instead of jsforce's internal HTTP client, which hangs in bundled Electron builds). Sessions are automatically refreshed via `withAutoRefresh()` when `INVALID_SESSION_ID` or `Session expired` errors are detected.
 
 #### Connection String Format
 
