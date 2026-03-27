@@ -37,6 +37,7 @@ function AppliedTheme({ children }) {
     // Common settings regardless of mode
     const baseTheme = {
       MuiButtonBase: { defaultProps: { disableRipple: true } },
+      MuiTooltip: { defaultProps: { enterDelay: 500 } },
     };
 
     // Mode A: Compact (Small, No Icons, Dense)

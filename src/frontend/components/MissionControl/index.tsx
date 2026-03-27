@@ -418,16 +418,15 @@ export default function MissionControl() {
       }
     }
 
-    if (showOnlyRevealedConnection === false) {
-      await addToast({
-        message: `Revealed selected connection / database on the sidebar`,
-      });
-    }
-
-    // scroll to the selected dom
+    // scroll to the revealed element
     setTimeout(() => {
-      const selectedHeaders = document.querySelectorAll(".Accordion__Header.selected");
-      selectedHeaders[selectedHeaders.length - 1].scrollIntoView();
+      const selectedHeaders = document.querySelectorAll(
+        ".Accordion__Header.selected, .ConnectionDescription.selected, .DatabaseDescription.selected, .TableDescription.selected",
+      );
+      const target = selectedHeaders[selectedHeaders.length - 1];
+      if (target) {
+        target.scrollIntoView({ block: "center" });
+      }
     }, 100);
   };
 

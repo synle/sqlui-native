@@ -63,6 +63,9 @@ export const TreeRowRenderer = React.memo(function TreeRowRenderer(props: TreeRo
                     textOverflow: "ellipsis",
                     whiteSpace: "nowrap",
                     color: theme.palette.text.disabled,
+                    fontWeight: "normal",
+                    width: "fit-content",
+                    maxWidth: "100%",
                   }}
                 >
                   {sanitizedUrl}
