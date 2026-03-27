@@ -39,24 +39,25 @@ label {
 $ConnectionTreeIndentSize: 7px;
 
 .ConnectionDescription {
+  padding-left: $ConnectionTreeIndentSize * 1;
 }
 
 .DatabaseDescription {
-  padding-left: $ConnectionTreeIndentSize * 1;
+  padding-left: $ConnectionTreeIndentSize * 2;
 }
 
 .TableDescription,
 .TableActions {
-  padding-left: $ConnectionTreeIndentSize * 2;
+  padding-left: $ConnectionTreeIndentSize * 3;
 }
 
 .ColumnDescription {
-  padding-left: $ConnectionTreeIndentSize * 3;
+  padding-left: $ConnectionTreeIndentSize * 4;
 }
 
 .ColumnAttributes,
 .ShowAllColumnsButton {
-  padding-left: $ConnectionTreeIndentSize * 4;
+  padding-left: $ConnectionTreeIndentSize * 5;
 }
 
 .QueryBox {
