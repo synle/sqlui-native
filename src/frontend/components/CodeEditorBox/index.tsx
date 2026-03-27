@@ -97,10 +97,8 @@ export default function CodeEditorBox(props: CodeEditorProps): JSX.Element | nul
   const hideEditorSize = !!props.hideEditorSize || props.height || false;
   const hideEditorSyntax = !!props.hideEditorSyntax || false;
 
-  /** Calls onChange immediately (used on blur). */
-  const onBlur = (newValue: string) => {
-    props.onChange && props.onChange(newValue);
-  };
+  /** Tracks the last value emitted via onChange to avoid duplicate calls. */
+  const lastEmittedRef = useRef<string | undefined>(props.value);
 
   /** Calls onChange with a debounced delay (used on live typing). */
   const debounceMs = Math.min(props.debounceMs ?? DEFAULT_DEBOUNCE_MS, MAX_DEBOUNCE_MS);
@@ -110,11 +108,23 @@ export default function CodeEditorBox(props: CodeEditorProps): JSX.Element | nul
       if (!props.onChange) return;
       if (liveChangeTimerRef.current) clearTimeout(liveChangeTimerRef.current);
       liveChangeTimerRef.current = setTimeout(() => {
+        lastEmittedRef.current = newValue;
         props.onChange!(newValue);
       }, debounceMs);
     },
     [props.onChange, debounceMs],
   );
+
+  /** Calls onChange immediately on blur if the value changed. Clears any pending debounce. */
+  const onBlur = (newValue: string) => {
+    if (liveChangeTimerRef.current) {
+      clearTimeout(liveChangeTimerRef.current);
+      liveChangeTimerRef.current = null;
+    }
+    if (!props.onChange || newValue === lastEmittedRef.current) return;
+    lastEmittedRef.current = newValue;
+    props.onChange(newValue);
+  };
 
   const onSetHeight = (newHeight: string) => {
     setHeightSetting(newHeight);
