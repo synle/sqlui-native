@@ -37,6 +37,7 @@ export default function ConnectionActions(props: ConnectionActionsProps): JSX.El
   const { data: treeActions } = useTreeActions();
 
   const { dialect, id: connectionId } = connection;
+  const isRestApi = dialect === "restapi" || dialect === "rest";
 
   const options: SqlAction.Output[] = [
     {
@@ -81,20 +82,24 @@ export default function ConnectionActions(props: ConnectionActionsProps): JSX.El
           data,
         }),
     },
-    {
-      label: "Refresh",
-      startIcon: <RefreshIcon />,
-      onClick: () =>
-        selectCommand({
-          event: "clientEvent/connection/refresh",
-          data,
-        }),
-    },
-    {
-      label: "Test Connection",
-      startIcon: <NetworkCheckIcon />,
-      onClick: () => showTestConnectionModal(connection, modal, dismiss),
-    },
+    ...(isRestApi
+      ? []
+      : [
+          {
+            label: "Refresh",
+            startIcon: <RefreshIcon />,
+            onClick: () =>
+              selectCommand({
+                event: "clientEvent/connection/refresh",
+                data,
+              }),
+          },
+          {
+            label: "Test Connection",
+            startIcon: <NetworkCheckIcon />,
+            onClick: () => showTestConnectionModal(connection, modal, dismiss),
+          },
+        ]),
     {
       label: "Delete",
       startIcon: <DeleteIcon />,

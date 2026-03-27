@@ -68,6 +68,8 @@ export default function DatabaseActions(props: DatabaseActionsProps): JSX.Elemen
     });
   }
 
+  const isRestApi = dialect === "restapi" || dialect === "rest";
+
   actions = [
     ...actions,
     ...getDatabaseActions({
@@ -76,17 +78,21 @@ export default function DatabaseActions(props: DatabaseActionsProps): JSX.Elemen
       databaseId,
       querySize,
     }),
-    getDivider(),
-    {
-      label: "Refresh",
-      description: "Refresh database tables and columns cache.",
-      icon: <RefreshIcon />,
-      onClick: () => {
-        if (props.connectionId && props.databaseId) {
-          refreshDatabase(props.connectionId, props.databaseId);
-        }
-      },
-    },
+    ...(isRestApi
+      ? []
+      : [
+          getDivider(),
+          {
+            label: "Refresh",
+            description: "Refresh database tables and columns cache.",
+            icon: <RefreshIcon />,
+            onClick: () => {
+              if (props.connectionId && props.databaseId) {
+                refreshDatabase(props.connectionId, props.databaseId);
+              }
+            },
+          },
+        ]),
   ];
 
   const options = actions.map((action) => ({

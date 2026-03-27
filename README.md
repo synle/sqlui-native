@@ -42,6 +42,7 @@ You can also refer to this link for [General Queries](https://synle.github.io/sq
 - [Azure CosmosDB](https://synle.github.io/sqlui-native/guides#cosmosdb) (Limited Supported)
 - [Azure Table Storage (Azure Table)](https://synle.github.io/sqlui-native/guides#aztable) (Limited Supported)
 - [Salesforce (SFDC)](https://synle.github.io/sqlui-native/guides#sfdc) (Limited Supported)
+- REST API (curl / fetch) — Postman-like API client with `{{variable}}` interpolation
 
 ## Features
 
@@ -462,6 +463,15 @@ Sample connection will look like this
 ```
 aztable://<your_connection_string>
 ```
+
+### REST API Limitations
+
+- Requires `curl` installed on the system (pre-installed on macOS and most Linux distributions).
+- Uses curl/fetch syntax in the editor — not a visual form builder like Postman.
+- No persistent connection — each request is a standalone `curl` subprocess.
+- `{{VAR}}` variable interpolation is case-sensitive.
+- Connection string format: `restapi://{"HOST":"https://httpbin.org"}` (also accepts `rest://`).
+- Folder nesting is limited to 2 levels (Connection → Folder → Request), matching the database/table model.
 
 ## Suggestion?
 
