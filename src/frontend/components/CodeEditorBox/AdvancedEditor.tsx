@@ -56,12 +56,8 @@ export default function AdvancedEditor(props: AdvancedEditorProps): JSX.Element 
         });
 
         if (props.onLiveChange) {
-          let liveTimer: ReturnType<typeof setTimeout> | null = null;
           newEditor.onDidChangeModelContent(() => {
-            if (liveTimer) clearTimeout(liveTimer);
-            liveTimer = setTimeout(() => {
-              props.onLiveChange!(newEditor.getValue() || "");
-            }, 400);
+            props.onLiveChange!(newEditor.getValue() || "");
           });
         }
 

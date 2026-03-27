@@ -60,22 +60,14 @@ export default function ImportModal(props: ImportModalProps): JSX.Element {
     return "";
   };
 
-  /** Handles live content changes from the editor without updating value state. */
-  const onLiveChange = useCallback((newValue: string) => {
-    liveValueRef.current = newValue;
-    const trimmed = newValue.trim();
-    setHasContent(!!trimmed);
-    setError(trimmed ? validate(trimmed) : "");
-  }, []);
-
   /** Updates value state and syncs hasContent flag, live ref, and validation. */
-  const updateValue = (newValue: string) => {
+  const updateValue = useCallback((newValue: string) => {
     setValue(newValue);
     liveValueRef.current = newValue;
     const trimmed = newValue.trim();
     setHasContent(!!trimmed);
     setError(trimmed ? validate(trimmed) : "");
-  };
+  }, []);
 
   /** Reads a file and sets its text content into the editor. */
   const loadFile = (file: File) => {
@@ -127,7 +119,6 @@ export default function ImportModal(props: ImportModalProps): JSX.Element {
         <CodeEditorBox
           value={value}
           onChange={updateValue}
-          onLiveChange={onLiveChange}
           language="json"
           autoFocus={true}
           wordWrap={true}
