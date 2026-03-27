@@ -3,7 +3,7 @@ import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
 import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
 import ToggleButton from "@mui/material/ToggleButton";
-import React, { useEffect, useLayoutEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import AdvancedEditor from "src/frontend/components/CodeEditorBox/AdvancedEditor";
 import SimpleEditor from "src/frontend/components/CodeEditorBox/SimpleEditor";
 import InputError from "src/frontend/components/InputError";
@@ -44,14 +44,20 @@ export type CodeEditorProps = {
   hideEditorSize?: boolean;
   hideEditorSyntax?: boolean;
   completionItems?: CompletionItem[];
-  /** Fires on every content change (debounced) without feeding back into value. */
+  /** Debounce delay in ms for live typing onChange calls. Defaults to 150, clamped to 1000 max. */
+  debounceMs?: number;
+};
+
+/** Extended editor props with blur and live change callbacks, used by AdvancedEditor and SimpleEditor implementations. */
+export type DecoratedEditorProps = CodeEditorProps & {
+  onBlur?: (newValue: string) => void;
   onLiveChange?: (newValue: string) => void;
 };
 
-/** Extended editor props with blur callback, used by AdvancedEditor and SimpleEditor implementations. */
-export type DecoratedEditorProps = CodeEditorProps & {
-  onBlur?: (newValue: string) => void;
-};
+/** Default debounce delay in ms for live typing onChange calls. */
+export const DEFAULT_DEBOUNCE_MS = 150;
+/** Maximum allowed debounce delay in ms. */
+export const MAX_DEBOUNCE_MS = 1000;
 
 /** Default editor height when no explicit height is provided. */
 const DEFAULT_EDITOR_HEIGHT = "30vh";
@@ -91,9 +97,24 @@ export default function CodeEditorBox(props: CodeEditorProps): JSX.Element | nul
   const hideEditorSize = !!props.hideEditorSize || props.height || false;
   const hideEditorSyntax = !!props.hideEditorSyntax || false;
 
-  const onChange = (newValue: string) => {
+  /** Calls onChange immediately (used on blur). */
+  const onBlur = (newValue: string) => {
     props.onChange && props.onChange(newValue);
   };
+
+  /** Calls onChange with a debounced delay (used on live typing). */
+  const debounceMs = Math.min(props.debounceMs ?? DEFAULT_DEBOUNCE_MS, MAX_DEBOUNCE_MS);
+  const liveChangeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const onLiveChange = useCallback(
+    (newValue: string) => {
+      if (!props.onChange) return;
+      if (liveChangeTimerRef.current) clearTimeout(liveChangeTimerRef.current);
+      liveChangeTimerRef.current = setTimeout(() => {
+        props.onChange!(newValue);
+      }, debounceMs);
+    },
+    [props.onChange, debounceMs],
+  );
 
   const onSetHeight = (newHeight: string) => {
     setHeightSetting(newHeight);
@@ -187,8 +208,8 @@ export default function CodeEditorBox(props: CodeEditorProps): JSX.Element | nul
           id={props.id}
           value={props.value}
           placeholder={props.placeholder}
-          onBlur={onChange}
-          onLiveChange={props.onLiveChange}
+          onBlur={onBlur}
+          onLiveChange={onLiveChange}
           autoFocus={props.autoFocus}
           required={props.required}
           disabled={props.disabled}
@@ -213,8 +234,8 @@ export default function CodeEditorBox(props: CodeEditorProps): JSX.Element | nul
           id={props.id}
           language={languageToUse}
           value={props.value}
-          onBlur={onChange}
-          onLiveChange={props.onLiveChange}
+          onBlur={onBlur}
+          onLiveChange={onLiveChange}
           wordWrap={wordWrap}
           placeholder={props.placeholder}
           disabled={props.disabled}

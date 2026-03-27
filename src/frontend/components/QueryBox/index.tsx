@@ -299,6 +299,7 @@ function QueryBox(props: QueryBoxProps): JSX.Element | null {
     [onChange],
   );
 
+  /** Syncs editor text to query state — fires on blur and debounced live typing. */
   const onSqlQueryChange = useCallback(
     (newQuery: string) => {
       onChange({ sql: newQuery });
