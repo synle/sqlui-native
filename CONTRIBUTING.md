@@ -81,13 +81,24 @@ Assuming you use the same database in the docker samples below:
   {
     "_type": "connection",
     "id": "connection.1711500000000.1234567890123456",
-    "connection": "restapi://{\"HOST\":\"https://httpbin.org\"}",
-    "name": "httpbin REST API"
+    "connection": "rest://{\"HOST\":\"https://httpbin.org\"}",
+    "name": "httpbin REST API",
+    "managedMetadata": {
+      "databases": [{ "name": "Folder 1" }],
+      "tables": [
+        { "name": "GET Request", "databaseId": "Folder 1", "props": { "query": "curl '{{HOST}}/get'" } },
+        {
+          "name": "POST JSON",
+          "databaseId": "Folder 1",
+          "props": { "query": "curl -X POST '{{HOST}}/post' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\"key\": \"value\"}'" }
+        }
+      ]
+    }
   }
 ]
 ```
 
-> **Import behavior (upsert):** When importing connections, queries, or bookmarks, if an item with the same `id` already exists, it will be **updated** (overwritten) rather than duplicated. Items without a matching `id` are created as new entries.
+> **Import behavior (upsert):** When importing connections, queries, or bookmarks, if an item with the same `id` already exists, it will be **updated** (overwritten) rather than duplicated. Items without a matching `id` are created as new entries. For REST API connections with `managedMetadata`, existing folders and requests are always replaced (deleted and recreated) on import.
 
 The import JSON also supports bookmarks with `_type: "bookmark"`:
 

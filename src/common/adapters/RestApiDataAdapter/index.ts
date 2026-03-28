@@ -1,16 +1,18 @@
-/** REST API data adapter — IDataAdapter implementation for the restapi/rest dialect. */
+/** REST API data adapter — IDataAdapter implementation for the rest dialect. */
 
+import dns from "dns";
 import BaseDataAdapter from "src/common/adapters/BaseDataAdapter/index";
 import IDataAdapter from "src/common/adapters/IDataAdapter";
 import { executeCurl } from "src/common/adapters/RestApiDataAdapter/curlExecutor";
 import { detectAndParse } from "src/common/adapters/RestApiDataAdapter/requestParser";
-import { RestApiConnectionConfig } from "src/common/adapters/RestApiDataAdapter/types";
+import { RestApiConnectionConfig, RestApiFolderProperties } from "src/common/adapters/RestApiDataAdapter/types";
 import { mergeVariableLayers, resolveVariables } from "src/common/adapters/RestApiDataAdapter/variableResolver";
+import { getManagedDatabasesStorage } from "src/common/PersistentStorage";
 import { SqluiCore } from "typings";
 
 /**
- * Parses the restapi:// or rest:// connection string into a config object.
- * Format: restapi://{"variables":[...]} or restapi://{}
+ * Parses the rest:// connection string into a config object.
+ * Also accepts legacy restapi:// prefix for backward compatibility.
  * @param connectionOption - The raw connection string URI.
  * @returns Parsed connection config.
  */
@@ -29,37 +31,94 @@ function parseRestApiConnectionString(connectionOption: string): RestApiConnecti
  */
 export default class RestApiDataAdapter extends BaseDataAdapter implements IDataAdapter {
   private _config: RestApiConnectionConfig;
+  /** Set after construction to enable folder-level variable resolution. */
+  connectionId?: string;
 
   /**
-   * @param connectionOption - The restapi:// connection string.
+   * @param connectionOption - The rest:// connection string.
    */
   constructor(connectionOption: string) {
     super(connectionOption);
-    this.dialect = "restapi";
+    this.dialect = "rest";
     this._config = parseRestApiConnectionString(connectionOption);
   }
 
   /**
-   * Validates the connection string is parseable.
-   * REST API connections are stateless — no persistent connection to verify.
+   * Validates the HOST URL format (must be http:// or https://) and that the domain is DNS-resolvable.
+   * @throws If HOST is invalid or the domain cannot be resolved.
    */
   async authenticate(): Promise<void> {
-    // Just verify the config parses. No server to ping.
-    parseRestApiConnectionString(this.connectionOption);
+    const config = parseRestApiConnectionString(this.connectionOption);
+    const host = config.HOST;
+    if (!host) {
+      // No HOST defined — just validate the config parses
+      return;
+    }
+
+    // Validate URL format
+    if (!/^https?:\/\/.+/i.test(host)) {
+      throw new Error(`Invalid HOST format: "${host}". Must start with http:// or https://`);
+    }
+
+    // Extract hostname and verify DNS resolution
+    let hostname: string;
+    try {
+      hostname = new URL(host).hostname;
+    } catch (_err) {
+      throw new Error(`Invalid HOST URL: "${host}"`);
+    }
+
+    await new Promise<void>((resolve, reject) => {
+      dns.lookup(hostname, (err) => {
+        if (err) {
+          reject(new Error(`Cannot resolve host "${hostname}": ${err.message}`));
+        } else {
+          resolve();
+        }
+      });
+    });
   }
 
   /**
-   * Returns folders for this collection.
-   * A default folder is always present.
-   * @returns Array of database metadata representing folders.
+   * Runs diagnostic HTTP checks (HEAD, GET, OPTIONS) against the HOST.
+   * Results are informational — failures do not throw.
+   * @returns Array of diagnostic results.
+   */
+  async runDiagnostics(): Promise<SqluiCore.ConnectionDiagnostic[]> {
+    const config = parseRestApiConnectionString(this.connectionOption);
+    const host = config.HOST;
+    if (!host) {
+      return [];
+    }
+
+    const methods: Array<"HEAD" | "GET" | "OPTIONS"> = ["HEAD", "GET", "OPTIONS"];
+    const results: SqluiCore.ConnectionDiagnostic[] = [];
+
+    for (const method of methods) {
+      try {
+        const response = await executeCurl({ method, url: host, headers: {}, params: {} }, 5000);
+        const ok = response.status > 0 && response.status < 500;
+        results.push({
+          name: method,
+          success: ok,
+          message: `${response.status} ${response.statusText || ""}`.trim(),
+        });
+      } catch (err: any) {
+        const msg = String(err.message || err);
+        const curlErr = msg.match(/curl:\s*\(\d+\)\s*.+/)?.[0] || msg.split("\n")[0];
+        results.push({ name: method, success: false, message: curlErr });
+      }
+    }
+
+    return results;
+  }
+
+  /**
+   * Returns an empty array — managed databases are read from persistent storage by DataAdapterFactory.
+   * @returns Empty array (folders are managed externally).
    */
   async getDatabases(): Promise<SqluiCore.DatabaseMetaData[]> {
-    return [
-      {
-        name: "Default",
-        tables: [],
-      },
-    ];
+    return [];
   }
 
   /**
@@ -92,21 +151,36 @@ export default class RestApiDataAdapter extends BaseDataAdapter implements IData
 
   /**
    * Executes an HTTP request from a curl or fetch() command string.
-   * Resolves {{VAR}} placeholders from collection variables before execution.
+   * Resolves {{VAR}} placeholders from collection and folder variables before execution.
    * @param sql - The curl or fetch() command string.
-   * @param _database - The folder name (unused, reserved for folder-level variables).
+   * @param database - The folder name (used to fetch folder-level variables).
    * @param _table - The request name (unused).
    * @returns Result with response data in raw field.
    */
-  async execute(sql: string, _database?: string, _table?: string): Promise<SqluiCore.Result> {
+  async execute(sql: string, database?: string, _table?: string): Promise<SqluiCore.Result> {
     try {
       if (!sql || !sql.trim()) {
         return { ok: false, error: "No request to execute. Enter a curl or fetch() command." };
       }
 
-      // Resolve variables
+      // Fetch folder-level variables if connectionId and database are available
+      let folderVars: RestApiFolderProperties["variables"] | undefined;
+      if (this.connectionId && database) {
+        try {
+          const dbStorage = await getManagedDatabasesStorage(this.connectionId);
+          const folder = await dbStorage.get(database);
+          folderVars = (folder?.props as RestApiFolderProperties | undefined)?.variables;
+        } catch (_err) {
+          // Non-fatal — fall back to connection-level variables only
+        }
+      }
+
+      // Resolve variables — folder overrides collection, HOST is always injected
       const collectionVars = this._config.variables || [];
-      const variables = mergeVariableLayers(collectionVars);
+      const variables = mergeVariableLayers(collectionVars, folderVars);
+      if (this._config.HOST) {
+        variables["HOST"] = this._config.HOST;
+      }
       const resolvedSql = resolveVariables(sql, variables);
 
       // Parse the command (auto-detect curl vs fetch)

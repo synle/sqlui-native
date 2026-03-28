@@ -136,6 +136,11 @@ export const DIALECTS_SUPPORTING_EDIT_FORM = getAllImplementations()
   .filter((script) => script.supportEditRecordForm())
   .reduce<string[]>(consolidateDialects, []);
 
+/** List of dialect identifiers that manage their own databases/tables (e.g., REST API). */
+export const DIALECTS_SUPPORTING_MANAGED_METADATA = getAllImplementations()
+  .filter((script) => script.supportManagedMetadata())
+  .reduce<string[]>(consolidateDialects, []);
+
 /**
  * Checks whether a dialect supports schema migration.
  * @param dialect - The dialect identifier.
@@ -158,6 +163,14 @@ export function isDialectSupportCreateRecordForm(dialect?: string) {
  */
 export function isDialectSupportEditRecordForm(dialect?: string) {
   return dialect && DIALECTS_SUPPORTING_EDIT_FORM.includes(dialect);
+}
+
+/**
+ * Checks whether a dialect manages its own databases/tables (e.g., REST API folders/requests).
+ * @param dialect - The dialect identifier.
+ */
+export function isDialectSupportManagedMetadata(dialect?: string) {
+  return dialect ? DIALECTS_SUPPORTING_MANAGED_METADATA.includes(dialect) : false;
 }
 
 /**

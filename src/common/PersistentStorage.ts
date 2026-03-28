@@ -266,3 +266,27 @@ export async function getDataSnapshotStorage() {
 export async function getSettingsStorage() {
   return await new PersistentStorage<SqluiCore.SettingsEntry>("settings", "settings", "settings");
 }
+
+/**
+ * Returns a PersistentStorage instance for managed databases (folders) of a connection.
+ * @param connectionId - The parent connection ID.
+ * @returns A PersistentStorage instance for ManagedDatabase entries.
+ */
+export async function getManagedDatabasesStorage(connectionId: string) {
+  if (!connectionId) {
+    throw new Error(`connectionId is required for getManagedDatabasesStorage`);
+  }
+  return await new PersistentStorage<SqluiCore.ManagedDatabase>("managedDatabases", connectionId);
+}
+
+/**
+ * Returns a PersistentStorage instance for managed tables (requests) of a connection.
+ * @param connectionId - The parent connection ID.
+ * @returns A PersistentStorage instance for ManagedTable entries.
+ */
+export async function getManagedTablesStorage(connectionId: string) {
+  if (!connectionId) {
+    throw new Error(`connectionId is required for getManagedTablesStorage`);
+  }
+  return await new PersistentStorage<SqluiCore.ManagedTable>("managedTables", connectionId);
+}
