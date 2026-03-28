@@ -261,6 +261,15 @@ export class ProxyApi {
   }
 
   /**
+   * Fetches a single managed database (folder) by ID, including props.
+   * @param connectionId - The connection ID.
+   * @param managedDatabaseId - The database name/ID.
+   */
+  static getManagedDatabase(connectionId: string, managedDatabaseId: string) {
+    return _fetch<SqluiCore.ManagedDatabase>(`/api/connection/${connectionId}/managedDatabase/${encodeURIComponent(managedDatabaseId)}`);
+  }
+
+  /**
    * Creates a managed database (folder) for a connection.
    * @param connectionId - The connection ID.
    * @param body - The database name.
