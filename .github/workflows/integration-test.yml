@@ -362,6 +362,7 @@ jobs:
           name: playwright-report
           path: playwright-report/
           retention-days: 14
+          compression-level: 0
 
       - name: Upload test screenshots
         if: ${{ always() && steps.e2e_tests.outcome == 'failure' }}
@@ -370,6 +371,7 @@ jobs:
           name: playwright-screenshots
           path: test-results/
           retention-days: 14
+          compression-level: 0
 
       - name: Publish E2E test results
         if: ${{ always() && steps.e2e_tests.outcome != 'skipped' }}
