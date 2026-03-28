@@ -234,11 +234,10 @@ describe("RestApiDataAdapter integration (httpbin.org)", () => {
       await adapter.disconnect();
     });
 
-    it("getDatabases returns default folder", async () => {
+    it("getDatabases returns empty array (folders are managed externally)", async () => {
       const adapter = new RestApiDataAdapter(`rest://{}`);
       const dbs = await adapter.getDatabases();
-      expect(dbs).toHaveLength(1);
-      expect(dbs[0].name).toBe("Default");
+      expect(dbs).toHaveLength(0);
       await adapter.disconnect();
     });
 
