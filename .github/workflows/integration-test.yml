@@ -1,4 +1,4 @@
-name: Test (Unit / Integration Tests)
+name: Test (Unit / Integration / E2E Tests)
 
 on:
   schedule:
@@ -314,32 +314,49 @@ jobs:
           echo "| Integration Tests | $(format_duration $TESTS_DUR) |" >> $GITHUB_STEP_SUMMARY
           echo "| **Total (incl. DB wait)** | **$(format_duration $TOTAL_DUR)** |" >> $GITHUB_STEP_SUMMARY
 
-      # ---- E2E Tests (Playwright) — only when run_e2e is true ----
+  # ---- E2E Tests (Playwright) ----
+  e2e_test:
+    needs: check
+    if: ${{ needs.check.outputs.has_changes == 'true' && inputs.run_e2e == true }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      checks: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.ref }}
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ inputs.node_version || '24' }}
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci || npm install
+
       - name: Install Playwright browsers
-        if: ${{ inputs.run_e2e == true }}
         run: npx playwright install --with-deps chromium
 
       - name: Build frontend and mocked server for E2E
-        if: ${{ inputs.run_e2e == true }}
         run: |
           npm run build
           npm run build-mocked-server
 
       - name: Record E2E tests start time
-        if: ${{ inputs.run_e2e == true }}
         run: echo "E2E_START=$(date +%s)" >> $GITHUB_ENV
 
       - name: Run E2E tests
-        if: ${{ inputs.run_e2e == true }}
         id: e2e_tests
         run: npx playwright test
 
       - name: Record E2E tests end time
-        if: ${{ always() && inputs.run_e2e == true }}
+        if: ${{ always() }}
         run: echo "E2E_END=$(date +%s)" >> $GITHUB_ENV
 
       - name: Upload Playwright report
-        if: ${{ always() && inputs.run_e2e == true && steps.e2e_tests.outcome != 'skipped' }}
+        if: ${{ always() && steps.e2e_tests.outcome != 'skipped' }}
         uses: actions/upload-artifact@v4
         with:
           name: playwright-report
@@ -347,7 +364,7 @@ jobs:
           retention-days: 14
 
       - name: Upload test screenshots
-        if: ${{ always() && inputs.run_e2e == true && steps.e2e_tests.outcome == 'failure' }}
+        if: ${{ always() && steps.e2e_tests.outcome == 'failure' }}
         uses: actions/upload-artifact@v4
         with:
           name: playwright-screenshots
@@ -355,7 +372,7 @@ jobs:
           retention-days: 14
 
       - name: Publish E2E test results
-        if: ${{ always() && inputs.run_e2e == true && steps.e2e_tests.outcome != 'skipped' }}
+        if: ${{ always() && steps.e2e_tests.outcome != 'skipped' }}
         uses: dorny/test-reporter@v3
         with:
           name: E2E Test Results
@@ -365,7 +382,7 @@ jobs:
           fail-on-empty: false
 
       - name: Write E2E test summary
-        if: ${{ always() && inputs.run_e2e == true }}
+        if: ${{ always() }}
         shell: bash
         run: |
           format_duration() {
