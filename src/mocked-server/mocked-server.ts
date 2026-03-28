@@ -1,6 +1,6 @@
 import bodyParser from "body-parser";
 import express from "express";
-import fs from "fs";
+import fs from "node:fs";
 import multer from "multer";
 import { setUpDataEndpoints } from "src/common/Endpoints";
 
