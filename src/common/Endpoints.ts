@@ -24,6 +24,7 @@ import {
   getSettingsStorage,
   storageDir,
 } from "src/common/PersistentStorage";
+import { backfillTimestamps, formatErrorMessage, safeDisconnect } from "src/common/utils/errorUtils";
 import { SqluiCore, SqluiEnums } from "typings";
 let expressAppContext: Express | undefined;
 
@@ -87,7 +88,7 @@ function addDataEndpoint(
       await incomingHandler(req, res, cache);
     } catch (err: any) {
       console.error(`Endpoints.ts:addDataEndpoint [${method.toUpperCase()} ${url}] error`, err);
-      const message = err?.sqlMessage || err?.message || err?.toString?.() || "Internal Server Error";
+      const message = formatErrorMessage(err);
       try {
         res.status(500).json({ error: message });
       } catch (resErr) {
@@ -201,16 +202,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     const connections = await connectionsStorage.list();
 
     // backfill legacy connections missing timestamps (batch write)
-    let connectionsDirty = false;
-    for (const conn of connections) {
-      if (!conn.createdAt || !conn.updatedAt) {
-        if (!conn.createdAt) conn.createdAt = Date.now();
-        if (!conn.updatedAt) conn.updatedAt = Date.now();
-        console.log(`Endpoints.ts:GET /api/connections - backfilled timestamps for connection ${conn.id}`);
-        connectionsDirty = true;
-      }
-    }
-    if (connectionsDirty) {
+    if (backfillTimestamps(connections, "connection")) {
       connectionsStorage.set(connections);
     }
 
@@ -247,11 +239,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     } catch (err: any) {
       console.error("Endpoints.ts:authenticate", err);
     } finally {
-      try {
-        await engine.disconnect();
-      } catch (_err) {
-        // best-effort cleanup
-      }
+      await safeDisconnect(engine);
     }
 
     res.status(200).json(connection);
@@ -261,7 +249,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     try {
       res.status(200).json(await getDatabases(req.headers["sqlui-native-session-id"], req.params?.connectionId));
     } catch (err: any) {
-      const message = err?.sqlMessage || err?.message || err?.toString?.() || "Connection failed";
+      const message = formatErrorMessage(err, "Connection failed");
       console.error("Endpoints.ts:getDatabases", err);
       res.status(500).json({ error: message });
     }
@@ -278,7 +266,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
 
       res.status(200).json(database);
     } catch (err: any) {
-      const message = err?.sqlMessage || err?.message || err?.toString?.() || "Connection failed";
+      const message = formatErrorMessage(err, "Connection failed");
       console.error("Endpoints.ts:getDatabase", err);
       res.status(500).json({ error: message });
     }
@@ -288,7 +276,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     try {
       res.status(200).json(await getTables(req.headers["sqlui-native-session-id"], req.params?.connectionId, req.params?.databaseId));
     } catch (err: any) {
-      const message = err?.sqlMessage || err?.message || err?.toString?.() || "Connection failed";
+      const message = formatErrorMessage(err, "Connection failed");
       console.error("Endpoints.ts:getTables", err);
       res.status(500).json({ error: message });
     }
@@ -302,7 +290,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
           await getColumns(req.headers["sqlui-native-session-id"], req.params?.connectionId, req.params?.databaseId, req.params?.tableId),
         );
     } catch (err: any) {
-      const message = err?.sqlMessage || err?.message || err?.toString?.() || "Connection failed";
+      const message = formatErrorMessage(err, "Connection failed");
       console.error("Endpoints.ts:getColumns", err);
       res.status(500).json({ error: message });
     }
@@ -313,7 +301,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
       const result = getCachedSchema(req.params?.connectionId, req.params?.databaseId);
       res.status(200).json(result);
     } catch (err: any) {
-      const message = err?.sqlMessage || err?.message || err?.toString?.() || "Connection failed";
+      const message = formatErrorMessage(err, "Connection failed");
       console.error(`Endpoints.ts:handler [GET /api/.../schema/cached]`, err);
       res.status(500).json({ error: message });
     }
@@ -341,11 +329,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
       res.status(406).json(`Failed to connect ${err.toString()}`);
       console.error("Endpoints.ts:handler [POST /api/connection/:connectionId/refresh]", err);
     } finally {
-      try {
-        await engine.disconnect();
-      } catch (_err) {
-        // best-effort cleanup
-      }
+      await safeDisconnect(engine);
     }
   });
 
@@ -356,7 +340,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
       clearCachedDatabase(connectionId, databaseId);
       res.status(200).json({ success: true });
     } catch (err: any) {
-      const message = err?.sqlMessage || err?.message || err?.toString?.() || "Refresh failed";
+      const message = formatErrorMessage(err, "Refresh failed");
       console.error("Endpoints.ts:handler [POST /api/connection/:connectionId/database/:databaseId/refresh]", err);
       res.status(500).json({ error: message });
     }
@@ -370,7 +354,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
       clearCachedTable(connectionId, databaseId, tableId);
       res.status(200).json({ success: true });
     } catch (err: any) {
-      const message = err?.sqlMessage || err?.message || err?.toString?.() || "Refresh failed";
+      const message = formatErrorMessage(err, "Refresh failed");
       console.error("Endpoints.ts:handler [POST /api/connection/:connectionId/database/:databaseId/table/:tableId/refresh]", err);
       res.status(500).json({ error: message });
     }
@@ -467,15 +451,11 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     try {
       res.status(200).json(await engine.execute(req.body?.sql, req.body?.database, req.body?.table));
     } catch (err: any) {
-      const message = err?.sqlMessage || err?.message || err?.toString?.() || "Query execution failed";
+      const message = formatErrorMessage(err, "Query execution failed");
       console.error("Endpoints.ts:execute", err);
       res.status(200).json({ ok: false, error: message });
     } finally {
-      try {
-        await engine.disconnect();
-      } catch (_err) {
-        // best-effort cleanup
-      }
+      await safeDisconnect(engine);
     }
   });
 
@@ -505,15 +485,11 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
         ...(diagnostics && diagnostics.length > 0 ? { diagnostics } : {}),
       });
     } catch (err: any) {
-      const message = err?.sqlMessage || err?.message || err?.toString?.() || "Connection test failed";
+      const message = formatErrorMessage(err, "Connection test failed");
       console.error("Endpoints.ts:testConnection", err);
       res.status(406).json({ error: message });
     } finally {
-      try {
-        await engine.disconnect();
-      } catch (_err) {
-        // best-effort cleanup
-      }
+      await safeDisconnect(engine);
     }
   });
 
@@ -744,16 +720,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     const queries = await queryStorage.list();
 
     // backfill legacy queries missing timestamps (batch write)
-    let queriesDirty = false;
-    for (const query of queries) {
-      if (!query.createdAt || !query.updatedAt) {
-        if (!query.createdAt) query.createdAt = Date.now();
-        if (!query.updatedAt) query.updatedAt = Date.now();
-        console.log(`Endpoints.ts:GET /api/queries - backfilled timestamps for query ${query.id}`);
-        queriesDirty = true;
-      }
-    }
-    if (queriesDirty) {
+    if (backfillTimestamps(queries, "query")) {
       queryStorage.set(queries);
     }
 
@@ -831,7 +798,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
       if (!session.name) {
         const fallbackDate = session.createdAt ? new Date(session.createdAt).toLocaleString() : new Date().toLocaleString();
         session.name = `Session ${fallbackDate}`;
-        console.log(`Endpoints.ts:GET /api/sessions - backfilled missing name for session ${session.id}: "${session.name}"`);
+        console.error(`Endpoints.ts:GET /api/sessions - backfilled missing name for session ${session.id}: "${session.name}"`);
         needsUpdate = true;
       }
 
@@ -851,12 +818,12 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
       // backfill missing timestamps
       if (!session.createdAt) {
         session.createdAt = Date.now();
-        console.log(`Endpoints.ts:GET /api/sessions - backfilled missing createdAt for session ${session.id}`);
+        console.error(`Endpoints.ts:GET /api/sessions - backfilled missing createdAt for session ${session.id}`);
         needsUpdate = true;
       }
       if (!session.updatedAt) {
         session.updatedAt = Date.now();
-        console.log(`Endpoints.ts:GET /api/sessions - backfilled missing updatedAt for session ${session.id}`);
+        console.error(`Endpoints.ts:GET /api/sessions - backfilled missing updatedAt for session ${session.id}`);
         needsUpdate = true;
       }
 
@@ -1047,27 +1014,14 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     // backfill legacy snapshots: migrate "created" → "createdAt" and add missing timestamps (batch write)
     let snapshotsDirty = false;
     for (const snapshot of snapshots) {
-      let needsUpdate = false;
       const legacy = snapshot as any;
       if (legacy.created && !snapshot.createdAt) {
         snapshot.createdAt = legacy.created;
         delete legacy.created;
-        needsUpdate = true;
-      }
-      if (!snapshot.createdAt) {
-        snapshot.createdAt = Date.now();
-        needsUpdate = true;
-      }
-      if (!snapshot.updatedAt) {
-        snapshot.updatedAt = Date.now();
-        needsUpdate = true;
-      }
-      if (needsUpdate) {
-        console.log(`Endpoints.ts:GET /api/dataSnapshots - backfilled timestamps for snapshot ${snapshot.id}`);
         snapshotsDirty = true;
       }
     }
-    if (snapshotsDirty) {
+    if (backfillTimestamps(snapshots, "snapshot") || snapshotsDirty) {
       dataSnapshotStorage.set(snapshots);
     }
 

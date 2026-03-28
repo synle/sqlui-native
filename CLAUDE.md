@@ -198,6 +198,14 @@ Custom React hooks and context providers instead of Redux: `useSession`, `useCon
 
 Additional hooks: `useToaster` (toast notifications with history), `useClientSidePreference` (localStorage-backed preferences), `useServerConfigs` (server configuration), `useDataSnapshot` (import/export snapshots).
 
+**Hook module organization (under `src/frontend/hooks/`):**
+
+- **`queryKeys.ts`** — Centralized React Query key factory. All cache keys are defined here as typed factory functions (`queryKeys.connections.all`, `queryKeys.databases.list(connectionId)`, etc.). Never use inline string arrays for query keys — always import from this module.
+- **`useConnection.tsx`** — Connection CRUD hooks (`useGetConnections`, `useUpsertConnection`, `useDeleteConnection`, etc.) and re-exports from `useSchema` and `useSchemaRefresh` for backward compatibility.
+- **`useSchema.ts`** — Schema read hooks: `useGetDatabases`, `useGetTables`, `useGetCachedSchema`, `useGetAllTableColumns`, `useGetColumns`. These are re-exported from `useConnection.tsx`.
+- **`useSchemaRefresh.ts`** — Schema invalidation hooks: `useRetryConnection`, `useRefreshDatabase`, `useRefreshTable`. Contains centralized `invalidateSchemaForDatabase` and `invalidateSchemaForTable` helpers.
+- **`useManagedMetadata.ts`** — Managed metadata mutation hooks for REST API folders and requests: `useCreateManagedDatabase`, `useUpdateManagedDatabase`, `useDeleteManagedDatabase`, `useCreateManagedTable`, `useUpdateManagedTable`, `useDeleteManagedTable`. Used by `ConnectionActions`, `DatabaseActions`, and `TableActions`.
+
 ### Frontend Data Layer
 
 - **`src/frontend/data/api.tsx`** - `ProxyApi` static class wraps all backend calls (works in both Electron IPC and HTTP modes)
@@ -212,6 +220,14 @@ Additional hooks: `useToaster` (toast notifications with history), `useClientSid
 ### Persistent Storage
 
 `PersistentStorage<T>` stores data as JSON files in the user's app data directory (`~/Library/Application Support/sqlui-native/` on Mac, `%APPDATA%/sqlui-native` on Windows).
+
+### Shared Utilities
+
+`src/common/utils/` contains shared helper functions used across the backend:
+
+- **`errorUtils.ts`** — `formatErrorMessage(err, fallback)` extracts a human-readable message from any caught error (handles `sqlMessage`, `message`, `toString()`). `safeDisconnect(engine)` wraps adapter disconnect in a swallowed try/catch for use in finally blocks. `backfillTimestamps(items, label)` mutates items with missing `createdAt`/`updatedAt` fields and returns whether any were modified.
+- **`commonUtils.ts`** — `getGeneratedRandomId()` for generating unique IDs.
+- **`sessionUtils.ts`** — In-memory session tracking (windowId → sessionId mapping) with ping/keep-alive and stale cleanup.
 
 ## Adding a New Database Adapter
 
