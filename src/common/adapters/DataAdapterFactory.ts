@@ -521,6 +521,10 @@ export function resetConnectionMetaData(connection: SqluiCore.CoreConnectionProp
 export async function getDatabases(sessionId: string, connectionId: string) {
   const connection = await new PersistentStorage<SqluiCore.ConnectionProps>(sessionId, "connection").get(connectionId);
 
+  if (!connection) {
+    throw new Error(`Connection not found: ${connectionId}`);
+  }
+
   // For managed-metadata adapters, always read directly from managed storage (no caching)
   const dialect = connection.dialect || getDialectType(connection.connection);
   if (isDialectSupportManagedMetadata(dialect)) {
@@ -588,6 +592,10 @@ export async function getDatabases(sessionId: string, connectionId: string) {
  */
 export async function getTables(sessionId: string, connectionId: string, databaseId: string) {
   const connection = await new PersistentStorage<SqluiCore.ConnectionProps>(sessionId, "connection").get(connectionId);
+
+  if (!connection) {
+    throw new Error(`Connection not found: ${connectionId}`);
+  }
 
   // For managed-metadata adapters, always read directly from managed storage (no caching)
   const dialect = connection.dialect || getDialectType(connection.connection);

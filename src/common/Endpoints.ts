@@ -233,6 +233,11 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
 
     const connection = await connectionsStorage.get(req.params?.connectionId);
 
+    if (!connection) {
+      res.status(404).json({ error: "Connection not found" });
+      return;
+    }
+
     const engine = getDataAdapter(connection.connection);
     try {
       await engine.authenticate();
