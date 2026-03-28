@@ -37,6 +37,15 @@ export default defineConfig(({ command }) => ({
       },
     },
   },
+  preview: {
+    port: 3000,
+    proxy: {
+      "/api": {
+        target: "http://localhost:3001",
+        changeOrigin: true,
+      },
+    },
+  },
   optimizeDeps: {
     include: ["@emotion/react", "@emotion/styled", "@mui/icons-material", "@mui/lab", "@mui/material"],
     esbuildOptions: {
