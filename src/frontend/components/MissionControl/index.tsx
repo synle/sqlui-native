@@ -48,6 +48,7 @@ import {
 } from "src/frontend/utils/commonUtils";
 import ProxyApi from "src/frontend/data/api";
 import { execute } from "src/frontend/utils/executeUtils";
+import { detectAndParseImportFile, exportAsPostmanCollection } from "src/frontend/utils/importExportUtils";
 import { RecordDetailsPage } from "src/frontend/views/RecordPage";
 import appPackage from "src/package.json";
 import { SqluiCore, SqluiEnums, SqluiFrontend } from "typings";
@@ -134,7 +135,8 @@ export default function MissionControl() {
   const { queries } = connectionQueries;
   const { query: activeQuery, onChange: onChangeActiveQuery } = useActiveConnectionQuery();
   const { command, selectCommand, dismissCommand } = useCommands();
-  const { modal, confirm, prompt, alert, dismiss: dismissDialog } = useActionDialogs();
+  const { modal, confirm, prompt, alert, choice, dismiss: dismissDialog } = useActionDialogs();
+  const queryClient = useQueryClient();
   const { data: sessions } = useGetSessions();
   const { data: serverConfigs } = useGetServerConfigs();
   const { data: currentSession } = useGetCurrentSession();
@@ -817,6 +819,171 @@ export default function MissionControl() {
     );
   };
 
+  /** Opens a file picker, auto-detects HAR/Postman format, confirms, and imports into the connection. */
+  const onImportCollection = async (connection: SqluiCore.ConnectionProps) => {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = ".json,.har";
+
+    input.onchange = async () => {
+      const file = input.files?.[0];
+      if (!file) return;
+
+      let result;
+      try {
+        const text = await file.text();
+        result = detectAndParseImportFile(text);
+      } catch (err) {
+        console.error("MissionControl:onImportCollection:parse", err);
+        return alert(`Import failed: ${err instanceof Error ? err.message : "Invalid file"}`);
+      }
+
+      if (result.requests.length === 0) {
+        return alert("No requests found in the imported file.");
+      }
+
+      try {
+        const confirmed = await choice(`Import ${result.format === "har" ? "HAR" : "Postman"} Collection`, result.summary, [
+          { label: "Import", value: "Import" },
+          { label: "Cancel", value: "Cancel" },
+        ]);
+        if (confirmed !== "Import") return;
+      } catch (_err) {
+        // user dismissed dialog
+        return;
+      }
+
+      const curToast = await addToast({
+        message: `Importing ${result.requests.length} request${result.requests.length !== 1 ? "s" : ""}, please wait...`,
+      });
+
+      try {
+        const connectionId = connection.id;
+
+        // Create folders
+        for (const folder of result.folders) {
+          try {
+            await ProxyApi.createManagedDatabase(connectionId, { name: folder.name });
+            if (folder.variables && folder.variables.length > 0) {
+              await ProxyApi.updateManagedDatabase(connectionId, folder.name, {
+                props: { variables: folder.variables },
+              });
+            }
+          } catch (_err) {
+            // folder may already exist, continue
+          }
+        }
+
+        // Create requests
+        for (const req of result.requests) {
+          try {
+            const created = await ProxyApi.createManagedTable(connectionId, req.folderName, { name: req.name });
+            await ProxyApi.updateManagedTable(connectionId, req.folderName, created.id, { props: { query: req.curl } });
+          } catch (err) {
+            console.error("MissionControl:onImportCollection:createRequest", err);
+          }
+        }
+
+        // Merge collection-level variables into connection if provided
+        if (result.variables && result.variables.length > 0) {
+          try {
+            const conn = await ProxyApi.getConnection(connectionId);
+            const config = JSON.parse(conn.connection.replace(/^(rest|restapi):\/\//, ""));
+            const existingVars: { key: string; value: string; enabled: boolean }[] = config.variables || [];
+            const existingKeys = new Set(existingVars.map((v) => v.key));
+            const newVars = result.variables.filter((v) => !existingKeys.has(v.key));
+            if (newVars.length > 0) {
+              config.variables = [...existingVars, ...newVars];
+              await ProxyApi.upsertConnection({ ...conn, connection: `rest://${JSON.stringify(config)}` });
+            }
+          } catch (err) {
+            console.error("MissionControl:onImportCollection:mergeVariables", err);
+          }
+        }
+
+        queryClient.invalidateQueries({ queryKey: [connectionId] });
+
+        await curToast.dismiss();
+        await addToast({
+          message: `Successfully imported ${result.requests.length} request${result.requests.length !== 1 ? "s" : ""} from ${result.format === "har" ? "HAR" : "Postman"} file.`,
+        });
+      } catch (err) {
+        console.error("MissionControl:onImportCollection", err);
+        await curToast.dismiss();
+        alert("Import failed. Check the console for details.");
+      }
+    };
+
+    input.click();
+  };
+
+  /** Exports REST API folders and requests as a Postman Collection v2.1 JSON. */
+  const onExportAsPostman = async (connection: SqluiCore.ConnectionProps) => {
+    const curToast = await addToast({
+      message: `Exporting "${connection.name}" as Postman collection, please wait...`,
+    });
+
+    try {
+      const [databases, tables] = await Promise.all([
+        ProxyApi.listManagedDatabases(connection.id),
+        ProxyApi.listManagedTables(connection.id),
+      ]);
+
+      // Parse connection-level variables
+      let connectionVars: { key: string; value: string; enabled: boolean }[] = [];
+      try {
+        const config = JSON.parse(connection.connection.replace(/^(rest|restapi):\/\//, ""));
+        connectionVars = config.variables || [];
+        if (config.HOST) {
+          connectionVars = [{ key: "HOST", value: config.HOST, enabled: true }, ...connectionVars];
+        }
+      } catch (_err) {
+        // ignore parse error
+      }
+
+      const folders = databases.map((db) => ({
+        name: db.name,
+        variables: (db.props as any)?.variables,
+      }));
+
+      // Fetch full table data (with props.query) for each table
+      const requests: { name: string; folderName: string; curl: string }[] = [];
+      for (const table of tables) {
+        try {
+          const fullTable = await ProxyApi.getManagedTable(connection.id, table.databaseId, table.id);
+          const query = (fullTable.props as any)?.query || "";
+          if (query) {
+            requests.push({
+              name: table.name,
+              folderName: table.databaseId,
+              curl: query,
+            });
+          }
+        } catch (err) {
+          console.error("MissionControl:onExportAsPostman:getTable", err);
+        }
+      }
+
+      const json = exportAsPostmanCollection({
+        connectionName: connection.name,
+        folders,
+        requests,
+        variables: connectionVars,
+      });
+
+      downloadText(`${connection.name}.postman_collection.json`, json, "text/json");
+
+      await curToast.dismiss();
+      await addToast({
+        message: `Exported "${connection.name}" as Postman collection (${requests.length} request${requests.length !== 1 ? "s" : ""}).`,
+      });
+    } catch (err) {
+      console.error("MissionControl:onExportAsPostman", err);
+      await curToast.dismiss();
+      alert("Export failed. Check the console for details.");
+    }
+  };
+
   const onSelectConnection = async (connection: SqluiCore.ConnectionProps) => {
     selectCommand({
       event: "clientEvent/query/apply/active",
@@ -1326,6 +1493,18 @@ export default function MissionControl() {
         case "clientEvent/connection/export":
           if (command.data) {
             onExportConnection(command.data as SqluiCore.ConnectionProps);
+          }
+          break;
+
+        case "clientEvent/connection/importCollection":
+          if (command.data) {
+            onImportCollection(command.data as SqluiCore.ConnectionProps);
+          }
+          break;
+
+        case "clientEvent/connection/exportAsPostman":
+          if (command.data) {
+            onExportAsPostman(command.data as SqluiCore.ConnectionProps);
           }
           break;
 

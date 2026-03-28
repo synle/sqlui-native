@@ -247,7 +247,6 @@ export class ProxyApi {
   /**
    * Lists all managed databases (folders) for a connection.
    * @param connectionId - The connection ID.
-   * @returns Array of managed database entries.
    */
   static listManagedDatabases(connectionId: string) {
     return _fetch<SqluiCore.ManagedDatabase[]>(`/api/connection/${connectionId}/managedDatabases`);
@@ -256,7 +255,6 @@ export class ProxyApi {
   /**
    * Lists all managed tables (requests) for a connection.
    * @param connectionId - The connection ID.
-   * @returns Array of managed table entries.
    */
   static listManagedTables(connectionId: string) {
     return _fetch<SqluiCore.ManagedTable[]>(`/api/connection/${connectionId}/managedTables`);
@@ -280,15 +278,6 @@ export class ProxyApi {
    * @param managedDatabaseId - The current database name/ID.
    * @param body - The new name.
    */
-  /**
-   * Fetches a single managed database by ID (includes props).
-   * @param connectionId - The connection ID.
-   * @param managedDatabaseId - The database name/ID.
-   */
-  static getManagedDatabase(connectionId: string, managedDatabaseId: string) {
-    return _fetch<SqluiCore.ManagedDatabase>(`/api/connection/${connectionId}/managedDatabase/${encodeURIComponent(managedDatabaseId)}`);
-  }
-
   static renameManagedDatabase(connectionId: string, managedDatabaseId: string, body: { name: string }) {
     return _fetch<SqluiCore.ManagedDatabase>(`/api/connection/${connectionId}/managedDatabase/${encodeURIComponent(managedDatabaseId)}`, {
       method: "put",
@@ -297,16 +286,12 @@ export class ProxyApi {
   }
 
   /**
-   * Updates a managed database's name and/or props (e.g., folder variables).
+   * Updates a managed database's props (e.g., variables for REST API folders).
    * @param connectionId - The connection ID.
-   * @param managedDatabaseId - The current database name/ID.
-   * @param body - Name and/or props to update.
+   * @param managedDatabaseId - The database name/ID.
+   * @param body - The properties to merge.
    */
-  static updateManagedDatabase(
-    connectionId: string,
-    managedDatabaseId: string,
-    body: { name?: string; props?: SqluiCore.ManagedProperties },
-  ) {
+  static updateManagedDatabase(connectionId: string, managedDatabaseId: string, body: { props: SqluiCore.ManagedProperties }) {
     return _fetch<SqluiCore.ManagedDatabase>(`/api/connection/${connectionId}/managedDatabase/${encodeURIComponent(managedDatabaseId)}`, {
       method: "put",
       body: JSON.stringify(body),
