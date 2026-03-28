@@ -5,6 +5,7 @@ import React, { useEffect, useState } from "react";
 import BaseDataAdapter from "src/common/adapters/BaseDataAdapter/index";
 import { getConnectionSetupGuide, getDialectTypeFromConnectionString } from "src/common/adapters/DataScriptFactory";
 import ConnectionHint from "src/frontend/components/ConnectionForm/ConnectionHint";
+import RestApiConnectionFields from "src/frontend/components/ConnectionForm/RestApiConnectionFields";
 import HTMLContent from "src/frontend/components/HTMLContent";
 import { useCommands } from "src/frontend/components/MissionControl";
 import TestConnectionButton from "src/frontend/components/TestConnectionButton";
@@ -214,6 +215,9 @@ function MainConnectionForm(props: MainConnectionFormProps): JSX.Element | null 
     setShowHint(false);
   };
 
+  const detectedDialect = getDialectTypeFromConnectionString(props.connection);
+  const isRestApi = detectedDialect === "rest";
+
   return (
     <form className="ConnectionForm FormInput__Container" onSubmit={onSave}>
       <div className="FormInput__Row">
@@ -228,20 +232,24 @@ function MainConnectionForm(props: MainConnectionFormProps): JSX.Element | null 
           autoFocus
         />
       </div>
-      <div className="FormInput__Row">
-        <TextField
-          label="Connection"
-          value={props.connection}
-          onChange={(e) => props.setConnection(e.target.value)}
-          required
-          size="small"
-          fullWidth={true}
-          multiline
-          minRows={1}
-          maxRows={10}
-        />
-      </div>
-      <ConnectionSetupGuideAlert dialect={getDialectTypeFromConnectionString(props.connection)} />
+      {isRestApi ? (
+        <RestApiConnectionFields connection={props.connection} setConnection={props.setConnection} />
+      ) : (
+        <div className="FormInput__Row">
+          <TextField
+            label="Connection"
+            value={props.connection}
+            onChange={(e) => props.setConnection(e.target.value)}
+            required
+            size="small"
+            fullWidth={true}
+            multiline
+            minRows={1}
+            maxRows={10}
+          />
+        </div>
+      )}
+      {!isRestApi && <ConnectionSetupGuideAlert dialect={detectedDialect} />}
       {showSqliteDatabasePathSelection && (
         <div className="FormInput__Row">
           <input
@@ -265,30 +273,34 @@ function MainConnectionForm(props: MainConnectionFormProps): JSX.Element | null 
           Cancel
         </Button>
         <TestConnectionButton connection={connection} />
-        <Button type="button" disabled={props.saving} onClick={() => setShowHint(!showHint)}>
-          {showHint ? "Hide Connection Hints" : "Show Connection Hints"}
-        </Button>
-        <Button
-          type="button"
-          onClick={() =>
-            selectCommand({
-              event: "clientEvent/showConnectionHelper",
-              data: {
-                scheme: parsedConnectionProps?.scheme || connection.connection.match(/^[a-z0-9]+/)?.[0] || 0,
-                username: parsedConnectionProps?.username,
-                password: parsedConnectionProps?.password,
-                host: parsedConnectionProps?.hosts[0]?.host,
-                port: parsedConnectionProps?.hosts[0]?.port,
-                restOfConnectionString,
-                onApply: (newConnection: string) => {
-                  props.setConnection(newConnection);
+        {!isRestApi && (
+          <Button type="button" disabled={props.saving} onClick={() => setShowHint(!showHint)}>
+            {showHint ? "Hide Connection Hints" : "Show Connection Hints"}
+          </Button>
+        )}
+        {!isRestApi && (
+          <Button
+            type="button"
+            onClick={() =>
+              selectCommand({
+                event: "clientEvent/showConnectionHelper",
+                data: {
+                  scheme: parsedConnectionProps?.scheme || connection.connection.match(/^[a-z0-9]+/)?.[0] || 0,
+                  username: parsedConnectionProps?.username,
+                  password: parsedConnectionProps?.password,
+                  host: parsedConnectionProps?.hosts[0]?.host,
+                  port: parsedConnectionProps?.hosts[0]?.port,
+                  restOfConnectionString,
+                  onApply: (newConnection: string) => {
+                    props.setConnection(newConnection);
+                  },
                 },
-              },
-            })
-          }
-        >
-          Show Connection Helper
-        </Button>
+              })
+            }
+          >
+            Show Connection Helper
+          </Button>
+        )}
       </div>
       {showHint && (
         <div className="FormInput__Container">

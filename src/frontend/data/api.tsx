@@ -240,6 +240,152 @@ export class ProxyApi {
     });
   }
 
+  // =========================================================================
+  // Managed metadata API (folders/requests for REST API, etc.)
+  // =========================================================================
+
+  /**
+   * Lists all managed databases (folders) for a connection.
+   * @param connectionId - The connection ID.
+   * @returns Array of managed database entries.
+   */
+  static listManagedDatabases(connectionId: string) {
+    return _fetch<SqluiCore.ManagedDatabase[]>(`/api/connection/${connectionId}/managedDatabases`);
+  }
+
+  /**
+   * Lists all managed tables (requests) for a connection.
+   * @param connectionId - The connection ID.
+   * @returns Array of managed table entries.
+   */
+  static listManagedTables(connectionId: string) {
+    return _fetch<SqluiCore.ManagedTable[]>(`/api/connection/${connectionId}/managedTables`);
+  }
+
+  /**
+   * Creates a managed database (folder) for a connection.
+   * @param connectionId - The connection ID.
+   * @param body - The database name.
+   */
+  static createManagedDatabase(connectionId: string, body: { name: string }) {
+    return _fetch<SqluiCore.ManagedDatabase>(`/api/connection/${connectionId}/managedDatabase`, {
+      method: "post",
+      body: JSON.stringify(body),
+    });
+  }
+
+  /**
+   * Renames a managed database (folder).
+   * @param connectionId - The connection ID.
+   * @param managedDatabaseId - The current database name/ID.
+   * @param body - The new name.
+   */
+  /**
+   * Fetches a single managed database by ID (includes props).
+   * @param connectionId - The connection ID.
+   * @param managedDatabaseId - The database name/ID.
+   */
+  static getManagedDatabase(connectionId: string, managedDatabaseId: string) {
+    return _fetch<SqluiCore.ManagedDatabase>(`/api/connection/${connectionId}/managedDatabase/${encodeURIComponent(managedDatabaseId)}`);
+  }
+
+  static renameManagedDatabase(connectionId: string, managedDatabaseId: string, body: { name: string }) {
+    return _fetch<SqluiCore.ManagedDatabase>(`/api/connection/${connectionId}/managedDatabase/${encodeURIComponent(managedDatabaseId)}`, {
+      method: "put",
+      body: JSON.stringify(body),
+    });
+  }
+
+  /**
+   * Updates a managed database's name and/or props (e.g., folder variables).
+   * @param connectionId - The connection ID.
+   * @param managedDatabaseId - The current database name/ID.
+   * @param body - Name and/or props to update.
+   */
+  static updateManagedDatabase(
+    connectionId: string,
+    managedDatabaseId: string,
+    body: { name?: string; props?: SqluiCore.ManagedProperties },
+  ) {
+    return _fetch<SqluiCore.ManagedDatabase>(`/api/connection/${connectionId}/managedDatabase/${encodeURIComponent(managedDatabaseId)}`, {
+      method: "put",
+      body: JSON.stringify(body),
+    });
+  }
+
+  /**
+   * Deletes a managed database (folder) and its child tables.
+   * @param connectionId - The connection ID.
+   * @param managedDatabaseId - The database name/ID to delete.
+   */
+  static deleteManagedDatabase(connectionId: string, managedDatabaseId: string) {
+    return _fetch(`/api/connection/${connectionId}/managedDatabase/${encodeURIComponent(managedDatabaseId)}`, {
+      method: "delete",
+    });
+  }
+
+  /**
+   * Creates a managed table (request) within a database folder.
+   * @param connectionId - The connection ID.
+   * @param databaseId - The parent database/folder name.
+   * @param body - The table name.
+   */
+  static createManagedTable(connectionId: string, databaseId: string, body: { name: string }) {
+    return _fetch<SqluiCore.ManagedTable>(`/api/connection/${connectionId}/database/${encodeURIComponent(databaseId)}/managedTable`, {
+      method: "post",
+      body: JSON.stringify(body),
+    });
+  }
+
+  /**
+   * Deletes a managed table (request).
+   * @param connectionId - The connection ID.
+   * @param databaseId - The parent database/folder name.
+   * @param managedTableId - The table name/ID to delete.
+   */
+  static deleteManagedTable(connectionId: string, databaseId: string, managedTableId: string) {
+    return _fetch(
+      `/api/connection/${connectionId}/database/${encodeURIComponent(databaseId)}/managedTable/${encodeURIComponent(managedTableId)}`,
+      { method: "delete" },
+    );
+  }
+
+  /**
+   * Fetches a single managed table by ID (includes props).
+   * @param connectionId - The connection ID.
+   * @param databaseId - The parent database/folder name.
+   * @param managedTableId - The table name/ID.
+   */
+  static getManagedTable(connectionId: string, databaseId: string, managedTableId: string) {
+    return _fetch<SqluiCore.ManagedTable>(
+      `/api/connection/${connectionId}/database/${encodeURIComponent(databaseId)}/managedTable/${encodeURIComponent(managedTableId)}`,
+    );
+  }
+
+  /**
+   * Updates a managed table's name and/or props (e.g., saved query for REST API requests).
+   * @param connectionId - The connection ID.
+   * @param databaseId - The parent database/folder name.
+   * @param managedTableId - The table UUID.
+   * @param body - The fields to update (name and/or props).
+   */
+  static updateManagedTable(
+    connectionId: string,
+    databaseId: string,
+    managedTableId: string,
+    body: { name?: string; props?: SqluiCore.ManagedProperties } | SqluiCore.ManagedProperties,
+  ) {
+    // Normalize: if body has 'name' or 'props' key at top level, send as-is; otherwise wrap as props
+    const payload = "name" in body || "props" in body ? body : { props: body };
+    return _fetch<SqluiCore.ManagedTable>(
+      `/api/connection/${connectionId}/database/${encodeURIComponent(databaseId)}/managedTable/${encodeURIComponent(managedTableId)}`,
+      {
+        method: "put",
+        body: JSON.stringify(payload),
+      },
+    );
+  }
+
   /**
    * Tests a database connection without persisting it.
    * @param connection - The connection properties to test.

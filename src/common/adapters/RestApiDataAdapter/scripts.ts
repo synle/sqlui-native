@@ -1,6 +1,7 @@
 /** Script generator for the REST API dialect — curl/fetch request templates. */
 
 import BaseDataScript, { getDivider } from "src/common/adapters/BaseDataAdapter/scripts";
+import curlIcon from "src/common/adapters/RestApiDataAdapter/curl-logo.png";
 import { SqlAction, SqluiCore } from "typings";
 
 /** Formatter hint for shell/curl syntax highlighting. */
@@ -15,212 +16,173 @@ const shellFormatter = "shell";
  * @param input - Table input with URL context.
  * @returns Script output with a curl GET command.
  */
-export function getSimpleGet(input: SqlAction.TableInput): SqlAction.Output | undefined {
+export function getSimpleGet(_input: SqlAction.TableInput): SqlAction.Output | undefined {
   return {
     label: "GET Request",
     formatter: shellFormatter,
-    query: `curl '{{HOST}}/${input.tableId || "endpoint"}'`,
+    query: `curl '{{HOST}}/get'`,
   };
 }
 
 /**
- * Generates a GET request with authorization header.
- * @param input - Table input with URL context.
+ * Generates a GET request with authorization header (httpbin /bearer).
+ * @param _input - Table input (unused).
  * @returns Script output with an authenticated curl GET.
  */
-export function getGetWithAuth(input: SqlAction.TableInput): SqlAction.Output | undefined {
+export function getGetWithAuth(_input: SqlAction.TableInput): SqlAction.Output | undefined {
   return {
     label: "GET with Auth",
     formatter: shellFormatter,
-    query: `curl '{{HOST}}/${input.tableId || "endpoint"}' \\\n  -H 'Authorization: Bearer {{TOKEN}}'`,
+    query: `curl '{{HOST}}/bearer' \\\n  -H 'Authorization: Bearer {{ACCESS_TOKEN}}'`,
   };
 }
 
 /**
- * Generates a POST request with JSON body.
- * @param input - Table input with URL context.
+ * Generates a POST request with JSON body (httpbin /post).
+ * @param _input - Table input (unused).
  * @returns Script output with a curl POST command.
  */
-export function getPostJson(input: SqlAction.TableInput): SqlAction.Output | undefined {
+export function getPostJson(_input: SqlAction.TableInput): SqlAction.Output | undefined {
   return {
     label: "POST JSON",
     formatter: shellFormatter,
-    query: `curl -X POST '{{HOST}}/${input.tableId || "endpoint"}' \\\n  -H 'Content-Type: application/json' \\\n  -d '{"key": "value"}'`,
+    query: `curl -X POST '{{HOST}}/post' \\\n  -H 'Content-Type: application/json' \\\n  -d '{"key": "value"}'`,
   };
 }
 
 /**
- * Generates a PUT request with JSON body.
- * @param input - Table input with URL context.
+ * Generates a PUT request with JSON body (httpbin /put).
+ * @param _input - Table input (unused).
  * @returns Script output with a curl PUT command.
  */
-export function getPutJson(input: SqlAction.TableInput): SqlAction.Output | undefined {
+export function getPutJson(_input: SqlAction.TableInput): SqlAction.Output | undefined {
   return {
     label: "PUT JSON",
     formatter: shellFormatter,
-    query: `curl -X PUT '{{HOST}}/${input.tableId || "endpoint"}' \\\n  -H 'Content-Type: application/json' \\\n  -d '{"key": "updated_value"}'`,
+    query: `curl -X PUT '{{HOST}}/put' \\\n  -H 'Content-Type: application/json' \\\n  -d '{"key": "updated_value"}'`,
   };
 }
 
 /**
- * Generates a PATCH request with JSON body.
- * @param input - Table input with URL context.
+ * Generates a PATCH request with JSON body (httpbin /patch).
+ * @param _input - Table input (unused).
  * @returns Script output with a curl PATCH command.
  */
-export function getPatchJson(input: SqlAction.TableInput): SqlAction.Output | undefined {
+export function getPatchJson(_input: SqlAction.TableInput): SqlAction.Output | undefined {
   return {
     label: "PATCH JSON",
     formatter: shellFormatter,
-    query: `curl -X PATCH '{{HOST}}/${input.tableId || "endpoint"}' \\\n  -H 'Content-Type: application/json' \\\n  -d '{"key": "patched_value"}'`,
+    query: `curl -X PATCH '{{HOST}}/patch' \\\n  -H 'Content-Type: application/json' \\\n  -d '{"key": "patched_value"}'`,
   };
 }
 
 /**
- * Generates a DELETE request.
- * @param input - Table input with URL context.
+ * Generates a DELETE request (httpbin /delete).
+ * @param _input - Table input (unused).
  * @returns Script output with a curl DELETE command.
  */
-export function getDeleteRequest(input: SqlAction.TableInput): SqlAction.Output | undefined {
+export function getDeleteRequest(_input: SqlAction.TableInput): SqlAction.Output | undefined {
   return {
     label: "DELETE Request",
     formatter: shellFormatter,
-    query: `curl -X DELETE '{{HOST}}/${input.tableId || "endpoint"}'`,
+    query: `curl -X DELETE '{{HOST}}/delete'`,
   };
 }
 
 /**
- * Generates a POST request with form-urlencoded body.
- * @param input - Table input with URL context.
+ * Generates a POST request with form-urlencoded body (httpbin /post).
+ * @param _input - Table input (unused).
  * @returns Script output with a curl form POST.
  */
-export function getFormPost(input: SqlAction.TableInput): SqlAction.Output | undefined {
+export function getFormPost(_input: SqlAction.TableInput): SqlAction.Output | undefined {
   return {
     label: "POST Form Data",
     formatter: shellFormatter,
-    query: `curl -X POST '{{HOST}}/${input.tableId || "endpoint"}' \\\n  -d 'field1=value1&field2=value2'`,
+    query: `curl -X POST '{{HOST}}/post' \\\n  -d 'field1=value1&field2=value2'`,
   };
 }
 
 /**
- * Generates a file upload request with multipart form data.
- * @param input - Table input with URL context.
+ * Generates a file upload request with multipart form data (httpbin /post).
+ * @param _input - Table input (unused).
  * @returns Script output with a curl file upload.
  */
-export function getFileUpload(input: SqlAction.TableInput): SqlAction.Output | undefined {
+export function getFileUpload(_input: SqlAction.TableInput): SqlAction.Output | undefined {
   return {
     label: "File Upload",
     formatter: shellFormatter,
-    query: `curl -X POST '{{HOST}}/${input.tableId || "upload"}' \\\n  -F 'file=@/path/to/file'`,
+    query: `curl -X POST '{{HOST}}/post' \\\n  -F 'file=@/path/to/file'`,
   };
 }
 
 /**
- * Generates a request with basic auth.
- * @param input - Table input with URL context.
+ * Generates a request with basic auth (httpbin /basic-auth).
+ * @param _input - Table input (unused).
  * @returns Script output with a curl basic auth request.
  */
-export function getBasicAuth(input: SqlAction.TableInput): SqlAction.Output | undefined {
+export function getBasicAuth(_input: SqlAction.TableInput): SqlAction.Output | undefined {
   return {
     label: "Basic Auth",
     formatter: shellFormatter,
-    query: `curl -u 'username:password' '{{HOST}}/${input.tableId || "endpoint"}'`,
+    query: `curl -u 'user:pass' '{{HOST}}/basic-auth/user/pass'`,
   };
 }
 
 /**
- * Generates a request with query parameters.
- * @param input - Table input with URL context.
+ * Generates a request with query parameters (httpbin /get).
+ * @param _input - Table input (unused).
  * @returns Script output with a curl request including query params.
  */
-export function getWithQueryParams(input: SqlAction.TableInput): SqlAction.Output | undefined {
+export function getWithQueryParams(_input: SqlAction.TableInput): SqlAction.Output | undefined {
   return {
     label: "GET with Params",
     formatter: shellFormatter,
-    query: `curl '{{HOST}}/${input.tableId || "endpoint"}?page=1&limit=10'`,
+    query: `curl '{{HOST}}/get?page=1&limit=10'`,
   };
 }
 
 /**
- * Generates a fetch() GET request template.
- * @param input - Table input with URL context.
+ * Generates a fetch() GET request template (httpbin /get).
+ * @param _input - Table input (unused).
  * @returns Script output with a fetch() GET call.
  */
-export function getFetchGet(input: SqlAction.TableInput): SqlAction.Output | undefined {
+export function getFetchGet(_input: SqlAction.TableInput): SqlAction.Output | undefined {
   return {
     label: "GET (fetch syntax)",
     formatter: shellFormatter,
-    query: `fetch("{{HOST}}/${input.tableId || "endpoint"}", {\n  "headers": {\n    "accept": "application/json"\n  },\n  "method": "GET"\n});`,
+    query: `fetch("{{HOST}}/get", {\n  "headers": {\n    "accept": "application/json"\n  },\n  "method": "GET"\n});`,
   };
 }
 
 /**
- * Generates a fetch() POST request template.
- * @param input - Table input with URL context.
+ * Generates a fetch() POST request template (httpbin /post).
+ * @param _input - Table input (unused).
  * @returns Script output with a fetch() POST call.
  */
-export function getFetchPost(input: SqlAction.TableInput): SqlAction.Output | undefined {
+export function getFetchPost(_input: SqlAction.TableInput): SqlAction.Output | undefined {
   return {
     label: "POST (fetch syntax)",
     formatter: shellFormatter,
-    query: `fetch("{{HOST}}/${input.tableId || "endpoint"}", {\n  "headers": {\n    "accept": "application/json",\n    "content-type": "application/json"\n  },\n  "body": "{\\"key\\": \\"value\\"}",\n  "method": "POST"\n});`,
+    query: `fetch("{{HOST}}/post", {\n  "headers": {\n    "accept": "application/json",\n    "content-type": "application/json"\n  },\n  "body": "{\\"key\\": \\"value\\"}",\n  "method": "POST"\n});`,
   };
 }
 
 // ============================================================
-// Connection-Level Scripts
-// ============================================================
-
-/**
- * Generates a health check request at the connection level.
- * @param _input - Connection input (unused).
- * @returns Script output with a health check curl.
- */
-export function getHealthCheck(_input: SqlAction.ConnectionInput): SqlAction.Output | undefined {
-  return {
-    label: "Health Check",
-    formatter: shellFormatter,
-    query: `curl '{{HOST}}/health'`,
-  };
-}
-
-/**
- * Generates an OPTIONS request at the connection level.
- * @param _input - Connection input (unused).
- * @returns Script output with an OPTIONS curl.
- */
-export function getOptionsRequest(_input: SqlAction.ConnectionInput): SqlAction.Output | undefined {
-  return {
-    label: "OPTIONS (CORS check)",
-    formatter: shellFormatter,
-    query: `curl -X OPTIONS '{{HOST}}' -i`,
-  };
-}
-
-/**
- * Generates a HEAD request at the connection level.
- * @param _input - Connection input (unused).
- * @returns Script output with a HEAD curl.
- */
-export function getHeadRequest(_input: SqlAction.ConnectionInput): SqlAction.Output | undefined {
-  return {
-    label: "HEAD Request",
-    formatter: shellFormatter,
-    query: `curl -I '{{HOST}}'`,
-  };
-}
-
 // ============================================================
 // Script class
 // ============================================================
 
-/** Script generator for the REST API (restapi/rest) dialect. */
+/** Script generator for the REST API dialect. */
 export class ConcreteDataScripts extends BaseDataScript {
-  /** Supported dialect identifiers for REST API. */
-  dialects = ["restapi", "rest"];
+  /** Supported dialect identifiers for REST API (includes legacy "restapi" for backward compat). */
+  dialects = ["rest", "restapi"];
 
-  /** Returns connection form inputs — just collection-level variables as JSON. */
+  /** Returns connection form inputs — HOST and collection-level variables. */
   getConnectionFormInputs() {
-    return [["variables", "Variables (JSON array)", "optional"]];
+    return [
+      ["HOST", "HOST (optional, used as {{HOST}})", "optional"],
+      ["variables", "Variables (JSON array)", "optional"],
+    ];
   }
 
   /** Returns "json" because REST API uses JSON-based connection strings. */
@@ -243,6 +205,11 @@ export class ConcreteDataScripts extends BaseDataScript {
     return false;
   }
 
+  /** Returns true — REST API manages its own databases (folders) and tables (requests). */
+  supportManagedMetadata() {
+    return true;
+  }
+
   /** Returns false — REST API does not use create record forms. */
   supportCreateRecordForm() {
     return false;
@@ -254,12 +221,12 @@ export class ConcreteDataScripts extends BaseDataScript {
   }
 
   /**
-   * Returns the canonical "restapi" dialect type for both "restapi" and "rest" aliases.
+   * Returns the canonical "rest" dialect type for both "rest" and legacy "restapi" aliases.
    * @param _dialect - The raw dialect string.
-   * @returns The "restapi" dialect identifier.
+   * @returns The "rest" dialect identifier.
    */
   getDialectType(_dialect) {
-    return "restapi" as SqluiCore.Dialect;
+    return "rest" as SqluiCore.Dialect;
   }
 
   /**
@@ -277,7 +244,7 @@ export class ConcreteDataScripts extends BaseDataScript {
    * @returns Empty string for now (icon to be added).
    */
   getDialectIcon(_dialect) {
-    return "";
+    return curlIcon;
   }
 
   /**
@@ -316,16 +283,16 @@ export class ConcreteDataScripts extends BaseDataScript {
    * @returns Array of connection-level request generators.
    */
   getConnectionScripts() {
-    return [getDivider, getHealthCheck, getOptionsRequest, getHeadRequest];
+    return [];
   }
 
   /**
    * Returns a sample REST API connection string.
    * @param _dialect - The dialect identifier.
-   * @returns A sample restapi:// connection string.
+   * @returns A sample rest:// connection string.
    */
   getSampleConnectionString(_dialect) {
-    return `restapi://{}`;
+    return `rest://{"HOST":"https://httpbin.org","variables":[{"key":"ACCESS_TOKEN","value":"sample-access-token","enabled":true}]}`;
   }
 
   /** Returns REST API setup guide HTML. */
@@ -333,7 +300,7 @@ export class ConcreteDataScripts extends BaseDataScript {
     return `
       <strong>REST API Collection Setup</strong>
       <ol>
-        <li><strong>Connection String</strong> -- Use <code>restapi://{}</code> for an empty collection, or <code>restapi://{"variables":[{"key":"HOST","value":"https://api.example.com","enabled":true}]}</code> to set variables.</li>
+        <li><strong>Connection String</strong> -- Use <code>rest://{}</code> for an empty collection, or <code>rest://{"variables":[{"key":"HOST","value":"https://api.example.com","enabled":true}]}</code> to set variables.</li>
         <li><strong>Variables</strong> -- Define <code>{{HOST}}</code>, <code>{{TOKEN}}</code>, etc. at collection level. Override per folder.</li>
         <li><strong>Syntax</strong> -- Use <code>curl</code> or <code>fetch()</code> syntax in the editor. Both are auto-detected.</li>
         <li><strong>Paste from DevTools</strong> -- Right-click a request in Chrome DevTools &gt; Copy as cURL / Copy as fetch.</li>

@@ -59,7 +59,7 @@ export default function ConnectionDatabaseSelector(props: ConnectionDatabaseSele
   const tableOptions = useMemo(
     () =>
       tables?.map((table) => (
-        <option value={table.name} key={table.name}>
+        <option value={table.id ?? table.name} key={table.id ?? table.name}>
           {table.name}
         </option>
       )),
@@ -95,8 +95,8 @@ export default function ConnectionDatabaseSelector(props: ConnectionDatabaseSele
     }
 
     // if there's only one table, then select that as well
-    if (tables && tables.length === 1 && tables[0].name !== query.tableId) {
-      onTableChange(tables[0].name);
+    if (tables && tables.length === 1 && (tables[0].id ?? tables[0].name) !== query.tableId) {
+      onTableChange(tables[0].id ?? tables[0].name);
     }
   }, [databases, tables]);
 

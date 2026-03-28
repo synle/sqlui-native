@@ -17,6 +17,44 @@ describe("commonUtils", () => {
         name: "sy mysql 123",
       });
     });
+
+    test("should include managedMetadata when provided, stripping connectionId and timestamps", async () => {
+      const databases = [{ id: "Folder 1", name: "Folder 1", connectionId: "conn1", createdAt: 123, updatedAt: 456 }];
+      const tables = [
+        {
+          id: "GET /users",
+          name: "GET /users",
+          connectionId: "conn1",
+          databaseId: "Folder 1",
+          createdAt: 789,
+          updatedAt: 999,
+          props: { query: "curl {{HOST}}/users" },
+        },
+      ];
+      const actual = commonUtils.getExportedConnection(
+        {
+          id: "conn1",
+          connection: 'rest://{"HOST":"https://httpbin.org"}',
+          name: "rest Connection",
+          dialect: "rest",
+        },
+        { databases: databases as any, tables: tables as any },
+      );
+      expect(actual.managedMetadata).toStrictEqual({
+        databases: [{ name: "Folder 1" }],
+        tables: [{ name: "GET /users", databaseId: "Folder 1", props: { query: "curl {{HOST}}/users" } }],
+      });
+    });
+
+    test("should not include managedMetadata when not provided", async () => {
+      const actual = commonUtils.getExportedConnection({
+        id: "conn1",
+        connection: 'rest://{"HOST":"https://httpbin.org"}',
+        name: "rest Connection",
+        dialect: "rest",
+      });
+      expect(actual.managedMetadata).toBeUndefined();
+    });
   });
 
   describe("getExportedQuery", () => {
@@ -289,6 +327,18 @@ describe("commonUtils", () => {
       expect(commonUtils.getSanitizedConnectionUrl("mongodb://fake_mongo_user:fake_mongo_pass@fake-mongo-host.example.com:27017/")).toBe(
         "fake-mongo-host.example.com:27017",
       );
+    });
+
+    test("should extract HOST from rest:// connection string with variables", () => {
+      expect(
+        commonUtils.getSanitizedConnectionUrl(
+          'rest://{"HOST":"https://httpbin.org","variables":[{"key":"TOKEN","value":"abc","enabled":true}]}',
+        ),
+      ).toBe("https://httpbin.org");
+    });
+
+    test("should extract HOST from rest:// connection string", () => {
+      expect(commonUtils.getSanitizedConnectionUrl('rest://{"HOST":"https://api.example.com"}')).toBe("https://api.example.com");
     });
   });
 

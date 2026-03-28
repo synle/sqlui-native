@@ -17,6 +17,8 @@ import {
   getConnectionsStorage,
   getDataSnapshotStorage,
   getFolderItemsStorage,
+  getManagedDatabasesStorage,
+  getManagedTablesStorage,
   getQueryStorage,
   getSessionsStorage,
   getSettingsStorage,
@@ -453,6 +455,10 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     }
 
     const engine = getDataAdapter(connection.connection);
+    // Set connectionId for adapters that need it (e.g., REST API folder-level variables)
+    if ("connectionId" in engine) {
+      (engine as any).connectionId = req.params?.connectionId;
+    }
     try {
       res.status(200).json(await engine.execute(req.body?.sql, req.body?.database, req.body?.table));
     } catch (err: any) {
@@ -477,6 +483,13 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     const engine = getDataAdapter(connection.connection);
     try {
       await engine.authenticate();
+
+      // Run optional diagnostics (e.g., REST API HTTP probes)
+      let diagnostics: SqluiCore.ConnectionDiagnostic[] | undefined;
+      if (typeof (engine as any).runDiagnostics === "function") {
+        diagnostics = await (engine as any).runDiagnostics();
+      }
+
       res.status(200).json({
         name: connection.name,
         id: connection?.id,
@@ -484,6 +497,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
         status: "online",
         dialect: engine.dialect,
         databases: [],
+        ...(diagnostics && diagnostics.length > 0 ? { diagnostics } : {}),
       });
     } catch (err: any) {
       const message = err?.sqlMessage || err?.message || err?.toString?.() || "Connection test failed";
@@ -501,12 +515,23 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
   addDataEndpoint("post", "/api/connection", async (req, res) => {
     const connectionsStorage = await getConnectionsStorage(req.headers["sqlui-native-session-id"]);
 
-    res.status(201).json(
-      await connectionsStorage.add({
-        connection: req.body?.connection,
-        name: req.body?.name,
-      }),
-    );
+    const newConnection = await connectionsStorage.add({
+      connection: req.body?.connection,
+      name: req.body?.name,
+    });
+
+    // Seed an initial folder for REST API connections
+    try {
+      const dialect = getDataAdapter(newConnection.connection).dialect;
+      if (dialect === "rest") {
+        const dbStorage = await getManagedDatabasesStorage(newConnection.id);
+        await dbStorage.add({ id: "Folder 1", name: "Folder 1", connectionId: newConnection.id });
+      }
+    } catch (_err) {
+      // Non-fatal — user can create folders manually
+    }
+
+    res.status(201).json(newConnection);
   });
 
   addDataEndpoint("put", "/api/connection/:connectionId", async (req, res) => {
@@ -526,6 +551,185 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
 
     res.status(202).json(await connectionsStorage.delete(req.params?.connectionId));
   });
+
+  //=========================================================================
+  // managed metadata api endpoints (folders/requests for REST API, etc.)
+  //=========================================================================
+
+  /** GET all managed databases (folders) for a connection. */
+  addDataEndpoint("get", "/api/connection/:connectionId/managedDatabases", async (req, res) => {
+    const { connectionId } = req.params;
+    try {
+      const storage = await getManagedDatabasesStorage(connectionId);
+      const entries = await storage.list();
+      res.status(200).json(entries);
+    } catch (err) {
+      console.error(`Endpoints.ts:handler [GET /api/connection/:connectionId/managedDatabases]`, err);
+      res.status(500).send("Failed to list managed databases");
+    }
+  });
+
+  /** GET all managed tables (requests) for a connection. */
+  addDataEndpoint("get", "/api/connection/:connectionId/managedTables", async (req, res) => {
+    const { connectionId } = req.params;
+    try {
+      const storage = await getManagedTablesStorage(connectionId);
+      const entries = await storage.list();
+      res.status(200).json(entries);
+    } catch (err) {
+      console.error(`Endpoints.ts:handler [GET /api/connection/:connectionId/managedTables]`, err);
+      res.status(500).send("Failed to list managed tables");
+    }
+  });
+
+  addDataEndpoint("post", "/api/connection/:connectionId/managedDatabase", async (req, res) => {
+    const { connectionId } = req.params;
+    const { name } = req.body;
+    if (!name) {
+      return res.status(400).send("`name` is required");
+    }
+    const storage = await getManagedDatabasesStorage(connectionId);
+    const result = await storage.add({ id: name, name, connectionId });
+    await clearCachedColumns(connectionId);
+    res.status(201).json(result);
+  });
+
+  /** GET a single managed database by ID (includes props). */
+  addDataEndpoint("get", "/api/connection/:connectionId/managedDatabase/:managedDatabaseId", async (req, res) => {
+    const { connectionId, managedDatabaseId } = req.params;
+    const storage = await getManagedDatabasesStorage(connectionId);
+    try {
+      const entry = await storage.get(managedDatabaseId);
+      if (!entry) {
+        return res.status(404).send("Managed database not found");
+      }
+      res.status(200).json(entry);
+    } catch (err) {
+      console.error(`Endpoints.ts:handler [GET /api/connection/:connectionId/managedDatabase/:managedDatabaseId]`, err);
+      res.status(404).send("Managed database not found");
+    }
+  });
+
+  /** PUT updates a managed database's name and/or props (e.g., folder variables for REST API). */
+  addDataEndpoint("put", "/api/connection/:connectionId/managedDatabase/:managedDatabaseId", async (req, res) => {
+    const { connectionId, managedDatabaseId } = req.params;
+    const { name, props } = req.body;
+    const dbStorage = await getManagedDatabasesStorage(connectionId);
+
+    if (name && name !== managedDatabaseId) {
+      // Rename: delete old, create new with props
+      let existing: any = null;
+      try {
+        existing = await dbStorage.get(managedDatabaseId);
+      } catch (_err) {
+        // old entry may not exist
+      }
+      await dbStorage.delete(managedDatabaseId);
+      const mergedProps = { ...(existing?.props || {}), ...(props || {}) };
+      const result = await dbStorage.add({
+        id: name,
+        name,
+        connectionId,
+        ...(Object.keys(mergedProps).length > 0 ? { props: mergedProps } : {}),
+      });
+      // Update child tables to reference new database name
+      const tableStorage = await getManagedTablesStorage(connectionId);
+      const tables = await tableStorage.list();
+      for (const table of tables) {
+        if (table.databaseId === managedDatabaseId) {
+          await tableStorage.update({ ...table, databaseId: name });
+        }
+      }
+      await clearCachedColumns(connectionId);
+      res.status(202).json(result);
+    } else if (props) {
+      // Props-only update (no rename)
+      try {
+        const entry = await dbStorage.get(managedDatabaseId);
+        const updated = await dbStorage.update({ ...entry, props: { ...(entry.props || {}), ...props } });
+        res.status(200).json(updated);
+      } catch (err) {
+        console.error(`Endpoints.ts:handler [PUT /api/connection/:connectionId/managedDatabase/:managedDatabaseId]`, err);
+        res.status(404).send("Managed database not found");
+      }
+    } else {
+      return res.status(400).send("`name` or `props` is required");
+    }
+  });
+
+  addDataEndpoint("delete", "/api/connection/:connectionId/managedDatabase/:managedDatabaseId", async (req, res) => {
+    const { connectionId, managedDatabaseId } = req.params;
+    const dbStorage = await getManagedDatabasesStorage(connectionId);
+    await dbStorage.delete(managedDatabaseId);
+    // Also delete child tables
+    const tableStorage = await getManagedTablesStorage(connectionId);
+    const tables = await tableStorage.list();
+    for (const table of tables) {
+      if (table.databaseId === managedDatabaseId) {
+        await tableStorage.delete(table.id);
+      }
+    }
+    await clearCachedColumns(connectionId);
+    res.status(202).json({ id: managedDatabaseId });
+  });
+
+  addDataEndpoint("post", "/api/connection/:connectionId/database/:databaseId/managedTable", async (req, res) => {
+    const { connectionId, databaseId } = req.params;
+    const { name } = req.body;
+    if (!name) {
+      return res.status(400).send("`name` is required");
+    }
+    const storage = await getManagedTablesStorage(connectionId);
+    const result = await storage.add({ name, connectionId, databaseId });
+    await clearCachedDatabase(connectionId, databaseId);
+    res.status(201).json(result);
+  });
+
+  addDataEndpoint("delete", "/api/connection/:connectionId/database/:databaseId/managedTable/:managedTableId", async (req, res) => {
+    const { connectionId, databaseId, managedTableId } = req.params;
+    const storage = await getManagedTablesStorage(connectionId);
+    await storage.delete(managedTableId);
+    await clearCachedDatabase(connectionId, databaseId);
+    res.status(202).json({ id: managedTableId });
+  });
+
+  /** GET a single managed table by ID (includes props). */
+  addDataEndpoint("get", "/api/connection/:connectionId/database/:databaseId/managedTable/:managedTableId", async (req, res) => {
+    const { connectionId, databaseId, managedTableId } = req.params;
+    const storage = await getManagedTablesStorage(connectionId);
+    try {
+      const entry = await storage.get(managedTableId);
+      if (!entry || entry.databaseId !== databaseId) {
+        return res.status(404).send("Managed table not found");
+      }
+      res.status(200).json(entry);
+    } catch (err) {
+      console.error(`Endpoints.ts:handler [GET /api/connection/:connectionId/database/:databaseId/managedTable/:managedTableId]`, err);
+      res.status(404).send("Managed table not found");
+    }
+  });
+
+  /** PUT updates a managed table's name and/or props (e.g., saved query for REST API requests). */
+  addDataEndpoint("put", "/api/connection/:connectionId/database/:databaseId/managedTable/:managedTableId", async (req, res) => {
+    const { connectionId, databaseId, managedTableId } = req.params;
+    const { name, props } = req.body;
+    const storage = await getManagedTablesStorage(connectionId);
+    try {
+      const entry = await storage.get(managedTableId);
+      if (!entry || entry.databaseId !== databaseId) {
+        return res.status(404).send("Managed table not found");
+      }
+      const updates = { ...entry };
+      if (name) updates.name = name;
+      if (props) updates.props = { ...(entry.props || {}), ...props };
+      const updated = await storage.update(updates);
+      res.status(200).json(updated);
+    } catch (err) {
+      console.error(`Endpoints.ts:handler [PUT /api/connection/:connectionId/database/:databaseId/managedTable/:managedTableId]`, err);
+      res.status(500).send("Failed to update managed table");
+    }
+  });
+
   //=========================================================================
   // query api endpoints
   //=========================================================================

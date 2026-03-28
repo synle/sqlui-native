@@ -41,6 +41,8 @@ export type TableHeaderRow = {
   connectionId: string;
   databaseId: string;
   tableName: string;
+  /** Unique identifier for the table (UUID for managed tables, same as tableName for regular). */
+  tableId: string;
   isSelected: boolean;
   isExpanded: boolean;
 };

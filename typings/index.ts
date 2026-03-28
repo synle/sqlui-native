@@ -30,7 +30,6 @@ export module SqluiCore {
     | "cosmosdb"
     | "aztable"
     | "sfdc"
-    | "restapi"
     | "rest";
 
   /** Supported programming language modes for code generation. */
@@ -65,6 +64,8 @@ export module SqluiCore {
     createdAt?: number;
     /** Last update timestamp (epoch ms). Auto-set by PersistentStorage on add/update. */
     updatedAt?: number;
+    /** Adapter-specific properties for managed-metadata connections. */
+    props?: ManagedProperties;
     [index: string]: any;
   };
 
@@ -115,6 +116,8 @@ export module SqluiCore {
 
   /** Metadata describing a table and its columns. */
   export type TableMetaData = {
+    /** Optional unique identifier (used by managed tables; defaults to name if absent). */
+    id?: string;
     name: string;
     columns: ColumnMetaData[];
   };
@@ -125,9 +128,58 @@ export module SqluiCore {
     tables: TableMetaData[];
   };
 
+  /** A single diagnostic check result from a test connection. */
+  export type ConnectionDiagnostic = {
+    /** Name of the check (e.g., "HEAD", "GET", "OPTIONS"). */
+    name: string;
+    /** Whether the check passed. */
+    success: boolean;
+    /** Human-readable result message. */
+    message: string;
+  };
+
+  /** Generic adapter-specific properties for managed metadata entries. */
+  export type ManagedProperties = Record<string, any>;
+
+  /** A user-managed database entry (e.g., a folder in REST API collections). */
+  export type ManagedDatabase = {
+    /** Unique identifier (same as name). */
+    id: string;
+    /** Display name of the database/folder. */
+    name: string;
+    /** Parent connection ID. */
+    connectionId: string;
+    /** Adapter-specific properties (e.g., folder-level variables for REST API). */
+    props?: ManagedProperties;
+    /** Creation timestamp (epoch ms). Auto-set by PersistentStorage. */
+    createdAt?: number;
+    /** Last update timestamp (epoch ms). Auto-set by PersistentStorage. */
+    updatedAt?: number;
+  };
+
+  /** A user-managed table entry (e.g., a request in REST API collections). */
+  export type ManagedTable = {
+    /** Unique identifier (same as name). */
+    id: string;
+    /** Display name of the table/request. */
+    name: string;
+    /** Parent connection ID. */
+    connectionId: string;
+    /** Parent database/folder name. */
+    databaseId: string;
+    /** Adapter-specific properties (e.g., curl/fetch command for REST API). */
+    props?: ManagedProperties;
+    /** Creation timestamp (epoch ms). Auto-set by PersistentStorage. */
+    createdAt?: number;
+    /** Last update timestamp (epoch ms). Auto-set by PersistentStorage. */
+    updatedAt?: number;
+  };
+
   /** Core connection metadata including database information. */
   export type CoreConnectionMetaData = CoreConnectionProps & {
     databases: DatabaseMetaData[];
+    /** Optional diagnostic results from the test connection. */
+    diagnostics?: ConnectionDiagnostic[];
   };
 
   /** Full connection metadata combining connection props and database info. */

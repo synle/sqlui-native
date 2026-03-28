@@ -4,7 +4,7 @@ import Link from "@mui/material/Link";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 import React, { useCallback, useEffect } from "react";
-import { getCodeSnippet } from "src/common/adapters/DataScriptFactory";
+import { getCodeSnippet, isDialectSupportManagedMetadata } from "src/common/adapters/DataScriptFactory";
 import { AddBookmarkConnectionContent, AddBookmarkQueryContent } from "src/frontend/components/AddBookmarkModal";
 import CodeEditorBox from "src/frontend/components/CodeEditorBox";
 import CommandPalette from "src/frontend/components/CommandPalette";
@@ -46,6 +46,7 @@ import {
   getExportedQuery,
   useNavigate,
 } from "src/frontend/utils/commonUtils";
+import ProxyApi from "src/frontend/data/api";
 import { execute } from "src/frontend/utils/executeUtils";
 import { RecordDetailsPage } from "src/frontend/views/RecordPage";
 import appPackage from "src/package.json";
@@ -433,15 +434,14 @@ export default function MissionControl() {
   const onApplyQuery = async (data: SqluiFrontend.PartialConnectionQuery, openQueryInNewTab: boolean, toastMessage: string | undefined) => {
     if (openQueryInNewTab === true) {
       const parts: string[] = [];
-      if (data.connectionId) {
-        const conn = connections?.find((c) => c.id === data.connectionId);
-        if (conn?.name) parts.push(conn.name);
-      }
+      const conn = data.connectionId ? connections?.find((c) => c.id === data.connectionId) : undefined;
+      if (conn?.name) parts.push(conn.name);
       if (data.databaseId) parts.push(data.databaseId);
-      if (data.tableId) parts.push(data.tableId);
+      if (data.tableId) parts.push((data as any).tableName ?? data.tableId);
 
-      const prefix = parts.length > 0 ? `${parts.join(" / ")} ` : "";
-      const newQueryTabName = `${prefix}Query ${formatShortDate()}`;
+      const prefix = parts.length > 0 ? `${parts.join(" / ")}` : "";
+      const isManagedTable = isDialectSupportManagedMetadata(conn?.dialect) && data.tableId;
+      const newQueryTabName = isManagedTable ? prefix : `${prefix} Query ${formatShortDate()}`;
 
       await connectionQueries.onAddQuery({
         ...data,
@@ -638,7 +638,22 @@ export default function MissionControl() {
 
     if (connections) {
       for (const connection of connections) {
-        jsonContent.push(getExportedConnection(connection));
+        let managedMetadata: { databases: SqluiCore.ManagedDatabase[]; tables: SqluiCore.ManagedTable[] } | undefined;
+        const isRestApi = connection.dialect === "rest";
+        if (isRestApi) {
+          try {
+            const [databases, tables] = await Promise.all([
+              ProxyApi.listManagedDatabases(connection.id),
+              ProxyApi.listManagedTables(connection.id),
+            ]);
+            if (databases.length > 0 || tables.length > 0) {
+              managedMetadata = { databases, tables };
+            }
+          } catch (err) {
+            console.error("MissionControl:onExportAll:managedMetadata", err);
+          }
+        }
+        jsonContent.push(getExportedConnection(connection, managedMetadata));
       }
     }
 
@@ -779,14 +794,30 @@ export default function MissionControl() {
       message: `Exporting connection "${connection.name}", please wait...`,
     });
 
-    downloadText(`${connection.name}.connection.json`, JSON.stringify([getExportedConnection(connection)], null, 2), "text/json");
+    let managedMetadata: { databases: SqluiCore.ManagedDatabase[]; tables: SqluiCore.ManagedTable[] } | undefined;
+    const isRestApi = connection.dialect === "rest";
+    if (isRestApi) {
+      try {
+        const [databases, tables] = await Promise.all([
+          ProxyApi.listManagedDatabases(connection.id),
+          ProxyApi.listManagedTables(connection.id),
+        ]);
+        if (databases.length > 0 || tables.length > 0) {
+          managedMetadata = { databases, tables };
+        }
+      } catch (err) {
+        console.error("MissionControl:onExportConnection:managedMetadata", err);
+      }
+    }
+
+    downloadText(
+      `${connection.name}.connection.json`,
+      JSON.stringify([getExportedConnection(connection, managedMetadata)], null, 2),
+      "text/json",
+    );
   };
 
   const onSelectConnection = async (connection: SqluiCore.ConnectionProps) => {
-    await addToast({
-      message: `Connection "${connection.name}" selected for query`,
-    });
-
     selectCommand({
       event: "clientEvent/query/apply/active",
       data: {
@@ -835,12 +866,39 @@ export default function MissionControl() {
       successCount = 0;
     for (const jsonRow of jsonRows) {
       try {
-        const { _type, ...rawImportMetaData } = jsonRow;
+        const { _type, managedMetadata, ...rawImportMetaData } = jsonRow;
         switch (_type) {
-          case "connection":
+          case "connection": {
             // upsert: updates existing connection if ID matches, otherwise creates new
-            await importConnection(rawImportMetaData);
+            const imported = await importConnection(rawImportMetaData);
+            // Reconstruct managed metadata (folders/requests) — always create fresh
+            if (managedMetadata && imported?.id) {
+              const connId = imported.id;
+              // Delete existing managed data first
+              try {
+                const existingDbs = await ProxyApi.listManagedDatabases(connId);
+                for (const db of existingDbs) {
+                  await ProxyApi.deleteManagedDatabase(connId, db.name);
+                }
+              } catch (_err) {
+                // no existing data to clean up
+              }
+              // Create folders and requests from the import
+              for (const db of managedMetadata.databases || []) {
+                await ProxyApi.createManagedDatabase(connId, { name: db.name });
+                if (db.props && Object.keys(db.props).length > 0) {
+                  await ProxyApi.updateManagedDatabase(connId, db.name, { props: db.props });
+                }
+              }
+              for (const table of managedMetadata.tables || []) {
+                const created = await ProxyApi.createManagedTable(connId, table.databaseId, { name: table.name });
+                if (table.props && Object.keys(table.props).length > 0) {
+                  await ProxyApi.updateManagedTable(connId, table.databaseId, created.id, { props: table.props });
+                }
+              }
+            }
             break;
+          }
 
           case "query":
             await connectionQueries.onImportQuery(jsonRow);

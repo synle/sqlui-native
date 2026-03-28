@@ -1,5 +1,23 @@
 /** REST API adapter types. */
 
+import { SqluiCore } from "typings";
+
+/** REST API folder-level properties extending generic ManagedProperties. */
+export type RestApiFolderProperties = SqluiCore.ManagedProperties & {
+  /** Folder-level variables for {{VAR}} interpolation. */
+  variables?: RestApiVariable[];
+  /** Optional description of the folder. */
+  description?: string;
+};
+
+/** REST API request-level properties extending generic ManagedProperties. */
+export type RestApiRequestProperties = SqluiCore.ManagedProperties & {
+  /** The curl/fetch command string for this request. */
+  query?: string;
+  /** Optional description of the request. */
+  description?: string;
+};
+
 /** A single variable entry for {{VAR}} interpolation. */
 export type RestApiVariable = {
   /** Variable name (used as {{key}} in templates). */
@@ -18,8 +36,10 @@ export type RestApiEnvironment = {
   variables: RestApiVariable[];
 };
 
-/** Parsed connection config from the restapi:// connection string JSON. */
+/** Parsed connection config from the rest:// connection string JSON. */
 export type RestApiConnectionConfig = {
+  /** Base host URL for the API collection. */
+  HOST?: string;
   /** Collection-level variables. */
   variables?: RestApiVariable[];
 };
