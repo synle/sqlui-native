@@ -1,4 +1,4 @@
-import fs from "fs";
+import fs from "node:fs";
 import RelationalDataAdapter from "src/common/adapters/RelationalDataAdapter/index";
 
 describe("sqlite", () => {

@@ -1,5 +1,5 @@
 import { defineConfig } from "vite";
-import path from "path";
+import path from "node:path";
 
 /**
  * Packages with native bindings that Vite cannot bundle and must remain external.
