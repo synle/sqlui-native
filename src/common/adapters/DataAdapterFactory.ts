@@ -17,6 +17,7 @@ import RestApiDataAdapterScripts from "src/common/adapters/RestApiDataAdapter/sc
 import SalesforceDataAdapter from "src/common/adapters/SalesforceDataAdapter/index";
 import SalesforceDataAdapterScripts from "src/common/adapters/SalesforceDataAdapter/scripts";
 import PersistentStorage, { getManagedDatabasesStorage, getManagedTablesStorage } from "src/common/PersistentStorage";
+import { safeDisconnect } from "src/common/utils/errorUtils";
 import { SqluiCore } from "typings";
 
 /** Cache entry shape for storing database metadata on disk. */
@@ -558,11 +559,7 @@ export async function getDatabases(sessionId: string, connectionId: string) {
       console.error("DataAdapterFactory.ts:refreshDatabaseCache", err);
       return undefined;
     } finally {
-      try {
-        await engine.disconnect();
-      } catch (_err) {
-        // best-effort cleanup
-      }
+      await safeDisconnect(engine);
     }
   };
 
@@ -626,11 +623,7 @@ export async function getTables(sessionId: string, connectionId: string, databas
       console.error("DataAdapterFactory.ts:refreshTableCache", err);
       return undefined;
     } finally {
-      try {
-        await engine.disconnect();
-      } catch (_err) {
-        // best-effort cleanup
-      }
+      await safeDisconnect(engine);
     }
   };
 
@@ -725,11 +718,7 @@ export async function getColumns(sessionId: string, connectionId: string, databa
       console.error("DataAdapterFactory.ts:refreshCache", err);
       return undefined;
     } finally {
-      try {
-        await engine.disconnect();
-      } catch (_err) {
-        // best-effort cleanup
-      }
+      await safeDisconnect(engine);
     }
   };
 

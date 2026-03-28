@@ -105,7 +105,7 @@ export default class RedisDataAdapter extends BaseDataAdapter implements IDataAd
 
       //@ts-ignore
       const resp: any = await eval(sql); // eslint-disable-line no-eval
-      console.log(resp);
+      console.error("RedisDataAdapter:execute", resp);
 
       if (resp === "OK") {
         return { ok: true };
