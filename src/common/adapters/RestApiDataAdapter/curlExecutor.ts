@@ -1,6 +1,6 @@
 /** Curl executor — runs HTTP requests via child_process curl with timing metrics. */
 
-import { execFile } from "child_process";
+import { execFile } from "node:child_process";
 import { RestApiRequest, RestApiResponse, RestApiTiming } from "src/common/adapters/RestApiDataAdapter/types";
 
 /** Default request timeout in milliseconds. */

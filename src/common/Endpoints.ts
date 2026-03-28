@@ -1,6 +1,6 @@
 import { BrowserWindow } from "electron";
 import { Express } from "express";
-import path from "path";
+import path from "node:path";
 import {
   clearCachedColumns,
   clearCachedDatabase,

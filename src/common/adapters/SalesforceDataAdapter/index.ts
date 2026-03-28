@@ -1,4 +1,4 @@
-import https from "https";
+import https from "node:https";
 import { Connection } from "jsforce/lib/connection";
 import BaseDataAdapter, { MAX_CONNECTION_TIMEOUT } from "src/common/adapters/BaseDataAdapter/index";
 import IDataAdapter from "src/common/adapters/IDataAdapter";

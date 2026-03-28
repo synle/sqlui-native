@@ -1,6 +1,6 @@
 /** Variable resolver — handles {{VAR}} interpolation with 4-layer priority. */
 
-import { randomUUID } from "crypto";
+import { randomUUID } from "node:crypto";
 import { RestApiVariable } from "src/common/adapters/RestApiDataAdapter/types";
 
 /** Pattern matching {{variableName}} placeholders. */
