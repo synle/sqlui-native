@@ -1,20 +1,23 @@
+/** Connection CRUD hooks and re-exports for schema and refresh hooks. */
 import { QueryClient, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef } from "react";
 import dataApi from "src/frontend/data/api";
 import { useAddRecycleBinItem } from "src/frontend/hooks/useFolderItems";
+import { queryKeys } from "src/frontend/hooks/queryKeys";
 import { useIsSoftDeleteModeSetting } from "src/frontend/hooks/useSetting";
 import { getUpdatedOrdersForList } from "src/frontend/utils/commonUtils";
 import { SqluiCore, SqluiFrontend } from "typings";
 
-/** React Query cache key for all connections. */
-const QUERY_KEY_ALL_CONNECTIONS = "connections";
+// Re-export schema hooks so existing imports from "useConnection" continue to work.
+export { useGetDatabases, useGetTables, useGetCachedSchema, useGetAllTableColumns, useGetColumns } from "src/frontend/hooks/useSchema";
+export { useRetryConnection, useRefreshDatabase, useRefreshTable } from "src/frontend/hooks/useSchemaRefresh";
 
 /**
  * Hook to fetch all database connections.
  * @returns React Query result containing an array of connections.
  */
 export function useGetConnections() {
-  return useQuery([QUERY_KEY_ALL_CONNECTIONS], dataApi.getConnections, {
+  return useQuery(queryKeys.connections.all, dataApi.getConnections, {
     notifyOnChangeProps: ["data", "error"],
   });
 }
@@ -30,7 +33,7 @@ export function useUpdateConnections(connections?: SqluiCore.ConnectionProps[]) 
     if (connections) {
       connections = getUpdatedOrdersForList(connections, from, to);
 
-      queryClient.setQueryData<SqluiCore.ConnectionProps[] | undefined>([QUERY_KEY_ALL_CONNECTIONS], connections);
+      queryClient.setQueryData<SqluiCore.ConnectionProps[] | undefined>(queryKeys.connections.all, connections);
 
       return dataApi.update(connections);
     }
@@ -45,10 +48,14 @@ export function useUpdateConnections(connections?: SqluiCore.ConnectionProps[]) 
  * @returns React Query result containing the connection or undefined.
  */
 export function useGetConnectionById(connectionId?: string) {
-  return useQuery([connectionId], () => (!connectionId ? undefined : dataApi.getConnection(connectionId)), {
-    enabled: !!connectionId,
-    notifyOnChangeProps: ["data", "error"],
-  });
+  return useQuery(
+    connectionId ? queryKeys.connections.byId(connectionId) : [connectionId],
+    () => (!connectionId ? undefined : dataApi.getConnection(connectionId)),
+    {
+      enabled: !!connectionId,
+      notifyOnChangeProps: ["data", "error"],
+    },
+  );
 }
 
 /**
@@ -59,10 +66,10 @@ export function useUpsertConnection() {
   const queryClient = useQueryClient();
   return useMutation<SqluiCore.ConnectionProps, void, SqluiCore.CoreConnectionProps>(dataApi.upsertConnection, {
     onSuccess: async (newConnection) => {
-      queryClient.invalidateQueries([newConnection.id]);
-      queryClient.invalidateQueries([QUERY_KEY_ALL_CONNECTIONS]);
+      queryClient.invalidateQueries(queryKeys.connections.byId(newConnection.id));
+      queryClient.invalidateQueries(queryKeys.connections.all);
 
-      queryClient.setQueryData<SqluiCore.ConnectionProps[] | undefined>([QUERY_KEY_ALL_CONNECTIONS], (oldData) => {
+      queryClient.setQueryData<SqluiCore.ConnectionProps[] | undefined>(queryKeys.connections.all, (oldData) => {
         // find that entry
         let isNew = true;
         oldData = oldData?.map((connection) => {
@@ -102,7 +109,7 @@ export function useDeleteConnection() {
 
   return useMutation<string, void, string>(dataApi.deleteConnection, {
     onSuccess: async (deletedConnectionId) => {
-      queryClient.setQueryData<SqluiCore.ConnectionProps[] | undefined>([QUERY_KEY_ALL_CONNECTIONS], (oldData) => {
+      queryClient.setQueryData<SqluiCore.ConnectionProps[] | undefined>(queryKeys.connections.all, (oldData) => {
         return oldData?.filter((connection) => connection.id !== deletedConnectionId);
       });
 
@@ -173,122 +180,6 @@ export function useImportConnection() {
 }
 
 /**
- * Hook to fetch databases for a given connection.
- * @param connectionId - The connection ID to fetch databases for.
- * @returns React Query result containing an array of database metadata.
- */
-export function useGetDatabases(connectionId?: string) {
-  const enabled = !!connectionId;
-
-  return useQuery([connectionId, "databases"], () => (!enabled ? undefined : dataApi.getConnectionDatabases(connectionId)), {
-    enabled,
-    notifyOnChangeProps: ["data", "error"],
-  });
-}
-
-/**
- * Hook to fetch tables for a given connection and database.
- * @param connectionId - The connection ID.
- * @param databaseId - The database ID.
- * @returns React Query result containing an array of table metadata.
- */
-export function useGetTables(connectionId?: string, databaseId?: string) {
-  const enabled = !!connectionId && !!databaseId;
-
-  return useQuery(
-    [connectionId, databaseId, "tables"],
-    () => (!enabled ? undefined : dataApi.getConnectionTables(connectionId, databaseId)),
-    {
-      enabled,
-      notifyOnChangeProps: ["data", "error"],
-    },
-  );
-}
-
-/**
- * Hook to fetch columns for all tables in a given connection and database.
- * @param connectionId - The connection ID.
- * @param databaseId - The database ID.
- * @returns React Query result containing a record mapping table names to column metadata arrays.
- */
-export function useGetCachedSchema(connectionId?: string, databaseId?: string) {
-  const enabled = !!connectionId && !!databaseId;
-
-  return useQuery(
-    [connectionId, databaseId, "cached_schema"],
-    () => (!enabled ? undefined : dataApi.getCachedSchema(connectionId, databaseId)),
-    {
-      enabled,
-      staleTime: 30 * 1000,
-      cacheTime: 5 * 60 * 1000,
-      notifyOnChangeProps: ["data", "error"],
-    },
-  );
-}
-
-/**
- * Fetches columns for ALL tables in a database by making individual API calls.
- * Use sparingly — prefer useGetCachedColumns for read-only access to already-cached data.
- * @param connectionId - The connection ID.
- * @param databaseId - The database ID.
- * @returns React Query result containing a record mapping table names to column metadata arrays.
- */
-export function useGetAllTableColumns(connectionId?: string, databaseId?: string) {
-  const enabled = !!connectionId && !!databaseId;
-
-  return useQuery(
-    [connectionId, databaseId, "all_table_columns"],
-    async () => {
-      if (!enabled) {
-        return {} as Record<string, SqluiCore.ColumnMetaData[]>;
-      }
-
-      const tables = await dataApi.getConnectionTables(connectionId, databaseId);
-      const tableIds = tables.map((table) => table.name);
-
-      const res: Record<string, SqluiCore.ColumnMetaData[]> = {};
-      const concurrency = 3;
-      for (let i = 0; i < tableIds.length; i += concurrency) {
-        const batch = tableIds.slice(i, i + concurrency);
-        const results = await Promise.all(batch.map((tableId) => dataApi.getConnectionColumns(connectionId, databaseId, tableId)));
-        for (let j = 0; j < batch.length; j++) {
-          res[batch[j]] = results[j];
-        }
-      }
-      return res;
-    },
-    {
-      enabled,
-      staleTime: 5 * 60 * 1000,
-      cacheTime: 10 * 60 * 1000,
-      notifyOnChangeProps: ["data", "error"],
-    },
-  );
-}
-
-/**
- * Hook to fetch columns for a specific table.
- * @param connectionId - The connection ID.
- * @param databaseId - The database ID.
- * @param tableId - The table ID.
- * @returns React Query result containing an array of column metadata.
- */
-export function useGetColumns(connectionId?: string, databaseId?: string, tableId?: string) {
-  const enabled = !!connectionId && !!databaseId && !!tableId;
-
-  return useQuery(
-    [connectionId, databaseId, tableId, "columns"],
-    () => (!enabled ? undefined : dataApi.getConnectionColumns(connectionId, databaseId, tableId)),
-    {
-      enabled,
-      staleTime: 60000, // refetch in background after 1 minute
-      keepPreviousData: true, // show cached data while refetching
-      notifyOnChangeProps: ["data", "error"],
-    },
-  );
-}
-
-/**
  * Hook to execute a SQL/NoSQL query against a connection.
  * @returns Mutation that accepts a ConnectionQuery and returns the result.
  */
@@ -300,96 +191,13 @@ export function useExecute() {
 
 /**
  * Invalidates relevant query caches after executing DDL or data-modifying statements.
- * @param query - The executed query to check for DDL/DML keywords.
- * @param queryClient - The React Query client used to invalidate caches.
+ * @param _query - The executed query to check for DDL/DML keywords.
+ * @param _queryClient - The React Query client used to invalidate caches.
  */
 export function refreshAfterExecution(_query: SqluiFrontend.ConnectionQuery, _queryClient: QueryClient) {
   // No-op: DDL detection previously triggered automatic cache invalidation
   // which caused expensive reconnection cascades on slow connections.
   // Users should manually refresh/reconnect to pick up schema changes.
-}
-
-/**
- * Hook to retry/reconnect a failed connection and refresh its cache data.
- * @returns Mutation that accepts a connection ID to reconnect.
- */
-export function useRetryConnection() {
-  const queryClient = useQueryClient();
-  return useMutation<SqluiCore.ConnectionMetaData, SqluiCore.ConnectionMetaData, string>(
-    async (connectionId: string) => {
-      // Clear all client-side caches for this connection before reconnecting
-      // This removes cached databases, tables, columns, and all_table_columns
-      queryClient.removeQueries({
-        predicate: (query) => {
-          const key = query.queryKey;
-          return Array.isArray(key) && key[0] === connectionId;
-        },
-      });
-      return dataApi.refreshConnection(connectionId);
-    },
-    {
-      onSettled: async (newSuccessConnection, newFailedConnection) => {
-        // NOTE: here we used settled, because if the connection
-        // went bad, we want to also refresh the data
-        const connectionId = newSuccessConnection?.id || newFailedConnection?.id;
-
-        queryClient.setQueryData<SqluiCore.ConnectionMetaData[] | undefined>([QUERY_KEY_ALL_CONNECTIONS], (oldData) => {
-          return oldData?.map((connection) => {
-            if (connection.id === newSuccessConnection?.id) {
-              return newSuccessConnection;
-            }
-            if (connection.id === newFailedConnection?.id) {
-              return newFailedConnection;
-            }
-            return connection;
-          });
-        });
-
-        // Invalidate to trigger fresh refetch of connection-related data
-        if (connectionId) {
-          queryClient.invalidateQueries([connectionId]);
-        }
-      },
-    },
-  );
-}
-
-/**
- * Hook to refresh (clear backend + frontend cache and refetch) data for a specific database.
- * Clears the backend disk cache then invalidates frontend React Query cache for tables and columns.
- * @returns A callback that accepts connectionId and databaseId to refresh.
- */
-export function useRefreshDatabase() {
-  const queryClient = useQueryClient();
-  return async (connectionId: string, databaseId: string) => {
-    // Clear backend disk cache for this database
-    await dataApi.refreshDatabase(connectionId, databaseId);
-    // Invalidate frontend cache to trigger refetch for active queries
-    queryClient.invalidateQueries([connectionId, databaseId, "tables"]);
-    queryClient.invalidateQueries([connectionId, databaseId, "all_table_columns"]);
-    queryClient.invalidateQueries({
-      predicate: (query) => {
-        const key = query.queryKey;
-        return Array.isArray(key) && key[0] === connectionId && key[1] === databaseId && key[3] === "columns";
-      },
-    });
-  };
-}
-
-/**
- * Hook to refresh (clear backend + frontend cache and refetch) column data for a specific table.
- * Clears the backend disk cache then invalidates frontend React Query cache for columns.
- * @returns A callback that accepts connectionId, databaseId, and tableId to refresh.
- */
-export function useRefreshTable() {
-  const queryClient = useQueryClient();
-  return async (connectionId: string, databaseId: string, tableId: string) => {
-    // Clear backend disk cache for this table
-    await dataApi.refreshTable(connectionId, databaseId, tableId);
-    // Invalidate frontend cache to trigger refetch for active queries
-    queryClient.invalidateQueries([connectionId, databaseId, tableId, "columns"]);
-    queryClient.invalidateQueries([connectionId, databaseId, "all_table_columns"]);
-  };
 }
 
 /**
@@ -421,7 +229,7 @@ export function useAutoConnectAll(connections?: SqluiCore.ConnectionProps[]) {
     }
 
     // Mark all unchecked connections as "loading" immediately
-    queryClient.setQueryData<SqluiCore.ConnectionProps[] | undefined>([QUERY_KEY_ALL_CONNECTIONS], (oldData) => {
+    queryClient.setQueryData<SqluiCore.ConnectionProps[] | undefined>(queryKeys.connections.all, (oldData) => {
       if (!oldData) return oldData;
       return oldData.map((c) => (checkedRef.current.has(c.id) && !c.status ? { ...c, status: "loading" as const } : c));
     });
@@ -431,13 +239,13 @@ export function useAutoConnectAll(connections?: SqluiCore.ConnectionProps[]) {
       dataApi
         .reconnect(conn.id)
         .then((result) => {
-          queryClient.setQueryData<SqluiCore.ConnectionProps[] | undefined>([QUERY_KEY_ALL_CONNECTIONS], (oldData) =>
+          queryClient.setQueryData<SqluiCore.ConnectionProps[] | undefined>(queryKeys.connections.all, (oldData) =>
             oldData?.map((c) => (c.id === conn.id ? { ...c, ...result } : c)),
           );
-          queryClient.invalidateQueries([conn.id]);
+          queryClient.invalidateQueries(queryKeys.connections.byId(conn.id));
         })
         .catch(() => {
-          queryClient.setQueryData<SqluiCore.ConnectionProps[] | undefined>([QUERY_KEY_ALL_CONNECTIONS], (oldData) =>
+          queryClient.setQueryData<SqluiCore.ConnectionProps[] | undefined>(queryKeys.connections.all, (oldData) =>
             oldData?.map((c) => (c.id === conn.id ? { ...c, status: "offline" as const } : c)),
           );
         });

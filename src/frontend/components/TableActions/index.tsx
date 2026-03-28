@@ -5,7 +5,6 @@ import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import SsidChartIcon from "@mui/icons-material/SsidChart";
 import IconButton from "@mui/material/IconButton";
-import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "src/frontend/utils/commonUtils";
 import { useState } from "react";
 import { getDivider } from "src/common/adapters/BaseDataAdapter/scripts";
@@ -13,6 +12,7 @@ import { getTableActions, isDialectSupportManagedMetadata, isDialectSupportVisua
 import DropdownButton from "src/frontend/components/DropdownButton";
 import { useCommands } from "src/frontend/components/MissionControl";
 import { ProxyApi } from "src/frontend/data/api";
+import { useDeleteManagedTable, useUpdateManagedTable } from "src/frontend/hooks/useManagedMetadata";
 import { useGetColumns, useGetConnectionById, useRefreshTable } from "src/frontend/hooks/useConnection";
 import { useActionDialogs } from "src/frontend/hooks/useActionDialogs";
 import { useQuerySizeSetting } from "src/frontend/hooks/useSetting";
@@ -47,7 +47,8 @@ export default function TableActions(props: TableActionsProps): JSX.Element | nu
   const { selectCommand } = useCommands();
   const { data: treeActions } = useTreeActions();
   const { confirm, prompt } = useActionDialogs();
-  const queryClient = useQueryClient();
+  const { mutateAsync: updateTable } = useUpdateManagedTable();
+  const { mutateAsync: deleteTable } = useDeleteManagedTable();
   const refreshTable = useRefreshTable();
 
   if (!open) {
@@ -123,8 +124,12 @@ export default function TableActions(props: TableActionsProps): JSX.Element | nu
               value: displayName,
             });
             if (newName && newName !== displayName && props.connectionId && props.databaseId && props.tableId) {
-              await ProxyApi.updateManagedTable(props.connectionId, props.databaseId, props.tableId, { name: newName });
-              queryClient.invalidateQueries({ queryKey: [props.connectionId, props.databaseId, "tables"] });
+              await updateTable({
+                connectionId: props.connectionId,
+                databaseId: props.databaseId,
+                managedTableId: props.tableId,
+                body: { name: newName },
+              });
             }
           } catch (_err) {
             // user dismissed dialog
@@ -139,8 +144,11 @@ export default function TableActions(props: TableActionsProps): JSX.Element | nu
           try {
             await confirm(`Are you sure you want to delete request "${displayName}"?`, "Delete");
             if (props.connectionId && props.databaseId && props.tableId) {
-              await ProxyApi.deleteManagedTable(props.connectionId, props.databaseId, props.tableId);
-              queryClient.invalidateQueries({ queryKey: [props.connectionId, props.databaseId, "tables"] });
+              await deleteTable({
+                connectionId: props.connectionId,
+                databaseId: props.databaseId,
+                managedTableId: props.tableId,
+              });
             }
           } catch (_err) {
             // user dismissed dialog
