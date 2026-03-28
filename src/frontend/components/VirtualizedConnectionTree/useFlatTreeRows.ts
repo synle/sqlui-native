@@ -1,6 +1,7 @@
 import { useQueries } from "@tanstack/react-query";
 import { isDialectSupportManagedMetadata } from "src/common/adapters/DataScriptFactory";
 import dataApi from "src/frontend/data/api";
+import { queryKeys } from "src/frontend/hooks/queryKeys";
 import { useGetConnections, useUpdateConnections, useAutoConnectAll } from "src/frontend/hooks/useConnection";
 import { useActiveConnectionQuery } from "src/frontend/hooks/useConnectionQuery";
 import { useShowHide } from "src/frontend/hooks/useShowHide";
@@ -81,7 +82,7 @@ export function useFlatTreeRows() {
   // Batch fetch databases for all expanded+online connections
   const databaseQueries = useQueries({
     queries: expandedOnlineConnections.map((connectionId) => ({
-      queryKey: [connectionId, "databases"],
+      queryKey: queryKeys.databases.list(connectionId),
       queryFn: () => dataApi.getConnectionDatabases(connectionId),
     })),
   });
@@ -109,7 +110,7 @@ export function useFlatTreeRows() {
   // Batch fetch tables for all expanded databases
   const tableQueries = useQueries({
     queries: expandedDatabases.map(({ connectionId, databaseId }) => ({
-      queryKey: [connectionId, databaseId, "tables"],
+      queryKey: queryKeys.tables.list(connectionId, databaseId),
       queryFn: () => dataApi.getConnectionTables(connectionId, databaseId),
     })),
   });
@@ -150,7 +151,7 @@ export function useFlatTreeRows() {
   // Batch fetch columns for all expanded tables (staggered via connectionThrottle)
   const columnQueries = useQueries({
     queries: expandedTables.map(({ connectionId, databaseId, tableId }) => ({
-      queryKey: [connectionId, databaseId, tableId, "columns"],
+      queryKey: queryKeys.columns.list(connectionId, databaseId, tableId),
       queryFn: () => dataApi.getConnectionColumns(connectionId, databaseId, tableId),
       staleTime: 5 * 60 * 1000,
       cacheTime: 10 * 60 * 1000,

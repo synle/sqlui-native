@@ -11,14 +11,14 @@ import RefreshIcon from "@mui/icons-material/Refresh";
 import SelectAllIcon from "@mui/icons-material/SelectAll";
 import StarIcon from "@mui/icons-material/Star";
 import IconButton from "@mui/material/IconButton";
-import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "src/frontend/utils/commonUtils";
 import { getDivider } from "src/common/adapters/BaseDataAdapter/scripts";
 import { getConnectionActions, isDialectSupportManagedMetadata } from "src/common/adapters/DataScriptFactory";
-import { ProxyApi } from "src/frontend/data/api";
+
 import DropdownButton from "src/frontend/components/DropdownButton";
 import { useCommands } from "src/frontend/components/MissionControl";
 import { showTestConnectionModal } from "src/frontend/components/TestConnectionButton";
+import { useCreateManagedDatabase } from "src/frontend/hooks/useManagedMetadata";
 import { useActionDialogs } from "src/frontend/hooks/useActionDialogs";
 import { useTreeActions } from "src/frontend/hooks/useTreeActions";
 import { SqlAction, SqluiCore } from "typings";
@@ -38,7 +38,7 @@ export default function ConnectionActions(props: ConnectionActionsProps): JSX.El
   const navigate = useNavigate();
   const { selectCommand } = useCommands();
   const { modal, prompt, dismiss } = useActionDialogs();
-  const queryClient = useQueryClient();
+  const { mutateAsync: createFolder } = useCreateManagedDatabase();
   const data = connection;
   const { data: treeActions } = useTreeActions();
 
@@ -139,8 +139,7 @@ export default function ConnectionActions(props: ConnectionActionsProps): JSX.El
               try {
                 const name = await prompt({ title: "New Folder", message: "Enter folder name:", required: true });
                 if (name) {
-                  await ProxyApi.createManagedDatabase(connectionId!, { name });
-                  queryClient.invalidateQueries({ queryKey: [connectionId, "databases"] });
+                  await createFolder({ connectionId: connectionId!, name });
                 }
               } catch (_err) {
                 // user dismissed dialog

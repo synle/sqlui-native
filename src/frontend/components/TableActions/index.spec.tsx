@@ -16,12 +16,13 @@ vi.mock("src/common/adapters/DataScriptFactory", () => ({
   isDialectSupportVisualization: () => false,
 }));
 
-vi.mock("@tanstack/react-query", () => ({
-  useQueryClient: () => ({ invalidateQueries: vi.fn() }),
-}));
-
 vi.mock("src/frontend/data/api", () => ({
   ProxyApi: {},
+}));
+
+vi.mock("src/frontend/hooks/useManagedMetadata", () => ({
+  useDeleteManagedTable: () => ({ mutateAsync: vi.fn() }),
+  useUpdateManagedTable: () => ({ mutateAsync: vi.fn() }),
 }));
 
 vi.mock("src/frontend/hooks/useActionDialogs", () => ({
