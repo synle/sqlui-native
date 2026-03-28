@@ -1,5 +1,5 @@
 import { app, BrowserWindow, ipcMain, Menu, nativeTheme, shell } from "electron";
-import path from "path";
+import path from "node:path";
 import { matchPath } from "react-router-dom";
 import { getEndpointHandlers, setUpDataEndpoints } from "src/common/Endpoints";
 import { SqluiEnums } from "typings";
