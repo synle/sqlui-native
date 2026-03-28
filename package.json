@@ -87,6 +87,7 @@
     "pretest-ci": "npm run pretest",
     "test-ci": "vitest run",
     "test-integration": "vitest run --config vitest.integration.config.ts",
+    "test-e2e": "npx playwright test",
     "### Distribution & Packaging ###": "##################################################################################",
     "version-stamp:draft": "npm version prepatch --no-git-tag-version --preid=beta-$(date +%Y%m%d%H%M%S)",
     "version-stamp:release": "npm version patch --no-git-tag-version",

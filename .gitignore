@@ -46,6 +46,9 @@ src/package.json
 # Testing & coverage
 coverage/
 .nyc_output
+e2e-screenshots/
+e2e-results/
+e2e-report/
 
 # Caches
 .cache
