@@ -333,7 +333,7 @@ See CONTRIBUTING.md for the full step-by-step guide with code examples.
 
 After any code change, you MUST run these commands **in order** and ensure they all pass before considering the task complete. **Running `npm run format` is mandatory after every change — no exceptions.**
 
-1. **Always add JSDoc for ALL code in every change.** JSDoc is mandatory on every function, constant, type, interface, and any code you touch — JavaScript and TypeScript alike, no exceptions. Script files must start with a single-line `/** Description. */` file header.
+1. **Always add TSDoc for ALL code in every change.** TSDoc is mandatory on every function, constant, type, interface, and any code you touch — no exceptions. Script files must start with a single-line `/** Description. */` file header. See the **Documentation** section below for TSDoc style rules.
 2. **Update docs** when making significant changes:
    - **CONTRIBUTING.md** — Update when adding or modifying database adapters (new auth flows, connection formats, query modes, setup instructions, integration tests).
    - **README.md** — Update for new features and adapter changes (new adapters, significant changes to existing ones). Only for semi-major or new features, not minor tweaks.
@@ -390,4 +390,34 @@ After any build-related or Vite config change, run the affected build task to ve
 
 ## Documentation
 
-**JSDoc is mandatory on every change.** All tracked source files (`.ts`, `.tsx`, `.js`) must have JSDoc documentation on all exported functions, classes, interfaces, types, constants, and components. This is a non-negotiable part of every code change — no PR or commit should be made without ensuring JSDoc coverage. Follow the existing JSDoc style: concise 1-2 line descriptions with `@param` and `@returns` tags where applicable. Excluded: test files (`*.spec.*`), `_Sample*` files, and `sw*.js` files.
+### TSDoc
+
+When writing or modifying non-test source code (`.ts`, `.tsx`), add **TSDoc** comments to all exported functions, classes, components, hooks, types, interfaces, and constants. Do not duplicate type information already present in the TypeScript signature — document _what_ and _why_, not the types. Script files must start with a single-line `/** Description. */` file header.
+
+This is a non-negotiable part of every code change — no PR or commit should be made without ensuring TSDoc coverage.
+
+- **Use TSDoc**, not JSDoc. This is a TypeScript codebase; avoid JSDoc-style type annotations (`@param {string}`, `@returns {number}`).
+- **Skip TSDoc for**: test files (`*.spec.*`), `_Sample*` files, and `sw*.js` files.
+- **`@param`** — describe semantics, not types: `@param connectionId - The connection to refresh`
+- **`@returns`** — describe what the caller gets back when it isn't obvious from the return type.
+- **`@remarks`** — use for non-obvious implementation details, caveats, or performance notes.
+- **`@example`** — include when usage isn't obvious (e.g., complex hook signatures).
+
+```ts
+// GOOD — TSDoc, no redundant types
+/**
+ * Fetches databases for a connection.
+ * @param connectionId - The connection to query
+ * @returns The list of databases including metadata
+ */
+function getDatabases(connectionId: string): Promise<DatabaseMetaData[]> { ... }
+
+// BAD — JSDoc-style with redundant type annotations
+/**
+ * @param {string} connectionId
+ * @returns {Promise<DatabaseMetaData[]>}
+ */
+function getDatabases(connectionId: string): Promise<DatabaseMetaData[]> { ... }
+```
+
+> **Migration note:** Existing code uses JSDoc-style comments. When touching a file, convert its doc comments to TSDoc style (remove `{type}` annotations from `@param`/`@returns` tags). No need to bulk-convert files you aren't otherwise modifying.
