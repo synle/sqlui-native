@@ -12,7 +12,20 @@ vi.mock("src/common/adapters/BaseDataAdapter/scripts", () => ({
 
 vi.mock("src/common/adapters/DataScriptFactory", () => ({
   getDatabaseActions: () => [],
+  isDialectSupportManagedMetadata: () => false,
   isDialectSupportVisualization: () => false,
+}));
+
+vi.mock("@tanstack/react-query", () => ({
+  useQueryClient: () => ({ invalidateQueries: vi.fn() }),
+}));
+
+vi.mock("src/frontend/data/api", () => ({
+  ProxyApi: {},
+}));
+
+vi.mock("src/frontend/hooks/useActionDialogs", () => ({
+  useActionDialogs: () => ({ prompt: vi.fn(), confirm: vi.fn() }),
 }));
 
 vi.mock("src/frontend/components/DropdownButton", () => ({

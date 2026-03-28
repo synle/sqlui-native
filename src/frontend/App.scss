@@ -157,6 +157,26 @@ $ConnectionTreeIndentSize: 7px;
   }
 }
 
+.editor-variable-highlight {
+  font-weight: bold;
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.editor-variable-connection {
+  color: #4ec9b0 !important;
+}
+
+.editor-variable-folder {
+  color: #dcdcaa !important;
+}
+
+.editor-variable-dynamic {
+  color: #c586c0 !important;
+}
+
 .Resizer {
   &--Horizontal {
     cursor: "col-resize";

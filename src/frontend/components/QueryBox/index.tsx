@@ -4,6 +4,7 @@ import FormatColorTextIcon from "@mui/icons-material/FormatColorText";
 import HelpIcon from "@mui/icons-material/Help";
 import InfoIcon from "@mui/icons-material/Info";
 import MenuIcon from "@mui/icons-material/Menu";
+import SaveIcon from "@mui/icons-material/Save";
 import SendIcon from "@mui/icons-material/Send";
 import UnfoldLessIcon from "@mui/icons-material/UnfoldLess";
 import UnfoldMoreIcon from "@mui/icons-material/UnfoldMore";
@@ -16,8 +17,9 @@ import Tooltip from "@mui/material/Tooltip";
 import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "src/frontend/utils/commonUtils";
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import { getSyntaxModeByDialect, getTableActions } from "src/common/adapters/DataScriptFactory";
-import CodeEditorBox, { CompletionItem, EditorRef } from "src/frontend/components/CodeEditorBox";
+import { getSyntaxModeByDialect, getTableActions, isDialectSupportManagedMetadata } from "src/common/adapters/DataScriptFactory";
+import { ProxyApi } from "src/frontend/data/api";
+import CodeEditorBox, { CompletionItem, EditorRef, EditorVariable } from "src/frontend/components/CodeEditorBox";
 import DropdownButton from "src/frontend/components/DropdownButton";
 import { useCommands } from "src/frontend/components/MissionControl";
 import ConnectionDatabaseSelector from "src/frontend/components/QueryBox/ConnectionDatabaseSelector";
@@ -169,6 +171,7 @@ function QueryBox(props: QueryBoxProps): JSX.Element | null {
   const { query, onChange, isLoading: loadingConnection } = useConnectionQuery(queryId);
   const { mutateAsync: executeQuery } = useExecute();
   const [executing, setExecuting] = useState(false);
+  const [saving, setSaving] = useState(false);
   const layoutMode = useLayoutModeSetting();
   const [expanded, setExpanded] = useState(layoutMode !== "compact");
   const { data: selectedConnection } = useGetConnectionById(query?.connectionId);
@@ -285,8 +288,69 @@ function QueryBox(props: QueryBoxProps): JSX.Element | null {
   const language: string = useMemo(() => getSyntaxModeByDialect(selectedConnection?.dialect), [selectedConnection?.dialect, query?.sql]);
   const isLoading = loadingConnection;
   const isExecuting = executing;
+  const isManagedMetadata = isDialectSupportManagedMetadata(selectedConnection?.dialect);
+  const editorLanguageOptions = isManagedMetadata
+    ? [
+        { value: "shell", label: "Shell (curl)" },
+        { value: "javascript", label: "Javascript (fetch)" },
+      ]
+    : undefined;
+  const isSaveVisible = isManagedMetadata && !!query?.connectionId && !!query?.databaseId && !!query?.tableId;
   const isMigrationVisible = !!query?.connectionId && !!query?.databaseId;
   const isCreateRecordVisible = isMigrationVisible;
+
+  /** Parses REST API connection config variables (connection-level). */
+  const connectionVariables: EditorVariable[] = useMemo(() => {
+    if (!isManagedMetadata || !selectedConnection?.connection) return [];
+    try {
+      const json = selectedConnection.connection.replace(/^(restapi|rest):\/\//, "");
+      const config = json ? JSON.parse(json) : {};
+      const vars: EditorVariable[] = [];
+      if (config.HOST) {
+        vars.push({ key: "HOST", value: config.HOST, enabled: true, source: "connection" });
+      }
+      if (Array.isArray(config.variables)) {
+        for (const v of config.variables) {
+          if (v.key) vars.push({ key: v.key, value: v.value || "", enabled: v.enabled !== false, source: "connection" });
+        }
+      }
+      return vars;
+    } catch (_err) {
+      return [];
+    }
+  }, [isManagedMetadata, selectedConnection?.connection]);
+
+  /** Fetches folder-level variables when the selected database changes. */
+  const [folderVariables, setFolderVariables] = useState<EditorVariable[]>([]);
+  useEffect(() => {
+    if (!isManagedMetadata || !query?.connectionId || !query?.databaseId) {
+      setFolderVariables([]);
+      return;
+    }
+    ProxyApi.getManagedDatabase(query.connectionId, query.databaseId)
+      .then((folder) => {
+        const vars = (folder?.props as { variables?: any[] } | undefined)?.variables;
+        if (Array.isArray(vars)) {
+          setFolderVariables(
+            vars
+              .filter((v) => v.key)
+              .map((v) => ({ key: v.key, value: v.value || "", enabled: v.enabled !== false, source: "folder" as const })),
+          );
+        } else {
+          setFolderVariables([]);
+        }
+      })
+      .catch(() => setFolderVariables([]));
+  }, [isManagedMetadata, query?.connectionId, query?.databaseId]);
+
+  /** Merged editor variables: folder overrides connection (last wins). */
+  const editorVariables: EditorVariable[] | undefined = useMemo(() => {
+    const merged = new Map<string, EditorVariable>();
+    for (const v of connectionVariables) merged.set(v.key, v);
+    for (const v of folderVariables) merged.set(v.key, v);
+    const result = Array.from(merged.values());
+    return result.length > 0 ? result : undefined;
+  }, [connectionVariables, folderVariables]);
 
   useLayoutEffect(() => {
     setExpanded(layoutMode !== "compact");
@@ -326,6 +390,25 @@ function QueryBox(props: QueryBoxProps): JSX.Element | null {
     }
 
     onChange({ sql });
+  };
+
+  /** Saves the current editor content to the managed table's persisted props.query. */
+  const onSaveRequest = async () => {
+    if (!query?.connectionId || !query?.databaseId || !query?.tableId) return;
+    setSaving(true);
+    try {
+      const currentSql = editorRef?.current?.getValue() ?? query.sql ?? "";
+      onChange({ sql: currentSql });
+      await ProxyApi.updateManagedTable(query.connectionId, query.databaseId, query.tableId, {
+        query: currentSql,
+      });
+      await addToast({ message: `Request "${query.tableId}" saved.`, persisted: false });
+    } catch (err) {
+      console.error("QueryBox:onSaveRequest", err);
+      await addToast({ message: `Failed to save request "${query.tableId}".`, persisted: false });
+    } finally {
+      setSaving(false);
+    }
   };
 
   const onSubmit = async (e: React.SyntheticEvent) => {
@@ -464,9 +547,11 @@ function QueryBox(props: QueryBoxProps): JSX.Element | null {
           id={query.id}
           className="CodeEditorBox__QueryBox"
           value={query.sql}
-          placeholder={`Enter SQL for ` + query.name}
+          placeholder={isManagedMetadata ? `Enter curl or fetch() command` : `Enter SQL for ` + query.name}
           onChange={onSqlQueryChange}
           language={language}
+          languageOptions={editorLanguageOptions}
+          variables={editorVariables}
           editorRef={editorRef}
           autoFocus
           required
@@ -479,6 +564,20 @@ function QueryBox(props: QueryBoxProps): JSX.Element | null {
               <ConnectionRevealButton query={query} />
               <CodeSnippetButton {...props} />
             </div>
+          )}
+          {isSaveVisible && (
+            <Tooltip title="Save this request to the collection.">
+              <LoadingButton
+                type="button"
+                variant="outlined"
+                loading={saving}
+                onClick={onSaveRequest}
+                startIcon={<SaveIcon />}
+                size="small"
+              >
+                Save
+              </LoadingButton>
+            </Tooltip>
           )}
           <LoadingButton
             id="btnExecuteCommand"

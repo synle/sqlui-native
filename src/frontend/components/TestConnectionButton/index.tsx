@@ -3,8 +3,10 @@ import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import { Box, Button, CircularProgress, Typography } from "@mui/material";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { getConnectionFormInputs, getConnectionStringFormat } from "src/common/adapters/DataScriptFactory";
+import Timer from "src/frontend/components/Timer";
 import { ProxyApi } from "src/frontend/data/api";
 import { useActionDialogs } from "src/frontend/hooks/useActionDialogs";
+import { formatDuration } from "src/frontend/utils/formatter";
 import { SqluiCore } from "typings";
 
 /** Props for the TestConnectionButton component. */
@@ -61,7 +63,10 @@ function parseConnectionDetails(connectionString: string): ConnectionDetail[] {
           if (parsed[inputKey]) {
             // Mask sensitive fields
             const isSensitive = /password|secret|token|key|clientId/i.test(inputKey);
-            details.push({ label: inputLabel, value: isSensitive ? "••••••••" : parsed[inputKey] });
+            const rawValue = parsed[inputKey];
+            // Skip non-string values (e.g., variables array) — they can't be rendered as text
+            if (typeof rawValue !== "string") continue;
+            details.push({ label: inputLabel, value: isSensitive ? "••••••••" : rawValue });
           }
         }
       } catch (_err) {
@@ -121,18 +126,6 @@ function parseConnectionDetails(connectionString: string): ConnectionDetail[] {
 }
 
 /**
- * Formats elapsed milliseconds into a human-readable string (e.g. "1.2s" or "350ms").
- * @param ms - Elapsed time in milliseconds.
- * @returns Formatted duration string.
- */
-function formatElapsed(ms: number): string {
-  if (ms < 1000) {
-    return `${ms}ms`;
-  }
-  return `${(ms / 1000).toFixed(1)}s`;
-}
-
-/**
  * Renders a labeled metadata row for the test connection result.
  * @param props - Label and value to display.
  * @returns The metadata row element, or null if value is empty.
@@ -159,14 +152,11 @@ function MetadataRow(props: { label: string; value: string }): JSX.Element | nul
  * @returns The live timer element.
  */
 function LiveTimer(props: { startTime: number }): JSX.Element {
-  const [now, setNow] = useState(Date.now());
-
-  useEffect(() => {
-    const interval = setInterval(() => setNow(Date.now()), 1000);
-    return () => clearInterval(interval);
-  }, []);
-
-  return <Typography variant="body2">{formatElapsed(now - props.startTime)}</Typography>;
+  return (
+    <Typography variant="body2">
+      <Timer startTime={props.startTime} />
+    </Typography>
+  );
 }
 
 /**
@@ -181,6 +171,7 @@ export function TestConnectionModalBody(props: TestConnectionModalBodyProps): JS
   const [errorMessage, setErrorMessage] = useState("");
   const [elapsed, setElapsed] = useState(0);
   const [dialect, setDialect] = useState("");
+  const [diagnostics, setDiagnostics] = useState<SqluiCore.ConnectionDiagnostic[]>([]);
   const startTimeRef = useRef(Date.now());
   const abortControllerRef = useRef<AbortController | null>(null);
 
@@ -196,6 +187,7 @@ export function TestConnectionModalBody(props: TestConnectionModalBodyProps): JS
     setErrorMessage("");
     setElapsed(0);
     setDialect("");
+    setDiagnostics([]);
     startTimeRef.current = Date.now();
     try {
       const result = await ProxyApi.test(connection, controller.signal);
@@ -204,6 +196,7 @@ export function TestConnectionModalBody(props: TestConnectionModalBodyProps): JS
       }
       setElapsed(Date.now() - startTimeRef.current);
       setDialect(result?.dialect || "");
+      setDiagnostics(result?.diagnostics || []);
       setStatus("success");
     } catch (err) {
       if (controller.signal.aborted) {
@@ -246,7 +239,7 @@ export function TestConnectionModalBody(props: TestConnectionModalBodyProps): JS
     <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5, ml: 0.5 }}>
       {renderConnectionInfo()}
       {showDialect && <MetadataRow label="Dialect" value={dialect} />}
-      <MetadataRow label="Time" value={formatElapsed(elapsed)} />
+      <MetadataRow label="Time" value={formatDuration(elapsed)} />
     </Box>
   );
 
@@ -277,6 +270,23 @@ export function TestConnectionModalBody(props: TestConnectionModalBodyProps): JS
             <Typography>Successfully connected to Server.</Typography>
           </Box>
           {renderMetadata(true)}
+          {diagnostics.length > 0 && (
+            <Box sx={{ mt: 1.5 }}>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
+                Diagnostics:
+              </Typography>
+              {diagnostics.map((d, idx) => (
+                <Box key={idx} sx={{ display: "flex", gap: 1, ml: 0.5 }}>
+                  <Typography variant="body2" sx={{ minWidth: 70 }}>
+                    {d.name}
+                  </Typography>
+                  <Typography variant="body2" color={d.success ? "success.main" : "text.secondary"}>
+                    {d.success ? "✓" : "✗"} {d.message}
+                  </Typography>
+                </Box>
+              ))}
+            </Box>
+          )}
         </Box>
       )}
 
@@ -312,7 +322,7 @@ export function TestConnectionModalBody(props: TestConnectionModalBodyProps): JS
             <Typography>Connection test cancelled.</Typography>
           </Box>
           <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5, ml: 0.5 }}>
-            <MetadataRow label="Time" value={formatElapsed(elapsed)} />
+            <MetadataRow label="Time" value={formatDuration(elapsed)} />
           </Box>
         </Box>
       )}

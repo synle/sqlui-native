@@ -4,7 +4,7 @@ import AzureTableStorageAdapter from "src/common/adapters/AzureTableStorageAdapt
 import AzureTableStorageAdapterScripts from "src/common/adapters/AzureTableStorageAdapter/scripts";
 import CassandraDataAdapter from "src/common/adapters/CassandraDataAdapter/index";
 import CassandraDataAdapterScripts from "src/common/adapters/CassandraDataAdapter/scripts";
-import { getDialectType } from "src/common/adapters/DataScriptFactory";
+import { getDialectType, isDialectSupportManagedMetadata } from "src/common/adapters/DataScriptFactory";
 import IDataAdapter from "src/common/adapters/IDataAdapter";
 import MongoDBDataAdapter from "src/common/adapters/MongoDBDataAdapter/index";
 import MongoDBDataAdapterScripts from "src/common/adapters/MongoDBDataAdapter/scripts";
@@ -16,7 +16,7 @@ import RestApiDataAdapter from "src/common/adapters/RestApiDataAdapter/index";
 import RestApiDataAdapterScripts from "src/common/adapters/RestApiDataAdapter/scripts";
 import SalesforceDataAdapter from "src/common/adapters/SalesforceDataAdapter/index";
 import SalesforceDataAdapterScripts from "src/common/adapters/SalesforceDataAdapter/scripts";
-import PersistentStorage from "src/common/PersistentStorage";
+import PersistentStorage, { getManagedDatabasesStorage, getManagedTablesStorage } from "src/common/PersistentStorage";
 import { SqluiCore } from "typings";
 
 /** Cache entry shape for storing database metadata on disk. */
@@ -519,11 +519,32 @@ export function resetConnectionMetaData(connection: SqluiCore.CoreConnectionProp
  * @returns Sorted array of database metadata.
  */
 export async function getDatabases(sessionId: string, connectionId: string) {
+  const connection = await new PersistentStorage<SqluiCore.ConnectionProps>(sessionId, "connection").get(connectionId);
+
+  // For managed-metadata adapters, always read directly from managed storage (no caching)
+  const dialect = connection.dialect || getDialectType(connection.connection);
+  if (isDialectSupportManagedMetadata(dialect)) {
+    try {
+      const dbStorage = await getManagedDatabasesStorage(connectionId);
+      let managed = await dbStorage.list();
+      // Auto-seed a folder if storage is empty (e.g., REST API connection created before this feature)
+      if (managed.length === 0 && dialect === "rest") {
+        await dbStorage.add({ id: "Folder 1", name: "Folder 1", connectionId });
+        managed = await dbStorage.list();
+      }
+      return managed
+        .map((entry): SqluiCore.DatabaseMetaData => ({ name: entry.name, tables: [] }))
+        .sort((a, b) => (a.name || "").localeCompare(b.name || ""));
+    } catch (err) {
+      console.error("DataAdapterFactory.ts:getManagedDatabases", err);
+      return [];
+    }
+  }
+
   const cached = getCachedDatabases(connectionId);
 
   // Background refresh: fetch fresh data and update the cache for next call
   const refreshCache = async () => {
-    const connection = await new PersistentStorage<SqluiCore.ConnectionProps>(sessionId, "connection").get(connectionId);
     const engine = getDataAdapter(connection.connection);
     try {
       const databases = (await engine.getDatabases()).sort((a, b) => (a.name || "").localeCompare(b.name || ""));
@@ -566,11 +587,28 @@ export async function getDatabases(sessionId: string, connectionId: string) {
  * @returns Sorted array of table metadata.
  */
 export async function getTables(sessionId: string, connectionId: string, databaseId: string) {
+  const connection = await new PersistentStorage<SqluiCore.ConnectionProps>(sessionId, "connection").get(connectionId);
+
+  // For managed-metadata adapters, always read directly from managed storage (no caching)
+  const dialect = connection.dialect || getDialectType(connection.connection);
+  if (isDialectSupportManagedMetadata(dialect)) {
+    try {
+      const tableStorage = await getManagedTablesStorage(connectionId);
+      const managed = await tableStorage.list();
+      return managed
+        .filter((entry) => entry.databaseId === databaseId)
+        .map((entry): SqluiCore.TableMetaData => ({ id: entry.id, name: entry.name, columns: [] }))
+        .sort((a, b) => (a.name || "").localeCompare(b.name || ""));
+    } catch (err) {
+      console.error("DataAdapterFactory.ts:getManagedTables", err);
+      return [];
+    }
+  }
+
   const cached = getCachedTables(connectionId, databaseId);
 
   // Background refresh: fetch fresh data and update the cache for next call
   const refreshCache = async () => {
-    const connection = await new PersistentStorage<SqluiCore.ConnectionProps>(sessionId, "connection").get(connectionId);
     const engine = getDataAdapter(connection.connection);
     try {
       const tables = (await engine.getTables(databaseId)).sort((a, b) => (a.name || "").localeCompare(b.name || ""));

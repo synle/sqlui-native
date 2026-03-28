@@ -52,23 +52,28 @@ LIMIT
   });
 
   describe("formatDuration", () => {
-    test("should return seconds for durations > 1 second", () => {
-      expect(formatter.formatDuration(2000)).toEqual("2 seconds");
-      expect(formatter.formatDuration(5500)).toEqual("5 seconds");
-      expect(formatter.formatDuration(10000)).toEqual("10 seconds");
-      expect(formatter.formatDuration(60000)).toEqual("60 seconds");
+    test("should return compact seconds for durations > 1 second", () => {
+      expect(formatter.formatDuration(2000)).toEqual("2s");
+      expect(formatter.formatDuration(5500)).toEqual("5.5s");
+      expect(formatter.formatDuration(10000)).toEqual("10s");
+      expect(formatter.formatDuration(60000)).toEqual("60s");
     });
 
-    test("should return '<= 1 second' for durations <= 1 second", () => {
-      expect(formatter.formatDuration(0)).toEqual("<= 1 second");
-      expect(formatter.formatDuration(500)).toEqual("<= 1 second");
-      expect(formatter.formatDuration(999)).toEqual("<= 1 second");
-      expect(formatter.formatDuration(1000)).toEqual("<= 1 second");
+    test("should return '<= 1s' for durations <= 1 second", () => {
+      expect(formatter.formatDuration(0)).toEqual("<= 1s");
+      expect(formatter.formatDuration(500)).toEqual("<= 1s");
+      expect(formatter.formatDuration(999)).toEqual("<= 1s");
+      expect(formatter.formatDuration(1000)).toEqual("<= 1s");
     });
 
-    test("should floor the seconds value", () => {
-      expect(formatter.formatDuration(2999)).toEqual("2 seconds");
-      expect(formatter.formatDuration(3001)).toEqual("3 seconds");
+    test("should show decimal for non-integer seconds", () => {
+      expect(formatter.formatDuration(2999)).toEqual("3.0s");
+      expect(formatter.formatDuration(3001)).toEqual("3.0s");
+      expect(formatter.formatDuration(1500)).toEqual("1.5s");
+    });
+
+    test("should handle negative values", () => {
+      expect(formatter.formatDuration(-100)).toEqual("<= 1s");
     });
   });
 

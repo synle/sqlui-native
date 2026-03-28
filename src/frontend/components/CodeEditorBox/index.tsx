@@ -21,8 +21,23 @@ export type EditorRef =
 /** A completion suggestion item for the Monaco editor autocomplete. */
 export type CompletionItem = {
   label: string;
-  kind: "database" | "table" | "column";
+  kind: "database" | "table" | "column" | "variable";
   detail?: string;
+};
+
+/** Source layer of a variable definition. */
+export type EditorVariableSource = "connection" | "folder" | "dynamic";
+
+/** A variable definition for {{VAR}} highlighting, hover, and autocomplete. */
+export type EditorVariable = {
+  /** Variable name (without {{ }}). */
+  key: string;
+  /** Resolved value shown on hover. */
+  value: string;
+  /** Whether the variable is enabled. */
+  enabled: boolean;
+  /** Which layer this variable comes from. */
+  source: EditorVariableSource;
 };
 
 /** Props for the CodeEditorBox component. */
@@ -45,7 +60,11 @@ export type CodeEditorProps = {
 
   hideEditorSize?: boolean;
   hideEditorSyntax?: boolean;
+  /** Custom language options for the syntax dropdown. Defaults to ["javascript", "sql"]. */
+  languageOptions?: { value: string; label: string }[];
   completionItems?: CompletionItem[];
+  /** Variables for {{VAR}} highlighting, hover tooltips, and autocomplete in the editor. */
+  variables?: EditorVariable[];
   /** Debounce delay in ms for live typing onChange calls. Defaults to 150, clamped to 1000 max. */
   debounceMs?: number;
 };
@@ -152,12 +171,21 @@ export default function CodeEditorBox(props: CodeEditorProps): JSX.Element | nul
     </ToggleButton>
   );
 
+  const defaultLanguageOptions = [
+    { value: "javascript", label: "Javascript" },
+    { value: "sql", label: "SQL" },
+  ];
+  const languageOptions = props.languageOptions || defaultLanguageOptions;
+
   const contentLanguageModeSelection = !hideEditorSyntax && (
     <>
       <Select label="Syntax" onChange={(newLanguage) => onSetLanguageMode(newLanguage)} value={languageMode}>
         <option value="">Auto Detected ({props.language})</option>
-        <option value="javascript">Javascript</option>
-        <option value="sql">SQL</option>
+        {languageOptions.map((opt) => (
+          <option key={opt.value} value={opt.value}>
+            {opt.label}
+          </option>
+        ))}
       </Select>
     </>
   );
@@ -259,6 +287,7 @@ export default function CodeEditorBox(props: CodeEditorProps): JSX.Element | nul
           required={props.required}
           editorRef={props.editorRef}
           completionItems={props.completionItems}
+          variables={props.variables}
         />
         {editorOptionBox}
       </Paper>

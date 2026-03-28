@@ -74,14 +74,18 @@ function buildCurlArgs(request: RestApiRequest): string[] {
   const args: string[] = [
     "-s", // Silent (no progress bar)
     "-S", // Show errors
-    "-i", // Include response headers in output
     "-w",
     `${TIMING_SEPARATOR}{${WRITE_OUT_FORMAT}}`, // Timing output
   ];
 
-  // Method
-  if (request.method !== "GET") {
-    args.push("-X", request.method);
+  // Method — use -I for HEAD (implies header output), -i for all others
+  if (request.method === "HEAD") {
+    args.push("-I");
+  } else {
+    args.push("-i"); // Include response headers in output
+    if (request.method !== "GET") {
+      args.push("-X", request.method);
+    }
   }
 
   // Headers
@@ -132,7 +136,13 @@ export function executeCurl(request: RestApiRequest, timeoutMs: number = DEFAULT
 
     execFile("curl", args, { timeout: timeoutMs, maxBuffer: 50 * 1024 * 1024 }, (error, stdout, stderr) => {
       if (error && !stdout) {
-        reject(new Error(`curl failed: ${stderr || error.message}`));
+        if (error.killed) {
+          reject(new Error(`Request timed out after ${timeoutMs}ms`));
+        } else {
+          // Prefer stderr (contains "curl: (N) ..." messages), fall back to a short error
+          const curlError = stderr?.trim() || error.message?.split("\n")[0] || "Unknown error";
+          reject(new Error(curlError));
+        }
         return;
       }
 

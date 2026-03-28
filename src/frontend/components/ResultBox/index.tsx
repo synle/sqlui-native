@@ -8,6 +8,7 @@ import CodeEditorBox from "src/frontend/components/CodeEditorBox";
 import { DataTableWithJSONList } from "src/frontend/components/DataTable";
 import JsonFormatData from "src/frontend/components/JsonFormatData";
 import { useCommands } from "src/frontend/components/MissionControl";
+import RestApiResultBox from "src/frontend/components/ResultBox/RestApiResultBox";
 import Tabs from "src/frontend/components/Tabs";
 import Timer from "src/frontend/components/Timer";
 import { downloadCsv, downloadJSON } from "src/frontend/data/file";
@@ -68,6 +69,11 @@ export default function ResultBox(props: ResultBoxProps): JSX.Element | null {
 
   if (!queryResult) {
     return null;
+  }
+
+  // REST API responses get a dedicated result viewer
+  if (queryResult.meta?.isRestApi && data && data.length > 0) {
+    return <RestApiResultBox meta={queryResult.meta} raw={data} executionStart={query.executionStart} executionEnd={query.executionEnd} />;
   }
 
   if (!data || !Array.isArray(data) || data.length === 0) {

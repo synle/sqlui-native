@@ -1,4 +1,5 @@
 import { useQueries } from "@tanstack/react-query";
+import { isDialectSupportManagedMetadata } from "src/common/adapters/DataScriptFactory";
 import dataApi from "src/frontend/data/api";
 import { useGetConnections, useUpdateConnections, useAutoConnectAll } from "src/frontend/hooks/useConnection";
 import { useActiveConnectionQuery } from "src/frontend/hooks/useConnectionQuery";
@@ -122,10 +123,18 @@ export function useFlatTreeRows() {
     error: tableQueries[i]?.error,
   }));
 
-  // Determine which tables are expanded
+  // Determine which tables are expanded (skip managed metadata — no columns to fetch)
+  const connectionDialectMap = new Map<string, string | undefined>();
+  if (connections) {
+    for (const c of connections) {
+      connectionDialectMap.set(c.id, c.dialect);
+    }
+  }
+
   const expandedTables: { connectionId: string; databaseId: string; tableId: string }[] = [];
   for (const tblResult of tableResults) {
     if (!tblResult.data) continue;
+    if (isDialectSupportManagedMetadata(connectionDialectMap.get(tblResult.connectionId))) continue;
     for (const tbl of tblResult.data) {
       const key = [tblResult.connectionId, tblResult.databaseId, tbl.name].join(" > ");
       if (visibles[key]) {
@@ -296,9 +305,14 @@ export function useFlatTreeRows() {
           continue;
         }
 
+        const isManagedMeta = isDialectSupportManagedMetadata(connection.dialect);
+
         for (const table of tblResult.data) {
-          const tblKey = [connection.id, database.name, table.name].join(" > ");
+          const tableId = table.id ?? table.name;
+          const tblKey = [connection.id, database.name, tableId].join(" > ");
           const tblExpanded = !!visibles[tblKey];
+          const tblSelected =
+            activeQuery?.connectionId === connection.id && activeQuery?.databaseId === database.name && activeQuery?.tableId === tableId;
 
           rows.push({
             type: "table-header",
@@ -308,14 +322,16 @@ export function useFlatTreeRows() {
             connectionId: connection.id,
             databaseId: database.name,
             tableName: table.name,
-            isSelected: tblExpanded,
-            isExpanded: tblExpanded,
+            tableId,
+            isSelected: tblSelected || tblExpanded,
+            isExpanded: isManagedMeta ? false : tblExpanded,
           });
 
-          if (!tblExpanded) continue;
+          // Skip column drill-down for managed metadata (REST API requests are leaf nodes)
+          if (isManagedMeta || !tblExpanded) continue;
 
           // Columns
-          const colResult = colMap.get(`${connection.id}|${database.name}|${table.name}`);
+          const colResult = colMap.get(`${connection.id}|${database.name}|${tableId}`);
           if (!colResult || colResult.isLoading) {
             rows.push({
               type: "loading",
@@ -344,13 +360,13 @@ export function useFlatTreeRows() {
             continue;
           }
 
-          const showAllKey = [connection.id, database.name, table.name, "__ShowAllColumns__"].join(" > ");
+          const showAllKey = [connection.id, database.name, tableId, "__ShowAllColumns__"].join(" > ");
           const showAll = colResult.data.length <= MAX_COLUMN_SIZE_TO_SHOW || !!visibles[showAllKey];
 
           const columnsToShow = showAll ? colResult.data : colResult.data.slice(0, MAX_COLUMN_SIZE_TO_SHOW + 1);
 
           for (const column of columnsToShow) {
-            const colKey = [connection.id, database.name, table.name, column.name].join(" > ");
+            const colKey = [connection.id, database.name, tableId, column.name].join(" > ");
             const colExpanded = !!visibles[colKey];
 
             rows.push({
@@ -360,7 +376,7 @@ export function useFlatTreeRows() {
               visibilityKey: colKey,
               connectionId: connection.id,
               databaseId: database.name,
-              tableId: table.name,
+              tableId,
               column,
               isSelected: colExpanded,
               isExpanded: colExpanded,

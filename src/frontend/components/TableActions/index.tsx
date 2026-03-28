@@ -1,14 +1,20 @@
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
+import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import SsidChartIcon from "@mui/icons-material/SsidChart";
 import IconButton from "@mui/material/IconButton";
+import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "src/frontend/utils/commonUtils";
 import { useState } from "react";
 import { getDivider } from "src/common/adapters/BaseDataAdapter/scripts";
-import { getTableActions, isDialectSupportVisualization } from "src/common/adapters/DataScriptFactory";
+import { getTableActions, isDialectSupportManagedMetadata, isDialectSupportVisualization } from "src/common/adapters/DataScriptFactory";
 import DropdownButton from "src/frontend/components/DropdownButton";
 import { useCommands } from "src/frontend/components/MissionControl";
+import { ProxyApi } from "src/frontend/data/api";
 import { useGetColumns, useGetConnectionById, useRefreshTable } from "src/frontend/hooks/useConnection";
+import { useActionDialogs } from "src/frontend/hooks/useActionDialogs";
 import { useQuerySizeSetting } from "src/frontend/hooks/useSetting";
 import { useTreeActions } from "src/frontend/hooks/useTreeActions";
 import { SqlAction } from "typings";
@@ -19,8 +25,10 @@ type TableActionsProps = {
   connectionId: string;
   /** ID of the database. */
   databaseId: string;
-  /** ID/name of the table. */
+  /** Unique identifier of the table (UUID for managed tables). */
   tableId: string;
+  /** Display name of the table (defaults to tableId if not provided). */
+  tableName?: string;
 };
 
 /**
@@ -38,6 +46,8 @@ export default function TableActions(props: TableActionsProps): JSX.Element | nu
   let tableId: string | undefined = props.tableId;
   const { selectCommand } = useCommands();
   const { data: treeActions } = useTreeActions();
+  const { confirm, prompt } = useActionDialogs();
+  const queryClient = useQueryClient();
   const refreshTable = useRefreshTable();
 
   if (!open) {
@@ -53,6 +63,7 @@ export default function TableActions(props: TableActionsProps): JSX.Element | nu
   const dialect = connection?.dialect;
 
   const isLoading = loadingConnection || loadingColumns;
+  const isManagedMetadata = isDialectSupportManagedMetadata(dialect);
 
   let actions: SqlAction.Output[] = [];
 
@@ -69,28 +80,98 @@ export default function TableActions(props: TableActionsProps): JSX.Element | nu
     ];
   }
 
-  actions = [
-    ...actions,
-    ...getTableActions({
-      dialect,
-      connectionId,
-      databaseId,
-      tableId,
-      columns: columns || [],
-      querySize,
-    }),
-    getDivider(),
-    {
-      label: "Refresh",
-      description: "Refresh table columns cache.",
-      icon: <RefreshIcon />,
-      onClick: () => {
-        if (props.connectionId && props.databaseId && props.tableId) {
-          refreshTable(props.connectionId, props.databaseId, props.tableId);
-        }
+  if (isManagedMetadata) {
+    // Managed metadata tables (REST API requests): Open, Edit, Delete only
+    const displayName = props.tableName ?? props.tableId;
+    actions = [
+      ...actions,
+      {
+        label: "Open Request",
+        description: "Load the saved query for this request.",
+        icon: <OpenInNewIcon />,
+        onClick: async () => {
+          if (!props.connectionId || !props.databaseId || !props.tableId) return;
+          try {
+            const managed = await ProxyApi.getManagedTable(props.connectionId, props.databaseId, props.tableId);
+            const savedQuery = (managed?.props as { query?: string } | undefined)?.query ?? "";
+            selectCommand({
+              event: "clientEvent/query/apply",
+              data: {
+                connectionId: props.connectionId,
+                databaseId: props.databaseId,
+                tableId: props.tableId,
+                tableName: displayName,
+                sql: savedQuery,
+              },
+              label: `Opened request "${displayName}".`,
+            });
+          } catch (err) {
+            console.error("TableActions:openRequest", err);
+          }
+        },
       },
-    },
-  ];
+      {
+        label: "Edit Request",
+        description: "Rename this request.",
+        icon: <EditIcon />,
+        onClick: async () => {
+          try {
+            const newName = await prompt({
+              title: "Rename Request",
+              message: "Enter new request name:",
+              required: true,
+              value: displayName,
+            });
+            if (newName && newName !== displayName && props.connectionId && props.databaseId && props.tableId) {
+              await ProxyApi.updateManagedTable(props.connectionId, props.databaseId, props.tableId, { name: newName });
+              queryClient.invalidateQueries({ queryKey: [props.connectionId, props.databaseId, "tables"] });
+            }
+          } catch (_err) {
+            // user dismissed dialog
+          }
+        },
+      },
+      {
+        label: "Delete Request",
+        description: "Delete this request.",
+        icon: <DeleteIcon />,
+        onClick: async () => {
+          try {
+            await confirm(`Are you sure you want to delete request "${displayName}"?`, "Delete");
+            if (props.connectionId && props.databaseId && props.tableId) {
+              await ProxyApi.deleteManagedTable(props.connectionId, props.databaseId, props.tableId);
+              queryClient.invalidateQueries({ queryKey: [props.connectionId, props.databaseId, "tables"] });
+            }
+          } catch (_err) {
+            // user dismissed dialog
+          }
+        },
+      },
+    ];
+  } else {
+    actions = [
+      ...actions,
+      ...getTableActions({
+        dialect,
+        connectionId,
+        databaseId,
+        tableId,
+        columns: columns || [],
+        querySize,
+      }),
+      getDivider(),
+      {
+        label: "Refresh",
+        description: "Refresh table columns cache.",
+        icon: <RefreshIcon />,
+        onClick: () => {
+          if (props.connectionId && props.databaseId && props.tableId) {
+            refreshTable(props.connectionId, props.databaseId, props.tableId);
+          }
+        },
+      },
+    ];
+  }
 
   const options = actions.map((action) => ({
     label: action.label,
