@@ -4,6 +4,8 @@ import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
+import FileDownloadIcon from "@mui/icons-material/FileDownload";
+import FileUploadIcon from "@mui/icons-material/FileUpload";
 import NetworkCheckIcon from "@mui/icons-material/NetworkCheck";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import SelectAllIcon from "@mui/icons-material/SelectAll";
@@ -78,6 +80,28 @@ export default function ConnectionActions(props: ConnectionActionsProps): JSX.El
           data,
         }),
     },
+    ...(isRestApi
+      ? [
+          {
+            label: "Import Collection",
+            startIcon: <FileUploadIcon />,
+            onClick: () =>
+              selectCommand({
+                event: "clientEvent/connection/importCollection",
+                data,
+              }),
+          },
+          {
+            label: "Export as Postman",
+            startIcon: <FileDownloadIcon />,
+            onClick: () =>
+              selectCommand({
+                event: "clientEvent/connection/exportAsPostman",
+                data,
+              }),
+          },
+        ]
+      : []),
     {
       label: "Duplicate",
       startIcon: <ContentCopyIcon />,

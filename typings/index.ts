@@ -498,6 +498,8 @@ export module SqluiEnums {
     | "clientEvent/connection/delete"
     | "clientEvent/connection/duplicate"
     | "clientEvent/connection/export"
+    | "clientEvent/connection/exportAsPostman"
+    | "clientEvent/connection/importCollection"
     | "clientEvent/connection/new"
     | "clientEvent/connection/refresh"
     | "clientEvent/connection/select"
