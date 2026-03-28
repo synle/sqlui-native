@@ -97,7 +97,7 @@ export const TreeRowRenderer = React.memo(function TreeRowRenderer(props: TreeRo
     }
 
     case "table-header": {
-      const { connectionId, databaseId, tableName, isSelected, isExpanded, visibilityKey } = row;
+      const { connectionId, databaseId, tableName, tableId, isSelected, isExpanded, visibilityKey } = row;
       return (
         <div data-tree-key={visibilityKey}>
           <AccordionHeader
@@ -107,7 +107,7 @@ export const TreeRowRenderer = React.memo(function TreeRowRenderer(props: TreeRo
           >
             <TableRowsIcon color="success" fontSize="inherit" />
             <span>{tableName}</span>
-            <TableActions connectionId={connectionId} databaseId={databaseId} tableId={tableName} />
+            <TableActions connectionId={connectionId} databaseId={databaseId} tableId={tableId} tableName={tableName} />
           </AccordionHeader>
         </div>
       );

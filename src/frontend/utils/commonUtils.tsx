@@ -6,9 +6,19 @@ import { SqluiCore, SqluiFrontend } from "typings";
  * @param connectionProps - The connection properties to export.
  * @returns An object with `_type: "connection"` and key connection fields.
  */
-export function getExportedConnection(connectionProps: SqluiCore.ConnectionProps) {
+export function getExportedConnection(
+  connectionProps: SqluiCore.ConnectionProps,
+  managedMetadata?: { databases: SqluiCore.ManagedDatabase[]; tables: SqluiCore.ManagedTable[] },
+) {
   const { id, connection, name } = connectionProps;
-  return { _type: "connection", ...{ id, connection, name } };
+  const result: Record<string, any> = { _type: "connection", id, connection, name };
+  if (managedMetadata) {
+    result.managedMetadata = {
+      databases: managedMetadata.databases.map(({ name, props }) => ({ name, ...(props ? { props } : {}) })),
+      tables: managedMetadata.tables.map(({ name, databaseId, props }) => ({ name, databaseId, ...(props ? { props } : {}) })),
+    };
+  }
+  return result;
 }
 
 /**
@@ -122,6 +132,17 @@ export function getSanitizedConnectionUrl(connectionString: string): string {
   if (!connectionString) return "";
 
   const input = connectionString;
+
+  // Special handling for REST API connection strings (JSON format with HOST field).
+  // e.g. rest://{"HOST":"https://httpbin.org","variables":[...]} (also accepts legacy restapi://)
+  if (input.startsWith("rest://") || input.startsWith("restapi://")) {
+    try {
+      const json = JSON.parse(input.replace(/^[a-zA-Z][a-zA-Z0-9+.-]*:\/\//, ""));
+      if (json.HOST) return json.HOST;
+    } catch (_err) {
+      // fall through to default handling
+    }
+  }
 
   // Special handling for CosmosDB and Azure Table Storage connection strings,
   // which use a key=value;key=value format instead of standard URLs.

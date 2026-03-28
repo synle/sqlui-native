@@ -80,6 +80,11 @@ export default abstract class BaseDataScript implements IDataScript {
     return false;
   }
 
+  /** Returns false by default; override if this dialect manages its own databases/tables (e.g., REST API). */
+  supportManagedMetadata() {
+    return false;
+  }
+
   /**
    * Returns the dialect type if it is in the supported dialects list.
    * @param dialect - The dialect to check.

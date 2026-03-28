@@ -1,3 +1,4 @@
+import AddIcon from "@mui/icons-material/Add";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
@@ -8,9 +9,11 @@ import RefreshIcon from "@mui/icons-material/Refresh";
 import SelectAllIcon from "@mui/icons-material/SelectAll";
 import StarIcon from "@mui/icons-material/Star";
 import IconButton from "@mui/material/IconButton";
+import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "src/frontend/utils/commonUtils";
 import { getDivider } from "src/common/adapters/BaseDataAdapter/scripts";
-import { getConnectionActions } from "src/common/adapters/DataScriptFactory";
+import { getConnectionActions, isDialectSupportManagedMetadata } from "src/common/adapters/DataScriptFactory";
+import { ProxyApi } from "src/frontend/data/api";
 import DropdownButton from "src/frontend/components/DropdownButton";
 import { useCommands } from "src/frontend/components/MissionControl";
 import { showTestConnectionModal } from "src/frontend/components/TestConnectionButton";
@@ -32,12 +35,14 @@ export default function ConnectionActions(props: ConnectionActionsProps): JSX.El
   const { connection } = props;
   const navigate = useNavigate();
   const { selectCommand } = useCommands();
-  const { modal, dismiss } = useActionDialogs();
+  const { modal, prompt, dismiss } = useActionDialogs();
+  const queryClient = useQueryClient();
   const data = connection;
   const { data: treeActions } = useTreeActions();
 
   const { dialect, id: connectionId } = connection;
-  const isRestApi = dialect === "restapi" || dialect === "rest";
+  const isRestApi = dialect === "rest";
+  const isManagedMetadata = isDialectSupportManagedMetadata(dialect);
 
   const options: SqlAction.Output[] = [
     {
@@ -94,12 +99,32 @@ export default function ConnectionActions(props: ConnectionActionsProps): JSX.El
                 data,
               }),
           },
-          {
-            label: "Test Connection",
-            startIcon: <NetworkCheckIcon />,
-            onClick: () => showTestConnectionModal(connection, modal, dismiss),
-          },
         ]),
+    {
+      label: "Test Connection",
+      startIcon: <NetworkCheckIcon />,
+      onClick: () => showTestConnectionModal(connection, modal, dismiss),
+    },
+    ...(isManagedMetadata
+      ? [
+          getDivider(),
+          {
+            label: "New Folder",
+            startIcon: <AddIcon />,
+            onClick: async () => {
+              try {
+                const name = await prompt({ title: "New Folder", message: "Enter folder name:", required: true });
+                if (name) {
+                  await ProxyApi.createManagedDatabase(connectionId!, { name });
+                  queryClient.invalidateQueries({ queryKey: [connectionId, "databases"] });
+                }
+              } catch (_err) {
+                // user dismissed dialog
+              }
+            },
+          },
+        ]
+      : []),
     {
       label: "Delete",
       startIcon: <DeleteIcon />,

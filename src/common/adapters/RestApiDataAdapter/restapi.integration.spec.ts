@@ -8,7 +8,7 @@ describe("RestApiDataAdapter integration (httpbin.org)", () => {
 
   describe("curl execution", () => {
     it("GET request", async () => {
-      const adapter = new RestApiDataAdapter(`restapi://{"HOST":"${HTTPBIN}"}`);
+      const adapter = new RestApiDataAdapter(`rest://{"HOST":"${HTTPBIN}"}`);
       const result = await adapter.execute(`curl '${HTTPBIN}/get?foo=bar'`);
       expect(result.ok).toBe(true);
       expect(result.meta?.status).toBe(200);
@@ -18,7 +18,7 @@ describe("RestApiDataAdapter integration (httpbin.org)", () => {
     });
 
     it("POST JSON request", async () => {
-      const adapter = new RestApiDataAdapter(`restapi://{"HOST":"${HTTPBIN}"}`);
+      const adapter = new RestApiDataAdapter(`rest://{"HOST":"${HTTPBIN}"}`);
       const result = await adapter.execute(
         `curl -X POST '${HTTPBIN}/post' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{"name": "test"}'`,
       );
@@ -30,7 +30,7 @@ describe("RestApiDataAdapter integration (httpbin.org)", () => {
     });
 
     it("POST form-urlencoded request", async () => {
-      const adapter = new RestApiDataAdapter(`restapi://{"HOST":"${HTTPBIN}"}`);
+      const adapter = new RestApiDataAdapter(`rest://{"HOST":"${HTTPBIN}"}`);
       const result = await adapter.execute(
         `curl -X POST '${HTTPBIN}/post' \\\n  -H 'Content-Type: application/x-www-form-urlencoded' \\\n  -d 'field1=value1&field2=value2'`,
       );
@@ -42,7 +42,7 @@ describe("RestApiDataAdapter integration (httpbin.org)", () => {
     });
 
     it("PUT JSON request", async () => {
-      const adapter = new RestApiDataAdapter(`restapi://{"HOST":"${HTTPBIN}"}`);
+      const adapter = new RestApiDataAdapter(`rest://{"HOST":"${HTTPBIN}"}`);
       const result = await adapter.execute(
         `curl -X PUT '${HTTPBIN}/put' \\\n  -H 'Content-Type: application/json' \\\n  -d '{"updated": true}'`,
       );
@@ -54,7 +54,7 @@ describe("RestApiDataAdapter integration (httpbin.org)", () => {
     });
 
     it("PATCH JSON request", async () => {
-      const adapter = new RestApiDataAdapter(`restapi://{"HOST":"${HTTPBIN}"}`);
+      const adapter = new RestApiDataAdapter(`rest://{"HOST":"${HTTPBIN}"}`);
       const result = await adapter.execute(
         `curl -X PATCH '${HTTPBIN}/patch' \\\n  -H 'Content-Type: application/json' \\\n  -d '{"patched": true}'`,
       );
@@ -66,7 +66,7 @@ describe("RestApiDataAdapter integration (httpbin.org)", () => {
     });
 
     it("DELETE request", async () => {
-      const adapter = new RestApiDataAdapter(`restapi://{"HOST":"${HTTPBIN}"}`);
+      const adapter = new RestApiDataAdapter(`rest://{"HOST":"${HTTPBIN}"}`);
       const result = await adapter.execute(`curl -X DELETE '${HTTPBIN}/delete'`);
       expect(result.ok).toBe(true);
       expect(result.meta?.status).toBe(200);
@@ -75,7 +75,7 @@ describe("RestApiDataAdapter integration (httpbin.org)", () => {
     });
 
     it("GET with custom headers", async () => {
-      const adapter = new RestApiDataAdapter(`restapi://{"HOST":"${HTTPBIN}"}`);
+      const adapter = new RestApiDataAdapter(`rest://{"HOST":"${HTTPBIN}"}`);
       const result = await adapter.execute(
         `curl '${HTTPBIN}/headers' \\\n  -H 'X-Custom-Header: test-value' \\\n  -H 'Accept: application/json'`,
       );
@@ -85,7 +85,7 @@ describe("RestApiDataAdapter integration (httpbin.org)", () => {
     });
 
     it("GET with basic auth", async () => {
-      const adapter = new RestApiDataAdapter(`restapi://{"HOST":"${HTTPBIN}"}`);
+      const adapter = new RestApiDataAdapter(`rest://{"HOST":"${HTTPBIN}"}`);
       const result = await adapter.execute(`curl -u 'testuser:testpass' '${HTTPBIN}/basic-auth/testuser/testpass'`);
       expect(result.ok).toBe(true);
       expect(result.meta?.status).toBe(200);
@@ -94,7 +94,7 @@ describe("RestApiDataAdapter integration (httpbin.org)", () => {
     });
 
     it("returns timing data", async () => {
-      const adapter = new RestApiDataAdapter(`restapi://{"HOST":"${HTTPBIN}"}`);
+      const adapter = new RestApiDataAdapter(`rest://{"HOST":"${HTTPBIN}"}`);
       const result = await adapter.execute(`curl '${HTTPBIN}/get'`);
       expect(result.ok).toBe(true);
       expect(result.meta?.timing?.total).toBeGreaterThan(0);
@@ -102,7 +102,7 @@ describe("RestApiDataAdapter integration (httpbin.org)", () => {
     });
 
     it("returns response headers", async () => {
-      const adapter = new RestApiDataAdapter(`restapi://{"HOST":"${HTTPBIN}"}`);
+      const adapter = new RestApiDataAdapter(`rest://{"HOST":"${HTTPBIN}"}`);
       const result = await adapter.execute(`curl '${HTTPBIN}/get'`);
       expect(result.ok).toBe(true);
       expect(result.meta?.responseHeaders).toBeDefined();
@@ -117,7 +117,7 @@ describe("RestApiDataAdapter integration (httpbin.org)", () => {
 
   describe("fetch execution", () => {
     it("GET request", async () => {
-      const adapter = new RestApiDataAdapter(`restapi://{"HOST":"${HTTPBIN}"}`);
+      const adapter = new RestApiDataAdapter(`rest://{"HOST":"${HTTPBIN}"}`);
       const result = await adapter.execute(
         `fetch("${HTTPBIN}/get?hello=world", { "headers": { "accept": "application/json" }, "method": "GET" });`,
       );
@@ -129,7 +129,7 @@ describe("RestApiDataAdapter integration (httpbin.org)", () => {
     });
 
     it("POST JSON request", async () => {
-      const adapter = new RestApiDataAdapter(`restapi://{"HOST":"${HTTPBIN}"}`);
+      const adapter = new RestApiDataAdapter(`rest://{"HOST":"${HTTPBIN}"}`);
       const result = await adapter.execute(
         `fetch("${HTTPBIN}/post", { "headers": { "accept": "application/json", "content-type": "application/json" }, "body": "{\\"name\\": \\"test\\"}", "method": "POST" });`,
       );
@@ -141,7 +141,7 @@ describe("RestApiDataAdapter integration (httpbin.org)", () => {
     });
 
     it("POST form-urlencoded request", async () => {
-      const adapter = new RestApiDataAdapter(`restapi://{"HOST":"${HTTPBIN}"}`);
+      const adapter = new RestApiDataAdapter(`rest://{"HOST":"${HTTPBIN}"}`);
       const result = await adapter.execute(
         `fetch("${HTTPBIN}/post", { "headers": { "content-type": "application/x-www-form-urlencoded" }, "body": "a=1&b=2", "method": "POST" });`,
       );
@@ -152,7 +152,7 @@ describe("RestApiDataAdapter integration (httpbin.org)", () => {
     });
 
     it("PUT JSON request", async () => {
-      const adapter = new RestApiDataAdapter(`restapi://{"HOST":"${HTTPBIN}"}`);
+      const adapter = new RestApiDataAdapter(`rest://{"HOST":"${HTTPBIN}"}`);
       const result = await adapter.execute(
         `fetch("${HTTPBIN}/put", { "headers": { "content-type": "application/json" }, "body": "{\\"updated\\": true}", "method": "PUT" });`,
       );
@@ -163,7 +163,7 @@ describe("RestApiDataAdapter integration (httpbin.org)", () => {
     });
 
     it("PATCH JSON request", async () => {
-      const adapter = new RestApiDataAdapter(`restapi://{"HOST":"${HTTPBIN}"}`);
+      const adapter = new RestApiDataAdapter(`rest://{"HOST":"${HTTPBIN}"}`);
       const result = await adapter.execute(
         `fetch("${HTTPBIN}/patch", { "headers": { "content-type": "application/json" }, "body": "{\\"patched\\": true}", "method": "PATCH" });`,
       );
@@ -174,7 +174,7 @@ describe("RestApiDataAdapter integration (httpbin.org)", () => {
     });
 
     it("DELETE request", async () => {
-      const adapter = new RestApiDataAdapter(`restapi://{"HOST":"${HTTPBIN}"}`);
+      const adapter = new RestApiDataAdapter(`rest://{"HOST":"${HTTPBIN}"}`);
       const result = await adapter.execute(
         `fetch("${HTTPBIN}/delete", { "headers": { "accept": "application/json" }, "method": "DELETE" });`,
       );
@@ -189,7 +189,7 @@ describe("RestApiDataAdapter integration (httpbin.org)", () => {
 
   describe("variable resolution", () => {
     it("resolves {{HOST}} from connection config", async () => {
-      const adapter = new RestApiDataAdapter(`restapi://{"HOST":"${HTTPBIN}"}`);
+      const adapter = new RestApiDataAdapter(`rest://{"HOST":"${HTTPBIN}"}`);
       const result = await adapter.execute(`curl '{{HOST}}/get'`);
       expect(result.ok).toBe(true);
       expect(result.meta?.status).toBe(200);
@@ -197,9 +197,7 @@ describe("RestApiDataAdapter integration (httpbin.org)", () => {
     });
 
     it("resolves collection variables", async () => {
-      const adapter = new RestApiDataAdapter(
-        `restapi://{"HOST":"${HTTPBIN}","variables":[{"key":"ENDPOINT","value":"get","enabled":true}]}`,
-      );
+      const adapter = new RestApiDataAdapter(`rest://{"HOST":"${HTTPBIN}","variables":[{"key":"ENDPOINT","value":"get","enabled":true}]}`);
       const result = await adapter.execute(`curl '{{HOST}}/{{ENDPOINT}}'`);
       expect(result.ok).toBe(true);
       expect(result.meta?.status).toBe(200);
@@ -211,7 +209,7 @@ describe("RestApiDataAdapter integration (httpbin.org)", () => {
 
   describe("error handling", () => {
     it("returns error for empty input", async () => {
-      const adapter = new RestApiDataAdapter(`restapi://{}`);
+      const adapter = new RestApiDataAdapter(`rest://{}`);
       const result = await adapter.execute("");
       expect(result.ok).toBe(false);
       expect(result.error).toContain("No request to execute");
@@ -219,7 +217,7 @@ describe("RestApiDataAdapter integration (httpbin.org)", () => {
     });
 
     it("returns error for missing URL", async () => {
-      const adapter = new RestApiDataAdapter(`restapi://{}`);
+      const adapter = new RestApiDataAdapter(`rest://{}`);
       const result = await adapter.execute("curl");
       expect(result.ok).toBe(false);
       expect(result.error).toContain("No URL found");
@@ -231,13 +229,13 @@ describe("RestApiDataAdapter integration (httpbin.org)", () => {
 
   describe("adapter lifecycle", () => {
     it("authenticate succeeds with valid config", async () => {
-      const adapter = new RestApiDataAdapter(`restapi://{"HOST":"${HTTPBIN}"}`);
+      const adapter = new RestApiDataAdapter(`rest://{"HOST":"${HTTPBIN}"}`);
       await expect(adapter.authenticate()).resolves.toBeUndefined();
       await adapter.disconnect();
     });
 
     it("getDatabases returns default folder", async () => {
-      const adapter = new RestApiDataAdapter(`restapi://{}`);
+      const adapter = new RestApiDataAdapter(`rest://{}`);
       const dbs = await adapter.getDatabases();
       expect(dbs).toHaveLength(1);
       expect(dbs[0].name).toBe("Default");
@@ -245,14 +243,14 @@ describe("RestApiDataAdapter integration (httpbin.org)", () => {
     });
 
     it("getTables returns empty array", async () => {
-      const adapter = new RestApiDataAdapter(`restapi://{}`);
+      const adapter = new RestApiDataAdapter(`rest://{}`);
       const tables = await adapter.getTables("Default");
       expect(tables).toEqual([]);
       await adapter.disconnect();
     });
 
     it("getColumns returns request metadata fields", async () => {
-      const adapter = new RestApiDataAdapter(`restapi://{}`);
+      const adapter = new RestApiDataAdapter(`rest://{}`);
       const cols = await adapter.getColumns("test", "Default");
       expect(cols.map((c) => c.name)).toContain("method");
       expect(cols.map((c) => c.name)).toContain("url");
@@ -261,7 +259,7 @@ describe("RestApiDataAdapter integration (httpbin.org)", () => {
     });
 
     it("disconnect is a no-op", async () => {
-      const adapter = new RestApiDataAdapter(`restapi://{}`);
+      const adapter = new RestApiDataAdapter(`rest://{}`);
       await expect(adapter.disconnect()).resolves.toBeUndefined();
     });
   });

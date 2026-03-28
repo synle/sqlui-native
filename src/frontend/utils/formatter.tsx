@@ -40,15 +40,14 @@ export const formatJS = (val: string) => {
 };
 
 /**
- * Formats a duration in milliseconds to a human-readable string.
+ * Formats a duration in milliseconds to a compact human-readable string.
  * @param durationMs - The duration in milliseconds.
- * @returns A string like "X seconds" or "<= 1 second".
+ * @returns A string like "<= 1s", "350ms", "1.2s", or "5s".
  */
 export const formatDuration = (durationMs: number) => {
-  const durationS = Math.floor(durationMs / 1000);
-  if (durationS > 1) return `${durationS} seconds`;
-
-  return "<= 1 second";
+  if (durationMs <= 1000) return "<= 1s";
+  const seconds = durationMs / 1000;
+  return `${Number.isInteger(seconds) ? seconds : seconds.toFixed(1)}s`;
 };
 
 /**
