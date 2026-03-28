@@ -9,42 +9,103 @@ test.setTimeout(60_000);
  * Either selects an existing session or creates a new one, then waits for the main app.
  */
 async function selectOrCreateSession(page: Page) {
-  // The Connection ButtonGroup only appears in the main app, never on the session select page
   const mainAppIndicator = page.getByRole("group", { name: "Connection" });
-  // The welcome banner appears on the session select page even while sessions are loading
   const welcomeBanner = page.getByText("Welcome to SQLUI Native", { exact: false });
 
-  // Wait for either the session selection page or the main app to appear
   await expect(welcomeBanner.or(mainAppIndicator).first()).toBeVisible({ timeout: 45_000 });
 
-  // If the main app is already showing, session is already selected
-  if (await mainAppIndicator.isVisible({ timeout: 2_000 }).catch(() => false)) {
+  if (await mainAppIndicator.isVisible({ timeout: 3_000 }).catch(() => false)) {
     return;
   }
 
-  // We're on the session selection screen — wait for the session list to finish loading
-  const sessionPrompt = page.getByText("Please select a session from below:");
-  await expect(sessionPrompt).toBeVisible({ timeout: 30_000 });
+  // Wait for session form to finish loading — the first API call can be slow
+  const newSessionInput = page.getByLabel("New Session Name");
+  const checkboxEl = page.getByRole("checkbox").first();
+  await expect(newSessionInput.or(checkboxEl).first()).toBeVisible({ timeout: 45_000 });
 
-  // Check for existing sessions - they appear as checkboxes
-  const existingSession = page.getByRole("checkbox").first();
-  const hasExisting = await existingSession.isVisible({ timeout: 5_000 }).catch(() => false);
-
+  const hasExisting = await checkboxEl.isVisible({ timeout: 3_000 }).catch(() => false);
   if (hasExisting) {
-    // Clicking the checkbox selects the session and triggers reload
-    await existingSession.click();
+    await checkboxEl.click();
   } else {
-    // No existing sessions — create a new one
-    const input = page.locator("input[required]");
-    await input.fill(`E2E Session ${Date.now()}`);
     await page.getByRole("button", { name: "Create Session" }).click();
   }
 
-  // Session selection triggers window.location.reload() — wait for the main app
   await expect(mainAppIndicator).toBeVisible({ timeout: 45_000 });
 }
 
-test.describe("App Launch", () => {
+/** Unique suffix to avoid collisions between test runs. */
+const TEST_ID = Date.now();
+const SQLITE_CONNECTION_NAME = `E2E SQLite ${TEST_ID}`;
+const SQLITE_CONNECTION_STRING = `sqlite:///tmp/e2e-test-${TEST_ID}.sqlite`;
+
+/** Counter to generate unique connection names within a single test run. */
+let connectionCounter = 0;
+
+/**
+ * Creates a new SQLite connection via the UI.
+ * Returns the connection name so callers can reference it.
+ */
+async function createSqliteConnection(page: Page): Promise<string> {
+  connectionCounter++;
+  const connName = `${SQLITE_CONNECTION_NAME} ${connectionCounter}`;
+  const connString = `sqlite:///tmp/e2e-test-${TEST_ID}-${connectionCounter}.sqlite`;
+
+  await page.getByRole("group", { name: "Connection" }).getByRole("button").first().click();
+  await expect(page).toHaveURL(/connection/i);
+
+  await page.getByText("Sqlite", { exact: true }).click();
+
+  await page.getByRole("textbox", { name: "Name" }).fill(connName);
+  await page.getByRole("textbox", { name: "Connection" }).fill(connString);
+
+  await page.getByRole("button", { name: "Save" }).click();
+
+  await expect(page.locator(".ConnectionDescription").filter({ hasText: connName }).first()).toBeVisible({
+    timeout: 15_000,
+  });
+
+  return connName;
+}
+
+/**
+ * Selects a connection in the QueryBox Connection dropdown.
+ */
+async function selectConnectionInQueryBox(page: Page, connectionName: string) {
+  const connectionSelect = page.locator("[data-testid='query-connection-select']");
+  const optionValue = await connectionSelect.locator("option", { hasText: connectionName }).first().getAttribute("value");
+  await connectionSelect.selectOption(optionValue!);
+}
+
+/**
+ * Sets text in the Monaco editor via clipboard paste.
+ */
+async function typeInEditor(page: Page, text: string) {
+  const editorContainer = page.locator(".CodeEditorBox__QueryBox .monaco-editor").first();
+  await editorContainer.click();
+
+  const textarea = page.locator(".CodeEditorBox__QueryBox .monaco-editor textarea");
+  await textarea.focus();
+
+  const modifier = process.platform === "darwin" ? "Meta" : "Control";
+  await page.keyboard.press(`${modifier}+A`);
+  await page.keyboard.press("Backspace");
+
+  await page.evaluate((val) => navigator.clipboard.writeText(val), text);
+  await page.keyboard.press(`${modifier}+V`);
+  await page.waitForTimeout(300);
+}
+
+/** Clicks execute and waits for results. */
+async function executeQuery(page: Page) {
+  await page.locator("#btnExecuteCommand").click();
+  // Wait for "Query took" text which appears for all successful queries
+  await expect(page.getByText("Query took", { exact: false }).first()).toBeVisible({ timeout: 15_000 });
+}
+
+// ============================================================
+// Phase 1: Basic app loading
+// ============================================================
+test.describe("Phase 1: App Launch", () => {
   test("should load the main page", async ({ page }) => {
     await page.goto("/");
     await selectOrCreateSession(page);
@@ -58,18 +119,186 @@ test.describe("App Launch", () => {
   });
 });
 
-test.describe("New Connection Page", () => {
-  test("should navigate to new connection page", async ({ page }) => {
+// ============================================================
+// Phase 2: Connection CRUD with SQLite
+// ============================================================
+test.describe("Phase 2: SQLite Connection CRUD", () => {
+  test("should create a new SQLite connection", async ({ page }) => {
     await page.goto("/");
     await selectOrCreateSession(page);
-    await page.getByRole("group", { name: "Connection" }).getByRole("button").first().click();
-    await expect(page).toHaveURL(/connection/i);
+    await createSqliteConnection(page);
   });
 
-  test("should show dialect options", async ({ page }) => {
+  test("should show dialect options on new connection page", async ({ page }) => {
     await page.goto("/");
     await selectOrCreateSession(page);
     await page.getByRole("group", { name: "Connection" }).getByRole("button").first().click();
     await expect(page.getByText("Mysql", { exact: true }).first()).toBeVisible({ timeout: 10_000 });
+    await expect(page.getByText("Sqlite", { exact: true }).first()).toBeVisible();
+    await expect(page.getByText("Postgres", { exact: true }).first()).toBeVisible();
+  });
+});
+
+// ============================================================
+// Phase 3: Query execution (create DB objects, insert, select)
+// ============================================================
+test.describe("Phase 3: Query Execution", () => {
+  test("should create a table and insert data", async ({ page }) => {
+    await page.goto("/");
+    await selectOrCreateSession(page);
+    const connName = await createSqliteConnection(page);
+    await selectConnectionInQueryBox(page, connName);
+    await typeInEditor(page, "CREATE TABLE e2e_users (id INTEGER PRIMARY KEY, name TEXT, email TEXT);");
+    await executeQuery(page);
+  });
+
+  test("should insert and select data", async ({ page }) => {
+    await page.goto("/");
+    await selectOrCreateSession(page);
+    const connName = await createSqliteConnection(page);
+    await selectConnectionInQueryBox(page, connName);
+
+    await typeInEditor(page, "CREATE TABLE e2e_items (id INTEGER PRIMARY KEY, title TEXT, qty INTEGER);");
+    await executeQuery(page);
+
+    await typeInEditor(
+      page,
+      `INSERT INTO e2e_items (title, qty) VALUES ('Acme Widget', 10), ('Globex Gadget', 25), ('Initech Device', 5);`,
+    );
+    await executeQuery(page);
+
+    await typeInEditor(page, "SELECT * FROM e2e_items ORDER BY id;");
+    await executeQuery(page);
+
+    await expect(page.getByText("Acme Widget").first()).toBeVisible({ timeout: 10_000 });
+    await expect(page.getByText("Globex Gadget").first()).toBeVisible({ timeout: 5_000 });
+    await expect(page.getByText("Initech Device").first()).toBeVisible({ timeout: 5_000 });
+  });
+
+  test("should select with WHERE clause", async ({ page }) => {
+    await page.goto("/");
+    await selectOrCreateSession(page);
+    const connName = await createSqliteConnection(page);
+    await selectConnectionInQueryBox(page, connName);
+
+    await typeInEditor(page, "CREATE TABLE e2e_products (id INTEGER PRIMARY KEY, name TEXT, price REAL);");
+    await executeQuery(page);
+    await typeInEditor(page, `INSERT INTO e2e_products (name, price) VALUES ('Alpha', 9.99), ('Beta', 19.99), ('Gamma', 29.99);`);
+    await executeQuery(page);
+
+    await typeInEditor(page, "SELECT * FROM e2e_products WHERE price > 15;");
+    await executeQuery(page);
+
+    await expect(page.getByText("Beta").first()).toBeVisible({ timeout: 10_000 });
+    await expect(page.getByText("Gamma").first()).toBeVisible({ timeout: 5_000 });
+  });
+});
+
+// ============================================================
+// Phase 4: Query tab management
+// ============================================================
+test.describe("Phase 4: Query Tabs", () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto("/");
+    await selectOrCreateSession(page);
+  });
+
+  test("should add a new query tab", async ({ page }) => {
+    const queryTabs = page.locator("#QueryBoxTabs .Tab__Headers [role='tab']:not(:last-child)");
+    const tabsBefore = await queryTabs.count();
+
+    const addTab = page.locator("#QueryBoxTabs .Tab__Headers [role='tab']:last-child");
+    await addTab.click();
+
+    await expect(queryTabs).toHaveCount(tabsBefore + 1, { timeout: 5_000 });
+  });
+
+  test("should switch between query tabs", async ({ page }) => {
+    const addTab = page.locator("#QueryBoxTabs .Tab__Headers [role='tab']:last-child");
+    await addTab.click();
+
+    const queryTabs = page.locator("#QueryBoxTabs .Tab__Headers [role='tab']:not(:last-child)");
+    const tabCount = await queryTabs.count();
+    expect(tabCount).toBeGreaterThanOrEqual(2);
+
+    await queryTabs.first().click();
+    await queryTabs.nth(1).click();
+  });
+
+  test("should rename a query tab", async ({ page }) => {
+    const firstTab = page.locator("#QueryBoxTabs .Tab__Headers [role='tab']:not(:last-child)").first();
+    await firstTab.click({ button: "right" });
+
+    await page.getByRole("menuitem", { name: "Rename" }).click();
+
+    const newName = `Renamed Tab ${TEST_ID}`;
+    const dialogInput = page.locator("[role='dialog'] input, .MuiDialog-root input").last();
+    await dialogInput.clear();
+    await dialogInput.fill(newName);
+    await page.getByRole("button", { name: "Save" }).click();
+
+    await expect(page.locator("#QueryBoxTabs .Tab__Headers [role='tab']").filter({ hasText: newName })).toBeVisible({
+      timeout: 5_000,
+    });
+  });
+
+  test("should close a query tab via context menu", async ({ page }) => {
+    const addTab = page.locator("#QueryBoxTabs .Tab__Headers [role='tab']:last-child");
+    await addTab.click();
+    await page.waitForTimeout(500);
+
+    const queryTabs = page.locator("#QueryBoxTabs .Tab__Headers [role='tab']:not(:last-child)");
+    const tabsBefore = await queryTabs.count();
+    expect(tabsBefore).toBeGreaterThanOrEqual(2);
+
+    await queryTabs.last().click({ button: "right" });
+    await page.getByRole("menuitem", { name: /^Close$/ }).click();
+
+    // Confirm the deletion dialog
+    const yesButton = page.getByRole("button", { name: "Yes" });
+    await expect(yesButton).toBeVisible({ timeout: 5_000 });
+    await yesButton.click();
+
+    await expect(queryTabs).toHaveCount(tabsBefore - 1, { timeout: 10_000 });
+  });
+
+  test("should duplicate a query tab", async ({ page }) => {
+    const queryTabs = page.locator("#QueryBoxTabs .Tab__Headers [role='tab']:not(:last-child)");
+    const tabsBefore = await queryTabs.count();
+
+    await queryTabs.first().click({ button: "right" });
+    await page.getByRole("menuitem", { name: "Duplicate" }).click();
+
+    await expect(queryTabs).toHaveCount(tabsBefore + 1, { timeout: 5_000 });
+  });
+});
+
+// ============================================================
+// Phase 5: Edit connection
+// ============================================================
+test.describe("Phase 5: Edit Connection", () => {
+  test("should edit a connection name", async ({ page }) => {
+    await page.goto("/");
+    await selectOrCreateSession(page);
+    const connName = await createSqliteConnection(page);
+
+    const connectionRow = page.locator(".ConnectionDescription").filter({ hasText: connName }).first();
+    await connectionRow.click();
+    await connectionRow.click({ button: "right" });
+
+    const editItem = page.getByRole("menuitem", { name: /Edit/i });
+    await expect(editItem).toBeVisible({ timeout: 5_000 });
+    await editItem.click();
+
+    await expect(page).toHaveURL(/connection/i, { timeout: 10_000 });
+
+    const newName = `Edited SQLite ${TEST_ID}`;
+    const nameField = page.getByRole("textbox", { name: "Name" });
+    await nameField.clear();
+    await nameField.fill(newName);
+
+    await page.getByRole("button", { name: "Save" }).click();
+
+    await expect(page.locator(".ConnectionDescription").filter({ hasText: newName })).toBeVisible({ timeout: 15_000 });
   });
 });

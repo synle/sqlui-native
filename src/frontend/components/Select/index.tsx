@@ -51,7 +51,7 @@ type SelectProps = {
  * @returns The select element.
  */
 export default function Select(props: SelectProps): JSX.Element | null {
-  const { value, label, children, onChange, sx, ...restProps } = props;
+  const { value, label, children, onChange, sx, "data-testid": dataTestId, ...restProps } = props;
 
   if (label) {
     // https://github.com/mui/material-ui/issues/32197
@@ -65,6 +65,7 @@ export default function Select(props: SelectProps): JSX.Element | null {
           input={<OutlinedInput label={label} notched={true} />}
           inputProps={{
             id: controlId,
+            ...(dataTestId ? { "data-testid": dataTestId } : {}),
           }}
           value={value}
           onChange={(e) => onChange && onChange(e.target.value)}

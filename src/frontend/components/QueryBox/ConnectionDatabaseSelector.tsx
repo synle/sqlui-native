@@ -106,6 +106,7 @@ export default function ConnectionDatabaseSelector(props: ConnectionDatabaseSele
         <ConnectionTypeIcon dialect={connection?.dialect} status={connection?.status} />
         <Select
           label="Connection"
+          data-testid="query-connection-select"
           value={query.connectionId}
           onChange={(newValue) => onConnectionChange(newValue)}
           required
