@@ -4,6 +4,7 @@ import Link from "@mui/material/Link";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 import React, { useCallback, useEffect } from "react";
+import { queryKeys } from "src/frontend/hooks/queryKeys";
 import { getCodeSnippet, isDialectSupportManagedMetadata } from "src/common/adapters/DataScriptFactory";
 import { AddBookmarkConnectionContent, AddBookmarkQueryContent } from "src/frontend/components/AddBookmarkModal";
 import CodeEditorBox from "src/frontend/components/CodeEditorBox";
@@ -901,7 +902,7 @@ export default function MissionControl() {
           }
         }
 
-        queryClient.invalidateQueries({ queryKey: [connectionId] });
+        queryClient.invalidateQueries({ queryKey: queryKeys.connections.byId(connectionId) });
 
         await curToast.dismiss();
         await addToast({

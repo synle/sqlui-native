@@ -6,7 +6,12 @@ import RefreshIcon from "@mui/icons-material/Refresh";
 import SelectAllIcon from "@mui/icons-material/SelectAll";
 import SsidChartIcon from "@mui/icons-material/SsidChart";
 import IconButton from "@mui/material/IconButton";
-import { useQueryClient } from "@tanstack/react-query";
+import {
+  useCreateManagedTable,
+  useDeleteManagedDatabase,
+  useUpdateManagedDatabase,
+  useUpdateManagedTable,
+} from "src/frontend/hooks/useManagedMetadata";
 import { useNavigate } from "src/frontend/utils/commonUtils";
 import { useState } from "react";
 import { getDivider } from "src/common/adapters/BaseDataAdapter/scripts";
@@ -51,7 +56,10 @@ export default function DatabaseActions(props: DatabaseActionsProps): JSX.Elemen
   const { selectCommand } = useCommands();
   const { data: treeActions } = useTreeActions();
   const { confirm, modal, dismiss } = useActionDialogs();
-  const queryClient = useQueryClient();
+  const { mutateAsync: createManagedTable } = useCreateManagedTable();
+  const { mutateAsync: updateManagedTable } = useUpdateManagedTable();
+  const { mutateAsync: updateManagedDatabase } = useUpdateManagedDatabase();
+  const { mutateAsync: deleteManagedDatabase } = useDeleteManagedDatabase();
   const refreshDatabase = useRefreshDatabase();
   const { onToggle: onTreeToggle } = useShowHide();
 
@@ -112,8 +120,11 @@ export default function DatabaseActions(props: DatabaseActionsProps): JSX.Elemen
               if (!props.connectionId || !props.databaseId) return;
               const requestName = "New Request";
               try {
-                const created = await ProxyApi.createManagedTable(props.connectionId, props.databaseId, { name: requestName });
-                queryClient.invalidateQueries({ queryKey: [props.connectionId, props.databaseId, "tables"] });
+                const created = await createManagedTable({
+                  connectionId: props.connectionId,
+                  databaseId: props.databaseId,
+                  name: requestName,
+                });
                 // Expand the folder in the tree
                 onTreeToggle([props.connectionId, props.databaseId].join(" > "), true);
                 selectCommand({
@@ -156,8 +167,11 @@ export default function DatabaseActions(props: DatabaseActionsProps): JSX.Elemen
                         const body: { name?: string; props?: any } = {};
                         if (newName !== props.databaseId) body.name = newName;
                         body.props = { variables: newVars };
-                        await ProxyApi.updateManagedDatabase(props.connectionId, props.databaseId, body);
-                        queryClient.invalidateQueries({ queryKey: [props.connectionId, "databases"] });
+                        await updateManagedDatabase({
+                          connectionId: props.connectionId,
+                          managedDatabaseId: props.databaseId,
+                          body,
+                        });
                         dismiss();
                       }}
                       onCancel={() => dismiss()}
@@ -179,8 +193,10 @@ export default function DatabaseActions(props: DatabaseActionsProps): JSX.Elemen
               try {
                 await confirm(`Are you sure you want to delete folder "${props.databaseId}" and all its requests?`, "Delete");
                 if (props.connectionId && props.databaseId) {
-                  await ProxyApi.deleteManagedDatabase(props.connectionId, props.databaseId);
-                  queryClient.invalidateQueries({ queryKey: [props.connectionId, "databases"] });
+                  await deleteManagedDatabase({
+                    connectionId: props.connectionId,
+                    managedDatabaseId: props.databaseId,
+                  });
                 }
               } catch (_err) {
                 // user dismissed dialog
@@ -221,9 +237,17 @@ export default function DatabaseActions(props: DatabaseActionsProps): JSX.Elemen
       if (isManagedMetadata && templateActionSet.has(action) && action.query && props.connectionId && props.databaseId) {
         const requestName = action.label || "New Request";
         try {
-          const created = await ProxyApi.createManagedTable(props.connectionId, props.databaseId, { name: requestName });
-          await ProxyApi.updateManagedTable(props.connectionId, props.databaseId, created.id, { query: action.query });
-          queryClient.invalidateQueries({ queryKey: [props.connectionId, props.databaseId, "tables"] });
+          const created = await createManagedTable({
+            connectionId: props.connectionId,
+            databaseId: props.databaseId,
+            name: requestName,
+          });
+          await updateManagedTable({
+            connectionId: props.connectionId,
+            databaseId: props.databaseId,
+            managedTableId: created.id,
+            body: { props: { query: action.query } },
+          });
           // Expand the folder in the tree
           onTreeToggle([props.connectionId, props.databaseId].join(" > "), true);
           selectCommand({
