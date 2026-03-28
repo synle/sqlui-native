@@ -9,29 +9,39 @@ test.setTimeout(60_000);
  * Either selects an existing session or creates a new one, then waits for the main app.
  */
 async function selectOrCreateSession(page: Page) {
-  const createSessionButton = page.getByRole("button", { name: "Create Session", exact: true });
-  const appHeader = page.getByText("SQLUI NATIVE", { exact: false }).first();
+  // The Connection ButtonGroup only appears in the main app, never on the session select page
+  const mainAppIndicator = page.getByRole("group", { name: "Connection" });
+  // The welcome banner appears on the session select page even while sessions are loading
+  const welcomeBanner = page.getByText("Welcome to SQLUI Native", { exact: false });
 
-  // Wait for the app to render something meaningful
-  await expect(createSessionButton.or(appHeader).first()).toBeVisible({ timeout: 45_000 });
+  // Wait for either the session selection page or the main app to appear
+  await expect(welcomeBanner.or(mainAppIndicator).first()).toBeVisible({ timeout: 45_000 });
 
-  if (await createSessionButton.isVisible({ timeout: 1_000 }).catch(() => false)) {
-    // Check if there's an existing session checkbox to click
-    const existingSession = page.locator("role=checkbox").first();
-    const hasExisting = await existingSession.isVisible({ timeout: 2_000 }).catch(() => false);
-
-    if (hasExisting) {
-      await existingSession.click();
-    } else {
-      const input = page.locator("input[required]");
-      await input.fill("E2E Test Session");
-      await createSessionButton.click();
-    }
-
-    // Selecting a session triggers window.location.reload()
-    await page.waitForLoadState("networkidle", { timeout: 30_000 });
-    await expect(appHeader).toBeVisible({ timeout: 30_000 });
+  // If the main app is already showing, session is already selected
+  if (await mainAppIndicator.isVisible({ timeout: 2_000 }).catch(() => false)) {
+    return;
   }
+
+  // We're on the session selection screen — wait for the session list to finish loading
+  const sessionPrompt = page.getByText("Please select a session from below:");
+  await expect(sessionPrompt).toBeVisible({ timeout: 30_000 });
+
+  // Check for existing sessions - they appear as checkboxes
+  const existingSession = page.getByRole("checkbox").first();
+  const hasExisting = await existingSession.isVisible({ timeout: 5_000 }).catch(() => false);
+
+  if (hasExisting) {
+    // Clicking the checkbox selects the session and triggers reload
+    await existingSession.click();
+  } else {
+    // No existing sessions — create a new one
+    const input = page.locator("input[required]");
+    await input.fill(`E2E Session ${Date.now()}`);
+    await page.getByRole("button", { name: "Create Session" }).click();
+  }
+
+  // Session selection triggers window.location.reload() — wait for the main app
+  await expect(mainAppIndicator).toBeVisible({ timeout: 45_000 });
 }
 
 test.describe("App Launch", () => {
