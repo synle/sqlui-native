@@ -33,6 +33,7 @@ on:
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
   ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
+  EXPECTED_RELEASE_ASSETS: 10
 
 jobs:
   code_format:
@@ -143,6 +144,23 @@ jobs:
             --notes "Release $TAG
           ${{ inputs.release_notes }}" \
             $DRAFT_FLAGS
+
+      - name: Cleanup incomplete releases
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          echo "Checking for incomplete releases with missing assets (last 3 months)..."
+          CUTOFF=$(date -u -d '3 months ago' '+%Y-%m-%dT%H:%M:%SZ' 2>/dev/null || date -u -v-3m '+%Y-%m-%dT%H:%M:%SZ')
+          gh release list --json tagName,createdAt --limit 50 | \
+            jq -r --arg cutoff "$CUTOFF" '.[] | select(.createdAt >= $cutoff) | .tagName' | \
+            while read -r tag; do
+              ASSET_COUNT=$(gh release view "$tag" --json assets --jq '.assets | length' 2>/dev/null || echo "0")
+              if [ "$ASSET_COUNT" -gt 0 ] && [ "$ASSET_COUNT" -lt "$EXPECTED_RELEASE_ASSETS" ]; then
+                echo "Deleting incomplete release: $tag ($ASSET_COUNT/$EXPECTED_RELEASE_ASSETS assets)"
+                gh release delete "$tag" --yes --cleanup-tag || true
+              fi
+            done
 
       - name: Cleanup old draft releases
         if: ${{ inputs.release_mode == 'draft' }}
@@ -687,14 +705,42 @@ jobs:
           echo "BUILD_END=$(date +%s)" >> $GITHUB_ENV
           echo "PACKAGE_START=$(date +%s)" >> $GITHUB_ENV
 
-      - name: Package Linux distributables
+      - name: Package Linux deb
+        shell: bash
+        run: npm run dist-linux-deb || true
+
+      - name: Package Linux rpm
+        shell: bash
+        run: npm run dist-linux-rpm || true
+
+      - name: Package Linux snap
+        shell: bash
+        run: npm run dist-linux-snap || true
+
+      - name: Package Linux pacman
+        shell: bash
+        run: npm run dist-linux-pacman || true
+
+      - name: Package Linux AppImage
+        shell: bash
+        run: npm run dist-linux-appimage || true
+
+      - name: List dist output
+        shell: bash
+        run: ls -R ./dist
+
+      - name: Verify at least one Linux artifact was produced
         shell: bash
         run: |
-          npm run dist
-          npm run dist-linux-appimage
-          ls -R ./dist
+          if [ ! -f ./dist/sqlui-native.deb ] && [ ! -f ./dist/sqlui-native.rpm ] && \
+             [ ! -f ./dist/sqlui-native.snap ] && [ ! -f ./dist/sqlui-native.pacman ] && \
+             [ ! -f ./dist/sqlui-native.AppImage ]; then
+            echo "::error::No Linux artifacts were produced"
+            exit 1
+          fi
 
       - name: Upload deb artifact
+        if: ${{ hashFiles('./dist/sqlui-native.deb') != '' }}
         uses: actions/upload-artifact@v4
         with:
           name: Linux - Debian Ubuntu.deb
@@ -702,7 +748,7 @@ jobs:
           compression-level: 9
 
       - name: Upload deb to release
-        if: ${{ needs.create_release.outputs.dist_version != '' }}
+        if: ${{ needs.create_release.outputs.dist_version != '' && hashFiles('./dist/sqlui-native.deb') != '' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: bash
@@ -712,6 +758,7 @@ jobs:
             --clobber
 
       - name: Upload rpm artifact
+        if: ${{ hashFiles('./dist/sqlui-native.rpm') != '' }}
         uses: actions/upload-artifact@v4
         with:
           name: Linux - Redhat CentOS Fedora.rpm
@@ -719,7 +766,7 @@ jobs:
           compression-level: 9
 
       - name: Upload rpm to release
-        if: ${{ needs.create_release.outputs.dist_version != '' }}
+        if: ${{ needs.create_release.outputs.dist_version != '' && hashFiles('./dist/sqlui-native.rpm') != '' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: bash
@@ -729,6 +776,7 @@ jobs:
             --clobber
 
       - name: Upload snap artifact
+        if: ${{ hashFiles('./dist/sqlui-native.snap') != '' }}
         uses: actions/upload-artifact@v4
         with:
           name: Linux - Ubuntu.snap
@@ -736,7 +784,7 @@ jobs:
           compression-level: 9
 
       - name: Upload snap to release
-        if: ${{ needs.create_release.outputs.dist_version != '' }}
+        if: ${{ needs.create_release.outputs.dist_version != '' && hashFiles('./dist/sqlui-native.snap') != '' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: bash
@@ -746,6 +794,7 @@ jobs:
             --clobber
 
       - name: Upload pacman artifact
+        if: ${{ hashFiles('./dist/sqlui-native.pacman') != '' }}
         uses: actions/upload-artifact@v4
         with:
           name: Linux - Arch.pacman
@@ -753,7 +802,7 @@ jobs:
           compression-level: 9
 
       - name: Upload pacman to release
-        if: ${{ needs.create_release.outputs.dist_version != '' }}
+        if: ${{ needs.create_release.outputs.dist_version != '' && hashFiles('./dist/sqlui-native.pacman') != '' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: bash
@@ -763,6 +812,7 @@ jobs:
             --clobber
 
       - name: Upload AppImage artifact
+        if: ${{ hashFiles('./dist/sqlui-native.AppImage') != '' }}
         uses: actions/upload-artifact@v4
         with:
           name: Linux.AppImage
@@ -770,7 +820,7 @@ jobs:
           compression-level: 9
 
       - name: Upload AppImage to release
-        if: ${{ needs.create_release.outputs.dist_version != '' }}
+        if: ${{ needs.create_release.outputs.dist_version != '' && hashFiles('./dist/sqlui-native.AppImage') != '' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: bash
@@ -800,7 +850,7 @@ jobs:
           echo "| **Total** | **$(format_duration $TOTAL_DUR)** |" >> $GITHUB_STEP_SUMMARY
 
   roll_back_on_failure_or_canceled:
-    if: ${{ always() && inputs.release_mode != 'no_release' && needs.create_release.result == 'success' && (needs.dist_windows_x64.result == 'failure' || needs.dist_windows_arm64.result == 'failure' || needs.dist_macos_arm64.result == 'failure' || needs.dist_macos_intel_x64.result == 'failure' || needs.dist_linux.result == 'failure' || needs.dist_windows_x64.result == 'cancelled' || needs.dist_windows_arm64.result == 'cancelled' || needs.dist_macos_arm64.result == 'cancelled' || needs.dist_macos_intel_x64.result == 'cancelled' || needs.dist_linux.result == 'cancelled') }}
+    if: ${{ always() && inputs.release_mode != 'no_release' && needs.create_release.result == 'success' }}
     needs: [create_release, dist_windows_x64, dist_windows_arm64, dist_macos_arm64, dist_macos_intel_x64, dist_linux]
     runs-on: ubuntu-latest
     steps:
@@ -809,22 +859,37 @@ jobs:
         with:
           ref: ${{ github.ref }} # fetch latest branch tip (includes prep commits)
 
-      - name: Delete failed release tag and assets
+      - name: Check release completeness and rollback if needed
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: bash
         run: |
           TAG="${{ needs.create_release.outputs.dist_version }}"
-          echo "Deleting failed release: $TAG"
-          gh release delete "$TAG" --yes --cleanup-tag 2>/dev/null || true
+          JOB_FAILED=${{ needs.dist_windows_x64.result == 'failure' || needs.dist_windows_arm64.result == 'failure' || needs.dist_macos_arm64.result == 'failure' || needs.dist_macos_intel_x64.result == 'failure' || needs.dist_linux.result == 'failure' || needs.dist_windows_x64.result == 'cancelled' || needs.dist_windows_arm64.result == 'cancelled' || needs.dist_macos_arm64.result == 'cancelled' || needs.dist_macos_intel_x64.result == 'cancelled' || needs.dist_linux.result == 'cancelled' }}
+
+          ASSET_COUNT=$(gh release view "$TAG" --json assets --jq '.assets | length' 2>/dev/null || echo "0")
+          echo "Release $TAG has $ASSET_COUNT/$EXPECTED_RELEASE_ASSETS assets"
+
+          if [ "$JOB_FAILED" = "true" ] || [ "$ASSET_COUNT" -lt "$EXPECTED_RELEASE_ASSETS" ]; then
+            echo "::warning::Release $TAG is incomplete ($ASSET_COUNT/$EXPECTED_RELEASE_ASSETS assets) — deleting"
+            gh release delete "$TAG" --yes --cleanup-tag 2>/dev/null || true
+            echo "ROLLED_BACK=true" >> $GITHUB_ENV
+          else
+            echo "Release $TAG is complete"
+            echo "ROLLED_BACK=false" >> $GITHUB_ENV
+          fi
 
       - name: Rollback job summary
         if: ${{ always() }}
         shell: bash
         run: |
-          echo "## :rewind: Rollback Summary" >> $GITHUB_STEP_SUMMARY
+          echo "## :rewind: Release Validation Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "Rolled back release **${{ needs.create_release.outputs.dist_version }}** due to dist job failure." >> $GITHUB_STEP_SUMMARY
+          if [ "$ROLLED_BACK" = "true" ]; then
+            echo "Rolled back release **${{ needs.create_release.outputs.dist_version }}** due to missing assets or job failure." >> $GITHUB_STEP_SUMMARY
+          else
+            echo "Release **${{ needs.create_release.outputs.dist_version }}** is complete with all expected assets." >> $GITHUB_STEP_SUMMARY
+          fi
 
   publish:
     if: ${{ inputs.release_mode == 'production' }}
