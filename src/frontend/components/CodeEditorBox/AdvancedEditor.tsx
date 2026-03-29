@@ -36,8 +36,6 @@ export default function AdvancedEditor(props: AdvancedEditorProps): JSX.Element 
   const decorationIdsRef = useRef<string[]>([]);
   /** True during programmatic value sync — suppresses onDidChangeModelContent callbacks. */
   const suppressChangeRef = useRef(false);
-  /** Tracks the previous editor ID to detect query tab switches. */
-  const prevIdRef = useRef(props.id);
 
   const onSetupMonacoEditor = useCallback(() => {
     if (debounceTimerRef.current) {
@@ -108,10 +106,6 @@ export default function AdvancedEditor(props: AdvancedEditorProps): JSX.Element 
     // Skip if editor already has this value — the change is a round-trip from typing
     if (editor.getValue() === newValue) return;
 
-    // Detect query tab switch — reset cursor to start only when switching tabs
-    const tabSwitched = props.id !== prevIdRef.current;
-    prevIdRef.current = props.id;
-
     // Suppress onDidChangeModelContent during programmatic edit to avoid feedback loop
     suppressChangeRef.current = true;
 
@@ -128,7 +122,6 @@ export default function AdvancedEditor(props: AdvancedEditorProps): JSX.Element 
           },
         ]);
 
-        editor.setSelection(new monaco.Selection(1, 1, 1, 1));
         editor.pushUndoStop();
       } else {
         editor.setValue(newValue);
