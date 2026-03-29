@@ -1,0 +1,83 @@
+name: Cleanup Incomplete Releases
+
+on:
+  workflow_dispatch:
+    inputs:
+      expected_assets:
+        description: "Expected number of assets per release"
+        type: number
+        default: 10
+      lookback_months:
+        description: "How many months back to check"
+        type: number
+        default: 3
+      dry_run:
+        description: "Preview deletions without actually deleting"
+        type: boolean
+        default: true
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Record job start time
+        run: echo "JOB_START=$(date +%s)" >> $GITHUB_ENV
+
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Cleanup incomplete releases
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          EXPECTED=${{ inputs.expected_assets }}
+          DRY_RUN=${{ inputs.dry_run }}
+          echo "Checking for incomplete releases with < $EXPECTED assets (last ${{ inputs.lookback_months }} months)..."
+          if [ "$DRY_RUN" = "true" ]; then
+            echo "::notice::DRY RUN — no releases will be deleted"
+          fi
+
+          CUTOFF=$(date -u -d '${{ inputs.lookback_months }} months ago' '+%Y-%m-%dT%H:%M:%SZ' 2>/dev/null || date -u -v-${{ inputs.lookback_months }}m '+%Y-%m-%dT%H:%M:%SZ')
+          DELETED=0
+
+          gh release list --json tagName,createdAt --limit 50 | \
+            jq -r --arg cutoff "$CUTOFF" '.[] | select(.createdAt >= $cutoff) | .tagName' | \
+            while read -r tag; do
+              ASSET_COUNT=$(gh release view "$tag" --json assets --jq '.assets | length' 2>/dev/null || echo "0")
+              if [ "$ASSET_COUNT" -gt 0 ] && [ "$ASSET_COUNT" -lt "$EXPECTED" ]; then
+                if [ "$DRY_RUN" = "true" ]; then
+                  echo "Would delete: $tag ($ASSET_COUNT/$EXPECTED assets)"
+                else
+                  echo "Deleting incomplete release: $tag ($ASSET_COUNT/$EXPECTED assets)"
+                  gh release delete "$tag" --yes --cleanup-tag || true
+                fi
+                DELETED=$((DELETED + 1))
+              fi
+            done
+
+          if [ "$DELETED" -eq 0 ]; then
+            echo "No incomplete releases found"
+          fi
+
+      - name: Cleanup job summary
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          JOB_END=$(date +%s)
+          DUR=$(( JOB_END - ${JOB_START:-$JOB_END} ))
+          if [ "$DUR" -ge 60 ]; then FORMATTED=$(printf "%dm %ds" $((DUR / 60)) $((DUR % 60))); else FORMATTED="${DUR}s"; fi
+          echo "## :broom: Cleanup Incomplete Releases Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Metric | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|--------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Dry Run | **${{ inputs.dry_run }}** |" >> $GITHUB_STEP_SUMMARY
+          echo "| Expected Assets | **${{ inputs.expected_assets }}** |" >> $GITHUB_STEP_SUMMARY
+          echo "| Lookback | **${{ inputs.lookback_months }} months** |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Total Duration** | **${FORMATTED}** |" >> $GITHUB_STEP_SUMMARY
