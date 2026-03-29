@@ -98,6 +98,10 @@
     "dist-win-arm64": "electron-builder build --publish=never --win --arm64 --config.npmRebuild=false",
     "dist-macos-x64": "electron-builder build --publish=never --mac --x64",
     "dist-macos-arm64": "electron-builder build --publish=never --mac --arm64",
+    "dist-linux-deb": "electron-builder build --publish=never --linux deb",
+    "dist-linux-rpm": "electron-builder build --publish=never --linux rpm",
+    "dist-linux-snap": "electron-builder build --publish=never --linux snap",
+    "dist-linux-pacman": "electron-builder build --publish=never --linux pacman",
     "dist-linux-appimage": "electron-builder build --publish=never --linux AppImage"
   },
   "repository": "https://github.com/synle/sqlui-native",
