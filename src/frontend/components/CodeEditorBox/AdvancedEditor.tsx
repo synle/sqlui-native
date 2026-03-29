@@ -122,6 +122,17 @@ export default function AdvancedEditor(props: AdvancedEditorProps): JSX.Element 
           },
         ]);
 
+        // Reset cursor only if it's beyond the new content bounds
+        const model = editor.getModel();
+        const pos = editor.getPosition();
+        if (model && pos) {
+          const lastLine = model.getLineCount();
+          const lastCol = model.getLineMaxColumn(lastLine);
+          if (pos.lineNumber > lastLine || (pos.lineNumber === lastLine && pos.column > lastCol)) {
+            editor.setSelection(new monaco.Selection(1, 1, 1, 1));
+          }
+        }
+
         editor.pushUndoStop();
       } else {
         editor.setValue(newValue);
