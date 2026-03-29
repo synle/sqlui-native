@@ -1,14 +1,26 @@
-name: Cleanup Incomplete Releases
+name: Cleanup Releases
 
 on:
   workflow_dispatch:
     inputs:
+      cleanup_drafts:
+        description: "Delete old draft releases"
+        type: boolean
+        default: true
+      draft_keep_count:
+        description: "Number of most recent draft releases to keep"
+        type: number
+        default: 0
+      cleanup_incomplete:
+        description: "Delete incomplete releases (missing assets)"
+        type: boolean
+        default: true
       expected_assets:
         description: "Expected number of assets per release"
         type: number
         default: 10
       lookback_months:
-        description: "How many months back to check"
+        description: "How many months back to check for incomplete releases"
         type: number
         default: 3
       dry_run:
@@ -32,7 +44,31 @@ jobs:
         with:
           ref: ${{ github.ref }}
 
+      - name: Cleanup old draft releases
+        if: ${{ inputs.cleanup_drafts }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          DRY_RUN=${{ inputs.dry_run }}
+          echo "Cleaning up old draft releases, keeping the last ${{ inputs.draft_keep_count }}..."
+          if [ "$DRY_RUN" = "true" ]; then
+            echo "::notice::DRY RUN — no releases will be deleted"
+          fi
+
+          gh release list --json tagName,isDraft --limit 100 | \
+            jq -r '[.[] | select(.isDraft == true)] | sort_by(.tagName) | reverse | .[${{ inputs.draft_keep_count }}:] | .[].tagName' | \
+            while read -r tag; do
+              if [ "$DRY_RUN" = "true" ]; then
+                echo "Would delete draft: $tag"
+              else
+                echo "Deleting draft release: $tag"
+                gh release delete "$tag" --yes --cleanup-tag || true
+              fi
+            done
+
       - name: Cleanup incomplete releases
+        if: ${{ inputs.cleanup_incomplete }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: bash
@@ -45,7 +81,6 @@ jobs:
           fi
 
           CUTOFF=$(date -u -d '${{ inputs.lookback_months }} months ago' '+%Y-%m-%dT%H:%M:%SZ' 2>/dev/null || date -u -v-${{ inputs.lookback_months }}m '+%Y-%m-%dT%H:%M:%SZ')
-          DELETED=0
 
           gh release list --json tagName,createdAt --limit 50 | \
             jq -r --arg cutoff "$CUTOFF" '.[] | select(.createdAt >= $cutoff) | .tagName' | \
@@ -58,13 +93,8 @@ jobs:
                   echo "Deleting incomplete release: $tag ($ASSET_COUNT/$EXPECTED assets)"
                   gh release delete "$tag" --yes --cleanup-tag || true
                 fi
-                DELETED=$((DELETED + 1))
               fi
             done
-
-          if [ "$DELETED" -eq 0 ]; then
-            echo "No incomplete releases found"
-          fi
 
       - name: Cleanup job summary
         if: ${{ always() }}
@@ -73,11 +103,11 @@ jobs:
           JOB_END=$(date +%s)
           DUR=$(( JOB_END - ${JOB_START:-$JOB_END} ))
           if [ "$DUR" -ge 60 ]; then FORMATTED=$(printf "%dm %ds" $((DUR / 60)) $((DUR % 60))); else FORMATTED="${DUR}s"; fi
-          echo "## :broom: Cleanup Incomplete Releases Summary" >> $GITHUB_STEP_SUMMARY
+          echo "## :broom: Cleanup Releases Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "| Metric | Value |" >> $GITHUB_STEP_SUMMARY
-          echo "|--------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Setting | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|---------|-------|" >> $GITHUB_STEP_SUMMARY
           echo "| Dry Run | **${{ inputs.dry_run }}** |" >> $GITHUB_STEP_SUMMARY
-          echo "| Expected Assets | **${{ inputs.expected_assets }}** |" >> $GITHUB_STEP_SUMMARY
-          echo "| Lookback | **${{ inputs.lookback_months }} months** |" >> $GITHUB_STEP_SUMMARY
+          echo "| Cleanup Drafts | **${{ inputs.cleanup_drafts }}** (keep last ${{ inputs.draft_keep_count }}) |" >> $GITHUB_STEP_SUMMARY
+          echo "| Cleanup Incomplete | **${{ inputs.cleanup_incomplete }}** (expect ${{ inputs.expected_assets }} assets, last ${{ inputs.lookback_months }}mo) |" >> $GITHUB_STEP_SUMMARY
           echo "| **Total Duration** | **${FORMATTED}** |" >> $GITHUB_STEP_SUMMARY
