@@ -146,6 +146,7 @@ jobs:
             $DRAFT_FLAGS
 
       - name: Cleanup incomplete releases
+        if: ${{ inputs.release_mode == 'production' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: bash
@@ -867,15 +868,23 @@ jobs:
           TAG="${{ needs.create_release.outputs.dist_version }}"
           JOB_FAILED=${{ needs.dist_windows_x64.result == 'failure' || needs.dist_windows_arm64.result == 'failure' || needs.dist_macos_arm64.result == 'failure' || needs.dist_macos_intel_x64.result == 'failure' || needs.dist_linux.result == 'failure' || needs.dist_windows_x64.result == 'cancelled' || needs.dist_windows_arm64.result == 'cancelled' || needs.dist_macos_arm64.result == 'cancelled' || needs.dist_macos_intel_x64.result == 'cancelled' || needs.dist_linux.result == 'cancelled' }}
 
-          ASSET_COUNT=$(gh release view "$TAG" --json assets --jq '.assets | length' 2>/dev/null || echo "0")
-          echo "Release $TAG has $ASSET_COUNT/$EXPECTED_RELEASE_ASSETS assets"
-
-          if [ "$JOB_FAILED" = "true" ] || [ "$ASSET_COUNT" -lt "$EXPECTED_RELEASE_ASSETS" ]; then
-            echo "::warning::Release $TAG is incomplete ($ASSET_COUNT/$EXPECTED_RELEASE_ASSETS assets) — deleting"
+          if [ "$JOB_FAILED" = "true" ]; then
+            echo "::warning::Release $TAG has failing jobs — deleting"
             gh release delete "$TAG" --yes --cleanup-tag 2>/dev/null || true
             echo "ROLLED_BACK=true" >> $GITHUB_ENV
+          elif [ "${{ inputs.release_mode }}" = "production" ]; then
+            ASSET_COUNT=$(gh release view "$TAG" --json assets --jq '.assets | length' 2>/dev/null || echo "0")
+            echo "Release $TAG has $ASSET_COUNT/$EXPECTED_RELEASE_ASSETS assets"
+            if [ "$ASSET_COUNT" -lt "$EXPECTED_RELEASE_ASSETS" ]; then
+              echo "::warning::Release $TAG is incomplete ($ASSET_COUNT/$EXPECTED_RELEASE_ASSETS assets) — deleting"
+              gh release delete "$TAG" --yes --cleanup-tag 2>/dev/null || true
+              echo "ROLLED_BACK=true" >> $GITHUB_ENV
+            else
+              echo "Release $TAG is complete"
+              echo "ROLLED_BACK=false" >> $GITHUB_ENV
+            fi
           else
-            echo "Release $TAG is complete"
+            echo "Release $TAG — skipping asset count check (non-production mode)"
             echo "ROLLED_BACK=false" >> $GITHUB_ENV
           fi
 
