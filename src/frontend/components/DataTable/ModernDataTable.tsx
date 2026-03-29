@@ -141,9 +141,12 @@ export default function ModernDataTable(props: DataTableProps): JSX.Element | nu
     overscan: 5,
   });
 
+  const columnVirtualizerRef = useRef(columnVirtualizer);
+  columnVirtualizerRef.current = columnVirtualizer;
+
   useLayoutEffect(() => {
-    columnVirtualizer.measure();
-  }, [columnSizingInfo, columnVirtualizer]);
+    columnVirtualizerRef.current.measure();
+  }, [columnSizingInfo]);
 
   const onShowExpandedData = async () => {
     try {
