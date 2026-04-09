@@ -111,7 +111,7 @@ export function getFileUpload(_input: SqlAction.TableInput): SqlAction.Output | 
   return {
     label: "File Upload",
     formatter: shellFormatter,
-    query: `curl -X POST '{{HOST}}/post' \\\n  -F 'file=@/path/to/file'`,
+    query: `curl -X POST '{{HOST}}/post' \\\n  -F 'file=@/path/to/file' \\\n  -F 'description=my upload'`,
   };
 }
 

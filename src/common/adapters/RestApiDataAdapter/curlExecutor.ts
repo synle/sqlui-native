@@ -103,8 +103,12 @@ function buildCurlArgs(request: RestApiRequest): string[] {
     args.push("-b", request.cookies);
   }
 
-  // Body
-  if (request.body) {
+  // Form parts (-F flags passed directly to curl for multipart/file uploads)
+  if (request.formParts && request.formParts.length > 0) {
+    for (const part of request.formParts) {
+      args.push("-F", part);
+    }
+  } else if (request.body) {
     args.push("--data-raw", request.body);
   }
 

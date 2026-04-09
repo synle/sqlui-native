@@ -85,7 +85,27 @@ describe("curlParser", () => {
     it("parses form data with -F", () => {
       const result = parseCurlCommand("curl -X POST 'https://example.com' -F 'field1=value1' -F 'field2=value2'");
       expect(result.bodyType).toBe("form-data");
-      expect(result.body).toContain("field1=value1");
+      expect(result.formParts).toEqual(["field1=value1", "field2=value2"]);
+      expect(result.body).toBeUndefined();
+    });
+
+    it("parses file upload with -F", () => {
+      const result = parseCurlCommand("curl -X POST 'https://example.com' -F 'file=@/path/to/file' -F 'description=my upload'");
+      expect(result.bodyType).toBe("form-data");
+      expect(result.formParts).toEqual(["file=@/path/to/file", "description=my upload"]);
+    });
+
+    it("builds curl with -F for form parts", () => {
+      const cmd = buildCurlCommand({
+        method: "POST",
+        url: "https://example.com",
+        headers: {},
+        params: {},
+        formParts: ["file=@/path/to/file", "field=value"],
+      });
+      expect(cmd).toContain("-F 'file=@/path/to/file'");
+      expect(cmd).toContain("-F 'field=value'");
+      expect(cmd).not.toContain("-d");
     });
 
     it("extracts query params from URL", () => {

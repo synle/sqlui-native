@@ -1,4 +1,5 @@
-import { describe, expect, it } from "vitest";
+import fs from "fs";
+import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import RestApiDataAdapter from "src/common/adapters/RestApiDataAdapter/index";
 
 const HTTPBIN = "https://httpbin.org";
@@ -597,6 +598,55 @@ describe("RestApiDataAdapter integration (httpbin.org)", () => {
       const n = Number(result.meta?.responseBodyParsed?.args?.n);
       expect(n).toBeGreaterThanOrEqual(0);
       expect(n).toBeLessThan(1000);
+      await adapter.disconnect();
+    });
+  });
+
+  // -- file upload --
+
+  describeHttpbin("file upload", () => {
+    const testFilePath = "/tmp/sqlui-native-test-upload.txt";
+
+    beforeAll(() => {
+      fs.writeFileSync(testFilePath, "abc\ndef\n");
+    });
+
+    afterAll(() => {
+      try {
+        fs.unlinkSync(testFilePath);
+      } catch (_err) {
+        // cleanup is best-effort
+      }
+    });
+
+    it("uploads a file with -F flag", async () => {
+      const adapter = new RestApiDataAdapter(`rest://{"HOST":"${HTTPBIN}"}`);
+      const result = await adapter.execute(`curl -X POST '${HTTPBIN}/post' \\\n  -F 'file=@${testFilePath}'`);
+      expect(result.ok).toBe(true);
+      expect(result.meta?.status).toBe(200);
+      expect(result.meta?.responseBodyParsed?.files?.file).toBe("abc\ndef\n");
+      await adapter.disconnect();
+    });
+
+    it("uploads a file with additional form fields", async () => {
+      const adapter = new RestApiDataAdapter(`rest://{"HOST":"${HTTPBIN}"}`);
+      const result = await adapter.execute(
+        `curl -X POST '${HTTPBIN}/post' \\\n  -F 'file=@${testFilePath}' \\\n  -F 'description=my upload'`,
+      );
+      expect(result.ok).toBe(true);
+      expect(result.meta?.status).toBe(200);
+      expect(result.meta?.responseBodyParsed?.files?.file).toBe("abc\ndef\n");
+      expect(result.meta?.responseBodyParsed?.form?.description).toBe("my upload");
+      await adapter.disconnect();
+    });
+
+    it("sends form fields without file", async () => {
+      const adapter = new RestApiDataAdapter(`rest://{"HOST":"${HTTPBIN}"}`);
+      const result = await adapter.execute(`curl -X POST '${HTTPBIN}/post' \\\n  -F 'field1=value1' \\\n  -F 'field2=value2'`);
+      expect(result.ok).toBe(true);
+      expect(result.meta?.status).toBe(200);
+      expect(result.meta?.responseBodyParsed?.form?.field1).toBe("value1");
+      expect(result.meta?.responseBodyParsed?.form?.field2).toBe("value2");
       await adapter.disconnect();
     });
   });

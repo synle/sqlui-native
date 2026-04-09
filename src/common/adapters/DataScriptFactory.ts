@@ -113,7 +113,11 @@ export function getConnectionStringFormat(dialect?: string): "url" | "json" | "a
  */
 export function consolidateDialects(res: string[], script: BaseDataScript) {
   for (const dialect of script.dialects) {
-    res.push(dialect);
+    // Use canonical dialect type to deduplicate aliases (e.g., "restapi" → "rest")
+    const canonical = script.getDialectType(dialect as SqluiCore.Dialect) || dialect;
+    if (!res.includes(canonical)) {
+      res.push(canonical);
+    }
   }
   return res;
 }
