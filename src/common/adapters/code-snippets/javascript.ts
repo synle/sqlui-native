@@ -45,13 +45,13 @@ async function _doWork(){
 
 _doWork();`;
 
-/** Mustache template for a JavaScript/Node.js code snippet connecting to SQLite via better-sqlite3. */
+/** Mustache template for a JavaScript/Node.js code snippet connecting to SQLite via built-in node:sqlite. */
 export const sqlite = `\
-// npm install --save better-sqlite3
-const Database = require('better-sqlite3');
+// No extra dependencies needed - requires Node.js 22.5+
+const { DatabaseSync } = require('node:sqlite');
 
 function _doWork(){
-  const db = new Database('{{{storagePath}}}');
+  const db = new DatabaseSync('{{{storagePath}}}');
 
   try{
     const rows = db.prepare(\`{{{sql}}}\`).all();
