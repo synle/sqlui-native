@@ -837,91 +837,115 @@ export class ConcreteDataScripts extends BaseDataScript {
   getCodeSnippet(connection, query, language) {
     const sql = query.sql;
     const database = query.databaseId;
-    const deps: string[] = [];
 
-    // construct the connection url for code snippet
+    // resolve the engine name for code snippet templates
+    const engineMap: Record<string, string> = {
+      mysql: "mysql",
+      mariadb: "mysql",
+      mssql: "mssql",
+      postgres: "postgres",
+      postgresql: "postgres",
+      sqlite: "sqlite",
+    };
+    const engine = engineMap[connection.dialect || ""] || "";
+    if (!engine) return "";
+
+    // parse connection parameters for non-sqlite dialects
     let connectionString = connection.connection;
     connectionString = connectionString.replace("sslmode=require", "sslmode=no-verify");
-    switch (connection.dialect) {
-      case "sqlite":
-        break;
-      default:
-        if (database) {
-          //@ts-ignore
-          const { scheme, username, password, hosts, options } = BaseDataAdapter.getConnectionParameters(connectionString);
 
-          connectionString = `${scheme}://`;
-          if (username && password) {
-            connectionString += `${encodeURIComponent(username)}:${encodeURIComponent(password)}`;
-          }
+    let host = "";
+    let port: string | number = "";
+    let username = "";
+    let password = "";
 
-          const [{ host, port }] = hosts;
-          connectionString += `@${host}:${port}`;
+    if (connection.dialect !== "sqlite") {
+      //@ts-ignore
+      const params = BaseDataAdapter.getConnectionParameters(connectionString);
+      host = params?.hosts?.[0]?.host || "localhost";
+      port = params?.hosts?.[0]?.port || "";
+      username = params?.username || "";
+      password = params?.password || "";
 
-          if (database) {
-            connectionString += `/${database}`;
-          }
+      // build full connection URL with database
+      if (database) {
+        //@ts-ignore
+        const { scheme, options } = params || {};
 
-          if (options) {
-            connectionString += `?${qs.stringify(options)}`;
-          }
+        connectionString = `${scheme}://`;
+        if (username && password) {
+          connectionString += `${encodeURIComponent(username)}:${encodeURIComponent(password)}`;
         }
-        break;
+        connectionString += `@${host}:${port}`;
+        connectionString += `/${database}`;
+        if (options) {
+          connectionString += `?${qs.stringify(options)}`;
+        }
+      }
     }
 
     switch (language) {
-      case "javascript":
+      case "javascript": {
         switch (connection.dialect) {
+          case "sqlite": {
+            const storagePath = connectionString.replace("sqlite://", "").replace(/\\/g, "/");
+            return renderCodeSnippet("javascript", engine as any, { storagePath, sql });
+          }
           case "mssql":
-            deps.push(`tedious`);
-            break;
+            return renderCodeSnippet("javascript", engine as any, {
+              host,
+              port,
+              username,
+              password,
+              database: database || "",
+              sql,
+            });
+          case "mysql":
+          case "mariadb": {
+            let mysqlConnStr = connectionString;
+            if (connection.dialect === "mariadb") {
+              mysqlConnStr = mysqlConnStr.replace("mariadb://", "mysql://");
+            }
+            return renderCodeSnippet("javascript", engine as any, { connectionString: mysqlConnStr, sql });
+          }
           case "postgres":
           case "postgresql":
-            deps.push(`pg pg-hstore`);
-            break;
-          case "sqlite":
-            deps.push(`sqlite3`);
-            break;
-          case "mariadb":
-            deps.push(`mariadb`);
-            break;
-          case "mysql":
-            deps.push(`mysql2`);
-            break;
+            return renderCodeSnippet("javascript", engine as any, { connectionString, sql });
+          default:
+            return "";
         }
-
-        return renderCodeSnippet("javascript", "relational", {
-          deps: deps.join(" "),
-          connectionString,
-          sql,
-        });
+      }
       case "python": {
-        let pythonConnStr = connectionString;
         switch (connection.dialect) {
+          case "sqlite": {
+            const storagePath = connectionString.replace("sqlite://", "").replace(/\\/g, "/");
+            return renderCodeSnippet("python", engine as any, { storagePath, sql });
+          }
           case "mssql":
-            deps.push(`# pip install pymssql`);
-            pythonConnStr = pythonConnStr.replace("mssql://", "mssql+pymssql://");
-            break;
+            return renderCodeSnippet("python", engine as any, {
+              host,
+              port,
+              username,
+              password,
+              database: database || "",
+              sql,
+            });
+          case "mysql":
+          case "mariadb":
+            return renderCodeSnippet("python", engine as any, {
+              host,
+              port: port || 3306,
+              username,
+              password,
+              database: database || "",
+              sql,
+            });
           case "postgres":
           case "postgresql":
-            deps.push(`# pip install psycopg2-binary`);
-            pythonConnStr = pythonConnStr.replace("postgres://", "postgresql://");
-            break;
-          case "sqlite":
-            pythonConnStr = pythonConnStr.replace("sqlite://", "sqlite:///");
-            break;
-          case "mariadb":
-          case "mysql":
-            deps.push(`# pip install pymysql`);
-            pythonConnStr = pythonConnStr.replace("mysql://", "mysql+pymysql://");
-            break;
+            return renderCodeSnippet("python", engine as any, { connectionString, sql });
+          default:
+            return "";
         }
-
-        return renderCodeSnippet("python", "relational", {
-          deps: deps.join("\n"),
-          connectionString: pythonConnStr,
-          sql,
-        });
       }
       case "java": {
         let jdbcUrl = "";
@@ -953,9 +977,6 @@ export class ConcreteDataScripts extends BaseDataScript {
             break;
           }
           case "mssql": {
-            //@ts-ignore
-            const { username, password, hosts } = BaseDataAdapter.getConnectionParameters(connectionString);
-            const [{ host, port }] = hosts;
             let mssqlJdbc = `jdbc:sqlserver://${host}:${port}`;
             if (username) mssqlJdbc += `;user=${username}`;
             if (password) mssqlJdbc += `;password=${password}`;
@@ -974,7 +995,7 @@ export class ConcreteDataScripts extends BaseDataScript {
 
         return renderCodeSnippet(
           "java",
-          "relational",
+          engine as any,
           { jdbcUrl, escapedSql },
           {
             connectDescription: dbDescription,
