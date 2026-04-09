@@ -5,7 +5,7 @@ import * as javascriptTemplates from "./javascript";
 import * as pythonTemplates from "./python";
 
 /** Supported database engine types for code snippet generation. */
-type Engine = "relational" | "sqlite" | "cassandra" | "mongodb" | "redis" | "cosmosdb" | "aztable" | "sfdc";
+type Engine = "mysql" | "postgres" | "sqlite" | "mssql" | "cassandra" | "mongodb" | "redis" | "cosmosdb" | "aztable" | "sfdc";
 
 /** Supported programming languages for code snippet generation. */
 type Language = "javascript" | "python" | "java";
