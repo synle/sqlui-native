@@ -61,6 +61,8 @@ export type RestApiRequest = {
   body?: string;
   /** Body content type hint. */
   bodyType?: "json" | "form-urlencoded" | "form-data" | "raw" | "none";
+  /** Multipart form parts from -F/--form flags (e.g., "field=value", "file=@/path/to/file"). */
+  formParts?: string[];
   /** Cookie string from -b flag or credentials. */
   cookies?: string;
   /** Whether to follow redirects. */
