@@ -1,5 +1,5 @@
-/** Mustache template for a Java JDBC code snippet connecting to relational databases. */
-export const relational = `\
+/** Mustache template for a Java JDBC code snippet shared across all relational dialects. */
+const relationalJdbc = `\
 import java.sql.*;
 
 public class Main {
@@ -47,6 +47,18 @@ public class Main {
         }
     }
 }`;
+
+/** Java JDBC template for MySQL connections. */
+export const mysql = relationalJdbc;
+
+/** Java JDBC template for PostgreSQL connections. */
+export const postgres = relationalJdbc;
+
+/** Java JDBC template for SQLite connections. */
+export const sqlite = relationalJdbc;
+
+/** Java JDBC template for MSSQL connections. */
+export const mssql = relationalJdbc;
 
 /** Mustache template for a Java code snippet connecting to Cassandra via the DataStax driver. */
 export const cassandra = `\
