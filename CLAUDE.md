@@ -133,6 +133,8 @@ Connection strings are prefixed with a dialect scheme (`dialect://...`) but the 
 
 **Variable system:** `{{VAR}}` placeholders resolved by `variableResolver.ts`. 4-layer priority (folder > environment > collection > global). Built-in dynamic variables: `{{$timestamp}}`, `{{$isoTimestamp}}`, `{{$randomUUID}}`, `{{$randomInt}}`.
 
+**File uploads / multipart form data:** `-F`/`--form` flags are preserved as individual `formParts` on `RestApiRequest` (not merged into `body`). The executor passes each `-F` flag directly to the system `curl` binary, which handles multipart boundaries and `@file` references natively. Example: `curl -X POST '{{HOST}}/post' -F 'file=@/path/to/file' -F 'description=my upload'`.
+
 **Execution:** `curlExecutor.ts` spawns `curl` with `--write-out` for timing metrics (DNS, connect, TLS, TTFB, total) and `-i` for response headers. Response is parsed into structured `RestApiResponse` with status, headers, body, cookies, timing, and size.
 
 **Context menus:** Database (folder) context menu shows "New Request" templates (curl/fetch × GET/POST JSON/POST form/PUT JSON/PUT form/PATCH/DELETE). Connection context menu hides "Refresh" and "Test Connection" (not applicable for stateless HTTP).
