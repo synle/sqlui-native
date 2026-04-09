@@ -1,0 +1,39 @@
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+
+public class Main {
+    // Replace with your Salesforce credentials
+    private static final String LOGIN_URL = "https://login.salesforce.com";
+    private static final String USERNAME = "your_username";
+    private static final String PASSWORD = "your_password" + "your_security_token";
+    private static final String CLIENT_ID = "your_connected_app_client_id";
+    private static final String CLIENT_SECRET = "your_connected_app_client_secret";
+
+    public static void main(String[] args) throws Exception {
+        HttpClient client = HttpClient.newHttpClient();
+
+        // Step 1: OAuth login
+        String loginBody = "grant_type=password"
+            + "&client_id=" + CLIENT_ID
+            + "&client_secret=" + CLIENT_SECRET
+            + "&username=" + USERNAME
+            + "&password=" + PASSWORD;
+
+        HttpRequest loginRequest = HttpRequest.newBuilder()
+            .uri(URI.create(LOGIN_URL + "/services/oauth2/token"))
+            .header("Content-Type", "application/x-www-form-urlencoded")
+            .POST(HttpRequest.BodyPublishers.ofString(loginBody))
+            .build();
+
+        HttpResponse<String> loginResponse = client.send(loginRequest, HttpResponse.BodyHandlers.ofString());
+        System.out.println("Login response: " + loginResponse.body());
+        // Parse access_token and instance_url from JSON response
+
+        // Step 2: Execute SOQL query
+        // String soql = "{{{sql}}}";
+        // Use: GET {instance_url}/services/data/v59.0/query?q={soql}
+        // Header: Authorization: Bearer {access_token}
+    }
+}

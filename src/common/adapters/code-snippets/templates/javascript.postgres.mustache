@@ -1,0 +1,21 @@
+// npm install --save pg
+const { Client } = require('pg');
+
+async function _doWork(){
+  const client = new Client({ connectionString: '{{{connectionString}}}' });
+  await client.connect();
+
+  try{
+    const res = await client.query(`{{{sql}}}`);
+
+    for(const item of res.rows){
+      console.log(item);
+    }
+  } catch(err){
+    console.log('Failed to run query', err);
+  } finally {
+    await client.end();
+  }
+}
+
+_doWork();

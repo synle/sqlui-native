@@ -1,0 +1,22 @@
+# python3 -m venv ./ # setting up virtual environment with
+# source bin/activate # activate the venv profile
+# pip install pymysql
+import pymysql
+
+connection = pymysql.connect(
+  host='{{{host}}}',
+  port={{{port}}},
+  user='{{{username}}}',
+  password='{{{password}}}',
+  database='{{{database}}}',
+  cursorclass=pymysql.cursors.DictCursor
+)
+
+try:
+  with connection.cursor() as cursor:
+    cursor.execute("""{{{sql}}}""")
+    rows = cursor.fetchall()
+    for row in rows:
+      print(row)
+finally:
+  connection.close()

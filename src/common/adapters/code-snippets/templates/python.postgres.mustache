@@ -1,0 +1,16 @@
+# python3 -m venv ./ # setting up virtual environment with
+# source bin/activate # activate the venv profile
+# pip install psycopg2-binary
+import psycopg2
+import psycopg2.extras
+
+connection = psycopg2.connect('{{{connectionString}}}')
+
+try:
+  with connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cursor:
+    cursor.execute("""{{{sql}}}""")
+    rows = cursor.fetchall()
+    for row in rows:
+      print(row)
+finally:
+  connection.close()

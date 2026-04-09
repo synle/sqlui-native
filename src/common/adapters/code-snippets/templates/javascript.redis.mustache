@@ -1,0 +1,20 @@
+// npm install --save redis
+const { createClient, RedisClientType } = require('redis');
+
+async function _doWork(){
+  try {
+    const db = await new Promise((resolve, reject) => {
+      const client = createClient({{{clientOptionsJson}}});
+      client.connect();
+      client.on('ready', () => resolve(client));
+      client.on('error', (err) => reject(err));
+    });
+
+    const res = await {{{sql}}};
+    console.log(res);
+  } catch(err){
+    console.log('Failed to connect', err);
+  }
+}
+
+_doWork();
