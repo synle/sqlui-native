@@ -33,7 +33,7 @@ describe("renderCodeSnippet", () => {
         sql: "SELECT * FROM users",
       });
 
-      expect(result).toContain("require('node:sqlite')");
+      expect(result).toContain("require('better-sqlite3')");
       expect(result).toContain("test-db.sqlite");
       expect(result).toContain("SELECT * FROM users");
     });
