@@ -149,11 +149,13 @@
     "mustache": "^4.2.0",
     "mysql2": "^2.3.3",
     "pg": "^8.18.0",
+    "pg-hstore": "^2.3.4",
     "qs": "^6.11.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.2.2",
     "redis": "^4.3.1",
+    "sequelize": "^6.37.8",
     "sql-formatter": "^4.0.2",
     "tedious": "^19.0.0"
   },

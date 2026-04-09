@@ -1,14 +1,13 @@
-import createRelationalDataAdapter from "src/common/adapters/RelationalDataAdapter/index";
-import IDataAdapter from "src/common/adapters/IDataAdapter";
+import RelationalDataAdapter from "src/common/adapters/RelationalDataAdapter/index";
 
 const CONNECTION = "mysql://root:password123!@127.0.0.1:3306";
 
 describe("mysql integration", () => {
-  let adapter: IDataAdapter;
+  let adapter: RelationalDataAdapter;
 
   beforeAll(async () => {
-    adapter = createRelationalDataAdapter(CONNECTION);
-    await adapter.execute(`CREATE DATABASE IF NOT EXISTS sqlui_test`, undefined, undefined);
+    adapter = new RelationalDataAdapter(CONNECTION);
+    await adapter.execute(`CREATE DATABASE IF NOT EXISTS sqlui_test`);
   });
 
   test("authenticate", async () => {
@@ -33,11 +32,10 @@ describe("mysql integration", () => {
         Name VARCHAR(120)
       )`,
       "sqlui_test",
-      undefined,
     );
-    await adapter.execute(`INSERT INTO artists (Name) VALUES ('Test Artist 1')`, "sqlui_test", undefined);
-    await adapter.execute(`INSERT INTO artists (Name) VALUES ('Test Artist 2')`, "sqlui_test", undefined);
-    await adapter.execute(`INSERT INTO artists (Name) VALUES ('Test Artist 3')`, "sqlui_test", undefined);
+    await adapter.execute(`INSERT INTO artists (Name) VALUES ('Test Artist 1')`, "sqlui_test");
+    await adapter.execute(`INSERT INTO artists (Name) VALUES ('Test Artist 2')`, "sqlui_test");
+    await adapter.execute(`INSERT INTO artists (Name) VALUES ('Test Artist 3')`, "sqlui_test");
   });
 
   test("getTables", async () => {
@@ -55,31 +53,31 @@ describe("mysql integration", () => {
   });
 
   test("execute select", async () => {
-    const resp = await adapter.execute(`SELECT * FROM artists ORDER BY Name ASC LIMIT 10`, "sqlui_test", undefined);
+    const resp = await adapter.execute(`SELECT * FROM artists ORDER BY Name ASC LIMIT 10`, "sqlui_test");
     expect(resp.ok).toBe(true);
     expect(resp.raw?.length).toBe(3);
   });
 
   test("execute update", async () => {
-    const resp = await adapter.execute(`UPDATE artists SET Name = 'Updated Artist' WHERE ArtistId = 1`, "sqlui_test", undefined);
+    const resp = await adapter.execute(`UPDATE artists SET Name = 'Updated Artist' WHERE ArtistId = 1`, "sqlui_test");
     expect(resp.ok).toBe(true);
   });
 
   test("execute delete", async () => {
-    const resp = await adapter.execute(`DELETE FROM artists WHERE ArtistId = 1`, "sqlui_test", undefined);
+    const resp = await adapter.execute(`DELETE FROM artists WHERE ArtistId = 1`, "sqlui_test");
     expect(resp.ok).toBe(true);
   });
 
   test("cleanup", async () => {
-    await adapter.execute(`DROP DATABASE IF EXISTS sqlui_test`, undefined, undefined);
+    await adapter.execute(`DROP DATABASE IF EXISTS sqlui_test`);
   });
 });
 
 describe.skip("mysql legacy", () => {
-  let adapter: IDataAdapter;
+  let adapter;
 
   beforeAll(() => {
-    adapter = createRelationalDataAdapter("mysql://root:password123!@127.0.0.1:3306");
+    adapter = new RelationalDataAdapter("mysql://root:password123!@127.0.0.1:3306");
   });
 
   test("Get tables", async () => {
@@ -93,14 +91,14 @@ describe.skip("mysql legacy", () => {
   });
 
   test("Execute Select", async () => {
-    const resp = await adapter.execute(`SELECT * FROM artists ORDER BY Name ASC LIMIT 10`, "music_store", undefined);
+    const resp = await adapter.execute(`SELECT * FROM artists ORDER BY Name ASC LIMIT 10`, "music_store");
     //@ts-ignore
     expect(resp && resp.raw && resp.raw.length > 0 && resp.raw.length <= 10).toBe(true);
   });
 
   test("Execute Update", async () => {
     try {
-      await adapter.execute(`UPDATE artists SET name = 'AC/DC' WHERE ArtistId = '1'`, "music_store", undefined);
+      await adapter.execute(`UPDATE artists SET name = 'AC/DC' WHERE ArtistId = '1'`, "music_store");
       expect(1).toBe(1);
     } catch (err) {
       expect(err).toBeUndefined();

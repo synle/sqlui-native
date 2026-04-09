@@ -1,114 +1,24 @@
-/** Mustache template for a JavaScript/Node.js code snippet connecting to MySQL via mysql2. */
-export const mysql = `\
-// npm install --save mysql2
-const mysql = require('mysql2/promise');
+/** Mustache template for a JavaScript/Node.js code snippet connecting to relational databases via Sequelize. */
+export const relational = `\
+// install these extra dependencies if needed
+// npm install --save sequelize {{{deps}}}
+const {Sequelize} = require('sequelize');
 
 async function _doWork(){
-  const connection = await mysql.createConnection('{{{connectionString}}}');
+  const sequelize = new Sequelize('{{{connectionString}}}');
 
   try{
-    const [rows] = await connection.query(\`{{{sql}}}\`);
-
-    for(const item of rows){
-      console.log(item);
-    }
-  } catch(err){
-    console.log('Failed to run query', err);
-  } finally {
-    await connection.end();
-  }
-}
-
-_doWork();`;
-
-/** Mustache template for a JavaScript/Node.js code snippet connecting to PostgreSQL via pg. */
-export const postgres = `\
-// npm install --save pg
-const { Client } = require('pg');
-
-async function _doWork(){
-  const client = new Client({ connectionString: '{{{connectionString}}}' });
-  await client.connect();
-
-  try{
-    const res = await client.query(\`{{{sql}}}\`);
-
-    for(const item of res.rows){
-      console.log(item);
-    }
-  } catch(err){
-    console.log('Failed to run query', err);
-  } finally {
-    await client.end();
-  }
-}
-
-_doWork();`;
-
-/** Mustache template for a JavaScript/Node.js code snippet connecting to SQLite via better-sqlite3. */
-export const sqlite = `\
-// npm install --save better-sqlite3
-const Database = require('better-sqlite3');
-
-function _doWork(){
-  const db = new Database('{{{storagePath}}}');
-
-  try{
-    const rows = db.prepare(\`{{{sql}}}\`).all();
-
-    for(const item of rows){
-      console.log(item);
-    }
-  } catch(err){
-    console.log('Failed to run query', err);
-  } finally {
-    db.close();
-  }
-}
-
-_doWork();`;
-
-/** Mustache template for a JavaScript/Node.js code snippet connecting to MSSQL via tedious. */
-export const mssql = `\
-// npm install --save tedious
-const { Connection, Request } = require('tedious');
-
-function _doWork(){
-  const config = {
-    server: '{{{host}}}',
-    authentication: {
-      type: 'default',
-      options: { userName: '{{{username}}}', password: '{{{password}}}' }
-    },
-    options: {
-      port: {{{port}}},
-      database: '{{{database}}}',
-      encrypt: false,
-      trustServerCertificate: true,
-      rowCollectionOnRequestCompletion: true
-    }
-  };
-
-  const connection = new Connection(config);
-  connection.on('connect', (err) => {
-    if(err){ console.log('Failed to connect', err); return; }
-
-    const request = new Request(\`{{{sql}}}\`, (err, rowCount, rows) => {
-      if(err){ console.log('Failed to run query', err); return; }
-
-      for(const row of rows){
-        const item = {};
-        for(const col of row){ item[col.metadata.colName] = col.value; }
-        console.log(item);
-      }
-
-      connection.close();
+    const [items, meta] = await sequelize.query(\`{{{sql}}}\`, {
+      raw: true,
+      plain: false,
     });
 
-    connection.execSql(request);
-  });
-
-  connection.connect();
+    for(const item of items){
+      console.log(item);
+    }
+  } catch(err){
+    console.log('Failed to run query', err);
+  }
 }
 
 _doWork();`;
@@ -279,6 +189,29 @@ async function _doWork(){
     }
   } catch(err){
     console.log('Failed to connect', err)
+  }
+}
+
+_doWork();`;
+
+/** Mustache template for a JavaScript/Node.js code snippet connecting to SQLite via better-sqlite3. */
+export const sqlite = `\
+// npm install --save better-sqlite3
+const Database = require('better-sqlite3');
+
+function _doWork(){
+  const db = new Database('{{{storagePath}}}');
+
+  try{
+    const rows = db.prepare(\`{{{sql}}}\`).all();
+
+    for(const item of rows){
+      console.log(item);
+    }
+  } catch(err){
+    console.log('Failed to run query', err);
+  } finally {
+    db.close();
   }
 }
 
