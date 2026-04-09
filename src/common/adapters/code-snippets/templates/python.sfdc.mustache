@@ -1,0 +1,36 @@
+# python3 -m venv ./ # setting up virtual environment
+# source bin/activate # activate the venv profile
+# pip install simple-salesforce
+from simple_salesforce import Salesforce
+
+def _do_work():
+    try:
+        sf = Salesforce(
+            username='your_username',
+            password='your_password',
+            security_token='your_security_token'
+        )
+
+        # SOQL Query
+        result = sf.query('{{{sql}}}')
+        print(f"Total records: {result['totalSize']}")
+        for record in result['records']:
+            print(record)
+
+        # Insert
+        # result = sf.Account.create({'Name': 'New Account'})
+        # print(f"Created: {result['id']}")
+
+        # Update
+        # sf.Account.update('some_id', {'Name': 'Updated Name'})
+
+        # Delete
+        # sf.Account.delete('some_id')
+
+        # SOSL Search
+        # result = sf.search('FIND {keyword} IN ALL FIELDS RETURNING Account(Id, Name)')
+        # print(result)
+    except Exception as err:
+        print('Failed to connect', err)
+
+_do_work()

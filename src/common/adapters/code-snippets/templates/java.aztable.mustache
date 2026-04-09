@@ -1,0 +1,33 @@
+import com.azure.data.tables.TableClient;
+import com.azure.data.tables.TableClientBuilder;
+import com.azure.data.tables.TableServiceClient;
+import com.azure.data.tables.TableServiceClientBuilder;
+import com.azure.data.tables.models.TableEntity;
+import com.azure.data.tables.models.ListEntitiesOptions;
+
+public class Main {
+    public static void main(String[] args) {
+        String connectionString = "{{{connectionString}}}";
+        String table = "{{{tableId}}}";
+
+        try {
+            TableServiceClient serviceClient = new TableServiceClientBuilder()
+                .connectionString(connectionString)
+                .buildClient();
+
+            TableClient tableClient = new TableClientBuilder()
+                .connectionString(connectionString)
+                .tableName(table)
+                .buildClient();
+
+            // List entities
+            for (TableEntity entity : tableClient.listEntities()) {
+                System.out.println("PartitionKey: " + entity.getPartitionKey()
+                    + ", RowKey: " + entity.getRowKey()
+                    + ", Properties: " + entity.getProperties());
+            }
+        } catch (Exception e) {
+            System.out.println("Failed to connect: " + e.getMessage());
+        }
+    }
+}

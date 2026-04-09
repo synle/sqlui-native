@@ -1,0 +1,27 @@
+# python3 -m venv ./ # setting up virtual environment
+# source bin/activate # activate the venv profile
+# pip install azure-cosmos
+from azure.cosmos import CosmosClient
+
+def _do_work():
+    try:
+        client = CosmosClient.from_connection_string('{{{connectionString}}}')
+
+        # List databases
+        # for db in client.list_databases():
+        #     print(db['id'])
+
+        database = client.get_database_client('{{{databaseId}}}')
+        container = database.get_container_client('{{{tableId}}}')
+
+        # Query items
+        items = list(container.query_items(
+            query='SELECT * FROM c',
+            enable_cross_partition_query=True
+        ))
+        for item in items:
+            print(item)
+    except Exception as err:
+        print('Failed to connect', err)
+
+_do_work()
