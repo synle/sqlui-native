@@ -230,7 +230,6 @@ export function parseCurlCommand(curlString: string): RestApiRequest {
   // Determine body type from form parts
   let bodyType: RestApiRequest["bodyType"] = "none";
   if (formParts.length > 0) {
-    body = formParts.join("&");
     bodyType = "form-data";
   } else if (body) {
     const contentType = Object.entries(headers).find(([k]) => k.toLowerCase() === "content-type")?.[1];
@@ -249,6 +248,7 @@ export function parseCurlCommand(curlString: string): RestApiRequest {
     params: extractParams(url),
     body,
     bodyType,
+    formParts: formParts.length > 0 ? formParts : undefined,
     cookies,
     followRedirects,
     insecure,
@@ -282,7 +282,12 @@ export function buildCurlCommand(request: RestApiRequest): string {
     parts.push(`-b '${request.cookies}'`);
   }
 
-  if (request.body) {
+  if (request.formParts && request.formParts.length > 0) {
+    for (const part of request.formParts) {
+      const escaped = part.replace(/'/g, "'\\''");
+      parts.push(`-F '${escaped}'`);
+    }
+  } else if (request.body) {
     const escaped = request.body.replace(/'/g, "'\\''");
     parts.push(`-d '${escaped}'`);
   }
