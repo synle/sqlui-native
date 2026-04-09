@@ -1,0 +1,22 @@
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+import org.bson.Document;
+
+public class Main {
+    public static void main(String[] args) {
+        try (MongoClient client = MongoClients.create("{{{connectionString}}}")) {
+            MongoDatabase db = client.getDatabase("{{{database}}}");
+
+            // Adjust the query below to use the Java MongoDB driver syntax
+            // Example: find all documents in a collection
+            MongoCollection<Document> collection = db.getCollection("your_collection");
+            for (Document doc : collection.find()) {
+                System.out.println(doc.toJson());
+            }
+        } catch (Exception e) {
+            System.out.println("Failed to connect: " + e.getMessage());
+        }
+    }
+}

@@ -1,0 +1,42 @@
+// npm install --save tedious
+const { Connection, Request } = require('tedious');
+
+function _doWork(){
+  const config = {
+    server: '{{{host}}}',
+    authentication: {
+      type: 'default',
+      options: { userName: '{{{username}}}', password: '{{{password}}}' }
+    },
+    options: {
+      port: {{{port}}},
+      database: '{{{database}}}',
+      encrypt: false,
+      trustServerCertificate: true,
+      rowCollectionOnRequestCompletion: true
+    }
+  };
+
+  const connection = new Connection(config);
+  connection.on('connect', (err) => {
+    if(err){ console.log('Failed to connect', err); return; }
+
+    const request = new Request(`{{{sql}}}`, (err, rowCount, rows) => {
+      if(err){ console.log('Failed to run query', err); return; }
+
+      for(const row of rows){
+        const item = {};
+        for(const col of row){ item[col.metadata.colName] = col.value; }
+        console.log(item);
+      }
+
+      connection.close();
+    });
+
+    connection.execSql(request);
+  });
+
+  connection.connect();
+}
+
+_doWork();

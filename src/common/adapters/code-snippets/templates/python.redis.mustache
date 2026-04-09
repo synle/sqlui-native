@@ -1,0 +1,14 @@
+# python3 -m venv ./ # setting up virtual environment
+# source bin/activate # activate the venv profile
+# pip install redis
+import redis
+
+def _do_work():
+    try:
+        client = redis.Redis.from_url('{{{url}}}'{{{passwordArg}}})
+        res = client.{{{pythonCommand}}}
+        print(res)
+    except Exception as err:
+        print('Failed to connect', err)
+
+_do_work()

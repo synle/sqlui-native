@@ -1,0 +1,23 @@
+# python3 -m venv ./ # setting up virtual environment
+# source bin/activate # activate the venv profile
+# pip install pymongo
+from pymongo import MongoClient
+from bson.objectid import ObjectId
+
+def _do_work():
+    try:
+        database = '{{{database}}}'
+
+        client = MongoClient('{{{connectionString}}}')
+        db = client[database]
+
+        # Note: adjust the query below to use PyMongo syntax
+        # For example: db['collection_name'].find().limit(10)
+        res = list({{{pythonSql}}})
+
+        for item in res if isinstance(res, list) else [res]:
+            print(item)
+    except Exception as err:
+        print('Failed to connect', err)
+
+_do_work()

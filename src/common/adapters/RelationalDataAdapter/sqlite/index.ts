@@ -37,8 +37,12 @@ export default class SQLiteDataAdapter extends BaseDataAdapter implements IDataA
     // Strip the "sqlite://" scheme and normalize Windows backslashes to forward slashes
     const storagePath = this.connectionOption.replace("sqlite://", "").replace(/\\/g, "/");
 
+    // Validate that the parent directory exists for non-memory databases
     if (storagePath !== ":memory:" && !fs.existsSync(storagePath)) {
-      throw new Error(`SQLite database file not found: ${storagePath}`);
+      const parentDir = storagePath.includes("/") ? storagePath.substring(0, storagePath.lastIndexOf("/")) : ".";
+      if (!fs.existsSync(parentDir)) {
+        throw new Error(`SQLite database file not found: ${storagePath}`);
+      }
     }
 
     try {

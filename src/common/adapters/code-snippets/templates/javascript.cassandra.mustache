@@ -1,0 +1,29 @@
+// npm install --save cassandra-driver
+const cassandra = require('cassandra-driver')
+
+async function _doWork(){
+  try {
+    const clientOptions = {{{clientOptionsJson}}};
+    const client = new cassandra.Client({
+      contactPoints: clientOptions.contactPoints,
+      keyspace: clientOptions.keyspace,
+      authProvider: clientOptions.authProvider ? new cassandra.auth.PlainTextAuthProvider(
+        clientOptions.authProvider.username,
+        clientOptions.authProvider.password,
+      ): undefined,
+      sslOptions: {
+        rejectUnauthorized: false, // optional, check to see if you need to disable this SSL check
+      }
+    });
+    await new Promise((resolve, reject) => {
+      client.connect((err) => err ? reject(err): resolve());
+    })
+
+    const res = await client.execute(`{{{sql}}}`);
+    console.log(res);
+  } catch(err){
+    console.log('Failed to connect', err);
+  }
+}
+
+_doWork();
