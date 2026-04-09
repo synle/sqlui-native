@@ -10,9 +10,8 @@ import MongoDBDataAdapter from "src/common/adapters/MongoDBDataAdapter/index";
 import MongoDBDataAdapterScripts from "src/common/adapters/MongoDBDataAdapter/scripts";
 import RedisDataAdapter from "src/common/adapters/RedisDataAdapter/index";
 import RedisDataAdapterScripts from "src/common/adapters/RedisDataAdapter/scripts";
-import RelationalDataAdapter from "src/common/adapters/RelationalDataAdapter/index";
+import createRelationalDataAdapter from "src/common/adapters/RelationalDataAdapter/index";
 import RelationalDataAdapterScripts from "src/common/adapters/RelationalDataAdapter/scripts";
-import SQLiteDataAdapter from "src/common/adapters/RelationalDataAdapter/sqlite/index";
 import RestApiDataAdapter from "src/common/adapters/RestApiDataAdapter/index";
 import RestApiDataAdapterScripts from "src/common/adapters/RestApiDataAdapter/scripts";
 import SalesforceDataAdapter from "src/common/adapters/SalesforceDataAdapter/index";
@@ -356,10 +355,8 @@ export function getDataAdapter(connection: string) {
   try {
     const targetDialect = getDialectType(connection);
 
-    if (targetDialect === "sqlite") {
-      adapter = new SQLiteDataAdapter(connection);
-    } else if (RelationalDataAdapterScripts.isDialectSupported(targetDialect)) {
-      adapter = new RelationalDataAdapter(connection);
+    if (RelationalDataAdapterScripts.isDialectSupported(targetDialect)) {
+      adapter = createRelationalDataAdapter(connection);
     } else if (CassandraDataAdapterScripts.isDialectSupported(targetDialect)) {
       adapter = new CassandraDataAdapter(connection);
     } else if (MongoDBDataAdapterScripts.isDialectSupported(targetDialect)) {
