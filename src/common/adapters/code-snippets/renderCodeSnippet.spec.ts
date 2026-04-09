@@ -5,52 +5,17 @@ describe("renderCodeSnippet", () => {
   // ─── JavaScript templates ───────────────────────────────────────────
 
   describe("javascript", () => {
-    it("renders mysql template with connectionString and sql", () => {
-      const result = renderCodeSnippet("javascript", "mysql", {
+    it("renders relational template with connectionString, sql, and deps", () => {
+      const result = renderCodeSnippet("javascript", "relational", {
         connectionString: "mysql://root:pass@localhost:3306/mydb",
         sql: "SELECT * FROM users",
+        deps: "mysql2",
       });
 
-      expect(result).toContain("require('mysql2/promise')");
+      expect(result).toContain("require('sequelize')");
       expect(result).toContain("mysql://root:pass@localhost:3306/mydb");
       expect(result).toContain("SELECT * FROM users");
-    });
-
-    it("renders postgres template with connectionString and sql", () => {
-      const result = renderCodeSnippet("javascript", "postgres", {
-        connectionString: "postgres://user:pass@localhost:5432/mydb",
-        sql: "SELECT * FROM users",
-      });
-
-      expect(result).toContain("require('pg')");
-      expect(result).toContain("postgres://user:pass@localhost:5432/mydb");
-      expect(result).toContain("SELECT * FROM users");
-    });
-
-    it("renders sqlite template with storagePath and sql", () => {
-      const result = renderCodeSnippet("javascript", "sqlite", {
-        storagePath: "test-db.sqlite",
-        sql: "SELECT * FROM users",
-      });
-
-      expect(result).toContain("require('better-sqlite3')");
-      expect(result).toContain("test-db.sqlite");
-      expect(result).toContain("SELECT * FROM users");
-    });
-
-    it("renders mssql template with connection params and sql", () => {
-      const result = renderCodeSnippet("javascript", "mssql", {
-        host: "localhost",
-        port: 1433,
-        username: "sa",
-        password: "password123!",
-        database: "mydb",
-        sql: "SELECT * FROM users",
-      });
-
-      expect(result).toContain("require('tedious')");
-      expect(result).toContain("'localhost'");
-      expect(result).toContain("SELECT * FROM users");
+      expect(result).toContain("npm install --save sequelize mysql2");
     });
 
     it("renders cassandra template with clientOptionsJson and sql", () => {
@@ -126,56 +91,17 @@ describe("renderCodeSnippet", () => {
   // ─── Python templates ───────────────────────────────────────────────
 
   describe("python", () => {
-    it("renders mysql template with connection params and sql", () => {
-      const result = renderCodeSnippet("python", "mysql", {
-        host: "localhost",
-        port: 3306,
-        username: "root",
-        password: "pass",
-        database: "mydb",
-        sql: "SELECT * FROM orders",
-      });
-
-      expect(result).toContain("import pymysql");
-      expect(result).toContain("host='localhost'");
-      expect(result).toContain("SELECT * FROM orders");
-    });
-
-    it("renders postgres template with connectionString and sql", () => {
-      const result = renderCodeSnippet("python", "postgres", {
+    it("renders relational template with connectionString, sql, and deps", () => {
+      const result = renderCodeSnippet("python", "relational", {
         connectionString: "postgresql://user:pass@localhost:5432/mydb",
         sql: "SELECT * FROM orders",
+        deps: "# pip install psycopg2-binary",
       });
 
-      expect(result).toContain("import psycopg2");
+      expect(result).toContain("from sqlalchemy import create_engine, text");
       expect(result).toContain("postgresql://user:pass@localhost:5432/mydb");
       expect(result).toContain("SELECT * FROM orders");
-    });
-
-    it("renders sqlite template with storagePath and sql", () => {
-      const result = renderCodeSnippet("python", "sqlite", {
-        storagePath: "test-db.sqlite",
-        sql: "SELECT * FROM orders",
-      });
-
-      expect(result).toContain("import sqlite3");
-      expect(result).toContain("test-db.sqlite");
-      expect(result).toContain("SELECT * FROM orders");
-    });
-
-    it("renders mssql template with connection params and sql", () => {
-      const result = renderCodeSnippet("python", "mssql", {
-        host: "localhost",
-        port: 1433,
-        username: "sa",
-        password: "pass",
-        database: "mydb",
-        sql: "SELECT * FROM orders",
-      });
-
-      expect(result).toContain("import pymssql");
-      expect(result).toContain("server='localhost'");
-      expect(result).toContain("SELECT * FROM orders");
+      expect(result).toContain("# pip install psycopg2-binary");
     });
 
     it("renders cassandra template with host, port, username, password, keyspace, and sql", () => {
@@ -270,8 +196,8 @@ describe("renderCodeSnippet", () => {
   // ─── Java templates ─────────────────────────────────────────────────
 
   describe("java", () => {
-    it("renders mysql template with jdbcUrl and escapedSql", () => {
-      const result = renderCodeSnippet("java", "mysql", {
+    it("renders relational template with jdbcUrl and escapedSql", () => {
+      const result = renderCodeSnippet("java", "relational", {
         jdbcUrl: "jdbc:mysql://localhost:3306/mydb",
         escapedSql: "SELECT * FROM users",
       });
@@ -280,36 +206,6 @@ describe("renderCodeSnippet", () => {
       expect(result).toContain("jdbc:mysql://localhost:3306/mydb");
       expect(result).toContain("SELECT * FROM users");
       expect(result).toContain("DriverManager.getConnection(DB_URL)");
-    });
-
-    it("renders postgres template with jdbcUrl and escapedSql", () => {
-      const result = renderCodeSnippet("java", "postgres", {
-        jdbcUrl: "jdbc:postgresql://localhost:5432/mydb",
-        escapedSql: "SELECT * FROM users",
-      });
-
-      expect(result).toContain("import java.sql.*");
-      expect(result).toContain("jdbc:postgresql://localhost:5432/mydb");
-    });
-
-    it("renders sqlite template with jdbcUrl and escapedSql", () => {
-      const result = renderCodeSnippet("java", "sqlite", {
-        jdbcUrl: "jdbc:sqlite:test-db.sqlite",
-        escapedSql: "SELECT * FROM users",
-      });
-
-      expect(result).toContain("import java.sql.*");
-      expect(result).toContain("jdbc:sqlite:test-db.sqlite");
-    });
-
-    it("renders mssql template with jdbcUrl and escapedSql", () => {
-      const result = renderCodeSnippet("java", "mssql", {
-        jdbcUrl: "jdbc:sqlserver://localhost:1433",
-        escapedSql: "SELECT * FROM users",
-      });
-
-      expect(result).toContain("import java.sql.*");
-      expect(result).toContain("jdbc:sqlserver://localhost:1433");
     });
 
     it("renders cassandra template with host, port, authCredentialsLine, keyspace, and escapedSql", () => {
@@ -390,7 +286,7 @@ describe("renderCodeSnippet", () => {
     it("wraps Java output in Gradle project structure", () => {
       const result = renderCodeSnippet(
         "java",
-        "mysql",
+        "relational",
         {
           jdbcUrl: "jdbc:mysql://localhost:3306/mydb",
           escapedSql: "SELECT 1",
@@ -418,7 +314,7 @@ describe("renderCodeSnippet", () => {
     it("includes connectDescription in the Gradle header when provided", () => {
       const result = renderCodeSnippet(
         "java",
-        "mysql",
+        "relational",
         {
           jdbcUrl: "jdbc:mysql://localhost:3306/mydb",
           escapedSql: "SELECT 1",
@@ -437,7 +333,7 @@ describe("renderCodeSnippet", () => {
     it("omits connectDescription section when not provided", () => {
       const result = renderCodeSnippet(
         "java",
-        "mysql",
+        "relational",
         {
           jdbcUrl: "jdbc:mysql://localhost:3306/mydb",
           escapedSql: "SELECT 1",
@@ -479,7 +375,7 @@ describe("renderCodeSnippet", () => {
 
   describe("invalid language or engine", () => {
     it("returns empty string for an unsupported language", () => {
-      const result = renderCodeSnippet("ruby" as any, "mysql", {
+      const result = renderCodeSnippet("ruby" as any, "relational", {
         connectionString: "test",
       });
 
@@ -505,9 +401,10 @@ describe("renderCodeSnippet", () => {
 
   describe("context variable interpolation", () => {
     it("interpolates triple-braced Mustache variables without HTML escaping", () => {
-      const result = renderCodeSnippet("javascript", "mysql", {
+      const result = renderCodeSnippet("javascript", "relational", {
         connectionString: "mysql://root:p@ss&word@localhost:3306/db",
         sql: "SELECT * FROM t WHERE name = 'O&Brien'",
+        deps: "mysql2",
       });
 
       // Triple braces should not escape & or '
@@ -516,18 +413,21 @@ describe("renderCodeSnippet", () => {
     });
 
     it("handles empty context values gracefully", () => {
-      const result = renderCodeSnippet("javascript", "mysql", {
+      const result = renderCodeSnippet("javascript", "relational", {
         connectionString: "",
         sql: "",
+        deps: "",
       });
 
-      expect(result).toContain("createConnection('')");
+      expect(result).toContain("new Sequelize('')");
+      expect(result).toContain("npm install --save sequelize");
     });
 
     it("handles context values containing special characters", () => {
-      const result = renderCodeSnippet("python", "postgres", {
+      const result = renderCodeSnippet("python", "relational", {
         connectionString: "postgresql://user:p@$$w0rd!@host/db?sslmode=require",
         sql: 'SELECT "column" FROM "schema"."table"',
+        deps: "",
       });
 
       expect(result).toContain("postgresql://user:p@$$w0rd!@host/db?sslmode=require");
@@ -577,7 +477,7 @@ describe("renderCodeSnippet", () => {
 
     it("preserves multiline SQL in templates", () => {
       const multilineSql = "SELECT\n  id,\n  name\nFROM users\nWHERE active = 1";
-      const result = renderCodeSnippet("java", "mysql", {
+      const result = renderCodeSnippet("java", "relational", {
         jdbcUrl: "jdbc:mysql://localhost/db",
         escapedSql: multilineSql,
       });
@@ -590,9 +490,10 @@ describe("renderCodeSnippet", () => {
 
   describe("return value trimming", () => {
     it("trims the rendered output for non-Gradle snippets", () => {
-      const result = renderCodeSnippet("javascript", "mysql", {
+      const result = renderCodeSnippet("javascript", "relational", {
         connectionString: "mysql://localhost/db",
         sql: "SELECT 1",
+        deps: "mysql2",
       });
 
       expect(result).toBe(result.trim());
@@ -601,7 +502,7 @@ describe("renderCodeSnippet", () => {
     it("trims the Gradle-wrapped output", () => {
       const result = renderCodeSnippet(
         "java",
-        "mysql",
+        "relational",
         { jdbcUrl: "jdbc:mysql://localhost/db", escapedSql: "SELECT 1" },
         {
           gradleDep: "    implementation 'mysql:mysql-connector-java:8.0.33'",
