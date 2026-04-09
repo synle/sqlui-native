@@ -91,6 +91,11 @@ Assuming you use the same database in the docker samples below:
           "name": "POST JSON",
           "databaseId": "Folder 1",
           "props": { "query": "curl -X POST '{{HOST}}/post' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\"key\": \"value\"}'" }
+        },
+        {
+          "name": "File Upload",
+          "databaseId": "Folder 1",
+          "props": { "query": "curl -X POST '{{HOST}}/post' \\\n  -F 'file=@/path/to/file' \\\n  -F 'description=my upload'" }
         }
       ]
     }
@@ -447,6 +452,39 @@ npm start             # test in Electron -- try adding a connection with your di
 ```
 
 ## Sample runbooks
+
+### REST API
+
+```bash
+rest://{"HOST":"https://httpbin.org","variables":[{"key":"ACCESS_TOKEN","value":"sample-access-token","enabled":true}]}
+
+# Simple GET
+curl '{{HOST}}/get'
+
+# GET with auth
+curl '{{HOST}}/bearer' \
+  -H 'Authorization: Bearer {{ACCESS_TOKEN}}'
+
+# POST JSON
+curl -X POST '{{HOST}}/post' \
+  -H 'Content-Type: application/json' \
+  -d '{"key": "value"}'
+
+# POST form-urlencoded
+curl -X POST '{{HOST}}/post' \
+  -d 'field1=value1&field2=value2'
+
+# File upload (multipart form data)
+curl -X POST '{{HOST}}/post' \
+  -F 'file=@/path/to/file' \
+  -F 'description=my upload'
+
+# fetch() syntax (auto-detected)
+fetch("{{HOST}}/get", {
+  "headers": { "accept": "application/json" },
+  "method": "GET"
+});
+```
 
 ### Relational Database
 
