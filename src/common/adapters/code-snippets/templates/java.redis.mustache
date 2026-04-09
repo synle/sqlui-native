@@ -1,0 +1,15 @@
+import redis.clients.jedis.Jedis;
+
+public class Main {
+    public static void main(String[] args) {
+        try (Jedis jedis = new Jedis("{{{url}}}")) {
+            {{{authLine}}}
+
+            // Example: get a key
+            String res = jedis.get("key");
+            System.out.println(res);
+        } catch (Exception e) {
+            System.out.println("Failed to connect: " + e.getMessage());
+        }
+    }
+}

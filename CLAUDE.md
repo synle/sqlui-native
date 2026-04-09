@@ -227,7 +227,15 @@ Additional hooks: `useToaster` (toast notifications with history), `useClientSid
 
 ### Code Snippets
 
-`src/common/adapters/code-snippets/` contains connection code templates for Java, JavaScript, and Python. Templates are per-dialect for relational databases (e.g., `mysql`, `postgres`, `sqlite`, `mssql` engine keys) and per-engine for NoSQL (e.g., `cassandra`, `mongodb`). `renderCodeSnippet.ts` renders Mustache templates with dialect-specific context values. Used by `ConcreteDataScripts.getCodeSnippet()` in each adapter's `scripts.ts`.
+`src/common/adapters/code-snippets/` contains connection code templates for Java, JavaScript, and Python. Raw Mustache templates live in `templates/` as `.mustache` files named `{language}.{engine}.mustache` (e.g., `javascript.mysql.mustache`, `python.postgres.mustache`). `renderCodeSnippet.ts` renders them with dialect-specific context values. Used by `ConcreteDataScripts.getCodeSnippet()` in each adapter's `scripts.ts`.
+
+**Template loading (three-tier with version gating):**
+
+1. **Bundled fallback** — `.mustache` files are imported via Vite `?raw` and baked into the build. Always available offline.
+2. **Disk cache** — After a successful remote fetch, templates are persisted to `cache.code-snippets.json` via `PersistentStorage`. On next launch, the disk cache is loaded if its `version` matches the current app version (cache is discarded on app updates so new bundled templates take precedence).
+3. **Remote refresh** — On first `renderCodeSnippet()` call, all templates are fetched in parallel from `https://raw.githubusercontent.com/synle/sqlui-native/refs/heads/main/src/common/adapters/code-snippets/templates/`. Fetched templates override in-memory copies immediately and are saved to disk. Failures are silently ignored.
+
+**To update templates without an app release:** Edit the `.mustache` files in the `main` branch — running apps pick up changes on next launch.
 
 ### Persistent Storage
 

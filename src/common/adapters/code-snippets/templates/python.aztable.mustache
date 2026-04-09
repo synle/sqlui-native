@@ -1,0 +1,26 @@
+# python3 -m venv ./ # setting up virtual environment
+# source bin/activate # activate the venv profile
+# pip install azure-data-tables
+from azure.data.tables import TableServiceClient, TableClient
+
+def _do_work():
+    try:
+        connection_string = '{{{connectionString}}}'
+        table = '{{{tableId}}}'
+
+        service_client = TableServiceClient.from_connection_string(connection_string)
+        table_client = TableClient.from_connection_string(connection_string, table) if table else None
+
+        # List tables
+        # for table in service_client.list_tables():
+        #     print(table.name)
+
+        # Query entities
+        if table_client:
+            entities = table_client.list_entities()
+            for entity in entities:
+                print(entity)
+    except Exception as err:
+        print('Failed to connect', err)
+
+_do_work()

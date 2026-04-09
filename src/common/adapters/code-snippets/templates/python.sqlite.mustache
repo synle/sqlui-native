@@ -1,0 +1,14 @@
+# No extra dependencies needed - sqlite3 is built into Python
+import sqlite3
+
+connection = sqlite3.connect('{{{storagePath}}}')
+connection.row_factory = sqlite3.Row
+
+try:
+  cursor = connection.cursor()
+  cursor.execute("""{{{sql}}}""")
+  rows = cursor.fetchall()
+  for row in rows:
+    print(dict(row))
+finally:
+  connection.close()

@@ -1,0 +1,20 @@
+// npm install --save mysql2
+const mysql = require('mysql2/promise');
+
+async function _doWork(){
+  const connection = await mysql.createConnection('{{{connectionString}}}');
+
+  try{
+    const [rows] = await connection.query(`{{{sql}}}`);
+
+    for(const item of rows){
+      console.log(item);
+    }
+  } catch(err){
+    console.log('Failed to run query', err);
+  } finally {
+    await connection.end();
+  }
+}
+
+_doWork();

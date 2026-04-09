@@ -1,0 +1,47 @@
+import java.sql.*;
+
+public class Main {
+
+    private static final String DB_URL =
+            "{{{jdbcUrl}}}";
+
+    public static void main(String[] args) {
+        try (Connection conn = DriverManager.getConnection(DB_URL)) {
+
+            if (conn != null) {
+                System.out.println("Connected to: " + DB_URL);
+                runQuery(conn);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void runQuery(Connection conn) throws SQLException {
+        String sql = """
+{{{escapedSql}}}
+        """;
+
+        try (Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+
+            ResultSetMetaData meta = rs.getMetaData();
+            int columnCount = meta.getColumnCount();
+
+            // Print column headers
+            for (int i = 1; i <= columnCount; i++) {
+                System.out.print(meta.getColumnName(i) + "\t");
+            }
+            System.out.println();
+
+            // Print rows
+            while (rs.next()) {
+                for (int i = 1; i <= columnCount; i++) {
+                    System.out.print(rs.getString(i) + "\t");
+                }
+                System.out.println();
+            }
+        }
+    }
+}

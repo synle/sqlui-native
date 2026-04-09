@@ -1,0 +1,20 @@
+// npm install --save better-sqlite3
+const Database = require('better-sqlite3');
+
+function _doWork(){
+  const db = new Database('{{{storagePath}}}');
+
+  try{
+    const rows = db.prepare(`{{{sql}}}`).all();
+
+    for(const item of rows){
+      console.log(item);
+    }
+  } catch(err){
+    console.log('Failed to run query', err);
+  } finally {
+    db.close();
+  }
+}
+
+_doWork();
