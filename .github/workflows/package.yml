@@ -852,7 +852,7 @@ jobs:
           echo "| **Total** | **$(format_duration $TOTAL_DUR)** |" >> $GITHUB_STEP_SUMMARY
 
   roll_back_on_failure_or_canceled:
-    if: ${{ always() && inputs.release_mode != 'no_release' && needs.create_release.result == 'success' }}
+    if: ${{ always() && inputs.release_mode == 'production' && needs.create_release.result == 'success' && (needs.dist_windows_x64.result == 'failure' || needs.dist_windows_arm64.result == 'failure' || needs.dist_macos_arm64.result == 'failure' || needs.dist_macos_intel_x64.result == 'failure' || needs.dist_linux.result == 'failure' || needs.dist_windows_x64.result == 'cancelled' || needs.dist_windows_arm64.result == 'cancelled' || needs.dist_macos_arm64.result == 'cancelled' || needs.dist_macos_intel_x64.result == 'cancelled' || needs.dist_linux.result == 'cancelled') }}
     needs: [create_release, dist_windows_x64, dist_windows_arm64, dist_macos_arm64, dist_macos_intel_x64, dist_linux]
     runs-on: ubuntu-latest
     steps:
@@ -901,9 +901,15 @@ jobs:
             echo "Release **${{ needs.create_release.outputs.dist_version }}** is complete with all expected assets." >> $GITHUB_STEP_SUMMARY
           fi
 
+      - name: Fail pipeline on rollback
+        shell: bash
+        run: |
+          echo "::error::Release rolled back due to dist job failure or cancellation — failing the pipeline."
+          exit 1
+
   publish:
-    if: ${{ inputs.release_mode == 'production' }}
-    needs: [create_release, dist_windows_x64, dist_windows_arm64, dist_macos_arm64, dist_macos_intel_x64, dist_linux]
+    if: ${{ always() && inputs.release_mode == 'production' && needs.roll_back_on_failure_or_canceled.result == 'skipped' }}
+    needs: [create_release, roll_back_on_failure_or_canceled, dist_windows_x64, dist_windows_arm64, dist_macos_arm64, dist_macos_intel_x64, dist_linux]
     runs-on: ubuntu-latest
     steps:
       - name: Record job start time
