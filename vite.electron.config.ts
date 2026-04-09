@@ -7,14 +7,16 @@ import path from "node:path";
  */
 const nativeExternals = [
   "electron",
-  "node:sqlite",
   "cassandra-driver",
   "monaco-editor",
   "mongodb",
   "mustache",
   "mysql2",
   "pg",
+  "pg-hstore",
   "redis",
+  "sequelize",
+  "sqlite3",
   "tedious",
 ];
 

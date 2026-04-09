@@ -1,7 +1,6 @@
-/** SQLite adapter using Node.js built-in node:sqlite for zero-dependency database access. */
-import type { DatabaseSync as DatabaseSyncType } from "node:sqlite";
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const { DatabaseSync } = require("node:sqlite") as { DatabaseSync: typeof DatabaseSyncType };
+/** SQLite adapter using better-sqlite3 for synchronous, high-performance database access. */
+import Database from "better-sqlite3";
+import { MAX_CONNECTION_TIMEOUT } from "src/common/adapters/BaseDataAdapter/index";
 import BaseDataAdapter from "src/common/adapters/BaseDataAdapter/index";
 import IDataAdapter from "src/common/adapters/IDataAdapter";
 import { SqluiCore } from "typings";
@@ -10,12 +9,12 @@ import { SqluiCore } from "typings";
 const SELECT_PATTERN = /^\s*(SELECT|PRAGMA|EXPLAIN|WITH)\b/i;
 
 /**
- * Data adapter for SQLite databases using the built-in node:sqlite module.
- * Uses the synchronous DatabaseSync API — no native compilation or external dependencies required.
+ * Data adapter for SQLite databases using better-sqlite3.
+ * Provides synchronous, high-performance access ideal for Electron apps.
  */
 export default class SQLiteDataAdapter extends BaseDataAdapter implements IDataAdapter {
   dialect?: SqluiCore.Dialect;
-  private _connection?: DatabaseSyncType;
+  private _connection?: Database.Database;
 
   /**
    * Creates a SQLiteDataAdapter instance.
@@ -27,9 +26,9 @@ export default class SQLiteDataAdapter extends BaseDataAdapter implements IDataA
 
   /**
    * Opens the SQLite database file and returns the connection.
-   * @returns The DatabaseSync instance.
+   * @returns The better-sqlite3 Database instance.
    */
-  private getConnection(): DatabaseSyncType {
+  private getConnection(): Database.Database {
     if (this._connection) {
       return this._connection;
     }
@@ -37,7 +36,7 @@ export default class SQLiteDataAdapter extends BaseDataAdapter implements IDataA
     const storagePath = this.connectionOption.replace("sqlite://", "").replace(/\\/g, "/");
 
     try {
-      this._connection = new DatabaseSync(storagePath);
+      this._connection = new Database(storagePath, { timeout: MAX_CONNECTION_TIMEOUT });
       return this._connection;
     } catch (err) {
       console.error("SQLiteDataAdapter:getConnection", storagePath, err);
@@ -163,7 +162,7 @@ export default class SQLiteDataAdapter extends BaseDataAdapter implements IDataA
         return { ok: true, raw };
       } else {
         const result = db.prepare(sql).run();
-        return { ok: true, affectedRows: Number(result.changes) };
+        return { ok: true, affectedRows: result.changes };
       }
     } catch (error) {
       console.error("SQLiteDataAdapter:execute", error);
