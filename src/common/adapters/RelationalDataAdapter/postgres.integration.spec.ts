@@ -1,13 +1,12 @@
-import createRelationalDataAdapter from "src/common/adapters/RelationalDataAdapter/index";
-import IDataAdapter from "src/common/adapters/IDataAdapter";
+import RelationalDataAdapter from "src/common/adapters/RelationalDataAdapter/index";
 
 const CONNECTION = "postgres://postgres:password123!@127.0.0.1:5432";
 
 describe("postgres integration", () => {
-  let adapter: IDataAdapter;
+  let adapter: RelationalDataAdapter;
 
   beforeAll(() => {
-    adapter = createRelationalDataAdapter(CONNECTION);
+    adapter = new RelationalDataAdapter(CONNECTION);
   });
 
   test("authenticate", async () => {
@@ -28,11 +27,10 @@ describe("postgres integration", () => {
         Name VARCHAR(120)
       )`,
       "postgres",
-      undefined,
     );
-    await adapter.execute(`INSERT INTO artists (Name) VALUES ('Test Artist 1')`, "postgres", undefined);
-    await adapter.execute(`INSERT INTO artists (Name) VALUES ('Test Artist 2')`, "postgres", undefined);
-    await adapter.execute(`INSERT INTO artists (Name) VALUES ('Test Artist 3')`, "postgres", undefined);
+    await adapter.execute(`INSERT INTO artists (Name) VALUES ('Test Artist 1')`, "postgres");
+    await adapter.execute(`INSERT INTO artists (Name) VALUES ('Test Artist 2')`, "postgres");
+    await adapter.execute(`INSERT INTO artists (Name) VALUES ('Test Artist 3')`, "postgres");
   });
 
   test("getTables", async () => {
@@ -50,31 +48,31 @@ describe("postgres integration", () => {
   });
 
   test("execute select", async () => {
-    const resp = await adapter.execute(`SELECT * FROM artists ORDER BY Name ASC LIMIT 10`, "postgres", undefined);
+    const resp = await adapter.execute(`SELECT * FROM artists ORDER BY Name ASC LIMIT 10`, "postgres");
     expect(resp.ok).toBe(true);
     expect(resp.raw?.length).toBe(3);
   });
 
   test("execute update", async () => {
-    const resp = await adapter.execute(`UPDATE artists SET Name = 'Updated Artist' WHERE ArtistId = 1`, "postgres", undefined);
+    const resp = await adapter.execute(`UPDATE artists SET Name = 'Updated Artist' WHERE ArtistId = 1`, "postgres");
     expect(resp.ok).toBe(true);
   });
 
   test("execute delete", async () => {
-    const resp = await adapter.execute(`DELETE FROM artists WHERE ArtistId = 1`, "postgres", undefined);
+    const resp = await adapter.execute(`DELETE FROM artists WHERE ArtistId = 1`, "postgres");
     expect(resp.ok).toBe(true);
   });
 
   test("cleanup", async () => {
-    await adapter.execute(`DROP TABLE IF EXISTS artists`, "postgres", undefined);
+    await adapter.execute(`DROP TABLE IF EXISTS artists`, "postgres");
   });
 });
 
 describe.skip("postgres legacy", () => {
-  let adapter: IDataAdapter;
+  let adapter;
 
   beforeAll(() => {
-    adapter = createRelationalDataAdapter("postgres://postgres:password123!@127.0.0.1:5432");
+    adapter = new RelationalDataAdapter("postgres://postgres:password123!@127.0.0.1:5432");
   });
 
   test("Get tables", async () => {
@@ -88,14 +86,14 @@ describe.skip("postgres legacy", () => {
   });
 
   test("Execute Select", async () => {
-    const resp = await adapter.execute(`SELECT * FROM artists ORDER BY Name ASC LIMIT 10`, "music_store", undefined);
+    const resp = await adapter.execute(`SELECT * FROM artists ORDER BY Name ASC LIMIT 10`, "music_store");
     //@ts-ignore
     expect(resp && resp.raw && resp.raw.length > 0 && resp.raw.length <= 10).toBe(true);
   });
 
   test("Execute Update", async () => {
     try {
-      await adapter.execute(`UPDATE artists SET name = 'AC/DC' WHERE ArtistId = '1'`, "music_store", undefined);
+      await adapter.execute(`UPDATE artists SET name = 'AC/DC' WHERE ArtistId = '1'`, "music_store");
       expect(1).toBe(1);
     } catch (err) {
       expect(err).toBeUndefined();
