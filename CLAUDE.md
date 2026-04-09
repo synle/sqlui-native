@@ -85,7 +85,14 @@ All database engines implement `IDataAdapter` (authenticate, getDatabases, getTa
 
 Adapter implementations live in `src/common/adapters/`:
 
-- `RelationalDataAdapter` - MySQL, MariaDB, Postgres, MSSQL, SQLite (via Sequelize)
+- `RelationalDataAdapter` - Per-dialect adapters using native drivers (no ORM):
+  - `sqlite/` — `better-sqlite3` (synchronous, high-performance)
+  - `mysql/` — `mysql2/promise`
+  - `mariadb/` — extends MySQL adapter (protocol-compatible)
+  - `postgres/` — `pg` (node-postgres)
+  - `mssql/` — `tedious` (promisified wrapper)
+  - `index.ts` — factory function `createRelationalDataAdapter()` that routes to the correct adapter by dialect
+  - `scripts.ts` — shared SQL script generation for all relational dialects
 - `CassandraDataAdapter`, `MongoDBDataAdapter`, `RedisDataAdapter`, `AzureCosmosDataAdapter`, `AzureTableStorageAdapter`, `SalesforceDataAdapter`
 - `RestApiDataAdapter` - REST API client (curl/fetch syntax, executed via system curl)
 
@@ -101,9 +108,12 @@ Connection strings are prefixed with a dialect scheme (`dialect://...`) but the 
 
 **Adapter Connection Lifecycle:**
 
-- Each adapter holds exactly ONE connection as instance state (`private _connection`). `getConnection()` creates and stores it.
-- Adapter methods (authenticate, getDatabases, getTables, getColumns, execute) use `getConnection()` without closing the connection.
-- `disconnect()` is the SOLE cleanup method — it closes `this._connection` and sets it to `undefined`. It must **never** be called internally by adapter methods. It is called exclusively by the **caller** (`Endpoints.ts`, `DataAdapterFactory`, or tests) in `finally` blocks after all operations complete.
+- Each adapter manages its own connection(s) as instance state. Connection strategies vary by driver:
+  - **SQLite** (`better-sqlite3`): Single synchronous `Database` instance. All operations are sync wrapped in async.
+  - **MySQL/MariaDB** (`mysql2/promise`): Connection pool (`pool.getConnection()`). Database switching via `USE` statement.
+  - **PostgreSQL** (`pg`): Map of `pg.Client` instances per database (PG doesn't support `USE` — requires new connection per database).
+  - **MSSQL** (`tedious`): Creates new `Connection` per database. Callback-based API wrapped in promises.
+- `disconnect()` is the SOLE cleanup method — it closes all connections and clears state. It must **never** be called internally by adapter methods. It is called exclusively by the **caller** (`Endpoints.ts`, `DataAdapterFactory`, or tests) in `finally` blocks after all operations complete.
 - **SFDC auto-refresh:** The `SalesforceDataAdapter` wraps all operations in `withAutoRefresh()`, which detects `INVALID_SESSION_ID` / `Session expired` errors and automatically re-authenticates (for Client Credentials flow where no refresh token is available). The OAuth2 token request uses Node's native `https` module instead of jsforce's internal HTTP client, which hangs in bundled Electron builds.
 - **REST API (stateless):** The `RestApiDataAdapter` has no persistent connection. Each `execute()` call parses the curl/fetch command, resolves `{{VAR}}` placeholders, and spawns a `curl` subprocess. `authenticate()` just validates the JSON config. `disconnect()` is a no-op. The `HOST` field from the connection string JSON is auto-injected as the `{{HOST}}` variable.
 
@@ -215,7 +225,7 @@ Additional hooks: `useToaster` (toast notifications with history), `useClientSid
 
 ### Code Snippets
 
-`src/common/adapters/code-snippets/` contains connection code templates for Java, JavaScript, and Python. `renderCodeSnippet.ts` renders templates with dialect-specific values. Used by `BaseDataScript.getCodeSnippet()`.
+`src/common/adapters/code-snippets/` contains connection code templates for Java, JavaScript, and Python. Templates are per-dialect for relational databases (e.g., `mysql`, `postgres`, `sqlite`, `mssql` engine keys) and per-engine for NoSQL (e.g., `cassandra`, `mongodb`). `renderCodeSnippet.ts` renders Mustache templates with dialect-specific context values. Used by `ConcreteDataScripts.getCodeSnippet()` in each adapter's `scripts.ts`.
 
 ### Persistent Storage
 
