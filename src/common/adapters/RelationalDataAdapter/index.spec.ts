@@ -1,5 +1,5 @@
 import fs from "node:fs";
-import RelationalDataAdapter from "src/common/adapters/RelationalDataAdapter/index";
+import createRelationalDataAdapter from "src/common/adapters/RelationalDataAdapter/index";
 
 describe("sqlite", () => {
   let adapter;
@@ -18,7 +18,7 @@ describe("sqlite", () => {
       console.error("index.spec.ts:unlinkSync", err);
     }
 
-    adapter = new RelationalDataAdapter(`sqlite://${mockedDbFilePath}`);
+    adapter = createRelationalDataAdapter(`sqlite://${mockedDbFilePath}`);
   });
 
   test("Create and insert table", async () => {
