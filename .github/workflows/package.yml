@@ -955,7 +955,7 @@ jobs:
           echo "| **Total Duration** | **${FORMATTED}** |" >> $GITHUB_STEP_SUMMARY
 
   deploy_github_pages:
-    if: ${{ inputs.release_mode == 'production' }}
+    if: ${{ always() && inputs.release_mode == 'production' && needs.publish.result == 'success' }}
     needs: [publish]
     runs-on: ubuntu-latest
     permissions:
