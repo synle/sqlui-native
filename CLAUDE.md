@@ -86,7 +86,7 @@ All database engines implement `IDataAdapter` (authenticate, getDatabases, getTa
 Adapter implementations live in `src/common/adapters/`:
 
 - `RelationalDataAdapter` - Per-dialect adapters using native drivers (no ORM):
-  - `sqlite/` — `better-sqlite3` (synchronous, high-performance)
+  - `sqlite/` — `node:sqlite` (Node.js built-in, zero dependencies)
   - `mysql/` — `mysql2/promise`
   - `mariadb/` — extends MySQL adapter (protocol-compatible)
   - `postgres/` — `pg` (node-postgres)
@@ -109,7 +109,7 @@ Connection strings are prefixed with a dialect scheme (`dialect://...`) but the 
 **Adapter Connection Lifecycle:**
 
 - Each adapter manages its own connection(s) as instance state. Connection strategies vary by driver:
-  - **SQLite** (`better-sqlite3`): Single synchronous `Database` instance. All operations are sync wrapped in async.
+  - **SQLite** (`node:sqlite`): Single synchronous `DatabaseSync` instance. Built into Node.js 22.5+ — no native compilation or external dependencies required.
   - **MySQL/MariaDB** (`mysql2/promise`): Connection pool (`pool.getConnection()`). Database switching via `USE` statement.
   - **PostgreSQL** (`pg`): Map of `pg.Client` instances per database (PG doesn't support `USE` — requires new connection per database).
   - **MSSQL** (`tedious`): Creates new `Connection` per database. Callback-based API wrapped in promises.

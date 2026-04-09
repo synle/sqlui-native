@@ -328,14 +328,6 @@ jobs:
           node-version: ${{ inputs.node_version }}
           cache: "npm"
 
-      - name: Setup Python for node-gyp
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
-      - name: Install setuptools for node-gyp
-        run: python -m pip install setuptools
-
       - name: Update package.json to release version
         run: npm version --no-git-tag-version "${{ needs.create_release.outputs.dist_version }}"
 
@@ -434,13 +426,8 @@ jobs:
           node-version: ${{ inputs.node_version }}
           cache: "npm"
 
-      - name: Setup Python for node-gyp
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
       - name: Install setuptools for node-gyp
-        run: python -m pip install setuptools
+        run: pip install setuptools
 
       - name: Update package.json to release version
         run: npm version --no-git-tag-version "${{ needs.create_release.outputs.dist_version }}"
@@ -517,14 +504,6 @@ jobs:
           node-version: ${{ inputs.node_version }}
           cache: "npm"
 
-      - name: Setup Python for node-gyp
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
-      - name: Install setuptools for node-gyp
-        run: python -m pip install setuptools
-
       - name: Update package.json to release version
         run: npm version --no-git-tag-version "${{ needs.create_release.outputs.dist_version }}"
 
@@ -600,14 +579,6 @@ jobs:
           node-version: ${{ inputs.node_version }}
           cache: "npm"
 
-      - name: Setup Python for node-gyp
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
-      - name: Install setuptools for node-gyp
-        run: python -m pip install setuptools
-
       - name: Update package.json to release version
         run: npm version --no-git-tag-version "${{ needs.create_release.outputs.dist_version }}"
 
@@ -682,14 +653,6 @@ jobs:
         with:
           node-version: ${{ inputs.node_version }}
           cache: "npm"
-
-      - name: Setup Python for node-gyp
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
-      - name: Install setuptools for node-gyp
-        run: python -m pip install setuptools
 
       - name: Update package.json to release version
         run: npm version --no-git-tag-version "${{ needs.create_release.outputs.dist_version }}"
