@@ -1,18 +1,88 @@
-/** Mustache template for a Python code snippet connecting to relational databases via SQLAlchemy. */
-export const relational = `\
+/** Mustache template for a Python code snippet connecting to MySQL via pymysql. */
+export const mysql = `\
 # python3 -m venv ./ # setting up virtual environment with
 # source bin/activate # activate the venv profile
-# pip install sqlalchemy
-{{{deps}}}
-from sqlalchemy import create_engine, text
+# pip install pymysql
+import pymysql
 
-engine = create_engine('{{{connectionString}}}', echo = True)
+connection = pymysql.connect(
+  host='{{{host}}}',
+  port={{{port}}},
+  user='{{{username}}}',
+  password='{{{password}}}',
+  database='{{{database}}}',
+  cursorclass=pymysql.cursors.DictCursor
+)
 
-with engine.connect() as con:
-  rs = con.execute(text("""{{{sql}}}"""))
+try:
+  with connection.cursor() as cursor:
+    cursor.execute("""{{{sql}}}""")
+    rows = cursor.fetchall()
+    for row in rows:
+      print(row)
+finally:
+  connection.close()`;
 
-  for row in rs:
-    print(row)`;
+/** Mustache template for a Python code snippet connecting to PostgreSQL via psycopg2. */
+export const postgres = `\
+# python3 -m venv ./ # setting up virtual environment with
+# source bin/activate # activate the venv profile
+# pip install psycopg2-binary
+import psycopg2
+import psycopg2.extras
+
+connection = psycopg2.connect('{{{connectionString}}}')
+
+try:
+  with connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cursor:
+    cursor.execute("""{{{sql}}}""")
+    rows = cursor.fetchall()
+    for row in rows:
+      print(row)
+finally:
+  connection.close()`;
+
+/** Mustache template for a Python code snippet connecting to SQLite via built-in sqlite3. */
+export const sqlite = `\
+# No extra dependencies needed - sqlite3 is built into Python
+import sqlite3
+
+connection = sqlite3.connect('{{{storagePath}}}')
+connection.row_factory = sqlite3.Row
+
+try:
+  cursor = connection.cursor()
+  cursor.execute("""{{{sql}}}""")
+  rows = cursor.fetchall()
+  for row in rows:
+    print(dict(row))
+finally:
+  connection.close()`;
+
+/** Mustache template for a Python code snippet connecting to MSSQL via pymssql. */
+export const mssql = `\
+# python3 -m venv ./ # setting up virtual environment with
+# source bin/activate # activate the venv profile
+# pip install pymssql
+import pymssql
+
+connection = pymssql.connect(
+  server='{{{host}}}',
+  port={{{port}}},
+  user='{{{username}}}',
+  password='{{{password}}}',
+  database='{{{database}}}',
+  as_dict=True
+)
+
+try:
+  with connection.cursor() as cursor:
+    cursor.execute("""{{{sql}}}""")
+    rows = cursor.fetchall()
+    for row in rows:
+      print(row)
+finally:
+  connection.close()`;
 
 /** Mustache template for a Python code snippet connecting to Cassandra via cassandra-driver. */
 export const cassandra = `\
