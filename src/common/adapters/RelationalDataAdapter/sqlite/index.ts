@@ -1,4 +1,5 @@
 /** SQLite adapter using better-sqlite3 for synchronous, high-performance database access. */
+import fs from "fs";
 import Database from "better-sqlite3";
 import { MAX_CONNECTION_TIMEOUT } from "src/common/adapters/BaseDataAdapter/index";
 import BaseDataAdapter from "src/common/adapters/BaseDataAdapter/index";
@@ -33,7 +34,12 @@ export default class SQLiteDataAdapter extends BaseDataAdapter implements IDataA
       return this._connection;
     }
 
+    // Strip the "sqlite://" scheme and normalize Windows backslashes to forward slashes
     const storagePath = this.connectionOption.replace("sqlite://", "").replace(/\\/g, "/");
+
+    if (storagePath !== ":memory:" && !fs.existsSync(storagePath)) {
+      throw new Error(`SQLite database file not found: ${storagePath}`);
+    }
 
     try {
       this._connection = new Database(storagePath, { timeout: MAX_CONNECTION_TIMEOUT });
