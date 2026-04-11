@@ -31,6 +31,17 @@
             "statusMessage": "Running prettier..."
           }
         ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "jq -r '.tool_input.command' | grep -q 'git commit' && npm run validate || true",
+            "timeout": 600,
+            "statusMessage": "Running validate before commit..."
+          }
+        ]
       }
     ]
   }
