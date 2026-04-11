@@ -33,3 +33,11 @@ jobs:
       release_notes: ${{ inputs.message }}
     secrets:
       TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  tests:
+    needs: [package]
+    uses: ./.github/workflows/integration-test.yml
+    with:
+      node_version: ${{ inputs.node_version || '24' }}
+      run_e2e: true
+    secrets: inherit
