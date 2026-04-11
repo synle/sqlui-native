@@ -33,7 +33,7 @@ function useSettingChange() {
  * query size, animation, table renderer, word wrap, query tab orientation, and delete mode.
  * @returns The settings form or null if settings are not loaded.
  */
-export default function Settings(): JSX.Element | null {
+export default function Settings(): React.JSX.Element | null {
   const { settings, onSettingChange } = useSettingChange();
   const querySize = useQuerySizeSetting();
   const maxToasts = useMaxToastsSetting();
@@ -198,7 +198,7 @@ export default function Settings(): JSX.Element | null {
             size="small"
             fullWidth={true}
             type="number"
-            inputProps={{ min: 3, max: 10, step: 1 }}
+            slotProps={{ htmlInput: { min: 3, max: 10, step: 1 } }}
           />
         </div>
         <Typography className="FormInput__Label" variant="subtitle1">

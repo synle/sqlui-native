@@ -108,7 +108,7 @@ function arrayToHeaders(entries: HeaderEntry[]): Record<string, string> {
  * @param props - The connection string and setter.
  * @returns The GraphQL config form fields.
  */
-export default function GraphQLConnectionFields(props: GraphQLConnectionFieldsProps): JSX.Element {
+export default function GraphQLConnectionFields(props: GraphQLConnectionFieldsProps): React.JSX.Element {
   const { connection, setConnection } = props;
   const config = parseConfig(connection);
 

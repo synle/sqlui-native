@@ -53,7 +53,7 @@ export type CodeEditorProps = {
   disabled?: boolean;
   /** When true, the editor is non-editable, auto-fits to content height, and hides the editor size control. */
   readOnly?: boolean;
-  editorRef?: React.RefObject<EditorRef>;
+  editorRef?: React.RefObject<EditorRef | null>;
   required?: boolean;
   height?: string;
   fillHeight?: boolean;
@@ -108,7 +108,7 @@ function getFullHeight(value?: string): string {
  * @param props - Editor configuration including value, language, height, and editor mode options.
  * @returns The rendered code editor with toolbar controls.
  */
-export default function CodeEditorBox(props: CodeEditorProps): JSX.Element | null {
+export default function CodeEditorBox(props: CodeEditorProps): React.JSX.Element | null {
   const globalWordWrap = useWordWrapSetting();
   const [wordWrap, setWordWrap] = useState(false);
   const [languageMode, setLanguageMode] = useState<string | undefined>();

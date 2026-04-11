@@ -1,3 +1,4 @@
+import React from "react";
 import Alert from "@mui/material/Alert";
 import CircularProgress from "@mui/material/CircularProgress";
 import { useEffect, useRef, useState } from "react";
@@ -18,7 +19,7 @@ type SessionManagerProps = {
  * @param props - Contains child components to render after session validation.
  * @returns Children, a loading alert, or the session selection modal.
  */
-export default function SessionManager(props: SessionManagerProps): JSX.Element | null {
+export default function SessionManager(props: SessionManagerProps): React.JSX.Element | null {
   const [status, setStatus] = useState<"pending_session" | "no_session" | "valid_session">("pending_session");
   const { data: currentSession, isLoading: loadingCurrentSession, error: sessionError, refetch } = useGetCurrentSession();
   useSelectSession(true);

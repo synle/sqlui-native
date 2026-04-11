@@ -16,7 +16,9 @@ export const DEBOUNCE_MS = 3000;
 
 /** Hook to fetch all query version history entries. */
 export function useGetQueryVersionHistory() {
-  return useQuery<SqluiCore.FolderItem[]>([QUERY_KEY], () => dataApi.getQueryVersionHistory(), {
+  return useQuery<SqluiCore.FolderItem[]>({
+    queryKey: [QUERY_KEY],
+    queryFn: () => dataApi.getQueryVersionHistory(),
     notifyOnChangeProps: ["data", "error"],
   });
 }
@@ -29,9 +31,10 @@ export function useAddQueryVersionHistory() {
     SqluiCore.FolderItem,
     void,
     { connectionId: string; sql: string; auditType: SqluiCore.QueryVersionAuditType; name?: string }
-  >((entry) => dataApi.addQueryVersionHistory(entry), {
+  >({
+    mutationFn: (entry) => dataApi.addQueryVersionHistory(entry),
     onSuccess: () => {
-      queryClient.invalidateQueries([QUERY_KEY]);
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEY] });
     },
   });
 }
@@ -40,9 +43,10 @@ export function useAddQueryVersionHistory() {
 export function useDeleteQueryVersionHistory() {
   const queryClient = useQueryClient();
 
-  return useMutation<void, void, string>((entryId) => dataApi.deleteQueryVersionHistory(entryId), {
+  return useMutation<void, void, string>({
+    mutationFn: (entryId) => dataApi.deleteQueryVersionHistory(entryId),
     onSuccess: () => {
-      queryClient.invalidateQueries([QUERY_KEY]);
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEY] });
     },
   });
 }
@@ -51,9 +55,10 @@ export function useDeleteQueryVersionHistory() {
 export function useClearQueryVersionHistory() {
   const queryClient = useQueryClient();
 
-  return useMutation<void, void, void>(() => dataApi.clearQueryVersionHistory(), {
+  return useMutation<void, void, void>({
+    mutationFn: () => dataApi.clearQueryVersionHistory(),
     onSuccess: () => {
-      queryClient.invalidateQueries([QUERY_KEY]);
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEY] });
     },
   });
 }

@@ -75,7 +75,7 @@ let _commands: Command[] = [];
  */
 export function useCommands() {
   const queryClient = useQueryClient();
-  const { data: commands = [] } = useQuery([QUERY_KEY_COMMAND_PALETTE], () => _commands);
+  const { data: commands = [] } = useQuery({ queryKey: [QUERY_KEY_COMMAND_PALETTE], queryFn: () => _commands });
   const command = commands[commands.length - 1];
 
   const selectCommand = (newCommand: Command) => {

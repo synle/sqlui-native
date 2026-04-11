@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { useNavigate as useReactRouterNavigate, NavigateFunction } from "react-router-dom";
+import { useNavigate as useReactRouterNavigate, NavigateFunction } from "react-router";
 import { SqluiCore, SqluiFrontend } from "typings";
 /**
  * Converts a connection to an exportable format with a type marker.

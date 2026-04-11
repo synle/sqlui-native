@@ -1,3 +1,4 @@
+import React from "react";
 import CloseIcon from "@mui/icons-material/Close";
 import Dialog from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
@@ -29,7 +30,7 @@ type ModalProps = ModalInput & {
  * @param props - Modal configuration including title, content, and dismiss behavior.
  * @returns The rendered modal dialog element.
  */
-export default function Modal(props: ModalProps): JSX.Element | null {
+export default function Modal(props: ModalProps): React.JSX.Element | null {
   const onBackdropClick = () => {
     if (props.disableBackdropClick !== true) {
       props.onDismiss();

@@ -1,3 +1,4 @@
+import React from "react";
 import AutorenewIcon from "@mui/icons-material/Autorenew";
 import DownloadIcon from "@mui/icons-material/Download";
 import SwapHorizIcon from "@mui/icons-material/SwapHoriz";
@@ -49,7 +50,7 @@ import {
 import "@xyflow/react/dist/style.css";
 import { toPng } from "html-to-image";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams } from "react-router";
 import Breadcrumbs, { BreadcrumbLink } from "src/frontend/components/Breadcrumbs";
 import { downloadBlob } from "src/frontend/data/file";
 import { useGetAllTableColumns, useGetColumns, useGetConnectionById, useGetDatabases } from "src/frontend/hooks/useConnection";
@@ -957,7 +958,7 @@ export default function RelationshipChartPage() {
   }
 
   // Determine which content to show based on route state
-  let contentDom: JSX.Element;
+  let contentDom: React.JSX.Element;
   if (!databaseId) {
     // No database selected — show list of available databases
     if (databases && databases.length > 0) {

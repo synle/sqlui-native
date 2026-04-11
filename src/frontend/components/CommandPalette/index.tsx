@@ -1,5 +1,6 @@
+import React from "react";
 import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
+import ListItemButton from "@mui/material/ListItemButton";
 import ListItemText from "@mui/material/ListItemText";
 import TextField from "@mui/material/TextField";
 import fuzzysort from "fuzzysort";
@@ -264,7 +265,7 @@ const ALL_COMMAND_PALETTE_OPTIONS: CommandOption[] = [
  * @param props - Configuration including the command selection callback.
  * @returns The rendered command palette with search input and command list.
  */
-export default function CommandPalette(props: CommandPaletteProps): JSX.Element | null {
+export default function CommandPalette(props: CommandPaletteProps): React.JSX.Element | null {
   const [text, setText] = useState("");
   const [options, setOptions] = useState<Command[]>([]);
   const [, setAllOptions] = useState<Command[]>([]);
@@ -390,15 +391,14 @@ export default function CommandPalette(props: CommandPaletteProps): JSX.Element 
       </div>
       <List dense sx={{ mt: 1 }}>
         {optionsToShow.map((option, idx) => (
-          <ListItem
-            button
+          <ListItemButton
             className="CommandPalette__Option"
             key={`${option.event}.${idx}`}
             onClick={() => onSelectCommand(option)}
             title={option.event}
           >
             <ListItemText primary={option.label} />
-          </ListItem>
+          </ListItemButton>
         ))}
       </List>
     </section>

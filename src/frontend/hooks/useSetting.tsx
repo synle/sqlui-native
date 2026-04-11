@@ -8,7 +8,7 @@ import { SqluiFrontend } from "typings";
  * @param props - Component props containing child elements.
  * @returns The children as-is without additional wrapping.
  */
-export default function SettingContextProvider(props: { children: React.ReactNode }): JSX.Element {
+export default function SettingContextProvider(props: { children: React.ReactNode }): React.JSX.Element {
   return <>{props.children}</>;
 }
 

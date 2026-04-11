@@ -31,7 +31,7 @@ type ResultBoxProps = {
  * @param props - The query, execution state, and collapse flag.
  * @returns The result display or null if no results.
  */
-export default function ResultBox(props: ResultBoxProps): JSX.Element | null {
+export default function ResultBox(props: ResultBoxProps): React.JSX.Element | null {
   const { selectCommand } = useCommands();
   const [tabIdx, setTabIdx] = useState(0);
   const { query, executing } = props;
@@ -204,7 +204,7 @@ type QueryTimeDescriptionProps = {
  * @param props - Contains the query whose execution start/end times are shown.
  * @returns An alert with the query duration.
  */
-function QueryTimeDescription(props: QueryTimeDescriptionProps): JSX.Element | null {
+function QueryTimeDescription(props: QueryTimeDescriptionProps): React.JSX.Element | null {
   const { query } = props;
   return (
     <Alert severity="info">
@@ -228,7 +228,7 @@ type QueryDetailsPanelProps = {
  * @param props - Execution details and timing information.
  * @returns A panel showing query execution metadata and the SQL that was run.
  */
-function QueryDetailsPanel(props: QueryDetailsPanelProps): JSX.Element {
+function QueryDetailsPanel(props: QueryDetailsPanelProps): React.JSX.Element {
   const { executionDetails, executionStart, executionEnd } = props;
 
   const detailRows: { label: string; value: string | undefined }[] = [

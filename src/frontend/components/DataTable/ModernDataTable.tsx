@@ -46,7 +46,7 @@ import { useLayoutModeSetting } from "src/frontend/hooks/useSetting";
  * @param props - Data table properties including columns, data, and optional callbacks.
  * @returns The rendered virtualized data table or null.
  */
-export default function ModernDataTable(props: DataTableProps): JSX.Element | null {
+export default function ModernDataTable(props: DataTableProps): React.JSX.Element | null {
   const { columns, data } = props;
   const isCompact = useLayoutModeSetting() === "compact";
   const cellHeight = isCompact ? tableCellHeightCompact : tableCellHeight;

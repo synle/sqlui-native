@@ -1,3 +1,4 @@
+import React from "react";
 import AddIcon from "@mui/icons-material/Add";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
@@ -33,7 +34,7 @@ type ConnectionActionsProps = {
  * @param props - Props containing the connection to display actions for.
  * @returns The rendered dropdown action button, or null if context menus are hidden.
  */
-export default function ConnectionActions(props: ConnectionActionsProps): JSX.Element | null {
+export default function ConnectionActions(props: ConnectionActionsProps): React.JSX.Element | null {
   const { connection } = props;
   const navigate = useNavigate();
   const { selectCommand } = useCommands();

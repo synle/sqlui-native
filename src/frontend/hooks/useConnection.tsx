@@ -17,7 +17,9 @@ export { useRetryConnection, useRefreshDatabase, useRefreshTable } from "src/fro
  * @returns React Query result containing an array of connections.
  */
 export function useGetConnections() {
-  return useQuery(queryKeys.connections.all, dataApi.getConnections, {
+  return useQuery({
+    queryKey: queryKeys.connections.all,
+    queryFn: dataApi.getConnections,
     notifyOnChangeProps: ["data", "error"],
   });
 }
@@ -29,16 +31,18 @@ export function useGetConnections() {
  */
 export function useUpdateConnections(connections?: SqluiCore.ConnectionProps[]) {
   const queryClient = useQueryClient();
-  return useMutation<SqluiCore.ConnectionProps[] | undefined, void, number[]>(([from, to]) => {
-    if (connections) {
-      connections = getUpdatedOrdersForList(connections, from, to);
+  return useMutation<SqluiCore.ConnectionProps[] | undefined, void, number[]>({
+    mutationFn: ([from, to]) => {
+      if (connections) {
+        connections = getUpdatedOrdersForList(connections, from, to);
 
-      queryClient.setQueryData<SqluiCore.ConnectionProps[] | undefined>(queryKeys.connections.all, connections);
+        queryClient.setQueryData<SqluiCore.ConnectionProps[] | undefined>(queryKeys.connections.all, connections);
 
-      return dataApi.update(connections);
-    }
+        return dataApi.update(connections);
+      }
 
-    return Promise.reject();
+      return Promise.reject();
+    },
   });
 }
 
@@ -48,14 +52,12 @@ export function useUpdateConnections(connections?: SqluiCore.ConnectionProps[]) 
  * @returns React Query result containing the connection or undefined.
  */
 export function useGetConnectionById(connectionId?: string) {
-  return useQuery(
-    connectionId ? queryKeys.connections.byId(connectionId) : [connectionId],
-    () => (!connectionId ? undefined : dataApi.getConnection(connectionId)),
-    {
-      enabled: !!connectionId,
-      notifyOnChangeProps: ["data", "error"],
-    },
-  );
+  return useQuery({
+    queryKey: connectionId ? queryKeys.connections.byId(connectionId) : [connectionId],
+    queryFn: () => (!connectionId ? undefined : dataApi.getConnection(connectionId)),
+    enabled: !!connectionId,
+    notifyOnChangeProps: ["data", "error"],
+  });
 }
 
 /**
@@ -64,10 +66,11 @@ export function useGetConnectionById(connectionId?: string) {
  */
 export function useUpsertConnection() {
   const queryClient = useQueryClient();
-  return useMutation<SqluiCore.ConnectionProps, void, SqluiCore.CoreConnectionProps>(dataApi.upsertConnection, {
+  return useMutation<SqluiCore.ConnectionProps, void, SqluiCore.CoreConnectionProps>({
+    mutationFn: dataApi.upsertConnection,
     onSuccess: async (newConnection) => {
-      queryClient.invalidateQueries(queryKeys.connections.byId(newConnection.id));
-      queryClient.invalidateQueries(queryKeys.connections.all);
+      queryClient.invalidateQueries({ queryKey: queryKeys.connections.byId(newConnection.id) });
+      queryClient.invalidateQueries({ queryKey: queryKeys.connections.all });
 
       queryClient.setQueryData<SqluiCore.ConnectionProps[] | undefined>(queryKeys.connections.all, (oldData) => {
         // find that entry
@@ -107,7 +110,8 @@ export function useDeleteConnection() {
   const { data: connections } = useGetConnections();
   const isSoftDeleteModeSetting = useIsSoftDeleteModeSetting();
 
-  return useMutation<string, void, string>(dataApi.deleteConnection, {
+  return useMutation<string, void, string>({
+    mutationFn: dataApi.deleteConnection,
     onSuccess: async (deletedConnectionId) => {
       queryClient.setQueryData<SqluiCore.ConnectionProps[] | undefined>(queryKeys.connections.all, (oldData) => {
         return oldData?.filter((connection) => connection.id !== deletedConnectionId);
@@ -143,7 +147,7 @@ export function useDeleteConnection() {
  * @returns Mutation that accepts connection properties to duplicate.
  */
 export function useDuplicateConnection() {
-  const { mutateAsync: upsertConnection, isLoading } = useUpsertConnection();
+  const { mutateAsync: upsertConnection, isPending } = useUpsertConnection();
 
   return {
     mutateAsync: (connection: SqluiCore.CoreConnectionProps) => {
@@ -154,7 +158,7 @@ export function useDuplicateConnection() {
       };
       return upsertConnection(duplicatedConnection);
     },
-    isLoading,
+    isLoading: isPending,
   };
 }
 
@@ -163,7 +167,7 @@ export function useDuplicateConnection() {
  * @returns Mutation that accepts connection properties to import.
  */
 export function useImportConnection() {
-  const { mutateAsync: upsertConnection, isLoading } = useUpsertConnection();
+  const { mutateAsync: upsertConnection, isPending } = useUpsertConnection();
 
   return {
     mutateAsync: (connection: SqluiCore.CoreConnectionProps) => {
@@ -175,7 +179,7 @@ export function useImportConnection() {
       };
       return upsertConnection(duplicatedConnection);
     },
-    isLoading,
+    isLoading: isPending,
   };
 }
 
@@ -184,9 +188,9 @@ export function useImportConnection() {
  * @returns Mutation that accepts a ConnectionQuery and returns the result.
  */
 export function useExecute() {
-  return useMutation<SqluiCore.Result, void, SqluiFrontend.ConnectionQuery>((query?: SqluiFrontend.ConnectionQuery) =>
-    dataApi.execute(query),
-  );
+  return useMutation<SqluiCore.Result, void, SqluiFrontend.ConnectionQuery>({
+    mutationFn: (query?: SqluiFrontend.ConnectionQuery) => dataApi.execute(query),
+  });
 }
 
 /**
@@ -205,7 +209,9 @@ export function refreshAfterExecution(_query: SqluiFrontend.ConnectionQuery, _qu
  * @returns Mutation that accepts connection properties and returns test results.
  */
 export function useTestConnection() {
-  return useMutation<SqluiCore.CoreConnectionMetaData, void, SqluiCore.CoreConnectionProps>(dataApi.test);
+  return useMutation<SqluiCore.CoreConnectionMetaData, void, SqluiCore.CoreConnectionProps>({
+    mutationFn: (connection) => dataApi.test(connection),
+  });
 }
 
 /**
@@ -242,7 +248,7 @@ export function useAutoConnectAll(connections?: SqluiCore.ConnectionProps[]) {
           queryClient.setQueryData<SqluiCore.ConnectionProps[] | undefined>(queryKeys.connections.all, (oldData) =>
             oldData?.map((c) => (c.id === conn.id ? { ...c, ...result } : c)),
           );
-          queryClient.invalidateQueries(queryKeys.connections.byId(conn.id));
+          queryClient.invalidateQueries({ queryKey: queryKeys.connections.byId(conn.id) });
         })
         .catch(() => {
           queryClient.setQueryData<SqluiCore.ConnectionProps[] | undefined>(queryKeys.connections.all, (oldData) =>

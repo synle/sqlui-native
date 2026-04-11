@@ -52,7 +52,7 @@ const StyledTabs = styled("section")(() => {
  * @param props - Tab configuration including headers, contents, orientation, and event handlers.
  * @returns The tabbed UI.
  */
-export default function MyTabs(props: TabsProps): JSX.Element | null {
+export default function MyTabs(props: TabsProps): React.JSX.Element | null {
   const { id, tabIdx, tabHeaders, tabContents } = props;
   let { orientation } = props;
   const layoutMode = useLayoutModeSetting();

@@ -21,7 +21,7 @@ type TableDescriptionProps = {
  * @param props - Contains connectionId and databaseId to fetch tables.
  * @returns The table accordion list, a loading indicator, or a warning if no tables exist.
  */
-export default function TableDescription(props: TableDescriptionProps): JSX.Element | null {
+export default function TableDescription(props: TableDescriptionProps): React.JSX.Element | null {
   const { databaseId, connectionId } = props;
   const { data: tables, isLoading } = useGetTables(connectionId, databaseId);
   const { visibles, onToggle } = useShowHide();

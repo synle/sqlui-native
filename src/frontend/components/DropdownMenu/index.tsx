@@ -23,7 +23,7 @@ export type DropdownButtonOption = {
 /** Props for the DropdownMenu component. */
 type DropdownMenuProps = {
   /** Ref to the anchor element the popper is positioned relative to. */
-  anchorEl: React.RefObject<HTMLElement>;
+  anchorEl: React.RefObject<HTMLElement | null>;
   /** Unique identifier for the menu list. */
   id: string;
   /** Menu options to render. */
@@ -44,7 +44,7 @@ type DropdownMenuProps = {
  * @param props - Menu configuration including anchor element, options, and open state.
  * @returns A positioned dropdown menu, or null if no anchor element is available.
  */
-export default function DropdownMenu(props: DropdownMenuProps): JSX.Element | null {
+export default function DropdownMenu(props: DropdownMenuProps): React.JSX.Element | null {
   const { id, options, maxHeight, anchorEl } = props;
   const [open, setOpen] = React.useState(false);
 
@@ -71,7 +71,7 @@ export default function DropdownMenu(props: DropdownMenuProps): JSX.Element | nu
     setOpen(!!props.open);
   }, [props.open]);
 
-  let popperBody: JSX.Element = <></>;
+  let popperBody: React.JSX.Element = <></>;
   if (props.isLoading) {
     popperBody = (
       <div className="DropdownButton__Popper">

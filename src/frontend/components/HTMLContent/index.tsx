@@ -1,3 +1,4 @@
+import React from "react";
 /** Reusable component for rendering trusted HTML strings with consistent link styling. */
 import Box from "@mui/material/Box";
 
@@ -11,7 +12,7 @@ type HTMLContentProps = {
  * @param props - Contains the HTML string to render.
  * @returns The rendered HTML content wrapped in a Box.
  */
-export default function HTMLContent(props: HTMLContentProps): JSX.Element {
+export default function HTMLContent(props: HTMLContentProps): React.JSX.Element {
   return (
     <Box
       component="div"

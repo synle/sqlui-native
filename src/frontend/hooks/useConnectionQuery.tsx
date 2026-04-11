@@ -29,7 +29,7 @@ function _persistQueries() {
  * @param props - Component props containing child elements.
  * @returns The context provider wrapping children.
  */
-export default function WrappedContext(props: { children: React.ReactNode }): JSX.Element | null {
+export default function WrappedContext(props: { children: React.ReactNode }): React.JSX.Element | null {
   // State to hold the theme value
   const [data, setData] = useState(_connectionQueries);
   const [isLoading, setIsLoading] = useState(true);

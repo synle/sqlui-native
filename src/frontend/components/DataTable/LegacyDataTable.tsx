@@ -39,7 +39,7 @@ import { useAddDataSnapshot } from "src/frontend/hooks/useDataSnapshot";
  * @param props - Data table properties including columns, data, and optional callbacks.
  * @returns The rendered data table or null.
  */
-export default function LegacyDataTable(props: DataTableProps): JSX.Element | null {
+export default function LegacyDataTable(props: DataTableProps): React.JSX.Element | null {
   const { data } = props;
   const isCompact = useLayoutModeSetting() === "compact";
   const [columns, setColumns] = useState<ColumnDef<any, any>[]>([]);
