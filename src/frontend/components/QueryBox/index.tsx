@@ -66,7 +66,7 @@ type ConnectionActionsButtonProps = {
  * @param props - Contains the connection query with connectionId, databaseId, and tableId.
  * @returns A dropdown button with table actions, or null if connection/table are not selected.
  */
-function ConnectionActionsButton(props: ConnectionActionsButtonProps): JSX.Element | null {
+function ConnectionActionsButton(props: ConnectionActionsButtonProps): React.JSX.Element | null {
   const { query } = props;
   const { databaseId, connectionId, tableId } = query;
   const querySize = useQuerySizeSetting();
@@ -164,9 +164,9 @@ function CodeSnippetButton(props: QueryBoxProps) {
  * @param props - Contains the queryId identifying which query tab to render.
  * @returns The query box UI or null/loading indicator.
  */
-function QueryBox(props: QueryBoxProps): JSX.Element | null {
+function QueryBox(props: QueryBoxProps): React.JSX.Element | null {
   const { queryId } = props;
-  const editorRef = useRef<EditorRef>();
+  const editorRef = useRef<EditorRef>(null);
   const executionIdRef = useRef(0);
   const { query, onChange, isLoading: loadingConnection } = useConnectionQuery(queryId);
   const { mutateAsync: executeQuery } = useExecute();

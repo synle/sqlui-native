@@ -1,5 +1,6 @@
-import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
-import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
+import React from "react";
+import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutlined";
+import ErrorOutlineIcon from "@mui/icons-material/ErrorOutlined";
 import { Box, Button, CircularProgress, Typography } from "@mui/material";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { getConnectionFormInputs, getConnectionStringFormat } from "src/common/adapters/DataScriptFactory";
@@ -130,7 +131,7 @@ function parseConnectionDetails(connectionString: string): ConnectionDetail[] {
  * @param props - Label and value to display.
  * @returns The metadata row element, or null if value is empty.
  */
-function MetadataRow(props: { label: string; value: string }): JSX.Element | null {
+function MetadataRow(props: { label: string; value: string }): React.JSX.Element | null {
   if (!props.value) {
     return null;
   }
@@ -151,7 +152,7 @@ function MetadataRow(props: { label: string; value: string }): JSX.Element | nul
  * @param props - Contains the start timestamp (epoch ms).
  * @returns The live timer element.
  */
-function LiveTimer(props: { startTime: number }): JSX.Element {
+function LiveTimer(props: { startTime: number }): React.JSX.Element {
   return (
     <Typography variant="body2">
       <Timer startTime={props.startTime} />
@@ -165,7 +166,7 @@ function LiveTimer(props: { startTime: number }): JSX.Element {
  * @param props - Connection props and dismiss callback.
  * @returns The modal body element.
  */
-export function TestConnectionModalBody(props: TestConnectionModalBodyProps): JSX.Element {
+export function TestConnectionModalBody(props: TestConnectionModalBodyProps): React.JSX.Element {
   const { connection, onDismiss } = props;
   const [status, setStatus] = useState<TestStatus>("loading");
   const [errorMessage, setErrorMessage] = useState("");
@@ -377,7 +378,7 @@ export function showTestConnectionModal(
  * @param props - Contains the connection properties to test.
  * @returns The test connection button.
  */
-export default function TestConnectionButton(props: TestConnectionButtonProps): JSX.Element | null {
+export default function TestConnectionButton(props: TestConnectionButtonProps): React.JSX.Element | null {
   const { modal, alert, dismiss } = useActionDialogs();
 
   const onTestConnection = async () => {

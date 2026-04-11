@@ -36,7 +36,7 @@ type PromptDialogProps = PromptInput & {
  * @param props - Prompt dialog configuration including message, initial value, and save callback.
  * @returns The rendered prompt dialog element.
  */
-export default function PromptDialog(props: PromptDialogProps): JSX.Element | null {
+export default function PromptDialog(props: PromptDialogProps): React.JSX.Element | null {
   const [value, setValue] = useState(props.value || "");
   const showRequiredError = props.isLongPrompt && !!props.required && !value.trim();
 

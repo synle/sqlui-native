@@ -27,7 +27,7 @@ type ColumnDescriptionProps = {
  * @param props - Props containing connectionId, databaseId, and tableId to fetch columns for.
  * @returns The rendered column list with accordion-style expand/collapse for each column.
  */
-export default function ColumnDescription(props: ColumnDescriptionProps): JSX.Element | null {
+export default function ColumnDescription(props: ColumnDescriptionProps): React.JSX.Element | null {
   const { databaseId, connectionId, tableId } = props;
   useActiveConnectionQuery();
   const { data: columns, isLoading: loadingColumns, isError } = useGetColumns(connectionId, databaseId, tableId);

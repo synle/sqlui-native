@@ -1,3 +1,4 @@
+import React from "react";
 import AddIcon from "@mui/icons-material/Add";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -47,7 +48,7 @@ type DatabaseActionsProps = {
  * @param props - Contains connectionId and databaseId.
  * @returns A dropdown button with database actions, or null if context menu is hidden.
  */
-export default function DatabaseActions(props: DatabaseActionsProps): JSX.Element | null {
+export default function DatabaseActions(props: DatabaseActionsProps): React.JSX.Element | null {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const querySize = useQuerySizeSetting();

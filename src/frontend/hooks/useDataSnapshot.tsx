@@ -10,7 +10,9 @@ const QUERY_KEY_DATA_SNAPSHOT = `dataSnapshot`;
  * @returns React Query result containing an array of data snapshots.
  */
 export function useGetDataSnapshots() {
-  return useQuery([QUERY_KEY_DATA_SNAPSHOT], dataApi.getDataSnapshots, {
+  return useQuery({
+    queryKey: [QUERY_KEY_DATA_SNAPSHOT],
+    queryFn: dataApi.getDataSnapshots,
     notifyOnChangeProps: ["data", "error"],
   });
 }
@@ -21,7 +23,9 @@ export function useGetDataSnapshots() {
  * @returns React Query result containing the snapshot or null.
  */
 export function useGetDataSnapshot(dataSnapshotId?: string) {
-  return useQuery([QUERY_KEY_DATA_SNAPSHOT, dataSnapshotId], () => (dataSnapshotId ? dataApi.getDataSnapshot(dataSnapshotId) : null), {
+  return useQuery({
+    queryKey: [QUERY_KEY_DATA_SNAPSHOT, dataSnapshotId],
+    queryFn: () => (dataSnapshotId ? dataApi.getDataSnapshot(dataSnapshotId) : null),
     notifyOnChangeProps: ["data", "error"],
   });
 }
@@ -35,11 +39,13 @@ export function useAddDataSnapshot() {
     SqluiCore.DataSnapshot,
     void,
     Partial<SqluiCore.DataSnapshot> & Required<Pick<SqluiCore.DataSnapshot, "values" | "description">>
-  >(async (newDataSnapshot) => {
-    if (newDataSnapshot) {
-      return dataApi.addDataSnapshot(newDataSnapshot);
-    }
-    throw new Error("newDataSnapshot is empty");
+  >({
+    mutationFn: async (newDataSnapshot) => {
+      if (newDataSnapshot) {
+        return dataApi.addDataSnapshot(newDataSnapshot);
+      }
+      throw new Error("newDataSnapshot is empty");
+    },
   });
 }
 
@@ -49,17 +55,15 @@ export function useAddDataSnapshot() {
  */
 export function useDeleteDataSnapshot() {
   const queryClient = useQueryClient();
-  return useMutation<void, void, string>(
-    async (dataSnapshotId) => {
+  return useMutation<void, void, string>({
+    mutationFn: async (dataSnapshotId) => {
       if (dataSnapshotId) {
         return dataApi.deleteDataSnapshot(dataSnapshotId);
       }
       throw new Error("dataSnapshotId is empty");
     },
-    {
-      onSettled: () => {
-        queryClient.invalidateQueries([QUERY_KEY_DATA_SNAPSHOT]);
-      },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEY_DATA_SNAPSHOT] });
     },
-  );
+  });
 }

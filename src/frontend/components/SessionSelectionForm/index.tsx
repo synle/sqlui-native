@@ -1,3 +1,4 @@
+import React from "react";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import Box from "@mui/material/Box";
@@ -7,6 +8,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import IconButton from "@mui/material/IconButton";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
+import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import TextField from "@mui/material/TextField";
@@ -41,11 +43,11 @@ type SessionSelectionFormProps = {
  * @param props - Contains isFirstTime flag to control UI behavior.
  * @returns The session selection form or null while loading.
  */
-export default function SessionSelectionForm(props: SessionSelectionFormProps): JSX.Element | null {
+export default function SessionSelectionForm(props: SessionSelectionFormProps): React.JSX.Element | null {
   const { isFirstTime } = props;
   const { data: sessions, isLoading: loadingSessions } = useGetSessions();
   const { data: currentSession } = useGetCurrentSession();
-  const { mutateAsync: upsertSession, isLoading: isCreating } = useUpsertSession();
+  const { mutateAsync: upsertSession, isPending: isCreating } = useUpsertSession();
   const { mutateAsync: selectSession } = useSelectSession();
   const { mutateAsync: deleteSession } = useDeleteSession();
   const { selectCommand } = useCommands();
@@ -129,7 +131,7 @@ export default function SessionSelectionForm(props: SessionSelectionFormProps): 
           };
           const labelId = `session-option-${option.value}`;
 
-          let secondaryAction: JSX.Element | undefined;
+          let secondaryAction: React.JSX.Element | undefined;
           if (!isFirstTime) {
             const targetSession = sessions.find((session) => session.id === option.value);
 
@@ -164,11 +166,13 @@ export default function SessionSelectionForm(props: SessionSelectionFormProps): 
           }
 
           return (
-            <ListItem dense key={option.value} selected={option.selected} onClick={onSelectThisSession} secondaryAction={secondaryAction}>
-              <ListItemIcon>
-                <Checkbox edge="start" checked={!!option.selected} tabIndex={-1} inputProps={{ "aria-labelledby": labelId }} />
-              </ListItemIcon>
-              <ListItemText id={labelId} primary={option.label} secondary={option.subtitle} />
+            <ListItem dense key={option.value} secondaryAction={secondaryAction} disablePadding>
+              <ListItemButton selected={option.selected} onClick={onSelectThisSession}>
+                <ListItemIcon>
+                  <Checkbox edge="start" checked={!!option.selected} tabIndex={-1} slotProps={{ input: { "aria-labelledby": labelId } }} />
+                </ListItemIcon>
+                <ListItemText id={labelId} primary={option.label} secondary={option.subtitle} />
+              </ListItemButton>
             </ListItem>
           );
         })}

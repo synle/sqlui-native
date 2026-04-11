@@ -1,3 +1,4 @@
+import React from "react";
 import PreviewIcon from "@mui/icons-material/Preview";
 import { Button } from "@mui/material";
 import Tooltip from "@mui/material/Tooltip";
@@ -15,7 +16,7 @@ type ConnectionRevealButtonProps = {
  * @param props - Contains the query to reveal.
  * @returns The reveal button or null if no query is provided.
  */
-export default function ConnectionRevealButton(props: ConnectionRevealButtonProps): JSX.Element | null {
+export default function ConnectionRevealButton(props: ConnectionRevealButtonProps): React.JSX.Element | null {
   const { query } = props;
   const { selectCommand } = useCommands();
 

@@ -19,7 +19,7 @@ export default defineConfig(({ command }) => ({
       src: path.resolve(__dirname, "src"),
       // Bypass the NODE_ENV !== 'development' check in the default export
       // so React Query DevTools can be toggled in packaged/production builds.
-      "@tanstack/react-query-devtools": path.resolve(__dirname, "node_modules/@tanstack/react-query-devtools/build/lib/index.prod.mjs"),
+      "@tanstack/react-query-devtools": path.resolve(__dirname, "node_modules/@tanstack/react-query-devtools/build/modern/production.js"),
     },
   },
   css: {
@@ -60,7 +60,7 @@ export default defineConfig(({ command }) => ({
     rollupOptions: {
       output: {
         manualChunks: {
-          "vendor-react": ["react", "react-dom", "react-router-dom"],
+          "vendor-react": ["react", "react-dom", "react-router"],
           "vendor-mui": ["@mui/material", "@mui/icons-material", "@mui/lab"],
           "vendor-tanstack": ["@tanstack/react-query", "@tanstack/react-table", "@tanstack/react-virtual"],
           "vendor-xyflow": ["@xyflow/react"],

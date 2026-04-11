@@ -4,7 +4,7 @@ import { createTheme, Theme, ThemeProvider } from "@mui/material/styles";
 import { createRoot } from "react-dom/client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { HashRouter, Route, Routes } from "react-router-dom";
+import { HashRouter, Route, Routes } from "react-router";
 import { useEffect, useState } from "react";
 import App from "src/frontend/App";
 import SessionExpiredPage from "src/frontend/views/SessionExpiredPage";
@@ -130,7 +130,7 @@ function AppliedTheme({ children }) {
  * @param {{ children: React.ReactNode }} props - Component children to wrap with the router.
  */
 function FutureHashRouter({ children }) {
-  return <HashRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>{children}</HashRouter>;
+  return <HashRouter>{children}</HashRouter>;
 }
 
 /**

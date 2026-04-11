@@ -1,3 +1,4 @@
+import React from "react";
 import CloudIcon from "@mui/icons-material/Cloud";
 import { getDialectIcon, SUPPORTED_DIALECTS } from "src/common/adapters/DataScriptFactory";
 import { useLayoutModeSetting } from "src/frontend/hooks/useSetting";
@@ -16,7 +17,7 @@ type ConnectionTypeIconProps = {
  * @param props - The dialect and status of the connection.
  * @returns An icon element or null.
  */
-export default function ConnectionTypeIcon(props: ConnectionTypeIconProps): JSX.Element | null {
+export default function ConnectionTypeIcon(props: ConnectionTypeIconProps): React.JSX.Element | null {
   const { dialect, status } = props;
   const isCompact = useLayoutModeSetting() === "compact";
 

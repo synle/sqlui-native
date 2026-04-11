@@ -1,4 +1,5 @@
 // @ts-nocheck
+import React from "react";
 import { grey } from "@mui/material/colors";
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { styled } from "@mui/system";
@@ -36,7 +37,7 @@ const StyledTextArea = styled("textarea")(({ theme }) => {
  * @param props - Editor configuration including value, language, word wrap, and editor ref.
  * @returns The rendered textarea editor.
  */
-export default function SimpleEditor(props: SimpleEditorProps): JSX.Element | null {
+export default function SimpleEditor(props: SimpleEditorProps): React.JSX.Element | null {
   const textareaRef = useRef<HTMLTextareaElement>(null);
 
   const onInputKeyDown = useCallback((e) => {

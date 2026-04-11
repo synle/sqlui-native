@@ -1,7 +1,7 @@
 import BackupIcon from "@mui/icons-material/Backup";
 import LoadingButton from "@mui/lab/LoadingButton";
 import { Button, Link, Skeleton, TextField, Typography } from "@mui/material";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router";
 import { useNavigate } from "src/frontend/utils/commonUtils";
 import React, { useEffect, useState } from "react";
 import {
@@ -69,7 +69,7 @@ type DialectSelectorProps = {
  * @param props - Contains label, current value, and onChange callback.
  * @returns A select element with supported migration dialects.
  */
-function DialectSelector(props: DialectSelectorProps): JSX.Element | null {
+function DialectSelector(props: DialectSelectorProps): React.JSX.Element | null {
   const { label, value, onChange } = props;
 
   return (
@@ -101,7 +101,7 @@ type ColumnSelectorProps = {
  * @param props - Contains label, value, columns, and onChange callback.
  * @returns A select or text field for column selection.
  */
-function ColumnSelector(props: ColumnSelectorProps): JSX.Element | null {
+function ColumnSelector(props: ColumnSelectorProps): React.JSX.Element | null {
   const { label, value, columns, required, onChange } = props;
 
   if (!columns || columns.length === 0) {
@@ -307,7 +307,7 @@ async function generateMigrationScript(
  * @param props - Contains the migration mode.
  * @returns The migration form UI or null.
  */
-export default function MigrationBox(props: MigrationBoxProps): JSX.Element | null {
+export default function MigrationBox(props: MigrationBoxProps): React.JSX.Element | null {
   const { mode } = props;
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -621,7 +621,7 @@ type MigrationMetaDataInputsProps = {
  * @param props - Contains migration state, query info, and onChange callback.
  * @returns Migration metadata form fields or null while loading.
  */
-function MigrationMetaDataInputs(props: MigrationMetaDataInputsProps): JSX.Element | null {
+function MigrationMetaDataInputs(props: MigrationMetaDataInputsProps): React.JSX.Element | null {
   const { query, isMigratingRealConnection, value: migrationMetaData } = props;
   const { data: columns, isLoading: loadingColumns } = useGetColumns(query?.connectionId, query?.databaseId, query?.tableId);
   const { data: connection, isLoading: loadingConnection } = useGetConnectionById(query?.connectionId);
@@ -636,7 +636,7 @@ function MigrationMetaDataInputs(props: MigrationMetaDataInputsProps): JSX.Eleme
     });
   };
 
-  const extraDoms: JSX.Element[] = [];
+  const extraDoms: React.JSX.Element[] = [];
 
   let shouldShowNewDatabaseIdInput = true;
   switch (migrationMetaData.toDialect) {

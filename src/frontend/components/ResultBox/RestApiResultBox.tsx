@@ -79,7 +79,7 @@ export function formatBytes(bytes: number): string {
  * @param entries - Object with string keys and values.
  * @returns A styled table element.
  */
-function KeyValueTable({ entries }: { entries: Record<string, any> }): JSX.Element {
+function KeyValueTable({ entries }: { entries: Record<string, any> }): React.JSX.Element {
   const keys = Object.keys(entries);
   if (keys.length === 0) {
     return <div style={{ padding: "0.75rem", opacity: 0.6 }}>(none)</div>;
@@ -128,7 +128,7 @@ function KeyValueTable({ entries }: { entries: Record<string, any> }): JSX.Eleme
  * @param props - REST API result metadata and timing info.
  * @returns The REST API result viewer.
  */
-export default function RestApiResultBox(props: RestApiResultBoxProps): JSX.Element {
+export default function RestApiResultBox(props: RestApiResultBoxProps): React.JSX.Element {
   const { meta, raw, executionStart, executionEnd } = props;
   const [tabIdx, setTabIdx] = useState(0);
 

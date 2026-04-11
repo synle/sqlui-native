@@ -1,3 +1,4 @@
+import React from "react";
 import Box from "@mui/material/Box";
 import { useEffect, useMemo } from "react";
 import { getIsTableIdRequiredForQueryByDialect } from "src/common/adapters/DataScriptFactory";
@@ -28,7 +29,7 @@ type ConnectionDatabaseSelectorProps = {
  * @param props - Configuration for the selector including current values and change handler.
  * @returns The selector dropdowns or null.
  */
-export default function ConnectionDatabaseSelector(props: ConnectionDatabaseSelectorProps): JSX.Element | null {
+export default function ConnectionDatabaseSelector(props: ConnectionDatabaseSelectorProps): React.JSX.Element | null {
   const query = props.value;
   const { data: connections, isLoading: loadingConnections } = useGetConnections();
   const { data: connection } = useGetConnectionById(query?.connectionId);
