@@ -28,14 +28,6 @@ export type RestApiVariable = {
   enabled: boolean;
 };
 
-/** Named set of variables for environment switching (e.g., dev, staging, prod). */
-export type RestApiEnvironment = {
-  /** Environment display name. */
-  name: string;
-  /** Variables defined in this environment. */
-  variables: RestApiVariable[];
-};
-
 /** Parsed connection config from the rest:// connection string JSON. */
 export type RestApiConnectionConfig = {
   /** Base host URL for the API collection. */
@@ -71,6 +63,12 @@ export type RestApiRequest = {
   insecure?: boolean;
   /** Basic auth credentials. */
   auth?: { username: string; password: string };
+  /** Maximum total time in seconds for the request (from --max-time). */
+  maxTime?: number;
+  /** Connection timeout in seconds (from --connect-timeout). */
+  connectTimeout?: number;
+  /** Proxy URL (from -x/--proxy, e.g., "http://proxy:8080"). */
+  proxy?: string;
 };
 
 /** Timing breakdown from curl --write-out. */

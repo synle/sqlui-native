@@ -91,6 +91,29 @@ describe("executeCurl", () => {
       expect(result.cookies).toEqual({ session: "abc123" });
     });
 
+    it("should accumulate multiple Set-Cookie headers into cookies map", async () => {
+      const headers = "HTTP/1.1 200 OK\r\nSet-Cookie: session=abc123; Path=/\r\nSet-Cookie: theme=dark; Path=/\r\nContent-Type: text/plain";
+      const stdout = buildStdout(headers, "ok");
+      simulateCurl(stdout);
+
+      const result = await executeCurl(makeRequest());
+
+      expect(result.cookies).toEqual({ session: "abc123", theme: "dark" });
+      // Duplicate headers should be joined with comma separator
+      expect(result.headers["Set-Cookie"]).toContain("session=abc123");
+      expect(result.headers["Set-Cookie"]).toContain("theme=dark");
+    });
+
+    it("should join duplicate response headers with comma separator", async () => {
+      const headers = "HTTP/1.1 200 OK\r\nX-Custom: value1\r\nX-Custom: value2\r\nContent-Type: text/plain";
+      const stdout = buildStdout(headers, "ok");
+      simulateCurl(stdout);
+
+      const result = await executeCurl(makeRequest());
+
+      expect(result.headers["X-Custom"]).toBe("value1, value2");
+    });
+
     it("should handle multiple header blocks (100 Continue then 200 OK)", async () => {
       const responsePart = "HTTP/1.1 100 Continue\r\n\r\n" + "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\n\r\n" + '{"data":true}';
       const stdout = `${responsePart}${TIMING_SEPARATOR}${makeTimingJson()}`;
@@ -234,6 +257,30 @@ describe("executeCurl", () => {
 
       const args = getCurlArgs();
       expect(args[args.length - 1]).toBe("https://example.com/test");
+    });
+
+    it("should include --max-time and --connect-timeout when specified", async () => {
+      const stdout = buildStdout("HTTP/1.1 200 OK", "");
+      simulateCurl(stdout);
+
+      await executeCurl(makeRequest({ maxTime: 10, connectTimeout: 3 }));
+
+      const args = getCurlArgs();
+      expect(args).toContain("--max-time");
+      expect(args[args.indexOf("--max-time") + 1]).toBe("10");
+      expect(args).toContain("--connect-timeout");
+      expect(args[args.indexOf("--connect-timeout") + 1]).toBe("3");
+    });
+
+    it("should include -x for proxy when specified", async () => {
+      const stdout = buildStdout("HTTP/1.1 200 OK", "");
+      simulateCurl(stdout);
+
+      await executeCurl(makeRequest({ proxy: "http://proxy:8080" }));
+
+      const args = getCurlArgs();
+      expect(args).toContain("-x");
+      expect(args[args.indexOf("-x") + 1]).toBe("http://proxy:8080");
     });
   });
 

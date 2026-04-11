@@ -1,0 +1,29 @@
+// Using the Fetch API (built-in)
+async function _doWork() {
+  try {
+    const response = await fetch('{{{url}}}', {
+      method: '{{{method}}}',
+      headers: {{{headersJson}}},{{#body}}
+      body: '{{{body}}}',{{/body}}
+    });
+
+    const status = response.status;
+    const headers = Object.fromEntries(response.headers.entries());
+    const body = await response.text();
+
+    console.log(`Status: ${status}`);
+    console.log('Headers:', headers);
+
+    // Try to parse as JSON
+    try {
+      const json = JSON.parse(body);
+      console.log('Body:', JSON.stringify(json, null, 2));
+    } catch (_e) {
+      console.log('Body:', body);
+    }
+  } catch (err) {
+    console.error('Request failed:', err);
+  }
+}
+
+_doWork();
