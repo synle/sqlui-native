@@ -1,5 +1,6 @@
 import AddIcon from "@mui/icons-material/Add";
 import BackupIcon from "@mui/icons-material/Backup";
+import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import DataArrayIcon from "@mui/icons-material/DataArray";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -22,6 +23,7 @@ import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
 import { useNavigate } from "src/frontend/utils/commonUtils";
 import { useEffect } from "react";
+import dataApi from "src/frontend/data/api";
 import DropdownButton from "src/frontend/components/DropdownButton";
 import { useCommands } from "src/frontend/components/MissionControl";
 import { useActionDialogs } from "src/frontend/hooks/useActionDialogs";
@@ -120,6 +122,17 @@ export default function AppHeader() {
       label: "Settings",
       onClick: () => selectCommand({ event: "clientEvent/showSettings" }),
       startIcon: <SettingsIcon />,
+    },
+    {
+      label: "Backup Database",
+      onClick: async () => {
+        try {
+          await dataApi.backupDatabase();
+        } catch (err) {
+          console.error("AppHeader:backupDatabase", err);
+        }
+      },
+      startIcon: <CloudDownloadIcon />,
     },
 
     {

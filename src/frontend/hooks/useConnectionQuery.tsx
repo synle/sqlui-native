@@ -4,7 +4,7 @@ import { SessionStorageConfig } from "src/frontend/data/config";
 import { getCurrentSessionId } from "src/frontend/data/session";
 import { useAddRecycleBinItem } from "src/frontend/hooks/useFolderItems";
 import { useIsSoftDeleteModeSetting } from "src/frontend/hooks/useSetting";
-import { formatShortDate, getGeneratedRandomId, getUpdatedOrdersForList } from "src/frontend/utils/commonUtils";
+import { formatShortDate, getUpdatedOrdersForList } from "src/frontend/utils/commonUtils";
 import { SqluiCore, SqluiFrontend } from "typings";
 
 // connection queries
@@ -115,12 +115,9 @@ export function useConnectionQueries() {
 
     const res: SqluiCore.CoreConnectionQuery[] = [];
     for (const query of queries) {
-      const newId = getGeneratedRandomId(`queryId`);
-
-      let newQuery: SqluiFrontend.ConnectionQuery;
+      let newQueryData: Partial<SqluiFrontend.ConnectionQuery>;
       if (!query) {
-        newQuery = {
-          id: newId,
+        newQueryData = {
           name: `Query ${formatShortDate()}`,
           sql: "",
           selected: true,
@@ -136,9 +133,8 @@ export function useConnectionQueries() {
         }
 
         const queryAny = query as any;
-        newQuery = {
+        newQueryData = {
           ...query,
-          id: newId,
           name: newQueryName,
           selected: true,
           result: options?.preserveResult ? queryAny.result : undefined,
@@ -146,20 +142,23 @@ export function useConnectionQueries() {
           executionStart: options?.preserveResult ? queryAny.executionStart : undefined,
           isSnapshot: options?.preserveResult && !!queryAny.result ? true : undefined,
         };
+        // Strip id so the backend generates one
+        delete newQueryData.id;
       }
 
-      _connectionQueries = [
-        ..._connectionQueries.map((q) => ({
-          ...q,
-          selected: false,
-        })),
-        newQuery,
-      ];
-
-      res.push(newQuery);
-
       try {
-        dataApi.upsertQuery(newQuery); // make an api call to persists and this is fire and forget
+        const persisted = await dataApi.upsertQuery(newQueryData as any);
+        const newQuery: SqluiFrontend.ConnectionQuery = { ...newQueryData, id: persisted.id } as any;
+
+        _connectionQueries = [
+          ..._connectionQueries.map((q) => ({
+            ...q,
+            selected: false,
+          })),
+          newQuery,
+        ];
+
+        res.push(newQuery);
       } catch (err) {
         console.error("useConnectionQuery.tsx:upsertQuery", err);
       }
@@ -264,7 +263,6 @@ export function useConnectionQueries() {
       if (!queries || queries.length === 0) {
         // this is an edge case where users already closed all the query tab
         const newQuery = await onAddQuery({
-          id: getGeneratedRandomId(`queryId`),
           name: `Query ${formatShortDate()}`,
           ...partials,
         });

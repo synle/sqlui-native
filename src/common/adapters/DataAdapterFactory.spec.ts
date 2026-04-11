@@ -8,7 +8,7 @@ import {
   listCachedColumnsByDatabase,
   getCachedSchema,
 } from "src/common/adapters/DataAdapterFactory";
-import PersistentStorage from "src/common/PersistentStorage";
+import { getCachedColumnsStorage, getCachedDatabasesStorage, getCachedTablesStorage } from "src/common/PersistentStorage";
 
 describe("DataAdapterFactory", () => {
   describe("getDataAdapter", () => {
@@ -101,9 +101,9 @@ describe("DataAdapterFactory", () => {
 });
 
 describe("DataAdapterFactory caching", () => {
-  const databaseCacheStorage = new PersistentStorage<any>("cache", "databases", "cache.databases");
-  const tableCacheStorage = new PersistentStorage<any>("cache", "tables", "cache.tables");
-  const columnCacheStorage = new PersistentStorage<any>("cache", "columns", "cache.columns");
+  const databaseCacheStorage = getCachedDatabasesStorage();
+  const tableCacheStorage = getCachedTablesStorage();
+  const columnCacheStorage = getCachedColumnsStorage();
 
   const TEST_CONN_ID = "test-conn-cache-spec";
   const TEST_DB_ID = "acme_db";

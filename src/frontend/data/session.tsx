@@ -1,13 +1,4 @@
 import { SessionStorageConfig } from "src/frontend/data/config";
-import { getGeneratedRandomId } from "src/frontend/utils/commonUtils";
-
-/**
- * Generates a random session ID with a "sessionId" prefix.
- * @returns A unique session ID string.
- */
-export function getRandomSessionId() {
-  return getGeneratedRandomId(`sessionId`);
-}
 
 /**
  * Returns the current session ID from sessionStorage, or empty string if not set.

@@ -43,6 +43,7 @@ function uniqueName(prefix = "test") {
 }
 
 import PersistentStorage, {
+  PersistentStorageJsonFile,
   storageDir,
   getConnectionsStorage,
   getQueryStorage,
@@ -52,6 +53,10 @@ import PersistentStorage, {
   getSettingsStorage,
   getManagedDatabasesStorage,
   getManagedTablesStorage,
+  getCachedDatabasesStorage,
+  getCachedTablesStorage,
+  getCachedColumnsStorage,
+  getCachedCodeSnippetsStorage,
 } from "src/common/PersistentStorage";
 
 describe("PersistentStorage", () => {
@@ -63,7 +68,7 @@ describe("PersistentStorage", () => {
     test("uses default storage location when storageLocation is not provided", () => {
       const instanceId = uniqueName("inst");
       const name = uniqueName("name");
-      const storage = new PersistentStorage(instanceId, name);
+      const storage = new PersistentStorage("test", instanceId, name);
       expect(storage.storageLocation).toContain(`${instanceId}.${name}.json`);
       expect(storage.storageLocation).toContain(storageDir);
     });
@@ -72,7 +77,7 @@ describe("PersistentStorage", () => {
       const instanceId = uniqueName("inst");
       const name = uniqueName("name");
       const customLocation = uniqueName("custom");
-      const storage = new PersistentStorage(instanceId, name, customLocation);
+      const storage = new PersistentStorage("test", instanceId, name, customLocation);
       expect(storage.storageLocation).toContain(`${customLocation}.json`);
       expect(storage.storageLocation).not.toContain(`${instanceId}.${name}.json`);
     });
@@ -80,7 +85,7 @@ describe("PersistentStorage", () => {
     test("sets instanceId and name properties", () => {
       const instanceId = uniqueName("inst");
       const name = uniqueName("name");
-      const storage = new PersistentStorage(instanceId, name);
+      const storage = new PersistentStorage("test", instanceId, name);
       expect(storage.instanceId).toBe(instanceId);
       expect(storage.name).toBe(name);
     });
@@ -99,7 +104,7 @@ describe("PersistentStorage", () => {
 
   describe("add()", () => {
     test("generates an ID when entry has no id", () => {
-      const storage = new PersistentStorage(uniqueName(), uniqueName());
+      const storage = new PersistentStorage("test", uniqueName(), uniqueName());
       const result = storage.add({ foo: "bar" });
       expect(result.id).toBeDefined();
       expect(typeof result.id).toBe("string");
@@ -107,13 +112,13 @@ describe("PersistentStorage", () => {
     });
 
     test("uses the provided id when entry has one", () => {
-      const storage = new PersistentStorage(uniqueName(), uniqueName());
+      const storage = new PersistentStorage("test", uniqueName(), uniqueName());
       const result = storage.add({ id: "custom-id-123", foo: "bar" });
       expect(result.id).toBe("custom-id-123");
     });
 
     test("sets createdAt and updatedAt timestamps", () => {
-      const storage = new PersistentStorage(uniqueName(), uniqueName());
+      const storage = new PersistentStorage("test", uniqueName(), uniqueName());
       const before = Date.now();
       const result = storage.add({ foo: "bar" });
       const after = Date.now();
@@ -125,14 +130,14 @@ describe("PersistentStorage", () => {
     });
 
     test("preserves entry properties", () => {
-      const storage = new PersistentStorage(uniqueName(), uniqueName());
+      const storage = new PersistentStorage("test", uniqueName(), uniqueName());
       const result = storage.add({ name: "test-entry", value: 42 });
       expect(result.name).toBe("test-entry");
       expect(result.value).toBe(42);
     });
 
     test("can add multiple entries", () => {
-      const storage = new PersistentStorage(uniqueName(), uniqueName());
+      const storage = new PersistentStorage("test", uniqueName(), uniqueName());
       storage.add({ id: "a", label: "first" });
       storage.add({ id: "b", label: "second" });
       const items = storage.list();
@@ -142,7 +147,7 @@ describe("PersistentStorage", () => {
 
   describe("get()", () => {
     test("retrieves an entry by ID", () => {
-      const storage = new PersistentStorage(uniqueName(), uniqueName());
+      const storage = new PersistentStorage("test", uniqueName(), uniqueName());
       storage.add({ id: "lookup-id", data: "hello" });
       const result = storage.get("lookup-id");
       expect(result).toBeDefined();
@@ -151,7 +156,7 @@ describe("PersistentStorage", () => {
     });
 
     test("returns undefined for a non-existent ID", () => {
-      const storage = new PersistentStorage(uniqueName(), uniqueName());
+      const storage = new PersistentStorage("test", uniqueName(), uniqueName());
       const result = storage.get("does-not-exist");
       expect(result).toBeUndefined();
     });
@@ -159,13 +164,13 @@ describe("PersistentStorage", () => {
 
   describe("list()", () => {
     test("returns an empty array when storage is empty", () => {
-      const storage = new PersistentStorage(uniqueName(), uniqueName());
+      const storage = new PersistentStorage("test", uniqueName(), uniqueName());
       const items = storage.list();
       expect(items).toEqual([]);
     });
 
     test("returns all entries as an array", () => {
-      const storage = new PersistentStorage(uniqueName(), uniqueName());
+      const storage = new PersistentStorage("test", uniqueName(), uniqueName());
       storage.add({ id: "x", val: 1 });
       storage.add({ id: "y", val: 2 });
       storage.add({ id: "z", val: 3 });
@@ -180,7 +185,7 @@ describe("PersistentStorage", () => {
 
   describe("update()", () => {
     test("merges new fields into an existing entry", () => {
-      const storage = new PersistentStorage(uniqueName(), uniqueName());
+      const storage = new PersistentStorage("test", uniqueName(), uniqueName());
       storage.add({ id: "upd-1", name: "original", extra: "keep" });
       const updated = storage.update({ id: "upd-1", name: "modified" } as any);
       expect(updated.name).toBe("modified");
@@ -188,7 +193,7 @@ describe("PersistentStorage", () => {
     });
 
     test("updates the updatedAt timestamp", () => {
-      const storage = new PersistentStorage(uniqueName(), uniqueName());
+      const storage = new PersistentStorage("test", uniqueName(), uniqueName());
       const added = storage.add({ id: "upd-2", name: "test" });
       const originalUpdatedAt = added.updatedAt;
 
@@ -198,7 +203,7 @@ describe("PersistentStorage", () => {
     });
 
     test("does not overwrite createdAt", () => {
-      const storage = new PersistentStorage(uniqueName(), uniqueName());
+      const storage = new PersistentStorage("test", uniqueName(), uniqueName());
       const added = storage.add({ id: "upd-3", name: "test" });
       const originalCreatedAt = added.createdAt;
 
@@ -207,7 +212,7 @@ describe("PersistentStorage", () => {
     });
 
     test("persists the update for subsequent get calls", () => {
-      const storage = new PersistentStorage(uniqueName(), uniqueName());
+      const storage = new PersistentStorage("test", uniqueName(), uniqueName());
       storage.add({ id: "upd-4", status: "pending" });
       storage.update({ id: "upd-4", status: "done" } as any);
       const result = storage.get("upd-4");
@@ -217,7 +222,7 @@ describe("PersistentStorage", () => {
 
   describe("delete()", () => {
     test("removes an entry by ID", () => {
-      const storage = new PersistentStorage(uniqueName(), uniqueName());
+      const storage = new PersistentStorage("test", uniqueName(), uniqueName());
       storage.add({ id: "del-1", data: "remove me" });
       expect(storage.get("del-1")).toBeDefined();
       storage.delete("del-1");
@@ -225,7 +230,7 @@ describe("PersistentStorage", () => {
     });
 
     test("does not affect other entries", () => {
-      const storage = new PersistentStorage(uniqueName(), uniqueName());
+      const storage = new PersistentStorage("test", uniqueName(), uniqueName());
       storage.add({ id: "keep", data: "stay" });
       storage.add({ id: "remove", data: "go" });
       storage.delete("remove");
@@ -234,14 +239,14 @@ describe("PersistentStorage", () => {
     });
 
     test("deleting a non-existent ID does not throw", () => {
-      const storage = new PersistentStorage(uniqueName(), uniqueName());
+      const storage = new PersistentStorage("test", uniqueName(), uniqueName());
       expect(() => storage.delete("phantom")).not.toThrow();
     });
   });
 
   describe("set()", () => {
     test("replaces all entries with the provided array", () => {
-      const storage = new PersistentStorage(uniqueName(), uniqueName());
+      const storage = new PersistentStorage("test", uniqueName(), uniqueName());
       storage.add({ id: "old", data: "should be gone" });
       storage.set([
         { id: "new1", data: "first" },
@@ -255,7 +260,7 @@ describe("PersistentStorage", () => {
     });
 
     test("setting an empty array clears all entries", () => {
-      const storage = new PersistentStorage(uniqueName(), uniqueName());
+      const storage = new PersistentStorage("test", uniqueName(), uniqueName());
       storage.add({ id: "a", data: "1" });
       storage.add({ id: "b", data: "2" });
       storage.set([]);
@@ -263,7 +268,7 @@ describe("PersistentStorage", () => {
     });
 
     test("returns the input entries array", () => {
-      const storage = new PersistentStorage(uniqueName(), uniqueName());
+      const storage = new PersistentStorage("test", uniqueName(), uniqueName());
       const entries = [{ id: "r1", data: "test" }] as any;
       const result = storage.set(entries);
       expect(result).toBe(entries);
@@ -273,13 +278,13 @@ describe("PersistentStorage", () => {
   describe("getGeneratedRandomId()", () => {
     test("returns a string prefixed with the storage name", () => {
       const name = uniqueName("mytype");
-      const storage = new PersistentStorage(uniqueName(), name);
+      const storage = new PersistentStorage("test", uniqueName(), name);
       const id = storage.getGeneratedRandomId();
       expect(id.startsWith(`${name}.`)).toBe(true);
     });
 
     test("generates unique IDs on successive calls", () => {
-      const storage = new PersistentStorage(uniqueName(), uniqueName());
+      const storage = new PersistentStorage("test", uniqueName(), uniqueName());
       const ids = new Set<string>();
       for (let i = 0; i < 50; i++) {
         ids.add(storage.getGeneratedRandomId());
@@ -288,7 +293,7 @@ describe("PersistentStorage", () => {
     });
 
     test("contains three dot-separated parts", () => {
-      const storage = new PersistentStorage(uniqueName(), uniqueName());
+      const storage = new PersistentStorage("test", uniqueName(), uniqueName());
       const id = storage.getGeneratedRandomId();
       const parts = id.split(".");
       expect(parts.length).toBe(3);
@@ -297,7 +302,7 @@ describe("PersistentStorage", () => {
 
   describe("writeDataFile() and readDataFile()", () => {
     test("writeDataFile writes JSON to the storage directory and returns the path", () => {
-      const storage = new PersistentStorage(uniqueName(), uniqueName());
+      const storage = new PersistentStorage("test", uniqueName(), uniqueName());
       const fileName = `test-output-${Date.now()}.json`;
       const data = { key: "value", count: 7 };
       const fullPath = storage.writeDataFile(fileName, data);
@@ -310,7 +315,7 @@ describe("PersistentStorage", () => {
     });
 
     test("readDataFile reads and parses a JSON file", () => {
-      const storage = new PersistentStorage(uniqueName(), uniqueName());
+      const storage = new PersistentStorage("test", uniqueName(), uniqueName());
       const fileName = `read-test-${Date.now()}.json`;
       const data = { items: [1, 2, 3] };
       const fullPath = storage.writeDataFile(fileName, data);
@@ -319,7 +324,7 @@ describe("PersistentStorage", () => {
     });
 
     test("readDataFile throws for a non-existent file", () => {
-      const storage = new PersistentStorage(uniqueName(), uniqueName());
+      const storage = new PersistentStorage("test", uniqueName(), uniqueName());
       expect(() => storage.readDataFile("/nonexistent/path.json")).toThrow();
     });
   });
@@ -327,7 +332,7 @@ describe("PersistentStorage", () => {
   describe("memory cache behavior", () => {
     test("second read hits the in-memory cache without re-reading from disk", () => {
       const fs = require("node:fs");
-      const storage = new PersistentStorage(uniqueName(), uniqueName());
+      const storage = new PersistentStorage("test", uniqueName(), uniqueName());
       storage.add({ id: "cached-entry", data: "test" });
 
       // Clear the readFileSync call count
@@ -343,7 +348,7 @@ describe("PersistentStorage", () => {
 
   describe("getData() edge cases", () => {
     test("returns empty object when file does not exist", () => {
-      const storage = new PersistentStorage(uniqueName(), uniqueName());
+      const storage = new PersistentStorage("test", uniqueName(), uniqueName());
       const items = storage.list();
       expect(items).toEqual([]);
     });
@@ -355,7 +360,7 @@ describe("PersistentStorage", () => {
       mockFiles.set(expectedPath, "{ invalid json !!!");
 
       const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-      const storage = new PersistentStorage(name1, name2);
+      const storage = new PersistentStorage("test", name1, name2);
       const items = storage.list();
       expect(items).toEqual([]);
       consoleSpy.mockRestore();
@@ -368,7 +373,7 @@ describe("PersistentStorage", () => {
       const existingData = { "entry-1": { id: "entry-1", name: "preloaded" } };
       mockFiles.set(expectedPath, JSON.stringify(existingData));
 
-      const storage = new PersistentStorage(name1, name2);
+      const storage = new PersistentStorage("test", name1, name2);
       const result = storage.get("entry-1");
       expect(result).toBeDefined();
       expect(result.name).toBe("preloaded");
@@ -465,11 +470,43 @@ describe("PersistentStorage", () => {
         await expect(getManagedTablesStorage("")).rejects.toThrow("connectionId is required");
       });
     });
+
+    describe("getCachedDatabasesStorage", () => {
+      test("returns a PersistentStorage instance", () => {
+        const storage = getCachedDatabasesStorage();
+        expect(storage).toBeInstanceOf(PersistentStorage);
+        expect(storage.storageLocation).toContain("cache.databases.json");
+      });
+    });
+
+    describe("getCachedTablesStorage", () => {
+      test("returns a PersistentStorage instance", () => {
+        const storage = getCachedTablesStorage();
+        expect(storage).toBeInstanceOf(PersistentStorage);
+        expect(storage.storageLocation).toContain("cache.tables.json");
+      });
+    });
+
+    describe("getCachedColumnsStorage", () => {
+      test("returns a PersistentStorage instance", () => {
+        const storage = getCachedColumnsStorage();
+        expect(storage).toBeInstanceOf(PersistentStorage);
+        expect(storage.storageLocation).toContain("cache.columns.json");
+      });
+    });
+
+    describe("getCachedCodeSnippetsStorage", () => {
+      test("returns a PersistentStorage instance", () => {
+        const storage = getCachedCodeSnippetsStorage();
+        expect(storage).toBeInstanceOf(PersistentStorage);
+        expect(storage.storageLocation).toContain("cache.code-snippets.json");
+      });
+    });
   });
 
   describe("add() with existing ID overwrites", () => {
     test("adding an entry with the same ID overwrites the previous entry", () => {
-      const storage = new PersistentStorage(uniqueName(), uniqueName());
+      const storage = new PersistentStorage("test", uniqueName(), uniqueName());
       storage.add({ id: "dup", version: 1 });
       storage.add({ id: "dup", version: 2 });
       const result = storage.get("dup");
@@ -478,9 +515,15 @@ describe("PersistentStorage", () => {
     });
   });
 
+  describe("barrel re-export", () => {
+    test("PersistentStorage is the same class as PersistentStorageJsonFile", () => {
+      expect(PersistentStorage).toBe(PersistentStorageJsonFile);
+    });
+  });
+
   describe("CRUD integration", () => {
     test("full lifecycle: add, get, update, list, delete", () => {
-      const storage = new PersistentStorage(uniqueName(), uniqueName());
+      const storage = new PersistentStorage("test", uniqueName(), uniqueName());
 
       // Add
       const entry = storage.add({ id: "lifecycle-1", status: "new", priority: 5 });

@@ -15,7 +15,6 @@ import SchemaSearchModal from "src/frontend/components/SchemaSearchModal";
 import SessionSelectionForm from "src/frontend/components/SessionSelectionForm";
 import Settings, { ChangeSoftDeleteInput } from "src/frontend/components/Settings";
 import { downloadText } from "src/frontend/data/file";
-import { getRandomSessionId } from "src/frontend/data/session";
 import { useActionDialogs } from "src/frontend/hooks/useActionDialogs";
 import {
   useDeleteConnection,
@@ -541,9 +540,8 @@ export default function MissionControl() {
       }
 
       const newSession = await upsertSession({
-        id: getRandomSessionId(),
         name: newSessionName,
-      });
+      } as any);
 
       if (!newSession) {
         return;
