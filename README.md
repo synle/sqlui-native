@@ -130,6 +130,12 @@ Settings can be accessed via the top right menu icon. It allows you to set up pr
 
 ![image](https://user-images.githubusercontent.com/3792401/167707497-82546e72-4a7f-4724-bf1e-8c36836d685d.png)
 
+### SQLite-based Storage
+
+Application data (connections, queries, sessions, settings, caches) is stored in a single SQLite database file (`sqlui-native-storage.db`) in the app data directory. This makes import/export simpler compared to the previous approach of many individual JSON files.
+
+On first launch after upgrading, existing JSON storage files are automatically migrated into the SQLite database. The original JSON files are moved to a `backup/` subdirectory (not deleted) so you can restore them if needed by moving them back to the parent directory.
+
 ### Data Migration
 
 If you happens to work with different database engine, there's a chance you want to move data from one engine to another engine. You can use `Data Migration` to craft a query to pull in data from the old engine and select a destination to generate the new schema / data for the new engine.

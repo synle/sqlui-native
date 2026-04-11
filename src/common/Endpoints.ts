@@ -13,9 +13,11 @@ import {
   getCachedSchema,
   listAllCachedColumns,
 } from "src/common/adapters/DataAdapterFactory";
+import fs from "node:fs";
 import {
   getConnectionsStorage,
   getDataSnapshotStorage,
+  getDbFilePath,
   getFolderItemsStorage,
   getManagedDatabasesStorage,
   getManagedTablesStorage,
@@ -191,6 +193,22 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
       isElectron: !expressAppContext,
       ...settingsData,
     });
+  });
+
+  //=========================================================================
+  // backup api endpoints
+  //=========================================================================
+  addDataEndpoint("get", "/api/backup/database", async (_req, res) => {
+    const dbPath = getDbFilePath();
+    if (!fs.existsSync(dbPath)) {
+      res.status(404).json({ error: "Database file not found" });
+      return;
+    }
+    const fileName = `sqlui-native-backup-${new Date().toISOString().replace(/[:.]/g, "-")}.db`;
+    res.setHeader("Content-Disposition", `attachment; filename="${fileName}"`);
+    res.setHeader("Content-Type", "application/octet-stream");
+    const fileBuffer = fs.readFileSync(dbPath);
+    res.status(200).send(fileBuffer);
   });
 
   //=========================================================================

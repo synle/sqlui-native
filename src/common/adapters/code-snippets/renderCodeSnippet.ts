@@ -2,7 +2,7 @@
 
 import Mustache from "mustache";
 import { version as appVersion } from "../../../package.json";
-import { PersistentStorage } from "src/common/PersistentStorage";
+import { getCachedCodeSnippetsStorage } from "src/common/PersistentStorage";
 
 // Bundled .mustache templates imported as raw strings (offline fallback)
 import bundledJavascriptMysql from "src/common/adapters/code-snippets/templates/javascript.mysql.mustache?raw";
@@ -142,7 +142,7 @@ type TemplateCache = {
 };
 
 /** Persistent storage for caching fetched templates to disk. */
-const templateCacheStorage = new PersistentStorage<TemplateCache>("cache", "code-snippets", "cache.code-snippets");
+const templateCacheStorage = getCachedCodeSnippetsStorage();
 
 /** Cache entry ID — single entry stores all templates. */
 const CACHE_ID = "templates";
