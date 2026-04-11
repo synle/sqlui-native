@@ -892,9 +892,18 @@ jobs:
           echo "| Package + Upload | $(format_duration $PACKAGE_DUR) |" >> $GITHUB_STEP_SUMMARY
           echo "| **Total** | **$(format_duration $TOTAL_DUR)** |" >> $GITHUB_STEP_SUMMARY
 
+  tests:
+    needs: [code_format]
+    if: ${{ always() && needs.code_format.result == 'success' }}
+    uses: ./.github/workflows/integration-test.yml
+    with:
+      node_version: ${{ inputs.node_version || '24' }}
+      run_e2e: true
+    secrets: inherit
+
   roll_back_on_failure_or_canceled:
-    if: ${{ always() && inputs.release_mode == 'production' && needs.create_release.result == 'success' && (needs.dist_windows_x64.result == 'failure' || needs.dist_windows_arm64.result == 'failure' || needs.dist_macos_arm64.result == 'failure' || needs.dist_macos_intel_x64.result == 'failure' || needs.dist_linux.result == 'failure' || needs.dist_windows_x64.result == 'cancelled' || needs.dist_windows_arm64.result == 'cancelled' || needs.dist_macos_arm64.result == 'cancelled' || needs.dist_macos_intel_x64.result == 'cancelled' || needs.dist_linux.result == 'cancelled') }}
-    needs: [create_release, dist_windows_x64, dist_windows_arm64, dist_macos_arm64, dist_macos_intel_x64, dist_linux]
+    if: ${{ always() && inputs.release_mode == 'production' && needs.create_release.result == 'success' && (needs.tests.result == 'failure' || needs.dist_windows_x64.result == 'failure' || needs.dist_windows_arm64.result == 'failure' || needs.dist_macos_arm64.result == 'failure' || needs.dist_macos_intel_x64.result == 'failure' || needs.dist_linux.result == 'failure' || needs.tests.result == 'cancelled' || needs.dist_windows_x64.result == 'cancelled' || needs.dist_windows_arm64.result == 'cancelled' || needs.dist_macos_arm64.result == 'cancelled' || needs.dist_macos_intel_x64.result == 'cancelled' || needs.dist_linux.result == 'cancelled') }}
+    needs: [create_release, tests, dist_windows_x64, dist_windows_arm64, dist_macos_arm64, dist_macos_intel_x64, dist_linux]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -908,7 +917,7 @@ jobs:
         shell: bash
         run: |
           TAG="${{ needs.create_release.outputs.dist_version }}"
-          JOB_FAILED=${{ needs.dist_windows_x64.result == 'failure' || needs.dist_windows_arm64.result == 'failure' || needs.dist_macos_arm64.result == 'failure' || needs.dist_macos_intel_x64.result == 'failure' || needs.dist_linux.result == 'failure' || needs.dist_windows_x64.result == 'cancelled' || needs.dist_windows_arm64.result == 'cancelled' || needs.dist_macos_arm64.result == 'cancelled' || needs.dist_macos_intel_x64.result == 'cancelled' || needs.dist_linux.result == 'cancelled' }}
+          JOB_FAILED=${{ needs.tests.result == 'failure' || needs.dist_windows_x64.result == 'failure' || needs.dist_windows_arm64.result == 'failure' || needs.dist_macos_arm64.result == 'failure' || needs.dist_macos_intel_x64.result == 'failure' || needs.dist_linux.result == 'failure' || needs.tests.result == 'cancelled' || needs.dist_windows_x64.result == 'cancelled' || needs.dist_windows_arm64.result == 'cancelled' || needs.dist_macos_arm64.result == 'cancelled' || needs.dist_macos_intel_x64.result == 'cancelled' || needs.dist_linux.result == 'cancelled' }}
 
           if [ "$JOB_FAILED" = "true" ]; then
             echo "::warning::Release $TAG has failing jobs — deleting"
@@ -950,7 +959,7 @@ jobs:
 
   publish:
     if: ${{ always() && inputs.release_mode == 'production' && needs.roll_back_on_failure_or_canceled.result == 'skipped' }}
-    needs: [create_release, roll_back_on_failure_or_canceled, dist_windows_x64, dist_windows_arm64, dist_macos_arm64, dist_macos_intel_x64, dist_linux]
+    needs: [create_release, roll_back_on_failure_or_canceled, tests, dist_windows_x64, dist_windows_arm64, dist_macos_arm64, dist_macos_intel_x64, dist_linux]
     runs-on: ubuntu-latest
     steps:
       - name: Record job start time
