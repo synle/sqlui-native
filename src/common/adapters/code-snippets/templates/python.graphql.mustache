@@ -1,0 +1,32 @@
+# pip install requests
+import requests
+import json
+
+endpoint = '{{{endpoint}}}'
+query = '''{{{query}}}'''
+{{#hasVariables}}
+variables = {{{variablesJson}}}
+{{/hasVariables}}
+headers = {{{headersJson}}}
+
+payload = {
+    'query': query,
+    {{#hasVariables}}
+    'variables': variables,
+    {{/hasVariables}}
+    {{#operationName}}
+    'operationName': '{{{operationName}}}',
+    {{/operationName}}
+}
+
+try:
+    response = requests.post(endpoint, json=payload, headers=headers)
+    result = response.json()
+
+    if 'errors' in result:
+        print(f'GraphQL Errors: {json.dumps(result["errors"], indent=2)}')
+
+    if 'data' in result:
+        print(f'Data: {json.dumps(result["data"], indent=2)}')
+except requests.RequestException as err:
+    print(f'Request failed: {err}')

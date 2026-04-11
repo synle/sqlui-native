@@ -240,6 +240,10 @@ describe("Code snippets through DataScriptFactory", () => {
       dialect: "sfdc" as any,
       connection: 'sfdc://{"username":"u","password":"p","securityToken":"t","loginUrl":"https://login.salesforce.com"}',
     },
+    {
+      dialect: "rest" as any,
+      connection: 'rest://{"HOST":"https://httpbin.org"}',
+    },
   ];
 
   const languages = ["javascript" as any, "python" as any, "java" as any];
@@ -256,4 +260,34 @@ describe("Code snippets through DataScriptFactory", () => {
       });
     }
   }
+
+  describe("REST API code snippets generate real code from curl", () => {
+    const restConnection = { dialect: "rest" as any, connection: 'rest://{"HOST":"https://httpbin.org"}', id: "c1", name: "Test" };
+    const curlQuery = {
+      sql: "curl -X POST 'https://httpbin.org/post' -H 'Content-Type: application/json' -d '{\"key\":\"value\"}'",
+      databaseId: "db1",
+      tableId: "t1",
+    };
+
+    test("javascript snippet contains fetch and URL", () => {
+      const snippet = getCodeSnippet(restConnection as any, curlQuery as any, "javascript" as any);
+      expect(snippet).toContain("fetch");
+      expect(snippet).toContain("https://httpbin.org/post");
+      expect(snippet).toContain("POST");
+    });
+
+    test("python snippet contains requests and URL", () => {
+      const snippet = getCodeSnippet(restConnection as any, curlQuery as any, "python" as any);
+      expect(snippet).toContain("requests");
+      expect(snippet).toContain("https://httpbin.org/post");
+      expect(snippet).toContain("post");
+    });
+
+    test("java snippet contains HttpClient and URL", () => {
+      const snippet = getCodeSnippet(restConnection as any, curlQuery as any, "java" as any);
+      expect(snippet).toContain("HttpClient");
+      expect(snippet).toContain("https://httpbin.org/post");
+      expect(snippet).toContain("POST");
+    });
+  });
 });

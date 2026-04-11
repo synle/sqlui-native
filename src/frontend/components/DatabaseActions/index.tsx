@@ -76,6 +76,7 @@ export default function DatabaseActions(props: DatabaseActionsProps): JSX.Elemen
   const isLoading = loadingConnection;
 
   const isRestApi = dialect === "rest";
+  const isGraphQL = dialect === "graphql";
   const isManagedMetadata = isDialectSupportManagedMetadata(dialect);
 
   let actions: SqlAction.Output[] = [];
@@ -205,7 +206,7 @@ export default function DatabaseActions(props: DatabaseActionsProps): JSX.Elemen
           },
         ]
       : []),
-    ...(isRestApi
+    ...(isRestApi || isGraphQL
       ? []
       : [
           getDivider(),

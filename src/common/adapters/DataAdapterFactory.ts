@@ -12,6 +12,8 @@ import RedisDataAdapter from "src/common/adapters/RedisDataAdapter/index";
 import RedisDataAdapterScripts from "src/common/adapters/RedisDataAdapter/scripts";
 import createRelationalDataAdapter from "src/common/adapters/RelationalDataAdapter/index";
 import RelationalDataAdapterScripts from "src/common/adapters/RelationalDataAdapter/scripts";
+import GraphQLDataAdapter from "src/common/adapters/GraphQLDataAdapter/index";
+import GraphQLDataAdapterScripts from "src/common/adapters/GraphQLDataAdapter/scripts";
 import RestApiDataAdapter from "src/common/adapters/RestApiDataAdapter/index";
 import RestApiDataAdapterScripts from "src/common/adapters/RestApiDataAdapter/scripts";
 import SalesforceDataAdapter from "src/common/adapters/SalesforceDataAdapter/index";
@@ -369,6 +371,8 @@ export function getDataAdapter(connection: string) {
       adapter = new AzureTableStorageAdapter(connection);
     } else if (SalesforceDataAdapterScripts.isDialectSupported(targetDialect)) {
       adapter = new SalesforceDataAdapter(connection);
+    } else if (GraphQLDataAdapterScripts.isDialectSupported(targetDialect)) {
+      adapter = new GraphQLDataAdapter(connection);
     } else if (RestApiDataAdapterScripts.isDialectSupported(targetDialect)) {
       adapter = new RestApiDataAdapter(connection);
     }
@@ -533,7 +537,7 @@ export async function getDatabases(sessionId: string, connectionId: string) {
       const dbStorage = await getManagedDatabasesStorage(connectionId);
       let managed = await dbStorage.list();
       // Auto-seed a folder if storage is empty (e.g., REST API connection created before this feature)
-      if (managed.length === 0 && dialect === "rest") {
+      if (managed.length === 0 && (dialect === "rest" || dialect === "graphql")) {
         await dbStorage.add({ id: "Folder 1", name: "Folder 1", connectionId });
         managed = await dbStorage.list();
       }
