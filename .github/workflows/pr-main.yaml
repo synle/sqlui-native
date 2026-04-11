@@ -7,7 +7,7 @@ on:
     inputs:
       node_version:
         description: "Node.js version"
-        default: "20"
+        default: "24"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -20,5 +20,4 @@ jobs:
       node_version: ${{ inputs.node_version }}
       release_mode: "no_release"
       run_format: true
-    secrets:
-      TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    secrets: inherit
