@@ -173,8 +173,14 @@ function MainConnectionForm(props: MainConnectionFormProps): JSX.Element | null 
     try {
       if (files && files.length > 0) {
         const [file] = files;
-        const { path, name } = file;
-        const pathToUse = path || name; // this is a fallback for mocked webserver
+        let pathToUse = file.name; // fallback for mocked webserver
+        try {
+          // @ts-ignore - webUtils is only available in Electron renderer
+          const { webUtils } = window.requireElectron("electron");
+          pathToUse = webUtils.getPathForFile(file) || file.name;
+        } catch (_err) {
+          // not in Electron, use file.name
+        }
         props.setConnection(`sqlite://${pathToUse}`);
       }
     } catch (err) {
