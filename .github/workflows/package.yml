@@ -34,6 +34,7 @@ env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
   ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
   EXPECTED_RELEASE_ASSETS: 10
+  PLAYWRIGHT_BROWSERS_PATH: ${{ github.workspace }}/.playwright-browsers
 
 jobs:
   code_format:
@@ -191,6 +192,12 @@ jobs:
       - name: Build application
         run: bash scripts/build.sh
 
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ${{ github.workspace }}/.playwright-browsers
+          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+
       - name: Install Playwright browsers for smoke test
         run: npx playwright install --with-deps chromium
 
@@ -303,6 +310,12 @@ jobs:
       - name: Build application
         run: bash scripts/build.sh
 
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ${{ github.workspace }}/.playwright-browsers
+          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+
       - name: Install Playwright browsers for smoke test
         run: npx playwright install --with-deps chromium
 
@@ -391,6 +404,12 @@ jobs:
 
       - name: Build application
         run: bash scripts/build.sh
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ${{ github.workspace }}/.playwright-browsers
+          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
 
       - name: Install Playwright browsers for smoke test
         run: npx playwright install --with-deps chromium
@@ -481,6 +500,12 @@ jobs:
       - name: Build application
         run: bash scripts/build.sh
 
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ${{ github.workspace }}/.playwright-browsers
+          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+
       - name: Install Playwright browsers for smoke test
         run: npx playwright install --with-deps chromium
 
@@ -569,6 +594,12 @@ jobs:
 
       - name: Build application
         run: bash scripts/build.sh
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ${{ github.workspace }}/.playwright-browsers
+          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
 
       - name: Install Playwright browsers for smoke test
         run: npx playwright install --with-deps chromium
