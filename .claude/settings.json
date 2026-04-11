@@ -20,26 +20,14 @@
         ]
       }
     ],
-    "PostToolUse": [
+    "Stop": [
       {
-        "matcher": "Write|Edit",
         "hooks": [
           {
             "type": "command",
-            "command": "npm run format 2>/dev/null || true",
-            "timeout": 60,
-            "statusMessage": "Running prettier..."
-          }
-        ]
-      },
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "jq -r '.tool_input.command' | grep -q 'git commit' && npm run validate || true",
+            "command": "git diff --quiet && git diff --cached --quiet || npm run validate 2>&1 | tail -20",
             "timeout": 600,
-            "statusMessage": "Running validate before commit..."
+            "description": "Run validate if there are uncommitted changes"
           }
         ]
       }
