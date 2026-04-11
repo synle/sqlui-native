@@ -245,7 +245,24 @@ Additional hooks: `useToaster` (toast notifications with history), `useClientSid
 
 ### Persistent Storage
 
-`PersistentStorage<T>` stores data as JSON files in the user's app data directory (`~/Library/Application Support/sqlui-native/` on Mac, `%APPDATA%/sqlui-native` on Windows).
+The storage layer has two backends behind the `IPersistentStorage<T>` interface (`src/common/IPersistentStorage.ts`):
+
+- **`PersistentStorageJsonFile<T>`** (deprecated) — Legacy JSON file backend. Each instance maps to a separate `.json` file in the app data directory (`~/Library/Application Support/sqlui-native/` on Mac, `%APPDATA%/sqlui-native` on Windows).
+- **`PersistentStorageSqlite<T>`** — SQLite backend. All data lives in a single `sqlui-native-storage.db` file with separate tables per data type. No `id` duplication — the `id` column is the source of truth; the `data` JSON column does not contain `id`. On read, `id` is re-injected from the column.
+
+**Constructor:** `constructor(table: string, instanceId: string, name: string, storageLocation?: string)` — `table` is the SQLite table name (ignored by JSON backend).
+
+**`PersistentStorage`** is re-exported from `src/common/PersistentStorage.ts` as an alias for `PersistentStorageJsonFile` for backward compatibility.
+
+**Factory functions** in `src/common/PersistentStorageJsonFile.ts` create pre-configured instances: `getConnectionsStorage`, `getQueryStorage`, `getSessionsStorage`, `getFolderItemsStorage`, `getDataSnapshotStorage`, `getSettingsStorage`, `getManagedDatabasesStorage`, `getManagedTablesStorage`, `getCachedDatabasesStorage`, `getCachedTablesStorage`, `getCachedColumnsStorage`, `getCachedCodeSnippetsStorage`.
+
+**Never instantiate `PersistentStorage` / `PersistentStorageJsonFile` / `PersistentStorageSqlite` directly.** Always use the factory functions above. They centralize the table name mapping and ensure consistency across backends. When adding a new storage type, create a new factory function in `PersistentStorageJsonFile.ts` and re-export it from `PersistentStorage.ts`.
+
+**SQLite table mapping** (snake_case, singular): `connection`, `query`, `session`, `folder_item`, `data_snapshot`, `setting`, `managed_database`, `managed_table`, `cached_database`, `cached_table`, `cached_column`, `cached_code_snippet`.
+
+**Storage version tracking:** A `database_storage_version` entry in the `setting` table tracks the schema version. Missing = legacy JSON (v0), `1` = first SQLite version. Used by `PersistentStorageMigration.ts` to determine if migration is needed.
+
+**Migration** (`src/common/PersistentStorageMigration.ts`): On app startup, `runMigration()` checks the storage version. If legacy JSON files exist, it reads them, inserts entries into the corresponding SQLite tables, and moves the `.json` files to `{storageDir}/backup/`. Users can restore by moving files back from `backup/`.
 
 ### Shared Utilities
 

@@ -18,22 +18,20 @@ import RestApiDataAdapter from "src/common/adapters/RestApiDataAdapter/index";
 import RestApiDataAdapterScripts from "src/common/adapters/RestApiDataAdapter/scripts";
 import SalesforceDataAdapter from "src/common/adapters/SalesforceDataAdapter/index";
 import SalesforceDataAdapterScripts from "src/common/adapters/SalesforceDataAdapter/scripts";
-import PersistentStorage, { getManagedDatabasesStorage, getManagedTablesStorage } from "src/common/PersistentStorage";
+import {
+  getCachedColumnsStorage,
+  getCachedDatabasesStorage,
+  getCachedTablesStorage,
+  getConnectionsStorage,
+  getManagedDatabasesStorage,
+  getManagedTablesStorage,
+} from "src/common/PersistentStorage";
 import { safeDisconnect } from "src/common/utils/errorUtils";
 import { SqluiCore } from "typings";
 
-/** Cache entry shape for storing database metadata on disk. */
-type DatabaseCacheEntry = { id: string; data: SqluiCore.DatabaseMetaData[]; timestamp: number };
-
-/** Cache entry shape for storing table metadata on disk. */
-type TableCacheEntry = { id: string; data: SqluiCore.TableMetaData[]; timestamp: number };
-
-/** Cache entry shape for storing column metadata on disk. */
-type ColumnCacheEntry = { id: string; data: SqluiCore.ColumnMetaData[]; timestamp: number };
-
-const databaseCacheStorage = new PersistentStorage<DatabaseCacheEntry>("cache", "databases", "cache.databases");
-const tableCacheStorage = new PersistentStorage<TableCacheEntry>("cache", "tables", "cache.tables");
-const columnCacheStorage = new PersistentStorage<ColumnCacheEntry>("cache", "columns", "cache.columns");
+const databaseCacheStorage = getCachedDatabasesStorage();
+const tableCacheStorage = getCachedTablesStorage();
+const columnCacheStorage = getCachedColumnsStorage();
 
 /** Tracks in-flight background refreshes to prevent duplicate concurrent fetches. */
 const pendingRefreshes = new Set<string>();
@@ -524,7 +522,7 @@ export function resetConnectionMetaData(connection: SqluiCore.CoreConnectionProp
  * @returns Sorted array of database metadata.
  */
 export async function getDatabases(sessionId: string, connectionId: string) {
-  const connection = await new PersistentStorage<SqluiCore.ConnectionProps>(sessionId, "connection").get(connectionId);
+  const connection = (await getConnectionsStorage(sessionId)).get(connectionId);
 
   if (!connection) {
     throw new Error(`Connection not found: ${connectionId}`);
@@ -592,7 +590,7 @@ export async function getDatabases(sessionId: string, connectionId: string) {
  * @returns Sorted array of table metadata.
  */
 export async function getTables(sessionId: string, connectionId: string, databaseId: string) {
-  const connection = await new PersistentStorage<SqluiCore.ConnectionProps>(sessionId, "connection").get(connectionId);
+  const connection = (await getConnectionsStorage(sessionId)).get(connectionId);
 
   if (!connection) {
     throw new Error(`Connection not found: ${connectionId}`);
@@ -712,7 +710,7 @@ export async function getColumns(sessionId: string, connectionId: string, databa
 
   // Background refresh: fetch fresh data and update the cache for next call
   const refreshCache = async () => {
-    const connection = await new PersistentStorage<SqluiCore.ConnectionProps>(sessionId, "connection").get(connectionId);
+    const connection = (await getConnectionsStorage(sessionId)).get(connectionId);
     const engine = getDataAdapter(connection.connection);
     try {
       const columns = cleanAndSortColumns(await engine.getColumns(tableId, databaseId));

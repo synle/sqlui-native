@@ -11,7 +11,6 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import TextField from "@mui/material/TextField";
 import { useCommands } from "src/frontend/components/MissionControl";
-import { getRandomSessionId } from "src/frontend/data/session";
 import { useGetCurrentSession, useGetSessions, useSelectSession, useUpsertSession, useDeleteSession } from "src/frontend/hooks/useSession";
 import { useActionDialogs } from "src/frontend/hooks/useActionDialogs";
 import { useNavigate } from "src/frontend/utils/commonUtils";
@@ -57,9 +56,8 @@ export default function SessionSelectionForm(props: SessionSelectionFormProps): 
     const newSessionName = (formEl.querySelector("input") as HTMLInputElement).value;
 
     const newSession = await upsertSession({
-      id: getRandomSessionId(),
       name: newSessionName,
-    });
+    } as any);
 
     selectSession(newSession.id);
   };
