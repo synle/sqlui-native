@@ -43,6 +43,20 @@ npx vitest run --config vitest.integration.config.ts src/common/adapters/Relatio
 
 The app runs in **Electron mode** (`npm start`) or **mocked server mode** (`npm run dev`). Both share the same backend code in `src/common/`. In Electron mode, the renderer communicates with the main process via IPC. In mocked server mode, an Express server on port 3001 serves the same endpoints over HTTP.
 
+### Frontend/Backend Module Boundary
+
+**The frontend bundle (`src/frontend/`) must NEVER import modules that depend on Node.js APIs (`fs`, `path`, `electron`, `better-sqlite3`, etc.).** Vite builds the frontend for the browser — Node.js modules are either stubbed (breaking at runtime) or unbundleable (native addons).
+
+Forbidden imports from frontend-reachable code:
+
+- `PersistentStorage.ts`, `PersistentStorageJsonFile.ts`, `PersistentStorageSqlite.ts`, `PersistentStorageMigration.ts`
+- `electron`, `node:fs`, `node:path`, `better-sqlite3`
+- Any module in `src/common/` that transitively imports the above
+
+**Frontend-reachable `src/common/` code** includes `DataScriptFactory.ts`, all adapter `scripts.ts` files, and anything they import (e.g., `renderCodeSnippet.ts`). These run on both frontend and backend — they must be pure (no I/O, no Node.js APIs).
+
+**If the frontend needs data from storage**, create an API endpoint in `Endpoints.ts` and call it via `ProxyApi`. Never import storage modules into frontend-reachable code.
+
 ### Naming Convention
 
 All property names in type definitions and data models use **camelCase** — never snake_case. This applies to all fields including timestamps (`createdAt`, `updatedAt`), identifiers (`connectionId`, `sessionId`), and flags (`allowNull`, `primaryKey`). Follow this convention when adding new properties.
