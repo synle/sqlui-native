@@ -19,6 +19,10 @@ on:
         type: string
         default: ""
         description: "Release notes for the GitHub release"
+      run_integration:
+        type: boolean
+        default: true
+        description: "Whether to run integration tests"
     secrets:
       TOKEN:
         required: false
@@ -730,6 +734,7 @@ jobs:
     with:
       node_version: ${{ inputs.node_version || '24' }}
       run_e2e: true
+      run_integration: ${{ inputs.run_integration }}
     secrets: inherit
 
   roll_back_on_failure_or_canceled:

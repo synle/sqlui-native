@@ -31,4 +31,5 @@ jobs:
       release_mode: "production"
       run_format: false
       release_notes: ${{ inputs.message }}
+      run_integration: true
     secrets: inherit

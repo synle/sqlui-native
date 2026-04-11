@@ -20,4 +20,5 @@ jobs:
       node_version: ${{ inputs.node_version }}
       release_mode: "no_release"
       run_format: true
+      run_integration: false
     secrets: inherit
