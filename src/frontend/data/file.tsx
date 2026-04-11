@@ -34,11 +34,8 @@ export function downloadJSON(downloadFileName: string, data) {
  * @param data - The array of objects to convert to CSV.
  */
 export function downloadCsv(downloadFileName: string, data) {
-  CsvEngine.json2csv(data, (err, newCsv) => {
-    if (!err && newCsv) {
-      downloadText(downloadFileName, newCsv, "text/csv");
-    }
-  });
+  const csv = CsvEngine.json2csv(data);
+  downloadText(downloadFileName, csv, "text/csv");
 }
 
 /**

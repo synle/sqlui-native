@@ -323,7 +323,7 @@ export default function CommandPalette(props: CommandPaletteProps): React.JSX.El
     let newOptions: Command[] = newAllOptions;
 
     if (text) {
-      newOptions = fuzzysort.go(text, newOptions, { key: "label", allowTypo: false }).map((result) => result.obj);
+      newOptions = fuzzysort.go(text, newOptions, { key: "label" }).map((result) => result.obj);
     }
 
     setOptions(newOptions);
