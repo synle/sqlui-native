@@ -504,7 +504,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     // Seed an initial folder for REST API connections
     try {
       const dialect = getDataAdapter(newConnection.connection).dialect;
-      if (dialect === "rest") {
+      if (dialect === "rest" || dialect === "graphql") {
         const dbStorage = await getManagedDatabasesStorage(newConnection.id);
         await dbStorage.add({ id: "Folder 1", name: "Folder 1", connectionId: newConnection.id });
       }

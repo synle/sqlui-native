@@ -289,11 +289,14 @@ function QueryBox(props: QueryBoxProps): JSX.Element | null {
   const isLoading = loadingConnection;
   const isExecuting = executing;
   const isManagedMetadata = isDialectSupportManagedMetadata(selectedConnection?.dialect);
+  const isGraphQL = selectedConnection?.dialect === "graphql";
   const editorLanguageOptions = isManagedMetadata
-    ? [
-        { value: "shell", label: "Shell (curl)" },
-        { value: "javascript", label: "Javascript (fetch)" },
-      ]
+    ? isGraphQL
+      ? undefined
+      : [
+          { value: "shell", label: "Shell (curl)" },
+          { value: "javascript", label: "Javascript (fetch)" },
+        ]
     : undefined;
   const isSaveVisible = isManagedMetadata && !!query?.connectionId && !!query?.databaseId && !!query?.tableId;
   const isMigrationVisible = !!query?.connectionId && !!query?.databaseId;
@@ -303,11 +306,14 @@ function QueryBox(props: QueryBoxProps): JSX.Element | null {
   const connectionVariables: EditorVariable[] = useMemo(() => {
     if (!isManagedMetadata || !selectedConnection?.connection) return [];
     try {
-      const json = selectedConnection.connection.replace(/^(restapi|rest):\/\//, "");
+      const json = selectedConnection.connection.replace(/^(restapi|rest|graphql):\/\//, "");
       const config = json ? JSON.parse(json) : {};
       const vars: EditorVariable[] = [];
       if (config.HOST) {
         vars.push({ key: "HOST", value: config.HOST, enabled: true, source: "connection" });
+      }
+      if (config.ENDPOINT) {
+        vars.push({ key: "ENDPOINT", value: config.ENDPOINT, enabled: true, source: "connection" });
       }
       if (Array.isArray(config.variables)) {
         for (const v of config.variables) {
@@ -547,7 +553,13 @@ function QueryBox(props: QueryBoxProps): JSX.Element | null {
           id={query.id}
           className="CodeEditorBox__QueryBox"
           value={query.sql}
-          placeholder={isManagedMetadata ? `Enter curl or fetch() command` : `Enter SQL for ` + query.name}
+          placeholder={
+            isManagedMetadata
+              ? isGraphQL
+                ? `Enter GraphQL query or mutation`
+                : `Enter curl or fetch() command`
+              : `Enter SQL for ` + query.name
+          }
           onChange={onSqlQueryChange}
           language={language}
           languageOptions={editorLanguageOptions}

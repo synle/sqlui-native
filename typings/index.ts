@@ -30,7 +30,8 @@ export module SqluiCore {
     | "cosmosdb"
     | "aztable"
     | "sfdc"
-    | "rest";
+    | "rest"
+    | "graphql";
 
   /** Supported programming language modes for code generation. */
   export type LanguageMode = "javascript" | "python" | "java";
@@ -429,7 +430,7 @@ export module SqlAction {
     query?: string;
     description?: string;
     icon?: JSX.Element;
-    formatter?: "sql" | "js" | "shell";
+    formatter?: "sql" | "js" | "shell" | "graphql";
     /**
      * if true, will skip when we attempt to generate the guide docs
      * @type {[type]}
