@@ -8,6 +8,7 @@ import CodeEditorBox from "src/frontend/components/CodeEditorBox";
 import { DataTableWithJSONList } from "src/frontend/components/DataTable";
 import JsonFormatData from "src/frontend/components/JsonFormatData";
 import { useCommands } from "src/frontend/components/MissionControl";
+import GraphQLResultBox from "src/frontend/components/ResultBox/GraphQLResultBox";
 import RestApiResultBox from "src/frontend/components/ResultBox/RestApiResultBox";
 import Tabs from "src/frontend/components/Tabs";
 import Timer from "src/frontend/components/Timer";
@@ -69,6 +70,11 @@ export default function ResultBox(props: ResultBoxProps): JSX.Element | null {
 
   if (!queryResult) {
     return null;
+  }
+
+  // GraphQL responses get a dedicated result viewer
+  if (queryResult.meta?.isGraphQL && data && data.length > 0) {
+    return <GraphQLResultBox meta={queryResult.meta} raw={data} executionStart={query.executionStart} executionEnd={query.executionEnd} />;
   }
 
   // REST API responses get a dedicated result viewer

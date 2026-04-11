@@ -144,6 +144,16 @@ export function getSanitizedConnectionUrl(connectionString: string): string {
     }
   }
 
+  // Special handling for GraphQL connection strings (JSON format with ENDPOINT field).
+  if (input.startsWith("graphql://")) {
+    try {
+      const json = JSON.parse(input.replace(/^graphql:\/\//, ""));
+      if (json.ENDPOINT) return json.ENDPOINT;
+    } catch (_err) {
+      // fall through to default handling
+    }
+  }
+
   // Special handling for CosmosDB and Azure Table Storage connection strings,
   // which use a key=value;key=value format instead of standard URLs.
   // e.g. cosmosdb://AccountEndpoint=https://host:port;AccountKey=...

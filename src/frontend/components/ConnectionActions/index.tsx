@@ -44,6 +44,7 @@ export default function ConnectionActions(props: ConnectionActionsProps): JSX.El
 
   const { dialect, id: connectionId } = connection;
   const isRestApi = dialect === "rest";
+  const isGraphQL = dialect === "graphql";
   const isManagedMetadata = isDialectSupportManagedMetadata(dialect);
 
   const options: SqlAction.Output[] = [
@@ -111,7 +112,7 @@ export default function ConnectionActions(props: ConnectionActionsProps): JSX.El
           data,
         }),
     },
-    ...(isRestApi
+    ...(isRestApi || isGraphQL
       ? []
       : [
           {
