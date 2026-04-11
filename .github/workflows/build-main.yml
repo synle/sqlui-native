@@ -25,4 +25,5 @@ jobs:
       release_mode: "draft"
       run_format: true
       release_notes: "Beta"
+      run_integration: false
     secrets: inherit

@@ -11,6 +11,9 @@ on:
       run_e2e:
         type: boolean
         default: true
+      run_integration:
+        type: boolean
+        default: true
   workflow_dispatch:
     inputs:
       node_version:
@@ -18,6 +21,10 @@ on:
         default: "24"
       run_e2e:
         description: "Run E2E (Playwright) tests"
+        type: boolean
+        default: true
+      run_integration:
+        description: "Run integration tests"
         type: boolean
         default: true
 
@@ -43,13 +50,17 @@ jobs:
       - name: Check for changes in the last 24 hours
         id: check
         run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            echo "has_changes=true" >> "$GITHUB_OUTPUT"
-          elif [ -n "$(git log --since='24 hours ago' --oneline)" ]; then
-            echo "has_changes=true" >> "$GITHUB_OUTPUT"
+          if [ "${{ github.event_name }}" = "schedule" ]; then
+            # Only gate on recent changes for scheduled (cron) runs
+            if [ -n "$(git log --since='24 hours ago' --oneline)" ]; then
+              echo "has_changes=true" >> "$GITHUB_OUTPUT"
+            else
+              echo "No changes in the last 24 hours, skipping."
+              echo "has_changes=false" >> "$GITHUB_OUTPUT"
+            fi
           else
-            echo "No changes in the last 24 hours, skipping."
-            echo "has_changes=false" >> "$GITHUB_OUTPUT"
+            # Always run for push, workflow_dispatch, and workflow_call
+            echo "has_changes=true" >> "$GITHUB_OUTPUT"
           fi
 
   # ---- Unit Tests ----
@@ -190,7 +201,7 @@ jobs:
   # ---- Integration Tests ----
   integration_test:
     needs: check
-    if: needs.check.outputs.has_changes == 'true'
+    if: ${{ needs.check.outputs.has_changes == 'true' && inputs.run_integration != false }}
     runs-on: ubuntu-latest
     timeout-minutes: 60
     permissions:
