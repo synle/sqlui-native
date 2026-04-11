@@ -48,6 +48,31 @@ export class ProxyApi {
   }
 
   /**
+   * Downloads the SQLite database backup as a blob and triggers a browser download.
+   * @returns A promise that resolves when the download is triggered.
+   */
+  static async backupDatabase() {
+    const response = await fetch(`/api/backup/database`, {
+      headers: { "sqlui-native-session-id": getCurrentSessionId() },
+    });
+    if (!response.ok) {
+      throw new Error("Failed to download database backup");
+    }
+    const blob = await response.blob();
+    const url = URL.createObjectURL(blob);
+    const contentDisposition = response.headers.get("Content-Disposition") || "";
+    const fileNameMatch = contentDisposition.match(/filename="(.+)"/);
+    const fileName = fileNameMatch ? fileNameMatch[1] : `sqlui-native-backup-${Date.now()}.db`;
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  }
+
+  /**
    * Updates server configuration settings.
    * @param settings - The settings to apply.
    * @returns The updated server configs.

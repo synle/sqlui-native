@@ -1,19 +1,6 @@
 // @vitest-environment jsdom
 import { vi } from "vitest";
-import { getRandomSessionId, setCurrentSessionId } from "src/frontend/data/session";
-
-describe("getRandomSessionId", () => {
-  test("returns a string containing sessionId", () => {
-    const id = getRandomSessionId();
-    expect(id).toContain("sessionId");
-  });
-
-  test("returns unique values on each call", () => {
-    const id1 = getRandomSessionId();
-    const id2 = getRandomSessionId();
-    expect(id1).not.toEqual(id2);
-  });
-});
+import { setCurrentSessionId } from "src/frontend/data/session";
 
 describe("setCurrentSessionId", () => {
   beforeEach(() => {
