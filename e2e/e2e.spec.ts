@@ -80,29 +80,28 @@ async function selectConnectionInQueryBox(page: Page, connectionName: string) {
  * Sets text in the Monaco editor via clipboard paste.
  */
 async function typeInEditor(page: Page, text: string) {
-  // Ensure Monaco editor is visible and focused
+  // Ensure Monaco editor is visible
   const editorContainer = page.locator(".CodeEditorBox__QueryBox .monaco-editor").first();
   await expect(editorContainer).toBeVisible({ timeout: 5_000 });
   await editorContainer.click();
   await page.waitForTimeout(200);
 
-  const textarea = page.locator(".CodeEditorBox__QueryBox .monaco-editor textarea");
-  await textarea.focus();
-  await page.waitForTimeout(100);
-
-  // Clear existing content: select all + delete, twice to be safe
-  const modifier = process.platform === "darwin" ? "Meta" : "Control";
-  await page.keyboard.press(`${modifier}+A`);
-  await page.keyboard.press("Delete");
-  await page.waitForTimeout(100);
-  await page.keyboard.press(`${modifier}+A`);
-  await page.keyboard.press("Delete");
-  await page.waitForTimeout(100);
-
-  // Paste new content via clipboard
-  await page.evaluate((val) => navigator.clipboard.writeText(val), text);
-  await textarea.focus();
-  await page.keyboard.press(`${modifier}+V`);
+  // Set editor content directly via Monaco API — clipboard paste is unreliable
+  // in headless CI environments (Linux headless Chrome)
+  await page.evaluate((val) => {
+    const queryBoxEl = document.querySelector(".CodeEditorBox__QueryBox");
+    const allEditors = (window as any).monaco?.editor?.getEditors() || [];
+    const editor = allEditors.find((e: any) => {
+      try {
+        return queryBoxEl?.contains(e.getDomNode());
+      } catch {
+        return false;
+      }
+    });
+    if (editor) {
+      editor.setValue(val);
+    }
+  }, text);
   await page.waitForTimeout(300);
 }
 
