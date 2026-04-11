@@ -464,13 +464,23 @@ Sample connection will look like this
 aztable://<your_connection_string>
 ```
 
+### REST API Features
+
+- Dual syntax: auto-detects `curl` and `fetch()` input (paste from Chrome DevTools).
+- `{{VAR}}` variable interpolation with 4-layer priority (folder > collection > global), plus dynamic variables (`{{$timestamp}}`, `{{$randomUUID}}`).
+- Warns on unresolved `{{VAR}}` placeholders after variable resolution.
+- Supports proxy (`-x`/`--proxy`), timeouts (`--max-time`, `--connect-timeout`), basic auth (`-u`), SSL bypass (`-k`), redirects (`-L`), and file uploads (`-F`).
+- Code snippet generation for JavaScript (fetch), Python (requests), and Java (HttpClient).
+- Import from HAR files and Postman Collection v2.1; export as Postman Collection.
+- Response viewer with tabs for Body, Headers, Cookies, Timing, and Raw JSON download.
+
 ### REST API Limitations
 
 - Requires `curl` installed on the system (pre-installed on macOS and most Linux distributions).
 - Uses curl/fetch syntax in the editor — not a visual form builder like Postman.
 - No persistent connection — each request is a standalone `curl` subprocess.
 - `{{VAR}}` variable interpolation is case-sensitive.
-- Connection string format: `restapi://{"HOST":"https://httpbin.org"}` (also accepts `rest://`).
+- Connection string format: `rest://{"HOST":"https://httpbin.org"}` (also accepts legacy `restapi://`).
 - Folder nesting is limited to 2 levels (Connection → Folder → Request), matching the database/table model.
 
 ## Suggestion?

@@ -7,6 +7,7 @@ const VALID_METHODS: RestApiMethod[] = ["GET", "POST", "PUT", "DELETE", "PATCH",
 
 /**
  * Extracts URL query parameters into a Record.
+ * Duplicate keys (e.g., ?tag=a&tag=b) are joined with ", ".
  * @param url - The URL to extract params from.
  * @returns Record of query parameter key-value pairs.
  */
@@ -14,8 +15,13 @@ function extractParams(url: string): Record<string, string> {
   const params: Record<string, string> = {};
   try {
     const parsed = new URL(url);
-    parsed.searchParams.forEach((value, key) => {
-      params[key] = value;
+    const seen = new Set<string>();
+    parsed.searchParams.forEach((_value, key) => {
+      if (!seen.has(key)) {
+        seen.add(key);
+        const allValues = parsed.searchParams.getAll(key);
+        params[key] = allValues.length > 1 ? allValues.join(", ") : allValues[0];
+      }
     });
   } catch (_err) {
     // URL may contain unresolved variables, skip parsing

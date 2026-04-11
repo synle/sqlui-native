@@ -50,9 +50,15 @@ function parseResponseHeaders(headerBlock: string): {
     if (colonIdx > 0) {
       const key = line.substring(0, colonIdx).trim();
       const value = line.substring(colonIdx + 1).trim();
-      headers[key] = value;
 
-      // Parse Set-Cookie headers
+      // Accumulate duplicate headers (e.g., multiple Set-Cookie) with comma separator
+      if (key in headers) {
+        headers[key] = `${headers[key]}, ${value}`;
+      } else {
+        headers[key] = value;
+      }
+
+      // Parse Set-Cookie headers into individual cookie entries
       if (key.toLowerCase() === "set-cookie") {
         const cookieMatch = value.match(/^([^=]+)=([^;]*)/);
         if (cookieMatch) {
@@ -122,6 +128,20 @@ function buildCurlArgs(request: RestApiRequest): string[] {
     args.push("-k");
   }
 
+  // Timeout flags — passed to curl directly for precise control
+  if (request.maxTime !== undefined) {
+    args.push("--max-time", String(request.maxTime));
+  }
+
+  if (request.connectTimeout !== undefined) {
+    args.push("--connect-timeout", String(request.connectTimeout));
+  }
+
+  // Proxy
+  if (request.proxy) {
+    args.push("-x", request.proxy);
+  }
+
   // URL (must be last)
   args.push(request.url);
 
@@ -138,7 +158,11 @@ export function executeCurl(request: RestApiRequest, timeoutMs: number = DEFAULT
   return new Promise((resolve, reject) => {
     const args = buildCurlArgs(request);
 
-    execFile("curl", args, { timeout: timeoutMs, maxBuffer: 50 * 1024 * 1024 }, (error, stdout, stderr) => {
+    // If maxTime is specified in the request, use it as the process timeout (with 5s buffer)
+    // so curl's own timeout message is shown instead of a generic "killed" error.
+    const effectiveTimeout = request.maxTime !== undefined ? Math.max(request.maxTime * 1000 + 5000, timeoutMs) : timeoutMs;
+
+    execFile("curl", args, { timeout: effectiveTimeout, maxBuffer: 50 * 1024 * 1024 }, (error, stdout, stderr) => {
       if (error && !stdout) {
         if (error.killed) {
           reject(new Error(`Request timed out after ${timeoutMs}ms`));

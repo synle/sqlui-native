@@ -135,7 +135,13 @@ Connection strings are prefixed with a dialect scheme (`dialect://...`) but the 
 
 **File uploads / multipart form data:** `-F`/`--form` flags are preserved as individual `formParts` on `RestApiRequest` (not merged into `body`). The executor passes each `-F` flag directly to the system `curl` binary, which handles multipart boundaries and `@file` references natively. Example: `curl -X POST '{{HOST}}/post' -F 'file=@/path/to/file' -F 'description=my upload'`.
 
-**Execution:** `curlExecutor.ts` spawns `curl` with `--write-out` for timing metrics (DNS, connect, TLS, TTFB, total) and `-i` for response headers. Response is parsed into structured `RestApiResponse` with status, headers, body, cookies, timing, and size.
+**Curl flag support:** The parser recognizes and passes through these curl flags: `-X` (method), `-H` (headers), `-d`/`--data`/`--data-raw` (body), `-F`/`--form` (multipart), `-u` (basic auth), `-b` (cookies), `-L` (follow redirects), `-k` (insecure), `--max-time`/`-m` (request timeout), `--connect-timeout` (connection timeout), `-x`/`--proxy` (proxy URL). Timeout and proxy flags are passed directly to the system curl binary.
+
+**Unresolved variable warnings:** After variable resolution, any remaining `{{VAR}}` placeholders are detected by `findUnresolvedVariables()` and surfaced in the result metadata. `RestApiResultBox` displays a warning banner listing undefined variables.
+
+**Execution:** `curlExecutor.ts` spawns `curl` with `--write-out` for timing metrics (DNS, connect, TLS, TTFB, total) and `-i` for response headers. Response is parsed into structured `RestApiResponse` with status, headers, body, cookies, timing, and size. Duplicate response headers (e.g., multiple `Set-Cookie`) are joined with `, ` per HTTP spec; individual cookies are still parsed into a separate map.
+
+**Code snippets:** REST API supports code generation via Mustache templates (`javascript.rest.mustache`, `python.rest.mustache`, `java.rest.mustache`). The curl/fetch command is parsed to extract URL, method, headers, and body, then interpolated into language-specific templates (fetch API for JS, `requests` for Python, `HttpClient` for Java).
 
 **Context menus:** Database (folder) context menu shows "New Request" templates (curl/fetch × GET/POST JSON/POST form/PUT JSON/PUT form/PATCH/DELETE). Connection context menu hides "Refresh" and "Test Connection" (not applicable for stateless HTTP).
 
