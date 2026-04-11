@@ -22,7 +22,10 @@ export function getSimpleQuery(_input: SqlAction.TableInput): SqlAction.Output |
     label: "Simple Query",
     formatter: graphqlFormatter,
     query: `{
-  __typename
+  continents {
+    code
+    name
+  }
 }`,
   };
 }
@@ -36,15 +39,20 @@ export function getQueryWithVariables(_input: SqlAction.TableInput): SqlAction.O
   return {
     label: "Query with Variables",
     formatter: graphqlFormatter,
-    query: `query GetItems($limit: Int, $offset: Int) {
-  items(limit: $limit, offset: $offset) {
-    id
+    query: `query GetCountry($code: ID!) {
+  country(code: $code) {
     name
+    capital
+    currency
+    emoji
+    languages {
+      name
+    }
   }
 }
 
 ### Variables
-{"limit": 10, "offset": 0}`,
+{"code": "US"}`,
   };
 }
 
@@ -55,11 +63,11 @@ export function getQueryWithVariables(_input: SqlAction.TableInput): SqlAction.O
  */
 export function getQueryWithHeaders(_input: SqlAction.TableInput): SqlAction.Output | undefined {
   return {
-    label: "Query with Headers",
+    label: "Query with Auth Header",
     formatter: graphqlFormatter,
     query: `{
-  viewer {
-    id
+  countries {
+    code
     name
   }
 }
@@ -76,18 +84,21 @@ Authorization: Bearer {{ACCESS_TOKEN}}`,
  */
 export function getSearchQuery(_input: SqlAction.TableInput): SqlAction.Output | undefined {
   return {
-    label: "Search / List Query",
+    label: "Search / Filter Query",
     formatter: graphqlFormatter,
-    query: `query SearchItems($filter: String, $limit: Int, $offset: Int) {
-  items(filter: $filter, limit: $limit, offset: $offset) {
-    id
+    query: `query FilterCountries($filter: CountryFilterInput) {
+  countries(filter: $filter) {
+    code
     name
-    createdAt
+    capital
+    continent {
+      name
+    }
   }
 }
 
 ### Variables
-{"filter": "", "limit": 10, "offset": 0}`,
+{"filter": {"continent": {"eq": "EU"}}}`,
   };
 }
 
@@ -357,8 +368,8 @@ export class ConcreteDataScripts extends BaseDataScript {
     return `
       <strong>GraphQL API Setup</strong>
       <ol>
-        <li><strong>Connection String</strong> -- Use <code>graphql://{"ENDPOINT":"https://your-api.com/graphql"}</code> to set the endpoint.</li>
-        <li><strong>Headers</strong> -- Add default headers (e.g., Authorization) in the connection form. They are sent with every request.</li>
+        <li><strong>Connection String</strong> -- Use <code>graphql://{"ENDPOINT":"https://your-api.com/graphql"}</code> to set the endpoint. The default sample uses <code>https://countries.trevorblades.com/graphql</code> (a free, public Countries API).</li>
+        <li><strong>Authentication</strong> -- GraphQL uses HTTP headers for auth. Set default headers in the connection form (e.g., <code>"headers": {"Authorization": "Bearer YOUR_TOKEN"}</code>), or add per-request headers via the <code>### Headers</code> section in the editor. Common patterns: Bearer tokens, API keys (<code>X-API-Key</code>), or basic auth.</li>
         <li><strong>Variables</strong> -- Define <code>{{ACCESS_TOKEN}}</code>, etc. at collection level. Override per folder.</li>
         <li><strong>Editor Format</strong> -- Write GraphQL queries directly. Use <code>### Variables</code>, <code>### Headers</code>, and <code>### Operation</code> sections for additional request data.</li>
       </ol>
