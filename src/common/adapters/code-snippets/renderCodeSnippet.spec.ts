@@ -475,6 +475,210 @@ describe("renderCodeSnippet", () => {
     });
   });
 
+  // ─── REST API templates ─────────────────────────────────────────────
+
+  describe("rest", () => {
+    const restContext = {
+      url: "https://api.example.com/users",
+      method: "GET",
+      methodLower: "get",
+      headers: { Accept: "application/json" },
+      headersJson: JSON.stringify({ Accept: "application/json" }, null, 2),
+      headerLines: [{ key: "Accept", value: "application/json" }],
+    };
+
+    it("renders javascript rest template with url, method, and headers", () => {
+      const result = renderCodeSnippet("javascript", "rest" as any, restContext);
+
+      expect(result).toContain("fetch(");
+      expect(result).toContain("https://api.example.com/users");
+      expect(result).toContain("GET");
+      expect(result).toContain("application/json");
+    });
+
+    it("renders javascript rest template with body", () => {
+      const result = renderCodeSnippet("javascript", "rest" as any, {
+        ...restContext,
+        method: "POST",
+        body: '{"name": "test"}',
+      });
+
+      expect(result).toContain("POST");
+      expect(result).toContain('{"name": "test"}');
+    });
+
+    it("renders python rest template with url, method, and headers", () => {
+      const result = renderCodeSnippet("python", "rest" as any, restContext);
+
+      expect(result).toContain("import requests");
+      expect(result).toContain("https://api.example.com/users");
+      expect(result).toContain("requests.get(");
+      expect(result).toContain("application/json");
+    });
+
+    it("renders python rest template with body", () => {
+      const result = renderCodeSnippet("python", "rest" as any, {
+        ...restContext,
+        method: "POST",
+        methodLower: "post",
+        body: '{"name": "test"}',
+      });
+
+      expect(result).toContain("requests.post(");
+      expect(result).toContain("data = ");
+      expect(result).toContain('{"name": "test"}');
+    });
+
+    it("renders java rest template with url, method, and headers", () => {
+      const result = renderCodeSnippet("java", "rest" as any, restContext);
+
+      expect(result).toContain("import java.net.http.HttpClient");
+      expect(result).toContain("https://api.example.com/users");
+      expect(result).toContain('"GET"');
+      expect(result).toContain("Accept");
+    });
+
+    it("renders java rest template with body", () => {
+      const result = renderCodeSnippet("java", "rest" as any, {
+        ...restContext,
+        method: "POST",
+        headerLines: [
+          { key: "Accept", value: "application/json" },
+          { key: "Content-Type", value: "application/json" },
+        ],
+        body: '{"name": "test"}',
+        bodyEscaped: '{\\"name\\": \\"test\\"}',
+      });
+
+      expect(result).toContain('"POST"');
+      expect(result).toContain("BodyPublishers.ofString");
+      expect(result).toContain("Content-Type");
+    });
+
+    it("renders java rest template without body uses noBody()", () => {
+      const result = renderCodeSnippet("java", "rest" as any, restContext);
+
+      expect(result).toContain("BodyPublishers.noBody()");
+    });
+
+    it("renders rest templates across all languages consistently", () => {
+      const jsResult = renderCodeSnippet("javascript", "rest" as any, restContext);
+      const pyResult = renderCodeSnippet("python", "rest" as any, restContext);
+      const javaResult = renderCodeSnippet("java", "rest" as any, restContext);
+
+      for (const result of [jsResult, pyResult, javaResult]) {
+        expect(result).toContain("https://api.example.com/users");
+        expect(result.length).toBeGreaterThan(50);
+      }
+    });
+  });
+
+  // ─── GraphQL templates ─────────────────────────────────────────────
+
+  describe("graphql", () => {
+    const graphqlContext = {
+      endpoint: "https://api.example.com/graphql",
+      query: "{ users { id name } }",
+      queryEscaped: "{ users { id name } }",
+      hasVariables: false,
+      headers: { "Content-Type": "application/json" },
+      headersJson: JSON.stringify({ "Content-Type": "application/json" }, null, 2),
+      headerLines: [{ key: "Content-Type", value: "application/json" }],
+    };
+
+    it("renders javascript graphql template with endpoint and query", () => {
+      const result = renderCodeSnippet("javascript", "graphql" as any, graphqlContext);
+
+      expect(result).toContain("fetch(");
+      expect(result).toContain("https://api.example.com/graphql");
+      expect(result).toContain("{ users { id name } }");
+      expect(result).toContain("POST");
+      expect(result).toContain("JSON.stringify");
+    });
+
+    it("renders javascript graphql template with variables", () => {
+      const result = renderCodeSnippet("javascript", "graphql" as any, {
+        ...graphqlContext,
+        hasVariables: true,
+        variablesJson: JSON.stringify({ limit: 10 }, null, 2),
+      });
+
+      expect(result).toContain("variables");
+      expect(result).toContain('"limit": 10');
+    });
+
+    it("renders javascript graphql template with operationName", () => {
+      const result = renderCodeSnippet("javascript", "graphql" as any, {
+        ...graphqlContext,
+        operationName: "GetUsers",
+      });
+
+      expect(result).toContain("operationName");
+      expect(result).toContain("GetUsers");
+    });
+
+    it("renders python graphql template with endpoint and query", () => {
+      const result = renderCodeSnippet("python", "graphql" as any, graphqlContext);
+
+      expect(result).toContain("import requests");
+      expect(result).toContain("https://api.example.com/graphql");
+      expect(result).toContain("{ users { id name } }");
+      expect(result).toContain("requests.post(");
+    });
+
+    it("renders python graphql template with variables", () => {
+      const result = renderCodeSnippet("python", "graphql" as any, {
+        ...graphqlContext,
+        hasVariables: true,
+        variablesJson: JSON.stringify({ id: "123" }, null, 2),
+      });
+
+      expect(result).toContain("variables");
+      expect(result).toContain('"id": "123"');
+    });
+
+    it("renders python graphql template with operationName", () => {
+      const result = renderCodeSnippet("python", "graphql" as any, {
+        ...graphqlContext,
+        operationName: "ListUsers",
+      });
+
+      expect(result).toContain("operationName");
+      expect(result).toContain("ListUsers");
+    });
+
+    it("renders java graphql template with endpoint and query", () => {
+      const result = renderCodeSnippet("java", "graphql" as any, graphqlContext);
+
+      expect(result).toContain("import java.net.http.HttpClient");
+      expect(result).toContain("https://api.example.com/graphql");
+      expect(result).toContain("{ users { id name } }");
+      expect(result).toContain(".POST(");
+    });
+
+    it("renders java graphql template with variables", () => {
+      const result = renderCodeSnippet("java", "graphql" as any, {
+        ...graphqlContext,
+        hasVariables: true,
+        variablesJson: JSON.stringify({ offset: 0 }, null, 2),
+        variablesEscaped: '{\\"offset\\":0}',
+      });
+
+      expect(result).toContain("variables");
+    });
+
+    it("renders graphql templates across all languages consistently", () => {
+      const jsResult = renderCodeSnippet("javascript", "graphql" as any, graphqlContext);
+      const pyResult = renderCodeSnippet("python", "graphql" as any, graphqlContext);
+      const javaResult = renderCodeSnippet("java", "graphql" as any, graphqlContext);
+
+      for (const result of [jsResult, pyResult, javaResult]) {
+        expect(result).toContain("https://api.example.com/graphql");
+        expect(result.length).toBeGreaterThan(50);
+      }
+    });
+  });
+
   // ─── Invalid language / engine ──────────────────────────────────────
 
   describe("invalid language or engine", () => {

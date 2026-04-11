@@ -70,13 +70,35 @@ Authorization: Bearer {{ACCESS_TOKEN}}`,
 }
 
 /**
- * Generates a mutation template.
+ * Generates a list/search query template with filtering and pagination.
  * @param _input - Table input (unused).
- * @returns Script output with a mutation and variables.
+ * @returns Script output with a search query.
  */
-export function getMutation(_input: SqlAction.TableInput): SqlAction.Output | undefined {
+export function getSearchQuery(_input: SqlAction.TableInput): SqlAction.Output | undefined {
   return {
-    label: "Mutation",
+    label: "Search / List Query",
+    formatter: graphqlFormatter,
+    query: `query SearchItems($filter: String, $limit: Int, $offset: Int) {
+  items(filter: $filter, limit: $limit, offset: $offset) {
+    id
+    name
+    createdAt
+  }
+}
+
+### Variables
+{"filter": "", "limit": 10, "offset": 0}`,
+  };
+}
+
+/**
+ * Generates a create mutation template.
+ * @param _input - Table input (unused).
+ * @returns Script output with a create mutation and variables.
+ */
+export function getCreateMutation(_input: SqlAction.TableInput): SqlAction.Output | undefined {
+  return {
+    label: "Create Mutation",
     formatter: graphqlFormatter,
     query: `mutation CreateItem($input: CreateItemInput!) {
   createItem(input: $input) {
@@ -88,6 +110,68 @@ export function getMutation(_input: SqlAction.TableInput): SqlAction.Output | un
 
 ### Variables
 {"input": {"name": "New Item"}}`,
+  };
+}
+
+/**
+ * Generates an update mutation template.
+ * @param _input - Table input (unused).
+ * @returns Script output with an update mutation and variables.
+ */
+export function getUpdateMutation(_input: SqlAction.TableInput): SqlAction.Output | undefined {
+  return {
+    label: "Update Mutation",
+    formatter: graphqlFormatter,
+    query: `mutation UpdateItem($id: ID!, $input: UpdateItemInput!) {
+  updateItem(id: $id, input: $input) {
+    id
+    name
+    updatedAt
+  }
+}
+
+### Variables
+{"id": "123", "input": {"name": "Updated Item"}}`,
+  };
+}
+
+/**
+ * Generates a delete mutation template.
+ * @param _input - Table input (unused).
+ * @returns Script output with a delete mutation and variables.
+ */
+export function getDeleteMutation(_input: SqlAction.TableInput): SqlAction.Output | undefined {
+  return {
+    label: "Delete Mutation",
+    formatter: graphqlFormatter,
+    query: `mutation DeleteItem($id: ID!) {
+  deleteItem(id: $id) {
+    id
+    success
+  }
+}
+
+### Variables
+{"id": "123"}`,
+  };
+}
+
+/**
+ * Generates a subscription template.
+ * @param _input - Table input (unused).
+ * @returns Script output with a subscription example.
+ */
+export function getSubscription(_input: SqlAction.TableInput): SqlAction.Output | undefined {
+  return {
+    label: "Subscription",
+    formatter: graphqlFormatter,
+    query: `subscription OnItemCreated {
+  itemCreated {
+    id
+    name
+    createdAt
+  }
+}`,
   };
 }
 
@@ -236,8 +320,13 @@ export class ConcreteDataScripts extends BaseDataScript {
       getSimpleQuery,
       getQueryWithVariables,
       getQueryWithHeaders,
+      getSearchQuery,
       getDivider,
-      getMutation,
+      getCreateMutation,
+      getUpdateMutation,
+      getDeleteMutation,
+      getDivider,
+      getSubscription,
       getDivider,
       getIntrospectionQuery,
       getIntrospectionTypesOnly,
