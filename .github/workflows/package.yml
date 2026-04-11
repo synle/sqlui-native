@@ -182,6 +182,16 @@ jobs:
       - name: Run prebuild
         run: npm run prebuild
 
+      - name: Build frontend and servers
+        run: npm run build
+
+      - name: Install Playwright browsers for smoke test
+        run: npx playwright install --with-deps chromium
+
+      - name: Run smoke test
+        id: smoke_test
+        run: npm run test-smoke
+
       - name: Record tests start time
         run: echo "TESTS_START=$(date +%s)" >> $GITHUB_ENV
 
@@ -306,6 +316,7 @@ jobs:
 
           echo "| Check | Result | Duration |" >> $GITHUB_STEP_SUMMARY
           echo "|-------|--------|----------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Smoke Test | ${{ steps.smoke_test.outcome == 'success' && ':white_check_mark: Passed' || ':x: Failed' }} | - |" >> $GITHUB_STEP_SUMMARY
           echo "| Unit Tests | ${{ steps.tests.outcome == 'success' && ':white_check_mark: Passed' || ':x: Failed' }} | $(format_duration $TESTS_DUR) |" >> $GITHUB_STEP_SUMMARY
           echo "| Coverage | ${COV_BADGE:- :warning: N/A} | - |" >> $GITHUB_STEP_SUMMARY
           echo "| TypeCheck | ${{ steps.typecheck.outcome == 'success' && ':white_check_mark: Passed' || ':x: Failed' }} | $(format_duration $TYPECHECK_DUR) |" >> $GITHUB_STEP_SUMMARY
@@ -344,6 +355,12 @@ jobs:
 
       - name: Build application
         run: bash scripts/build.sh
+
+      - name: Install Playwright browsers for smoke test
+        run: npx playwright install --with-deps chromium
+
+      - name: Run smoke test
+        run: npm run test-smoke
 
       - name: Record build end / package start time
         if: ${{ always() }}
@@ -451,6 +468,12 @@ jobs:
       - name: Build application
         run: bash scripts/build.sh
 
+      - name: Install Playwright browsers for smoke test
+        run: npx playwright install --with-deps chromium
+
+      - name: Run smoke test
+        run: npm run test-smoke
+
       - name: Record build end / package start time
         if: ${{ always() }}
         shell: bash
@@ -533,6 +556,12 @@ jobs:
 
       - name: Build application
         run: bash scripts/build.sh
+
+      - name: Install Playwright browsers for smoke test
+        run: npx playwright install --with-deps chromium
+
+      - name: Run smoke test
+        run: npm run test-smoke
 
       - name: Record build end / package start time
         if: ${{ always() }}
@@ -617,6 +646,12 @@ jobs:
       - name: Build application
         run: bash scripts/build.sh
 
+      - name: Install Playwright browsers for smoke test
+        run: npx playwright install --with-deps chromium
+
+      - name: Run smoke test
+        run: npm run test-smoke
+
       - name: Record build end / package start time
         if: ${{ always() }}
         shell: bash
@@ -699,6 +734,12 @@ jobs:
 
       - name: Build application
         run: bash scripts/build.sh
+
+      - name: Install Playwright browsers for smoke test
+        run: npx playwright install --with-deps chromium
+
+      - name: Run smoke test
+        run: npm run test-smoke
 
       - name: Record build end / package start time
         if: ${{ always() }}

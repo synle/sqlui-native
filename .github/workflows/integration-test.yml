@@ -3,6 +3,14 @@ name: Test (Unit / Integration / E2E Tests)
 on:
   schedule:
     - cron: "0 0 * * *" # daily, midnight UTC
+  workflow_call:
+    inputs:
+      node_version:
+        type: string
+        default: "24"
+      run_e2e:
+        type: boolean
+        default: true
   workflow_dispatch:
     inputs:
       node_version:
@@ -11,7 +19,7 @@ on:
       run_e2e:
         description: "Run E2E (Playwright) tests"
         type: boolean
-        default: false
+        default: true
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
