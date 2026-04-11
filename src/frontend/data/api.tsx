@@ -529,7 +529,10 @@ export class ProxyApi {
     try {
       //@ts-ignore
       const fs = window.requireElectron("fs");
-      return fs.readFileSync(file.path, { encoding: "utf-8" });
+      //@ts-ignore
+      const { webUtils } = window.requireElectron("electron");
+      const filePath = webUtils.getPathForFile(file);
+      return fs.readFileSync(filePath, { encoding: "utf-8" });
     } catch (err) {
       console.error("api.tsx:readFileSync", err);
       const form = new FormData();

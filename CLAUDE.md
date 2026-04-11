@@ -18,6 +18,7 @@ npm run test-ci         # Run Vitest tests (CI, no watch)
 npm run lint            # ESLint with auto-fix
 npm run format          # Prettier formatting
 npm run typecheck       # TypeScript type check (tsc --noEmit)
+npm run validate        # All checks: lint → typecheck → test-ci → format → e2e → smoke → integration
 ```
 
 **Run a single test file:**
@@ -388,19 +389,20 @@ See CONTRIBUTING.md for the full step-by-step guide with code examples.
 
 ## Pre-commit Checklist
 
-After any code change, you MUST run these commands **in order** and ensure they all pass before considering the task complete. **Running `npm run format` is mandatory after every change — no exceptions.**
+After **all** changes are complete, run `npm run validate` once. Do NOT run it after each atomic change — only once at the end.
+
+```bash
+npm run validate         # Runs: lint → typecheck → test-ci → format → test-e2e → test-smoke → test-integration
+```
+
+This single command runs everything in order: ESLint, TypeScript type check, unit tests, Prettier formatting, e2e tests, smoke tests, and integration tests (heaviest, last).
+
+Additionally:
 
 1. **Always add TSDoc for ALL code in every change.** TSDoc is mandatory on every function, constant, type, interface, and any code you touch — no exceptions. Script files must start with a single-line `/** Description. */` file header. See the **Documentation** section below for TSDoc style rules.
 2. **Update docs** when making significant changes:
    - **CONTRIBUTING.md** — Update when adding or modifying database adapters (new auth flows, connection formats, query modes, setup instructions, integration tests).
    - **README.md** — Update for new features and adapter changes (new adapters, significant changes to existing ones). Only for semi-major or new features, not minor tweaks.
-
-```bash
-npm run lint             # ESLint (must have 0 errors)
-npm run typecheck        # TypeScript type check (must have 0 errors)
-npm run test-ci          # All tests must pass
-npm run format           # Prettier formatting (MANDATORY — always run LAST, because tests regenerate guides.md)
-```
 
 ## Error Handling Convention
 
