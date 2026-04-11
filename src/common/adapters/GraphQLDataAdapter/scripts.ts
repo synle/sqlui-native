@@ -3,6 +3,7 @@
 import BaseDataScript, { getDivider } from "src/common/adapters/BaseDataAdapter/scripts";
 import { renderCodeSnippet } from "src/common/adapters/code-snippets/renderCodeSnippet";
 import graphqlIcon from "src/common/adapters/GraphQLDataAdapter/graphql-logo.png";
+import { parseGraphQLInput } from "src/common/adapters/GraphQLDataAdapter/graphqlParser";
 import { SqlAction, SqluiCore } from "typings";
 
 /** Formatter hint for GraphQL syntax highlighting. */
@@ -400,7 +401,6 @@ export class ConcreteDataScripts extends BaseDataScript {
 
     try {
       // Parse the GraphQL input to extract query/variables/operationName/headers
-      const { parseGraphQLInput } = require("src/common/adapters/GraphQLDataAdapter/graphqlParser");
       const parsed = parseGraphQLInput(cmd);
       const mergedHeaders = { "Content-Type": "application/json", ...parsed.headers };
       const hasVariables = parsed.variables && Object.keys(parsed.variables).length > 0;
