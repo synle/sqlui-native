@@ -62,6 +62,19 @@ jobs:
       - name: Run code formatting
         run: bash scripts/format.sh
 
+      - name: Generate release.json from latest official release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          LATEST_VERSION=$(gh release list --exclude-drafts --exclude-pre-releases --limit 1 --json tagName --jq '.[0].tagName' 2>/dev/null || echo "")
+          if [ -n "$LATEST_VERSION" ]; then
+            echo "{ \"version\": \"$LATEST_VERSION\" }" > release.json
+            echo "Generated release.json with version: $LATEST_VERSION"
+          else
+            echo "No official release found, skipping release.json generation"
+          fi
+
       - name: Commit formatting changes
         if: ${{ inputs.run_format }}
         id: commit
@@ -854,10 +867,14 @@ jobs:
       - name: Update package.json to release version
         run: npm version --no-git-tag-version "${{ needs.create_release.outputs.dist_version }}"
 
-      - name: Write release version file
+      - name: Write release version file from latest official release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: bash
         run: |
-          echo "{ \"version\": \"${{ needs.create_release.outputs.dist_version }}\" }" > release.json
+          LATEST_VERSION=$(gh release list --exclude-drafts --exclude-pre-releases --limit 1 --json tagName --jq '.[0].tagName')
+          echo "{ \"version\": \"$LATEST_VERSION\" }" > release.json
+          echo "Generated release.json with version: $LATEST_VERSION"
 
       - name: Commit release version
         uses: EndBug/add-and-commit@v9
