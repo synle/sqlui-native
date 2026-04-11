@@ -35,10 +35,28 @@ import bundledJavaRedis from "src/common/adapters/code-snippets/templates/java.r
 import bundledJavaCosmosdb from "src/common/adapters/code-snippets/templates/java.cosmosdb.mustache?raw";
 import bundledJavaSfdc from "src/common/adapters/code-snippets/templates/java.sfdc.mustache?raw";
 import bundledJavaAztable from "src/common/adapters/code-snippets/templates/java.aztable.mustache?raw";
+import bundledJavascriptRest from "src/common/adapters/code-snippets/templates/javascript.rest.mustache?raw";
+import bundledPythonRest from "src/common/adapters/code-snippets/templates/python.rest.mustache?raw";
+import bundledJavaRest from "src/common/adapters/code-snippets/templates/java.rest.mustache?raw";
+import bundledJavascriptGraphql from "src/common/adapters/code-snippets/templates/javascript.graphql.mustache?raw";
+import bundledPythonGraphql from "src/common/adapters/code-snippets/templates/python.graphql.mustache?raw";
+import bundledJavaGraphql from "src/common/adapters/code-snippets/templates/java.graphql.mustache?raw";
 import bundledJavaGradle from "src/common/adapters/code-snippets/templates/java.gradle.mustache?raw";
 
 /** Supported database engine types for code snippet generation. */
-type Engine = "mysql" | "postgres" | "sqlite" | "mssql" | "cassandra" | "mongodb" | "redis" | "cosmosdb" | "aztable" | "sfdc";
+type Engine =
+  | "mysql"
+  | "postgres"
+  | "sqlite"
+  | "mssql"
+  | "cassandra"
+  | "mongodb"
+  | "redis"
+  | "cosmosdb"
+  | "aztable"
+  | "sfdc"
+  | "rest"
+  | "graphql";
 
 /** Supported programming languages for code snippet generation. */
 type Language = "javascript" | "python" | "java";
@@ -46,7 +64,20 @@ type Language = "javascript" | "python" | "java";
 /** All language-engine template keys for iteration. */
 const TEMPLATE_KEYS: Array<{ language: Language; engine: Engine }> = [];
 const LANGUAGES: Language[] = ["javascript", "python", "java"];
-const ENGINES: Engine[] = ["mysql", "postgres", "sqlite", "mssql", "cassandra", "mongodb", "redis", "cosmosdb", "aztable", "sfdc"];
+const ENGINES: Engine[] = [
+  "mysql",
+  "postgres",
+  "sqlite",
+  "mssql",
+  "cassandra",
+  "mongodb",
+  "redis",
+  "cosmosdb",
+  "aztable",
+  "sfdc",
+  "rest",
+  "graphql",
+];
 for (const language of LANGUAGES) {
   for (const engine of ENGINES) {
     TEMPLATE_KEYS.push({ language, engine });
@@ -66,6 +97,8 @@ const bundledTemplates: Record<Language, Record<Engine, string>> = {
     cosmosdb: bundledJavascriptCosmosdb,
     sfdc: bundledJavascriptSfdc,
     aztable: bundledJavascriptAztable,
+    rest: bundledJavascriptRest,
+    graphql: bundledJavascriptGraphql,
   },
   python: {
     mysql: bundledPythonMysql,
@@ -78,6 +111,8 @@ const bundledTemplates: Record<Language, Record<Engine, string>> = {
     cosmosdb: bundledPythonCosmosdb,
     sfdc: bundledPythonSfdc,
     aztable: bundledPythonAztable,
+    rest: bundledPythonRest,
+    graphql: bundledPythonGraphql,
   },
   java: {
     mysql: bundledJavaMysql,
@@ -90,6 +125,8 @@ const bundledTemplates: Record<Language, Record<Engine, string>> = {
     cosmosdb: bundledJavaCosmosdb,
     sfdc: bundledJavaSfdc,
     aztable: bundledJavaAztable,
+    rest: bundledJavaRest,
+    graphql: bundledJavaGraphql,
   },
 };
 

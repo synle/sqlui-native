@@ -5,6 +5,7 @@ import React, { useEffect, useState } from "react";
 import BaseDataAdapter from "src/common/adapters/BaseDataAdapter/index";
 import { getConnectionSetupGuide, getDialectTypeFromConnectionString } from "src/common/adapters/DataScriptFactory";
 import ConnectionHint from "src/frontend/components/ConnectionForm/ConnectionHint";
+import GraphQLConnectionFields from "src/frontend/components/ConnectionForm/GraphQLConnectionFields";
 import RestApiConnectionFields from "src/frontend/components/ConnectionForm/RestApiConnectionFields";
 import HTMLContent from "src/frontend/components/HTMLContent";
 import { useCommands } from "src/frontend/components/MissionControl";
@@ -217,6 +218,7 @@ function MainConnectionForm(props: MainConnectionFormProps): JSX.Element | null 
 
   const detectedDialect = getDialectTypeFromConnectionString(props.connection);
   const isRestApi = detectedDialect === "rest";
+  const isGraphQL = detectedDialect === "graphql";
 
   return (
     <form className="ConnectionForm FormInput__Container" onSubmit={onSave}>
@@ -232,7 +234,9 @@ function MainConnectionForm(props: MainConnectionFormProps): JSX.Element | null 
           autoFocus
         />
       </div>
-      {isRestApi ? (
+      {isGraphQL ? (
+        <GraphQLConnectionFields connection={props.connection} setConnection={props.setConnection} />
+      ) : isRestApi ? (
         <RestApiConnectionFields connection={props.connection} setConnection={props.setConnection} />
       ) : (
         <div className="FormInput__Row">
@@ -249,7 +253,7 @@ function MainConnectionForm(props: MainConnectionFormProps): JSX.Element | null 
           />
         </div>
       )}
-      {!isRestApi && <ConnectionSetupGuideAlert dialect={detectedDialect} />}
+      {!isRestApi && !isGraphQL && <ConnectionSetupGuideAlert dialect={detectedDialect} />}
       {showSqliteDatabasePathSelection && (
         <div className="FormInput__Row">
           <input
@@ -273,12 +277,12 @@ function MainConnectionForm(props: MainConnectionFormProps): JSX.Element | null 
           Cancel
         </Button>
         <TestConnectionButton connection={connection} />
-        {!isRestApi && (
+        {!isRestApi && !isGraphQL && (
           <Button type="button" disabled={props.saving} onClick={() => setShowHint(!showHint)}>
             {showHint ? "Hide Connection Hints" : "Show Connection Hints"}
           </Button>
         )}
-        {!isRestApi && (
+        {!isRestApi && !isGraphQL && (
           <Button
             type="button"
             onClick={() =>
