@@ -1313,7 +1313,7 @@ export default function MissionControl() {
     if (command) {
       dismissCommand();
 
-      switch (command.event) {
+      switch (command.event as string) {
         case "clientEvent/navigate":
           navigate(command.data as string);
           break;
