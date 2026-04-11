@@ -95,6 +95,13 @@ describe("curlParser", () => {
       expect(result.formParts).toEqual(["file=@/path/to/file", "description=my upload"]);
     });
 
+    it("defaults to POST when -F form parts are present without explicit method", () => {
+      const result = parseCurlCommand("curl 'https://example.com/upload' -F 'file=@/path/to/file'");
+      expect(result.method).toBe("POST");
+      expect(result.bodyType).toBe("form-data");
+      expect(result.formParts).toEqual(["file=@/path/to/file"]);
+    });
+
     it("builds curl with -F for form parts", () => {
       const cmd = buildCurlCommand({
         method: "POST",
@@ -106,6 +113,11 @@ describe("curlParser", () => {
       expect(cmd).toContain("-F 'file=@/path/to/file'");
       expect(cmd).toContain("-F 'field=value'");
       expect(cmd).not.toContain("-d");
+    });
+
+    it("preserves duplicate query params joined with comma", () => {
+      const result = parseCurlCommand("curl 'https://example.com/api?tag=a&tag=b&tag=c'");
+      expect(result.params["tag"]).toBe("a, b, c");
     });
 
     it("extracts query params from URL", () => {
@@ -128,6 +140,37 @@ describe("curlParser", () => {
       const result = parseCurlCommand("curl -s -S -v -i 'https://example.com'");
       expect(result.url).toBe("https://example.com");
       expect(result.method).toBe("GET");
+    });
+
+    it("parses --max-time flag", () => {
+      const result = parseCurlCommand("curl --max-time 10 'https://example.com'");
+      expect(result.maxTime).toBe(10);
+    });
+
+    it("parses -m shorthand for --max-time", () => {
+      const result = parseCurlCommand("curl -m 5.5 'https://example.com'");
+      expect(result.maxTime).toBe(5.5);
+    });
+
+    it("parses --connect-timeout flag", () => {
+      const result = parseCurlCommand("curl --connect-timeout 3 'https://example.com'");
+      expect(result.connectTimeout).toBe(3);
+    });
+
+    it("parses both --max-time and --connect-timeout together", () => {
+      const result = parseCurlCommand("curl --max-time 30 --connect-timeout 5 'https://example.com'");
+      expect(result.maxTime).toBe(30);
+      expect(result.connectTimeout).toBe(5);
+    });
+
+    it("parses --proxy flag", () => {
+      const result = parseCurlCommand("curl --proxy 'http://proxy:8080' 'https://example.com'");
+      expect(result.proxy).toBe("http://proxy:8080");
+    });
+
+    it("parses -x shorthand for --proxy", () => {
+      const result = parseCurlCommand("curl -x 'socks5://localhost:1080' 'https://example.com'");
+      expect(result.proxy).toBe("socks5://localhost:1080");
     });
 
     it("skips --compressed flag without value", () => {
@@ -205,6 +248,30 @@ describe("curlParser", () => {
         auth: { username: "user", password: "pass" },
       });
       expect(cmd).toContain("-u 'user:pass'");
+    });
+
+    it("includes --max-time and --connect-timeout", () => {
+      const cmd = buildCurlCommand({
+        method: "GET",
+        url: "https://example.com",
+        headers: {},
+        params: {},
+        maxTime: 30,
+        connectTimeout: 5,
+      });
+      expect(cmd).toContain("--max-time 30");
+      expect(cmd).toContain("--connect-timeout 5");
+    });
+
+    it("includes -x for proxy", () => {
+      const cmd = buildCurlCommand({
+        method: "GET",
+        url: "https://example.com",
+        headers: {},
+        params: {},
+        proxy: "http://proxy:8080",
+      });
+      expect(cmd).toContain("-x 'http://proxy:8080'");
     });
   });
 });

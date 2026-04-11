@@ -6,7 +6,7 @@ import IDataAdapter from "src/common/adapters/IDataAdapter";
 import { executeCurl } from "src/common/adapters/RestApiDataAdapter/curlExecutor";
 import { detectAndParse } from "src/common/adapters/RestApiDataAdapter/requestParser";
 import { RestApiConnectionConfig, RestApiFolderProperties } from "src/common/adapters/RestApiDataAdapter/types";
-import { mergeVariableLayers, resolveVariables } from "src/common/adapters/RestApiDataAdapter/variableResolver";
+import { findUnresolvedVariables, mergeVariableLayers, resolveVariables } from "src/common/adapters/RestApiDataAdapter/variableResolver";
 import { getManagedDatabasesStorage } from "src/common/PersistentStorage";
 import { SqluiCore } from "typings";
 
@@ -183,6 +183,9 @@ export default class RestApiDataAdapter extends BaseDataAdapter implements IData
       }
       const resolvedSql = resolveVariables(sql, variables);
 
+      // Detect unresolved variables that will be sent as literal {{VAR}} strings
+      const unresolvedVariables = findUnresolvedVariables(resolvedSql);
+
       // Parse the command (auto-detect curl vs fetch)
       const request = detectAndParse(resolvedSql);
 
@@ -221,6 +224,7 @@ export default class RestApiDataAdapter extends BaseDataAdapter implements IData
           requestUrl: request.url,
           requestHeaders: request.headers,
           requestBody: request.body,
+          unresolvedVariables,
         },
       };
     } catch (error: any) {

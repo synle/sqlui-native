@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { extractVariableNames, mergeVariableLayers, resolveVariables } from "src/common/adapters/RestApiDataAdapter/variableResolver";
+import {
+  extractVariableNames,
+  findUnresolvedVariables,
+  mergeVariableLayers,
+  resolveVariables,
+} from "src/common/adapters/RestApiDataAdapter/variableResolver";
 
 describe("variableResolver", () => {
   describe("mergeVariableLayers", () => {
@@ -88,6 +93,31 @@ describe("variableResolver", () => {
     it("extracts dynamic variable names", () => {
       const names = extractVariableNames("{{$timestamp}} {{$randomUUID}}");
       expect(names).toEqual(["$timestamp", "$randomUUID"]);
+    });
+  });
+
+  describe("findUnresolvedVariables", () => {
+    it("returns unresolved variable names from resolved string", () => {
+      const resolved = "https://api.com/{{UNKNOWN_PATH}}?token={{MISSING_TOKEN}}";
+      expect(findUnresolvedVariables(resolved)).toEqual(["UNKNOWN_PATH", "MISSING_TOKEN"]);
+    });
+
+    it("returns empty array when all variables are resolved", () => {
+      expect(findUnresolvedVariables("https://api.com/users?token=abc")).toEqual([]);
+    });
+
+    it("deduplicates repeated unresolved variables", () => {
+      const resolved = "{{HOST}}/api and {{HOST}}/health";
+      expect(findUnresolvedVariables(resolved)).toEqual(["HOST"]);
+    });
+
+    it("skips dynamic variable names starting with $", () => {
+      const resolved = "{{$timestamp}} {{MISSING}}";
+      expect(findUnresolvedVariables(resolved)).toEqual(["MISSING"]);
+    });
+
+    it("returns empty array for string with no placeholders", () => {
+      expect(findUnresolvedVariables("no variables here")).toEqual([]);
     });
   });
 });

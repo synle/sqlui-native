@@ -64,6 +64,7 @@ function tokenize(input: string): string[] {
 
 /**
  * Parses URL query parameters into a Record.
+ * Duplicate keys (e.g., ?tag=a&tag=b) are joined with ", ".
  * @param url - The URL to extract params from.
  * @returns Record of query parameter key-value pairs.
  */
@@ -71,8 +72,13 @@ function extractParams(url: string): Record<string, string> {
   const params: Record<string, string> = {};
   try {
     const parsed = new URL(url);
-    parsed.searchParams.forEach((value, key) => {
-      params[key] = value;
+    const seen = new Set<string>();
+    parsed.searchParams.forEach((_value, key) => {
+      if (!seen.has(key)) {
+        seen.add(key);
+        const allValues = parsed.searchParams.getAll(key);
+        params[key] = allValues.length > 1 ? allValues.join(", ") : allValues[0];
+      }
     });
   } catch (_err) {
     // URL may contain unresolved variables like {{HOST}}, skip parsing
@@ -119,6 +125,9 @@ export function parseCurlCommand(curlString: string): RestApiRequest {
   let followRedirects = false;
   let insecure = false;
   let auth: { username: string; password: string } | undefined;
+  let maxTime: number | undefined;
+  let connectTimeout: number | undefined;
+  let proxy: string | undefined;
   const formParts: string[] = [];
 
   let i = 0;
@@ -191,10 +200,28 @@ export function parseCurlCommand(curlString: string): RestApiRequest {
         insecure = true;
         break;
       }
+      case "--connect-timeout": {
+        const val = parseFloat(tokens[++i] || "");
+        if (!isNaN(val)) {
+          connectTimeout = val;
+        }
+        break;
+      }
+      case "--max-time":
+      case "-m": {
+        const val = parseFloat(tokens[++i] || "");
+        if (!isNaN(val)) {
+          maxTime = val;
+        }
+        break;
+      }
+      case "-x":
+      case "--proxy": {
+        proxy = tokens[++i] || "";
+        break;
+      }
       case "-o":
       case "--output":
-      case "--connect-timeout":
-      case "--max-time":
       case "-A":
       case "--user-agent":
       case "--compressed": {
@@ -236,9 +263,9 @@ export function parseCurlCommand(curlString: string): RestApiRequest {
     bodyType = detectBodyType(contentType);
   }
 
-  // Default method: POST if body present, GET otherwise
+  // Default method: POST if body or form parts present, GET otherwise
   if (!method) {
-    method = body ? "POST" : "GET";
+    method = body || formParts.length > 0 ? "POST" : "GET";
   }
 
   return {
@@ -253,6 +280,9 @@ export function parseCurlCommand(curlString: string): RestApiRequest {
     followRedirects,
     insecure,
     auth,
+    maxTime,
+    connectTimeout,
+    proxy,
   };
 }
 
@@ -298,6 +328,18 @@ export function buildCurlCommand(request: RestApiRequest): string {
 
   if (request.insecure) {
     parts.push("-k");
+  }
+
+  if (request.maxTime !== undefined) {
+    parts.push(`--max-time ${request.maxTime}`);
+  }
+
+  if (request.connectTimeout !== undefined) {
+    parts.push(`--connect-timeout ${request.connectTimeout}`);
+  }
+
+  if (request.proxy) {
+    parts.push(`-x '${request.proxy}'`);
   }
 
   return parts.join(" \\\n  ");
