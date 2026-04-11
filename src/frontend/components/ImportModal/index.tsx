@@ -26,7 +26,7 @@ type ImportModalProps = {
  * @param props - Import modal configuration including onImport callback.
  * @returns The rendered import modal content.
  */
-export default function ImportModal(props: ImportModalProps): JSX.Element {
+export default function ImportModal(props: ImportModalProps): React.JSX.Element {
   const [value, setValue] = useState(props.initialValue || "");
   const [mode, setMode] = useState<ImportMode>("keepIds");
   const [hasContent, setHasContent] = useState(!!props.initialValue?.trim());

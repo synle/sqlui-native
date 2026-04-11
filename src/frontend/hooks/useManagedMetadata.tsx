@@ -11,14 +11,12 @@ import { SqluiCore } from "typings";
  */
 export function useCreateManagedDatabase() {
   const queryClient = useQueryClient();
-  return useMutation<SqluiCore.ManagedDatabase, unknown, { connectionId: string; name: string }>(
-    ({ connectionId, name }) => ProxyApi.createManagedDatabase(connectionId, { name }),
-    {
-      onSuccess: (_data, { connectionId }) => {
-        queryClient.invalidateQueries(queryKeys.databases.list(connectionId));
-      },
+  return useMutation<SqluiCore.ManagedDatabase, unknown, { connectionId: string; name: string }>({
+    mutationFn: ({ connectionId, name }) => ProxyApi.createManagedDatabase(connectionId, { name }),
+    onSuccess: (_data, { connectionId }) => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.databases.list(connectionId) });
     },
-  );
+  });
 }
 
 /**
@@ -28,14 +26,12 @@ export function useCreateManagedDatabase() {
  */
 export function useDeleteManagedDatabase() {
   const queryClient = useQueryClient();
-  return useMutation<unknown, unknown, { connectionId: string; managedDatabaseId: string }>(
-    ({ connectionId, managedDatabaseId }) => ProxyApi.deleteManagedDatabase(connectionId, managedDatabaseId),
-    {
-      onSuccess: (_data, { connectionId }) => {
-        queryClient.invalidateQueries(queryKeys.databases.list(connectionId));
-      },
+  return useMutation<unknown, unknown, { connectionId: string; managedDatabaseId: string }>({
+    mutationFn: ({ connectionId, managedDatabaseId }) => ProxyApi.deleteManagedDatabase(connectionId, managedDatabaseId),
+    onSuccess: (_data, { connectionId }) => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.databases.list(connectionId) });
     },
-  );
+  });
 }
 
 /**
@@ -49,9 +45,10 @@ export function useUpdateManagedDatabase() {
     SqluiCore.ManagedDatabase,
     unknown,
     { connectionId: string; managedDatabaseId: string; body: { name?: string; props?: SqluiCore.ManagedProperties } }
-  >(({ connectionId, managedDatabaseId, body }) => ProxyApi.updateManagedDatabase(connectionId, managedDatabaseId, body as any), {
+  >({
+    mutationFn: ({ connectionId, managedDatabaseId, body }) => ProxyApi.updateManagedDatabase(connectionId, managedDatabaseId, body as any),
     onSuccess: (_data, { connectionId }) => {
-      queryClient.invalidateQueries(queryKeys.databases.list(connectionId));
+      queryClient.invalidateQueries({ queryKey: queryKeys.databases.list(connectionId) });
     },
   });
 }
@@ -63,14 +60,12 @@ export function useUpdateManagedDatabase() {
  */
 export function useCreateManagedTable() {
   const queryClient = useQueryClient();
-  return useMutation<SqluiCore.ManagedTable, unknown, { connectionId: string; databaseId: string; name: string }>(
-    ({ connectionId, databaseId, name }) => ProxyApi.createManagedTable(connectionId, databaseId, { name }),
-    {
-      onSuccess: (_data, { connectionId, databaseId }) => {
-        queryClient.invalidateQueries(queryKeys.tables.list(connectionId, databaseId));
-      },
+  return useMutation<SqluiCore.ManagedTable, unknown, { connectionId: string; databaseId: string; name: string }>({
+    mutationFn: ({ connectionId, databaseId, name }) => ProxyApi.createManagedTable(connectionId, databaseId, { name }),
+    onSuccess: (_data, { connectionId, databaseId }) => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.tables.list(connectionId, databaseId) });
     },
-  );
+  });
 }
 
 /**
@@ -80,14 +75,12 @@ export function useCreateManagedTable() {
  */
 export function useDeleteManagedTable() {
   const queryClient = useQueryClient();
-  return useMutation<unknown, unknown, { connectionId: string; databaseId: string; managedTableId: string }>(
-    ({ connectionId, databaseId, managedTableId }) => ProxyApi.deleteManagedTable(connectionId, databaseId, managedTableId),
-    {
-      onSuccess: (_data, { connectionId, databaseId }) => {
-        queryClient.invalidateQueries(queryKeys.tables.list(connectionId, databaseId));
-      },
+  return useMutation<unknown, unknown, { connectionId: string; databaseId: string; managedTableId: string }>({
+    mutationFn: ({ connectionId, databaseId, managedTableId }) => ProxyApi.deleteManagedTable(connectionId, databaseId, managedTableId),
+    onSuccess: (_data, { connectionId, databaseId }) => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.tables.list(connectionId, databaseId) });
     },
-  );
+  });
 }
 
 /**
@@ -106,9 +99,11 @@ export function useUpdateManagedTable() {
       managedTableId: string;
       body: { name?: string; props?: SqluiCore.ManagedProperties } | SqluiCore.ManagedProperties;
     }
-  >(({ connectionId, databaseId, managedTableId, body }) => ProxyApi.updateManagedTable(connectionId, databaseId, managedTableId, body), {
+  >({
+    mutationFn: ({ connectionId, databaseId, managedTableId, body }) =>
+      ProxyApi.updateManagedTable(connectionId, databaseId, managedTableId, body),
     onSuccess: (_data, { connectionId, databaseId }) => {
-      queryClient.invalidateQueries(queryKeys.tables.list(connectionId, databaseId));
+      queryClient.invalidateQueries({ queryKey: queryKeys.tables.list(connectionId, databaseId) });
     },
   });
 }

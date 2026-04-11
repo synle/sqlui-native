@@ -1,5 +1,5 @@
 import SignalWifiStatusbar4BarIcon from "@mui/icons-material/SignalWifiStatusbar4Bar";
-import { useParams } from "react-router-dom";
+import { useParams } from "react-router";
 import { useEffect } from "react";
 import Breadcrumbs from "src/frontend/components/Breadcrumbs";
 import VirtualizedConnectionTree from "src/frontend/components/VirtualizedConnectionTree";

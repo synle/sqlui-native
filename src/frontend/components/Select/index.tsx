@@ -50,7 +50,7 @@ type SelectProps = {
  * @param props - Select configuration including label, value, children, and onChange handler.
  * @returns The select element.
  */
-export default function Select(props: SelectProps): JSX.Element | null {
+export default function Select(props: SelectProps): React.JSX.Element | null {
   const { value, label, children, onChange, sx, "data-testid": dataTestId, ...restProps } = props;
 
   if (label) {

@@ -12,9 +12,9 @@ import { SqluiCore } from "typings";
  * @param databaseId - The database name.
  */
 export function invalidateSchemaForDatabase(queryClient: QueryClient, connectionId: string, databaseId: string) {
-  queryClient.invalidateQueries(queryKeys.tables.list(connectionId, databaseId));
-  queryClient.invalidateQueries(queryKeys.columns.allForDatabase(connectionId, databaseId));
-  queryClient.invalidateQueries(queryKeys.schema.cached(connectionId, databaseId));
+  queryClient.invalidateQueries({ queryKey: queryKeys.tables.list(connectionId, databaseId) });
+  queryClient.invalidateQueries({ queryKey: queryKeys.columns.allForDatabase(connectionId, databaseId) });
+  queryClient.invalidateQueries({ queryKey: queryKeys.schema.cached(connectionId, databaseId) });
   queryClient.invalidateQueries({
     predicate: (query) => {
       const key = query.queryKey;
@@ -31,9 +31,9 @@ export function invalidateSchemaForDatabase(queryClient: QueryClient, connection
  * @param tableId - The table name.
  */
 export function invalidateSchemaForTable(queryClient: QueryClient, connectionId: string, databaseId: string, tableId: string) {
-  queryClient.invalidateQueries(queryKeys.columns.list(connectionId, databaseId, tableId));
-  queryClient.invalidateQueries(queryKeys.columns.allForDatabase(connectionId, databaseId));
-  queryClient.invalidateQueries(queryKeys.schema.cached(connectionId, databaseId));
+  queryClient.invalidateQueries({ queryKey: queryKeys.columns.list(connectionId, databaseId, tableId) });
+  queryClient.invalidateQueries({ queryKey: queryKeys.columns.allForDatabase(connectionId, databaseId) });
+  queryClient.invalidateQueries({ queryKey: queryKeys.schema.cached(connectionId, databaseId) });
 }
 
 /**
@@ -42,8 +42,8 @@ export function invalidateSchemaForTable(queryClient: QueryClient, connectionId:
  */
 export function useRetryConnection() {
   const queryClient = useQueryClient();
-  return useMutation<SqluiCore.ConnectionMetaData, SqluiCore.ConnectionMetaData, string>(
-    async (connectionId: string) => {
+  return useMutation<SqluiCore.ConnectionMetaData, SqluiCore.ConnectionMetaData, string>({
+    mutationFn: async (connectionId: string) => {
       // Clear all client-side caches for this connection before reconnecting
       // This removes cached databases, tables, columns, and allTableColumns
       queryClient.removeQueries({
@@ -54,31 +54,29 @@ export function useRetryConnection() {
       });
       return dataApi.refreshConnection(connectionId);
     },
-    {
-      onSettled: async (newSuccessConnection, newFailedConnection) => {
-        // NOTE: here we used settled, because if the connection
-        // went bad, we want to also refresh the data
-        const connectionId = newSuccessConnection?.id || newFailedConnection?.id;
+    onSettled: async (newSuccessConnection, newFailedConnection) => {
+      // NOTE: here we used settled, because if the connection
+      // went bad, we want to also refresh the data
+      const connectionId = newSuccessConnection?.id || newFailedConnection?.id;
 
-        queryClient.setQueryData<SqluiCore.ConnectionMetaData[] | undefined>(queryKeys.connections.all, (oldData) => {
-          return oldData?.map((connection) => {
-            if (connection.id === newSuccessConnection?.id) {
-              return newSuccessConnection;
-            }
-            if (connection.id === newFailedConnection?.id) {
-              return newFailedConnection;
-            }
-            return connection;
-          });
+      queryClient.setQueryData<SqluiCore.ConnectionMetaData[] | undefined>(queryKeys.connections.all, (oldData) => {
+        return oldData?.map((connection) => {
+          if (connection.id === newSuccessConnection?.id) {
+            return newSuccessConnection;
+          }
+          if (connection.id === newFailedConnection?.id) {
+            return newFailedConnection;
+          }
+          return connection;
         });
+      });
 
-        // Invalidate to trigger fresh refetch of connection-related data
-        if (connectionId) {
-          queryClient.invalidateQueries(queryKeys.connections.byId(connectionId));
-        }
-      },
+      // Invalidate to trigger fresh refetch of connection-related data
+      if (connectionId) {
+        queryClient.invalidateQueries({ queryKey: queryKeys.connections.byId(connectionId) });
+      }
     },
-  );
+  });
 }
 
 /**

@@ -8,7 +8,7 @@ import IconButton from "@mui/material/IconButton";
 import Link from "@mui/material/Link";
 import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink } from "react-router";
 import { useEffect, useState } from "react";
 import { ColumnDef } from "@tanstack/react-table";
 import DataTable from "src/frontend/components/DataTable";

@@ -20,13 +20,11 @@ const FOLDER_TYPE_BOOKMARKS = "bookmarks";
  * @returns React Query result containing an array of folder items.
  */
 export function useGetFolderItems(folderType: SqluiCore.FolderType) {
-  return useQuery<SqluiCore.FolderItem[], void, SqluiCore.FolderItem[]>(
-    [QUERY_KEY_FOLDER_ITEMS, folderType],
-    async () => dataApi.getFolderItems(folderType),
-    {
-      notifyOnChangeProps: ["data", "error"],
-    },
-  );
+  return useQuery<SqluiCore.FolderItem[], void, SqluiCore.FolderItem[]>({
+    queryKey: [QUERY_KEY_FOLDER_ITEMS, folderType],
+    queryFn: async () => dataApi.getFolderItems(folderType),
+    notifyOnChangeProps: ["data", "error"],
+  });
 }
 
 /**
@@ -37,16 +35,14 @@ export function useGetFolderItems(folderType: SqluiCore.FolderType) {
 export function useAddFolderItem(folderType: SqluiCore.FolderType) {
   const queryClient = useQueryClient();
 
-  return useMutation<void, void, SqluiCore.FolderItemInput>(
-    async (folderItem) => {
+  return useMutation<void, void, SqluiCore.FolderItemInput>({
+    mutationFn: async (folderItem) => {
       await dataApi.addFolderItem(folderType, folderItem);
     },
-    {
-      onSuccess: async () => {
-        queryClient.invalidateQueries([QUERY_KEY_FOLDER_ITEMS, folderType]);
-      },
+    onSuccess: async () => {
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEY_FOLDER_ITEMS, folderType] });
     },
-  );
+  });
 }
 
 /**
@@ -57,16 +53,14 @@ export function useAddFolderItem(folderType: SqluiCore.FolderType) {
 export function useUpdateFolderItem(folderType: SqluiCore.FolderType) {
   const queryClient = useQueryClient();
 
-  return useMutation<void, void, SqluiCore.FolderItem>(
-    async (folderItem) => {
+  return useMutation<void, void, SqluiCore.FolderItem>({
+    mutationFn: async (folderItem) => {
       await dataApi.updateFolderItem(folderType, folderItem);
     },
-    {
-      onSuccess: async () => {
-        queryClient.invalidateQueries([QUERY_KEY_FOLDER_ITEMS, folderType]);
-      },
+    onSuccess: async () => {
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEY_FOLDER_ITEMS, folderType] });
     },
-  );
+  });
 }
 
 /**
@@ -77,16 +71,14 @@ export function useUpdateFolderItem(folderType: SqluiCore.FolderType) {
 export function useDeleteFolderItem(folderType: SqluiCore.FolderType) {
   const queryClient = useQueryClient();
 
-  return useMutation<void, void, string>(
-    async (itemId) => {
+  return useMutation<void, void, string>({
+    mutationFn: async (itemId) => {
       await dataApi.deleteFolderItem(folderType, itemId);
     },
-    {
-      onSuccess: async () => {
-        queryClient.invalidateQueries([QUERY_KEY_FOLDER_ITEMS, folderType]);
-      },
+    onSuccess: async () => {
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEY_FOLDER_ITEMS, folderType] });
     },
-  );
+  });
 }
 
 /** Hook to fetch all items in the recycle bin. */
@@ -122,34 +114,38 @@ export function useRestoreRecycleBinItem() {
   const { onAddQuery } = useConnectionQueries();
   const { selectCommand } = useCommands();
 
-  return useMutation<void, void, SqluiCore.FolderItem>(async (folderItem) => {
-    // here we handle restorable
-    switch (folderItem.type) {
-      case "Connection":
-        await Promise.all([upsertConnection(folderItem.data), deleteRecyleBinItem(folderItem.id)]);
-        navigate("/"); // navigate back to the main page
-        break;
-      case "Query": {
-        const hasResult = !!(folderItem.data as any)?.result;
-        await Promise.all([onAddQuery(folderItem.data, { preserveResult: hasResult }), deleteRecyleBinItem(folderItem.id)]);
-        navigate("/"); // navigate back to the main page
-        break;
-      }
-      case "Session": {
-        // restore the session record
-        const restoredSession = await upsertSession(folderItem.data);
-
-        // restore associated connections to the session
-        if (folderItem.connections?.length) {
-          await Promise.all(folderItem.connections.map((connection) => dataApi.upsertConnectionForSession(restoredSession.id, connection)));
+  return useMutation<void, void, SqluiCore.FolderItem>({
+    mutationFn: async (folderItem) => {
+      // here we handle restorable
+      switch (folderItem.type) {
+        case "Connection":
+          await Promise.all([upsertConnection(folderItem.data), deleteRecyleBinItem(folderItem.id)]);
+          navigate("/"); // navigate back to the main page
+          break;
+        case "Query": {
+          const hasResult = !!(folderItem.data as any)?.result;
+          await Promise.all([onAddQuery(folderItem.data, { preserveResult: hasResult }), deleteRecyleBinItem(folderItem.id)]);
+          navigate("/"); // navigate back to the main page
+          break;
         }
+        case "Session": {
+          // restore the session record
+          const restoredSession = await upsertSession(folderItem.data);
 
-        await deleteRecyleBinItem(folderItem.id);
-        selectCommand({ event: "clientEvent/session/switch" });
-        navigate("/"); // navigate back to the main page
-        break;
+          // restore associated connections to the session
+          if (folderItem.connections?.length) {
+            await Promise.all(
+              folderItem.connections.map((connection) => dataApi.upsertConnectionForSession(restoredSession.id, connection)),
+            );
+          }
+
+          await deleteRecyleBinItem(folderItem.id);
+          selectCommand({ event: "clientEvent/session/switch" });
+          navigate("/"); // navigate back to the main page
+          break;
+        }
       }
-    }
+    },
   });
 }
 
@@ -183,14 +179,12 @@ export function useUpdateBookmarkItem() {
 export function useImportBookmarkItem() {
   const queryClient = useQueryClient();
 
-  return useMutation<void, void, SqluiCore.FolderItem>(
-    async (folderItem) => {
+  return useMutation<void, void, SqluiCore.FolderItem>({
+    mutationFn: async (folderItem) => {
       await dataApi.upsertFolderItem(FOLDER_TYPE_BOOKMARKS, folderItem);
     },
-    {
-      onSuccess: async () => {
-        queryClient.invalidateQueries([QUERY_KEY_FOLDER_ITEMS, FOLDER_TYPE_BOOKMARKS]);
-      },
+    onSuccess: async () => {
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEY_FOLDER_ITEMS, FOLDER_TYPE_BOOKMARKS] });
     },
-  );
+  });
 }

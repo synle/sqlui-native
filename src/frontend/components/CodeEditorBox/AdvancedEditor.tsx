@@ -1,3 +1,4 @@
+import React from "react";
 import * as monaco from "monaco-editor/esm/vs/editor/editor.api";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { styled } from "@mui/system";
@@ -28,7 +29,7 @@ const EDITOR_MODELS_MAP: Record<string, any> = {};
  * @param props - Editor configuration including value, language, word wrap, and editor ref.
  * @returns The rendered Monaco editor container.
  */
-export default function AdvancedEditor(props: AdvancedEditorProps): JSX.Element | null {
+export default function AdvancedEditor(props: AdvancedEditorProps): React.JSX.Element | null {
   const colorMode = useDarkModeSetting();
   const [editor, setEditor] = useState<monaco.editor.IStandaloneCodeEditor | null>(null);
   const monacoEl = useRef(null);

@@ -9,7 +9,9 @@ const QUERY_KEY_SERVER_CONFIGS = "server_configs";
  * @returns React Query result containing the server config object.
  */
 export function useGetServerConfigs() {
-  return useQuery([QUERY_KEY_SERVER_CONFIGS], dataApi.getConfigs, {
+  return useQuery({
+    queryKey: [QUERY_KEY_SERVER_CONFIGS],
+    queryFn: dataApi.getConfigs,
     staleTime: 1800000, // 30 minutes - configs rarely change
     notifyOnChangeProps: ["data", "error"],
   });
@@ -21,9 +23,10 @@ export function useGetServerConfigs() {
  */
 export function useUpdateServerConfigs() {
   const queryClient = useQueryClient();
-  return useMutation(dataApi.updateConfigs, {
+  return useMutation({
+    mutationFn: dataApi.updateConfigs,
     onSuccess: () => {
-      queryClient.invalidateQueries([QUERY_KEY_SERVER_CONFIGS]);
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEY_SERVER_CONFIGS] });
     },
   });
 }

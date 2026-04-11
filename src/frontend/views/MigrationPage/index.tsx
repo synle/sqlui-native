@@ -1,6 +1,7 @@
+import React from "react";
 import BackupIcon from "@mui/icons-material/Backup";
 import { Box, Link, Typography } from "@mui/material";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink } from "react-router";
 import { useEffect } from "react";
 import Breadcrumbs, { BreadcrumbLink } from "src/frontend/components/Breadcrumbs";
 import VirtualizedConnectionTree from "src/frontend/components/VirtualizedConnectionTree";
@@ -40,7 +41,7 @@ type MigrationPageProps = {
  * @param props - Contains the migration mode.
  * @returns The migration page layout.
  */
-export default function MigrationPage(props: MigrationPageProps): JSX.Element | null {
+export default function MigrationPage(props: MigrationPageProps): React.JSX.Element | null {
   const { mode } = props;
   const { setTreeActions } = useTreeActions();
 

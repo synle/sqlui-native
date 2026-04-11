@@ -1,3 +1,4 @@
+import React from "react";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
@@ -28,7 +29,7 @@ type AlertDialogProps = AlertInput & {
  * @param props - Alert dialog configuration including message, labels, and callbacks.
  * @returns The rendered alert dialog element.
  */
-export default function AlertDialog(props: AlertDialogProps): JSX.Element | null {
+export default function AlertDialog(props: AlertDialogProps): React.JSX.Element | null {
   return (
     <Dialog
       open={props.open}

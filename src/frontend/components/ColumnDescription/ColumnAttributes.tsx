@@ -1,3 +1,4 @@
+import React from "react";
 import Tooltip from "@mui/material/Tooltip";
 import { styled } from "@mui/system";
 import { SqluiCore } from "typings";
@@ -11,7 +12,7 @@ type ColumnAttributesProps = {
  * @param props - Props containing the column metadata to display.
  * @returns The rendered column attributes list.
  */
-export default function ColumnAttributes(props: ColumnAttributesProps): JSX.Element | null {
+export default function ColumnAttributes(props: ColumnAttributesProps): React.JSX.Element | null {
   const { column } = props;
 
   const keys = Object.keys(column);

@@ -73,7 +73,7 @@ function buildConnectionString(config: RestApiConfig): string {
  * @param props - The connection string and setter.
  * @returns The REST API config form fields.
  */
-export default function RestApiConnectionFields(props: RestApiConnectionFieldsProps): JSX.Element {
+export default function RestApiConnectionFields(props: RestApiConnectionFieldsProps): React.JSX.Element {
   const { connection, setConnection } = props;
   const config = parseConfig(connection);
 

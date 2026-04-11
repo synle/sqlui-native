@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { render } from "@testing-library/react";
 import { vi } from "vitest";
-import { MemoryRouter } from "react-router-dom";
+import { MemoryRouter } from "react-router";
 
 vi.mock("src/frontend/components/BookmarksItemList", () => ({ default: () => <div>BookmarksList</div> }));
 vi.mock("src/frontend/components/Breadcrumbs", () => ({ default: (_props: any) => <div>Breadcrumbs</div> }));

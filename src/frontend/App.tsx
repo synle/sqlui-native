@@ -1,6 +1,6 @@
 import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes } from "react-router";
 import { Suspense, lazy, useEffect, useRef } from "react";
 import AppHeader from "src/frontend/components/AppHeader";
 import MissionControl, { useCommands } from "src/frontend/components/MissionControl";
@@ -36,7 +36,7 @@ export default function App() {
   useGetSessions();
   const { selectCommand } = useCommands();
   const { add: addToast } = useToaster();
-  const toasterRef = useRef<ToasterHandler | undefined>();
+  const toasterRef = useRef<ToasterHandler | undefined>(undefined);
 
   // @ts-ignore
   const globalMonaco = window.monaco;

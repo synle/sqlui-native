@@ -1,3 +1,4 @@
+import React from "react";
 /** Modal body for editing a folder's name and variables. */
 
 import AddIcon from "@mui/icons-material/Add";
@@ -46,7 +47,7 @@ type EditFolderModalBodyProps = {
  * @param props - Current name/variables and save/cancel callbacks.
  * @returns The edit folder form.
  */
-export default function EditFolderModalBody(props: EditFolderModalBodyProps): JSX.Element {
+export default function EditFolderModalBody(props: EditFolderModalBodyProps): React.JSX.Element {
   const [name, setName] = useState(props.name);
   const [variables, setVariables] = useState<Variable[]>(props.variables);
 

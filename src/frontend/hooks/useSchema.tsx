@@ -12,14 +12,12 @@ import { SqluiCore } from "typings";
 export function useGetDatabases(connectionId?: string) {
   const enabled = !!connectionId;
 
-  return useQuery(
-    connectionId ? queryKeys.databases.list(connectionId) : [connectionId, "databases"],
-    () => (!enabled ? undefined : dataApi.getConnectionDatabases(connectionId)),
-    {
-      enabled,
-      notifyOnChangeProps: ["data", "error"],
-    },
-  );
+  return useQuery({
+    queryKey: connectionId ? queryKeys.databases.list(connectionId) : [connectionId, "databases"],
+    queryFn: () => (!enabled ? undefined : dataApi.getConnectionDatabases(connectionId)),
+    enabled,
+    notifyOnChangeProps: ["data", "error"],
+  });
 }
 
 /**
@@ -31,14 +29,12 @@ export function useGetDatabases(connectionId?: string) {
 export function useGetTables(connectionId?: string, databaseId?: string) {
   const enabled = !!connectionId && !!databaseId;
 
-  return useQuery(
-    connectionId && databaseId ? queryKeys.tables.list(connectionId, databaseId) : [connectionId, databaseId, "tables"],
-    () => (!enabled ? undefined : dataApi.getConnectionTables(connectionId, databaseId)),
-    {
-      enabled,
-      notifyOnChangeProps: ["data", "error"],
-    },
-  );
+  return useQuery({
+    queryKey: connectionId && databaseId ? queryKeys.tables.list(connectionId, databaseId) : [connectionId, databaseId, "tables"],
+    queryFn: () => (!enabled ? undefined : dataApi.getConnectionTables(connectionId, databaseId)),
+    enabled,
+    notifyOnChangeProps: ["data", "error"],
+  });
 }
 
 /**
@@ -51,16 +47,14 @@ export function useGetTables(connectionId?: string, databaseId?: string) {
 export function useGetCachedSchema(connectionId?: string, databaseId?: string) {
   const enabled = !!connectionId && !!databaseId;
 
-  return useQuery(
-    connectionId && databaseId ? queryKeys.schema.cached(connectionId, databaseId) : [connectionId, databaseId, "cachedSchema"],
-    () => (!enabled ? undefined : dataApi.getCachedSchema(connectionId, databaseId)),
-    {
-      enabled,
-      staleTime: 30 * 1000,
-      cacheTime: 5 * 60 * 1000,
-      notifyOnChangeProps: ["data", "error"],
-    },
-  );
+  return useQuery({
+    queryKey: connectionId && databaseId ? queryKeys.schema.cached(connectionId, databaseId) : [connectionId, databaseId, "cachedSchema"],
+    queryFn: () => (!enabled ? undefined : dataApi.getCachedSchema(connectionId, databaseId)),
+    enabled,
+    staleTime: 30 * 1000,
+    gcTime: 5 * 60 * 1000,
+    notifyOnChangeProps: ["data", "error"],
+  });
 }
 
 /**
@@ -84,9 +78,12 @@ export function useGetAllTableColumns(connectionId?: string, databaseId?: string
     columns: Record<string, SqluiCore.ColumnMetaData[]>;
   }>(cachedSchemaKey);
 
-  return useQuery(
-    connectionId && databaseId ? queryKeys.columns.allForDatabase(connectionId, databaseId) : [connectionId, databaseId, "allTableColumns"],
-    async () => {
+  return useQuery({
+    queryKey:
+      connectionId && databaseId
+        ? queryKeys.columns.allForDatabase(connectionId, databaseId)
+        : [connectionId, databaseId, "allTableColumns"],
+    queryFn: async () => {
       if (!enabled) {
         return {} as Record<string, SqluiCore.ColumnMetaData[]>;
       }
@@ -110,14 +107,12 @@ export function useGetAllTableColumns(connectionId?: string, databaseId?: string
 
       return res;
     },
-    {
-      enabled,
-      placeholderData: cachedSchema?.columns ?? undefined,
-      staleTime: 5 * 60 * 1000,
-      cacheTime: 10 * 60 * 1000,
-      notifyOnChangeProps: ["data", "error"],
-    },
-  );
+    enabled,
+    placeholderData: cachedSchema?.columns ?? undefined,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+    notifyOnChangeProps: ["data", "error"],
+  });
 }
 
 /**
@@ -130,16 +125,15 @@ export function useGetAllTableColumns(connectionId?: string, databaseId?: string
 export function useGetColumns(connectionId?: string, databaseId?: string, tableId?: string) {
   const enabled = !!connectionId && !!databaseId && !!tableId;
 
-  return useQuery(
-    connectionId && databaseId && tableId
-      ? queryKeys.columns.list(connectionId, databaseId, tableId)
-      : [connectionId, databaseId, tableId, "columns"],
-    () => (!enabled ? undefined : dataApi.getConnectionColumns(connectionId, databaseId, tableId)),
-    {
-      enabled,
-      staleTime: 60000, // refetch in background after 1 minute
-      keepPreviousData: true, // show cached data while refetching
-      notifyOnChangeProps: ["data", "error"],
-    },
-  );
+  return useQuery({
+    queryKey:
+      connectionId && databaseId && tableId
+        ? queryKeys.columns.list(connectionId, databaseId, tableId)
+        : [connectionId, databaseId, tableId, "columns"],
+    queryFn: () => (!enabled ? undefined : dataApi.getConnectionColumns(connectionId, databaseId, tableId)),
+    enabled,
+    staleTime: 60000, // refetch in background after 1 minute
+    placeholderData: (prev) => prev, // show cached data while refetching (replaces keepPreviousData)
+    notifyOnChangeProps: ["data", "error"],
+  });
 }

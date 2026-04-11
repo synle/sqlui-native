@@ -1,3 +1,4 @@
+import React from "react";
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import IconButton from "@mui/material/IconButton";
@@ -11,7 +12,7 @@ type LayoutTwoColumnsProps = {
   /** Optional CSS class name for the container. */
   className?: string;
   /** Two child elements: [0] = left pane content, [1] = right pane content. */
-  children: JSX.Element[];
+  children: React.JSX.Element[];
 };
 
 /** Style for the sidebar toggle button. */
@@ -33,7 +34,7 @@ const toggleButtonStyle = {
  * @param props - Contains className and two children for left and right panes.
  * @returns The two-column layout or single-column when sidebar is collapsed.
  */
-export default function LayoutTwoColumns(props: LayoutTwoColumnsProps): JSX.Element | null {
+export default function LayoutTwoColumns(props: LayoutTwoColumnsProps): React.JSX.Element | null {
   const { className = "", children } = props;
   const { value: width, onChange: onSetWidth } = useSideBarWidthPreference();
   const { setTreeActions } = useTreeActions();

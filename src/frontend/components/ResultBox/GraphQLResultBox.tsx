@@ -41,7 +41,7 @@ function getStatusColor(status: number): "success" | "warning" | "error" | "info
  * @param entries - Object with string keys and values.
  * @returns A styled table element.
  */
-function KeyValueTable({ entries }: { entries: Record<string, any> }): JSX.Element {
+function KeyValueTable({ entries }: { entries: Record<string, any> }): React.JSX.Element {
   const keys = Object.keys(entries);
   if (keys.length === 0) {
     return <div style={{ padding: "0.75rem", opacity: 0.6 }}>(none)</div>;
@@ -90,7 +90,7 @@ function KeyValueTable({ entries }: { entries: Record<string, any> }): JSX.Eleme
  * @param props - GraphQL result metadata and timing info.
  * @returns The GraphQL result viewer.
  */
-export default function GraphQLResultBox(props: GraphQLResultBoxProps): JSX.Element {
+export default function GraphQLResultBox(props: GraphQLResultBoxProps): React.JSX.Element {
   const { meta, raw, executionStart, executionEnd } = props;
 
   const status: number = meta.status || 0;
