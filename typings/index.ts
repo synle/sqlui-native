@@ -1,3 +1,4 @@
+import React from "react";
 import Electron from "electron";
 declare global {
   /** Extended Window interface with Electron-specific properties and utilities. */
@@ -429,7 +430,7 @@ export module SqlAction {
     label: string;
     query?: string;
     description?: string;
-    icon?: JSX.Element;
+    icon?: React.JSX.Element;
     formatter?: "sql" | "js" | "shell" | "graphql";
     /**
      * if true, will skip when we attempt to generate the guide docs
@@ -437,7 +438,7 @@ export module SqlAction {
      */
     skipGuide?: boolean;
     onClick?: () => void;
-    startIcon?: JSX.Element;
+    startIcon?: React.JSX.Element;
   };
 
   /** Function that generates a script action for a table-level operation. */

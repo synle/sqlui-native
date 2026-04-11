@@ -40,7 +40,7 @@ type SplitButtonProps = {
  * @param props - Configuration including id, label, primary click handler, and dropdown options.
  * @returns The split button group with dropdown menu.
  */
-export default function SplitButton(props: SplitButtonProps): JSX.Element | null {
+export default function SplitButton(props: SplitButtonProps): React.JSX.Element | null {
   const { id, options, label } = props;
   const [open, setOpen] = React.useState(false);
   const anchorRef = React.useRef<HTMLDivElement>(null);
@@ -62,7 +62,7 @@ export default function SplitButton(props: SplitButtonProps): JSX.Element | null
     setOpen(false);
   };
 
-  let popperBody: JSX.Element = <></>;
+  let popperBody: React.JSX.Element = <></>;
   if (options.length === 0) {
     popperBody = <div style={{ padding: "10px 15px" }}>No options.</div>;
   } else {

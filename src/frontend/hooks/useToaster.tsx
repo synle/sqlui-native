@@ -10,9 +10,9 @@ import { getGeneratedRandomId } from "src/frontend/utils/commonUtils";
 
 /** Base properties for creating a toast notification. */
 type CoreToasterProps = {
-  message: string | JSX.Element;
+  message: string | React.JSX.Element;
   autoHideDuration?: number;
-  action?: JSX.Element;
+  action?: React.JSX.Element;
 };
 
 /** Full properties for a toast notification, extending core props with history/detail fields. */
@@ -34,7 +34,7 @@ export type ToasterHandler = {
 /** Represents a persisted toast notification in the history log. */
 export type ToastHistoryEntry = {
   id: string;
-  message: string | JSX.Element;
+  message: string | React.JSX.Element;
   detail?: string;
   metadata?: Record<string, any>;
   createdTime: number;
@@ -56,8 +56,8 @@ const DEFAULT_AUTO_HIDE_DURATION = 5000;
 
 type InternalToast = {
   id: string;
-  message: string | JSX.Element;
-  action?: JSX.Element;
+  message: string | React.JSX.Element;
+  action?: React.JSX.Element;
   autoHideDuration?: number;
   detail?: string;
   metadata?: Record<string, any>;

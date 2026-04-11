@@ -1,3 +1,4 @@
+import React from "react";
 import AlertDialog from "src/frontend/components/ActionDialogs/AlertDialog";
 import ChoiceDialog from "src/frontend/components/ActionDialogs/ChoiceDialog";
 import ModalDialog from "src/frontend/components/ActionDialogs/ModalDialog";
@@ -9,7 +10,7 @@ import { useActionDialogs } from "src/frontend/hooks/useActionDialogs";
  * based on the current dialog state from useActionDialogs.
  * @returns The rendered dialog component matching the current dialog type, or null if no dialog is active.
  */
-export default function ActionDialogs(): JSX.Element | null {
+export default function ActionDialogs(): React.JSX.Element | null {
   const { dialog, dismiss } = useActionDialogs();
 
   if (!dialog) {

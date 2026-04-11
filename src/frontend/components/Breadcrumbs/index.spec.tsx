@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { render } from "@testing-library/react";
 import { vi } from "vitest";
-import { MemoryRouter } from "react-router-dom";
+import { MemoryRouter } from "react-router";
 
 vi.mock("src/frontend/hooks/useSession", () => ({
   useGetCurrentSession: () => ({ data: { id: "s1", name: "Home" }, isLoading: false }),

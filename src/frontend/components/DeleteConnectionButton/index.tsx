@@ -16,7 +16,7 @@ type DeleteConnectionButtonProps = {
  * @param props - Contains the connectionId to delete.
  * @returns A delete icon button with tooltip.
  */
-export default function DeleteConnectionButton(props: DeleteConnectionButtonProps): JSX.Element | null {
+export default function DeleteConnectionButton(props: DeleteConnectionButtonProps): React.JSX.Element | null {
   const { connectionId } = props;
   const { confirm } = useActionDialogs();
   const { mutateAsync } = useDeleteConnection();

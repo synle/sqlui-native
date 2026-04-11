@@ -1,3 +1,4 @@
+import React from "react";
 import { useEffect, useRef, useState } from "react";
 import { formatDuration } from "src/frontend/utils/formatter";
 
@@ -15,9 +16,9 @@ type TimerProps = {
  * @param props - Start and optional end timestamps.
  * @returns Formatted duration string or null if no startTime.
  */
-export default function _Timer(props: TimerProps): JSX.Element | null {
+export default function _Timer(props: TimerProps): React.JSX.Element | null {
   const { startTime } = props;
-  const intervalRef = useRef<ReturnType<typeof setInterval> | undefined>();
+  const intervalRef = useRef<ReturnType<typeof setInterval> | undefined>(undefined);
   const [endTime, setEndTime] = useState<number>(Date.now());
 
   useEffect(() => {

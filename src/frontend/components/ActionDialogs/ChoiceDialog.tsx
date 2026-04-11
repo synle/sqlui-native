@@ -1,8 +1,9 @@
+import React from "react";
 import Dialog from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
+import ListItemButton from "@mui/material/ListItemButton";
 import ListItemText from "@mui/material/ListItemText";
 
 /** Represents a single selectable option in a choice dialog. */
@@ -35,7 +36,7 @@ type ChoiceDialogProps = ChoiceInput & {
  * @param props - Choice dialog configuration including title, message, options, and selection callback.
  * @returns The rendered choice dialog element.
  */
-export default function ChoiceDialog(props: ChoiceDialogProps): JSX.Element | null {
+export default function ChoiceDialog(props: ChoiceDialogProps): React.JSX.Element | null {
   const { title, message, options, open, required, onDismiss: handleClose, onSelect: handleListItemClick } = props;
 
   let onClose: (() => void) | undefined = handleClose;
@@ -56,8 +57,7 @@ export default function ChoiceDialog(props: ChoiceDialogProps): JSX.Element | nu
         {message}
         <List dense>
           {options.map((option) => (
-            <ListItem
-              button
+            <ListItemButton
               onClick={() => !option.disabled && handleListItemClick(option.value)}
               disabled={!!option.disabled}
               key={option.value}
@@ -65,7 +65,7 @@ export default function ChoiceDialog(props: ChoiceDialogProps): JSX.Element | nu
             >
               {!option.startIcon ? null : option.startIcon}
               <ListItemText primary={option.label} />
-            </ListItem>
+            </ListItemButton>
           ))}
         </List>
       </DialogContent>

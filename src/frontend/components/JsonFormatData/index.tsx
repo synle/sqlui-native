@@ -1,3 +1,4 @@
+import React from "react";
 import CodeEditorBox from "src/frontend/components/CodeEditorBox";
 
 /** Props for the JsonFormatData component. */
@@ -11,7 +12,7 @@ type FormatDataProps = {
  * @param props - Contains the data to format and display.
  * @returns A code editor box showing the JSON-formatted data.
  */
-export default function JsonFormatData(props: FormatDataProps): JSX.Element | null {
+export default function JsonFormatData(props: FormatDataProps): React.JSX.Element | null {
   const { data } = props;
   return <CodeEditorBox value={JSON.stringify(data, null, 2)} language="json" readOnly={true} height="60vh" />;
 }

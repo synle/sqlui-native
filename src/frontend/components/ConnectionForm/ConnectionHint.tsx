@@ -1,3 +1,4 @@
+import React from "react";
 import StarIcon from "@mui/icons-material/Star";
 import { Box, Link, Skeleton } from "@mui/material";
 import Avatar from "@mui/material/Avatar";
@@ -22,7 +23,7 @@ type ConnectionHintProps = {
  * @param props - Configuration including onChange callback and whether to show bookmarked connections.
  * @returns The rendered connection hint list.
  */
-export default function ConnectionHint(props: ConnectionHintProps): JSX.Element | null {
+export default function ConnectionHint(props: ConnectionHintProps): React.JSX.Element | null {
   const { data, isLoading } = useGetBookmarkItems();
   let bookmarkedConnectionsDom: any[] = [];
 

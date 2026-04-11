@@ -1,3 +1,4 @@
+import React from "react";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
@@ -37,7 +38,7 @@ type TableActionsProps = {
  * @param props - Contains connectionId, databaseId, and tableId to determine available actions.
  * @returns The dropdown button or null if context menu is disabled.
  */
-export default function TableActions(props: TableActionsProps): JSX.Element | null {
+export default function TableActions(props: TableActionsProps): React.JSX.Element | null {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const querySize = useQuerySizeSetting();

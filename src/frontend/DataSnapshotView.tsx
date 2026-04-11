@@ -9,7 +9,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import InputLabel from "@mui/material/InputLabel";
 import SpeedDial from "@mui/material/SpeedDial";
 import SpeedDialAction from "@mui/material/SpeedDialAction";
-import { useParams } from "react-router-dom";
+import { useParams } from "react-router";
 import { useNavigate } from "src/frontend/utils/commonUtils";
 import { useEffect, useState } from "react";
 import { DataTableWithJSONList } from "src/frontend/components/DataTable";
@@ -94,11 +94,21 @@ function QuickActionDial(props: QuickActionDialProps) {
         <SpeedDialAction
           key="action_data_snapshot_detailed_description"
           icon={<DescriptionIcon />}
-          tooltipTitle="Show Data Snapshot Detailed Description"
+          slotProps={{ tooltip: { title: "Show Data Snapshot Detailed Description" } }}
           onClick={onShowDescription}
         />,
-        <SpeedDialAction key="action_download_as_csv" icon={<ListAltIcon />} tooltipTitle="Download as CSV" onClick={onDownloadCSV} />,
-        <SpeedDialAction key="action_download_as_json" icon={<DataArrayIcon />} tooltipTitle="Download as JSON" onClick={onDownloadJSON} />,
+        <SpeedDialAction
+          key="action_download_as_csv"
+          icon={<ListAltIcon />}
+          slotProps={{ tooltip: { title: "Download as CSV" } }}
+          onClick={onDownloadCSV}
+        />,
+        <SpeedDialAction
+          key="action_download_as_json"
+          icon={<DataArrayIcon />}
+          slotProps={{ tooltip: { title: "Download as JSON" } }}
+          onClick={onDownloadJSON}
+        />,
       ];
   return (
     <SpeedDial
@@ -109,7 +119,11 @@ function QuickActionDial(props: QuickActionDialProps) {
       open={open}
       sx={{ position: "fixed", bottom: 2, right: 2 }}
     >
-      <SpeedDialAction icon={<KeyboardArrowLeftIcon />} tooltipTitle="Go back to Data Snapshot List" onClick={onGoToDataSnapshotList} />
+      <SpeedDialAction
+        icon={<KeyboardArrowLeftIcon />}
+        slotProps={{ tooltip: { title: "Go back to Data Snapshot List" } }}
+        onClick={onGoToDataSnapshotList}
+      />
       {actionDoms}
     </SpeedDial>
   );

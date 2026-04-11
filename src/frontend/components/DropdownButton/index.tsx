@@ -28,7 +28,7 @@ type DropdownButtonProps = {
  * @param props - Dropdown button configuration including options and toggle callback.
  * @returns The dropdown button with attached menu.
  */
-export default function DropdownButton(props: DropdownButtonProps): JSX.Element | null {
+export default function DropdownButton(props: DropdownButtonProps): React.JSX.Element | null {
   const { id, options, children, maxHeight } = props;
   const [open, setOpen] = React.useState(false);
   const anchorRef = React.useRef<HTMLDivElement>(null);

@@ -14,7 +14,9 @@ const QUERY_KEY_SESSIONS = "sessions";
  * @returns React Query result containing an array of sessions.
  */
 export function useGetSessions() {
-  return useQuery([QUERY_KEY_SESSIONS], dataApi.getSessions, {
+  return useQuery({
+    queryKey: [QUERY_KEY_SESSIONS],
+    queryFn: dataApi.getSessions,
     notifyOnChangeProps: ["data", "error"],
   });
 }
@@ -24,7 +26,9 @@ export function useGetSessions() {
  * @returns React Query result containing the current session.
  */
 export function useGetCurrentSession() {
-  return useQuery([QUERY_KEY_SESSIONS, "current"], dataApi.getSession, {
+  return useQuery({
+    queryKey: [QUERY_KEY_SESSIONS, "current"],
+    queryFn: dataApi.getSession,
     enabled: !!getCurrentSessionId(),
     notifyOnChangeProps: ["data", "error", "status"],
   });
@@ -37,9 +41,11 @@ export function useGetCurrentSession() {
  */
 export function useSelectSession(suppressReload?: boolean) {
   const navigate = useNavigate();
-  return useMutation<void, void, string>(async (newSessionId: string) => {
-    navigate("/", { replace: true });
-    await setCurrentSessionId(newSessionId, suppressReload);
+  return useMutation<void, void, string>({
+    mutationFn: async (newSessionId: string) => {
+      navigate("/", { replace: true });
+      await setCurrentSessionId(newSessionId, suppressReload);
+    },
   });
 }
 
@@ -49,9 +55,10 @@ export function useSelectSession(suppressReload?: boolean) {
  */
 export function useUpsertSession() {
   const queryClient = useQueryClient();
-  return useMutation<SqluiCore.Session, void, SqluiCore.CoreSession>(dataApi.upsertSession, {
+  return useMutation<SqluiCore.Session, void, SqluiCore.CoreSession>({
+    mutationFn: dataApi.upsertSession,
     onSuccess: async (newSession) => {
-      queryClient.invalidateQueries([QUERY_KEY_SESSIONS]);
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEY_SESSIONS] });
       return newSession;
     },
   });
@@ -63,9 +70,10 @@ export function useUpsertSession() {
  */
 export function useCloneSession() {
   const queryClient = useQueryClient();
-  return useMutation<SqluiCore.Session, void, SqluiCore.CoreSession>(dataApi.cloneSession, {
+  return useMutation<SqluiCore.Session, void, SqluiCore.CoreSession>({
+    mutationFn: dataApi.cloneSession,
     onSuccess: async (newSession) => {
-      queryClient.invalidateQueries([QUERY_KEY_SESSIONS]);
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEY_SESSIONS] });
       return newSession;
     },
   });
@@ -81,8 +89,8 @@ export function useDeleteSession() {
   const { data: sessions } = useGetSessions();
   const isSoftDeleteModeSetting = useIsSoftDeleteModeSetting();
 
-  return useMutation<{ deletedSessionId: string; connections: SqluiCore.ConnectionProps[] }, void, string>(
-    async (sessionId: string) => {
+  return useMutation<{ deletedSessionId: string; connections: SqluiCore.ConnectionProps[] }, void, string>({
+    mutationFn: async (sessionId: string) => {
       // fetch connections before deleting, so we can back them up
       let connections: SqluiCore.ConnectionProps[] = [];
       if (isSoftDeleteModeSetting) {
@@ -97,33 +105,31 @@ export function useDeleteSession() {
       const deletedSessionId = await dataApi.deleteSession(sessionId);
       return { deletedSessionId, connections };
     },
-    {
-      onSuccess: async ({ deletedSessionId, connections }) => {
-        queryClient.invalidateQueries([QUERY_KEY_SESSIONS]);
+    onSuccess: async ({ deletedSessionId, connections }) => {
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEY_SESSIONS] });
 
-        try {
-          if (isSoftDeleteModeSetting) {
-            const sessionToBackup = sessions?.find((session) => session.id === deletedSessionId);
+      try {
+        if (isSoftDeleteModeSetting) {
+          const sessionToBackup = sessions?.find((session) => session.id === deletedSessionId);
 
-            if (sessionToBackup) {
-              // strip status from connections before backup
-              const connectionsToBackup = connections.map(({ status, ...rest }) => rest as SqluiCore.ConnectionProps);
+          if (sessionToBackup) {
+            // strip status from connections before backup
+            const connectionsToBackup = connections.map(({ status, ...rest }) => rest as SqluiCore.ConnectionProps);
 
-              await addRecycleBinItem({
-                type: "Session",
-                name: sessionToBackup.name,
-                data: sessionToBackup,
-                connections: connectionsToBackup,
-              });
-            }
+            await addRecycleBinItem({
+              type: "Session",
+              name: sessionToBackup.name,
+              data: sessionToBackup,
+              connections: connectionsToBackup,
+            });
           }
-        } catch (err) {
-          console.error("useSession.tsx:addRecycleBinItem", err);
-          // TODO: add error handling
         }
+      } catch (err) {
+        console.error("useSession.tsx:addRecycleBinItem", err);
+        // TODO: add error handling
+      }
 
-        return deletedSessionId;
-      },
+      return deletedSessionId;
     },
-  );
+  });
 }

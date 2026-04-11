@@ -1,15 +1,16 @@
+import React from "react";
 import HomeIcon from "@mui/icons-material/Home";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import Box from "@mui/material/Box";
 import Breadcrumbs from "@mui/material/Breadcrumbs";
 import Link from "@mui/material/Link";
 import Typography from "@mui/material/Typography";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink } from "react-router";
 import { useGetCurrentSession } from "src/frontend/hooks/useSession";
 
 /** Represents a single breadcrumb navigation link with a label and optional URL. */
 export type BreadcrumbLink = {
-  label: string | JSX.Element;
+  label: string | React.JSX.Element;
   href?: string;
 };
 
@@ -23,7 +24,7 @@ type BreadcrumbProps = {
  * @param props - Configuration containing the list of breadcrumb links.
  * @returns The rendered breadcrumb navigation, or null while loading.
  */
-export default (props: BreadcrumbProps): JSX.Element | null => {
+export default (props: BreadcrumbProps): React.JSX.Element | null => {
   const { links } = props;
   const { data: currentSession, isLoading } = useGetCurrentSession();
 

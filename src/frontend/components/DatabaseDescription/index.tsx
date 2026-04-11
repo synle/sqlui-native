@@ -21,7 +21,7 @@ type DatabaseDescriptionProps = {
  * @param props - Contains the connectionId to fetch databases for.
  * @returns A list of accordion sections for each database, or a loading/error alert.
  */
-export default function DatabaseDescription(props: DatabaseDescriptionProps): JSX.Element | null {
+export default function DatabaseDescription(props: DatabaseDescriptionProps): React.JSX.Element | null {
   const { connectionId } = props;
   const { data: databases, isLoading, isError } = useGetDatabases(connectionId);
   const { visibles, onToggle } = useShowHide();

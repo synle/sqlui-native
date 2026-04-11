@@ -1,3 +1,4 @@
+import React from "react";
 import KeyIcon from "@mui/icons-material/Key";
 import SearchIcon from "@mui/icons-material/Search";
 import StorageIcon from "@mui/icons-material/Storage";
@@ -126,14 +127,14 @@ function ColumnBadges({ column }: { column: SqluiCore.ColumnMetaData }) {
  * @param props - Props containing the navigation callback.
  * @returns The rendered schema search modal content.
  */
-export default function SchemaSearchModal(props: SchemaSearchModalProps): JSX.Element {
+export default function SchemaSearchModal(props: SchemaSearchModalProps): React.JSX.Element {
   const { onNavigate } = props;
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SqluiCore.SchemaSearchResult[]>([]);
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>("simple");
-  const debounceRef = useRef<ReturnType<typeof setTimeout>>();
+  const debounceRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   const doSearch = useCallback(async (searchQuery: string) => {
     if (!searchQuery.trim()) {
@@ -182,12 +183,14 @@ export default function SchemaSearchModal(props: SchemaSearchModalProps): JSX.El
           fullWidth
           size="small"
           autoComplete="off"
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <SearchIcon fontSize="small" />
-              </InputAdornment>
-            ),
+          slotProps={{
+            input: {
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon fontSize="small" />
+                </InputAdornment>
+              ),
+            },
           }}
         />
         <ToggleButtonGroup value={viewMode} exclusive onChange={(_e, val) => val && setViewMode(val)} size="small">
@@ -239,7 +242,7 @@ export default function SchemaSearchModal(props: SchemaSearchModalProps): JSX.El
                 {/* Connection + Database + Table header */}
                 <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: viewMode === "detailed" ? 1 : 0.5 }}>
                   <StorageIcon fontSize="small" color="action" />
-                  <Typography variant="body2" fontWeight="bold" noWrap>
+                  <Typography variant="body2" sx={{ fontWeight: "bold" }} noWrap>
                     {group.connectionName}
                   </Typography>
                   <Typography variant="caption" color="text.secondary" sx={{ mx: 0.5 }}>
@@ -252,7 +255,7 @@ export default function SchemaSearchModal(props: SchemaSearchModalProps): JSX.El
                     &rsaquo;
                   </Typography>
                   <TableChartIcon fontSize="small" color="action" />
-                  <Typography variant="body2" fontWeight="bold" noWrap>
+                  <Typography variant="body2" sx={{ fontWeight: "bold" }} noWrap>
                     {group.tableId}
                   </Typography>
                 </Box>
@@ -294,7 +297,7 @@ export default function SchemaSearchModal(props: SchemaSearchModalProps): JSX.El
                         }}
                       >
                         <ViewColumnIcon fontSize="small" color="disabled" sx={{ mr: 0.5 }} />
-                        <Typography variant="body2" fontWeight="medium" sx={{ minWidth: 150 }}>
+                        <Typography variant="body2" sx={{ fontWeight: "medium", minWidth: 150 }}>
                           {col.name}
                         </Typography>
                         <ColumnBadges column={col} />

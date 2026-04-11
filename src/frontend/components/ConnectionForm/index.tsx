@@ -28,7 +28,7 @@ export function NewConnectionForm() {
   const [name, setName] = useState("");
   const [connection, setConnection] = useState("");
   const [showHint, setShowHint] = useState(true);
-  const { mutateAsync, isLoading: saving } = useUpsertConnection();
+  const { mutateAsync, isPending: saving } = useUpsertConnection();
   const navigate = useNavigate();
 
   const onSave = async () => {
@@ -91,12 +91,12 @@ export function NewConnectionForm() {
  * @param props - Props containing the connection ID to edit.
  * @returns The rendered edit connection form, a loading indicator, or an error message if not found.
  */
-export function EditConnectionForm(props: ConnectionFormProps): JSX.Element | null {
+export function EditConnectionForm(props: ConnectionFormProps): React.JSX.Element | null {
   const { id } = props;
   const [name, setName] = useState("");
   const [connection, setConnection] = useState("");
   const { data: initialConnection, isLoading: loading } = useGetConnectionById(id);
-  const { mutateAsync, isLoading: saving } = useUpsertConnection();
+  const { mutateAsync, isPending: saving } = useUpsertConnection();
   const navigate = useNavigate();
 
   const onSave = async () => {
@@ -156,7 +156,7 @@ type MainConnectionFormProps = {
  * @param props - Form state, setters, and submit handler.
  * @returns The rendered connection form.
  */
-function MainConnectionForm(props: MainConnectionFormProps): JSX.Element | null {
+function MainConnectionForm(props: MainConnectionFormProps): React.JSX.Element | null {
   const navigate = useNavigate();
   const [showHint, setShowHint] = useState(false);
   const [showSqliteDatabasePathSelection, setShowSqliteDatabasePathSelection] = useState(false);
@@ -326,7 +326,7 @@ function MainConnectionForm(props: MainConnectionFormProps): JSX.Element | null 
  * @param props - Contains the detected dialect string.
  * @returns The rendered alert, or null if no guide is available.
  */
-function ConnectionSetupGuideAlert(props: { dialect: string }): JSX.Element | null {
+function ConnectionSetupGuideAlert(props: { dialect: string }): React.JSX.Element | null {
   const guide = getConnectionSetupGuide(props.dialect);
   if (!guide) {
     return null;

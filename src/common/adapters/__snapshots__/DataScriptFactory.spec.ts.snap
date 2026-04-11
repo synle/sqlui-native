@@ -53,8 +53,8 @@ LIMIT
   {
     "formatter": "sql",
     "label": "Select Distinct",
-    "query": "SELECT
-  DISTINCT column1
+    "query": "SELECT DISTINCT
+  column1
 FROM
   table1
 WHERE
@@ -75,8 +75,7 @@ VALUES
   {
     "formatter": "sql",
     "label": "Update",
-    "query": "UPDATE
-  table1
+    "query": "UPDATE table1
 SET
   id = '',
   column1 = '',
@@ -89,8 +88,7 @@ WHERE
   {
     "formatter": "sql",
     "label": "Delete",
-    "query": "DELETE FROM
-  table1
+    "query": "DELETE FROM table1
 WHERE
   id = ''
   AND column1 = ''
@@ -113,20 +111,20 @@ WHERE
   {
     "formatter": "sql",
     "label": "Add Column",
-    "query": "ALTER TABLE
-  table1
-ADD
-  COLUMN newColumn1 varchar(200)",
+    "query": "ALTER TABLE table1
+ADD COLUMN newColumn1 varchar(200)",
   },
   {
     "formatter": "sql",
     "label": "Drop Column",
-    "query": "ALTER TABLE
-  table1 DROP COLUMN id;
-ALTER TABLE
-  table1 DROP COLUMN column1;
-ALTER TABLE
-  table1 DROP COLUMN column2;",
+    "query": "ALTER TABLE table1
+DROP COLUMN id;
+
+ALTER TABLE table1
+DROP COLUMN column1;
+
+ALTER TABLE table1
+DROP COLUMN column2;",
   },
 ]
 `;
@@ -180,8 +178,8 @@ WHERE
   {
     "formatter": "sql",
     "label": "Select Distinct",
-    "query": "SELECT
-  DISTINCT TOP 200 column1
+    "query": "SELECT DISTINCT
+  TOP 200 column1
 FROM
   table1
 WHERE
@@ -200,8 +198,7 @@ VALUES
   {
     "formatter": "sql",
     "label": "Update",
-    "query": "UPDATE
-  table1
+    "query": "UPDATE table1
 SET
   id = '',
   column1 = '',
@@ -214,8 +211,7 @@ WHERE
   {
     "formatter": "sql",
     "label": "Delete",
-    "query": "DELETE FROM
-  table1
+    "query": "DELETE FROM table1
 WHERE
   id = ''
   AND column1 = ''
@@ -238,20 +234,20 @@ WHERE
   {
     "formatter": "sql",
     "label": "Add Column",
-    "query": "ALTER TABLE
-  table1
-ADD
-  COLUMN newColumn1 NVARCHAR(200)",
+    "query": "ALTER TABLE table1
+ADD COLUMN newColumn1 NVARCHAR (200)",
   },
   {
     "formatter": "sql",
     "label": "Drop Column",
-    "query": "ALTER TABLE
-  table1 DROP COLUMN id;
-ALTER TABLE
-  table1 DROP COLUMN column1;
-ALTER TABLE
-  table1 DROP COLUMN column2;",
+    "query": "ALTER TABLE table1
+DROP COLUMN id;
+
+ALTER TABLE table1
+DROP COLUMN column1;
+
+ALTER TABLE table1
+DROP COLUMN column2;",
   },
 ]
 `;
@@ -309,8 +305,8 @@ LIMIT
   {
     "formatter": "sql",
     "label": "Select Distinct",
-    "query": "SELECT
-  DISTINCT column1
+    "query": "SELECT DISTINCT
+  column1
 FROM
   table1
 WHERE
@@ -331,8 +327,7 @@ VALUES
   {
     "formatter": "sql",
     "label": "Update",
-    "query": "UPDATE
-  table1
+    "query": "UPDATE table1
 SET
   id = '',
   column1 = '',
@@ -345,8 +340,7 @@ WHERE
   {
     "formatter": "sql",
     "label": "Delete",
-    "query": "DELETE FROM
-  table1
+    "query": "DELETE FROM table1
 WHERE
   id = ''
   AND column1 = ''
@@ -369,20 +363,20 @@ WHERE
   {
     "formatter": "sql",
     "label": "Add Column",
-    "query": "ALTER TABLE
-  table1
-ADD
-  COLUMN newColumn1 varchar(200)",
+    "query": "ALTER TABLE table1
+ADD COLUMN newColumn1 varchar(200)",
   },
   {
     "formatter": "sql",
     "label": "Drop Column",
-    "query": "ALTER TABLE
-  table1 DROP COLUMN id;
-ALTER TABLE
-  table1 DROP COLUMN column1;
-ALTER TABLE
-  table1 DROP COLUMN column2;",
+    "query": "ALTER TABLE table1
+DROP COLUMN id;
+
+ALTER TABLE table1
+DROP COLUMN column1;
+
+ALTER TABLE table1
+DROP COLUMN column2;",
   },
 ]
 `;
@@ -440,8 +434,8 @@ LIMIT
   {
     "formatter": "sql",
     "label": "Select Distinct",
-    "query": "SELECT
-  DISTINCT column1
+    "query": "SELECT DISTINCT
+  column1
 FROM
   table1
 WHERE
@@ -462,8 +456,7 @@ VALUES
   {
     "formatter": "sql",
     "label": "Update",
-    "query": "UPDATE
-  table1
+    "query": "UPDATE table1
 SET
   id = '',
   column1 = '',
@@ -476,8 +469,7 @@ WHERE
   {
     "formatter": "sql",
     "label": "Delete",
-    "query": "DELETE FROM
-  table1
+    "query": "DELETE FROM table1
 WHERE
   id = ''
   AND column1 = ''
@@ -500,20 +492,20 @@ WHERE
   {
     "formatter": "sql",
     "label": "Add Column",
-    "query": "ALTER TABLE
-  table1
-ADD
-  COLUMN newColumn1 CHAR(200)",
+    "query": "ALTER TABLE table1
+ADD COLUMN newColumn1 CHAR(200)",
   },
   {
     "formatter": "sql",
     "label": "Drop Column",
-    "query": "ALTER TABLE
-  table1 DROP COLUMN id;
-ALTER TABLE
-  table1 DROP COLUMN column1;
-ALTER TABLE
-  table1 DROP COLUMN column2;",
+    "query": "ALTER TABLE table1
+DROP COLUMN id;
+
+ALTER TABLE table1
+DROP COLUMN column1;
+
+ALTER TABLE table1
+DROP COLUMN column2;",
   },
 ]
 `;
@@ -571,8 +563,8 @@ LIMIT
   {
     "formatter": "sql",
     "label": "Select Distinct",
-    "query": "SELECT
-  DISTINCT column1
+    "query": "SELECT DISTINCT
+  column1
 FROM
   table1
 WHERE
@@ -593,8 +585,7 @@ VALUES
   {
     "formatter": "sql",
     "label": "Update",
-    "query": "UPDATE
-  table1
+    "query": "UPDATE table1
 SET
   id = '',
   column1 = '',
@@ -607,8 +598,7 @@ WHERE
   {
     "formatter": "sql",
     "label": "Delete",
-    "query": "DELETE FROM
-  table1
+    "query": "DELETE FROM table1
 WHERE
   id = ''
   AND column1 = ''
@@ -631,20 +621,20 @@ WHERE
   {
     "formatter": "sql",
     "label": "Add Column",
-    "query": "ALTER TABLE
-  table1
-ADD
-  COLUMN newColumn1 TEXT",
+    "query": "ALTER TABLE table1
+ADD COLUMN newColumn1 TEXT",
   },
   {
     "formatter": "sql",
     "label": "Drop Column",
-    "query": "ALTER TABLE
-  table1 DROP COLUMN id;
-ALTER TABLE
-  table1 DROP COLUMN column1;
-ALTER TABLE
-  table1 DROP COLUMN column2;",
+    "query": "ALTER TABLE table1
+DROP COLUMN id;
+
+ALTER TABLE table1
+DROP COLUMN column1;
+
+ALTER TABLE table1
+DROP COLUMN column2;",
   },
 ]
 `;
@@ -722,8 +712,8 @@ exports[`Scripts > cassandra 1`] = `
   {
     "formatter": "sql",
     "label": "Create Keyspace",
-    "query": "CREATE KEYSPACE IF NOT EXISTS database1 WITH replication = { 'class': 'SimpleStrategy',
-'replication_factor': 3 };",
+    "query": "CREATE KEYSPACE IF NOT EXISTS database1
+WITH replication = {'class': 'SimpleStrategy', 'replication_factor' : 3};",
   },
   {
     "formatter": "sql",
@@ -767,8 +757,7 @@ VALUES
   {
     "formatter": "sql",
     "label": "Update",
-    "query": "UPDATE
-  table1
+    "query": "UPDATE table1
 SET
   id = 123,
   column1 = 123,
@@ -781,8 +770,7 @@ WHERE
   {
     "formatter": "sql",
     "label": "Delete",
-    "query": "DELETE FROM
-  table1
+    "query": "DELETE FROM table1
 WHERE
   id = ''
   AND column1 = ''
@@ -791,7 +779,11 @@ WHERE
   {
     "formatter": "sql",
     "label": "Create Table",
-    "query": "CREATE TABLE table1 (id INT PRIMARY KEY, column1 INT, column2 VARCHAR(100))",
+    "query": "CREATE TABLE table1 (
+  id INT PRIMARY KEY,
+  column1 INT,
+  column2 VARCHAR(100)
+)",
   },
   {
     "formatter": "sql",
@@ -801,20 +793,19 @@ WHERE
   {
     "formatter": "sql",
     "label": "Add Column",
-    "query": "ALTER TABLE
-  table1
-ADD
-  new_column1 TEXT",
+    "query": "ALTER TABLE table1 ADD new_column1 TEXT",
   },
   {
     "formatter": "sql",
     "label": "Drop Column",
-    "query": "ALTER TABLE
-  table1 DROP id;
-ALTER TABLE
-  table1 DROP column1;
-ALTER TABLE
-  table1 DROP column2;",
+    "query": "ALTER TABLE table1
+DROP id;
+
+ALTER TABLE table1
+DROP column1;
+
+ALTER TABLE table1
+DROP column2;",
   },
 ]
 `;
@@ -1266,16 +1257,7 @@ LIMIT
   {
     "formatter": "sql",
     "label": "Select By Date Range",
-    "query": "SELECT
-  Id,
-  Name,
-  CreatedDate
-FROM
-  table1
-WHERE
-  CreatedDate = LAST_N_DAYS: 7
-LIMIT
-  200",
+    "query": "SELECT Id, Name, CreatedDate FROM table1 WHERE CreatedDate = LAST_N_DAYS:7 LIMIT 200",
   },
   {
     "description": "Modify the subquery to match your object's child relationships",
@@ -1299,9 +1281,7 @@ LIMIT
   {
     "formatter": "sql",
     "label": "Search (SOSL)",
-    "query": "FIND { keyword } IN ALL FIELDS RETURNING table1(Id, Name)
-LIMIT
-  200",
+    "query": "FIND {keyword} IN ALL FIELDS RETURNING table1(Id, Name) LIMIT 200",
   },
   {
     "formatter": "js",

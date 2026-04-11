@@ -77,8 +77,8 @@ LIMIT
 ### Select Distinct
 
 ```sql
-SELECT
-  DISTINCT column1
+SELECT DISTINCT
+  column1
 FROM
   table1
 WHERE
@@ -103,8 +103,7 @@ VALUES
 ### Update
 
 ```sql
-UPDATE
-  table1
+UPDATE table1
 SET
   id = '',
   column1 = '',
@@ -119,8 +118,7 @@ WHERE
 ### Delete
 
 ```sql
-DELETE FROM
-  table1
+DELETE FROM table1
 WHERE
   id = ''
   AND column1 = ''
@@ -149,22 +147,22 @@ DROP TABLE table1
 ### Add Column
 
 ```sql
-ALTER TABLE
-  table1
-ADD
-  COLUMN newColumn1 varchar(200)
+ALTER TABLE table1
+ADD COLUMN newColumn1 varchar(200)
 ```
 
 
 ### Drop Column
 
 ```sql
-ALTER TABLE
-  table1 DROP COLUMN id;
-ALTER TABLE
-  table1 DROP COLUMN column1;
-ALTER TABLE
-  table1 DROP COLUMN column2;
+ALTER TABLE table1
+DROP COLUMN id;
+
+ALTER TABLE table1
+DROP COLUMN column1;
+
+ALTER TABLE table1
+DROP COLUMN column2;
 ```
 
 
@@ -239,8 +237,8 @@ LIMIT
 ### Select Distinct
 
 ```sql
-SELECT
-  DISTINCT column1
+SELECT DISTINCT
+  column1
 FROM
   table1
 WHERE
@@ -265,8 +263,7 @@ VALUES
 ### Update
 
 ```sql
-UPDATE
-  table1
+UPDATE table1
 SET
   id = '',
   column1 = '',
@@ -281,8 +278,7 @@ WHERE
 ### Delete
 
 ```sql
-DELETE FROM
-  table1
+DELETE FROM table1
 WHERE
   id = ''
   AND column1 = ''
@@ -311,22 +307,22 @@ DROP TABLE table1
 ### Add Column
 
 ```sql
-ALTER TABLE
-  table1
-ADD
-  COLUMN newColumn1 varchar(200)
+ALTER TABLE table1
+ADD COLUMN newColumn1 varchar(200)
 ```
 
 
 ### Drop Column
 
 ```sql
-ALTER TABLE
-  table1 DROP COLUMN id;
-ALTER TABLE
-  table1 DROP COLUMN column1;
-ALTER TABLE
-  table1 DROP COLUMN column2;
+ALTER TABLE table1
+DROP COLUMN id;
+
+ALTER TABLE table1
+DROP COLUMN column1;
+
+ALTER TABLE table1
+DROP COLUMN column2;
 ```
 
 
@@ -397,8 +393,8 @@ WHERE
 ### Select Distinct
 
 ```sql
-SELECT
-  DISTINCT TOP 200 column1
+SELECT DISTINCT
+  TOP 200 column1
 FROM
   table1
 WHERE
@@ -421,8 +417,7 @@ VALUES
 ### Update
 
 ```sql
-UPDATE
-  table1
+UPDATE table1
 SET
   id = '',
   column1 = '',
@@ -437,8 +432,7 @@ WHERE
 ### Delete
 
 ```sql
-DELETE FROM
-  table1
+DELETE FROM table1
 WHERE
   id = ''
   AND column1 = ''
@@ -467,22 +461,22 @@ DROP TABLE table1
 ### Add Column
 
 ```sql
-ALTER TABLE
-  table1
-ADD
-  COLUMN newColumn1 NVARCHAR(200)
+ALTER TABLE table1
+ADD COLUMN newColumn1 NVARCHAR (200)
 ```
 
 
 ### Drop Column
 
 ```sql
-ALTER TABLE
-  table1 DROP COLUMN id;
-ALTER TABLE
-  table1 DROP COLUMN column1;
-ALTER TABLE
-  table1 DROP COLUMN column2;
+ALTER TABLE table1
+DROP COLUMN id;
+
+ALTER TABLE table1
+DROP COLUMN column1;
+
+ALTER TABLE table1
+DROP COLUMN column2;
 ```
 
 
@@ -557,8 +551,8 @@ LIMIT
 ### Select Distinct
 
 ```sql
-SELECT
-  DISTINCT column1
+SELECT DISTINCT
+  column1
 FROM
   table1
 WHERE
@@ -583,8 +577,7 @@ VALUES
 ### Update
 
 ```sql
-UPDATE
-  table1
+UPDATE table1
 SET
   id = '',
   column1 = '',
@@ -599,8 +592,7 @@ WHERE
 ### Delete
 
 ```sql
-DELETE FROM
-  table1
+DELETE FROM table1
 WHERE
   id = ''
   AND column1 = ''
@@ -629,22 +621,22 @@ DROP TABLE table1
 ### Add Column
 
 ```sql
-ALTER TABLE
-  table1
-ADD
-  COLUMN newColumn1 CHAR(200)
+ALTER TABLE table1
+ADD COLUMN newColumn1 CHAR(200)
 ```
 
 
 ### Drop Column
 
 ```sql
-ALTER TABLE
-  table1 DROP COLUMN id;
-ALTER TABLE
-  table1 DROP COLUMN column1;
-ALTER TABLE
-  table1 DROP COLUMN column2;
+ALTER TABLE table1
+DROP COLUMN id;
+
+ALTER TABLE table1
+DROP COLUMN column1;
+
+ALTER TABLE table1
+DROP COLUMN column2;
 ```
 
 
@@ -719,8 +711,8 @@ LIMIT
 ### Select Distinct
 
 ```sql
-SELECT
-  DISTINCT column1
+SELECT DISTINCT
+  column1
 FROM
   table1
 WHERE
@@ -745,8 +737,7 @@ VALUES
 ### Update
 
 ```sql
-UPDATE
-  table1
+UPDATE table1
 SET
   id = '',
   column1 = '',
@@ -761,8 +752,7 @@ WHERE
 ### Delete
 
 ```sql
-DELETE FROM
-  table1
+DELETE FROM table1
 WHERE
   id = ''
   AND column1 = ''
@@ -791,22 +781,22 @@ DROP TABLE table1
 ### Add Column
 
 ```sql
-ALTER TABLE
-  table1
-ADD
-  COLUMN newColumn1 TEXT
+ALTER TABLE table1
+ADD COLUMN newColumn1 TEXT
 ```
 
 
 ### Drop Column
 
 ```sql
-ALTER TABLE
-  table1 DROP COLUMN id;
-ALTER TABLE
-  table1 DROP COLUMN column1;
-ALTER TABLE
-  table1 DROP COLUMN column2;
+ALTER TABLE table1
+DROP COLUMN id;
+
+ALTER TABLE table1
+DROP COLUMN column1;
+
+ALTER TABLE table1
+DROP COLUMN column2;
 ```
 
 
@@ -823,8 +813,8 @@ cassandra://cassandra:cassandra@localhost:9042
 ### Create Keyspace
 
 ```sql
-CREATE KEYSPACE IF NOT EXISTS database1 WITH replication = { 'class': 'SimpleStrategy',
-'replication_factor': 3 };
+CREATE KEYSPACE IF NOT EXISTS database1
+WITH replication = {'class': 'SimpleStrategy', 'replication_factor' : 3};
 ```
 
 
@@ -878,8 +868,7 @@ VALUES
 ### Update
 
 ```sql
-UPDATE
-  table1
+UPDATE table1
 SET
   id = 123,
   column1 = 123,
@@ -894,8 +883,7 @@ WHERE
 ### Delete
 
 ```sql
-DELETE FROM
-  table1
+DELETE FROM table1
 WHERE
   id = ''
   AND column1 = ''
@@ -906,7 +894,11 @@ WHERE
 ### Create Table
 
 ```sql
-CREATE TABLE table1 (id INT PRIMARY KEY, column1 INT, column2 VARCHAR(100))
+CREATE TABLE table1 (
+  id INT PRIMARY KEY,
+  column1 INT,
+  column2 VARCHAR(100)
+)
 ```
 
 
@@ -920,22 +912,21 @@ DROP TABLE table1
 ### Add Column
 
 ```sql
-ALTER TABLE
-  table1
-ADD
-  new_column1 TEXT
+ALTER TABLE table1 ADD new_column1 TEXT
 ```
 
 
 ### Drop Column
 
 ```sql
-ALTER TABLE
-  table1 DROP id;
-ALTER TABLE
-  table1 DROP column1;
-ALTER TABLE
-  table1 DROP column2;
+ALTER TABLE table1
+DROP id;
+
+ALTER TABLE table1
+DROP column1;
+
+ALTER TABLE table1
+DROP column2;
 ```
 
 
@@ -1602,16 +1593,7 @@ LIMIT
 ### Select By Date Range
 
 ```sql
-SELECT
-  Id,
-  Name,
-  CreatedDate
-FROM
-  table1
-WHERE
-  CreatedDate = LAST_N_DAYS: 7
-LIMIT
-  200
+SELECT Id, Name, CreatedDate FROM table1 WHERE CreatedDate = LAST_N_DAYS:7 LIMIT 200
 ```
 
 
@@ -1638,9 +1620,7 @@ LIMIT
 ### Search (SOSL)
 
 ```sql
-FIND { keyword } IN ALL FIELDS RETURNING table1(Id, Name)
-LIMIT
-  200
+FIND {keyword} IN ALL FIELDS RETURNING table1(Id, Name) LIMIT 200
 ```
 
 

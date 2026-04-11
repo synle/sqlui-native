@@ -1,3 +1,4 @@
+import React from "react";
 import CameraAltIcon from "@mui/icons-material/CameraAlt";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import EditIcon from "@mui/icons-material/Edit";
@@ -254,7 +255,7 @@ type BookmarksItemListProps = {
  * @param props - Configuration including optional after-select callback and whether to hide action buttons.
  * @returns The rendered bookmarks list, a loading indicator, or an empty state message.
  */
-export default function BookmarksItemList(props: BookmarksItemListProps): JSX.Element | null {
+export default function BookmarksItemList(props: BookmarksItemListProps): React.JSX.Element | null {
   const { onAfterSelect, hideActions } = props;
   const { data, isLoading } = useGetBookmarkItems();
   const [allExpanded, setAllExpanded] = useState(false);

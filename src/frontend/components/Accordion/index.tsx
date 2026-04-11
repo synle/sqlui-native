@@ -91,7 +91,7 @@ type AccordionHeaderProps = AccordionBodyProps & {
  * @param props - Header configuration including children, expanded state, and toggle handler.
  * @returns The rendered accordion header element.
  */
-export function AccordionHeader(props: AccordionHeaderProps): JSX.Element | null {
+export function AccordionHeader(props: AccordionHeaderProps): React.JSX.Element | null {
   const { children, expanded, onToggle, className } = props;
   const isCompact = useLayoutModeSetting() === "compact";
 
@@ -166,7 +166,7 @@ const StyledAccordionBody = styled("div")<{ expanded: boolean }>(({ expanded }) 
  * @param props - Body configuration including children and expanded state.
  * @returns The rendered accordion body element.
  */
-export function AccordionBody(props: AccordionBodyProps): JSX.Element | null {
+export function AccordionBody(props: AccordionBodyProps): React.JSX.Element | null {
   const { children, expanded } = props;
   return (
     <StyledAccordionBody expanded={expanded}>

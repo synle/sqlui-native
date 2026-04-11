@@ -1,3 +1,4 @@
+import React from "react";
 import { Button } from "@mui/material";
 import Alert from "@mui/material/Alert";
 import { useState } from "react";
@@ -16,7 +17,7 @@ type ConnectionRetryAlertProps = {
  * @param props - Contains the connectionId to retry.
  * @returns An alert element or null.
  */
-export default function ConnectionRetryAlert(props: ConnectionRetryAlertProps): JSX.Element | null {
+export default function ConnectionRetryAlert(props: ConnectionRetryAlertProps): React.JSX.Element | null {
   const { connectionId } = props;
   const [retrying, setRetrying] = useState(false);
   const { mutateAsync: reconnectConnection } = useRetryConnection();

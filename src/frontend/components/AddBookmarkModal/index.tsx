@@ -1,3 +1,4 @@
+import React from "react";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Checkbox from "@mui/material/Checkbox";
@@ -30,7 +31,7 @@ type AddBookmarkConnectionProps = {
  * @param props - The query data and completion callback.
  * @returns Form with bookmark name, association toggle, and result snapshot toggle.
  */
-export function AddBookmarkQueryContent({ query, onDone }: AddBookmarkQueryProps): JSX.Element {
+export function AddBookmarkQueryContent({ query, onDone }: AddBookmarkQueryProps): React.JSX.Element {
   const { mutateAsync: addBookmarkItem } = useAddBookmarkItem();
   const { add: addToast } = useToaster();
 
@@ -118,7 +119,7 @@ export function AddBookmarkQueryContent({ query, onDone }: AddBookmarkQueryProps
  * @param props - The connection data and completion callback.
  * @returns Form with bookmark name input.
  */
-export function AddBookmarkConnectionContent({ connection, onDone }: AddBookmarkConnectionProps): JSX.Element {
+export function AddBookmarkConnectionContent({ connection, onDone }: AddBookmarkConnectionProps): React.JSX.Element {
   const { mutateAsync: addBookmarkItem } = useAddBookmarkItem();
   const { add: addToast } = useToaster();
 

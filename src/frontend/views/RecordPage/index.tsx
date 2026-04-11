@@ -4,7 +4,7 @@ import Button from "@mui/material/Button";
 import InputLabel from "@mui/material/InputLabel";
 import TextField, { TextFieldProps } from "@mui/material/TextField";
 import set from "lodash.set";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router";
 import { useNavigate } from "src/frontend/utils/commonUtils";
 import React, { useEffect, useState } from "react";
 import {
@@ -56,7 +56,7 @@ type RecordData = any;
  * render the form in read only mode
  * @param {[type]} props: RecordDetailsPageProps [description]
  */
-function RecordView(props: RecordDetailsPageProps): JSX.Element | null {
+function RecordView(props: RecordDetailsPageProps): React.JSX.Element | null {
   const { data } = props;
   const columnNames = Object.keys(data || {});
 
@@ -100,7 +100,7 @@ function RecordView(props: RecordDetailsPageProps): JSX.Element | null {
               margin="dense"
               disabled={true}
               multiline
-              inputProps={{ style: { fontFamily: "monospace" } }}
+              slotProps={{ htmlInput: { style: { fontFamily: "monospace" } } }}
             />
           );
         }
@@ -258,7 +258,7 @@ function RecordForm(props) {
     });
   }, []);
 
-  const contentFormDataView: JSX.Element[] = [];
+  const contentFormDataView: React.JSX.Element[] = [];
   if (!isDialectSupportCreateRecordForm(connection?.dialect)) {
     contentFormDataView.push(
       <React.Fragment key="non_supported_dialect">The dialect of this connection is not supported for RecordForm</React.Fragment>,
@@ -578,7 +578,7 @@ export function NewRecordPage() {
  * @param props - Contains record data and edit mode flag.
  * @returns The record view/edit form or null if no active query/connection.
  */
-export function EditRecordPage(props: RecordDetailsPageProps): JSX.Element | null {
+export function EditRecordPage(props: RecordDetailsPageProps): React.JSX.Element | null {
   const { data } = props;
   const { onAddQuery } = useConnectionQueries();
   const [isEdit, setIsEdit] = useState(!!props.isEditMode);
@@ -798,7 +798,7 @@ type RecordDetailsPageProps = {
  * @param props - Contains record data and optional edit mode flag.
  * @returns Tabbed record detail view.
  */
-export function RecordDetailsPage(props: RecordDetailsPageProps): JSX.Element | null {
+export function RecordDetailsPage(props: RecordDetailsPageProps): React.JSX.Element | null {
   const { data, isEditMode } = props;
   const [tabIdx, setTabIdx] = useState(0);
 
