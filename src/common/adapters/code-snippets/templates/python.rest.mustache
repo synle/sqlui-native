@@ -1,0 +1,26 @@
+# pip install requests
+import requests
+import json
+
+url = '{{{url}}}'
+headers = {{{headersJson}}}
+{{#body}}
+data = '{{{body}}}'
+{{/body}}
+
+try:
+    response = requests.{{{methodLower}}}(
+        url,
+        headers=headers,{{#body}}
+        data=data,{{/body}}
+    )
+
+    print(f'Status: {response.status_code}')
+    print(f'Headers: {dict(response.headers)}')
+
+    try:
+        print(f'Body: {json.dumps(response.json(), indent=2)}')
+    except ValueError:
+        print(f'Body: {response.text}')
+except requests.RequestException as err:
+    print(f'Request failed: {err}')

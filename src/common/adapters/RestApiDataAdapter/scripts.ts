@@ -1,7 +1,9 @@
 /** Script generator for the REST API dialect — curl/fetch request templates. */
 
 import BaseDataScript, { getDivider } from "src/common/adapters/BaseDataAdapter/scripts";
+import { renderCodeSnippet } from "src/common/adapters/code-snippets/renderCodeSnippet";
 import curlIcon from "src/common/adapters/RestApiDataAdapter/curl-logo.png";
+import { detectAndParse } from "src/common/adapters/RestApiDataAdapter/requestParser";
 import { SqlAction, SqluiCore } from "typings";
 
 /** Formatter hint for shell/curl syntax highlighting. */
@@ -326,15 +328,28 @@ export class ConcreteDataScripts extends BaseDataScript {
    */
   getCodeSnippet(_connection, query, language) {
     const cmd = query.sql || "";
-    switch (language) {
-      case "javascript":
-        return `// Using fetch API\n${cmd}`;
-      case "python":
-        return `# Using requests library\nimport requests\n\n# Paste your curl command into a tool like curlconverter.com\n# Original command:\n# ${cmd.replace(/\n/g, "\n# ")}`;
-      case "java":
-        return `// Using HttpClient (Java 11+)\n// Original command:\n// ${cmd.replace(/\n/g, "\n// ")}`;
-      default:
-        return "";
+    if (!cmd.trim()) {
+      return "";
+    }
+
+    try {
+      const request = detectAndParse(cmd);
+      const headersJson = JSON.stringify(request.headers, null, 2);
+      const headerLines = Object.entries(request.headers).map(([key, value]) => ({ key, value }));
+      const context = {
+        url: request.url || "https://example.com",
+        method: request.method,
+        methodLower: request.method.toLowerCase(),
+        headers: request.headers,
+        headersJson,
+        headerLines,
+        body: request.body,
+        bodyEscaped: request.body?.replace(/"/g, '\\"'),
+      };
+      return renderCodeSnippet(language as any, "rest", context);
+    } catch (_err) {
+      // Fallback to raw command if parsing fails
+      return `// Original command:\n// ${cmd.replace(/\n/g, "\n// ")}`;
     }
   }
 }

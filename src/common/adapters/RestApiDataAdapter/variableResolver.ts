@@ -89,3 +89,25 @@ export function extractVariableNames(template: string): string[] {
   }
   return names;
 }
+
+/**
+ * Finds variable names that remain unresolved after resolution.
+ * These are {{VAR}} placeholders still present in the resolved string
+ * that are not built-in dynamic variables.
+ * @param resolvedString - The string after variable resolution.
+ * @returns Array of unresolved variable names (deduplicated).
+ */
+export function findUnresolvedVariables(resolvedString: string): string[] {
+  const unresolved = new Set<string>();
+  let match: RegExpExecArray | null;
+  const pattern = new RegExp(VARIABLE_PATTERN.source, "g");
+  while ((match = pattern.exec(resolvedString)) !== null) {
+    const name = match[1].trim();
+    // Dynamic variables starting with $ are always resolved at execution time,
+    // so they should not appear here — but skip them just in case.
+    if (!name.startsWith("$")) {
+      unresolved.add(name);
+    }
+  }
+  return Array.from(unresolved);
+}

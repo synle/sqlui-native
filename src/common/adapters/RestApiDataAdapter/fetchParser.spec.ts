@@ -64,6 +64,11 @@ describe("fetchParser", () => {
       expect(result.params["size"]).toBe("10");
     });
 
+    it("preserves duplicate query params joined with comma", () => {
+      const result = parseFetchCommand(`fetch("https://example.com/api?tag=a&tag=b&tag=c", { "method": "GET" });`);
+      expect(result.params["tag"]).toBe("a, b, c");
+    });
+
     it("detects JSON body type", () => {
       const result = parseFetchCommand(`fetch("https://example.com", {
         "headers": { "content-type": "application/json" },

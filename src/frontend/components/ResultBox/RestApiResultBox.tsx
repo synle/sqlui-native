@@ -64,6 +64,17 @@ function formatBody(body: any): { text: string; language: string } {
 }
 
 /**
+ * Formats a byte count as a human-readable string (B, KB, MB).
+ * @param bytes - The byte count to format.
+ * @returns Human-readable size string.
+ */
+export function formatBytes(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+/**
  * Renders a key-value table for headers, cookies, or timing.
  * @param entries - Object with string keys and values.
  * @returns A styled table element.
@@ -130,6 +141,7 @@ export default function RestApiResultBox(props: RestApiResultBoxProps): JSX.Elem
   const responseBody = meta.responseBodyParsed ?? meta.responseBody ?? "";
   const requestMethod: string = meta.requestMethod || "";
   const requestUrl: string = meta.requestUrl || "";
+  const unresolvedVariables: string[] = meta.unresolvedVariables || [];
 
   const { text: bodyText, language: bodyLanguage } = formatBody(responseBody);
 
@@ -176,7 +188,7 @@ export default function RestApiResultBox(props: RestApiResultBoxProps): JSX.Elem
       <KeyValueTable entries={timingEntries} />
       {size > 0 && (
         <div style={{ marginTop: "0.5rem", fontSize: "0.85rem" }}>
-          <strong>Response Size:</strong> {size} bytes
+          <strong>Response Size:</strong> {formatBytes(size)}
         </div>
       )}
     </div>,
@@ -187,6 +199,11 @@ export default function RestApiResultBox(props: RestApiResultBoxProps): JSX.Elem
 
   return (
     <div className="ResultBox">
+      {unresolvedVariables.length > 0 && (
+        <Alert severity="warning" sx={{ mb: 0.5 }}>
+          Unresolved variables: {unresolvedVariables.map((v) => `{{${v}}}`).join(", ")}. Define them in collection or folder variables.
+        </Alert>
+      )}
       <Alert severity={status >= 200 && status < 400 ? "info" : "warning"} icon={false} sx={{ display: "flex", alignItems: "center" }}>
         <span style={{ display: "flex", alignItems: "center", gap: "0.75rem", flexWrap: "wrap" }}>
           <Chip label={`${status} ${statusText}`} color={getStatusColor(status)} size="small" sx={{ fontWeight: 700 }} />
@@ -195,7 +212,7 @@ export default function RestApiResultBox(props: RestApiResultBoxProps): JSX.Elem
           <span style={{ opacity: 0.6 }}>
             <Timer startTime={executionStart} endTime={executionEnd} />
           </span>
-          {size > 0 && <span style={{ opacity: 0.6 }}>{size} B</span>}
+          {size > 0 && <span style={{ opacity: 0.6 }}>{formatBytes(size)}</span>}
         </span>
       </Alert>
       <Tabs tabIdx={tabIdx} tabHeaders={tabHeaders} tabContents={tabContents} onTabChange={(newTabIdx) => setTabIdx(newTabIdx)} />

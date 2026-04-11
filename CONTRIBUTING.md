@@ -479,6 +479,10 @@ curl -X POST '{{HOST}}/post' \
   -F 'file=@/path/to/file' \
   -F 'description=my upload'
 
+# Request with timeout and proxy
+curl --max-time 30 --connect-timeout 5 '{{HOST}}/get'
+curl -x 'http://proxy:8080' '{{HOST}}/get'
+
 # fetch() syntax (auto-detected)
 fetch("{{HOST}}/get", {
   "headers": { "accept": "application/json" },
