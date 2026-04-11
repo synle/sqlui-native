@@ -202,7 +202,7 @@ jobs:
   # ---- Integration Tests ----
   integration_test:
     needs: check
-    if: ${{ needs.check.outputs.has_changes == 'true' && inputs.run_integration != false }}
+    if: ${{ needs.check.outputs.has_changes == 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 60
     permissions:
@@ -292,10 +292,12 @@ jobs:
         # Each secret must be mapped here manually (one per line).
         # When adding a new cloud adapter integration test, add its secret here too.
         # SECURITY: These contain real credentials. Never log or echo these values.
+        # Cloud secrets are only injected when run_integration is true (release builds).
+        # When false (build-main), cloud tests self-skip via their process.env checks.
         env:
-          TEST_AZ_TABLE_STORAGE_CONNECTION: ${{ secrets.TEST_AZ_TABLE_STORAGE_CONNECTION }}
-          TEST_AZ_COSMOSDB_CONNECTION: ${{ secrets.TEST_AZ_COSMOSDB_CONNECTION }}
-          TEST_SFDC_CONNECTION: ${{ secrets.TEST_SFDC_CONNECTION }}
+          TEST_AZ_TABLE_STORAGE_CONNECTION: ${{ inputs.run_integration && secrets.TEST_AZ_TABLE_STORAGE_CONNECTION || '' }}
+          TEST_AZ_COSMOSDB_CONNECTION: ${{ inputs.run_integration && secrets.TEST_AZ_COSMOSDB_CONNECTION || '' }}
+          TEST_SFDC_CONNECTION: ${{ inputs.run_integration && secrets.TEST_SFDC_CONNECTION || '' }}
         run: npx vitest run --config vitest.integration.config.ts --reporter=default --reporter=junit --outputFile.junit=integration-test-results.xml
 
       - name: Record integration tests end time

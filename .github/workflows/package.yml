@@ -199,7 +199,7 @@ jobs:
           key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
 
       - name: Install Playwright browsers for smoke test
-        run: npx playwright install --with-deps chromium
+        run: npx playwright install chromium
 
       - name: Run smoke test
         run: npm run test-smoke
@@ -317,7 +317,7 @@ jobs:
           key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
 
       - name: Install Playwright browsers for smoke test
-        run: npx playwright install --with-deps chromium
+        run: npx playwright install chromium
 
       - name: Run smoke test
         run: npm run test-smoke
@@ -614,29 +614,37 @@ jobs:
           echo "BUILD_END=$(date +%s)" >> $GITHUB_ENV
           echo "PACKAGE_START=$(date +%s)" >> $GITHUB_ENV
 
-      - name: Package Linux deb
+      - name: Package all Linux formats (parallel)
         shell: bash
-        run: npm run dist-linux-deb || true
+        run: |
+          mkdir -p logs
+          npm run dist-linux-deb      > logs/deb.log     2>&1 &  PID_DEB=$!
+          npm run dist-linux-rpm      > logs/rpm.log     2>&1 &  PID_RPM=$!
+          npm run dist-linux-snap     > logs/snap.log    2>&1 &  PID_SNAP=$!
+          npm run dist-linux-pacman   > logs/pacman.log  2>&1 &  PID_PACMAN=$!
+          npm run dist-linux-appimage > logs/appimage.log 2>&1 & PID_APPIMAGE=$!
 
-      - name: Package Linux rpm
-        shell: bash
-        run: npm run dist-linux-rpm || true
+          FAILED=0
+          for name_pid in "deb:$PID_DEB" "rpm:$PID_RPM" "snap:$PID_SNAP" "pacman:$PID_PACMAN" "appimage:$PID_APPIMAGE"; do
+            NAME="${name_pid%%:*}"
+            PID="${name_pid##*:}"
+            if wait "$PID"; then
+              echo "::notice::$NAME packaging succeeded"
+            else
+              echo "::warning::$NAME packaging failed (non-fatal)"
+              cat "logs/$NAME.log"
+              FAILED=$((FAILED + 1))
+            fi
+          done
 
-      - name: Package Linux snap
-        shell: bash
-        run: npm run dist-linux-snap || true
+          echo ""
+          echo "=== Packaging Results ==="
+          ls -R ./dist 2>/dev/null || true
 
-      - name: Package Linux pacman
-        shell: bash
-        run: npm run dist-linux-pacman || true
-
-      - name: Package Linux AppImage
-        shell: bash
-        run: npm run dist-linux-appimage || true
-
-      - name: List dist output
-        shell: bash
-        run: ls -R ./dist
+          if [ "$FAILED" -eq 5 ]; then
+            echo "::error::All Linux packaging formats failed"
+            exit 1
+          fi
 
       - name: Verify at least one Linux artifact was produced
         shell: bash
