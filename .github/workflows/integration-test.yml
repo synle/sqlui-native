@@ -29,7 +29,7 @@ on:
         default: true
 
 concurrency:
-  group: integration-tests-${{ github.ref }}
+  group: integration-tests-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 env:
