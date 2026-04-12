@@ -22,8 +22,7 @@ jobs:
     uses: ./.github/workflows/package.yml
     with:
       node_version: ${{ inputs.node_version }}
-      release_mode: "draft"
+      release_mode: "no_release"
       run_format: true
-      release_notes: "Beta"
       run_integration: false
     secrets: inherit
