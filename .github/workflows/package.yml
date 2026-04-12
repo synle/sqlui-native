@@ -627,50 +627,13 @@ jobs:
           echo "BUILD_END=$(date +%s)" >> $GITHUB_ENV
           echo "PACKAGE_START=$(date +%s)" >> $GITHUB_ENV
 
-      - name: Package all Linux formats (parallel)
+      - name: Package Linux deb
         shell: bash
         run: |
-          mkdir -p logs
-          npm run dist-linux-deb      > logs/deb.log     2>&1 &  PID_DEB=$!
-          npm run dist-linux-rpm      > logs/rpm.log     2>&1 &  PID_RPM=$!
-          npm run dist-linux-snap     > logs/snap.log    2>&1 &  PID_SNAP=$!
-          npm run dist-linux-pacman   > logs/pacman.log  2>&1 &  PID_PACMAN=$!
-          npm run dist-linux-appimage > logs/appimage.log 2>&1 & PID_APPIMAGE=$!
-
-          FAILED=0
-          for name_pid in "deb:$PID_DEB" "rpm:$PID_RPM" "snap:$PID_SNAP" "pacman:$PID_PACMAN" "appimage:$PID_APPIMAGE"; do
-            NAME="${name_pid%%:*}"
-            PID="${name_pid##*:}"
-            if wait "$PID"; then
-              echo "::notice::$NAME packaging succeeded"
-            else
-              echo "::warning::$NAME packaging failed (non-fatal)"
-              cat "logs/$NAME.log"
-              FAILED=$((FAILED + 1))
-            fi
-          done
-
-          echo ""
-          echo "=== Packaging Results ==="
-          ls -R ./dist 2>/dev/null || true
-
-          if [ "$FAILED" -eq 5 ]; then
-            echo "::error::All Linux packaging formats failed"
-            exit 1
-          fi
-
-      - name: Verify at least one Linux artifact was produced
-        shell: bash
-        run: |
-          if [ ! -f ./dist/sqlui-native.deb ] && [ ! -f ./dist/sqlui-native.rpm ] && \
-             [ ! -f ./dist/sqlui-native.snap ] && [ ! -f ./dist/sqlui-native.pacman ] && \
-             [ ! -f ./dist/sqlui-native.AppImage ]; then
-            echo "::error::No Linux artifacts were produced"
-            exit 1
-          fi
+          npm run dist-linux-deb
+          ls -R ./dist
 
       - name: Upload deb artifact
-        if: ${{ hashFiles('./dist/sqlui-native.deb') != '' }}
         uses: actions/upload-artifact@v4
         with:
           name: Linux - Debian Ubuntu.deb
@@ -678,7 +641,7 @@ jobs:
           compression-level: 9
 
       - name: Upload deb to release
-        if: ${{ needs.create_release.outputs.dist_version != '' && hashFiles('./dist/sqlui-native.deb') != '' }}
+        if: ${{ needs.create_release.outputs.dist_version != '' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: bash
@@ -687,8 +650,13 @@ jobs:
             "./dist/sqlui-native.deb#sqlui-native-${{ needs.create_release.outputs.dist_version }}.deb" \
             --clobber
 
+      - name: Package Linux rpm
+        shell: bash
+        run: |
+          npm run dist-linux-rpm
+          ls -R ./dist
+
       - name: Upload rpm artifact
-        if: ${{ hashFiles('./dist/sqlui-native.rpm') != '' }}
         uses: actions/upload-artifact@v4
         with:
           name: Linux - Redhat CentOS Fedora.rpm
@@ -696,7 +664,7 @@ jobs:
           compression-level: 9
 
       - name: Upload rpm to release
-        if: ${{ needs.create_release.outputs.dist_version != '' && hashFiles('./dist/sqlui-native.rpm') != '' }}
+        if: ${{ needs.create_release.outputs.dist_version != '' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: bash
@@ -705,8 +673,13 @@ jobs:
             "./dist/sqlui-native.rpm#sqlui-native-${{ needs.create_release.outputs.dist_version }}.rpm" \
             --clobber
 
+      - name: Package Linux snap
+        shell: bash
+        run: |
+          npm run dist-linux-snap
+          ls -R ./dist
+
       - name: Upload snap artifact
-        if: ${{ hashFiles('./dist/sqlui-native.snap') != '' }}
         uses: actions/upload-artifact@v4
         with:
           name: Linux - Ubuntu.snap
@@ -714,7 +687,7 @@ jobs:
           compression-level: 9
 
       - name: Upload snap to release
-        if: ${{ needs.create_release.outputs.dist_version != '' && hashFiles('./dist/sqlui-native.snap') != '' }}
+        if: ${{ needs.create_release.outputs.dist_version != '' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: bash
@@ -723,8 +696,13 @@ jobs:
             "./dist/sqlui-native.snap#sqlui-native-${{ needs.create_release.outputs.dist_version }}.snap" \
             --clobber
 
+      - name: Package Linux pacman
+        shell: bash
+        run: |
+          npm run dist-linux-pacman
+          ls -R ./dist
+
       - name: Upload pacman artifact
-        if: ${{ hashFiles('./dist/sqlui-native.pacman') != '' }}
         uses: actions/upload-artifact@v4
         with:
           name: Linux - Arch.pacman
@@ -732,7 +710,7 @@ jobs:
           compression-level: 9
 
       - name: Upload pacman to release
-        if: ${{ needs.create_release.outputs.dist_version != '' && hashFiles('./dist/sqlui-native.pacman') != '' }}
+        if: ${{ needs.create_release.outputs.dist_version != '' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: bash
@@ -741,8 +719,13 @@ jobs:
             "./dist/sqlui-native.pacman#sqlui-native-${{ needs.create_release.outputs.dist_version }}.pacman" \
             --clobber
 
+      - name: Package Linux AppImage
+        shell: bash
+        run: |
+          npm run dist-linux-appimage
+          ls -R ./dist
+
       - name: Upload AppImage artifact
-        if: ${{ hashFiles('./dist/sqlui-native.AppImage') != '' }}
         uses: actions/upload-artifact@v4
         with:
           name: Linux.AppImage
@@ -750,7 +733,7 @@ jobs:
           compression-level: 9
 
       - name: Upload AppImage to release
-        if: ${{ needs.create_release.outputs.dist_version != '' && hashFiles('./dist/sqlui-native.AppImage') != '' }}
+        if: ${{ needs.create_release.outputs.dist_version != '' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: bash
