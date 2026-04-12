@@ -197,6 +197,7 @@ jobs:
         run: python -m pip install setuptools
 
       - name: Update package.json to release version
+        if: ${{ needs.create_release.outputs.dist_version != '' }}
         run: npm version --no-git-tag-version "${{ needs.create_release.outputs.dist_version }}"
 
       - name: Record build start time
@@ -315,6 +316,7 @@ jobs:
         run: python -m pip install setuptools
 
       - name: Update package.json to release version
+        if: ${{ needs.create_release.outputs.dist_version != '' }}
         run: npm version --no-git-tag-version "${{ needs.create_release.outputs.dist_version }}"
 
       - name: Record build start time
@@ -410,6 +412,7 @@ jobs:
         run: python -m pip install setuptools
 
       - name: Update package.json to release version
+        if: ${{ needs.create_release.outputs.dist_version != '' }}
         run: npm version --no-git-tag-version "${{ needs.create_release.outputs.dist_version }}"
 
       - name: Record build start time
@@ -505,6 +508,7 @@ jobs:
         run: python -m pip install setuptools
 
       - name: Update package.json to release version
+        if: ${{ needs.create_release.outputs.dist_version != '' }}
         run: npm version --no-git-tag-version "${{ needs.create_release.outputs.dist_version }}"
 
       - name: Record build start time
@@ -600,6 +604,7 @@ jobs:
         run: python -m pip install setuptools
 
       - name: Update package.json to release version
+        if: ${{ needs.create_release.outputs.dist_version != '' }}
         run: npm version --no-git-tag-version "${{ needs.create_release.outputs.dist_version }}"
 
       - name: Record build start time
@@ -848,6 +853,7 @@ jobs:
           cache: "npm"
 
       - name: Update package.json to release version
+        if: ${{ needs.create_release.outputs.dist_version != '' }}
         run: npm version --no-git-tag-version "${{ needs.create_release.outputs.dist_version }}"
 
       - name: Write release version file from latest official release
