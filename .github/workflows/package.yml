@@ -35,6 +35,8 @@ env:
   ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
   EXPECTED_RELEASE_ASSETS: 10
   PLAYWRIGHT_BROWSERS_PATH: ${{ github.workspace }}/.playwright-browsers
+  ELECTRON_CACHE: ${{ github.workspace }}/.cache/electron
+  ELECTRON_BUILDER_CACHE: ${{ github.workspace }}/.cache/electron-builder
 
 jobs:
   code_format:
@@ -200,6 +202,14 @@ jobs:
         if: ${{ needs.create_release.outputs.dist_version != '' }}
         run: npm version --no-git-tag-version "${{ needs.create_release.outputs.dist_version }}"
 
+      - name: Cache Electron and electron-builder binaries
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ github.workspace }}/.cache/electron
+            ${{ github.workspace }}/.cache/electron-builder
+          key: electron-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+
       - name: Record build start time
         run: echo "BUILD_START=$(date +%s)" >> $GITHUB_ENV
 
@@ -319,6 +329,14 @@ jobs:
         if: ${{ needs.create_release.outputs.dist_version != '' }}
         run: npm version --no-git-tag-version "${{ needs.create_release.outputs.dist_version }}"
 
+      - name: Cache Electron and electron-builder binaries
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ github.workspace }}/.cache/electron
+            ${{ github.workspace }}/.cache/electron-builder
+          key: electron-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+
       - name: Record build start time
         run: echo "BUILD_START=$(date +%s)" >> $GITHUB_ENV
 
@@ -414,6 +432,14 @@ jobs:
       - name: Update package.json to release version
         if: ${{ needs.create_release.outputs.dist_version != '' }}
         run: npm version --no-git-tag-version "${{ needs.create_release.outputs.dist_version }}"
+
+      - name: Cache Electron and electron-builder binaries
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ github.workspace }}/.cache/electron
+            ${{ github.workspace }}/.cache/electron-builder
+          key: electron-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
 
       - name: Record build start time
         run: echo "BUILD_START=$(date +%s)" >> $GITHUB_ENV
@@ -511,6 +537,14 @@ jobs:
         if: ${{ needs.create_release.outputs.dist_version != '' }}
         run: npm version --no-git-tag-version "${{ needs.create_release.outputs.dist_version }}"
 
+      - name: Cache Electron and electron-builder binaries
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ github.workspace }}/.cache/electron
+            ${{ github.workspace }}/.cache/electron-builder
+          key: electron-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+
       - name: Record build start time
         run: echo "BUILD_START=$(date +%s)" >> $GITHUB_ENV
 
@@ -606,6 +640,14 @@ jobs:
       - name: Update package.json to release version
         if: ${{ needs.create_release.outputs.dist_version != '' }}
         run: npm version --no-git-tag-version "${{ needs.create_release.outputs.dist_version }}"
+
+      - name: Cache Electron and electron-builder binaries
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ github.workspace }}/.cache/electron
+            ${{ github.workspace }}/.cache/electron-builder
+          key: electron-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
 
       - name: Record build start time
         run: echo "BUILD_START=$(date +%s)" >> $GITHUB_ENV
