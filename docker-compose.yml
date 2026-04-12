@@ -1,0 +1,73 @@
+services:
+  # Relational Databases
+  mysql:
+    image: mysql
+    container_name: sqlui_mysql
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: "password123!"
+
+  mariadb:
+    image: mariadb:latest
+    container_name: sqlui_mariadb
+    ports:
+      - "33061:3306"
+    environment:
+      MARIADB_ROOT_PASSWORD: "password123!"
+
+  mssql:
+    image: mcr.microsoft.com/azure-sql-edge
+    container_name: sqlui_mssql
+    ports:
+      - "1433:1433"
+    environment:
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: "password123!"
+
+  postgres:
+    image: postgres
+    container_name: sqlui_postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: "password123!"
+
+  # NoSQL & Caching
+  cassandra_v4:
+    image: cassandra:4
+    container_name: sqlui_cassandra_v4
+    ports:
+      - "9042:9042"
+    environment:
+      CASSANDRA_USERNAME: cassandra
+      CASSANDRA_PASSWORD: cassandra
+
+  cassandra_v2:
+    image: cassandra:2
+    container_name: sqlui_cassandra_v2
+    ports:
+      - "9043:9042"
+    environment:
+      CASSANDRA_USERNAME: cassandra
+      CASSANDRA_PASSWORD: cassandra
+
+  mongodb:
+    image: mongo
+    container_name: sqlui_mongodb
+    ports:
+      - "27017:27017"
+
+  redis:
+    image: redis
+    container_name: sqlui_redis
+    ports:
+      - "6379:6379"
+
+  cockroachdb:
+    image: cockroachdb/cockroach:latest
+    container_name: sqlui_cockroach_demo
+    ports:
+      - "26257:26257"
+      - "8080:8080"
+    command: start-single-node --insecure
