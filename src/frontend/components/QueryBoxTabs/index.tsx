@@ -17,6 +17,7 @@ import { platform } from "src/frontend/platform";
 import QueryBox from "src/frontend/components/QueryBox";
 import Tabs from "src/frontend/components/Tabs";
 import { useConnectionQueries } from "src/frontend/hooks/useConnectionQuery";
+import { platform } from "src/frontend/platform";
 import { useQueryTabOrientationSetting } from "src/frontend/hooks/useSetting";
 import { SqluiFrontend } from "typings";
 

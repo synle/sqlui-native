@@ -8,11 +8,11 @@ import ConnectionHint from "src/frontend/components/ConnectionForm/ConnectionHin
 import GraphQLConnectionFields from "src/frontend/components/ConnectionForm/GraphQLConnectionFields";
 import RestApiConnectionFields from "src/frontend/components/ConnectionForm/RestApiConnectionFields";
 import HTMLContent from "src/frontend/components/HTMLContent";
-import { platform } from "src/frontend/platform";
 import { useCommands } from "src/frontend/components/MissionControl";
 import TestConnectionButton from "src/frontend/components/TestConnectionButton";
 import { useGetConnectionById, useUpsertConnection } from "src/frontend/hooks/useConnection";
 import useToaster from "src/frontend/hooks/useToaster";
+import { platform } from "src/frontend/platform";
 import { createSystemNotification, useNavigate } from "src/frontend/utils/commonUtils";
 import { SqluiCore } from "typings";
 
@@ -174,7 +174,11 @@ function MainConnectionForm(props: MainConnectionFormProps): React.JSX.Element |
     try {
       if (files && files.length > 0) {
         const [file] = files;
-        const pathToUse = platform.getFilePath(file) || file.name;
+        let pathToUse = file.name; // fallback for mocked webserver
+        const resolvedPath = platform.getFilePath(file);
+        if (resolvedPath) {
+          pathToUse = resolvedPath;
+        }
         props.setConnection(`sqlite://${pathToUse}`);
       }
     } catch (err) {

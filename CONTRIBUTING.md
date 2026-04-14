@@ -6,6 +6,7 @@
 
 - NODE_VERSION: 24 (use `fnm` to switch: `fnm use 24`)
 - npm (bundled with Node)
+- Rust toolchain: stable (rustc 1.94+, install via [rustup](https://rustup.rs/))
 - Docker (for integration tests)
 
 ### Starting guide
@@ -152,31 +153,32 @@ The import JSON also supports bookmarks with `_type: "bookmark"`:
 
 ### How to run locally?
 
-#### In an electron container
+#### In Tauri (full app with Rust backend)
 
 ```bash
 npm install
-npm start
+npm start          # or: npm run tauri:dev
 ```
 
-#### In a mocked server container
+This starts the Vite dev server on port 3000 and compiles/runs the Rust backend. First build takes a few minutes (Cargo downloads and compiles dependencies).
 
-Run this and test it in the browser
+#### Frontend only (no backend)
 
 ```bash
 npm install
 npm run dev
-# then open a browser with URL
-# http://localhost:3000
+# then open a browser with URL http://localhost:3000
+# Note: API calls will fail without the Rust backend
 ```
 
 ### To package
 
 ```bash
-npm run build
-cd build
-npm install
-npm run dist
+npm run tauri:build                    # Build for current platform
+npm run dist-macos-arm64              # macOS Apple Silicon
+npm run dist-macos-x64               # macOS Intel
+npm run dist-linux-x64               # Linux x64
+npm run dist-windows-x64             # Windows x64
 ```
 
 ### Where is the config / data stored on local machine?
@@ -228,13 +230,13 @@ docker exec sqlui_redis redis-cli ping
 
 ## Integration Tests
 
-Integration tests run against real database engines via Docker. They are separated from unit tests and use the `*.integration.spec.ts` naming convention.
+Integration tests run against real database engines via Docker. The Rust integration tests are in `src-tauri/tests/adapter_integration.rs`.
 
-### Running integration tests locally
+### Running Rust integration tests locally
 
 ```bash
 # 1. Start all database containers
-docker compose up -d
+docker-compose up -d
 
 # 2. Wait for containers to be ready (Cassandra takes the longest ~60-90s)
 docker exec sqlui_mysql mysqladmin ping -uroot -p'password123!' --silent
@@ -242,62 +244,59 @@ docker exec sqlui_postgres pg_isready -U postgres
 docker exec sqlui_cassandra_v4 cqlsh -e "DESCRIBE KEYSPACES"
 docker exec sqlui_redis redis-cli ping
 
-# 3. Install dependencies
-npm install
+# 3. Run all Rust integration tests
+cd src-tauri && cargo test --test adapter_integration -- --nocapture --test-threads=1
 
-# 4. Run all integration tests
-npm run test-integration
+# 4. Run a single adapter test
+cd src-tauri && cargo test --test adapter_integration test_mysql_adapter -- --nocapture
 
-# 5. Run a single adapter test
-npx vitest run --config vitest.integration.config.ts src/common/adapters/RelationalDataAdapter/mysql.integration.spec.ts
+# 5. Cleanup containers when done
+docker-compose down
+```
 
-# 6. Cleanup containers when done
-docker compose down
+### Tested adapters
+
+| Adapter        | Connection String                                                     | Docker Required |
+| -------------- | --------------------------------------------------------------------- | --------------- |
+| MySQL          | `mysql://root:password123!@localhost:3306`                            | Yes             |
+| MariaDB        | `mariadb://root:password123!@localhost:33061`                         | Yes             |
+| PostgreSQL     | `postgres://postgres:password123!@localhost:5432`                     | Yes             |
+| MSSQL          | `mssql://sa:password123!@localhost:1433`                              | Yes             |
+| SQLite         | `sqlite:///tmp/test.sqlite`                                           | No              |
+| MongoDB        | `mongodb://localhost:27017`                                           | Yes             |
+| Redis          | `redis://localhost:6379`                                              | Yes             |
+| Cassandra      | `cassandra://cassandra:cassandra@localhost:9042`                      | Yes             |
+| REST API       | `rest://{"HOST":"https://httpbin.org"}`                               | No              |
+| GraphQL        | `graphql://{"ENDPOINT":"https://countries.trevorblades.com/graphql"}` | No              |
+| Azure Table    | env var `TEST_AZ_TABLE_STORAGE_CONNECTION`                            | No (cloud)      |
+| Azure CosmosDB | env var `TEST_AZ_COSMOSDB_CONNECTION`                                 | No (cloud)      |
+| Salesforce     | env var `TEST_SFDC_CONNECTION`                                        | No (cloud)      |
+
+Cloud-based adapters auto-skip when their env var is not set:
+
+```bash
+TEST_SFDC_CONNECTION='sfdc://{"clientId":"...","clientSecret":"...","loginUrl":"..."}' \
+cargo test --test adapter_integration test_sfdc_adapter -- --nocapture
 ```
 
 ### Running integration tests via GitHub Actions
 
-The integration test workflow is available under `.github/workflows/integration-test.yml`. It is triggered manually via `workflow_dispatch` from the Actions tab on GitHub.
-
-### Test structure
-
-Integration tests live alongside their adapter source code:
-
-- `src/common/adapters/RelationalDataAdapter/mysql.integration.spec.ts`
-- `src/common/adapters/RelationalDataAdapter/mariadb.integration.spec.ts`
-- `src/common/adapters/RelationalDataAdapter/mssql.integration.spec.ts`
-- `src/common/adapters/RelationalDataAdapter/postgres.integration.spec.ts`
-- `src/common/adapters/CassandraDataAdapter/cassandra.integration.spec.ts` (v4 + v2)
-- `src/common/adapters/MongoDBDataAdapter/mongodb.integration.spec.ts`
-- `src/common/adapters/RedisDataAdapter/redis.integration.spec.ts`
-- `src/common/adapters/AzureTableStorageAdapter/aztable.integration.spec.ts` (requires `TEST_AZ_TABLE_STORAGE_CONNECTION`)
-- `src/common/adapters/AzureCosmosDataAdapter/cosmosdb.integration.spec.ts` (requires `TEST_AZ_COSMOSDB_CONNECTION`)
-- `src/common/adapters/SalesforceDataAdapter/sfdc.integration.spec.ts` (requires `TEST_SFDC_CONNECTION`)
-
-Each test covers: authenticate, create test data, getTables, getColumns, execute queries, cleanup.
-
-Cloud-based adapters (Azure Table Storage, Azure CosmosDB, Salesforce) don't use Docker — they connect to real cloud services. Their integration tests require connection strings via environment variables and auto-skip when the env var is not set:
-
-| Env Variable                       | Adapter             |
-| ---------------------------------- | ------------------- |
-| `TEST_AZ_TABLE_STORAGE_CONNECTION` | Azure Table Storage |
-| `TEST_AZ_COSMOSDB_CONNECTION`      | Azure CosmosDB      |
-| `TEST_SFDC_CONNECTION`             | Salesforce          |
-
-To run these locally, export the env var before running tests:
-
-```bash
-export TEST_SFDC_CONNECTION='sfdc://{"username":"...","password":"...","securityToken":"..."}'
-npm run test-integration
-```
-
-In CI, these are mapped from GitHub secrets in `.github/workflows/integration-test.yml`. To add or update a secret: GitHub repo > Settings > Secrets and variables > Actions > New repository secret.
-
-Integration tests are excluded from `npm run test-ci` and only run via `npm run test-integration`.
+The integration test workflow is available under `.github/workflows/integration-test.yml`. It is triggered manually via `workflow_dispatch` from the Actions tab on GitHub. Cloud adapter secrets are mapped from GitHub repo secrets.
 
 ## Adding new adapters?
 
-Use the template in [src/common/adapters/\_SampleDataAdapter\_](https://github.com/synle/sqlui-native/tree/main/src/common/adapters/_SampleDataAdapter_) as your starting point. Also see this [Sample PR (Adding Support For Azure Table)](https://github.com/synle/sqlui-native/pull/321/files) for a real-world example.
+New adapters require changes in **both** the Rust backend and the TypeScript frontend scripts.
+
+### Rust backend
+
+1. Create `src-tauri/src/adapters/mydb_adapter.rs` implementing the `DataAdapter` trait
+2. Register in `src-tauri/src/adapters/mod.rs` (add module + match arm in `create_adapter()`)
+3. Add dialect variant in `src-tauri/src/types.rs` (`Dialect` enum + `parse_dialect()`)
+4. Add integration test in `src-tauri/tests/adapter_integration.rs`
+
+### TypeScript frontend scripts
+
+Use the template in [src/common/adapters/\_SampleDataAdapter\_](https://github.com/synle/sqlui-native/tree/main/src/common/adapters/_SampleDataAdapter_) as your starting point.
 
 The template files use placeholder names that you need to replace with your actual values:
 
@@ -417,14 +416,20 @@ getDialectIcon() {
 
 Open `src/common/adapters/DataScriptFactory.spec.ts` and add your dialect to the test cases so that table/database action scripts are snapshot-tested.
 
-#### Step 8: Verify
+#### Step 8: Add the Rust adapter
+
+Create the Rust adapter file, register it, and add an integration test. See "Adding new adapters?" above for the Rust-side steps.
+
+#### Step 9: Verify
 
 ```bash
 npm run lint          # check for lint errors (must have 0 errors)
 npm run typecheck     # TypeScript type check (must have 0 errors)
 npm run test-ci       # run unit tests (all tests must pass)
+npm run check-rust    # cargo check (Rust must compile)
+npm run test-rust     # cargo test (Rust tests must pass)
 npm run format        # Prettier formatting (always run LAST)
-npm start             # test in Electron -- try adding a connection with your dialect
+npm start             # test in Tauri -- try adding a connection with your dialect
 ```
 
 ## Sample runbooks
@@ -564,7 +569,9 @@ sfdc://{"username":"you@yourcompany.dev","password":"your_password","securityTok
 sfdc://{"clientId":"your_consumer_key","clientSecret":"your_consumer_secret","loginUrl":"your-org.my.salesforce.com"}
 ```
 
-The Client Credentials flow is useful for service-to-service integrations where no user credentials are available. The adapter uses Node's native `https` module for the OAuth2 token request (instead of jsforce's internal HTTP client, which hangs in bundled Electron builds). Sessions are automatically refreshed via `withAutoRefresh()` when `INVALID_SESSION_ID` or `Session expired` errors are detected.
+The Client Credentials flow is useful for service-to-service integrations where no user credentials are available. The Rust adapter (`src-tauri/src/adapters/salesforce_adapter.rs`) uses `reqwest` for all HTTP calls. Sessions are automatically refreshed via `with_auto_refresh()` when `INVALID_SESSION_ID` or `Session expired` errors are detected.
+
+**Note:** The Rust SFDC adapter supports read-only SOQL/SOSL queries. The JS API mode (`conn.sobject().create/update/delete`) from the old Node.js adapter is not yet ported to Rust.
 
 #### Connection String Format
 

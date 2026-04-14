@@ -18,7 +18,7 @@ on:
       expected_assets:
         description: "Expected number of assets per release"
         type: number
-        default: 10
+        default: 4
       lookback_months:
         description: "How many months back to check for incomplete releases"
         type: number

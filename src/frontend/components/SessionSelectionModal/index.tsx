@@ -3,6 +3,7 @@ import { allMenuKeys } from "src/frontend/components/MissionControl";
 import { platform } from "src/frontend/platform";
 import SessionSelectionForm from "src/frontend/components/SessionSelectionForm";
 import { useActionDialogs } from "src/frontend/hooks/useActionDialogs";
+import { platform } from "src/frontend/platform";
 import { useGetCurrentSession, useGetSessions } from "src/frontend/hooks/useSession";
 
 /**

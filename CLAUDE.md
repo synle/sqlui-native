@@ -4,21 +4,32 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-SQLUI Native is a cross-platform Electron desktop SQL/NoSQL database client and REST API client supporting MySQL, MariaDB, MSSQL, PostgreSQL, SQLite, Cassandra, MongoDB, Redis, Azure CosmosDB, Azure Table Storage, Salesforce (SFDC), and REST API (curl/fetch).
+SQLUI Native is a cross-platform **Tauri 2** desktop SQL/NoSQL database client and REST API client supporting MySQL, MariaDB, MSSQL, PostgreSQL, SQLite, Cassandra, MongoDB, Redis, Azure CosmosDB, Azure Table Storage, Salesforce (SFDC), REST API (curl/fetch), and GraphQL.
+
+The backend is written in **Rust** (`src-tauri/`) and communicates with the React frontend via Tauri's `invoke()` IPC. The frontend is built with **Vite + React 19 + MUI 9**.
 
 ## Commands
 
 ```bash
-npm install             # Install dependencies
-npm start               # Run in Electron (dev mode)
-npm run dev             # Run mocked server + Vite dev server at http://localhost:3000
-npm run build           # Build frontend (Vite) + Electron + mocked server
+npm install             # Install dependencies (includes @tauri-apps/cli)
+npm start               # Run Tauri dev mode (alias for npm run tauri:dev)
+npm run dev             # Run Vite dev server at http://localhost:3000 (frontend only)
+npm run build           # Build frontend (Vite) — output to build/
 npm test                # Run Vitest tests (watch mode)
 npm run test-ci         # Run Vitest tests (CI, no watch)
 npm run lint            # ESLint with auto-fix
 npm run format          # Prettier formatting
 npm run typecheck       # TypeScript type check (tsc --noEmit)
-npm run validate        # All checks: lint → typecheck → test-ci → format → e2e → smoke → integration
+npm run validate        # All checks: lint → typecheck → test-ci → format → check-rust → test-rust
+```
+
+**Tauri commands:**
+
+```bash
+npm run tauri:dev       # Start Tauri dev mode (Vite + Rust backend)
+npm run tauri:build     # Build production Tauri app
+npm run check-rust      # cargo check (type-check Rust code)
+npm run test-rust       # cargo test (run Rust tests)
 ```
 
 **Run a single test file:**
@@ -27,14 +38,13 @@ npm run validate        # All checks: lint → typecheck → test-ci → format 
 npx vitest run src/path/to/file.spec.ts
 ```
 
-**Run integration tests** (requires Docker containers — see CONTRIBUTING.md):
+**Run Rust integration tests** (requires Docker containers — see CONTRIBUTING.md):
 
 ```bash
-npm run test-integration
-npx vitest run --config vitest.integration.config.ts src/common/adapters/RelationalDataAdapter/mysql.integration.spec.ts
+cd src-tauri && cargo test --test adapter_integration -- --nocapture --test-threads=1
 ```
 
-**Packaging:** `bash scripts/build.sh && npm run dist`
+**Packaging:** `npm run tauri:build` (or per-platform: `npm run dist-macos-arm64`, etc.)
 
 **Debug shortcut:** `Ctrl+Shift+Alt+D` (Windows/Linux) or `Cmd+Shift+Option+D` (Mac) toggles React Query Devtools in packaged builds. Also available via Command Palette (`Cmd+P` / `Ctrl+P`) as "Toggle React Query Devtools".
 
@@ -42,7 +52,9 @@ npx vitest run --config vitest.integration.config.ts src/common/adapters/Relatio
 
 ### Two Runtime Modes
 
-The app runs in **Electron mode** (`npm start`) or **mocked server mode** (`npm run dev`). Both share the same backend code in `src/common/`. In Electron mode, the renderer communicates with the main process via IPC. In mocked server mode, an Express server on port 3001 serves the same endpoints over HTTP.
+The app runs in **Tauri mode** (`npm start` / `npm run tauri:dev`) or **browser dev mode** (`npm run dev`). In Tauri mode, the React frontend communicates with the Rust backend via Tauri's `invoke()` IPC. In browser dev mode, only the Vite frontend runs (no backend — useful for UI-only development).
+
+The Rust backend lives in `src-tauri/` and implements all database adapters and API command handlers natively. The TypeScript adapter code in `src/common/` is used only for frontend-reachable script generation (`DataScriptFactory`, `scripts.ts` files).
 
 ### Frontend/Backend Module Boundary
 
@@ -56,7 +68,7 @@ Forbidden imports from frontend-reachable code:
 
 **Frontend-reachable `src/common/` code** includes `DataScriptFactory.ts`, all adapter `scripts.ts` files, and anything they import (e.g., `renderCodeSnippet.ts`). These run on both frontend and backend — they must be pure (no I/O, no Node.js APIs).
 
-**If the frontend needs data from storage**, create an API endpoint in `Endpoints.ts` and call it via `ProxyApi`. Never import storage modules into frontend-reachable code.
+**If the frontend needs data from storage**, add a Tauri command in `src-tauri/src/commands/mod.rs`, register it in `src-tauri/src/lib.rs`, add a route mapping in `src/frontend/platform/tauri.ts`, and call it via `ProxyApi`. Never import storage modules into frontend-reachable code.
 
 ### Naming Convention
 
@@ -85,10 +97,15 @@ All persisted models (`Session`, `ConnectionProps`, `ConnectionQuery`, `FolderIt
 ### Directory Structure
 
 - **`src/frontend/`** - React 19 UI (MUI v9, React Query, Monaco Editor, React Router v7)
-- **`src/frontend/platform/`** - Platform abstraction layer (Electron vs browser). Auto-detects environment at import time.
-- **`src/electron/`** - Electron main process (window management, IPC handlers, menus)
-- **`src/common/`** - Shared backend: database adapters, API endpoint handlers, persistent storage
-- **`src/mocked-server/`** - Express server wrapping the shared backend for browser-based dev
+- **`src/frontend/platform/`** - Platform abstraction layer (Tauri vs browser). `tauri.ts` maps HTTP-style API URLs to Tauri `invoke()` commands.
+- **`src-tauri/`** - Tauri 2 / Rust backend
+  - **`src-tauri/src/adapters/`** - Database adapter implementations in Rust (one file per dialect)
+  - **`src-tauri/src/commands/mod.rs`** - All Tauri command handlers (equivalent to old `Endpoints.ts`)
+  - **`src-tauri/src/storage/mod.rs`** - JSON-file-based persistent storage (connections, queries, sessions, etc.)
+  - **`src-tauri/src/types.rs`** - Shared Rust types (DatabaseMetaData, TableMetaData, ColumnMetaData, QueryResult, etc.)
+  - **`src-tauri/src/lib.rs`** - Tauri app setup, command registration, plugin initialization
+  - **`src-tauri/tests/adapter_integration.rs`** - Integration tests for all database adapters
+- **`src/common/`** - TypeScript adapter scripts (frontend-reachable only: DataScriptFactory, scripts.ts files, code snippets)
 - **`typings/index.ts`** - Central type definitions (`SqluiCore`, `SqluiFrontend`, `SqlAction`, `SqluiEnums`)
 
 ### Import Paths
@@ -145,7 +162,7 @@ Connection strings are prefixed with a dialect scheme (`dialect://...`) but the 
 
 **Connection string:** `rest://{"HOST":"https://api.example.com","variables":[{"key":"TOKEN","value":"abc","enabled":true}]}`
 
-**Dual syntax:** Auto-detects `curl` vs `fetch()` input. Both are parsed into `RestApiRequest` and executed via the system `curl` binary. `curlParser.ts` and `fetchParser.ts` handle parsing; `requestParser.ts` auto-routes.
+**Dual syntax:** Auto-detects `curl` vs `fetch()` input. In the Rust backend (`src-tauri/src/adapters/restapi_adapter.rs`), `execute()` checks if input starts with `fetch(` and routes to `execute_fetch()`, otherwise uses `execute_curl()`. Both methods use `reqwest` for HTTP requests (not the system curl binary). The TypeScript parsers (`curlParser.ts`, `fetchParser.ts`, `requestParser.ts`) remain for frontend-only use (code snippet generation).
 
 **Variable system:** `{{VAR}}` placeholders resolved by `variableResolver.ts`. 4-layer priority (folder > environment > collection > global). Built-in dynamic variables: `{{$timestamp}}`, `{{$isoTimestamp}}`, `{{$randomUUID}}`, `{{$randomInt}}`.
 
@@ -213,9 +230,20 @@ Key functions: `getCachedDatabases`/`setCachedDatabases`, `getCachedTables`/`set
 
 `src/frontend/data/connectionThrottle.ts` provides a per-connection semaphore (`ConnectionThrottle`) that limits concurrent column fetch requests to 3 per connection. This prevents flooding the server when expanding a database with many tables in the tree view.
 
-### Endpoint Pattern
+### Tauri Command Pattern
 
-`src/common/Endpoints.ts` defines API handlers that work in both modes. In Electron, handlers are registered via IPC. In mocked server mode, they're mounted as Express routes. Session ID and Window ID are passed in request headers.
+`src-tauri/src/commands/mod.rs` defines all backend command handlers as `#[tauri::command]` functions. These are registered in `src-tauri/src/lib.rs` via `tauri::generate_handler![]`.
+
+The frontend communicates via `src/frontend/platform/tauri.ts`, which maps HTTP-style API URLs (e.g., `POST /api/connection`) to Tauri invoke commands (e.g., `create_connection`). The `backendFetch()` method in `tauri.ts`:
+
+1. Extracts URL params via regex route matching and **decodes URI-encoded values**
+2. Wraps the request body under a `body` key
+3. Adds `sessionId` from the request headers
+4. Calls `invoke(commandName, args)`
+
+**Tauri command argument naming:** Tauri v2 automatically converts camelCase JS args to snake_case Rust params (e.g., `sessionId` → `session_id`, `connectionId` → `connection_id`). Extra args not declared in the Rust function signature are silently ignored.
+
+**Adding a new endpoint:** Add the command function in `commands/mod.rs`, register it in `lib.rs`, and add a route entry in `tauri.ts`'s `mapUrlToCommand()` routes array.
 
 ### Session Ping / Keep-Alive
 
@@ -288,6 +316,31 @@ The storage layer has two backends behind the `IPersistentStorage<T>` interface 
 - **`commonUtils.ts`** — `getGeneratedRandomId()` for generating unique IDs.
 - **`sessionUtils.ts`** — In-memory session tracking (windowId → sessionId mapping) with ping/keep-alive and stale cleanup.
 
+### Rust Backend Architecture (`src-tauri/`)
+
+The Rust backend implements all database adapters and API handlers natively. Key modules:
+
+- **`adapters/mod.rs`** — `DataAdapter` trait (authenticate, get_databases, get_tables, get_columns, execute, disconnect) and `create_adapter()` factory function
+- **`adapters/*_adapter.rs`** — Per-dialect adapter implementations using native Rust drivers:
+  - `sqlite_adapter.rs` — `rusqlite` (bundled)
+  - `mysql_adapter.rs` — `sqlx` (MySQL + MariaDB)
+  - `postgres_adapter.rs` — `sqlx`
+  - `mssql_adapter.rs` — `tiberius`
+  - `mongodb_adapter.rs` — `mongodb` crate
+  - `redis_adapter.rs` — `redis` crate
+  - `cassandra_adapter.rs` — `scylla` driver
+  - `cosmosdb_adapter.rs` — raw REST API with HMAC-SHA256 auth via `reqwest`
+  - `aztable_adapter.rs` — raw REST API with SharedKeyLite auth via `reqwest`
+  - `salesforce_adapter.rs` — SOAP + OAuth2 Client Credentials via `reqwest`
+  - `restapi_adapter.rs` — curl/fetch parsing + HTTP execution via `reqwest`
+  - `graphql_adapter.rs` — GraphQL POST execution via `reqwest`
+- **`commands/mod.rs`** — All `#[tauri::command]` handlers. Managed metadata dialects (REST/GraphQL) have special handling: `get_databases` and `get_tables` read from managed storage instead of the adapter. `create_connection` auto-creates "Folder 1" for REST/GraphQL.
+- **`storage/mod.rs`** — JSON-file-based persistent storage with auto-generated IDs and timestamps
+- **`types.rs`** — Shared types with `#[serde(rename_all = "camelCase")]` for frontend compatibility. `parse_dialect()` extracts dialect from connection string scheme. `Dialect::uses_managed_metadata()` returns true for REST/GraphQL.
+- **`cache.rs`** — In-memory session tracking (ping/keep-alive)
+
+**Managed metadata pattern:** REST and GraphQL connections don't have real databases/tables. Instead, "databases" are folders and "tables" are saved requests, stored via `managed_databases_storage` and `managed_tables_storage`. The `get_databases`, `get_tables`, and `connect_connection` commands check `dialect.uses_managed_metadata()` and read from storage instead of calling the adapter.
+
 ## Adding a New Database Adapter
 
 1. Add a new dialect value in `typings/index.ts`
@@ -306,8 +359,6 @@ See CONTRIBUTING.md for the full step-by-step guide with code examples.
 - **`ActionDialogs`** - Global dialog system (alert, choice, prompt, modal) managed via `useActionDialogs` context
 - **`MissionControl`** - Central event handler that wires up all application commands (session, connection, query, settings, navigation). Processes commands from the `CommandPalette`, keyboard shortcuts, and Electron menu events
 - **`CommandPalette`** - Fuzzy-searchable command list (`Cmd+P` / `Ctrl+P`). Options defined in `ALL_COMMAND_PALETTE_OPTIONS` array in `CommandPalette/index.tsx`. Supports expanding per-connection/per-query commands. When adding new app-wide actions, add a `ClientEventKey` in `typings/index.ts`, a command option in `CommandPalette`, and a `case` in `MissionControl`'s `_executeCommandPalette` switch
-- **`ConnectionActions`** - Dropdown menu of actions per connection (bookmark, edit, export, duplicate, refresh, test, delete). Shows "Refreshing..." with spinner when a refresh is in progress, preventing double-refresh
-- **`NewConnectionButton`** - Split button for creating connections, with dropdown for Import, Export All, Data Migration, Refresh All Connections, and Collapse All
 - **`ConnectionForm`** - New/edit connection forms with dialect-specific hints
 - **`MigrationBox`** - Data migration between connections with column mapping
 
@@ -367,15 +418,33 @@ See CONTRIBUTING.md for the full step-by-step guide with code examples.
 
 ## Testing
 
+### Frontend Tests (Vitest)
+
 - Tests use Vitest (config in `vite.frontend.config.ts`)
 - Unit tests are co-located with source files as `*.spec.ts`/`*.spec.tsx`
-- Integration tests exist for each adapter (require running database instances, run via `npm run test-integration`)
-- Integration tests use `*.integration.spec.ts` naming and are excluded from `npm run test-ci`
-- Cloud-based adapters (Azure Table Storage, Azure CosmosDB, Salesforce) require connection strings via environment variables (`TEST_AZ_TABLE_STORAGE_CONNECTION`, `TEST_AZ_COSMOSDB_CONNECTION`, `TEST_SFDC_CONNECTION`). Tests auto-skip when the env var is not set. In CI, these are mapped **manually** from GitHub secrets in `.github/workflows/integration-test.yml` under the `env:` block of the "Run integration tests" step. When adding a new cloud adapter integration test, you must add its secret mapping there too
+- Run `npm run test-ci` for CI mode (no watch), `npm test` for watch mode
+- Known: `jsdom` environment tests may show errors if the package is not installed; this doesn't affect test results
+
+### Rust Backend Integration Tests
+
+Rust integration tests live in `src-tauri/tests/adapter_integration.rs` and test every database adapter's full lifecycle (authenticate → getDatabases → getTables → getColumns → execute → disconnect).
+
+```bash
+# Run all adapter tests (requires Docker containers running)
+cd src-tauri && cargo test --test adapter_integration -- --nocapture --test-threads=1
+
+# Run a single adapter test
+cd src-tauri && cargo test --test adapter_integration test_mysql_adapter -- --nocapture
+```
+
+**Adapters tested:**
+
+- **Docker-based:** MySQL, MariaDB, PostgreSQL, MSSQL, MongoDB, Redis, Cassandra (require `docker-compose up -d`)
+- **No Docker needed:** SQLite, REST API (httpbin.org), GraphQL (countries.trevorblades.com)
+- **Cloud (env var gated, auto-skip if not set):** Azure Table Storage (`TEST_AZ_TABLE_STORAGE_CONNECTION`), Azure CosmosDB (`TEST_AZ_COSMOSDB_CONNECTION`), Salesforce (`TEST_SFDC_CONNECTION`)
+
 - **SECURITY: `TEST_*_CONNECTION` env vars contain real credentials. NEVER log, echo, console.log, or expose these values in code, tests, or CI output.**
 - **Test data convention:** Use fictional company names (Acme, Globex, Initech) and made-up ticket keys in tests and documentation examples. Never use real company names, real credentials, or real user data.
-- Known: `jsdom` environment tests may show errors if the package is not installed; this doesn't affect test results
-- Run `npm run test-ci` for CI mode (no watch), `npm test` for watch mode
 
 ### Frontend Test Conventions
 
@@ -434,20 +503,20 @@ Never use an empty `finally` block — replace it with `catch (_err) {}` when wr
 
 ## Build Verification
 
-After any build-related or Vite config change, run the affected build task to verify it works:
+After any build-related or config change, run the affected build task to verify it works:
 
 - Frontend changes (`vite.frontend.config.ts`, `index.html`, `src/frontend/`): `npm run build`
-- Electron changes (`vite.electron.config.ts`, `src/electron/`): `npm run build-electron`
-- Mocked server changes (`vite.mocked-server.config.ts`, `src/mocked-server/`): `npm run build-mocked-server`
-- Shared backend changes (`src/common/`): run all three builds
+- Rust backend changes (`src-tauri/src/`): `npm run check-rust`
+- Tauri config changes (`src-tauri/tauri.conf.json`): `npm run tauri:dev`
 
 ## Build Configuration
 
-- React app: Vite (`vite.frontend.config.ts`) - dev server on port 3000 with proxy to mocked server on port 3001
-- Electron main process: Vite SSR (`vite.electron.config.ts`) - outputs `build/main.js`
-- Mocked server: Vite SSR (`vite.mocked-server.config.ts`) - outputs `build/mocked-server.js`
+- React app: Vite (`vite.frontend.config.ts`) - dev server on port 3000
+- Tauri backend: Cargo (`src-tauri/Cargo.toml`) - Rust binary with all database drivers compiled in
+- Tauri config: `src-tauri/tauri.conf.json` - window settings, CSP, dev URL, build commands
 - Prettier: 140 char width, single quotes, trailing commas, 2-space indent
 - NODE_VERSION: 24 (use `fnm` to switch: `fnm use 24`)
+- Rust toolchain: stable (rustc 1.94+)
 - npm
 
 ## Documentation
