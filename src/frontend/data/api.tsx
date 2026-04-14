@@ -1,6 +1,13 @@
 import { columnFetchThrottle } from "src/frontend/data/connectionThrottle";
 import { getCurrentSessionId } from "src/frontend/data/session";
+import { platform } from "src/frontend/platform";
 import { SqluiCore, SqluiFrontend } from "typings";
+
+/** Returns the base URL for API requests. */
+function getApiBaseUrl(): string {
+  return "";
+}
+
 async function _fetch<T>(input: RequestInfo, initOptions?: RequestInit) {
   let { headers, ...restInput } = initOptions || {};
 
@@ -14,7 +21,17 @@ async function _fetch<T>(input: RequestInfo, initOptions?: RequestInit) {
 
   restInput = restInput || {};
 
-  return fetch(input, {
+  // In Tauri mode with Rust backend, use invoke() instead of HTTP fetch
+  if (platform.backendFetch && typeof input === "string" && input.startsWith("/api")) {
+    const method = ((restInput as any).method || "GET").toUpperCase();
+    const body = (restInput as any).body ? JSON.parse((restInput as any).body as string) : undefined;
+    const sessionId = (headers as any)["sqlui-native-session-id"];
+    return platform.backendFetch(method, input, body, sessionId) as Promise<T>;
+  }
+
+  const url = typeof input === "string" ? `${getApiBaseUrl()}${input}` : input;
+
+  return fetch(url, {
     ...restInput,
     headers,
   })
@@ -526,22 +543,7 @@ export class ProxyApi {
    * @returns The file content as a string.
    */
   static readFileContent(file: File): Promise<string> {
-    try {
-      //@ts-ignore
-      const fs = window.requireElectron("fs");
-      //@ts-ignore
-      const { webUtils } = window.requireElectron("electron");
-      const filePath = webUtils.getPathForFile(file);
-      return fs.readFileSync(filePath, { encoding: "utf-8" });
-    } catch (err) {
-      console.error("api.tsx:readFileSync", err);
-      const form = new FormData();
-      form.append("file", file);
-      return fetch("/api/file", {
-        method: "POST",
-        body: form,
-      }).then((r) => r.text());
-    }
+    return platform.readFileContent(file);
   }
 
   /**

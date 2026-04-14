@@ -16,6 +16,7 @@ import { allMenuKeys, useCommands } from "src/frontend/components/MissionControl
 import QueryBox from "src/frontend/components/QueryBox";
 import Tabs from "src/frontend/components/Tabs";
 import { useConnectionQueries } from "src/frontend/hooks/useConnectionQuery";
+import { platform } from "src/frontend/platform";
 import { useQueryTabOrientationSetting } from "src/frontend/hooks/useSetting";
 import { SqluiFrontend } from "typings";
 
@@ -97,10 +98,10 @@ export default function QueryBoxTabs() {
   // we only want to show the query menu for
   // electron only when we can see the query tabs...
   useEffect(() => {
-    window.toggleElectronMenu(true, allMenuKeys);
+    platform.toggleMenuItems(true, allMenuKeys);
 
     return () => {
-      window.toggleElectronMenu(false, allMenuKeys);
+      platform.toggleMenuItems(false, allMenuKeys);
     };
   }, []);
 

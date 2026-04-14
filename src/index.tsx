@@ -10,7 +10,7 @@ import App from "src/frontend/App";
 import SessionExpiredPage from "src/frontend/views/SessionExpiredPage";
 import SessionSelectPage from "src/frontend/views/SessionSelectPage";
 import ActionDialogs from "src/frontend/components/ActionDialogs";
-import ElectronEventListener from "src/frontend/components/ElectronEventListener";
+import NativeEventListener from "src/frontend/components/NativeEventListener";
 import DataSnapshotListView from "src/frontend/DataSnapshotListView";
 import DataSnapshotView from "src/frontend/DataSnapshotView";
 import ActionDialogsContextProvider from "src/frontend/hooks/useActionDialogs";
@@ -20,7 +20,6 @@ import ShowHideContextProvider from "src/frontend/hooks/useShowHide";
 import TreeActionContextProvider from "src/frontend/hooks/useTreeActions";
 import { useLayoutModeSetting, useIsAnimationModeOn } from "src/frontend/hooks/useSetting";
 import "src/frontend/App.scss";
-import "src/frontend/electronRenderer";
 
 /**
  * Applies the active MUI theme (dark/light, compact/comfortable, animations) to its subtree.
@@ -199,7 +198,7 @@ const renderApp = function () {
           <Route path="/*" element={<App />} />
         </Routes>
         <ActionDialogs />
-        <ElectronEventListener />
+        <NativeEventListener />
       </CombinedContextProvider>
     </QueryClientProvider>,
   );

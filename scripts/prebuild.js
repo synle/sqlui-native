@@ -3,7 +3,7 @@ require("./common");
 log(`
 ==============================================
 # prebuild.js
-# move build content into root (package.json)
+# copy package.json and Monaco Editor files
 ==============================================
 `);
 

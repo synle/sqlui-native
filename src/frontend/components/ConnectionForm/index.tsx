@@ -12,6 +12,7 @@ import { useCommands } from "src/frontend/components/MissionControl";
 import TestConnectionButton from "src/frontend/components/TestConnectionButton";
 import { useGetConnectionById, useUpsertConnection } from "src/frontend/hooks/useConnection";
 import useToaster from "src/frontend/hooks/useToaster";
+import { platform } from "src/frontend/platform";
 import { createSystemNotification, useNavigate } from "src/frontend/utils/commonUtils";
 import { SqluiCore } from "typings";
 
@@ -174,12 +175,9 @@ function MainConnectionForm(props: MainConnectionFormProps): React.JSX.Element |
       if (files && files.length > 0) {
         const [file] = files;
         let pathToUse = file.name; // fallback for mocked webserver
-        try {
-          // @ts-ignore - webUtils is only available in Electron renderer
-          const { webUtils } = window.requireElectron("electron");
-          pathToUse = webUtils.getPathForFile(file) || file.name;
-        } catch (_err) {
-          // not in Electron, use file.name
+        const resolvedPath = platform.getFilePath(file);
+        if (resolvedPath) {
+          pathToUse = resolvedPath;
         }
         props.setConnection(`sqlite://${pathToUse}`);
       }
