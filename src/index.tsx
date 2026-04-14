@@ -19,8 +19,8 @@ import SettingContextProvider, { useDarkModeSetting } from "src/frontend/hooks/u
 import ShowHideContextProvider from "src/frontend/hooks/useShowHide";
 import TreeActionContextProvider from "src/frontend/hooks/useTreeActions";
 import { useLayoutModeSetting, useIsAnimationModeOn } from "src/frontend/hooks/useSetting";
-import { initPlatform } from "src/frontend/platform";
 import "src/frontend/App.scss";
+import "src/frontend/electronRenderer";
 
 /**
  * Applies the active MUI theme (dark/light, compact/comfortable, animations) to its subtree.
@@ -172,12 +172,14 @@ function DevtoolsToggle() {
 }
 
 /**
- * Initializes the React Query client and mounts the full application into the #body DOM node.
+ * Initializes the Tauri/browser bridge and then mounts the full application.
  * Called once when the "sqluiNativeEvent/ready" event fires.
  */
-const renderApp = function () {
-  // Initialize platform (sets up Electron IPC fetch polyfill if in Electron)
-  initPlatform();
+const renderApp = async function () {
+  // Initialize the Tauri/browser bridge (resolves sidecar port in Tauri mode)
+  if (typeof window.initApp === "function") {
+    await window.initApp();
+  }
 
   const queryClient = new QueryClient({
     defaultOptions: {

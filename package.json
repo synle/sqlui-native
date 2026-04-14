@@ -1,59 +1,10 @@
 {
   "name": "sqlui-native",
-  "version": "1.69.0",
-  "engine": "Electron",
+  "version": "2.0.0",
+  "engine": "Tauri + Node.js Sidecar",
   "private": true,
   "description": "A minimal native desktop client for most databases supporting MySQL, MariaDB, MS SQL Server, PostgresSQL, SQLite, Cassandra, MongoDB and Redis.",
   "homepage": "./",
-  "build": {
-    "extends": null,
-    "appId": "io.synle.github.sqlui-native",
-    "files": [
-      "**/*.icns",
-      "**/*.ico",
-      "**/*.jpg",
-      "**/*.png",
-      "*.css",
-      "*.js",
-      "*.json",
-      "static/**/*",
-      "appx/**/*",
-      "assets/**/*",
-      "index.html",
-      "vs/**/*",
-      "!src/**/*",
-      "!public/**/*",
-      "!typings/**/*",
-      "!scripts/**/*",
-      "!mocked-server.js",
-      "!robots.txt"
-    ],
-    "win": {
-      "icon": "build/logo512.png",
-      "artifactName": "${name}-${arch}.${ext}"
-    },
-    "appx": {
-      "publisherDisplayName": "Sy Le",
-      "applicationId": "sqluiNative"
-    },
-    "mac": {
-      "icon": "build/logo512.png",
-      "artifactName": "${name}-${arch}.${ext}"
-    },
-    "linux": {
-      "synopsis": "sqlui-native - A minimal native desktop client for most databases supporting MySQL, MariaDB, MS SQL Server, PostgresSQL, SQLite, Cassandra, MongoDB and Redis.",
-      "icon": "build/logo256.icns",
-      "category": "Development",
-      "artifactName": "${name}.${ext}",
-      "target": [
-        "deb",
-        "rpm",
-        "snap",
-        "pacman"
-      ]
-    }
-  },
-  "main": "main.js",
   "scripts": {
     "### Cleanup & Maintenance ###": "##################################################################################",
     "clean": "rm -rf build public/vs src/package.json ./dist/*",
@@ -66,22 +17,20 @@
     "### Build Lifecycle ###": "##################################################################################",
     "prebuild": "node scripts/prebuild.js",
     "build": "cross-env NODE_OPTIONS=--max-old-space-size=4096 vite build --config vite.frontend.config.ts",
-    "postbuild": "concurrently \"npm run build-electron\" \"npm run build-mocked-server\"",
-    "build-electron": "vite build --config vite.electron.config.ts",
+    "postbuild": "npm run build-mocked-server",
     "build-mocked-server": "vite build --config vite.mocked-server.config.ts",
+    "build:all": "npm run build && npm run build-mocked-server && node scripts/prepare-sidecar.js",
     "### Development & Execution ###": "##################################################################################",
     "predev": "node scripts/prebuild.js",
     "dev": "concurrently \"npm run dev-mocked-server\" \"npm run start-webapp\"",
     "prestart": "npm run build",
-    "start": "npm run start-electron",
-    "start-electron": "cross-env NODE_OPTIONS='--max-old-space-size=4096' ENV_TYPE='electron-dev' electron build/main.js",
-    "start-electron-dev": "cross-env NODE_OPTIONS='--max-old-space-size=4096' ENV_TYPE='electron-dev' VITE_DEV_SERVER_URL='http://localhost:3000' electron build/main.js",
-    "prestart-dev": "npm run prebuild && npm run build-electron",
-    "start-dev": "concurrently \"npm run start-webapp\" \"sleep 3 && npm run start-electron-dev\"",
+    "start": "npm run tauri:dev",
+    "tauri:dev": "tauri dev",
+    "tauri:build": "tauri build",
     "start-webapp": "cross-env NODE_OPTIONS='--max-old-space-size=4096' ENV_TYPE='mocked-server' vite --config vite.frontend.config.ts --strictPort",
     "prestart-mocked-server": "npm run build-mocked-server",
-    "start-mocked-server": "cross-env NODE_OPTIONS='--max-old-space-size=4096' node build/mocked-server.js",
-    "dev-mocked-server": "concurrently \"vite build --config vite.mocked-server.config.ts --watch\" \"nodemon --watch build/mocked-server.js --delay 1 -- build/mocked-server.js\"",
+    "start-mocked-server": "cross-env NODE_OPTIONS='--max-old-space-size=4096' SIDECAR_PORT=3001 node build/mocked-server.js",
+    "dev-mocked-server": "concurrently \"vite build --config vite.mocked-server.config.ts --watch\" \"cross-env SIDECAR_PORT=3001 nodemon --watch build/mocked-server.js --delay 1 -- build/mocked-server.js\"",
     "### Validation ###": "##################################################################################",
     "validate": "npm run lint && npm run typecheck && npm run test-ci && npm run format && npm run test-e2e && npm run test-smoke && npm run test-integration",
     "### Testing ###": "##################################################################################",
@@ -90,25 +39,16 @@
     "pretest-ci": "npm run pretest",
     "test-ci": "vitest run",
     "test-integration": "vitest run --config vitest.integration.config.ts",
-    "start-e2e": "concurrently \"node build/mocked-server.js\" \"vite preview --config vite.frontend.config.ts --strictPort\"",
+    "start-e2e": "concurrently \"cross-env SIDECAR_PORT=3001 node build/mocked-server.js\" \"vite preview --config vite.frontend.config.ts --strictPort\"",
     "test-e2e": "npx playwright test",
     "test-smoke": "npx playwright test --config playwright.smoke.config.ts",
     "### Distribution & Packaging ###": "##################################################################################",
-    "dist": "electron-builder build --publish=never",
-    "dist-win-x64-exe": "electron-builder build --publish=never --win --x64",
-    "dist-win-x64-appx": "electron-builder build --publish=never --win appx",
-    "dist-win-arm64": "electron-builder build --publish=never --win --arm64 --config.npmRebuild=false",
-    "dist-macos-x64": "electron-builder build --publish=never --mac --x64",
-    "dist-macos-arm64": "electron-builder build --publish=never --mac --arm64",
-    "dist-linux-deb": "electron-builder build --publish=never --linux deb",
-    "dist-linux-rpm": "electron-builder build --publish=never --linux rpm",
-    "dist-linux-snap": "electron-builder build --publish=never --linux snap",
-    "dist-linux-pacman": "electron-builder build --publish=never --linux pacman",
-    "dist-linux-appimage": "electron-builder build --publish=never --linux AppImage"
+    "version-stamp:draft": "npm version prepatch --no-git-tag-version --preid=beta-$(date +%Y%m%d%H%M%S)",
+    "version-stamp:release": "npm version patch --no-git-tag-version"
   },
   "repository": "https://github.com/synle/sqlui-native",
   "keywords": [
-    "Electron",
+    "Tauri",
     "SQL",
     "Native Desktop Application",
     "MySQL",
@@ -124,6 +64,9 @@
     "email": "le.nguyen.sy@gmail.com"
   },
   "dependencies": {
+    "@tauri-apps/api": "^2",
+    "@tauri-apps/plugin-opener": "^2",
+    "@tauri-apps/plugin-shell": "^2",
     "@azure/cosmos": "^3.17.1",
     "@azure/data-tables": "^13.1.1",
     "@emotion/react": "^11.14.0",
@@ -161,6 +104,7 @@
     "tedious": "^19.0.0"
   },
   "devDependencies": {
+    "@tauri-apps/cli": "^2",
     "@playwright/test": "^1.58.2",
     "@testing-library/react": "^16.3.2",
     "@types/cassandra-driver": "^3.6.0",
@@ -177,8 +121,6 @@
     "body-parser": "^1.20.0",
     "concurrently": "^7.4.0",
     "cross-env": "^7.0.3",
-    "electron": "^41.2.0",
-    "electron-builder": "^26.8.1",
     "eslint": "^8.35.0",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-unused-imports": "^4.4.1",

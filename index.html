@@ -101,7 +101,6 @@
 
           const vsCodeLoader = "./vs/loader.js";
           let amdRequire;
-          let amdDefine;
 
           function _loadjs(file, cb) {
             const script = document.createElement("script");
@@ -142,39 +141,10 @@
           new Promise((resolve, reject) => {
             self.module = undefined;
 
-            // When served from a dev server (http/https), use HTTP URLs for Monaco
-            const isDevServer = window.location.protocol === "http:" || window.location.protocol === "https:";
-
-            try {
-              const path = requireElectron("path");
-
-              function _uriFromPath(_path) {
-                let pathName = path.resolve(_path).replace(/\\/g, "/");
-                if (pathName.length > 0 && pathName.charAt(0) !== "/") {
-                  pathName = "/" + pathName;
-                }
-                return encodeURI("file://" + pathName);
-              }
-
-              const monacoBaseUrl = isDevServer ? window.location.origin : _uriFromPath(path.join(__dirname, "."));
-
-              _loadjs(vsCodeLoader, function () {
-                amdRequire = window.require;
-                amdDefine = window.require.define;
-
-                amdRequire.config({
-                  baseUrl: monacoBaseUrl,
-                  preferScriptTags: isDevServer,
-                });
-
-                resolve();
-              });
-            } catch (err) {
-              _loadjs(vsCodeLoader, function () {
-                amdRequire = window.require;
-                resolve();
-              });
-            }
+            _loadjs(vsCodeLoader, function () {
+              amdRequire = window.require;
+              resolve();
+            });
           })
             .then(function () {
               amdRequire(["vs/editor/editor.main"], function () {
@@ -191,7 +161,6 @@
             .catch(triggerFallback);
         }
 
-        window.requireElectron = window.require;
         window.addEventListener("sqluiNativeEvent/init", handleSqluiNativeEventInit);
       })();
     </script>

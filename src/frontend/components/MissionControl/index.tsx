@@ -3,7 +3,7 @@ import Button from "@mui/material/Button";
 import Link from "@mui/material/Link";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect } from "react";
 import { queryKeys } from "src/frontend/hooks/queryKeys";
 import { getCodeSnippet, isDialectSupportManagedMetadata } from "src/common/adapters/DataScriptFactory";
 import { AddBookmarkConnectionContent, AddBookmarkQueryContent } from "src/frontend/components/AddBookmarkModal";
@@ -38,7 +38,6 @@ import {
 import { useSetting } from "src/frontend/hooks/useSetting";
 import { useShowHide } from "src/frontend/hooks/useShowHide";
 import useToaster from "src/frontend/hooks/useToaster";
-import { platform as appPlatform } from "src/frontend/platform";
 import {
   createSystemNotification,
   formatShortDate,
@@ -68,18 +67,12 @@ export type Command = {
 const QUERY_KEY_COMMAND_PALETTE = "commandPalette";
 
 let _commands: Command[] = [];
-let _refreshingConnectionIds: Set<string> = new Set();
 
 /**
  * Hook for managing the command queue used by MissionControl.
  * Provides the current command, a method to dispatch new commands, and a method to dismiss them.
  * @returns An object with command, selectCommand, and dismissCommand.
  */
-/** Returns whether a connection is currently being refreshed. */
-export function isConnectionRefreshing(connectionId?: string): boolean {
-  return connectionId ? _refreshingConnectionIds.has(connectionId) : false;
-}
-
 export function useCommands() {
   const queryClient = useQueryClient();
   const { data: commands = [] } = useQuery({ queryKey: [QUERY_KEY_COMMAND_PALETTE], queryFn: () => _commands });
@@ -162,8 +155,6 @@ export default function MissionControl() {
   const { mutateAsync: deleteSession } = useDeleteSession();
   const { data: bookmarkItems } = useGetBookmarkItems();
   const { mutateAsync: importBookmarkItem } = useImportBookmarkItem();
-  const [refreshingConnectionIds, setRefreshingConnectionIds] = useState<Set<string>>(new Set());
-  _refreshingConnectionIds = refreshingConnectionIds;
 
   const onCloseQuery = async (query: SqluiFrontend.ConnectionQuery) => {
     try {
@@ -768,11 +759,8 @@ export default function MissionControl() {
   };
 
   const onRefreshConnection = async (connection: SqluiCore.ConnectionProps) => {
-    if (!connection.id || refreshingConnectionIds.has(connection.id)) return;
-
-    setRefreshingConnectionIds((prev) => new Set(prev).add(connection.id!));
-
     let curToast;
+
     curToast = await addToast({
       message: `Refreshing connection "${connection.name}", please wait...`,
     });
@@ -786,35 +774,12 @@ export default function MissionControl() {
       resultMessage = `Failed to connect to "${connection.name}"`;
     }
 
-    setRefreshingConnectionIds((prev) => {
-      const next = new Set(prev);
-      next.delete(connection.id!);
-      return next;
-    });
-
     await curToast.dismiss();
     curToast = await addToast({
       message: resultMessage,
     });
 
     createSystemNotification(resultMessage);
-  };
-
-  const onRefreshAllConnections = async () => {
-    if (!connections || connections.length === 0) return;
-    const nonManagedConnections = connections
-      .filter((c) => !isDialectSupportManagedMetadata(c.dialect))
-      .sort((a, b) => {
-        // Inactive (offline/undefined) first, then online, then loading
-        const statusOrder = (s?: string) => (s === "online" ? 1 : 0);
-        const statusDiff = statusOrder(a.status) - statusOrder(b.status);
-        if (statusDiff !== 0) return statusDiff;
-        // Oldest first by createdAt, then updatedAt
-        return (a.createdAt || 0) - (b.createdAt || 0) || (a.updatedAt || 0) - (b.updatedAt || 0);
-      });
-    for (const c of nonManagedConnections) {
-      await onRefreshConnection(c);
-    }
   };
 
   const onDuplicateConnection = async (connection: SqluiCore.ConnectionProps) => {
@@ -1213,10 +1178,10 @@ export default function MissionControl() {
           <label>Your version:</label>
           {appPackage.version}
         </Box>
-        {(appPackage as any).engine && (
+        {appPackage.engine && (
           <Box className="FormInput__Row">
             <label>Engine:</label>
-            {(appPackage as any).engine}
+            {appPackage.engine}
           </Box>
         )}
         <Box className="FormInput__Row">
@@ -1247,8 +1212,7 @@ export default function MissionControl() {
       selectCommand({ event: "clientEvent/openExternalUrl", data });
     };
 
-    const onRevealDataLocation = () => {
-      const platform = window?.process?.platform;
+    const onRevealDataLocation = async () => {
       const storageDir = serverConfigs?.storageDir || "";
 
       if (!storageDir) {
@@ -1258,13 +1222,12 @@ export default function MissionControl() {
       // copy the path to clipboard
       navigator.clipboard.writeText(storageDir);
 
-      if (appPlatform.isDesktop) {
-        if (platform === "win32") {
-          execute(`explorer.exe "${storageDir}"`);
-        } else if (platform === "darwin") {
-          execute(`open "${storageDir}"`);
-        } else {
-          // anything else
+      if ((window as any).isTauri) {
+        try {
+          const { invoke } = await import("@tauri-apps/api/core");
+          await invoke("open_in_file_explorer", { path: storageDir });
+        } catch (err) {
+          console.error("MissionControl:onRevealDataLocation", err);
         }
       }
     };
@@ -1361,7 +1324,7 @@ export default function MissionControl() {
           break;
 
         case "clientEvent/openAppWindow":
-          appPlatform.openAppWindow(command.data as string);
+          window.openAppLink(command.data as string);
           break;
         case "clientEvent/showCommandPalette":
           onShowCommandPalette();
@@ -1487,21 +1450,21 @@ export default function MissionControl() {
         case "clientEvent/openExternalUrl":
           const url = command.data as string;
           if (url) {
-            appPlatform.openExternalUrl(url);
+            window.openBrowserLink(url);
           }
           break;
 
         // overall commands
         case "clientEvent/import":
           try {
-            appPlatform.toggleMenuItems(false, allMenuKeys);
+            window.toggleElectronMenu(false, allMenuKeys);
             await onImport(command.data as string);
           } catch (err) {
             console.error("index.tsx:onImport", err);
           }
 
           //@ts-ignore
-          appPlatform.toggleMenuItems(true, allMenuKeys);
+          window.toggleElectronMenu(true, allMenuKeys);
           break;
 
         case "clientEvent/exportAll":
@@ -1523,10 +1486,6 @@ export default function MissionControl() {
           if (command.data) {
             onRefreshConnection(command.data as SqluiCore.ConnectionProps);
           }
-          break;
-
-        case "clientEvent/connection/refreshAll":
-          onRefreshAllConnections();
           break;
 
         case "clientEvent/connection/duplicate":
@@ -1770,29 +1729,29 @@ export default function MissionControl() {
         // session commands
         case "clientEvent/session/switch":
           try {
-            appPlatform.toggleMenuItems(false, allMenuKeys);
+            window.toggleElectronMenu(false, allMenuKeys);
             await onChangeSession();
           } catch (err) {
             console.error("index.tsx:onChangeSession", err);
           }
 
-          appPlatform.toggleMenuItems(true, allMenuKeys);
+          window.toggleElectronMenu(true, allMenuKeys);
           break;
 
         case "clientEvent/session/new":
           try {
-            appPlatform.toggleMenuItems(false, allMenuKeys);
+            window.toggleElectronMenu(false, allMenuKeys);
             await onAddSession();
           } catch (err) {
             console.error("index.tsx:onAddSession", err);
           }
 
-          appPlatform.toggleMenuItems(true, allMenuKeys);
+          window.toggleElectronMenu(true, allMenuKeys);
           break;
 
         case "clientEvent/session/clone":
           try {
-            appPlatform.toggleMenuItems(false, allMenuKeys);
+            window.toggleElectronMenu(false, allMenuKeys);
 
             if (command.data) {
               await onCloneSession(command.data as SqluiCore.Session);
@@ -1803,12 +1762,12 @@ export default function MissionControl() {
             console.error("index.tsx:onCloneSession", err);
           }
 
-          appPlatform.toggleMenuItems(true, allMenuKeys);
+          window.toggleElectronMenu(true, allMenuKeys);
           break;
 
         case "clientEvent/session/rename":
           try {
-            appPlatform.toggleMenuItems(false, allMenuKeys);
+            window.toggleElectronMenu(false, allMenuKeys);
 
             if (command.data) {
               await onRenameSession(command.data as SqluiCore.Session);
@@ -1819,12 +1778,12 @@ export default function MissionControl() {
             console.error("index.tsx:onRenameSession", err);
           }
 
-          appPlatform.toggleMenuItems(true, allMenuKeys);
+          window.toggleElectronMenu(true, allMenuKeys);
           break;
 
         case "clientEvent/session/delete":
           try {
-            appPlatform.toggleMenuItems(false, allMenuKeys);
+            window.toggleElectronMenu(false, allMenuKeys);
             if (command.data) {
               await onDeleteSession(command.data as SqluiCore.Session);
             } else if (currentSession) {
@@ -1834,7 +1793,7 @@ export default function MissionControl() {
             console.error("index.tsx:onDeleteSession", err);
           }
 
-          appPlatform.toggleMenuItems(true, allMenuKeys);
+          window.toggleElectronMenu(true, allMenuKeys);
           break;
         case "clientEvent/toggleDevtools":
           window.dispatchEvent(new KeyboardEvent("keydown", { key: "D", ctrlKey: true, shiftKey: true, altKey: true }));
@@ -2005,10 +1964,10 @@ export default function MissionControl() {
     };
 
     document.addEventListener("keydown", onKeyboardShortcutEventForAll, true);
-    !appPlatform.isDesktop && document.addEventListener("keydown", onKeyboardShortcutEventForMockedServer, true);
+    !(window as any).isTauri && document.addEventListener("keydown", onKeyboardShortcutEventForMockedServer, true);
     return () => {
       document.removeEventListener("keydown", onKeyboardShortcutEventForAll);
-      !appPlatform.isDesktop && document.removeEventListener("keydown", onKeyboardShortcutEventForMockedServer);
+      !(window as any).isTauri && document.removeEventListener("keydown", onKeyboardShortcutEventForMockedServer);
     };
   }, []);
 
