@@ -33,5 +33,7 @@ app.post("/api/file", upload.single("file"), async (req, res) => {
 });
 setUpDataEndpoints(app);
 
-/** Port number the mocked server listens on. */
-export const port = 3001;
+/** Health check endpoint for sidecar readiness detection. */
+app.get("/api/health", (_req, res) => {
+  res.status(200).json({ status: "ok" });
+});

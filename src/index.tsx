@@ -172,10 +172,15 @@ function DevtoolsToggle() {
 }
 
 /**
- * Initializes the React Query client and mounts the full application into the #body DOM node.
+ * Initializes the Tauri/browser bridge and then mounts the full application.
  * Called once when the "sqluiNativeEvent/ready" event fires.
  */
-const renderApp = function () {
+const renderApp = async function () {
+  // Initialize the Tauri/browser bridge (resolves sidecar port in Tauri mode)
+  if (typeof window.initApp === "function") {
+    await window.initApp();
+  }
+
   const queryClient = new QueryClient({
     defaultOptions: {
       queries: {
