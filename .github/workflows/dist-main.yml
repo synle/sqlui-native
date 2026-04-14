@@ -5,9 +5,9 @@ on:
     inputs:
       message:
         description: "Release notes"
-      node_version:
-        description: "Node.js version"
-        default: "24"
+      tag:
+        description: "Release tag (e.g. v2.0.0). Leave empty to auto-increment from tauri.conf.json."
+        required: false
 
 permissions:
   contents: write
@@ -24,12 +24,201 @@ env:
   ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
 
 jobs:
-  package:
-    uses: ./.github/workflows/package.yml
-    with:
-      node_version: ${{ inputs.node_version }}
-      release_mode: "production"
-      run_format: false
-      release_notes: ${{ inputs.message }}
-      run_integration: true
-    secrets: inherit
+  # Determine the release tag
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.tag.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Determine release tag
+        id: tag
+        shell: bash
+        run: |
+          if [ -n "${{ inputs.tag }}" ]; then
+            echo "tag=${{ inputs.tag }}" >> "$GITHUB_OUTPUT"
+          else
+            # Read version from tauri.conf.json (single source of truth)
+            VERSION=$(node -e "console.log(require('./src-tauri/tauri.conf.json').version)")
+            echo "tag=v${VERSION}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Print release tag
+        run: 'echo "Release tag: ${{ steps.tag.outputs.tag }}"'
+
+  # Run tests before release
+  tests:
+    needs: [prepare]
+    runs-on: ubuntu-latest
+    permissions:
+      checks: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci || npm install
+
+      - name: Run prebuild
+        run: npm run prebuild
+
+      - name: Run unit tests
+        run: npx vitest run
+
+      - name: Run typecheck
+        run: npm run typecheck
+
+      - name: Run lint
+        run: npm run lint
+
+  # Build and release on all platforms
+  release:
+    needs: [prepare, tests]
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: macos-latest
+            target: aarch64-apple-darwin
+          - platform: macos-latest
+            target: x86_64-apple-darwin
+          - platform: windows-latest
+            target: x86_64-pc-windows-msvc
+          - platform: ubuntu-22.04
+            target: x86_64-unknown-linux-gnu
+
+    runs-on: ${{ matrix.platform }}
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+          cache: "npm"
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      - name: Install Linux dependencies
+        if: matrix.platform == 'ubuntu-22.04'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libwebkit2gtk-4.1-dev \
+            libappindicator3-dev \
+            librsvg2-dev \
+            patchelf \
+            libxdo-dev \
+            libssl-dev
+
+      - name: Install dependencies
+        run: npm ci || npm install
+
+      - name: Build and release
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tagName: ${{ needs.prepare.outputs.tag }}
+          releaseName: "sqlui-native ${{ needs.prepare.outputs.tag }}"
+          releaseBody: |
+            ## sqlui-native ${{ needs.prepare.outputs.tag }}
+
+            ${{ inputs.message }}
+
+            ### Supported Platforms
+            - **macOS** Apple Silicon (ARM64) - `.dmg`
+            - **macOS** Intel (x64) - `.dmg`
+            - **Windows** (x64) - `.msi` / `.exe`
+            - **Linux** (x64) - `.deb` / `.AppImage` / `.rpm`
+          releaseDraft: true
+          prerelease: false
+          args: --target ${{ matrix.target }}
+
+  # Publish release and commit version
+  publish:
+    if: always() && !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled')
+    needs: [prepare, release]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Publish release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          TAG="${{ needs.prepare.outputs.tag }}"
+          ASSET_COUNT=$(gh release view "$TAG" --json assets --jq '.assets | length' 2>/dev/null || echo "0")
+          echo "Release $TAG has $ASSET_COUNT assets"
+          if [ "$ASSET_COUNT" -lt 4 ]; then
+            echo "::warning::Release $TAG is incomplete ($ASSET_COUNT assets) -- keeping as draft"
+          else
+            echo "Release $TAG looks complete -- publishing"
+            gh release edit "$TAG" --draft=false
+          fi
+
+      - name: Commit release version
+        uses: EndBug/add-and-commit@v9
+        with:
+          message: "CI / CD - New Release ${{ needs.prepare.outputs.tag }}"
+          default_author: github_actions
+
+  # Deploy GitHub Pages
+  deploy_github_pages:
+    needs: [publish]
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Generate release.json from latest official release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          LATEST_VERSION=$(gh release list --exclude-drafts --exclude-pre-releases --limit 1 --json tagName --jq '.[0].tagName' 2>/dev/null || echo "")
+          if [ -n "$LATEST_VERSION" ]; then
+            echo "{ \"version\": \"$LATEST_VERSION\" }" > release.json
+            echo "Generated release.json with version: $LATEST_VERSION"
+          else
+            echo "No official release found, skipping release.json generation"
+          fi
+
+      - name: Build with Jekyll
+        uses: actions/jekyll-build-pages@v1
+        with:
+          source: ./
+          destination: ./_site
+
+      - name: Copy release.json into site
+        shell: bash
+        run: cp release.json _site/ 2>/dev/null || true
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+
+      - name: Deploy to GitHub Pages
+        id: deploy
+        uses: actions/deploy-pages@v4

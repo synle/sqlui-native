@@ -1,8 +1,9 @@
 /** Platform abstraction interface for desktop shell integration.
- * Implementations exist for Electron and browser environments.
+ * Implementations exist for Tauri, Electron, and browser environments.
+ * This seam enables swapping the backend from HTTP to Tauri invoke in a single file change.
  */
 export interface PlatformBridge {
-  /** True when running inside a desktop shell (Electron). */
+  /** True when running inside a desktop shell (Tauri or Electron). */
   readonly isDesktop: boolean;
 
   /** Opens a URL in the system's default browser. */
@@ -25,4 +26,7 @@ export interface PlatformBridge {
 
   /** Subscribes to native menu command events. Returns an unsubscribe function. */
   onAppCommand(callback: (event: string) => void): () => void;
+
+  /** Calls the backend via Tauri invoke or HTTP fetch. Returns undefined to fall through to HTTP. */
+  backendFetch?(method: string, url: string, body?: any, sessionId?: string): Promise<any>;
 }

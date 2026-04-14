@@ -146,6 +146,10 @@
             const isDevServer = window.location.protocol === "http:" || window.location.protocol === "https:";
 
             try {
+              // In Tauri mode, skip Electron path resolution and use HTTP-based loading
+              if (window.__TAURI_INTERNALS__) {
+                throw new Error("Tauri mode");
+              }
               const path = requireElectron("path");
 
               function _uriFromPath(_path) {

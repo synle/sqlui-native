@@ -4,7 +4,7 @@ import path from "node:path";
 
 /**
  * Vite build configuration for the React frontend.
- * Dev server runs on port 3000 and proxies /api requests to the mocked server on port 3001.
+ * Dev server runs on port 3000. In Tauri dev mode, the Rust backend handles all API calls via invoke().
  * @param {{ command: string }} env - Vite config environment with the current command ("serve" or "build").
  * @returns {import('vite').UserConfig} The resolved Vite configuration object.
  */
@@ -30,21 +30,9 @@ export default defineConfig(({ command }) => ({
   server: {
     port: 3000,
     open: false,
-    proxy: {
-      "/api": {
-        target: "http://localhost:3001",
-        changeOrigin: true,
-      },
-    },
   },
   preview: {
     port: 3000,
-    proxy: {
-      "/api": {
-        target: "http://localhost:3001",
-        changeOrigin: true,
-      },
-    },
   },
   optimizeDeps: {
     include: ["@emotion/react", "@emotion/styled", "@mui/icons-material", "@mui/lab", "@mui/material"],
