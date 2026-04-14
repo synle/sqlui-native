@@ -52,6 +52,9 @@ jobs:
       - name: Run lint
         run: npm run lint
 
+      - name: Prepare build assets
+        run: npm run prebuild
+
       - name: Run typecheck
         run: npm run typecheck
 
