@@ -1,14 +1,14 @@
 import React from "react";
-import Electron from "electron";
 declare global {
-  /** Extended Window interface with Electron-specific properties and utilities. */
+  /** Extended Window interface with Electron/Tauri-specific properties and utilities. */
   interface Window {
     isElectron: boolean;
     toggleElectronMenu: (visible: boolean, menus: any[]) => void;
     openBrowserLink: (link: string) => void;
     openAppLink: (link: string) => void;
-    ipcRenderer?: Electron.IpcRenderer;
+    ipcRenderer?: any;
     requireElectron: (importPath: string) => any;
+    initApp?: () => Promise<void>;
   }
 }
 

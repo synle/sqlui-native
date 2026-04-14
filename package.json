@@ -25,6 +25,7 @@
     "dev": "concurrently \"npm run dev-mocked-server\" \"npm run start-webapp\"",
     "prestart": "npm run build",
     "start": "npm run tauri:dev",
+    "tauri": "tauri",
     "tauri:dev": "tauri dev",
     "tauri:build": "tauri build",
     "start-webapp": "cross-env NODE_OPTIONS='--max-old-space-size=4096' ENV_TYPE='mocked-server' vite --config vite.frontend.config.ts --strictPort",

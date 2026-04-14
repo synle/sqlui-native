@@ -3,7 +3,6 @@
  * @deprecated Use PersistentStorageSqlite instead. This backend will be removed once all users have migrated to SQLite storage.
  */
 
-import { app } from "electron";
 import fs from "node:fs";
 import path from "node:path";
 import type { IPersistentStorage, StorageContent, StorageEntry } from "src/common/IPersistentStorage";
@@ -15,9 +14,10 @@ const homedir = require("os").homedir();
 let baseDir: string;
 try {
   // electron path
+  const { app } = require("electron");
   baseDir = path.join(app.getPath("appData"), "sqlui-native");
 } catch (_err) {
-  // fall back for mocked server
+  // fall back for mocked server / Tauri mode
   baseDir = path.join(homedir, ".sqlui-native");
 }
 fs.mkdirSync(baseDir, { recursive: true });

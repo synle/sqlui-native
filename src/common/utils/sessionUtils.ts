@@ -1,5 +1,4 @@
-import { BrowserWindow } from "electron";
-const openedWindows: Record<string, BrowserWindow> = {};
+const openedWindows: Record<string, any> = {};
 
 /**
  * Closes a BrowserWindow by its window ID.
@@ -40,6 +39,6 @@ export async function focus(windowId?: string) {
  * @param windowId - The unique window identifier.
  * @param browserWindow - The Electron BrowserWindow instance to register.
  */
-export function registerWindow(windowId: string, browserWindow: BrowserWindow) {
+export function registerWindow(windowId: string, browserWindow: any) {
   openedWindows[windowId] = browserWindow;
 }

@@ -23,37 +23,36 @@ cpSync("package.json", path.join(RESOURCES_DIR, "package.json"));
 // 3. Copy required node_modules (native and external dependencies)
 // These are the dependencies marked as external in vite.mocked-server.config.ts
 const appPackage = require("../package.json");
-const externalDeps = [
-  ...Object.keys(appPackage.dependencies || {}),
-  ...Object.keys(appPackage.optionalDependencies || {}),
-].filter((dep) => {
-  // Skip frontend-only packages that aren't needed by the sidecar
-  const frontendOnly = [
-    "@tauri-apps/api",
-    "@tauri-apps/plugin-opener",
-    "@tauri-apps/plugin-shell",
-    "@emotion/react",
-    "@emotion/styled",
-    "@mui/icons-material",
-    "@mui/lab",
-    "@mui/material",
-    "@tanstack/react-query",
-    "@tanstack/react-query-devtools",
-    "@tanstack/react-table",
-    "@tanstack/react-virtual",
-    "@testing-library/dom",
-    "@types/better-sqlite3",
-    "@xyflow/react",
-    "fuzzysort",
-    "html-to-image",
-    "monaco-editor",
-    "react",
-    "react-dom",
-    "react-router",
-    "sql-formatter",
-  ];
-  return !frontendOnly.includes(dep);
-});
+const externalDeps = [...Object.keys(appPackage.dependencies || {}), ...Object.keys(appPackage.optionalDependencies || {})].filter(
+  (dep) => {
+    // Skip frontend-only packages that aren't needed by the sidecar
+    const frontendOnly = [
+      "@tauri-apps/api",
+      "@tauri-apps/plugin-opener",
+      "@tauri-apps/plugin-shell",
+      "@emotion/react",
+      "@emotion/styled",
+      "@mui/icons-material",
+      "@mui/lab",
+      "@mui/material",
+      "@tanstack/react-query",
+      "@tanstack/react-query-devtools",
+      "@tanstack/react-table",
+      "@tanstack/react-virtual",
+      "@testing-library/dom",
+      "@types/better-sqlite3",
+      "@xyflow/react",
+      "fuzzysort",
+      "html-to-image",
+      "monaco-editor",
+      "react",
+      "react-dom",
+      "react-router",
+      "sql-formatter",
+    ];
+    return !frontendOnly.includes(dep);
+  },
+);
 
 for (const dep of externalDeps) {
   const src = path.join("node_modules", dep);

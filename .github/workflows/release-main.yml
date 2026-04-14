@@ -132,7 +132,7 @@ jobs:
             ~/.cargo/registry
             ~/.cargo/git
             src-tauri/target
-          key: cargo-release-${{ runner.os }}-${{ matrix.rust_target }}-${{ hashFiles('src-tauri/Cargo.lock') }}
+          key: cargo-release-v2-${{ runner.os }}-${{ matrix.rust_target }}-${{ hashFiles('src-tauri/Cargo.lock') }}
 
       - name: Update package.json to release version
         if: ${{ needs.create_release.outputs.dist_version != '' }}
@@ -140,6 +140,9 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Sync version to Tauri config
+        run: npm run prebuild
 
       - name: Download Node.js binary for sidecar
         shell: bash
