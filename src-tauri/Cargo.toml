@@ -1,0 +1,71 @@
+[package]
+name = "sqlui-native"
+version = "0.0.0"
+description = "A cross-platform desktop SQL/NoSQL database client"
+authors = ["synle"]
+edition = "2021"
+
+[lib]
+name = "sqlui_native_lib"
+crate-type = ["lib", "cdylib", "staticlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+serde_json = "1"
+
+[dependencies]
+# Tauri framework and plugins
+tauri = { version = "2", features = [] }
+tauri-plugin-shell = "2"
+tauri-plugin-fs = "2"
+tauri-plugin-process = "2"
+tauri-plugin-window-state = "2"
+tauri-plugin-opener = "2"
+
+# Serialization
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+# HTTP client (health-check, REST/GraphQL adapters, Salesforce)
+reqwest = { version = "0.12", features = ["blocking", "json", "multipart", "rustls-tls"] }
+
+# Async runtime
+tokio = { version = "1", features = ["full"] }
+async-trait = "0.1"
+futures-util = "0.3"
+
+# Database adapters
+rusqlite = { version = "0.32", features = ["bundled"] }
+sqlx = { version = "0.8", features = ["runtime-tokio", "tls-rustls", "mysql", "postgres", "sqlite"] }
+tiberius = { version = "0.12", default-features = false, features = ["tokio", "tokio-rustls", "tokio-util", "chrono", "tds73"] }
+mongodb = "3"
+redis = { version = "0.27", features = ["tokio-comp"] }
+scylla = "0.14"
+azure_data_cosmos = "0.21"
+azure_data_tables = "0.16"
+azure_core = "0.21"
+
+# Async utilities (tiberius requires tokio-util compat layer)
+tokio-util = { version = "0.7", features = ["compat"] }
+percent-encoding = "2"
+
+# Concurrent data structures
+dashmap = "6"
+r2d2 = "0.8"
+r2d2_sqlite = "0.25"
+
+# Cryptography (Azure CosmosDB/Table Storage HMAC-SHA256 auth)
+hmac = "0.12"
+sha2 = "0.10"
+base64 = "0.22"
+
+# Utilities
+uuid = { version = "1", features = ["v4"] }
+regex = "1"
+chrono = { version = "0.4", features = ["serde"] }
+url = "2"
+urlencoding = "2"
+dirs = "6"
+log = "0.4"
+env_logger = "0.11"
+thiserror = "2"
