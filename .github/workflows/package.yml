@@ -600,7 +600,7 @@ jobs:
           echo "| Package + Upload | $(format_duration $PACKAGE_DUR) |" >> $GITHUB_STEP_SUMMARY
           echo "| **Total** | **$(format_duration $TOTAL_DUR)** |" >> $GITHUB_STEP_SUMMARY
 
-  dist_linux:
+  dist_linux_deb:
     needs: [code_format, create_release]
     if: ${{ always() && needs.code_format.result == 'success' }}
     runs-on: ubuntu-latest
@@ -608,7 +608,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
         with:
-          ref: ${{ github.ref }} # fetch latest branch tip (includes prep commits)
+          ref: ${{ github.ref }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v6
@@ -684,6 +684,87 @@ jobs:
             "./dist/sqlui-native.deb#sqlui-native-${{ needs.create_release.outputs.dist_version }}.deb" \
             --clobber
 
+      - name: Linux deb job summary
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          format_duration() {
+            local s=$1
+            if [ "${s:-0}" -ge 60 ]; then printf "%dm %ds" $((s / 60)) $((s % 60)); else printf "%ds" "${s:-0}"; fi
+          }
+          JOB_END=$(date +%s)
+          BUILD_DUR=$(( ${BUILD_END:-$JOB_END} - ${BUILD_START:-$JOB_END} ))
+          PACKAGE_DUR=$(( JOB_END - ${PACKAGE_START:-$JOB_END} ))
+          TOTAL_DUR=$(( JOB_END - ${BUILD_START:-$JOB_END} ))
+          echo "## :package: Linux deb Build Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Task | Duration |" >> $GITHUB_STEP_SUMMARY
+          echo "|------|----------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Build | $(format_duration $BUILD_DUR) |" >> $GITHUB_STEP_SUMMARY
+          echo "| Package + Upload | $(format_duration $PACKAGE_DUR) |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Total** | **$(format_duration $TOTAL_DUR)** |" >> $GITHUB_STEP_SUMMARY
+
+  dist_linux_rpm:
+    needs: [code_format, create_release]
+    if: ${{ always() && needs.code_format.result == 'success' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: ${{ inputs.node_version }}
+          cache: "npm"
+
+      - name: Setup Python for node-gyp
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install setuptools for node-gyp
+        run: python -m pip install setuptools
+
+      - name: Update package.json to release version
+        if: ${{ needs.create_release.outputs.dist_version != '' }}
+        run: npm version --no-git-tag-version "${{ needs.create_release.outputs.dist_version }}"
+
+      - name: Cache Electron and electron-builder binaries
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ github.workspace }}/.cache/electron
+            ${{ github.workspace }}/.cache/electron-builder
+          key: electron-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+
+      - name: Record build start time
+        run: echo "BUILD_START=$(date +%s)" >> $GITHUB_ENV
+
+      - name: Build application
+        run: bash scripts/build.sh
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ${{ github.workspace }}/.playwright-browsers
+          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+
+      - name: Install Playwright browsers for smoke test
+        run: npx playwright install --with-deps chromium
+
+      - name: Run smoke test
+        run: npm run test-smoke
+
+      - name: Record build end / package start time
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          echo "BUILD_END=$(date +%s)" >> $GITHUB_ENV
+          echo "PACKAGE_START=$(date +%s)" >> $GITHUB_ENV
+
       - name: Package Linux rpm
         shell: bash
         run: |
@@ -706,6 +787,87 @@ jobs:
           gh release upload "${{ needs.create_release.outputs.dist_version }}" \
             "./dist/sqlui-native.rpm#sqlui-native-${{ needs.create_release.outputs.dist_version }}.rpm" \
             --clobber
+
+      - name: Linux rpm job summary
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          format_duration() {
+            local s=$1
+            if [ "${s:-0}" -ge 60 ]; then printf "%dm %ds" $((s / 60)) $((s % 60)); else printf "%ds" "${s:-0}"; fi
+          }
+          JOB_END=$(date +%s)
+          BUILD_DUR=$(( ${BUILD_END:-$JOB_END} - ${BUILD_START:-$JOB_END} ))
+          PACKAGE_DUR=$(( JOB_END - ${PACKAGE_START:-$JOB_END} ))
+          TOTAL_DUR=$(( JOB_END - ${BUILD_START:-$JOB_END} ))
+          echo "## :package: Linux rpm Build Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Task | Duration |" >> $GITHUB_STEP_SUMMARY
+          echo "|------|----------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Build | $(format_duration $BUILD_DUR) |" >> $GITHUB_STEP_SUMMARY
+          echo "| Package + Upload | $(format_duration $PACKAGE_DUR) |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Total** | **$(format_duration $TOTAL_DUR)** |" >> $GITHUB_STEP_SUMMARY
+
+  dist_linux_snap:
+    needs: [code_format, create_release]
+    if: ${{ always() && needs.code_format.result == 'success' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: ${{ inputs.node_version }}
+          cache: "npm"
+
+      - name: Setup Python for node-gyp
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install setuptools for node-gyp
+        run: python -m pip install setuptools
+
+      - name: Update package.json to release version
+        if: ${{ needs.create_release.outputs.dist_version != '' }}
+        run: npm version --no-git-tag-version "${{ needs.create_release.outputs.dist_version }}"
+
+      - name: Cache Electron and electron-builder binaries
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ github.workspace }}/.cache/electron
+            ${{ github.workspace }}/.cache/electron-builder
+          key: electron-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+
+      - name: Record build start time
+        run: echo "BUILD_START=$(date +%s)" >> $GITHUB_ENV
+
+      - name: Build application
+        run: bash scripts/build.sh
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ${{ github.workspace }}/.playwright-browsers
+          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+
+      - name: Install Playwright browsers for smoke test
+        run: npx playwright install --with-deps chromium
+
+      - name: Run smoke test
+        run: npm run test-smoke
+
+      - name: Record build end / package start time
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          echo "BUILD_END=$(date +%s)" >> $GITHUB_ENV
+          echo "PACKAGE_START=$(date +%s)" >> $GITHUB_ENV
 
       - name: Package Linux snap
         shell: bash
@@ -730,6 +892,87 @@ jobs:
             "./dist/sqlui-native.snap#sqlui-native-${{ needs.create_release.outputs.dist_version }}.snap" \
             --clobber
 
+      - name: Linux snap job summary
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          format_duration() {
+            local s=$1
+            if [ "${s:-0}" -ge 60 ]; then printf "%dm %ds" $((s / 60)) $((s % 60)); else printf "%ds" "${s:-0}"; fi
+          }
+          JOB_END=$(date +%s)
+          BUILD_DUR=$(( ${BUILD_END:-$JOB_END} - ${BUILD_START:-$JOB_END} ))
+          PACKAGE_DUR=$(( JOB_END - ${PACKAGE_START:-$JOB_END} ))
+          TOTAL_DUR=$(( JOB_END - ${BUILD_START:-$JOB_END} ))
+          echo "## :package: Linux snap Build Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Task | Duration |" >> $GITHUB_STEP_SUMMARY
+          echo "|------|----------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Build | $(format_duration $BUILD_DUR) |" >> $GITHUB_STEP_SUMMARY
+          echo "| Package + Upload | $(format_duration $PACKAGE_DUR) |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Total** | **$(format_duration $TOTAL_DUR)** |" >> $GITHUB_STEP_SUMMARY
+
+  dist_linux_pacman:
+    needs: [code_format, create_release]
+    if: ${{ always() && needs.code_format.result == 'success' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: ${{ inputs.node_version }}
+          cache: "npm"
+
+      - name: Setup Python for node-gyp
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install setuptools for node-gyp
+        run: python -m pip install setuptools
+
+      - name: Update package.json to release version
+        if: ${{ needs.create_release.outputs.dist_version != '' }}
+        run: npm version --no-git-tag-version "${{ needs.create_release.outputs.dist_version }}"
+
+      - name: Cache Electron and electron-builder binaries
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ github.workspace }}/.cache/electron
+            ${{ github.workspace }}/.cache/electron-builder
+          key: electron-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+
+      - name: Record build start time
+        run: echo "BUILD_START=$(date +%s)" >> $GITHUB_ENV
+
+      - name: Build application
+        run: bash scripts/build.sh
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ${{ github.workspace }}/.playwright-browsers
+          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+
+      - name: Install Playwright browsers for smoke test
+        run: npx playwright install --with-deps chromium
+
+      - name: Run smoke test
+        run: npm run test-smoke
+
+      - name: Record build end / package start time
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          echo "BUILD_END=$(date +%s)" >> $GITHUB_ENV
+          echo "PACKAGE_START=$(date +%s)" >> $GITHUB_ENV
+
       - name: Package Linux pacman
         shell: bash
         run: |
@@ -752,6 +995,87 @@ jobs:
           gh release upload "${{ needs.create_release.outputs.dist_version }}" \
             "./dist/sqlui-native.pacman#sqlui-native-${{ needs.create_release.outputs.dist_version }}.pacman" \
             --clobber
+
+      - name: Linux pacman job summary
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          format_duration() {
+            local s=$1
+            if [ "${s:-0}" -ge 60 ]; then printf "%dm %ds" $((s / 60)) $((s % 60)); else printf "%ds" "${s:-0}"; fi
+          }
+          JOB_END=$(date +%s)
+          BUILD_DUR=$(( ${BUILD_END:-$JOB_END} - ${BUILD_START:-$JOB_END} ))
+          PACKAGE_DUR=$(( JOB_END - ${PACKAGE_START:-$JOB_END} ))
+          TOTAL_DUR=$(( JOB_END - ${BUILD_START:-$JOB_END} ))
+          echo "## :package: Linux pacman Build Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Task | Duration |" >> $GITHUB_STEP_SUMMARY
+          echo "|------|----------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Build | $(format_duration $BUILD_DUR) |" >> $GITHUB_STEP_SUMMARY
+          echo "| Package + Upload | $(format_duration $PACKAGE_DUR) |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Total** | **$(format_duration $TOTAL_DUR)** |" >> $GITHUB_STEP_SUMMARY
+
+  dist_linux_appimage:
+    needs: [code_format, create_release]
+    if: ${{ always() && needs.code_format.result == 'success' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: ${{ inputs.node_version }}
+          cache: "npm"
+
+      - name: Setup Python for node-gyp
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install setuptools for node-gyp
+        run: python -m pip install setuptools
+
+      - name: Update package.json to release version
+        if: ${{ needs.create_release.outputs.dist_version != '' }}
+        run: npm version --no-git-tag-version "${{ needs.create_release.outputs.dist_version }}"
+
+      - name: Cache Electron and electron-builder binaries
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ github.workspace }}/.cache/electron
+            ${{ github.workspace }}/.cache/electron-builder
+          key: electron-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+
+      - name: Record build start time
+        run: echo "BUILD_START=$(date +%s)" >> $GITHUB_ENV
+
+      - name: Build application
+        run: bash scripts/build.sh
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ${{ github.workspace }}/.playwright-browsers
+          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+
+      - name: Install Playwright browsers for smoke test
+        run: npx playwright install --with-deps chromium
+
+      - name: Run smoke test
+        run: npm run test-smoke
+
+      - name: Record build end / package start time
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          echo "BUILD_END=$(date +%s)" >> $GITHUB_ENV
+          echo "PACKAGE_START=$(date +%s)" >> $GITHUB_ENV
 
       - name: Package Linux AppImage
         shell: bash
@@ -776,7 +1100,7 @@ jobs:
             "./dist/sqlui-native.AppImage#sqlui-native-${{ needs.create_release.outputs.dist_version }}.AppImage" \
             --clobber
 
-      - name: Linux job summary
+      - name: Linux AppImage job summary
         if: ${{ always() }}
         shell: bash
         run: |
@@ -788,7 +1112,7 @@ jobs:
           BUILD_DUR=$(( ${BUILD_END:-$JOB_END} - ${BUILD_START:-$JOB_END} ))
           PACKAGE_DUR=$(( JOB_END - ${PACKAGE_START:-$JOB_END} ))
           TOTAL_DUR=$(( JOB_END - ${BUILD_START:-$JOB_END} ))
-          echo "## :package: Linux Build Summary" >> $GITHUB_STEP_SUMMARY
+          echo "## :package: Linux AppImage Build Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "| Task | Duration |" >> $GITHUB_STEP_SUMMARY
           echo "|------|----------|" >> $GITHUB_STEP_SUMMARY
@@ -807,8 +1131,8 @@ jobs:
     secrets: inherit
 
   roll_back_on_failure_or_canceled:
-    if: ${{ always() && inputs.release_mode == 'production' && needs.create_release.result == 'success' && (needs.tests.result == 'failure' || needs.dist_windows_x64.result == 'failure' || needs.dist_windows_arm64.result == 'failure' || needs.dist_macos_arm64.result == 'failure' || needs.dist_macos_intel_x64.result == 'failure' || needs.dist_linux.result == 'failure' || needs.tests.result == 'cancelled' || needs.dist_windows_x64.result == 'cancelled' || needs.dist_windows_arm64.result == 'cancelled' || needs.dist_macos_arm64.result == 'cancelled' || needs.dist_macos_intel_x64.result == 'cancelled' || needs.dist_linux.result == 'cancelled') }}
-    needs: [create_release, tests, dist_windows_x64, dist_windows_arm64, dist_macos_arm64, dist_macos_intel_x64, dist_linux]
+    if: ${{ always() && inputs.release_mode == 'production' && needs.create_release.result == 'success' && (needs.tests.result == 'failure' || needs.dist_windows_x64.result == 'failure' || needs.dist_windows_arm64.result == 'failure' || needs.dist_macos_arm64.result == 'failure' || needs.dist_macos_intel_x64.result == 'failure' || needs.dist_linux_deb.result == 'failure' || needs.dist_linux_rpm.result == 'failure' || needs.dist_linux_snap.result == 'failure' || needs.dist_linux_pacman.result == 'failure' || needs.dist_linux_appimage.result == 'failure' || needs.tests.result == 'cancelled' || needs.dist_windows_x64.result == 'cancelled' || needs.dist_windows_arm64.result == 'cancelled' || needs.dist_macos_arm64.result == 'cancelled' || needs.dist_macos_intel_x64.result == 'cancelled' || needs.dist_linux_deb.result == 'cancelled' || needs.dist_linux_rpm.result == 'cancelled' || needs.dist_linux_snap.result == 'cancelled' || needs.dist_linux_pacman.result == 'cancelled' || needs.dist_linux_appimage.result == 'cancelled') }}
+    needs: [create_release, tests, dist_windows_x64, dist_windows_arm64, dist_macos_arm64, dist_macos_intel_x64, dist_linux_deb, dist_linux_rpm, dist_linux_snap, dist_linux_pacman, dist_linux_appimage]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -822,7 +1146,7 @@ jobs:
         shell: bash
         run: |
           TAG="${{ needs.create_release.outputs.dist_version }}"
-          JOB_FAILED=${{ needs.tests.result == 'failure' || needs.dist_windows_x64.result == 'failure' || needs.dist_windows_arm64.result == 'failure' || needs.dist_macos_arm64.result == 'failure' || needs.dist_macos_intel_x64.result == 'failure' || needs.dist_linux.result == 'failure' || needs.tests.result == 'cancelled' || needs.dist_windows_x64.result == 'cancelled' || needs.dist_windows_arm64.result == 'cancelled' || needs.dist_macos_arm64.result == 'cancelled' || needs.dist_macos_intel_x64.result == 'cancelled' || needs.dist_linux.result == 'cancelled' }}
+          JOB_FAILED=${{ needs.tests.result == 'failure' || needs.dist_windows_x64.result == 'failure' || needs.dist_windows_arm64.result == 'failure' || needs.dist_macos_arm64.result == 'failure' || needs.dist_macos_intel_x64.result == 'failure' || needs.dist_linux_deb.result == 'failure' || needs.dist_linux_rpm.result == 'failure' || needs.dist_linux_snap.result == 'failure' || needs.dist_linux_pacman.result == 'failure' || needs.dist_linux_appimage.result == 'failure' || needs.tests.result == 'cancelled' || needs.dist_windows_x64.result == 'cancelled' || needs.dist_windows_arm64.result == 'cancelled' || needs.dist_macos_arm64.result == 'cancelled' || needs.dist_macos_intel_x64.result == 'cancelled' || needs.dist_linux_deb.result == 'cancelled' || needs.dist_linux_rpm.result == 'cancelled' || needs.dist_linux_snap.result == 'cancelled' || needs.dist_linux_pacman.result == 'cancelled' || needs.dist_linux_appimage.result == 'cancelled' }}
 
           if [ "$JOB_FAILED" = "true" ]; then
             echo "::warning::Release $TAG has failing jobs — deleting"
@@ -864,7 +1188,7 @@ jobs:
 
   publish:
     if: ${{ always() && inputs.release_mode == 'production' && needs.roll_back_on_failure_or_canceled.result == 'skipped' }}
-    needs: [create_release, roll_back_on_failure_or_canceled, tests, dist_windows_x64, dist_windows_arm64, dist_macos_arm64, dist_macos_intel_x64, dist_linux]
+    needs: [create_release, roll_back_on_failure_or_canceled, tests, dist_windows_x64, dist_windows_arm64, dist_macos_arm64, dist_macos_intel_x64, dist_linux_deb, dist_linux_rpm, dist_linux_snap, dist_linux_pacman, dist_linux_appimage]
     runs-on: ubuntu-latest
     steps:
       - name: Record job start time
