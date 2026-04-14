@@ -90,7 +90,7 @@
     "json-2-csv": "^5.5.10",
     "lodash.set": "^4.3.2",
     "monaco-editor": "^0.55.1",
-    "mongodb": "^4.10.0",
+    "mongodb": "^7.1.1",
     "mustache": "^4.2.0",
     "mysql2": "^3.22.0",
     "pg": "^8.18.0",
