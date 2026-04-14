@@ -37,6 +37,16 @@ export default function AdvancedEditor(props: AdvancedEditorProps): React.JSX.El
   const decorationIdsRef = useRef<string[]>([]);
   /** True during programmatic value sync — suppresses onDidChangeModelContent callbacks. */
   const suppressChangeRef = useRef(false);
+  /** True when the editor has user-initiated changes that haven't round-tripped through props yet. */
+  const hasPendingChangeRef = useRef(false);
+
+  // Refs for callback props to avoid stale closures in Monaco event handlers
+  const onLiveChangeRef = useRef(props.onLiveChange);
+  onLiveChangeRef.current = props.onLiveChange;
+  const onBlurRef = useRef(props.onBlur);
+  onBlurRef.current = props.onBlur;
+  const valueRef = useRef(props.value);
+  valueRef.current = props.value;
 
   const onSetupMonacoEditor = useCallback(() => {
     if (debounceTimerRef.current) {
@@ -48,7 +58,7 @@ export default function AdvancedEditor(props: AdvancedEditorProps): React.JSX.El
       if (monacoEl.current) {
         //@ts-ignore
         const newEditor = window.monaco.editor.create(monacoEl.current!, {
-          value: props.value,
+          value: valueRef.current,
           language: props.language,
           theme: colorMode === "dark" ? "vs-dark" : "light",
           wordWrap: props.wordWrap === true ? "on" : "off",
@@ -57,14 +67,13 @@ export default function AdvancedEditor(props: AdvancedEditorProps): React.JSX.El
         });
 
         newEditor.onDidBlurEditorWidget(() => {
-          props.onBlur && props.onBlur(newEditor.getValue() || "");
+          onBlurRef.current?.(newEditor.getValue() || "");
         });
 
         newEditor.onDidChangeModelContent(() => {
           if (suppressChangeRef.current) return;
-          if (props.onLiveChange) {
-            props.onLiveChange(newEditor.getValue() || "");
-          }
+          hasPendingChangeRef.current = true;
+          onLiveChangeRef.current?.(newEditor.getValue() || "");
         });
 
         // clean up the model as we don't need it while it's active
@@ -73,10 +82,11 @@ export default function AdvancedEditor(props: AdvancedEditorProps): React.JSX.El
           delete EDITOR_MODELS_MAP[props.id];
         }
 
+        hasPendingChangeRef.current = false;
         setEditor(newEditor);
       }
     }, 100);
-  }, [editor, props.value, props.language, props.wordWrap, props.id, props.onBlur, colorMode]);
+  }, [editor, props.language, props.wordWrap, props.id, colorMode]);
 
   // this is used to clean up the editor
   useEffect(() => {
@@ -98,14 +108,22 @@ export default function AdvancedEditor(props: AdvancedEditorProps): React.JSX.El
     };
   }, [editor, props.id]);
   // Sync external value changes to the editor (e.g., loading a saved query, applying a template).
-  // Skips when the editor already has the same content (round-trip from user typing).
+  // Skips when the editor already has the same content (round-trip from user typing)
+  // or when the editor has pending user-initiated changes (debounce hasn't settled).
   useEffect(() => {
     if (!editor) return;
 
     const newValue = props.value || "";
 
-    // Skip if editor already has this value — the change is a round-trip from typing
-    if (editor.getValue() === newValue) return;
+    // Skip if editor already has this value — round-trip from typing is complete
+    if (editor.getValue() === newValue) {
+      hasPendingChangeRef.current = false;
+      return;
+    }
+
+    // Skip if the editor has pending internal changes (user is actively typing).
+    // The debounced onChange will eventually fire and reconcile props with editor state.
+    if (hasPendingChangeRef.current) return;
 
     // Suppress onDidChangeModelContent during programmatic edit to avoid feedback loop
     suppressChangeRef.current = true;
