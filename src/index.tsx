@@ -10,7 +10,7 @@ import App from "src/frontend/App";
 import SessionExpiredPage from "src/frontend/views/SessionExpiredPage";
 import SessionSelectPage from "src/frontend/views/SessionSelectPage";
 import ActionDialogs from "src/frontend/components/ActionDialogs";
-import ElectronEventListener from "src/frontend/components/ElectronEventListener";
+import NativeEventListener from "src/frontend/components/NativeEventListener";
 import DataSnapshotListView from "src/frontend/DataSnapshotListView";
 import DataSnapshotView from "src/frontend/DataSnapshotView";
 import ActionDialogsContextProvider from "src/frontend/hooks/useActionDialogs";
@@ -202,7 +202,7 @@ const renderApp = function () {
           <Route path="/*" element={<App />} />
         </Routes>
         <ActionDialogs />
-        <ElectronEventListener />
+        <NativeEventListener />
       </CombinedContextProvider>
     </QueryClientProvider>,
   );

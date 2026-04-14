@@ -1,4 +1,4 @@
-/** Browser platform implementation. Default fallback when not in Electron. */
+/** Browser platform implementation. Default fallback when not in Tauri. */
 import type { PlatformBridge } from "src/frontend/platform/types";
 
 export const browserPlatform: PlatformBridge = {

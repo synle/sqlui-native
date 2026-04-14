@@ -269,10 +269,14 @@ jobs:
           node-version: ${{ inputs.node_version || '24' }}
           cache: "npm"
 
-      - run: |
-          node scripts/prebuild.js
-          npm ci || npm install
-          node scripts/postbuild.js
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install dependencies
+        run: npm ci || npm install
+
+      - name: Run prebuild
+        run: npm run prebuild
 
       # wait for databases to be ready
       - name: Record job start time
@@ -282,6 +286,14 @@ jobs:
         run: |
           echo "Waiting for databases to initialize..."
           sleep 5m  # sleep for n mins
+
+      - name: Run Rust integration tests
+        env:
+          TEST_AZ_TABLE_STORAGE_CONNECTION: ${{ inputs.run_integration && secrets.TEST_AZ_TABLE_STORAGE_CONNECTION || '' }}
+          TEST_AZ_COSMOSDB_CONNECTION: ${{ inputs.run_integration && secrets.TEST_AZ_COSMOSDB_CONNECTION || '' }}
+          TEST_SFDC_CONNECTION: ${{ inputs.run_integration && secrets.TEST_SFDC_CONNECTION || '' }}
+        working-directory: src-tauri
+        run: cargo test --test adapter_integration -- --nocapture --test-threads=1
 
       - name: Record integration tests start time
         run: echo "TESTS_START=$(date +%s)" >> $GITHUB_ENV
@@ -386,10 +398,8 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
 
-      - name: Build frontend and mocked server for E2E
-        run: |
-          npm run build
-          npm run build-mocked-server
+      - name: Build frontend for E2E
+        run: npm run build
 
       - name: Record E2E tests start time
         run: echo "E2E_START=$(date +%s)" >> $GITHUB_ENV
