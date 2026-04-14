@@ -1,4 +1,3 @@
-import { BrowserWindow } from "electron";
 import { Express } from "express";
 import path from "node:path";
 import {
@@ -1005,6 +1004,7 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
 
     // attempting to open the window to show this data
     try {
+      const { BrowserWindow } = require("electron");
       const mainWindow = new BrowserWindow({
         width: 1200,
         height: 800,

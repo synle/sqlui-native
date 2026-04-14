@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useCommands } from "src/frontend/components/MissionControl";
 import { useActionDialogs } from "src/frontend/hooks/useActionDialogs";
+import { SqluiEnums } from "typings";
 
 /**
  * Listens for menu commands from the Tauri shell (or Electron IPC for backward compat)
@@ -39,7 +40,7 @@ export default function ElectronEventListener() {
           }
 
           console.log(">> clientEvent Executed", data);
-          selectCommand({ event: data });
+          selectCommand({ event: data as SqluiEnums.ClientEventKey });
         }).then((fn) => {
           unlisten = fn;
         });

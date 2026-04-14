@@ -54,7 +54,7 @@ esac
 
 # Resolve the latest Node.js version for the major version
 echo "Resolving Node.js v${NODE_VERSION} for ${NODE_PLATFORM}-${NODE_ARCH}..."
-RESOLVED_VERSION=$(curl -sL "https://nodejs.org/dist/latest-v${NODE_VERSION}.x/" | grep -oP "node-v\K[0-9]+\.[0-9]+\.[0-9]+" | head -1)
+RESOLVED_VERSION=$(curl -sL "https://nodejs.org/dist/latest-v${NODE_VERSION}.x/" | grep -oE "node-v[0-9]+\.[0-9]+\.[0-9]+" | head -1 | sed 's/node-v//')
 
 if [ -z "$RESOLVED_VERSION" ]; then
   echo "Failed to resolve Node.js version"
