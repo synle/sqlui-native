@@ -1,24 +1,26 @@
-// This file is required by the index.html file and will
-// be executed in the renderer process for that window.
-// No Node.js APIs are available in this process because
-// `nodeIntegration` is turned off. Use `preload.js` to
-// selectively enable features needed in the rendering
-// process.
-try {
-  /** @type {boolean} True when running inside Electron; false in browser/mocked-server mode. */
+// This file bridges the frontend with either the Tauri shell or a plain browser environment.
+// It replaces the previous Electron-specific polyfills (IPC fetch, shell, menus).
+
+/**
+ * Initializes the application bridge for either Tauri or browser mode.
+ * In Tauri mode, resolves the sidecar port and sets up native shell helpers.
+ * In browser/dev mode, uses standard browser APIs with relative URLs.
+ * Must be called and awaited before the app renders.
+ * @returns {Promise<void>}
+ */
+window.initApp = async function initApp() {
+  // Defaults for browser / mocked-server mode
   window.isElectron = false;
+  window.isTauri = false;
+  window.__SIDECAR_BASE_URL__ = "";
 
   /**
-   * Toggles Electron application menu items by name.
-   * No-op in browser/mocked-server mode.
-   * @param {boolean} visible - Whether to show or hide the menus.
-   * @param {string|string[]} menus - Menu name(s) to toggle.
+   * Toggles native menu items. No-op — menus are handled by Tauri/Rust.
    */
   window.toggleElectronMenu = () => {};
 
   /**
-   * Opens a URL in the system's default external browser.
-   * In browser mode, opens the link in a new tab.
+   * Opens a URL in the system's default browser.
    * @param {string} link - The URL to open.
    */
   window.openBrowserLink = (link) => {
@@ -27,103 +29,47 @@ try {
 
   /**
    * Navigates to an in-app hash route.
-   * In browser mode, opens the hash route in the same origin.
-   * @param {string} hashLink - The hash portion of the route (without the leading #).
+   * @param {string} hashLink - The hash portion of the route.
    */
   window.openAppLink = (hashLink) => {
     window.open(`/#${hashLink}`);
   };
 
-  if (window?.process?.env?.ENV_TYPE !== "mocked-server" && window.requireElectron) {
-    const ipcRenderer = window.requireElectron("electron").ipcRenderer;
-    const shell = window.requireElectron("electron").shell;
+  // Detect Tauri environment
+  if (window.__TAURI_INTERNALS__) {
+    window.isTauri = true;
 
-    window.ipcRenderer = ipcRenderer;
-    window.isElectron = true;
+    try {
+      const { invoke } = await import("@tauri-apps/api/core");
 
-    /**
-     * Sends a toggle-menus IPC message to the Electron main process.
-     * @param {boolean} visible - Whether to show or hide the menus.
-     * @param {string|string[]} menus - Menu name(s) to toggle.
-     */
-    window.toggleElectronMenu = (visible, menus) => {
-      menus = [].concat(menus);
-      ipcRenderer.send("sqluiNativeEvent/toggleMenus", [visible, ...menus]);
-    };
+      // Get the sidecar Express server port from Rust
+      const port = await invoke("get_sidecar_port");
+      window.__SIDECAR_BASE_URL__ = `http://127.0.0.1:${port}`;
+      console.log(`Tauri sidecar connected on port ${port}`);
+    } catch (err) {
+      console.error("electronRenderer.js:initApp:sidecar", err);
+    }
 
     /**
-     * Opens a URL in the system's default browser via Electron's shell.
+     * Opens a URL in the system's default browser via Tauri's shell plugin.
      * @param {string} link - The URL to open externally.
      */
-    window.openBrowserLink = (link) => {
-      shell.openExternal(link);
+    window.openBrowserLink = async (link) => {
+      try {
+        const { open } = await import("@tauri-apps/plugin-opener");
+        await open(link);
+      } catch (err) {
+        console.error("electronRenderer.js:openBrowserLink", err);
+        window.open(link, "_blank");
+      }
     };
 
     /**
-     * Requests the Electron main process to open a new app window at the given hash route.
-     * @param {string} hashLink - The hash portion of the route (without the leading #).
+     * Opens an in-app hash route in the current window.
+     * @param {string} hashLink - The hash portion of the route.
      */
     window.openAppLink = (hashLink) => {
-      fetch(`/api/appWindow`, {
-        method: "post",
-        body: JSON.stringify({
-          hashLink,
-        }),
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-      });
-    };
-
-    // here we are polyfilling fetch with ipcRenderer
-    const origFetch = window.fetch;
-
-    /**
-     * Fetch polyfill for Electron: routes /api/* requests through ipcRenderer instead of HTTP.
-     * Non-/api requests fall through to the original window.fetch.
-     * @param {string} url - The request URL.
-     * @param {RequestInit} options - Standard fetch options (method, headers, body, etc.).
-     * @returns {Promise<{ok: boolean, text: function(): string, headers: object}>} A fetch-compatible response object.
-     */
-    window.fetch = (url, options) => {
-      if (url.indexOf("/api") !== 0) {
-        // if not /api/, then use the original fetch
-        return origFetch(url, options);
-      }
-      return new Promise((resolve, reject) => {
-        const requestId = `fetch.requestId.${Date.now()}.${Math.floor(Math.random() * 10000000000000000)}`;
-        ipcRenderer.once(requestId, (event, data) => {
-          const { ok, text, status, headers } = data;
-
-          let returnedData = text;
-
-          try {
-            returnedData = JSON.parse(text);
-          } catch (err) {
-            console.error("electronRenderer.js:parse", err);
-          }
-
-          console.log(
-            ">> Network",
-            ok ? "Success" : "Error:",
-            status,
-            options.method || "get",
-            url,
-            options.headers["sqlui-native-session-id"],
-            returnedData,
-          );
-
-          resolve({
-            ok,
-            text: () => text,
-            headers,
-          });
-        });
-        ipcRenderer.send("sqluiNativeEvent/fetch", { requestId, url, options });
-      });
+      window.location.hash = hashLink;
     };
   }
-} catch (err) {
-  console.error("electronRenderer.js:send", err);
-}
+};

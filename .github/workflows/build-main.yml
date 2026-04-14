@@ -3,6 +3,8 @@ name: Main - Build
 on:
   push:
     branches: [master, main]
+  pull_request:
+    branches: [master, main]
   workflow_dispatch:
     inputs:
       node_version:
@@ -16,13 +18,110 @@ concurrency:
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
   ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
+  PLAYWRIGHT_BROWSERS_PATH: ${{ github.workspace }}/.playwright-browsers
 
 jobs:
-  package:
-    uses: ./.github/workflows/package.yml
-    with:
-      node_version: ${{ inputs.node_version }}
-      release_mode: "no_release"
-      run_format: true
-      run_integration: false
-    secrets: inherit
+  lint_and_test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Record job start time
+        run: echo "JOB_START=$(date +%s)" >> $GITHUB_ENV
+
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: ${{ inputs.node_version || '24' }}
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run code formatting check
+        run: bash scripts/format.sh
+
+      - name: Commit formatting changes
+        if: ${{ github.event_name == 'push' }}
+        uses: EndBug/add-and-commit@v9
+        with:
+          message: "CI / CD - Format code"
+          default_author: github_actions
+
+      - name: Run lint
+        run: npm run lint
+
+      - name: Run typecheck
+        run: npm run typecheck
+
+      - name: Build frontend and mocked-server
+        run: npm run build
+
+      - name: Run unit tests
+        run: npm run test-ci
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ${{ github.workspace }}/.playwright-browsers
+          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Run smoke tests
+        run: npm run test-smoke
+
+      - name: Job summary
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          JOB_END=$(date +%s)
+          DUR=$(( JOB_END - ${JOB_START:-$JOB_END} ))
+          if [ "$DUR" -ge 60 ]; then FORMATTED=$(printf "%dm %ds" $((DUR / 60)) $((DUR % 60))); else FORMATTED="${DUR}s"; fi
+          echo "## Build Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Metric | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|--------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| **Total Duration** | **${FORMATTED}** |" >> $GITHUB_STEP_SUMMARY
+
+  cargo_check:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            rust_target: x86_64-unknown-linux-gnu
+          - os: macos-latest
+            rust_target: aarch64-apple-darwin
+          - os: windows-latest
+            rust_target: x86_64-pc-windows-msvc
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.rust_target }}
+
+      - name: Cache Cargo registry and build
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            src-tauri/target
+          key: cargo-${{ runner.os }}-${{ matrix.rust_target }}-${{ hashFiles('src-tauri/Cargo.lock') }}
+
+      - name: Install Linux dependencies
+        if: ${{ runner.os == 'Linux' }}
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+
+      - name: Cargo check
+        working-directory: src-tauri
+        run: cargo check --target ${{ matrix.rust_target }}

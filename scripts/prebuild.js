@@ -3,16 +3,16 @@ require("./common");
 log(`
 ==============================================
 # prebuild.js
-# move build content into root (package.json)
+# Prepare build directories and copy assets
 ==============================================
 `);
 
-// Copy package.json to build and src
+// Ensure build and public directories exist
 fs.mkdirSync("build", { recursive: true });
 fs.mkdirSync("public", { recursive: true });
-cpSync("package.json", "build/package.json");
+
+// Copy package.json to src (for module resolution during build)
 cpSync("package.json", "src/package.json");
-cpSync("package.json", "public/package.json");
 
 // Copy monaco-editor vs files to public/vs
 cpSync(

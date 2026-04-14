@@ -14,7 +14,9 @@ async function _fetch<T>(input: RequestInfo, initOptions?: RequestInit) {
 
   restInput = restInput || {};
 
-  return fetch(input, {
+  const baseUrl = (window as any).__SIDECAR_BASE_URL__ || "";
+
+  return fetch(`${baseUrl}${input}`, {
     ...restInput,
     headers,
   })
@@ -52,7 +54,8 @@ export class ProxyApi {
    * @returns A promise that resolves when the download is triggered.
    */
   static async backupDatabase() {
-    const response = await fetch(`/api/backup/database`, {
+    const baseUrl = (window as any).__SIDECAR_BASE_URL__ || "";
+    const response = await fetch(`${baseUrl}/api/backup/database`, {
       headers: { "sqlui-native-session-id": getCurrentSessionId() },
     });
     if (!response.ok) {
@@ -526,22 +529,13 @@ export class ProxyApi {
    * @returns The file content as a string.
    */
   static readFileContent(file: File): Promise<string> {
-    try {
-      //@ts-ignore
-      const fs = window.requireElectron("fs");
-      //@ts-ignore
-      const { webUtils } = window.requireElectron("electron");
-      const filePath = webUtils.getPathForFile(file);
-      return fs.readFileSync(filePath, { encoding: "utf-8" });
-    } catch (err) {
-      console.error("api.tsx:readFileSync", err);
-      const form = new FormData();
-      form.append("file", file);
-      return fetch("/api/file", {
-        method: "POST",
-        body: form,
-      }).then((r) => r.text());
-    }
+    const baseUrl = (window as any).__SIDECAR_BASE_URL__ || "";
+    const form = new FormData();
+    form.append("file", file);
+    return fetch(`${baseUrl}/api/file`, {
+      method: "POST",
+      body: form,
+    }).then((r) => r.text());
   }
 
   /**

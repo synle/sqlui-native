@@ -1205,8 +1205,7 @@ export default function MissionControl() {
       selectCommand({ event: "clientEvent/openExternalUrl", data });
     };
 
-    const onRevealDataLocation = () => {
-      const platform = window?.process?.platform;
+    const onRevealDataLocation = async () => {
       const storageDir = serverConfigs?.storageDir || "";
 
       if (!storageDir) {
@@ -1216,13 +1215,12 @@ export default function MissionControl() {
       // copy the path to clipboard
       navigator.clipboard.writeText(storageDir);
 
-      if (window.isElectron) {
-        if (platform === "win32") {
-          execute(`explorer.exe "${storageDir}"`);
-        } else if (platform === "darwin") {
-          execute(`open "${storageDir}"`);
-        } else {
-          // anything else
+      if ((window as any).isTauri) {
+        try {
+          const { invoke } = await import("@tauri-apps/api/core");
+          await invoke("open_in_file_explorer", { path: storageDir });
+        } catch (err) {
+          console.error("MissionControl:onRevealDataLocation", err);
         }
       }
     };
@@ -1959,10 +1957,10 @@ export default function MissionControl() {
     };
 
     document.addEventListener("keydown", onKeyboardShortcutEventForAll, true);
-    !window.isElectron && document.addEventListener("keydown", onKeyboardShortcutEventForMockedServer, true);
+    !(window as any).isTauri && document.addEventListener("keydown", onKeyboardShortcutEventForMockedServer, true);
     return () => {
       document.removeEventListener("keydown", onKeyboardShortcutEventForAll);
-      !window.isElectron && document.removeEventListener("keydown", onKeyboardShortcutEventForMockedServer);
+      !(window as any).isTauri && document.removeEventListener("keydown", onKeyboardShortcutEventForMockedServer);
     };
   }, []);
 

@@ -1,27 +1,20 @@
 /**
- * Executes a shell command in Electron mode using child_process.exec.
- * Returns an empty string in non-Electron environments.
+ * Executes a shell command via Tauri invoke.
+ * Returns an empty string in browser/non-Tauri environments.
  * @param shellToRun - The shell command to execute.
- * @param delay - Delay in milliseconds before execution (default: 25).
+ * @param _delay - Unused, kept for backward compatibility.
  * @returns The stdout output of the command.
  */
-export function execute(shellToRun: string, delay = 25): Promise<string> {
-  if (!window.isElectron) {
-    return Promise.resolve("");
+export async function execute(shellToRun: string, _delay = 25): Promise<string> {
+  if (!(window as any).isTauri) {
+    return "";
   }
 
-  // @ts-ignore
-  const { exec } = window.requireElectron("child_process");
-
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      exec(shellToRun, (error, stdout, stderr) => {
-        if (error) {
-          return reject(stderr);
-        }
-
-        resolve(stdout);
-      });
-    }, delay);
-  });
+  try {
+    const { invoke } = await import("@tauri-apps/api/core");
+    return await invoke("execute_shell", { command: shellToRun });
+  } catch (err) {
+    console.error("executeUtils.ts:execute", err);
+    return "";
+  }
 }
