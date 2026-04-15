@@ -106,17 +106,6 @@ jobs:
           node-version: ${{ inputs.node_version }}
           cache: "npm"
 
-      - name: Stamp version (${{ inputs.release_mode }})
-        shell: bash
-        run: |
-          echo "::group::Version stamp - release_mode=${{ inputs.release_mode }}"
-          if [ "${{ inputs.release_mode }}" = "production" ]; then
-            npm run version-stamp:release
-          else
-            npm run version-stamp:draft
-          fi
-          echo "::endgroup::"
-
       - name: Get package version
         id: package-version
         uses: martinbeentjes/npm-get-version-action@master
