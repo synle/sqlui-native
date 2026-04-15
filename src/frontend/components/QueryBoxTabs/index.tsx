@@ -13,6 +13,7 @@ import Link from "@mui/material/Link";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import DropdownButton from "src/frontend/components/DropdownButton";
 import { allMenuKeys, useCommands } from "src/frontend/components/MissionControl";
+import { platform } from "src/frontend/platform";
 import QueryBox from "src/frontend/components/QueryBox";
 import Tabs from "src/frontend/components/Tabs";
 import { useConnectionQueries } from "src/frontend/hooks/useConnectionQuery";
@@ -97,10 +98,10 @@ export default function QueryBoxTabs() {
   // we only want to show the query menu for
   // electron only when we can see the query tabs...
   useEffect(() => {
-    window.toggleElectronMenu(true, allMenuKeys);
+    platform.toggleMenuItems(true, allMenuKeys);
 
     return () => {
-      window.toggleElectronMenu(false, allMenuKeys);
+      platform.toggleMenuItems(false, allMenuKeys);
     };
   }, []);
 

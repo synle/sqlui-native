@@ -38,6 +38,7 @@ import {
 import { useSetting } from "src/frontend/hooks/useSetting";
 import { useShowHide } from "src/frontend/hooks/useShowHide";
 import useToaster from "src/frontend/hooks/useToaster";
+import { platform as appPlatform } from "src/frontend/platform";
 import {
   createSystemNotification,
   formatShortDate,
@@ -1223,7 +1224,7 @@ export default function MissionControl() {
       // copy the path to clipboard
       navigator.clipboard.writeText(storageDir);
 
-      if (window.isElectron) {
+      if (appPlatform.isDesktop) {
         if (platform === "win32") {
           execute(`explorer.exe "${storageDir}"`);
         } else if (platform === "darwin") {
@@ -1326,7 +1327,7 @@ export default function MissionControl() {
           break;
 
         case "clientEvent/openAppWindow":
-          window.openAppLink(command.data as string);
+          appPlatform.openAppWindow(command.data as string);
           break;
         case "clientEvent/showCommandPalette":
           onShowCommandPalette();
@@ -1452,21 +1453,21 @@ export default function MissionControl() {
         case "clientEvent/openExternalUrl":
           const url = command.data as string;
           if (url) {
-            window.openBrowserLink(url);
+            appPlatform.openExternalUrl(url);
           }
           break;
 
         // overall commands
         case "clientEvent/import":
           try {
-            window.toggleElectronMenu(false, allMenuKeys);
+            appPlatform.toggleMenuItems(false, allMenuKeys);
             await onImport(command.data as string);
           } catch (err) {
             console.error("index.tsx:onImport", err);
           }
 
           //@ts-ignore
-          window.toggleElectronMenu(true, allMenuKeys);
+          appPlatform.toggleMenuItems(true, allMenuKeys);
           break;
 
         case "clientEvent/exportAll":
@@ -1731,29 +1732,29 @@ export default function MissionControl() {
         // session commands
         case "clientEvent/session/switch":
           try {
-            window.toggleElectronMenu(false, allMenuKeys);
+            appPlatform.toggleMenuItems(false, allMenuKeys);
             await onChangeSession();
           } catch (err) {
             console.error("index.tsx:onChangeSession", err);
           }
 
-          window.toggleElectronMenu(true, allMenuKeys);
+          appPlatform.toggleMenuItems(true, allMenuKeys);
           break;
 
         case "clientEvent/session/new":
           try {
-            window.toggleElectronMenu(false, allMenuKeys);
+            appPlatform.toggleMenuItems(false, allMenuKeys);
             await onAddSession();
           } catch (err) {
             console.error("index.tsx:onAddSession", err);
           }
 
-          window.toggleElectronMenu(true, allMenuKeys);
+          appPlatform.toggleMenuItems(true, allMenuKeys);
           break;
 
         case "clientEvent/session/clone":
           try {
-            window.toggleElectronMenu(false, allMenuKeys);
+            appPlatform.toggleMenuItems(false, allMenuKeys);
 
             if (command.data) {
               await onCloneSession(command.data as SqluiCore.Session);
@@ -1764,12 +1765,12 @@ export default function MissionControl() {
             console.error("index.tsx:onCloneSession", err);
           }
 
-          window.toggleElectronMenu(true, allMenuKeys);
+          appPlatform.toggleMenuItems(true, allMenuKeys);
           break;
 
         case "clientEvent/session/rename":
           try {
-            window.toggleElectronMenu(false, allMenuKeys);
+            appPlatform.toggleMenuItems(false, allMenuKeys);
 
             if (command.data) {
               await onRenameSession(command.data as SqluiCore.Session);
@@ -1780,12 +1781,12 @@ export default function MissionControl() {
             console.error("index.tsx:onRenameSession", err);
           }
 
-          window.toggleElectronMenu(true, allMenuKeys);
+          appPlatform.toggleMenuItems(true, allMenuKeys);
           break;
 
         case "clientEvent/session/delete":
           try {
-            window.toggleElectronMenu(false, allMenuKeys);
+            appPlatform.toggleMenuItems(false, allMenuKeys);
             if (command.data) {
               await onDeleteSession(command.data as SqluiCore.Session);
             } else if (currentSession) {
@@ -1795,7 +1796,7 @@ export default function MissionControl() {
             console.error("index.tsx:onDeleteSession", err);
           }
 
-          window.toggleElectronMenu(true, allMenuKeys);
+          appPlatform.toggleMenuItems(true, allMenuKeys);
           break;
         case "clientEvent/toggleDevtools":
           window.dispatchEvent(new KeyboardEvent("keydown", { key: "D", ctrlKey: true, shiftKey: true, altKey: true }));
@@ -1966,10 +1967,10 @@ export default function MissionControl() {
     };
 
     document.addEventListener("keydown", onKeyboardShortcutEventForAll, true);
-    !window.isElectron && document.addEventListener("keydown", onKeyboardShortcutEventForMockedServer, true);
+    !appPlatform.isDesktop && document.addEventListener("keydown", onKeyboardShortcutEventForMockedServer, true);
     return () => {
       document.removeEventListener("keydown", onKeyboardShortcutEventForAll);
-      !window.isElectron && document.removeEventListener("keydown", onKeyboardShortcutEventForMockedServer);
+      !appPlatform.isDesktop && document.removeEventListener("keydown", onKeyboardShortcutEventForMockedServer);
     };
   }, []);
 
