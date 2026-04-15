@@ -43,9 +43,7 @@
     "start-e2e": "concurrently \"cross-env SIDECAR_PORT=3001 node build/mocked-server.js\" \"vite preview --config vite.frontend.config.ts --strictPort\"",
     "test-e2e": "npx playwright test",
     "test-smoke": "npx playwright test --config playwright.smoke.config.ts",
-    "### Distribution & Packaging ###": "##################################################################################",
-    "version-stamp:draft": "npm version prepatch --no-git-tag-version --preid=beta-$(date +%Y%m%d%H%M%S)",
-    "version-stamp:release": "npm version patch --no-git-tag-version"
+    "### Distribution & Packaging ###": "##################################################################################"
   },
   "repository": "https://github.com/synle/sqlui-native",
   "keywords": [

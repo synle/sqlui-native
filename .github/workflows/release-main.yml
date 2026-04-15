@@ -40,9 +40,6 @@ jobs:
           node-version: ${{ inputs.node_version }}
           cache: "npm"
 
-      - name: Stamp release version
-        run: npm run version-stamp:release
-
       - name: Get package version
         id: package-version
         uses: martinbeentjes/npm-get-version-action@master
