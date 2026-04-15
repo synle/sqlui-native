@@ -12,7 +12,8 @@ main.js
 mocked-server.js
 preload.js
 src-tauri/target/
-src-tauri/binaries/
+src-tauri/binaries/*
+!src-tauri/binaries/.gitkeep
 src-tauri/resources/mocked-server.js
 src-tauri/resources/node_modules/
 
