@@ -2,6 +2,7 @@ import AddIcon from "@mui/icons-material/Add";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import BackupIcon from "@mui/icons-material/Backup";
+import RefreshIcon from "@mui/icons-material/Refresh";
 import UnfoldLessIcon from "@mui/icons-material/UnfoldLess";
 import Box from "@mui/material/Box";
 import { useNavigate } from "src/frontend/utils/commonUtils";
@@ -31,6 +32,11 @@ export default function NewConnectionButton() {
       label: "Data Migration",
       onClick: () => navigate("/migration"),
       startIcon: <BackupIcon />,
+    },
+    {
+      label: "Refresh All Connections",
+      onClick: () => selectCommand({ event: "clientEvent/connection/refreshAll" }),
+      startIcon: <RefreshIcon />,
     },
     {
       label: "Collapse All Connections",

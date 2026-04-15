@@ -3,7 +3,7 @@ import Button from "@mui/material/Button";
 import Link from "@mui/material/Link";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { queryKeys } from "src/frontend/hooks/queryKeys";
 import { getCodeSnippet, isDialectSupportManagedMetadata } from "src/common/adapters/DataScriptFactory";
 import { AddBookmarkConnectionContent, AddBookmarkQueryContent } from "src/frontend/components/AddBookmarkModal";
@@ -68,12 +68,18 @@ export type Command = {
 const QUERY_KEY_COMMAND_PALETTE = "commandPalette";
 
 let _commands: Command[] = [];
+let _refreshingConnectionIds: Set<string> = new Set();
 
 /**
  * Hook for managing the command queue used by MissionControl.
  * Provides the current command, a method to dispatch new commands, and a method to dismiss them.
  * @returns An object with command, selectCommand, and dismissCommand.
  */
+/** Returns whether a connection is currently being refreshed. */
+export function isConnectionRefreshing(connectionId?: string): boolean {
+  return connectionId ? _refreshingConnectionIds.has(connectionId) : false;
+}
+
 export function useCommands() {
   const queryClient = useQueryClient();
   const { data: commands = [] } = useQuery({ queryKey: [QUERY_KEY_COMMAND_PALETTE], queryFn: () => _commands });
@@ -156,6 +162,8 @@ export default function MissionControl() {
   const { mutateAsync: deleteSession } = useDeleteSession();
   const { data: bookmarkItems } = useGetBookmarkItems();
   const { mutateAsync: importBookmarkItem } = useImportBookmarkItem();
+  const [refreshingConnectionIds, setRefreshingConnectionIds] = useState<Set<string>>(new Set());
+  _refreshingConnectionIds = refreshingConnectionIds;
 
   const onCloseQuery = async (query: SqluiFrontend.ConnectionQuery) => {
     try {
@@ -760,8 +768,11 @@ export default function MissionControl() {
   };
 
   const onRefreshConnection = async (connection: SqluiCore.ConnectionProps) => {
-    let curToast;
+    if (!connection.id || refreshingConnectionIds.has(connection.id)) return;
 
+    setRefreshingConnectionIds((prev) => new Set(prev).add(connection.id!));
+
+    let curToast;
     curToast = await addToast({
       message: `Refreshing connection "${connection.name}", please wait...`,
     });
@@ -775,12 +786,26 @@ export default function MissionControl() {
       resultMessage = `Failed to connect to "${connection.name}"`;
     }
 
+    setRefreshingConnectionIds((prev) => {
+      const next = new Set(prev);
+      next.delete(connection.id!);
+      return next;
+    });
+
     await curToast.dismiss();
     curToast = await addToast({
       message: resultMessage,
     });
 
     createSystemNotification(resultMessage);
+  };
+
+  const onRefreshAllConnections = async () => {
+    if (!connections || connections.length === 0) return;
+    const nonManagedConnections = connections.filter(
+      (c) => !isDialectSupportManagedMetadata(c.dialect),
+    );
+    await Promise.allSettled(nonManagedConnections.map((c) => onRefreshConnection(c)));
   };
 
   const onDuplicateConnection = async (connection: SqluiCore.ConnectionProps) => {
@@ -1179,10 +1204,10 @@ export default function MissionControl() {
           <label>Your version:</label>
           {appPackage.version}
         </Box>
-        {appPackage.engine && (
+        {(appPackage as any).engine && (
           <Box className="FormInput__Row">
             <label>Engine:</label>
-            {appPackage.engine}
+            {(appPackage as any).engine}
           </Box>
         )}
         <Box className="FormInput__Row">
@@ -1489,6 +1514,10 @@ export default function MissionControl() {
           if (command.data) {
             onRefreshConnection(command.data as SqluiCore.ConnectionProps);
           }
+          break;
+
+        case "clientEvent/connection/refreshAll":
+          onRefreshAllConnections();
           break;
 
         case "clientEvent/connection/duplicate":
