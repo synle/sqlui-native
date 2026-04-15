@@ -19,7 +19,6 @@ import SettingContextProvider, { useDarkModeSetting } from "src/frontend/hooks/u
 import ShowHideContextProvider from "src/frontend/hooks/useShowHide";
 import TreeActionContextProvider from "src/frontend/hooks/useTreeActions";
 import { useLayoutModeSetting, useIsAnimationModeOn } from "src/frontend/hooks/useSetting";
-import { initPlatform } from "src/frontend/platform";
 import "src/frontend/App.scss";
 
 /**
@@ -176,9 +175,6 @@ function DevtoolsToggle() {
  * Called once when the "sqluiNativeEvent/ready" event fires.
  */
 const renderApp = function () {
-  // Initialize platform (sets up Electron IPC fetch polyfill if in Electron)
-  initPlatform();
-
   const queryClient = new QueryClient({
     defaultOptions: {
       queries: {
