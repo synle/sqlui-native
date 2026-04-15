@@ -1,25 +1,29 @@
 /** Platform detection and singleton export.
- * Detects Electron or browser environment and provides the appropriate PlatformBridge.
+ * Detects Tauri or browser environment and provides the appropriate PlatformBridge.
  */
 import type { PlatformBridge } from "src/frontend/platform/types";
 import { browserPlatform } from "src/frontend/platform/browser";
-import { electronPlatform, initElectronPlatform } from "src/frontend/platform/electron";
+import { tauriPlatform, initTauriPlatform } from "src/frontend/platform/tauri";
 
-/** True when running inside Electron with requireElectron available. */
-function isElectronEnvironment(): boolean {
-  if (typeof window === "undefined") return false;
-  const w = window as any;
-  return w?.process?.env?.ENV_TYPE !== "mocked-server" && typeof w.requireElectron === "function";
+/** Detects the current runtime environment and returns the matching PlatformBridge. */
+function detectPlatform(): PlatformBridge {
+  if (typeof window === "undefined") {
+    return browserPlatform;
+  }
+  if ((window as any).__TAURI_INTERNALS__) {
+    return tauriPlatform;
+  }
+  return browserPlatform;
 }
 
 /** The active platform bridge for the current runtime environment. */
-export const platform: PlatformBridge = isElectronEnvironment() ? electronPlatform : browserPlatform;
+export const platform: PlatformBridge = detectPlatform();
 
-/** Initializes the platform (sets up IPC fetch polyfill in Electron mode).
+/** Initializes the platform (resolves sidecar port in Tauri mode).
  * Must be called once before the app renders.
  */
-export function initPlatform(): void {
-  if (platform === electronPlatform) {
-    initElectronPlatform();
+export async function initPlatform(): Promise<void> {
+  if (platform.isTauri) {
+    await initTauriPlatform();
   }
 }

@@ -1,8 +1,10 @@
-/** Browser platform implementation. Default fallback when not in Electron. */
+/** Browser platform implementation. Default fallback when not in Tauri. */
 import type { PlatformBridge } from "src/frontend/platform/types";
 
 export const browserPlatform: PlatformBridge = {
   isDesktop: false,
+  isTauri: false,
+  sidecarBaseUrl: "",
 
   openExternalUrl(url: string) {
     window.open(url, "_blank");
@@ -16,24 +18,11 @@ export const browserPlatform: PlatformBridge = {
     // No native menu in browser mode
   },
 
-  readFileContent(file: File): Promise<string> {
-    const form = new FormData();
-    form.append("file", file);
-    return fetch("/api/file", {
-      method: "POST",
-      body: form,
-    }).then((r) => r.text());
+  onAppCommand(_callback: (event: string) => void): () => void {
+    return () => {};
   },
 
   executeShellCommand(_command: string): Promise<string> {
     return Promise.resolve("");
-  },
-
-  getFilePath(_file: File): string | null {
-    return null;
-  },
-
-  onAppCommand(_callback: (event: string) => void): () => void {
-    return () => {};
   },
 };

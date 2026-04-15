@@ -1,9 +1,15 @@
 /** Platform abstraction interface for desktop shell integration.
- * Implementations exist for Electron and browser environments.
+ * Implementations exist for Tauri (sidecar) and browser environments.
  */
 export interface PlatformBridge {
-  /** True when running inside a desktop shell (Electron). */
+  /** True when running inside a desktop shell (Tauri). */
   readonly isDesktop: boolean;
+
+  /** True when running inside Tauri. */
+  readonly isTauri: boolean;
+
+  /** Base URL for backend API calls. Empty string for relative URLs (dev proxy). */
+  readonly sidecarBaseUrl: string;
 
   /** Opens a URL in the system's default browser. */
   openExternalUrl(url: string): void;
@@ -14,15 +20,9 @@ export interface PlatformBridge {
   /** Toggles native menu items by ID. No-op in browser mode. */
   toggleMenuItems(visible: boolean, menuIds: string[]): void;
 
-  /** Reads the text content of a File object. */
-  readFileContent(file: File): Promise<string>;
+  /** Subscribes to native menu command events. Returns an unsubscribe function. */
+  onAppCommand(callback: (event: string) => void): () => void;
 
   /** Executes a shell command and returns stdout. No-op in browser mode. */
   executeShellCommand(command: string): Promise<string>;
-
-  /** Returns the filesystem path for a File object, or null if unavailable. */
-  getFilePath(file: File): string | null;
-
-  /** Subscribes to native menu command events. Returns an unsubscribe function. */
-  onAppCommand(callback: (event: string) => void): () => void;
 }

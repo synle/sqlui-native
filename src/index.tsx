@@ -10,7 +10,7 @@ import App from "src/frontend/App";
 import SessionExpiredPage from "src/frontend/views/SessionExpiredPage";
 import SessionSelectPage from "src/frontend/views/SessionSelectPage";
 import ActionDialogs from "src/frontend/components/ActionDialogs";
-import ElectronEventListener from "src/frontend/components/ElectronEventListener";
+import NativeEventListener from "src/frontend/components/ElectronEventListener";
 import DataSnapshotListView from "src/frontend/DataSnapshotListView";
 import DataSnapshotView from "src/frontend/DataSnapshotView";
 import ActionDialogsContextProvider from "src/frontend/hooks/useActionDialogs";
@@ -19,8 +19,8 @@ import SettingContextProvider, { useDarkModeSetting } from "src/frontend/hooks/u
 import ShowHideContextProvider from "src/frontend/hooks/useShowHide";
 import TreeActionContextProvider from "src/frontend/hooks/useTreeActions";
 import { useLayoutModeSetting, useIsAnimationModeOn } from "src/frontend/hooks/useSetting";
+import { initPlatform } from "src/frontend/platform";
 import "src/frontend/App.scss";
-import "src/frontend/electronRenderer";
 
 /**
  * Applies the active MUI theme (dark/light, compact/comfortable, animations) to its subtree.
@@ -172,14 +172,12 @@ function DevtoolsToggle() {
 }
 
 /**
- * Initializes the Tauri/browser bridge and then mounts the full application.
+ * Initializes the platform bridge and then mounts the full application.
  * Called once when the "sqluiNativeEvent/ready" event fires.
  */
 const renderApp = async function () {
-  // Initialize the Tauri/browser bridge (resolves sidecar port in Tauri mode)
-  if (typeof window.initApp === "function") {
-    await window.initApp();
-  }
+  // Initialize the platform (resolves sidecar port in Tauri mode)
+  await initPlatform();
 
   const queryClient = new QueryClient({
     defaultOptions: {
@@ -204,7 +202,7 @@ const renderApp = async function () {
           <Route path="/*" element={<App />} />
         </Routes>
         <ActionDialogs />
-        <ElectronEventListener />
+        <NativeEventListener />
       </CombinedContextProvider>
     </QueryClientProvider>,
   );

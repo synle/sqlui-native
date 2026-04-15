@@ -38,6 +38,7 @@ import {
 import { useSetting } from "src/frontend/hooks/useSetting";
 import { useShowHide } from "src/frontend/hooks/useShowHide";
 import useToaster from "src/frontend/hooks/useToaster";
+import { platform } from "src/frontend/platform";
 import {
   createSystemNotification,
   formatShortDate,
@@ -1221,7 +1222,7 @@ export default function MissionControl() {
       // copy the path to clipboard
       navigator.clipboard.writeText(storageDir);
 
-      if ((window as any).isTauri) {
+      if (platform.isTauri) {
         try {
           const { invoke } = await import("@tauri-apps/api/core");
           await invoke("open_in_file_explorer", { path: storageDir });
@@ -1323,7 +1324,7 @@ export default function MissionControl() {
           break;
 
         case "clientEvent/openAppWindow":
-          window.openAppLink(command.data as string);
+          platform.openAppWindow(command.data as string);
           break;
         case "clientEvent/showCommandPalette":
           onShowCommandPalette();
@@ -1449,21 +1450,21 @@ export default function MissionControl() {
         case "clientEvent/openExternalUrl":
           const url = command.data as string;
           if (url) {
-            window.openBrowserLink(url);
+            platform.openExternalUrl(url);
           }
           break;
 
         // overall commands
         case "clientEvent/import":
           try {
-            window.toggleElectronMenu(false, allMenuKeys);
+            platform.toggleMenuItems(false, allMenuKeys);
             await onImport(command.data as string);
           } catch (err) {
             console.error("index.tsx:onImport", err);
           }
 
           //@ts-ignore
-          window.toggleElectronMenu(true, allMenuKeys);
+          platform.toggleMenuItems(true, allMenuKeys);
           break;
 
         case "clientEvent/exportAll":
@@ -1728,29 +1729,29 @@ export default function MissionControl() {
         // session commands
         case "clientEvent/session/switch":
           try {
-            window.toggleElectronMenu(false, allMenuKeys);
+            platform.toggleMenuItems(false, allMenuKeys);
             await onChangeSession();
           } catch (err) {
             console.error("index.tsx:onChangeSession", err);
           }
 
-          window.toggleElectronMenu(true, allMenuKeys);
+          platform.toggleMenuItems(true, allMenuKeys);
           break;
 
         case "clientEvent/session/new":
           try {
-            window.toggleElectronMenu(false, allMenuKeys);
+            platform.toggleMenuItems(false, allMenuKeys);
             await onAddSession();
           } catch (err) {
             console.error("index.tsx:onAddSession", err);
           }
 
-          window.toggleElectronMenu(true, allMenuKeys);
+          platform.toggleMenuItems(true, allMenuKeys);
           break;
 
         case "clientEvent/session/clone":
           try {
-            window.toggleElectronMenu(false, allMenuKeys);
+            platform.toggleMenuItems(false, allMenuKeys);
 
             if (command.data) {
               await onCloneSession(command.data as SqluiCore.Session);
@@ -1761,12 +1762,12 @@ export default function MissionControl() {
             console.error("index.tsx:onCloneSession", err);
           }
 
-          window.toggleElectronMenu(true, allMenuKeys);
+          platform.toggleMenuItems(true, allMenuKeys);
           break;
 
         case "clientEvent/session/rename":
           try {
-            window.toggleElectronMenu(false, allMenuKeys);
+            platform.toggleMenuItems(false, allMenuKeys);
 
             if (command.data) {
               await onRenameSession(command.data as SqluiCore.Session);
@@ -1777,12 +1778,12 @@ export default function MissionControl() {
             console.error("index.tsx:onRenameSession", err);
           }
 
-          window.toggleElectronMenu(true, allMenuKeys);
+          platform.toggleMenuItems(true, allMenuKeys);
           break;
 
         case "clientEvent/session/delete":
           try {
-            window.toggleElectronMenu(false, allMenuKeys);
+            platform.toggleMenuItems(false, allMenuKeys);
             if (command.data) {
               await onDeleteSession(command.data as SqluiCore.Session);
             } else if (currentSession) {
@@ -1792,7 +1793,7 @@ export default function MissionControl() {
             console.error("index.tsx:onDeleteSession", err);
           }
 
-          window.toggleElectronMenu(true, allMenuKeys);
+          platform.toggleMenuItems(true, allMenuKeys);
           break;
         case "clientEvent/toggleDevtools":
           window.dispatchEvent(new KeyboardEvent("keydown", { key: "D", ctrlKey: true, shiftKey: true, altKey: true }));
@@ -1963,10 +1964,10 @@ export default function MissionControl() {
     };
 
     document.addEventListener("keydown", onKeyboardShortcutEventForAll, true);
-    !(window as any).isTauri && document.addEventListener("keydown", onKeyboardShortcutEventForMockedServer, true);
+    !platform.isTauri && document.addEventListener("keydown", onKeyboardShortcutEventForMockedServer, true);
     return () => {
       document.removeEventListener("keydown", onKeyboardShortcutEventForAll);
-      !(window as any).isTauri && document.removeEventListener("keydown", onKeyboardShortcutEventForMockedServer);
+      !platform.isTauri && document.removeEventListener("keydown", onKeyboardShortcutEventForMockedServer);
     };
   }, []);
 
