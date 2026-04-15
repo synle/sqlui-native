@@ -29,6 +29,7 @@ vi.mock("src/frontend/components/DropdownButton", () => ({
 
 vi.mock("src/frontend/components/MissionControl", () => ({
   useCommands: () => ({ selectCommand: vi.fn() }),
+  isConnectionRefreshing: () => false,
 }));
 
 vi.mock("src/frontend/hooks/useTreeActions", () => ({
