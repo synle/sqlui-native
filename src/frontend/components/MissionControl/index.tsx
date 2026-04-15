@@ -47,7 +47,6 @@ import {
   useNavigate,
 } from "src/frontend/utils/commonUtils";
 import ProxyApi from "src/frontend/data/api";
-import { execute } from "src/frontend/utils/executeUtils";
 import { detectAndParseImportFile, exportAsPostmanCollection } from "src/frontend/utils/importExportUtils";
 import { RecordDetailsPage } from "src/frontend/views/RecordPage";
 import appPackage from "src/package.json";

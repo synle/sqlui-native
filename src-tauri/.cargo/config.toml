@@ -1,0 +1,9 @@
+# Use LLVM's lld-link as the linker instead of MSVC link.exe.
+# This avoids picking up the wrong link.exe from Git for Windows.
+# The -Clink-arg flags add the library search path for custom import libraries
+# created from Windows DLLs (needed when the Windows SDK is not installed).
+[target.x86_64-pc-windows-msvc]
+linker = "C:\\Program Files\\LLVM\\bin\\lld-link.exe"
+rustflags = [
+  "-C", "link-arg=/LIBPATH:C:\\Users\\Sy Le\\.windows-libs",
+]

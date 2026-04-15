@@ -319,7 +319,20 @@ pub fn run() {
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_opener::init())
         .setup(|app| {
+            // In debug/dev builds (`tauri dev`), the mocked Express server is already
+            // started by the `beforeDevCommand` (`npm run dev`) on port 3001.
+            // Skip spawning a duplicate sidecar process; port 0 signals the frontend
+            // to use relative URLs so the Vite proxy routes /api calls to port 3001.
+            #[cfg(debug_assertions)]
+            let state = SidecarState {
+                child: Mutex::new(None),
+                port: 0,
+            };
+
+            // In release/production builds, spawn the bundled Node.js sidecar.
+            #[cfg(not(debug_assertions))]
             let state = spawn_sidecar(app).expect("Failed to start sidecar");
+
             app.manage(state);
             setup_menu(app.handle())?;
             Ok(())

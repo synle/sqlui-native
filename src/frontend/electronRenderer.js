@@ -42,10 +42,17 @@ window.initApp = async function initApp() {
     try {
       const { invoke } = await import("@tauri-apps/api/core");
 
-      // Get the sidecar Express server port from Rust
+      // Get the sidecar Express server port from Rust.
+      // Port 0 means dev mode (`tauri dev`): the mocked server runs on port 3001
+      // and the Vite dev server at port 3000 proxies /api calls to it.
+      // In that case, leave __SIDECAR_BASE_URL__ empty so relative URLs are used.
       const port = await invoke("get_sidecar_port");
-      window.__SIDECAR_BASE_URL__ = `http://127.0.0.1:${port}`;
-      console.log(`Tauri sidecar connected on port ${port}`);
+      if (port !== 0) {
+        window.__SIDECAR_BASE_URL__ = `http://127.0.0.1:${port}`;
+        console.log(`Tauri sidecar connected on port ${port}`);
+      } else {
+        console.log("Tauri dev mode: using Vite proxy for API calls");
+      }
     } catch (err) {
       console.error("electronRenderer.js:initApp:sidecar", err);
     }
