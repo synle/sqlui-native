@@ -56,7 +56,6 @@ import { downloadBlob } from "src/frontend/data/file";
 import { useGetAllTableColumns, useGetColumns, useGetConnectionById, useGetDatabases } from "src/frontend/hooks/useConnection";
 import { useNavigate } from "src/frontend/utils/commonUtils";
 import "src/frontend/App.scss";
-import "src/frontend/electronRenderer";
 
 /** Width in pixels for each table node in the diagram. */
 const NODE_WIDTH = 180;
