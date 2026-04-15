@@ -139,7 +139,11 @@
           }, FALLBACK_TIMEOUT_MS);
 
           new Promise((resolve, reject) => {
-            self.module = undefined;
+            try {
+              self.module = undefined;
+            } catch (_e) {
+              /* readonly in some webview contexts */
+            }
 
             _loadjs(vsCodeLoader, function () {
               amdRequire = window.require;
