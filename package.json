@@ -18,7 +18,7 @@
     "prebuild": "node scripts/prebuild.js",
     "build": "cross-env NODE_OPTIONS=--max-old-space-size=4096 vite build --config vite.frontend.config.ts",
     "postbuild": "npm run build-mocked-server",
-    "build-mocked-server": "vite build --config vite.mocked-server.config.ts",
+    "build-mocked-server": "vite build --config vite.mocked-server.config.ts && node -e \"const fs=require('fs');const path=require('path');const dest=path.join('src-tauri','resources');fs.mkdirSync(dest,{recursive:true});fs.copyFileSync(path.join('build','mocked-server.js'),path.join(dest,'mocked-server.js'));console.log('Copied mocked-server.js to',dest);\"",
     "build:all": "npm run build && npm run build-mocked-server && node scripts/prepare-sidecar.js",
     "### Development & Execution ###": "##################################################################################",
     "predev": "node scripts/prebuild.js",
