@@ -4,15 +4,17 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-SQLUI Native is a cross-platform Electron desktop SQL/NoSQL database client and REST API client supporting MySQL, MariaDB, MSSQL, PostgreSQL, SQLite, Cassandra, MongoDB, Redis, Azure CosmosDB, Azure Table Storage, Salesforce (SFDC), and REST API (curl/fetch).
+SQLUI Native is a cross-platform **Tauri 2** desktop SQL/NoSQL database client and REST API client with a **Node.js Express sidecar backend**. It supports MySQL, MariaDB, MSSQL, PostgreSQL, SQLite, Cassandra, MongoDB, Redis, Azure CosmosDB, Azure Table Storage, Salesforce (SFDC), REST API (curl/fetch), and GraphQL.
+
+The frontend is built with **Vite + React 19 + MUI 9**. The Tauri shell provides the native desktop window, menus, and platform integration. The Node.js Express server runs as a sidecar process handling all database connections and API endpoints.
 
 ## Commands
 
 ```bash
 npm install             # Install dependencies
-npm start               # Run in Electron (dev mode)
+npm start               # Run Tauri dev mode (sidecar + frontend)
 npm run dev             # Run mocked server + Vite dev server at http://localhost:3000
-npm run build           # Build frontend (Vite) + Electron + mocked server
+npm run build           # Build frontend (Vite) + mocked server
 npm test                # Run Vitest tests (watch mode)
 npm run test-ci         # Run Vitest tests (CI, no watch)
 npm run lint            # ESLint with auto-fix
@@ -42,7 +44,7 @@ npx vitest run --config vitest.integration.config.ts src/common/adapters/Relatio
 
 ### Two Runtime Modes
 
-The app runs in **Electron mode** (`npm start`) or **mocked server mode** (`npm run dev`). Both share the same backend code in `src/common/`. In Electron mode, the renderer communicates with the main process via IPC. In mocked server mode, an Express server on port 3001 serves the same endpoints over HTTP.
+The app runs in **Tauri mode** (`npm start` / `npm run tauri:dev`) or **mocked server mode** (`npm run dev`). Both share the same backend code in `src/common/`. In Tauri mode, the Node.js Express backend runs as a sidecar process and the React frontend communicates with it via HTTP. In mocked server mode, the same Express server runs on port 3001 with Vite proxying `/api` calls from port 3000.
 
 ### Frontend/Backend Module Boundary
 
@@ -85,10 +87,10 @@ All persisted models (`Session`, `ConnectionProps`, `ConnectionQuery`, `FolderIt
 ### Directory Structure
 
 - **`src/frontend/`** - React 19 UI (MUI v9, React Query, Monaco Editor, React Router v7)
-- **`src/frontend/platform/`** - Platform abstraction layer (Electron vs browser). Auto-detects environment at import time.
-- **`src/electron/`** - Electron main process (window management, IPC handlers, menus)
+- **`src/frontend/platform/`** - Platform abstraction layer (Tauri vs browser). Auto-detects environment at import time.
+- **`src-tauri/`** - Tauri 2 shell (Rust): window management, native menus, sidecar process spawning
 - **`src/common/`** - Shared backend: database adapters, API endpoint handlers, persistent storage
-- **`src/mocked-server/`** - Express server wrapping the shared backend for browser-based dev
+- **`src/mocked-server/`** - Express server wrapping the shared backend (runs as sidecar in Tauri, standalone in dev)
 - **`typings/index.ts`** - Central type definitions (`SqluiCore`, `SqluiFrontend`, `SqlAction`, `SqluiEnums`)
 
 ### Import Paths
@@ -306,8 +308,6 @@ See CONTRIBUTING.md for the full step-by-step guide with code examples.
 - **`ActionDialogs`** - Global dialog system (alert, choice, prompt, modal) managed via `useActionDialogs` context
 - **`MissionControl`** - Central event handler that wires up all application commands (session, connection, query, settings, navigation). Processes commands from the `CommandPalette`, keyboard shortcuts, and Electron menu events
 - **`CommandPalette`** - Fuzzy-searchable command list (`Cmd+P` / `Ctrl+P`). Options defined in `ALL_COMMAND_PALETTE_OPTIONS` array in `CommandPalette/index.tsx`. Supports expanding per-connection/per-query commands. When adding new app-wide actions, add a `ClientEventKey` in `typings/index.ts`, a command option in `CommandPalette`, and a `case` in `MissionControl`'s `_executeCommandPalette` switch
-- **`ConnectionActions`** - Dropdown menu of actions per connection (bookmark, edit, export, duplicate, refresh, test, delete). Shows "Refreshing..." with spinner when a refresh is in progress, preventing double-refresh
-- **`NewConnectionButton`** - Split button for creating connections, with dropdown for Import, Export All, Data Migration, Refresh All Connections, and Collapse All
 - **`ConnectionForm`** - New/edit connection forms with dialect-specific hints
 - **`MigrationBox`** - Data migration between connections with column mapping
 

@@ -4,7 +4,7 @@
 
 ![64](https://user-images.githubusercontent.com/3792401/160178384-638de88f-1712-4419-aed4-b1ef79e5d82a.png)
 
-`sqlui-native` is a simple UI client for most SQL Engines written in Electron. It is compatible with most desktop OS's and support most dialects of RDBMS like MySQL, Microsoft SQL Server, Postgres, SQLite, Cassandra, MongoDB, Redis, Azure CosmosDB, Azure Storage Table, and Salesforce.
+`sqlui-native` is a cross-platform desktop SQL/NoSQL database client and REST API client built with Tauri 2 (hybrid sidecar with Node.js Express backend). It supports MySQL, MariaDB, Microsoft SQL Server, PostgreSQL, SQLite, Cassandra, MongoDB, Redis, Azure CosmosDB, Azure Table Storage, Salesforce, REST API (curl/fetch), and GraphQL.
 
 It supports multiple Windows, so you can have different sets of queries and connections side by side. The connections and queries are all stored locally, so you can continue where you left off in later visits.
 
