@@ -84,7 +84,8 @@ All persisted models (`Session`, `ConnectionProps`, `ConnectionQuery`, `FolderIt
 
 ### Directory Structure
 
-- **`src/frontend/`** - React 18 UI (MUI v5, React Query, Monaco Editor, React Router v6)
+- **`src/frontend/`** - React 19 UI (MUI v9, React Query, Monaco Editor, React Router v7)
+- **`src/frontend/platform/`** - Platform abstraction layer (Electron vs browser). Auto-detects environment at import time.
 - **`src/electron/`** - Electron main process (window management, IPC handlers, menus)
 - **`src/common/`** - Shared backend: database adapters, API endpoint handlers, persistent storage
 - **`src/mocked-server/`** - Express server wrapping the shared backend for browser-based dev
@@ -305,6 +306,8 @@ See CONTRIBUTING.md for the full step-by-step guide with code examples.
 - **`ActionDialogs`** - Global dialog system (alert, choice, prompt, modal) managed via `useActionDialogs` context
 - **`MissionControl`** - Central event handler that wires up all application commands (session, connection, query, settings, navigation). Processes commands from the `CommandPalette`, keyboard shortcuts, and Electron menu events
 - **`CommandPalette`** - Fuzzy-searchable command list (`Cmd+P` / `Ctrl+P`). Options defined in `ALL_COMMAND_PALETTE_OPTIONS` array in `CommandPalette/index.tsx`. Supports expanding per-connection/per-query commands. When adding new app-wide actions, add a `ClientEventKey` in `typings/index.ts`, a command option in `CommandPalette`, and a `case` in `MissionControl`'s `_executeCommandPalette` switch
+- **`ConnectionActions`** - Dropdown menu of actions per connection (bookmark, edit, export, duplicate, refresh, test, delete). Shows "Refreshing..." with spinner when a refresh is in progress, preventing double-refresh
+- **`NewConnectionButton`** - Split button for creating connections, with dropdown for Import, Export All, Data Migration, Refresh All Connections, and Collapse All
 - **`ConnectionForm`** - New/edit connection forms with dialect-specific hints
 - **`MigrationBox`** - Data migration between connections with column mapping
 
