@@ -1177,6 +1177,12 @@ export default function MissionControl() {
           <label>Your version:</label>
           {appPackage.version}
         </Box>
+        {appPackage.engine && (
+          <Box className="FormInput__Row">
+            <label>Engine:</label>
+            {appPackage.engine}
+          </Box>
+        )}
         <Box className="FormInput__Row">
           <label>Latest version:</label>
           {newVersion}
