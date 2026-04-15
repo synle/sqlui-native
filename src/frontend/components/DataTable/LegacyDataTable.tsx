@@ -31,6 +31,7 @@ import { useLayoutModeSetting } from "src/frontend/hooks/useSetting";
 import { GlobalFilter, SimpleColumnFilter } from "src/frontend/components/DataTable/Filter";
 import DropdownMenu from "src/frontend/components/DropdownMenu";
 import { useAddDataSnapshot } from "src/frontend/hooks/useDataSnapshot";
+import { platform } from "src/frontend/platform";
 
 /**
  * A non-virtualized data table using TanStack React Table.
@@ -143,7 +144,7 @@ export default function LegacyDataTable(props: DataTableProps): React.JSX.Elemen
       });
 
       if (dataSnapshot?.id) {
-        window.openAppLink(`/data_snapshot/${dataSnapshot.id}`);
+        platform.openAppWindow(`/data_snapshot/${dataSnapshot.id}`);
       }
     } catch (_err) {}
   };
