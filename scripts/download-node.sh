@@ -69,7 +69,6 @@ if [ "$NODE_PLATFORM" = "win" ]; then
   TMPFILE=$(mktemp /tmp/node-XXXXXX.zip)
   curl -sL "$URL" -o "$TMPFILE"
   unzip -o -j "$TMPFILE" "node-v${RESOLVED_VERSION}-${NODE_PLATFORM}-${NODE_ARCH}/node.exe" -d "$BINARIES_DIR"
-  mv "$BINARIES_DIR/node.exe" "$BINARIES_DIR/node-${TARGET_TRIPLE}.exe"
   rm "$TMPFILE"
 else
   # Unix: download the tarball, extract just the node binary
@@ -77,10 +76,9 @@ else
   TMPFILE=$(mktemp /tmp/node-XXXXXX.tar.gz)
   curl -sL "$URL" -o "$TMPFILE"
   tar -xzf "$TMPFILE" -C "$BINARIES_DIR" --strip-components=2 "node-v${RESOLVED_VERSION}-${NODE_PLATFORM}-${NODE_ARCH}/bin/node"
-  mv "$BINARIES_DIR/node" "$BINARIES_DIR/node-${TARGET_TRIPLE}"
-  chmod +x "$BINARIES_DIR/node-${TARGET_TRIPLE}"
+  chmod +x "$BINARIES_DIR/node"
   rm "$TMPFILE"
 fi
 
-echo "Node.js binary saved to: $BINARIES_DIR/node-${TARGET_TRIPLE}${EXT}"
-ls -lh "$BINARIES_DIR/node-${TARGET_TRIPLE}${EXT}"
+echo "Node.js binary saved to: $BINARIES_DIR/node${EXT}"
+ls -lh "$BINARIES_DIR/node${EXT}"
