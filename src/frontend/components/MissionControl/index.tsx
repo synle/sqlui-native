@@ -802,9 +802,7 @@ export default function MissionControl() {
 
   const onRefreshAllConnections = async () => {
     if (!connections || connections.length === 0) return;
-    const nonManagedConnections = connections.filter(
-      (c) => !isDialectSupportManagedMetadata(c.dialect),
-    );
+    const nonManagedConnections = connections.filter((c) => !isDialectSupportManagedMetadata(c.dialect));
     await Promise.allSettled(nonManagedConnections.map((c) => onRefreshConnection(c)));
   };
 
