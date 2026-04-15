@@ -93,8 +93,6 @@
     "test-e2e": "npx playwright test",
     "test-smoke": "npx playwright test --config playwright.smoke.config.ts",
     "### Distribution & Packaging ###": "##################################################################################",
-    "version-stamp:draft": "npm version prepatch --no-git-tag-version --preid=beta-$(date +%Y%m%d%H%M%S)",
-    "version-stamp:release": "npm version patch --no-git-tag-version",
     "dist": "electron-builder build --publish=never",
     "dist-win-x64-exe": "electron-builder build --publish=never --win --x64",
     "dist-win-x64-appx": "electron-builder build --publish=never --win appx",
