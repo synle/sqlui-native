@@ -37,6 +37,7 @@ import {
 import { GlobalFilter, SimpleColumnFilter } from "src/frontend/components/DataTable/Filter";
 import DropdownMenu from "src/frontend/components/DropdownMenu";
 import { useAddDataSnapshot } from "src/frontend/hooks/useDataSnapshot";
+import { platform } from "src/frontend/platform";
 import { useLayoutModeSetting } from "src/frontend/hooks/useSetting";
 
 /**
@@ -156,7 +157,7 @@ export default function ModernDataTable(props: DataTableProps): React.JSX.Elemen
       });
 
       if (dataSnapshot?.id) {
-        window.openAppLink(`/data_snapshot/${dataSnapshot.id}`);
+        platform.openAppWindow(`/data_snapshot/${dataSnapshot.id}`);
       }
     } catch (_err) {}
   };

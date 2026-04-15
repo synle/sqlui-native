@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { allMenuKeys } from "src/frontend/components/MissionControl";
+import { platform } from "src/frontend/platform";
 import SessionSelectionForm from "src/frontend/components/SessionSelectionForm";
 import { useActionDialogs } from "src/frontend/hooks/useActionDialogs";
 import { useGetCurrentSession, useGetSessions } from "src/frontend/hooks/useSession";
@@ -23,7 +24,7 @@ export default function SessionSelectionModal() {
     async function _init() {
       try {
         try {
-          window.toggleElectronMenu(false, allMenuKeys);
+          platform.toggleMenuItems(false, allMenuKeys);
         } catch (err) {
           console.error("index.tsx:toggleElectronMenu", err);
         }
