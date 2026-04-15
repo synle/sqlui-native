@@ -233,6 +233,7 @@ jobs:
         with:
           name: Windows 10 - 11 (Intel - AMD x64).exe
           path: ./dist/sqlui-native-x64.exe
+          retention-days: 30
           compression-level: 9
 
       - name: Upload x64 exe to release
@@ -256,6 +257,7 @@ jobs:
         with:
           name: Windows 10 - 11 (Intel - AMD x64).appx
           path: ./dist/sqlui-native-x64.appx
+          retention-days: 30
           compression-level: 9
 
       - name: Upload x64 appx to release
@@ -360,6 +362,7 @@ jobs:
         with:
           name: Windows 10 - 11 (ARM architecture).exe
           path: ./dist/sqlui-native-arm64.exe
+          retention-days: 30
           compression-level: 9
 
       - name: Upload ARM64 exe to release
@@ -464,6 +467,7 @@ jobs:
         with:
           name: macOS - OSX (Apple Silicon M-Series).dmg
           path: ./dist/sqlui-native-arm64.dmg
+          retention-days: 30
           compression-level: 9
 
       - name: Upload ARM64 dmg to release
@@ -568,6 +572,7 @@ jobs:
         with:
           name: macOS - OSX (Intel x64).dmg
           path: ./dist/sqlui-native-x64.dmg
+          retention-days: 30
           compression-level: 9
 
       - name: Upload x64 dmg to release
@@ -672,6 +677,7 @@ jobs:
         with:
           name: Linux - Debian Ubuntu.deb
           path: ./dist/sqlui-native.deb
+          retention-days: 30
           compression-level: 9
 
       - name: Upload deb to release
@@ -776,6 +782,7 @@ jobs:
         with:
           name: Linux - Redhat CentOS Fedora.rpm
           path: ./dist/sqlui-native.rpm
+          retention-days: 30
           compression-level: 9
 
       - name: Upload rpm to release
@@ -880,6 +887,7 @@ jobs:
         with:
           name: Linux - Ubuntu.snap
           path: ./dist/sqlui-native.snap
+          retention-days: 30
           compression-level: 9
 
       - name: Upload snap to release
@@ -984,6 +992,7 @@ jobs:
         with:
           name: Linux - Arch.pacman
           path: ./dist/sqlui-native.pacman
+          retention-days: 30
           compression-level: 9
 
       - name: Upload pacman to release
@@ -1088,6 +1097,7 @@ jobs:
         with:
           name: Linux.AppImage
           path: ./dist/sqlui-native.AppImage
+          retention-days: 30
           compression-level: 9
 
       - name: Upload AppImage to release
