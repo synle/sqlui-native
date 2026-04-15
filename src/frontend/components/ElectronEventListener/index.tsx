@@ -1,39 +1,35 @@
 import { useEffect } from "react";
 import { useCommands } from "src/frontend/components/MissionControl";
 import { useActionDialogs } from "src/frontend/hooks/useActionDialogs";
+import { platform } from "src/frontend/platform";
+import { SqluiEnums } from "typings";
 
-/**
- * Listens for IPC commands from the Electron main process and dispatches them
+/** Listens for native menu command events and dispatches them
  * to the MissionControl command system. Ignores commands when a dialog is active
  * (except for checkForUpdate). Renders nothing.
- * @returns null
  */
 export default function ElectronEventListener() {
   const { selectCommand } = useCommands();
   const { dialog } = useActionDialogs();
 
   useEffect(() => {
-    window?.ipcRenderer?.on("sqluiNativeEvent/ipcElectronCommand", (event, data) => {
+    const unsubscribe = platform.onAppCommand((data) => {
       if (dialog) {
         switch (data) {
           case "clientEvent/checkForUpdate":
             break;
           default:
-            // if there is already a dialog, then ignore this command
-            console.log(">> clientEvent Ignored (Active Dialog)", event, data);
-            return; // early exits
+            console.log(">> clientEvent Ignored (Active Dialog)", data);
+            return;
         }
       }
 
-      console.log(">> clientEvent Executed", event, data);
-      selectCommand({
-        event: data,
-      });
+      console.log(">> clientEvent Executed", data);
+      selectCommand({ event: data as SqluiEnums.ClientEventKey });
     });
 
-    return () => {
-      window?.ipcRenderer?.removeAllListeners("sqluiNativeEvent/ipcElectronCommand");
-    };
+    return unsubscribe;
   }, [dialog]);
+
   return null;
 }
