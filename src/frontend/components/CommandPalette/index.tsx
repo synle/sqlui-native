@@ -204,6 +204,7 @@ const ALL_COMMAND_PALETTE_OPTIONS: CommandOption[] = [
     label: "Refresh Current Connection",
     useCurrentConnection: true,
   },
+  { event: "clientEvent/connection/refreshAll", label: "Refresh All Connections" },
 
   // queries
   { event: "clientEvent/query/new", label: "New Query" },

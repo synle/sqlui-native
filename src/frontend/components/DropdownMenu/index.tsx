@@ -18,6 +18,8 @@ export type DropdownButtonOption = {
   startIcon?: React.ReactNode;
   /** Callback invoked when this option is selected. */
   onClick?: (data?: any) => void;
+  /** When true, the option is rendered but not clickable. */
+  disabled?: boolean;
 };
 
 /** Props for the DropdownMenu component. */
@@ -89,7 +91,7 @@ export default function DropdownMenu(props: DropdownMenuProps): React.JSX.Elemen
             return (content = <Divider key={index} sx={{ marginBlock: 1 }} />);
           } else {
             content = (
-              <MenuItem dense onClick={(event) => handleMenuItemClick(event, index)}>
+              <MenuItem dense disabled={option.disabled} onClick={(event) => !option.disabled && handleMenuItemClick(event, index)}>
                 {!option.startIcon ? null : <ListItemIcon>{option.startIcon}</ListItemIcon>}
                 <ListItemText>{option.label}</ListItemText>
               </MenuItem>

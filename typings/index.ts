@@ -439,6 +439,7 @@ export module SqlAction {
     skipGuide?: boolean;
     onClick?: () => void;
     startIcon?: React.JSX.Element;
+    disabled?: boolean;
   };
 
   /** Function that generates a script action for a table-level operation. */
@@ -504,6 +505,7 @@ export module SqluiEnums {
     | "clientEvent/connection/importCollection"
     | "clientEvent/connection/new"
     | "clientEvent/connection/refresh"
+    | "clientEvent/connection/refreshAll"
     | "clientEvent/connection/select"
     | "clientEvent/exportAll"
     | "clientEvent/import"
