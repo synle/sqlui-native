@@ -1129,11 +1129,12 @@ export default function MissionControl() {
   };
 
   const onCheckForUpdate = async () => {
-    const newVersion = await fetch("https://synle.github.io/sqlui-native/release.json")
+    const newVersion = await fetch("https://api.github.com/repos/synle/sqlui-native/releases/latest")
       .then((r) => r.json())
-      .then((r) => r.version);
+      .then((r) => r.tag_name);
 
     const isUpToDate = newVersion === appPackage.version;
+    const versionForUrl = newVersion.replace(/^v/, "");
     const baseDownloadUrl = `https://github.com/synle/sqlui-native/releases/download/${newVersion}/sqlui-native`;
     const releasePageUrl = `https://github.com/synle/sqlui-native/releases/tag/${newVersion}`;
 

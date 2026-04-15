@@ -1258,29 +1258,11 @@ jobs:
         with:
           ref: ${{ github.ref }} # fetch latest branch tip (includes prep commits)
 
-      - name: Generate release.json from latest official release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        shell: bash
-        run: |
-          LATEST_VERSION=$(gh release list --exclude-drafts --exclude-pre-releases --limit 1 --json tagName --jq '.[0].tagName' 2>/dev/null || echo "")
-          if [ -n "$LATEST_VERSION" ]; then
-            echo "{ \"version\": \"$LATEST_VERSION\" }" > release.json
-            echo "Generated release.json with version: $LATEST_VERSION"
-          else
-            echo "No official release found, skipping release.json generation"
-          fi
-
       - name: Build with Jekyll
         uses: actions/jekyll-build-pages@v1
         with:
           source: ./
           destination: ./_site
-
-      - name: Copy release.json into site
-        shell: bash
-        run: |
-          cp release.json _site/ 2>/dev/null || true
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
