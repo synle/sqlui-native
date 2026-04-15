@@ -802,8 +802,19 @@ export default function MissionControl() {
 
   const onRefreshAllConnections = async () => {
     if (!connections || connections.length === 0) return;
-    const nonManagedConnections = connections.filter((c) => !isDialectSupportManagedMetadata(c.dialect));
-    await Promise.allSettled(nonManagedConnections.map((c) => onRefreshConnection(c)));
+    const nonManagedConnections = connections
+      .filter((c) => !isDialectSupportManagedMetadata(c.dialect))
+      .sort((a, b) => {
+        // Inactive (offline/undefined) first, then online, then loading
+        const statusOrder = (s?: string) => (s === "online" ? 1 : 0);
+        const statusDiff = statusOrder(a.status) - statusOrder(b.status);
+        if (statusDiff !== 0) return statusDiff;
+        // Oldest first by createdAt, then updatedAt
+        return (a.createdAt || 0) - (b.createdAt || 0) || (a.updatedAt || 0) - (b.updatedAt || 0);
+      });
+    for (const c of nonManagedConnections) {
+      await onRefreshConnection(c);
+    }
   };
 
   const onDuplicateConnection = async (connection: SqluiCore.ConnectionProps) => {
