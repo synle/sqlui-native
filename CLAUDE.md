@@ -147,7 +147,7 @@ Connection strings are prefixed with a dialect scheme (`dialect://...`) but the 
   - **PostgreSQL** (`pg`): Map of `pg.Client` instances per database (PG doesn't support `USE` — requires new connection per database).
   - **MSSQL** (`tedious`): Creates new `Connection` per database. Callback-based API wrapped in promises.
 - `disconnect()` is the SOLE cleanup method — it closes all connections and clears state. It must **never** be called internally by adapter methods. It is called exclusively by the **caller** (`Endpoints.ts`, `DataAdapterFactory`, or tests) in `finally` blocks after all operations complete.
-- **SFDC auto-refresh:** The `SalesforceDataAdapter` wraps all operations in `withAutoRefresh()`, which detects `INVALID_SESSION_ID` / `Session expired` errors and automatically re-authenticates (for Client Credentials flow where no refresh token is available). The OAuth2 token request uses Node's native `https` module instead of jsforce's internal HTTP client, which hangs in bundled Electron builds.
+- **SFDC auto-refresh:** The `SalesforceDataAdapter` wraps all operations in `withAutoRefresh()`, which detects `INVALID_SESSION_ID` / `Session expired` errors and automatically re-authenticates (for Client Credentials flow where no refresh token is available). The OAuth2 token request uses Node's native `https` module instead of jsforce's internal HTTP client, which hangs in bundled desktop builds.
 - **REST API (stateless):** The `RestApiDataAdapter` has no persistent connection. Each `execute()` call parses the curl/fetch command, resolves `{{VAR}}` placeholders, and spawns a `curl` subprocess. `authenticate()` just validates the JSON config. `disconnect()` is a no-op. The `HOST` field from the connection string JSON is auto-injected as the `{{HOST}}` variable.
 
 ### REST API Adapter
@@ -270,7 +270,7 @@ Additional hooks: `useToaster` (toast notifications with history), `useClientSid
 
 ### Frontend Data Layer
 
-- **`src/frontend/data/api.tsx`** - `ProxyApi` static class wraps all backend calls (works in both Electron IPC and HTTP modes)
+- **`src/frontend/data/api.tsx`** - `ProxyApi` static class wraps all backend calls (works in both Tauri invoke and HTTP modes)
 - **`src/frontend/data/config.ts`** - `SessionStorageConfig` and `LocalStorageConfig` constants for storage keys
 - **`src/frontend/data/file.tsx`** - File download utilities (text, JSON, CSV, blob)
 - **`src/frontend/data/session.tsx`** - Session ID generation and management
@@ -357,7 +357,7 @@ See CONTRIBUTING.md for the full step-by-step guide with code examples.
 - **`ResultBox`** - Displays query results with DataTable (legacy and modern/virtualized variants)
 - **`VirtualizedConnectionTree`** - Tree view of connections/databases/tables/columns using virtualized flat rows
 - **`ActionDialogs`** - Global dialog system (alert, choice, prompt, modal) managed via `useActionDialogs` context
-- **`MissionControl`** - Central event handler that wires up all application commands (session, connection, query, settings, navigation). Processes commands from the `CommandPalette`, keyboard shortcuts, and Electron menu events
+- **`MissionControl`** - Central event handler that wires up all application commands (session, connection, query, settings, navigation). Processes commands from the `CommandPalette`, keyboard shortcuts, and Tauri native menu events
 - **`CommandPalette`** - Fuzzy-searchable command list (`Cmd+P` / `Ctrl+P`). Options defined in `ALL_COMMAND_PALETTE_OPTIONS` array in `CommandPalette/index.tsx`. Supports expanding per-connection/per-query commands. When adding new app-wide actions, add a `ClientEventKey` in `typings/index.ts`, a command option in `CommandPalette`, and a `case` in `MissionControl`'s `_executeCommandPalette` switch
 - **`ConnectionForm`** - New/edit connection forms with dialect-specific hints
 - **`MigrationBox`** - Data migration between connections with column mapping
