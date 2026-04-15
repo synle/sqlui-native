@@ -174,9 +174,6 @@ jobs:
       - name: Install setuptools for node-gyp
         run: python -m pip install setuptools
 
-      - name: Update package.json to release version
-        if: ${{ needs.create_release.outputs.dist_version != '' }}
-        run: npm version --no-git-tag-version "${{ needs.create_release.outputs.dist_version }}"
 
       - name: Cache Electron and electron-builder binaries
         uses: actions/cache@v4
@@ -303,9 +300,6 @@ jobs:
       - name: Install setuptools for node-gyp
         run: python -m pip install setuptools
 
-      - name: Update package.json to release version
-        if: ${{ needs.create_release.outputs.dist_version != '' }}
-        run: npm version --no-git-tag-version "${{ needs.create_release.outputs.dist_version }}"
 
       - name: Cache Electron and electron-builder binaries
         uses: actions/cache@v4
@@ -408,9 +402,6 @@ jobs:
       - name: Install setuptools for node-gyp
         run: python -m pip install setuptools
 
-      - name: Update package.json to release version
-        if: ${{ needs.create_release.outputs.dist_version != '' }}
-        run: npm version --no-git-tag-version "${{ needs.create_release.outputs.dist_version }}"
 
       - name: Cache Electron and electron-builder binaries
         uses: actions/cache@v4
@@ -513,9 +504,6 @@ jobs:
       - name: Install setuptools for node-gyp
         run: python -m pip install setuptools
 
-      - name: Update package.json to release version
-        if: ${{ needs.create_release.outputs.dist_version != '' }}
-        run: npm version --no-git-tag-version "${{ needs.create_release.outputs.dist_version }}"
 
       - name: Cache Electron and electron-builder binaries
         uses: actions/cache@v4
@@ -618,9 +606,6 @@ jobs:
       - name: Install setuptools for node-gyp
         run: python -m pip install setuptools
 
-      - name: Update package.json to release version
-        if: ${{ needs.create_release.outputs.dist_version != '' }}
-        run: npm version --no-git-tag-version "${{ needs.create_release.outputs.dist_version }}"
 
       - name: Cache Electron and electron-builder binaries
         uses: actions/cache@v4
@@ -723,9 +708,6 @@ jobs:
       - name: Install setuptools for node-gyp
         run: python -m pip install setuptools
 
-      - name: Update package.json to release version
-        if: ${{ needs.create_release.outputs.dist_version != '' }}
-        run: npm version --no-git-tag-version "${{ needs.create_release.outputs.dist_version }}"
 
       - name: Cache Electron and electron-builder binaries
         uses: actions/cache@v4
@@ -828,9 +810,6 @@ jobs:
       - name: Install setuptools for node-gyp
         run: python -m pip install setuptools
 
-      - name: Update package.json to release version
-        if: ${{ needs.create_release.outputs.dist_version != '' }}
-        run: npm version --no-git-tag-version "${{ needs.create_release.outputs.dist_version }}"
 
       - name: Cache Electron and electron-builder binaries
         uses: actions/cache@v4
@@ -933,9 +912,6 @@ jobs:
       - name: Install setuptools for node-gyp
         run: python -m pip install setuptools
 
-      - name: Update package.json to release version
-        if: ${{ needs.create_release.outputs.dist_version != '' }}
-        run: npm version --no-git-tag-version "${{ needs.create_release.outputs.dist_version }}"
 
       - name: Cache Electron and electron-builder binaries
         uses: actions/cache@v4
@@ -1038,9 +1014,6 @@ jobs:
       - name: Install setuptools for node-gyp
         run: python -m pip install setuptools
 
-      - name: Update package.json to release version
-        if: ${{ needs.create_release.outputs.dist_version != '' }}
-        run: npm version --no-git-tag-version "${{ needs.create_release.outputs.dist_version }}"
 
       - name: Cache Electron and electron-builder binaries
         uses: actions/cache@v4
@@ -1204,9 +1177,6 @@ jobs:
           node-version: ${{ inputs.node_version }}
           cache: "npm"
 
-      - name: Update package.json to release version
-        if: ${{ needs.create_release.outputs.dist_version != '' }}
-        run: npm version --no-git-tag-version "${{ needs.create_release.outputs.dist_version }}"
 
       - name: Commit release version
         uses: EndBug/add-and-commit@v9
