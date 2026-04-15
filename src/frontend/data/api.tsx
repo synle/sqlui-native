@@ -1,5 +1,6 @@
 import { columnFetchThrottle } from "src/frontend/data/connectionThrottle";
 import { getCurrentSessionId } from "src/frontend/data/session";
+import { platform } from "src/frontend/platform";
 import { SqluiCore, SqluiFrontend } from "typings";
 async function _fetch<T>(input: RequestInfo, initOptions?: RequestInit) {
   let { headers, ...restInput } = initOptions || {};
@@ -14,7 +15,7 @@ async function _fetch<T>(input: RequestInfo, initOptions?: RequestInit) {
 
   restInput = restInput || {};
 
-  const baseUrl = (window as any).__SIDECAR_BASE_URL__ || "";
+  const baseUrl = platform.sidecarBaseUrl;
 
   return fetch(`${baseUrl}${input}`, {
     ...restInput,
@@ -54,7 +55,7 @@ export class ProxyApi {
    * @returns A promise that resolves when the download is triggered.
    */
   static async backupDatabase() {
-    const baseUrl = (window as any).__SIDECAR_BASE_URL__ || "";
+    const baseUrl = platform.sidecarBaseUrl;
     const response = await fetch(`${baseUrl}/api/backup/database`, {
       headers: { "sqlui-native-session-id": getCurrentSessionId() },
     });
@@ -529,7 +530,7 @@ export class ProxyApi {
    * @returns The file content as a string.
    */
   static readFileContent(file: File): Promise<string> {
-    const baseUrl = (window as any).__SIDECAR_BASE_URL__ || "";
+    const baseUrl = platform.sidecarBaseUrl;
     const form = new FormData();
     form.append("file", file);
     return fetch(`${baseUrl}/api/file`, {

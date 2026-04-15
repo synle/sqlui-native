@@ -1,57 +1,39 @@
 import { useEffect } from "react";
 import { useCommands } from "src/frontend/components/MissionControl";
 import { useActionDialogs } from "src/frontend/hooks/useActionDialogs";
+import { platform } from "src/frontend/platform";
 import { SqluiEnums } from "typings";
 
-/**
- * Listens for menu commands from the Tauri shell (or Electron IPC for backward compat)
- * and dispatches them to the MissionControl command system.
- * Ignores commands when a dialog is active (except for checkForUpdate).
- * Renders nothing.
- * @returns null
+/** Listens for native menu command events (Tauri or browser) and dispatches them
+ * to the MissionControl command system. Ignores commands when a dialog is active
+ * (except for checkForUpdate). Renders nothing.
  */
 export default function ElectronEventListener() {
   const { selectCommand } = useCommands();
   const { dialog } = useActionDialogs();
 
   useEffect(() => {
-    // Tauri mode: listen for "menu-command" events from the Rust backend
-    if ((window as any).isTauri) {
-      let unlisten: (() => void) | undefined;
-
-      import("@tauri-apps/api/event").then(({ listen }) => {
-        listen<string>("menu-command", (event) => {
-          const data = event.payload;
-
-          if (dialog) {
-            switch (data) {
-              case "clientEvent/checkForUpdate":
-                break;
-              default:
-                console.log(">> clientEvent Ignored (Active Dialog)", data);
-                return;
-            }
-          }
-
-          // Handle "File a bug" by opening the URL directly
-          if (data === "clientEvent/openBugReport") {
-            window.openBrowserLink("https://github.com/synle/sqlui-native/issues/new");
+    const unsubscribe = platform.onAppCommand((data) => {
+      if (dialog) {
+        switch (data) {
+          case "clientEvent/checkForUpdate":
+            break;
+          default:
+            console.log(">> clientEvent Ignored (Active Dialog)", data);
             return;
-          }
+        }
+      }
 
-          console.log(">> clientEvent Executed", data);
-          selectCommand({ event: data as SqluiEnums.ClientEventKey });
-        }).then((fn) => {
-          unlisten = fn;
-        });
-      });
+      if (data === "clientEvent/openBugReport") {
+        platform.openExternalUrl("https://github.com/synle/sqlui-native/issues/new");
+        return;
+      }
 
-      return () => {
-        if (unlisten) unlisten();
-      };
-    }
+      console.log(">> clientEvent Executed", data);
+      selectCommand({ event: data as SqluiEnums.ClientEventKey });
+    });
 
-    return undefined;
+    return unsubscribe;
   }, [dialog]);
 
   return null;
