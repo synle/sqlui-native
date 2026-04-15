@@ -125,15 +125,6 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf libarchive-tools
 
-      - name: Cache Cargo registry and build
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.cargo/registry
-            ~/.cargo/git
-            src-tauri/target
-          key: cargo-release-v2-${{ runner.os }}-${{ matrix.rust_target }}-${{ hashFiles('src-tauri/Cargo.lock') }}
-
       - name: Update package.json to release version
         if: ${{ needs.create_release.outputs.dist_version != '' }}
         run: npm version --no-git-tag-version "${{ needs.create_release.outputs.dist_version }}"
