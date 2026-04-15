@@ -11,13 +11,14 @@ import NetworkCheckIcon from "@mui/icons-material/NetworkCheck";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import SelectAllIcon from "@mui/icons-material/SelectAll";
 import StarIcon from "@mui/icons-material/Star";
+import CircularProgress from "@mui/material/CircularProgress";
 import IconButton from "@mui/material/IconButton";
 import { useNavigate } from "src/frontend/utils/commonUtils";
 import { getDivider } from "src/common/adapters/BaseDataAdapter/scripts";
 import { getConnectionActions, isDialectSupportManagedMetadata } from "src/common/adapters/DataScriptFactory";
 
 import DropdownButton from "src/frontend/components/DropdownButton";
-import { useCommands } from "src/frontend/components/MissionControl";
+import { useCommands, isConnectionRefreshing } from "src/frontend/components/MissionControl";
 import { showTestConnectionModal } from "src/frontend/components/TestConnectionButton";
 import { useCreateManagedDatabase } from "src/frontend/hooks/useManagedMetadata";
 import { useActionDialogs } from "src/frontend/hooks/useActionDialogs";
@@ -116,15 +117,21 @@ export default function ConnectionActions(props: ConnectionActionsProps): React.
     ...(isRestApi || isGraphQL
       ? []
       : [
-          {
-            label: "Refresh",
-            startIcon: <RefreshIcon />,
-            onClick: () =>
-              selectCommand({
-                event: "clientEvent/connection/refresh",
-                data,
-              }),
-          },
+          isConnectionRefreshing(connectionId)
+            ? {
+                label: "Refreshing...",
+                startIcon: <CircularProgress size={16} />,
+                disabled: true,
+              }
+            : {
+                label: "Refresh",
+                startIcon: <RefreshIcon />,
+                onClick: () =>
+                  selectCommand({
+                    event: "clientEvent/connection/refresh",
+                    data,
+                  }),
+              },
         ]),
     {
       label: "Test Connection",
