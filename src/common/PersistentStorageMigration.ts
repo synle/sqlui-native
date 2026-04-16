@@ -2,6 +2,7 @@
 
 import fs from "node:fs";
 import path from "node:path";
+import { writeDebugLog } from "src/common/utils/debugLogger";
 import { storageDir } from "src/common/PersistentStorageJsonFile";
 import { PersistentStorageSqlite, DB_FILE_NAME } from "src/common/PersistentStorageSqlite";
 
@@ -203,5 +204,7 @@ export function runMigration(): void {
   // Mark migration complete
   setStorageVersion(CURRENT_STORAGE_VERSION);
 
-  console.log(`PersistentStorageMigration: migrated ${totalMigrated} entries from ${migratedFilePaths.length} files`);
+  const msg = `PersistentStorageMigration: migrated ${totalMigrated} entries from ${migratedFilePaths.length} files`;
+  console.log(msg);
+  writeDebugLog(msg);
 }

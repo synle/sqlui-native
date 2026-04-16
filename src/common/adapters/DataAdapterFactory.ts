@@ -26,6 +26,7 @@ import {
   getManagedDatabasesStorage,
   getManagedTablesStorage,
 } from "src/common/PersistentStorage";
+import { writeDebugLog } from "src/common/utils/debugLogger";
 import { safeDisconnect } from "src/common/utils/errorUtils";
 import { SqluiCore } from "typings";
 
@@ -376,6 +377,7 @@ export function getDataAdapter(connection: string) {
     }
   } catch (err) {
     console.error("DataAdapterFactory.ts:getDataAdapter", connection, err);
+    writeDebugLog(`DataAdapterFactory.ts:getDataAdapter - failed to create adapter - ${(err as any)?.message || err}`);
     throw err;
   }
 
@@ -402,6 +404,7 @@ export async function getConnectionMetaData(connection: SqluiCore.CoreConnection
   const engine = getDataAdapter(connection.connection);
   try {
     connItem.dialect = engine.dialect;
+    writeDebugLog(`DataAdapterFactory.ts:getConnectionMetaData - dialect=${engine.dialect} connId=${connection.id}`);
 
     // Use cached databases if available; fetch fresh in background only if stale
     const cachedDatabasesEntry = connection.id ? getCachedDatabases(connection.id) : undefined;
@@ -488,6 +491,7 @@ export async function getConnectionMetaData(connection: SqluiCore.CoreConnection
     connItem.status = "offline";
     connItem.dialect = undefined;
     console.error("DataAdapterFactory.ts:getConnectionItem", err);
+    writeDebugLog(`DataAdapterFactory.ts:getConnectionMetaData - offline connId=${connection.id} - ${(err as any)?.message || err}`);
   } finally {
     try {
       await engine.disconnect();
