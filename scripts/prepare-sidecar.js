@@ -20,62 +20,46 @@ cpSync("build/mocked-server.js", path.join(RESOURCES_DIR, "mocked-server.js"));
 // 2. Copy package.json (needed for module resolution)
 cpSync("package.json", path.join(RESOURCES_DIR, "package.json"));
 
-// 3. Copy required node_modules (native and external dependencies)
-// These are the dependencies marked as external in vite.mocked-server.config.ts
+// 3. Copy ALL node_modules dependencies and their transitive dependencies.
+// The Vite mocked-server config externalizes every dependency, so any of them
+// may be require()'d at runtime. Trying to maintain a manual exclusion list
+// leads to missing-module crashes in production.
 const appPackage = require("../package.json");
-const externalDeps = [...Object.keys(appPackage.dependencies || {}), ...Object.keys(appPackage.optionalDependencies || {})].filter(
-  (dep) => {
-    // Skip frontend-only packages that aren't needed by the sidecar
-    const frontendOnly = [
-      "@tauri-apps/api",
-      "@tauri-apps/plugin-opener",
-      "@tauri-apps/plugin-shell",
-      "@emotion/react",
-      "@emotion/styled",
-      "@mui/icons-material",
-      "@mui/lab",
-      "@mui/material",
-      "@tanstack/react-query",
-      "@tanstack/react-query-devtools",
-      "@tanstack/react-table",
-      "@tanstack/react-virtual",
-      "@testing-library/dom",
-      "@types/better-sqlite3",
-      "@xyflow/react",
-      "fuzzysort",
-      "html-to-image",
-      "monaco-editor",
-      "react",
-      "react-dom",
-      "react-router",
-      "sql-formatter",
-    ];
-    return !frontendOnly.includes(dep);
-  },
-);
+const topLevelDeps = [...Object.keys(appPackage.dependencies || {}), ...Object.keys(appPackage.optionalDependencies || {})];
 
-for (const dep of externalDeps) {
+// Recursively collect all transitive dependencies
+const collected = new Set();
+
+function collectDeps(depName) {
+  if (collected.has(depName)) return;
+  collected.add(depName);
+
+  const pkgPath = path.join("node_modules", depName, "package.json");
+  if (!fs.existsSync(pkgPath)) return;
+
+  const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf-8"));
+  for (const sub of Object.keys(pkg.dependencies || {})) {
+    collectDeps(sub);
+  }
+  // Also follow optionalDependencies that are installed
+  for (const sub of Object.keys(pkg.optionalDependencies || {})) {
+    if (fs.existsSync(path.join("node_modules", sub))) {
+      collectDeps(sub);
+    }
+  }
+}
+
+for (const dep of topLevelDeps) {
+  collectDeps(dep);
+}
+
+log(`Copying ${collected.size} packages (top-level + transitive)...`);
+
+for (const dep of collected) {
   const src = path.join("node_modules", dep);
   const dest = path.join(RESOURCES_NODE_MODULES, dep);
   if (fs.existsSync(src)) {
     cpSync(src, dest);
-  }
-}
-
-// Also copy any scoped dependency sub-dependencies that native modules need
-const nativeDeps = ["better-sqlite3", "cassandra-driver", "mongodb", "mysql2", "pg", "tedious", "redis"];
-for (const dep of nativeDeps) {
-  const depPkgPath = path.join("node_modules", dep, "package.json");
-  if (!fs.existsSync(depPkgPath)) continue;
-
-  const depPkg = JSON.parse(fs.readFileSync(depPkgPath, "utf-8"));
-  const subDeps = Object.keys(depPkg.dependencies || {});
-  for (const subDep of subDeps) {
-    const src = path.join("node_modules", subDep);
-    const dest = path.join(RESOURCES_NODE_MODULES, subDep);
-    if (fs.existsSync(src) && !fs.existsSync(dest)) {
-      cpSync(src, dest);
-    }
   }
 }
 
