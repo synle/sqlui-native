@@ -10,9 +10,11 @@ const nativeExternals = [
   "better-sqlite3",
   "cassandra-driver",
   "monaco-editor",
+  "mustache",
   "mongodb",
   "mysql2",
   "pg",
+  "redis",
   "tedious",
 ];
 
