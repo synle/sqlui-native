@@ -255,7 +255,7 @@ Additional hooks: `useToaster` (toast notifications with history), `useClientSid
 
 1. **Bundled fallback** — `.mustache` files are imported via Vite `?raw` and baked into the build. Always available offline.
 2. **Disk cache** — After a successful remote fetch, templates are persisted to `cache.code-snippets.json` via `PersistentStorage`. On next launch, the disk cache is loaded if its `version` matches the current app version (cache is discarded on app updates so new bundled templates take precedence).
-3. **Remote refresh** — On first `renderCodeSnippet()` call, all templates are fetched in parallel from `https://raw.githubusercontent.com/synle/sqlui-native/refs/heads/main/src/common/adapters/code-snippets/templates/`. Fetched templates override in-memory copies immediately and are saved to disk. Failures are silently ignored.
+3. **Remote refresh** — On first `renderCodeSnippet()` call, all templates are fetched in parallel from `https://github.com/synle/sqlui-native/blob/head/src/common/adapters/code-snippets/templates/{filename}?raw=true`. Fetched templates override in-memory copies immediately and are saved to disk. Failures are silently ignored.
 
 **To update templates without an app release:** Edit the `.mustache` files in the `main` branch — running apps pick up changes on next launch.
 
@@ -389,6 +389,19 @@ See CONTRIBUTING.md for the full step-by-step guide with code examples.
 - Use `toMatchInlineSnapshot` for empty/null render checks
 - For stub assertions, `toHaveBeenCalled()` is sufficient — no need to assert call count
 - Avoid `toEqual` for text — use `toContain` where it makes sense
+
+## GitHub Raw File URLs
+
+When fetching raw file content from GitHub repos, always use the `?raw=true` blob URL format:
+
+```
+https://github.com/{owner}/{repo}/blob/head/{path}?raw=true
+```
+
+Do NOT use:
+
+- `https://api.github.com/repos/{owner}/{repo}/contents/{path}` (GitHub Contents API)
+- `https://raw.githubusercontent.com/{owner}/{repo}/{branch}/{path}`
 
 ## Pre-commit Checklist
 
