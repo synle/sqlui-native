@@ -31,7 +31,7 @@ export default defineConfig({
       input: "./src/electron/index.ts",
       external: nativeExternals,
       output: {
-        entryFileNames: "main.js",
+        entryFileNames: "app.js",
         format: "cjs",
         banner: `if(typeof globalThis.crypto==="undefined"){globalThis.crypto=require("crypto");}`,
       },
