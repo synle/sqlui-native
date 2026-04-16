@@ -2,18 +2,24 @@ import { app, BrowserWindow, ipcMain, Menu, nativeTheme, shell } from "electron"
 import path from "node:path";
 import { matchPath } from "react-router";
 import { getEndpointHandlers, setUpDataEndpoints } from "src/common/Endpoints";
+import { writeDebugLog } from "src/common/utils/debugLogger";
 import { SqluiEnums } from "typings";
 
 /** Whether the current platform is macOS. */
 const isMac = process.platform === "darwin";
 
+writeDebugLog(`app:init - platform=${process.platform} arch=${process.arch} electron=${process.versions.electron} node=${process.versions.node} pid=${process.pid}`);
+
 // prevent process crashes from unhandled connection errors (e.g. mariadb timeout)
 process.on("uncaughtException", (err) => {
-  console.error("Uncaught Exception:", err?.message || err);
+  const msg = err?.message || err;
+  console.error("Uncaught Exception:", msg);
+  writeDebugLog(`app:uncaughtException - ${msg}\n${err?.stack || ""}`);
 });
 
 process.on("unhandledRejection", (reason) => {
   console.error("Unhandled Rejection:", reason);
+  writeDebugLog(`app:unhandledRejection - ${reason}`);
 });
 
 // performance: disable smooth scrolling
@@ -55,6 +61,7 @@ async function createWindow() {
   });
 
   mainWindow.on("ready-to-show", () => {
+    writeDebugLog("app:window - ready-to-show, displaying window");
     mainWindow.show();
   });
 
@@ -295,9 +302,13 @@ function setupMenu() {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(async () => {
+  writeDebugLog("app:ready - setting up endpoints");
   setUpDataEndpoints();
+  writeDebugLog("app:ready - creating window");
   await createWindow();
+  writeDebugLog("app:ready - setting up menu");
   setupMenu();
+  writeDebugLog("app:ready - initialization complete");
 
   app.on("activate", () => {
     // On macOS it's common to re-create a window in the app when the
@@ -310,6 +321,7 @@ app.whenReady().then(async () => {
 // for applications and their menu bar to stay active until the user quits
 // explicitly with Cmd + Q.
 app.on("window-all-closed", () => {
+  writeDebugLog("app:window-all-closed - quitting");
   app.quit();
 });
 
@@ -462,8 +474,10 @@ ipcMain.on("sqluiNativeEvent/fetch", async (event, data) => {
     }
 
     // not found, then return 404
+    writeDebugLog(`ipc:fetch - 404 not found: ${method} ${url}`);
     sendResponse("Resource Not Found...", 500);
   } catch (err) {
     console.error("index.ts:ipcMain.handle", err);
+    writeDebugLog(`ipc:fetch - error: ${method} ${url} - ${(err as any)?.message || err}`);
   }
 });
