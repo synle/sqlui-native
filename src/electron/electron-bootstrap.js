@@ -36,17 +36,22 @@ function earlyLog(message) {
 }
 
 earlyLog(
-  "bootstrap:start - platform=" + process.platform +
-  " arch=" + process.arch +
-  " node=" + process.versions.node +
-  " electron=" + (process.versions.electron || "N/A") +
-  " pid=" + process.pid
+  "bootstrap:start - platform=" +
+    process.platform +
+    " arch=" +
+    process.arch +
+    " node=" +
+    process.versions.node +
+    " electron=" +
+    (process.versions.electron || "N/A") +
+    " pid=" +
+    process.pid,
 );
 
 // Catch crashes that happen during app module loading
 process.on("uncaughtException", function (err) {
-  earlyLog("bootstrap:uncaughtException - " + (err && err.message || err) + "\n" + (err && err.stack || ""));
-  console.error("Uncaught Exception:", err && err.message || err);
+  earlyLog("bootstrap:uncaughtException - " + ((err && err.message) || err) + "\n" + ((err && err.stack) || ""));
+  console.error("Uncaught Exception:", (err && err.message) || err);
 });
 
 process.on("unhandledRejection", function (reason) {
@@ -60,7 +65,7 @@ try {
   require("./app.js");
   earlyLog("bootstrap:loaded - app.js imported successfully");
 } catch (err) {
-  earlyLog("bootstrap:FATAL - app failed to load: " + (err && err.message || err) + "\n" + (err && err.stack || ""));
+  earlyLog("bootstrap:FATAL - app failed to load: " + ((err && err.message) || err) + "\n" + ((err && err.stack) || ""));
   console.error("FATAL: App failed to load:", err);
 
   // Show an error dialog so the user sees something instead of a silent crash
@@ -69,7 +74,7 @@ try {
     electron.app.whenReady().then(function () {
       electron.dialog.showErrorBox(
         "sqlui-native failed to start",
-        (err && err.message || String(err)) + "\n\nCheck debug.log in the app data folder for details."
+        ((err && err.message) || String(err)) + "\n\nCheck debug.log in the app data folder for details.",
       );
       electron.app.quit();
     });
