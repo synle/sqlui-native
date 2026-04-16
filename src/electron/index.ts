@@ -67,6 +67,16 @@ async function createWindow() {
     mainWindow.show();
   });
 
+  // Catch renderer process crashes and log them instead of silently dying
+  mainWindow.webContents.on("render-process-gone", (_event, details) => {
+    writeDebugLog(`app:renderer-crash - reason=${details.reason} exitCode=${details.exitCode}`);
+    console.error("Renderer process gone:", details);
+  });
+
+  mainWindow.on("unresponsive", () => {
+    writeDebugLog("app:window - unresponsive");
+  });
+
   // and load the index.html of the app.
   if (process?.env?.VITE_DEV_SERVER_URL) {
     mainWindow.loadURL(process.env.VITE_DEV_SERVER_URL);
