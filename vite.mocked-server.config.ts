@@ -3,13 +3,13 @@ import path from "node:path";
 import appPackage from "./package.json";
 
 /**
- * All runtime dependencies (from package.json) that should remain external in the mocked-server bundle.
- * These are available via node_modules at runtime and do not need to be inlined.
+ * Only packages with native bindings (.node files) must stay external.
+ * Everything else is bundled into a single mocked-server.js by Vite,
+ * eliminating the need to copy hundreds of node_modules for the sidecar.
  */
 const externalsDeps = [
   "electron",
-  ...Object.keys((appPackage as any).optionalDependencies || {}),
-  ...Object.keys(appPackage.dependencies || {}),
+  "better-sqlite3",
 ];
 
 /**
