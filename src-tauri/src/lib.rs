@@ -70,6 +70,93 @@ fn read_file_content(path: String) -> Result<String, String> {
     std::fs::read_to_string(&path).map_err(|e| format!("Failed to read file {}: {}", path, e))
 }
 
+/// Searches for a working `node` binary outside the default PATH.
+/// GUI apps on macOS/Linux don't inherit shell rc files, so version managers
+/// (fnm, nvm, volta, mise, n, asdf, Homebrew, nodenv) are invisible.
+/// Returns the first path where `node --version` succeeds.
+fn find_system_node() -> Option<String> {
+    // 1. Try the bare command first (works when PATH is correct, e.g. dev mode)
+    if Command::new("node")
+        .arg("--version")
+        .stdout(Stdio::null())
+        .stderr(Stdio::null())
+        .status()
+        .map(|s| s.success())
+        .unwrap_or(false)
+    {
+        return Some("node".to_string());
+    }
+
+    // 2. Probe well-known version-manager and system locations
+    let home = std::env::var("HOME").unwrap_or_default();
+    let candidates: Vec<std::path::PathBuf> = vec![
+        // fnm (default XDG data dir)
+        std::path::PathBuf::from(&home).join(".local/share/fnm/aliases/default/bin/node"),
+        // fnm (macOS alternate)
+        std::path::PathBuf::from(&home).join("Library/Application Support/fnm/aliases/default/bin/node"),
+        // nvm
+        std::path::PathBuf::from(&home).join(".nvm/alias/default"),   // symlink target resolved below
+        // volta
+        std::path::PathBuf::from(&home).join(".volta/bin/node"),
+        // mise / rtx
+        std::path::PathBuf::from(&home).join(".local/share/mise/shims/node"),
+        // n
+        std::path::PathBuf::from("/usr/local/bin/node"),
+        // asdf
+        std::path::PathBuf::from(&home).join(".asdf/shims/node"),
+        // nodenv
+        std::path::PathBuf::from(&home).join(".nodenv/shims/node"),
+        // Homebrew (Apple Silicon)
+        std::path::PathBuf::from("/opt/homebrew/bin/node"),
+        // Homebrew (Intel)
+        std::path::PathBuf::from("/usr/local/bin/node"),
+    ];
+
+    // Also try resolving nvm's default alias to an actual version directory
+    let nvm_dir = std::env::var("NVM_DIR")
+        .unwrap_or_else(|_| format!("{}/.nvm", home));
+    let nvm_default = std::path::PathBuf::from(&nvm_dir).join("alias/default");
+    let mut extra: Vec<std::path::PathBuf> = Vec::new();
+    if let Ok(version) = std::fs::read_to_string(&nvm_default) {
+        let v = version.trim().to_string();
+        // nvm alias could be e.g. "22" or "lts/jod" — scan versions dir for prefix match
+        let versions_dir = std::path::PathBuf::from(&nvm_dir).join("versions/node");
+        if let Ok(entries) = std::fs::read_dir(&versions_dir) {
+            for entry in entries.flatten() {
+                let name = entry.file_name();
+                let name_str = name.to_string_lossy();
+                if name_str.starts_with(&format!("v{}", v)) {
+                    extra.push(entry.path().join("bin/node"));
+                }
+            }
+        }
+        // Also try exact match
+        extra.push(
+            versions_dir
+                .join(format!("v{}", v))
+                .join("bin/node"),
+        );
+    }
+
+    for candidate in candidates.iter().chain(extra.iter()) {
+        if candidate.exists() {
+            if let Ok(status) = Command::new(candidate)
+                .arg("--version")
+                .stdout(Stdio::null())
+                .stderr(Stdio::null())
+                .status()
+            {
+                if status.success() {
+                    println!("Sidecar: found node at {}", candidate.display());
+                    return Some(candidate.to_string_lossy().to_string());
+                }
+            }
+        }
+    }
+
+    None
+}
+
 /// Spawns the Node.js sidecar Express server and waits for it to report its port.
 fn spawn_sidecar(app: &tauri::App) -> Result<SidecarState, Box<dyn std::error::Error>> {
     let resource_dir = app
@@ -88,11 +175,12 @@ fn spawn_sidecar(app: &tauri::App) -> Result<SidecarState, Box<dyn std::error::E
         node_bin_dir.join("node")
     };
 
-    // In development, fall back to system Node.js
+    // Fall back to system Node.js, searching common version-manager paths
+    // because GUI apps on macOS don't inherit the shell's PATH.
     let node_cmd = if node_bin.exists() {
         node_bin.to_string_lossy().to_string()
     } else {
-        "node".to_string()
+        find_system_node().unwrap_or_else(|| "node".to_string())
     };
 
     println!("Sidecar: spawning {} {}", node_cmd, server_js.display());
@@ -104,7 +192,12 @@ fn spawn_sidecar(app: &tauri::App) -> Result<SidecarState, Box<dyn std::error::E
         .stdout(Stdio::piped())
         .stderr(Stdio::inherit())
         .spawn()
-        .map_err(|e| format!("Failed to spawn sidecar: {}", e))?;
+        .map_err(|e| format!(
+            "Failed to spawn sidecar (node='{}'): {}. \
+             Is Node.js installed? GUI apps cannot see version managers (fnm/nvm/volta) — \
+             install Node.js system-wide or place it in /usr/local/bin.",
+            node_cmd, e
+        ))?;
 
     // Read stdout lines until we find the port marker
     let stdout = child
@@ -331,7 +424,10 @@ pub fn run() {
 
             // In release/production builds, spawn the bundled Node.js sidecar.
             #[cfg(not(debug_assertions))]
-            let state = spawn_sidecar(app).expect("Failed to start sidecar");
+            let state = spawn_sidecar(app).map_err(|e| {
+                eprintln!("Fatal: {}", e);
+                e
+            })?;
 
             app.manage(state);
             setup_menu(app.handle())?;
