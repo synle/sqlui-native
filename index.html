@@ -66,6 +66,31 @@
       <div id="initial-app-loader">Loading...</div>
       <noscript>You need to enable JavaScript to run this app.</noscript>
     </div>
+    <script type="text/javascript" script-id="early-error-logger">
+      // Capture early renderer errors to the debug log before React loads
+      (function() {
+        try {
+          if (typeof require !== 'function') return;
+          var fs = require('fs');
+          var nodePath = require('path');
+          var electron = require('electron');
+          var baseDir = nodePath.join(electron.app ? electron.app.getPath('appData') : require('os').homedir(), 'sqlui-native');
+          var logPath = nodePath.join(baseDir, 'debug.log');
+          window.__earlyLog = function(msg) {
+            try {
+              var ts = new Date().toISOString().replace('T', ' ').slice(0, 23);
+              fs.appendFileSync(logPath, '[' + ts + '] renderer:' + msg + '\n');
+            } catch(e) {}
+          };
+          window.__earlyLog('init - renderer script starting');
+          window.addEventListener('error', function(e) {
+            if (window.__earlyLog) window.__earlyLog('error - ' + e.message + ' at ' + e.filename + ':' + e.lineno);
+          });
+        } catch(_err) {
+          // Not in Electron or require not available — skip
+        }
+      })();
+    </script>
     <script type="text/javascript" script-id="suppress-resizer-error">
       // Suppress benign ResizeObserver loop errors
       var _origOnerror = window.onerror;
