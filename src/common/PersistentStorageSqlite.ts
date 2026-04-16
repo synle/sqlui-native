@@ -6,6 +6,7 @@ import fs from "node:fs";
 import path from "node:path";
 import type { IPersistentStorage, StorageEntry } from "src/common/IPersistentStorage";
 import { getGeneratedRandomId } from "src/common/utils/commonUtils";
+import { writeDebugLog } from "src/common/utils/debugLogger";
 import { storageDir } from "src/common/PersistentStorageJsonFile";
 
 /** Default SQLite database file name. */
@@ -64,6 +65,7 @@ export class PersistentStorageSqlite<T extends StorageEntry> implements IPersist
 
     PersistentStorageSqlite.dbPath = path.join(storageDir, DB_FILE_NAME);
     fs.mkdirSync(storageDir, { recursive: true });
+    writeDebugLog(`PersistentStorageSqlite:ensureDb - opening ${PersistentStorageSqlite.dbPath}`);
     PersistentStorageSqlite.db = new Database(PersistentStorageSqlite.dbPath);
     PersistentStorageSqlite.db.pragma("journal_mode = WAL");
   }

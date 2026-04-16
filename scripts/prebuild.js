@@ -38,6 +38,9 @@ fs.mkdirSync("public", { recursive: true });
 // Copy package.json to src (for module resolution during build)
 cpSync("package.json", "src/package.json");
 
+// Copy the Electron bootstrap entry point (must stay unbundled to catch native addon crashes)
+cpSync("src/electron/electron-bootstrap.js", "build/main.js");
+
 // Copy monaco-editor vs files to public/vs
 cpSync(
   path.join("node_modules", "monaco-editor", "min", "vs"),

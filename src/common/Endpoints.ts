@@ -25,6 +25,7 @@ import {
   getSettingsStorage,
   storageDir,
 } from "src/common/PersistentStorage";
+import { writeDebugLog } from "src/common/utils/debugLogger";
 import { backfillTimestamps, formatErrorMessage, safeDisconnect } from "src/common/utils/errorUtils";
 import { SqluiCore, SqluiEnums } from "typings";
 let expressAppContext: Express | undefined;
@@ -89,11 +90,13 @@ function addDataEndpoint(
       await incomingHandler(req, res, cache);
     } catch (err: any) {
       console.error(`Endpoints.ts:addDataEndpoint [${method.toUpperCase()} ${url}] error`, err);
+      writeDebugLog(`Endpoints.ts:error [${method.toUpperCase()} ${url}] - ${err?.message || err}\n${err?.stack || ""}`);
       const message = formatErrorMessage(err);
       try {
         res.status(500).json({ error: message });
       } catch (resErr) {
         console.error(`Endpoints.ts:addDataEndpoint [${method.toUpperCase()} ${url}] resError`, resErr);
+        writeDebugLog(`Endpoints.ts:resError [${method.toUpperCase()} ${url}] - ${(resErr as any)?.message || resErr}`);
       }
     }
   };
@@ -154,6 +157,7 @@ export function getEndpointHandlers() {
  */
 export function setUpDataEndpoints(anExpressAppContext?: Express) {
   expressAppContext = anExpressAppContext;
+  writeDebugLog(`Endpoints.ts:setUpDataEndpoints - mode=${anExpressAppContext ? "express" : "electron"} storageDir=${storageDir}`);
   // storageDir
   //=========================================================================
   // config api endpoints

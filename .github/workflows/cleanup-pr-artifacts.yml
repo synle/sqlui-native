@@ -1,4 +1,4 @@
-name: cleanup-pr-artifacts
+name: Cleanup Artifacts (PR Closed)
 
 on:
   pull_request:
