@@ -8,7 +8,9 @@ import { SqluiEnums } from "typings";
 /** Whether the current platform is macOS. */
 const isMac = process.platform === "darwin";
 
-writeDebugLog(`app:init - platform=${process.platform} arch=${process.arch} electron=${process.versions.electron} node=${process.versions.node} pid=${process.pid}`);
+writeDebugLog(
+  `app:init - platform=${process.platform} arch=${process.arch} electron=${process.versions.electron} node=${process.versions.node} pid=${process.pid}`,
+);
 
 // prevent process crashes from unhandled connection errors (e.g. mariadb timeout)
 process.on("uncaughtException", (err) => {
