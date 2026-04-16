@@ -11,10 +11,8 @@ const nativeExternals = [
   "cassandra-driver",
   "monaco-editor",
   "mongodb",
-  "mustache",
   "mysql2",
   "pg",
-  "redis",
   "tedious",
 ];
 
