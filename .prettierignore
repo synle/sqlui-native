@@ -6,7 +6,5 @@ coverage
 coverage*
 dist
 node_modules
-public/vs
-vs
 .github/workflows
 guides.md
