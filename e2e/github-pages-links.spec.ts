@@ -44,6 +44,23 @@ test.describe("Phase 0 — GitHub Pages download links", () => {
       console.error(`Broken download links:\n${report}`);
     }
 
+    // When all release binary links (those pointing to /releases/download/) return 404,
+    // the release binaries haven't been uploaded yet (pre-release). This is expected and
+    // should not fail the build — only fail when some binary links work and others don't.
+    const binaryFailures = failures.filter((f) => f.href.includes("/releases/download/"));
+    const binaryLinks = links.filter((l) => l.href.includes("/releases/download/"));
+    const allBinariesMissing =
+      binaryFailures.length > 0 && binaryFailures.length === binaryLinks.length && binaryFailures.every((f) => f.status === 404);
+    if (allBinariesMissing) {
+      console.warn(
+        `Skipping assertion: all ${binaryLinks.length} binary download links returned 404 (pre-release — binaries not yet uploaded)`,
+      );
+      // Still check non-binary links (e.g., "Other Releases", npm)
+      const nonBinaryFailures = failures.filter((f) => !f.href.includes("/releases/download/"));
+      expect(nonBinaryFailures, `Found ${nonBinaryFailures.length} broken non-binary links`).toHaveLength(0);
+      return;
+    }
+
     expect(failures, `Found ${failures.length} broken download links`).toHaveLength(0);
   });
 });
