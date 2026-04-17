@@ -175,7 +175,7 @@ function DevtoolsToggle() {
  * Initializes the React Query client and mounts the full application into the #body DOM node.
  */
 const renderApp = function () {
-  // Initialize platform (sets up Electron IPC fetch polyfill if in Electron)
+  // Initialize platform (sets up Electron IPC for shell integration)
   initPlatform();
 
   const queryClient = new QueryClient({

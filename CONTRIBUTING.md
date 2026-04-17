@@ -159,7 +159,7 @@ npm install
 npm start
 ```
 
-#### In a mocked server container
+#### In browser mode (dev server)
 
 Run this and test it in the browser
 
