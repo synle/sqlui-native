@@ -8,24 +8,12 @@
   "build": {
     "extends": null,
     "appId": "io.synle.github.sqlui-native",
+    "directories": {
+      "app": "build"
+    },
     "files": [
-      "**/*.icns",
-      "**/*.ico",
-      "**/*.jpg",
-      "**/*.png",
-      "*.css",
-      "*.js",
-      "*.json",
-      "static/**/*",
-      "appx/**/*",
-      "assets/**/*",
-      "index.html",
-      "!src/**/*",
-      "!public/**/*",
-      "!typings/**/*",
-      "!scripts/**/*",
-      "!sqlui-server.js",
-      "!robots.txt"
+      "**/*",
+      "!sqlui-server.js"
     ],
     "win": {
       "icon": "build/logo512.png",
@@ -93,7 +81,6 @@
     "test-e2e": "npx playwright test",
     "test-smoke": "npx playwright test --config playwright.smoke.config.ts",
     "### Distribution & Packaging ###": "##################################################################################",
-    "predist": "node scripts/postbuild.js",
     "dist": "electron-builder build --publish=never",
     "dist-win-x64-exe": "electron-builder build --publish=never --win --x64",
     "dist-win-x64-appx": "electron-builder build --publish=never --win appx",
