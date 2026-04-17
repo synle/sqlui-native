@@ -704,6 +704,17 @@ export function getCreateConnectionDatabase(input: SqlAction.ConnectionInput): S
 export class ConcreteDataScripts extends BaseDataScript {
   dialects = ["mysql", "mariadb", "mssql", "postgres", "postgresql", "sqlite"];
 
+  /**
+   * Returns connection form inputs. SQLite only needs a file path; other dialects use the default fields.
+   * @param dialect - The specific relational dialect.
+   */
+  getConnectionFormInputs(dialect?: string) {
+    if (dialect === "sqlite") {
+      return [["path", "SQLite File Path"]];
+    }
+    return super.getConnectionFormInputs(dialect);
+  }
+
   /** Returns false because table ID is inferred from the query for relational databases. */
   getIsTableIdRequiredForQuery() {
     return false;

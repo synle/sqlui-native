@@ -95,7 +95,7 @@ export function getAllImplementations(): BaseDataScript[] {
  * @param dialect - The dialect identifier.
  */
 export function getConnectionFormInputs(dialect?: string) {
-  return _getImplementation(dialect)?.getConnectionFormInputs() || [];
+  return _getImplementation(dialect)?.getConnectionFormInputs(dialect) || [];
 }
 
 /**
