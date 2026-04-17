@@ -154,6 +154,7 @@ async function createRestApiConnection(page: Page): Promise<string> {
 async function deleteConnection(page: Page, connName: string) {
   const connectionRow = page.locator(".ConnectionDescription").filter({ hasText: connName }).first();
   await connectionRow.click();
+  await page.waitForTimeout(500);
   await connectionRow.click({ button: "right" });
 
   const deleteItem = page.getByRole("menuitem", { name: "Delete" });
@@ -351,6 +352,7 @@ test.describe("Phase 5: Edit Connection", () => {
 
     const connectionRow = page.locator(".ConnectionDescription").filter({ hasText: connName }).first();
     await connectionRow.click();
+    await page.waitForTimeout(500);
     await connectionRow.click({ button: "right" });
 
     const editItem = page.getByRole("menuitem", { name: /Edit/i });
