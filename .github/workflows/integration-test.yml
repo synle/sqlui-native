@@ -386,10 +386,9 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
 
-      - name: Build frontend and mocked server for E2E
+      - name: Build frontend and server for E2E
         run: |
           npm run build
-          npm run build-mocked-server
 
       - name: Record E2E tests start time
         run: echo "E2E_START=$(date +%s)" >> $GITHUB_ENV
