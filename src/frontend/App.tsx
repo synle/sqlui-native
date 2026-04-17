@@ -25,7 +25,7 @@ function PageLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
       <AppHeader />
-      <section className="App__Section">{children}</section>
+      <section className="App__Section" style={{ paddingBottom: "2rem" }}>{children}</section>
     </>
   );
 }
