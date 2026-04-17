@@ -3,7 +3,7 @@ import path from "node:path";
 import appPackage from "./package.json";
 
 /**
- * All runtime dependencies (from package.json) that should remain external in the mocked-server bundle.
+ * All runtime dependencies (from package.json) that should remain external in the sqlui-server bundle.
  * These are available via node_modules at runtime and do not need to be inlined.
  */
 const externalsDeps = [
@@ -13,8 +13,8 @@ const externalsDeps = [
 ];
 
 /**
- * Vite build configuration for the mocked Express server.
- * Outputs a CommonJS bundle at build/mocked-server.js targeting Node 18.
+ * Vite build configuration for the sqlui-server.
+ * Outputs a CommonJS bundle at build/sqlui-server.js targeting Node 18.
  */
 export default defineConfig({
   build: {
@@ -22,10 +22,10 @@ export default defineConfig({
     emptyOutDir: false,
     sourcemap: false,
     rollupOptions: {
-      input: "./src/mocked-server/index.ts",
+      input: "./src/sqlui-server/index.ts",
       external: externalsDeps,
       output: {
-        entryFileNames: "mocked-server.js",
+        entryFileNames: "sqlui-server.js",
         format: "cjs",
       },
     },

@@ -9,23 +9,23 @@ allowed-tools: Bash(npm *) Bash(node *) Bash(npx *) Bash(lsof *) Bash(kill *) Ba
 
 Run the app in each runtime mode, pausing for the user to manually verify after each phase. Wait for explicit user confirmation before moving to the next phase.
 
-## Phase 1: Dev Server (Mocked Webapp)
+## Phase 1: Dev Server (Browser Mode)
 
 1. Kill any existing processes on ports 3000 and 3001:
    ```
    lsof -ti:3000,3001 | xargs kill -9 2>/dev/null
    ```
-2. Build the mocked server if `build/mocked-server.js` doesn't exist:
+2. Build the sqlui-server if `build/sqlui-server.js` doesn't exist:
    ```
-   npm run build-mocked-server
+   npm run build-server
    ```
-3. Start the mocked server (port 3001) in the background:
+3. Start the sqlui-server (port 3001) in the background:
    ```
-   NODE_OPTIONS='--max-old-space-size=4096' node build/mocked-server.js
+   NODE_OPTIONS='--max-old-space-size=4096' node build/sqlui-server.js
    ```
 4. Start the Vite dev server (port 3000) in the background:
    ```
-   NODE_OPTIONS='--max-old-space-size=4096' ENV_TYPE='mocked-server' npx vite --config vite.frontend.config.ts --strictPort
+   NODE_OPTIONS='--max-old-space-size=4096' ENV_TYPE='browser' npx vite --config vite.frontend.config.ts --strictPort
    ```
 5. Wait for both to be ready, then tell the user:
    - Open http://localhost:3000/
