@@ -12,6 +12,7 @@ app.js
 main.js
 mocked-server.js
 preload.js
+sqlui-server.js
 
 # Static / generated assets
 assets/
