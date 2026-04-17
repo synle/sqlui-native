@@ -6,7 +6,7 @@ title: sqlui-native
 
 ## Windows
 
-- %download-link-windows%
+- %download-link-windows-x64-exe%
 - Open the `.exe` file
 - Click on `More info`
 - Then choose `Run anyway`
@@ -19,7 +19,7 @@ title: sqlui-native
 
 ## Mac
 
-- %download-link-mac%
+- %download-link-mac-arm64%
 - Open the `.dmg` file
 - Drag the binary to Application file
 - Open the app once in the Applications folder

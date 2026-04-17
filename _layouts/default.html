@@ -72,16 +72,15 @@
 
     <script>
       (async () => {
-        // Tauri bundle naming: sqlui-native_VERSION_arch.ext (underscore separator)
-        // Exception: RPM uses sqlui-native-VERSION-1.arch.rpm (dash separator)
+        // Electron builder naming: sqlui-native-ARCH.ext (no version in filename)
         const DOWNLOADS_CONFIG = [
-          { id: "download-link-mac-arm64", filename: "sqlui-native_{{v}}_aarch64.dmg", name: "macOS / OSX (Apple Silicon M-Series)" },
-          { id: "download-link-mac-x64", filename: "sqlui-native_{{v}}_x64.dmg", name: "macOS / OSX (Intel x64)" },
-          { id: "download-link-windows-x64-exe", filename: "sqlui-native_{{v}}_x64-setup.exe", name: "Windows 10/11 (x64 Installer)" },
-          { id: "download-link-windows-x64-msi", filename: "sqlui-native_{{v}}_x64_en-US.msi", name: "Windows 10/11 (x64 MSI)" },
-          { id: "download-link-ubuntu", filename: "sqlui-native_{{v}}_amd64.deb", name: "Linux Mint / Ubuntu / Debian" },
-          { id: "download-link-redhat", filename: "sqlui-native-{{v}}-1.x86_64.rpm", name: "Linux Redhat / CentOS / Fedora" },
-          { id: "download-link-appimage", filename: "sqlui-native_{{v}}_amd64.AppImage", name: "Linux Other Distro" },
+          { id: "download-link-mac-arm64", filename: "sqlui-native-arm64.dmg", name: "macOS / OSX (Apple Silicon M-Series)" },
+          { id: "download-link-mac-x64", filename: "sqlui-native-x64.dmg", name: "macOS / OSX (Intel x64)" },
+          { id: "download-link-windows-x64-exe", filename: "sqlui-native-x64.exe", name: "Windows 10/11 (x64 Installer)" },
+          { id: "download-link-windows-arm64-exe", filename: "sqlui-native-arm64.exe", name: "Windows 10/11 (ARM64 Installer)" },
+          { id: "download-link-ubuntu", filename: "sqlui-native.deb", name: "Linux Mint / Ubuntu / Debian" },
+          { id: "download-link-redhat", filename: "sqlui-native.rpm", name: "Linux Redhat / CentOS / Fedora" },
+          { id: "download-link-appimage", filename: "sqlui-native.AppImage", name: "Linux Other Distro" },
         ].map((item) => {
           const extension = item.filename.split(".").pop();
           return { ...item, label: `${item.name} (<b>.${extension}</b>)` };
@@ -101,9 +100,8 @@
 
           container.innerHTML +=
             DOWNLOADS_CONFIG.map((cfg) => {
-              const file = cfg.filename.replace(/\{\{v\}\}/g, version.replace(/^v/, ""));
               return `
-            <a id="${cfg.id}" href="${baseUrl}/${file}" class="btn">
+            <a id="${cfg.id}" href="${baseUrl}/${cfg.filename}" class="btn">
               <i class="fas fa-download" style="margin-right: 5px;"></i> ${cfg.label}
             </a>`;
             }).join("") +
@@ -114,9 +112,8 @@
             if (!li.innerText.includes("%")) return;
             const matchedCfg = DOWNLOADS_CONFIG.find((cfg) => li.innerText.includes(cfg.id));
             if (matchedCfg) {
-              const file = matchedCfg.filename.replace(/\{\{v\}\}/g, version.replace(/^v/, ""));
               const cleanLabel = matchedCfg.label.replace(/<\/?[^>]+(>|$)/g, "");
-              li.innerHTML = `<a href="${baseUrl}/${file}">${cleanLabel}</a>`;
+              li.innerHTML = `<a href="${baseUrl}/${matchedCfg.filename}">${cleanLabel}</a>`;
             }
           });
         } catch (err) {
