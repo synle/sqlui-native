@@ -1,5 +1,5 @@
 import { describe, test, expect, vi, beforeEach, afterAll } from "vitest";
-import Database from "better-sqlite3";
+import { DatabaseSync } from "node:sqlite";
 import path from "node:path";
 
 // Mock electron so the fallback path is used
@@ -22,7 +22,7 @@ function uniqueName(prefix = "test") {
 import { PersistentStorageSqlite } from "src/common/PersistentStorageSqlite";
 
 // Use an in-memory database for all tests
-const memDb = new Database(":memory:");
+const memDb = new DatabaseSync(":memory:");
 PersistentStorageSqlite.setDb(memDb);
 
 afterAll(() => {

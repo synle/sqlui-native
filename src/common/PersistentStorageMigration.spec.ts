@@ -1,5 +1,5 @@
 import { describe, test, expect, vi, beforeEach, afterEach } from "vitest";
-import Database from "better-sqlite3";
+import { DatabaseSync } from "node:sqlite";
 
 // Shared state must be created via vi.hoisted so it's available inside hoisted vi.mock factories
 const { mockFiles, mockDirs, renamedFiles, norm } = vi.hoisted(() => {
@@ -106,13 +106,13 @@ import {
 } from "src/common/PersistentStorageMigration";
 
 // Use in-memory database for tests
-let memDb: InstanceType<typeof Database>;
+let memDb: DatabaseSync;
 
 beforeEach(() => {
   mockFiles.clear();
   mockDirs.clear();
   renamedFiles.length = 0;
-  memDb = new Database(":memory:");
+  memDb = new DatabaseSync(":memory:");
   PersistentStorageSqlite.setDb(memDb);
 });
 
