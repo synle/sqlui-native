@@ -25,8 +25,12 @@ describe("Electron packaging safeguards", () => {
       expect(config).not.toMatch(/["']multer["']/);
     });
 
+    test("should NOT externalize better-sqlite3 (replaced by node:sqlite)", () => {
+      // node:sqlite is built into Node.js — no native module to externalize
+      expect(config).not.toContain("better-sqlite3");
+    });
+
     test("should externalize native modules that cannot be bundled", () => {
-      expect(config).toContain("better-sqlite3");
       expect(config).toContain("electron");
     });
   });
