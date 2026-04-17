@@ -13,7 +13,7 @@ process.on("unhandledRejection", (reason) => {
   console.error("Unhandled Rejection:", reason);
 });
 
-/** Express application instance for the mocked development server. */
+/** Express application instance for the sqlui-server. */
 export const app = express();
 
 const upload = multer({ dest: "./upload" });
@@ -21,17 +21,17 @@ const upload = multer({ dest: "./upload" });
 app.use(bodyParser.urlencoded({ extended: false, limit: "50mb" })); // parse application/x-www-form-urlencoded
 app.use(bodyParser.json({ limit: "50mb" })); // parse application/json
 
-// strictly used for the mocked server to upload and read the content of the files
+// file upload endpoint used by the server to read uploaded file content
 app.post("/api/file", upload.single("file"), async (req, res) => {
   try {
     //@ts-ignore
     res.status(200).send(fs.readFileSync(req.file.path, { encoding: "utf-8" }));
   } catch (err) {
-    console.error("mocked-server.ts:status", err);
+    console.error("server.ts:status", err);
     res.status(400).send("Cannot read the file");
   }
 });
 setUpDataEndpoints(app);
 
-/** Port number the mocked server listens on. */
+/** Port number the sqlui-server listens on. */
 export const port = 3001;

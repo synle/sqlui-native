@@ -40,7 +40,7 @@ async function _fetch<T>(input: RequestInfo, initOptions?: RequestInit) {
 
 /**
  * API client for communicating with the backend via HTTP requests.
- * Used in both Electron IPC and mocked server modes.
+ * Used in both Electron IPC and sqlui-server modes.
  */
 export class ProxyApi {
   /** Fetches server configuration settings. */

@@ -153,7 +153,7 @@ export function getEndpointHandlers() {
 
 /**
  * Registers all API endpoint handlers for connections, queries, sessions, folders, and data snapshots.
- * Works in both Express (mocked server) and Electron IPC modes.
+ * Works in both Express (sqlui-server) and Electron IPC modes.
  * @param anExpressAppContext - Optional Express app; if provided, routes are registered as HTTP endpoints.
  */
 export function setUpDataEndpoints(anExpressAppContext?: Express) {
