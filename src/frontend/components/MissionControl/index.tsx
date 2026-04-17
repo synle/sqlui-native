@@ -1169,41 +1169,18 @@ export default function MissionControl() {
       .then((r) => r.json())
       .then((r) => r.tag_name);
 
-    const isUpToDate = newVersion === appPackage.version;
-    const versionForUrl = newVersion.replace(/^v/, "");
-    const baseDownloadUrl = `https://github.com/synle/sqlui-native/releases/download/${newVersion}/sqlui-native`;
-    const releasePageUrl = `https://github.com/synle/sqlui-native/releases/tag/${newVersion}`;
-
-    /** Returns platform-specific download links with the recommended one first based on OS and architecture. */
-    const getDownloadLinks = (): { label: string; url: string; recommended: boolean }[] => {
-      const platform = window?.process?.platform;
-      const arch = window?.process?.arch || "";
-
-      if (platform === "darwin") {
-        const isArm = arch === "arm64";
-        return [
-          { label: "macOS (Apple Silicon)", url: `${baseDownloadUrl}-${newVersion}-arm64.dmg`, recommended: isArm },
-          { label: "macOS (Intel x64)", url: `${baseDownloadUrl}-${newVersion}-x64.dmg`, recommended: !isArm },
-        ];
-      }
-
-      if (platform === "win32") {
-        const isArm = arch === "arm64";
-        return [
-          { label: "Windows (x64)", url: `${baseDownloadUrl}-${newVersion}-x64.exe`, recommended: !isArm },
-          { label: "Windows (ARM64)", url: `${baseDownloadUrl}-${newVersion}-arm64.exe`, recommended: isArm },
-        ];
-      }
-
-      // Linux or unknown — no architecture detection, show all
-      return [
-        { label: "Linux (.deb)", url: `${baseDownloadUrl}-${newVersion}.deb`, recommended: false },
-        { label: "Linux (.rpm)", url: `${baseDownloadUrl}-${newVersion}.rpm`, recommended: false },
-        { label: "Linux (.AppImage)", url: `${baseDownloadUrl}-${newVersion}.AppImage`, recommended: false },
-      ];
+    /** Compares two semver strings (e.g. "1.69.1" vs "1.70.0"). Returns true if local >= remote. */
+    const isVersionUpToDate = (local: string, remote: string): boolean => {
+      const parse = (v: string) => v.replace(/^v/, "").split(".").map(Number);
+      const [lMajor, lMinor = 0, lPatch = 0] = parse(local);
+      const [rMajor, rMinor = 0, rPatch = 0] = parse(remote);
+      if (lMajor !== rMajor) return lMajor > rMajor;
+      if (lMinor !== rMinor) return lMinor > rMinor;
+      return lPatch >= rPatch;
     };
 
-    const downloadLinks = getDownloadLinks();
+    const isUpToDate = isVersionUpToDate(appPackage.version, newVersion);
+    const releasePageUrl = `https://github.com/synle/sqlui-native/releases/tag/${newVersion}`;
 
     const buildLabel =
       __BUILD_CHANNEL__ === "production" ? "Release" : `${__BUILD_CHANNEL__ === "beta" ? "Beta" : "Dev"} (${__BUILD_COMMIT__})`;
@@ -1239,25 +1216,12 @@ export default function MissionControl() {
         {!isUpToDate && (
           <>
             <Divider sx={{ my: 2 }} />
-            <Box sx={{ fontWeight: "bold", mb: 1, opacity: 0.7 }}>Download latest version</Box>
-            <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}>
-              {downloadLinks.map((link) => (
-                <Link
-                  key={link.label}
-                  onClick={() => selectCommand({ event: "clientEvent/openExternalUrl", data: link.url })}
-                  sx={{ cursor: "pointer", fontWeight: link.recommended ? "bold" : "normal" }}
-                >
-                  {link.label}
-                  {link.recommended ? " (Recommended)" : ""}
-                </Link>
-              ))}
-              <Link
-                onClick={() => selectCommand({ event: "clientEvent/openExternalUrl", data: releasePageUrl })}
-                sx={{ cursor: "pointer" }}
-              >
-                All Downloads
-              </Link>
-            </Box>
+            <Link
+              onClick={() => selectCommand({ event: "clientEvent/openExternalUrl", data: releasePageUrl })}
+              sx={{ cursor: "pointer" }}
+            >
+              Download latest version
+            </Link>
           </>
         )}
       </>
