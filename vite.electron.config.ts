@@ -2,19 +2,15 @@ import { defineConfig } from "vite";
 import path from "node:path";
 
 /**
- * Packages that must remain external in the Electron main process bundle.
- * Includes native bindings (cannot be bundled) and server dependencies
- * (Express, body-parser, multer) used by the embedded sqlui-server.
+ * Packages with native bindings that Vite cannot bundle and must remain external.
+ * Pure-JS dependencies (express, body-parser, multer, etc.) are bundled into app.js.
  */
 const nativeExternals = [
   "electron",
   "better-sqlite3",
-  "body-parser",
   "cassandra-driver",
-  "express",
   "monaco-editor",
   "mongodb",
-  "multer",
   "mustache",
   "mysql2",
   "pg",

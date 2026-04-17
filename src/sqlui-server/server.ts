@@ -1,6 +1,8 @@
 import bodyParser from "body-parser";
 import express from "express";
 import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
 import multer from "multer";
 import { setUpDataEndpoints } from "src/common/Endpoints";
 
@@ -16,7 +18,7 @@ process.on("unhandledRejection", (reason) => {
 /** Express application instance for the sqlui-server. */
 export const app = express();
 
-const upload = multer({ dest: "./upload" });
+const upload = multer({ dest: path.join(os.tmpdir(), "sqlui-native-upload") });
 
 app.use(bodyParser.urlencoded({ extended: false, limit: "50mb" })); // parse application/x-www-form-urlencoded
 app.use(bodyParser.json({ limit: "50mb" })); // parse application/json
