@@ -1,5 +1,6 @@
-/** Electron platform implementation using IPC renderer.
+/** Electron platform implementation using IPC for shell integration.
  * All window.requireElectron / window.ipcRenderer access is encapsulated here.
+ * API calls use standard HTTP fetch (no IPC polyfill needed — the embedded server handles them).
  */
 import type { PlatformBridge } from "src/frontend/platform/types";
 
@@ -12,7 +13,7 @@ function electronRequire(module: string): any {
 let ipcRenderer: any;
 let shell: any;
 
-/** Initializes Electron IPC and polyfills window.fetch for /api/* routes. */
+/** Initializes Electron IPC modules for shell integration (menus, commands, file access). */
 export function initElectronPlatform(): void {
   try {
     const electron = electronRequire("electron");
@@ -21,29 +22,6 @@ export function initElectronPlatform(): void {
 
     // Store ipcRenderer on window for ElectronEventListener backward compat
     (window as any).ipcRenderer = ipcRenderer;
-
-    // Polyfill fetch: route /api/* through IPC instead of HTTP
-    const origFetch = window.fetch;
-    window.fetch = ((url: string, options: any) => {
-      if (typeof url !== "string" || url.indexOf("/api") !== 0) {
-        return origFetch(url, options);
-      }
-      return new Promise((resolve) => {
-        const requestId = `fetch.requestId.${Date.now()}.${Math.floor(Math.random() * 10000000000000000)}`;
-        ipcRenderer.once(requestId, (_event: any, data: any) => {
-          const { ok, text, status, headers } = data;
-          let returnedData = text;
-          try {
-            returnedData = JSON.parse(text);
-          } catch (err) {
-            console.error("electron.ts:parse", err);
-          }
-          console.log(">> Network", ok ? "Success" : "Error:", status, options?.method || "get", url, returnedData);
-          resolve({ ok, text: () => text, headers } as any);
-        });
-        ipcRenderer.send("sqluiNativeEvent/fetch", { requestId, url, options });
-      });
-    }) as typeof window.fetch;
   } catch (err) {
     console.error("platform/electron.ts:initElectronPlatform", err);
   }
