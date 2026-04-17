@@ -194,14 +194,19 @@ export function useExecute() {
 }
 
 /**
- * Invalidates relevant query caches after executing DDL or data-modifying statements.
- * @param _query - The executed query to check for DDL/DML keywords.
- * @param _queryClient - The React Query client used to invalidate caches.
+ * Invalidates the frontend schema cache for the queried database in the background
+ * after a successful query execution. This is lightweight — it only invalidates
+ * React Query caches (triggering lazy refetches), not backend disk caches or reconnections.
+ * @param query - The executed query with connectionId and databaseId.
+ * @param queryClient - The React Query client used to invalidate caches.
  */
-export function refreshAfterExecution(_query: SqluiFrontend.ConnectionQuery, _queryClient: QueryClient) {
-  // No-op: DDL detection previously triggered automatic cache invalidation
-  // which caused expensive reconnection cascades on slow connections.
-  // Users should manually refresh/reconnect to pick up schema changes.
+export function refreshAfterExecution(query: SqluiFrontend.ConnectionQuery, queryClient: QueryClient) {
+  if (!query?.connectionId || !query?.databaseId) return;
+  const { connectionId, databaseId } = query;
+  // Fire-and-forget: invalidate schema caches so the tree picks up changes on next render
+  queryClient.invalidateQueries({ queryKey: queryKeys.tables.list(connectionId, databaseId) });
+  queryClient.invalidateQueries({ queryKey: queryKeys.columns.allForDatabase(connectionId, databaseId) });
+  queryClient.invalidateQueries({ queryKey: queryKeys.schema.cached(connectionId, databaseId) });
 }
 
 /**
