@@ -70,16 +70,16 @@ const QUERY_KEY_COMMAND_PALETTE = "commandPalette";
 let _commands: Command[] = [];
 let _refreshingConnectionIds: Set<string> = new Set();
 
-/**
- * Hook for managing the command queue used by MissionControl.
- * Provides the current command, a method to dispatch new commands, and a method to dismiss them.
- * @returns An object with command, selectCommand, and dismissCommand.
- */
 /** Returns whether a connection is currently being refreshed. */
 export function isConnectionRefreshing(connectionId?: string): boolean {
   return connectionId ? _refreshingConnectionIds.has(connectionId) : false;
 }
 
+/**
+ * Hook for managing the command queue used by MissionControl.
+ * Provides the current command, a method to dispatch new commands, and a method to dismiss them.
+ * @returns An object with command, selectCommand, and dismissCommand.
+ */
 export function useCommands() {
   const queryClient = useQueryClient();
   const { data: commands = [] } = useQuery({ queryKey: [QUERY_KEY_COMMAND_PALETTE], queryFn: () => _commands });
@@ -805,11 +805,9 @@ export default function MissionControl() {
     const nonManagedConnections = connections
       .filter((c) => !isDialectSupportManagedMetadata(c.dialect))
       .sort((a, b) => {
-        // Inactive (offline/undefined) first, then online, then loading
         const statusOrder = (s?: string) => (s === "online" ? 1 : 0);
         const statusDiff = statusOrder(a.status) - statusOrder(b.status);
         if (statusDiff !== 0) return statusDiff;
-        // Oldest first by createdAt, then updatedAt
         return (a.createdAt || 0) - (b.createdAt || 0) || (a.updatedAt || 0) - (b.updatedAt || 0);
       });
     for (const c of nonManagedConnections) {
