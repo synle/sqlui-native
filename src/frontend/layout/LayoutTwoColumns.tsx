@@ -73,7 +73,9 @@ export default function LayoutTwoColumns(props: LayoutTwoColumnsProps): React.JS
         </Section>
         <Bar size={5} className="Resizer Resizer--Horizontal" />
         <Section>
-          <Box className="LayoutTwoColumns__RightPane" sx={{ paddingBottom: 4 }}>{children[1]}</Box>
+          <Box className="LayoutTwoColumns__RightPane" sx={{ paddingBottom: 4 }}>
+            {children[1]}
+          </Box>
         </Section>
       </Container>
     );
@@ -84,7 +86,9 @@ export default function LayoutTwoColumns(props: LayoutTwoColumnsProps): React.JS
       <IconButton size="small" sx={toggleButtonStyle} onClick={() => setLeftPaneExpanded(true)}>
         <KeyboardArrowRightIcon fontSize="small" />
       </IconButton>
-      <Box className="LayoutTwoColumns__RightPane" sx={{ paddingBottom: 4 }}>{children[1]}</Box>
+      <Box className="LayoutTwoColumns__RightPane" sx={{ paddingBottom: 4 }}>
+        {children[1]}
+      </Box>
     </>
   );
 }
