@@ -11,8 +11,8 @@ SQLUI Native is a cross-platform Electron desktop SQL/NoSQL database client and 
 ```bash
 npm install             # Install dependencies
 npm start               # Run in Electron (dev mode)
-npm run dev             # Run mocked server + Vite dev server at http://localhost:3000
-npm run build           # Build frontend (Vite) + Electron + mocked server
+npm run dev             # Run sqlui-server + Vite dev server at http://localhost:3000
+npm run build           # Build frontend (Vite) + Electron + sqlui-server
 npm test                # Run Vitest tests (watch mode)
 npm run test-ci         # Run Vitest tests (CI, no watch)
 npm run lint            # ESLint with auto-fix
@@ -42,7 +42,7 @@ npx vitest run --config vitest.integration.config.ts src/common/adapters/Relatio
 
 ### Two Runtime Modes
 
-The app runs in **Electron mode** (`npm start`) or **mocked server mode** (`npm run dev`). Both share the same backend code in `src/common/`. In Electron mode, the renderer communicates with the main process via IPC. In mocked server mode, an Express server on port 3001 serves the same endpoints over HTTP.
+The app runs in **Electron mode** (`npm start`) or **browser mode** (`npm run dev`). Both share the same backend code in `src/common/`. In both modes, the frontend communicates with the backend via HTTP through the sqlui-server (Express). In Electron mode, the server is embedded in the main process on a dynamic port. In browser mode, the server runs standalone on port 3001.
 
 ### Frontend/Backend Module Boundary
 
@@ -88,7 +88,7 @@ All persisted models (`Session`, `ConnectionProps`, `ConnectionQuery`, `FolderIt
 - **`src/frontend/platform/`** - Platform abstraction layer (Electron vs browser). Auto-detects environment at import time.
 - **`src/electron/`** - Electron main process (window management, IPC handlers, menus)
 - **`src/common/`** - Shared backend: database adapters, API endpoint handlers, persistent storage
-- **`src/mocked-server/`** - Express server wrapping the shared backend for browser-based dev
+- **`src/sqlui-server/`** - Express server wrapping the shared backend (embedded in Electron, standalone in dev)
 - **`typings/index.ts`** - Central type definitions (`SqluiCore`, `SqluiFrontend`, `SqlAction`, `SqluiEnums`)
 
 ### Import Paths
@@ -215,7 +215,7 @@ Key functions: `getCachedDatabases`/`setCachedDatabases`, `getCachedTables`/`set
 
 ### Endpoint Pattern
 
-`src/common/Endpoints.ts` defines API handlers that work in both modes. In Electron, handlers are registered via IPC. In mocked server mode, they're mounted as Express routes. Session ID and Window ID are passed in request headers.
+`src/common/Endpoints.ts` defines API handlers mounted as Express routes via `setUpDataEndpoints(app)`. All modes use HTTP. Session ID and Window ID are passed in request headers.
 
 ### Session Ping / Keep-Alive
 
@@ -451,14 +451,14 @@ After any build-related or Vite config change, run the affected build task to ve
 
 - Frontend changes (`vite.frontend.config.ts`, `index.html`, `src/frontend/`): `npm run build`
 - Electron changes (`vite.electron.config.ts`, `src/electron/`): `npm run build-electron`
-- Mocked server changes (`vite.mocked-server.config.ts`, `src/mocked-server/`): `npm run build-mocked-server`
+- Server changes (`vite.sqlui-server.config.ts`, `src/sqlui-server/`): `npm run build-server`
 - Shared backend changes (`src/common/`): run all three builds
 
 ## Build Configuration
 
-- React app: Vite (`vite.frontend.config.ts`) - dev server on port 3000 with proxy to mocked server on port 3001
+- React app: Vite (`vite.frontend.config.ts`) - dev server on port 3000 with proxy to sqlui-server on port 3001
 - Electron main process: Vite SSR (`vite.electron.config.ts`) - outputs `build/main.js`
-- Mocked server: Vite SSR (`vite.mocked-server.config.ts`) - outputs `build/mocked-server.js`
+- Server: Vite SSR (`vite.sqlui-server.config.ts`) - outputs `build/sqlui-server.js`
 - Prettier: 140 char width, single quotes, trailing commas, 2-space indent
 - NODE_VERSION: 24 (use `fnm` to switch: `fnm use 24`)
 - npm
