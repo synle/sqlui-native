@@ -1,6 +1,7 @@
 import React from "react";
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
+import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
 import { Bar, Container, Section } from "src/frontend/components/Resizer";
 import { useCallback, useEffect, useState } from "react";
@@ -72,7 +73,7 @@ export default function LayoutTwoColumns(props: LayoutTwoColumnsProps): React.JS
         </Section>
         <Bar size={5} className="Resizer Resizer--Horizontal" />
         <Section>
-          <div className="LayoutTwoColumns__RightPane">{children[1]}</div>
+          <Box className="LayoutTwoColumns__RightPane" sx={{ paddingBottom: 4 }}>{children[1]}</Box>
         </Section>
       </Container>
     );
@@ -83,7 +84,7 @@ export default function LayoutTwoColumns(props: LayoutTwoColumnsProps): React.JS
       <IconButton size="small" sx={toggleButtonStyle} onClick={() => setLeftPaneExpanded(true)}>
         <KeyboardArrowRightIcon fontSize="small" />
       </IconButton>
-      <div className="LayoutTwoColumns__RightPane">{children[1]}</div>
+      <Box className="LayoutTwoColumns__RightPane" sx={{ paddingBottom: 4 }}>{children[1]}</Box>
     </>
   );
 }
