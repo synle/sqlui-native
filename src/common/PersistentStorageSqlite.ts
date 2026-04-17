@@ -1,7 +1,6 @@
 /** SQLite-backed persistent storage — stores all data in a single database file. */
 
-import Database from "better-sqlite3";
-import type { Database as DatabaseType } from "better-sqlite3";
+import { DatabaseSync } from "node:sqlite";
 import fs from "node:fs";
 import path from "node:path";
 import type { IPersistentStorage, StorageEntry } from "src/common/IPersistentStorage";
@@ -30,7 +29,7 @@ export class PersistentStorageSqlite<T extends StorageEntry> implements IPersist
   storageLocation: string;
 
   /** Shared database connection singleton. */
-  private static db: DatabaseType | null = null;
+  private static db: DatabaseSync | null = null;
 
   /** Absolute path to the SQLite database file. */
   private static dbPath: string;
@@ -66,8 +65,8 @@ export class PersistentStorageSqlite<T extends StorageEntry> implements IPersist
     PersistentStorageSqlite.dbPath = path.join(storageDir, DB_FILE_NAME);
     fs.mkdirSync(storageDir, { recursive: true });
     writeDebugLog(`PersistentStorageSqlite:ensureDb - opening ${PersistentStorageSqlite.dbPath}`);
-    PersistentStorageSqlite.db = new Database(PersistentStorageSqlite.dbPath);
-    PersistentStorageSqlite.db.pragma("journal_mode = WAL");
+    PersistentStorageSqlite.db = new DatabaseSync(PersistentStorageSqlite.dbPath);
+    PersistentStorageSqlite.db.exec("PRAGMA journal_mode = WAL");
   }
 
   /** Creates the table for this instance if it doesn't already exist. */
@@ -83,7 +82,7 @@ export class PersistentStorageSqlite<T extends StorageEntry> implements IPersist
   }
 
   /** Returns the shared database connection, throwing if not initialized. */
-  private static getDb(): DatabaseType {
+  private static getDb(): DatabaseSync {
     if (!PersistentStorageSqlite.db) {
       throw new Error("PersistentStorageSqlite: database not initialized");
     }
@@ -137,15 +136,19 @@ export class PersistentStorageSqlite<T extends StorageEntry> implements IPersist
   set(entries: T[]): T[] {
     const db = PersistentStorageSqlite.getDb();
 
-    const tx = db.transaction(() => {
+    db.exec("BEGIN");
+    try {
       db.prepare(`DELETE FROM "${this.table}"`).run();
       const insert = db.prepare(`INSERT INTO "${this.table}" (id, data) VALUES (?, ?)`);
       for (const entry of entries) {
         const { id, ...data } = entry as any;
         insert.run(id, JSON.stringify(data));
       }
-    });
-    tx();
+      db.exec("COMMIT");
+    } catch (err) {
+      db.exec("ROLLBACK");
+      throw err;
+    }
 
     return entries;
   }
@@ -199,7 +202,7 @@ export class PersistentStorageSqlite<T extends StorageEntry> implements IPersist
    * Overrides the database connection with the provided instance. Used for testing with `:memory:` databases.
    * @param db - The database instance to use.
    */
-  static setDb(db: DatabaseType): void {
+  static setDb(db: DatabaseSync): void {
     PersistentStorageSqlite.db = db;
     PersistentStorageSqlite.ensuredTables.clear();
   }
