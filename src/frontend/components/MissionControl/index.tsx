@@ -1228,7 +1228,7 @@ export default function MissionControl() {
           <tbody>
             {infoRows.map(([label, value]) => (
               <tr key={label}>
-                <Box component="td" sx={{ fontWeight: "bold", pr: 2, whiteSpace: "nowrap", opacity: 0.7, width: 1 }}>
+                <Box component="td" sx={{ fontWeight: "bold", pr: 2, whiteSpace: "nowrap", opacity: 0.7 }}>
                   {label}
                 </Box>
                 <td>{value}</td>
@@ -1299,7 +1299,7 @@ export default function MissionControl() {
           <Box component="table" sx={{ width: "100%", borderCollapse: "collapse", "& td": { py: 0.5, verticalAlign: "top" } }}>
             <tbody>
               <tr>
-                <Box component="td" sx={{ fontWeight: "bold", pr: 2, whiteSpace: "nowrap", opacity: 0.7, width: 1 }}>
+                <Box component="td" sx={{ fontWeight: "bold", pr: 2, whiteSpace: "nowrap", opacity: 0.7 }}>
                   Data
                 </Box>
                 <td>
@@ -1309,7 +1309,7 @@ export default function MissionControl() {
                 </td>
               </tr>
               <tr>
-                <Box component="td" sx={{ fontWeight: "bold", pr: 2, whiteSpace: "nowrap", opacity: 0.7, width: 1 }}>
+                <Box component="td" sx={{ fontWeight: "bold", pr: 2, whiteSpace: "nowrap", opacity: 0.7 }}>
                   Home
                 </Box>
                 <td>
