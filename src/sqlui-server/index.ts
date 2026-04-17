@@ -1,7 +1,9 @@
 /** Entry point for the sqlui-server. Starts Express on localhost with graceful shutdown. */
 import { execSync } from "node:child_process";
 import net from "node:net";
-import { app, port } from "src/sqlui-server/server";
+import { app, initializeEndpoints, port } from "src/sqlui-server/server";
+
+initializeEndpoints();
 
 /** Host to bind to — loopback only, no firewall prompt. */
 const HOST = "127.0.0.1";
