@@ -77,37 +77,24 @@ describe("Electron packaging safeguards", () => {
     });
   });
 
-  describe("postbuild.js copies build/ to root", () => {
-    const postbuild = readFile("scripts/postbuild.js");
+  describe("prebuild.js symlinks node_modules into build/", () => {
+    const prebuild = readFile("scripts/prebuild.js");
 
-    test("should copy build directory to project root for electron-builder", () => {
-      // electron-builder packages from the project root and respects .gitignore.
-      // build/ is gitignored, so postbuild must copy its contents to root
-      // (index.html, app.js, assets/, etc.) before packaging.
-      expect(postbuild).toContain('cpSync("build", ".")');
+    test("should symlink node_modules into build/ for electron-builder", () => {
+      // electron-builder uses directories.app: "build" and needs node_modules
+      // there for external dependencies (native modules)
+      expect(prebuild).toContain("node_modules");
+      expect(prebuild).toContain("symlinkSync");
     });
   });
 
-  describe(".gitignore includes build artifacts", () => {
-    const gitignore = readFile(".gitignore");
-
-    test("should ignore app.js at project root", () => {
-      // app.js is copied from build/ to root by postbuild.js for packaging
-      expect(gitignore).toContain("app.js");
-    });
-
-    test("should ignore build/ directory", () => {
-      expect(gitignore).toContain("build/");
-    });
-  });
-
-  describe("package.json packaging scripts", () => {
+  describe("package.json electron-builder config", () => {
     const pkg = JSON.parse(readFile("package.json"));
 
-    test("should have predist that copies build to root", () => {
-      // Without this, electron-builder won't find app.js, index.html,
-      // or assets/ because build/ is gitignored
-      expect(pkg.scripts.predist).toContain("postbuild.js");
+    test("should use build/ as the app directory", () => {
+      // electron-builder packages from build/ directly instead of project root,
+      // avoiding .gitignore issues and root-level build artifact pollution
+      expect(pkg.build.directories.app).toBe("build");
     });
 
     test("should exclude sqlui-server.js from electron-builder files", () => {
