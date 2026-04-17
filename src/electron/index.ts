@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, Menu, nativeTheme, shell } from "electron";
+import { app, BrowserWindow, ipcMain, Menu, nativeTheme, session, shell } from "electron";
 import express from "express";
 import type { AddressInfo } from "node:net";
 import path from "node:path";
@@ -87,8 +87,12 @@ async function createWindow() {
     writeDebugLog("app:window - unresponsive");
   });
 
-  // load the app from the server URL
-  mainWindow.loadURL(serverBaseUrl);
+  // load the app: in dev mode use the Vite URL, otherwise load from file
+  if (isDevMode) {
+    mainWindow.loadURL(serverBaseUrl);
+  } else {
+    mainWindow.loadFile(path.join(__dirname, "index.html"));
+  }
 
   // Open the DevTools.
   if (process?.env?.ENV_TYPE === "electron-dev") {
@@ -324,16 +328,6 @@ function startEmbeddedServer(): Promise<string> {
   return new Promise((resolve, reject) => {
     initializeEndpoints();
 
-    // serve the built frontend static files
-    expressApp.use(express.static(__dirname));
-
-    // SPA catch-all: serve index.html for any non-API route
-    expressApp.get("*", (req, res) => {
-      if (!req.path.startsWith("/api")) {
-        res.sendFile(path.join(__dirname, "index.html"));
-      }
-    });
-
     httpServer = expressApp.listen(0, "127.0.0.1", () => {
       const addr = httpServer!.address() as AddressInfo;
       const url = `http://127.0.0.1:${addr.port}`;
@@ -375,6 +369,13 @@ app.whenReady().then(async () => {
     // Production: embed the Express server
     writeDebugLog("app:ready - starting embedded server");
     serverBaseUrl = await startEmbeddedServer();
+
+    // Redirect file:///api/* requests to the embedded HTTP server.
+    // This allows the renderer (loaded from file://) to use relative /api/ paths.
+    session.defaultSession.webRequest.onBeforeRequest({ urls: ["file:///api/*"] }, (details, callback) => {
+      const url = new URL(details.url);
+      callback({ redirectURL: `${serverBaseUrl}${url.pathname}${url.search}` });
+    });
   }
 
   writeDebugLog("app:ready - creating window");
