@@ -2,11 +2,43 @@ import { describe, test, expect, vi, beforeEach, afterEach } from "vitest";
 import Database from "better-sqlite3";
 
 // Shared state must be created via vi.hoisted so it's available inside hoisted vi.mock factories
-const { mockFiles, mockDirs, renamedFiles } = vi.hoisted(() => ({
-  mockFiles: new Map<string, string>(),
-  mockDirs: new Set<string>(),
-  renamedFiles: [] as Array<{ from: string; to: string }>,
-}));
+const { mockFiles, mockDirs, renamedFiles, norm } = vi.hoisted(() => {
+  /** Normalizes path separators to forward slashes for consistent mock lookups on Windows. */
+  const norm = (p: string) => p.replace(/\\/g, "/");
+
+  /** A Map that normalizes path keys so backslash and forward-slash paths match. */
+  class NormMap extends Map<string, string> {
+    override get(key: string) {
+      return super.get(norm(key));
+    }
+    override set(key: string, value: string) {
+      return super.set(norm(key), value);
+    }
+    override has(key: string) {
+      return super.has(norm(key));
+    }
+    override delete(key: string) {
+      return super.delete(norm(key));
+    }
+  }
+
+  /** A Set that normalizes path entries. */
+  class NormSet extends Set<string> {
+    override add(value: string) {
+      return super.add(norm(value));
+    }
+    override has(value: string) {
+      return super.has(norm(value));
+    }
+  }
+
+  return {
+    mockFiles: new NormMap(),
+    mockDirs: new NormSet(),
+    renamedFiles: [] as Array<{ from: string; to: string }>,
+    norm,
+  };
+});
 
 // Mock electron so the fallback path is used
 vi.mock("electron", () => ({
@@ -32,7 +64,7 @@ vi.mock("node:fs", () => ({
       mockFiles.set(filePath, data);
     }),
     readdirSync: vi.fn((dir: string) => {
-      const prefix = dir.endsWith("/") ? dir : dir + "/";
+      const prefix = norm(dir) + "/";
       const results: string[] = [];
       for (const key of mockFiles.keys()) {
         if (key.startsWith(prefix)) {
@@ -46,7 +78,7 @@ vi.mock("node:fs", () => ({
       return results;
     }),
     renameSync: vi.fn((from: string, to: string) => {
-      renamedFiles.push({ from, to });
+      renamedFiles.push({ from: norm(from), to: norm(to) });
       const content = mockFiles.get(from);
       if (content !== undefined) {
         mockFiles.set(to, content);
