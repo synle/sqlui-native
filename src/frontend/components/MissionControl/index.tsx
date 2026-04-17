@@ -1,5 +1,7 @@
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
+import Chip from "@mui/material/Chip";
+import Divider from "@mui/material/Divider";
 import Link from "@mui/material/Link";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
@@ -1203,46 +1205,61 @@ export default function MissionControl() {
 
     const downloadLinks = getDownloadLinks();
 
+    const buildLabel =
+      __BUILD_CHANNEL__ === "production" ? "Release" : `${__BUILD_CHANNEL__ === "beta" ? "Beta" : "Dev"} (${__BUILD_COMMIT__})`;
+    const archLabel = getArchLabel();
+
+    const infoRows: [string, React.ReactNode][] = [
+      ["Version", appPackage.version],
+      ["Latest", newVersion],
+      ["Engine", `${(appPackage as any).engine || "Unknown"}${archLabel ? ` (${archLabel})` : ""}`],
+      ["Build", buildLabel],
+    ];
+
     const contentDom = (
       <>
-        <Box className="FormInput__Row">
-          <strong>{isUpToDate ? "You are on the latest version." : "A new version is available."}</strong>
+        <Chip
+          label={isUpToDate ? "Up to date" : "Update available"}
+          color={isUpToDate ? "success" : "warning"}
+          size="small"
+          sx={{ mb: 2 }}
+        />
+        <Box component="table" sx={{ width: "100%", borderCollapse: "collapse", "& td": { py: 0.5, verticalAlign: "top" } }}>
+          <tbody>
+            {infoRows.map(([label, value]) => (
+              <tr key={label}>
+                <Box component="td" sx={{ fontWeight: "bold", pr: 2, whiteSpace: "nowrap", opacity: 0.7, width: 1 }}>
+                  {label}
+                </Box>
+                <td>{value}</td>
+              </tr>
+            ))}
+          </tbody>
         </Box>
-        <Box className="FormInput__Row">
-          <label>Your version:</label>
-          {appPackage.version}
-        </Box>
-        {(appPackage as any).engine && (
-          <Box className="FormInput__Row">
-            <label>Engine:</label>
-            {(appPackage as any).engine}
-            {getArchLabel() ? ` (${getArchLabel()})` : ""}
-          </Box>
+        {!isUpToDate && (
+          <>
+            <Divider sx={{ my: 2 }} />
+            <Box sx={{ fontWeight: "bold", mb: 1, opacity: 0.7 }}>Download latest version</Box>
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}>
+              {downloadLinks.map((link) => (
+                <Link
+                  key={link.label}
+                  onClick={() => selectCommand({ event: "clientEvent/openExternalUrl", data: link.url })}
+                  sx={{ cursor: "pointer", fontWeight: link.recommended ? "bold" : "normal" }}
+                >
+                  {link.label}
+                  {link.recommended ? " (Recommended)" : ""}
+                </Link>
+              ))}
+              <Link
+                onClick={() => selectCommand({ event: "clientEvent/openExternalUrl", data: releasePageUrl })}
+                sx={{ cursor: "pointer" }}
+              >
+                All Downloads
+              </Link>
+            </Box>
+          </>
         )}
-        <Box className="FormInput__Row">
-          <label>Build:</label>
-          {__BUILD_CHANNEL__ === "production" ? "Release" : `${__BUILD_CHANNEL__ === "beta" ? "Beta" : "Dev"} (${__BUILD_COMMIT__})`}
-        </Box>
-        <Box className="FormInput__Row">
-          <label>Latest version:</label>
-          {newVersion}
-        </Box>
-        <Box className="FormInput__Row" sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
-          <label>Download latest version:</label>
-          {downloadLinks.map((link) => (
-            <Link
-              key={link.label}
-              onClick={() => selectCommand({ event: "clientEvent/openExternalUrl", data: link.url })}
-              sx={{ cursor: "pointer", fontWeight: link.recommended ? "bold" : "normal" }}
-            >
-              {link.label}
-              {link.recommended ? " (Recommended)" : ""}
-            </Link>
-          ))}
-          <Link onClick={() => selectCommand({ event: "clientEvent/openExternalUrl", data: releasePageUrl })} sx={{ cursor: "pointer" }}>
-            All Downloads
-          </Link>
-        </Box>
       </>
     );
 
@@ -1274,16 +1291,34 @@ export default function MissionControl() {
     };
 
     await modal({
-      title: "Check for update",
+      title: "About",
       message: (
-        <Box className="FormInput__Container FormInput__Container__sm">
+        <Box sx={{ minWidth: 320 }}>
           {contentDom}
-          <Box className="FormInput__Row">
-            <label>Data Location:</label>
-            <Link onClick={onRevealDataLocation}>{serverConfigs?.storageDir}</Link>
-          </Box>
-          <Box sx={{ mt: 3 }}>
-            <Link onClick={onGoToHomepage}>synle.github.io/sqlui-native</Link>
+          <Divider sx={{ my: 2 }} />
+          <Box component="table" sx={{ width: "100%", borderCollapse: "collapse", "& td": { py: 0.5, verticalAlign: "top" } }}>
+            <tbody>
+              <tr>
+                <Box component="td" sx={{ fontWeight: "bold", pr: 2, whiteSpace: "nowrap", opacity: 0.7, width: 1 }}>
+                  Data
+                </Box>
+                <td>
+                  <Link onClick={onRevealDataLocation} sx={{ cursor: "pointer", wordBreak: "break-all" }}>
+                    {serverConfigs?.storageDir}
+                  </Link>
+                </td>
+              </tr>
+              <tr>
+                <Box component="td" sx={{ fontWeight: "bold", pr: 2, whiteSpace: "nowrap", opacity: 0.7, width: 1 }}>
+                  Home
+                </Box>
+                <td>
+                  <Link onClick={onGoToHomepage} sx={{ cursor: "pointer" }}>
+                    synle.github.io/sqlui-native
+                  </Link>
+                </td>
+              </tr>
+            </tbody>
           </Box>
         </Box>
       ),
