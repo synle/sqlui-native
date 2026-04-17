@@ -3,6 +3,12 @@ import { render, fireEvent, act } from "@testing-library/react";
 import { createRef } from "react";
 import { vi, describe, test, expect, beforeEach, afterEach } from "vitest";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+
+vi.mock("src/frontend/monacoSetup", () => ({
+  monaco: {},
+  default: {},
+}));
+
 import CodeEditorBox, { DEFAULT_DEBOUNCE_MS, MAX_DEBOUNCE_MS, EditorRef } from "src/frontend/components/CodeEditorBox";
 
 const theme = createTheme();

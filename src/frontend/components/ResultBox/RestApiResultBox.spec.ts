@@ -1,5 +1,11 @@
 // @vitest-environment jsdom
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+
+vi.mock("src/frontend/monacoSetup", () => ({
+  monaco: {},
+  default: {},
+}));
+
 import { formatBytes } from "src/frontend/components/ResultBox/RestApiResultBox";
 
 describe("formatBytes", () => {
