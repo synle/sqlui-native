@@ -173,7 +173,7 @@ export default class SQLiteDataAdapter extends BaseDataAdapter implements IDataA
         return { ok: true, raw };
       } else {
         const result = db.prepare(sql).run();
-        return { ok: true, affectedRows: result.changes };
+        return { ok: true, affectedRows: Number(result.changes) };
       }
     } catch (error) {
       console.error("SQLiteDataAdapter:execute", error);
