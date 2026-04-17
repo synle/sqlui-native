@@ -46,12 +46,12 @@ The app runs in **Electron mode** (`npm start`) or **browser mode** (`npm run de
 
 ### Frontend/Backend Module Boundary
 
-**The frontend bundle (`src/frontend/`) must NEVER import modules that depend on Node.js APIs (`fs`, `path`, `electron`, `better-sqlite3`, etc.).** Vite builds the frontend for the browser — Node.js modules are either stubbed (breaking at runtime) or unbundleable (native addons).
+**The frontend bundle (`src/frontend/`) must NEVER import modules that depend on Node.js APIs (`fs`, `path`, `electron`, `node:sqlite`, etc.).** Vite builds the frontend for the browser — Node.js modules are either stubbed (breaking at runtime) or unbundleable (native addons).
 
 Forbidden imports from frontend-reachable code:
 
 - `PersistentStorage.ts`, `PersistentStorageJsonFile.ts`, `PersistentStorageSqlite.ts`, `PersistentStorageMigration.ts`
-- `electron`, `node:fs`, `node:path`, `better-sqlite3`
+- `electron`, `node:fs`, `node:path`, `node:sqlite`
 - Any module in `src/common/` that transitively imports the above
 
 **Frontend-reachable `src/common/` code** includes `DataScriptFactory.ts`, all adapter `scripts.ts` files, and anything they import (e.g., `renderCodeSnippet.ts`). These run on both frontend and backend — they must be pure (no I/O, no Node.js APIs).
@@ -86,7 +86,7 @@ All persisted models (`Session`, `ConnectionProps`, `ConnectionQuery`, `FolderIt
 
 - **`src/frontend/`** - React 19 UI (MUI v9, React Query, Monaco Editor, React Router v7)
 - **`src/frontend/platform/`** - Platform abstraction layer (Electron vs browser). Auto-detects environment at import time.
-- **`src/electron/`** - Electron main process (window management, IPC handlers, menus)
+- **`src/electron/`** - Electron main process (window management, embedded server, IPC for menus/shell)
 - **`src/common/`** - Shared backend: database adapters, API endpoint handlers, persistent storage
 - **`src/sqlui-server/`** - Express server wrapping the shared backend (embedded in Electron, standalone in dev)
 - **`typings/index.ts`** - Central type definitions (`SqluiCore`, `SqluiFrontend`, `SqlAction`, `SqluiEnums`)
@@ -102,7 +102,7 @@ All database engines implement `IDataAdapter` (authenticate, getDatabases, getTa
 Adapter implementations live in `src/common/adapters/`:
 
 - `RelationalDataAdapter` - Per-dialect adapters using native drivers (no ORM):
-  - `sqlite/` — `better-sqlite3` (synchronous, high-performance)
+  - `sqlite/` — `node:sqlite` (`DatabaseSync`, built-in, no native compilation)
   - `mysql/` — `mysql2/promise`
   - `mariadb/` — extends MySQL adapter (protocol-compatible)
   - `postgres/` — `pg` (node-postgres)
@@ -125,7 +125,7 @@ Connection strings are prefixed with a dialect scheme (`dialect://...`) but the 
 **Adapter Connection Lifecycle:**
 
 - Each adapter manages its own connection(s) as instance state. Connection strategies vary by driver:
-  - **SQLite** (`better-sqlite3`): Single synchronous `Database` instance. All operations are sync wrapped in async.
+  - **SQLite** (`node:sqlite`): Single synchronous `DatabaseSync` instance. All operations are sync wrapped in async.
   - **MySQL/MariaDB** (`mysql2/promise`): Connection pool (`pool.getConnection()`). Database switching via `USE` statement.
   - **PostgreSQL** (`pg`): Map of `pg.Client` instances per database (PG doesn't support `USE` — requires new connection per database).
   - **MSSQL** (`tedious`): Creates new `Connection` per database. Callback-based API wrapped in promises.
@@ -242,7 +242,7 @@ Additional hooks: `useToaster` (toast notifications with history), `useClientSid
 
 ### Frontend Data Layer
 
-- **`src/frontend/data/api.tsx`** - `ProxyApi` static class wraps all backend calls (works in both Electron IPC and HTTP modes)
+- **`src/frontend/data/api.tsx`** - `ProxyApi` static class wraps all backend calls via HTTP (Electron uses `file://` with `webRequest` redirect to embedded server)
 - **`src/frontend/data/config.ts`** - `SessionStorageConfig` and `LocalStorageConfig` constants for storage keys
 - **`src/frontend/data/file.tsx`** - File download utilities (text, JSON, CSV, blob)
 - **`src/frontend/data/session.tsx`** - Session ID generation and management
