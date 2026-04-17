@@ -52,6 +52,7 @@ import { execute } from "src/frontend/utils/executeUtils";
 import { detectAndParseImportFile, exportAsPostmanCollection } from "src/frontend/utils/importExportUtils";
 import { RecordDetailsPage } from "src/frontend/views/RecordPage";
 import appPackage from "src/package.json";
+import { getArchLabel } from "src/frontend/utils/buildInfo";
 import { SqluiCore, SqluiEnums, SqluiFrontend } from "typings";
 
 /** Represents a command dispatched through the MissionControl system. */
@@ -1215,8 +1216,13 @@ export default function MissionControl() {
           <Box className="FormInput__Row">
             <label>Engine:</label>
             {(appPackage as any).engine}
+            {getArchLabel() ? ` (${getArchLabel()})` : ""}
           </Box>
         )}
+        <Box className="FormInput__Row">
+          <label>Build:</label>
+          {__BUILD_CHANNEL__ === "production" ? "Release" : `${__BUILD_CHANNEL__ === "beta" ? "Beta" : "Dev"} (${__BUILD_COMMIT__})`}
+        </Box>
         <Box className="FormInput__Row">
           <label>Latest version:</label>
           {newVersion}
