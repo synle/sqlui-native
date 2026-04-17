@@ -9,7 +9,6 @@ build/
 dist/
 appx/
 main.js
-mocked-server.js
 preload.js
 
 # Static / generated assets

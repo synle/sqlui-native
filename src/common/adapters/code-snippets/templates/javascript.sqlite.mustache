@@ -1,8 +1,8 @@
-// npm install --save better-sqlite3
-const Database = require('better-sqlite3');
+// Requires Node.js 22.5+ (node:sqlite built-in)
+const { DatabaseSync } = require('node:sqlite');
 
 function _doWork(){
-  const db = new Database('{{{storagePath}}}');
+  const db = new DatabaseSync('{{{storagePath}}}');
 
   try{
     const rows = db.prepare(`{{{sql}}}`).all();
