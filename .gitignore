@@ -15,8 +15,6 @@ preload.js
 # Static / generated assets
 assets/
 static/
-public/vs
-vs/
 favicon.ico
 logo32.png
 logo256.png
