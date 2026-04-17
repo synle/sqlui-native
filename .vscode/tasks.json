@@ -16,9 +16,9 @@
       "problemMatcher": []
     },
     {
-      "label": "build-mocked-server",
+      "label": "build-server",
       "type": "npm",
-      "script": "build-mocked-server",
+      "script": "build-server",
       "group": "build",
       "problemMatcher": []
     }
