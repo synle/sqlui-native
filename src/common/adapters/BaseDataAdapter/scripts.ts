@@ -29,8 +29,11 @@ export default abstract class BaseDataScript implements IDataScript {
     return !!dialect && this.dialects.indexOf(dialect) >= 0;
   }
 
-  /** Returns default connection form input fields (username, password, host, port). */
-  getConnectionFormInputs() {
+  /**
+   * Returns connection form input fields for the connection helper dialog.
+   * @param _dialect - The specific dialect (used by multi-dialect scripts to customize fields).
+   */
+  getConnectionFormInputs(_dialect?: string) {
     return [
       ["username", "Username"],
       ["password", "Password"],
