@@ -1251,7 +1251,10 @@ export default function MissionControl() {
                   {link.recommended ? " (Recommended)" : ""}
                 </Link>
               ))}
-              <Link onClick={() => selectCommand({ event: "clientEvent/openExternalUrl", data: releasePageUrl })} sx={{ cursor: "pointer" }}>
+              <Link
+                onClick={() => selectCommand({ event: "clientEvent/openExternalUrl", data: releasePageUrl })}
+                sx={{ cursor: "pointer" }}
+              >
                 All Downloads
               </Link>
             </Box>
@@ -1296,7 +1299,9 @@ export default function MissionControl() {
           <Box component="table" sx={{ width: "100%", borderCollapse: "collapse", "& td": { py: 0.5, verticalAlign: "top" } }}>
             <tbody>
               <tr>
-                <Box component="td" sx={{ fontWeight: "bold", pr: 2, whiteSpace: "nowrap", opacity: 0.7, width: 1 }}>Data</Box>
+                <Box component="td" sx={{ fontWeight: "bold", pr: 2, whiteSpace: "nowrap", opacity: 0.7, width: 1 }}>
+                  Data
+                </Box>
                 <td>
                   <Link onClick={onRevealDataLocation} sx={{ cursor: "pointer", wordBreak: "break-all" }}>
                     {serverConfigs?.storageDir}
@@ -1304,9 +1309,13 @@ export default function MissionControl() {
                 </td>
               </tr>
               <tr>
-                <Box component="td" sx={{ fontWeight: "bold", pr: 2, whiteSpace: "nowrap", opacity: 0.7, width: 1 }}>Home</Box>
+                <Box component="td" sx={{ fontWeight: "bold", pr: 2, whiteSpace: "nowrap", opacity: 0.7, width: 1 }}>
+                  Home
+                </Box>
                 <td>
-                  <Link onClick={onGoToHomepage} sx={{ cursor: "pointer" }}>synle.github.io/sqlui-native</Link>
+                  <Link onClick={onGoToHomepage} sx={{ cursor: "pointer" }}>
+                    synle.github.io/sqlui-native
+                  </Link>
                 </td>
               </tr>
             </tbody>
