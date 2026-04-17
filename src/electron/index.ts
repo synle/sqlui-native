@@ -1,12 +1,22 @@
 import { app, BrowserWindow, ipcMain, Menu, nativeTheme, shell } from "electron";
+import express from "express";
+import type { AddressInfo } from "node:net";
 import path from "node:path";
-import { matchPath } from "react-router";
-import { getEndpointHandlers, setUpDataEndpoints } from "src/common/Endpoints";
 import { writeDebugLog } from "src/common/utils/debugLogger";
+import { app as expressApp, initializeEndpoints } from "src/sqlui-server/server";
 import { SqluiEnums } from "typings";
 
 /** Whether the current platform is macOS. */
 const isMac = process.platform === "darwin";
+
+/** Whether this is dev mode with a Vite dev server. */
+const isDevMode = !!process?.env?.VITE_DEV_SERVER_URL;
+
+/** Base URL for loading the frontend (set after server starts or from VITE_DEV_SERVER_URL). */
+let serverBaseUrl: string;
+
+/** HTTP server instance for graceful shutdown. */
+let httpServer: ReturnType<typeof expressApp.listen> | undefined;
 
 writeDebugLog(
   `app:init - platform=${process.platform} arch=${process.arch} electron=${process.versions.electron} node=${process.versions.node} pid=${process.pid}`,
@@ -42,7 +52,7 @@ app.commandLine.appendSwitch("enable-features", "CanvasOopRasterization,BackForw
 app.commandLine.appendSwitch("js-flags", "--expose-gc");
 
 /**
- * Creates and returns the main Electron BrowserWindow, loading the app URL or built index.html.
+ * Creates and returns the main Electron BrowserWindow, loading the server URL.
  * @returns The created BrowserWindow instance.
  */
 async function createWindow() {
@@ -77,13 +87,8 @@ async function createWindow() {
     writeDebugLog("app:window - unresponsive");
   });
 
-  // and load the index.html of the app.
-  if (process?.env?.VITE_DEV_SERVER_URL) {
-    mainWindow.loadURL(process.env.VITE_DEV_SERVER_URL);
-  } else {
-    mainWindow.loadFile("index.html");
-  }
-  global.indexHtmlPath = path.join(__dirname, "index.html");
+  // load the app from the server URL
+  mainWindow.loadURL(serverBaseUrl);
 
   // Open the DevTools.
   if (process?.env?.ENV_TYPE === "electron-dev") {
@@ -310,12 +315,68 @@ function setupMenu() {
   Menu.setApplicationMenu(menu);
 }
 
+/**
+ * Starts the embedded Express server on a dynamic port bound to 127.0.0.1.
+ * Registers API endpoints and serves static frontend files.
+ * @returns Promise that resolves with the server base URL.
+ */
+function startEmbeddedServer(): Promise<string> {
+  return new Promise((resolve, reject) => {
+    initializeEndpoints();
+
+    // serve the built frontend static files
+    expressApp.use(express.static(__dirname));
+
+    // SPA catch-all: serve index.html for any non-API route
+    expressApp.get("*", (req, res) => {
+      if (!req.path.startsWith("/api")) {
+        res.sendFile(path.join(__dirname, "index.html"));
+      }
+    });
+
+    httpServer = expressApp.listen(0, "127.0.0.1", () => {
+      const addr = httpServer!.address() as AddressInfo;
+      const url = `http://127.0.0.1:${addr.port}`;
+      writeDebugLog(`app:server - embedded server started on ${url}`);
+      console.log(`Embedded server started on ${url} (pid: ${process.pid})`);
+
+      // store base URL for appWindow endpoint to create new windows
+      (global as any).serverBaseUrl = url;
+
+      resolve(url);
+    });
+
+    httpServer.on("error", (err: NodeJS.ErrnoException) => {
+      writeDebugLog(`app:server - failed to start: ${err.message}`);
+      reject(err);
+    });
+  });
+}
+
+/**
+ * Gracefully shuts down the embedded HTTP server.
+ */
+function shutdownServer(): void {
+  if (httpServer) {
+    httpServer.close();
+    httpServer = undefined;
+  }
+}
+
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(async () => {
-  writeDebugLog("app:ready - setting up endpoints");
-  setUpDataEndpoints();
+  if (isDevMode) {
+    // Dev mode: Vite dev server + external sqlui-server handle everything
+    serverBaseUrl = process.env.VITE_DEV_SERVER_URL!;
+    writeDebugLog(`app:ready - dev mode, loading ${serverBaseUrl}`);
+  } else {
+    // Production: embed the Express server
+    writeDebugLog("app:ready - starting embedded server");
+    serverBaseUrl = await startEmbeddedServer();
+  }
+
   writeDebugLog("app:ready - creating window");
   await createWindow();
   writeDebugLog("app:ready - setting up menu");
@@ -334,6 +395,21 @@ app.whenReady().then(async () => {
 // explicitly with Cmd + Q.
 app.on("window-all-closed", () => {
   writeDebugLog("app:window-all-closed - quitting");
+  shutdownServer();
+  app.quit();
+});
+
+app.on("before-quit", () => {
+  shutdownServer();
+});
+
+process.on("SIGTERM", () => {
+  shutdownServer();
+  app.quit();
+});
+
+process.on("SIGINT", () => {
+  shutdownServer();
   app.quit();
 });
 
@@ -364,132 +440,5 @@ ipcMain.on("sqluiNativeEvent/toggleMenus", (...[, data]) => {
     } catch (err) {
       console.error("index.ts:toggleMenu", data, err);
     }
-  }
-});
-
-// this is the event listener that will respond when we will request it in the web page
-const _apiCache = {};
-let _cachedEndpoints: ReturnType<typeof getEndpointHandlers> | undefined;
-ipcMain.on("sqluiNativeEvent/fetch", async (event, data) => {
-  const { requestId, url, options } = data;
-
-  const method = (options.method || "get").toLowerCase();
-
-  const sessionId = options?.headers["sqlui-native-session-id"];
-
-  let body: any = {};
-  if (options.body) {
-    try {
-      body = JSON.parse(options.body);
-    } catch (err) {
-      console.error("index.ts:parse", options.body, err);
-    }
-  }
-
-  // Separate path from query string for route matching and query param parsing
-  const [urlPath, urlQueryString] = url.split("?");
-  const query: Record<string, string> = {};
-  if (urlQueryString) {
-    for (const part of urlQueryString.split("&")) {
-      const [key, val] = part.split("=");
-      if (key) query[decodeURIComponent(key)] = decodeURIComponent(val || "");
-    }
-  }
-
-  console.log(">> Request", method, url, sessionId, body);
-  const matchCurrentUrlAgainst = (matchAgainstUrl: string) => {
-    try {
-      return matchPath(matchAgainstUrl, urlPath);
-    } catch (err) {
-      console.error("index.ts:matchPath", err);
-      return undefined;
-    }
-  };
-
-  try {
-    const returnedResponseHeaders: any = []; // array of [key, value]
-    const sendResponse = (responseData: any = "", status = 200) => {
-      let ok = true;
-      if (status >= 300 || status < 200) {
-        ok = false;
-      }
-      console.log(">> Response", status, method, url, sessionId, body, responseData);
-      event.reply(requestId, {
-        ok,
-        status,
-        text: JSON.stringify(responseData),
-        headers: returnedResponseHeaders,
-      });
-    };
-
-    // polyfill for the express server interface
-    const res = {
-      status: (code: number) => {
-        return {
-          send: (msg: any) => {
-            sendResponse(msg, code);
-          },
-          json: (returnedData: any) => {
-            sendResponse(returnedData, code);
-          },
-        };
-      },
-      header: (key: string, value: string) => {
-        returnedResponseHeaders.push([key, value]);
-      },
-    };
-
-    if (!_cachedEndpoints) {
-      _cachedEndpoints = getEndpointHandlers();
-    }
-    for (const endpoint of _cachedEndpoints) {
-      const [targetMethod, targetUrl, targetHandler] = endpoint;
-      const matchedUrlObject = matchCurrentUrlAgainst(targetUrl);
-      if (targetMethod === method && matchedUrlObject) {
-        const apiCache = {
-          get(key: string) {
-            try {
-              //@ts-ignore
-              return _apiCache[sessionId][key];
-            } catch (err) {
-              console.error("index.ts:get", err);
-              return undefined;
-            }
-          },
-          set(key: string, value: any) {
-            try {
-              //@ts-ignore
-              _apiCache[sessionId] = _apiCache[sessionId] || {};
-
-              //@ts-ignore
-              _apiCache[sessionId][key] = value;
-            } catch (err) {
-              console.error("index.ts:set", err);
-            }
-          },
-          json() {
-            return JSON.stringify(_apiCache);
-          },
-        };
-
-        const req = {
-          params: matchedUrlObject?.params,
-          query,
-          body: body,
-          headers: {
-            "sqlui-native-session-id": sessionId,
-          },
-        };
-
-        return targetHandler(req, res, apiCache);
-      }
-    }
-
-    // not found, then return 404
-    writeDebugLog(`ipc:fetch - 404 not found: ${method} ${url}`);
-    sendResponse("Resource Not Found...", 500);
-  } catch (err) {
-    console.error("index.ts:ipcMain.handle", err);
-    writeDebugLog(`ipc:fetch - error: ${method} ${url} - ${(err as any)?.message || err}`);
   }
 });

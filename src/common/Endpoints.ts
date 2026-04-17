@@ -70,11 +70,8 @@ function evictStaleApiCacheEntries() {
 /** Run cache eviction every 10 minutes. */
 setInterval(evictStaleApiCacheEntries, 10 * 60 * 1000);
 
-/** Accumulated endpoint handler tuples used in Electron IPC mode. */
-const electronEndpointHandlers: any[] = [];
-
 /**
- * Registers a single API endpoint in either Express or Electron IPC mode.
+ * Registers a single API endpoint on the Express app.
  * Wraps the handler with error handling and session ID header forwarding.
  * @param method - HTTP method ("get", "post", "put", "delete").
  * @param url - URL pattern (Express-style) for the endpoint.
@@ -102,63 +99,50 @@ function addDataEndpoint(
     }
   };
 
-  if (expressAppContext) {
-    // set up the route in the context of express server
-    expressAppContext[method](url, async (req, res) => {
-      const cacheKey = req.headers["sqlui-native-session-id"];
-      const apiCache = {
-        get(key: SqluiEnums.ServerApiCacheKey) {
-          try {
-            const entry = _apiCache[cacheKey];
-            if (entry) {
-              entry.lastAccessed = Date.now();
-              return entry.data[key];
-            }
-            return undefined;
-          } catch (err: any) {
-            console.error("Endpoints.ts:get", err);
-            return undefined;
+  expressAppContext![method](url, async (req, res) => {
+    const cacheKey = req.headers["sqlui-native-session-id"];
+    const apiCache = {
+      get(key: SqluiEnums.ServerApiCacheKey) {
+        try {
+          const entry = _apiCache[cacheKey];
+          if (entry) {
+            entry.lastAccessed = Date.now();
+            return entry.data[key];
           }
-        },
-        set(key: SqluiEnums.ServerApiCacheKey, value: any) {
-          try {
-            if (!_apiCache[cacheKey]) {
-              _apiCache[cacheKey] = { data: {}, lastAccessed: Date.now() };
-            }
-            _apiCache[cacheKey].data[key] = value;
-            _apiCache[cacheKey].lastAccessed = Date.now();
-          } catch (err: any) {
-            console.error("Endpoints.ts:set", err);
+          return undefined;
+        } catch (err: any) {
+          console.error("Endpoints.ts:get", err);
+          return undefined;
+        }
+      },
+      set(key: SqluiEnums.ServerApiCacheKey, value: any) {
+        try {
+          if (!_apiCache[cacheKey]) {
+            _apiCache[cacheKey] = { data: {}, lastAccessed: Date.now() };
           }
-        },
-        json() {
-          return JSON.stringify(_apiCache);
-        },
-      };
+          _apiCache[cacheKey].data[key] = value;
+          _apiCache[cacheKey].lastAccessed = Date.now();
+        } catch (err: any) {
+          console.error("Endpoints.ts:set", err);
+        }
+      },
+      json() {
+        return JSON.stringify(_apiCache);
+      },
+    };
 
-      await handlerToUse(req, res, apiCache);
-    });
-  } else {
-    electronEndpointHandlers.push([method, url, handlerToUse]);
-  }
-}
-
-/**
- * Returns the accumulated endpoint handlers for use in Electron IPC mode.
- * @returns Array of [method, url, handler] tuples registered via addDataEndpoint.
- */
-export function getEndpointHandlers() {
-  return electronEndpointHandlers;
+    await handlerToUse(req, res, apiCache);
+  });
 }
 
 /**
  * Registers all API endpoint handlers for connections, queries, sessions, folders, and data snapshots.
- * Works in both Express (sqlui-server) and Electron IPC modes.
- * @param anExpressAppContext - Optional Express app; if provided, routes are registered as HTTP endpoints.
+ * All endpoints are registered as Express HTTP routes.
+ * @param anExpressAppContext - The Express app to register routes on.
  */
-export function setUpDataEndpoints(anExpressAppContext?: Express) {
+export function setUpDataEndpoints(anExpressAppContext: Express) {
   expressAppContext = anExpressAppContext;
-  writeDebugLog(`Endpoints.ts:setUpDataEndpoints - mode=${anExpressAppContext ? "express" : "electron"} storageDir=${storageDir}`);
+  writeDebugLog(`Endpoints.ts:setUpDataEndpoints - storageDir=${storageDir}`);
   // storageDir
   //=========================================================================
   // config api endpoints
@@ -1003,12 +987,13 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
     res.status(202).json(await folderItemsStorage.delete(req.params?.itemId));
   });
 
-  // for open in app window (ONLY for electro mode)
+  // for open in app window (Electron only — opens a new BrowserWindow)
   addDataEndpoint("post", "/api/appWindow", async (req, res) => {
     const hashLink = req.body.hashLink;
 
     // attempting to open the window to show this data
     try {
+      const baseUrl = (global as any).serverBaseUrl;
       const mainWindow = new BrowserWindow({
         width: 1200,
         height: 800,
@@ -1020,9 +1005,13 @@ export function setUpDataEndpoints(anExpressAppContext?: Express) {
         },
       });
 
-      mainWindow.loadFile(global.indexHtmlPath, { hash: hashLink });
+      if (baseUrl) {
+        mainWindow.loadURL(`${baseUrl}/#${hashLink}`);
+      } else {
+        mainWindow.loadFile(path.join(__dirname, "index.html"), { hash: hashLink });
+      }
     } catch (err) {
-      console.error("Endpoints.ts:loadFile", err);
+      console.error("Endpoints.ts:appWindow", err);
     }
 
     res.status(200).send();
