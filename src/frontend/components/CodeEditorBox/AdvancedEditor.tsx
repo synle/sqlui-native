@@ -300,7 +300,7 @@ export default function AdvancedEditor(props: AdvancedEditorProps): React.JSX.El
         const sourceIcon = { connection: "🔗", folder: "📁", dynamic: "⚡" };
         const suggestions: monaco.languages.CompletionItem[] = (props.variables || []).map((v) => ({
           label: `{{${v.key}}}`,
-          kind: globalMonaco.languages.CompletionItemKind.Variable,
+          kind: monaco.languages.CompletionItemKind.Variable,
           detail: `${sourceIcon[v.source] || ""} ${v.enabled ? v.value : `${v.value} (disabled)`}`,
           insertText: `{{${v.key}}}`,
           range,

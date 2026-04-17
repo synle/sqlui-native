@@ -42,6 +42,7 @@ export default function App() {
   useEffect(() => {
     // Disable auto complete popup for TypeScript/JavaScript
     // https://stackoverflow.com/questions/41581570/how-to-remove-autocompletions-for-monaco-editor-using-javascript
+    // @ts-ignore — monaco types mark languages.typescript as deprecated but it works at runtime
     monaco.languages.typescript.javascriptDefaults.setCompilerOptions({
       noLib: true,
       allowNonTsExtensions: true,
