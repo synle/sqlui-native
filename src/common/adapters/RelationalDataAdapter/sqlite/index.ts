@@ -1,6 +1,6 @@
-/** SQLite adapter using better-sqlite3 for synchronous, high-performance database access. */
+/** SQLite adapter using node:sqlite for synchronous, high-performance database access. */
 import fs from "fs";
-import Database from "better-sqlite3";
+import { DatabaseSync } from "node:sqlite";
 import { MAX_CONNECTION_TIMEOUT } from "src/common/adapters/BaseDataAdapter/index";
 import BaseDataAdapter from "src/common/adapters/BaseDataAdapter/index";
 import IDataAdapter from "src/common/adapters/IDataAdapter";
@@ -10,12 +10,12 @@ import { SqluiCore } from "typings";
 const SELECT_PATTERN = /^\s*(SELECT|PRAGMA|EXPLAIN|WITH)\b/i;
 
 /**
- * Data adapter for SQLite databases using better-sqlite3.
- * Provides synchronous, high-performance access ideal for Electron apps.
+ * Data adapter for SQLite databases using node:sqlite.
+ * Provides synchronous, high-performance access with no native module compilation.
  */
 export default class SQLiteDataAdapter extends BaseDataAdapter implements IDataAdapter {
   dialect?: SqluiCore.Dialect;
-  private _connection?: Database.Database;
+  private _connection?: DatabaseSync;
 
   /**
    * Creates a SQLiteDataAdapter instance.
@@ -27,9 +27,9 @@ export default class SQLiteDataAdapter extends BaseDataAdapter implements IDataA
 
   /**
    * Opens the SQLite database file and returns the connection.
-   * @returns The better-sqlite3 Database instance.
+   * @returns The node:sqlite DatabaseSync instance.
    */
-  private getConnection(): Database.Database {
+  private getConnection(): DatabaseSync {
     if (this._connection) {
       return this._connection;
     }
@@ -46,7 +46,8 @@ export default class SQLiteDataAdapter extends BaseDataAdapter implements IDataA
     }
 
     try {
-      this._connection = new Database(storagePath, { timeout: MAX_CONNECTION_TIMEOUT });
+      this._connection = new DatabaseSync(storagePath);
+      this._connection.exec(`PRAGMA busy_timeout = ${MAX_CONNECTION_TIMEOUT}`);
       return this._connection;
     } catch (err) {
       console.error("SQLiteDataAdapter:getConnection", storagePath, err);

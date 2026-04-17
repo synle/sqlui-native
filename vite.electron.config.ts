@@ -5,18 +5,7 @@ import path from "node:path";
  * Packages with native bindings that Vite cannot bundle and must remain external.
  * Pure-JS dependencies (express, body-parser, multer, etc.) are bundled into app.js.
  */
-const nativeExternals = [
-  "electron",
-  "better-sqlite3",
-  "cassandra-driver",
-  "monaco-editor",
-  "mongodb",
-  "mustache",
-  "mysql2",
-  "pg",
-  "redis",
-  "tedious",
-];
+const nativeExternals = ["electron", "cassandra-driver", "monaco-editor", "mongodb", "mustache", "mysql2", "pg", "redis", "tedious"];
 
 /**
  * Vite build configuration for the Electron main process.
