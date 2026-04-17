@@ -1,6 +1,6 @@
 {
   "name": "sqlui-native",
-  "version": "1.69.0",
+  "version": "1.69.1",
   "engine": "Electron",
   "private": true,
   "description": "A minimal native desktop client for most databases supporting MySQL, MariaDB, MS SQL Server, PostgresSQL, SQLite, Cassandra, MongoDB and Redis.",
@@ -20,7 +20,6 @@
       "appx/**/*",
       "assets/**/*",
       "index.html",
-      "vs/**/*",
       "!src/**/*",
       "!public/**/*",
       "!typings/**/*",
@@ -56,7 +55,7 @@
   "main": "main.js",
   "scripts": {
     "### Cleanup & Maintenance ###": "##################################################################################",
-    "clean": "rm -rf build public/vs src/package.json ./dist/*",
+    "clean": "rm -rf build src/package.json ./dist/*",
     "cleanSnapshot": "rm -rf src/common/adapters/__snapshots__/ src/common/adapters/BaseDataAdapter/__snapshots__/ && npm run test-ci -- --update",
     "format": "prettier --write --cache --ignore-unknown --no-error-on-unmatched-pattern --print-width 140 .",
     "format:ci": "prettier --write --ignore-unknown --no-error-on-unmatched-pattern --print-width 140 .",

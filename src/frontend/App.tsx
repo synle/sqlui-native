@@ -8,6 +8,7 @@ import SessionManager from "src/frontend/components/SessionManager";
 import dataApi from "src/frontend/data/api";
 import { useGetSessions } from "src/frontend/hooks/useSession";
 import useToaster, { ToasterHandler } from "src/frontend/hooks/useToaster";
+import { monaco } from "src/frontend/monacoSetup";
 
 /** Lazy-loaded route pages for code splitting. */
 const BookmarksPage = lazy(() => import("src/frontend/views/BookmarksPage"));
@@ -38,19 +39,14 @@ export default function App() {
   const { add: addToast } = useToaster();
   const toasterRef = useRef<ToasterHandler | undefined>(undefined);
 
-  // @ts-ignore
-  const globalMonaco = window.monaco;
   useEffect(() => {
-    if (globalMonaco) {
-      // disable auto complete  popup
-      // https://stackoverflow.com/questions/41581570/how-to-remove-autocompletions-for-monaco-editor-using-javascript
-
-      globalMonaco.languages.typescript.javascriptDefaults.setCompilerOptions({
-        noLib: true,
-        allowNonTsExtensions: true,
-      });
-    }
-  }, [globalMonaco]);
+    // Disable auto complete popup for TypeScript/JavaScript
+    // https://stackoverflow.com/questions/41581570/how-to-remove-autocompletions-for-monaco-editor-using-javascript
+    monaco.languages.typescript.javascriptDefaults.setCompilerOptions({
+      noLib: true,
+      allowNonTsExtensions: true,
+    });
+  }, []);
 
   const onDrop = async (e: React.DragEvent) => {
     if (e.dataTransfer.items && e.dataTransfer.items.length === 1) {

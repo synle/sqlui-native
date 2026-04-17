@@ -173,7 +173,6 @@ function DevtoolsToggle() {
 
 /**
  * Initializes the React Query client and mounts the full application into the #body DOM node.
- * Called once when the "sqluiNativeEvent/ready" event fires.
  */
 const renderApp = function () {
   // Initialize platform (sets up Electron IPC fetch polyfill if in Electron)
@@ -207,10 +206,6 @@ const renderApp = function () {
     </QueryClientProvider>,
   );
 
-  window.removeEventListener("sqluiNativeEvent/ready", renderApp);
 };
 
-window.addEventListener("sqluiNativeEvent/ready", renderApp, false);
-
-// tell the main app to get ready for initiation
-window.dispatchEvent(new Event("sqluiNativeEvent/init"));
+renderApp();

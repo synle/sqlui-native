@@ -1,5 +1,5 @@
 import React from "react";
-import * as monaco from "monaco-editor/esm/vs/editor/editor.api";
+import { monaco } from "src/frontend/monacoSetup";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { styled } from "@mui/system";
 import { CompletionItem, DecoratedEditorProps as AdvancedEditorProps, EditorVariable } from "src/frontend/components/CodeEditorBox";
@@ -56,8 +56,7 @@ export default function AdvancedEditor(props: AdvancedEditorProps): React.JSX.El
       editor?.dispose();
 
       if (monacoEl.current) {
-        //@ts-ignore
-        const newEditor = window.monaco.editor.create(monacoEl.current!, {
+        const newEditor = monaco.editor.create(monacoEl.current!, {
           value: valueRef.current,
           language: props.language,
           theme: colorMode === "dark" ? "vs-dark" : "light",
@@ -185,21 +184,16 @@ export default function AdvancedEditor(props: AdvancedEditorProps): React.JSX.El
       return;
     }
 
-    const globalMonaco = (window as any).monaco as typeof monaco | undefined;
-    if (!globalMonaco) {
-      return;
-    }
-
     const kindMap: Record<CompletionItem["kind"], monaco.languages.CompletionItemKind> = {
-      database: globalMonaco.languages.CompletionItemKind.Module,
-      table: globalMonaco.languages.CompletionItemKind.Struct,
-      column: globalMonaco.languages.CompletionItemKind.Field,
-      variable: globalMonaco.languages.CompletionItemKind.Variable,
+      database: monaco.languages.CompletionItemKind.Module,
+      table: monaco.languages.CompletionItemKind.Struct,
+      column: monaco.languages.CompletionItemKind.Field,
+      variable: monaco.languages.CompletionItemKind.Variable,
     };
 
     const language = props.language || "sql";
 
-    const disposable = globalMonaco.languages.registerCompletionItemProvider(language, {
+    const disposable = monaco.languages.registerCompletionItemProvider(language, {
       provideCompletionItems(_model, position) {
         const word = _model.getWordUntilPosition(position);
         const range = {
@@ -280,12 +274,9 @@ export default function AdvancedEditor(props: AdvancedEditorProps): React.JSX.El
   useEffect(() => {
     if (!props.variables || props.variables.length === 0) return;
 
-    const globalMonaco = (window as any).monaco as typeof monaco | undefined;
-    if (!globalMonaco) return;
-
     const language = props.language || "sql";
 
-    const disposable = globalMonaco.languages.registerCompletionItemProvider(language, {
+    const disposable = monaco.languages.registerCompletionItemProvider(language, {
       triggerCharacters: ["{"],
       provideCompletionItems(model, position) {
         const textUntilPosition = model.getValueInRange({
