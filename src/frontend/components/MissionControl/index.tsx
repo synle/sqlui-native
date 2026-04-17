@@ -1281,6 +1281,20 @@ export default function MissionControl() {
               </tr>
             </tbody>
           </Box>
+          {window?.process?.platform === "darwin" && (
+            <>
+              <Divider sx={{ my: 2 }} />
+              <Box sx={{ opacity: 0.7, fontSize: "0.85em" }}>
+                <strong>macOS Troubleshooting:</strong> If you see "app is damaged", run in Terminal:
+                <Box
+                  component="code"
+                  sx={{ display: "block", mt: 0.5, p: 1, bgcolor: "action.hover", borderRadius: 1, userSelect: "text", cursor: "text" }}
+                >
+                  xattr -cr /Applications/sqlui-native.app
+                </Box>
+              </Box>
+            </>
+          )}
         </Box>
       ),
       showCloseButton: true,
