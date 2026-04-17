@@ -132,10 +132,63 @@ jobs:
           if [ "${{ inputs.release_mode }}" = "draft" ]; then
             DRAFT_FLAGS="--draft --prerelease"
           fi
+
+          # Find the previous release tag for changelog
+          PREV_TAG=$(gh release list --limit 20 --json tagName,isDraft --jq '[.[] | select(.isDraft == false) | .tagName] | .[0] // empty' 2>/dev/null || true)
+
+          # Build release notes
+          NOTES=""
+
+          # 1. User-provided notes at the top
+          USER_NOTES="${{ inputs.release_notes }}"
+          if [ -n "$USER_NOTES" ]; then
+            NOTES="${USER_NOTES}
+
+          "
+          fi
+
+          # 2. Changelog from commits (top 10, with link to full diff)
+          CURRENT_SHA=$(git rev-parse HEAD)
+          if [ -n "$PREV_TAG" ] && [ "$PREV_TAG" != "$TAG" ]; then
+            TOTAL_COMMITS=$(git rev-list --count --no-merges "${PREV_TAG}..HEAD" 2>/dev/null || echo "0")
+            CHANGELOG=$(git log "${PREV_TAG}..HEAD" --pretty=format:"- %s (\`%h\`)" --no-merges -10 2>/dev/null || true)
+            if [ -n "$CHANGELOG" ]; then
+              NOTES="${NOTES}## Changes since ${PREV_TAG}
+
+          ${CHANGELOG}
+          "
+              if [ "$TOTAL_COMMITS" -gt 10 ]; then
+                NOTES="${NOTES}
+          ... and $((TOTAL_COMMITS - 10)) more
+          "
+              fi
+              PREV_SHA=$(git rev-parse "${PREV_TAG}" 2>/dev/null || true)
+              if [ -n "$PREV_SHA" ]; then
+                NOTES="${NOTES}
+          [Full changelog](https://github.com/synle/sqlui-native/compare/${PREV_TAG}...${TAG})
+          "
+              fi
+            fi
+          fi
+
+          # 3. Install instructions at the bottom
+          NOTES="${NOTES}## Install
+
+          Download the appropriate file for your platform below. For detailed instructions, see the [installation guide](https://synle.github.io/sqlui-native/installation).
+
+          | Platform | File |
+          |----------|------|
+          | macOS (Apple Silicon) | \`sqlui-native-arm64.dmg\` |
+          | macOS (Intel) | \`sqlui-native-x64.dmg\` |
+          | Windows (x64) | \`sqlui-native-x64.exe\` |
+          | Windows (ARM64) | \`sqlui-native-arm64.exe\` |
+          | Linux (Debian/Ubuntu) | \`sqlui-native.deb\` |
+          | Linux (RedHat/Fedora) | \`sqlui-native.rpm\` |
+          | Linux (AppImage) | \`sqlui-native.AppImage\` |"
+
           gh release create "$TAG" \
             --title "$TAG" \
-            --notes "Release $TAG
-          ${{ inputs.release_notes }}" \
+            --notes "$NOTES" \
             $DRAFT_FLAGS
 
       - name: Create release job summary
