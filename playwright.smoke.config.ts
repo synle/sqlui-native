@@ -25,8 +25,8 @@ export default defineConfig({
       use: { ...devices["Desktop Chrome"] },
     },
   ],
-  /* Only run Phase 1 (App Launch) and Phase 2 (Connection CRUD) for smoke. */
-  grep: /Phase 1|Phase 2/,
+  /* Only run Phase 0 (GitHub Pages links), Phase 1 (App Launch), and Phase 2 (Connection CRUD) for smoke. */
+  grep: /Phase 0|Phase 1|Phase 2/,
   webServer: {
     command: process.env.CI ? "npm run start-e2e" : "npm run dev",
     url: "http://localhost:3000",
