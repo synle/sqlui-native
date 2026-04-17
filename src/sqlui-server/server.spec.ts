@@ -1,5 +1,7 @@
 import supertest from "supertest";
-import { app } from "src/sqlui-server/server";
+import { app, initializeEndpoints } from "src/sqlui-server/server";
+
+initializeEndpoints();
 
 const requestWithSupertest = supertest(app);
 

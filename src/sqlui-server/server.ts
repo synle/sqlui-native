@@ -31,7 +31,15 @@ app.post("/api/file", upload.single("file"), async (req, res) => {
     res.status(400).send("Cannot read the file");
   }
 });
-setUpDataEndpoints(app);
 
-/** Port number the sqlui-server listens on. */
+/**
+ * Registers all API endpoints on the Express app.
+ * Called explicitly by the entry point rather than at import time,
+ * so Electron can import this module without triggering setup in dev mode.
+ */
+export function initializeEndpoints(): void {
+  setUpDataEndpoints(app);
+}
+
+/** Default port for the sqlui-server in standalone/dev mode. */
 export const port = 3001;
