@@ -1216,10 +1216,7 @@ export default function MissionControl() {
         {!isUpToDate && (
           <>
             <Divider sx={{ my: 2 }} />
-            <Link
-              onClick={() => selectCommand({ event: "clientEvent/openExternalUrl", data: releasePageUrl })}
-              sx={{ cursor: "pointer" }}
-            >
+            <Link onClick={() => selectCommand({ event: "clientEvent/openExternalUrl", data: releasePageUrl })} sx={{ cursor: "pointer" }}>
               Download latest version
             </Link>
           </>
