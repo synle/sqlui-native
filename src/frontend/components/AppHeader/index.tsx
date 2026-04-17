@@ -31,6 +31,7 @@ import { useGetCurrentSession } from "src/frontend/hooks/useSession";
 import ToastHistoryList from "src/frontend/components/ToastHistoryList";
 import { useToastHistoryCount } from "src/frontend/hooks/useToaster";
 import appPackage from "src/package.json";
+import { getBuildBadge } from "src/frontend/utils/buildInfo";
 
 /**
  * Application header bar with session management, navigation, notifications, and command palette access.
@@ -159,7 +160,7 @@ export default function AppHeader() {
     <AppBar position="static">
       <Toolbar variant="dense">
         <Typography variant="h5" onClick={() => navigate("/")} sx={{ cursor: "pointer", fontWeight: "bold", mr: 3 }}>
-          SQLUI NATIVE {appPackage.version}
+          SQLUI NATIVE {appPackage.version} {getBuildBadge()}
         </Typography>
 
         <Tooltip title="This is the current session name. Click to rename it.">

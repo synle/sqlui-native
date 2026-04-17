@@ -35,6 +35,7 @@ env:
   ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
   EXPECTED_RELEASE_ASSETS: 10
   PLAYWRIGHT_BROWSERS_PATH: ${{ github.workspace }}/.playwright-browsers
+  BUILD_CHANNEL: production
   ELECTRON_CACHE: ${{ github.workspace }}/.cache/electron
   ELECTRON_BUILDER_CACHE: ${{ github.workspace }}/.cache/electron-builder
 
