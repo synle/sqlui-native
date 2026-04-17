@@ -1,6 +1,16 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import path from "node:path";
+import { execSync } from "node:child_process";
+
+/** Short git commit hash for build identification. */
+const gitCommit = (() => {
+  try {
+    return execSync("git rev-parse --short HEAD", { encoding: "utf-8" }).trim();
+  } catch {
+    return "unknown";
+  }
+})();
 
 /**
  * Vite build configuration for the React frontend.
@@ -10,6 +20,10 @@ import path from "node:path";
  */
 export default defineConfig(({ command }) => ({
   plugins: [react()],
+  define: {
+    __BUILD_COMMIT__: JSON.stringify(gitCommit),
+    __BUILD_CHANNEL__: JSON.stringify(process.env.BUILD_CHANNEL || "dev"),
+  },
   root: ".",
   base: command === "serve" ? "/" : "./",
   publicDir: "public",
