@@ -1,6 +1,34 @@
 // @vitest-environment jsdom
 import { SessionStorageConfig, LocalStorageConfig } from "src/frontend/data/config";
 
+// Node 24 ships a broken globalThis.localStorage (missing clear/getItem/setItem)
+// which shadows jsdom's proper implementation. Replace it with a spec-compliant mock.
+beforeAll(() => {
+  if (typeof window.localStorage.clear !== "function") {
+    const store: Record<string, string> = {};
+    Object.defineProperty(window, "localStorage", {
+      value: {
+        getItem: (key: string) => (key in store ? store[key] : null),
+        setItem: (key: string, value: string) => {
+          store[key] = String(value);
+        },
+        removeItem: (key: string) => {
+          delete store[key];
+        },
+        clear: () => {
+          for (const key of Object.keys(store)) delete store[key];
+        },
+        get length() {
+          return Object.keys(store).length;
+        },
+        key: (index: number) => Object.keys(store)[index] ?? null,
+      },
+      writable: true,
+      configurable: true,
+    });
+  }
+});
+
 describe("SessionStorageConfig", () => {
   beforeEach(() => {
     window.sessionStorage.clear();
