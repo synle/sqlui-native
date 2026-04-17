@@ -17,7 +17,7 @@ try {
   // electron path
   baseDir = path.join(app.getPath("appData"), "sqlui-native");
 } catch (_err) {
-  // fall back for mocked server
+  // fall back for non-Electron environments (sqlui-server, dev mode)
   baseDir = path.join(homedir, ".sqlui-native");
 }
 fs.mkdirSync(baseDir, { recursive: true });

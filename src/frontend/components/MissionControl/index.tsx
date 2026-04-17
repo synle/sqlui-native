@@ -1866,7 +1866,7 @@ export default function MissionControl() {
       const hasModifierKey = e.altKey || e.ctrlKey || e.metaKey;
       const { key } = e;
 
-      // here are keybindings that are used for both the electron and web mocked
+      // here are keybindings that are used for both the electron and browser modes
       if (hasModifierKey) {
         const activeElement = document.activeElement;
         const activeInputTagName = activeElement?.tagName.toLowerCase();
@@ -1939,8 +1939,8 @@ export default function MissionControl() {
         }
       }
     };
-    // this section below is strictly for mocked webserver
-    const onKeyboardShortcutEventForMockedServer = (e: KeyboardEvent) => {
+    // this section below is strictly for browser mode (non-Electron)
+    const onKeyboardShortcutEventForBrowser = (e: KeyboardEvent) => {
       const hasModifierKey = e.altKey || e.ctrlKey || e.metaKey;
 
       let command: Command | undefined;
@@ -2019,10 +2019,10 @@ export default function MissionControl() {
     };
 
     document.addEventListener("keydown", onKeyboardShortcutEventForAll, true);
-    !appPlatform.isDesktop && document.addEventListener("keydown", onKeyboardShortcutEventForMockedServer, true);
+    !appPlatform.isDesktop && document.addEventListener("keydown", onKeyboardShortcutEventForBrowser, true);
     return () => {
       document.removeEventListener("keydown", onKeyboardShortcutEventForAll);
-      !appPlatform.isDesktop && document.removeEventListener("keydown", onKeyboardShortcutEventForMockedServer);
+      !appPlatform.isDesktop && document.removeEventListener("keydown", onKeyboardShortcutEventForBrowser);
     };
   }, []);
 

@@ -2,11 +2,11 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Debug Mocked Server",
+      "name": "Debug Server",
       "type": "node",
       "request": "launch",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "start-mocked-server"],
+      "runtimeArgs": ["run", "start-server"],
       "env": {
         "NODE_OPTIONS": "--max-old-space-size=4096"
       },
@@ -52,7 +52,7 @@
   "compounds": [
     {
       "name": "Debug Dev Mode (Server + Webapp)",
-      "configurations": ["Debug Mocked Server", "Debug Webapp (Chrome)"]
+      "configurations": ["Debug Server", "Debug Webapp (Chrome)"]
     },
     {
       "name": "Debug Electron (Main + Renderer)",

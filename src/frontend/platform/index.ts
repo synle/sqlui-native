@@ -9,7 +9,7 @@ import { electronPlatform, initElectronPlatform } from "src/frontend/platform/el
 function isElectronEnvironment(): boolean {
   if (typeof window === "undefined") return false;
   const w = window as any;
-  return w?.process?.env?.ENV_TYPE !== "mocked-server" && typeof w.requireElectron === "function";
+  return w?.process?.env?.ENV_TYPE !== "browser" && typeof w.requireElectron === "function";
 }
 
 /** The active platform bridge for the current runtime environment. */
