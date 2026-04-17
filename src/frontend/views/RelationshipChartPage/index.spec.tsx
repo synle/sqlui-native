@@ -30,7 +30,16 @@ vi.mock("@xyflow/react", () => ({
 }));
 vi.mock("@xyflow/react/dist/style.css", () => ({}));
 vi.mock("src/frontend/App.scss", () => ({}));
-vi.mock("src/frontend/electronRenderer", () => ({}));
+vi.mock("src/frontend/platform", () => ({
+  platform: {
+    isDesktop: false,
+    openExternalUrl: vi.fn(),
+    openAppWindow: vi.fn(),
+    toggleMenuItems: vi.fn(),
+    onAppCommand: () => () => {},
+    executeShellCommand: () => Promise.resolve(""),
+  },
+}));
 vi.mock("src/frontend/utils/commonUtils", () => ({
   useNavigate: () => vi.fn(),
 }));

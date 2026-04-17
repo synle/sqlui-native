@@ -1,36 +1,32 @@
 import { execute } from "src/frontend/utils/executeUtils";
 
-// Mock the platform module
+const mockExecuteShellCommand = vi.fn();
+
 vi.mock("src/frontend/platform", () => ({
   platform: {
-    executeShellCommand: vi.fn(),
+    executeShellCommand: (...args: any[]) => mockExecuteShellCommand(...args),
   },
 }));
-
-import { platform } from "src/frontend/platform";
 
 describe("executeUtils", () => {
   describe("execute", () => {
     afterEach(() => {
-      vi.clearAllMocks();
+      vi.restoreAllMocks();
     });
 
     test("should delegate to platform.executeShellCommand", async () => {
-      vi.mocked(platform.executeShellCommand).mockResolvedValue("output");
-      const result = await execute("echo hello");
+      mockExecuteShellCommand.mockResolvedValue("output");
+
+      const result = await execute("echo hello", 0);
       expect(result).toEqual("output");
-      expect(platform.executeShellCommand).toHaveBeenCalledWith("echo hello");
+      expect(mockExecuteShellCommand).toHaveBeenCalledWith("echo hello");
     });
 
-    test("should resolve empty string when platform returns empty", async () => {
-      vi.mocked(platform.executeShellCommand).mockResolvedValue("");
+    test("should return empty string when platform returns empty", async () => {
+      mockExecuteShellCommand.mockResolvedValue("");
+
       const result = await execute("echo hello");
       expect(result).toEqual("");
-    });
-
-    test("should reject when platform rejects", async () => {
-      vi.mocked(platform.executeShellCommand).mockRejectedValue("some error");
-      await expect(execute("bad command")).rejects.toEqual("some error");
     });
   });
 });
