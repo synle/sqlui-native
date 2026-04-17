@@ -205,7 +205,6 @@ const renderApp = function () {
       </CombinedContextProvider>
     </QueryClientProvider>,
   );
-
 };
 
 renderApp();
