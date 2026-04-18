@@ -49,7 +49,8 @@ jobs:
         shell: bash
         run: |
           SHORT_SHA=$(git rev-parse --short HEAD)
-          TAG="release-beta-${SHORT_SHA}"
+          DATE=$(date -u +"%Y-%m-%d-%H-%M")
+          TAG="release-beta-${DATE}-${SHORT_SHA}"
           echo "tag=$TAG" >> "$GITHUB_OUTPUT"
           echo "Release tag: $TAG"
 
