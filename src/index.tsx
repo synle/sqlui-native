@@ -173,10 +173,11 @@ function DevtoolsToggle() {
 
 /**
  * Initializes the React Query client and mounts the full application into the #body DOM node.
+ * Awaits platform initialization (Tauri sidecar port resolution or Electron IPC setup).
  */
-const renderApp = function () {
-  // Initialize platform (sets up Electron IPC for shell integration)
-  initPlatform();
+const renderApp = async function () {
+  // Initialize platform (sets up Tauri sidecar port or Electron IPC for shell integration)
+  await initPlatform();
 
   const queryClient = new QueryClient({
     defaultOptions: {
