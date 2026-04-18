@@ -79,8 +79,8 @@ jobs:
 
             console.log(`\nArtifacts — Kept runs: ${keepRunIds.size}, Deleted artifacts: ${toDelete.length}`);
 
-            // --- Cleanup Draft Releases ---
-            console.log(`\n=== Draft Release Cleanup ===\n`);
+            // --- Cleanup Draft Releases and [Error] Releases ---
+            console.log(`\n=== Draft & Error Release Cleanup ===\n`);
 
             const releases = await github.paginate(
               github.rest.repos.listReleases,
@@ -92,17 +92,28 @@ jobs:
             );
 
             const drafts = releases.filter(r => r.draft);
+            const errorReleases = releases.filter(r => r.name && r.name.includes('[Error]'));
+            const toDeleteReleases = [...drafts, ...errorReleases];
 
-            for (const draft of drafts) {
-              console.log(`Deleting draft release: ${draft.name || draft.tag_name} (created: ${draft.created_at})`);
+            for (const release of toDeleteReleases) {
+              const label = release.draft ? 'draft' : '[Error]';
+              console.log(`Deleting ${label} release: ${release.name || release.tag_name} (created: ${release.created_at})`);
               await github.rest.repos.deleteRelease({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                release_id: draft.id,
+                release_id: release.id,
               });
+              // Also clean up the tag
+              try {
+                await github.rest.git.deleteRef({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  ref: `tags/${release.tag_name}`,
+                });
+              } catch (_e) { /* tag may not exist */ }
             }
 
-            console.log(`\nDraft releases deleted: ${drafts.length}`);
+            console.log(`\nReleases deleted: ${toDeleteReleases.length} (${drafts.length} drafts, ${errorReleases.length} [Error])`);
 
             // --- Cleanup Old Workflow Runs ---
             console.log(`\n=== Workflow Run Cleanup (older than ${KEEP_RUNS_DAYS} days) ===\n`);
