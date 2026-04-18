@@ -14,11 +14,7 @@ import appPackage from "src/package.json";
 
 /** Compares two semver strings. Returns true if local >= remote. */
 function isVersionUpToDate(local: string, remote: string): boolean {
-  const parse = (v: string) =>
-    v
-      .replace(/^v/, "")
-      .split(".")
-      .map(Number);
+  const parse = (v: string) => v.replace(/^v/, "").split(".").map(Number);
   const [lMajor, lMinor = 0, lPatch = 0] = parse(local);
   const [rMajor, rMinor = 0, rPatch = 0] = parse(remote);
   if (lMajor !== rMajor) return lMajor > rMajor;
@@ -55,7 +51,12 @@ export function useShowAboutDialog() {
 
     const contentDom = (
       <>
-        <Chip label={isUpToDate ? "Up to date" : "Update available"} color={isUpToDate ? "success" : "warning"} size="small" sx={{ mb: 2 }} />
+        <Chip
+          label={isUpToDate ? "Up to date" : "Update available"}
+          color={isUpToDate ? "success" : "warning"}
+          size="small"
+          sx={{ mb: 2 }}
+        />
         <Box component="table" sx={{ width: "100%", borderCollapse: "collapse", "& td": { py: 0.5, verticalAlign: "top" } }}>
           <tbody>
             {infoRows.map(([label, value]) => (
