@@ -2,7 +2,7 @@
 name: install-app
 description: Download the latest release artifact, install it locally, and launch the app. Handles macOS (DMG + xattr + tccutil) and detects the right architecture automatically.
 disable-model-invocation: true
-allowed-tools: Bash(gh *) Bash(hdiutil *) Bash(cp *) Bash(xattr *) Bash(tccutil *) Bash(open *) Bash(rm *) Bash(ls *) Bash(uname *) Bash(cat *)
+allowed-tools: Bash(gh *) Bash(hdiutil *) Bash(cp *) Bash(xattr *) Bash(open *) Bash(rm *) Bash(ls *) Bash(uname *) Bash(cat *)
 ---
 
 # Install App from Latest Release
@@ -58,18 +58,10 @@ Download, install, and launch sqlui-native from the latest GitHub release.
    ```
    hdiutil detach "/Volumes/sqlui-native <version>"
    ```
-
-   - Strip quarantine and reset accessibility permissions:
+   - Strip quarantine attribute:
 
    ```
    xattr -cr "/Applications/sqlui-native.app"
-   tccutil reset Accessibility com.electron.sqlui-native
-   ```
-
-   - Launch the app:
-
-   ```
-   open "/Applications/sqlui-native.app"
    ```
 
    - Clean up:
@@ -99,4 +91,4 @@ Download, install, and launch sqlui-native from the latest GitHub release.
 
 - Always tell the user which version and architecture was installed.
 - If the expected artifact is missing from the release, list available assets and ask which one to use.
-- On macOS, the `xattr` and `tccutil` steps are mandatory — the app will not launch without them.
+- On macOS, the `xattr` step is mandatory — the app will not launch without it.
