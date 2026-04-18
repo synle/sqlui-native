@@ -48,9 +48,7 @@ function getNodeDistInfo(platform, arch) {
 const BINARIES_DIR = path.join("src-tauri", "binaries");
 const { distName, ext, binaryPath } = getNodeDistInfo(targetPlatform, targetArch);
 const downloadUrl = `https://nodejs.org/dist/v${NODE_VERSION}/${distName}.${ext}`;
-const outputBinary = targetPlatform === "win32"
-  ? path.join(BINARIES_DIR, "node.exe")
-  : path.join(BINARIES_DIR, "node");
+const outputBinary = targetPlatform === "win32" ? path.join(BINARIES_DIR, "node.exe") : path.join(BINARIES_DIR, "node");
 
 // Skip if already downloaded
 if (fs.existsSync(outputBinary)) {
