@@ -1,6 +1,6 @@
 {
   "name": "sqlui-native",
-  "version": "3.0.0",
+  "version": "3.76.4",
   "engine": "Tauri + Rust",
   "private": true,
   "description": "A cross-platform Tauri desktop client for SQL/NoSQL databases and REST APIs supporting MySQL, MariaDB, MS SQL Server, PostgreSQL, SQLite, Cassandra, MongoDB, Redis, Azure CosmosDB, Azure Table Storage, Salesforce, and REST/GraphQL.",
