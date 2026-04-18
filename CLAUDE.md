@@ -36,6 +36,14 @@ npx vitest run --config vitest.integration.config.ts src/common/adapters/Relatio
 
 **Packaging:** `bash scripts/build.sh && npm run dist`
 
+**macOS install (unsigned builds):** After downloading a `.dmg` artifact and moving the app to `/Applications`, strip the quarantine attribute:
+
+```bash
+xattr -cr "/Applications/sqlui-native.app"
+```
+
+This is required because the app is not code-signed. Without it, macOS Gatekeeper will block the app from launching.
+
 **Debug shortcut:** `Ctrl+Shift+Alt+D` (Windows/Linux) or `Cmd+Shift+Option+D` (Mac) toggles React Query Devtools in packaged builds. Also available via Command Palette (`Cmd+P` / `Ctrl+P`) as "Toggle React Query Devtools".
 
 ## Architecture
