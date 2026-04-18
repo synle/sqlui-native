@@ -26,3 +26,14 @@ const buildPkgJson = JSON.stringify(buildPkg, null, 2);
 fs.writeFileSync("build/package.json", buildPkgJson);
 fs.writeFileSync("public/package.json", buildPkgJson);
 log("Wrote: build/package.json and public/package.json (minimal, no 'build' key)");
+
+// Symlink node_modules into build/ so electron-builder can find native externals
+// (cassandra-driver, pg, tedious, etc. that are excluded from the Vite bundle)
+const buildNodeModules = path.join("build", "node_modules");
+const rootNodeModules = path.resolve("node_modules");
+if (!fs.existsSync(buildNodeModules)) {
+  fs.symlinkSync(rootNodeModules, buildNodeModules, "junction");
+  log(`Symlinked: ${buildNodeModules} -> ${rootNodeModules}`);
+} else {
+  log(`Skipped symlink: ${buildNodeModules} already exists`);
+}
