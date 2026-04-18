@@ -29,6 +29,7 @@ export function initElectronPlatform(): void {
 
 export const electronPlatform: PlatformBridge = {
   isDesktop: true,
+  sidecarBaseUrl: "",
 
   openExternalUrl(url: string) {
     try {
