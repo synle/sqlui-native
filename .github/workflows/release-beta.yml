@@ -3,8 +3,8 @@ name: Release Beta
 on:
   workflow_dispatch:
     inputs:
-      release_notes:
-        description: "Release notes"
+      sha:
+        description: "Commit SHA to build (defaults to HEAD)"
         required: false
         default: ""
 
@@ -27,17 +27,29 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       release_tag: ${{ steps.tag.outputs.tag }}
+      sha: ${{ steps.resolve.outputs.sha }}
     steps:
+      - name: Resolve SHA
+        id: resolve
+        shell: bash
+        run: |
+          SHA="${{ inputs.sha }}"
+          if [ -z "$SHA" ]; then
+            SHA="${{ github.sha }}"
+          fi
+          echo "sha=$SHA" >> "$GITHUB_OUTPUT"
+          echo "Resolved SHA: $SHA"
+
       - uses: actions/checkout@v6
+        with:
+          ref: ${{ steps.resolve.outputs.sha }}
 
       - name: Generate release tag
         id: tag
         shell: bash
         run: |
-          VERSION=$(node -p "require('./package.json').version")
           SHORT_SHA=$(git rev-parse --short HEAD)
-          BRANCH_NAME=$(echo "${GITHUB_REF#refs/heads/}" | sed 's/[^a-zA-Z0-9._-]/-/g')
-          TAG="release-beta-${BRANCH_NAME}-${SHORT_SHA}"
+          TAG="release-beta-${SHORT_SHA}"
           echo "tag=$TAG" >> "$GITHUB_OUTPUT"
           echo "Release tag: $TAG"
 
@@ -53,12 +65,6 @@ jobs:
 
           # Build release notes
           NOTES=""
-          USER_NOTES="${{ inputs.release_notes }}"
-          if [ -n "$USER_NOTES" ]; then
-            NOTES="${USER_NOTES}
-
-          "
-          fi
 
           PREV_TAG=$(gh release list --limit 20 --json tagName,isDraft --jq '[.[] | select(.isDraft == false) | .tagName] | .[0] // empty' 2>/dev/null || true)
           if [ -n "$PREV_TAG" ] && [ "$PREV_TAG" != "$TAG" ]; then
@@ -117,6 +123,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v6
+        with:
+          ref: ${{ needs.create_release.outputs.sha }}
 
       - name: Setup Node
         uses: actions/setup-node@v6
@@ -282,6 +290,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+        with:
+          ref: ${{ needs.create_release.outputs.sha }}
 
       - name: Update release status
         env:
