@@ -10,6 +10,10 @@ vi.mock("src/frontend/hooks/useActionDialogs", () => ({
   useActionDialogs: () => ({ dialog: null }),
 }));
 
+vi.mock("src/frontend/components/AboutDialog", () => ({
+  useShowAboutDialog: () => vi.fn(),
+}));
+
 import NativeEventListener from "src/frontend/components/NativeEventListener";
 
 describe("NativeEventListener", () => {
