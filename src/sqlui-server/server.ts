@@ -20,7 +20,7 @@ export const app = express();
 
 const upload = multer({ dest: path.join(os.tmpdir(), "sqlui-native-upload") });
 
-// Allow cross-origin requests from Tauri's tauri:// protocol and localhost dev server
+// Allow cross-origin requests from the Electron file:// protocol and localhost dev server
 app.use((_req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "*");

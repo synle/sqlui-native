@@ -8,34 +8,6 @@ initializeEndpoints();
 /** Host to bind to — loopback only, no firewall prompt. */
 const HOST = "127.0.0.1";
 
-/** True when launched as a Tauri sidecar (SIDECAR_PORT env var is set). */
-const isSidecarMode = process.env.SIDECAR_PORT !== undefined;
-
-/**
- * Returns a random port in the ephemeral/high range (49152-65535).
- * These ports are unlikely to conflict with well-known services.
- */
-function getRandomHighPort(): number {
-  return 49152 + Math.floor(Math.random() * (65535 - 49152));
-}
-
-/**
- * Checks whether a given port is available for binding on 127.0.0.1.
- * @param targetPort - The port number to test.
- * @returns True if the port is free, false if already in use.
- */
-function isPortAvailable(targetPort: number): Promise<boolean> {
-  return new Promise((resolve) => {
-    const server = net.createServer();
-    server.once("error", () => resolve(false));
-    server.once("listening", () => {
-      server.close();
-      resolve(true);
-    });
-    server.listen(targetPort, HOST);
-  });
-}
-
 /**
  * Checks if a port is already in use on the given host.
  * @param targetPort - The port number to check.
@@ -97,45 +69,7 @@ function gracefulShutdown(server: net.Server, signal: string): void {
 }
 
 /**
- * Starts the server in sidecar mode for Tauri.
- * Uses SIDECAR_PORT env var, a random high port, or OS-assigned port.
- * Prints __SIDECAR_PORT__=<port> to stdout for the parent process to read.
- * Detects parent process death via stdin close.
- */
-async function startSidecar(): Promise<void> {
-  let port: number;
-
-  if (process.env.SIDECAR_PORT) {
-    port = parseInt(process.env.SIDECAR_PORT, 10);
-  } else {
-    port = getRandomHighPort();
-    if (!(await isPortAvailable(port))) {
-      port = 0; // fallback: let OS assign a free port
-    }
-  }
-
-  const server = app.listen(port, HOST, () => {
-    const addr = server.address();
-    const actualPort = typeof addr === "object" && addr !== null ? addr.port : port;
-    console.log(`__SIDECAR_PORT__=${actualPort}`);
-  });
-
-  /** Gracefully shuts down the HTTP server and exits. */
-  const shutdown = () => {
-    server.close(() => process.exit(0));
-    setTimeout(() => process.exit(0), 3000);
-  };
-
-  process.on("SIGTERM", shutdown);
-  process.on("SIGINT", shutdown);
-
-  // Detect parent process death: stdin closes when Tauri exits or crashes
-  process.stdin.resume();
-  process.stdin.on("end", shutdown);
-}
-
-/**
- * Starts the server in standalone mode (dev/legacy).
+ * Starts the server in standalone mode.
  * Uses the default port (3001) with port conflict detection and cleanup.
  */
 async function startStandalone(): Promise<void> {
@@ -163,8 +97,4 @@ async function startStandalone(): Promise<void> {
   process.on("SIGINT", () => gracefulShutdown(server, "SIGINT"));
 }
 
-if (isSidecarMode) {
-  startSidecar();
-} else {
-  startStandalone();
-}
+startStandalone();
