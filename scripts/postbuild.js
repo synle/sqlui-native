@@ -2,11 +2,8 @@ require("./common");
 
 log(`
 =========================================================
-# move build content into root (monaco and built bundle)
+# postbuild.js
+# No-op: electron-builder uses directories.app = "build"
+# so all built assets are already in the right place.
 =========================================================
 `);
-cpSync("build", ".", (srcPath) => {
-  // Skip package.json — the build/ copy is a minimal version for electron-builder
-  // and must not overwrite the root package.json which contains dist-* scripts.
-  return path.basename(srcPath) !== "package.json";
-});
