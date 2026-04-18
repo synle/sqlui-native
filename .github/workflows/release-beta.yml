@@ -184,10 +184,6 @@ jobs:
           fi
 
       # --- Tauri build path ---
-      - name: Prepare sidecar resources
-        if: steps.detect.outputs.mode == 'tauri'
-        run: mkdir -p src-tauri/resources && npm run build:tauri
-
       - name: Build Tauri app
         if: steps.detect.outputs.mode == 'tauri'
         uses: tauri-apps/tauri-action@v0
