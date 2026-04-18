@@ -77,3 +77,6 @@ upload/
 *.patch
 *.rej
 *.LICENSE.txt
+
+sqlui-server.js
+app.js
