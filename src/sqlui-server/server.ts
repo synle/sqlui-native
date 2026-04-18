@@ -20,6 +20,15 @@ export const app = express();
 
 const upload = multer({ dest: path.join(os.tmpdir(), "sqlui-native-upload") });
 
+// Allow cross-origin requests from Tauri's tauri:// protocol and localhost dev server
+app.use((_req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "*");
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+  if (_req.method === "OPTIONS") return res.sendStatus(204);
+  next();
+});
+
 app.use(bodyParser.urlencoded({ extended: false, limit: "50mb" })); // parse application/x-www-form-urlencoded
 app.use(bodyParser.json({ limit: "50mb" })); // parse application/json
 
