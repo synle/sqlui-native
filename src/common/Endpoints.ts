@@ -1,4 +1,3 @@
-import { BrowserWindow } from "electron";
 import { Express } from "express";
 import path from "node:path";
 import {
@@ -987,33 +986,8 @@ export function setUpDataEndpoints(anExpressAppContext: Express) {
     res.status(202).json(await folderItemsStorage.delete(req.params?.itemId));
   });
 
-  // for open in app window (Electron only — opens a new BrowserWindow)
-  addDataEndpoint("post", "/api/appWindow", async (req, res) => {
-    const hashLink = req.body.hashLink;
-
-    // attempting to open the window to show this data
-    try {
-      const baseUrl = (global as any).serverBaseUrl;
-      const mainWindow = new BrowserWindow({
-        width: 1200,
-        height: 800,
-        icon: __dirname + "/build/favicon.ico",
-        webPreferences: {
-          preload: path.join(__dirname, "preload.js"),
-          nodeIntegration: true,
-          contextIsolation: false,
-        },
-      });
-
-      if (baseUrl) {
-        mainWindow.loadURL(`${baseUrl}/#${hashLink}`);
-      } else {
-        mainWindow.loadFile(path.join(__dirname, "index.html"), { hash: hashLink });
-      }
-    } catch (err) {
-      console.error("Endpoints.ts:appWindow", err);
-    }
-
+  // Open in app window — no-op in Tauri/browser mode (window navigation handled by frontend)
+  addDataEndpoint("post", "/api/appWindow", async (_req, res) => {
     res.status(200).send();
   });
   // data snapshot endpoints

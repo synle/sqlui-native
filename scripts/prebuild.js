@@ -27,16 +27,6 @@ fs.writeFileSync("build/package.json", buildPkgJson);
 fs.writeFileSync("public/package.json", buildPkgJson);
 log("Wrote: build/package.json and public/package.json (minimal, no 'build' key)");
 
-// Copy the Electron bootstrap entry point (must stay unbundled to catch native addon crashes)
-cpSync("src/electron/electron-bootstrap.js", "build/main.js");
-
-// Symlink node_modules into build/ so electron-builder (directories.app: "build")
-// can find external dependencies (native modules like cassandra-driver, pg, etc.)
-const nmLink = path.join("build", "node_modules");
-if (!fs.existsSync(nmLink)) {
-  fs.symlinkSync(path.resolve("node_modules"), nmLink, "junction");
-  log(`Symlinked: node_modules -> ${nmLink}`);
-}
 
 // Sync version from package.json to Tauri config files (if they exist)
 const tauriConfPath = path.join("src-tauri", "tauri.conf.json");

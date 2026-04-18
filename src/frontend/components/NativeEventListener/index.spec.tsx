@@ -10,11 +10,11 @@ vi.mock("src/frontend/hooks/useActionDialogs", () => ({
   useActionDialogs: () => ({ dialog: null }),
 }));
 
-import ElectronEventListener from "src/frontend/components/ElectronEventListener";
+import NativeEventListener from "src/frontend/components/NativeEventListener";
 
-describe("ElectronEventListener", () => {
+describe("NativeEventListener", () => {
   test("renders null", () => {
-    const { container } = render(<ElectronEventListener />);
+    const { container } = render(<NativeEventListener />);
     expect(container.innerHTML).toMatchInlineSnapshot(`""`);
   });
 });

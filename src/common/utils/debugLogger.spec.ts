@@ -2,11 +2,6 @@ import fs from "node:fs";
 import path from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-// Mock electron so getLogFilePath uses the os.homedir fallback
-vi.mock("electron", () => {
-  throw new Error("not in electron");
-});
-
 // Use a temp dir for tests
 const tmpDir = path.join(__dirname, ".test-debug-logs");
 
