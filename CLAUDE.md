@@ -42,11 +42,9 @@ npx vitest run --config vitest.integration.config.ts src/common/adapters/Relatio
 
   ```bash
   xattr -cr "/Applications/sqlui-native.app"
-  tccutil reset Accessibility com.electron.sqlui-native
-  open "/Applications/sqlui-native.app"
   ```
 
-  The `xattr` command strips the quarantine attribute (required for unsigned builds — macOS Gatekeeper blocks the app without it). The `tccutil` command resets accessibility permissions so the app can request them fresh on launch.
+  This strips the quarantine attribute (required for unsigned builds — macOS Gatekeeper blocks the app without it).
 
 - **Windows:** Download the `.exe`, run it to install, and follow the installer prompts.
 
