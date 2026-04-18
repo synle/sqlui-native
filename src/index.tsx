@@ -10,7 +10,7 @@ import App from "src/frontend/App";
 import SessionExpiredPage from "src/frontend/views/SessionExpiredPage";
 import SessionSelectPage from "src/frontend/views/SessionSelectPage";
 import ActionDialogs from "src/frontend/components/ActionDialogs";
-import ElectronEventListener from "src/frontend/components/ElectronEventListener";
+import NativeEventListener from "src/frontend/components/NativeEventListener";
 import DataSnapshotListView from "src/frontend/DataSnapshotListView";
 import DataSnapshotView from "src/frontend/DataSnapshotView";
 import ActionDialogsContextProvider from "src/frontend/hooks/useActionDialogs";
@@ -173,10 +173,11 @@ function DevtoolsToggle() {
 
 /**
  * Initializes the React Query client and mounts the full application into the #body DOM node.
+ * Awaits platform initialization (Tauri sidecar port resolution or Electron IPC setup).
  */
-const renderApp = function () {
-  // Initialize platform (sets up Electron IPC for shell integration)
-  initPlatform();
+const renderApp = async function () {
+  // Initialize platform (sets up Tauri sidecar port or Electron IPC for shell integration)
+  await initPlatform();
 
   const queryClient = new QueryClient({
     defaultOptions: {
@@ -201,7 +202,7 @@ const renderApp = function () {
           <Route path="/*" element={<App />} />
         </Routes>
         <ActionDialogs />
-        <ElectronEventListener />
+        <NativeEventListener />
       </CombinedContextProvider>
     </QueryClientProvider>,
   );

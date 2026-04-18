@@ -96,23 +96,15 @@ jobs:
           - platform: macos-latest
             target: aarch64-apple-darwin
             artifact_name: macOS (Apple Silicon ARM64)
-            electron_dist_cmd: npm run dist-macos-arm64
-            electron_dist_glob: "dist/*.dmg"
           - platform: macos-latest
             target: x86_64-apple-darwin
             artifact_name: macOS (Intel x64)
-            electron_dist_cmd: npm run dist-macos-x64
-            electron_dist_glob: "dist/*.dmg"
           - platform: windows-latest
             target: x86_64-pc-windows-msvc
             artifact_name: Windows (x64)
-            electron_dist_cmd: npm run dist-win-x64-exe
-            electron_dist_glob: "dist/*.exe"
           - platform: ubuntu-22.04
             target: x86_64-unknown-linux-gnu
             artifact_name: Linux (x64)
-            electron_dist_cmd: npm run dist-linux-deb
-            electron_dist_glob: "dist/*.deb"
 
     runs-on: ${{ matrix.platform }}
 
@@ -127,24 +119,13 @@ jobs:
           node-version: "24"
           cache: "npm"
 
-      - name: Check for Tauri project
-        id: check_tauri
-        shell: bash
-        run: |
-          if [ -f src-tauri/Cargo.toml ]; then
-            echo "has_tauri=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "has_tauri=false" >> "$GITHUB_OUTPUT"
-          fi
-
       - name: Setup Rust
-        if: steps.check_tauri.outputs.has_tauri == 'true'
         uses: dtolnay/rust-toolchain@stable
         with:
           targets: ${{ matrix.target }}
 
       - name: Install Linux dependencies
-        if: steps.check_tauri.outputs.has_tauri == 'true' && matrix.platform == 'ubuntu-22.04'
+        if: matrix.platform == 'ubuntu-22.04'
         run: |
           sudo apt-get update
           sudo apt-get install -y \
@@ -159,7 +140,6 @@ jobs:
         run: npm ci || npm install
 
       - name: Run Rust tests
-        if: steps.check_tauri.outputs.has_tauri == 'true'
         working-directory: src-tauri
         shell: bash
         run: |
@@ -170,7 +150,6 @@ jobs:
           fi
 
       - name: Build Tauri app
-        if: steps.check_tauri.outputs.has_tauri == 'true'
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -178,7 +157,6 @@ jobs:
           args: --target ${{ matrix.target }}
 
       - name: Upload Tauri bundle artifacts
-        if: steps.check_tauri.outputs.has_tauri == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.artifact_name }}
@@ -194,25 +172,6 @@ jobs:
           compression-level: 9
           if-no-files-found: ignore
 
-      - name: Build Electron app
-        if: steps.check_tauri.outputs.has_tauri == 'false'
-        shell: bash
-        run: bash scripts/build.sh
-
-      - name: Package Electron distributable
-        if: steps.check_tauri.outputs.has_tauri == 'false'
-        shell: bash
-        run: ${{ matrix.electron_dist_cmd }}
-
-      - name: Upload Electron artifacts
-        if: steps.check_tauri.outputs.has_tauri == 'false'
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ matrix.artifact_name }}
-          path: ${{ matrix.electron_dist_glob }}
-          retention-days: 30
-          compression-level: 9
-          if-no-files-found: ignore
 
   pr_comment:
     if: github.event_name == 'pull_request'
