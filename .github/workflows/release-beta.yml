@@ -1,4 +1,4 @@
-name: Tauri Release
+name: Release Beta
 
 on:
   workflow_dispatch:
@@ -34,7 +34,8 @@ jobs:
         run: |
           VERSION=$(node -p "require('./package.json').version")
           SHORT_SHA=$(git rev-parse --short HEAD)
-          TAG="beta-${VERSION}-${SHORT_SHA}"
+          BRANCH_NAME=$(echo "${GITHUB_REF#refs/heads/}" | sed 's/[^a-zA-Z0-9._-]/-/g')
+          TAG="release-beta-${BRANCH_NAME}-${SHORT_SHA}"
           echo "tag=$TAG" >> "$GITHUB_OUTPUT"
           echo "Release tag: $TAG"
 
