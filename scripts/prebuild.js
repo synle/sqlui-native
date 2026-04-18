@@ -26,4 +26,3 @@ const buildPkgJson = JSON.stringify(buildPkg, null, 2);
 fs.writeFileSync("build/package.json", buildPkgJson);
 fs.writeFileSync("public/package.json", buildPkgJson);
 log("Wrote: build/package.json and public/package.json (minimal, no 'build' key)");
-
