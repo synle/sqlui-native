@@ -19,6 +19,7 @@ const buildPkg = {
   name: rootPkg.name,
   version: rootPkg.version,
   main: rootPkg.main,
+  author: rootPkg.author,
   dependencies: rootPkg.dependencies,
 };
 const buildPkgJson = JSON.stringify(buildPkg, null, 2);
