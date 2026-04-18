@@ -4,15 +4,18 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-SQLUI Native is a cross-platform Electron desktop SQL/NoSQL database client and REST API client supporting MySQL, MariaDB, MSSQL, PostgreSQL, SQLite, Cassandra, MongoDB, Redis, Azure CosmosDB, Azure Table Storage, Salesforce (SFDC), and REST API (curl/fetch).
+SQLUI Native is a cross-platform desktop SQL/NoSQL database client and REST API client supporting MySQL, MariaDB, MSSQL, PostgreSQL, SQLite, Cassandra, MongoDB, Redis, Azure CosmosDB, Azure Table Storage, Salesforce (SFDC), and REST API (curl/fetch). The desktop shell uses **Tauri v2** with a **Node.js sidecar** (Express server).
 
 ## Commands
 
 ```bash
 npm install             # Install dependencies
-npm start               # Run in Electron (dev mode)
-npm run dev             # Run sqlui-server + Vite dev server at http://localhost:3000
-npm run build           # Build frontend (Vite) + Electron + sqlui-server
+npm start               # Run in Tauri dev mode (alias for npx tauri dev)
+npx tauri dev           # Run Tauri + Vite dev server + sqlui-server
+npx tauri build         # Build production Tauri app (.dmg/.exe/.deb)
+npm run dev             # Run sqlui-server + Vite dev server at http://localhost:3000 (browser only)
+npm run build           # Build frontend (Vite) + sqlui-server
+npm run build:tauri     # Build frontend + sidecar bundle + prepare resources for Tauri
 npm test                # Run Vitest tests (watch mode)
 npm run test-ci         # Run Vitest tests (CI, no watch)
 npm run lint            # ESLint with auto-fix
@@ -42,7 +45,25 @@ npx vitest run --config vitest.integration.config.ts src/common/adapters/Relatio
 
 ### Two Runtime Modes
 
-The app runs in **Electron mode** (`npm start`) or **browser mode** (`npm run dev`). Both share the same backend code in `src/common/`. In both modes, the frontend communicates with the backend via HTTP through the sqlui-server (Express). In Electron mode, the server is embedded in the main process on a dynamic port. In browser mode, the server runs standalone on port 3001.
+The app runs in **Tauri mode** (`npx tauri dev` / `npx tauri build`) or **browser mode** (`npm run dev`). Both share the same backend code in `src/common/`. In both modes, the frontend communicates with the backend via HTTP through the sqlui-server (Express). In Tauri mode, the server runs as a **Node.js sidecar process** on a dynamic port. In browser mode, the server runs standalone on port 3001.
+
+### Tauri + Node.js Sidecar Architecture
+
+- **Tauri** (Rust) provides the desktop shell: native window, menus, process lifecycle
+- **Node.js sidecar**: Tauri spawns `node sqlui-server.js` as a child process on a random port
+- **Port protocol**: The sidecar prints `__SIDECAR_PORT__=<port>` to stdout; Tauri reads it
+- **Parent-death detection**: Sidecar monitors stdin; when Tauri exits, stdin closes and the sidecar shuts down
+- **Dev mode**: `npx tauri dev` runs `npm run dev` (Vite + sqlui-server on port 3001), sidecar is skipped — the Vite proxy handles `/api/*` routing
+- **Production**: All JS dependencies are bundled into a single `sqlui-server.js` (7MB) via `vite.sqlui-server.sidecar.config.ts` — no `node_modules` needed at runtime
+- **System Node.js required**: The sidecar uses the system's `node` binary (Node 22+ for `node:sqlite`). `find_system_node()` in `src-tauri/src/lib.rs` probes fnm/nvm/volta/mise/homebrew paths since GUI apps don't inherit shell PATH
+
+### Tauri-Specific Gotchas
+
+- **CSP**: `tauri.conf.json` must allow `connect-src http://127.0.0.1:*` (sidecar HTTP) and `https://api.github.com` (update check). `style-src 'unsafe-inline'` is required for MUI/Emotion — use `dangerousDisableAssetCspModification: ["style-src"]` to prevent Tauri from adding nonces
+- **crossorigin attributes**: Vite adds `crossorigin` to `<script>`/`<link>` tags which breaks `tauri://` protocol. The `strip-crossorigin` plugin in `vite.frontend.config.ts` removes them
+- **CORS**: The Express server needs `Access-Control-Allow-Origin: *` headers because the frontend runs on `tauri://localhost` (cross-origin to `http://127.0.0.1`)
+- **`src-tauri/resources/`**: Must exist before `cargo build` (Tauri's build.rs validates resource paths at compile time). In CI, run `mkdir -p src-tauri/resources && npm run build:tauri` before `cargo test` or `tauri build`
+- **App location**: Production `.app` must run from `/Applications/` or DMG mount — running from `/tmp/` causes `Failed to resolve resource dir` panic
 
 ### Frontend/Backend Module Boundary
 
@@ -51,7 +72,7 @@ The app runs in **Electron mode** (`npm start`) or **browser mode** (`npm run de
 Forbidden imports from frontend-reachable code:
 
 - `PersistentStorage.ts`, `PersistentStorageJsonFile.ts`, `PersistentStorageSqlite.ts`, `PersistentStorageMigration.ts`
-- `electron`, `node:fs`, `node:path`, `node:sqlite`
+- `node:fs`, `node:path`, `node:sqlite`
 - Any module in `src/common/` that transitively imports the above
 
 **Frontend-reachable `src/common/` code** includes `DataScriptFactory.ts`, all adapter `scripts.ts` files, and anything they import (e.g., `renderCodeSnippet.ts`). These run on both frontend and backend — they must be pure (no I/O, no Node.js APIs).
@@ -86,7 +107,7 @@ All persisted models (`Session`, `ConnectionProps`, `ConnectionQuery`, `FolderIt
 
 - **`src/frontend/`** - React 19 UI (MUI v9, React Query, Monaco Editor, React Router v7)
 - **`src/frontend/platform/`** - Platform abstraction layer (Electron vs browser). Auto-detects environment at import time.
-- **`src/electron/`** - Electron main process (window management, embedded server, IPC for menus/shell)
+- **`src-tauri/`** - Tauri v2 Rust shell (sidecar management, native menus, window lifecycle)
 - **`src/common/`** - Shared backend: database adapters, API endpoint handlers, persistent storage
 - **`src/sqlui-server/`** - Express server wrapping the shared backend (embedded in Electron, standalone in dev)
 - **`typings/index.ts`** - Central type definitions (`SqluiCore`, `SqluiFrontend`, `SqlAction`, `SqluiEnums`)
@@ -450,7 +471,7 @@ Never use an empty `finally` block — replace it with `catch (_err) {}` when wr
 After any build-related or Vite config change, run the affected build task to verify it works:
 
 - Frontend changes (`vite.frontend.config.ts`, `index.html`, `src/frontend/`): `npm run build`
-- Electron changes (`vite.electron.config.ts`, `src/electron/`): `npm run build-electron`
+- Tauri/sidecar changes (`src-tauri/`, `vite.sqlui-server.sidecar.config.ts`): `npm run build:tauri && npx tauri build`
 - Server changes (`vite.sqlui-server.config.ts`, `src/sqlui-server/`): `npm run build-server`
 - Shared backend changes (`src/common/`): run all three builds
 
