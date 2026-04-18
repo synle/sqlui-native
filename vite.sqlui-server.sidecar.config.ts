@@ -8,7 +8,7 @@ import path from "node:path";
  *
  * node:sqlite is a Node 22+ built-in and does not need to be externalized.
  */
-const externalsDeps = ["electron"];
+const externalsDeps: string[] = [];
 
 /**
  * Vite build configuration for the sqlui-server sidecar bundle.
