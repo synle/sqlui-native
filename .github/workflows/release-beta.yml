@@ -19,6 +19,8 @@ env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
   ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
   BUILD_CHANNEL: production
+  ELECTRON_CACHE: ${{ github.workspace }}/.cache/electron
+  ELECTRON_BUILDER_CACHE: ${{ github.workspace }}/.cache/electron-builder
 
 jobs:
   create_release:
@@ -122,13 +124,33 @@ jobs:
           node-version: "24"
           cache: "npm"
 
+      - name: Check for Tauri project
+        id: check_tauri
+        shell: bash
+        run: |
+          if [ -f src-tauri/Cargo.toml ]; then
+            echo "has_tauri=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_tauri=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Cache Electron binaries
+        if: steps.check_tauri.outputs.has_tauri == 'false'
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ github.workspace }}/.cache/electron
+            ${{ github.workspace }}/.cache/electron-builder
+          key: electron-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+
       - name: Setup Rust
+        if: steps.check_tauri.outputs.has_tauri == 'true'
         uses: dtolnay/rust-toolchain@stable
         with:
           targets: ${{ matrix.target }}
 
       - name: Install Linux dependencies
-        if: matrix.platform == 'ubuntu-22.04'
+        if: steps.check_tauri.outputs.has_tauri == 'true' && matrix.platform == 'ubuntu-22.04'
         run: |
           sudo apt-get update
           sudo apt-get install -y \
@@ -142,17 +164,31 @@ jobs:
       - name: Install dependencies
         run: npm ci || npm install
 
+      - name: Detect build mode
+        id: detect
+        shell: bash
+        run: |
+          if [ -f src-tauri/Cargo.toml ]; then
+            echo "mode=tauri" >> "$GITHUB_OUTPUT"
+          else
+            echo "mode=electron" >> "$GITHUB_OUTPUT"
+          fi
+
+      # --- Tauri build path ---
       - name: Prepare sidecar resources
+        if: steps.detect.outputs.mode == 'tauri'
         run: mkdir -p src-tauri/resources && npm run build:tauri
 
       - name: Build Tauri app
+        if: steps.detect.outputs.mode == 'tauri'
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           args: --target ${{ matrix.target }}
 
-      - name: Upload artifacts to release
+      - name: Upload Tauri artifacts to release
+        if: steps.detect.outputs.mode == 'tauri'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: bash
@@ -174,7 +210,8 @@ jobs:
             fi
           done
 
-      - name: Upload build artifacts
+      - name: Upload Tauri build artifacts
+        if: steps.detect.outputs.mode == 'tauri'
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.artifact_name }}
@@ -186,6 +223,55 @@ jobs:
             src-tauri/target/${{ matrix.target }}/release/bundle/deb/*.deb
             src-tauri/target/${{ matrix.target }}/release/bundle/appimage/*.AppImage
             src-tauri/target/${{ matrix.target }}/release/bundle/rpm/*.rpm
+          retention-days: 30
+          compression-level: 9
+          if-no-files-found: ignore
+
+      # --- Electron build path ---
+      - name: Build Electron app
+        if: steps.detect.outputs.mode == 'electron'
+        shell: bash
+        run: bash scripts/build.sh
+
+      - name: Package Electron distributable
+        if: steps.detect.outputs.mode == 'electron'
+        shell: bash
+        run: |
+          if [ "${{ matrix.platform }}" = "macos-latest" ] && [ "${{ matrix.target }}" = "aarch64-apple-darwin" ]; then
+            npm run dist-macos-arm64
+          elif [ "${{ matrix.platform }}" = "macos-latest" ] && [ "${{ matrix.target }}" = "x86_64-apple-darwin" ]; then
+            npm run dist-macos-x64
+          elif [ "${{ matrix.platform }}" = "windows-latest" ]; then
+            npm run dist-win-x64-exe
+          elif [ "${{ matrix.platform }}" = "ubuntu-22.04" ]; then
+            npm run dist-linux-deb
+          fi
+
+      - name: Upload Electron artifacts to release
+        if: steps.detect.outputs.mode == 'electron'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          TAG="${{ needs.create_release.outputs.release_tag }}"
+          for file in dist/*.dmg dist/*.exe dist/*.deb dist/*.rpm dist/*.AppImage dist/*.snap; do
+            if [ -f "$file" ]; then
+              echo "Uploading: $file"
+              gh release upload "$TAG" "$file" --clobber
+            fi
+          done
+
+      - name: Upload Electron build artifacts
+        if: steps.detect.outputs.mode == 'electron'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact_name }}
+          path: |
+            dist/*.dmg
+            dist/*.exe
+            dist/*.deb
+            dist/*.rpm
+            dist/*.AppImage
           retention-days: 30
           compression-level: 9
           if-no-files-found: ignore
