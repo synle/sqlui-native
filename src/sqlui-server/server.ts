@@ -45,3 +45,11 @@ export function initializeEndpoints(): void {
 
 /** Default port for the sqlui-server in standalone/dev mode. */
 export const port = 3001;
+
+/**
+ * Health check endpoint for verifying the server is running.
+ * Returns process ID and uptime for diagnostics.
+ */
+app.get("/api/health", (_req, res) => {
+  res.status(200).json({ status: "ok", pid: process.pid, uptime: process.uptime() });
+});

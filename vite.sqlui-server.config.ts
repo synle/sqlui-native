@@ -7,7 +7,6 @@ import appPackage from "./package.json";
  * These are available via node_modules at runtime and do not need to be inlined.
  */
 const externalsDeps = [
-  "electron",
   ...Object.keys((appPackage as any).optionalDependencies || {}),
   ...Object.keys(appPackage.dependencies || {}),
 ];
