@@ -58,6 +58,7 @@ Download, install, and launch sqlui-native from the latest GitHub release.
    ```
    hdiutil detach "/Volumes/sqlui-native <version>"
    ```
+
    - Strip quarantine attribute:
 
    ```
@@ -81,6 +82,7 @@ Download, install, and launch sqlui-native from the latest GitHub release.
 
 5. **Linux:**
    - Download the `.deb` (or `.AppImage` / `.rpm` based on user preference):
+
    ```
    gh release download <tag> --pattern "sqlui-native.deb" --dir /tmp
    ```
