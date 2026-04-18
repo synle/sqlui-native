@@ -2,15 +2,6 @@ import { describe, test, expect, vi, beforeEach, afterAll } from "vitest";
 import { DatabaseSync } from "node:sqlite";
 import path from "node:path";
 
-// Mock electron so the fallback path is used
-vi.mock("electron", () => ({
-  app: {
-    getPath: () => {
-      throw new Error("not in electron");
-    },
-  },
-}));
-
 // Use a counter to generate unique storage names per test, avoiding collisions
 let testCounter = 0;
 

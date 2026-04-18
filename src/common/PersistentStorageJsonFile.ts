@@ -3,23 +3,14 @@
  * @deprecated Use PersistentStorageSqlite instead. This backend will be removed once all users have migrated to SQLite storage.
  */
 
-import { app } from "electron";
 import fs from "node:fs";
+import os from "node:os";
 import path from "node:path";
 import type { IPersistentStorage, StorageContent, StorageEntry } from "src/common/IPersistentStorage";
 import { getGeneratedRandomId } from "src/common/utils/commonUtils";
 import { SqluiCore } from "typings";
 
-const homedir = require("os").homedir();
-
-let baseDir: string;
-try {
-  // electron path
-  baseDir = path.join(app.getPath("appData"), "sqlui-native");
-} catch (_err) {
-  // fall back for non-Electron environments (sqlui-server, dev mode)
-  baseDir = path.join(homedir, ".sqlui-native");
-}
+const baseDir = path.join(os.homedir(), ".sqlui-native");
 fs.mkdirSync(baseDir, { recursive: true });
 
 /** Absolute path to the directory where all persistent storage files are saved. */
