@@ -3,7 +3,6 @@ import type { PlatformBridge } from "src/frontend/platform/types";
 
 export const browserPlatform: PlatformBridge = {
   isDesktop: false,
-  sidecarBaseUrl: "",
 
   openExternalUrl(url: string) {
     window.open(url, "_blank");
