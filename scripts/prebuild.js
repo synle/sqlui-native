@@ -27,7 +27,6 @@ fs.writeFileSync("build/package.json", buildPkgJson);
 fs.writeFileSync("public/package.json", buildPkgJson);
 log("Wrote: build/package.json and public/package.json (minimal, no 'build' key)");
 
-
 // Sync version from package.json to Tauri config files (if they exist)
 const tauriConfPath = path.join("src-tauri", "tauri.conf.json");
 if (fs.existsSync(tauriConfPath)) {
@@ -42,10 +41,7 @@ if (fs.existsSync(tauriConfPath)) {
 const cargoTomlPath = path.join("src-tauri", "Cargo.toml");
 if (fs.existsSync(cargoTomlPath)) {
   let cargoToml = fs.readFileSync(cargoTomlPath, "utf-8");
-  const updated = cargoToml.replace(
-    /^version\s*=\s*"[^"]*"/m,
-    `version = "${rootPkg.version}"`
-  );
+  const updated = cargoToml.replace(/^version\s*=\s*"[^"]*"/m, `version = "${rootPkg.version}"`);
   if (updated !== cargoToml) {
     fs.writeFileSync(cargoTomlPath, updated);
     log(`Synced version ${rootPkg.version} to ${cargoTomlPath}`);

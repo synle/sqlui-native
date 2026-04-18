@@ -36,9 +36,7 @@ export const tauriPlatform: PlatformBridge = {
   },
 
   openExternalUrl(url: string) {
-    import("@tauri-apps/plugin-opener")
-      .then(({ openUrl }) => openUrl(url))
-      .catch(() => window.open(url, "_blank"));
+    import("@tauri-apps/plugin-opener").then(({ openUrl }) => openUrl(url)).catch(() => window.open(url, "_blank"));
   },
 
   openAppWindow(hashLink: string) {
@@ -61,9 +59,7 @@ export const tauriPlatform: PlatformBridge = {
   },
 
   executeShellCommand(command: string): Promise<string> {
-    return import("@tauri-apps/api/core")
-      .then(({ invoke }) => invoke<string>("execute_shell", { command }))
-      .catch(() => "");
+    return import("@tauri-apps/api/core").then(({ invoke }) => invoke<string>("execute_shell", { command })).catch(() => "");
   },
 
   getFilePath(_file: File): string | null {
