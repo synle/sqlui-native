@@ -6,11 +6,7 @@ import appPackage from "./package.json";
  * All runtime dependencies (from package.json) that should remain external in the sqlui-server bundle.
  * These are available via node_modules at runtime and do not need to be inlined.
  */
-const externalsDeps = [
-  "electron",
-  ...Object.keys((appPackage as any).optionalDependencies || {}),
-  ...Object.keys(appPackage.dependencies || {}),
-];
+const externalsDeps = [...Object.keys((appPackage as any).optionalDependencies || {}), ...Object.keys(appPackage.dependencies || {})];
 
 /**
  * Vite build configuration for the sqlui-server.

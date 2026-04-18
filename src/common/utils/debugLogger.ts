@@ -23,14 +23,8 @@ function getLogFilePath(): string {
 
   // Replicate the storageDir resolution from PersistentStorageJsonFile
   // to avoid importing it (which would create a circular dependency).
-  let baseDir: string;
-  try {
-    const { app } = require("electron");
-    baseDir = path.join(app.getPath("appData"), "sqlui-native");
-  } catch (_err) {
-    const homedir = require("os").homedir();
-    baseDir = path.join(homedir, ".sqlui-native");
-  }
+  const homedir = require("os").homedir();
+  const baseDir = path.join(homedir, ".sqlui-native");
 
   fs.mkdirSync(baseDir, { recursive: true });
   logFilePath = path.join(baseDir, "debug.log");

@@ -1,15 +1,6 @@
 import { describe, test, expect, vi, beforeEach } from "vitest";
 import path from "node:path";
 
-// Mock electron so the fallback path is used
-vi.mock("electron", () => ({
-  app: {
-    getPath: () => {
-      throw new Error("not in electron");
-    },
-  },
-}));
-
 // Track written files in memory so we can verify write behavior
 const mockFiles = new Map<string, string>();
 
