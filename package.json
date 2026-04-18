@@ -1,9 +1,10 @@
 {
   "name": "sqlui-native",
   "version": "1.76.1",
-  "engine": "Tauri",
+  "engine": "Electron",
   "private": true,
   "description": "A minimal native desktop client for most databases supporting MySQL, MariaDB, MS SQL Server, PostgresSQL, SQLite, Cassandra, MongoDB and Redis.",
+  "main": "main.js",
   "homepage": "./",
   "scripts": {
     "### Cleanup & Maintenance ###": "##################################################################################",
@@ -17,17 +18,13 @@
     "### Build Lifecycle ###": "##################################################################################",
     "prebuild": "node scripts/prebuild.js",
     "build": "cross-env NODE_OPTIONS=--max-old-space-size=4096 vite build --config vite.frontend.config.ts",
-    "postbuild": "npm run build-server",
+    "postbuild": "npm run build-server && npm run build-electron",
     "build-server": "vite build --config vite.sqlui-server.config.ts",
-    "build-server-sidecar": "vite build --config vite.sqlui-server.sidecar.config.ts",
-    "build:tauri": "npm run prebuild && npm run build && npm run build-server-sidecar && node scripts/prepare-sidecar.js",
-    "tauri": "tauri",
-    "tauri:dev": "tauri dev",
-    "tauri:build": "tauri build",
+    "build-electron": "vite build --config vite.electron.config.ts",
     "### Development & Execution ###": "##################################################################################",
     "predev": "node scripts/prebuild.js",
     "dev": "concurrently \"npm run dev-server\" \"npm run start-webapp\"",
-    "start": "npm run tauri:dev",
+    "start": "cross-env ENV_TYPE='electron-dev' VITE_DEV_SERVER_URL='http://localhost:3000' electron .",
     "start-webapp": "cross-env NODE_OPTIONS='--max-old-space-size=4096' ENV_TYPE='browser' vite --config vite.frontend.config.ts --strictPort",
     "prestart-server": "npm run build-server",
     "start-server": "cross-env NODE_OPTIONS='--max-old-space-size=4096' node build/sqlui-server.js",
@@ -44,11 +41,15 @@
     "test-e2e": "npx playwright test",
     "test-smoke": "npx playwright test --config playwright.smoke.config.ts",
     "### Distribution & Packaging ###": "##################################################################################",
-    "dist": "npm run tauri:build"
+    "dist": "electron-builder",
+    "dist-mac-arm64": "electron-builder --mac --arm64",
+    "dist-mac-x64": "electron-builder --mac --x64",
+    "dist-linux": "electron-builder --linux",
+    "dist-win": "electron-builder --win"
   },
   "repository": "https://github.com/synle/sqlui-native",
   "keywords": [
-    "Tauri",
+    "Electron",
     "SQL",
     "Native Desktop Application",
     "MySQL",
@@ -75,9 +76,6 @@
     "@tanstack/react-query-devtools": "^5.99.0",
     "@tanstack/react-table": "^8.21.3",
     "@tanstack/react-virtual": "^3.13.23",
-    "@tauri-apps/api": "^2.10.1",
-    "@tauri-apps/plugin-opener": "^2.5.3",
-    "@tauri-apps/plugin-shell": "^2.3.5",
     "@testing-library/dom": "^10.4.1",
     "@xyflow/react": "^12.10.2",
     "cassandra-driver": "^3.6.0",
@@ -103,7 +101,6 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.58.2",
-    "@tauri-apps/cli": "^2.10.1",
     "@testing-library/react": "^16.3.2",
     "@types/cassandra-driver": "^3.6.0",
     "@types/js-beautify": "^1.13.3",
@@ -119,6 +116,8 @@
     "body-parser": "^1.20.0",
     "concurrently": "^7.4.0",
     "cross-env": "^7.0.3",
+    "electron": "^35.1.2",
+    "electron-builder": "^26.0.12",
     "eslint": "^8.35.0",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-unused-imports": "^4.4.1",
@@ -132,5 +131,40 @@
     "typescript": "~5.8",
     "vite": "^6.4.2",
     "vitest": "^0.34.6"
+  },
+  "build": {
+    "extends": null,
+    "appId": "io.synle.github.sqlui-native",
+    "directories": {
+      "app": "build"
+    },
+    "files": [
+      "**/*",
+      "!sqlui-server.js"
+    ],
+    "win": {
+      "icon": "build/logo512.png",
+      "artifactName": "${name}-${arch}.${ext}"
+    },
+    "appx": {
+      "publisherDisplayName": "Sy Le",
+      "applicationId": "sqluiNative"
+    },
+    "mac": {
+      "icon": "build/logo512.png",
+      "artifactName": "${name}-${arch}.${ext}"
+    },
+    "linux": {
+      "synopsis": "sqlui-native - A minimal native desktop client for most databases supporting MySQL, MariaDB, MS SQL Server, PostgresSQL, SQLite, Cassandra, MongoDB and Redis.",
+      "icon": "build/logo256.icns",
+      "category": "Development",
+      "artifactName": "${name}.${ext}",
+      "target": [
+        "deb",
+        "rpm",
+        "snap",
+        "pacman"
+      ]
+    }
   }
 }
