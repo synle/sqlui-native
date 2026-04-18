@@ -1,6 +1,6 @@
 [package]
 name = "sqlui-native"
-version = "1.76.0"
+version = "2.76.4"
 edition = "2021"
 description = "A cross-platform desktop SQL/NoSQL database client"
 authors = ["Sy Le"]
@@ -14,7 +14,7 @@ crate-type = ["staticlib", "cdylib", "rlib"]
 tauri-build = { version = "2", features = [] }
 
 [dependencies]
-tauri = { version = "2", features = [] }
+tauri = { version = "2", features = ["devtools"] }
 tauri-plugin-shell = "2"
 tauri-plugin-dialog = "2"
 tauri-plugin-opener = "2"
