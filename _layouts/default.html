@@ -106,8 +106,7 @@
             <a id="${cfg.id}" href="${baseUrl}/${cfg.filename}" class="btn">
               <i class="fas fa-download" style="margin-right: 5px;"></i> ${cfg.label}
             </a>`;
-            }).join("") +
-            `<a id="btn-other-releases" href="${otherReleasesUrl}" class="btn">Other Releases</a>`;
+            }).join("") + `<a id="btn-other-releases" href="${otherReleasesUrl}" class="btn">Other Releases</a>`;
 
           // 3. Update instructions/links in the main content (<li> items)
           document.querySelectorAll("li").forEach((li) => {
