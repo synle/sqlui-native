@@ -94,16 +94,16 @@ jobs:
       matrix:
         include:
           - platform: macos-latest
-            dist_cmd: npm run dist-mac-arm64
+            dist_cmd: npm run dist-macos-arm64
             artifact_name: macOS (Apple Silicon ARM64)
           - platform: macos-latest
-            dist_cmd: npm run dist-mac-x64
+            dist_cmd: npm run dist-macos-x64
             artifact_name: macOS (Intel x64)
           - platform: windows-latest
-            dist_cmd: npm run dist-win
+            dist_cmd: npm run dist-win-x64-exe
             artifact_name: Windows (x64)
           - platform: ubuntu-22.04
-            dist_cmd: npm run dist-linux
+            dist_cmd: npm run dist-linux-deb
             artifact_name: Linux (x64)
 
     runs-on: ${{ matrix.platform }}
@@ -122,6 +122,14 @@ jobs:
         with:
           node-version: "24"
           cache: "npm"
+
+      - name: Cache Electron and electron-builder binaries
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ github.workspace }}/.cache/electron
+            ${{ github.workspace }}/.cache/electron-builder
+          key: electron-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
 
       - name: Install dependencies
         run: npm ci || npm install
@@ -143,7 +151,6 @@ jobs:
             dist/*.msi
             dist/*.deb
             dist/*.rpm
-            dist/*.snap
             dist/*.AppImage
           retention-days: 30
           compression-level: 9
