@@ -40,15 +40,6 @@ const { mockFiles, mockDirs, renamedFiles, norm } = vi.hoisted(() => {
   };
 });
 
-// Mock electron so the fallback path is used
-vi.mock("electron", () => ({
-  app: {
-    getPath: () => {
-      throw new Error("not in electron");
-    },
-  },
-}));
-
 vi.mock("node:fs", () => ({
   default: {
     mkdirSync: vi.fn((dir: string) => {

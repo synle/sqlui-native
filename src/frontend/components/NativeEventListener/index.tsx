@@ -4,11 +4,11 @@ import { useActionDialogs } from "src/frontend/hooks/useActionDialogs";
 import { platform } from "src/frontend/platform";
 import { SqluiEnums } from "typings";
 
-/** Listens for native menu command events and dispatches them
+/** Listens for native menu command events (Tauri or Electron) and dispatches them
  * to the MissionControl command system. Ignores commands when a dialog is active
  * (except for checkForUpdate). Renders nothing.
  */
-export default function ElectronEventListener() {
+export default function NativeEventListener() {
   const { selectCommand } = useCommands();
   const { dialog } = useActionDialogs();
 
