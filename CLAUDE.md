@@ -496,3 +496,8 @@ function getDatabases(connectionId: string): Promise<DatabaseMetaData[]> { ... }
 ```
 
 > **Migration note:** Existing code uses JSDoc-style comments. When touching a file, convert its doc comments to TSDoc style (remove `{type}` annotations from `@param`/`@returns` tags). No need to bulk-convert files you aren't otherwise modifying.
+
+## Git / PR Merge Policy
+
+- Always use **squash and merge** when merging PRs. Never use merge commits or rebase merges. This keeps the git history clean with one commit per PR.
+- You may `git merge origin/main` or `git merge origin/master` locally to sync branches, but PR merges must always be squash merges.
