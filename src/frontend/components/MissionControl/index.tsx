@@ -1167,7 +1167,8 @@ export default function MissionControl() {
   const onCheckForUpdate = async () => {
     const newVersion = await fetch("https://api.github.com/repos/synle/sqlui-native/releases/latest")
       .then((r) => r.json())
-      .then((r) => r.tag_name);
+      .then((r) => r.tag_name)
+      .catch(() => "unknown");
 
     /** Compares two semver strings (e.g. "1.69.1" vs "1.70.0"). Returns true if local >= remote. */
     const isVersionUpToDate = (local: string, remote: string): boolean => {
