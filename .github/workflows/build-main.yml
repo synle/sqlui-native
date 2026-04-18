@@ -139,6 +139,9 @@ jobs:
       - name: Install dependencies
         run: npm ci || npm install
 
+      - name: Prepare sidecar resources
+        run: mkdir -p src-tauri/resources && npm run build:tauri
+
       - name: Run Rust tests
         working-directory: src-tauri
         shell: bash
