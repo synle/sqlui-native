@@ -40,6 +40,7 @@ If no previous tag, use `git log --pretty=format:"- %s (%h)" --no-merges -20` fo
 ### 4. Show the user the release notes and ask for confirmation
 
 Display:
+
 - Current version from package.json
 - Last official release tag
 - Number of commits since last release
