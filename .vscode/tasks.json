@@ -9,18 +9,25 @@
       "problemMatcher": []
     },
     {
-      "label": "build-electron",
-      "type": "npm",
-      "script": "build-electron",
-      "group": "build",
-      "problemMatcher": []
-    },
-    {
       "label": "build-server",
       "type": "npm",
       "script": "build-server",
       "group": "build",
       "problemMatcher": []
+    },
+    {
+      "label": "build:tauri",
+      "type": "npm",
+      "script": "build:tauri",
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "typecheck",
+      "type": "npm",
+      "script": "typecheck",
+      "group": "build",
+      "problemMatcher": ["$tsc"]
     }
   ]
 }
