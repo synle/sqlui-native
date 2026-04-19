@@ -530,6 +530,16 @@ function getDatabases(connectionId: string): Promise<DatabaseMetaData[]> { ... }
 
 > **Migration note:** Existing code uses JSDoc-style comments. When touching a file, convert its doc comments to TSDoc style (remove `{type}` annotations from `@param`/`@returns` tags). No need to bulk-convert files you aren't otherwise modifying.
 
+## CI / Release Workflows
+
+Use `/release-official` and `/release-beta` skills for interactive triggering from Claude Code.
+
+- **`release-official.yml`** — Thin wrapper that delegates to `.github/workflows/package.yml`. The `package.yml` reusable workflow handles the full official release lifecycle: code formatting, version resolution from `package.json`, draft release creation, multi-platform builds (macOS ARM64/Intel, Windows x64/ARM64, Linux deb/rpm/snap/pacman/AppImage), integration tests, rollback on failure, publish (un-draft + mark latest), and GitHub Pages deployment.
+- **`release-beta.yml`** — Standalone beta release workflow using shared composite actions from `synle/gha-workflows/actions/release/`:
+  - `begin-release` (prepare job) — checkout, resolve tag (`release-beta-<date>-<sha>`), cleanup old release, create draft prerelease
+  - Matrix build job (4 platforms) — auto-detects Tauri vs Electron, builds and uploads artifacts directly to the release via `gh release upload --clobber`
+  - `end-release` (finalize job) — generates release notes, marks release as `[Success]` or `[Error]` based on build result
+
 ## Git / PR Merge Policy
 
 - Always use **squash and merge** when merging PRs. Never use merge commits or rebase merges. This keeps the git history clean with one commit per PR.

@@ -23,86 +23,21 @@ env:
   ELECTRON_BUILDER_CACHE: ${{ github.workspace }}/.cache/electron-builder
 
 jobs:
-  create_release:
+  prepare:
     runs-on: ubuntu-latest
     outputs:
-      release_tag: ${{ steps.tag.outputs.tag }}
-      sha: ${{ steps.resolve.outputs.sha }}
+      tag: ${{ steps.pre.outputs.tag }}
+      sha: ${{ steps.pre.outputs.sha }}
     steps:
-      - name: Resolve SHA
-        id: resolve
-        shell: bash
-        run: |
-          SHA="${{ inputs.sha }}"
-          if [ -z "$SHA" ]; then
-            SHA="${{ github.sha }}"
-          fi
-          echo "sha=$SHA" >> "$GITHUB_OUTPUT"
-          echo "Resolved SHA: $SHA"
-
-      - uses: actions/checkout@v6
+      - uses: synle/gha-workflows/actions/release/begin-release@main
+        id: pre
         with:
-          ref: ${{ steps.resolve.outputs.sha }}
-
-      - name: Generate release tag
-        id: tag
-        shell: bash
-        run: |
-          SHORT_SHA=$(git rev-parse --short HEAD)
-          DATE=$(date -u +"%Y-%m-%d-%H-%M")
-          TAG="release-beta-${DATE}-${SHORT_SHA}"
-          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
-          echo "Release tag: $TAG"
-
-      - name: Create or update draft release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        shell: bash
-        run: |
-          TAG="${{ steps.tag.outputs.tag }}"
-
-          # Delete existing release with this tag if any
-          gh release delete "$TAG" --yes --cleanup-tag 2>/dev/null || true
-
-          # Build release notes
-          NOTES=""
-
-          PREV_TAG=$(gh release list --limit 20 --json tagName,isDraft --jq '[.[] | select(.isDraft == false) | .tagName] | .[0] // empty' 2>/dev/null || true)
-          if [ -n "$PREV_TAG" ] && [ "$PREV_TAG" != "$TAG" ]; then
-            CHANGELOG=$(git log "${PREV_TAG}..HEAD" --pretty=format:"- %s (\`%h\`)" --no-merges -10 2>/dev/null || true)
-            if [ -n "$CHANGELOG" ]; then
-              TOTAL=$(git rev-list --count --no-merges "${PREV_TAG}..HEAD" 2>/dev/null || echo "0")
-              NOTES="${NOTES}## Changes since ${PREV_TAG}
-
-          ${CHANGELOG}"
-              if [ "$TOTAL" -gt 10 ]; then
-                NOTES="${NOTES}
-          ... and $((TOTAL - 10)) more"
-              fi
-            fi
-          fi
-
-          NOTES="${NOTES}
-
-          ## Install
-          Download the appropriate file for your platform below.
-
-          | Platform | File |
-          |----------|------|
-          | macOS (Apple Silicon) | \`.dmg\` (aarch64) |
-          | macOS (Intel) | \`.dmg\` (x64) |
-          | Windows (x64) | \`.exe\` / \`.msi\` |
-          | Linux (Debian/Ubuntu) | \`.deb\` |
-          | Linux (AppImage) | \`.AppImage\` |
-          | Linux (RPM) | \`.rpm\` |"
-
-          gh release create "$TAG" \
-            --title "$TAG" \
-            --notes "$NOTES" \
-            --draft --prerelease
+          mode: beta
+          project_name: sqlui-native
+          sha: ${{ inputs.sha }}
 
   build:
-    needs: [create_release]
+    needs: [prepare]
     strategy:
       fail-fast: false
       matrix:
@@ -125,7 +60,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
         with:
-          ref: ${{ needs.create_release.outputs.sha }}
+          ref: ${{ needs.prepare.outputs.sha }}
 
       - name: Setup Node
         uses: actions/setup-node@v6
@@ -202,7 +137,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: bash
         run: |
-          TAG="${{ needs.create_release.outputs.release_tag }}"
+          TAG="${{ needs.prepare.outputs.tag }}"
           BUNDLE_DIR="src-tauri/target/${{ matrix.target }}/release/bundle"
 
           for file in \
@@ -262,7 +197,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: bash
         run: |
-          TAG="${{ needs.create_release.outputs.release_tag }}"
+          TAG="${{ needs.prepare.outputs.tag }}"
           for file in dist/*.dmg dist/*.exe dist/*.deb dist/*.rpm dist/*.AppImage dist/*.snap; do
             if [ -f "$file" ]; then
               echo "Uploading: $file"
@@ -286,27 +221,16 @@ jobs:
           if-no-files-found: ignore
 
   finalize:
-    needs: [create_release, build]
+    needs: [prepare, build]
     if: always()
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
-      - uses: actions/checkout@v6
+      - uses: synle/gha-workflows/actions/release/end-release@main
         with:
-          ref: ${{ needs.create_release.outputs.sha }}
-
-      - name: Update release status
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        shell: bash
-        run: |
-          TAG="${{ needs.create_release.outputs.release_tag }}"
-
-          if [ "${{ needs.build.result }}" = "success" ]; then
-            # All builds passed — mark as [Success]
-            gh release edit "$TAG" --title "${TAG} [Success]"
-            echo "Release $TAG marked as [Success]"
-          else
-            # Some builds failed — mark as [Error]
-            gh release edit "$TAG" --title "${TAG} [Error]"
-            echo "::error::Release $TAG marked as [Error] — some builds failed"
-          fi
+          tag: ${{ needs.prepare.outputs.tag }}
+          project_name: sqlui-native
+          mode: beta
+          build_result: ${{ needs.build.result }}
+          sha: ${{ needs.prepare.outputs.sha }}
