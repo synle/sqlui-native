@@ -150,6 +150,29 @@ The import JSON also supports bookmarks with `_type: "bookmark"`:
 
 - **React Query Devtools:** Press `Ctrl+Shift+Alt+D` (Windows/Linux) or `Cmd+Shift+Option+D` (Mac) to toggle React Query Devtools in any build (including packaged/production builds). Useful for inspecting query cache, stale states, and in-flight requests.
 
+### VS Code Setup
+
+The repo includes `.vscode/launch.json` and `.vscode/tasks.json` with pre-configured debug profiles:
+
+| Launch Config                        | What it does                                                      |
+| ------------------------------------ | ----------------------------------------------------------------- |
+| **Debug Server**                     | Runs `npm run start-server` with Node debugger attached           |
+| **Debug Webapp (Chrome)**            | Opens Chrome at `http://localhost:3000` with devtools debugging   |
+| **Debug Tauri (Server + Webapp)**    | Runs `npm start` (Tauri dev mode) with Node debugger attached     |
+| **Debug Dev Mode (Server + Webapp)** | Compound: launches both Server and Webapp together (browser mode) |
+
+**Typical workflow:**
+
+1. Use **Debug Dev Mode (Server + Webapp)** for browser-based development with breakpoints in both frontend and backend.
+2. Use **Debug Tauri (Server + Webapp)** to test the full Tauri desktop app with Node debugging.
+
+**Tasks** (`Cmd+Shift+B` / `Ctrl+Shift+B`):
+
+- `build` — Build frontend + server
+- `build-server` — Build server only
+- `build:tauri` — Full Tauri build (frontend + sidecar + Node binary)
+- `typecheck` — Run TypeScript type check (errors appear in VS Code Problems panel)
+
 ### How to run locally?
 
 #### In Tauri dev mode
