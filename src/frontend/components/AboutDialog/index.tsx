@@ -116,7 +116,7 @@ export function useShowAboutDialog() {
     );
 
     try {
-      await modal({ title: "About", message: contentDom });
+      await modal({ title: "About", message: contentDom, showCloseButton: true, size: "xs" });
     } catch (_err) {
       // user dismissed dialog
     }
