@@ -1,6 +1,6 @@
 {
   "name": "sqlui-native",
-  "version": "2.76.9",
+  "version": "2.76.10",
   "engine": "Tauri + Node Sidecar",
   "private": true,
   "description": "A minimal native desktop client for most databases supporting MySQL, MariaDB, MS SQL Server, PostgresSQL, SQLite, Cassandra, MongoDB and Redis.",
@@ -20,7 +20,7 @@
     "postbuild": "npm run build-server",
     "build-server": "vite build --config vite.sqlui-server.config.ts",
     "build-server-sidecar": "vite build --config vite.sqlui-server.sidecar.config.ts",
-    "build:tauri": "cross-env NODE_OPTIONS=--max-old-space-size=8192 npm run prebuild && npm run build && npm run build-server-sidecar && node scripts/download-node.js && node scripts/prepare-sidecar.js",
+    "build:tauri": "cross-env-shell NODE_OPTIONS=--max-old-space-size=8192 \"npm run prebuild && npm run build && npm run build-server-sidecar && node scripts/download-node.js && node scripts/prepare-sidecar.js\"",
     "tauri": "tauri",
     "tauri:dev": "tauri dev",
     "tauri:build": "tauri build",
