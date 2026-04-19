@@ -21,11 +21,11 @@ Run the app in each runtime mode, pausing for the user to manually verify after 
    ```
 3. Start the sqlui-server (port 3001) in the background:
    ```
-   NODE_OPTIONS='--max-old-space-size=4096' node build/sqlui-server.js
+   node build/sqlui-server.js
    ```
 4. Start the Vite dev server (port 3000) in the background:
    ```
-   NODE_OPTIONS='--max-old-space-size=4096' ENV_TYPE='browser' npx vite --config vite.frontend.config.ts --strictPort
+   ENV_TYPE='browser' npx vite --config vite.frontend.config.ts --strictPort
    ```
 5. Wait for both to be ready, then tell the user:
    - Open http://localhost:3000/
