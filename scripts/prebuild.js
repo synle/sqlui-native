@@ -27,23 +27,13 @@ fs.writeFileSync("build/package.json", buildPkgJson);
 fs.writeFileSync("public/package.json", buildPkgJson);
 log("Wrote: build/package.json and public/package.json (minimal, no 'build' key)");
 
-// Sync version from package.json to Tauri config files (if they exist)
-const tauriConfPath = path.join("src-tauri", "tauri.conf.json");
-if (fs.existsSync(tauriConfPath)) {
-  const tauriConf = JSON.parse(fs.readFileSync(tauriConfPath, "utf-8"));
-  if (tauriConf.version !== rootPkg.version) {
-    tauriConf.version = rootPkg.version;
-    fs.writeFileSync(tauriConfPath, JSON.stringify(tauriConf, null, 2) + "\n");
-    log(`Synced version ${rootPkg.version} to ${tauriConfPath}`);
-  }
-}
-
-const cargoTomlPath = path.join("src-tauri", "Cargo.toml");
-if (fs.existsSync(cargoTomlPath)) {
-  let cargoToml = fs.readFileSync(cargoTomlPath, "utf-8");
-  const updated = cargoToml.replace(/^version\s*=\s*"[^"]*"/m, `version = "${rootPkg.version}"`);
-  if (updated !== cargoToml) {
-    fs.writeFileSync(cargoTomlPath, updated);
-    log(`Synced version ${rootPkg.version} to ${cargoTomlPath}`);
-  }
+// Symlink node_modules into build/ so electron-builder can find native externals
+// (cassandra-driver, pg, tedious, etc. that are excluded from the Vite bundle)
+const buildNodeModules = path.join("build", "node_modules");
+const rootNodeModules = path.resolve("node_modules");
+if (!fs.existsSync(buildNodeModules)) {
+  fs.symlinkSync(rootNodeModules, buildNodeModules, "junction");
+  log(`Symlinked: ${buildNodeModules} -> ${rootNodeModules}`);
+} else {
+  log(`Skipped symlink: ${buildNodeModules} already exists`);
 }

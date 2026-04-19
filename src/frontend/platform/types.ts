@@ -1,15 +1,9 @@
 /** Platform abstraction interface for desktop shell integration.
- * Implementations exist for Electron, Tauri, and browser environments.
+ * Implementations exist for Electron and browser environments.
  */
 export interface PlatformBridge {
-  /** True when running inside a desktop shell (Electron or Tauri). */
+  /** True when running inside a desktop shell (Electron). */
   readonly isDesktop: boolean;
-
-  /** True when running inside Tauri with a sidecar backend. */
-  readonly isTauri?: boolean;
-
-  /** Base URL for the sidecar HTTP server. Empty string when not in Tauri mode. */
-  readonly sidecarBaseUrl: string;
 
   /** Opens a URL in the system's default browser. */
   openExternalUrl(url: string): void;

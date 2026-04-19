@@ -986,7 +986,7 @@ export function setUpDataEndpoints(anExpressAppContext: Express) {
     res.status(202).json(await folderItemsStorage.delete(req.params?.itemId));
   });
 
-  // Open in app window — no-op in Tauri/browser mode (window navigation handled by frontend)
+  // Open in app window — no-op in browser mode (window navigation handled by frontend)
   addDataEndpoint("post", "/api/appWindow", async (_req, res) => {
     res.status(200).send();
   });
