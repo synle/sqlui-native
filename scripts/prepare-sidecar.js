@@ -20,12 +20,8 @@ cpSync("package.json", path.join(RESOURCES_DIR, "package.json"));
 
 // 3. Copy bundled Node.js binary (downloaded by download-node.js)
 const BINARIES_DIR = path.join("src-tauri", "binaries");
-const nodeSrc = process.platform === "win32"
-  ? path.join(BINARIES_DIR, "node.exe")
-  : path.join(BINARIES_DIR, "node");
-const nodeDest = process.platform === "win32"
-  ? path.join(RESOURCES_DIR, "node.exe")
-  : path.join(RESOURCES_DIR, "node");
+const nodeSrc = process.platform === "win32" ? path.join(BINARIES_DIR, "node.exe") : path.join(BINARIES_DIR, "node");
+const nodeDest = process.platform === "win32" ? path.join(RESOURCES_DIR, "node.exe") : path.join(RESOURCES_DIR, "node");
 
 if (fs.existsSync(nodeSrc)) {
   cpSync(nodeSrc, nodeDest);
