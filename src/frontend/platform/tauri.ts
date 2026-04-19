@@ -6,9 +6,7 @@ export const tauriPlatform: PlatformBridge = {
   isDesktop: true,
 
   openExternalUrl(url: string) {
-    import("@tauri-apps/plugin-opener")
-      .then((mod) => mod.openUrl(url))
-      .catch(() => window.open(url, "_blank"));
+    import("@tauri-apps/plugin-opener").then((mod) => mod.openUrl(url)).catch(() => window.open(url, "_blank"));
   },
 
   openAppWindow(hashLink: string) {
