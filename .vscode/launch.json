@@ -7,9 +7,6 @@
       "request": "launch",
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "start-server"],
-      "env": {
-        "NODE_OPTIONS": "--max-old-space-size=4096"
-      },
       "console": "integratedTerminal",
       "skipFiles": ["<node_internals>/**"]
     },
@@ -30,8 +27,7 @@
       "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/electron",
       "args": ["build/main.js"],
       "env": {
-        "ENV_TYPE": "electron-dev",
-        "NODE_OPTIONS": "--max-old-space-size=4096"
+        "ENV_TYPE": "electron-dev"
       },
       "cwd": "${workspaceFolder}",
       "preLaunchTask": "build",
