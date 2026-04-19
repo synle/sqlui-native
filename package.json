@@ -20,7 +20,7 @@
     "postbuild": "npm run build-server",
     "build-server": "vite build --config vite.sqlui-server.config.ts",
     "build-server-sidecar": "vite build --config vite.sqlui-server.sidecar.config.ts",
-    "build:tauri": "npm run prebuild && npm run build && npm run build-server-sidecar && node scripts/prepare-sidecar.js",
+    "build:tauri": "npm run prebuild && npm run build && npm run build-server-sidecar && node scripts/download-node.js && node scripts/prepare-sidecar.js",
     "tauri": "tauri",
     "tauri:dev": "tauri dev",
     "tauri:build": "tauri build",
