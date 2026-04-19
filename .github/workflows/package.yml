@@ -33,6 +33,7 @@ on:
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
   ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
+  NODE_OPTIONS: "--max-old-space-size=8192"
   EXPECTED_RELEASE_ASSETS: 6
   PLAYWRIGHT_BROWSERS_PATH: ${{ github.workspace }}/.playwright-browsers
   BUILD_CHANNEL: production
@@ -261,8 +262,6 @@ jobs:
         run: npm ci || npm install
 
       - name: Prepare sidecar resources
-        env:
-          NODE_OPTIONS: "--max-old-space-size=8192"
         run: mkdir -p src-tauri/resources && npm run build:tauri
 
       - name: Cache Playwright browsers
