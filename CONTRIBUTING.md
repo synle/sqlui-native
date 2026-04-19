@@ -152,7 +152,7 @@ The import JSON also supports bookmarks with `_type: "bookmark"`:
 
 ### How to run locally?
 
-#### In an electron container
+#### In Tauri dev mode
 
 ```bash
 npm install
@@ -424,7 +424,7 @@ npm run lint          # check for lint errors (must have 0 errors)
 npm run typecheck     # TypeScript type check (must have 0 errors)
 npm run test-ci       # run unit tests (all tests must pass)
 npm run format        # Prettier formatting (always run LAST)
-npm start             # test in Electron -- try adding a connection with your dialect
+npm start             # test in Tauri dev mode -- try adding a connection with your dialect
 ```
 
 ## Sample runbooks
@@ -564,7 +564,7 @@ sfdc://{"username":"you@yourcompany.dev","password":"your_password","securityTok
 sfdc://{"clientId":"your_consumer_key","clientSecret":"your_consumer_secret","loginUrl":"your-org.my.salesforce.com"}
 ```
 
-The Client Credentials flow is useful for service-to-service integrations where no user credentials are available. The adapter uses Node's native `https` module for the OAuth2 token request (instead of jsforce's internal HTTP client, which hangs in bundled Electron builds). Sessions are automatically refreshed via `withAutoRefresh()` when `INVALID_SESSION_ID` or `Session expired` errors are detected.
+The Client Credentials flow is useful for service-to-service integrations where no user credentials are available. The adapter uses Node's native `https` module for the OAuth2 token request (instead of jsforce's internal HTTP client, which hangs in bundled sidecar builds). Sessions are automatically refreshed via `withAutoRefresh()` when `INVALID_SESSION_ID` or `Session expired` errors are detected.
 
 #### Connection String Format
 
