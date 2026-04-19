@@ -35,4 +35,11 @@ if (fs.existsSync(nodeSrc)) {
   log(`WARNING: No Node.js binary found at ${nodeSrc} — app will require system Node.js`);
 }
 
+// 4. Remove node_modules symlink from build/ — Tauri rejects frontendDist containing node_modules
+const buildNodeModules = path.join("build", "node_modules");
+if (fs.existsSync(buildNodeModules)) {
+  fs.rmSync(buildNodeModules, { force: true });
+  log(`Removed ${buildNodeModules} symlink (not needed for Tauri)`);
+}
+
 log("Sidecar preparation complete.");
