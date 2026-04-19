@@ -261,6 +261,8 @@ jobs:
         run: npm ci || npm install
 
       - name: Prepare sidecar resources
+        env:
+          NODE_OPTIONS: "--max-old-space-size=8192"
         run: mkdir -p src-tauri/resources && npm run build:tauri
 
       - name: Cache Playwright browsers
