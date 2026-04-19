@@ -45,6 +45,7 @@ export function useShowAboutDialog() {
       ["Latest", newVersion],
       ["Engine", `${(appPackage as any).engine || "Unknown"}${archLabel ? ` (${archLabel})` : ""}`],
       ["Build", buildLabel],
+      ["Build Date", __BUILD_DATE__],
     ];
 
     const storageDir = serverConfigs?.storageDir || "";
