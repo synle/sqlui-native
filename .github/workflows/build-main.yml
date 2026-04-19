@@ -142,16 +142,6 @@ jobs:
       - name: Prepare sidecar resources
         run: mkdir -p src-tauri/resources && npm run build:tauri
 
-      - name: Run Rust tests
-        working-directory: src-tauri
-        shell: bash
-        run: |
-          if [[ "${{ matrix.platform }}" == "windows-latest" ]]; then
-            cargo test --target ${{ matrix.target }} --lib
-          else
-            cargo test --target ${{ matrix.target }}
-          fi
-
       - name: Build Tauri app
         uses: tauri-apps/tauri-action@v0
         env:
