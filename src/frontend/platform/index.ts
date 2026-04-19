@@ -20,11 +20,7 @@ function isTauriEnvironment(): boolean {
 }
 
 /** The active platform bridge for the current runtime environment. */
-export const platform: PlatformBridge = isElectronEnvironment()
-  ? electronPlatform
-  : isTauriEnvironment()
-    ? tauriPlatform
-    : browserPlatform;
+export const platform: PlatformBridge = isElectronEnvironment() ? electronPlatform : isTauriEnvironment() ? tauriPlatform : browserPlatform;
 
 /** Initializes the platform (sets up Electron IPC for shell integration).
  * Must be called once before the app renders.
