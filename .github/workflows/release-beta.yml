@@ -121,6 +121,8 @@ jobs:
       # --- Tauri build path ---
       - name: Prepare sidecar resources
         if: steps.detect.outputs.mode == 'tauri'
+        env:
+          NODE_OPTIONS: "--max-old-space-size=8192"
         run: mkdir -p src-tauri/resources && npm run build:tauri
 
       - name: Build Tauri app
