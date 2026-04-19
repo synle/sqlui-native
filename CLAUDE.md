@@ -4,15 +4,18 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-SQLUI Native is a cross-platform Electron desktop SQL/NoSQL database client and REST API client supporting MySQL, MariaDB, MSSQL, PostgreSQL, SQLite, Cassandra, MongoDB, Redis, Azure CosmosDB, Azure Table Storage, Salesforce (SFDC), and REST API (curl/fetch).
+SQLUI Native is a cross-platform desktop SQL/NoSQL database client and REST API client supporting MySQL, MariaDB, MSSQL, PostgreSQL, SQLite, Cassandra, MongoDB, Redis, Azure CosmosDB, Azure Table Storage, Salesforce (SFDC), and REST API (curl/fetch). The desktop shell uses **Tauri v2** with a **Node.js sidecar** (Express server).
 
 ## Commands
 
 ```bash
 npm install             # Install dependencies
-npm start               # Run in Electron (dev mode)
-npm run dev             # Run sqlui-server + Vite dev server at http://localhost:3000
-npm run build           # Build frontend (Vite) + Electron + sqlui-server
+npm start               # Run in Tauri dev mode (alias for npx tauri dev)
+npx tauri dev           # Run Tauri + Vite dev server + sqlui-server
+npx tauri build         # Build production Tauri app (.dmg/.exe/.deb)
+npm run dev             # Run sqlui-server + Vite dev server at http://localhost:3000 (browser only)
+npm run build           # Build frontend (Vite) + sqlui-server
+npm run build:tauri     # Build frontend + sidecar bundle + prepare resources for Tauri
 npm test                # Run Vitest tests (watch mode)
 npm run test-ci         # Run Vitest tests (CI, no watch)
 npm run lint            # ESLint with auto-fix
@@ -54,16 +57,34 @@ npx vitest run --config vitest.integration.config.ts src/common/adapters/Relatio
 
 ### Two Runtime Modes
 
-The app runs in **Electron mode** (`npm start`) or **browser mode** (`npm run dev`). Both share the same backend code in `src/common/`. In both modes, the frontend communicates with the backend via HTTP through the sqlui-server (Express). In Electron mode, the server is embedded in the main process on a dynamic port. In browser mode, the server runs standalone on port 3001.
+The app runs in **Tauri mode** (`npx tauri dev` / `npx tauri build`) or **browser mode** (`npm run dev`). Both share the same backend code in `src/common/`. In both modes, the frontend communicates with the backend via HTTP through the sqlui-server (Express). In Tauri mode, the server runs as a **Node.js sidecar process** on a dynamic port. In browser mode, the server runs standalone on port 3001.
+
+### Tauri + Node.js Sidecar Architecture
+
+- **Tauri** (Rust) provides the desktop shell: native window, menus, process lifecycle
+- **Node.js sidecar**: Tauri spawns `node sqlui-server.js` as a child process on a random port
+- **Port protocol**: The sidecar prints `__SIDECAR_PORT__=<port>` to stdout; Tauri reads it
+- **Parent-death detection**: Sidecar monitors stdin; when Tauri exits, stdin closes and the sidecar shuts down
+- **Dev mode**: `npx tauri dev` runs `npm run dev` (Vite + sqlui-server on port 3001), sidecar is skipped — the Vite proxy handles `/api/*` routing
+- **Production**: All JS dependencies are bundled into a single `sqlui-server.js` (7MB) via `vite.sqlui-server.sidecar.config.ts` — no `node_modules` needed at runtime
+- **System Node.js required**: The sidecar uses the system's `node` binary (Node 22+ for `node:sqlite`). `find_system_node()` in `src-tauri/src/lib.rs` probes fnm/nvm/volta/mise/homebrew paths since GUI apps don't inherit shell PATH
+
+### Tauri-Specific Gotchas
+
+- **CSP**: `tauri.conf.json` must allow `connect-src http://127.0.0.1:*` (sidecar HTTP) and `https://api.github.com` (update check). `style-src 'unsafe-inline'` is required for MUI/Emotion — use `dangerousDisableAssetCspModification: ["style-src"]` to prevent Tauri from adding nonces
+- **crossorigin attributes**: Vite adds `crossorigin` to `<script>`/`<link>` tags which breaks `tauri://` protocol. The `strip-crossorigin` plugin in `vite.frontend.config.ts` removes them
+- **CORS**: The Express server needs `Access-Control-Allow-Origin: *` headers because the frontend runs on `tauri://localhost` (cross-origin to `http://127.0.0.1`)
+- **`src-tauri/resources/`**: Must exist before `cargo build` (Tauri's build.rs validates resource paths at compile time). In CI, run `mkdir -p src-tauri/resources && npm run build:tauri` before `cargo test` or `tauri build`
+- **App location**: Production `.app` must run from `/Applications/` or DMG mount — running from `/tmp/` causes `Failed to resolve resource dir` panic
 
 ### Frontend/Backend Module Boundary
 
-**The frontend bundle (`src/frontend/`) must NEVER import modules that depend on Node.js APIs (`fs`, `path`, `electron`, `node:sqlite`, etc.).** Vite builds the frontend for the browser — Node.js modules are either stubbed (breaking at runtime) or unbundleable (native addons).
+**The frontend bundle (`src/frontend/`) must NEVER import modules that depend on Node.js APIs (`fs`, `path`, `node:sqlite`, etc.).** Vite builds the frontend for the browser — Node.js modules are either stubbed (breaking at runtime) or unbundleable (native addons).
 
 Forbidden imports from frontend-reachable code:
 
 - `PersistentStorage.ts`, `PersistentStorageJsonFile.ts`, `PersistentStorageSqlite.ts`, `PersistentStorageMigration.ts`
-- `electron`, `node:fs`, `node:path`, `node:sqlite`
+- `node:fs`, `node:path`, `node:sqlite`
 - Any module in `src/common/` that transitively imports the above
 
 **Frontend-reachable `src/common/` code** includes `DataScriptFactory.ts`, all adapter `scripts.ts` files, and anything they import (e.g., `renderCodeSnippet.ts`). These run on both frontend and backend — they must be pure (no I/O, no Node.js APIs).
@@ -97,10 +118,10 @@ All persisted models (`Session`, `ConnectionProps`, `ConnectionQuery`, `FolderIt
 ### Directory Structure
 
 - **`src/frontend/`** - React 19 UI (MUI v9, React Query, Monaco Editor, React Router v7)
-- **`src/frontend/platform/`** - Platform abstraction layer (Electron vs browser). Auto-detects environment at import time.
-- **`src/electron/`** - Electron main process (window management, embedded server, IPC for menus/shell)
+- **`src/frontend/platform/`** - Platform abstraction layer (Tauri vs browser). Auto-detects environment at import time.
+- **`src-tauri/`** - Tauri v2 Rust shell (sidecar management, native menus, window lifecycle)
 - **`src/common/`** - Shared backend: database adapters, API endpoint handlers, persistent storage
-- **`src/sqlui-server/`** - Express server wrapping the shared backend (embedded in Electron, standalone in dev)
+- **`src/sqlui-server/`** - Express server wrapping the shared backend (Tauri Node.js sidecar in production, standalone in dev)
 - **`typings/index.ts`** - Central type definitions (`SqluiCore`, `SqluiFrontend`, `SqlAction`, `SqluiEnums`)
 
 ### Import Paths
@@ -142,7 +163,7 @@ Connection strings are prefixed with a dialect scheme (`dialect://...`) but the 
   - **PostgreSQL** (`pg`): Map of `pg.Client` instances per database (PG doesn't support `USE` — requires new connection per database).
   - **MSSQL** (`tedious`): Creates new `Connection` per database. Callback-based API wrapped in promises.
 - `disconnect()` is the SOLE cleanup method — it closes all connections and clears state. It must **never** be called internally by adapter methods. It is called exclusively by the **caller** (`Endpoints.ts`, `DataAdapterFactory`, or tests) in `finally` blocks after all operations complete.
-- **SFDC auto-refresh:** The `SalesforceDataAdapter` wraps all operations in `withAutoRefresh()`, which detects `INVALID_SESSION_ID` / `Session expired` errors and automatically re-authenticates (for Client Credentials flow where no refresh token is available). The OAuth2 token request uses Node's native `https` module instead of jsforce's internal HTTP client, which hangs in bundled Electron builds.
+- **SFDC auto-refresh:** The `SalesforceDataAdapter` wraps all operations in `withAutoRefresh()`, which detects `INVALID_SESSION_ID` / `Session expired` errors and automatically re-authenticates (for Client Credentials flow where no refresh token is available). The OAuth2 token request uses Node's native `https` module instead of jsforce's internal HTTP client, which hangs in bundled sidecar builds.
 - **REST API (stateless):** The `RestApiDataAdapter` has no persistent connection. Each `execute()` call parses the curl/fetch command, resolves `{{VAR}}` placeholders, and spawns a `curl` subprocess. `authenticate()` just validates the JSON config. `disconnect()` is a no-op. The `HOST` field from the connection string JSON is auto-injected as the `{{HOST}}` variable.
 
 ### REST API Adapter
@@ -254,7 +275,7 @@ Additional hooks: `useToaster` (toast notifications with history), `useClientSid
 
 ### Frontend Data Layer
 
-- **`src/frontend/data/api.tsx`** - `ProxyApi` static class wraps all backend calls via HTTP (Electron uses `file://` with `webRequest` redirect to embedded server)
+- **`src/frontend/data/api.tsx`** - `ProxyApi` static class wraps all backend calls via HTTP (Tauri connects to sidecar on dynamic port)
 - **`src/frontend/data/config.ts`** - `SessionStorageConfig` and `LocalStorageConfig` constants for storage keys
 - **`src/frontend/data/file.tsx`** - File download utilities (text, JSON, CSV, blob)
 - **`src/frontend/data/session.tsx`** - Session ID generation and management
@@ -316,7 +337,7 @@ See CONTRIBUTING.md for the full step-by-step guide with code examples.
 - **`ResultBox`** - Displays query results with DataTable (legacy and modern/virtualized variants)
 - **`VirtualizedConnectionTree`** - Tree view of connections/databases/tables/columns using virtualized flat rows
 - **`ActionDialogs`** - Global dialog system (alert, choice, prompt, modal) managed via `useActionDialogs` context
-- **`MissionControl`** - Central event handler that wires up all application commands (session, connection, query, settings, navigation). Processes commands from the `CommandPalette`, keyboard shortcuts, and Electron menu events
+- **`MissionControl`** - Central event handler that wires up all application commands (session, connection, query, settings, navigation). Processes commands from the `CommandPalette`, keyboard shortcuts, and native menu events
 - **`CommandPalette`** - Fuzzy-searchable command list (`Cmd+P` / `Ctrl+P`). Options defined in `ALL_COMMAND_PALETTE_OPTIONS` array in `CommandPalette/index.tsx`. Supports expanding per-connection/per-query commands. When adding new app-wide actions, add a `ClientEventKey` in `typings/index.ts`, a command option in `CommandPalette`, and a `case` in `MissionControl`'s `_executeCommandPalette` switch
 - **`ConnectionActions`** - Dropdown menu of actions per connection (bookmark, edit, export, duplicate, refresh, test, delete). Shows "Refreshing..." with spinner when a refresh is in progress, preventing double-refresh
 - **`NewConnectionButton`** - Split button for creating connections, with dropdown for Import, Export All, Data Migration, Refresh All Connections, and Collapse All
@@ -462,14 +483,14 @@ Never use an empty `finally` block — replace it with `catch (_err) {}` when wr
 After any build-related or Vite config change, run the affected build task to verify it works:
 
 - Frontend changes (`vite.frontend.config.ts`, `index.html`, `src/frontend/`): `npm run build`
-- Electron changes (`vite.electron.config.ts`, `src/electron/`): `npm run build-electron`
+- Tauri/sidecar changes (`src-tauri/`, `vite.sqlui-server.sidecar.config.ts`): `npm run build:tauri && npx tauri build`
 - Server changes (`vite.sqlui-server.config.ts`, `src/sqlui-server/`): `npm run build-server`
 - Shared backend changes (`src/common/`): run all three builds
 
 ## Build Configuration
 
 - React app: Vite (`vite.frontend.config.ts`) - dev server on port 3000 with proxy to sqlui-server on port 3001
-- Electron main process: Vite SSR (`vite.electron.config.ts`) - outputs `build/main.js`
+- Tauri sidecar bundle: Vite SSR (`vite.sqlui-server.sidecar.config.ts`) - outputs single-file `sqlui-server.js` for sidecar
 - Server: Vite SSR (`vite.sqlui-server.config.ts`) - outputs `build/sqlui-server.js`
 - Prettier: 140 char width, single quotes, trailing commas, 2-space indent
 - NODE_VERSION: 24 (use `fnm` to switch: `fnm use 24`)
