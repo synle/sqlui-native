@@ -128,7 +128,8 @@ jobs:
         shell: bash
         run: |
           TAG="${{ steps.package-version.outputs.current-version }}"
-          DRAFT_FLAGS=""
+          # Always create as draft first; the publish job promotes it on success
+          DRAFT_FLAGS="--draft"
           if [ "${{ inputs.release_mode }}" = "draft" ]; then
             DRAFT_FLAGS="--draft --prerelease"
           fi
@@ -1231,6 +1232,16 @@ jobs:
           node-version: ${{ inputs.node_version }}
           cache: "npm"
 
+
+      - name: Publish release (un-draft and mark as latest)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          TAG="${{ needs.create_release.outputs.dist_version }}"
+          echo "Publishing release $TAG as official latest..."
+          gh release edit "$TAG" --draft=false --latest
+          echo "Release $TAG is now published and marked as latest"
 
       - name: Commit release version
         uses: EndBug/add-and-commit@v9

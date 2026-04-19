@@ -45,7 +45,7 @@ Run the app in each runtime mode, pausing for the user to manually verify after 
 
 1. Check if a GitHub Actions release workflow is running for the current version. If not, trigger one:
    ```
-   gh workflow run dist-main.yml --ref main
+   gh workflow run release-official.yml --ref main
    ```
 2. Poll the workflow until the macOS ARM64 build job completes (check every 60 seconds).
 3. Find the release tag matching the version in `package.json`.
