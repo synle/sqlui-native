@@ -19,16 +19,7 @@ const gitCommit = (() => {
  * @returns {import('vite').UserConfig} The resolved Vite configuration object.
  */
 export default defineConfig(({ command }) => ({
-  plugins: [
-    react(),
-    // Strip crossorigin attributes from HTML — they break Tauri's tauri:// protocol
-    {
-      name: "strip-crossorigin",
-      transformIndexHtml(html: string) {
-        return html.replace(/ crossorigin/g, "");
-      },
-    },
-  ],
+  plugins: [react()],
   define: {
     __BUILD_COMMIT__: JSON.stringify(gitCommit),
     __BUILD_CHANNEL__: JSON.stringify(process.env.BUILD_CHANNEL || "dev"),
