@@ -154,11 +154,11 @@ The import JSON also supports bookmarks with `_type: "bookmark"`:
 
 The repo includes `.vscode/launch.json` and `.vscode/tasks.json` with pre-configured debug profiles:
 
-| Launch Config                      | What it does                                                    |
-| ---------------------------------- | --------------------------------------------------------------- |
-| **Debug Server**                   | Runs `npm run start-server` with Node debugger attached         |
-| **Debug Webapp (Chrome)**          | Opens Chrome at `http://localhost:3000` with devtools debugging |
-| **Debug Tauri (Server + Webapp)**  | Runs `npm start` (Tauri dev mode) with Node debugger attached   |
+| Launch Config                        | What it does                                                      |
+| ------------------------------------ | ----------------------------------------------------------------- |
+| **Debug Server**                     | Runs `npm run start-server` with Node debugger attached           |
+| **Debug Webapp (Chrome)**            | Opens Chrome at `http://localhost:3000` with devtools debugging   |
+| **Debug Tauri (Server + Webapp)**    | Runs `npm start` (Tauri dev mode) with Node debugger attached     |
 | **Debug Dev Mode (Server + Webapp)** | Compound: launches both Server and Webapp together (browser mode) |
 
 **Typical workflow:**
