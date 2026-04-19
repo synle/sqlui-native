@@ -15,11 +15,7 @@ async function _fetch<T>(input: RequestInfo, initOptions?: RequestInit) {
 
   restInput = restInput || {};
 
-  // In Tauri mode, prepend the sidecar base URL to relative paths
-  const baseUrl = platform.sidecarBaseUrl;
-  const resolvedInput = baseUrl && typeof input === "string" && input.startsWith("/") ? `${baseUrl}${input}` : input;
-
-  return fetch(resolvedInput, {
+  return fetch(input, {
     ...restInput,
     headers,
   })
