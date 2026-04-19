@@ -166,9 +166,17 @@ fn spawn_sidecar(app: &tauri::App) -> Result<SidecarState, Box<dyn std::error::E
     let server_js = resource_dir.join("resources").join("sqlui-server.js");
     let node_modules = resource_dir.join("resources").join("node_modules");
 
-    // Fall back to system Node.js, searching common version-manager paths
-    // because GUI apps on macOS don't inherit the shell's PATH.
-    let node_cmd = find_system_node().unwrap_or_else(|| "node".to_string());
+    // Prefer bundled Node.js binary in resources/, fall back to system Node.js
+    let bundled_node = resource_dir.join("resources").join(
+        if cfg!(target_os = "windows") { "node.exe" } else { "node" }
+    );
+    let node_cmd = if bundled_node.exists() {
+        println!("Sidecar: using bundled node at {}", bundled_node.display());
+        bundled_node.to_string_lossy().to_string()
+    } else {
+        println!("Sidecar: no bundled node, searching system paths...");
+        find_system_node().unwrap_or_else(|| "node".to_string())
+    };
 
     println!("Sidecar: spawning {} {}", node_cmd, server_js.display());
 
