@@ -273,10 +273,18 @@ fn kill_sidecar(state: &SidecarState) {
 /// Builds the native application menu, emitting "menu-command" events on click.
 fn setup_menu(app: &tauri::AppHandle) -> Result<(), Box<dyn std::error::Error>> {
     // File submenu
-    let file_new_connection =
-        MenuItemBuilder::new("New Connection").id("file-new-connection").build(app)?;
-    let file_import = MenuItemBuilder::new("Import").id("file-import").build(app)?;
-    let file_export = MenuItemBuilder::new("Export").id("file-export").build(app)?;
+    let file_new_connection = MenuItemBuilder::new("New Connection")
+        .id("file-new-connection")
+        .accelerator("CmdOrCtrl+N")
+        .build(app)?;
+    let file_import = MenuItemBuilder::new("Import")
+        .id("file-import")
+        .accelerator("CmdOrCtrl+O")
+        .build(app)?;
+    let file_export = MenuItemBuilder::new("Export")
+        .id("file-export")
+        .accelerator("CmdOrCtrl+S")
+        .build(app)?;
     let file_settings = MenuItemBuilder::new("Settings").id("file-settings").build(app)?;
 
     let file_submenu = SubmenuBuilder::new(app, "File")
@@ -291,12 +299,27 @@ fn setup_menu(app: &tauri::AppHandle) -> Result<(), Box<dyn std::error::Error>> 
         .build()?;
 
     // Query submenu
-    let query_new = MenuItemBuilder::new("New Query").id("query-new").build(app)?;
-    let query_rename = MenuItemBuilder::new("Rename Query").id("query-rename").build(app)?;
+    let query_new = MenuItemBuilder::new("New Query")
+        .id("query-new")
+        .accelerator("CmdOrCtrl+T")
+        .build(app)?;
+    let query_rename = MenuItemBuilder::new("Rename Query")
+        .id("query-rename")
+        .accelerator("F2")
+        .build(app)?;
     let query_help = MenuItemBuilder::new("Query Help").id("query-help").build(app)?;
-    let query_prev = MenuItemBuilder::new("Prev Query").id("query-prev").build(app)?;
-    let query_next = MenuItemBuilder::new("Next Query").id("query-next").build(app)?;
-    let query_close = MenuItemBuilder::new("Close Query").id("query-close").build(app)?;
+    let query_prev = MenuItemBuilder::new("Prev Query")
+        .id("query-prev")
+        .accelerator("CmdOrCtrl+{")
+        .build(app)?;
+    let query_next = MenuItemBuilder::new("Next Query")
+        .id("query-next")
+        .accelerator("CmdOrCtrl+}")
+        .build(app)?;
+    let query_close = MenuItemBuilder::new("Close Query")
+        .id("query-close")
+        .accelerator("CmdOrCtrl+W")
+        .build(app)?;
 
     let query_submenu = SubmenuBuilder::new(app, "Query")
         .item(&query_new)
@@ -327,12 +350,18 @@ fn setup_menu(app: &tauri::AppHandle) -> Result<(), Box<dyn std::error::Error>> 
         .build()?;
 
     // Edit submenu
-    let toggle_sidebar =
-        MenuItemBuilder::new("Toggle Sidebar").id("edit-toggle-sidebar").build(app)?;
-    let schema_search =
-        MenuItemBuilder::new("Search Schema").id("edit-schema-search").build(app)?;
-    let command_palette =
-        MenuItemBuilder::new("Command Palette").id("edit-command-palette").build(app)?;
+    let toggle_sidebar = MenuItemBuilder::new("Toggle Sidebar")
+        .id("edit-toggle-sidebar")
+        .accelerator("CmdOrCtrl+\\")
+        .build(app)?;
+    let schema_search = MenuItemBuilder::new("Search Schema")
+        .id("edit-schema-search")
+        .accelerator("CmdOrCtrl+Shift+F")
+        .build(app)?;
+    let command_palette = MenuItemBuilder::new("Command Palette")
+        .id("edit-command-palette")
+        .accelerator("CmdOrCtrl+P")
+        .build(app)?;
 
     let edit_submenu = SubmenuBuilder::new(app, "Edit")
         .undo()
