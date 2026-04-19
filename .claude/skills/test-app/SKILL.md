@@ -1,6 +1,6 @@
 ---
 name: test-app
-description: Manually test the app in 3 phases - dev server, Electron, and bundled DMG. Use when validating that the app works end-to-end after changes.
+description: Manually test the app in 3 phases - dev server, Tauri dev mode, and bundled DMG. Use when validating that the app works end-to-end after changes.
 disable-model-invocation: true
 allowed-tools: Bash(npm *) Bash(node *) Bash(npx *) Bash(lsof *) Bash(kill *) Bash(open *) Bash(sleep *) Bash(gh *) Bash(ls *) Bash(tail *) Bash(cat *)
 ---
@@ -33,12 +33,12 @@ Run the app in each runtime mode, pausing for the user to manually verify after 
 6. **Wait for user signal** before proceeding.
 7. Kill processes on ports 3000 and 3001 before moving on.
 
-## Phase 2: Electron (npm start)
+## Phase 2: Tauri (npm start)
 
-1. Run `npm start` in the background (this triggers prebuild + build + electron launch).
-2. Wait for the Electron window to appear (monitor logs for successful startup).
+1. Run `npm start` in the background (this triggers `npm run tauri:dev` and launches the Tauri dev window).
+2. Wait for the Tauri window to appear (monitor logs for successful startup).
 3. Tell the user:
-   - Verify: Electron app loads, editor works, autocomplete works, no console errors (Cmd+Shift+Option+I for DevTools)
+   - Verify: Tauri app loads, editor works, autocomplete works, no console errors
 4. **Wait for user signal** before proceeding.
 
 ## Phase 3: Bundled DMG
