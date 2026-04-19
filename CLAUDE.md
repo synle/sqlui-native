@@ -79,7 +79,7 @@ The app runs in **Tauri mode** (`npx tauri dev` / `npx tauri build`) or **browse
 
 ### Frontend/Backend Module Boundary
 
-**The frontend bundle (`src/frontend/`) must NEVER import modules that depend on Node.js APIs (`fs`, `path`, `electron`, `node:sqlite`, etc.).** Vite builds the frontend for the browser — Node.js modules are either stubbed (breaking at runtime) or unbundleable (native addons).
+**The frontend bundle (`src/frontend/`) must NEVER import modules that depend on Node.js APIs (`fs`, `path`, `node:sqlite`, etc.).** Vite builds the frontend for the browser — Node.js modules are either stubbed (breaking at runtime) or unbundleable (native addons).
 
 Forbidden imports from frontend-reachable code:
 
@@ -118,10 +118,10 @@ All persisted models (`Session`, `ConnectionProps`, `ConnectionQuery`, `FolderIt
 ### Directory Structure
 
 - **`src/frontend/`** - React 19 UI (MUI v9, React Query, Monaco Editor, React Router v7)
-- **`src/frontend/platform/`** - Platform abstraction layer (Electron vs browser). Auto-detects environment at import time.
+- **`src/frontend/platform/`** - Platform abstraction layer (Tauri vs browser). Auto-detects environment at import time.
 - **`src-tauri/`** - Tauri v2 Rust shell (sidecar management, native menus, window lifecycle)
 - **`src/common/`** - Shared backend: database adapters, API endpoint handlers, persistent storage
-- **`src/sqlui-server/`** - Express server wrapping the shared backend (embedded in Electron, standalone in dev)
+- **`src/sqlui-server/`** - Express server wrapping the shared backend (Tauri Node.js sidecar in production, standalone in dev)
 - **`typings/index.ts`** - Central type definitions (`SqluiCore`, `SqluiFrontend`, `SqlAction`, `SqluiEnums`)
 
 ### Import Paths
@@ -163,7 +163,7 @@ Connection strings are prefixed with a dialect scheme (`dialect://...`) but the 
   - **PostgreSQL** (`pg`): Map of `pg.Client` instances per database (PG doesn't support `USE` — requires new connection per database).
   - **MSSQL** (`tedious`): Creates new `Connection` per database. Callback-based API wrapped in promises.
 - `disconnect()` is the SOLE cleanup method — it closes all connections and clears state. It must **never** be called internally by adapter methods. It is called exclusively by the **caller** (`Endpoints.ts`, `DataAdapterFactory`, or tests) in `finally` blocks after all operations complete.
-- **SFDC auto-refresh:** The `SalesforceDataAdapter` wraps all operations in `withAutoRefresh()`, which detects `INVALID_SESSION_ID` / `Session expired` errors and automatically re-authenticates (for Client Credentials flow where no refresh token is available). The OAuth2 token request uses Node's native `https` module instead of jsforce's internal HTTP client, which hangs in bundled Electron builds.
+- **SFDC auto-refresh:** The `SalesforceDataAdapter` wraps all operations in `withAutoRefresh()`, which detects `INVALID_SESSION_ID` / `Session expired` errors and automatically re-authenticates (for Client Credentials flow where no refresh token is available). The OAuth2 token request uses Node's native `https` module instead of jsforce's internal HTTP client, which hangs in bundled sidecar builds.
 - **REST API (stateless):** The `RestApiDataAdapter` has no persistent connection. Each `execute()` call parses the curl/fetch command, resolves `{{VAR}}` placeholders, and spawns a `curl` subprocess. `authenticate()` just validates the JSON config. `disconnect()` is a no-op. The `HOST` field from the connection string JSON is auto-injected as the `{{HOST}}` variable.
 
 ### REST API Adapter
@@ -275,7 +275,7 @@ Additional hooks: `useToaster` (toast notifications with history), `useClientSid
 
 ### Frontend Data Layer
 
-- **`src/frontend/data/api.tsx`** - `ProxyApi` static class wraps all backend calls via HTTP (Electron uses `file://` with `webRequest` redirect to embedded server)
+- **`src/frontend/data/api.tsx`** - `ProxyApi` static class wraps all backend calls via HTTP (Tauri connects to sidecar on dynamic port)
 - **`src/frontend/data/config.ts`** - `SessionStorageConfig` and `LocalStorageConfig` constants for storage keys
 - **`src/frontend/data/file.tsx`** - File download utilities (text, JSON, CSV, blob)
 - **`src/frontend/data/session.tsx`** - Session ID generation and management
@@ -337,7 +337,7 @@ See CONTRIBUTING.md for the full step-by-step guide with code examples.
 - **`ResultBox`** - Displays query results with DataTable (legacy and modern/virtualized variants)
 - **`VirtualizedConnectionTree`** - Tree view of connections/databases/tables/columns using virtualized flat rows
 - **`ActionDialogs`** - Global dialog system (alert, choice, prompt, modal) managed via `useActionDialogs` context
-- **`MissionControl`** - Central event handler that wires up all application commands (session, connection, query, settings, navigation). Processes commands from the `CommandPalette`, keyboard shortcuts, and Electron menu events
+- **`MissionControl`** - Central event handler that wires up all application commands (session, connection, query, settings, navigation). Processes commands from the `CommandPalette`, keyboard shortcuts, and native menu events
 - **`CommandPalette`** - Fuzzy-searchable command list (`Cmd+P` / `Ctrl+P`). Options defined in `ALL_COMMAND_PALETTE_OPTIONS` array in `CommandPalette/index.tsx`. Supports expanding per-connection/per-query commands. When adding new app-wide actions, add a `ClientEventKey` in `typings/index.ts`, a command option in `CommandPalette`, and a `case` in `MissionControl`'s `_executeCommandPalette` switch
 - **`ConnectionActions`** - Dropdown menu of actions per connection (bookmark, edit, export, duplicate, refresh, test, delete). Shows "Refreshing..." with spinner when a refresh is in progress, preventing double-refresh
 - **`NewConnectionButton`** - Split button for creating connections, with dropdown for Import, Export All, Data Migration, Refresh All Connections, and Collapse All
@@ -490,7 +490,7 @@ After any build-related or Vite config change, run the affected build task to ve
 ## Build Configuration
 
 - React app: Vite (`vite.frontend.config.ts`) - dev server on port 3000 with proxy to sqlui-server on port 3001
-- Electron main process: Vite SSR (`vite.electron.config.ts`) - outputs `build/main.js`
+- Tauri sidecar bundle: Vite SSR (`vite.sqlui-server.sidecar.config.ts`) - outputs single-file `sqlui-server.js` for sidecar
 - Server: Vite SSR (`vite.sqlui-server.config.ts`) - outputs `build/sqlui-server.js`
 - Prettier: 140 char width, single quotes, trailing commas, 2-space indent
 - NODE_VERSION: 24 (use `fnm` to switch: `fnm use 24`)
