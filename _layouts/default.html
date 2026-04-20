@@ -79,8 +79,7 @@
           { id: "download-link-mac-x64", filename: "sqlui-native_VERSION_x64.dmg", name: "macOS / OSX (Intel x64)" },
           { id: "download-link-windows-x64-exe", filename: "sqlui-native_VERSION_x64-setup.exe", name: "Windows 10/11 (x64 Installer)" },
           { id: "download-link-ubuntu", filename: "sqlui-native_VERSION_amd64.deb", name: "Linux Mint / Ubuntu / Debian" },
-          { id: "download-link-redhat", filename: "sqlui-native-VERSION-1.x86_64.rpm", name: "Linux Redhat / CentOS / Fedora" },
-          { id: "download-link-appimage", filename: "sqlui-native_VERSION_amd64.AppImage", name: "Linux Other Distro" },
+          { id: "download-link-appimage", filename: "sqlui-native_VERSION_amd64.AppImage", name: "Linux Other Distro (AppImage)" },
         ].map((item) => {
           const extension = item.filename.split(".").pop();
           return { ...item, label: `${item.name} (<b>.${extension}</b>)` };
