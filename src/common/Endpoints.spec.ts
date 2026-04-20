@@ -105,6 +105,56 @@ describe("Endpoints data persistence", () => {
     });
   });
 
+  describe("POST /api/query - full field persistence", () => {
+    test("query sql, connectionId, databaseId, tableId, and selected are preserved on create", async () => {
+      const sessionId = uniqueSessionId();
+      const queryStorage = await getQueryStorage(sessionId);
+
+      const added = queryStorage.add({
+        name: "My Query",
+        sql: "SELECT * FROM users",
+        connectionId: "conn-123",
+        databaseId: "db-456",
+        tableId: "table-789",
+        selected: true,
+      });
+
+      expect(added.name).toBe("My Query");
+      expect(added.sql).toBe("SELECT * FROM users");
+      expect(added.connectionId).toBe("conn-123");
+      expect(added.databaseId).toBe("db-456");
+      expect(added.tableId).toBe("table-789");
+      expect(added.selected).toBe(true);
+
+      const queries = queryStorage.list();
+      const fetched = queries.find((q: any) => q.id === added.id);
+      expect(fetched.name).toBe("My Query");
+      expect(fetched.sql).toBe("SELECT * FROM users");
+      expect(fetched.connectionId).toBe("conn-123");
+      expect(fetched.selected).toBe(true);
+    });
+
+    test("query fields persist across storage re-instantiation", async () => {
+      const sessionId = uniqueSessionId();
+      const queryStorage1 = await getQueryStorage(sessionId);
+
+      queryStorage1.add({
+        name: "Persistent Query",
+        sql: "aaaa",
+        connectionId: "conn-abc",
+        selected: true,
+      });
+
+      const queryStorage2 = await getQueryStorage(sessionId);
+      const queries = queryStorage2.list();
+      expect(queries).toHaveLength(1);
+      expect(queries[0].name).toBe("Persistent Query");
+      expect(queries[0].sql).toBe("aaaa");
+      expect(queries[0].connectionId).toBe("conn-abc");
+      expect(queries[0].selected).toBe(true);
+    });
+  });
+
   describe("PUT endpoints preserve name on update", () => {
     test("query name survives update cycle", async () => {
       const sessionId = uniqueSessionId();

@@ -738,6 +738,11 @@ export function setUpDataEndpoints(anExpressAppContext: Express) {
     res.status(201).json(
       await queryStorage.add({
         name: req.body?.name,
+        connectionId: req.body?.connectionId,
+        databaseId: req.body?.databaseId,
+        tableId: req.body?.tableId,
+        sql: req.body?.sql,
+        selected: req.body?.selected,
       }),
     );
   });
