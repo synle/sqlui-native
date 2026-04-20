@@ -1,10 +1,11 @@
 import SaveIcon from "@mui/icons-material/Save";
 import LoadingButton from "@mui/lab/LoadingButton";
-import { Alert, Box, Button, Link, TextField, Typography } from "@mui/material";
+import { Alert, Box, Button, Link, Tab, Tabs, TextField, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import BaseDataAdapter from "src/common/adapters/BaseDataAdapter/index";
 import { getConnectionSetupGuide, getDialectTypeFromConnectionString } from "src/common/adapters/DataScriptFactory";
 import ConnectionHint from "src/frontend/components/ConnectionForm/ConnectionHint";
+import ConnectionHelper from "src/frontend/components/ConnectionHelper";
 import GraphQLConnectionFields from "src/frontend/components/ConnectionForm/GraphQLConnectionFields";
 import RestApiConnectionFields from "src/frontend/components/ConnectionForm/RestApiConnectionFields";
 import HTMLContent from "src/frontend/components/HTMLContent";
@@ -171,6 +172,7 @@ function MainConnectionForm(props: MainConnectionFormProps): React.JSX.Element |
   const navigate = useNavigate();
   const [showHint, setShowHint] = useState(false);
   const [showSqliteDatabasePathSelection, setShowSqliteDatabasePathSelection] = useState(false);
+  const [activeTab, setActiveTab] = useState(0);
   const { add: addToast } = useToaster();
   const { selectCommand } = useCommands();
 
@@ -230,20 +232,25 @@ function MainConnectionForm(props: MainConnectionFormProps): React.JSX.Element |
   const isRestApi = detectedDialect === "rest";
   const isGraphQL = detectedDialect === "graphql";
 
-  return (
-    <form className="ConnectionForm FormInput__Container" onSubmit={onSave}>
-      <div className="FormInput__Row">
-        <TextField
-          label="Name"
-          value={props.name}
-          onChange={(e) => props.setName(e.target.value)}
-          required
-          size="small"
-          fullWidth={true}
-          autoComplete="off"
-          autoFocus
-        />
-      </div>
+  const showTabs = !isRestApi && !isGraphQL;
+
+  const nameFieldDom = (
+    <div className="FormInput__Row">
+      <TextField
+        label="Name"
+        value={props.name}
+        onChange={(e) => props.setName(e.target.value)}
+        required
+        size="small"
+        fullWidth={true}
+        autoComplete="off"
+        autoFocus
+      />
+    </div>
+  );
+
+  const advancedTabDom = (
+    <>
       {isGraphQL ? (
         <GraphQLConnectionFields connection={props.connection} setConnection={props.setConnection} />
       ) : isRestApi ? (
@@ -278,6 +285,37 @@ function MainConnectionForm(props: MainConnectionFormProps): React.JSX.Element |
             </Button>
           </label>
         </div>
+      )}
+    </>
+  );
+
+  const simpleTabDom = (
+    <ConnectionHelper
+      inline={true}
+      scheme={parsedConnectionProps?.scheme || connection.connection.match(/^[a-z0-9]+/)?.[0] || ""}
+      username={parsedConnectionProps?.username || ""}
+      password={parsedConnectionProps?.password || ""}
+      host={parsedConnectionProps?.hosts?.[0]?.host || ""}
+      port={parsedConnectionProps?.hosts?.[0]?.port || ""}
+      restOfConnectionString={restOfConnectionString}
+      onChange={(newConnection: string) => props.setConnection(newConnection)}
+    />
+  );
+
+  return (
+    <form className="ConnectionForm FormInput__Container" onSubmit={onSave}>
+      {nameFieldDom}
+      {showTabs ? (
+        <>
+          <Tabs value={activeTab} onChange={(_e, newVal) => setActiveTab(newVal)} sx={{ mb: 1 }}>
+            <Tab label="Simple" />
+            <Tab label="Advanced" />
+          </Tabs>
+          {activeTab === 0 && simpleTabDom}
+          {activeTab === 1 && advancedTabDom}
+        </>
+      ) : (
+        advancedTabDom
       )}
       <div className="FormInput__Row">
         <LoadingButton variant="contained" type="submit" loading={props.saving} startIcon={<SaveIcon />}>
