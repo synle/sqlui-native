@@ -33,12 +33,17 @@ export function NewConnectionForm() {
   const navigate = useNavigate();
 
   const onSave = async () => {
+    const trimmedName = name.trim();
+    const trimmedConnection = connection.trim();
+    setName(trimmedName);
+    setConnection(trimmedConnection);
+
     await mutateAsync({
-      name,
-      connection,
+      name: trimmedName,
+      connection: trimmedConnection,
     });
 
-    createSystemNotification(`Connection "${name}" created`);
+    createSystemNotification(`Connection "${trimmedName}" created`);
 
     // when done, go back to the main page (added delay to prevent operation on unmounted component errors)
     setTimeout(() => navigate(`/`, { replace: true }), 0);
@@ -101,10 +106,15 @@ export function EditConnectionForm(props: ConnectionFormProps): React.JSX.Elemen
   const navigate = useNavigate();
 
   const onSave = async () => {
+    const trimmedName = name.trim();
+    const trimmedConnection = connection.trim();
+    setName(trimmedName);
+    setConnection(trimmedConnection);
+
     await mutateAsync({
       id,
-      name,
-      connection,
+      name: trimmedName,
+      connection: trimmedConnection,
     });
 
     // when done, go back to the main page
