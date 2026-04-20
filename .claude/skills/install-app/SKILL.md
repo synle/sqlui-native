@@ -110,7 +110,7 @@ open /Applications/sqlui-native.app
 
 ### 4. Windows
 
-- Download the `.exe` or `.msi` installer:
+- Download the `.exe` installer:
 
 ```
 gh release download <tag> --pattern "*.exe" --dir /tmp
@@ -120,7 +120,7 @@ gh release download <tag> --pattern "*.exe" --dir /tmp
 
 ### 5. Linux
 
-- Download the `.deb` (or `.AppImage` / `.rpm` based on user preference):
+- Download the `.deb` (or `.AppImage` for non-Debian distros):
 
 ```
 gh release download <tag> --pattern "*.deb" --dir /tmp
