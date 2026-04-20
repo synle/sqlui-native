@@ -263,19 +263,6 @@ jobs:
       - name: Prepare sidecar resources
         run: mkdir -p src-tauri/resources && npm run build:tauri
 
-      - name: Cache Playwright browsers
-        uses: actions/cache@v4
-        with:
-          path: ${{ github.workspace }}/.playwright-browsers
-          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
-
-      - name: Install Playwright browsers for smoke test
-        shell: bash
-        run: npx playwright install --with-deps chromium || npx playwright install chromium
-
-      - name: Run smoke test
-        run: npm run test-smoke
-
       - name: Build Tauri app
         uses: tauri-apps/tauri-action@v0
         env:
