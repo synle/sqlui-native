@@ -72,15 +72,15 @@
 
     <script>
       (async () => {
-        // Electron builder naming: sqlui-native-ARCH.ext (no version in filename)
+        // Tauri naming: sqlui-native_VERSION_ARCH.ext (version embedded in filename)
+        // The VERSION placeholder is replaced at runtime with the actual release version.
         const DOWNLOADS_CONFIG = [
-          { id: "download-link-mac-arm64", filename: "sqlui-native-arm64.dmg", name: "macOS / OSX (Apple Silicon M-Series)" },
-          { id: "download-link-mac-x64", filename: "sqlui-native-x64.dmg", name: "macOS / OSX (Intel x64)" },
-          { id: "download-link-windows-x64-exe", filename: "sqlui-native-x64.exe", name: "Windows 10/11 (x64 Installer)" },
-          { id: "download-link-windows-arm64-exe", filename: "sqlui-native-arm64.exe", name: "Windows 10/11 (ARM64 Installer)" },
-          { id: "download-link-ubuntu", filename: "sqlui-native.deb", name: "Linux Mint / Ubuntu / Debian" },
-          { id: "download-link-redhat", filename: "sqlui-native.rpm", name: "Linux Redhat / CentOS / Fedora" },
-          { id: "download-link-appimage", filename: "sqlui-native.AppImage", name: "Linux Other Distro" },
+          { id: "download-link-mac-arm64", filename: "sqlui-native_VERSION_aarch64.dmg", name: "macOS / OSX (Apple Silicon M-Series)" },
+          { id: "download-link-mac-x64", filename: "sqlui-native_VERSION_x64.dmg", name: "macOS / OSX (Intel x64)" },
+          { id: "download-link-windows-x64-exe", filename: "sqlui-native_VERSION_x64-setup.exe", name: "Windows 10/11 (x64 Installer)" },
+          { id: "download-link-ubuntu", filename: "sqlui-native_VERSION_amd64.deb", name: "Linux Mint / Ubuntu / Debian" },
+          { id: "download-link-redhat", filename: "sqlui-native-VERSION-1.x86_64.rpm", name: "Linux Redhat / CentOS / Fedora" },
+          { id: "download-link-appimage", filename: "sqlui-native_VERSION_amd64.AppImage", name: "Linux Other Distro" },
         ].map((item) => {
           const extension = item.filename.split(".").pop();
           return { ...item, label: `${item.name} (<b>.${extension}</b>)` };
@@ -92,6 +92,9 @@
           const version = release.tag_name;
           if (!version) throw new Error("No version found in latest release");
 
+          // Tauri uses the version without v prefix in filenames (e.g. 1.76.0, not v1.76.0)
+          const fileVersion = version.replace(/^v/, "");
+
           // 1. Update Version in Title
           document.querySelectorAll(".appVersion").forEach((el) => (el.innerText = version));
 
@@ -102,8 +105,9 @@
 
           container.innerHTML +=
             DOWNLOADS_CONFIG.map((cfg) => {
+              const resolvedFilename = cfg.filename.replace("VERSION", fileVersion);
               return `
-            <a id="${cfg.id}" href="${baseUrl}/${cfg.filename}" class="btn">
+            <a id="${cfg.id}" href="${baseUrl}/${resolvedFilename}" class="btn">
               <i class="fas fa-download" style="margin-right: 5px;"></i> ${cfg.label}
             </a>`;
             }).join("") + `<a id="btn-other-releases" href="${otherReleasesUrl}" class="btn">Other Releases</a>`;
@@ -113,8 +117,9 @@
             if (!li.innerText.includes("%")) return;
             const matchedCfg = DOWNLOADS_CONFIG.find((cfg) => li.innerText.includes(cfg.id));
             if (matchedCfg) {
+              const resolvedFilename = matchedCfg.filename.replace("VERSION", fileVersion);
               const cleanLabel = matchedCfg.label.replace(/<\/?[^>]+(>|$)/g, "");
-              li.innerHTML = `<a href="${baseUrl}/${matchedCfg.filename}">${cleanLabel}</a>`;
+              li.innerHTML = `<a href="${baseUrl}/${resolvedFilename}">${cleanLabel}</a>`;
             }
           });
         } catch (err) {
