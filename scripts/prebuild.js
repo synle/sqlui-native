@@ -3,9 +3,37 @@ require("./common");
 log(`
 ==============================================
 # prebuild.js
+# sync version from tauri.conf.json → package.json
 # move build content into root (package.json)
 ==============================================
 `);
+
+// Sync version: tauri.conf.json is the single source of truth.
+const tauriConf = JSON.parse(fs.readFileSync("src-tauri/tauri.conf.json", "utf-8"));
+const tauriVersion = tauriConf.version;
+if (tauriVersion) {
+  const pkgPath = "package.json";
+  const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf-8"));
+  if (pkg.version !== tauriVersion) {
+    pkg.version = tauriVersion;
+    fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + "\n");
+    log(`Synced version: ${tauriVersion} (tauri.conf.json → package.json)`);
+
+    // Also update package-lock.json if it exists
+    const lockPath = "package-lock.json";
+    if (fs.existsSync(lockPath)) {
+      const lock = JSON.parse(fs.readFileSync(lockPath, "utf-8"));
+      lock.version = tauriVersion;
+      if (lock.packages && lock.packages[""]) {
+        lock.packages[""].version = tauriVersion;
+      }
+      fs.writeFileSync(lockPath, JSON.stringify(lock, null, 2) + "\n");
+      log(`Synced version: ${tauriVersion} (tauri.conf.json → package-lock.json)`);
+    }
+  } else {
+    log(`Version already in sync: ${tauriVersion}`);
+  }
+}
 
 // Write a minimal package.json for build/ and public/ (electron-builder's app directory).
 // Must not contain the "build" key — electron-builder rejects it in the app package.json.
