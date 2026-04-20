@@ -66,23 +66,12 @@ sudo dpkg -i sqlui-native*.deb
 
 ![image](https://user-images.githubusercontent.com/3792401/153638017-85896932-65b1-4670-9a05-b81bcb858d51.png)
 
-## Redhat - CentOS - Fedora
+## Linux Other Distro (AppImage)
 
-- Download the above `.rpm` file
-- Run the following shell command to install the above `.rpm`
-
-```
-sudo rpm -i sqlui-native*.rpm
-```
-
-## Arch Linux with pacman
+- %download-link-appimage%
+- Make the `.AppImage` file executable and run it
 
 ```
-# download and install it with this command
-sudo pacman -U ./sqlui-native*.pacman
-
-
-# or run this command to download and install it in one command
-# replace the version for the latest build
-curl https://github.com/synle/sqlui-native/releases/download/1.61.16/sqlui-native-1.61.16.pacman -O -J -L && sudo pacman -U sqlui-native*.pacman && rm sqlui-native*.pacman
+chmod +x sqlui-native*.AppImage
+./sqlui-native*.AppImage
 ```
