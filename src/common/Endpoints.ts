@@ -737,7 +737,7 @@ export function setUpDataEndpoints(anExpressAppContext: Express) {
 
     res.status(201).json(
       await queryStorage.add({
-        connection: req.body?.name,
+        name: req.body?.name,
       }),
     );
   });
@@ -849,7 +849,7 @@ export function setUpDataEndpoints(anExpressAppContext: Express) {
 
     res.status(201).json(
       await sessionsStorage.add({
-        connection: req.body?.name,
+        name: req.body?.name,
       }),
     );
   });
