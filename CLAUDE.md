@@ -205,4 +205,5 @@ Use `/release-official` and `/release-beta` skills for interactive triggering fr
 ## Git / PR Merge Policy
 
 - Always use **squash and merge** when merging PRs. Never use merge commits or rebase merges.
+- **Always rebase before pushing** (`git pull --rebase` before `git push`).
 - You may `git merge origin/main` locally to sync branches, but PR merges must always be squash merges.
