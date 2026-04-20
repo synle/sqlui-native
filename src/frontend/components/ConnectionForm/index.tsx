@@ -10,7 +10,6 @@ import GraphQLConnectionFields from "src/frontend/components/ConnectionForm/Grap
 import RestApiConnectionFields from "src/frontend/components/ConnectionForm/RestApiConnectionFields";
 import HTMLContent from "src/frontend/components/HTMLContent";
 import { platform } from "src/frontend/platform";
-import { useCommands } from "src/frontend/components/MissionControl";
 import TestConnectionButton from "src/frontend/components/TestConnectionButton";
 import { useGetConnectionById, useUpsertConnection } from "src/frontend/hooks/useConnection";
 import useToaster from "src/frontend/hooks/useToaster";
@@ -170,11 +169,9 @@ type MainConnectionFormProps = {
  */
 function MainConnectionForm(props: MainConnectionFormProps): React.JSX.Element | null {
   const navigate = useNavigate();
-  const [showHint, setShowHint] = useState(false);
   const [showSqliteDatabasePathSelection, setShowSqliteDatabasePathSelection] = useState(false);
   const [activeTab, setActiveTab] = useState(0);
   const { add: addToast } = useToaster();
-  const { selectCommand } = useCommands();
 
   // effects
   useEffect(() => {
@@ -221,12 +218,6 @@ function MainConnectionForm(props: MainConnectionFormProps): React.JSX.Element |
 
   const parsedConnectionProps = BaseDataAdapter.getConnectionParameters(connection.connection);
   const restOfConnectionString = connection.connection.replace(/[a-z0-9+]:\/\/+/, "");
-
-  const onApplyConnectionHint = (dialect, connection) => {
-    props.setName(`${dialect} Connection - ${new Date().toLocaleDateString()}`);
-    props.setConnection(connection);
-    setShowHint(false);
-  };
 
   const detectedDialect = getDialectTypeFromConnectionString(props.connection);
   const isRestApi = detectedDialect === "rest";
@@ -325,40 +316,7 @@ function MainConnectionForm(props: MainConnectionFormProps): React.JSX.Element |
           Cancel
         </Button>
         <TestConnectionButton connection={connection} />
-        {!isRestApi && !isGraphQL && (
-          <Button type="button" disabled={props.saving} onClick={() => setShowHint(!showHint)}>
-            {showHint ? "Hide Connection Hints" : "Show Connection Hints"}
-          </Button>
-        )}
-        {!isRestApi && !isGraphQL && (
-          <Button
-            type="button"
-            onClick={() =>
-              selectCommand({
-                event: "clientEvent/showConnectionHelper",
-                data: {
-                  scheme: parsedConnectionProps?.scheme || connection.connection.match(/^[a-z0-9]+/)?.[0] || 0,
-                  username: parsedConnectionProps?.username,
-                  password: parsedConnectionProps?.password,
-                  host: parsedConnectionProps?.hosts[0]?.host,
-                  port: parsedConnectionProps?.hosts[0]?.port,
-                  restOfConnectionString,
-                  onApply: (newConnection: string) => {
-                    props.setConnection(newConnection);
-                  },
-                },
-              })
-            }
-          >
-            Show Connection Helper
-          </Button>
-        )}
       </div>
-      {showHint && (
-        <div className="FormInput__Container">
-          <ConnectionHint onChange={onApplyConnectionHint} />
-        </div>
-      )}
     </form>
   );
 }
