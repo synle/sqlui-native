@@ -735,16 +735,8 @@ export function setUpDataEndpoints(anExpressAppContext: Express) {
   addDataEndpoint("post", "/api/query", async (req, res) => {
     const queryStorage = await getQueryStorage(req.headers["sqlui-native-session-id"]);
 
-    res.status(201).json(
-      await queryStorage.add({
-        name: req.body?.name,
-        connectionId: req.body?.connectionId,
-        databaseId: req.body?.databaseId,
-        tableId: req.body?.tableId,
-        sql: req.body?.sql,
-        selected: req.body?.selected,
-      }),
-    );
+    const { id: _id, createdAt: _ca, updatedAt: _ua, ...body } = req.body || {};
+    res.status(201).json(await queryStorage.add(body));
   });
 
   addDataEndpoint("put", "/api/query/:queryId", async (req, res) => {

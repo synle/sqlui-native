@@ -8,6 +8,20 @@ import { getGeneratedRandomId } from "src/common/utils/commonUtils";
 import { writeDebugLog } from "src/common/utils/debugLogger";
 import { storageDir } from "src/common/PersistentStorageJsonFile";
 
+/**
+ * Returns a shallow copy of the object with all undefined-valued keys removed.
+ * Prevents `undefined` from overwriting existing values during spread merges.
+ */
+function stripUndefined<T>(obj: T): Partial<T> {
+  const result: any = {};
+  for (const [key, value] of Object.entries(obj as any)) {
+    if (value !== undefined) {
+      result[key] = value;
+    }
+  }
+  return result;
+}
+
 /** Default SQLite database file name. */
 export const DB_FILE_NAME = "sqlui-native-storage.db";
 
@@ -102,7 +116,7 @@ export class PersistentStorageSqlite<T extends StorageEntry> implements IPersist
     const now = Date.now();
 
     const obj: any = {
-      ...entry,
+      ...stripUndefined(entry),
       createdAt: now,
       updatedAt: now,
     };
@@ -121,7 +135,7 @@ export class PersistentStorageSqlite<T extends StorageEntry> implements IPersist
 
     const merged: any = {
       ...existing,
-      ...entry,
+      ...stripUndefined(entry),
       updatedAt: Date.now(),
     };
     // Strip id from data

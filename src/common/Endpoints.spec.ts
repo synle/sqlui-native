@@ -182,4 +182,52 @@ describe("Endpoints data persistence", () => {
       expect(fetched.name).toBe("Renamed Session");
     });
   });
+
+  describe("partial update - undefined fields do not overwrite existing values", () => {
+    test("update with undefined name does not erase existing name", async () => {
+      const sessionId = uniqueSessionId();
+      const queryStorage = await getQueryStorage(sessionId);
+
+      const added = queryStorage.add({ name: "Keep This Name", sql: "SELECT 1", connectionId: "conn-1" });
+
+      const updated = queryStorage.update({ id: added.id, sql: "SELECT 2", name: undefined } as any);
+
+      expect(updated.name).toBe("Keep This Name");
+      expect(updated.sql).toBe("SELECT 2");
+      expect(updated.connectionId).toBe("conn-1");
+    });
+
+    test("update with undefined sql does not erase existing sql", async () => {
+      const sessionId = uniqueSessionId();
+      const queryStorage = await getQueryStorage(sessionId);
+
+      const added = queryStorage.add({ name: "My Query", sql: "aaaa", connectionId: "conn-1" });
+
+      const updated = queryStorage.update({ id: added.id, name: "Renamed", sql: undefined } as any);
+
+      expect(updated.name).toBe("Renamed");
+      expect(updated.sql).toBe("aaaa");
+      expect(updated.connectionId).toBe("conn-1");
+    });
+
+    test("add with undefined fields does not store undefined keys", async () => {
+      const sessionId = uniqueSessionId();
+      const queryStorage = await getQueryStorage(sessionId);
+
+      const added = queryStorage.add({ name: "Test", sql: undefined, connectionId: undefined });
+
+      expect(added.name).toBe("Test");
+      expect("sql" in added).toBe(false);
+      expect("connectionId" in added).toBe(false);
+    });
+
+    test("session partial update preserves existing name", async () => {
+      const sessionsStorage = await getSessionsStorage();
+
+      const added = sessionsStorage.add({ name: "My Session" });
+      const updated = sessionsStorage.update({ id: added.id, name: undefined } as any);
+
+      expect(updated.name).toBe("My Session");
+    });
+  });
 });
