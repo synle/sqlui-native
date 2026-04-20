@@ -89,7 +89,7 @@ jobs:
     needs: [code_format]
     runs-on: ubuntu-latest
     outputs:
-      dist_version: ${{ steps.package-version.outputs.current-version }}
+      dist_version: v${{ steps.package-version.outputs.current-version }}
     steps:
       - name: Record job start time
         run: echo "JOB_START=$(date +%s)" >> $GITHUB_ENV
@@ -116,7 +116,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: bash
         run: |
-          TAG="${{ steps.package-version.outputs.current-version }}"
+          TAG="v${{ steps.package-version.outputs.current-version }}"
           echo "Deleting existing release and tag for $TAG (if any)..."
           gh release delete "$TAG" --yes --cleanup-tag 2>/dev/null || true
 
@@ -125,7 +125,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: bash
         run: |
-          TAG="${{ steps.package-version.outputs.current-version }}"
+          TAG="v${{ steps.package-version.outputs.current-version }}"
           # Always create as draft first; the publish job promotes it on success
           DRAFT_FLAGS="--draft"
           if [ "${{ inputs.release_mode }}" = "draft" ]; then
