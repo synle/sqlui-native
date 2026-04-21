@@ -91,7 +91,7 @@ describe("Endpoints data persistence", () => {
       const sessions = sessionsStorage.list();
       const found = sessions.find((s: any) => s.id === added.id);
       expect(found).toBeDefined();
-      expect(found.name).toBe("New Session 4/20/2026");
+      expect(found!.name).toBe("New Session 4/20/2026");
     });
 
     test("session name persists across storage re-instantiation", async () => {
@@ -106,7 +106,7 @@ describe("Endpoints data persistence", () => {
   });
 
   describe("POST /api/query - full field persistence", () => {
-    test("query sql, connectionId, databaseId, tableId, and selected are preserved on create", async () => {
+    test("query sql, connectionId, databaseId, and tableId are preserved on create", async () => {
       const sessionId = uniqueSessionId();
       const queryStorage = await getQueryStorage(sessionId);
 
@@ -116,7 +116,6 @@ describe("Endpoints data persistence", () => {
         connectionId: "conn-123",
         databaseId: "db-456",
         tableId: "table-789",
-        selected: true,
       });
 
       expect(added.name).toBe("My Query");
@@ -124,14 +123,12 @@ describe("Endpoints data persistence", () => {
       expect(added.connectionId).toBe("conn-123");
       expect(added.databaseId).toBe("db-456");
       expect(added.tableId).toBe("table-789");
-      expect(added.selected).toBe(true);
 
       const queries = queryStorage.list();
       const fetched = queries.find((q: any) => q.id === added.id);
-      expect(fetched.name).toBe("My Query");
-      expect(fetched.sql).toBe("SELECT * FROM users");
-      expect(fetched.connectionId).toBe("conn-123");
-      expect(fetched.selected).toBe(true);
+      expect(fetched!.name).toBe("My Query");
+      expect(fetched!.sql).toBe("SELECT * FROM users");
+      expect(fetched!.connectionId).toBe("conn-123");
     });
 
     test("query fields persist across storage re-instantiation", async () => {
@@ -142,7 +139,6 @@ describe("Endpoints data persistence", () => {
         name: "Persistent Query",
         sql: "aaaa",
         connectionId: "conn-abc",
-        selected: true,
       });
 
       const queryStorage2 = await getQueryStorage(sessionId);
@@ -151,7 +147,6 @@ describe("Endpoints data persistence", () => {
       expect(queries[0].name).toBe("Persistent Query");
       expect(queries[0].sql).toBe("aaaa");
       expect(queries[0].connectionId).toBe("conn-abc");
-      expect(queries[0].selected).toBe(true);
     });
   });
 

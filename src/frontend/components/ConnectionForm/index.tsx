@@ -287,7 +287,7 @@ function MainConnectionForm(props: MainConnectionFormProps): React.JSX.Element |
       username={parsedConnectionProps?.username || ""}
       password={parsedConnectionProps?.password || ""}
       host={parsedConnectionProps?.hosts?.[0]?.host || ""}
-      port={parsedConnectionProps?.hosts?.[0]?.port || ""}
+      port={String(parsedConnectionProps?.hosts?.[0]?.port || "")}
       restOfConnectionString={restOfConnectionString}
       onChange={(newConnection: string) => props.setConnection(newConnection)}
     />
