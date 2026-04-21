@@ -8,31 +8,45 @@ log(`
 ==============================================
 `);
 
-// Sync version: tauri.conf.json is the single source of truth.
-const tauriConf = JSON.parse(fs.readFileSync("src-tauri/tauri.conf.json", "utf-8"));
+// Sync version: pick the higher version between tauri.conf.json and package.json.
+const tauriConfPath = "src-tauri/tauri.conf.json";
+const pkgPath = "package.json";
+const tauriConf = JSON.parse(fs.readFileSync(tauriConfPath, "utf-8"));
+const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf-8"));
 const tauriVersion = tauriConf.version;
-if (tauriVersion) {
-  const pkgPath = "package.json";
-  const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf-8"));
-  if (pkg.version !== tauriVersion) {
-    pkg.version = tauriVersion;
-    fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + "\n");
-    log(`Synced version: ${tauriVersion} (tauri.conf.json → package.json)`);
+const pkgVersion = pkg.version;
 
-    // Also update package-lock.json if it exists
-    const lockPath = "package-lock.json";
-    if (fs.existsSync(lockPath)) {
-      const lock = JSON.parse(fs.readFileSync(lockPath, "utf-8"));
-      lock.version = tauriVersion;
-      if (lock.packages && lock.packages[""]) {
-        lock.packages[""].version = tauriVersion;
-      }
-      fs.writeFileSync(lockPath, JSON.stringify(lock, null, 2) + "\n");
-      log(`Synced version: ${tauriVersion} (tauri.conf.json → package-lock.json)`);
-    }
+if (tauriVersion && pkgVersion && tauriVersion !== pkgVersion) {
+  const tauriParts = tauriVersion.split(".").map(Number);
+  const pkgParts = pkgVersion.split(".").map(Number);
+  const usePackageVersion = pkgParts[0] > tauriParts[0] ||
+    (pkgParts[0] === tauriParts[0] && pkgParts[1] > tauriParts[1]) ||
+    (pkgParts[0] === tauriParts[0] && pkgParts[1] === tauriParts[1] && pkgParts[2] > tauriParts[2]);
+
+  const canonicalVersion = usePackageVersion ? pkgVersion : tauriVersion;
+
+  if (usePackageVersion) {
+    tauriConf.version = canonicalVersion;
+    fs.writeFileSync(tauriConfPath, JSON.stringify(tauriConf, null, 2) + "\n");
+    log(`Synced version: ${canonicalVersion} (package.json → tauri.conf.json)`);
   } else {
-    log(`Version already in sync: ${tauriVersion}`);
+    pkg.version = canonicalVersion;
+    fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + "\n");
+    log(`Synced version: ${canonicalVersion} (tauri.conf.json → package.json)`);
   }
+
+  const lockPath = "package-lock.json";
+  if (fs.existsSync(lockPath)) {
+    const lock = JSON.parse(fs.readFileSync(lockPath, "utf-8"));
+    lock.version = canonicalVersion;
+    if (lock.packages && lock.packages[""]) {
+      lock.packages[""].version = canonicalVersion;
+    }
+    fs.writeFileSync(lockPath, JSON.stringify(lock, null, 2) + "\n");
+    log(`Synced version: ${canonicalVersion} → package-lock.json`);
+  }
+} else {
+  log(`Version already in sync: ${tauriVersion}`);
 }
 
 // Write a minimal package.json for build/ and public/ (electron-builder's app directory).
