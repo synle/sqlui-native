@@ -2,7 +2,34 @@ import { columnFetchThrottle } from "src/frontend/data/connectionThrottle";
 import { getCurrentSessionId } from "src/frontend/data/session";
 import { platform } from "src/frontend/platform";
 import { SqluiCore, SqluiFrontend } from "typings";
+
+/** Cached base URL for API calls. Empty string for browser/dev mode (relative URLs). */
+let _apiBaseUrl = "";
+let _apiBaseUrlResolved = false;
+
+/** Resolves the sidecar base URL in Tauri mode by invoking the Rust command. */
+async function getApiBaseUrl(): Promise<string> {
+  if (_apiBaseUrlResolved) return _apiBaseUrl;
+  _apiBaseUrlResolved = true;
+
+  if ((window as any).__TAURI_INTERNALS__) {
+    try {
+      const { invoke } = await import("@tauri-apps/api/core");
+      const port = await invoke<number>("get_sidecar_port");
+      if (port > 0) {
+        _apiBaseUrl = `http://127.0.0.1:${port}`;
+      }
+    } catch (err) {
+      console.error("api.tsx:getApiBaseUrl", err);
+    }
+  }
+
+  return _apiBaseUrl;
+}
+
 async function _fetch<T>(input: RequestInfo, initOptions?: RequestInit) {
+  const baseUrl = await getApiBaseUrl();
+
   let { headers, ...restInput } = initOptions || {};
 
   headers = headers || {};
@@ -15,7 +42,9 @@ async function _fetch<T>(input: RequestInfo, initOptions?: RequestInit) {
 
   restInput = restInput || {};
 
-  return fetch(input, {
+  const url = typeof input === "string" && baseUrl ? `${baseUrl}${input}` : input;
+
+  return fetch(url, {
     ...restInput,
     headers,
   })

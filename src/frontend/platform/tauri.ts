@@ -17,10 +17,19 @@ export const tauriPlatform: PlatformBridge = {
     // Tauri menu item enable/disable not implemented yet
   },
 
-  readFileContent(file: File): Promise<string> {
+  async readFileContent(file: File): Promise<string> {
     const form = new FormData();
     form.append("file", file);
-    return fetch("/api/file", {
+    // Use Tauri invoke to get the sidecar port for absolute URL
+    let baseUrl = "";
+    try {
+      const { invoke } = await import("@tauri-apps/api/core");
+      const port = await invoke<number>("get_sidecar_port");
+      if (port > 0) baseUrl = `http://127.0.0.1:${port}`;
+    } catch (_err) {
+      // fall back to relative URL
+    }
+    return fetch(`${baseUrl}/api/file`, {
       method: "POST",
       body: form,
     }).then((r) => r.text());
