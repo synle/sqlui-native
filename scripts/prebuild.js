@@ -19,7 +19,8 @@ const pkgVersion = pkg.version;
 if (tauriVersion && pkgVersion && tauriVersion !== pkgVersion) {
   const tauriParts = tauriVersion.split(".").map(Number);
   const pkgParts = pkgVersion.split(".").map(Number);
-  const usePackageVersion = pkgParts[0] > tauriParts[0] ||
+  const usePackageVersion =
+    pkgParts[0] > tauriParts[0] ||
     (pkgParts[0] === tauriParts[0] && pkgParts[1] > tauriParts[1]) ||
     (pkgParts[0] === tauriParts[0] && pkgParts[1] === tauriParts[1] && pkgParts[2] > tauriParts[2]);
 
