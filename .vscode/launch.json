@@ -7,9 +7,6 @@
       "request": "launch",
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "start-server"],
-      "env": {
-        "NODE_OPTIONS": "--max-old-space-size=4096"
-      },
       "console": "integratedTerminal",
       "skipFiles": ["<node_internals>/**"]
     },
@@ -18,45 +15,22 @@
       "type": "chrome",
       "request": "launch",
       "url": "http://localhost:3000",
-      "webRoot": "${workspaceFolder}/src",
-      "sourceMapPathOverrides": {
-        "webpack:///src/*": "${webRoot}/*"
-      }
+      "webRoot": "${workspaceFolder}/src"
     },
     {
-      "name": "Debug Electron Main Process",
+      "name": "Debug Tauri (Server + Webapp)",
       "type": "node",
       "request": "launch",
-      "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/electron",
-      "args": ["build/main.js"],
-      "env": {
-        "ENV_TYPE": "electron-dev",
-        "NODE_OPTIONS": "--max-old-space-size=4096"
-      },
-      "cwd": "${workspaceFolder}",
-      "preLaunchTask": "build",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "start"],
       "console": "integratedTerminal",
       "skipFiles": ["<node_internals>/**"]
-    },
-    {
-      "name": "Debug Electron Renderer",
-      "type": "chrome",
-      "request": "attach",
-      "port": 9222,
-      "webRoot": "${workspaceFolder}",
-      "sourceMapPathOverrides": {
-        "webpack:///./src/*": "${webRoot}/src/*"
-      }
     }
   ],
   "compounds": [
     {
       "name": "Debug Dev Mode (Server + Webapp)",
       "configurations": ["Debug Server", "Debug Webapp (Chrome)"]
-    },
-    {
-      "name": "Debug Electron (Main + Renderer)",
-      "configurations": ["Debug Electron Main Process", "Debug Electron Renderer"]
     }
   ]
 }

@@ -12,6 +12,9 @@ const gitCommit = (() => {
   }
 })();
 
+/** ISO 8601 build date (e.g. "2026-04-19"). */
+const buildDate = new Date().toISOString().slice(0, 10);
+
 /**
  * Vite build configuration for the React frontend.
  * Dev server runs on port 3000 and proxies /api requests to the sqlui-server on port 3001.
@@ -23,6 +26,7 @@ export default defineConfig(({ command }) => ({
   define: {
     __BUILD_COMMIT__: JSON.stringify(gitCommit),
     __BUILD_CHANNEL__: JSON.stringify(process.env.BUILD_CHANNEL || "dev"),
+    __BUILD_DATE__: JSON.stringify(buildDate),
   },
   root: ".",
   base: command === "serve" ? "/" : "./",

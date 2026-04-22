@@ -256,6 +256,11 @@ export function useConnectionQueries() {
       selected: q.id === queryId,
     }));
     _invalidateQueries();
+
+    // persist selected state to the backend so it survives sessionStorage loss
+    for (const q of _connectionQueries) {
+      dataApi.upsertQuery(q);
+    }
   };
 
   const onChangeQuery = async (queryId: string | undefined, partials: SqluiFrontend.PartialConnectionQuery) => {
