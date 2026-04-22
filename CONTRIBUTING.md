@@ -40,7 +40,7 @@ Assuming you use the same database in the docker samples below:
     "_type": "connection",
     "id": "connection.1643485516220.4798705129674932",
     "connection": "postgres://postgres:password123!@127.0.0.1:5432",
-    "name": "Local PostgresSQL"
+    "name": "Local PostgreSQL"
   },
   {
     "_type": "connection",
@@ -86,16 +86,24 @@ Assuming you use the same database in the docker samples below:
     "managedMetadata": {
       "databases": [{ "name": "Folder 1" }],
       "tables": [
-        { "name": "GET Request", "databaseId": "Folder 1", "props": { "query": "curl '{{HOST}}/get'" } },
+        {
+          "name": "GET Request",
+          "databaseId": "Folder 1",
+          "props": { "query": "curl '{{HOST}}/get'" }
+        },
         {
           "name": "POST JSON",
           "databaseId": "Folder 1",
-          "props": { "query": "curl -X POST '{{HOST}}/post' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\"key\": \"value\"}'" }
+          "props": {
+            "query": "curl -X POST '{{HOST}}/post' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\"key\": \"value\"}'"
+          }
         },
         {
           "name": "File Upload",
           "databaseId": "Folder 1",
-          "props": { "query": "curl -X POST '{{HOST}}/post' \\\n  -F 'file=@/path/to/file' \\\n  -F 'description=my upload'" }
+          "props": {
+            "query": "curl -X POST '{{HOST}}/post' \\\n  -F 'file=@/path/to/file' \\\n  -F 'description=my upload'"
+          }
         }
       ]
     }
@@ -108,7 +116,11 @@ Assuming you use the same database in the docker samples below:
     "managedMetadata": {
       "databases": [{ "name": "Queries" }],
       "tables": [
-        { "name": "List Continents", "databaseId": "Queries", "props": { "query": "{\n  continents {\n    code\n    name\n  }\n}" } },
+        {
+          "name": "List Continents",
+          "databaseId": "Queries",
+          "props": { "query": "{\n  continents {\n    code\n    name\n  }\n}" }
+        },
         {
           "name": "Get Country",
           "databaseId": "Queries",
@@ -119,7 +131,9 @@ Assuming you use the same database in the docker samples below:
         {
           "name": "List Languages",
           "databaseId": "Queries",
-          "props": { "query": "{\n  languages {\n    code\n    name\n    native\n  }\n}" }
+          "props": {
+            "query": "{\n  languages {\n    code\n    name\n    native\n  }\n}"
+          }
         }
       ]
     }
