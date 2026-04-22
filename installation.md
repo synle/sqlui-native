@@ -2,14 +2,13 @@
 title: sqlui-native
 ---
 
-# Installation:
+# Installation
 
 ## Windows
 
-- %download-link-windows-x64-exe%
-- Open the `.exe` file
-- Click on `More info`
-- Then choose `Run anyway`
+1. Download: %download-link-windows-x64-exe%
+2. Run the `.exe` installer
+3. If Windows SmartScreen appears, click `More info` then `Run anyway`
 
 ![image](https://user-images.githubusercontent.com/3792401/153638199-32b6070f-ee05-48cd-9e84-1eba45db22e4.png)
 
@@ -19,13 +18,15 @@ title: sqlui-native
 
 ## Mac
 
-- %download-link-mac-arm64%
-- Open the `.dmg` file
-- Drag the binary to Application file
-- Open the app once in the Applications folder
-- When prompted, clicked on Cancel
-- Open `System Preference`, then `Security & Privacy`, then click on `General` tab
-- Click on `Open Anyway`
+1. Download: %download-link-mac-arm64%
+2. Open the `.dmg` file and drag `sqlui-native.app` to the `Applications` folder
+3. Open the app from Applications — macOS will block it the first time
+4. Go to **System Settings > Privacy & Security**, scroll down, and click `Open Anyway`
+5. Alternatively, run this in Terminal to bypass the quarantine check:
+
+```
+xattr -cr /Applications/sqlui-native.app
+```
 
 ![image](https://user-images.githubusercontent.com/3792401/153640153-725af959-2989-4984-bbab-2f0995ddb94a.png)
 
@@ -39,24 +40,22 @@ title: sqlui-native
 
 ![image](https://user-images.githubusercontent.com/3792401/153640735-8fe99a6e-c052-407e-95a9-13b00c3747f1.png)
 
-### Mac Apple Silicon (M-Series) Troubleshooting
+### Mac Apple Silicon (M-Series) — "App is damaged" Error
 
-On macOS 26+ with Apple Silicon (M1/M2/M3/M4), you may see the following error when attempting to open the app:
+On Apple Silicon Macs (M1/M2/M3/M4), you may see:
 
 > "sqlui-native.app" is damaged and can't be opened. You should move it to the Trash.
 
-This is caused by macOS quarantine attributes applied to unsigned apps. To fix this, open Terminal and run:
+This is caused by macOS quarantine attributes on unsigned apps. Fix it by running:
 
 ```
 xattr -cr /Applications/sqlui-native.app
 ```
 
-After running the command, you should be able to open sqlui-native normally.
+## Ubuntu / Debian
 
-## Ubuntu - Debian
-
-- %download-link-ubuntu%
-- Run the following shell command to install the above `.deb`
+1. Download: %download-link-ubuntu%
+2. Install via terminal:
 
 ```
 sudo dpkg -i sqlui-native*.deb
@@ -66,10 +65,10 @@ sudo dpkg -i sqlui-native*.deb
 
 ![image](https://user-images.githubusercontent.com/3792401/153638017-85896932-65b1-4670-9a05-b81bcb858d51.png)
 
-## Linux Other Distro (AppImage)
+## Linux Other Distros (AppImage)
 
-- %download-link-appimage%
-- Make the `.AppImage` file executable and run it
+1. Download: %download-link-appimage%
+2. Make executable and run:
 
 ```
 chmod +x sqlui-native*.AppImage
