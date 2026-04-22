@@ -236,11 +236,11 @@ When `SIDECAR_PORT` is not set (i.e., running via `npm run dev`), the server sta
 
 #### Key Files
 
-| File | Role |
-| --- | --- |
-| `src/sqlui-server/index.ts` | Server entry point — `startSidecar()` vs `startStandalone()` branching, port protocol, stdin monitoring |
-| `src-tauri/src/lib.rs` | Rust host — `spawn_sidecar()`, `find_system_node()`, stdout parsing, `get_sidecar_port` command |
-| `vite.sqlui-server.sidecar.config.ts` | Bundles all JS dependencies into a single `sqlui-server.js` for the sidecar |
+| File                                  | Role                                                                                                    |
+| ------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| `src/sqlui-server/index.ts`           | Server entry point — `startSidecar()` vs `startStandalone()` branching, port protocol, stdin monitoring |
+| `src-tauri/src/lib.rs`                | Rust host — `spawn_sidecar()`, `find_system_node()`, stdout parsing, `get_sidecar_port` command         |
+| `vite.sqlui-server.sidecar.config.ts` | Bundles all JS dependencies into a single `sqlui-server.js` for the sidecar                             |
 
 ### To package
 
