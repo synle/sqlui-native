@@ -1,7 +1,7 @@
 {
   "$schema": "https://raw.githubusercontent.com/nicedoc/tauri/dev/.schema/config.schema.json",
   "productName": "sqlui-native",
-  "version": "2.76.18",
+  "version": "2.76.19",
   "identifier": "io.synle.github.sqlui-native",
   "build": {
     "frontendDist": "../build",
