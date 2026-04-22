@@ -1,7 +1,7 @@
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { getConnectionFormInputs, getConnectionStringFormat, SUPPORTED_DIALECTS } from "src/common/adapters/DataScriptFactory";
 import Select from "src/frontend/components/Select";
 
@@ -17,10 +17,12 @@ type ConnectionHelperFormInputs = {
 
 /** Props for the ConnectionHelper component, extending form inputs with callbacks. */
 type ConnectionHelperProps = ConnectionHelperFormInputs & {
-  /** Called with the generated connection string when the user clicks Apply. */
+  /** Called with the generated connection string when the user clicks Apply (dialog) or on every change (inline). */
   onChange: (newConnection: string) => void;
-  /** Called when the user cancels the connection helper. */
-  onClose: () => void;
+  /** Called when the user cancels the connection helper. Optional in inline mode. */
+  onClose?: () => void;
+  /** When true, renders inline without Apply/Cancel buttons and auto-syncs on every change. */
+  inline?: boolean;
 };
 
 /**
@@ -82,6 +84,13 @@ export default function ConnectionHelper(props: ConnectionHelperProps) {
     setFormValues((prev) => ({ ...prev, [fieldKey]: fieldValue }));
   };
 
+  // In inline mode, auto-sync the generated connection string to the parent on every change.
+  useEffect(() => {
+    if (props.inline) {
+      props.onChange(connection);
+    }
+  }, [connection, props.inline]);
+
   // construct the final
   const onApply = () => props.onChange(connection);
 
@@ -106,6 +115,43 @@ export default function ConnectionHelper(props: ConnectionHelperProps) {
       })
     );
 
+  const schemeSelectorDom = (
+    <div className="FormInput__Row">
+      <Select required onChange={(newScheme) => onChange("scheme", newScheme)} value={formValues.scheme}>
+        <option value="">Select a Scheme</option>
+        {SUPPORTED_DIALECTS.sort().map((dialect) => (
+          <option key={dialect} value={dialect}>
+            {dialect}
+          </option>
+        ))}
+      </Select>
+    </div>
+  );
+
+  const generatedConnectionDom = (
+    <div className="FormInput__Row">
+      <TextField
+        label="Generated Connection String"
+        value={connection}
+        disabled={true}
+        required
+        size="small"
+        fullWidth={true}
+        slotProps={{ input: { readOnly: true } }}
+      />
+    </div>
+  );
+
+  if (props.inline) {
+    return (
+      <div className="FormInput__Container">
+        {schemeSelectorDom}
+        {formDom}
+        {generatedConnectionDom}
+      </div>
+    );
+  }
+
   return (
     <form
       className="FormInput__Container"
@@ -114,20 +160,9 @@ export default function ConnectionHelper(props: ConnectionHelperProps) {
         onApply();
       }}
     >
-      <div className="FormInput__Row">
-        <Select required onChange={(newScheme) => onChange("scheme", newScheme)} value={formValues.scheme}>
-          <option value="">Select a Scheme</option>
-          {SUPPORTED_DIALECTS.sort().map((dialect) => (
-            <option key={dialect} value={dialect}>
-              {dialect}
-            </option>
-          ))}
-        </Select>
-      </div>
+      {schemeSelectorDom}
       {formDom}
-      <div className="FormInput__Row">
-        <TextField label="Generated Connection String" value={connection} disabled={true} required size="small" fullWidth={true} />
-      </div>
+      {generatedConnectionDom}
       <Box sx={{ display: "flex", justifyContent: "end", gap: 2 }}>
         <Button type="submit" variant="contained">
           Apply

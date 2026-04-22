@@ -1,15 +1,15 @@
 import SaveIcon from "@mui/icons-material/Save";
 import LoadingButton from "@mui/lab/LoadingButton";
-import { Alert, Box, Button, Link, TextField, Typography } from "@mui/material";
+import { Alert, Box, Button, Link, Tab, Tabs, TextField, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import BaseDataAdapter from "src/common/adapters/BaseDataAdapter/index";
 import { getConnectionSetupGuide, getDialectTypeFromConnectionString } from "src/common/adapters/DataScriptFactory";
 import ConnectionHint from "src/frontend/components/ConnectionForm/ConnectionHint";
+import ConnectionHelper from "src/frontend/components/ConnectionHelper";
 import GraphQLConnectionFields from "src/frontend/components/ConnectionForm/GraphQLConnectionFields";
 import RestApiConnectionFields from "src/frontend/components/ConnectionForm/RestApiConnectionFields";
 import HTMLContent from "src/frontend/components/HTMLContent";
 import { platform } from "src/frontend/platform";
-import { useCommands } from "src/frontend/components/MissionControl";
 import TestConnectionButton from "src/frontend/components/TestConnectionButton";
 import { useGetConnectionById, useUpsertConnection } from "src/frontend/hooks/useConnection";
 import useToaster from "src/frontend/hooks/useToaster";
@@ -33,12 +33,17 @@ export function NewConnectionForm() {
   const navigate = useNavigate();
 
   const onSave = async () => {
+    const trimmedName = name.trim();
+    const trimmedConnection = connection.trim();
+    setName(trimmedName);
+    setConnection(trimmedConnection);
+
     await mutateAsync({
-      name,
-      connection,
+      name: trimmedName,
+      connection: trimmedConnection,
     });
 
-    createSystemNotification(`Connection "${name}" created`);
+    createSystemNotification(`Connection "${trimmedName}" created`);
 
     // when done, go back to the main page (added delay to prevent operation on unmounted component errors)
     setTimeout(() => navigate(`/`, { replace: true }), 0);
@@ -101,10 +106,15 @@ export function EditConnectionForm(props: ConnectionFormProps): React.JSX.Elemen
   const navigate = useNavigate();
 
   const onSave = async () => {
+    const trimmedName = name.trim();
+    const trimmedConnection = connection.trim();
+    setName(trimmedName);
+    setConnection(trimmedConnection);
+
     await mutateAsync({
       id,
-      name,
-      connection,
+      name: trimmedName,
+      connection: trimmedConnection,
     });
 
     // when done, go back to the main page
@@ -159,10 +169,9 @@ type MainConnectionFormProps = {
  */
 function MainConnectionForm(props: MainConnectionFormProps): React.JSX.Element | null {
   const navigate = useNavigate();
-  const [showHint, setShowHint] = useState(false);
   const [showSqliteDatabasePathSelection, setShowSqliteDatabasePathSelection] = useState(false);
+  const [activeTab, setActiveTab] = useState(0);
   const { add: addToast } = useToaster();
-  const { selectCommand } = useCommands();
 
   // effects
   useEffect(() => {
@@ -210,30 +219,29 @@ function MainConnectionForm(props: MainConnectionFormProps): React.JSX.Element |
   const parsedConnectionProps = BaseDataAdapter.getConnectionParameters(connection.connection);
   const restOfConnectionString = connection.connection.replace(/[a-z0-9+]:\/\/+/, "");
 
-  const onApplyConnectionHint = (dialect, connection) => {
-    props.setName(`${dialect} Connection - ${new Date().toLocaleDateString()}`);
-    props.setConnection(connection);
-    setShowHint(false);
-  };
-
   const detectedDialect = getDialectTypeFromConnectionString(props.connection);
   const isRestApi = detectedDialect === "rest";
   const isGraphQL = detectedDialect === "graphql";
 
-  return (
-    <form className="ConnectionForm FormInput__Container" onSubmit={onSave}>
-      <div className="FormInput__Row">
-        <TextField
-          label="Name"
-          value={props.name}
-          onChange={(e) => props.setName(e.target.value)}
-          required
-          size="small"
-          fullWidth={true}
-          autoComplete="off"
-          autoFocus
-        />
-      </div>
+  const showTabs = !isRestApi && !isGraphQL;
+
+  const nameFieldDom = (
+    <div className="FormInput__Row">
+      <TextField
+        label="Name"
+        value={props.name}
+        onChange={(e) => props.setName(e.target.value)}
+        required
+        size="small"
+        fullWidth={true}
+        autoComplete="off"
+        autoFocus
+      />
+    </div>
+  );
+
+  const advancedTabDom = (
+    <>
       {isGraphQL ? (
         <GraphQLConnectionFields connection={props.connection} setConnection={props.setConnection} />
       ) : isRestApi ? (
@@ -269,6 +277,37 @@ function MainConnectionForm(props: MainConnectionFormProps): React.JSX.Element |
           </label>
         </div>
       )}
+    </>
+  );
+
+  const simpleTabDom = (
+    <ConnectionHelper
+      inline={true}
+      scheme={parsedConnectionProps?.scheme || connection.connection.match(/^[a-z0-9]+/)?.[0] || ""}
+      username={parsedConnectionProps?.username || ""}
+      password={parsedConnectionProps?.password || ""}
+      host={parsedConnectionProps?.hosts?.[0]?.host || ""}
+      port={String(parsedConnectionProps?.hosts?.[0]?.port || "")}
+      restOfConnectionString={restOfConnectionString}
+      onChange={(newConnection: string) => props.setConnection(newConnection)}
+    />
+  );
+
+  return (
+    <form className="ConnectionForm FormInput__Container" onSubmit={onSave}>
+      {nameFieldDom}
+      {showTabs ? (
+        <>
+          <Tabs value={activeTab} onChange={(_e, newVal) => setActiveTab(newVal)} sx={{ mb: 1 }}>
+            <Tab label="Simple" />
+            <Tab label="Advanced" />
+          </Tabs>
+          {activeTab === 0 && simpleTabDom}
+          {activeTab === 1 && advancedTabDom}
+        </>
+      ) : (
+        advancedTabDom
+      )}
       <div className="FormInput__Row">
         <LoadingButton variant="contained" type="submit" loading={props.saving} startIcon={<SaveIcon />}>
           Save
@@ -277,40 +316,7 @@ function MainConnectionForm(props: MainConnectionFormProps): React.JSX.Element |
           Cancel
         </Button>
         <TestConnectionButton connection={connection} />
-        {!isRestApi && !isGraphQL && (
-          <Button type="button" disabled={props.saving} onClick={() => setShowHint(!showHint)}>
-            {showHint ? "Hide Connection Hints" : "Show Connection Hints"}
-          </Button>
-        )}
-        {!isRestApi && !isGraphQL && (
-          <Button
-            type="button"
-            onClick={() =>
-              selectCommand({
-                event: "clientEvent/showConnectionHelper",
-                data: {
-                  scheme: parsedConnectionProps?.scheme || connection.connection.match(/^[a-z0-9]+/)?.[0] || 0,
-                  username: parsedConnectionProps?.username,
-                  password: parsedConnectionProps?.password,
-                  host: parsedConnectionProps?.hosts[0]?.host,
-                  port: parsedConnectionProps?.hosts[0]?.port,
-                  restOfConnectionString,
-                  onApply: (newConnection: string) => {
-                    props.setConnection(newConnection);
-                  },
-                },
-              })
-            }
-          >
-            Show Connection Helper
-          </Button>
-        )}
       </div>
-      {showHint && (
-        <div className="FormInput__Container">
-          <ConnectionHint onChange={onApplyConnectionHint} />
-        </div>
-      )}
     </form>
   );
 }

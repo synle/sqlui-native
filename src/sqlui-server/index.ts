@@ -69,6 +69,32 @@ function gracefulShutdown(server: net.Server, signal: string): void {
 }
 
 /**
+ * Starts the server as a Tauri sidecar.
+ * Listens on a random port (0) and prints the port marker for the Rust host to read.
+ * Monitors stdin — when the parent Tauri process exits, stdin closes and the sidecar shuts down.
+ */
+function startSidecar(): void {
+  const server = app.listen(0, HOST, () => {
+    const addr = server.address();
+    const port = typeof addr === "object" && addr ? addr.port : 0;
+    // The Rust host reads this exact marker from stdout to discover the port
+    console.log(`__SIDECAR_PORT__=${port}`);
+    console.log(`SQLUI Native Server (sidecar) started on http://${HOST}:${port} (pid: ${process.pid})`);
+  });
+
+  server.on("error", (err: NodeJS.ErrnoException) => {
+    console.error("Sidecar server error:", err);
+    process.exit(1);
+  });
+
+  // Detect parent death: when Tauri exits, stdin closes
+  process.stdin.resume();
+  process.stdin.on("end", () => gracefulShutdown(server, "stdin closed (parent exited)"));
+  process.on("SIGTERM", () => gracefulShutdown(server, "SIGTERM"));
+  process.on("SIGINT", () => gracefulShutdown(server, "SIGINT"));
+}
+
+/**
  * Starts the server in standalone mode.
  * Uses the default port (3001) with port conflict detection and cleanup.
  */
@@ -97,4 +123,9 @@ async function startStandalone(): Promise<void> {
   process.on("SIGINT", () => gracefulShutdown(server, "SIGINT"));
 }
 
-startStandalone();
+// SIDECAR_PORT=0 is set by the Tauri Rust host when spawning the sidecar
+if (process.env.SIDECAR_PORT === "0") {
+  startSidecar();
+} else {
+  startStandalone();
+}

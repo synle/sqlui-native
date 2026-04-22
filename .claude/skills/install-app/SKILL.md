@@ -16,7 +16,7 @@ Kill any running sqlui-native processes, download, install, and launch from the 
 This MUST run first to ensure a clean install. Kill the app, the sidecar server, and any related Node.js processes:
 
 ```bash
-# Kill the Tauri/Electron app
+# Kill the Tauri app
 pkill -f "sqlui-native" 2>/dev/null
 osascript -e 'quit app "sqlui-native"' 2>/dev/null
 
@@ -110,7 +110,7 @@ open /Applications/sqlui-native.app
 
 ### 4. Windows
 
-- Download the `.exe` or `.msi` installer:
+- Download the `.exe` installer:
 
 ```
 gh release download <tag> --pattern "*.exe" --dir /tmp
@@ -120,7 +120,7 @@ gh release download <tag> --pattern "*.exe" --dir /tmp
 
 ### 5. Linux
 
-- Download the `.deb` (or `.AppImage` / `.rpm` based on user preference):
+- Download the `.deb` (or `.AppImage` for non-Debian distros):
 
 ```
 gh release download <tag> --pattern "*.deb" --dir /tmp

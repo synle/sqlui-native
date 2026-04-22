@@ -1,10 +1,9 @@
 {
   "name": "sqlui-native",
-  "version": "1.76.5",
-  "engine": "Electron",
+  "version": "2.76.19",
+  "engine": "Tauri + Node Sidecar",
   "private": true,
   "description": "A minimal native desktop client for most databases supporting MySQL, MariaDB, MS SQL Server, PostgresSQL, SQLite, Cassandra, MongoDB and Redis.",
-  "main": "main.js",
   "homepage": "./",
   "scripts": {
     "### Cleanup & Maintenance ###": "##################################################################################",
@@ -14,20 +13,24 @@
     "format:ci": "prettier --write --ignore-unknown --no-error-on-unmatched-pattern --print-width 140 .",
     "format:check": "prettier --check --cache --ignore-unknown --print-width 140 .",
     "lint": "eslint --fix --ext .tsx --ext .ts src",
-    "typecheck": "cross-env NODE_OPTIONS=--max-old-space-size=4096 tsc --noEmit",
+    "typecheck": "tsc --noEmit --project tsconfig.json",
     "### Build Lifecycle ###": "##################################################################################",
     "prebuild": "node scripts/prebuild.js",
-    "build": "cross-env NODE_OPTIONS=--max-old-space-size=4096 vite build --config vite.frontend.config.ts",
-    "postbuild": "npm run build-server && npm run build-electron",
+    "build": "vite build --config vite.frontend.config.ts",
+    "postbuild": "npm run build-server",
     "build-server": "vite build --config vite.sqlui-server.config.ts",
-    "build-electron": "vite build --config vite.electron.config.ts",
+    "build-server-sidecar": "vite build --config vite.sqlui-server.sidecar.config.ts",
+    "build:tauri": "cross-env-shell NODE_OPTIONS=--max-old-space-size=8192 \"npm run prebuild && npm run build && npm run build-server-sidecar && node scripts/download-node.js && node scripts/prepare-sidecar.js\"",
+    "tauri": "tauri",
+    "tauri:dev": "tauri dev",
+    "tauri:build": "tauri build",
     "### Development & Execution ###": "##################################################################################",
     "predev": "node scripts/prebuild.js",
     "dev": "concurrently \"npm run dev-server\" \"npm run start-webapp\"",
-    "start": "cross-env ENV_TYPE='electron-dev' VITE_DEV_SERVER_URL='http://localhost:3000' electron .",
-    "start-webapp": "cross-env NODE_OPTIONS='--max-old-space-size=4096' ENV_TYPE='browser' vite --config vite.frontend.config.ts --strictPort",
+    "start": "npm run tauri:dev",
+    "start-webapp": "cross-env ENV_TYPE='browser' vite --config vite.frontend.config.ts --strictPort",
     "prestart-server": "npm run build-server",
-    "start-server": "cross-env NODE_OPTIONS='--max-old-space-size=4096' node build/sqlui-server.js",
+    "start-server": "node build/sqlui-server.js",
     "dev-server": "concurrently \"vite build --config vite.sqlui-server.config.ts --watch\" \"nodemon --watch build/sqlui-server.js --delay 1 -- build/sqlui-server.js\"",
     "### Validation ###": "##################################################################################",
     "validate": "npm run lint && npm run typecheck && npm run test-ci && npm run format && npm run test-e2e && npm run test-smoke && npm run test-integration",
@@ -41,21 +44,11 @@
     "test-e2e": "npx playwright test",
     "test-smoke": "npx playwright test --config playwright.smoke.config.ts",
     "### Distribution & Packaging ###": "##################################################################################",
-    "dist": "electron-builder build --publish=never",
-    "dist-win-x64-exe": "electron-builder build --publish=never --win --x64",
-    "dist-win-x64-appx": "electron-builder build --publish=never --win appx",
-    "dist-win-arm64": "electron-builder build --publish=never --win --arm64 --config.npmRebuild=false",
-    "dist-macos-x64": "electron-builder build --publish=never --mac --x64",
-    "dist-macos-arm64": "electron-builder build --publish=never --mac --arm64",
-    "dist-linux-deb": "electron-builder build --publish=never --linux deb",
-    "dist-linux-rpm": "electron-builder build --publish=never --linux rpm",
-    "dist-linux-snap": "electron-builder build --publish=never --linux snap",
-    "dist-linux-pacman": "electron-builder build --publish=never --linux pacman",
-    "dist-linux-appimage": "electron-builder build --publish=never --linux AppImage"
+    "dist": "npm run tauri:build"
   },
   "repository": "https://github.com/synle/sqlui-native",
   "keywords": [
-    "Electron",
+    "Tauri",
     "SQL",
     "Native Desktop Application",
     "MySQL",
@@ -82,6 +75,9 @@
     "@tanstack/react-query-devtools": "^5.99.0",
     "@tanstack/react-table": "^8.21.3",
     "@tanstack/react-virtual": "^3.13.23",
+    "@tauri-apps/api": "^2.10.1",
+    "@tauri-apps/plugin-opener": "^2.5.3",
+    "@tauri-apps/plugin-shell": "^2.3.5",
     "@testing-library/dom": "^10.4.1",
     "@xyflow/react": "^12.10.2",
     "cassandra-driver": "^3.6.0",
@@ -107,6 +103,7 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.58.2",
+    "@tauri-apps/cli": "^2.10.1",
     "@testing-library/react": "^16.3.2",
     "@types/cassandra-driver": "^3.6.0",
     "@types/js-beautify": "^1.13.3",
@@ -122,8 +119,6 @@
     "body-parser": "^1.20.0",
     "concurrently": "^7.4.0",
     "cross-env": "^7.0.3",
-    "electron": "^35.1.2",
-    "electron-builder": "^26.0.12",
     "eslint": "^8.35.0",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-unused-imports": "^4.4.1",
@@ -137,40 +132,5 @@
     "typescript": "~5.8",
     "vite": "^6.4.2",
     "vitest": "^0.34.6"
-  },
-  "build": {
-    "extends": null,
-    "appId": "io.synle.github.sqlui-native",
-    "directories": {
-      "app": "build"
-    },
-    "files": [
-      "**/*",
-      "!sqlui-server.js"
-    ],
-    "win": {
-      "icon": "build/logo512.png",
-      "artifactName": "${name}-${arch}.${ext}"
-    },
-    "appx": {
-      "publisherDisplayName": "Sy Le",
-      "applicationId": "sqluiNative"
-    },
-    "mac": {
-      "icon": "build/logo512.png",
-      "artifactName": "${name}-${arch}.${ext}"
-    },
-    "linux": {
-      "synopsis": "sqlui-native - A minimal native desktop client for most databases supporting MySQL, MariaDB, MS SQL Server, PostgresSQL, SQLite, Cassandra, MongoDB and Redis.",
-      "icon": "build/logo256.icns",
-      "category": "Development",
-      "artifactName": "${name}.${ext}",
-      "target": [
-        "deb",
-        "rpm",
-        "snap",
-        "pacman"
-      ]
-    }
   }
 }
