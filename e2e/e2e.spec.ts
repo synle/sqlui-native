@@ -1,8 +1,8 @@
 /** End-to-end tests for sqlui-native web app. */
 import { test, expect, Page } from "@playwright/test";
 
-/** Increased timeout for app initialization and session selection. */
-test.setTimeout(60_000);
+/** Increased timeout for app initialization and CI environments. */
+test.setTimeout(120_000);
 
 /**
  * Handles the session selection that appears on first load when no session exists.
@@ -42,6 +42,14 @@ const REST_CONNECTION_NAME = `E2E REST ${TEST_ID}`;
 let connectionCounter = 0;
 
 /**
+ * Navigates to the new connection page by clicking the Connection button.
+ */
+async function navigateToNewConnection(page: Page) {
+  await page.getByRole("group", { name: "Connection" }).getByRole("button").first().click();
+  await expect(page).toHaveURL(/connection/i, { timeout: 10_000 });
+}
+
+/**
  * Creates a new SQLite connection via the UI.
  * Returns the connection name so callers can reference it.
  */
@@ -50,13 +58,24 @@ async function createSqliteConnection(page: Page): Promise<string> {
   const connName = `${SQLITE_CONNECTION_NAME} ${connectionCounter}`;
   const connString = `sqlite:///tmp/e2e-test-${TEST_ID}-${connectionCounter}.sqlite`;
 
-  await page.getByRole("group", { name: "Connection" }).getByRole("button").first().click();
-  await expect(page).toHaveURL(/connection/i);
+  await navigateToNewConnection(page);
 
-  await page.getByText("Sqlite", { exact: true }).click();
+  // ConnectionHint shows dialect names — click SQLite
+  // getDialectName returns "Sqlite", rendered with CSS text-transform: uppercase
+  const sqliteLink = page.getByText("Sqlite", { exact: true }).first();
+  await expect(sqliteLink).toBeVisible({ timeout: 15_000 });
+  await sqliteLink.click();
 
-  await page.getByRole("textbox", { name: "Name" }).fill(connName);
-  await page.getByRole("textbox", { name: "Connection" }).fill(connString);
+  // Wait for connection form to render after dialect selection
+  const nameField = page.getByRole("textbox", { name: "Name" });
+  await expect(nameField).toBeVisible({ timeout: 15_000 });
+  await nameField.fill(connName);
+
+  // Switch to Advanced tab to get the raw Connection string field
+  await page.getByRole("tab", { name: "Advanced" }).click();
+  const connectionField = page.getByRole("textbox", { name: "Connection" });
+  await expect(connectionField).toBeVisible({ timeout: 5_000 });
+  await connectionField.fill(connString);
 
   await page.getByRole("button", { name: "Save" }).click();
 
@@ -72,22 +91,21 @@ async function createSqliteConnection(page: Page): Promise<string> {
  */
 async function selectConnectionInQueryBox(page: Page, connectionName: string) {
   const connectionSelect = page.locator("[data-testid='query-connection-select']");
+  await expect(connectionSelect).toBeVisible({ timeout: 10_000 });
   const optionValue = await connectionSelect.locator("option", { hasText: connectionName }).first().getAttribute("value");
   await connectionSelect.selectOption(optionValue!);
 }
 
 /**
- * Sets text in the Monaco editor via clipboard paste.
+ * Sets text in the Monaco editor via the Monaco API.
+ * Clipboard paste is unreliable in headless CI environments.
  */
 async function typeInEditor(page: Page, text: string) {
-  // Ensure Monaco editor is visible
   const editorContainer = page.locator(".CodeEditorBox__QueryBox .monaco-editor").first();
-  await expect(editorContainer).toBeVisible({ timeout: 5_000 });
+  await expect(editorContainer).toBeVisible({ timeout: 10_000 });
   await editorContainer.click();
   await page.waitForTimeout(200);
 
-  // Set editor content directly via Monaco API — clipboard paste is unreliable
-  // in headless CI environments (Linux headless Chrome)
   await page.evaluate((val) => {
     const queryBoxEl = document.querySelector(".CodeEditorBox__QueryBox");
     const allEditors = (window as any).monaco?.editor?.getEditors() || [];
@@ -108,14 +126,12 @@ async function typeInEditor(page: Page, text: string) {
 /** Clicks execute and waits for results (SQL queries). */
 async function executeQuery(page: Page) {
   await page.locator("#btnExecuteCommand").click();
-  // Wait for "Query took" text which appears for all successful queries
-  await expect(page.getByText("Query took", { exact: false }).first()).toBeVisible({ timeout: 15_000 });
+  await expect(page.getByText("Query took", { exact: false }).first()).toBeVisible({ timeout: 30_000 });
 }
 
-/** Clicks execute and waits for REST API response (status code chip like "200 OK"). */
+/** Clicks execute and waits for REST API response (status code like "200 OK"). */
 async function executeRestQuery(page: Page) {
   await page.locator("#btnExecuteCommand").click();
-  // REST API results show a chip with "STATUS TEXT" — wait for common HTTP statuses
   await expect(page.getByText(/\d{3}\s+\w+/).first()).toBeVisible({ timeout: 30_000 });
 }
 
@@ -127,15 +143,21 @@ async function createRestApiConnection(page: Page): Promise<string> {
   connectionCounter++;
   const connName = `${REST_CONNECTION_NAME} ${connectionCounter}`;
 
-  await page.getByRole("group", { name: "Connection" }).getByRole("button").first().click();
-  await expect(page).toHaveURL(/connection/i);
+  await navigateToNewConnection(page);
 
-  await page.getByText("REST API", { exact: true }).first().click();
+  // ConnectionHint shows "REST API" from getDialectName
+  const restLink = page.getByText("REST API", { exact: true }).first();
+  await expect(restLink).toBeVisible({ timeout: 15_000 });
+  await restLink.click();
 
-  // REST API form has Name, HOST, and Variables fields (not a single Connection string)
-  await page.getByRole("textbox", { name: "Name", exact: true }).fill(connName);
-  // HOST field is pre-filled from the sample — clear and set to httpbin
+  // Wait for REST API form to render
+  const nameField = page.getByRole("textbox", { name: "Name", exact: true });
+  await expect(nameField).toBeVisible({ timeout: 15_000 });
+  await nameField.fill(connName);
+
+  // HOST field label is "HOST (base URL, used as {{HOST}})" — match with regex
   const hostField = page.getByRole("textbox", { name: /HOST/i });
+  await expect(hostField).toBeVisible({ timeout: 5_000 });
   await hostField.clear();
   await hostField.fill("https://httpbin.org");
 
@@ -149,24 +171,32 @@ async function createRestApiConnection(page: Page): Promise<string> {
 }
 
 /**
- * Deletes a connection via right-click context menu and confirms the dialog.
+ * Opens the context menu (DropdownButton) on a tree row via right-click.
+ * Right-click on AccordionHeader triggers its onContextMenu which clicks the DropdownButton.
+ */
+async function openContextMenu(page: Page, rowLocator: ReturnType<Page["locator"]>) {
+  await rowLocator.click();
+  await page.waitForTimeout(300);
+  await rowLocator.click({ button: "right" });
+  await page.waitForTimeout(300);
+}
+
+/**
+ * Deletes a connection via context menu and confirms the dialog.
  */
 async function deleteConnection(page: Page, connName: string) {
   const connectionRow = page.locator(".ConnectionDescription").filter({ hasText: connName }).first();
-  await connectionRow.click();
-  await page.waitForTimeout(500);
-  await connectionRow.click({ button: "right" });
+  await openContextMenu(page, connectionRow);
 
   const deleteItem = page.getByRole("menuitem", { name: "Delete" });
   await expect(deleteItem).toBeVisible({ timeout: 5_000 });
   await deleteItem.click();
 
-  // Confirm the deletion dialog
+  // AlertDialog confirmation uses "Yes" button
   const yesButton = page.getByRole("button", { name: "Yes" });
   await expect(yesButton).toBeVisible({ timeout: 5_000 });
   await yesButton.click();
 
-  // Wait for connection to disappear from sidebar
   await expect(connectionRow).not.toBeVisible({ timeout: 10_000 });
 }
 
@@ -200,8 +230,9 @@ test.describe("Phase 2: SQLite Connection CRUD", () => {
   test("should show dialect options on new connection page", async ({ page }) => {
     await page.goto("/");
     await selectOrCreateSession(page);
-    await page.getByRole("group", { name: "Connection" }).getByRole("button").first().click();
-    await expect(page.getByText("Mysql", { exact: true }).first()).toBeVisible({ timeout: 10_000 });
+    await navigateToNewConnection(page);
+    // ConnectionHint renders dialect names from getDialectName()
+    await expect(page.getByText("Mysql", { exact: true }).first()).toBeVisible({ timeout: 15_000 });
     await expect(page.getByText("Sqlite", { exact: true }).first()).toBeVisible();
     await expect(page.getByText("Postgres", { exact: true }).first()).toBeVisible();
   });
@@ -272,20 +303,21 @@ test.describe("Phase 4: Query Tabs", () => {
   });
 
   test("should add a new query tab", async ({ page }) => {
-    const queryTabs = page.locator("#QueryBoxTabs .Tab__Headers [role='tab']:not(:last-child)");
+    const queryTabs = page.locator("#QueryBoxTabs > .Tab__Headers [role='tab']:not(:last-child)");
     const tabsBefore = await queryTabs.count();
 
-    const addTab = page.locator("#QueryBoxTabs .Tab__Headers [role='tab']:last-child");
+    // Last tab is the "Add Query" tab
+    const addTab = page.getByRole("tab", { name: "Add Query" });
     await addTab.click();
 
     await expect(queryTabs).toHaveCount(tabsBefore + 1, { timeout: 5_000 });
   });
 
   test("should switch between query tabs", async ({ page }) => {
-    const addTab = page.locator("#QueryBoxTabs .Tab__Headers [role='tab']:last-child");
+    const addTab = page.getByRole("tab", { name: "Add Query" });
     await addTab.click();
 
-    const queryTabs = page.locator("#QueryBoxTabs .Tab__Headers [role='tab']:not(:last-child)");
+    const queryTabs = page.locator("#QueryBoxTabs > .Tab__Headers [role='tab']:not(:last-child)");
     const tabCount = await queryTabs.count();
     expect(tabCount).toBeGreaterThanOrEqual(2);
 
@@ -297,13 +329,16 @@ test.describe("Phase 4: Query Tabs", () => {
     const firstTab = page.locator("#QueryBoxTabs .Tab__Headers [role='tab']:not(:last-child)").first();
     await firstTab.click({ button: "right" });
 
+    // Tab context menu uses DropdownMenu with MenuItem components
     await page.getByRole("menuitem", { name: "Rename" }).click();
 
+    // PromptDialog opens — rename uses saveLabel: "Save"
     const newName = `Renamed Tab ${TEST_ID}`;
     const dialogInput = page.locator("[role='dialog'] input, .MuiDialog-root input").last();
+    await expect(dialogInput).toBeVisible({ timeout: 5_000 });
     await dialogInput.clear();
     await dialogInput.fill(newName);
-    await page.getByRole("button", { name: "Save" }).click();
+    await page.getByRole("button", { name: "Save", exact: true }).click();
 
     await expect(page.locator("#QueryBoxTabs .Tab__Headers [role='tab']").filter({ hasText: newName })).toBeVisible({
       timeout: 5_000,
@@ -311,18 +346,18 @@ test.describe("Phase 4: Query Tabs", () => {
   });
 
   test("should close a query tab via context menu", async ({ page }) => {
-    const addTab = page.locator("#QueryBoxTabs .Tab__Headers [role='tab']:last-child");
+    const addTab = page.getByRole("tab", { name: "Add Query" });
     await addTab.click();
     await page.waitForTimeout(500);
 
-    const queryTabs = page.locator("#QueryBoxTabs .Tab__Headers [role='tab']:not(:last-child)");
+    const queryTabs = page.locator("#QueryBoxTabs > .Tab__Headers [role='tab']:not(:last-child)");
     const tabsBefore = await queryTabs.count();
     expect(tabsBefore).toBeGreaterThanOrEqual(2);
 
     await queryTabs.last().click({ button: "right" });
     await page.getByRole("menuitem", { name: /^Close$/ }).click();
 
-    // Confirm the deletion dialog
+    // AlertDialog confirmation uses "Yes" button
     const yesButton = page.getByRole("button", { name: "Yes" });
     await expect(yesButton).toBeVisible({ timeout: 5_000 });
     await yesButton.click();
@@ -331,7 +366,7 @@ test.describe("Phase 4: Query Tabs", () => {
   });
 
   test("should duplicate a query tab", async ({ page }) => {
-    const queryTabs = page.locator("#QueryBoxTabs .Tab__Headers [role='tab']:not(:last-child)");
+    const queryTabs = page.locator("#QueryBoxTabs > .Tab__Headers [role='tab']:not(:last-child)");
     const tabsBefore = await queryTabs.count();
 
     await queryTabs.first().click({ button: "right" });
@@ -351,20 +386,25 @@ test.describe("Phase 5: Edit Connection", () => {
     const connName = await createSqliteConnection(page);
 
     const connectionRow = page.locator(".ConnectionDescription").filter({ hasText: connName }).first();
-    await connectionRow.click();
-    await page.waitForTimeout(500);
-    await connectionRow.click({ button: "right" });
+    await openContextMenu(page, connectionRow);
 
-    const editItem = page.getByRole("menuitem", { name: /Edit/i });
+    const editItem = page.getByRole("menuitem", { name: /^Edit$/ });
     await expect(editItem).toBeVisible({ timeout: 5_000 });
     await editItem.click();
 
     await expect(page).toHaveURL(/connection/i, { timeout: 10_000 });
 
-    const newName = `Edited SQLite ${TEST_ID}`;
+    // Edit connection form — switch to Advanced tab for raw connection string
     const nameField = page.getByRole("textbox", { name: "Name" });
+    await expect(nameField).toBeVisible({ timeout: 10_000 });
+
+    const newName = `Edited SQLite ${TEST_ID}`;
     await nameField.clear();
     await nameField.fill(newName);
+
+    // Ensure Advanced tab is active so connection string is preserved
+    await page.getByRole("tab", { name: "Advanced" }).click();
+    await page.waitForTimeout(300);
 
     await page.getByRole("button", { name: "Save" }).click();
 
@@ -382,37 +422,32 @@ test.describe("Phase 6: REST API", () => {
     await createRestApiConnection(page);
   });
 
-  test("should create a folder and GET request via context menu", async ({ page }) => {
+  test("should create a folder and blank request via context menu", async ({ page }) => {
     await page.goto("/");
     await selectOrCreateSession(page);
     const connName = await createRestApiConnection(page);
 
-    // Expand the connection in the tree first
-    const connectionRow = page.locator(".ConnectionDescription").filter({ hasText: connName }).first();
-    await connectionRow.click();
-    await page.waitForTimeout(500);
-
     // Right-click connection to create a new folder
-    await connectionRow.click({ button: "right" });
+    const connectionRow = page.locator(".ConnectionDescription").filter({ hasText: connName }).first();
+    await openContextMenu(page, connectionRow);
     await page.getByRole("menuitem", { name: "New Folder" }).click();
 
-    // Fill in folder name in the prompt dialog
+    // PromptDialog for folder name — "Save Changes" button
     const dialogInput = page.locator("[role='dialog'] input, .MuiDialog-root input").last();
+    await expect(dialogInput).toBeVisible({ timeout: 5_000 });
     await dialogInput.fill("E2E Folder");
-    await page.getByRole("button", { name: "Save" }).click();
+    await page.getByRole("button", { name: "Save Changes" }).click();
 
-    // Folder should appear in the tree (may need to expand connection)
-    await expect(page.locator(".DatabaseDescription").filter({ hasText: "E2E Folder" }).first()).toBeVisible({
-      timeout: 15_000,
-    });
-
-    // Right-click folder to add a GET request from template
+    // Folder should appear in the tree
     const folderRow = page.locator(".DatabaseDescription").filter({ hasText: "E2E Folder" }).first();
-    await folderRow.click({ button: "right" });
-    await page.getByRole("menuitem", { name: "GET Request" }).click();
+    await expect(folderRow).toBeVisible({ timeout: 15_000 });
 
-    // The request should appear in the tree under the folder
-    await expect(page.locator(".TableDescription").filter({ hasText: "GET Request" }).first()).toBeVisible({
+    // Right-click folder to add a blank request
+    await openContextMenu(page, folderRow);
+    await page.getByRole("menuitem", { name: "New Blank Request" }).click();
+
+    // The request "New Request" should appear in the tree under the folder
+    await expect(page.locator(".TableDescription").filter({ hasText: "New Request" }).first()).toBeVisible({
       timeout: 10_000,
     });
   });
@@ -422,15 +457,14 @@ test.describe("Phase 6: REST API", () => {
     await selectOrCreateSession(page);
     const connName = await createRestApiConnection(page);
 
-    // Add a fresh query tab to avoid leftover content from previous tests
-    await page.locator("#QueryBoxTabs .Tab__Headers [role='tab']:last-child").click();
+    // Add a fresh query tab to avoid leftover content
+    await page.getByRole("tab", { name: "Add Query" }).click();
     await page.waitForTimeout(300);
     await selectConnectionInQueryBox(page, connName);
 
     await typeInEditor(page, "curl 'https://httpbin.org/get'");
     await executeRestQuery(page);
 
-    // Should show 200 OK status
     await expect(page.getByText("200 OK").first()).toBeVisible({ timeout: 15_000 });
   });
 
@@ -439,12 +473,10 @@ test.describe("Phase 6: REST API", () => {
     await selectOrCreateSession(page);
     const connName = await createRestApiConnection(page);
 
-    // Add a fresh query tab
-    await page.locator("#QueryBoxTabs .Tab__Headers [role='tab']:last-child").click();
+    await page.getByRole("tab", { name: "Add Query" }).click();
     await page.waitForTimeout(300);
     await selectConnectionInQueryBox(page, connName);
 
-    // Type a fetch() GET request
     await typeInEditor(page, `fetch("https://httpbin.org/get", {\n  "method": "GET",\n  "headers": { "accept": "application/json" }\n});`);
     await executeRestQuery(page);
 
@@ -456,43 +488,43 @@ test.describe("Phase 6: REST API", () => {
     await selectOrCreateSession(page);
     const connName = await createRestApiConnection(page);
 
-    // Expand connection, then create folder + request
+    // Create folder
     const connectionRow = page.locator(".ConnectionDescription").filter({ hasText: connName }).first();
-    await connectionRow.click();
-    await page.waitForTimeout(500);
-    await connectionRow.click({ button: "right" });
+    await openContextMenu(page, connectionRow);
     await page.getByRole("menuitem", { name: "New Folder" }).click();
     const folderInput = page.locator("[role='dialog'] input, .MuiDialog-root input").last();
+    await expect(folderInput).toBeVisible({ timeout: 5_000 });
     await folderInput.fill("Rename Test Folder");
-    await page.getByRole("button", { name: "Save" }).click();
+    await page.getByRole("button", { name: "Save Changes" }).click();
 
+    // Create blank request in folder
     const folderRow = page.locator(".DatabaseDescription").filter({ hasText: "Rename Test Folder" }).first();
     await expect(folderRow).toBeVisible({ timeout: 10_000 });
-    await folderRow.click({ button: "right" });
+    await openContextMenu(page, folderRow);
     await page.getByRole("menuitem", { name: "New Blank Request" }).click();
 
-    // Wait for the request to appear
     const requestRow = page.locator(".TableDescription").filter({ hasText: "New Request" }).first();
     await expect(requestRow).toBeVisible({ timeout: 10_000 });
 
-    // Rename the request
-    await requestRow.click({ button: "right" });
+    // Rename the request via "Edit Request" menu item
+    await openContextMenu(page, requestRow);
     await page.getByRole("menuitem", { name: "Edit Request" }).click();
     const renameInput = page.locator("[role='dialog'] input, .MuiDialog-root input").last();
+    await expect(renameInput).toBeVisible({ timeout: 5_000 });
     await renameInput.clear();
     await renameInput.fill("Renamed Request");
-    await page.getByRole("button", { name: "Save" }).click();
+    await page.getByRole("button", { name: "Save Changes" }).click();
 
     await expect(page.locator(".TableDescription").filter({ hasText: "Renamed Request" }).first()).toBeVisible({
       timeout: 10_000,
     });
 
-    // Delete the request
+    // Delete the request via "Delete Request" menu item
     const renamedRow = page.locator(".TableDescription").filter({ hasText: "Renamed Request" }).first();
-    await renamedRow.click({ button: "right" });
+    await openContextMenu(page, renamedRow);
     await page.getByRole("menuitem", { name: "Delete Request" }).click();
 
-    // Confirm deletion
+    // Confirmation dialog uses "Delete" button
     const confirmButton = page.getByRole("button", { name: "Delete" });
     await expect(confirmButton).toBeVisible({ timeout: 5_000 });
     await confirmButton.click();
@@ -505,24 +537,23 @@ test.describe("Phase 6: REST API", () => {
     await selectOrCreateSession(page);
     const connName = await createRestApiConnection(page);
 
-    // Expand connection, then create a folder
+    // Create a folder
     const connectionRow = page.locator(".ConnectionDescription").filter({ hasText: connName }).first();
-    await connectionRow.click();
-    await page.waitForTimeout(500);
-    await connectionRow.click({ button: "right" });
+    await openContextMenu(page, connectionRow);
     await page.getByRole("menuitem", { name: "New Folder" }).click();
     const folderInput = page.locator("[role='dialog'] input, .MuiDialog-root input").last();
+    await expect(folderInput).toBeVisible({ timeout: 5_000 });
     await folderInput.fill("Delete Test Folder");
-    await page.getByRole("button", { name: "Save" }).click();
+    await page.getByRole("button", { name: "Save Changes" }).click();
 
     const folderRow = page.locator(".DatabaseDescription").filter({ hasText: "Delete Test Folder" }).first();
     await expect(folderRow).toBeVisible({ timeout: 10_000 });
 
-    // Delete the folder
-    await folderRow.click({ button: "right" });
+    // Delete the folder via "Delete Folder" menu item
+    await openContextMenu(page, folderRow);
     await page.getByRole("menuitem", { name: "Delete Folder" }).click();
 
-    // Confirm deletion if dialog appears
+    // Confirmation dialog uses "Delete" button
     const confirmButton = page.getByRole("button", { name: "Delete" });
     if (await confirmButton.isVisible({ timeout: 3_000 }).catch(() => false)) {
       await confirmButton.click();

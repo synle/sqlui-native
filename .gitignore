@@ -10,6 +10,8 @@ dist/
 appx/
 main.js
 preload.js
+src-tauri/target/
+src-tauri/gen/
 
 # Static / generated assets
 assets/

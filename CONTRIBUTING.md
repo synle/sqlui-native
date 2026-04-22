@@ -150,9 +150,32 @@ The import JSON also supports bookmarks with `_type: "bookmark"`:
 
 - **React Query Devtools:** Press `Ctrl+Shift+Alt+D` (Windows/Linux) or `Cmd+Shift+Option+D` (Mac) to toggle React Query Devtools in any build (including packaged/production builds). Useful for inspecting query cache, stale states, and in-flight requests.
 
+### VS Code Setup
+
+The repo includes `.vscode/launch.json` and `.vscode/tasks.json` with pre-configured debug profiles:
+
+| Launch Config                        | What it does                                                      |
+| ------------------------------------ | ----------------------------------------------------------------- |
+| **Debug Server**                     | Runs `npm run start-server` with Node debugger attached           |
+| **Debug Webapp (Chrome)**            | Opens Chrome at `http://localhost:3000` with devtools debugging   |
+| **Debug Tauri (Server + Webapp)**    | Runs `npm start` (Tauri dev mode) with Node debugger attached     |
+| **Debug Dev Mode (Server + Webapp)** | Compound: launches both Server and Webapp together (browser mode) |
+
+**Typical workflow:**
+
+1. Use **Debug Dev Mode (Server + Webapp)** for browser-based development with breakpoints in both frontend and backend.
+2. Use **Debug Tauri (Server + Webapp)** to test the full Tauri desktop app with Node debugging.
+
+**Tasks** (`Cmd+Shift+B` / `Ctrl+Shift+B`):
+
+- `build` — Build frontend + server
+- `build-server` — Build server only
+- `build:tauri` — Full Tauri build (frontend + sidecar + Node binary)
+- `typecheck` — Run TypeScript type check (errors appear in VS Code Problems panel)
+
 ### How to run locally?
 
-#### In an electron container
+#### In Tauri dev mode
 
 ```bash
 npm install
@@ -424,7 +447,7 @@ npm run lint          # check for lint errors (must have 0 errors)
 npm run typecheck     # TypeScript type check (must have 0 errors)
 npm run test-ci       # run unit tests (all tests must pass)
 npm run format        # Prettier formatting (always run LAST)
-npm start             # test in Electron -- try adding a connection with your dialect
+npm start             # test in Tauri dev mode -- try adding a connection with your dialect
 ```
 
 ## Sample runbooks
@@ -564,7 +587,7 @@ sfdc://{"username":"you@yourcompany.dev","password":"your_password","securityTok
 sfdc://{"clientId":"your_consumer_key","clientSecret":"your_consumer_secret","loginUrl":"your-org.my.salesforce.com"}
 ```
 
-The Client Credentials flow is useful for service-to-service integrations where no user credentials are available. The adapter uses Node's native `https` module for the OAuth2 token request (instead of jsforce's internal HTTP client, which hangs in bundled Electron builds). Sessions are automatically refreshed via `withAutoRefresh()` when `INVALID_SESSION_ID` or `Session expired` errors are detected.
+The Client Credentials flow is useful for service-to-service integrations where no user credentials are available. The adapter uses Node's native `https` module for the OAuth2 token request (instead of jsforce's internal HTTP client, which hangs in bundled sidecar builds). Sessions are automatically refreshed via `withAutoRefresh()` when `INVALID_SESSION_ID` or `Session expired` errors are detected.
 
 #### Connection String Format
 
