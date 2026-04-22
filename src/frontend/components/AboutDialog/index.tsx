@@ -45,6 +45,7 @@ export function useShowAboutDialog() {
       ["Latest", newVersion],
       ["Engine", `${(appPackage as any).engine || "Unknown"}${archLabel ? ` (${archLabel})` : ""}`],
       ["Build", buildLabel],
+      ["Build Date", __BUILD_DATE__],
     ];
 
     const storageDir = serverConfigs?.storageDir || "";
@@ -115,7 +116,7 @@ export function useShowAboutDialog() {
     );
 
     try {
-      await modal({ title: "About", message: contentDom });
+      await modal({ title: "About", message: contentDom, showCloseButton: true, size: "xs" });
     } catch (_err) {
       // user dismissed dialog
     }

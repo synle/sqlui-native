@@ -1,8 +1,5 @@
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
-import Chip from "@mui/material/Chip";
-import Divider from "@mui/material/Divider";
-import Link from "@mui/material/Link";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 import React, { useCallback, useEffect, useState } from "react";
@@ -28,7 +25,6 @@ import {
 } from "src/frontend/hooks/useConnection";
 import { useActiveConnectionQuery, useConnectionQueries } from "src/frontend/hooks/useConnectionQuery";
 import { useGetBookmarkItems, useImportBookmarkItem } from "src/frontend/hooks/useFolderItems";
-import { useGetServerConfigs } from "src/frontend/hooks/useServerConfigs";
 import {
   useCloneSession,
   useDeleteSession,
@@ -50,11 +46,9 @@ import {
   useNavigate,
 } from "src/frontend/utils/commonUtils";
 import ProxyApi from "src/frontend/data/api";
-import { execute } from "src/frontend/utils/executeUtils";
 import { detectAndParseImportFile, exportAsPostmanCollection } from "src/frontend/utils/importExportUtils";
 import { RecordDetailsPage } from "src/frontend/views/RecordPage";
-import appPackage from "src/package.json";
-import { getArchLabel } from "src/frontend/utils/buildInfo";
+import { useShowAboutDialog } from "src/frontend/components/AboutDialog";
 import { SqluiCore, SqluiEnums, SqluiFrontend } from "typings";
 
 /** Represents a command dispatched through the MissionControl system. */
@@ -148,7 +142,6 @@ export default function MissionControl() {
   const { modal, confirm, prompt, alert, choice, dismiss: dismissDialog } = useActionDialogs();
   const queryClient = useQueryClient();
   const { data: sessions } = useGetSessions();
-  const { data: serverConfigs } = useGetServerConfigs();
   const { data: currentSession } = useGetCurrentSession();
   const { mutateAsync: upsertSession } = useUpsertSession();
   const { mutateAsync: cloneSession } = useCloneSession();
@@ -165,6 +158,7 @@ export default function MissionControl() {
   const { mutateAsync: deleteSession } = useDeleteSession();
   const { data: bookmarkItems } = useGetBookmarkItems();
   const { mutateAsync: importBookmarkItem } = useImportBookmarkItem();
+  const showAboutDialog = useShowAboutDialog();
   const [refreshingConnectionIds, setRefreshingConnectionIds] = useState<Set<string>>(new Set());
   _refreshingConnectionIds = refreshingConnectionIds;
 
@@ -1164,145 +1158,6 @@ export default function MissionControl() {
     }
   };
 
-  const onCheckForUpdate = async () => {
-    const newVersion = await fetch("https://api.github.com/repos/synle/sqlui-native/releases/latest")
-      .then((r) => r.json())
-      .then((r) => r.tag_name)
-      .catch(() => "unknown");
-
-    /** Compares two semver strings (e.g. "1.69.1" vs "1.70.0"). Returns true if local >= remote. */
-    const isVersionUpToDate = (local: string, remote: string): boolean => {
-      const parse = (v: string) => v.replace(/^v/, "").split(".").map(Number);
-      const [lMajor, lMinor = 0, lPatch = 0] = parse(local);
-      const [rMajor, rMinor = 0, rPatch = 0] = parse(remote);
-      if (lMajor !== rMajor) return lMajor > rMajor;
-      if (lMinor !== rMinor) return lMinor > rMinor;
-      return lPatch >= rPatch;
-    };
-
-    const isUpToDate = isVersionUpToDate(appPackage.version, newVersion);
-    const releasePageUrl = `https://github.com/synle/sqlui-native/releases/tag/${newVersion}`;
-
-    const buildLabel =
-      __BUILD_CHANNEL__ === "production" ? "Release" : `${__BUILD_CHANNEL__ === "beta" ? "Beta" : "Dev"} (${__BUILD_COMMIT__})`;
-    const archLabel = getArchLabel();
-
-    const infoRows: [string, React.ReactNode][] = [
-      ["Version", appPackage.version],
-      ["Latest", newVersion],
-      ["Engine", `${(appPackage as any).engine || "Unknown"}${archLabel ? ` (${archLabel})` : ""}`],
-      ["Build", buildLabel],
-    ];
-
-    const contentDom = (
-      <>
-        <Chip
-          label={isUpToDate ? "Up to date" : "Update available"}
-          color={isUpToDate ? "success" : "warning"}
-          size="small"
-          sx={{ mb: 2 }}
-        />
-        <Box component="table" sx={{ width: "100%", borderCollapse: "collapse", "& td": { py: 0.5, verticalAlign: "top" } }}>
-          <tbody>
-            {infoRows.map(([label, value]) => (
-              <tr key={label}>
-                <Box component="td" sx={{ fontWeight: "bold", pr: 2, whiteSpace: "nowrap", opacity: 0.7 }}>
-                  {label}
-                </Box>
-                <td>{value}</td>
-              </tr>
-            ))}
-          </tbody>
-        </Box>
-        {!isUpToDate && (
-          <>
-            <Divider sx={{ my: 2 }} />
-            <Link onClick={() => selectCommand({ event: "clientEvent/openExternalUrl", data: releasePageUrl })} sx={{ cursor: "pointer" }}>
-              Download latest version
-            </Link>
-          </>
-        )}
-      </>
-    );
-
-    const onGoToHomepage = () => {
-      const data = "https://synle.github.io/sqlui-native/";
-      selectCommand({ event: "clientEvent/openExternalUrl", data });
-    };
-
-    const onRevealDataLocation = () => {
-      const platform = window?.process?.platform;
-      const storageDir = serverConfigs?.storageDir || "";
-
-      if (!storageDir) {
-        return;
-      }
-
-      // copy the path to clipboard
-      navigator.clipboard.writeText(storageDir);
-
-      if (appPlatform.isDesktop) {
-        if (platform === "win32") {
-          execute(`explorer.exe "${storageDir}"`);
-        } else if (platform === "darwin") {
-          execute(`open "${storageDir}"`);
-        } else {
-          // anything else
-        }
-      }
-    };
-
-    await modal({
-      title: "About",
-      message: (
-        <Box sx={{ minWidth: 320 }}>
-          {contentDom}
-          <Divider sx={{ my: 2 }} />
-          <Box component="table" sx={{ width: "100%", borderCollapse: "collapse", "& td": { py: 0.5, verticalAlign: "top" } }}>
-            <tbody>
-              <tr>
-                <Box component="td" sx={{ fontWeight: "bold", pr: 2, whiteSpace: "nowrap", opacity: 0.7 }}>
-                  Data
-                </Box>
-                <td>
-                  <Link onClick={onRevealDataLocation} sx={{ cursor: "pointer", wordBreak: "break-all" }}>
-                    {serverConfigs?.storageDir}
-                  </Link>
-                </td>
-              </tr>
-              <tr>
-                <Box component="td" sx={{ fontWeight: "bold", pr: 2, whiteSpace: "nowrap", opacity: 0.7 }}>
-                  Home
-                </Box>
-                <td>
-                  <Link onClick={onGoToHomepage} sx={{ cursor: "pointer" }}>
-                    synle.github.io/sqlui-native
-                  </Link>
-                </td>
-              </tr>
-            </tbody>
-          </Box>
-          {window?.process?.platform === "darwin" && (
-            <>
-              <Divider sx={{ my: 2 }} />
-              <Box sx={{ opacity: 0.7, fontSize: "0.85em" }}>
-                <strong>macOS Troubleshooting:</strong> If you see "app is damaged", run in Terminal:
-                <Box
-                  component="code"
-                  sx={{ display: "block", mt: 0.5, p: 1, bgcolor: "action.hover", borderRadius: 1, userSelect: "text", cursor: "text" }}
-                >
-                  xattr -cr /Applications/sqlui-native.app
-                </Box>
-              </Box>
-            </>
-          )}
-        </Box>
-      ),
-      showCloseButton: true,
-      size: "xs",
-    });
-  };
-
   const onSchemaSearch = async () => {
     try {
       const onNavigate = (connectionId: string, databaseId: string, tableId: string) => {
@@ -1383,7 +1238,7 @@ export default function MissionControl() {
           break;
 
         case "clientEvent/checkForUpdate":
-          onCheckForUpdate();
+          showAboutDialog();
           break;
 
         case "clientEvent/schema/search":

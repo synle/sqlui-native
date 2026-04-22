@@ -10,6 +10,20 @@ import type { IPersistentStorage, StorageContent, StorageEntry } from "src/commo
 import { getGeneratedRandomId } from "src/common/utils/commonUtils";
 import { SqluiCore } from "typings";
 
+/**
+ * Returns a shallow copy of the object with all undefined-valued keys removed.
+ * Prevents `undefined` from overwriting existing values during spread merges.
+ */
+function stripUndefined<T>(obj: T): Partial<T> {
+  const result: any = {};
+  for (const [key, value] of Object.entries(obj as any)) {
+    if (value !== undefined) {
+      result[key] = value;
+    }
+  }
+  return result;
+}
+
 const baseDir = path.join(os.homedir(), ".sqlui-native");
 fs.mkdirSync(baseDir, { recursive: true });
 
@@ -102,7 +116,7 @@ export class PersistentStorageJsonFile<T extends StorageEntry> implements IPersi
     const caches = this.getData();
     caches[newId] = {
       id: newId,
-      ...entry,
+      ...stripUndefined(entry),
       createdAt: now,
       updatedAt: now,
     };
@@ -117,7 +131,7 @@ export class PersistentStorageJsonFile<T extends StorageEntry> implements IPersi
     const caches = this.getData();
     caches[entry.id] = {
       ...caches[entry.id],
-      ...entry,
+      ...stripUndefined(entry),
       updatedAt: Date.now(),
     };
 

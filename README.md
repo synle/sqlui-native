@@ -4,7 +4,7 @@
 
 ![64](https://user-images.githubusercontent.com/3792401/160178384-638de88f-1712-4419-aed4-b1ef79e5d82a.png)
 
-`sqlui-native` is a simple UI client for most SQL Engines written in Electron. It is compatible with most desktop OS's and support most dialects of RDBMS like MySQL, Microsoft SQL Server, Postgres, SQLite, Cassandra, MongoDB, Redis, Azure CosmosDB, Azure Storage Table, and Salesforce.
+`sqlui-native` is a simple UI client for most SQL Engines built with Tauri v2 and a Node.js sidecar. It is compatible with most desktop OS's and support most dialects of RDBMS like MySQL, Microsoft SQL Server, Postgres, SQLite, Cassandra, MongoDB, Redis, Azure CosmosDB, Azure Storage Table, and Salesforce.
 
 It supports multiple Windows, so you can have different sets of queries and connections side by side. The connections and queries are all stored locally, so you can continue where you left off in later visits.
 
@@ -16,14 +16,11 @@ Refer to the following link for download information.
 
 ## Supported OS's
 
-- [Windows 10/11 (Intel - AMD x64)](https://synle.github.io/sqlui-native/installation#windows)
-- [Windows 10/11 (ARM architecture)](https://synle.github.io/sqlui-native/installation#windows)
-- [macOS / OSX (Apple Silicon M-Series)](https://synle.github.io/sqlui-native/installation#mac) (Tested on Mac OS Monterey and macOS 26) - See [quarantine troubleshooting](#mac-apple-silicon-m-series---app-is-damaged-error)
-- [macOS / OSX (Intel x64)](https://synle.github.io/sqlui-native/installation#mac) (Tested on Mac OS Monterey)
+- [Windows 10/11 (x64 Installer)](https://synle.github.io/sqlui-native/installation#windows)
+- [macOS / OSX (Apple Silicon M-Series)](https://synle.github.io/sqlui-native/installation#mac) - See [quarantine troubleshooting](#mac-apple-silicon-m-series---app-is-damaged-error)
+- [macOS / OSX (Intel x64)](https://synle.github.io/sqlui-native/installation#mac)
 - [Linux Mint / Ubuntu / Debian](https://synle.github.io/sqlui-native/installation#ubuntu--debian)
-- [Linux Redhat / CentOS / Fedora](https://synle.github.io/sqlui-native/installation#redhat--centos--fedora) : Refer to this link for [Installation Instructions](https://synle.github.io/sqlui-native/installation)
-- [Linux Arch Linux](https://synle.github.io/sqlui-native/installation#arch-linux-with-pacman) (Tested on Steam Deck)
-- [Linux Other Distro](https://synle.github.io/sqlui-native/installation#linux-appimage) (Tested on Linux Mint)
+- [Linux Other Distro (AppImage)](https://synle.github.io/sqlui-native/installation#linux-other-distro-appimage)
 
 ## Supported Database Adapters
 

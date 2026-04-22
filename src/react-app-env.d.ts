@@ -5,3 +5,5 @@
 declare const __BUILD_COMMIT__: string;
 /** Build channel: "production" for release builds, "beta" for build-main CI, "dev" for local. */
 declare const __BUILD_CHANNEL__: string;
+/** ISO 8601 build date (e.g. "2026-04-19") injected at build time by Vite. */
+declare const __BUILD_DATE__: string;
