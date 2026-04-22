@@ -207,6 +207,41 @@ npm run dev
 # http://localhost:3000
 ```
 
+### Tauri Sidecar Lifecycle
+
+In production (Tauri) mode, the backend runs as a Node.js sidecar process managed by the Rust host. Understanding this lifecycle is important when debugging bundled app issues.
+
+#### Startup Sequence
+
+1. Tauri (Rust) calls `spawn_sidecar()` which finds the system `node` binary and launches `node sqlui-server.js` with `SIDECAR_PORT=0` and `stdin` kept open (`Stdio::piped()`).
+2. The Node.js server detects `SIDECAR_PORT=0` and calls `startSidecar()` which binds to port `0` — the OS assigns a random available port.
+3. Once listening, the sidecar prints `__SIDECAR_PORT__=<port>` to stdout.
+4. The Rust host reads stdout line by line, parses the port from the `__SIDECAR_PORT__=` marker, and stores it in `SidecarState`.
+5. The frontend calls the `get_sidecar_port` Tauri command to discover the port, then makes all API requests to `http://127.0.0.1:<port>`.
+
+#### Parent-Death Detection (Graceful Shutdown)
+
+The sidecar monitors `stdin` — when the Tauri process exits (user closes the window, crash, etc.), the stdin pipe closes. The sidecar detects this and shuts down gracefully:
+
+```
+process.stdin.resume();
+process.stdin.on("end", () => gracefulShutdown(server, "stdin closed (parent exited)"));
+```
+
+This avoids orphaned Node.js processes that would otherwise keep running in the background and hold the port. The sidecar also listens for `SIGTERM` and `SIGINT` signals as fallbacks.
+
+#### Standalone Mode (Browser Dev)
+
+When `SIDECAR_PORT` is not set (i.e., running via `npm run dev`), the server starts in standalone mode on the default port 3001. In this mode, there is no stdin monitoring — the server runs until manually stopped.
+
+#### Key Files
+
+| File                                  | Role                                                                                                    |
+| ------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| `src/sqlui-server/index.ts`           | Server entry point — `startSidecar()` vs `startStandalone()` branching, port protocol, stdin monitoring |
+| `src-tauri/src/lib.rs`                | Rust host — `spawn_sidecar()`, `find_system_node()`, stdout parsing, `get_sidecar_port` command         |
+| `vite.sqlui-server.sidecar.config.ts` | Bundles all JS dependencies into a single `sqlui-server.js` for the sidecar                             |
+
 ### To package
 
 ```bash
