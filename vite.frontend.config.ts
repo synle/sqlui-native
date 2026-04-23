@@ -12,8 +12,16 @@ const gitCommit = (() => {
   }
 })();
 
-/** ISO 8601 build date (e.g. "2026-04-19"). */
-const buildDate = new Date().toISOString().slice(0, 10);
+/** Build timestamp in MM/DD/YYYY HH:MM format. */
+const buildDate = (() => {
+  const now = new Date();
+  const mm = String(now.getMonth() + 1).padStart(2, "0");
+  const dd = String(now.getDate()).padStart(2, "0");
+  const yyyy = now.getFullYear();
+  const hh = String(now.getHours()).padStart(2, "0");
+  const min = String(now.getMinutes()).padStart(2, "0");
+  return `${mm}/${dd}/${yyyy} ${hh}:${min}`;
+})();
 
 /**
  * Vite build configuration for the React frontend.
