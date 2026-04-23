@@ -14,14 +14,20 @@ export function isProductionBuild(): boolean {
   return __BUILD_CHANNEL__ === "production";
 }
 
-/** Returns the short build badge shown in the header (e.g., "[arm64]" or "[BETA - abc1234] [arm64]"). */
+/** Returns true if this is a local dev build (not production or beta). */
+export function isDevBuild(): boolean {
+  return __BUILD_CHANNEL__ === "dev";
+}
+
+/** Returns the short build badge shown in the header (e.g., "[arm64]" or "[DEV - BUILD_04/23/2026 10:30]"). */
 export function getBuildBadge(): string {
   const arch = getArchLabel();
   const parts: string[] = [];
 
-  if (__BUILD_CHANNEL__ !== "production") {
-    const label = __BUILD_CHANNEL__ === "beta" ? "BETA" : "DEV";
-    parts.push(`[${label} - ${__BUILD_COMMIT__}]`);
+  if (__BUILD_CHANNEL__ === "dev") {
+    parts.push(`[DEV - BUILD_${__BUILD_DATE__}]`);
+  } else if (__BUILD_CHANNEL__ === "beta") {
+    parts.push(`[BETA - ${__BUILD_COMMIT__}]`);
   }
 
   if (arch) {
