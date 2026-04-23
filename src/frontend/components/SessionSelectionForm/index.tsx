@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import Box from "@mui/material/Box";
@@ -16,20 +16,12 @@ import { useCommands } from "src/frontend/components/MissionControl";
 import { useGetCurrentSession, useGetSessions, useSelectSession, useUpsertSession, useDeleteSession } from "src/frontend/hooks/useSession";
 import { useActionDialogs } from "src/frontend/hooks/useActionDialogs";
 import { useNavigate } from "src/frontend/utils/commonUtils";
-import {
-  getSessionOwner,
-  broadcastSessionDeleted,
-  broadcastFocusAndClose,
-  releaseSession,
-  stopHeartbeat,
-  validateRegistry,
-} from "src/frontend/data/windowSessionRegistry";
 
 /** Represents a session option in the session selection list. */
 export type SessionOption = {
   /** Display name of the session. */
   label: string;
-  /** Additional context (e.g., "Current Session", "In use by another window"). */
+  /** Additional context (e.g., "Current Session"). */
   subtitle?: string;
   /** Session ID. */
   value: string;
@@ -37,8 +29,6 @@ export type SessionOption = {
   selected?: boolean;
   /** Whether this session is the current window's session. */
   isCurrent?: boolean;
-  /** Window ID of the other window that owns this session, or null. */
-  ownerWindowId?: string | null;
 };
 
 /** Props for the SessionSelectionForm component. */
@@ -50,8 +40,6 @@ type SessionSelectionFormProps = {
 /**
  * Form for selecting, creating, renaming, and deleting sessions.
  * Displays available sessions with their status and allows creating new ones.
- * Enforces single-window-per-session: shows "In use by another window" for sessions
- * owned by other windows, and handles focus/close logic when selecting them.
  * @param props - Contains isFirstTime flag to control UI behavior.
  * @returns The session selection form or null while loading.
  */
@@ -63,14 +51,8 @@ export default function SessionSelectionForm(props: SessionSelectionFormProps): 
   const { mutateAsync: selectSession } = useSelectSession();
   const { mutateAsync: deleteSession } = useDeleteSession();
   const { selectCommand } = useCommands();
-  const { confirm, alert, dismiss } = useActionDialogs();
+  const { confirm, dismiss } = useActionDialogs();
   const navigate = useNavigate();
-
-  // Validate registry on mount: ping other windows and remove stale claims from dead windows
-  const [registryValidated, setRegistryValidated] = useState(false);
-  useEffect(() => {
-    validateRegistry().then(() => setRegistryValidated(true));
-  }, []);
 
   const onCreateNewSession = async (formEl: HTMLElement) => {
     const newSessionName = (formEl.querySelector("input") as HTMLInputElement).value;
@@ -82,7 +64,7 @@ export default function SessionSelectionForm(props: SessionSelectionFormProps): 
     selectSession(newSession.id);
   };
 
-  if (loadingSessions || !sessions || !registryValidated) {
+  if (loadingSessions || !sessions) {
     return (
       <Box sx={{ display: "flex", justifyContent: "center", padding: 3 }}>
         <CircularProgress size={24} />
@@ -92,6 +74,7 @@ export default function SessionSelectionForm(props: SessionSelectionFormProps): 
 
   const options: SessionOption[] = sessions.map((session) => {
     const isCurrent = session.id === currentSession?.id;
+
     const label = session.name;
     const value = session.id;
 
@@ -102,18 +85,14 @@ export default function SessionSelectionForm(props: SessionSelectionFormProps): 
         value,
         selected: true,
         isCurrent: true,
-        ownerWindowId: null,
       };
     }
 
-    const ownerWindowId = getSessionOwner(session.id);
     return {
       label,
-      subtitle: ownerWindowId ? "In use by another window" : undefined,
       value,
       selected: false,
       isCurrent: false,
-      ownerWindowId,
     };
   });
 
@@ -121,63 +100,24 @@ export default function SessionSelectionForm(props: SessionSelectionFormProps): 
     const targetSession = sessions.find((s) => s.id === option.value);
     if (!targetSession) return;
 
-    const hasOtherWindowOwner = !!option.ownerWindowId;
-    const windowWarning = hasOtherWindowOwner ? " This will also close any other window currently using this session." : "";
-
     if (option.isCurrent) {
       try {
-        await confirm(`Do you want to delete your current session "${targetSession.name}"?${windowWarning}`);
+        await confirm(`Do you want to delete your current session "${targetSession.name}"?`);
       } catch (_err) {
         return;
       }
-      broadcastSessionDeleted(targetSession.id);
       await deleteSession(targetSession.id);
-      releaseSession();
-      stopHeartbeat();
-      // Dismiss all dialogs (including the parent "Change Session" modal) before closing
+      // Dismiss any open dialogs (e.g. the parent "Change Session" modal) before navigating
       dismiss();
-      window.close();
-      // Fallback if window.close() didn't work (e.g. browser security)
       navigate("/session_expired", { replace: true });
     } else {
       try {
-        await confirm(`Do you want to delete the session "${targetSession.name}"?${windowWarning}`);
+        await confirm(`Do you want to delete the session "${targetSession.name}"?`);
       } catch (_err) {
         return;
       }
-      broadcastSessionDeleted(targetSession.id);
       await deleteSession(targetSession.id);
     }
-  };
-
-  const onSelectThisSession = async (option: SessionOption) => {
-    if (option.isCurrent) {
-      return; // already on this session
-    }
-
-    if (option.ownerWindowId) {
-      // Session is in use by another window — focus that window and close this one
-      broadcastFocusAndClose(option.ownerWindowId);
-      releaseSession();
-      stopHeartbeat();
-
-      // Try to close this window. window.close() only works for script-opened windows;
-      // in browser/dev mode on manually opened tabs it's a no-op.
-      window.close();
-
-      // If still here, show an alert telling the user to switch manually
-      try {
-        await alert(
-          `Session "${option.label}" is already open in another window. Please switch to that window. This window has been disconnected from its session.`,
-        );
-      } catch (_err) {
-        // dismissed
-      }
-      navigate("/session_select", { replace: true });
-      return;
-    }
-
-    selectSession(option.value);
   };
 
   const defaultSessionName = options.length === 0 ? `New Session ${new Date().toLocaleDateString()}` : "";
@@ -188,6 +128,9 @@ export default function SessionSelectionForm(props: SessionSelectionFormProps): 
 
       <List>
         {options.map((option) => {
+          const onSelectThisSession = () => {
+            selectSession(option.value);
+          };
           const labelId = `session-option-${option.value}`;
 
           let secondaryAction: React.JSX.Element | undefined;
@@ -226,7 +169,7 @@ export default function SessionSelectionForm(props: SessionSelectionFormProps): 
 
           return (
             <ListItem dense key={option.value} secondaryAction={secondaryAction} disablePadding>
-              <ListItemButton selected={option.selected} onClick={() => onSelectThisSession(option)}>
+              <ListItemButton selected={option.selected} onClick={onSelectThisSession}>
                 <ListItemIcon>
                   <Checkbox edge="start" checked={!!option.selected} tabIndex={-1} slotProps={{ input: { "aria-labelledby": labelId } }} />
                 </ListItemIcon>

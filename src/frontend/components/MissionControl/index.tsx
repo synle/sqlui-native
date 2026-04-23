@@ -45,7 +45,6 @@ import {
   getExportedQuery,
   useNavigate,
 } from "src/frontend/utils/commonUtils";
-import { getSessionOwner, broadcastSessionDeleted } from "src/frontend/data/windowSessionRegistry";
 import ProxyApi from "src/frontend/data/api";
 import { detectAndParseImportFile, exportAsPostmanCollection } from "src/frontend/utils/importExportUtils";
 import { RecordDetailsPage } from "src/frontend/views/RecordPage";
@@ -626,16 +625,10 @@ export default function MissionControl() {
         return;
       }
 
-      const hasOtherWindowOwner = !!getSessionOwner(targetSession.id);
-      const windowWarning = hasOtherWindowOwner ? " This will also close any other window currently using this session." : "";
-
-      await confirm(`Do you want to delete this session "${targetSession.name}"?${windowWarning}`);
-      broadcastSessionDeleted(targetSession.id);
+      await confirm(`Do you want to delete this session "${targetSession.name}"?`);
       await deleteSession(targetSession.id);
 
       if (targetSession.id === currentSession?.id) {
-        window.close();
-        // Fallback if window.close() didn't work (e.g. browser security)
         navigate("/session_expired", { replace: true });
       }
     } catch (err) {
