@@ -1,5 +1,4 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useNavigate } from "src/frontend/utils/commonUtils";
 import dataApi from "src/frontend/data/api";
 import { getCurrentSessionId, setCurrentSessionId } from "src/frontend/data/session";
 import { useAddRecycleBinItem } from "src/frontend/hooks/useFolderItems";
@@ -40,10 +39,8 @@ export function useGetCurrentSession() {
  * @returns Mutation that accepts a session ID to select.
  */
 export function useSelectSession(suppressReload?: boolean) {
-  const navigate = useNavigate();
   return useMutation<void, void, string>({
     mutationFn: async (newSessionId: string) => {
-      navigate("/", { replace: true });
       await setCurrentSessionId(newSessionId, suppressReload);
     },
   });
