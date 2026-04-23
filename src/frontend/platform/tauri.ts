@@ -9,10 +9,8 @@ export const tauriPlatform: PlatformBridge = {
     import("@tauri-apps/plugin-opener").then((mod) => mod.openUrl(url)).catch(() => window.open(url, "_blank"));
   },
 
-  openAppWindow(_hashLink: string) {
-    import("@tauri-apps/api/core")
-      .then((mod) => mod.invoke("open_new_window"))
-      .catch((err) => console.error("platform/tauri.ts:openAppWindow", err));
+  openAppWindow(hashLink: string) {
+    window.open(`/#${hashLink}`);
   },
 
   toggleMenuItems(_visible: boolean, _menuIds: string[]) {
