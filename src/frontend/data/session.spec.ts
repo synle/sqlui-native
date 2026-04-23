@@ -5,6 +5,7 @@ import { getCurrentSessionId, setSessionIdIfNotDefined, clearCurrentSessionId, s
 describe("session", () => {
   beforeEach(() => {
     window.sessionStorage.clear();
+    window.localStorage.clear();
   });
 
   describe("getCurrentSessionId", () => {
@@ -13,7 +14,7 @@ describe("session", () => {
     });
 
     test("returns the stored session id", () => {
-      sessionStorage.setItem("sqlui-native.sessionId", "my-session-42");
+      setCurrentSessionId("my-session-42", true);
       expect(getCurrentSessionId()).toBe("my-session-42");
     });
   });
@@ -21,48 +22,48 @@ describe("session", () => {
   describe("setSessionIdIfNotDefined", () => {
     test("sets session id when none exists", () => {
       setSessionIdIfNotDefined("fallback-session");
-      expect(sessionStorage.getItem("sqlui-native.sessionId")).toBe("fallback-session");
+      expect(getCurrentSessionId()).toBe("fallback-session");
     });
 
     test("does not overwrite existing session id", () => {
-      sessionStorage.setItem("sqlui-native.sessionId", "existing-session");
+      setCurrentSessionId("existing-session", true);
       setSessionIdIfNotDefined("fallback-session");
-      expect(sessionStorage.getItem("sqlui-native.sessionId")).toBe("existing-session");
+      expect(getCurrentSessionId()).toBe("existing-session");
     });
   });
 
   describe("clearCurrentSessionId", () => {
-    test("removes session id from sessionStorage", () => {
-      sessionStorage.setItem("sqlui-native.sessionId", "to-be-cleared");
+    test("removes session id", () => {
+      setCurrentSessionId("to-be-cleared", true);
       clearCurrentSessionId();
-      expect(sessionStorage.getItem("sqlui-native.sessionId")).toBeNull();
+      expect(getCurrentSessionId()).toBe("");
     });
 
     test("clears other session config items", () => {
       sessionStorage.setItem("clientConfig/cache.treeVisibles", '{"a":true}');
-      sessionStorage.setItem("sqlui-native.sessionId", "my-session");
+      setCurrentSessionId("my-session", true);
       clearCurrentSessionId();
       expect(sessionStorage.getItem("clientConfig/cache.treeVisibles")).toBeNull();
     });
   });
 
   describe("setCurrentSessionId", () => {
-    test("sets the session id in sessionStorage", () => {
+    test("sets the session id", () => {
       setCurrentSessionId("test-session-123", true);
-      expect(sessionStorage.getItem("sqlui-native.sessionId")).toBe("test-session-123");
+      expect(getCurrentSessionId()).toBe("test-session-123");
     });
 
     test("clears previous session config before setting new id", () => {
       sessionStorage.setItem("clientConfig/cache.treeVisibles", '{"old":true}');
       setCurrentSessionId("new-session", true);
       expect(sessionStorage.getItem("clientConfig/cache.treeVisibles")).toBeNull();
-      expect(sessionStorage.getItem("sqlui-native.sessionId")).toBe("new-session");
+      expect(getCurrentSessionId()).toBe("new-session");
     });
 
     test("overwrites existing session id", () => {
       setCurrentSessionId("first-session", true);
       setCurrentSessionId("second-session", true);
-      expect(sessionStorage.getItem("sqlui-native.sessionId")).toBe("second-session");
+      expect(getCurrentSessionId()).toBe("second-session");
     });
   });
 });

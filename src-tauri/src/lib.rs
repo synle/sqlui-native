@@ -10,6 +10,7 @@ use std::process::Stdio;
 use std::sync::Mutex;
 use std::time::{Duration, Instant};
 use tauri::menu::{MenuBuilder, MenuItemBuilder, PredefinedMenuItem, SubmenuBuilder};
+use tauri::webview::WebviewWindowBuilder;
 use tauri::{Emitter, Manager};
 
 /// Holds the sidecar Node.js child process and the port it is listening on.
@@ -71,6 +72,34 @@ fn open_in_file_explorer(path: String) -> Result<(), String> {
 #[tauri::command]
 fn read_file_content(path: String) -> Result<String, String> {
     std::fs::read_to_string(&path).map_err(|e| format!("Failed to read file {}: {}", path, e))
+}
+
+/// Counter for unique window labels.
+static WINDOW_COUNTER: std::sync::atomic::AtomicU32 = std::sync::atomic::AtomicU32::new(1);
+
+/// Creates a new application window. Called from the frontend or menu.
+#[tauri::command]
+fn open_new_window(app: tauri::AppHandle) -> Result<(), String> {
+    create_new_window(&app).map(|_| ())
+}
+
+/// Creates a new Tauri webview window with a unique label.
+fn create_new_window(app: &tauri::AppHandle) -> Result<tauri::WebviewWindow, String> {
+    let n = WINDOW_COUNTER.fetch_add(1, std::sync::atomic::Ordering::SeqCst);
+    let label = format!("main-{}", n);
+
+    // In dev mode, load from the Vite dev server; in production, load from bundled assets
+    #[cfg(debug_assertions)]
+    let url = tauri::WebviewUrl::External("http://localhost:3000".parse().unwrap());
+    #[cfg(not(debug_assertions))]
+    let url = tauri::WebviewUrl::App("index.html".into());
+
+    WebviewWindowBuilder::new(app, &label, url)
+        .title("sqlui-native")
+        .inner_size(1200.0, 800.0)
+        .min_inner_size(1000.0, 800.0)
+        .build()
+        .map_err(|e| format!("Failed to create window: {}", e))
 }
 
 #[cfg(not(debug_assertions))]
@@ -273,6 +302,10 @@ fn kill_sidecar(state: &SidecarState) {
 /// Builds the native application menu, emitting "menu-command" events on click.
 fn setup_menu(app: &tauri::AppHandle) -> Result<(), Box<dyn std::error::Error>> {
     // File submenu
+    let file_new_window = MenuItemBuilder::new("New Window")
+        .id("file-new-window")
+        .accelerator("CmdOrCtrl+Shift+N")
+        .build(app)?;
     let file_new_connection = MenuItemBuilder::new("New Connection")
         .id("file-new-connection")
         .accelerator("CmdOrCtrl+N")
@@ -288,6 +321,8 @@ fn setup_menu(app: &tauri::AppHandle) -> Result<(), Box<dyn std::error::Error>> 
     let file_settings = MenuItemBuilder::new("Settings").id("file-settings").build(app)?;
 
     let file_submenu = SubmenuBuilder::new(app, "File")
+        .item(&file_new_window)
+        .separator()
         .item(&file_new_connection)
         .separator()
         .item(&file_import)
@@ -403,6 +438,15 @@ fn setup_menu(app: &tauri::AppHandle) -> Result<(), Box<dyn std::error::Error>> 
     // Handle menu events by emitting a "menu-command" event to the webview
     app.on_menu_event(move |app_handle, event| {
         let id = event.id().0.as_str();
+
+        // "New Window" is handled on the Rust side (creates a new webview window)
+        if id == "file-new-window" {
+            if let Err(e) = create_new_window(app_handle) {
+                eprintln!("Failed to create new window: {}", e);
+            }
+            return;
+        }
+
         let command = match id {
             "file-new-connection" => "clientEvent/connection/new",
             "file-import" => "clientEvent/import",
@@ -465,6 +509,7 @@ pub fn run() {
             get_platform_info,
             open_in_file_explorer,
             read_file_content,
+            open_new_window,
         ])
         .build(tauri::generate_context!())
         .expect("error while building tauri application");
