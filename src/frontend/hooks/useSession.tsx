@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "src/frontend/utils/commonUtils";
 import dataApi from "src/frontend/data/api";
 import { getCurrentSessionId, setCurrentSessionId } from "src/frontend/data/session";
 import { useAddRecycleBinItem } from "src/frontend/hooks/useFolderItems";
@@ -34,14 +35,27 @@ export function useGetCurrentSession() {
 }
 
 /**
- * Hook to switch to a different session.
- * @param suppressReload - If true, suppresses page reload after switching sessions.
+ * Hook to switch to a different session inline without a full page reload.
+ * Clears all React Query cache and session configs, sets the new session ID,
+ * then navigates to the root route so SessionManager re-validates.
+ * @param suppressReload - If true, only sets the session ID without clearing cache or navigating.
  * @returns Mutation that accepts a session ID to select.
  */
 export function useSelectSession(suppressReload?: boolean) {
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
   return useMutation<void, void, string>({
     mutationFn: async (newSessionId: string) => {
-      await setCurrentSessionId(newSessionId, suppressReload);
+      // Set the new session ID (suppressReload=true to skip page reload)
+      setCurrentSessionId(newSessionId, true);
+
+      if (!suppressReload) {
+        // Clear all cached data so everything refetches for the new session
+        queryClient.clear();
+
+        // Navigate to root so SessionManager picks up the new session
+        navigate("/", { replace: true });
+      }
     },
   });
 }
