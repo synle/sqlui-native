@@ -31,7 +31,7 @@ import { useGetCurrentSession } from "src/frontend/hooks/useSession";
 import ToastHistoryList from "src/frontend/components/ToastHistoryList";
 import { useToastHistoryCount } from "src/frontend/hooks/useToaster";
 import appPackage from "src/package.json";
-import { getBuildBadge } from "src/frontend/utils/buildInfo";
+import { getBuildBadge, isDevBuild } from "src/frontend/utils/buildInfo";
 
 /**
  * Application header bar with session management, navigation, notifications, and command palette access.
@@ -159,7 +159,11 @@ export default function AppHeader() {
   return (
     <AppBar position="static">
       <Toolbar variant="dense">
-        <Typography variant="h5" onClick={() => navigate("/")} sx={{ cursor: "pointer", fontWeight: "bold", mr: 3 }}>
+        <Typography
+          variant="h5"
+          onClick={() => navigate("/")}
+          sx={{ cursor: "pointer", fontWeight: "bold", mr: 3, color: isDevBuild() ? "error.main" : "inherit" }}
+        >
           SQLUI NATIVE {appPackage.version} {getBuildBadge()}
         </Typography>
 
