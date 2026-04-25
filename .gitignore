@@ -12,6 +12,8 @@ main.js
 preload.js
 src-tauri/target/
 src-tauri/gen/
+src-tauri/binaries/
+src-tauri/resources/
 
 # Static / generated assets
 assets/
