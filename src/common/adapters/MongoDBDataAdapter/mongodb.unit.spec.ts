@@ -10,26 +10,28 @@ const mockCreateCollection = vi.fn();
 const mockToArray = vi.fn();
 
 vi.mock("mongodb", () => ({
-  MongoClient: vi.fn().mockImplementation(() => ({
-    connect: mockConnect,
-    close: mockClose,
-    db: vi.fn().mockImplementation(() => ({
-      admin: () => ({
-        listDatabases: mockListDatabases,
-      }),
-      listCollections: () => ({
-        toArray: mockListCollections,
-      }),
-      collection: () => ({
-        find: () => ({
-          limit: () => ({
-            toArray: mockFind,
+  MongoClient: vi.fn().mockImplementation(function () {
+    return {
+      connect: mockConnect,
+      close: mockClose,
+      db: vi.fn().mockImplementation(() => ({
+        admin: () => ({
+          listDatabases: mockListDatabases,
+        }),
+        listCollections: () => ({
+          toArray: mockListCollections,
+        }),
+        collection: () => ({
+          find: () => ({
+            limit: () => ({
+              toArray: mockFind,
+            }),
           }),
         }),
-      }),
-      createCollection: mockCreateCollection,
-    })),
-  })),
+        createCollection: mockCreateCollection,
+      })),
+    };
+  }),
 }));
 
 import MongoDBDataAdapter from "src/common/adapters/MongoDBDataAdapter/index";

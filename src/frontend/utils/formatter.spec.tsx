@@ -7,17 +7,17 @@ describe("formatter", () => {
         `db.collection("sy-collection-1a").distinct("commute",{_id:"",commute:"","company.location":"","company.name":"",location:"",name:"",zip:""});`,
       );
       expect(actual).toMatchInlineSnapshot(`
-"db.collection(\\"sy-collection-1a\\")
-  .distinct(\\"commute\\", {
-    _id: \\"\\",
-    commute: \\"\\",
-    \\"company.location\\": \\"\\",
-    \\"company.name\\": \\"\\",
-    location: \\"\\",
-    name: \\"\\",
-    zip: \\"\\"
-  });"
-`);
+        "db.collection("sy-collection-1a")
+          .distinct("commute", {
+            _id: "",
+            commute: "",
+            "company.location": "",
+            "company.name": "",
+            location: "",
+            name: "",
+            zip: ""
+          });"
+      `);
     });
 
     test("should return original string if formatting fails", async () => {
