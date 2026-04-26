@@ -314,12 +314,16 @@ test.describe("Phase 4: Query Tabs", () => {
   });
 
   test("should switch between query tabs", async ({ page }) => {
+    const queryTabs = page.locator("#QueryBoxTabs > .Tab__Headers [role='tab']:not(:last-child)");
+    const tabsBefore = await queryTabs.count();
+
     const addTab = page.getByRole("tab", { name: "Add Query" });
     await addTab.click();
 
-    const queryTabs = page.locator("#QueryBoxTabs > .Tab__Headers [role='tab']:not(:last-child)");
-    const tabCount = await queryTabs.count();
-    expect(tabCount).toBeGreaterThanOrEqual(2);
+    // Wait for the new tab to appear before reading the count — the click is
+    // async and the count was racing the DOM update on slower CI runners.
+    await expect(queryTabs).toHaveCount(tabsBefore + 1, { timeout: 10_000 });
+    expect(tabsBefore + 1).toBeGreaterThanOrEqual(2);
 
     await queryTabs.first().click();
     await queryTabs.nth(1).click();
