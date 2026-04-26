@@ -4,6 +4,8 @@
 use serde::Serialize;
 #[cfg(not(debug_assertions))]
 use std::io::BufRead;
+#[cfg(all(not(debug_assertions), target_os = "windows"))]
+use std::os::windows::process::CommandExt;
 use std::process::{Child, Command};
 #[cfg(not(debug_assertions))]
 use std::process::Stdio;
@@ -11,6 +13,12 @@ use std::sync::Mutex;
 use std::time::{Duration, Instant};
 use tauri::menu::{MenuBuilder, MenuItemBuilder, PredefinedMenuItem, SubmenuBuilder};
 use tauri::{Emitter, Manager};
+
+/// Windows process creation flag that prevents a console window from appearing
+/// when a GUI app spawns a child process. Without this, every `node.exe` spawn
+/// pops a black terminal window alongside the Tauri app.
+#[cfg(all(not(debug_assertions), target_os = "windows"))]
+const CREATE_NO_WINDOW: u32 = 0x08000000;
 
 /// Holds the sidecar Node.js child process and the port it is listening on.
 struct SidecarState {
@@ -81,14 +89,11 @@ fn read_file_content(path: String) -> Result<String, String> {
 /// Returns the first path where `node --version` succeeds.
 fn find_system_node() -> Option<String> {
     // 1. Try the bare command first (works when PATH is correct, e.g. dev mode)
-    if Command::new("node")
-        .arg("--version")
-        .stdout(Stdio::null())
-        .stderr(Stdio::null())
-        .status()
-        .map(|s| s.success())
-        .unwrap_or(false)
-    {
+    let mut probe = Command::new("node");
+    probe.arg("--version").stdout(Stdio::null()).stderr(Stdio::null());
+    #[cfg(target_os = "windows")]
+    probe.creation_flags(CREATE_NO_WINDOW);
+    if probe.status().map(|s| s.success()).unwrap_or(false) {
         return Some("node".to_string());
     }
 
@@ -139,12 +144,11 @@ fn find_system_node() -> Option<String> {
 
     for candidate in candidates.iter().chain(extra.iter()) {
         if candidate.exists() {
-            if let Ok(status) = Command::new(candidate)
-                .arg("--version")
-                .stdout(Stdio::null())
-                .stderr(Stdio::null())
-                .status()
-            {
+            let mut probe = Command::new(candidate);
+            probe.arg("--version").stdout(Stdio::null()).stderr(Stdio::null());
+            #[cfg(target_os = "windows")]
+            probe.creation_flags(CREATE_NO_WINDOW);
+            if let Ok(status) = probe.status() {
                 if status.success() {
                     println!("Sidecar: found node at {}", candidate.display());
                     return Some(candidate.to_string_lossy().to_string());
@@ -181,13 +185,19 @@ fn spawn_sidecar(app: &tauri::App) -> Result<SidecarState, Box<dyn std::error::E
 
     println!("Sidecar: spawning {} {}", node_cmd, server_js.display());
 
-    let mut child = Command::new(&node_cmd)
+    let mut spawn_cmd = Command::new(&node_cmd);
+    spawn_cmd
         .arg(&server_js)
         .env("SIDECAR_PORT", "0")
         .env("NODE_PATH", &node_modules)
         .stdin(Stdio::piped()) // Keep stdin open so sidecar can detect parent death
         .stdout(Stdio::piped())
-        .stderr(Stdio::inherit())
+        .stderr(Stdio::inherit());
+    // On Windows, prevent a console window from popping up alongside the Tauri app.
+    #[cfg(target_os = "windows")]
+    spawn_cmd.creation_flags(CREATE_NO_WINDOW);
+
+    let mut child = spawn_cmd
         .spawn()
         .map_err(|e| {
             format!(
