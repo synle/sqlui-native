@@ -8,19 +8,21 @@ const mockGetState = vi.fn().mockReturnValue({
 });
 
 vi.mock("cassandra-driver", () => ({
-  Client: vi.fn().mockImplementation(() => ({
-    connect: mockConnect,
-    execute: mockExecute,
-    shutdown: mockShutdown,
-    getState: mockGetState,
-    metadata: {
-      keyspaces: {
-        system: {},
-        system_schema: {},
-        test_keyspace: {},
+  Client: vi.fn().mockImplementation(function () {
+    return {
+      connect: mockConnect,
+      execute: mockExecute,
+      shutdown: mockShutdown,
+      getState: mockGetState,
+      metadata: {
+        keyspaces: {
+          system: {},
+          system_schema: {},
+          test_keyspace: {},
+        },
       },
-    },
-  })),
+    };
+  }),
   auth: {
     PlainTextAuthProvider: vi.fn(),
   },

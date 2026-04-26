@@ -115,11 +115,13 @@ const mockPgEnd = vi.fn().mockResolvedValue(undefined);
 
 vi.mock("pg", () => ({
   default: {
-    Client: vi.fn().mockImplementation(() => ({
-      connect: mockPgConnect,
-      query: mockPgQuery,
-      end: mockPgEnd,
-    })),
+    Client: vi.fn().mockImplementation(function () {
+      return {
+        connect: mockPgConnect,
+        query: mockPgQuery,
+        end: mockPgEnd,
+      };
+    }),
   },
 }));
 
