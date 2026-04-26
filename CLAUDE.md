@@ -30,6 +30,10 @@ npm run validate        # All checks: lint → typecheck → test-ci → format 
 npx vitest run src/path/to/file.spec.ts
 ```
 
+**VSCode debugging:** `.vscode/launch.json` provides launch configs for the dev
+server (`Debug Server`), the webapp in Chrome, the full Tauri app, and Vitest
+(unit, single-file, integration). Open the Run and Debug panel and pick one.
+
 **Run integration tests** (requires Docker containers — see CONTRIBUTING.md):
 
 ```bash
