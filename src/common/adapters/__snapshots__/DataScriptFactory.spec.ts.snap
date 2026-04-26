@@ -661,7 +661,7 @@ exports[`Scripts > aztable 1`] = `
     "query": "tableClient.listEntities({
   queryOptions: {
     filter: \`PartitionKey eq 'some_partition_key'\`,
-    select: [\\"id\\", \\"column1\\", \\"column2\\"]
+    select: ["id", "column1", "column2"]
   }
 })",
   },
@@ -669,24 +669,24 @@ exports[`Scripts > aztable 1`] = `
     "formatter": "js",
     "label": "Insert",
     "query": "tableClient.createEntity({
-  \\"rowKey\\": \\"some_row_key\\",
-  \\"partitionKey\\": \\"some_partition_key\\"
+  "rowKey": "some_row_key",
+  "partitionKey": "some_partition_key"
 })",
   },
   {
     "formatter": "js",
     "label": "Update",
     "query": "tableClient.updateEntity({
-  \\"rowKey\\": \\"some_row_key\\",
-  \\"partitionKey\\": \\"some_partition_key\\"
+  "rowKey": "some_row_key",
+  "partitionKey": "some_partition_key"
 })",
   },
   {
     "formatter": "js",
     "label": "Upsert",
     "query": "tableClient.upsertEntity({
-  \\"rowKey\\": \\"some_row_key\\",
-  \\"partitionKey\\": \\"some_partition_key\\"
+  "rowKey": "some_row_key",
+  "partitionKey": "some_partition_key"
 }, 'Replace')",
   },
   {
@@ -914,7 +914,7 @@ exports[`Scripts > cosmosdb 1`] = `
   .container('table1')
   .item('some_id', 'some_partition_key')
   .replace({
-    \\"id\\": \\"some_id\\"
+    "id": "some_id"
   })",
   },
   {
@@ -980,9 +980,9 @@ exports[`Scripts > mongodb 1`] = `
     "label": "Select Specific Columns",
     "query": "db.collection('table1')
   .find({
-    \\"id\\": 123,
-    \\"column1\\": 123,
-    \\"column2\\": 123
+    "id": 123,
+    "column1": 123,
+    "column2": 123
   })
   .limit(200)
   .toArray();",
@@ -993,9 +993,9 @@ exports[`Scripts > mongodb 1`] = `
     "query": "db.collection('table1')
   .distinct(
     'column1', {
-      \\"id\\": \\"\\",
-      \\"column1\\": \\"\\",
-      \\"column2\\": \\"\\"
+      "id": "",
+      "column1": "",
+      "column2": ""
     }
   )",
   },
@@ -1004,7 +1004,7 @@ exports[`Scripts > mongodb 1`] = `
     "label": "Select One Record",
     "query": "db.collection('table1')
   .findOne({
-    \\"_id\\": ObjectId(\\"some_id\\")
+    "_id": ObjectId("some_id")
   });",
   },
   {
@@ -1012,9 +1012,9 @@ exports[`Scripts > mongodb 1`] = `
     "label": "Insert",
     "query": "db.collection('table1')
   .insertMany([{
-    \\"id\\": 123,
-    \\"column1\\": 123,
-    \\"column2\\": 123
+    "id": 123,
+    "column1": 123,
+    "column2": 123
   }]);",
   },
   {
@@ -1022,15 +1022,15 @@ exports[`Scripts > mongodb 1`] = `
     "label": "Update",
     "query": "db.collection('table1')
   .update({
-    \\"id\\": 123,
-    \\"column1\\": 123,
-    \\"column2\\": 123,
-    \\"_id\\": ObjectId(\\"some_id\\")
+    "id": 123,
+    "column1": 123,
+    "column2": 123,
+    "_id": ObjectId("some_id")
   }, {
     $set: {
-      \\"id\\": 123,
-      \\"column1\\": 123,
-      \\"column2\\": 123
+      "id": 123,
+      "column1": 123,
+      "column2": 123
     }
   });",
   },
@@ -1039,15 +1039,15 @@ exports[`Scripts > mongodb 1`] = `
     "label": "Delete",
     "query": "db.collection('table1')
   .deleteMany({
-    \\"id\\": 123,
-    \\"column1\\": 123,
-    \\"column2\\": 123
+    "id": 123,
+    "column1": 123,
+    "column2": 123
   });",
   },
   {
     "formatter": "js",
     "label": "Create Collection",
-    "query": "db.createCollection(\\"table1\\")",
+    "query": "db.createCollection("table1")",
   },
   {
     "formatter": "js",
@@ -1063,105 +1063,105 @@ exports[`Scripts > redis 1`] = `
   {
     "formatter": "js",
     "label": "Set Value",
-    "query": "db.set(\\"key\\", \\"value123\\")",
+    "query": "db.set("key", "value123")",
   },
   {
     "formatter": "js",
     "label": "Get Value by Key",
-    "query": "db.get(\\"key\\")",
+    "query": "db.get("key")",
   },
   {
     "formatter": "js",
     "label": "Scan for keys",
-    "query": "db.keys(\\"*\\")",
+    "query": "db.keys("*")",
   },
   {
     "formatter": "js",
     "label": "Hashset > Set Value",
-    "query": "db.hSet(\\"hash_key1\\", \\"field1\\", \\"value1\\")",
+    "query": "db.hSet("hash_key1", "field1", "value1")",
   },
   {
     "formatter": "js",
     "label": "Hashset > Get Value By Key",
-    "query": "db.hGetAll(\\"hash_key1\\")",
+    "query": "db.hGetAll("hash_key1")",
   },
   {
     "formatter": "js",
     "label": "Hashset > Values",
-    "query": "db.hVals(\\"hash_key1\\")",
+    "query": "db.hVals("hash_key1")",
   },
   {
     "formatter": "js",
     "label": "Hashset > Check if key exists",
-    "query": "db.hExists(\\"hash_key1\\", \\"field1\\")",
+    "query": "db.hExists("hash_key1", "field1")",
   },
   {
     "formatter": "js",
     "label": "List > Get Items",
-    "query": "db.lRange(\\"list_key1\\", 0, -1)",
+    "query": "db.lRange("list_key1", 0, -1)",
   },
   {
     "formatter": "js",
     "label": "List > Push item to the front",
-    "query": "db.lPush(\\"list_key1\\", \\"value\\")",
+    "query": "db.lPush("list_key1", "value")",
   },
   {
     "formatter": "js",
     "label": "List > Push item to the back",
-    "query": "db.rPush(\\"list_key1\\", \\"value\\")",
+    "query": "db.rPush("list_key1", "value")",
   },
   {
     "formatter": "js",
     "label": "List > Delete item from the front",
-    "query": "db.lPop(\\"list_key1\\")",
+    "query": "db.lPop("list_key1")",
   },
   {
     "formatter": "js",
     "label": "List > Delete item from the back",
-    "query": "db.rPop(\\"list_key1\\")",
+    "query": "db.rPop("list_key1")",
   },
   {
     "formatter": "js",
     "label": "Set > Get Items",
-    "query": "db.sMembers(\\"set_key1\\")",
+    "query": "db.sMembers("set_key1")",
   },
   {
     "formatter": "js",
     "label": "Set > Add Item",
-    "query": "db.sAdd(\\"set_key1\\", \\"value1\\")",
+    "query": "db.sAdd("set_key1", "value1")",
   },
   {
     "formatter": "js",
     "label": "Set > Is a member of set",
-    "query": "db.sIsMember(\\"set_key1\\", \\"value1\\")",
+    "query": "db.sIsMember("set_key1", "value1")",
   },
   {
     "formatter": "js",
     "label": "Set > Total Size",
-    "query": "db.sCard(\\"set_key1\\")",
+    "query": "db.sCard("set_key1")",
   },
   {
     "formatter": "js",
     "label": "Set > Remove last item",
-    "query": "db.sPop(\\"set_key1\\")",
+    "query": "db.sPop("set_key1")",
   },
   {
     "formatter": "js",
     "label": "Sorted Set > Get Items",
-    "query": "db.zRange(\\"sorted_set_key1\\", 0, -1)",
+    "query": "db.zRange("sorted_set_key1", 0, -1)",
   },
   {
     "formatter": "js",
     "label": "Sorted Set > Add Item",
-    "query": "db.zAdd(\\"sorted_set_key1\\", [{
+    "query": "db.zAdd("sorted_set_key1", [{
   score: 1,
-  value: \\"some_value\\"
+  value: "some_value"
 }])",
   },
   {
     "formatter": "js",
     "label": "Publish a message",
-    "query": "db.publish(\\"pubsub_channel_key1\\", \\"some_message\\")",
+    "query": "db.publish("pubsub_channel_key1", "some_message")",
   },
 ]
 `;
@@ -1288,9 +1288,9 @@ LIMIT
     "label": "Insert Record (API)",
     "query": "conn.sobject('table1')
   .create({
-    \\"id\\": \\"\\",
-    \\"column1\\": \\"\\",
-    \\"column2\\": \\"\\"
+    "id": "",
+    "column1": "",
+    "column2": ""
   })",
   },
   {
@@ -1298,10 +1298,10 @@ LIMIT
     "label": "Update Record (API)",
     "query": "conn.sobject('table1')
   .update({
-    \\"Id\\": \\"record_id_here\\",
-    \\"id\\": \\"\\",
-    \\"column1\\": \\"\\",
-    \\"column2\\": \\"\\"
+    "Id": "record_id_here",
+    "id": "",
+    "column1": "",
+    "column2": ""
   })",
   },
   {
@@ -1316,8 +1316,8 @@ LIMIT
     "label": "Upsert Record (API)",
     "query": "conn.sobject('table1')
   .upsert({
-    \\"External_Id__c\\": \\"external_id_value\\",
-    \\"Name\\": \\"Record Name\\"
+    "External_Id__c": "external_id_value",
+    "Name": "Record Name"
   }, 'External_Id__c')",
   },
   {

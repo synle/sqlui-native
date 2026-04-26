@@ -7,29 +7,31 @@ const mockContainersReadAll = vi.fn();
 const mockItemsQuery = vi.fn();
 
 vi.mock("@azure/cosmos", () => ({
-  CosmosClient: vi.fn().mockImplementation(() => ({
-    dispose: mockDispose,
-    getReadEndpoint: mockGetReadEndpoint,
-    databases: {
-      readAll: () => ({
-        fetchAll: mockDatabasesReadAll,
-      }),
-    },
-    database: vi.fn().mockImplementation(() => ({
-      containers: {
+  CosmosClient: vi.fn().mockImplementation(function () {
+    return {
+      dispose: mockDispose,
+      getReadEndpoint: mockGetReadEndpoint,
+      databases: {
         readAll: () => ({
-          fetchAll: mockContainersReadAll,
+          fetchAll: mockDatabasesReadAll,
         }),
       },
-      container: vi.fn().mockImplementation(() => ({
-        items: {
-          query: () => ({
-            fetchAll: mockItemsQuery,
+      database: vi.fn().mockImplementation(() => ({
+        containers: {
+          readAll: () => ({
+            fetchAll: mockContainersReadAll,
           }),
         },
+        container: vi.fn().mockImplementation(() => ({
+          items: {
+            query: () => ({
+              fetchAll: mockItemsQuery,
+            }),
+          },
+        })),
       })),
-    })),
-  })),
+    };
+  }),
 }));
 
 import AzureCosmosDataAdapter from "src/common/adapters/AzureCosmosDataAdapter/index";
