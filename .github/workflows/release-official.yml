@@ -14,6 +14,7 @@ permissions:
   pages: write
   id-token: write
   checks: write
+  statuses: write
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
