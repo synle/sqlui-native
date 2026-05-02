@@ -3,8 +3,8 @@ import dataApi from "src/frontend/data/api";
 import { SessionStorageConfig } from "src/frontend/data/config";
 import { getCurrentSessionId } from "src/frontend/data/session";
 import { useAddRecycleBinItem } from "src/frontend/hooks/useFolderItems";
-import { useIsSoftDeleteModeSetting } from "src/frontend/hooks/useSetting";
-import { formatShortDate, getUpdatedOrdersForList } from "src/frontend/utils/commonUtils";
+import { useIsQueryTabAutoSaveEnabled, useIsSoftDeleteModeSetting } from "src/frontend/hooks/useSetting";
+import { formatShortDate, getGeneratedRandomId, getUpdatedOrdersForList } from "src/frontend/utils/commonUtils";
 import { SqluiCore, SqluiFrontend } from "typings";
 
 // connection queries
@@ -15,13 +15,30 @@ const TargetContext = createContext({
   isLoading: true,
 });
 
+function _getPersistableQueries(queries: SqluiFrontend.ConnectionQuery[] = _connectionQueries) {
+  return queries.map((query, idx) => {
+    const { result, executionEnd, executionStart, executing, executionDetails, isSnapshot, ...restOfQuery } = query;
+    return {
+      ...restOfQuery,
+      tabOrder: idx,
+      selected: !!query.selected,
+    };
+  });
+}
+
 function _persistQueries() {
   // store to client
-  const toPersistQueries = _connectionQueries.map((query) => {
-    const { pinned, result, executionEnd, executionStart, executing, executionDetails, ...restOfQuery } = query;
-    return restOfQuery;
-  });
+  const toPersistQueries = _getPersistableQueries();
   SessionStorageConfig.set("clientConfig/cache.connectionQueries", toPersistQueries);
+}
+
+function _normalizeQueries(queries: SqluiFrontend.ConnectionQuery[]) {
+  const normalizedQueries = (queries || []).map((query, idx) => ({
+    ...query,
+    tabOrder: query.tabOrder ?? idx,
+  }));
+
+  return normalizedQueries.sort((a, b) => (a.tabOrder ?? 0) - (b.tabOrder ?? 0));
 }
 
 /**
@@ -39,12 +56,14 @@ export default function WrappedContext(props: { children: React.ReactNode }): Re
       try {
         // this is the first time
         // try pulling it in from sessionStorage
-        _connectionQueries = SessionStorageConfig.get<SqluiFrontend.ConnectionQuery[]>("clientConfig/cache.connectionQueries", []);
+        _connectionQueries = _normalizeQueries(
+          SessionStorageConfig.get<SqluiFrontend.ConnectionQuery[]>("clientConfig/cache.connectionQueries", []),
+        );
 
         if (_connectionQueries.length === 0 && getCurrentSessionId()) {
           // if config failed, attempt to get it from the api (only if a session is selected)
           try {
-            _connectionQueries = await dataApi.getQueries();
+            _connectionQueries = _normalizeQueries(await dataApi.getQueries());
           } catch (err) {
             console.error("useConnectionQuery.tsx:getQueries", err);
           }
@@ -103,12 +122,34 @@ export function useConnectionQueries() {
   const { data: queries, setData, isLoading } = _useConnectionQueries();
   const { mutateAsync: addRecycleBinItem } = useAddRecycleBinItem();
   const isSoftDeleteModeSetting = useIsSoftDeleteModeSetting();
+  const isQueryTabAutoSaveEnabled = useIsQueryTabAutoSaveEnabled();
 
   function _invalidateQueries() {
+    _connectionQueries = _connectionQueries.map((query, idx) => ({
+      ...query,
+      tabOrder: idx,
+      selected: !!query.selected,
+    }));
     setData(_connectionQueries);
 
     _persistQueries();
   }
+
+  const onSaveQueries = async (queryIds?: string[]) => {
+    const idsToSave = queryIds ? new Set(queryIds) : undefined;
+    const queriesToSave = _getPersistableQueries().filter((query) => !idsToSave || idsToSave.has(query.id));
+
+    await Promise.all(queriesToSave.map((query) => dataApi.upsertQuery(query)));
+    return queriesToSave.length;
+  };
+
+  const onSaveQuery = async (queryId?: string) => {
+    if (!queryId) {
+      return 0;
+    }
+
+    return onSaveQueries([queryId]);
+  };
 
   const onAddQueries = async (queries: (SqluiCore.CoreConnectionQuery | undefined)[], options?: { preserveResult?: boolean }) => {
     queries = queries || [];
@@ -147,8 +188,15 @@ export function useConnectionQueries() {
       }
 
       try {
-        const persisted = await dataApi.upsertQuery(newQueryData as any);
-        const newQuery: SqluiFrontend.ConnectionQuery = { ...newQueryData, id: persisted.id } as any;
+        let persisted: SqluiCore.CoreConnectionQuery | undefined;
+        if (isQueryTabAutoSaveEnabled) {
+          persisted = await dataApi.upsertQuery(newQueryData as any);
+        }
+
+        const newQuery: SqluiFrontend.ConnectionQuery = {
+          ...newQueryData,
+          id: persisted?.id || newQueryData.id || getGeneratedRandomId("query"),
+        } as any;
 
         _connectionQueries = [
           ..._connectionQueries.map((q) => ({
@@ -166,6 +214,9 @@ export function useConnectionQueries() {
 
     try {
       _invalidateQueries();
+      if (isQueryTabAutoSaveEnabled) {
+        await onSaveQueries();
+      }
     } catch (err) {
       console.error("useConnectionQuery.tsx:_invalidateQueries", err);
     }
@@ -174,7 +225,7 @@ export function useConnectionQueries() {
   };
 
   const onAddQuery = async (query?: SqluiCore.CoreConnectionQuery, options?: { preserveResult?: boolean }) =>
-    onAddQueries([query], options)[0];
+    (await onAddQueries([query], options))[0];
 
   const onDeleteQueries = async (queryIds?: string[]) => {
     if (!queryIds || queryIds.length === 0) {
@@ -238,8 +289,7 @@ export function useConnectionQueries() {
       _connectionQueries[toBeSelected].selected = true;
     }
 
-    // make an api call to persists
-    // this is fire and forget
+    // remove closed tabs from saved workspace state too, so they do not restore on next launch.
     for (const queryId of queryIds) {
       // make api to delete the query
       dataApi.deleteQuery(queryId);
@@ -257,9 +307,9 @@ export function useConnectionQueries() {
     }));
     _invalidateQueries();
 
-    // persist selected state to the backend so it survives sessionStorage loss
-    for (const q of _connectionQueries) {
-      dataApi.upsertQuery(q);
+    if (isQueryTabAutoSaveEnabled) {
+      // persist selected state to the backend so it survives sessionStorage loss
+      onSaveQueries();
     }
   };
 
@@ -295,7 +345,12 @@ export function useConnectionQueries() {
 
     try {
       _invalidateQueries();
-      dataApi.upsertQuery(query); // make an api call to persists and this is fire and forget
+      if (isQueryTabAutoSaveEnabled) {
+        const queryToPersist = _getPersistableQueries().find((q) => q.id === query.id);
+        if (queryToPersist) {
+          dataApi.upsertQuery(queryToPersist); // make an api call to persists and this is fire and forget
+        }
+      }
     } catch (err) {
       console.error("useConnectionQuery.tsx:upsertQuery", err);
     }
@@ -324,6 +379,9 @@ export function useConnectionQueries() {
   const onChangeTabOrdering = (from: number, to: number) => {
     _connectionQueries = getUpdatedOrdersForList(_connectionQueries, from, to);
     _invalidateQueries();
+    if (isQueryTabAutoSaveEnabled) {
+      onSaveQueries();
+    }
   };
 
   return {
@@ -338,6 +396,8 @@ export function useConnectionQueries() {
     onDuplicateQuery,
     onImportQuery,
     onChangeTabOrdering,
+    onSaveQuery,
+    onSaveQueries,
   };
 }
 

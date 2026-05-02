@@ -6,6 +6,7 @@ import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import EditIcon from "@mui/icons-material/Edit";
 import PushPinIcon from "@mui/icons-material/PushPin";
 import PushPinOutlinedIcon from "@mui/icons-material/PushPinOutlined";
+import SaveIcon from "@mui/icons-material/Save";
 import StarIcon from "@mui/icons-material/Star";
 import Alert from "@mui/material/Alert";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -68,6 +69,13 @@ export default function QueryBoxTabs() {
     [selectCommand],
   );
 
+  const onSaveQuery = useCallback(
+    (data: SqluiFrontend.ConnectionQuery) => selectCommand({ event: "clientEvent/query/save", data }),
+    [selectCommand],
+  );
+
+  const onSaveAllQueries = useCallback(() => selectCommand({ event: "clientEvent/query/saveAll" }), [selectCommand]);
+
   const onAddToBookmark = useCallback(
     (data: SqluiFrontend.ConnectionQuery) => selectCommand({ event: "clientEvent/query/addToBookmark", data }),
     [selectCommand],
@@ -112,6 +120,17 @@ export default function QueryBoxTabs() {
     () => [
       ...(queries || []).map((q, idx) => {
         let options = [
+          {
+            label: "Save",
+            onClick: () => onSaveQuery(q),
+            startIcon: <SaveIcon />,
+          },
+          {
+            label: "Save All Tabs",
+            onClick: () => onSaveAllQueries(),
+            startIcon: <SaveIcon />,
+          },
+          { label: "divider" },
           {
             label: "Add to Bookmark",
             onClick: () => onAddToBookmark(q),

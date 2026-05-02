@@ -23,6 +23,7 @@ vi.mock("src/frontend/hooks/useFolderItems", () => ({
 }));
 
 vi.mock("src/frontend/hooks/useSetting", () => ({
+  useIsQueryTabAutoSaveEnabled: () => true,
   useIsSoftDeleteModeSetting: () => false,
 }));
 

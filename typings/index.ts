@@ -211,6 +211,10 @@ export module SqluiCore {
      * @type {boolean} whether or not a query is pinned and can't be closed
      */
     pinned?: boolean;
+    /** Tab order used when restoring the query workspace. */
+    tabOrder?: number;
+    /** Whether this query tab was selected when the workspace was saved. */
+    selected?: boolean;
     /** Creation timestamp (epoch ms). Auto-set by PersistentStorage on add. */
     createdAt?: number;
     /** Last update timestamp (epoch ms). Auto-set by PersistentStorage on add/update. */
@@ -377,6 +381,7 @@ export module SqluiFrontend {
      * whether or not to open the bookmarked query in the same tab or new tab
      */
     querySelectionMode?: "same-tab" | "new-tab";
+    queryTabPersistenceMode?: "auto" | "manual";
     deleteMode?: "soft-delete" | "hard-delete";
   };
 
@@ -519,6 +524,8 @@ export module SqluiEnums {
     | "clientEvent/query/duplicate"
     | "clientEvent/query/export"
     | "clientEvent/query/history"
+    | "clientEvent/query/save"
+    | "clientEvent/query/saveAll"
     | "clientEvent/query/new"
     | "clientEvent/query/pin"
     | "clientEvent/query/rename"

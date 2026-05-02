@@ -85,6 +85,10 @@ Dark mode will be turned on automatically with respect to your OS Preference. Yo
 
 ### Query Tabs
 
+#### Query Tab Persistence
+
+Open query tabs can be restored across app restarts with their query text, tab order, selected tab, and pinned state. In Settings, use `Query Tab Persistence` to choose automatic saving or manual saving via the query tab dropdown's `Save` / `Save All Tabs` actions.
+
 #### Query Tab Orientation
 
 When there are more than 20 tabs, the query tabs wrap vertically.

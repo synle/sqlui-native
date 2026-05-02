@@ -379,6 +379,34 @@ export default function MissionControl() {
     downloadText(`${query.name}.query.json`, JSON.stringify([getExportedQuery(query)], null, 2), "text/json");
   };
 
+  const onSaveQuery = async (query: SqluiFrontend.ConnectionQuery) => {
+    try {
+      await connectionQueries.onSaveQuery(query.id);
+      await addToast({
+        message: `Query "${query.name}" saved.`,
+      });
+    } catch (err) {
+      console.error("index.tsx:onSaveQuery", err);
+      await addToast({
+        message: `Failed to save query "${query.name}".`,
+      });
+    }
+  };
+
+  const onSaveAllQueries = async () => {
+    try {
+      const savedCount = await connectionQueries.onSaveQueries();
+      await addToast({
+        message: `${savedCount} query tab${savedCount === 1 ? "" : "s"} saved.`,
+      });
+    } catch (err) {
+      console.error("index.tsx:onSaveAllQueries", err);
+      await addToast({
+        message: `Failed to save query tabs.`,
+      });
+    }
+  };
+
   const onAddQueryToBookmark = async (query: SqluiFrontend.ConnectionQuery) => {
     const { selected, ...restOfQuery } = query;
 
@@ -1520,6 +1548,18 @@ export default function MissionControl() {
           if (command.data) {
             onExportQuery(command.data as SqluiFrontend.ConnectionQuery);
           }
+          break;
+
+        case "clientEvent/query/save":
+          if (command.data) {
+            onSaveQuery(command.data as SqluiFrontend.ConnectionQuery);
+          } else if (activeQuery) {
+            onSaveQuery(activeQuery as SqluiFrontend.ConnectionQuery);
+          }
+          break;
+
+        case "clientEvent/query/saveAll":
+          onSaveAllQueries();
           break;
 
         case "clientEvent/query/duplicate":
