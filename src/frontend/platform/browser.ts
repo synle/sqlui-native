@@ -33,6 +33,11 @@ export const browserPlatform: PlatformBridge = {
     return null;
   },
 
+  async pickFile(): Promise<string | null> {
+    // Browser mode has no access to absolute paths — caller should use <input type="file"> instead.
+    return null;
+  },
+
   onAppCommand(_callback: (event: string) => void): () => void {
     return () => {};
   },

@@ -191,6 +191,24 @@ function MainConnectionForm(props: MainConnectionFormProps): React.JSX.Element |
     }
   };
 
+  /** Opens a native file picker (Tauri) to select a SQLite database file and returns its absolute path. */
+  const onBrowseSqliteDatabase = async () => {
+    try {
+      const picked = await platform.pickFile({
+        title: "Select a SQLite database file",
+        filters: [
+          { name: "SQLite database", extensions: ["db", "sqlite", "sqlite3", "db3"] },
+          { name: "All files", extensions: ["*"] },
+        ],
+      });
+      if (picked) {
+        props.setConnection(`sqlite://${picked}`);
+      }
+    } catch (err) {
+      console.error("index.tsx:onBrowseSqliteDatabase", err);
+    }
+  };
+
   const onSave = async (e: React.SyntheticEvent) => {
     e.preventDefault();
 
@@ -240,7 +258,9 @@ function MainConnectionForm(props: MainConnectionFormProps): React.JSX.Element |
     </div>
   );
 
-  const advancedTabDom = (
+  // "Simple" tab — raw connection string with an optional Browse button for SQLite.
+  // Also used as the sole rendering for REST/GraphQL dialects (which have their own field components).
+  const rawConnectionTabDom = (
     <>
       {isGraphQL ? (
         <GraphQLConnectionFields connection={props.connection} setConnection={props.setConnection} />
@@ -264,23 +284,32 @@ function MainConnectionForm(props: MainConnectionFormProps): React.JSX.Element |
       {!isRestApi && !isGraphQL && <ConnectionSetupGuideAlert dialect={detectedDialect} />}
       {showSqliteDatabasePathSelection && (
         <div className="FormInput__Row">
-          <input
-            type="file"
-            style={{ display: "none" }}
-            onChange={(e) => onSqliteDatabaseFileSelectionChange(e.target.files)}
-            id="sqlite-file-selection"
-          />
-          <label htmlFor="sqlite-file-selection">
-            <Button variant="contained" component="span">
+          {platform.isDesktop ? (
+            <Button variant="contained" component="button" type="button" onClick={onBrowseSqliteDatabase}>
               Browse for sqlite database
             </Button>
-          </label>
+          ) : (
+            <>
+              <input
+                type="file"
+                style={{ display: "none" }}
+                onChange={(e) => onSqliteDatabaseFileSelectionChange(e.target.files)}
+                id="sqlite-file-selection"
+              />
+              <label htmlFor="sqlite-file-selection">
+                <Button variant="contained" component="span">
+                  Browse for sqlite database
+                </Button>
+              </label>
+            </>
+          )}
         </div>
       )}
     </>
   );
 
-  const simpleTabDom = (
+  // "Advanced" tab — granular helper fields (host, port, user, password, etc.) that build the connection string.
+  const helperTabDom = (
     <ConnectionHelper
       inline={true}
       scheme={parsedConnectionProps?.scheme || connection.connection.match(/^[a-z0-9]+/)?.[0] || ""}
@@ -302,11 +331,11 @@ function MainConnectionForm(props: MainConnectionFormProps): React.JSX.Element |
             <Tab label="Simple" />
             <Tab label="Advanced" />
           </Tabs>
-          {activeTab === 0 && simpleTabDom}
-          {activeTab === 1 && advancedTabDom}
+          {activeTab === 0 && rawConnectionTabDom}
+          {activeTab === 1 && helperTabDom}
         </>
       ) : (
-        advancedTabDom
+        rawConnectionTabDom
       )}
       <div className="FormInput__Row">
         <LoadingButton variant="contained" type="submit" loading={props.saving} startIcon={<SaveIcon />}>

@@ -1,6 +1,6 @@
 {
   "name": "sqlui-native",
-  "version": "2.76.31",
+  "version": "2.76.32",
   "engine": "Tauri + Node Sidecar",
   "private": true,
   "description": "A minimal native desktop client for most databases supporting MySQL, MariaDB, MS SQL Server, PostgreSQL, SQLite, Cassandra, MongoDB and Redis.",
@@ -76,6 +76,7 @@
     "@tanstack/react-table": "^8.21.3",
     "@tanstack/react-virtual": "^3.13.23",
     "@tauri-apps/api": "^2.10.1",
+    "@tauri-apps/plugin-dialog": "^2.7.1",
     "@tauri-apps/plugin-opener": "^2.5.3",
     "@tauri-apps/plugin-shell": "^2.3.5",
     "@testing-library/dom": "^10.4.1",
