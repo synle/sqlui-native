@@ -24,9 +24,38 @@ It supports multiple windows, so you can run different sets of queries and conne
 
 Run sqlui-native as a self-contained **web portal** — phpMyAdmin / sqlite-web style — no desktop install needed. One Node script, one port, every supported dialect.
 
-### Build
+Requires **Node.js 22+** on the host.
+
+### Quick start (download from a release)
+
+One-liner — fetch the latest portal artifact, extract, and open a SQLite file:
 
 ```bash
+curl -fsSL https://github.com/synle/sqlui-native/releases/latest/download/sqlui-portal-3.1.1.tar.gz \
+  | tar -xz \
+  && ./portal/sqlui-portal ./mydata.sqlite
+```
+
+Or pin a specific version:
+
+```bash
+VERSION=3.1.1
+curl -fsSL "https://github.com/synle/sqlui-native/releases/download/v${VERSION}/sqlui-portal-${VERSION}.tar.gz" \
+  | tar -xz
+./portal/sqlui-portal ./mydata.sqlite
+```
+
+Windows / no-curl users: download `sqlui-portal-<version>.zip` from the [Releases page](https://github.com/synle/sqlui-native/releases/latest), unzip, and run `portal\sqlui-portal.js` with Node:
+
+```powershell
+node .\portal\sqlui-portal.js .\mydata.sqlite
+```
+
+### Build from source
+
+```bash
+git clone https://github.com/synle/sqlui-native
+cd sqlui-native
 npm install
 npm run build:portal
 ```
@@ -35,18 +64,19 @@ This produces three files under `dist/portal/`:
 
 - `sqlui-portal.js` — the bundled server (~6.6 MB, all deps inlined)
 - `sqlui-portal-assets.json` — embedded React frontend (~22 MB, decoded at runtime)
-- `sqlui-portal` — bash launcher (sets up Node and execs the bundle)
+- `sqlui-portal` — bash launcher (locates Node and execs the bundle)
 
 Copy the whole `dist/portal/` directory anywhere; it has no other dependencies besides a system Node.js 22+.
 
 ### Run
 
 ```bash
-# Open a SQLite file
-./dist/portal/sqlui-portal ./mydata.sqlite
+# Open a SQLite file (auto-opens browser at http://127.0.0.1:19378)
+./portal/sqlui-portal ./mydata.sqlite
 
-# Or any dialect URL — pass as many as you like
-./dist/portal/sqlui-portal \
+# Multiple connections, any dialect, in one shot
+./portal/sqlui-portal \
+  ./work.sqlite \
   postgres://user:pass@db.example.com:5432/mydb \
   mongodb://localhost:27017 \
   redis://localhost:6379
