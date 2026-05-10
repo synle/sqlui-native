@@ -3,7 +3,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { writeDebugLog } from "src/common/utils/debugLogger";
-import { storageDir } from "src/common/PersistentStorageJsonFile";
+import { getStorageDir } from "src/common/PersistentStorageJsonFile";
 import { PersistentStorageSqlite, DB_FILE_NAME } from "src/common/PersistentStorageSqlite";
 
 /** Current storage version. Increment when schema changes require a new migration. */
@@ -39,7 +39,7 @@ const MIGRATION_MAPPINGS: { pattern: RegExp; table: string }[] = [
  * @returns The full path to the database file.
  */
 export function getDbFilePath(): string {
-  return path.join(storageDir, DB_FILE_NAME);
+  return path.join(getStorageDir(), DB_FILE_NAME);
 }
 
 /**
@@ -134,7 +134,7 @@ function backupFile(filePath: string, backupDir: string): void {
  */
 function findJsonStorageFiles(): string[] {
   try {
-    return fs.readdirSync(storageDir).filter((f) => f.endsWith(".json"));
+    return fs.readdirSync(getStorageDir()).filter((f) => f.endsWith(".json"));
   } catch (err) {
     console.error("PersistentStorageMigration.ts:findJsonStorageFiles", err);
     return [];
@@ -177,14 +177,14 @@ export function runMigration(): void {
   }
 
   // Create backup directory
-  const backupDir = path.join(storageDir, BACKUP_DIR_NAME);
+  const backupDir = path.join(getStorageDir(), BACKUP_DIR_NAME);
   fs.mkdirSync(backupDir, { recursive: true });
 
   let totalMigrated = 0;
   const migratedFilePaths: string[] = [];
 
   for (const fileName of matchingFiles) {
-    const filePath = path.join(storageDir, fileName);
+    const filePath = path.join(getStorageDir(), fileName);
     const mapping = MIGRATION_MAPPINGS.find((m) => m.pattern.test(fileName))!;
 
     const count = migrateFile(filePath, mapping.table);

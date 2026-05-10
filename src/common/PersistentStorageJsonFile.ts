@@ -25,24 +25,66 @@ function stripUndefined<T>(obj: T): Partial<T> {
 }
 
 /**
- * Resolves the base directory for persistent storage.
- *
- * Honors the `SQLUI_HOME_DIR` environment variable so portal/standalone
- * launches can isolate their data from the desktop app's `~/.sqlui-native`.
- * The env var is read once at module load time — set it before importing
- * any storage modules.
+ * Cached resolved base directory. Populated by {@link getStorageDir} on first call.
+ * `undefined` until then so we honor `SQLUI_HOME_DIR` no matter when it's set —
+ * import-time vs runtime no longer matters.
  */
-const baseDir =
-  process.env.SQLUI_HOME_DIR && process.env.SQLUI_HOME_DIR.trim()
-    ? path.resolve(process.env.SQLUI_HOME_DIR)
-    : path.join(os.homedir(), ".sqlui-native");
-fs.mkdirSync(baseDir, { recursive: true });
+let _baseDir: string | undefined;
 
-/** Absolute path to the directory where all persistent storage files are saved. */
-export const storageDir = baseDir;
+/**
+ * Returns the absolute path to the directory where all persistent storage files are saved.
+ *
+ * Resolution rules (evaluated lazily, on the FIRST call only):
+ *   - `process.env.SQLUI_HOME_DIR` if set and non-empty (portal/standalone isolation)
+ *   - else `~/.sqlui-native` (desktop default)
+ *
+ * **Lazy on purpose.** When this module is imported, `process.env.SQLUI_HOME_DIR` may
+ * not yet be set — bundlers hoist top-level imports, so consumers that set the env var
+ * (e.g. `portal.ts`) run AFTER this module loads. Resolving on first storage operation
+ * means we pick up whatever the env says at that point.
+ *
+ * Result is cached after the first call; setting `SQLUI_HOME_DIR` later has no effect.
+ */
+export function getStorageDir(): string {
+  if (_baseDir !== undefined) return _baseDir;
+  const envDir = process.env.SQLUI_HOME_DIR;
+  _baseDir = envDir && envDir.trim() ? path.resolve(envDir) : path.join(os.homedir(), ".sqlui-native");
+  fs.mkdirSync(_baseDir, { recursive: true });
+  return _baseDir;
+}
 
 /** In-memory cache keyed by file path to avoid repeated disk reads. */
 const memoryCache = new Map<string, StorageContent>();
+
+/**
+ * Per-file write queue. Each entry is a Promise representing the in-flight (or last-completed)
+ * write for that file. New writes chain off the previous Promise so writes to the same file
+ * never overlap on disk — preventing the interleaved/truncated payloads that produce
+ * `Unexpected non-whitespace character after JSON` parse errors when the same storage dir
+ * is shared across processes / smoke tests / rapid mutations.
+ */
+const writeQueues = new Map<string, Promise<void>>();
+
+/**
+ * Serializes a write to `filePath` by chaining onto any in-flight write for that file.
+ * Errors are caught at each step so one failed write doesn't poison subsequent writes.
+ * @param filePath - Absolute target path (acts as the queue key).
+ * @param data - JSON string payload to write.
+ */
+function enqueueWrite(filePath: string, data: string): Promise<void> {
+  const previous = writeQueues.get(filePath) ?? Promise.resolve();
+  const next = previous
+    .catch(() => {
+      /* swallow prior failure — we still want to attempt this write */
+    })
+    .then(() => fs.promises.writeFile(filePath, data));
+  writeQueues.set(filePath, next);
+  // Drop the queue entry once it settles so the map doesn't grow unbounded.
+  next.finally(() => {
+    if (writeQueues.get(filePath) === next) writeQueues.delete(filePath);
+  });
+  return next;
+}
 
 /**
  * Generic JSON file-based persistent storage for CRUD operations on typed entries.
@@ -76,9 +118,9 @@ export class PersistentStorageJsonFile<T extends StorageEntry> implements IPersi
     this.instanceId = instanceId;
     this.name = name;
     if (storageLocation) {
-      this.storageLocation = path.join(baseDir, `${storageLocation}.json`);
+      this.storageLocation = path.join(getStorageDir(), `${storageLocation}.json`);
     } else {
-      this.storageLocation = path.join(baseDir, `${this.instanceId}.${this.name}.json`);
+      this.storageLocation = path.join(getStorageDir(), `${this.instanceId}.${this.name}.json`);
     }
   }
 
@@ -103,12 +145,17 @@ export class PersistentStorageJsonFile<T extends StorageEntry> implements IPersi
 
   /**
    * Persists data to the in-memory cache and asynchronously to disk.
+   *
+   * Writes are serialized per-file via {@link enqueueWrite} — concurrent calls
+   * to `setData` for the same storage location never interleave on disk, which
+   * prevents JSON corruption when multiple mutations land in quick succession.
+   *
    * @param toSave - The full storage content to write.
    */
   private setData(toSave: StorageContent) {
     memoryCache.set(this.storageLocation, toSave);
     const json = JSON.stringify(toSave, null, 2);
-    fs.promises.writeFile(this.storageLocation, json).catch((err) => {
+    enqueueWrite(this.storageLocation, json).catch((err) => {
       console.error("PersistentStorageJsonFile.ts:setData", err);
     });
   }
@@ -185,7 +232,7 @@ export class PersistentStorageJsonFile<T extends StorageEntry> implements IPersi
 
   /** {@inheritDoc IPersistentStorage.writeDataFile} */
   writeDataFile(fileName: string, content: any): string {
-    const fullPath = path.join(baseDir, fileName);
+    const fullPath = path.join(getStorageDir(), fileName);
     fs.writeFileSync(fullPath, JSON.stringify(content, null, 2));
     return fullPath;
   }

@@ -32,6 +32,11 @@ function run(args) {
   execFileSync(vite, args, { cwd: root, stdio: "inherit" });
 }
 
+function runIn(cmd, args, cwd) {
+  console.log(`→ ${cmd} ${args.join(" ")}  (cwd=${path.relative(root, cwd) || "."})`);
+  execFileSync(cmd, args, { cwd, stdio: "inherit" });
+}
+
 // 1. Clean build/ (preserve the node_modules symlink and src dir; remove everything else).
 //    We can't `rm -rf build` outright because Vite SSR for the desktop sidecar relies on
 //    the `build/node_modules` symlink, but we can purge stale assets and the prior index.html.
@@ -54,12 +59,42 @@ const launcherDst = path.join(distDir, "sqlui-portal");
 fs.copyFileSync(launcherSrc, launcherDst);
 fs.chmodSync(launcherDst, 0o755);
 
+// 5. Build an npx-able tarball with the standard npm package layout:
+//    sqlui-portal-<version>.tgz
+//      └── package/
+//          ├── package.json    (declares bin: { "sqlui-portal": "./sqlui-portal.js" })
+//          ├── sqlui-portal.js (shebang'd at vite-build time, +x)
+//          └── sqlui-portal-assets.json
+//
+//    `npx <tarball-url>` accepts this layout directly. We roll it with `tar`
+//    instead of `npm pack` so the build doesn't depend on a working npm
+//    install (the user's local npm is sometimes broken; CI has its own).
+const pkg = JSON.parse(fs.readFileSync(path.join(distDir, "package.json"), "utf-8"));
+const friendlyTgzName = `sqlui-portal-${pkg.version}.tgz`;
+const friendlyTgzPath = path.join(root, "dist", friendlyTgzName);
+
+// Stage the npm-shaped layout in a temp dir, then tar it.
+const stageRoot = path.join(root, "dist", ".pack-stage");
+const stagePackage = path.join(stageRoot, "package");
+fs.rmSync(stageRoot, { recursive: true, force: true });
+fs.mkdirSync(stagePackage, { recursive: true });
+for (const fname of ["package.json", "sqlui-portal.js", "sqlui-portal-assets.json"]) {
+  fs.copyFileSync(path.join(distDir, fname), path.join(stagePackage, fname));
+}
+fs.chmodSync(path.join(stagePackage, "sqlui-portal.js"), 0o755);
+runIn("tar", ["-czf", friendlyTgzPath, "package"], stageRoot);
+fs.rmSync(stageRoot, { recursive: true, force: true });
+
 const jsSize = (fs.statSync(path.join(distDir, "sqlui-portal.js")).size / 1024 / 1024).toFixed(2);
 const jsonSize = (fs.statSync(path.join(distDir, "sqlui-portal-assets.json")).size / 1024 / 1024).toFixed(2);
+const tgzSize = fs.existsSync(friendlyTgzPath) ? (fs.statSync(friendlyTgzPath).size / 1024 / 1024).toFixed(2) : "?";
 console.log("");
-console.log(`✓ Portal build ready in dist/portal/`);
-console.log(`  sqlui-portal.js              ${jsSize} MB  (server)`);
-console.log(`  sqlui-portal-assets.json     ${jsonSize} MB  (embedded frontend)`);
-console.log(`  sqlui-portal                 bash launcher`);
+console.log(`✓ Portal build ready`);
+console.log(`  dist/portal/sqlui-portal.js              ${jsSize} MB  (server)`);
+console.log(`  dist/portal/sqlui-portal-assets.json     ${jsonSize} MB  (embedded frontend)`);
+console.log(`  dist/portal/sqlui-portal                 bash launcher`);
+console.log(`  dist/portal/package.json                 npm package manifest`);
+console.log(`  dist/${friendlyTgzName}     ${tgzSize} MB  (npx-able tarball)`);
 console.log("");
-console.log(`  Run:  ./dist/portal/sqlui-portal ./mydata.sqlite`);
+console.log(`  curl + tar:  ./dist/portal/sqlui-portal ./mydata.sqlite`);
+console.log(`  npx:         npx ./dist/${friendlyTgzName} ./mydata.sqlite`);

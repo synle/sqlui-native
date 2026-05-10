@@ -86,7 +86,7 @@ vi.mock("node:fs", () => ({
 }));
 
 import { PersistentStorageSqlite } from "src/common/PersistentStorageSqlite";
-import { storageDir } from "src/common/PersistentStorageJsonFile";
+import { getStorageDir } from "src/common/PersistentStorageJsonFile";
 import {
   runMigration,
   getStorageVersion,
@@ -168,7 +168,7 @@ describe("PersistentStorageMigration", () => {
       const settingsData = {
         "app-settings": { id: "app-settings", darkMode: "dark", animationMode: "on" },
       };
-      mockFiles.set(`${storageDir}/settings.json`, JSON.stringify(settingsData));
+      mockFiles.set(`${getStorageDir()}/settings.json`, JSON.stringify(settingsData));
 
       runMigration();
 
@@ -184,7 +184,7 @@ describe("PersistentStorageMigration", () => {
       const connectionData = {
         "connection.123.456": { id: "connection.123.456", name: "My DB", connection: "mysql://localhost" },
       };
-      mockFiles.set(`${storageDir}/session-abc.connection.json`, JSON.stringify(connectionData));
+      mockFiles.set(`${getStorageDir()}/session-abc.connection.json`, JSON.stringify(connectionData));
 
       runMigration();
 
@@ -198,7 +198,7 @@ describe("PersistentStorageMigration", () => {
       const sessionsData = {
         "session.1.2": { id: "session.1.2", name: "My Session" },
       };
-      mockFiles.set(`${storageDir}/sessions.json`, JSON.stringify(sessionsData));
+      mockFiles.set(`${getStorageDir()}/sessions.json`, JSON.stringify(sessionsData));
 
       runMigration();
 
@@ -212,7 +212,7 @@ describe("PersistentStorageMigration", () => {
       const folderData = {
         "bookmark.1": { id: "bookmark.1", type: "Connection", data: {} },
       };
-      mockFiles.set(`${storageDir}/folders.bookmarks.json`, JSON.stringify(folderData));
+      mockFiles.set(`${getStorageDir()}/folders.bookmarks.json`, JSON.stringify(folderData));
 
       runMigration();
 
@@ -226,7 +226,7 @@ describe("PersistentStorageMigration", () => {
       const cacheData = {
         "conn-1": { id: "conn-1", data: [{ name: "db1" }], timestamp: 123 },
       };
-      mockFiles.set(`${storageDir}/cache.databases.json`, JSON.stringify(cacheData));
+      mockFiles.set(`${getStorageDir()}/cache.databases.json`, JSON.stringify(cacheData));
 
       runMigration();
 
@@ -238,7 +238,7 @@ describe("PersistentStorageMigration", () => {
 
     test("moves migrated files to backup directory", () => {
       const settingsData = { "app-settings": { id: "app-settings", darkMode: "dark" } };
-      mockFiles.set(`${storageDir}/settings.json`, JSON.stringify(settingsData));
+      mockFiles.set(`${getStorageDir()}/settings.json`, JSON.stringify(settingsData));
 
       runMigration();
 
@@ -249,16 +249,16 @@ describe("PersistentStorageMigration", () => {
     });
 
     test("creates backup directory", () => {
-      mockFiles.set(`${storageDir}/settings.json`, JSON.stringify({ s: { id: "s" } }));
+      mockFiles.set(`${getStorageDir()}/settings.json`, JSON.stringify({ s: { id: "s" } }));
 
       runMigration();
 
-      expect(mockDirs.has(`${storageDir}/backup`)).toBe(true);
+      expect(mockDirs.has(`${getStorageDir()}/backup`)).toBe(true);
     });
 
     test("skips unknown JSON files", () => {
-      mockFiles.set(`${storageDir}/unknown-file.json`, JSON.stringify({}));
-      mockFiles.set(`${storageDir}/settings.json`, JSON.stringify({ s: { id: "s" } }));
+      mockFiles.set(`${getStorageDir()}/unknown-file.json`, JSON.stringify({}));
+      mockFiles.set(`${getStorageDir()}/settings.json`, JSON.stringify({ s: { id: "s" } }));
 
       runMigration();
 
@@ -268,9 +268,9 @@ describe("PersistentStorageMigration", () => {
     });
 
     test("handles multiple files across different tables", () => {
-      mockFiles.set(`${storageDir}/session-a.connection.json`, JSON.stringify({ c1: { id: "c1", name: "Conn1" } }));
-      mockFiles.set(`${storageDir}/session-a.query.json`, JSON.stringify({ q1: { id: "q1", sql: "SELECT 1" } }));
-      mockFiles.set(`${storageDir}/settings.json`, JSON.stringify({ "app-settings": { id: "app-settings", darkMode: "light" } }));
+      mockFiles.set(`${getStorageDir()}/session-a.connection.json`, JSON.stringify({ c1: { id: "c1", name: "Conn1" } }));
+      mockFiles.set(`${getStorageDir()}/session-a.query.json`, JSON.stringify({ q1: { id: "q1", sql: "SELECT 1" } }));
+      mockFiles.set(`${getStorageDir()}/settings.json`, JSON.stringify({ "app-settings": { id: "app-settings", darkMode: "light" } }));
 
       runMigration();
 

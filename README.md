@@ -28,28 +28,36 @@ Requires **Node.js 22+** on the host.
 
 ### Quick start (download from a release)
 
-One-liner — fetch the latest portal artifact, extract, and open a SQLite file:
+Pick whichever flow you prefer — both are supported, equivalent behavior:
+
+#### Option A — `npx` (no manual extract, auto-cached)
 
 ```bash
-curl -fsSL https://github.com/synle/sqlui-native/releases/latest/download/sqlui-portal-3.1.1.tar.gz \
+npx https://github.com/synle/sqlui-native/releases/latest/download/sqlui-portal-3.1.2.tgz ./mydata.sqlite
+```
+
+`npx` downloads, caches under `~/.npm/_npx/`, and runs in one step. Subsequent invocations are instant (cached). Works the same on macOS, Linux, and Windows.
+
+#### Option B — `curl | tar` (no npm involved)
+
+```bash
+curl -fsSL https://github.com/synle/sqlui-native/releases/latest/download/sqlui-portal-3.1.2.tar.gz \
   | tar -xz \
   && ./portal/sqlui-portal ./mydata.sqlite
 ```
 
-Or pin a specific version:
+Pin a specific version with both flows:
 
 ```bash
-VERSION=3.1.1
-curl -fsSL "https://github.com/synle/sqlui-native/releases/download/v${VERSION}/sqlui-portal-${VERSION}.tar.gz" \
-  | tar -xz
+VERSION=3.1.2
+# npx
+npx "https://github.com/synle/sqlui-native/releases/download/v${VERSION}/sqlui-portal-${VERSION}.tgz" ./mydata.sqlite
+# or curl + tar
+curl -fsSL "https://github.com/synle/sqlui-native/releases/download/v${VERSION}/sqlui-portal-${VERSION}.tar.gz" | tar -xz
 ./portal/sqlui-portal ./mydata.sqlite
 ```
 
-Windows / no-curl users: download `sqlui-portal-<version>.zip` from the [Releases page](https://github.com/synle/sqlui-native/releases/latest), unzip, and run `portal\sqlui-portal.js` with Node:
-
-```powershell
-node .\portal\sqlui-portal.js .\mydata.sqlite
-```
+Windows users without curl can grab `sqlui-portal-<version>.zip` from the [Releases page](https://github.com/synle/sqlui-native/releases/latest) and unzip — or just use the npx flow above, which works natively.
 
 ### Build from source
 

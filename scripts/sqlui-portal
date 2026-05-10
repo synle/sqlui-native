@@ -53,4 +53,11 @@ if [ -z "$NODE_BIN" ]; then
   exit 1
 fi
 
+# Default SQLUI_HOME_DIR to ~/.sqlui-portal so the portal NEVER touches the desktop
+# app's storage at ~/.sqlui-native. This duplicates the env-set inside portal.ts as
+# defense-in-depth: bundlers hoist imports, so a JS-only env-set after imports is
+# too late for module-load-time consumers. Setting it here in the parent shell is
+# the only reliable point.
+export SQLUI_HOME_DIR="${SQLUI_HOME_DIR:-$HOME/.sqlui-portal}"
+
 exec "$NODE_BIN" "$BUNDLE" "$@"
