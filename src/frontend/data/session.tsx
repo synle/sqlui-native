@@ -34,10 +34,29 @@ function sessionIdKey(): string {
 /**
  * Returns the current session ID for this window, or empty string if not set.
  * Stored in localStorage keyed by the window scope so each Tauri window has its own session.
+ *
+ * In portal mode the server injects `window.__SQLUI_PORTAL_SESSION__` into index.html.
+ * If localStorage has nothing yet, we seed it from that global so the user lands directly
+ * on the connection list instead of the session-select screen.
+ *
  * @returns The current session ID or empty string.
  */
 export function getCurrentSessionId(): string {
-  return localStorage.getItem(sessionIdKey()) || "";
+  const stored = localStorage.getItem(sessionIdKey());
+  if (stored) return stored;
+
+  // Portal mode bootstrap — server-injected default session id.
+  try {
+    const portalSession = (window as any).__SQLUI_PORTAL_SESSION__;
+    if (typeof portalSession === "string" && portalSession) {
+      localStorage.setItem(sessionIdKey(), portalSession);
+      return portalSession;
+    }
+  } catch (_err) {
+    // window may not be available (SSR/tests) — fall through
+  }
+
+  return "";
 }
 
 /**

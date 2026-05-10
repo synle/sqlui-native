@@ -24,7 +24,18 @@ function stripUndefined<T>(obj: T): Partial<T> {
   return result;
 }
 
-const baseDir = path.join(os.homedir(), ".sqlui-native");
+/**
+ * Resolves the base directory for persistent storage.
+ *
+ * Honors the `SQLUI_HOME_DIR` environment variable so portal/standalone
+ * launches can isolate their data from the desktop app's `~/.sqlui-native`.
+ * The env var is read once at module load time — set it before importing
+ * any storage modules.
+ */
+const baseDir =
+  process.env.SQLUI_HOME_DIR && process.env.SQLUI_HOME_DIR.trim()
+    ? path.resolve(process.env.SQLUI_HOME_DIR)
+    : path.join(os.homedir(), ".sqlui-native");
 fs.mkdirSync(baseDir, { recursive: true });
 
 /** Absolute path to the directory where all persistent storage files are saved. */

@@ -62,3 +62,49 @@ export const port = 3001;
 app.get("/api/health", (_req, res) => {
   res.status(200).json({ status: "ok", pid: process.pid, uptime: process.uptime() });
 });
+
+/**
+ * Mounts a static-file directory plus a SPA fallback.
+ * Used by portal mode to serve the bundled React frontend alongside the API,
+ * so a single Node process exposes the full webapp at one URL (phpMyAdmin-style).
+ *
+ * @param assetsDir - Absolute path to the directory containing index.html and assets/.
+ * @param indexHtmlTransformer - Optional callback to mutate the served index.html on the fly
+ *   (used by portal mode to inject a default session ID into the page).
+ */
+export function mountStaticAssets(assetsDir: string, indexHtmlTransformer?: (html: string) => string): void {
+  if (!assetsDir || !fs.existsSync(assetsDir)) {
+    console.warn(`server.ts:mountStaticAssets - assets dir not found: ${assetsDir}`);
+    return;
+  }
+
+  // index.html — read on each request so the transformer can inject runtime values
+  const indexHtmlPath = path.join(assetsDir, "index.html");
+  const sendIndex = (_req: any, res: any) => {
+    try {
+      let html = fs.readFileSync(indexHtmlPath, "utf-8");
+      if (indexHtmlTransformer) html = indexHtmlTransformer(html);
+      res.setHeader("Content-Type", "text/html; charset=utf-8");
+      res.setHeader("Cache-Control", "no-cache");
+      res.status(200).send(html);
+    } catch (err) {
+      console.error("server.ts:mountStaticAssets sendIndex", err);
+      res.status(500).send("Failed to load index.html");
+    }
+  };
+
+  // hashed assets are immutable — long cache
+  app.use(
+    express.static(assetsDir, {
+      index: false,
+      maxAge: "30d",
+      setHeaders: (res, filePath) => {
+        if (filePath.endsWith(".html")) res.setHeader("Cache-Control", "no-cache");
+      },
+    }),
+  );
+
+  // SPA fallback: any non-/api GET that doesn't match a static asset → index.html.
+  // Skip /api/* so 404s from the API still return JSON, not HTML.
+  app.get(/^\/(?!api\/).*/, sendIndex);
+}
