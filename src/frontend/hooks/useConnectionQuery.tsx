@@ -15,6 +15,13 @@ const TargetContext = createContext({
   isLoading: true,
 });
 
+/**
+ * Returns query tabs in the shape that is safe to save and restore.
+ * Strips volatile runtime-only fields (`result`, `executionEnd`, `executionStart`, `executing`, `executionDetails`, and `isSnapshot`)
+ * so executions, timers, and snapshot markers do not leak into persisted workspace state.
+ * @param queries - Query tabs to convert; defaults to the current in-memory tab list.
+ * @returns Query tabs with stable tab order and selected state included.
+ */
 function _getPersistableQueries(queries: SqluiFrontend.ConnectionQuery[] = _connectionQueries) {
   return queries.map((query, idx) => {
     const { result, executionEnd, executionStart, executing, executionDetails, isSnapshot, ...restOfQuery } = query;
@@ -26,12 +33,21 @@ function _getPersistableQueries(queries: SqluiFrontend.ConnectionQuery[] = _conn
   });
 }
 
+/**
+ * Persists the current in-memory query tabs to sessionStorage for same-window reload recovery.
+ */
 function _persistQueries() {
   // store to client
   const toPersistQueries = _getPersistableQueries();
   SessionStorageConfig.set("clientConfig/cache.connectionQueries", toPersistQueries);
 }
 
+/**
+ * Normalizes restored query tabs by backfilling missing `tabOrder` from array index and sorting by `tabOrder`.
+ * This keeps legacy saved queries usable while restoring tabs in the order the user last saved.
+ * @param queries - Query tabs loaded from sessionStorage or the backend.
+ * @returns Query tabs sorted by persisted tab order.
+ */
 function _normalizeQueries(queries: SqluiFrontend.ConnectionQuery[]) {
   const normalizedQueries = (queries || []).map((query, idx) => ({
     ...query,
@@ -39,6 +55,31 @@ function _normalizeQueries(queries: SqluiFrontend.ConnectionQuery[]) {
   }));
 
   return normalizedQueries.sort((a, b) => (a.tabOrder ?? 0) - (b.tabOrder ?? 0));
+}
+
+/**
+ * Finds the tab that should be selected after restore.
+ * If storage contains multiple selected tabs from older single-tab saves, the most recently updated selected tab wins.
+ * @param queries - Normalized query tabs.
+ * @returns The selected query index, or `0` when none are marked selected.
+ */
+function _getRestoredSelectedQueryIndex(queries: SqluiFrontend.ConnectionQuery[]) {
+  let selectedIdx = -1;
+  let selectedUpdatedAt = -1;
+
+  queries.forEach((query, idx) => {
+    if (!query.selected) {
+      return;
+    }
+
+    const updatedAt = query.updatedAt || 0;
+    if (selectedIdx === -1 || updatedAt >= selectedUpdatedAt) {
+      selectedIdx = idx;
+      selectedUpdatedAt = updatedAt;
+    }
+  });
+
+  return selectedIdx >= 0 ? selectedIdx : 0;
 }
 
 /**
@@ -69,15 +110,8 @@ export default function WrappedContext(props: { children: React.ReactNode }): Re
           }
         }
 
-        // at the end we want to remove executionStart so the query won't be run again
-        let toBeSelectedQuery = 0;
-        _connectionQueries = _connectionQueries.map((query, idx) => {
-          if (query.selected) {
-            toBeSelectedQuery = idx;
-          }
-
-          return { ...query, selected: false };
-        });
+        const toBeSelectedQuery = _getRestoredSelectedQueryIndex(_connectionQueries);
+        _connectionQueries = _connectionQueries.map((query) => ({ ...query, selected: false }));
 
         if (_connectionQueries[toBeSelectedQuery]) {
           _connectionQueries[toBeSelectedQuery] = {
@@ -135,6 +169,12 @@ export function useConnectionQueries() {
     _persistQueries();
   }
 
+  /**
+   * Saves query tabs to backend storage.
+   * @param queryIds - Optional filter; when undefined, every open query tab is saved.
+   * @returns Number of query tabs persisted.
+   * @remarks Auto-save callers pass affected query IDs to avoid writing every tab on every edit; manual `Save All Tabs` intentionally omits it.
+   */
   const onSaveQueries = async (queryIds?: string[]) => {
     const idsToSave = queryIds ? new Set(queryIds) : undefined;
     const queriesToSave = _getPersistableQueries().filter((query) => !idsToSave || idsToSave.has(query.id));
@@ -143,6 +183,12 @@ export function useConnectionQueries() {
     return queriesToSave.length;
   };
 
+  /**
+   * Saves a single query tab to backend storage.
+   * @param queryId - Query tab ID to persist.
+   * @returns Number of query tabs persisted; `0` when no ID is provided.
+   * @remarks Used by explicit manual saves and by auto-save paths that only need to persist one affected tab.
+   */
   const onSaveQuery = async (queryId?: string) => {
     if (!queryId) {
       return 0;
@@ -155,6 +201,7 @@ export function useConnectionQueries() {
     queries = queries || [];
 
     const res: SqluiCore.CoreConnectionQuery[] = [];
+    const addedQueryIds: string[] = [];
     for (const query of queries) {
       let newQueryData: Partial<SqluiFrontend.ConnectionQuery>;
       if (!query) {
@@ -183,19 +230,14 @@ export function useConnectionQueries() {
           executionStart: options?.preserveResult ? queryAny.executionStart : undefined,
           isSnapshot: options?.preserveResult && !!queryAny.result ? true : undefined,
         };
-        // Strip id so the backend generates one
+        // Strip id so each duplicate/import gets a fresh tab identity.
         delete newQueryData.id;
       }
 
       try {
-        let persisted: SqluiCore.CoreConnectionQuery | undefined;
-        if (isQueryTabAutoSaveEnabled) {
-          persisted = await dataApi.upsertQuery(newQueryData as any);
-        }
-
         const newQuery: SqluiFrontend.ConnectionQuery = {
           ...newQueryData,
-          id: persisted?.id || newQueryData.id || getGeneratedRandomId("query"),
+          id: newQueryData.id || getGeneratedRandomId("query"),
         } as any;
 
         _connectionQueries = [
@@ -207,6 +249,7 @@ export function useConnectionQueries() {
         ];
 
         res.push(newQuery);
+        addedQueryIds.push(newQuery.id);
       } catch (err) {
         console.error("useConnectionQuery.tsx:upsertQuery", err);
       }
@@ -215,7 +258,7 @@ export function useConnectionQueries() {
     try {
       _invalidateQueries();
       if (isQueryTabAutoSaveEnabled) {
-        await onSaveQueries();
+        await onSaveQueries(addedQueryIds);
       }
     } catch (err) {
       console.error("useConnectionQuery.tsx:_invalidateQueries", err);
@@ -309,7 +352,7 @@ export function useConnectionQueries() {
 
     if (isQueryTabAutoSaveEnabled) {
       // persist selected state to the backend so it survives sessionStorage loss
-      onSaveQueries();
+      onSaveQuery(queryId);
     }
   };
 

@@ -524,8 +524,8 @@ export module SqluiEnums {
     | "clientEvent/query/duplicate"
     | "clientEvent/query/export"
     | "clientEvent/query/history"
-    | "clientEvent/query/save"
-    | "clientEvent/query/saveAll"
+    | "clientEvent/query/save" // Save one query tab to persisted workspace state.
+    | "clientEvent/query/saveAll" // Save all open query tabs to persisted workspace state.
     | "clientEvent/query/new"
     | "clientEvent/query/pin"
     | "clientEvent/query/rename"

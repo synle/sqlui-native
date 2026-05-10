@@ -379,6 +379,10 @@ export default function MissionControl() {
     downloadText(`${query.name}.query.json`, JSON.stringify([getExportedQuery(query)], null, 2), "text/json");
   };
 
+  /**
+   * Saves one query tab and reports success or failure with a toast.
+   * @param query - Query tab to persist.
+   */
   const onSaveQuery = async (query: SqluiFrontend.ConnectionQuery) => {
     try {
       await connectionQueries.onSaveQuery(query.id);
@@ -393,6 +397,9 @@ export default function MissionControl() {
     }
   };
 
+  /**
+   * Saves all open query tabs and reports success or failure with a toast.
+   */
   const onSaveAllQueries = async () => {
     try {
       const savedCount = await connectionQueries.onSaveQueries();
