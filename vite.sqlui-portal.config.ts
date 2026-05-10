@@ -8,40 +8,26 @@
  * Run after `npm run build` so `build/index.html` and `build/assets/` exist for embedding.
  */
 
-import fs from "node:fs";
 import path from "node:path";
-import { defineConfig, type Plugin } from "vite";
-import { buildEmbeddedAssetMap } from "./scripts/vite-plugin-embed-frontend";
+import { defineConfig } from "vite";
+import { emitEmbeddedAssetsPlugin } from "./scripts/vite-plugin-embed-frontend";
 
 const externalsDeps: string[] = [];
 
 const buildDir = path.resolve(__dirname, "build");
 const outDir = path.resolve(__dirname, "dist", "portal");
 
-/**
- * Writes the embedded asset map as a sibling JSON file next to the bundle.
- * The portal entry reads it at startup with fs. We deliberately avoid inlining
- * the map via Vite's `define` — multi-MB literals expand catastrophically
- * during minification (~40x bloat).
- */
-function emitEmbeddedAssetsJson(): Plugin {
-  return {
-    name: "sqlui:emit-embedded-assets-json",
-    closeBundle() {
-      const map = buildEmbeddedAssetMap(buildDir);
-      const dest = path.join(outDir, "sqlui-portal-assets.json");
-      fs.mkdirSync(outDir, { recursive: true });
-      fs.writeFileSync(dest, JSON.stringify(map));
-    },
-  };
-}
-
 export default defineConfig({
   // The portal SSR bundle has no use for public/ — that directory only
   // exists for the frontend (favicon, manifest, etc., which are already
   // embedded via the frontend build).
   publicDir: false,
-  plugins: [emitEmbeddedAssetsJson()],
+  plugins: [
+    emitEmbeddedAssetsPlugin({
+      assetsDir: buildDir,
+      outFile: path.join(outDir, "sqlui-portal-assets.json"),
+    }),
+  ],
   build: {
     outDir,
     emptyOutDir: true,

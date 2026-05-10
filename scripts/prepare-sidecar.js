@@ -15,6 +15,15 @@ fs.mkdirSync(RESOURCES_DIR, { recursive: true });
 // 1. Copy the built sqlui-server.js (single file, all deps bundled)
 cpSync("build/sqlui-server.js", path.join(RESOURCES_DIR, "sqlui-server.js"));
 
+// 1a. Copy the sibling embedded-assets JSON so the sidecar can serve the UI
+//     in standalone mode (and, in future, in Tauri mode if we drop frontendDist).
+//     Emitted by vite.sqlui-server.sidecar.config.ts via emitEmbeddedAssetsPlugin.
+const assetsJsonSrc = path.join("build", "sqlui-server-assets.json");
+if (fs.existsSync(assetsJsonSrc)) {
+  cpSync(assetsJsonSrc, path.join(RESOURCES_DIR, "sqlui-server-assets.json"));
+  log("Copied embedded frontend assets JSON");
+}
+
 // 2. Copy package.json (needed for module resolution fallback)
 cpSync("package.json", path.join(RESOURCES_DIR, "package.json"));
 

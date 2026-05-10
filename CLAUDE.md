@@ -16,6 +16,7 @@ npx tauri build         # Build production Tauri app (.dmg/.exe/.deb)
 npm run dev             # Run sqlui-server + Vite dev server at http://localhost:3000 (browser only)
 npm run build           # Build frontend (Vite) + sqlui-server
 npm run build:tauri     # Build frontend + sidecar bundle + prepare resources for Tauri
+npm run build:portal    # Build frontend + portal bundle → dist/portal/ (sqlui-portal.js + sqlui-portal-assets.json + bash launcher)
 npm test                # Run Vitest tests (watch mode)
 npm run test-ci         # Run Vitest tests (CI, no watch)
 npm run lint            # ESLint with auto-fix
@@ -52,9 +53,25 @@ npx vitest run --config vitest.integration.config.ts src/common/adapters/Relatio
 
 ## Architecture
 
-### Two Runtime Modes
+### Three Runtime Modes
 
-The app runs in **Tauri mode** (`npx tauri dev` / `npx tauri build`) or **browser mode** (`npm run dev`). Both share the same backend code in `src/common/`. The frontend communicates with the backend via HTTP through the sqlui-server (Express). In Tauri mode, the server runs as a **Node.js sidecar process** on a dynamic port. In browser mode, the server runs standalone on port 3001.
+The app runs in **Tauri mode** (`npx tauri dev` / `npx tauri build`), **browser dev mode** (`npm run dev`), or **portal mode** (`npm run build:portal` → `./dist/portal/sqlui-portal`). All three share the same backend code in `src/common/`. The frontend communicates with the backend via HTTP through the sqlui-server (Express).
+
+- **Tauri mode**: Server runs as a Node.js **sidecar process** on a dynamic port; frontend served by Tauri from `frontendDist`.
+- **Browser dev mode**: Server runs standalone on port 3001; frontend served by Vite dev server on port 3000.
+- **Portal mode**: Single bundled Node script that serves BOTH `/api/*` and the React UI from one port. Like phpMyAdmin / sqlite-web. See "Portal Mode" section below.
+
+### Portal Mode
+
+A self-contained web portal distribution. Entry point: `src/sqlui-server/portal.ts`. Build config: `vite.sqlui-portal.config.ts`. Output: `dist/portal/sqlui-portal.js` + `sqlui-portal-assets.json` + bash launcher.
+
+- **Storage isolation**: Portal mode persists to `~/.sqlui-portal/` (NOT `~/.sqlui-native/`) — set via `SQLUI_HOME_DIR` env var, read once at module load by `PersistentStorageJsonFile.ts`. Set this BEFORE importing any storage modules.
+- **Single fixed session**: All requests run under session id `"portal"`. Frontend bootstraps via `window.__SQLUI_PORTAL_SESSION__` injected into served `index.html`.
+- **CLI inputs**: Positional args are parsed as connection strings (any dialect URL or a SQLite file path). Each is normalized, deduped against existing connections by canonical connection string, and added to the portal session.
+- **Default port**: `19378` (rare). Falls back to a random port on EADDRINUSE; always echoes the running URL on boot.
+- **Asset embedding**: Frontend `build/` dir is base64-encoded into a sibling `sqlui-portal-assets.json` (NOT inlined via Vite `define` — multi-MB literals expand catastrophically through minification). The runtime decodes the JSON into `os.tmpdir()/sqlui-portal-<pid>/` and points `express.static` there.
+
+The same embed mechanism (`scripts/vite-plugin-embed-frontend.ts → emitEmbeddedAssetsPlugin`) is reused by the desktop sidecar config (`vite.sqlui-server.sidecar.config.ts`), so `build/sqlui-server.js` ships with `build/sqlui-server-assets.json`. The sidecar entry (`src/sqlui-server/index.ts`) calls `mountStaticAssets` when the JSON sibling is present, letting the same server binary serve UI in both Tauri-sidecar and standalone modes — one code path, three callers.
 
 ### Tauri + Node.js Sidecar Architecture
 

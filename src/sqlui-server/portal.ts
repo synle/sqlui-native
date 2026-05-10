@@ -19,6 +19,7 @@ import fs from "node:fs";
 import net from "node:net";
 import os from "node:os";
 import path from "node:path";
+import { getDialectTypeFromConnectionString } from "src/common/adapters/DataScriptFactory";
 
 // ---------------------------------------------------------------------------
 // 1. Storage isolation — must run before any storage import.
@@ -94,7 +95,6 @@ function resolveAssetsDir(): string {
 
 import { app, initializeEndpoints, mountStaticAssets } from "src/sqlui-server/server";
 import { getConnectionsStorage, getSessionsStorage } from "src/common/PersistentStorage";
-import { getDialectTypeFromConnectionString } from "src/common/adapters/DataScriptFactory";
 import { SqluiCore } from "typings";
 
 /** Fixed session ID used by every request in portal mode. */
@@ -199,54 +199,9 @@ function printHelp(): void {
 // Connection input → connection string normalization
 // ---------------------------------------------------------------------------
 
-/**
- * Normalizes a CLI input into a canonical connection string.
- *
- * Rules:
- *   - `dialect://...`   → returned as-is
- *   - existing file path or `*.sqlite|*.db|*.sqlite3` → `sqlite://<absolute-path>`
- *   - anything else → returned as-is (lets the user pass exotic Microsoft-style
- *     strings that don't start with a scheme; we trust them)
- *
- * @param input - Raw CLI argument.
- * @returns Canonical connection string suitable for ConnectionProps.connection.
- */
-function normalizeConnectionInput(input: string): string {
-  // already a scheme://… connection string (incl. aztable://, sfdc://, …)
-  if (/^[a-z0-9+-]+:\/\//i.test(input)) {
-    return input;
-  }
-
-  // looks like a sqlite file: existing path or known suffix
-  const looksLikeSqlite = /\.(sqlite3?|db)$/i.test(input);
-  const resolved = path.resolve(input);
-  if (fs.existsSync(resolved) || looksLikeSqlite) {
-    return `sqlite://${resolved}`;
-  }
-
-  return input;
-}
-
-/**
- * Derives a friendly display name for a connection from its connection string.
- * Tries (in order): a sqlite filename basename, the URL host[:port], or a generic label.
- */
-function deriveConnectionName(connectionString: string): string {
-  if (connectionString.toLowerCase().startsWith("sqlite://")) {
-    const p = connectionString.slice("sqlite://".length);
-    const base = path.basename(p);
-    return base || "SQLite";
-  }
-  try {
-    const u = new URL(connectionString);
-    const dialect = (u.protocol || "").replace(/:$/, "") || "connection";
-    const host = u.host || u.hostname || "";
-    return host ? `${dialect} (${host})` : dialect;
-  } catch {
-    const dialect = getDialectTypeFromConnectionString(connectionString) || "connection";
-    return dialect;
-  }
-}
+// Pure helpers live in src/sqlui-server/portalHelpers.ts so they can be unit-tested
+// without triggering portal.ts's IIFE main (which would actually start a server).
+import { normalizeConnectionInput, deriveConnectionName } from "src/sqlui-server/portalHelpers";
 
 // ---------------------------------------------------------------------------
 // Bootstrap: ensure portal session + dedupe-add the inputs
