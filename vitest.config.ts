@@ -34,6 +34,26 @@ export default defineConfig({
       reporter: ["text", "json-summary"],
       include: ["src/**/*.{ts,tsx}"],
       exclude: ["**/*.spec.{ts,tsx}", "**/*.integration.spec.{ts,tsx}", "**/_SampleDataAdapter_/**", "**/node_modules/**"],
+      /**
+       * Coverage thresholds — minimums that must be met or exceeded.
+       *
+       * Vitest exits non-zero when any metric drops below these, so any CI
+       * job invoking `vitest run --coverage.enabled` enforces them without
+       * needing additional shell glue. The bash threshold check in
+       * `.github/workflows/integration-test.yml` (Report and enforce JS/TS
+       * coverage) remains as a defense-in-depth layer that also produces
+       * the GitHub Actions step-summary table.
+       *
+       * Baselines captured when the JS/TS coverage pipeline was hardened.
+       * Bump these when coverage genuinely improves to lock in the new floor.
+       * Mirror any change in MIN_* values in integration-test.yml.
+       */
+      thresholds: {
+        statements: 37.82,
+        branches: 30.07,
+        functions: 41.12,
+        lines: 38.51,
+      },
     },
   },
 });
