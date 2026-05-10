@@ -6,7 +6,7 @@ import path from "node:path";
 import type { IPersistentStorage, StorageEntry } from "src/common/IPersistentStorage";
 import { getGeneratedRandomId } from "src/common/utils/commonUtils";
 import { writeDebugLog } from "src/common/utils/debugLogger";
-import { storageDir } from "src/common/PersistentStorageJsonFile";
+import { getStorageDir } from "src/common/PersistentStorageJsonFile";
 
 /**
  * Returns a shallow copy of the object with all undefined-valued keys removed.
@@ -63,9 +63,9 @@ export class PersistentStorageSqlite<T extends StorageEntry> implements IPersist
     this.instanceId = instanceId;
     this.name = name;
     if (storageLocation) {
-      this.storageLocation = path.join(storageDir, `${storageLocation}.json`);
+      this.storageLocation = path.join(getStorageDir(), `${storageLocation}.json`);
     } else {
-      this.storageLocation = path.join(storageDir, `${this.instanceId}.${this.name}.json`);
+      this.storageLocation = path.join(getStorageDir(), `${this.instanceId}.${this.name}.json`);
     }
 
     PersistentStorageSqlite.ensureDb();
@@ -76,8 +76,9 @@ export class PersistentStorageSqlite<T extends StorageEntry> implements IPersist
   private static ensureDb(): void {
     if (PersistentStorageSqlite.db) return;
 
-    PersistentStorageSqlite.dbPath = path.join(storageDir, DB_FILE_NAME);
-    fs.mkdirSync(storageDir, { recursive: true });
+    const sd = getStorageDir();
+    PersistentStorageSqlite.dbPath = path.join(sd, DB_FILE_NAME);
+    fs.mkdirSync(sd, { recursive: true });
     writeDebugLog(`PersistentStorageSqlite:ensureDb - opening ${PersistentStorageSqlite.dbPath}`);
     PersistentStorageSqlite.db = new DatabaseSync(PersistentStorageSqlite.dbPath);
     PersistentStorageSqlite.db.exec("PRAGMA journal_mode = WAL");
@@ -190,7 +191,7 @@ export class PersistentStorageSqlite<T extends StorageEntry> implements IPersist
 
   /** {@inheritDoc IPersistentStorage.writeDataFile} */
   writeDataFile(fileName: string, content: any): string {
-    const fullPath = path.join(storageDir, fileName);
+    const fullPath = path.join(getStorageDir(), fileName);
     fs.writeFileSync(fullPath, JSON.stringify(content, null, 2));
     return fullPath;
   }

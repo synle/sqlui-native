@@ -11,7 +11,7 @@ export type { IPersistentStorage, StorageContent, StorageEntry } from "src/commo
 export {
   PersistentStorageJsonFile,
   PersistentStorageJsonFile as PersistentStorage,
-  storageDir,
+  getStorageDir,
   getConnectionsStorage,
   getQueryStorage,
   getSessionsStorage,

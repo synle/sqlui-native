@@ -91,6 +91,12 @@ export const electronPlatform: PlatformBridge = {
     }
   },
 
+  async pickFile(): Promise<string | null> {
+    // Electron mode relies on the existing <input type="file"> + getFilePath flow;
+    // returning null signals the caller to fall back to that path.
+    return null;
+  },
+
   onAppCommand(callback: (event: string) => void): () => void {
     if (!ipcRenderer) return () => {};
     const handler = (_event: any, data: string) => callback(data);

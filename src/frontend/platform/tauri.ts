@@ -43,6 +43,24 @@ export const tauriPlatform: PlatformBridge = {
     return null;
   },
 
+  async pickFile(options?: { title?: string; filters?: { name: string; extensions: string[] }[] }): Promise<string | null> {
+    try {
+      const { open } = await import("@tauri-apps/plugin-dialog");
+      const selected = await open({
+        multiple: false,
+        directory: false,
+        title: options?.title,
+        filters: options?.filters,
+      });
+      if (!selected) return null;
+      // In Tauri v2, single-file selection returns a string path directly.
+      return typeof selected === "string" ? selected : null;
+    } catch (err) {
+      console.error("platform/tauri.ts:pickFile", err);
+      return null;
+    }
+  },
+
   onAppCommand(callback: (event: string) => void): () => void {
     let unlisten: (() => void) | undefined;
 

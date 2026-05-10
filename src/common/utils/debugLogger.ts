@@ -14,17 +14,21 @@ let logFilePath: string | undefined;
 
 /**
  * Resolves and returns the debug log file path.
- * Uses the same storageDir as PersistentStorage (app data directory).
- * Deferred to avoid circular import with PersistentStorageJsonFile.
+ * Uses the same storage directory as PersistentStorage (app data directory).
+ *
+ * Lazy on purpose — `process.env.SQLUI_HOME_DIR` may be set after module load
+ * (portal mode sets it before its first storage call). This function is only
+ * reached on actual log writes, by which time the env is in its final state.
+ *
  * @returns Absolute path to the debug.log file.
  */
 function getLogFilePath(): string {
   if (logFilePath) return logFilePath;
 
-  // Replicate the storageDir resolution from PersistentStorageJsonFile
-  // to avoid importing it (which would create a circular dependency).
-  const homedir = require("os").homedir();
-  const baseDir = path.join(homedir, ".sqlui-native");
+  // Replicate the storage-dir resolution from PersistentStorageJsonFile
+  // here (rather than importing) to avoid a circular module dependency.
+  const envDir = process.env.SQLUI_HOME_DIR;
+  const baseDir = envDir && envDir.trim() ? path.resolve(envDir) : path.join(require("os").homedir(), ".sqlui-native");
 
   fs.mkdirSync(baseDir, { recursive: true });
   logFilePath = path.join(baseDir, "debug.log");

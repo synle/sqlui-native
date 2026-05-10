@@ -35,7 +35,7 @@ function uniqueName(prefix = "test") {
 
 import PersistentStorage, {
   PersistentStorageJsonFile,
-  storageDir,
+  getStorageDir,
   getConnectionsStorage,
   getQueryStorage,
   getSessionsStorage,
@@ -61,7 +61,7 @@ describe("PersistentStorage", () => {
       const name = uniqueName("name");
       const storage = new PersistentStorage("test", instanceId, name);
       expect(storage.storageLocation).toContain(`${instanceId}.${name}.json`);
-      expect(storage.storageLocation).toContain(storageDir);
+      expect(storage.storageLocation).toContain(getStorageDir());
     });
 
     test("uses custom storage location when storageLocation is provided", () => {
@@ -82,14 +82,14 @@ describe("PersistentStorage", () => {
     });
   });
 
-  describe("storageDir", () => {
+  describe("getStorageDir", () => {
     test("is a non-empty string path", () => {
-      expect(typeof storageDir).toBe("string");
-      expect(storageDir.length).toBeGreaterThan(0);
+      expect(typeof getStorageDir()).toBe("string");
+      expect(getStorageDir().length).toBeGreaterThan(0);
     });
 
     test("contains .sqlui-native in fallback mode", () => {
-      expect(storageDir).toContain(".sqlui-native");
+      expect(getStorageDir()).toContain(".sqlui-native");
     });
   });
 
@@ -297,7 +297,7 @@ describe("PersistentStorage", () => {
       const fileName = `test-output-${Date.now()}.json`;
       const data = { key: "value", count: 7 };
       const fullPath = storage.writeDataFile(fileName, data);
-      expect(fullPath).toContain(storageDir);
+      expect(fullPath).toContain(getStorageDir());
       expect(fullPath).toContain(fileName);
       // Verify written content via mockFiles
       const written = mockFiles.get(fullPath);
@@ -347,7 +347,7 @@ describe("PersistentStorage", () => {
     test("returns empty object when file contains invalid JSON", () => {
       const name1 = uniqueName("inst");
       const name2 = uniqueName("name");
-      const expectedPath = path.join(storageDir, `${name1}.${name2}.json`);
+      const expectedPath = path.join(getStorageDir(), `${name1}.${name2}.json`);
       mockFiles.set(expectedPath, "{ invalid json !!!");
 
       const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
@@ -360,7 +360,7 @@ describe("PersistentStorage", () => {
     test("reads from disk when file exists and cache is empty", () => {
       const name1 = uniqueName("inst");
       const name2 = uniqueName("name");
-      const expectedPath = path.join(storageDir, `${name1}.${name2}.json`);
+      const expectedPath = path.join(getStorageDir(), `${name1}.${name2}.json`);
       const existingData = { "entry-1": { id: "entry-1", name: "preloaded" } };
       mockFiles.set(expectedPath, JSON.stringify(existingData));
 

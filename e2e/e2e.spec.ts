@@ -71,8 +71,9 @@ async function createSqliteConnection(page: Page): Promise<string> {
   await expect(nameField).toBeVisible({ timeout: 15_000 });
   await nameField.fill(connName);
 
-  // Switch to Advanced tab to get the raw Connection string field
-  await page.getByRole("tab", { name: "Advanced" }).click();
+  // The raw Connection string field lives in the Simple tab (default), but click it
+  // explicitly in case a previous test left Advanced selected.
+  await page.getByRole("tab", { name: "Simple" }).click();
   const connectionField = page.getByRole("textbox", { name: "Connection" });
   await expect(connectionField).toBeVisible({ timeout: 5_000 });
   await connectionField.fill(connString);
@@ -398,7 +399,7 @@ test.describe("Phase 5: Edit Connection", () => {
 
     await expect(page).toHaveURL(/connection/i, { timeout: 10_000 });
 
-    // Edit connection form — switch to Advanced tab for raw connection string
+    // Edit connection form — Simple tab holds the raw connection string field.
     const nameField = page.getByRole("textbox", { name: "Name" });
     await expect(nameField).toBeVisible({ timeout: 10_000 });
 
@@ -406,8 +407,8 @@ test.describe("Phase 5: Edit Connection", () => {
     await nameField.clear();
     await nameField.fill(newName);
 
-    // Ensure Advanced tab is active so connection string is preserved
-    await page.getByRole("tab", { name: "Advanced" }).click();
+    // Ensure Simple tab is active so the raw connection string is the source of truth on save.
+    await page.getByRole("tab", { name: "Simple" }).click();
     await page.waitForTimeout(300);
 
     await page.getByRole("button", { name: "Save" }).click();

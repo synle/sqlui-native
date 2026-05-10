@@ -23,7 +23,7 @@ import {
   getQueryStorage,
   getSessionsStorage,
   getSettingsStorage,
-  storageDir,
+  getStorageDir,
 } from "src/common/PersistentStorage";
 import { writeDebugLog } from "src/common/utils/debugLogger";
 import { backfillTimestamps, formatErrorMessage, safeDisconnect } from "src/common/utils/errorUtils";
@@ -142,7 +142,7 @@ function addDataEndpoint(
  */
 export function setUpDataEndpoints(anExpressAppContext: Express) {
   expressAppContext = anExpressAppContext;
-  writeDebugLog(`Endpoints.ts:setUpDataEndpoints - storageDir=${storageDir}`);
+  writeDebugLog(`Endpoints.ts:setUpDataEndpoints - storageDir=${getStorageDir()}`);
   // storageDir
   //=========================================================================
   // config api endpoints
@@ -159,7 +159,7 @@ export function setUpDataEndpoints(anExpressAppContext: Express) {
     const { id, ...settingsData } = settings;
 
     res.status(200).json({
-      storageDir,
+      storageDir: getStorageDir(),
       isElectron: !expressAppContext,
       ...settingsData,
     });
@@ -177,7 +177,7 @@ export function setUpDataEndpoints(anExpressAppContext: Express) {
     const { id, ...settingsData } = updated;
 
     res.status(200).json({
-      storageDir,
+      storageDir: getStorageDir(),
       isElectron: !expressAppContext,
       ...settingsData,
     });

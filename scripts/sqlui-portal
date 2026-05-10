@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+# sqlui-portal — launcher for the bundled sqlui-portal.js
+#
+# This script lives next to sqlui-portal.js inside the published portal
+# distribution. It locates Node (preferring NODE env > version managers > $PATH)
+# and execs the bundled server with whatever args the user passed.
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+BUNDLE="${SCRIPT_DIR}/sqlui-portal.js"
+
+if [ ! -f "$BUNDLE" ]; then
+  echo "sqlui-portal: bundle not found at $BUNDLE" >&2
+  exit 1
+fi
+
+# Resolve a Node binary. Order:
+#   1. $NODE env var (explicit override)
+#   2. version managers (fnm > nvm > volta > mise)
+#   3. system node on PATH
+find_node() {
+  if [ -n "${NODE:-}" ] && command -v "$NODE" >/dev/null 2>&1; then
+    echo "$NODE"
+    return
+  fi
+
+  # fnm / volta / mise typically expose `node` on PATH once shell init has run.
+  # In a non-interactive shell, fall through to common install dirs as a last resort.
+  if command -v node >/dev/null 2>&1; then
+    command -v node
+    return
+  fi
+
+  for candidate in \
+    "$HOME/.fnm/aliases/default/bin/node" \
+    "$HOME/.volta/bin/node" \
+    "$HOME/.local/share/mise/installs/node/latest/bin/node" \
+    "/opt/homebrew/bin/node" \
+    "/usr/local/bin/node"; do
+    if [ -x "$candidate" ]; then
+      echo "$candidate"
+      return
+    fi
+  done
+
+  echo ""
+}
+
+NODE_BIN="$(find_node)"
+if [ -z "$NODE_BIN" ]; then
+  echo "sqlui-portal: could not find Node.js. Install Node 22+ or set \$NODE." >&2
+  exit 1
+fi
+
+# Default SQLUI_HOME_DIR to ~/.sqlui-portal so the portal NEVER touches the desktop
+# app's storage at ~/.sqlui-native. This duplicates the env-set inside portal.ts as
+# defense-in-depth: bundlers hoist imports, so a JS-only env-set after imports is
+# too late for module-load-time consumers. Setting it here in the parent shell is
+# the only reliable point.
+export SQLUI_HOME_DIR="${SQLUI_HOME_DIR:-$HOME/.sqlui-portal}"
+
+exec "$NODE_BIN" "$BUNDLE" "$@"

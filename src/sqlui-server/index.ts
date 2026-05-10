@@ -1,9 +1,66 @@
 /** Entry point for the sqlui-server. Starts Express on localhost with graceful shutdown. */
 import { execSync } from "node:child_process";
+import fs from "node:fs";
 import net from "node:net";
-import { app, initializeEndpoints, port as defaultPort } from "src/sqlui-server/server";
+import os from "node:os";
+import path from "node:path";
+import { app, initializeEndpoints, mountStaticAssets, port as defaultPort } from "src/sqlui-server/server";
 
 initializeEndpoints();
+
+// ---------------------------------------------------------------------------
+// Optional static-asset serving — when a sibling `sqlui-server-assets.json` is
+// present (emitted by vite.sqlui-server.sidecar.config.ts), the server can serve
+// the React UI in addition to /api routes. This is the same code path the
+// portal entry uses, just sharing one server binary.
+//
+// In dev (vite.sqlui-server.config.ts has no embed plugin), the JSON sibling
+// won't exist and this is a no-op — Tauri continues using `frontendDist` and
+// the dev Vite server hosts the UI separately.
+// ---------------------------------------------------------------------------
+
+/**
+ * Decodes the embedded asset map (if present) into a per-PID temp dir and
+ * returns the directory path. Returns null when no assets are embedded.
+ */
+function extractEmbeddedAssetsIfPresent(): string | null {
+  const candidate = path.join(__dirname, "sqlui-server-assets.json");
+  if (!fs.existsSync(candidate)) return null;
+
+  try {
+    const map = JSON.parse(fs.readFileSync(candidate, "utf-8")) as Record<string, string>;
+    if (Object.keys(map).length === 0) return null;
+
+    const outDir = path.join(os.tmpdir(), `sqlui-server-${process.pid}`);
+    fs.mkdirSync(outDir, { recursive: true });
+    for (const [rel, base64] of Object.entries(map)) {
+      const full = path.join(outDir, rel);
+      fs.mkdirSync(path.dirname(full), { recursive: true });
+      fs.writeFileSync(full, Buffer.from(base64, "base64"));
+    }
+
+    const cleanup = () => {
+      try {
+        fs.rmSync(outDir, { recursive: true, force: true });
+      } catch {
+        /* ignore */
+      }
+    };
+    process.on("exit", cleanup);
+    process.on("SIGINT", cleanup);
+    process.on("SIGTERM", cleanup);
+
+    return outDir;
+  } catch (err) {
+    console.error("index.ts:extractEmbeddedAssetsIfPresent", err);
+    return null;
+  }
+}
+
+const embeddedAssetsDir = extractEmbeddedAssetsIfPresent();
+if (embeddedAssetsDir) {
+  mountStaticAssets(embeddedAssetsDir);
+}
 
 /** Host to bind to — loopback only, no firewall prompt. */
 const HOST = "127.0.0.1";
