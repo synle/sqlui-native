@@ -57,33 +57,30 @@ export function getStorageDir(): string {
 const memoryCache = new Map<string, StorageContent>();
 
 /**
- * Per-file write queue. Each entry is a Promise representing the in-flight (or last-completed)
- * write for that file. New writes chain off the previous Promise so writes to the same file
- * never overlap on disk — preventing the interleaved/truncated payloads that produce
- * `Unexpected non-whitespace character after JSON` parse errors when the same storage dir
- * is shared across processes / smoke tests / rapid mutations.
- */
-const writeQueues = new Map<string, Promise<void>>();
-
-/**
- * Serializes a write to `filePath` by chaining onto any in-flight write for that file.
- * Errors are caught at each step so one failed write doesn't poison subsequent writes.
- * @param filePath - Absolute target path (acts as the queue key).
+ * Writes JSON to disk synchronously and atomically (per-call) by writing to a
+ * sibling `.tmp` file then renaming it into place. Two reasons:
+ *
+ *   1. **Atomicity** — concurrent writes to the same file via async
+ *      `fs.promises.writeFile` interleave at the OS level and corrupt the JSON
+ *      ("Unexpected non-whitespace character after JSON" parse errors). Sync
+ *      writes can't interleave in Node's single-threaded event loop, and the
+ *      tmp+rename pattern guarantees readers either see the old content or
+ *      the new content, never a torn write.
+ *
+ *   2. **Reliability** — the previous async-fire-and-forget approach
+ *      occasionally never flushed in production builds (Vite SSR + minified
+ *      Promise chain), leaving the dir with only `debug.log` and no data
+ *      files. Sync write returns only when the bytes are on disk.
+ *
+ * Throws on failure; callers that don't want exceptions should wrap.
+ *
+ * @param filePath - Absolute target path.
  * @param data - JSON string payload to write.
  */
-function enqueueWrite(filePath: string, data: string): Promise<void> {
-  const previous = writeQueues.get(filePath) ?? Promise.resolve();
-  const next = previous
-    .catch(() => {
-      /* swallow prior failure — we still want to attempt this write */
-    })
-    .then(() => fs.promises.writeFile(filePath, data));
-  writeQueues.set(filePath, next);
-  // Drop the queue entry once it settles so the map doesn't grow unbounded.
-  next.finally(() => {
-    if (writeQueues.get(filePath) === next) writeQueues.delete(filePath);
-  });
-  return next;
+function writeAtomicSync(filePath: string, data: string): void {
+  const tmpPath = `${filePath}.${process.pid}.tmp`;
+  fs.writeFileSync(tmpPath, data);
+  fs.renameSync(tmpPath, filePath);
 }
 
 /**
@@ -104,10 +101,22 @@ export class PersistentStorageJsonFile<T extends StorageEntry> implements IPersi
   table: string;
   instanceId: string;
   name: string;
-  storageLocation: string;
+
+  /** Optional storage filename override (without ".json"); when null, falls back to `{instanceId}.{name}`. */
+  private readonly storageBasename: string | undefined;
+
+  /** Cached resolved absolute path; populated on first {@link storageLocation} access. */
+  private _storageLocation?: string;
 
   /**
    * Creates a new PersistentStorageJsonFile instance.
+   *
+   * **Critical: does NOT resolve {@link storageLocation} here.** Module-level
+   * factory consumers (e.g. `DataAdapterFactory.ts`) instantiate this class at
+   * import time, which is BEFORE `process.env.SQLUI_HOME_DIR` is set in portal
+   * mode. Resolving here would lock storageLocation to the wrong directory.
+   * The path is computed lazily on first `storageLocation` access instead.
+   *
    * @param table - The logical table name (ignored by JSON backend, used by SQLite).
    * @param instanceId - Identifier for the storage instance (e.g., session ID).
    * @param name - Name of the data type being stored (e.g., "connection", "query").
@@ -117,11 +126,20 @@ export class PersistentStorageJsonFile<T extends StorageEntry> implements IPersi
     this.table = table;
     this.instanceId = instanceId;
     this.name = name;
-    if (storageLocation) {
-      this.storageLocation = path.join(getStorageDir(), `${storageLocation}.json`);
-    } else {
-      this.storageLocation = path.join(getStorageDir(), `${this.instanceId}.${this.name}.json`);
+    this.storageBasename = storageLocation;
+  }
+
+  /**
+   * Absolute path to this instance's JSON file. Resolved on first read by
+   * combining {@link getStorageDir} (which honors env/CLI overrides) with the
+   * basename. Cached after first access.
+   */
+  get storageLocation(): string {
+    if (this._storageLocation === undefined) {
+      const basename = this.storageBasename ? `${this.storageBasename}.json` : `${this.instanceId}.${this.name}.json`;
+      this._storageLocation = path.join(getStorageDir(), basename);
     }
+    return this._storageLocation;
   }
 
   /** @returns The parsed storage content from disk or memory cache. */
@@ -144,20 +162,21 @@ export class PersistentStorageJsonFile<T extends StorageEntry> implements IPersi
   }
 
   /**
-   * Persists data to the in-memory cache and asynchronously to disk.
-   *
-   * Writes are serialized per-file via {@link enqueueWrite} — concurrent calls
-   * to `setData` for the same storage location never interleave on disk, which
-   * prevents JSON corruption when multiple mutations land in quick succession.
+   * Persists data to the in-memory cache and synchronously to disk via
+   * {@link writeAtomicSync} (tmp-write + rename). Sync writes are reliable
+   * (no async-flush surprises) and atomic (no torn JSON under concurrent
+   * mutation). Storage volumes are tiny — the perf cost is negligible.
    *
    * @param toSave - The full storage content to write.
    */
   private setData(toSave: StorageContent) {
     memoryCache.set(this.storageLocation, toSave);
     const json = JSON.stringify(toSave, null, 2);
-    enqueueWrite(this.storageLocation, json).catch((err) => {
+    try {
+      writeAtomicSync(this.storageLocation, json);
+    } catch (err) {
       console.error("PersistentStorageJsonFile.ts:setData", err);
-    });
+    }
   }
 
   /** {@inheritDoc IPersistentStorage.getGeneratedRandomId} */

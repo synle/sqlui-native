@@ -71,6 +71,12 @@ export default defineConfig({
   // exists for the frontend (favicon, manifest, etc., which are already
   // embedded via the frontend build).
   publicDir: false,
+  // Inline the app version at build time so portal.ts's banner + --version
+  // flag don't have to require("src/package.json") at runtime (which doesn't
+  // resolve from the SSR-bundled output).
+  define: {
+    __APP_VERSION__: JSON.stringify(appPackage.version),
+  },
   plugins: [
     emitEmbeddedAssetsPlugin({
       assetsDir: buildDir,

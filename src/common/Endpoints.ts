@@ -160,6 +160,9 @@ export function setUpDataEndpoints(anExpressAppContext: Express) {
     res.status(200).json({
       storageDir: getStorageDir(),
       isElectron: !expressAppContext,
+      // Server process id — surfaced so the portal UI can show it in the
+      // title bar. Always present; consumers gate display on portal mode.
+      serverPid: process.pid,
       ...settingsData,
     });
   });
@@ -178,6 +181,9 @@ export function setUpDataEndpoints(anExpressAppContext: Express) {
     res.status(200).json({
       storageDir: getStorageDir(),
       isElectron: !expressAppContext,
+      // Server process id — surfaced so the portal UI can show it in the
+      // title bar. Always present; consumers gate display on portal mode.
+      serverPid: process.pid,
       ...settingsData,
     });
   });
