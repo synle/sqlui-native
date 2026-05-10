@@ -180,7 +180,7 @@ function getAppVersion(): string {
  *
  * Recognized flags:
  *   --port <n> / -p <n>          listen port (default 19378; falls back to random if busy)
- *   --host <h>                   bind host (default 127.0.0.1; use 0.0.0.0 to expose on LAN)
+ *   --host <h>                   bind host (default 0.0.0.0 — exposed on LAN; use 127.0.0.1 for loopback only)
  *   --home-dir / --config-path   override storage dir (highest priority)
  *   --use-desktop-storage        share storage with the desktop app (~/.sqlui-native)
  *   --no-open                    don't auto-open the browser
@@ -190,7 +190,10 @@ function getAppVersion(): string {
 function parseArgs(argv: string[]): PortalOptions {
   const opts: PortalOptions = {
     port: DEFAULT_PORTAL_PORT,
-    host: "127.0.0.1",
+    // Default to 0.0.0.0 so the portal is reachable on the LAN out of the box —
+    // the primary use case is sharing a running portal with teammates / other devices.
+    // Use `--host 127.0.0.1` to restrict to loopback.
+    host: "0.0.0.0",
     open: true,
     inputs: [],
     help: false,
@@ -245,9 +248,9 @@ function printHelp(): void {
       `                             random free port if the requested one is busy.`,
       `                             Use 0 for OS-assigned random.`,
       "",
-      "      --host <host>          Bind host. Default 127.0.0.1 (loopback only).",
-      "                             Use 0.0.0.0 to expose on the LAN — the banner",
-      "                             will print the LAN URL too.",
+      "      --host <host>          Bind host. Default 0.0.0.0 (exposed on the LAN —",
+      "                             the banner prints the LAN URL too). Use 127.0.0.1",
+      "                             to restrict to loopback only.",
       "",
       "      --home-dir <path>      Storage directory override. Highest priority.",
       "                             Default ~/.sqlui-portal (isolated from the",
@@ -483,8 +486,12 @@ function gracefulShutdown(server: net.Server, signal: string): void {
    * exactly which port + storage dir it's on, plus the LAN URL when bound to 0.0.0.0.
    */
   const announce = (actualPort: number, fallback: boolean) => {
-    const url = `http://${opts.host}:${actualPort}`;
-    const lanUrl = opts.host === "0.0.0.0" ? `http://${getLanIp()}:${actualPort}` : null;
+    // When bound to 0.0.0.0 the bind address itself isn't a friendly URL to
+    // click on (browsers tolerate it but it's ugly); show the loopback URL as
+    // the primary "URL" and the discovered LAN IP as a second "LAN" line.
+    const isWildcard = opts.host === "0.0.0.0";
+    const url = isWildcard ? `http://127.0.0.1:${actualPort}` : `http://${opts.host}:${actualPort}`;
+    const lanUrl = isWildcard ? `http://${getLanIp()}:${actualPort}` : null;
     const lines = [
       ["URL", url],
       ...(lanUrl ? [["LAN", lanUrl] as [string, string]] : []),
