@@ -34,13 +34,12 @@ env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
   ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
   # 5 desktop installers (4 platforms — Linux ships both .deb and .AppImage from one matrix entry)
-  # + 2 portal assets:
-  #     sqlui-portal-<version>.tar.gz   (versioned, for pinning)
-  #     sqlui-portal.tar.gz             (versionless alias — `latest/download/sqlui-portal.tar.gz` always resolves)
-  # The single .tar.gz works for BOTH curl|tar and npx flows (npm/pacote strips
+  # + 1 portal asset:
+  #     sqlui-portal.tar.gz   (single filename; pin by tag URL, not by filename)
+  # The .tar.gz works for BOTH curl|tar and npx flows (npm/pacote strips
   # the top-level `portal/` dir and finds package.json — the file extension
   # doesn't matter, only the content shape).
-  EXPECTED_RELEASE_ASSETS: 7
+  EXPECTED_RELEASE_ASSETS: 6
   PLAYWRIGHT_BROWSERS_PATH: ${{ github.workspace }}/.playwright-browsers
   BUILD_CHANNEL: production
 
@@ -243,7 +242,7 @@ jobs:
           | Windows (x64) | \`.exe\` (NSIS installer) |
           | Linux (Debian/Ubuntu) | \`.deb\` |
           | Linux (AppImage) | \`.AppImage\` |
-          | Portal (web, any OS w/ Node 22+) | \`sqlui-portal-${TAG#v}.tar.gz\` |
+          | Portal (web, any OS w/ Node 22+) | \`sqlui-portal.tar.gz\` |
 
           **Portal mode** (phpMyAdmin-style) — one tarball, two flows, pick whichever:
 
@@ -255,11 +254,11 @@ jobs:
           npx https://github.com/synle/sqlui-native/releases/latest/download/sqlui-portal.tar.gz ./mydata.sqlite
           \`\`\`
 
-          The \`latest/download/…\` URL above always resolves to the current release. To pin to **${TAG}** specifically:
+          The \`latest/download/…\` URL above always resolves to the current release. To pin to **${TAG}** specifically, use the tag in the URL — the filename stays the same:
 
           \`\`\`sh
-          curl -fsSL https://github.com/synle/sqlui-native/releases/download/${TAG}/sqlui-portal-${TAG#v}.tar.gz | tar -xz && ./portal/sqlui-portal ./mydata.sqlite
-          npx https://github.com/synle/sqlui-native/releases/download/${TAG}/sqlui-portal-${TAG#v}.tar.gz ./mydata.sqlite
+          curl -fsSL https://github.com/synle/sqlui-native/releases/download/${TAG}/sqlui-portal.tar.gz | tar -xz && ./portal/sqlui-portal ./mydata.sqlite
+          npx https://github.com/synle/sqlui-native/releases/download/${TAG}/sqlui-portal.tar.gz ./mydata.sqlite
           \`\`\`"
 
           gh release create "$TAG" \
@@ -431,25 +430,24 @@ jobs:
         # serve assets, or returns garbage — gates the release upload.
         run: node scripts/smoke-portal.js
 
-      - name: Package portal artifacts
+      - name: Rename portal tarball to versionless name
         id: package
         shell: bash
         run: |
           VERSION=$(node -p "require('./package.json').version")
-          # build-portal.js already produced dist/sqlui-portal-<version>.tar.gz.
-          TARBALL="dist/sqlui-portal-${VERSION}.tar.gz"
-
-          # Versionless alias so README URLs never go stale —
-          # `latest/download/sqlui-portal.tar.gz` always resolves to the
+          # build-portal.js produced dist/sqlui-portal-<version>.tar.gz.
+          # We ship only one filename — sqlui-portal.tar.gz — and rely on the
+          # tag URL (releases/download/<tag>/sqlui-portal.tar.gz) for pinning.
+          # `releases/latest/download/sqlui-portal.tar.gz` auto-resolves to the
           # current release without pinning a version in the docs.
-          ALIAS="dist/sqlui-portal.tar.gz"
-          cp "$TARBALL" "$ALIAS"
+          SRC="dist/sqlui-portal-${VERSION}.tar.gz"
+          DST="dist/sqlui-portal.tar.gz"
+          mv "$SRC" "$DST"
 
-          ls -lh "$TARBALL" "$ALIAS"
-          echo "tarball=$TARBALL"      >> "$GITHUB_OUTPUT"
-          echo "tarball_alias=$ALIAS"  >> "$GITHUB_OUTPUT"
+          ls -lh "$DST"
+          echo "tarball=$DST" >> "$GITHUB_OUTPUT"
 
-      - name: Upload portal artifacts to release
+      - name: Upload portal artifact to release
         if: ${{ needs.create_release.outputs.dist_version != '' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -458,7 +456,6 @@ jobs:
           TAG="${{ needs.create_release.outputs.dist_version }}"
           gh release upload "$TAG" \
             "${{ steps.package.outputs.tarball }}" \
-            "${{ steps.package.outputs.tarball_alias }}" \
             --clobber
 
       - name: Upload build artifacts (CI retention)

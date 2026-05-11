@@ -48,13 +48,13 @@ curl -fsSL https://github.com/synle/sqlui-native/releases/latest/download/sqlui-
 
 #### Pin a specific version
 
-The `latest/download/sqlui-portal.tar.gz` URL is a versionless alias that always resolves to the current release. To pin:
+The `latest/download/sqlui-portal.tar.gz` URL is a versionless alias that always resolves to the current release. To pin to a specific tag, put the tag in the URL — the filename stays the same:
 
 ```bash
 VERSION=3.1.4
 # Either flow:
-npx "https://github.com/synle/sqlui-native/releases/download/v${VERSION}/sqlui-portal-${VERSION}.tar.gz" ./mydata.sqlite
-curl -fsSL "https://github.com/synle/sqlui-native/releases/download/v${VERSION}/sqlui-portal-${VERSION}.tar.gz" | tar -xz \
+npx "https://github.com/synle/sqlui-native/releases/download/v${VERSION}/sqlui-portal.tar.gz" ./mydata.sqlite
+curl -fsSL "https://github.com/synle/sqlui-native/releases/download/v${VERSION}/sqlui-portal.tar.gz" | tar -xz \
   && ./portal/sqlui-portal ./mydata.sqlite
 ```
 
