@@ -22,128 +22,24 @@ It supports multiple windows, so you can run different sets of queries and conne
 
 ## Portal Mode (Web)
 
-Run sqlui-native as a self-contained **web portal** — phpMyAdmin / sqlite-web style — no desktop install needed. One Node script, one port, every supported dialect.
-
-Requires **Node.js 22+** on the host.
-
-### Quick start (download from a release)
-
-**One tarball, two flows.** The release ships a single `sqlui-portal.tar.gz` whose contents work for both `curl | tar` and `npx`. Pick whichever you prefer — same file, same result:
-
-#### Option A — `npx` (auto-cached, single command, Windows-friendly)
+A phpMyAdmin / sqlite-web-style web portal is published from a separate repo:
+**[synle/sqlui-portal](https://github.com/synle/sqlui-portal)**. Quick install
+(pin the version to whatever's [latest](https://github.com/synle/sqlui-portal/releases/latest) —
+manually kept in sync here):
 
 ```bash
-npx https://github.com/synle/sqlui-native/releases/latest/download/sqlui-portal.tar.gz ./mydata.sqlite
+# curl + tar
+curl -fsSL https://github.com/synle/sqlui-portal/releases/download/v3.1.4/sqlui-portal-3.1.4.tar.gz | tar -xz && ./portal/sqlui-portal ./mydata.sqlite
+
+# npx
+npx https://github.com/synle/sqlui-portal/releases/download/v3.1.4/sqlui-portal-3.1.4.tar.gz ./mydata.sqlite
 ```
 
-`npx` downloads the tarball, caches it under `~/.npm/_npx/`, and runs in one step. Subsequent invocations are instant. npm/pacote strips the top-level `portal/` directory and finds the `package.json` at the root, so `.tar.gz` works just like `.tgz` would.
-
-#### Option B — `curl | tar` (no npm involved)
-
-```bash
-curl -fsSL https://github.com/synle/sqlui-native/releases/latest/download/sqlui-portal.tar.gz \
-  | tar -xz \
-  && ./portal/sqlui-portal ./mydata.sqlite
-```
-
-#### Pin a specific version
-
-The `latest/download/sqlui-portal.tar.gz` URL is a versionless alias that always resolves to the current release. To pin:
-
-```bash
-VERSION=3.1.4
-# Either flow:
-npx "https://github.com/synle/sqlui-native/releases/download/v${VERSION}/sqlui-portal-${VERSION}.tar.gz" ./mydata.sqlite
-curl -fsSL "https://github.com/synle/sqlui-native/releases/download/v${VERSION}/sqlui-portal-${VERSION}.tar.gz" | tar -xz \
-  && ./portal/sqlui-portal ./mydata.sqlite
-```
-
-### Build from source
-
-```bash
-git clone https://github.com/synle/sqlui-native
-cd sqlui-native
-npm install
-npm run build:portal
-```
-
-This produces three files under `dist/portal/`:
-
-- `sqlui-portal.js` — the bundled server (~6.6 MB, all deps inlined)
-- `sqlui-portal-assets.json` — embedded React frontend (~22 MB, decoded at runtime)
-- `sqlui-portal` — bash launcher (locates Node and execs the bundle)
-
-Copy the whole `dist/portal/` directory anywhere; it has no other dependencies besides a system Node.js 22+.
-
-### Run
-
-```bash
-# Open a SQLite file (auto-opens browser at http://127.0.0.1:19378)
-./portal/sqlui-portal ./mydata.sqlite
-
-# Multiple connections, any dialect, in one shot
-./portal/sqlui-portal \
-  ./work.sqlite \
-  postgres://user:pass@db.example.com:5432/mydb \
-  mongodb://localhost:27017 \
-  redis://localhost:6379
-```
-
-On boot, the portal:
-
-1. Adds each input as a connection (deduped by canonical connection string — running twice is a no-op)
-2. Prints the URL it's running on (e.g. `http://127.0.0.1:19378`)
-3. Opens your default browser
-
-### Options
-
-| Flag                       | Default           | Description                                                                                                              |
-| -------------------------- | ----------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| `--port <n>`               | `19378`           | Listen port. Falls back to a random port if the requested one is busy. `0` = random.                                     |
-| `--host <h>`               | `127.0.0.1`       | Bind host. Use `0.0.0.0` to expose on the LAN.                                                                           |
-| `--home-dir <path>`        | `~/.sqlui-portal` | Storage directory override. Highest priority.                                                                            |
-| `--config-path <path>`     | —                 | Alias for `--home-dir`.                                                                                                  |
-| `--use-desktop-storage`    | —                 | Share storage with the desktop app (`~/.sqlui-native`). Connections show up in the desktop app under a "Portal" session. |
-| `--no-open`                | —                 | Don't auto-open the browser.                                                                                             |
-| `-h`, `--help`, `-?`, `/?` | —                 | Show full usage with examples and exit.                                                                                  |
-
-### Dialect support
-
-Portal mode supports every dialect the desktop app does — SQLite, PostgreSQL, MySQL, MariaDB, Microsoft SQL Server, Cassandra, MongoDB, Redis, Azure CosmosDB, Azure Table Storage, Salesforce (SFDC), REST, and GraphQL. Pass connection strings in their native format (`postgres://…`, `mongodb://…`, `aztable://DefaultEndpointsProtocol=…`, etc.).
-
-A bare path like `./mydata.sqlite` is auto-resolved to `sqlite:///<absolute-path>`.
-
-### Storage
-
-Portal mode keeps its data in **`~/.sqlui-portal/`** so it never touches the desktop app's `~/.sqlui-native/` — true regardless of how it's launched (npx, curl-tar, raw `node sqlui-portal.js`).
-
-Override priority (highest first):
-
-1. `--home-dir <path>` (or `--config-path <path>`) CLI flag
-2. `--use-desktop-storage` (sugar for `--home-dir ~/.sqlui-native`)
-3. `SQLUI_HOME_DIR` environment variable
-4. `~/.sqlui-portal` (default)
-
-```bash
-# Per-invocation, throwaway session
-./portal/sqlui-portal --home-dir /tmp/work-session ./mydata.sqlite
-
-# Share with the desktop app — connections appear in your .app under a "Portal" session
-./portal/sqlui-portal --use-desktop-storage ./mydata.sqlite
-
-# Or via env var (handy for shell aliases)
-SQLUI_HOME_DIR=/tmp/work-session ./portal/sqlui-portal ./mydata.sqlite
-
-# Or fully isolated, never persists
-./portal/sqlui-portal --home-dir "$(mktemp -d)" ./mydata.sqlite
-```
-
-Run `sqlui-portal --help` for the full list of flags, examples, and dialect-specific connection-string formats.
-
-### When to use portal vs desktop
-
-- **Desktop app** — full multi-window experience, native menus, OS integration. Best for daily use.
-- **Portal** — quick "open this DB in a browser tab" workflow, server/cloud machines without a GUI, sharing a UI on a LAN with `--host 0.0.0.0`, ephemeral throwaway sessions.
+See the [sqlui-portal README](https://github.com/synle/sqlui-portal#readme) for
+all options and flags. Portal source still lives here in this repo
+(`src/sqlui-server/portal.ts`, `scripts/build-portal.js`,
+`vite.sqlui-portal.config.ts`, `scripts/sqlui-portal`); sqlui-portal just
+orchestrates the release.
 
 ## Supported Database Adapters
 
