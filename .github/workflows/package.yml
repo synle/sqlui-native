@@ -422,6 +422,13 @@ jobs:
       - name: Build portal bundle
         run: npm run build:portal
 
+      - name: Smoke test portal bundle
+        # Boots dist/portal/sqlui-portal.js on a random loopback port, probes
+        # `/` for the session-ID injection and `/api/connections` for a 200,
+        # then kills it. Fails the job if the built bundle can't start, can't
+        # serve assets, or returns garbage — gates the release upload.
+        run: node scripts/smoke-portal.js
+
       - name: Package portal artifacts
         id: package
         shell: bash
@@ -570,6 +577,20 @@ jobs:
           echo "Publishing release $TAG as official latest..."
           gh release edit "$TAG" --draft=false --latest
           echo "Release $TAG is now published and marked as latest"
+
+      - name: Sync README pinned-version example to current release
+        # The README's "Pin a specific version" section has a hardcoded
+        # VERSION=X.Y.Z so users get a copy-paste pinned-URL example. Keep it
+        # current by replacing it with the version we just published. The
+        # versionless `latest/download/...` URLs in the rest of the README
+        # don't need updating — they auto-resolve via GitHub. The next
+        # add-and-commit step picks up the diff (no commit if unchanged).
+        shell: bash
+        run: |
+          TAG="${{ needs.create_release.outputs.dist_version }}"
+          VERSION="${TAG#v}"
+          sed -i -E "s/^VERSION=[0-9]+\.[0-9]+\.[0-9]+$/VERSION=${VERSION}/" README.md
+          git --no-pager diff --stat README.md || true
 
       - name: Commit release version
         uses: EndBug/add-and-commit@v9
