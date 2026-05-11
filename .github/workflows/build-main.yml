@@ -240,7 +240,7 @@ jobs:
           args: --target ${{ matrix.target }}
 
       - name: Upload Tauri bundle artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ matrix.artifact_name }}
           path: |
@@ -261,7 +261,7 @@ jobs:
       pull-requests: write
     steps:
       - name: Post artifact links on PR
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             const runUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
