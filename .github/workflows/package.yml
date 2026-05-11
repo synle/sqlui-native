@@ -247,18 +247,20 @@ jobs:
 
           **Portal mode** (phpMyAdmin-style) — one tarball, two flows, pick whichever:
 
-          \`\`\`
+          \`\`\`sh
           # Option A — curl + tar (single command, no npm involved):
-          curl -fsSL https://github.com/synle/sqlui-native/releases/latest/download/sqlui-portal.tar.gz | tar -xz \\
-            && ./portal/sqlui-portal ./mydata.sqlite
+          curl -fsSL https://github.com/synle/sqlui-native/releases/latest/download/sqlui-portal.tar.gz | tar -xz && ./portal/sqlui-portal ./mydata.sqlite
 
           # Option B — npx (auto-cached, single command, Windows-friendly):
           npx https://github.com/synle/sqlui-native/releases/latest/download/sqlui-portal.tar.gz ./mydata.sqlite
           \`\`\`
 
-          \`latest/download/sqlui-portal.tar.gz\` is a versionless alias that
-          always resolves to the current release. Pin with
-          \`download/${TAG}/sqlui-portal-${TAG#v}.tar.gz\`."
+          The \`latest/download/…\` URL above always resolves to the current release. To pin to **${TAG}** specifically:
+
+          \`\`\`sh
+          curl -fsSL https://github.com/synle/sqlui-native/releases/download/${TAG}/sqlui-portal-${TAG#v}.tar.gz | tar -xz && ./portal/sqlui-portal ./mydata.sqlite
+          npx https://github.com/synle/sqlui-native/releases/download/${TAG}/sqlui-portal-${TAG#v}.tar.gz ./mydata.sqlite
+          \`\`\`"
 
           gh release create "$TAG" \
             --title "$TAG" \
