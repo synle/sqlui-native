@@ -86,7 +86,7 @@ jobs:
         run: echo "JOB_START=$(date +%s)" >> $GITHUB_ENV
 
       - name: Install dependencies
-        run: npm ci || npm install
+        run: npm ci || npm install --no-fund --prefer-offline
 
       - name: Run prebuild
         run: npm run prebuild
@@ -465,7 +465,7 @@ jobs:
 
       - run: |
           node scripts/prebuild.js
-          npm ci || npm install
+          npm ci || npm install --no-fund --prefer-offline
           node scripts/postbuild.js
 
       # wait for databases to be ready
@@ -569,7 +569,7 @@ jobs:
           cache: "npm"
 
       - name: Install dependencies
-        run: npm ci || npm install
+        run: npm ci || npm install --no-fund --prefer-offline
 
       - name: Cache Playwright browsers
         uses: actions/cache@v5

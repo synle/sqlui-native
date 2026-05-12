@@ -335,7 +335,7 @@ jobs:
             libssl-dev
 
       - name: Install dependencies
-        run: npm ci || npm install
+        run: npm ci || npm install --no-fund --prefer-offline
 
       - name: Prepare sidecar resources
         run: mkdir -p src-tauri/resources && npm run build:tauri
@@ -418,7 +418,7 @@ jobs:
           cache: "npm"
 
       - name: Install dependencies
-        run: npm ci || npm install
+        run: npm ci || npm install --no-fund --prefer-offline
 
       - name: Build portal bundle
         run: npm run build:portal
