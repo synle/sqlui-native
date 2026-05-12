@@ -40,7 +40,7 @@ describe("MSSQLDataAdapter", () => {
   });
 
   test("constructor rewrites sslmode=require → sslmode=no-verify", () => {
-    const a = new MSSQLDataAdapter("mssql://sa:pw@host:1433/db?sslmode=require");
+    const a: any = new MSSQLDataAdapter("mssql://sa:pw@host:1433/db?sslmode=require");
     expect(a.connectionOption).toContain("sslmode=no-verify");
     expect(a.connectionOption).not.toContain("sslmode=require");
   });
