@@ -141,10 +141,10 @@ jobs:
         if: ${{ always() && steps.tests.outcome != 'skipped' }}
         shell: bash
         env:
-          MIN_STATEMENTS: "37.82"
-          MIN_BRANCHES: "30.07"
-          MIN_FUNCTIONS: "41.12"
-          MIN_LINES: "38.51"
+          MIN_STATEMENTS: "48"
+          MIN_BRANCHES: "37"
+          MIN_FUNCTIONS: "51"
+          MIN_LINES: "49"
         run: |
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "## :bar_chart: JS/TS Code Coverage (Unit Tests)" >> $GITHUB_STEP_SUMMARY
