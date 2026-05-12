@@ -42,7 +42,11 @@ function makeRequester(honoApp: typeof app) {
       headers["content-type"] = headers["content-type"] || "application/json";
       body = JSON.stringify(init.body);
     }
-    const res = await honoApp.request(init.path, { method: init.method, headers, body });
+    const res = await honoApp.request(init.path, {
+      method: init.method,
+      headers,
+      body,
+    });
     const type = res.headers.get("content-type") || "";
     const text = await res.text();
     let parsed: any = text;
@@ -57,7 +61,13 @@ function makeRequester(honoApp: typeof app) {
     res.headers.forEach((v, k) => {
       headersOut[k.toLowerCase()] = v;
     });
-    return { status: res.status, type, body: parsed, headers: headersOut, text };
+    return {
+      status: res.status,
+      type,
+      body: parsed,
+      headers: headersOut,
+      text,
+    };
   }
 
   return {
@@ -370,7 +380,13 @@ describe("Connections - CRUD", () => {
     expect(res.status).toEqual(201);
 
     // replace all connections with a new set
-    const replacementConnections = [{ id: "replacement-1", name: "Replaced Conn", connection: "sqlite://replaced.db" }];
+    const replacementConnections = [
+      {
+        id: "replacement-1",
+        name: "Replaced Conn",
+        connection: "sqlite://replaced.db",
+      },
+    ];
     res = await requestWithSupertest.post(`/api/connections`).set(_getCommonHeaders(mockedSessionId)).send(replacementConnections);
     expect(res.status).toEqual(200);
 
@@ -533,7 +549,10 @@ describe("Folder Items (Bookmarks / Recycle Bin)", () => {
       id: itemId,
       name: "Updated Bookmark",
       type: "connection",
-      data: { connection: "mysql://localhost:3306/updateddb", name: "Updated MySQL" },
+      data: {
+        connection: "mysql://localhost:3306/updateddb",
+        name: "Updated MySQL",
+      },
     });
     expect(res.status).toEqual(202);
     expect(res.body.name).toEqual("Updated Bookmark");
@@ -872,6 +891,48 @@ describe("POST /api/file - multipart upload", () => {
     // and the handler did not error out.
     const text = await r.text();
     expect(typeof text).toEqual("string");
+  });
+
+  test("handles a ~1MB text payload without truncation", async () => {
+    // Build ~1MB of repeated content. This exercises Hono's parseBody() with a
+    // payload large enough to escape trivial small-buffer paths, but small
+    // enough to keep the test fast.
+    const chunk = "abcdefghij0123456789".repeat(50); // 1000 bytes
+    const content = chunk.repeat(1000); // ~1,000,000 bytes
+    const fd = new FormData();
+    fd.append("file", new Blob([content], { type: "text/plain" }), "large.txt");
+
+    const r = await app.request("/api/file", { method: "POST", body: fd });
+    expect(r.status).toEqual(200);
+    const text = await r.text();
+    expect(text.length).toEqual(content.length);
+    // Spot-check start, middle, end to catch silent truncation.
+    expect(text.slice(0, 20)).toEqual(content.slice(0, 20));
+    expect(text.slice(content.length / 2, content.length / 2 + 20)).toEqual(content.slice(content.length / 2, content.length / 2 + 20));
+    expect(text.slice(-20)).toEqual(content.slice(-20));
+  });
+
+  test("preserves utf-8 special characters (newlines, quotes, emoji-free unicode) verbatim", async () => {
+    const content = 'line1\n"quoted"\u2014em-dash\ttab\nFinal line with: \u00e9\u00e8\u00ea\u00eb';
+    const fd = new FormData();
+    fd.append("file", new Blob([content], { type: "application/json" }), "unicode.json");
+
+    const r = await app.request("/api/file", { method: "POST", body: fd });
+    expect(r.status).toEqual(200);
+    const text = await r.text();
+    expect(text).toEqual(content);
+  });
+
+  test("three sequential uploads each return their own independent payload", async () => {
+    const payloads = ["first-acme-payload", "second-globex-payload-with-newline\nhere", JSON.stringify({ company: "Initech", n: 3 })];
+
+    for (const payload of payloads) {
+      const fd = new FormData();
+      fd.append("file", new Blob([payload], { type: "text/plain" }), "seq.txt");
+      const r = await app.request("/api/file", { method: "POST", body: fd });
+      expect(r.status).toEqual(200);
+      expect(await r.text()).toEqual(payload);
+    }
   });
 });
 
