@@ -959,9 +959,7 @@ describe("Session-id header echo across diverse methods + statuses", () => {
 
   test("404 response still echoes session-id (error path is not silent)", async () => {
     const errSession = `echo-404.${Date.now()}`;
-    const res = await requestWithSupertest
-      .post(`/api/connection/this-id-does-not-exist-xyz/refresh`)
-      .set(_getCommonHeaders(errSession));
+    const res = await requestWithSupertest.post(`/api/connection/this-id-does-not-exist-xyz/refresh`).set(_getCommonHeaders(errSession));
     expect(res.status).toEqual(404);
     expect(res.headers["sqlui-native-session-id"]).toEqual(errSession);
   });

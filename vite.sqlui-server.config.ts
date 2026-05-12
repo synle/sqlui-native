@@ -6,7 +6,22 @@ import appPackage from "./package.json";
  * All runtime dependencies (from package.json) that should remain external in the sqlui-server bundle.
  * These are available via node_modules at runtime and do not need to be inlined.
  */
-const externalsDeps = [...Object.keys((appPackage as any).optionalDependencies || {}), ...Object.keys(appPackage.dependencies || {})];
+const externalDeps = new Set<string>([
+  ...Object.keys((appPackage as any).optionalDependencies || {}),
+  ...Object.keys(appPackage.dependencies || {}),
+]);
+
+/**
+ * Predicate used as Rollup's `external` config. Matches both exact package names
+ * (e.g. `hono`) AND subpath imports (e.g. `hono/cors`, `@hono/node-server/serve-static`)
+ * so Rollup does not try to resolve subpaths that aren't covered by an exact-match
+ * external list. Scoped packages (`@scope/name`) are matched on the two-segment prefix.
+ */
+function isExternal(id: string): boolean {
+  if (externalDeps.has(id)) return true;
+  const firstSegment = id.startsWith("@") ? id.split("/").slice(0, 2).join("/") : id.split("/")[0];
+  return externalDeps.has(firstSegment);
+}
 
 /**
  * Vite build configuration for the sqlui-server.
@@ -19,7 +34,7 @@ export default defineConfig({
     sourcemap: false,
     rollupOptions: {
       input: "./src/sqlui-server/index.ts",
-      external: externalsDeps,
+      external: isExternal,
       output: {
         entryFileNames: "sqlui-server.js",
         format: "cjs",
@@ -30,7 +45,7 @@ export default defineConfig({
     ssr: true,
   },
   ssr: {
-    external: externalsDeps,
+    external: [...externalDeps],
     noExternal: true,
   },
   resolve: {
