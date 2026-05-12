@@ -80,7 +80,7 @@ jobs:
 
       - name: Cache Electron binaries
         if: steps.check_tauri.outputs.has_tauri == 'false'
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             ${{ github.workspace }}/.cache/electron
@@ -106,7 +106,7 @@ jobs:
             libssl-dev
 
       - name: Install dependencies
-        run: npm ci || npm install
+        run: npm ci || npm install --no-fund --prefer-offline
 
       - name: Detect build mode
         id: detect
@@ -153,7 +153,7 @@ jobs:
 
       - name: Upload Tauri build artifacts
         if: steps.detect.outputs.mode == 'tauri'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ matrix.artifact_name }}
           path: |
@@ -201,7 +201,7 @@ jobs:
 
       - name: Upload Electron build artifacts
         if: steps.detect.outputs.mode == 'electron'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ matrix.artifact_name }}
           path: |

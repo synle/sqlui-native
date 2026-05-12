@@ -78,7 +78,7 @@ export type EmitEmbeddedAssetsOptions = {
 /**
  * Vite plugin that walks `assetsDir` at `closeBundle` and writes a base64 map
  * to `outFile` as JSON. Used by both the portal and sidecar bundles so the
- * Express server can serve the UI from a single Node process.
+ * Hono server can serve the UI from a single Node process.
  *
  * The corresponding runtime loader (in portal.ts / index.ts) reads the file
  * at startup with `fs.readFileSync(path.join(__dirname, "<basename>"))`.

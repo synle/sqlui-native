@@ -8,13 +8,14 @@ function readFile(relativePath: string): string {
 }
 
 describe("Tauri packaging safeguards", () => {
-  describe("server.ts multer configuration", () => {
+  describe("server.ts file-upload configuration", () => {
     const serverSource = readFile("src/sqlui-server/server.ts");
 
-    test("should use os.tmpdir for multer dest, not a relative path", () => {
-      // Relative paths like "./upload" fail in read-only app bundles
-      expect(serverSource).toContain("os.tmpdir()");
-      expect(serverSource).not.toMatch(/multer\(\{\s*dest:\s*["']\.\//);
+    test("should parse uploaded files via Hono parseBody (no on-disk tmp path)", () => {
+      // Hono's parseBody reads multipart into memory — no temp-dir write,
+      // so the prior on-disk relative-path failure mode (`./upload`) is moot.
+      expect(serverSource).toContain("parseBody");
+      expect(serverSource).not.toContain("multer");
     });
   });
 

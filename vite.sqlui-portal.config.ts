@@ -2,7 +2,7 @@
  * Vite build configuration for the sqlui-portal single-file bundle.
  *
  * Produces `dist/portal/sqlui-portal.js` — a self-contained Node script that:
- *   - bundles all pure-JS dependencies (Express, db drivers, …) inline (no node_modules needed)
+ *   - bundles all pure-JS dependencies (Hono, db drivers, …) inline (no node_modules needed)
  *   - embeds the frontend `build/` directory as a base64 map (extracted to a temp dir at runtime)
  *
  * Run after `npm run build` so `build/index.html` and `build/assets/` exist for embedding.
@@ -14,6 +14,10 @@ import { defineConfig, type Plugin } from "vite";
 import { emitEmbeddedAssetsPlugin } from "./scripts/vite-plugin-embed-frontend";
 import appPackage from "./package.json";
 
+/**
+ * Empty externals list — everything (Hono + subpaths like `hono/cors`, database drivers, etc.)
+ * gets bundled inline so the portal runs from a single self-contained `sqlui-portal.js`.
+ */
 const externalsDeps: string[] = [];
 
 const buildDir = path.resolve(__dirname, "build");
@@ -71,6 +75,12 @@ export default defineConfig({
   // exists for the frontend (favicon, manifest, etc., which are already
   // embedded via the frontend build).
   publicDir: false,
+  // Inline the app version at build time so portal.ts's banner + --version
+  // flag don't have to require("src/package.json") at runtime (which doesn't
+  // resolve from the SSR-bundled output).
+  define: {
+    __APP_VERSION__: JSON.stringify(appPackage.version),
+  },
   plugins: [
     emitEmbeddedAssetsPlugin({
       assetsDir: buildDir,

@@ -1,9 +1,84 @@
-import supertest from "supertest";
+import fs from "node:fs";
+import { vi } from "vitest";
 import { app, initializeEndpoints } from "src/sqlui-server/server";
 
 initializeEndpoints();
 
-const requestWithSupertest = supertest(app);
+/**
+ * Minimal supertest-style fluent wrapper around Hono's `app.request()`.
+ * Exposes `.get/.post/.put/.delete`, each returning a builder with `.set(headers)`,
+ * `.send(body)`, and a `then` that resolves to `{ status, type, body, headers }`.
+ */
+function makeRequester(honoApp: typeof app) {
+  type ReqInit = {
+    method: string;
+    path: string;
+    body?: any;
+    headers: Record<string, string>;
+  };
+
+  function build(method: string, p: string) {
+    const init: ReqInit = { method, path: p, headers: {} };
+    const builder: any = {
+      set(headers: Record<string, string>) {
+        Object.assign(init.headers, headers);
+        return builder;
+      },
+      send(body: any) {
+        init.body = body;
+        return builder;
+      },
+      then(resolve: (v: any) => any, reject?: (e: any) => any) {
+        return run(init).then(resolve, reject);
+      },
+    };
+    return builder;
+  }
+
+  async function run(init: ReqInit) {
+    const headers: Record<string, string> = { ...init.headers };
+    let body: any = undefined;
+    if (init.body !== undefined && (init.method === "POST" || init.method === "PUT" || init.method === "DELETE")) {
+      headers["content-type"] = headers["content-type"] || "application/json";
+      body = JSON.stringify(init.body);
+    }
+    const res = await honoApp.request(init.path, {
+      method: init.method,
+      headers,
+      body,
+    });
+    const type = res.headers.get("content-type") || "";
+    const text = await res.text();
+    let parsed: any = text;
+    if (type.includes("application/json")) {
+      try {
+        parsed = JSON.parse(text);
+      } catch {
+        parsed = text;
+      }
+    }
+    const headersOut: Record<string, string> = {};
+    res.headers.forEach((v, k) => {
+      headersOut[k.toLowerCase()] = v;
+    });
+    return {
+      status: res.status,
+      type,
+      body: parsed,
+      headers: headersOut,
+      text,
+    };
+  }
+
+  return {
+    get: (p: string) => build("GET", p),
+    post: (p: string) => build("POST", p),
+    put: (p: string) => build("PUT", p),
+    delete: (p: string) => build("DELETE", p),
+  };
+}
+
+const requestWithSupertest = makeRequester(app);
 
 function _getCommonHeaders(mockedSessionId) {
   return {
@@ -305,7 +380,13 @@ describe("Connections - CRUD", () => {
     expect(res.status).toEqual(201);
 
     // replace all connections with a new set
-    const replacementConnections = [{ id: "replacement-1", name: "Replaced Conn", connection: "sqlite://replaced.db" }];
+    const replacementConnections = [
+      {
+        id: "replacement-1",
+        name: "Replaced Conn",
+        connection: "sqlite://replaced.db",
+      },
+    ];
     res = await requestWithSupertest.post(`/api/connections`).set(_getCommonHeaders(mockedSessionId)).send(replacementConnections);
     expect(res.status).toEqual(200);
 
@@ -468,7 +549,10 @@ describe("Folder Items (Bookmarks / Recycle Bin)", () => {
       id: itemId,
       name: "Updated Bookmark",
       type: "connection",
-      data: { connection: "mysql://localhost:3306/updateddb", name: "Updated MySQL" },
+      data: {
+        connection: "mysql://localhost:3306/updateddb",
+        name: "Updated MySQL",
+      },
     });
     expect(res.status).toEqual(202);
     expect(res.body.name).toEqual("Updated Bookmark");
@@ -764,5 +848,276 @@ describe("Session Isolation", () => {
     expect(res.status).toEqual(200);
     expect(res.body.length).toEqual(1);
     expect(res.body[0].name).toEqual("Query B");
+  });
+});
+
+// ===========================================================================
+// Coverage for endpoints exposed by the Express -> Hono migration (PR #31).
+// These cover the file-upload reader, the binary backup-download path, the
+// no-op appWindow endpoint, the session-id echo across diverse status codes,
+// plain-text 404 bodies, body-parser sanity (JSON/empty/urlencoded), and the
+// CORS preflight wiring.
+// ===========================================================================
+
+describe("POST /api/file - multipart upload", () => {
+  test("uploads a utf-8 text file and returns its content verbatim", async () => {
+    const fd = new FormData();
+    const content = "hello world\nline two\nline three";
+    fd.append("file", new Blob([content], { type: "text/plain" }), "sample.txt");
+
+    const r = await app.request("/api/file", { method: "POST", body: fd });
+    expect(r.status).toEqual(200);
+    const text = await r.text();
+    expect(text).toEqual(content);
+  });
+
+  test("returns 400 with 'Cannot read the file' when no file is attached", async () => {
+    const fd = new FormData();
+    // intentionally empty body — no "file" field
+    const r = await app.request("/api/file", { method: "POST", body: fd });
+    expect(r.status).toEqual(400);
+    expect(await r.text()).toEqual("Cannot read the file");
+  });
+
+  test("non-utf8 binary content does not crash the handler", async () => {
+    // The handler reads via File.text() which decodes as utf-8 — binary bytes
+    // become replacement chars but the server must still respond 200, not throw.
+    const fd = new FormData();
+    fd.append("file", new Blob([new Uint8Array([0xff, 0xfe, 0x00, 0x10, 0x80, 0x81])]), "binary.bin");
+
+    const r = await app.request("/api/file", { method: "POST", body: fd });
+    expect(r.status).toEqual(200);
+    // body is whatever utf-8 decoding produced — assert only that it's defined
+    // and the handler did not error out.
+    const text = await r.text();
+    expect(typeof text).toEqual("string");
+  });
+
+  test("handles a ~1MB text payload without truncation", async () => {
+    // Build ~1MB of repeated content. This exercises Hono's parseBody() with a
+    // payload large enough to escape trivial small-buffer paths, but small
+    // enough to keep the test fast.
+    const chunk = "abcdefghij0123456789".repeat(50); // 1000 bytes
+    const content = chunk.repeat(1000); // ~1,000,000 bytes
+    const fd = new FormData();
+    fd.append("file", new Blob([content], { type: "text/plain" }), "large.txt");
+
+    const r = await app.request("/api/file", { method: "POST", body: fd });
+    expect(r.status).toEqual(200);
+    const text = await r.text();
+    expect(text.length).toEqual(content.length);
+    // Spot-check start, middle, end to catch silent truncation.
+    expect(text.slice(0, 20)).toEqual(content.slice(0, 20));
+    expect(text.slice(content.length / 2, content.length / 2 + 20)).toEqual(content.slice(content.length / 2, content.length / 2 + 20));
+    expect(text.slice(-20)).toEqual(content.slice(-20));
+  });
+
+  test("preserves utf-8 special characters (newlines, quotes, emoji-free unicode) verbatim", async () => {
+    const content = 'line1\n"quoted"\u2014em-dash\ttab\nFinal line with: \u00e9\u00e8\u00ea\u00eb';
+    const fd = new FormData();
+    fd.append("file", new Blob([content], { type: "application/json" }), "unicode.json");
+
+    const r = await app.request("/api/file", { method: "POST", body: fd });
+    expect(r.status).toEqual(200);
+    const text = await r.text();
+    expect(text).toEqual(content);
+  });
+
+  test("three sequential uploads each return their own independent payload", async () => {
+    const payloads = ["first-acme-payload", "second-globex-payload-with-newline\nhere", JSON.stringify({ company: "Initech", n: 3 })];
+
+    for (const payload of payloads) {
+      const fd = new FormData();
+      fd.append("file", new Blob([payload], { type: "text/plain" }), "seq.txt");
+      const r = await app.request("/api/file", { method: "POST", body: fd });
+      expect(r.status).toEqual(200);
+      expect(await r.text()).toEqual(payload);
+    }
+  });
+});
+
+describe("GET /api/backup/database - binary download", () => {
+  test("returns 200 with octet-stream + filename header when db file exists", async () => {
+    const fakeBuffer = Buffer.from([0xde, 0xad, 0xbe, 0xef, 0x42]);
+    const existsSpy = vi.spyOn(fs, "existsSync").mockReturnValue(true);
+    const readSpy = vi.spyOn(fs, "readFileSync").mockReturnValue(fakeBuffer as any);
+
+    try {
+      const r = await app.request("/api/backup/database", { method: "GET" });
+      expect(r.status).toEqual(200);
+      expect(r.headers.get("content-type")).toEqual("application/octet-stream");
+      const disposition = r.headers.get("content-disposition") || "";
+      expect(disposition).toMatch(/^attachment; filename="sqlui-native-backup-.*\.db"$/);
+      const body = Buffer.from(await r.arrayBuffer());
+      expect(body.length).toBeGreaterThan(0);
+      expect(body.equals(fakeBuffer)).toBe(true);
+    } finally {
+      existsSpy.mockRestore();
+      readSpy.mockRestore();
+    }
+  });
+
+  test("returns 404 JSON when db file is missing", async () => {
+    const existsSpy = vi.spyOn(fs, "existsSync").mockReturnValue(false);
+    try {
+      const r = await app.request("/api/backup/database", { method: "GET" });
+      expect(r.status).toEqual(404);
+      expect(r.headers.get("content-type") || "").toContain("application/json");
+      const body = JSON.parse(await r.text());
+      expect(body).toEqual({ error: "Database file not found" });
+    } finally {
+      existsSpy.mockRestore();
+    }
+  });
+});
+
+describe("POST /api/appWindow - empty 200 response", () => {
+  test("responds with 200 and empty body", async () => {
+    const r = await app.request("/api/appWindow", { method: "POST" });
+    expect(r.status).toEqual(200);
+    const text = await r.text();
+    // Hono c.body(null) yields an empty body — be flexible: accept "" or
+    // anything falsy in case the shim ever emits "{}" or similar.
+    expect(text === "" || text === "null" || text === "{}" || text === undefined).toBe(true);
+  });
+});
+
+describe("Session-id header echo across diverse methods + statuses", () => {
+  const sessionId = `echo-suite.${Date.now()}`;
+
+  test("PUT 202 response echoes session-id", async () => {
+    const res = await requestWithSupertest
+      .put(`/api/session/${sessionId}`)
+      .set(_getCommonHeaders(sessionId))
+      .send({ id: sessionId, name: "Echo PUT Session" });
+    expect(res.status).toEqual(202);
+    expect(res.headers["sqlui-native-session-id"]).toEqual(sessionId);
+
+    // cleanup
+    await requestWithSupertest.delete(`/api/session/${sessionId}`);
+  });
+
+  test("POST 201 response echoes session-id", async () => {
+    const postSession = `echo-post.${Date.now()}`;
+    const res = await requestWithSupertest
+      .post(`/api/connection`)
+      .set(_getCommonHeaders(postSession))
+      .send({ name: "Echo POST Conn", connection: "mysql://localhost/echo" });
+    expect(res.status).toEqual(201);
+    expect(res.headers["sqlui-native-session-id"]).toEqual(postSession);
+
+    // cleanup
+    await requestWithSupertest.delete(`/api/connection/${res.body.id}`).set(_getCommonHeaders(postSession));
+  });
+
+  test("DELETE 202 response echoes session-id", async () => {
+    const delSession = `echo-del.${Date.now()}`;
+    const fakeQueryId = `echo-q.${Date.now()}`;
+    const res = await requestWithSupertest.delete(`/api/query/${fakeQueryId}`).set(_getCommonHeaders(delSession));
+    expect(res.status).toEqual(202);
+    expect(res.headers["sqlui-native-session-id"]).toEqual(delSession);
+  });
+
+  test("404 response still echoes session-id (error path is not silent)", async () => {
+    const errSession = `echo-404.${Date.now()}`;
+    const res = await requestWithSupertest.post(`/api/connection/this-id-does-not-exist-xyz/refresh`).set(_getCommonHeaders(errSession));
+    expect(res.status).toEqual(404);
+    expect(res.headers["sqlui-native-session-id"]).toEqual(errSession);
+  });
+
+  test("400 response still echoes session-id (validation failure)", async () => {
+    const errSession = `echo-400.${Date.now()}`;
+    const res = await requestWithSupertest.post(`/api/connection/test`).set(_getCommonHeaders(errSession)).send({});
+    expect(res.status).toEqual(400);
+    expect(res.headers["sqlui-native-session-id"]).toEqual(errSession);
+  });
+});
+
+describe("Plain-text 404 'Not Found' body", () => {
+  test("POST /api/connection/:unknown/refresh returns plain-text 'Not Found', not JSON", async () => {
+    const r = await app.request("/api/connection/this-id-does-not-exist-xyz/refresh", {
+      method: "POST",
+      headers: { "sqlui-native-session-id": `plain-404.${Date.now()}` },
+    });
+    expect(r.status).toEqual(404);
+    const ct = r.headers.get("content-type") || "";
+    expect(ct).toContain("text/plain");
+    expect(ct).not.toContain("application/json");
+    const text = await r.text();
+    expect(text).toEqual("Not Found");
+  });
+
+  test("GET /api/dataSnapshot/:unknown returns plain-text 'Not Found'", async () => {
+    const r = await app.request("/api/dataSnapshot/non-existent-snapshot-xyz-12345", { method: "GET" });
+    expect(r.status).toEqual(404);
+    const ct = r.headers.get("content-type") || "";
+    expect(ct).toContain("text/plain");
+    expect(await r.text()).toEqual("Not Found");
+  });
+});
+
+describe("Body parsing sanity (JSON / empty / urlencoded)", () => {
+  test("JSON body fields round-trip into handler's req.body", async () => {
+    const sessionId = `body-json.${Date.now()}`;
+    const payload = {
+      name: "JSON Round Trip",
+      auditType: "execution",
+      connectionId: "conn-rt",
+      sql: "SELECT 'round-trip'",
+    };
+    const res = await requestWithSupertest.post(`/api/queryVersionHistory`).set(_getCommonHeaders(sessionId)).send(payload);
+    expect(res.status).toEqual(201);
+    // verify each field the handler read off req.body made it back unchanged
+    expect(res.body.name).toEqual("JSON Round Trip");
+    expect(res.body.type).toEqual("execution");
+    expect(res.body.data.connectionId).toEqual("conn-rt");
+    expect(res.body.data.sql).toEqual("SELECT 'round-trip'");
+  });
+
+  test("empty JSON body does not crash the handler", async () => {
+    // POST /api/connection/test with empty object — handler should respond 400
+    // (input validation), not 500. This catches a regression where req.body
+    // would be undefined and `connection.connection` would throw.
+    const r = await app.request("/api/connection/test", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: "",
+    });
+    expect(r.status).toEqual(400);
+    expect(r.status).not.toEqual(500);
+  });
+
+  test("application/x-www-form-urlencoded body parses into req.body fields", async () => {
+    const sessionId = `body-urlencoded.${Date.now()}`;
+    const r = await app.request("/api/queryVersionHistory", {
+      method: "POST",
+      headers: {
+        "content-type": "application/x-www-form-urlencoded",
+        "sqlui-native-session-id": sessionId,
+      },
+      body: "name=FormEncoded&auditType=delta&connectionId=conn-form&sql=SELECT+%27form%27",
+    });
+    expect(r.status).toEqual(201);
+    const body = await r.json();
+    expect(body.name).toEqual("FormEncoded");
+    expect(body.type).toEqual("delta");
+    expect(body.data.connectionId).toEqual("conn-form");
+    expect(body.data.sql).toEqual("SELECT 'form'");
+  });
+});
+
+describe("CORS preflight", () => {
+  test("OPTIONS /api/configs returns 204 with Access-Control-Allow-Origin: *", async () => {
+    const r = await app.request("/api/configs", {
+      method: "OPTIONS",
+      headers: {
+        Origin: "http://localhost",
+        "Access-Control-Request-Method": "GET",
+        "Access-Control-Request-Headers": "sqlui-native-session-id",
+      },
+    });
+    expect(r.status).toEqual(204);
+    expect(r.headers.get("access-control-allow-origin")).toEqual("*");
+    expect((r.headers.get("access-control-allow-methods") || "").toUpperCase()).toContain("GET");
   });
 });

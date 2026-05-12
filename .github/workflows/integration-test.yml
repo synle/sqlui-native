@@ -86,7 +86,7 @@ jobs:
         run: echo "JOB_START=$(date +%s)" >> $GITHUB_ENV
 
       - name: Install dependencies
-        run: npm ci || npm install
+        run: npm ci || npm install --no-fund --prefer-offline
 
       - name: Run prebuild
         run: npm run prebuild
@@ -132,20 +132,63 @@ jobs:
             echo "| Failures | ${FAILURES:-0} |" >> $GITHUB_STEP_SUMMARY
             echo "| Errors | ${ERRORS:-0} |" >> $GITHUB_STEP_SUMMARY
           fi
+      # Posts a consolidated coverage table to the GitHub Actions job summary
+      # AND enforces baselines. Baselines are the numbers captured when this
+      # pipeline was introduced — coverage must not regress below them. Bump
+      # MIN_* values when coverage genuinely improves so the new floor sticks.
+      - name: Report and enforce JS/TS coverage
+        id: js_coverage
+        if: ${{ always() && steps.tests.outcome != 'skipped' }}
+        shell: bash
+        env:
+          MIN_STATEMENTS: "48"
+          MIN_BRANCHES: "37"
+          MIN_FUNCTIONS: "51"
+          MIN_LINES: "49"
+        run: |
           echo "" >> $GITHUB_STEP_SUMMARY
-          if [ -f coverage/coverage-summary.json ]; then
-            echo "## :bar_chart: Code Coverage" >> $GITHUB_STEP_SUMMARY
-            echo "" >> $GITHUB_STEP_SUMMARY
-            STMTS=$(node -e "const c=require('./coverage/coverage-summary.json').total.statements; console.log(c.pct)")
-            BRANCH=$(node -e "const c=require('./coverage/coverage-summary.json').total.branches; console.log(c.pct)")
-            FUNCS=$(node -e "const c=require('./coverage/coverage-summary.json').total.functions; console.log(c.pct)")
-            LINES=$(node -e "const c=require('./coverage/coverage-summary.json').total.lines; console.log(c.pct)")
-            echo "| Category | Coverage |" >> $GITHUB_STEP_SUMMARY
-            echo "|----------|----------|" >> $GITHUB_STEP_SUMMARY
-            echo "| Statements | ${STMTS}% |" >> $GITHUB_STEP_SUMMARY
-            echo "| Branches | ${BRANCH}% |" >> $GITHUB_STEP_SUMMARY
-            echo "| Functions | ${FUNCS}% |" >> $GITHUB_STEP_SUMMARY
-            echo "| Lines | ${LINES}% |" >> $GITHUB_STEP_SUMMARY
+          echo "## :bar_chart: JS/TS Code Coverage (Unit Tests)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ ! -f coverage/coverage-summary.json ]; then
+            echo ":warning: \`coverage/coverage-summary.json\` not produced — cannot report or enforce thresholds." >> $GITHUB_STEP_SUMMARY
+            echo "::error::coverage/coverage-summary.json missing"
+            exit 1
+          fi
+
+          STMTS=$(node -e "console.log(require('./coverage/coverage-summary.json').total.statements.pct)")
+          BRANCH=$(node -e "console.log(require('./coverage/coverage-summary.json').total.branches.pct)")
+          FUNCS=$(node -e "console.log(require('./coverage/coverage-summary.json').total.functions.pct)")
+          LINES=$(node -e "console.log(require('./coverage/coverage-summary.json').total.lines.pct)")
+
+          fail=0
+          row() {
+            local name=$1 definition=$2 actual=$3 min=$4
+            local status
+            if awk -v a="$actual" -v m="$min" 'BEGIN { exit (a + 0 < m + 0) ? 0 : 1 }'; then
+              status=":x: FAIL"
+              echo "::error::${name} coverage ${actual}% is below baseline ${min}%"
+              fail=1
+            else
+              status=":white_check_mark: pass"
+            fi
+            echo "| ${name} | ${definition} | ${min}% | ${actual}% | ${status} |" >> $GITHUB_STEP_SUMMARY
+          }
+
+          echo "| Metric | Definition | Baseline (min) | Actual | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|--------|------------|----------------|--------|--------|" >> $GITHUB_STEP_SUMMARY
+          row "Statements" "% of executable statements run by tests"          "$STMTS"  "$MIN_STATEMENTS"
+          row "Branches"   "% of conditional branches (if/else, &&, ?:) taken" "$BRANCH" "$MIN_BRANCHES"
+          row "Functions"  "% of declared functions invoked at least once"     "$FUNCS"  "$MIN_FUNCTIONS"
+          row "Lines"      "% of source lines executed at least once"          "$LINES"  "$MIN_LINES"
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Scope: \`src/**/*.{ts,tsx}\` — frontend + Node backend combined. Excludes \`*.spec.*\` and \`*.integration.spec.*\`. Provider: \`@vitest/coverage-v8\`. Source of truth: \`coverage/coverage-summary.json\`." >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ "$fail" -ne 0 ]; then
+            echo ":x: **JS/TS coverage regressed below baseline — see annotations above.** To raise the floor, edit \`MIN_*\` in \`.github/workflows/integration-test.yml\`." >> $GITHUB_STEP_SUMMARY
+            exit 1
+          else
+            echo ":white_check_mark: **All JS/TS coverage metrics meet or exceed baseline.**" >> $GITHUB_STEP_SUMMARY
           fi
 
       - name: Record typecheck start time
@@ -198,6 +241,157 @@ jobs:
           echo "| TypeCheck | ${{ steps.typecheck.outcome == 'success' && ':white_check_mark: Passed' || ':x: Failed' }} | $(format_duration $TYPECHECK_DUR) |" >> $GITHUB_STEP_SUMMARY
           echo "| Lint | ${{ steps.lint.outcome == 'success' && ':white_check_mark: Passed' || ':x: Failed' }} | $(format_duration $LINT_DUR) |" >> $GITHUB_STEP_SUMMARY
           echo "| **Total** | | **$(format_duration $TOTAL_DUR)** |" >> $GITHUB_STEP_SUMMARY
+
+  # ---- Rust / Tauri Unit Tests + Coverage ----
+  # Runs `cargo llvm-cov --lib` against src-tauri/ and enforces the coverage
+  # baselines captured when this job was introduced. Coverage that regresses
+  # below the baselines fails the build. Bump the MIN_* values when coverage
+  # genuinely improves.
+  rust_unit_tests:
+    needs: check
+    if: needs.check.outputs.has_changes == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: llvm-tools-preview
+
+      - name: Cache cargo registry + build
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+
+      - name: Install Tauri Linux system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libwebkit2gtk-4.1-dev \
+            libgtk-3-dev \
+            libayatana-appindicator3-dev \
+            librsvg2-dev \
+            build-essential \
+            curl \
+            wget \
+            file \
+            libssl-dev
+
+      - name: Install cargo-llvm-cov
+        uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-llvm-cov
+
+      # Tauri's build.rs requires src-tauri/resources/ to exist before any
+      # cargo invocation, even when we are only compiling the lib for tests.
+      - name: Prepare Tauri resources dir
+        run: mkdir -p src-tauri/resources
+
+      - name: Record Rust tests start time
+        run: echo "RUST_TESTS_START=$(date +%s)" >> $GITHUB_ENV
+
+      - name: Run Rust unit tests with coverage
+        id: rust_tests
+        working-directory: src-tauri
+        run: |
+          # Run tests once, then emit both JSON (for threshold enforcement) and
+          # LCOV (for the uploaded artifact) from the same profdata.
+          cargo llvm-cov --lib --no-report
+          cargo llvm-cov report --json --summary-only --output-path rust-coverage.json
+          cargo llvm-cov report --lcov --output-path rust-coverage.lcov
+          cargo llvm-cov report --summary-only
+
+      - name: Record Rust tests end time
+        if: ${{ always() }}
+        run: echo "RUST_TESTS_END=$(date +%s)" >> $GITHUB_ENV
+
+      - name: Upload Rust coverage artifacts
+        if: ${{ always() && steps.rust_tests.outcome != 'skipped' }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: rust-coverage
+          path: |
+            src-tauri/rust-coverage.json
+            src-tauri/rust-coverage.lcov
+          retention-days: 14
+
+      # Posts a consolidated Rust coverage table to the GitHub Actions job
+      # summary AND enforces baselines (same pattern as the JS/TS job above).
+      - name: Report and enforce Rust coverage
+        id: rust_coverage
+        if: ${{ always() && steps.rust_tests.outcome != 'skipped' }}
+        shell: bash
+        env:
+          MIN_LINES: "19.08"
+          MIN_REGIONS: "19.14"
+          MIN_FUNCTIONS: "44.44"
+        run: |
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## :bar_chart: Rust Code Coverage (Unit Tests)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ ! -f src-tauri/rust-coverage.json ]; then
+            echo ":warning: \`src-tauri/rust-coverage.json\` not produced — cannot report or enforce thresholds." >> $GITHUB_STEP_SUMMARY
+            echo "::error::src-tauri/rust-coverage.json missing"
+            exit 1
+          fi
+
+          LINES=$(python3 -c "import json; print(round(json.load(open('src-tauri/rust-coverage.json'))['data'][0]['totals']['lines']['percent'], 2))")
+          REGIONS=$(python3 -c "import json; print(round(json.load(open('src-tauri/rust-coverage.json'))['data'][0]['totals']['regions']['percent'], 2))")
+          FUNCS=$(python3 -c "import json; print(round(json.load(open('src-tauri/rust-coverage.json'))['data'][0]['totals']['functions']['percent'], 2))")
+
+          fail=0
+          row() {
+            local name=$1 definition=$2 actual=$3 min=$4
+            local status
+            if awk -v a="$actual" -v m="$min" 'BEGIN { exit (a + 0 < m + 0) ? 0 : 1 }'; then
+              status=":x: FAIL"
+              echo "::error::${name} coverage ${actual}% is below baseline ${min}%"
+              fail=1
+            else
+              status=":white_check_mark: pass"
+            fi
+            echo "| ${name} | ${definition} | ${min}% | ${actual}% | ${status} |" >> $GITHUB_STEP_SUMMARY
+          }
+
+          echo "| Metric | Definition | Baseline (min) | Actual | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|--------|------------|----------------|--------|--------|" >> $GITHUB_STEP_SUMMARY
+          row "Lines"     "% of source lines executed at least once"                                "$LINES"   "$MIN_LINES"
+          row "Regions"   "% of llvm-cov regions (finer-grained than lines: per-branch arc) covered" "$REGIONS" "$MIN_REGIONS"
+          row "Functions" "% of declared functions invoked at least once"                            "$FUNCS"   "$MIN_FUNCTIONS"
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Scope: \`src-tauri/src/**/*.rs\` (lib target only). Provider: \`cargo-llvm-cov\` (LLVM source-based coverage). Code gated by \`#[cfg(not(debug_assertions))]\` or \`#[cfg(target_os = ...)]\` is not compiled in the test profile and therefore not measured. Source of truth: \`src-tauri/rust-coverage.json\` (uploaded as \`rust-coverage\` artifact)." >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ "$fail" -ne 0 ]; then
+            echo ":x: **Rust coverage regressed below baseline — see annotations above.** To raise the floor, edit \`MIN_*\` in \`.github/workflows/integration-test.yml\`." >> $GITHUB_STEP_SUMMARY
+            exit 1
+          else
+            echo ":white_check_mark: **All Rust coverage metrics meet or exceed baseline.**" >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Rust job duration summary
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          format_duration() {
+            local s=$1
+            if [ "${s:-0}" -ge 60 ]; then
+              printf "%dm %ds" $((s / 60)) $((s % 60))
+            else
+              printf "%ds" "${s:-0}"
+            fi
+          }
+          END=$(date +%s)
+          DUR=$(( ${RUST_TESTS_END:-$END} - ${RUST_TESTS_START:-$END} ))
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Task | Duration |" >> $GITHUB_STEP_SUMMARY
+          echo "|------|----------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Rust Unit Tests + Coverage | $(format_duration $DUR) |" >> $GITHUB_STEP_SUMMARY
 
   # ---- Integration Tests ----
   integration_test:
@@ -271,7 +465,7 @@ jobs:
 
       - run: |
           node scripts/prebuild.js
-          npm ci || npm install
+          npm ci || npm install --no-fund --prefer-offline
           node scripts/postbuild.js
 
       # wait for databases to be ready
@@ -375,10 +569,10 @@ jobs:
           cache: "npm"
 
       - name: Install dependencies
-        run: npm ci || npm install
+        run: npm ci || npm install --no-fund --prefer-offline
 
       - name: Cache Playwright browsers
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ${{ github.workspace }}/.playwright-browsers
           key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
@@ -403,7 +597,7 @@ jobs:
 
       - name: Upload Playwright report
         if: ${{ always() && steps.e2e_tests.outcome != 'skipped' }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: playwright-report
           path: playwright-report/
@@ -412,7 +606,7 @@ jobs:
 
       - name: Upload test screenshots
         if: ${{ always() && steps.e2e_tests.outcome == 'failure' }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: playwright-screenshots
           path: test-results/

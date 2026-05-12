@@ -1,5 +1,4 @@
-import { Express } from "express";
-import path from "node:path";
+import type { Hono, Context } from "hono";
 import {
   clearCachedColumns,
   clearCachedDatabase,
@@ -28,7 +27,7 @@ import {
 import { writeDebugLog } from "src/common/utils/debugLogger";
 import { backfillTimestamps, formatErrorMessage, safeDisconnect } from "src/common/utils/errorUtils";
 import { SqluiCore, SqluiEnums } from "typings";
-let expressAppContext: Express | undefined;
+let honoAppContext: Hono | undefined;
 
 /** Storage key for the application settings entry. */
 const SETTINGS_ID = "app-settings";
@@ -71,10 +70,145 @@ function evictStaleApiCacheEntries() {
 setInterval(evictStaleApiCacheEntries, 10 * 60 * 1000);
 
 /**
- * Registers a single API endpoint on the Express app.
+ * Convert an Express-style URL pattern (`:param`) to a Hono-style pattern (`:param`).
+ * They happen to be the same syntax — kept as an identity function for clarity.
+ * @param url - Endpoint pattern as written in the handler registration.
+ */
+function toHonoRoute(url: string): string {
+  return url;
+}
+
+/**
+ * Builds the buffered request/response adapter pair backed by a Hono Context.
+ * Letting handlers keep the (req, res) shape minimises churn and keeps the
+ * test-fixture pattern (`res.status`, `res.send`, `res.json`, `res.setHeader`)
+ * working identically.
+ */
+function buildReqRes(c: Context, body: any) {
+  // Collect the URL-segment params eagerly. Hono `param()` with no args returns
+  // a plain object of every captured path parameter.
+  const params: Record<string, string | undefined> = (c.req.param() as any) || {};
+
+  // Hoist query params into a plain object so handler code can do `req.query?.q`.
+  const query: Record<string, string | undefined> = {};
+  try {
+    const qAll = c.req.queries() as Record<string, string[]> | undefined;
+    if (qAll) {
+      for (const [k, v] of Object.entries(qAll)) {
+        query[k] = Array.isArray(v) ? v[0] : (v as any);
+      }
+    }
+  } catch {
+    /* ignore — `queries()` is optional */
+  }
+
+  const headers: Record<string, string | undefined> = {};
+  const allHeaders = c.req.header();
+  for (const [k, v] of Object.entries(allHeaders)) {
+    headers[k.toLowerCase()] = v;
+  }
+
+  const req = { params, query, headers, body };
+
+  // Response state — buffered until the handler completes, then materialised
+  // into a Hono Response by the wrapper. `send` accepts string|Buffer|nothing,
+  // matching the Express semantics the handlers were written against.
+  const state: {
+    status: number;
+    headers: Record<string, string>;
+    body: any;
+    bodyKind: "json" | "raw" | "empty";
+    ended: boolean;
+  } = { status: 200, headers: {}, body: undefined, bodyKind: "empty", ended: false };
+
+  const res = {
+    status(n: number) {
+      state.status = n;
+      return res;
+    },
+    json(obj: any) {
+      state.body = obj;
+      state.bodyKind = "json";
+      state.ended = true;
+      return res;
+    },
+    send(payload?: any) {
+      if (payload === undefined) {
+        state.bodyKind = "empty";
+      } else {
+        state.body = payload;
+        state.bodyKind = "raw";
+      }
+      state.ended = true;
+      return res;
+    },
+    header(name: string, value: string | undefined | null) {
+      if (value !== undefined && value !== null) {
+        state.headers[name] = String(value);
+      }
+      return res;
+    },
+    setHeader(name: string, value: string | undefined | null) {
+      return res.header(name, value);
+    },
+  };
+
+  return { req, res, state };
+}
+
+/**
+ * Materialises buffered response state into a Hono `Response`.
+ */
+function materializeResponse(c: Context, state: ReturnType<typeof buildReqRes>["state"]): Response {
+  for (const [k, v] of Object.entries(state.headers)) {
+    c.header(k, v);
+  }
+  if (state.bodyKind === "json") {
+    return c.json(state.body, state.status as any);
+  }
+  if (state.bodyKind === "raw") {
+    return c.body(state.body, state.status as any);
+  }
+  // empty body
+  return c.body(null, state.status as any);
+}
+
+/**
+ * Parse the incoming request body. Tries JSON first, then form-encoded — matches
+ * the prior Express `body-parser.json()` + `body-parser.urlencoded()` chain.
+ */
+async function readRequestBody(c: Context): Promise<any> {
+  const method = c.req.method.toUpperCase();
+  if (method === "GET" || method === "DELETE" || method === "HEAD") return undefined;
+  const ct = (c.req.header("content-type") || "").toLowerCase();
+  try {
+    if (ct.includes("application/json")) {
+      const raw = await c.req.text();
+      if (!raw) return {};
+      return JSON.parse(raw);
+    }
+    if (ct.includes("application/x-www-form-urlencoded") || ct.includes("multipart/form-data")) {
+      return await c.req.parseBody();
+    }
+    // No content-type / unknown — try JSON best-effort, otherwise empty.
+    const raw = await c.req.text();
+    if (!raw) return {};
+    try {
+      return JSON.parse(raw);
+    } catch {
+      return raw;
+    }
+  } catch (err) {
+    console.error("Endpoints.ts:readRequestBody", err);
+    return {};
+  }
+}
+
+/**
+ * Registers a single API endpoint on the Hono app.
  * Wraps the handler with error handling and session ID header forwarding.
  * @param method - HTTP method ("get", "post", "put", "delete").
- * @param url - URL pattern (Express-style) for the endpoint.
+ * @param url - URL pattern for the endpoint.
  * @param incomingHandler - Async handler receiving (req, res, cache).
  */
 function addDataEndpoint(
@@ -82,28 +216,22 @@ function addDataEndpoint(
   url: string,
   incomingHandler: (req: any, res: any, cache: any) => void,
 ) {
-  const handlerToUse = async (req: any, res: any, cache: any) => {
-    try {
-      res.header("sqlui-native-session-id", req.headers["sqlui-native-session-id"]);
-      await incomingHandler(req, res, cache);
-    } catch (err: any) {
-      console.error(`Endpoints.ts:addDataEndpoint [${method.toUpperCase()} ${url}] error`, err);
-      writeDebugLog(`Endpoints.ts:error [${method.toUpperCase()} ${url}] - ${err?.message || err}\n${err?.stack || ""}`);
-      const message = formatErrorMessage(err);
-      try {
-        res.status(500).json({ error: message });
-      } catch (resErr) {
-        console.error(`Endpoints.ts:addDataEndpoint [${method.toUpperCase()} ${url}] resError`, resErr);
-        writeDebugLog(`Endpoints.ts:resError [${method.toUpperCase()} ${url}] - ${(resErr as any)?.message || resErr}`);
-      }
-    }
-  };
+  honoAppContext![method](toHonoRoute(url), async (c: Context) => {
+    const body = await readRequestBody(c);
+    const { req, res, state } = buildReqRes(c, body);
 
-  expressAppContext![method](url, async (req, res) => {
-    const cacheKey = req.headers["sqlui-native-session-id"];
+    const sessionId = req.headers["sqlui-native-session-id"];
+    // Echo the session-id header onto the response — preserves the contract
+    // the frontend uses to verify which session a response belongs to.
+    if (sessionId !== undefined) {
+      res.header("sqlui-native-session-id", sessionId);
+    }
+
+    const cacheKey = sessionId as string | undefined;
     const apiCache = {
       get(key: SqluiEnums.ServerApiCacheKey) {
         try {
+          if (!cacheKey) return undefined;
           const entry = _apiCache[cacheKey];
           if (entry) {
             entry.lastAccessed = Date.now();
@@ -117,6 +245,7 @@ function addDataEndpoint(
       },
       set(key: SqluiEnums.ServerApiCacheKey, value: any) {
         try {
+          if (!cacheKey) return;
           if (!_apiCache[cacheKey]) {
             _apiCache[cacheKey] = { data: {}, lastAccessed: Date.now() };
           }
@@ -131,17 +260,29 @@ function addDataEndpoint(
       },
     };
 
-    await handlerToUse(req, res, apiCache);
+    try {
+      await incomingHandler(req, res, apiCache);
+    } catch (err: any) {
+      console.error(`Endpoints.ts:addDataEndpoint [${method.toUpperCase()} ${url}] error`, err);
+      writeDebugLog(`Endpoints.ts:error [${method.toUpperCase()} ${url}] - ${err?.message || err}\n${err?.stack || ""}`);
+      const message = formatErrorMessage(err);
+      state.status = 500;
+      state.body = { error: message };
+      state.bodyKind = "json";
+      state.ended = true;
+    }
+
+    return materializeResponse(c, state);
   });
 }
 
 /**
  * Registers all API endpoint handlers for connections, queries, sessions, folders, and data snapshots.
- * All endpoints are registered as Express HTTP routes.
- * @param anExpressAppContext - The Express app to register routes on.
+ * All endpoints are registered as Hono HTTP routes.
+ * @param aHonoAppContext - The Hono app to register routes on.
  */
-export function setUpDataEndpoints(anExpressAppContext: Express) {
-  expressAppContext = anExpressAppContext;
+export function setUpDataEndpoints(aHonoAppContext: Hono) {
+  honoAppContext = aHonoAppContext;
   writeDebugLog(`Endpoints.ts:setUpDataEndpoints - storageDir=${getStorageDir()}`);
   // storageDir
   //=========================================================================
@@ -160,7 +301,10 @@ export function setUpDataEndpoints(anExpressAppContext: Express) {
 
     res.status(200).json({
       storageDir: getStorageDir(),
-      isElectron: !expressAppContext,
+      isElectron: !honoAppContext,
+      // Server process id — surfaced so the portal UI can show it in the
+      // title bar. Always present; consumers gate display on portal mode.
+      serverPid: process.pid,
       ...settingsData,
     });
   });
@@ -178,7 +322,10 @@ export function setUpDataEndpoints(anExpressAppContext: Express) {
 
     res.status(200).json({
       storageDir: getStorageDir(),
-      isElectron: !expressAppContext,
+      isElectron: !honoAppContext,
+      // Server process id — surfaced so the portal UI can show it in the
+      // title bar. Always present; consumers gate display on portal mode.
+      serverPid: process.pid,
       ...settingsData,
     });
   });

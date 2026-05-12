@@ -33,7 +33,7 @@ struct PlatformInfo {
     arch: String,
 }
 
-/// Returns the port the sidecar Express server is listening on.
+/// Returns the port the sidecar Hono server is listening on.
 #[tauri::command]
 fn get_sidecar_port(state: tauri::State<SidecarState>) -> u16 {
     state.port
@@ -161,7 +161,7 @@ fn find_system_node() -> Option<String> {
 }
 
 #[cfg(not(debug_assertions))]
-/// Spawns the Node.js sidecar Express server and waits for it to report its port.
+/// Spawns the Node.js sidecar Hono server and waits for it to report its port.
 fn spawn_sidecar(app: &tauri::App) -> Result<SidecarState, Box<dyn std::error::Error>> {
     let resource_dir = app
         .path()
@@ -451,7 +451,7 @@ pub fn run() {
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_opener::init())
         .setup(|app| {
-            // In debug/dev builds (`tauri dev`), the Express server is already
+            // In debug/dev builds (`tauri dev`), the Hono server is already
             // started by the `beforeDevCommand` (`npm run dev`) on port 3001.
             // Skip spawning a duplicate sidecar process; port 0 signals the frontend
             // to use relative URLs so the Vite proxy routes /api calls to port 3001.
@@ -489,4 +489,58 @@ pub fn run() {
         }
         _ => {}
     });
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::io::Write;
+
+    #[test]
+    fn get_platform_info_returns_non_empty_strings() {
+        let info = get_platform_info();
+        assert!(!info.platform.is_empty(), "platform must be non-empty");
+        assert!(!info.arch.is_empty(), "arch must be non-empty");
+    }
+
+    #[test]
+    fn get_platform_info_matches_env_consts() {
+        let info = get_platform_info();
+        assert_eq!(info.platform, std::env::consts::OS);
+        assert_eq!(info.arch, std::env::consts::ARCH);
+    }
+
+    #[test]
+    fn platform_info_serializes_to_json() {
+        let info = PlatformInfo {
+            platform: "macos".to_string(),
+            arch: "aarch64".to_string(),
+        };
+        let json = serde_json::to_string(&info).expect("serialize");
+        assert!(json.contains("\"platform\":\"macos\""));
+        assert!(json.contains("\"arch\":\"aarch64\""));
+    }
+
+    #[test]
+    fn read_file_content_reads_existing_file() {
+        let dir = std::env::temp_dir();
+        let path = dir.join(format!("sqlui-rust-cov-{}.txt", std::process::id()));
+        let mut f = std::fs::File::create(&path).expect("create tempfile");
+        f.write_all(b"hello-rust-coverage").expect("write");
+        drop(f);
+
+        let result = read_file_content(path.to_string_lossy().to_string());
+        let _ = std::fs::remove_file(&path);
+
+        assert_eq!(result.expect("read ok"), "hello-rust-coverage");
+    }
+
+    #[test]
+    fn read_file_content_returns_error_for_missing_file() {
+        let missing = "/nonexistent/path/sqlui-rust-cov-missing.txt".to_string();
+        let result = read_file_content(missing);
+        assert!(result.is_err(), "expected error for missing file");
+        let err = result.unwrap_err();
+        assert!(err.contains("Failed to read file"), "error: {}", err);
+    }
 }

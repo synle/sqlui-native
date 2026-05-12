@@ -34,8 +34,12 @@ env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
   ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
   # 5 desktop installers (4 platforms — Linux ships both .deb and .AppImage from one matrix entry)
-  # + 3 portal artifacts (.tar.gz + .zip + .tgz npx-able, all OS-agnostic)
-  EXPECTED_RELEASE_ASSETS: 8
+  # + 1 portal asset:
+  #     sqlui-portal.tar.gz   (single filename; pin by tag URL, not by filename)
+  # The .tar.gz works for BOTH curl|tar and npx flows (npm/pacote strips
+  # the top-level `portal/` dir and finds package.json — the file extension
+  # doesn't matter, only the content shape).
+  EXPECTED_RELEASE_ASSETS: 6
   PLAYWRIGHT_BROWSERS_PATH: ${{ github.workspace }}/.playwright-browsers
   BUILD_CHANNEL: production
 
@@ -238,17 +242,23 @@ jobs:
           | Windows (x64) | \`.exe\` (NSIS installer) |
           | Linux (Debian/Ubuntu) | \`.deb\` |
           | Linux (AppImage) | \`.AppImage\` |
-          | Portal (web, any OS w/ Node 22+) | \`sqlui-portal-${TAG#v}.tar.gz\` / \`.zip\` / \`.tgz\` |
+          | Portal (web, any OS w/ Node 22+) | \`sqlui-portal.tar.gz\` |
 
-          **Portal mode** (phpMyAdmin-style) — pick whichever flow you prefer:
+          **Portal mode** (phpMyAdmin-style) — one tarball, two flows, pick whichever:
 
+          \`\`\`sh
+          # Option A — curl + tar (single command, no npm involved):
+          curl -fsSL https://github.com/synle/sqlui-native/releases/latest/download/sqlui-portal.tar.gz | tar -xz && ./portal/sqlui-portal ./mydata.sqlite
+
+          # Option B — npx (auto-cached, single command, Windows-friendly):
+          npx https://github.com/synle/sqlui-native/releases/latest/download/sqlui-portal.tar.gz ./mydata.sqlite
           \`\`\`
-          # Option A — curl + tar (single command):
-          curl -fsSL https://github.com/synle/sqlui-native/releases/download/${TAG}/sqlui-portal-${TAG#v}.tar.gz | tar -xz \\
-            && ./portal/sqlui-portal ./mydata.sqlite
 
-          # Option B — npx (no manual extract, auto-cached):
-          npx https://github.com/synle/sqlui-native/releases/download/${TAG}/sqlui-portal-${TAG#v}.tgz ./mydata.sqlite
+          The \`latest/download/…\` URL above always resolves to the current release. To pin to **${TAG}** specifically, use the tag in the URL — the filename stays the same:
+
+          \`\`\`sh
+          curl -fsSL https://github.com/synle/sqlui-native/releases/download/${TAG}/sqlui-portal.tar.gz | tar -xz && ./portal/sqlui-portal ./mydata.sqlite
+          npx https://github.com/synle/sqlui-native/releases/download/${TAG}/sqlui-portal.tar.gz ./mydata.sqlite
           \`\`\`"
 
           gh release create "$TAG" \
@@ -325,7 +335,7 @@ jobs:
             libssl-dev
 
       - name: Install dependencies
-        run: npm ci || npm install
+        run: npm ci || npm install --no-fund --prefer-offline
 
       - name: Prepare sidecar resources
         run: mkdir -p src-tauri/resources && npm run build:tauri
@@ -358,7 +368,7 @@ jobs:
           done
 
       - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ matrix.artifact_name }}
           path: |
@@ -408,30 +418,36 @@ jobs:
           cache: "npm"
 
       - name: Install dependencies
-        run: npm ci || npm install
+        run: npm ci || npm install --no-fund --prefer-offline
 
       - name: Build portal bundle
         run: npm run build:portal
 
-      - name: Package portal artifacts
+      - name: Smoke test portal bundle
+        # Boots dist/portal/sqlui-portal.js on a random loopback port, probes
+        # `/` for the session-ID injection and `/api/connections` for a 200,
+        # then kills it. Fails the job if the built bundle can't start, can't
+        # serve assets, or returns garbage — gates the release upload.
+        run: node scripts/smoke-portal.js
+
+      - name: Rename portal tarball to versionless name
         id: package
         shell: bash
         run: |
           VERSION=$(node -p "require('./package.json').version")
-          TARBALL="sqlui-portal-${VERSION}.tar.gz"
-          ZIPFILE="sqlui-portal-${VERSION}.zip"
-          NPXTGZ="dist/sqlui-portal-${VERSION}.tgz"  # produced by build-portal.js (npm-package layout)
+          # build-portal.js produced dist/sqlui-portal-<version>.tar.gz.
+          # We ship only one filename — sqlui-portal.tar.gz — and rely on the
+          # tag URL (releases/download/<tag>/sqlui-portal.tar.gz) for pinning.
+          # `releases/latest/download/sqlui-portal.tar.gz` auto-resolves to the
+          # current release without pinning a version in the docs.
+          SRC="dist/sqlui-portal-${VERSION}.tar.gz"
+          DST="dist/sqlui-portal.tar.gz"
+          mv "$SRC" "$DST"
 
-          # User-facing distribution archives: dist/portal/ rooted as `portal/`.
-          tar -czf "$TARBALL" -C dist portal
-          (cd dist && zip -qr "../$ZIPFILE" portal)
+          ls -lh "$DST"
+          echo "tarball=$DST" >> "$GITHUB_OUTPUT"
 
-          ls -lh "$TARBALL" "$ZIPFILE" "$NPXTGZ"
-          echo "tarball=$TARBALL" >> "$GITHUB_OUTPUT"
-          echo "zipfile=$ZIPFILE" >> "$GITHUB_OUTPUT"
-          echo "npxtgz=$NPXTGZ" >> "$GITHUB_OUTPUT"
-
-      - name: Upload portal artifacts to release
+      - name: Upload portal artifact to release
         if: ${{ needs.create_release.outputs.dist_version != '' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -440,18 +456,14 @@ jobs:
           TAG="${{ needs.create_release.outputs.dist_version }}"
           gh release upload "$TAG" \
             "${{ steps.package.outputs.tarball }}" \
-            "${{ steps.package.outputs.zipfile }}" \
-            "${{ steps.package.outputs.npxtgz }}" \
             --clobber
 
       - name: Upload build artifacts (CI retention)
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: sqlui-portal
           path: |
-            sqlui-portal-*.tar.gz
-            sqlui-portal-*.zip
-            dist/sqlui-portal-*.tgz
+            dist/sqlui-portal*.tar.gz
           retention-days: 30
           compression-level: 0
           if-no-files-found: error
@@ -564,6 +576,20 @@ jobs:
           echo "Publishing release $TAG as official latest..."
           gh release edit "$TAG" --draft=false --latest
           echo "Release $TAG is now published and marked as latest"
+
+      - name: Sync README pinned-version example to current release
+        # The README's "Pin a specific version" section has a hardcoded
+        # VERSION=X.Y.Z so users get a copy-paste pinned-URL example. Keep it
+        # current by replacing it with the version we just published. The
+        # versionless `latest/download/...` URLs in the rest of the README
+        # don't need updating — they auto-resolve via GitHub. The next
+        # add-and-commit step picks up the diff (no commit if unchanged).
+        shell: bash
+        run: |
+          TAG="${{ needs.create_release.outputs.dist_version }}"
+          VERSION="${TAG#v}"
+          sed -i -E "s/^VERSION=[0-9]+\.[0-9]+\.[0-9]+$/VERSION=${VERSION}/" README.md
+          git --no-pager diff --stat README.md || true
 
       - name: Commit release version
         uses: EndBug/add-and-commit@v9

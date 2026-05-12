@@ -4,8 +4,11 @@ import { emitEmbeddedAssetsPlugin } from "./scripts/vite-plugin-embed-frontend";
 
 /**
  * Only packages with native bindings (.node files) or Node built-in shims must stay external.
- * Everything else (Express, database drivers, etc.) is bundled into a single sqlui-server.js,
+ * Everything else (Hono, database drivers, etc.) is bundled into a single sqlui-server.js,
  * eliminating the need to ship node_modules for the Tauri sidecar.
+ *
+ * Because this list is empty, subpath imports (e.g. `hono/cors`, `@hono/node-server/serve-static`)
+ * are bundled inline alongside their parent packages — no subpath-aware predicate needed here.
  *
  * node:sqlite is a Node 22+ built-in and does not need to be externalized.
  */

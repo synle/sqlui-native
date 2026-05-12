@@ -104,13 +104,18 @@ jobs:
           cache: "npm"
 
       - name: Install dependencies
-        run: npm ci || npm install
+        run: npm ci || npm install --no-fund --prefer-offline
 
       - name: Run prebuild
         run: npm run prebuild
 
-      - name: Run unit tests
-        run: npx vitest run --reporter=default --reporter=junit --outputFile.junit=unit-test-results.xml
+      # `--coverage.enabled` activates the thresholds block in vitest.config.ts,
+      # which fails the run if any metric (statements/branches/functions/lines)
+      # drops below the baseline. This is the enforcement gate for the main /
+      # PR build flow; the integration-test.yml workflow does the same via a
+      # secondary bash check that also posts a step-summary table.
+      - name: Run unit tests with coverage
+        run: npx vitest run --reporter=default --reporter=junit --outputFile.junit=unit-test-results.xml --coverage.enabled
 
       - name: Publish unit test results
         if: always()
@@ -121,6 +126,50 @@ jobs:
           reporter: java-junit
           fail-on-error: false
           fail-on-empty: false
+
+      # Mirrors the coverage summary from integration-test.yml so build-main /
+      # pr-main runs surface the same Metric|Definition|Baseline|Actual|Status
+      # table in their job summary. Vitest's thresholds (in vitest.config.ts)
+      # are the actual enforcement gate — if any metric is below baseline,
+      # the previous "Run unit tests with coverage" step has already failed.
+      - name: Report JS/TS coverage
+        if: ${{ always() }}
+        shell: bash
+        env:
+          MIN_STATEMENTS: "37.82"
+          MIN_BRANCHES: "30.07"
+          MIN_FUNCTIONS: "41.12"
+          MIN_LINES: "38.51"
+        run: |
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## :bar_chart: JS/TS Code Coverage (Unit Tests)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ ! -f coverage/coverage-summary.json ]; then
+            echo ":warning: \`coverage/coverage-summary.json\` not produced — vitest may have failed before the report was written." >> $GITHUB_STEP_SUMMARY
+            exit 0
+          fi
+          STMTS=$(node -e "console.log(require('./coverage/coverage-summary.json').total.statements.pct)")
+          BRANCH=$(node -e "console.log(require('./coverage/coverage-summary.json').total.branches.pct)")
+          FUNCS=$(node -e "console.log(require('./coverage/coverage-summary.json').total.functions.pct)")
+          LINES=$(node -e "console.log(require('./coverage/coverage-summary.json').total.lines.pct)")
+          row() {
+            local name=$1 definition=$2 actual=$3 min=$4
+            local status
+            if awk -v a="$actual" -v m="$min" 'BEGIN { exit (a + 0 < m + 0) ? 0 : 1 }'; then
+              status=":x: FAIL"
+            else
+              status=":white_check_mark: pass"
+            fi
+            echo "| ${name} | ${definition} | ${min}% | ${actual}% | ${status} |" >> $GITHUB_STEP_SUMMARY
+          }
+          echo "| Metric | Definition | Baseline (min) | Actual | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|--------|------------|----------------|--------|--------|" >> $GITHUB_STEP_SUMMARY
+          row "Statements" "% of executable statements run by tests"          "$STMTS"  "$MIN_STATEMENTS"
+          row "Branches"   "% of conditional branches (if/else, &&, ?:) taken" "$BRANCH" "$MIN_BRANCHES"
+          row "Functions"  "% of declared functions invoked at least once"     "$FUNCS"  "$MIN_FUNCTIONS"
+          row "Lines"      "% of source lines executed at least once"          "$LINES"  "$MIN_LINES"
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Enforcement: thresholds in \`vitest.config.ts\` — vitest fails the run on regression." >> $GITHUB_STEP_SUMMARY
 
       - name: Run typecheck
         run: npm run typecheck
@@ -178,7 +227,7 @@ jobs:
             libssl-dev
 
       - name: Install dependencies
-        run: npm ci || npm install
+        run: npm ci || npm install --no-fund --prefer-offline
 
       - name: Prepare sidecar resources
         run: mkdir -p src-tauri/resources && npm run build:tauri
@@ -191,7 +240,7 @@ jobs:
           args: --target ${{ matrix.target }}
 
       - name: Upload Tauri bundle artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ matrix.artifact_name }}
           path: |
@@ -212,7 +261,7 @@ jobs:
       pull-requests: write
     steps:
       - name: Post artifact links on PR
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             const runUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;

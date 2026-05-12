@@ -31,18 +31,49 @@ import { useGetCurrentSession } from "src/frontend/hooks/useSession";
 import ToastHistoryList from "src/frontend/components/ToastHistoryList";
 import { useToastHistoryCount } from "src/frontend/hooks/useToaster";
 import appPackage from "src/package.json";
-import { getBuildBadge, isDevBuild } from "src/frontend/utils/buildInfo";
+import { getBuildBadge } from "src/frontend/utils/buildInfo";
+import { useGetServerConfigs } from "src/frontend/hooks/useServerConfigs";
 
 /**
  * Application header bar with session management, navigation, notifications, and command palette access.
  * @returns The rendered app header toolbar.
  */
+/**
+ * Detects portal mode by reading the global injected by the portal server's
+ * served `index.html`. Returns false on the desktop app and dev mode.
+ */
+function isPortalMode(): boolean {
+  try {
+    return typeof (window as any).__SQLUI_PORTAL_SESSION__ === "string" && !!(window as any).__SQLUI_PORTAL_SESSION__;
+  } catch {
+    return false;
+  }
+}
+
 export default function AppHeader() {
   const navigate = useNavigate();
   const { data: currentSession, isLoading } = useGetCurrentSession();
   const { selectCommand } = useCommands();
   const { modal } = useActionDialogs();
   const toastHistoryCount = useToastHistoryCount();
+  const { data: serverConfigs } = useGetServerConfigs();
+
+  const portalMode = isPortalMode();
+  // Build the suffix shown in the title bar in portal mode:
+  //   "Portal (PID=82242) — 127.0.0.1:19378 — /Users/syle/.sqlui-portal"
+  // Each segment is conditionally appended so we don't render trailing
+  // separators when the data hasn't loaded yet (or PID isn't available).
+  const portalSuffix = (() => {
+    if (!portalMode) return null;
+    const pid = serverConfigs?.serverPid;
+    const host = typeof window !== "undefined" ? window.location.host : "";
+    const storage = serverConfigs?.storageDir;
+    const head = pid ? `Portal (PID=${pid})` : "Portal";
+    const parts: string[] = [head];
+    if (host) parts.push(host);
+    if (storage) parts.push(storage);
+    return parts.join(" — ");
+  })();
 
   const options = [
     {
@@ -157,25 +188,48 @@ export default function AppHeader() {
   }, [currentSession?.name]);
 
   return (
-    <AppBar position="static">
+    <AppBar
+      position="static"
+      // Tint the bar in portal mode so it's visually distinct from the desktop app.
+      // `primary` (blue) — neutral, calmer than red/error, but still clearly
+      // different from desktop's `default` dark grey. Desktop keeps default.
+      //
+      // `enableColorOnDark` is REQUIRED — MUI v5+ ignores the `color` prop on
+      // AppBar in dark mode unless this is set, which silently makes the bar
+      // render as the same dark grey regardless of the chosen palette token.
+      color={portalMode ? "primary" : "default"}
+      enableColorOnDark
+    >
       <Toolbar variant="dense">
-        <Typography
-          variant="h5"
-          onClick={() => navigate("/")}
-          sx={{ cursor: "pointer", fontWeight: "bold", mr: 3, color: isDevBuild() ? "error.main" : "inherit" }}
-        >
+        {/*
+          No per-element color overrides — every text/icon in the toolbar
+          inherits from the AppBar's `color` prop above. That way the whole
+          bar tints uniformly when portal mode flips it to `secondary`, and
+          the desktop bar stays consistent with the theme's contrastText.
+        */}
+        <Typography variant="h5" onClick={() => navigate("/")} sx={{ cursor: "pointer", fontWeight: "bold", mr: 3 }}>
           SQLUI NATIVE {appPackage.version} {getBuildBadge()}
         </Typography>
 
-        <Tooltip title="This is the current session name. Click to rename it.">
-          <Typography
-            variant="subtitle1"
-            sx={{ cursor: "pointer", mr: "auto", fontFamily: "monospace" }}
-            onClick={() => selectCommand({ event: "clientEvent/session/rename" })}
-          >
-            ({currentSession?.name})
-          </Typography>
-        </Tooltip>
+        {portalSuffix ? (
+          // Portal mode: show host:port and storage dir inline so users always
+          // know where they're connected and where state is persisted.
+          <Tooltip title="Portal mode — host:port and storage directory.">
+            <Typography variant="subtitle1" sx={{ mr: "auto", fontFamily: "monospace" }}>
+              ({portalSuffix})
+            </Typography>
+          </Tooltip>
+        ) : (
+          <Tooltip title="This is the current session name. Click to rename it.">
+            <Typography
+              variant="subtitle1"
+              sx={{ cursor: "pointer", mr: "auto", fontFamily: "monospace" }}
+              onClick={() => selectCommand({ event: "clientEvent/session/rename" })}
+            >
+              ({currentSession?.name})
+            </Typography>
+          </Tooltip>
+        )}
 
         <Tooltip title="Notification History">
           <IconButton

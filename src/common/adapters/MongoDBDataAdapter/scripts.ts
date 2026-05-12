@@ -1,4 +1,4 @@
-import set from "lodash.set";
+import { setPath as set } from "src/common/utils/setPath";
 import BaseDataScript, { getDivider } from "src/common/adapters/BaseDataAdapter/scripts";
 import { renderCodeSnippet } from "src/common/adapters/code-snippets/renderCodeSnippet";
 import mongodbIcon from "src/common/adapters/MongoDBDataAdapter/mongodb.png";

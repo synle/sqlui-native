@@ -1,52 +1,61 @@
-import bodyParser from "body-parser";
-import express from "express";
+/** Hono application wiring for the sqlui-server. */
 import fs from "node:fs";
-import os from "node:os";
 import path from "node:path";
-import multer from "multer";
+import { Hono } from "hono";
+import { cors } from "hono/cors";
+import { serveStatic } from "@hono/node-server/serve-static";
 import { setUpDataEndpoints } from "src/common/Endpoints";
 
 // prevent process crashes from unhandled connection errors (e.g. mariadb timeout)
 process.on("uncaughtException", (err) => {
-  console.error("Uncaught Exception:", err?.message || err);
+  console.error("Uncaught Exception:", (err as any)?.message || err);
 });
 
 process.on("unhandledRejection", (reason) => {
   console.error("Unhandled Rejection:", reason);
 });
 
-/** Express application instance for the sqlui-server. */
-export const app = express();
+/** Hono application instance for the sqlui-server. */
+export const app = new Hono();
 
-const upload = multer({ dest: path.join(os.tmpdir(), "sqlui-native-upload") });
-
-// Allow cross-origin requests from the Electron file:// protocol and localhost dev server
-app.use((_req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "*");
-  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-  if (_req.method === "OPTIONS") return res.sendStatus(204);
-  next();
-});
-
-app.use(bodyParser.urlencoded({ extended: false, limit: "50mb" })); // parse application/x-www-form-urlencoded
-app.use(bodyParser.json({ limit: "50mb" })); // parse application/json
+// Allow cross-origin requests from the Tauri tauri:// protocol and the localhost dev server.
+app.use(
+  "*",
+  cors({
+    origin: "*",
+    allowHeaders: ["*"],
+    allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  }),
+);
 
 // file upload endpoint used by the server to read uploaded file content
-app.post("/api/file", upload.single("file"), async (req, res) => {
+app.post("/api/file", async (c) => {
   try {
-    //@ts-ignore
-    res.status(200).send(fs.readFileSync(req.file.path, { encoding: "utf-8" }));
+    const body = await c.req.parseBody();
+    const file = body["file"];
+    if (!file || typeof file === "string") {
+      return c.text("Cannot read the file", 400);
+    }
+    const text = await (file as File).text();
+    return c.body(text, 200);
   } catch (err) {
-    console.error("server.ts:status", err);
-    res.status(400).send("Cannot read the file");
+    console.error("server.ts:postFile", err);
+    return c.text("Cannot read the file", 400);
   }
 });
 
 /**
- * Registers all API endpoints on the Express app.
+ * Health check endpoint for verifying the server is running.
+ * Returns process ID and uptime for diagnostics.
+ */
+app.get("/api/health", (c) => {
+  return c.json({ status: "ok", pid: process.pid, uptime: process.uptime() }, 200);
+});
+
+/**
+ * Registers all API endpoints on the Hono app.
  * Called explicitly by the entry point rather than at import time,
- * so Electron can import this module without triggering setup in dev mode.
+ * so callers can import this module without triggering setup in dev mode.
  */
 export function initializeEndpoints(): void {
   setUpDataEndpoints(app);
@@ -56,16 +65,8 @@ export function initializeEndpoints(): void {
 export const port = 3001;
 
 /**
- * Health check endpoint for verifying the server is running.
- * Returns process ID and uptime for diagnostics.
- */
-app.get("/api/health", (_req, res) => {
-  res.status(200).json({ status: "ok", pid: process.pid, uptime: process.uptime() });
-});
-
-/**
  * Mounts a static-file directory plus a SPA fallback.
- * Used by portal mode to serve the bundled React frontend alongside the API,
+ * Used by portal mode and the sidecar to serve the bundled React frontend alongside the API,
  * so a single Node process exposes the full webapp at one URL (phpMyAdmin-style).
  *
  * @param assetsDir - Absolute path to the directory containing index.html and assets/.
@@ -78,33 +79,53 @@ export function mountStaticAssets(assetsDir: string, indexHtmlTransformer?: (htm
     return;
   }
 
-  // index.html — read on each request so the transformer can inject runtime values
   const indexHtmlPath = path.join(assetsDir, "index.html");
-  const sendIndex = (_req: any, res: any) => {
+
+  // index.html — read on each request so the transformer can inject runtime values.
+  // Registered as the SPA fallback last so any actual static asset matches first.
+  const sendIndex = (c: any) => {
     try {
       let html = fs.readFileSync(indexHtmlPath, "utf-8");
       if (indexHtmlTransformer) html = indexHtmlTransformer(html);
-      res.setHeader("Content-Type", "text/html; charset=utf-8");
-      res.setHeader("Cache-Control", "no-cache");
-      res.status(200).send(html);
+      c.header("Content-Type", "text/html; charset=utf-8");
+      c.header("Cache-Control", "no-cache");
+      return c.body(html, 200);
     } catch (err) {
       console.error("server.ts:mountStaticAssets sendIndex", err);
-      res.status(500).send("Failed to load index.html");
+      return c.text("Failed to load index.html", 500);
     }
   };
 
-  // hashed assets are immutable — long cache
+  // Index requests (`/` or `/index.html`) must always run through the
+  // transformer so the portal can inject `window.__SQLUI_PORTAL_SESSION__`.
+  // Register these BEFORE serveStatic so they win over the on-disk file.
+  app.get("/", (c) => sendIndex(c));
+  app.get("/index.html", (c) => sendIndex(c));
+
+  // Hashed assets are immutable — long cache; .html stays no-cache.
+  // `serveStatic` resolves files relative to `process.cwd()` from the given
+  // `root`. When the file isn't found it calls next() so the SPA fallback can
+  // run.
   app.use(
-    express.static(assetsDir, {
-      index: false,
-      maxAge: "30d",
-      setHeaders: (res, filePath) => {
-        if (filePath.endsWith(".html")) res.setHeader("Cache-Control", "no-cache");
+    "/*",
+    serveStatic({
+      root: path.relative(process.cwd(), assetsDir) || ".",
+      onFound: (_path, c) => {
+        const ext = path.extname(_path);
+        if (ext === ".html") {
+          c.header("Cache-Control", "no-cache");
+        } else {
+          c.header("Cache-Control", "public, max-age=2592000");
+        }
       },
     }),
   );
 
-  // SPA fallback: any non-/api GET that doesn't match a static asset → index.html.
+  // SPA fallback: any non-/api GET that didn't match a static asset → index.html.
   // Skip /api/* so 404s from the API still return JSON, not HTML.
-  app.get(/^\/(?!api\/).*/, sendIndex);
+  app.get("*", async (c, next) => {
+    if (c.req.path.startsWith("/api/")) return next();
+    if (c.req.method !== "GET") return next();
+    return sendIndex(c);
+  });
 }

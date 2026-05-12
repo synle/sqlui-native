@@ -40,7 +40,12 @@ export class PersistentStorageSqlite<T extends StorageEntry> implements IPersist
   table: string;
   instanceId: string;
   name: string;
-  storageLocation: string;
+
+  /** Optional storage filename override (without ".json"); when null, falls back to `{instanceId}.{name}`. */
+  private readonly storageBasename: string | undefined;
+
+  /** Cached resolved absolute path; populated on first {@link storageLocation} access. */
+  private _storageLocation?: string;
 
   /** Shared database connection singleton. */
   private static db: DatabaseSync | null = null;
@@ -53,6 +58,12 @@ export class PersistentStorageSqlite<T extends StorageEntry> implements IPersist
 
   /**
    * Creates a new PersistentStorageSqlite instance.
+   *
+   * **Critical: does NOT resolve {@link storageLocation} or open the DB here.**
+   * Module-level factory consumers instantiate this at import time, before
+   * `process.env.SQLUI_HOME_DIR` is set in portal mode. Both the file path and
+   * the shared SQLite connection are deferred to first storage operation.
+   *
    * @param table - The SQLite table name for this storage instance.
    * @param instanceId - Identifier for the storage instance (e.g., session ID).
    * @param name - Name of the data type being stored (e.g., "connection", "query").
@@ -62,12 +73,20 @@ export class PersistentStorageSqlite<T extends StorageEntry> implements IPersist
     this.table = table;
     this.instanceId = instanceId;
     this.name = name;
-    if (storageLocation) {
-      this.storageLocation = path.join(getStorageDir(), `${storageLocation}.json`);
-    } else {
-      this.storageLocation = path.join(getStorageDir(), `${this.instanceId}.${this.name}.json`);
-    }
+    this.storageBasename = storageLocation;
+  }
 
+  /** Lazily resolved storageLocation (kept for IPersistentStorage interface compat). */
+  get storageLocation(): string {
+    if (this._storageLocation === undefined) {
+      const basename = this.storageBasename ? `${this.storageBasename}.json` : `${this.instanceId}.${this.name}.json`;
+      this._storageLocation = path.join(getStorageDir(), basename);
+    }
+    return this._storageLocation;
+  }
+
+  /** Lazily ensures the shared DB connection + this instance's table on first storage call. */
+  private ensure(): void {
     PersistentStorageSqlite.ensureDb();
     this.ensureTable();
   }
@@ -111,6 +130,7 @@ export class PersistentStorageSqlite<T extends StorageEntry> implements IPersist
 
   /** {@inheritDoc IPersistentStorage.add} */
   add<K>(entry: K): T {
+    this.ensure();
     const db = PersistentStorageSqlite.getDb();
     //@ts-ignore
     const newId = entry.id || this.getGeneratedRandomId();
@@ -131,6 +151,7 @@ export class PersistentStorageSqlite<T extends StorageEntry> implements IPersist
 
   /** {@inheritDoc IPersistentStorage.update} */
   update(entry: T): T {
+    this.ensure();
     const db = PersistentStorageSqlite.getDb();
     const existing = this.get(entry.id) || {};
 
@@ -149,6 +170,7 @@ export class PersistentStorageSqlite<T extends StorageEntry> implements IPersist
 
   /** {@inheritDoc IPersistentStorage.set} */
   set(entries: T[]): T[] {
+    this.ensure();
     const db = PersistentStorageSqlite.getDb();
 
     db.exec("BEGIN");
@@ -170,6 +192,7 @@ export class PersistentStorageSqlite<T extends StorageEntry> implements IPersist
 
   /** {@inheritDoc IPersistentStorage.list} */
   list(): T[] {
+    this.ensure();
     const db = PersistentStorageSqlite.getDb();
     const rows = db.prepare(`SELECT id, data FROM "${this.table}"`).all() as { id: string; data: string }[];
     return rows.map((row) => ({ id: row.id, ...JSON.parse(row.data) }) as T);
@@ -177,6 +200,7 @@ export class PersistentStorageSqlite<T extends StorageEntry> implements IPersist
 
   /** {@inheritDoc IPersistentStorage.get} */
   get(id: string): T {
+    this.ensure();
     const db = PersistentStorageSqlite.getDb();
     const row = db.prepare(`SELECT id, data FROM "${this.table}" WHERE id = ?`).get(id) as { id: string; data: string } | undefined;
     if (!row) return undefined as any;
@@ -185,6 +209,7 @@ export class PersistentStorageSqlite<T extends StorageEntry> implements IPersist
 
   /** {@inheritDoc IPersistentStorage.delete} */
   delete(id: string): void {
+    this.ensure();
     const db = PersistentStorageSqlite.getDb();
     db.prepare(`DELETE FROM "${this.table}" WHERE id = ?`).run(id);
   }

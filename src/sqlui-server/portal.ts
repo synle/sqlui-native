@@ -16,9 +16,10 @@
 
 import { spawn } from "node:child_process";
 import fs from "node:fs";
-import net from "node:net";
+import type { Server } from "node:http";
 import os from "node:os";
 import path from "node:path";
+import { serve } from "@hono/node-server";
 import { getDialectTypeFromConnectionString } from "src/common/adapters/DataScriptFactory";
 
 // ---------------------------------------------------------------------------
@@ -114,6 +115,26 @@ const PORTAL_SESSION_NAME = "Portal";
  */
 const DEFAULT_PORTAL_PORT = 19378;
 
+/**
+ * Bag-of-token regex matching every help-trigger we accept.
+ *
+ * Covered tokens (case-insensitive):
+ *   - bare word                : `help`
+ *   - GNU long  / short / alt  : `--help`, `-h`, `-?`
+ *   - single-dash multi-char   : `-help`            (Java / older C tools)
+ *   - bare question mark       : `?`                (DOS-era, some CLIs)
+ *   - Windows slash-prefix     : `/?`, `/help`
+ *
+ * `i` flag → also matches `-H`, `--HELP`, `Help`, etc.
+ */
+const HELP_TOKEN_RE = /^(help|--help|-help|-h|-\?|\?|\/\?|\/help)$/i;
+
+/**
+ * Bag-of-token regex matching every version-trigger we accept (case-insensitive).
+ * Covers: `version`, `--version`, `-version`, `-v`, `-V`, `/version`.
+ */
+const VERSION_TOKEN_RE = /^(version|--version|-version|-v|\/version)$/i;
+
 /** Parsed CLI options for portal mode. */
 type PortalOptions = {
   port: number;
@@ -121,36 +142,82 @@ type PortalOptions = {
   open: boolean;
   inputs: string[];
   help: boolean;
+  /** When true, print version string and exit. */
+  version: boolean;
+  /**
+   * Optional storage directory override (CLI flag `--home-dir` / `--config-path`).
+   * Wins over `SQLUI_HOME_DIR`, the `--use-desktop-storage` shortcut, and the default.
+   */
+  homeDir?: string;
+  /**
+   * When true, the portal uses the desktop app's storage dir (`~/.sqlui-native/`)
+   * instead of its own `~/.sqlui-portal/`. Connections show up in the desktop app
+   * as a "Portal" session. Equivalent to `--home-dir ~/.sqlui-native`. Lower
+   * precedence than an explicit `--home-dir` flag.
+   */
+  useDesktopStorage?: boolean;
 };
 
 /**
+ * Compile-time global injected by Vite's `define` in the portal build config.
+ * In dev (unbundled), `typeof` is "undefined" — falls back to runtime require
+ * on the source-tree package.json so the helper stays runnable in dev too.
+ */
+declare const __APP_VERSION__: string;
+
+/** Returns the app version string, or "" if it can't be resolved. */
+function getAppVersion(): string {
+  if (typeof __APP_VERSION__ !== "undefined" && __APP_VERSION__) return __APP_VERSION__;
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    return require("src/package.json").version || "";
+  } catch {
+    return "";
+  }
+}
+
+/**
  * Parses argv into PortalOptions.
+ *
  * Recognized flags:
- *   --port <n> / -p <n>   listen port (default 19378; falls back to random if busy)
- *   --host <h>            bind host (default 127.0.0.1; use 0.0.0.0 to expose on LAN)
- *   --no-open             don't auto-open the browser
- *   --help / -h           print usage
+ *   --port <n> / -p <n>          listen port (default 19378; falls back to random if busy)
+ *   --host <h>                   bind host (default 0.0.0.0 — exposed on LAN; use 127.0.0.1 for loopback only)
+ *   --home-dir / --config-path   override storage dir (highest priority)
+ *   --use-desktop-storage        share storage with the desktop app (~/.sqlui-native)
+ *   --no-open                    don't auto-open the browser
+ *   --help / -h / -? / /?        print usage
  * Everything else is treated as a positional connection input.
  */
 function parseArgs(argv: string[]): PortalOptions {
   const opts: PortalOptions = {
     port: DEFAULT_PORTAL_PORT,
-    host: "127.0.0.1",
+    // Default to 0.0.0.0 so the portal is reachable on the LAN out of the box —
+    // the primary use case is sharing a running portal with teammates / other devices.
+    // Use `--host 127.0.0.1` to restrict to loopback.
+    host: "0.0.0.0",
     open: true,
     inputs: [],
     help: false,
+    version: false,
   };
 
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i];
-    if (arg === "--help" || arg === "-h") {
+    if (HELP_TOKEN_RE.test(arg)) {
       opts.help = true;
+    } else if (VERSION_TOKEN_RE.test(arg)) {
+      opts.version = true;
     } else if (arg === "--port" || arg === "-p") {
       const n = parseInt(argv[++i] ?? "", 10);
       if (Number.isFinite(n) && n >= 0) opts.port = n;
     } else if (arg === "--host") {
       const h = argv[++i];
       if (h) opts.host = h;
+    } else if (arg === "--home-dir" || arg === "--config-path") {
+      const d = argv[++i];
+      if (d) opts.homeDir = d;
+    } else if (arg === "--use-desktop-storage") {
+      opts.useDesktopStorage = true;
     } else if (arg === "--no-open") {
       opts.open = false;
     } else if (arg === "--open") {
@@ -164,33 +231,108 @@ function parseArgs(argv: string[]): PortalOptions {
   return opts;
 }
 
-/** Prints CLI usage to stdout. */
+/** Prints CLI usage to stdout. Triggered by `help`, `--help`, `-h`, `-?`, or `/?`. */
 function printHelp(): void {
+  const version = getAppVersion();
+  const v = version ? ` v${version}` : "";
+
   console.log(
     [
-      "sqlui-portal — open a SQL/NoSQL connection in your browser",
+      `sqlui-portal${v} — open any SQL/NoSQL connection in your browser`,
+      `(phpMyAdmin / sqlite-web style; every dialect the desktop app supports)`,
       "",
-      "Usage:",
+      "USAGE",
       "  sqlui-portal [options] [connection...]",
       "",
-      "Options:",
-      `  --port <n>     listen port (default ${DEFAULT_PORTAL_PORT}; falls back to random if busy; 0 = random)`,
-      "  --host <host>  bind host (default 127.0.0.1; 0.0.0.0 exposes on LAN)",
-      "  --no-open      don't auto-open the browser",
-      "  -h, --help     show this help",
+      "OPTIONS",
+      `  -p, --port <n>             Listen port. Default ${DEFAULT_PORTAL_PORT}. Falls back to a`,
+      `                             random free port if the requested one is busy.`,
+      `                             Use 0 for OS-assigned random.`,
       "",
-      "Connection inputs (any number, deduped):",
-      "  ./mydata.sqlite                         (path → sqlite)",
-      "  sqlite:///absolute/path/to/db.sqlite",
-      "  postgres://user:pass@host:5432/db",
-      "  mysql://user:pass@host:3306/db",
-      "  mongodb://user:pass@host:27017",
-      "  redis://host:6379",
-      "  mssql://user:pass@host:1433",
-      "  cassandra://user:pass@host:9042",
+      "      --host <host>          Bind host. Default 0.0.0.0 (exposed on the LAN —",
+      "                             the banner prints the LAN URL too). Use 127.0.0.1",
+      "                             to restrict to loopback only.",
       "",
-      "All inputs are added to a single 'Portal' session in ~/.sqlui-portal/.",
-      "Running with the same input twice does NOT create a duplicate.",
+      "      --home-dir <path>      Storage directory override. Highest priority.",
+      "                             Default ~/.sqlui-portal (isolated from the",
+      "                             desktop app's ~/.sqlui-native).",
+      "      --config-path <path>   Alias for --home-dir.",
+      "",
+      "      --use-desktop-storage  Share storage with the desktop app",
+      "                             (writes to ~/.sqlui-native). Connections show",
+      "                             up in the desktop app under a 'Portal' session.",
+      "                             Equivalent to: --home-dir ~/.sqlui-native",
+      "",
+      "      --no-open              Don't auto-open the browser on start.",
+      "      --open                 Auto-open the browser (default).",
+      "",
+      "  Help        help | --help | -help | -h | -? | ? | /? | /help",
+      "              (case-insensitive)",
+      "  Version     version | --version | -version | -v | /version",
+      "              (case-insensitive)",
+      "",
+      "CONNECTION INPUTS",
+      "  Pass zero or more positional connection strings. Each is normalized,",
+      "  deduped against existing connections (idempotent — running twice with",
+      "  the same input is a no-op), and added to the Portal session.",
+      "",
+      "  • Bare path             ./mydata.sqlite",
+      "                          /var/data/db.sqlite3",
+      "                            (auto-resolved to sqlite:///<absolute-path>)",
+      "  • SQLite URL            sqlite:///absolute/path/to/db.sqlite",
+      "  • PostgreSQL            postgres://user:pass@host:5432/db",
+      "  • MySQL / MariaDB       mysql://user:pass@host:3306/db",
+      "                          mariadb://user:pass@host:3306/db",
+      "  • MS SQL Server         mssql://user:pass@host:1433",
+      "  • MongoDB               mongodb://user:pass@host:27017",
+      "  • Redis                 redis://host:6379",
+      "  • Cassandra             cassandra://user:pass@host:9042",
+      "  • Azure Table Storage   aztable://DefaultEndpointsProtocol=...",
+      "  • Azure CosmosDB        cosmosdb://AccountEndpoint=...;AccountKey=...",
+      '  • Salesforce            sfdc://{"username":"...","password":"..."}',
+      "  • REST / GraphQL        rest://https://api.example.com",
+      "                          graphql://https://api.example.com/graphql",
+      "",
+      "ENVIRONMENT VARIABLES",
+      "  SQLUI_HOME_DIR             Storage directory. Lower priority than",
+      "                             --home-dir / --use-desktop-storage; higher",
+      "                             than the default.",
+      "  NODE                       Override the Node binary the bash launcher uses.",
+      "",
+      "EXAMPLES",
+      "  # Open a SQLite file (auto-opens browser at http://127.0.0.1:19378):",
+      "  sqlui-portal ./mydata.sqlite",
+      "",
+      "  # Multiple connections, mixed dialects, in one shot:",
+      "  sqlui-portal ./local.sqlite \\",
+      "    postgres://u:p@db.example.com:5432/mydb \\",
+      "    mongodb://localhost:27017",
+      "",
+      "  # Pick a port + expose on the LAN (great for sharing on a dev box):",
+      "  sqlui-portal --port 8080 --host 0.0.0.0 ./shared.sqlite",
+      "",
+      "  # Throwaway session — fresh isolated dir every run, never persists:",
+      '  sqlui-portal --home-dir "$(mktemp -d)" ./mydata.sqlite',
+      "",
+      "  # Share with the desktop app — connections appear in your .app:",
+      "  sqlui-portal --use-desktop-storage ./mydata.sqlite",
+      "",
+      "  # Headless server: don't auto-open the browser:",
+      "  sqlui-portal --no-open --port 19378 ./mydata.sqlite",
+      "",
+      "STORAGE & SESSIONS",
+      "  Default storage dir is ~/.sqlui-portal — fully isolated from the",
+      "  desktop app's ~/.sqlui-native. Override with --home-dir or share with",
+      "  the desktop via --use-desktop-storage.",
+      "",
+      "  Every portal-added connection lives under a fixed 'Portal' session.",
+      "  Re-running with the same input is a no-op (deduped by canonical",
+      "  connection string).",
+      "",
+      "DOCS",
+      "  Project        https://github.com/synle/sqlui-native",
+      "  Releases       https://github.com/synle/sqlui-native/releases",
+      "  Issues         https://github.com/synle/sqlui-native/issues",
     ].join("\n"),
   );
 }
@@ -293,7 +435,7 @@ function openInBrowser(url: string): void {
 /**
  * Gracefully shuts down the HTTP server then exits.
  */
-function gracefulShutdown(server: net.Server, signal: string): void {
+function gracefulShutdown(server: Server, signal: string): void {
   console.log(`\nReceived ${signal}, shutting down portal...`);
   server.close(() => process.exit(0));
   setTimeout(() => process.exit(1), 5000).unref();
@@ -309,8 +451,25 @@ function gracefulShutdown(server: net.Server, signal: string): void {
     printHelp();
     process.exit(0);
   }
+  if (opts.version) {
+    console.log(getAppVersion() || "unknown");
+    process.exit(0);
+  }
 
-  console.log(`sqlui-portal — storage: ${process.env.SQLUI_HOME_DIR}`);
+  // Storage-dir resolution priority (highest first):
+  //   1. --home-dir / --config-path  (explicit override)
+  //   2. --use-desktop-storage       (sugar for ~/.sqlui-native)
+  //   3. existing process.env.SQLUI_HOME_DIR  (already set by bash launcher or caller)
+  //   4. portal.ts top-level default ~/.sqlui-portal (already set above)
+  //
+  // Setting SQLUI_HOME_DIR here is safe because getStorageDir() is lazy — it
+  // reads the env on its FIRST call, which happens inside initializeEndpoints()
+  // below. Anything that reads the storage dir before this point would be a bug.
+  if (opts.homeDir) {
+    process.env.SQLUI_HOME_DIR = path.resolve(opts.homeDir);
+  } else if (opts.useDesktopStorage) {
+    process.env.SQLUI_HOME_DIR = path.join(os.homedir(), ".sqlui-native");
+  }
 
   initializeEndpoints();
   mountStaticAssets(resolveAssetsDir(), injectSessionBootstrap);
@@ -324,24 +483,61 @@ function gracefulShutdown(server: net.Server, signal: string): void {
   }
 
   /**
-   * Prints the running URL and connection summary.
-   * Always called once the server is bound — every page load knows
-   * exactly which port it's on (per the user requirement).
+   * Prints a boxed config banner once the server is bound. Every page load knows
+   * exactly which port + storage dir it's on, plus the LAN URL when bound to 0.0.0.0.
    */
   const announce = (actualPort: number, fallback: boolean) => {
-    const url = `http://${opts.host}:${actualPort}`;
-    console.log("");
-    console.log(`▶ sqlui-portal running at ${url}`);
-    if (fallback) {
-      console.log(`  (port ${opts.port} was in use — fell back to random port ${actualPort})`);
-    }
+    // When bound to 0.0.0.0 the bind address itself isn't a friendly URL to
+    // click on (browsers tolerate it but it's ugly); show the loopback URL as
+    // the primary "URL" and the discovered LAN IP as a second "LAN" line.
+    const isWildcard = opts.host === "0.0.0.0";
+    const url = isWildcard ? `http://127.0.0.1:${actualPort}` : `http://${opts.host}:${actualPort}`;
+    const lanUrl = isWildcard ? `http://${getLanIp()}:${actualPort}` : null;
+    const lines = [
+      ["URL", url],
+      ...(lanUrl ? [["LAN", lanUrl] as [string, string]] : []),
+      ["Host", opts.host],
+      ["Port", String(actualPort) + (fallback ? `  (requested ${opts.port}, fell back)` : "")],
+      ["Storage", process.env.SQLUI_HOME_DIR || "(default)"],
+      ["PID", String(process.pid)],
+    ];
     if (opts.inputs.length > 0) {
-      console.log(`  ${added} new connection(s) added, ${opts.inputs.length - added} duplicate(s) skipped`);
+      lines.push(["Connections", `${added} added, ${opts.inputs.length - added} duplicate skipped`]);
     }
-    console.log(`  pid ${process.pid} — Ctrl+C to stop`);
+    const labelWidth = Math.max(...lines.map(([k]) => k.length));
+    const body = lines.map(([k, v]) => `  ${k.padEnd(labelWidth)}  ${v}`);
+    const width = Math.max(...body.map((s) => s.length), 50);
+    const bar = "═".repeat(width);
+    const version = getAppVersion();
+    const titleLine = version ? `  sqlui-portal v${version}` : `  sqlui-portal`;
+    console.log("");
+    console.log(`╔${bar}╗`);
+    console.log(`║${titleLine.padEnd(width)}║`);
+    console.log(`╠${bar}╣`);
+    for (const line of body) console.log(`║${line.padEnd(width)}║`);
+    console.log(`╚${bar}╝`);
+    console.log(`  Ctrl+C to stop`);
     console.log("");
     if (opts.open) openInBrowser(url);
   };
+
+  /**
+   * Best-effort LAN IPv4 address for the banner when the user bound to 0.0.0.0.
+   * Returns "0.0.0.0" if no non-loopback interface is found.
+   */
+  function getLanIp(): string {
+    try {
+      const ifaces = require("node:os").networkInterfaces();
+      for (const list of Object.values(ifaces) as any[]) {
+        for (const i of list || []) {
+          if (i.family === "IPv4" && !i.internal) return i.address;
+        }
+      }
+    } catch {
+      /* ignore */
+    }
+    return "0.0.0.0";
+  }
 
   /**
    * Starts the server on the requested port. If the requested port is busy,
@@ -349,11 +545,9 @@ function gracefulShutdown(server: net.Server, signal: string): void {
    * gets a working URL — and we print which port we ended up on.
    */
   const tryListen = (requestedPort: number, isFallback: boolean) => {
-    const server = app.listen(requestedPort, opts.host, () => {
-      const addr = server.address();
-      const actualPort = typeof addr === "object" && addr ? addr.port : requestedPort;
-      announce(actualPort, isFallback);
-    });
+    const server = serve({ fetch: app.fetch, port: requestedPort, hostname: opts.host }, (info) => {
+      announce(info.port, isFallback);
+    }) as Server;
 
     server.on("error", (err: NodeJS.ErrnoException) => {
       if (err.code === "EADDRINUSE" && !isFallback && requestedPort !== 0) {
