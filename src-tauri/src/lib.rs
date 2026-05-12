@@ -33,7 +33,7 @@ struct PlatformInfo {
     arch: String,
 }
 
-/// Returns the port the sidecar Express server is listening on.
+/// Returns the port the sidecar Hono server is listening on.
 #[tauri::command]
 fn get_sidecar_port(state: tauri::State<SidecarState>) -> u16 {
     state.port
@@ -161,7 +161,7 @@ fn find_system_node() -> Option<String> {
 }
 
 #[cfg(not(debug_assertions))]
-/// Spawns the Node.js sidecar Express server and waits for it to report its port.
+/// Spawns the Node.js sidecar Hono server and waits for it to report its port.
 fn spawn_sidecar(app: &tauri::App) -> Result<SidecarState, Box<dyn std::error::Error>> {
     let resource_dir = app
         .path()
@@ -451,7 +451,7 @@ pub fn run() {
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_opener::init())
         .setup(|app| {
-            // In debug/dev builds (`tauri dev`), the Express server is already
+            // In debug/dev builds (`tauri dev`), the Hono server is already
             // started by the `beforeDevCommand` (`npm run dev`) on port 3001.
             // Skip spawning a duplicate sidecar process; port 0 signals the frontend
             // to use relative URLs so the Vite proxy routes /api calls to port 3001.
