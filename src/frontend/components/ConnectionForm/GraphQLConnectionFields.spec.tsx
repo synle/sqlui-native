@@ -35,7 +35,7 @@ describe("GraphQLConnectionFields", () => {
     const { getByText } = render(<GraphQLConnectionFields connection={`graphql://{}`} setConnection={setConnection} />);
     fireEvent.click(getByText("Add Variable"));
     expect(setConnection).toHaveBeenCalled();
-    const last = setConnection.mock.calls.at(-1)?.[0];
+    const last = setConnection.mock.calls[setConnection.mock.calls.length - 1]?.[0];
     expect(last).toMatch(/^graphql:\/\//);
     expect(JSON.parse(last.slice("graphql://".length)).variables.length).toBe(1);
   });
@@ -53,7 +53,7 @@ describe("GraphQLConnectionFields", () => {
     const input = container.querySelector("input") as HTMLInputElement;
     fireEvent.change(input, { target: { value: "https://x/graphql" } });
     expect(setConnection).toHaveBeenCalled();
-    const last = setConnection.mock.calls.at(-1)?.[0];
+    const last = setConnection.mock.calls[setConnection.mock.calls.length - 1]?.[0];
     expect(JSON.parse(last.slice("graphql://".length)).ENDPOINT).toBe("https://x/graphql");
   });
 });
