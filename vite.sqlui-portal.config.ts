@@ -14,6 +14,10 @@ import { defineConfig, type Plugin } from "vite";
 import { emitEmbeddedAssetsPlugin } from "./scripts/vite-plugin-embed-frontend";
 import appPackage from "./package.json";
 
+/**
+ * Empty externals list — everything (Hono + subpaths like `hono/cors`, database drivers, etc.)
+ * gets bundled inline so the portal runs from a single self-contained `sqlui-portal.js`.
+ */
 const externalsDeps: string[] = [];
 
 const buildDir = path.resolve(__dirname, "build");
