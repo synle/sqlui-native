@@ -113,7 +113,9 @@ describe("schema/cached endpoint", () => {
   test("GET cached schema for unknown connection returns shape", async () => {
     const r = await json("GET", `/api/connection/unknown/database/anyDb/schema/cached`, sid);
     expect(r.status).toEqual(200);
-    expect(r.body).toEqual(expect.objectContaining({ databases: expect.any(Array), tables: expect.any(Array), columns: expect.any(Object) }));
+    expect(r.body).toEqual(
+      expect.objectContaining({ databases: expect.any(Array), tables: expect.any(Array), columns: expect.any(Object) }),
+    );
   });
 });
 

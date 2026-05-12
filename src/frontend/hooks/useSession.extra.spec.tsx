@@ -80,9 +80,7 @@ describe("useSession extra coverage", () => {
   });
 
   test("useDeleteSession backs up under soft-delete mode + calls deleteSession", async () => {
-    (dataApi.getConnectionsBySessionId as any).mockResolvedValueOnce([
-      { id: "c1", name: "X", connection: "mysql://x", status: "online" },
-    ]);
+    (dataApi.getConnectionsBySessionId as any).mockResolvedValueOnce([{ id: "c1", name: "X", connection: "mysql://x", status: "online" }]);
     const { result } = renderHook(() => useDeleteSession(), { wrapper });
     await act(async () => {
       await result.current.mutateAsync("sess-1");

@@ -62,8 +62,12 @@ describe("DataAdapterFactory.getConnectionMetaData", () => {
 
   beforeEach(() => {
     mockFiles.clear();
-    try { dbCache.delete(`databases:${FAKE_CONN_ID}`); } catch {}
-    try { tblCache.delete(`tables:${FAKE_CONN_ID}:db1`); } catch {}
+    try {
+      dbCache.delete(`databases:${FAKE_CONN_ID}`);
+    } catch {}
+    try {
+      tblCache.delete(`tables:${FAKE_CONN_ID}:db1`);
+    } catch {}
   });
 
   test("offline status when adapter throws", async () => {
@@ -103,8 +107,12 @@ describe("DataAdapterFactory.getDatabases / getTables", () => {
 
   beforeEach(async () => {
     mockFiles.clear();
-    try { dbCache.delete(`databases:${CID}`); } catch {}
-    try { tblCache.delete(`tables:${CID}:db1`); } catch {}
+    try {
+      dbCache.delete(`databases:${CID}`);
+    } catch {}
+    try {
+      tblCache.delete(`tables:${CID}:db1`);
+    } catch {}
   });
 
   test("getDatabases throws when connection not found", async () => {
@@ -121,7 +129,9 @@ describe("DataAdapterFactory.getDatabases / getTables", () => {
     expect(dbs.map((d) => d.name)).toEqual(["alpha"]);
 
     // cleanup
-    try { connStore.delete(CID); } catch {}
+    try {
+      connStore.delete(CID);
+    } catch {}
   });
 
   test("getTables throws when connection not found", async () => {
@@ -132,11 +142,16 @@ describe("DataAdapterFactory.getDatabases / getTables", () => {
     const connStore = await getConnectionsStorage(SID);
     connStore.add({ id: CID, name: "C", connection: "mysql://localhost/x" });
 
-    seedTableCache(CID, "db1", [{ name: "t1", columns: [] }, { name: "t2", columns: [] }]);
+    seedTableCache(CID, "db1", [
+      { name: "t1", columns: [] },
+      { name: "t2", columns: [] },
+    ]);
     const tables = await getTables(SID, CID, "db1");
     expect(tables.map((t) => t.name)).toEqual(["t1", "t2"]);
 
-    try { connStore.delete(CID); } catch {}
+    try {
+      connStore.delete(CID);
+    } catch {}
   });
 
   test("getDatabases for managed adapter (rest) auto-seeds Folder 1", async () => {
@@ -151,7 +166,9 @@ describe("DataAdapterFactory.getDatabases / getTables", () => {
     expect(dbs.length).toBeGreaterThanOrEqual(1);
     expect(dbs[0].name).toBe("Folder 1");
 
-    try { connStore.delete(CID + "-rest"); } catch {}
+    try {
+      connStore.delete(CID + "-rest");
+    } catch {}
   });
 });
 
@@ -163,7 +180,9 @@ describe("DataAdapterFactory.getColumns + cleanAndSortColumns", () => {
 
   beforeEach(() => {
     mockFiles.clear();
-    try { colCache.delete(`${CID}:${DB}:${TBL}`); } catch {}
+    try {
+      colCache.delete(`${CID}:${DB}:${TBL}`);
+    } catch {}
   });
 
   test("returns cached columns immediately when present", async () => {
@@ -176,7 +195,9 @@ describe("DataAdapterFactory.getColumns + cleanAndSortColumns", () => {
     expect(cols.map((c: any) => c.name)).toEqual(["id", "email", "name"]); // already sorted by cleanAndSortColumns at write time? Actually cached as-is.
 
     // cleanup
-    try { colCache.delete(`${CID}:${DB}:${TBL}`); } catch {}
+    try {
+      colCache.delete(`${CID}:${DB}:${TBL}`);
+    } catch {}
   });
 
   test("returns [] when not cached and adapter fails (refresh throws)", async () => {
@@ -184,7 +205,9 @@ describe("DataAdapterFactory.getColumns + cleanAndSortColumns", () => {
     connStore.add({ id: CID, name: "C", connection: "mysql://localhost/x" });
     const cols = await getColumns(SID, CID, DB, TBL);
     expect(Array.isArray(cols)).toBe(true);
-    try { connStore.delete(CID); } catch {}
+    try {
+      connStore.delete(CID);
+    } catch {}
   });
 });
 
@@ -198,7 +221,9 @@ describe("DataAdapterFactory cache clear helpers (extra)", () => {
     // Direct cache reads return undefined
     expect(tblCache.get(`tables:${id}:db1`)).toBeFalsy();
     // cleanup leftover
-    try { dbCache.delete(`databases:${id}`); } catch {}
+    try {
+      dbCache.delete(`databases:${id}`);
+    } catch {}
   });
 
   test("clearCachedColumns scoped to connection removes those columns", () => {

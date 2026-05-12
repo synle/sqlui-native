@@ -29,7 +29,10 @@ import { DataTableWithJSONList, ALL_PAGE_SIZE_OPTIONS, DEFAULT_TABLE_PAGE_SIZE }
 
 describe("DataTableWithJSONList", () => {
   test("auto-generates columns from row keys + row-number col, renders Modern", () => {
-    const data = [{ id: 1, name: "Acme" }, { id: 2, name: "Globex" }];
+    const data = [
+      { id: 1, name: "Acme" },
+      { id: 2, name: "Globex" },
+    ];
     const { getByTestId } = render(<DataTableWithJSONList data={data as any} />);
     expect(getByTestId("modern-table")).toBeTruthy();
     expect(getByTestId("col-count").textContent).toBe("3"); // # + id + name

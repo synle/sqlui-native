@@ -143,7 +143,10 @@ describe("useFolderItems extra mutations", () => {
         name: "s",
         type: "Session",
         data: { name: "s" },
-        connections: [{ name: "c1", connection: "mysql://1" }, { name: "c2", connection: "mysql://2" }],
+        connections: [
+          { name: "c1", connection: "mysql://1" },
+          { name: "c2", connection: "mysql://2" },
+        ],
       } as any);
     });
     expect(dataApi.upsertConnectionForSession).toHaveBeenCalledTimes(2);

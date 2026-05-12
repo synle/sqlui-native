@@ -7,20 +7,17 @@ import React from "react";
 vi.mock("src/frontend/data/api", () => ({
   default: {
     getConnectionDatabases: vi.fn().mockResolvedValue([{ name: "db1", tables: [] }]),
-    getConnectionTables: vi.fn().mockResolvedValue([{ name: "t1", columns: [] }, { name: "t2", columns: [] }]),
+    getConnectionTables: vi.fn().mockResolvedValue([
+      { name: "t1", columns: [] },
+      { name: "t2", columns: [] },
+    ]),
     getConnectionColumns: vi.fn().mockResolvedValue([{ name: "id", type: "int" }]),
     getCachedSchema: vi.fn().mockResolvedValue({ databases: [], tables: [], columns: {} }),
   },
 }));
 
 import dataApi from "src/frontend/data/api";
-import {
-  useGetDatabases,
-  useGetTables,
-  useGetCachedSchema,
-  useGetAllTableColumns,
-  useGetColumns,
-} from "src/frontend/hooks/useSchema";
+import { useGetDatabases, useGetTables, useGetCachedSchema, useGetAllTableColumns, useGetColumns } from "src/frontend/hooks/useSchema";
 
 function wrapper({ children }: { children: React.ReactNode }) {
   const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });

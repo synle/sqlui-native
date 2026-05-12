@@ -92,11 +92,7 @@ describe("ConcreteDataScripts class", () => {
   });
 
   test("getCodeSnippet returns a string for a valid query", () => {
-    const out = GraphQLDataAdapterScripts.getCodeSnippet(
-      {} as any,
-      { sql: "{ continents { code name } }" } as any,
-      "fetch",
-    );
+    const out = GraphQLDataAdapterScripts.getCodeSnippet({} as any, { sql: "{ continents { code name } }" } as any, "fetch");
     expect(typeof out).toBe("string");
   });
 });

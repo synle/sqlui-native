@@ -7,7 +7,13 @@ vi.mock("src/frontend/components/MissionControl", () => ({
 }));
 
 vi.mock("src/frontend/hooks/useSession", () => ({
-  useGetSessions: () => ({ data: [{ id: "s1", name: "S1" }, { id: "s2", name: "S2" }], isLoading: false }),
+  useGetSessions: () => ({
+    data: [
+      { id: "s1", name: "S1" },
+      { id: "s2", name: "S2" },
+    ],
+    isLoading: false,
+  }),
   useGetCurrentSession: () => ({ data: { id: "s1", name: "S1" } }),
   useUpsertSession: () => ({ mutateAsync: vi.fn(), isPending: false }),
   useSelectSession: () => ({ mutateAsync: vi.fn() }),

@@ -10,12 +10,7 @@ vi.mock("src/frontend/hooks/useSetting", () => ({
   useMaxToastsSetting: () => 5,
 }));
 
-import {
-  setMaxToasts,
-  getToastHistory,
-  dismissHistoryEntry,
-  dismissAllHistoryEntries,
-} from "src/frontend/hooks/useToaster";
+import { setMaxToasts, getToastHistory, dismissHistoryEntry, dismissAllHistoryEntries } from "src/frontend/hooks/useToaster";
 
 describe("useToaster module-level helpers", () => {
   beforeEach(() => {
