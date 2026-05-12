@@ -2,7 +2,7 @@
  * Vite build configuration for the sqlui-portal single-file bundle.
  *
  * Produces `dist/portal/sqlui-portal.js` — a self-contained Node script that:
- *   - bundles all pure-JS dependencies (Express, db drivers, …) inline (no node_modules needed)
+ *   - bundles all pure-JS dependencies (Hono, db drivers, …) inline (no node_modules needed)
  *   - embeds the frontend `build/` directory as a base64 map (extracted to a temp dir at runtime)
  *
  * Run after `npm run build` so `build/index.html` and `build/assets/` exist for embedding.

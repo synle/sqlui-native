@@ -16,9 +16,10 @@
 
 import { spawn } from "node:child_process";
 import fs from "node:fs";
-import net from "node:net";
+import type { Server } from "node:http";
 import os from "node:os";
 import path from "node:path";
+import { serve } from "@hono/node-server";
 import { getDialectTypeFromConnectionString } from "src/common/adapters/DataScriptFactory";
 
 // ---------------------------------------------------------------------------
@@ -434,7 +435,7 @@ function openInBrowser(url: string): void {
 /**
  * Gracefully shuts down the HTTP server then exits.
  */
-function gracefulShutdown(server: net.Server, signal: string): void {
+function gracefulShutdown(server: Server, signal: string): void {
   console.log(`\nReceived ${signal}, shutting down portal...`);
   server.close(() => process.exit(0));
   setTimeout(() => process.exit(1), 5000).unref();
@@ -544,11 +545,9 @@ function gracefulShutdown(server: net.Server, signal: string): void {
    * gets a working URL — and we print which port we ended up on.
    */
   const tryListen = (requestedPort: number, isFallback: boolean) => {
-    const server = app.listen(requestedPort, opts.host, () => {
-      const addr = server.address();
-      const actualPort = typeof addr === "object" && addr ? addr.port : requestedPort;
-      announce(actualPort, isFallback);
-    });
+    const server = serve({ fetch: app.fetch, port: requestedPort, hostname: opts.host }, (info) => {
+      announce(info.port, isFallback);
+    }) as Server;
 
     server.on("error", (err: NodeJS.ErrnoException) => {
       if (err.code === "EADDRINUSE" && !isFallback && requestedPort !== 0) {

@@ -1,9 +1,11 @@
-/** Entry point for the sqlui-server. Starts Express on localhost with graceful shutdown. */
+/** Entry point for the sqlui-server. Starts the Hono app on localhost with graceful shutdown. */
 import { execSync } from "node:child_process";
+import type { Server } from "node:http";
 import fs from "node:fs";
 import net from "node:net";
 import os from "node:os";
 import path from "node:path";
+import { serve } from "@hono/node-server";
 import { app, initializeEndpoints, mountStaticAssets, port as defaultPort } from "src/sqlui-server/server";
 
 initializeEndpoints();
@@ -111,7 +113,7 @@ function killProcessOnPort(targetPort: number): void {
  * @param server - The HTTP server instance to close.
  * @param signal - The signal or reason for shutdown.
  */
-function gracefulShutdown(server: net.Server, signal: string): void {
+function gracefulShutdown(server: Server, signal: string): void {
   console.log(`\nReceived ${signal}, shutting down server...`);
   server.close(() => {
     console.log("Server closed.");
@@ -131,13 +133,11 @@ function gracefulShutdown(server: net.Server, signal: string): void {
  * Monitors stdin — when the parent Tauri process exits, stdin closes and the sidecar shuts down.
  */
 function startSidecar(): void {
-  const server = app.listen(0, HOST, () => {
-    const addr = server.address();
-    const port = typeof addr === "object" && addr ? addr.port : 0;
+  const server = serve({ fetch: app.fetch, port: 0, hostname: HOST }, (info) => {
     // The Rust host reads this exact marker from stdout to discover the port
-    console.log(`__SIDECAR_PORT__=${port}`);
-    console.log(`SQLUI Native Server (sidecar) started on http://${HOST}:${port} (pid: ${process.pid})`);
-  });
+    console.log(`__SIDECAR_PORT__=${info.port}`);
+    console.log(`SQLUI Native Server (sidecar) started on http://${HOST}:${info.port} (pid: ${process.pid})`);
+  }) as Server;
 
   server.on("error", (err: NodeJS.ErrnoException) => {
     console.error("Sidecar server error:", err);
@@ -164,9 +164,9 @@ async function startStandalone(): Promise<void> {
     await new Promise((resolve) => setTimeout(resolve, 500));
   }
 
-  const server = app.listen(defaultPort, HOST, () => {
-    console.log(`SQLUI Native Server started on http://${HOST}:${defaultPort} (pid: ${process.pid})`);
-  });
+  const server = serve({ fetch: app.fetch, port: defaultPort, hostname: HOST }, (info) => {
+    console.log(`SQLUI Native Server started on http://${HOST}:${info.port} (pid: ${process.pid})`);
+  }) as Server;
 
   server.on("error", (err: NodeJS.ErrnoException) => {
     if (err.code === "EADDRINUSE") {
