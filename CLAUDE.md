@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-SQLUI Native is a cross-platform desktop SQL/NoSQL database client and REST API client supporting MySQL, MariaDB, MSSQL, PostgreSQL, SQLite, Cassandra, MongoDB, Redis, Azure CosmosDB, Azure Table Storage, Salesforce (SFDC), and REST API (curl/fetch). The desktop shell uses **Tauri v2** with a **Node.js sidecar** (Express server).
+SQLUI Native is a cross-platform desktop SQL/NoSQL database client and REST API client supporting MySQL, MariaDB, MSSQL, PostgreSQL, SQLite, Cassandra, MongoDB, Redis, Azure CosmosDB, Azure Table Storage, Salesforce (SFDC), and REST API (curl/fetch). The desktop shell uses **Tauri v2** with a **Node.js sidecar** (Hono server).
 
 ## Commands
 
@@ -55,7 +55,7 @@ npx vitest run --config vitest.integration.config.ts src/common/adapters/Relatio
 
 ### Three Runtime Modes
 
-The app runs in **Tauri mode** (`npx tauri dev` / `npx tauri build`), **browser dev mode** (`npm run dev`), or **portal mode** (`npm run build:portal` → `./dist/portal/sqlui-portal`). All three share the same backend code in `src/common/`. The frontend communicates with the backend via HTTP through the sqlui-server (Express).
+The app runs in **Tauri mode** (`npx tauri dev` / `npx tauri build`), **browser dev mode** (`npm run dev`), or **portal mode** (`npm run build:portal` → `./dist/portal/sqlui-portal`). All three share the same backend code in `src/common/`. The frontend communicates with the backend via HTTP through the sqlui-server (Hono).
 
 - **Tauri mode**: Server runs as a Node.js **sidecar process** on a dynamic port; frontend served by Tauri from `frontendDist`.
 - **Browser dev mode**: Server runs standalone on port 3001; frontend served by Vite dev server on port 3000.
@@ -69,7 +69,7 @@ A self-contained web portal distribution. Entry point: `src/sqlui-server/portal.
 - **Single fixed session**: All requests run under session id `"portal"`. Frontend bootstraps via `window.__SQLUI_PORTAL_SESSION__` injected into served `index.html`.
 - **CLI inputs**: Positional args are parsed as connection strings (any dialect URL or a SQLite file path). Each is normalized, deduped against existing connections by canonical connection string, and added to the portal session.
 - **Default port**: `19378` (rare). Falls back to a random port on EADDRINUSE; always echoes the running URL on boot.
-- **Asset embedding**: Frontend `build/` dir is base64-encoded into a sibling `sqlui-portal-assets.json` (NOT inlined via Vite `define` — multi-MB literals expand catastrophically through minification). The runtime decodes the JSON into `os.tmpdir()/sqlui-portal-<pid>/` and points `express.static` there.
+- **Asset embedding**: Frontend `build/` dir is base64-encoded into a sibling `sqlui-portal-assets.json` (NOT inlined via Vite `define` — multi-MB literals expand catastrophically through minification). The runtime decodes the JSON into `os.tmpdir()/sqlui-portal-<pid>/` and points Hono's `serveStatic` there.
 
 The same embed mechanism (`scripts/vite-plugin-embed-frontend.ts → emitEmbeddedAssetsPlugin`) is reused by the desktop sidecar config (`vite.sqlui-server.sidecar.config.ts`), so `build/sqlui-server.js` ships with `build/sqlui-server-assets.json`. The sidecar entry (`src/sqlui-server/index.ts`) calls `mountStaticAssets` when the JSON sibling is present, letting the same server binary serve UI in both Tauri-sidecar and standalone modes — one code path, three callers.
 
@@ -87,7 +87,7 @@ The same embed mechanism (`scripts/vite-plugin-embed-frontend.ts → emitEmbedde
 
 - **CSP**: `tauri.conf.json` must allow `connect-src http://127.0.0.1:*` and `https://api.github.com`. Use `dangerousDisableAssetCspModification: ["style-src"]` for MUI/Emotion
 - **crossorigin attributes**: Vite adds `crossorigin` to `<script>`/`<link>` tags which breaks `tauri://` protocol. The `strip-crossorigin` plugin in `vite.frontend.config.ts` removes them
-- **CORS**: Express needs `Access-Control-Allow-Origin: *` because the frontend runs on `tauri://localhost`
+- **CORS**: The Hono server applies `Access-Control-Allow-Origin: *` because the frontend runs on `tauri://localhost`
 - **`src-tauri/resources/`**: Must exist before `cargo build`. In CI, run `mkdir -p src-tauri/resources && npm run build:tauri` before `cargo test` or `tauri build`
 - **App location**: Production `.app` must run from `/Applications/` or DMG mount
 
@@ -117,7 +117,7 @@ Forbidden imports from frontend-reachable code:
 - **`src/frontend/`** - React 19 UI (MUI v9, React Query, Monaco Editor, React Router v7)
 - **`src-tauri/`** - Tauri v2 Rust shell (sidecar management, native menus, window lifecycle)
 - **`src/common/`** - Shared backend: database adapters, API endpoint handlers, persistent storage
-- **`src/sqlui-server/`** - Express server (Tauri sidecar in production, standalone in dev)
+- **`src/sqlui-server/`** - Hono server (Tauri sidecar in production, standalone in dev)
 - **`typings/index.ts`** - Central type definitions
 
 ### Database Adapter Pattern

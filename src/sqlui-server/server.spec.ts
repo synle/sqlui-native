@@ -1,9 +1,72 @@
-import supertest from "supertest";
 import { app, initializeEndpoints } from "src/sqlui-server/server";
 
 initializeEndpoints();
 
-const requestWithSupertest = supertest(app);
+/**
+ * Minimal supertest-style fluent wrapper around Hono's `app.request()`.
+ * Exposes `.get/.post/.put/.delete`, each returning a builder with `.set(headers)`,
+ * `.send(body)`, and a `then` that resolves to `{ status, type, body, headers }`.
+ */
+function makeRequester(honoApp: typeof app) {
+  type ReqInit = {
+    method: string;
+    path: string;
+    body?: any;
+    headers: Record<string, string>;
+  };
+
+  function build(method: string, p: string) {
+    const init: ReqInit = { method, path: p, headers: {} };
+    const builder: any = {
+      set(headers: Record<string, string>) {
+        Object.assign(init.headers, headers);
+        return builder;
+      },
+      send(body: any) {
+        init.body = body;
+        return builder;
+      },
+      then(resolve: (v: any) => any, reject?: (e: any) => any) {
+        return run(init).then(resolve, reject);
+      },
+    };
+    return builder;
+  }
+
+  async function run(init: ReqInit) {
+    const headers: Record<string, string> = { ...init.headers };
+    let body: any = undefined;
+    if (init.body !== undefined && (init.method === "POST" || init.method === "PUT" || init.method === "DELETE")) {
+      headers["content-type"] = headers["content-type"] || "application/json";
+      body = JSON.stringify(init.body);
+    }
+    const res = await honoApp.request(init.path, { method: init.method, headers, body });
+    const type = res.headers.get("content-type") || "";
+    const text = await res.text();
+    let parsed: any = text;
+    if (type.includes("application/json")) {
+      try {
+        parsed = JSON.parse(text);
+      } catch {
+        parsed = text;
+      }
+    }
+    const headersOut: Record<string, string> = {};
+    res.headers.forEach((v, k) => {
+      headersOut[k.toLowerCase()] = v;
+    });
+    return { status: res.status, type, body: parsed, headers: headersOut, text };
+  }
+
+  return {
+    get: (p: string) => build("GET", p),
+    post: (p: string) => build("POST", p),
+    put: (p: string) => build("PUT", p),
+    delete: (p: string) => build("DELETE", p),
+  };
+}
+
+const requestWithSupertest = makeRequester(app);
 
 function _getCommonHeaders(mockedSessionId) {
   return {
