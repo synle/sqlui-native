@@ -91,7 +91,6 @@
     "js-beautify": "^1.15.4",
     "jsforce": "^3.10.14",
     "json-2-csv": "^5.5.10",
-    "lodash.set": "^4.3.2",
     "monaco-editor": "^0.55.1",
     "mongodb": "^4.10.0",
     "mustache": "^4.2.0",
