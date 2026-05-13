@@ -1,5 +1,7 @@
-// Prevents additional console window on Windows in release.
-#![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
+// NOTE: the `windows_subsystem = "windows"` attribute must live on the binary
+// root (`main.rs`), not here. An inner attribute on `lib.rs` is silently
+// ignored and leaves the binary as a console-subsystem program, which pops
+// a console window on Windows in release builds.
 
 use serde::Serialize;
 #[cfg(not(debug_assertions))]
