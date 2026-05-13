@@ -545,4 +545,48 @@ mod tests {
         let err = result.unwrap_err();
         assert!(err.contains("Failed to read file"), "error: {}", err);
     }
+
+    /// Regression test for the v3.1.8 → v3.1.9 Windows console-window bug.
+    ///
+    /// The `windows_subsystem = "windows"` attribute only takes effect on the
+    /// binary's root source file (`main.rs`). Rust silently accepts the inner
+    /// attribute on `lib.rs` but ignores it for the binary's subsystem header,
+    /// which causes the release binary to build as a console-subsystem app and
+    /// pop a console window on launch (Windows allocates one for every
+    /// console-subsystem GUI app).
+    ///
+    /// This test fails the build if the attribute drifts back to `lib.rs` or
+    /// disappears from `main.rs`.
+    #[test]
+    fn windows_subsystem_attribute_lives_on_binary_root() {
+        let main_rs = include_str!("main.rs");
+        let lib_rs = include_str!("lib.rs");
+
+        let needle = "#![cfg_attr(not(debug_assertions), windows_subsystem = \"windows\")]";
+        assert!(
+            main_rs.contains(needle),
+            "src-tauri/src/main.rs MUST contain `{}` — without it the Windows \
+             release binary builds as a console-subsystem app and pops a console \
+             window. See the v3.1.9 fix.",
+            needle
+        );
+
+        // The attribute is silently ignored on `lib.rs`. Allow the literal
+        // substring to appear only inside a comment (the breadcrumb we leave
+        // behind), never as an active inner attribute.
+        let mut in_comment_only = true;
+        for line in lib_rs.lines() {
+            let trimmed = line.trim_start();
+            if trimmed.contains(needle) && !trimmed.starts_with("//") {
+                in_comment_only = false;
+                break;
+            }
+        }
+        assert!(
+            in_comment_only,
+            "src-tauri/src/lib.rs MUST NOT carry the `windows_subsystem` inner \
+             attribute as live code — it is silently ignored there. Move it to \
+             `main.rs`. See the v3.1.9 fix."
+        );
+    }
 }
