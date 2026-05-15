@@ -6,18 +6,19 @@ import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import EditIcon from "@mui/icons-material/Edit";
 import PushPinIcon from "@mui/icons-material/PushPin";
 import PushPinOutlinedIcon from "@mui/icons-material/PushPinOutlined";
+import SaveIcon from "@mui/icons-material/Save";
 import StarIcon from "@mui/icons-material/Star";
 import Alert from "@mui/material/Alert";
 import CircularProgress from "@mui/material/CircularProgress";
 import Link from "@mui/material/Link";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import DropdownButton from "src/frontend/components/DropdownButton";
 import { allMenuKeys, useCommands } from "src/frontend/components/MissionControl";
 import { platform } from "src/frontend/platform";
 import QueryBox from "src/frontend/components/QueryBox";
 import Tabs from "src/frontend/components/Tabs";
 import { useConnectionQueries } from "src/frontend/hooks/useConnectionQuery";
-import { useQueryTabOrientationSetting } from "src/frontend/hooks/useSetting";
+import { useIsQueryTabAutoSaveEnabled, useQueryTabOrientationSetting } from "src/frontend/hooks/useSetting";
 import { SqluiFrontend } from "typings";
 
 /**
@@ -27,9 +28,11 @@ import { SqluiFrontend } from "typings";
  */
 export default function QueryBoxTabs() {
   const [init, setInit] = useState(false);
-  const { queries, isLoading } = useConnectionQueries();
+  const { queries, isLoading, onSaveQueries } = useConnectionQueries();
   const { selectCommand } = useCommands();
   const queryTabOrientation = useQueryTabOrientationSetting();
+  const isQueryTabAutoSaveEnabled = useIsQueryTabAutoSaveEnabled();
+  const previousAutoSaveEnabledRef = useRef(isQueryTabAutoSaveEnabled);
 
   const onShowQuery = useCallback(
     (data: SqluiFrontend.ConnectionQuery) => selectCommand({ event: "clientEvent/query/show", data }),
@@ -68,6 +71,13 @@ export default function QueryBoxTabs() {
     [selectCommand],
   );
 
+  const onSaveQuery = useCallback(
+    (data: SqluiFrontend.ConnectionQuery) => selectCommand({ event: "clientEvent/query/save", data }),
+    [selectCommand],
+  );
+
+  const onSaveAllQueries = useCallback(() => selectCommand({ event: "clientEvent/query/saveAll" }), [selectCommand]);
+
   const onAddToBookmark = useCallback(
     (data: SqluiFrontend.ConnectionQuery) => selectCommand({ event: "clientEvent/query/addToBookmark", data }),
     [selectCommand],
@@ -94,6 +104,16 @@ export default function QueryBoxTabs() {
     }
   }, [isLoading, queries, init]);
 
+  // When a user flips Manual Save Only back to Auto-save, register any manual-mode client-generated tabs immediately.
+  useEffect(() => {
+    const wasAutoSaveEnabled = previousAutoSaveEnabledRef.current;
+    previousAutoSaveEnabledRef.current = isQueryTabAutoSaveEnabled;
+
+    if (!wasAutoSaveEnabled && isQueryTabAutoSaveEnabled && !isLoading && queries && queries.length > 0) {
+      onSaveQueries().catch((err) => console.error("QueryBoxTabs:onSaveQueries", err));
+    }
+  }, [isQueryTabAutoSaveEnabled, isLoading, queries, onSaveQueries]);
+
   // this section is specific to electron
   // we only want to show the query menu for
   // electron only when we can see the query tabs...
@@ -112,6 +132,17 @@ export default function QueryBoxTabs() {
     () => [
       ...(queries || []).map((q, idx) => {
         let options = [
+          {
+            label: "Save",
+            onClick: () => onSaveQuery(q),
+            startIcon: <SaveIcon />,
+          },
+          {
+            label: "Save All Tabs",
+            onClick: () => onSaveAllQueries(),
+            startIcon: <SaveIcon />,
+          },
+          { label: "divider" },
           {
             label: "Add to Bookmark",
             onClick: () => onAddToBookmark(q),

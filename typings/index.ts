@@ -211,6 +211,10 @@ export module SqluiCore {
      * @type {boolean} whether or not a query is pinned and can't be closed
      */
     pinned?: boolean;
+    /** Tab order used when restoring the query workspace. */
+    tabOrder?: number;
+    /** Whether this query tab was selected when the workspace was saved. */
+    selected?: boolean;
     /** Creation timestamp (epoch ms). Auto-set by PersistentStorage on add. */
     createdAt?: number;
     /** Last update timestamp (epoch ms). Auto-set by PersistentStorage on add/update. */
@@ -378,6 +382,7 @@ export module SqluiFrontend {
      */
     querySelectionMode?: "same-tab" | "new-tab";
     deleteMode?: "soft-delete" | "hard-delete";
+    queryTabPersistenceMode?: "auto" | "manual";
   };
 
   /** Valid keys for accessing individual settings. */
@@ -544,5 +549,7 @@ export module SqluiEnums {
     | "clientEvent/showSettings"
     | "clientEvent/tableRenderer"
     | "clientEvent/toggleDevtools"
-    | "clientEvent/toggleSidebar";
+    | "clientEvent/toggleSidebar"
+    | "clientEvent/query/save"
+    | "clientEvent/query/saveAll";
 }

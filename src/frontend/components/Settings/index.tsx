@@ -108,6 +108,22 @@ export default function Settings(): React.JSX.Element | null {
           </Select>
         </div>
         <Typography className="FormInput__Label" variant="subtitle1">
+          Query Tab Persistence
+          <Tooltip title="Auto-save restores all open query tabs after reopening the app. Manual saves only when using the tab save actions.">
+            <HelpIcon fontSize="small" sx={{ ml: 1 }} />
+          </Tooltip>
+        </Typography>
+        <div className="FormInput__Row">
+          <Select
+            value={settings.queryTabPersistenceMode || "auto"}
+            onChange={(newValue) => onSettingChange("queryTabPersistenceMode", newValue)}
+            sx={{ width: "100%" }}
+          >
+            <option value="auto">Auto-save Open Tabs</option>
+            <option value="manual">Manual Save Only</option>
+          </Select>
+        </div>
+        <Typography className="FormInput__Label" variant="subtitle1">
           Editor Mode
           <Tooltip title="Which editor to use? Simple Editor vs Advanced Editor">
             <HelpIcon fontSize="small" sx={{ ml: 1 }} />

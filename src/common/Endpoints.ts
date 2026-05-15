@@ -38,6 +38,7 @@ const DEFAULT_SETTINGS = {
   animationMode: "on",
   layoutMode: "compact",
   querySelectionMode: "new-tab",
+  queryTabPersistenceMode: "auto",
   editorMode: "advanced",
   tableRenderer: "advanced",
   wordWrap: "wrap",

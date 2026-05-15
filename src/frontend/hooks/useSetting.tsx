@@ -25,6 +25,7 @@ export function useSetting() {
     animationMode: serverConfigs?.animationMode,
     layoutMode: serverConfigs?.layoutMode,
     querySelectionMode: serverConfigs?.querySelectionMode,
+    queryTabPersistenceMode: serverConfigs?.queryTabPersistenceMode,
     editorMode: serverConfigs?.editorMode,
     editorHeight: serverConfigs?.editorHeight,
     tableRenderer: serverConfigs?.tableRenderer,
@@ -151,6 +152,15 @@ export function useWordWrapSetting() {
 export function useQueryTabOrientationSetting() {
   const { settings } = useSetting();
   return settings?.queryTabOrientation;
+}
+
+/**
+ * Hook returning whether query tabs should be saved automatically.
+ * @returns True unless the user explicitly selects manual query tab persistence.
+ */
+export function useIsQueryTabAutoSaveEnabled() {
+  const { settings } = useSetting();
+  return settings?.queryTabPersistenceMode !== "manual";
 }
 
 /** Default number of rows to return per query execution. */
