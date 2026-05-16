@@ -1,6 +1,6 @@
 import BackupIcon from "@mui/icons-material/Backup";
 import LoadingButton from "@mui/lab/LoadingButton";
-import { Button, Link, Skeleton, TextField, Typography } from "@mui/material";
+import { Button, Checkbox, FormControlLabel, Link, Skeleton, TextField, Typography } from "@mui/material";
 import { useSearchParams } from "react-router";
 import { useNavigate } from "src/frontend/utils/commonUtils";
 import React, { useEffect, useState } from "react";
@@ -33,9 +33,12 @@ import {
 } from "src/common/adapters/MongoDBDataAdapter/scripts";
 import {
   getBulkInsert as getBulkInsertForRdbms,
+  getBulkUpsert as getBulkUpsertForRdbms,
   getCreateDatabase as getCreateDatabaseForRdbms,
   getCreateTable as getCreateTableForRdbms,
+  getForeignKeyToggle as getForeignKeyToggleForRdbms,
 } from "src/common/adapters/RelationalDataAdapter/scripts";
+import { getBulkInsert as getBulkInsertForSalesforce } from "src/common/adapters/SalesforceDataAdapter/scripts";
 import CodeEditorBox from "src/frontend/components/CodeEditorBox";
 import ConnectionDatabaseSelector from "src/frontend/components/QueryBox/ConnectionDatabaseSelector";
 import Select from "src/frontend/components/Select";
@@ -141,7 +144,7 @@ function ColumnSelector(props: ColumnSelectorProps): React.JSX.Element | null {
  * @param migrationMetaData - Additional migration configuration (e.g., Azure Table keys).
  * @returns A tuple of [migrationScript, errors] strings.
  */
-async function generateMigrationScript(
+export async function generateMigrationScript(
   toDialect: SqluiCore.Dialect | undefined,
   toDatabaseId: string,
   toTableId: string | undefined,
@@ -220,6 +223,17 @@ async function generateMigrationScript(
       res.push(`// Schema Creation Script : ${migrationInfoMessage}`);
       res.push(formatJS(getCreateTableForAzTable(toQueryMetaData)?.query || ""));
       break;
+    case "sfdc":
+      // Salesforce SObjects must be created in the org's Object Manager — they cannot
+      // be created via the REST/jsforce API the way RDBMS tables can. Treat the
+      // "New Database Name" / "New Table Name" inputs as the target SObject API name
+      // and skip DDL generation.
+      res.push(`// Schema Creation Script : ${migrationInfoMessage}`);
+      res.push(
+        `// Salesforce does not support creating SObjects via the API.`,
+        `// Ensure the target SObject "${toTableId}" already exists in your org (Setup > Object Manager).`,
+      );
+      break;
   }
 
   // getInsert
@@ -227,6 +241,11 @@ async function generateMigrationScript(
   try {
     const results = fromDataToUse || (await dataApi.execute(fromQuery));
     const hasSomeResults = results.raw && results.raw.length > 0;
+
+    // The disable-FK toggle wraps the data step in dialect-specific statements that
+    // suspend referential-integrity checks for the duration of the load. Computed once
+    // here so each case can splice it in around the INSERT/UPSERT call.
+    const fkToggle = migrationMetaData?.disableForeignKeyConstraints ? getForeignKeyToggleForRdbms(toDialect) : undefined;
 
     // TODO: here we need to perform the query to get the data
     switch (toDialect) {
@@ -238,7 +257,19 @@ async function generateMigrationScript(
       case "sqlite":
         res.push(`-- Data Migration Script`);
         if (hasSomeResults) {
-          res.push(formatSQL(getBulkInsertForRdbms(toQueryMetaData, results.raw)?.query || ""));
+          if (fkToggle) {
+            res.push(fkToggle.disable);
+          }
+          // When the user opts in to UPSERT, route through `getBulkUpsert` which emits
+          // dialect-appropriate ON CONFLICT / ON DUPLICATE KEY / MERGE syntax. Otherwise
+          // fall through to a plain INSERT — the historical default.
+          const dataQuery = migrationMetaData?.useUpsert
+            ? getBulkUpsertForRdbms(toQueryMetaData, results.raw, migrationMetaData?.upsertKeyField)?.query
+            : getBulkInsertForRdbms(toQueryMetaData, results.raw)?.query;
+          res.push(formatSQL(dataQuery || ""));
+          if (fkToggle) {
+            res.push(fkToggle.enable);
+          }
         } else {
           res.push(`-- ${MESSAGE_NO_DATA_FOR_MIGRATION}`);
           errors.push(MESSAGE_NO_DATA_FOR_MIGRATION);
@@ -286,6 +317,18 @@ async function generateMigrationScript(
               )?.query || "",
             ),
           );
+        } else {
+          res.push(`// ${MESSAGE_NO_DATA_FOR_MIGRATION}`);
+          errors.push(MESSAGE_NO_DATA_FOR_MIGRATION);
+        }
+        break;
+      case "sfdc":
+        res.push(`// Data Migration Script`);
+        if (hasSomeResults) {
+          // Salesforce migration writes to an existing SObject — pass the target SObject
+          // API name as tableId so the generated `conn.sobject('<Name>').create([...])`
+          // call targets the right object.
+          res.push(formatJS(getBulkInsertForSalesforce(toQueryMetaData, results.raw)?.query || ""));
         } else {
           res.push(`// ${MESSAGE_NO_DATA_FOR_MIGRATION}`);
           errors.push(MESSAGE_NO_DATA_FOR_MIGRATION);
@@ -601,7 +644,55 @@ type MigrationMetaData = {
   azTablePartitionKeyField?: string;
   /** SQL query to fetch source data for migration. */
   selectQuery?: string;
+  /**
+   * When true, the data step generates an UPSERT (`ON CONFLICT` / `ON DUPLICATE KEY` /
+   * `MERGE`) instead of an INSERT, so re-running the migration is idempotent.
+   */
+  useUpsert?: boolean;
+  /** Column name used as the upsert key (conflict / match column). Required when useUpsert is true. */
+  upsertKeyField?: string;
+  /**
+   * When true, the generated script wraps the migration in dialect-specific statements
+   * that disable foreign-key constraint checks for the duration of the load (e.g.
+   * `PRAGMA foreign_keys = OFF` for SQLite, `SET FOREIGN_KEY_CHECKS = 0` for MySQL).
+   * Re-enabled at the end of the script.
+   */
+  disableForeignKeyConstraints?: boolean;
 };
+
+/**
+ * Whether the given target dialect can take advantage of the "Use UPSERT" toggle.
+ * Currently only RDBMS dialects (which need explicit ON CONFLICT / MERGE syntax) —
+ * Cassandra inserts are already upserts, and the NoSQL adapters route through their
+ * own SDK-level upsert APIs which would need a separate code path.
+ *
+ * @param dialect - The target dialect identifier.
+ * @returns True if the UPSERT toggle is meaningful for the dialect.
+ */
+function dialectSupportsUpsertToggle(dialect?: SqluiCore.Dialect): boolean {
+  switch (dialect) {
+    case "mysql":
+    case "mariadb":
+    case "postgres":
+    case "postgresql":
+    case "sqlite":
+    case "mssql":
+      return true;
+    default:
+      return false;
+  }
+}
+
+/**
+ * Whether the given target dialect has a session-level toggle for disabling foreign-key
+ * constraints. Mirrors {@link getForeignKeyToggleForRdbms} — kept in sync with that switch.
+ *
+ * @param dialect - The target dialect identifier.
+ * @returns True if the disable-FK toggle is meaningful for the dialect.
+ */
+function dialectSupportsForeignKeyToggle(dialect?: SqluiCore.Dialect): boolean {
+  return !!getForeignKeyToggleForRdbms(dialect);
+}
 
 /** Props for the MigrationMetaDataInputs component. */
 type MigrationMetaDataInputsProps = {
@@ -652,6 +743,11 @@ function MigrationMetaDataInputs(props: MigrationMetaDataInputsProps): React.JSX
     case "mongodb":
     case "cosmosdb":
     default:
+      break;
+    case "sfdc":
+      // Salesforce orgs have no "database" — only SObjects. Hide the database
+      // input and treat "New Table Name" as the target SObject API name.
+      shouldShowNewDatabaseIdInput = false;
       break;
     case "aztable":
       shouldShowNewDatabaseIdInput = false;
@@ -717,6 +813,14 @@ function MigrationMetaDataInputs(props: MigrationMetaDataInputsProps): React.JSX
         />
       </div>
 
+      <MigrationToggleOptions
+        columns={columns}
+        value={migrationMetaData}
+        onChange={onChange}
+        supportsUpsert={dialectSupportsUpsertToggle(migrationMetaData.toDialect)}
+        supportsForeignKeyToggle={dialectSupportsForeignKeyToggle(migrationMetaData.toDialect)}
+      />
+
       {isQueryRequired && (
         <React.Fragment key="line3">
           <Typography sx={{ fontWeight: "medium" }}>Enter SQL to get Data for migration</Typography>
@@ -727,6 +831,75 @@ function MigrationMetaDataInputs(props: MigrationMetaDataInputsProps): React.JSX
             language={languageFrom}
           />
         </React.Fragment>
+      )}
+    </>
+  );
+}
+
+/** Props for the {@link MigrationToggleOptions} sub-form. */
+type MigrationToggleOptionsProps = {
+  /** Columns from the source table — used to populate the upsert-key picker. */
+  columns?: SqluiCore.ColumnMetaData[];
+  /** Current migration metadata. */
+  value: MigrationMetaData;
+  /** Patched onChange handler bound to a single metadata key. */
+  onChange: (propKey: keyof MigrationMetaData, propValue: any) => void;
+  /** Whether the target dialect supports the UPSERT toggle. */
+  supportsUpsert: boolean;
+  /** Whether the target dialect supports the disable-FK toggle. */
+  supportsForeignKeyToggle: boolean;
+};
+
+/**
+ * Optional migration toggles: upsert-instead-of-insert and disable-foreign-key-constraints.
+ *
+ * Both options are dialect-aware — they only render when the target dialect supports them
+ * (see `dialectSupportsUpsertToggle` / `dialectSupportsForeignKeyToggle`). When upsert is
+ * enabled, the user must pick the conflict-key column; the picker defaults to the source
+ * table's primary key when available.
+ *
+ * @param props - Form state, change handler, and per-dialect capability flags.
+ * @returns The toggle controls, or null when neither toggle is supported.
+ */
+function MigrationToggleOptions(props: MigrationToggleOptionsProps): React.JSX.Element | null {
+  const { columns, value, onChange, supportsUpsert, supportsForeignKeyToggle } = props;
+
+  if (!supportsUpsert && !supportsForeignKeyToggle) {
+    return null;
+  }
+
+  return (
+    <>
+      <div className="FormInput__Row" style={{ flexWrap: "wrap" }}>
+        {supportsUpsert && (
+          <FormControlLabel
+            control={<Checkbox size="small" checked={!!value.useUpsert} onChange={(e) => onChange("useUpsert", e.target.checked)} />}
+            label="Use UPSERT (idempotent — updates rows that already exist)"
+          />
+        )}
+        {supportsForeignKeyToggle && (
+          <FormControlLabel
+            control={
+              <Checkbox
+                size="small"
+                checked={!!value.disableForeignKeyConstraints}
+                onChange={(e) => onChange("disableForeignKeyConstraints", e.target.checked)}
+              />
+            }
+            label="Disable foreign-key constraints during migration"
+          />
+        )}
+      </div>
+      {supportsUpsert && value.useUpsert && (
+        <div className="FormInput__Row">
+          <ColumnSelector
+            label="Upsert Key Column"
+            columns={columns}
+            value={value.upsertKeyField}
+            required
+            onChange={(newValue) => onChange("upsertKeyField", newValue)}
+          />
+        </div>
       )}
     </>
   );

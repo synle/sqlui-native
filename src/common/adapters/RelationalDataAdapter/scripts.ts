@@ -254,6 +254,154 @@ export function getBulkInsert(input: SqlAction.TableInput, rows?: Record<string,
 }
 
 /**
+ * Generates a dialect-specific bulk UPSERT (insert-or-update) query for multiple rows.
+ *
+ * Routes:
+ * - MySQL / MariaDB → `INSERT ... ON DUPLICATE KEY UPDATE`
+ * - PostgreSQL / SQLite → `INSERT ... ON CONFLICT (key) DO UPDATE SET ... = excluded.*`
+ * - MSSQL → `MERGE INTO ... USING (VALUES ...) ON ... WHEN MATCHED THEN UPDATE / WHEN NOT MATCHED THEN INSERT`
+ *
+ * The key column is the conflict / match column. Non-key columns are overwritten on a match.
+ *
+ * @param input - Table input containing dialect, table ID, and columns.
+ * @param rows - Array of row records to upsert.
+ * @param keyField - Column name used as the conflict / match key. Falls back to the first
+ *   primary-key column on `input.columns`, then to the first column overall — but a caller
+ *   that wants reproducible output should always pass `keyField` explicitly.
+ * @returns Script output containing the dialect-specific upsert query, or `undefined` when
+ *   the input is unusable (missing columns / rows / unsupported dialect / unknown key).
+ */
+export function getBulkUpsert(input: SqlAction.TableInput, rows?: Record<string, any>[], keyField?: string): SqlAction.Output | undefined {
+  const label = `Upsert`;
+
+  if (!input.columns || input.columns.length === 0) {
+    return undefined;
+  }
+
+  if (!rows || rows.length === 0) {
+    return undefined;
+  }
+
+  const columns = input.columns;
+  const resolvedKey = keyField || columns.find((c) => c.primaryKey)?.name || columns[0].name;
+  // Guard against a typo'd key — if the caller passes a column not in `input.columns`
+  // we'd silently emit a query that always inserts. Surface this loudly instead.
+  if (!columns.find((c) => c.name === resolvedKey)) {
+    return undefined;
+  }
+
+  const columnString = columns.map((col) => col.name).join(",\n");
+  const nonKeyColumns = columns.filter((col) => col.name !== resolvedKey);
+
+  const buildValueRow = (row: Record<string, any>): string => {
+    const cells = columns
+      .map((col) => {
+        if (row?.[col.name] === undefined) {
+          return "null";
+        }
+        return `'${escapeSQLValue(row[col.name])}'`;
+      })
+      .join(",");
+    return `(${cells})`;
+  };
+
+  const insertValueRows = rows.map(buildValueRow).join(", \n");
+
+  switch (input.dialect) {
+    case "mysql":
+    case "mariadb": {
+      // ON DUPLICATE KEY UPDATE relies on a UNIQUE / PRIMARY key on the target table —
+      // the key arg here is informational; MySQL picks the matching constraint itself.
+      const updateClause = nonKeyColumns.map((col) => `${col.name} = VALUES(${col.name})`).join(",\n");
+      return {
+        label,
+        formatter,
+        query: `INSERT INTO ${input.tableId} (${columnString})
+                VALUES ${insertValueRows}
+                ON DUPLICATE KEY UPDATE
+                ${updateClause}`,
+      };
+    }
+    case "postgres":
+    case "postgresql":
+    case "sqlite": {
+      // `excluded.*` references the row that *would have been* inserted, which is the
+      // standard idiom for both Postgres and SQLite ON CONFLICT clauses.
+      const updateClause = nonKeyColumns.map((col) => `${col.name} = excluded.${col.name}`).join(",\n");
+      return {
+        label,
+        formatter,
+        query: `INSERT INTO ${input.tableId} (${columnString})
+                VALUES ${insertValueRows}
+                ON CONFLICT (${resolvedKey}) DO UPDATE SET
+                ${updateClause}`,
+      };
+    }
+    case "mssql": {
+      // MSSQL has no INSERT ... ON CONFLICT; MERGE is the canonical upsert.
+      // Always terminate with a semicolon — MSSQL MERGE requires it.
+      const matchedClause = nonKeyColumns.map((col) => `t.${col.name} = s.${col.name}`).join(",\n");
+      const insertColumns = columns.map((c) => c.name).join(", ");
+      const insertSourceColumns = columns.map((c) => `s.${c.name}`).join(", ");
+      return {
+        label,
+        formatter,
+        query: `MERGE INTO ${input.tableId} AS t
+                USING (VALUES ${insertValueRows}) AS s (${columnString})
+                ON t.${resolvedKey} = s.${resolvedKey}
+                WHEN MATCHED THEN UPDATE SET
+                ${matchedClause}
+                WHEN NOT MATCHED THEN INSERT (${insertColumns}) VALUES (${insertSourceColumns});`,
+      };
+    }
+  }
+}
+
+/**
+ * Returns dialect-specific SQL statements that disable referential-integrity checks
+ * for the duration of a bulk load, plus the matching statements to re-enable them.
+ *
+ * Useful when migrating rows in an order that would otherwise trip foreign-key
+ * constraints (parent-after-child, cyclic refs).
+ *
+ * - MySQL / MariaDB: `SET FOREIGN_KEY_CHECKS`
+ * - SQLite: `PRAGMA foreign_keys`
+ * - PostgreSQL: `SET session_replication_role` (requires superuser; non-superuser sessions
+ *   would need per-table `ALTER TABLE ... DISABLE TRIGGER ALL`, which is out of scope here).
+ * - MSSQL: `sp_msforeachtable` toggles — wide-reaching, but the canonical script-level toggle.
+ *
+ * @param dialect - The target dialect.
+ * @returns `{ disable, enable }` SQL strings, or `undefined` for dialects that have
+ *   no session-level toggle (e.g. NoSQL, Salesforce).
+ */
+export function getForeignKeyToggle(dialect?: string): { disable: string; enable: string } | undefined {
+  switch (dialect) {
+    case "mysql":
+    case "mariadb":
+      return {
+        disable: "SET FOREIGN_KEY_CHECKS = 0;",
+        enable: "SET FOREIGN_KEY_CHECKS = 1;",
+      };
+    case "sqlite":
+      return {
+        disable: "PRAGMA foreign_keys = OFF;",
+        enable: "PRAGMA foreign_keys = ON;",
+      };
+    case "postgres":
+    case "postgresql":
+      return {
+        disable: "SET session_replication_role = 'replica';",
+        enable: "SET session_replication_role = 'origin';",
+      };
+    case "mssql":
+      return {
+        disable: `EXEC sp_msforeachtable "ALTER TABLE ? NOCHECK CONSTRAINT all";`,
+        enable: `EXEC sp_msforeachtable "ALTER TABLE ? WITH CHECK CHECK CONSTRAINT all";`,
+      };
+  }
+}
+
+/**
  * Generates a template UPDATE query with placeholder values for all columns.
  * @param input - The table input containing dialect, table ID, and columns.
  */

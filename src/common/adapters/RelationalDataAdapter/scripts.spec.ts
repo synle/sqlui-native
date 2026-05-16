@@ -17,6 +17,8 @@ import {
   getSelectDistinctValues,
   getInsert,
   getBulkInsert,
+  getBulkUpsert,
+  getForeignKeyToggle,
   getUpdate,
   getUpdateWithValues,
   getDelete,
@@ -278,6 +280,109 @@ describe("RelationalDataAdapter scripts", () => {
     it("returns undefined for unsupported dialect", () => {
       const result = getBulkInsert({ ...baseTableInput, dialect: "mongodb" }, rows);
       expect(result).toBeUndefined();
+    });
+  });
+
+  describe("getBulkUpsert", () => {
+    const rows = [
+      { id: 1, name: "Alice", email: "alice@test.com" },
+      { id: 2, name: "Bob", email: "bob@test.com" },
+    ];
+
+    it("emits ON CONFLICT ... DO UPDATE for sqlite using the supplied keyField", () => {
+      const result = getBulkUpsert({ ...baseTableInput, dialect: "sqlite" }, rows, "id");
+      expect(result).toBeDefined();
+      expect(result!.label).toBe("Upsert");
+      expect(result!.query).toContain("INSERT INTO users");
+      expect(result!.query).toContain("ON CONFLICT (id) DO UPDATE SET");
+      expect(result!.query).toContain("name = excluded.name");
+      expect(result!.query).toContain("email = excluded.email");
+      // Key column must not be self-assigned (no `id = excluded.id`).
+      expect(result!.query).not.toContain("id = excluded.id");
+    });
+
+    it("emits ON CONFLICT for postgres / postgresql identically", () => {
+      const pg = getBulkUpsert({ ...baseTableInput, dialect: "postgres" }, rows, "id");
+      const pgsql = getBulkUpsert({ ...baseTableInput, dialect: "postgresql" }, rows, "id");
+      expect(pg!.query).toContain("ON CONFLICT (id) DO UPDATE SET");
+      expect(pgsql!.query).toContain("ON CONFLICT (id) DO UPDATE SET");
+    });
+
+    it("emits ON DUPLICATE KEY UPDATE for mysql / mariadb", () => {
+      const mysql = getBulkUpsert({ ...baseTableInput, dialect: "mysql" }, rows, "id");
+      const mariadb = getBulkUpsert({ ...baseTableInput, dialect: "mariadb" }, rows, "id");
+      expect(mysql!.query).toContain("ON DUPLICATE KEY UPDATE");
+      expect(mysql!.query).toContain("name = VALUES(name)");
+      expect(mysql!.query).not.toContain("id = VALUES(id)");
+      expect(mariadb!.query).toContain("ON DUPLICATE KEY UPDATE");
+    });
+
+    it("emits a MERGE statement for mssql", () => {
+      const result = getBulkUpsert({ ...baseTableInput, dialect: "mssql" }, rows, "id");
+      expect(result!.query).toContain("MERGE INTO users AS t");
+      expect(result!.query).toContain("USING (VALUES");
+      expect(result!.query).toContain("ON t.id = s.id");
+      expect(result!.query).toContain("WHEN MATCHED THEN UPDATE SET");
+      expect(result!.query).toContain("WHEN NOT MATCHED THEN INSERT");
+      // MERGE must terminate with a semicolon per MSSQL requirements.
+      expect(result!.query!.trimEnd().endsWith(";")).toBe(true);
+    });
+
+    it("falls back to the primary-key column when keyField is omitted", () => {
+      const result = getBulkUpsert({ ...baseTableInput, dialect: "sqlite" }, rows);
+      // `id` is marked primaryKey in baseTableInput.
+      expect(result!.query).toContain("ON CONFLICT (id)");
+    });
+
+    it("returns undefined when keyField is not a known column", () => {
+      const result = getBulkUpsert({ ...baseTableInput, dialect: "sqlite" }, rows, "not_a_column");
+      expect(result).toBeUndefined();
+    });
+
+    it("returns undefined when rows are empty / undefined / columns missing", () => {
+      expect(getBulkUpsert(baseTableInput, [], "id")).toBeUndefined();
+      expect(getBulkUpsert(baseTableInput, undefined, "id")).toBeUndefined();
+      expect(getBulkUpsert({ ...baseTableInput, columns: undefined }, rows, "id")).toBeUndefined();
+    });
+
+    it("returns undefined for unsupported dialect", () => {
+      const result = getBulkUpsert({ ...baseTableInput, dialect: "mongodb" }, rows, "id");
+      expect(result).toBeUndefined();
+    });
+  });
+
+  describe("getForeignKeyToggle", () => {
+    it("returns SET FOREIGN_KEY_CHECKS toggles for mysql / mariadb", () => {
+      const mysql = getForeignKeyToggle("mysql");
+      const mariadb = getForeignKeyToggle("mariadb");
+      expect(mysql).toEqual({
+        disable: "SET FOREIGN_KEY_CHECKS = 0;",
+        enable: "SET FOREIGN_KEY_CHECKS = 1;",
+      });
+      expect(mariadb).toEqual(mysql);
+    });
+
+    it("returns PRAGMA foreign_keys toggles for sqlite", () => {
+      expect(getForeignKeyToggle("sqlite")).toEqual({
+        disable: "PRAGMA foreign_keys = OFF;",
+        enable: "PRAGMA foreign_keys = ON;",
+      });
+    });
+
+    it("returns session_replication_role toggles for postgres", () => {
+      expect(getForeignKeyToggle("postgres")!.disable).toContain("session_replication_role");
+      expect(getForeignKeyToggle("postgresql")!.enable).toContain("session_replication_role");
+    });
+
+    it("returns sp_msforeachtable toggles for mssql", () => {
+      expect(getForeignKeyToggle("mssql")!.disable).toContain("NOCHECK CONSTRAINT all");
+      expect(getForeignKeyToggle("mssql")!.enable).toContain("CHECK CONSTRAINT all");
+    });
+
+    it("returns undefined for dialects without a session-level toggle", () => {
+      expect(getForeignKeyToggle("mongodb")).toBeUndefined();
+      expect(getForeignKeyToggle("sfdc")).toBeUndefined();
+      expect(getForeignKeyToggle(undefined)).toBeUndefined();
     });
   });
 
