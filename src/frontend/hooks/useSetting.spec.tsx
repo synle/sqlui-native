@@ -14,6 +14,7 @@ const mockConfigs: any = {
   tablePageSize: "25",
   deleteMode: "soft-delete",
   animationMode: "on",
+  queryTabPersistenceMode: "manual",
 };
 
 vi.mock("src/frontend/hooks/useServerConfigs", () => ({
@@ -34,6 +35,7 @@ import {
   useTableRenderer,
   useWordWrapSetting,
   useQueryTabOrientationSetting,
+  useIsQueryTabAutoSaveEnabled,
   useQuerySizeSetting,
   useTablePageSize,
   useIsSoftDeleteModeSetting,
@@ -81,6 +83,11 @@ describe("useSetting hooks", () => {
   test("useQueryTabOrientationSetting returns horizontal", () => {
     const { result } = renderHook(() => useQueryTabOrientationSetting());
     expect(result.current).toContain("horizontal");
+  });
+
+  test("useIsQueryTabAutoSaveEnabled returns false for manual persistence", () => {
+    const { result } = renderHook(() => useIsQueryTabAutoSaveEnabled());
+    expect(result.current).toBe(false);
   });
 
   test("useQuerySizeSetting returns parsed number", () => {

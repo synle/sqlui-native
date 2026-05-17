@@ -18,6 +18,7 @@ vi.mock("src/frontend/hooks/useSetting", () => ({
       deleteMode: "soft-delete",
       animationMode: "",
       querySelectionMode: "new-tab",
+      queryTabPersistenceMode: "auto",
     },
     onChange: vi.fn(),
   }),
@@ -52,6 +53,11 @@ describe("Settings", () => {
   test("renders Query Size label", () => {
     const { container } = renderWithTheme(<Settings />);
     expect(container.textContent).toContain("Query Size");
+  });
+
+  test("renders Query Tab Persistence label", () => {
+    const { container } = renderWithTheme(<Settings />);
+    expect(container.textContent).toContain("Query Tab Persistence");
   });
 
   test("renders Delete Mode label", () => {
