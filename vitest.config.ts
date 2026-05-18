@@ -37,7 +37,7 @@ export default defineConfig({
     setupFiles: ["./vitest.setup.ts"],
     coverage: {
       provider: "v8",
-      reporter: ["text", "json-summary"],
+      reporter: ["text", "json-summary", "json"],
       // Explicit source globs only — never `**/*` or `.` (rule 41).
       include: ["src/**/*.{ts,tsx}"],
       exclude: [

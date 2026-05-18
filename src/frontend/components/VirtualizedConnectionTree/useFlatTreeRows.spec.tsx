@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { renderHook } from "@testing-library/react";
+import { renderHook, waitFor } from "@testing-library/react";
 import { describe, test, expect, vi, beforeEach } from "vitest";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
@@ -46,6 +46,7 @@ function wrapper({ children }: any) {
 }
 
 beforeEach(() => {
+  vi.clearAllMocks();
   useShowHideMock.mockReturnValue({ visibles: {}, onToggle: vi.fn() });
   useActiveConnectionQueryMock.mockReturnValue({ query: undefined });
   useUpdateConnectionsMock.mockReturnValue({ mutateAsync: vi.fn() });
@@ -124,5 +125,192 @@ describe("useFlatTreeRows", () => {
     const { result } = renderHook(() => useFlatTreeRows(), { wrapper });
     const row: any = result.current.rows[0];
     expect(row.isSelected).toBe(true);
+  });
+
+  test("expanded online connection with empty database list shows 'Not Available'", async () => {
+    useGetConnectionsMock.mockReturnValue({
+      data: [{ id: "c1", name: "Conn1", status: "online", dialect: "sqlite" }],
+      isLoading: false,
+    });
+    useShowHideMock.mockReturnValue({ visibles: { c1: true }, onToggle: vi.fn() });
+    getConnectionDatabasesMock.mockResolvedValue([]);
+    const { result } = renderHook(() => useFlatTreeRows(), { wrapper });
+    await waitFor(() => {
+      const emptyRow: any = result.current.rows.find((r) => r.type === "empty");
+      expect(emptyRow).toBeTruthy();
+    });
+  });
+
+  test("expanded connection with database returns database-header row", async () => {
+    useGetConnectionsMock.mockReturnValue({
+      data: [{ id: "c1", name: "Conn1", status: "online", dialect: "sqlite" }],
+      isLoading: false,
+    });
+    useShowHideMock.mockReturnValue({ visibles: { c1: true }, onToggle: vi.fn() });
+    getConnectionDatabasesMock.mockResolvedValue([{ name: "db1" }]);
+    const { result } = renderHook(() => useFlatTreeRows(), { wrapper });
+    await waitFor(() => {
+      const dbHeader: any = result.current.rows.find((r) => r.type === "database-header");
+      expect(dbHeader).toBeTruthy();
+      expect(dbHeader.databaseName).toBe("db1");
+    });
+  });
+
+  test("error from database fetch shows error row", async () => {
+    useGetConnectionsMock.mockReturnValue({
+      data: [{ id: "c1", name: "Conn1", status: "online", dialect: "sqlite" }],
+      isLoading: false,
+    });
+    useShowHideMock.mockReturnValue({ visibles: { c1: true }, onToggle: vi.fn() });
+    getConnectionDatabasesMock.mockRejectedValue(new Error("db fetch failed"));
+    const { result } = renderHook(() => useFlatTreeRows(), { wrapper });
+    await waitFor(() => {
+      const errRow: any = result.current.rows.find((r) => r.type === "error");
+      expect(errRow).toBeTruthy();
+      expect(errRow.message).toContain("db fetch failed");
+    });
+  });
+
+  test("expanded database with tables returns table-header row", async () => {
+    useGetConnectionsMock.mockReturnValue({
+      data: [{ id: "c1", name: "Conn1", status: "online", dialect: "sqlite" }],
+      isLoading: false,
+    });
+    useShowHideMock.mockReturnValue({
+      visibles: { c1: true, "c1 > db1": true },
+      onToggle: vi.fn(),
+    });
+    getConnectionDatabasesMock.mockResolvedValue([{ name: "db1" }]);
+    getConnectionTablesMock.mockResolvedValue([{ name: "tbl1" }]);
+    const { result } = renderHook(() => useFlatTreeRows(), { wrapper });
+    await waitFor(() => {
+      const tblHeader: any = result.current.rows.find((r) => r.type === "table-header");
+      expect(tblHeader).toBeTruthy();
+      expect(tblHeader.tableName).toBe("tbl1");
+    });
+  });
+
+  test("expanded database with empty tables shows 'Not Available' empty row at depth 2", async () => {
+    useGetConnectionsMock.mockReturnValue({
+      data: [{ id: "c1", name: "Conn1", status: "online", dialect: "sqlite" }],
+      isLoading: false,
+    });
+    useShowHideMock.mockReturnValue({
+      visibles: { c1: true, "c1 > db1": true },
+      onToggle: vi.fn(),
+    });
+    getConnectionDatabasesMock.mockResolvedValue([{ name: "db1" }]);
+    getConnectionTablesMock.mockResolvedValue([]);
+    const { result } = renderHook(() => useFlatTreeRows(), { wrapper });
+    await waitFor(() => {
+      const emptyRow: any = result.current.rows.find((r) => r.type === "empty" && r.depth === 2);
+      expect(emptyRow).toBeTruthy();
+    });
+  });
+
+  test("expanded table with columns returns column-header rows", async () => {
+    useGetConnectionsMock.mockReturnValue({
+      data: [{ id: "c1", name: "Conn1", status: "online", dialect: "sqlite" }],
+      isLoading: false,
+    });
+    useShowHideMock.mockReturnValue({
+      visibles: { c1: true, "c1 > db1": true, "c1 > db1 > tbl1": true },
+      onToggle: vi.fn(),
+    });
+    getConnectionDatabasesMock.mockResolvedValue([{ name: "db1" }]);
+    getConnectionTablesMock.mockResolvedValue([{ name: "tbl1" }]);
+    getConnectionColumnsMock.mockResolvedValue([{ name: "col1", type: "TEXT" }]);
+    const { result } = renderHook(() => useFlatTreeRows(), { wrapper });
+    await waitFor(() => {
+      const colHeader: any = result.current.rows.find((r) => r.type === "column-header");
+      expect(colHeader).toBeTruthy();
+      expect(colHeader.column.name).toBe("col1");
+    });
+  });
+
+  test("expanded column shows column-attributes row", async () => {
+    useGetConnectionsMock.mockReturnValue({
+      data: [{ id: "c1", name: "Conn1", status: "online", dialect: "sqlite" }],
+      isLoading: false,
+    });
+    useShowHideMock.mockReturnValue({
+      visibles: {
+        c1: true,
+        "c1 > db1": true,
+        "c1 > db1 > tbl1": true,
+        "c1 > db1 > tbl1 > col1": true,
+      },
+      onToggle: vi.fn(),
+    });
+    getConnectionDatabasesMock.mockResolvedValue([{ name: "db1" }]);
+    getConnectionTablesMock.mockResolvedValue([{ name: "tbl1" }]);
+    getConnectionColumnsMock.mockResolvedValue([{ name: "col1", type: "TEXT" }]);
+    const { result } = renderHook(() => useFlatTreeRows(), { wrapper });
+    await waitFor(() => {
+      const colAttr: any = result.current.rows.find((r) => r.type === "column-attributes");
+      expect(colAttr).toBeTruthy();
+    });
+  });
+
+  test("table with > MAX_COLUMN_SIZE_TO_SHOW columns shows show-all-columns row", async () => {
+    useGetConnectionsMock.mockReturnValue({
+      data: [{ id: "c1", name: "Conn1", status: "online", dialect: "sqlite" }],
+      isLoading: false,
+    });
+    useShowHideMock.mockReturnValue({
+      visibles: { c1: true, "c1 > db1": true, "c1 > db1 > tbl1": true },
+      onToggle: vi.fn(),
+    });
+    getConnectionDatabasesMock.mockResolvedValue([{ name: "db1" }]);
+    getConnectionTablesMock.mockResolvedValue([{ name: "tbl1" }]);
+    const manyColumns = Array.from({ length: 25 }, (_, i) => ({ name: `col${i}`, type: "TEXT" }));
+    getConnectionColumnsMock.mockResolvedValue(manyColumns);
+    const { result } = renderHook(() => useFlatTreeRows(), { wrapper });
+    await waitFor(() => {
+      const showAll: any = result.current.rows.find((r) => r.type === "show-all-columns");
+      expect(showAll).toBeTruthy();
+    });
+  });
+
+  test("managed metadata dialect does not fetch columns - tables are leaf nodes", async () => {
+    useGetConnectionsMock.mockReturnValue({
+      data: [{ id: "c1", name: "Conn1", status: "online", dialect: "rest" }],
+      isLoading: false,
+    });
+    isDialectSupportManagedMetadataMock.mockImplementation((dialect: string) => dialect === "rest");
+    useShowHideMock.mockReturnValue({
+      visibles: { c1: true, "c1 > db1": true, "c1 > db1 > tbl1": true },
+      onToggle: vi.fn(),
+    });
+    getConnectionDatabasesMock.mockResolvedValue([{ name: "db1" }]);
+    getConnectionTablesMock.mockResolvedValue([{ name: "tbl1" }]);
+    const { result } = renderHook(() => useFlatTreeRows(), { wrapper });
+    await waitFor(() => {
+      const tblHeader: any = result.current.rows.find((r) => r.type === "table-header");
+      expect(tblHeader).toBeTruthy();
+      expect(tblHeader.isExpanded).toBe(false);
+    });
+    expect(getConnectionColumnsMock).not.toHaveBeenCalled();
+  });
+
+  test("activeQuery on table marks table row as selected", async () => {
+    useGetConnectionsMock.mockReturnValue({
+      data: [{ id: "c1", name: "Conn1", status: "online", dialect: "sqlite" }],
+      isLoading: false,
+    });
+    useShowHideMock.mockReturnValue({
+      visibles: { c1: true, "c1 > db1": true },
+      onToggle: vi.fn(),
+    });
+    useActiveConnectionQueryMock.mockReturnValue({
+      query: { connectionId: "c1", databaseId: "db1", tableId: "tbl1" },
+    });
+    getConnectionDatabasesMock.mockResolvedValue([{ name: "db1" }]);
+    getConnectionTablesMock.mockResolvedValue([{ name: "tbl1" }]);
+    const { result } = renderHook(() => useFlatTreeRows(), { wrapper });
+    await waitFor(() => {
+      const tblHeader: any = result.current.rows.find((r) => r.type === "table-header");
+      expect(tblHeader?.isSelected).toBe(true);
+    });
   });
 });
