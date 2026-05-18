@@ -72,7 +72,7 @@ describe("SimpleEditor", () => {
   });
 
   test("height prop is applied as minHeight when no fillHeight", () => {
-    const { container } = renderEditor(<SimpleEditor value="" height={150} />);
+    const { container } = renderEditor(<SimpleEditor value="" height="150px" />);
     const ta = container.querySelector("textarea") as HTMLTextAreaElement;
     expect(ta.style.minHeight).toBe("150px");
   });

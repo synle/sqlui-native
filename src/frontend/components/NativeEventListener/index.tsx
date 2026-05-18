@@ -21,8 +21,10 @@ export default function NativeEventListener() {
   useEffect(() => {
     const unsubscribe = platform.onAppCommand((data) => {
       // Global commands bypass dialog check and MissionControl
-      if (data === "clientEvent/checkForUpdate") {
-        showAboutDialog();
+      if (GLOBAL_COMMANDS.has(data)) {
+        if (data === "clientEvent/checkForUpdate") {
+          showAboutDialog();
+        }
         return;
       }
 
