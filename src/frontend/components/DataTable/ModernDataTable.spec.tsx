@@ -1,17 +1,22 @@
 // @vitest-environment jsdom
-import { render } from "@testing-library/react";
+import { render, fireEvent } from "@testing-library/react";
 import { describe, test, expect, vi } from "vitest";
+
+const { openAppWindowMock, addDataSnapshotMock } = vi.hoisted(() => ({
+  openAppWindowMock: vi.fn(),
+  addDataSnapshotMock: vi.fn(),
+}));
 
 vi.mock("src/frontend/hooks/useSetting", () => ({
   useLayoutModeSetting: () => "compact",
 }));
 
 vi.mock("src/frontend/hooks/useDataSnapshot", () => ({
-  useAddDataSnapshot: () => ({ mutateAsync: vi.fn() }),
+  useAddDataSnapshot: () => ({ mutateAsync: addDataSnapshotMock }),
 }));
 
 vi.mock("src/frontend/platform", () => ({
-  platform: { openAppWindow: vi.fn(), isDesktop: false },
+  platform: { openAppWindow: openAppWindowMock, isDesktop: false },
 }));
 
 vi.mock("src/frontend/components/DataTable/DataTableColumnSettings", () => ({
@@ -52,11 +57,24 @@ describe("ModernDataTable", () => {
     expect(container.textContent).toContain("Name");
   });
 
+  test("empty data shows 'no data' message", () => {
+    const columns = [{ header: "Name", accessorKey: "name" }];
+    const { container } = render(<ModernDataTable columns={columns as any} data={[] as any} />);
+    expect(container.textContent).toContain("no data");
+  });
+
   test("renders with searchInputId", () => {
     const columns = [{ header: "Name", accessorKey: "name" }];
     const data = [{ name: "Acme" }];
     const { container } = render(<ModernDataTable columns={columns as any} data={data as any} searchInputId="search-1" />);
     expect(container.textContent).toContain("Acme");
+  });
+
+  test("searchInputId renders a GlobalFilter input", () => {
+    const columns = [{ header: "Name", accessorKey: "name" }];
+    const data = [{ name: "Acme" }];
+    const { container } = render(<ModernDataTable columns={columns as any} data={data as any} searchInputId="filter-id" />);
+    expect(container.querySelector("#filter-id")).toBeTruthy();
   });
 
   test("renders with rowContextOptions", () => {
@@ -73,6 +91,49 @@ describe("ModernDataTable", () => {
     const columns = [{ header: "Name", accessorKey: "name" }];
     const data = [{ name: "Acme" }];
     const { container } = render(<ModernDataTable columns={columns as any} data={data as any} onRowClick={() => {}} />);
+    expect(container.textContent).toContain("Acme");
+  });
+
+  test("double-click on row invokes onRowClick with row.original data", () => {
+    const onRowClick = vi.fn();
+    const columns = [{ header: "Name", accessorKey: "name" }];
+    const data = [{ name: "Acme" }];
+    const { container } = render(<ModernDataTable columns={columns as any} data={data as any} onRowClick={onRowClick} />);
+    const row = container.querySelector("[data-row-idx='0']") as HTMLElement;
+    expect(row).toBeTruthy();
+    fireEvent.doubleClick(row);
+    expect(onRowClick).toHaveBeenCalledWith({ name: "Acme" });
+  });
+
+  test("clicking the fullscreen button calls addDataSnapshot and opens app window on success", async () => {
+    addDataSnapshotMock.mockResolvedValueOnce({ id: "snap-123" });
+    openAppWindowMock.mockReset();
+    const columns = [{ header: "Name", accessorKey: "name" }];
+    const data = [{ name: "Acme" }];
+    const { container } = render(<ModernDataTable columns={columns as any} data={data as any} />);
+    const btn = container.querySelector("[aria-label='Make table bigger']") as HTMLElement;
+    fireEvent.click(btn);
+    await new Promise((r) => setTimeout(r, 30));
+    expect(addDataSnapshotMock).toHaveBeenCalled();
+    expect(openAppWindowMock).toHaveBeenCalledWith("/data_snapshot/snap-123");
+  });
+
+  test("clicking the fullscreen button swallows snapshot rejection silently", async () => {
+    addDataSnapshotMock.mockRejectedValueOnce(new Error("fail"));
+    openAppWindowMock.mockReset();
+    const columns = [{ header: "Name", accessorKey: "name" }];
+    const data = [{ name: "Acme" }];
+    const { container } = render(<ModernDataTable columns={columns as any} data={data as any} />);
+    const btn = container.querySelector("[aria-label='Make table bigger']") as HTMLElement;
+    fireEvent.click(btn);
+    await new Promise((r) => setTimeout(r, 30));
+    expect(openAppWindowMock).not.toHaveBeenCalled();
+  });
+
+  test("fullScreen prop is accepted without error", () => {
+    const columns = [{ header: "Name", accessorKey: "name" }];
+    const data = [{ name: "Acme" }];
+    const { container } = render(<ModernDataTable columns={columns as any} data={data as any} {...({ fullScreen: true } as any)} />);
     expect(container.textContent).toContain("Acme");
   });
 });
