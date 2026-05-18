@@ -750,4 +750,380 @@ describe("importExportUtils", () => {
       expect(secondFolders).toEqual(firstFolders);
     });
   });
+
+  describe("Postman auth handling — additional branches", () => {
+    it("converts bearer auth into Authorization header", () => {
+      const collection = {
+        info: { name: "Bearer", schema: "https://schema.getpostman.com/json/collection/v2.1.0/collection.json" },
+        item: [
+          {
+            name: "B",
+            request: {
+              method: "GET",
+              url: "https://api.example.com/x",
+              auth: { type: "bearer", bearer: [{ key: "token", value: "xyz" }] },
+            },
+          },
+        ],
+      };
+      const result = detectAndParseImportFile(JSON.stringify(collection));
+      expect(result.requests[0].curl).toContain("Bearer xyz");
+    });
+
+    it("converts basic auth into -u credentials", () => {
+      const collection = {
+        info: { name: "Basic", schema: "https://schema.getpostman.com/json/collection/v2.1.0/collection.json" },
+        item: [
+          {
+            name: "B",
+            request: {
+              method: "GET",
+              url: "https://api.example.com/x",
+              auth: {
+                type: "basic",
+                basic: [
+                  { key: "username", value: "alice" },
+                  { key: "password", value: "secret" },
+                ],
+              },
+            },
+          },
+        ],
+      };
+      const result = detectAndParseImportFile(JSON.stringify(collection));
+      expect(result.requests[0].curl).toMatch(/alice/);
+    });
+
+    it("converts apikey auth (header location) into custom header", () => {
+      const collection = {
+        info: { name: "ApiKey", schema: "https://schema.getpostman.com/json/collection/v2.1.0/collection.json" },
+        item: [
+          {
+            name: "A",
+            request: {
+              method: "GET",
+              url: "https://api.example.com/x",
+              auth: {
+                type: "apikey",
+                apikey: [
+                  { key: "key", value: "X-API-Key" },
+                  { key: "value", value: "abc123" },
+                  { key: "in", value: "header" },
+                ],
+              },
+            },
+          },
+        ],
+      };
+      const result = detectAndParseImportFile(JSON.stringify(collection));
+      expect(result.requests[0].curl).toContain("X-API-Key");
+      expect(result.requests[0].curl).toContain("abc123");
+    });
+
+    it("handles apikey auth with non-header 'in' value by skipping it", () => {
+      const collection = {
+        info: { name: "ApiKeyQuery", schema: "https://schema.getpostman.com/json/collection/v2.1.0/collection.json" },
+        item: [
+          {
+            name: "A",
+            request: {
+              method: "GET",
+              url: "https://api.example.com/x",
+              auth: {
+                type: "apikey",
+                apikey: [
+                  { key: "key", value: "X-API-Key" },
+                  { key: "value", value: "abc123" },
+                  { key: "in", value: "query" },
+                ],
+              },
+            },
+          },
+        ],
+      };
+      const result = detectAndParseImportFile(JSON.stringify(collection));
+      expect(result.requests[0].curl).not.toContain("X-API-Key: abc123");
+    });
+
+    it("inherits folder-level auth when request lacks its own auth", () => {
+      const collection = {
+        info: { name: "InheritAuth", schema: "https://schema.getpostman.com/json/collection/v2.1.0/collection.json" },
+        item: [
+          {
+            name: "Folder",
+            auth: { type: "bearer", bearer: [{ key: "token", value: "inherited-tok" }] },
+            item: [
+              {
+                name: "ChildReq",
+                request: { method: "GET", url: "https://api.example.com/c" },
+              },
+            ],
+          },
+        ],
+      };
+      const result = detectAndParseImportFile(JSON.stringify(collection));
+      expect(result.requests[0].curl).toContain("Bearer inherited-tok");
+    });
+  });
+
+  describe("Postman body modes — additional branches", () => {
+    it("converts urlencoded body into form-urlencoded curl", () => {
+      const collection = {
+        info: { name: "URLEnc", schema: "https://schema.getpostman.com/json/collection/v2.1.0/collection.json" },
+        item: [
+          {
+            name: "Form",
+            request: {
+              method: "POST",
+              url: "https://api.example.com/login",
+              body: {
+                mode: "urlencoded",
+                urlencoded: [
+                  { key: "username", value: "alice" },
+                  { key: "password", value: "se cret" },
+                  { key: "disabled_key", value: "x", disabled: true },
+                ],
+              },
+            },
+          },
+        ],
+      };
+      const result = detectAndParseImportFile(JSON.stringify(collection));
+      expect(result.requests[0].curl).toContain("username=alice");
+      expect(result.requests[0].curl).not.toContain("disabled_key");
+    });
+
+    it("converts formdata body into form-data curl", () => {
+      const collection = {
+        info: { name: "FormData", schema: "https://schema.getpostman.com/json/collection/v2.1.0/collection.json" },
+        item: [
+          {
+            name: "FD",
+            request: {
+              method: "POST",
+              url: "https://api.example.com/upload",
+              body: {
+                mode: "formdata",
+                formdata: [
+                  { key: "file", value: "data" },
+                  { key: "skip", value: "x", disabled: true },
+                ],
+              },
+            },
+          },
+        ],
+      };
+      const result = detectAndParseImportFile(JSON.stringify(collection));
+      expect(result.requests[0].curl).toContain("file=data");
+      expect(result.requests[0].curl).not.toContain("skip=x");
+    });
+
+    it("auto-detects JSON body when raw starts with { ", () => {
+      const collection = {
+        info: { name: "AutoJSON", schema: "https://schema.getpostman.com/json/collection/v2.1.0/collection.json" },
+        item: [
+          {
+            name: "J",
+            request: {
+              method: "POST",
+              url: "https://api.example.com/data",
+              body: { mode: "raw", raw: '   {"k":"v"}' },
+            },
+          },
+        ],
+      };
+      const result = detectAndParseImportFile(JSON.stringify(collection));
+      expect(result.requests[0].curl).toContain("application/json");
+    });
+
+    it("respects an explicit Content-Type and does not override it", () => {
+      const collection = {
+        info: { name: "ExplicitCT", schema: "https://schema.getpostman.com/json/collection/v2.1.0/collection.json" },
+        item: [
+          {
+            name: "CT",
+            request: {
+              method: "POST",
+              url: "https://api.example.com/data",
+              header: [{ key: "Content-Type", value: "application/vnd.acme+json" }],
+              body: { mode: "raw", raw: '{"k":"v"}', options: { raw: { language: "json" } } },
+            },
+          },
+        ],
+      };
+      const result = detectAndParseImportFile(JSON.stringify(collection));
+      expect(result.requests[0].curl).toContain("application/vnd.acme+json");
+    });
+  });
+
+  describe("Postman URL resolution — additional branches", () => {
+    it("resolves URL from host array when raw is missing", () => {
+      const collection = {
+        info: { name: "HostArr", schema: "https://schema.getpostman.com/json/collection/v2.1.0/collection.json" },
+        item: [
+          {
+            name: "H",
+            request: {
+              method: "GET",
+              url: { host: ["api", "example", "com"], path: ["v1", "users"] },
+            },
+          },
+        ],
+      };
+      const result = detectAndParseImportFile(JSON.stringify(collection));
+      expect(result.requests[0].curl).toContain("api.example.com/v1/users");
+    });
+
+    it("handles requests with completely missing url field gracefully", () => {
+      const collection = {
+        info: { name: "NoUrl", schema: "https://schema.getpostman.com/json/collection/v2.1.0/collection.json" },
+        item: [
+          {
+            name: "U",
+            request: { method: "GET" },
+          },
+        ],
+      };
+      const result = detectAndParseImportFile(JSON.stringify(collection));
+      expect(result.requests).toHaveLength(1);
+    });
+  });
+
+  describe("HAR import — additional header/body branches", () => {
+    it("skips Host, Content-Length, and pseudo-headers (starting with ':')", () => {
+      const har = {
+        log: {
+          entries: [
+            {
+              request: {
+                method: "GET",
+                url: "https://api.example.com/data",
+                headers: [
+                  { name: "Host", value: "api.example.com" },
+                  { name: "Content-Length", value: "0" },
+                  { name: ":authority", value: "api.example.com" },
+                  { name: "X-Custom", value: "keep" },
+                ],
+              },
+              response: { content: { mimeType: "application/json" } },
+            },
+          ],
+        },
+      };
+      const result = detectAndParseImportFile(JSON.stringify(har));
+      expect(result.requests[0].curl).toContain("X-Custom");
+      expect(result.requests[0].curl).not.toContain("Host:");
+      expect(result.requests[0].curl).not.toContain("Content-Length");
+    });
+
+    it("classifies form-urlencoded body type via postData mimeType", () => {
+      const har = {
+        log: {
+          entries: [
+            {
+              request: {
+                method: "POST",
+                url: "https://api.example.com/login",
+                headers: [{ name: "Content-Type", value: "application/x-www-form-urlencoded" }],
+                postData: {
+                  mimeType: "application/x-www-form-urlencoded",
+                  text: "a=1&b=2",
+                },
+              },
+              response: { content: { mimeType: "application/json" } },
+            },
+          ],
+        },
+      };
+      const result = detectAndParseImportFile(JSON.stringify(har));
+      expect(result.requests).toHaveLength(1);
+      expect(result.requests[0].curl).toContain("a=1");
+    });
+
+    it("classifies form-data body type via postData mimeType", () => {
+      const har = {
+        log: {
+          entries: [
+            {
+              request: {
+                method: "POST",
+                url: "https://api.example.com/upload",
+                headers: [{ name: "Content-Type", value: "multipart/form-data; boundary=xyz" }],
+                postData: {
+                  mimeType: "multipart/form-data; boundary=xyz",
+                  text: "file=data",
+                },
+              },
+              response: { content: { mimeType: "application/json" } },
+            },
+          ],
+        },
+      };
+      const result = detectAndParseImportFile(JSON.stringify(har));
+      expect(result.requests).toHaveLength(1);
+    });
+
+    it("falls back to 'raw' body type when mimeType is plain text", () => {
+      const har = {
+        log: {
+          entries: [
+            {
+              request: {
+                method: "POST",
+                url: "https://api.example.com/x",
+                headers: [{ name: "Content-Type", value: "text/plain" }],
+                postData: { mimeType: "text/plain", text: "raw text body" },
+              },
+              response: { content: { mimeType: "application/json" } },
+            },
+          ],
+        },
+      };
+      const result = detectAndParseImportFile(JSON.stringify(har));
+      expect(result.requests[0].curl).toContain("raw text body");
+    });
+
+    it("filters HAR entries flagged with static _resourceType like 'stylesheet'", () => {
+      const har = {
+        log: {
+          entries: [
+            {
+              _resourceType: "stylesheet",
+              request: { method: "GET", url: "https://cdn.example.com/style.css", headers: [] },
+              response: { content: { mimeType: "text/css" } },
+            },
+            {
+              _resourceType: "xhr",
+              request: { method: "GET", url: "https://api.example.com/data", headers: [] },
+              response: { content: { mimeType: "application/json" } },
+            },
+          ],
+        },
+      };
+      const result = detectAndParseImportFile(JSON.stringify(har));
+      expect(result.requests).toHaveLength(1);
+      expect(result.requests[0].curl).toContain("api.example.com/data");
+    });
+
+    it("falls back to splitting URL when URL parsing throws (invalid URL)", () => {
+      const har = {
+        log: {
+          entries: [
+            {
+              request: {
+                method: "POST",
+                url: "not-a-valid-url?x=1",
+                headers: [],
+                postData: { mimeType: "application/json", text: '{"a":1}' },
+              },
+              response: { content: { mimeType: "application/json" } },
+            },
+          ],
+        },
+      };
+      const result = detectAndParseImportFile(JSON.stringify(har));
+      expect(result.requests).toHaveLength(1);
+      expect(result.requests[0].name).toContain("not-a-valid-url");
+    });
+  });
 });
