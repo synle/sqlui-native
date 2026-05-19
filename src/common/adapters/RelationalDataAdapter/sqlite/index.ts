@@ -9,6 +9,60 @@ import { SqluiCore } from "typings";
 /** Regex matching SQL statements that return rows (SELECT, PRAGMA, EXPLAIN, WITH). */
 const SELECT_PATTERN = /^\s*(SELECT|PRAGMA|EXPLAIN|WITH)\b/i;
 
+/** SQLite header magic bytes: "SQLite format 3\0" (16 bytes). */
+const SQLITE_HEADER_MAGIC = "SQLite format 3\0";
+
+/**
+ * Inspects a SQLite file on disk and classifies it as missing / empty / invalid / ok.
+ * Used to surface user-friendly errors instead of letting node:sqlite silently
+ * auto-create a fresh DB on a typo'd path.
+ * @param storagePath - The resolved file path (already stripped of the sqlite:// scheme).
+ * @returns A classification tag for the file at the given path.
+ */
+function classifySqliteFile(storagePath: string): "missing" | "empty" | "invalid" | "ok" {
+  if (!fs.existsSync(storagePath)) {
+    return "missing";
+  }
+
+  let stat: fs.Stats;
+  try {
+    stat = fs.statSync(storagePath);
+  } catch {
+    return "missing";
+  }
+
+  if (stat.size === 0) {
+    return "empty";
+  }
+
+  // Files smaller than the 16-byte SQLite header can't possibly be a valid DB.
+  if (stat.size < SQLITE_HEADER_MAGIC.length) {
+    return "invalid";
+  }
+
+  let fd: number | undefined;
+  try {
+    fd = fs.openSync(storagePath, "r");
+    const buf = Buffer.alloc(SQLITE_HEADER_MAGIC.length);
+    fs.readSync(fd, buf, 0, SQLITE_HEADER_MAGIC.length, 0);
+    if (buf.toString("binary") !== SQLITE_HEADER_MAGIC) {
+      return "invalid";
+    }
+  } catch {
+    return "invalid";
+  } finally {
+    if (fd !== undefined) {
+      try {
+        fs.closeSync(fd);
+      } catch {
+        // best-effort cleanup
+      }
+    }
+  }
+
+  return "ok";
+}
+
 /**
  * Data adapter for SQLite databases using node:sqlite.
  * Provides synchronous, high-performance access with no native module compilation.
@@ -25,6 +79,45 @@ export default class SQLiteDataAdapter extends BaseDataAdapter implements IDataA
     super(connectionOption);
   }
 
+  /** Resolved file path for diagnostics (stripped of the sqlite:// scheme). */
+  private _storagePath?: string;
+  /** Cached file classification used to short-circuit table/column lookups. */
+  private _fileState?: "missing" | "empty" | "invalid" | "ok" | "memory";
+
+  /**
+   * Resolves and validates the SQLite file path.
+   * Throws user-friendly errors for missing or non-SQLite files so the UI can
+   * display the cause instead of a generic "Not Available". Empty (0-byte)
+   * files are allowed — node:sqlite treats them as fresh blank databases —
+   * but get tagged so callers can surface a friendly "this file is empty" hint.
+   */
+  private resolveStoragePath(): string {
+    if (this._storagePath !== undefined) {
+      return this._storagePath;
+    }
+
+    // Strip the "sqlite://" scheme and normalize Windows backslashes to forward slashes
+    const storagePath = this.connectionOption.replace("sqlite://", "").replace(/\\/g, "/");
+    this._storagePath = storagePath;
+
+    if (storagePath === ":memory:") {
+      this._fileState = "memory";
+      return storagePath;
+    }
+
+    const state = classifySqliteFile(storagePath);
+    this._fileState = state;
+
+    if (state === "missing") {
+      throw new Error(`SQLite file not found at: ${storagePath}`);
+    }
+    if (state === "invalid") {
+      throw new Error(`Invalid SQLite file: ${storagePath} (not a SQLite database)`);
+    }
+    // "empty" and "ok" are both openable — node:sqlite will treat an empty file as a blank DB.
+    return storagePath;
+  }
+
   /**
    * Opens the SQLite database file and returns the connection.
    * @returns The node:sqlite DatabaseSync instance.
@@ -34,16 +127,7 @@ export default class SQLiteDataAdapter extends BaseDataAdapter implements IDataA
       return this._connection;
     }
 
-    // Strip the "sqlite://" scheme and normalize Windows backslashes to forward slashes
-    const storagePath = this.connectionOption.replace("sqlite://", "").replace(/\\/g, "/");
-
-    // Validate that the parent directory exists for non-memory databases
-    if (storagePath !== ":memory:" && !fs.existsSync(storagePath)) {
-      const parentDir = storagePath.includes("/") ? storagePath.substring(0, storagePath.lastIndexOf("/")) : ".";
-      if (!fs.existsSync(parentDir)) {
-        throw new Error(`SQLite database file not found: ${storagePath}`);
-      }
-    }
+    const storagePath = this.resolveStoragePath();
 
     try {
       this._connection = new DatabaseSync(storagePath);
@@ -85,10 +169,20 @@ export default class SQLiteDataAdapter extends BaseDataAdapter implements IDataA
 
   /**
    * Retrieves all user tables from the SQLite database.
+   * Surfaces a friendly error when the underlying file is empty so the tree UI
+   * shows "this file is empty" instead of a generic "Not Available".
    * @param _database - Ignored for SQLite (single database per file).
    */
   async getTables(_database?: string): Promise<SqluiCore.TableMetaData[]> {
     const db = this.getConnection();
+
+    // An empty (0-byte) file is a legal blank DB — opening succeeds, but there
+    // are no tables and node:sqlite hasn't written a header yet. Surface the
+    // state so the UI can guide the user (typed wrong path? freshly created?).
+    if (this._fileState === "empty") {
+      throw new Error(`SQLite file is empty (no tables yet): ${this._storagePath}`);
+    }
+
     const rows = db
       .prepare(`SELECT name AS tablename FROM sqlite_master WHERE type='table' AND name NOT LIKE '%sqlite%' ORDER BY tablename`)
       .all() as { tablename: string }[];
