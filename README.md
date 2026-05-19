@@ -356,6 +356,12 @@ Click any row in the query results to open the Record Detail page. Toggle edit m
 
 See [CONTRIBUTING.md](https://github.com/synle/sqlui-native/blob/main/CONTRIBUTING.md) for how to run the app locally and contribute.
 
+### Testing & Coverage
+
+- Unit tests: `npm run test-ci` (Vitest; config in [`vitest.config.ts`](https://github.com/synle/sqlui-native/blob/main/vitest.config.ts)).
+- Integration tests (Docker required): `npm run test-integration` (config in [`vitest.integration.config.ts`](https://github.com/synle/sqlui-native/blob/main/vitest.integration.config.ts)).
+- Coverage gates run in CI on every PR — see the [Code Coverage](https://github.com/synle/sqlui-native/blob/main/CONTRIBUTING.md#code-coverage) section in CONTRIBUTING.md for the JS/TS (Vitest + V8) and Rust (`cargo-llvm-cov`) configurations.
+
 ### Adding a New Database Adapter
 
 Want to add support for a new database engine? The project uses an adapter pattern where each database engine implements a standard interface (`IDataAdapter`). A starter template is provided at [`src/common/adapters/_SampleDataAdapter_/`](https://github.com/synle/sqlui-native/tree/main/src/common/adapters/_SampleDataAdapter_).

@@ -367,6 +367,24 @@ In CI, these are mapped from GitHub secrets in `.github/workflows/integration-te
 
 Integration tests are excluded from `npm run test-ci` and only run via `npm run test-integration`.
 
+## Code Coverage
+
+Two independent coverage gates run in CI and both must stay green for a build to pass. **Do not hard-code numbers in docs — bump the configs.**
+
+### Frontend / JS-TS (Vitest + V8)
+
+- **Config:** `vitest.config.ts` — `test.coverage.thresholds` block sets `statements` / `branches` / `functions` / `lines` minimums.
+- **CI runner:** `.github/workflows/build-main.yml` and `.github/workflows/integration-test.yml` invoke `vitest run --coverage.enabled` and mirror the same baselines as `MIN_STATEMENTS` / `MIN_BRANCHES` / `MIN_FUNCTIONS` / `MIN_LINES` env vars to render a step-summary table. **Vitest is the enforcement gate**; the bash check is defense-in-depth.
+- **Local:** `npx vitest run --coverage.enabled` (writes `coverage/coverage-summary.json` and an HTML report under `coverage/`).
+- **Raising the floor:** Update the numbers in **both** places — `vitest.config.ts` AND the `MIN_*` env vars in the two workflows. Never lower without an explicit reason.
+
+### Rust / Tauri (`cargo-llvm-cov`)
+
+- **Runner:** `rust_unit_tests` job in `.github/workflows/integration-test.yml` runs `cargo llvm-cov --lib --no-report` against `src-tauri/` and enforces `MIN_LINES` / `MIN_REGIONS` / `MIN_FUNCTIONS`. JSON summary at `src-tauri/rust-coverage.json` is uploaded as the `rust-coverage` artifact alongside an LCOV file.
+- **Scope:** `src-tauri/src/**/*.rs`, `--lib` target only. Code gated by `#[cfg(not(debug_assertions))]` or `#[cfg(target_os = ...)]` is **not** compiled into the test profile and is therefore unmeasured.
+- **Local:** `cd src-tauri && cargo llvm-cov --lib report --summary-only` (install `cargo-llvm-cov` first).
+- **Raising the floor:** Update the `MIN_*` env vars in `.github/workflows/integration-test.yml`.
+
 ## Adding new adapters?
 
 Use the template in [src/common/adapters/\_SampleDataAdapter\_](https://github.com/synle/sqlui-native/tree/main/src/common/adapters/_SampleDataAdapter_) as your starting point. Also see this [Sample PR (Adding Support For Azure Table)](https://github.com/synle/sqlui-native/pull/321/files) for a real-world example.
@@ -492,11 +510,12 @@ Open `src/common/adapters/DataScriptFactory.spec.ts` and add your dialect to the
 #### Step 8: Verify
 
 ```bash
-npm run lint          # check for lint errors (must have 0 errors)
-npm run typecheck     # TypeScript type check (must have 0 errors)
-npm run test-ci       # run unit tests (all tests must pass)
-npm run format        # Prettier formatting (always run LAST)
-npm start             # test in Tauri dev mode -- try adding a connection with your dialect
+npm run lint                                # check for lint errors (must have 0 errors)
+npm run typecheck                           # TypeScript type check (must have 0 errors)
+npm run test-ci                             # run unit tests (all tests must pass)
+npx vitest run --coverage.enabled           # confirm coverage stays above the thresholds in vitest.config.ts
+npm run format                              # Prettier formatting (always run LAST)
+npm start                                   # test in Tauri dev mode -- try adding a connection with your dialect
 ```
 
 ## Sample runbooks
