@@ -61,7 +61,11 @@ export default function SessionSelectionForm(props: SessionSelectionFormProps): 
       name: newSessionName,
     } as any);
 
-    selectSession(newSession.id);
+    // Dismiss the parent "Change Session" modal before switching sessions —
+    // otherwise it re-renders on top of the new session and looks like the
+    // dialog re-opened.
+    dismiss();
+    await selectSession(newSession.id);
   };
 
   if (loadingSessions || !sessions) {
@@ -128,8 +132,11 @@ export default function SessionSelectionForm(props: SessionSelectionFormProps): 
 
       <List>
         {options.map((option) => {
-          const onSelectThisSession = () => {
-            selectSession(option.value);
+          const onSelectThisSession = async () => {
+            // Dismiss the parent "Change Session" modal first so it isn't
+            // re-rendered against the new session and look like it re-opened.
+            dismiss();
+            await selectSession(option.value);
           };
           const labelId = `session-option-${option.value}`;
 
