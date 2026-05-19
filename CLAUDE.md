@@ -144,7 +144,7 @@ See CONTRIBUTING.md for the full step-by-step guide.
 
 ## Testing
 
-- Tests use Vitest (config in `vite.frontend.config.ts`)
+- Tests use Vitest (config in `vitest.config.ts`; integration config in `vitest.integration.config.ts`)
 - Unit tests are co-located with source files as `*.spec.ts`/`*.spec.tsx`
 - Integration tests: `*.integration.spec.ts` naming, excluded from `npm run test-ci`, require Docker
 - Cloud-based adapter tests require env vars (`TEST_AZ_TABLE_STORAGE_CONNECTION`, etc.) — auto-skip when not set. Map secrets in `.github/workflows/integration-test.yml`
@@ -206,8 +206,19 @@ After any build-related or Vite config change, run the affected build task:
 - React app: Vite (`vite.frontend.config.ts`) — dev server on port 3000, proxy to port 3001
 - Tauri sidecar bundle: Vite SSR (`vite.sqlui-server.sidecar.config.ts`) — single-file `sqlui-server.js`
 - Server: Vite SSR (`vite.sqlui-server.config.ts`) — `build/sqlui-server.js`
+- Portal bundle: Vite SSR (`vite.sqlui-portal.config.ts`) — `dist/portal/sqlui-portal.js`
+- Vitest: `vitest.config.ts` (unit) + `vitest.integration.config.ts` (integration)
 - Prettier: 140 char width, single quotes, trailing commas, 2-space indent
 - NODE_VERSION: 24 (use `fnm` to switch: `fnm use 24`)
+
+## Code Coverage Thresholds
+
+**Two coverage gates run in CI; both fail the build on regression. Source-of-truth lives in code/CI, not in this doc — never hard-code numbers here.**
+
+- **Frontend / JS-TS (Vitest + V8):** Thresholds enforced in `vitest.config.ts` under `test.coverage.thresholds` (statements / branches / functions / lines). The same baselines are mirrored as `MIN_*` env vars in `.github/workflows/build-main.yml` and `.github/workflows/integration-test.yml` for the step-summary table. Vitest is the enforcement gate; the bash check is defense-in-depth.
+- **Rust / Tauri (`cargo-llvm-cov`):** Thresholds enforced by the `rust_unit_tests` job in `.github/workflows/integration-test.yml` as `MIN_LINES` / `MIN_REGIONS` / `MIN_FUNCTIONS`. JSON summary is at `src-tauri/rust-coverage.json` (uploaded as `rust-coverage` artifact). Scope: `src-tauri/src/**/*.rs`, `--lib` target only — code gated by `#[cfg(not(debug_assertions))]` / `#[cfg(target_os = ...)]` is excluded.
+
+When raising the floor: bump in both places (Vitest config + workflow `MIN_*` env) for JS/TS; bump the workflow `MIN_*` env for Rust. Never lower without an explicit reason.
 
 ## Documentation (TSDoc)
 
