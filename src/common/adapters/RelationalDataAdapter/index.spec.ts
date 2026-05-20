@@ -1,4 +1,3 @@
-import fs from "node:fs";
 import createRelationalDataAdapter from "src/common/adapters/RelationalDataAdapter/index";
 
 describe("sqlite", () => {
@@ -9,16 +8,13 @@ describe("sqlite", () => {
   }
 
   beforeAll(() => {
-    const mockedDbFilePath = `mocked-db.sqlite`;
-
-    // try remove the mocked db before starting this test
-    try {
-      fs.unlinkSync(mockedDbFilePath);
-    } catch (err) {
-      console.error("index.spec.ts:unlinkSync", err);
-    }
-
-    adapter = createRelationalDataAdapter(`sqlite://${mockedDbFilePath}`);
+    // Use an in-memory SQLite DB so the test is self-contained and bypasses the
+    // file-state classifier (added in 77da1cad), which now throws "SQLite file
+    // not found" for paths that don't yet exist. The same adapter instance is
+    // reused across the tests below, so the in-memory data persists between
+    // them on a single shared connection. File-based behavior is covered
+    // separately by sqlite/index.spec.ts.
+    adapter = createRelationalDataAdapter(`sqlite://:memory:`);
   });
 
   test("Create and insert table", async () => {
