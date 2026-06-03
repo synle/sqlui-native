@@ -43,7 +43,7 @@ import {
   normalizeSql,
   useAddQueryVersionHistory,
 } from "src/frontend/hooks/useQueryVersionHistory";
-import { formatDuration, formatJS, formatSQL } from "src/frontend/utils/formatter";
+import { formatJS, formatSQL } from "src/frontend/utils/formatter";
 import { SqluiCore } from "typings";
 
 /** Maximum number of connections before column autocomplete is limited to the selected table only. */
@@ -430,7 +430,6 @@ function QueryBox(props: QueryBoxProps): React.JSX.Element | null {
     const executionStart = Date.now();
     onChange({ executing: true, executionStart, result: undefined, executionEnd: undefined, executionDetails: undefined });
 
-    let success = false;
     let newResult: SqluiCore.Result | undefined;
 
     const queryToExecute = {
@@ -480,8 +479,6 @@ function QueryBox(props: QueryBoxProps): React.JSX.Element | null {
       if (queryToExecute.sql) {
         trackVersion(queryToExecute.sql, "execution");
       }
-
-      success = newResult.ok;
     } catch (err) {
       console.error("index.tsx:refreshAfterExecution", err);
       // here query failed...
@@ -493,26 +490,6 @@ function QueryBox(props: QueryBoxProps): React.JSX.Element | null {
 
     const executionEnd = Date.now();
     onChange({ executing: false, executionEnd });
-
-    const { sql, ...queryExtra } = query;
-    const { selected, result: _result, ...toastMetaData } = queryExtra;
-
-    let toastMessage = `Query "${queryToExecute.name}" executed ${
-      success ? "successfully" : "unsuccessfully"
-    } and took about ${formatDuration(executionEnd - executionStart)}...`;
-
-    if (newResult?.raw && newResult?.raw?.length > 0) {
-      toastMessage += ` And the query returned a total of ${newResult?.raw?.length} records.`;
-    }
-
-    await addToast({
-      message: toastMessage,
-      detail: sql,
-      metadata: {
-        ...toastMetaData,
-      },
-      persisted: true,
-    });
   };
 
   const onShowMigrationForThisDatabaseAndTable = () => {
