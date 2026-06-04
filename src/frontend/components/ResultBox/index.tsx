@@ -12,7 +12,8 @@ import GraphQLResultBox from "src/frontend/components/ResultBox/GraphQLResultBox
 import RestApiResultBox from "src/frontend/components/ResultBox/RestApiResultBox";
 import Tabs from "src/frontend/components/Tabs";
 import Timer from "src/frontend/components/Timer";
-import { downloadCsv, downloadJSON } from "src/frontend/data/file";
+import { dataToCsv } from "src/frontend/data/file";
+import { useDownloadResultToast } from "src/frontend/hooks/useDownloadResultToast";
 import { SqluiFrontend } from "typings";
 
 /** Props for the ResultBox component. */
@@ -33,6 +34,7 @@ type ResultBoxProps = {
  */
 export default function ResultBox(props: ResultBoxProps): React.JSX.Element | null {
   const { selectCommand } = useCommands();
+  const { downloadResult } = useDownloadResultToast();
   const [tabIdx, setTabIdx] = useState(0);
   const { query, executing } = props;
   const queryResult = query.result;
@@ -95,14 +97,23 @@ export default function ResultBox(props: ResultBoxProps): React.JSX.Element | nu
   const onDownloadJson = async (e: React.SyntheticEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    downloadJSON(`Result - ${new Date().toLocaleString()}.result.json`, data);
+    await downloadResult({
+      suggestedName: `Result - ${new Date().toLocaleString()}.result.json`,
+      content: JSON.stringify(data, null, 2),
+      mimeType: "text/json",
+      filters: [{ name: "JSON", extensions: ["json"] }],
+    });
   };
 
   const onDownloadCsv = async (e: React.SyntheticEvent) => {
     e.preventDefault();
     e.stopPropagation();
-
-    downloadCsv(`Result - ${new Date().toLocaleString()}.result.csv`, data);
+    await downloadResult({
+      suggestedName: `Result - ${new Date().toLocaleString()}.result.csv`,
+      content: dataToCsv(data),
+      mimeType: "text/csv",
+      filters: [{ name: "CSV", extensions: ["csv"] }],
+    });
   };
 
   const onShowRecordDetails = (rowData: any) => {

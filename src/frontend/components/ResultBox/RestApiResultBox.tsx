@@ -8,7 +8,7 @@ import React, { useState } from "react";
 import CodeEditorBox from "src/frontend/components/CodeEditorBox";
 import Tabs from "src/frontend/components/Tabs";
 import Timer from "src/frontend/components/Timer";
-import { downloadJSON } from "src/frontend/data/file";
+import { useDownloadResultToast } from "src/frontend/hooks/useDownloadResultToast";
 
 /** Props for the RestApiResultBox component. */
 type RestApiResultBoxProps = {
@@ -131,6 +131,7 @@ function KeyValueTable({ entries }: { entries: Record<string, any> }): React.JSX
 export default function RestApiResultBox(props: RestApiResultBoxProps): React.JSX.Element {
   const { meta, raw, executionStart, executionEnd } = props;
   const [tabIdx, setTabIdx] = useState(0);
+  const { downloadResult } = useDownloadResultToast();
 
   const status: number = meta.status || 0;
   const statusText: string = meta.statusText || "";
@@ -149,10 +150,15 @@ export default function RestApiResultBox(props: RestApiResultBoxProps): React.JS
   const cookieCount = Object.keys(responseCookies).length;
 
   /** Downloads the full response as JSON. */
-  const onDownloadJson = (e: React.SyntheticEvent) => {
+  const onDownloadJson = async (e: React.SyntheticEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    downloadJSON(`Response - ${new Date().toLocaleString()}.json`, raw);
+    await downloadResult({
+      suggestedName: `Response - ${new Date().toLocaleString()}.json`,
+      content: JSON.stringify(raw, null, 2),
+      mimeType: "text/json",
+      filters: [{ name: "JSON", extensions: ["json"] }],
+    });
   };
 
   const tabHeaders = [

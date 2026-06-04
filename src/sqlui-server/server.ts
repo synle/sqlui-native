@@ -45,6 +45,34 @@ app.post("/api/file", async (c) => {
 });
 
 /**
+ * Writes a text file to the host filesystem at an absolute path supplied by the caller.
+ * Used by the Tauri save-file flow: the renderer picks a path via the native save dialog,
+ * then POSTs the text payload here so the sidecar (which has fs access) can persist it.
+ * Body: `{ path: string, content: string }`.
+ */
+app.post("/api/file/save", async (c) => {
+  try {
+    const body = (await c.req.json()) as { path?: unknown; content?: unknown };
+    const filePath = body?.path;
+    const content = body?.content;
+    if (typeof filePath !== "string" || filePath.length === 0) {
+      return c.json({ error: "Missing or invalid 'path'" }, 400);
+    }
+    if (typeof content !== "string") {
+      return c.json({ error: "Missing or invalid 'content'" }, 400);
+    }
+    if (!path.isAbsolute(filePath)) {
+      return c.json({ error: "'path' must be absolute" }, 400);
+    }
+    fs.writeFileSync(filePath, content, { encoding: "utf-8" });
+    return c.json({ path: filePath }, 200);
+  } catch (err) {
+    console.error("server.ts:postFileSave", err);
+    return c.json({ error: "Failed to save the file" }, 500);
+  }
+});
+
+/**
  * Health check endpoint for verifying the server is running.
  * Returns process ID and uptime for diagnostics.
  */

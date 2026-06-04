@@ -17,6 +17,9 @@ vi.mock("src/frontend/components/Timer", () => ({
   default: () => <span>Timer</span>,
 }));
 vi.mock("src/frontend/data/file", () => ({ downloadJSON: vi.fn() }));
+vi.mock("src/frontend/hooks/useDownloadResultToast", () => ({
+  useDownloadResultToast: () => ({ downloadResult: vi.fn(async () => ({ kind: "cancelled" })) }),
+}));
 
 import RestApiResultBox, { formatBytes } from "src/frontend/components/ResultBox/RestApiResultBox";
 import GraphQLResultBox from "src/frontend/components/ResultBox/GraphQLResultBox";

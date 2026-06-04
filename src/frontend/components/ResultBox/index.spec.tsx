@@ -38,6 +38,12 @@ vi.mock("src/frontend/components/Timer", () => ({
 vi.mock("src/frontend/data/file", () => ({
   downloadCsv: vi.fn(),
   downloadJSON: vi.fn(),
+  dataToCsv: vi.fn(() => ""),
+  saveTextFileWithFallback: vi.fn(async () => ({ kind: "cancelled" })),
+  revealItemInDir: vi.fn(async () => {}),
+}));
+vi.mock("src/frontend/hooks/useDownloadResultToast", () => ({
+  useDownloadResultToast: () => ({ downloadResult: vi.fn(async () => ({ kind: "cancelled" })) }),
 }));
 
 import ResultBox from "src/frontend/components/ResultBox";

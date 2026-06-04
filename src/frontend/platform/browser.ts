@@ -41,4 +41,14 @@ export const browserPlatform: PlatformBridge = {
   onAppCommand(_callback: (event: string) => void): () => void {
     return () => {};
   },
+
+  async saveTextFile(): Promise<string | null> {
+    // Browser mode cannot resolve an absolute filesystem path — caller should
+    // fall back to a blob/anchor download instead.
+    return null;
+  },
+
+  async revealItemInDir(_filePath: string): Promise<void> {
+    // No reveal-in-finder equivalent in a browser tab.
+  },
 };

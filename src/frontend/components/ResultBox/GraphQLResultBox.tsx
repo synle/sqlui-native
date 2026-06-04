@@ -9,7 +9,7 @@ import CodeEditorBox from "src/frontend/components/CodeEditorBox";
 import { formatBytes } from "src/frontend/components/ResultBox/RestApiResultBox";
 import Tabs from "src/frontend/components/Tabs";
 import Timer from "src/frontend/components/Timer";
-import { downloadJSON } from "src/frontend/data/file";
+import { useDownloadResultToast } from "src/frontend/hooks/useDownloadResultToast";
 
 /** Props for the GraphQLResultBox component. */
 type GraphQLResultBoxProps = {
@@ -92,6 +92,7 @@ function KeyValueTable({ entries }: { entries: Record<string, any> }): React.JSX
  */
 export default function GraphQLResultBox(props: GraphQLResultBoxProps): React.JSX.Element {
   const { meta, raw, executionStart, executionEnd } = props;
+  const { downloadResult } = useDownloadResultToast();
 
   const status: number = meta.status || 0;
   const statusText: string = meta.statusText || "";
@@ -121,10 +122,15 @@ export default function GraphQLResultBox(props: GraphQLResultBoxProps): React.JS
   const errorCount = graphqlErrors.length;
 
   /** Downloads the full response as JSON. */
-  const onDownloadJson = (e: React.SyntheticEvent) => {
+  const onDownloadJson = async (e: React.SyntheticEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    downloadJSON(`GraphQL Response - ${new Date().toLocaleString()}.json`, raw);
+    await downloadResult({
+      suggestedName: `GraphQL Response - ${new Date().toLocaleString()}.json`,
+      content: JSON.stringify(raw, null, 2),
+      mimeType: "text/json",
+      filters: [{ name: "JSON", extensions: ["json"] }],
+    });
   };
 
   // Build request details text

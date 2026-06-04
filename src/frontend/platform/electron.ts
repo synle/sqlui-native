@@ -105,4 +105,17 @@ export const electronPlatform: PlatformBridge = {
       ipcRenderer.removeListener("sqluiNativeEvent/ipcElectronCommand", handler);
     };
   },
+
+  async saveTextFile(): Promise<string | null> {
+    // Electron path is legacy / unused; let the caller fall back to the blob download.
+    return null;
+  },
+
+  async revealItemInDir(filePath: string): Promise<void> {
+    try {
+      shell.showItemInFolder(filePath);
+    } catch (_err) {
+      // shell not available — silently ignore
+    }
+  },
 };

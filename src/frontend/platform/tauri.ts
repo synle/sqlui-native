@@ -75,4 +75,49 @@ export const tauriPlatform: PlatformBridge = {
       unlisten?.();
     };
   },
+
+  async saveTextFile(opts): Promise<string | null> {
+    try {
+      const { save } = await import("@tauri-apps/plugin-dialog");
+      const selected = await save({
+        defaultPath: opts.suggestedName,
+        filters: opts.filters,
+      });
+      if (!selected || typeof selected !== "string") return null;
+
+      // The renderer can't touch the filesystem directly without plugin-fs scopes,
+      // so POST the payload to the sidecar (same machine, 127.0.0.1) which can.
+      let baseUrl = "";
+      try {
+        const { invoke } = await import("@tauri-apps/api/core");
+        const port = await invoke<number>("get_sidecar_port");
+        if (port > 0) baseUrl = `http://127.0.0.1:${port}`;
+      } catch (_err) {
+        // fall back to relative URL — fine when running under Vite dev proxy
+      }
+      const res = await fetch(`${baseUrl}/api/file/save`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ path: selected, content: opts.content }),
+      });
+      if (!res.ok) {
+        console.error("platform/tauri.ts:saveTextFile", `HTTP ${res.status}`);
+        return null;
+      }
+      const body = (await res.json()) as { path?: string };
+      return body?.path ?? selected;
+    } catch (err) {
+      console.error("platform/tauri.ts:saveTextFile", err);
+      return null;
+    }
+  },
+
+  async revealItemInDir(filePath: string): Promise<void> {
+    try {
+      const { revealItemInDir } = await import("@tauri-apps/plugin-opener");
+      await revealItemInDir(filePath);
+    } catch (err) {
+      console.error("platform/tauri.ts:revealItemInDir", err);
+    }
+  },
 };

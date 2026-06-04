@@ -32,4 +32,22 @@ export interface PlatformBridge {
 
   /** Subscribes to native menu command events. Returns an unsubscribe function. */
   onAppCommand(callback: (event: string) => void): () => void;
+
+  /** Opens a native save dialog and writes `content` to the chosen path.
+   *
+   * Returns the absolute path of the saved file on success, or `null` if the
+   * user cancelled the dialog OR the platform has no native save support
+   * (browser mode). Callers that get `null` should fall back to a browser-style
+   * blob download.
+   */
+  saveTextFile(opts: {
+    suggestedName: string;
+    content: string;
+    filters?: { name: string; extensions: string[] }[];
+  }): Promise<string | null>;
+
+  /** Reveals a file in the OS file manager (Finder / Explorer / Files).
+   * No-op in browser mode.
+   */
+  revealItemInDir(filePath: string): Promise<void>;
 }
