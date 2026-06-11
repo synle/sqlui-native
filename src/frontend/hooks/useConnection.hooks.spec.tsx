@@ -28,6 +28,10 @@ vi.mock("src/frontend/hooks/useSetting", () => ({
   useIsSoftDeleteModeSetting: () => false,
 }));
 
+vi.mock("src/frontend/hooks/useToaster", () => ({
+  default: () => ({ add: vi.fn().mockResolvedValue({ dismiss: vi.fn() }), dismiss: vi.fn() }),
+}));
+
 vi.mock("src/frontend/utils/commonUtils", async () => {
   const actual = await vi.importActual<any>("src/frontend/utils/commonUtils");
   return {

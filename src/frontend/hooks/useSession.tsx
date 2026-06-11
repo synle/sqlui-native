@@ -4,6 +4,7 @@ import dataApi from "src/frontend/data/api";
 import { getCurrentSessionId, setCurrentSessionId } from "src/frontend/data/session";
 import { useAddRecycleBinItem } from "src/frontend/hooks/useFolderItems";
 import { useIsSoftDeleteModeSetting } from "src/frontend/hooks/useSetting";
+import useToaster from "src/frontend/hooks/useToaster";
 import { SqluiCore } from "typings";
 
 /** React Query cache key for sessions. */
@@ -92,6 +93,7 @@ export function useCloneSession() {
 
 /**
  * Hook to delete a session. Optionally backs up session and its connections to recycle bin.
+ * On recycle-bin backup failure, the deletion still proceeds; the user is notified via toast.
  * @returns Mutation that accepts a session ID to delete.
  */
 export function useDeleteSession() {
@@ -99,6 +101,7 @@ export function useDeleteSession() {
   const { mutateAsync: addRecycleBinItem } = useAddRecycleBinItem();
   const { data: sessions } = useGetSessions();
   const isSoftDeleteModeSetting = useIsSoftDeleteModeSetting();
+  const { add: addToast } = useToaster();
 
   return useMutation<{ deletedSessionId: string; connections: SqluiCore.ConnectionProps[] }, void, string>({
     mutationFn: async (sessionId: string) => {
@@ -137,7 +140,8 @@ export function useDeleteSession() {
         }
       } catch (err) {
         console.error("useSession.tsx:addRecycleBinItem", err);
-        // TODO: add error handling
+        // Surface failure to user without aborting the deletion (already committed above).
+        addToast({ message: "Failed to back up session to recycle bin" });
       }
 
       return deletedSessionId;
