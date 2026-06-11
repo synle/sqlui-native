@@ -5,6 +5,7 @@ import dataApi from "src/frontend/data/api";
 import { useAddRecycleBinItem } from "src/frontend/hooks/useFolderItems";
 import { queryKeys } from "src/frontend/hooks/queryKeys";
 import { useIsSoftDeleteModeSetting } from "src/frontend/hooks/useSetting";
+import useToaster from "src/frontend/hooks/useToaster";
 import { getUpdatedOrdersForList } from "src/frontend/utils/commonUtils";
 import { SqluiCore, SqluiFrontend } from "typings";
 
@@ -102,6 +103,7 @@ export function useUpsertConnection() {
 
 /**
  * Hook to delete a connection. Optionally backs up to recycle bin if soft delete is enabled.
+ * On recycle-bin backup failure, the deletion still proceeds; the user is notified via toast.
  * @returns Mutation that accepts a connection ID to delete.
  */
 export function useDeleteConnection() {
@@ -109,6 +111,7 @@ export function useDeleteConnection() {
   const { mutateAsync: addRecycleBinItem } = useAddRecycleBinItem();
   const { data: connections } = useGetConnections();
   const isSoftDeleteModeSetting = useIsSoftDeleteModeSetting();
+  const { add: addToast } = useToaster();
 
   return useMutation<string, void, string>({
     mutationFn: dataApi.deleteConnection,
@@ -134,7 +137,8 @@ export function useDeleteConnection() {
         }
       } catch (err) {
         console.error("useConnection.tsx:addRecycleBinItem", err);
-        // TODO: add error handling
+        // Surface failure to user without aborting the deletion (already committed above).
+        addToast({ message: "Failed to back up connection to recycle bin" });
       }
 
       return deletedConnectionId;

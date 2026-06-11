@@ -34,6 +34,10 @@ vi.mock("src/frontend/hooks/useSetting", () => ({
   useIsSoftDeleteModeSetting: () => true,
 }));
 
+vi.mock("src/frontend/hooks/useToaster", () => ({
+  default: () => ({ add: vi.fn().mockResolvedValue({ dismiss: vi.fn() }), dismiss: vi.fn() }),
+}));
+
 import dataApi from "src/frontend/data/api";
 import { useSelectSession, useUpsertSession, useDeleteSession, useCloneSession } from "src/frontend/hooks/useSession";
 
