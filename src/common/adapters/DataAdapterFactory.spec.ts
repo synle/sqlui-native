@@ -36,10 +36,24 @@ describe("DataAdapterFactory", () => {
       expect(adapter.dialect).toBe("mongodb");
     });
 
+    test("should return a MongoDBDataAdapter for mongodb+srv://", () => {
+      const adapter = getDataAdapter("mongodb+srv://user:pass@cluster.example.com");
+      expect(adapter).toBeDefined();
+      // mongodb+srv resolves through MongoDB script's getDialectType — canonicalized or raw.
+      expect(["mongodb", "mongodb+srv"]).toContain(adapter.dialect);
+    });
+
     test("should return a RedisDataAdapter for redis://", () => {
       const adapter = getDataAdapter("redis://localhost:6379");
       expect(adapter).toBeDefined();
       expect(adapter.dialect).toBe("redis");
+    });
+
+    test("should return a RedisDataAdapter for rediss://", () => {
+      const adapter = getDataAdapter("rediss://localhost:6379");
+      expect(adapter).toBeDefined();
+      // rediss is the TLS variant routed through Redis script; dialect may be canonicalized or raw.
+      expect(["redis", "rediss"]).toContain(adapter.dialect);
     });
 
     test("should return an AzureCosmosDataAdapter for cosmosdb://", () => {
@@ -64,8 +78,30 @@ describe("DataAdapterFactory", () => {
       expect(adapter.dialect).toBe("sfdc");
     });
 
+    test("should return a GraphQLDataAdapter for graphql://", () => {
+      const adapter = getDataAdapter(`graphql://${JSON.stringify({ HOST: "https://api.example.com/graphql" })}`);
+      expect(adapter).toBeDefined();
+      expect(adapter.dialect).toBe("graphql");
+    });
+
+    test("should return a RestApiDataAdapter for rest://", () => {
+      const adapter = getDataAdapter(`rest://${JSON.stringify({ HOST: "https://api.example.com" })}`);
+      expect(adapter).toBeDefined();
+      expect(adapter.dialect).toBe("rest");
+    });
+
+    test("should return a RestApiDataAdapter for restapi:// (legacy alias)", () => {
+      const adapter = getDataAdapter(`restapi://${JSON.stringify({ HOST: "https://api.example.com" })}`);
+      expect(adapter).toBeDefined();
+      expect(adapter.dialect).toBe("rest");
+    });
+
     test("should throw for unsupported dialect", () => {
-      expect(() => getDataAdapter("unknown://host")).toThrow();
+      expect(() => getDataAdapter("unknown://host")).toThrow(/dialect not supported/);
+    });
+
+    test("should throw for a connection string with no scheme", () => {
+      expect(() => getDataAdapter("not a uri at all")).toThrow(/dialect not supported/);
     });
   });
 
