@@ -16,6 +16,7 @@ const ROW_HEIGHT_COLUMN_ATTRIBUTES = 35;
 /**
  * Virtualized tree view of all database connections, databases, tables, and columns.
  * Supports expanding/collapsing nodes and drag-and-drop reordering of connections.
+ * Connection-header rows are kept mounted to preserve drag-and-drop sources.
  */
 export default function VirtualizedConnectionTree() {
   const { rows, rowFingerprint, connections, connectionsLoading, onToggle, updateConnections } = useFlatTreeRows();
@@ -34,6 +35,7 @@ export default function VirtualizedConnectionTree() {
       }
       return rowHeight;
     },
+    measureElement: (element) => element?.getBoundingClientRect().height ?? rowHeight,
   });
 
   const onConnectionOrderChange = useCallback(
@@ -60,15 +62,28 @@ export default function VirtualizedConnectionTree() {
   }
 
   return (
-    <div
-      style={{
-        flex: 1,
-        overflowY: "auto",
-      }}
-    >
-      {rows.map((row) => (
-        <TreeRowRenderer key={row.key} row={row} onToggle={onToggle} onConnectionOrderChange={onConnectionOrderChange} />
-      ))}
+    <div ref={parentRef} style={{ flex: 1, overflowY: "auto" }}>
+      <div style={{ height: `${virtualizer.getTotalSize()}px`, position: "relative" }}>
+        {virtualizer.getVirtualItems().map((virtualItem) => {
+          const row = rows[virtualItem.index];
+          return (
+            <div
+              key={row.key}
+              data-index={virtualItem.index}
+              ref={virtualizer.measureElement}
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                width: "100%",
+                transform: `translateY(${virtualItem.start}px)`,
+              }}
+            >
+              <TreeRowRenderer row={row} onToggle={onToggle} onConnectionOrderChange={onConnectionOrderChange} />
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }
