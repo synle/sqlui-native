@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { useQueries } from "@tanstack/react-query";
 import { isDialectSupportManagedMetadata } from "src/common/adapters/DataScriptFactory";
 import dataApi from "src/frontend/data/api";
@@ -168,243 +169,264 @@ export function useFlatTreeRows() {
     error: columnQueries[i]?.error,
   }));
 
-  // Build flat row array
-  const rows: TreeRow[] = [];
+  // Memoize the flat row build — everything above is hooks and cheap iterations;
+  // the rows tree traversal is the expensive part.
+  const inputFingerprint = [
+    connections?.length,
+    ...(connections?.map((c) => `${c.id}:${c.status}`) ?? []),
+    ...databaseResults.map((r) => `${r.connectionId}:${r.isLoading ? "L" : r.isError ? "E" : `D${r.data?.length}`}`),
+    ...tableResults.map((r) => `${r.connectionId}|${r.databaseId}:${r.isLoading ? "L" : r.isError ? "E" : `T${r.data?.length}`}`),
+    ...columnResults.map(
+      (r) => `${r.connectionId}|${r.databaseId}|${r.tableId}:${r.isLoading ? "L" : r.isError ? "E" : `C${r.data?.length}`}`,
+    ),
+    ...expandedOnlineConnections,
+    ...expandedTables.map((t) => `${t.connectionId}|${t.databaseId}|${t.tableId}`),
+    activeQuery?.connectionId,
+    activeQuery?.databaseId,
+    activeQuery?.tableId,
+  ].join("|");
 
-  if (connections) {
-    // Build lookup maps for databases, tables, columns
-    const dbMap = new Map<string, DatabaseQueryResult>();
-    for (const dbr of databaseResults) {
-      dbMap.set(dbr.connectionId, dbr);
-    }
+  const rows = useMemo(() => {
+    // Build flat row array
+    const innerRows: TreeRow[] = [];
 
-    const tableMap = new Map<string, TableQueryResult>();
-    for (const tr of tableResults) {
-      tableMap.set(`${tr.connectionId}|${tr.databaseId}`, tr);
-    }
-
-    const colMap = new Map<string, ColumnQueryResult>();
-    for (const cr of columnResults) {
-      colMap.set(`${cr.connectionId}|${cr.databaseId}|${cr.tableId}`, cr);
-    }
-
-    for (let connIdx = 0; connIdx < connections.length; connIdx++) {
-      const connection = connections[connIdx];
-      const connKey = connection.id;
-      const isOnline = connection.status === "online";
-      const connExpanded = !!visibles[connKey];
-      const connSelected = !!(activeQuery?.connectionId && activeQuery.connectionId === connection.id);
-
-      rows.push({
-        type: "connection-header",
-        key: `conn-${connKey}`,
-        depth: 0,
-        visibilityKey: connKey,
-        connection,
-        connectionIndex: connIdx,
-        isSelected: connSelected,
-        isExpanded: connExpanded,
-      });
-
-      if (!connExpanded) continue;
-
-      if (connection.status === "loading") {
-        rows.push({
-          type: "loading",
-          key: `connecting-${connKey}`,
-          depth: 1,
-          message: "Connecting to server...",
-        });
-        continue;
+    if (connections) {
+      // Build lookup maps for databases, tables, columns
+      const dbMap = new Map<string, DatabaseQueryResult>();
+      for (const dbr of databaseResults) {
+        dbMap.set(dbr.connectionId, dbr);
       }
 
-      if (!isOnline) {
-        rows.push({
-          type: "connection-retry",
-          key: `retry-${connKey}`,
-          depth: 1,
-          connectionId: connection.id,
-        });
-        continue;
+      const tableMap = new Map<string, TableQueryResult>();
+      for (const tr of tableResults) {
+        tableMap.set(`${tr.connectionId}|${tr.databaseId}`, tr);
       }
 
-      // Databases
-      const dbResult = dbMap.get(connection.id);
-      if (!dbResult || dbResult.isLoading) {
-        rows.push({
-          type: "loading",
-          key: `loading-db-${connKey}`,
-          depth: 1,
-          message: "Loading...",
-        });
-        continue;
-      }
-      if (dbResult.isError) {
-        rows.push({
-          type: "error",
-          key: `error-db-${connKey}`,
-          depth: 1,
-          message: getErrorMessage(dbResult.error),
-        });
-        continue;
-      }
-      if (!dbResult.data || dbResult.data.length === 0) {
-        rows.push({
-          type: "empty",
-          key: `empty-db-${connKey}`,
-          depth: 1,
-          message: "Not Available",
-        });
-        continue;
+      const colMap = new Map<string, ColumnQueryResult>();
+      for (const cr of columnResults) {
+        colMap.set(`${cr.connectionId}|${cr.databaseId}|${cr.tableId}`, cr);
       }
 
-      for (const database of dbResult.data) {
-        const dbKey = [connection.id, database.name].join(" > ");
-        const dbExpanded = !!visibles[dbKey];
-        const dbSelected = activeQuery?.connectionId === connection.id && activeQuery?.databaseId === database.name;
+      for (let connIdx = 0; connIdx < connections.length; connIdx++) {
+        const connection = connections[connIdx];
+        const connKey = connection.id;
+        const isOnline = connection.status === "online";
+        const connExpanded = !!visibles[connKey];
+        const connSelected = !!(activeQuery?.connectionId && activeQuery.connectionId === connection.id);
 
-        rows.push({
-          type: "database-header",
-          key: `db-${dbKey}`,
-          depth: 1,
-          visibilityKey: dbKey,
-          connectionId: connection.id,
-          databaseName: database.name,
-          isSelected: dbSelected,
-          isExpanded: dbExpanded,
+        innerRows.push({
+          type: "connection-header",
+          key: `conn-${connKey}`,
+          depth: 0,
+          visibilityKey: connKey,
+          connection,
+          connectionIndex: connIdx,
+          isSelected: connSelected,
+          isExpanded: connExpanded,
         });
 
-        if (!dbExpanded) continue;
+        if (!connExpanded) continue;
 
-        // Tables
-        const tblResult = tableMap.get(`${connection.id}|${database.name}`);
-        if (!tblResult || tblResult.isLoading) {
-          rows.push({
+        if (connection.status === "loading") {
+          innerRows.push({
             type: "loading",
-            key: `loading-tbl-${dbKey}`,
-            depth: 2,
+            key: `connecting-${connKey}`,
+            depth: 1,
+            message: "Connecting to server...",
+          });
+          continue;
+        }
+
+        if (!isOnline) {
+          innerRows.push({
+            type: "connection-retry",
+            key: `retry-${connKey}`,
+            depth: 1,
+            connectionId: connection.id,
+          });
+          continue;
+        }
+
+        // Databases
+        const dbResult = dbMap.get(connection.id);
+        if (!dbResult || dbResult.isLoading) {
+          innerRows.push({
+            type: "loading",
+            key: `loading-db-${connKey}`,
+            depth: 1,
             message: "Loading...",
           });
           continue;
         }
-        if (tblResult.isError) {
-          rows.push({
+        if (dbResult.isError) {
+          innerRows.push({
             type: "error",
-            key: `error-tbl-${dbKey}`,
-            depth: 2,
-            message: getErrorMessage(tblResult.error),
+            key: `error-db-${connKey}`,
+            depth: 1,
+            message: getErrorMessage(dbResult.error),
           });
           continue;
         }
-        if (!tblResult.data || tblResult.data.length === 0) {
-          rows.push({
+        if (!dbResult.data || dbResult.data.length === 0) {
+          innerRows.push({
             type: "empty",
-            key: `empty-tbl-${dbKey}`,
-            depth: 2,
+            key: `empty-db-${connKey}`,
+            depth: 1,
             message: "Not Available",
           });
           continue;
         }
 
-        const isManagedMeta = isDialectSupportManagedMetadata(connection.dialect);
+        for (const database of dbResult.data) {
+          const dbKey = [connection.id, database.name].join(" > ");
+          const dbExpanded = !!visibles[dbKey];
+          const dbSelected = activeQuery?.connectionId === connection.id && activeQuery?.databaseId === database.name;
 
-        for (const table of tblResult.data) {
-          const tableId = table.id ?? table.name;
-          const tblKey = [connection.id, database.name, tableId].join(" > ");
-          const tblExpanded = !!visibles[tblKey];
-          const tblSelected =
-            activeQuery?.connectionId === connection.id && activeQuery?.databaseId === database.name && activeQuery?.tableId === tableId;
-
-          rows.push({
-            type: "table-header",
-            key: `tbl-${tblKey}`,
-            depth: 2,
-            visibilityKey: tblKey,
+          innerRows.push({
+            type: "database-header",
+            key: `db-${dbKey}`,
+            depth: 1,
+            visibilityKey: dbKey,
             connectionId: connection.id,
-            databaseId: database.name,
-            tableName: table.name,
-            tableId,
-            isSelected: tblSelected || tblExpanded,
-            isExpanded: isManagedMeta ? false : tblExpanded,
+            databaseName: database.name,
+            isSelected: dbSelected,
+            isExpanded: dbExpanded,
           });
 
-          // Skip column drill-down for managed metadata (REST API requests are leaf nodes)
-          if (isManagedMeta || !tblExpanded) continue;
+          if (!dbExpanded) continue;
 
-          // Columns
-          const colResult = colMap.get(`${connection.id}|${database.name}|${tableId}`);
-          if (!colResult || colResult.isLoading) {
-            rows.push({
+          // Tables
+          const tblResult = tableMap.get(`${connection.id}|${database.name}`);
+          if (!tblResult || tblResult.isLoading) {
+            innerRows.push({
               type: "loading",
-              key: `loading-col-${tblKey}`,
-              depth: 3,
+              key: `loading-tbl-${dbKey}`,
+              depth: 2,
               message: "Loading...",
             });
             continue;
           }
-          if (colResult.isError) {
-            rows.push({
+          if (tblResult.isError) {
+            innerRows.push({
               type: "error",
-              key: `error-col-${tblKey}`,
-              depth: 3,
-              message: getErrorMessage(colResult.error),
+              key: `error-tbl-${dbKey}`,
+              depth: 2,
+              message: getErrorMessage(tblResult.error),
             });
             continue;
           }
-          if (!colResult.data || colResult.data.length === 0) {
-            rows.push({
+          if (!tblResult.data || tblResult.data.length === 0) {
+            innerRows.push({
               type: "empty",
-              key: `empty-col-${tblKey}`,
-              depth: 3,
+              key: `empty-tbl-${dbKey}`,
+              depth: 2,
               message: "Not Available",
             });
             continue;
           }
 
-          const showAllKey = [connection.id, database.name, tableId, "__ShowAllColumns__"].join(" > ");
-          const showAll = colResult.data.length <= MAX_COLUMN_SIZE_TO_SHOW || !!visibles[showAllKey];
+          const isManagedMeta = isDialectSupportManagedMetadata(connection.dialect);
 
-          const columnsToShow = showAll ? colResult.data : colResult.data.slice(0, MAX_COLUMN_SIZE_TO_SHOW + 1);
+          for (const table of tblResult.data) {
+            const tableId = table.id ?? table.name;
+            const tblKey = [connection.id, database.name, tableId].join(" > ");
+            const tblExpanded = !!visibles[tblKey];
+            const tblSelected =
+              activeQuery?.connectionId === connection.id && activeQuery?.databaseId === database.name && activeQuery?.tableId === tableId;
 
-          for (const column of columnsToShow) {
-            const colKey = [connection.id, database.name, tableId, column.name].join(" > ");
-            const colExpanded = !!visibles[colKey];
-
-            rows.push({
-              type: "column-header",
-              key: `col-${colKey}`,
-              depth: 3,
-              visibilityKey: colKey,
+            innerRows.push({
+              type: "table-header",
+              key: `tbl-${tblKey}`,
+              depth: 2,
+              visibilityKey: tblKey,
               connectionId: connection.id,
               databaseId: database.name,
+              tableName: table.name,
               tableId,
-              column,
-              isSelected: colExpanded,
-              isExpanded: colExpanded,
+              isSelected: tblSelected || tblExpanded,
+              isExpanded: isManagedMeta ? false : tblExpanded,
             });
 
-            if (colExpanded) {
-              rows.push({
-                type: "column-attributes",
-                key: `colattr-${colKey}`,
-                depth: 4,
+            // Skip column drill-down for managed metadata (REST API requests are leaf nodes)
+            if (isManagedMeta || !tblExpanded) continue;
+
+            // Columns
+            const colResult = colMap.get(`${connection.id}|${database.name}|${tableId}`);
+            if (!colResult || colResult.isLoading) {
+              innerRows.push({
+                type: "loading",
+                key: `loading-col-${tblKey}`,
+                depth: 3,
+                message: "Loading...",
+              });
+              continue;
+            }
+            if (colResult.isError) {
+              innerRows.push({
+                type: "error",
+                key: `error-col-${tblKey}`,
+                depth: 3,
+                message: getErrorMessage(colResult.error),
+              });
+              continue;
+            }
+            if (!colResult.data || colResult.data.length === 0) {
+              innerRows.push({
+                type: "empty",
+                key: `empty-col-${tblKey}`,
+                depth: 3,
+                message: "Not Available",
+              });
+              continue;
+            }
+
+            const showAllKey = [connection.id, database.name, tableId, "__ShowAllColumns__"].join(" > ");
+            const showAll = colResult.data.length <= MAX_COLUMN_SIZE_TO_SHOW || !!visibles[showAllKey];
+
+            const columnsToShow = showAll ? colResult.data : colResult.data.slice(0, MAX_COLUMN_SIZE_TO_SHOW + 1);
+
+            for (const column of columnsToShow) {
+              const colKey = [connection.id, database.name, tableId, column.name].join(" > ");
+              const colExpanded = !!visibles[colKey];
+
+              innerRows.push({
+                type: "column-header",
+                key: `col-${colKey}`,
+                depth: 3,
+                visibilityKey: colKey,
+                connectionId: connection.id,
+                databaseId: database.name,
+                tableId,
                 column,
+                isSelected: colExpanded,
+                isExpanded: colExpanded,
+              });
+
+              if (colExpanded) {
+                innerRows.push({
+                  type: "column-attributes",
+                  key: `colattr-${colKey}`,
+                  depth: 4,
+                  column,
+                });
+              }
+            }
+
+            if (!showAll) {
+              innerRows.push({
+                type: "show-all-columns",
+                key: `showall-${tblKey}`,
+                depth: 4,
+                showAllKey,
               });
             }
-          }
-
-          if (!showAll) {
-            rows.push({
-              type: "show-all-columns",
-              key: `showall-${tblKey}`,
-              depth: 4,
-              showAllKey,
-            });
           }
         }
       }
     }
-  }
+
+    return innerRows;
+  }, [inputFingerprint]);
 
   // Build a structural fingerprint so consumers can detect tree shape changes
   const rowFingerprint = rows.map((r) => r.key).join("|");
