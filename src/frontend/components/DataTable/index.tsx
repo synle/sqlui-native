@@ -69,7 +69,7 @@ export function DataTableWithJSONList(props: DataTableWithJSONListProps) {
 
   const { columns, tableData } = useMemo(() => {
     const newColumnNames = new Set<string>();
-    const normalizedData = [];
+    const normalizedData: any[] = [];
     for (let i = 0; i < data.length; i++) {
       const row = data[i];
       if (typeof row === "object" && row !== null) {
