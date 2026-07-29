@@ -428,7 +428,11 @@ export default function MissionControl() {
     try {
       await modal({
         title: "Add query to Bookmarks",
-        message: <Suspense><AddBookmarkQueryContent query={restOfQuery} onDone={dismissDialog} /></Suspense>,
+        message: (
+          <Suspense>
+            <AddBookmarkQueryContent query={restOfQuery} onDone={dismissDialog} />
+          </Suspense>
+        ),
         showCloseButton: true,
         size: "sm",
       });
@@ -798,7 +802,11 @@ export default function MissionControl() {
     try {
       await modal({
         title: "Add connection to Bookmarks",
-        message: <Suspense><AddBookmarkConnectionContent connection={restOfConnectionMetaData} onDone={dismissDialog} /></Suspense>,
+        message: (
+          <Suspense>
+            <AddBookmarkConnectionContent connection={restOfConnectionMetaData} onDone={dismissDialog} />
+          </Suspense>
+        ),
         showCloseButton: true,
         size: "sm",
       });
@@ -1163,7 +1171,11 @@ export default function MissionControl() {
     try {
       await modal({
         title: "Import Connections / Queries / Bookmarks",
-        message: <Suspense><ImportModal initialValue={value} onImport={_processImport} /></Suspense>,
+        message: (
+          <Suspense>
+            <ImportModal initialValue={value} onImport={_processImport} />
+          </Suspense>
+        ),
         showCloseButton: true,
         isFullScreen: true,
         disableBackdropClick: true,
@@ -1234,7 +1246,11 @@ export default function MissionControl() {
 
       await modal({
         title: "Schema Search",
-        message: <Suspense><SchemaSearchModal onNavigate={onNavigate} /></Suspense>,
+        message: (
+          <Suspense>
+            <SchemaSearchModal onNavigate={onNavigate} />
+          </Suspense>
+        ),
         showCloseButton: true,
         size: "md",
       });
@@ -1246,7 +1262,11 @@ export default function MissionControl() {
   const onShowSettings = async () => {
     await modal({
       title: "Settings",
-      message: <Suspense><SettingsLazy /></Suspense>,
+      message: (
+        <Suspense>
+          <SettingsLazy />
+        </Suspense>
+      ),
       showCloseButton: true,
       size: "xs",
     });
@@ -1381,9 +1401,9 @@ export default function MissionControl() {
             modal({
               title: "Connection Helper",
               message: (
-<Suspense><ConnectionHelper
-                  onChange={onApplyConnectionHelper}
-                /></Suspense>
+                <Suspense>
+                  <ConnectionHelper onChange={onApplyConnectionHelper} />
+                </Suspense>
               ),
               showCloseButton: true,
             });

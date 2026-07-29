@@ -300,23 +300,25 @@ export default function CodeEditorBox(props: CodeEditorProps): React.JSX.Element
         variant="outlined"
         sx={props.fillHeight ? { display: "flex", flexDirection: "column", flex: 1, minHeight: 0 } : undefined}
       >
-        <Suspense><AdvancedEditor
-          id={props.id}
-          language={languageToUse}
-          value={props.value}
-          onBlur={onBlur}
-          onLiveChange={onLiveChange}
-          wordWrap={wordWrap}
-          placeholder={props.placeholder}
-          disabled={props.disabled}
-          readOnly={props.readOnly}
-          height={editorHeight}
-          fillHeight={props.fillHeight}
-          required={props.required}
-          editorRef={props.editorRef}
-          completionItems={props.completionItems}
-          variables={props.variables}
-        /></Suspense>
+        <Suspense>
+          <AdvancedEditor
+            id={props.id}
+            language={languageToUse}
+            value={props.value}
+            onBlur={onBlur}
+            onLiveChange={onLiveChange}
+            wordWrap={wordWrap}
+            placeholder={props.placeholder}
+            disabled={props.disabled}
+            readOnly={props.readOnly}
+            height={editorHeight}
+            fillHeight={props.fillHeight}
+            required={props.required}
+            editorRef={props.editorRef}
+            completionItems={props.completionItems}
+            variables={props.variables}
+          />
+        </Suspense>
         {editorOptionBox}
       </Paper>
       {shouldShowRequiredError && <InputError message="This field is required" sx={{ ml: 2 }} />}
