@@ -16,7 +16,7 @@ type ConnectionHelperFormInputs = {
 };
 
 /** Props for the ConnectionHelper component, extending form inputs with callbacks. */
-type ConnectionHelperProps = ConnectionHelperFormInputs & {
+type ConnectionHelperProps = Partial<ConnectionHelperFormInputs> & {
   /** Called with the generated connection string when the user clicks Apply (dialog) or on every change (inline). */
   onChange: (newConnection: string) => void;
   /** Called when the user cancels the connection helper. Optional in inline mode. */
