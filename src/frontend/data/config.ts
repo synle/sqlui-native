@@ -1,22 +1,40 @@
 import { SqluiEnums } from "typings";
 
+const _debounceTimers = new Map<string, ReturnType<typeof setTimeout>>();
+const _debouncePending = new Map<string, string>();
+
+/** Debounced localStorage setItem — coalesces rapid writes. Flush on pagehide. */
+function _debouncedSetItem(key: string, rawValue: string) {
+  _debouncePending.set(key, rawValue);
+  const existing = _debounceTimers.get(key);
+  if (existing) clearTimeout(existing);
+  _debounceTimers.set(
+    key,
+    setTimeout(() => {
+      window.localStorage.setItem(key, _debouncePending.get(key) ?? rawValue);
+      _debounceTimers.delete(key);
+      _debouncePending.delete(key);
+    }, 50),
+  );
+}
+
+if (typeof window !== "undefined") {
+  window.addEventListener("pagehide", () => {
+    for (const [key, timer] of _debounceTimers) {
+      clearTimeout(timer);
+      window.localStorage.setItem(key, _debouncePending.get(key) ?? "");
+    }
+    _debounceTimers.clear();
+    _debouncePending.clear();
+  });
+}
+
 /** Wrapper around sessionStorage for typed get/set of client configuration values. */
 export const SessionStorageConfig = {
-  /**
-   * Stores a value in sessionStorage under the given key.
-   * @param key - The config key to store under.
-   * @param value - The value to serialize and store.
-   */
   set(key: SqluiEnums.ClientConfigKey, value: any) {
     window.sessionStorage.setItem(key, JSON.stringify(value));
   },
 
-  /**
-   * Retrieves and deserializes a value from sessionStorage.
-   * @param key - The config key to retrieve.
-   * @param defaultValue - Fallback value if the key is absent or unparseable.
-   * @returns The stored value cast to T, or defaultValue.
-   */
   get<T>(key: SqluiEnums.ClientConfigKey, defaultValue?: T): T {
     let res;
 
@@ -29,7 +47,6 @@ export const SessionStorageConfig = {
     return res;
   },
 
-  /** Clears all entries from sessionStorage. */
   clear() {
     window.sessionStorage.clear();
   },
@@ -37,21 +54,10 @@ export const SessionStorageConfig = {
 
 /** Wrapper around localStorage for typed get/set of client configuration values. */
 export const LocalStorageConfig = {
-  /**
-   * Stores a value in localStorage under the given key.
-   * @param key - The config key to store under.
-   * @param value - The value to serialize and store.
-   */
   set(key: SqluiEnums.ClientConfigKey, value: any) {
-    window.localStorage.setItem(key, JSON.stringify(value));
+    _debouncedSetItem(key, JSON.stringify(value));
   },
 
-  /**
-   * Retrieves and deserializes a value from localStorage.
-   * @param key - The config key to retrieve.
-   * @param defaultValue - Fallback value if the key is absent or unparseable.
-   * @returns The stored value cast to T, or defaultValue.
-   */
   get<T>(key: SqluiEnums.ClientConfigKey, defaultValue?: T): T {
     let res;
 
@@ -64,7 +70,6 @@ export const LocalStorageConfig = {
     return res;
   },
 
-  /** Clears all entries from localStorage. */
   clear() {
     window.localStorage.clear();
   },
