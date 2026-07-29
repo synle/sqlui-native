@@ -1402,7 +1402,16 @@ export default function MissionControl() {
               title: "Connection Helper",
               message: (
                 <Suspense>
-                  <ConnectionHelper onChange={onApplyConnectionHelper} />
+                  <ConnectionHelper
+                    onChange={onApplyConnectionHelper}
+                    onClose={dismissDialog}
+                    scheme={scheme}
+                    username={username}
+                    password={password}
+                    host={host}
+                    port={port}
+                    restOfConnectionString={restOfConnectionString}
+                  />
                 </Suspense>
               ),
               showCloseButton: true,
