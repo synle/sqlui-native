@@ -1,22 +1,13 @@
-import AzureCosmosDataAdapter from "src/common/adapters/AzureCosmosDataAdapter/index";
-import AzureCosmosDataAdapterScripts from "src/common/adapters/AzureCosmosDataAdapter/scripts";
-import AzureTableStorageAdapter from "src/common/adapters/AzureTableStorageAdapter/index";
-import AzureTableStorageAdapterScripts from "src/common/adapters/AzureTableStorageAdapter/scripts";
-import CassandraDataAdapter from "src/common/adapters/CassandraDataAdapter/index";
-import CassandraDataAdapterScripts from "src/common/adapters/CassandraDataAdapter/scripts";
 import { getDialectType, isDialectSupportManagedMetadata } from "src/common/adapters/DataScriptFactory";
-import IDataAdapter from "src/common/adapters/IDataAdapter";
-import MongoDBDataAdapter from "src/common/adapters/MongoDBDataAdapter/index";
+import type IDataAdapter from "src/common/adapters/IDataAdapter";
+import CassandraDataAdapterScripts from "src/common/adapters/CassandraDataAdapter/scripts";
 import MongoDBDataAdapterScripts from "src/common/adapters/MongoDBDataAdapter/scripts";
-import RedisDataAdapter from "src/common/adapters/RedisDataAdapter/index";
 import RedisDataAdapterScripts from "src/common/adapters/RedisDataAdapter/scripts";
-import createRelationalDataAdapter from "src/common/adapters/RelationalDataAdapter/index";
+import AzureCosmosDataAdapterScripts from "src/common/adapters/AzureCosmosDataAdapter/scripts";
+import AzureTableStorageAdapterScripts from "src/common/adapters/AzureTableStorageAdapter/scripts";
 import RelationalDataAdapterScripts from "src/common/adapters/RelationalDataAdapter/scripts";
-import GraphQLDataAdapter from "src/common/adapters/GraphQLDataAdapter/index";
 import GraphQLDataAdapterScripts from "src/common/adapters/GraphQLDataAdapter/scripts";
-import RestApiDataAdapter from "src/common/adapters/RestApiDataAdapter/index";
 import RestApiDataAdapterScripts from "src/common/adapters/RestApiDataAdapter/scripts";
-import SalesforceDataAdapter from "src/common/adapters/SalesforceDataAdapter/index";
 import SalesforceDataAdapterScripts from "src/common/adapters/SalesforceDataAdapter/scripts";
 import {
   getCachedColumnsStorage,
@@ -27,7 +18,6 @@ import {
   getManagedTablesStorage,
 } from "src/common/PersistentStorage";
 import { writeDebugLog } from "src/common/utils/debugLogger";
-import { safeDisconnect } from "src/common/utils/errorUtils";
 import { SqluiCore } from "typings";
 
 const databaseCacheStorage = getCachedDatabasesStorage();
@@ -53,6 +43,35 @@ function addPendingRefresh(key: string) {
       pendingRefreshes.delete(key);
     }
   }, PENDING_REFRESH_TIMEOUT_MS);
+}
+
+/** Cache of live adapter instances keyed by canonical connection string. Avoids re-creating connections on repeated calls. */
+const adapterCache = new Map<string, IDataAdapter>();
+
+/**
+ * Disconnects and removes a cached adapter instance for the given connection string.
+ * Safe to call even if no adapter is cached for that connection.
+ * @param connection - The connection string.
+ */
+export async function disconnectAdapter(connection: string): Promise<void> {
+  const adapter = adapterCache.get(connection);
+  if (adapter) {
+    adapterCache.delete(connection);
+    try {
+      await adapter.disconnect();
+    } catch (_err) {
+      // best-effort cleanup
+    }
+  }
+}
+
+/**
+ * Disconnects and removes all cached adapter instances.
+ */
+export async function disconnectAllAdapters(): Promise<void> {
+  const entries = Array.from(adapterCache.entries());
+  adapterCache.clear();
+  await Promise.allSettled(entries.map(([, adapter]) => adapter.disconnect()));
 }
 
 /** Minimum age (ms) a cache entry must reach before a background refresh is triggered. */
@@ -344,35 +363,47 @@ export function clearCachedTable(connectionId: string, databaseId: string, table
 
 /**
  * Creates and returns the appropriate data adapter for the given connection string.
+ * Adapters are cached by connection string and reused across calls. Use `disconnectAdapter`
+ * or `disconnectAllAdapters` to release cached connections.
  * @param connection - The connection string URI (e.g., "mysql://user:pass@host:port").
  * @returns An IDataAdapter instance for the detected dialect.
  * @throws Error if the dialect is not supported or connection fails.
  */
-export function getDataAdapter(connection: string) {
-  // TODO: here we should initialize the connection based on type
-  // of the connection string
+export async function getDataAdapter(connection: string) {
+  const cached = adapterCache.get(connection);
+  if (cached) return cached;
+
   let adapter: IDataAdapter | undefined;
 
   try {
     const targetDialect = getDialectType(connection);
 
     if (RelationalDataAdapterScripts.isDialectSupported(targetDialect)) {
+      const createRelationalDataAdapter = (await import("src/common/adapters/RelationalDataAdapter/index")).default;
       adapter = createRelationalDataAdapter(connection);
     } else if (CassandraDataAdapterScripts.isDialectSupported(targetDialect)) {
+      const { default: CassandraDataAdapter } = await import("src/common/adapters/CassandraDataAdapter/index");
       adapter = new CassandraDataAdapter(connection);
     } else if (MongoDBDataAdapterScripts.isDialectSupported(targetDialect)) {
+      const { default: MongoDBDataAdapter } = await import("src/common/adapters/MongoDBDataAdapter/index");
       adapter = new MongoDBDataAdapter(connection);
     } else if (RedisDataAdapterScripts.isDialectSupported(targetDialect)) {
+      const { default: RedisDataAdapter } = await import("src/common/adapters/RedisDataAdapter/index");
       adapter = new RedisDataAdapter(connection);
     } else if (AzureCosmosDataAdapterScripts.isDialectSupported(targetDialect)) {
+      const { default: AzureCosmosDataAdapter } = await import("src/common/adapters/AzureCosmosDataAdapter/index");
       adapter = new AzureCosmosDataAdapter(connection);
     } else if (AzureTableStorageAdapterScripts.isDialectSupported(targetDialect)) {
+      const { default: AzureTableStorageAdapter } = await import("src/common/adapters/AzureTableStorageAdapter/index");
       adapter = new AzureTableStorageAdapter(connection);
     } else if (SalesforceDataAdapterScripts.isDialectSupported(targetDialect)) {
+      const { default: SalesforceDataAdapter } = await import("src/common/adapters/SalesforceDataAdapter/index");
       adapter = new SalesforceDataAdapter(connection);
     } else if (GraphQLDataAdapterScripts.isDialectSupported(targetDialect)) {
+      const { default: GraphQLDataAdapter } = await import("src/common/adapters/GraphQLDataAdapter/index");
       adapter = new GraphQLDataAdapter(connection);
     } else if (RestApiDataAdapterScripts.isDialectSupported(targetDialect)) {
+      const { default: RestApiDataAdapter } = await import("src/common/adapters/RestApiDataAdapter/index");
       adapter = new RestApiDataAdapter(connection);
     }
   } catch (err) {
@@ -385,6 +416,7 @@ export function getDataAdapter(connection: string) {
     throw new Error("dialect not supported");
   }
 
+  adapterCache.set(connection, adapter);
   return adapter;
 }
 
@@ -401,7 +433,7 @@ export async function getConnectionMetaData(connection: SqluiCore.CoreConnection
     databases: [] as SqluiCore.DatabaseMetaData[],
   };
 
-  const engine = getDataAdapter(connection.connection);
+  const engine = await getDataAdapter(connection.connection);
   try {
     connItem.dialect = engine.dialect;
     writeDebugLog(`DataAdapterFactory.ts:getConnectionMetaData - dialect=${engine.dialect} connId=${connection.id}`);
@@ -492,12 +524,6 @@ export async function getConnectionMetaData(connection: SqluiCore.CoreConnection
     connItem.dialect = undefined;
     console.error("DataAdapterFactory.ts:getConnectionItem", err);
     writeDebugLog(`DataAdapterFactory.ts:getConnectionMetaData - offline connId=${connection.id} - ${(err as any)?.message || err}`);
-  } finally {
-    try {
-      await engine.disconnect();
-    } catch (_err) {
-      // best-effort cleanup
-    }
   }
 
   return connItem;
@@ -556,7 +582,7 @@ export async function getDatabases(sessionId: string, connectionId: string) {
 
   // Background refresh: fetch fresh data and update the cache for next call
   const refreshCache = async () => {
-    const engine = getDataAdapter(connection.connection);
+    const engine = await getDataAdapter(connection.connection);
     try {
       const databases = (await engine.getDatabases()).sort((a, b) => (a.name || "").localeCompare(b.name || ""));
       setCachedDatabases(connectionId, databases);
@@ -564,8 +590,6 @@ export async function getDatabases(sessionId: string, connectionId: string) {
     } catch (err) {
       console.error("DataAdapterFactory.ts:refreshDatabaseCache", err);
       return undefined;
-    } finally {
-      await safeDisconnect(engine);
     }
   };
 
@@ -620,7 +644,7 @@ export async function getTables(sessionId: string, connectionId: string, databas
 
   // Background refresh: fetch fresh data and update the cache for next call
   const refreshCache = async () => {
-    const engine = getDataAdapter(connection.connection);
+    const engine = await getDataAdapter(connection.connection);
     try {
       const tables = (await engine.getTables(databaseId)).sort((a, b) => (a.name || "").localeCompare(b.name || ""));
       setCachedTables(connectionId, databaseId, tables);
@@ -628,8 +652,6 @@ export async function getTables(sessionId: string, connectionId: string, databas
     } catch (err) {
       console.error("DataAdapterFactory.ts:refreshTableCache", err);
       return undefined;
-    } finally {
-      await safeDisconnect(engine);
     }
   };
 
@@ -715,7 +737,7 @@ export async function getColumns(sessionId: string, connectionId: string, databa
   // Background refresh: fetch fresh data and update the cache for next call
   const refreshCache = async () => {
     const connection = (await getConnectionsStorage(sessionId)).get(connectionId);
-    const engine = getDataAdapter(connection.connection);
+    const engine = await getDataAdapter(connection.connection);
     try {
       const columns = cleanAndSortColumns(await engine.getColumns(tableId, databaseId));
       setCachedColumns(connectionId, databaseId, tableId, columns);
@@ -723,8 +745,6 @@ export async function getColumns(sessionId: string, connectionId: string, databa
     } catch (err) {
       console.error("DataAdapterFactory.ts:refreshCache", err);
       return undefined;
-    } finally {
-      await safeDisconnect(engine);
     }
   };
 

@@ -25,7 +25,7 @@ import {
   getStorageDir,
 } from "src/common/PersistentStorage";
 import { writeDebugLog } from "src/common/utils/debugLogger";
-import { backfillTimestamps, formatErrorMessage, safeDisconnect } from "src/common/utils/errorUtils";
+import { backfillTimestamps, formatErrorMessage } from "src/common/utils/errorUtils";
 import { SqluiCore, SqluiEnums } from "typings";
 let honoAppContext: Hono | undefined;
 
@@ -383,7 +383,7 @@ export function setUpDataEndpoints(aHonoAppContext: Hono) {
       return;
     }
 
-    const engine = getDataAdapter(connection.connection);
+    const engine = await getDataAdapter(connection.connection);
     try {
       await engine.authenticate();
 
@@ -391,8 +391,6 @@ export function setUpDataEndpoints(aHonoAppContext: Hono) {
       connection.dialect = engine.dialect;
     } catch (err: any) {
       console.error("Endpoints.ts:authenticate", err);
-    } finally {
-      await safeDisconnect(engine);
     }
 
     res.status(200).json(connection);
@@ -474,15 +472,13 @@ export function setUpDataEndpoints(aHonoAppContext: Hono) {
       clearCachedColumns(connection.id);
     }
 
-    const engine = getDataAdapter(connection.connection);
+    const engine = await getDataAdapter(connection.connection);
     try {
       await engine.authenticate();
       res.status(200).json(await getConnectionMetaData(connection));
     } catch (err: any) {
       res.status(406).json(`Failed to connect ${err.toString()}`);
       console.error("Endpoints.ts:handler [POST /api/connection/:connectionId/refresh]", err);
-    } finally {
-      await safeDisconnect(engine);
     }
   });
 
@@ -568,7 +564,7 @@ export function setUpDataEndpoints(aHonoAppContext: Hono) {
       clearCachedColumns(connection.id);
     }
 
-    const engine = getDataAdapter(connection.connection);
+    const engine = await getDataAdapter(connection.connection);
     try {
       await engine.authenticate();
       res.status(200).json(await getConnectionMetaData(connection));
@@ -577,13 +573,6 @@ export function setUpDataEndpoints(aHonoAppContext: Hono) {
       // here we return the barebone
       res.status(406).json(`Failed to connect ${err.toString()}`);
       console.error("Endpoints.ts:connect", err);
-    } finally {
-      // Dispose of the adapter connection/driver immediately
-      try {
-        await engine.disconnect();
-      } catch (_err) {
-        // best-effort cleanup
-      }
     }
   });
 
@@ -596,7 +585,7 @@ export function setUpDataEndpoints(aHonoAppContext: Hono) {
       return res.status(404).send("Not Found");
     }
 
-    const engine = getDataAdapter(connection.connection);
+    const engine = await getDataAdapter(connection.connection);
     // Set connectionId for adapters that need it (e.g., REST API folder-level variables)
     if ("connectionId" in engine) {
       (engine as any).connectionId = req.params?.connectionId;
@@ -607,8 +596,6 @@ export function setUpDataEndpoints(aHonoAppContext: Hono) {
       const message = formatErrorMessage(err, "Query execution failed");
       console.error("Endpoints.ts:execute", err);
       res.status(200).json({ ok: false, error: message });
-    } finally {
-      await safeDisconnect(engine);
     }
   });
 
@@ -618,7 +605,7 @@ export function setUpDataEndpoints(aHonoAppContext: Hono) {
       return res.status(400).send("`connection` is required...");
     }
 
-    const engine = getDataAdapter(connection.connection);
+    const engine = await getDataAdapter(connection.connection);
     try {
       await engine.authenticate();
 
@@ -641,8 +628,6 @@ export function setUpDataEndpoints(aHonoAppContext: Hono) {
       const message = formatErrorMessage(err, "Connection test failed");
       console.error("Endpoints.ts:testConnection", err);
       res.status(406).json({ error: message });
-    } finally {
-      await safeDisconnect(engine);
     }
   });
 
@@ -656,7 +641,7 @@ export function setUpDataEndpoints(aHonoAppContext: Hono) {
 
     // Seed an initial folder for REST API connections
     try {
-      const dialect = getDataAdapter(newConnection.connection).dialect;
+      const dialect = (await getDataAdapter(newConnection.connection)).dialect;
       if (dialect === "rest" || dialect === "graphql") {
         const dbStorage = await getManagedDatabasesStorage(newConnection.id);
         await dbStorage.add({ id: "Folder 1", name: "Folder 1", connectionId: newConnection.id });

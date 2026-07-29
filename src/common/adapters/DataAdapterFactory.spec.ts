@@ -18,90 +18,90 @@ describe("DataAdapterFactory", () => {
       ["postgres://root:password@localhost:5432"],
       ["mssql://sa:password@localhost:1433"],
       ["sqlite://path/to/db.sqlite"],
-    ])("should return a RelationalDataAdapter for %s", (connection) => {
-      const adapter = getDataAdapter(connection);
+    ])("should return a RelationalDataAdapter for %s", async (connection) => {
+      const adapter = await getDataAdapter(connection);
       expect(adapter).toBeDefined();
       expect(adapter.dialect).toBeDefined();
     });
 
-    test("should return a CassandraDataAdapter for cassandra://", () => {
-      const adapter = getDataAdapter("cassandra://localhost:9042");
+    test("should return a CassandraDataAdapter for cassandra://", async () => {
+      const adapter = await getDataAdapter("cassandra://localhost:9042");
       expect(adapter).toBeDefined();
       expect(adapter.dialect).toBe("cassandra");
     });
 
-    test("should return a MongoDBDataAdapter for mongodb://", () => {
-      const adapter = getDataAdapter("mongodb://localhost:27017");
+    test("should return a MongoDBDataAdapter for mongodb://", async () => {
+      const adapter = await getDataAdapter("mongodb://localhost:27017");
       expect(adapter).toBeDefined();
       expect(adapter.dialect).toBe("mongodb");
     });
 
-    test("should return a MongoDBDataAdapter for mongodb+srv://", () => {
-      const adapter = getDataAdapter("mongodb+srv://user:pass@cluster.example.com");
+    test("should return a MongoDBDataAdapter for mongodb+srv://", async () => {
+      const adapter = await getDataAdapter("mongodb+srv://user:pass@cluster.example.com");
       expect(adapter).toBeDefined();
       // mongodb+srv resolves through MongoDB script's getDialectType — canonicalized or raw.
       expect(["mongodb", "mongodb+srv"]).toContain(adapter.dialect);
     });
 
-    test("should return a RedisDataAdapter for redis://", () => {
-      const adapter = getDataAdapter("redis://localhost:6379");
+    test("should return a RedisDataAdapter for redis://", async () => {
+      const adapter = await getDataAdapter("redis://localhost:6379");
       expect(adapter).toBeDefined();
       expect(adapter.dialect).toBe("redis");
     });
 
-    test("should return a RedisDataAdapter for rediss://", () => {
-      const adapter = getDataAdapter("rediss://localhost:6379");
+    test("should return a RedisDataAdapter for rediss://", async () => {
+      const adapter = await getDataAdapter("rediss://localhost:6379");
       expect(adapter).toBeDefined();
       // rediss is the TLS variant routed through Redis script; dialect may be canonicalized or raw.
       expect(["redis", "rediss"]).toContain(adapter.dialect);
     });
 
-    test("should return an AzureCosmosDataAdapter for cosmosdb://", () => {
-      const adapter = getDataAdapter("cosmosdb://AccountEndpoint=https://test.documents.azure.com:443/;AccountKey=dGVzdA==;");
+    test("should return an AzureCosmosDataAdapter for cosmosdb://", async () => {
+      const adapter = await getDataAdapter("cosmosdb://AccountEndpoint=https://test.documents.azure.com:443/;AccountKey=dGVzdA==;");
       expect(adapter).toBeDefined();
       expect(adapter.dialect).toBe("cosmosdb");
     });
 
-    test("should return an AzureTableStorageAdapter for aztable://", () => {
-      const adapter = getDataAdapter(
+    test("should return an AzureTableStorageAdapter for aztable://", async () => {
+      const adapter = await getDataAdapter(
         "aztable://DefaultEndpointsProtocol=https;AccountName=test;AccountKey=dGVzdA==;EndpointSuffix=core.windows.net",
       );
       expect(adapter).toBeDefined();
       expect(adapter.dialect).toBe("aztable");
     });
 
-    test("should return a SalesforceDataAdapter for sfdc://", () => {
-      const adapter = getDataAdapter(
+    test("should return a SalesforceDataAdapter for sfdc://", async () => {
+      const adapter = await getDataAdapter(
         'sfdc://{"username":"test","password":"test","securityToken":"test","loginUrl":"https://test.salesforce.com"}',
       );
       expect(adapter).toBeDefined();
       expect(adapter.dialect).toBe("sfdc");
     });
 
-    test("should return a GraphQLDataAdapter for graphql://", () => {
-      const adapter = getDataAdapter(`graphql://${JSON.stringify({ HOST: "https://api.example.com/graphql" })}`);
+    test("should return a GraphQLDataAdapter for graphql://", async () => {
+      const adapter = await getDataAdapter(`graphql://${JSON.stringify({ HOST: "https://api.example.com/graphql" })}`);
       expect(adapter).toBeDefined();
       expect(adapter.dialect).toBe("graphql");
     });
 
-    test("should return a RestApiDataAdapter for rest://", () => {
-      const adapter = getDataAdapter(`rest://${JSON.stringify({ HOST: "https://api.example.com" })}`);
+    test("should return a RestApiDataAdapter for rest://", async () => {
+      const adapter = await getDataAdapter(`rest://${JSON.stringify({ HOST: "https://api.example.com" })}`);
       expect(adapter).toBeDefined();
       expect(adapter.dialect).toBe("rest");
     });
 
-    test("should return a RestApiDataAdapter for restapi:// (legacy alias)", () => {
-      const adapter = getDataAdapter(`restapi://${JSON.stringify({ HOST: "https://api.example.com" })}`);
+    test("should return a RestApiDataAdapter for restapi:// (legacy alias)", async () => {
+      const adapter = await getDataAdapter(`restapi://${JSON.stringify({ HOST: "https://api.example.com" })}`);
       expect(adapter).toBeDefined();
       expect(adapter.dialect).toBe("rest");
     });
 
-    test("should throw for unsupported dialect", () => {
-      expect(() => getDataAdapter("unknown://host")).toThrow(/dialect not supported/);
+    test("should throw for unsupported dialect", async () => {
+      await expect(getDataAdapter("unknown://host")).rejects.toThrow(/dialect not supported/);
     });
 
-    test("should throw for a connection string with no scheme", () => {
-      expect(() => getDataAdapter("not a uri at all")).toThrow(/dialect not supported/);
+    test("should throw for a connection string with no scheme", async () => {
+      await expect(getDataAdapter("not a uri at all")).rejects.toThrow(/dialect not supported/);
     });
   });
 
