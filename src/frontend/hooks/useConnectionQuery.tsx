@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { releaseEditorModel } from "src/frontend/components/CodeEditorBox/editorModelCache";
 import dataApi from "src/frontend/data/api";
 import { SessionStorageConfig } from "src/frontend/data/config";
 import { getCurrentSessionId } from "src/frontend/data/session";
@@ -346,6 +347,14 @@ export function useConnectionQueries() {
     for (const queryId of queryIds) {
       // make api to delete the query
       dataApi.deleteQuery(queryId);
+    }
+
+    // reclaim the Monaco text model parked for each tab that actually went away (pinned tabs stay).
+    const remainingQueryIds = new Set(_connectionQueries.map((q) => q.id));
+    for (const queryId of queryIds) {
+      if (!remainingQueryIds.has(queryId)) {
+        releaseEditorModel(queryId);
+      }
     }
 
     _invalidateQueries();

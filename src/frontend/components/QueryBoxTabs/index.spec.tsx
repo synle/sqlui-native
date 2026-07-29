@@ -26,10 +26,11 @@ vi.mock("src/frontend/components/QueryBox", () => ({
   default: ({ queryId }: any) => <div>QueryBox:{queryId}</div>,
 }));
 vi.mock("src/frontend/components/Tabs", () => ({
-  default: ({ tabHeaders, tabContents }: any) => (
+  default: ({ tabHeaders, tabContents, tabKeys }: any) => (
     <div data-testid="tabs">
       <div>headers:{tabHeaders.length}</div>
       <div>contents:{tabContents.length}</div>
+      <div data-testid="tab-keys">{JSON.stringify(tabKeys)}</div>
     </div>
   ),
 }));
@@ -80,6 +81,21 @@ describe("QueryBoxTabs", () => {
     const { container } = render(<QueryBoxTabs />);
     expect(container.textContent).toContain("headers:3");
     expect(container.textContent).toContain("contents:2");
+  });
+
+  test("passes stable per-query tab keys so tab state cannot stick to the wrong query", () => {
+    // keying tabs by index made DropdownButton `open` state follow the slot, not the query,
+    // after a duplicate/close/reorder
+    useConnectionQueriesMock.mockReturnValue({
+      queries: [
+        { id: "q1", name: "T1", selected: true },
+        { id: "q2", name: "T2" },
+      ],
+      isLoading: false,
+      onSaveQueries: vi.fn(),
+    });
+    const { getByTestId } = render(<QueryBoxTabs />);
+    expect(JSON.parse(getByTestId("tab-keys").textContent || "null")).toEqual(["q1", "q2", "add-query"]);
   });
 
   test("auto-save flip from false to true triggers onSaveQueries", () => {

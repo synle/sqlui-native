@@ -27,6 +27,11 @@ vi.mock("src/frontend/hooks/useFolderItems", () => ({
   useAddRecycleBinItem: () => ({ mutateAsync: vi.fn() }),
 }));
 
+const releaseEditorModelMock = vi.hoisted(() => vi.fn());
+vi.mock("src/frontend/components/CodeEditorBox/editorModelCache", () => ({
+  releaseEditorModel: releaseEditorModelMock,
+}));
+
 vi.mock("src/frontend/hooks/useSetting", () => ({
   useIsQueryTabAutoSaveEnabled: () => mockSettings.isQueryTabAutoSaveEnabled,
   useIsSoftDeleteModeSetting: () => false,
@@ -377,6 +382,33 @@ describe("useConnectionQuery", () => {
       </WrappedContext>,
     );
     await waitFor(() => expect(container.querySelector("[data-testid='count']")?.textContent).toBe("1"));
+  });
+
+  test("onDeleteQueries releases the editor model only for tabs that actually closed", async () => {
+    vi.mocked(SessionStorageConfig.get).mockReturnValue([
+      makeQuery("q1", { selected: true }),
+      makeQuery("q2", { pinned: true }),
+      makeQuery("q3"),
+    ]);
+    function DelConsumer() {
+      const didRef = useRef(false);
+      const { queries, isLoading, onDeleteQueries } = useConnectionQueries();
+      useEffect(() => {
+        if (isLoading || didRef.current) return;
+        didRef.current = true;
+        onDeleteQueries(["q2", "q3"]);
+      }, [isLoading, onDeleteQueries]);
+      return <span data-testid="count">{queries.length}</span>;
+    }
+    const { container } = render(
+      <WrappedContext>
+        <DelConsumer />
+      </WrappedContext>,
+    );
+
+    await waitFor(() => expect(container.querySelector("[data-testid='count']")?.textContent).toBe("2"));
+    // q2 is pinned so it survives the close — its model must stay parked for reuse
+    expect(releaseEditorModelMock.mock.calls.map(([id]) => id)).toEqual(["q3"]);
   });
 
   test("onImportQuery strips timestamps", async () => {

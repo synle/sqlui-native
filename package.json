@@ -1,6 +1,6 @@
 {
   "name": "sqlui-native",
-  "version": "3.1.14",
+  "version": "4.0.0",
   "engine": "Tauri + Node Sidecar",
   "private": true,
   "description": "A minimal native desktop client for most databases supporting MySQL, MariaDB, MS SQL Server, PostgreSQL, SQLite, Cassandra, MongoDB and Redis.",

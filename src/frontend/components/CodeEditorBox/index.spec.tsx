@@ -204,6 +204,57 @@ describe("CodeEditorBox", () => {
     expect(editorRef.current?.getValue()).toBe("not yet synced");
   });
 
+  test("flushes a pending debounce when the editor unmounts", () => {
+    // switching query tabs unmounts the editor — the in-flight keystrokes must not be dropped
+    const onChange = vi.fn();
+    const { container, unmount } = renderWithTheme(<CodeEditorBox value="" onChange={onChange} debounceMs={300} />);
+    const textarea = container.querySelector("textarea") as HTMLTextAreaElement;
+
+    fireEvent.change(textarea, { target: { value: "unsaved edit" } });
+    expect(onChange).not.toHaveBeenCalled();
+
+    unmount();
+
+    expect(onChange).toHaveBeenCalledTimes(1);
+    expect(onChange).toHaveBeenCalledWith("unsaved edit");
+
+    // the flushed timer must not fire a second time
+    act(() => {
+      vi.advanceTimersByTime(400);
+    });
+    expect(onChange).toHaveBeenCalledTimes(1);
+  });
+
+  test("does not emit on unmount when nothing is pending", () => {
+    const onChange = vi.fn();
+    const { container, unmount } = renderWithTheme(<CodeEditorBox value="" onChange={onChange} debounceMs={50} />);
+    const textarea = container.querySelector("textarea") as HTMLTextAreaElement;
+
+    fireEvent.change(textarea, { target: { value: "already emitted" } });
+    act(() => {
+      vi.advanceTimersByTime(60);
+    });
+    expect(onChange).toHaveBeenCalledTimes(1);
+
+    unmount();
+
+    expect(onChange).toHaveBeenCalledTimes(1);
+  });
+
+  test("does not emit on unmount when blur already flushed the value", () => {
+    const onChange = vi.fn();
+    const { container, unmount } = renderWithTheme(<CodeEditorBox value="" onChange={onChange} debounceMs={300} />);
+    const textarea = container.querySelector("textarea") as HTMLTextAreaElement;
+
+    fireEvent.change(textarea, { target: { value: "blur wins" } });
+    fireEvent.blur(textarea);
+    expect(onChange).toHaveBeenCalledTimes(1);
+
+    unmount();
+
+    expect(onChange).toHaveBeenCalledTimes(1);
+  });
+
   test("renders placeholder text", () => {
     const { container } = renderWithTheme(<CodeEditorBox placeholder="Enter SQL here" />);
     const textarea = container.querySelector("textarea") as HTMLTextAreaElement;
