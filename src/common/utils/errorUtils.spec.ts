@@ -1,4 +1,8 @@
-import { formatErrorMessage, safeDisconnect, backfillTimestamps } from "src/common/utils/errorUtils";
+import {
+  formatErrorMessage,
+  safeDisconnect,
+  backfillTimestamps,
+} from "src/common/utils/errorUtils";
 
 describe("errorUtils", () => {
   describe("formatErrorMessage", () => {

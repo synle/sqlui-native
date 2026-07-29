@@ -83,7 +83,10 @@ describe("MSSQLDataAdapter", () => {
   test("getTables returns user tables", async () => {
     const { Connection } = await import("tedious");
     (Connection as any).prototype.execSql = function (req: any) {
-      const rows = [[{ metadata: { colName: "tablename" }, value: "Users" }], [{ metadata: { colName: "tablename" }, value: "Orders" }]];
+      const rows = [
+        [{ metadata: { colName: "tablename" }, value: "Users" }],
+        [{ metadata: { colName: "tablename" }, value: "Orders" }],
+      ];
       req.cb(null, 2, rows);
     };
     const a = new MSSQLDataAdapter("mssql://sa:pw@host:1433");

@@ -1,5 +1,8 @@
 import { ConnectionStringParser } from "connection-string-parser";
-import { getDialectType, getDialectTypeFromConnectionString } from "src/common/adapters/DataScriptFactory";
+import {
+  getDialectType,
+  getDialectTypeFromConnectionString,
+} from "src/common/adapters/DataScriptFactory";
 import { SqluiCore } from "typings";
 
 /** Maximum timeout in milliseconds for establishing a database connection. */
@@ -59,7 +62,9 @@ export default abstract class BaseDataAdapter {
             if (connectionParts.length === 4) {
               // there are 4 parts: username, password, host, port
               const [username, password, host, port] = connectionParts.map(encodeURIComponent);
-              res = connectionStringParser.parse(`${dialect}://${username}:${password}@${host}:${port}`);
+              res = connectionStringParser.parse(
+                `${dialect}://${username}:${password}@${host}:${port}`,
+              );
             }
           } catch (err) {
             console.error("index.ts:parse", err);
@@ -84,7 +89,10 @@ export default abstract class BaseDataAdapter {
    * @param incomingTypeConverter - Optional function to convert type strings to dialect-specific types.
    * @returns A map of column paths to their metadata.
    */
-  static resolveTypes(inputItem: any, incomingTypeConverter?: (type: string, value: any) => string) {
+  static resolveTypes(
+    inputItem: any,
+    incomingTypeConverter?: (type: string, value: any) => string,
+  ) {
     const stack: {
       item: any;
       path: string[];

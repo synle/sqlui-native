@@ -75,7 +75,11 @@ const tarballPath = path.join(root, "dist", tarballName);
 runIn("tar", ["-czf", tarballPath, "-C", path.dirname(distDir), "portal"], root);
 
 const jsSize = (fs.statSync(path.join(distDir, "sqlui-portal.js")).size / 1024 / 1024).toFixed(2);
-const jsonSize = (fs.statSync(path.join(distDir, "sqlui-portal-assets.json")).size / 1024 / 1024).toFixed(2);
+const jsonSize = (
+  fs.statSync(path.join(distDir, "sqlui-portal-assets.json")).size /
+  1024 /
+  1024
+).toFixed(2);
 const tarSize = (fs.statSync(tarballPath).size / 1024 / 1024).toFixed(2);
 console.log("");
 console.log(`✓ Portal build ready`);

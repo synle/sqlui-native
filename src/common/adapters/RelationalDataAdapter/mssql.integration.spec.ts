@@ -43,9 +43,21 @@ describe("mssql integration", () => {
       "sqlui_test",
       undefined,
     );
-    await adapter.execute(`INSERT INTO artists (Name) VALUES ('Test Artist 1')`, "sqlui_test", undefined);
-    await adapter.execute(`INSERT INTO artists (Name) VALUES ('Test Artist 2')`, "sqlui_test", undefined);
-    await adapter.execute(`INSERT INTO artists (Name) VALUES ('Test Artist 3')`, "sqlui_test", undefined);
+    await adapter.execute(
+      `INSERT INTO artists (Name) VALUES ('Test Artist 1')`,
+      "sqlui_test",
+      undefined,
+    );
+    await adapter.execute(
+      `INSERT INTO artists (Name) VALUES ('Test Artist 2')`,
+      "sqlui_test",
+      undefined,
+    );
+    await adapter.execute(
+      `INSERT INTO artists (Name) VALUES ('Test Artist 3')`,
+      "sqlui_test",
+      undefined,
+    );
   });
 
   test("getTables", async () => {
@@ -63,18 +75,30 @@ describe("mssql integration", () => {
   });
 
   test("execute select", async () => {
-    const resp = await adapter.execute(`SELECT TOP 10 * FROM artists ORDER BY Name ASC`, "sqlui_test", undefined);
+    const resp = await adapter.execute(
+      `SELECT TOP 10 * FROM artists ORDER BY Name ASC`,
+      "sqlui_test",
+      undefined,
+    );
     expect(resp.ok).toBe(true);
     expect(resp.raw?.length).toBe(3);
   });
 
   test("execute update", async () => {
-    const resp = await adapter.execute(`UPDATE artists SET Name = 'Updated Artist' WHERE ArtistId = 1`, "sqlui_test", undefined);
+    const resp = await adapter.execute(
+      `UPDATE artists SET Name = 'Updated Artist' WHERE ArtistId = 1`,
+      "sqlui_test",
+      undefined,
+    );
     expect(resp.ok).toBe(true);
   });
 
   test("execute delete", async () => {
-    const resp = await adapter.execute(`DELETE FROM artists WHERE ArtistId = 1`, "sqlui_test", undefined);
+    const resp = await adapter.execute(
+      `DELETE FROM artists WHERE ArtistId = 1`,
+      "sqlui_test",
+      undefined,
+    );
     expect(resp.ok).toBe(true);
   });
 
@@ -101,14 +125,22 @@ describe.skip("mssql legacy", () => {
   });
 
   test("Execute Select", async () => {
-    const resp = await adapter.execute(`SELECT * FROM artists ORDER BY Name ASC LIMIT 10`, "music_store", undefined);
+    const resp = await adapter.execute(
+      `SELECT * FROM artists ORDER BY Name ASC LIMIT 10`,
+      "music_store",
+      undefined,
+    );
     //@ts-ignore
     expect(resp && resp.raw && resp.raw.length > 0 && resp.raw.length <= 10).toBe(true);
   });
 
   test("Execute Update", async () => {
     try {
-      await adapter.execute(`UPDATE artists SET name = 'AC/DC' WHERE ArtistId = '1'`, "music_store", undefined);
+      await adapter.execute(
+        `UPDATE artists SET name = 'AC/DC' WHERE ArtistId = '1'`,
+        "music_store",
+        undefined,
+      );
       expect(1).toBe(1);
     } catch (err) {
       expect(err).toBeUndefined();

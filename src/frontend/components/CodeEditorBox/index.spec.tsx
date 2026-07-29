@@ -9,7 +9,11 @@ vi.mock("src/frontend/monacoSetup", () => ({
   default: {},
 }));
 
-import CodeEditorBox, { DEFAULT_DEBOUNCE_MS, MAX_DEBOUNCE_MS, EditorRef } from "src/frontend/components/CodeEditorBox";
+import CodeEditorBox, {
+  DEFAULT_DEBOUNCE_MS,
+  MAX_DEBOUNCE_MS,
+  EditorRef,
+} from "src/frontend/components/CodeEditorBox";
 
 const theme = createTheme();
 
@@ -70,7 +74,9 @@ describe("CodeEditorBox", () => {
 
   test("debounce resets on rapid typing", () => {
     const onChange = vi.fn();
-    const { container } = renderWithTheme(<CodeEditorBox value="" onChange={onChange} debounceMs={100} />);
+    const { container } = renderWithTheme(
+      <CodeEditorBox value="" onChange={onChange} debounceMs={100} />,
+    );
     const textarea = container.querySelector("textarea") as HTMLTextAreaElement;
 
     fireEvent.change(textarea, { target: { value: "a" } });
@@ -97,7 +103,9 @@ describe("CodeEditorBox", () => {
 
   test("respects custom debounceMs", () => {
     const onChange = vi.fn();
-    const { container } = renderWithTheme(<CodeEditorBox value="" onChange={onChange} debounceMs={300} />);
+    const { container } = renderWithTheme(
+      <CodeEditorBox value="" onChange={onChange} debounceMs={300} />,
+    );
     const textarea = container.querySelector("textarea") as HTMLTextAreaElement;
 
     fireEvent.change(textarea, { target: { value: "delayed" } });
@@ -115,7 +123,9 @@ describe("CodeEditorBox", () => {
 
   test("clamps debounceMs to MAX_DEBOUNCE_MS", () => {
     const onChange = vi.fn();
-    const { container } = renderWithTheme(<CodeEditorBox value="" onChange={onChange} debounceMs={5000} />);
+    const { container } = renderWithTheme(
+      <CodeEditorBox value="" onChange={onChange} debounceMs={5000} />,
+    );
     const textarea = container.querySelector("textarea") as HTMLTextAreaElement;
 
     fireEvent.change(textarea, { target: { value: "clamped" } });
@@ -129,7 +139,9 @@ describe("CodeEditorBox", () => {
 
   test("blur fires onChange immediately even if debounce is pending", () => {
     const onChange = vi.fn();
-    const { container } = renderWithTheme(<CodeEditorBox value="" onChange={onChange} debounceMs={300} />);
+    const { container } = renderWithTheme(
+      <CodeEditorBox value="" onChange={onChange} debounceMs={300} />,
+    );
     const textarea = container.querySelector("textarea") as HTMLTextAreaElement;
 
     fireEvent.change(textarea, { target: { value: "quick blur" } });
@@ -143,7 +155,9 @@ describe("CodeEditorBox", () => {
 
   test("blur skips onChange if value has not changed since last emit", () => {
     const onChange = vi.fn();
-    const { container } = renderWithTheme(<CodeEditorBox value="" onChange={onChange} debounceMs={50} />);
+    const { container } = renderWithTheme(
+      <CodeEditorBox value="" onChange={onChange} debounceMs={50} />,
+    );
     const textarea = container.querySelector("textarea") as HTMLTextAreaElement;
 
     fireEvent.change(textarea, { target: { value: "same" } });
@@ -162,7 +176,9 @@ describe("CodeEditorBox", () => {
 
   test("blur cancels pending debounce timer", () => {
     const onChange = vi.fn();
-    const { container } = renderWithTheme(<CodeEditorBox value="" onChange={onChange} debounceMs={300} />);
+    const { container } = renderWithTheme(
+      <CodeEditorBox value="" onChange={onChange} debounceMs={300} />,
+    );
     const textarea = container.querySelector("textarea") as HTMLTextAreaElement;
 
     fireEvent.change(textarea, { target: { value: "blurred" } });
@@ -192,7 +208,9 @@ describe("CodeEditorBox", () => {
   test("editorRef.getValue returns latest value before debounce fires", () => {
     const onChange = vi.fn();
     const editorRef = createRef<EditorRef>();
-    const { container } = renderWithTheme(<CodeEditorBox value="" onChange={onChange} editorRef={editorRef} debounceMs={300} />);
+    const { container } = renderWithTheme(
+      <CodeEditorBox value="" onChange={onChange} editorRef={editorRef} debounceMs={300} />,
+    );
     const textarea = container.querySelector("textarea") as HTMLTextAreaElement;
 
     fireEvent.change(textarea, { target: { value: "not yet synced" } });
@@ -207,7 +225,9 @@ describe("CodeEditorBox", () => {
   test("flushes a pending debounce when the editor unmounts", () => {
     // switching query tabs unmounts the editor — the in-flight keystrokes must not be dropped
     const onChange = vi.fn();
-    const { container, unmount } = renderWithTheme(<CodeEditorBox value="" onChange={onChange} debounceMs={300} />);
+    const { container, unmount } = renderWithTheme(
+      <CodeEditorBox value="" onChange={onChange} debounceMs={300} />,
+    );
     const textarea = container.querySelector("textarea") as HTMLTextAreaElement;
 
     fireEvent.change(textarea, { target: { value: "unsaved edit" } });
@@ -227,7 +247,9 @@ describe("CodeEditorBox", () => {
 
   test("does not emit on unmount when nothing is pending", () => {
     const onChange = vi.fn();
-    const { container, unmount } = renderWithTheme(<CodeEditorBox value="" onChange={onChange} debounceMs={50} />);
+    const { container, unmount } = renderWithTheme(
+      <CodeEditorBox value="" onChange={onChange} debounceMs={50} />,
+    );
     const textarea = container.querySelector("textarea") as HTMLTextAreaElement;
 
     fireEvent.change(textarea, { target: { value: "already emitted" } });
@@ -243,7 +265,9 @@ describe("CodeEditorBox", () => {
 
   test("does not emit on unmount when blur already flushed the value", () => {
     const onChange = vi.fn();
-    const { container, unmount } = renderWithTheme(<CodeEditorBox value="" onChange={onChange} debounceMs={300} />);
+    const { container, unmount } = renderWithTheme(
+      <CodeEditorBox value="" onChange={onChange} debounceMs={300} />,
+    );
     const textarea = container.querySelector("textarea") as HTMLTextAreaElement;
 
     fireEvent.change(textarea, { target: { value: "blur wins" } });

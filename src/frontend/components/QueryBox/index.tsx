@@ -17,9 +17,17 @@ import Tooltip from "@mui/material/Tooltip";
 import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "src/frontend/utils/commonUtils";
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import { getSyntaxModeByDialect, getTableActions, isDialectSupportManagedMetadata } from "src/common/adapters/DataScriptFactory";
+import {
+  getSyntaxModeByDialect,
+  getTableActions,
+  isDialectSupportManagedMetadata,
+} from "src/common/adapters/DataScriptFactory";
 import { ProxyApi } from "src/frontend/data/api";
-import CodeEditorBox, { CompletionItem, EditorRef, EditorVariable } from "src/frontend/components/CodeEditorBox";
+import CodeEditorBox, {
+  CompletionItem,
+  EditorRef,
+  EditorVariable,
+} from "src/frontend/components/CodeEditorBox";
 import DropdownButton from "src/frontend/components/DropdownButton";
 import { useCommands } from "src/frontend/components/MissionControl";
 import ConnectionDatabaseSelector from "src/frontend/components/QueryBox/ConnectionDatabaseSelector";
@@ -74,7 +82,11 @@ function ConnectionActionsButton(props: ConnectionActionsButtonProps): React.JSX
   const { selectCommand } = useCommands();
 
   const { data: connection, isLoading: loadingConnection } = useGetConnectionById(connectionId);
-  const { data: columns, isLoading: loadingColumns } = useGetColumns(connectionId, databaseId, tableId);
+  const { data: columns, isLoading: loadingColumns } = useGetColumns(
+    connectionId,
+    databaseId,
+    tableId,
+  );
 
   const dialect = connection?.dialect;
 
@@ -111,7 +123,12 @@ function ConnectionActionsButton(props: ConnectionActionsButtonProps): React.JSX
   }
 
   return (
-    <DropdownButton id="session-action-split-button" options={options} isLoading={isLoading} maxHeight="400px">
+    <DropdownButton
+      id="session-action-split-button"
+      options={options}
+      isLoading={isLoading}
+      maxHeight="400px"
+    >
       <IconButton aria-label="Table Actions" color="inherit">
         <MenuIcon fontSize="inherit" color="inherit" />
       </IconButton>
@@ -244,7 +261,9 @@ function QueryBox(props: QueryBoxProps): React.JSX.Element | null {
     if (cachedSchema?.columns) {
       if (selectedTableId) {
         // Table is selected — only show columns for that table
-        const selectedColumns = cachedSchema.columns[selectedTableId] as SqluiCore.ColumnMetaData[] | undefined;
+        const selectedColumns = cachedSchema.columns[selectedTableId] as
+          | SqluiCore.ColumnMetaData[]
+          | undefined;
         if (selectedColumns) {
           for (const col of selectedColumns) {
             items.push({
@@ -262,7 +281,10 @@ function QueryBox(props: QueryBoxProps): React.JSX.Element | null {
       } else if (!connections || connections.length <= MAX_CONNECTIONS_FOR_FULL_AUTOCOMPLETE) {
         // No table selected, few connections — show all cached columns
         const seen = new Set<string>();
-        for (const [tableName, columns] of Object.entries(cachedSchema.columns) as [string, SqluiCore.ColumnMetaData[]][]) {
+        for (const [tableName, columns] of Object.entries(cachedSchema.columns) as [
+          string,
+          SqluiCore.ColumnMetaData[],
+        ][]) {
           for (const col of columns) {
             if (!seen.has(col.name)) {
               seen.add(col.name);
@@ -285,7 +307,10 @@ function QueryBox(props: QueryBoxProps): React.JSX.Element | null {
     return items;
   }, [cachedSchema, query?.tableId, connections]);
 
-  const language: string = useMemo(() => getSyntaxModeByDialect(selectedConnection?.dialect), [selectedConnection?.dialect, query?.sql]);
+  const language: string = useMemo(
+    () => getSyntaxModeByDialect(selectedConnection?.dialect),
+    [selectedConnection?.dialect, query?.sql],
+  );
   const isLoading = loadingConnection;
   const isExecuting = executing;
   const isManagedMetadata = isDialectSupportManagedMetadata(selectedConnection?.dialect);
@@ -298,7 +323,8 @@ function QueryBox(props: QueryBoxProps): React.JSX.Element | null {
           { value: "javascript", label: "Javascript (fetch)" },
         ]
     : undefined;
-  const isSaveVisible = isManagedMetadata && !!query?.connectionId && !!query?.databaseId && !!query?.tableId;
+  const isSaveVisible =
+    isManagedMetadata && !!query?.connectionId && !!query?.databaseId && !!query?.tableId;
   const isMigrationVisible = !!query?.connectionId && !!query?.databaseId;
   const isCreateRecordVisible = isMigrationVisible;
 
@@ -317,7 +343,13 @@ function QueryBox(props: QueryBoxProps): React.JSX.Element | null {
       }
       if (Array.isArray(config.variables)) {
         for (const v of config.variables) {
-          if (v.key) vars.push({ key: v.key, value: v.value || "", enabled: v.enabled !== false, source: "connection" });
+          if (v.key)
+            vars.push({
+              key: v.key,
+              value: v.value || "",
+              enabled: v.enabled !== false,
+              source: "connection",
+            });
         }
       }
       return vars;
@@ -340,7 +372,12 @@ function QueryBox(props: QueryBoxProps): React.JSX.Element | null {
           setFolderVariables(
             vars
               .filter((v) => v.key)
-              .map((v) => ({ key: v.key, value: v.value || "", enabled: v.enabled !== false, source: "folder" as const })),
+              .map((v) => ({
+                key: v.key,
+                value: v.value || "",
+                enabled: v.enabled !== false,
+                source: "folder" as const,
+              })),
           );
         } else {
           setFolderVariables([]);
@@ -428,7 +465,13 @@ function QueryBox(props: QueryBoxProps): React.JSX.Element | null {
     const currentExecutionId = ++executionIdRef.current;
 
     const executionStart = Date.now();
-    onChange({ executing: true, executionStart, result: undefined, executionEnd: undefined, executionDetails: undefined });
+    onChange({
+      executing: true,
+      executionStart,
+      result: undefined,
+      executionEnd: undefined,
+      executionDetails: undefined,
+    });
 
     let newResult: SqluiCore.Result | undefined;
 
@@ -501,7 +544,9 @@ function QueryBox(props: QueryBoxProps): React.JSX.Element | null {
   };
 
   const onShowCreateNewRecordForThisDatabaseAndTable = () => {
-    navigate(`/record/new?connectionId=${query?.connectionId || ""}&databaseId=${query?.databaseId || ""}&tableId=${query?.tableId || ""}`);
+    navigate(
+      `/record/new?connectionId=${query?.connectionId || ""}&databaseId=${query?.databaseId || ""}&tableId=${query?.tableId || ""}`,
+    );
   };
 
   if (isLoading) {
@@ -518,7 +563,11 @@ function QueryBox(props: QueryBoxProps): React.JSX.Element | null {
 
   return (
     <>
-      <form className="QueryBox FormInput__Container" onSubmit={onSubmit} style={{ marginBottom: "1rem" }}>
+      <form
+        className="QueryBox FormInput__Container"
+        onSubmit={onSubmit}
+        style={{ marginBottom: "1rem" }}
+      >
         {expanded && (
           <div className="FormInput__Row">
             <ConnectionDatabaseSelector value={query} onChange={onDatabaseConnectionChange} />
@@ -548,7 +597,10 @@ function QueryBox(props: QueryBoxProps): React.JSX.Element | null {
         />
         <div className="FormInput__Row" style={{ flexWrap: "nowrap" }}>
           {!expanded && (
-            <div className="FormInput__Row" style={{ flexShrink: 1, minWidth: 0, flexWrap: "nowrap" }}>
+            <div
+              className="FormInput__Row"
+              style={{ flexShrink: 1, minWidth: 0, flexWrap: "nowrap" }}
+            >
               <ConnectionDatabaseSelector value={query} onChange={onDatabaseConnectionChange} />
               <ConnectionRevealButton query={query} />
               <CodeSnippetButton {...props} />
@@ -591,13 +643,23 @@ function QueryBox(props: QueryBoxProps): React.JSX.Element | null {
                 </Button>
               </Tooltip>
               <Tooltip title="Format the SQL query for readability.">
-                <Button type="button" variant="outlined" onClick={onFormatQuery} startIcon={<FormatColorTextIcon />}>
+                <Button
+                  type="button"
+                  variant="outlined"
+                  onClick={onFormatQuery}
+                  startIcon={<FormatColorTextIcon />}
+                >
                   Format
                 </Button>
               </Tooltip>
               {isMigrationVisible && (
                 <Tooltip title="Migrate this database and table.">
-                  <Button type="button" variant="outlined" onClick={onShowMigrationForThisDatabaseAndTable} startIcon={<BackupIcon />}>
+                  <Button
+                    type="button"
+                    variant="outlined"
+                    onClick={onShowMigrationForThisDatabaseAndTable}
+                    startIcon={<BackupIcon />}
+                  >
                     Migration
                   </Button>
                 </Tooltip>

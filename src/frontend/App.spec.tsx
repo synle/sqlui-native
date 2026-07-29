@@ -10,13 +10,19 @@ const hoisted = vi.hoisted(() => ({
   readFileContentMock: vi.fn(),
 }));
 
-vi.mock("src/frontend/components/AppHeader", () => ({ default: () => <header data-testid="app-header" /> }));
+vi.mock("src/frontend/components/AppHeader", () => ({
+  default: () => <header data-testid="app-header" />,
+}));
 vi.mock("src/frontend/components/MissionControl", () => ({
   default: () => <div data-testid="mission-control" />,
   useCommands: () => ({ selectCommand: hoisted.selectCommandMock }),
 }));
-vi.mock("src/frontend/components/SessionManager", () => ({ default: ({ children }: any) => <div>{children}</div> }));
-vi.mock("src/frontend/hooks/useSession", () => ({ useGetSessions: () => hoisted.useGetSessionsMock() }));
+vi.mock("src/frontend/components/SessionManager", () => ({
+  default: ({ children }: any) => <div>{children}</div>,
+}));
+vi.mock("src/frontend/hooks/useSession", () => ({
+  useGetSessions: () => hoisted.useGetSessionsMock(),
+}));
 vi.mock("src/frontend/hooks/useToaster", () => ({
   default: () => ({ add: hoisted.addToastMock, dismiss: vi.fn() }),
 }));
@@ -34,17 +40,25 @@ vi.mock("src/frontend/monacoSetup", () => ({
 }));
 // Lazy-loaded route components - stub all of them
 vi.mock("src/frontend/views/BookmarksPage", () => ({ default: () => <div>BookmarksPage</div> }));
-vi.mock("src/frontend/views/EditConnectionPage", () => ({ default: () => <div>EditConnectionPage</div> }));
+vi.mock("src/frontend/views/EditConnectionPage", () => ({
+  default: () => <div>EditConnectionPage</div>,
+}));
 vi.mock("src/frontend/views/MainPage", () => ({ default: () => <div>MainPage</div> }));
 vi.mock("src/frontend/views/MigrationPage", () => ({ default: () => <div>MigrationPage</div> }));
-vi.mock("src/frontend/views/NewConnectionPage", () => ({ default: () => <div>NewConnectionPage</div> }));
+vi.mock("src/frontend/views/NewConnectionPage", () => ({
+  default: () => <div>NewConnectionPage</div>,
+}));
 vi.mock("src/frontend/views/RecordPage", () => ({
   default: () => <div>RecordPage</div>,
   NewRecordPage: () => <div>NewRecordPage</div>,
 }));
-vi.mock("src/frontend/views/QueryHistoryPage", () => ({ default: () => <div>QueryHistoryPage</div> }));
+vi.mock("src/frontend/views/QueryHistoryPage", () => ({
+  default: () => <div>QueryHistoryPage</div>,
+}));
 vi.mock("src/frontend/views/RecycleBinPage", () => ({ default: () => <div>RecycleBinPage</div> }));
-vi.mock("src/frontend/views/RelationshipChartPage", () => ({ default: () => <div>RelationshipChartPage</div> }));
+vi.mock("src/frontend/views/RelationshipChartPage", () => ({
+  default: () => <div>RelationshipChartPage</div>,
+}));
 
 import App from "src/frontend/App";
 

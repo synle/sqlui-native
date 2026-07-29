@@ -378,7 +378,9 @@ async function bootstrapConnections(rawInputs: string[]): Promise<number> {
       console.log(`  • already exists, skipped: ${connectionString}`);
       continue;
     }
-    const dialect = getDialectTypeFromConnectionString(connectionString) as SqluiCore.Dialect | undefined;
+    const dialect = getDialectTypeFromConnectionString(connectionString) as
+      | SqluiCore.Dialect
+      | undefined;
     const entry: Partial<SqluiCore.ConnectionProps> = {
       name: deriveConnectionName(connectionString),
       connection: connectionString,
@@ -502,7 +504,10 @@ function gracefulShutdown(server: Server, signal: string): void {
       ["PID", String(process.pid)],
     ];
     if (opts.inputs.length > 0) {
-      lines.push(["Connections", `${added} added, ${opts.inputs.length - added} duplicate skipped`]);
+      lines.push([
+        "Connections",
+        `${added} added, ${opts.inputs.length - added} duplicate skipped`,
+      ]);
     }
     const labelWidth = Math.max(...lines.map(([k]) => k.length));
     const body = lines.map(([k, v]) => `  ${k.padEnd(labelWidth)}  ${v}`);

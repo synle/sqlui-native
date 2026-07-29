@@ -156,7 +156,11 @@ describe("Endpoints data persistence", () => {
       const queryStorage = await getQueryStorage(sessionId);
 
       const added = queryStorage.add({ name: "Original Name" });
-      const updated = queryStorage.update({ id: added.id, name: "Renamed Query", sql: "SELECT 1" } as any);
+      const updated = queryStorage.update({
+        id: added.id,
+        name: "Renamed Query",
+        sql: "SELECT 1",
+      } as any);
 
       expect(updated.name).toBe("Renamed Query");
       expect(updated.sql).toBe("SELECT 1");
@@ -183,9 +187,17 @@ describe("Endpoints data persistence", () => {
       const sessionId = uniqueSessionId();
       const queryStorage = await getQueryStorage(sessionId);
 
-      const added = queryStorage.add({ name: "Keep This Name", sql: "SELECT 1", connectionId: "conn-1" });
+      const added = queryStorage.add({
+        name: "Keep This Name",
+        sql: "SELECT 1",
+        connectionId: "conn-1",
+      });
 
-      const updated = queryStorage.update({ id: added.id, sql: "SELECT 2", name: undefined } as any);
+      const updated = queryStorage.update({
+        id: added.id,
+        sql: "SELECT 2",
+        name: undefined,
+      } as any);
 
       expect(updated.name).toBe("Keep This Name");
       expect(updated.sql).toBe("SELECT 2");

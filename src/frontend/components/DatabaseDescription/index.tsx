@@ -21,7 +21,9 @@ type DatabaseDescriptionProps = {
  * @param props - Contains the connectionId to fetch databases for.
  * @returns A list of accordion sections for each database, or a loading/error alert.
  */
-export default function DatabaseDescription(props: DatabaseDescriptionProps): React.JSX.Element | null {
+export default function DatabaseDescription(
+  props: DatabaseDescriptionProps,
+): React.JSX.Element | null {
   const { connectionId } = props;
   const { data: databases, isLoading, isError } = useGetDatabases(connectionId);
   const { visibles, onToggle } = useShowHide();
@@ -47,7 +49,8 @@ export default function DatabaseDescription(props: DatabaseDescriptionProps): Re
     <>
       {databases.map((database) => {
         const key = [connectionId, database.name].join(" > ");
-        const isSelected = activeQuery?.connectionId === connectionId && activeQuery?.databaseId === database.name;
+        const isSelected =
+          activeQuery?.connectionId === connectionId && activeQuery?.databaseId === database.name;
 
         return (
           <React.Fragment key={database.name}>

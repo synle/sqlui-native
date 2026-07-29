@@ -28,7 +28,10 @@ function getLogFilePath(): string {
   // Replicate the storage-dir resolution from PersistentStorageJsonFile
   // here (rather than importing) to avoid a circular module dependency.
   const envDir = process.env.SQLUI_HOME_DIR;
-  const baseDir = envDir && envDir.trim() ? path.resolve(envDir) : path.join(require("os").homedir(), ".sqlui-native");
+  const baseDir =
+    envDir && envDir.trim()
+      ? path.resolve(envDir)
+      : path.join(require("os").homedir(), ".sqlui-native");
 
   fs.mkdirSync(baseDir, { recursive: true });
   logFilePath = path.join(baseDir, "debug.log");

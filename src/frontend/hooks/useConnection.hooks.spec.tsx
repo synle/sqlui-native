@@ -55,7 +55,9 @@ import {
 } from "src/frontend/hooks/useConnection";
 
 function wrapper({ children }: { children: React.ReactNode }) {
-  const qc = new QueryClient({ defaultOptions: { queries: { retry: false }, mutations: { retry: false } } });
+  const qc = new QueryClient({
+    defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
+  });
   return <QueryClientProvider client={qc}>{children}</QueryClientProvider>;
 }
 
@@ -65,7 +67,9 @@ describe("useConnection hooks", () => {
   });
 
   test("useGetConnections fetches", async () => {
-    (dataApi.getConnections as any).mockResolvedValueOnce([{ id: "c1", name: "X", connection: "mysql://x" }]);
+    (dataApi.getConnections as any).mockResolvedValueOnce([
+      { id: "c1", name: "X", connection: "mysql://x" },
+    ]);
     const { result } = renderHook(() => useGetConnections(), { wrapper });
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
     expect(result.current.data?.[0].name).toBe("X");
@@ -116,7 +120,11 @@ describe("useConnection hooks", () => {
   test("useImportConnection preserves id + name", async () => {
     const { result } = renderHook(() => useImportConnection(), { wrapper });
     await act(async () => {
-      await result.current.mutateAsync({ id: "preserved", name: "ImportedName", connection: "mysql://x" });
+      await result.current.mutateAsync({
+        id: "preserved",
+        name: "ImportedName",
+        connection: "mysql://x",
+      });
     });
     const arg = (dataApi.upsertConnection as any).mock.calls[0][0];
     expect(arg.id).toBe("preserved");
@@ -126,7 +134,13 @@ describe("useConnection hooks", () => {
   test("useExecute calls dataApi.execute", async () => {
     const { result } = renderHook(() => useExecute(), { wrapper });
     await act(async () => {
-      await result.current.mutateAsync({ id: "q", name: "Q", sql: "SELECT 1", connectionId: "c", databaseId: "d" } as any);
+      await result.current.mutateAsync({
+        id: "q",
+        name: "Q",
+        sql: "SELECT 1",
+        connectionId: "c",
+        databaseId: "d",
+      } as any);
     });
     expect(dataApi.execute).toHaveBeenCalled();
   });

@@ -87,7 +87,9 @@ export function DataTableWithJSONList(props: DataTableWithJSONListProps) {
       header: "#",
       enableSorting: false,
       enableColumnFilter: false,
-      cell: (info: any) => <span style={{ fontFamily: "monospace", opacity: 0.5 }}>{info.row.index + 1}</span>,
+      cell: (info: any) => (
+        <span style={{ fontFamily: "monospace", opacity: 0.5 }}>{info.row.index + 1}</span>
+      ),
     };
 
     return {
@@ -117,13 +119,47 @@ export function DataTableWithJSONList(props: DataTableWithJSONListProps) {
             cell: (info: any) => {
               const columnValue = info.row.original[columnName];
               if (columnValue === null) {
-                return <Chip sx={{ textTransform: "uppercase", fontStyle: "italic" }} size="small" color="info" label="null" />;
+                return (
+                  <Chip
+                    sx={{ textTransform: "uppercase", fontStyle: "italic" }}
+                    size="small"
+                    color="info"
+                    label="null"
+                  />
+                );
               } else if (columnValue === undefined) {
-                return <Chip sx={{ textTransform: "uppercase", fontStyle: "italic" }} size="small" color="default" label="undefined" />;
-              } else if (columnValue === true || columnValue?.toString()?.toLowerCase() === "true") {
-                return <Chip sx={{ textTransform: "uppercase", fontStyle: "italic" }} size="small" color="success" label="true" />;
-              } else if (columnValue === false || columnValue?.toString()?.toLowerCase() === "false") {
-                return <Chip sx={{ textTransform: "uppercase", fontStyle: "italic" }} size="small" color="error" label="false" />;
+                return (
+                  <Chip
+                    sx={{ textTransform: "uppercase", fontStyle: "italic" }}
+                    size="small"
+                    color="default"
+                    label="undefined"
+                  />
+                );
+              } else if (
+                columnValue === true ||
+                columnValue?.toString()?.toLowerCase() === "true"
+              ) {
+                return (
+                  <Chip
+                    sx={{ textTransform: "uppercase", fontStyle: "italic" }}
+                    size="small"
+                    color="success"
+                    label="true"
+                  />
+                );
+              } else if (
+                columnValue === false ||
+                columnValue?.toString()?.toLowerCase() === "false"
+              ) {
+                return (
+                  <Chip
+                    sx={{ textTransform: "uppercase", fontStyle: "italic" }}
+                    size="small"
+                    color="error"
+                    label="false"
+                  />
+                );
               } else if (typeof columnValue === "number") {
                 return <span style={{ fontFamily: "monospace" }}>{columnValue}</span>;
               } else if (typeof columnValue === "object") {

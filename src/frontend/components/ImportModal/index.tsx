@@ -114,7 +114,11 @@ export default function ImportModal(props: ImportModalProps): React.JSX.Element 
   };
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", flex: 1, overflow: "hidden", gap: 1 }} onDrop={onDrop} onDragOver={onDragOver}>
+    <Box
+      sx={{ display: "flex", flexDirection: "column", flex: 1, overflow: "hidden", gap: 1 }}
+      onDrop={onDrop}
+      onDragOver={onDragOver}
+    >
       <Box sx={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
         <CodeEditorBox
           value={value}
@@ -128,15 +132,34 @@ export default function ImportModal(props: ImportModalProps): React.JSX.Element 
         />
       </Box>
       <Box>
-        <input ref={fileInputRef} type="file" accept=".json" onChange={onFileSelected} style={{ display: "none" }} />
-        <Button variant="outlined" size="small" startIcon={<FileOpenIcon />} onClick={() => fileInputRef.current?.click()}>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept=".json"
+          onChange={onFileSelected}
+          style={{ display: "none" }}
+        />
+        <Button
+          variant="outlined"
+          size="small"
+          startIcon={<FileOpenIcon />}
+          onClick={() => fileInputRef.current?.click()}
+        >
           Load from File
         </Button>
       </Box>
       <FormControl>
         <RadioGroup row value={mode} onChange={(e) => setMode(e.target.value as ImportMode)}>
-          <FormControlLabel value="keepIds" control={<Radio size="small" />} label="Update existing if IDs match (upsert)" />
-          <FormControlLabel value="stripIds" control={<Radio size="small" />} label="Import as new (ignore IDs)" />
+          <FormControlLabel
+            value="keepIds"
+            control={<Radio size="small" />}
+            label="Update existing if IDs match (upsert)"
+          />
+          <FormControlLabel
+            value="stripIds"
+            control={<Radio size="small" />}
+            label="Import as new (ignore IDs)"
+          />
         </RadioGroup>
       </FormControl>
       <Box sx={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 1 }}>

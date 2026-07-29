@@ -18,7 +18,10 @@ import { platform } from "src/frontend/platform";
 import QueryBox from "src/frontend/components/QueryBox";
 import Tabs from "src/frontend/components/Tabs";
 import { useConnectionQueries } from "src/frontend/hooks/useConnectionQuery";
-import { useIsQueryTabAutoSaveEnabled, useQueryTabOrientationSetting } from "src/frontend/hooks/useSetting";
+import {
+  useIsQueryTabAutoSaveEnabled,
+  useQueryTabOrientationSetting,
+} from "src/frontend/hooks/useSetting";
 import { SqluiFrontend } from "typings";
 
 /**
@@ -35,56 +38,72 @@ export default function QueryBoxTabs() {
   const previousAutoSaveEnabledRef = useRef(isQueryTabAutoSaveEnabled);
 
   const onShowQuery = useCallback(
-    (data: SqluiFrontend.ConnectionQuery) => selectCommand({ event: "clientEvent/query/show", data }),
+    (data: SqluiFrontend.ConnectionQuery) =>
+      selectCommand({ event: "clientEvent/query/show", data }),
     [selectCommand],
   );
 
-  const onAddQuery = useCallback(() => selectCommand({ event: "clientEvent/query/new" }), [selectCommand]);
+  const onAddQuery = useCallback(
+    () => selectCommand({ event: "clientEvent/query/new" }),
+    [selectCommand],
+  );
 
   const onCloseQuery = useCallback(
-    (data: SqluiFrontend.ConnectionQuery) => selectCommand({ event: "clientEvent/query/close", data }),
+    (data: SqluiFrontend.ConnectionQuery) =>
+      selectCommand({ event: "clientEvent/query/close", data }),
     [selectCommand],
   );
 
   const onCloseOtherQueries = useCallback(
-    (data: SqluiFrontend.ConnectionQuery) => selectCommand({ event: "clientEvent/query/closeOther", data }),
+    (data: SqluiFrontend.ConnectionQuery) =>
+      selectCommand({ event: "clientEvent/query/closeOther", data }),
     [selectCommand],
   );
 
   const onCoseTabsToTheRight = useCallback(
-    (data: SqluiFrontend.ConnectionQuery) => selectCommand({ event: "clientEvent/query/closeToTheRight", data }),
+    (data: SqluiFrontend.ConnectionQuery) =>
+      selectCommand({ event: "clientEvent/query/closeToTheRight", data }),
     [selectCommand],
   );
 
   const onRenameQuery = useCallback(
-    (data: SqluiFrontend.ConnectionQuery) => selectCommand({ event: "clientEvent/query/rename", data }),
+    (data: SqluiFrontend.ConnectionQuery) =>
+      selectCommand({ event: "clientEvent/query/rename", data }),
     [selectCommand],
   );
 
   const onDuplicateQuery = useCallback(
-    (data: SqluiFrontend.ConnectionQuery) => selectCommand({ event: "clientEvent/query/duplicate", data }),
+    (data: SqluiFrontend.ConnectionQuery) =>
+      selectCommand({ event: "clientEvent/query/duplicate", data }),
     [selectCommand],
   );
 
   const onExportQuery = useCallback(
-    (data: SqluiFrontend.ConnectionQuery) => selectCommand({ event: "clientEvent/query/export", data }),
+    (data: SqluiFrontend.ConnectionQuery) =>
+      selectCommand({ event: "clientEvent/query/export", data }),
     [selectCommand],
   );
 
   const onSaveQuery = useCallback(
-    (data: SqluiFrontend.ConnectionQuery) => selectCommand({ event: "clientEvent/query/save", data }),
+    (data: SqluiFrontend.ConnectionQuery) =>
+      selectCommand({ event: "clientEvent/query/save", data }),
     [selectCommand],
   );
 
-  const onSaveAllQueries = useCallback(() => selectCommand({ event: "clientEvent/query/saveAll" }), [selectCommand]);
+  const onSaveAllQueries = useCallback(
+    () => selectCommand({ event: "clientEvent/query/saveAll" }),
+    [selectCommand],
+  );
 
   const onAddToBookmark = useCallback(
-    (data: SqluiFrontend.ConnectionQuery) => selectCommand({ event: "clientEvent/query/addToBookmark", data }),
+    (data: SqluiFrontend.ConnectionQuery) =>
+      selectCommand({ event: "clientEvent/query/addToBookmark", data }),
     [selectCommand],
   );
 
   const onChangeQueryTabOrdering = useCallback(
-    (from: number, to: number) => selectCommand({ event: "clientEvent/query/changeTabOrdering", data: { from, to } }),
+    (from: number, to: number) =>
+      selectCommand({ event: "clientEvent/query/changeTabOrdering", data: { from, to } }),
     [selectCommand],
   );
 
@@ -109,7 +128,13 @@ export default function QueryBoxTabs() {
     const wasAutoSaveEnabled = previousAutoSaveEnabledRef.current;
     previousAutoSaveEnabledRef.current = isQueryTabAutoSaveEnabled;
 
-    if (!wasAutoSaveEnabled && isQueryTabAutoSaveEnabled && !isLoading && queries && queries.length > 0) {
+    if (
+      !wasAutoSaveEnabled &&
+      isQueryTabAutoSaveEnabled &&
+      !isLoading &&
+      queries &&
+      queries.length > 0
+    ) {
       onSaveQueries().catch((err) => console.error("QueryBoxTabs:onSaveQueries", err));
     }
   }, [isQueryTabAutoSaveEnabled, isLoading, queries, onSaveQueries]);
@@ -127,7 +152,10 @@ export default function QueryBoxTabs() {
 
   const tabIdx = queries?.findIndex((q) => q.selected === true) || 0;
 
-  const tabKeys: string[] = useMemo(() => [...(queries || []).map((q) => q.id), "add-query"], [queries]);
+  const tabKeys: string[] = useMemo(
+    () => [...(queries || []).map((q) => q.id), "add-query"],
+    [queries],
+  );
   const tabHeaders: React.ReactNode[] = useMemo(
     () => [
       ...(queries || []).map((q) => {
@@ -233,7 +261,10 @@ export default function QueryBoxTabs() {
     [queries],
   );
 
-  const tabContents = useMemo(() => (queries || []).map((q) => <QueryBox key={q.id} queryId={q.id} />), [queries]);
+  const tabContents = useMemo(
+    () => (queries || []).map((q) => <QueryBox key={q.id} queryId={q.id} />),
+    [queries],
+  );
   if (isLoading) {
     return (
       <Alert severity="info" icon={<CircularProgress size={15} />}>

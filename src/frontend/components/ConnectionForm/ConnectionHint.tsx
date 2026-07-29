@@ -7,7 +7,11 @@ import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemAvatar from "@mui/material/ListItemAvatar";
 import ListItemText from "@mui/material/ListItemText";
-import { getDialectName, getSampleConnectionString, SUPPORTED_DIALECTS } from "src/common/adapters/DataScriptFactory";
+import {
+  getDialectName,
+  getSampleConnectionString,
+  SUPPORTED_DIALECTS,
+} from "src/common/adapters/DataScriptFactory";
 import ConnectionTypeIcon from "src/frontend/components/ConnectionTypeIcon";
 import { useGetBookmarkItems } from "src/frontend/hooks/useFolderItems";
 import { SqluiCore } from "typings";
@@ -41,7 +45,11 @@ export default function ConnectionHint(props: ConnectionHintProps): React.JSX.El
 
   const connectionsFromBookmark = data?.filter((bookmark) => bookmark.type === "Connection");
 
-  if (props.showBookmarks === true && connectionsFromBookmark && connectionsFromBookmark.length > 0) {
+  if (
+    props.showBookmarks === true &&
+    connectionsFromBookmark &&
+    connectionsFromBookmark.length > 0
+  ) {
     // pulling the connection string from bookmarks
     bookmarkedConnectionsDom = connectionsFromBookmark.map((connection) => {
       const bookmark = connection.data as SqluiCore.ConnectionProps;
@@ -61,7 +69,11 @@ export default function ConnectionHint(props: ConnectionHintProps): React.JSX.El
             primary={
               <Box sx={{ display: "flex", gap: 0.5, alignItems: "center" }}>
                 <StarIcon fontSize="small" />
-                <Link underline="hover" onClick={onApplyThisConnectionHint} sx={{ textTransform: "uppercase", fontWeight: "bold" }}>
+                <Link
+                  underline="hover"
+                  onClick={onApplyThisConnectionHint}
+                  sx={{ textTransform: "uppercase", fontWeight: "bold" }}
+                >
                   {connection.name}
                 </Link>
               </Box>
@@ -78,27 +90,34 @@ export default function ConnectionHint(props: ConnectionHintProps): React.JSX.El
 
   return (
     <List sx={{ bgcolor: "background.paper", overflow: "hidden", wordBreak: "break-all" }}>
-      {SUPPORTED_DIALECTS.sort((a, b) => getDialectName(a).localeCompare(getDialectName(b))).map((dialect) => {
-        const onApplyThisConnectionHint = () => props.onChange(dialect, getSampleConnectionString(dialect));
+      {SUPPORTED_DIALECTS.sort((a, b) => getDialectName(a).localeCompare(getDialectName(b))).map(
+        (dialect) => {
+          const onApplyThisConnectionHint = () =>
+            props.onChange(dialect, getSampleConnectionString(dialect));
 
-        return (
-          <ListItem key={dialect}>
-            <ListItemAvatar>
-              <Avatar>
-                <ConnectionTypeIcon dialect={dialect} status="online" />
-              </Avatar>
-            </ListItemAvatar>
-            <ListItemText
-              primary={
-                <Link underline="hover" onClick={onApplyThisConnectionHint} sx={{ textTransform: "uppercase", fontWeight: "bold" }}>
-                  {getDialectName(dialect)}
-                </Link>
-              }
-              secondary={getSampleConnectionString(dialect)}
-            />
-          </ListItem>
-        );
-      })}
+          return (
+            <ListItem key={dialect}>
+              <ListItemAvatar>
+                <Avatar>
+                  <ConnectionTypeIcon dialect={dialect} status="online" />
+                </Avatar>
+              </ListItemAvatar>
+              <ListItemText
+                primary={
+                  <Link
+                    underline="hover"
+                    onClick={onApplyThisConnectionHint}
+                    sx={{ textTransform: "uppercase", fontWeight: "bold" }}
+                  >
+                    {getDialectName(dialect)}
+                  </Link>
+                }
+                secondary={getSampleConnectionString(dialect)}
+              />
+            </ListItem>
+          );
+        },
+      )}
       {bookmarkedConnectionsDom}
     </List>
   );

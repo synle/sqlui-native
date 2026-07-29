@@ -130,12 +130,16 @@ describe("ProxyApi", () => {
 
   test("deleteQuery DELETEs", async () => {
     await ProxyApi.deleteQuery("q1");
-    expect((fetch as any).mock.calls[(fetch as any).mock.calls.length - 1][1].method.toLowerCase()).toBe("delete");
+    expect(
+      (fetch as any).mock.calls[(fetch as any).mock.calls.length - 1][1].method.toLowerCase(),
+    ).toBe("delete");
   });
 
   test("deleteSession DELETEs", async () => {
     await ProxyApi.deleteSession("s1");
-    expect((fetch as any).mock.calls[(fetch as any).mock.calls.length - 1][1].method.toLowerCase()).toBe("delete");
+    expect(
+      (fetch as any).mock.calls[(fetch as any).mock.calls.length - 1][1].method.toLowerCase(),
+    ).toBe("delete");
   });
 
   test("update() POSTs to /api/connections (bulk replace)", async () => {
@@ -147,27 +151,44 @@ describe("ProxyApi", () => {
 
   test("getCachedSchema calls fetch", async () => {
     await ProxyApi.getCachedSchema("c", "d");
-    expect((fetch as any).mock.calls[(fetch as any).mock.calls.length - 1][0]).toMatch(/\/schema\/cached$/);
+    expect((fetch as any).mock.calls[(fetch as any).mock.calls.length - 1][0]).toMatch(
+      /\/schema\/cached$/,
+    );
   });
 
   test("getSession calls fetch", async () => {
     await ProxyApi.getSession();
-    expect((fetch as any).mock.calls[(fetch as any).mock.calls.length - 1][0]).toMatch(/\/api\/session/);
+    expect((fetch as any).mock.calls[(fetch as any).mock.calls.length - 1][0]).toMatch(
+      /\/api\/session/,
+    );
   });
 
   test("getConnection calls fetch with the id in URL", async () => {
     await ProxyApi.getConnection("conn-abc");
-    expect((fetch as any).mock.calls[(fetch as any).mock.calls.length - 1][0]).toContain("conn-abc");
+    expect((fetch as any).mock.calls[(fetch as any).mock.calls.length - 1][0]).toContain(
+      "conn-abc",
+    );
   });
 
   test("upsertConnectionForSession PUT when id present", async () => {
-    await ProxyApi.upsertConnectionForSession("sess-1", { id: "c1", name: "X", connection: "mysql://x" } as any);
-    expect((fetch as any).mock.calls[(fetch as any).mock.calls.length - 1][1].method.toLowerCase()).toBe("put");
+    await ProxyApi.upsertConnectionForSession("sess-1", {
+      id: "c1",
+      name: "X",
+      connection: "mysql://x",
+    } as any);
+    expect(
+      (fetch as any).mock.calls[(fetch as any).mock.calls.length - 1][1].method.toLowerCase(),
+    ).toBe("put");
   });
 
   test("upsertConnectionForSession POST when id missing", async () => {
-    await ProxyApi.upsertConnectionForSession("sess-1", { name: "X", connection: "mysql://x" } as any);
-    expect((fetch as any).mock.calls[(fetch as any).mock.calls.length - 1][1].method.toLowerCase()).toBe("post");
+    await ProxyApi.upsertConnectionForSession("sess-1", {
+      name: "X",
+      connection: "mysql://x",
+    } as any);
+    expect(
+      (fetch as any).mock.calls[(fetch as any).mock.calls.length - 1][1].method.toLowerCase(),
+    ).toBe("post");
   });
 
   test("readFileContent POSTs the file to /api/file and returns server text", async () => {
@@ -253,7 +274,10 @@ describe("ProxyApi", () => {
   });
 
   test("addFolderItem POSTs", async () => {
-    await ProxyApi.addFolderItem("recycle_bin", { type: "Query", data: { sql: "select 1" } } as any);
+    await ProxyApi.addFolderItem("recycle_bin", {
+      type: "Query",
+      data: { sql: "select 1" },
+    } as any);
     const c = (fetch as any).mock.calls[(fetch as any).mock.calls.length - 1];
     expect(c[1].method.toLowerCase()).toBe("post");
   });
@@ -309,7 +333,11 @@ describe("ProxyApi", () => {
   });
 
   test("addQueryVersionHistory POSTs", async () => {
-    await ProxyApi.addQueryVersionHistory({ connectionId: "c", sql: "select 1", auditType: "saved" as any });
+    await ProxyApi.addQueryVersionHistory({
+      connectionId: "c",
+      sql: "select 1",
+      auditType: "saved" as any,
+    });
     const c = (fetch as any).mock.calls[(fetch as any).mock.calls.length - 1];
     expect(c[1].method.toLowerCase()).toBe("post");
   });

@@ -5,8 +5,15 @@ import BaseDataAdapter from "src/common/adapters/BaseDataAdapter/index";
 import IDataAdapter from "src/common/adapters/IDataAdapter";
 import { executeCurl } from "src/common/adapters/RestApiDataAdapter/curlExecutor";
 import { detectAndParse } from "src/common/adapters/RestApiDataAdapter/requestParser";
-import { RestApiConnectionConfig, RestApiFolderProperties } from "src/common/adapters/RestApiDataAdapter/types";
-import { findUnresolvedVariables, mergeVariableLayers, resolveVariables } from "src/common/adapters/RestApiDataAdapter/variableResolver";
+import {
+  RestApiConnectionConfig,
+  RestApiFolderProperties,
+} from "src/common/adapters/RestApiDataAdapter/types";
+import {
+  findUnresolvedVariables,
+  mergeVariableLayers,
+  resolveVariables,
+} from "src/common/adapters/RestApiDataAdapter/variableResolver";
 import { getManagedDatabasesStorage } from "src/common/PersistentStorage";
 import { SqluiCore } from "typings";
 
@@ -190,7 +197,10 @@ export default class RestApiDataAdapter extends BaseDataAdapter implements IData
       const request = detectAndParse(resolvedSql);
 
       if (!request.url) {
-        return { ok: false, error: "No URL found in the request. Check your curl or fetch() syntax." };
+        return {
+          ok: false,
+          error: "No URL found in the request. Check your curl or fetch() syntax.",
+        };
       }
 
       // Execute via curl

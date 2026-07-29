@@ -4,8 +4,15 @@ import dataApi from "src/frontend/data/api";
 import { SessionStorageConfig } from "src/frontend/data/config";
 import { getCurrentSessionId } from "src/frontend/data/session";
 import { useAddRecycleBinItem } from "src/frontend/hooks/useFolderItems";
-import { useIsQueryTabAutoSaveEnabled, useIsSoftDeleteModeSetting } from "src/frontend/hooks/useSetting";
-import { formatShortDate, getGeneratedRandomId, getUpdatedOrdersForList } from "src/frontend/utils/commonUtils";
+import {
+  useIsQueryTabAutoSaveEnabled,
+  useIsSoftDeleteModeSetting,
+} from "src/frontend/hooks/useSetting";
+import {
+  formatShortDate,
+  getGeneratedRandomId,
+  getUpdatedOrdersForList,
+} from "src/frontend/utils/commonUtils";
 import { SqluiCore, SqluiFrontend } from "typings";
 
 // connection queries
@@ -25,7 +32,15 @@ const TargetContext = createContext({
  */
 function _getPersistableQueries(queries: SqluiFrontend.ConnectionQuery[] = _connectionQueries) {
   return queries.map((query, idx) => {
-    const { result, executionEnd, executionStart, executing, executionDetails, isSnapshot, ...restOfQuery } = query;
+    const {
+      result,
+      executionEnd,
+      executionStart,
+      executing,
+      executionDetails,
+      isSnapshot,
+      ...restOfQuery
+    } = query;
     return {
       ...restOfQuery,
       tabOrder: idx,
@@ -89,8 +104,13 @@ function _getRestoredSelectedQueryIndex(queries: SqluiFrontend.ConnectionQuery[]
  * @param currentQueries - Query tabs in their order after the move.
  * @returns Query IDs that need their persisted tab order refreshed.
  */
-function _getQueryIdsWithChangedTabOrder(previousQueryIds: string[], currentQueries: SqluiFrontend.ConnectionQuery[]) {
-  return currentQueries.filter((query, idx) => previousQueryIds[idx] !== query.id).map((query) => query.id);
+function _getQueryIdsWithChangedTabOrder(
+  previousQueryIds: string[],
+  currentQueries: SqluiFrontend.ConnectionQuery[],
+) {
+  return currentQueries
+    .filter((query, idx) => previousQueryIds[idx] !== query.id)
+    .map((query) => query.id);
 }
 
 /**
@@ -98,7 +118,9 @@ function _getQueryIdsWithChangedTabOrder(previousQueryIds: string[], currentQuer
  * @param props - Component props containing child elements.
  * @returns The context provider wrapping children.
  */
-export default function WrappedContext(props: { children: React.ReactNode }): React.JSX.Element | null {
+export default function WrappedContext(props: {
+  children: React.ReactNode;
+}): React.JSX.Element | null {
   // State to hold the theme value
   const [data, setData] = useState(_connectionQueries);
   const [isLoading, setIsLoading] = useState(true);
@@ -109,7 +131,10 @@ export default function WrappedContext(props: { children: React.ReactNode }): Re
         // this is the first time
         // try pulling it in from sessionStorage
         _connectionQueries = _normalizeQueries(
-          SessionStorageConfig.get<SqluiFrontend.ConnectionQuery[]>("clientConfig/cache.connectionQueries", []),
+          SessionStorageConfig.get<SqluiFrontend.ConnectionQuery[]>(
+            "clientConfig/cache.connectionQueries",
+            [],
+          ),
         );
 
         if (_connectionQueries.length === 0 && getCurrentSessionId()) {
@@ -188,7 +213,9 @@ export function useConnectionQueries() {
    */
   const onSaveQueries = async (queryIds?: string[]) => {
     const idsToSave = queryIds ? new Set(queryIds) : undefined;
-    const queriesToSave = _getPersistableQueries().filter((query) => !idsToSave || idsToSave.has(query.id));
+    const queriesToSave = _getPersistableQueries().filter(
+      (query) => !idsToSave || idsToSave.has(query.id),
+    );
 
     await Promise.all(queriesToSave.map((query) => dataApi.upsertQuery(query)));
     return queriesToSave.length;
@@ -208,7 +235,10 @@ export function useConnectionQueries() {
     return onSaveQueries([queryId]);
   };
 
-  const onAddQueries = async (queries: (SqluiCore.CoreConnectionQuery | undefined)[], options?: { preserveResult?: boolean }) => {
+  const onAddQueries = async (
+    queries: (SqluiCore.CoreConnectionQuery | undefined)[],
+    options?: { preserveResult?: boolean },
+  ) => {
     queries = queries || [];
 
     const res: SqluiCore.CoreConnectionQuery[] = [];
@@ -278,8 +308,10 @@ export function useConnectionQueries() {
     return res;
   };
 
-  const onAddQuery = async (query?: SqluiCore.CoreConnectionQuery, options?: { preserveResult?: boolean }) =>
-    (await onAddQueries([query], options))[0];
+  const onAddQuery = async (
+    query?: SqluiCore.CoreConnectionQuery,
+    options?: { preserveResult?: boolean },
+  ) => (await onAddQueries([query], options))[0];
 
   const onDeleteQueries = async (queryIds?: string[]) => {
     if (!queryIds || queryIds.length === 0) {
@@ -294,7 +326,16 @@ export function useConnectionQueries() {
         })
         .map((query) => {
           // here we should remove the isSelected flag
-          const { selected, pinned, result, executionEnd, executionStart, executing, executionDetails, ...restOfQuery } = query;
+          const {
+            selected,
+            pinned,
+            result,
+            executionEnd,
+            executionStart,
+            executing,
+            executionDetails,
+            ...restOfQuery
+          } = query;
 
           return {
             type: "Query",
@@ -305,7 +346,9 @@ export function useConnectionQueries() {
 
       // attempt to make backups
       try {
-        await Promise.allSettled(toRecycleQueriesFolderItems.map(async (folderItem) => addRecycleBinItem(folderItem)));
+        await Promise.allSettled(
+          toRecycleQueriesFolderItems.map(async (folderItem) => addRecycleBinItem(folderItem)),
+        );
       } catch (err) {
         console.error("useConnectionQuery.tsx:allSettled", err);
       }
@@ -375,7 +418,10 @@ export function useConnectionQueries() {
     }
   };
 
-  const onChangeQuery = async (queryId: string | undefined, partials: SqluiFrontend.PartialConnectionQuery) => {
+  const onChangeQuery = async (
+    queryId: string | undefined,
+    partials: SqluiFrontend.PartialConnectionQuery,
+  ) => {
     if (!queryId) {
       if (!queries || queries.length === 0) {
         // this is an edge case where users already closed all the query tab
@@ -441,7 +487,10 @@ export function useConnectionQueries() {
   const onChangeTabOrdering = (from: number, to: number) => {
     const previousQueryIds = _connectionQueries.map((query) => query.id);
     _connectionQueries = getUpdatedOrdersForList([..._connectionQueries], from, to);
-    const queryIdsWithChangedTabOrder = _getQueryIdsWithChangedTabOrder(previousQueryIds, _connectionQueries);
+    const queryIdsWithChangedTabOrder = _getQueryIdsWithChangedTabOrder(
+      previousQueryIds,
+      _connectionQueries,
+    );
     _invalidateQueries();
     if (isQueryTabAutoSaveEnabled) {
       onSaveQueries(queryIdsWithChangedTabOrder);
@@ -475,7 +524,8 @@ export function useConnectionQuery(queryId: string) {
 
   const query = queries?.find((q) => q.id === queryId);
 
-  const onChange = (partials: SqluiFrontend.PartialConnectionQuery) => onChangeQuery(query?.id, partials);
+  const onChange = (partials: SqluiFrontend.PartialConnectionQuery) =>
+    onChangeQuery(query?.id, partials);
 
   const onDelete = () => onDeleteQuery(query?.id);
 
@@ -496,7 +546,8 @@ export function useActiveConnectionQuery() {
 
   const query = queries?.find((q) => q.selected);
 
-  const onChange = (partials: SqluiFrontend.PartialConnectionQuery) => onChangeQuery(query?.id, partials);
+  const onChange = (partials: SqluiFrontend.PartialConnectionQuery) =>
+    onChangeQuery(query?.id, partials);
 
   const onDelete = () => onDeleteQuery(query?.id);
 

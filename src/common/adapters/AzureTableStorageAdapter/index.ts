@@ -127,7 +127,10 @@ export default class AzureTableStorageAdapter extends BaseDataAdapter implements
     try {
       const tableClient = await this.getTableClient(table);
 
-      const page = await tableClient?.listEntities().byPage({ maxPageSize: MAX_ITEM_COUNT_TO_SCAN }).next();
+      const page = await tableClient
+        ?.listEntities()
+        .byPage({ maxPageSize: MAX_ITEM_COUNT_TO_SCAN })
+        .next();
 
       const items: any[] = [];
 

@@ -139,11 +139,17 @@ export function getReadItemById(input: SqlAction.TableInput): SqlAction.Output |
  * @param input - Table context including columns, database, and table identifiers.
  * @returns Script output with column-specific SELECT and WHERE clauses.
  */
-export function getSelectSpecificColumns(input: SqlAction.TableInput): SqlAction.Output | undefined {
+export function getSelectSpecificColumns(
+  input: SqlAction.TableInput,
+): SqlAction.Output | undefined {
   const label = `Select Specific Columns`;
 
-  const columnString = input?.columns?.map((col) => `${COSMOSDB_TABLE_ALIAS_PREFIX}.${col.name}`).join(",\n  ");
-  const whereColumnString = input?.columns?.map((col) => `${COSMOSDB_TABLE_ALIAS_PREFIX}.${col.name} = ''`).join("\n  AND ");
+  const columnString = input?.columns
+    ?.map((col) => `${COSMOSDB_TABLE_ALIAS_PREFIX}.${col.name}`)
+    .join(",\n  ");
+  const whereColumnString = input?.columns
+    ?.map((col) => `${COSMOSDB_TABLE_ALIAS_PREFIX}.${col.name} = ''`)
+    .join("\n  AND ");
 
   const sql = `
   SELECT ${columnString}
@@ -173,7 +179,10 @@ export function getSelectSpecificColumns(input: SqlAction.TableInput): SqlAction
  * @param value - Optional pre-populated values for the new item.
  * @returns Script output using the items.create() SDK method.
  */
-export function getInsert(input: SqlAction.TableInput, value?: Record<string, any>): SqlAction.Output | undefined {
+export function getInsert(
+  input: SqlAction.TableInput,
+  value?: Record<string, any>,
+): SqlAction.Output | undefined {
   const label = `Insert`;
 
   let colMap: any = {};
@@ -204,7 +213,10 @@ export function getInsert(input: SqlAction.TableInput, value?: Record<string, an
  * @param rows - Array of row data to insert.
  * @returns Script output using Promise.all with items.create(), or undefined if no rows.
  */
-export function getBulkInsert(input: SqlAction.TableInput, rows?: Record<string, any>[]): SqlAction.Output | undefined {
+export function getBulkInsert(
+  input: SqlAction.TableInput,
+  rows?: Record<string, any>[],
+): SqlAction.Output | undefined {
   const label = `Insert`;
 
   if (!rows || rows.length === 0) {
@@ -384,7 +396,9 @@ export function getCreateDatabase(input: SqlAction.DatabaseInput): SqlAction.Out
  * @param input - Database context including the database identifier.
  * @returns Script output using the containers.create() SDK method.
  */
-export function getCreateDatabaseContainer(input: SqlAction.DatabaseInput): SqlAction.Output | undefined {
+export function getCreateDatabaseContainer(
+  input: SqlAction.DatabaseInput,
+): SqlAction.Output | undefined {
   const label = `Create Database Container`;
 
   return {
@@ -422,7 +436,9 @@ export function getDropDatabase(input: SqlAction.DatabaseInput): SqlAction.Outpu
  * @param input - Connection context.
  * @returns Script output using the databases.create() SDK method with a placeholder name.
  */
-export function getCreateConnectionDatabase(_input: SqlAction.ConnectionInput): SqlAction.Output | undefined {
+export function getCreateConnectionDatabase(
+  _input: SqlAction.ConnectionInput,
+): SqlAction.Output | undefined {
   const label = `Create Database`;
 
   return {

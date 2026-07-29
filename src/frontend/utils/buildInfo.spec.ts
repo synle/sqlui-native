@@ -1,6 +1,11 @@
 /** @vitest-environment jsdom */
 import { afterEach, beforeEach, describe, test, expect } from "vitest";
-import { getArchLabel, isProductionBuild, isDevBuild, getBuildBadge } from "src/frontend/utils/buildInfo";
+import {
+  getArchLabel,
+  isProductionBuild,
+  isDevBuild,
+  getBuildBadge,
+} from "src/frontend/utils/buildInfo";
 
 // jsdom shares globalThis with node, so `window.process === process`. Stub
 // `window.process` via the WindowProxy proxy instead — but be careful not to

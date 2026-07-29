@@ -153,7 +153,11 @@ describe("AzureTableStorageAdapter scripts", () => {
     });
 
     test("removes etag and timestamp from update values", () => {
-      const result = getUpdateWithValues(tableInput, { name: "updated", etag: "abc", timestamp: "123" }, {});
+      const result = getUpdateWithValues(
+        tableInput,
+        { name: "updated", etag: "abc", timestamp: "123" },
+        {},
+      );
       expect(result).toBeDefined();
       expect(result!.query).not.toContain('"etag"');
       expect(result!.query).not.toContain('"timestamp"');

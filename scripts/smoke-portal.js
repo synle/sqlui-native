@@ -52,10 +52,14 @@ log(`--version OK: ${semverMatch[0]}`);
 
 // 2. Boot + HTTP probes
 log(`booting bundle on ${HOST}:${PORT} …`);
-const child = spawn(process.execPath, [BUNDLE, "--port", String(PORT), "--host", HOST, "--no-open", "--home-dir", HOME], {
-  cwd: ROOT,
-  env: process.env,
-});
+const child = spawn(
+  process.execPath,
+  [BUNDLE, "--port", String(PORT), "--host", HOST, "--no-open", "--home-dir", HOME],
+  {
+    cwd: ROOT,
+    env: process.env,
+  },
+);
 
 let stdoutBuf = "";
 let stderrBuf = "";
@@ -76,11 +80,14 @@ child.on("exit", (code, sig) => {
 
 function get(pathname, headers = {}) {
   return new Promise((resolve, reject) => {
-    const req = http.request({ host: HOST, port: PORT, path: pathname, method: "GET", headers }, (res) => {
-      let body = "";
-      res.on("data", (c) => (body += c));
-      res.on("end", () => resolve({ status: res.statusCode, body, headers: res.headers }));
-    });
+    const req = http.request(
+      { host: HOST, port: PORT, path: pathname, method: "GET", headers },
+      (res) => {
+        let body = "";
+        res.on("data", (c) => (body += c));
+        res.on("end", () => resolve({ status: res.statusCode, body, headers: res.headers }));
+      },
+    );
     req.on("error", reject);
     req.setTimeout(5000, () => req.destroy(new Error("timeout")));
     req.end();

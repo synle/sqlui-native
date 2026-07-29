@@ -146,7 +146,11 @@ export function AccordionHeader(props: AccordionHeaderProps): React.JSX.Element 
       onContextMenu={onShowActions}
     >
       {!isCompact &&
-        (!expanded ? <ExpandLessIcon fontSize="inherit" color="inherit" /> : <ExpandMoreIcon fontSize="inherit" color="inherit" />)}
+        (!expanded ? (
+          <ExpandLessIcon fontSize="inherit" color="inherit" />
+        ) : (
+          <ExpandMoreIcon fontSize="inherit" color="inherit" />
+        ))}
       {children}
     </StyledAccordionHeader>
   );

@@ -6,7 +6,11 @@
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import type { IPersistentStorage, StorageContent, StorageEntry } from "src/common/IPersistentStorage";
+import type {
+  IPersistentStorage,
+  StorageContent,
+  StorageEntry,
+} from "src/common/IPersistentStorage";
 import { getGeneratedRandomId } from "src/common/utils/commonUtils";
 import { SqluiCore } from "typings";
 
@@ -48,7 +52,8 @@ let _baseDir: string | undefined;
 export function getStorageDir(): string {
   if (_baseDir !== undefined) return _baseDir;
   const envDir = process.env.SQLUI_HOME_DIR;
-  _baseDir = envDir && envDir.trim() ? path.resolve(envDir) : path.join(os.homedir(), ".sqlui-native");
+  _baseDir =
+    envDir && envDir.trim() ? path.resolve(envDir) : path.join(os.homedir(), ".sqlui-native");
   fs.mkdirSync(_baseDir, { recursive: true });
   return _baseDir;
 }
@@ -136,7 +141,9 @@ export class PersistentStorageJsonFile<T extends StorageEntry> implements IPersi
    */
   get storageLocation(): string {
     if (this._storageLocation === undefined) {
-      const basename = this.storageBasename ? `${this.storageBasename}.json` : `${this.instanceId}.${this.name}.json`;
+      const basename = this.storageBasename
+        ? `${this.storageBasename}.json`
+        : `${this.instanceId}.${this.name}.json`;
       this._storageLocation = path.join(getStorageDir(), basename);
     }
     return this._storageLocation;
@@ -152,7 +159,9 @@ export class PersistentStorageJsonFile<T extends StorageEntry> implements IPersi
         this.setData({});
         return {};
       }
-      const data = JSON.parse(fs.readFileSync(this.storageLocation, { encoding: "utf8", flag: "r" }).trim());
+      const data = JSON.parse(
+        fs.readFileSync(this.storageLocation, { encoding: "utf8", flag: "r" }).trim(),
+      );
       memoryCache.set(this.storageLocation, data);
       return data;
     } catch (err) {
@@ -278,7 +287,11 @@ export async function getConnectionsStorage(sessionId: string) {
   if (!sessionId) {
     throw new Error(`sessionId is required for getConnectionsStorage`);
   }
-  return await new PersistentStorageJsonFile<SqluiCore.ConnectionProps>("connection", sessionId, "connection");
+  return await new PersistentStorageJsonFile<SqluiCore.ConnectionProps>(
+    "connection",
+    sessionId,
+    "connection",
+  );
 }
 
 /**
@@ -291,7 +304,11 @@ export async function getQueryStorage(sessionId: string) {
   if (!sessionId) {
     throw new Error(`sessionId is required for getQueryStorage`);
   }
-  return await new PersistentStorageJsonFile<SqluiCore.ConnectionQuery>("query", sessionId, "query");
+  return await new PersistentStorageJsonFile<SqluiCore.ConnectionQuery>(
+    "query",
+    sessionId,
+    "query",
+  );
 }
 
 /**
@@ -300,7 +317,12 @@ export async function getQueryStorage(sessionId: string) {
  */
 // TODO: Switch default to PersistentStorageSqlite
 export async function getSessionsStorage() {
-  return await new PersistentStorageJsonFile<SqluiCore.Session>("session", "session", "session", "sessions");
+  return await new PersistentStorageJsonFile<SqluiCore.Session>(
+    "session",
+    "session",
+    "session",
+    "sessions",
+  );
 }
 
 /**
@@ -313,7 +335,11 @@ export async function getFolderItemsStorage(folderId: "bookmarks" | "recycleBin"
   if (!folderId) {
     throw new Error(`folderId is required for getFolderItemsStorage`);
   }
-  return await new PersistentStorageJsonFile<SqluiCore.FolderItem>("folder_item", "folders", folderId);
+  return await new PersistentStorageJsonFile<SqluiCore.FolderItem>(
+    "folder_item",
+    "folders",
+    folderId,
+  );
 }
 
 /**
@@ -322,7 +348,12 @@ export async function getFolderItemsStorage(folderId: "bookmarks" | "recycleBin"
  */
 // TODO: Switch default to PersistentStorageSqlite
 export async function getDataSnapshotStorage() {
-  return await new PersistentStorageJsonFile<SqluiCore.DataSnapshot>("data_snapshot", "dataSnapshots", "dataSnapshots", "dataSnapshots");
+  return await new PersistentStorageJsonFile<SqluiCore.DataSnapshot>(
+    "data_snapshot",
+    "dataSnapshots",
+    "dataSnapshots",
+    "dataSnapshots",
+  );
 }
 
 /**
@@ -331,7 +362,12 @@ export async function getDataSnapshotStorage() {
  */
 // TODO: Switch default to PersistentStorageSqlite
 export async function getSettingsStorage() {
-  return await new PersistentStorageJsonFile<SqluiCore.SettingsEntry>("setting", "settings", "settings", "settings");
+  return await new PersistentStorageJsonFile<SqluiCore.SettingsEntry>(
+    "setting",
+    "settings",
+    "settings",
+    "settings",
+  );
 }
 
 /**
@@ -344,7 +380,11 @@ export async function getManagedDatabasesStorage(connectionId: string) {
   if (!connectionId) {
     throw new Error(`connectionId is required for getManagedDatabasesStorage`);
   }
-  return await new PersistentStorageJsonFile<SqluiCore.ManagedDatabase>("managed_database", "managedDatabases", connectionId);
+  return await new PersistentStorageJsonFile<SqluiCore.ManagedDatabase>(
+    "managed_database",
+    "managedDatabases",
+    connectionId,
+  );
 }
 
 /**
@@ -357,7 +397,11 @@ export async function getManagedTablesStorage(connectionId: string) {
   if (!connectionId) {
     throw new Error(`connectionId is required for getManagedTablesStorage`);
   }
-  return await new PersistentStorageJsonFile<SqluiCore.ManagedTable>("managed_table", "managedTables", connectionId);
+  return await new PersistentStorageJsonFile<SqluiCore.ManagedTable>(
+    "managed_table",
+    "managedTables",
+    connectionId,
+  );
 }
 
 /** Cache entry shape for storing database metadata on disk. */
@@ -378,7 +422,12 @@ type CachedCodeSnippetEntry = { id: string; [key: string]: any };
  */
 // TODO: Switch default to PersistentStorageSqlite
 export function getCachedDatabasesStorage() {
-  return new PersistentStorageJsonFile<CachedDatabaseEntry>("cached_database", "cache", "databases", "cache.databases");
+  return new PersistentStorageJsonFile<CachedDatabaseEntry>(
+    "cached_database",
+    "cache",
+    "databases",
+    "cache.databases",
+  );
 }
 
 /**
@@ -387,7 +436,12 @@ export function getCachedDatabasesStorage() {
  */
 // TODO: Switch default to PersistentStorageSqlite
 export function getCachedTablesStorage() {
-  return new PersistentStorageJsonFile<CachedTableEntry>("cached_table", "cache", "tables", "cache.tables");
+  return new PersistentStorageJsonFile<CachedTableEntry>(
+    "cached_table",
+    "cache",
+    "tables",
+    "cache.tables",
+  );
 }
 
 /**
@@ -396,7 +450,12 @@ export function getCachedTablesStorage() {
  */
 // TODO: Switch default to PersistentStorageSqlite
 export function getCachedColumnsStorage() {
-  return new PersistentStorageJsonFile<CachedColumnEntry>("cached_column", "cache", "columns", "cache.columns");
+  return new PersistentStorageJsonFile<CachedColumnEntry>(
+    "cached_column",
+    "cache",
+    "columns",
+    "cache.columns",
+  );
 }
 
 /**
@@ -405,5 +464,10 @@ export function getCachedColumnsStorage() {
  */
 // TODO: Switch default to PersistentStorageSqlite
 export function getCachedCodeSnippetsStorage() {
-  return new PersistentStorageJsonFile<CachedCodeSnippetEntry>("cached_code_snippet", "cache", "code-snippets", "cache.code-snippets");
+  return new PersistentStorageJsonFile<CachedCodeSnippetEntry>(
+    "cached_code_snippet",
+    "cache",
+    "code-snippets",
+    "cache.code-snippets",
+  );
 }

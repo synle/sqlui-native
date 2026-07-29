@@ -87,12 +87,20 @@ describe("ConcreteDataScripts class", () => {
   });
 
   test("getCodeSnippet returns empty when sql is empty", () => {
-    expect(GraphQLDataAdapterScripts.getCodeSnippet({} as any, { sql: "" } as any, "fetch")).toBe("");
-    expect(GraphQLDataAdapterScripts.getCodeSnippet({} as any, { sql: "   " } as any, "fetch")).toBe("");
+    expect(GraphQLDataAdapterScripts.getCodeSnippet({} as any, { sql: "" } as any, "fetch")).toBe(
+      "",
+    );
+    expect(
+      GraphQLDataAdapterScripts.getCodeSnippet({} as any, { sql: "   " } as any, "fetch"),
+    ).toBe("");
   });
 
   test("getCodeSnippet returns a string for a valid query", () => {
-    const out = GraphQLDataAdapterScripts.getCodeSnippet({} as any, { sql: "{ continents { code name } }" } as any, "fetch");
+    const out = GraphQLDataAdapterScripts.getCodeSnippet(
+      {} as any,
+      { sql: "{ continents { code name } }" } as any,
+      "fetch",
+    );
     expect(typeof out).toBe("string");
   });
 });

@@ -51,7 +51,11 @@ function QueryDetailCell({ row, allExpanded }: { row: any; allExpanded: boolean 
 
   return (
     <Box sx={{ display: "flex", alignItems: "flex-start", gap: 0.5 }}>
-      <IconButton size="small" onClick={() => setLocalExpanded(!expanded)} sx={{ p: 0, minWidth: 0 }}>
+      <IconButton
+        size="small"
+        onClick={() => setLocalExpanded(!expanded)}
+        sx={{ p: 0, minWidth: 0 }}
+      >
         {expanded ? <UnfoldLessIcon fontSize="small" /> : <UnfoldMoreIcon fontSize="small" />}
       </IconButton>
       <Typography
@@ -135,10 +139,16 @@ function AuditTypeCell({ row }: { row: any }) {
 function ConnectionNameCell({ row }: { row: any }) {
   const folderItem: SqluiCore.FolderItem = row.original;
   const { data: connections } = useGetConnections();
-  const connectionId = folderItem.type === "execution" || folderItem.type === "delta" ? folderItem.data.connectionId : undefined;
+  const connectionId =
+    folderItem.type === "execution" || folderItem.type === "delta"
+      ? folderItem.data.connectionId
+      : undefined;
   const connection = connections?.find((c) => c.id === connectionId);
   return (
-    <Typography variant="body2" sx={!connection ? { opacity: 0.5, fontStyle: "italic" } : undefined}>
+    <Typography
+      variant="body2"
+      sx={!connection ? { opacity: 0.5, fontStyle: "italic" } : undefined}
+    >
       {connection?.name || folderItem.name || "N/A (deleted)"}
     </Typography>
   );
@@ -188,7 +198,9 @@ const getColumns = (allExpanded: boolean): ColumnDef<any, any>[] => [
     enableSorting: false,
     enableColumnFilter: false,
     size: 50,
-    cell: (info) => <span style={{ fontFamily: "monospace", opacity: 0.5 }}>{info.row.index + 1}</span>,
+    cell: (info) => (
+      <span style={{ fontFamily: "monospace", opacity: 0.5 }}>{info.row.index + 1}</span>
+    ),
   },
   {
     header: "Query",
@@ -276,12 +288,22 @@ function QueryHistoryList() {
   return (
     <>
       <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
-        <Button variant="outlined" color="error" size="small" startIcon={<DeleteSweepIcon />} onClick={onClearHistory}>
+        <Button
+          variant="outlined"
+          color="error"
+          size="small"
+          startIcon={<DeleteSweepIcon />}
+          onClick={onClearHistory}
+        >
           Clear History
         </Button>
         <Tooltip title={allExpanded ? "Collapse all details" : "Expand all details"}>
           <IconButton size="small" onClick={() => setAllExpanded(!allExpanded)}>
-            {allExpanded ? <UnfoldLessIcon fontSize="small" /> : <UnfoldMoreIcon fontSize="small" />}
+            {allExpanded ? (
+              <UnfoldLessIcon fontSize="small" />
+            ) : (
+              <UnfoldMoreIcon fontSize="small" />
+            )}
           </IconButton>
         </Tooltip>
       </Box>

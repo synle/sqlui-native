@@ -78,5 +78,10 @@ export const isValueNumber = (value: any) => {
  * @returns True if the value is boolean-like.
  */
 export const isValueBoolean = (value: any) => {
-  return value === true || value === false || value.toString().toLowerCase() === "true" || value.toString().toLowerCase() === "false";
+  return (
+    value === true ||
+    value === false ||
+    value.toString().toLowerCase() === "true" ||
+    value.toString().toLowerCase() === "false"
+  );
 };

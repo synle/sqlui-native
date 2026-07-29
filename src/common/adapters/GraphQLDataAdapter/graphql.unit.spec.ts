@@ -36,25 +36,33 @@ describe("GraphQLDataAdapter", () => {
     });
 
     test("invalid ENDPOINT (no http/https) — throws", async () => {
-      const adapter = new GraphQLDataAdapter(`graphql://${JSON.stringify({ ENDPOINT: "ftp://x.com" })}`);
+      const adapter = new GraphQLDataAdapter(
+        `graphql://${JSON.stringify({ ENDPOINT: "ftp://x.com" })}`,
+      );
       await expect(adapter.authenticate()).rejects.toThrow(/Invalid ENDPOINT format/);
     });
 
     test("malformed ENDPOINT URL — throws", async () => {
-      const adapter = new GraphQLDataAdapter(`graphql://${JSON.stringify({ ENDPOINT: "http://" })}`);
+      const adapter = new GraphQLDataAdapter(
+        `graphql://${JSON.stringify({ ENDPOINT: "http://" })}`,
+      );
       // The format regex requires at least one character after http(s)://
       await expect(adapter.authenticate()).rejects.toThrow(/Invalid ENDPOINT/);
     });
 
     test("DNS resolution failure — rejects with hostname", async () => {
       mockDnsLookup.mockImplementation((_h: string, cb: any) => cb(new Error("ENOTFOUND")));
-      const adapter = new GraphQLDataAdapter(`graphql://${JSON.stringify({ ENDPOINT: "https://example.invalid/graphql" })}`);
+      const adapter = new GraphQLDataAdapter(
+        `graphql://${JSON.stringify({ ENDPOINT: "https://example.invalid/graphql" })}`,
+      );
       await expect(adapter.authenticate()).rejects.toThrow(/Cannot resolve host "example.invalid"/);
     });
 
     test("DNS resolution success", async () => {
       mockDnsLookup.mockImplementation((_h: string, cb: any) => cb(null));
-      const adapter = new GraphQLDataAdapter(`graphql://${JSON.stringify({ ENDPOINT: "https://api.example.com/graphql" })}`);
+      const adapter = new GraphQLDataAdapter(
+        `graphql://${JSON.stringify({ ENDPOINT: "https://api.example.com/graphql" })}`,
+      );
       await expect(adapter.authenticate()).resolves.toBeUndefined();
       expect(mockDnsLookup).toHaveBeenCalledWith("api.example.com", expect.any(Function));
     });
@@ -79,14 +87,20 @@ describe("GraphQLDataAdapter", () => {
 
     test("successful introspection", async () => {
       mockExecuteCurl.mockResolvedValueOnce({ status: 200, statusText: "OK" });
-      const a = new GraphQLDataAdapter(`graphql://${JSON.stringify({ ENDPOINT: "https://api.example.com/graphql" })}`);
+      const a = new GraphQLDataAdapter(
+        `graphql://${JSON.stringify({ ENDPOINT: "https://api.example.com/graphql" })}`,
+      );
       const out = await a.runDiagnostics();
       expect(out).toEqual([{ name: "Introspection", success: true, message: "200 OK" }]);
     });
 
     test("curl error — non-fatal, returns failure result", async () => {
-      mockExecuteCurl.mockRejectedValueOnce(new Error("curl: (6) Could not resolve host: example.invalid"));
-      const a = new GraphQLDataAdapter(`graphql://${JSON.stringify({ ENDPOINT: "https://example.invalid" })}`);
+      mockExecuteCurl.mockRejectedValueOnce(
+        new Error("curl: (6) Could not resolve host: example.invalid"),
+      );
+      const a = new GraphQLDataAdapter(
+        `graphql://${JSON.stringify({ ENDPOINT: "https://example.invalid" })}`,
+      );
       const out = await a.runDiagnostics();
       expect(out[0]).toMatchObject({ name: "Introspection", success: false });
       expect(out[0].message).toContain("curl: (6)");
@@ -94,7 +108,9 @@ describe("GraphQLDataAdapter", () => {
 
     test("non-2xx status — marked unsuccessful", async () => {
       mockExecuteCurl.mockResolvedValueOnce({ status: 500, statusText: "Internal Server Error" });
-      const a = new GraphQLDataAdapter(`graphql://${JSON.stringify({ ENDPOINT: "https://api.example.com" })}`);
+      const a = new GraphQLDataAdapter(
+        `graphql://${JSON.stringify({ ENDPOINT: "https://api.example.com" })}`,
+      );
       const out = await a.runDiagnostics();
       expect(out[0].success).toBe(false);
     });
@@ -149,7 +165,9 @@ describe("GraphQLDataAdapter", () => {
         timing: 100,
         size: 10,
       });
-      const a = new GraphQLDataAdapter(`graphql://${JSON.stringify({ ENDPOINT: "https://api.example.com/graphql" })}`);
+      const a = new GraphQLDataAdapter(
+        `graphql://${JSON.stringify({ ENDPOINT: "https://api.example.com/graphql" })}`,
+      );
       const r = await a.execute("{ __typename }");
       expect(r.ok).toBe(true);
       expect(r.raw?.[0].data).toEqual({ x: 1 });
@@ -171,7 +189,9 @@ describe("GraphQLDataAdapter", () => {
         timing: 0,
         size: 0,
       });
-      const a = new GraphQLDataAdapter(`graphql://${JSON.stringify({ ENDPOINT: "https://api.example.com" })}`);
+      const a = new GraphQLDataAdapter(
+        `graphql://${JSON.stringify({ ENDPOINT: "https://api.example.com" })}`,
+      );
       a.connectionId = "conn1";
       const r = await a.execute("{ me }", "folderA");
       expect(r.ok).toBe(true);
@@ -189,7 +209,9 @@ describe("GraphQLDataAdapter", () => {
         timing: 0,
         size: 0,
       });
-      const a = new GraphQLDataAdapter(`graphql://${JSON.stringify({ ENDPOINT: "https://api.example.com" })}`);
+      const a = new GraphQLDataAdapter(
+        `graphql://${JSON.stringify({ ENDPOINT: "https://api.example.com" })}`,
+      );
       a.connectionId = "conn1";
       const r = await a.execute("{ x }", "folderA");
       expect(r.ok).toBe(true);
@@ -197,7 +219,9 @@ describe("GraphQLDataAdapter", () => {
 
     test("executeGraphQL throw — returns error result with message", async () => {
       mockExecuteGraphQL.mockRejectedValueOnce(new Error("boom"));
-      const a = new GraphQLDataAdapter(`graphql://${JSON.stringify({ ENDPOINT: "https://api.example.com" })}`);
+      const a = new GraphQLDataAdapter(
+        `graphql://${JSON.stringify({ ENDPOINT: "https://api.example.com" })}`,
+      );
       const r = await a.execute("{ x }");
       expect(r.ok).toBe(false);
       expect(r.error).toBe("boom");

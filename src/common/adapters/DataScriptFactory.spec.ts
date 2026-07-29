@@ -55,7 +55,9 @@ function _getScript(dialect: SqluiCore.Dialect): GuideMetaData {
 
   return {
     connectionString: sampleConnectionString,
-    scripts: [...databaseActionScripts, ...tableActionScripts].filter((script) => !script.skipGuide),
+    scripts: [...databaseActionScripts, ...tableActionScripts].filter(
+      (script) => !script.skipGuide,
+    ),
   };
 }
 
@@ -71,7 +73,11 @@ Query Guides:
   `.trim(),
   ];
 
-  function addGuideText(sectionName: string, connectionString: string | undefined, scripts: SqlAction.Output[] | undefined) {
+  function addGuideText(
+    sectionName: string,
+    connectionString: string | undefined,
+    scripts: SqlAction.Output[] | undefined,
+  ) {
     commandGuides.push(`## ${sectionName}\n`);
 
     if (connectionString) {
@@ -207,12 +213,20 @@ Query Guides:
     { dialect: "cassandra", connection: "cassandra://user:pass@localhost:9042" },
     { dialect: "mongodb", connection: "mongodb://localhost:27017" },
     { dialect: "redis", connection: "redis://localhost:6379" },
-    { dialect: "cosmosdb", connection: "cosmosdb://AccountEndpoint=https://host:443;AccountKey=key" },
+    {
+      dialect: "cosmosdb",
+      connection: "cosmosdb://AccountEndpoint=https://host:443;AccountKey=key",
+    },
     {
       dialect: "aztable",
-      connection: "aztable://DefaultEndpointsProtocol=https;AccountName=acct;AccountKey=key;EndpointSuffix=core.windows.net",
+      connection:
+        "aztable://DefaultEndpointsProtocol=https;AccountName=acct;AccountKey=key;EndpointSuffix=core.windows.net",
     },
-    { dialect: "sfdc", connection: 'sfdc://{"username":"u","password":"p","securityToken":"t","loginUrl":"https://login.salesforce.com"}' },
+    {
+      dialect: "sfdc",
+      connection:
+        'sfdc://{"username":"u","password":"p","securityToken":"t","loginUrl":"https://login.salesforce.com"}',
+    },
   ];
 
   for (const { dialect, connection } of snippetDialects) {

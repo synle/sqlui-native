@@ -17,7 +17,9 @@ type ConnectionRetryAlertProps = {
  * @param props - Contains the connectionId to retry.
  * @returns An alert element or null.
  */
-export default function ConnectionRetryAlert(props: ConnectionRetryAlertProps): React.JSX.Element | null {
+export default function ConnectionRetryAlert(
+  props: ConnectionRetryAlertProps,
+): React.JSX.Element | null {
   const { connectionId } = props;
   const [retrying, setRetrying] = useState(false);
   const { mutateAsync: reconnectConnection } = useRetryConnection();
@@ -48,7 +50,12 @@ export default function ConnectionRetryAlert(props: ConnectionRetryAlertProps): 
       severity="error"
       icon={false}
       action={
-        <Button color="inherit" size="small" onClick={() => onReconnect(connectionId)} sx={{ fontSize: "0.7rem" }}>
+        <Button
+          color="inherit"
+          size="small"
+          onClick={() => onReconnect(connectionId)}
+          sx={{ fontSize: "0.7rem" }}
+        >
           Reconnect
         </Button>
       }

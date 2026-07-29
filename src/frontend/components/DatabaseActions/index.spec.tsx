@@ -207,7 +207,9 @@ describe("DatabaseActions", () => {
     mockDialect = "rest";
     mockCreateManagedTable.mockResolvedValue({ id: "t-new", name: "New Request" });
     const { container } = render(<DatabaseActions connectionId="c1" databaseId="db1" />);
-    fireEvent.click(container.querySelector("[data-testid='opt-New Blank Request']") as HTMLElement);
+    fireEvent.click(
+      container.querySelector("[data-testid='opt-New Blank Request']") as HTMLElement,
+    );
     await waitFor(() => expect(mockCreateManagedTable).toHaveBeenCalled());
     await waitFor(() => expect(mockSelectCommand).toHaveBeenCalled());
     const cmdCall = mockSelectCommand.mock.calls[0][0];
@@ -270,7 +272,9 @@ describe("DatabaseActions", () => {
     mockManagedMetadata = true;
     mockDialect = "rest";
     const { container } = render(<DatabaseActions connectionId="" databaseId="db1" />);
-    fireEvent.click(container.querySelector("[data-testid='opt-New Blank Request']") as HTMLElement);
+    fireEvent.click(
+      container.querySelector("[data-testid='opt-New Blank Request']") as HTMLElement,
+    );
     await new Promise((r) => setTimeout(r, 50));
     expect(mockCreateManagedTable).not.toHaveBeenCalled();
   });
@@ -284,7 +288,9 @@ describe("DatabaseActions", () => {
   });
 
   test("database action with query string fires query/apply command", () => {
-    mockDatabaseActions = [{ label: "RunQuery", description: "run it", query: "SELECT 1", icon: null }];
+    mockDatabaseActions = [
+      { label: "RunQuery", description: "run it", query: "SELECT 1", icon: null },
+    ];
     const { container } = render(<DatabaseActions connectionId="c1" databaseId="db1" />);
     fireEvent.click(container.querySelector("[data-testid='opt-RunQuery']") as HTMLElement);
     expect(mockSelectCommand).toHaveBeenCalledWith(

@@ -108,7 +108,9 @@ function arrayToHeaders(entries: HeaderEntry[]): Record<string, string> {
  * @param props - The connection string and setter.
  * @returns The GraphQL config form fields.
  */
-export default function GraphQLConnectionFields(props: GraphQLConnectionFieldsProps): React.JSX.Element {
+export default function GraphQLConnectionFields(
+  props: GraphQLConnectionFieldsProps,
+): React.JSX.Element {
   const { connection, setConnection } = props;
   const config = parseConfig(connection);
 
@@ -211,7 +213,14 @@ export default function GraphQLConnectionFields(props: GraphQLConnectionFieldsPr
 
       {/* Default Headers */}
       <div>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "0.25rem" }}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            marginBottom: "0.25rem",
+          }}
+        >
           <Typography variant="subtitle2">Default Headers</Typography>
           <Button size="small" startIcon={<AddIcon />} onClick={onAddHeader}>
             Add Header
@@ -267,14 +276,22 @@ export default function GraphQLConnectionFields(props: GraphQLConnectionFieldsPr
         )}
         {headers.length === 0 && (
           <Typography variant="body2" sx={{ opacity: 0.6, fontSize: "0.8rem" }}>
-            No default headers. Add headers like Authorization that should be sent with every request.
+            No default headers. Add headers like Authorization that should be sent with every
+            request.
           </Typography>
         )}
       </div>
 
       {/* Variables */}
       <div>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "0.25rem" }}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            marginBottom: "0.25rem",
+          }}
+        >
           <Typography variant="subtitle2">Variables</Typography>
           <Button size="small" startIcon={<AddIcon />} onClick={onAddVariable}>
             Add Variable

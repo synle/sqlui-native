@@ -9,16 +9,23 @@ vi.mock("src/frontend/data/config", () => ({
   },
 }));
 
-import { useLocalStoragePreferences, useSideBarWidthPreference } from "src/frontend/hooks/useClientSidePreference";
+import {
+  useLocalStoragePreferences,
+  useSideBarWidthPreference,
+} from "src/frontend/hooks/useClientSidePreference";
 
 describe("useClientSidePreference", () => {
   test("useLocalStoragePreferences returns default value", () => {
-    const { result } = renderHook(() => useLocalStoragePreferences("clientConfig/leftPanelWidth", 300));
+    const { result } = renderHook(() =>
+      useLocalStoragePreferences("clientConfig/leftPanelWidth", 300),
+    );
     expect(result.current.value).toBe(undefined);
   });
 
   test("useLocalStoragePreferences onChange updates value", () => {
-    const { result } = renderHook(() => useLocalStoragePreferences("clientConfig/leftPanelWidth", 300));
+    const { result } = renderHook(() =>
+      useLocalStoragePreferences("clientConfig/leftPanelWidth", 300),
+    );
     act(() => {
       result.current.onChange(500);
     });

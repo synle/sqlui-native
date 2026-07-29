@@ -109,7 +109,9 @@ const bundledTemplates: Record<Language, Record<Engine, string>> = {
 const bundledJavaGradleInstructions: string = bundledJavaGradle;
 
 /** Active templates — uses bundled templates baked into the build. */
-const templates: Record<Language, Record<Engine, string>> = JSON.parse(JSON.stringify(bundledTemplates));
+const templates: Record<Language, Record<Engine, string>> = JSON.parse(
+  JSON.stringify(bundledTemplates),
+);
 
 /** Active Java Gradle instructions — uses bundled template. */
 const javaGradleInstructions: string = bundledJavaGradleInstructions;

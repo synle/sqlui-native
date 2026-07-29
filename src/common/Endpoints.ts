@@ -25,7 +25,11 @@ import {
   getStorageDir,
 } from "src/common/PersistentStorage";
 import { writeDebugLog } from "src/common/utils/debugLogger";
-import { backfillTimestamps, formatErrorMessage, safeDisconnect } from "src/common/utils/errorUtils";
+import {
+  backfillTimestamps,
+  formatErrorMessage,
+  safeDisconnect,
+} from "src/common/utils/errorUtils";
 import { SqluiCore, SqluiEnums } from "typings";
 let honoAppContext: Hono | undefined;
 
@@ -264,7 +268,9 @@ function addDataEndpoint(
       await incomingHandler(req, res, apiCache);
     } catch (err: any) {
       console.error(`Endpoints.ts:addDataEndpoint [${method.toUpperCase()} ${url}] error`, err);
-      writeDebugLog(`Endpoints.ts:error [${method.toUpperCase()} ${url}] - ${err?.message || err}\n${err?.stack || ""}`);
+      writeDebugLog(
+        `Endpoints.ts:error [${method.toUpperCase()} ${url}] - ${err?.message || err}\n${err?.stack || ""}`,
+      );
       const message = formatErrorMessage(err);
       state.status = 500;
       state.body = { error: message };
@@ -400,7 +406,9 @@ export function setUpDataEndpoints(aHonoAppContext: Hono) {
 
   addDataEndpoint("get", "/api/connection/:connectionId/databases", async (req, res) => {
     try {
-      res.status(200).json(await getDatabases(req.headers["sqlui-native-session-id"], req.params?.connectionId));
+      res
+        .status(200)
+        .json(await getDatabases(req.headers["sqlui-native-session-id"], req.params?.connectionId));
     } catch (err: any) {
       const message = formatErrorMessage(err, "Connection failed");
       console.error("Endpoints.ts:getDatabases", err);
@@ -410,7 +418,10 @@ export function setUpDataEndpoints(aHonoAppContext: Hono) {
 
   addDataEndpoint("get", "/api/connection/:connectionId/database/:databaseId", async (req, res) => {
     try {
-      const databases = await getDatabases(req.headers["sqlui-native-session-id"], req.params?.connectionId);
+      const databases = await getDatabases(
+        req.headers["sqlui-native-session-id"],
+        req.params?.connectionId,
+      );
       const database = databases.find((db) => db.name === req.params?.databaseId);
 
       if (!database) {
@@ -425,40 +436,65 @@ export function setUpDataEndpoints(aHonoAppContext: Hono) {
     }
   });
 
-  addDataEndpoint("get", "/api/connection/:connectionId/database/:databaseId/tables", async (req, res) => {
-    try {
-      res.status(200).json(await getTables(req.headers["sqlui-native-session-id"], req.params?.connectionId, req.params?.databaseId));
-    } catch (err: any) {
-      const message = formatErrorMessage(err, "Connection failed");
-      console.error("Endpoints.ts:getTables", err);
-      res.status(500).json({ error: message });
-    }
-  });
+  addDataEndpoint(
+    "get",
+    "/api/connection/:connectionId/database/:databaseId/tables",
+    async (req, res) => {
+      try {
+        res
+          .status(200)
+          .json(
+            await getTables(
+              req.headers["sqlui-native-session-id"],
+              req.params?.connectionId,
+              req.params?.databaseId,
+            ),
+          );
+      } catch (err: any) {
+        const message = formatErrorMessage(err, "Connection failed");
+        console.error("Endpoints.ts:getTables", err);
+        res.status(500).json({ error: message });
+      }
+    },
+  );
 
-  addDataEndpoint("get", "/api/connection/:connectionId/database/:databaseId/table/:tableId/columns", async (req, res) => {
-    try {
-      res
-        .status(200)
-        .json(
-          await getColumns(req.headers["sqlui-native-session-id"], req.params?.connectionId, req.params?.databaseId, req.params?.tableId),
-        );
-    } catch (err: any) {
-      const message = formatErrorMessage(err, "Connection failed");
-      console.error("Endpoints.ts:getColumns", err);
-      res.status(500).json({ error: message });
-    }
-  });
+  addDataEndpoint(
+    "get",
+    "/api/connection/:connectionId/database/:databaseId/table/:tableId/columns",
+    async (req, res) => {
+      try {
+        res
+          .status(200)
+          .json(
+            await getColumns(
+              req.headers["sqlui-native-session-id"],
+              req.params?.connectionId,
+              req.params?.databaseId,
+              req.params?.tableId,
+            ),
+          );
+      } catch (err: any) {
+        const message = formatErrorMessage(err, "Connection failed");
+        console.error("Endpoints.ts:getColumns", err);
+        res.status(500).json({ error: message });
+      }
+    },
+  );
 
-  addDataEndpoint("get", "/api/connection/:connectionId/database/:databaseId/schema/cached", async (req, res) => {
-    try {
-      const result = getCachedSchema(req.params?.connectionId, req.params?.databaseId);
-      res.status(200).json(result);
-    } catch (err: any) {
-      const message = formatErrorMessage(err, "Connection failed");
-      console.error(`Endpoints.ts:handler [GET /api/.../schema/cached]`, err);
-      res.status(500).json({ error: message });
-    }
-  });
+  addDataEndpoint(
+    "get",
+    "/api/connection/:connectionId/database/:databaseId/schema/cached",
+    async (req, res) => {
+      try {
+        const result = getCachedSchema(req.params?.connectionId, req.params?.databaseId);
+        res.status(200).json(result);
+      } catch (err: any) {
+        const message = formatErrorMessage(err, "Connection failed");
+        console.error(`Endpoints.ts:handler [GET /api/.../schema/cached]`, err);
+        res.status(500).json({ error: message });
+      }
+    },
+  );
 
   addDataEndpoint("post", "/api/connection/:connectionId/refresh", async (req, res) => {
     const connectionsStorage = await getConnectionsStorage(req.headers["sqlui-native-session-id"]);
@@ -486,32 +522,46 @@ export function setUpDataEndpoints(aHonoAppContext: Hono) {
     }
   });
 
-  addDataEndpoint("post", "/api/connection/:connectionId/database/:databaseId/refresh", async (req, res) => {
-    try {
-      const connectionId = req.params?.connectionId;
-      const databaseId = req.params?.databaseId;
-      clearCachedDatabase(connectionId, databaseId);
-      res.status(200).json({ success: true });
-    } catch (err: any) {
-      const message = formatErrorMessage(err, "Refresh failed");
-      console.error("Endpoints.ts:handler [POST /api/connection/:connectionId/database/:databaseId/refresh]", err);
-      res.status(500).json({ error: message });
-    }
-  });
+  addDataEndpoint(
+    "post",
+    "/api/connection/:connectionId/database/:databaseId/refresh",
+    async (req, res) => {
+      try {
+        const connectionId = req.params?.connectionId;
+        const databaseId = req.params?.databaseId;
+        clearCachedDatabase(connectionId, databaseId);
+        res.status(200).json({ success: true });
+      } catch (err: any) {
+        const message = formatErrorMessage(err, "Refresh failed");
+        console.error(
+          "Endpoints.ts:handler [POST /api/connection/:connectionId/database/:databaseId/refresh]",
+          err,
+        );
+        res.status(500).json({ error: message });
+      }
+    },
+  );
 
-  addDataEndpoint("post", "/api/connection/:connectionId/database/:databaseId/table/:tableId/refresh", async (req, res) => {
-    try {
-      const connectionId = req.params?.connectionId;
-      const databaseId = req.params?.databaseId;
-      const tableId = req.params?.tableId;
-      clearCachedTable(connectionId, databaseId, tableId);
-      res.status(200).json({ success: true });
-    } catch (err: any) {
-      const message = formatErrorMessage(err, "Refresh failed");
-      console.error("Endpoints.ts:handler [POST /api/connection/:connectionId/database/:databaseId/table/:tableId/refresh]", err);
-      res.status(500).json({ error: message });
-    }
-  });
+  addDataEndpoint(
+    "post",
+    "/api/connection/:connectionId/database/:databaseId/table/:tableId/refresh",
+    async (req, res) => {
+      try {
+        const connectionId = req.params?.connectionId;
+        const databaseId = req.params?.databaseId;
+        const tableId = req.params?.tableId;
+        clearCachedTable(connectionId, databaseId, tableId);
+        res.status(200).json({ success: true });
+      } catch (err: any) {
+        const message = formatErrorMessage(err, "Refresh failed");
+        console.error(
+          "Endpoints.ts:handler [POST /api/connection/:connectionId/database/:databaseId/table/:tableId/refresh]",
+          err,
+        );
+        res.status(500).json({ error: message });
+      }
+    },
+  );
 
   addDataEndpoint("get", "/api/schema/search", async (req, res) => {
     const query = (req.query?.q || "").toString().toLowerCase().trim();
@@ -538,7 +588,11 @@ export function setUpDataEndpoints(aHonoAppContext: Hono) {
       const tableMatches = tableId.toLowerCase().includes(query);
 
       for (const column of entry.data) {
-        if (tableMatches || column.name.toLowerCase().includes(query) || column.type.toLowerCase().includes(query)) {
+        if (
+          tableMatches ||
+          column.name.toLowerCase().includes(query) ||
+          column.type.toLowerCase().includes(query)
+        ) {
           results.push({
             connectionId,
             connectionName: conn.name,
@@ -602,7 +656,9 @@ export function setUpDataEndpoints(aHonoAppContext: Hono) {
       (engine as any).connectionId = req.params?.connectionId;
     }
     try {
-      res.status(200).json(await engine.execute(req.body?.sql, req.body?.database, req.body?.table));
+      res
+        .status(200)
+        .json(await engine.execute(req.body?.sql, req.body?.database, req.body?.table));
     } catch (err: any) {
       const message = formatErrorMessage(err, "Query execution failed");
       console.error("Endpoints.ts:execute", err);
@@ -698,7 +754,10 @@ export function setUpDataEndpoints(aHonoAppContext: Hono) {
       const entries = await storage.list();
       res.status(200).json(entries);
     } catch (err) {
-      console.error(`Endpoints.ts:handler [GET /api/connection/:connectionId/managedDatabases]`, err);
+      console.error(
+        `Endpoints.ts:handler [GET /api/connection/:connectionId/managedDatabases]`,
+        err,
+      );
       res.status(500).send("Failed to list managed databases");
     }
   });
@@ -729,140 +788,183 @@ export function setUpDataEndpoints(aHonoAppContext: Hono) {
   });
 
   /** GET a single managed database by ID (includes props). */
-  addDataEndpoint("get", "/api/connection/:connectionId/managedDatabase/:managedDatabaseId", async (req, res) => {
-    const { connectionId, managedDatabaseId } = req.params;
-    const storage = await getManagedDatabasesStorage(connectionId);
-    try {
-      const entry = await storage.get(managedDatabaseId);
-      if (!entry) {
-        return res.status(404).send("Managed database not found");
+  addDataEndpoint(
+    "get",
+    "/api/connection/:connectionId/managedDatabase/:managedDatabaseId",
+    async (req, res) => {
+      const { connectionId, managedDatabaseId } = req.params;
+      const storage = await getManagedDatabasesStorage(connectionId);
+      try {
+        const entry = await storage.get(managedDatabaseId);
+        if (!entry) {
+          return res.status(404).send("Managed database not found");
+        }
+        res.status(200).json(entry);
+      } catch (err) {
+        console.error(
+          `Endpoints.ts:handler [GET /api/connection/:connectionId/managedDatabase/:managedDatabaseId]`,
+          err,
+        );
+        res.status(404).send("Managed database not found");
       }
-      res.status(200).json(entry);
-    } catch (err) {
-      console.error(`Endpoints.ts:handler [GET /api/connection/:connectionId/managedDatabase/:managedDatabaseId]`, err);
-      res.status(404).send("Managed database not found");
-    }
-  });
+    },
+  );
 
   /** PUT updates a managed database's name and/or props (e.g., folder variables for REST API). */
-  addDataEndpoint("put", "/api/connection/:connectionId/managedDatabase/:managedDatabaseId", async (req, res) => {
-    const { connectionId, managedDatabaseId } = req.params;
-    const { name, props } = req.body;
-    const dbStorage = await getManagedDatabasesStorage(connectionId);
+  addDataEndpoint(
+    "put",
+    "/api/connection/:connectionId/managedDatabase/:managedDatabaseId",
+    async (req, res) => {
+      const { connectionId, managedDatabaseId } = req.params;
+      const { name, props } = req.body;
+      const dbStorage = await getManagedDatabasesStorage(connectionId);
 
-    if (name && name !== managedDatabaseId) {
-      // Rename: delete old, create new with props
-      let existing: any = null;
-      try {
-        existing = await dbStorage.get(managedDatabaseId);
-      } catch (_err) {
-        // old entry may not exist
+      if (name && name !== managedDatabaseId) {
+        // Rename: delete old, create new with props
+        let existing: any = null;
+        try {
+          existing = await dbStorage.get(managedDatabaseId);
+        } catch (_err) {
+          // old entry may not exist
+        }
+        await dbStorage.delete(managedDatabaseId);
+        const mergedProps = { ...(existing?.props || {}), ...(props || {}) };
+        const result = await dbStorage.add({
+          id: name,
+          name,
+          connectionId,
+          ...(Object.keys(mergedProps).length > 0 ? { props: mergedProps } : {}),
+        });
+        // Update child tables to reference new database name
+        const tableStorage = await getManagedTablesStorage(connectionId);
+        const tables = await tableStorage.list();
+        for (const table of tables) {
+          if (table.databaseId === managedDatabaseId) {
+            await tableStorage.update({ ...table, databaseId: name });
+          }
+        }
+        await clearCachedColumns(connectionId);
+        res.status(202).json(result);
+      } else if (props) {
+        // Props-only update (no rename)
+        try {
+          const entry = await dbStorage.get(managedDatabaseId);
+          const updated = await dbStorage.update({
+            ...entry,
+            props: { ...(entry.props || {}), ...props },
+          });
+          res.status(200).json(updated);
+        } catch (err) {
+          console.error(
+            `Endpoints.ts:handler [PUT /api/connection/:connectionId/managedDatabase/:managedDatabaseId]`,
+            err,
+          );
+          res.status(404).send("Managed database not found");
+        }
+      } else {
+        return res.status(400).send("`name` or `props` is required");
       }
+    },
+  );
+
+  addDataEndpoint(
+    "delete",
+    "/api/connection/:connectionId/managedDatabase/:managedDatabaseId",
+    async (req, res) => {
+      const { connectionId, managedDatabaseId } = req.params;
+      const dbStorage = await getManagedDatabasesStorage(connectionId);
       await dbStorage.delete(managedDatabaseId);
-      const mergedProps = { ...(existing?.props || {}), ...(props || {}) };
-      const result = await dbStorage.add({
-        id: name,
-        name,
-        connectionId,
-        ...(Object.keys(mergedProps).length > 0 ? { props: mergedProps } : {}),
-      });
-      // Update child tables to reference new database name
+      // Also delete child tables
       const tableStorage = await getManagedTablesStorage(connectionId);
       const tables = await tableStorage.list();
       for (const table of tables) {
         if (table.databaseId === managedDatabaseId) {
-          await tableStorage.update({ ...table, databaseId: name });
+          await tableStorage.delete(table.id);
         }
       }
       await clearCachedColumns(connectionId);
-      res.status(202).json(result);
-    } else if (props) {
-      // Props-only update (no rename)
-      try {
-        const entry = await dbStorage.get(managedDatabaseId);
-        const updated = await dbStorage.update({ ...entry, props: { ...(entry.props || {}), ...props } });
-        res.status(200).json(updated);
-      } catch (err) {
-        console.error(`Endpoints.ts:handler [PUT /api/connection/:connectionId/managedDatabase/:managedDatabaseId]`, err);
-        res.status(404).send("Managed database not found");
+      res.status(202).json({ id: managedDatabaseId });
+    },
+  );
+
+  addDataEndpoint(
+    "post",
+    "/api/connection/:connectionId/database/:databaseId/managedTable",
+    async (req, res) => {
+      const { connectionId, databaseId } = req.params;
+      const { name } = req.body;
+      if (!name) {
+        return res.status(400).send("`name` is required");
       }
-    } else {
-      return res.status(400).send("`name` or `props` is required");
-    }
-  });
+      const storage = await getManagedTablesStorage(connectionId);
+      const result = await storage.add({ name, connectionId, databaseId });
+      await clearCachedDatabase(connectionId, databaseId);
+      res.status(201).json(result);
+    },
+  );
 
-  addDataEndpoint("delete", "/api/connection/:connectionId/managedDatabase/:managedDatabaseId", async (req, res) => {
-    const { connectionId, managedDatabaseId } = req.params;
-    const dbStorage = await getManagedDatabasesStorage(connectionId);
-    await dbStorage.delete(managedDatabaseId);
-    // Also delete child tables
-    const tableStorage = await getManagedTablesStorage(connectionId);
-    const tables = await tableStorage.list();
-    for (const table of tables) {
-      if (table.databaseId === managedDatabaseId) {
-        await tableStorage.delete(table.id);
-      }
-    }
-    await clearCachedColumns(connectionId);
-    res.status(202).json({ id: managedDatabaseId });
-  });
-
-  addDataEndpoint("post", "/api/connection/:connectionId/database/:databaseId/managedTable", async (req, res) => {
-    const { connectionId, databaseId } = req.params;
-    const { name } = req.body;
-    if (!name) {
-      return res.status(400).send("`name` is required");
-    }
-    const storage = await getManagedTablesStorage(connectionId);
-    const result = await storage.add({ name, connectionId, databaseId });
-    await clearCachedDatabase(connectionId, databaseId);
-    res.status(201).json(result);
-  });
-
-  addDataEndpoint("delete", "/api/connection/:connectionId/database/:databaseId/managedTable/:managedTableId", async (req, res) => {
-    const { connectionId, databaseId, managedTableId } = req.params;
-    const storage = await getManagedTablesStorage(connectionId);
-    await storage.delete(managedTableId);
-    await clearCachedDatabase(connectionId, databaseId);
-    res.status(202).json({ id: managedTableId });
-  });
+  addDataEndpoint(
+    "delete",
+    "/api/connection/:connectionId/database/:databaseId/managedTable/:managedTableId",
+    async (req, res) => {
+      const { connectionId, databaseId, managedTableId } = req.params;
+      const storage = await getManagedTablesStorage(connectionId);
+      await storage.delete(managedTableId);
+      await clearCachedDatabase(connectionId, databaseId);
+      res.status(202).json({ id: managedTableId });
+    },
+  );
 
   /** GET a single managed table by ID (includes props). */
-  addDataEndpoint("get", "/api/connection/:connectionId/database/:databaseId/managedTable/:managedTableId", async (req, res) => {
-    const { connectionId, databaseId, managedTableId } = req.params;
-    const storage = await getManagedTablesStorage(connectionId);
-    try {
-      const entry = await storage.get(managedTableId);
-      if (!entry || entry.databaseId !== databaseId) {
-        return res.status(404).send("Managed table not found");
+  addDataEndpoint(
+    "get",
+    "/api/connection/:connectionId/database/:databaseId/managedTable/:managedTableId",
+    async (req, res) => {
+      const { connectionId, databaseId, managedTableId } = req.params;
+      const storage = await getManagedTablesStorage(connectionId);
+      try {
+        const entry = await storage.get(managedTableId);
+        if (!entry || entry.databaseId !== databaseId) {
+          return res.status(404).send("Managed table not found");
+        }
+        res.status(200).json(entry);
+      } catch (err) {
+        console.error(
+          `Endpoints.ts:handler [GET /api/connection/:connectionId/database/:databaseId/managedTable/:managedTableId]`,
+          err,
+        );
+        res.status(404).send("Managed table not found");
       }
-      res.status(200).json(entry);
-    } catch (err) {
-      console.error(`Endpoints.ts:handler [GET /api/connection/:connectionId/database/:databaseId/managedTable/:managedTableId]`, err);
-      res.status(404).send("Managed table not found");
-    }
-  });
+    },
+  );
 
   /** PUT updates a managed table's name and/or props (e.g., saved query for REST API requests). */
-  addDataEndpoint("put", "/api/connection/:connectionId/database/:databaseId/managedTable/:managedTableId", async (req, res) => {
-    const { connectionId, databaseId, managedTableId } = req.params;
-    const { name, props } = req.body;
-    const storage = await getManagedTablesStorage(connectionId);
-    try {
-      const entry = await storage.get(managedTableId);
-      if (!entry || entry.databaseId !== databaseId) {
-        return res.status(404).send("Managed table not found");
+  addDataEndpoint(
+    "put",
+    "/api/connection/:connectionId/database/:databaseId/managedTable/:managedTableId",
+    async (req, res) => {
+      const { connectionId, databaseId, managedTableId } = req.params;
+      const { name, props } = req.body;
+      const storage = await getManagedTablesStorage(connectionId);
+      try {
+        const entry = await storage.get(managedTableId);
+        if (!entry || entry.databaseId !== databaseId) {
+          return res.status(404).send("Managed table not found");
+        }
+        const updates = { ...entry };
+        if (name) updates.name = name;
+        if (props) updates.props = { ...(entry.props || {}), ...props };
+        const updated = await storage.update(updates);
+        res.status(200).json(updated);
+      } catch (err) {
+        console.error(
+          `Endpoints.ts:handler [PUT /api/connection/:connectionId/database/:databaseId/managedTable/:managedTableId]`,
+          err,
+        );
+        res.status(500).send("Failed to update managed table");
       }
-      const updates = { ...entry };
-      if (name) updates.name = name;
-      if (props) updates.props = { ...(entry.props || {}), ...props };
-      const updated = await storage.update(updates);
-      res.status(200).json(updated);
-    } catch (err) {
-      console.error(`Endpoints.ts:handler [PUT /api/connection/:connectionId/database/:databaseId/managedTable/:managedTableId]`, err);
-      res.status(500).send("Failed to update managed table");
-    }
-  });
+    },
+  );
 
   //=========================================================================
   // query api endpoints
@@ -938,9 +1040,13 @@ export function setUpDataEndpoints(aHonoAppContext: Hono) {
 
       // fix sessions with no name
       if (!session.name) {
-        const fallbackDate = session.createdAt ? new Date(session.createdAt).toLocaleString() : new Date().toLocaleString();
+        const fallbackDate = session.createdAt
+          ? new Date(session.createdAt).toLocaleString()
+          : new Date().toLocaleString();
         session.name = `Session ${fallbackDate}`;
-        console.error(`Endpoints.ts:GET /api/sessions - backfilled missing name for session ${session.id}: "${session.name}"`);
+        console.error(
+          `Endpoints.ts:GET /api/sessions - backfilled missing name for session ${session.id}: "${session.name}"`,
+        );
         needsUpdate = true;
       }
 
@@ -960,12 +1066,16 @@ export function setUpDataEndpoints(aHonoAppContext: Hono) {
       // backfill missing timestamps
       if (!session.createdAt) {
         session.createdAt = Date.now();
-        console.error(`Endpoints.ts:GET /api/sessions - backfilled missing createdAt for session ${session.id}`);
+        console.error(
+          `Endpoints.ts:GET /api/sessions - backfilled missing createdAt for session ${session.id}`,
+        );
         needsUpdate = true;
       }
       if (!session.updatedAt) {
         session.updatedAt = Date.now();
-        console.error(`Endpoints.ts:GET /api/sessions - backfilled missing updatedAt for session ${session.id}`);
+        console.error(
+          `Endpoints.ts:GET /api/sessions - backfilled missing updatedAt for session ${session.id}`,
+        );
         needsUpdate = true;
       }
 
@@ -1202,12 +1312,16 @@ export function setUpDataEndpoints(aHonoAppContext: Hono) {
   const MAX_QUERY_VERSION_ENTRIES = 200;
 
   addDataEndpoint("get", "/api/queryVersionHistory", async (req, res) => {
-    const storage = await getFolderItemsStorage(`queryHistory_${req.headers["sqlui-native-session-id"]}`);
+    const storage = await getFolderItemsStorage(
+      `queryHistory_${req.headers["sqlui-native-session-id"]}`,
+    );
     res.status(200).json(await storage.list());
   });
 
   addDataEndpoint("post", "/api/queryVersionHistory", async (req, res) => {
-    const storage = await getFolderItemsStorage(`queryHistory_${req.headers["sqlui-native-session-id"]}`);
+    const storage = await getFolderItemsStorage(
+      `queryHistory_${req.headers["sqlui-native-session-id"]}`,
+    );
 
     const entry = await storage.add({
       name: req.body.name,
@@ -1244,12 +1358,16 @@ export function setUpDataEndpoints(aHonoAppContext: Hono) {
   });
 
   addDataEndpoint("delete", "/api/queryVersionHistory/:entryId", async (req, res) => {
-    const storage = await getFolderItemsStorage(`queryHistory_${req.headers["sqlui-native-session-id"]}`);
+    const storage = await getFolderItemsStorage(
+      `queryHistory_${req.headers["sqlui-native-session-id"]}`,
+    );
     res.status(202).json(await storage.delete(req.params?.entryId));
   });
 
   addDataEndpoint("delete", "/api/queryVersionHistory", async (req, res) => {
-    const storage = await getFolderItemsStorage(`queryHistory_${req.headers["sqlui-native-session-id"]}`);
+    const storage = await getFolderItemsStorage(
+      `queryHistory_${req.headers["sqlui-native-session-id"]}`,
+    );
     await storage.set([]);
     res.status(202).json([]);
   });

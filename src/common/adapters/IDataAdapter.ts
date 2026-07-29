@@ -35,7 +35,11 @@ export default interface IDataAdapter {
    * @param table - The target table name (used by some NoSQL adapters).
    * @returns The query result containing raw data and metadata.
    */
-  execute: (sql: string, database: string | undefined, table: string | undefined) => Promise<SqluiCore.Result>;
+  execute: (
+    sql: string,
+    database: string | undefined,
+    table: string | undefined,
+  ) => Promise<SqluiCore.Result>;
   /**
    * Disconnects from the database and cleans up resources.
    * Must NOT be called internally by adapter methods — only by the caller (Endpoints.ts, DataAdapterFactory, or tests).

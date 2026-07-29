@@ -95,8 +95,12 @@ describe("renderCodeSnippet", () => {
       });
 
       expect(result).toContain("require('@azure/cosmos')");
-      expect(result).toContain("AccountEndpoint=https://myaccount.documents.azure.com;AccountKey=abc123");
-      expect(result).toContain('client.database("mydb").container("mycol").items.readAll().fetchAll()');
+      expect(result).toContain(
+        "AccountEndpoint=https://myaccount.documents.azure.com;AccountKey=abc123",
+      );
+      expect(result).toContain(
+        'client.database("mydb").container("mycol").items.readAll().fetchAll()',
+      );
     });
 
     it("renders sfdc template with sql", () => {
@@ -117,7 +121,9 @@ describe("renderCodeSnippet", () => {
       });
 
       expect(result).toContain("require('@azure/data-tables')");
-      expect(result).toContain("DefaultEndpointsProtocol=https;AccountName=myaccount;AccountKey=xyz");
+      expect(result).toContain(
+        "DefaultEndpointsProtocol=https;AccountName=myaccount;AccountKey=xyz",
+      );
       expect(result).toContain("'MyTable'");
       expect(result).toContain("tableClient.listEntities()");
     });
@@ -241,7 +247,9 @@ describe("renderCodeSnippet", () => {
       });
 
       expect(result).toContain("from azure.cosmos import CosmosClient");
-      expect(result).toContain("AccountEndpoint=https://myaccount.documents.azure.com;AccountKey=abc");
+      expect(result).toContain(
+        "AccountEndpoint=https://myaccount.documents.azure.com;AccountKey=abc",
+      );
       expect(result).toContain("client.get_database_client('mydb')");
       expect(result).toContain("database.get_container_client('mycol')");
     });
@@ -262,7 +270,9 @@ describe("renderCodeSnippet", () => {
       });
 
       expect(result).toContain("from azure.data.tables import TableServiceClient, TableClient");
-      expect(result).toContain("DefaultEndpointsProtocol=https;AccountName=myaccount;AccountKey=xyz");
+      expect(result).toContain(
+        "DefaultEndpointsProtocol=https;AccountName=myaccount;AccountKey=xyz",
+      );
       expect(result).toContain("'MyTable'");
     });
   });
@@ -357,7 +367,9 @@ describe("renderCodeSnippet", () => {
       });
 
       expect(result).toContain("import com.azure.cosmos.CosmosClient");
-      expect(result).toContain("AccountEndpoint=https://myaccount.documents.azure.com;AccountKey=abc");
+      expect(result).toContain(
+        "AccountEndpoint=https://myaccount.documents.azure.com;AccountKey=abc",
+      );
       expect(result).toContain('client.getDatabase("mydb")');
       expect(result).toContain('database.getContainer("mycol")');
     });
@@ -379,7 +391,9 @@ describe("renderCodeSnippet", () => {
       });
 
       expect(result).toContain("import com.azure.data.tables.TableClient");
-      expect(result).toContain("DefaultEndpointsProtocol=https;AccountName=myaccount;AccountKey=xyz");
+      expect(result).toContain(
+        "DefaultEndpointsProtocol=https;AccountName=myaccount;AccountKey=xyz",
+      );
       expect(result).toContain('"MyTable"');
     });
   });
@@ -771,7 +785,9 @@ describe("renderCodeSnippet", () => {
 
       // All three should include the connection string and identifiers
       for (const result of [jsResult, pyResult, javaResult]) {
-        expect(result).toContain("AccountEndpoint=https://acct.documents.azure.com;AccountKey=key123");
+        expect(result).toContain(
+          "AccountEndpoint=https://acct.documents.azure.com;AccountKey=key123",
+        );
       }
       expect(pyResult).toContain("'proddb'");
       expect(pyResult).toContain("'items'");

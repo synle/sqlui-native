@@ -30,7 +30,11 @@ type ColumnDescriptionProps = {
 export default function ColumnDescription(props: ColumnDescriptionProps): React.JSX.Element | null {
   const { databaseId, connectionId, tableId } = props;
   useActiveConnectionQuery();
-  const { data: columns, isLoading: loadingColumns, isError } = useGetColumns(connectionId, databaseId, tableId);
+  const {
+    data: columns,
+    isLoading: loadingColumns,
+    isError,
+  } = useGetColumns(connectionId, databaseId, tableId);
   const { visibles, onToggle } = useShowHide();
   const keyShowAllColumns = [connectionId, databaseId, tableId, "__ShowAllColumns__"].join(" > ");
   const [showAllColumns, setShowAllColumns] = useState(visibles[keyShowAllColumns]);
@@ -98,7 +102,9 @@ export default function ColumnDescription(props: ColumnDescriptionProps): React.
                   </Tooltip>
                 )}
                 {shouldShowForeignKeyIcon && (
-                  <Tooltip title={`Foreign Key referencing table=${column.referencedTableName} column=${column.referencedColumnName}`}>
+                  <Tooltip
+                    title={`Foreign Key referencing table=${column.referencedTableName} column=${column.referencedColumnName}`}
+                  >
                     <i style={{ height: "15px" }}>
                       <KeyIcon fontSize="small" color="secondary" />{" "}
                     </i>

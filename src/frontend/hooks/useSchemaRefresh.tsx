@@ -11,14 +11,25 @@ import { SqluiCore } from "typings";
  * @param connectionId - The connection identifier.
  * @param databaseId - The database name.
  */
-export function invalidateSchemaForDatabase(queryClient: QueryClient, connectionId: string, databaseId: string) {
+export function invalidateSchemaForDatabase(
+  queryClient: QueryClient,
+  connectionId: string,
+  databaseId: string,
+) {
   queryClient.invalidateQueries({ queryKey: queryKeys.tables.list(connectionId, databaseId) });
-  queryClient.invalidateQueries({ queryKey: queryKeys.columns.allForDatabase(connectionId, databaseId) });
+  queryClient.invalidateQueries({
+    queryKey: queryKeys.columns.allForDatabase(connectionId, databaseId),
+  });
   queryClient.invalidateQueries({ queryKey: queryKeys.schema.cached(connectionId, databaseId) });
   queryClient.invalidateQueries({
     predicate: (query) => {
       const key = query.queryKey;
-      return Array.isArray(key) && key[0] === connectionId && key[1] === databaseId && key[3] === "columns";
+      return (
+        Array.isArray(key) &&
+        key[0] === connectionId &&
+        key[1] === databaseId &&
+        key[3] === "columns"
+      );
     },
   });
 }
@@ -30,9 +41,18 @@ export function invalidateSchemaForDatabase(queryClient: QueryClient, connection
  * @param databaseId - The database name.
  * @param tableId - The table name.
  */
-export function invalidateSchemaForTable(queryClient: QueryClient, connectionId: string, databaseId: string, tableId: string) {
-  queryClient.invalidateQueries({ queryKey: queryKeys.columns.list(connectionId, databaseId, tableId) });
-  queryClient.invalidateQueries({ queryKey: queryKeys.columns.allForDatabase(connectionId, databaseId) });
+export function invalidateSchemaForTable(
+  queryClient: QueryClient,
+  connectionId: string,
+  databaseId: string,
+  tableId: string,
+) {
+  queryClient.invalidateQueries({
+    queryKey: queryKeys.columns.list(connectionId, databaseId, tableId),
+  });
+  queryClient.invalidateQueries({
+    queryKey: queryKeys.columns.allForDatabase(connectionId, databaseId),
+  });
   queryClient.invalidateQueries({ queryKey: queryKeys.schema.cached(connectionId, databaseId) });
 }
 
@@ -59,17 +79,20 @@ export function useRetryConnection() {
       // went bad, we want to also refresh the data
       const connectionId = newSuccessConnection?.id || newFailedConnection?.id;
 
-      queryClient.setQueryData<SqluiCore.ConnectionMetaData[] | undefined>(queryKeys.connections.all, (oldData) => {
-        return oldData?.map((connection) => {
-          if (connection.id === newSuccessConnection?.id) {
-            return newSuccessConnection;
-          }
-          if (connection.id === newFailedConnection?.id) {
-            return newFailedConnection;
-          }
-          return connection;
-        });
-      });
+      queryClient.setQueryData<SqluiCore.ConnectionMetaData[] | undefined>(
+        queryKeys.connections.all,
+        (oldData) => {
+          return oldData?.map((connection) => {
+            if (connection.id === newSuccessConnection?.id) {
+              return newSuccessConnection;
+            }
+            if (connection.id === newFailedConnection?.id) {
+              return newFailedConnection;
+            }
+            return connection;
+          });
+        },
+      );
 
       // Invalidate to trigger fresh refetch of connection-related data
       if (connectionId) {

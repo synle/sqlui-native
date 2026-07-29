@@ -30,7 +30,10 @@ export function useGetTables(connectionId?: string, databaseId?: string) {
   const enabled = !!connectionId && !!databaseId;
 
   return useQuery({
-    queryKey: connectionId && databaseId ? queryKeys.tables.list(connectionId, databaseId) : [connectionId, databaseId, "tables"],
+    queryKey:
+      connectionId && databaseId
+        ? queryKeys.tables.list(connectionId, databaseId)
+        : [connectionId, databaseId, "tables"],
     queryFn: () => (!enabled ? undefined : dataApi.getConnectionTables(connectionId, databaseId)),
     enabled,
     notifyOnChangeProps: ["data", "error"],
@@ -48,7 +51,10 @@ export function useGetCachedSchema(connectionId?: string, databaseId?: string) {
   const enabled = !!connectionId && !!databaseId;
 
   return useQuery({
-    queryKey: connectionId && databaseId ? queryKeys.schema.cached(connectionId, databaseId) : [connectionId, databaseId, "cachedSchema"],
+    queryKey:
+      connectionId && databaseId
+        ? queryKeys.schema.cached(connectionId, databaseId)
+        : [connectionId, databaseId, "cachedSchema"],
     queryFn: () => (!enabled ? undefined : dataApi.getCachedSchema(connectionId, databaseId)),
     enabled,
     staleTime: 30 * 1000,
@@ -71,7 +77,9 @@ export function useGetAllTableColumns(connectionId?: string, databaseId?: string
   // Use backend disk cache as placeholder so consumers render immediately
   // while live column fetches complete in the background.
   const cachedSchemaKey =
-    connectionId && databaseId ? queryKeys.schema.cached(connectionId, databaseId) : [connectionId, databaseId, "cachedSchema"];
+    connectionId && databaseId
+      ? queryKeys.schema.cached(connectionId, databaseId)
+      : [connectionId, databaseId, "cachedSchema"];
   const cachedSchema = queryClient.getQueryData<{
     databases: SqluiCore.DatabaseMetaData[];
     tables: SqluiCore.TableMetaData[];
@@ -94,7 +102,9 @@ export function useGetAllTableColumns(connectionId?: string, databaseId?: string
       // Let columnFetchThrottle in ProxyApi.getConnectionColumns handle concurrency —
       // no manual batching needed here. All fetches are queued and the throttle
       // limits to 3 concurrent requests per connection.
-      const results = await Promise.all(tableIds.map((tableId) => dataApi.getConnectionColumns(connectionId, databaseId, tableId)));
+      const results = await Promise.all(
+        tableIds.map((tableId) => dataApi.getConnectionColumns(connectionId, databaseId, tableId)),
+      );
       const res: Record<string, SqluiCore.ColumnMetaData[]> = {};
       for (let i = 0; i < tableIds.length; i++) {
         res[tableIds[i]] = results[i];
@@ -102,7 +112,10 @@ export function useGetAllTableColumns(connectionId?: string, databaseId?: string
 
       // Seed individual column caches so useGetColumns doesn't re-fetch
       for (const [tableId, columns] of Object.entries(res)) {
-        queryClient.setQueryData(queryKeys.columns.list(connectionId, databaseId, tableId), columns);
+        queryClient.setQueryData(
+          queryKeys.columns.list(connectionId, databaseId, tableId),
+          columns,
+        );
       }
 
       return res;
@@ -130,7 +143,8 @@ export function useGetColumns(connectionId?: string, databaseId?: string, tableI
       connectionId && databaseId && tableId
         ? queryKeys.columns.list(connectionId, databaseId, tableId)
         : [connectionId, databaseId, tableId, "columns"],
-    queryFn: () => (!enabled ? undefined : dataApi.getConnectionColumns(connectionId, databaseId, tableId)),
+    queryFn: () =>
+      !enabled ? undefined : dataApi.getConnectionColumns(connectionId, databaseId, tableId),
     enabled,
     staleTime: 60000, // refetch in background after 1 minute
     placeholderData: (prev) => prev, // show cached data while refetching (replaces keepPreviousData)

@@ -389,7 +389,14 @@ export module SqluiFrontend {
   export type SettingKey = keyof Settings;
 
   /** React Query cache key identifiers used for data fetching. */
-  export type QueryKey = "actionDialogs" | "missionControlCommand" | "connections" | "treeVisibles" | "queries" | "results" | "settings";
+  export type QueryKey =
+    | "actionDialogs"
+    | "missionControlCommand"
+    | "connections"
+    | "treeVisibles"
+    | "queries"
+    | "results"
+    | "settings";
 
   /** Type of migration operation to perform. */
   export type MigrationType = "insert" | "create";
@@ -443,13 +450,19 @@ export module SqlAction {
   };
 
   /** Function that generates a script action for a table-level operation. */
-  export type TableActionScriptGenerator = (input: SqlAction.TableInput) => SqlAction.Output | undefined;
+  export type TableActionScriptGenerator = (
+    input: SqlAction.TableInput,
+  ) => SqlAction.Output | undefined;
 
   /** Function that generates a script action for a database-level operation. */
-  export type DatabaseActionScriptGenerator = (input: SqlAction.DatabaseInput) => SqlAction.Output | undefined;
+  export type DatabaseActionScriptGenerator = (
+    input: SqlAction.DatabaseInput,
+  ) => SqlAction.Output | undefined;
 
   /** Function that generates a script action for a connection-level operation. */
-  export type ConnectionActionScriptGenerator = (input: SqlAction.ConnectionInput) => SqlAction.Output | undefined;
+  export type ConnectionActionScriptGenerator = (
+    input: SqlAction.ConnectionInput,
+  ) => SqlAction.Output | undefined;
 }
 
 /**

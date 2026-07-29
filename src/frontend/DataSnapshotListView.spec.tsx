@@ -46,7 +46,13 @@ describe("DataSnapshotListView", () => {
     useGetDataSnapshotsMock.mockReturnValue({
       data: [
         { id: "s1", location: "/tmp/a", description: "Snap 1", createdAt: Date.now(), values: [] },
-        { id: "s2", location: "/tmp/b", description: "", createdAt: Date.now() - 1000, values: [{}] },
+        {
+          id: "s2",
+          location: "/tmp/b",
+          description: "",
+          createdAt: Date.now() - 1000,
+          values: [{}],
+        },
       ],
       isLoading: false,
     });

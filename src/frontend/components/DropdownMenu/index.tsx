@@ -91,7 +91,11 @@ export default function DropdownMenu(props: DropdownMenuProps): React.JSX.Elemen
             return (content = <Divider key={index} sx={{ marginBlock: 1 }} />);
           } else {
             content = (
-              <MenuItem dense disabled={option.disabled} onClick={(event) => !option.disabled && handleMenuItemClick(event, index)}>
+              <MenuItem
+                dense
+                disabled={option.disabled}
+                onClick={(event) => !option.disabled && handleMenuItemClick(event, index)}
+              >
                 {!option.startIcon ? null : <ListItemIcon>{option.startIcon}</ListItemIcon>}
                 <ListItemText>{option.label}</ListItemText>
               </MenuItem>

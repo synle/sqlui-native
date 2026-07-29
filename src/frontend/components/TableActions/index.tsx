@@ -9,12 +9,23 @@ import IconButton from "@mui/material/IconButton";
 import { useNavigate } from "src/frontend/utils/commonUtils";
 import { useState } from "react";
 import { getDivider } from "src/common/adapters/BaseDataAdapter/scripts";
-import { getTableActions, isDialectSupportManagedMetadata, isDialectSupportVisualization } from "src/common/adapters/DataScriptFactory";
+import {
+  getTableActions,
+  isDialectSupportManagedMetadata,
+  isDialectSupportVisualization,
+} from "src/common/adapters/DataScriptFactory";
 import DropdownButton from "src/frontend/components/DropdownButton";
 import { useCommands } from "src/frontend/components/MissionControl";
 import { ProxyApi } from "src/frontend/data/api";
-import { useDeleteManagedTable, useUpdateManagedTable } from "src/frontend/hooks/useManagedMetadata";
-import { useGetColumns, useGetConnectionById, useRefreshTable } from "src/frontend/hooks/useConnection";
+import {
+  useDeleteManagedTable,
+  useUpdateManagedTable,
+} from "src/frontend/hooks/useManagedMetadata";
+import {
+  useGetColumns,
+  useGetConnectionById,
+  useRefreshTable,
+} from "src/frontend/hooks/useConnection";
 import { useActionDialogs } from "src/frontend/hooks/useActionDialogs";
 import { useQuerySizeSetting } from "src/frontend/hooks/useSetting";
 import { useTreeActions } from "src/frontend/hooks/useTreeActions";
@@ -60,7 +71,11 @@ export default function TableActions(props: TableActionsProps): React.JSX.Elemen
   }
 
   const { data: connection, isLoading: loadingConnection } = useGetConnectionById(connectionId);
-  const { data: columns, isLoading: loadingColumns } = useGetColumns(connectionId, databaseId, tableId);
+  const { data: columns, isLoading: loadingColumns } = useGetColumns(
+    connectionId,
+    databaseId,
+    tableId,
+  );
 
   const dialect = connection?.dialect;
 
@@ -94,7 +109,11 @@ export default function TableActions(props: TableActionsProps): React.JSX.Elemen
         onClick: async () => {
           if (!props.connectionId || !props.databaseId || !props.tableId) return;
           try {
-            const managed = await ProxyApi.getManagedTable(props.connectionId, props.databaseId, props.tableId);
+            const managed = await ProxyApi.getManagedTable(
+              props.connectionId,
+              props.databaseId,
+              props.tableId,
+            );
             const savedQuery = (managed?.props as { query?: string } | undefined)?.query ?? "";
             selectCommand({
               event: "clientEvent/query/apply",
@@ -124,7 +143,13 @@ export default function TableActions(props: TableActionsProps): React.JSX.Elemen
               required: true,
               value: displayName,
             });
-            if (newName && newName !== displayName && props.connectionId && props.databaseId && props.tableId) {
+            if (
+              newName &&
+              newName !== displayName &&
+              props.connectionId &&
+              props.databaseId &&
+              props.tableId
+            ) {
               await updateTable({
                 connectionId: props.connectionId,
                 databaseId: props.databaseId,
@@ -207,7 +232,12 @@ export default function TableActions(props: TableActionsProps): React.JSX.Elemen
 
   return (
     <div className="TableActions">
-      <DropdownButton id="table-action-split-button" options={options} onToggle={(newOpen) => setOpen(newOpen)} isLoading={isLoading}>
+      <DropdownButton
+        id="table-action-split-button"
+        options={options}
+        onToggle={(newOpen) => setOpen(newOpen)}
+        isLoading={isLoading}
+      >
         <IconButton aria-label="Table Actions" size="small" color="inherit">
           <ArrowDropDownIcon fontSize="inherit" color="inherit" />
         </IconButton>

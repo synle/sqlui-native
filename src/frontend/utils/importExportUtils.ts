@@ -2,7 +2,11 @@
 
 import { buildCurlCommand } from "src/common/adapters/RestApiDataAdapter/curlParser";
 import { parseCurlCommand } from "src/common/adapters/RestApiDataAdapter/curlParser";
-import type { HarEntry, HarLog, RestApiRequest } from "src/common/adapters/RestApiDataAdapter/types";
+import type {
+  HarEntry,
+  HarLog,
+  RestApiRequest,
+} from "src/common/adapters/RestApiDataAdapter/types";
 
 // =========================================================================
 // Types
@@ -44,7 +48,9 @@ export type ImportDetectionResult = {
 type PostmanVariable = { key: string; value: string; type?: string };
 type PostmanHeader = { key: string; value: string; disabled?: boolean };
 type PostmanUrlParam = { key: string; value: string; disabled?: boolean };
-type PostmanUrl = { raw?: string; host?: string[]; path?: string[]; query?: PostmanUrlParam[] } | string;
+type PostmanUrl =
+  | { raw?: string; host?: string[]; path?: string[]; query?: PostmanUrlParam[] }
+  | string;
 type PostmanAuth = {
   type: string;
   bearer?: { key: string; value: string }[];
@@ -121,7 +127,15 @@ const STATIC_ASSET_MIME_PATTERNS = [
 ];
 
 /** Resource types from HAR `_resourceType` that indicate static assets. */
-const STATIC_RESOURCE_TYPES = ["stylesheet", "image", "font", "script", "media", "manifest", "other"];
+const STATIC_RESOURCE_TYPES = [
+  "stylesheet",
+  "image",
+  "font",
+  "script",
+  "media",
+  "manifest",
+  "other",
+];
 
 /**
  * Checks if a HAR entry is a static asset (not an API call).
@@ -283,7 +297,10 @@ function resolvePostmanUrl(url?: PostmanUrl): string {
  * @param auth - The Postman auth object.
  * @returns An object with headers to add and optional -u auth.
  */
-function postmanAuthToHeaders(auth?: PostmanAuth): { headers: Record<string, string>; basicAuth?: { username: string; password: string } } {
+function postmanAuthToHeaders(auth?: PostmanAuth): {
+  headers: Record<string, string>;
+  basicAuth?: { username: string; password: string };
+} {
   const headers: Record<string, string> = {};
   if (!auth) return { headers };
 
@@ -339,7 +356,11 @@ function postmanRequestToCurl(pmRequest: PostmanRequest, folderAuth?: PostmanAut
     switch (pmRequest.body.mode) {
       case "raw":
         body = pmRequest.body.raw || "";
-        if (pmRequest.body.options?.raw?.language === "json" || body.trim().startsWith("{") || body.trim().startsWith("[")) {
+        if (
+          pmRequest.body.options?.raw?.language === "json" ||
+          body.trim().startsWith("{") ||
+          body.trim().startsWith("[")
+        ) {
           bodyType = "json";
           if (!headers["Content-Type"]) headers["Content-Type"] = "application/json";
         } else {
@@ -356,7 +377,9 @@ function postmanRequestToCurl(pmRequest: PostmanRequest, folderAuth?: PostmanAut
         break;
       }
       case "formdata": {
-        const parts = (pmRequest.body.formdata || []).filter((p) => !p.disabled).map((p) => `${p.key}=${p.value}`);
+        const parts = (pmRequest.body.formdata || [])
+          .filter((p) => !p.disabled)
+          .map((p) => `${p.key}=${p.value}`);
         body = parts.join("&");
         bodyType = "form-data";
         break;
@@ -395,7 +418,9 @@ function flattenPostmanItems(
 ): void {
   for (const item of items) {
     if (item.item && item.item.length > 0) {
-      const folderName = parentPath ? `${parentPath} - ${item.name || "Unnamed"}` : item.name || "Unnamed";
+      const folderName = parentPath
+        ? `${parentPath} - ${item.name || "Unnamed"}`
+        : item.name || "Unnamed";
       folders.push({ name: folderName });
       flattenPostmanItems(item.item, folderName, item.auth || parentAuth, folders, requests);
     } else if (item.request) {
@@ -465,7 +490,10 @@ function curlToPostmanRequest(curlCommand: string): PostmanRequest {
   const req = parseCurlCommand(curlCommand);
 
   const url: PostmanUrl = { raw: req.url };
-  const header: PostmanHeader[] = Object.entries(req.headers).map(([key, value]) => ({ key, value }));
+  const header: PostmanHeader[] = Object.entries(req.headers).map(([key, value]) => ({
+    key,
+    value,
+  }));
 
   const result: PostmanRequest = {
     method: req.method,
@@ -570,7 +598,9 @@ export function exportAsPostmanCollection(input: ExportPostmanInput): string {
   };
 
   if (input.variables && input.variables.length > 0) {
-    collection.variable = input.variables.filter((v) => v.enabled).map((v) => ({ key: v.key, value: v.value, type: "string" }));
+    collection.variable = input.variables
+      .filter((v) => v.enabled)
+      .map((v) => ({ key: v.key, value: v.value, type: "string" }));
   }
 
   return JSON.stringify(collection, null, 2);

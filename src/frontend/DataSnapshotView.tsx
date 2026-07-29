@@ -161,7 +161,8 @@ export default function DataSnapshotView() {
 
   useEffect(() => {
     if (data) {
-      window.document.title = `${new Date(data.createdAt ?? 0).toLocaleString()} Snapshot - ${data.description || ""}`.trim();
+      window.document.title =
+        `${new Date(data.createdAt ?? 0).toLocaleString()} Snapshot - ${data.description || ""}`.trim();
     } else {
       window.document.title = `Snapshot`.trim();
     }

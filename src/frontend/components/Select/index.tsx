@@ -77,7 +77,11 @@ export default function Select(props: SelectProps): React.JSX.Element | null {
   }
 
   return (
-    <StyledSelect onChange={(e) => onChange && onChange(e.target.value)} value={value} {...restProps}>
+    <StyledSelect
+      onChange={(e) => onChange && onChange(e.target.value)}
+      value={value}
+      {...restProps}
+    >
       {children}
     </StyledSelect>
   );

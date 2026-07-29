@@ -752,7 +752,9 @@ conn.sobject("Account").update({ Id: "001xxx", Name: "Updated Name" });
 conn.sobject("Account").destroy("001xxx");
 
 // Upsert (using external ID field)
-conn.sobject("Account").upsert({ External_Id__c: "EXT-001", Name: "Upserted Account" }, "External_Id__c");
+conn
+  .sobject("Account")
+  .upsert({ External_Id__c: "EXT-001", Name: "Upserted Account" }, "External_Id__c");
 
 // Describe object metadata
 conn.sobject("Account").describe();

@@ -101,7 +101,10 @@ export const port = 3001;
  * @param indexHtmlTransformer - Optional callback to mutate the served index.html on the fly
  *   (used by portal mode to inject a default session ID into the page).
  */
-export function mountStaticAssets(assetsDir: string, indexHtmlTransformer?: (html: string) => string): void {
+export function mountStaticAssets(
+  assetsDir: string,
+  indexHtmlTransformer?: (html: string) => string,
+): void {
   if (!assetsDir || !fs.existsSync(assetsDir)) {
     console.warn(`server.ts:mountStaticAssets - assets dir not found: ${assetsDir}`);
     return;

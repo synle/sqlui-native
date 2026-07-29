@@ -89,7 +89,9 @@ describe("PersistentStorageSqlite", () => {
       storage.add({ id: "no-dup", foo: "bar" });
 
       // Read raw data from SQLite to verify id is not in JSON
-      const row = memDb.prepare(`SELECT data FROM "${tbl}" WHERE id = ?`).get("no-dup") as { data: string };
+      const row = memDb.prepare(`SELECT data FROM "${tbl}" WHERE id = ?`).get("no-dup") as {
+        data: string;
+      };
       const parsed = JSON.parse(row.data);
       expect(parsed.id).toBeUndefined();
       expect(parsed.foo).toBe("bar");

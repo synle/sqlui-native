@@ -17,7 +17,13 @@ vi.mock("src/frontend/data/api", () => ({
 }));
 
 import dataApi from "src/frontend/data/api";
-import { useGetDatabases, useGetTables, useGetCachedSchema, useGetAllTableColumns, useGetColumns } from "src/frontend/hooks/useSchema";
+import {
+  useGetDatabases,
+  useGetTables,
+  useGetCachedSchema,
+  useGetAllTableColumns,
+  useGetColumns,
+} from "src/frontend/hooks/useSchema";
 
 function wrapper({ children }: { children: React.ReactNode }) {
   const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });

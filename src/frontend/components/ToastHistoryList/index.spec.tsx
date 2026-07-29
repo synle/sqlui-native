@@ -26,7 +26,8 @@ beforeEach(() => {
   useToastHistoryCountMock.mockReturnValue(2);
   useVirtualizerMock.mockImplementation(({ count }: any) => ({
     getTotalSize: () => count * 60,
-    getVirtualItems: () => Array.from({ length: count }, (_, i) => ({ index: i, start: i * 60, size: 60 })),
+    getVirtualItems: () =>
+      Array.from({ length: count }, (_, i) => ({ index: i, start: i * 60, size: 60 })),
     measure: vi.fn(),
     measureElement: vi.fn(),
   }));
@@ -43,7 +44,13 @@ describe("ToastHistoryList", () => {
   test("renders list of entries with filter / sort / Dismiss All", () => {
     getToastHistoryMock.mockReturnValue([
       { id: "t1", message: "Hello", createdTime: 1000 },
-      { id: "t2", message: "World", createdTime: 2000, dismissTime: 3000, dismissTriggered: "user" },
+      {
+        id: "t2",
+        message: "World",
+        createdTime: 2000,
+        dismissTime: 3000,
+        dismissTriggered: "user",
+      },
     ]);
     const { container } = render(<ToastHistoryList />);
     expect(container.textContent).toContain("Hello");

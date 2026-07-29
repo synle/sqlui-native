@@ -122,7 +122,9 @@ export function parseFetchCommand(fetchString: string): RestApiRequest {
   }
 
   // Detect body type from content-type header
-  const contentType = Object.entries(headers).find(([k]) => k.toLowerCase() === "content-type")?.[1];
+  const contentType = Object.entries(headers).find(
+    ([k]) => k.toLowerCase() === "content-type",
+  )?.[1];
   const bodyType = body ? detectBodyType(contentType) : ("none" as const);
 
   return {

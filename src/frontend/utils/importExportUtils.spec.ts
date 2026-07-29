@@ -1,10 +1,15 @@
 import { describe, expect, it } from "vitest";
-import { detectAndParseImportFile, exportAsPostmanCollection } from "src/frontend/utils/importExportUtils";
+import {
+  detectAndParseImportFile,
+  exportAsPostmanCollection,
+} from "src/frontend/utils/importExportUtils";
 
 describe("importExportUtils", () => {
   describe("detectAndParseImportFile", () => {
     it("should throw on unrecognized format", () => {
-      expect(() => detectAndParseImportFile(JSON.stringify({ foo: "bar" }))).toThrow("Unsupported file format");
+      expect(() => detectAndParseImportFile(JSON.stringify({ foo: "bar" }))).toThrow(
+        "Unsupported file format",
+      );
     });
 
     it("should throw on invalid JSON", () => {
@@ -13,7 +18,12 @@ describe("importExportUtils", () => {
   });
 
   describe("HAR import", () => {
-    const makeHarEntry = (method: string, url: string, postData?: { mimeType: string; text: string }, resourceType?: string) => ({
+    const makeHarEntry = (
+      method: string,
+      url: string,
+      postData?: { mimeType: string; text: string },
+      resourceType?: string,
+    ) => ({
       startedDateTime: "2026-01-01T00:00:00.000Z",
       time: 100,
       request: {
@@ -740,8 +750,12 @@ describe("importExportUtils", () => {
 
       // Request count and methods preserved
       expect(secondImport.requests).toHaveLength(3);
-      const methodsFromFirst = firstImport.requests.map((r) => /-X (\w+)/.exec(r.curl)?.[1] ?? "GET").sort();
-      const methodsFromSecond = secondImport.requests.map((r) => /-X (\w+)/.exec(r.curl)?.[1] ?? "GET").sort();
+      const methodsFromFirst = firstImport.requests
+        .map((r) => /-X (\w+)/.exec(r.curl)?.[1] ?? "GET")
+        .sort();
+      const methodsFromSecond = secondImport.requests
+        .map((r) => /-X (\w+)/.exec(r.curl)?.[1] ?? "GET")
+        .sort();
       expect(methodsFromSecond).toEqual(methodsFromFirst);
 
       // Folder names preserved (set equality, since order may differ)
@@ -754,7 +768,10 @@ describe("importExportUtils", () => {
   describe("Postman auth handling — additional branches", () => {
     it("converts bearer auth into Authorization header", () => {
       const collection = {
-        info: { name: "Bearer", schema: "https://schema.getpostman.com/json/collection/v2.1.0/collection.json" },
+        info: {
+          name: "Bearer",
+          schema: "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+        },
         item: [
           {
             name: "B",
@@ -772,7 +789,10 @@ describe("importExportUtils", () => {
 
     it("converts basic auth into -u credentials", () => {
       const collection = {
-        info: { name: "Basic", schema: "https://schema.getpostman.com/json/collection/v2.1.0/collection.json" },
+        info: {
+          name: "Basic",
+          schema: "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+        },
         item: [
           {
             name: "B",
@@ -796,7 +816,10 @@ describe("importExportUtils", () => {
 
     it("converts apikey auth (header location) into custom header", () => {
       const collection = {
-        info: { name: "ApiKey", schema: "https://schema.getpostman.com/json/collection/v2.1.0/collection.json" },
+        info: {
+          name: "ApiKey",
+          schema: "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+        },
         item: [
           {
             name: "A",
@@ -822,7 +845,10 @@ describe("importExportUtils", () => {
 
     it("handles apikey auth with non-header 'in' value by skipping it", () => {
       const collection = {
-        info: { name: "ApiKeyQuery", schema: "https://schema.getpostman.com/json/collection/v2.1.0/collection.json" },
+        info: {
+          name: "ApiKeyQuery",
+          schema: "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+        },
         item: [
           {
             name: "A",
@@ -847,7 +873,10 @@ describe("importExportUtils", () => {
 
     it("inherits folder-level auth when request lacks its own auth", () => {
       const collection = {
-        info: { name: "InheritAuth", schema: "https://schema.getpostman.com/json/collection/v2.1.0/collection.json" },
+        info: {
+          name: "InheritAuth",
+          schema: "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+        },
         item: [
           {
             name: "Folder",
@@ -869,7 +898,10 @@ describe("importExportUtils", () => {
   describe("Postman body modes — additional branches", () => {
     it("converts urlencoded body into form-urlencoded curl", () => {
       const collection = {
-        info: { name: "URLEnc", schema: "https://schema.getpostman.com/json/collection/v2.1.0/collection.json" },
+        info: {
+          name: "URLEnc",
+          schema: "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+        },
         item: [
           {
             name: "Form",
@@ -895,7 +927,10 @@ describe("importExportUtils", () => {
 
     it("converts formdata body into form-data curl", () => {
       const collection = {
-        info: { name: "FormData", schema: "https://schema.getpostman.com/json/collection/v2.1.0/collection.json" },
+        info: {
+          name: "FormData",
+          schema: "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+        },
         item: [
           {
             name: "FD",
@@ -920,7 +955,10 @@ describe("importExportUtils", () => {
 
     it("auto-detects JSON body when raw starts with { ", () => {
       const collection = {
-        info: { name: "AutoJSON", schema: "https://schema.getpostman.com/json/collection/v2.1.0/collection.json" },
+        info: {
+          name: "AutoJSON",
+          schema: "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+        },
         item: [
           {
             name: "J",
@@ -938,7 +976,10 @@ describe("importExportUtils", () => {
 
     it("respects an explicit Content-Type and does not override it", () => {
       const collection = {
-        info: { name: "ExplicitCT", schema: "https://schema.getpostman.com/json/collection/v2.1.0/collection.json" },
+        info: {
+          name: "ExplicitCT",
+          schema: "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+        },
         item: [
           {
             name: "CT",
@@ -959,7 +1000,10 @@ describe("importExportUtils", () => {
   describe("Postman URL resolution — additional branches", () => {
     it("resolves URL from host array when raw is missing", () => {
       const collection = {
-        info: { name: "HostArr", schema: "https://schema.getpostman.com/json/collection/v2.1.0/collection.json" },
+        info: {
+          name: "HostArr",
+          schema: "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+        },
         item: [
           {
             name: "H",
@@ -976,7 +1020,10 @@ describe("importExportUtils", () => {
 
     it("handles requests with completely missing url field gracefully", () => {
       const collection = {
-        info: { name: "NoUrl", schema: "https://schema.getpostman.com/json/collection/v2.1.0/collection.json" },
+        info: {
+          name: "NoUrl",
+          schema: "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+        },
         item: [
           {
             name: "U",

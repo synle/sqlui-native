@@ -3,7 +3,10 @@ import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutlined";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutlined";
 import { Box, Button, CircularProgress, Typography } from "@mui/material";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { getConnectionFormInputs, getConnectionStringFormat } from "src/common/adapters/DataScriptFactory";
+import {
+  getConnectionFormInputs,
+  getConnectionStringFormat,
+} from "src/common/adapters/DataScriptFactory";
 import Timer from "src/frontend/components/Timer";
 import { ProxyApi } from "src/frontend/data/api";
 import { useActionDialogs } from "src/frontend/hooks/useActionDialogs";
@@ -378,7 +381,9 @@ export function showTestConnectionModal(
  * @param props - Contains the connection properties to test.
  * @returns The test connection button.
  */
-export default function TestConnectionButton(props: TestConnectionButtonProps): React.JSX.Element | null {
+export default function TestConnectionButton(
+  props: TestConnectionButtonProps,
+): React.JSX.Element | null {
   const { modal, alert, dismiss } = useActionDialogs();
 
   const onTestConnection = async () => {

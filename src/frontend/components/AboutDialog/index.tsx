@@ -28,7 +28,9 @@ export function useShowAboutDialog() {
   const { data: serverConfigs } = useGetServerConfigs();
 
   return async () => {
-    const newVersion = await fetch("https://api.github.com/repos/synle/sqlui-native/releases/latest")
+    const newVersion = await fetch(
+      "https://api.github.com/repos/synle/sqlui-native/releases/latest",
+    )
       .then((r) => r.json())
       .then((r) => r.tag_name)
       .catch(() => "unknown");
@@ -37,7 +39,9 @@ export function useShowAboutDialog() {
     const releasePageUrl = `https://github.com/synle/sqlui-native/releases/tag/${newVersion}`;
 
     const buildLabel =
-      __BUILD_CHANNEL__ === "production" ? "Release" : `${__BUILD_CHANNEL__ === "beta" ? "Beta" : "Dev"} (${__BUILD_COMMIT__})`;
+      __BUILD_CHANNEL__ === "production"
+        ? "Release"
+        : `${__BUILD_CHANNEL__ === "beta" ? "Beta" : "Dev"} (${__BUILD_COMMIT__})`;
     const archLabel = getArchLabel();
 
     const infoRows: [string, React.ReactNode][] = [
@@ -58,11 +62,21 @@ export function useShowAboutDialog() {
           size="small"
           sx={{ mb: 2 }}
         />
-        <Box component="table" sx={{ width: "100%", borderCollapse: "collapse", "& td": { py: 0.5, verticalAlign: "top" } }}>
+        <Box
+          component="table"
+          sx={{
+            width: "100%",
+            borderCollapse: "collapse",
+            "& td": { py: 0.5, verticalAlign: "top" },
+          }}
+        >
           <tbody>
             {infoRows.map(([label, value]) => (
               <tr key={label}>
-                <Box component="td" sx={{ fontWeight: "bold", pr: 2, whiteSpace: "nowrap", opacity: 0.7 }}>
+                <Box
+                  component="td"
+                  sx={{ fontWeight: "bold", pr: 2, whiteSpace: "nowrap", opacity: 0.7 }}
+                >
                   {label}
                 </Box>
                 <td>{value}</td>
@@ -73,32 +87,54 @@ export function useShowAboutDialog() {
         {!isUpToDate && (
           <>
             <Divider sx={{ my: 2 }} />
-            <Link onClick={() => platform.openExternalUrl(releasePageUrl)} sx={{ cursor: "pointer" }}>
+            <Link
+              onClick={() => platform.openExternalUrl(releasePageUrl)}
+              sx={{ cursor: "pointer" }}
+            >
               Download latest version
             </Link>
           </>
         )}
         <Divider sx={{ my: 2 }} />
-        <Box component="table" sx={{ width: "100%", borderCollapse: "collapse", "& td": { py: 0.5, verticalAlign: "top" } }}>
+        <Box
+          component="table"
+          sx={{
+            width: "100%",
+            borderCollapse: "collapse",
+            "& td": { py: 0.5, verticalAlign: "top" },
+          }}
+        >
           <tbody>
             {storageDir && (
               <tr>
-                <Box component="td" sx={{ fontWeight: "bold", pr: 2, whiteSpace: "nowrap", opacity: 0.7 }}>
+                <Box
+                  component="td"
+                  sx={{ fontWeight: "bold", pr: 2, whiteSpace: "nowrap", opacity: 0.7 }}
+                >
                   Data
                 </Box>
                 <td>
-                  <Link onClick={() => navigator.clipboard.writeText(storageDir)} sx={{ cursor: "pointer" }}>
+                  <Link
+                    onClick={() => navigator.clipboard.writeText(storageDir)}
+                    sx={{ cursor: "pointer" }}
+                  >
                     {storageDir}
                   </Link>
                 </td>
               </tr>
             )}
             <tr>
-              <Box component="td" sx={{ fontWeight: "bold", pr: 2, whiteSpace: "nowrap", opacity: 0.7 }}>
+              <Box
+                component="td"
+                sx={{ fontWeight: "bold", pr: 2, whiteSpace: "nowrap", opacity: 0.7 }}
+              >
                 Home
               </Box>
               <td>
-                <Link onClick={() => platform.openExternalUrl("https://synle.github.io/sqlui-native/")} sx={{ cursor: "pointer" }}>
+                <Link
+                  onClick={() => platform.openExternalUrl("https://synle.github.io/sqlui-native/")}
+                  sx={{ cursor: "pointer" }}
+                >
                   synle.github.io/sqlui-native
                 </Link>
               </td>
@@ -109,7 +145,16 @@ export function useShowAboutDialog() {
         <Typography variant="body2" sx={{ opacity: 0.6 }}>
           <strong>macOS Troubleshooting:</strong> If you see "app is damaged", run in Terminal:
         </Typography>
-        <Box sx={{ mt: 0.5, p: 1, bgcolor: "action.hover", borderRadius: 1, fontFamily: "monospace", fontSize: 12 }}>
+        <Box
+          sx={{
+            mt: 0.5,
+            p: 1,
+            bgcolor: "action.hover",
+            borderRadius: 1,
+            fontFamily: "monospace",
+            fontSize: 12,
+          }}
+        >
           xattr -cr /Applications/sqlui-native.app
         </Box>
       </>

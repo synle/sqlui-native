@@ -63,13 +63,19 @@ describe("SalesforceDataAdapter", () => {
         `sfdc://${JSON.stringify({ username: "u", password: "p", loginUrl: "my-org.my.salesforce.com//" })}`,
       );
       await a.authenticate();
-      expect(ConnectionCtor).toHaveBeenCalledWith(expect.objectContaining({ loginUrl: "https://my-org.my.salesforce.com" }));
+      expect(ConnectionCtor).toHaveBeenCalledWith(
+        expect.objectContaining({ loginUrl: "https://my-org.my.salesforce.com" }),
+      );
     });
 
     test("default loginUrl is https://login.salesforce.com", async () => {
-      const a = new SalesforceDataAdapter(`sfdc://${JSON.stringify({ username: "u", password: "p" })}`);
+      const a = new SalesforceDataAdapter(
+        `sfdc://${JSON.stringify({ username: "u", password: "p" })}`,
+      );
       await a.authenticate();
-      expect(ConnectionCtor).toHaveBeenCalledWith(expect.objectContaining({ loginUrl: "https://login.salesforce.com" }));
+      expect(ConnectionCtor).toHaveBeenCalledWith(
+        expect.objectContaining({ loginUrl: "https://login.salesforce.com" }),
+      );
     });
   });
 
@@ -118,7 +124,9 @@ describe("SalesforceDataAdapter", () => {
         // immediately invoke once res handler set up
         setImmediate(() => {
           cb(res);
-          dataCb(JSON.stringify({ access_token: "tok123", instance_url: "https://my.salesforce.com" }));
+          dataCb(
+            JSON.stringify({ access_token: "tok123", instance_url: "https://my.salesforce.com" }),
+          );
           endCb();
         });
         return { on: vi.fn(), write: vi.fn(), end: vi.fn() };
@@ -191,7 +199,12 @@ describe("SalesforceDataAdapter", () => {
       });
       const a = new SalesforceDataAdapter(validConnString);
       const cols = await a.getColumns("Account");
-      expect(cols[0]).toMatchObject({ name: "Id", primaryKey: true, allowNull: false, comment: "ID" });
+      expect(cols[0]).toMatchObject({
+        name: "Id",
+        primaryKey: true,
+        allowNull: false,
+        comment: "ID",
+      });
       expect(cols[1]).toMatchObject({ name: "Name", primaryKey: false, allowNull: true });
     });
   });
@@ -201,7 +214,14 @@ describe("SalesforceDataAdapter", () => {
       connInstance.query.mockResolvedValueOnce({
         totalSize: 1,
         done: true,
-        records: [{ attributes: { type: "Account" }, Id: "001", Name: "Acme", Owner: { attributes: { type: "User" }, Id: "U1" } }],
+        records: [
+          {
+            attributes: { type: "Account" },
+            Id: "001",
+            Name: "Acme",
+            Owner: { attributes: { type: "User" }, Id: "U1" },
+          },
+        ],
       });
       const a = new SalesforceDataAdapter(validConnString);
       const r = await a.execute("SELECT Id, Name FROM Account");

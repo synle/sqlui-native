@@ -19,7 +19,9 @@ describe("commonUtils", () => {
     });
 
     test("should include managedMetadata when provided, stripping connectionId and timestamps", async () => {
-      const databases = [{ id: "Folder 1", name: "Folder 1", connectionId: "conn1", createdAt: 123, updatedAt: 456 }];
+      const databases = [
+        { id: "Folder 1", name: "Folder 1", connectionId: "conn1", createdAt: 123, updatedAt: 456 },
+      ];
       const tables = [
         {
           id: "GET /users",
@@ -42,7 +44,9 @@ describe("commonUtils", () => {
       );
       expect(actual.managedMetadata).toStrictEqual({
         databases: [{ name: "Folder 1" }],
-        tables: [{ name: "GET /users", databaseId: "Folder 1", props: { query: "curl {{HOST}}/users" } }],
+        tables: [
+          { name: "GET /users", databaseId: "Folder 1", props: { query: "curl {{HOST}}/users" } },
+        ],
       });
     });
 
@@ -230,12 +234,22 @@ describe("commonUtils", () => {
     });
 
     test("should put special column names in order", () => {
-      const actual = commonUtils.sortColumnNamesForUnknownData(["etag", "partitionKey", "rowKey", "_id"]);
+      const actual = commonUtils.sortColumnNamesForUnknownData([
+        "etag",
+        "partitionKey",
+        "rowKey",
+        "_id",
+      ]);
       expect(actual).toEqual(["_id", "rowKey", "partitionKey", "etag"]);
     });
 
     test("should put columns ending with 'id' before other columns", () => {
-      const actual = commonUtils.sortColumnNamesForUnknownData(["name", "userId", "email", "orderId"]);
+      const actual = commonUtils.sortColumnNamesForUnknownData([
+        "name",
+        "userId",
+        "email",
+        "orderId",
+      ]);
       expect(actual.indexOf("userId")).toBeLessThan(actual.indexOf("name"));
       expect(actual.indexOf("orderId")).toBeLessThan(actual.indexOf("email"));
     });
@@ -256,7 +270,14 @@ describe("commonUtils", () => {
     });
 
     test("should handle mixed special and regular columns", () => {
-      const actual = commonUtils.sortColumnNamesForUnknownData(["description", "id", "userId", "name", "_id", "createdAt"]);
+      const actual = commonUtils.sortColumnNamesForUnknownData([
+        "description",
+        "id",
+        "userId",
+        "name",
+        "_id",
+        "createdAt",
+      ]);
       // _id first, then id, then columns ending in Id, then alphabetical
       expect(actual[0]).toEqual("_id");
       expect(actual[1]).toEqual("id");
@@ -270,41 +291,55 @@ describe("commonUtils", () => {
     });
 
     test("should strip protocol and credentials", () => {
-      expect(commonUtils.getSanitizedConnectionUrl("mysql://fake_user:fake_pass123@fake-mysql-host.example.com:3306")).toBe(
-        "fake-mysql-host.example.com:3306",
-      );
+      expect(
+        commonUtils.getSanitizedConnectionUrl(
+          "mysql://fake_user:fake_pass123@fake-mysql-host.example.com:3306",
+        ),
+      ).toBe("fake-mysql-host.example.com:3306");
     });
 
     test("should strip protocol when no credentials", () => {
-      expect(commonUtils.getSanitizedConnectionUrl("mssql://fake-mssql-host.example.com:1433")).toBe("fake-mssql-host.example.com:1433");
+      expect(
+        commonUtils.getSanitizedConnectionUrl("mssql://fake-mssql-host.example.com:1433"),
+      ).toBe("fake-mssql-host.example.com:1433");
     });
 
     test("should preserve database path", () => {
-      expect(commonUtils.getSanitizedConnectionUrl("mysql://fake-db-host.example.com:3306/fake_database")).toBe(
-        "fake-db-host.example.com:3306/fake_database",
-      );
+      expect(
+        commonUtils.getSanitizedConnectionUrl(
+          "mysql://fake-db-host.example.com:3306/fake_database",
+        ),
+      ).toBe("fake-db-host.example.com:3306/fake_database");
     });
 
     test("should strip query params", () => {
-      expect(commonUtils.getSanitizedConnectionUrl("redis://fake-redis-host.example.com:6379?timeout=5000")).toBe(
-        "fake-redis-host.example.com:6379",
-      );
+      expect(
+        commonUtils.getSanitizedConnectionUrl(
+          "redis://fake-redis-host.example.com:6379?timeout=5000",
+        ),
+      ).toBe("fake-redis-host.example.com:6379");
     });
 
     test("should handle @ in password", () => {
-      expect(commonUtils.getSanitizedConnectionUrl("mssql://fake_admin!*((:fake_p@ssw0rd!@fake-sql-host.example.net:1433")).toBe(
-        "fake-sql-host.example.net:1433",
-      );
+      expect(
+        commonUtils.getSanitizedConnectionUrl(
+          "mssql://fake_admin!*((:fake_p@ssw0rd!@fake-sql-host.example.net:1433",
+        ),
+      ).toBe("fake-sql-host.example.net:1433");
     });
 
     test("should handle sqlite file path", () => {
-      expect(commonUtils.getSanitizedConnectionUrl("sqlite:///tmp/fake/fake-app.sqlite")).toContain("tmp/fake/fake-app.sqlite");
+      expect(commonUtils.getSanitizedConnectionUrl("sqlite:///tmp/fake/fake-app.sqlite")).toContain(
+        "tmp/fake/fake-app.sqlite",
+      );
     });
 
     test("should strip credentials with special characters", () => {
-      expect(commonUtils.getSanitizedConnectionUrl("mssql://fake_svc_user!*((:F@ke_P@ss!@fake-db-server.example.com:1433")).toBe(
-        "fake-db-server.example.com:1433",
-      );
+      expect(
+        commonUtils.getSanitizedConnectionUrl(
+          "mssql://fake_svc_user!*((:F@ke_P@ss!@fake-db-server.example.com:1433",
+        ),
+      ).toBe("fake-db-server.example.com:1433");
     });
 
     test("should construct host from aztable EndpointSuffix", () => {
@@ -324,9 +359,11 @@ describe("commonUtils", () => {
     });
 
     test("should strip leading and trailing slashes", () => {
-      expect(commonUtils.getSanitizedConnectionUrl("mongodb://fake_mongo_user:fake_mongo_pass@fake-mongo-host.example.com:27017/")).toBe(
-        "fake-mongo-host.example.com:27017",
-      );
+      expect(
+        commonUtils.getSanitizedConnectionUrl(
+          "mongodb://fake_mongo_user:fake_mongo_pass@fake-mongo-host.example.com:27017/",
+        ),
+      ).toBe("fake-mongo-host.example.com:27017");
     });
 
     test("should extract HOST from rest:// connection string with variables", () => {
@@ -338,7 +375,9 @@ describe("commonUtils", () => {
     });
 
     test("should extract HOST from rest:// connection string", () => {
-      expect(commonUtils.getSanitizedConnectionUrl('rest://{"HOST":"https://api.example.com"}')).toBe("https://api.example.com");
+      expect(
+        commonUtils.getSanitizedConnectionUrl('rest://{"HOST":"https://api.example.com"}'),
+      ).toBe("https://api.example.com");
     });
   });
 

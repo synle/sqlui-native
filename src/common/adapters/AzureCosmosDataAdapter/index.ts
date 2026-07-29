@@ -158,7 +158,10 @@ export default class AzureCosmosDataAdapter extends BaseDataAdapter implements I
 
       let items: any;
 
-      if ((sql.includes("db") || sql.includes("client")) && (sql.includes(".database") || sql.includes(".container"))) {
+      if (
+        (sql.includes("db") || sql.includes("client")) &&
+        (sql.includes(".database") || sql.includes(".container"))
+      ) {
         // run as raw query
         //@ts-ignore
         const res: any = await eval(sql); // eslint-disable-line no-eval

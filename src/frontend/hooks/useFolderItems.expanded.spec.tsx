@@ -122,7 +122,12 @@ describe("useFolderItems extra mutations", () => {
   test("useRestoreRecycleBinItem — Connection branch calls upsert + delete", async () => {
     const { result } = renderHook(() => useRestoreRecycleBinItem(), { wrapper });
     await act(async () => {
-      await result.current.mutateAsync({ id: "x", name: "c", type: "Connection", data: { name: "c", connection: "mysql://x" } } as any);
+      await result.current.mutateAsync({
+        id: "x",
+        name: "c",
+        type: "Connection",
+        data: { name: "c", connection: "mysql://x" },
+      } as any);
     });
     expect(dataApi.deleteFolderItem).toHaveBeenCalledWith("recycleBin", "x");
   });
@@ -130,7 +135,12 @@ describe("useFolderItems extra mutations", () => {
   test("useRestoreRecycleBinItem — Query branch", async () => {
     const { result } = renderHook(() => useRestoreRecycleBinItem(), { wrapper });
     await act(async () => {
-      await result.current.mutateAsync({ id: "y", name: "q", type: "Query", data: { name: "q", sql: "SELECT 1" } } as any);
+      await result.current.mutateAsync({
+        id: "y",
+        name: "q",
+        type: "Query",
+        data: { name: "q", sql: "SELECT 1" },
+      } as any);
     });
     expect(dataApi.deleteFolderItem).toHaveBeenCalledWith("recycleBin", "y");
   });

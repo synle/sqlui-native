@@ -2,7 +2,11 @@ import React from "react";
 import { monaco } from "src/frontend/monacoSetup";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { styled } from "@mui/system";
-import { CompletionItem, DecoratedEditorProps as AdvancedEditorProps, EditorVariable } from "src/frontend/components/CodeEditorBox";
+import {
+  CompletionItem,
+  DecoratedEditorProps as AdvancedEditorProps,
+  EditorVariable,
+} from "src/frontend/components/CodeEditorBox";
 import {
   cacheEditorModel,
   consumeReleasedEditorId,
@@ -69,7 +73,10 @@ export default function AdvancedEditor(props: AdvancedEditorProps): React.JSX.El
   colorModeRef.current = colorMode;
 
   /** Resolves the Monaco theme name for the current color mode. */
-  const getThemeName = useCallback((mode: string | undefined) => (mode === "dark" ? "vs-dark" : "light"), []);
+  const getThemeName = useCallback(
+    (mode: string | undefined) => (mode === "dark" ? "vs-dark" : "light"),
+    [],
+  );
 
   // Sync external value changes to the editor (e.g., loading a saved query, applying a template).
   // Skips when the editor already has the same content (round-trip from user typing)
@@ -189,13 +196,15 @@ export default function AdvancedEditor(props: AdvancedEditorProps): React.JSX.El
           endColumn: word.endColumn,
         };
 
-        const suggestions: monaco.languages.CompletionItem[] = (props.completionItems || []).map((item) => ({
-          label: item.label,
-          kind: kindMap[item.kind],
-          detail: item.detail,
-          insertText: item.label,
-          range,
-        }));
+        const suggestions: monaco.languages.CompletionItem[] = (props.completionItems || []).map(
+          (item) => ({
+            label: item.label,
+            kind: kindMap[item.kind],
+            detail: item.detail,
+            insertText: item.label,
+            range,
+          }),
+        );
 
         return { suggestions };
       },
@@ -232,13 +241,25 @@ export default function AdvancedEditor(props: AdvancedEditorProps): React.JSX.El
         const endPos = model.getPositionAt(match.index + match[0].length);
 
         const cssClass = `editor-variable-highlight editor-variable-${variable.source}`;
-        const sourceLabel = variable.source === "folder" ? "Folder" : variable.source === "dynamic" ? "Dynamic" : "Connection";
+        const sourceLabel =
+          variable.source === "folder"
+            ? "Folder"
+            : variable.source === "dynamic"
+              ? "Dynamic"
+              : "Connection";
 
         newDecorations.push({
-          range: new monaco.Range(startPos.lineNumber, startPos.column, endPos.lineNumber, endPos.column),
+          range: new monaco.Range(
+            startPos.lineNumber,
+            startPos.column,
+            endPos.lineNumber,
+            endPos.column,
+          ),
           options: {
             inlineClassName: cssClass,
-            hoverMessage: { value: `**\`{{${varName}}}\`** → \`${variable.value}\`\n\n*${sourceLabel} variable*` },
+            hoverMessage: {
+              value: `**\`{{${varName}}}\`** → \`${variable.value}\`\n\n*${sourceLabel} variable*`,
+            },
           },
         });
       }
@@ -316,7 +337,8 @@ export default function AdvancedEditor(props: AdvancedEditorProps): React.JSX.El
     // disposes a model it created itself (StandaloneEditor._ownsModel). That is what lets the
     // undo stack survive an unmount.
     const restoredModel = takeCachedEditorModel(id);
-    const model = restoredModel ?? monaco.editor.createModel(valueRef.current || "", languageRef.current);
+    const model =
+      restoredModel ?? monaco.editor.createModel(valueRef.current || "", languageRef.current);
 
     const newEditor = monaco.editor.create(container, {
       model,

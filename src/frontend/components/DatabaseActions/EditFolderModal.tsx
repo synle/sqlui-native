@@ -79,7 +79,14 @@ export default function EditFolderModalBody(props: EditFolderModalBodyProps): Re
         autoComplete="off"
       />
       <div>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "0.25rem" }}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            marginBottom: "0.25rem",
+          }}
+        >
           <Typography variant="subtitle2">Folder Variables</Typography>
           <Button size="small" startIcon={<AddIcon />} onClick={onAddVariable}>
             Add Variable
@@ -148,7 +155,12 @@ export default function EditFolderModalBody(props: EditFolderModalBodyProps): Re
         )}
       </div>
       <Box sx={{ display: "flex", gap: 1, justifyContent: "flex-end" }}>
-        <Button variant="contained" size="small" onClick={() => props.onSave(name, variables)} disabled={!name.trim()}>
+        <Button
+          variant="contained"
+          size="small"
+          onClick={() => props.onSave(name, variables)}
+          disabled={!name.trim()}
+        >
           Save
         </Button>
         <Button variant="outlined" size="small" onClick={props.onCancel}>

@@ -103,7 +103,11 @@ export function useDeleteSession() {
   const isSoftDeleteModeSetting = useIsSoftDeleteModeSetting();
   const { add: addToast } = useToaster();
 
-  return useMutation<{ deletedSessionId: string; connections: SqluiCore.ConnectionProps[] }, void, string>({
+  return useMutation<
+    { deletedSessionId: string; connections: SqluiCore.ConnectionProps[] },
+    void,
+    string
+  >({
     mutationFn: async (sessionId: string) => {
       // fetch connections before deleting, so we can back them up
       let connections: SqluiCore.ConnectionProps[] = [];
@@ -128,7 +132,9 @@ export function useDeleteSession() {
 
           if (sessionToBackup) {
             // strip status from connections before backup
-            const connectionsToBackup = connections.map(({ status, ...rest }) => rest as SqluiCore.ConnectionProps);
+            const connectionsToBackup = connections.map(
+              ({ status, ...rest }) => rest as SqluiCore.ConnectionProps,
+            );
 
             await addRecycleBinItem({
               type: "Session",

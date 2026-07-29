@@ -4,8 +4,12 @@ import { vi } from "vitest";
 import { MemoryRouter } from "react-router";
 
 vi.mock("src/frontend/components/Breadcrumbs", () => ({ default: () => <div>Breadcrumbs</div> }));
-vi.mock("src/frontend/components/VirtualizedConnectionTree", () => ({ default: () => <div>Tree</div> }));
-vi.mock("src/frontend/components/NewConnectionButton", () => ({ default: () => <div>NewConn</div> }));
+vi.mock("src/frontend/components/VirtualizedConnectionTree", () => ({
+  default: () => <div>Tree</div>,
+}));
+vi.mock("src/frontend/components/NewConnectionButton", () => ({
+  default: () => <div>NewConn</div>,
+}));
 vi.mock("src/frontend/components/MigrationForm", () => ({
   RawJsonMigrationForm: () => <div>RawJsonForm</div>,
   RealConnectionMigrationMigrationForm: () => <div>RealConnForm</div>,

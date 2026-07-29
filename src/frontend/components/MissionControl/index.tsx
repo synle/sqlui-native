@@ -4,7 +4,10 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 import React, { lazy, Suspense, useCallback, useEffect, useState } from "react";
 import { queryKeys } from "src/frontend/hooks/queryKeys";
-import { getCodeSnippet, isDialectSupportManagedMetadata } from "src/common/adapters/DataScriptFactory";
+import {
+  getCodeSnippet,
+  isDialectSupportManagedMetadata,
+} from "src/common/adapters/DataScriptFactory";
 import CodeEditorBox from "src/frontend/components/CodeEditorBox";
 import CommandPalette from "src/frontend/components/CommandPalette";
 import { ImportMode } from "src/frontend/components/ImportModal";
@@ -17,10 +20,14 @@ const ConnectionHelper = lazy(() => import("src/frontend/components/ConnectionHe
 const SchemaSearchModal = lazy(() => import("src/frontend/components/SchemaSearchModal"));
 const SettingsLazy = lazy(() => import("src/frontend/components/Settings"));
 const AddBookmarkConnectionContent = lazy(() =>
-  import("src/frontend/components/AddBookmarkModal").then((m) => ({ default: m.AddBookmarkConnectionContent })),
+  import("src/frontend/components/AddBookmarkModal").then((m) => ({
+    default: m.AddBookmarkConnectionContent,
+  })),
 );
 const AddBookmarkQueryContent = lazy(() =>
-  import("src/frontend/components/AddBookmarkModal").then((m) => ({ default: m.AddBookmarkQueryContent })),
+  import("src/frontend/components/AddBookmarkModal").then((m) => ({
+    default: m.AddBookmarkQueryContent,
+  })),
 );
 import { useActionDialogs } from "src/frontend/hooks/useActionDialogs";
 import {
@@ -31,7 +38,10 @@ import {
   useImportConnection,
   useRetryConnection,
 } from "src/frontend/hooks/useConnection";
-import { useActiveConnectionQuery, useConnectionQueries } from "src/frontend/hooks/useConnectionQuery";
+import {
+  useActiveConnectionQuery,
+  useConnectionQueries,
+} from "src/frontend/hooks/useConnectionQuery";
 import { useGetBookmarkItems, useImportBookmarkItem } from "src/frontend/hooks/useFolderItems";
 import {
   useCloneSession,
@@ -54,7 +64,10 @@ import {
   useNavigate,
 } from "src/frontend/utils/commonUtils";
 import ProxyApi from "src/frontend/data/api";
-import { detectAndParseImportFile, exportAsPostmanCollection } from "src/frontend/utils/importExportUtils";
+import {
+  detectAndParseImportFile,
+  exportAsPostmanCollection,
+} from "src/frontend/utils/importExportUtils";
 import { RecordDetailsPage } from "src/frontend/views/RecordPage";
 import { useShowAboutDialog } from "src/frontend/components/AboutDialog";
 import { SqluiCore, SqluiEnums, SqluiFrontend } from "typings";
@@ -87,7 +100,10 @@ export function isConnectionRefreshing(connectionId?: string): boolean {
  */
 export function useCommands() {
   const queryClient = useQueryClient();
-  const { data: commands = [] } = useQuery({ queryKey: [QUERY_KEY_COMMAND_PALETTE], queryFn: () => _commands });
+  const { data: commands = [] } = useQuery({
+    queryKey: [QUERY_KEY_COMMAND_PALETTE],
+    queryFn: () => _commands,
+  });
   const command = commands[commands.length - 1];
 
   const selectCommand = (newCommand: Command) => {
@@ -157,7 +173,11 @@ export default function MissionControl() {
   const { mutateAsync: importConnection } = useImportConnection();
   const { data: connections } = useGetConnections();
   const { settings, onChange: onChangeSettings } = useSetting();
-  const { onClear: onClearConnectionVisibles, onToggle: onToggleConnectionVisible, onSet: onSetConnectionVisible } = useShowHide();
+  const {
+    onClear: onClearConnectionVisibles,
+    onToggle: onToggleConnectionVisible,
+    onSet: onSetConnectionVisible,
+  } = useShowHide();
   const { data: activeConnection } = useGetConnectionById(activeQuery?.connectionId);
   const { add: addToast } = useToaster();
   const { mutateAsync: deleteConnection } = useDeleteConnection();
@@ -384,7 +404,11 @@ export default function MissionControl() {
       message: `Exporting Query "${query.name}", please wait...`,
     });
 
-    downloadText(`${query.name}.query.json`, JSON.stringify([getExportedQuery(query)], null, 2), "text/json");
+    downloadText(
+      `${query.name}.query.json`,
+      JSON.stringify([getExportedQuery(query)], null, 2),
+      "text/json",
+    );
   };
 
   /**
@@ -441,7 +465,10 @@ export default function MissionControl() {
     }
   };
 
-  const onRevealQueryConnection = async (query: SqluiFrontend.ConnectionQuery, showOnlyRevealedConnection: boolean) => {
+  const onRevealQueryConnection = async (
+    query: SqluiFrontend.ConnectionQuery,
+    showOnlyRevealedConnection: boolean,
+  ) => {
     const { connectionId, databaseId, tableId } = query;
 
     if (!connectionId) {
@@ -486,10 +513,16 @@ export default function MissionControl() {
     }, 100);
   };
 
-  const onApplyQuery = async (data: SqluiFrontend.PartialConnectionQuery, openQueryInNewTab: boolean, toastMessage: string | undefined) => {
+  const onApplyQuery = async (
+    data: SqluiFrontend.PartialConnectionQuery,
+    openQueryInNewTab: boolean,
+    toastMessage: string | undefined,
+  ) => {
     if (openQueryInNewTab === true) {
       const parts: string[] = [];
-      const conn = data.connectionId ? connections?.find((c) => c.id === data.connectionId) : undefined;
+      const conn = data.connectionId
+        ? connections?.find((c) => c.id === data.connectionId)
+        : undefined;
       if (conn?.name) parts.push(conn.name);
       if (data.databaseId) parts.push(data.databaseId);
       if (data.tableId) parts.push((data as any).tableName ?? data.tableId);
@@ -692,7 +725,9 @@ export default function MissionControl() {
 
     if (connections) {
       for (const connection of connections) {
-        let managedMetadata: { databases: SqluiCore.ManagedDatabase[]; tables: SqluiCore.ManagedTable[] } | undefined;
+        let managedMetadata:
+          | { databases: SqluiCore.ManagedDatabase[]; tables: SqluiCore.ManagedTable[] }
+          | undefined;
         const isRestApi = connection.dialect === "rest";
         if (isRestApi) {
           try {
@@ -723,7 +758,11 @@ export default function MissionControl() {
       }
     }
 
-    downloadText(`${new Date().toLocaleString()}.sqlui_native.json`, JSON.stringify(jsonContent, null, 2), "text/json");
+    downloadText(
+      `${new Date().toLocaleString()}.sqlui_native.json`,
+      JSON.stringify(jsonContent, null, 2),
+      "text/json",
+    );
   };
 
   const onNewConnection = useCallback(() => navigate("/connection/new"), []);
@@ -751,7 +790,9 @@ export default function MissionControl() {
             ),
           });
 
-          createSystemNotification(`Connection "${connection.name}" (dialect=${connection.dialect || "N/A"}) deleted`);
+          createSystemNotification(
+            `Connection "${connection.name}" (dialect=${connection.dialect || "N/A"}) deleted`,
+          );
         } catch (err1) {
           console.error("MissionControl:deleteConnection", err1);
           curToast = await addToast({
@@ -804,7 +845,10 @@ export default function MissionControl() {
         title: "Add connection to Bookmarks",
         message: (
           <Suspense>
-            <AddBookmarkConnectionContent connection={restOfConnectionMetaData} onDone={dismissDialog} />
+            <AddBookmarkConnectionContent
+              connection={restOfConnectionMetaData}
+              onDone={dismissDialog}
+            />
           </Suspense>
         ),
         showCloseButton: true,
@@ -876,7 +920,9 @@ export default function MissionControl() {
       message: `Exporting connection "${connection.name}", please wait...`,
     });
 
-    let managedMetadata: { databases: SqluiCore.ManagedDatabase[]; tables: SqluiCore.ManagedTable[] } | undefined;
+    let managedMetadata:
+      | { databases: SqluiCore.ManagedDatabase[]; tables: SqluiCore.ManagedTable[] }
+      | undefined;
     const isRestApi = connection.dialect === "rest";
     if (isRestApi) {
       try {
@@ -923,10 +969,14 @@ export default function MissionControl() {
       }
 
       try {
-        const confirmed = await choice(`Import ${result.format === "har" ? "HAR" : "Postman"} Collection`, result.summary, [
-          { label: "Import", value: "Import" },
-          { label: "Cancel", value: "Cancel" },
-        ]);
+        const confirmed = await choice(
+          `Import ${result.format === "har" ? "HAR" : "Postman"} Collection`,
+          result.summary,
+          [
+            { label: "Import", value: "Import" },
+            { label: "Cancel", value: "Cancel" },
+          ],
+        );
         if (confirmed !== "Import") return;
       } catch (_err) {
         // user dismissed dialog
@@ -957,8 +1007,12 @@ export default function MissionControl() {
         // Create requests
         for (const req of result.requests) {
           try {
-            const created = await ProxyApi.createManagedTable(connectionId, req.folderName, { name: req.name });
-            await ProxyApi.updateManagedTable(connectionId, req.folderName, created.id, { props: { query: req.curl } });
+            const created = await ProxyApi.createManagedTable(connectionId, req.folderName, {
+              name: req.name,
+            });
+            await ProxyApi.updateManagedTable(connectionId, req.folderName, created.id, {
+              props: { query: req.curl },
+            });
           } catch (err) {
             console.error("MissionControl:onImportCollection:createRequest", err);
           }
@@ -969,12 +1023,16 @@ export default function MissionControl() {
           try {
             const conn = await ProxyApi.getConnection(connectionId);
             const config = JSON.parse(conn.connection.replace(/^(rest|restapi):\/\//, ""));
-            const existingVars: { key: string; value: string; enabled: boolean }[] = config.variables || [];
+            const existingVars: { key: string; value: string; enabled: boolean }[] =
+              config.variables || [];
             const existingKeys = new Set(existingVars.map((v) => v.key));
             const newVars = result.variables.filter((v) => !existingKeys.has(v.key));
             if (newVars.length > 0) {
               config.variables = [...existingVars, ...newVars];
-              await ProxyApi.upsertConnection({ ...conn, connection: `rest://${JSON.stringify(config)}` });
+              await ProxyApi.upsertConnection({
+                ...conn,
+                connection: `rest://${JSON.stringify(config)}`,
+              });
             }
           } catch (err) {
             console.error("MissionControl:onImportCollection:mergeVariables", err);
@@ -1030,7 +1088,11 @@ export default function MissionControl() {
       const requests: { name: string; folderName: string; curl: string }[] = [];
       for (const table of tables) {
         try {
-          const fullTable = await ProxyApi.getManagedTable(connection.id, table.databaseId, table.id);
+          const fullTable = await ProxyApi.getManagedTable(
+            connection.id,
+            table.databaseId,
+            table.id,
+          );
           const query = (fullTable.props as any)?.query || "";
           if (query) {
             requests.push({
@@ -1103,7 +1165,8 @@ export default function MissionControl() {
 
     // check for duplicate id (only relevant when keeping IDs)
     if (mode === "keepIds") {
-      const hasDuplicateIds = new Set([...jsonRows.map((jsonRow) => jsonRow.id)]).size !== jsonRows.length;
+      const hasDuplicateIds =
+        new Set([...jsonRows.map((jsonRow) => jsonRow.id)]).size !== jsonRows.length;
       if (hasDuplicateIds) {
         return alert(`Import failed. JSON Config includes duplicate IDs.`);
       }
@@ -1138,9 +1201,13 @@ export default function MissionControl() {
                 }
               }
               for (const table of managedMetadata.tables || []) {
-                const created = await ProxyApi.createManagedTable(connId, table.databaseId, { name: table.name });
+                const created = await ProxyApi.createManagedTable(connId, table.databaseId, {
+                  name: table.name,
+                });
                 if (table.props && Object.keys(table.props).length > 0) {
-                  await ProxyApi.updateManagedTable(connId, table.databaseId, created.id, { props: table.props });
+                  await ProxyApi.updateManagedTable(connId, table.databaseId, created.id, {
+                    props: table.props,
+                  });
                 }
               }
             }
@@ -1226,7 +1293,11 @@ export default function MissionControl() {
         }
 
         // Expand the tree path: connection > database > table
-        const branchesToReveal = [connectionId, [connectionId, databaseId].join(" > "), [connectionId, databaseId, tableId].join(" > ")];
+        const branchesToReveal = [
+          connectionId,
+          [connectionId, databaseId].join(" > "),
+          [connectionId, databaseId, tableId].join(" > "),
+        ];
 
         for (const branch of branchesToReveal) {
           onToggleConnectionVisible(branch, true);
@@ -1390,7 +1461,8 @@ export default function MissionControl() {
 
         case "clientEvent/showConnectionHelper":
           if (command.data) {
-            const { scheme, username, password, host, port, restOfConnectionString, onApply } = command.data as any;
+            const { scheme, username, password, host, port, restOfConnectionString, onApply } =
+              command.data as any;
 
             const onApplyConnectionHelper = (newConnectionString: string) => {
               dismissDialog();
@@ -1511,7 +1583,11 @@ export default function MissionControl() {
           if (command.data) {
             const querySelectionMode = settings?.querySelectionMode || "new-tab";
 
-            onApplyQuery(command.data as SqluiFrontend.PartialConnectionQuery, querySelectionMode === "new-tab", command.label);
+            onApplyQuery(
+              command.data as SqluiFrontend.PartialConnectionQuery,
+              querySelectionMode === "new-tab",
+              command.label,
+            );
 
             navigate("/");
             document.querySelector("#QueryBoxTabs")?.scrollIntoView();
@@ -1666,7 +1742,11 @@ export default function MissionControl() {
                   break;
               }
               if (extension) {
-                downloadText(`sample-code-snippet-${Date.now()}.${extension}`, codeSnippet, "text/plain");
+                downloadText(
+                  `sample-code-snippet-${Date.now()}.${extension}`,
+                  codeSnippet,
+                  "text/plain",
+                );
               }
             };
 
@@ -1775,7 +1855,9 @@ export default function MissionControl() {
           appPlatform.toggleMenuItems(true, allMenuKeys);
           break;
         case "clientEvent/toggleDevtools":
-          window.dispatchEvent(new KeyboardEvent("keydown", { key: "D", ctrlKey: true, shiftKey: true, altKey: true }));
+          window.dispatchEvent(
+            new KeyboardEvent("keydown", { key: "D", ctrlKey: true, shiftKey: true, altKey: true }),
+          );
           break;
       }
     }
@@ -1818,7 +1900,9 @@ export default function MissionControl() {
                   ) as HTMLTextAreaElement
                 ).blur();
 
-                setTimeout(() => (document.querySelector("#btnExecuteCommand") as HTMLButtonElement).click());
+                setTimeout(() =>
+                  (document.querySelector("#btnExecuteCommand") as HTMLButtonElement).click(),
+                );
                 e.stopPropagation();
                 e.preventDefault();
               }
@@ -1850,7 +1934,9 @@ export default function MissionControl() {
                 return;
               }
 
-              const resultSearchBox = document.querySelector("#result-box-search-input") as HTMLInputElement;
+              const resultSearchBox = document.querySelector(
+                "#result-box-search-input",
+              ) as HTMLInputElement;
               if (resultSearchBox) {
                 resultSearchBox.focus();
                 e.stopPropagation();
@@ -1943,10 +2029,12 @@ export default function MissionControl() {
     };
 
     document.addEventListener("keydown", onKeyboardShortcutEventForAll, true);
-    !appPlatform.isDesktop && document.addEventListener("keydown", onKeyboardShortcutEventForBrowser, true);
+    !appPlatform.isDesktop &&
+      document.addEventListener("keydown", onKeyboardShortcutEventForBrowser, true);
     return () => {
       document.removeEventListener("keydown", onKeyboardShortcutEventForAll, true);
-      !appPlatform.isDesktop && document.removeEventListener("keydown", onKeyboardShortcutEventForBrowser, true);
+      !appPlatform.isDesktop &&
+        document.removeEventListener("keydown", onKeyboardShortcutEventForBrowser, true);
     };
   }, []);
 

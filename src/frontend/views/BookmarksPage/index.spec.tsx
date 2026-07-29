@@ -3,10 +3,18 @@ import { render } from "@testing-library/react";
 import { vi } from "vitest";
 import { MemoryRouter } from "react-router";
 
-vi.mock("src/frontend/components/BookmarksItemList", () => ({ default: () => <div>BookmarksList</div> }));
-vi.mock("src/frontend/components/Breadcrumbs", () => ({ default: (_props: any) => <div>Breadcrumbs</div> }));
-vi.mock("src/frontend/components/VirtualizedConnectionTree", () => ({ default: () => <div>Tree</div> }));
-vi.mock("src/frontend/components/NewConnectionButton", () => ({ default: () => <div>NewConn</div> }));
+vi.mock("src/frontend/components/BookmarksItemList", () => ({
+  default: () => <div>BookmarksList</div>,
+}));
+vi.mock("src/frontend/components/Breadcrumbs", () => ({
+  default: (_props: any) => <div>Breadcrumbs</div>,
+}));
+vi.mock("src/frontend/components/VirtualizedConnectionTree", () => ({
+  default: () => <div>Tree</div>,
+}));
+vi.mock("src/frontend/components/NewConnectionButton", () => ({
+  default: () => <div>NewConn</div>,
+}));
 vi.mock("src/frontend/layout/LayoutTwoColumns", () => ({
   default: (props: any) => <div className="LayoutTwoColumns">{props.children}</div>,
 }));

@@ -454,7 +454,11 @@ describe("RelationalDataAdapter scripts", () => {
     });
 
     it("returns undefined for unsupported dialect", () => {
-      const result = getUpdateWithValues({ ...baseTableInput, dialect: "mongodb" }, { name: "x" }, { id: 1 });
+      const result = getUpdateWithValues(
+        { ...baseTableInput, dialect: "mongodb" },
+        { name: "x" },
+        { id: 1 },
+      );
       expect(result).toBeUndefined();
     });
   });

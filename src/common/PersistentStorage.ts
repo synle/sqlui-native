@@ -6,7 +6,11 @@
  * centralize the table name mapping. Adding new storage types? Create a new factory function here.
  */
 
-export type { IPersistentStorage, StorageContent, StorageEntry } from "src/common/IPersistentStorage";
+export type {
+  IPersistentStorage,
+  StorageContent,
+  StorageEntry,
+} from "src/common/IPersistentStorage";
 
 export {
   PersistentStorageJsonFile,

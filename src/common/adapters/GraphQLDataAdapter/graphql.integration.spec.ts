@@ -194,7 +194,9 @@ Accept-Language: en`);
     });
 
     it("merges connection-level headers with request headers", async () => {
-      const adapter = new GraphQLDataAdapter(`graphql://{"ENDPOINT":"${GRAPHQL_ENDPOINT}","headers":{"X-Connection-Header":"conn-value"}}`);
+      const adapter = new GraphQLDataAdapter(
+        `graphql://{"ENDPOINT":"${GRAPHQL_ENDPOINT}","headers":{"X-Connection-Header":"conn-value"}}`,
+      );
       const result = await adapter.execute(`{
   continents {
     code
@@ -397,7 +399,9 @@ GetCountryFull`);
       const result = await adapter.execute(`{ __typename }`);
       expect(result.ok).toBe(true);
       expect(result.meta?.responseHeaders).toBeDefined();
-      const contentType = result.meta?.responseHeaders?.["Content-Type"] || result.meta?.responseHeaders?.["content-type"];
+      const contentType =
+        result.meta?.responseHeaders?.["Content-Type"] ||
+        result.meta?.responseHeaders?.["content-type"];
       expect(contentType).toContain("application/json");
       await adapter.disconnect();
     });
@@ -502,7 +506,9 @@ GetCountryFull`);
     });
 
     it("rejects unresolvable ENDPOINT domain", async () => {
-      const adapter = new GraphQLDataAdapter(`graphql://{"ENDPOINT":"https://this-domain-definitely-does-not-exist-xyz123.com/graphql"}`);
+      const adapter = new GraphQLDataAdapter(
+        `graphql://{"ENDPOINT":"https://this-domain-definitely-does-not-exist-xyz123.com/graphql"}`,
+      );
       await expect(adapter.authenticate()).rejects.toThrow("Cannot resolve host");
       await adapter.disconnect();
     });

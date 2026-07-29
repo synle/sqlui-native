@@ -37,7 +37,9 @@ function _formatScript(formatter?: string, query?: string) {
  */
 function _formatScripts(
   actionInput: SqlAction.TableInput | SqlAction.DatabaseInput | SqlAction.ConnectionInput,
-  generatorFuncs: SqlAction.TableActionScriptGenerator[] | SqlAction.DatabaseActionScriptGenerator[],
+  generatorFuncs:
+    | SqlAction.TableActionScriptGenerator[]
+    | SqlAction.DatabaseActionScriptGenerator[],
 ) {
   const actions: SqlAction.Output[] = [];
 
@@ -276,7 +278,8 @@ export function getSampleSelectQuery(actionInput: SqlAction.TableInput) {
  * @returns Array of formatted action outputs.
  */
 export function getTableActions(actionInput: SqlAction.TableInput) {
-  const scriptsToUse: SqlAction.TableActionScriptGenerator[] = _getImplementation(actionInput.dialect)?.getTableScripts() || [];
+  const scriptsToUse: SqlAction.TableActionScriptGenerator[] =
+    _getImplementation(actionInput.dialect)?.getTableScripts() || [];
   return _formatScripts(actionInput, scriptsToUse);
 }
 
@@ -286,7 +289,8 @@ export function getTableActions(actionInput: SqlAction.TableInput) {
  * @returns Array of formatted action outputs.
  */
 export function getDatabaseActions(actionInput: SqlAction.DatabaseInput) {
-  const scriptsToUse: SqlAction.DatabaseActionScriptGenerator[] = _getImplementation(actionInput.dialect)?.getDatabaseScripts() || [];
+  const scriptsToUse: SqlAction.DatabaseActionScriptGenerator[] =
+    _getImplementation(actionInput.dialect)?.getDatabaseScripts() || [];
   return _formatScripts(actionInput, scriptsToUse);
 }
 
@@ -296,7 +300,8 @@ export function getDatabaseActions(actionInput: SqlAction.DatabaseInput) {
  * @returns Array of formatted action outputs.
  */
 export function getConnectionActions(actionInput: SqlAction.ConnectionInput) {
-  const scriptsToUse: SqlAction.DatabaseActionScriptGenerator[] = _getImplementation(actionInput.dialect)?.getConnectionScripts() || [];
+  const scriptsToUse: SqlAction.DatabaseActionScriptGenerator[] =
+    _getImplementation(actionInput.dialect)?.getConnectionScripts() || [];
   return _formatScripts(actionInput, scriptsToUse);
 }
 
@@ -307,9 +312,16 @@ export function getConnectionActions(actionInput: SqlAction.ConnectionInput) {
  * @param language - The target programming language (javascript, python, java).
  * @returns The formatted code snippet string.
  */
-export function getCodeSnippet(connection: SqluiCore.ConnectionProps, query: SqluiCore.ConnectionQuery, language: SqluiCore.LanguageMode) {
+export function getCodeSnippet(
+  connection: SqluiCore.ConnectionProps,
+  query: SqluiCore.ConnectionQuery,
+  language: SqluiCore.LanguageMode,
+) {
   const cleanedUpQuery = { ...query };
   cleanedUpQuery.sql = cleanedUpQuery.sql || "";
 
-  return _formatScript(language, _getImplementation(connection?.dialect)?.getCodeSnippet(connection, cleanedUpQuery, language));
+  return _formatScript(
+    language,
+    _getImplementation(connection?.dialect)?.getCodeSnippet(connection, cleanedUpQuery, language),
+  );
 }

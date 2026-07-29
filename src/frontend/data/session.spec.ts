@@ -1,6 +1,11 @@
 // @vitest-environment jsdom
 import { vi } from "vitest";
-import { getCurrentSessionId, setSessionIdIfNotDefined, clearCurrentSessionId, setCurrentSessionId } from "src/frontend/data/session";
+import {
+  getCurrentSessionId,
+  setSessionIdIfNotDefined,
+  clearCurrentSessionId,
+  setCurrentSessionId,
+} from "src/frontend/data/session";
 
 describe("session", () => {
   beforeEach(() => {

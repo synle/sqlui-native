@@ -188,7 +188,9 @@ export default class SQLiteDataAdapter extends BaseDataAdapter implements IDataA
     }
 
     const rows = db
-      .prepare(`SELECT name AS tablename FROM sqlite_master WHERE type='table' AND name NOT LIKE '%sqlite%' ORDER BY tablename`)
+      .prepare(
+        `SELECT name AS tablename FROM sqlite_master WHERE type='table' AND name NOT LIKE '%sqlite%' ORDER BY tablename`,
+      )
       .all() as { tablename: string }[];
 
     return rows

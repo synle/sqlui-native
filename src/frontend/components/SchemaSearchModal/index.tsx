@@ -93,7 +93,12 @@ function ColumnBadges({ column }: { column: SqluiCore.ColumnMetaData }) {
   const isFK = column.kind === "foreign_key";
   return (
     <Box sx={{ display: "inline-flex", gap: 0.5, ml: 1, flexWrap: "wrap" }}>
-      <Chip label={column.type} size="small" variant="outlined" sx={{ fontSize: "0.7rem", height: 20 }} />
+      <Chip
+        label={column.type}
+        size="small"
+        variant="outlined"
+        sx={{ fontSize: "0.7rem", height: 20 }}
+      />
       {isPK && (
         <Chip
           icon={<KeyIcon sx={{ fontSize: "0.8rem" }} />}
@@ -114,8 +119,22 @@ function ColumnBadges({ column }: { column: SqluiCore.ColumnMetaData }) {
           />
         </Tooltip>
       )}
-      {column.allowNull === false && <Chip label="NOT NULL" size="small" variant="outlined" sx={{ fontSize: "0.65rem", height: 20 }} />}
-      {column.autoIncrement && <Chip label="AUTO" size="small" variant="outlined" sx={{ fontSize: "0.65rem", height: 20 }} />}
+      {column.allowNull === false && (
+        <Chip
+          label="NOT NULL"
+          size="small"
+          variant="outlined"
+          sx={{ fontSize: "0.65rem", height: 20 }}
+        />
+      )}
+      {column.autoIncrement && (
+        <Chip
+          label="AUTO"
+          size="small"
+          variant="outlined"
+          sx={{ fontSize: "0.65rem", height: 20 }}
+        />
+      )}
     </Box>
   );
 }
@@ -193,7 +212,12 @@ export default function SchemaSearchModal(props: SchemaSearchModalProps): React.
             },
           }}
         />
-        <ToggleButtonGroup value={viewMode} exclusive onChange={(_e, val) => val && setViewMode(val)} size="small">
+        <ToggleButtonGroup
+          value={viewMode}
+          exclusive
+          onChange={(_e, val) => val && setViewMode(val)}
+          size="small"
+        >
           <ToggleButton value="simple">Simple</ToggleButton>
           <ToggleButton value="detailed">Detailed</ToggleButton>
         </ToggleButtonGroup>
@@ -206,17 +230,26 @@ export default function SchemaSearchModal(props: SchemaSearchModalProps): React.
       )}
 
       {!loading && searched && results.length === 0 && (
-        <Alert severity="info">No results found. Make sure you have connected to your databases first so schema metadata is cached.</Alert>
+        <Alert severity="info">
+          No results found. Make sure you have connected to your databases first so schema metadata
+          is cached.
+        </Alert>
       )}
 
       {!loading && !searched && (
-        <Alert severity="info">Search across all cached schema metadata. Connect to databases first to populate the cache.</Alert>
+        <Alert severity="info">
+          Search across all cached schema metadata. Connect to databases first to populate the
+          cache.
+        </Alert>
       )}
 
       {!loading && results.length > 0 && (
         <Box sx={{ overflow: "auto", flex: 1 }}>
           <Typography variant="caption" color="text.secondary" sx={{ mb: 1, display: "block" }}>
-            {results.length >= MAX_RESULTS ? `${MAX_RESULTS}+ results` : `${results.length} results`} in {groupKeys.length} tables
+            {results.length >= MAX_RESULTS
+              ? `${MAX_RESULTS}+ results`
+              : `${results.length} results`}{" "}
+            in {groupKeys.length} tables
           </Typography>
 
           {groupKeys.map((groupKey) => {
@@ -240,7 +273,14 @@ export default function SchemaSearchModal(props: SchemaSearchModalProps): React.
                 }}
               >
                 {/* Connection + Database + Table header */}
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: viewMode === "detailed" ? 1 : 0.5 }}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1,
+                    mb: viewMode === "detailed" ? 1 : 0.5,
+                  }}
+                >
                   <StorageIcon fontSize="small" color="action" />
                   <Typography variant="body2" sx={{ fontWeight: "bold" }} noWrap>
                     {group.connectionName}
@@ -261,7 +301,12 @@ export default function SchemaSearchModal(props: SchemaSearchModalProps): React.
                 </Box>
 
                 {viewMode === "detailed" && (
-                  <Typography variant="caption" color="text.disabled" noWrap sx={{ display: "block", mb: 1, pl: 3.5 }}>
+                  <Typography
+                    variant="caption"
+                    color="text.disabled"
+                    noWrap
+                    sx={{ display: "block", mb: 1, pl: 3.5 }}
+                  >
                     {maskConnectionString(group.connectionString)}
                   </Typography>
                 )}

@@ -57,7 +57,9 @@ describe("SchemaSearchModal", () => {
     const { container, findByText } = render(<SchemaSearchModal onNavigate={onNavigate} />);
     const input = container.querySelector("input") as HTMLInputElement;
     fireEvent.change(input, { target: { value: "missing" } });
-    await waitFor(() => expect(container.textContent).toContain("No results found"), { timeout: 2000 });
+    await waitFor(() => expect(container.textContent).toContain("No results found"), {
+      timeout: 2000,
+    });
   });
 
   test("displays results when API returns matches", async () => {
@@ -90,7 +92,9 @@ describe("SchemaSearchModal", () => {
     const { container } = render(<SchemaSearchModal onNavigate={onNavigate} />);
     const input = container.querySelector("input") as HTMLInputElement;
     fireEvent.change(input, { target: { value: "err" } });
-    await waitFor(() => expect(container.textContent).toContain("No results found"), { timeout: 2000 });
+    await waitFor(() => expect(container.textContent).toContain("No results found"), {
+      timeout: 2000,
+    });
   });
 
   test("switching to detailed view mode works", () => {
@@ -135,7 +139,13 @@ describe("SchemaSearchModal", () => {
         connectionString: "mysql://host/db",
         databaseId: "d1",
         tableId: "orders",
-        column: { name: "user_id", type: "int", kind: "foreign_key", referencedTableName: "users", referencedColumnName: "id" },
+        column: {
+          name: "user_id",
+          type: "int",
+          kind: "foreign_key",
+          referencedTableName: "users",
+          referencedColumnName: "id",
+        },
       },
     ]);
     const { container, getByText } = render(<SchemaSearchModal onNavigate={onNavigate} />);

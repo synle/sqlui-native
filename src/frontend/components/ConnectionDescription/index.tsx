@@ -57,7 +57,11 @@ export default function ConnectionDescription() {
               <ConnectionActions connection={connection} />
             </AccordionHeader>
             <AccordionBody expanded={visibles[key]}>
-              {isOnline ? <DatabaseDescription connectionId={connection.id} /> : <ConnectionRetryAlert connectionId={connection.id} />}
+              {isOnline ? (
+                <DatabaseDescription connectionId={connection.id} />
+              ) : (
+                <ConnectionRetryAlert connectionId={connection.id} />
+              )}
             </AccordionBody>
           </React.Fragment>
         );

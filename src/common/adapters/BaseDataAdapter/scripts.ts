@@ -169,7 +169,11 @@ export default abstract class BaseDataScript implements IDataScript {
    * @param query - The query to generate a snippet for.
    * @param language - The target programming language (javascript, python, java).
    */
-  getCodeSnippet(connection: SqluiCore.ConnectionProps, query: SqluiCore.ConnectionQuery, language: SqluiCore.LanguageMode) {
+  getCodeSnippet(
+    connection: SqluiCore.ConnectionProps,
+    query: SqluiCore.ConnectionQuery,
+    language: SqluiCore.LanguageMode,
+  ) {
     switch (language) {
       case "javascript":
         // TODO: implement me

@@ -41,7 +41,11 @@ describe("refreshAfterExecution", () => {
 
   test("calls refreshDatabase and invalidates caches when both IDs present", async () => {
     const queryClient = { invalidateQueries: vi.fn() } as any;
-    const query = { connectionId: "c1", databaseId: "db1", sql: "CREATE TABLE foo (id INT)" } as any;
+    const query = {
+      connectionId: "c1",
+      databaseId: "db1",
+      sql: "CREATE TABLE foo (id INT)",
+    } as any;
     refreshAfterExecution(query, queryClient);
     // Wait for the fire-and-forget promise chain
     await vi.waitFor(() => {

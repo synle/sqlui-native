@@ -13,7 +13,11 @@ vi.mock("src/frontend/hooks/useToaster", () => ({
 // the editor value directly without booting Monaco.
 vi.mock("src/frontend/components/CodeEditorBox", () => ({
   default: ({ value, onChange }: { value: string; onChange?: (v: string) => void }) => (
-    <textarea data-testid="mock-code-editor" value={value} onChange={(e) => onChange?.(e.target.value)} />
+    <textarea
+      data-testid="mock-code-editor"
+      value={value}
+      onChange={(e) => onChange?.(e.target.value)}
+    />
   ),
 }));
 
@@ -72,15 +76,21 @@ describe("ImportModal", () => {
   test("renders empty state with required-input alert and disabled Import button", () => {
     const { container, getByText } = render(<ImportModal onImport={vi.fn()} />);
     expect(getByText("This input is required")).toBeTruthy();
-    const importBtn = Array.from(container.querySelectorAll("button")).find((b) => b.textContent === "Import")!;
+    const importBtn = Array.from(container.querySelectorAll("button")).find(
+      (b) => b.textContent === "Import",
+    )!;
     expect(importBtn.disabled).toBe(true);
   });
 
   test("renders with valid initialValue: button enabled, no error", () => {
     const initial = JSON.stringify([{ _type: "query", sql: "SELECT 1" }]);
-    const { container, queryByText } = render(<ImportModal onImport={vi.fn()} initialValue={initial} />);
+    const { container, queryByText } = render(
+      <ImportModal onImport={vi.fn()} initialValue={initial} />,
+    );
     expect(queryByText("This input is required")).toBeNull();
-    const importBtn = Array.from(container.querySelectorAll("button")).find((b) => b.textContent === "Import")!;
+    const importBtn = Array.from(container.querySelectorAll("button")).find(
+      (b) => b.textContent === "Import",
+    )!;
     expect(importBtn.disabled).toBe(false);
   });
 
@@ -94,7 +104,9 @@ describe("ImportModal", () => {
     expect(queryByText("This input is required")).toBeNull();
     expect(queryByText(/Invalid JSON/)).toBeNull();
     expect(queryByText(/Each entry must have a valid _type/)).toBeNull();
-    const importBtn = Array.from(container.querySelectorAll("button")).find((b) => b.textContent === "Import")!;
+    const importBtn = Array.from(container.querySelectorAll("button")).find(
+      (b) => b.textContent === "Import",
+    )!;
     expect(importBtn.disabled).toBe(false);
   });
 
@@ -104,7 +116,9 @@ describe("ImportModal", () => {
     fireEvent.change(editor, { target: { value: "{not json" } });
 
     expect(getByText(/Invalid JSON format/)).toBeTruthy();
-    const importBtn = Array.from(container.querySelectorAll("button")).find((b) => b.textContent === "Import")!;
+    const importBtn = Array.from(container.querySelectorAll("button")).find(
+      (b) => b.textContent === "Import",
+    )!;
     expect(importBtn.disabled).toBe(true);
   });
 
@@ -116,7 +130,9 @@ describe("ImportModal", () => {
     });
 
     expect(getByText(/Each entry must have a valid _type/)).toBeTruthy();
-    const importBtn = Array.from(container.querySelectorAll("button")).find((b) => b.textContent === "Import")!;
+    const importBtn = Array.from(container.querySelectorAll("button")).find(
+      (b) => b.textContent === "Import",
+    )!;
     expect(importBtn.disabled).toBe(true);
   });
 
@@ -139,7 +155,9 @@ describe("ImportModal", () => {
     });
     expect(queryByText(/Each entry must have a valid _type/)).toBeNull();
     expect(queryByText(/Invalid JSON/)).toBeNull();
-    const importBtn = Array.from(container.querySelectorAll("button")).find((b) => b.textContent === "Import")!;
+    const importBtn = Array.from(container.querySelectorAll("button")).find(
+      (b) => b.textContent === "Import",
+    )!;
     expect(importBtn.disabled).toBe(false);
   });
 
@@ -147,7 +165,9 @@ describe("ImportModal", () => {
     const onImport = vi.fn();
     const raw = JSON.stringify([{ _type: "query", sql: "SELECT 1" }]);
     const { container } = render(<ImportModal onImport={onImport} initialValue={raw} />);
-    const importBtn = Array.from(container.querySelectorAll("button")).find((b) => b.textContent === "Import")!;
+    const importBtn = Array.from(container.querySelectorAll("button")).find(
+      (b) => b.textContent === "Import",
+    )!;
     fireEvent.click(importBtn);
     expect(onImport).toHaveBeenCalledTimes(1);
     expect(onImport).toHaveBeenCalledWith(raw, "keepIds");
@@ -163,7 +183,9 @@ describe("ImportModal", () => {
     const stripIdsRadio = Array.from(radios).find((r) => r.value === "stripIds")!;
     fireEvent.click(stripIdsRadio);
 
-    const importBtn = Array.from(container.querySelectorAll("button")).find((b) => b.textContent === "Import")!;
+    const importBtn = Array.from(container.querySelectorAll("button")).find(
+      (b) => b.textContent === "Import",
+    )!;
     fireEvent.click(importBtn);
 
     expect(onImport).toHaveBeenCalledWith(raw, "stripIds");
@@ -216,7 +238,9 @@ describe("ImportModal", () => {
 
     fireEvent.drop(dropZone, { dataTransfer: { files: [file] } });
 
-    expect(mockAddToast).toHaveBeenCalledWith(expect.objectContaining({ message: "Only .json files are supported." }));
+    expect(mockAddToast).toHaveBeenCalledWith(
+      expect.objectContaining({ message: "Only .json files are supported." }),
+    );
     const editor = getByTestId("mock-code-editor") as HTMLTextAreaElement;
     expect(editor.value).toEqual("");
   });
@@ -254,7 +278,9 @@ describe("ImportModal", () => {
     const editor = getByTestId("mock-code-editor") as HTMLTextAreaElement;
     fireEvent.change(editor, { target: { value: "{still not json" } });
 
-    const importBtn = Array.from(container.querySelectorAll("button")).find((b) => b.textContent === "Import")!;
+    const importBtn = Array.from(container.querySelectorAll("button")).find(
+      (b) => b.textContent === "Import",
+    )!;
     expect(importBtn.disabled).toBe(true);
   });
 });

@@ -55,7 +55,9 @@ describe("ConnectionHelper", () => {
   test("calls onClose when Cancel is clicked", () => {
     const onClose = vi.fn();
     const { container } = renderWithTheme(<ConnectionHelper {...defaultProps} onClose={onClose} />);
-    const cancelButton = Array.from(container.querySelectorAll("button")).find((b) => b.textContent?.includes("Cancel"));
+    const cancelButton = Array.from(container.querySelectorAll("button")).find((b) =>
+      b.textContent?.includes("Cancel"),
+    );
     if (cancelButton) fireEvent.click(cancelButton);
     expect(onClose).toHaveBeenCalled();
   });

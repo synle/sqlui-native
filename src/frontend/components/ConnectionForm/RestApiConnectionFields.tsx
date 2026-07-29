@@ -73,7 +73,9 @@ function buildConnectionString(config: RestApiConfig): string {
  * @param props - The connection string and setter.
  * @returns The REST API config form fields.
  */
-export default function RestApiConnectionFields(props: RestApiConnectionFieldsProps): React.JSX.Element {
+export default function RestApiConnectionFields(
+  props: RestApiConnectionFieldsProps,
+): React.JSX.Element {
   const { connection, setConnection } = props;
   const config = parseConfig(connection);
 
@@ -146,7 +148,14 @@ export default function RestApiConnectionFields(props: RestApiConnectionFieldsPr
         autoComplete="off"
       />
       <div>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "0.25rem" }}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            marginBottom: "0.25rem",
+          }}
+        >
           <Typography variant="subtitle2">Variables</Typography>
           <Button size="small" startIcon={<AddIcon />} onClick={onAddVariable}>
             Add Variable

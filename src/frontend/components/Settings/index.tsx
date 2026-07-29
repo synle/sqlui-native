@@ -4,7 +4,11 @@ import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
 import React from "react";
 import Select from "src/frontend/components/Select";
-import { useMaxToastsSetting, useQuerySizeSetting, useSetting } from "src/frontend/hooks/useSetting";
+import {
+  useMaxToastsSetting,
+  useQuerySizeSetting,
+  useSetting,
+} from "src/frontend/hooks/useSetting";
 import { SqluiFrontend } from "typings";
 
 /**
@@ -52,7 +56,11 @@ export default function Settings(): React.JSX.Element | null {
           </Tooltip>
         </Typography>
         <div className="FormInput__Row">
-          <Select value={settings.darkMode} onChange={(newValue) => onSettingChange("darkMode", newValue)} sx={{ width: "100%" }}>
+          <Select
+            value={settings.darkMode}
+            onChange={(newValue) => onSettingChange("darkMode", newValue)}
+            sx={{ width: "100%" }}
+          >
             <option value="">Follows System Settings</option>
             <option value="dark">Prefers Dark Mode</option>
             <option value="light">Prefers Light Mode</option>
@@ -162,7 +170,11 @@ export default function Settings(): React.JSX.Element | null {
           </Tooltip>
         </Typography>
         <div className="FormInput__Row">
-          <Select value={settings.wordWrap} onChange={(newValue) => onSettingChange("wordWrap", newValue)} sx={{ width: "100%" }}>
+          <Select
+            value={settings.wordWrap}
+            onChange={(newValue) => onSettingChange("wordWrap", newValue)}
+            sx={{ width: "100%" }}
+          >
             <option value="">No wrap</option>
             <option value="wrap">Wrap</option>
           </Select>

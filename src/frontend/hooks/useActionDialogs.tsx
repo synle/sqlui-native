@@ -39,7 +39,12 @@ type ModalActionDialog = ModalInput & {
 };
 
 /** Union type representing any action dialog configuration. */
-type ActionDialog = AlertActionDialog | ConfirmActionDialog | PromptActionDialog | ChoiceActionDialog | ModalActionDialog;
+type ActionDialog =
+  | AlertActionDialog
+  | ConfirmActionDialog
+  | PromptActionDialog
+  | ChoiceActionDialog
+  | ModalActionDialog;
 
 let _actionDialogs: ActionDialog[] = [];
 
@@ -54,7 +59,9 @@ const TargetContext = createContext({
  * @param props - Component props containing child elements.
  * @returns The context provider wrapping children.
  */
-export default function WrappedContext(props: { children: React.ReactNode }): React.JSX.Element | null {
+export default function WrappedContext(props: {
+  children: React.ReactNode;
+}): React.JSX.Element | null {
   // State to hold the theme value
   const [data, setData] = useState(_actionDialogs);
   // Provide the theme value and toggle function to the children components
@@ -100,7 +107,12 @@ export function useActionDialogs() {
     });
   };
 
-  const choice = (title: string, message: string | React.ReactNode, options: ChoiceOption[], required?: boolean): Promise<string> => {
+  const choice = (
+    title: string,
+    message: string | React.ReactNode,
+    options: ChoiceOption[],
+    required?: boolean,
+  ): Promise<string> => {
     return new Promise((resolve, reject) => {
       const newActionDialog: ActionDialog = {
         type: "choice",

@@ -37,7 +37,15 @@ type ChoiceDialogProps = ChoiceInput & {
  * @returns The rendered choice dialog element.
  */
 export default function ChoiceDialog(props: ChoiceDialogProps): React.JSX.Element | null {
-  const { title, message, options, open, required, onDismiss: handleClose, onSelect: handleListItemClick } = props;
+  const {
+    title,
+    message,
+    options,
+    open,
+    required,
+    onDismiss: handleClose,
+    onSelect: handleListItemClick,
+  } = props;
 
   let onClose: (() => void) | undefined = handleClose;
   if (required) {

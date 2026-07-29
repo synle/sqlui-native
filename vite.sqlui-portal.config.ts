@@ -54,7 +54,8 @@ function writePortalPackageJson(): Plugin {
       const pkg = {
         name: "@synle/sqlui-portal",
         version: appPackage.version,
-        description: "Portable web portal for sqlui-native — phpMyAdmin-style for any supported dialect.",
+        description:
+          "Portable web portal for sqlui-native — phpMyAdmin-style for any supported dialect.",
         homepage: "https://github.com/synle/sqlui-native#portal-mode-web",
         bugs: "https://github.com/synle/sqlui-native/issues",
         license: appPackage.license,

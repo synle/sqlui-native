@@ -58,7 +58,10 @@ import WrappedContext, { useConnectionQueries } from "src/frontend/hooks/useConn
 import dataApi from "src/frontend/data/api";
 import { SessionStorageConfig } from "src/frontend/data/config";
 
-function makeQuery(id: string, overrides: Partial<SqluiFrontend.ConnectionQuery> = {}): SqluiFrontend.ConnectionQuery {
+function makeQuery(
+  id: string,
+  overrides: Partial<SqluiFrontend.ConnectionQuery> = {},
+): SqluiFrontend.ConnectionQuery {
   return {
     id,
     name: id,
@@ -132,7 +135,9 @@ describe("useConnectionQuery", () => {
       </WrappedContext>,
     );
 
-    await waitFor(() => expect(container.querySelector("[data-testid='selected']")?.textContent).toContain("q3"));
+    await waitFor(() =>
+      expect(container.querySelector("[data-testid='selected']")?.textContent).toContain("q3"),
+    );
   });
 
   test("auto-saves only reordered query tabs when tab ordering changes", async () => {
@@ -149,10 +154,16 @@ describe("useConnectionQuery", () => {
       </WrappedContext>,
     );
 
-    await waitFor(() => expect(container.querySelector("[data-testid='order']")?.textContent).toContain("q2,q3,q1,q4"));
+    await waitFor(() =>
+      expect(container.querySelector("[data-testid='order']")?.textContent).toContain(
+        "q2,q3,q1,q4",
+      ),
+    );
     await waitFor(() => expect(dataApi.upsertQuery).toHaveBeenCalledTimes(3));
 
-    expect(vi.mocked(dataApi.upsertQuery).mock.calls.map(([query]) => [query.id, query.tabOrder])).toEqual([
+    expect(
+      vi.mocked(dataApi.upsertQuery).mock.calls.map(([query]) => [query.id, query.tabOrder]),
+    ).toEqual([
       ["q2", 0],
       ["q3", 1],
       ["q1", 2],
@@ -174,7 +185,11 @@ describe("useConnectionQuery", () => {
       </WrappedContext>,
     );
 
-    await waitFor(() => expect(container.querySelector("[data-testid='order']")?.textContent).toContain("q2,q3,q1,q4"));
+    await waitFor(() =>
+      expect(container.querySelector("[data-testid='order']")?.textContent).toContain(
+        "q2,q3,q1,q4",
+      ),
+    );
 
     expect(dataApi.upsertQuery).not.toHaveBeenCalled();
   });
@@ -198,7 +213,9 @@ describe("useConnectionQuery", () => {
         <AddConsumer />
       </WrappedContext>,
     );
-    await waitFor(() => expect(container.querySelector("[data-testid='add-count']")?.textContent).toBe("2"));
+    await waitFor(() =>
+      expect(container.querySelector("[data-testid='add-count']")?.textContent).toBe("2"),
+    );
   });
 
   test("onAddQuery with payload uses provided name", async () => {
@@ -218,11 +235,16 @@ describe("useConnectionQuery", () => {
         <AddConsumer />
       </WrappedContext>,
     );
-    await waitFor(() => expect(container.querySelector("[data-testid='names']")?.textContent).toContain("MyQuery"));
+    await waitFor(() =>
+      expect(container.querySelector("[data-testid='names']")?.textContent).toContain("MyQuery"),
+    );
   });
 
   test("onDeleteQuery removes a query", async () => {
-    vi.mocked(SessionStorageConfig.get).mockReturnValue([makeQuery("q1", { selected: true }), makeQuery("q2")]);
+    vi.mocked(SessionStorageConfig.get).mockReturnValue([
+      makeQuery("q1", { selected: true }),
+      makeQuery("q2"),
+    ]);
     function DeleteConsumer() {
       const didRef = useRef(false);
       const { queries, isLoading, onDeleteQuery } = useConnectionQueries();
@@ -238,11 +260,17 @@ describe("useConnectionQuery", () => {
         <DeleteConsumer />
       </WrappedContext>,
     );
-    await waitFor(() => expect(container.querySelector("[data-testid='ids']")?.textContent).toBe("q2"));
+    await waitFor(() =>
+      expect(container.querySelector("[data-testid='ids']")?.textContent).toBe("q2"),
+    );
   });
 
   test("onShowQuery changes selected query", async () => {
-    vi.mocked(SessionStorageConfig.get).mockReturnValue([makeQuery("q1", { selected: true }), makeQuery("q2"), makeQuery("q3")]);
+    vi.mocked(SessionStorageConfig.get).mockReturnValue([
+      makeQuery("q1", { selected: true }),
+      makeQuery("q2"),
+      makeQuery("q3"),
+    ]);
     function ShowConsumer() {
       const didRef = useRef(false);
       const { queries, isLoading, onShowQuery } = useConnectionQueries();
@@ -258,7 +286,9 @@ describe("useConnectionQuery", () => {
         <ShowConsumer />
       </WrappedContext>,
     );
-    await waitFor(() => expect(container.querySelector("[data-testid='selected']")?.textContent).toBe("q3"));
+    await waitFor(() =>
+      expect(container.querySelector("[data-testid='selected']")?.textContent).toBe("q3"),
+    );
   });
 
   test("onChangeQuery updates query properties", async () => {
@@ -278,11 +308,15 @@ describe("useConnectionQuery", () => {
         <ChangeConsumer />
       </WrappedContext>,
     );
-    await waitFor(() => expect(container.querySelector("[data-testid='sql']")?.textContent).toBe("updated sql"));
+    await waitFor(() =>
+      expect(container.querySelector("[data-testid='sql']")?.textContent).toBe("updated sql"),
+    );
   });
 
   test("onDuplicateQuery copies an existing tab", async () => {
-    vi.mocked(SessionStorageConfig.get).mockReturnValue([makeQuery("q1", { selected: true, name: "Original" })]);
+    vi.mocked(SessionStorageConfig.get).mockReturnValue([
+      makeQuery("q1", { selected: true, name: "Original" }),
+    ]);
     function DupeConsumer() {
       const didRef = useRef(false);
       const { queries, isLoading, onDuplicateQuery } = useConnectionQueries();
@@ -298,7 +332,9 @@ describe("useConnectionQuery", () => {
         <DupeConsumer />
       </WrappedContext>,
     );
-    await waitFor(() => expect(container.querySelector("[data-testid='count']")?.textContent).toBe("2"));
+    await waitFor(() =>
+      expect(container.querySelector("[data-testid='count']")?.textContent).toBe("2"),
+    );
   });
 
   test("onDuplicateQuery does nothing if id not found", async () => {
@@ -318,12 +354,17 @@ describe("useConnectionQuery", () => {
         <DupeConsumer />
       </WrappedContext>,
     );
-    await waitFor(() => expect(container.querySelector("[data-testid='count']")?.textContent).toBe("1"));
+    await waitFor(() =>
+      expect(container.querySelector("[data-testid='count']")?.textContent).toBe("1"),
+    );
   });
 
   test("onSaveQueries persists all tabs when no IDs provided", async () => {
     mockSettings.isQueryTabAutoSaveEnabled = false;
-    vi.mocked(SessionStorageConfig.get).mockReturnValue([makeQuery("q1", { selected: true }), makeQuery("q2")]);
+    vi.mocked(SessionStorageConfig.get).mockReturnValue([
+      makeQuery("q1", { selected: true }),
+      makeQuery("q2"),
+    ]);
     function SaveConsumer() {
       const didRef = useRef(false);
       const { isLoading, onSaveQueries } = useConnectionQueries();
@@ -381,7 +422,9 @@ describe("useConnectionQuery", () => {
         <DelConsumer />
       </WrappedContext>,
     );
-    await waitFor(() => expect(container.querySelector("[data-testid='count']")?.textContent).toBe("1"));
+    await waitFor(() =>
+      expect(container.querySelector("[data-testid='count']")?.textContent).toBe("1"),
+    );
   });
 
   test("onDeleteQueries releases the editor model only for tabs that actually closed", async () => {
@@ -406,7 +449,9 @@ describe("useConnectionQuery", () => {
       </WrappedContext>,
     );
 
-    await waitFor(() => expect(container.querySelector("[data-testid='count']")?.textContent).toBe("2"));
+    await waitFor(() =>
+      expect(container.querySelector("[data-testid='count']")?.textContent).toBe("2"),
+    );
     // q2 is pinned so it survives the close — its model must stay parked for reuse
     expect(releaseEditorModelMock.mock.calls.map(([id]) => id)).toEqual(["q3"]);
   });
@@ -419,7 +464,13 @@ describe("useConnectionQuery", () => {
       useEffect(() => {
         if (isLoading || didRef.current) return;
         didRef.current = true;
-        onImportQuery({ id: "qi", name: "Imported", sql: "x", createdAt: 100, updatedAt: 200 } as any);
+        onImportQuery({
+          id: "qi",
+          name: "Imported",
+          sql: "x",
+          createdAt: 100,
+          updatedAt: 200,
+        } as any);
       }, [isLoading, onImportQuery]);
       return <span data-testid="names">{queries.map((q) => q.name).join(",")}</span>;
     }
@@ -428,7 +479,9 @@ describe("useConnectionQuery", () => {
         <ImportConsumer />
       </WrappedContext>,
     );
-    await waitFor(() => expect(container.querySelector("[data-testid='names']")?.textContent).toContain("Imported"));
+    await waitFor(() =>
+      expect(container.querySelector("[data-testid='names']")?.textContent).toContain("Imported"),
+    );
   });
 
   test("onImportQuery with undefined is a no-op", async () => {
@@ -448,6 +501,8 @@ describe("useConnectionQuery", () => {
         <ImportConsumer />
       </WrappedContext>,
     );
-    await waitFor(() => expect(container.querySelector("[data-testid='count']")?.textContent).toBe("0"));
+    await waitFor(() =>
+      expect(container.querySelector("[data-testid='count']")?.textContent).toBe("0"),
+    );
   });
 });

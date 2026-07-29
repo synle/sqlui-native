@@ -224,7 +224,9 @@ export function getIntrospectionQuery(_input: SqlAction.TableInput): SqlAction.O
  * @param _input - Table input (unused).
  * @returns Script output with a types-only introspection query.
  */
-export function getIntrospectionTypesOnly(_input: SqlAction.TableInput): SqlAction.Output | undefined {
+export function getIntrospectionTypesOnly(
+  _input: SqlAction.TableInput,
+): SqlAction.Output | undefined {
   return {
     label: "Introspection (Types Only)",
     formatter: graphqlFormatter,
@@ -407,10 +409,15 @@ export class ConcreteDataScripts extends BaseDataScript {
       const context = {
         endpoint: "{{ENDPOINT}}",
         query: parsed.query,
-        queryEscaped: parsed.query.replace(/\\/g, "\\\\").replace(/"/g, '\\"').replace(/\n/g, "\\n"),
+        queryEscaped: parsed.query
+          .replace(/\\/g, "\\\\")
+          .replace(/"/g, '\\"')
+          .replace(/\n/g, "\\n"),
         hasVariables,
         variablesJson: hasVariables ? JSON.stringify(parsed.variables, null, 2) : undefined,
-        variablesEscaped: hasVariables ? JSON.stringify(JSON.stringify(parsed.variables)).slice(1, -1) : undefined,
+        variablesEscaped: hasVariables
+          ? JSON.stringify(JSON.stringify(parsed.variables)).slice(1, -1)
+          : undefined,
         operationName: parsed.operationName,
         headers: mergedHeaders,
         headersJson: JSON.stringify(mergedHeaders, null, 2),

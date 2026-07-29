@@ -126,7 +126,8 @@ export default function ModernDataTable(props: DataTableProps): React.JSX.Elemen
     () =>
       (props.rowContextOptions || []).map((rowContextOption) => ({
         ...rowContextOption,
-        onClick: () => rowContextOption.onClick && rowContextOption.onClick(data[openContextMenuRowIdx]),
+        onClick: () =>
+          rowContextOption.onClick && rowContextOption.onClick(data[openContextMenuRowIdx]),
       })),
     [props.rowContextOptions, data, openContextMenuRowIdx],
   );
@@ -220,7 +221,12 @@ export default function ModernDataTable(props: DataTableProps): React.JSX.Elemen
     <div className={isCompact ? "DataTable--compact" : ""}>
       <Box sx={{ display: "flex", gap: 2 }}>
         <Box sx={{ flexGrow: 1 }}>
-          {props.searchInputId && <GlobalFilter id={props.searchInputId} onChange={(value: string) => table.setGlobalFilter(value)} />}
+          {props.searchInputId && (
+            <GlobalFilter
+              id={props.searchInputId}
+              onChange={(value: string) => table.setGlobalFilter(value)}
+            />
+          )}
         </Box>
         <DataTableColumnSettings table={table} />
         <Tooltip title="Open this table fullscreen in another window">
@@ -240,7 +246,14 @@ export default function ModernDataTable(props: DataTableProps): React.JSX.Elemen
         onContextMenu={(e) => onRowContextMenuClick(e)}
       >
         {/* Sticky header */}
-        <Box sx={{ position: "sticky", top: 0, zIndex: (theme) => theme.zIndex.drawer + 1, height: headerHeight }}>
+        <Box
+          sx={{
+            position: "sticky",
+            top: 0,
+            zIndex: (theme) => theme.zIndex.drawer + 1,
+            height: headerHeight,
+          }}
+        >
           {headerGroups.map((headerGroup) => (
             <StyledDivHeaderRow
               key={headerGroup.id}
@@ -367,7 +380,11 @@ export default function ModernDataTable(props: DataTableProps): React.JSX.Elemen
             );
           })}
         </StyledDivContainer>
-        {rows.length === 0 && <Box sx={{ paddingInline: 2, paddingBlock: 2 }}>There is no data in the query with matching filters.</Box>}
+        {rows.length === 0 && (
+          <Box sx={{ paddingInline: 2, paddingBlock: 2 }}>
+            There is no data in the query with matching filters.
+          </Box>
+        )}
       </Box>
     </div>
   );

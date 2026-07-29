@@ -30,7 +30,9 @@ describe("RedisDataAdapter/utils", () => {
     });
 
     it("handles Azure Redis connection with username placeholder", () => {
-      const result = getClientOptions("rediss://azure:myaccesskey@myredis.redis.cache.windows.net:6380");
+      const result = getClientOptions(
+        "rediss://azure:myaccesskey@myredis.redis.cache.windows.net:6380",
+      );
       expect(result.url).toContain("myredis.redis.cache.windows.net:6380");
       expect(result.password).toBe("myaccesskey");
     });

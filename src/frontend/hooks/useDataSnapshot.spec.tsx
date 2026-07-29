@@ -13,13 +13,19 @@ vi.mock("src/frontend/data/api", () => ({
   },
 }));
 
-import { useGetDataSnapshots, useGetDataSnapshot, useAddDataSnapshot, useDeleteDataSnapshot } from "src/frontend/hooks/useDataSnapshot";
+import {
+  useGetDataSnapshots,
+  useGetDataSnapshot,
+  useAddDataSnapshot,
+  useDeleteDataSnapshot,
+} from "src/frontend/hooks/useDataSnapshot";
 
 function createWrapper() {
   const queryClient = new QueryClient({
     defaultOptions: { queries: { retry: false } },
   });
-  return ({ children }: { children: React.ReactNode }) => React.createElement(QueryClientProvider, { client: queryClient }, children);
+  return ({ children }: { children: React.ReactNode }) =>
+    React.createElement(QueryClientProvider, { client: queryClient }, children);
 }
 
 describe("useDataSnapshot", () => {

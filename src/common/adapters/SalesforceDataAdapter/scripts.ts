@@ -22,7 +22,8 @@ export function getSelectAllColumns(input: SqlAction.TableInput): SqlAction.Outp
   const label = `Select All Columns`;
 
   const columns = input.columns;
-  const columnNames = columns && columns.length > 0 ? columns.map((c) => c.name).join(", ") : "Id, Name";
+  const columnNames =
+    columns && columns.length > 0 ? columns.map((c) => c.name).join(", ") : "Id, Name";
 
   return {
     label,
@@ -51,7 +52,9 @@ export function getSelectById(input: SqlAction.TableInput): SqlAction.Output | u
  * @param input - Table input containing columns and query size.
  * @returns Script output with filtered SOQL query, or undefined if no columns.
  */
-export function getSelectSpecificColumns(input: SqlAction.TableInput): SqlAction.Output | undefined {
+export function getSelectSpecificColumns(
+  input: SqlAction.TableInput,
+): SqlAction.Output | undefined {
   const label = `Select Specific Columns`;
 
   if (!input.columns) {
@@ -207,7 +210,9 @@ export function getSoslSearch(input: SqlAction.TableInput): SqlAction.Output | u
  * @param _input - Connection input (unused).
  * @returns Script output with a multi-object SOSL FIND query.
  */
-export function getSoslSearchMultiObject(_input: SqlAction.ConnectionInput): SqlAction.Output | undefined {
+export function getSoslSearchMultiObject(
+  _input: SqlAction.ConnectionInput,
+): SqlAction.Output | undefined {
   const label = `Search Across Objects (SOSL)`;
 
   return {
@@ -227,7 +232,10 @@ export function getSoslSearchMultiObject(_input: SqlAction.ConnectionInput): Sql
  * @param value - Optional pre-populated values for the new record.
  * @returns Script output with the conn.sobject().create() call.
  */
-export function getInsert(input: SqlAction.TableInput, value?: Record<string, any>): SqlAction.Output | undefined {
+export function getInsert(
+  input: SqlAction.TableInput,
+  value?: Record<string, any>,
+): SqlAction.Output | undefined {
   const label = `Insert Record (API)`;
 
   let colMap: any = {};
@@ -284,7 +292,10 @@ export function getInsert(input: SqlAction.TableInput, value?: Record<string, an
  * @param rows - Array of row data to insert.
  * @returns Script output with the conn.sobject().create() bulk call.
  */
-export function getBulkInsert(input: SqlAction.TableInput, rows?: Record<string, any>[]): SqlAction.Output | undefined {
+export function getBulkInsert(
+  input: SqlAction.TableInput,
+  rows?: Record<string, any>[],
+): SqlAction.Output | undefined {
   const label = `Insert Record (API)`;
 
   if (!rows || rows.length === 0) {
@@ -440,7 +451,9 @@ export function getDescribeApi(input: SqlAction.TableInput): SqlAction.Output | 
  * @param _input - Connection input (unused).
  * @returns Script output listing custom objects.
  */
-export function getListCustomObjects(_input: SqlAction.ConnectionInput): SqlAction.Output | undefined {
+export function getListCustomObjects(
+  _input: SqlAction.ConnectionInput,
+): SqlAction.Output | undefined {
   const label = `List Custom Objects`;
 
   return {
@@ -455,7 +468,9 @@ export function getListCustomObjects(_input: SqlAction.ConnectionInput): SqlActi
  * @param _input - Connection input (unused).
  * @returns Script output listing standard objects.
  */
-export function getListStandardObjects(_input: SqlAction.ConnectionInput): SqlAction.Output | undefined {
+export function getListStandardObjects(
+  _input: SqlAction.ConnectionInput,
+): SqlAction.Output | undefined {
   const label = `List Standard Objects`;
 
   return {
@@ -515,7 +530,9 @@ export function getRecentContacts(_input: SqlAction.ConnectionInput): SqlAction.
  * @param _input - Connection input (unused).
  * @returns Script output querying Opportunity records.
  */
-export function getRecentOpportunities(_input: SqlAction.ConnectionInput): SqlAction.Output | undefined {
+export function getRecentOpportunities(
+  _input: SqlAction.ConnectionInput,
+): SqlAction.Output | undefined {
   const label = `Recent Opportunities`;
 
   return {

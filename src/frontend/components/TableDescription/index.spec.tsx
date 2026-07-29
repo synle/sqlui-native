@@ -15,7 +15,9 @@ vi.mock("src/frontend/components/Accordion", () => ({
   AccordionHeader: ({ children, className }: any) => <div className={className}>{children}</div>,
   AccordionBody: ({ children }: any) => <div>{children}</div>,
 }));
-vi.mock("src/frontend/components/ColumnDescription", () => ({ default: () => <div>ColumnDesc</div> }));
+vi.mock("src/frontend/components/ColumnDescription", () => ({
+  default: () => <div>ColumnDesc</div>,
+}));
 vi.mock("src/frontend/components/TableActions", () => ({ default: () => <div>TableActions</div> }));
 
 import TableDescription from "src/frontend/components/TableDescription";

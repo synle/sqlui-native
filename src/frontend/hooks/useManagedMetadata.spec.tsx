@@ -41,7 +41,9 @@ function createWrapper() {
     defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
   });
   queryClient.invalidateQueries = mockInvalidateQueries as any;
-  return ({ children }: { children: React.ReactNode }) => <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
+  return ({ children }: { children: React.ReactNode }) => (
+    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+  );
 }
 
 describe("useManagedMetadata", () => {

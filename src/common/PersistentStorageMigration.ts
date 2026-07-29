@@ -59,7 +59,12 @@ export function getStorageVersion(): number {
   if (!dbFileExists()) return 0;
 
   try {
-    const settingStorage = new PersistentStorageSqlite<any>("setting", "settings", "settings", "settings");
+    const settingStorage = new PersistentStorageSqlite<any>(
+      "setting",
+      "settings",
+      "settings",
+      "settings",
+    );
     const entry = settingStorage.get(STORAGE_VERSION_ID);
     if (!entry) return 0;
     return entry.version || 0;
@@ -73,7 +78,12 @@ export function getStorageVersion(): number {
  * @param version - The version number to write.
  */
 function setStorageVersion(version: number): void {
-  const settingStorage = new PersistentStorageSqlite<any>("setting", "settings", "settings", "settings");
+  const settingStorage = new PersistentStorageSqlite<any>(
+    "setting",
+    "settings",
+    "settings",
+    "settings",
+  );
   const existing = settingStorage.get(STORAGE_VERSION_ID);
   if (existing) {
     settingStorage.update({ id: STORAGE_VERSION_ID, version });

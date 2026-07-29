@@ -38,7 +38,10 @@ function makeRequester(honoApp: typeof app) {
   async function run(init: ReqInit) {
     const headers: Record<string, string> = { ...init.headers };
     let body: any = undefined;
-    if (init.body !== undefined && (init.method === "POST" || init.method === "PUT" || init.method === "DELETE")) {
+    if (
+      init.body !== undefined &&
+      (init.method === "POST" || init.method === "PUT" || init.method === "DELETE")
+    ) {
       headers["content-type"] = headers["content-type"] || "application/json";
       body = JSON.stringify(init.body);
     }
@@ -119,7 +122,9 @@ describe("Configs", () => {
     expect(res.body).toHaveProperty("isElectron");
 
     // restore defaults
-    res = await requestWithSupertest.put(`/api/configs`).send({ darkMode: "dark", layoutMode: "compact" });
+    res = await requestWithSupertest
+      .put(`/api/configs`)
+      .send({ darkMode: "dark", layoutMode: "compact" });
     expect(res.status).toEqual(200);
     expect(res.body.darkMode).toEqual("dark");
   });
@@ -161,7 +166,9 @@ describe("Sessions", () => {
     };
 
     let res: any;
-    res = await requestWithSupertest.put(`/api/session/${mockedSessionId}`).send(mockedSessionValue1);
+    res = await requestWithSupertest
+      .put(`/api/session/${mockedSessionId}`)
+      .send(mockedSessionValue1);
     expect(res.status).toEqual(202);
 
     res = await requestWithSupertest.get(`/api/sessions`);
@@ -170,7 +177,9 @@ describe("Sessions", () => {
     expect(res.body).toContainEqual(expect.objectContaining(mockedSessionValue1));
     expect(res.body.length > 0).toEqual(true);
     // rename the session
-    res = await requestWithSupertest.put(`/api/session/${mockedSessionId}`).send(mockedSessionValue2);
+    res = await requestWithSupertest
+      .put(`/api/session/${mockedSessionId}`)
+      .send(mockedSessionValue2);
     expect(res.status).toEqual(202);
 
     res = await requestWithSupertest.get(`/api/sessions`);
@@ -183,17 +192,24 @@ describe("Sessions", () => {
     let res: any;
 
     // add a connection
-    res = await requestWithSupertest.post(`/api/connection`).set(_getCommonHeaders(mockedSessionId)).send(mockedConnection1);
+    res = await requestWithSupertest
+      .post(`/api/connection`)
+      .set(_getCommonHeaders(mockedSessionId))
+      .send(mockedConnection1);
     expect(res.status).toEqual(201);
     expect(res.body).toEqual(expect.objectContaining(mockedConnection1));
     const mockedConnectionId1 = res.body.id;
     expect(mockedConnectionId1.length > 0).toBe(true);
 
     // for simplicity, we will only assert this response headers once
-    expect(res.headers["sqlui-native-session-id"]).toEqual(_getCommonHeaders(mockedSessionId)["sqlui-native-session-id"]);
+    expect(res.headers["sqlui-native-session-id"]).toEqual(
+      _getCommonHeaders(mockedSessionId)["sqlui-native-session-id"],
+    );
 
     // delete connection
-    res = await requestWithSupertest.delete(`/api/connection/${mockedConnectionId1}`).set(_getCommonHeaders(mockedSessionId));
+    res = await requestWithSupertest
+      .delete(`/api/connection/${mockedConnectionId1}`)
+      .set(_getCommonHeaders(mockedSessionId));
     expect(res.status).toEqual(202);
   });
 
@@ -221,7 +237,9 @@ describe("Sessions", () => {
     expect(res.body.length).toEqual(2);
 
     // delete one query and test
-    res = await requestWithSupertest.delete(`/api/query/${mockedQueryValue1.id}`).set(_getCommonHeaders(mockedSessionId));
+    res = await requestWithSupertest
+      .delete(`/api/query/${mockedQueryValue1.id}`)
+      .set(_getCommonHeaders(mockedSessionId));
     expect(res.status).toEqual(202);
 
     // check the queries
@@ -234,7 +252,10 @@ describe("Sessions", () => {
     let res: any;
 
     // add a connection
-    res = await requestWithSupertest.post(`/api/connection`).set(_getCommonHeaders(mockedSessionId)).send(mockedConnection1);
+    res = await requestWithSupertest
+      .post(`/api/connection`)
+      .set(_getCommonHeaders(mockedSessionId))
+      .send(mockedConnection1);
     expect(res.status).toEqual(201);
     expect(res.body).toEqual(expect.objectContaining(mockedConnection1));
 
@@ -274,7 +295,9 @@ describe("Sessions", () => {
     res = await requestWithSupertest.get(`/api/queries`).set(_getCommonHeaders(newClonedSessionId));
     expect(res.status).toEqual(200);
     expect(res.body.length).toEqual(2);
-    res = await requestWithSupertest.get(`/api/connections`).set(_getCommonHeaders(newClonedSessionId));
+    res = await requestWithSupertest
+      .get(`/api/connections`)
+      .set(_getCommonHeaders(newClonedSessionId));
     expect(res.status).toEqual(200);
     expect(res.body.length).toEqual(1);
 
@@ -321,7 +344,10 @@ describe("Connections - CRUD", () => {
       name: "Test PG Connection",
       connection: "postgres://user:pass@localhost:5432/testdb",
     };
-    res = await requestWithSupertest.post(`/api/connection`).set(_getCommonHeaders(mockedSessionId)).send(connectionData);
+    res = await requestWithSupertest
+      .post(`/api/connection`)
+      .set(_getCommonHeaders(mockedSessionId))
+      .send(connectionData);
     expect(res.status).toEqual(201);
     expect(res.body.name).toEqual(connectionData.name);
     expect(res.body.connection).toEqual(connectionData.connection);
@@ -329,7 +355,9 @@ describe("Connections - CRUD", () => {
     expect(connectionId).toBeDefined();
 
     // get single connection
-    res = await requestWithSupertest.get(`/api/connection/${connectionId}`).set(_getCommonHeaders(mockedSessionId));
+    res = await requestWithSupertest
+      .get(`/api/connection/${connectionId}`)
+      .set(_getCommonHeaders(mockedSessionId));
     expect(res.status).toEqual(200);
     expect(res.body.id).toEqual(connectionId);
     expect(res.body.name).toEqual(connectionData.name);
@@ -339,13 +367,18 @@ describe("Connections - CRUD", () => {
       name: "Updated PG Connection",
       connection: "postgres://user:pass@localhost:5432/updateddb",
     };
-    res = await requestWithSupertest.put(`/api/connection/${connectionId}`).set(_getCommonHeaders(mockedSessionId)).send(updatedData);
+    res = await requestWithSupertest
+      .put(`/api/connection/${connectionId}`)
+      .set(_getCommonHeaders(mockedSessionId))
+      .send(updatedData);
     expect(res.status).toEqual(202);
     expect(res.body.name).toEqual(updatedData.name);
     expect(res.body.connection).toEqual(updatedData.connection);
 
     // list connections - should have the updated one
-    res = await requestWithSupertest.get(`/api/connections`).set(_getCommonHeaders(mockedSessionId));
+    res = await requestWithSupertest
+      .get(`/api/connections`)
+      .set(_getCommonHeaders(mockedSessionId));
     expect(res.status).toEqual(200);
     expect(Array.isArray(res.body)).toBe(true);
     const found = res.body.find((c: any) => c.id === connectionId);
@@ -353,11 +386,15 @@ describe("Connections - CRUD", () => {
     expect(found.name).toEqual(updatedData.name);
 
     // delete connection
-    res = await requestWithSupertest.delete(`/api/connection/${connectionId}`).set(_getCommonHeaders(mockedSessionId));
+    res = await requestWithSupertest
+      .delete(`/api/connection/${connectionId}`)
+      .set(_getCommonHeaders(mockedSessionId));
     expect(res.status).toEqual(202);
 
     // verify deletion
-    res = await requestWithSupertest.get(`/api/connections`).set(_getCommonHeaders(mockedSessionId));
+    res = await requestWithSupertest
+      .get(`/api/connections`)
+      .set(_getCommonHeaders(mockedSessionId));
     expect(res.status).toEqual(200);
     const foundAfterDelete = res.body.find((c: any) => c.id === connectionId);
     expect(foundAfterDelete).toBeUndefined();
@@ -387,11 +424,16 @@ describe("Connections - CRUD", () => {
         connection: "sqlite://replaced.db",
       },
     ];
-    res = await requestWithSupertest.post(`/api/connections`).set(_getCommonHeaders(mockedSessionId)).send(replacementConnections);
+    res = await requestWithSupertest
+      .post(`/api/connections`)
+      .set(_getCommonHeaders(mockedSessionId))
+      .send(replacementConnections);
     expect(res.status).toEqual(200);
 
     // verify replacement
-    res = await requestWithSupertest.get(`/api/connections`).set(_getCommonHeaders(mockedSessionId));
+    res = await requestWithSupertest
+      .get(`/api/connections`)
+      .set(_getCommonHeaders(mockedSessionId));
     expect(res.status).toEqual(200);
     expect(res.body.length).toEqual(1);
     expect(res.body[0].name).toEqual("Replaced Conn");
@@ -404,20 +446,27 @@ describe("Connection - Refresh Endpoints", () => {
   let connectionId: string;
 
   beforeAll(async () => {
-    const res = await requestWithSupertest.post(`/api/connection`).set(_getCommonHeaders(mockedSessionId)).send({
-      name: "Refresh Test Connection",
-      connection: "postgres://user:pass@localhost:5432/testdb",
-    });
+    const res = await requestWithSupertest
+      .post(`/api/connection`)
+      .set(_getCommonHeaders(mockedSessionId))
+      .send({
+        name: "Refresh Test Connection",
+        connection: "postgres://user:pass@localhost:5432/testdb",
+      });
     connectionId = res.body.id;
   });
 
   test("POST /api/connection/:connectionId/refresh should return 406 for unreachable connection", async () => {
-    const res = await requestWithSupertest.post(`/api/connection/${connectionId}/refresh`).set(_getCommonHeaders(mockedSessionId));
+    const res = await requestWithSupertest
+      .post(`/api/connection/${connectionId}/refresh`)
+      .set(_getCommonHeaders(mockedSessionId));
     expect(res.status).toEqual(406);
   });
 
   test("POST /api/connection/:connectionId/refresh should return 404 for unknown connection", async () => {
-    const res = await requestWithSupertest.post(`/api/connection/nonexistent/refresh`).set(_getCommonHeaders(mockedSessionId));
+    const res = await requestWithSupertest
+      .post(`/api/connection/nonexistent/refresh`)
+      .set(_getCommonHeaders(mockedSessionId));
     expect(res.status).toEqual(404);
   });
 
@@ -452,20 +501,26 @@ describe("Queries - CRUD", () => {
     let res: any;
 
     // create a query using POST
-    res = await requestWithSupertest.post(`/api/query`).set(_getCommonHeaders(mockedSessionId)).send({ name: "New Query" });
+    res = await requestWithSupertest
+      .post(`/api/query`)
+      .set(_getCommonHeaders(mockedSessionId))
+      .send({ name: "New Query" });
     expect(res.status).toEqual(201);
     expect(res.body.id).toBeDefined();
     const queryId = res.body.id;
 
     // update the query with SQL content
-    res = await requestWithSupertest.put(`/api/query/${queryId}`).set(_getCommonHeaders(mockedSessionId)).send({
-      id: queryId,
-      name: "Updated Query",
-      sql: "SELECT * FROM users",
-      connectionId: "conn-1",
-      databaseId: "db-1",
-      tableId: "users",
-    });
+    res = await requestWithSupertest
+      .put(`/api/query/${queryId}`)
+      .set(_getCommonHeaders(mockedSessionId))
+      .send({
+        id: queryId,
+        name: "Updated Query",
+        sql: "SELECT * FROM users",
+        connectionId: "conn-1",
+        databaseId: "db-1",
+        tableId: "users",
+      });
     expect(res.status).toEqual(202);
     expect(res.body.name).toEqual("Updated Query");
     expect(res.body.sql).toEqual("SELECT * FROM users");
@@ -482,7 +537,9 @@ describe("Queries - CRUD", () => {
     expect(found.sql).toEqual("SELECT * FROM users");
 
     // delete query
-    res = await requestWithSupertest.delete(`/api/query/${queryId}`).set(_getCommonHeaders(mockedSessionId));
+    res = await requestWithSupertest
+      .delete(`/api/query/${queryId}`)
+      .set(_getCommonHeaders(mockedSessionId));
     expect(res.status).toEqual(202);
 
     // verify deletion
@@ -509,7 +566,9 @@ describe("Sessions", () => {
   });
 
   test("GET /api/session should return 404 for unknown session-id", async () => {
-    const res = await requestWithSupertest.get(`/api/session`).set({ "sqlui-native-session-id": `non-existent-session.${Date.now()}` });
+    const res = await requestWithSupertest
+      .get(`/api/session`)
+      .set({ "sqlui-native-session-id": `non-existent-session.${Date.now()}` });
     expect(res.status).toEqual(404);
   });
 });
@@ -663,10 +722,14 @@ describe("Data Snapshots", () => {
   test("Multiple snapshots can be created and listed", async () => {
     let res: any;
 
-    const snap1 = await requestWithSupertest.post(`/api/dataSnapshot`).send({ description: "Snap 1", values: [{ a: 1 }] });
+    const snap1 = await requestWithSupertest
+      .post(`/api/dataSnapshot`)
+      .send({ description: "Snap 1", values: [{ a: 1 }] });
     expect(snap1.status).toEqual(200);
 
-    const snap2 = await requestWithSupertest.post(`/api/dataSnapshot`).send({ description: "Snap 2", values: [{ b: 2 }] });
+    const snap2 = await requestWithSupertest
+      .post(`/api/dataSnapshot`)
+      .send({ description: "Snap 2", values: [{ b: 2 }] });
     expect(snap2.status).toEqual(200);
 
     // both should have different ids
@@ -705,7 +768,9 @@ describe("Schema Search", () => {
 
   test("GET /api/schema/search?q=nonexistent should return empty for no matches", async () => {
     const sessionId = `schema-search.${Date.now()}`;
-    const res = await requestWithSupertest.get(`/api/schema/search?q=nonexistenttable12345`).set(_getCommonHeaders(sessionId));
+    const res = await requestWithSupertest
+      .get(`/api/schema/search?q=nonexistenttable12345`)
+      .set(_getCommonHeaders(sessionId));
     expect(res.status).toEqual(200);
     expect(Array.isArray(res.body)).toBe(true);
   });
@@ -715,7 +780,9 @@ describe("Query Version History", () => {
   const mockedSessionId = `mocked-history.${Date.now()}`;
 
   test("GET /api/queryVersionHistory should return empty array initially", async () => {
-    const res = await requestWithSupertest.get(`/api/queryVersionHistory`).set(_getCommonHeaders(mockedSessionId));
+    const res = await requestWithSupertest
+      .get(`/api/queryVersionHistory`)
+      .set(_getCommonHeaders(mockedSessionId));
     expect(res.status).toEqual(200);
     expect(Array.isArray(res.body)).toBe(true);
     expect(res.body.length).toEqual(0);
@@ -729,7 +796,10 @@ describe("Query Version History", () => {
       sql: "SELECT * FROM users",
     };
 
-    const res = await requestWithSupertest.post(`/api/queryVersionHistory`).set(_getCommonHeaders(mockedSessionId)).send(entry);
+    const res = await requestWithSupertest
+      .post(`/api/queryVersionHistory`)
+      .set(_getCommonHeaders(mockedSessionId))
+      .send(entry);
     expect(res.status).toEqual(201);
     expect(res.body.id).toBeDefined();
     expect(res.body.name).toEqual("Test History Entry");
@@ -744,14 +814,19 @@ describe("Query Version History", () => {
       sql: "INSERT INTO orders VALUES (1)",
     };
 
-    const res = await requestWithSupertest.post(`/api/queryVersionHistory`).set(_getCommonHeaders(mockedSessionId)).send(entry);
+    const res = await requestWithSupertest
+      .post(`/api/queryVersionHistory`)
+      .set(_getCommonHeaders(mockedSessionId))
+      .send(entry);
     expect(res.status).toEqual(201);
     expect(res.body.data.sql).toEqual("INSERT INTO orders VALUES (1)");
     expect(res.body.data.connectionId).toEqual("conn-2");
   });
 
   test("GET /api/queryVersionHistory should list added entries", async () => {
-    const res = await requestWithSupertest.get(`/api/queryVersionHistory`).set(_getCommonHeaders(mockedSessionId));
+    const res = await requestWithSupertest
+      .get(`/api/queryVersionHistory`)
+      .set(_getCommonHeaders(mockedSessionId));
     expect(res.status).toEqual(200);
     expect(res.body.length).toBeGreaterThanOrEqual(2);
   });
@@ -764,21 +839,30 @@ describe("Query Version History", () => {
       connectionId: "conn-1",
       sql: "SELECT 1",
     };
-    let res = await requestWithSupertest.post(`/api/queryVersionHistory`).set(_getCommonHeaders(mockedSessionId)).send(entry);
+    let res = await requestWithSupertest
+      .post(`/api/queryVersionHistory`)
+      .set(_getCommonHeaders(mockedSessionId))
+      .send(entry);
     expect(res.status).toEqual(201);
     const entryId = res.body.id;
 
     // delete it
-    res = await requestWithSupertest.delete(`/api/queryVersionHistory/${entryId}`).set(_getCommonHeaders(mockedSessionId));
+    res = await requestWithSupertest
+      .delete(`/api/queryVersionHistory/${entryId}`)
+      .set(_getCommonHeaders(mockedSessionId));
     expect(res.status).toEqual(202);
   });
 
   test("DELETE /api/queryVersionHistory should clear all entries", async () => {
-    let res = await requestWithSupertest.delete(`/api/queryVersionHistory`).set(_getCommonHeaders(mockedSessionId));
+    let res = await requestWithSupertest
+      .delete(`/api/queryVersionHistory`)
+      .set(_getCommonHeaders(mockedSessionId));
     expect(res.status).toEqual(202);
 
     // verify cleared
-    res = await requestWithSupertest.get(`/api/queryVersionHistory`).set(_getCommonHeaders(mockedSessionId));
+    res = await requestWithSupertest
+      .get(`/api/queryVersionHistory`)
+      .set(_getCommonHeaders(mockedSessionId));
     expect(res.status).toEqual(200);
     expect(res.body.length).toEqual(0);
   });
@@ -883,7 +967,11 @@ describe("POST /api/file - multipart upload", () => {
     // The handler reads via File.text() which decodes as utf-8 — binary bytes
     // become replacement chars but the server must still respond 200, not throw.
     const fd = new FormData();
-    fd.append("file", new Blob([new Uint8Array([0xff, 0xfe, 0x00, 0x10, 0x80, 0x81])]), "binary.bin");
+    fd.append(
+      "file",
+      new Blob([new Uint8Array([0xff, 0xfe, 0x00, 0x10, 0x80, 0x81])]),
+      "binary.bin",
+    );
 
     const r = await app.request("/api/file", { method: "POST", body: fd });
     expect(r.status).toEqual(200);
@@ -908,7 +996,9 @@ describe("POST /api/file - multipart upload", () => {
     expect(text.length).toEqual(content.length);
     // Spot-check start, middle, end to catch silent truncation.
     expect(text.slice(0, 20)).toEqual(content.slice(0, 20));
-    expect(text.slice(content.length / 2, content.length / 2 + 20)).toEqual(content.slice(content.length / 2, content.length / 2 + 20));
+    expect(text.slice(content.length / 2, content.length / 2 + 20)).toEqual(
+      content.slice(content.length / 2, content.length / 2 + 20),
+    );
     expect(text.slice(-20)).toEqual(content.slice(-20));
   });
 
@@ -924,7 +1014,11 @@ describe("POST /api/file - multipart upload", () => {
   });
 
   test("three sequential uploads each return their own independent payload", async () => {
-    const payloads = ["first-acme-payload", "second-globex-payload-with-newline\nhere", JSON.stringify({ company: "Initech", n: 3 })];
+    const payloads = [
+      "first-acme-payload",
+      "second-globex-payload-with-newline\nhere",
+      JSON.stringify({ company: "Initech", n: 3 }),
+    ];
 
     for (const payload of payloads) {
       const fd = new FormData();
@@ -1007,27 +1101,36 @@ describe("Session-id header echo across diverse methods + statuses", () => {
     expect(res.headers["sqlui-native-session-id"]).toEqual(postSession);
 
     // cleanup
-    await requestWithSupertest.delete(`/api/connection/${res.body.id}`).set(_getCommonHeaders(postSession));
+    await requestWithSupertest
+      .delete(`/api/connection/${res.body.id}`)
+      .set(_getCommonHeaders(postSession));
   });
 
   test("DELETE 202 response echoes session-id", async () => {
     const delSession = `echo-del.${Date.now()}`;
     const fakeQueryId = `echo-q.${Date.now()}`;
-    const res = await requestWithSupertest.delete(`/api/query/${fakeQueryId}`).set(_getCommonHeaders(delSession));
+    const res = await requestWithSupertest
+      .delete(`/api/query/${fakeQueryId}`)
+      .set(_getCommonHeaders(delSession));
     expect(res.status).toEqual(202);
     expect(res.headers["sqlui-native-session-id"]).toEqual(delSession);
   });
 
   test("404 response still echoes session-id (error path is not silent)", async () => {
     const errSession = `echo-404.${Date.now()}`;
-    const res = await requestWithSupertest.post(`/api/connection/this-id-does-not-exist-xyz/refresh`).set(_getCommonHeaders(errSession));
+    const res = await requestWithSupertest
+      .post(`/api/connection/this-id-does-not-exist-xyz/refresh`)
+      .set(_getCommonHeaders(errSession));
     expect(res.status).toEqual(404);
     expect(res.headers["sqlui-native-session-id"]).toEqual(errSession);
   });
 
   test("400 response still echoes session-id (validation failure)", async () => {
     const errSession = `echo-400.${Date.now()}`;
-    const res = await requestWithSupertest.post(`/api/connection/test`).set(_getCommonHeaders(errSession)).send({});
+    const res = await requestWithSupertest
+      .post(`/api/connection/test`)
+      .set(_getCommonHeaders(errSession))
+      .send({});
     expect(res.status).toEqual(400);
     expect(res.headers["sqlui-native-session-id"]).toEqual(errSession);
   });
@@ -1048,7 +1151,9 @@ describe("Plain-text 404 'Not Found' body", () => {
   });
 
   test("GET /api/dataSnapshot/:unknown returns plain-text 'Not Found'", async () => {
-    const r = await app.request("/api/dataSnapshot/non-existent-snapshot-xyz-12345", { method: "GET" });
+    const r = await app.request("/api/dataSnapshot/non-existent-snapshot-xyz-12345", {
+      method: "GET",
+    });
     expect(r.status).toEqual(404);
     const ct = r.headers.get("content-type") || "";
     expect(ct).toContain("text/plain");
@@ -1065,7 +1170,10 @@ describe("Body parsing sanity (JSON / empty / urlencoded)", () => {
       connectionId: "conn-rt",
       sql: "SELECT 'round-trip'",
     };
-    const res = await requestWithSupertest.post(`/api/queryVersionHistory`).set(_getCommonHeaders(sessionId)).send(payload);
+    const res = await requestWithSupertest
+      .post(`/api/queryVersionHistory`)
+      .set(_getCommonHeaders(sessionId))
+      .send(payload);
     expect(res.status).toEqual(201);
     // verify each field the handler read off req.body made it back unchanged
     expect(res.body.name).toEqual("JSON Round Trip");

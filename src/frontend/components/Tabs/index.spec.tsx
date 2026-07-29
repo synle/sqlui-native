@@ -51,7 +51,12 @@ describe("MyTabs", () => {
 
   test("uses horizontal orientation by default for few tabs", () => {
     const { container } = render(
-      <MyTabs tabIdx={0} onTabChange={() => {}} tabHeaders={["Tab A"]} tabContents={[<div key="a">Content A</div>]} />,
+      <MyTabs
+        tabIdx={0}
+        onTabChange={() => {}}
+        tabHeaders={["Tab A"]}
+        tabContents={[<div key="a">Content A</div>]}
+      />,
     );
     expect(container.querySelector(".Tabs__Horizontal")).toBeTruthy();
   });

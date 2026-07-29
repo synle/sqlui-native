@@ -4,9 +4,16 @@ import dns from "dns";
 import BaseDataAdapter from "src/common/adapters/BaseDataAdapter/index";
 import { executeGraphQL } from "src/common/adapters/GraphQLDataAdapter/graphqlExecutor";
 import { parseGraphQLInput } from "src/common/adapters/GraphQLDataAdapter/graphqlParser";
-import { GraphQLConnectionConfig, GraphQLFolderProperties } from "src/common/adapters/GraphQLDataAdapter/types";
+import {
+  GraphQLConnectionConfig,
+  GraphQLFolderProperties,
+} from "src/common/adapters/GraphQLDataAdapter/types";
 import { executeCurl } from "src/common/adapters/RestApiDataAdapter/curlExecutor";
-import { findUnresolvedVariables, mergeVariableLayers, resolveVariables } from "src/common/adapters/RestApiDataAdapter/variableResolver";
+import {
+  findUnresolvedVariables,
+  mergeVariableLayers,
+  resolveVariables,
+} from "src/common/adapters/RestApiDataAdapter/variableResolver";
 import IDataAdapter from "src/common/adapters/IDataAdapter";
 import { getManagedDatabasesStorage } from "src/common/PersistentStorage";
 import { SqluiCore } from "typings";
@@ -57,7 +64,9 @@ export default class GraphQLDataAdapter extends BaseDataAdapter implements IData
 
     // Validate URL format
     if (!/^https?:\/\/.+/i.test(endpoint)) {
-      throw new Error(`Invalid ENDPOINT format: "${endpoint}". Must start with http:// or https://`);
+      throw new Error(
+        `Invalid ENDPOINT format: "${endpoint}". Must start with http:// or https://`,
+      );
     }
 
     // Extract hostname and verify DNS resolution
@@ -198,7 +207,10 @@ export default class GraphQLDataAdapter extends BaseDataAdapter implements IData
       // Determine endpoint
       const endpoint = this._config.ENDPOINT;
       if (!endpoint) {
-        return { ok: false, error: "No ENDPOINT configured. Set the GraphQL endpoint URL in the connection settings." };
+        return {
+          ok: false,
+          error: "No ENDPOINT configured. Set the GraphQL endpoint URL in the connection settings.",
+        };
       }
 
       // Merge default headers from connection config

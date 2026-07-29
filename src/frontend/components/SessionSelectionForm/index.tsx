@@ -13,7 +13,13 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import TextField from "@mui/material/TextField";
 import { useCommands } from "src/frontend/components/MissionControl";
-import { useGetCurrentSession, useGetSessions, useSelectSession, useUpsertSession, useDeleteSession } from "src/frontend/hooks/useSession";
+import {
+  useGetCurrentSession,
+  useGetSessions,
+  useSelectSession,
+  useUpsertSession,
+  useDeleteSession,
+} from "src/frontend/hooks/useSession";
 import { useActionDialogs } from "src/frontend/hooks/useActionDialogs";
 import { useNavigate } from "src/frontend/utils/commonUtils";
 
@@ -43,7 +49,9 @@ type SessionSelectionFormProps = {
  * @param props - Contains isFirstTime flag to control UI behavior.
  * @returns The session selection form or null while loading.
  */
-export default function SessionSelectionForm(props: SessionSelectionFormProps): React.JSX.Element | null {
+export default function SessionSelectionForm(
+  props: SessionSelectionFormProps,
+): React.JSX.Element | null {
   const { isFirstTime } = props;
   const { data: sessions, isLoading: loadingSessions } = useGetSessions();
   const { data: currentSession } = useGetCurrentSession();
@@ -124,7 +132,8 @@ export default function SessionSelectionForm(props: SessionSelectionFormProps): 
     }
   };
 
-  const defaultSessionName = options.length === 0 ? `New Session ${new Date().toLocaleDateString()}` : "";
+  const defaultSessionName =
+    options.length === 0 ? `New Session ${new Date().toLocaleDateString()}` : "";
 
   return (
     <Box className="FormInput__Container">
@@ -178,7 +187,12 @@ export default function SessionSelectionForm(props: SessionSelectionFormProps): 
             <ListItem dense key={option.value} secondaryAction={secondaryAction} disablePadding>
               <ListItemButton selected={option.selected} onClick={onSelectThisSession}>
                 <ListItemIcon>
-                  <Checkbox edge="start" checked={!!option.selected} tabIndex={-1} slotProps={{ input: { "aria-labelledby": labelId } }} />
+                  <Checkbox
+                    edge="start"
+                    checked={!!option.selected}
+                    tabIndex={-1}
+                    slotProps={{ input: { "aria-labelledby": labelId } }}
+                  />
                 </ListItemIcon>
                 <ListItemText id={labelId} primary={option.label} secondary={option.subtitle} />
               </ListItemButton>
@@ -203,7 +217,12 @@ export default function SessionSelectionForm(props: SessionSelectionFormProps): 
             sx={{ flexGrow: 1 }}
             defaultValue={defaultSessionName}
           />
-          <Button type="submit" size="small" disabled={isCreating} startIcon={isCreating ? <CircularProgress size={16} /> : undefined}>
+          <Button
+            type="submit"
+            size="small"
+            disabled={isCreating}
+            startIcon={isCreating ? <CircularProgress size={16} /> : undefined}
+          >
             {isCreating ? "Creating..." : "Create Session"}
           </Button>
         </Box>

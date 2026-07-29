@@ -60,7 +60,14 @@ describe("generateMigrationScript — sfdc target", () => {
   });
 
   test("schema step explains that SObjects are not API-creatable", async () => {
-    const [script] = await generateMigrationScript("sfdc", "Acme Migration", "Account", fromQuery, columns, fromDataToUse);
+    const [script] = await generateMigrationScript(
+      "sfdc",
+      "Acme Migration",
+      "Account",
+      fromQuery,
+      columns,
+      fromDataToUse,
+    );
 
     expect(script).toContain("Salesforce does not support creating SObjects via the API");
     // The user-supplied SObject API name is surfaced so users know what to verify.
@@ -68,7 +75,14 @@ describe("generateMigrationScript — sfdc target", () => {
   });
 
   test("data step invokes jsforce conn.sobject(...).create with the supplied rows", async () => {
-    const [script] = await generateMigrationScript("sfdc", "Acme Migration", "Account", fromQuery, columns, fromDataToUse);
+    const [script] = await generateMigrationScript(
+      "sfdc",
+      "Acme Migration",
+      "Account",
+      fromQuery,
+      columns,
+      fromDataToUse,
+    );
 
     expect(script).toContain("conn.sobject('Account')");
     expect(script).toContain(".create(");
@@ -77,7 +91,14 @@ describe("generateMigrationScript — sfdc target", () => {
   });
 
   test("reports the no-data warning when the source query returned zero rows", async () => {
-    const [script, errors] = await generateMigrationScript("sfdc", "Acme Migration", "Account", fromQuery, columns, { ok: true, raw: [] });
+    const [script, errors] = await generateMigrationScript(
+      "sfdc",
+      "Acme Migration",
+      "Account",
+      fromQuery,
+      columns,
+      { ok: true, raw: [] },
+    );
 
     expect(script).toContain("doesn't contain any record");
     expect(errors).toContain("doesn't contain any record");
@@ -91,13 +112,21 @@ describe("generateMigrationScript — useUpsert toggle", () => {
   // literal `.toContain("DO UPDATE SET")` so the tests are robust to formatter changes.
 
   test("sqlite emits ON CONFLICT ... DO UPDATE when useUpsert is set", async () => {
-    const [script] = await generateMigrationScript("sqlite", "acme_db", "settings", fromQuery, columns, fromDataToUse, {
-      toDialect: "sqlite",
-      newDatabaseName: "acme_db",
-      newTableName: "settings",
-      useUpsert: true,
-      upsertKeyField: "Id",
-    });
+    const [script] = await generateMigrationScript(
+      "sqlite",
+      "acme_db",
+      "settings",
+      fromQuery,
+      columns,
+      fromDataToUse,
+      {
+        toDialect: "sqlite",
+        newDatabaseName: "acme_db",
+        newTableName: "settings",
+        useUpsert: true,
+        upsertKeyField: "Id",
+      },
+    );
 
     expect(script).toMatch(/ON CONFLICT\s*\(Id\)/);
     expect(script).toMatch(/DO\s+UPDATE\s+SET/);
@@ -105,26 +134,42 @@ describe("generateMigrationScript — useUpsert toggle", () => {
   });
 
   test("mysql emits ON DUPLICATE KEY UPDATE when useUpsert is set", async () => {
-    const [script] = await generateMigrationScript("mysql", "acme_db", "settings", fromQuery, columns, fromDataToUse, {
-      toDialect: "mysql",
-      newDatabaseName: "acme_db",
-      newTableName: "settings",
-      useUpsert: true,
-      upsertKeyField: "Id",
-    });
+    const [script] = await generateMigrationScript(
+      "mysql",
+      "acme_db",
+      "settings",
+      fromQuery,
+      columns,
+      fromDataToUse,
+      {
+        toDialect: "mysql",
+        newDatabaseName: "acme_db",
+        newTableName: "settings",
+        useUpsert: true,
+        upsertKeyField: "Id",
+      },
+    );
 
     expect(script).toMatch(/ON DUPLICATE KEY\s+UPDATE/);
     expect(script).toMatch(/Name\s*=\s*VALUES\s*\(\s*Name\s*\)/);
   });
 
   test("mssql emits MERGE when useUpsert is set", async () => {
-    const [script] = await generateMigrationScript("mssql", "acme_db", "settings", fromQuery, columns, fromDataToUse, {
-      toDialect: "mssql",
-      newDatabaseName: "acme_db",
-      newTableName: "settings",
-      useUpsert: true,
-      upsertKeyField: "Id",
-    });
+    const [script] = await generateMigrationScript(
+      "mssql",
+      "acme_db",
+      "settings",
+      fromQuery,
+      columns,
+      fromDataToUse,
+      {
+        toDialect: "mssql",
+        newDatabaseName: "acme_db",
+        newTableName: "settings",
+        useUpsert: true,
+        upsertKeyField: "Id",
+      },
+    );
 
     expect(script).toContain("MERGE INTO settings");
     expect(script).toMatch(/WHEN MATCHED THEN\s+UPDATE/);
@@ -132,7 +177,14 @@ describe("generateMigrationScript — useUpsert toggle", () => {
   });
 
   test("default path still emits plain INSERT when useUpsert is not set", async () => {
-    const [script] = await generateMigrationScript("sqlite", "acme_db", "settings", fromQuery, columns, fromDataToUse);
+    const [script] = await generateMigrationScript(
+      "sqlite",
+      "acme_db",
+      "settings",
+      fromQuery,
+      columns,
+      fromDataToUse,
+    );
 
     expect(script).toContain("INSERT INTO");
     expect(script).not.toContain("ON CONFLICT");
@@ -142,33 +194,58 @@ describe("generateMigrationScript — useUpsert toggle", () => {
 
 describe("generateMigrationScript — disableForeignKeyConstraints toggle", () => {
   test("sqlite wraps the data step in PRAGMA foreign_keys = OFF / ON", async () => {
-    const [script] = await generateMigrationScript("sqlite", "acme_db", "settings", fromQuery, columns, fromDataToUse, {
-      toDialect: "sqlite",
-      newDatabaseName: "acme_db",
-      newTableName: "settings",
-      disableForeignKeyConstraints: true,
-    });
+    const [script] = await generateMigrationScript(
+      "sqlite",
+      "acme_db",
+      "settings",
+      fromQuery,
+      columns,
+      fromDataToUse,
+      {
+        toDialect: "sqlite",
+        newDatabaseName: "acme_db",
+        newTableName: "settings",
+        disableForeignKeyConstraints: true,
+      },
+    );
 
     expect(script).toContain("PRAGMA foreign_keys = OFF");
     expect(script).toContain("PRAGMA foreign_keys = ON");
     // Off must appear before On (regression: don't swap them).
-    expect(script.indexOf("PRAGMA foreign_keys = OFF")).toBeLessThan(script.indexOf("PRAGMA foreign_keys = ON"));
+    expect(script.indexOf("PRAGMA foreign_keys = OFF")).toBeLessThan(
+      script.indexOf("PRAGMA foreign_keys = ON"),
+    );
   });
 
   test("mysql wraps the data step in SET FOREIGN_KEY_CHECKS toggles", async () => {
-    const [script] = await generateMigrationScript("mysql", "acme_db", "settings", fromQuery, columns, fromDataToUse, {
-      toDialect: "mysql",
-      newDatabaseName: "acme_db",
-      newTableName: "settings",
-      disableForeignKeyConstraints: true,
-    });
+    const [script] = await generateMigrationScript(
+      "mysql",
+      "acme_db",
+      "settings",
+      fromQuery,
+      columns,
+      fromDataToUse,
+      {
+        toDialect: "mysql",
+        newDatabaseName: "acme_db",
+        newTableName: "settings",
+        disableForeignKeyConstraints: true,
+      },
+    );
 
     expect(script).toContain("SET FOREIGN_KEY_CHECKS = 0");
     expect(script).toContain("SET FOREIGN_KEY_CHECKS = 1");
   });
 
   test("no FK toggle statements appear when the option is not set", async () => {
-    const [script] = await generateMigrationScript("sqlite", "acme_db", "settings", fromQuery, columns, fromDataToUse);
+    const [script] = await generateMigrationScript(
+      "sqlite",
+      "acme_db",
+      "settings",
+      fromQuery,
+      columns,
+      fromDataToUse,
+    );
 
     expect(script).not.toContain("PRAGMA foreign_keys");
   });

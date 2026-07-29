@@ -59,10 +59,15 @@ describe("Managed Databases (REST API connection)", () => {
 
   test("PUT /api/connection/:cid/managedDatabase/:id updates a folder", async () => {
     const folderId = "Reports";
-    const r = await json("PUT", `/api/connection/${connectionId}/managedDatabase/${folderId}`, sid, {
-      id: folderId,
-      name: "Reports2",
-    });
+    const r = await json(
+      "PUT",
+      `/api/connection/${connectionId}/managedDatabase/${folderId}`,
+      sid,
+      {
+        id: folderId,
+        name: "Reports2",
+      },
+    );
     expect([200, 202]).toContain(r.status);
   });
 
@@ -102,7 +107,11 @@ describe("Managed Tables", () => {
   });
 
   test("GET unknown managedTable returns 404 or empty", async () => {
-    const r = await json("GET", `/api/connection/${connectionId}/database/F1/managedTable/nope`, sid);
+    const r = await json(
+      "GET",
+      `/api/connection/${connectionId}/database/F1/managedTable/nope`,
+      sid,
+    );
     expect([200, 404]).toContain(r.status);
   });
 });
@@ -114,7 +123,11 @@ describe("schema/cached endpoint", () => {
     const r = await json("GET", `/api/connection/unknown/database/anyDb/schema/cached`, sid);
     expect(r.status).toEqual(200);
     expect(r.body).toEqual(
-      expect.objectContaining({ databases: expect.any(Array), tables: expect.any(Array), columns: expect.any(Object) }),
+      expect.objectContaining({
+        databases: expect.any(Array),
+        tables: expect.any(Array),
+        columns: expect.any(Object),
+      }),
     );
   });
 });

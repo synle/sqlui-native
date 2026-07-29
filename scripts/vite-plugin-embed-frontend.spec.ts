@@ -28,7 +28,9 @@ describe("buildEmbeddedAssetMap", () => {
 
     const map = buildEmbeddedAssetMap(tmpDir);
     expect(Object.keys(map).sort()).toEqual(["favicon.ico", "index.html"]);
-    expect(Buffer.from(map["index.html"], "base64").toString("utf-8")).toBe("<!doctype html><body>hi</body>");
+    expect(Buffer.from(map["index.html"], "base64").toString("utf-8")).toBe(
+      "<!doctype html><body>hi</body>",
+    );
   });
 
   test("recurses into subdirectories with forward-slash keys", () => {

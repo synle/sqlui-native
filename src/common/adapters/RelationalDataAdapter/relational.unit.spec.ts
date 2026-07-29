@@ -94,7 +94,9 @@ describe("MySQLDataAdapter - unit", () => {
 
   test("execute select", async () => {
     // first call: USE database, second: the actual query
-    mockConnQuery.mockResolvedValueOnce([[], []]).mockResolvedValueOnce([[{ ArtistId: 1, Name: "Test Artist" }], []]);
+    mockConnQuery
+      .mockResolvedValueOnce([[], []])
+      .mockResolvedValueOnce([[{ ArtistId: 1, Name: "Test Artist" }], []]);
     const resp = await adapter.execute("SELECT * FROM artists LIMIT 10", "test_db");
     expect(resp.ok).toBe(true);
     expect(resp.raw).toEqual([{ ArtistId: 1, Name: "Test Artist" }]);
@@ -102,7 +104,9 @@ describe("MySQLDataAdapter - unit", () => {
 
   test("execute error", async () => {
     // first call: USE database succeeds, second: query fails
-    mockConnQuery.mockResolvedValueOnce([[], []]).mockRejectedValueOnce(new Error("SQL syntax error"));
+    mockConnQuery
+      .mockResolvedValueOnce([[], []])
+      .mockRejectedValueOnce(new Error("SQL syntax error"));
     const resp = await adapter.execute("INVALID SQL", "test_db");
     expect(resp.ok).toBe(false);
     expect(resp.error).toBeDefined();

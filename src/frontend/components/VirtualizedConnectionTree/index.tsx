@@ -19,7 +19,8 @@ const ROW_HEIGHT_COLUMN_ATTRIBUTES = 35;
  * Connection-header rows are kept mounted to preserve drag-and-drop sources.
  */
 export default function VirtualizedConnectionTree() {
-  const { rows, rowFingerprint, connections, connectionsLoading, onToggle, updateConnections } = useFlatTreeRows();
+  const { rows, rowFingerprint, connections, connectionsLoading, onToggle, updateConnections } =
+    useFlatTreeRows();
   const parentRef = useRef<HTMLDivElement>(null);
   const layoutMode = useLayoutModeSetting();
   const isCompact = layoutMode === "compact";
@@ -79,7 +80,11 @@ export default function VirtualizedConnectionTree() {
                 transform: `translateY(${virtualItem.start}px)`,
               }}
             >
-              <TreeRowRenderer row={row} onToggle={onToggle} onConnectionOrderChange={onConnectionOrderChange} />
+              <TreeRowRenderer
+                row={row}
+                onToggle={onToggle}
+                onConnectionOrderChange={onConnectionOrderChange}
+              />
             </div>
           );
         })}

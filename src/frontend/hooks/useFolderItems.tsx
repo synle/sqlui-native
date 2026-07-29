@@ -119,12 +119,18 @@ export function useRestoreRecycleBinItem() {
       // here we handle restorable
       switch (folderItem.type) {
         case "Connection":
-          await Promise.all([upsertConnection(folderItem.data), deleteRecyleBinItem(folderItem.id)]);
+          await Promise.all([
+            upsertConnection(folderItem.data),
+            deleteRecyleBinItem(folderItem.id),
+          ]);
           navigate("/"); // navigate back to the main page
           break;
         case "Query": {
           const hasResult = !!(folderItem.data as any)?.result;
-          await Promise.all([onAddQuery(folderItem.data, { preserveResult: hasResult }), deleteRecyleBinItem(folderItem.id)]);
+          await Promise.all([
+            onAddQuery(folderItem.data, { preserveResult: hasResult }),
+            deleteRecyleBinItem(folderItem.id),
+          ]);
           navigate("/"); // navigate back to the main page
           break;
         }
@@ -135,7 +141,9 @@ export function useRestoreRecycleBinItem() {
           // restore associated connections to the session
           if (folderItem.connections?.length) {
             await Promise.all(
-              folderItem.connections.map((connection) => dataApi.upsertConnectionForSession(restoredSession.id, connection)),
+              folderItem.connections.map((connection) =>
+                dataApi.upsertConnectionForSession(restoredSession.id, connection),
+              ),
             );
           }
 

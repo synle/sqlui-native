@@ -41,7 +41,9 @@ describe("AzureCosmosDataAdapter unit", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    adapter = new AzureCosmosDataAdapter("cosmosdb://AccountEndpoint=https://mock.documents.azure.com:443/;AccountKey=mockKey==;");
+    adapter = new AzureCosmosDataAdapter(
+      "cosmosdb://AccountEndpoint=https://mock.documents.azure.com:443/;AccountKey=mockKey==;",
+    );
   });
 
   test("authenticate", async () => {

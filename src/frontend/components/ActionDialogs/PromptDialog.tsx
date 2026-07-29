@@ -68,7 +68,14 @@ export default function PromptDialog(props: PromptDialogProps): React.JSX.Elemen
       fullWidth={!props.isFullScreen && !props.isLongPrompt}
       maxWidth={props.isFullScreen || props.isLongPrompt ? false : props.size || "sm"}
     >
-      <form onSubmit={onSave} style={props.isLongPrompt ? { display: "flex", flexDirection: "column", height: "100%" } : undefined}>
+      <form
+        onSubmit={onSave}
+        style={
+          props.isLongPrompt
+            ? { display: "flex", flexDirection: "column", height: "100%" }
+            : undefined
+        }
+      >
         <DialogTitle id="prompt-dialog-title">
           {props.title || "Prompt"}
           <IconButton

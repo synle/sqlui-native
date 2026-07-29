@@ -56,7 +56,10 @@ describe("executeGraphQL", () => {
   });
 
   test("omits variables when empty", async () => {
-    await executeGraphQL({ query: "{ ping }", variables: {}, headers: {} }, "https://api.example.com/graphql");
+    await executeGraphQL(
+      { query: "{ ping }", variables: {}, headers: {} },
+      "https://api.example.com/graphql",
+    );
 
     const [request] = mockedExecuteCurl.mock.calls[0];
     const parsed = JSON.parse(request.body);
@@ -84,13 +87,20 @@ describe("executeGraphQL", () => {
   });
 
   test("passes through a custom timeout", async () => {
-    await executeGraphQL({ query: "{ ping }", headers: {} }, "https://api.example.com/graphql", 5000);
+    await executeGraphQL(
+      { query: "{ ping }", headers: {} },
+      "https://api.example.com/graphql",
+      5000,
+    );
     const [, timeoutMs] = mockedExecuteCurl.mock.calls[0];
     expect(timeoutMs).toBe(5000);
   });
 
   test("returns the parsed GraphQL response shape", async () => {
-    const result = await executeGraphQL({ query: "{ hello }", headers: {} }, "https://api.example.com/graphql");
+    const result = await executeGraphQL(
+      { query: "{ hello }", headers: {} },
+      "https://api.example.com/graphql",
+    );
 
     expect(result.status).toBe(200);
     expect(result.statusText).toBe("OK");
@@ -118,7 +128,10 @@ describe("executeGraphQL", () => {
       size: {},
     });
 
-    const result = await executeGraphQL({ query: "{ broken }", headers: {} }, "https://api.example.com/graphql");
+    const result = await executeGraphQL(
+      { query: "{ broken }", headers: {} },
+      "https://api.example.com/graphql",
+    );
     expect(result.bodyParsed).toEqual({
       data: null,
       errors: [{ message: "oops" }],
@@ -139,7 +152,10 @@ describe("executeGraphQL", () => {
       size: {},
     });
 
-    const result = await executeGraphQL({ query: "{ broken }", headers: {} }, "https://api.example.com/graphql");
+    const result = await executeGraphQL(
+      { query: "{ broken }", headers: {} },
+      "https://api.example.com/graphql",
+    );
     expect(result.bodyParsed).toBeUndefined();
     expect(result.status).toBe(500);
   });

@@ -33,7 +33,9 @@ describe("DataTableComponents", () => {
   test("ColumnResizer renders and dispatches mouse/touch events", () => {
     const onMouseDown = vi.fn();
     const onTouchStart = vi.fn();
-    const { container } = render(<ColumnResizer isResizing={true} onMouseDown={onMouseDown} onTouchStart={onTouchStart} />);
+    const { container } = render(
+      <ColumnResizer isResizing={true} onMouseDown={onMouseDown} onTouchStart={onTouchStart} />,
+    );
     const resizer = container.firstChild as HTMLElement;
     expect(resizer).toBeTruthy();
     fireEvent.mouseDown(resizer);

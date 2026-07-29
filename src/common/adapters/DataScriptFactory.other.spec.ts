@@ -455,7 +455,12 @@ describe("DataScriptFactory - Other Tests", () => {
   describe("getCodeSnippet", () => {
     test("should return javascript snippet for mysql", () => {
       const result = getCodeSnippet(
-        { dialect: "mysql", connection: "mysql://root:pass@localhost:3306", id: "c1", name: "Test" } as any,
+        {
+          dialect: "mysql",
+          connection: "mysql://root:pass@localhost:3306",
+          id: "c1",
+          name: "Test",
+        } as any,
         { sql: "SELECT 1", databaseId: "testdb" } as any,
         "javascript" as any,
       );
@@ -465,7 +470,12 @@ describe("DataScriptFactory - Other Tests", () => {
 
     test("should return python snippet for postgres", () => {
       const result = getCodeSnippet(
-        { dialect: "postgres", connection: "postgres://user:pass@localhost:5432", id: "c1", name: "Test" } as any,
+        {
+          dialect: "postgres",
+          connection: "postgres://user:pass@localhost:5432",
+          id: "c1",
+          name: "Test",
+        } as any,
         { sql: "SELECT 1", databaseId: "testdb" } as any,
         "python" as any,
       );
@@ -474,7 +484,12 @@ describe("DataScriptFactory - Other Tests", () => {
 
     test("should return java snippet for mysql", () => {
       const result = getCodeSnippet(
-        { dialect: "mysql", connection: "mysql://root:pass@localhost:3306", id: "c1", name: "Test" } as any,
+        {
+          dialect: "mysql",
+          connection: "mysql://root:pass@localhost:3306",
+          id: "c1",
+          name: "Test",
+        } as any,
         { sql: "SELECT 1", databaseId: "testdb" } as any,
         "java" as any,
       );
@@ -483,7 +498,12 @@ describe("DataScriptFactory - Other Tests", () => {
 
     test("should handle empty sql", () => {
       const result = getCodeSnippet(
-        { dialect: "mysql", connection: "mysql://root:pass@localhost:3306", id: "c1", name: "Test" } as any,
+        {
+          dialect: "mysql",
+          connection: "mysql://root:pass@localhost:3306",
+          id: "c1",
+          name: "Test",
+        } as any,
         { databaseId: "testdb" } as any,
         "javascript" as any,
       );

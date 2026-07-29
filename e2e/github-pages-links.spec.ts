@@ -19,7 +19,9 @@ test.describe("Phase 0 — GitHub Pages download links", () => {
     // by the release workflow, but the test runs before the deploy).
     const status = response?.status() ?? 0;
     if (status === 404) {
-      console.warn(`Skipping assertion: GitHub Pages site not deployed yet (HTTP 404 from ${GITHUB_PAGES_URL})`);
+      console.warn(
+        `Skipping assertion: GitHub Pages site not deployed yet (HTTP 404 from ${GITHUB_PAGES_URL})`,
+      );
       return;
     }
 
@@ -62,14 +64,19 @@ test.describe("Phase 0 — GitHub Pages download links", () => {
     const binaryFailures = failures.filter((f) => f.href.includes("/releases/download/"));
     const binaryLinks = links.filter((l) => l.href.includes("/releases/download/"));
     const allBinariesMissing =
-      binaryFailures.length > 0 && binaryFailures.length === binaryLinks.length && binaryFailures.every((f) => f.status === 404);
+      binaryFailures.length > 0 &&
+      binaryFailures.length === binaryLinks.length &&
+      binaryFailures.every((f) => f.status === 404);
     if (allBinariesMissing) {
       console.warn(
         `Skipping assertion: all ${binaryLinks.length} binary download links returned 404 (pre-release — binaries not yet uploaded)`,
       );
       // Still check non-binary links (e.g., "Other Releases", npm)
       const nonBinaryFailures = failures.filter((f) => !f.href.includes("/releases/download/"));
-      expect(nonBinaryFailures, `Found ${nonBinaryFailures.length} broken non-binary links`).toHaveLength(0);
+      expect(
+        nonBinaryFailures,
+        `Found ${nonBinaryFailures.length} broken non-binary links`,
+      ).toHaveLength(0);
       return;
     }
 

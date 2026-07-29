@@ -4,10 +4,18 @@ import { vi } from "vitest";
 import { MemoryRouter } from "react-router";
 
 vi.mock("src/frontend/components/Breadcrumbs", () => ({ default: () => <div>Breadcrumbs</div> }));
-vi.mock("src/frontend/components/VirtualizedConnectionTree", () => ({ default: () => <div>Tree</div> }));
-vi.mock("src/frontend/components/NewConnectionButton", () => ({ default: () => <div>NewConn</div> }));
-vi.mock("src/frontend/components/CodeEditorBox", () => ({ default: () => <div>CodeEditorBox</div> }));
-vi.mock("src/frontend/components/JsonFormatData", () => ({ default: () => <div>JsonFormatData</div> }));
+vi.mock("src/frontend/components/VirtualizedConnectionTree", () => ({
+  default: () => <div>Tree</div>,
+}));
+vi.mock("src/frontend/components/NewConnectionButton", () => ({
+  default: () => <div>NewConn</div>,
+}));
+vi.mock("src/frontend/components/CodeEditorBox", () => ({
+  default: () => <div>CodeEditorBox</div>,
+}));
+vi.mock("src/frontend/components/JsonFormatData", () => ({
+  default: () => <div>JsonFormatData</div>,
+}));
 vi.mock("src/frontend/components/MissionControl", () => ({
   useCommands: () => ({ selectCommand: vi.fn() }),
 }));

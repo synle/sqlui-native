@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { buildCommand, detectAndParse, detectFormat } from "src/common/adapters/RestApiDataAdapter/requestParser";
+import {
+  buildCommand,
+  detectAndParse,
+  detectFormat,
+} from "src/common/adapters/RestApiDataAdapter/requestParser";
 
 describe("requestParser", () => {
   describe("detectFormat", () => {

@@ -14,8 +14,15 @@ export function getExportedConnection(
   const result: Record<string, any> = { _type: "connection", id, connection, name };
   if (managedMetadata) {
     result.managedMetadata = {
-      databases: managedMetadata.databases.map(({ name, props }) => ({ name, ...(props ? { props } : {}) })),
-      tables: managedMetadata.tables.map(({ name, databaseId, props }) => ({ name, databaseId, ...(props ? { props } : {}) })),
+      databases: managedMetadata.databases.map(({ name, props }) => ({
+        name,
+        ...(props ? { props } : {}),
+      })),
+      tables: managedMetadata.tables.map(({ name, databaseId, props }) => ({
+        name,
+        databaseId,
+        ...(props ? { props } : {}),
+      })),
     };
   }
   return result;

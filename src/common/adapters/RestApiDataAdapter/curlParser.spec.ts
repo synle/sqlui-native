@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { buildCurlCommand, parseCurlCommand } from "src/common/adapters/RestApiDataAdapter/curlParser";
+import {
+  buildCurlCommand,
+  parseCurlCommand,
+} from "src/common/adapters/RestApiDataAdapter/curlParser";
 
 describe("curlParser", () => {
   describe("parseCurlCommand", () => {
@@ -33,7 +36,9 @@ describe("curlParser", () => {
     });
 
     it("parses headers with -H", () => {
-      const result = parseCurlCommand("curl 'https://example.com' -H 'Accept: application/json' -H 'Authorization: Bearer abc'");
+      const result = parseCurlCommand(
+        "curl 'https://example.com' -H 'Accept: application/json' -H 'Authorization: Bearer abc'",
+      );
       expect(result.headers["Accept"]).toBe("application/json");
       expect(result.headers["Authorization"]).toBe("Bearer abc");
     });
@@ -83,14 +88,18 @@ describe("curlParser", () => {
     });
 
     it("parses form data with -F", () => {
-      const result = parseCurlCommand("curl -X POST 'https://example.com' -F 'field1=value1' -F 'field2=value2'");
+      const result = parseCurlCommand(
+        "curl -X POST 'https://example.com' -F 'field1=value1' -F 'field2=value2'",
+      );
       expect(result.bodyType).toBe("form-data");
       expect(result.formParts).toEqual(["field1=value1", "field2=value2"]);
       expect(result.body).toBeUndefined();
     });
 
     it("parses file upload with -F", () => {
-      const result = parseCurlCommand("curl -X POST 'https://example.com' -F 'file=@/path/to/file' -F 'description=my upload'");
+      const result = parseCurlCommand(
+        "curl -X POST 'https://example.com' -F 'file=@/path/to/file' -F 'description=my upload'",
+      );
       expect(result.bodyType).toBe("form-data");
       expect(result.formParts).toEqual(["file=@/path/to/file", "description=my upload"]);
     });
@@ -127,12 +136,16 @@ describe("curlParser", () => {
     });
 
     it("detects JSON body type from Content-Type header", () => {
-      const result = parseCurlCommand("curl -X POST 'https://example.com' -H 'Content-Type: application/json' -d '{}'");
+      const result = parseCurlCommand(
+        "curl -X POST 'https://example.com' -H 'Content-Type: application/json' -d '{}'",
+      );
       expect(result.bodyType).toBe("json");
     });
 
     it("detects form-urlencoded body type", () => {
-      const result = parseCurlCommand("curl -X POST 'https://example.com' -H 'Content-Type: application/x-www-form-urlencoded' -d 'a=1'");
+      const result = parseCurlCommand(
+        "curl -X POST 'https://example.com' -H 'Content-Type: application/x-www-form-urlencoded' -d 'a=1'",
+      );
       expect(result.bodyType).toBe("form-urlencoded");
     });
 
@@ -158,7 +171,9 @@ describe("curlParser", () => {
     });
 
     it("parses both --max-time and --connect-timeout together", () => {
-      const result = parseCurlCommand("curl --max-time 30 --connect-timeout 5 'https://example.com'");
+      const result = parseCurlCommand(
+        "curl --max-time 30 --connect-timeout 5 'https://example.com'",
+      );
       expect(result.maxTime).toBe(30);
       expect(result.connectTimeout).toBe(5);
     });

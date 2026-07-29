@@ -39,10 +39,17 @@ vi.mock("src/frontend/hooks/useToaster", () => ({
 }));
 
 import dataApi from "src/frontend/data/api";
-import { useSelectSession, useUpsertSession, useDeleteSession, useCloneSession } from "src/frontend/hooks/useSession";
+import {
+  useSelectSession,
+  useUpsertSession,
+  useDeleteSession,
+  useCloneSession,
+} from "src/frontend/hooks/useSession";
 
 function wrapper({ children }: { children: React.ReactNode }) {
-  const qc = new QueryClient({ defaultOptions: { queries: { retry: false }, mutations: { retry: false } } });
+  const qc = new QueryClient({
+    defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
+  });
   return <QueryClientProvider client={qc}>{children}</QueryClientProvider>;
 }
 
@@ -84,7 +91,9 @@ describe("useSession extra coverage", () => {
   });
 
   test("useDeleteSession backs up under soft-delete mode + calls deleteSession", async () => {
-    (dataApi.getConnectionsBySessionId as any).mockResolvedValueOnce([{ id: "c1", name: "X", connection: "mysql://x", status: "online" }]);
+    (dataApi.getConnectionsBySessionId as any).mockResolvedValueOnce([
+      { id: "c1", name: "X", connection: "mysql://x", status: "online" },
+    ]);
     const { result } = renderHook(() => useDeleteSession(), { wrapper });
     await act(async () => {
       await result.current.mutateAsync("sess-1");

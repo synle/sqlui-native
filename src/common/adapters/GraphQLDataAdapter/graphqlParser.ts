@@ -56,7 +56,10 @@ export function parseGraphQLInput(input: string): GraphQLRequest {
   // Extract variables section
   let variables: Record<string, any> | undefined;
   if (variablesIdx >= 0) {
-    const variablesContent = extractSection(input, variablesIdx + VARIABLES_MARKER.length, [headersIdx, operationIdx]);
+    const variablesContent = extractSection(input, variablesIdx + VARIABLES_MARKER.length, [
+      headersIdx,
+      operationIdx,
+    ]);
     if (variablesContent.trim()) {
       try {
         variables = JSON.parse(variablesContent.trim());
@@ -69,7 +72,10 @@ export function parseGraphQLInput(input: string): GraphQLRequest {
   // Extract headers section
   const headers: Record<string, string> = {};
   if (headersIdx >= 0) {
-    const headersContent = extractSection(input, headersIdx + HEADERS_MARKER.length, [variablesIdx, operationIdx]);
+    const headersContent = extractSection(input, headersIdx + HEADERS_MARKER.length, [
+      variablesIdx,
+      operationIdx,
+    ]);
     for (const line of headersContent.split("\n")) {
       const trimmed = line.trim();
       if (!trimmed) {
@@ -87,7 +93,10 @@ export function parseGraphQLInput(input: string): GraphQLRequest {
   // Extract operation name section
   let operationName: string | undefined;
   if (operationIdx >= 0) {
-    const operationContent = extractSection(input, operationIdx + OPERATION_MARKER.length, [variablesIdx, headersIdx]);
+    const operationContent = extractSection(input, operationIdx + OPERATION_MARKER.length, [
+      variablesIdx,
+      headersIdx,
+    ]);
     const trimmed = operationContent.trim();
     if (trimmed) {
       operationName = trimmed;

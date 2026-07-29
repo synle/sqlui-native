@@ -52,14 +52,24 @@ export default (props: BreadcrumbProps): React.JSX.Element | null => {
         {links.map((link, idx) => {
           if (!link.href || (links.length > 1 && idx === links.length - 1)) {
             return (
-              <Typography key={idx} sx={{ display: "flex", gap: 1, alignItems: "center" }} variant="h6">
+              <Typography
+                key={idx}
+                sx={{ display: "flex", gap: 1, alignItems: "center" }}
+                variant="h6"
+              >
                 {link.label}
               </Typography>
             );
           }
 
           return (
-            <Link key={idx} underline="hover" component={RouterLink} to={link.href} sx={{ display: "flex", gap: 1, alignItems: "center" }}>
+            <Link
+              key={idx}
+              underline="hover"
+              component={RouterLink}
+              to={link.href}
+              sx={{ display: "flex", gap: 1, alignItems: "center" }}
+            >
               <Typography sx={{ display: "flex", gap: 1, alignItems: "center" }} variant="h6">
                 {link.label}
               </Typography>

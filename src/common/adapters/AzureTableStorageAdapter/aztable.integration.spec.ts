@@ -30,7 +30,11 @@ describeIfEnv("AzureTableStorageAdapter integration", () => {
   });
 
   test("execute - create table", async () => {
-    const result = await adapter.execute(`serviceClient.createTable('${testTableName}')`, "Azure Table Storage", testTableName);
+    const result = await adapter.execute(
+      `serviceClient.createTable('${testTableName}')`,
+      "Azure Table Storage",
+      testTableName,
+    );
     expect(result.ok).toBe(true);
   });
 
@@ -99,17 +103,29 @@ describeIfEnv("AzureTableStorageAdapter integration", () => {
   });
 
   test("execute - delete entity", async () => {
-    const result = await adapter.execute(`tableClient.deleteEntity('partition1', 'row1')`, "Azure Table Storage", testTableName);
+    const result = await adapter.execute(
+      `tableClient.deleteEntity('partition1', 'row1')`,
+      "Azure Table Storage",
+      testTableName,
+    );
     expect(result.ok).toBe(true);
   });
 
   test("execute - delete second entity", async () => {
-    const result = await adapter.execute(`tableClient.deleteEntity('partition1', 'row2')`, "Azure Table Storage", testTableName);
+    const result = await adapter.execute(
+      `tableClient.deleteEntity('partition1', 'row2')`,
+      "Azure Table Storage",
+      testTableName,
+    );
     expect(result.ok).toBe(true);
   });
 
   test("execute - drop table", async () => {
-    const result = await adapter.execute(`serviceClient.deleteTable('${testTableName}')`, "Azure Table Storage", testTableName);
+    const result = await adapter.execute(
+      `serviceClient.deleteTable('${testTableName}')`,
+      "Azure Table Storage",
+      testTableName,
+    );
     expect(result.ok).toBe(true);
   });
 
@@ -153,7 +169,11 @@ Array [
   });
 
   test("execute list data", async () => {
-    const actual = await adapter.execute("tableClient.listEntities()", "Azure Table Storage", "syaztabl1");
+    const actual = await adapter.execute(
+      "tableClient.listEntities()",
+      "Azure Table Storage",
+      "syaztabl1",
+    );
     expect(actual?.raw?.length).toBeGreaterThan(0);
     expect(actual?.raw?.[0]?.etag).toBeDefined();
     expect(actual?.raw?.[0]?.partitionKey).toBeDefined();

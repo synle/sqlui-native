@@ -69,7 +69,9 @@ export function getSelectAllColumns(_input: SqlAction.TableInput): SqlAction.Out
  * @param input - Table context including columns and table identifier.
  * @returns Script output with column selection and filter options.
  */
-export function getSelectSpecificColumns(input: SqlAction.TableInput): SqlAction.Output | undefined {
+export function getSelectSpecificColumns(
+  input: SqlAction.TableInput,
+): SqlAction.Output | undefined {
   const label = `Select Specific Columns`;
 
   const columns = input?.columns?.map((col) => col.name);
@@ -94,7 +96,10 @@ export function getSelectSpecificColumns(input: SqlAction.TableInput): SqlAction
  * @param value - Optional pre-populated values for the new entity.
  * @returns Script output using the tableClient.createEntity() method.
  */
-export function getInsert(input: SqlAction.TableInput, value?: Record<string, any>): SqlAction.Output | undefined {
+export function getInsert(
+  input: SqlAction.TableInput,
+  value?: Record<string, any>,
+): SqlAction.Output | undefined {
   const label = `Insert`;
 
   const colMap = _getColMapForInsertAndUpdate(input?.columns);
@@ -298,7 +303,9 @@ export function getCreateTable(input: SqlAction.TableInput): SqlAction.Output | 
  * @param input - Database context.
  * @returns Script output using the serviceClient.createTable() method with a placeholder name.
  */
-export function getCreateDatabaseTable(_input: SqlAction.DatabaseInput): SqlAction.Output | undefined {
+export function getCreateDatabaseTable(
+  _input: SqlAction.DatabaseInput,
+): SqlAction.Output | undefined {
   const label = `Create Table`;
 
   return {

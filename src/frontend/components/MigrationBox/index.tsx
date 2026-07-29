@@ -1,6 +1,14 @@
 import BackupIcon from "@mui/icons-material/Backup";
 import LoadingButton from "@mui/lab/LoadingButton";
-import { Button, Checkbox, FormControlLabel, Link, Skeleton, TextField, Typography } from "@mui/material";
+import {
+  Button,
+  Checkbox,
+  FormControlLabel,
+  Link,
+  Skeleton,
+  TextField,
+  Typography,
+} from "@mui/material";
 import { useSearchParams } from "react-router";
 import { useNavigate } from "src/frontend/utils/commonUtils";
 import React, { useEffect, useState } from "react";
@@ -43,7 +51,11 @@ import CodeEditorBox from "src/frontend/components/CodeEditorBox";
 import ConnectionDatabaseSelector from "src/frontend/components/QueryBox/ConnectionDatabaseSelector";
 import Select from "src/frontend/components/Select";
 import dataApi from "src/frontend/data/api";
-import { useGetColumns, useGetConnectionById, useGetConnections } from "src/frontend/hooks/useConnection";
+import {
+  useGetColumns,
+  useGetConnectionById,
+  useGetConnections,
+} from "src/frontend/hooks/useConnection";
 import { useConnectionQueries } from "src/frontend/hooks/useConnectionQuery";
 import useToaster from "src/frontend/hooks/useToaster";
 import { formatJS, formatSQL } from "src/frontend/utils/formatter";
@@ -76,7 +88,11 @@ function DialectSelector(props: DialectSelectorProps): React.JSX.Element | null 
   const { label, value, onChange } = props;
 
   return (
-    <Select label={label} value={value} onChange={(newValue) => onChange && onChange(newValue as SqluiCore.Dialect)}>
+    <Select
+      label={label}
+      value={value}
+      onChange={(newValue) => onChange && onChange(newValue as SqluiCore.Dialect)}
+    >
       {DIALECTS_SUPPORTING_MIGRATION.map((dialect) => (
         <option value={dialect}>{getDialectName(dialect)}</option>
       ))}
@@ -122,7 +138,12 @@ function ColumnSelector(props: ColumnSelectorProps): React.JSX.Element | null {
   }
 
   return (
-    <Select required={required} label={label} value={value} onChange={(newValue) => onChange && onChange(newValue)}>
+    <Select
+      required={required}
+      label={label}
+      value={value}
+      onChange={(newValue) => onChange && onChange(newValue)}
+    >
       <option>Select a value</option>
       {(columns || []).map((col) => (
         <option key={col.name} value={col.name}>
@@ -243,7 +264,9 @@ export async function generateMigrationScript(
     // The disable-FK toggle wraps the data step in dialect-specific statements that
     // suspend referential-integrity checks for the duration of the load. Computed once
     // here so each case can splice it in around the INSERT/UPSERT call.
-    const fkToggle = migrationMetaData?.disableForeignKeyConstraints ? getForeignKeyToggleForRdbms(toDialect) : undefined;
+    const fkToggle = migrationMetaData?.disableForeignKeyConstraints
+      ? getForeignKeyToggleForRdbms(toDialect)
+      : undefined;
 
     // TODO: here we need to perform the query to get the data
     switch (toDialect) {
@@ -262,7 +285,8 @@ export async function generateMigrationScript(
           // dialect-appropriate ON CONFLICT / ON DUPLICATE KEY / MERGE syntax. Otherwise
           // fall through to a plain INSERT — the historical default.
           const dataQuery = migrationMetaData?.useUpsert
-            ? getBulkUpsertForRdbms(toQueryMetaData, results.raw, migrationMetaData?.upsertKeyField)?.query
+            ? getBulkUpsertForRdbms(toQueryMetaData, results.raw, migrationMetaData?.upsertKeyField)
+                ?.query
             : getBulkInsertForRdbms(toQueryMetaData, results.raw)?.query;
           res.push(formatSQL(dataQuery || ""));
           if (fkToggle) {
@@ -361,8 +385,14 @@ export default function MigrationBox(props: MigrationBoxProps): React.JSX.Elemen
   });
   const [migrationScript, setMigrationScript] = useState("");
   const [migrating, setMigrating] = useState(false);
-  const { data: columns, isLoading: loadingColumns } = useGetColumns(query?.connectionId, query?.databaseId, query?.tableId);
-  const { data: connection, isLoading: loadingConnection } = useGetConnectionById(query?.connectionId);
+  const { data: columns, isLoading: loadingColumns } = useGetColumns(
+    query?.connectionId,
+    query?.databaseId,
+    query?.tableId,
+  );
+  const { data: connection, isLoading: loadingConnection } = useGetConnectionById(
+    query?.connectionId,
+  );
   const { data: connections, isLoading: loadingConnections } = useGetConnections();
   const { onAddQuery } = useConnectionQueries();
   const [rawJson, setRawJson] = useState("");
@@ -413,7 +443,11 @@ export default function MigrationBox(props: MigrationBoxProps): React.JSX.Elemen
   }, [query, migrationMetaData.selectQuery]);
 
   // events
-  const onDatabaseConnectionChange = (connectionId?: string, databaseId?: string, tableId?: string) => {
+  const onDatabaseConnectionChange = (
+    connectionId?: string,
+    databaseId?: string,
+    tableId?: string,
+  ) => {
     setQuery({
       ...query,
       connectionId,
@@ -446,7 +480,8 @@ export default function MigrationBox(props: MigrationBoxProps): React.JSX.Elemen
           columns?.map((column) => {
             return {
               ...column,
-              allowNull: !column.primaryKey || column.name === "rowKey" || column.kind === "partition_key",
+              allowNull:
+                !column.primaryKey || column.name === "rowKey" || column.kind === "partition_key",
             };
           }),
           undefined,
@@ -464,12 +499,14 @@ export default function MigrationBox(props: MigrationBoxProps): React.JSX.Elemen
           tableId: `mocked_raw_json_table_id`,
         };
 
-        const columnsToUse = BaseDataAdapter.inferSqlTypeFromItems(parsedRawJson, toDialect).map((col) => {
-          return {
-            ...col,
-            allowNull: true,
-          };
-        });
+        const columnsToUse = BaseDataAdapter.inferSqlTypeFromItems(parsedRawJson, toDialect).map(
+          (col) => {
+            return {
+              ...col,
+              allowNull: true,
+            };
+          },
+        );
 
         const dataToUse = {
           ok: true,
@@ -518,7 +555,9 @@ export default function MigrationBox(props: MigrationBoxProps): React.JSX.Elemen
 
   const onApplySampleQueryForMigration = () => {
     if (query) {
-      const fromConnection = connections?.find((connection) => connection.id === query.connectionId);
+      const fromConnection = connections?.find(
+        (connection) => connection.id === query.connectionId,
+      );
       const sampleSelectQueryText = getSampleSelectQuery({
         ...fromConnection,
         ...query,
@@ -561,11 +600,17 @@ export default function MigrationBox(props: MigrationBoxProps): React.JSX.Elemen
         <div className="FormInput__Container">
           {isConnectionSelectorVisible && (
             <div className="FormInput__Row">
-              <ConnectionDatabaseSelector isTableIdRequired={true} value={query} onChange={onDatabaseConnectionChange} required />
+              <ConnectionDatabaseSelector
+                isTableIdRequired={true}
+                value={query}
+                onChange={onDatabaseConnectionChange}
+                required
+              />
             </div>
           )}
           <Typography className="FormInput__Row" sx={{ color: "error.main" }}>
-            Migration Script is not supported for {connection?.dialect}. Please choose a different connection to migrate data from.
+            Migration Script is not supported for {connection?.dialect}. Please choose a different
+            connection to migrate data from.
           </Typography>
         </div>
       );
@@ -582,7 +627,12 @@ export default function MigrationBox(props: MigrationBoxProps): React.JSX.Elemen
     >
       {isConnectionSelectorVisible && (
         <div className="FormInput__Row">
-          <ConnectionDatabaseSelector isTableIdRequired={true} value={query} onChange={onDatabaseConnectionChange} required />
+          <ConnectionDatabaseSelector
+            isTableIdRequired={true}
+            value={query}
+            onChange={onDatabaseConnectionChange}
+            required
+          />
           <Link onClick={onApplySampleQueryForMigration}>Apply Sample Query</Link>
         </div>
       )}
@@ -605,7 +655,12 @@ export default function MigrationBox(props: MigrationBoxProps): React.JSX.Elemen
         onChange={setMigrationMetaData}
       />
       <div className="FormInput__Row">
-        <LoadingButton variant="contained" type="submit" loading={isSaving} startIcon={<BackupIcon />}>
+        <LoadingButton
+          variant="contained"
+          type="submit"
+          loading={isSaving}
+          startIcon={<BackupIcon />}
+        >
           Migrate
         </LoadingButton>
         <Button variant="outlined" type="button" disabled={migrating} onClick={onCancel}>
@@ -616,7 +671,12 @@ export default function MigrationBox(props: MigrationBoxProps): React.JSX.Elemen
         <>
           <CodeEditorBox value={migrationScript} language={languageTo} disabled={true} />
           <div className="FormInput__Row">
-            <Button variant="outlined" type="button" disabled={migrating} onClick={onCreateMigrationQueryTab}>
+            <Button
+              variant="outlined"
+              type="button"
+              disabled={migrating}
+              onClick={onCreateMigrationQueryTab}
+            >
               Create New Tab with This Migration Query
             </Button>
           </div>
@@ -710,8 +770,14 @@ type MigrationMetaDataInputsProps = {
  */
 function MigrationMetaDataInputs(props: MigrationMetaDataInputsProps): React.JSX.Element | null {
   const { query, isMigratingRealConnection, value: migrationMetaData } = props;
-  const { data: columns, isLoading: loadingColumns } = useGetColumns(query?.connectionId, query?.databaseId, query?.tableId);
-  const { data: connection, isLoading: loadingConnection } = useGetConnectionById(query?.connectionId);
+  const { data: columns, isLoading: loadingColumns } = useGetColumns(
+    query?.connectionId,
+    query?.databaseId,
+    query?.tableId,
+  );
+  const { data: connection, isLoading: loadingConnection } = useGetConnectionById(
+    query?.connectionId,
+  );
   const loading = loadingColumns || loadingConnection;
   const isQueryRequired = isMigratingRealConnection;
   const languageFrom = getSyntaxModeByDialect(connection?.dialect);
@@ -772,7 +838,8 @@ function MigrationMetaDataInputs(props: MigrationMetaDataInputsProps): React.JSX
     // if it's not migrating real connection and connection is not selected, then we should show an error
     return (
       <Typography sx={{ color: "error.main" }}>
-        Connection information required to generate migration script. Please select one from the above.
+        Connection information required to generate migration script. Please select one from the
+        above.
       </Typography>
     );
   }
@@ -780,7 +847,11 @@ function MigrationMetaDataInputs(props: MigrationMetaDataInputsProps): React.JSX
   return (
     <>
       <div className="FormInput__Row">
-        <DialectSelector label="Migrate To" value={migrationMetaData.toDialect} onChange={(newValue) => onChange("toDialect", newValue)} />
+        <DialectSelector
+          label="Migrate To"
+          value={migrationMetaData.toDialect}
+          onChange={(newValue) => onChange("toDialect", newValue)}
+        />
         {extraDoms}
       </div>
 
@@ -867,7 +938,13 @@ function MigrationToggleOptions(props: MigrationToggleOptionsProps): React.JSX.E
       <div className="FormInput__Row" style={{ flexWrap: "wrap" }}>
         {supportsUpsert && (
           <FormControlLabel
-            control={<Checkbox size="small" checked={!!value.useUpsert} onChange={(e) => onChange("useUpsert", e.target.checked)} />}
+            control={
+              <Checkbox
+                size="small"
+                checked={!!value.useUpsert}
+                onChange={(e) => onChange("useUpsert", e.target.checked)}
+              />
+            }
             label="Use UPSERT (idempotent — updates rows that already exist)"
           />
         )}

@@ -21,20 +21,24 @@ export const queryKeys = {
   /** Keys for table schema queries. */
   tables: {
     /** Key for the list of tables within a database. */
-    list: (connectionId: string, databaseId: string) => [connectionId, databaseId, "tables"] as const,
+    list: (connectionId: string, databaseId: string) =>
+      [connectionId, databaseId, "tables"] as const,
   },
 
   /** Keys for column schema queries. */
   columns: {
     /** Key for columns of a specific table. */
-    list: (connectionId: string, databaseId: string, tableId: string) => [connectionId, databaseId, tableId, "columns"] as const,
+    list: (connectionId: string, databaseId: string, tableId: string) =>
+      [connectionId, databaseId, tableId, "columns"] as const,
     /** Key for all columns across all tables in a database (bulk fetch). */
-    allForDatabase: (connectionId: string, databaseId: string) => [connectionId, databaseId, "allTableColumns"] as const,
+    allForDatabase: (connectionId: string, databaseId: string) =>
+      [connectionId, databaseId, "allTableColumns"] as const,
   },
 
   /** Keys for cached schema queries (backend disk cache). */
   schema: {
     /** Key for consolidated cached schema (databases + tables + columns). */
-    cached: (connectionId: string, databaseId: string) => [connectionId, databaseId, "cachedSchema"] as const,
+    cached: (connectionId: string, databaseId: string) =>
+      [connectionId, databaseId, "cachedSchema"] as const,
   },
 } as const;

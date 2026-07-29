@@ -31,7 +31,10 @@ type AddBookmarkConnectionProps = {
  * @param props - The query data and completion callback.
  * @returns Form with bookmark name, association toggle, and result snapshot toggle.
  */
-export function AddBookmarkQueryContent({ query, onDone }: AddBookmarkQueryProps): React.JSX.Element {
+export function AddBookmarkQueryContent({
+  query,
+  onDone,
+}: AddBookmarkQueryProps): React.JSX.Element {
   const { mutateAsync: addBookmarkItem } = useAddBookmarkItem();
   const { add: addToast } = useToaster();
 
@@ -82,7 +85,13 @@ export function AddBookmarkQueryContent({ query, onDone }: AddBookmarkQueryProps
       />
       <Box>
         <FormControlLabel
-          control={<Checkbox checked={keepAssociation} onChange={(e) => setKeepAssociation(e.target.checked)} disabled={!hasAssociation} />}
+          control={
+            <Checkbox
+              checked={keepAssociation}
+              onChange={(e) => setKeepAssociation(e.target.checked)}
+              disabled={!hasAssociation}
+            />
+          }
           label="Keep connection association"
         />
         <FormHelperText sx={{ mt: -0.5, ml: 4 }}>
@@ -93,7 +102,13 @@ export function AddBookmarkQueryContent({ query, onDone }: AddBookmarkQueryProps
       </Box>
       <Box>
         <FormControlLabel
-          control={<Checkbox checked={includeResult} onChange={(e) => setIncludeResult(e.target.checked)} disabled={!hasResult} />}
+          control={
+            <Checkbox
+              checked={includeResult}
+              onChange={(e) => setIncludeResult(e.target.checked)}
+              disabled={!hasResult}
+            />
+          }
           label="Include result snapshot"
         />
         <FormHelperText sx={{ mt: -0.5, ml: 4 }}>
@@ -119,7 +134,10 @@ export function AddBookmarkQueryContent({ query, onDone }: AddBookmarkQueryProps
  * @param props - The connection data and completion callback.
  * @returns Form with bookmark name input.
  */
-export function AddBookmarkConnectionContent({ connection, onDone }: AddBookmarkConnectionProps): React.JSX.Element {
+export function AddBookmarkConnectionContent({
+  connection,
+  onDone,
+}: AddBookmarkConnectionProps): React.JSX.Element {
   const { mutateAsync: addBookmarkItem } = useAddBookmarkItem();
   const { add: addToast } = useToaster();
 

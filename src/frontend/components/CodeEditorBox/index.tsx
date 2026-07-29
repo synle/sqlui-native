@@ -3,7 +3,16 @@ import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
 import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
 import ToggleButton from "@mui/material/ToggleButton";
-import React, { lazy, Suspense, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import React, {
+  lazy,
+  Suspense,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import SimpleEditor from "src/frontend/components/CodeEditorBox/SimpleEditor";
 
 const AdvancedEditor = lazy(() => import("src/frontend/components/CodeEditorBox/AdvancedEditor"));
@@ -116,7 +125,8 @@ export default function CodeEditorBox(props: CodeEditorProps): React.JSX.Element
   const [heightSetting, setHeightSetting] = useState<string>(props.height || DEFAULT_EDITOR_HEIGHT);
   const editorModeToUse = useEditorModeSetting();
 
-  const height = heightSetting === FULL_HEIGHT_SENTINEL ? getFullHeight(props.value) : heightSetting;
+  const height =
+    heightSetting === FULL_HEIGHT_SENTINEL ? getFullHeight(props.value) : heightSetting;
 
   const hideEditorSize = !!props.hideEditorSize || !!props.readOnly || props.height || false;
   const hideEditorSyntax = !!props.hideEditorSyntax || false;
@@ -193,7 +203,13 @@ export default function CodeEditorBox(props: CodeEditorProps): React.JSX.Element
   };
 
   const contentToggleWordWrapSelection = (
-    <ToggleButton value="check" selected={wordWrap} onChange={() => onSetWrap(!wordWrap)} size="small" color="primary">
+    <ToggleButton
+      value="check"
+      selected={wordWrap}
+      onChange={() => onSetWrap(!wordWrap)}
+      size="small"
+      color="primary"
+    >
       {wordWrap ? <CheckBoxIcon /> : <CheckBoxOutlineBlankIcon />}
       <span style={{ marginLeft: "5px" }}>Wrap</span>
     </ToggleButton>
@@ -207,7 +223,11 @@ export default function CodeEditorBox(props: CodeEditorProps): React.JSX.Element
 
   const contentLanguageModeSelection = !hideEditorSyntax && (
     <>
-      <Select label="Syntax" onChange={(newLanguage) => onSetLanguageMode(newLanguage)} value={languageMode}>
+      <Select
+        label="Syntax"
+        onChange={(newLanguage) => onSetLanguageMode(newLanguage)}
+        value={languageMode}
+      >
         <option value="">Auto Detected ({props.language})</option>
         {languageOptions.map((opt) => (
           <option key={opt.value} value={opt.value}>
@@ -220,7 +240,11 @@ export default function CodeEditorBox(props: CodeEditorProps): React.JSX.Element
 
   const contentHeightSelection = !hideEditorSize && (
     <>
-      <Select label="Editor Size" onChange={(newHeight) => onSetHeight(newHeight)} value={heightSetting}>
+      <Select
+        label="Editor Size"
+        onChange={(newHeight) => onSetHeight(newHeight)}
+        value={heightSetting}
+      >
         <option value={DEFAULT_EDITOR_HEIGHT}>Small</option>
         <option value="45vh">Medium</option>
         <option value={FULL_HEIGHT_SENTINEL}>Full</option>
@@ -240,7 +264,10 @@ export default function CodeEditorBox(props: CodeEditorProps): React.JSX.Element
 
   useEffect(() => setWordWrap(!!props.wordWrap || globalWordWrap), [globalWordWrap]);
 
-  const shouldShowRequiredError = useMemo(() => !!props.required && !props.value, [!!props.required && !props.value]);
+  const shouldShowRequiredError = useMemo(
+    () => !!props.required && !props.value,
+    [!!props.required && !props.value],
+  );
 
   useLayoutEffect(() => {
     if (props.id) {
@@ -267,7 +294,9 @@ export default function CodeEditorBox(props: CodeEditorProps): React.JSX.Element
     }
   }, [props.height, props.id]);
 
-  const fillHeightStyle = props.fillHeight ? { display: "flex", flexDirection: "column" as const, flex: 1, minHeight: 0 } : undefined;
+  const fillHeightStyle = props.fillHeight
+    ? { display: "flex", flexDirection: "column" as const, flex: 1, minHeight: 0 }
+    : undefined;
 
   const editorHeight = props.fillHeight ? undefined : height;
 
@@ -294,11 +323,21 @@ export default function CodeEditorBox(props: CodeEditorProps): React.JSX.Element
   }
 
   return (
-    <Box sx={props.fillHeight ? { display: "flex", flexDirection: "column", flex: 1, minHeight: 0 } : undefined}>
+    <Box
+      sx={
+        props.fillHeight
+          ? { display: "flex", flexDirection: "column", flex: 1, minHeight: 0 }
+          : undefined
+      }
+    >
       <Paper
         className={"CodeEditorBox " + props.className}
         variant="outlined"
-        sx={props.fillHeight ? { display: "flex", flexDirection: "column", flex: 1, minHeight: 0 } : undefined}
+        sx={
+          props.fillHeight
+            ? { display: "flex", flexDirection: "column", flex: 1, minHeight: 0 }
+            : undefined
+        }
       >
         <Suspense>
           <AdvancedEditor

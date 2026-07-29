@@ -38,7 +38,11 @@ function makeRequest(overrides: Partial<RestApiRequest> = {}): RestApiRequest {
   };
 }
 
-function simulateCurl(stdout: string, stderr = "", error: (Error & { killed?: boolean }) | null = null) {
+function simulateCurl(
+  stdout: string,
+  stderr = "",
+  error: (Error & { killed?: boolean }) | null = null,
+) {
   mockExecFile.mockImplementation((_cmd: string, _args: string[], _opts: any, cb: Function) => {
     cb(error, stdout, stderr);
   });
@@ -82,7 +86,8 @@ describe("executeCurl", () => {
     });
 
     it("should parse Set-Cookie headers into cookies map", async () => {
-      const headers = "HTTP/1.1 200 OK\r\nSet-Cookie: session=abc123; Path=/; HttpOnly\r\nContent-Type: text/plain";
+      const headers =
+        "HTTP/1.1 200 OK\r\nSet-Cookie: session=abc123; Path=/; HttpOnly\r\nContent-Type: text/plain";
       const stdout = buildStdout(headers, "ok");
       simulateCurl(stdout);
 
@@ -92,7 +97,8 @@ describe("executeCurl", () => {
     });
 
     it("should accumulate multiple Set-Cookie headers into cookies map", async () => {
-      const headers = "HTTP/1.1 200 OK\r\nSet-Cookie: session=abc123; Path=/\r\nSet-Cookie: theme=dark; Path=/\r\nContent-Type: text/plain";
+      const headers =
+        "HTTP/1.1 200 OK\r\nSet-Cookie: session=abc123; Path=/\r\nSet-Cookie: theme=dark; Path=/\r\nContent-Type: text/plain";
       const stdout = buildStdout(headers, "ok");
       simulateCurl(stdout);
 
@@ -105,7 +111,8 @@ describe("executeCurl", () => {
     });
 
     it("should join duplicate response headers with comma separator", async () => {
-      const headers = "HTTP/1.1 200 OK\r\nX-Custom: value1\r\nX-Custom: value2\r\nContent-Type: text/plain";
+      const headers =
+        "HTTP/1.1 200 OK\r\nX-Custom: value1\r\nX-Custom: value2\r\nContent-Type: text/plain";
       const stdout = buildStdout(headers, "ok");
       simulateCurl(stdout);
 
@@ -115,7 +122,10 @@ describe("executeCurl", () => {
     });
 
     it("should handle multiple header blocks (100 Continue then 200 OK)", async () => {
-      const responsePart = "HTTP/1.1 100 Continue\r\n\r\n" + "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\n\r\n" + '{"data":true}';
+      const responsePart =
+        "HTTP/1.1 100 Continue\r\n\r\n" +
+        "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\n\r\n" +
+        '{"data":true}';
       const stdout = `${responsePart}${TIMING_SEPARATOR}${makeTimingJson()}`;
       simulateCurl(stdout);
 
@@ -127,7 +137,10 @@ describe("executeCurl", () => {
     });
 
     it("should resolve when curl error occurs but stdout is present", async () => {
-      const stdout = buildStdout("HTTP/1.1 503 Service Unavailable\r\nContent-Type: text/plain", "server down");
+      const stdout = buildStdout(
+        "HTTP/1.1 503 Service Unavailable\r\nContent-Type: text/plain",
+        "server down",
+      );
       const error = new Error("curl failed") as Error & { killed?: boolean };
       error.killed = false;
       simulateCurl(stdout, "", error);
@@ -199,7 +212,10 @@ describe("executeCurl", () => {
       await executeCurl(makeRequest({ formParts: ["file=@/tmp/test.txt", "name=hello"] }));
 
       const args = getCurlArgs();
-      const fIndices = args.reduce<number[]>((acc, val, idx) => (val === "-F" ? [...acc, idx] : acc), []);
+      const fIndices = args.reduce<number[]>(
+        (acc, val, idx) => (val === "-F" ? [...acc, idx] : acc),
+        [],
+      );
       expect(fIndices).toHaveLength(2);
       expect(args[fIndices[0] + 1]).toBe("file=@/tmp/test.txt");
       expect(args[fIndices[1] + 1]).toBe("name=hello");
@@ -240,10 +256,15 @@ describe("executeCurl", () => {
       const stdout = buildStdout("HTTP/1.1 200 OK", "");
       simulateCurl(stdout);
 
-      await executeCurl(makeRequest({ headers: { Authorization: "Bearer token123", Accept: "application/json" } }));
+      await executeCurl(
+        makeRequest({ headers: { Authorization: "Bearer token123", Accept: "application/json" } }),
+      );
 
       const args = getCurlArgs();
-      const hIndices = args.reduce<number[]>((acc, val, idx) => (val === "-H" ? [...acc, idx] : acc), []);
+      const hIndices = args.reduce<number[]>(
+        (acc, val, idx) => (val === "-H" ? [...acc, idx] : acc),
+        [],
+      );
       expect(hIndices).toHaveLength(2);
       expect(args[hIndices[0] + 1]).toBe("Authorization: Bearer token123");
       expect(args[hIndices[1] + 1]).toBe("Accept: application/json");
@@ -323,7 +344,9 @@ describe("executeCurl", () => {
       error.killed = true;
       simulateCurl("", "", error);
 
-      await expect(executeCurl(makeRequest(), 5000)).rejects.toThrow("Request timed out after 5000ms");
+      await expect(executeCurl(makeRequest(), 5000)).rejects.toThrow(
+        "Request timed out after 5000ms",
+      );
     });
 
     it("should reject with stderr message on curl failure without stdout", async () => {
@@ -331,7 +354,9 @@ describe("executeCurl", () => {
       error.killed = false;
       simulateCurl("", "curl: (6) Could not resolve host: bad.example.com", error);
 
-      await expect(executeCurl(makeRequest())).rejects.toThrow("curl: (6) Could not resolve host: bad.example.com");
+      await expect(executeCurl(makeRequest())).rejects.toThrow(
+        "curl: (6) Could not resolve host: bad.example.com",
+      );
     });
 
     it("should fall back to error.message when stderr is empty", async () => {

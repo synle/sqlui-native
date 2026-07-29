@@ -76,12 +76,26 @@ export default function ResultBox(props: ResultBoxProps): React.JSX.Element | nu
 
   // GraphQL responses get a dedicated result viewer
   if (queryResult.meta?.isGraphQL && data && data.length > 0) {
-    return <GraphQLResultBox meta={queryResult.meta} raw={data} executionStart={query.executionStart} executionEnd={query.executionEnd} />;
+    return (
+      <GraphQLResultBox
+        meta={queryResult.meta}
+        raw={data}
+        executionStart={query.executionStart}
+        executionEnd={query.executionEnd}
+      />
+    );
   }
 
   // REST API responses get a dedicated result viewer
   if (queryResult.meta?.isRestApi && data && data.length > 0) {
-    return <RestApiResultBox meta={queryResult.meta} raw={data} executionStart={query.executionStart} executionEnd={query.executionEnd} />;
+    return (
+      <RestApiResultBox
+        meta={queryResult.meta}
+        raw={data}
+        executionStart={query.executionStart}
+        executionEnd={query.executionEnd}
+      />
+    );
   }
 
   if (!data || !Array.isArray(data) || data.length === 0) {
@@ -185,8 +199,11 @@ export default function ResultBox(props: ResultBoxProps): React.JSX.Element | nu
 
   const snapshotInfo = query.isSnapshot ? (
     <Alert severity="warning" sx={{ mb: 0.5 }}>
-      Restored snapshot — query took <Timer startTime={query?.executionStart} endTime={query?.executionEnd} />.{" "}
-      {query?.executionEnd ? `Originally executed on ${new Date(query.executionEnd).toLocaleString()}.` : ""}{" "}
+      Restored snapshot — query took{" "}
+      <Timer startTime={query?.executionStart} endTime={query?.executionEnd} />.{" "}
+      {query?.executionEnd
+        ? `Originally executed on ${new Date(query.executionEnd).toLocaleString()}.`
+        : ""}{" "}
       {data?.length > 0 ? `${data.length} records.` : ""}
     </Alert>
   ) : (
@@ -199,7 +216,12 @@ export default function ResultBox(props: ResultBoxProps): React.JSX.Element | nu
   return (
     <div className="ResultBox">
       {snapshotInfo}
-      <Tabs tabIdx={tabIdx} tabHeaders={tabHeaders} tabContents={tabContents} onTabChange={(newTabIdx) => setTabIdx(newTabIdx)}></Tabs>
+      <Tabs
+        tabIdx={tabIdx}
+        tabHeaders={tabHeaders}
+        tabContents={tabContents}
+        onTabChange={(newTabIdx) => setTabIdx(newTabIdx)}
+      ></Tabs>
     </div>
   );
 }
@@ -243,13 +265,22 @@ function QueryDetailsPanel(props: QueryDetailsPanelProps): React.JSX.Element {
   const { executionDetails, executionStart, executionEnd } = props;
 
   const detailRows: { label: string; value: string | undefined }[] = [
-    { label: "Connection", value: executionDetails.connectionName || executionDetails.connectionId },
+    {
+      label: "Connection",
+      value: executionDetails.connectionName || executionDetails.connectionId,
+    },
     { label: "Database", value: executionDetails.databaseId },
     { label: "Table", value: executionDetails.tableId },
-    { label: "Executed At", value: executionStart ? new Date(executionStart).toLocaleString() : undefined },
+    {
+      label: "Executed At",
+      value: executionStart ? new Date(executionStart).toLocaleString() : undefined,
+    },
     {
       label: "Duration",
-      value: executionStart && executionEnd ? `${((executionEnd - executionStart) / 1000).toFixed(2)}s` : undefined,
+      value:
+        executionStart && executionEnd
+          ? `${((executionEnd - executionStart) / 1000).toFixed(2)}s`
+          : undefined,
     },
   ];
 
@@ -261,14 +292,28 @@ function QueryDetailsPanel(props: QueryDetailsPanelProps): React.JSX.Element {
             .filter((row) => row.value)
             .map((row) => (
               <tr key={row.label}>
-                <td style={{ padding: "4px 12px 4px 0", fontWeight: 600, whiteSpace: "nowrap", verticalAlign: "top" }}>{row.label}</td>
+                <td
+                  style={{
+                    padding: "4px 12px 4px 0",
+                    fontWeight: 600,
+                    whiteSpace: "nowrap",
+                    verticalAlign: "top",
+                  }}
+                >
+                  {row.label}
+                </td>
                 <td style={{ padding: "4px 0" }}>{row.value}</td>
               </tr>
             ))}
         </tbody>
       </table>
       <div style={{ fontWeight: 600, marginBottom: "0.5rem" }}>Executed Query</div>
-      <CodeEditorBox value={executionDetails.sql || ""} language="sql" wordWrap={true} readOnly={true} />
+      <CodeEditorBox
+        value={executionDetails.sql || ""}
+        language="sql"
+        wordWrap={true}
+        readOnly={true}
+      />
     </div>
   );
 }

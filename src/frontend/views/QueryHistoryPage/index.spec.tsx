@@ -6,8 +6,12 @@ import { MemoryRouter } from "react-router";
 const useGetQueryVersionHistoryMock = vi.fn();
 
 vi.mock("src/frontend/components/Breadcrumbs", () => ({ default: () => <div>Breadcrumbs</div> }));
-vi.mock("src/frontend/components/VirtualizedConnectionTree", () => ({ default: () => <div>Tree</div> }));
-vi.mock("src/frontend/components/NewConnectionButton", () => ({ default: () => <div>NewConn</div> }));
+vi.mock("src/frontend/components/VirtualizedConnectionTree", () => ({
+  default: () => <div>Tree</div>,
+}));
+vi.mock("src/frontend/components/NewConnectionButton", () => ({
+  default: () => <div>NewConn</div>,
+}));
 vi.mock("src/frontend/components/DataTable", () => ({ default: () => <div>DataTable</div> }));
 vi.mock("src/frontend/components/DateCell", () => ({ default: () => <div>Date</div> }));
 vi.mock("src/frontend/layout/LayoutTwoColumns", () => ({

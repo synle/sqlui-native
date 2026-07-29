@@ -6,7 +6,10 @@ vi.mock("src/frontend/components/MigrationBox", () => ({
   default: ({ mode }: { mode: string }) => <div data-testid="migration-box">{mode}</div>,
 }));
 
-import { RealConnectionMigrationMigrationForm, RawJsonMigrationForm } from "src/frontend/components/MigrationForm";
+import {
+  RealConnectionMigrationMigrationForm,
+  RawJsonMigrationForm,
+} from "src/frontend/components/MigrationForm";
 
 describe("MigrationForm", () => {
   test("RealConnectionMigrationMigrationForm renders MigrationBox in real_connection mode", () => {

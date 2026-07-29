@@ -42,7 +42,9 @@ export function Container({ children, style, ...rest }: ContainerProps) {
   // Extract first Section's props into the ref via effect (not during render)
   const childArray = React.Children.toArray(children);
   const firstSectionChild = childArray.find((c) => React.isValidElement(c) && c.type === Section);
-  const firstSectionProps = React.isValidElement(firstSectionChild) ? (firstSectionChild.props as SectionProps) : undefined;
+  const firstSectionProps = React.isValidElement(firstSectionChild)
+    ? (firstSectionChild.props as SectionProps)
+    : undefined;
 
   useLayoutEffect(() => {
     if (firstSectionProps) {
@@ -118,7 +120,14 @@ export function Container({ children, style, ...rest }: ContainerProps) {
 /**
  * A resizable section within a Container. The first Section is width-constrained; others flex to fill.
  */
-export function Section({ defaultSize, minSize, maxSize, onSizeChanged, children, ...rest }: SectionProps) {
+export function Section({
+  defaultSize,
+  minSize,
+  maxSize,
+  onSizeChanged,
+  children,
+  ...rest
+}: SectionProps) {
   return <div {...rest}>{children}</div>;
 }
 

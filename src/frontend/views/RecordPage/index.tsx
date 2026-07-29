@@ -20,7 +20,10 @@ import {
   getInsert as getInsertForCassandra,
   getUpdateWithValues as getUpdateWithValuesForCassandra,
 } from "src/common/adapters/CassandraDataAdapter/scripts";
-import { isDialectSupportCreateRecordForm, isDialectSupportEditRecordForm } from "src/common/adapters/DataScriptFactory";
+import {
+  isDialectSupportCreateRecordForm,
+  isDialectSupportEditRecordForm,
+} from "src/common/adapters/DataScriptFactory";
 import {
   getInsert as getInsertForMongoDB,
   getUpdateWithValues as getUpdateWithValuesForMongoDB,
@@ -40,7 +43,10 @@ import Tabs from "src/frontend/components/Tabs";
 import { useActionDialogs } from "src/frontend/hooks/useActionDialogs";
 import { useSideBarWidthPreference } from "src/frontend/hooks/useClientSidePreference";
 import { useGetColumns, useGetConnectionById } from "src/frontend/hooks/useConnection";
-import { useActiveConnectionQuery, useConnectionQueries } from "src/frontend/hooks/useConnectionQuery";
+import {
+  useActiveConnectionQuery,
+  useConnectionQueries,
+} from "src/frontend/hooks/useConnectionQuery";
 import useToaster from "src/frontend/hooks/useToaster";
 import { useTreeActions } from "src/frontend/hooks/useTreeActions";
 import LayoutTwoColumns from "src/frontend/layout/LayoutTwoColumns";
@@ -64,21 +70,57 @@ function RecordView(props: RecordDetailsPageProps): React.JSX.Element | null {
     <>
       {columnNames.map((columnName) => {
         const columnValue = data[columnName];
-        const columnLabelDom = <InputLabel sx={{ mt: 1, fontWeight: "bold" }}>{columnName}</InputLabel>;
+        const columnLabelDom = (
+          <InputLabel sx={{ mt: 1, fontWeight: "bold" }}>{columnName}</InputLabel>
+        );
 
         let contentColumnValueView = (
-          <TextField label={columnName} value={columnValue} size="small" margin="dense" disabled={true} multiline />
+          <TextField
+            label={columnName}
+            value={columnValue}
+            size="small"
+            margin="dense"
+            disabled={true}
+            multiline
+          />
         );
         if (columnValue === true || columnValue === false) {
           // boolean
-          contentColumnValueView = <TextField label={columnName} value={columnValue} size="small" margin="dense" disabled={true} />;
+          contentColumnValueView = (
+            <TextField
+              label={columnName}
+              value={columnValue}
+              size="small"
+              margin="dense"
+              disabled={true}
+            />
+          );
         } else if (columnValue === null) {
           // null value
-          contentColumnValueView = <TextField label={columnName} value="NULL" size="small" margin="dense" disabled={true} />;
+          contentColumnValueView = (
+            <TextField
+              label={columnName}
+              value="NULL"
+              size="small"
+              margin="dense"
+              disabled={true}
+            />
+          );
         } else if (columnValue === undefined) {
           // undefined
-          contentColumnValueView = <TextField label={columnName} value="undefined" size="small" margin="dense" disabled={true} />;
-        } else if (columnValue?.toString()?.match(/<[a-z0-9]>+/gi) || columnValue?.toString()?.match(/<\/[a-z0-9]+>/gi)) {
+          contentColumnValueView = (
+            <TextField
+              label={columnName}
+              value="undefined"
+              size="small"
+              margin="dense"
+              disabled={true}
+            />
+          );
+        } else if (
+          columnValue?.toString()?.match(/<[a-z0-9]>+/gi) ||
+          columnValue?.toString()?.match(/<\/[a-z0-9]+>/gi)
+        ) {
           // raw HTML
           contentColumnValueView = (
             <>
@@ -128,7 +170,11 @@ function RecordForm(props) {
   const { data: connection } = useGetConnectionById(query?.connectionId);
   const { data: columns } = useGetColumns(query?.connectionId, query?.databaseId, query?.tableId);
 
-  const onDatabaseConnectionChange = (connectionId?: string, databaseId?: string, tableId?: string) => {
+  const onDatabaseConnectionChange = (
+    connectionId?: string,
+    databaseId?: string,
+    tableId?: string,
+  ) => {
     if (props.onConnectionChanges) {
       props.onConnectionChanges({
         connectionId,
@@ -224,14 +270,17 @@ function RecordForm(props) {
           setRawValue(JSON.stringify(newData, null, 2));
           break;
         case "cosmosdb":
-          for (const column of columns.filter((targetColumn) => targetColumn.name[0] !== "_" && !targetColumn.primaryKey)) {
+          for (const column of columns.filter(
+            (targetColumn) => targetColumn.name[0] !== "_" && !targetColumn.primaryKey,
+          )) {
             set(newData, column.propertyPath || column.name, "");
           }
           setRawValue(JSON.stringify(newData, null, 2));
           break;
         case "aztable":
           for (const column of columns.filter(
-            (targetColumn) => AZTABLE_KEYS_TO_IGNORE_FOR_INSERT_AND_UPDATE.indexOf(targetColumn.name) === -1,
+            (targetColumn) =>
+              AZTABLE_KEYS_TO_IGNORE_FOR_INSERT_AND_UPDATE.indexOf(targetColumn.name) === -1,
           )) {
             set(newData, column.propertyPath || column.name, "");
           }
@@ -257,7 +306,9 @@ function RecordForm(props) {
   const contentFormDataView: React.JSX.Element[] = [];
   if (!isDialectSupportCreateRecordForm(connection?.dialect)) {
     contentFormDataView.push(
-      <React.Fragment key="non_supported_dialect">The dialect of this connection is not supported for RecordForm</React.Fragment>,
+      <React.Fragment key="non_supported_dialect">
+        The dialect of this connection is not supported for RecordForm
+      </React.Fragment>,
     );
   } else {
     switch (connection?.dialect) {
@@ -279,7 +330,9 @@ function RecordForm(props) {
               fullWidth: true,
               autoComplete: "off",
             };
-            let contentColumnValueInputView = <TextField {...baseInputProps} type="text" multiline />;
+            let contentColumnValueInputView = (
+              <TextField {...baseInputProps} type="text" multiline />
+            );
 
             if (
               column.type?.toLowerCase()?.includes("int") ||
@@ -317,8 +370,13 @@ function RecordForm(props) {
               required,
               autoComplete: "off",
             };
-            let contentColumnValueInputView = <TextField {...baseInputProps} type="text" multiline />;
-            if (column.type?.toLowerCase()?.includes("int") || column.type?.toLowerCase()?.includes("number")) {
+            let contentColumnValueInputView = (
+              <TextField {...baseInputProps} type="text" multiline />
+            );
+            if (
+              column.type?.toLowerCase()?.includes("int") ||
+              column.type?.toLowerCase()?.includes("number")
+            ) {
               contentColumnValueInputView = <TextField {...baseInputProps} type="number" />;
             }
 
@@ -352,7 +410,9 @@ function RecordForm(props) {
           );
         } else {
           contentFormDataView.push(
-            <React.Fragment key="connection_required">Please select a connection, database and table from the above</React.Fragment>,
+            <React.Fragment key="connection_required">
+              Please select a connection, database and table from the above
+            </React.Fragment>,
           );
         }
         break;
@@ -559,7 +619,12 @@ export function NewRecordPage() {
             },
           ]}
         />
-        <RecordForm onSave={onSave} onCancel={onCancel} onConnectionChanges={onConnectionChanges} mode="create" />
+        <RecordForm
+          onSave={onSave}
+          onCancel={onCancel}
+          onConnectionChanges={onConnectionChanges}
+          mode="create"
+        />
       </>
     </LayoutTwoColumns>
   );
@@ -758,7 +823,14 @@ export function EditRecordPage(props: RecordDetailsPageProps): React.JSX.Element
     <>
       {isEdit ? (
         <>
-          <RecordForm data={data} query={activeQuery} onSave={onSave} onCancel={onCancel} isEditMode={true} mode="edit" />
+          <RecordForm
+            data={data}
+            query={activeQuery}
+            onSave={onSave}
+            onCancel={onCancel}
+            isEditMode={true}
+            mode="edit"
+          />
         </>
       ) : (
         <>
@@ -804,5 +876,12 @@ export function RecordDetailsPage(props: RecordDetailsPageProps): React.JSX.Elem
     </Box>,
   ];
 
-  return <Tabs tabIdx={tabIdx} tabHeaders={tabHeaders} tabContents={tabContents} onTabChange={(newTabIdx) => setTabIdx(newTabIdx)}></Tabs>;
+  return (
+    <Tabs
+      tabIdx={tabIdx}
+      tabHeaders={tabHeaders}
+      tabContents={tabContents}
+      onTabChange={(newTabIdx) => setTabIdx(newTabIdx)}
+    ></Tabs>
+  );
 }

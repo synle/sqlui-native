@@ -5,7 +5,10 @@ export default defineConfig({
   resolve: {
     alias: {
       src: path.resolve(__dirname, "src"),
-      "@typespec/ts-http-runtime/internal": path.resolve(__dirname, "node_modules/@typespec/ts-http-runtime/dist/commonjs"),
+      "@typespec/ts-http-runtime/internal": path.resolve(
+        __dirname,
+        "node_modules/@typespec/ts-http-runtime/dist/commonjs",
+      ),
     },
   },
   plugins: [

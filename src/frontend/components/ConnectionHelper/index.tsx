@@ -2,7 +2,11 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import { useEffect, useState } from "react";
-import { getConnectionFormInputs, getConnectionStringFormat, SUPPORTED_DIALECTS } from "src/common/adapters/DataScriptFactory";
+import {
+  getConnectionFormInputs,
+  getConnectionStringFormat,
+  SUPPORTED_DIALECTS,
+} from "src/common/adapters/DataScriptFactory";
 import Select from "src/frontend/components/Select";
 
 /** Form input fields for building a database connection string. */
@@ -96,7 +100,9 @@ export default function ConnectionHelper(props: ConnectionHelperProps) {
 
   const formDom =
     formInputs.length === 0 ? (
-      <div className="FormInput__Row">This database scheme is not supported by the connection helper</div>
+      <div className="FormInput__Row">
+        This database scheme is not supported by the connection helper
+      </div>
     ) : (
       formInputs.map(([inputKey, inputLabel, optionalFlag], idx) => {
         const isRequired = optionalFlag !== "optional";
@@ -117,7 +123,11 @@ export default function ConnectionHelper(props: ConnectionHelperProps) {
 
   const schemeSelectorDom = (
     <div className="FormInput__Row">
-      <Select required onChange={(newScheme) => onChange("scheme", newScheme)} value={formValues.scheme}>
+      <Select
+        required
+        onChange={(newScheme) => onChange("scheme", newScheme)}
+        value={formValues.scheme}
+      >
         <option value="">Select a Scheme</option>
         {SUPPORTED_DIALECTS.sort().map((dialect) => (
           <option key={dialect} value={dialect}>

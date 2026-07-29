@@ -4,7 +4,12 @@ import { useEffect, useMemo } from "react";
 import { getIsTableIdRequiredForQueryByDialect } from "src/common/adapters/DataScriptFactory";
 import ConnectionTypeIcon from "src/frontend/components/ConnectionTypeIcon";
 import Select from "src/frontend/components/Select";
-import { useGetConnectionById, useGetConnections, useGetDatabases, useGetTables } from "src/frontend/hooks/useConnection";
+import {
+  useGetConnectionById,
+  useGetConnections,
+  useGetDatabases,
+  useGetTables,
+} from "src/frontend/hooks/useConnection";
 import { SqluiFrontend } from "typings";
 
 /** Props for the ConnectionDatabaseSelector component. */
@@ -29,12 +34,17 @@ type ConnectionDatabaseSelectorProps = {
  * @param props - Configuration for the selector including current values and change handler.
  * @returns The selector dropdowns or null.
  */
-export default function ConnectionDatabaseSelector(props: ConnectionDatabaseSelectorProps): React.JSX.Element | null {
+export default function ConnectionDatabaseSelector(
+  props: ConnectionDatabaseSelectorProps,
+): React.JSX.Element | null {
   const query = props.value;
   const { data: connections, isLoading: loadingConnections } = useGetConnections();
   const { data: connection } = useGetConnectionById(query?.connectionId);
   const { data: databases, isLoading: loadingDatabases } = useGetDatabases(query.connectionId);
-  const { data: tables, isLoading: loadingTables } = useGetTables(query.connectionId, query.databaseId);
+  const { data: tables, isLoading: loadingTables } = useGetTables(
+    query.connectionId,
+    query.databaseId,
+  );
   const isLoading = loadingDatabases || loadingConnections || loadingTables;
 
   const connectionOptions = useMemo(
@@ -69,7 +79,9 @@ export default function ConnectionDatabaseSelector(props: ConnectionDatabaseSele
 
   const isTableIdRequired =
     useMemo<boolean>(() => {
-      const selectedConnection = connections?.find((connection) => connection.id === query.connectionId);
+      const selectedConnection = connections?.find(
+        (connection) => connection.id === query.connectionId,
+      );
       return getIsTableIdRequiredForQueryByDialect(selectedConnection?.dialect);
     }, [connections, query.connectionId]) ||
     !!props.isTableIdRequired ||
@@ -84,9 +96,11 @@ export default function ConnectionDatabaseSelector(props: ConnectionDatabaseSele
 
   const onConnectionChange = (connectionId: string) => props.onChange(connectionId, "", "");
 
-  const onDatabaseChange = (databaseId: string) => props.onChange(query.connectionId, databaseId, "");
+  const onDatabaseChange = (databaseId: string) =>
+    props.onChange(query.connectionId, databaseId, "");
 
-  const onTableChange = (tableId: string) => props.onChange(query.connectionId, query.databaseId, tableId);
+  const onTableChange = (tableId: string) =>
+    props.onChange(query.connectionId, query.databaseId, tableId);
 
   // side effect to select the only database or table
   useEffect(() => {

@@ -22,7 +22,12 @@ const mocks = vi.hoisted(() => {
       setValue: (newValue: string) => {
         model.value = newValue;
       },
-      getFullModelRange: () => ({ startLineNumber: 1, startColumn: 1, endLineNumber: 1, endColumn: 1 }),
+      getFullModelRange: () => ({
+        startLineNumber: 1,
+        startColumn: 1,
+        endLineNumber: 1,
+        endColumn: 1,
+      }),
       getLineCount: () => 1,
       getLineMaxColumn: () => model.value.length + 1,
       getPositionAt: () => ({ lineNumber: 1, column: 1 }),
@@ -57,7 +62,9 @@ const mocks = vi.hoisted(() => {
           getSelection: () => null,
           setSelection: vi.fn(),
           getPosition: () => ({ lineNumber: 1, column: 1 }),
-          executeEdits: vi.fn((_source: any, edits: any[]) => editor.model?.setValue(edits[0].text)),
+          executeEdits: vi.fn((_source: any, edits: any[]) =>
+            editor.model?.setValue(edits[0].text),
+          ),
           pushUndoStop: vi.fn(),
           deltaDecorations: vi.fn(() => []),
         };
@@ -89,7 +96,11 @@ vi.mock("src/frontend/hooks/useSetting", () => ({
 }));
 
 import AdvancedEditor from "src/frontend/components/CodeEditorBox/AdvancedEditor";
-import { getEditorModelCacheSize, releaseEditorModel, resetEditorModelCache } from "src/frontend/components/CodeEditorBox/editorModelCache";
+import {
+  getEditorModelCacheSize,
+  releaseEditorModel,
+  resetEditorModelCache,
+} from "src/frontend/components/CodeEditorBox/editorModelCache";
 
 describe("AdvancedEditor", () => {
   beforeEach(() => {
@@ -174,12 +185,16 @@ describe("AdvancedEditor", () => {
   });
 
   test("applies language, word wrap and theme in place instead of recreating the editor", () => {
-    const { rerender, unmount } = render(<AdvancedEditor id="query-1" value="SELECT 1" language="sql" wordWrap={false} />);
+    const { rerender, unmount } = render(
+      <AdvancedEditor id="query-1" value="SELECT 1" language="sql" wordWrap={false} />,
+    );
 
     expect(mocks.monaco.editor.create).toHaveBeenCalledTimes(1);
     const editor = mocks.createdEditors[0];
 
-    rerender(<AdvancedEditor id="query-1" value="SELECT 1" language="javascript" wordWrap={true} />);
+    rerender(
+      <AdvancedEditor id="query-1" value="SELECT 1" language="javascript" wordWrap={true} />,
+    );
 
     // still a single editor — recreating it is what leaked zombies in the first place
     expect(mocks.monaco.editor.create).toHaveBeenCalledTimes(1);
@@ -205,7 +220,9 @@ describe("AdvancedEditor", () => {
 
   test("exposes selection and value helpers through editorRef", () => {
     const editorRef = { current: undefined } as any;
-    const { unmount } = render(<AdvancedEditor id="query-1" value="SELECT 1" language="sql" editorRef={editorRef} />);
+    const { unmount } = render(
+      <AdvancedEditor id="query-1" value="SELECT 1" language="sql" editorRef={editorRef} />,
+    );
 
     expect(editorRef.current?.getValue()).toBe("SELECT 1");
 

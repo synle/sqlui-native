@@ -31,13 +31,17 @@ export async function safeDisconnect(engine: { disconnect(): Promise<void> }) {
  * @param label - Label for console.error log messages (e.g., "connections").
  * @returns True if any items were modified, false otherwise.
  */
-export function backfillTimestamps<T extends { id: string; createdAt?: number; updatedAt?: number }>(items: T[], label: string): boolean {
+export function backfillTimestamps<
+  T extends { id: string; createdAt?: number; updatedAt?: number },
+>(items: T[], label: string): boolean {
   let dirty = false;
   for (const item of items) {
     if (!item.createdAt || !item.updatedAt) {
       if (!item.createdAt) item.createdAt = Date.now();
       if (!item.updatedAt) item.updatedAt = Date.now();
-      console.error(`Endpoints.ts:backfillTimestamps - backfilled timestamps for ${label} ${item.id}`);
+      console.error(
+        `Endpoints.ts:backfillTimestamps - backfilled timestamps for ${label} ${item.id}`,
+      );
       dirty = true;
     }
   }

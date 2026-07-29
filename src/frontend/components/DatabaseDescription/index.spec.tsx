@@ -20,7 +20,9 @@ vi.mock("src/frontend/components/Accordion", () => ({
   AccordionBody: ({ children }: any) => <div>{children}</div>,
 }));
 vi.mock("src/frontend/components/DatabaseActions", () => ({ default: () => <div>DbActions</div> }));
-vi.mock("src/frontend/components/TableDescription", () => ({ default: () => <div>TableDesc</div> }));
+vi.mock("src/frontend/components/TableDescription", () => ({
+  default: () => <div>TableDesc</div>,
+}));
 
 import DatabaseDescription from "src/frontend/components/DatabaseDescription";
 
@@ -67,7 +69,9 @@ describe("DatabaseDescription", () => {
       isLoading: false,
       isError: false,
     });
-    useActiveConnectionQueryMock.mockReturnValue({ query: { connectionId: "c1", databaseId: "acme_db" } });
+    useActiveConnectionQueryMock.mockReturnValue({
+      query: { connectionId: "c1", databaseId: "acme_db" },
+    });
     const { container } = render(<DatabaseDescription connectionId="c1" />);
     expect(container.innerHTML).toContain("selected");
   });

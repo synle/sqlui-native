@@ -21,19 +21,25 @@ import LayoutTwoColumns from "src/frontend/layout/LayoutTwoColumns";
 describe("LayoutTwoColumns", () => {
   test("renders left and right pane content", () => {
     const { container } = render(
-      <LayoutTwoColumns>{[<div key="l">Left Content</div>, <div key="r">Right Content</div>]}</LayoutTwoColumns>,
+      <LayoutTwoColumns>
+        {[<div key="l">Left Content</div>, <div key="r">Right Content</div>]}
+      </LayoutTwoColumns>,
     );
     expect(container.textContent).toContain("Left Content");
     expect(container.textContent).toContain("Right Content");
   });
 
   test("renders LayoutTwoColumns class", () => {
-    const { container } = render(<LayoutTwoColumns>{[<div key="l">L</div>, <div key="r">R</div>]}</LayoutTwoColumns>);
+    const { container } = render(
+      <LayoutTwoColumns>{[<div key="l">L</div>, <div key="r">R</div>]}</LayoutTwoColumns>,
+    );
     expect(container.querySelector(".LayoutTwoColumns")).toBeTruthy();
   });
 
   test("collapses left pane when toggle button is clicked", () => {
-    const { container } = render(<LayoutTwoColumns>{[<div key="l">Left</div>, <div key="r">Right</div>]}</LayoutTwoColumns>);
+    const { container } = render(
+      <LayoutTwoColumns>{[<div key="l">Left</div>, <div key="r">Right</div>]}</LayoutTwoColumns>,
+    );
     // Find the fab button (collapse)
     const fab = container.querySelector("button");
     if (fab) fireEvent.click(fab);

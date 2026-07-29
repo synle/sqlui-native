@@ -6,7 +6,9 @@ export const tauriPlatform: PlatformBridge = {
   isDesktop: true,
 
   openExternalUrl(url: string) {
-    import("@tauri-apps/plugin-opener").then((mod) => mod.openUrl(url)).catch(() => window.open(url, "_blank"));
+    import("@tauri-apps/plugin-opener")
+      .then((mod) => mod.openUrl(url))
+      .catch(() => window.open(url, "_blank"));
   },
 
   openAppWindow(hashLink: string) {
@@ -43,7 +45,10 @@ export const tauriPlatform: PlatformBridge = {
     return null;
   },
 
-  async pickFile(options?: { title?: string; filters?: { name: string; extensions: string[] }[] }): Promise<string | null> {
+  async pickFile(options?: {
+    title?: string;
+    filters?: { name: string; extensions: string[] }[];
+  }): Promise<string | null> {
     try {
       const { open } = await import("@tauri-apps/plugin-dialog");
       const selected = await open({

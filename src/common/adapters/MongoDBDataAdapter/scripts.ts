@@ -72,7 +72,9 @@ export function getSelectOne(input: SqlAction.TableInput): SqlAction.Output | un
  * @param input - Table input containing columns and query size.
  * @returns Script output with the find query, or undefined if no columns.
  */
-export function getSelectSpecificColumns(input: SqlAction.TableInput): SqlAction.Output | undefined {
+export function getSelectSpecificColumns(
+  input: SqlAction.TableInput,
+): SqlAction.Output | undefined {
   const label = `Select Specific Columns`;
 
   if (!input.columns) {
@@ -82,7 +84,8 @@ export function getSelectSpecificColumns(input: SqlAction.TableInput): SqlAction
   const columns: any = {};
   for (const column of input.columns || []) {
     // construct nested object properly
-    columns[column.propertyPath ? column.propertyPath.join(".") : column.name] = column.type === "string" ? "_some_value_" : 123;
+    columns[column.propertyPath ? column.propertyPath.join(".") : column.name] =
+      column.type === "string" ? "_some_value_" : 123;
   }
   return {
     label,
@@ -106,7 +109,8 @@ export function getSelectDistinctValues(input: SqlAction.TableInput): SqlAction.
   }, {});
 
   // select something that is not _id or id
-  const distinctColumn = columns.filter((col) => col.name !== "_id" && col.name !== "id")?.[0]?.name || "some_field";
+  const distinctColumn =
+    columns.filter((col) => col.name !== "_id" && col.name !== "id")?.[0]?.name || "some_field";
 
   return {
     label,
@@ -124,7 +128,10 @@ export function getSelectDistinctValues(input: SqlAction.TableInput): SqlAction.
  * @param value - Optional pre-populated values to insert.
  * @returns Script output with the insertMany query, or undefined if no columns.
  */
-export function getInsert(input: SqlAction.TableInput, value?: Record<string, any>): SqlAction.Output | undefined {
+export function getInsert(
+  input: SqlAction.TableInput,
+  value?: Record<string, any>,
+): SqlAction.Output | undefined {
   const label = `Insert`;
 
   if (!input.columns) {
@@ -159,7 +166,10 @@ export function getInsert(input: SqlAction.TableInput, value?: Record<string, an
  * @param rows - Array of row objects to insert.
  * @returns Script output with the insertMany query, or undefined if no columns.
  */
-export function getBulkInsert(input: SqlAction.TableInput, rows?: Record<string, any>[]): SqlAction.Output | undefined {
+export function getBulkInsert(
+  input: SqlAction.TableInput,
+  rows?: Record<string, any>[],
+): SqlAction.Output | undefined {
   const label = `Insert`;
 
   if (!input.columns) {
@@ -251,7 +261,8 @@ export function getDelete(input: SqlAction.TableInput): SqlAction.Output | undef
   const columns: any = {};
   for (const column of input.columns) {
     // construct nested object properly
-    columns[column.propertyPath ? column.propertyPath.join(".") : column.name] = column.type === "string" ? "_some_value_" : 123;
+    columns[column.propertyPath ? column.propertyPath.join(".") : column.name] =
+      column.type === "string" ? "_some_value_" : 123;
   }
   return {
     label,
@@ -330,7 +341,9 @@ export function getDropDatabase(_input: SqlAction.DatabaseInput): SqlAction.Outp
  * @param input - Connection input.
  * @returns Script output with the createDatabase query.
  */
-export function getCreateConnectionDatabase(_input: SqlAction.ConnectionInput): SqlAction.Output | undefined {
+export function getCreateConnectionDatabase(
+  _input: SqlAction.ConnectionInput,
+): SqlAction.Output | undefined {
   const label = `Create Database`;
   return {
     label,

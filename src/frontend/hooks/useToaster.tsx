@@ -305,7 +305,8 @@ function ToastItem({ toast }: { toast: InternalToast }) {
         background: "#323232",
         color: "#fff",
         borderRadius: "4px",
-        boxShadow: "0 3px 5px -1px rgba(0,0,0,.2), 0 6px 10px 0 rgba(0,0,0,.14), 0 1px 18px 0 rgba(0,0,0,.12)",
+        boxShadow:
+          "0 3px 5px -1px rgba(0,0,0,.2), 0 6px 10px 0 rgba(0,0,0,.14), 0 1px 18px 0 rgba(0,0,0,.12)",
         fontSize: "0.875rem",
         minWidth: "70vw",
       }}
@@ -315,7 +316,12 @@ function ToastItem({ toast }: { toast: InternalToast }) {
       <IconButton onClick={handleExpand} size="small" aria-label="expand" color="inherit">
         <OpenInFullIcon sx={{ fontSize: "0.875rem" }} />
       </IconButton>
-      <IconButton onClick={() => _dismissToast(toast.id, "user")} size="small" aria-label="close" color="inherit">
+      <IconButton
+        onClick={() => _dismissToast(toast.id, "user")}
+        size="small"
+        aria-label="close"
+        color="inherit"
+      >
         <CloseIcon fontSize="small" />
       </IconButton>
     </div>

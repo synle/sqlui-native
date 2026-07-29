@@ -6,11 +6,17 @@ import { normalizeConnectionInput, deriveConnectionName } from "src/sqlui-server
 describe("portalHelpers", () => {
   describe("normalizeConnectionInput", () => {
     test("returns dialect:// URLs unchanged", () => {
-      expect(normalizeConnectionInput("postgres://user:pass@db:5432/mydb")).toBe("postgres://user:pass@db:5432/mydb");
-      expect(normalizeConnectionInput("mongodb://localhost:27017")).toBe("mongodb://localhost:27017");
+      expect(normalizeConnectionInput("postgres://user:pass@db:5432/mydb")).toBe(
+        "postgres://user:pass@db:5432/mydb",
+      );
+      expect(normalizeConnectionInput("mongodb://localhost:27017")).toBe(
+        "mongodb://localhost:27017",
+      );
       expect(normalizeConnectionInput("redis://host:6379")).toBe("redis://host:6379");
       expect(normalizeConnectionInput("mysql://u:p@h:3306/d")).toBe("mysql://u:p@h:3306/d");
-      expect(normalizeConnectionInput("sqlite:///abs/path/db.sqlite")).toBe("sqlite:///abs/path/db.sqlite");
+      expect(normalizeConnectionInput("sqlite:///abs/path/db.sqlite")).toBe(
+        "sqlite:///abs/path/db.sqlite",
+      );
     });
 
     test("returns Microsoft-style aztable strings unchanged", () => {
@@ -65,7 +71,9 @@ describe("portalHelpers", () => {
     });
 
     test("uses dialect (host:port) for URL-style connection strings", () => {
-      expect(deriveConnectionName("postgres://user:pass@db.example.com:5432/mydb")).toBe("postgres (db.example.com:5432)");
+      expect(deriveConnectionName("postgres://user:pass@db.example.com:5432/mydb")).toBe(
+        "postgres (db.example.com:5432)",
+      );
       expect(deriveConnectionName("mongodb://localhost:27017")).toBe("mongodb (localhost:27017)");
       expect(deriveConnectionName("redis://localhost:6379")).toBe("redis (localhost:6379)");
     });

@@ -10,8 +10,18 @@ import { getUpdatedOrdersForList } from "src/frontend/utils/commonUtils";
 import { SqluiCore, SqluiFrontend } from "typings";
 
 // Re-export schema hooks so existing imports from "useConnection" continue to work.
-export { useGetDatabases, useGetTables, useGetCachedSchema, useGetAllTableColumns, useGetColumns } from "src/frontend/hooks/useSchema";
-export { useRetryConnection, useRefreshDatabase, useRefreshTable } from "src/frontend/hooks/useSchemaRefresh";
+export {
+  useGetDatabases,
+  useGetTables,
+  useGetCachedSchema,
+  useGetAllTableColumns,
+  useGetColumns,
+} from "src/frontend/hooks/useSchema";
+export {
+  useRetryConnection,
+  useRefreshDatabase,
+  useRefreshTable,
+} from "src/frontend/hooks/useSchemaRefresh";
 
 /**
  * Hook to fetch all database connections.
@@ -37,7 +47,10 @@ export function useUpdateConnections(connections?: SqluiCore.ConnectionProps[]) 
       if (connections) {
         connections = getUpdatedOrdersForList(connections, from, to);
 
-        queryClient.setQueryData<SqluiCore.ConnectionProps[] | undefined>(queryKeys.connections.all, connections);
+        queryClient.setQueryData<SqluiCore.ConnectionProps[] | undefined>(
+          queryKeys.connections.all,
+          connections,
+        );
 
         return dataApi.update(connections);
       }
@@ -73,28 +86,31 @@ export function useUpsertConnection() {
       queryClient.invalidateQueries({ queryKey: queryKeys.connections.byId(newConnection.id) });
       queryClient.invalidateQueries({ queryKey: queryKeys.connections.all });
 
-      queryClient.setQueryData<SqluiCore.ConnectionProps[] | undefined>(queryKeys.connections.all, (oldData) => {
-        // find that entry
-        let isNew = true;
-        oldData = oldData?.map((connection) => {
-          if (connection.id === newConnection.id) {
-            isNew = false;
-            return {
-              ...connection,
-              ...newConnection,
-            };
-          }
-          return connection;
-        });
-
-        if (isNew) {
-          oldData?.push({
-            ...newConnection,
+      queryClient.setQueryData<SqluiCore.ConnectionProps[] | undefined>(
+        queryKeys.connections.all,
+        (oldData) => {
+          // find that entry
+          let isNew = true;
+          oldData = oldData?.map((connection) => {
+            if (connection.id === newConnection.id) {
+              isNew = false;
+              return {
+                ...connection,
+                ...newConnection,
+              };
+            }
+            return connection;
           });
-        }
 
-        return oldData;
-      });
+          if (isNew) {
+            oldData?.push({
+              ...newConnection,
+            });
+          }
+
+          return oldData;
+        },
+      );
 
       return newConnection;
     },
@@ -116,14 +132,19 @@ export function useDeleteConnection() {
   return useMutation<string, void, string>({
     mutationFn: dataApi.deleteConnection,
     onSuccess: async (deletedConnectionId) => {
-      queryClient.setQueryData<SqluiCore.ConnectionProps[] | undefined>(queryKeys.connections.all, (oldData) => {
-        return oldData?.filter((connection) => connection.id !== deletedConnectionId);
-      });
+      queryClient.setQueryData<SqluiCore.ConnectionProps[] | undefined>(
+        queryKeys.connections.all,
+        (oldData) => {
+          return oldData?.filter((connection) => connection.id !== deletedConnectionId);
+        },
+      );
 
       try {
         if (isSoftDeleteModeSetting) {
           // generate the connection backup to store in recyclebin
-          const connectionToBackup = connections?.find((connection) => connection.id === deletedConnectionId);
+          const connectionToBackup = connections?.find(
+            (connection) => connection.id === deletedConnectionId,
+          );
 
           if (connectionToBackup) {
             // remove status before we backup.
@@ -204,7 +225,10 @@ export function useExecute() {
  * @param query - The executed query with connectionId and databaseId.
  * @param queryClient - The React Query client used to invalidate caches.
  */
-export function refreshAfterExecution(query: SqluiFrontend.ConnectionQuery, queryClient: QueryClient) {
+export function refreshAfterExecution(
+  query: SqluiFrontend.ConnectionQuery,
+  queryClient: QueryClient,
+) {
   if (!query?.connectionId || !query?.databaseId) return;
   const { connectionId, databaseId } = query;
   // Fire-and-forget: clear backend disk cache, then invalidate frontend caches
@@ -212,8 +236,12 @@ export function refreshAfterExecution(query: SqluiFrontend.ConnectionQuery, quer
     .refreshDatabase(connectionId, databaseId)
     .then(() => {
       queryClient.invalidateQueries({ queryKey: queryKeys.tables.list(connectionId, databaseId) });
-      queryClient.invalidateQueries({ queryKey: queryKeys.columns.allForDatabase(connectionId, databaseId) });
-      queryClient.invalidateQueries({ queryKey: queryKeys.schema.cached(connectionId, databaseId) });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.columns.allForDatabase(connectionId, databaseId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.schema.cached(connectionId, databaseId),
+      });
     })
     .catch(() => {
       // Silently ignore — background refresh should not disrupt the user
@@ -251,24 +279,32 @@ export function useAutoConnectAll(connections?: SqluiCore.ConnectionProps[]) {
     }
 
     // Mark all unchecked connections as "loading" immediately
-    queryClient.setQueryData<SqluiCore.ConnectionProps[] | undefined>(queryKeys.connections.all, (oldData) => {
-      if (!oldData) return oldData;
-      return oldData.map((c) => (checkedRef.current.has(c.id) && !c.status ? { ...c, status: "loading" as const } : c));
-    });
+    queryClient.setQueryData<SqluiCore.ConnectionProps[] | undefined>(
+      queryKeys.connections.all,
+      (oldData) => {
+        if (!oldData) return oldData;
+        return oldData.map((c) =>
+          checkedRef.current.has(c.id) && !c.status ? { ...c, status: "loading" as const } : c,
+        );
+      },
+    );
 
     // Fire individual auth checks in parallel — each resolves independently
     for (const conn of unchecked) {
       dataApi
         .reconnect(conn.id)
         .then((result) => {
-          queryClient.setQueryData<SqluiCore.ConnectionProps[] | undefined>(queryKeys.connections.all, (oldData) =>
-            oldData?.map((c) => (c.id === conn.id ? { ...c, ...result } : c)),
+          queryClient.setQueryData<SqluiCore.ConnectionProps[] | undefined>(
+            queryKeys.connections.all,
+            (oldData) => oldData?.map((c) => (c.id === conn.id ? { ...c, ...result } : c)),
           );
           queryClient.invalidateQueries({ queryKey: queryKeys.connections.byId(conn.id) });
         })
         .catch(() => {
-          queryClient.setQueryData<SqluiCore.ConnectionProps[] | undefined>(queryKeys.connections.all, (oldData) =>
-            oldData?.map((c) => (c.id === conn.id ? { ...c, status: "offline" as const } : c)),
+          queryClient.setQueryData<SqluiCore.ConnectionProps[] | undefined>(
+            queryKeys.connections.all,
+            (oldData) =>
+              oldData?.map((c) => (c.id === conn.id ? { ...c, status: "offline" as const } : c)),
           );
         });
     }

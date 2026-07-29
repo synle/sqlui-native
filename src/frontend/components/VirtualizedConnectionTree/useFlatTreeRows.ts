@@ -3,7 +3,11 @@ import { useQueries } from "@tanstack/react-query";
 import { isDialectSupportManagedMetadata } from "src/common/adapters/DataScriptFactory";
 import dataApi from "src/frontend/data/api";
 import { queryKeys } from "src/frontend/hooks/queryKeys";
-import { useGetConnections, useUpdateConnections, useAutoConnectAll } from "src/frontend/hooks/useConnection";
+import {
+  useGetConnections,
+  useUpdateConnections,
+  useAutoConnectAll,
+} from "src/frontend/hooks/useConnection";
 import { useActiveConnectionQuery } from "src/frontend/hooks/useConnectionQuery";
 import { useShowHide } from "src/frontend/hooks/useShowHide";
 import { SqluiCore } from "typings";
@@ -88,13 +92,15 @@ export function useFlatTreeRows() {
     })),
   });
 
-  const databaseResults: DatabaseQueryResult[] = expandedOnlineConnections.map((connectionId, i) => ({
-    connectionId,
-    data: databaseQueries[i]?.data as SqluiCore.DatabaseMetaData[] | undefined,
-    isLoading: databaseQueries[i]?.isLoading ?? true,
-    isError: databaseQueries[i]?.isError ?? false,
-    error: databaseQueries[i]?.error,
-  }));
+  const databaseResults: DatabaseQueryResult[] = expandedOnlineConnections.map(
+    (connectionId, i) => ({
+      connectionId,
+      data: databaseQueries[i]?.data as SqluiCore.DatabaseMetaData[] | undefined,
+      isLoading: databaseQueries[i]?.isLoading ?? true,
+      isError: databaseQueries[i]?.isError ?? false,
+      error: databaseQueries[i]?.error,
+    }),
+  );
 
   // Determine which databases are expanded
   const expandedDatabases: { connectionId: string; databaseId: string }[] = [];
@@ -116,14 +122,16 @@ export function useFlatTreeRows() {
     })),
   });
 
-  const tableResults: TableQueryResult[] = expandedDatabases.map(({ connectionId, databaseId }, i) => ({
-    connectionId,
-    databaseId,
-    data: tableQueries[i]?.data as SqluiCore.TableMetaData[] | undefined,
-    isLoading: tableQueries[i]?.isLoading ?? true,
-    isError: tableQueries[i]?.isError ?? false,
-    error: tableQueries[i]?.error,
-  }));
+  const tableResults: TableQueryResult[] = expandedDatabases.map(
+    ({ connectionId, databaseId }, i) => ({
+      connectionId,
+      databaseId,
+      data: tableQueries[i]?.data as SqluiCore.TableMetaData[] | undefined,
+      isLoading: tableQueries[i]?.isLoading ?? true,
+      isError: tableQueries[i]?.isError ?? false,
+      error: tableQueries[i]?.error,
+    }),
+  );
 
   // Determine which tables are expanded (skip managed metadata — no columns to fetch)
   const connectionDialectMap = new Map<string, string | undefined>();
@@ -159,25 +167,33 @@ export function useFlatTreeRows() {
     })),
   });
 
-  const columnResults: ColumnQueryResult[] = expandedTables.map(({ connectionId, databaseId, tableId }, i) => ({
-    connectionId,
-    databaseId,
-    tableId,
-    data: columnQueries[i]?.data as SqluiCore.ColumnMetaData[] | undefined,
-    isLoading: columnQueries[i]?.isLoading ?? true,
-    isError: columnQueries[i]?.isError ?? false,
-    error: columnQueries[i]?.error,
-  }));
+  const columnResults: ColumnQueryResult[] = expandedTables.map(
+    ({ connectionId, databaseId, tableId }, i) => ({
+      connectionId,
+      databaseId,
+      tableId,
+      data: columnQueries[i]?.data as SqluiCore.ColumnMetaData[] | undefined,
+      isLoading: columnQueries[i]?.isLoading ?? true,
+      isError: columnQueries[i]?.isError ?? false,
+      error: columnQueries[i]?.error,
+    }),
+  );
 
   // Memoize the flat row build — everything above is hooks and cheap iterations;
   // the rows tree traversal is the expensive part.
   const inputFingerprint = [
     connections?.length,
     ...(connections?.map((c) => `${c.id}:${c.status}`) ?? []),
-    ...databaseResults.map((r) => `${r.connectionId}:${r.isLoading ? "L" : r.isError ? "E" : `D${r.data?.length}`}`),
-    ...tableResults.map((r) => `${r.connectionId}|${r.databaseId}:${r.isLoading ? "L" : r.isError ? "E" : `T${r.data?.length}`}`),
+    ...databaseResults.map(
+      (r) => `${r.connectionId}:${r.isLoading ? "L" : r.isError ? "E" : `D${r.data?.length}`}`,
+    ),
+    ...tableResults.map(
+      (r) =>
+        `${r.connectionId}|${r.databaseId}:${r.isLoading ? "L" : r.isError ? "E" : `T${r.data?.length}`}`,
+    ),
     ...columnResults.map(
-      (r) => `${r.connectionId}|${r.databaseId}|${r.tableId}:${r.isLoading ? "L" : r.isError ? "E" : `C${r.data?.length}`}`,
+      (r) =>
+        `${r.connectionId}|${r.databaseId}|${r.tableId}:${r.isLoading ? "L" : r.isError ? "E" : `C${r.data?.length}`}`,
     ),
     ...expandedOnlineConnections,
     ...expandedTables.map((t) => `${t.connectionId}|${t.databaseId}|${t.tableId}`),
@@ -212,7 +228,9 @@ export function useFlatTreeRows() {
         const connKey = connection.id;
         const isOnline = connection.status === "online";
         const connExpanded = !!visibles[connKey];
-        const connSelected = !!(activeQuery?.connectionId && activeQuery.connectionId === connection.id);
+        const connSelected = !!(
+          activeQuery?.connectionId && activeQuery.connectionId === connection.id
+        );
 
         innerRows.push({
           type: "connection-header",
@@ -280,7 +298,9 @@ export function useFlatTreeRows() {
         for (const database of dbResult.data) {
           const dbKey = [connection.id, database.name].join(" > ");
           const dbExpanded = !!visibles[dbKey];
-          const dbSelected = activeQuery?.connectionId === connection.id && activeQuery?.databaseId === database.name;
+          const dbSelected =
+            activeQuery?.connectionId === connection.id &&
+            activeQuery?.databaseId === database.name;
 
           innerRows.push({
             type: "database-header",
@@ -332,7 +352,9 @@ export function useFlatTreeRows() {
             const tblKey = [connection.id, database.name, tableId].join(" > ");
             const tblExpanded = !!visibles[tblKey];
             const tblSelected =
-              activeQuery?.connectionId === connection.id && activeQuery?.databaseId === database.name && activeQuery?.tableId === tableId;
+              activeQuery?.connectionId === connection.id &&
+              activeQuery?.databaseId === database.name &&
+              activeQuery?.tableId === tableId;
 
             innerRows.push({
               type: "table-header",
@@ -380,10 +402,15 @@ export function useFlatTreeRows() {
               continue;
             }
 
-            const showAllKey = [connection.id, database.name, tableId, "__ShowAllColumns__"].join(" > ");
-            const showAll = colResult.data.length <= MAX_COLUMN_SIZE_TO_SHOW || !!visibles[showAllKey];
+            const showAllKey = [connection.id, database.name, tableId, "__ShowAllColumns__"].join(
+              " > ",
+            );
+            const showAll =
+              colResult.data.length <= MAX_COLUMN_SIZE_TO_SHOW || !!visibles[showAllKey];
 
-            const columnsToShow = showAll ? colResult.data : colResult.data.slice(0, MAX_COLUMN_SIZE_TO_SHOW + 1);
+            const columnsToShow = showAll
+              ? colResult.data
+              : colResult.data.slice(0, MAX_COLUMN_SIZE_TO_SHOW + 1);
 
             for (const column of columnsToShow) {
               const colKey = [connection.id, database.name, tableId, column.name].join(" > ");

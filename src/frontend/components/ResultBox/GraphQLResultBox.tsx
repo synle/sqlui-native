@@ -50,8 +50,24 @@ function KeyValueTable({ entries }: { entries: Record<string, any> }): React.JSX
     <table style={{ borderCollapse: "collapse", width: "100%", fontSize: "0.85rem" }}>
       <thead>
         <tr>
-          <th style={{ textAlign: "left", padding: "6px 12px 6px 0", borderBottom: "1px solid rgba(128,128,128,0.3)" }}>Name</th>
-          <th style={{ textAlign: "left", padding: "6px 0", borderBottom: "1px solid rgba(128,128,128,0.3)" }}>Value</th>
+          <th
+            style={{
+              textAlign: "left",
+              padding: "6px 12px 6px 0",
+              borderBottom: "1px solid rgba(128,128,128,0.3)",
+            }}
+          >
+            Name
+          </th>
+          <th
+            style={{
+              textAlign: "left",
+              padding: "6px 0",
+              borderBottom: "1px solid rgba(128,128,128,0.3)",
+            }}
+          >
+            Value
+          </th>
         </tr>
       </thead>
       <tbody>
@@ -76,7 +92,9 @@ function KeyValueTable({ entries }: { entries: Record<string, any> }): React.JSX
                 borderBottom: "1px solid rgba(128,128,128,0.15)",
               }}
             >
-              {typeof entries[key] === "object" ? JSON.stringify(entries[key]) : String(entries[key])}
+              {typeof entries[key] === "object"
+                ? JSON.stringify(entries[key])
+                : String(entries[key])}
             </td>
           </tr>
         ))}
@@ -114,9 +132,13 @@ export default function GraphQLResultBox(props: GraphQLResultBoxProps): React.JS
   const hasNoData = graphqlData === null || graphqlData === undefined;
   const [tabIdx, setTabIdx] = useState(hasErrors && hasNoData ? 1 : 0);
 
-  const dataText = graphqlData !== undefined && graphqlData !== null ? JSON.stringify(graphqlData, null, 2) : "(no data)";
+  const dataText =
+    graphqlData !== undefined && graphqlData !== null
+      ? JSON.stringify(graphqlData, null, 2)
+      : "(no data)";
 
-  const errorsText = graphqlErrors.length > 0 ? JSON.stringify(graphqlErrors, null, 2) : "(no errors)";
+  const errorsText =
+    graphqlErrors.length > 0 ? JSON.stringify(graphqlErrors, null, 2) : "(no errors)";
 
   const headerCount = Object.keys(responseHeaders).length;
   const errorCount = graphqlErrors.length;
@@ -157,8 +179,23 @@ export default function GraphQLResultBox(props: GraphQLResultBoxProps): React.JS
 
   const tabHeaders = [
     <>Data</>,
-    <>Errors {errorCount > 0 && <Chip label={errorCount} size="small" color="error" sx={{ ml: 0.5, height: 18, fontSize: "0.7rem" }} />}</>,
-    <>Headers {headerCount > 0 && <Chip label={headerCount} size="small" sx={{ ml: 0.5, height: 18, fontSize: "0.7rem" }} />}</>,
+    <>
+      Errors{" "}
+      {errorCount > 0 && (
+        <Chip
+          label={errorCount}
+          size="small"
+          color="error"
+          sx={{ ml: 0.5, height: 18, fontSize: "0.7rem" }}
+        />
+      )}
+    </>,
+    <>
+      Headers{" "}
+      {headerCount > 0 && (
+        <Chip label={headerCount} size="small" sx={{ ml: 0.5, height: 18, fontSize: "0.7rem" }} />
+      )}
+    </>,
     <>Request</>,
     <>Timing</>,
     <>
@@ -191,7 +228,12 @@ export default function GraphQLResultBox(props: GraphQLResultBoxProps): React.JS
       )}
     </div>,
     <div className="ResultBox__Content" key="Raw">
-      <CodeEditorBox value={JSON.stringify(raw, null, 2)} language="json" wordWrap={true} readOnly={true} />
+      <CodeEditorBox
+        value={JSON.stringify(raw, null, 2)}
+        language="json"
+        wordWrap={true}
+        readOnly={true}
+      />
     </div>,
   ];
 
@@ -206,23 +248,35 @@ export default function GraphQLResultBox(props: GraphQLResultBoxProps): React.JS
     <div className="ResultBox">
       {unresolvedVariables.length > 0 && (
         <Alert severity="warning" sx={{ mb: 0.5 }}>
-          Unresolved variables: {unresolvedVariables.map((v) => `{{${v}}}`).join(", ")}. Define them in collection or folder variables.
+          Unresolved variables: {unresolvedVariables.map((v) => `{{${v}}}`).join(", ")}. Define them
+          in collection or folder variables.
         </Alert>
       )}
       {hasErrors && !hasNoData && (
         <Alert severity="warning" sx={{ mb: 0.5 }}>
-          GraphQL returned partial data with {errorCount} error{errorCount !== 1 ? "s" : ""}. Check the Errors tab for details.
+          GraphQL returned partial data with {errorCount} error{errorCount !== 1 ? "s" : ""}. Check
+          the Errors tab for details.
         </Alert>
       )}
       {hasErrors && hasNoData && (
         <Alert severity="error" sx={{ mb: 0.5 }}>
-          GraphQL returned {errorCount} error{errorCount !== 1 ? "s" : ""} with no data. Check the Errors tab for details.
+          GraphQL returned {errorCount} error{errorCount !== 1 ? "s" : ""} with no data. Check the
+          Errors tab for details.
         </Alert>
       )}
       {extensionsAlert}
-      <Alert severity={status >= 200 && status < 400 ? "info" : "warning"} icon={false} sx={{ display: "flex", alignItems: "center" }}>
+      <Alert
+        severity={status >= 200 && status < 400 ? "info" : "warning"}
+        icon={false}
+        sx={{ display: "flex", alignItems: "center" }}
+      >
         <span style={{ display: "flex", alignItems: "center", gap: "0.75rem", flexWrap: "wrap" }}>
-          <Chip label={`${status} ${statusText}`} color={getStatusColor(status)} size="small" sx={{ fontWeight: 700 }} />
+          <Chip
+            label={`${status} ${statusText}`}
+            color={getStatusColor(status)}
+            size="small"
+            sx={{ fontWeight: 700 }}
+          />
           <span style={{ fontWeight: 600 }}>POST</span>
           <span style={{ opacity: 0.8, wordBreak: "break-all" }}>{requestEndpoint}</span>
           <span style={{ opacity: 0.6 }}>
@@ -231,7 +285,12 @@ export default function GraphQLResultBox(props: GraphQLResultBoxProps): React.JS
           {size > 0 && <span style={{ opacity: 0.6 }}>{formatBytes(size)}</span>}
         </span>
       </Alert>
-      <Tabs tabIdx={tabIdx} tabHeaders={tabHeaders} tabContents={tabContents} onTabChange={(newTabIdx) => setTabIdx(newTabIdx)} />
+      <Tabs
+        tabIdx={tabIdx}
+        tabHeaders={tabHeaders}
+        tabContents={tabContents}
+        onTabChange={(newTabIdx) => setTabIdx(newTabIdx)}
+      />
     </div>
   );
 }

@@ -21,10 +21,16 @@ vi.mock("src/frontend/components/Accordion", () => ({
   AccordionHeader: ({ children, className }: any) => <div className={className}>{children}</div>,
   AccordionBody: ({ children }: any) => <div>{children}</div>,
 }));
-vi.mock("src/frontend/components/ConnectionActions", () => ({ default: () => <div>ConnActions</div> }));
-vi.mock("src/frontend/components/ConnectionRetryAlert", () => ({ default: () => <div>Retry</div> }));
+vi.mock("src/frontend/components/ConnectionActions", () => ({
+  default: () => <div>ConnActions</div>,
+}));
+vi.mock("src/frontend/components/ConnectionRetryAlert", () => ({
+  default: () => <div>Retry</div>,
+}));
 vi.mock("src/frontend/components/ConnectionTypeIcon", () => ({ default: () => <i>Icon</i> }));
-vi.mock("src/frontend/components/DatabaseDescription", () => ({ default: () => <div>DbDesc</div> }));
+vi.mock("src/frontend/components/DatabaseDescription", () => ({
+  default: () => <div>DbDesc</div>,
+}));
 
 import ConnectionDescription from "src/frontend/components/ConnectionDescription";
 

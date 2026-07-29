@@ -25,7 +25,11 @@ vi.mock("src/frontend/components/DataTable/LegacyDataTable", () => ({
   ),
 }));
 
-import { DataTableWithJSONList, ALL_PAGE_SIZE_OPTIONS, DEFAULT_TABLE_PAGE_SIZE } from "src/frontend/components/DataTable";
+import {
+  DataTableWithJSONList,
+  ALL_PAGE_SIZE_OPTIONS,
+  DEFAULT_TABLE_PAGE_SIZE,
+} from "src/frontend/components/DataTable";
 
 describe("DataTableWithJSONList", () => {
   test("auto-generates columns from row keys + row-number col, renders Modern", () => {

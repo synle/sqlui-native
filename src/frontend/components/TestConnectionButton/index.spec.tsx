@@ -18,7 +18,9 @@ vi.mock("src/frontend/components/Timer", () => ({
   default: ({ startTime }: any) => <span>timer:{startTime}</span>,
 }));
 
-import TestConnectionButton, { TestConnectionModalBody } from "src/frontend/components/TestConnectionButton";
+import TestConnectionButton, {
+  TestConnectionModalBody,
+} from "src/frontend/components/TestConnectionButton";
 
 beforeEach(() => {
   mockModal.mockClear();
@@ -29,7 +31,9 @@ beforeEach(() => {
 
 describe("TestConnectionButton", () => {
   test("renders Test Connection button", () => {
-    const { container } = render(<TestConnectionButton connection={{ connection: "mysql://localhost" } as any} />);
+    const { container } = render(
+      <TestConnectionButton connection={{ connection: "mysql://localhost" } as any} />,
+    );
     expect(container.textContent).toContain("Test Connection");
   });
 
@@ -58,7 +62,10 @@ describe("TestConnectionModalBody", () => {
   test("renders loading state initially", async () => {
     proxyTestMock.mockImplementation(() => new Promise(() => {})); // hangs
     const { container } = render(
-      <TestConnectionModalBody connection={{ name: "MyDb", connection: "mysql://u:p@host:3306" } as any} onDismiss={() => {}} />,
+      <TestConnectionModalBody
+        connection={{ name: "MyDb", connection: "mysql://u:p@host:3306" } as any}
+        onDismiss={() => {}}
+      />,
     );
     expect(container.textContent).toContain("Testing connection");
     expect(container.textContent).toContain("Cancel");
@@ -68,9 +75,15 @@ describe("TestConnectionModalBody", () => {
   });
 
   test("renders success state after successful test", async () => {
-    proxyTestMock.mockResolvedValue({ dialect: "mysql", diagnostics: [{ name: "DNS", success: true, message: "ok" }] });
+    proxyTestMock.mockResolvedValue({
+      dialect: "mysql",
+      diagnostics: [{ name: "DNS", success: true, message: "ok" }],
+    });
     const { container } = render(
-      <TestConnectionModalBody connection={{ name: "MyDb", connection: "mysql://u:p@host:3306" } as any} onDismiss={() => {}} />,
+      <TestConnectionModalBody
+        connection={{ name: "MyDb", connection: "mysql://u:p@host:3306" } as any}
+        onDismiss={() => {}}
+      />,
     );
     await waitFor(() => {
       expect(container.textContent).toContain("Successfully connected");
@@ -84,7 +97,10 @@ describe("TestConnectionModalBody", () => {
   test("renders error state when test fails", async () => {
     proxyTestMock.mockRejectedValue(new Error("Connection refused"));
     const { container } = render(
-      <TestConnectionModalBody connection={{ name: "MyDb", connection: "mysql://u:p@host:3306" } as any} onDismiss={() => {}} />,
+      <TestConnectionModalBody
+        connection={{ name: "MyDb", connection: "mysql://u:p@host:3306" } as any}
+        onDismiss={() => {}}
+      />,
     );
     await waitFor(() => {
       expect(container.textContent).toContain("Failed to connect");
@@ -97,7 +113,10 @@ describe("TestConnectionModalBody", () => {
   test("clicking Cancel during loading goes to cancelled state", async () => {
     proxyTestMock.mockImplementation(() => new Promise(() => {}));
     const { container, getByText } = render(
-      <TestConnectionModalBody connection={{ name: "MyDb", connection: "mysql://u:p@host:3306" } as any} onDismiss={() => {}} />,
+      <TestConnectionModalBody
+        connection={{ name: "MyDb", connection: "mysql://u:p@host:3306" } as any}
+        onDismiss={() => {}}
+      />,
     );
     fireEvent.click(getByText("Cancel"));
     await waitFor(() => {
@@ -109,16 +128,26 @@ describe("TestConnectionModalBody", () => {
   test("Close button invokes onDismiss", async () => {
     proxyTestMock.mockResolvedValue({ dialect: "mysql" });
     const onDismiss = vi.fn();
-    const { getByText } = render(<TestConnectionModalBody connection={{ connection: "mysql://h" } as any} onDismiss={onDismiss} />);
+    const { getByText } = render(
+      <TestConnectionModalBody
+        connection={{ connection: "mysql://h" } as any}
+        onDismiss={onDismiss}
+      />,
+    );
     await waitFor(() => getByText("Close"));
     fireEvent.click(getByText("Close"));
     expect(onDismiss).toHaveBeenCalled();
   });
 
   test("Retry re-runs ProxyApi.test after error", async () => {
-    proxyTestMock.mockRejectedValueOnce(new Error("boom")).mockResolvedValueOnce({ dialect: "mysql" });
+    proxyTestMock
+      .mockRejectedValueOnce(new Error("boom"))
+      .mockResolvedValueOnce({ dialect: "mysql" });
     const { container, getByText } = render(
-      <TestConnectionModalBody connection={{ connection: "mysql://h" } as any} onDismiss={() => {}} />,
+      <TestConnectionModalBody
+        connection={{ connection: "mysql://h" } as any}
+        onDismiss={() => {}}
+      />,
     );
     await waitFor(() => getByText("Retry"));
     expect(proxyTestMock).toHaveBeenCalledTimes(1);

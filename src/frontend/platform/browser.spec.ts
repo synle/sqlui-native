@@ -45,7 +45,9 @@ describe("browserPlatform", () => {
   });
 
   test("readFileContent POSTs to /api/file and returns text", async () => {
-    const fetchSpy = vi.fn().mockResolvedValueOnce({ text: () => Promise.resolve("file contents") } as any);
+    const fetchSpy = vi
+      .fn()
+      .mockResolvedValueOnce({ text: () => Promise.resolve("file contents") } as any);
     (globalThis as any).fetch = fetchSpy;
     const f = new File(["x"], "f.txt");
     await expect(browserPlatform.readFileContent(f)).resolves.toBe("file contents");

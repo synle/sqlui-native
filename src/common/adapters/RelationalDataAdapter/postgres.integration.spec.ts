@@ -30,9 +30,21 @@ describe("postgres integration", () => {
       "postgres",
       undefined,
     );
-    await adapter.execute(`INSERT INTO artists (Name) VALUES ('Test Artist 1')`, "postgres", undefined);
-    await adapter.execute(`INSERT INTO artists (Name) VALUES ('Test Artist 2')`, "postgres", undefined);
-    await adapter.execute(`INSERT INTO artists (Name) VALUES ('Test Artist 3')`, "postgres", undefined);
+    await adapter.execute(
+      `INSERT INTO artists (Name) VALUES ('Test Artist 1')`,
+      "postgres",
+      undefined,
+    );
+    await adapter.execute(
+      `INSERT INTO artists (Name) VALUES ('Test Artist 2')`,
+      "postgres",
+      undefined,
+    );
+    await adapter.execute(
+      `INSERT INTO artists (Name) VALUES ('Test Artist 3')`,
+      "postgres",
+      undefined,
+    );
   });
 
   test("getTables", async () => {
@@ -50,18 +62,30 @@ describe("postgres integration", () => {
   });
 
   test("execute select", async () => {
-    const resp = await adapter.execute(`SELECT * FROM artists ORDER BY Name ASC LIMIT 10`, "postgres", undefined);
+    const resp = await adapter.execute(
+      `SELECT * FROM artists ORDER BY Name ASC LIMIT 10`,
+      "postgres",
+      undefined,
+    );
     expect(resp.ok).toBe(true);
     expect(resp.raw?.length).toBe(3);
   });
 
   test("execute update", async () => {
-    const resp = await adapter.execute(`UPDATE artists SET Name = 'Updated Artist' WHERE ArtistId = 1`, "postgres", undefined);
+    const resp = await adapter.execute(
+      `UPDATE artists SET Name = 'Updated Artist' WHERE ArtistId = 1`,
+      "postgres",
+      undefined,
+    );
     expect(resp.ok).toBe(true);
   });
 
   test("execute delete", async () => {
-    const resp = await adapter.execute(`DELETE FROM artists WHERE ArtistId = 1`, "postgres", undefined);
+    const resp = await adapter.execute(
+      `DELETE FROM artists WHERE ArtistId = 1`,
+      "postgres",
+      undefined,
+    );
     expect(resp.ok).toBe(true);
   });
 
@@ -88,14 +112,22 @@ describe.skip("postgres legacy", () => {
   });
 
   test("Execute Select", async () => {
-    const resp = await adapter.execute(`SELECT * FROM artists ORDER BY Name ASC LIMIT 10`, "music_store", undefined);
+    const resp = await adapter.execute(
+      `SELECT * FROM artists ORDER BY Name ASC LIMIT 10`,
+      "music_store",
+      undefined,
+    );
     //@ts-ignore
     expect(resp && resp.raw && resp.raw.length > 0 && resp.raw.length <= 10).toBe(true);
   });
 
   test("Execute Update", async () => {
     try {
-      await adapter.execute(`UPDATE artists SET name = 'AC/DC' WHERE ArtistId = '1'`, "music_store", undefined);
+      await adapter.execute(
+        `UPDATE artists SET name = 'AC/DC' WHERE ArtistId = '1'`,
+        "music_store",
+        undefined,
+      );
       expect(1).toBe(1);
     } catch (err) {
       expect(err).toBeUndefined();

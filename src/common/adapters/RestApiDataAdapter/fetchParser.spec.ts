@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { buildFetchCommand, parseFetchCommand } from "src/common/adapters/RestApiDataAdapter/fetchParser";
+import {
+  buildFetchCommand,
+  parseFetchCommand,
+} from "src/common/adapters/RestApiDataAdapter/fetchParser";
 
 describe("fetchParser", () => {
   describe("parseFetchCommand", () => {
@@ -25,7 +28,9 @@ describe("fetchParser", () => {
     });
 
     it("parses PUT method", () => {
-      const result = parseFetchCommand(`fetch("https://example.com/api", { "method": "PUT", "body": "data" });`);
+      const result = parseFetchCommand(
+        `fetch("https://example.com/api", { "method": "PUT", "body": "data" });`,
+      );
       expect(result.method).toBe("PUT");
       expect(result.body).toBe("data");
     });
@@ -36,7 +41,9 @@ describe("fetchParser", () => {
     });
 
     it("parses PATCH method", () => {
-      const result = parseFetchCommand(`fetch("https://example.com/api", { "method": "PATCH", "body": "{}" });`);
+      const result = parseFetchCommand(
+        `fetch("https://example.com/api", { "method": "PATCH", "body": "{}" });`,
+      );
       expect(result.method).toBe("PATCH");
     });
 
@@ -54,18 +61,24 @@ describe("fetchParser", () => {
     });
 
     it("handles null body", () => {
-      const result = parseFetchCommand(`fetch("https://example.com/api", { "body": null, "method": "GET" });`);
+      const result = parseFetchCommand(
+        `fetch("https://example.com/api", { "body": null, "method": "GET" });`,
+      );
       expect(result.body).toBeUndefined();
     });
 
     it("extracts query params from URL", () => {
-      const result = parseFetchCommand(`fetch("https://example.com/api?page=2&size=10", { "method": "GET" });`);
+      const result = parseFetchCommand(
+        `fetch("https://example.com/api?page=2&size=10", { "method": "GET" });`,
+      );
       expect(result.params["page"]).toBe("2");
       expect(result.params["size"]).toBe("10");
     });
 
     it("preserves duplicate query params joined with comma", () => {
-      const result = parseFetchCommand(`fetch("https://example.com/api?tag=a&tag=b&tag=c", { "method": "GET" });`);
+      const result = parseFetchCommand(
+        `fetch("https://example.com/api?tag=a&tag=b&tag=c", { "method": "GET" });`,
+      );
       expect(result.params["tag"]).toBe("a, b, c");
     });
 

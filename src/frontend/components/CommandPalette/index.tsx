@@ -7,7 +7,10 @@ import fuzzysort from "fuzzysort";
 import { useEffect, useRef, useState } from "react";
 import { Command as CoreCommand } from "src/frontend/components/MissionControl";
 import { useGetConnectionById, useGetConnections } from "src/frontend/hooks/useConnection";
-import { useActiveConnectionQuery, useConnectionQueries } from "src/frontend/hooks/useConnectionQuery";
+import {
+  useActiveConnectionQuery,
+  useConnectionQueries,
+} from "src/frontend/hooks/useConnectionQuery";
 import { SqluiEnums } from "typings";
 
 /** A command with a required display label, extending the base MissionControl Command. */
@@ -371,7 +374,11 @@ export default function CommandPalette(props: CommandPaletteProps): React.JSX.El
         nextIndex = allOptions.length - 1;
       }
 
-      (refOption?.current?.querySelectorAll(".CommandPalette__Option")[nextIndex] as HTMLButtonElement)?.focus();
+      (
+        refOption?.current?.querySelectorAll(".CommandPalette__Option")[
+          nextIndex
+        ] as HTMLButtonElement
+      )?.focus();
     }
   };
 

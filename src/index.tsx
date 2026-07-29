@@ -148,7 +148,9 @@ function CombinedContextProvider({ children }) {
   ].reduceRight((acc, Provider) => <Provider>{acc}</Provider>, children);
 }
 
-const ReactQueryDevtoolsLazy = lazy(() => import("@tanstack/react-query-devtools").then((m) => ({ default: m.ReactQueryDevtools })));
+const ReactQueryDevtoolsLazy = lazy(() =>
+  import("@tanstack/react-query-devtools").then((m) => ({ default: m.ReactQueryDevtools })),
+);
 
 /**
  * Renders React Query Devtools when toggled via Ctrl+Shift+Alt+D (Win/Linux) or Cmd+Shift+Option+D (Mac).

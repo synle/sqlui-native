@@ -78,7 +78,9 @@ export function getSelectCount(input: SqlAction.TableInput): SqlAction.Output | 
  * Generates a SELECT query listing all columns individually with a WHERE clause.
  * @param input - The table input containing dialect, table ID, columns, and query size.
  */
-export function getSelectSpecificColumns(input: SqlAction.TableInput): SqlAction.Output | undefined {
+export function getSelectSpecificColumns(
+  input: SqlAction.TableInput,
+): SqlAction.Output | undefined {
   const label = `Select Specific Columns`;
 
   if (!input.columns) {
@@ -159,7 +161,10 @@ export function getSelectDistinctValues(input: SqlAction.TableInput): SqlAction.
  * @param input - The table input containing dialect, table ID, and columns.
  * @param value - Optional record of column values to insert.
  */
-export function getInsert(input: SqlAction.TableInput, value?: Record<string, any>): SqlAction.Output | undefined {
+export function getInsert(
+  input: SqlAction.TableInput,
+  value?: Record<string, any>,
+): SqlAction.Output | undefined {
   const label = `Insert`;
 
   if (!input.columns) {
@@ -202,7 +207,10 @@ export function getInsert(input: SqlAction.TableInput, value?: Record<string, an
  * @param input - The table input containing dialect, table ID, and columns.
  * @param rows - Array of row records to insert.
  */
-export function getBulkInsert(input: SqlAction.TableInput, rows?: Record<string, any>[]): SqlAction.Output | undefined {
+export function getBulkInsert(
+  input: SqlAction.TableInput,
+  rows?: Record<string, any>[],
+): SqlAction.Output | undefined {
   const label = `Insert`;
 
   if (!input.columns) {
@@ -271,7 +279,11 @@ export function getBulkInsert(input: SqlAction.TableInput, rows?: Record<string,
  * @returns Script output containing the dialect-specific upsert query, or `undefined` when
  *   the input is unusable (missing columns / rows / unsupported dialect / unknown key).
  */
-export function getBulkUpsert(input: SqlAction.TableInput, rows?: Record<string, any>[], keyField?: string): SqlAction.Output | undefined {
+export function getBulkUpsert(
+  input: SqlAction.TableInput,
+  rows?: Record<string, any>[],
+  keyField?: string,
+): SqlAction.Output | undefined {
   const label = `Upsert`;
 
   if (!input.columns || input.columns.length === 0) {
@@ -312,7 +324,9 @@ export function getBulkUpsert(input: SqlAction.TableInput, rows?: Record<string,
     case "mariadb": {
       // ON DUPLICATE KEY UPDATE relies on a UNIQUE / PRIMARY key on the target table —
       // the key arg here is informational; MySQL picks the matching constraint itself.
-      const updateClause = nonKeyColumns.map((col) => `${col.name} = VALUES(${col.name})`).join(",\n");
+      const updateClause = nonKeyColumns
+        .map((col) => `${col.name} = VALUES(${col.name})`)
+        .join(",\n");
       return {
         label,
         formatter,
@@ -327,7 +341,9 @@ export function getBulkUpsert(input: SqlAction.TableInput, rows?: Record<string,
     case "sqlite": {
       // `excluded.*` references the row that *would have been* inserted, which is the
       // standard idiom for both Postgres and SQLite ON CONFLICT clauses.
-      const updateClause = nonKeyColumns.map((col) => `${col.name} = excluded.${col.name}`).join(",\n");
+      const updateClause = nonKeyColumns
+        .map((col) => `${col.name} = excluded.${col.name}`)
+        .join(",\n");
       return {
         label,
         formatter,
@@ -374,7 +390,9 @@ export function getBulkUpsert(input: SqlAction.TableInput, rows?: Record<string,
  * @returns `{ disable, enable }` SQL strings, or `undefined` for dialects that have
  *   no session-level toggle (e.g. NoSQL, Salesforce).
  */
-export function getForeignKeyToggle(dialect?: string): { disable: string; enable: string } | undefined {
+export function getForeignKeyToggle(
+  dialect?: string,
+): { disable: string; enable: string } | undefined {
   switch (dialect) {
     case "mysql":
     case "mariadb":
@@ -569,7 +587,11 @@ export function getCreateTable(input: SqlAction.TableInput): SqlAction.Output | 
 
           // TODO: better use regex here
           // nextval(employees_employeeid_seq::regclass)
-          if (col.primaryKey && col?.defaultValue?.includes("nextval(") && col?.defaultValue?.includes("_seq::regclass)")) {
+          if (
+            col.primaryKey &&
+            col?.defaultValue?.includes("nextval(") &&
+            col?.defaultValue?.includes("_seq::regclass)")
+          ) {
             res.push("BIGSERIAL PRIMARY KEY");
           } else {
             if (colType.includes("INT") && col.primaryKey) {
@@ -827,7 +849,9 @@ export function getCreateSampleTable(input: SqlAction.DatabaseInput): SqlAction.
  * Generates a CREATE DATABASE template query for connection-level actions.
  * @param input - The connection input containing dialect info.
  */
-export function getCreateConnectionDatabase(input: SqlAction.ConnectionInput): SqlAction.Output | undefined {
+export function getCreateConnectionDatabase(
+  input: SqlAction.ConnectionInput,
+): SqlAction.Output | undefined {
   const label = `Create Database`;
 
   switch (input.dialect) {
@@ -1065,7 +1089,10 @@ export class ConcreteDataScripts extends BaseDataScript {
             if (connection.dialect === "mariadb") {
               mysqlConnStr = mysqlConnStr.replace("mariadb://", "mysql://");
             }
-            return renderCodeSnippet("javascript", engine as any, { connectionString: mysqlConnStr, sql });
+            return renderCodeSnippet("javascript", engine as any, {
+              connectionString: mysqlConnStr,
+              sql,
+            });
           }
           case "postgres":
           case "postgresql":

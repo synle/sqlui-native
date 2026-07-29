@@ -36,7 +36,11 @@ function DescriptionCell({ row, allExpanded }: { row: any; allExpanded: boolean 
 
   return (
     <Box sx={{ display: "flex", alignItems: "flex-start", gap: 0.5 }}>
-      <IconButton size="small" onClick={() => setLocalExpanded(!expanded)} sx={{ p: 0, minWidth: 0 }}>
+      <IconButton
+        size="small"
+        onClick={() => setLocalExpanded(!expanded)}
+        sx={{ p: 0, minWidth: 0 }}
+      >
         {expanded ? <UnfoldLessIcon fontSize="small" /> : <UnfoldMoreIcon fontSize="small" />}
       </IconButton>
       <Typography
@@ -73,7 +77,10 @@ function ActionCell({ row }: { row: any }) {
 
   return (
     <Box sx={{ display: "flex", gap: 1 }}>
-      <IconButton aria-label="Delete item permanently" onClick={() => onDeleteRecycleBin(dataSnapshot.id)}>
+      <IconButton
+        aria-label="Delete item permanently"
+        onClick={() => onDeleteRecycleBin(dataSnapshot.id)}
+      >
         <DeleteForeverIcon />
       </IconButton>
     </Box>
@@ -86,7 +93,9 @@ const getColumns = (allExpanded: boolean): ColumnDef<any, any>[] => [
     enableSorting: false,
     enableColumnFilter: false,
     size: 50,
-    cell: (info) => <span style={{ fontFamily: "monospace", opacity: 0.5 }}>{info.row.index + 1}</span>,
+    cell: (info) => (
+      <span style={{ fontFamily: "monospace", opacity: 0.5 }}>{info.row.index + 1}</span>
+    ),
   },
   {
     header: "ID",
@@ -146,7 +155,11 @@ export default function DataSnapshotListView() {
       <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
         <Tooltip title={allExpanded ? "Collapse all descriptions" : "Expand all descriptions"}>
           <IconButton size="small" onClick={() => setAllExpanded(!allExpanded)}>
-            {allExpanded ? <UnfoldLessIcon fontSize="small" /> : <UnfoldMoreIcon fontSize="small" />}
+            {allExpanded ? (
+              <UnfoldLessIcon fontSize="small" />
+            ) : (
+              <UnfoldMoreIcon fontSize="small" />
+            )}
           </IconButton>
         </Tooltip>
       </Box>

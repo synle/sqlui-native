@@ -1,7 +1,13 @@
 /** Request parser auto-router — detects curl vs fetch syntax and delegates to the right parser. */
 
-import { buildCurlCommand, parseCurlCommand } from "src/common/adapters/RestApiDataAdapter/curlParser";
-import { buildFetchCommand, parseFetchCommand } from "src/common/adapters/RestApiDataAdapter/fetchParser";
+import {
+  buildCurlCommand,
+  parseCurlCommand,
+} from "src/common/adapters/RestApiDataAdapter/curlParser";
+import {
+  buildFetchCommand,
+  parseFetchCommand,
+} from "src/common/adapters/RestApiDataAdapter/fetchParser";
 import { RestApiRequest } from "src/common/adapters/RestApiDataAdapter/types";
 
 /** Detected input format type. */

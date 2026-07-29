@@ -6,7 +6,12 @@ import net from "node:net";
 import os from "node:os";
 import path from "node:path";
 import { serve } from "@hono/node-server";
-import { app, initializeEndpoints, mountStaticAssets, port as defaultPort } from "src/sqlui-server/server";
+import {
+  app,
+  initializeEndpoints,
+  mountStaticAssets,
+  port as defaultPort,
+} from "src/sqlui-server/server";
 
 initializeEndpoints();
 
@@ -93,7 +98,9 @@ function isPortInUse(targetPort: number, host: string): Promise<boolean> {
 function killProcessOnPort(targetPort: number): void {
   try {
     if (process.platform === "win32") {
-      const output = execSync(`netstat -ano | findstr :${targetPort} | findstr LISTENING`, { encoding: "utf-8" });
+      const output = execSync(`netstat -ano | findstr :${targetPort} | findstr LISTENING`, {
+        encoding: "utf-8",
+      });
       const pid = output.trim().split(/\s+/).pop();
       if (pid && pid !== "0") {
         execSync(`taskkill /PID ${pid} /F`);
@@ -136,7 +143,9 @@ function startSidecar(): void {
   const server = serve({ fetch: app.fetch, port: 0, hostname: HOST }, (info) => {
     // The Rust host reads this exact marker from stdout to discover the port
     console.log(`__SIDECAR_PORT__=${info.port}`);
-    console.log(`SQLUI Native Server (sidecar) started on http://${HOST}:${info.port} (pid: ${process.pid})`);
+    console.log(
+      `SQLUI Native Server (sidecar) started on http://${HOST}:${info.port} (pid: ${process.pid})`,
+    );
   }) as Server;
 
   server.on("error", (err: NodeJS.ErrnoException) => {

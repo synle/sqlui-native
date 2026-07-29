@@ -68,7 +68,9 @@ function parseSfdcConnectionString(connectionOption: string) {
 
   try {
     const parsed = JSON.parse(withoutScheme);
-    let loginUrl = (parsed.loginUrl || "login.salesforce.com").replace(/\s/g, "").replace(/\/+$/, "");
+    let loginUrl = (parsed.loginUrl || "login.salesforce.com")
+      .replace(/\s/g, "")
+      .replace(/\/+$/, "");
     if (loginUrl && !loginUrl.startsWith("http")) {
       loginUrl = `https://${loginUrl}`;
     }
@@ -188,9 +190,13 @@ export default class SalesforceDataAdapter extends BaseDataAdapter implements ID
     }
 
     return new Promise<Connection>(async (resolve, reject) => {
-      const timer = setTimeout(() => reject(new Error("Connection timeout — check your login URL and network")), MAX_CONNECTION_TIMEOUT);
+      const timer = setTimeout(
+        () => reject(new Error("Connection timeout — check your login URL and network")),
+        MAX_CONNECTION_TIMEOUT,
+      );
       try {
-        const { username, password, securityToken, loginUrl, clientId, clientSecret } = parseSfdcConnectionString(this.connectionOption);
+        const { username, password, securityToken, loginUrl, clientId, clientSecret } =
+          parseSfdcConnectionString(this.connectionOption);
 
         const connOptions: any = { loginUrl };
 
@@ -254,7 +260,9 @@ export default class SalesforceDataAdapter extends BaseDataAdapter implements ID
       const msg = err?.message || "";
       if (
         this._isClientCredentials &&
-        (msg.includes("refresh token") || msg.includes("INVALID_SESSION_ID") || msg.includes("Session expired"))
+        (msg.includes("refresh token") ||
+          msg.includes("INVALID_SESSION_ID") ||
+          msg.includes("Session expired"))
       ) {
         const freshConn = await this.refreshConnection();
         return await operation(freshConn);
@@ -382,7 +390,11 @@ export default class SalesforceDataAdapter extends BaseDataAdapter implements ID
 
           // Handle query results from conn.query()
           if (res && res.records) {
-            return { ok: true, raw: cleanSalesforceRecord(res.records), meta: { totalSize: res.totalSize, done: res.done } };
+            return {
+              ok: true,
+              raw: cleanSalesforceRecord(res.records),
+              meta: { totalSize: res.totalSize, done: res.done },
+            };
           }
 
           // Generic result

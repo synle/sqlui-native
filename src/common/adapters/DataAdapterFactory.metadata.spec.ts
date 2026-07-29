@@ -53,8 +53,18 @@ function seedDatabaseCache(connectionId: string, data: any[], age = 0) {
 function seedTableCache(connectionId: string, databaseId: string, data: any[], age = 0) {
   tblCache.add({ id: `tables:${connectionId}:${databaseId}`, data, timestamp: Date.now() - age });
 }
-function seedColumnCache(connectionId: string, databaseId: string, tableId: string, data: any[], age = 0) {
-  colCache.add({ id: `${connectionId}:${databaseId}:${tableId}`, data, timestamp: Date.now() - age });
+function seedColumnCache(
+  connectionId: string,
+  databaseId: string,
+  tableId: string,
+  data: any[],
+  age = 0,
+) {
+  colCache.add({
+    id: `${connectionId}:${databaseId}:${tableId}`,
+    data,
+    timestamp: Date.now() - age,
+  });
 }
 
 describe("DataAdapterFactory.getConnectionMetaData", () => {

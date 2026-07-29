@@ -1,6 +1,10 @@
 /** Hook that wraps the save-text-file flow with a confirmation toast and a reveal-in-finder action. */
 import React from "react";
-import { revealItemInDir, saveTextFileWithFallback, type SaveTextFileResult } from "src/frontend/data/file";
+import {
+  revealItemInDir,
+  saveTextFileWithFallback,
+  type SaveTextFileResult,
+} from "src/frontend/data/file";
 import useToaster from "src/frontend/hooks/useToaster";
 
 /** Options accepted by the `downloadResult` callback returned from {@link useDownloadResultToast}. */
@@ -19,10 +23,16 @@ export type DownloadResultToastOptions = {
 function RevealLink({ path }: { path: string }) {
   const onClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    revealItemInDir(path).catch((err) => console.error("useDownloadResultToast.tsx:revealItemInDir", err));
+    revealItemInDir(path).catch((err) =>
+      console.error("useDownloadResultToast.tsx:revealItemInDir", err),
+    );
   };
   return (
-    <a href="#" onClick={onClick} style={{ color: "#90caf9", textDecoration: "underline", cursor: "pointer" }}>
+    <a
+      href="#"
+      onClick={onClick}
+      style={{ color: "#90caf9", textDecoration: "underline", cursor: "pointer" }}
+    >
       Click here to reveal in finder
     </a>
   );
@@ -50,7 +60,8 @@ export function useDownloadResultToast() {
       await addToast({
         message: (
           <span>
-            Downloaded <strong>{opts.suggestedName}</strong> successfully. <RevealLink path={result.path} />
+            Downloaded <strong>{opts.suggestedName}</strong> successfully.{" "}
+            <RevealLink path={result.path} />
           </span>
         ),
         persisted: false,

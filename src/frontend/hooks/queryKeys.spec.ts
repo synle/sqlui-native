@@ -29,7 +29,11 @@ describe("queryKeys", () => {
     });
 
     test("allForDatabase returns connectionId + databaseId + allTableColumns", () => {
-      expect(queryKeys.columns.allForDatabase("c1", "db1")).toEqual(["c1", "db1", "allTableColumns"]);
+      expect(queryKeys.columns.allForDatabase("c1", "db1")).toEqual([
+        "c1",
+        "db1",
+        "allTableColumns",
+      ]);
     });
   });
 

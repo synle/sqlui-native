@@ -38,7 +38,8 @@ export function useAddDataSnapshot() {
   return useMutation<
     SqluiCore.DataSnapshot,
     void,
-    Partial<SqluiCore.DataSnapshot> & Required<Pick<SqluiCore.DataSnapshot, "values" | "description">>
+    Partial<SqluiCore.DataSnapshot> &
+      Required<Pick<SqluiCore.DataSnapshot, "values" | "description">>
   >({
     mutationFn: async (newDataSnapshot) => {
       if (newDataSnapshot) {

@@ -26,7 +26,8 @@ vi.mock("@azure/cosmos", () => ({
 
 import AzureCosmosDataAdapter from "src/common/adapters/AzureCosmosDataAdapter/index";
 
-const validConn = "cosmosdb://AccountEndpoint=https://mock.documents.azure.com:443/;AccountKey=mockKey==;";
+const validConn =
+  "cosmosdb://AccountEndpoint=https://mock.documents.azure.com:443/;AccountKey=mockKey==;";
 
 describe("AzureCosmosDataAdapter extra", () => {
   beforeEach(() => {

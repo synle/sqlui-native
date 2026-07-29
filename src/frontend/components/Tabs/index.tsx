@@ -109,7 +109,10 @@ export default function MyTabs(props: TabsProps): React.JSX.Element | null {
   }
 
   return (
-    <StyledTabs id={id} className={orientation === "vertical" ? "Tabs Tabs__Vertical" : "Tabs Tabs__Horizontal"}>
+    <StyledTabs
+      id={id}
+      className={orientation === "vertical" ? "Tabs Tabs__Vertical" : "Tabs Tabs__Horizontal"}
+    >
       <Tabs
         value={tabIdx}
         onChange={(_e, newTabIdx) => onTabChange(newTabIdx)}

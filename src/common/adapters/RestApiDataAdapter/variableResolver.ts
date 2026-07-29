@@ -13,7 +13,9 @@ const VARIABLE_PATTERN = /\{\{([^}]+)\}\}/g;
  * @param layers - Variable arrays ordered from lowest to highest priority.
  * @returns Merged key-value map of resolved variables.
  */
-export function mergeVariableLayers(...layers: (RestApiVariable[] | undefined)[]): Record<string, string> {
+export function mergeVariableLayers(
+  ...layers: (RestApiVariable[] | undefined)[]
+): Record<string, string> {
   const merged: Record<string, string> = {};
   for (const layer of layers) {
     if (!layer) {

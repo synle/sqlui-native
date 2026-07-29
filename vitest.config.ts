@@ -11,7 +11,10 @@ export default defineConfig({
   resolve: {
     alias: {
       src: path.resolve(__dirname, "src"),
-      "@typespec/ts-http-runtime/internal": path.resolve(__dirname, "node_modules/@typespec/ts-http-runtime/dist/commonjs"),
+      "@typespec/ts-http-runtime/internal": path.resolve(
+        __dirname,
+        "node_modules/@typespec/ts-http-runtime/dist/commonjs",
+      ),
     },
   },
   plugins: [
@@ -33,7 +36,12 @@ export default defineConfig({
     globals: true,
     testTimeout: 10000,
     include: ["**/*.spec.{ts,tsx}"],
-    exclude: ["**/*.integration.spec.{ts,tsx}", "**/node_modules/**", "**/_SampleDataAdapter_/**", "e2e/**"],
+    exclude: [
+      "**/*.integration.spec.{ts,tsx}",
+      "**/node_modules/**",
+      "**/_SampleDataAdapter_/**",
+      "e2e/**",
+    ],
     setupFiles: ["./vitest.setup.ts"],
     coverage: {
       provider: "v8",

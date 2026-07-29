@@ -22,7 +22,11 @@ import DataTable from "src/frontend/components/DataTable";
 import NewConnectionButton from "src/frontend/components/NewConnectionButton";
 import { useActionDialogs } from "src/frontend/hooks/useActionDialogs";
 import { useSideBarWidthPreference } from "src/frontend/hooks/useClientSidePreference";
-import { useDeletedRecycleBinItem, useGetRecycleBinItems, useRestoreRecycleBinItem } from "src/frontend/hooks/useFolderItems";
+import {
+  useDeletedRecycleBinItem,
+  useGetRecycleBinItems,
+  useRestoreRecycleBinItem,
+} from "src/frontend/hooks/useFolderItems";
 import useToaster from "src/frontend/hooks/useToaster";
 import { useTreeActions } from "src/frontend/hooks/useTreeActions";
 import LayoutTwoColumns from "src/frontend/layout/LayoutTwoColumns";
@@ -53,7 +57,11 @@ function QueryDetailCell({ row, allExpanded }: { row: any; allExpanded: boolean 
     if (!sql) return null;
     return (
       <Box sx={{ display: "flex", alignItems: "flex-start", gap: 0.5 }}>
-        <IconButton size="small" onClick={() => setLocalExpanded(!expanded)} sx={{ p: 0, minWidth: 0 }}>
+        <IconButton
+          size="small"
+          onClick={() => setLocalExpanded(!expanded)}
+          sx={{ p: 0, minWidth: 0 }}
+        >
           {expanded ? <UnfoldLessIcon fontSize="small" /> : <UnfoldMoreIcon fontSize="small" />}
         </IconButton>
         <Typography
@@ -95,7 +103,9 @@ function TypeCell({ row }: { row: any }) {
     Query: "warning",
     Session: "info",
   };
-  return <Chip label={folderItem.type} color={colorMap[folderItem.type] ?? "default"} size="small" />;
+  return (
+    <Chip label={folderItem.type} color={colorMap[folderItem.type] ?? "default"} size="small" />
+  );
 }
 
 /**
@@ -124,7 +134,10 @@ function ActionCell({ row }: { row: any }) {
       <IconButton aria-label="Restore item" onClick={() => onRestoreRecycleBinItem(folderItem)}>
         <RestoreIcon />
       </IconButton>
-      <IconButton aria-label="Delete item permanently" onClick={() => onDeleteRecycleBin(folderItem)}>
+      <IconButton
+        aria-label="Delete item permanently"
+        onClick={() => onDeleteRecycleBin(folderItem)}
+      >
         <DeleteForeverIcon />
       </IconButton>
     </Box>
@@ -142,7 +155,9 @@ const getColumns = (allExpanded: boolean): ColumnDef<any, any>[] => [
     enableSorting: false,
     enableColumnFilter: false,
     size: 50,
-    cell: (info) => <span style={{ fontFamily: "monospace", opacity: 0.5 }}>{info.row.index + 1}</span>,
+    cell: (info) => (
+      <span style={{ fontFamily: "monospace", opacity: 0.5 }}>{info.row.index + 1}</span>
+    ),
   },
   {
     header: "Name",
@@ -231,13 +246,23 @@ function RecycleBinItemList() {
   return (
     <>
       <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
-        <Button variant="outlined" color="error" size="small" startIcon={<DeleteSweepIcon />} onClick={() => onEmptyTrash()}>
+        <Button
+          variant="outlined"
+          color="error"
+          size="small"
+          startIcon={<DeleteSweepIcon />}
+          onClick={() => onEmptyTrash()}
+        >
           Empty Trash
         </Button>
         {hasQueryItems && (
           <Tooltip title={allExpanded ? "Collapse all details" : "Expand all details"}>
             <IconButton size="small" onClick={() => setAllExpanded(!allExpanded)}>
-              {allExpanded ? <UnfoldLessIcon fontSize="small" /> : <UnfoldMoreIcon fontSize="small" />}
+              {allExpanded ? (
+                <UnfoldLessIcon fontSize="small" />
+              ) : (
+                <UnfoldMoreIcon fontSize="small" />
+              )}
             </IconButton>
           </Tooltip>
         )}

@@ -104,7 +104,10 @@ export default class MSSQLDataAdapter extends BaseDataAdapter implements IDataAd
    * @param connection - The tedious Connection to use.
    * @returns An array of row objects.
    */
-  private execQuery(sql: string, connection: Connection): Promise<{ rows: Record<string, any>[]; rowCount: number | undefined }> {
+  private execQuery(
+    sql: string,
+    connection: Connection,
+  ): Promise<{ rows: Record<string, any>[]; rowCount: number | undefined }> {
     return new Promise((resolve, reject) => {
       const rows: Record<string, any>[] = [];
 
@@ -154,7 +157,10 @@ export default class MSSQLDataAdapter extends BaseDataAdapter implements IDataAd
   /** Retrieves all non-system databases. */
   async getDatabases(): Promise<SqluiCore.DatabaseMetaData[]> {
     const connection = await this.getConnection();
-    const { rows } = await this.execQuery(`SELECT name AS [database] FROM sys.databases`, connection);
+    const { rows } = await this.execQuery(
+      `SELECT name AS [database] FROM sys.databases`,
+      connection,
+    );
 
     return rows
       .map((row) => row.database)
@@ -179,7 +185,10 @@ export default class MSSQLDataAdapter extends BaseDataAdapter implements IDataAd
     }
 
     try {
-      const { rows } = await this.execQuery(`SELECT name AS [tablename] FROM SYSOBJECTS WHERE xtype = 'U' ORDER BY name`, connection);
+      const { rows } = await this.execQuery(
+        `SELECT name AS [tablename] FROM SYSOBJECTS WHERE xtype = 'U' ORDER BY name`,
+        connection,
+      );
 
       return rows
         .map((row) => row.tablename)

@@ -52,7 +52,9 @@ describe("RestApiResultBox", () => {
     size: 100,
   };
   test("renders 200 status with all sections", () => {
-    const { container } = render(<RestApiResultBox meta={baseMeta} raw={[{}]} executionStart={1} executionEnd={2} />);
+    const { container } = render(
+      <RestApiResultBox meta={baseMeta} raw={[{}]} executionStart={1} executionEnd={2} />,
+    );
     expect(container.textContent).toContain("200 OK");
     expect(container.textContent).toContain("GET");
     expect(container.textContent).toContain("example.com");
@@ -60,33 +62,54 @@ describe("RestApiResultBox", () => {
   });
 
   test("unresolved variables warning shown", () => {
-    const { container } = render(<RestApiResultBox meta={{ ...baseMeta, unresolvedVariables: ["token", "host"] }} raw={[{}]} />);
+    const { container } = render(
+      <RestApiResultBox
+        meta={{ ...baseMeta, unresolvedVariables: ["token", "host"] }}
+        raw={[{}]}
+      />,
+    );
     expect(container.textContent).toContain("Unresolved variables");
     expect(container.textContent).toContain("{{token}}");
   });
 
   test("error status (5xx) renders warning alert", () => {
-    const { container } = render(<RestApiResultBox meta={{ ...baseMeta, status: 500, statusText: "Server Error" }} raw={[{}]} />);
+    const { container } = render(
+      <RestApiResultBox
+        meta={{ ...baseMeta, status: 500, statusText: "Server Error" }}
+        raw={[{}]}
+      />,
+    );
     expect(container.textContent).toContain("500 Server Error");
   });
 
   test("empty body and 0 status handled", () => {
-    const { container } = render(<RestApiResultBox meta={{ status: 0, responseBody: "" }} raw={[{}]} />);
+    const { container } = render(
+      <RestApiResultBox meta={{ status: 0, responseBody: "" }} raw={[{}]} />,
+    );
     expect(container.textContent).toContain("empty response");
   });
 
   test("HTML body detected", () => {
-    const { container } = render(<RestApiResultBox meta={{ status: 200, responseBody: "<html><body>x</body></html>" }} raw={[{}]} />);
+    const { container } = render(
+      <RestApiResultBox
+        meta={{ status: 200, responseBody: "<html><body>x</body></html>" }}
+        raw={[{}]}
+      />,
+    );
     expect(container.querySelector('[data-language="html"]')).toBeTruthy();
   });
 
   test("JSON string in body is parsed", () => {
-    const { container } = render(<RestApiResultBox meta={{ status: 200, responseBody: '{"x":1}' }} raw={[{}]} />);
+    const { container } = render(
+      <RestApiResultBox meta={{ status: 200, responseBody: '{"x":1}' }} raw={[{}]} />,
+    );
     expect(container.querySelector('[data-language="json"]')).toBeTruthy();
   });
 
   test("invalid JSON string falls back to text", () => {
-    const { container } = render(<RestApiResultBox meta={{ status: 200, responseBody: "{notjson" }} raw={[{}]} />);
+    const { container } = render(
+      <RestApiResultBox meta={{ status: 200, responseBody: "{notjson" }} raw={[{}]} />,
+    );
     expect(container.querySelector('[data-language="text"]')).toBeTruthy();
   });
 });
@@ -104,7 +127,9 @@ describe("GraphQLResultBox", () => {
     size: 200,
   };
   test("renders data tab with success status", () => {
-    const { container } = render(<GraphQLResultBox meta={baseMeta} raw={[{}]} executionStart={1} executionEnd={2} />);
+    const { container } = render(
+      <GraphQLResultBox meta={baseMeta} raw={[{}]} executionStart={1} executionEnd={2} />,
+    );
     expect(container.textContent).toContain("200 OK");
     expect(container.textContent).toContain("headers:6");
     expect(container.textContent).toContain("hello");
@@ -140,23 +165,34 @@ describe("GraphQLResultBox", () => {
   });
 
   test("extensions alert rendered", () => {
-    const { container } = render(<GraphQLResultBox meta={{ ...baseMeta, graphqlExtensions: { trace: 1 } }} raw={[{}]} />);
+    const { container } = render(
+      <GraphQLResultBox meta={{ ...baseMeta, graphqlExtensions: { trace: 1 } }} raw={[{}]} />,
+    );
     expect(container.textContent).toContain("Server extensions");
   });
 
   test("unresolved variables warning rendered", () => {
-    const { container } = render(<GraphQLResultBox meta={{ ...baseMeta, unresolvedVariables: ["userId"] }} raw={[{}]} />);
+    const { container } = render(
+      <GraphQLResultBox meta={{ ...baseMeta, unresolvedVariables: ["userId"] }} raw={[{}]} />,
+    );
     expect(container.textContent).toContain("Unresolved variables");
     expect(container.textContent).toContain("{{userId}}");
   });
 
   test("status >= 400 chip uses warning alert", () => {
-    const { container } = render(<GraphQLResultBox meta={{ ...baseMeta, status: 400, statusText: "Bad Request" }} raw={[{}]} />);
+    const { container } = render(
+      <GraphQLResultBox
+        meta={{ ...baseMeta, status: 400, statusText: "Bad Request" }}
+        raw={[{}]}
+      />,
+    );
     expect(container.textContent).toContain("400 Bad Request");
   });
 
   test("status 3xx", () => {
-    const { container } = render(<GraphQLResultBox meta={{ ...baseMeta, status: 301, statusText: "Moved" }} raw={[{}]} />);
+    const { container } = render(
+      <GraphQLResultBox meta={{ ...baseMeta, status: 301, statusText: "Moved" }} raw={[{}]} />,
+    );
     expect(container.textContent).toContain("301 Moved");
   });
 

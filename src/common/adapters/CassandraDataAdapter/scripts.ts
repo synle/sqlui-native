@@ -48,7 +48,9 @@ export function getSelectAllColumns(input: SqlAction.TableInput): SqlAction.Outp
  * @param input - Table input containing columns and query size.
  * @returns Script output with the select query, or undefined if no columns.
  */
-export function getSelectSpecificColumns(input: SqlAction.TableInput): SqlAction.Output | undefined {
+export function getSelectSpecificColumns(
+  input: SqlAction.TableInput,
+): SqlAction.Output | undefined {
   const label = `Select Specific Columns`;
 
   if (!input.columns) {
@@ -74,7 +76,10 @@ export function getSelectSpecificColumns(input: SqlAction.TableInput): SqlAction
  * @param value - Optional pre-populated values to insert.
  * @returns Script output with the insert query, or undefined if no columns.
  */
-export function getInsert(input: SqlAction.TableInput, value?: Record<string, any>): SqlAction.Output | undefined {
+export function getInsert(
+  input: SqlAction.TableInput,
+  value?: Record<string, any>,
+): SqlAction.Output | undefined {
   const label = `Insert`;
 
   if (!input.columns) {
@@ -140,7 +145,10 @@ export function getInsert(input: SqlAction.TableInput, value?: Record<string, an
  * @param rows - Array of row objects to insert.
  * @returns Script output with a BATCH statement, or undefined if no columns or rows.
  */
-export function getBulkInsert(input: SqlAction.TableInput, rows?: Record<string, any>[]): SqlAction.Output | undefined {
+export function getBulkInsert(
+  input: SqlAction.TableInput,
+  rows?: Record<string, any>[],
+): SqlAction.Output | undefined {
   const label = `Insert`;
 
   if (!input.columns) {
@@ -151,7 +159,9 @@ export function getBulkInsert(input: SqlAction.TableInput, rows?: Record<string,
     return undefined;
   }
 
-  const rowsToInsert = (rows || []).map((value) => getInsert(input, value)).map((output) => output?.query);
+  const rowsToInsert = (rows || [])
+    .map((value) => getInsert(input, value))
+    .map((output) => output?.query);
 
   return {
     label,
@@ -229,8 +239,12 @@ export function getUpdate(input: SqlAction.TableInput): SqlAction.Output | undef
     return undefined;
   }
 
-  const columnString = input.columns.map((col) => `${col.name} = ${_getDummyColumnValue(col)}`).join(",\n");
-  const whereColumnString = input.columns.map((col) => `${col.name} = ${_getDummyColumnValue(col)}`).join(" AND \n");
+  const columnString = input.columns
+    .map((col) => `${col.name} = ${_getDummyColumnValue(col)}`)
+    .join(",\n");
+  const whereColumnString = input.columns
+    .map((col) => `${col.name} = ${_getDummyColumnValue(col)}`)
+    .join(" AND \n");
 
   return {
     label,
@@ -299,7 +313,9 @@ export function getDropKeyspace(input: SqlAction.DatabaseInput): SqlAction.Outpu
  * @param input - Connection input.
  * @returns Script output with the create keyspace query.
  */
-export function getCreateConnectionDatabase(_input: SqlAction.ConnectionInput): SqlAction.Output | undefined {
+export function getCreateConnectionDatabase(
+  _input: SqlAction.ConnectionInput,
+): SqlAction.Output | undefined {
   const label = `Create Connection Keyspace`;
 
   return {
@@ -324,7 +340,9 @@ export function getCreateTable(input: SqlAction.TableInput): SqlAction.Output | 
 
   let columnString: string = "";
   // mapping column
-  columnString = input.columns.map((col) => [col.name, col.type, col.primaryKey ? "PRIMARY KEY" : ""].join(" ")).join(",\n");
+  columnString = input.columns
+    .map((col) => [col.name, col.type, col.primaryKey ? "PRIMARY KEY" : ""].join(" "))
+    .join(",\n");
 
   // figuring out the keys
   const partitionKeys: string[] = [],

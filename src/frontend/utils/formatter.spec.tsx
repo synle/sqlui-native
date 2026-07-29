@@ -29,7 +29,9 @@ describe("formatter", () => {
 
   describe("formatSQL", () => {
     test("should work", async () => {
-      const actual = formatter.formatSQL(`SELECT AlbumId, ArtistId, Title FROM albums WHERE Title = 'abc' LIMIT 100`);
+      const actual = formatter.formatSQL(
+        `SELECT AlbumId, ArtistId, Title FROM albums WHERE Title = 'abc' LIMIT 100`,
+      );
       expect(actual).toMatchInlineSnapshot(`
 "SELECT
   AlbumId,

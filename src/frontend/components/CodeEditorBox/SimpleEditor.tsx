@@ -64,14 +64,20 @@ export default function SimpleEditor(props: SimpleEditorProps): React.JSX.Elemen
 
       if (startPos === endPos) {
         // single line indentation
-        myField.value = myField.value.substring(0, startPos) + myValue + myField.value.substring(endPos);
+        myField.value =
+          myField.value.substring(0, startPos) + myValue + myField.value.substring(endPos);
         myField.setSelectionRange(startPos + myValue.length, endPos + myValue.length);
       } else {
         // multiple line indentation
         const [lineStart, lineEnd] = _getLineStartEnd(myField, startPos, endPos);
 
         // calculate where we should put the cursor
-        const [res, newStartPos, newEndPos] = _iterateOverRows(myField.value.split("\n"), lineStart, lineEnd, (row) => myValue + row);
+        const [res, newStartPos, newEndPos] = _iterateOverRows(
+          myField.value.split("\n"),
+          lineStart,
+          lineEnd,
+          (row) => myValue + row,
+        );
         myField.value = res;
         myField.setSelectionRange(newStartPos, newEndPos);
       }
@@ -87,14 +93,19 @@ export default function SimpleEditor(props: SimpleEditorProps): React.JSX.Elemen
       } else {
         const [lineStart, lineEnd] = _getLineStartEnd(myField, startPos, endPos);
 
-        const [res, newStartPos, newEndPos] = _iterateOverRows(myField.value.split("\n"), lineStart, lineEnd, (row) => {
-          for (let i = 0; i < row.length; i++) {
-            if (row[i] !== " " || i === length) {
-              return row.substr(i);
+        const [res, newStartPos, newEndPos] = _iterateOverRows(
+          myField.value.split("\n"),
+          lineStart,
+          lineEnd,
+          (row) => {
+            for (let i = 0; i < row.length; i++) {
+              if (row[i] !== " " || i === length) {
+                return row.substr(i);
+              }
             }
-          }
-          return row;
-        });
+            return row;
+          },
+        );
 
         myField.value = res;
         myField.setSelectionRange(newStartPos, newEndPos);

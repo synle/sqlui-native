@@ -32,7 +32,15 @@ describe("AlertDialog", () => {
 
   test("calls onYesClick when Yes is clicked in confirm mode", () => {
     const onYesClick = vi.fn();
-    render(<AlertDialog open={true} message="msg" isConfirm={true} onYesClick={onYesClick} onDismiss={() => {}} />);
+    render(
+      <AlertDialog
+        open={true}
+        message="msg"
+        isConfirm={true}
+        onYesClick={onYesClick}
+        onDismiss={() => {}}
+      />,
+    );
     const buttons = document.body.querySelectorAll("button");
     const yesButton = Array.from(buttons).find((b) => b.textContent?.includes("Yes"));
     fireEvent.click(yesButton!);

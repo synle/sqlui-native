@@ -56,7 +56,11 @@ function parsePath(path: string): (string | number)[] {
  * @param value - The value to assign at the leaf.
  * @returns The same `obj` reference, for chaining / parity with lodash.
  */
-export function setPath<T extends object>(obj: T, path: string | (string | number)[], value: unknown): T {
+export function setPath<T extends object>(
+  obj: T,
+  path: string | (string | number)[],
+  value: unknown,
+): T {
   const segments: (string | number)[] = Array.isArray(path) ? path.slice() : parsePath(path);
   if (segments.length === 0) {
     return obj;

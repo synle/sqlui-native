@@ -44,7 +44,10 @@ import { useGetServerConfigs } from "src/frontend/hooks/useServerConfigs";
  */
 function isPortalMode(): boolean {
   try {
-    return typeof (window as any).__SQLUI_PORTAL_SESSION__ === "string" && !!(window as any).__SQLUI_PORTAL_SESSION__;
+    return (
+      typeof (window as any).__SQLUI_PORTAL_SESSION__ === "string" &&
+      !!(window as any).__SQLUI_PORTAL_SESSION__
+    );
   } catch {
     return false;
   }
@@ -207,7 +210,11 @@ export default function AppHeader() {
           bar tints uniformly when portal mode flips it to `secondary`, and
           the desktop bar stays consistent with the theme's contrastText.
         */}
-        <Typography variant="h5" onClick={() => navigate("/")} sx={{ cursor: "pointer", fontWeight: "bold", mr: 3 }}>
+        <Typography
+          variant="h5"
+          onClick={() => navigate("/")}
+          sx={{ cursor: "pointer", fontWeight: "bold", mr: 3 }}
+        >
           SQLUI NATIVE {appPackage.version} {getBuildBadge()}
         </Typography>
 

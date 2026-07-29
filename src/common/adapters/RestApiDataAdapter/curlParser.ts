@@ -259,7 +259,9 @@ export function parseCurlCommand(curlString: string): RestApiRequest {
   if (formParts.length > 0) {
     bodyType = "form-data";
   } else if (body) {
-    const contentType = Object.entries(headers).find(([k]) => k.toLowerCase() === "content-type")?.[1];
+    const contentType = Object.entries(headers).find(
+      ([k]) => k.toLowerCase() === "content-type",
+    )?.[1];
     bodyType = detectBodyType(contentType);
   }
 

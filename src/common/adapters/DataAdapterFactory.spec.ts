@@ -8,7 +8,11 @@ import {
   listCachedColumnsByDatabase,
   getCachedSchema,
 } from "src/common/adapters/DataAdapterFactory";
-import { getCachedColumnsStorage, getCachedDatabasesStorage, getCachedTablesStorage } from "src/common/PersistentStorage";
+import {
+  getCachedColumnsStorage,
+  getCachedDatabasesStorage,
+  getCachedTablesStorage,
+} from "src/common/PersistentStorage";
 
 describe("DataAdapterFactory", () => {
   describe("getDataAdapter", () => {
@@ -57,7 +61,9 @@ describe("DataAdapterFactory", () => {
     });
 
     test("should return an AzureCosmosDataAdapter for cosmosdb://", () => {
-      const adapter = getDataAdapter("cosmosdb://AccountEndpoint=https://test.documents.azure.com:443/;AccountKey=dGVzdA==;");
+      const adapter = getDataAdapter(
+        "cosmosdb://AccountEndpoint=https://test.documents.azure.com:443/;AccountKey=dGVzdA==;",
+      );
       expect(adapter).toBeDefined();
       expect(adapter.dialect).toBe("cosmosdb");
     });
@@ -79,19 +85,25 @@ describe("DataAdapterFactory", () => {
     });
 
     test("should return a GraphQLDataAdapter for graphql://", () => {
-      const adapter = getDataAdapter(`graphql://${JSON.stringify({ HOST: "https://api.example.com/graphql" })}`);
+      const adapter = getDataAdapter(
+        `graphql://${JSON.stringify({ HOST: "https://api.example.com/graphql" })}`,
+      );
       expect(adapter).toBeDefined();
       expect(adapter.dialect).toBe("graphql");
     });
 
     test("should return a RestApiDataAdapter for rest://", () => {
-      const adapter = getDataAdapter(`rest://${JSON.stringify({ HOST: "https://api.example.com" })}`);
+      const adapter = getDataAdapter(
+        `rest://${JSON.stringify({ HOST: "https://api.example.com" })}`,
+      );
       expect(adapter).toBeDefined();
       expect(adapter.dialect).toBe("rest");
     });
 
     test("should return a RestApiDataAdapter for restapi:// (legacy alias)", () => {
-      const adapter = getDataAdapter(`restapi://${JSON.stringify({ HOST: "https://api.example.com" })}`);
+      const adapter = getDataAdapter(
+        `restapi://${JSON.stringify({ HOST: "https://api.example.com" })}`,
+      );
       expect(adapter).toBeDefined();
       expect(adapter.dialect).toBe("rest");
     });
@@ -165,11 +177,19 @@ describe("DataAdapterFactory caching", () => {
   }
 
   function seedTableCache(connectionId: string, databaseId: string, data: any[]) {
-    tableCacheStorage.add({ id: `tables:${connectionId}:${databaseId}`, data, timestamp: Date.now() });
+    tableCacheStorage.add({
+      id: `tables:${connectionId}:${databaseId}`,
+      data,
+      timestamp: Date.now(),
+    });
   }
 
   function seedColumnCache(connectionId: string, databaseId: string, tableId: string, data: any[]) {
-    columnCacheStorage.add({ id: `${connectionId}:${databaseId}:${tableId}`, data, timestamp: Date.now() });
+    columnCacheStorage.add({
+      id: `${connectionId}:${databaseId}:${tableId}`,
+      data,
+      timestamp: Date.now(),
+    });
   }
 
   function cleanupTestCaches() {
@@ -431,7 +451,9 @@ describe("DataAdapterFactory caching", () => {
       const allColumns = listAllCachedColumns();
       expect(Array.isArray(allColumns)).toBe(true);
 
-      const match = allColumns.find((entry) => entry.id === `${TEST_CONN_ID}:${TEST_DB_ID}:${TEST_TABLE_ID}`);
+      const match = allColumns.find(
+        (entry) => entry.id === `${TEST_CONN_ID}:${TEST_DB_ID}:${TEST_TABLE_ID}`,
+      );
       expect(match).toBeDefined();
       expect(match!.data).toEqual(mockColumns);
     });

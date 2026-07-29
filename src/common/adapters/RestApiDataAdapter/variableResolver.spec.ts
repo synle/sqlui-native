@@ -22,7 +22,11 @@ describe("variableResolver", () => {
     });
 
     it("handles undefined layers", () => {
-      const result = mergeVariableLayers(undefined, [{ key: "A", value: "1", enabled: true }], undefined);
+      const result = mergeVariableLayers(
+        undefined,
+        [{ key: "A", value: "1", enabled: true }],
+        undefined,
+      );
       expect(result["A"]).toBe("1");
     });
 

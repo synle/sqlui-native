@@ -46,7 +46,9 @@ describe("LegacyDataTable", () => {
   test("renders with searchInputId showing GlobalFilter", () => {
     const columns = [{ header: "Name", accessorKey: "name" }];
     const data = [{ name: "Acme" }];
-    const { container } = render(<LegacyDataTable columns={columns as any} data={data as any} searchInputId="search-1" />);
+    const { container } = render(
+      <LegacyDataTable columns={columns as any} data={data as any} searchInputId="search-1" />,
+    );
     expect(container.textContent).toContain("Acme");
   });
 
@@ -54,7 +56,9 @@ describe("LegacyDataTable", () => {
     const columns = [{ header: "Name", accessorKey: "name" }];
     const data = [{ name: "Acme" }];
     const onRowClick = vi.fn();
-    const { container } = render(<LegacyDataTable columns={columns as any} data={data as any} onRowClick={onRowClick} />);
+    const { container } = render(
+      <LegacyDataTable columns={columns as any} data={data as any} onRowClick={onRowClick} />,
+    );
     expect(container.textContent).toContain("Acme");
   });
 
@@ -63,7 +67,11 @@ describe("LegacyDataTable", () => {
     const data = [{ name: "Acme" }];
     const rowContextOptions = [{ label: "Edit", onClick: vi.fn() }];
     const { container } = render(
-      <LegacyDataTable columns={columns as any} data={data as any} rowContextOptions={rowContextOptions as any} />,
+      <LegacyDataTable
+        columns={columns as any}
+        data={data as any}
+        rowContextOptions={rowContextOptions as any}
+      />,
     );
     expect(container.textContent).toContain("Acme");
   });

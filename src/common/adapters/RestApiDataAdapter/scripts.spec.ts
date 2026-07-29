@@ -70,7 +70,11 @@ describe("RestApi ConcreteDataScripts", () => {
   });
 
   test("getCodeSnippet returns a string for a curl input", () => {
-    const out = RestApiScripts.getCodeSnippet({} as any, { sql: "curl 'https://api.example.com'" } as any, "fetch");
+    const out = RestApiScripts.getCodeSnippet(
+      {} as any,
+      { sql: "curl 'https://api.example.com'" } as any,
+      "fetch",
+    );
     expect(typeof out).toBe("string");
   });
 });

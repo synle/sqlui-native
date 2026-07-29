@@ -63,7 +63,9 @@ export function buildEmbeddedAssetMap(assetsDir: string): Record<string, string>
     map[key] = buf.toString("base64");
   }
   // eslint-disable-next-line no-console
-  console.log(`[embed-frontend-assets] embedded ${files.length} file(s), ${(totalBytes / 1024).toFixed(0)} KB from ${assetsDir}`);
+  console.log(
+    `[embed-frontend-assets] embedded ${files.length} file(s), ${(totalBytes / 1024).toFixed(0)} KB from ${assetsDir}`,
+  );
   return map;
 }
 

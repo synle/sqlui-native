@@ -15,7 +15,10 @@ import CircularProgress from "@mui/material/CircularProgress";
 import IconButton from "@mui/material/IconButton";
 import { useNavigate } from "src/frontend/utils/commonUtils";
 import { getDivider } from "src/common/adapters/BaseDataAdapter/scripts";
-import { getConnectionActions, isDialectSupportManagedMetadata } from "src/common/adapters/DataScriptFactory";
+import {
+  getConnectionActions,
+  isDialectSupportManagedMetadata,
+} from "src/common/adapters/DataScriptFactory";
 
 import DropdownButton from "src/frontend/components/DropdownButton";
 import { useCommands, isConnectionRefreshing } from "src/frontend/components/MissionControl";
@@ -146,7 +149,11 @@ export default function ConnectionActions(props: ConnectionActionsProps): React.
             startIcon: <AddIcon />,
             onClick: async () => {
               try {
-                const name = await prompt({ title: "New Folder", message: "Enter folder name:", required: true });
+                const name = await prompt({
+                  title: "New Folder",
+                  message: "Enter folder name:",
+                  required: true,
+                });
                 if (name) {
                   await createFolder({ connectionId: connectionId!, name });
                 }

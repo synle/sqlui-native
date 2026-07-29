@@ -28,7 +28,10 @@ export interface PlatformBridge {
    * (browser mode). When null is returned, callers should fall back to an HTML
    * `<input type="file">` element.
    */
-  pickFile(options?: { title?: string; filters?: { name: string; extensions: string[] }[] }): Promise<string | null>;
+  pickFile(options?: {
+    title?: string;
+    filters?: { name: string; extensions: string[] }[];
+  }): Promise<string | null>;
 
   /** Subscribes to native menu command events. Returns an unsubscribe function. */
   onAppCommand(callback: (event: string) => void): () => void;

@@ -27,7 +27,14 @@ vi.mock("@tanstack/react-virtual", () => ({
   useVirtualizer: ({ count }: any) => ({
     getTotalSize: () => count * 40,
     getVirtualItems: () =>
-      Array.from({ length: count }, (_, i) => ({ index: i, start: i * 40, size: 40, key: `vi-${i}`, lane: 0, end: (i + 1) * 40 })),
+      Array.from({ length: count }, (_, i) => ({
+        index: i,
+        start: i * 40,
+        size: 40,
+        key: `vi-${i}`,
+        lane: 0,
+        end: (i + 1) * 40,
+      })),
     measure: vi.fn(),
     measureElement: vi.fn(),
     scrollToOffset: vi.fn(),
@@ -66,14 +73,18 @@ describe("ModernDataTable", () => {
   test("renders with searchInputId", () => {
     const columns = [{ header: "Name", accessorKey: "name" }];
     const data = [{ name: "Acme" }];
-    const { container } = render(<ModernDataTable columns={columns as any} data={data as any} searchInputId="search-1" />);
+    const { container } = render(
+      <ModernDataTable columns={columns as any} data={data as any} searchInputId="search-1" />,
+    );
     expect(container.textContent).toContain("Acme");
   });
 
   test("searchInputId renders a GlobalFilter input", () => {
     const columns = [{ header: "Name", accessorKey: "name" }];
     const data = [{ name: "Acme" }];
-    const { container } = render(<ModernDataTable columns={columns as any} data={data as any} searchInputId="filter-id" />);
+    const { container } = render(
+      <ModernDataTable columns={columns as any} data={data as any} searchInputId="filter-id" />,
+    );
     expect(container.querySelector("#filter-id")).toBeTruthy();
   });
 
@@ -82,7 +93,11 @@ describe("ModernDataTable", () => {
     const data = [{ name: "Acme" }];
     const rowContextOptions = [{ label: "Edit", onClick: vi.fn() }];
     const { container } = render(
-      <ModernDataTable columns={columns as any} data={data as any} rowContextOptions={rowContextOptions as any} />,
+      <ModernDataTable
+        columns={columns as any}
+        data={data as any}
+        rowContextOptions={rowContextOptions as any}
+      />,
     );
     expect(container.textContent).toContain("Acme");
   });
@@ -90,7 +105,9 @@ describe("ModernDataTable", () => {
   test("renders with onRowClick handler", () => {
     const columns = [{ header: "Name", accessorKey: "name" }];
     const data = [{ name: "Acme" }];
-    const { container } = render(<ModernDataTable columns={columns as any} data={data as any} onRowClick={() => {}} />);
+    const { container } = render(
+      <ModernDataTable columns={columns as any} data={data as any} onRowClick={() => {}} />,
+    );
     expect(container.textContent).toContain("Acme");
   });
 
@@ -98,7 +115,9 @@ describe("ModernDataTable", () => {
     const onRowClick = vi.fn();
     const columns = [{ header: "Name", accessorKey: "name" }];
     const data = [{ name: "Acme" }];
-    const { container } = render(<ModernDataTable columns={columns as any} data={data as any} onRowClick={onRowClick} />);
+    const { container } = render(
+      <ModernDataTable columns={columns as any} data={data as any} onRowClick={onRowClick} />,
+    );
     const row = container.querySelector("[data-row-idx='0']") as HTMLElement;
     expect(row).toBeTruthy();
     fireEvent.doubleClick(row);
@@ -133,7 +152,13 @@ describe("ModernDataTable", () => {
   test("fullScreen prop is accepted without error", () => {
     const columns = [{ header: "Name", accessorKey: "name" }];
     const data = [{ name: "Acme" }];
-    const { container } = render(<ModernDataTable columns={columns as any} data={data as any} {...({ fullScreen: true } as any)} />);
+    const { container } = render(
+      <ModernDataTable
+        columns={columns as any}
+        data={data as any}
+        {...({ fullScreen: true } as any)}
+      />,
+    );
     expect(container.textContent).toContain("Acme");
   });
 });

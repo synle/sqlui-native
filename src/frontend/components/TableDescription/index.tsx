@@ -53,10 +53,18 @@ export default function TableDescription(props: TableDescriptionProps): React.JS
             >
               <TableRowsIcon color="success" fontSize="inherit" />
               <span>{table.name}</span>
-              <TableActions connectionId={connectionId} databaseId={databaseId} tableId={table.name} />
+              <TableActions
+                connectionId={connectionId}
+                databaseId={databaseId}
+                tableId={table.name}
+              />
             </AccordionHeader>
             <AccordionBody expanded={visibles[key]}>
-              <ColumnDescription connectionId={connectionId} databaseId={databaseId} tableId={table.name} />
+              <ColumnDescription
+                connectionId={connectionId}
+                databaseId={databaseId}
+                tableId={table.name}
+              />
             </AccordionBody>
           </React.Fragment>
         );

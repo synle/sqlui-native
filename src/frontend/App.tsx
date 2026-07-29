@@ -15,7 +15,9 @@ const EditConnectionPage = lazy(() => import("src/frontend/views/EditConnectionP
 const MainPage = lazy(() => import("src/frontend/views/MainPage"));
 const MigrationPage = lazy(() => import("src/frontend/views/MigrationPage"));
 const NewConnectionPage = lazy(() => import("src/frontend/views/NewConnectionPage"));
-const NewRecordPage = lazy(() => import("src/frontend/views/RecordPage").then((m) => ({ default: m.NewRecordPage })));
+const NewRecordPage = lazy(() =>
+  import("src/frontend/views/RecordPage").then((m) => ({ default: m.NewRecordPage })),
+);
 const QueryHistoryPage = lazy(() => import("src/frontend/views/QueryHistoryPage"));
 const RecycleBinPage = lazy(() => import("src/frontend/views/RecycleBinPage"));
 const RelationshipChartPage = lazy(() => import("src/frontend/views/RelationshipChartPage"));
@@ -49,7 +51,9 @@ export default function App() {
       });
 
       // TODO: right now only support one file for drop...
-      const files = [...e.dataTransfer.items].map((item) => item.getAsFile()).filter((f) => f) as File[];
+      const files = [...e.dataTransfer.items]
+        .map((item) => item.getAsFile())
+        .filter((f) => f) as File[];
 
       const file = files[0];
       if (!file) {

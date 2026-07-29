@@ -39,19 +39,25 @@ beforeEach(() => {
 describe("ColumnDescription", () => {
   test("loading state", () => {
     useGetColumnsMock.mockReturnValue({ data: undefined, isLoading: true, isError: false });
-    const { container } = render(<ColumnDescription connectionId="c1" databaseId="db1" tableId="t1" />);
+    const { container } = render(
+      <ColumnDescription connectionId="c1" databaseId="db1" tableId="t1" />,
+    );
     expect(container.textContent).toContain("Loading");
   });
 
   test("error state", () => {
     useGetColumnsMock.mockReturnValue({ data: undefined, isLoading: false, isError: true });
-    const { container } = render(<ColumnDescription connectionId="c1" databaseId="db1" tableId="t1" />);
+    const { container } = render(
+      <ColumnDescription connectionId="c1" databaseId="db1" tableId="t1" />,
+    );
     expect(container.textContent).toContain("Error");
   });
 
   test("empty columns renders 'Not Available'", () => {
     useGetColumnsMock.mockReturnValue({ data: [], isLoading: false, isError: false });
-    const { container } = render(<ColumnDescription connectionId="c1" databaseId="db1" tableId="t1" />);
+    const { container } = render(
+      <ColumnDescription connectionId="c1" databaseId="db1" tableId="t1" />,
+    );
     expect(container.textContent).toContain("Not Available");
   });
 
@@ -59,7 +65,13 @@ describe("ColumnDescription", () => {
     useGetColumnsMock.mockReturnValue({
       data: [
         { name: "id", type: "INT", primaryKey: true },
-        { name: "user_id", type: "INT", kind: "foreign_key", referencedTableName: "users", referencedColumnName: "id" },
+        {
+          name: "user_id",
+          type: "INT",
+          kind: "foreign_key",
+          referencedTableName: "users",
+          referencedColumnName: "id",
+        },
         { name: "name", type: "VARCHAR" },
         { name: "partition", type: "TEXT", kind: "partition_key" },
         { name: "cluster", type: "TEXT", kind: "clustering" },
@@ -67,7 +79,9 @@ describe("ColumnDescription", () => {
       isLoading: false,
       isError: false,
     });
-    const { container } = render(<ColumnDescription connectionId="c1" databaseId="db1" tableId="t1" />);
+    const { container } = render(
+      <ColumnDescription connectionId="c1" databaseId="db1" tableId="t1" />,
+    );
     expect(container.textContent).toContain("id");
     expect(container.textContent).toContain("user_id");
     expect(container.textContent).toContain("VARCHAR");
@@ -78,7 +92,9 @@ describe("ColumnDescription", () => {
     const cols = Array.from({ length: 50 }, (_, i) => ({ name: `c${i}`, type: "TEXT" }));
     useGetColumnsMock.mockReturnValue({ data: cols, isLoading: false, isError: false });
     useShowHideMock.mockReturnValue({ visibles: {}, onToggle: vi.fn() });
-    const { container } = render(<ColumnDescription connectionId="c1" databaseId="db1" tableId="t1" />);
+    const { container } = render(
+      <ColumnDescription connectionId="c1" databaseId="db1" tableId="t1" />,
+    );
     const btn = container.querySelector(".ShowAllColumnsButton button");
     expect(btn).toBeTruthy();
     if (btn) {

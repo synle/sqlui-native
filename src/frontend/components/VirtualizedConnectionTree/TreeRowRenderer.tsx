@@ -97,7 +97,15 @@ export const TreeRowRenderer = React.memo(function TreeRowRenderer(props: TreeRo
     }
 
     case "table-header": {
-      const { connectionId, databaseId, tableName, tableId, isSelected, isExpanded, visibilityKey } = row;
+      const {
+        connectionId,
+        databaseId,
+        tableName,
+        tableId,
+        isSelected,
+        isExpanded,
+        visibilityKey,
+      } = row;
       return (
         <div data-tree-key={visibilityKey}>
           <AccordionHeader
@@ -107,7 +115,12 @@ export const TreeRowRenderer = React.memo(function TreeRowRenderer(props: TreeRo
           >
             <TableRowsIcon color="success" fontSize="inherit" />
             <span>{tableName}</span>
-            <TableActions connectionId={connectionId} databaseId={databaseId} tableId={tableId} tableName={tableName} />
+            <TableActions
+              connectionId={connectionId}
+              databaseId={databaseId}
+              tableId={tableId}
+              tableName={tableName}
+            />
           </AccordionHeader>
         </div>
       );
@@ -141,7 +154,9 @@ export const TreeRowRenderer = React.memo(function TreeRowRenderer(props: TreeRo
             </Tooltip>
           )}
           {shouldShowForeignKeyIcon && (
-            <Tooltip title={`Foreign Key referencing table=${column.referencedTableName} column=${column.referencedColumnName}`}>
+            <Tooltip
+              title={`Foreign Key referencing table=${column.referencedTableName} column=${column.referencedColumnName}`}
+            >
               <i style={{ height: "15px" }}>
                 <KeyIcon fontSize="small" color="secondary" />{" "}
               </i>

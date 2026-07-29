@@ -28,7 +28,10 @@ describeIfEnv("AzureCosmosDataAdapter integration", () => {
   });
 
   test("execute - create database", async () => {
-    const result = await adapter.execute(`client.databases.create({ id: '${testDbName}' })`, testDbName);
+    const result = await adapter.execute(
+      `client.databases.create({ id: '${testDbName}' })`,
+      testDbName,
+    );
     expect(result.ok).toBe(true);
   });
 
@@ -165,7 +168,11 @@ describe.skip("cosmosdb legacy", () => {
   });
 
   test("execute", async () => {
-    const actual = await adapter.execute("SELECT * FROM C OFFSET 1 LIMIT 2", "sy-test-database1", "sy-test-container1");
+    const actual = await adapter.execute(
+      "SELECT * FROM C OFFSET 1 LIMIT 2",
+      "sy-test-database1",
+      "sy-test-container1",
+    );
     expect(actual?.raw?.length).toBeGreaterThan(0);
   });
 });

@@ -51,7 +51,12 @@ type ColumnResizerProps = React.HTMLAttributes<HTMLDivElement> & {
  * @param props - Resizer properties including isResizing state and event handlers.
  * @returns A styled resize bar element.
  */
-export function ColumnResizer({ isResizing, onMouseDown, onTouchStart, ...rest }: ColumnResizerProps) {
+export function ColumnResizer({
+  isResizing,
+  onMouseDown,
+  onTouchStart,
+  ...rest
+}: ColumnResizerProps) {
   const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
@@ -62,7 +67,15 @@ export function ColumnResizer({ isResizing, onMouseDown, onTouchStart, ...rest }
     e.stopPropagation();
     onTouchStart?.(e);
   };
-  return <StyledColumnResizer size={5} isResizing={isResizing} onMouseDown={handleMouseDown} onTouchStart={handleTouchStart} {...rest} />;
+  return (
+    <StyledColumnResizer
+      size={5}
+      isResizing={isResizing}
+      onMouseDown={handleMouseDown}
+      onTouchStart={handleTouchStart}
+      {...rest}
+    />
+  );
 }
 
 /** Styled div for table value cells with text ellipsis overflow. */

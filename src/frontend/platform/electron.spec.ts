@@ -95,7 +95,9 @@ describe("electronPlatform", () => {
     (window as any).requireElectron = vi.fn(() => {
       throw new Error("not electron");
     });
-    const fetchSpy = vi.fn().mockResolvedValueOnce({ text: () => Promise.resolve("from-server") } as any);
+    const fetchSpy = vi
+      .fn()
+      .mockResolvedValueOnce({ text: () => Promise.resolve("from-server") } as any);
     (globalThis as any).fetch = fetchSpy;
     const f = new File(["x"], "x.txt");
     await expect(electronPlatform.readFileContent(f)).resolves.toBe("from-server");
@@ -108,7 +110,9 @@ describe("electronPlatform", () => {
   });
 
   test("executeShellCommand rejects with stderr on error", async () => {
-    mockExec.mockImplementation((_cmd: string, cb: any) => cb(new Error("oh no"), "", "stderr-out"));
+    mockExec.mockImplementation((_cmd: string, cb: any) =>
+      cb(new Error("oh no"), "", "stderr-out"),
+    );
     await expect(electronPlatform.executeShellCommand("ls")).rejects.toBe("stderr-out");
   });
 
@@ -141,7 +145,10 @@ describe("electronPlatform", () => {
     initElectronPlatform();
     const cb = vi.fn();
     const off = electronPlatform.onAppCommand(cb);
-    expect(mockIpcOn).toHaveBeenCalledWith("sqluiNativeEvent/ipcElectronCommand", expect.any(Function));
+    expect(mockIpcOn).toHaveBeenCalledWith(
+      "sqluiNativeEvent/ipcElectronCommand",
+      expect.any(Function),
+    );
     off();
     expect(mockIpcRemoveListener).toHaveBeenCalled();
   });

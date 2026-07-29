@@ -3,7 +3,10 @@ import LoadingButton from "@mui/lab/LoadingButton";
 import { Alert, Box, Button, Link, Tab, Tabs, TextField, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import BaseDataAdapter from "src/common/adapters/BaseDataAdapter/index";
-import { getConnectionSetupGuide, getDialectTypeFromConnectionString } from "src/common/adapters/DataScriptFactory";
+import {
+  getConnectionSetupGuide,
+  getDialectTypeFromConnectionString,
+} from "src/common/adapters/DataScriptFactory";
 import ConnectionHint from "src/frontend/components/ConnectionForm/ConnectionHint";
 import ConnectionHelper from "src/frontend/components/ConnectionHelper";
 import GraphQLConnectionFields from "src/frontend/components/ConnectionForm/GraphQLConnectionFields";
@@ -64,8 +67,8 @@ export function NewConnectionForm() {
     return (
       <Box className="FormInput__Container">
         <Typography>
-          Select one of the following connection type. Or <Link onClick={onStartBlankConnection}>get started with an empty connection</Link>
-          .
+          Select one of the following connection type. Or{" "}
+          <Link onClick={onStartBlankConnection}>get started with an empty connection</Link>.
         </Typography>
         <ConnectionHint onChange={onApplyConnectionHint} showBookmarks={true} />
         <Box sx={{ display: "flex", gap: 2 }}>
@@ -263,9 +266,15 @@ function MainConnectionForm(props: MainConnectionFormProps): React.JSX.Element |
   const rawConnectionTabDom = (
     <>
       {isGraphQL ? (
-        <GraphQLConnectionFields connection={props.connection} setConnection={props.setConnection} />
+        <GraphQLConnectionFields
+          connection={props.connection}
+          setConnection={props.setConnection}
+        />
       ) : isRestApi ? (
-        <RestApiConnectionFields connection={props.connection} setConnection={props.setConnection} />
+        <RestApiConnectionFields
+          connection={props.connection}
+          setConnection={props.setConnection}
+        />
       ) : (
         <div className="FormInput__Row">
           <TextField
@@ -285,7 +294,12 @@ function MainConnectionForm(props: MainConnectionFormProps): React.JSX.Element |
       {showSqliteDatabasePathSelection && (
         <div className="FormInput__Row">
           {platform.isDesktop ? (
-            <Button variant="contained" component="button" type="button" onClick={onBrowseSqliteDatabase}>
+            <Button
+              variant="contained"
+              component="button"
+              type="button"
+              onClick={onBrowseSqliteDatabase}
+            >
               Browse for sqlite database
             </Button>
           ) : (
@@ -338,10 +352,20 @@ function MainConnectionForm(props: MainConnectionFormProps): React.JSX.Element |
         rawConnectionTabDom
       )}
       <div className="FormInput__Row">
-        <LoadingButton variant="contained" type="submit" loading={props.saving} startIcon={<SaveIcon />}>
+        <LoadingButton
+          variant="contained"
+          type="submit"
+          loading={props.saving}
+          startIcon={<SaveIcon />}
+        >
           Save
         </LoadingButton>
-        <Button variant="outlined" type="button" disabled={props.saving} onClick={() => navigate("/")}>
+        <Button
+          variant="outlined"
+          type="button"
+          disabled={props.saving}
+          onClick={() => navigate("/")}
+        >
           Cancel
         </Button>
         <TestConnectionButton connection={connection} />

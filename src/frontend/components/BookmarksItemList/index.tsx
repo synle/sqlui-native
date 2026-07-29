@@ -20,7 +20,11 @@ import DataTable from "src/frontend/components/DataTable";
 import { useActionDialogs } from "src/frontend/hooks/useActionDialogs";
 import { useUpsertConnection } from "src/frontend/hooks/useConnection";
 import { useConnectionQueries } from "src/frontend/hooks/useConnectionQuery";
-import { useDeleteBookmarkItem, useGetBookmarkItems, useUpdateBookmarkItem } from "src/frontend/hooks/useFolderItems";
+import {
+  useDeleteBookmarkItem,
+  useGetBookmarkItems,
+  useUpdateBookmarkItem,
+} from "src/frontend/hooks/useFolderItems";
 import { SqluiCore } from "typings";
 
 /** Callback invoked after a bookmark item is selected and applied. */
@@ -82,7 +86,13 @@ function NameCell({ row, onAfterSelect }: { row: any; onAfterSelect?: OnAfterSel
  */
 function TypeCell({ row }: { row: any }) {
   const folderItem = row.original;
-  return <Chip label={folderItem.type} color={folderItem.type === "Connection" ? "success" : "warning"} size="small" />;
+  return (
+    <Chip
+      label={folderItem.type}
+      color={folderItem.type === "Connection" ? "success" : "warning"}
+      size="small"
+    />
+  );
 }
 
 /**
@@ -126,7 +136,11 @@ function QueryDetailCell({ row, allExpanded }: { row: any; allExpanded: boolean 
 
   return (
     <Box sx={{ display: "flex", alignItems: "flex-start", gap: 0.5 }}>
-      <IconButton size="small" onClick={() => setLocalExpanded(!expanded)} sx={{ p: 0, minWidth: 0 }}>
+      <IconButton
+        size="small"
+        onClick={() => setLocalExpanded(!expanded)}
+        sx={{ p: 0, minWidth: 0 }}
+      >
         {expanded ? <UnfoldLessIcon fontSize="small" /> : <UnfoldMoreIcon fontSize="small" />}
       </IconButton>
       <Typography
@@ -202,14 +216,19 @@ function ActionCell({ row }: { row: any }) {
  * @param allExpanded - Whether all query detail rows should be expanded by default.
  * @returns An array of TanStack column definitions.
  */
-const getColumns = (onAfterSelect?: OnAfterSelectCallback, allExpanded?: boolean): ColumnDef<any, any>[] => {
+const getColumns = (
+  onAfterSelect?: OnAfterSelectCallback,
+  allExpanded?: boolean,
+): ColumnDef<any, any>[] => {
   return [
     {
       header: "#",
       enableSorting: false,
       enableColumnFilter: false,
       size: 50,
-      cell: (info) => <span style={{ fontFamily: "monospace", opacity: 0.5 }}>{info.row.index + 1}</span>,
+      cell: (info) => (
+        <span style={{ fontFamily: "monospace", opacity: 0.5 }}>{info.row.index + 1}</span>
+      ),
     },
     {
       header: "Name",
@@ -299,7 +318,11 @@ export default function BookmarksItemList(props: BookmarksItemListProps): React.
         <Box sx={{ display: "flex", gap: 2, alignItems: "center", mb: 1 }}>
           <Tooltip title={allExpanded ? "Collapse all details" : "Expand all details"}>
             <IconButton size="small" onClick={() => setAllExpanded(!allExpanded)}>
-              {allExpanded ? <UnfoldLessIcon fontSize="small" /> : <UnfoldMoreIcon fontSize="small" />}
+              {allExpanded ? (
+                <UnfoldLessIcon fontSize="small" />
+              ) : (
+                <UnfoldMoreIcon fontSize="small" />
+              )}
             </IconButton>
           </Tooltip>
         </Box>

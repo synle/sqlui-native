@@ -16,7 +16,11 @@ export default function DateCell({ timestamp }: { timestamp?: number }) {
   const label = expanded ? date.toLocaleString() : date.toLocaleDateString();
 
   return (
-    <Typography variant="body2" onClick={() => setExpanded(!expanded)} sx={{ cursor: "pointer", whiteSpace: "nowrap" }}>
+    <Typography
+      variant="body2"
+      onClick={() => setExpanded(!expanded)}
+      sx={{ cursor: "pointer", whiteSpace: "nowrap" }}
+    >
       {label}
     </Typography>
   );

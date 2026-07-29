@@ -13,7 +13,10 @@ vi.mock("src/frontend/hooks/useToaster", () => ({
   default: () => ({ add: mockAddToast }),
 }));
 
-import { AddBookmarkConnectionContent, AddBookmarkQueryContent } from "src/frontend/components/AddBookmarkModal";
+import {
+  AddBookmarkConnectionContent,
+  AddBookmarkQueryContent,
+} from "src/frontend/components/AddBookmarkModal";
 
 describe("AddBookmarkQueryContent", () => {
   const query = {
@@ -46,7 +49,9 @@ describe("AddBookmarkQueryContent", () => {
   test("Cancel button calls onDone", () => {
     const { container } = render(<AddBookmarkQueryContent query={query} onDone={onDone} />);
 
-    const cancelButton = Array.from(container.querySelectorAll("button")).find((b) => b.textContent === "Cancel")!;
+    const cancelButton = Array.from(container.querySelectorAll("button")).find(
+      (b) => b.textContent === "Cancel",
+    )!;
     fireEvent.click(cancelButton);
     expect(onDone).toHaveBeenCalled();
   });
@@ -57,7 +62,9 @@ describe("AddBookmarkQueryContent", () => {
     const input = container.querySelector("input") as HTMLInputElement;
     fireEvent.change(input, { target: { value: "" } });
 
-    const saveButton = Array.from(container.querySelectorAll("button")).find((b) => b.textContent === "Save")!;
+    const saveButton = Array.from(container.querySelectorAll("button")).find(
+      (b) => b.textContent === "Save",
+    )!;
     expect(saveButton.disabled).toBe(true);
   });
 });
@@ -77,7 +84,9 @@ describe("AddBookmarkConnectionContent", () => {
   });
 
   test("renders with default name, Save and Cancel buttons", () => {
-    const { container } = render(<AddBookmarkConnectionContent connection={connection} onDone={onDone} />);
+    const { container } = render(
+      <AddBookmarkConnectionContent connection={connection} onDone={onDone} />,
+    );
 
     const input = container.querySelector("input") as HTMLInputElement;
     expect(input).toBeTruthy();
@@ -90,9 +99,13 @@ describe("AddBookmarkConnectionContent", () => {
   });
 
   test("Cancel button calls onDone", () => {
-    const { container } = render(<AddBookmarkConnectionContent connection={connection} onDone={onDone} />);
+    const { container } = render(
+      <AddBookmarkConnectionContent connection={connection} onDone={onDone} />,
+    );
 
-    const cancelButton = Array.from(container.querySelectorAll("button")).find((b) => b.textContent === "Cancel")!;
+    const cancelButton = Array.from(container.querySelectorAll("button")).find(
+      (b) => b.textContent === "Cancel",
+    )!;
     fireEvent.click(cancelButton);
     expect(onDone).toHaveBeenCalled();
   });

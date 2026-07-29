@@ -101,7 +101,14 @@ export default function DatabaseActions(props: DatabaseActionsProps): React.JSX.
 
   // For managed metadata, show template scripts that auto-create a request when selected
   const templateActions: SqlAction.Output[] = isManagedMetadata
-    ? getTableActions({ dialect, connectionId, databaseId, tableId: undefined, columns: [], querySize })
+    ? getTableActions({
+        dialect,
+        connectionId,
+        databaseId,
+        tableId: undefined,
+        columns: [],
+        querySize,
+      })
     : [];
 
   actions = [
@@ -156,7 +163,10 @@ export default function DatabaseActions(props: DatabaseActionsProps): React.JSX.
               if (!props.connectionId || !props.databaseId) return;
               try {
                 // Fetch current folder props to get existing variables
-                const currentFolder = await ProxyApi.getManagedDatabase(props.connectionId, props.databaseId);
+                const currentFolder = await ProxyApi.getManagedDatabase(
+                  props.connectionId,
+                  props.databaseId,
+                );
                 const currentVars = (currentFolder?.props as any)?.variables || [];
 
                 await modal({
@@ -193,7 +203,10 @@ export default function DatabaseActions(props: DatabaseActionsProps): React.JSX.
             icon: <DeleteIcon />,
             onClick: async () => {
               try {
-                await confirm(`Are you sure you want to delete folder "${props.databaseId}" and all its requests?`, "Delete");
+                await confirm(
+                  `Are you sure you want to delete folder "${props.databaseId}" and all its requests?`,
+                  "Delete",
+                );
                 if (props.connectionId && props.databaseId) {
                   await deleteManagedDatabase({
                     connectionId: props.connectionId,
@@ -236,7 +249,13 @@ export default function DatabaseActions(props: DatabaseActionsProps): React.JSX.
       }
 
       // For managed metadata template actions, auto-create a request and open it
-      if (isManagedMetadata && templateActionSet.has(action) && action.query && props.connectionId && props.databaseId) {
+      if (
+        isManagedMetadata &&
+        templateActionSet.has(action) &&
+        action.query &&
+        props.connectionId &&
+        props.databaseId
+      ) {
         const requestName = action.label || "New Request";
         try {
           const created = await createManagedTable({
@@ -290,7 +309,12 @@ export default function DatabaseActions(props: DatabaseActionsProps): React.JSX.
 
   return (
     <div className="DatabaseActions">
-      <DropdownButton id="database-action-split-button" options={options} onToggle={(newOpen) => setOpen(newOpen)} isLoading={isLoading}>
+      <DropdownButton
+        id="database-action-split-button"
+        options={options}
+        onToggle={(newOpen) => setOpen(newOpen)}
+        isLoading={isLoading}
+      >
         <IconButton aria-label="Database Actions" size="small" color="inherit">
           <ArrowDropDownIcon fontSize="inherit" color="inherit" />
         </IconButton>

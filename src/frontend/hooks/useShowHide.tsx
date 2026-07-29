@@ -2,7 +2,10 @@ import React, { createContext, useCallback, useContext, useMemo, useState } from
 import { SessionStorageConfig } from "src/frontend/data/config";
 import { SqluiFrontend } from "typings";
 // used for show and hide the sidebar trees
-let _treeVisibles = SessionStorageConfig.get<SqluiFrontend.TreeVisibilities>("clientConfig/cache.treeVisibles", {});
+let _treeVisibles = SessionStorageConfig.get<SqluiFrontend.TreeVisibilities>(
+  "clientConfig/cache.treeVisibles",
+  {},
+);
 
 const TargetContext = createContext({
   visibles: _treeVisibles,
@@ -16,7 +19,9 @@ const TargetContext = createContext({
  * @param props - Component props containing child elements.
  * @returns The context provider wrapping children.
  */
-export default function WrappedContext(props: { children: React.ReactNode }): React.JSX.Element | null {
+export default function WrappedContext(props: {
+  children: React.ReactNode;
+}): React.JSX.Element | null {
   // State to hold the theme value
   const [visibles, setVisibles] = useState(_treeVisibles);
 
@@ -46,7 +51,10 @@ export default function WrappedContext(props: { children: React.ReactNode }): Re
   }, [_updateVisibles]);
 
   /** Memoized context value to prevent unnecessary re-renders of consumers. */
-  const contextValue = useMemo(() => ({ visibles, onToggle, onClear, onSet }), [visibles, onToggle, onClear, onSet]);
+  const contextValue = useMemo(
+    () => ({ visibles, onToggle, onClear, onSet }),
+    [visibles, onToggle, onClear, onSet],
+  );
 
   // Provide the theme value and toggle function to the children components
   return <TargetContext.Provider value={contextValue}>{props.children}</TargetContext.Provider>;

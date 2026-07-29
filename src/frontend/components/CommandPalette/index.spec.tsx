@@ -20,7 +20,9 @@ vi.mock("src/frontend/hooks/useConnectionQuery", () => ({
 import CommandPalette from "src/frontend/components/CommandPalette";
 
 beforeEach(() => {
-  useActiveConnectionQueryMock.mockReturnValue({ query: { id: "q1", connectionId: "c1", name: "ActiveQ" } });
+  useActiveConnectionQueryMock.mockReturnValue({
+    query: { id: "q1", connectionId: "c1", name: "ActiveQ" },
+  });
   useConnectionQueriesMock.mockReturnValue({
     queries: [
       { id: "q1", name: "ActiveQ" },

@@ -3,7 +3,11 @@ import Alert from "@mui/material/Alert";
 import CircularProgress from "@mui/material/CircularProgress";
 import { useEffect, useRef, useState } from "react";
 import { getCurrentSessionId, setCurrentSessionId } from "src/frontend/data/session";
-import { useGetCurrentSession, useGetSessions, useSelectSession } from "src/frontend/hooks/useSession";
+import {
+  useGetCurrentSession,
+  useGetSessions,
+  useSelectSession,
+} from "src/frontend/hooks/useSession";
 import { useNavigate } from "src/frontend/utils/commonUtils";
 
 /** Props for the SessionManager component. */
@@ -20,8 +24,15 @@ type SessionManagerProps = {
  * @returns Children, a loading alert, or the session selection modal.
  */
 export default function SessionManager(props: SessionManagerProps): React.JSX.Element | null {
-  const [status, setStatus] = useState<"pending_session" | "no_session" | "valid_session">("pending_session");
-  const { data: currentSession, isLoading: loadingCurrentSession, error: sessionError, refetch } = useGetCurrentSession();
+  const [status, setStatus] = useState<"pending_session" | "no_session" | "valid_session">(
+    "pending_session",
+  );
+  const {
+    data: currentSession,
+    isLoading: loadingCurrentSession,
+    error: sessionError,
+    refetch,
+  } = useGetCurrentSession();
   useSelectSession(true);
   const retryCountRef = useRef(0);
   const navigate = useNavigate();

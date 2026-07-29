@@ -207,7 +207,9 @@ export default function ToastHistoryList() {
 
   const hasAnyExpandable = history.some((entry) => getExpandableContent(entry).length > 0);
   const filtered = filter ? history.filter((entry) => matchesFilter(entry, filter)) : history;
-  const sorted = [...filtered].sort((a, b) => (sortOrder === "newest" ? b.createdTime - a.createdTime : a.createdTime - b.createdTime));
+  const sorted = [...filtered].sort((a, b) =>
+    sortOrder === "newest" ? b.createdTime - a.createdTime : a.createdTime - b.createdTime,
+  );
 
   const virtualizer = useVirtualizer({
     count: sorted.length,
@@ -226,12 +228,24 @@ export default function ToastHistoryList() {
   }, [expandAll]);
 
   if (history.length === 0) {
-    return <div style={{ padding: "16px", textAlign: "center", opacity: 0.6 }}>No notifications yet.</div>;
+    return (
+      <div style={{ padding: "16px", textAlign: "center", opacity: 0.6 }}>
+        No notifications yet.
+      </div>
+    );
   }
 
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
-      <div style={{ display: "flex", gap: "8px", marginBottom: "8px", alignItems: "center", flexShrink: 0 }}>
+      <div
+        style={{
+          display: "flex",
+          gap: "8px",
+          marginBottom: "8px",
+          alignItems: "center",
+          flexShrink: 0,
+        }}
+      >
         <TextField
           size="small"
           placeholder="Filter notifications..."
@@ -239,7 +253,11 @@ export default function ToastHistoryList() {
           onChange={(e) => setFilter(e.target.value)}
           sx={{ flex: 1 }}
         />
-        <Select size="small" value={sortOrder} onChange={(e) => setSortOrder(e.target.value as SortOrder)}>
+        <Select
+          size="small"
+          value={sortOrder}
+          onChange={(e) => setSortOrder(e.target.value as SortOrder)}
+        >
           <MenuItem value="newest">Newest First</MenuItem>
           <MenuItem value="oldest">Oldest First</MenuItem>
         </Select>
@@ -248,13 +266,20 @@ export default function ToastHistoryList() {
             {expandAll ? "Collapse All" : "Expand All"}
           </Button>
         )}
-        <Button size="small" variant="outlined" color="error" onClick={() => dismissAllHistoryEntries()}>
+        <Button
+          size="small"
+          variant="outlined"
+          color="error"
+          onClick={() => dismissAllHistoryEntries()}
+        >
           Dismiss All
         </Button>
       </div>
       <div ref={parentRef} style={{ flex: 1, overflow: "auto" }}>
         {sorted.length === 0 ? (
-          <div style={{ padding: "16px", textAlign: "center", opacity: 0.6 }}>No matching notifications.</div>
+          <div style={{ padding: "16px", textAlign: "center", opacity: 0.6 }}>
+            No matching notifications.
+          </div>
         ) : (
           <div
             style={{
@@ -310,7 +335,13 @@ export default function ToastHistoryList() {
                       <CloseIcon sx={{ fontSize: "0.85rem" }} />
                     </IconButton>
                   </div>
-                  {sections.length > 0 && <ExpandableContent sections={sections} expanded={expandAll} onToggle={remeasure} />}
+                  {sections.length > 0 && (
+                    <ExpandableContent
+                      sections={sections}
+                      expanded={expandAll}
+                      onToggle={remeasure}
+                    />
+                  )}
                   <Divider sx={{ mt: 1 }} />
                 </div>
               );

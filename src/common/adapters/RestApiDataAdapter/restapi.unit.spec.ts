@@ -25,11 +25,15 @@ describe("RestApiDataAdapter", () => {
 
   describe("constructor parses legacy and modern schemes", () => {
     test("rest:// scheme", () => {
-      const a = new RestApiDataAdapter(`rest://${JSON.stringify({ HOST: "https://api.example.com" })}`);
+      const a = new RestApiDataAdapter(
+        `rest://${JSON.stringify({ HOST: "https://api.example.com" })}`,
+      );
       expect(a.dialect).toBe("rest");
     });
     test("restapi:// scheme is also recognized", () => {
-      const a = new RestApiDataAdapter(`restapi://${JSON.stringify({ HOST: "https://api.example.com" })}`);
+      const a = new RestApiDataAdapter(
+        `restapi://${JSON.stringify({ HOST: "https://api.example.com" })}`,
+      );
       expect(a.dialect).toBe("rest");
     });
     test("invalid JSON falls back to empty config (no throw)", () => {
@@ -54,12 +58,16 @@ describe("RestApiDataAdapter", () => {
     });
     test("DNS lookup error — throws Cannot resolve host", async () => {
       mockDnsLookup.mockImplementation((_h: string, cb: any) => cb(new Error("ENOTFOUND")));
-      const a = new RestApiDataAdapter(`rest://${JSON.stringify({ HOST: "https://example.invalid" })}`);
+      const a = new RestApiDataAdapter(
+        `rest://${JSON.stringify({ HOST: "https://example.invalid" })}`,
+      );
       await expect(a.authenticate()).rejects.toThrow(/Cannot resolve host "example.invalid"/);
     });
     test("DNS lookup success", async () => {
       mockDnsLookup.mockImplementation((_h: string, cb: any) => cb(null));
-      const a = new RestApiDataAdapter(`rest://${JSON.stringify({ HOST: "https://api.example.com" })}`);
+      const a = new RestApiDataAdapter(
+        `rest://${JSON.stringify({ HOST: "https://api.example.com" })}`,
+      );
       await expect(a.authenticate()).resolves.toBeUndefined();
     });
   });
@@ -75,7 +83,9 @@ describe("RestApiDataAdapter", () => {
         .mockResolvedValueOnce({ status: 200, statusText: "OK" })
         .mockResolvedValueOnce({ status: 404, statusText: "Not Found" })
         .mockResolvedValueOnce({ status: 0, statusText: "" }); // fails ok check
-      const a = new RestApiDataAdapter(`rest://${JSON.stringify({ HOST: "https://api.example.com" })}`);
+      const a = new RestApiDataAdapter(
+        `rest://${JSON.stringify({ HOST: "https://api.example.com" })}`,
+      );
       const out = await a.runDiagnostics();
       expect(out.map((r) => r.name)).toEqual(["HEAD", "GET", "OPTIONS"]);
       expect(out[0].success).toBe(true); // 200
@@ -85,7 +95,9 @@ describe("RestApiDataAdapter", () => {
 
     test("curl rejection — captured as failure with curl error text", async () => {
       mockExecuteCurl.mockRejectedValue(new Error("curl: (6) Could not resolve host"));
-      const a = new RestApiDataAdapter(`rest://${JSON.stringify({ HOST: "https://example.invalid" })}`);
+      const a = new RestApiDataAdapter(
+        `rest://${JSON.stringify({ HOST: "https://example.invalid" })}`,
+      );
       const out = await a.runDiagnostics();
       expect(out.every((r) => !r.success)).toBe(true);
       expect(out[0].message).toContain("curl: (6)");
@@ -102,7 +114,14 @@ describe("RestApiDataAdapter", () => {
     });
     test("getColumns returns request shape", async () => {
       const c = await a.getColumns();
-      expect(c.map((x) => x.name)).toEqual(["method", "url", "headers", "params", "body", "bodyType"]);
+      expect(c.map((x) => x.name)).toEqual([
+        "method",
+        "url",
+        "headers",
+        "params",
+        "body",
+        "bodyType",
+      ]);
     });
     test("disconnect is no-op", async () => {
       await expect(a.disconnect()).resolves.toBeUndefined();
@@ -111,7 +130,9 @@ describe("RestApiDataAdapter", () => {
 
   describe("execute", () => {
     test("empty input — error result", async () => {
-      const a = new RestApiDataAdapter(`rest://${JSON.stringify({ HOST: "https://api.example.com" })}`);
+      const a = new RestApiDataAdapter(
+        `rest://${JSON.stringify({ HOST: "https://api.example.com" })}`,
+      );
       const r = await a.execute("   ");
       expect(r.ok).toBe(false);
       expect(r.error).toMatch(/No request to execute/);
@@ -128,7 +149,9 @@ describe("RestApiDataAdapter", () => {
         timing: 50,
         size: 7,
       });
-      const a = new RestApiDataAdapter(`rest://${JSON.stringify({ HOST: "https://api.example.com" })}`);
+      const a = new RestApiDataAdapter(
+        `rest://${JSON.stringify({ HOST: "https://api.example.com" })}`,
+      );
       const r = await a.execute(`curl 'https://api.example.com/foo'`);
       expect(r.ok).toBe(true);
       expect(r.raw?.[0].status).toBe(200);
@@ -157,7 +180,9 @@ describe("RestApiDataAdapter", () => {
         timing: 0,
         size: 0,
       });
-      const a = new RestApiDataAdapter(`rest://${JSON.stringify({ HOST: "https://api.example.com" })}`);
+      const a = new RestApiDataAdapter(
+        `rest://${JSON.stringify({ HOST: "https://api.example.com" })}`,
+      );
       a.connectionId = "conn1";
       const r = await a.execute("curl 'https://api.example.com/me'", "folderA");
       expect(r.ok).toBe(true);
@@ -176,7 +201,9 @@ describe("RestApiDataAdapter", () => {
         timing: 0,
         size: 0,
       });
-      const a = new RestApiDataAdapter(`rest://${JSON.stringify({ HOST: "https://api.example.com" })}`);
+      const a = new RestApiDataAdapter(
+        `rest://${JSON.stringify({ HOST: "https://api.example.com" })}`,
+      );
       a.connectionId = "conn1";
       const r = await a.execute("curl 'https://api.example.com/x'", "fA");
       expect(r.ok).toBe(true);
@@ -184,7 +211,9 @@ describe("RestApiDataAdapter", () => {
 
     test("executeCurl throwing returns error result", async () => {
       mockExecuteCurl.mockRejectedValueOnce(new Error("network"));
-      const a = new RestApiDataAdapter(`rest://${JSON.stringify({ HOST: "https://api.example.com" })}`);
+      const a = new RestApiDataAdapter(
+        `rest://${JSON.stringify({ HOST: "https://api.example.com" })}`,
+      );
       const r = await a.execute("curl 'https://api.example.com/x'");
       expect(r.ok).toBe(false);
       expect(r.error).toBe("network");

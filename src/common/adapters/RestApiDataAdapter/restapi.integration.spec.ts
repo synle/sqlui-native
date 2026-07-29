@@ -90,7 +90,9 @@ describe("RestApiDataAdapter integration (httpbin.org)", () => {
 
     it("GET with basic auth", async () => {
       const adapter = new RestApiDataAdapter(`rest://{"HOST":"${HTTPBIN}"}`);
-      const result = await adapter.execute(`curl -u 'testuser:testpass' '${HTTPBIN}/basic-auth/testuser/testpass'`);
+      const result = await adapter.execute(
+        `curl -u 'testuser:testpass' '${HTTPBIN}/basic-auth/testuser/testpass'`,
+      );
       expect(result.ok).toBe(true);
       expect(result.meta?.status).toBe(200);
       expect(result.meta?.responseBodyParsed?.authenticated).toBe(true);
@@ -111,7 +113,9 @@ describe("RestApiDataAdapter integration (httpbin.org)", () => {
       expect(result.ok).toBe(true);
       expect(result.meta?.responseHeaders).toBeDefined();
       // HTTP/2 uses lowercase header names
-      const contentType = result.meta?.responseHeaders?.["Content-Type"] || result.meta?.responseHeaders?.["content-type"];
+      const contentType =
+        result.meta?.responseHeaders?.["Content-Type"] ||
+        result.meta?.responseHeaders?.["content-type"];
       expect(contentType).toContain("application/json");
       await adapter.disconnect();
     });
@@ -166,7 +170,9 @@ describe("RestApiDataAdapter integration (httpbin.org)", () => {
   describeHttpbin("redirects", () => {
     it("follows redirect with -L flag", async () => {
       const adapter = new RestApiDataAdapter(`rest://{"HOST":"${HTTPBIN}"}`);
-      const result = await adapter.execute(`curl -L '${HTTPBIN}/redirect-to?url=${encodeURIComponent(`${HTTPBIN}/get`)}&status_code=302'`);
+      const result = await adapter.execute(
+        `curl -L '${HTTPBIN}/redirect-to?url=${encodeURIComponent(`${HTTPBIN}/get`)}&status_code=302'`,
+      );
       expect(result.ok).toBe(true);
       expect(result.meta?.status).toBe(200);
       expect(result.meta?.responseBodyParsed?.url).toContain("/get");
@@ -175,7 +181,9 @@ describe("RestApiDataAdapter integration (httpbin.org)", () => {
 
     it("returns redirect status without -L flag", async () => {
       const adapter = new RestApiDataAdapter(`rest://{"HOST":"${HTTPBIN}"}`);
-      const result = await adapter.execute(`curl '${HTTPBIN}/redirect-to?url=${encodeURIComponent(`${HTTPBIN}/get`)}&status_code=302'`);
+      const result = await adapter.execute(
+        `curl '${HTTPBIN}/redirect-to?url=${encodeURIComponent(`${HTTPBIN}/get`)}&status_code=302'`,
+      );
       expect(result.ok).toBe(true);
       expect(result.meta?.status).toBe(302);
       await adapter.disconnect();
@@ -196,7 +204,9 @@ describe("RestApiDataAdapter integration (httpbin.org)", () => {
   describeHttpbin("cookies", () => {
     it("sends cookies via -b flag", async () => {
       const adapter = new RestApiDataAdapter(`rest://{"HOST":"${HTTPBIN}"}`);
-      const result = await adapter.execute(`curl -b 'session=abc123; theme=dark' '${HTTPBIN}/cookies'`);
+      const result = await adapter.execute(
+        `curl -b 'session=abc123; theme=dark' '${HTTPBIN}/cookies'`,
+      );
       expect(result.ok).toBe(true);
       expect(result.meta?.responseBodyParsed?.cookies?.session).toBe("abc123");
       expect(result.meta?.responseBodyParsed?.cookies?.theme).toBe("dark");
@@ -307,7 +317,9 @@ describe("RestApiDataAdapter integration (httpbin.org)", () => {
 
     it("GET /anything echoes full request details", async () => {
       const adapter = new RestApiDataAdapter(`rest://{"HOST":"${HTTPBIN}"}`);
-      const result = await adapter.execute(`curl '${HTTPBIN}/anything?key=value' \\\n  -H 'X-Test: hello'`);
+      const result = await adapter.execute(
+        `curl '${HTTPBIN}/anything?key=value' \\\n  -H 'X-Test: hello'`,
+      );
       expect(result.ok).toBe(true);
       expect(result.meta?.responseBodyParsed?.method).toBe("GET");
       expect(result.meta?.responseBodyParsed?.args?.key).toBe("value");
@@ -333,7 +345,9 @@ describe("RestApiDataAdapter integration (httpbin.org)", () => {
   describeHttpbin("bearer auth", () => {
     it("GET /bearer with valid Authorization header", async () => {
       const adapter = new RestApiDataAdapter(`rest://{"HOST":"${HTTPBIN}"}`);
-      const result = await adapter.execute(`curl '${HTTPBIN}/bearer' \\\n  -H 'Authorization: Bearer my-secret-token'`);
+      const result = await adapter.execute(
+        `curl '${HTTPBIN}/bearer' \\\n  -H 'Authorization: Bearer my-secret-token'`,
+      );
       expect(result.ok).toBe(true);
       expect(result.meta?.status).toBe(200);
       expect(result.meta?.responseBodyParsed?.authenticated).toBe(true);
@@ -381,7 +395,9 @@ describe("RestApiDataAdapter integration (httpbin.org)", () => {
   describeHttpbin("custom response headers", () => {
     it("returns server-set response headers", async () => {
       const adapter = new RestApiDataAdapter(`rest://{"HOST":"${HTTPBIN}"}`);
-      const result = await adapter.execute(`curl '${HTTPBIN}/response-headers?X-Custom-Response=hello&X-Another=world'`);
+      const result = await adapter.execute(
+        `curl '${HTTPBIN}/response-headers?X-Custom-Response=hello&X-Another=world'`,
+      );
       expect(result.ok).toBe(true);
       const headers = result.meta?.responseHeaders || {};
       // httpbin returns the custom headers (case may vary with HTTP/2)
@@ -405,7 +421,9 @@ describe("RestApiDataAdapter integration (httpbin.org)", () => {
 
     it("handles URL-encoded query values", async () => {
       const adapter = new RestApiDataAdapter(`rest://{"HOST":"${HTTPBIN}"}`);
-      const result = await adapter.execute(`curl '${HTTPBIN}/get?message=hello%20world&special=%26%3D%3F'`);
+      const result = await adapter.execute(
+        `curl '${HTTPBIN}/get?message=hello%20world&special=%26%3D%3F'`,
+      );
       expect(result.ok).toBe(true);
       expect(result.meta?.responseBodyParsed?.args?.message).toBe("hello world");
       expect(result.meta?.responseBodyParsed?.args?.special).toBe("&=?");
@@ -521,7 +539,9 @@ describe("RestApiDataAdapter integration (httpbin.org)", () => {
     });
 
     it("resolves collection variables", async () => {
-      const adapter = new RestApiDataAdapter(`rest://{"HOST":"${HTTPBIN}","variables":[{"key":"ENDPOINT","value":"get","enabled":true}]}`);
+      const adapter = new RestApiDataAdapter(
+        `rest://{"HOST":"${HTTPBIN}","variables":[{"key":"ENDPOINT","value":"get","enabled":true}]}`,
+      );
       const result = await adapter.execute(`curl '{{HOST}}/{{ENDPOINT}}'`);
       expect(result.ok).toBe(true);
       expect(result.meta?.status).toBe(200);
@@ -537,10 +557,14 @@ describe("RestApiDataAdapter integration (httpbin.org)", () => {
         ],
       });
       const adapter = new RestApiDataAdapter(`rest://${config}`);
-      const result = await adapter.execute(`curl '{{HOST}}/{{PATH}}' \\\n  -H 'Authorization: Bearer {{TOKEN}}'`);
+      const result = await adapter.execute(
+        `curl '{{HOST}}/{{PATH}}' \\\n  -H 'Authorization: Bearer {{TOKEN}}'`,
+      );
       expect(result.ok).toBe(true);
       expect(result.meta?.status).toBe(200);
-      expect(result.meta?.responseBodyParsed?.headers?.Authorization).toBe("Bearer my-bearer-token");
+      expect(result.meta?.responseBodyParsed?.headers?.Authorization).toBe(
+        "Bearer my-bearer-token",
+      );
       await adapter.disconnect();
     });
 
@@ -621,7 +645,9 @@ describe("RestApiDataAdapter integration (httpbin.org)", () => {
 
     it("uploads a file with -F flag", async () => {
       const adapter = new RestApiDataAdapter(`rest://{"HOST":"${HTTPBIN}"}`);
-      const result = await adapter.execute(`curl -X POST '${HTTPBIN}/post' \\\n  -F 'file=@${testFilePath}'`);
+      const result = await adapter.execute(
+        `curl -X POST '${HTTPBIN}/post' \\\n  -F 'file=@${testFilePath}'`,
+      );
       expect(result.ok).toBe(true);
       expect(result.meta?.status).toBe(200);
       expect(result.meta?.responseBodyParsed?.files?.file).toBe("abc\ndef\n");
@@ -642,7 +668,9 @@ describe("RestApiDataAdapter integration (httpbin.org)", () => {
 
     it("sends form fields without file", async () => {
       const adapter = new RestApiDataAdapter(`rest://{"HOST":"${HTTPBIN}"}`);
-      const result = await adapter.execute(`curl -X POST '${HTTPBIN}/post' \\\n  -F 'field1=value1' \\\n  -F 'field2=value2'`);
+      const result = await adapter.execute(
+        `curl -X POST '${HTTPBIN}/post' \\\n  -F 'field1=value1' \\\n  -F 'field2=value2'`,
+      );
       expect(result.ok).toBe(true);
       expect(result.meta?.status).toBe(200);
       expect(result.meta?.responseBodyParsed?.form?.field1).toBe("value1");
@@ -701,7 +729,9 @@ describe("RestApiDataAdapter integration (httpbin.org)", () => {
     });
 
     it("rejects unresolvable HOST domain", async () => {
-      const adapter = new RestApiDataAdapter(`rest://{"HOST":"https://this-domain-definitely-does-not-exist-xyz123.com"}`);
+      const adapter = new RestApiDataAdapter(
+        `rest://{"HOST":"https://this-domain-definitely-does-not-exist-xyz123.com"}`,
+      );
       await expect(adapter.authenticate()).rejects.toThrow("Cannot resolve host");
       await adapter.disconnect();
     });

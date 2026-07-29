@@ -44,7 +44,8 @@ export default class PostgresDataAdapter extends BaseDataAdapter implements IDat
 
     if (database) {
       //@ts-ignore
-      const { scheme, username, password, hosts, options } = BaseDataAdapter.getConnectionParameters(connectionUrl);
+      const { scheme, username, password, hosts, options } =
+        BaseDataAdapter.getConnectionParameters(connectionUrl);
 
       connectionUrl = `${scheme}://`;
       if (username && password) {
@@ -110,7 +111,9 @@ export default class PostgresDataAdapter extends BaseDataAdapter implements IDat
    */
   async getTables(database?: string): Promise<SqluiCore.TableMetaData[]> {
     const client = await this.getClient(database);
-    const result = await client.query(`SELECT tablename FROM pg_tables WHERE schemaname='public' ORDER BY tablename`);
+    const result = await client.query(
+      `SELECT tablename FROM pg_tables WHERE schemaname='public' ORDER BY tablename`,
+    );
 
     return result.rows
       .map((row) => row.tablename)

@@ -88,7 +88,12 @@ export default class MongoDBDataAdapter extends BaseDataAdapter implements IData
     const client = await this.getConnection();
 
     //@ts-ignore
-    const items = await client.db(database).collection(table).find().limit(MAX_ITEM_COUNT_TO_SCAN).toArray();
+    const items = await client
+      .db(database)
+      .collection(table)
+      .find()
+      .limit(MAX_ITEM_COUNT_TO_SCAN)
+      .toArray();
 
     return BaseDataAdapter.inferTypesFromItems(structuredClone(items)).map((column) => ({
       ...column,
@@ -147,7 +152,8 @@ export default class MongoDBDataAdapter extends BaseDataAdapter implements IData
 
       if (rawToUse?.acknowledged === true) {
         // insert or insertOne
-        let affectedRows = rawToUse.insertedCount || rawToUse.deletedCount || rawToUse.modifiedCount;
+        let affectedRows =
+          rawToUse.insertedCount || rawToUse.deletedCount || rawToUse.modifiedCount;
         if (affectedRows === undefined) {
           affectedRows = 1;
         }

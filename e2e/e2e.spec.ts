@@ -80,7 +80,9 @@ async function createSqliteConnection(page: Page): Promise<string> {
 
   await page.getByRole("button", { name: "Save" }).click();
 
-  await expect(page.locator(".ConnectionDescription").filter({ hasText: connName }).first()).toBeVisible({
+  await expect(
+    page.locator(".ConnectionDescription").filter({ hasText: connName }).first(),
+  ).toBeVisible({
     timeout: 15_000,
   });
 
@@ -93,7 +95,10 @@ async function createSqliteConnection(page: Page): Promise<string> {
 async function selectConnectionInQueryBox(page: Page, connectionName: string) {
   const connectionSelect = page.locator("[data-testid='query-connection-select']");
   await expect(connectionSelect).toBeVisible({ timeout: 10_000 });
-  const optionValue = await connectionSelect.locator("option", { hasText: connectionName }).first().getAttribute("value");
+  const optionValue = await connectionSelect
+    .locator("option", { hasText: connectionName })
+    .first()
+    .getAttribute("value");
   await connectionSelect.selectOption(optionValue!);
 }
 
@@ -142,7 +147,9 @@ async function readEditorValue(page: Page): Promise<string> {
 /** Clicks execute and waits for results (SQL queries). */
 async function executeQuery(page: Page) {
   await page.locator("#btnExecuteCommand").click();
-  await expect(page.getByText("Query took", { exact: false }).first()).toBeVisible({ timeout: 30_000 });
+  await expect(page.getByText("Query took", { exact: false }).first()).toBeVisible({
+    timeout: 30_000,
+  });
 }
 
 /** Clicks execute and waits for REST API response (status code like "200 OK"). */
@@ -179,7 +186,9 @@ async function createRestApiConnection(page: Page): Promise<string> {
 
   await page.getByRole("button", { name: "Save" }).click();
 
-  await expect(page.locator(".ConnectionDescription").filter({ hasText: connName }).first()).toBeVisible({
+  await expect(
+    page.locator(".ConnectionDescription").filter({ hasText: connName }).first(),
+  ).toBeVisible({
     timeout: 15_000,
   });
 
@@ -201,7 +210,10 @@ async function openContextMenu(page: Page, rowLocator: ReturnType<Page["locator"
  * Deletes a connection via context menu and confirms the dialog.
  */
 async function deleteConnection(page: Page, connName: string) {
-  const connectionRow = page.locator(".ConnectionDescription").filter({ hasText: connName }).first();
+  const connectionRow = page
+    .locator(".ConnectionDescription")
+    .filter({ hasText: connName })
+    .first();
   await openContextMenu(page, connectionRow);
 
   const deleteItem = page.getByRole("menuitem", { name: "Delete" });
@@ -263,7 +275,10 @@ test.describe("Phase 3: Query Execution", () => {
     await selectOrCreateSession(page);
     const connName = await createSqliteConnection(page);
     await selectConnectionInQueryBox(page, connName);
-    await typeInEditor(page, "CREATE TABLE e2e_users (id INTEGER PRIMARY KEY, name TEXT, email TEXT);");
+    await typeInEditor(
+      page,
+      "CREATE TABLE e2e_users (id INTEGER PRIMARY KEY, name TEXT, email TEXT);",
+    );
     await executeQuery(page);
   });
 
@@ -273,7 +288,10 @@ test.describe("Phase 3: Query Execution", () => {
     const connName = await createSqliteConnection(page);
     await selectConnectionInQueryBox(page, connName);
 
-    await typeInEditor(page, "CREATE TABLE e2e_items (id INTEGER PRIMARY KEY, title TEXT, qty INTEGER);");
+    await typeInEditor(
+      page,
+      "CREATE TABLE e2e_items (id INTEGER PRIMARY KEY, title TEXT, qty INTEGER);",
+    );
     await executeQuery(page);
 
     await typeInEditor(
@@ -296,9 +314,15 @@ test.describe("Phase 3: Query Execution", () => {
     const connName = await createSqliteConnection(page);
     await selectConnectionInQueryBox(page, connName);
 
-    await typeInEditor(page, "CREATE TABLE e2e_products (id INTEGER PRIMARY KEY, name TEXT, price REAL);");
+    await typeInEditor(
+      page,
+      "CREATE TABLE e2e_products (id INTEGER PRIMARY KEY, name TEXT, price REAL);",
+    );
     await executeQuery(page);
-    await typeInEditor(page, `INSERT INTO e2e_products (name, price) VALUES ('Alpha', 9.99), ('Beta', 19.99), ('Gamma', 29.99);`);
+    await typeInEditor(
+      page,
+      `INSERT INTO e2e_products (name, price) VALUES ('Alpha', 9.99), ('Beta', 19.99), ('Gamma', 29.99);`,
+    );
     await executeQuery(page);
 
     await typeInEditor(page, "SELECT * FROM e2e_products WHERE price > 15;");
@@ -346,7 +370,9 @@ test.describe("Phase 4: Query Tabs", () => {
   });
 
   test("should rename a query tab", async ({ page }) => {
-    const firstTab = page.locator("#QueryBoxTabs .Tab__Headers [role='tab']:not(:last-child)").first();
+    const firstTab = page
+      .locator("#QueryBoxTabs .Tab__Headers [role='tab']:not(:last-child)")
+      .first();
     await firstTab.click({ button: "right" });
 
     // Tab context menu uses DropdownMenu with MenuItem components
@@ -360,7 +386,9 @@ test.describe("Phase 4: Query Tabs", () => {
     await dialogInput.fill(newName);
     await page.getByRole("button", { name: "Save", exact: true }).click();
 
-    await expect(page.locator("#QueryBoxTabs .Tab__Headers [role='tab']").filter({ hasText: newName })).toBeVisible({
+    await expect(
+      page.locator("#QueryBoxTabs .Tab__Headers [role='tab']").filter({ hasText: newName }),
+    ).toBeVisible({
       timeout: 5_000,
     });
   });
@@ -471,7 +499,10 @@ test.describe("Phase 5: Edit Connection", () => {
     await selectOrCreateSession(page);
     const connName = await createSqliteConnection(page);
 
-    const connectionRow = page.locator(".ConnectionDescription").filter({ hasText: connName }).first();
+    const connectionRow = page
+      .locator(".ConnectionDescription")
+      .filter({ hasText: connName })
+      .first();
     await openContextMenu(page, connectionRow);
 
     const editItem = page.getByRole("menuitem", { name: /^Edit$/ });
@@ -494,7 +525,9 @@ test.describe("Phase 5: Edit Connection", () => {
 
     await page.getByRole("button", { name: "Save" }).click();
 
-    await expect(page.locator(".ConnectionDescription").filter({ hasText: newName })).toBeVisible({ timeout: 15_000 });
+    await expect(page.locator(".ConnectionDescription").filter({ hasText: newName })).toBeVisible({
+      timeout: 15_000,
+    });
   });
 });
 
@@ -514,7 +547,10 @@ test.describe("Phase 6: REST API", () => {
     const connName = await createRestApiConnection(page);
 
     // Right-click connection to create a new folder
-    const connectionRow = page.locator(".ConnectionDescription").filter({ hasText: connName }).first();
+    const connectionRow = page
+      .locator(".ConnectionDescription")
+      .filter({ hasText: connName })
+      .first();
     await openContextMenu(page, connectionRow);
     await page.getByRole("menuitem", { name: "New Folder" }).click();
 
@@ -525,7 +561,10 @@ test.describe("Phase 6: REST API", () => {
     await page.getByRole("button", { name: "Save Changes" }).click();
 
     // Folder should appear in the tree
-    const folderRow = page.locator(".DatabaseDescription").filter({ hasText: "E2E Folder" }).first();
+    const folderRow = page
+      .locator(".DatabaseDescription")
+      .filter({ hasText: "E2E Folder" })
+      .first();
     await expect(folderRow).toBeVisible({ timeout: 15_000 });
 
     // Right-click folder to add a blank request
@@ -533,7 +572,9 @@ test.describe("Phase 6: REST API", () => {
     await page.getByRole("menuitem", { name: "New Blank Request" }).click();
 
     // The request "New Request" should appear in the tree under the folder
-    await expect(page.locator(".TableDescription").filter({ hasText: "New Request" }).first()).toBeVisible({
+    await expect(
+      page.locator(".TableDescription").filter({ hasText: "New Request" }).first(),
+    ).toBeVisible({
       timeout: 10_000,
     });
   });
@@ -563,7 +604,10 @@ test.describe("Phase 6: REST API", () => {
     await page.waitForTimeout(300);
     await selectConnectionInQueryBox(page, connName);
 
-    await typeInEditor(page, `fetch("https://httpbin.org/get", {\n  "method": "GET",\n  "headers": { "accept": "application/json" }\n});`);
+    await typeInEditor(
+      page,
+      `fetch("https://httpbin.org/get", {\n  "method": "GET",\n  "headers": { "accept": "application/json" }\n});`,
+    );
     await executeRestQuery(page);
 
     await expect(page.getByText("200").first()).toBeVisible({ timeout: 10_000 });
@@ -575,7 +619,10 @@ test.describe("Phase 6: REST API", () => {
     const connName = await createRestApiConnection(page);
 
     // Create folder
-    const connectionRow = page.locator(".ConnectionDescription").filter({ hasText: connName }).first();
+    const connectionRow = page
+      .locator(".ConnectionDescription")
+      .filter({ hasText: connName })
+      .first();
     await openContextMenu(page, connectionRow);
     await page.getByRole("menuitem", { name: "New Folder" }).click();
     const folderInput = page.locator("[role='dialog'] input, .MuiDialog-root input").last();
@@ -584,7 +631,10 @@ test.describe("Phase 6: REST API", () => {
     await page.getByRole("button", { name: "Save Changes" }).click();
 
     // Create blank request in folder
-    const folderRow = page.locator(".DatabaseDescription").filter({ hasText: "Rename Test Folder" }).first();
+    const folderRow = page
+      .locator(".DatabaseDescription")
+      .filter({ hasText: "Rename Test Folder" })
+      .first();
     await expect(folderRow).toBeVisible({ timeout: 10_000 });
     await openContextMenu(page, folderRow);
     await page.getByRole("menuitem", { name: "New Blank Request" }).click();
@@ -601,12 +651,17 @@ test.describe("Phase 6: REST API", () => {
     await renameInput.fill("Renamed Request");
     await page.getByRole("button", { name: "Save Changes" }).click();
 
-    await expect(page.locator(".TableDescription").filter({ hasText: "Renamed Request" }).first()).toBeVisible({
+    await expect(
+      page.locator(".TableDescription").filter({ hasText: "Renamed Request" }).first(),
+    ).toBeVisible({
       timeout: 10_000,
     });
 
     // Delete the request via "Delete Request" menu item
-    const renamedRow = page.locator(".TableDescription").filter({ hasText: "Renamed Request" }).first();
+    const renamedRow = page
+      .locator(".TableDescription")
+      .filter({ hasText: "Renamed Request" })
+      .first();
     await openContextMenu(page, renamedRow);
     await page.getByRole("menuitem", { name: "Delete Request" }).click();
 
@@ -624,7 +679,10 @@ test.describe("Phase 6: REST API", () => {
     const connName = await createRestApiConnection(page);
 
     // Create a folder
-    const connectionRow = page.locator(".ConnectionDescription").filter({ hasText: connName }).first();
+    const connectionRow = page
+      .locator(".ConnectionDescription")
+      .filter({ hasText: connName })
+      .first();
     await openContextMenu(page, connectionRow);
     await page.getByRole("menuitem", { name: "New Folder" }).click();
     const folderInput = page.locator("[role='dialog'] input, .MuiDialog-root input").last();
@@ -632,7 +690,10 @@ test.describe("Phase 6: REST API", () => {
     await folderInput.fill("Delete Test Folder");
     await page.getByRole("button", { name: "Save Changes" }).click();
 
-    const folderRow = page.locator(".DatabaseDescription").filter({ hasText: "Delete Test Folder" }).first();
+    const folderRow = page
+      .locator(".DatabaseDescription")
+      .filter({ hasText: "Delete Test Folder" })
+      .first();
     await expect(folderRow).toBeVisible({ timeout: 10_000 });
 
     // Delete the folder via "Delete Folder" menu item
@@ -659,13 +720,17 @@ test.describe("Phase 7: Delete Connection", () => {
     const connName = await createSqliteConnection(page);
 
     // Verify connection exists
-    await expect(page.locator(".ConnectionDescription").filter({ hasText: connName }).first()).toBeVisible();
+    await expect(
+      page.locator(".ConnectionDescription").filter({ hasText: connName }).first(),
+    ).toBeVisible();
 
     // Delete it
     await deleteConnection(page, connName);
 
     // Should no longer be in the sidebar
-    await expect(page.locator(".ConnectionDescription").filter({ hasText: connName })).not.toBeVisible({
+    await expect(
+      page.locator(".ConnectionDescription").filter({ hasText: connName }),
+    ).not.toBeVisible({
       timeout: 5_000,
     });
   });

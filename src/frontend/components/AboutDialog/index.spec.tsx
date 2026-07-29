@@ -75,7 +75,9 @@ describe("useShowAboutDialog", () => {
   });
 
   test("handles newer remote version (update available)", async () => {
-    (global.fetch as any).mockResolvedValueOnce({ json: () => Promise.resolve({ tag_name: "v9.9.9" }) });
+    (global.fetch as any).mockResolvedValueOnce({
+      json: () => Promise.resolve({ tag_name: "v9.9.9" }),
+    });
     const { container } = render(<HostComp />);
     const btn = container.querySelector("button")!;
     btn.click();

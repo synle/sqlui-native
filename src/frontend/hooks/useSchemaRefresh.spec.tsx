@@ -22,7 +22,9 @@ import {
 } from "src/frontend/hooks/useSchemaRefresh";
 
 function wrapper({ children }: { children: React.ReactNode }) {
-  const qc = new QueryClient({ defaultOptions: { queries: { retry: false }, mutations: { retry: false } } });
+  const qc = new QueryClient({
+    defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
+  });
   return <QueryClientProvider client={qc}>{children}</QueryClientProvider>;
 }
 

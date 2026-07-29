@@ -140,7 +140,12 @@ describe("PersistentStorageMigration", () => {
 
     test("returns the stored version when DB file exists", () => {
       simulateDbFileExists();
-      const settingStorage = new PersistentStorageSqlite<any>("setting", "settings", "settings", "settings");
+      const settingStorage = new PersistentStorageSqlite<any>(
+        "setting",
+        "settings",
+        "settings",
+        "settings",
+      );
       settingStorage.add({ id: STORAGE_VERSION_ID, version: 1 });
       expect(getStorageVersion()).toBe(1);
     });
@@ -149,7 +154,12 @@ describe("PersistentStorageMigration", () => {
   describe("runMigration", () => {
     test("no-ops when DB exists and already at current version", () => {
       simulateDbFileExists();
-      const settingStorage = new PersistentStorageSqlite<any>("setting", "settings", "settings", "settings");
+      const settingStorage = new PersistentStorageSqlite<any>(
+        "setting",
+        "settings",
+        "settings",
+        "settings",
+      );
       settingStorage.add({ id: STORAGE_VERSION_ID, version: CURRENT_STORAGE_VERSION });
 
       runMigration();
@@ -182,9 +192,16 @@ describe("PersistentStorageMigration", () => {
 
     test("migrates connection files to connection table", () => {
       const connectionData = {
-        "connection.123.456": { id: "connection.123.456", name: "My DB", connection: "mysql://localhost" },
+        "connection.123.456": {
+          id: "connection.123.456",
+          name: "My DB",
+          connection: "mysql://localhost",
+        },
       };
-      mockFiles.set(`${getStorageDir()}/session-abc.connection.json`, JSON.stringify(connectionData));
+      mockFiles.set(
+        `${getStorageDir()}/session-abc.connection.json`,
+        JSON.stringify(connectionData),
+      );
 
       runMigration();
 
@@ -216,7 +233,11 @@ describe("PersistentStorageMigration", () => {
 
       runMigration();
 
-      const folderStorage = new PersistentStorageSqlite<any>("folder_item", "migration", "migration");
+      const folderStorage = new PersistentStorageSqlite<any>(
+        "folder_item",
+        "migration",
+        "migration",
+      );
       const entry = folderStorage.get("bookmark.1");
       expect(entry).toBeDefined();
       expect(entry.type).toBe("Connection");
@@ -230,7 +251,11 @@ describe("PersistentStorageMigration", () => {
 
       runMigration();
 
-      const cacheStorage = new PersistentStorageSqlite<any>("cached_database", "migration", "migration");
+      const cacheStorage = new PersistentStorageSqlite<any>(
+        "cached_database",
+        "migration",
+        "migration",
+      );
       const entry = cacheStorage.get("conn-1");
       expect(entry).toBeDefined();
       expect(entry.timestamp).toBe(123);
@@ -268,9 +293,18 @@ describe("PersistentStorageMigration", () => {
     });
 
     test("handles multiple files across different tables", () => {
-      mockFiles.set(`${getStorageDir()}/session-a.connection.json`, JSON.stringify({ c1: { id: "c1", name: "Conn1" } }));
-      mockFiles.set(`${getStorageDir()}/session-a.query.json`, JSON.stringify({ q1: { id: "q1", sql: "SELECT 1" } }));
-      mockFiles.set(`${getStorageDir()}/settings.json`, JSON.stringify({ "app-settings": { id: "app-settings", darkMode: "light" } }));
+      mockFiles.set(
+        `${getStorageDir()}/session-a.connection.json`,
+        JSON.stringify({ c1: { id: "c1", name: "Conn1" } }),
+      );
+      mockFiles.set(
+        `${getStorageDir()}/session-a.query.json`,
+        JSON.stringify({ q1: { id: "q1", sql: "SELECT 1" } }),
+      );
+      mockFiles.set(
+        `${getStorageDir()}/settings.json`,
+        JSON.stringify({ "app-settings": { id: "app-settings", darkMode: "light" } }),
+      );
 
       runMigration();
 

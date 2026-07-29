@@ -79,7 +79,9 @@ export class PersistentStorageSqlite<T extends StorageEntry> implements IPersist
   /** Lazily resolved storageLocation (kept for IPersistentStorage interface compat). */
   get storageLocation(): string {
     if (this._storageLocation === undefined) {
-      const basename = this.storageBasename ? `${this.storageBasename}.json` : `${this.instanceId}.${this.name}.json`;
+      const basename = this.storageBasename
+        ? `${this.storageBasename}.json`
+        : `${this.instanceId}.${this.name}.json`;
       this._storageLocation = path.join(getStorageDir(), basename);
     }
     return this._storageLocation;
@@ -144,7 +146,10 @@ export class PersistentStorageSqlite<T extends StorageEntry> implements IPersist
     // Strip id from data — it lives only in the id column
     delete obj.id;
 
-    db.prepare(`INSERT OR REPLACE INTO "${this.table}" (id, data) VALUES (?, ?)`).run(newId, JSON.stringify(obj));
+    db.prepare(`INSERT OR REPLACE INTO "${this.table}" (id, data) VALUES (?, ?)`).run(
+      newId,
+      JSON.stringify(obj),
+    );
 
     return { id: newId, ...obj } as T;
   }
@@ -163,7 +168,10 @@ export class PersistentStorageSqlite<T extends StorageEntry> implements IPersist
     // Strip id from data
     const { id, ...data } = merged;
 
-    db.prepare(`INSERT OR REPLACE INTO "${this.table}" (id, data) VALUES (?, ?)`).run(entry.id, JSON.stringify(data));
+    db.prepare(`INSERT OR REPLACE INTO "${this.table}" (id, data) VALUES (?, ?)`).run(
+      entry.id,
+      JSON.stringify(data),
+    );
 
     return { id: entry.id, ...data } as T;
   }
@@ -194,7 +202,10 @@ export class PersistentStorageSqlite<T extends StorageEntry> implements IPersist
   list(): T[] {
     this.ensure();
     const db = PersistentStorageSqlite.getDb();
-    const rows = db.prepare(`SELECT id, data FROM "${this.table}"`).all() as { id: string; data: string }[];
+    const rows = db.prepare(`SELECT id, data FROM "${this.table}"`).all() as {
+      id: string;
+      data: string;
+    }[];
     return rows.map((row) => ({ id: row.id, ...JSON.parse(row.data) }) as T);
   }
 
@@ -202,7 +213,9 @@ export class PersistentStorageSqlite<T extends StorageEntry> implements IPersist
   get(id: string): T {
     this.ensure();
     const db = PersistentStorageSqlite.getDb();
-    const row = db.prepare(`SELECT id, data FROM "${this.table}" WHERE id = ?`).get(id) as { id: string; data: string } | undefined;
+    const row = db.prepare(`SELECT id, data FROM "${this.table}" WHERE id = ?`).get(id) as
+      | { id: string; data: string }
+      | undefined;
     if (!row) return undefined as any;
     return { id: row.id, ...JSON.parse(row.data) } as T;
   }

@@ -32,7 +32,9 @@ function DataTableColumnSettingsContent({ table }: DataTableColumnSettingsProps)
     const currentOrder = table.getState().columnOrder;
     return currentOrder.length > 0 ? currentOrder : defaultOrder;
   });
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(() => table.getState().columnVisibility);
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
+    () => table.getState().columnVisibility,
+  );
   const [dragIdx, setDragIdx] = useState<number | null>(null);
 
   const onToggle = (columnId: string) => {
@@ -119,7 +121,8 @@ function DataTableColumnSettingsContent({ table }: DataTableColumnSettingsProps)
         {columnOrder.map((columnId, idx) => {
           const column = allColumns.find((c) => c.id === columnId);
           if (!column) return null;
-          const rawHeader = typeof column.columnDef.header === "string" ? column.columnDef.header : "";
+          const rawHeader =
+            typeof column.columnDef.header === "string" ? column.columnDef.header : "";
           const header = rawHeader || column.id;
           return (
             <ListItem
@@ -133,7 +136,12 @@ function DataTableColumnSettingsContent({ table }: DataTableColumnSettingsProps)
               <ListItemIcon sx={{ minWidth: 32 }}>
                 <DragIndicatorIcon fontSize="small" />
               </ListItemIcon>
-              <Checkbox edge="start" checked={isVisible(columnId)} onChange={() => onToggle(columnId)} size="small" />
+              <Checkbox
+                edge="start"
+                checked={isVisible(columnId)}
+                onChange={() => onToggle(columnId)}
+                size="small"
+              />
               <ListItemText primary={header} />
             </ListItem>
           );

@@ -54,7 +54,11 @@ beforeEach(() => {
 
 describe("QueryBoxTabs", () => {
   test("loading state shows Loading...", () => {
-    useConnectionQueriesMock.mockReturnValue({ queries: undefined, isLoading: true, onSaveQueries: vi.fn() });
+    useConnectionQueriesMock.mockReturnValue({
+      queries: undefined,
+      isLoading: true,
+      onSaveQueries: vi.fn(),
+    });
     const { container } = render(<QueryBoxTabs />);
     expect(container.textContent).toContain("Loading");
   });
@@ -62,7 +66,11 @@ describe("QueryBoxTabs", () => {
   test("empty queries calls selectCommand for /query/new and re-renders empty state", () => {
     const selectCommand = vi.fn();
     useCommandsMock.mockReturnValue({ selectCommand });
-    useConnectionQueriesMock.mockReturnValue({ queries: [], isLoading: false, onSaveQueries: vi.fn() });
+    useConnectionQueriesMock.mockReturnValue({
+      queries: [],
+      isLoading: false,
+      onSaveQueries: vi.fn(),
+    });
     const { container } = render(<QueryBoxTabs />);
     // First render triggers useEffect to add a query; UI still shows empty alert
     expect(container.textContent).toContain("No Query Yet");
@@ -95,7 +103,11 @@ describe("QueryBoxTabs", () => {
       onSaveQueries: vi.fn(),
     });
     const { getByTestId } = render(<QueryBoxTabs />);
-    expect(JSON.parse(getByTestId("tab-keys").textContent || "null")).toEqual(["q1", "q2", "add-query"]);
+    expect(JSON.parse(getByTestId("tab-keys").textContent || "null")).toEqual([
+      "q1",
+      "q2",
+      "add-query",
+    ]);
   });
 
   test("auto-save flip from false to true triggers onSaveQueries", () => {

@@ -61,7 +61,9 @@ describe("SessionSelectionForm", () => {
     vi.resetModules();
     const selectSessionMock = vi.fn().mockResolvedValue(undefined);
     const dismissMock = vi.fn();
-    vi.doMock("src/frontend/components/MissionControl", () => ({ useCommands: () => ({ selectCommand: vi.fn() }) }));
+    vi.doMock("src/frontend/components/MissionControl", () => ({
+      useCommands: () => ({ selectCommand: vi.fn() }),
+    }));
     vi.doMock("src/frontend/hooks/useSession", () => ({
       useGetSessions: () => ({
         data: [
@@ -91,14 +93,18 @@ describe("SessionSelectionForm", () => {
     expect(dismissMock).toHaveBeenCalled();
     expect(selectSessionMock).toHaveBeenCalledWith("s2");
     // dismiss must run before / not after — assert order via call order tracking
-    expect(dismissMock.mock.invocationCallOrder[0]).toBeLessThan(selectSessionMock.mock.invocationCallOrder[0]);
+    expect(dismissMock.mock.invocationCallOrder[0]).toBeLessThan(
+      selectSessionMock.mock.invocationCallOrder[0],
+    );
   });
 });
 
 describe("SessionSelectionForm — loading state", () => {
   test("shows CircularProgress when sessions are loading", async () => {
     vi.resetModules();
-    vi.doMock("src/frontend/components/MissionControl", () => ({ useCommands: () => ({ selectCommand: vi.fn() }) }));
+    vi.doMock("src/frontend/components/MissionControl", () => ({
+      useCommands: () => ({ selectCommand: vi.fn() }),
+    }));
     vi.doMock("src/frontend/hooks/useSession", () => ({
       useGetSessions: () => ({ data: undefined, isLoading: true }),
       useGetCurrentSession: () => ({ data: undefined }),

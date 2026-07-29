@@ -84,7 +84,8 @@ export default function LegacyDataTable(props: DataTableProps): React.JSX.Elemen
   // figure out the width
   let tableCellWidthToUse = tableCellWidth;
 
-  const totalWidth = (document.querySelector(".LayoutTwoColumns__RightPane") as HTMLElement)?.offsetWidth - 20 || 0;
+  const totalWidth =
+    (document.querySelector(".LayoutTwoColumns__RightPane") as HTMLElement)?.offsetWidth - 20 || 0;
   if (columns.length * tableCellWidth < totalWidth) {
     tableCellWidthToUse = Math.floor(totalWidth / columns.length);
   }
@@ -133,7 +134,8 @@ export default function LegacyDataTable(props: DataTableProps): React.JSX.Elemen
 
   const targetRowContextOptions = (props.rowContextOptions || []).map((rowContextOption) => ({
     ...rowContextOption,
-    onClick: () => rowContextOption.onClick && rowContextOption.onClick(data[openContextMenuRowIdx]),
+    onClick: () =>
+      rowContextOption.onClick && rowContextOption.onClick(data[openContextMenuRowIdx]),
   }));
 
   const onShowExpandedData = async () => {
@@ -152,7 +154,12 @@ export default function LegacyDataTable(props: DataTableProps): React.JSX.Elemen
     <div className={isCompact ? "DataTable--compact" : ""}>
       <Box sx={{ display: "flex", gap: 2 }}>
         <Box sx={{ flexGrow: 1 }}>
-          {props.searchInputId && <GlobalFilter id={props.searchInputId} onChange={(value: string) => table.setGlobalFilter(value)} />}
+          {props.searchInputId && (
+            <GlobalFilter
+              id={props.searchInputId}
+              onChange={(value: string) => table.setGlobalFilter(value)}
+            />
+          )}
         </Box>
         <DataTableColumnSettings table={table} />
         <Tooltip title="Open this table fullscreen in another window">
@@ -251,7 +258,11 @@ export default function LegacyDataTable(props: DataTableProps): React.JSX.Elemen
             </StyledDivContentRow>
           );
         })}
-        {rows.length === 0 && <Box sx={{ paddingInline: 2, paddingBlock: 2 }}>There is no data in the query with matching filters.</Box>}
+        {rows.length === 0 && (
+          <Box sx={{ paddingInline: 2, paddingBlock: 2 }}>
+            There is no data in the query with matching filters.
+          </Box>
+        )}
       </Box>
     </div>
   );

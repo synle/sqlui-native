@@ -112,7 +112,10 @@ describe("All adapters - database actions", () => {
 describe("All adapters - connection actions", () => {
   for (const input of allTableInputs) {
     test(`getConnectionActions for ${input.dialect}`, () => {
-      const actions = getConnectionActions({ dialect: input.dialect, connectionId: input.connectionId });
+      const actions = getConnectionActions({
+        dialect: input.dialect,
+        connectionId: input.connectionId,
+      });
       expect(Array.isArray(actions)).toBe(true);
     });
   }
@@ -204,7 +207,11 @@ describe("CosmosDB scripts - direct function calls", () => {
 
 describe("Azure Table Storage scripts - direct function calls", () => {
   test("getInsert with values", () => {
-    const r = aztableScripts.getInsert(aztableInput, { partitionKey: "pk", rowKey: "rk", name: "Acme" });
+    const r = aztableScripts.getInsert(aztableInput, {
+      partitionKey: "pk",
+      rowKey: "rk",
+      name: "Acme",
+    });
     expect(r?.query).toContain("Acme");
   });
   test("getUpdateWithValues", () => {
@@ -231,14 +238,19 @@ describe("Code snippets through DataScriptFactory", () => {
     { dialect: "cassandra" as any, connection: "cassandra://user:pass@localhost:9042" },
     { dialect: "mongodb" as any, connection: "mongodb://localhost:27017" },
     { dialect: "redis" as any, connection: "redis://localhost:6379" },
-    { dialect: "cosmosdb" as any, connection: "cosmosdb://AccountEndpoint=https://host:443;AccountKey=key" },
+    {
+      dialect: "cosmosdb" as any,
+      connection: "cosmosdb://AccountEndpoint=https://host:443;AccountKey=key",
+    },
     {
       dialect: "aztable" as any,
-      connection: "aztable://DefaultEndpointsProtocol=https;AccountName=acct;AccountKey=key;EndpointSuffix=core.windows.net",
+      connection:
+        "aztable://DefaultEndpointsProtocol=https;AccountName=acct;AccountKey=key;EndpointSuffix=core.windows.net",
     },
     {
       dialect: "sfdc" as any,
-      connection: 'sfdc://{"username":"u","password":"p","securityToken":"t","loginUrl":"https://login.salesforce.com"}',
+      connection:
+        'sfdc://{"username":"u","password":"p","securityToken":"t","loginUrl":"https://login.salesforce.com"}',
     },
     {
       dialect: "rest" as any,
@@ -262,7 +274,12 @@ describe("Code snippets through DataScriptFactory", () => {
   }
 
   describe("REST API code snippets generate real code from curl", () => {
-    const restConnection = { dialect: "rest" as any, connection: 'rest://{"HOST":"https://httpbin.org"}', id: "c1", name: "Test" };
+    const restConnection = {
+      dialect: "rest" as any,
+      connection: 'rest://{"HOST":"https://httpbin.org"}',
+      id: "c1",
+      name: "Test",
+    };
     const curlQuery = {
       sql: "curl -X POST 'https://httpbin.org/post' -H 'Content-Type: application/json' -d '{\"key\":\"value\"}'",
       databaseId: "db1",

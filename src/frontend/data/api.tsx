@@ -175,7 +175,9 @@ export class ProxyApi {
    * @param databaseId - The database ID.
    */
   static getConnectionTables(connectionId: string, databaseId: string) {
-    return _fetch<SqluiCore.TableMetaData[]>(`/api/connection/${connectionId}/database/${databaseId}/tables`);
+    return _fetch<SqluiCore.TableMetaData[]>(
+      `/api/connection/${connectionId}/database/${databaseId}/tables`,
+    );
   }
 
   /**
@@ -187,7 +189,9 @@ export class ProxyApi {
   static async getConnectionColumns(connectionId: string, databaseId: string, tableId: string) {
     const release = await columnFetchThrottle.acquire(connectionId);
     try {
-      return await _fetch<SqluiCore.ColumnMetaData[]>(`/api/connection/${connectionId}/database/${databaseId}/table/${tableId}/columns`);
+      return await _fetch<SqluiCore.ColumnMetaData[]>(
+        `/api/connection/${connectionId}/database/${databaseId}/table/${tableId}/columns`,
+      );
     } finally {
       release();
     }
@@ -292,9 +296,12 @@ export class ProxyApi {
    * @param tableId - The table name to refresh.
    */
   static refreshTable(connectionId: string, databaseId: string, tableId: string) {
-    return _fetch(`/api/connection/${connectionId}/database/${databaseId}/table/${tableId}/refresh`, {
-      method: "post",
-    });
+    return _fetch(
+      `/api/connection/${connectionId}/database/${databaseId}/table/${tableId}/refresh`,
+      {
+        method: "post",
+      },
+    );
   }
 
   // =========================================================================
@@ -323,7 +330,9 @@ export class ProxyApi {
    * @param managedDatabaseId - The database name/ID.
    */
   static getManagedDatabase(connectionId: string, managedDatabaseId: string) {
-    return _fetch<SqluiCore.ManagedDatabase>(`/api/connection/${connectionId}/managedDatabase/${encodeURIComponent(managedDatabaseId)}`);
+    return _fetch<SqluiCore.ManagedDatabase>(
+      `/api/connection/${connectionId}/managedDatabase/${encodeURIComponent(managedDatabaseId)}`,
+    );
   }
 
   /**
@@ -344,11 +353,18 @@ export class ProxyApi {
    * @param managedDatabaseId - The current database name/ID.
    * @param body - The new name.
    */
-  static renameManagedDatabase(connectionId: string, managedDatabaseId: string, body: { name: string }) {
-    return _fetch<SqluiCore.ManagedDatabase>(`/api/connection/${connectionId}/managedDatabase/${encodeURIComponent(managedDatabaseId)}`, {
-      method: "put",
-      body: JSON.stringify(body),
-    });
+  static renameManagedDatabase(
+    connectionId: string,
+    managedDatabaseId: string,
+    body: { name: string },
+  ) {
+    return _fetch<SqluiCore.ManagedDatabase>(
+      `/api/connection/${connectionId}/managedDatabase/${encodeURIComponent(managedDatabaseId)}`,
+      {
+        method: "put",
+        body: JSON.stringify(body),
+      },
+    );
   }
 
   /**
@@ -357,11 +373,18 @@ export class ProxyApi {
    * @param managedDatabaseId - The database name/ID.
    * @param body - The properties to merge.
    */
-  static updateManagedDatabase(connectionId: string, managedDatabaseId: string, body: { props: SqluiCore.ManagedProperties }) {
-    return _fetch<SqluiCore.ManagedDatabase>(`/api/connection/${connectionId}/managedDatabase/${encodeURIComponent(managedDatabaseId)}`, {
-      method: "put",
-      body: JSON.stringify(body),
-    });
+  static updateManagedDatabase(
+    connectionId: string,
+    managedDatabaseId: string,
+    body: { props: SqluiCore.ManagedProperties },
+  ) {
+    return _fetch<SqluiCore.ManagedDatabase>(
+      `/api/connection/${connectionId}/managedDatabase/${encodeURIComponent(managedDatabaseId)}`,
+      {
+        method: "put",
+        body: JSON.stringify(body),
+      },
+    );
   }
 
   /**
@@ -370,9 +393,12 @@ export class ProxyApi {
    * @param managedDatabaseId - The database name/ID to delete.
    */
   static deleteManagedDatabase(connectionId: string, managedDatabaseId: string) {
-    return _fetch(`/api/connection/${connectionId}/managedDatabase/${encodeURIComponent(managedDatabaseId)}`, {
-      method: "delete",
-    });
+    return _fetch(
+      `/api/connection/${connectionId}/managedDatabase/${encodeURIComponent(managedDatabaseId)}`,
+      {
+        method: "delete",
+      },
+    );
   }
 
   /**
@@ -382,10 +408,13 @@ export class ProxyApi {
    * @param body - The table name.
    */
   static createManagedTable(connectionId: string, databaseId: string, body: { name: string }) {
-    return _fetch<SqluiCore.ManagedTable>(`/api/connection/${connectionId}/database/${encodeURIComponent(databaseId)}/managedTable`, {
-      method: "post",
-      body: JSON.stringify(body),
-    });
+    return _fetch<SqluiCore.ManagedTable>(
+      `/api/connection/${connectionId}/database/${encodeURIComponent(databaseId)}/managedTable`,
+      {
+        method: "post",
+        body: JSON.stringify(body),
+      },
+    );
   }
 
   /**
@@ -640,7 +669,10 @@ export class ProxyApi {
    * Creates a new data snapshot.
    * @param dataSnapshot - The snapshot data with required values and description.
    */
-  static addDataSnapshot(dataSnapshot: Partial<SqluiCore.DataSnapshot> & Required<Pick<SqluiCore.DataSnapshot, "values" | "description">>) {
+  static addDataSnapshot(
+    dataSnapshot: Partial<SqluiCore.DataSnapshot> &
+      Required<Pick<SqluiCore.DataSnapshot, "values" | "description">>,
+  ) {
     return _fetch<SqluiCore.DataSnapshot>(`/api/dataSnapshot`, {
       method: "post",
       body: JSON.stringify(dataSnapshot),
@@ -663,7 +695,9 @@ export class ProxyApi {
    * @returns Array of schema search results.
    */
   static searchSchema(query: string) {
-    return _fetch<SqluiCore.SchemaSearchResult[]>(`/api/schema/search?q=${encodeURIComponent(query)}`);
+    return _fetch<SqluiCore.SchemaSearchResult[]>(
+      `/api/schema/search?q=${encodeURIComponent(query)}`,
+    );
   }
 
   /** Fetches all query version history entries as folder items. */
@@ -675,7 +709,12 @@ export class ProxyApi {
    * Adds a new query version history entry as a folder item.
    * @param entry - The entry data to add.
    */
-  static addQueryVersionHistory(entry: { connectionId: string; sql: string; auditType: SqluiCore.QueryVersionAuditType; name?: string }) {
+  static addQueryVersionHistory(entry: {
+    connectionId: string;
+    sql: string;
+    auditType: SqluiCore.QueryVersionAuditType;
+    name?: string;
+  }) {
     return _fetch<SqluiCore.FolderItem>(`/api/queryVersionHistory`, {
       method: "post",
       body: JSON.stringify(entry),
