@@ -154,7 +154,7 @@ export function useFlatTreeRows() {
       queryKey: queryKeys.columns.list(connectionId, databaseId, tableId),
       queryFn: () => dataApi.getConnectionColumns(connectionId, databaseId, tableId),
       staleTime: 5 * 60 * 1000,
-      cacheTime: 10 * 60 * 1000,
+      gcTime: 10 * 60 * 1000,
     })),
   });
 
