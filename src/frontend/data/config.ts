@@ -22,7 +22,12 @@ if (typeof window !== "undefined") {
   window.addEventListener("pagehide", () => {
     for (const [key, timer] of _debounceTimers) {
       clearTimeout(timer);
-      window.localStorage.setItem(key, _debouncePending.get(key) ?? "");
+      const pending = _debouncePending.get(key);
+      // Only flush keys that actually have a pending value — writing "" would poison the next read,
+      // which parses the stored string and would fall back to the default on failure.
+      if (pending !== undefined) {
+        window.localStorage.setItem(key, pending);
+      }
     }
     _debounceTimers.clear();
     _debouncePending.clear();
@@ -62,7 +67,11 @@ export const LocalStorageConfig = {
     let res;
 
     try {
-      res = JSON.parse(window.localStorage.getItem(key) || "");
+      // A debounced write may not have reached localStorage yet, so the pending value — not what is
+      // currently stored — is the authoritative one. Without this, a read within the debounce window
+      // returns the previous value.
+      const raw = _debouncePending.get(key) ?? window.localStorage.getItem(key) ?? "";
+      res = JSON.parse(raw);
     } catch (_err) {
       res = defaultValue;
     }
@@ -71,6 +80,13 @@ export const LocalStorageConfig = {
   },
 
   clear() {
+    // Cancel in-flight writes first: a pending timer firing after the clear would resurrect the key.
+    for (const timer of _debounceTimers.values()) {
+      clearTimeout(timer);
+    }
+    _debounceTimers.clear();
+    _debouncePending.clear();
+
     window.localStorage.clear();
   },
 };

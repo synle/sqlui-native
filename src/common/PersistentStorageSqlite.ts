@@ -1,6 +1,6 @@
 /** SQLite-backed persistent storage — stores all data in a single database file. */
 
-import { DatabaseSync } from "node:sqlite";
+import { DatabaseSync, type StatementSync } from "node:sqlite";
 import fs from "node:fs";
 import path from "node:path";
 import type { IPersistentStorage, StorageEntry } from "src/common/IPersistentStorage";
@@ -55,6 +55,22 @@ export class PersistentStorageSqlite<T extends StorageEntry> implements IPersist
 
   /** Set of table names already ensured to exist (avoids repeated CREATE TABLE calls). */
   private static ensuredTables = new Set<string>();
+
+  /**
+   * Prepared statements keyed by SQL text, scoped to the current {@link db} connection.
+   *
+   * Re-preparing the same SQL on every call forces SQLite to re-parse and re-plan the query. The
+   * statement objects are reusable across `run`/`get`/`all` invocations, so caching them removes
+   * that per-call cost from every read and write.
+   *
+   * @remarks Statements are bound to the connection that created them, so this **must** be cleared
+   * whenever {@link db} is replaced ({@link closeDb}, {@link setDb}) — otherwise a cached statement
+   * would reference a closed or stale database.
+   */
+  private static statementCache = new Map<string, StatementSync>();
+
+  /** Nesting depth of the active {@link transaction}; 0 when no transaction is open. */
+  private static transactionDepth = 0;
 
   /**
    * Creates a new PersistentStorageSqlite instance.
@@ -123,6 +139,73 @@ export class PersistentStorageSqlite<T extends StorageEntry> implements IPersist
     return PersistentStorageSqlite.db;
   }
 
+  /**
+   * Returns a prepared statement for `sql`, reusing a cached one when available.
+   * @param sql - The SQL text; also serves as the cache key (table names are already interpolated).
+   */
+  private static prepare(sql: string): StatementSync {
+    const cached = PersistentStorageSqlite.statementCache.get(sql);
+    if (cached) return cached;
+
+    const statement = PersistentStorageSqlite.getDb().prepare(sql);
+    PersistentStorageSqlite.statementCache.set(sql, statement);
+    return statement;
+  }
+
+  /**
+   * Runs `fn` inside a single SQLite transaction, committing on success and rolling back on throw.
+   *
+   * Without this, every write is its own implicit transaction, which costs a disk sync per row.
+   * Batching a bulk write into one transaction turns N syncs into one.
+   *
+   * Nested calls use a `SAVEPOINT` rather than a second `BEGIN` (SQLite rejects nested `BEGIN`), so an
+   * inner failure unwinds only the inner work. That keeps a nested call's semantics identical to a
+   * standalone one: if the caller catches the inner error and carries on, the inner writes are gone
+   * but the outer transaction is still intact and commits normally.
+   *
+   * @param fn - The work to run transactionally.
+   * @returns Whatever `fn` returns.
+   */
+  static transaction<T>(fn: () => T): T {
+    PersistentStorageSqlite.ensureDb();
+    const db = PersistentStorageSqlite.getDb();
+
+    const depth = PersistentStorageSqlite.transactionDepth;
+    const nested = depth > 0;
+    const savepoint = `sqlui_sp_${depth}`;
+
+    db.exec(nested ? `SAVEPOINT ${savepoint}` : "BEGIN");
+    PersistentStorageSqlite.transactionDepth = depth + 1;
+
+    try {
+      const result = fn();
+      db.exec(nested ? `RELEASE ${savepoint}` : "COMMIT");
+      return result;
+    } catch (err) {
+      try {
+        if (nested) {
+          // ROLLBACK TO rewinds to the savepoint but leaves it on the stack; RELEASE pops it.
+          db.exec(`ROLLBACK TO ${savepoint}`);
+          db.exec(`RELEASE ${savepoint}`);
+        } else {
+          db.exec("ROLLBACK");
+        }
+      } catch (rollbackErr) {
+        // Swallowed so the original failure is what propagates — a rollback error is a symptom.
+        console.error("PersistentStorageSqlite.ts:transaction", rollbackErr);
+      } finally {
+        // DDL is transactional in SQLite, so unwinding can also undo the CREATE TABLE issued by
+        // `ensureTable`. The memoized caches would then claim tables and statements that no longer
+        // exist, and every later write would fail with "no such table". Drop both and let them rebuild.
+        PersistentStorageSqlite.ensuredTables.clear();
+        PersistentStorageSqlite.statementCache.clear();
+      }
+      throw err;
+    } finally {
+      PersistentStorageSqlite.transactionDepth = depth;
+    }
+  }
+
   /** {@inheritDoc IPersistentStorage.getGeneratedRandomId} */
   getGeneratedRandomId() {
     return getGeneratedRandomId(`${this.name}`);
@@ -131,7 +214,6 @@ export class PersistentStorageSqlite<T extends StorageEntry> implements IPersist
   /** {@inheritDoc IPersistentStorage.add} */
   add<K>(entry: K): T {
     this.ensure();
-    const db = PersistentStorageSqlite.getDb();
     //@ts-ignore
     const newId = entry.id || this.getGeneratedRandomId();
     const now = Date.now();
@@ -144,7 +226,7 @@ export class PersistentStorageSqlite<T extends StorageEntry> implements IPersist
     // Strip id from data — it lives only in the id column
     delete obj.id;
 
-    db.prepare(`INSERT OR REPLACE INTO "${this.table}" (id, data) VALUES (?, ?)`).run(newId, JSON.stringify(obj));
+    PersistentStorageSqlite.prepare(`INSERT OR REPLACE INTO "${this.table}" (id, data) VALUES (?, ?)`).run(newId, JSON.stringify(obj));
 
     return { id: newId, ...obj } as T;
   }
@@ -152,7 +234,6 @@ export class PersistentStorageSqlite<T extends StorageEntry> implements IPersist
   /** {@inheritDoc IPersistentStorage.update} */
   update(entry: T): T {
     this.ensure();
-    const db = PersistentStorageSqlite.getDb();
     const existing = this.get(entry.id) || {};
 
     const merged: any = {
@@ -163,7 +244,10 @@ export class PersistentStorageSqlite<T extends StorageEntry> implements IPersist
     // Strip id from data
     const { id, ...data } = merged;
 
-    db.prepare(`INSERT OR REPLACE INTO "${this.table}" (id, data) VALUES (?, ?)`).run(entry.id, JSON.stringify(data));
+    PersistentStorageSqlite.prepare(`INSERT OR REPLACE INTO "${this.table}" (id, data) VALUES (?, ?)`).run(
+      entry.id,
+      JSON.stringify(data),
+    );
 
     return { id: entry.id, ...data } as T;
   }
@@ -171,21 +255,15 @@ export class PersistentStorageSqlite<T extends StorageEntry> implements IPersist
   /** {@inheritDoc IPersistentStorage.set} */
   set(entries: T[]): T[] {
     this.ensure();
-    const db = PersistentStorageSqlite.getDb();
 
-    db.exec("BEGIN");
-    try {
-      db.prepare(`DELETE FROM "${this.table}"`).run();
-      const insert = db.prepare(`INSERT INTO "${this.table}" (id, data) VALUES (?, ?)`);
+    PersistentStorageSqlite.transaction(() => {
+      PersistentStorageSqlite.prepare(`DELETE FROM "${this.table}"`).run();
+      const insert = PersistentStorageSqlite.prepare(`INSERT INTO "${this.table}" (id, data) VALUES (?, ?)`);
       for (const entry of entries) {
         const { id, ...data } = entry as any;
         insert.run(id, JSON.stringify(data));
       }
-      db.exec("COMMIT");
-    } catch (err) {
-      db.exec("ROLLBACK");
-      throw err;
-    }
+    });
 
     return entries;
   }
@@ -193,16 +271,16 @@ export class PersistentStorageSqlite<T extends StorageEntry> implements IPersist
   /** {@inheritDoc IPersistentStorage.list} */
   list(): T[] {
     this.ensure();
-    const db = PersistentStorageSqlite.getDb();
-    const rows = db.prepare(`SELECT id, data FROM "${this.table}"`).all() as { id: string; data: string }[];
+    const rows = PersistentStorageSqlite.prepare(`SELECT id, data FROM "${this.table}"`).all() as { id: string; data: string }[];
     return rows.map((row) => ({ id: row.id, ...JSON.parse(row.data) }) as T);
   }
 
   /** {@inheritDoc IPersistentStorage.get} */
   get(id: string): T {
     this.ensure();
-    const db = PersistentStorageSqlite.getDb();
-    const row = db.prepare(`SELECT id, data FROM "${this.table}" WHERE id = ?`).get(id) as { id: string; data: string } | undefined;
+    const row = PersistentStorageSqlite.prepare(`SELECT id, data FROM "${this.table}" WHERE id = ?`).get(id) as
+      | { id: string; data: string }
+      | undefined;
     if (!row) return undefined as any;
     return { id: row.id, ...JSON.parse(row.data) } as T;
   }
@@ -210,8 +288,7 @@ export class PersistentStorageSqlite<T extends StorageEntry> implements IPersist
   /** {@inheritDoc IPersistentStorage.delete} */
   delete(id: string): void {
     this.ensure();
-    const db = PersistentStorageSqlite.getDb();
-    db.prepare(`DELETE FROM "${this.table}" WHERE id = ?`).run(id);
+    PersistentStorageSqlite.prepare(`DELETE FROM "${this.table}" WHERE id = ?`).run(id);
   }
 
   /** {@inheritDoc IPersistentStorage.writeDataFile} */
@@ -235,6 +312,8 @@ export class PersistentStorageSqlite<T extends StorageEntry> implements IPersist
       PersistentStorageSqlite.db.close();
       PersistentStorageSqlite.db = null;
       PersistentStorageSqlite.ensuredTables.clear();
+      PersistentStorageSqlite.statementCache.clear();
+      PersistentStorageSqlite.transactionDepth = 0;
     }
   }
 
@@ -245,6 +324,8 @@ export class PersistentStorageSqlite<T extends StorageEntry> implements IPersist
   static setDb(db: DatabaseSync): void {
     PersistentStorageSqlite.db = db;
     PersistentStorageSqlite.ensuredTables.clear();
+    PersistentStorageSqlite.statementCache.clear();
+    PersistentStorageSqlite.transactionDepth = 0;
   }
 }
 

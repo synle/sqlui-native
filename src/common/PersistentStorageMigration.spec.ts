@@ -285,5 +285,44 @@ describe("PersistentStorageMigration", () => {
       simulateDbFileExists();
       expect(getStorageVersion()).toBe(CURRENT_STORAGE_VERSION);
     });
+
+    // The whole migration runs in one transaction, so a failure part-way must leave no trace: no rows
+    // in SQLite, no files moved to backup, and no version bump — otherwise the next launch would skip
+    // a migration that never actually happened.
+    test("rolls back every table when a later file fails to write", () => {
+      mockFiles.set(
+        `${getStorageDir()}/sessions.json`,
+        JSON.stringify({ "session.1": { id: "session.1", name: "My Session" } }),
+      );
+      mockFiles.set(
+        `${getStorageDir()}/session-abc.connection.json`,
+        JSON.stringify({ "connection.1": { id: "connection.1", name: "My DB" } }),
+      );
+
+      // Fail on the second table's first insert, after the first table has already been written.
+      const realPrepare = memDb.prepare.bind(memDb);
+      const prepareSpy = vi.spyOn(memDb, "prepare").mockImplementation((sql: string) => {
+        if (sql.includes('INTO "connection"')) {
+          throw new Error("simulated write failure");
+        }
+        return realPrepare(sql);
+      });
+
+      try {
+        expect(() => runMigration()).toThrow("simulated write failure");
+      } finally {
+        prepareSpy.mockRestore();
+      }
+
+      // Nothing was backed up and the version was never advanced, so the JSON files are still the
+      // source of truth and a retry is safe.
+      expect(renamedFiles).toHaveLength(0);
+      simulateDbFileExists();
+      expect(getStorageVersion()).toBe(0);
+
+      // The successfully-written table was rolled back along with the failed one.
+      const sessionStorage = new PersistentStorageSqlite<any>("session", "migration", "migration");
+      expect(sessionStorage.list()).toHaveLength(0);
+    });
   });
 });

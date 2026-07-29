@@ -16,6 +16,12 @@ vi.mock("node:fs", () => ({
     writeFileSync: vi.fn((filePath: string, data: string) => {
       mockFiles.set(filePath, data);
     }),
+    renameSync: vi.fn((from: string, to: string) => {
+      const content = mockFiles.get(from);
+      if (content === undefined) throw new Error(`ENOENT: no such file - ${from}`);
+      mockFiles.set(to, content);
+      mockFiles.delete(from);
+    }),
     promises: {
       writeFile: vi.fn((filePath: string, data: string) => {
         mockFiles.set(filePath, data);
@@ -321,19 +327,60 @@ describe("PersistentStorage", () => {
   });
 
   describe("memory cache behavior", () => {
-    test("second read hits the in-memory cache without re-reading from disk", () => {
-      const fs = require("node:fs");
-      const storage = new PersistentStorage("test", uniqueName(), uniqueName());
+    test("second read hits the in-memory cache without re-reading from disk", async () => {
+      // Previously this used `require("node:fs")` and optional-chained the mock
+      // (`fs.default?.readFileSync?.mockClear?.()`). Under vitest's ESM interop `require` does not
+      // resolve to the `vi.mock` factory, so `fs.default` was undefined, the chain no-opped, and the
+      // test asserted nothing about disk access at all — it would have passed if every read went to
+      // disk. Import the mocked module properly and assert the call count.
+      const fs = (await import("node:fs")).default;
+      const storage = new PersistentStorage<any>("test", uniqueName(), uniqueName());
       storage.add({ id: "cached-entry", data: "test" });
 
-      // Clear the readFileSync call count
-      fs.default?.readFileSync?.mockClear?.();
+      vi.mocked(fs.readFileSync).mockClear();
 
-      // Subsequent reads should use the cache
       const result1 = storage.get("cached-entry");
       const result2 = storage.list();
       expect(result1.data).toBe("test");
       expect(result2).toHaveLength(1);
+      expect(fs.readFileSync, "reads after a write should be served from the in-memory cache").not.toHaveBeenCalled();
+    });
+  });
+
+  describe("atomic write to disk", () => {
+    // Writes go through writeAtomicSync (writeFileSync to `<path>.<pid>.tmp`, then renameSync into
+    // place). Every other test in this file reads back through the in-memory cache, so none of them
+    // notice if the disk write fails — a `node:fs` mock missing `renameSync` silently turns this
+    // whole suite into a cache test. These assertions look at the mock filesystem directly.
+    test("lands the payload at the real path and leaves no .tmp behind", () => {
+      const storage = new PersistentStorage<any>("test", uniqueName(), uniqueName());
+      const target = storage.storageLocation;
+
+      storage.add({ id: "durable-1", data: "acme" });
+
+      expect(mockFiles.has(target), `nothing was written to ${target}`).toBe(true);
+      expect(JSON.parse(mockFiles.get(target)!)["durable-1"].data).toBe("acme");
+
+      const leftovers = [...mockFiles.keys()].filter((key) => key.startsWith(`${target}.`) && key.endsWith(".tmp"));
+      expect(leftovers, "temp files should be renamed away, not left on disk").toEqual([]);
+    });
+
+    test("surfaces a write failure instead of silently succeeding", async () => {
+      const fs = (await import("node:fs")).default;
+      const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+      const realRename = vi.mocked(fs.renameSync).getMockImplementation()!;
+      vi.mocked(fs.renameSync).mockImplementation(() => {
+        throw new Error("EACCES: permission denied");
+      });
+
+      const storage = new PersistentStorage<any>("test", uniqueName(), uniqueName());
+      storage.add({ id: "doomed-1", data: "globex" });
+
+      expect(mockFiles.has(storage.storageLocation), "a failed rename must not look like a successful write").toBe(false);
+      expect(consoleSpy).toHaveBeenCalled();
+
+      vi.mocked(fs.renameSync).mockImplementation(realRename);
+      consoleSpy.mockRestore();
     });
   });
 

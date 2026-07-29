@@ -313,4 +313,97 @@ describe("useFlatTreeRows", () => {
       expect(tblHeader?.isSelected).toBe(true);
     });
   });
+
+  // The rows build is memoized on a fingerprint derived from the query results. An earlier version of
+  // that fingerprint encoded only `data.length`, so any metadata change that preserved the count —
+  // every rename, every type change — left the tree rendering stale values.
+  describe("refetched metadata of the same length", () => {
+    /** Renders the hook against a caller-owned QueryClient so the test can force a refetch. */
+    function renderWithClient() {
+      const queryClient = new QueryClient({
+        defaultOptions: { queries: { retry: false, refetchOnWindowFocus: false, gcTime: 0 } },
+      });
+      const { result } = renderHook(() => useFlatTreeRows(), {
+        wrapper: ({ children }: any) => <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>,
+      });
+      return { result, queryClient };
+    }
+
+    /**
+     * Returns the first row of `type`, widened to `any` so tests can read fields that only exist on
+     * one member of the `TreeRow` union.
+     */
+    function findRow(rows: readonly { type: string }[], type: string): any {
+      return rows.find((r) => r.type === type);
+    }
+
+    test("a renamed database is reflected in the rows", async () => {
+      useGetConnectionsMock.mockReturnValue({
+        data: [{ id: "c1", name: "Conn1", status: "online", dialect: "sqlite" }],
+        isLoading: false,
+      });
+      useShowHideMock.mockReturnValue({ visibles: { c1: true }, onToggle: vi.fn() });
+      getConnectionDatabasesMock.mockResolvedValue([{ name: "sales" }]);
+
+      const { result, queryClient } = renderWithClient();
+      await waitFor(() => {
+        expect(findRow(result.current.rows, "database-header")?.databaseName).toBe("sales");
+      });
+
+      getConnectionDatabasesMock.mockResolvedValue([{ name: "revenue" }]);
+      await queryClient.invalidateQueries();
+
+      await waitFor(() => {
+        expect(findRow(result.current.rows, "database-header")?.databaseName).toBe("revenue");
+      });
+    });
+
+    test("a renamed table is reflected in the rows", async () => {
+      useGetConnectionsMock.mockReturnValue({
+        data: [{ id: "c1", name: "Conn1", status: "online", dialect: "sqlite" }],
+        isLoading: false,
+      });
+      useShowHideMock.mockReturnValue({ visibles: { c1: true, "c1 > db1": true }, onToggle: vi.fn() });
+      getConnectionDatabasesMock.mockResolvedValue([{ name: "db1" }]);
+      getConnectionTablesMock.mockResolvedValue([{ name: "invoices" }]);
+
+      const { result, queryClient } = renderWithClient();
+      await waitFor(() => {
+        expect(findRow(result.current.rows, "table-header")?.tableName).toBe("invoices");
+      });
+
+      getConnectionTablesMock.mockResolvedValue([{ name: "receipts" }]);
+      await queryClient.invalidateQueries();
+
+      await waitFor(() => {
+        expect(findRow(result.current.rows, "table-header")?.tableName).toBe("receipts");
+      });
+    });
+
+    test("a changed column type is reflected in the rows", async () => {
+      useGetConnectionsMock.mockReturnValue({
+        data: [{ id: "c1", name: "Conn1", status: "online", dialect: "sqlite" }],
+        isLoading: false,
+      });
+      useShowHideMock.mockReturnValue({
+        visibles: { c1: true, "c1 > db1": true, "c1 > db1 > tbl1": true },
+        onToggle: vi.fn(),
+      });
+      getConnectionDatabasesMock.mockResolvedValue([{ name: "db1" }]);
+      getConnectionTablesMock.mockResolvedValue([{ name: "tbl1" }]);
+      getConnectionColumnsMock.mockResolvedValue([{ name: "amount", type: "TEXT" }]);
+
+      const { result, queryClient } = renderWithClient();
+      await waitFor(() => {
+        expect(findRow(result.current.rows, "column-header")?.column.type).toBe("TEXT");
+      });
+
+      getConnectionColumnsMock.mockResolvedValue([{ name: "amount", type: "INTEGER" }]);
+      await queryClient.invalidateQueries();
+
+      await waitFor(() => {
+        expect(findRow(result.current.rows, "column-header")?.column.type).toBe("INTEGER");
+      });
+    });
+  });
 });

@@ -19,6 +19,12 @@ vi.mock("node:fs", () => ({
     writeFileSync: vi.fn((filePath: string, data: string) => {
       mockFiles.set(filePath, data);
     }),
+    renameSync: vi.fn((from: string, to: string) => {
+      const content = mockFiles.get(from);
+      if (content === undefined) throw new Error(`ENOENT: no such file - ${from}`);
+      mockFiles.set(to, content);
+      mockFiles.delete(from);
+    }),
     promises: {
       writeFile: vi.fn((filePath: string, data: string) => {
         mockFiles.set(filePath, data);

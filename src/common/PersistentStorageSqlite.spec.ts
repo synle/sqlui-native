@@ -328,4 +328,186 @@ describe("PersistentStorageSqlite", () => {
       expect(storage.get("lifecycle-2")).toBeDefined();
     });
   });
+
+  describe("prepared statement caching", () => {
+    test("prepares each distinct SQL statement only once", () => {
+      const table = uniqueName("stmt_cache");
+      const storage = new PersistentStorageSqlite(table, "inst", "name");
+
+      // Warm the cache so CREATE TABLE / first-use preparation is not counted below.
+      storage.add({ id: "warm", value: 1 });
+      storage.get("warm");
+      storage.list();
+      storage.delete("warm");
+
+      const prepareSpy = vi.spyOn(memDb, "prepare");
+      try {
+        for (let i = 0; i < 5; i++) {
+          storage.add({ id: `row-${i}`, value: i });
+          storage.get(`row-${i}`);
+          storage.list();
+          storage.delete(`row-${i}`);
+        }
+        expect(prepareSpy).not.toHaveBeenCalled();
+      } finally {
+        prepareSpy.mockRestore();
+      }
+    });
+
+    test("re-prepares against a replaced connection instead of reusing stale statements", () => {
+      const table = uniqueName("stmt_swap");
+      const storage = new PersistentStorageSqlite(table, "inst", "name");
+      storage.add({ id: "before-swap", value: 1 });
+      expect(storage.get("before-swap").value).toBe(1);
+
+      // Swapping the connection must invalidate cached statements — they belong to the old database.
+      const replacement = new DatabaseSync(":memory:");
+      PersistentStorageSqlite.setDb(replacement);
+      try {
+        // The new database starts empty, proving reads hit the replacement rather than a stale statement.
+        expect(storage.get("before-swap")).toBeUndefined();
+
+        storage.add({ id: "after-swap", value: 2 });
+        expect(storage.get("after-swap").value).toBe(2);
+      } finally {
+        replacement.close();
+        PersistentStorageSqlite.setDb(memDb);
+      }
+
+      // The original connection is intact and still holds its own row.
+      expect(storage.get("before-swap").value).toBe(1);
+    });
+  });
+
+  describe("transaction()", () => {
+    test("commits all writes made inside the callback", () => {
+      const storage = new PersistentStorageSqlite(uniqueName("txn_commit"), "inst", "name");
+
+      const result = PersistentStorageSqlite.transaction(() => {
+        storage.add({ id: "a", value: 1 });
+        storage.add({ id: "b", value: 2 });
+        return "done";
+      });
+
+      expect(result).toBe("done");
+      expect(storage.list()).toHaveLength(2);
+    });
+
+    test("rolls back every write when the callback throws", () => {
+      const table = uniqueName("txn_rollback");
+      const storage = new PersistentStorageSqlite(table, "inst", "name");
+      storage.add({ id: "pre-existing", value: 0 });
+
+      expect(() =>
+        PersistentStorageSqlite.transaction(() => {
+          storage.add({ id: "a", value: 1 });
+          storage.add({ id: "b", value: 2 });
+          throw new Error("boom");
+        }),
+      ).toThrow("boom");
+
+      // The two in-transaction inserts are gone; the earlier committed row survives.
+      expect(storage.get("a")).toBeUndefined();
+      expect(storage.get("b")).toBeUndefined();
+      expect(storage.get("pre-existing").value).toBe(0);
+    });
+
+    test("nested calls join the outer transaction instead of opening a second one", () => {
+      const storage = new PersistentStorageSqlite(uniqueName("txn_nested"), "inst", "name");
+
+      // SQLite rejects BEGIN inside an active transaction, so a naive implementation throws here.
+      expect(() =>
+        PersistentStorageSqlite.transaction(() => {
+          storage.add({ id: "outer", value: 1 });
+          PersistentStorageSqlite.transaction(() => {
+            storage.add({ id: "inner", value: 2 });
+          });
+        }),
+      ).not.toThrow();
+
+      expect(storage.list()).toHaveLength(2);
+    });
+
+    test("a throw inside a nested call rolls back the outer transaction too", () => {
+      const storage = new PersistentStorageSqlite(uniqueName("txn_nested_throw"), "inst", "name");
+
+      expect(() =>
+        PersistentStorageSqlite.transaction(() => {
+          storage.add({ id: "outer", value: 1 });
+          PersistentStorageSqlite.transaction(() => {
+            storage.add({ id: "inner", value: 2 });
+            throw new Error("inner boom");
+          });
+        }),
+      ).toThrow("inner boom");
+
+      expect(storage.list()).toHaveLength(0);
+    });
+
+    test("a caught nested failure discards only the inner writes, and the outer still commits", () => {
+      const storage = new PersistentStorageSqlite(uniqueName("txn_nested_caught"), "inst", "name");
+
+      PersistentStorageSqlite.transaction(() => {
+        storage.add({ id: "outer-before", value: 1 });
+
+        try {
+          PersistentStorageSqlite.transaction(() => {
+            storage.add({ id: "inner", value: 2 });
+            throw new Error("inner boom");
+          });
+        } catch (_err) {
+          // The caller absorbs the inner failure and carries on.
+        }
+
+        storage.add({ id: "outer-after", value: 3 });
+      });
+
+      // The inner write is gone; both outer writes survived.
+      expect(storage.get("inner")).toBeUndefined();
+      expect(storage.get("outer-before").value).toBe(1);
+      expect(storage.get("outer-after").value).toBe(3);
+    });
+
+    test("a caught set() failure inside an outer transaction does not destroy existing rows", () => {
+      const storage = new PersistentStorageSqlite(uniqueName("txn_nested_set"), "inst", "name");
+      storage.add({ id: "keep-me", value: 1 });
+
+      PersistentStorageSqlite.transaction(() => {
+        try {
+          // set() deletes every row before inserting. A failure partway must not leave the table empty
+          // just because it happened to run inside an outer transaction.
+          storage.set([{ id: "a", value: 1 }, { id: null, value: 2 }] as any);
+        } catch (_err) {
+          // absorbed
+        }
+      });
+
+      expect(storage.get("keep-me").value).toBe(1);
+    });
+
+    test("leaves no transaction open after a rollback, so later writes still commit", () => {
+      const storage = new PersistentStorageSqlite(uniqueName("txn_recover"), "inst", "name");
+
+      expect(() =>
+        PersistentStorageSqlite.transaction(() => {
+          throw new Error("boom");
+        }),
+      ).toThrow("boom");
+
+      expect(() => PersistentStorageSqlite.transaction(() => storage.add({ id: "after", value: 1 }))).not.toThrow();
+      expect(storage.get("after").value).toBe(1);
+    });
+
+    test("set() works inside an outer transaction", () => {
+      const storage = new PersistentStorageSqlite(uniqueName("txn_set"), "inst", "name");
+
+      expect(() =>
+        PersistentStorageSqlite.transaction(() => {
+          storage.set([{ id: "x", value: 1 }, { id: "y", value: 2 }] as any);
+        }),
+      ).not.toThrow();
+
+      expect(storage.list()).toHaveLength(2);
+    });
+  });
 });

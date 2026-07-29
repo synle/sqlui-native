@@ -109,7 +109,7 @@ export default function ModernDataTable(props: DataTableProps): React.JSX.Elemen
 
   const rows = table.getRowModel().rows;
 
-  const onRowContextMenuClick = (e: React.SyntheticEvent) => {
+  const onRowContextMenuClick = useCallback((e: React.SyntheticEvent) => {
     const target = e.target as HTMLElement;
     const tr = target.closest("[role=row]") as HTMLElement;
     const rowIdx = parseInt(tr?.dataset?.rowIdx || "");
@@ -120,7 +120,7 @@ export default function ModernDataTable(props: DataTableProps): React.JSX.Elemen
       setOpenContextMenuRowIdx(rowIdx);
       anchorEl.current = target;
     }
-  };
+  }, []);
 
   const targetRowContextOptions = useMemo(
     () =>
@@ -215,6 +215,9 @@ export default function ModernDataTable(props: DataTableProps): React.JSX.Elemen
 
   const virtualItems = rowVirtualizer.getVirtualItems();
   const virtualColumns = columnVirtualizer.getVirtualItems();
+  // Read once per render; line 325 below sits inside the row loop, so this was previously
+  // recomputed for every visible row.
+  const totalColumnWidth = columnVirtualizer.getTotalSize();
 
   return (
     <div className={isCompact ? "DataTable--compact" : ""}>
@@ -237,7 +240,7 @@ export default function ModernDataTable(props: DataTableProps): React.JSX.Elemen
           maxHeight: tableHeight,
           overflow: "auto",
         }}
-        onContextMenu={(e) => onRowContextMenuClick(e)}
+        onContextMenu={onRowContextMenuClick}
       >
         {/* Sticky header */}
         <Box sx={{ position: "sticky", top: 0, zIndex: (theme) => theme.zIndex.drawer + 1, height: headerHeight }}>
@@ -247,7 +250,7 @@ export default function ModernDataTable(props: DataTableProps): React.JSX.Elemen
               role="row"
               style={{
                 display: "flex",
-                width: `${columnVirtualizer.getTotalSize()}px`,
+                width: `${totalColumnWidth}px`,
                 position: "relative",
               }}
             >
@@ -301,13 +304,17 @@ export default function ModernDataTable(props: DataTableProps): React.JSX.Elemen
         <StyledDivContainer
           sx={{
             height: `${rowVirtualizer.getTotalSize()}px`,
-            width: `${columnVirtualizer.getTotalSize()}px`,
+            width: `${totalColumnWidth}px`,
             position: "relative",
           }}
         >
           {virtualItems.map((virtualItem) => {
             const rowIdx = virtualItem.index;
             const row = rows[rowIdx];
+            // Hoisted out of the column loop below: this was previously called once per rendered
+            // cell rather than once per row, so a 30-row × 20-column viewport did 600 lookups
+            // per render instead of 30.
+            const visibleCells = row.getVisibleCells();
 
             return (
               <StyledDivContentRow
@@ -318,14 +325,14 @@ export default function ModernDataTable(props: DataTableProps): React.JSX.Elemen
                 sx={{
                   cursor: props.onRowClick ? "pointer" : "",
                   transform: `translateY(${virtualItem.start}px)`,
-                  width: `${columnVirtualizer.getTotalSize()}px`,
+                  width: `${totalColumnWidth}px`,
                   height: `${cellHeight}px`,
                 }}
                 onDoubleClick={() => props.onRowClick && props.onRowClick(row.original)}
               >
                 {virtualColumns.map((virtualColumn) => {
                   const colIdx = virtualColumn.index;
-                  const cell = row.getVisibleCells()[colIdx];
+                  const cell = visibleCells[colIdx];
                   let dropdownContent: any;
                   if (colIdx === 0 && targetRowContextOptions.length > 0) {
                     dropdownContent = (

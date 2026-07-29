@@ -12,6 +12,32 @@ import { TreeRow } from "./types";
 /** Maximum number of columns to display before showing a "Show All" button. */
 const MAX_COLUMN_SIZE_TO_SHOW = 20;
 
+/**
+ * Serial numbers handed out to metadata array references, used to build the memoization fingerprint.
+ *
+ * React Query's structural sharing keeps the previous array reference when refetched data is
+ * deep-equal and produces a new one whenever anything changed, so reference identity is exactly the
+ * "did the content change" signal the fingerprint needs. Comparing lengths instead would miss renames
+ * and type changes; serializing the arrays would make the fingerprint O(total metadata) per render.
+ */
+const metadataTokens = new WeakMap<object, number>();
+let nextMetadataToken = 0;
+
+/**
+ * Returns a stable, cheap token identifying a metadata array by reference.
+ * @param value - A metadata array from a query result, or undefined when not yet loaded.
+ * @returns The same token for the same reference, a fresh one for any new reference.
+ */
+function metadataToken(value: object | undefined): number | string {
+  if (!value) return "-";
+  let token = metadataTokens.get(value);
+  if (token === undefined) {
+    token = ++nextMetadataToken;
+    metadataTokens.set(value, token);
+  }
+  return token;
+}
+
 /** Result of a database metadata query for a connection. */
 type DatabaseQueryResult = {
   connectionId: string;
@@ -171,13 +197,20 @@ export function useFlatTreeRows() {
 
   // Memoize the flat row build — everything above is hooks and cheap iterations;
   // the rows tree traversal is the expensive part.
+  //
+  // Each loaded result contributes its metadata reference token, not its length: a rename or a type
+  // change keeps the count identical, and keying on the count alone left the tree showing stale
+  // names until an unrelated re-render happened to change the fingerprint.
   const inputFingerprint = [
     connections?.length,
     ...(connections?.map((c) => `${c.id}:${c.status}`) ?? []),
-    ...databaseResults.map((r) => `${r.connectionId}:${r.isLoading ? "L" : r.isError ? "E" : `D${r.data?.length}`}`),
-    ...tableResults.map((r) => `${r.connectionId}|${r.databaseId}:${r.isLoading ? "L" : r.isError ? "E" : `T${r.data?.length}`}`),
+    ...databaseResults.map((r) => `${r.connectionId}:${r.isLoading ? "L" : r.isError ? "E" : `D${metadataToken(r.data)}`}`),
+    ...tableResults.map(
+      (r) => `${r.connectionId}|${r.databaseId}:${r.isLoading ? "L" : r.isError ? "E" : `T${metadataToken(r.data)}`}`,
+    ),
     ...columnResults.map(
-      (r) => `${r.connectionId}|${r.databaseId}|${r.tableId}:${r.isLoading ? "L" : r.isError ? "E" : `C${r.data?.length}`}`,
+      (r) =>
+        `${r.connectionId}|${r.databaseId}|${r.tableId}:${r.isLoading ? "L" : r.isError ? "E" : `C${metadataToken(r.data)}`}`,
     ),
     ...expandedOnlineConnections,
     ...expandedTables.map((t) => `${t.connectionId}|${t.databaseId}|${t.tableId}`),

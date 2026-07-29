@@ -9,12 +9,41 @@ log(`
 `);
 
 // Sync version: pick the higher version between tauri.conf.json and package.json.
+//
+// Writes are surgical (single "version" line) rather than JSON.stringify round-trips. A round-trip
+// reformats the whole file — JSON.stringify does not reproduce the repo's formatting, so every build
+// left tauri.conf.json and package-lock.json modified in the working tree with a large whitespace-only
+// diff.
 const tauriConfPath = "src-tauri/tauri.conf.json";
 const pkgPath = "package.json";
 const tauriConf = JSON.parse(fs.readFileSync(tauriConfPath, "utf-8"));
 const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf-8"));
 const tauriVersion = tauriConf.version;
 const pkgVersion = pkg.version;
+
+/**
+ * Rewrites the first `"version": "..."` occurrence in a JSON file, leaving all other bytes untouched.
+ * @param {string} filePath File to rewrite in place.
+ * @param {string} version New version string.
+ * @param {number} occurrences How many leading occurrences to replace (package-lock.json carries the
+ *   version twice: at the root and under `packages[""]`).
+ */
+function writeVersionInPlace(filePath, version, occurrences = 1) {
+  const source = fs.readFileSync(filePath, "utf-8");
+  let remaining = occurrences;
+  const updated = source.replace(/"version":\s*"[^"]*"/g, (match) => {
+    if (remaining <= 0) return match;
+    remaining--;
+    return `"version": "${version}"`;
+  });
+
+  if (remaining > 0) {
+    throw new Error(`prebuild.js: expected ${occurrences} "version" field(s) in ${filePath}`);
+  }
+  if (updated !== source) {
+    fs.writeFileSync(filePath, updated);
+  }
+}
 
 if (tauriVersion && pkgVersion && tauriVersion !== pkgVersion) {
   const tauriParts = tauriVersion.split(".").map(Number);
@@ -27,24 +56,20 @@ if (tauriVersion && pkgVersion && tauriVersion !== pkgVersion) {
   const canonicalVersion = usePackageVersion ? pkgVersion : tauriVersion;
 
   if (usePackageVersion) {
-    tauriConf.version = canonicalVersion;
-    fs.writeFileSync(tauriConfPath, JSON.stringify(tauriConf, null, 2) + "\n");
+    writeVersionInPlace(tauriConfPath, canonicalVersion);
     log(`Synced version: ${canonicalVersion} (package.json → tauri.conf.json)`);
   } else {
-    pkg.version = canonicalVersion;
-    fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + "\n");
+    writeVersionInPlace(pkgPath, canonicalVersion);
     log(`Synced version: ${canonicalVersion} (tauri.conf.json → package.json)`);
   }
 
   const lockPath = "package-lock.json";
   if (fs.existsSync(lockPath)) {
     const lock = JSON.parse(fs.readFileSync(lockPath, "utf-8"));
-    lock.version = canonicalVersion;
-    if (lock.packages && lock.packages[""]) {
-      lock.packages[""].version = canonicalVersion;
+    if (lock.version !== canonicalVersion || lock.packages?.[""]?.version !== canonicalVersion) {
+      writeVersionInPlace(lockPath, canonicalVersion, 2);
+      log(`Synced version: ${canonicalVersion} → package-lock.json`);
     }
-    fs.writeFileSync(lockPath, JSON.stringify(lock, null, 2) + "\n");
-    log(`Synced version: ${canonicalVersion} → package-lock.json`);
   }
 } else {
   log(`Version already in sync: ${tauriVersion}`);

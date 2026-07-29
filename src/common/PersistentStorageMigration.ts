@@ -99,13 +99,16 @@ function readJsonStorageFile(filePath: string): Array<{ id: string; [key: string
 }
 
 /**
- * Migrates a single JSON file's entries into the corresponding SQLite table.
- * @param filePath - Absolute path to the JSON file.
+ * Writes already-parsed entries into the corresponding SQLite table.
+ *
+ * @remarks Reading is deliberately a separate step (see {@link runMigration}) so that file I/O stays
+ * outside the write transaction.
  * @param table - The target SQLite table name.
- * @returns The number of entries migrated.
+ * @param entries - Entries previously read from a legacy JSON file.
+ * @returns The number of entries seen (entries without an `id` are skipped but still counted, matching
+ * the original per-file tally).
  */
-function migrateFile(filePath: string, table: string): number {
-  const entries = readJsonStorageFile(filePath);
+function writeMigrationEntries(table: string, entries: Array<{ id: string; [key: string]: any }>): number {
   if (entries.length === 0) return 0;
 
   const storage = new PersistentStorageSqlite<any>(table, "migration", "migration");
@@ -181,16 +184,27 @@ export function runMigration(): void {
   fs.mkdirSync(backupDir, { recursive: true });
 
   let totalMigrated = 0;
-  const migratedFilePaths: string[] = [];
 
-  for (const fileName of matchingFiles) {
+  // Read and parse every file before opening the transaction — doing file I/O inside a write
+  // transaction would hold the database lock (and grow the WAL) for the entire scan.
+  const pending = matchingFiles.map((fileName) => {
     const filePath = path.join(getStorageDir(), fileName);
     const mapping = MIGRATION_MAPPINGS.find((m) => m.pattern.test(fileName))!;
+    return { filePath, table: mapping.table, entries: readJsonStorageFile(filePath) };
+  });
 
-    const count = migrateFile(filePath, mapping.table);
-    totalMigrated += count;
-    migratedFilePaths.push(filePath);
-  }
+  // One transaction for every file: without it each row is its own implicit transaction (a disk sync
+  // per entry), and a mid-way failure would leave the database half-populated. On throw everything
+  // rolls back and this function exits before the backup moves or the version bump below, so the JSON
+  // files stay put and the next launch retries cleanly.
+  PersistentStorageSqlite.transaction(() => {
+    for (const { table, entries } of pending) {
+      totalMigrated += writeMigrationEntries(table, entries);
+    }
+  });
+
+  // Only reached once the writes are committed, so nothing is backed up for a migration that failed.
+  const migratedFilePaths = pending.map((p) => p.filePath);
 
   // Move migrated files to backup
   for (const filePath of migratedFilePaths) {
