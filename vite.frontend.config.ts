@@ -59,10 +59,7 @@ export default defineConfig(({ command }) => ({
       src: path.resolve(__dirname, "src"),
       // Bypass the NODE_ENV !== 'development' check in the default export
       // so React Query DevTools can be toggled in packaged/production builds.
-      "@tanstack/react-query-devtools": path.resolve(
-        __dirname,
-        "node_modules/@tanstack/react-query-devtools/build/modern/production.js",
-      ),
+      "@tanstack/react-query-devtools": path.resolve(__dirname, "node_modules/@tanstack/react-query-devtools/build/modern/production.js"),
     },
   },
   css: {
@@ -90,13 +87,7 @@ export default defineConfig(({ command }) => ({
     },
   },
   optimizeDeps: {
-    include: [
-      "@emotion/react",
-      "@emotion/styled",
-      "@mui/icons-material",
-      "@mui/lab",
-      "@mui/material",
-    ],
+    include: ["@emotion/react", "@emotion/styled", "@mui/icons-material", "@mui/lab", "@mui/material"],
     esbuildOptions: {
       resolveExtensions: [".mjs", ".js", ".mts", ".ts", ".jsx", ".tsx", ".json"],
       mainFields: ["main", "module"],
@@ -111,8 +102,7 @@ export default defineConfig(({ command }) => ({
         manualChunks(id) {
           if (id.includes("node_modules")) {
             if (id.includes("monaco-editor")) return "vendor-monaco";
-            if (id.includes("react-router") || id.includes("react-dom") || id.includes("scheduler"))
-              return "vendor-react";
+            if (id.includes("react-router") || id.includes("react-dom") || id.includes("scheduler")) return "vendor-react";
             if (id.includes("@mui") || id.includes("emotion")) return "vendor-mui";
             if (id.includes("@tanstack/react-query")) return "vendor-tanstack";
             if (id.includes("reactflow") || id.includes("@xyflow")) return "vendor-xyflow";
