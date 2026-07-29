@@ -476,7 +476,10 @@ describe("PersistentStorageSqlite", () => {
         try {
           // set() deletes every row before inserting. A failure partway must not leave the table empty
           // just because it happened to run inside an outer transaction.
-          storage.set([{ id: "a", value: 1 }, { id: null, value: 2 }] as any);
+          storage.set([
+            { id: "a", value: 1 },
+            { id: null, value: 2 },
+          ] as any);
         } catch (_err) {
           // absorbed
         }
@@ -503,7 +506,10 @@ describe("PersistentStorageSqlite", () => {
 
       expect(() =>
         PersistentStorageSqlite.transaction(() => {
-          storage.set([{ id: "x", value: 1 }, { id: "y", value: 2 }] as any);
+          storage.set([
+            { id: "x", value: 1 },
+            { id: "y", value: 2 },
+          ] as any);
         }),
       ).not.toThrow();
 

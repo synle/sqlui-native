@@ -244,10 +244,7 @@ export class PersistentStorageSqlite<T extends StorageEntry> implements IPersist
     // Strip id from data
     const { id, ...data } = merged;
 
-    PersistentStorageSqlite.prepare(`INSERT OR REPLACE INTO "${this.table}" (id, data) VALUES (?, ?)`).run(
-      entry.id,
-      JSON.stringify(data),
-    );
+    PersistentStorageSqlite.prepare(`INSERT OR REPLACE INTO "${this.table}" (id, data) VALUES (?, ?)`).run(entry.id, JSON.stringify(data));
 
     return { id: entry.id, ...data } as T;
   }

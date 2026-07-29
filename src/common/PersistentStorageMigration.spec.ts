@@ -290,10 +290,7 @@ describe("PersistentStorageMigration", () => {
     // in SQLite, no files moved to backup, and no version bump — otherwise the next launch would skip
     // a migration that never actually happened.
     test("rolls back every table when a later file fails to write", () => {
-      mockFiles.set(
-        `${getStorageDir()}/sessions.json`,
-        JSON.stringify({ "session.1": { id: "session.1", name: "My Session" } }),
-      );
+      mockFiles.set(`${getStorageDir()}/sessions.json`, JSON.stringify({ "session.1": { id: "session.1", name: "My Session" } }));
       mockFiles.set(
         `${getStorageDir()}/session-abc.connection.json`,
         JSON.stringify({ "connection.1": { id: "connection.1", name: "My DB" } }),

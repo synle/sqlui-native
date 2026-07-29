@@ -205,12 +205,9 @@ export function useFlatTreeRows() {
     connections?.length,
     ...(connections?.map((c) => `${c.id}:${c.status}`) ?? []),
     ...databaseResults.map((r) => `${r.connectionId}:${r.isLoading ? "L" : r.isError ? "E" : `D${metadataToken(r.data)}`}`),
-    ...tableResults.map(
-      (r) => `${r.connectionId}|${r.databaseId}:${r.isLoading ? "L" : r.isError ? "E" : `T${metadataToken(r.data)}`}`,
-    ),
+    ...tableResults.map((r) => `${r.connectionId}|${r.databaseId}:${r.isLoading ? "L" : r.isError ? "E" : `T${metadataToken(r.data)}`}`),
     ...columnResults.map(
-      (r) =>
-        `${r.connectionId}|${r.databaseId}|${r.tableId}:${r.isLoading ? "L" : r.isError ? "E" : `C${metadataToken(r.data)}`}`,
+      (r) => `${r.connectionId}|${r.databaseId}|${r.tableId}:${r.isLoading ? "L" : r.isError ? "E" : `C${metadataToken(r.data)}`}`,
     ),
     ...expandedOnlineConnections,
     ...expandedTables.map((t) => `${t.connectionId}|${t.databaseId}|${t.tableId}`),
