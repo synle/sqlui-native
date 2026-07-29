@@ -16,7 +16,7 @@ import {
   ColumnDef,
 } from "@tanstack/react-table";
 import { ColumnOrderState, VisibilityState } from "@tanstack/react-table";
-import React, { useCallback, useLayoutEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { DataTableProps } from "src/frontend/components/DataTable";
 import DataTableColumnSettings from "src/frontend/components/DataTable/DataTableColumnSettings";
 import {
@@ -63,9 +63,20 @@ export default function ModernDataTable(props: DataTableProps): React.JSX.Elemen
   const [tableHeight, setTableHeight] = useState(defaultTableHeight);
   const anchorEl = useRef<HTMLElement | null>(null);
 
-  // figure out the width
+  // Cache container width via ResizeObserver instead of reading offsetWidth during render
+  const [containerWidth, setContainerWidth] = useState(0);
+  useEffect(() => {
+    const el = document.querySelector(".LayoutTwoColumns__RightPane");
+    if (!el) return;
+    const ro = new ResizeObserver((entries) => {
+      setContainerWidth(entries[0]?.contentRect?.width ?? 0);
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
   let tableCellWidthToUse = tableCellWidth;
-  const totalWidth = (document.querySelector(".LayoutTwoColumns__RightPane") as HTMLElement)?.offsetWidth - 20 || 0;
+  const totalWidth = (containerWidth || 0) - 20;
   if (columns.length > 0 && columns.length * tableCellWidth < totalWidth) {
     tableCellWidthToUse = Math.floor(totalWidth / columns.length);
   }
@@ -111,10 +122,14 @@ export default function ModernDataTable(props: DataTableProps): React.JSX.Elemen
     }
   };
 
-  const targetRowContextOptions = (props.rowContextOptions || []).map((rowContextOption) => ({
-    ...rowContextOption,
-    onClick: () => rowContextOption.onClick && rowContextOption.onClick(data[openContextMenuRowIdx]),
-  }));
+  const targetRowContextOptions = useMemo(
+    () =>
+      (props.rowContextOptions || []).map((rowContextOption) => ({
+        ...rowContextOption,
+        onClick: () => rowContextOption.onClick && rowContextOption.onClick(data[openContextMenuRowIdx]),
+      })),
+    [props.rowContextOptions, data, openContextMenuRowIdx],
+  );
 
   // The scrollable element for the list
   const parentRef = useRef<HTMLDivElement | null>(null);

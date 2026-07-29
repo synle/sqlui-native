@@ -1,9 +1,12 @@
 // @vitest-environment jsdom
+import { afterEach, beforeAll, beforeEach, describe, expect, test, vi } from "vitest";
 import { SessionStorageConfig, LocalStorageConfig } from "src/frontend/data/config";
 
 // Node 24 ships a broken globalThis.localStorage (missing clear/getItem/setItem)
 // which shadows jsdom's proper implementation. Replace it with a spec-compliant mock.
 beforeAll(() => {
+  vi.useFakeTimers();
+
   if (typeof window.localStorage.clear !== "function") {
     const store: Record<string, string> = {};
     Object.defineProperty(window, "localStorage", {
@@ -27,6 +30,10 @@ beforeAll(() => {
       configurable: true,
     });
   }
+});
+
+afterEach(() => {
+  vi.runAllTimers();
 });
 
 describe("SessionStorageConfig", () => {
@@ -60,6 +67,7 @@ describe("LocalStorageConfig", () => {
 
   test("set and get a value", () => {
     LocalStorageConfig.set("clientConfig/leftPanelWidth", 400);
+    vi.advanceTimersByTime(50);
     const result = LocalStorageConfig.get<number>("clientConfig/leftPanelWidth");
     expect(result).toEqual(400);
   });
@@ -71,6 +79,7 @@ describe("LocalStorageConfig", () => {
 
   test("clear removes all items", () => {
     LocalStorageConfig.set("clientConfig/leftPanelWidth", 500);
+    vi.advanceTimersByTime(50);
     LocalStorageConfig.clear();
     const result = LocalStorageConfig.get("clientConfig/leftPanelWidth", 300);
     expect(result).toEqual(300);

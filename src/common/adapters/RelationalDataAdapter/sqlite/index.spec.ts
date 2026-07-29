@@ -51,11 +51,14 @@ describe("SQLiteDataAdapter file validation", () => {
     }
   });
 
-  test("missing file → authenticate throws 'SQLite file not found'", async () => {
+  test("missing file → authenticate succeeds (creates file), getTables throws 'SQLite file is empty'", async () => {
     const dir = mkTmpDir();
     const missingPath = path.join(dir, "does-not-exist.db");
     const adapter = new SQLiteDataAdapter(`sqlite://${missingPath}`);
-    await expect(adapter.authenticate()).rejects.toThrow(/SQLite file not found at:/);
+    await expect(adapter.authenticate()).resolves.toBeUndefined();
+    await expect(adapter.getTables()).rejects.toThrow(/SQLite file is empty/);
+    expect(fs.existsSync(missingPath)).toBe(true);
+    await adapter.disconnect();
   });
 
   test("empty file → authenticate succeeds, getTables throws 'SQLite file is empty'", async () => {

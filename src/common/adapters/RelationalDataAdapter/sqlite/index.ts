@@ -109,7 +109,11 @@ export default class SQLiteDataAdapter extends BaseDataAdapter implements IDataA
     this._fileState = state;
 
     if (state === "missing") {
-      throw new Error(`SQLite file not found at: ${storagePath}`);
+      // Create the file — node:sqlite will treat an empty file as a fresh blank database.
+      // This matches SQLite's standard behavior of auto-creating files on connect.
+      fs.writeFileSync(storagePath, "");
+      this._fileState = "empty";
+      return storagePath;
     }
     if (state === "invalid") {
       throw new Error(`Invalid SQLite file: ${storagePath} (not a SQLite database)`);
