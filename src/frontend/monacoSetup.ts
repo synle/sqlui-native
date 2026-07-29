@@ -15,6 +15,12 @@ import "monaco-editor/esm/vs/basic-languages/shell/shell.contribution";
 (monaco.languages as any).html = htmlLanguage;
 (monaco.languages as any).typescript = typescriptLanguage;
 
+import "monaco-editor/esm/vs/basic-languages/html/html.contribution";
+import "monaco-editor/esm/vs/basic-languages/css/css.contribution";
+import "monaco-editor/esm/vs/basic-languages/python/python.contribution";
+import "monaco-editor/esm/vs/basic-languages/java/java.contribution";
+import "monaco-editor/esm/vs/basic-languages/typescript/typescript.contribution";
+
 import editorWorker from "monaco-editor/esm/vs/editor/editor.worker?worker";
 import jsonWorker from "monaco-editor/esm/vs/language/json/json.worker?worker";
 import htmlWorker from "monaco-editor/esm/vs/language/html/html.worker?worker";
