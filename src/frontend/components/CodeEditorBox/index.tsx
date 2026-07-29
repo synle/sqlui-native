@@ -3,9 +3,10 @@ import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
 import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
 import ToggleButton from "@mui/material/ToggleButton";
-import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import AdvancedEditor from "src/frontend/components/CodeEditorBox/AdvancedEditor";
+import React, { lazy, Suspense, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import SimpleEditor from "src/frontend/components/CodeEditorBox/SimpleEditor";
+
+const AdvancedEditor = lazy(() => import("src/frontend/components/CodeEditorBox/AdvancedEditor"));
 import InputError from "src/frontend/components/InputError";
 import Select from "src/frontend/components/Select";
 import { useEditorModeSetting, useWordWrapSetting } from "src/frontend/hooks/useSetting";
@@ -299,7 +300,7 @@ export default function CodeEditorBox(props: CodeEditorProps): React.JSX.Element
         variant="outlined"
         sx={props.fillHeight ? { display: "flex", flexDirection: "column", flex: 1, minHeight: 0 } : undefined}
       >
-        <AdvancedEditor
+        <Suspense><AdvancedEditor
           id={props.id}
           language={languageToUse}
           value={props.value}
@@ -315,7 +316,7 @@ export default function CodeEditorBox(props: CodeEditorProps): React.JSX.Element
           editorRef={props.editorRef}
           completionItems={props.completionItems}
           variables={props.variables}
-        />
+        /></Suspense>
         {editorOptionBox}
       </Paper>
       {shouldShowRequiredError && <InputError message="This field is required" sx={{ ml: 2 }} />}

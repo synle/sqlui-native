@@ -10,10 +10,16 @@ import "monaco-editor/esm/vs/basic-languages/graphql/graphql.contribution";
 import "monaco-editor/esm/vs/basic-languages/shell/shell.contribution";
 
 // edcore.main skips the language namespace assignments that editor.main does.
-// Re-assign them explicitly so App.tsx can use monaco.languages.typescript.javascriptDefaults.
+// Re-assign them explicitly and configure TS/JS defaults.
 (monaco.languages as any).json = jsonLanguage;
 (monaco.languages as any).html = htmlLanguage;
 (monaco.languages as any).typescript = typescriptLanguage;
+
+// @ts-ignore — monaco types mark languages.typescript as deprecated but it works at runtime
+monaco.languages.typescript.javascriptDefaults.setCompilerOptions({
+  noLib: true,
+  allowNonTsExtensions: true,
+});
 
 import "monaco-editor/esm/vs/basic-languages/html/html.contribution";
 import "monaco-editor/esm/vs/basic-languages/css/css.contribution";

@@ -2,18 +2,26 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
-import React, { useCallback, useEffect, useState } from "react";
+import React, { lazy, Suspense, useCallback, useEffect, useState } from "react";
 import { queryKeys } from "src/frontend/hooks/queryKeys";
 import { getCodeSnippet, isDialectSupportManagedMetadata } from "src/common/adapters/DataScriptFactory";
-import { AddBookmarkConnectionContent, AddBookmarkQueryContent } from "src/frontend/components/AddBookmarkModal";
 import CodeEditorBox from "src/frontend/components/CodeEditorBox";
 import CommandPalette from "src/frontend/components/CommandPalette";
-import ImportModal, { ImportMode } from "src/frontend/components/ImportModal";
-import ConnectionHelper from "src/frontend/components/ConnectionHelper";
-import SchemaSearchModal from "src/frontend/components/SchemaSearchModal";
+import { ImportMode } from "src/frontend/components/ImportModal";
 import SessionSelectionForm from "src/frontend/components/SessionSelectionForm";
-import Settings, { ChangeSoftDeleteInput } from "src/frontend/components/Settings";
+import { ChangeSoftDeleteInput } from "src/frontend/components/Settings";
 import { downloadText } from "src/frontend/data/file";
+
+const ImportModal = lazy(() => import("src/frontend/components/ImportModal"));
+const ConnectionHelper = lazy(() => import("src/frontend/components/ConnectionHelper"));
+const SchemaSearchModal = lazy(() => import("src/frontend/components/SchemaSearchModal"));
+const SettingsLazy = lazy(() => import("src/frontend/components/Settings"));
+const AddBookmarkConnectionContent = lazy(() =>
+  import("src/frontend/components/AddBookmarkModal").then((m) => ({ default: m.AddBookmarkConnectionContent })),
+);
+const AddBookmarkQueryContent = lazy(() =>
+  import("src/frontend/components/AddBookmarkModal").then((m) => ({ default: m.AddBookmarkQueryContent })),
+);
 import { useActionDialogs } from "src/frontend/hooks/useActionDialogs";
 import {
   useDeleteConnection,
@@ -420,7 +428,7 @@ export default function MissionControl() {
     try {
       await modal({
         title: "Add query to Bookmarks",
-        message: <AddBookmarkQueryContent query={restOfQuery} onDone={dismissDialog} />,
+        message: <Suspense><AddBookmarkQueryContent query={restOfQuery} onDone={dismissDialog} /></Suspense>,
         showCloseButton: true,
         size: "sm",
       });
@@ -790,7 +798,7 @@ export default function MissionControl() {
     try {
       await modal({
         title: "Add connection to Bookmarks",
-        message: <AddBookmarkConnectionContent connection={restOfConnectionMetaData} onDone={dismissDialog} />,
+        message: <Suspense><AddBookmarkConnectionContent connection={restOfConnectionMetaData} onDone={dismissDialog} /></Suspense>,
         showCloseButton: true,
         size: "sm",
       });
@@ -1155,7 +1163,7 @@ export default function MissionControl() {
     try {
       await modal({
         title: "Import Connections / Queries / Bookmarks",
-        message: <ImportModal initialValue={value} onImport={_processImport} />,
+        message: <Suspense><ImportModal initialValue={value} onImport={_processImport} /></Suspense>,
         showCloseButton: true,
         isFullScreen: true,
         disableBackdropClick: true,
@@ -1226,7 +1234,7 @@ export default function MissionControl() {
 
       await modal({
         title: "Schema Search",
-        message: <SchemaSearchModal onNavigate={onNavigate} />,
+        message: <Suspense><SchemaSearchModal onNavigate={onNavigate} /></Suspense>,
         showCloseButton: true,
         size: "md",
       });
@@ -1238,7 +1246,7 @@ export default function MissionControl() {
   const onShowSettings = async () => {
     await modal({
       title: "Settings",
-      message: <Settings />,
+      message: <Suspense><SettingsLazy /></Suspense>,
       showCloseButton: true,
       size: "xs",
     });
@@ -1373,16 +1381,9 @@ export default function MissionControl() {
             modal({
               title: "Connection Helper",
               message: (
-                <ConnectionHelper
+<Suspense><ConnectionHelper
                   onChange={onApplyConnectionHelper}
-                  onClose={dismissDialog}
-                  scheme={scheme}
-                  username={username}
-                  password={password}
-                  host={host}
-                  port={port}
-                  restOfConnectionString={restOfConnectionString}
-                />
+                /></Suspense>
               ),
               showCloseButton: true,
             });

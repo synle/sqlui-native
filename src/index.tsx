@@ -3,9 +3,8 @@ import CssBaseline from "@mui/material/CssBaseline";
 import { createTheme, Theme, ThemeProvider } from "@mui/material/styles";
 import { createRoot } from "react-dom/client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { HashRouter, Route, Routes } from "react-router";
-import { useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import App from "src/frontend/App";
 import SessionExpiredPage from "src/frontend/views/SessionExpiredPage";
 import SessionSelectPage from "src/frontend/views/SessionSelectPage";
@@ -149,6 +148,10 @@ function CombinedContextProvider({ children }) {
   ].reduceRight((acc, Provider) => <Provider>{acc}</Provider>, children);
 }
 
+const ReactQueryDevtoolsLazy = lazy(() =>
+  import("@tanstack/react-query-devtools").then((m) => ({ default: m.ReactQueryDevtools })),
+);
+
 /**
  * Renders React Query Devtools when toggled via Ctrl+Shift+Alt+D (Win/Linux) or Cmd+Shift+Option+D (Mac).
  * Renders nothing when the panel is hidden.
@@ -168,7 +171,7 @@ function DevtoolsToggle() {
   }, []);
 
   if (!show) return null;
-  return <ReactQueryDevtools initialIsOpen={true} />;
+  return <Suspense><ReactQueryDevtoolsLazy initialIsOpen={true} /></Suspense>;
 }
 
 /**
