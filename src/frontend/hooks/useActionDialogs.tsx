@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useMemo, useState } from "react";
 import { AlertInput } from "src/frontend/components/ActionDialogs/AlertDialog";
 import { ChoiceInput, ChoiceOption } from "src/frontend/components/ActionDialogs/ChoiceDialog";
 import { ModalInput } from "src/frontend/components/ActionDialogs/ModalDialog";
@@ -58,7 +58,8 @@ export default function WrappedContext(props: { children: React.ReactNode }): Re
   // State to hold the theme value
   const [data, setData] = useState(_actionDialogs);
   // Provide the theme value and toggle function to the children components
-  return <TargetContext.Provider value={{ data, setData }}>{props.children}</TargetContext.Provider>;
+  const value = useMemo(() => ({ data, setData }), [data]);
+  return <TargetContext.Provider value={value}>{props.children}</TargetContext.Provider>;
 }
 
 /**

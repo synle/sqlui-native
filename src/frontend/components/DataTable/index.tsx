@@ -59,20 +59,6 @@ export function DataTableWithJSONList(props: DataTableWithJSONListProps) {
   const tableRenderer = useTableRenderer();
   const isAdvancedTableRenderer = tableRenderer === "advanced";
 
-  useMemo(() => {
-    for (const value of data) {
-      if (value !== null) {
-        for (const columnValue of Object.values(value)) {
-          if (typeof columnValue === "object" && columnValue !== null) {
-            return true;
-          }
-        }
-      }
-    }
-
-    return false;
-  }, [data]);
-
   const columns: ColumnDef<any, any>[] = useMemo(() => {
     const newColumnNames = new Set<string>();
     for (let i = 0; i < data.length; i++) {
