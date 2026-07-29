@@ -24,13 +24,27 @@ const buildDate = (() => {
 })();
 
 /**
+ * Vite plugin that removes `crossorigin` attributes from `<script>` and `<link>` tags
+ * in the generated HTML. The `tauri://` protocol used by Tauri does not support the
+ * `crossorigin` attribute, and Vite adds it by default to all module scripts and preload links.
+ */
+function stripCrossoriginPlugin(): import("vite").Plugin {
+  return {
+    name: "strip-crossorigin",
+    transformIndexHtml(html) {
+      return html.replace(/\s+crossorigin(=["'][^"']*["'])?/gi, "");
+    },
+  };
+}
+
+/**
  * Vite build configuration for the React frontend.
  * Dev server runs on port 3000 and proxies /api requests to the sqlui-server on port 3001.
  * @param {{ command: string }} env - Vite config environment with the current command ("serve" or "build").
  * @returns {import('vite').UserConfig} The resolved Vite configuration object.
  */
 export default defineConfig(({ command }) => ({
-  plugins: [react()],
+  plugins: [react(), stripCrossoriginPlugin()],
   define: {
     __BUILD_COMMIT__: JSON.stringify(gitCommit),
     __BUILD_CHANNEL__: JSON.stringify(process.env.BUILD_CHANNEL || "dev"),
@@ -85,7 +99,15 @@ export default defineConfig(({ command }) => ({
     sourcemap: false,
     rollupOptions: {
       output: {
-        inlineDynamicImports: true,
+        manualChunks(id) {
+          if (id.includes("node_modules")) {
+            if (id.includes("monaco-editor")) return "vendor-monaco";
+            if (id.includes("react-router") || id.includes("react-dom") || id.includes("scheduler")) return "vendor-react";
+            if (id.includes("@mui") || id.includes("emotion")) return "vendor-mui";
+            if (id.includes("@tanstack/react-query")) return "vendor-tanstack";
+            if (id.includes("reactflow") || id.includes("@xyflow")) return "vendor-xyflow";
+          }
+        },
       },
     },
   },
