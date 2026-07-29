@@ -122,6 +122,11 @@ export default function CodeEditorBox(props: CodeEditorProps): React.JSX.Element
 
   /** Tracks the last value emitted via onChange to avoid duplicate calls. */
   const lastEmittedRef = useRef<string | undefined>(props.value);
+  /** Latest live-typed value that has not been emitted through onChange yet. */
+  const pendingValueRef = useRef<string | undefined>(undefined);
+  /** Ref to onChange so the unmount flush never runs against a stale closure. */
+  const onChangeRef = useRef(props.onChange);
+  onChangeRef.current = props.onChange;
 
   /** Calls onChange with a debounced delay (used on live typing). */
   const debounceMs = Math.min(props.debounceMs ?? DEFAULT_DEBOUNCE_MS, MAX_DEBOUNCE_MS);
@@ -130,7 +135,10 @@ export default function CodeEditorBox(props: CodeEditorProps): React.JSX.Element
     (newValue: string) => {
       if (!props.onChange) return;
       if (liveChangeTimerRef.current) clearTimeout(liveChangeTimerRef.current);
+      pendingValueRef.current = newValue;
       liveChangeTimerRef.current = setTimeout(() => {
+        liveChangeTimerRef.current = null;
+        pendingValueRef.current = undefined;
         lastEmittedRef.current = newValue;
         props.onChange!(newValue);
       }, debounceMs);
@@ -144,10 +152,29 @@ export default function CodeEditorBox(props: CodeEditorProps): React.JSX.Element
       clearTimeout(liveChangeTimerRef.current);
       liveChangeTimerRef.current = null;
     }
+    pendingValueRef.current = undefined;
     if (!props.onChange || newValue === lastEmittedRef.current) return;
     lastEmittedRef.current = newValue;
     props.onChange(newValue);
   };
+
+  // Flush (never drop) a debounced edit that is still in flight when the editor unmounts, e.g. the
+  // user types and immediately switches query tabs. Without this the last keystrokes are lost.
+  useEffect(
+    () => () => {
+      if (!liveChangeTimerRef.current) return;
+      clearTimeout(liveChangeTimerRef.current);
+      liveChangeTimerRef.current = null;
+
+      const pendingValue = pendingValueRef.current;
+      pendingValueRef.current = undefined;
+      if (pendingValue === undefined || pendingValue === lastEmittedRef.current) return;
+
+      lastEmittedRef.current = pendingValue;
+      onChangeRef.current?.(pendingValue);
+    },
+    [],
+  );
 
   const onSetHeight = (newHeight: string) => {
     setHeightSetting(newHeight);

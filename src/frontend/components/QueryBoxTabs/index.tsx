@@ -127,10 +127,10 @@ export default function QueryBoxTabs() {
 
   const tabIdx = queries?.findIndex((q) => q.selected === true) || 0;
 
-  const tabKeys: string[] = [];
+  const tabKeys: string[] = useMemo(() => [...(queries || []).map((q) => q.id), "add-query"], [queries]);
   const tabHeaders: React.ReactNode[] = useMemo(
     () => [
-      ...(queries || []).map((q, idx) => {
+      ...(queries || []).map((q) => {
         let options = [
           {
             label: "Save",
@@ -215,22 +215,20 @@ export default function QueryBoxTabs() {
           ];
         }
 
-        tabKeys.push(q.name + "." + idx);
-
         return (
-          <>
+          <React.Fragment key={q.id}>
             {q.executing && <CircularProgress size={14} sx={{ mr: 0.5 }} />}
             {q.pinned && <PushPinIcon />}
             {q.name}
             <DropdownButton id="table-action-split-button" options={options}>
               <ArrowDropDownIcon fontSize="small" />
             </DropdownButton>
-          </>
+          </React.Fragment>
         );
       }),
-      <>
+      <React.Fragment key="add-query">
         <AddIcon fontSize="small" aria-label="Add query" /> Add Query
-      </>,
+      </React.Fragment>,
     ],
     [queries],
   );
@@ -259,6 +257,7 @@ export default function QueryBoxTabs() {
       id="QueryBoxTabs"
       tabIdx={tabIdx}
       tabHeaders={tabHeaders}
+      tabKeys={tabKeys}
       tabContents={tabContents}
       orientation={queryTabOrientation}
       onTabChange={(newTabIdx) => {

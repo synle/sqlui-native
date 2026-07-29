@@ -124,6 +124,21 @@ async function typeInEditor(page: Page, text: string) {
   await page.waitForTimeout(300);
 }
 
+/** Reads the current text of the visible QueryBox Monaco editor. */
+async function readEditorValue(page: Page): Promise<string> {
+  return page.evaluate(() => {
+    const queryBoxEl = document.querySelector(".CodeEditorBox__QueryBox");
+    const allEditors = (window as any).monaco?.editor?.getEditors() || [];
+    const editor = allEditors.find((e: any) => {
+      try {
+        return queryBoxEl?.contains(e.getDomNode());
+      } catch {
+        return false;
+      }
+    });
+    return editor?.getValue() ?? "";
+  });
+}
 /** Clicks execute and waits for results (SQL queries). */
 async function executeQuery(page: Page) {
   await page.locator("#btnExecuteCommand").click();
@@ -378,6 +393,72 @@ test.describe("Phase 4: Query Tabs", () => {
     await page.getByRole("menuitem", { name: "Duplicate" }).click();
 
     await expect(queryTabs).toHaveCount(tabsBefore + 1, { timeout: 5_000 });
+  });
+
+  test("editor still responds to keypresses after heavy tab churn", async ({ page }) => {
+    // Regression: AdvancedEditor never disposed its Monaco editor on unmount, so every tab switch
+    // leaked a live editor into Monaco's global registry. A leaked editor that was focused when it
+    // was removed from the DOM keeps reporting hasTextFocus() === true (Chromium fires no blur for
+    // a removed node), wins getFocusedCodeEditor(), and swallows every keybinding-driven key.
+    const queryTabs = page.locator("#QueryBoxTabs > .Tab__Headers [role='tab']:not(:last-child)");
+    const addTab = page.getByRole("tab", { name: "Add Query" });
+    const tabsBefore = await queryTabs.count();
+
+    await addTab.click();
+    await expect(queryTabs).toHaveCount(tabsBefore + 1, { timeout: 10_000 });
+    await addTab.click();
+    await expect(queryTabs).toHaveCount(tabsBefore + 2, { timeout: 10_000 });
+
+    await queryTabs.first().click({ button: "right" });
+    await page.getByRole("menuitem", { name: "Duplicate" }).click();
+    await expect(queryTabs).toHaveCount(tabsBefore + 3, { timeout: 10_000 });
+
+    // bounce back and forth to churn the editor mount/unmount cycle, which is the reported repro
+    const totalTabs = await queryTabs.count();
+    for (let pass = 0; pass < 3; pass++) {
+      for (let idx = 0; idx < totalTabs; idx++) {
+        await queryTabs.nth(idx).click();
+        await page.waitForTimeout(100);
+      }
+    }
+
+    // Only the active tab renders a body, so the registry must not grow with the number of visits.
+    const editorStats = await page.evaluate(() => {
+      const editors = (window as any).monaco?.editor?.getEditors() || [];
+      const detachedFocused = editors.filter((e: any) => {
+        try {
+          return !document.body.contains(e.getDomNode()) && e.hasTextFocus();
+        } catch {
+          return false;
+        }
+      }).length;
+      return { total: editors.length, detachedFocused };
+    });
+    expect(editorStats.total).toBeLessThanOrEqual(2);
+    expect(editorStats.detachedFocused).toBe(0);
+
+    const editorContainer = page.locator(".CodeEditorBox__QueryBox .monaco-editor").first();
+    await expect(editorContainer).toBeVisible({ timeout: 10_000 });
+
+    await typeInEditor(page, "");
+    await editorContainer.click();
+    await page.waitForTimeout(200);
+
+    // plain typing
+    await page.keyboard.type("select 1234");
+    await page.waitForTimeout(300);
+    expect(await readEditorValue(page)).toContain("select 1234");
+
+    // keybinding-dispatched keys — these are what a hijacked getFocusedCodeEditor() swallows
+    await page.keyboard.press("Backspace");
+    await page.keyboard.press("Backspace");
+    await page.waitForTimeout(300);
+    expect(await readEditorValue(page)).toContain("select 12");
+
+    await page.keyboard.press("Enter");
+    await page.keyboard.type("from t");
+    await page.waitForTimeout(300);
+    expect(await readEditorValue(page)).toContain("\nfrom t");
   });
 });
 

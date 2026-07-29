@@ -1924,8 +1924,8 @@ export default function MissionControl() {
     document.addEventListener("keydown", onKeyboardShortcutEventForAll, true);
     !appPlatform.isDesktop && document.addEventListener("keydown", onKeyboardShortcutEventForBrowser, true);
     return () => {
-      document.removeEventListener("keydown", onKeyboardShortcutEventForAll);
-      !appPlatform.isDesktop && document.removeEventListener("keydown", onKeyboardShortcutEventForBrowser);
+      document.removeEventListener("keydown", onKeyboardShortcutEventForAll, true);
+      !appPlatform.isDesktop && document.removeEventListener("keydown", onKeyboardShortcutEventForBrowser, true);
     };
   }, []);
 

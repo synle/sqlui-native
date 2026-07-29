@@ -3,6 +3,12 @@ import { monaco } from "src/frontend/monacoSetup";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { styled } from "@mui/system";
 import { CompletionItem, DecoratedEditorProps as AdvancedEditorProps, EditorVariable } from "src/frontend/components/CodeEditorBox";
+import {
+  cacheEditorModel,
+  consumeReleasedEditorId,
+  disposeEditorModel,
+  takeCachedEditorModel,
+} from "src/frontend/components/CodeEditorBox/editorModelCache";
 import { useDarkModeSetting } from "src/frontend/hooks/useSetting";
 
 const AdvancedEditorContainer = styled("div")(() => {
@@ -22,10 +28,13 @@ const DEFAULT_OPTIONS = {
   },
 };
 
-const EDITOR_MODELS_MAP: Record<string, any> = {};
-
 /**
  * Monaco-based code editor with undo/redo stack preservation, dark mode support, and selection text retrieval.
+ *
+ * The editor instance is created exactly once per mount and is always disposed on unmount. Option
+ * changes (theme, word wrap, language, read-only) are applied in place rather than by recreating
+ * the editor, because a leaked Monaco editor stays registered in Monaco's global editor registry
+ * and can hijack `getFocusedCodeEditor()`, which silently swallows keybindings in the visible editor.
  * @param props - Editor configuration including value, language, word wrap, and editor ref.
  * @returns The rendered Monaco editor container.
  */
@@ -33,7 +42,6 @@ export default function AdvancedEditor(props: AdvancedEditorProps): React.JSX.El
   const colorMode = useDarkModeSetting();
   const [editor, setEditor] = useState<monaco.editor.IStandaloneCodeEditor | null>(null);
   const monacoEl = useRef(null);
-  const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const decorationIdsRef = useRef<string[]>([]);
   /** True during programmatic value sync — suppresses onDidChangeModelContent callbacks. */
   const suppressChangeRef = useRef(false);
@@ -48,64 +56,21 @@ export default function AdvancedEditor(props: AdvancedEditorProps): React.JSX.El
   const valueRef = useRef(props.value);
   valueRef.current = props.value;
 
-  const onSetupMonacoEditor = useCallback(() => {
-    if (debounceTimerRef.current) {
-      clearTimeout(debounceTimerRef.current);
-    }
-    debounceTimerRef.current = setTimeout(() => {
-      editor?.dispose();
+  // Refs read by the create/teardown effect, which intentionally runs only once per mount.
+  const idRef = useRef(props.id);
+  idRef.current = props.id;
+  const languageRef = useRef(props.language);
+  languageRef.current = props.language;
+  const wordWrapRef = useRef(props.wordWrap);
+  wordWrapRef.current = props.wordWrap;
+  const readOnlyRef = useRef(props.readOnly);
+  readOnlyRef.current = props.readOnly;
+  const colorModeRef = useRef(colorMode);
+  colorModeRef.current = colorMode;
 
-      if (monacoEl.current) {
-        const newEditor = monaco.editor.create(monacoEl.current!, {
-          value: valueRef.current,
-          language: props.language,
-          theme: colorMode === "dark" ? "vs-dark" : "light",
-          wordWrap: props.wordWrap === true ? "on" : "off",
-          readOnly: !!props.readOnly,
-          ...DEFAULT_OPTIONS,
-        });
+  /** Resolves the Monaco theme name for the current color mode. */
+  const getThemeName = useCallback((mode: string | undefined) => (mode === "dark" ? "vs-dark" : "light"), []);
 
-        newEditor.onDidBlurEditorWidget(() => {
-          onBlurRef.current?.(newEditor.getValue() || "");
-        });
-
-        newEditor.onDidChangeModelContent(() => {
-          if (suppressChangeRef.current) return;
-          hasPendingChangeRef.current = true;
-          onLiveChangeRef.current?.(newEditor.getValue() || "");
-        });
-
-        // clean up the model as we don't need it while it's active
-        if (props.id && EDITOR_MODELS_MAP[props.id]) {
-          newEditor.setModel(EDITOR_MODELS_MAP[props.id]);
-          delete EDITOR_MODELS_MAP[props.id];
-        }
-
-        hasPendingChangeRef.current = false;
-        setEditor(newEditor);
-      }
-    }, 100);
-  }, [editor, props.language, props.wordWrap, props.id, colorMode]);
-
-  // this is used to clean up the editor
-  useEffect(() => {
-    return () => {
-      // dispose the editor
-      editor?.dispose();
-      setEditor(null);
-    };
-  }, []);
-
-  // this is used to clean up the editor
-  useEffect(() => {
-    return () => {
-      // keep track of the undo if we need it
-      if (editor && props.id) {
-        // https://stackoverflow.com/questions/48210120/get-restore-monaco-editor-undoredo-stack
-        EDITOR_MODELS_MAP[props.id] = editor?.getModel();
-      }
-    };
-  }, [editor, props.id]);
   // Sync external value changes to the editor (e.g., loading a saved query, applying a template).
   // Skips when the editor already has the same content (round-trip from user typing)
   // or when the editor has pending user-initiated changes (debounce hasn't settled).
@@ -177,6 +142,27 @@ export default function AdvancedEditor(props: AdvancedEditorProps): React.JSX.El
       };
     }
   }, [editor, props.editorRef]);
+
+  // Apply the theme in place. Monaco's standalone theme service is global, so this is the same
+  // scope the `theme` construction option had.
+  useEffect(() => {
+    monaco.editor.setTheme(getThemeName(colorMode));
+  }, [colorMode, getThemeName]);
+
+  // Apply word wrap / read-only in place instead of recreating the editor.
+  useEffect(() => {
+    editor?.updateOptions({
+      wordWrap: props.wordWrap === true ? "on" : "off",
+      readOnly: !!props.readOnly,
+    });
+  }, [editor, props.wordWrap, props.readOnly]);
+
+  // Apply the language in place instead of recreating the editor.
+  useEffect(() => {
+    const model = editor?.getModel();
+    if (!model || model.isDisposed() || !props.language) return;
+    monaco.editor.setModelLanguage(model, props.language);
+  }, [editor, props.language]);
 
   // register autocomplete suggestions from connection metadata
   useEffect(() => {
@@ -264,7 +250,9 @@ export default function AdvancedEditor(props: AdvancedEditorProps): React.JSX.El
     const disposable = model.onDidChangeContent(() => updateDecorations());
     return () => {
       disposable.dispose();
-      if (editor) {
+      // The model is parked for reuse, so strip the decorations we added rather than leaving
+      // stale ranges behind for the next mount.
+      if (!model.isDisposed()) {
         decorationIdsRef.current = editor.deltaDecorations(decorationIdsRef.current, []);
       }
     };
@@ -314,9 +302,62 @@ export default function AdvancedEditor(props: AdvancedEditorProps): React.JSX.El
     return () => disposable.dispose();
   }, [props.variables, props.language]);
 
-  // here we will initiate the editor
-  // and can be also be used to update the settings
-  useEffect(onSetupMonacoEditor, [monacoEl, props.wordWrap, props.language, colorMode]);
+  // Create the editor once per mount and always dispose it on unmount.
+  //
+  // This effect is declared last on purpose: React runs cleanups in declaration order, so every
+  // effect above releases its Monaco disposables while the editor is still alive.
+  useEffect(() => {
+    const container = monacoEl.current;
+    if (!container) return;
+
+    const id = idRef.current;
+
+    // We create and own the model so that `editor.dispose()` does not dispose it — Monaco only
+    // disposes a model it created itself (StandaloneEditor._ownsModel). That is what lets the
+    // undo stack survive an unmount.
+    const restoredModel = takeCachedEditorModel(id);
+    const model = restoredModel ?? monaco.editor.createModel(valueRef.current || "", languageRef.current);
+
+    const newEditor = monaco.editor.create(container, {
+      model,
+      theme: getThemeName(colorModeRef.current),
+      wordWrap: wordWrapRef.current === true ? "on" : "off",
+      readOnly: !!readOnlyRef.current,
+      ...DEFAULT_OPTIONS,
+    });
+
+    newEditor.onDidBlurEditorWidget(() => {
+      onBlurRef.current?.(newEditor.getValue() || "");
+    });
+
+    newEditor.onDidChangeModelContent(() => {
+      if (suppressChangeRef.current) return;
+      hasPendingChangeRef.current = true;
+      onLiveChangeRef.current?.(newEditor.getValue() || "");
+    });
+
+    hasPendingChangeRef.current = false;
+    setEditor(newEditor);
+
+    return () => {
+      const currentId = idRef.current;
+      const currentModel = newEditor.getModel();
+
+      newEditor.dispose();
+      setEditor(null);
+
+      if (!currentModel || currentModel.isDisposed()) {
+        return;
+      }
+
+      if (currentId && !consumeReleasedEditorId(currentId)) {
+        cacheEditorModel(currentId, currentModel);
+        return;
+      }
+
+      disposeEditorModel(currentModel);
+    };
+  }, [getThemeName]);
 
   return (
     <AdvancedEditorContainer
