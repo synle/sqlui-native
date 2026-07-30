@@ -305,6 +305,11 @@ export function setUpDataEndpoints(aHonoAppContext: Hono) {
       // Server process id — surfaced so the portal UI can show it in the
       // title bar. Always present; consumers gate display on portal mode.
       serverPid: process.pid,
+      // Machine actually running the server. The About dialog falls back to
+      // these when the frontend bundle has no Tauri build target (portal /
+      // browser-dev), where the bundle itself is OS-agnostic.
+      hostPlatform: process.platform,
+      hostArch: process.arch,
       ...settingsData,
     });
   });

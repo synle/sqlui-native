@@ -89,6 +89,63 @@ const gitCommit = (() => {
   }
 })();
 
+/**
+ * Ordered matchers that map a Rust target triple to a normalized OS token.
+ * The triple is matched as a whole (not just its third segment) because vendor
+ * and ABI segments vary — `aarch64-apple-darwin`, `x86_64-pc-windows-msvc` and
+ * `aarch64-unknown-linux-gnu` all have to resolve.
+ */
+const TRIPLE_OS_MATCHERS: [RegExp, string][] = [
+  [/darwin|apple|macos/, "macos"],
+  [/windows|msvc|mingw/, "windows"],
+  [/android/, "android"],
+  [/linux/, "linux"],
+];
+
+/** The platform an artifact is built for, as reported by the Tauri CLI. */
+export type BuildTarget = {
+  /** Normalized OS token (`macos`, `windows`, `linux`, ...), or `""` when unknown. */
+  os: string;
+  /** Normalized CPU token (`aarch64`, `x86_64`, `i686`, `universal`, ...), or `""` when unknown. */
+  arch: string;
+  /** Raw Rust target triple, or `""` when the build is not Tauri-driven. */
+  triple: string;
+};
+
+/**
+ * Resolves the platform an artifact is being built for from the Tauri CLI environment.
+ *
+ * Tauri v2 injects `TAURI_ENV_TARGET_TRIPLE` / `TAURI_ENV_PLATFORM` / `TAURI_ENV_ARCH` into the
+ * `beforeBuildCommand` environment, so `tauri build --target <triple>` yields per-artifact accurate
+ * values. Outside Tauri (`npm run dev`, `npm run build`, `npm run build:portal`) the eventual target
+ * is unknowable — the build host is deliberately NOT used as a stand-in, because a portal bundle
+ * built on a Linux runner runs on any OS. Every field is returned empty instead, and the About
+ * dialog falls back to the runtime host reported by the server.
+ *
+ * @param env - Environment variables to read.
+ * @returns Target descriptor; all fields are `""` when the build is not Tauri-driven.
+ */
+export function resolveBuildTarget(env: Record<string, string | undefined> = process.env): BuildTarget {
+  const triple = (env.TAURI_ENV_TARGET_TRIPLE || "").trim();
+  const platform = (env.TAURI_ENV_PLATFORM || "").trim().toLowerCase();
+  const arch = (env.TAURI_ENV_ARCH || "").trim().toLowerCase();
+
+  if (triple) {
+    const lowerTriple = triple.toLowerCase();
+    const matchedOs = TRIPLE_OS_MATCHERS.find(([pattern]) => pattern.test(lowerTriple));
+    return {
+      os: matchedOs ? matchedOs[1] : platform,
+      arch: lowerTriple.split("-")[0] || arch,
+      triple,
+    };
+  }
+
+  return { os: platform, arch, triple: "" };
+}
+
+/** Platform this frontend bundle is being built for; empty outside a Tauri build. */
+const buildTarget = resolveBuildTarget();
+
 /** Build timestamp in MM/DD/YYYY HH:MM format. */
 const buildDate = (() => {
   const now = new Date();
@@ -126,6 +183,8 @@ export default defineConfig(({ command }) => ({
     __BUILD_COMMIT__: JSON.stringify(gitCommit),
     __BUILD_CHANNEL__: JSON.stringify(process.env.BUILD_CHANNEL || "dev"),
     __BUILD_DATE__: JSON.stringify(buildDate),
+    __BUILD_TARGET_OS__: JSON.stringify(buildTarget.os),
+    __BUILD_TARGET_ARCH__: JSON.stringify(buildTarget.arch),
   },
   root: ".",
   base: command === "serve" ? "/" : "./",

@@ -7,6 +7,9 @@ export default defineConfig({
     __BUILD_COMMIT__: JSON.stringify("test-commit"),
     __BUILD_CHANNEL__: JSON.stringify("dev"),
     __BUILD_DATE__: JSON.stringify("2026-01-01T00:00:00Z"),
+    // Empty target = "not a Tauri build", which is the branch that falls back to the runtime host.
+    __BUILD_TARGET_OS__: JSON.stringify(""),
+    __BUILD_TARGET_ARCH__: JSON.stringify(""),
   },
   resolve: {
     alias: {

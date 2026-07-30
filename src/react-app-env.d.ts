@@ -7,3 +7,7 @@ declare const __BUILD_COMMIT__: string;
 declare const __BUILD_CHANNEL__: string;
 /** ISO 8601 build date (e.g. "2026-04-19") injected at build time by Vite. */
 declare const __BUILD_DATE__: string;
+/** Normalized OS the artifact was built for (`macos`, `windows`, `linux`), or `""` outside a Tauri build. */
+declare const __BUILD_TARGET_OS__: string;
+/** Normalized CPU the artifact was built for (`aarch64`, `x86_64`, `universal`), or `""` outside a Tauri build. */
+declare const __BUILD_TARGET_ARCH__: string;

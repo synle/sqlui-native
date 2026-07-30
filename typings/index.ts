@@ -36,6 +36,10 @@ export module SqluiCore {
   export type ServerConfigs = {
     storageDir: string;
     isElectron: boolean;
+    /** Node `process.platform` of the machine running the server. */
+    hostPlatform?: string;
+    /** Node `process.arch` of the machine running the server. */
+    hostArch?: string;
     [key: string]: any;
   };
 

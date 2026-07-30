@@ -8,7 +8,7 @@ import Link from "@mui/material/Link";
 import Typography from "@mui/material/Typography";
 import { useActionDialogs } from "src/frontend/hooks/useActionDialogs";
 import { useGetServerConfigs } from "src/frontend/hooks/useServerConfigs";
-import { getArchLabel } from "src/frontend/utils/buildInfo";
+import { resolvePlatformLabels } from "src/frontend/utils/buildInfo";
 import { platform } from "src/frontend/platform";
 import appPackage from "src/package.json";
 
@@ -38,12 +38,19 @@ export function useShowAboutDialog() {
 
     const buildLabel =
       __BUILD_CHANNEL__ === "production" ? "Release" : `${__BUILD_CHANNEL__ === "beta" ? "Beta" : "Dev"} (${__BUILD_COMMIT__})`;
-    const archLabel = getArchLabel();
+    const { osLabel, archLabel } = resolvePlatformLabels({
+      platform: serverConfigs?.hostPlatform,
+      arch: serverConfigs?.hostArch,
+    });
 
     const infoRows: [string, React.ReactNode][] = [
       ["Version", appPackage.version],
-      ["Latest", newVersion],
-      ["Engine", `${(appPackage as any).engine || "Unknown"}${archLabel ? ` (${archLabel})` : ""}`],
+      // Release tags are `vX.Y.Z`; strip the prefix so it lines up with the Version row above.
+      // `releasePageUrl` keeps the raw tag because the GitHub URL needs it verbatim.
+      ["Latest", newVersion.replace(/^v/i, "")],
+      ["Engine", (appPackage as any).engine || "Unknown"],
+      ["Platform", osLabel],
+      ["Architecture", archLabel],
       ["Build", buildLabel],
       ["Build Date", __BUILD_DATE__],
     ];

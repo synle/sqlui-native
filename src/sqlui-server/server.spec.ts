@@ -95,6 +95,12 @@ describe("Configs", () => {
     expect(res.body).toHaveProperty("isElectron");
   });
 
+  test("GET /api/configs should report the runtime host platform and arch", async () => {
+    const res = await requestWithSupertest.get(`/api/configs`);
+    expect(res.status).toEqual(200);
+    expect(res.body.hostPlatform).toEqual(process.platform);
+    expect(res.body.hostArch).toEqual(process.arch);
+  });
   test("GET /api/configs should return default settings", async () => {
     const res = await requestWithSupertest.get(`/api/configs`);
     expect(res.status).toEqual(200);

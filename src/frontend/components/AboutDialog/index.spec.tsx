@@ -4,6 +4,7 @@ import { describe, test, expect, vi, beforeEach } from "vitest";
 
 const modalMock = vi.fn();
 const useGetServerConfigsMock = vi.fn();
+const openExternalUrlMock = vi.fn();
 
 vi.mock("src/frontend/hooks/useActionDialogs", () => ({
   useActionDialogs: () => ({ modal: modalMock }),
@@ -14,11 +15,14 @@ vi.mock("src/frontend/hooks/useServerConfigs", () => ({
 }));
 
 vi.mock("src/frontend/utils/buildInfo", () => ({
-  getArchLabel: () => "arm64",
+  resolvePlatformLabels: (host: { platform?: string; arch?: string } | undefined) => ({
+    osLabel: host?.platform === "win32" ? "Windows" : "macOS",
+    archLabel: host?.arch === "x64" ? "x64 (Intel) · 64-bit" : "ARM64 (Apple Silicon) · 64-bit",
+  }),
 }));
 
 vi.mock("src/frontend/platform", () => ({
-  platform: { openExternalUrl: vi.fn() },
+  platform: { openExternalUrl: (...args: unknown[]) => openExternalUrlMock(...args) },
 }));
 
 vi.mock("src/package.json", () => ({
@@ -41,12 +45,24 @@ import { useShowAboutDialog } from "src/frontend/components/AboutDialog";
 
 beforeEach(() => {
   modalMock.mockReset().mockResolvedValue(undefined);
-  useGetServerConfigsMock.mockReturnValue({ data: { storageDir: "/Users/me/.sqlui-native" } });
+  openExternalUrlMock.mockReset();
+  useGetServerConfigsMock.mockReturnValue({
+    data: { storageDir: "/Users/me/.sqlui-native", hostPlatform: "darwin", hostArch: "arm64" },
+  });
 });
 
 function HostComp() {
   const showAbout = useShowAboutDialog();
   return <button onClick={() => showAbout()}>Show About</button>;
+}
+
+/** Clicks the trigger, waits for the async version fetch, and renders the modal body. */
+async function openAboutDialog() {
+  const { container } = render(<HostComp />);
+  container.querySelector("button")!.click();
+  await new Promise((r) => setTimeout(r, 50));
+  expect(modalMock).toHaveBeenCalled();
+  return render(modalMock.mock.calls[0][0].message).container;
 }
 
 describe("useShowAboutDialog", () => {
@@ -90,5 +106,36 @@ describe("useShowAboutDialog", () => {
     btn.click();
     await new Promise((r) => setTimeout(r, 50));
     expect(modalMock).toHaveBeenCalled();
+  });
+  test("renders the Latest version without the leading v", async () => {
+    const body = await openAboutDialog();
+    expect(body.textContent).toContain("Latest");
+    expect(body.textContent).toContain("3.0.0");
+    expect(body.textContent).not.toContain("v3.0.0");
+  });
+
+  test("renders the platform and architecture rows", async () => {
+    const body = await openAboutDialog();
+    expect(body.textContent).toContain("Platform");
+    expect(body.textContent).toContain("macOS");
+    expect(body.textContent).toContain("Architecture");
+    expect(body.textContent).toContain("ARM64 (Apple Silicon)");
+  });
+
+  test("falls back to the runtime host reported by the server", async () => {
+    useGetServerConfigsMock.mockReturnValue({ data: { storageDir: "", hostPlatform: "win32", hostArch: "x64" } });
+    const body = await openAboutDialog();
+    expect(body.textContent).toContain("Windows");
+    expect(body.textContent).toContain("x64 (Intel)");
+  });
+
+  test("keeps the raw v-prefixed tag in the release download link", async () => {
+    (global.fetch as any).mockResolvedValueOnce({ json: () => Promise.resolve({ tag_name: "v9.9.9" }) });
+    const body = await openAboutDialog();
+    expect(body.textContent).toContain("9.9.9");
+
+    const downloadLink = [...body.querySelectorAll("a")].find((el) => el.textContent?.includes("Download latest version"));
+    (downloadLink as HTMLElement).click();
+    expect(openExternalUrlMock).toHaveBeenCalledWith("https://github.com/synle/sqlui-native/releases/tag/v9.9.9");
   });
 });
