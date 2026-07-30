@@ -566,7 +566,6 @@ jobs:
           node-version: ${{ inputs.node_version }}
           cache: "npm"
 
-
       - name: Publish release (un-draft and mark as latest)
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
