@@ -2,9 +2,7 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import path from "node:path";
 import { execSync } from "node:child_process";
-
-const REACT_CORE_CHUNK =
-  /\/node_modules\/(react(\/|$)|react-dom|react-is|scheduler|use-sync-external-store|react-router|react-router-dom)\//;
+import { getFrontendManualChunk } from "./scripts/vite-manual-chunks";
 
 /** Short git commit hash for build identification. */
 const gitCommit = (() => {
@@ -103,15 +101,7 @@ export default defineConfig(({ command }) => ({
     rollupOptions: {
       output: {
         manualChunks(id) {
-          const normalizedId = id.replace(/\\/g, "/");
-          if (!normalizedId.includes("/node_modules/")) {
-            return;
-          }
-          if (normalizedId.includes("/node_modules/monaco-editor/")) return "vendor-monaco";
-          if (REACT_CORE_CHUNK.test(normalizedId)) return "vendor-react";
-          if (normalizedId.includes("/node_modules/@mui/") || normalizedId.includes("/node_modules/@emotion/")) return "vendor-mui";
-          if (normalizedId.includes("/node_modules/@tanstack/react-query")) return "vendor-tanstack";
-          if (normalizedId.includes("/node_modules/reactflow/") || normalizedId.includes("/node_modules/@xyflow/")) return "vendor-xyflow";
+          return getFrontendManualChunk(id);
         },
       },
     },
