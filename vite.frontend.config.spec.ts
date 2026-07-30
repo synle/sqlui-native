@@ -53,9 +53,9 @@ describe("getFrontendManualChunk", () => {
   });
 
   it("groups the remaining heavy vendors into their own chunks", () => {
-    expect(getFrontendManualChunk(`${NODE_MODULES}/monaco-editor/esm/vs/editor/editor.api.js`)).toBe("vendor-monaco");
+    expect(getFrontendManualChunk(`${NODE_MODULES}/monaco-editor/esm/vs/editor.api.js`)).toBe("vendor-monaco");
     expect(getFrontendManualChunk(`${NODE_MODULES}/@mui/material/index.js`)).toBe("vendor-mui");
-    expect(getFrontendManualChunk(`${NODE_MODULES}/@emotion/react/dist/emotion-modules/emotion-react.esm.js`)).toBe("vendor-mui");
+    expect(getFrontendManualChunk(`${NODE_MODULES}/@emotion/react/dist/emotion-react.esm.js`)).toBe("vendor-mui");
     expect(getFrontendManualChunk(`${NODE_MODULES}/@tanstack/react-query/build/modern/index.js`)).toBe("vendor-tanstack");
     expect(getFrontendManualChunk(`${NODE_MODULES}/@xyflow/react/dist/esm/index.js`)).toBe("vendor-xyflow");
   });
@@ -63,7 +63,7 @@ describe("getFrontendManualChunk", () => {
   it("does not conflate packages that merely share a name prefix", () => {
     expect(getFrontendManualChunk(`${NODE_MODULES}/react-transition-group/esm/index.js`)).toBeUndefined();
     expect(getFrontendManualChunk(`${NODE_MODULES}/@tanstack/react-query-devtools/build/index.js`)).toBeUndefined();
-    expect(getFrontendManualChunk(`${NODE_MODULES}/monaco-editor-webpack-plugin/index.js`)).toBeUndefined();
+    expect(getFrontendManualChunk(`${NODE_MODULES}/monaco-to-editor-webpack-plugin/index.js`)).toBeUndefined();
   });
 
   it("leaves first-party sources to Rollup's default chunking", () => {
