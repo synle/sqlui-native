@@ -37,6 +37,7 @@ import {
 import { GlobalFilter, SimpleColumnFilter } from "src/frontend/components/DataTable/Filter";
 import DropdownMenu from "src/frontend/components/DropdownMenu";
 import { useAddDataSnapshot } from "src/frontend/hooks/useDataSnapshot";
+import useToaster from "src/frontend/hooks/useToaster";
 import { platform } from "src/frontend/platform";
 import { useLayoutModeSetting } from "src/frontend/hooks/useSetting";
 
@@ -57,6 +58,7 @@ export default function ModernDataTable(props: DataTableProps): React.JSX.Elemen
   //@ts-ignore
   const description = props.description || `Data Snapshot - ${new Date()}`;
   const { mutateAsync: addDataSnapshot } = useAddDataSnapshot();
+  const { add: addToast } = useToaster();
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [columnOrder, setColumnOrder] = useState<ColumnOrderState>([]);
   const [openContextMenuRowIdx, setOpenContextMenuRowIdx] = useState(-1);
@@ -173,8 +175,13 @@ export default function ModernDataTable(props: DataTableProps): React.JSX.Elemen
 
       if (dataSnapshot?.id) {
         platform.openAppWindow(`/data_snapshot/${dataSnapshot.id}`);
+      } else {
+        await addToast({ message: "Failed to open data in another window. Please try again." });
       }
-    } catch (_err) {}
+    } catch (err) {
+      console.error("ModernDataTable.tsx:onShowExpandedData", err);
+      await addToast({ message: "Failed to open data in another window. Please try again." });
+    }
   };
 
   useLayoutEffect(() => {

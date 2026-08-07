@@ -9,6 +9,8 @@ const { openAppWindowMock, addDataSnapshotMock } = vi.hoisted(() => ({
 
 vi.mock("src/frontend/hooks/useSetting", () => ({
   useLayoutModeSetting: () => "compact",
+  useMaxToastsSetting: () => 3,
+  DEFAULT_MAX_TOASTS: 3,
 }));
 
 vi.mock("src/frontend/hooks/useDataSnapshot", () => ({

@@ -210,35 +210,62 @@ fn spawn_sidecar(app: &tauri::App) -> Result<SidecarState, Box<dyn std::error::E
             )
         })?;
 
-    // Read stdout lines until we find the port marker
+    // Read stdout lines until we find the port marker.
+    //
+    // The read runs on a worker thread and reports lines over a channel: `lines()` is a
+    // blocking iterator, so checking the deadline inline would only ever be evaluated
+    // *after* a line arrives. A sidecar that starts but never prints (hung import,
+    // blocked syscall) would otherwise wedge startup forever with no error.
     let stdout = child
         .stdout
         .take()
         .ok_or("Failed to capture sidecar stdout")?;
-    let reader = std::io::BufReader::new(stdout);
+    let (tx, rx) = std::sync::mpsc::channel::<Result<String, String>>();
+    std::thread::spawn(move || {
+        let reader = std::io::BufReader::new(stdout);
+        for line in reader.lines() {
+            let payload = line.map_err(|e| e.to_string());
+            let is_err = payload.is_err();
+            // A send failure just means the parent stopped waiting; nothing left to do.
+            if tx.send(payload).is_err() || is_err {
+                return;
+            }
+        }
+    });
+
     let start = Instant::now();
     let timeout = Duration::from_secs(15);
     let mut port: u16 = 0;
 
-    for line in reader.lines() {
-        if start.elapsed() > timeout {
-            let _ = child.kill();
-            return Err("Sidecar startup timed out (15s)".into());
-        }
-        match line {
-            Ok(text) => {
+    loop {
+        let remaining = match timeout.checked_sub(start.elapsed()) {
+            Some(remaining) if !remaining.is_zero() => remaining,
+            _ => {
+                let _ = child.kill();
+                return Err("Sidecar startup timed out (15s)".into());
+            }
+        };
+
+        match rx.recv_timeout(remaining) {
+            Ok(Ok(text)) => {
                 println!("Sidecar: {}", text);
                 if let Some(port_str) = text.strip_prefix("__SIDECAR_PORT__=") {
-                    port = port_str
-                        .trim()
-                        .parse()
-                        .map_err(|_| format!("Invalid port: {}", port_str))?;
+                    port = port_str.trim().parse().map_err(|_| {
+                        let _ = child.kill();
+                        format!("Invalid port: {}", port_str)
+                    })?;
                     break;
                 }
             }
-            Err(e) => {
+            Ok(Err(e)) => {
                 let _ = child.kill();
                 return Err(format!("Failed to read sidecar stdout: {}", e).into());
+            }
+            // Channel closed: the sidecar exited without ever reporting a port.
+            Err(std::sync::mpsc::RecvTimeoutError::Disconnected) => break,
+            Err(std::sync::mpsc::RecvTimeoutError::Timeout) => {
+                let _ = child.kill();
+                return Err("Sidecar startup timed out (15s)".into());
             }
         }
     }

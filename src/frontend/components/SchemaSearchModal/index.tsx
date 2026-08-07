@@ -135,8 +135,13 @@ export default function SchemaSearchModal(props: SchemaSearchModalProps): React.
   const [searched, setSearched] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>("simple");
   const debounceRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+  // Monotonic id of the most recent search, so a slow earlier response cannot
+  // overwrite the results of a newer query the user has since typed.
+  const latestRequestRef = useRef(0);
 
   const doSearch = useCallback(async (searchQuery: string) => {
+    const requestId = ++latestRequestRef.current;
+
     if (!searchQuery.trim()) {
       setResults([]);
       setSearched(false);
@@ -146,14 +151,18 @@ export default function SchemaSearchModal(props: SchemaSearchModalProps): React.
     setLoading(true);
     try {
       const data = await ProxyApi.searchSchema(searchQuery.trim());
+      if (requestId !== latestRequestRef.current) return;
       setResults(data.slice(0, MAX_RESULTS));
       setSearched(true);
     } catch (err) {
+      if (requestId !== latestRequestRef.current) return;
       console.error("SchemaSearchModal:doSearch", err);
       setResults([]);
       setSearched(true);
     } finally {
-      setLoading(false);
+      if (requestId === latestRequestRef.current) {
+        setLoading(false);
+      }
     }
   }, []);
 

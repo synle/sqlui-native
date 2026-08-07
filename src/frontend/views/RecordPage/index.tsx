@@ -4,6 +4,7 @@ import Button from "@mui/material/Button";
 import InputLabel from "@mui/material/InputLabel";
 import TextField, { TextFieldProps } from "@mui/material/TextField";
 import { setPath as set } from "src/common/utils/setPath";
+import { sanitizeHtml } from "src/frontend/utils/sanitizeHtml";
 import { useSearchParams } from "react-router";
 import { useNavigate } from "src/frontend/utils/commonUtils";
 import React, { useEffect, useState } from "react";
@@ -79,13 +80,13 @@ function RecordView(props: RecordDetailsPageProps): React.JSX.Element | null {
           // undefined
           contentColumnValueView = <TextField label={columnName} value="undefined" size="small" margin="dense" disabled={true} />;
         } else if (columnValue?.toString()?.match(/<[a-z0-9]>+/gi) || columnValue?.toString()?.match(/<\/[a-z0-9]+>/gi)) {
-          // raw HTML
+          // raw HTML — sanitized because the value originates from the connected database
           contentColumnValueView = (
             <>
               {columnLabelDom}
               <Box
                 className="RawHtmlRender"
-                dangerouslySetInnerHTML={{ __html: columnValue }}
+                dangerouslySetInnerHTML={{ __html: sanitizeHtml(columnValue) }}
                 sx={{ border: 1, borderRadius: 1, borderColor: "divider", p: 1 }}
               />
             </>

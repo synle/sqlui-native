@@ -9,6 +9,20 @@ import { SqluiCore } from "typings";
 const SYSTEM_DATABASES = ["master", "tempdb", "model", "msdb"];
 
 /**
+ * Escapes a value for safe embedding inside a single-quoted T-SQL string literal
+ * by doubling any embedded apostrophes, per the SQL standard.
+ *
+ * Used for INFORMATION_SCHEMA lookups where the identifier must be compared as a
+ * string literal and cannot be passed as a bound parameter.
+ *
+ * @param value - The raw value to embed (e.g. a table name).
+ * @returns The value with every `'` doubled, ready to sit between single quotes.
+ */
+export function escapeSqlStringLiteral(value: string): string {
+  return String(value ?? "").replace(/'/g, "''");
+}
+
+/**
  * Data adapter for MSSQL (SQL Server) databases using the tedious driver.
  * Wraps the callback-based tedious API in promises.
  */
@@ -199,6 +213,10 @@ export default class MSSQLDataAdapter extends BaseDataAdapter implements IDataAd
    * @param database - The database name.
    */
   async getColumns(table: string, database?: string): Promise<SqluiCore.ColumnMetaData[]> {
+    // Table names are compared against INFORMATION_SCHEMA as string literals, so any
+    // apostrophe in the name (legal in SQL Server, e.g. `O'Brien`) would otherwise
+    // terminate the literal early — breaking the query and allowing SQL injection.
+    const tableLiteral = escapeSqlStringLiteral(table);
     let connection: Connection;
     let isTemporary = false;
 
@@ -225,9 +243,9 @@ export default class MSSQLDataAdapter extends BaseDataAdapter implements IDataAd
           SELECT ku.COLUMN_NAME
           FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS tc
           JOIN INFORMATION_SCHEMA.KEY_COLUMN_USAGE ku ON tc.CONSTRAINT_NAME = ku.CONSTRAINT_NAME
-          WHERE tc.TABLE_NAME = '${table}' AND tc.CONSTRAINT_TYPE = 'PRIMARY KEY'
+          WHERE tc.TABLE_NAME = '${tableLiteral}' AND tc.CONSTRAINT_TYPE = 'PRIMARY KEY'
         ) pk ON c.COLUMN_NAME = pk.COLUMN_NAME
-        WHERE c.TABLE_NAME = '${table}'
+        WHERE c.TABLE_NAME = '${tableLiteral}'
         ORDER BY c.ORDINAL_POSITION`,
         connection,
       );
@@ -259,7 +277,7 @@ export default class MSSQLDataAdapter extends BaseDataAdapter implements IDataAd
           ON rc.UNIQUE_CONSTRAINT_NAME = pk_tab_c.CONSTRAINT_NAME
         JOIN INFORMATION_SCHEMA.TABLES pk_tab
           ON pk_tab_c.TABLE_NAME = pk_tab.TABLE_NAME
-        WHERE fk_col.TABLE_NAME = '${table}'`,
+        WHERE fk_col.TABLE_NAME = '${tableLiteral}'`,
         connection,
       );
 

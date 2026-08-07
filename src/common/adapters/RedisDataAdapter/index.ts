@@ -14,22 +14,30 @@ export default class RedisDataAdapter extends BaseDataAdapter implements IDataAd
   private async getConnection(): Promise<RedisClientType> {
     // attempt to pull in connections
     return new Promise<RedisClientType>(async (resolve, reject) => {
+      let connectionTimeout: ReturnType<typeof setTimeout> | undefined;
       try {
-        setTimeout(() => reject("Connection Timeout"), MAX_CONNECTION_TIMEOUT);
+        connectionTimeout = setTimeout(() => reject("Connection Timeout"), MAX_CONNECTION_TIMEOUT);
 
         const client = createClient(getClientOptions(this.connectionOption));
 
-        client.connect();
+        // `connect()` rejects on bad host/credentials. Without a handler that rejection
+        // is unhandled, so surface it through the same path as the "error" event.
+        client.connect().catch(reject);
 
         client.on("ready", () => {
+          clearTimeout(connectionTimeout);
           //@ts-ignore
           this._connection = client;
           //@ts-ignore
           resolve(client);
         });
 
-        client.on("error", (err) => reject(err));
+        client.on("error", (err) => {
+          clearTimeout(connectionTimeout);
+          reject(err);
+        });
       } catch (err) {
+        clearTimeout(connectionTimeout);
         console.error("RedisDataAdapter:getConnection", err);
         reject(err);
       }
