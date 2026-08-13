@@ -459,7 +459,7 @@ export function useFlatTreeRows() {
   }, [inputFingerprint]);
 
   // Build a structural fingerprint so consumers can detect tree shape changes
-  const rowFingerprint = rows.map((r) => r.key).join("|");
+  const rowFingerprint = useMemo(() => rows.map((r) => r.key).join("|"), [rows]);
 
   return {
     rows,

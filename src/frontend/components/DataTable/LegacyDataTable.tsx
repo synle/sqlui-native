@@ -26,6 +26,9 @@ import {
   StyledDivHeaderRow,
   StyledDivValueCell,
   tableCellWidth,
+  tableHeaderFilterGap,
+  tableHeaderFilterGapCompact,
+  tableHeaderFilterHeight,
 } from "src/frontend/components/DataTable/DataTableComponents";
 import { useLayoutModeSetting } from "src/frontend/hooks/useSetting";
 import { GlobalFilter, SimpleColumnFilter } from "src/frontend/components/DataTable/Filter";
@@ -185,7 +188,12 @@ export default function LegacyDataTable(props: DataTableProps): React.JSX.Elemen
                   ) : null}
                 </StyledDivHeaderCellLabel>
                 {header.column.getCanFilter() && header.column.columnDef.header && (
-                  <Box sx={{ mt: 1 }}>
+                  <Box
+                    sx={{
+                      mt: `${isCompact ? tableHeaderFilterGapCompact : tableHeaderFilterGap}px`,
+                      height: `${tableHeaderFilterHeight}px`,
+                    }}
+                  >
                     <SimpleColumnFilter column={header.column} />
                   </Box>
                 )}

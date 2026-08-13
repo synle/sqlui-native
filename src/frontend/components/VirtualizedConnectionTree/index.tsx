@@ -3,15 +3,12 @@ import CircularProgress from "@mui/material/CircularProgress";
 import { useCallback, useEffect, useRef } from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { useLayoutModeSetting } from "src/frontend/hooks/useSetting";
+import { estimateTreeRowHeight, getTreeRowKey } from "./rowMetrics";
 import { TreeRowRenderer } from "./TreeRowRenderer";
 import { useFlatTreeRows } from "./useFlatTreeRows";
 
-/** Default row height in pixels for tree rows. */
-const ROW_HEIGHT_DEFAULT = 37;
-/** Compact mode row height in pixels. */
-const ROW_HEIGHT_COMPACT = 28;
-/** Row height in pixels for column attribute detail rows. */
-const ROW_HEIGHT_COLUMN_ATTRIBUTES = 35;
+/** Rows rendered above and below the viewport so they are measured before they scroll into view. */
+const OVERSCAN = 10;
 
 /**
  * Virtualized tree view of all database connections, databases, tables, and columns.
@@ -19,23 +16,20 @@ const ROW_HEIGHT_COLUMN_ATTRIBUTES = 35;
  * Connection-header rows are kept mounted to preserve drag-and-drop sources.
  */
 export default function VirtualizedConnectionTree() {
-  const { rows, rowFingerprint, connections, connectionsLoading, onToggle, updateConnections } = useFlatTreeRows();
+  const { rows, connections, connectionsLoading, onToggle, updateConnections } = useFlatTreeRows();
   const parentRef = useRef<HTMLDivElement>(null);
   const layoutMode = useLayoutModeSetting();
   const isCompact = layoutMode === "compact";
-  const rowHeight = isCompact ? ROW_HEIGHT_COMPACT : ROW_HEIGHT_DEFAULT;
+
+  const getItemKey = useCallback((index: number) => getTreeRowKey(rows, index), [rows]);
+  const estimateSize = useCallback((index: number) => estimateTreeRowHeight(rows, index, isCompact), [rows, isCompact]);
 
   const virtualizer = useVirtualizer<HTMLDivElement, HTMLDivElement>({
     count: rows.length,
     getScrollElement: () => parentRef.current,
-    estimateSize: (index) => {
-      const row = rows[index];
-      if (row.type === "column-attributes") {
-        return (Object.keys(row.column).length + 1) * ROW_HEIGHT_COLUMN_ATTRIBUTES;
-      }
-      return rowHeight;
-    },
-    measureElement: (element) => element?.getBoundingClientRect().height ?? rowHeight,
+    getItemKey,
+    estimateSize,
+    overscan: OVERSCAN,
   });
 
   const onConnectionOrderChange = useCallback(
@@ -45,9 +39,12 @@ export default function VirtualizedConnectionTree() {
     [updateConnections],
   );
 
+  // Only the layout mode invalidates measurements wholesale: every row changes height at once and
+  // the estimates change with it. Tree shape changes must not clear the cache — keyed measurements
+  // already follow their rows, and wiping them drops the height of every row that stays mounted.
   useEffect(() => {
     virtualizer.measure();
-  }, [layoutMode, rowFingerprint]);
+  }, [layoutMode]);
 
   if (connectionsLoading) {
     return (
@@ -62,13 +59,14 @@ export default function VirtualizedConnectionTree() {
   }
 
   return (
-    <div ref={parentRef} style={{ flex: 1, overflowY: "auto" }}>
+    <div ref={parentRef} className="VirtualizedConnectionTree" style={{ flex: 1, overflowY: "auto" }}>
       <div style={{ height: `${virtualizer.getTotalSize()}px`, position: "relative" }}>
         {virtualizer.getVirtualItems().map((virtualItem) => {
           const row = rows[virtualItem.index];
           return (
             <div
               key={row.key}
+              className="VirtualizedConnectionTree__Row"
               data-index={virtualItem.index}
               ref={virtualizer.measureElement}
               style={{

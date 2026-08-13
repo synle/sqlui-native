@@ -9,6 +9,13 @@ import {
   tableCellHeight,
   tableCellHeightCompact,
   tableCellWidth,
+  tableHeaderFilterGap,
+  tableHeaderFilterGapCompact,
+  tableHeaderFilterHeight,
+  tableHeaderLabelHeight,
+  tableHeaderLabelHeightCompact,
+  tableHeaderPaddingBlock,
+  tableHeaderPaddingBlockCompact,
   StyledDivContainer,
   StyledDivValueCell,
   StyledDivHeaderRow,
@@ -23,11 +30,20 @@ import {
 describe("DataTableComponents", () => {
   test("constants are well-defined", () => {
     expect(defaultTableHeight).toBe("85vh");
-    expect(tableCellHeaderHeight).toBe(75);
-    expect(tableCellHeaderHeightCompact).toBe(60);
+    expect(tableCellHeaderHeight).toBe(86);
+    expect(tableCellHeaderHeightCompact).toBe(74);
     expect(tableCellHeight).toBe(35);
     expect(tableCellHeightCompact).toBe(28);
     expect(tableCellWidth).toBe(160);
+  });
+
+  test("header height reserves room for the label, the gap and the filter input", () => {
+    expect(tableCellHeaderHeight).toBe(
+      tableHeaderPaddingBlock * 2 + tableHeaderLabelHeight + tableHeaderFilterGap + tableHeaderFilterHeight,
+    );
+    expect(tableCellHeaderHeightCompact).toBe(
+      tableHeaderPaddingBlockCompact * 2 + tableHeaderLabelHeightCompact + tableHeaderFilterGapCompact + tableHeaderFilterHeight,
+    );
   });
 
   test("ColumnResizer renders and dispatches mouse/touch events", () => {

@@ -5,11 +5,37 @@ import { Bar } from "src/frontend/components/Resizer";
 /** Default height for the data table container. */
 export const defaultTableHeight = "85vh";
 
-/** Height in pixels for table header cells in comfortable mode. */
-export const tableCellHeaderHeight = 75;
+/** Height in pixels of the single-line label at the top of a header cell in comfortable mode. */
+export const tableHeaderLabelHeight = 26;
 
-/** Height in pixels for table header cells in compact mode. */
-export const tableCellHeaderHeightCompact = 60;
+/** Height in pixels of the single-line label at the top of a header cell in compact mode. */
+export const tableHeaderLabelHeightCompact = 22;
+
+/**
+ * Height in pixels reserved for the `size="small"` filter input rendered under each header label.
+ * Header cells are absolutely positioned so they contribute nothing to their row's height — the
+ * space the filter needs has to be reserved up front or the input bleeds onto the first data row.
+ */
+export const tableHeaderFilterHeight = 40;
+
+/** Vertical gap in pixels between a header label and its filter input in comfortable mode. */
+export const tableHeaderFilterGap = 8;
+
+/** Vertical gap in pixels between a header label and its filter input in compact mode. */
+export const tableHeaderFilterGapCompact = 4;
+
+/** Vertical padding in pixels above and below header cell content in comfortable mode. */
+export const tableHeaderPaddingBlock = 6;
+
+/** Vertical padding in pixels above and below header cell content in compact mode. */
+export const tableHeaderPaddingBlockCompact = 4;
+
+/** Height in pixels for table header cells in comfortable mode, derived from the parts stacked inside them. */
+export const tableCellHeaderHeight = tableHeaderPaddingBlock * 2 + tableHeaderLabelHeight + tableHeaderFilterGap + tableHeaderFilterHeight;
+
+/** Height in pixels for table header cells in compact mode, derived from the parts stacked inside them. */
+export const tableCellHeaderHeightCompact =
+  tableHeaderPaddingBlockCompact * 2 + tableHeaderLabelHeightCompact + tableHeaderFilterGapCompact + tableHeaderFilterHeight;
 
 /** Height in pixels for table data cells in comfortable mode. */
 export const tableCellHeight = 35;
@@ -96,8 +122,12 @@ export const StyledDivHeaderRow = styled("div")(({ theme }) => ({
     height: `${tableCellHeaderHeight}px`,
     backgroundColor: theme.palette.background.default,
     color: theme.palette.text.primary,
-    paddingTop: "5px",
+    paddingTop: `${tableHeaderPaddingBlock}px`,
+    paddingBottom: `${tableHeaderPaddingBlock}px`,
     boxSizing: "border-box",
+    // Header cells are absolutely positioned, so anything taller than the cell would paint over the
+    // first data row instead of pushing it down.
+    overflow: "hidden",
     textOverflow: "ellipsis",
     wordBreak: "break-all",
     whiteSpace: "nowrap",
@@ -106,7 +136,8 @@ export const StyledDivHeaderRow = styled("div")(({ theme }) => ({
   ".DataTable--compact &": {
     "> div": {
       height: `${tableCellHeaderHeightCompact}px`,
-      paddingTop: "3px",
+      paddingTop: `${tableHeaderPaddingBlockCompact}px`,
+      paddingBottom: `${tableHeaderPaddingBlockCompact}px`,
     },
   },
 }));
@@ -143,8 +174,16 @@ export const StyledDivHeaderCell = styled("div")(() => ({
 export const StyledDivHeaderCellLabel = styled("div")(() => ({
   display: "flex",
   alignItems: "center",
+  height: `${tableHeaderLabelHeight}px`,
+  boxSizing: "border-box",
+  ".DataTable--compact &": {
+    height: `${tableHeaderLabelHeightCompact}px`,
+  },
   "> span": {
     flexGrow: 1,
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    whiteSpace: "nowrap",
   },
 }));
 /** Styled content row for virtualized table rendering with absolute positioning. */
@@ -156,9 +195,9 @@ export const StyledDivContentRowForVirualized = styled(StyledDivContentRow)(() =
 
 /** Styled header cell for virtualized table rendering with fixed height. */
 export const StyledDivHeaderCellForVirtualized = styled(StyledDivHeaderCell)(() => ({
-  height: `${tableCellHeight}px`,
+  height: `${tableCellHeaderHeight}px`,
   ".DataTable--compact &": {
-    height: `${tableCellHeightCompact}px`,
+    height: `${tableCellHeaderHeightCompact}px`,
   },
 }));
 

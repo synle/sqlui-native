@@ -33,6 +33,9 @@ import {
   tableCellHeight,
   tableCellHeightCompact,
   tableCellWidth,
+  tableHeaderFilterGap,
+  tableHeaderFilterGapCompact,
+  tableHeaderFilterHeight,
 } from "src/frontend/components/DataTable/DataTableComponents";
 import { GlobalFilter, SimpleColumnFilter } from "src/frontend/components/DataTable/Filter";
 import DropdownMenu from "src/frontend/components/DropdownMenu";
@@ -288,7 +291,12 @@ export default function ModernDataTable(props: DataTableProps): React.JSX.Elemen
                       ) : null}
                     </StyledDivHeaderCellLabel>
                     {header.column.getCanFilter() && header.column.columnDef.header && (
-                      <Box sx={{ mt: 1 }}>
+                      <Box
+                        sx={{
+                          mt: `${isCompact ? tableHeaderFilterGapCompact : tableHeaderFilterGap}px`,
+                          height: `${tableHeaderFilterHeight}px`,
+                        }}
+                      >
                         <SimpleColumnFilter column={header.column} />
                       </Box>
                     )}
