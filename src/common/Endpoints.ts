@@ -484,7 +484,7 @@ export function setUpDataEndpoints(aHonoAppContext: Hono) {
       await engine.authenticate();
       res.status(200).json(await getConnectionMetaData(connection));
     } catch (err: any) {
-      res.status(406).json(`Failed to connect ${err.toString()}`);
+      res.status(406).json(`Failed to connect ${formatErrorMessage(err, "Connection failed")}`);
       console.error("Endpoints.ts:handler [POST /api/connection/:connectionId/refresh]", err);
     } finally {
       await safeDisconnect(engine);
@@ -580,7 +580,7 @@ export function setUpDataEndpoints(aHonoAppContext: Hono) {
     } catch (err: any) {
       // here means we failed to connect, just set back 407 - Not Acceptable
       // here we return the barebone
-      res.status(406).json(`Failed to connect ${err.toString()}`);
+      res.status(406).json(`Failed to connect ${formatErrorMessage(err, "Connection failed")}`);
       console.error("Endpoints.ts:connect", err);
     } finally {
       // Dispose of the adapter connection/driver immediately

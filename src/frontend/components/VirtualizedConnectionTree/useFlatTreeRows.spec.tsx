@@ -406,4 +406,76 @@ describe("useFlatTreeRows", () => {
       });
     });
   });
+
+  // Toggling a column open or pressing "Show All Columns" changes only the visibility map — it fires
+  // no query and adds no expanded table — so the memoization fingerprint has to carry the visibility
+  // state itself, or the rows stay frozen at whatever they were when the last query settled.
+  describe("visibility toggled after the rows are built", () => {
+    const baseVisibles = { c1: true, "c1 > db1": true, "c1 > db1 > tbl1": true };
+
+    beforeEach(() => {
+      useGetConnectionsMock.mockReturnValue({
+        data: [{ id: "c1", name: "Conn1", status: "online", dialect: "sqlite" }],
+        isLoading: false,
+      });
+      getConnectionDatabasesMock.mockResolvedValue([{ name: "db1" }]);
+      getConnectionTablesMock.mockResolvedValue([{ name: "tbl1" }]);
+    });
+
+    test("'Show All Columns' expands the truncated column list", async () => {
+      const manyColumns = Array.from({ length: 25 }, (_, i) => ({ name: `col${i}`, type: "TEXT" }));
+      getConnectionColumnsMock.mockResolvedValue(manyColumns);
+      useShowHideMock.mockReturnValue({ visibles: baseVisibles, onToggle: vi.fn() });
+
+      const { result, rerender } = renderHook(() => useFlatTreeRows(), { wrapper });
+      await waitFor(() => {
+        expect(result.current.rows.find((r) => r.type === "show-all-columns")).toBeTruthy();
+      });
+
+      useShowHideMock.mockReturnValue({
+        visibles: { ...baseVisibles, "c1 > db1 > tbl1 > __ShowAllColumns__": true },
+        onToggle: vi.fn(),
+      });
+      rerender();
+
+      expect(result.current.rows.filter((r) => r.type === "column-header")).toHaveLength(25);
+      expect(result.current.rows.find((r) => r.type === "show-all-columns")).toBeUndefined();
+    });
+
+    test("expanding a column adds its column-attributes row", async () => {
+      getConnectionColumnsMock.mockResolvedValue([{ name: "col1", type: "TEXT" }]);
+      useShowHideMock.mockReturnValue({ visibles: baseVisibles, onToggle: vi.fn() });
+
+      const { result, rerender } = renderHook(() => useFlatTreeRows(), { wrapper });
+      await waitFor(() => {
+        expect(result.current.rows.find((r) => r.type === "column-header")).toBeTruthy();
+      });
+
+      useShowHideMock.mockReturnValue({
+        visibles: { ...baseVisibles, "c1 > db1 > tbl1 > col1": true },
+        onToggle: vi.fn(),
+      });
+      rerender();
+
+      expect(result.current.rows.find((r) => r.type === "column-attributes")).toBeTruthy();
+    });
+
+    test("collapsing a table removes its column rows", async () => {
+      getConnectionColumnsMock.mockResolvedValue([{ name: "col1", type: "TEXT" }]);
+      useShowHideMock.mockReturnValue({ visibles: baseVisibles, onToggle: vi.fn() });
+
+      const { result, rerender } = renderHook(() => useFlatTreeRows(), { wrapper });
+      await waitFor(() => {
+        expect(result.current.rows.find((r) => r.type === "column-header")).toBeTruthy();
+      });
+
+      useShowHideMock.mockReturnValue({
+        visibles: { c1: true, "c1 > db1": true },
+        onToggle: vi.fn(),
+      });
+      rerender();
+
+      expect(result.current.rows.find((r) => r.type === "column-header")).toBeUndefined();
+    });
+  });
 });

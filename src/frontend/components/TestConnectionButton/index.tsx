@@ -4,6 +4,7 @@ import ErrorOutlineIcon from "@mui/icons-material/ErrorOutlined";
 import { Box, Button, CircularProgress, Typography } from "@mui/material";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { getConnectionFormInputs, getConnectionStringFormat } from "src/common/adapters/DataScriptFactory";
+import { formatErrorMessage } from "src/common/utils/errorUtils";
 import Timer from "src/frontend/components/Timer";
 import { ProxyApi } from "src/frontend/data/api";
 import { useActionDialogs } from "src/frontend/hooks/useActionDialogs";
@@ -206,7 +207,7 @@ export function TestConnectionModalBody(props: TestConnectionModalBodyProps): Re
       setElapsed(Date.now() - startTimeRef.current);
       console.error("TestConnectionButton:testConnection", err);
       setStatus("error");
-      setErrorMessage(err instanceof Error ? err.message : JSON.stringify(err));
+      setErrorMessage(formatErrorMessage(err, "Connection failed"));
     }
   }, [connection]);
 

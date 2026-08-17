@@ -82,6 +82,9 @@ upload/
 *.rej
 *.LICENSE.txt
 
+# Local scratch scripts — these hold live credentials, never commit them
+test-do-not-checkin.js
+
 sqlui-server.js
 app.js
 

@@ -6,7 +6,7 @@ import { queryKeys } from "src/frontend/hooks/queryKeys";
 import { useGetConnections, useUpdateConnections, useAutoConnectAll } from "src/frontend/hooks/useConnection";
 import { useActiveConnectionQuery } from "src/frontend/hooks/useConnectionQuery";
 import { useShowHide } from "src/frontend/hooks/useShowHide";
-import { SqluiCore } from "typings";
+import { SqluiCore, SqluiFrontend } from "typings";
 import { TreeRow } from "./types";
 
 /** Maximum number of columns to display before showing a "Show All" button. */
@@ -36,6 +36,27 @@ function metadataToken(value: object | undefined): number | string {
     metadataTokens.set(value, token);
   }
   return token;
+}
+
+/**
+ * Builds a fingerprint of the expanded tree nodes.
+ *
+ * Most visibility changes reach the memoization fingerprint indirectly, because expanding a node
+ * adds a metadata query. The ones that don't — "Show All Columns" and expanding a column to see its
+ * attributes — fetch nothing at all, so without this the rows stay frozen at whatever they were when
+ * the last query settled and clicking those does nothing. Derived from the map's contents rather
+ * than its reference so an in-place mutation upstream cannot silently freeze the tree again.
+ * @param visibles - The visibility map keyed by tree node key.
+ * @returns A stable string listing every expanded key.
+ */
+function visibilityFingerprint(visibles: SqluiFrontend.TreeVisibilities): string {
+  const expandedKeys: string[] = [];
+  for (const key of Object.keys(visibles)) {
+    if (visibles[key]) {
+      expandedKeys.push(key);
+    }
+  }
+  return expandedKeys.sort().join(",");
 }
 
 /** Result of a database metadata query for a connection. */
@@ -211,6 +232,7 @@ export function useFlatTreeRows() {
     ),
     ...expandedOnlineConnections,
     ...expandedTables.map((t) => `${t.connectionId}|${t.databaseId}|${t.tableId}`),
+    `V${visibilityFingerprint(visibles)}`,
     activeQuery?.connectionId,
     activeQuery?.databaseId,
     activeQuery?.tableId,

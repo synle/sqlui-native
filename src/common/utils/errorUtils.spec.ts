@@ -38,6 +38,43 @@ describe("errorUtils", () => {
       const err = { sqlMessage: "SQL specific", message: "generic" };
       expect(formatErrorMessage(err)).toBe("SQL specific");
     });
+
+    test("unwraps AggregateError causes instead of returning 'AggregateError'", () => {
+      // AggregateError is ES2021; the project targets ES2020, so reach it off globalThis.
+      const AggregateErrorCtor = (globalThis as any).AggregateError;
+      const err = new AggregateErrorCtor(
+        [new Error("connect ECONNREFUSED ::1:33062"), new Error("connect ECONNREFUSED 127.0.0.1:33062")],
+        "",
+      );
+      expect(formatErrorMessage(err)).toBe("connect ECONNREFUSED ::1:33062; connect ECONNREFUSED 127.0.0.1:33062");
+    });
+
+    test("dedupes identical AggregateError causes", () => {
+      const AggregateErrorCtor = (globalThis as any).AggregateError;
+      const err = new AggregateErrorCtor([new Error("connect ETIMEDOUT"), new Error("connect ETIMEDOUT")], "");
+      expect(formatErrorMessage(err)).toBe("connect ETIMEDOUT");
+    });
+
+    test("falls back to the aggregate code when causes carry no message", () => {
+      const err = { errors: [{}, {}], code: "ECONNREFUSED", syscall: "connect" };
+      expect(formatErrorMessage(err)).toBe("ECONNREFUSED (connect)");
+    });
+
+    test("returns the error field of an API error payload", () => {
+      expect(formatErrorMessage({ error: "Connection test failed" })).toBe("Connection test failed");
+    });
+
+    test("unwraps a nested error object in an adapter result", () => {
+      expect(formatErrorMessage({ ok: false, error: new Error("syntax error") })).toBe("syntax error");
+    });
+
+    test("returns the code for a messageless system error", () => {
+      expect(formatErrorMessage({ code: "ETIMEDOUT" })).toBe("ETIMEDOUT");
+    });
+
+    test("prefers message over the code", () => {
+      expect(formatErrorMessage({ message: "boom", code: "ECONNRESET" })).toBe("boom");
+    });
   });
 
   describe("safeDisconnect", () => {

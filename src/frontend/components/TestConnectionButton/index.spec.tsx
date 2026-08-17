@@ -94,6 +94,18 @@ describe("TestConnectionModalBody", () => {
     expect(container.textContent).toContain("Close");
   });
 
+  test("renders the server error message from a rejected API payload", async () => {
+    proxyTestMock.mockRejectedValue({ error: "connect ECONNREFUSED 127.0.0.1:33062" });
+    const { container } = render(
+      <TestConnectionModalBody connection={{ name: "MyDb", connection: "******host:33062" } as any} onDismiss={() => {}} />,
+    );
+    await waitFor(() => {
+      expect(container.textContent).toContain("Failed to connect");
+    });
+    expect(container.textContent).toContain("connect ECONNREFUSED 127.0.0.1:33062");
+    expect(container.textContent).not.toContain('{"error"');
+  });
+
   test("clicking Cancel during loading goes to cancelled state", async () => {
     proxyTestMock.mockImplementation(() => new Promise(() => {}));
     const { container, getByText } = render(
